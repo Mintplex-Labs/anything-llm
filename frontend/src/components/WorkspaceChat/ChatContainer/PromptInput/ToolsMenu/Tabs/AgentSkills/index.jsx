@@ -15,12 +15,10 @@ import {
 import useToolsMenuItems from "../../useToolsMenuItems";
 import SkillRow from "./SkillRow";
 import SkillSection from "./SkillSection";
-import { Wrench, MagnifyingGlass } from "@phosphor-icons/react";
+import { Wrench, MagnifyingGlass, CircleNotch } from "@phosphor-icons/react";
 import { useIsAgentSessionActive } from "@/utils/chat/agent";
 
 const SEARCH_THRESHOLD = 10;
-
-let _mcpCache = null;
 
 export default function AgentSkillsTab({
   highlightedIndex = -1,
@@ -40,15 +38,15 @@ export default function AgentSkillsTab({
   const [enabledConfigurable, setEnabledConfigurable] = useState([]);
   const [importedSkills, setImportedSkills] = useState([]);
   const [flows, setFlows] = useState([]);
-  const [mcpServers, setMcpServers] = useState(_mcpCache ?? []);
+  const [mcpServers, setMcpServers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [mcpLoading, setMcpLoading] = useState(true);
   const [expandedSections, setExpandedSections] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
   const showAgentCmdActivationAlert = showAgentCommand && !agentSessionActive;
 
   useEffect(() => {
     fetchSkillSettings();
-    if (_mcpCache) setMcpServers(_mcpCache);
     fetchMcpServers();
   }, []);
 
@@ -81,10 +79,11 @@ export default function AgentSkillsTab({
   async function fetchMcpServers() {
     try {
       const { servers = [] } = await MCPServers.listServers();
-      _mcpCache = servers;
       setMcpServers(servers);
     } catch (e) {
       console.error(e);
+    } finally {
+      setMcpLoading(false);
     }
   }
 
@@ -160,7 +159,6 @@ export default function AgentSkillsTab({
           },
         };
       });
-      _mcpCache = updated;
       return updated;
     });
     await MCPServers.toggleTool(serverName, toolName, newEnabled);
@@ -355,7 +353,19 @@ export default function AgentSkillsTab({
           ))}
         </SkillSection>
       ))}
-      {filteredSections.length === 0 && searchQuery.trim() && (
+      {mcpLoading && (
+        <div className="flex items-center gap-1.5 px-2 py-1.5">
+          <CircleNotch
+            size={12}
+            className="text-zinc-500 light:text-slate-400 animate-spin"
+            weight="bold"
+          />
+          <span className="text-[10px] text-zinc-500 light:text-slate-400">
+            {t("chat_window.loading_mcp_servers")}
+          </span>
+        </div>
+      )}
+      {filteredSections.length === 0 && !mcpLoading && searchQuery.trim() && (
         <p className="text-xs text-zinc-500 light:text-slate-400 text-center py-2">
           {t("chat_window.no_tools_found")}
         </p>
