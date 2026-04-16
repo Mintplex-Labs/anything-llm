@@ -10,6 +10,12 @@ const { agentSkillsFromSystemSettings } = require("../utils/agents/defaults");
 const ImportedPlugin = require("../utils/agents/imported");
 const { AgentFlows } = require("../utils/agentFlows");
 const MCPCompatibilityLayer = require("../utils/MCP");
+const { BackgroundService } = require("../utils/BackgroundWorkers");
+
+// BackgroundService is a singleton, so `new BackgroundService()` anywhere in
+// the codebase returns the same instance that `server/index.js` booted. We
+// grab that reference once and reuse it across handlers.
+const backgroundService = new BackgroundService();
 
 function scheduledJobEndpoints(app) {
   if (!app) return;
@@ -265,8 +271,7 @@ function scheduledJobEndpoints(app) {
           return response.status(400).json({ job: null, error });
         }
 
-        const { BackgroundService } = require("../utils/BackgroundWorkers");
-        new BackgroundService().addScheduledJob(job);
+        backgroundService.addScheduledJob(job);
 
         return response.status(201).json({ job, error: null });
       } catch (e) {
@@ -344,8 +349,7 @@ function scheduledJobEndpoints(app) {
           return response.status(400).json({ job: null, error });
         }
 
-        const { BackgroundService } = require("../utils/BackgroundWorkers");
-        await new BackgroundService().syncScheduledJob(job.id);
+        await backgroundService.syncScheduledJob(job.id);
 
         return response.status(200).json({ job, error: null });
       } catch (e) {
@@ -361,8 +365,7 @@ function scheduledJobEndpoints(app) {
     [validatedRequest, isSingleUserMode],
     async (request, response) => {
       try {
-        const { BackgroundService } = require("../utils/BackgroundWorkers");
-        new BackgroundService().removeScheduledJob(Number(request.params.id));
+        backgroundService.removeScheduledJob(Number(request.params.id));
 
         const success = await ScheduledJob.delete(Number(request.params.id));
         return response.status(200).json({ success });
@@ -404,8 +407,7 @@ function scheduledJobEndpoints(app) {
           enabled: !job.enabled,
         });
 
-        const { BackgroundService } = require("../utils/BackgroundWorkers");
-        await new BackgroundService().syncScheduledJob(job.id);
+        await backgroundService.syncScheduledJob(job.id);
 
         return response.status(200).json({ job: updated });
       } catch (e) {
@@ -428,8 +430,7 @@ function scheduledJobEndpoints(app) {
           return response.status(404).json({ error: "Job not found" });
         }
 
-        const { BackgroundService } = require("../utils/BackgroundWorkers");
-        new BackgroundService().enqueueScheduledJob(job.id);
+        backgroundService.enqueueScheduledJob(job.id);
 
         return response.status(200).json({ success: true, error: null });
       } catch (e) {
