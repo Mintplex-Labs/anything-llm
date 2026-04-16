@@ -156,10 +156,10 @@ export default function CronBuilder({ value, onChange }) {
                       : [...state.weekdays, day.value];
                     update({ weekdays: next.length ? next : [day.value] });
                   }}
-                  className={`border-none px-3 py-1 text-xs rounded-full border transition-colors ${
+                  className={`border-none px-3 py-1 text-xs rounded-full transition-colors ${
                     selected
-                      ? "bg-primary-button text-white border-primary-button"
-                      : "bg-transparent text-theme-text-secondary border-white/10 hover:border-white/30"
+                      ? "bg-zinc-50 text-zinc-950 light:bg-zinc-950 light:text-white"
+                      : "bg-white/5 text-theme-text-secondary hover:bg-white/10 hover:text-theme-text-primary light:bg-slate-200 light:hover:bg-slate-300"
                   }`}
                 >
                   {day.label}
