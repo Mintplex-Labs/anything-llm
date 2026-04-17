@@ -6,12 +6,18 @@ import showToast from "@/utils/toast";
 import ModalWrapper from "@/components/ModalWrapper";
 import LLMProviderModelPicker from "../LLMProviderModelPicker";
 
-export default function NewRouterModal({ isOpen, closeModal, onSuccess }) {
+export default function NewRouterModal({
+  isOpen,
+  closeModal,
+  onSuccess,
+  router = null,
+}) {
   const { t } = useTranslation();
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const isEdit = !!router;
 
-  const handleCreate = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
@@ -37,17 +43,28 @@ export default function NewRouterModal({ isOpen, closeModal, onSuccess }) {
       return;
     }
 
-    const { router, error: apiError } = await ModelRouter.create(data);
+    const { router: saved, error: apiError } = isEdit
+      ? await ModelRouter.update(router.id, data)
+      : await ModelRouter.create(data);
     setLoading(false);
 
-    if (router) {
-      showToast(t("model-router.new-router.toast-created"), "success", {
-        clear: true,
-      });
+    if (saved) {
+      showToast(
+        t(
+          isEdit
+            ? "model-router.edit-router.toast-updated"
+            : "model-router.new-router.toast-created"
+        ),
+        "success",
+        { clear: true }
+      );
       onSuccess();
       closeModal();
     } else {
-      setError(apiError);
+      setError(
+        apiError ||
+          (isEdit ? t("model-router.edit-router.toast-update-failed") : null)
+      );
     }
   };
 
@@ -56,7 +73,9 @@ export default function NewRouterModal({ isOpen, closeModal, onSuccess }) {
       <div className="relative w-full max-w-2xl bg-zinc-900 light:bg-white rounded-xl shadow border border-zinc-700 light:border-slate-300">
         <div className="relative p-6 border-b border-zinc-700 light:border-slate-200">
           <h3 className="text-lg font-semibold text-white light:text-slate-900">
-            {t("model-router.new-router.title")}
+            {isEdit
+              ? t("model-router.edit-router.title", { name: router.name })
+              : t("model-router.new-router.title")}
           </h3>
           <button
             onClick={closeModal}
@@ -67,7 +86,7 @@ export default function NewRouterModal({ isOpen, closeModal, onSuccess }) {
           </button>
         </div>
         <div className="px-6 py-6">
-          <form onSubmit={handleCreate}>
+          <form onSubmit={handleSubmit}>
             <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
               {error && <p className="text-red-400 text-sm">Error: {error}</p>}
               <div className="flex flex-col gap-y-1.5">
@@ -77,6 +96,7 @@ export default function NewRouterModal({ isOpen, closeModal, onSuccess }) {
                 <input
                   type="text"
                   name="name"
+                  defaultValue={router?.name || ""}
                   placeholder={t("model-router.new-router.name-placeholder")}
                   className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 placeholder:text-zinc-400 light:placeholder:text-slate-500 text-sm rounded-lg outline-none block w-full p-2.5"
                   required
@@ -89,6 +109,7 @@ export default function NewRouterModal({ isOpen, closeModal, onSuccess }) {
                 <input
                   type="text"
                   name="description"
+                  defaultValue={router?.description || ""}
                   placeholder={t(
                     "model-router.new-router.description-placeholder"
                   )}
@@ -100,6 +121,8 @@ export default function NewRouterModal({ isOpen, closeModal, onSuccess }) {
                 modelFieldName="fallback_model"
                 label={t("model-router.new-router.fallback-label")}
                 description={t("model-router.new-router.fallback-description")}
+                defaultProvider={router?.fallback_provider}
+                defaultModel={router?.fallback_model}
               />
               <div className="flex flex-col gap-y-1.5">
                 <label className="text-sm font-medium text-zinc-200 light:text-slate-900">
@@ -108,7 +131,7 @@ export default function NewRouterModal({ isOpen, closeModal, onSuccess }) {
                 <input
                   type="number"
                   name="cooldown_seconds"
-                  defaultValue={30}
+                  defaultValue={router?.cooldown_seconds ?? 30}
                   min={0}
                   max={3600}
                   className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 placeholder:text-zinc-400 light:placeholder:text-slate-500 text-sm rounded-lg outline-none block w-full p-2.5"
@@ -134,8 +157,14 @@ export default function NewRouterModal({ isOpen, closeModal, onSuccess }) {
                 {loading ? (
                   <>
                     <CircleNotch className="h-4 w-4 animate-spin" />
-                    {t("model-router.new-router.creating")}
+                    {t(
+                      isEdit
+                        ? "model-router.edit-router.saving"
+                        : "model-router.new-router.creating"
+                    )}
                   </>
+                ) : isEdit ? (
+                  t("model-router.edit-router.save")
                 ) : (
                   t("model-router.new-router.create")
                 )}

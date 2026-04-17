@@ -927,7 +927,10 @@ const TRANSLATIONS = {
       rules: "Rules",
       workspaces: "Workspaces",
     },
-    "no-routers": "No model routers created yet",
+    "no-routers": "No model routers yet",
+    "empty-description":
+      "No model routers configured yet. Create one to get started.",
+    "new-router-button": "New Router",
     "delete-confirm":
       'Are you sure you want to delete the router "{{name}}"?\nThis will remove all its rules and unlink any workspaces using it.\n\nThis action is irreversible.',
     "toast-deleted": "Router deleted",
@@ -971,6 +974,7 @@ const TRANSLATIONS = {
     },
     rules: {
       title: "Routing Rules",
+      "title-with-name": "Router Rules: {{name}}",
       description:
         "Rules are evaluated top-to-bottom by priority. Drag to reorder. First match wins.",
       "add-rule": "Add Rule",
@@ -978,7 +982,10 @@ const TRANSLATIONS = {
       "toast-deleted": "Rule deleted",
       "toast-delete-failed": "Failed to delete rule",
       "toast-reorder-failed": "Failed to reorder rules",
-      "no-rules": "No rules yet. Add a rule to start routing.",
+      "no-rules": "No rules yet",
+      "empty-description":
+        "Add a rule to start routing chat messages to specific providers and models.",
+      "new-rule-button": "New Rule",
     },
     "rule-form": {
       "edit-title": "Edit Rule",
