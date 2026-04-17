@@ -209,7 +209,9 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
           if (captureAs === "html") return document.documentElement.innerHTML;
           return document.body.innerText;
         }, captureAs);
-        await browser.close();
+        // Note: browser.close() is handled by the scrape() finally-block below,
+        // so we don't close here. Closing twice is safe but closing before the
+        // outer function returns would cause issues if any step above throws.
         return result;
       },
     });
@@ -226,44 +228,54 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
         ignoreDefaultArgs: ["--disable-extensions"],
         ...this.options?.launchOptions,
       });
-      const page = await browser.newPage();
-      if (Object.keys(overrideHeaders).length > 0) {
-        await page.setExtraHTTPHeaders(overrideHeaders);
-      }
-
-      // Block non-essential resources that slow down text extraction
-      await page.setRequestInterception(true);
-      page.on('request', (req) => {
-        const type = req.resourceType();
-        const url = req.url();
-        if (['image', 'stylesheet', 'font', 'media'].includes(type)) {
-          req.abort();
-        // Block chatbot widget scripts — they load synchronously from the
-        // AnythingLLM container itself and block DOMContentLoaded indefinitely
-        // (self-connection deadlock). Matches both ki.kufer.de and ki.kufer-test.de.
-        } else if (type === 'script' && /\.ki\.kufer(-test)?\.de\//.test(url)) {
-          req.abort();
-        } else {
-          req.continue();
+      // Wrap everything in try/finally so the Chromium process is always
+      // closed — even on page.goto errors, evaluate() throws, or upstream
+      // cancellation. Without this, each failed scrape leaks a Chromium
+      // process (observed 2026-04-17: intern container had 14 zombie
+      // Chromium processes holding ~2.5 GiB after an OpenRouter outage).
+      try {
+        const page = await browser.newPage();
+        if (Object.keys(overrideHeaders).length > 0) {
+          await page.setExtraHTTPHeaders(overrideHeaders);
         }
-      });
 
-      await page.goto(this.webPath, {
-        timeout: 30000,
-        waitUntil: "domcontentloaded",
-      }).catch(() => {});
-      // Wait for JS frameworks to finish (readyState=complete), max 2s
-      await page.waitForFunction(
-        () => document.readyState === 'complete',
-        { timeout: 2000 }
-      ).catch(() => {});
+        // Block non-essential resources that slow down text extraction
+        await page.setRequestInterception(true);
+        page.on('request', (req) => {
+          const type = req.resourceType();
+          const url = req.url();
+          if (['image', 'stylesheet', 'font', 'media'].includes(type)) {
+            req.abort();
+          // Block chatbot widget scripts — they load synchronously from the
+          // AnythingLLM container itself and block DOMContentLoaded indefinitely
+          // (self-connection deadlock). Matches both ki.kufer.de and ki.kufer-test.de.
+          } else if (type === 'script' && /\.ki\.kufer(-test)?\.de\//.test(url)) {
+            req.abort();
+          } else {
+            req.continue();
+          }
+        });
 
-      const bodyHTML = this.options?.evaluate
-        ? await this.options.evaluate(page, browser)
-        : await page.evaluate(() => document.body.innerHTML);
+        await page.goto(this.webPath, {
+          timeout: 30000,
+          waitUntil: "domcontentloaded",
+        }).catch(() => {});
+        // Wait for JS frameworks to finish (readyState=complete), max 2s
+        await page.waitForFunction(
+          () => document.readyState === 'complete',
+          { timeout: 2000 }
+        ).catch(() => {});
 
-      await browser.close();
-      return bodyHTML;
+        const bodyHTML = this.options?.evaluate
+          ? await this.options.evaluate(page, browser)
+          : await page.evaluate(() => document.body.innerHTML);
+
+        return bodyHTML;
+      } finally {
+        await browser.close().catch((e) => {
+          console.error("Failed to close Puppeteer browser:", e && e.message);
+        });
+      }
     };
 
     const docs = await loader.load();
