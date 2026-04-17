@@ -20,12 +20,14 @@ const VALID_COMPARATORS = [
   "neq",
   "between",
 ];
+const VALID_CONDITION_LOGIC = ["AND", "OR"];
 const TITLE_REGEX = /^[a-z0-9_]+$/;
 
 const ModelRouterRule = {
   VALID_TYPES,
   VALID_PROPERTIES,
   VALID_COMPARATORS,
+  VALID_CONDITION_LOGIC,
 
   create: async function (routerId, data = {}, creatorId = null) {
     if (!routerId) return { rule: null, error: "Router ID is required." };
@@ -45,22 +47,17 @@ const ModelRouterRule = {
         message: `Type must be one of: ${VALID_TYPES.join(", ")}`,
       };
 
+    let conditionLogic = null;
+    let serializedConditions = null;
+
     if (type === "calculated") {
-      if (!VALID_PROPERTIES.includes(data.property))
-        return {
-          rule: null,
-          message: `Property must be one of: ${VALID_PROPERTIES.join(", ")}`,
-        };
-      if (!VALID_COMPARATORS.includes(data.comparator))
-        return {
-          rule: null,
-          message: `Comparator must be one of: ${VALID_COMPARATORS.join(", ")}`,
-        };
-      if (data.value === undefined || data.value === null || data.value === "")
-        return {
-          rule: null,
-          message: "Value is required for calculated rules.",
-        };
+      const validated = this._validateConditions(
+        data.condition_logic,
+        data.conditions
+      );
+      if (validated.error) return { rule: null, message: validated.error };
+      conditionLogic = validated.condition_logic;
+      serializedConditions = validated.serialized;
     }
 
     if (type === "llm") {
@@ -87,15 +84,14 @@ const ModelRouterRule = {
           type,
           title,
           description: data.description || null,
-          property: data.property || null,
-          comparator: data.comparator || null,
-          value: data.value != null ? String(data.value) : null,
+          condition_logic: conditionLogic,
+          conditions: serializedConditions,
           route_provider: String(data.route_provider),
           route_model: String(data.route_model),
           created_by: creatorId ? Number(creatorId) : null,
         },
       });
-      return { rule, error: null };
+      return { rule: this._hydrate(rule), error: null };
     } catch (error) {
       console.error(error.message);
       // P2002 is the unique constraint violation error code
@@ -125,7 +121,7 @@ const ModelRouterRule = {
       const rule = await prisma.model_router_rules.findFirst({
         where: clause,
       });
-      return rule || null;
+      return this._hydrate(rule);
     } catch (error) {
       console.error(error.message);
       return null;
@@ -139,7 +135,7 @@ const ModelRouterRule = {
         ...(limit !== null ? { take: limit } : {}),
         ...(orderBy !== null ? { orderBy } : {}),
       });
-      return results;
+      return results.map((r) => this._hydrate(r));
     } catch (error) {
       console.error(error.message);
       return [];
@@ -152,7 +148,7 @@ const ModelRouterRule = {
         where: { router_id: Number(routerId) },
         orderBy: { priority: "asc" },
       });
-      return rules;
+      return rules.map((r) => this._hydrate(r));
     } catch (error) {
       console.error(error.message);
       return [];
@@ -178,7 +174,6 @@ const ModelRouterRule = {
       ["enabled", (v) => Boolean(v)],
       ["priority", (v) => Number(v)],
       ["description", (v) => v || null],
-      ["value", (v) => (v != null ? String(v) : null)],
       ["route_provider", (v) => String(v)],
       ["route_model", (v) => String(v)],
     ];
@@ -186,23 +181,27 @@ const ModelRouterRule = {
       if (data[key] !== undefined) updates[key] = map(data[key]);
     }
 
-    const enumErr =
-      assignEnum(updates, data, "type", VALID_TYPES, "Type") ||
-      assignEnumOrNull(
-        updates,
-        data,
-        "property",
-        VALID_PROPERTIES,
-        "Property"
-      ) ||
-      assignEnumOrNull(
-        updates,
-        data,
-        "comparator",
-        VALID_COMPARATORS,
-        "Comparator"
-      );
-    if (enumErr) return enumErr;
+    const typeErr = assignEnum(updates, data, "type", VALID_TYPES, "Type");
+    if (typeErr) return typeErr;
+
+    // Conditions are only meaningful for calculated rules. When either
+    // condition_logic or conditions is provided we revalidate the pair
+    // together so we never persist a half-updated rule.
+    if (data.condition_logic !== undefined || data.conditions !== undefined) {
+      const effectiveType = updates.type || data.type;
+      if (effectiveType === "llm") {
+        updates.condition_logic = null;
+        updates.conditions = null;
+      } else {
+        const validated = this._validateConditions(
+          data.condition_logic,
+          data.conditions
+        );
+        if (validated.error) return { rule: null, error: validated.error };
+        updates.condition_logic = validated.condition_logic;
+        updates.conditions = validated.serialized;
+      }
+    }
 
     if (Object.keys(updates).length === 0)
       return { rule: { id }, error: "No valid fields to update." };
@@ -212,7 +211,7 @@ const ModelRouterRule = {
         where: { id: Number(id) },
         data: updates,
       });
-      return { rule, error: null };
+      return { rule: this._hydrate(rule), error: null };
     } catch (error) {
       console.error(error.message);
       // P2002 is the unique constraint violation error code
@@ -277,6 +276,62 @@ const ModelRouterRule = {
     if (!TITLE_REGEX.test(cleaned)) return null;
     return cleaned;
   },
+
+  /**
+   * Validate a (condition_logic, conditions[]) pair for calculated rules.
+   * Returns either `{ error }` or `{ condition_logic, serialized }`.
+   */
+  _validateConditions: function (logic, conditions) {
+    if (!VALID_CONDITION_LOGIC.includes(logic))
+      return {
+        error: `Condition logic must be one of: ${VALID_CONDITION_LOGIC.join(", ")}`,
+      };
+    if (!Array.isArray(conditions) || conditions.length === 0)
+      return { error: "At least one condition is required." };
+
+    const normalized = [];
+    for (let i = 0; i < conditions.length; i++) {
+      const c = conditions[i] || {};
+      if (!VALID_PROPERTIES.includes(c.property))
+        return {
+          error: `Condition ${i + 1}: property must be one of: ${VALID_PROPERTIES.join(", ")}`,
+        };
+      if (!VALID_COMPARATORS.includes(c.comparator))
+        return {
+          error: `Condition ${i + 1}: comparator must be one of: ${VALID_COMPARATORS.join(", ")}`,
+        };
+      if (c.value === undefined || c.value === null || String(c.value) === "")
+        return { error: `Condition ${i + 1}: value is required.` };
+      normalized.push({
+        property: c.property,
+        comparator: c.comparator,
+        value: String(c.value),
+      });
+    }
+
+    return {
+      condition_logic: logic,
+      serialized: JSON.stringify(normalized),
+    };
+  },
+
+  /**
+   * Parse the stored JSON `conditions` string into an array so every consumer
+   * (API responses, evaluator, UI) works with the same shape. Safe on null and
+   * on rule types that don't use conditions.
+   */
+  _hydrate: function (rule) {
+    if (!rule) return null;
+    if (!rule.conditions) return { ...rule, conditions: null };
+    try {
+      return { ...rule, conditions: JSON.parse(rule.conditions) };
+    } catch (error) {
+      console.error(
+        `Failed to parse conditions for rule ${rule.id}: ${error.message}`
+      );
+      return { ...rule, conditions: null };
+    }
+  },
 };
 
 function assignEnum(updates, data, key, validList, label) {
@@ -287,18 +342,6 @@ function assignEnum(updates, data, key, validList, label) {
       error: `${label} must be one of: ${validList.join(", ")}`,
     };
   updates[key] = data[key];
-  return null;
-}
-
-function assignEnumOrNull(updates, data, key, validList, label) {
-  if (data[key] === undefined) return null;
-  const v = data[key];
-  if (v && !validList.includes(v))
-    return {
-      rule: null,
-      error: `${label} must be one of: ${validList.join(", ")}`,
-    };
-  updates[key] = v || null;
   return null;
 }
 

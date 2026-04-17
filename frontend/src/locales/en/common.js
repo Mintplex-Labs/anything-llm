@@ -996,7 +996,15 @@ const TRANSLATIONS = {
       "property-label": "Property",
       "property-select": "Select",
       "comparator-label": "Comparator",
+      "comparator-select": "Select",
       "value-label": "Value",
+      "logic-label": "Match",
+      "logic-and": "ALL of the following (AND)",
+      "logic-or": "ANY of the following (OR)",
+      "add-condition": "Add condition",
+      "remove-condition": "Remove condition",
+      "conditions-incomplete":
+        "Condition {{index}} is incomplete — fill in property, comparator, and value.",
       "match-description-label": "Match Description",
       "match-description-placeholder":
         "e.g. The user is asking about legal topics, contracts, or compliance",

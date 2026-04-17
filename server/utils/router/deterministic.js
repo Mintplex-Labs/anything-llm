@@ -1,21 +1,28 @@
 /**
- * Evaluate a single calculated rule against the given context.
- * @param {Object} rule - A model_router_rules record
+ * Evaluate a calculated rule against the given context. A rule holds one or
+ * more conditions joined by `condition_logic` ("AND" or "OR"). An empty
+ * conditions list never matches.
+ * @param {Object} rule - A hydrated model_router_rules record (conditions parsed)
  * @param {Object} context - { prompt, conversationHistory, conversationTokenCount }
  * @returns {boolean}
  */
 function evaluateRule(rule, context) {
   if (rule.type !== "calculated") return false;
-  if (!rule.property || !rule.comparator || rule.value == null) return false;
-  return evaluateCondition(rule.property, rule.comparator, rule.value, context);
+  const { conditions, condition_logic: logic } = rule;
+  if (!Array.isArray(conditions) || conditions.length === 0) return false;
+
+  const method = logic === "OR" ? "some" : "every";
+  return conditions[method]((c) =>
+    evaluateCondition(c.property, c.comparator, c.value, context)
+  );
 }
 
 /**
  * Evaluate a single condition against the context.
- * @param {string} property - "promptContent" | "conversationTokenCount" | "conversationMessageCount" | "currentHour"
- * @param {string} comparator - "contains" | "gt" | "gte" | "lt" | "lte" | "eq" | "neq"
+ * @param {string} property - "promptContent" | "conversationTokenCount" | "conversationMessageCount" | "currentHour" | "hasImageAttachment"
+ * @param {string} comparator - "contains" | "matches" | "gt" | "gte" | "lt" | "lte" | "eq" | "neq" | "between"
  * @param {string} value - The comparison value (stored as string in DB)
- * @param {Object} context - { prompt, conversationHistory, conversationTokenCount, conversationMessageCount }
+ * @param {Object} context - { prompt, conversationHistory, conversationTokenCount, conversationMessageCount, attachments }
  * @returns {boolean}
  */
 function evaluateCondition(property, comparator, value, context) {

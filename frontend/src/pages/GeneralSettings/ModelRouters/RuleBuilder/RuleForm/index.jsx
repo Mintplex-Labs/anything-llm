@@ -5,7 +5,7 @@ import ModalWrapper from "@/components/ModalWrapper";
 import ModelRouterAPI from "@/models/modelRouter";
 import showToast from "@/utils/toast";
 import LLMProviderModelPicker from "../../LLMProviderModelPicker";
-import CalculatedFields, { NUMERIC_PROPERTIES } from "./CalculatedFields";
+import CalculatedFields from "./CalculatedFields";
 import LLMDescriptionField from "./LLMDescriptionField";
 
 const RULE_TYPES = [
@@ -23,22 +23,9 @@ const RULE_TYPES = [
   },
 ];
 
-const STRING_COMPARATORS = [
-  { value: "contains", label: "contains" },
-  { value: "matches", label: "matches (regex)" },
-  { value: "eq", label: "equals" },
-  { value: "neq", label: "not equals" },
-];
-
-const NUMERIC_COMPARATORS = [
-  { value: "gt", label: "greater than" },
-  { value: "gte", label: "greater than or equal" },
-  { value: "lt", label: "less than" },
-  { value: "lte", label: "less than or equal" },
-  { value: "eq", label: "equals" },
-  { value: "neq", label: "not equals" },
-  { value: "between", label: "between (inclusive)" },
-];
+function emptyCondition() {
+  return { property: "", comparator: "", value: "" };
+}
 
 function slugify(text) {
   return text
@@ -60,12 +47,14 @@ export default function RuleForm({
   const isEditing = !!existingRule;
   const [loading, setLoading] = useState(false);
   const [ruleType, setRuleType] = useState(existingRule?.type || "calculated");
-  const [property, setProperty] = useState(existingRule?.property || "");
-  const [comparator, setComparator] = useState(existingRule?.comparator || "");
-
-  const comparators = NUMERIC_PROPERTIES.includes(property)
-    ? NUMERIC_COMPARATORS
-    : STRING_COMPARATORS;
+  const [conditionLogic, setConditionLogic] = useState(
+    existingRule?.condition_logic || "AND"
+  );
+  const [conditions, setConditions] = useState(
+    Array.isArray(existingRule?.conditions) && existingRule.conditions.length
+      ? existingRule.conditions
+      : [emptyCondition()]
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -89,15 +78,26 @@ export default function RuleForm({
     };
 
     if (ruleType === "calculated") {
-      data.property = formData.get("property");
-      data.comparator = formData.get("comparator");
-      data.value = formData.get("value");
+      const incomplete = conditions.findIndex(
+        (c) => !c.property || !c.comparator || !String(c.value ?? "").trim()
+      );
+      if (incomplete !== -1) {
+        showToast(
+          t("model-router.rule-form.conditions-incomplete", {
+            index: incomplete + 1,
+          }),
+          "error"
+        );
+        setLoading(false);
+        return;
+      }
+      data.condition_logic = conditionLogic;
+      data.conditions = conditions;
       data.description = null;
     } else if (ruleType === "llm") {
       data.description = formData.get("description");
-      data.property = null;
-      data.comparator = null;
-      data.value = null;
+      data.condition_logic = null;
+      data.conditions = null;
     }
 
     let result;
@@ -189,12 +189,10 @@ export default function RuleForm({
 
               {ruleType === "calculated" ? (
                 <CalculatedFields
-                  property={property}
-                  setProperty={setProperty}
-                  comparator={comparator}
-                  setComparator={setComparator}
-                  comparators={comparators}
-                  existingRule={existingRule}
+                  conditionLogic={conditionLogic}
+                  setConditionLogic={setConditionLogic}
+                  conditions={conditions}
+                  setConditions={setConditions}
                 />
               ) : (
                 <LLMDescriptionField existingRule={existingRule} />

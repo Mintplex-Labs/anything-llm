@@ -10,6 +10,7 @@ const COMPARATOR_LABELS = {
   lte: "<=",
   eq: "=",
   neq: "!=",
+  between: "between",
 };
 
 export default function RuleRow({
@@ -20,7 +21,6 @@ export default function RuleRow({
   onToggle,
   dragHandleProps,
 }) {
-  const comparatorLabel = COMPARATOR_LABELS[rule.comparator] || rule.comparator;
   const isDisabled = !rule.enabled;
 
   return (
@@ -55,31 +55,9 @@ export default function RuleRow({
           )}
         </div>
         {rule.type === "llm" ? (
-          <p className="text-sm font-medium leading-5 text-zinc-400 light:text-slate-500 truncate">
-            Match{" "}
-            <span className="font-mono text-fuchsia-400 light:text-fuchsia-500">
-              &quot;{rule.description}&quot;
-            </span>{" "}
-            then route to{" "}
-            <span className="text-zinc-200 light:text-slate-700">
-              {rule.route_provider}/{rule.route_model}
-            </span>
-          </p>
+          <LLMRuleBody rule={rule} />
         ) : (
-          <p className="text-sm font-medium leading-5 text-zinc-400 light:text-slate-500 truncate">
-            If{" "}
-            <span className="font-mono text-blue-400 light:text-blue-500">
-              {rule.property}
-            </span>{" "}
-            {comparatorLabel}{" "}
-            <span className="font-mono text-blue-400 light:text-blue-500">
-              &quot;{rule.value}&quot;
-            </span>{" "}
-            then route to{" "}
-            <span className="text-zinc-200 light:text-slate-700">
-              {rule.route_provider}/{rule.route_model}
-            </span>
-          </p>
+          <CalculatedRuleBody rule={rule} />
         )}
       </div>
       <div className="flex items-center gap-x-3 shrink-0">
@@ -104,5 +82,74 @@ export default function RuleRow({
         </button>
       </div>
     </div>
+  );
+}
+
+function LLMRuleBody({ rule }) {
+  return (
+    <p className="text-sm font-medium leading-5 text-zinc-400 light:text-slate-500 truncate">
+      Match{" "}
+      <span className="font-mono text-fuchsia-400 light:text-fuchsia-500">
+        &quot;{rule.description}&quot;
+      </span>{" "}
+      then route to{" "}
+      <span className="text-zinc-200 light:text-slate-700">
+        {rule.route_provider}/{rule.route_model}
+      </span>
+    </p>
+  );
+}
+
+function CalculatedRuleBody({ rule }) {
+  const conditions = Array.isArray(rule.conditions) ? rule.conditions : [];
+  const routeTo = (
+    <span className="text-zinc-200 light:text-slate-700">
+      {rule.route_provider}/{rule.route_model}
+    </span>
+  );
+
+  if (conditions.length === 0) {
+    return (
+      <p className="text-sm font-medium leading-5 text-zinc-400 light:text-slate-500 truncate">
+        No conditions — route to {routeTo}
+      </p>
+    );
+  }
+
+  if (conditions.length === 1) {
+    return (
+      <p className="text-sm font-medium leading-5 text-zinc-400 light:text-slate-500 truncate">
+        If <ConditionText condition={conditions[0]} /> then route to {routeTo}
+      </p>
+    );
+  }
+
+  const quantifier = rule.condition_logic === "OR" ? "ANY" : "ALL";
+  return (
+    <p className="text-sm font-medium leading-5 text-zinc-400 light:text-slate-500 truncate">
+      If {quantifier} of{" "}
+      {conditions.map((c, i) => (
+        <span key={i}>
+          <ConditionText condition={c} />
+          {i < conditions.length - 1 ? ", " : ""}
+        </span>
+      ))}{" "}
+      then route to {routeTo}
+    </p>
+  );
+}
+
+function ConditionText({ condition }) {
+  const label = COMPARATOR_LABELS[condition.comparator] || condition.comparator;
+  return (
+    <>
+      <span className="font-mono text-blue-400 light:text-blue-500">
+        {condition.property}
+      </span>{" "}
+      {label}{" "}
+      <span className="font-mono text-blue-400 light:text-blue-500">
+        &quot;{condition.value}&quot;
+      </span>
+    </>
   );
 }

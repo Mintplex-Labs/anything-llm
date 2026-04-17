@@ -164,6 +164,7 @@ export default function RuleBuilder({
       )}
 
       <RuleForm
+        key={editingRule?.id ?? "new"}
         isOpen={isOpen}
         closeModal={handleModalClose}
         routerId={routerId}
