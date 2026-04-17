@@ -105,8 +105,20 @@ function matchesRegex(input, value) {
 
 function evaluateNumericCondition(contextValue, comparator, value) {
   const numContext = Number(contextValue);
+  if (isNaN(numContext)) return false;
+
+  // `between` takes a "min,max" pair, not a single number — parse it before
+  // the scalar-numeric coercion below so `Number("9,17") → NaN` doesn't
+  // short-circuit the whole evaluation.
+  if (comparator === "between") {
+    const parts = String(value).split(",").map(Number);
+    if (parts.length !== 2 || parts.some(isNaN)) return false;
+    const [min, max] = parts;
+    return numContext >= min && numContext <= max;
+  }
+
   const numValue = Number(value);
-  if (isNaN(numContext) || isNaN(numValue)) return false;
+  if (isNaN(numValue)) return false;
 
   switch (comparator) {
     case "gt":
@@ -121,11 +133,6 @@ function evaluateNumericCondition(contextValue, comparator, value) {
       return numContext === numValue;
     case "neq":
       return numContext !== numValue;
-    case "between": {
-      const parts = String(value).split(",").map(Number);
-      if (parts.length !== 2 || parts.some(isNaN)) return false;
-      return numContext >= parts[0] && numContext <= parts[1];
-    }
     default:
       return false;
   }
