@@ -303,6 +303,9 @@ function getEmbeddingEngineSelection() {
     case "lemonade":
       const { LemonadeEmbedder } = require("../EmbeddingEngines/lemonade");
       return new LemonadeEmbedder();
+    case "bedrock":
+      const { AWSBedrockEmbedder } = require("../EmbeddingEngines/bedrock");
+      return new AWSBedrockEmbedder();
     default:
       return new NativeEmbedder();
   }
