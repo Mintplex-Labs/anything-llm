@@ -3,6 +3,7 @@ import { SimpleToggleSwitch } from "@/components/lib/Toggle";
 
 const COMPARATOR_LABELS = {
   contains: "contains",
+  matches: "matches",
   gt: ">",
   gte: ">=",
   lt: "<",

@@ -22,7 +22,18 @@ function valuePlaceholder(property, comparator) {
   if (property === "currentHour") return "e.g. 18 (0-23)";
   if (property === "conversationMessageCount") return "e.g. 10";
   if (NUMERIC_PROPERTIES.includes(property)) return "e.g. 4000";
+  if (comparator === "contains") return "e.g. code, python, rust";
+  if (comparator === "matches") return "e.g. /\\bpython\\b/i";
   return "e.g. code";
+}
+
+function valueHelp(property, comparator) {
+  if (NUMERIC_PROPERTIES.includes(property)) return null;
+  if (comparator === "contains")
+    return "Comma-separated list — matches if the prompt contains any of the values (case-insensitive).";
+  if (comparator === "matches")
+    return "Regex pattern. Use /pattern/flags for case sensitivity (defaults to case-insensitive).";
+  return null;
 }
 
 export default function CalculatedFields({
@@ -139,9 +150,16 @@ function ComparatorAndValueFields({
           name="value"
           defaultValue={existingRule?.value || ""}
           placeholder={valuePlaceholder(property, comparator)}
-          className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 placeholder:text-zinc-400 light:placeholder:text-slate-500 text-sm rounded-lg outline-none block w-full p-2.5"
+          className={`bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 placeholder:text-zinc-400 light:placeholder:text-slate-500 text-sm rounded-lg outline-none block w-full p-2.5 ${
+            comparator === "matches" ? "font-mono" : ""
+          }`}
           required
         />
+        {valueHelp(property, comparator) && (
+          <p className="text-[10px] text-zinc-400 light:text-slate-500">
+            {valueHelp(property, comparator)}
+          </p>
+        )}
       </div>
     </>
   );

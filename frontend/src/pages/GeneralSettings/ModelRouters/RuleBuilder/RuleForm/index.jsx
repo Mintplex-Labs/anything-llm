@@ -25,6 +25,7 @@ const RULE_TYPES = [
 
 const STRING_COMPARATORS = [
   { value: "contains", label: "contains" },
+  { value: "matches", label: "matches (regex)" },
   { value: "eq", label: "equals" },
   { value: "neq", label: "not equals" },
 ];

@@ -49,6 +49,10 @@ function getContextValue(property, context) {
   }
 }
 
+// Cap the input scanned by regex to mitigate catastrophic backtracking on
+// pathological patterns + huge prompts. 10k chars is plenty for routing.
+const REGEX_INPUT_CAP = 10_000;
+
 function evaluateStringCondition(contextValue, comparator, value) {
   switch (comparator) {
     case "contains":
@@ -59,12 +63,36 @@ function evaluateStringCondition(contextValue, comparator, value) {
         .some((keyword) =>
           String(contextValue).toLowerCase().includes(keyword)
         );
+    case "matches":
+      return matchesRegex(String(contextValue), String(value));
     case "eq":
       return String(contextValue).toLowerCase() === String(value).toLowerCase();
     case "neq":
       return String(contextValue).toLowerCase() !== String(value).toLowerCase();
     default:
       return false;
+  }
+}
+
+/**
+ * Test `input` against a user-provided regex. Accepts either a bare pattern
+ * ("foo.*bar", defaults to case-insensitive) or `/pattern/flags` syntax.
+ * Invalid patterns and runtime errors return false rather than throwing so a
+ * broken rule never crashes routing.
+ */
+function matchesRegex(input, value) {
+  const trimmed = value.trim();
+  if (!trimmed) return false;
+
+  const delimited = trimmed.match(/^\/(.+)\/([gimsuy]*)$/);
+  const pattern = delimited ? delimited[1] : trimmed;
+  const flags = delimited ? delimited[2] || "i" : "i";
+
+  try {
+    const regex = new RegExp(pattern, flags);
+    return regex.test(input.slice(0, REGEX_INPUT_CAP));
+  } catch {
+    return false;
   }
 }
 

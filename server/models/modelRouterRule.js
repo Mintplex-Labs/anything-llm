@@ -11,6 +11,7 @@ const VALID_PROPERTIES = [
 ];
 const VALID_COMPARATORS = [
   "contains",
+  "matches",
   "gt",
   "gte",
   "lt",
