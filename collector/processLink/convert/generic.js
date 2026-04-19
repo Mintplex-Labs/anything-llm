@@ -209,9 +209,9 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
           if (captureAs === "html") return document.documentElement.innerHTML;
           return document.body.innerText;
         }, captureAs);
-        // Note: browser.close() is handled by the scrape() finally-block below,
-        // so we don't close here. Closing twice is safe but closing before the
-        // outer function returns would cause issues if any step above throws.
+        // NOTE: outer scrape() finally-block closes the browser unconditionally,
+        // even if the caller of evaluate throws. Do not close here (would be a
+        // no-op anyway, but clarifies ownership).
         return result;
       },
     });
@@ -222,18 +222,14 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
     let overrideHeaders = validatedHeaders(headers);
     loader.scrape = async function () {
       const { launch } = await PuppeteerWebBaseLoader.imports();
-      const browser = await launch({
-        headless: "new",
-        defaultViewport: null,
-        ignoreDefaultArgs: ["--disable-extensions"],
-        ...this.options?.launchOptions,
-      });
-      // Wrap everything in try/finally so the Chromium process is always
-      // closed — even on page.goto errors, evaluate() throws, or upstream
-      // cancellation. Without this, each failed scrape leaks a Chromium
-      // process (observed 2026-04-17: intern container had 14 zombie
-      // Chromium processes holding ~2.5 GiB after an OpenRouter outage).
+      let browser = null;
       try {
+        browser = await launch({
+          headless: "new",
+          defaultViewport: null,
+          ignoreDefaultArgs: ["--disable-extensions"],
+          ...this.options?.launchOptions,
+        });
         const page = await browser.newPage();
         if (Object.keys(overrideHeaders).length > 0) {
           await page.setExtraHTTPHeaders(overrideHeaders);
@@ -272,9 +268,27 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
 
         return bodyHTML;
       } finally {
-        await browser.close().catch((e) => {
-          console.error("Failed to close Puppeteer browser:", e && e.message);
-        });
+        // Guarantee Chromium cleanup even if launch, navigation or evaluate throws.
+        // Root cause of the zombie accumulation (forum-unna: 1376/4d, intern: 1228/1.5d):
+        // target site Connection-Timeouts surfaced before the old `browser.close()`
+        // on the happy path could run. SIGKILL fallback handles the case where
+        // close() itself hangs (rare but seen on blocked hosts).
+        if (browser) {
+          try {
+            await Promise.race([
+              browser.close(),
+              new Promise((_, rej) => setTimeout(() => rej(new Error("close timeout")), 5000)),
+            ]);
+          } catch (closeErr) {
+            console.error("[cleanup] browser.close() failed, SIGKILL:", closeErr?.message || closeErr);
+            try {
+              const proc = browser.process();
+              if (proc && !proc.killed) proc.kill("SIGKILL");
+            } catch (killErr) {
+              console.error("[cleanup] SIGKILL failed:", killErr?.message || killErr);
+            }
+          }
+        }
       }
     };
 
