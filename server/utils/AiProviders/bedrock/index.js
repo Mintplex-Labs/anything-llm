@@ -21,6 +21,9 @@ const {
   getBedrockAuthMethod,
 } = require("./utils");
 
+// Bedrock models known to reject the `temperature` inference parameter.
+const MODELS_THAT_REJECT_TEMPERATURE = ["anthropic.claude-opus-4-7"];
+
 class AWSBedrockLLM {
   /**
    * List of Bedrock models observed to not support system prompts when using the Converse API.
@@ -408,7 +411,9 @@ class AWSBedrockLLM {
             messages: history,
             inferenceConfig: {
               maxTokens: maxTokensToSend,
-              temperature: temperature ?? this.defaultTemp,
+              ...(!MODELS_THAT_REJECT_TEMPERATURE.includes(this.model)
+                ? { temperature: temperature ?? this.defaultTemp }
+                : {}),
             },
             system: systemBlock,
           })
@@ -483,7 +488,9 @@ class AWSBedrockLLM {
           messages: history,
           inferenceConfig: {
             maxTokens: maxTokensToSend,
-            temperature: temperature ?? this.defaultTemp,
+            ...(!MODELS_THAT_REJECT_TEMPERATURE.includes(this.model)
+              ? { temperature: temperature ?? this.defaultTemp }
+              : {}),
           },
           system: systemBlock,
         })
