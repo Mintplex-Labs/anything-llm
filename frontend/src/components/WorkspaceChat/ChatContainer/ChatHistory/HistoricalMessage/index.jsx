@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useRef, useState } from "react";
+import React, { memo, useLayoutEffect, useRef, useState } from "react";
 import { Info, Warning } from "@phosphor-icons/react";
 import Actions from "./Actions";
 import renderMarkdown from "@/utils/chat/markdown";
@@ -22,7 +22,7 @@ import HistoricalOutputs from "./HistoricalOutputs";
 import { openImageLightbox } from "@/components/ImageLightbox";
 
 const HistoricalMessage = ({
-  uuid = v4(),
+  uuid: uuidProp,
   message,
   role,
   workspace,
@@ -38,6 +38,10 @@ const HistoricalMessage = ({
   metrics = {},
   outputs = [],
 }) => {
+  // Freeze uuid on first render. User messages arrive without a uuid and this value
+  // is used as the wrapper div's `key` — a default param fallback would regenerate
+  // on every render and remount the subtree, wiping TruncatableContent state.
+  const [uuid] = useState(() => uuidProp ?? v4());
   const { t } = useTranslation();
   const { isEditing } = useEditMessage({ chatId, role });
   const { isDeleted, completeDelete, onEndAnimation } = useWatchDeleteMessage({
@@ -238,7 +242,9 @@ function TruncatableContent({ children }) {
   const [isOverflowing, setIsOverflowing] = useState(false);
   const { t } = useTranslation();
 
-  useEffect(() => {
+  // useLayoutEffect (not useEffect) so collapse applies before paint — avoids a
+  // one-frame flash of uncollapsed content on mount.
+  useLayoutEffect(() => {
     if (contentRef.current) {
       setIsOverflowing(contentRef.current.scrollHeight > 250);
     }
