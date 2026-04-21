@@ -406,7 +406,9 @@ class Provider {
           ...config,
         });
       default:
-        throw new Error(`Unsupported provider ${provider} for this task.`);
+        throw new Error(
+          `Unsupported provider ${typeof provider === "string" ? provider : JSON.stringify(provider)} for this task.`
+        );
     }
   }
 
