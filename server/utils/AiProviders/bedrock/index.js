@@ -21,9 +21,6 @@ const {
   getBedrockAuthMethod,
 } = require("./utils");
 
-// Bedrock models known to reject the `temperature` inference parameter.
-const MODELS_THAT_REJECT_TEMPERATURE = ["anthropic.claude-opus-4-7"];
-
 class AWSBedrockLLM {
   /**
    * List of Bedrock models observed to not support system prompts when using the Converse API.
@@ -35,6 +32,15 @@ class AWSBedrockLLM {
     "cohere.command-text-v14",
     "cohere.command-light-text-v14",
     "us.deepseek.r1-v1:0",
+    // Add other models here if identified
+  ];
+
+  /**
+   * List of Bedrock models observed to not support the `temperature` inference parameter.
+   * @type {string[]}
+   */
+  noTemperatureModels = [
+    "anthropic.claude-opus-4-7",
     // Add other models here if identified
   ];
 
@@ -104,6 +110,21 @@ class AWSBedrockLLM {
    */
   get credentials() {
     return createBedrockCredentials(this.authMethod);
+  }
+
+  /**
+   * Gets the temperature configuration for the AWS Bedrock LLM.
+   * @param {number} temperature - The temperature to use.
+   * @returns {{temperature: number}} The temperature configuration object with the temperature value as a float.
+   */
+  temperatureConfig(temperature = this.defaultTemp) {
+    if (typeof temperature !== "number") return {};
+
+    // So model names prefix `us.` and may not be exact matches - so we check with includes to see if the model
+    // substring matches any of the models in the noTemperatureModels array.
+    if (this.noTemperatureModels.some((model) => this.model.includes(model)))
+      return {};
+    return { temperature: parseFloat(temperature) };
   }
 
   /**
@@ -411,9 +432,7 @@ class AWSBedrockLLM {
             messages: history,
             inferenceConfig: {
               maxTokens: maxTokensToSend,
-              ...(!MODELS_THAT_REJECT_TEMPERATURE.includes(this.model)
-                ? { temperature: temperature ?? this.defaultTemp }
-                : {}),
+              ...this.temperatureConfig(temperature),
             },
             system: systemBlock,
           })
@@ -488,9 +507,7 @@ class AWSBedrockLLM {
           messages: history,
           inferenceConfig: {
             maxTokens: maxTokensToSend,
-            ...(!MODELS_THAT_REJECT_TEMPERATURE.includes(this.model)
-              ? { temperature: temperature ?? this.defaultTemp }
-              : {}),
+            ...this.temperatureConfig(temperature),
           },
           system: systemBlock,
         })
