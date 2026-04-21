@@ -1,5 +1,6 @@
 const { Prisma } = require("@prisma/client");
 const prisma = require("../utils/prisma");
+const { ModelRouterRule } = require("./modelRouterRule");
 
 const ModelRouter = {
   validations: {
@@ -94,7 +95,8 @@ const ModelRouter = {
           },
         },
       });
-      return router || null;
+      if (!router) return null;
+      return { ...router, rules: router.rules.map(ModelRouterRule._hydrate) };
     } catch (error) {
       console.error(error.message);
       return null;
@@ -115,8 +117,12 @@ const ModelRouter = {
         },
       });
       if (!router) return null;
-      const { _count, ...rest } = router;
-      return { ...rest, workspaceCount: _count.workspaces };
+      const { _count, rules, ...rest } = router;
+      return {
+        ...rest,
+        rules: rules.map(ModelRouterRule._hydrate),
+        workspaceCount: _count.workspaces,
+      };
     } catch (error) {
       console.error(error.message);
       return null;
