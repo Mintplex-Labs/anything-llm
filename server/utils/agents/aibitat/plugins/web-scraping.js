@@ -49,17 +49,14 @@ const webScraping = {
               if (url) return await this.scrape(url);
               return "There is nothing we can do. This function call returns no information.";
             } catch (error) {
-              const errorDetails =
-                error instanceof Error
-                  ? error.message
-                  : JSON.stringify(error, Object.getOwnPropertyNames(error), 2);
+              const errorMessage = error?.message ?? JSON.stringify(error);
               this.super.handlerProps.log(
-                `Web Scraping Error: ${errorDetails}`
+                `Web Scraping Error: ${errorMessage}`
               );
               this.super.introspect(
-                `${this.caller}: Web Scraping Error: ${error?.message ?? errorDetails}`
+                `${this.caller}: Web Scraping Error: ${errorMessage}`
               );
-              return `There was an error while calling the function. No data or response was found. Let the user know this was the error: ${error.message}`;
+              return `There was an error while calling the function. No data or response was found. Let the user know this was the error: ${errorMessage}`;
             }
           },
 
