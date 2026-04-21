@@ -85,17 +85,23 @@ export default function CalculatedFields({
     setConditions((prev) => prev.filter((_, i) => i !== index));
   };
 
-  return (
-    <div className="flex flex-col gap-y-3">
-      {conditions.length > 1 && (
-        <LogicToggle value={conditionLogic} onChange={setConditionLogic} />
-      )}
+  const toggleLogic = () => {
+    setConditionLogic((prev) => (prev === "AND" ? "OR" : "AND"));
+  };
 
-      <div className="flex flex-col gap-y-2">
+  return (
+    <div className="flex flex-col gap-y-1.5 items-start">
+      <div className="flex flex-col gap-y-5 w-full">
         {conditions.map((condition, index) => (
           <ConditionRow
             key={index}
             condition={condition}
+            showLabels={index === 0}
+            logicBadge={
+              index === 0 ? null : (
+                <LogicBadge value={conditionLogic} onClick={toggleLogic} />
+              )
+            }
             onChange={(changes) => updateCondition(index, changes)}
             onRemove={
               conditions.length > 1 ? () => removeCondition(index) : null
@@ -107,55 +113,34 @@ export default function CalculatedFields({
       <button
         type="button"
         onClick={addCondition}
-        className="self-start flex items-center gap-x-1.5 text-xs font-medium text-zinc-300 light:text-slate-700 hover:text-white light:hover:text-slate-900 border border-zinc-700 light:border-slate-300 hover:border-zinc-500 light:hover:border-slate-400 rounded-lg px-3 py-1.5 transition-colors"
+        aria-label={t("model-router.rule-form.add-condition")}
+        className="border-none bg-zinc-50 light:bg-slate-900 text-zinc-900 light:text-white rounded-md p-1 hover:opacity-90 transition-opacity"
       >
-        <Plus size={14} weight="bold" />
-        {t("model-router.rule-form.add-condition")}
+        <Plus size={16} weight="bold" />
       </button>
     </div>
   );
 }
 
-function LogicToggle({ value, onChange }) {
-  const { t } = useTranslation();
-  const options = [
-    { value: "AND", label: t("model-router.rule-form.logic-and") },
-    { value: "OR", label: t("model-router.rule-form.logic-or") },
-  ];
+function LogicBadge({ value, onClick }) {
   return (
-    <div className="flex flex-col gap-y-1.5">
-      <label className="text-sm font-medium text-zinc-200 light:text-slate-900">
-        {t("model-router.rule-form.logic-label")}
-      </label>
-      <div
-        role="radiogroup"
-        className="inline-flex self-start rounded-lg border border-zinc-700 light:border-slate-300 bg-zinc-800 light:bg-white p-0.5"
-      >
-        {options.map((opt) => {
-          const selected = value === opt.value;
-          return (
-            <button
-              key={opt.value}
-              type="button"
-              role="radio"
-              aria-checked={selected}
-              onClick={() => onChange(opt.value)}
-              className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
-                selected
-                  ? "bg-zinc-50 light:bg-slate-900 text-zinc-900 light:text-white"
-                  : "text-zinc-300 light:text-slate-700 hover:text-white light:hover:text-slate-900"
-              }`}
-            >
-              {opt.label}
-            </button>
-          );
-        })}
-      </div>
-    </div>
+    <button
+      type="button"
+      onClick={onClick}
+      className="border-none shrink-0 bg-zinc-700 light:bg-slate-200 text-white light:text-slate-950 text-xs font-medium leading-4 tracking-[1.2px] uppercase px-2.5 py-1.5 rounded-md hover:opacity-80 transition-opacity"
+    >
+      {value}
+    </button>
   );
 }
 
-function ConditionRow({ condition, onChange, onRemove }) {
+function ConditionRow({
+  condition,
+  showLabels,
+  logicBadge,
+  onChange,
+  onRemove,
+}) {
   const { t } = useTranslation();
   const isBoolean = BOOLEAN_PROPERTIES.includes(condition.property);
 
@@ -185,15 +170,18 @@ function ConditionRow({ condition, onChange, onRemove }) {
   };
 
   return (
-    <div className="flex items-start gap-x-2">
+    <div className="flex items-end gap-x-5">
+      {logicBadge}
       <div
-        className={`grid flex-1 ${isBoolean ? "grid-cols-2" : "grid-cols-3"} gap-3`}
+        className={`grid flex-1 ${isBoolean ? "grid-cols-2" : "grid-cols-3"} gap-x-5`}
       >
-        <div className="flex flex-col gap-y-1">
+        <FieldColumn
+          label={showLabels ? t("model-router.rule-form.property-label") : null}
+        >
           <select
             value={condition.property}
             onChange={(e) => handlePropertyChange(e.target.value)}
-            className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 text-sm rounded-lg outline-none block w-full p-2.5"
+            className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-700 text-sm rounded-[8px] outline-none block w-full h-8 px-3.5"
             required
           >
             <option value="">
@@ -205,27 +193,49 @@ function ConditionRow({ condition, onChange, onRemove }) {
               </option>
             ))}
           </select>
-        </div>
+        </FieldColumn>
 
         {isBoolean ? (
-          <BooleanValueField
-            value={condition.value}
-            onChange={(value) => onChange({ value })}
-          />
+          <FieldColumn
+            label={showLabels ? t("model-router.rule-form.value-label") : null}
+          >
+            <BooleanValueField
+              value={condition.value}
+              onChange={(value) => onChange({ value })}
+            />
+          </FieldColumn>
         ) : (
-          <ComparatorAndValueFields condition={condition} onChange={onChange} />
+          <ComparatorAndValueFields
+            condition={condition}
+            onChange={onChange}
+            showLabels={showLabels}
+          />
         )}
       </div>
 
-      <button
-        type="button"
-        onClick={onRemove || undefined}
-        disabled={!onRemove}
-        aria-label={t("model-router.rule-form.remove-condition")}
-        className="mt-1.5 text-zinc-400 light:text-slate-500 hover:text-red-400 light:hover:text-red-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-      >
-        <X size={16} weight="bold" />
-      </button>
+      {onRemove && (
+        <button
+          type="button"
+          onClick={onRemove}
+          aria-label={t("model-router.rule-form.remove-condition")}
+          className="border-none shrink-0 mb-2 text-zinc-400 light:text-slate-500 hover:text-red-400 light:hover:text-red-500 transition-colors"
+        >
+          <X size={16} weight="bold" />
+        </button>
+      )}
+    </div>
+  );
+}
+
+function FieldColumn({ label, children }) {
+  return (
+    <div className="flex flex-col gap-y-1.5">
+      {label && (
+        <label className="text-sm font-medium leading-5 text-white light:text-slate-950">
+          {label}
+        </label>
+      )}
+      {children}
     </div>
   );
 }
@@ -235,7 +245,7 @@ function BooleanValueField({ value, onChange }) {
     <select
       value={value || "true"}
       onChange={(e) => onChange(e.target.value)}
-      className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 text-sm rounded-lg outline-none block w-full p-2.5"
+      className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-700 text-sm rounded-[8px] outline-none block w-full h-8 px-3.5"
       required
     >
       <option value="true">True</option>
@@ -244,16 +254,18 @@ function BooleanValueField({ value, onChange }) {
   );
 }
 
-function ComparatorAndValueFields({ condition, onChange }) {
+function ComparatorAndValueFields({ condition, onChange, showLabels }) {
   const { t } = useTranslation();
   const comparators = comparatorsFor(condition.property);
   return (
     <>
-      <div className="flex flex-col gap-y-1">
+      <FieldColumn
+        label={showLabels ? t("model-router.rule-form.comparator-label") : null}
+      >
         <select
           value={condition.comparator}
           onChange={(e) => onChange({ comparator: e.target.value })}
-          className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 text-sm rounded-lg outline-none block w-full p-2.5"
+          className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-700 text-sm rounded-[8px] outline-none block w-full h-8 px-3.5"
           required
         >
           <option value="">
@@ -265,9 +277,11 @@ function ComparatorAndValueFields({ condition, onChange }) {
             </option>
           ))}
         </select>
-      </div>
+      </FieldColumn>
 
-      <div className="flex flex-col gap-y-1">
+      <FieldColumn
+        label={showLabels ? t("model-router.rule-form.value-label") : null}
+      >
         <input
           type="text"
           value={condition.value}
@@ -276,17 +290,17 @@ function ComparatorAndValueFields({ condition, onChange }) {
             condition.property,
             condition.comparator
           )}
-          className={`bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 placeholder:text-zinc-400 light:placeholder:text-slate-500 text-sm rounded-lg outline-none block w-full p-2.5 ${
+          className={`bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-700 placeholder:text-zinc-400 light:placeholder:text-slate-400 text-sm rounded-[8px] outline-none block w-full h-8 px-3.5 ${
             condition.comparator === "matches" ? "font-mono" : ""
           }`}
           required
         />
         {valueHelp(condition.property, condition.comparator) && (
-          <p className="text-[10px] text-zinc-400 light:text-slate-500">
+          <p className="text-xs leading-4 text-zinc-400 light:text-slate-600">
             {valueHelp(condition.property, condition.comparator)}
           </p>
         )}
-      </div>
+      </FieldColumn>
     </>
   );
 }

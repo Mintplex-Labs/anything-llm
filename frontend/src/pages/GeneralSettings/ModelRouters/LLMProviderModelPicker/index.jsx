@@ -108,21 +108,21 @@ export default function LLMProviderModelPicker({
 
   return (
     <div className="flex flex-col gap-y-1.5">
-      <label className="text-sm font-medium text-zinc-200 light:text-slate-900">
+      <label className="text-sm font-medium leading-5 text-white light:text-slate-950">
         {label}
       </label>
       {description && (
-        <p className="text-xs text-zinc-400 light:text-slate-600">
+        <p className="text-xs leading-4 text-zinc-400 light:text-slate-600">
           {description}
         </p>
       )}
-      <div className="flex gap-x-4 mt-1">
+      <div className="flex gap-x-3">
         <div className="flex-1">
           <select
             name={providerFieldName}
             value={selectedProvider}
             onChange={handleProviderChange}
-            className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 text-sm rounded-lg outline-none block w-full p-2.5"
+            className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-700 text-sm rounded-[8px] outline-none block w-full h-8 px-3.5"
             required
           >
             <option value="">
@@ -143,14 +143,14 @@ export default function LLMProviderModelPicker({
             <button
               type="button"
               onClick={openModal}
-              className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-blue-400 light:text-blue-500 text-sm rounded-lg block w-full p-2.5 text-left hover:text-blue-300 light:hover:text-blue-600 transition-colors"
+              className="border-none bg-zinc-800 light:bg-white light:border light:border-slate-300 text-blue-400 light:text-blue-500 text-sm rounded-[8px] block w-full h-8 px-3.5 text-left hover:text-blue-300 light:hover:text-blue-600 transition-colors"
             >
               {t("model-router.provider-picker.configure-to-continue", {
                 name: selectedLlm.name,
               })}
             </button>
           ) : loadingModels ? (
-            <div className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-zinc-400 light:text-slate-500 text-sm rounded-lg p-2.5">
+            <div className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-zinc-400 light:text-slate-500 text-sm rounded-[8px] h-8 px-3.5 flex items-center">
               {t("model-router.provider-picker.loading-models")}
             </div>
           ) : models.length > 0 ? (
@@ -158,7 +158,7 @@ export default function LLMProviderModelPicker({
               name={modelFieldName}
               value={selectedModel}
               onChange={(e) => setSelectedModel(e.target.value)}
-              className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 text-sm rounded-lg outline-none block w-full p-2.5"
+              className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-700 text-sm rounded-[8px] outline-none block w-full h-8 px-3.5"
               required
             >
               <option value="">
@@ -182,7 +182,7 @@ export default function LLMProviderModelPicker({
                   : t("model-router.provider-picker.select-provider-first")
               }
               disabled={!selectedProvider}
-              className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 placeholder:text-zinc-400 light:placeholder:text-slate-500 text-sm rounded-lg outline-none block w-full p-2.5 disabled:opacity-50"
+              className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-700 placeholder:text-zinc-400 light:placeholder:text-slate-400 text-sm rounded-[8px] outline-none block w-full h-8 px-3.5 disabled:opacity-50"
               required
             />
           )}
@@ -206,7 +206,7 @@ function ProviderSetupModal({ isOpen, provider, settings, onSave, onClose }) {
 
   return (
     <ModalWrapper isOpen={isOpen}>
-      <div className="w-full max-w-2xl bg-zinc-900 light:bg-white rounded-lg shadow-lg border border-zinc-700 light:border-slate-300">
+      <div className="w-full max-w-2xl bg-zinc-900 light:bg-white rounded-[8px] shadow-lg border border-zinc-700 light:border-slate-300">
         <div className="flex items-center justify-between p-6 border-b border-zinc-700 light:border-slate-300">
           <div className="flex items-center gap-x-3">
             {provider.logo && (
@@ -216,7 +216,7 @@ function ProviderSetupModal({ isOpen, provider, settings, onSave, onClose }) {
                 className="w-8 h-8 rounded-md"
               />
             )}
-            <h3 className="text-lg font-semibold text-white light:text-slate-900">
+            <h3 className="text-base font-semibold leading-6 text-white light:text-slate-950">
               {t("model-router.provider-picker.configure-provider", {
                 name: provider.name,
               })}
@@ -225,32 +225,32 @@ function ProviderSetupModal({ isOpen, provider, settings, onSave, onClose }) {
           <button
             onClick={onClose}
             type="button"
-            className="p-1 rounded-lg text-zinc-400 light:text-slate-500 hover:text-white light:hover:text-slate-900 hover:bg-zinc-800 light:hover:bg-slate-100 transition-colors"
+            className="border-none p-1 rounded-lg text-zinc-400 light:text-slate-500 hover:text-white light:hover:text-slate-900 hover:bg-zinc-800 light:hover:bg-slate-100 transition-colors"
           >
-            <X size={20} weight="bold" />
+            <X size={16} weight="bold" />
           </button>
         </div>
         <form id="provider-setup-form" onSubmit={onSave}>
           <div className="px-6 py-5">
-            <p className="text-sm text-zinc-400 light:text-slate-600 mb-4">
+            <p className="text-xs leading-4 text-zinc-400 light:text-slate-600 mb-4">
               {t("model-router.provider-picker.setup-credentials", {
                 name: provider.name,
               })}
             </p>
             <div className="space-y-4">{provider.options(settings ?? {})}</div>
           </div>
-          <div className="flex justify-end gap-x-3 px-6 py-4 border-t border-zinc-700 light:border-slate-300">
+          <div className="flex justify-between gap-x-3 px-6 py-4 border-t border-zinc-700 light:border-slate-300">
             <button
               type="button"
               onClick={onClose}
-              className="text-sm font-medium text-zinc-400 light:text-slate-600 hover:text-white light:hover:text-slate-900 px-4 py-2 rounded-lg transition-colors"
+              className="border border-zinc-600 light:border-slate-600 text-white light:text-slate-900 text-sm font-medium leading-5 rounded-[8px] h-[34px] px-3.5 hover:opacity-90 transition-opacity"
             >
               {t("model-router.provider-picker.cancel")}
             </button>
             <button
               type="submit"
               form="provider-setup-form"
-              className="text-sm font-medium bg-zinc-50 light:bg-slate-900 text-zinc-900 light:text-white rounded-lg px-5 py-2 hover:opacity-90 transition-opacity duration-200"
+              className="border-none text-sm font-medium leading-5 bg-zinc-50 light:bg-slate-900 text-zinc-900 light:text-white rounded-[8px] h-[34px] px-3.5 hover:opacity-90 transition-opacity"
             >
               {t("model-router.provider-picker.save-settings")}
             </button>

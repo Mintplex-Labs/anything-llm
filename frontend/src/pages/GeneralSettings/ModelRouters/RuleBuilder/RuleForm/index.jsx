@@ -13,13 +13,13 @@ const RULE_TYPES = [
     value: "calculated",
     label: "Calculated",
     description:
-      "Match based on message properties like content, token count, or time of day",
+      "Match based on message properties like content, token count, or time of day.",
   },
   {
     value: "llm",
     label: "LLM Classified",
     description:
-      "Use the fallback model to decide if the message matches a description you provide",
+      "Use the fallback model to decide if the message matches a description you provide.",
   },
 ];
 
@@ -128,113 +128,112 @@ export default function RuleForm({
 
   return (
     <ModalWrapper isOpen={isOpen}>
-      <div className="relative w-full max-w-3xl bg-zinc-900 light:bg-white rounded-xl shadow border border-zinc-700 light:border-slate-300">
-        <div className="relative p-6 border-b border-zinc-700 light:border-slate-200">
-          <h3 className="text-lg font-semibold text-white light:text-slate-900">
-            {isEditing
-              ? t("model-router.rule-form.edit-title")
-              : t("model-router.rule-form.new-title")}
-          </h3>
-          <button
-            onClick={closeModal}
-            type="button"
-            className="absolute top-4 right-4 text-zinc-400 light:text-slate-500 hover:text-white light:hover:text-slate-900 transition-colors"
-          >
-            <X size={20} weight="bold" />
-          </button>
-        </div>
-        <div className="px-6 py-6">
-          <form onSubmit={handleSubmit}>
-            <div className="flex flex-col gap-y-4 max-h-[60vh] overflow-y-auto pr-2">
-              <div className="flex gap-x-4">
-                <div className="flex-1 flex flex-col gap-y-1.5">
-                  <label className="text-sm font-medium text-zinc-200 light:text-slate-900">
-                    {t("model-router.rule-form.title-label")}
-                  </label>
-                  <input
-                    type="text"
-                    name="title"
-                    defaultValue={existingRule?.title || ""}
-                    placeholder="e.g. route_code_to_claude"
-                    className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 placeholder:text-zinc-400 light:placeholder:text-slate-500 text-sm rounded-lg outline-none block w-full p-2.5 font-mono"
-                    required
-                  />
-                  <p className="text-[10px] text-zinc-400 light:text-slate-500">
-                    {t("model-router.rule-form.title-help")}
-                  </p>
-                </div>
-                <div className="w-[200px] flex flex-col gap-y-1.5">
-                  <label className="text-sm font-medium text-zinc-200 light:text-slate-900">
-                    {t("model-router.rule-form.rule-type")}
-                  </label>
-                  <select
-                    value={ruleType}
-                    onChange={(e) => setRuleType(e.target.value)}
-                    className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 text-sm rounded-lg outline-none block w-full p-2.5"
-                  >
-                    {RULE_TYPES.map((rt) => (
-                      <option key={rt.value} value={rt.value}>
-                        {rt.label}
-                      </option>
-                    ))}
-                  </select>
-                  <p className="text-[10px] text-zinc-400 light:text-slate-500">
-                    {
-                      RULE_TYPES.find((rt) => rt.value === ruleType)
-                        ?.description
-                    }
-                  </p>
-                </div>
-              </div>
-
-              {ruleType === "calculated" ? (
-                <CalculatedFields
-                  conditionLogic={conditionLogic}
-                  setConditionLogic={setConditionLogic}
-                  conditions={conditions}
-                  setConditions={setConditions}
-                />
-              ) : (
-                <LLMDescriptionField existingRule={existingRule} />
-              )}
-
-              <LLMProviderModelPicker
-                providerFieldName="route_provider"
-                modelFieldName="route_model"
-                label={t("model-router.rule-form.route-to-label")}
-                description={t("model-router.rule-form.route-to-description")}
-                defaultProvider={existingRule?.route_provider || ""}
-                defaultModel={existingRule?.route_model || ""}
-              />
-            </div>
-
-            <div className="flex justify-end items-center mt-6 pt-6 border-t border-zinc-700 light:border-slate-200">
+      <div className="relative w-full max-w-3xl bg-zinc-900 light:bg-white rounded-[8px] shadow border border-zinc-700 light:border-slate-300">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-y-5 p-6">
+          <div className="flex flex-col gap-y-1">
+            <div className="flex items-start justify-between">
+              <h3 className="text-base font-semibold leading-6 text-white light:text-slate-950">
+                {t("model-router.rules.title")}
+              </h3>
               <button
-                type="button"
                 onClick={closeModal}
-                className="text-sm font-medium text-zinc-400 light:text-slate-600 hover:text-white light:hover:text-slate-900 px-4 py-2 rounded-lg transition-colors mr-2"
+                type="button"
+                className="border-none text-zinc-400 light:text-slate-500 hover:text-white light:hover:text-slate-900 transition-colors"
               >
-                {t("model-router.rule-form.cancel")}
-              </button>
-              <button
-                type="submit"
-                disabled={loading}
-                className="flex items-center gap-x-1.5 text-sm font-medium bg-zinc-50 light:bg-slate-900 text-zinc-900 light:text-white rounded-lg h-9 px-5 hover:opacity-90 transition-opacity duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? (
-                  <>
-                    <CircleNotch className="h-4 w-4 animate-spin" />
-                    {t("model-router.rule-form.saving")}
-                  </>
-                ) : isEditing ? (
-                  t("model-router.rule-form.update-rule")
-                ) : (
-                  t("model-router.rule-form.create-rule")
-                )}
+                <X size={16} weight="bold" />
               </button>
             </div>
-          </form>
-        </div>
+            <p className="text-xs leading-4 text-zinc-400 light:text-slate-600">
+              {t("model-router.rules.description")}
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-y-5 max-h-[60vh] overflow-y-auto">
+            <div className="flex gap-x-5 items-start">
+              <div className="flex flex-col gap-y-1.5 w-[500px]">
+                <label className="text-sm font-medium leading-5 text-white light:text-slate-950">
+                  {t("model-router.rule-form.title-label")}
+                </label>
+                <input
+                  type="text"
+                  name="title"
+                  defaultValue={existingRule?.title || ""}
+                  placeholder="e.g. route_code_to_claude"
+                  className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-700 placeholder:text-zinc-400 light:placeholder:text-slate-400 text-sm rounded-[8px] outline-none block w-full h-8 px-3.5 font-mono"
+                  required
+                />
+                <p className="text-xs leading-4 text-zinc-400 light:text-slate-600">
+                  {t("model-router.rule-form.title-help")}
+                </p>
+              </div>
+              <div className="flex flex-col gap-y-1.5 w-[300px]">
+                <label className="text-sm font-medium leading-5 text-white light:text-slate-950">
+                  {t("model-router.rule-form.rule-type")}
+                </label>
+                <select
+                  value={ruleType}
+                  onChange={(e) => setRuleType(e.target.value)}
+                  className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-700 text-sm rounded-[8px] outline-none block w-full h-8 px-3.5"
+                >
+                  {RULE_TYPES.map((rt) => (
+                    <option key={rt.value} value={rt.value}>
+                      {rt.label}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-xs leading-4 text-zinc-400 light:text-slate-600">
+                  {RULE_TYPES.find((rt) => rt.value === ruleType)?.description}
+                </p>
+              </div>
+            </div>
+
+            {ruleType === "calculated" ? (
+              <CalculatedFields
+                conditionLogic={conditionLogic}
+                setConditionLogic={setConditionLogic}
+                conditions={conditions}
+                setConditions={setConditions}
+              />
+            ) : (
+              <LLMDescriptionField existingRule={existingRule} />
+            )}
+
+            <LLMProviderModelPicker
+              providerFieldName="route_provider"
+              modelFieldName="route_model"
+              label={t("model-router.rule-form.route-to-label")}
+              description={t("model-router.rule-form.route-to-description")}
+              defaultProvider={existingRule?.route_provider || ""}
+              defaultModel={existingRule?.route_model || ""}
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <button
+              type="button"
+              onClick={closeModal}
+              className="border border-zinc-600 light:border-slate-600 text-white light:text-slate-900 text-sm font-medium leading-5 rounded-[8px] h-[34px] px-3.5 hover:opacity-90 transition-opacity"
+            >
+              {t("model-router.rule-form.cancel")}
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="border-none flex items-center gap-x-1.5 text-sm font-medium leading-5 bg-zinc-50 light:bg-slate-900 text-zinc-900 light:text-white rounded-[8px] h-[34px] px-3.5 hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? (
+                <>
+                  <CircleNotch className="h-4 w-4 animate-spin" />
+                  {t("model-router.rule-form.saving")}
+                </>
+              ) : isEditing ? (
+                t("model-router.rule-form.update-rule")
+              ) : (
+                t("model-router.rule-form.create-rule")
+              )}
+            </button>
+          </div>
+        </form>
       </div>
     </ModalWrapper>
   );
