@@ -421,7 +421,7 @@ const TRANSLATIONS = {
         },
       },
       gmail: {
-        title: "GMail Connector",
+        title: "GMail",
         description:
           "Enable your agent to interact with Gmail - search emails, read threads, compose drafts, send emails, and manage your inbox. <a>Read the documentation</a>.",
         multiUserWarning:
@@ -533,6 +533,183 @@ const TRANSLATIONS = {
           getMailboxStats: {
             title: "Mailbox Stats",
             description: "Get unread counts and mailbox statistics",
+          },
+        },
+      },
+      googleCalendar: {
+        title: "Google Calendar",
+        description:
+          "Enable your agent to interact with Google Calendar - view calendars, get events, create and update events, and manage RSVPs. <a>Read the documentation</a>.",
+        multiUserWarning:
+          "Google Calendar integration is not available in multi-user mode for security reasons. Please disable multi-user mode to use this feature.",
+        configuration: "Google Calendar Configuration",
+        deploymentId: "Deployment ID",
+        deploymentIdHelp:
+          "The deployment ID from your Google Apps Script web app",
+        apiKey: "API Key",
+        apiKeyHelp:
+          "The API key you configured in your Google Apps Script deployment",
+        configurationRequired:
+          "Please configure the Deployment ID and API Key to enable Google Calendar skills.",
+        configured: "Configured",
+        searchSkills: "Search skills...",
+        noSkillsFound: "No skills match your search.",
+        categories: {
+          calendars: {
+            title: "Calendars",
+            description: "View and manage your Google Calendars",
+          },
+          readEvents: {
+            title: "Read Events",
+            description: "View and search calendar events",
+          },
+          writeEvents: {
+            title: "Create & Update Events",
+            description: "Create new events and modify existing ones",
+          },
+          rsvp: {
+            title: "RSVP Management",
+            description: "Manage your response status for events",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "List Calendars",
+            description: "List all calendars you own or are subscribed to",
+          },
+          getCalendar: {
+            title: "Get Calendar Details",
+            description: "Get detailed information about a specific calendar",
+          },
+          getEvent: {
+            title: "Get Event",
+            description: "Get detailed information about a specific event",
+          },
+          getEventsForDay: {
+            title: "Get Events for Day",
+            description: "Get all events scheduled for a specific day",
+          },
+          getEvents: {
+            title: "Get Events (Date Range)",
+            description: "Get events within a custom date range",
+          },
+          getUpcomingEvents: {
+            title: "Get Upcoming Events",
+            description:
+              "Get events for today, this week, or this month using simple keywords",
+          },
+          quickAdd: {
+            title: "Quick Add Event",
+            description:
+              "Create an event from natural language (e.g., 'Meeting tomorrow at 3pm')",
+          },
+          createEvent: {
+            title: "Create Event",
+            description:
+              "Create a new event with full control over all properties",
+          },
+          updateEvent: {
+            title: "Update Event",
+            description: "Update an existing calendar event",
+          },
+          setMyStatus: {
+            title: "Set RSVP Status",
+            description: "Accept, decline, or tentatively accept an event",
+          },
+        },
+      },
+      outlook: {
+        title: "Outlook",
+        description:
+          "Enable your agent to interact with Microsoft Outlook - search emails, read threads, compose drafts, send emails, and manage your inbox via Microsoft Graph API. <a>Read the documentation</a>.",
+        multiUserWarning:
+          "Outlook integration is not available in multi-user mode for security reasons. Please disable multi-user mode to use this feature.",
+        configuration: "Outlook Configuration",
+        authType: "Account Type",
+        authTypeHelp:
+          "Choose which types of Microsoft accounts can authenticate. 'All accounts' supports both personal and work/school accounts. 'Personal only' restricts to personal Microsoft accounts. 'Organization only' restricts to work/school accounts from a specific Azure AD tenant.",
+        authTypeCommon: "All accounts (personal & work/school)",
+        authTypeConsumers: "Personal Microsoft accounts only",
+        authTypeOrganization: "Organization accounts only (requires Tenant ID)",
+        clientId: "Application (Client) ID",
+        clientIdHelp:
+          "The Application (Client) ID from your Azure AD app registration",
+        tenantId: "Directory (Tenant) ID",
+        tenantIdHelp:
+          "The Directory (Tenant) ID from your Azure AD app registration. Required only for organization-only authentication.",
+        clientSecret: "Client Secret",
+        clientSecretHelp:
+          "The client secret value from your Azure AD app registration",
+        configurationRequired:
+          "Please configure the Client ID and Client Secret to enable Outlook skills.",
+        authRequired:
+          "Save your credentials first, then authenticate with Microsoft to complete the setup.",
+        authenticateWithMicrosoft: "Authenticate with Microsoft",
+        authenticated: "Successfully authenticated with Microsoft Outlook.",
+        revokeAccess: "Revoke Access",
+        configured: "Configured",
+        searchSkills: "Search skills...",
+        noSkillsFound: "No skills match your search.",
+        categories: {
+          search: {
+            title: "Search & Read Emails",
+            description: "Search and read emails from your Outlook inbox",
+          },
+          drafts: {
+            title: "Draft Emails",
+            description: "Create, edit, and manage email drafts",
+          },
+          send: {
+            title: "Send Emails",
+            description: "Send new emails or reply to messages immediately",
+          },
+          account: {
+            title: "Integration Statistics",
+            description: "View mailbox statistics and account information",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "Get Inbox",
+            description: "Get recent emails from your Outlook inbox",
+          },
+          search: {
+            title: "Search Emails",
+            description: "Search emails using Microsoft Search syntax",
+          },
+          readThread: {
+            title: "Read Conversation",
+            description: "Read a full email conversation thread",
+          },
+          createDraft: {
+            title: "Create Draft",
+            description:
+              "Create a new draft email or draft reply to an existing message",
+          },
+          updateDraft: {
+            title: "Update Draft",
+            description: "Update an existing draft email",
+          },
+          listDrafts: {
+            title: "List Drafts",
+            description: "List all draft emails",
+          },
+          deleteDraft: {
+            title: "Delete Draft",
+            description: "Delete a draft email",
+          },
+          sendDraft: {
+            title: "Send Draft",
+            description: "Send an existing draft email",
+          },
+          sendEmail: {
+            title: "Send Email",
+            description:
+              "Send a new email or reply to an existing message immediately",
+          },
+          getMailboxStats: {
+            title: "Mailbox Stats",
+            description: "Get folder counts and mailbox statistics",
           },
         },
       },

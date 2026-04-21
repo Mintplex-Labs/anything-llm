@@ -95,12 +95,8 @@ async function grepAgents({
     writeResponseChunk(response, {
       id: uuid,
       type: "statusResponse",
-      textResponse: `${pluralize(
-        "Agent",
-        agentHandles.length
-      )} ${agentHandles.join(
-        ", "
-      )} invoked.\nSwapping over to agent chat. Type /exit to exit agent execution loop early.`,
+      textResponse:
+        "@agent: Swapping over to agent chat. Type /exit to exit agent execution loop early.",
       sources: [],
       close: true,
       error: null,

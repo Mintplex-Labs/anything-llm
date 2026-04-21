@@ -33,7 +33,7 @@ class AIbitat {
   defaultInterrupt;
   maxRounds;
   _chats;
-
+  _trackedChatId = null;
   agents = new Map();
   channels = new Map();
   functions = new Map();
@@ -112,6 +112,44 @@ class AIbitat {
   use(plugin) {
     plugin.setup(this);
     return this;
+  }
+
+  /**
+   * Register a new chat ID for tracking for a given conversation exchange
+   * @param {number} chatId - The ID of the chat to register.
+   */
+  registerChatId(chatId = null) {
+    if (!chatId) return;
+    this._trackedChatId = Number(chatId);
+  }
+
+  /**
+   * Get the tracked chat ID for a given conversation exchange
+   * @returns {number|null} The ID of the chat to register.
+   */
+  get trackedChatId() {
+    return this._trackedChatId ?? null;
+  }
+
+  /**
+   * Clear the tracked chat ID for a given conversation exchange
+   */
+  clearTrackedChatId() {
+    this._trackedChatId = null;
+  }
+
+  /**
+   * Emit the tracked chat ID to the frontend via the websocket
+   * plugin (assumed to be attached).
+   * @param {string} [uuid] - The message UUID to associate with this chatId
+   */
+  emitChatId(uuid = null) {
+    if (!this.trackedChatId || !uuid) return null;
+    this.socket?.send?.("reportStreamEvent", {
+      type: "chatId",
+      uuid,
+      chatId: this.trackedChatId,
+    });
   }
 
   /**
@@ -916,6 +954,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
           metrics: provider.getUsage(),
         });
         this?.flushCitations?.(directOutputUUID);
+        this?.emitChatId?.(directOutputUUID);
         return result;
       }
 
@@ -957,6 +996,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       metrics: provider.getUsage(),
     });
     this?.flushCitations?.(responseUuid);
+    this?.emitChatId?.(responseUuid);
     return completionStream?.textResponse;
   }
 
@@ -1096,6 +1136,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       metrics: provider.getUsage(),
     });
     this?.flushCitations?.(msgUUID);
+    this?.emitChatId?.(msgUUID);
     return completion?.textResponse;
   }
 

@@ -315,6 +315,45 @@ const WorkspaceChats = {
       return { chats: null, message: error.message };
     }
   },
+  upsert: async function (
+    chatId = null,
+    data = {
+      workspaceId: null,
+      prompt: null,
+      response: {},
+      user: null,
+      threadId: null,
+      include: true,
+      apiSessionId: null,
+    }
+  ) {
+    try {
+      const payload = {
+        workspaceId: data.workspaceId,
+        response: safeJSONStringify(data.response),
+        user_id: data.user?.id || null,
+        thread_id: data.threadId,
+        api_session_id: data.apiSessionId,
+        include: data.include,
+      };
+
+      const { chat } = await prisma.workspace_chats.upsert({
+        where: {
+          id: Number(chatId),
+          user_id: data.user?.id || null,
+        },
+        // On updates, we already have the prompt so we don't need to set it again.
+        update: { ...payload, lastUpdatedAt: new Date() },
+
+        // On creates, we need to set the prompt or else record will fail.
+        create: { ...payload, prompt: data.prompt },
+      });
+      return { chat, message: null };
+    } catch (error) {
+      console.error(error.message);
+      return { chat: null, message: error.message };
+    }
+  },
 };
 
 module.exports = { WorkspaceChats };

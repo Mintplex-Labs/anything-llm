@@ -523,6 +523,189 @@ const TRANSLATIONS = {
           },
         },
       },
+      outlook: {
+        title: "Outlooki ühineja",
+        description:
+          "Laske oma agentil interakteeruda Microsoft Outlookiga – otsida e-kirju, lugeda teemasid, luua esialgseid versioone, saata e-kirju ja hallata oma postkasti Microsoft Graph API kaudu. <a>Vaata dokumentatsiooni</a>.",
+        multiUserWarning:
+          "Outlooki integratsioon ei ole saadaval mitme kasutaja režiimis turvalisuse huvides. Palun deaktiveeri mitme kasutaja režiim, et kasutada seda funktsiooni.",
+        configuration: "Outlooki seadistamine",
+        authType: "Kontoti tüüp",
+        authTypeHelp:
+          'Valige, milliseid Microsofti kontode tüüpe saab autentida. "Kõik kontod" toetab nii isiklikke kui ka töö- või kooli kontode. " ainult isiklikud kontod" piirab kasutamise ainult isikliktega Microsofti kontodega. " ainult organisatsioonile kuuluvad kontod" piirab kasutamise ainult töö- või kooli kontodega, mis kuuluvad konkreetsele Azure AD kliendile.',
+        authTypeCommon: "Kõik kontod (personaalsed ja töö/kooli kontod)",
+        authTypeConsumers: "V ainult isiklikud Microsofti kontod",
+        authTypeOrganization:
+          "Vain organisatsioonide kontod (vajalik Rentniku ID)",
+        clientId: "Rakenduse (kliendi) ID",
+        clientIdHelp:
+          "Rakenduse (kliendi) ID, mis on teie Azure AD rakenduse registreerimisel saadud",
+        tenantId: "Kinnitusnumber (kasutaja)",
+        tenantIdHelp:
+          '"Kinnitusnumber (kasutaja) teie Azure AD rakenduse registreerimise kohta. Nii on vaja ainult organisatsioonide enda autentimiseks."',
+        clientSecret: "Klientide andmetest saadava teabe turvaandlik kood",
+        clientSecretHelp:
+          "Klientide andmevara, mis on saadaval teie Azure AD rakenduse registreerimisel",
+        configurationRequired:
+          "Palun konfigureerige kliendi ID ja kliendi salavai, et Outlooki funktsioonid oleksid saadaval.",
+        authRequired:
+          "Esiteks salvestage oma andmed, seejärel käivitage Microsoftiga autentimine, et lõpule viia seadistamine.",
+        authenticateWithMicrosoft:
+          "Veenduge, et olete Microsoftiga sisselogitud",
+        authenticated: "Eduka autentimine Microsoft Outlook-iga.",
+        revokeAccess: "Tõsta juurdepääsu kaotamine",
+        configured: "Konfigureeritud",
+        searchSkills: "otsinguteadused...",
+        noSkillsFound: "Sellele andmetele ei leitud sobivaid tulemusi.",
+        categories: {
+          search: {
+            title: "Abi otsimiseks ja e-kirjade lugemiseks",
+            description: "Kavatu ja loe oma Outlooki postkasti e-kirju",
+          },
+          drafts: {
+            title: "Esimesed kirjad",
+            description: "Loo, muuda ja hallata e-kirjade plaane",
+          },
+          send: {
+            title: "Saada e-kirju",
+            description: "Saada uusi e-kirju või vastata teatele kohe",
+          },
+          account: {
+            title: "Integreerimise statistika",
+            description: "Vaata postkasti statistikat ja kontoinformatsiooni",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "Ava postkasti",
+            description: "Vaata viimaseid e-kirju oma Outlook postkasti",
+          },
+          search: {
+            title: "E-kirjade otsing",
+            description: "Kõnede otsimiseks kasutage Microsofti otsingusünkt.",
+          },
+          readThread: {
+            title: "Loe vestluse",
+            description: "Vaata kogu e-kirjade vestluse täisteksti",
+          },
+          createDraft: {
+            title: "Loo esialgne versioon",
+            description:
+              "Loo uus e-kirja versioon või uus vastamine olemasolevale kirja kohta.",
+          },
+          updateDraft: {
+            title: "Versiooni uuendamine",
+            description: "Värskendada olemasolevat e-kirja versiooni",
+          },
+          listDrafts: {
+            title: "Esialgne versioon",
+            description: "Loeda kõik eelnevate kirjade nimekiri",
+          },
+          deleteDraft: {
+            title: "Hüvata projekti",
+            description: "Hüvida kirjalik e-kiri",
+          },
+          sendDraft: {
+            title: "Saada esialgne versioon",
+            description: "Saada olemasolev e-kirja esialgne versioon",
+          },
+          sendEmail: {
+            title: "Saada e-kiri",
+            description:
+              "Saada uus e-kiri või vastata olemasolevale sõnule kohe",
+          },
+          getMailboxStats: {
+            title: "Postkasti statistika",
+            description: "Vaata kaustade arvu ja postkasti statistikat",
+          },
+        },
+      },
+      googleCalendar: {
+        title: "Google Kalendri ühendaja",
+        description:
+          "Lisage oma esindajale võimalus interakteeruda Google Kalendriga – vaadake kalendreid, hankige sündmusi, looge ja uuendage sündmusi ning hallake vastuvõtuid. <a>Vaadake dokumentatsiooni</a>.",
+        multiUserWarning:
+          "Google Kalendri integreerimine ei ole saadaval mitme kasutaja režiimis turvalisuse huvides. Palun deaktiveeri mitme kasutaja režiim, et kasutada seda funktsiooni.",
+        configuration: "Google Kalendri seadistamine",
+        deploymentId: "Paigutuse ID",
+        deploymentIdHelp: "Veebirakenduse Google Apps Scripti ID",
+        apiKey: "API võtme",
+        apiKeyHelp:
+          "API võti, mida olete konfigureerinud oma Google Apps Scripti rakenduses.",
+        configurationRequired:
+          'Palun konfigureerige "Deployment ID" ja API võti, et Google Calendar funktsionaalsus oleks aktiivne.',
+        configured: "Konfigureeritud",
+        searchSkills: "otsinguteadused...",
+        noSkillsFound: "Sellele andmetele ei leitud sobivaid tulemusi.",
+        categories: {
+          calendars: {
+            title: "Kalendrid",
+            description: "Vaata ja hallata oma Google kalendeid",
+          },
+          readEvents: {
+            title: "Vaata üritusi",
+            description: "Vaata ja otsi kalendri sündmusi",
+          },
+          writeEvents: {
+            title: "Loo ja uuenda üritusi",
+            description: "Loo uusi üritusi ja muuda olemasolevaid",
+          },
+          rsvp: {
+            title: "Vabatahtlikkuse registreerimise juhtimine",
+            description: "Halda oma vastuse staatuse sündmustele",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "Kalendrid",
+            description:
+              "Loole kõik kalendrid, mille te omate või millele olete registreeritud.",
+          },
+          getCalendar: {
+            title: "Hankige kalendri üksikasjad",
+            description:
+              "Hankige üksikasjalikke andmeid konkreetse kalendri kohta",
+          },
+          getEvent: {
+            title: "Saada ürituse info",
+            description:
+              "Hankige üksikasjalikku teavet konkreetse ürituse kohta",
+          },
+          getEventsForDay: {
+            title: "Leidke üritused selle päeva jaoks",
+            description:
+              "Vaata kõiki üritusi, mis on planeeritud konkreetsele päeval",
+          },
+          getEvents: {
+            title: "Leia üritused (aegraadi)",
+            description: "Võtke kokku sündmused spetsifitse ajaskaala pikkusel",
+          },
+          getUpcomingEvents: {
+            title: "Vaata tulevasi üritusi",
+            description:
+              "Leidke sündmused täna, selle nädala või selle kuuga, kasutades lihtsaid sõnu",
+          },
+          quickAdd: {
+            title: "Kiirelt sisse lisada",
+            description:
+              'Loo üritus loomuliku keele alusel (nt "Koosolek homme kell 15:00")',
+          },
+          createEvent: {
+            title: "Loo üritus",
+            description:
+              "Loo uus üritus, mis võimaldab kontrollida kõiki selle atribuute.",
+          },
+          updateEvent: {
+            title: "Täiendav info",
+            description: "Muuda olemasoleva kalendri sündmuse",
+          },
+          setMyStatus: {
+            title: "Määrake vastuvõtu staatus",
+            description:
+              "Mõne sündmuse kinnitamise, kehtestamise või esialgse kinnitamise.",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP-serverid",
