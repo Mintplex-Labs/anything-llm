@@ -22,7 +22,7 @@ class LemonadeLLM {
         process.env.LEMONADE_LLM_BASE_PATH,
         "openai"
       ),
-      apiKey: process.env.LEMONADE_LLM_API_KEY ?? null,
+      apiKey: process.env.LEMONADE_LLM_API_KEY || null,
     });
 
     this.model = modelPreference || process.env.LEMONADE_LLM_MODEL_PREF;
@@ -202,7 +202,7 @@ class LemonadeLLM {
           process.env.LEMONADE_LLM_BASE_PATH,
           "openai"
         ),
-        apiKey: process.env.LEMONADE_LLM_API_KEY ?? null,
+        apiKey: process.env.LEMONADE_LLM_API_KEY || null,
       });
 
       const { labels = [] } = await client.models.retrieve(this.model);
@@ -224,18 +224,74 @@ class LemonadeLLM {
   }
 
   /**
+   * Get the currently loaded models from the Lemonade server.
+   * @returns {Promise<string[]>}
+   */
+  static async getCurrentlyLoadedModels() {
+    const endpoint = new URL(
+      parseLemonadeServerEndpoint(process.env.LEMONADE_LLM_BASE_PATH, "openai")
+    );
+    endpoint.pathname += "/health";
+    const loadedModels = await fetch(endpoint.toString(), {
+      method: "GET",
+      headers: {
+        ...(process.env.LEMONADE_LLM_API_KEY
+          ? { Authorization: `Bearer ${process.env.LEMONADE_LLM_API_KEY}` }
+          : {}),
+      },
+    })
+      .then((response) => {
+        if (!response.ok)
+          throw new Error(
+            `Failed to get currently loaded models: ${response.statusText}`
+          );
+        return response.json();
+      })
+      .then(({ all_models_loaded = [] } = {}) => {
+        return all_models_loaded.map((model) => {
+          return {
+            model_name: model.model_name,
+            ctx_size: model?.recipe_options?.ctx_size ?? 8192,
+          };
+        });
+      });
+    return loadedModels;
+  }
+
+  /**
    * Utility function to load a model from the Lemonade server.
    * Does not check if the model is already loaded or unloads any models.
    * @param {*} model
    */
   static async loadModel(model, basePath = process.env.LEMONADE_LLM_BASE_PATH) {
     try {
+      const desiredCtxSize = Number(this.promptWindowLimit());
+      const currentlyLoadedModels =
+        await LemonadeLLM.getCurrentlyLoadedModels();
+      const modelAlreadyLoaded = currentlyLoadedModels.find(
+        (m) => m.model_name === model
+      );
+
+      if (modelAlreadyLoaded) {
+        if (modelAlreadyLoaded.ctx_size === desiredCtxSize) {
+          LemonadeLLM.slog(
+            `Model ${model} already loaded with ctx size ${desiredCtxSize}`
+          );
+          return true;
+        }
+
+        LemonadeLLM.slog(
+          `Model ${model} needs to be reloaded again with ctx size ${desiredCtxSize}`
+        );
+      }
+
       const endpoint = new URL(parseLemonadeServerEndpoint(basePath, "openai"));
       endpoint.pathname += "/load";
 
       LemonadeLLM.slog(
-        `Loading model ${model} with context size ${this.promptWindowLimit()}`
+        `Loading model ${model} with context size ${desiredCtxSize}`
       );
+
       await fetch(endpoint.toString(), {
         method: "POST",
         headers: {
@@ -246,7 +302,7 @@ class LemonadeLLM {
         },
         body: JSON.stringify({
           model_name: String(model),
-          ctx_size: Number(this.promptWindowLimit()),
+          ctx_size: desiredCtxSize,
         }),
       })
         .then((response) => {

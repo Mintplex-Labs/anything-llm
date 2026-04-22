@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { isMobile } from "react-device-detect";
 import useUser from "@/hooks/useUser";
 import { useModal } from "@/hooks/useModal";
 import LLMSelectorModal from "../PromptInput/LLMSelector/index";
@@ -75,7 +76,7 @@ export default function WorkspaceModelPicker({ workspaceSlug = null }) {
 
   // This feature is disabled for multi-user instances where the user is not an admin
   if (!!user && user.role !== "admin") return null;
-  if (!slug) return null;
+  if (!slug || isMobile) return null;
 
   return (
     <>

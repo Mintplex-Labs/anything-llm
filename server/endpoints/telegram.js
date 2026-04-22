@@ -36,12 +36,19 @@ function telegramEndpoints(app) {
           null;
         const threadSlug = activeUser?.active_thread || null;
 
+        let thread = null;
         let workspace = await Workspace.get({ slug: workspaceSlug });
         if (!workspace) {
           const available = await Workspace.where({}, 1);
           if (available.length) workspace = available[0];
         }
-        const thread = await WorkspaceThread.get({ slug: threadSlug });
+
+        if (!threadSlug) {
+          const availableThreads = await WorkspaceThread.where({
+            workspace_id: workspace.id,
+          });
+          if (availableThreads.length) thread = availableThreads[0];
+        }
 
         return response.status(200).json({
           config: {
@@ -157,7 +164,7 @@ function telegramEndpoints(app) {
     async (_request, response) => {
       try {
         const service = new TelegramBotService();
-        service.stop();
+        await service.stop();
         await ExternalCommunicationConnector.delete("telegram");
         await EventLogs.logEvent("telegram_bot_disconnected");
         return response.status(200).json({ success: true });

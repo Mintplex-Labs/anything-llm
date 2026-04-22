@@ -1,6 +1,7 @@
 const chalk = require("chalk");
 const { Telemetry } = require("../../../../models/telemetry");
 const { v4: uuidv4 } = require("uuid");
+const { skillIsAutoApproved } = require("../../../helpers/agents");
 const TOOL_APPROVAL_TIMEOUT_MS = 120 * 1_000; // 2 mins for tool approval
 
 /**
@@ -118,7 +119,13 @@ const httpSocket = {
           payload = {},
           description = null,
         }) {
-          // Check whitelist first
+          if (skillIsAutoApproved({ skillName })) {
+            return {
+              approved: true,
+              message: "Skill is auto-approved.",
+            };
+          }
+
           const {
             AgentSkillWhitelist,
           } = require("../../../../models/agentSkillWhitelist");
