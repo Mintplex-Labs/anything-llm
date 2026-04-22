@@ -1,4 +1,5 @@
-import { ArrowsLeftRight } from "@phosphor-icons/react";
+import { Shuffle } from "@phosphor-icons/react";
+import RouterAnimation from "@/media/animations/router-animation.webm";
 
 /**
  * Ephemeral notification shown during streaming when the model router
@@ -12,29 +13,41 @@ export default function ModelRouteNotification({ routedTo, isStreaming }) {
 
   return (
     <div className="flex w-full my-2">
-      <div className="relative rounded-full p-[1.5px] overflow-hidden">
-        {isStreaming && (
-          <div className="absolute inset-0 h-full w-full rounded-full bg-[conic-gradient(from_0deg,transparent,#0ea5e9_10%,transparent_20%)] animate-border-spin" />
-        )}
-        <div className="relative rounded-full bg-zinc-800 light:bg-slate-100 px-3 py-1.5 flex items-center gap-2">
-          <ArrowsLeftRight
-            className="w-3.5 h-3.5 text-sky-400 light:text-sky-600 flex-shrink-0"
-            weight="bold"
-          />
-          <span className="text-xs text-zinc-300 light:text-slate-600 whitespace-nowrap">
-            Routed to{" "}
-            <span className="font-semibold text-white light:text-slate-900">
-              {routedTo.model}
-            </span>
-            {routedTo.ruleTitle && (
-              <span className="text-zinc-400 light:text-slate-500">
-                {" "}
-                via {routedTo.ruleTitle}
-              </span>
-            )}
+      <div className="rounded-[20px] border border-zinc-700 light:border-slate-300 px-4 py-2 flex items-center gap-2">
+        <RouterIcon isStreaming={isStreaming} />
+        <span className="text-sm text-zinc-400 light:text-slate-600 whitespace-nowrap">
+          Routed to{" "}
+          <span className="text-zinc-50 light:text-slate-950">
+            {routedTo.model}
           </span>
-        </div>
+          {routedTo.ruleTitle && (
+            <>
+              {" "}
+              via <span>{routedTo.ruleTitle}</span>
+            </>
+          )}
+        </span>
       </div>
     </div>
+  );
+}
+
+function RouterIcon({ isStreaming }) {
+  if (!isStreaming) {
+    return (
+      <Shuffle className="w-4 h-4 text-zinc-50 light:text-slate-950 flex-shrink-0" />
+    );
+  }
+
+  return (
+    <video
+      autoPlay
+      muted
+      playsInline
+      className="w-4 h-4 flex-shrink-0 scale-[134%] invert light:invert-0"
+      aria-label="Routing to model..."
+    >
+      <source src={RouterAnimation} type="video/webm" />
+    </video>
   );
 }
