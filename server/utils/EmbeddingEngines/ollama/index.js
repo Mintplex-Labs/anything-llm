@@ -1,4 +1,7 @@
-const { maximumChunkLength } = require("../../helpers");
+const {
+  maximumChunkLength,
+  reportEmbeddingProgress,
+} = require("../../helpers");
 const { Ollama } = require("ollama");
 const { OllamaAILLM } = require("../../AiProviders/ollama");
 
@@ -111,6 +114,7 @@ class OllamaEmbedder {
         // but input param returns an array of embeddings (number[][]) for batch processing.
         // This is why we spread the embeddings array into the data array.
         data.push(...embeddings);
+        reportEmbeddingProgress(data.length, textChunks.length);
         this.log(
           `Batch ${currentBatch}/${totalBatches}: Embedded ${embeddings.length} chunks. Total: ${data.length}/${textChunks.length}`
         );

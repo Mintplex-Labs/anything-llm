@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useRef, useState } from "react";
+import React, { memo, useLayoutEffect, useRef, useState } from "react";
 import { Info, Warning } from "@phosphor-icons/react";
 import Actions from "./Actions";
 import renderMarkdown from "@/utils/chat/markdown";
@@ -19,9 +19,10 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { chatQueryRefusalResponse } from "@/utils/chat";
 import HistoricalOutputs from "./HistoricalOutputs";
+import { openImageLightbox } from "@/components/ImageLightbox";
 
 const HistoricalMessage = ({
-  uuid = v4(),
+  uuid: uuidProp,
   message,
   role,
   workspace,
@@ -37,6 +38,10 @@ const HistoricalMessage = ({
   metrics = {},
   outputs = [],
 }) => {
+  // Freeze uuid on first render. User messages arrive without a uuid and this value
+  // is used as the wrapper div's `key` — a default param fallback would regenerate
+  // on every render and remount the subtree, wiping TruncatableContent state.
+  const [uuid] = useState(() => uuidProp ?? v4());
   const { t } = useTranslation();
   const { isEditing } = useEditMessage({ chatId, role });
   const { isDeleted, completeDelete, onEndAnimation } = useWatchDeleteMessage({
@@ -205,17 +210,27 @@ export default memo(
   }
 );
 
+/**
+ * Currently only renders image attachments as clickable thumbnails that open in the lightbox.
+ * Other attachment types may be supported here in the future.
+ */
 function ChatAttachments({ attachments = [] }) {
   if (!attachments.length) return null;
   return (
     <div className="flex flex-wrap gap-4 mt-4">
-      {attachments.map((item) => (
-        <img
-          alt={`Attachment: ${item.name}`}
+      {attachments.map((item, index) => (
+        <button
+          type="button"
           key={item.name}
-          src={item.contentString}
-          className="w-[120px] h-[120px] object-cover rounded-lg"
-        />
+          onClick={() => openImageLightbox(attachments, index)}
+          className="p-0 border-none bg-transparent cursor-pointer hover:opacity-80 transition-opacity"
+        >
+          <img
+            alt={`Attachment: ${item.name}`}
+            src={item.contentString}
+            className="w-[120px] h-[120px] object-cover rounded-lg"
+          />
+        </button>
       ))}
     </div>
   );
@@ -227,7 +242,9 @@ function TruncatableContent({ children }) {
   const [isOverflowing, setIsOverflowing] = useState(false);
   const { t } = useTranslation();
 
-  useEffect(() => {
+  // useLayoutEffect (not useEffect) so collapse applies before paint — avoids a
+  // one-frame flash of uncollapsed content on mount.
+  useLayoutEffect(() => {
     if (contentRef.current) {
       setIsOverflowing(contentRef.current.scrollHeight > 250);
     }

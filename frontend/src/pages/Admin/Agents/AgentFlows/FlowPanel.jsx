@@ -12,6 +12,7 @@ function ManageFlowMenu({ flow, onDelete }) {
   const navigate = useNavigate();
 
   async function deleteFlow() {
+    setOpen(false);
     if (
       !window.confirm(
         "Are you sure you want to delete this flow? This action cannot be undone."
@@ -28,6 +29,8 @@ function ManageFlowMenu({ flow, onDelete }) {
   }
 
   useEffect(() => {
+    if (!open) return;
+
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setOpen(false);
@@ -38,7 +41,7 @@ function ManageFlowMenu({ flow, onDelete }) {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [open]);
 
   return (
     <div className="relative" ref={menuRef}>
@@ -50,20 +53,20 @@ function ManageFlowMenu({ flow, onDelete }) {
         <Gear className="h-5 w-5" weight="bold" />
       </button>
       {open && (
-        <div className="absolute w-[100px] -top-1 left-7 mt-1 border-[1.5px] border-white/40 rounded-lg bg-theme-action-menu-bg flex flex-col shadow-[0_4px_14px_rgba(0,0,0,0.25)] text-white z-99 md:z-10">
+        <div className="absolute min-w-[140px] top-full right-0 mt-1 border-[1.5px] border-white/40 rounded-lg bg-theme-action-menu-bg flex flex-col shadow-[0_4px_14px_rgba(0,0,0,0.25)] text-white z-99 md:z-10">
           <button
             type="button"
             onClick={() => navigate(paths.agents.editAgent(flow.uuid))}
             className="border-none flex items-center rounded-lg gap-x-2 hover:bg-theme-action-menu-item-hover py-1.5 px-2 transition-colors duration-200 w-full text-left"
           >
-            <span className="text-sm">Edit Flow</span>
+            <span className="text-sm whitespace-nowrap">Edit Flow</span>
           </button>
           <button
             type="button"
             onClick={deleteFlow}
             className="border-none flex items-center rounded-lg gap-x-2 hover:bg-theme-action-menu-item-hover py-1.5 px-2 transition-colors duration-200 w-full text-left"
           >
-            <span className="text-sm">Delete Flow</span>
+            <span className="text-sm whitespace-nowrap">Delete Flow</span>
           </button>
         </div>
       )}
@@ -71,23 +74,15 @@ function ManageFlowMenu({ flow, onDelete }) {
   );
 }
 
-export default function FlowPanel({ flow, toggleFlow, onDelete }) {
-  const [isActive, setIsActive] = useState(flow.active);
-
-  useEffect(() => {
-    setIsActive(flow.active);
-  }, [flow.uuid, flow.active]);
-
+export default function FlowPanel({ flow, toggleFlow, enabled, onDelete }) {
   const handleToggle = async () => {
     try {
       const { success, error } = await AgentFlows.toggleFlow(
         flow.uuid,
-        !isActive
+        !enabled
       );
       if (!success) throw new Error(error);
-      setIsActive(!isActive);
       toggleFlow(flow.uuid);
-      showToast("Flow status updated successfully", "success", { clear: true });
     } catch (error) {
       console.error("Failed to toggle flow:", error);
       showToast("Failed to toggle flow", "error", { clear: true });
@@ -106,7 +101,7 @@ export default function FlowPanel({ flow, toggleFlow, onDelete }) {
               </label>
             </div>
             <div className="flex items-center gap-x-2">
-              <Toggle size="lg" enabled={isActive} onChange={handleToggle} />
+              <Toggle size="lg" enabled={enabled} onChange={handleToggle} />
               <ManageFlowMenu flow={flow} onDelete={onDelete} />
             </div>
           </div>

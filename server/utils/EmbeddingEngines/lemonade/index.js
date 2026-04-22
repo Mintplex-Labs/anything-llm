@@ -1,4 +1,5 @@
 const { parseLemonadeServerEndpoint } = require("../../AiProviders/lemonade");
+const { toChunks, reportEmbeddingProgress } = require("../../helpers");
 
 class LemonadeEmbedder {
   constructor() {
@@ -13,10 +14,11 @@ class LemonadeEmbedder {
         process.env.EMBEDDING_BASE_PATH,
         "openai"
       ),
-      apiKey: process.env.LEMONADE_LLM_API_KEY ?? null,
+      apiKey: process.env.LEMONADE_LLM_API_KEY || null,
     });
     this.model = process.env.EMBEDDING_MODEL_PREF;
 
+    this.maxConcurrentChunks = 50;
     this.embeddingMaxChunkLength =
       process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH || 8_191;
   }
@@ -34,23 +36,37 @@ class LemonadeEmbedder {
       });
       return response?.data[0]?.embedding || [];
     } catch (error) {
-      console.error("Failed to get embedding from Lemonade.", error.message);
-      return [];
+      this.log("Failed to get embedding from Lemonade.", error.message);
+      throw error;
     }
   }
 
   async embedChunks(textChunks = []) {
-    try {
-      this.log(`Embedding ${textChunks.length} chunks of text...`);
-      const response = await this.lemonade.embeddings.create({
-        model: this.model,
-        input: textChunks,
-      });
-      return response?.data?.map((emb) => emb.embedding) || [];
-    } catch (error) {
-      console.error("Failed to get embeddings from Lemonade.", error.message);
-      return new Array(textChunks.length).fill([]);
+    this.log(
+      `Embedding ${textChunks.length} chunks of text with ${this.model}.`
+    );
+
+    const allResults = [];
+    for (const chunk of toChunks(textChunks, this.maxConcurrentChunks)) {
+      try {
+        const response = await this.lemonade.embeddings.create({
+          model: this.model,
+          input: chunk,
+        });
+
+        const embeddings = response?.data?.map((emb) => emb.embedding) || [];
+        if (embeddings.length === 0)
+          throw new Error("Lemonade returned empty embeddings for batch");
+
+        allResults.push(...embeddings);
+        reportEmbeddingProgress(allResults.length, textChunks.length);
+      } catch (error) {
+        this.log("Failed to get embeddings from Lemonade.", error.message);
+        throw new Error(`Lemonade Failed to embed: ${error.message}`);
+      }
     }
+
+    return allResults.length > 0 ? allResults : null;
   }
 }
 
