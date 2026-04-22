@@ -18,6 +18,9 @@ export default function RunHistoryPage() {
   const [runs, setRuns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [triggering, setTriggering] = useState(false);
+  const hasInFlightRun = runs.some(
+    (r) => r.status === "queued" || r.status === "running"
+  );
 
   const fetchRuns = async () => {
     const { runs: foundRuns } = await ScheduledJobs.runs(id);
@@ -35,14 +38,24 @@ export default function RunHistoryPage() {
 
   const handleRunNow = async () => {
     setTriggering(true);
-    const { success, error } = await ScheduledJobs.trigger(id);
+    const { success, skipped, error } = await ScheduledJobs.trigger(id);
     setTriggering(false);
-    if (success) {
-      showToast(t("scheduledJobs.toast.triggered"), "success");
-      fetchRuns();
-    } else {
+    if (!success) {
       showToast(error || t("scheduledJobs.toast.triggerFailed"), "error");
+      return;
     }
+    if (skipped) {
+      showToast(
+        t(
+          "scheduledJobs.toast.triggerSkipped",
+          "A run is already in progress for this job"
+        ),
+        "info"
+      );
+    } else {
+      showToast(t("scheduledJobs.toast.triggered"), "success");
+    }
+    fetchRuns();
   };
 
   return (
@@ -110,7 +123,7 @@ export default function RunHistoryPage() {
                   <button
                     type="button"
                     onClick={handleRunNow}
-                    disabled={triggering}
+                    disabled={triggering || hasInFlightRun}
                     className="border-none h-9 px-5 rounded-lg bg-zinc-50 text-zinc-950 light:bg-slate-900 light:text-white text-sm font-medium hover:bg-zinc-200 light:hover:bg-slate-800 transition-colors disabled:opacity-50"
                   >
                     {t("scheduledJobs.runHistory.runNow")}

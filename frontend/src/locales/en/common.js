@@ -1424,6 +1424,7 @@ const TRANSLATIONS = {
       deleted: "Job deleted",
       triggered: "Job triggered successfully",
       triggerFailed: "Failed to trigger job",
+      triggerSkipped: "A run is already in progress for this job",
     },
     row: {
       neverRun: "Never run",

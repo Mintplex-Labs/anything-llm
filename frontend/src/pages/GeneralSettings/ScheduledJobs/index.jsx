@@ -48,11 +48,19 @@ export default function ScheduledJobsPage() {
   };
 
   const handleTrigger = async (id) => {
-    const { success, error } = await ScheduledJobs.trigger(id);
-    if (success) {
-      showToast(t("scheduledJobs.toast.triggered"), "success");
-    } else {
+    const { success, skipped, error } = await ScheduledJobs.trigger(id);
+    if (!success) {
       showToast(error || t("scheduledJobs.toast.triggerFailed"), "error");
+    } else if (skipped) {
+      showToast(
+        t(
+          "scheduledJobs.toast.triggerSkipped",
+          "A run is already in progress for this job"
+        ),
+        "info"
+      );
+    } else {
+      showToast(t("scheduledJobs.toast.triggered"), "success");
     }
     fetchJobs();
   };

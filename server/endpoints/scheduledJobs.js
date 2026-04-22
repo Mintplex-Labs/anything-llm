@@ -430,9 +430,11 @@ function scheduledJobEndpoints(app) {
           return response.status(404).json({ error: "Job not found" });
         }
 
-        backgroundService.enqueueScheduledJob(job.id);
+        const run = await backgroundService.enqueueScheduledJob(job.id);
 
-        return response.status(200).json({ success: true, error: null });
+        return response
+          .status(200)
+          .json({ success: true, skipped: !run, error: null });
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500);

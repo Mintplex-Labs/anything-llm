@@ -293,13 +293,15 @@ class BackgroundService {
    * atomically rejects the call if the job already has a run in flight.
    *
    * @param {number} jobId - scheduled_jobs.id
+   * @returns {Promise<object|null>} the created run row, or null if skipped
+   *   because a run is already in flight for this job.
    */
   async enqueueScheduledJob(jobId) {
     const { ScheduledJobRun } = require("../../models/scheduledJobRun");
 
     const run = await ScheduledJobRun.start(jobId);
     // if start returns null, skip enqueuing, schueduled job already has a run in flight
-    if (!run) return;
+    if (!run) return null;
 
     this.#scheduledJobQueue.add(() =>
       this.#runScheduledJobWorker(jobId, run.id).catch(async (err) => {
@@ -307,6 +309,7 @@ class BackgroundService {
         await ScheduledJobRun.failIfNotTerminal(run.id, err.message);
       })
     );
+    return run;
   }
 
   /**
