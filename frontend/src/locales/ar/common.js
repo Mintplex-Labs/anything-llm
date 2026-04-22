@@ -1543,6 +1543,10 @@ const TRANSLATIONS = {
       "toast-delete-failed": "فشل حذف القاعدة.",
       "toast-reorder-failed": "فشل في تطبيق قواعد إعادة الترتيب.",
       "no-rules": "لا توجد قواعد حتى الآن. أضف قاعدة لبدء عملية التوجيه.",
+      "title-with-name": "قواعد جهاز التوجيه: {{name}}",
+      "empty-description":
+        "أضف قاعدة لتوجيه رسائل الدردشة إلى مزودي و/أو نماذج محددة.",
+      "new-rule-button": "قاعدة جديدة",
     },
     "rule-form": {
       "edit-title": "عدّل القاعدة",
@@ -1571,6 +1575,14 @@ const TRANSLATIONS = {
       "toast-updated": "تم تحديث القاعدة",
       "toast-created": "تم إنشاء القاعدة",
       "toast-save-failed": "فشل في حفظ القاعدة.",
+      "comparator-select": "اختر",
+      "logic-label": "مباراة",
+      "logic-and": "كل ما يلي (و)",
+      "logic-or": "أي من الخيارات التالية (أو)",
+      "add-condition": "أضف شرطًا",
+      "remove-condition": "إزالة الشرط",
+      "conditions-incomplete":
+        "الشرط {{index}} غير مكتمل — يرجى إدخال معلومات العقار والمقارن والقيمة.",
     },
     "provider-picker": {
       "select-provider": "اختر المزود",
@@ -1608,6 +1620,9 @@ const TRANSLATIONS = {
       "select-router-error": "اختر جهاز توجيه",
       "invalid-model": "اختيار نموذج غير صالح",
     },
+    "empty-description":
+      "لم يتم تكوين أي من أجهزة التوجيه (routers) حتى الآن. قم بإنشاء واحد للبدء.",
+    "new-router-button": "جهاز توجيه جديد",
   },
 };
 

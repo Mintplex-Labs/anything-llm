@@ -1524,6 +1524,10 @@ const TRANSLATIONS = {
       "toast-reorder-failed": "Ei õnnestunud taastada reegleid",
       "no-rules":
         "Hetkel pole veel reegleid. Lisage reegel, et alustada marsruuti määramisega.",
+      "title-with-name": "Routeri reeglid: {{name}}",
+      "empty-description":
+        "Lisage reegel, mis määrab, et vestlemisvihtede saadetakse konkreetsetele teenustele ja mudelitele.",
+      "new-rule-button": "Uus reegel",
     },
     "rule-form": {
       "edit-title": "Reegli muutmise funktsioon",
@@ -1552,6 +1556,14 @@ const TRANSLATIONS = {
       "toast-updated": "Reegel on uuendatud",
       "toast-created": "Reegel loodud",
       "toast-save-failed": "Reegli salvestamine ebaõnnestus",
+      "comparator-select": "Vali",
+      "logic-label": "Kohtumine",
+      "logic-and": "Järgmine",
+      "logic-or": "MISKI järgmistest (VAGRAM)",
+      "add-condition": "Lisada tingimus",
+      "remove-condition": "Eemalda tingimus",
+      "conditions-incomplete":
+        'Sujul "{{index}}" on puudu – täisenda omand, võrdleja ja väärtus.',
     },
     "provider-picker": {
       "select-provider": "Vali teenusepakkaja",
@@ -1590,6 +1602,9 @@ const TRANSLATIONS = {
       "select-router-error": "Valige ruuter",
       "invalid-model": "Väärtuslik mudeli valik",
     },
+    "empty-description":
+      "Hetkel pole konfigureeritud ühtegi režiiverit. Loomistage üks, et alustada.",
+    "new-router-button": "Uus ruuter",
   },
 };
 

@@ -1615,6 +1615,10 @@ const TRANSLATIONS = {
       "toast-reorder-failed": "No se pudieron aplicar las reglas.",
       "no-rules":
         "Aún no hay reglas. Añada una regla para empezar a dirigir el tráfico.",
+      "title-with-name": "Reglas del enrutador: {{name}}",
+      "empty-description":
+        "Agrega una regla para dirigir automáticamente los mensajes de chat a proveedores y modelos específicos.",
+      "new-rule-button": "Nueva norma",
     },
     "rule-form": {
       "edit-title": "Editar regla",
@@ -1643,6 +1647,14 @@ const TRANSLATIONS = {
       "toast-updated": "Regla actualizada",
       "toast-created": "Regla establecida",
       "toast-save-failed": "No se pudo guardar la regla.",
+      "comparator-select": "Seleccionar",
+      "logic-label": "Partido",
+      "logic-and": "TODAS las siguientes (Y)",
+      "logic-or": "CUALQUIERA de las siguientes opciones (O)",
+      "add-condition": "Añadir condición",
+      "remove-condition": "Eliminar la condición",
+      "conditions-incomplete":
+        "La condición {{index}} está incompleta: complete con la propiedad, el comparador y el valor.",
     },
     "provider-picker": {
       "select-provider": "Seleccionar proveedor",
@@ -1681,6 +1693,9 @@ const TRANSLATIONS = {
       "select-router-error": "Seleccione un router.",
       "invalid-model": "Selección de modelo no válida",
     },
+    "empty-description":
+      "Ningún enrutador ha sido configurado todavía. Cree uno para comenzar.",
+    "new-router-button": "Nuevo router",
   },
 };
 

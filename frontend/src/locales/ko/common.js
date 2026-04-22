@@ -1527,6 +1527,10 @@ const TRANSLATIONS = {
       "toast-reorder-failed": "재정렬 규칙 적용 실패",
       "no-rules":
         "규칙은 아직 정의되지 않았습니다. 경로 설정 기능을 시작하기 위한 규칙을 추가하세요.",
+      "title-with-name": "라우터 규칙: {{name}}",
+      "empty-description":
+        "특정 제공업체 및 모델로 채팅 메시지를 라우팅하는 규칙을 추가합니다.",
+      "new-rule-button": "새로운 규칙",
     },
     "rule-form": {
       "edit-title": "편집 규칙",
@@ -1554,6 +1558,14 @@ const TRANSLATIONS = {
       "toast-updated": "규칙 업데이트",
       "toast-created": "규칙이 설정되었습니다",
       "toast-save-failed": "규칙 저장 실패",
+      "comparator-select": "선택",
+      "logic-label": "경쟁",
+      "logic-and": "다음 항목(모두)",
+      "logic-or": "다음 중 하나 (또는)",
+      "add-condition": "조건 추가",
+      "remove-condition": "조건 제거",
+      "conditions-incomplete":
+        "조건 {{index}}은 불완전합니다. 속성, 비교 연산자, 값을 채워주세요.",
     },
     "provider-picker": {
       "select-provider": "제공업체 선택",
@@ -1591,6 +1603,9 @@ const TRANSLATIONS = {
       "select-router-error": "라우터를 선택하세요",
       "invalid-model": "유효하지 않은 모델 선택",
     },
+    "empty-description":
+      "아직 라우터 모델을 설정하지 않았습니다. 시작하려면 하나를 설정하세요.",
+    "new-router-button": "새로운 라우터",
   },
 };
 

@@ -1604,6 +1604,10 @@ const TRANSLATIONS = {
       "toast-reorder-failed": "Fehlgeschlagene Wiederholung der Regeln",
       "no-rules":
         "Noch keine Regeln definiert. Füge eine Regel hinzu, um die Weiterleitung zu starten.",
+      "title-with-name": "Router-Regeln: {{name}}",
+      "empty-description":
+        "Fügen Sie eine Regel hinzu, um Chat-Nachrichten an bestimmte Anbieter und Modelle weiterzuleiten.",
+      "new-rule-button": "Neue Regel",
     },
     "rule-form": {
       "edit-title": "Regel bearbeiten",
@@ -1632,6 +1636,14 @@ const TRANSLATIONS = {
       "toast-updated": "Regel aktualisiert",
       "toast-created": "Regel erstellt",
       "toast-save-failed": "Fehlgeschaltes Speichern der Regel",
+      "comparator-select": "Auswählen",
+      "logic-label": "Spiel",
+      "logic-and": "Alle folgenden Punkte (UND)",
+      "logic-or": "JEDE der folgenden Optionen (ODER)",
+      "add-condition": "Füge eine Bedingung hinzu",
+      "remove-condition": "Bedingung entfernen",
+      "conditions-incomplete":
+        "Der Zustand {{index}} ist unvollständig – bitte die Informationen zu Eigenschaft, Vergleicher und Wert ergänzen.",
     },
     "provider-picker": {
       "select-provider": "Ausgewählter Anbieter",
@@ -1671,6 +1683,9 @@ const TRANSLATIONS = {
       "select-router-error": "Wählen Sie einen Router aus.",
       "invalid-model": "Ungültige Modellauswahl",
     },
+    "empty-description":
+      "Noch keine Router-Modelle konfiguriert. Erstellen Sie eines, um loszulegen.",
+    "new-router-button": "Neuer Router",
   },
 };
 

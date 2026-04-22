@@ -1570,6 +1570,10 @@ const TRANSLATIONS = {
       "toast-reorder-failed": "Kunne ikke genoprette reglerne",
       "no-rules":
         "Der er endnu ingen regler. Tilføj en regel for at starte rutingen.",
+      "title-with-name": "Router-regler: {{name}}",
+      "empty-description":
+        "Tilføj en regel, der styrer, at chatbeskeder skal dirigeres til specifikke leverandører og modeller.",
+      "new-rule-button": "Ny regel",
     },
     "rule-form": {
       "edit-title": "Rediger regel",
@@ -1598,6 +1602,14 @@ const TRANSLATIONS = {
       "toast-updated": "Reglen er opdateret",
       "toast-created": "Regel er oprettet",
       "toast-save-failed": "Kunne ikke gemme reglen",
+      "comparator-select": "Vælg",
+      "logic-label": "Kamp",
+      "logic-and": "ALLE følgende (OG)",
+      "logic-or": "ETHVERT af følgende (ELLER)",
+      "add-condition": "Tilføj betingelse",
+      "remove-condition": "Fjern betingelsen",
+      "conditions-incomplete":
+        "Betingelsen {{index}} er ufuldstændig – udfyld oplysninger om ejendom, sammenligningsfunktion og værdi.",
     },
     "provider-picker": {
       "select-provider": "Vælg leverandør",
@@ -1635,6 +1647,9 @@ const TRANSLATIONS = {
       "select-router-error": "Vælg en router",
       "invalid-model": "Forkert modelvalg",
     },
+    "empty-description":
+      "Ingen routere er endnu konfigureret. Opret en for at komme i gang.",
+    "new-router-button": "Ny router",
   },
 };
 

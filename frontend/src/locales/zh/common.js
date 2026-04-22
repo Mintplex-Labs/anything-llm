@@ -1465,6 +1465,10 @@ const TRANSLATIONS = {
       "toast-delete-failed": "未能删除规则",
       "toast-reorder-failed": "未能重新应用规则",
       "no-rules": "目前还没有任何规则。 添加一条规则，以便开始进行路由。",
+      "title-with-name": "路由规则：{{name}}",
+      "empty-description":
+        "添加一条规则，以便将聊天消息路由到特定的提供商和模型。",
+      "new-rule-button": "新的规定",
     },
     "rule-form": {
       "edit-title": "编辑规则",
@@ -1491,6 +1495,14 @@ const TRANSLATIONS = {
       "toast-updated": "规则已更新",
       "toast-created": "规则已制定",
       "toast-save-failed": "未能保存规则",
+      "comparator-select": "选择",
+      "logic-label": "比赛",
+      "logic-and": "以下所有内容 (且)",
+      "logic-or": "以下任一选项 (或)",
+      "add-condition": "添加条件",
+      "remove-condition": "移除条件",
+      "conditions-incomplete":
+        "条件 {{index}} 不完整——请填写属性、比较器和值。",
     },
     "provider-picker": {
       "select-provider": "选择服务提供商",
@@ -1526,6 +1538,9 @@ const TRANSLATIONS = {
       "select-router-error": "选择一个路由器",
       "invalid-model": "无效的模型选择",
     },
+    "empty-description":
+      "目前还没有配置任何路由器型号。请创建一个，以便开始配置。",
+    "new-router-button": "新的路由器",
   },
 };
 

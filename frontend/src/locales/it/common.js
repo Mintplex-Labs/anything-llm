@@ -1614,6 +1614,10 @@ const TRANSLATIONS = {
       "toast-reorder-failed": "Mancato rispetto delle regole di riordino.",
       "no-rules":
         "Al momento non ci sono regole. Aggiungi una regola per iniziare a definire i percorsi.",
+      "title-with-name": "Regole del router: {{name}}",
+      "empty-description":
+        "Aggiungi una regola per indirizzare automaticamente i messaggi di chat a specifici fornitori e modelli.",
+      "new-rule-button": "Nuova regola",
     },
     "rule-form": {
       "edit-title": "Modifica regola",
@@ -1642,6 +1646,14 @@ const TRANSLATIONS = {
       "toast-updated": "Regola aggiornata",
       "toast-created": "Regola creata",
       "toast-save-failed": "Impossibile salvare la regola.",
+      "comparator-select": "Seleziona",
+      "logic-label": "Partita",
+      "logic-and": "Tutti i seguenti punti (E)",
+      "logic-or": "QUALSIASI delle seguenti opzioni (oppure)",
+      "add-condition": "Aggiungi condizione",
+      "remove-condition": "Eliminare la condizione",
+      "conditions-incomplete":
+        "La condizione {{index}} è incompleta: è necessario specificare la proprietà, il comparatore e il valore.",
     },
     "provider-picker": {
       "select-provider": "Seleziona il fornitore",
@@ -1681,6 +1693,9 @@ const TRANSLATIONS = {
       "select-router-error": "Seleziona un router",
       "invalid-model": "Selezione del modello non valida",
     },
+    "empty-description":
+      "Al momento non sono state configurate alcuna rete wireless. Creare una rete per iniziare.",
+    "new-router-button": "Nuovo router",
   },
 };
 

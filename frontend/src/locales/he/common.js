@@ -1508,6 +1508,10 @@ const TRANSLATIONS = {
       "toast-delete-failed": "לא הצליח למחוק את הכלל.",
       "toast-reorder-failed": "לא הצליח ליישם את הכללים",
       "no-rules": "אין כללים עדיין. הוסף כלל כדי להתחיל בניתוב.",
+      "title-with-name": "כללי ניתוב: {{name}}",
+      "empty-description":
+        "הוסף כלל שיגרום לשליחת הודעות צ'אט לספקים ומודלים ספציפיים.",
+      "new-rule-button": "חוק חדש",
     },
     "rule-form": {
       "edit-title": "ערוך חוק",
@@ -1535,6 +1539,14 @@ const TRANSLATIONS = {
       "toast-updated": "הכלל עודכן",
       "toast-created": "הוראות נוצרו",
       "toast-save-failed": "לא הצליח לשמור את הכלל",
+      "comparator-select": "בחר",
+      "logic-label": "משחק",
+      "logic-and": "כל מה שמופיע להלן (וגם)",
+      "logic-or": "כל אחד מהאפשרויות הבאות (או)",
+      "add-condition": "הוסף תנאי",
+      "remove-condition": "להסיר את התנאי",
+      "conditions-incomplete":
+        "התנאי {{index}} אינו שלם – יש למלא את שם המאפיין, המשוואה והערך.",
     },
     "provider-picker": {
       "select-provider": "בחר ספק",
@@ -1572,6 +1584,9 @@ const TRANSLATIONS = {
       "select-router-error": "בחר/י נתב",
       "invalid-model": "בחירת מודל לא תקינה",
     },
+    "empty-description":
+      "עדיין לא הגדרתם נתבים מסוגים שונים. צרו אחד כדי להתחיל.",
+    "new-router-button": "ראוטר חדש",
   },
 };
 

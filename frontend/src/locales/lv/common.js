@@ -1583,6 +1583,10 @@ const TRANSLATIONS = {
       "toast-reorder-failed": "Neizdevās atjaunot noteikumus",
       "no-rules":
         "Vēl nav noteikumu. Pievienojiet noteikumu, lai sāktu maršrutēšanu.",
+      "title-with-name": "Router noteikumi: {{name}}",
+      "empty-description":
+        "Ieviesiet noteikumu, kas nosaka, ka ziņojumi no čata tiks nosūtīti konkrētiem sniedzējiem un modeļiem.",
+      "new-rule-button": "Jauna noteikums",
     },
     "rule-form": {
       "edit-title": "Rediģēšanas noteikums",
@@ -1611,6 +1615,14 @@ const TRANSLATIONS = {
       "toast-updated": "Noteikums atjaunināts",
       "toast-created": "Noteikums tika izveidots",
       "toast-save-failed": "Neizdevās saglabāt noteikumu",
+      "comparator-select": "Izvēlēties",
+      "logic-label": "Spēle",
+      "logic-and": "Visas šīs (un)",
+      "logic-or": "KAD no sekojošajām (vai arī)",
+      "add-condition": "Piešķiriet nosacījumu",
+      "remove-condition": "Atbrīvots no nosacījuma",
+      "conditions-incomplete":
+        "Stāvoklis {{index}} ir nevis pilnīgs — norādiet īpašumu, salīdzinātāju un vērtību.",
     },
     "provider-picker": {
       "select-provider": "Izvēlēties pakalpojumu sniedzēju",
@@ -1649,6 +1661,9 @@ const TRANSLATIONS = {
       "select-router-error": "Izvēlieties maršrutētāju",
       "invalid-model": "Neizvēlēts vai nepiemērots modelis",
     },
+    "empty-description":
+      "Vēl nav konfigurēti neviens maršrutētājs. Jāizveido viens, lai sāktu.",
+    "new-router-button": "Jauns maršrutizators",
   },
 };
 

@@ -1558,6 +1558,10 @@ const TRANSLATIONS = {
       "toast-reorder-failed": "عدم توانایی در اعمال مجدد قوانین",
       "no-rules":
         "هنوز قوانینی وجود ندارد. برای شروع مسیریابی، یک قانون اضافه کنید.",
+      "title-with-name": "قوانین مسیریابی: {{name}}",
+      "empty-description":
+        "یک قانون را اضافه کنید تا پیام‌های چت را به صورت خاص به ارائه دهندگان و مدل‌های مشخص هدایت کنید.",
+      "new-rule-button": "قانون جدید",
     },
     "rule-form": {
       "edit-title": "قانون ویرایش",
@@ -1586,6 +1590,14 @@ const TRANSLATIONS = {
       "toast-updated": "قانون به‌روز شد",
       "toast-created": "قانون ایجاد شد",
       "toast-save-failed": "عدم موفقیت در ذخیره قانون",
+      "comparator-select": "انتخاب",
+      "logic-label": "مسابقه",
+      "logic-and": "همه موارد زیر (و)",
+      "logic-or": "هر یک از موارد زیر (یا)",
+      "add-condition": "اضافه کردن شرط",
+      "remove-condition": "حذف شرط",
+      "conditions-incomplete":
+        "شرط {{index}} ناقص است — اطلاعات مربوط به ویژگی، مقایسه و مقدار را پر کنید.",
     },
     "provider-picker": {
       "select-provider": "انتخاب ارائه دهنده",
@@ -1623,6 +1635,9 @@ const TRANSLATIONS = {
       "select-router-error": "یک روتر را انتخاب کنید.",
       "invalid-model": "انتخاب مدل نامعتبر",
     },
+    "empty-description":
+      "هنوز هیچ روتر مدلی تنظیم نشده است. برای شروع، یکی ایجاد کنید.",
+    "new-router-button": "روتر جدید",
   },
 };
 

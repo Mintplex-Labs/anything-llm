@@ -1591,6 +1591,10 @@ const TRANSLATIONS = {
       "toast-reorder-failed": "Nu a reușit să aplice regulile",
       "no-rules":
         "Nu există reguli în prezent. Adăugați o regulă pentru a începe rutarea.",
+      "title-with-name": "Reguli pentru router: {{name}}",
+      "empty-description":
+        "Adăugați o regulă pentru a direcționa automat mesajele de chat către furnizori și modele specifice.",
+      "new-rule-button": "Nouă regulă",
     },
     "rule-form": {
       "edit-title": "Modifică regulă",
@@ -1619,6 +1623,14 @@ const TRANSLATIONS = {
       "toast-updated": "Regulamentul a fost actualizat",
       "toast-created": "Regula a fost stabilită",
       "toast-save-failed": "Nu a reușit să salveze regula",
+      "comparator-select": "Selectați",
+      "logic-label": "Meci",
+      "logic-and": "TOATE următoarele (ȘI)",
+      "logic-or": "ORICE dintre următoarele (SAU)",
+      "add-condition": "Adaugă o condiție",
+      "remove-condition": "Elimină condiția",
+      "conditions-incomplete":
+        "Starea {{index}} este incompletă – completați proprietatea, comparatorul și valoarea.",
     },
     "provider-picker": {
       "select-provider": "Selectați furnizorul",
@@ -1656,6 +1668,9 @@ const TRANSLATIONS = {
       "select-router-error": "Alege un router",
       "invalid-model": "Alegerea incorectă a modelului",
     },
+    "empty-description":
+      "În prezent, nu există routere configurate. Creați unul pentru a începe.",
+    "new-router-button": "Router nou",
   },
 };
 

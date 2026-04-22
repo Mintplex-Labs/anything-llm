@@ -1461,6 +1461,9 @@ const TRANSLATIONS = {
       "toast-delete-failed": "刪除規則失敗",
       "toast-reorder-failed": "未能重新設定規則",
       "no-rules": "目前還沒有任何規則。請新增規則，以開始建立路線。",
+      "title-with-name": "路由規則：{{name}}",
+      "empty-description": "新增規則，以便將聊天訊息路由至特定供應商和模型。",
+      "new-rule-button": "新規定",
     },
     "rule-form": {
       "edit-title": "編輯規則",
@@ -1487,6 +1490,14 @@ const TRANSLATIONS = {
       "toast-updated": "規則已更新",
       "toast-created": "規則已制定",
       "toast-save-failed": "無法儲存規則",
+      "comparator-select": "選擇",
+      "logic-label": "比分",
+      "logic-and": "以下所有（且）",
+      "logic-or": "以下任一項目（或）",
+      "add-condition": "添加條件",
+      "remove-condition": "移除條件",
+      "conditions-incomplete":
+        "條件 {{index}} 尚未完整填寫 — 請填寫「屬性」、「比較器」和「值」。",
     },
     "provider-picker": {
       "select-provider": "選擇供應商",
@@ -1522,6 +1533,8 @@ const TRANSLATIONS = {
       "select-router-error": "選擇一個路由器",
       "invalid-model": "模型選擇無效",
     },
+    "empty-description": "目前尚未設定任何路由器。請先建立一個，以便開始操作。",
+    "new-router-button": "新的路由器",
   },
 };
 

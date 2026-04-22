@@ -1586,6 +1586,10 @@ const TRANSLATIONS = {
       "toast-reorder-failed": "Nie udało się zrezygnować z zasad.",
       "no-rules":
         "Na razie nie ma żadnych zasad. Dodaj zasadę, aby rozpocząć routowanie.",
+      "title-with-name": "Reguły routingu: {{name}}",
+      "empty-description":
+        "Dodaj regułę, która będzie kierować wiadomościami w czacie do określonych dostawców i modeli.",
+      "new-rule-button": "Nowe zasady",
     },
     "rule-form": {
       "edit-title": "Edytuj zasadę",
@@ -1614,6 +1618,14 @@ const TRANSLATIONS = {
       "toast-updated": "Zaktualizowane zasady",
       "toast-created": "Zasada została ustanowiona",
       "toast-save-failed": "Nie udało się zapisać reguły",
+      "comparator-select": "Wybierz",
+      "logic-label": "Mecz",
+      "logic-and": "Wszystkie poniższe (I)",
+      "logic-or": "JAKIEKOLWIEK z następujących (lub)",
+      "add-condition": "Dodaj warunek",
+      "remove-condition": "Usunąć warunek",
+      "conditions-incomplete":
+        "Stan {{index}} jest niekompletny – należy uzupełnić informacje dotyczące właściwości, porównywanej wartości i wartości.",
     },
     "provider-picker": {
       "select-provider": "Wybierz dostawcę",
@@ -1652,6 +1664,9 @@ const TRANSLATIONS = {
       "select-router-error": "Wybierz router",
       "invalid-model": "Nieprawidłowy wybór modelu",
     },
+    "empty-description":
+      "Na razie nie skonfigurowano żadnych routerów. Aby zacząć, należy stworzyć jeden.",
+    "new-router-button": "Nowy router",
   },
 };
 

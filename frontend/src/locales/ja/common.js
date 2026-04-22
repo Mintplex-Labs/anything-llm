@@ -1554,6 +1554,10 @@ const TRANSLATIONS = {
       "toast-reorder-failed": "再注文に関するルールが適用されなかった",
       "no-rules":
         "現時点ではルールはまだ設定されていません。「ルーティングを開始するためのルールを追加」",
+      "title-with-name": "ルーターのルール: {{name}}",
+      "empty-description":
+        "チャットメッセージを特定のプロバイダやモデルにルーティングを開始するためのルールを追加する。",
+      "new-rule-button": "新しい規則",
     },
     "rule-form": {
       "edit-title": "ルールを編集する",
@@ -1582,6 +1586,14 @@ const TRANSLATIONS = {
       "toast-updated": "ルールが更新されました",
       "toast-created": "ルールが作成されました",
       "toast-save-failed": "ルールを保存できませんでした",
+      "comparator-select": "選択",
+      "logic-label": "試合",
+      "logic-and": "以下のすべての項目 (および)",
+      "logic-or": "以下のいずれか (または)",
+      "add-condition": "条件を追加する",
+      "remove-condition": "条件を削除する",
+      "conditions-incomplete":
+        "条件 {{index}} は未記入です。プロパティ、比較演算子、および値を入力してください。",
     },
     "provider-picker": {
       "select-provider": "サービスプロバイダーを選択",
@@ -1620,6 +1632,9 @@ const TRANSLATIONS = {
       "select-router-error": "ルーターを選択する",
       "invalid-model": "無効なモデルの選択",
     },
+    "empty-description":
+      "現時点では、設定されたルーターは存在しません。 まず、一つ作成して設定を開始してください。",
+    "new-router-button": "新しいルーター",
   },
 };
 

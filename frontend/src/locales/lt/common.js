@@ -1574,6 +1574,10 @@ const TRANSLATIONS = {
       "toast-reorder-failed": "Nepavyko atstatyti taisyklių",
       "no-rules":
         "Šiuo metu nustatyta jokių taisyklių. Pridėkite taisykę, kad būtų pradėta maršrutizavimas.",
+      "title-with-name": "Ruterio nurodymai: {{name}}",
+      "empty-description":
+        "Įtraukite taisykę, kad žodžių skelbimo pranešimai būtų siunčiami konkretiems tiekėjams ir modeliams.",
+      "new-rule-button": "Naujas įstatymas",
     },
     "rule-form": {
       "edit-title": "Redagavimo taisyklė",
@@ -1602,6 +1606,14 @@ const TRANSLATIONS = {
       "toast-updated": "Regulė atnaujinta",
       "toast-created": "Regulė sukurta",
       "toast-save-failed": "Nepavyko išsaugoti nurodymo",
+      "comparator-select": "Pasirinkite",
+      "logic-label": "Susidūrimas",
+      "logic-and": "Visos iš šių (ir)",
+      "logic-or": "KAS iš toliau (ARBA)",
+      "add-condition": "Pridėti sąlygą",
+      "remove-condition": "Atšalinti sąlygą",
+      "conditions-incomplete":
+        "Sąlyga {{index}} yra nebaigta – reikia nurodyti nuosavybę, lygybės operatorių ir vertę.",
     },
     "provider-picker": {
       "select-provider": "Pasirinkite paslaugų teikėją",
@@ -1641,6 +1653,9 @@ const TRANSLATIONS = {
       "select-router-error": "Pasirinkite maršrutizatorių",
       "invalid-model": "Neteisingas modelio pasirinkimas",
     },
+    "empty-description":
+      "Nėra konfigūruotų maršrutizavimo modelių. Norėdami pradėti, sukurkite vieną.",
+    "new-router-button": "Naujas maršrutizatorius",
   },
 };
 

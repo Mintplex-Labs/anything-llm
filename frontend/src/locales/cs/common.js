@@ -1568,6 +1568,10 @@ const TRANSLATIONS = {
       "toast-reorder-failed": "Nezdařilo se znovu nastavit pravidla",
       "no-rules":
         "Dosud neexistují žádná pravidla. Přidejte pravidlo, které spustí směrování.",
+      "title-with-name": "Pravidla pro směrovač: {{name}}",
+      "empty-description":
+        "Přidejte pravidlo, které způsobí směrování chatových zpráv na konkrétní poskytovatele a modely.",
+      "new-rule-button": "Nová pravidla",
     },
     "rule-form": {
       "edit-title": "Upravit pravidlo",
@@ -1596,6 +1600,14 @@ const TRANSLATIONS = {
       "toast-updated": "Pravidlo aktualizováno",
       "toast-created": "Pravidlo bylo vytvořeno",
       "toast-save-failed": "Nedařilo se uložit pravidlo",
+      "comparator-select": "Vybrat",
+      "logic-label": "Souboj",
+      "logic-and": "Vše následující (A)",
+      "logic-or": "JAKÉKOLI z následujících (NEBO)",
+      "add-condition": "Přidat podmínku",
+      "remove-condition": "Odstranit podmínku",
+      "conditions-incomplete":
+        "Podmínka {{index}} není kompletní – vyplňte vlastnosti, porovnávací operátor a hodnotu.",
     },
     "provider-picker": {
       "select-provider": "Vyberte dodavatele",
@@ -1635,6 +1647,9 @@ const TRANSLATIONS = {
       "select-router-error": "Vyberte si směrovač.",
       "invalid-model": "Neplatná volba modelu",
     },
+    "empty-description":
+      "V současné době nejsou žádné nakonfigurované routery. Vytvořte jeden, abyste mohli začít.",
+    "new-router-button": "Nový router",
   },
 };
 

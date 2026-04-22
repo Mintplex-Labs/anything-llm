@@ -1580,6 +1580,10 @@ const TRANSLATIONS = {
       "toast-reorder-failed": "Yeniden sıralama kuralları uygulanmadı",
       "no-rules":
         "Henüz herhangi bir kural belirlenmedi. Yönlendirmeyi başlatmak için bir kural ekleyin.",
+      "title-with-name": "Ruter Kuralları: {{name}}",
+      "empty-description":
+        "Belirli sağlayıcılar ve modeller için sohbet mesajlarının yönlendirilmesini başlatmak için bir kural ekleyin.",
+      "new-rule-button": "Yeni Kural",
     },
     "rule-form": {
       "edit-title": "Kuralı Düzenle",
@@ -1608,6 +1612,14 @@ const TRANSLATIONS = {
       "toast-updated": "Kural güncellendi",
       "toast-created": "Kural oluşturuldu",
       "toast-save-failed": "Kuralın kaydedilememesi",
+      "comparator-select": "Seç",
+      "logic-label": "Maç",
+      "logic-and": "Aşağıdaki tüm maddeler (VE)",
+      "logic-or": "Aşağıdaki seçeneklerden herhangi biri (VEYA)",
+      "add-condition": "Koşul ekle",
+      "remove-condition": "Koşulu kaldır",
+      "conditions-incomplete":
+        "Koşul {{index}} eksik — özellik, karşılaştırma ve değeri belirtin.",
     },
     "provider-picker": {
       "select-provider": "Sağlayıcıyı seçin",
@@ -1647,6 +1659,9 @@ const TRANSLATIONS = {
       "select-router-error": "Bir yönlendirici seçin",
       "invalid-model": "Geçersiz model seçimi",
     },
+    "empty-description":
+      "Henüz herhangi bir model yönlendirici yapılandırılmamış. Başlamak için bir tane oluşturun.",
+    "new-router-button": "Yeni Router",
   },
 };
 

@@ -1566,6 +1566,10 @@ const TRANSLATIONS = {
       "toast-reorder-failed": "Không thể áp dụng các quy tắc mới.",
       "no-rules":
         "Hiện chưa có quy định nào. Thêm một quy định để bắt đầu định tuyến.",
+      "title-with-name": "Quy tắc định tuyến: {{name}}",
+      "empty-description":
+        "Thêm quy tắc để định tuyến tin nhắn trò chuyện đến các nhà cung cấp và mô hình cụ thể.",
+      "new-rule-button": "Quy định mới",
     },
     "rule-form": {
       "edit-title": "Quy tắc chỉnh sửa",
@@ -1594,6 +1598,14 @@ const TRANSLATIONS = {
       "toast-updated": "Quy định đã được cập nhật",
       "toast-created": "Quy tắc đã được tạo ra",
       "toast-save-failed": "Không thể lưu quy tắc",
+      "comparator-select": "Chọn",
+      "logic-label": "So sánh",
+      "logic-and": "Tất cả các điều sau (VÀ)",
+      "logic-or": "Bất kỳ một trong các lựa chọn sau (HOẶC)",
+      "add-condition": "Thêm điều kiện",
+      "remove-condition": "Loại bỏ điều kiện",
+      "conditions-incomplete":
+        "Điều kiện {{index}} chưa đầy đủ – vui lòng điền thông tin về thuộc tính, đối sánh và giá trị.",
     },
     "provider-picker": {
       "select-provider": "Chọn nhà cung cấp",
@@ -1633,6 +1645,9 @@ const TRANSLATIONS = {
       "select-router-error": "Chọn một bộ định tuyến",
       "invalid-model": "Lựa chọn mô hình không hợp lệ",
     },
+    "empty-description":
+      "Hiện chưa có bất kỳ bộ định tuyến nào được cấu hình. Hãy tạo một để bắt đầu.",
+    "new-router-button": "Router mới",
   },
 };
 

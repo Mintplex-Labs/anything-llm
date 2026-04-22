@@ -1585,6 +1585,10 @@ const TRANSLATIONS = {
       "toast-reorder-failed": "Fout bij het opnieuw toepassen van regels",
       "no-rules":
         "Er zijn nog geen regels. Voeg een regel toe om het routeren te starten.",
+      "title-with-name": "Regels voor de router: {{name}}",
+      "empty-description":
+        "Voeg een regel toe om chatberichten automatisch naar specifieke aanbieders en modellen te routeren.",
+      "new-rule-button": "Nieuwe regel",
     },
     "rule-form": {
       "edit-title": "Regel bewerken",
@@ -1613,6 +1617,14 @@ const TRANSLATIONS = {
       "toast-updated": "Regel bijgewerkt",
       "toast-created": "Regel is opgesteld",
       "toast-save-failed": "Niet mogelijk om regel op te slaan",
+      "comparator-select": "Selecteer",
+      "logic-label": "Wedstrijd",
+      "logic-and": "ALLE volgende (EN)",
+      "logic-or": "ELK van de volgende (OF)",
+      "add-condition": "Voeg een voorwaarde toe",
+      "remove-condition": "Verwijder de voorwaarde",
+      "conditions-incomplete":
+        "De conditie {{index}} is onvolledig – vul de eigenschappen, de vergelijkingsfunctie en de waarde in.",
     },
     "provider-picker": {
       "select-provider": "Selecteer leverancier",
@@ -1654,6 +1666,9 @@ const TRANSLATIONS = {
       "select-router-error": "Kies een router",
       "invalid-model": "Ongeldige modelselectie",
     },
+    "empty-description":
+      "Op dit moment zijn er nog geen router-modellen geconfigureerd. Maak er een aan om te beginnen.",
+    "new-router-button": "Nieuwe router",
   },
 };
 
