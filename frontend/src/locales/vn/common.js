@@ -848,52 +848,6 @@ const TRANSLATIONS = {
         },
       },
     },
-    mcp: {
-      title: "Máy chủ MCP",
-      "loading-from-config": "Tải các máy chủ MCP từ tệp cấu hình",
-      "learn-more": "Tìm hiểu thêm về máy chủ MCP.",
-      "no-servers-found": "Không tìm thấy máy chủ MCP.",
-      "tool-warning":
-        "Để đạt hiệu suất tốt nhất, hãy cân nhắc việc tắt các công cụ không cần thiết để tiết kiệm tài nguyên.",
-      "stop-server": "Tắt máy chủ MCP",
-      "start-server": "Khởi động máy chủ MCP",
-      "delete-server": "Xóa máy chủ MCP",
-      "tool-count-warning":
-        "Máy chủ MCP này có các công cụ <b> được kích hoạt, {{count}} và chúng sẽ tiêu thụ ngữ cảnh trong mọi cuộc trò chuyện.</b> Hãy cân nhắc việc tắt các công cụ không cần thiết để tiết kiệm ngữ cảnh.",
-      "startup-command": "Lệnh khởi động",
-      command: "Lệnh",
-      arguments: "Luận điểm",
-      "not-running-warning":
-        "Máy chủ MCP này không hoạt động – có thể nó đã bị tắt hoặc đang gặp lỗi khi khởi động.",
-      "tool-call-arguments": "Tham số khi gọi hàm/thao tác",
-      "tools-enabled": "các công cụ đã được kích hoạt",
-    },
-    settings: {
-      title: "Cài đặt kỹ năng của đại lý",
-      "max-tool-calls": {
-        title: "Số lượng lệnh gọi công cụ tối đa cho mỗi phản hồi",
-        description:
-          "Số lượng công cụ tối đa mà một người dùng có thể liên kết để tạo ra một phản hồi duy nhất. Điều này ngăn chặn việc gọi công cụ quá mức và tạo ra các vòng lặp vô hạn.",
-      },
-      "intelligent-skill-selection": {
-        title: "Lựa chọn kỹ năng thông minh",
-        "beta-badge": "Phiên bản thử nghiệm",
-        description:
-          "Cho phép sử dụng không giới hạn các công cụ và giảm mức sử dụng token lên đến 80% cho mỗi truy vấn – AnythingLLM tự động chọn các kỹ năng phù hợp nhất cho mỗi yêu cầu.",
-        "max-tools": {
-          title: "Công cụ Max",
-          description:
-            "Số lượng công cụ tối đa có thể chọn cho mỗi truy vấn. Chúng tôi khuyến nghị đặt giá trị này thành các giá trị lớn hơn đối với các mô hình có ngữ cảnh lớn hơn.",
-        },
-      },
-      sql: {
-        title: "Kết nối SQL",
-        description:
-          "Cho phép đại lý của bạn sử dụng SQL để trả lời các câu hỏi của bạn bằng cách kết nối với nhiều nhà cung cấp cơ sở dữ liệu SQL khác nhau.",
-      },
-      default_skill:
-        "Theo mặc định, kỹ năng này được kích hoạt, nhưng bạn có thể tắt nó nếu không muốn nó được sử dụng bởi người đại diện.",
-    },
   },
   recorded: {
     title: "Hội thoại không gian làm việc",

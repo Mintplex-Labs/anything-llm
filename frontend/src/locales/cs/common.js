@@ -864,52 +864,6 @@ const TRANSLATIONS = {
         },
       },
     },
-    mcp: {
-      title: "Servery společnosti MCP",
-      "loading-from-config": "Načítání serverů MCP z konfiguračního souboru",
-      "learn-more": "Zjistěte více o serverech MCP.",
-      "no-servers-found": "Nebyl nalezen žádný server pro správu MCP.",
-      "tool-warning":
-        "Pro optimální výkon zvažte vypnutí nepoužívaných nástrojů, abyste ušetřili zdroje.",
-      "stop-server": "Zastavte server MCP",
-      "start-server": "Spustit server MCP",
-      "delete-server": "Odstranit server MCP",
-      "tool-count-warning":
-        "Tento server pro správu chatů má povolené nástroje <b>{{count}}, které spotřebovávají kontext v každém chatu. </b> Zvažte vypnutí nepotřebných nástrojů, abyste ušetřili kontext.",
-      "startup-command": "Příkaz pro spuštění",
-      command: "Příkaz",
-      arguments: "Argumenty",
-      "not-running-warning":
-        "Tento server pro správu MCP není aktivní – buď byl vypnut, nebo se při spuštění vyskytuje chyba.",
-      "tool-call-arguments": "Argumenty pro volání nástroje",
-      "tools-enabled": "nástroje jsou aktivovány",
-    },
-    settings: {
-      title: "Nastavení dovedností agenta",
-      "max-tool-calls": {
-        title: "Maximální počet volání nástrojů na jednu odpověď",
-        description:
-          "Maximální počet nástrojů, které může agent spouštět v řetězci za účelem generování jedné odpovědi. To zabraňuje nekontrolovanému spouštění nástrojů a vytváření nekonečných smyček.",
-      },
-      "intelligent-skill-selection": {
-        title: "Inteligentní výběr dovedností",
-        "beta-badge": "Beta",
-        description:
-          "Umožněte použití libovolného počtu nástrojů a snížit využití tokenů až o 80 % pro každou dotaz — AnythingLLM automaticky vybírá vhodné dovednosti pro každou žádost.",
-        "max-tools": {
-          title: "Nástroje Max",
-          description:
-            "Maximální počet nástrojů, které lze vybrat pro každou dotaz. Doporučujeme nastavit tuto hodnotu na vyšší, pro modely s větším kontextem.",
-        },
-      },
-      sql: {
-        title: "Připojení k databázi SQL",
-        description:
-          "Umožněte svému agentovi, aby mohl využívat SQL k zodpovězení vašich otázek, a to prostřednictvím připojení k různým poskytovatelům databází.",
-      },
-      default_skill:
-        "Výchozí nastavení je, že tato schopnost je aktivní, ale můžete ji vypnout, pokud nechcete, aby ji mohl využít zástupce.",
-    },
   },
   recorded: {
     title: "Chaty pracovních prostorů",

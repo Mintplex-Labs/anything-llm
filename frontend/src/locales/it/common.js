@@ -869,53 +869,6 @@ const TRANSLATIONS = {
         },
       },
     },
-    mcp: {
-      title: "Server MCP",
-      "loading-from-config":
-        "Caricamento dei server MCP da file di configurazione",
-      "learn-more": "Scopri di più sui server MCP.",
-      "no-servers-found": "Nessun server MCP trovato.",
-      "tool-warning":
-        "Per ottenere le migliori prestazioni, si consiglia di disattivare gli strumenti non necessari per preservare il contesto.",
-      "stop-server": "Arrestare il server MCP",
-      "start-server": "Avvia il server MCP",
-      "delete-server": "Elimina il server MCP",
-      "tool-count-warning":
-        "Questo server MCP ha <b> alcune funzionalità abilitate</b> che consumano contesto in ogni chat.<br /> Considera di disabilitare le funzionalità indesiderate per preservare il contesto.",
-      "startup-command": "Comando di avvio",
-      command: "Ordine",
-      arguments: "Argomentazioni",
-      "not-running-warning":
-        "Questo server MCP non è attivo; potrebbe essere stato interrotto o potrebbe essere in fase di avvio con errori.",
-      "tool-call-arguments": "Argomenti delle chiamate di funzioni",
-      "tools-enabled": "strumenti abilitati",
-    },
-    settings: {
-      title: "Impostazioni delle competenze dell'agente",
-      "max-tool-calls": {
-        title: "Numero massimo di chiamate a funzioni Max Tool per risposta",
-        description:
-          "Il numero massimo di strumenti che un agente può concatenare per generare una singola risposta. Questo previene chiamate eccessive agli strumenti e cicli infiniti.",
-      },
-      "intelligent-skill-selection": {
-        title: "Selezione intelligente delle competenze",
-        "beta-badge": "Versione beta",
-        description:
-          "Abilita l'uso illimitato degli strumenti e riduci l'utilizzo dei token fino all'80% per ogni query — AnythingLLM seleziona automaticamente le competenze più appropriate per ogni richiesta.",
-        "max-tools": {
-          title: "Max Tools",
-          description:
-            "Il numero massimo di strumenti da selezionare per ogni query. Si raccomanda di impostare questo valore su un valore più elevato per i modelli con un contesto più ampio.",
-        },
-      },
-      sql: {
-        title: "Connettore SQL",
-        description:
-          "Permetti al tuo agente di utilizzare SQL per rispondere alle tue domande, collegandosi a diversi fornitori di database SQL.",
-      },
-      default_skill:
-        "Per impostazione predefinita, questa funzionalità è attiva, ma è possibile disabilitarla se non si desidera che sia disponibile per l'agente.",
-    },
   },
   recorded: {
     title: "Chat dell'area di lavoro",

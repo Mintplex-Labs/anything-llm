@@ -873,53 +873,6 @@ const TRANSLATIONS = {
         },
       },
     },
-    mcp: {
-      title: "Serveurs MCP",
-      "loading-from-config":
-        "Chargement des serveurs MCP à partir du fichier de configuration",
-      "learn-more": "En savoir plus sur les serveurs MCP.",
-      "no-servers-found": "Aucun serveur MCP n'a été trouvé.",
-      "tool-warning":
-        "Pour obtenir les meilleures performances, envisagez de désactiver les outils inutiles afin de préserver le contexte.",
-      "stop-server": "Arrêter le serveur MCP",
-      "start-server": "Démarrer le serveur MCP",
-      "delete-server": "Supprimer le serveur MCP",
-      "tool-count-warning":
-        "Ce serveur MCP a <b> des outils {{count}} activés</b> qui consommeront du contexte dans chaque conversation.<br /> Envisagez de désactiver les outils inutiles pour préserver le contexte.",
-      "startup-command": "Commande de démarrage",
-      command: "Ordre",
-      arguments: "Arguments",
-      "not-running-warning":
-        "Ce serveur MCP n'est pas en cours de fonctionnement ; il peut être arrêté ou rencontrer une erreur lors du démarrage.",
-      "tool-call-arguments": "Arguments des appels de fonctions/outils",
-      "tools-enabled": "outils activés",
-    },
-    settings: {
-      title: "Paramètres des compétences des agents",
-      "max-tool-calls": {
-        title: "Nombre maximal de requêtes Max Tool par réponse",
-        description:
-          "Le nombre maximal d'outils qu'un agent peut utiliser en chaîne pour générer une seule réponse. Cela empêche les appels excessifs aux outils et les boucles infinies.",
-      },
-      "intelligent-skill-selection": {
-        title: "Sélection de compétences basée sur l'intelligence",
-        "beta-badge": "Bêta",
-        description:
-          "Permettez l'utilisation illimitée d'outils et réduisez la consommation de jetons jusqu'à 80 % par requête – AnythingLLM sélectionne automatiquement les compétences appropriées pour chaque requête.",
-        "max-tools": {
-          title: "Max Tools",
-          description:
-            "Le nombre maximal d'outils à sélectionner pour chaque requête. Nous recommandons de définir cette valeur sur une valeur plus élevée pour les modèles de contexte plus importants.",
-        },
-      },
-      sql: {
-        title: "Connecteur SQL",
-        description:
-          "Permettez à votre agent d'utiliser SQL pour répondre à vos questions en lui fournissant un accès à divers fournisseurs de bases de données SQL.",
-      },
-      default_skill:
-        "Par défaut, cette fonctionnalité est activée, mais vous pouvez la désactiver si vous ne souhaitez pas qu'elle soit disponible pour l'agent.",
-    },
   },
   recorded: {
     title: "Chats de l'espace de travail",

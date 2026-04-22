@@ -793,50 +793,6 @@ const TRANSLATIONS = {
         },
       },
     },
-    mcp: {
-      title: "MCP 伺服器",
-      "loading-from-config": "從設定檔中載入 MCP 伺服器",
-      "learn-more": "了解更多關於 MCP 伺服器的資訊。",
-      "no-servers-found": "未找到任何 MCP 伺服器",
-      "tool-warning": "為了獲得最佳效能，建議關閉不必要的工具，以節省資源。",
-      "stop-server": "停止 MCP 伺服器",
-      "start-server": "啟動 MCP 伺服器",
-      "delete-server": "刪除 MCP 伺服器",
-      "tool-count-warning":
-        "這個 MCP 伺服器已啟用 <b> 工具，這些工具會消耗聊天中的語境 </b>。建議停用不需要的工具，以節省語境。",
-      "startup-command": "啟動指令",
-      command: "指令",
-      arguments: "辯論",
-      "not-running-warning":
-        "這個 MCP 伺服器目前處於停止狀態，可能是因為已停止運作，或是啟動時出現錯誤。",
-      "tool-call-arguments": "工具呼叫的參數",
-      "tools-enabled": "已啟用工具",
-    },
-    settings: {
-      title: "代理人技能設定",
-      "max-tool-calls": {
-        title: "每次回應的最大工具呼叫次數",
-        description:
-          "這設定了代理可以串聯使用的最大工具數量，以確保每次回應只會呼叫有限的工具，並避免無限循環。",
-      },
-      "intelligent-skill-selection": {
-        title: "智能技能選擇",
-        "beta-badge": "β 版本",
-        description:
-          "啟用無限多個工具，並將每個查詢的 token 使用量最多降低 80% — AnythingLLM 能夠自動選擇最適合的技能，以處理每一個提示。",
-        "max-tools": {
-          title: "馬克斯工具",
-          description:
-            "可選取的工具的最大數量，適用於每個查詢。我們建議將此值設定為較高的值，以適用於較大的模型。",
-        },
-      },
-      sql: {
-        title: "SQL 連接器",
-        description:
-          "讓您的智慧代理人能夠利用 SQL 查詢來回答您的問題，只需連接到不同的 SQL 資料庫提供者即可。",
-      },
-      default_skill: "這項技能預設為啟用；若不希望智慧代理人使用，也可以停用。",
-    },
   },
   recorded: {
     title: "工作區對話紀錄",

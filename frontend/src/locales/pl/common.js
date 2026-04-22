@@ -871,52 +871,6 @@ const TRANSLATIONS = {
         },
       },
     },
-    mcp: {
-      title: "Serwery MCP",
-      "loading-from-config": "Ładowanie serwerów MCP z pliku konfiguracyjnego",
-      "learn-more": "Dowiedz się więcej o serwerach MCP.",
-      "no-servers-found": "Nie znaleziono serwerów MCP.",
-      "tool-warning":
-        "Aby uzyskać najlepsze wyniki, rozważ wyłączenie niepotrzebnych narzędzi, aby zminimalizować zakłócenia.",
-      "stop-server": "Zatrzymaj serwer MCP",
-      "start-server": "Uruchom serwer MCP",
-      "delete-server": "Usuń serwer MCP",
-      "tool-count-warning":
-        "Ten serwer MCP ma włączone <b> narzędzia, które będą zużywać kontekst w każdej rozmowie.</b> Rozważ wyłączenie niepotrzebnych narzędzi, aby oszczędzać kontekst.",
-      "startup-command": "Polecenie uruchamiające",
-      command: "Rozkaz",
-      arguments: "Argumenty",
-      "not-running-warning":
-        "Ten serwer MCP nie działa – może być zatrzymany lub może występować w nim błąd podczas uruchamiania.",
-      "tool-call-arguments": "Argumenty wywoływania funkcji",
-      "tools-enabled": "narzędzia są aktywne",
-    },
-    settings: {
-      title: "Ustawienia umiejętności agenta",
-      "max-tool-calls": {
-        title: "Maksymalna liczba żądań narzędzi na odpowiedź",
-        description:
-          "Maksymalna liczba narzędzi, które agent może łączyć, aby wygenerować pojedynczą odpowiedź. Zapobiega to niekontrolowanemu wywoływaniu narzędzi i tworzeniu nieskończonych pętli.",
-      },
-      "intelligent-skill-selection": {
-        title: "Inteligentny wybór umiejętności",
-        "beta-badge": "Wersja beta",
-        description:
-          "Umożliwia korzystanie z nieograniczonej liczby narzędzi oraz redukcję zużycia tokenów o do 80% na każde zapytanie – EverythingLLM automatycznie wybiera odpowiednie umiejętności dla każdego zapytania.",
-        "max-tools": {
-          title: "Narzędzia Max",
-          description:
-            "Maksymalna liczba narzędzi, które można wybrać dla każdego zapytania. Zalecamy ustawienie tej wartości na wyższe poziomy dla modeli o większym kontekście.",
-        },
-      },
-      sql: {
-        title: "Połączenie z bazą danych SQL",
-        description:
-          "Umożliw agentowi korzystanie z języka SQL, aby odpowiadał na Twoje pytania, poprzez połączenie z różnymi dostawcami baz danych SQL.",
-      },
-      default_skill:
-        "Domyślnie, ta umiejętność jest włączona, ale można ją wyłączyć, jeśli nie chcemy, aby była dostępna dla agenta.",
-    },
   },
   recorded: {
     title: "Czaty w obszarach roboczych",
