@@ -163,15 +163,17 @@ export default function RuleBuilder({
         </div>
       )}
 
-      <RuleForm
-        key={editingRule?.id ?? "new"}
-        isOpen={isOpen}
-        closeModal={handleModalClose}
-        routerId={routerId}
-        existingRule={editingRule}
-        nextPriority={(rules?.length || 0) + 1}
-        onSaved={onRulesChanged}
-      />
+      {isOpen && (
+        <RuleForm
+          key={editingRule?.id ?? "new"}
+          isOpen={isOpen}
+          closeModal={handleModalClose}
+          routerId={routerId}
+          existingRule={editingRule}
+          nextPriority={(rules?.length || 0) + 1}
+          onSaved={onRulesChanged}
+        />
+      )}
     </div>
   );
 }
