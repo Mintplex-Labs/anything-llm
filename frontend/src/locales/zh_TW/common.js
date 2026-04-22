@@ -384,6 +384,287 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: "Gmail 連接器",
+        description:
+          "讓您的代理能夠與 Gmail 互動：搜尋郵件、閱讀郵件討論、撰寫草稿、發送郵件，以及管理您的收件匣。請參閱相關文件。",
+        multiUserWarning:
+          "由於安全考量，Gmail 整合功能在多使用者模式下無法使用。請停用多使用者模式才能使用此功能。",
+        configuration: "Gmail 設定",
+        deploymentId: "部署 ID",
+        deploymentIdHelp: "您的 Google Apps Script 網頁應用程式的部署 ID",
+        apiKey: "API 關鍵字",
+        apiKeyHelp: "您在 Google Apps Script 部署中設定的 API 金鑰",
+        configurationRequired: "請設定部署 ID 和 API 關鍵，以啟用 Gmail 功能。",
+        configured: "設定",
+        searchSkills: "搜尋技巧...",
+        noSkillsFound: "沒有符合您搜尋條件的結果。",
+        categories: {
+          search: {
+            title: "搜尋和閱讀電子郵件",
+            description: "搜尋並閱讀您 Gmail 收件匣中的電子郵件。",
+          },
+          drafts: {
+            title: "草稿郵件",
+            description: "創建、編輯和管理電子郵件草稿",
+          },
+          send: {
+            title: "發送和回覆電子郵件",
+            description: "立即發送電子郵件並回覆討論串",
+          },
+          threads: {
+            title: "管理電子郵件串",
+            description: "管理電子郵件對話 - 標示已讀/未讀、歸檔、刪除",
+          },
+          account: {
+            title: "整合統計",
+            description: "查看郵箱統計資料和帳戶資訊",
+          },
+        },
+        skills: {
+          search: {
+            title: "搜尋郵件",
+            description: "使用 Gmail 的查詢語法搜尋電子郵件",
+          },
+          readThread: {
+            title: "閱讀主題",
+            description: "閱讀由 ID 創建的完整電子郵件對話",
+          },
+          createDraft: {
+            title: "建立草稿",
+            description: "建立新的電子郵件草稿",
+          },
+          createDraftReply: {
+            title: "撰寫草稿回覆",
+            description: "撰寫一份針對已有的討論串的回覆草稿。",
+          },
+          updateDraft: {
+            title: "更新草稿",
+            description: "更新現有電子郵件草稿",
+          },
+          getDraft: {
+            title: "取得草稿",
+            description: "根據 ID 取得特定草稿",
+          },
+          listDrafts: {
+            title: "草稿清單",
+            description: "列出所有草稿電子郵件",
+          },
+          deleteDraft: {
+            title: "刪除草稿",
+            description: "刪除草稿電子郵件",
+          },
+          sendDraft: {
+            title: "發送草稿",
+            description: "發送現有電子郵件草稿",
+          },
+          sendEmail: {
+            title: "發送電子郵件",
+            description: "立即發送電子郵件",
+          },
+          replyToThread: {
+            title: "回覆主題",
+            description: "立即回覆電子郵件討論串",
+          },
+          markRead: {
+            title: "馬克·瑞德",
+            description: "標示某個主題已閱讀",
+          },
+          markUnread: {
+            title: "標示為未讀",
+            description: "將某個主題標示為未讀",
+          },
+          moveToTrash: {
+            title: "移至垃圾桶",
+            description: "將主題移動到垃圾桶",
+          },
+          moveToArchive: {
+            title: "檔案",
+            description: "將主題歸檔",
+          },
+          moveToInbox: {
+            title: "移動到收件匣",
+            description: "將主題移動到收件匣",
+          },
+          getMailboxStats: {
+            title: "郵箱統計",
+            description: "查看未讀郵件數量及郵箱統計數據",
+          },
+          getInbox: {
+            title: "開啟收件匣",
+            description: "簡潔的方式，讓您能輕鬆取得 Gmail 郵箱中的郵件。",
+          },
+        },
+      },
+      outlook: {
+        title: "Outlook 連接器",
+        description:
+          "讓您的代理能夠與 Microsoft Outlook 互動 - 搜尋郵件、閱讀討論串、撰寫草稿、發送郵件，以及透過 Microsoft Graph API 管理您的收件匣。 詳情請參考<a>相關文件</a>。",
+        multiUserWarning:
+          "由於安全原因，Outlook 整合功能在多使用者模式下無法使用。請先停用多使用者模式，才能使用此功能。",
+        configuration: "視圖配置",
+        authType: "帳戶類型",
+        authTypeHelp:
+          "選擇哪些類型的 Microsoft 帳戶可以進行驗證。「所有帳戶」支援個人帳戶和工作/學校帳戶。「僅限個人帳戶」僅支援個人 Microsoft 帳戶。「僅限組織帳戶」僅支援特定 Azure AD 租戶中的工作/學校帳戶。",
+        authTypeCommon: "所有帳戶（個人帳戶及工作/學校帳戶）",
+        authTypeConsumers: "僅限個人 Microsoft 帳戶",
+        authTypeOrganization: "僅限於組織帳戶（需要租戶 ID）",
+        clientId: "申請者（客戶）編號",
+        clientIdHelp: "您的 Azure AD 應用程式註冊產生的應用程式 ID",
+        tenantId: "租戶編號",
+        tenantIdHelp:
+          "您的 Azure AD 應用程式註冊的「租戶 ID」。僅用於組織內單向驗證。",
+        clientSecret: "客戶密鑰",
+        clientSecretHelp: "您的 Azure AD 應用程式註冊時所使用的客戶端秘密值",
+        configurationRequired:
+          "請設定 Client ID 和 Client Secret，以便啟用 Outlook 相關功能。",
+        authRequired:
+          "首先儲存您的帳戶資訊，然後再透過 Microsoft 進行驗證，以完成設定。",
+        authenticateWithMicrosoft: "使用 Microsoft 驗證",
+        authenticated: "已成功與 Microsoft Outlook 驗證連線。",
+        revokeAccess: "撤銷權限",
+        configured: "設定",
+        searchSkills: "搜尋技巧...",
+        noSkillsFound: "沒有符合您搜尋條件的結果。",
+        categories: {
+          search: {
+            title: "搜尋和閱讀電子郵件",
+            description: "搜尋並閱讀您 Outlook 收件匣中的電子郵件",
+          },
+          drafts: {
+            title: "草稿郵件",
+            description: "創建、編輯和管理電子郵件草稿",
+          },
+          send: {
+            title: "發送電子郵件",
+            description: "即時發送新的電子郵件或回覆訊息",
+          },
+          account: {
+            title: "整合統計數據",
+            description: "查看郵箱統計資料和帳戶資訊",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "開啟收件匣",
+            description: "從您的 Outlook 郵箱取得最近的郵件",
+          },
+          search: {
+            title: "搜尋電子郵件",
+            description: "使用 Microsoft 搜尋語法來搜尋電子郵件",
+          },
+          readThread: {
+            title: "閱讀對話",
+            description: "閱讀完整的電子郵件對話紀錄",
+          },
+          createDraft: {
+            title: "建立草稿",
+            description: "建立新的電子郵件草稿，或回覆現有訊息的草稿。",
+          },
+          updateDraft: {
+            title: "更新草稿",
+            description: "更新現有電子郵件草稿",
+          },
+          listDrafts: {
+            title: "草稿清單",
+            description: "列出所有草稿電子郵件",
+          },
+          deleteDraft: {
+            title: "刪除草稿",
+            description: "刪除草稿郵件",
+          },
+          sendDraft: {
+            title: "發送草稿",
+            description: "發送現有電子郵件草稿",
+          },
+          sendEmail: {
+            title: "發送電子郵件",
+            description: "發送新的電子郵件或立即回覆現有訊息",
+          },
+          getMailboxStats: {
+            title: "郵箱統計",
+            description: "取得資料夾數量和郵箱統計數據",
+          },
+        },
+      },
+      googleCalendar: {
+        title: "Google 日曆連線",
+        description:
+          "讓您的代理能夠與 Google 日曆互動：查看日曆、取得活動資訊、創建和更新活動，以及管理確認出席。 詳情請參考<a>文件</a>。",
+        multiUserWarning:
+          "由於安全原因，Google 日曆的整合功能在多使用者模式下無法使用。請先停用多使用者模式，然後再使用此功能。",
+        configuration: "Google 日曆設定",
+        deploymentId: "部署 ID",
+        deploymentIdHelp: "您的 Google Apps Script 網頁應用程式的部署 ID",
+        apiKey: "API 關鍵字",
+        apiKeyHelp: "您在 Google Apps Script 部署中設定的 API 金鑰。",
+        configurationRequired:
+          "請設定部署 ID 和 API 鑰，以啟用 Google 日曆功能。",
+        configured: "已設定",
+        searchSkills: "搜尋技巧...",
+        noSkillsFound: "沒有符合您搜尋條件的結果。",
+        categories: {
+          calendars: {
+            title: "日曆",
+            description: "檢視和管理您的 Google 日曆",
+          },
+          readEvents: {
+            title: "閱讀活動",
+            description: "查看和搜尋日曆活動",
+          },
+          writeEvents: {
+            title: "建立與更新活動",
+            description: "創建新的活動，並修改現有的活動。",
+          },
+          rsvp: {
+            title: "請假確認管理",
+            description: "管理您參加活動的回應狀態",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "日曆清單",
+            description: "列出您擁有的或訂閱的全部日曆",
+          },
+          getCalendar: {
+            title: "獲取日曆細節",
+            description: "獲取有關特定日曆的詳細資訊",
+          },
+          getEvent: {
+            title: "取得活動",
+            description: "獲取有關特定活動的詳細資訊",
+          },
+          getEventsForDay: {
+            title: "獲取特定日期的活動",
+            description: "列出特定日期的所有活動",
+          },
+          getEvents: {
+            title: "取得活動（日期範圍）",
+            description: "取得指定日期範圍內的活動",
+          },
+          getUpcomingEvents: {
+            title: "查看即將到來的活動",
+            description: "使用簡單的關鍵字，即可查詢今日、本週或本月的活動",
+          },
+          quickAdd: {
+            title: "快速新增活動",
+            description:
+              "從自然語言（例如：「明天下午 3 點舉行會議」）創建活動。",
+          },
+          createEvent: {
+            title: "建立活動",
+            description: "創建一個新的活動，並擁有對所有屬性的完全控制。",
+          },
+          updateEvent: {
+            title: "活動更新",
+            description: "更新現有的日曆事件",
+          },
+          setMyStatus: {
+            title: "設定確認參加狀態",
+            description: "接受、拒絕或表示暫時接受活動",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP 伺服器",
@@ -428,6 +709,89 @@ const TRANSLATIONS = {
           "讓您的智慧代理人能夠利用 SQL 查詢來回答您的問題，只需連接到不同的 SQL 資料庫提供者即可。",
       },
       default_skill: "這項技能預設為啟用；若不希望智慧代理人使用，也可以停用。",
+      filesystem: {
+        title: "檔案系統存取",
+        description:
+          "允許您的代理程式在指定目錄中讀取、寫入、搜尋和管理檔案。支援檔案編輯、目錄導航和內容搜尋功能。",
+        learnMore: "了解更多關於如何運用這項技能的資訊",
+        configuration: "設定",
+        readActions: "閱讀行動",
+        writeActions: "撰寫動作",
+        warning:
+          "訪問檔案系統可能存在風險，因為它可能會修改或刪除檔案。在啟用之前，請務必查閱相關<link>文件</link>。",
+        skills: {
+          "read-text-file": {
+            title: "開啟檔案",
+            description: "閱讀檔案內容（包括文字、程式碼、PDF 文件、圖片等）",
+          },
+          "read-multiple-files": {
+            title: "閱讀多個檔案",
+            description: "同時讀取多個檔案",
+          },
+          "list-directory": {
+            title: "名錄索引",
+            description: "列出指定資料夾中的檔案和目錄",
+          },
+          "search-files": {
+            title: "搜尋檔案",
+            description: "按檔案名稱或內容來搜尋",
+          },
+          "get-file-info": {
+            title: "取得檔案資訊",
+            description: "獲取關於檔案的詳細元數據",
+          },
+          "edit-file": {
+            title: "編輯檔案",
+            description: "能夠對文字檔案進行行別編輯。",
+          },
+          "create-directory": {
+            title: "建立資料夾",
+            description: "建立新的資料夾",
+          },
+          "move-file": {
+            title: "移動/更名檔案",
+            description: "移動或更名檔案和資料夾",
+          },
+          "copy-file": {
+            title: "複製檔案",
+            description: "複製檔案和目錄",
+          },
+          "write-text-file": {
+            title: "撰寫文字檔案",
+            description: "建立新的文字檔，或覆蓋現有的文字檔。",
+          },
+        },
+      },
+      createFiles: {
+        title: "文件建立",
+        description:
+          "允許您的代理創建二元文件格式，例如PowerPoint簡報、Excel電子表格、Word文件和PDF文件。 文件可以直接從聊天窗口下載。",
+        configuration: "可用的文件類型",
+        skills: {
+          "create-text-file": {
+            title: "文字檔",
+            description:
+              "能夠創建包含任何內容和檔案擴展名（例如：.txt、.md、.json、.csv 等）的文字檔案。",
+          },
+          "create-pptx": {
+            title: "PowerPoint 簡報",
+            description: "創建新的 PowerPoint 簡報，包含幻燈片、標題和要點",
+          },
+          "create-pdf": {
+            title: "PDF 文件",
+            description:
+              "能夠從 Markdown 或純文字檔案中，使用基本的格式設定，創建 PDF 文件。",
+          },
+          "create-xlsx": {
+            title: "Excel 試算表",
+            description: "建立包含表格資料、工作表和樣式的 Excel 文件",
+          },
+          "create-docx": {
+            title: "Word 格式的文件",
+            description: "建立包含基本樣式和格式的 Word 文件",
+          },
+        },
+      },
     },
   },
   recorded: {
@@ -449,7 +813,33 @@ const TRANSLATIONS = {
       "API 金鑰可讓持有人透過程式方式存取並管理這個 AnythingLLM 系統。",
     link: "閱讀 API 文件",
     generate: "產生新的 API 金鑰",
+    empty: "找不到 API 金鑰",
+    actions: "操作",
+    messages: {
+      error: "錯誤：{{error}}",
+    },
+    modal: {
+      title: "建立新的 API 金鑰",
+      cancel: "取消",
+      close: "關閉",
+      create: "建立 API 金鑰",
+      helper:
+        "建立後，API 金鑰可用於以程式方式存取並設定這個 AnythingLLM 執行個體。",
+      name: {
+        label: "名稱",
+        placeholder: "正式環境整合",
+        helper: "選填。請使用易於辨識的名稱，方便你之後識別這把金鑰。",
+      },
+    },
+    row: {
+      copy: "複製 API 金鑰",
+      copied: "已複製",
+      unnamed: "--",
+      deleteConfirm:
+        "確定要停用此 API 金鑰嗎？\n停用後將無法再使用。\n\n此操作無法復原。",
+    },
     table: {
+      name: "名稱",
       key: "API 金鑰",
       by: "建立者",
       created: "建立時間",
@@ -1058,8 +1448,6 @@ const TRANSLATIONS = {
         description:
           "請將您從 @BotFather 處獲得的 API 令牌複製並貼上，然後選擇一個預設的工作空間，讓您的機器人與其對話。",
         "bot-token": "機器人代幣",
-        "default-workspace": "預設工作空間",
-        "no-workspace": "目前沒有可用的工作空間。將會創建一個新的工作空間。",
         connecting: "正在連接...",
         "connect-bot": "連線機器人",
       },
@@ -1095,19 +1483,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "未能取消使用者權限。",
     },
     users: {
-      "pending-title": "待審核",
       "pending-description":
         "等待驗證的使用者。請將這裡顯示的配對碼與他們在 Telegram 聊天中顯示的配對碼對齊。",
-      "approved-title": "已授權的使用者",
-      "approved-description": "已獲得批准，可以與您的機器人進行對話的使用者。",
-      user: "使用者",
-      "pairing-code": "編碼組合",
-      "no-pending": "目前沒有待處理的請求",
-      "no-approved": "目前沒有已授權的使用者",
       unknown: "未知的",
-      approve: "批准",
-      deny: "拒絕",
-      revoke: "撤銷",
     },
   },
 };

@@ -409,6 +409,294 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: "GMail 연결기",
+        description:
+          "제 에이전트가 Gmail과 상호 작용할 수 있도록 설정하세요 - 이메일 검색, 스레드 읽기, 초안 작성, 이메일 전송, 그리고 받은 메일 관리 기능을 사용하세요. <a>문서를 참조하세요</a>.",
+        multiUserWarning:
+          "Gmail 통합 기능은 보안상의 이유로 다중 사용자 모드에서는 사용할 수 없습니다. 이 기능을 사용하려면 다중 사용자 모드를 비활성화해 주세요.",
+        configuration: "Gmail 설정",
+        deploymentId: "배포 ID",
+        deploymentIdHelp: "당신의 Google Apps Script 웹 앱의 배포 ID",
+        apiKey: "API 키",
+        apiKeyHelp: "당신이 Google Apps Script 배포 시 설정한 API 키",
+        configurationRequired:
+          "Gmail 기능을 사용하려면 배포 ID와 API 키를 설정해 주세요.",
+        configured: "설정됨",
+        searchSkills: "검색 기술...",
+        noSkillsFound: "검색 결과와 일치하는 기술이 없습니다.",
+        categories: {
+          search: {
+            title: "이메일 검색 및 읽기",
+            description: "Gmail 계정에서 이메일을 검색하고 읽으세요.",
+          },
+          drafts: {
+            title: "샘플 이메일",
+            description: "이메일 초안을 작성, 편집, 관리",
+          },
+          send: {
+            title: "이메일 보내기 및 답변",
+            description: "이메일을 보내고, 토론 스레드에 즉시 응답",
+          },
+          threads: {
+            title: "이메일 스레드 관리",
+            description:
+              "이메일 스레드 관리 - 읽음/미읽음 표시, 아카이브, 삭제",
+          },
+          account: {
+            title: "통합 통계",
+            description: "메일함 통계 및 계정 정보 확인",
+          },
+        },
+        skills: {
+          search: {
+            title: "이메일 검색",
+            description: "Gmail 쿼리 구문을 사용하여 이메일 검색",
+          },
+          readThread: {
+            title: "게시글 전체 읽기",
+            description: "ID를 기준으로 전체 이메일 스레드를 읽기",
+          },
+          createDraft: {
+            title: "초안 작성",
+            description: "새로운 이메일 초안 작성",
+          },
+          createDraftReply: {
+            title: "초안 답변 작성",
+            description: "기존 스레드에 대한 답변 초안 작성",
+          },
+          updateDraft: {
+            title: "초안 업데이트",
+            description: "기존 이메일 초안을 업데이트합니다.",
+          },
+          getDraft: {
+            title: "초안 보기",
+            description: "ID를 사용하여 특정 초안을 검색/불러오기",
+          },
+          listDrafts: {
+            title: "초안 목록",
+            description: "모든 초안 이메일 목록을 표시",
+          },
+          deleteDraft: {
+            title: "초안 삭제",
+            description: "초안 이메일을 삭제",
+          },
+          sendDraft: {
+            title: "초안 보내기",
+            description: "기존 이메일 초안을 보내기",
+          },
+          sendEmail: {
+            title: "이메일 보내기",
+            description: "즉시 이메일을 보내세요.",
+          },
+          replyToThread: {
+            title: "게시글에 답변",
+            description: "이메일 스레드에 즉시 답변",
+          },
+          markRead: {
+            title: "마크 리드",
+            description: '특정 게시글을 "읽음"으로 표시',
+          },
+          markUnread: {
+            title: "미리 읽기",
+            description: '특정 스레드를 "읽지 않은 상태"로 표시',
+          },
+          moveToTrash: {
+            title: "삭제",
+            description: "스레드를 쓰레기함으로 이동",
+          },
+          moveToArchive: {
+            title: "보관",
+            description: "게시글을 보관",
+          },
+          moveToInbox: {
+            title: "받은 편지함으로 이동",
+            description: "스레드를 받은 편지함으로 이동",
+          },
+          getMailboxStats: {
+            title: "메일함 통계",
+            description: "읽지 않은 이메일 수 및 메일함 통계 확인",
+          },
+          getInbox: {
+            title: "메일함 보기",
+            description: "Gmail에서 받은 이메일을 효율적으로 관리하는 방법",
+          },
+        },
+      },
+      outlook: {
+        title: "아웃룩 연결",
+        description:
+          "Microsoft Outlook와 상호 작용할 수 있도록 에이전트에게 Microsoft Graph API를 사용하도록 설정합니다. 이메일 검색, 스레드 읽기, 초안 작성, 이메일 전송, 그리고 Microsoft Graph API를 통해 이메일함을 관리할 수 있습니다. 자세한 내용은 <a>문서를 참조하세요</a>.",
+        multiUserWarning:
+          "Outlook 통합 기능은 보안상의 이유로 다중 사용자 모드에서는 사용할 수 없습니다. 이 기능을 사용하려면 다중 사용자 모드를 비활성화해 주십시오.",
+        configuration: "아웃룩 설정",
+        authType: "계정 유형",
+        authTypeHelp:
+          "인증할 수 있는 Microsoft 계정 유형을 선택합니다. '모든 계정'은 개인 및 업무/학교 계정을 모두 지원합니다. '개인 계정만'은 개인 Microsoft 계정에만 적용됩니다. '특정 Azure AD 테넌트의 계정만'은 특정 Azure AD 테넌트의 업무/학교 계정에만 적용됩니다.",
+        authTypeCommon: "모든 계정 (개인 계정 및 직장/학교 계정)",
+        authTypeConsumers: "개인 Microsoft 계정만 해당",
+        authTypeOrganization: "단순히 조직 계정만 (세입자 ID 필요)",
+        clientId: "애플리케이션 (고객) ID",
+        clientIdHelp:
+          "당신의 Azure AD 애플리케이션 등록 시 얻은 애플리케이션(클라이언트) ID",
+        tenantId: "임대인 ID",
+        tenantIdHelp:
+          "Azure AD 애플리케이션 등록 시 얻은 (임차인) ID. 조직 내 사용자만 인증하는 경우에만 필요합니다.",
+        clientSecret: "고객 비밀",
+        clientSecretHelp: "Azure AD 애플리케이션 등록 시 얻은 클라이언트 비밀",
+        configurationRequired:
+          "아웃룩 기능을 사용하려면 클라이언트 ID와 클라이언트 비밀을 설정해 주세요.",
+        authRequired:
+          "먼저 사용자 정보를 저장한 다음, Microsoft를 통해 계정을 인증하여 설정 과정을 완료하십시오.",
+        authenticateWithMicrosoft: "마이크로소프트와 인증",
+        authenticated: "Microsoft Outlook와 성공적으로 인증되었습니다.",
+        revokeAccess: "접근 권한 취소",
+        configured: "설정됨",
+        searchSkills: "검색 기술...",
+        noSkillsFound: "검색하신 조건과 일치하는 기술이 없습니다.",
+        categories: {
+          search: {
+            title: "이메일 검색 및 읽기",
+            description: "Outlook 계정의 이메일을 검색하고 읽으세요.",
+          },
+          drafts: {
+            title: "샘플 이메일",
+            description: "이메일 초안을 작성, 편집 및 관리",
+          },
+          send: {
+            title: "이메일 보내기",
+            description: "새로운 이메일을 보내거나, 즉시 메시지에 응답",
+          },
+          account: {
+            title: "통합 통계",
+            description: "메일함 통계 및 계정 정보 확인",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "메일함 보기",
+            description: "최근에 받은 이메일을 Outlook 계정에서 확인",
+          },
+          search: {
+            title: "이메일 검색",
+            description: "Microsoft 검색 구문을 사용하여 이메일 검색",
+          },
+          readThread: {
+            title: "대화 내용 읽기",
+            description: "전체 이메일 대화 내용을 읽기",
+          },
+          createDraft: {
+            title: "초안 작성",
+            description:
+              "새로운 이메일 초안을 작성하거나 기존 메시지에 대한 답변 초안을 작성합니다.",
+          },
+          updateDraft: {
+            title: "초안 업데이트",
+            description: "기존 이메일 초안을 업데이트합니다.",
+          },
+          listDrafts: {
+            title: "초안 목록",
+            description: "모든 초안 이메일 목록을 표시",
+          },
+          deleteDraft: {
+            title: "초안 삭제",
+            description: "초안 이메일을 삭제",
+          },
+          sendDraft: {
+            title: "초안 보내기",
+            description: "기존 이메일 초안을 보내기",
+          },
+          sendEmail: {
+            title: "이메일 보내기",
+            description: "새로운 이메일을 보내거나 기존 메시지에 즉시 응답",
+          },
+          getMailboxStats: {
+            title: "메일함 통계",
+            description: "폴더 수와 메일함 통계 정보를 확인합니다.",
+          },
+        },
+      },
+      googleCalendar: {
+        title: "구글 캘린더 연동",
+        description:
+          "에이전트가 Google 캘린더와 상호 작용할 수 있도록 설정하세요 - 캘린더 보기, 이벤트 확인, 이벤트 생성 및 업데이트, RSVP 관리 등을 수행할 수 있습니다. <a>문서를 참조하세요</a>.",
+        multiUserWarning:
+          "Google 캘린더 통합 기능은 보안상의 이유로 다중 사용자 모드에서는 사용할 수 없습니다. 이 기능을 사용하려면 다중 사용자 모드를 비활성화해주세요.",
+        configuration: "구글 캘린더 설정",
+        deploymentId: "배포 ID",
+        deploymentIdHelp: "당신의 구글 앱스 스크립트 웹 앱의 배포 ID",
+        apiKey: "API 키",
+        apiKeyHelp: "Google Apps Script 배포 시 설정한 API 키",
+        configurationRequired:
+          "구글 캘린더 기능을 사용하려면 배포 ID와 API 키를 설정해 주세요.",
+        configured: "설정됨",
+        searchSkills: "검색 기술...",
+        noSkillsFound: "검색하신 조건과 일치하는 기술이 없습니다.",
+        categories: {
+          calendars: {
+            title: "달력",
+            description: "Google 캘린더를 확인하고 관리하세요.",
+          },
+          readEvents: {
+            title: "이벤트 목록 보기",
+            description: "일정 뷰 및 검색",
+          },
+          writeEvents: {
+            title: "이벤트 생성 및 업데이트",
+            description: "새로운 이벤트를 생성하고 기존 이벤트를 수정",
+          },
+          rsvp: {
+            title: "참석 확인 관리",
+            description: "이벤트에 대한 응답 상태를 관리하세요.",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "달력 목록",
+            description:
+              "자신이 소유하거나 구독하고 있는 모든 캘린더 목록을 작성하세요.",
+          },
+          getCalendar: {
+            title: "달력 세부 정보 보기",
+            description: "특정 캘린더에 대한 자세한 정보를 얻으세요.",
+          },
+          getEvent: {
+            title: "이벤트 정보 보기",
+            description: "특정 이벤트에 대한 자세한 정보를 얻으세요.",
+          },
+          getEventsForDay: {
+            title: "오늘의 행사 정보 보기",
+            description: "특정 날짜에 예정된 모든 행사 목록을 확인",
+          },
+          getEvents: {
+            title: "이벤트 검색 (날짜 범위)",
+            description: "사용자 지정 날짜 범위 내의 이벤트 가져오기",
+          },
+          getUpcomingEvents: {
+            title: "다가오는 행사 보기",
+            description:
+              "오늘, 이번 주 또는 이번 달의 이벤트를 간단한 키워드를 사용하여 검색",
+          },
+          quickAdd: {
+            title: "빠르게 이벤트 추가",
+            description:
+              '자연어 (예: "내일 오후 3시에 회의")를 사용하여 이벤트를 생성합니다.',
+          },
+          createEvent: {
+            title: "이벤트 생성",
+            description:
+              "모든 속성에 대한 완전한 제어 기능을 갖춘 새로운 이벤트를 생성합니다.",
+          },
+          updateEvent: {
+            title: "이벤트 업데이트",
+            description: "기존 캘린더 이벤트 업데이트",
+          },
+          setMyStatus: {
+            title: "RSVP 상태 설정",
+            description: "행사 참여 여부를 수락, 거절, 또는 잠정적으로 수락",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP 서버",
@@ -455,6 +743,94 @@ const TRANSLATIONS = {
       },
       default_skill:
         "기본적으로 이 기능은 활성화되어 있지만, 에이전트에게 이 기능을 사용하지 않도록 설정할 수도 있습니다.",
+      filesystem: {
+        title: "파일 시스템 접근",
+        description:
+          "제 에이전트가 지정된 디렉토리 내에서 파일을 읽고, 쓰고, 검색하고, 관리할 수 있도록 합니다. 파일 편집, 디렉토리 탐색, 콘텐츠 검색을 지원합니다.",
+        learnMore: "이 기술을 사용하는 방법에 대해 자세히 알아보세요.",
+        configuration: "구성",
+        readActions: "실행 내용 보기",
+        writeActions: "실행 내용",
+        warning:
+          "파일 시스템 접근은 위험할 수 있습니다. 왜냐하면 파일 내용을 변경하거나 삭제할 수 있기 때문입니다. 사용하기 전에 반드시 <link>문서</link>를 참조하십시오.",
+        skills: {
+          "read-text-file": {
+            title: "파일 읽기",
+            description:
+              "파일(텍스트, 코드, PDF, 이미지 등)의 내용을 읽습니다.",
+          },
+          "read-multiple-files": {
+            title: "여러 파일을 읽기",
+            description: "여러 파일을 한 번에 읽기",
+          },
+          "list-directory": {
+            title: "디렉토리 목록",
+            description: "폴더 내의 파일 및 디렉터리 목록 보기",
+          },
+          "search-files": {
+            title: "파일 검색",
+            description: "이름 또는 내용으로 파일을 검색",
+          },
+          "get-file-info": {
+            title: "파일 정보 확인",
+            description: "파일에 대한 자세한 메타데이터를 얻으세요.",
+          },
+          "edit-file": {
+            title: "파일 편집",
+            description: "텍스트 파일에 줄 단위로 편집",
+          },
+          "create-directory": {
+            title: "디렉토리 생성",
+            description: "새로운 디렉토리를 생성합니다.",
+          },
+          "move-file": {
+            title: "파일 이동/이름 변경",
+            description: "파일 및 폴더를 이동하거나 이름을 변경합니다.",
+          },
+          "copy-file": {
+            title: "파일 복사",
+            description: "파일 및 디렉터리를 복사",
+          },
+          "write-text-file": {
+            title: "텍스트 파일 작성",
+            description:
+              "새로운 텍스트 파일을 생성하거나 기존 텍스트 파일을 덮어쓰기",
+          },
+        },
+      },
+      createFiles: {
+        title: "문서 생성",
+        description:
+          "에이전트가 파워포인트 프레젠테이션, 엑셀 스프레드시트, 워드 문서, PDF 등 이진 파일 형식의 문서를 생성할 수 있도록 지원합니다. 파일은 채팅 창에서 직접 다운로드할 수 있습니다.",
+        configuration: "사용 가능한 문서 유형",
+        skills: {
+          "create-text-file": {
+            title: "텍스트 파일",
+            description:
+              "원하는 내용과 확장자(.txt, .md, .json, .csv 등)를 사용하여 텍스트 파일을 생성합니다.",
+          },
+          "create-pptx": {
+            title: "파워포인트 프레젠테이션",
+            description:
+              "슬라이드, 제목, 마크다운 등을 포함하여 새로운 파워포인트 프레젠테이션을 만드세요.",
+          },
+          "create-pdf": {
+            title: "PDF 문서",
+            description:
+              "기본 스타일을 적용하여 마크다운 또는 일반 텍스트에서 PDF 문서를 생성합니다.",
+          },
+          "create-xlsx": {
+            title: "엑셀 스프레드시트",
+            description:
+              "표와 스타일을 포함한 표 형태의 데이터를 위한 엑셀 문서를 만드세요.",
+          },
+          "create-docx": {
+            title: "워드 문서",
+            description:
+              "기본적인 스타일과 서식을 사용하여 워드 문서를 만드세요.",
+          },
+        },
+      },
     },
   },
   recorded: {
@@ -563,7 +939,34 @@ const TRANSLATIONS = {
       "API 키는 소유자가 프로그래밍 방식으로 이 AnythingLLM 인스턴스에 액세스하고 관리할 수 있도록 합니다.",
     link: "API 문서 읽기",
     generate: "새 API 키 생성",
+    empty: "API 키를 찾을 수 없습니다",
+    actions: "작업",
+    messages: {
+      error: "오류: {{error}}",
+    },
+    modal: {
+      title: "새 API 키 만들기",
+      cancel: "취소",
+      close: "닫기",
+      create: "API 키 만들기",
+      helper:
+        "생성된 API 키는 이 AnythingLLM 인스턴스에 프로그래밍 방식으로 접근하고 구성하는 데 사용할 수 있습니다.",
+      name: {
+        label: "이름",
+        placeholder: "프로덕션 통합",
+        helper:
+          "선택 사항입니다. 나중에 쉽게 식별할 수 있도록 알아보기 쉬운 이름을 사용하세요.",
+      },
+    },
+    row: {
+      copy: "API 키 복사",
+      copied: "복사됨",
+      unnamed: "--",
+      deleteConfirm:
+        "이 API 키를 비활성화하시겠습니까?\n비활성화하면 더 이상 사용할 수 없습니다.\n\n이 작업은 되돌릴 수 없습니다.",
+    },
     table: {
+      name: "이름",
       key: "API 키",
       by: "생성한 사람",
       created: "생성일",
@@ -1114,9 +1517,6 @@ const TRANSLATIONS = {
         description:
           "@BotFather로부터 받은 API 토큰을 복사하여, 봇이 채팅할 기본 워크스페이스를 선택하세요.",
         "bot-token": "봇 토큰",
-        "default-workspace": "기본 워크스페이스",
-        "no-workspace":
-          "사용 가능한 작업 공간이 없습니다. 새로운 작업 공간이 생성될 것입니다.",
         connecting: "연결 중...",
         "connect-bot": "연결 봇",
       },
@@ -1154,19 +1554,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "사용자 계정 삭제에 실패했습니다.",
     },
     users: {
-      "pending-title": "승인 대기 중",
       "pending-description":
         "승인 대기 중인 사용자. 여기 표시된 매칭 코드를 자신의 Telegram 채팅에서 표시된 코드로 일치시켜 주세요.",
-      "approved-title": "승인된 사용자",
-      "approved-description": "당신의 봇과 대화할 수 있도록 승인된 사용자.",
-      user: "사용자",
-      "pairing-code": "코드 매칭",
-      "no-pending": "처리 중인 요청이 없습니다.",
-      "no-approved": "승인된 사용자가 없습니다",
       unknown: "알 수 없음",
-      approve: "승인",
-      deny: "부인",
-      revoke: "취소",
     },
   },
 };

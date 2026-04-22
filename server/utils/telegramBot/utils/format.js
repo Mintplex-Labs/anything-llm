@@ -5,9 +5,13 @@
  * @param {string} text - The markdown text to convert
  * @param {object} [opts]
  * @param {boolean} [opts.escapeHtml=true] - Whether to escape HTML in non-code text
+ * @param {boolean} [opts.closeUnclosedTags=true] - Whether to close unclosed HTML tags
  * @returns {string} - HTML formatted text for Telegram
  */
-function markdownToTelegram(text, { escapeHtml = true } = {}) {
+function markdownToTelegram(
+  text,
+  { escapeHtml = true, closeUnclosedTags = true } = {}
+) {
   if (!text) return "";
 
   let result = text;
@@ -113,6 +117,9 @@ function markdownToTelegram(text, { escapeHtml = true } = {}) {
     result = result.replace(`\x00INLINECODE${i}\x00`, code);
   });
 
+  // Close any unclosed HTML tags to prevent Telegram API errors during streaming
+  // since if you try to update a message with an unclosed tag, the API will return an 400 error
+  if (closeUnclosedTags) result = closeUnclosedHtmlTags(result);
   return result;
 }
 
@@ -126,6 +133,44 @@ function escapeHTML(text) {
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
+}
+
+/**
+ * Close any unclosed HTML tags to prevent Telegram API errors.
+ * This is important during streaming when messages may be split mid-markdown.
+ * @param {string} html - The HTML text to fix
+ * @returns {string} - HTML with all tags properly closed
+ */
+function closeUnclosedHtmlTags(html) {
+  const tags = ["b", "i", "u", "s", "code", "pre", "a", "blockquote"];
+  const openTags = [];
+  const tagRegex = /<\/?([a-z]+)(?:\s[^>]*)?\s*\/?>/gi;
+  let match;
+
+  while ((match = tagRegex.exec(html)) !== null) {
+    const fullMatch = match[0];
+    const tagName = match[1].toLowerCase();
+
+    if (!tags.includes(tagName)) continue;
+    if (fullMatch.endsWith("/>")) continue;
+
+    if (fullMatch.startsWith("</")) {
+      const lastOpenIdx = openTags.lastIndexOf(tagName);
+      if (lastOpenIdx !== -1) {
+        openTags.splice(lastOpenIdx, 1);
+      }
+    } else {
+      openTags.push(tagName);
+    }
+  }
+
+  // Close any remaining open tags in reverse order
+  let result = html;
+  for (let i = openTags.length - 1; i >= 0; i--) {
+    result += `</${openTags[i]}>`;
+  }
+
+  return result;
 }
 
 /**

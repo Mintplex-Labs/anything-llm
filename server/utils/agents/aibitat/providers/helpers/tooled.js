@@ -227,13 +227,19 @@ async function tooledStream(
       for (const toolCall of choice.delta.tool_calls) {
         const idx = toolCall.index ?? 0;
 
-        if (toolCall.id) {
+        // Initialize tool call entry if it doesn't exist yet.
+        // Some providers (e.g. mlx-server) send id as null, so we generate one.
+        if (!toolCallsByIndex[idx]) {
           toolCallsByIndex[idx] = {
-            id: toolCall.id,
+            id: toolCall.id || `call_${v4()}`,
             name: toolCall.function?.name || "",
             arguments: toolCall.function?.arguments || "",
           };
-        } else if (toolCallsByIndex[idx]) {
+        } else {
+          // Update existing entry with streamed data
+          if (toolCall.id && !toolCallsByIndex[idx].id.startsWith("call_")) {
+            toolCallsByIndex[idx].id = toolCall.id;
+          }
           if (toolCall.function?.name) {
             toolCallsByIndex[idx].name += toolCall.function.name;
           }

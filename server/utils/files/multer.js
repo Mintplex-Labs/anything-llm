@@ -2,7 +2,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const { v4 } = require("uuid");
-const { normalizePath } = require(".");
+const { normalizePath, sanitizeFileName } = require(".");
 
 // When on Render/Railway we ask the user to attach a volume that is
 // mounted to the root. So under this specific circumstance reaching the collectors
@@ -25,8 +25,8 @@ const fileUploadStorage = multer.diskStorage({
     cb(null, uploadOutput);
   },
   filename: function (_, file, cb) {
-    file.originalname = normalizePath(
-      Buffer.from(file.originalname, "latin1").toString("utf8")
+    file.originalname = sanitizeFileName(
+      normalizePath(Buffer.from(file.originalname, "latin1").toString("utf8"))
     );
     cb(null, file.originalname);
   },
@@ -46,8 +46,8 @@ const fileAPIUploadStorage = multer.diskStorage({
     cb(null, uploadOutput);
   },
   filename: function (_, file, cb) {
-    file.originalname = normalizePath(
-      Buffer.from(file.originalname, "latin1").toString("utf8")
+    file.originalname = sanitizeFileName(
+      normalizePath(Buffer.from(file.originalname, "latin1").toString("utf8"))
     );
     cb(null, file.originalname);
   },
@@ -64,8 +64,8 @@ const assetUploadStorage = multer.diskStorage({
     return cb(null, uploadOutput);
   },
   filename: function (_, file, cb) {
-    file.originalname = normalizePath(
-      Buffer.from(file.originalname, "latin1").toString("utf8")
+    file.originalname = sanitizeFileName(
+      normalizePath(Buffer.from(file.originalname, "latin1").toString("utf8"))
     );
     cb(null, file.originalname);
   },

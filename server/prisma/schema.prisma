@@ -17,6 +17,7 @@ datasource db {
 
 model api_keys {
   id            Int      @id @default(autoincrement())
+  name          String?
   secret        String?  @unique
   createdBy     Int?
   createdAt     DateTime @default(now())
