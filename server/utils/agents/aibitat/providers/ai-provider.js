@@ -402,11 +402,13 @@ class Provider {
           configuration: {
             baseURL: process.env.LEMONADE_LLM_BASE_PATH,
           },
-          apiKey: process.env.LEMONADE_LLM_API_KEY ?? null,
+          apiKey: process.env.LEMONADE_LLM_API_KEY || null,
           ...config,
         });
       default:
-        throw new Error(`Unsupported provider ${provider} for this task.`);
+        throw new Error(
+          `Unsupported provider ${JSON.stringify(provider)} for this task.`
+        );
     }
   }
 

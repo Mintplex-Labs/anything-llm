@@ -224,6 +224,28 @@ function workspaceEndpoints(app) {
           deletes,
           response.locals?.user?.id
         );
+
+        const {
+          isNativeEmbedder,
+          embedFiles,
+        } = require("../utils/EmbeddingWorkerManager");
+
+        if (isNativeEmbedder() && adds.length > 0) {
+          await embedFiles(
+            currWorkspace.slug,
+            adds,
+            currWorkspace.id,
+            response.locals?.user?.id ?? null
+          );
+          const updatedWorkspace = await Workspace.get({
+            id: currWorkspace.id,
+          });
+          response
+            .status(200)
+            .json({ workspace: updatedWorkspace, message: null });
+          return;
+        }
+
         const { failedToEmbed = [], errors = [] } = await Document.addDocuments(
           currWorkspace,
           adds,
@@ -1055,6 +1077,66 @@ function workspaceEndpoints(app) {
       } catch (error) {
         console.error("Error searching for workspaces:", error);
         response.sendStatus(500).end();
+      }
+    }
+  );
+
+  // SSE endpoint for embedding progress
+  app.get(
+    "/workspace/:slug/embed-progress",
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      validWorkspaceSlug,
+    ],
+    async (request, response) => {
+      try {
+        const workspace = response.locals.workspace;
+        const {
+          addSSEConnection,
+          removeSSEConnection,
+        } = require("../utils/EmbeddingWorkerManager");
+
+        response.setHeader("Cache-Control", "no-cache");
+        response.setHeader("Content-Type", "text/event-stream");
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Connection", "keep-alive");
+        response.flushHeaders();
+        addSSEConnection(workspace.slug, response);
+        request.on("close", () => {
+          removeSSEConnection(workspace.slug, response);
+        });
+      } catch (e) {
+        console.error(e.message, e);
+        response.status(500).end();
+      }
+    }
+  );
+
+  app.delete(
+    "/workspace/:slug/embed-queue",
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      validWorkspaceSlug,
+    ],
+    async (request, response) => {
+      try {
+        const workspace = response.locals.workspace;
+        const { filename } = reqBody(request);
+        if (!filename) {
+          response
+            .status(400)
+            .json({ success: false, error: "Missing filename" });
+          return;
+        }
+
+        const { removeQueuedFile } = require("../utils/EmbeddingWorkerManager");
+        const sent = removeQueuedFile(workspace.slug, filename);
+        response.status(200).json({ success: sent });
+      } catch (e) {
+        console.error(e.message, e);
+        response.status(500).json({ success: false, error: e.message });
       }
     }
   );

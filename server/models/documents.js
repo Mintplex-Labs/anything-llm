@@ -84,13 +84,37 @@ const Document = {
     const VectorDb = getVectorDbClass();
     if (additions.length === 0) return { failed: [], embedded: [] };
     const { fileData } = require("../utils/files");
+    const { emitProgress } = require("../utils/EmbeddingWorkerManager");
     const embedded = [];
     const failedToEmbed = [];
     const errors = new Set();
 
-    for (const path of additions) {
+    emitProgress(workspace.slug, {
+      type: "batch_starting",
+      workspaceSlug: workspace.slug,
+      userId,
+      filenames: additions,
+      totalDocs: additions.length,
+    });
+
+    for (const [index, path] of additions.entries()) {
+      const docProgress = {
+        workspaceSlug: workspace.slug,
+        userId,
+        filename: path,
+        docIndex: index,
+        totalDocs: additions.length,
+      };
+
       const data = await fileData(path);
-      if (!data) continue;
+      if (!data) {
+        emitProgress(workspace.slug, {
+          type: "doc_failed",
+          ...docProgress,
+          error: "Failed to load file data",
+        });
+        continue;
+      }
 
       const docId = uuidv4();
       const { pageContent: _pageContent, ...metadata } = data;
@@ -100,6 +124,14 @@ const Document = {
         docpath: path,
         workspaceId: workspace.id,
         metadata: JSON.stringify(metadata),
+      };
+
+      emitProgress(workspace.slug, { type: "doc_starting", ...docProgress });
+
+      global.__embeddingProgress = {
+        workspaceSlug: workspace.slug,
+        filename: path,
+        userId,
       };
 
       const { vectorized, error } = await VectorDb.addDocumentToNamespace(
@@ -115,16 +147,41 @@ const Document = {
         );
         failedToEmbed.push(metadata?.title || newDoc.filename);
         errors.add(error);
+        emitProgress(workspace.slug, {
+          type: "doc_failed",
+          ...docProgress,
+          error: error || "Unknown error",
+        });
         continue;
       }
 
       try {
         await prisma.workspace_documents.create({ data: newDoc });
         embedded.push(path);
+        emitProgress(workspace.slug, {
+          type: "doc_complete",
+          ...docProgress,
+        });
       } catch (error) {
         console.error(error.message);
+        emitProgress(workspace.slug, {
+          type: "doc_failed",
+          ...docProgress,
+          error: "Failed to save document record",
+        });
       }
     }
+
+    global.__embeddingProgress = null;
+
+    emitProgress(workspace.slug, {
+      type: "all_complete",
+      workspaceSlug: workspace.slug,
+      userId,
+      totalDocs: additions.length,
+      embedded: embedded.length,
+      failed: failedToEmbed.length,
+    });
 
     await Telemetry.sendTelemetry("documents_embedded_in_workspace", {
       LLMSelection: process.env.LLM_PROVIDER || "openai",
