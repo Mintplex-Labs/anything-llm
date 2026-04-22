@@ -7,7 +7,6 @@ import { ArrowLeft, CircleNotch } from "@phosphor-icons/react";
 import ModelRouter from "@/models/modelRouter";
 import showToast from "@/utils/toast";
 import paths from "@/utils/paths";
-import LLMProviderModelPicker from "../LLMProviderModelPicker";
 import RuleBuilder from "../RuleBuilder";
 
 export default function RouterFormPage() {
@@ -15,7 +14,6 @@ export default function RouterFormPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
   const [router, setRouter] = useState(null);
 
   const fetchRouter = async () => {
@@ -33,35 +31,6 @@ export default function RouterFormPage() {
     fetchRouter();
   }, [id]);
 
-  const handleSave = async (e) => {
-    e.preventDefault();
-    setSaving(true);
-
-    const formData = new FormData(e.target);
-    const data = {
-      name: formData.get("name"),
-      description: formData.get("description"),
-      fallback_provider: formData.get("fallback_provider"),
-      fallback_model: formData.get("fallback_model"),
-      cooldown_seconds: Number(formData.get("cooldown_seconds")),
-    };
-
-    const { router: updated, error } = await ModelRouter.update(id, data);
-    setSaving(false);
-
-    if (updated) {
-      showToast(t("model-router.edit-router.toast-updated"), "success", {
-        clear: true,
-      });
-      setRouter({ ...router, ...updated });
-    } else {
-      showToast(
-        error || t("model-router.edit-router.toast-update-failed"),
-        "error"
-      );
-    }
-  };
-
   return (
     <div className="w-screen h-screen overflow-hidden bg-zinc-950 light:bg-slate-50 flex md:mt-0 mt-6">
       <Sidebar />
@@ -74,7 +43,7 @@ export default function RouterFormPage() {
             onClick={() => navigate(paths.settings.modelRouters())}
             className="flex items-center gap-x-2 text-zinc-400 light:text-slate-500 hover:text-white light:hover:text-slate-900 text-sm mb-4 transition-colors"
           >
-            <ArrowLeft className="h-4 w-4" />{" "}
+            <ArrowLeft className="h-4 w-4" />
             {t("model-router.edit-router.back-to-routers")}
           </button>
 
@@ -83,95 +52,12 @@ export default function RouterFormPage() {
               <CircleNotch className="h-8 w-8 text-zinc-400 light:text-slate-400 animate-spin" />
             </div>
           ) : (
-            <>
-              <div className="w-full flex flex-col gap-y-2 pb-6 border-b border-white/20 light:border-slate-300">
-                <p className="text-lg font-semibold leading-7 text-white light:text-slate-900">
-                  {t("model-router.edit-router.title", { name: router.name })}
-                </p>
-                <p className="text-xs leading-4 text-zinc-400 light:text-slate-600 max-w-[700px]">
-                  {t("model-router.edit-router.description")}
-                </p>
-              </div>
-
-              <form onSubmit={handleSave} className="mt-6">
-                <div className="space-y-4 max-w-[700px]">
-                  <div className="flex flex-col gap-y-1.5">
-                    <label className="text-sm font-medium text-zinc-200 light:text-slate-900">
-                      {t("model-router.edit-router.name")}
-                    </label>
-                    <input
-                      type="text"
-                      name="name"
-                      defaultValue={router.name}
-                      className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 placeholder:text-zinc-400 light:placeholder:text-slate-500 text-sm rounded-lg outline-none block w-full p-2.5"
-                      required
-                    />
-                  </div>
-                  <div className="flex flex-col gap-y-1.5">
-                    <label className="text-sm font-medium text-zinc-200 light:text-slate-900">
-                      {t("model-router.edit-router.description-label")}
-                    </label>
-                    <input
-                      type="text"
-                      name="description"
-                      defaultValue={router.description || ""}
-                      placeholder={t(
-                        "model-router.edit-router.description-placeholder"
-                      )}
-                      className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 placeholder:text-zinc-400 light:placeholder:text-slate-500 text-sm rounded-lg outline-none block w-full p-2.5"
-                    />
-                  </div>
-                  <LLMProviderModelPicker
-                    providerFieldName="fallback_provider"
-                    modelFieldName="fallback_model"
-                    label={t("model-router.edit-router.fallback-label")}
-                    description={t(
-                      "model-router.edit-router.fallback-description"
-                    )}
-                    defaultProvider={router.fallback_provider}
-                    defaultModel={router.fallback_model}
-                  />
-                  <div className="flex flex-col gap-y-1.5">
-                    <label className="text-sm font-medium text-zinc-200 light:text-slate-900">
-                      {t("model-router.edit-router.cooldown-label")}
-                    </label>
-                    <input
-                      type="number"
-                      name="cooldown_seconds"
-                      defaultValue={router.cooldown_seconds ?? 30}
-                      min={0}
-                      max={3600}
-                      className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 placeholder:text-zinc-400 light:placeholder:text-slate-500 text-sm rounded-lg outline-none block w-full p-2.5"
-                    />
-                    <p className="text-[10px] text-zinc-400 light:text-slate-500">
-                      {t("model-router.edit-router.cooldown-help")}
-                    </p>
-                  </div>
-                  <div className="flex justify-end pt-4">
-                    <button
-                      type="submit"
-                      disabled={saving}
-                      className="flex items-center gap-x-1.5 text-sm font-medium bg-zinc-50 light:bg-slate-900 text-zinc-900 light:text-white rounded-lg h-9 px-5 hover:opacity-90 transition-opacity duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {saving ? (
-                        <>
-                          <CircleNotch className="h-4 w-4 animate-spin" />
-                          {t("model-router.edit-router.saving")}
-                        </>
-                      ) : (
-                        t("model-router.edit-router.save")
-                      )}
-                    </button>
-                  </div>
-                </div>
-              </form>
-
-              <RuleBuilder
-                routerId={router.id}
-                rules={router.rules || []}
-                onRulesChanged={fetchRouter}
-              />
-            </>
+            <RuleBuilder
+              routerId={router.id}
+              routerName={router.name}
+              rules={router.rules || []}
+              onRulesChanged={fetchRouter}
+            />
           )}
         </div>
       </div>
