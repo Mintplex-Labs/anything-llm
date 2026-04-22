@@ -200,8 +200,7 @@ export default {
         "pulse-glow": "pulse-glow 1.5s infinite",
         'fade-in': 'fade-in 0.3s ease-out',
         'slide-up': 'slide-up 0.4s ease-out forwards',
-        'bounce-subtle': 'bounce-subtle 2s ease-in-out infinite',
-        'border-spin': 'border-spin 3s linear infinite',
+        'bounce-subtle': 'bounce-subtle 2s ease-in-out infinite'
       },
       keyframes: {
         sweep: {
@@ -247,10 +246,6 @@ export default {
         'bounce-subtle': {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-2px)' }
-        },
-        'border-spin': {
-          '0%': { transform: 'rotate(0deg) scale(10)' },
-          '100%': { transform: 'rotate(360deg) scale(10)' }
         }
       }
     }

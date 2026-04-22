@@ -1,25 +1,35 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { PlusCircle } from "@phosphor-icons/react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import ModelRouterAPI from "@/models/modelRouter";
+import { useModal } from "@/hooks/useModal";
 import showToast from "@/utils/toast";
 import RuleForm from "./RuleForm";
 import RuleRow from "./RuleRow";
 
-export default function RuleBuilder({ routerId, rules, onRulesChanged }) {
+export default function RuleBuilder({
+  routerId,
+  routerName,
+  rules,
+  onRulesChanged,
+}) {
   const { t } = useTranslation();
-  const [showForm, setShowForm] = useState(false);
+  const { isOpen, openModal, closeModal } = useModal();
   const [editingRule, setEditingRule] = useState(null);
 
-  const handleRuleCreated = () => {
-    setShowForm(false);
-    onRulesChanged();
+  const openCreate = () => {
+    setEditingRule(null);
+    openModal();
   };
 
-  const handleRuleUpdated = () => {
+  const openEdit = (rule) => {
+    setEditingRule(rule);
+    openModal();
+  };
+
+  const handleModalClose = () => {
+    closeModal();
     setEditingRule(null);
-    onRulesChanged();
   };
 
   const handleDelete = async (rule) => {
@@ -69,56 +79,33 @@ export default function RuleBuilder({ routerId, rules, onRulesChanged }) {
     }
   };
 
+  const hasRules = rules && rules.length > 0;
+
   return (
     <div className="mt-8">
-      <div className="flex items-center justify-between pb-4 border-b border-white/20 light:border-slate-300">
-        <div>
-          <p className="text-base font-semibold text-white light:text-slate-900">
-            {t("model-router.rules.title")}
+      <div className="flex items-end justify-between pb-6 border-b border-white/20 light:border-slate-300">
+        <div className="flex flex-col gap-y-2">
+          <p className="text-lg font-semibold leading-7 text-white light:text-slate-900">
+            {routerName
+              ? t("model-router.rules.title-with-name", { name: routerName })
+              : t("model-router.rules.title")}
           </p>
-          <p className="text-xs text-zinc-400 light:text-slate-600 mt-1">
+          <p className="text-xs leading-4 text-zinc-400 light:text-slate-600 max-w-[700px]">
             {t("model-router.rules.description")}
           </p>
         </div>
-        {!showForm && !editingRule && (
+        {hasRules && (
           <button
-            onClick={() => setShowForm(true)}
-            className="flex items-center gap-x-1.5 text-sm font-medium bg-zinc-50 light:bg-slate-900 text-zinc-900 light:text-white rounded-lg h-9 px-5 hover:opacity-90 transition-opacity duration-200"
+            onClick={openCreate}
+            className="shrink-0 flex items-center justify-center h-9 px-5 py-2.5 rounded-lg bg-slate-50 text-zinc-950 text-sm font-medium leading-5 hover:opacity-90 transition-opacity duration-200"
           >
-            <PlusCircle className="h-4 w-4" weight="bold" />
             {t("model-router.rules.add-rule")}
           </button>
         )}
       </div>
 
-      {showForm && (
-        <div className="mt-4 border border-zinc-700 light:border-slate-200 rounded-xl p-4">
-          <RuleForm
-            routerId={routerId}
-            nextPriority={(rules?.length || 0) + 1}
-            onSaved={handleRuleCreated}
-            onCancel={() => setShowForm(false)}
-          />
-        </div>
-      )}
-
-      {editingRule && (
-        <div className="mt-4 border border-zinc-700 light:border-slate-200 rounded-xl p-4">
-          <RuleForm
-            routerId={routerId}
-            existingRule={editingRule}
-            onSaved={handleRuleUpdated}
-            onCancel={() => setEditingRule(null)}
-          />
-        </div>
-      )}
-
-      <div className="mt-4">
-        {(!rules || rules.length === 0) && !showForm ? (
-          <p className="text-sm text-zinc-400 light:text-slate-500 py-4 text-center">
-            {t("model-router.rules.no-rules")}
-          </p>
-        ) : (
+      {hasRules ? (
+        <div className="mt-6">
           <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId="rules">
               {(provided) => (
@@ -127,7 +114,7 @@ export default function RuleBuilder({ routerId, rules, onRulesChanged }) {
                   {...provided.droppableProps}
                   className="flex flex-col gap-y-2"
                 >
-                  {rules?.map((rule, index) => (
+                  {rules.map((rule, index) => (
                     <Draggable
                       key={rule.id}
                       draggableId={rule.id.toString()}
@@ -142,10 +129,7 @@ export default function RuleBuilder({ routerId, rules, onRulesChanged }) {
                           <RuleRow
                             rule={rule}
                             isEditing={editingRule?.id === rule.id}
-                            onEdit={() => {
-                              setShowForm(false);
-                              setEditingRule(rule);
-                            }}
+                            onEdit={() => openEdit(rule)}
                             onDelete={() => handleDelete(rule)}
                             onToggle={() => handleToggle(rule)}
                             dragHandleProps={provided.dragHandleProps}
@@ -159,8 +143,37 @@ export default function RuleBuilder({ routerId, rules, onRulesChanged }) {
               )}
             </Droppable>
           </DragDropContext>
-        )}
-      </div>
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center gap-8 py-28">
+          <div className="flex flex-col items-center gap-1.5 text-center">
+            <p className="text-base font-semibold leading-6 text-zinc-50 light:text-slate-900">
+              {t("model-router.rules.no-rules")}
+            </p>
+            <p className="text-sm font-medium leading-5 text-zinc-400 light:text-slate-500 max-w-[370px]">
+              {t("model-router.rules.empty-description")}
+            </p>
+          </div>
+          <button
+            onClick={openCreate}
+            className="flex items-center justify-center h-9 px-5 py-2.5 rounded-lg bg-slate-50 text-zinc-950 text-sm font-medium leading-5 hover:opacity-90 transition-opacity duration-200"
+          >
+            {t("model-router.rules.new-rule-button")}
+          </button>
+        </div>
+      )}
+
+      {isOpen && (
+        <RuleForm
+          key={editingRule?.id ?? "new"}
+          isOpen={isOpen}
+          closeModal={handleModalClose}
+          routerId={routerId}
+          existingRule={editingRule}
+          nextPriority={(rules?.length || 0) + 1}
+          onSaved={onRulesChanged}
+        />
+      )}
     </div>
   );
 }

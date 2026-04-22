@@ -3,12 +3,14 @@ import { SimpleToggleSwitch } from "@/components/lib/Toggle";
 
 const COMPARATOR_LABELS = {
   contains: "contains",
+  matches: "matches",
   gt: ">",
   gte: ">=",
   lt: "<",
   lte: "<=",
   eq: "=",
   neq: "!=",
+  between: "between",
 };
 
 export default function RuleRow({
@@ -19,72 +21,46 @@ export default function RuleRow({
   onToggle,
   dragHandleProps,
 }) {
-  const comparatorLabel = COMPARATOR_LABELS[rule.comparator] || rule.comparator;
+  const isDisabled = !rule.enabled;
 
   return (
     <div
-      className={`flex items-center border rounded-xl p-3 ${
-        isEditing
-          ? "border-blue-500/50"
-          : rule.enabled
-            ? "border-zinc-700 light:border-slate-200"
-            : "border-zinc-800 light:border-slate-100 opacity-50"
-      }`}
+      className={`group flex items-center gap-3 px-3 py-2 rounded-lg bg-zinc-800 light:bg-slate-100 transition-colors ${
+        isEditing ? "ring-1 ring-blue-500/60" : ""
+      } ${isDisabled ? "opacity-50" : ""}`}
     >
-      <div {...dragHandleProps} className="cursor-grab mr-2 shrink-0">
-        <DotsSixVertical
-          size={18}
-          weight="bold"
-          className="text-zinc-500 light:text-slate-400"
-        />
+      <div
+        {...dragHandleProps}
+        className="cursor-grab shrink-0 text-zinc-400 light:text-slate-500 hover:text-white light:hover:text-slate-700 transition-colors"
+        aria-label="Drag to reorder"
+      >
+        <DotsSixVertical size={24} weight="bold" />
       </div>
-      <div className="flex flex-col gap-y-1 flex-1 min-w-0">
-        <div className="flex items-baseline gap-x-2">
-          <span className="text-xs font-mono text-zinc-400 light:text-slate-500 w-5 shrink-0">
-            #{rule.priority}
-          </span>
-          <span className="text-sm font-semibold text-white light:text-slate-900 truncate">
+      <p className="shrink-0 text-sm font-semibold text-zinc-400 light:text-slate-500 tabular-nums">
+        #{rule.priority}
+      </p>
+      <div className="flex flex-col flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium leading-5 text-white light:text-slate-900 truncate">
             {rule.title}
           </span>
           {rule.type === "llm" ? (
-            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded shrink-0 bg-fuchsia-500/20 text-fuchsia-400 light:bg-fuchsia-100 light:text-fuchsia-700">
+            <span className="shrink-0 text-[10px] font-medium px-1.5 py-0.5 rounded bg-fuchsia-500/20 text-fuchsia-400 light:bg-fuchsia-100 light:text-fuchsia-700">
               LLM
             </span>
           ) : (
-            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded shrink-0 bg-blue-500/20 text-blue-400 light:bg-blue-100 light:text-blue-700">
+            <span className="shrink-0 text-[10px] font-medium px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 light:bg-blue-100 light:text-blue-700">
               Calculated
             </span>
           )}
         </div>
         {rule.type === "llm" ? (
-          <p className="text-xs text-zinc-300 light:text-slate-700 truncate ml-7">
-            MATCH{" "}
-            <span className="font-mono text-fuchsia-400 light:text-fuchsia-500">
-              &quot;{rule.description}&quot;
-            </span>{" "}
-            THEN{" "}
-            <span className="font-medium text-white light:text-slate-900">
-              {rule.route_provider} / {rule.route_model}
-            </span>
-          </p>
+          <LLMRuleBody rule={rule} />
         ) : (
-          <p className="text-xs text-zinc-300 light:text-slate-700 ml-7">
-            IF{" "}
-            <span className="font-mono text-blue-400 light:text-blue-500">
-              {rule.property}
-            </span>{" "}
-            <span className="font-medium">{comparatorLabel}</span>{" "}
-            <span className="font-mono text-blue-400 light:text-blue-500">
-              &quot;{rule.value}&quot;
-            </span>{" "}
-            THEN{" "}
-            <span className="font-medium text-white light:text-slate-900">
-              {rule.route_provider} / {rule.route_model}
-            </span>
-          </p>
+          <CalculatedRuleBody rule={rule} />
         )}
       </div>
-      <div className="flex items-center gap-x-3 ml-4 shrink-0">
+      <div className="flex items-center gap-x-3 shrink-0">
         <SimpleToggleSwitch
           enabled={rule.enabled}
           onChange={onToggle}
@@ -93,16 +69,87 @@ export default function RuleRow({
         <button
           onClick={onEdit}
           className="border-none text-zinc-400 light:text-slate-500 hover:text-white light:hover:text-slate-900 transition-colors"
+          aria-label="Edit rule"
         >
-          <PencilSimple className="h-4 w-4" />
+          <PencilSimple size={16} weight="bold" />
         </button>
         <button
           onClick={onDelete}
           className="border-none text-zinc-400 light:text-slate-500 hover:text-red-400 light:hover:text-red-500 transition-colors"
+          aria-label="Delete rule"
         >
-          <Trash className="h-4 w-4" />
+          <Trash size={16} weight="bold" />
         </button>
       </div>
     </div>
+  );
+}
+
+function LLMRuleBody({ rule }) {
+  return (
+    <p className="text-sm font-medium leading-5 text-zinc-400 light:text-slate-500 truncate">
+      Match{" "}
+      <span className="font-mono text-fuchsia-400 light:text-fuchsia-500">
+        &quot;{rule.description}&quot;
+      </span>{" "}
+      then route to{" "}
+      <span className="text-zinc-200 light:text-slate-700">
+        {rule.route_provider}/{rule.route_model}
+      </span>
+    </p>
+  );
+}
+
+function CalculatedRuleBody({ rule }) {
+  const conditions = Array.isArray(rule.conditions) ? rule.conditions : [];
+  const routeTo = (
+    <span className="text-zinc-200 light:text-slate-700">
+      {rule.route_provider}/{rule.route_model}
+    </span>
+  );
+
+  if (conditions.length === 0) {
+    return (
+      <p className="text-sm font-medium leading-5 text-zinc-400 light:text-slate-500 truncate">
+        No conditions — route to {routeTo}
+      </p>
+    );
+  }
+
+  if (conditions.length === 1) {
+    return (
+      <p className="text-sm font-medium leading-5 text-zinc-400 light:text-slate-500 truncate">
+        If <ConditionText condition={conditions[0]} /> then route to {routeTo}
+      </p>
+    );
+  }
+
+  const quantifier = rule.condition_logic === "OR" ? "ANY" : "ALL";
+  return (
+    <p className="text-sm font-medium leading-5 text-zinc-400 light:text-slate-500 truncate">
+      If {quantifier} of{" "}
+      {conditions.map((c, i) => (
+        <span key={i}>
+          <ConditionText condition={c} />
+          {i < conditions.length - 1 ? ", " : ""}
+        </span>
+      ))}{" "}
+      then route to {routeTo}
+    </p>
+  );
+}
+
+function ConditionText({ condition }) {
+  const label = COMPARATOR_LABELS[condition.comparator] || condition.comparator;
+  return (
+    <>
+      <span className="font-mono text-blue-400 light:text-blue-500">
+        {condition.property}
+      </span>{" "}
+      {label}{" "}
+      <span className="font-mono text-blue-400 light:text-blue-500">
+        &quot;{condition.value}&quot;
+      </span>
+    </>
   );
 }
