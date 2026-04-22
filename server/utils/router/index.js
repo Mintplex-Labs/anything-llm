@@ -1,6 +1,8 @@
 const { ModelRouter } = require("../../models/modelRouter");
 const { evaluateRule } = require("./deterministic");
-const { classifyWithLLM } = require("./llmClassifier");
+const {
+  classifyWithLLM,
+} = require("../agents/aibitat/plugins/router-classifier");
 
 /**
  * Load the router config and rules for a workspace.
