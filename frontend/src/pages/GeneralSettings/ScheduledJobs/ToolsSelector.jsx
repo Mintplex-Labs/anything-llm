@@ -87,6 +87,7 @@ export default function ToolsSelector({
   const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
+  const [placement, setPlacement] = useState("bottom");
   const containerRef = useRef(null);
 
   useEffect(() => {
@@ -102,6 +103,32 @@ export default function ToolsSelector({
     return () => {
       document.removeEventListener("mousedown", onClick);
       document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  // Flip the popover above the input when it would otherwise be clipped by the
+  // viewport bottom (e.g. when the modal is scrolled near the bottom of the
+  // screen). Recomputes on resize/scroll so the choice stays correct while open.
+  useEffect(() => {
+    if (!open) return;
+    const POPOVER_MAX_HEIGHT = 256; // matches max-h-64
+    const updatePlacement = () => {
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      setPlacement(
+        spaceBelow < POPOVER_MAX_HEIGHT && spaceAbove > spaceBelow
+          ? "top"
+          : "bottom"
+      );
+    };
+    updatePlacement();
+    window.addEventListener("resize", updatePlacement);
+    window.addEventListener("scroll", updatePlacement, true);
+    return () => {
+      window.removeEventListener("resize", updatePlacement);
+      window.removeEventListener("scroll", updatePlacement, true);
     };
   }, [open]);
 
@@ -182,7 +209,11 @@ export default function ToolsSelector({
         </div>
 
         {open && (
-          <div className="absolute left-0 right-0 top-full mt-1 z-20 max-h-64 overflow-y-auto p-1.5 bg-zinc-800 light:bg-white rounded-lg flex flex-col shadow-[0px_4px_12px_0px_rgba(0,0,0,0.35)] border border-zinc-700 light:border-slate-300">
+          <div
+            className={`absolute left-0 right-0 z-20 max-h-64 overflow-y-auto p-1.5 bg-zinc-800 light:bg-white rounded-lg flex flex-col shadow-[0px_4px_12px_0px_rgba(0,0,0,0.35)] border border-zinc-700 light:border-slate-300 ${
+              placement === "top" ? "bottom-full mb-1" : "top-full mt-1"
+            }`}
+          >
             {filteredGroups.length === 0 ? (
               <p className="text-xs text-zinc-400 light:text-slate-500 px-2 py-3 text-center">
                 {t("scheduledJobs.modal.toolsNoResults", "No tools match")}
