@@ -1339,6 +1339,7 @@ const TRANSLATIONS = {
     app_integrations: "App Integrations",
     custom_skills: "Custom Skills",
     agent_flows: "Agent Flows",
+    sub_skills: "Sub-skills",
     no_tools_found: "No matching tools found",
     loading_mcp_servers: "Loading MCP servers...",
     start_agent_session: "Start Agent Session",

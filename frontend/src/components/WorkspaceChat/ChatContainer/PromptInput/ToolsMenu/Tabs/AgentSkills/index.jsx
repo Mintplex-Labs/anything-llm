@@ -1,30 +1,15 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { titleCase } from "text-case";
 import paths from "@/utils/paths";
-import Admin from "@/models/admin";
-import System from "@/models/system";
-import AgentPlugins from "@/models/experimental/agentPlugins";
-import AgentFlows from "@/models/agentFlows";
-import MCPServers from "@/models/mcpServers";
 import {
   getDefaultSkills,
   getConfigurableSkills,
   getAppIntegrationSkills,
 } from "@/pages/Admin/Agents/skills";
-import { getCreateFileSkills } from "@/pages/Admin/Agents/CreateFileSkillPanel";
-import { getFileSystemSubSkills } from "@/pages/Admin/Agents/FileSystemSkillPanel";
-import { getGmailSkills } from "@/pages/Admin/Agents/GMailSkillPanel/utils";
-import { getGoogleCalendarSkills } from "@/pages/Admin/Agents/GoogleCalendarSkillPanel/utils";
-import { getOutlookSkills } from "@/pages/Admin/Agents/OutlookSkillPanel/utils";
 import useToolsMenuItems from "../../useToolsMenuItems";
-
-function flattenCategorySkills(categorizedSkills) {
-  return Object.values(categorizedSkills).flatMap(
-    (category) => category.skills
-  );
-}
+import useAgentSkillsState from "./useAgentSkillsState";
+import useSkillSections from "./useSkillSections";
 import SkillRow from "./SkillRow";
 import SkillSection from "./SkillSection";
 import { Wrench, MagnifyingGlass, CircleNotch } from "@phosphor-icons/react";
@@ -40,168 +25,62 @@ export default function AgentSkillsTab({
   const { t } = useTranslation();
   const { showAgentCommand = true } = workspace ?? {};
   const agentSessionActive = useIsAgentSessionActive();
+
+  // Get skill definitions
   const defaultSkills = getDefaultSkills(t);
-  const [fileSystemAgentAvailable, setFileSystemAgentAvailable] =
-    useState(false);
+  const appIntegrationSkills = getAppIntegrationSkills(t);
+
+  // All skill state management
+  const {
+    fileSystemAgentAvailable,
+    importedSkills,
+    flows,
+    mcpServers,
+    loading,
+    mcpLoading,
+    isSkillEnabled,
+    toggleSkill,
+    toggleImportedSkill,
+    toggleFlow,
+    toggleMcpTool,
+    isSubSkillEnabled,
+    toggleSubSkill,
+    disabledSubSkills,
+  } = useAgentSkillsState(defaultSkills);
+
   const configurableSkills = getConfigurableSkills(t, {
     fileSystemAgentAvailable,
   });
-  const appIntegrationSkills = getAppIntegrationSkills(t);
-  const [disabledDefaults, setDisabledDefaults] = useState([]);
-  const [enabledConfigurable, setEnabledConfigurable] = useState([]);
-  const [importedSkills, setImportedSkills] = useState([]);
-  const [flows, setFlows] = useState([]);
-  const [mcpServers, setMcpServers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [mcpLoading, setMcpLoading] = useState(true);
+
+  // UI state
   const [expandedSections, setExpandedSections] = useState({});
   const [expandedSubSections, setExpandedSubSections] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
-  const [disabledCreateFilesSubSkills, setDisabledCreateFilesSubSkills] =
-    useState([]);
-  const [disabledFileSystemSubSkills, setDisabledFileSystemSubSkills] =
-    useState([]);
-  const [disabledGmailSubSkills, setDisabledGmailSubSkills] = useState([]);
-  const [disabledGoogleCalendarSubSkills, setDisabledGoogleCalendarSubSkills] =
-    useState([]);
-  const [disabledOutlookSubSkills, setDisabledOutlookSubSkills] = useState([]);
+
   const showAgentCmdActivationAlert = showAgentCommand && !agentSessionActive;
 
-  useEffect(() => {
-    fetchSkillSettings();
-    fetchMcpServers();
-  }, []);
+  // Build all sections
+  const sections = useSkillSections({
+    t,
+    defaultSkills,
+    configurableSkills,
+    appIntegrationSkills,
+    importedSkills,
+    flows,
+    mcpServers,
+    isSkillEnabled,
+    toggleSkill,
+    isSubSkillEnabled,
+    toggleSubSkill,
+    toggleImportedSkill,
+    toggleFlow,
+    toggleMcpTool,
+    disabledSubSkills,
+  });
 
-  async function fetchSkillSettings() {
-    try {
-      const [prefs, flowsRes, fsAgentAvailable] = await Promise.all([
-        Admin.systemPreferencesByFields([
-          "disabled_agent_skills",
-          "default_agent_skills",
-          "imported_agent_skills",
-          "disabled_create_files_skills",
-          "disabled_filesystem_skills",
-          "disabled_gmail_skills",
-          "disabled_google_calendar_skills",
-          "disabled_outlook_skills",
-        ]),
-        AgentFlows.listFlows(),
-        System.isFileSystemAgentAvailable(),
-      ]);
-
-      if (prefs?.settings) {
-        setDisabledDefaults(prefs.settings.disabled_agent_skills ?? []);
-        setEnabledConfigurable(prefs.settings.default_agent_skills ?? []);
-        setImportedSkills(prefs.settings.imported_agent_skills ?? []);
-        setDisabledCreateFilesSubSkills(
-          prefs.settings.disabled_create_files_skills ?? []
-        );
-        setDisabledFileSystemSubSkills(
-          prefs.settings.disabled_filesystem_skills ?? []
-        );
-        setDisabledGmailSubSkills(prefs.settings.disabled_gmail_skills ?? []);
-        setDisabledGoogleCalendarSubSkills(
-          prefs.settings.disabled_google_calendar_skills ?? []
-        );
-        setDisabledOutlookSubSkills(
-          prefs.settings.disabled_outlook_skills ?? []
-        );
-      }
-      if (flowsRes?.flows) setFlows(flowsRes.flows);
-      setFileSystemAgentAvailable(fsAgentAvailable);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function fetchMcpServers() {
-    try {
-      const { servers = [] } = await MCPServers.listServers();
-      setMcpServers(servers);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setMcpLoading(false);
-    }
-  }
-
-  function toggleItem(arr, item) {
-    return arr.includes(item) ? arr.filter((s) => s !== item) : [...arr, item];
-  }
-
-  function isSkillEnabled(key) {
-    return key in defaultSkills
-      ? !disabledDefaults.includes(key)
-      : enabledConfigurable.includes(key);
-  }
-
+  // Section expansion helpers
   function isSectionExpanded(sectionId) {
     return !!(searchQuery.trim() || expandedSections[sectionId]);
-  }
-
-  async function toggleSkill(key) {
-    if (key in defaultSkills) {
-      const updated = toggleItem(disabledDefaults, key);
-      setDisabledDefaults(updated);
-      await Admin.updateSystemPreferences({
-        disabled_agent_skills: updated.join(","),
-        default_agent_skills: enabledConfigurable.join(","),
-      });
-      return;
-    }
-
-    const updated = toggleItem(enabledConfigurable, key);
-    setEnabledConfigurable(updated);
-    await Admin.updateSystemPreferences({
-      disabled_agent_skills: disabledDefaults.join(","),
-      default_agent_skills: updated.join(","),
-    });
-  }
-
-  async function toggleImportedSkill(skill) {
-    const newActive = !skill.active;
-    setImportedSkills((prev) =>
-      prev.map((s) =>
-        s.hubId === skill.hubId ? { ...s, active: newActive } : s
-      )
-    );
-    await AgentPlugins.toggleFeature(skill.hubId, newActive);
-  }
-
-  async function toggleFlow(flow) {
-    const newActive = !flow.active;
-    setFlows((prev) =>
-      prev.map((f) => (f.uuid === flow.uuid ? { ...f, active: newActive } : f))
-    );
-    await AgentFlows.toggleFlow(flow.uuid, newActive);
-  }
-
-  async function toggleMcpTool(serverName, toolName, currentlyEnabled) {
-    const newEnabled = !currentlyEnabled;
-    setMcpServers((prev) => {
-      const updated = prev.map((server) => {
-        if (server.name !== serverName) return server;
-        const currentSuppressed =
-          server.config?.anythingllm?.suppressedTools || [];
-        const newSuppressed = newEnabled
-          ? currentSuppressed.filter((t) => t !== toolName)
-          : [...currentSuppressed, toolName];
-        return {
-          ...server,
-          config: {
-            ...server.config,
-            anythingllm: {
-              ...server.config?.anythingllm,
-              suppressedTools: newSuppressed,
-            },
-          },
-        };
-      });
-      return updated;
-    });
-    await MCPServers.toggleTool(serverName, toolName, newEnabled);
   }
 
   function toggleSection(sectionId) {
@@ -211,221 +90,16 @@ export default function AgentSkillsTab({
     }));
   }
 
+  function isSubSectionExpanded(subSectionId) {
+    return !!(searchQuery.trim() || expandedSubSections[subSectionId]);
+  }
+
   function toggleSubSection(subSectionId) {
     setExpandedSubSections((prev) => ({
       ...prev,
       [subSectionId]: !prev[subSectionId],
     }));
   }
-
-  function isSubSectionExpanded(subSectionId) {
-    return !!(searchQuery.trim() || expandedSubSections[subSectionId]);
-  }
-
-  function isSubSkillEnabled(skillKey, subSkillName) {
-    if (skillKey === "create-files-agent") {
-      return !disabledCreateFilesSubSkills.includes(subSkillName);
-    }
-    if (skillKey === "filesystem-agent") {
-      return !disabledFileSystemSubSkills.includes(subSkillName);
-    }
-    if (skillKey === "gmail-agent") {
-      return !disabledGmailSubSkills.includes(subSkillName);
-    }
-    if (skillKey === "google-calendar-agent") {
-      return !disabledGoogleCalendarSubSkills.includes(subSkillName);
-    }
-    if (skillKey === "outlook-agent") {
-      return !disabledOutlookSubSkills.includes(subSkillName);
-    }
-    return true;
-  }
-
-  async function toggleSubSkill(skillKey, subSkillName) {
-    if (skillKey === "create-files-agent") {
-      const updated = toggleItem(disabledCreateFilesSubSkills, subSkillName);
-      setDisabledCreateFilesSubSkills(updated);
-      await Admin.updateSystemPreferences({
-        disabled_create_files_skills: updated.join(","),
-      });
-    } else if (skillKey === "filesystem-agent") {
-      const updated = toggleItem(disabledFileSystemSubSkills, subSkillName);
-      setDisabledFileSystemSubSkills(updated);
-      await Admin.updateSystemPreferences({
-        disabled_filesystem_skills: updated.join(","),
-      });
-    } else if (skillKey === "gmail-agent") {
-      const updated = toggleItem(disabledGmailSubSkills, subSkillName);
-      setDisabledGmailSubSkills(updated);
-      await Admin.updateSystemPreferences({
-        disabled_gmail_skills: updated.join(","),
-      });
-    } else if (skillKey === "google-calendar-agent") {
-      const updated = toggleItem(disabledGoogleCalendarSubSkills, subSkillName);
-      setDisabledGoogleCalendarSubSkills(updated);
-      await Admin.updateSystemPreferences({
-        disabled_google_calendar_skills: updated.join(","),
-      });
-    } else if (skillKey === "outlook-agent") {
-      const updated = toggleItem(disabledOutlookSubSkills, subSkillName);
-      setDisabledOutlookSubSkills(updated);
-      await Admin.updateSystemPreferences({
-        disabled_outlook_skills: updated.join(","),
-      });
-    }
-  }
-
-  function getSubSkillsForSkill(skillKey) {
-    if (skillKey === "create-files-agent") return getCreateFileSkills(t);
-    if (skillKey === "filesystem-agent") return getFileSystemSubSkills(t);
-    if (skillKey === "gmail-agent")
-      return flattenCategorySkills(getGmailSkills(t));
-    if (skillKey === "google-calendar-agent")
-      return flattenCategorySkills(getGoogleCalendarSkills(t));
-    if (skillKey === "outlook-agent")
-      return flattenCategorySkills(getOutlookSkills(t));
-    return null;
-  }
-
-  // Build sections of grouped items
-  const sections = useMemo(() => {
-    const sectionList = [];
-
-    // Agent Skills (default + configurable, excluding app integrations)
-    const skillItems = [];
-    for (const [key, { title }] of Object.entries({
-      ...defaultSkills,
-      ...configurableSkills,
-    })) {
-      const subSkills = getSubSkillsForSkill(key);
-      const parentEnabled = isSkillEnabled(key);
-      skillItems.push({
-        id: key,
-        name: title,
-        enabled: parentEnabled,
-        onToggle: () => toggleSkill(key),
-        hasSubSkills: !!subSkills,
-        subSkills: subSkills
-          ? subSkills.map((sub) => ({
-              id: `${key}::${sub.name}`,
-              name: sub.title,
-              enabled: parentEnabled && isSubSkillEnabled(key, sub.name),
-              onToggle: () => toggleSubSkill(key, sub.name),
-              parentEnabled,
-            }))
-          : null,
-      });
-    }
-    if (skillItems.length > 0) {
-      sectionList.push({
-        id: "agent-skills",
-        name: t("chat_window.agent_skills"),
-        items: skillItems,
-        enabledCount: skillItems.filter((i) => i.enabled).length,
-      });
-    }
-
-    // App Integrations (Gmail, Google Calendar, Outlook)
-    const appIntegrationItems = [];
-    for (const [key, { title }] of Object.entries(appIntegrationSkills)) {
-      const subSkills = getSubSkillsForSkill(key);
-      const parentEnabled = isSkillEnabled(key);
-      appIntegrationItems.push({
-        id: key,
-        name: title,
-        enabled: parentEnabled,
-        onToggle: () => toggleSkill(key),
-        hasSubSkills: !!subSkills,
-        subSkills: subSkills
-          ? subSkills.map((sub) => ({
-              id: `${key}::${sub.name}`,
-              name: sub.title,
-              enabled: parentEnabled && isSubSkillEnabled(key, sub.name),
-              onToggle: () => toggleSubSkill(key, sub.name),
-              parentEnabled,
-            }))
-          : null,
-      });
-    }
-    if (appIntegrationItems.length > 0) {
-      sectionList.push({
-        id: "app-integrations",
-        name: t("chat_window.app_integrations"),
-        items: appIntegrationItems,
-        enabledCount: appIntegrationItems.filter((i) => i.enabled).length,
-      });
-    }
-
-    // Custom Skills (imported)
-    if (importedSkills.length > 0) {
-      const items = importedSkills.map((skill) => ({
-        id: skill.hubId,
-        name: skill.name,
-        enabled: skill.active,
-        onToggle: () => toggleImportedSkill(skill),
-      }));
-      sectionList.push({
-        id: "custom-skills",
-        name: t("chat_window.custom_skills"),
-        items,
-        enabledCount: items.filter((i) => i.enabled).length,
-      });
-    }
-
-    // Agent Flows
-    if (flows.length > 0) {
-      const items = flows.map((flow) => ({
-        id: flow.uuid,
-        name: flow.name,
-        enabled: flow.active,
-        onToggle: () => toggleFlow(flow),
-      }));
-      sectionList.push({
-        id: "agent-flows",
-        name: t("chat_window.agent_flows"),
-        items,
-        enabledCount: items.filter((i) => i.enabled).length,
-      });
-    }
-
-    // MCP Servers (one section per running server with tools)
-    for (const server of mcpServers) {
-      if (!server.running || server.tools.length === 0) continue;
-      const suppressedTools = server.config?.anythingllm?.suppressedTools || [];
-      const items = server.tools.map((tool) => ({
-        id: `mcp::${server.name}::${tool.name}`,
-        name: tool.name,
-        enabled: !suppressedTools.includes(tool.name),
-        onToggle: () =>
-          toggleMcpTool(
-            server.name,
-            tool.name,
-            !suppressedTools.includes(tool.name)
-          ),
-      }));
-      sectionList.push({
-        id: `mcp-${server.name}`,
-        name: titleCase(server.name.replace(/[_-]/g, " ")),
-        isMcp: true,
-        items,
-        enabledCount: items.filter((i) => i.enabled).length,
-      });
-    }
-
-    return sectionList;
-  }, [
-    disabledDefaults,
-    enabledConfigurable,
-    importedSkills,
-    flows,
-    mcpServers,
-    fileSystemAgentAvailable,
-    disabledCreateFilesSubSkills,
-    disabledFileSystemSubSkills,
-    disabledGmailSubSkills,
-    disabledGoogleCalendarSubSkills,
-    disabledOutlookSubSkills,
-  ]);
 
   // Filter sections by search query
   const filteredSections = useMemo(() => {
@@ -449,7 +123,7 @@ export default function AgentSkillsTab({
       .filter((section) => section.items.length > 0);
   }, [sections, searchQuery]);
 
-  // Flat list of navigable items (headers + visible children) for keyboard nav
+  // Flat list of navigable items for keyboard nav
   const { flatItems, flatIndexMap } = useMemo(() => {
     const items = [];
     const indexMap = {};
@@ -537,7 +211,7 @@ export default function AgentSkillsTab({
               />
               {item.hasSubSkills && item.subSkills && item.enabled && (
                 <SkillSection
-                  name="Sub-skills"
+                  name={t("chat_window.sub_skills")}
                   expanded={isSubSectionExpanded(item.id)}
                   onToggle={() => toggleSubSection(item.id)}
                   enabledCount={item.subSkills.filter((s) => s.enabled).length}
