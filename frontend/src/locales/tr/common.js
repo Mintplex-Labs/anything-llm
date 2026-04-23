@@ -1200,6 +1200,12 @@ const TRANSLATIONS = {
       tool_call_was_approved: "Araç talebi onaylandı.",
       tool_call_was_rejected: "Ara çağrısı reddedildi.",
     },
+    custom_skills: "Özel Beceri",
+    agent_flows: "Ajans Akışları",
+    no_tools_found: "Uyumlu herhangi bir araç bulunamadı",
+    loading_mcp_servers: "MCP sunucularının yüklenmesi...",
+    app_integrations: "Uygulama Entegrasyonları",
+    sub_skills: "Alt beceriler",
   },
   profile_settings: {
     edit_account: "Hesabı Düzenle",

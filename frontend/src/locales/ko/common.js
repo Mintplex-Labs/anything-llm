@@ -1249,6 +1249,12 @@ const TRANSLATIONS = {
       tool_call_was_approved: "도구 사용 승인",
       tool_call_was_rejected: "도구 호출이 거부되었습니다.",
     },
+    custom_skills: "맞춤형 기술",
+    agent_flows: "에이전트 흐름",
+    no_tools_found: "일치하는 도구가 없습니다.",
+    loading_mcp_servers: "MCP 서버 로딩 중...",
+    app_integrations: "앱 통합",
+    sub_skills: "세부 기술",
   },
   profile_settings: {
     edit_account: "계정 정보 수정",
