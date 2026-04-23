@@ -173,10 +173,15 @@ ENV NODE_ENV=production
 ENV ANYTHING_LLM_RUNTIME=docker
 ENV DEPLOYMENT_VERSION=1.11.0
 
+# Install gosu for entrypoint privilege dropping
+USER root
+RUN apt-get update && apt-get install -y --no-install-recommends gosu && rm -rf /var/lib/apt/lists/*
+
 # Setup the healthcheck
 HEALTHCHECK --interval=1m --timeout=10s --start-period=1m \
   CMD /bin/bash /usr/local/bin/docker-healthcheck.sh || exit 1
 
+# Start as root so entrypoint can fix permissions, then drop to anythingllm
 # Run the server
 # CMD ["sh", "-c", "tail -f /dev/null"] # For development: keep container open
 ENTRYPOINT ["/bin/bash", "/usr/local/bin/docker-entrypoint.sh"]
