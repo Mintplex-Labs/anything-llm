@@ -7,10 +7,7 @@ const ScheduledJobs = {
       headers: baseHeaders(),
     })
       .then((res) => res.json())
-      .catch((e) => {
-        console.error(e);
-        return { jobs: [] };
-      });
+      .catch(() => ({ jobs: [] }));
   },
 
   create: async function (data) {
@@ -20,10 +17,7 @@ const ScheduledJobs = {
       body: JSON.stringify(data),
     })
       .then((res) => res.json())
-      .catch((e) => {
-        console.error(e);
-        return { job: null, error: e.message };
-      });
+      .catch(() => ({ job: null, error: "Failed to create scheduled job" }));
   },
 
   get: async function (id) {
@@ -31,10 +25,7 @@ const ScheduledJobs = {
       headers: baseHeaders(),
     })
       .then((res) => res.json())
-      .catch((e) => {
-        console.error(e);
-        return { job: null };
-      });
+      .catch(() => ({ job: null }));
   },
 
   update: async function (id, data) {
@@ -44,10 +35,10 @@ const ScheduledJobs = {
       body: JSON.stringify(data),
     })
       .then((res) => res.json())
-      .catch((e) => {
-        console.error(e);
-        return { job: null, error: e.message };
-      });
+      .catch((e) => ({
+        job: null,
+        error: e.message,
+      }));
   },
 
   delete: async function (id) {
@@ -56,10 +47,7 @@ const ScheduledJobs = {
       headers: baseHeaders(),
     })
       .then((res) => res.json())
-      .catch((e) => {
-        console.error(e);
-        return { success: false };
-      });
+      .catch(() => ({ success: false }));
   },
 
   toggle: async function (id) {
@@ -68,10 +56,7 @@ const ScheduledJobs = {
       headers: baseHeaders(),
     })
       .then((res) => res.json())
-      .catch((e) => {
-        console.error(e);
-        return { job: null };
-      });
+      .catch(() => ({ job: null }));
   },
 
   trigger: async function (id) {
@@ -80,10 +65,7 @@ const ScheduledJobs = {
       headers: baseHeaders(),
     })
       .then((res) => res.json())
-      .catch((e) => {
-        console.error(e);
-        return { success: false, error: e.message };
-      });
+      .catch((e) => ({ success: false, error: e.message }));
   },
 
   runs: async function (id) {
@@ -91,10 +73,7 @@ const ScheduledJobs = {
       headers: baseHeaders(),
     })
       .then((res) => res.json())
-      .catch((e) => {
-        console.error(e);
-        return { runs: [] };
-      });
+      .catch(() => ({ runs: [] }));
   },
 
   getRun: async function (runId) {
@@ -102,10 +81,7 @@ const ScheduledJobs = {
       headers: baseHeaders(),
     })
       .then((res) => res.json())
-      .catch((e) => {
-        console.error(e);
-        return { run: null, job: null };
-      });
+      .catch(() => ({ run: null, job: null }));
   },
 
   markRunRead: async function (runId) {
@@ -114,10 +90,7 @@ const ScheduledJobs = {
       headers: baseHeaders(),
     })
       .then((res) => res.json())
-      .catch((e) => {
-        console.error(e);
-        return { success: false };
-      });
+      .catch(() => ({ success: false }));
   },
 
   continueInThread: async function (runId) {
@@ -126,10 +99,11 @@ const ScheduledJobs = {
       headers: baseHeaders(),
     })
       .then((res) => res.json())
-      .catch((e) => {
-        console.error(e);
-        return { workspaceSlug: null, threadSlug: null, error: e.message };
-      });
+      .catch((e) => ({
+        workspaceSlug: null,
+        threadSlug: null,
+        error: e.message,
+      }));
   },
 
   availableTools: async function () {
@@ -137,10 +111,7 @@ const ScheduledJobs = {
       headers: baseHeaders(),
     })
       .then((res) => res.json())
-      .catch((e) => {
-        console.error(e);
-        return { tools: [] };
-      });
+      .catch(() => ({ tools: [] }));
   },
 };
 
