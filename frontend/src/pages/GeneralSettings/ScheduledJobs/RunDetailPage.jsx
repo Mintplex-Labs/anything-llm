@@ -20,6 +20,7 @@ import ToolCallCard from "./components/ToolCallCard";
 import GeneratedFileCard from "./components/GeneratedFileCard";
 import moment from "moment";
 import { formatDuration } from "@/utils/numbers";
+import DOMPurify from "@/utils/chat/purify";
 
 export default function RunDetailPage() {
   const { t } = useTranslation();
@@ -316,7 +317,7 @@ function FinalResponseSection({ t, result }) {
       <div
         className="text-sm text-zinc-50 light:text-slate-950 markdown"
         dangerouslySetInnerHTML={{
-          __html: renderMarkdown(result.text),
+          __html: DOMPurify.sanitize(renderMarkdown(result.text)),
         }}
       />
     </CollapsibleSection>
