@@ -1,3 +1,16 @@
+/**
+ * Memory Injection
+ *
+ * Used by chat handlers (streaming, sync, API) to enrich the system prompt with
+ * the user's stored memories so the model has the user's context at every turn.
+ *
+ * Exports `promptWithMemories(opts)`. Given a base system prompt, it looks up
+ * the user's global + workspace memories, reranks the workspace set against
+ * the current prompt + recent history (only when there are more than
+ * INJECTED_WORKSPACE_LIMIT to choose from), formats the selected memories as
+ * a markdown section, and appends it to the system prompt. Returns the
+ * original prompt unchanged when memories are disabled or the user has none.
+ */
 const { Memory } = require("../../models/memory");
 const { SystemSettings } = require("../../models/systemSettings");
 
