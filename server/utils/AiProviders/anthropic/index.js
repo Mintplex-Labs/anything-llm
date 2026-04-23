@@ -190,7 +190,7 @@ class AnthropicLLM {
     await this.assertModelMaxTokens();
     try {
       const systemContent = messages[0].content;
-      const result = await LLMPerformanceMonitor.measureAsyncFunction(
+      const result = await LLMPerformanceMonitor.measureWithRetry(() =>
         this.anthropic.messages.create({
           model: this.model,
           max_tokens: this.maxTokens,

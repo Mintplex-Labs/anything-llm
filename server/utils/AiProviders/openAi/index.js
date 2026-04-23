@@ -149,17 +149,13 @@ class OpenAiLLM {
         `OpenAI chat: ${this.model} is not valid for chat completion!`
       );
 
-    const result = await LLMPerformanceMonitor.measureAsyncFunction(
-      this.openai.responses
-        .create({
-          model: this.model,
-          input: messages,
-          store: false,
-          temperature: this.#temperature(this.model, temperature),
-        })
-        .catch((e) => {
-          throw new Error(e.message);
-        })
+    const result = await LLMPerformanceMonitor.measureWithRetry(() =>
+      this.openai.responses.create({
+        model: this.model,
+        input: messages,
+        store: false,
+        temperature: this.#temperature(this.model, temperature),
+      })
     );
 
     if (!result.output.hasOwnProperty("output_text")) return null;
