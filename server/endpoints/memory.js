@@ -43,11 +43,10 @@ function memoryEndpoints(app) {
           return response.status(403).json({ error: "Invalid workspace." });
         }
 
-        const globalMemories = await Memory.globalForUser(user?.id);
-        const workspaceMemories = await Memory.forUserWorkspace(
-          user?.id,
-          workspaceId
-        );
+        const [globalMemories, workspaceMemories] = await Promise.all([
+          Memory.globalForUser(user?.id),
+          Memory.forUserWorkspace(user?.id, workspaceId),
+        ]);
         response.status(200).json({
           memories: { global: globalMemories, workspace: workspaceMemories },
         });

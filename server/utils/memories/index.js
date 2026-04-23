@@ -20,11 +20,10 @@ async function getMemoriesForPrompt(userId, workspaceId, prompt, rawHistory) {
     );
     if (enabled !== "on") return "";
 
-    const globalMemories = await Memory.globalForUser(userId ?? null);
-    const workspaceMemories = await Memory.forUserWorkspace(
-      userId ?? null,
-      workspaceId
-    );
+    const [globalMemories, workspaceMemories] = await Promise.all([
+      Memory.globalForUser(userId ?? null),
+      Memory.forUserWorkspace(userId ?? null, workspaceId),
+    ]);
 
     if (globalMemories.length === 0 && workspaceMemories.length === 0)
       return "";
