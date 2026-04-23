@@ -10,9 +10,13 @@ later.date.localTime();
 const ScheduledJob = {
   writable: ["name", "prompt", "tools", "schedule", "enabled"],
 
-  // Maximum number of scheduled jobs that can be enabled at once.
-  // null = no limit. Set to a positive integer to cap concurrent active jobs;
-  // attempting to enable a job past the cap will be rejected at the API layer.
+  /**
+   * Maximum number of scheduled jobs that can be enabled at once.
+   * null = no limit. Set to a positive integer to cap concurrent active jobs;
+   * attempting to enable a job past the cap will be rejected at the API layer.
+   * @todo: add a configuration option for this
+   * @type {number|null}
+   */
   MAX_ACTIVE: null,
 
   /**

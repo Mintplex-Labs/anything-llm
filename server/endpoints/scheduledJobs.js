@@ -1,8 +1,5 @@
 const { ScheduledJob } = require("../models/scheduledJob");
 const { ScheduledJobRun } = require("../models/scheduledJobRun");
-const { Workspace } = require("../models/workspace");
-const { WorkspaceThread } = require("../models/workspaceThread");
-const { WorkspaceChats } = require("../models/workspaceChats");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { isSingleUserMode } = require("../utils/middleware/multiUserProtected");
 const { reqBody, safeJsonParse } = require("../utils/http");
@@ -63,83 +60,33 @@ function scheduledJobEndpoints(app) {
 
   // Mark a run as read
   app.post(
-    "/scheduled-jobs/runs/:runId/read",
+    "/scheduled-jobs/runs/:runId/:action",
     [validatedRequest, isSingleUserMode],
     async (request, response) => {
       try {
-        await ScheduledJobRun.markRead(Number(request.params.runId));
-        return response.status(200).json({ success: true });
-      } catch (e) {
-        console.error(e.message, e);
-        response.sendStatus(500);
-      }
-    }
-  );
+        const { action } = request.params;
 
-  // Continue a run in a workspace thread
-  app.post(
-    "/scheduled-jobs/runs/:runId/continue",
-    [validatedRequest, isSingleUserMode],
-    async (request, response) => {
-      try {
-        const run = await ScheduledJobRun.get({
-          id: Number(request.params.runId),
-        });
-        if (!run) {
-          return response.status(404).json({ error: "Run not found" });
+        if (!["read", "continue"].includes(action))
+          throw new Error("Invalid action");
+
+        if (action === "read") {
+          await ScheduledJobRun.markRead(Number(request.params.runId));
+          return response.status(200).json({ success: true });
         }
 
-        const job = await ScheduledJob.get({ id: run.jobId });
-        if (!job) {
-          return response.status(404).json({ error: "Job not found" });
+        if (action === "continue") {
+          const { workspace, thread, error } =
+            await ScheduledJobRun.continueInThread(
+              Number(request.params.runId)
+            );
+          if (error) return response.status(500).json({ error });
+
+          return response.status(200).json({
+            workspaceSlug: workspace.slug,
+            threadSlug: thread.slug,
+          });
         }
-
-        const result = safeJsonParse(run.result, {});
-        const responseText = result?.text || "No response was generated.";
-
-        // Get or create the "Scheduled Jobs" workspace
-        let workspace = await Workspace.get({ slug: "scheduled-jobs" });
-        if (!workspace) {
-          const wsResult = await Workspace.new("Scheduled Jobs");
-          workspace = wsResult.workspace;
-          if (!workspace) {
-            return response
-              .status(500)
-              .json({ error: "Failed to create workspace" });
-          }
-        }
-
-        const threadName = `${job.name} - ${new Date(run.startedAt).toISOString()}`;
-        const { thread, message: threadError } = await WorkspaceThread.new(
-          workspace,
-          null,
-          { name: threadName }
-        );
-
-        if (!thread) {
-          return response
-            .status(500)
-            .json({ error: threadError || "Failed to create thread" });
-        }
-
-        await WorkspaceChats.new({
-          workspaceId: workspace.id,
-          prompt: job.prompt,
-          response: {
-            text: responseText,
-            sources: result.sources || [],
-            type: "chat",
-          },
-          threadId: thread.id,
-          include: true,
-        });
-
-        return response.status(200).json({
-          workspaceSlug: workspace.slug,
-          threadSlug: thread.slug,
-        });
-      } catch (e) {
-        console.error(e.message, e);
+      } catch {
         response.sendStatus(500);
       }
     }
@@ -182,32 +129,24 @@ function scheduledJobEndpoints(app) {
     async (request, response) => {
       try {
         const { name, prompt, tools, schedule } = reqBody(request);
+        let errorMessage = null;
 
-        if (!name || !name.trim()) {
-          return response
-            .status(400)
-            .json({ job: null, error: "Name is required" });
+        if (!name?.trim()) {
+          errorMessage = "Name is required";
+        } else if (!prompt?.trim()) {
+          errorMessage = "Prompt is required";
+        } else if (!schedule?.trim()) {
+          errorMessage = "Schedule is required";
+        } else if (!ScheduledJob.isValidCron(schedule)) {
+          errorMessage = "Invalid cron expression";
+        } else if (tools?.length > 0 && !Array.isArray(tools)) {
+          errorMessage = "Tools must be an array";
         }
-        if (!prompt || !prompt.trim()) {
-          return response
-            .status(400)
-            .json({ job: null, error: "Prompt is required" });
-        }
-        if (!schedule || !schedule.trim()) {
-          return response
-            .status(400)
-            .json({ job: null, error: "Schedule is required" });
-        }
-        if (!ScheduledJob.isValidCron(schedule)) {
-          return response
-            .status(400)
-            .json({ job: null, error: "Invalid cron expression" });
-        }
-        if (tools && !Array.isArray(tools)) {
-          return response
-            .status(400)
-            .json({ job: null, error: "Tools must be an array" });
-        }
+        if (errorMessage)
+          return response.status(400).json({
+            job: null,
+            error: errorMessage,
+          });
 
         // New jobs default to enabled, so creating one always counts as an
         // activation. Reject if it would push us past the configured cap.
