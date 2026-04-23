@@ -1,7 +1,25 @@
 import { API_BASE } from "@/utils/constants";
 import { baseHeaders } from "@/utils/request";
 
+/**
+ * @typedef {Object} Memory
+ * @property {number} id
+ * @property {number|null} userId
+ * @property {number|null} workspaceId
+ * @property {"workspace"|"global"} scope
+ * @property {string} content
+ * @property {number|null} sourceThreadId
+ * @property {string|null} lastUsedAt
+ * @property {string} createdAt
+ * @property {string} updatedAt
+ */
+
 const Memory = {
+  /**
+   * Fetch all memories (global + workspace) for a workspace.
+   * @param {number} workspaceId
+   * @returns {Promise<{global: Memory[], workspace: Memory[]}>}
+   */
   forWorkspace: async function (workspaceId) {
     return await fetch(`${API_BASE}/workspaces/${workspaceId}/memories`, {
       method: "GET",
@@ -9,12 +27,15 @@ const Memory = {
     })
       .then((res) => res.json())
       .then((res) => res?.memories || { global: [], workspace: [] })
-      .catch((e) => {
-        console.error(e);
-        return { global: [], workspace: [] };
-      });
+      .catch(() => ({ global: [], workspace: [] }));
   },
 
+  /**
+   * Create a new memory for a workspace.
+   * @param {number} workspaceId
+   * @param {{content: string, scope?: "workspace"|"global"}} body
+   * @returns {Promise<{memory: Memory|null, error?: string}>}
+   */
   create: async function (workspaceId, { content, scope = "workspace" }) {
     return await fetch(`${API_BASE}/workspaces/${workspaceId}/memories`, {
       method: "POST",
@@ -22,12 +43,15 @@ const Memory = {
       body: JSON.stringify({ content, scope }),
     })
       .then((res) => res.json())
-      .catch((e) => {
-        console.error(e);
-        return { memory: null, error: e.message };
-      });
+      .catch((e) => ({ memory: null, error: e.message }));
   },
 
+  /**
+   * Update an existing memory's content.
+   * @param {number} memoryId
+   * @param {{content: string}} body
+   * @returns {Promise<{memory: Memory|null, error?: string}>}
+   */
   update: async function (memoryId, { content }) {
     return await fetch(`${API_BASE}/memories/${memoryId}`, {
       method: "PUT",
@@ -35,36 +59,43 @@ const Memory = {
       body: JSON.stringify({ content }),
     })
       .then((res) => res.json())
-      .catch((e) => {
-        console.error(e);
-        return { memory: null, error: e.message };
-      });
+      .catch((e) => ({ memory: null, error: e.message }));
   },
 
+  /**
+   * Delete a memory.
+   * @param {number} memoryId
+   * @returns {Promise<{success: boolean, error?: string}>}
+   */
   delete: async function (memoryId) {
     return await fetch(`${API_BASE}/memories/${memoryId}`, {
       method: "DELETE",
       headers: baseHeaders(),
     })
       .then((res) => res.json())
-      .catch((e) => {
-        console.error(e);
-        return { success: false, error: e.message };
-      });
+      .catch((e) => ({ success: false, error: e.message }));
   },
 
+  /**
+   * Promote a workspace-scoped memory to global.
+   * @param {number} memoryId
+   * @returns {Promise<{memory: Memory|null, error?: string}>}
+   */
   promoteToGlobal: async function (memoryId) {
     return await fetch(`${API_BASE}/memories/${memoryId}/promote`, {
       method: "POST",
       headers: baseHeaders(),
     })
       .then((res) => res.json())
-      .catch((e) => {
-        console.error(e);
-        return { memory: null, error: e.message };
-      });
+      .catch((e) => ({ memory: null, error: e.message }));
   },
 
+  /**
+   * Demote a global memory to a specific workspace.
+   * @param {number} memoryId
+   * @param {number} workspaceId
+   * @returns {Promise<{memory: Memory|null, error?: string}>}
+   */
   demoteToWorkspace: async function (memoryId, workspaceId) {
     return await fetch(`${API_BASE}/memories/${memoryId}/demote`, {
       method: "POST",
@@ -72,10 +103,7 @@ const Memory = {
       body: JSON.stringify({ workspaceId }),
     })
       .then((res) => res.json())
-      .catch((e) => {
-        console.error(e);
-        return { memory: null, error: e.message };
-      });
+      .catch((e) => ({ memory: null, error: e.message }));
   },
 };
 
