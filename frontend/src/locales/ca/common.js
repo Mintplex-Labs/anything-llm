@@ -548,6 +548,200 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Per defecte, aquesta habilitat està activada, però pots desactivar-la si no vols que estigui disponible per a l'agent.",
+      outlook: {
+        title: "Connector per a Outlook",
+        description:
+          "Permite que el teu agent interactui amb Microsoft Outlook: cerca correus electrònics, llegeix converses, redacta drafts, envia correus electrònics i gestiona la teva caixa de correu electrònic a través de l'API de Microsoft Graph. <a>Consulteu la documentació</a>.",
+        multiUserWarning:
+          "La integració d'Outlook no està disponible en mode multiusuari per raons de seguretat. Per utilitzar aquesta funció, feu que el mode multiusuari estigui desactivat.",
+        configuration: "Configuració d'Outlook",
+        authType: "Tipus de compte",
+        authTypeHelp:
+          "Seleccioneu quins tipus de comptes de Microsoft poden autenticar-se. \"Tots els comptes\" admet tant comptes personals com comptes per a l'ús laboral/escolar. \"Només comptes personals\" limita l'opció a comptes personals de Microsoft. \"Només comptes d'organització\" limita l'opció a comptes per a l'ús laboral/escolar d'un tenant específic d'Azure AD.",
+        authTypeCommon: "Totes les comptes (personals i laborals/escolars)",
+        authTypeConsumers: "Només comptes personals de Microsoft",
+        authTypeOrganization:
+          "Només comptes d'organitzacions (requereix l'ID del llogater)",
+        clientId: "Identificador (Client)",
+        clientIdHelp:
+          "L'ID de l'aplicació (Client) del vostre registre d'aplicació a Azure AD",
+        tenantId: "Identificador (del llogater)",
+        tenantIdHelp:
+          "L'ID del \"Tenant\" (inquilí) del vostre registre d'aplicació a Azure AD. És obligatori només per a l'autenticació dins de l'organització.",
+        clientSecret: "Secret del client",
+        clientSecretHelp:
+          "El valor secret de l'aplicació registrada a Azure AD.",
+        configurationRequired:
+          "Si us plau, configureu l'ID del client i el secret del client per habilitar les funcionalitats d'Outlook.",
+        authRequired:
+          "Primer, guarda les teves credencials, i després autentica't amb Microsoft per completar la configuració.",
+        authenticateWithMicrosoft: "Autentica't amb Microsoft",
+        authenticated: "He estat autentificat amb èxit amb Microsoft Outlook.",
+        revokeAccess: "Revocar l'accés",
+        configured: "Configurat",
+        searchSkills: "Habilitats de cerca...",
+        noSkillsFound:
+          "No s'han trobat perfils que coincideixin amb la vostra cerca.",
+        categories: {
+          search: {
+            title: "Cerca i llegeix correus electrònics",
+            description:
+              "Cerca i llegeix correus electrònics des de la teva pestanya de correus d'Outlook.",
+          },
+          drafts: {
+            title: "Proposals de correu electrònic",
+            description: "Crea, edita i gestiona els esborralls d'e-mail.",
+          },
+          send: {
+            title: "Enviar correus electrònics",
+            description:
+              "Envieu correus electrònics nous o respondre als missatges immediatament.",
+          },
+          account: {
+            title: "Estadístiques d'integració",
+            description:
+              "Visualitza les estadístiques de la caixa de correu i la informació del compte.",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "Accedeix a la caixa de correu",
+            description:
+              "Obteniu els correus electrònics més recents de la vostra pestanya de correu d'Outlook.",
+          },
+          search: {
+            title: "Cerca correus electrònics",
+            description:
+              "Cerca correus electrònics utilitzant la sintaxi de cerca de Microsoft",
+          },
+          readThread: {
+            title: "Llegir la conversa",
+            description:
+              "Llegeix la totalitat d'una conversa per correu electrònic.",
+          },
+          createDraft: {
+            title: "Crear un esborr",
+            description:
+              "Crea un nou correu electrònic o una resposta a un missatge existent.",
+          },
+          updateDraft: {
+            title: "Versió actualitzada",
+            description:
+              "Actualitza un correu electrònic existent que ja està redactat",
+          },
+          listDrafts: {
+            title: "Proposta de llistats",
+            description: "Mostra totes les correus electrònics en projecte.",
+          },
+          deleteDraft: {
+            title: "Eliminar esbor",
+            description: "Eliminar un correu electrònic en projecte",
+          },
+          sendDraft: {
+            title: "Enviar esborrany",
+            description: "Envia un correu electrònic existent.",
+          },
+          sendEmail: {
+            title: "Enviar correu electrònic",
+            description:
+              "Envieu un correu electrònic nou o respondreu a un missatge existent immediatament.",
+          },
+          getMailboxStats: {
+            title: "Estadístiques de la caixa de correu",
+            description:
+              "Obteniu el nombre de carpetes i les estadístiques de la caixa de correu.",
+          },
+        },
+      },
+      googleCalendar: {
+        title: "Connector per a Google Calendar",
+        description:
+          "Permite que el teu agent interactui amb Google Calendar: visualitza calendaris, obté esdeveniments, crea i actualitza esdeveniments, i gestiona les confirmacions de participació. <a>Consulteu la documentació</a>.",
+        multiUserWarning:
+          "La integració amb Google Calendar no està disponible en el mode multiusuari per raons de seguretat. Per utilitzar aquesta funció, feu que el mode multiusuari estigui desactivat.",
+        configuration: "Configuració de Google Calendar",
+        deploymentId: "Identificador de desplegament",
+        deploymentIdHelp:
+          "L'ID de desplegament de la vostra aplicació web de Google Apps Script",
+        apiKey: "Clau API",
+        apiKeyHelp:
+          "La clau API que has configurat en la implementació del teu Google Apps Script",
+        configurationRequired:
+          "Si us plau, configureu l'ID de l'implementació i la clau API per activar les funcionalitats de Google Calendar.",
+        configured: "Configurat",
+        searchSkills: "Habilitats de cerca...",
+        noSkillsFound:
+          "No s'han trobat perfils que coincideixin amb la vostra cerca.",
+        categories: {
+          calendars: {
+            title: "Calendari",
+            description: "Visualitza i gestiona els teus calendaris de Google.",
+          },
+          readEvents: {
+            title: "Consulta els esdeveniments",
+            description: "Visualitza i cerca esdeveniments del calendari",
+          },
+          writeEvents: {
+            title: "Crear i actualitzar esdeveniments",
+            description: "Crea esdeveniments nous i modifica els existents.",
+          },
+          rsvp: {
+            title: "Gestió de confirmacions de participació",
+            description: "Gestiona l'estat de resposta per als esdeveniments.",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "Calendari de dates",
+            description:
+              "Enumera tots els calendaris que poseu al dia o als quals esteu subscrit.",
+          },
+          getCalendar: {
+            title: "Obteniu detalls del calendari",
+            description:
+              "Obteniu informació detallada sobre un calendari específic.",
+          },
+          getEvent: {
+            title: "Obtenir informació sobre l'esdeveniment",
+            description:
+              "Obteniu informació detallada sobre un esdeveniment específic.",
+          },
+          getEventsForDay: {
+            title: "Troba esdeveniments per a un dia concret",
+            description:
+              "Obteniu tots els esdeveniments programats per a un dia concret.",
+          },
+          getEvents: {
+            title: "Obtenir esdeveniments (interval de dates)",
+            description:
+              "Obtenir esdeveniments dins d'un interval de dates personalitzat",
+          },
+          getUpcomingEvents: {
+            title: "Consulta els esdeveniments pròxims",
+            description:
+              "Troba esdeveniments per avui, aquesta setmana o aquest mes utilitzant paraules clau senzilles.",
+          },
+          quickAdd: {
+            title: "Afegir esdeveniment de forma ràpida",
+            description:
+              'Crea un esdeveniment a partir d\'un text natural (per exemple, "Reunió demà a les 15:00")',
+          },
+          createEvent: {
+            title: "Crear esdeveniment",
+            description:
+              "Crea un esdeveniment nou amb control total sobre totes les propietats.",
+          },
+          updateEvent: {
+            title: "Actualització d'esdeveniments",
+            description: "Actualitza un esdeveniment existent en el calendari",
+          },
+          setMyStatus: {
+            title: "Estat de confirmació de participació",
+            description:
+              "Acceptar, rebutjar o acceptar de manera provisional un esdeveniment.",
+          },
+        },
+      },
     },
     mcp: {
       title: "Servidors MCP",
@@ -1205,6 +1399,12 @@ const TRANSLATIONS = {
       tool_call_was_approved: "La crida a l'eina ha estat aprovada",
       tool_call_was_rejected: "La crida a l'eina ha estat rebutjada",
     },
+    custom_skills: "Habilitats personalitzades",
+    agent_flows: "Fluxos d'agents",
+    no_tools_found: "No s'han trobat eines corresponents.",
+    loading_mcp_servers: "Carregant servidors MCP...",
+    app_integrations: "Integracions d'aplicacions",
+    sub_skills: "Habilitats específiques",
   },
   profile_settings: {
     edit_account: "Edita el compte",

@@ -527,6 +527,191 @@ const TRANSLATIONS = {
           },
         },
       },
+      outlook: {
+        title: "Kết nối Outlook",
+        description:
+          "Cho phép đại lý của bạn tương tác với Microsoft Outlook – tìm kiếm email, đọc các cuộc thảo luận, soạn thảo bản nháp, gửi email và quản lý hộp thư đến thông qua Microsoft Graph API. Đọc tài liệu hướng dẫn <a>.",
+        multiUserWarning:
+          "Tính năng tích hợp với Outlook không khả dụng trong chế độ nhiều người dùng vì lý do bảo mật. Vui lòng tắt chế độ nhiều người dùng để sử dụng tính năng này.",
+        configuration: "Cấu hình Outlook",
+        authType: "Loại tài khoản",
+        authTypeHelp:
+          'Chọn loại tài khoản Microsoft nào có thể xác thực. "Tất cả các tài khoản" hỗ trợ cả tài khoản cá nhân và tài khoản làm việc/học. "Chỉ tài khoản cá nhân" giới hạn chỉ ở tài khoản Microsoft cá nhân. "Chỉ tài khoản tổ chức" giới hạn ở tài khoản làm việc/học từ một tenant cụ thể của Azure AD.',
+        authTypeCommon:
+          "Tất cả các tài khoản (cá nhân và tài khoản liên quan đến công việc/học tập)",
+        authTypeConsumers: "Chỉ dành cho tài khoản Microsoft cá nhân",
+        authTypeOrganization:
+          "Chỉ dành cho tài khoản tổ chức (cần ID của người thuê).",
+        clientId: "Mã định danh của khách hàng",
+        clientIdHelp:
+          "Mã định danh ứng dụng (Client ID) từ quá trình đăng ký ứng dụng của bạn trong Azure AD",
+        tenantId: "Mã định danh (cho người thuê)",
+        tenantIdHelp:
+          "Mã định danh (Tenant ID) từ ứng dụng Azure AD của bạn. Yêu cầu chỉ khi thực hiện xác thực cho riêng tổ chức.",
+        clientSecret: "Mật khẩu",
+        clientSecretHelp: "Giá trị bí mật của ứng dụng Azure AD của bạn",
+        configurationRequired:
+          "Vui lòng cấu hình ID và bí mật của ứng dụng để kích hoạt các tính năng của Outlook.",
+        authRequired:
+          "Trước tiên, hãy lưu thông tin đăng nhập của bạn, sau đó xác thực với Microsoft để hoàn thành quá trình thiết lập.",
+        authenticateWithMicrosoft: "Xác minh bằng Microsoft",
+        authenticated: "Đã xác thực thành công với Microsoft Outlook.",
+        revokeAccess: "Thu hồi quyền truy cập",
+        configured: "Đã được cấu hình",
+        searchSkills: "Kỹ năng tìm kiếm...",
+        noSkillsFound: "Không có kết quả nào khớp với tìm kiếm của bạn.",
+        categories: {
+          search: {
+            title: "Tìm kiếm và đọc email",
+            description:
+              "Tìm kiếm và đọc các email trong hộp thư Outlook của bạn.",
+          },
+          drafts: {
+            title: "Mẫu email",
+            description: "Tạo, chỉnh sửa và quản lý bản nháp email",
+          },
+          send: {
+            title: "Gửi email",
+            description: "Gửi email mới hoặc trả lời tin nhắn ngay lập tức.",
+          },
+          account: {
+            title: "Thống kê tích hợp",
+            description: "Xem thống kê hộp thư và thông tin tài khoản",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "Truy cập hộp thư",
+            description: "Lấy các email mới nhất từ hộp thư Outlook của bạn",
+          },
+          search: {
+            title: "Tìm kiếm trong thư điện tử",
+            description:
+              "Tìm kiếm trong các email bằng cú pháp tìm kiếm của Microsoft",
+          },
+          readThread: {
+            title: "Đọc cuộc hội thoại",
+            description: "Đọc toàn bộ chuỗi email.",
+          },
+          createDraft: {
+            title: "Tạo bản nháp",
+            description:
+              "Tạo một bản nháp email mới hoặc một bản nháp trả lời cho một tin nhắn hiện có.",
+          },
+          updateDraft: {
+            title: "Cập nhật bản nháp",
+            description: "Cập nhật một bản nháp email đã có",
+          },
+          listDrafts: {
+            title: "Danh sách dự thảo",
+            description: "Liệt kê tất cả các email đang soạn thảo.",
+          },
+          deleteDraft: {
+            title: "Xóa bản nháp",
+            description: "Xóa bản nháp email",
+          },
+          sendDraft: {
+            title: "Gửi bản nháp",
+            description: "Gửi một bản nháp email đã có",
+          },
+          sendEmail: {
+            title: "Gửi email",
+            description:
+              "Gửi một email mới hoặc trả lời một tin nhắn hiện có ngay lập tức.",
+          },
+          getMailboxStats: {
+            title: "Thống kê hộp thư",
+            description: "Lấy số lượng thư mục và thống kê hộp thư.",
+          },
+        },
+      },
+      googleCalendar: {
+        title: "Kết nối Google Calendar",
+        description:
+          "Cho phép đại lý của bạn tương tác với Google Calendar - xem lịch, lấy thông tin sự kiện, tạo và cập nhật sự kiện, và quản lý xác nhận tham dự. <a>Đọc tài liệu</a>.",
+        multiUserWarning:
+          "Tính năng tích hợp với Google Calendar không khả dụng ở chế độ nhiều người dùng vì lý do bảo mật. Vui lòng tắt chế độ nhiều người dùng để sử dụng tính năng này.",
+        configuration: "Cấu hình Google Calendar",
+        deploymentId: "Mã triển khai",
+        deploymentIdHelp:
+          "Mã định danh ứng dụng từ ứng dụng web Google Apps Script của bạn",
+        apiKey: "Khóa API",
+        apiKeyHelp:
+          "Khóa API mà bạn đã cấu hình trong quá trình triển khai Google Apps Script của mình.",
+        configurationRequired:
+          "Vui lòng cấu hình ID triển khai và khóa API để kích hoạt các tính năng của Google Calendar.",
+        configured: "Đã được cấu hình",
+        searchSkills: "Kỹ năng tìm kiếm...",
+        noSkillsFound:
+          "Không tìm thấy kết quả phù hợp với tiêu chí tìm kiếm của bạn.",
+        categories: {
+          calendars: {
+            title: "Lịch",
+            description: "Xem và quản lý lịch Google của bạn",
+          },
+          readEvents: {
+            title: "Xem sự kiện",
+            description: "Xem và tìm kiếm các sự kiện trong lịch",
+          },
+          writeEvents: {
+            title: "Tạo và cập nhật sự kiện",
+            description:
+              "Tạo các sự kiện mới và chỉnh sửa các sự kiện hiện có.",
+          },
+          rsvp: {
+            title: "Quản lý xác nhận tham dự",
+            description: "Quản lý trạng thái phản hồi của bạn cho các sự kiện",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "Danh sách lịch",
+            description: "Liệt kê tất cả các lịch mà bạn sở hữu hoặc đăng ký",
+          },
+          getCalendar: {
+            title: "Lấy thông tin lịch",
+            description: "Lấy thông tin chi tiết về một lịch cụ thể",
+          },
+          getEvent: {
+            title: "Tìm sự kiện",
+            description: "Lấy thông tin chi tiết về một sự kiện cụ thể",
+          },
+          getEventsForDay: {
+            title: "Tìm các sự kiện cho ngày hôm nay",
+            description:
+              "Hiển thị tất cả các sự kiện được lên lịch cho một ngày cụ thể.",
+          },
+          getEvents: {
+            title: "Tìm sự kiện (khoảng thời gian)",
+            description:
+              "Lấy danh sách các sự kiện trong một khoảng thời gian tùy chỉnh.",
+          },
+          getUpcomingEvents: {
+            title: "Xem các sự kiện sắp tới",
+            description:
+              "Tìm kiếm các sự kiện diễn ra hôm nay, tuần này hoặc tháng này bằng cách sử dụng các từ khóa đơn giản.",
+          },
+          quickAdd: {
+            title: "Thêm sự kiện nhanh chóng",
+            description:
+              'Tạo một sự kiện từ ngôn ngữ tự nhiên (ví dụ: "Cuộc họp vào ngày mai lúc 3 giờ chiều")',
+          },
+          createEvent: {
+            title: "Tạo sự kiện",
+            description:
+              "Tạo một sự kiện mới với quyền kiểm soát hoàn toàn đối với tất cả các thuộc tính.",
+          },
+          updateEvent: {
+            title: "Cập nhật sự kiện",
+            description: "Cập nhật một sự kiện đã có trong lịch",
+          },
+          setMyStatus: {
+            title: "Đặt trạng thái xác nhận tham dự",
+            description:
+              "Chấp nhận, từ chối hoặc chấp nhận một sự kiện một cách tạm thời.",
+          },
+        },
+      },
     },
     mcp: {
       title: "Máy chủ MCP",
@@ -999,6 +1184,12 @@ const TRANSLATIONS = {
       tool_call_was_approved: "Đã được phê duyệt yêu cầu dụng cụ.",
       tool_call_was_rejected: "Yêu cầu gọi công cụ đã bị từ chối.",
     },
+    custom_skills: "Kỹ năng tùy chỉnh",
+    agent_flows: "Dòng chảy của đại lý",
+    no_tools_found: "Không tìm thấy công cụ tương ứng.",
+    loading_mcp_servers: "Đang tải các máy chủ MCP...",
+    app_integrations: "Tích hợp ứng dụng",
+    sub_skills: "Kỹ năng chuyên môn",
   },
   profile_settings: {
     edit_account: "Chỉnh sửa Tài khoản",

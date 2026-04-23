@@ -538,6 +538,194 @@ const TRANSLATIONS = {
           },
         },
       },
+      outlook: {
+        title: "Outlook savienojums",
+        description:
+          "Ļaujiet savam pārstāvim interaktīvi darboties ar Microsoft Outlook – meklēt e-pasta ziņojus, lasīt diskusijas, veidot projektejus, nosūtīt e-pasta ziņojus un pārvaldīt savu e-pasta skapis, izmantojot Microsoft Graph API. <a>Izlasiet dokumentāciju</a>.",
+        multiUserWarning:
+          '"Outlook integrācija nav pieejama vairāku lietotāju režīmā, lai nodrošinātu drošību. Lūdzu, atgrieziet multilietotāju režīmu, lai izmantotu šo funkciju."',
+        configuration: "Outlook iestatījumu konfigurēšana",
+        authType: "Aģenta veids",
+        authTypeHelp:
+          'Izvēlieties, kādas Microsoft kontu tipus var autentificēt. "Visas kontas" atbalsta gan personiskus, gan darba/skolas kontus. "Tikai personiskie konti" ierobežo izmantošanu tikai ar personiskiem Microsoft kontiem. "Tikai organizācijas konti" ierobežo izmantošanu tikai ar darba/skolas kontiem no konkrēta Azure AD klienta.',
+        authTypeCommon: "Visas kontas (personālās un darba/skolas)",
+        authTypeConsumers: "Personiskas Microsoft kontas tikai",
+        authTypeOrganization:
+          "Tikai organizācijas konti (nepieciešams īpašnieka ID)",
+        clientId: "Pieteikuma (Klienta) ID",
+        clientIdHelp:
+          "Pieteikuma (klienta) ID no jūsu Azure AD lietojamās programmas reģistrācijas",
+        tenantId: "Reģistrācijas numurs (īres lietotājs)",
+        tenantIdHelp:
+          '"Klienta" ID no jūsu Azure AD lietojumprogrammas reģistrācijas. Nepieciešams tikai, ja tiek izmantota tikai organizācijas autentifikācija.',
+        clientSecret: "Klienta slepšvārds",
+        clientSecretHelp:
+          "Klienta slepenas vērtība, kas iegūta no jūsu Azure AD lietojamās programmas reģistrācijas",
+        configurationRequired:
+          "Lūdzu, konfigurējiet klienta ID un klienta sleptu atslēgu, lai iespējotu Outlook funkcijas.",
+        authRequired:
+          "Pirms sākat, saglabājiet savus autentifikācijas datus, un pēc tam veiciet autentifikāciju, lai pabeigtu konfigurēšanu.",
+        authenticateWithMicrosoft: "Autentizējieties ar Microsoft",
+        authenticated: "Izdevīgi sarakstījies ar Microsoft Outlook.",
+        revokeAccess: "Atcel piekļuvi",
+        configured: "Ierādīts",
+        searchSkills: "Meklēšanas prasmes...",
+        noSkillsFound: "Neatrastas atbilstošas prasmes jūsu meklējumiem.",
+        categories: {
+          search: {
+            title: "Meklē un lasiet e-pastus",
+            description:
+              "Meklējiet un lasiet e-pasta ziņojus no jūsu Outlook skapis",
+          },
+          drafts: {
+            title: "Pamatraksti e-pasta vēstījumiem",
+            description: "Izveidot, rediģēt un pārvaldīt e-pasta rakstus",
+          },
+          send: {
+            title: "Nosūtīt e-pastus",
+            description:
+              "Sūtiet jaunas e-pasta vēstules vai atbildiet uz saņemtajām vēstnēm nekavējoties.",
+          },
+          account: {
+            title: "Integrācijas statistika",
+            description:
+              "Apskatiet pasta kastes statistiku un konta informāciju.",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "Atsvērt e-pasta skatīšanās reklāžu",
+            description:
+              "Iegūstiet jaunākos e-pasta ziņojus no jūsu Outlook skapis",
+          },
+          search: {
+            title: "Meklē e-pastus",
+            description:
+              "Meklē e-pasta ziņojus, izmantojot Microsoft meklēšanas sintaksi",
+          },
+          readThread: {
+            title: "Izlasiet sarunu",
+            description: "Izlasiet pilnu e-pasta sarunu",
+          },
+          createDraft: {
+            title: "Izveidot projekta versiju",
+            description:
+              "Izveidot jaunu e-pasta projekta rakstu vai atbildes projektu esošam ziņojumam.",
+          },
+          updateDraft: {
+            title: "Pēcmājas projekts",
+            description: "Atjaunināt esošo e-pasta projekta",
+          },
+          listDrafts: {
+            title: "Izstrādāto variantu saraksts",
+            description:
+              "Izveidot sarakstu ar visiem izstrādātajiem e-pasta vēstījumiem",
+          },
+          deleteDraft: {
+            title: "Dzēst projekta versiju",
+            description: "Dzēst izstrādāto e-pastu",
+          },
+          sendDraft: {
+            title: "Nosūtīt projekta versiju",
+            description: "Nosūtiet esošā e-pasta projekta versiju",
+          },
+          sendEmail: {
+            title: "Sūtīt e-pastu",
+            description:
+              "Sūtiet jaunu e-pastu vai atbildiet uz esošu ziņu nekavējoties.",
+          },
+          getMailboxStats: {
+            title: "Pasta kastes statistika",
+            description:
+              "Iesaļojiet mapeņu skaitu un e-pasta kontu statistiku.",
+          },
+        },
+      },
+      googleCalendar: {
+        title: "Google Kalendāra integrācija",
+        description:
+          "Ļauj savam pārstāvim interaktīvi darboties ar Google Kalendāru – skatīt kalendārus, iegūt pasākumus, izveidot un atjaunot pasākumus, kā arī pārvaldīt reģistrāciju. <a>Lasiet dokumentāciju</a>.",
+        multiUserWarning:
+          "Google Kalendāra integrācija nav pieejama vairāku lietotāju režīmā, lai nodrošinātu drošību. Lūdzu, atgrieziet multilietotāju režīmu, lai izmantotu šo funkciju.",
+        configuration: "Google kalendāra konfigurācija",
+        deploymentId: "Ierīces identifikators",
+        deploymentIdHelp: "Jūsu Google Apps Script veidlapas ID",
+        apiKey: "API atslēga",
+        apiKeyHelp:
+          "API atslēga, ko jūs konfigurējāt savā Google Apps Script instalācijā",
+        configurationRequired:
+          'Lūdzu, konfigurējiet "Deployment ID" un API atslēgu, lai aktivizētu Google Kalendāra funkcijas.',
+        configured: "Ierīkots",
+        searchSkills: "Meklēšanas prasmes...",
+        noSkillsFound: "Neatrodītas atbilstības jūsu meklējumiem.",
+        categories: {
+          calendars: {
+            title: "Kalendāri",
+            description: "Skatiet un pārvaldiet savus Google kalendārus.",
+          },
+          readEvents: {
+            title: "Lasīt pasākumus",
+            description: "Skatiet un meklējiet kalendāra notikumus",
+          },
+          writeEvents: {
+            title: "Izveidot un atjaunināt pasākumus",
+            description: "Izveidot jaunas pasākumus un mainīt esošos",
+          },
+          rsvp: {
+            title: "Piedalīšanās reģistrācija",
+            description: "Pārvaldiet savu atbildes statusu pasākumiem",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "Kalendāri",
+            description:
+              "Izveidojot sarakstu, norādi visus kalendārus, ko tu īpašoj un uz kuriem esi reģistrējies.",
+          },
+          getCalendar: {
+            title: "Iegūstiet kalendāra informāciju",
+            description: "Iesaļojiet detalizētus datus par konkrētu kalendāru.",
+          },
+          getEvent: {
+            title: "Iegūstiet pasākuma informāciju",
+            description:
+              "Iesaļojiet detalizētu informāciju par konkrētu pasākumu",
+          },
+          getEventsForDay: {
+            title: "Ieskats uz pasākumiem šajā dienā",
+            description:
+              "Ieskaitiet visus pasākumus, kas plānoti konkrētā datumā",
+          },
+          getEvents: {
+            title: "Iegūstiet pasākumus (datu diapazons)",
+            description:
+              "Iegūt pasākumus, kas notiek konkrētā datuma diapazonā",
+          },
+          getUpcomingEvents: {
+            title: "Uznāciet nākamo pasākumu",
+            description:
+              "Atrodiet pasākumus šodien, šajā nedēļā vai šajā mēnesī, izmantojot vienkāržus atslēvvadus.",
+          },
+          quickAdd: {
+            title: "Ātri pievienot pasākumu",
+            description:
+              'Izveidot pasākumu, izmantojot dabas valodu (piemēram, "Sanākšana rīt plkst. 15:00")',
+          },
+          createEvent: {
+            title: "Izveidot pasākumu",
+            description:
+              "Izveidot jaunu pasākumu, nodrošinot pilnu kontroli pār visām tās īpašībām.",
+          },
+          updateEvent: {
+            title: "Pasākuma atjauninājums",
+            description: "Atjaunināt esošas kalendāra notikuma informāciju",
+          },
+          setMyStatus: {
+            title: "Norādiet atbildes statusu",
+            description: "Atzīst, atgrūst vai temporāri apstiprināt pasākumu",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP serveri",
@@ -1105,6 +1293,12 @@ const TRANSLATIONS = {
       tool_call_was_rejected:
         "Pieprasījums par instrumenta izmantošanu tika atgrūstīts.",
     },
+    custom_skills: "Pielāgotas prasmes",
+    agent_flows: "Aģentu plūsmas",
+    no_tools_found: "Neatradusies atbilstošas instrumentus",
+    loading_mcp_servers: "Ielāde MCP serverus...",
+    app_integrations: "Dienvidligzdas integrācijas",
+    sub_skills: "Īpašās prasmes",
   },
   profile_settings: {
     edit_account: "Rediģēt kontu",

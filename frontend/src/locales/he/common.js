@@ -522,6 +522,178 @@ const TRANSLATIONS = {
           },
         },
       },
+      outlook: {
+        title: "חיבור ל-Outlook",
+        description:
+          'אפשר לאגנט שלכם לתקשר עם Microsoft Outlook – לחפש הודעות דוא"ל, לקרוא דיונים, ליצור טיוטות, לשלוח הודעות דוא"ל ולנהל תיבת הדואר שלכם באמצעות Microsoft Graph API. <a>קראו את התיעוד</a>.',
+        multiUserWarning:
+          "שילוב עם Outlook אינו זמין במצב רב-משתמשים מטעמי אבטחה. אנא בטל את מצב רב-משתמשים כדי להשתמש בתכונה זו.",
+        configuration: "הגדרת תצורה (Outlook)",
+        authType: "סוג חשבון",
+        authTypeHelp:
+          'בחר איזה סוגי חשבונות מיקרוסופט יכולים לאמת. "כל החשבונות" תומך הן בחשבונות אישיים והן בחשבונות עבודה/לימודים. "רק חשבונות אישיים" מגביל את השימוש לחשבונות מיקרוסופט אישיים בלבד. "רק חשבונות ארגוניים" מגביל את השימוש לחשבונות עבודה/לימודים מחשבון Azure AD ספציפי.',
+        authTypeCommon: "כל החשבונות (אישיים וקשורים לעבודה/לימודים)",
+        authTypeConsumers: "חשבונות אישיים של מיקרוסופט בלבד",
+        authTypeOrganization: "חשבונות רק עבור ארגונים (דורש מזהה שוכר)",
+        clientId: "מספר זיהוי של לקוח (יישום)",
+        clientIdHelp: "מזהה היישום (לקוח) מההרשמה של היישום שלך ב-Azure AD",
+        tenantId: "מספר מזהה (שוכר)",
+        tenantIdHelp:
+          "מזהה ה-ID של הלקוח (שוכר) מההרשמה של היישום שלך ב-Azure AD. נדרש רק לאימות מתוך הארגון בלבד.",
+        clientSecret: "סוד לקוח",
+        clientSecretHelp:
+          "הערך הסודי של הלקוח מההרשמה של היישום שלך ב-Azure AD",
+        configurationRequired:
+          "אנא הגדירו את מזהה הלקוח והסיסמה כדי לאפשר את יכולות Outlook.",
+        authRequired:
+          "שמרו את הפרטים שלכם תחילה, ולאחר מכן השתמשו באימות של מיקרוסופט כדי להשלים את ההגדרה.",
+        authenticateWithMicrosoft: "אימות באמצעות מיקרוסופט",
+        authenticated: "התחברות מוצלחת עם Microsoft Outlook.",
+        revokeAccess: "ביטול גישה",
+        configured: "מוגדר",
+        searchSkills: "כישורים במחקר...",
+        noSkillsFound: "אין התאמות לחיפוש שלך.",
+        categories: {
+          search: {
+            title: 'חיפוש וקריאת הודעות דוא"ל',
+            description: 'חפש וקרא הודעות דוא"ל מהתיבת הדוא"ל של Outlook שלך.',
+          },
+          drafts: {
+            title: 'הודעות דוא"ל לדוגמה',
+            description: 'יצירה, עריכה וניהול של טיוטות של הודעות דוא"ל',
+          },
+          send: {
+            title: 'שלח הודעות דוא"ל',
+            description: "שלחו מיילים חדשים או הגיבו למיילים באופן מיידי.",
+          },
+          account: {
+            title: "נתוני אינטגרציה",
+            description: "צפו בסטטיסטיקות של תיבת הדואר ובמידע על החשבון.",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "קבל תיבת דואר",
+            description: "קבל מיילים חדשים מהתיבת הדואר שלך ב-Outlook.",
+          },
+          search: {
+            title: 'חיפוש הודעות דוא"ל',
+            description: 'חיפוש הודעות דוא"ל באמצעות תחביר החיפוש של Microsoft',
+          },
+          readThread: {
+            title: "קרא שיחה",
+            description: 'קראו את כל רצף ההודעות בדוא"ל.',
+          },
+          createDraft: {
+            title: "יצירת טיוטה",
+            description: "צור טיוטת מייל חדשה או טיוטת תגובה למייל קיים.",
+          },
+          updateDraft: {
+            title: "גרסה עדכנית",
+            description: 'עדכן הודעת דוא"ל קיימת',
+          },
+          listDrafts: {
+            title: "גרסאות ראשוניות",
+            description: "רשום את כל ההודעות המיילים המוצעות",
+          },
+          deleteDraft: {
+            title: "מחיקת טיוטה",
+            description: "מחיקת טיוטת אימייל",
+          },
+          sendDraft: {
+            title: "שלח טיוטה",
+            description: "שלח גרסה קיימת של מייל",
+          },
+          sendEmail: {
+            title: "שלח מייל",
+            description: "שלח מייל חדש או הגיב למייל קיים באופן מיידי.",
+          },
+          getMailboxStats: {
+            title: "סטטיסטיקות של תיבת דואר",
+            description: "קבל ספירת תיקיות ונתונים סטטיסטיים עבור תיבות דואר.",
+          },
+        },
+      },
+      googleCalendar: {
+        title: "חיבור ל-Google Calendar",
+        description:
+          "אפשרו לסוכן שלכם לתקשר עם גוגל קלנדר - לצפות בקלנדרים, לקבל אירועים, ליצור ולעדכן אירועים, ולנהל אישורי השתתפות. <a>קראו את התיעוד</a>.",
+        multiUserWarning:
+          "שילוב עם גוגל קלנדר אינו זמין במצב רב-משתמשים מטעמי אבטחה. אנא כבו את מצב רב-משתמשים כדי להשתמש בתכונה זו.",
+        configuration: "הגדרת גלובל קלנדר",
+        deploymentId: "מזהה הפריסה",
+        deploymentIdHelp: "מזהה הפריסה מהאפליקציה שלך של Google Apps Script",
+        apiKey: "מפתח API",
+        apiKeyHelp:
+          "המפתח של ה-API שקבעת בהגדרות של סקריפט האפליקציות של גוגל.",
+        configurationRequired:
+          "אנא הגדירו את מזהה ההפצה ואת מפתח ה-API כדי לאפשר את הפונקציונליות של גוגל קלנדר.",
+        configured: "מוגדר",
+        searchSkills: "כישורים לחיפוש...",
+        noSkillsFound: "אין התאמות לחיפוש שלך.",
+        categories: {
+          calendars: {
+            title: "יומני",
+            description: "צפו ונהלו את הלוחות שלכם בגוגל",
+          },
+          readEvents: {
+            title: "קרא על אירועים",
+            description: "צפו וחפשו אירועים בלוח השנה",
+          },
+          writeEvents: {
+            title: "יצירה ועדכון אירועים",
+            description: "ליצור אירועים חדשים ולשנות את האירועים הקיימים.",
+          },
+          rsvp: {
+            title: "ניהול אישורי השתתפות",
+            description: "נהלו את סטטוס התגובה שלכם לאירועים",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "רשימת לוחות",
+            description: "רשום את כל הקלנדרים שבבעלותך או אליהם מנויים.",
+          },
+          getCalendar: {
+            title: "קבל פרטים על הקלנדר",
+            description: "קבל מידע מפורט על לוח שנה ספציפי.",
+          },
+          getEvent: {
+            title: "קבל אירוע",
+            description: "קבל מידע מפורט על אירוע ספציפי",
+          },
+          getEventsForDay: {
+            title: "מצא אירועים ליום",
+            description: "קבלו את כל האירועים המתוכננים לתאריך ספציפי.",
+          },
+          getEvents: {
+            title: "קבל אירועים (טווח תאריכים)",
+            description: "קבל אירועים בטווח תאריכים מותאם אישית",
+          },
+          getUpcomingEvents: {
+            title: "רשימת אירועים עתידיים",
+            description:
+              "מצאו אירועים של היום, השבוע או החודש באמצעות מילות מפתח פשוטות.",
+          },
+          quickAdd: {
+            title: "הוספה מהירה של אירוע",
+            description:
+              'ליצור אירוע מתוך טקסט טבעי (למשל, "פגישה מחר בשעה 15:00")',
+          },
+          createEvent: {
+            title: "יצירת אירוע",
+            description: "צור אירוע חדש עם שליטה מלאה על כל התכונות.",
+          },
+          updateEvent: {
+            title: "עדכון אירוע",
+            description: "עדכן אירוע קיים בלוח השנה",
+          },
+          setMyStatus: {
+            title: "הגדר סטטוס אישור השתתפות",
+            description: "לקבל, לדחות, או לקבל באופן זמני אירוע",
+          },
+        },
+      },
     },
     mcp: {
       title: "שרתי MCP",
@@ -1064,6 +1236,12 @@ const TRANSLATIONS = {
       tool_call_was_approved: "הבקשה לקבלת הכלי אושרה.",
       tool_call_was_rejected: "בקשת השימוש בכלי נדחתה.",
     },
+    custom_skills: "כישורים מותאמים אישית",
+    agent_flows: "זרימת סוכנים",
+    no_tools_found: "לא נמצאו כלים תואמים.",
+    loading_mcp_servers: "טעינת שרתי ה-MCP...",
+    app_integrations: "אינטגרציות עם אפליקציות",
+    sub_skills: "כישורים ספציפיים",
   },
   profile_settings: {
     edit_account: "ערוך חשבון",

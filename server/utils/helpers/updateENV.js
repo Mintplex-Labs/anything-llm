@@ -586,6 +586,10 @@ const KEY_MAPPING = {
     envKey: "AGENT_BING_SEARCH_API_KEY",
     checks: [],
   },
+  AgentBaiduSearchApiKey: {
+    envKey: "AGENT_BAIDU_SEARCH_API_KEY",
+    checks: [],
+  },
   AgentSerplyApiKey: {
     envKey: "AGENT_SERPLY_API_KEY",
     checks: [],
@@ -1334,8 +1338,12 @@ function dumpENV() {
     // Allow disabling of streaming for AWS Bedrock
     "AWS_BEDROCK_STREAMING_DISABLED",
 
-    // Allow native tool calling for specific providers.
+    // Allow capabilities for specific providers.
     "PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING",
+    "PROVIDER_SUPPORTS_REASONING",
+    "PROVIDER_SUPPORTS_IMAGE_GENERATION",
+    "PROVIDER_SUPPORTS_VISION",
+    "GENERIC_OPEN_AI_REPORT_USAGE",
 
     // Allow auto-approval of skills
     "AGENT_AUTO_APPROVED_SKILLS",

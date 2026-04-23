@@ -412,11 +412,8 @@ function adminEndpoints(app) {
             case "disabled_gmail_skills":
               requestedSettings[label] = safeJsonParse(setting?.value, []);
               break;
-            case "gmail_deployment_id":
-              requestedSettings[label] = setting?.value || null;
-              break;
-            case "gmail_api_key":
-              requestedSettings[label] = setting?.value || null;
+            case "disabled_outlook_skills":
+              requestedSettings[label] = safeJsonParse(setting?.value, []);
               break;
             case "imported_agent_skills":
               requestedSettings[label] = ImportedPlugin.listImportedPlugins();
