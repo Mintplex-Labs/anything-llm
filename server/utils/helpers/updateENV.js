@@ -586,6 +586,10 @@ const KEY_MAPPING = {
     envKey: "AGENT_BING_SEARCH_API_KEY",
     checks: [],
   },
+  AgentBaiduSearchApiKey: {
+    envKey: "AGENT_BAIDU_SEARCH_API_KEY",
+    checks: [],
+  },
   AgentSerplyApiKey: {
     envKey: "AGENT_SERPLY_API_KEY",
     checks: [],

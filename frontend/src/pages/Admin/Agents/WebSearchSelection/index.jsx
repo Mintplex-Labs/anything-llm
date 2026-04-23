@@ -4,6 +4,7 @@ import SerpApiIcon from "./icons/serpapi.png";
 import SearchApiIcon from "./icons/searchapi.png";
 import SerperDotDevIcon from "./icons/serper.png";
 import BingSearchIcon from "./icons/bing.png";
+import BaiduSearchIcon from "./icons/baidu.png";
 import SerplySearchIcon from "./icons/serply.png";
 import SearXNGSearchIcon from "./icons/searxng.png";
 import TavilySearchIcon from "./icons/tavily.svg";
@@ -24,6 +25,7 @@ import {
   SearchApiOptions,
   SerperDotDevOptions,
   BingSearchOptions,
+  BaiduSearchOptions,
   SerplySearchOptions,
   SearXNGOptions,
   TavilySearchOptions,
@@ -70,6 +72,14 @@ const SEARCH_PROVIDERS = [
     logo: BingSearchIcon,
     options: (settings) => <BingSearchOptions settings={settings} />,
     description: "Web search powered by the Bing Search API (paid service).",
+  },
+  {
+    name: "Baidu Search",
+    value: "baidu-search",
+    logo: BaiduSearchIcon,
+    options: (settings) => <BaiduSearchOptions settings={settings} />,
+    description:
+      "Web search powered by Baidu Search for stronger zh-CN retrieval.",
   },
   {
     name: "Serply.io",
