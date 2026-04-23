@@ -3,7 +3,26 @@ const prisma = require("../utils/prisma");
 const GLOBAL_LIMIT = 5;
 const WORKSPACE_LIMIT = 20;
 
+/**
+ * @typedef {Object} Memory
+ * @property {number} id
+ * @property {number|null} userId
+ * @property {number|null} workspaceId
+ * @property {"workspace"|"global"} scope
+ * @property {string} content
+ * @property {number|null} sourceThreadId
+ * @property {Date|null} lastUsedAt
+ * @property {Date} createdAt
+ * @property {Date} updatedAt
+ */
+
 const Memory = {
+  /**
+   * List a user's workspace-scoped memories, newest first.
+   * @param {number|null} userId
+   * @param {number} workspaceId
+   * @returns {Promise<Memory[]>}
+   */
   forUserWorkspace: async function (userId, workspaceId) {
     try {
       const memories = await prisma.memories.findMany({
@@ -17,6 +36,11 @@ const Memory = {
     }
   },
 
+  /**
+   * List a user's global-scoped memories, newest first.
+   * @param {number|null} userId
+   * @returns {Promise<Memory[]>}
+   */
   globalForUser: async function (userId) {
     try {
       const memories = await prisma.memories.findMany({
@@ -30,6 +54,16 @@ const Memory = {
     }
   },
 
+  /**
+   * Create a memory, enforcing per-scope limits (global: 5, workspace: 20).
+   * @param {Object} params
+   * @param {number|null} params.userId
+   * @param {number|null} [params.workspaceId]
+   * @param {"workspace"|"global"} [params.scope]
+   * @param {string} params.content
+   * @param {number|null} [params.sourceThreadId]
+   * @returns {Promise<{memory: Memory|null, message: string|null}>}
+   */
   create: async function ({
     userId,
     workspaceId = null,
@@ -56,6 +90,12 @@ const Memory = {
     }
   },
 
+  /**
+   * Update an existing memory's content.
+   * @param {number} id
+   * @param {{content: string}} fields
+   * @returns {Promise<{memory: Memory|null, message: string|null}>}
+   */
   update: async function (id, { content }) {
     try {
       const memory = await prisma.memories.update({
@@ -69,6 +109,11 @@ const Memory = {
     }
   },
 
+  /**
+   * Delete a memory by id.
+   * @param {number} id
+   * @returns {Promise<boolean>} true on success, false on error
+   */
   delete: async function (id) {
     try {
       await prisma.memories.delete({ where: { id } });
@@ -79,6 +124,12 @@ const Memory = {
     }
   },
 
+  /**
+   * Promote a workspace-scoped memory to global scope.
+   * Enforces the global limit and clears its workspaceId.
+   * @param {number} id
+   * @returns {Promise<{memory: Memory|null, message: string|null}>}
+   */
   promoteToGlobal: async function (id) {
     try {
       const existing = await prisma.memories.findUnique({ where: { id } });
@@ -108,6 +159,13 @@ const Memory = {
     }
   },
 
+  /**
+   * Demote a global memory to workspace scope, assigning it to the target workspace.
+   * Enforces the per-workspace limit.
+   * @param {number} id
+   * @param {number} workspaceId
+   * @returns {Promise<{memory: Memory|null, message: string|null}>}
+   */
   demoteToWorkspace: async function (id, workspaceId) {
     try {
       const existing = await prisma.memories.findUnique({ where: { id } });
@@ -140,6 +198,11 @@ const Memory = {
     }
   },
 
+  /**
+   * Stamp a set of memories as just-used (for recency tracking / reranking).
+   * @param {number[]} [ids]
+   * @returns {Promise<void>}
+   */
   updateLastUsed: async function (ids = []) {
     if (!ids.length) return;
     try {
@@ -152,6 +215,13 @@ const Memory = {
     }
   },
 
+  /**
+   * Count a user's memories in a given scope. For "workspace" scope the workspaceId is required.
+   * @param {number|null} userId
+   * @param {number|null} workspaceId
+   * @param {"workspace"|"global"} scope
+   * @returns {Promise<number>}
+   */
   countForScope: async function (userId, workspaceId, scope) {
     try {
       const where = { userId, scope };
@@ -163,6 +233,15 @@ const Memory = {
     }
   },
 
+  /**
+   * Replace all of a user's workspace-scoped memories for a workspace with the given set.
+   * Runs in a transaction so a failure mid-write does not leave a partial state.
+   * Caps the input at WORKSPACE_LIMIT.
+   * @param {number|null} userId
+   * @param {number} workspaceId
+   * @param {string[]} memories - memory contents to insert
+   * @returns {Promise<boolean>}
+   */
   replaceWorkspaceMemories: async function (userId, workspaceId, memories) {
     try {
       await prisma.$transaction(async (tx) => {
@@ -183,6 +262,11 @@ const Memory = {
     }
   },
 
+  /**
+   * Assign all unowned memories (userId null) to the admin account when the system enters multi-user mode.
+   * @param {number} adminUserId
+   * @returns {Promise<boolean>}
+   */
   migrateToMultiUser: async function (adminUserId) {
     try {
       await prisma.memories.updateMany({
@@ -196,6 +280,11 @@ const Memory = {
     }
   },
 
+  /**
+   * Fetch the first memory matching the given where clause.
+   * @param {object} [clause] - Prisma where clause
+   * @returns {Promise<Memory|null>}
+   */
   get: async function (clause = {}) {
     try {
       const memory = await prisma.memories.findFirst({ where: clause });
