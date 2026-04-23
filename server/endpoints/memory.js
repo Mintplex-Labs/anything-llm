@@ -40,8 +40,7 @@ function memoryEndpoints(app) {
           ? await Workspace.getWithUser(user, { id: workspaceId })
           : await Workspace.get({ id: workspaceId });
         if (!workspace) {
-          response.status(403).json({ error: "Invalid workspace." });
-          return;
+          return response.status(403).json({ error: "Invalid workspace." });
         }
 
         const globalMemories = await Memory.globalForUser(user?.id);
@@ -68,17 +67,15 @@ function memoryEndpoints(app) {
         const workspaceId = Number(request.params.workspaceId);
         const { content, scope = "workspace" } = reqBody(request);
 
-        if (!content || !content.trim()) {
-          response.status(400).json({ error: "Content is required." });
-          return;
-        }
-
         const workspace = multiUserMode(response)
           ? await Workspace.getWithUser(user, { id: workspaceId })
           : await Workspace.get({ id: workspaceId });
         if (!workspace) {
-          response.status(403).json({ error: "Invalid workspace." });
-          return;
+          return response.status(403).json({ error: "Invalid workspace." });
+        }
+
+        if (!content || !content.trim()) {
+          return response.status(400).json({ error: "Content is required." });
         }
 
         const { memory, message } = await Memory.create({
@@ -89,8 +86,7 @@ function memoryEndpoints(app) {
         });
 
         if (!memory) {
-          response.status(400).json({ error: message });
-          return;
+          return response.status(400).json({ error: message });
         }
 
         response.status(200).json({ memory });
@@ -110,15 +106,13 @@ function memoryEndpoints(app) {
         const memoryId = Number(request.params.memoryId);
         const { content } = reqBody(request);
 
-        if (!content || !content.trim()) {
-          response.status(400).json({ error: "Content is required." });
-          return;
-        }
-
         const existing = await Memory.get({ id: memoryId });
         if (!existing || !ownerMatch(existing, user)) {
-          response.status(404).json({ error: "Memory not found." });
-          return;
+          return response.status(404).json({ error: "Memory not found." });
+        }
+
+        if (!content || !content.trim()) {
+          return response.status(400).json({ error: "Content is required." });
         }
 
         const { memory, message } = await Memory.update(memoryId, {
@@ -126,8 +120,7 @@ function memoryEndpoints(app) {
         });
 
         if (!memory) {
-          response.status(400).json({ error: message });
-          return;
+          return response.status(400).json({ error: message });
         }
 
         response.status(200).json({ memory });
@@ -148,8 +141,7 @@ function memoryEndpoints(app) {
 
         const existing = await Memory.get({ id: memoryId });
         if (!existing || !ownerMatch(existing, user)) {
-          response.status(404).json({ error: "Memory not found." });
-          return;
+          return response.status(404).json({ error: "Memory not found." });
         }
 
         await Memory.delete(memoryId);
@@ -171,14 +163,12 @@ function memoryEndpoints(app) {
 
         const existing = await Memory.get({ id: memoryId });
         if (!existing || !ownerMatch(existing, user)) {
-          response.status(404).json({ error: "Memory not found." });
-          return;
+          return response.status(404).json({ error: "Memory not found." });
         }
 
         const { memory, message } = await Memory.promoteToGlobal(memoryId);
         if (!memory) {
-          response.status(400).json({ error: message });
-          return;
+          return response.status(400).json({ error: message });
         }
 
         response.status(200).json({ memory });
@@ -198,23 +188,22 @@ function memoryEndpoints(app) {
         const memoryId = Number(request.params.memoryId);
         const { workspaceId } = reqBody(request);
 
-        if (!workspaceId) {
-          response.status(400).json({ error: "workspaceId is required." });
-          return;
-        }
-
         const existing = await Memory.get({ id: memoryId });
         if (!existing || !ownerMatch(existing, user)) {
-          response.status(404).json({ error: "Memory not found." });
-          return;
+          return response.status(404).json({ error: "Memory not found." });
+        }
+
+        if (!workspaceId) {
+          return response
+            .status(400)
+            .json({ error: "workspaceId is required." });
         }
 
         const targetWorkspace = multiUserMode(response)
           ? await Workspace.getWithUser(user, { id: Number(workspaceId) })
           : await Workspace.get({ id: Number(workspaceId) });
         if (!targetWorkspace) {
-          response.status(403).json({ error: "Invalid workspace." });
-          return;
+          return response.status(403).json({ error: "Invalid workspace." });
         }
 
         const { memory, message } = await Memory.demoteToWorkspace(
@@ -222,8 +211,7 @@ function memoryEndpoints(app) {
           Number(workspaceId)
         );
         if (!memory) {
-          response.status(400).json({ error: message });
-          return;
+          return response.status(400).json({ error: message });
         }
 
         response.status(200).json({ memory });
