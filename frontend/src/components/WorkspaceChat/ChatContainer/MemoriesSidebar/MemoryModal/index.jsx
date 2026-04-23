@@ -67,6 +67,10 @@ export default function MemoryModal({
           </label>
           <textarea
             autoFocus
+            onFocus={(e) => {
+              const len = e.currentTarget.value.length;
+              e.currentTarget.setSelectionRange(len, len);
+            }}
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder={t("chat_window.memories.modal.placeholder")}
