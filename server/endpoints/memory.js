@@ -15,20 +15,19 @@ async function memoryFeatureEnabled(_req, response, next) {
   next();
 }
 
-// Loads the memory by :memoryId and, in multi-user mode, verifies the requester owns it.
-// Single-user mode has no per-user scoping so only the existence check runs.
+// Loads the memory by :memoryId and, in multi-user mode, scopes the query to the requester's userId.
+// A memory owned by another user returns null here and is indistinguishable from "not found" — 404 either way.
 async function validateMemoryOwner(request, response, next) {
   try {
-    const memoryId = Number(request.params.memoryId);
-    const memory = await Memory.get({ id: memoryId });
-    if (!memory)
-      return response.status(404).json({ error: "Memory not found." });
-
+    const clause = { id: Number(request.params.memoryId) };
     if (response.locals.multiUserMode) {
       const user = await userFromSession(request, response);
-      if ((memory.userId ?? null) !== (user?.id ?? null))
-        return response.status(404).json({ error: "Memory not found." });
+      clause.userId = user?.id ?? null;
     }
+
+    const memory = await Memory.get(clause);
+    if (!memory)
+      return response.status(404).json({ error: "Memory not found." });
 
     next();
   } catch (e) {
