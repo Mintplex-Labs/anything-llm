@@ -1172,6 +1172,8 @@ const TRANSLATIONS = {
     agent_flows: "エージェント間の流れ",
     no_tools_found: "一致するツールは見つかりませんでした",
     loading_mcp_servers: "MCP サーバーの読み込み中...",
+    app_integrations: "アプリケーション連携",
+    sub_skills: "専門スキル",
   },
   profile_settings: {
     edit_account: "アカウントを編集",

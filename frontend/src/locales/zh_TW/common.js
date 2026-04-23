@@ -1112,6 +1112,8 @@ const TRANSLATIONS = {
     agent_flows: "代理人流",
     no_tools_found: "未找到匹配的工具",
     loading_mcp_servers: "正在載入 MCP 伺服器...",
+    app_integrations: "應用程式整合",
+    sub_skills: "細項技能",
   },
   profile_settings: {
     edit_account: "編輯帳戶",

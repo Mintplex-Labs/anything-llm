@@ -1200,6 +1200,8 @@ const TRANSLATIONS = {
     agent_flows: "Stroom van agenten",
     no_tools_found: "Geen overeenkomende gereedschappen gevonden.",
     loading_mcp_servers: "MCP-servers worden geladen...",
+    app_integrations: "Integraties met apps",
+    sub_skills: "Specifieke vaardigheden",
   },
   profile_settings: {
     edit_account: "Account bewerken",

@@ -1324,6 +1324,8 @@ const TRANSLATIONS = {
     agent_flows: "Flujos de agentes",
     no_tools_found: "No se encontraron herramientas coincidentes.",
     loading_mcp_servers: "Cargando servidores de MCP...",
+    app_integrations: "Integraciones de aplicaciones",
+    sub_skills: "Habilidades específicas",
   },
   profile_settings: {
     edit_account: "Editar cuenta",

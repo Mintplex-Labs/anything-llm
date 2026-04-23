@@ -1178,6 +1178,8 @@ const TRANSLATIONS = {
     agent_flows: "تدفقات الوكلاء",
     no_tools_found: "لم يتم العثور على أدوات مطابقة.",
     loading_mcp_servers: "تحميل خوادم MCP...",
+    app_integrations: "تكامل التطبيقات",
+    sub_skills: "مهارات فرعية",
   },
   profile_settings: {
     edit_account: "تحرير الحساب",

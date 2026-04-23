@@ -581,6 +581,8 @@ const TRANSLATIONS = {
     agent_flows: "Fluxuri de agenți",
     no_tools_found: "Nu au fost găsite instrumente corespunzătoare.",
     loading_mcp_servers: "Încărcare servere MCP...",
+    app_integrations: "Integrarea aplicațiilor",
+    sub_skills: "Abilități specifice",
   },
   profile_settings: {
     edit_account: "Editează contul",

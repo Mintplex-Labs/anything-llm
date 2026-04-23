@@ -1210,6 +1210,8 @@ const TRANSLATIONS = {
     agent_flows: "Поток агентов",
     no_tools_found: "Не найдено соответствующих инструментов.",
     loading_mcp_servers: "Загрузка серверов MCP...",
+    app_integrations: "Интеграция с приложениями",
+    sub_skills: "Подквалификация",
   },
   profile_settings: {
     edit_account: "Редактировать учётную запись",

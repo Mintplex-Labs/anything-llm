@@ -1316,6 +1316,8 @@ const TRANSLATIONS = {
     agent_flows: "Agentų srautai",
     no_tools_found: "Nėra rasti atitikusių įrankių.",
     loading_mcp_servers: "Įkrauname MCP serverius...",
+    app_integrations: "Programų integracijos",
+    sub_skills: "Pagrindinės įgūdžios",
   },
   profile_settings: {
     edit_account: "Redaguoti paskyrą",

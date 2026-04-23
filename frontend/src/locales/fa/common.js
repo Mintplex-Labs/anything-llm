@@ -1184,6 +1184,8 @@ const TRANSLATIONS = {
     agent_flows: "جریان‌های نمایندگی",
     no_tools_found: "هیچ ابزار مشابهی یافت نشد.",
     loading_mcp_servers: "بارگذاری سرورهای MCP...",
+    app_integrations: "ادغام با برنامه‌ها",
+    sub_skills: "مهارت‌های پایه",
   },
   profile_settings: {
     edit_account: "ویرایش حساب",

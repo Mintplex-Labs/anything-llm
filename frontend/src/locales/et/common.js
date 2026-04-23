@@ -1251,6 +1251,8 @@ const TRANSLATIONS = {
     agent_flows: "Agentide liiklus",
     no_tools_found: "Välja ei leitud sobivaid tööriistu",
     loading_mcp_servers: "MCP-serverite laadimine...",
+    app_integrations: "Rakenduste integreerimine",
+    sub_skills: "Alamspetsid",
   },
   profile_settings: {
     edit_account: "Muuda kontot",

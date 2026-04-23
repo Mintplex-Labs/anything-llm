@@ -1312,6 +1312,8 @@ const TRANSLATIONS = {
     agent_flows: "Toky agentů",
     no_tools_found: "Nebyla nalezena žádná odpovídající nářadí.",
     loading_mcp_servers: "Načítají se servery pro MCP...",
+    app_integrations: "Integrace aplikací",
+    sub_skills: "Specifické dovednosti",
   },
   profile_settings: {
     edit_account: "Upravit účet",

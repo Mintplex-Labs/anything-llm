@@ -1308,6 +1308,8 @@ const TRANSLATIONS = {
     agent_flows: "Datenströme",
     no_tools_found: "Keine passenden Werkzeuge gefunden.",
     loading_mcp_servers: "MCP-Server laden...",
+    app_integrations: "Anwendungen und Integrationen",
+    sub_skills: "Spezifische Fähigkeiten",
   },
   profile_settings: {
     edit_account: "Account bearbeiten",

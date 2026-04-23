@@ -1297,6 +1297,8 @@ const TRANSLATIONS = {
     agent_flows: "Aģentu plūsmas",
     no_tools_found: "Neatradusies atbilstošas instrumentus",
     loading_mcp_servers: "Ielāde MCP serverus...",
+    app_integrations: "Dienvidligzdas integrācijas",
+    sub_skills: "Īpašās prasmes",
   },
   profile_settings: {
     edit_account: "Rediģēt kontu",
