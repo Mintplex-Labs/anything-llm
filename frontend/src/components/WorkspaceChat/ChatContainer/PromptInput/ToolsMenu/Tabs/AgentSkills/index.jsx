@@ -1,24 +1,21 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { titleCase } from "text-case";
 import paths from "@/utils/paths";
-import Admin from "@/models/admin";
-import System from "@/models/system";
-import AgentPlugins from "@/models/experimental/agentPlugins";
-import AgentFlows from "@/models/agentFlows";
-import MCPServers from "@/models/mcpServers";
 import {
   getDefaultSkills,
   getConfigurableSkills,
+  getAppIntegrationSkills,
 } from "@/pages/Admin/Agents/skills";
 import useToolsMenuItems from "../../useToolsMenuItems";
+import useAgentSkillsState from "./useAgentSkillsState";
+import useSkillSections from "./useSkillSections";
 import SkillRow from "./SkillRow";
 import SkillSection from "./SkillSection";
 import { Wrench, MagnifyingGlass, CircleNotch } from "@phosphor-icons/react";
 import { useIsAgentSessionActive } from "@/utils/chat/agent";
 
-const SEARCH_THRESHOLD = 10;
+const MIN_ITEMS_TO_SHOW_SEARCH = 10;
 
 export default function AgentSkillsTab({
   highlightedIndex = -1,
@@ -28,140 +25,62 @@ export default function AgentSkillsTab({
   const { t } = useTranslation();
   const { showAgentCommand = true } = workspace ?? {};
   const agentSessionActive = useIsAgentSessionActive();
+
+  // Get skill definitions
   const defaultSkills = getDefaultSkills(t);
-  const [fileSystemAgentAvailable, setFileSystemAgentAvailable] =
-    useState(false);
+  const appIntegrationSkills = getAppIntegrationSkills(t);
+
+  // All skill state management
+  const {
+    fileSystemAgentAvailable,
+    importedSkills,
+    flows,
+    mcpServers,
+    loading,
+    mcpLoading,
+    isSkillEnabled,
+    toggleSkill,
+    toggleImportedSkill,
+    toggleFlow,
+    toggleMcpTool,
+    isSubSkillEnabled,
+    toggleSubSkill,
+    disabledSubSkills,
+  } = useAgentSkillsState(defaultSkills);
+
   const configurableSkills = getConfigurableSkills(t, {
     fileSystemAgentAvailable,
   });
-  const [disabledDefaults, setDisabledDefaults] = useState([]);
-  const [enabledConfigurable, setEnabledConfigurable] = useState([]);
-  const [importedSkills, setImportedSkills] = useState([]);
-  const [flows, setFlows] = useState([]);
-  const [mcpServers, setMcpServers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [mcpLoading, setMcpLoading] = useState(true);
+
+  // UI state
   const [expandedSections, setExpandedSections] = useState({});
+  const [expandedSubSections, setExpandedSubSections] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
+
   const showAgentCmdActivationAlert = showAgentCommand && !agentSessionActive;
 
-  useEffect(() => {
-    fetchSkillSettings();
-    fetchMcpServers();
-  }, []);
+  // Build all sections
+  const sections = useSkillSections({
+    t,
+    defaultSkills,
+    configurableSkills,
+    appIntegrationSkills,
+    importedSkills,
+    flows,
+    mcpServers,
+    isSkillEnabled,
+    toggleSkill,
+    isSubSkillEnabled,
+    toggleSubSkill,
+    toggleImportedSkill,
+    toggleFlow,
+    toggleMcpTool,
+    disabledSubSkills,
+  });
 
-  async function fetchSkillSettings() {
-    try {
-      const [prefs, flowsRes, fsAgentAvailable] = await Promise.all([
-        Admin.systemPreferencesByFields([
-          "disabled_agent_skills",
-          "default_agent_skills",
-          "imported_agent_skills",
-        ]),
-        AgentFlows.listFlows(),
-        System.isFileSystemAgentAvailable(),
-      ]);
-
-      if (prefs?.settings) {
-        setDisabledDefaults(prefs.settings.disabled_agent_skills ?? []);
-        setEnabledConfigurable(prefs.settings.default_agent_skills ?? []);
-        setImportedSkills(prefs.settings.imported_agent_skills ?? []);
-      }
-      if (flowsRes?.flows) setFlows(flowsRes.flows);
-      setFileSystemAgentAvailable(fsAgentAvailable);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function fetchMcpServers() {
-    try {
-      const { servers = [] } = await MCPServers.listServers();
-      setMcpServers(servers);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setMcpLoading(false);
-    }
-  }
-
-  function toggleItem(arr, item) {
-    return arr.includes(item) ? arr.filter((s) => s !== item) : [...arr, item];
-  }
-
-  function isSkillEnabled(key) {
-    return key in defaultSkills
-      ? !disabledDefaults.includes(key)
-      : enabledConfigurable.includes(key);
-  }
-
+  // Section expansion helpers
   function isSectionExpanded(sectionId) {
     return !!(searchQuery.trim() || expandedSections[sectionId]);
-  }
-
-  async function toggleSkill(key) {
-    if (key in defaultSkills) {
-      const updated = toggleItem(disabledDefaults, key);
-      setDisabledDefaults(updated);
-      await Admin.updateSystemPreferences({
-        disabled_agent_skills: updated.join(","),
-        default_agent_skills: enabledConfigurable.join(","),
-      });
-      return;
-    }
-
-    const updated = toggleItem(enabledConfigurable, key);
-    setEnabledConfigurable(updated);
-    await Admin.updateSystemPreferences({
-      disabled_agent_skills: disabledDefaults.join(","),
-      default_agent_skills: updated.join(","),
-    });
-  }
-
-  async function toggleImportedSkill(skill) {
-    const newActive = !skill.active;
-    setImportedSkills((prev) =>
-      prev.map((s) =>
-        s.hubId === skill.hubId ? { ...s, active: newActive } : s
-      )
-    );
-    await AgentPlugins.toggleFeature(skill.hubId, newActive);
-  }
-
-  async function toggleFlow(flow) {
-    const newActive = !flow.active;
-    setFlows((prev) =>
-      prev.map((f) => (f.uuid === flow.uuid ? { ...f, active: newActive } : f))
-    );
-    await AgentFlows.toggleFlow(flow.uuid, newActive);
-  }
-
-  async function toggleMcpTool(serverName, toolName, currentlyEnabled) {
-    const newEnabled = !currentlyEnabled;
-    setMcpServers((prev) => {
-      const updated = prev.map((server) => {
-        if (server.name !== serverName) return server;
-        const currentSuppressed =
-          server.config?.anythingllm?.suppressedTools || [];
-        const newSuppressed = newEnabled
-          ? currentSuppressed.filter((t) => t !== toolName)
-          : [...currentSuppressed, toolName];
-        return {
-          ...server,
-          config: {
-            ...server.config,
-            anythingllm: {
-              ...server.config?.anythingllm,
-              suppressedTools: newSuppressed,
-            },
-          },
-        };
-      });
-      return updated;
-    });
-    await MCPServers.toggleTool(serverName, toolName, newEnabled);
   }
 
   function toggleSection(sectionId) {
@@ -171,97 +90,16 @@ export default function AgentSkillsTab({
     }));
   }
 
-  // Build sections of grouped items
-  const sections = useMemo(() => {
-    const sectionList = [];
+  function isSubSectionExpanded(subSectionId) {
+    return !!(searchQuery.trim() || expandedSubSections[subSectionId]);
+  }
 
-    // Agent Skills (default + configurable)
-    const skillItems = [];
-    for (const [key, { title }] of Object.entries({
-      ...defaultSkills,
-      ...configurableSkills,
-    })) {
-      skillItems.push({
-        id: key,
-        name: title,
-        enabled: isSkillEnabled(key),
-        onToggle: () => toggleSkill(key),
-      });
-    }
-    if (skillItems.length > 0) {
-      sectionList.push({
-        id: "agent-skills",
-        name: t("chat_window.agent_skills"),
-        items: skillItems,
-        enabledCount: skillItems.filter((i) => i.enabled).length,
-      });
-    }
-
-    // Custom Skills (imported)
-    if (importedSkills.length > 0) {
-      const items = importedSkills.map((skill) => ({
-        id: skill.hubId,
-        name: skill.name,
-        enabled: skill.active,
-        onToggle: () => toggleImportedSkill(skill),
-      }));
-      sectionList.push({
-        id: "custom-skills",
-        name: t("chat_window.custom_skills"),
-        items,
-        enabledCount: items.filter((i) => i.enabled).length,
-      });
-    }
-
-    // Agent Flows
-    if (flows.length > 0) {
-      const items = flows.map((flow) => ({
-        id: flow.uuid,
-        name: flow.name,
-        enabled: flow.active,
-        onToggle: () => toggleFlow(flow),
-      }));
-      sectionList.push({
-        id: "agent-flows",
-        name: t("chat_window.agent_flows"),
-        items,
-        enabledCount: items.filter((i) => i.enabled).length,
-      });
-    }
-
-    // MCP Servers (one section per running server with tools)
-    for (const server of mcpServers) {
-      if (!server.running || server.tools.length === 0) continue;
-      const suppressedTools = server.config?.anythingllm?.suppressedTools || [];
-      const items = server.tools.map((tool) => ({
-        id: `mcp::${server.name}::${tool.name}`,
-        name: tool.name,
-        enabled: !suppressedTools.includes(tool.name),
-        onToggle: () =>
-          toggleMcpTool(
-            server.name,
-            tool.name,
-            !suppressedTools.includes(tool.name)
-          ),
-      }));
-      sectionList.push({
-        id: `mcp-${server.name}`,
-        name: titleCase(server.name.replace(/[_-]/g, " ")),
-        isMcp: true,
-        items,
-        enabledCount: items.filter((i) => i.enabled).length,
-      });
-    }
-
-    return sectionList;
-  }, [
-    disabledDefaults,
-    enabledConfigurable,
-    importedSkills,
-    flows,
-    mcpServers,
-    fileSystemAgentAvailable,
-  ]);
+  function toggleSubSection(subSectionId) {
+    setExpandedSubSections((prev) => ({
+      ...prev,
+      [subSectionId]: !prev[subSectionId],
+    }));
+  }
 
   // Filter sections by search query
   const filteredSections = useMemo(() => {
@@ -269,9 +107,13 @@ export default function AgentSkillsTab({
     const q = searchQuery.toLowerCase();
     return sections
       .map((section) => {
-        const items = section.items.filter((item) =>
-          item.name.toLowerCase().includes(q)
-        );
+        const items = section.items.filter((item) => {
+          const nameMatches = item.name.toLowerCase().includes(q);
+          const subSkillMatches =
+            item.subSkills?.some((sub) => sub.name.toLowerCase().includes(q)) ??
+            false;
+          return nameMatches || subSkillMatches;
+        });
         return {
           ...section,
           items,
@@ -281,7 +123,7 @@ export default function AgentSkillsTab({
       .filter((section) => section.items.length > 0);
   }, [sections, searchQuery]);
 
-  // Flat list of navigable items (headers + visible children) for keyboard nav
+  // Flat list of navigable items for keyboard nav
   const { flatItems, flatIndexMap } = useMemo(() => {
     const items = [];
     const indexMap = {};
@@ -296,11 +138,28 @@ export default function AgentSkillsTab({
         for (const item of section.items) {
           indexMap[item.id] = items.length;
           items.push(item);
+
+          if (item.hasSubSkills && item.subSkills) {
+            indexMap[`subsection-${item.id}`] = items.length;
+            items.push({
+              type: "subheader",
+              id: `subsection-${item.id}`,
+              parentId: item.id,
+              onToggle: () => toggleSubSection(item.id),
+            });
+
+            if (isSubSectionExpanded(item.id)) {
+              for (const subItem of item.subSkills) {
+                indexMap[subItem.id] = items.length;
+                items.push(subItem);
+              }
+            }
+          }
         }
       }
     }
     return { flatItems: items, flatIndexMap: indexMap };
-  }, [filteredSections, expandedSections, searchQuery]);
+  }, [filteredSections, expandedSections, expandedSubSections, searchQuery]);
 
   const totalItemCount = sections.reduce((sum, s) => sum + s.items.length, 0);
 
@@ -323,7 +182,7 @@ export default function AgentSkillsTab({
           {t("chat_window.use_agent_session_to_use_tools")}
         </p>
       )}
-      {totalItemCount >= SEARCH_THRESHOLD && (
+      {totalItemCount >= MIN_ITEMS_TO_SHOW_SEARCH && (
         <SearchInput
           value={searchQuery}
           onChange={setSearchQuery}
@@ -342,14 +201,41 @@ export default function AgentSkillsTab({
           highlighted={highlightedIndex === flatIndexMap[section.id]}
         >
           {section.items.map((item) => (
-            <SkillRow
-              key={item.id}
-              name={item.name}
-              enabled={item.enabled}
-              onToggle={item.onToggle}
-              highlighted={highlightedIndex === flatIndexMap[item.id]}
-              disabled={agentSessionActive}
-            />
+            <div key={item.id}>
+              <SkillRow
+                name={item.name}
+                enabled={item.enabled}
+                onToggle={item.onToggle}
+                highlighted={highlightedIndex === flatIndexMap[item.id]}
+                disabled={agentSessionActive}
+              />
+              {item.hasSubSkills && item.subSkills && item.enabled && (
+                <SkillSection
+                  name={t("chat_window.sub_skills")}
+                  expanded={isSubSectionExpanded(item.id)}
+                  onToggle={() => toggleSubSection(item.id)}
+                  enabledCount={item.subSkills.filter((s) => s.enabled).length}
+                  totalCount={item.subSkills.length}
+                  highlighted={
+                    highlightedIndex === flatIndexMap[`subsection-${item.id}`]
+                  }
+                  indented
+                >
+                  {item.subSkills.map((subItem) => (
+                    <SkillRow
+                      key={subItem.id}
+                      name={subItem.name}
+                      enabled={subItem.enabled}
+                      onToggle={subItem.onToggle}
+                      highlighted={
+                        highlightedIndex === flatIndexMap[subItem.id]
+                      }
+                      disabled={agentSessionActive || !subItem.parentEnabled}
+                    />
+                  ))}
+                </SkillSection>
+              )}
+            </div>
           ))}
         </SkillSection>
       ))}
