@@ -1493,18 +1493,10 @@ const TRANSLATIONS = {
   scheduledJobs: {
     title: "Scheduled Jobs",
     enableNotifications: "Enable browser notifications for job results",
-    status: {
-      completed: "Completed",
-      failed: "Failed",
-      timed_out: "Timed out",
-      running: "Running",
-      queued: "Queued",
-    },
     description:
       "Create recurring AI tasks that run on a schedule. Each job runs a prompt with optional tools and saves the result for review.",
     newJob: "New Job",
     loading: "Loading...",
-    empty: "No scheduled jobs yet. Create one to get started.",
     emptyTitle: "No Scheduled Jobs yet",
     emptySubtitle: "Create one to get started.",
     table: {
@@ -1551,13 +1543,10 @@ const TRANSLATIONS = {
       required: "Required",
       requiredFieldsBanner:
         "Please fill out all required fields in order to create job.",
-      selectAll: "Select all",
-      deselectAll: "Deselect all",
       cancel: "Cancel",
       saving: "Saving...",
       updateJob: "Update Job",
       createJob: "Create Job",
-      requiredFields: "Please fill in all required fields",
       jobUpdated: "Job updated",
       jobCreated: "Job created",
     },
@@ -1603,7 +1592,6 @@ const TRANSLATIONS = {
         started: "Started",
         duration: "Duration",
         error: "Error",
-        actions: "Actions",
       },
     },
     runDetail: {
@@ -1637,9 +1625,6 @@ const TRANSLATIONS = {
         completionTokens: "Completion tokens:",
       },
     },
-    runRow: {
-      viewDetails: "View details",
-    },
     toolCall: {
       arguments: "Arguments:",
       showResult: "Show result",
@@ -1648,7 +1633,6 @@ const TRANSLATIONS = {
     file: {
       unknown: "Unknown file",
       download: "Download",
-      downloading: "Downloading...",
       downloadFailed: "Failed to download file",
       types: {
         powerpoint: "PowerPoint",
