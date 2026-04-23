@@ -98,21 +98,17 @@ function scheduledJobEndpoints(app) {
     [validatedRequest, isSingleUserMode],
     async (_request, response) => {
       try {
-        const jobs = await ScheduledJob.where();
+        const jobs = await ScheduledJob.where({}, null, null, {
+          runs: {
+            take: 1,
+            orderBy: { startedAt: "desc" },
+          },
+        });
 
-        const jobsWithStatus = await Promise.all(
-          jobs.map(async (job) => {
-            const [latestRun] = await ScheduledJobRun.where(
-              { jobId: job.id },
-              1,
-              { startedAt: "desc" }
-            );
-            return {
-              ...job,
-              latestRun: latestRun || null,
-            };
-          })
-        );
+        const jobsWithStatus = jobs.map(({ runs, ...job }) => ({
+          ...job,
+          latestRun: runs[0] || null,
+        }));
 
         return response.status(200).json({ jobs: jobsWithStatus });
       } catch (e) {

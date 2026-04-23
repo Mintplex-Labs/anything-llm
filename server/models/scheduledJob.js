@@ -113,7 +113,12 @@ const ScheduledJob = {
     }
   },
 
-  where: async function (clause = {}, limit = null, orderBy = null) {
+  where: async function (
+    clause = {},
+    limit = null,
+    orderBy = null,
+    include = {}
+  ) {
     try {
       const results = await prisma.scheduled_jobs.findMany({
         where: clause,
@@ -121,6 +126,7 @@ const ScheduledJob = {
         ...(orderBy !== null
           ? { orderBy }
           : { orderBy: { createdAt: "desc" } }),
+        ...(Object.keys(include).length > 0 ? { include } : {}),
       });
       return results;
     } catch (error) {
