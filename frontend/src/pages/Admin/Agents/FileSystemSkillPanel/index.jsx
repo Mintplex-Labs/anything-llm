@@ -18,7 +18,7 @@ import {
 } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
 
-const getFileSystemSubSkills = (t) => {
+export const getFileSystemSubSkills = (t) => {
   return [
     {
       name: "filesystem-read-text-file",

@@ -107,7 +107,7 @@ module.exports.GmailSearch = {
                 )
                 .join("\n");
 
-              return `Found ${resultCount} email threads:\n\n${summary}\n\nUse the thread ID with gmail-read-thread to read the full conversation.`;
+              return `Found ${resultCount} email threads:\n\n${summary}\n\nAlways include the full thread ID in the response. Use the thread ID with gmail-read-thread to read the full conversation.`;
             } catch (e) {
               this.super.handlerProps.log(`gmail-search error: ${e.message}`);
               this.super.introspect(`Error: ${e.message}`);

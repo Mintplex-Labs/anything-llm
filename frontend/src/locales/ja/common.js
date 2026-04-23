@@ -615,6 +615,89 @@ const TRANSLATIONS = {
           },
         },
       },
+      googleCalendar: {
+        title: "Google カレンダー 連携機能",
+        description:
+          "エージェントがGoogleカレンダーと連携できるようにする - カレンダーの表示、イベントの取得、イベントの作成と更新、およびRSVPの管理を可能にする。詳細については、ドキュメントを参照してください。",
+        multiUserWarning:
+          "Google カレンダーとの連携は、セキュリティ上の理由から、複数ユーザーモードでは利用できません。この機能をご利用いただくには、複数ユーザーモードを無効にする必要があります。",
+        configuration: "Google カレンダーの設定",
+        deploymentId: "デプロイメントID",
+        deploymentIdHelp:
+          "あなたのGoogle Apps ScriptのウェブアプリケーションのデプロイID",
+        apiKey: "APIキー",
+        apiKeyHelp: "Google Apps Script のデプロイ時に設定した API キー",
+        configurationRequired:
+          "Google カレンダーの機能を使用するために、デプロイメントIDとAPIキーを設定してください。",
+        configured: "設定済み",
+        searchSkills: "検索スキル...",
+        noSkillsFound:
+          "あなたの検索条件に合致するスキルは見つかりませんでした。",
+        categories: {
+          calendars: {
+            title: "カレンダー",
+            description: "Googleカレンダーの表示と管理",
+          },
+          readEvents: {
+            title: "イベント情報",
+            description: "カレンダー上のイベントの表示と検索",
+          },
+          writeEvents: {
+            title: "イベントの作成と更新",
+            description: "新しいイベントを作成し、既存のイベントを修正する",
+          },
+          rsvp: {
+            title: "RSVP（出欠確認）管理",
+            description: "イベントへの参加状況を管理する",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "カレンダーリスト",
+            description:
+              "所有している、または購読しているすべてのカレンダーの一覧",
+          },
+          getCalendar: {
+            title: "カレンダーの詳細を確認する",
+            description: "特定のカレンダーに関する詳細な情報த்தைப்入手する",
+          },
+          getEvent: {
+            title: "イベント情報を入手",
+            description: "特定のイベントに関する詳細な情報த்தைப்入手する",
+          },
+          getEventsForDay: {
+            title: "その日のイベントを検索する",
+            description: "特定の日に予定されているすべてのイベントを取得する",
+          },
+          getEvents: {
+            title: "イベント（期間指定）",
+            description: "指定した期間内のイベントを取得する",
+          },
+          getUpcomingEvents: {
+            title: "今後のイベントをチェックする",
+            description:
+              "今日、今週、または今月のイベントを、簡単なキーワードを使って検索する",
+          },
+          quickAdd: {
+            title: "イベントをすぐに登録",
+            description:
+              "自然言語（例：「明日午後3時に会議」）からイベントを作成する",
+          },
+          createEvent: {
+            title: "イベントを作成する",
+            description:
+              "すべてのプロパティを完全に制御できる、新しいイベントを作成する。",
+          },
+          updateEvent: {
+            title: "イベント情報更新",
+            description: "既存の予定を更新する",
+          },
+          setMyStatus: {
+            title: "返信状況を設定する",
+            description: "イベントへの参加、拒否、または仮の参加",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP サーバー",
@@ -1085,6 +1168,12 @@ const TRANSLATIONS = {
       tool_call_was_approved: "ツールの使用許可が承認されました",
       tool_call_was_rejected: "ツール呼び出しは拒否されました",
     },
+    custom_skills: "カスタマイズ可能なスキル",
+    agent_flows: "エージェント間の流れ",
+    no_tools_found: "一致するツールは見つかりませんでした",
+    loading_mcp_servers: "MCP サーバーの読み込み中...",
+    app_integrations: "アプリケーション連携",
+    sub_skills: "専門スキル",
   },
   profile_settings: {
     edit_account: "アカウントを編集",

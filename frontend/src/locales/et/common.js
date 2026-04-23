@@ -620,6 +620,92 @@ const TRANSLATIONS = {
           },
         },
       },
+      googleCalendar: {
+        title: "Google Kalendri ühendaja",
+        description:
+          "Lisage oma esindajale võimalus interakteeruda Google Kalendriga – vaadake kalendreid, hankige sündmusi, looge ja uuendage sündmusi ning hallake vastuvõtuid. <a>Vaadake dokumentatsiooni</a>.",
+        multiUserWarning:
+          "Google Kalendri integreerimine ei ole saadaval mitme kasutaja režiimis turvalisuse huvides. Palun deaktiveeri mitme kasutaja režiim, et kasutada seda funktsiooni.",
+        configuration: "Google Kalendri seadistamine",
+        deploymentId: "Paigutuse ID",
+        deploymentIdHelp: "Veebirakenduse Google Apps Scripti ID",
+        apiKey: "API võtme",
+        apiKeyHelp:
+          "API võti, mida olete konfigureerinud oma Google Apps Scripti rakenduses.",
+        configurationRequired:
+          'Palun konfigureerige "Deployment ID" ja API võti, et Google Calendar funktsionaalsus oleks aktiivne.',
+        configured: "Konfigureeritud",
+        searchSkills: "otsinguteadused...",
+        noSkillsFound: "Sellele andmetele ei leitud sobivaid tulemusi.",
+        categories: {
+          calendars: {
+            title: "Kalendrid",
+            description: "Vaata ja hallata oma Google kalendeid",
+          },
+          readEvents: {
+            title: "Vaata üritusi",
+            description: "Vaata ja otsi kalendri sündmusi",
+          },
+          writeEvents: {
+            title: "Loo ja uuenda üritusi",
+            description: "Loo uusi üritusi ja muuda olemasolevaid",
+          },
+          rsvp: {
+            title: "Vabatahtlikkuse registreerimise juhtimine",
+            description: "Halda oma vastuse staatuse sündmustele",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "Kalendrid",
+            description:
+              "Loole kõik kalendrid, mille te omate või millele olete registreeritud.",
+          },
+          getCalendar: {
+            title: "Hankige kalendri üksikasjad",
+            description:
+              "Hankige üksikasjalikke andmeid konkreetse kalendri kohta",
+          },
+          getEvent: {
+            title: "Saada ürituse info",
+            description:
+              "Hankige üksikasjalikku teavet konkreetse ürituse kohta",
+          },
+          getEventsForDay: {
+            title: "Leidke üritused selle päeva jaoks",
+            description:
+              "Vaata kõiki üritusi, mis on planeeritud konkreetsele päeval",
+          },
+          getEvents: {
+            title: "Leia üritused (aegraadi)",
+            description: "Võtke kokku sündmused spetsifitse ajaskaala pikkusel",
+          },
+          getUpcomingEvents: {
+            title: "Vaata tulevasi üritusi",
+            description:
+              "Leidke sündmused täna, selle nädala või selle kuuga, kasutades lihtsaid sõnu",
+          },
+          quickAdd: {
+            title: "Kiirelt sisse lisada",
+            description:
+              'Loo üritus loomuliku keele alusel (nt "Koosolek homme kell 15:00")',
+          },
+          createEvent: {
+            title: "Loo üritus",
+            description:
+              "Loo uus üritus, mis võimaldab kontrollida kõiki selle atribuute.",
+          },
+          updateEvent: {
+            title: "Täiendav info",
+            description: "Muuda olemasoleva kalendri sündmuse",
+          },
+          setMyStatus: {
+            title: "Määrake vastuvõtu staatus",
+            description:
+              "Mõne sündmuse kinnitamise, kehtestamise või esialgse kinnitamise.",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP-serverid",
@@ -1161,6 +1247,12 @@ const TRANSLATIONS = {
       tool_call_was_approved: "Vahendite tellimuse kinnitati.",
       tool_call_was_rejected: "Vahendite taotlus jäeti rahuldamata.",
     },
+    custom_skills: "Kohandatud oskused",
+    agent_flows: "Agentide liiklus",
+    no_tools_found: "Välja ei leitud sobivaid tööriistu",
+    loading_mcp_servers: "MCP-serverite laadimine...",
+    app_integrations: "Rakenduste integreerimine",
+    sub_skills: "Alamspetsid",
   },
   profile_settings: {
     edit_account: "Muuda kontot",

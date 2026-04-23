@@ -641,6 +641,95 @@ const TRANSLATIONS = {
           },
         },
       },
+      googleCalendar: {
+        title: "Conector do Google Calendar",
+        description:
+          "Permita que seu agente interaja com o Google Agenda – visualize agendas, obter eventos, criar e atualizar eventos, e gerenciar confirmações de presença. <a>Leia a documentação</a>.",
+        multiUserWarning:
+          "A integração com o Google Calendar não está disponível no modo multiusuário, por razões de segurança. Por favor, desative o modo multiusuário para utilizar esta funcionalidade.",
+        configuration: "Configuração do Google Agenda",
+        deploymentId: "ID de implantação",
+        deploymentIdHelp:
+          "O ID de implantação da sua aplicação web do Google Apps Script",
+        apiKey: "Chave de API",
+        apiKeyHelp:
+          "A chave de API que você configurou no seu projeto Google Apps Script",
+        configurationRequired:
+          "Por favor, configure o ID de Implantação e a Chave de API para habilitar as funcionalidades do Google Calendar.",
+        configured: "Configurado",
+        searchSkills: "Habilidades de pesquisa...",
+        noSkillsFound:
+          "Não encontramos nenhum resultado que corresponda à sua pesquisa.",
+        categories: {
+          calendars: {
+            title: "Calendários",
+            description: "Visualize e gerencie seus calendários do Google.",
+          },
+          readEvents: {
+            title: "Ver eventos",
+            description: "Visualize e pesquise eventos no calendário",
+          },
+          writeEvents: {
+            title: "Criar e atualizar eventos",
+            description: "Crie novos eventos e modifique os existentes.",
+          },
+          rsvp: {
+            title: "Gerenciamento de confirmações de presença",
+            description: "Gerencie o status da sua resposta para eventos.",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "Listar calendários",
+            description:
+              "Liste todos os calendários que você possui ou aos quais está inscrito.",
+          },
+          getCalendar: {
+            title: "Obtenha detalhes do calendário",
+            description:
+              "Obtenha informações detalhadas sobre um calendário específico.",
+          },
+          getEvent: {
+            title: "Obtenha informações sobre o evento",
+            description:
+              "Obtenha informações detalhadas sobre um evento específico.",
+          },
+          getEventsForDay: {
+            title: "Encontre eventos para o dia",
+            description:
+              "Obtenha todos os eventos agendados para uma data específica.",
+          },
+          getEvents: {
+            title: "Obter eventos (período de tempo)",
+            description:
+              "Obtenha eventos dentro de um intervalo de datas personalizado.",
+          },
+          getUpcomingEvents: {
+            title: "Veja os próximos eventos",
+            description:
+              "Encontre eventos para hoje, esta semana ou este mês utilizando palavras-chave simples.",
+          },
+          quickAdd: {
+            title: "Adicionar evento rapidamente",
+            description:
+              'Criar um evento a partir de linguagem natural (por exemplo, "Reunião amanhã às 15h")',
+          },
+          createEvent: {
+            title: "Criar evento",
+            description:
+              "Crie um novo evento com controle total sobre todas as propriedades.",
+          },
+          updateEvent: {
+            title: "Atualização do evento",
+            description: "Atualizar um evento existente no calendário",
+          },
+          setMyStatus: {
+            title: "Definir o status de confirmação de presença",
+            description:
+              "Aceitar, recusar ou aceitar provisoriamente um evento.",
+          },
+        },
+      },
     },
     mcp: {
       title: "Servidores MCP",
@@ -1191,6 +1280,12 @@ const TRANSLATIONS = {
       tool_call_was_rejected:
         "A solicitação de acesso à ferramenta foi rejeitada.",
     },
+    custom_skills: "Habilidades personalizadas",
+    agent_flows: "Fluxo de Agentes",
+    no_tools_found: "Nenhuma ferramenta correspondente encontrada.",
+    loading_mcp_servers: "Carregando servidores MCP...",
+    app_integrations: "Integrações de aplicativos",
+    sub_skills: "Habilidades específicas",
   },
   profile_settings: {
     edit_account: "Editar conta",

@@ -646,6 +646,95 @@ const TRANSLATIONS = {
           },
         },
       },
+      googleCalendar: {
+        title: "Google Kalender-Verbindung",
+        description:
+          "Ermöglichen Sie Ihrem Agenten, mit Google Kalender zu interagieren – Kalender anzeigen, Ereignisse einsehen, erstellen und aktualisieren, sowie Rückmeldungen verwalten. <a> Lesen Sie die Dokumentation </a>.",
+        multiUserWarning:
+          "Die Integration mit Google Kalender ist aus Sicherheitsgründen nicht im Mehrbenutzermodus verfügbar. Bitte deaktivieren Sie den Mehrbenutzermodus, um diese Funktion nutzen zu können.",
+        configuration: "Konfiguration des Google Kalenders",
+        deploymentId: "Deployment-ID",
+        deploymentIdHelp:
+          "Die Bereitstellungs-ID Ihrer Google Apps Script Web-Anwendung",
+        apiKey: "API-Schlüssel",
+        apiKeyHelp:
+          "Der API-Schlüssel, den Sie in Ihrer Google Apps Script-Bereitstellung konfiguriert haben",
+        configurationRequired:
+          "Bitte konfigurieren Sie die Deployment-ID und den API-Schlüssel, um die Google Calendar-Funktionen zu aktivieren.",
+        configured: "Konfiguriert",
+        searchSkills: "Suchfähigkeiten...",
+        noSkillsFound: "Keine Übereinstimmungen zu Ihrer Suche.",
+        categories: {
+          calendars: {
+            title: "Kalender",
+            description: "Überprüfen und verwalten Sie Ihre Google-Kalender.",
+          },
+          readEvents: {
+            title: "Veranstaltungen lesen",
+            description: "Kalenderereignisse anzeigen und suchen",
+          },
+          writeEvents: {
+            title: "Erstellen und aktualisieren von Veranstaltungen",
+            description:
+              "Erstellen Sie neue Veranstaltungen und ändern Sie bestehende",
+          },
+          rsvp: {
+            title: "Verwaltung von Rückmeldungen",
+            description:
+              "Verwalten Sie den Status Ihrer Teilnahme an Veranstaltungen",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "Kalenderlisten",
+            description:
+              "Listen Sie alle Kalender auf, die Sie besitzen oder für die Sie ein Abonnement haben.",
+          },
+          getCalendar: {
+            title: "Details zum Kalender anzeigen",
+            description:
+              "Erhalten Sie detaillierte Informationen über einen bestimmten Kalender.",
+          },
+          getEvent: {
+            title: "Veranstaltung finden",
+            description:
+              "Erhalten Sie detaillierte Informationen über ein bestimmtes Ereignis.",
+          },
+          getEventsForDay: {
+            title: "Veranstaltungen für den Tag",
+            description:
+              "Alle Veranstaltungen, die für einen bestimmten Tag geplant sind, anzeigen.",
+          },
+          getEvents: {
+            title: "Veranstaltungen (Zeitraum) anzeigen",
+            description:
+              "Ereignisse innerhalb eines benutzerdefinierten Datumsbereichs abrufen",
+          },
+          getUpcomingEvents: {
+            title: "Anstehende Veranstaltungen anzeigen",
+            description:
+              "Finden Sie Veranstaltungen für heute, diese Woche oder diesen Monat, indem Sie einfache Suchbegriffe verwenden.",
+          },
+          quickAdd: {
+            title: "Schnellere Veranstaltung hinzufügen",
+            description:
+              "Erstellen Sie eine Veranstaltung aus natürlicher Sprache (z. B. „Treffen morgen um 15:00 Uhr“)",
+          },
+          createEvent: {
+            title: "Ereignis erstellen",
+            description:
+              "Erstellen Sie ein neues Ereignis mit vollständiger Kontrolle über alle Eigenschaften.",
+          },
+          updateEvent: {
+            title: "Aktualisierungsereignis",
+            description: "Ein bestehendes Kalendereintrag aktualisieren",
+          },
+          setMyStatus: {
+            title: "Status der Rückmeldung",
+            description: "Teilen, ablehnen oder vorläufig zustimmen",
+          },
+        },
+      },
     },
     "performance-warning":
       "Die Leistung von LLMs, die keine explizite Unterstützung für das Aufrufen von Tools bieten, hängt stark von den Fähigkeiten und der Genauigkeit des Modells ab. Einige Fähigkeiten können eingeschränkt oder nicht funktionsfähig sein.",
@@ -1215,6 +1304,12 @@ const TRANSLATIONS = {
         "Die Genehmigung für die Bestellung der Werkzeuge wurde erteilt.",
       tool_call_was_rejected: "Die Anfrage nach dem Werkzeug wurde abgelehnt.",
     },
+    custom_skills: "Individuelle Fähigkeiten",
+    agent_flows: "Datenströme",
+    no_tools_found: "Keine passenden Werkzeuge gefunden.",
+    loading_mcp_servers: "MCP-Server laden...",
+    app_integrations: "Anwendungen und Integrationen",
+    sub_skills: "Spezifische Fähigkeiten",
   },
   profile_settings: {
     edit_account: "Account bearbeiten",

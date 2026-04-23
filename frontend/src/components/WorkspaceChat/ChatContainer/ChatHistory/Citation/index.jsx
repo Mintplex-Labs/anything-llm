@@ -12,6 +12,9 @@ import {
   LinkSimple,
   GitlabLogo,
 } from "@phosphor-icons/react";
+import GmailLogo from "@/pages/Admin/Agents/GMailSkillPanel/gmail.png";
+import GoogleCalendarLogo from "@/pages/Admin/Agents/GoogleCalendarSkillPanel/google-calendar.png";
+import OutlookLogo from "@/pages/Admin/Agents/OutlookSkillPanel/outlook.png";
 import { toPercentString } from "@/utils/numbers";
 import { useTranslation } from "react-i18next";
 import { useSourcesSidebar } from "../../SourcesSidebar";
@@ -28,18 +31,37 @@ const CIRCLE_ICONS = {
   paperlessNgx: FileText,
 };
 
+const CIRCLE_IMAGES = {
+  gmailThread: GmailLogo,
+  gmailAttachment: GmailLogo,
+  googleCalendar: GoogleCalendarLogo,
+  outlookThread: OutlookLogo,
+  outlookAttachment: OutlookLogo,
+};
+
+/**
+ * Returns the custom image for a given type, or null if no custom image is available.
+ * @param {string} type
+ * @returns {string|null}
+ */
+export function getCustomImage(type) {
+  return CIRCLE_IMAGES[type] ?? null;
+}
+
 /**
  * Renders a circle with a source type icon inside, or a favicon if URL is provided.
  * @param {"file"|"link"|"youtube"|"github"|"gitlab"|"confluence"|"drupalwiki"|"obsidian"|"paperlessNgx"} props.type
  * @param {number} [props.size] - Circle diameter in px
  * @param {number} [props.iconSize] - Icon size in px
  * @param {string} [props.url] - Optional URL to fetch favicon from
+ * @param {string} [props.customImage] - Optional custom image to display
  */
 export function SourceTypeCircle({
   type = "file",
   size = 22,
   iconSize = 12,
   url = null,
+  customImage = null,
 }) {
   const Icon = CIRCLE_ICONS[type] || CIRCLE_ICONS.file;
   const [imgError, setImgError] = useState(false);
@@ -60,7 +82,7 @@ export function SourceTypeCircle({
 
   return (
     <div
-      className="bg-white light:bg-slate-100 rounded-full flex items-center justify-center overflow-hidden"
+      className={`${customImage ? "bg-transparent border-none" : "bg-white light:bg-slate-100 border-zinc-800 light:border-white rounded-full"} flex items-center justify-center overflow-hidden`}
       style={{ width: size, height: size }}
     >
       {faviconUrl && !imgError ? (
@@ -70,6 +92,13 @@ export function SourceTypeCircle({
           style={{ width: size, height: size }}
           className="object-cover"
           onError={() => setImgError(true)}
+        />
+      ) : customImage ? (
+        <img
+          src={customImage}
+          alt={type}
+          style={{ width: size, height: size }}
+          className="object-contain bg-transparent"
         />
       ) : (
         <Icon size={iconSize} weight="bold" className="text-black" />
@@ -133,10 +162,11 @@ export default function Citations({ sources = [] }) {
       >
         {visibleSources.map((source, idx) => {
           const info = parseChunkSource(source);
+          const customImage = CIRCLE_IMAGES[info.icon];
           return (
             <div
               key={source.title || idx}
-              className="absolute top-0 size-[22px] rounded-full border-2 border-zinc-800 light:border-white"
+              className={`absolute top-0 size-[22px] rounded-full ${customImage ? "border-none" : "border-2 border-zinc-800 light:border-white"}`}
               style={{ left: `${idx * 17}px`, zIndex: 3 - idx }}
             >
               <SourceTypeCircle
@@ -144,6 +174,7 @@ export default function Citations({ sources = [] }) {
                 size={18}
                 iconSize={10}
                 url={info.href}
+                customImage={customImage}
               />
             </div>
           );
@@ -262,6 +293,11 @@ const supportedSources = [
   "youtube://",
   "obsidian://",
   "paperless-ngx://",
+  "gmail-thread://",
+  "gmail-attachment://",
+  "google-calendar://",
+  "outlook-thread://",
+  "outlook-attachment://",
 ];
 
 /**
@@ -340,6 +376,30 @@ export function parseChunkSource({ title = "", chunks = [] }) {
       case "paperless-ngx://":
         text = title;
         icon = "paperlessNgx";
+        break;
+
+      case "gmail-thread://":
+        text = title;
+        icon = "gmailThread";
+        break;
+      case "gmail-attachment://":
+        text = title;
+        icon = "gmailAttachment";
+        break;
+
+      case "google-calendar://":
+        text = title;
+        icon = "googleCalendar";
+        break;
+
+      case "outlook-thread://":
+        text = title;
+        icon = "outlookThread";
+        break;
+
+      case "outlook-attachment://":
+        text = title;
+        icon = "outlookAttachment";
         break;
 
       default:

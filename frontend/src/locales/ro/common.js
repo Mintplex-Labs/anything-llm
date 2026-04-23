@@ -577,6 +577,12 @@ const TRANSLATIONS = {
       tool_call_was_rejected:
         "Cererea de utilizare a instrumentului a fost respinsă.",
     },
+    custom_skills: "Abilități personalizate",
+    agent_flows: "Fluxuri de agenți",
+    no_tools_found: "Nu au fost găsite instrumente corespunzătoare.",
+    loading_mcp_servers: "Încărcare servere MCP...",
+    app_integrations: "Integrarea aplicațiilor",
+    sub_skills: "Abilități specifice",
   },
   profile_settings: {
     edit_account: "Editează contul",
@@ -1090,6 +1096,95 @@ const TRANSLATIONS = {
             title: "Statistici cutie poștală",
             description:
               "Obține numărul de foldere și statisticile pentru cutiile de e-mail.",
+          },
+        },
+      },
+      googleCalendar: {
+        title: "Conector Google Calendar",
+        description:
+          "Permite-ți agentului să interacționeze cu Google Calendar – vizualizează calendare, obține evenimente, creează și actualizează evenimente, și gestionează răspunsurile la invitații. Consultă documentația<a>.",
+        multiUserWarning:
+          "Integrarea cu Google Calendar nu este disponibilă în modul multi-utilizator, din motive de securitate. Vă rugăm să dezactivați modul multi-utilizator pentru a utiliza această funcție.",
+        configuration: "Configurarea calendarului Google",
+        deploymentId: "ID de implementare",
+        deploymentIdHelp:
+          "ID-ul de implementare al aplicației web Google Apps Script",
+        apiKey: "Cheia API",
+        apiKeyHelp:
+          "Cheia API pe care ați configurat în implementarea dumneavoastră de Google Apps Script",
+        configurationRequired:
+          "Vă rugăm să configurați ID-ul de implementare și cheia API pentru a activa funcționalitățile Google Calendar.",
+        configured: "Configurat",
+        searchSkills: "Abilități de căutare...",
+        noSkillsFound:
+          "Nu s-au găsit rezultate care să corespundă criteriilor dumneavoastră de căutare.",
+        categories: {
+          calendars: {
+            title: "Calendare",
+            description: "Vizualizați și gestionați calendarele Google.",
+          },
+          readEvents: {
+            title: "Vezi evenimente",
+            description: "Vizualizați și căutați evenimentele din calendar",
+          },
+          writeEvents: {
+            title: "Creați și actualizați evenimente",
+            description:
+              "Creați evenimente noi și modificați evenimentele existente.",
+          },
+          rsvp: {
+            title: "Gestionarea răspunsurilor",
+            description:
+              "Gestionați starea răspunsului dumneavoastră pentru evenimente",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "Liste de calendare",
+            description:
+              "Enumerați toate calendarele pe care le dețineți sau pentru care aveți abonament.",
+          },
+          getCalendar: {
+            title: "Obțineți detalii despre calendar",
+            description:
+              "Obțineți informații detaliate despre un calendar specific.",
+          },
+          getEvent: {
+            title: "Obține evenimentul",
+            description:
+              "Obțineți informații detaliate despre un eveniment specific.",
+          },
+          getEventsForDay: {
+            title: "Obține evenimente pentru ziua respectivă",
+            description:
+              "Obțineți toate evenimentele programate pentru o anumită dată.",
+          },
+          getEvents: {
+            title: "Obține evenimente (interval de date)",
+            description: "Obține evenimente într-un interval de date specific",
+          },
+          getUpcomingEvents: {
+            title: "Vezi evenimentele viitoare",
+            description:
+              "Găsiți evenimente pentru ziua de azi, pentru această săptămână sau pentru acest lună, folosind cuvinte cheie simple.",
+          },
+          quickAdd: {
+            title: "Adaugă eveniment rapid",
+            description:
+              "Creați un eveniment folosind limbaj natural (de exemplu, „Întâlnire mâine la ora 15:00”)",
+          },
+          createEvent: {
+            title: "Creați eveniment",
+            description:
+              "Creați un eveniment nou, având control complet asupra tuturor proprietăților.",
+          },
+          updateEvent: {
+            title: "Actualizare eveniment",
+            description: "Modificați un eveniment existent din calendar",
+          },
+          setMyStatus: {
+            title: "Stare confirmare participare",
+            description: "Acceptă, refuză sau acceptă cu rezerve evenimentul",
           },
         },
       },

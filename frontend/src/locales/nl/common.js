@@ -630,6 +630,95 @@ const TRANSLATIONS = {
           },
         },
       },
+      googleCalendar: {
+        title: "Google Kalender-connector",
+        description:
+          "Maak het mogelijk voor uw agent om met Google Kalender te communiceren: kalenders bekijken, evenementen bekijken, evenementen aanmaken en bijwerken, en RSVP's beheren. <a>Lees de documentatie</a>.",
+        multiUserWarning:
+          "De integratie met Google Kalender is niet beschikbaar in de modus met meerdere gebruikers, vanwege beveiligingsredenen. Om deze functie te gebruiken, dient u de modus met meerdere gebruikers uit te schakelen.",
+        configuration: "Google Kalender instellingen",
+        deploymentId: "Identificatiecode voor de implementatie",
+        deploymentIdHelp: "De deployment-ID van uw Google Apps Script web-app",
+        apiKey: "API-sleutel",
+        apiKeyHelp:
+          "De API-sleutel die u heeft geconfigureerd in uw Google Apps Script-implementatie.",
+        configurationRequired:
+          "Configureer de Deployment ID en de API-sleutel om de Google Calendar-functionaliteit te activeren.",
+        configured: "Geconfigureerd",
+        searchSkills: "Vaardigheden op het gebied van zoeken...",
+        noSkillsFound:
+          "Geen resultaten gevonden die overeenkomen met uw zoekopdracht.",
+        categories: {
+          calendars: {
+            title: "Kalenders",
+            description: "Bekijk en beheer uw Google-agenda's",
+          },
+          readEvents: {
+            title: "Bekijk evenementen",
+            description: "Bekijk en zoek naar evenementen in de agenda",
+          },
+          writeEvents: {
+            title: "Maak en update evenementen",
+            description:
+              "Creëer nieuwe evenementen en wijzig bestaande evenementen.",
+          },
+          rsvp: {
+            title: "Beheer van RSVP-verzoeken",
+            description: "Beheer de status van uw reacties voor evenementen",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "Agenda's",
+            description:
+              "Maak een lijst van alle kalenders die u bezit of waarvoor u een abonnement heeft.",
+          },
+          getCalendar: {
+            title: "Bekijk de details van de agenda",
+            description:
+              "Vind gedetailleerde informatie over een specifieke kalender.",
+          },
+          getEvent: {
+            title: "Evenement bekijken",
+            description:
+              "Vind gedetailleerde informatie over een specifiek evenement.",
+          },
+          getEventsForDay: {
+            title: "Zoek naar evenementen voor de dag",
+            description:
+              "Bekijk alle evenementen die gepland staan voor een specifieke dag.",
+          },
+          getEvents: {
+            title: "Evenementen (tijdsperiode)",
+            description:
+              "Haal evenementen op binnen een aangepaste datumschaal",
+          },
+          getUpcomingEvents: {
+            title: "Bekijk aankomende evenementen",
+            description:
+              "Zoek evenementen voor vandaag, deze week of deze maand met behulp van eenvoudige zoekwoorden.",
+          },
+          quickAdd: {
+            title: "Snel evenement toevoegen",
+            description:
+              "Maak een evenement op basis van natuurlijke taal (bijvoorbeeld: 'Ontmoeting morgen om 15:00 uur')",
+          },
+          createEvent: {
+            title: "Evenement aanmaken",
+            description:
+              "Maak een nieuw evenement en beschik over volledige controle over alle instellingen.",
+          },
+          updateEvent: {
+            title: "Nieuwsupdate",
+            description: "Wijzig een bestaand evenement in uw agenda",
+          },
+          setMyStatus: {
+            title: "Status van reactie bevestigd",
+            description:
+              "Accepteer, weiger of geef een voorlopige bevestiging van een evenement",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP-servers",
@@ -1107,6 +1196,12 @@ const TRANSLATIONS = {
       tool_call_was_rejected:
         "De aanvraag om het gereedschap te gebruiken is afgewezen.",
     },
+    custom_skills: "Aangepaste vaardigheden",
+    agent_flows: "Stroom van agenten",
+    no_tools_found: "Geen overeenkomende gereedschappen gevonden.",
+    loading_mcp_servers: "MCP-servers worden geladen...",
+    app_integrations: "Integraties met apps",
+    sub_skills: "Specifieke vaardigheden",
   },
   profile_settings: {
     edit_account: "Account bewerken",

@@ -587,6 +587,84 @@ const TRANSLATIONS = {
           },
         },
       },
+      googleCalendar: {
+        title: "Google 日曆連線",
+        description:
+          "讓您的代理能夠與 Google 日曆互動：查看日曆、取得活動資訊、創建和更新活動，以及管理確認出席。 詳情請參考<a>文件</a>。",
+        multiUserWarning:
+          "由於安全原因，Google 日曆的整合功能在多使用者模式下無法使用。請先停用多使用者模式，然後再使用此功能。",
+        configuration: "Google 日曆設定",
+        deploymentId: "部署 ID",
+        deploymentIdHelp: "您的 Google Apps Script 網頁應用程式的部署 ID",
+        apiKey: "API 關鍵字",
+        apiKeyHelp: "您在 Google Apps Script 部署中設定的 API 金鑰。",
+        configurationRequired:
+          "請設定部署 ID 和 API 鑰，以啟用 Google 日曆功能。",
+        configured: "已設定",
+        searchSkills: "搜尋技巧...",
+        noSkillsFound: "沒有符合您搜尋條件的結果。",
+        categories: {
+          calendars: {
+            title: "日曆",
+            description: "檢視和管理您的 Google 日曆",
+          },
+          readEvents: {
+            title: "閱讀活動",
+            description: "查看和搜尋日曆活動",
+          },
+          writeEvents: {
+            title: "建立與更新活動",
+            description: "創建新的活動，並修改現有的活動。",
+          },
+          rsvp: {
+            title: "請假確認管理",
+            description: "管理您參加活動的回應狀態",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "日曆清單",
+            description: "列出您擁有的或訂閱的全部日曆",
+          },
+          getCalendar: {
+            title: "獲取日曆細節",
+            description: "獲取有關特定日曆的詳細資訊",
+          },
+          getEvent: {
+            title: "取得活動",
+            description: "獲取有關特定活動的詳細資訊",
+          },
+          getEventsForDay: {
+            title: "獲取特定日期的活動",
+            description: "列出特定日期的所有活動",
+          },
+          getEvents: {
+            title: "取得活動（日期範圍）",
+            description: "取得指定日期範圍內的活動",
+          },
+          getUpcomingEvents: {
+            title: "查看即將到來的活動",
+            description: "使用簡單的關鍵字，即可查詢今日、本週或本月的活動",
+          },
+          quickAdd: {
+            title: "快速新增活動",
+            description:
+              "從自然語言（例如：「明天下午 3 點舉行會議」）創建活動。",
+          },
+          createEvent: {
+            title: "建立活動",
+            description: "創建一個新的活動，並擁有對所有屬性的完全控制。",
+          },
+          updateEvent: {
+            title: "活動更新",
+            description: "更新現有的日曆事件",
+          },
+          setMyStatus: {
+            title: "設定確認參加狀態",
+            description: "接受、拒絕或表示暫時接受活動",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP 伺服器",
@@ -1030,6 +1108,12 @@ const TRANSLATIONS = {
       tool_call_was_approved: "工具請求已獲得批准。",
       tool_call_was_rejected: "請求已遭拒絕",
     },
+    custom_skills: "客製化技能",
+    agent_flows: "代理人流",
+    no_tools_found: "未找到匹配的工具",
+    loading_mcp_servers: "正在載入 MCP 伺服器...",
+    app_integrations: "應用程式整合",
+    sub_skills: "細項技能",
   },
   profile_settings: {
     edit_account: "編輯帳戶",
