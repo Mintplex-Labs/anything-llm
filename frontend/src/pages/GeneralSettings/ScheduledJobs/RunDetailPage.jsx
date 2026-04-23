@@ -18,14 +18,8 @@ import renderMarkdown from "@/utils/chat/markdown";
 import CollapsibleSection from "./components/CollapsibleSection";
 import ToolCallCard from "./components/ToolCallCard";
 import GeneratedFileCard from "./components/GeneratedFileCard";
-
-const STATUS_COLORS = {
-  completed: "text-green-400 light:text-green-600",
-  failed: "text-red-400 light:text-red-600",
-  timed_out: "text-orange-400 light:text-orange-600",
-  running: "text-yellow-400 light:text-yellow-600",
-  queued: "text-blue-400 light:text-blue-600",
-};
+import moment from "moment";
+import { formatDuration } from "@/utils/numbers";
 
 export default function RunDetailPage() {
   const { t } = useTranslation();
@@ -70,8 +64,53 @@ export default function RunDetailPage() {
     navigate(paths.workspace.thread(workspaceSlug, threadSlug));
   };
 
-  const result = run?.result || {};
+  if (loading) {
+    return (
+      <RunDetailLayout>
+        <p className="text-zinc-400 light:text-slate-600 text-sm">
+          {t("scheduledJobs.runDetail.loading")}
+        </p>
+      </RunDetailLayout>
+    );
+  }
 
+  if (!run) {
+    return (
+      <RunDetailLayout>
+        <p className="text-zinc-400 light:text-slate-600 text-sm">
+          {t("scheduledJobs.runDetail.notFound")}
+        </p>
+      </RunDetailLayout>
+    );
+  }
+
+  const result = run.result || {};
+  return (
+    <RunDetailLayout>
+      <RunHeader
+        t={t}
+        job={job}
+        run={run}
+        result={result}
+        continuing={continuing}
+        onBack={() => navigate(paths.settings.scheduledJobRuns(id))}
+        onContinueInThread={handleContinueInThread}
+      />
+
+      <div className="mt-6 space-y-4">
+        <PromptSection t={t} prompt={job?.prompt} />
+        <ErrorSection t={t} error={run?.error} />
+        <AgentThoughtsSection t={t} result={result} />
+        <ToolCallsSection t={t} result={result} />
+        <GeneratedFilesSection t={t} result={result} />
+        <FinalResponseSection t={t} result={result} />
+        <MetricsSection t={t} metrics={result?.metrics} />
+      </div>
+    </RunDetailLayout>
+  );
+}
+
+function RunDetailLayout({ children }) {
   return (
     <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
       <Sidebar />
@@ -80,50 +119,7 @@ export default function RunDetailPage() {
         className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
       >
         <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
-          {loading ? (
-            <p className="text-zinc-400 light:text-slate-600 text-sm">
-              {t("scheduledJobs.runDetail.loading")}
-            </p>
-          ) : !run ? (
-            <p className="text-zinc-400 light:text-slate-600 text-sm">
-              {t("scheduledJobs.runDetail.notFound")}
-            </p>
-          ) : (
-            <>
-              <RunHeader
-                t={t}
-                job={job}
-                run={run}
-                result={result}
-                continuing={continuing}
-                onBack={() => navigate(paths.settings.scheduledJobRuns(id))}
-                onContinueInThread={handleContinueInThread}
-              />
-
-              <div className="mt-6 space-y-4">
-                <PromptSection t={t} prompt={job?.prompt} />
-
-                {run.error && <ErrorSection t={t} error={run.error} />}
-
-                {result.thoughts?.length > 0 && (
-                  <AgentThoughtsSection t={t} result={result} />
-                )}
-
-                {result.toolCalls?.length > 0 && (
-                  <ToolCallsSection t={t} result={result} />
-                )}
-                {result.generatedFiles?.length > 0 && (
-                  <GeneratedFilesSection t={t} result={result} />
-                )}
-
-                {result.text && <FinalResponseSection t={t} result={result} />}
-
-                {result.metrics && Object.keys(result.metrics).length > 0 && (
-                  <MetricsSection t={t} metrics={result.metrics} />
-                )}
-              </div>
-            </>
-          )}
+          {children}
         </div>
       </div>
     </div>
@@ -139,15 +135,37 @@ function RunHeader({
   onBack,
   onContinueInThread,
 }) {
-  const statusLabels = {
-    completed: t("scheduledJobs.runDetail.status.completed"),
-    failed: t("scheduledJobs.runDetail.status.failed"),
-    timed_out: t("scheduledJobs.runDetail.status.timed_out"),
-    running: t("scheduledJobs.runDetail.status.running"),
-    queued: t("scheduledJobs.runDetail.status.queued"),
-  };
-  const statusLabel =
-    statusLabels[run.status] || run.status?.replace("_", " ") || "";
+  function getStatusInfo() {
+    return {
+      completed: {
+        text: t("scheduledJobs.runDetail.status.completed"),
+        style: "text-green-400 light:text-green-600",
+      },
+      failed: {
+        text: t("scheduledJobs.runDetail.status.failed"),
+        style: "text-red-400 light:text-red-600",
+      },
+      timed_out: {
+        text: t("scheduledJobs.runDetail.status.timed_out"),
+        style: "text-orange-400 light:text-orange-600",
+      },
+      running: {
+        text: t("scheduledJobs.runDetail.status.running"),
+        style: "text-yellow-400 light:text-yellow-600",
+      },
+      queued: {
+        text: t("scheduledJobs.runDetail.status.queued"),
+        style: "text-blue-400 light:text-blue-600",
+      },
+      default: {
+        text: "—",
+        style: "text-zinc-400 light:text-slate-600",
+      },
+    };
+  }
+  const statusInfo = getStatusInfo();
+  const { text, style } = statusInfo[run.status] || statusInfo.default;
+
   return (
     <div className="w-full flex items-end justify-between gap-x-4 pb-6 border-white/10 light:border-zinc-300 border-b-2">
       <div className="flex flex-col gap-y-2">
@@ -166,18 +184,14 @@ function RunHeader({
           })}
         </p>
         <div className="flex items-center gap-2 text-xs">
-          <span
-            className={`${STATUS_COLORS[run.status] || "text-zinc-400 light:text-slate-600"}`}
-          >
-            {statusLabel}
-          </span>
+          <span className={style}>{text}</span>
           <span className="text-zinc-400 light:text-slate-600">
-            {new Date(run.startedAt).toLocaleString()}
+            {moment(run.startedAt).format("LTS")}
           </span>
           {result.duration && (
             <span className="text-zinc-400 light:text-slate-600">
               {t("scheduledJobs.runDetail.duration", {
-                seconds: (result.duration / 1000).toFixed(1),
+                value: formatDuration(result.duration / 1000),
               })}
             </span>
           )}
@@ -213,6 +227,7 @@ function PromptSection({ t, prompt }) {
 }
 
 function ErrorSection({ t, error }) {
+  if (!error) return null;
   return (
     <div className="border border-red-500/20 light:border-red-300 rounded-lg p-[18px] bg-red-500/5 light:bg-red-50">
       <p className="text-sm font-medium text-red-400 light:text-red-600 uppercase tracking-[1.4px] mb-1">
@@ -224,6 +239,8 @@ function ErrorSection({ t, error }) {
 }
 
 function AgentThoughtsSection({ t, result }) {
+  if (!result.thoughts || result.thoughts.length === 0) return null;
+
   return (
     <CollapsibleSection
       title={t("scheduledJobs.runDetail.sections.thinking", {
@@ -249,6 +266,8 @@ function AgentThoughtsSection({ t, result }) {
 }
 
 function ToolCallsSection({ t, result }) {
+  if (!result.toolCalls || result.toolCalls.length === 0) return null;
+
   return (
     <CollapsibleSection
       title={t("scheduledJobs.runDetail.sections.toolCalls", {
@@ -266,6 +285,8 @@ function ToolCallsSection({ t, result }) {
 }
 
 function GeneratedFilesSection({ t, result }) {
+  if (!result.generatedFiles || result.generatedFiles.length === 0) return null;
+
   return (
     <CollapsibleSection
       title={t("scheduledJobs.runDetail.sections.files", {
@@ -284,6 +305,8 @@ function GeneratedFilesSection({ t, result }) {
 }
 
 function FinalResponseSection({ t, result }) {
+  if (!result.text) return null;
+
   return (
     <CollapsibleSection
       title={t("scheduledJobs.runDetail.sections.response")}
@@ -299,7 +322,10 @@ function FinalResponseSection({ t, result }) {
     </CollapsibleSection>
   );
 }
+
 function MetricsSection({ t, metrics }) {
+  if (!metrics || Object.keys(metrics).length === 0) return null;
+
   return (
     <div className="border border-zinc-700 light:border-slate-400 rounded-lg p-[18px]">
       <p className="text-sm font-semibold text-zinc-400 light:text-slate-600 uppercase tracking-[1.4px] mb-1">

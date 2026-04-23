@@ -1604,7 +1604,7 @@ const TRANSLATIONS = {
       back: "Back",
       unknownJob: "Unknown Job",
       runHeading: "{{name}} — Run #{{id}}",
-      duration: "Duration: {{seconds}}s",
+      duration: "Duration: {{value}}",
       continueInThread: "Continue in Thread",
       creating: "Creating...",
       threadFailed: "Failed to create thread",
@@ -1618,7 +1618,7 @@ const TRANSLATIONS = {
       sections: {
         prompt: "Prompt",
         error: "Error",
-        thinking: "Thinking ({{count}} steps)",
+        thinking: "Thoughts ({{count}})",
         toolCalls: "Tool Calls ({{count}})",
         files: "Files ({{count}})",
         response: "Response",

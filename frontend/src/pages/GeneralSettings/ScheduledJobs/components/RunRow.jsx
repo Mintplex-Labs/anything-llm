@@ -1,21 +1,32 @@
 import { useNavigate } from "react-router-dom";
 import { Circle } from "@phosphor-icons/react";
+import moment from "moment";
 import paths from "@/utils/paths";
 import StatusBadge from "./StatusBadge";
 
-// Format a run's elapsed time as ms / s / m. Only used here so it lives
-// alongside the row component.
+/**
+ * Format a run's elapsed time as ms / s / m.
+ * @param {Object} run - The run object.
+ * @returns {string} The formatted duration.
+ */
 function formatDuration(run) {
   if (!run.completedAt || !run.startedAt) return "—";
-  const ms =
-    new Date(run.completedAt).getTime() - new Date(run.startedAt).getTime();
+  const duration = moment.duration(
+    moment(run.completedAt).diff(moment(run.startedAt))
+  );
+  const ms = duration.asMilliseconds();
   if (ms < 1000) return `${ms}ms`;
-  if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`;
-  return `${(ms / 60000).toFixed(1)}m`;
+  if (ms < 60000) return `${duration.asSeconds().toFixed(1)}s`;
+  return `${duration.asMinutes().toFixed(1)}m`;
 }
 
-// One row of the run history table. The whole row is clickable and
-// navigates to the run detail page.
+/**
+ * One row of the run history table. The whole row is clickable and
+ * navigates to the run detail page.
+ * @param {Object} run - The run object.
+ * @param {string} jobId - The ID of the job.
+ * @returns {React.ReactNode} The rendered row.
+ */
 export default function RunRow({ run, jobId }) {
   const navigate = useNavigate();
   const unreadAndTerminal =
