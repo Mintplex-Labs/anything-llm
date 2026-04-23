@@ -1,6 +1,5 @@
 const { SystemSettings } = require("../../../../models/systemSettings");
 const { TokenManager } = require("../../../helpers/tiktoken");
-const { normalizeBaiduSearchReferences } = require("./web-browsing-utils");
 const tiktoken = new TokenManager();
 
 const webBrowsing = {
@@ -670,8 +669,41 @@ const webBrowsing = {
               return `There was an error searching for content. ${response?.message || response?.code}`;
             }
 
-            const data = normalizeBaiduSearchReferences(response?.references);
+            /**
+             * Normalize Baidu Search References to the expected search results format
+             * @param {Array} references - The references to normalize
+             * @returns {Array} The normalized references
+             */
+            function normalizeBaiduSearchReferences(references = []) {
+              if (!Array.isArray(references)) return [];
 
+              const seenLinks = new Set();
+              return references
+                .filter((reference) => {
+                  if (!reference) return false;
+                  const referenceType = String(
+                    reference.type || reference.resource_type || "web"
+                  ).toLowerCase();
+                  return referenceType === "web";
+                })
+                .map((reference) => {
+                  const title = String(
+                    reference.title || reference.web_anchor || ""
+                  ).trim();
+                  const link = String(reference.url || "").trim();
+                  const snippet = String(
+                    reference.snippet || reference.content || ""
+                  ).trim();
+
+                  if (!title || !link || seenLinks.has(link)) return null;
+                  seenLinks.add(link);
+
+                  return { title, link, snippet };
+                })
+                .filter(Boolean);
+            }
+
+            const data = normalizeBaiduSearchReferences(response?.references);
             if (data.length === 0)
               return `No information was found online for the search query.`;
 
