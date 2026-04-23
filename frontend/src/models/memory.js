@@ -17,11 +17,11 @@ import { baseHeaders } from "@/utils/request";
 const Memory = {
   /**
    * Fetch all memories (global + workspace) for a workspace.
-   * @param {number} workspaceId
+   * @param {string} slug
    * @returns {Promise<{global: Memory[], workspace: Memory[]}>}
    */
-  forWorkspace: async function (workspaceId) {
-    return await fetch(`${API_BASE}/workspaces/${workspaceId}/memories`, {
+  forWorkspace: async function (slug) {
+    return await fetch(`${API_BASE}/workspaces/${slug}/memories`, {
       method: "GET",
       headers: baseHeaders(),
     })
@@ -32,12 +32,12 @@ const Memory = {
 
   /**
    * Create a new memory for a workspace.
-   * @param {number} workspaceId
+   * @param {string} slug
    * @param {{content: string, scope?: "workspace"|"global"}} body
    * @returns {Promise<{memory: Memory|null, error?: string}>}
    */
-  create: async function (workspaceId, { content, scope = "workspace" }) {
-    return await fetch(`${API_BASE}/workspaces/${workspaceId}/memories`, {
+  create: async function (slug, { content, scope = "workspace" }) {
+    return await fetch(`${API_BASE}/workspaces/${slug}/memories`, {
       method: "POST",
       headers: baseHeaders(),
       body: JSON.stringify({ content, scope }),
@@ -93,14 +93,13 @@ const Memory = {
   /**
    * Demote a global memory to a specific workspace.
    * @param {number} memoryId
-   * @param {number} workspaceId
+   * @param {string} slug
    * @returns {Promise<{memory: Memory|null, error?: string}>}
    */
-  demoteToWorkspace: async function (memoryId, workspaceId) {
-    return await fetch(`${API_BASE}/memories/${memoryId}/demote`, {
+  demoteToWorkspace: async function (memoryId, slug) {
+    return await fetch(`${API_BASE}/memories/${memoryId}/demote/${slug}`, {
       method: "POST",
       headers: baseHeaders(),
-      body: JSON.stringify({ workspaceId }),
     })
       .then((res) => res.json())
       .catch((e) => ({ memory: null, error: e.message }));

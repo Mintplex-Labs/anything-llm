@@ -1,12 +1,12 @@
 const { Memory } = require("../models/memory");
-const { Workspace } = require("../models/workspace");
 const { SystemSettings } = require("../models/systemSettings");
-const { userFromSession, reqBody, multiUserMode } = require("../utils/http");
+const { userFromSession, reqBody } = require("../utils/http");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const {
   flexUserRoleValid,
   ROLES,
 } = require("../utils/middleware/multiUserProtected");
+const { validWorkspaceSlug } = require("../utils/middleware/validWorkspace");
 
 async function memoryFeatureEnabled(_req, response, next) {
   const enabled = await SystemSettings.memoriesEnabled();
@@ -41,23 +41,21 @@ function memoryEndpoints(app) {
   if (!app) return;
 
   app.get(
-    "/workspaces/:workspaceId/memories",
-    [validatedRequest, flexUserRoleValid([ROLES.all]), memoryFeatureEnabled],
+    "/workspaces/:slug/memories",
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.all]),
+      memoryFeatureEnabled,
+      validWorkspaceSlug,
+    ],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        const workspaceId = Number(request.params.workspaceId);
-
-        const workspace = multiUserMode(response)
-          ? await Workspace.getWithUser(user, { id: workspaceId })
-          : await Workspace.get({ id: workspaceId });
-        if (!workspace) {
-          return response.status(403).json({ error: "Invalid workspace." });
-        }
+        const workspace = response.locals.workspace;
 
         const [globalMemories, workspaceMemories] = await Promise.all([
           Memory.globalForUser(user?.id),
-          Memory.forUserWorkspace(user?.id, workspaceId),
+          Memory.forUserWorkspace(user?.id, workspace.id),
         ]);
         response.status(200).json({
           memories: { global: globalMemories, workspace: workspaceMemories },
@@ -70,20 +68,18 @@ function memoryEndpoints(app) {
   );
 
   app.post(
-    "/workspaces/:workspaceId/memories",
-    [validatedRequest, flexUserRoleValid([ROLES.all]), memoryFeatureEnabled],
+    "/workspaces/:slug/memories",
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.all]),
+      memoryFeatureEnabled,
+      validWorkspaceSlug,
+    ],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        const workspaceId = Number(request.params.workspaceId);
+        const workspace = response.locals.workspace;
         const { content, scope = "workspace" } = reqBody(request);
-
-        const workspace = multiUserMode(response)
-          ? await Workspace.getWithUser(user, { id: workspaceId })
-          : await Workspace.get({ id: workspaceId });
-        if (!workspace) {
-          return response.status(403).json({ error: "Invalid workspace." });
-        }
 
         if (!content || !content.trim()) {
           return response.status(400).json({ error: "Content is required." });
@@ -91,7 +87,7 @@ function memoryEndpoints(app) {
 
         const { memory, message } = await Memory.create({
           userId: user?.id,
-          workspaceId: scope === "global" ? null : workspaceId,
+          workspaceId: scope === "global" ? null : workspace.id,
           scope,
           content: content.trim(),
         });
@@ -188,35 +184,22 @@ function memoryEndpoints(app) {
   );
 
   app.post(
-    "/memories/:memoryId/demote",
+    "/memories/:memoryId/demote/:slug",
     [
       validatedRequest,
       flexUserRoleValid([ROLES.all]),
       memoryFeatureEnabled,
       validateMemoryOwner,
+      validWorkspaceSlug,
     ],
     async (request, response) => {
       try {
-        const user = await userFromSession(request, response);
         const memoryId = Number(request.params.memoryId);
-        const { workspaceId } = reqBody(request);
-
-        if (!workspaceId) {
-          return response
-            .status(400)
-            .json({ error: "workspaceId is required." });
-        }
-
-        const targetWorkspace = multiUserMode(response)
-          ? await Workspace.getWithUser(user, { id: Number(workspaceId) })
-          : await Workspace.get({ id: Number(workspaceId) });
-        if (!targetWorkspace) {
-          return response.status(403).json({ error: "Invalid workspace." });
-        }
+        const targetWorkspace = response.locals.workspace;
 
         const { memory, message } = await Memory.demoteToWorkspace(
           memoryId,
-          Number(workspaceId)
+          targetWorkspace.id
         );
         if (!memory) {
           return response.status(400).json({ error: message });

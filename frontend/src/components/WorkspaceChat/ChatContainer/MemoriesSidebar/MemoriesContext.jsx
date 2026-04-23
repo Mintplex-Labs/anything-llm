@@ -40,17 +40,17 @@ export function MemoriesProvider({ workspace, children }) {
   }, [sidebarOpen]);
 
   async function fetchMemories() {
-    if (!workspace?.id) return;
-    const data = await Memory.forWorkspace(workspace.id);
+    if (!workspace?.slug) return;
+    const data = await Memory.forWorkspace(workspace.slug);
     setMemories(data);
   }
 
   useEffect(() => {
     if (sidebarOpen && enabled) fetchMemories();
-  }, [sidebarOpen, workspace?.id, enabled]);
+  }, [sidebarOpen, workspace?.slug, enabled]);
 
   async function handleCreate(content) {
-    const { memory } = await Memory.create(workspace.id, {
+    const { memory } = await Memory.create(workspace.slug, {
       content,
       scope: activeTab,
     });
@@ -73,8 +73,8 @@ export function MemoriesProvider({ workspace, children }) {
   }
 
   async function handleDemote(memoryId) {
-    if (!workspace?.id) return;
-    const { memory } = await Memory.demoteToWorkspace(memoryId, workspace.id);
+    if (!workspace?.slug) return;
+    const { memory } = await Memory.demoteToWorkspace(memoryId, workspace.slug);
     if (memory) fetchMemories();
   }
 
