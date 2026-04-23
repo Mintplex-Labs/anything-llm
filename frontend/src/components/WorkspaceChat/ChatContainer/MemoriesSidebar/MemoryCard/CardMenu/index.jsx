@@ -27,13 +27,13 @@ export default function CardMenu({
   useEffect(() => {
     if (!buttonRef.current) return;
     const rect = buttonRef.current.getBoundingClientRect();
-    setPos({ top: rect.bottom + 4, left: rect.right - 170 });
+    setPos({ top: rect.bottom + 4, left: rect.right - 200 });
   }, []);
 
   return createPortal(
     <div
       ref={menuRef}
-      className="fixed z-[9999] bg-zinc-800 light:bg-slate-50 border border-zinc-700 light:border-slate-300 rounded-lg py-3 px-2 flex flex-col shadow-lg w-[170px]"
+      className="fixed z-[9999] bg-zinc-800 light:bg-slate-50 border border-zinc-700 light:border-slate-300 rounded-lg py-3 px-2 flex flex-col shadow-lg w-[175px]"
       style={{ top: pos.top, left: pos.left }}
     >
       <MenuItem label={t("chat_window.memories.menu.edit")} onClick={onEdit} />
