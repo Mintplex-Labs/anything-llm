@@ -313,6 +313,7 @@ function FinalResponseSection({ t, result }) {
       title={t("scheduledJobs.runDetail.sections.response")}
       icon={ChatText}
       defaultOpen={true}
+      copyableContent={result.text}
     >
       <div
         className="text-sm text-zinc-50 light:text-slate-950 markdown"
