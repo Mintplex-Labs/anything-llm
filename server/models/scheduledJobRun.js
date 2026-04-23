@@ -189,7 +189,8 @@ const ScheduledJobRun = {
     clause = {},
     limit = null,
     orderBy = null,
-    include = {}
+    include = {},
+    offset = 0
   ) {
     try {
       const results = await prisma.scheduled_job_runs.findMany({
@@ -199,6 +200,7 @@ const ScheduledJobRun = {
           ? { orderBy }
           : { orderBy: { startedAt: "desc" } }),
         ...(Object.keys(include).length > 0 ? { include } : {}),
+        ...(offset !== null ? { skip: offset } : {}),
       });
       return results;
     } catch (error) {
