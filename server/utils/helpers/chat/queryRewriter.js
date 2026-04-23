@@ -1,8 +1,8 @@
 const REWRITE_PROMPT = `Given a chat history and the latest user question which might reference context in the chat history, determine if the question needs to be reformulated to be understood without the chat history.
 
-If the question already contains its own subject or topic, return it EXACTLY as written — do not rephrase, expand, or modify it in any way. This applies regardless of the language of the chat history. NEVER translate or switch the language of a self-contained question.
+If the question is fully self-contained — meaning a stranger could understand it without any prior conversation — return it EXACTLY as written. Do not rephrase, expand, or modify it. NEVER translate or switch the language of a self-contained question.
 
-Only reformulate when the question contains pronouns (it, that, they), demonstratives (this, these), incomplete references, OR when the question is so short (1-3 words) that it cannot stand alone without context.
+If the question would be unclear or ambiguous to someone who has NOT read the chat history, reformulate it by adding the missing context from the history. When in doubt, reformulate — it is better to add context than to lose it.
 
 When reformulating:
 - Extract the SPECIFIC topic from the most recent USER question (not from the assistant response). Use the EXACT words the user used — never shorten, generalize, or drop qualifiers.

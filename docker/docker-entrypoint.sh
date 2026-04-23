@@ -16,10 +16,19 @@ if [ -z "$STORAGE_DIR" ]; then
     echo "================================================================"
 fi
 
+# Fix storage permissions as root BEFORE dropping privileges
+STORAGE="${STORAGE_DIR:-/app/server/storage}"
+if [ "$(id -u)" = "0" ]; then
+  echo "[entrypoint] Running as root — fixing storage permissions..."
+  chown -R anythingllm:anythingllm "$STORAGE" 2>/dev/null || true
+  # Also fix any WAL/SHM files
+  chown anythingllm:anythingllm "$STORAGE"/anythingllm.db* 2>/dev/null || true
+fi
+
 {
   cd /app/server/ &&
 
-    # Ensure DB file is writable by the container user (fixes UID mismatch after docker cp)
+    # Legacy check for non-root containers (kept for backwards compatibility)
     DB_PATH="${STORAGE_DIR:-/app/server/storage}/anythingllm.db"
     if [ -f "$DB_PATH" ] && [ ! -w "$DB_PATH" ]; then
       echo "[entrypoint] ⚠️  DB file is not writable — fixing ownership..."
@@ -56,8 +65,19 @@ fi
       fi
     fi &&
 
-    node /app/server/index.js
+    # Drop to anythingllm user if running as root
+    if [ "$(id -u)" = "0" ] && command -v gosu >/dev/null 2>&1; then
+      exec gosu anythingllm node /app/server/index.js
+    else
+      node /app/server/index.js
+    fi
 } &
-{ node /app/collector/index.js; } &
+{
+  if [ "$(id -u)" = "0" ] && command -v gosu >/dev/null 2>&1; then
+    gosu anythingllm node /app/collector/index.js
+  else
+    node /app/collector/index.js
+  fi
+} &
 wait -n
 exit $?
