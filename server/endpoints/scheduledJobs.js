@@ -6,10 +6,6 @@ const { WorkspaceChats } = require("../models/workspaceChats");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { isSingleUserMode } = require("../utils/middleware/multiUserProtected");
 const { reqBody, safeJsonParse } = require("../utils/http");
-const { agentSkillsFromSystemSettings } = require("../utils/agents/defaults");
-const ImportedPlugin = require("../utils/agents/imported");
-const { AgentFlows } = require("../utils/agentFlows");
-const MCPCompatibilityLayer = require("../utils/MCP");
 const { BackgroundService } = require("../utils/BackgroundWorkers");
 
 // BackgroundService is a singleton, so `new BackgroundService()` anywhere in
@@ -26,48 +22,11 @@ function scheduledJobEndpoints(app) {
     [validatedRequest, isSingleUserMode],
     async (_request, response) => {
       try {
-        // Built-in skills — already human-readable identifiers
-        const builtIn = (await agentSkillsFromSystemSettings()).map((id) => ({
-          id,
-          name: id,
-        }));
-
-        // Imported plugins — resolve hubId to name from plugin.json
-        const imported = ImportedPlugin.activeImportedPlugins().map((id) => {
-          const hubId = id.replace("@@", "");
-          let name = hubId;
-          try {
-            const plugin = ImportedPlugin.loadPluginByHubId(hubId);
-            if (plugin?.name) name = plugin.name;
-          } catch {}
-          return { id, name };
-        });
-
-        // Agent flows — resolve UUID to flow name
-        const flows = AgentFlows.activeFlowPlugins().map((id) => {
-          const uuid = id.replace("@@flow_", "");
-          let name = uuid;
-          try {
-            const allFlows = AgentFlows.getAllFlows();
-            if (allFlows[uuid]?.name) name = allFlows[uuid].name;
-          } catch {}
-          return { id, name: `Flow: ${name}` };
-        });
-
-        // MCP servers — strip prefix for display
-        const mcp = (await new MCPCompatibilityLayer().activeMCPServers()).map(
-          (id) => ({
-            id,
-            name: `MCP: ${id.replace("@@mcp_", "")}`,
-          })
-        );
-
-        return response
-          .status(200)
-          .json({ tools: [...builtIn, ...imported, ...flows, ...mcp] });
+        const tools = await ScheduledJob.availableTools();
+        return response.status(200).json({ tools });
       } catch (e) {
         console.error(e.message, e);
-        response.sendStatus(500);
+        response.sendStatus(500).json({ tools: [] });
       }
     }
   );

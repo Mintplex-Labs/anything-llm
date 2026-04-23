@@ -2,6 +2,11 @@ const prisma = require("../utils/prisma");
 const later = require("@breejs/later");
 const cronValidate = require("cron-validate").default;
 
+// Configure later.js to use local time instead of UTC.
+// This ensures cron expressions like "0 9 * * *" are interpreted as 9 AM local
+// time rather than 9 AM UTC.
+later.date.localTime();
+
 const ScheduledJob = {
   writable: ["name", "prompt", "tools", "schedule", "enabled"],
 
@@ -220,6 +225,221 @@ const ScheduledJob = {
     } catch (error) {
       console.error("Failed to update run timestamps:", error.message);
     }
+  },
+
+  /**
+   * Get ALL available tools for scheduled jobs to choose from.
+   * Unlike the global agent settings, each scheduled job can have its own tool configuration.
+   * This returns all possible tools so users can enable different tools for different scheduled tasks.
+   *
+   * @returns {Promise<{
+   *   category: string,
+   *   name: string,
+   *   items: Array<{ id: string, name: string, description?: string }>
+   * }[]>}
+   */
+  availableTools: async function () {
+    const AgentPlugins = require("../utils/agents/aibitat/plugins");
+    const ImportedPlugin = require("../utils/agents/imported");
+    const { AgentFlows } = require("../utils/agentFlows");
+    const MCPCompatibilityLayer = require("../utils/MCP");
+
+    const categories = [];
+
+    // Default skills (always available)
+    const DEFAULT_SKILLS = [
+      {
+        id: "rag-memory",
+        name: "RAG Memory",
+        description: "Recall and cite information from embedded documents",
+      },
+      {
+        id: "document-summarizer",
+        name: "Document Summarizer",
+        description: "Summarize documents in the workspace",
+      },
+      {
+        id: "web-scraping",
+        name: "Web Scraping",
+        description: "Scrape content from web pages",
+      },
+    ];
+
+    // Configurable skills without sub-skills
+    const SIMPLE_CONFIGURABLE_SKILLS = [
+      {
+        id: "create-chart",
+        name: "Create Charts",
+        description: "Generate data visualization charts",
+      },
+      {
+        id: "web-browsing",
+        name: "Web Browsing",
+        description: "Search and browse the web",
+      },
+      {
+        id: "sql-agent",
+        name: "SQL Agent",
+        description: "Query connected SQL databases",
+      },
+    ];
+
+    // Build agent skills category
+    const agentSkillItems = [...DEFAULT_SKILLS, ...SIMPLE_CONFIGURABLE_SKILLS];
+
+    if (agentSkillItems.length > 0) {
+      categories.push({
+        category: "agent-skills",
+        name: "Agent Skills",
+        items: agentSkillItems,
+      });
+    }
+
+    // Helper to prettify a sub-skill name (e.g., "gmail-get-inbox" -> "Get Inbox")
+    const prettifySubSkillName = (name, prefix) => {
+      let cleaned = name;
+      const prefixes = [prefix, "gcal", "filesystem", "create"];
+      for (const p of prefixes) {
+        if (cleaned.startsWith(`${p}-`)) {
+          cleaned = cleaned.slice(p.length + 1);
+          break;
+        }
+      }
+      return cleaned
+        .split("-")
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(" ");
+    };
+
+    // Helper function to build sub-skill items from AgentPlugins
+    const buildSubSkillItems = (pluginKey, namePrefix) => {
+      const plugin = AgentPlugins[pluginKey];
+      if (!plugin || !Array.isArray(plugin.plugin)) return [];
+
+      return plugin.plugin.map((subPlugin) => ({
+        id: `${plugin.name}#${subPlugin.name}`,
+        name: prettifySubSkillName(subPlugin.name, namePrefix),
+        description: subPlugin.description || null,
+      }));
+    };
+
+    // Filesystem Agent (has sub-skills)
+    const filesystemItems = buildSubSkillItems("filesystemAgent", "filesystem");
+    if (filesystemItems.length > 0) {
+      categories.push({
+        category: "filesystem-agent",
+        name: "File System",
+        items: filesystemItems,
+      });
+    }
+
+    // Create Files Agent (has sub-skills)
+    const createFilesItems = buildSubSkillItems("createFilesAgent", "create");
+    if (createFilesItems.length > 0) {
+      categories.push({
+        category: "create-files-agent",
+        name: "Create Files",
+        items: createFilesItems,
+      });
+    }
+
+    // Gmail Agent (has sub-skills)
+    const gmailItems = buildSubSkillItems("gmailAgent", "gmail");
+    if (gmailItems.length > 0) {
+      categories.push({
+        category: "gmail-agent",
+        name: "Gmail",
+        items: gmailItems,
+      });
+    }
+
+    // Google Calendar Agent (has sub-skills)
+    const googleCalendarItems = buildSubSkillItems(
+      "googleCalendarAgent",
+      "gcal"
+    );
+    if (googleCalendarItems.length > 0) {
+      categories.push({
+        category: "google-calendar-agent",
+        name: "Google Calendar",
+        items: googleCalendarItems,
+      });
+    }
+
+    // Outlook Agent (has sub-skills)
+    const outlookItems = buildSubSkillItems("outlookAgent", "outlook");
+    if (outlookItems.length > 0) {
+      categories.push({
+        category: "outlook-agent",
+        name: "Outlook",
+        items: outlookItems,
+      });
+    }
+
+    // Custom/imported skills category
+    const importedPlugins = ImportedPlugin.listImportedPlugins();
+    if (importedPlugins.length > 0) {
+      const customSkillItems = importedPlugins.map((plugin) => ({
+        id: `@@${plugin.hubId}`,
+        name: plugin.name || plugin.hubId,
+        description: plugin.description || null,
+      }));
+
+      categories.push({
+        category: "custom-skills",
+        name: "Custom Skills",
+        items: customSkillItems,
+      });
+    }
+
+    // Agent flows category
+    const allFlows = AgentFlows.listFlows();
+    if (allFlows.length > 0) {
+      const flowItems = allFlows.map((flow) => ({
+        id: `@@flow_${flow.uuid}`,
+        name: flow.name,
+        description: flow.description || null,
+      }));
+
+      categories.push({
+        category: "agent-flows",
+        name: "Agent Flows",
+        items: flowItems,
+      });
+    }
+
+    // MCP servers category - get all servers
+    // MCP servers are selected as a whole (@@mcp_serverName), not individual tools.
+    // The agent loader expands the server into its individual tools at runtime.
+    try {
+      const mcpLayer = new MCPCompatibilityLayer();
+      const servers = await mcpLayer.servers();
+
+      const mcpItems = [];
+      for (const server of servers) {
+        const toolCount = server.tools?.length || 0;
+        mcpItems.push({
+          id: `@@mcp_${server.name}`,
+          name: server.name,
+          description:
+            toolCount > 0
+              ? `${toolCount} tools available`
+              : "No tools available",
+        });
+      }
+
+      if (mcpItems.length > 0) {
+        categories.push({
+          category: "mcp-servers",
+          name: "MCP Servers",
+          items: mcpItems,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to load MCP servers for available tools:", error);
+    }
+
+    return categories;
   },
 };
 
