@@ -9,7 +9,7 @@ export default function PersonalizationToggle() {
   const { t } = useTranslation();
 
   async function handleToggle(checked) {
-    const value = checked ? "on" : "off";
+    const value = checked ? "true" : "false";
     const { success } = await Admin.updateSystemPreferences({
       memory_enabled: value,
     });

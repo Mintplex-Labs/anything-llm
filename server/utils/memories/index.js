@@ -14,11 +14,8 @@ const INJECTED_WORKSPACE_LIMIT = 5;
  */
 async function getMemoriesForPrompt(userId, workspaceId, prompt, rawHistory) {
   try {
-    const enabled = await SystemSettings.getValueOrFallback(
-      { label: "memory_enabled" },
-      "off"
-    );
-    if (enabled !== "on") return "";
+    const enabled = await SystemSettings.memoriesEnabled();
+    if (!enabled) return "";
 
     const [globalMemories, workspaceMemories] = await Promise.all([
       Memory.globalForUser(userId ?? null),

@@ -411,9 +411,7 @@ const SystemSettings = {
       JWTSecret: !!process.env.JWT_SECRET,
       StorageDir: process.env.STORAGE_DIR,
       MultiUserMode: await this.isMultiUserMode(),
-      MemoryEnabled:
-        (await this.getValueOrFallback({ label: "memory_enabled" }, "off")) ===
-        "on",
+      MemoryEnabled: await this.memoriesEnabled(),
       DisableTelemetry: process.env.DISABLE_TELEMETRY || "false",
 
       // --------------------------------------------------------
@@ -624,6 +622,16 @@ const SystemSettings = {
   isMultiUserMode: async function () {
     try {
       const setting = await this.get({ label: "multi_user_mode" });
+      return setting?.value === "true";
+    } catch (error) {
+      console.error(error.message);
+      return false;
+    }
+  },
+
+  memoriesEnabled: async function () {
+    try {
+      const setting = await this.get({ label: "memory_enabled" });
       return setting?.value === "true";
     } catch (error) {
       console.error(error.message);

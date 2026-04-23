@@ -60,11 +60,8 @@ function parseMemoriesResponse(text) {
 
 (async () => {
   try {
-    const enabled = await SystemSettings.getValueOrFallback(
-      { label: "memory_enabled" },
-      "off"
-    );
-    if (enabled !== "on") {
+    const enabled = await SystemSettings.memoriesEnabled();
+    if (!enabled) {
       log("Memory extraction is disabled. Exiting.");
       return;
     }
