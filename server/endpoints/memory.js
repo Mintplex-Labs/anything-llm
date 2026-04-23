@@ -8,17 +8,33 @@ const {
   ROLES,
 } = require("../utils/middleware/multiUserProtected");
 
-function ownerMatch(memory, user) {
-  const memUserId = memory.userId ?? null;
-  const reqUserId = user?.id ?? null;
-  return memUserId === reqUserId;
-}
-
 async function memoryFeatureEnabled(_req, response, next) {
   const enabled = await SystemSettings.memoriesEnabled();
   if (!enabled)
     return response.status(403).json({ error: "Personalization is disabled." });
   next();
+}
+
+// Loads the memory by :memoryId and, in multi-user mode, verifies the requester owns it.
+// Single-user mode has no per-user scoping so only the existence check runs.
+async function validateMemoryOwner(request, response, next) {
+  try {
+    const memoryId = Number(request.params.memoryId);
+    const memory = await Memory.get({ id: memoryId });
+    if (!memory)
+      return response.status(404).json({ error: "Memory not found." });
+
+    if (response.locals.multiUserMode) {
+      const user = await userFromSession(request, response);
+      if ((memory.userId ?? null) !== (user?.id ?? null))
+        return response.status(404).json({ error: "Memory not found." });
+    }
+
+    next();
+  } catch (e) {
+    console.error(e);
+    return response.sendStatus(500);
+  }
 }
 
 function memoryEndpoints(app) {
@@ -48,7 +64,7 @@ function memoryEndpoints(app) {
         });
       } catch (e) {
         console.error(e);
-        response.sendStatus(500).end();
+        return response.sendStatus(500);
       }
     }
   );
@@ -87,24 +103,23 @@ function memoryEndpoints(app) {
         response.status(200).json({ memory });
       } catch (e) {
         console.error(e);
-        response.sendStatus(500).end();
+        return response.sendStatus(500);
       }
     }
   );
 
   app.put(
     "/memories/:memoryId",
-    [validatedRequest, flexUserRoleValid([ROLES.all]), memoryFeatureEnabled],
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.all]),
+      memoryFeatureEnabled,
+      validateMemoryOwner,
+    ],
     async (request, response) => {
       try {
-        const user = await userFromSession(request, response);
         const memoryId = Number(request.params.memoryId);
         const { content } = reqBody(request);
-
-        const existing = await Memory.get({ id: memoryId });
-        if (!existing || !ownerMatch(existing, user)) {
-          return response.status(404).json({ error: "Memory not found." });
-        }
 
         if (!content || !content.trim()) {
           return response.status(400).json({ error: "Content is required." });
@@ -121,45 +136,43 @@ function memoryEndpoints(app) {
         response.status(200).json({ memory });
       } catch (e) {
         console.error(e);
-        response.sendStatus(500).end();
+        return response.sendStatus(500);
       }
     }
   );
 
   app.delete(
     "/memories/:memoryId",
-    [validatedRequest, flexUserRoleValid([ROLES.all]), memoryFeatureEnabled],
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.all]),
+      memoryFeatureEnabled,
+      validateMemoryOwner,
+    ],
     async (request, response) => {
       try {
-        const user = await userFromSession(request, response);
         const memoryId = Number(request.params.memoryId);
-
-        const existing = await Memory.get({ id: memoryId });
-        if (!existing || !ownerMatch(existing, user)) {
-          return response.status(404).json({ error: "Memory not found." });
-        }
 
         await Memory.delete(memoryId);
         response.status(200).json({ success: true });
       } catch (e) {
         console.error(e);
-        response.sendStatus(500).end();
+        return response.sendStatus(500);
       }
     }
   );
 
   app.post(
     "/memories/:memoryId/promote",
-    [validatedRequest, flexUserRoleValid([ROLES.all]), memoryFeatureEnabled],
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.all]),
+      memoryFeatureEnabled,
+      validateMemoryOwner,
+    ],
     async (request, response) => {
       try {
-        const user = await userFromSession(request, response);
         const memoryId = Number(request.params.memoryId);
-
-        const existing = await Memory.get({ id: memoryId });
-        if (!existing || !ownerMatch(existing, user)) {
-          return response.status(404).json({ error: "Memory not found." });
-        }
 
         const { memory, message } = await Memory.promoteToGlobal(memoryId);
         if (!memory) {
@@ -169,24 +182,24 @@ function memoryEndpoints(app) {
         response.status(200).json({ memory });
       } catch (e) {
         console.error(e);
-        response.sendStatus(500).end();
+        return response.sendStatus(500);
       }
     }
   );
 
   app.post(
     "/memories/:memoryId/demote",
-    [validatedRequest, flexUserRoleValid([ROLES.all]), memoryFeatureEnabled],
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.all]),
+      memoryFeatureEnabled,
+      validateMemoryOwner,
+    ],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
         const memoryId = Number(request.params.memoryId);
         const { workspaceId } = reqBody(request);
-
-        const existing = await Memory.get({ id: memoryId });
-        if (!existing || !ownerMatch(existing, user)) {
-          return response.status(404).json({ error: "Memory not found." });
-        }
 
         if (!workspaceId) {
           return response
@@ -212,7 +225,7 @@ function memoryEndpoints(app) {
         response.status(200).json({ memory });
       } catch (e) {
         console.error(e);
-        response.sendStatus(500).end();
+        return response.sendStatus(500);
       }
     }
   );
