@@ -1,24 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import { DotsThreeVertical } from "@phosphor-icons/react";
+import { useMemoriesContext } from "../MemoriesContext";
 import CardMenu from "./CardMenu";
 
-/**
- * @param {Object} props
- * @param {Object} props.memory
- * @param {"workspace"|"global"} props.activeTab
- * @param {function} props.onDelete
- * @param {function} props.onEdit
- * @param {function} props.onPromote
- * @param {function} props.onDemote
- */
-export default function MemoryCard({
-  memory,
-  activeTab,
-  onDelete,
-  onEdit,
-  onPromote,
-  onDemote,
-}) {
+export default function MemoryCard({ memory }) {
+  const {
+    activeTab,
+    handleDelete,
+    openEditModal,
+    handlePromote,
+    handleDemote,
+  } = useMemoriesContext();
+
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
@@ -70,19 +63,16 @@ export default function MemoryCard({
           isWorkspace={isWorkspace}
           onEdit={() => {
             setMenuOpen(false);
-            onEdit(memory);
+            openEditModal(memory);
           }}
           onMove={() => {
             setMenuOpen(false);
-            if (isWorkspace) {
-              onPromote(memory.id);
-            } else {
-              onDemote(memory.id);
-            }
+            if (isWorkspace) handlePromote(memory.id);
+            else handleDemote(memory.id);
           }}
           onDelete={() => {
             setMenuOpen(false);
-            onDelete(memory.id);
+            handleDelete(memory.id);
           }}
         />
       )}

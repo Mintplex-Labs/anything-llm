@@ -1,31 +1,20 @@
 import { Plus } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
+import { useMemoriesContext } from "../MemoriesContext";
 
 const LIMITS = {
   workspace: 20,
   global: 5,
 };
 
-/**
- * @param {Object} props
- * @param {Object} props.workspace
- * @param {"workspace"|"global"} props.activeTab
- * @param {function} props.onTabChange
- * @param {number} props.workspaceCount
- * @param {number} props.globalCount
- * @param {function} props.onAdd
- */
-export default function MemoryTabs({
-  workspace,
-  activeTab,
-  onTabChange,
-  workspaceCount,
-  globalCount,
-  onAdd,
-}) {
+export default function MemoryTabs() {
+  const { workspace, activeTab, setActiveTab, memories, openCreateModal } =
+    useMemoriesContext();
   const { t } = useTranslation();
   const workspaceName =
     workspace?.name || t("chat_window.memories.tab_workspace");
+  const workspaceCount = memories.workspace.length;
+  const globalCount = memories.global.length;
 
   return (
     <div className="flex items-center justify-between shrink-0">
@@ -34,18 +23,18 @@ export default function MemoryTabs({
           label={workspaceName}
           count={`${workspaceCount}/${LIMITS.workspace}`}
           active={activeTab === "workspace"}
-          onClick={() => onTabChange("workspace")}
+          onClick={() => setActiveTab("workspace")}
         />
         <TabPill
           label={t("chat_window.memories.tab_global")}
           count={`${globalCount}/${LIMITS.global}`}
           active={activeTab === "global"}
-          onClick={() => onTabChange("global")}
+          onClick={() => setActiveTab("global")}
         />
       </div>
       <button
         type="button"
-        onClick={onAdd}
+        onClick={openCreateModal}
         className="-mr-1 flex items-center justify-center size-6 rounded-lg border-none bg-transparent cursor-pointer text-zinc-50 light:text-slate-900 hover:bg-zinc-800 light:hover:bg-slate-200 transition-colors"
       >
         <Plus size={16} weight="bold" />

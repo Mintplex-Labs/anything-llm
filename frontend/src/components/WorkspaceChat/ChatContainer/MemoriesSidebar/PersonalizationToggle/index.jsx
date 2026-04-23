@@ -1,14 +1,11 @@
 import { SimpleToggleSwitch } from "@/components/lib/Toggle";
 import { useTranslation } from "react-i18next";
 import Admin from "@/models/admin";
+import { useMemoriesContext } from "../MemoriesContext";
 
-/**
- * @param {Object} props
- * @param {boolean} props.enabled
- * @param {boolean} props.loading
- * @param {function} props.onToggle - Called with the new enabled value
- */
-export default function PersonalizationToggle({ enabled, loading, onToggle }) {
+export default function PersonalizationToggle() {
+  const { canToggle, enabled, setEnabled, loadingEnabled } =
+    useMemoriesContext();
   const { t } = useTranslation();
 
   async function handleToggle(checked) {
@@ -17,10 +14,10 @@ export default function PersonalizationToggle({ enabled, loading, onToggle }) {
       memory_enabled: value,
     });
     if (!success) return;
-    onToggle(checked);
+    setEnabled(checked);
   }
 
-  if (loading) return null;
+  if (!canToggle || loadingEnabled) return null;
 
   return (
     <div className="shrink-0 bg-zinc-900 light:bg-white light:border light:border-slate-300 rounded-2xl p-4">

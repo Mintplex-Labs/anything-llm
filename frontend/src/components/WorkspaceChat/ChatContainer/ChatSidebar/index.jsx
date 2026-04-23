@@ -17,11 +17,8 @@ export function ChatSidebarProvider({ children }) {
   }
 
   function toggleSidebar(type, data = null) {
-    if (activeSidebar === type) {
-      closeSidebar();
-    } else {
-      openSidebar(type, data);
-    }
+    if (activeSidebar === type) closeSidebar();
+    else openSidebar(type, data);
   }
 
   return (
