@@ -8,6 +8,7 @@ export default function SkillSection({
   enabledCount,
   totalCount,
   isMcp = false,
+  indented = false,
   highlighted = false,
   children,
 }) {
@@ -22,7 +23,7 @@ export default function SkillSection({
   else headerClasses += " hover:bg-zinc-700/30 light:hover:bg-slate-50";
 
   return (
-    <div>
+    <div className={indented ? "ml-3" : ""}>
       <button
         ref={ref}
         type="button"

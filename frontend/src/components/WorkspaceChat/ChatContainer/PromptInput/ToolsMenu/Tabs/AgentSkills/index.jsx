@@ -11,14 +11,26 @@ import MCPServers from "@/models/mcpServers";
 import {
   getDefaultSkills,
   getConfigurableSkills,
+  getAppIntegrationSkills,
 } from "@/pages/Admin/Agents/skills";
+import { getCreateFileSkills } from "@/pages/Admin/Agents/CreateFileSkillPanel";
+import { getFileSystemSubSkills } from "@/pages/Admin/Agents/FileSystemSkillPanel";
+import { getGmailSkills } from "@/pages/Admin/Agents/GMailSkillPanel/utils";
+import { getGoogleCalendarSkills } from "@/pages/Admin/Agents/GoogleCalendarSkillPanel/utils";
+import { getOutlookSkills } from "@/pages/Admin/Agents/OutlookSkillPanel/utils";
 import useToolsMenuItems from "../../useToolsMenuItems";
+
+function flattenCategorySkills(categorizedSkills) {
+  return Object.values(categorizedSkills).flatMap(
+    (category) => category.skills
+  );
+}
 import SkillRow from "./SkillRow";
 import SkillSection from "./SkillSection";
 import { Wrench, MagnifyingGlass, CircleNotch } from "@phosphor-icons/react";
 import { useIsAgentSessionActive } from "@/utils/chat/agent";
 
-const SEARCH_THRESHOLD = 10;
+const MIN_ITEMS_TO_SHOW_SEARCH = 10;
 
 export default function AgentSkillsTab({
   highlightedIndex = -1,
@@ -34,6 +46,7 @@ export default function AgentSkillsTab({
   const configurableSkills = getConfigurableSkills(t, {
     fileSystemAgentAvailable,
   });
+  const appIntegrationSkills = getAppIntegrationSkills(t);
   const [disabledDefaults, setDisabledDefaults] = useState([]);
   const [enabledConfigurable, setEnabledConfigurable] = useState([]);
   const [importedSkills, setImportedSkills] = useState([]);
@@ -42,7 +55,16 @@ export default function AgentSkillsTab({
   const [loading, setLoading] = useState(true);
   const [mcpLoading, setMcpLoading] = useState(true);
   const [expandedSections, setExpandedSections] = useState({});
+  const [expandedSubSections, setExpandedSubSections] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
+  const [disabledCreateFilesSubSkills, setDisabledCreateFilesSubSkills] =
+    useState([]);
+  const [disabledFileSystemSubSkills, setDisabledFileSystemSubSkills] =
+    useState([]);
+  const [disabledGmailSubSkills, setDisabledGmailSubSkills] = useState([]);
+  const [disabledGoogleCalendarSubSkills, setDisabledGoogleCalendarSubSkills] =
+    useState([]);
+  const [disabledOutlookSubSkills, setDisabledOutlookSubSkills] = useState([]);
   const showAgentCmdActivationAlert = showAgentCommand && !agentSessionActive;
 
   useEffect(() => {
@@ -57,6 +79,11 @@ export default function AgentSkillsTab({
           "disabled_agent_skills",
           "default_agent_skills",
           "imported_agent_skills",
+          "disabled_create_files_skills",
+          "disabled_filesystem_skills",
+          "disabled_gmail_skills",
+          "disabled_google_calendar_skills",
+          "disabled_outlook_skills",
         ]),
         AgentFlows.listFlows(),
         System.isFileSystemAgentAvailable(),
@@ -66,6 +93,19 @@ export default function AgentSkillsTab({
         setDisabledDefaults(prefs.settings.disabled_agent_skills ?? []);
         setEnabledConfigurable(prefs.settings.default_agent_skills ?? []);
         setImportedSkills(prefs.settings.imported_agent_skills ?? []);
+        setDisabledCreateFilesSubSkills(
+          prefs.settings.disabled_create_files_skills ?? []
+        );
+        setDisabledFileSystemSubSkills(
+          prefs.settings.disabled_filesystem_skills ?? []
+        );
+        setDisabledGmailSubSkills(prefs.settings.disabled_gmail_skills ?? []);
+        setDisabledGoogleCalendarSubSkills(
+          prefs.settings.disabled_google_calendar_skills ?? []
+        );
+        setDisabledOutlookSubSkills(
+          prefs.settings.disabled_outlook_skills ?? []
+        );
       }
       if (flowsRes?.flows) setFlows(flowsRes.flows);
       setFileSystemAgentAvailable(fsAgentAvailable);
@@ -171,21 +211,109 @@ export default function AgentSkillsTab({
     }));
   }
 
+  function toggleSubSection(subSectionId) {
+    setExpandedSubSections((prev) => ({
+      ...prev,
+      [subSectionId]: !prev[subSectionId],
+    }));
+  }
+
+  function isSubSectionExpanded(subSectionId) {
+    return !!(searchQuery.trim() || expandedSubSections[subSectionId]);
+  }
+
+  function isSubSkillEnabled(skillKey, subSkillName) {
+    if (skillKey === "create-files-agent") {
+      return !disabledCreateFilesSubSkills.includes(subSkillName);
+    }
+    if (skillKey === "filesystem-agent") {
+      return !disabledFileSystemSubSkills.includes(subSkillName);
+    }
+    if (skillKey === "gmail-agent") {
+      return !disabledGmailSubSkills.includes(subSkillName);
+    }
+    if (skillKey === "google-calendar-agent") {
+      return !disabledGoogleCalendarSubSkills.includes(subSkillName);
+    }
+    if (skillKey === "outlook-agent") {
+      return !disabledOutlookSubSkills.includes(subSkillName);
+    }
+    return true;
+  }
+
+  async function toggleSubSkill(skillKey, subSkillName) {
+    if (skillKey === "create-files-agent") {
+      const updated = toggleItem(disabledCreateFilesSubSkills, subSkillName);
+      setDisabledCreateFilesSubSkills(updated);
+      await Admin.updateSystemPreferences({
+        disabled_create_files_skills: updated.join(","),
+      });
+    } else if (skillKey === "filesystem-agent") {
+      const updated = toggleItem(disabledFileSystemSubSkills, subSkillName);
+      setDisabledFileSystemSubSkills(updated);
+      await Admin.updateSystemPreferences({
+        disabled_filesystem_skills: updated.join(","),
+      });
+    } else if (skillKey === "gmail-agent") {
+      const updated = toggleItem(disabledGmailSubSkills, subSkillName);
+      setDisabledGmailSubSkills(updated);
+      await Admin.updateSystemPreferences({
+        disabled_gmail_skills: updated.join(","),
+      });
+    } else if (skillKey === "google-calendar-agent") {
+      const updated = toggleItem(disabledGoogleCalendarSubSkills, subSkillName);
+      setDisabledGoogleCalendarSubSkills(updated);
+      await Admin.updateSystemPreferences({
+        disabled_google_calendar_skills: updated.join(","),
+      });
+    } else if (skillKey === "outlook-agent") {
+      const updated = toggleItem(disabledOutlookSubSkills, subSkillName);
+      setDisabledOutlookSubSkills(updated);
+      await Admin.updateSystemPreferences({
+        disabled_outlook_skills: updated.join(","),
+      });
+    }
+  }
+
+  function getSubSkillsForSkill(skillKey) {
+    if (skillKey === "create-files-agent") return getCreateFileSkills(t);
+    if (skillKey === "filesystem-agent") return getFileSystemSubSkills(t);
+    if (skillKey === "gmail-agent")
+      return flattenCategorySkills(getGmailSkills(t));
+    if (skillKey === "google-calendar-agent")
+      return flattenCategorySkills(getGoogleCalendarSkills(t));
+    if (skillKey === "outlook-agent")
+      return flattenCategorySkills(getOutlookSkills(t));
+    return null;
+  }
+
   // Build sections of grouped items
   const sections = useMemo(() => {
     const sectionList = [];
 
-    // Agent Skills (default + configurable)
+    // Agent Skills (default + configurable, excluding app integrations)
     const skillItems = [];
     for (const [key, { title }] of Object.entries({
       ...defaultSkills,
       ...configurableSkills,
     })) {
+      const subSkills = getSubSkillsForSkill(key);
+      const parentEnabled = isSkillEnabled(key);
       skillItems.push({
         id: key,
         name: title,
-        enabled: isSkillEnabled(key),
+        enabled: parentEnabled,
         onToggle: () => toggleSkill(key),
+        hasSubSkills: !!subSkills,
+        subSkills: subSkills
+          ? subSkills.map((sub) => ({
+              id: `${key}::${sub.name}`,
+              name: sub.title,
+              enabled: parentEnabled && isSubSkillEnabled(key, sub.name),
+              onToggle: () => toggleSubSkill(key, sub.name),
+              parentEnabled,
+            }))
+          : null,
       });
     }
     if (skillItems.length > 0) {
@@ -194,6 +322,37 @@ export default function AgentSkillsTab({
         name: t("chat_window.agent_skills"),
         items: skillItems,
         enabledCount: skillItems.filter((i) => i.enabled).length,
+      });
+    }
+
+    // App Integrations (Gmail, Google Calendar, Outlook)
+    const appIntegrationItems = [];
+    for (const [key, { title }] of Object.entries(appIntegrationSkills)) {
+      const subSkills = getSubSkillsForSkill(key);
+      const parentEnabled = isSkillEnabled(key);
+      appIntegrationItems.push({
+        id: key,
+        name: title,
+        enabled: parentEnabled,
+        onToggle: () => toggleSkill(key),
+        hasSubSkills: !!subSkills,
+        subSkills: subSkills
+          ? subSkills.map((sub) => ({
+              id: `${key}::${sub.name}`,
+              name: sub.title,
+              enabled: parentEnabled && isSubSkillEnabled(key, sub.name),
+              onToggle: () => toggleSubSkill(key, sub.name),
+              parentEnabled,
+            }))
+          : null,
+      });
+    }
+    if (appIntegrationItems.length > 0) {
+      sectionList.push({
+        id: "app-integrations",
+        name: t("chat_window.app_integrations"),
+        items: appIntegrationItems,
+        enabledCount: appIntegrationItems.filter((i) => i.enabled).length,
       });
     }
 
@@ -261,6 +420,11 @@ export default function AgentSkillsTab({
     flows,
     mcpServers,
     fileSystemAgentAvailable,
+    disabledCreateFilesSubSkills,
+    disabledFileSystemSubSkills,
+    disabledGmailSubSkills,
+    disabledGoogleCalendarSubSkills,
+    disabledOutlookSubSkills,
   ]);
 
   // Filter sections by search query
@@ -269,9 +433,13 @@ export default function AgentSkillsTab({
     const q = searchQuery.toLowerCase();
     return sections
       .map((section) => {
-        const items = section.items.filter((item) =>
-          item.name.toLowerCase().includes(q)
-        );
+        const items = section.items.filter((item) => {
+          const nameMatches = item.name.toLowerCase().includes(q);
+          const subSkillMatches =
+            item.subSkills?.some((sub) => sub.name.toLowerCase().includes(q)) ??
+            false;
+          return nameMatches || subSkillMatches;
+        });
         return {
           ...section,
           items,
@@ -296,11 +464,28 @@ export default function AgentSkillsTab({
         for (const item of section.items) {
           indexMap[item.id] = items.length;
           items.push(item);
+
+          if (item.hasSubSkills && item.subSkills) {
+            indexMap[`subsection-${item.id}`] = items.length;
+            items.push({
+              type: "subheader",
+              id: `subsection-${item.id}`,
+              parentId: item.id,
+              onToggle: () => toggleSubSection(item.id),
+            });
+
+            if (isSubSectionExpanded(item.id)) {
+              for (const subItem of item.subSkills) {
+                indexMap[subItem.id] = items.length;
+                items.push(subItem);
+              }
+            }
+          }
         }
       }
     }
     return { flatItems: items, flatIndexMap: indexMap };
-  }, [filteredSections, expandedSections, searchQuery]);
+  }, [filteredSections, expandedSections, expandedSubSections, searchQuery]);
 
   const totalItemCount = sections.reduce((sum, s) => sum + s.items.length, 0);
 
@@ -323,7 +508,7 @@ export default function AgentSkillsTab({
           {t("chat_window.use_agent_session_to_use_tools")}
         </p>
       )}
-      {totalItemCount >= SEARCH_THRESHOLD && (
+      {totalItemCount >= MIN_ITEMS_TO_SHOW_SEARCH && (
         <SearchInput
           value={searchQuery}
           onChange={setSearchQuery}
@@ -342,14 +527,41 @@ export default function AgentSkillsTab({
           highlighted={highlightedIndex === flatIndexMap[section.id]}
         >
           {section.items.map((item) => (
-            <SkillRow
-              key={item.id}
-              name={item.name}
-              enabled={item.enabled}
-              onToggle={item.onToggle}
-              highlighted={highlightedIndex === flatIndexMap[item.id]}
-              disabled={agentSessionActive}
-            />
+            <div key={item.id}>
+              <SkillRow
+                name={item.name}
+                enabled={item.enabled}
+                onToggle={item.onToggle}
+                highlighted={highlightedIndex === flatIndexMap[item.id]}
+                disabled={agentSessionActive}
+              />
+              {item.hasSubSkills && item.subSkills && item.enabled && (
+                <SkillSection
+                  name="Sub-skills"
+                  expanded={isSubSectionExpanded(item.id)}
+                  onToggle={() => toggleSubSection(item.id)}
+                  enabledCount={item.subSkills.filter((s) => s.enabled).length}
+                  totalCount={item.subSkills.length}
+                  highlighted={
+                    highlightedIndex === flatIndexMap[`subsection-${item.id}`]
+                  }
+                  indented
+                >
+                  {item.subSkills.map((subItem) => (
+                    <SkillRow
+                      key={subItem.id}
+                      name={subItem.name}
+                      enabled={subItem.enabled}
+                      onToggle={subItem.onToggle}
+                      highlighted={
+                        highlightedIndex === flatIndexMap[subItem.id]
+                      }
+                      disabled={agentSessionActive || !subItem.parentEnabled}
+                    />
+                  ))}
+                </SkillSection>
+              )}
+            </div>
           ))}
         </SkillSection>
       ))}

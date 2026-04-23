@@ -1336,6 +1336,7 @@ const TRANSLATIONS = {
     slash_commands: "Slash Commands",
     agent_skills: "Agent Skills",
     manage_agent_skills: "Manage Agent Skills",
+    app_integrations: "App Integrations",
     custom_skills: "Custom Skills",
     agent_flows: "Agent Flows",
     no_tools_found: "No matching tools found",
