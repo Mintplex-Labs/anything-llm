@@ -19,20 +19,28 @@ function log(message, ...args) {
 /**
  * Subscribes to push notifications for the current client - can be called multiple times without re-subscribing
  * or generating infinite tokens.
- * @returns {void}
+ * @returns {Promise<void>}
  */
-export async function subscribeToPushNotifications() {
+export async function subscribeToPushNotifications(askToEnable = true) {
   try {
     if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
       log("Push notifications not supported");
       return;
     }
 
-    // Check current permission status
-    const permission = await Notification.requestPermission();
-    if (permission !== "granted") {
-      log("Notification permission not granted");
-      return;
+    if (askToEnable) {
+      // Check current permission status
+      const permission = await Notification.requestPermission();
+      if (permission !== "granted") {
+        log("Notification permission not granted");
+        return;
+      }
+    } else {
+      const permission = Notification.permission;
+      if (permission !== "granted") {
+        log("Notification permission not granted");
+        return;
+      }
     }
 
     const publicKey = await fetch(PUSH_PUBKEY_URL, { headers: baseHeaders() })
@@ -107,9 +115,9 @@ export async function subscribeToPushNotifications() {
  * Hook that registers a service worker for push notifications.
  * @returns {void}
  */
-export default function useWebPushNotifications() {
+export default function useWebPushNotifications(askToEnable = true) {
   useEffect(() => {
-    subscribeToPushNotifications();
+    subscribeToPushNotifications(askToEnable);
   }, []);
 }
 

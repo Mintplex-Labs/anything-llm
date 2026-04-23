@@ -6,11 +6,6 @@ import {
   Copy,
 } from "@phosphor-icons/react";
 
-function copyToClipboard(content) {
-  const text = typeof content === "string" ? content : String(content);
-  navigator.clipboard.writeText(text);
-}
-
 // Generic expand/collapse panel used by the run-detail page to wrap each
 // trace section (thinking, tool calls, response, files).
 export default function CollapsibleSection({

@@ -1492,6 +1492,14 @@ const TRANSLATIONS = {
   },
   scheduledJobs: {
     title: "Scheduled Jobs",
+    enableNotifications: "Enable browser notifications for job results",
+    status: {
+      completed: "Completed",
+      failed: "Failed",
+      timed_out: "Timed out",
+      running: "Running",
+      queued: "Queued",
+    },
     description:
       "Create recurring AI tasks that run on a schedule. Each job runs a prompt with optional tools and saves the result for review.",
     newJob: "New Job",
@@ -1609,11 +1617,11 @@ const TRANSLATIONS = {
       creating: "Creating...",
       threadFailed: "Failed to create thread",
       status: {
-        completed: "completed",
-        failed: "failed",
-        timed_out: "timed out",
-        running: "running",
-        queued: "queued",
+        completed: "Completed",
+        failed: "Failed",
+        timed_out: "Timed out",
+        running: "Running",
+        queued: "Queued",
       },
       sections: {
         prompt: "Prompt",

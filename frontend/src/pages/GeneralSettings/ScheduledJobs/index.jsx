@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import ScheduledJobs from "@/models/scheduledJobs";
+import { subscribeToPushNotifications } from "@/hooks/useWebPushNotifications";
 import useWebPushNotifications from "@/hooks/useWebPushNotifications";
 import usePolling from "@/hooks/usePolling";
 import JobFormModal from "./JobFormModal";
@@ -10,10 +11,12 @@ import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
 import showToast from "@/utils/toast";
 import JobRow from "./components/JobRow";
+import { Bell } from "@phosphor-icons/react";
+import { Tooltip } from "react-tooltip";
 
 export default function ScheduledJobsPage() {
   const { t } = useTranslation();
-  useWebPushNotifications();
+  useWebPushNotifications(false);
   const { isOpen, openModal, closeModal } = useModal();
   const [loading, setLoading] = useState(true);
   const [jobs, setJobs] = useState([]);
@@ -173,19 +176,64 @@ function BaseLayout({
                 {t("scheduledJobs.description")}
               </p>
             </div>
-            {showNewJobButton && (
-              <button
-                type="button"
-                onClick={handleCreate}
-                className="border-none h-9 px-5 rounded-lg bg-zinc-50 text-zinc-950 light:bg-slate-900 light:text-white text-sm font-medium hover:bg-zinc-200 light:hover:bg-slate-800 transition-colors shrink-0"
-              >
-                {t("scheduledJobs.newJob")}
-              </button>
-            )}
+            <div className="flex items-center gap-x-2 shrink-0">
+              <NotificationBellButton />
+              {showNewJobButton && (
+                <button
+                  type="button"
+                  onClick={handleCreate}
+                  className="border-none h-9 px-5 rounded-lg bg-zinc-50 text-zinc-950 light:bg-slate-900 light:text-white text-sm font-medium hover:bg-zinc-200 light:hover:bg-slate-800 transition-colors"
+                >
+                  {t("scheduledJobs.newJob")}
+                </button>
+              )}
+            </div>
           </div>
           {children}
         </div>
       </div>
     </div>
+  );
+}
+
+function NotificationBellButton() {
+  const { t } = useTranslation();
+  const [permissionState, setPermissionState] = useState(
+    typeof Notification !== "undefined" ? Notification.permission : "denied"
+  );
+
+  if (
+    !("serviceWorker" in navigator) ||
+    !("PushManager" in window) ||
+    permissionState === "granted"
+  ) {
+    return null;
+  }
+
+  const handleClick = async () => {
+    await subscribeToPushNotifications();
+    setPermissionState(Notification.permission);
+  };
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={handleClick}
+        data-tooltip-id="notification-bell-tooltip"
+        data-tooltip-content={t(
+          "scheduledJobs.enableNotifications",
+          "Enable browser notifications for job results"
+        )}
+        className="flex items-center justify-center w-9 h-9 rounded-lg hover:bg-white/10 light:hover:bg-slate-200 transition-colors"
+      >
+        <Bell size={20} className="text-orange-400" />
+      </button>
+      <Tooltip
+        id="notification-bell-tooltip"
+        place="bottom"
+        className="tooltip !text-xs"
+      />
+    </>
   );
 }
