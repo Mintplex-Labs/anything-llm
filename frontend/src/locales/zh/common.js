@@ -394,6 +394,286 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: "Gmail 连接器",
+        description:
+          "让您的代理能够与Gmail互动：搜索邮件、阅读邮件线程、撰写草稿、发送邮件以及管理您的收件箱。请参考相关文档。",
+        multiUserWarning:
+          "为了安全原因，在多用户模式下无法使用 Gmail 集成功能。请先禁用多用户模式，然后才能使用此功能。",
+        configuration: "Gmail 设置",
+        deploymentId: "部署 ID",
+        deploymentIdHelp: "您的 Google Apps Script 网页应用的部署 ID",
+        apiKey: "API 密钥",
+        apiKeyHelp: "您在 Google Apps Script 部署中配置的 API 密钥。",
+        configurationRequired: "请配置部署 ID 和 API 密钥，以启用 Gmail 功能。",
+        configured: "已配置",
+        searchSkills: "搜索技巧...",
+        noSkillsFound: "未找到与您的搜索条件匹配的技能。",
+        categories: {
+          search: {
+            title: "搜索和阅读电子邮件",
+            description: "搜索并阅读您 Gmail 收件箱中的邮件。",
+          },
+          drafts: {
+            title: "草稿邮件",
+            description: "创建、编辑和管理电子邮件草稿",
+          },
+          send: {
+            title: "发送和回复电子邮件",
+            description: "立即发送电子邮件并回复讨论串",
+          },
+          threads: {
+            title: "管理电子邮件线程",
+            description: "管理邮件线程 - 标记为已读/未读，归档，删除",
+          },
+          account: {
+            title: "集成统计",
+            description: "查看邮件收件箱统计数据和账户信息",
+          },
+        },
+        skills: {
+          search: {
+            title: "搜索邮件",
+            description: "使用 Gmail 的查询语法搜索电子邮件",
+          },
+          readThread: {
+            title: "阅读此主题",
+            description: "阅读由ID发起的完整邮件往来",
+          },
+          createDraft: {
+            title: "创建草稿",
+            description: "创建一个新的电子邮件草稿",
+          },
+          createDraftReply: {
+            title: "创建草稿回复",
+            description: "创建一个针对现有主题的回应草稿",
+          },
+          updateDraft: {
+            title: "更新草稿",
+            description: "更新已有的电子邮件草稿",
+          },
+          getDraft: {
+            title: "获取草稿",
+            description: "通过ID检索特定草稿",
+          },
+          listDrafts: {
+            title: "草稿清单",
+            description: "列出所有草稿邮件",
+          },
+          deleteDraft: {
+            title: "删除草稿",
+            description: "删除草稿邮件",
+          },
+          sendDraft: {
+            title: "发送草稿",
+            description: "发送已有的电子邮件草稿",
+          },
+          sendEmail: {
+            title: "发送电子邮件",
+            description: "立即发送一封电子邮件",
+          },
+          replyToThread: {
+            title: "回复主题",
+            description: "立即回复邮件线程",
+          },
+          markRead: {
+            title: "马克·瑞德",
+            description: "将某个主题标记为已阅读",
+          },
+          markUnread: {
+            title: "标记为未读",
+            description: "将某个主题标记为未读",
+          },
+          moveToTrash: {
+            title: "移动到垃圾箱",
+            description: "将某个主题归档到垃圾箱",
+          },
+          moveToArchive: {
+            title: "存档",
+            description: "存档该主题",
+          },
+          moveToInbox: {
+            title: "移动到收件箱",
+            description: "将某个主题移动到收件箱",
+          },
+          getMailboxStats: {
+            title: "邮箱统计",
+            description: "获取未读邮件数量和邮箱统计信息",
+          },
+          getInbox: {
+            title: "查看收件箱",
+            description: "一种便捷的方式，可以从 Gmail 中获取收件邮件。",
+          },
+        },
+      },
+      outlook: {
+        title: "Outlook 连接器",
+        description:
+          "让您的代理通过 Microsoft Graph API 与 Microsoft Outlook 交互——搜索邮件、阅读邮件线程、撰写草稿、发送邮件以及管理您的收件箱。请查阅相关文档。",
+        multiUserWarning:
+          "由于安全原因，在多用户模式下无法使用 Outlook 集成功能。请先关闭多用户模式，然后再使用此功能。",
+        configuration: "Outlook 设置",
+        authType: "账户类型",
+        authTypeHelp:
+          '选择哪些类型的 Microsoft 账户可以进行身份验证。 "所有账户" 支持个人账户和工作/学校账户。 "仅限个人账户" 仅限于个人 Microsoft 账户。 "仅限工作/学校账户" 仅限于特定 Azure AD 租户的工作/学校账户。',
+        authTypeCommon: "所有账户（包括个人账户和工作/学习账户）",
+        authTypeConsumers: "仅限个人 Microsoft 账户",
+        authTypeOrganization: "仅限组织账户 (需要租户 ID)",
+        clientId: "申请人（客户）ID",
+        clientIdHelp: "您 Azure AD 应用程序注册的应用程序 ID",
+        tenantId: "租户 ID",
+        tenantIdHelp:
+          "您的 Azure AD 应用注册的“租户 ID”。仅在组织内部身份验证时需要。",
+        clientSecret: "客户端密钥",
+        clientSecretHelp: "您的 Azure AD 应用程序注册的客户端机密值",
+        configurationRequired:
+          "请配置客户端 ID 和客户端密钥，以便启用 Outlook 相关功能。",
+        authRequired:
+          "首先保存您的凭据，然后通过 Microsoft 进行身份验证以完成设置。",
+        authenticateWithMicrosoft: "使用 Microsoft 身份验证",
+        authenticated: "已成功与 Microsoft Outlook 认证。",
+        revokeAccess: "撤销权限",
+        configured: "已配置",
+        searchSkills: "搜索技巧...",
+        noSkillsFound: "未找到与您的搜索条件匹配的技能。",
+        categories: {
+          search: {
+            title: "搜索和阅读电子邮件",
+            description: "搜索并阅读您 Outlook 收件箱中的电子邮件。",
+          },
+          drafts: {
+            title: "草稿邮件",
+            description: "创建、编辑和管理电子邮件草稿",
+          },
+          send: {
+            title: "发送电子邮件",
+            description: "立即发送新邮件或回复消息",
+          },
+          account: {
+            title: "集成统计",
+            description: "查看邮件收件箱统计数据和账户信息",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "查看收件箱",
+            description: "从您的 Outlook 收件箱获取最近的邮件",
+          },
+          search: {
+            title: "搜索邮件",
+            description: "使用 Microsoft 搜索语法搜索电子邮件",
+          },
+          readThread: {
+            title: "阅读对话",
+            description: "阅读完整的电子邮件对话记录",
+          },
+          createDraft: {
+            title: "创建草稿",
+            description: "创建一个新的电子邮件草稿，或回复一个已存在的邮件。",
+          },
+          updateDraft: {
+            title: "更新草稿",
+            description: "更新已有的电子邮件草稿",
+          },
+          listDrafts: {
+            title: "草稿清单",
+            description: "列出所有草稿邮件",
+          },
+          deleteDraft: {
+            title: "删除草稿",
+            description: "删除草稿邮件",
+          },
+          sendDraft: {
+            title: "发送草稿",
+            description: "发送已有的邮件草稿",
+          },
+          sendEmail: {
+            title: "发送电子邮件",
+            description: "立即发送一封新的电子邮件，或回复已存在的消息。",
+          },
+          getMailboxStats: {
+            title: "邮件收件统计",
+            description: "获取文件夹数量和邮箱统计信息",
+          },
+        },
+      },
+      googleCalendar: {
+        title: "Google 日历连接器",
+        description:
+          "让您的代理能够与 Google 日历互动：查看日历、获取活动、创建和更新活动，以及管理确认回复。请参考相关文档。",
+        multiUserWarning:
+          "由于安全原因，在多用户模式下无法使用 Google 日历集成功能。请先禁用多用户模式，然后再使用此功能。",
+        configuration: "谷歌日历配置",
+        deploymentId: "部署ID",
+        deploymentIdHelp: "您的 Google Apps Script 网页应用的部署 ID",
+        apiKey: "API 密钥",
+        apiKeyHelp: "您在 Google Apps Script 部署中配置的 API 密钥。",
+        configurationRequired:
+          "请配置部署 ID 和 API 密钥，以启用 Google 日历功能。",
+        configured: "已配置",
+        searchSkills: "搜索技巧...",
+        noSkillsFound: "未找到与您搜索条件匹配的技能。",
+        categories: {
+          calendars: {
+            title: "日历",
+            description: "查看和管理您的 Google 日历",
+          },
+          readEvents: {
+            title: "查看活动",
+            description: "查看和搜索日历活动",
+          },
+          writeEvents: {
+            title: "创建和更新活动",
+            description: "创建新的活动，并修改现有的活动。",
+          },
+          rsvp: {
+            title: "请回复确认",
+            description: "管理您对活动的响应状态",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "日历列表",
+            description: "列出您拥有的或订阅的全部日历。",
+          },
+          getCalendar: {
+            title: "获取日历详情",
+            description: "获取有关特定日历的详细信息",
+          },
+          getEvent: {
+            title: "获取活动",
+            description: "获取有关特定活动的详细信息",
+          },
+          getEventsForDay: {
+            title: "获取当日活动",
+            description: "获取指定日期的所有活动",
+          },
+          getEvents: {
+            title: "获取活动（日期范围）",
+            description: "获取指定日期范围内的活动",
+          },
+          getUpcomingEvents: {
+            title: "查看即将举办的活动",
+            description: "使用简单的关键词，查找今天、本周或本月的活动",
+          },
+          quickAdd: {
+            title: "快速添加活动",
+            description: "从自然语言（例如“明天下午3点开会”）创建一个活动。",
+          },
+          createEvent: {
+            title: "创建活动",
+            description: "创建一个新的活动，并完全控制所有属性。",
+          },
+          updateEvent: {
+            title: "活动更新",
+            description: "更新现有的日历事件",
+          },
+          setMyStatus: {
+            title: "设置回复状态",
+            description: "接受、拒绝或表示初步接受某个活动",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP 服务器",
@@ -531,7 +811,32 @@ const TRANSLATIONS = {
     description: "API 密钥允许持有者以编程方式访问和管理此 AnythingLLM 实例。",
     link: "阅读 API 文档",
     generate: "生成新的 API 密钥",
+    empty: "未找到 API 密钥",
+    actions: "操作",
+    messages: {
+      error: "错误：{{error}}",
+    },
+    modal: {
+      title: "创建新的 API 密钥",
+      cancel: "取消",
+      close: "关闭",
+      create: "创建 API 密钥",
+      helper: "创建后，API 密钥可用于以编程方式访问并配置此 AnythingLLM 实例。",
+      name: {
+        label: "名称",
+        placeholder: "生产环境集成",
+        helper: "可选。使用一个易于识别的名称，以便之后识别此密钥。",
+      },
+    },
+    row: {
+      copy: "复制 API 密钥",
+      copied: "已复制",
+      unnamed: "--",
+      deleteConfirm:
+        "确定要停用此 API 密钥吗？\n停用后将无法再使用。\n\n此操作不可撤销。",
+    },
     table: {
+      name: "名称",
       key: "API 密钥",
       by: "创建者",
       created: "创建时间",
@@ -890,6 +1195,12 @@ const TRANSLATIONS = {
       tool_call_was_approved: "工具使用申请已获得批准。",
       tool_call_was_rejected: "请求获取工具已被拒绝。",
     },
+    custom_skills: "定制技能",
+    agent_flows: "代理人流动",
+    no_tools_found: "未找到匹配的工具",
+    loading_mcp_servers: "正在加载 MCP 服务器…",
+    app_integrations: "应用程序集成",
+    sub_skills: "基本技能",
   },
   profile_settings: {
     edit_account: "编辑帐户",
@@ -1058,8 +1369,6 @@ const TRANSLATIONS = {
         description:
           "将您从 @BotFather 获得的 API 令牌粘贴到指定位置，并选择一个默认的工作区，以便您的机器人可以进行对话。",
         "bot-token": "机器人代币",
-        "default-workspace": "默认工作区",
-        "no-workspace": "目前没有可用的工作空间。将会创建一个新的工作空间。",
         connecting: "正在连接...",
         "connect-bot": "连接机器人",
       },
@@ -1095,19 +1404,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "未能撤销用户权限。",
     },
     users: {
-      "pending-title": "待审批",
       "pending-description":
         "等待验证的用户。请将此处显示的配对代码与他们在 Telegram 聊天中显示的配对代码进行匹配。",
-      "approved-title": "已批准的用户",
-      "approved-description": "已获得批准，可以与您的机器人进行对话的用户。",
-      user: "用户",
-      "pairing-code": "配对代码",
-      "no-pending": "目前没有待处理的请求",
-      "no-approved": "未批准的用户",
       unknown: "未知",
-      approve: "批准",
-      deny: "否认",
-      revoke: "撤销",
     },
   },
 };

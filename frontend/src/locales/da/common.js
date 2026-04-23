@@ -411,6 +411,305 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: "Gmail-forbindelse",
+        description:
+          "Giv din agent mulighed for at interagere med Gmail – søg efter e-mails, læs samtaler, oprette udkast, sende e-mails og administrere din indbakke. <a>Læs dokumentationen</a>.",
+        multiUserWarning:
+          "Integration med Gmail er ikke tilgængelig i multi-bruger-tilstand af sikkerhedsmæssige årsager. For at bruge denne funktion, bedes du deaktivere multi-bruger-tilstanden.",
+        configuration: "Konfiguration af Gmail",
+        deploymentId: "Implementerings-ID",
+        deploymentIdHelp: "Deployment-ID'en fra din Google Apps Script webapp",
+        apiKey: "API-nøgle",
+        apiKeyHelp:
+          "API-nøglen, du har konfigureret i din Google Apps Script-implementering.",
+        configurationRequired:
+          "Venligst konfigurer Deployment ID og API-nøglen for at aktivere Gmail-funktionaliteten.",
+        configured: "Konfigureret",
+        searchSkills: "Søgeteknikker...",
+        noSkillsFound: "Ingen resultater fundet, der matcher din søgning.",
+        categories: {
+          search: {
+            title: "Søg og læs e-mails",
+            description: "Søg og læs e-mails fra din Gmail-indbakke",
+          },
+          drafts: {
+            title: "Udkast til e-mails",
+            description: "Opret, rediger og administrer udkast til e-mails",
+          },
+          send: {
+            title: "Send og svar på e-mails",
+            description: "Send e-mails og svar på tråde øjeblikkeligt",
+          },
+          threads: {
+            title: "Administrer e-mailtråde",
+            description:
+              "Administrer e-mailtråde – marker som læst/ulæst, arkiver, slet",
+          },
+          account: {
+            title: "Statistik for integration",
+            description:
+              "Se statistik for din e-postindbakke og kontoinformation.",
+          },
+        },
+        skills: {
+          search: {
+            title: "Søg i e-mails",
+            description:
+              "Søg efter e-mails ved hjælp af Gmail's forespørgselssprog",
+          },
+          readThread: {
+            title: "Læs tråd",
+            description: "Læs hele e-mailtråden sorteret efter ID",
+          },
+          createDraft: {
+            title: "Opret udkast",
+            description: "Opret et nyt udkast til en e-mail",
+          },
+          createDraftReply: {
+            title: "Opret udkast",
+            description: "Opret et udkast til et svar på en eksisterende tråd.",
+          },
+          updateDraft: {
+            title: "Opdateret udkast",
+            description: "Opdater en eksisterende udkast til en e-mail",
+          },
+          getDraft: {
+            title: "Få udkast",
+            description: "Hent en bestemt udkast baseret på ID",
+          },
+          listDrafts: {
+            title: "Udkast til lister",
+            description: "Vis alle udkastede e-mails",
+          },
+          deleteDraft: {
+            title: "Slet udkast",
+            description: "Slet et udkast til e-mail",
+          },
+          sendDraft: {
+            title: "Send udkast",
+            description: "Send en eksisterende udkast til en e-mail",
+          },
+          sendEmail: {
+            title: "Send e-mail",
+            description: "Send en e-mail med det samme",
+          },
+          replyToThread: {
+            title: "Svar på tråd",
+            description: "Svar på en e-mailtråd med det samme",
+          },
+          markRead: {
+            title: "Mark Read",
+            description: "Marker en tråd som læst",
+          },
+          markUnread: {
+            title: "Marker som ikke læst",
+            description: "Marker en tråd som ikke læst",
+          },
+          moveToTrash: {
+            title: "Flyt til papirkurven",
+            description: "Flyt en tråd til papirkurven",
+          },
+          moveToArchive: {
+            title: "Arkiv",
+            description: "Arkiver tråden",
+          },
+          moveToInbox: {
+            title: "Flyt til indbakken",
+            description: "Flyt en tråd til indbakken",
+          },
+          getMailboxStats: {
+            title: "Statistik for postkasse",
+            description:
+              "Få oplysninger om antallet af ulæste beskeder og statistik for din e-mailindbakke.",
+          },
+          getInbox: {
+            title: "Åbn indbakken",
+            description:
+              "En effektiv måde at hente e-mails fra din Gmail-indbakke",
+          },
+        },
+      },
+      outlook: {
+        title: "Outlook-forbindelse",
+        description:
+          "Giv din agent mulighed for at interagere med Microsoft Outlook – søg efter e-mails, læs samtaler, oprette udkast, sende e-mails og administrer din indbakke via Microsoft Graph API. Se dokumentationen her: <a>.",
+        multiUserWarning:
+          "Integration med Outlook er ikke tilgængelig i multi-bruger-tilstand af sikkerhedsmæssige årsager. For at bruge denne funktion, bedes du deaktivere multi-bruger-tilstanden.",
+        configuration: "Outlook-konfiguration",
+        authType: "Kontotype",
+        authTypeHelp:
+          'Vælg, hvilke typer af Microsoft-konti der kan godkende. "Alle konti" understøtter både personlige og arbejds-/skolekonti. "Kun personlige konti" begrænser til kun personlige Microsoft-konti. "Kun arbejds-/skolekonti" begrænser til arbejds-/skolekonti fra en specifik Azure AD-tenant.',
+        authTypeCommon: "Alle konti (personlige og arbejds-/skolerelaterede)",
+        authTypeConsumers: "Kun personlige Microsoft-konti",
+        authTypeOrganization: "Kun organisationskonti (kræver lejer-ID)",
+        clientId: "Anvendelses-ID (kunde)",
+        clientIdHelp:
+          "Applikations-ID (også kaldet klient-ID) fra din Azure AD applikationsregistrering",
+        tenantId: "Identifikationsnummer (Lejer)",
+        tenantIdHelp:
+          "Identifikationsnummeret (for lejer) fra din Azure AD-applikationsregistrering. Kræves kun til autentificering, der kun er for organisationen.",
+        clientSecret: "Klientens hemmelige nøgle",
+        clientSecretHelp:
+          "Klientens hemmelige værdi fra din Azure AD-applikationsregistrering",
+        configurationRequired:
+          "Vær venligst oprettet Client ID og Client Secret for at aktivere Outlook-funktionaliteten.",
+        authRequired:
+          "Gem dine legitimationsoplysninger først, og derefter skal du autentificere dig hos Microsoft for at fuldføre opsætningen.",
+        authenticateWithMicrosoft: "Bekræft med Microsoft",
+        authenticated: "Succesfuldt bekræftet med Microsoft Outlook.",
+        revokeAccess: "Annullér adgang",
+        configured: "Konfigureret",
+        searchSkills: "Færdigheder inden for søgning...",
+        noSkillsFound: "Ingen resultater fundet, der matcher din søgning.",
+        categories: {
+          search: {
+            title: "Søg og læs e-mails",
+            description: "Søg og læs e-mails fra din Outlook-indbakke",
+          },
+          drafts: {
+            title: "Udkast til e-mails",
+            description: "Opret, rediger og administrer udkast til e-mails.",
+          },
+          send: {
+            title: "Send e-mails",
+            description:
+              "Send nye e-mails eller svar på beskeder med det samme.",
+          },
+          account: {
+            title: "Statistik om integration",
+            description: "Se statistik for din postkasse og kontoinformation.",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "Åbn indbakken",
+            description: "Få de seneste e-mails fra din Outlook-indbakke.",
+          },
+          search: {
+            title: "Søg i e-mails",
+            description:
+              "Søg efter e-mails ved hjælp af Microsofts søgesyntaks",
+          },
+          readThread: {
+            title: "Læs samtale",
+            description: "Læs hele e-mail-samtaletråden",
+          },
+          createDraft: {
+            title: "Opret udkast",
+            description:
+              "Opret et nyt udkast til en e-mail eller et udkast til et svar på en eksisterende besked.",
+          },
+          updateDraft: {
+            title: "Opdateret udkast",
+            description: "Opdater en eksisterende udkast til en e-mail",
+          },
+          listDrafts: {
+            title: "Udkast til lister",
+            description: "Vis alle udkastede e-mails",
+          },
+          deleteDraft: {
+            title: "Slet udkast",
+            description: "Slet en udkast til e-mail",
+          },
+          sendDraft: {
+            title: "Send udkast",
+            description: "Send en eksisterende udkast til en e-mail",
+          },
+          sendEmail: {
+            title: "Send e-mail",
+            description:
+              "Send en ny e-mail eller svar på en eksisterende besked med det samme.",
+          },
+          getMailboxStats: {
+            title: "Statistik for postkasse",
+            description: "Få antallet af mapper og statistikker for postkasser",
+          },
+        },
+      },
+      googleCalendar: {
+        title: "Google Kalender-tilslutning",
+        description:
+          "Giv din agent mulighed for at interagere med Google Kalender – se kalendere, få adgang til begivenheder, oprette og opdatere begivenheder, og administrere tilmeldinger. <a>Læs dokumentationen</a>.",
+        multiUserWarning:
+          "Integration med Google Kalender er ikke tilgængelig i multi-bruger-tilstand af sikkerhedsmæssige årsager. For at bruge denne funktion, bedes du deaktivere multi-bruger-tilstanden.",
+        configuration: "Konfiguration af Google Kalender",
+        deploymentId: "Identifikations-ID",
+        deploymentIdHelp: "Deployment-ID fra din Google Apps Script webapp",
+        apiKey: "API-nøgle",
+        apiKeyHelp:
+          "API-nøglen, du har konfigureret i din Google Apps Script-implementering.",
+        configurationRequired:
+          "Vær venligst oprettet Deployment ID og API-nøgle for at aktivere Google Calendar-funktionaliteten.",
+        configured: "Konfigureret",
+        searchSkills: "Søgeteknikker...",
+        noSkillsFound: "Ingen resultater matcher din søgning.",
+        categories: {
+          calendars: {
+            title: "Kalendere",
+            description: "Se og administrer dine Google Kalendere",
+          },
+          readEvents: {
+            title: "Læs begivenheder",
+            description: "Se og søg efter begivenheder i kalenderen",
+          },
+          writeEvents: {
+            title: "Opret og opdater begivenheder",
+            description: "Opret nye begivenheder og rediger eksisterende.",
+          },
+          rsvp: {
+            title: "Håndtering af bekræftelser",
+            description: "Administrer status for dine svar på begivenheder",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "Kalenderlister",
+            description: "Vis alle kalendere, du ejer eller er abonnent på.",
+          },
+          getCalendar: {
+            title: "Få detaljer om kalenderen",
+            description: "Få detaljerede oplysninger om en bestemt kalender",
+          },
+          getEvent: {
+            title: "Find arrangement",
+            description: "Få detaljerede oplysninger om et bestemt arrangement",
+          },
+          getEventsForDay: {
+            title: "Find begivenheder for den pågældende dag",
+            description:
+              "Find alle begivenheder, der er planlagt til en bestemt dato.",
+          },
+          getEvents: {
+            title: "Find begivenheder (datointerval)",
+            description: "Find begivenheder inden for et angivet tidsinterval",
+          },
+          getUpcomingEvents: {
+            title: "Se kommende arrangementer",
+            description:
+              "Find begivenheder for i dag, denne uge eller denne måned ved hjælp af enkle søgeord.",
+          },
+          quickAdd: {
+            title: "Tilføj begivenhed hurtigt",
+            description:
+              'Opret et arrangement ud fra naturligt sprog (f.eks. "Møde i morgen kl. 15:00")',
+          },
+          createEvent: {
+            title: "Opret begivenhed",
+            description:
+              "Opret et nyt arrangement med fuld kontrol over alle indstillinger.",
+          },
+          updateEvent: {
+            title: "Opdatering af begivenhed",
+            description: "Opdater en eksisterende kalenderbegivenhed",
+          },
+          setMyStatus: {
+            title: "Angiv status for bekræftet deltagelse",
+            description:
+              "Accepter, afvise eller midlertidigt acceptere et arrangement",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP-servere",
@@ -472,7 +771,34 @@ const TRANSLATIONS = {
       "API-nøgler giver indehaveren mulighed for programmatisk at få adgang til og administrere denne AnythingLLM-instans.",
     link: "Læs API-dokumentationen",
     generate: "Generér ny API-nøgle",
+    empty: "Ingen API-nøgler fundet",
+    actions: "Handlinger",
+    messages: {
+      error: "Fejl: {{error}}",
+    },
+    modal: {
+      title: "Opret ny API-nøgle",
+      cancel: "Annuller",
+      close: "Luk",
+      create: "Opret API-nøgle",
+      helper:
+        "Når API-nøglen er oprettet, kan den bruges til programmatisk at få adgang til og konfigurere denne AnythingLLM-instans.",
+      name: {
+        label: "Navn",
+        placeholder: "Produktionsintegration",
+        helper:
+          "Valgfrit. Brug et sigende navn, så du nemt kan kende nøglen senere.",
+      },
+    },
+    row: {
+      copy: "Kopiér API-nøgle",
+      copied: "Kopieret",
+      unnamed: "--",
+      deleteConfirm:
+        "Er du sikker på, at du vil deaktivere denne API-nøgle?\nNår du gør det, kan den ikke længere bruges.\n\nDenne handling kan ikke fortrydes.",
+    },
     table: {
+      name: "Navn",
       key: "API-nøgle",
       by: "Oprettet af",
       created: "Oprettet",
@@ -862,6 +1188,12 @@ const TRANSLATIONS = {
         "Anmodningen om at bruge værktøjet blev godkendt.",
       tool_call_was_rejected: "Anmodningen om at bruge værktøjet blev afvist.",
     },
+    custom_skills: "Skræddersyede færdigheder",
+    agent_flows: "Agentstrømme",
+    no_tools_found: "Ingen matchende værktøjer fundet",
+    loading_mcp_servers: "Indlæser MCP-servere...",
+    app_integrations: "App-integrationer",
+    sub_skills: "Specifikke færdigheder",
   },
   profile_settings: {
     edit_account: "Rediger konto",
@@ -1133,9 +1465,6 @@ const TRANSLATIONS = {
         description:
           "Indsæt API-tokenet, du modtog fra @BotFather, og vælg et standard-arbejdsområde, hvor din bot kan kommunikere.",
         "bot-token": "Bot-token",
-        "default-workspace": "Standardarbejdsområde",
-        "no-workspace":
-          "Ingen ledige arbejdsområder. Et nyt vil blive oprettet.",
         connecting: "Forbindes...",
         "connect-bot": "Connect Bot",
       },
@@ -1176,20 +1505,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "Kunne ikke annullere brugerens adgang.",
     },
     users: {
-      "pending-title": "Afventer godkendelse",
       "pending-description":
         "Brugere, der venter på at blive verificeret. Sammenlign den kode, der vises her, med den, der vises i deres Telegram-chat.",
-      "approved-title": "Godkendte brugere",
-      "approved-description":
-        "Brugere, der er blevet godkendt til at kommunikere med din bot.",
-      user: "Bruger",
-      "pairing-code": "Kombinationskode",
-      "no-pending": "Ingen igangværende anmodninger",
-      "no-approved": "Ingen godkendte brugere",
       unknown: "Ukendt",
-      approve: "Godkend",
-      deny: "Afvise",
-      revoke: "Annullere",
     },
   },
 };

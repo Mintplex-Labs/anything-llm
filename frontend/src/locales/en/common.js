@@ -420,6 +420,299 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: "GMail",
+        description:
+          "Enable your agent to interact with Gmail - search emails, read threads, compose drafts, send emails, and manage your inbox. <a>Read the documentation</a>.",
+        multiUserWarning:
+          "Gmail integration is not available in multi-user mode for security reasons. Please disable multi-user mode to use this feature.",
+        configuration: "Gmail Configuration",
+        deploymentId: "Deployment ID",
+        deploymentIdHelp:
+          "The deployment ID from your Google Apps Script web app",
+        apiKey: "API Key",
+        apiKeyHelp:
+          "The API key you configured in your Google Apps Script deployment",
+        configurationRequired:
+          "Please configure the Deployment ID and API Key to enable Gmail skills.",
+        configured: "Configured",
+        searchSkills: "Search skills...",
+        noSkillsFound: "No skills match your search.",
+        categories: {
+          search: {
+            title: "Search & Read Emails",
+            description: "Search and read emails from your Gmail inbox",
+          },
+          drafts: {
+            title: "Draft Emails",
+            description: "Create, edit, and manage email drafts",
+          },
+          send: {
+            title: "Send & Reply to Emails",
+            description: "Send emails and reply to threads immediately",
+          },
+          threads: {
+            title: "Manage Email Threads",
+            description:
+              "Manage email threads - mark read/unread, archive, trash",
+          },
+          account: {
+            title: "Integration Statistics",
+            description: "View mailbox statistics and account information",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "Get Inbox",
+            description: "Streamlined way to get the inbox emails from Gmail",
+          },
+          search: {
+            title: "Search Emails",
+            description: "Search emails using Gmail query syntax",
+          },
+          readThread: {
+            title: "Read Thread",
+            description: "Read a full email thread by ID",
+          },
+          createDraft: {
+            title: "Create Draft",
+            description: "Create a new draft email",
+          },
+          createDraftReply: {
+            title: "Create Draft Reply",
+            description: "Create a draft reply to an existing thread",
+          },
+          updateDraft: {
+            title: "Update Draft",
+            description: "Update an existing draft email",
+          },
+          getDraft: {
+            title: "Get Draft",
+            description: "Retrieve a specific draft by ID",
+          },
+          listDrafts: {
+            title: "List Drafts",
+            description: "List all draft emails",
+          },
+          deleteDraft: {
+            title: "Delete Draft",
+            description: "Delete a draft email",
+          },
+          sendDraft: {
+            title: "Send Draft",
+            description: "Send an existing draft email",
+          },
+          sendEmail: {
+            title: "Send Email",
+            description: "Send an email immediately",
+          },
+          replyToThread: {
+            title: "Reply to Thread",
+            description: "Reply to an email thread immediately",
+          },
+          markRead: {
+            title: "Mark Read",
+            description: "Mark a thread as read",
+          },
+          markUnread: {
+            title: "Mark Unread",
+            description: "Mark a thread as unread",
+          },
+          moveToTrash: {
+            title: "Move to Trash",
+            description: "Move a thread to trash",
+          },
+          moveToArchive: {
+            title: "Archive",
+            description: "Archive a thread",
+          },
+          moveToInbox: {
+            title: "Move to Inbox",
+            description: "Move a thread to inbox",
+          },
+          getMailboxStats: {
+            title: "Mailbox Stats",
+            description: "Get unread counts and mailbox statistics",
+          },
+        },
+      },
+      googleCalendar: {
+        title: "Google Calendar",
+        description:
+          "Enable your agent to interact with Google Calendar - view calendars, get events, create and update events, and manage RSVPs. <a>Read the documentation</a>.",
+        multiUserWarning:
+          "Google Calendar integration is not available in multi-user mode for security reasons. Please disable multi-user mode to use this feature.",
+        configuration: "Google Calendar Configuration",
+        deploymentId: "Deployment ID",
+        deploymentIdHelp:
+          "The deployment ID from your Google Apps Script web app",
+        apiKey: "API Key",
+        apiKeyHelp:
+          "The API key you configured in your Google Apps Script deployment",
+        configurationRequired:
+          "Please configure the Deployment ID and API Key to enable Google Calendar skills.",
+        configured: "Configured",
+        searchSkills: "Search skills...",
+        noSkillsFound: "No skills match your search.",
+        categories: {
+          calendars: {
+            title: "Calendars",
+            description: "View and manage your Google Calendars",
+          },
+          readEvents: {
+            title: "Read Events",
+            description: "View and search calendar events",
+          },
+          writeEvents: {
+            title: "Create & Update Events",
+            description: "Create new events and modify existing ones",
+          },
+          rsvp: {
+            title: "RSVP Management",
+            description: "Manage your response status for events",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "List Calendars",
+            description: "List all calendars you own or are subscribed to",
+          },
+          getCalendar: {
+            title: "Get Calendar Details",
+            description: "Get detailed information about a specific calendar",
+          },
+          getEvent: {
+            title: "Get Event",
+            description: "Get detailed information about a specific event",
+          },
+          getEventsForDay: {
+            title: "Get Events for Day",
+            description: "Get all events scheduled for a specific day",
+          },
+          getEvents: {
+            title: "Get Events (Date Range)",
+            description: "Get events within a custom date range",
+          },
+          getUpcomingEvents: {
+            title: "Get Upcoming Events",
+            description:
+              "Get events for today, this week, or this month using simple keywords",
+          },
+          quickAdd: {
+            title: "Quick Add Event",
+            description:
+              "Create an event from natural language (e.g., 'Meeting tomorrow at 3pm')",
+          },
+          createEvent: {
+            title: "Create Event",
+            description:
+              "Create a new event with full control over all properties",
+          },
+          updateEvent: {
+            title: "Update Event",
+            description: "Update an existing calendar event",
+          },
+          setMyStatus: {
+            title: "Set RSVP Status",
+            description: "Accept, decline, or tentatively accept an event",
+          },
+        },
+      },
+      outlook: {
+        title: "Outlook",
+        description:
+          "Enable your agent to interact with Microsoft Outlook - search emails, read threads, compose drafts, send emails, and manage your inbox via Microsoft Graph API. <a>Read the documentation</a>.",
+        multiUserWarning:
+          "Outlook integration is not available in multi-user mode for security reasons. Please disable multi-user mode to use this feature.",
+        configuration: "Outlook Configuration",
+        authType: "Account Type",
+        authTypeHelp:
+          "Choose which types of Microsoft accounts can authenticate. 'All accounts' supports both personal and work/school accounts. 'Personal only' restricts to personal Microsoft accounts. 'Organization only' restricts to work/school accounts from a specific Azure AD tenant.",
+        authTypeCommon: "All accounts (personal & work/school)",
+        authTypeConsumers: "Personal Microsoft accounts only",
+        authTypeOrganization: "Organization accounts only (requires Tenant ID)",
+        clientId: "Application (Client) ID",
+        clientIdHelp:
+          "The Application (Client) ID from your Azure AD app registration",
+        tenantId: "Directory (Tenant) ID",
+        tenantIdHelp:
+          "The Directory (Tenant) ID from your Azure AD app registration. Required only for organization-only authentication.",
+        clientSecret: "Client Secret",
+        clientSecretHelp:
+          "The client secret value from your Azure AD app registration",
+        configurationRequired:
+          "Please configure the Client ID and Client Secret to enable Outlook skills.",
+        authRequired:
+          "Save your credentials first, then authenticate with Microsoft to complete the setup.",
+        authenticateWithMicrosoft: "Authenticate with Microsoft",
+        authenticated: "Successfully authenticated with Microsoft Outlook.",
+        revokeAccess: "Revoke Access",
+        configured: "Configured",
+        searchSkills: "Search skills...",
+        noSkillsFound: "No skills match your search.",
+        categories: {
+          search: {
+            title: "Search & Read Emails",
+            description: "Search and read emails from your Outlook inbox",
+          },
+          drafts: {
+            title: "Draft Emails",
+            description: "Create, edit, and manage email drafts",
+          },
+          send: {
+            title: "Send Emails",
+            description: "Send new emails or reply to messages immediately",
+          },
+          account: {
+            title: "Integration Statistics",
+            description: "View mailbox statistics and account information",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "Get Inbox",
+            description: "Get recent emails from your Outlook inbox",
+          },
+          search: {
+            title: "Search Emails",
+            description: "Search emails using Microsoft Search syntax",
+          },
+          readThread: {
+            title: "Read Conversation",
+            description: "Read a full email conversation thread",
+          },
+          createDraft: {
+            title: "Create Draft",
+            description:
+              "Create a new draft email or draft reply to an existing message",
+          },
+          updateDraft: {
+            title: "Update Draft",
+            description: "Update an existing draft email",
+          },
+          listDrafts: {
+            title: "List Drafts",
+            description: "List all draft emails",
+          },
+          deleteDraft: {
+            title: "Delete Draft",
+            description: "Delete a draft email",
+          },
+          sendDraft: {
+            title: "Send Draft",
+            description: "Send an existing draft email",
+          },
+          sendEmail: {
+            title: "Send Email",
+            description:
+              "Send a new email or reply to an existing message immediately",
+          },
+          getMailboxStats: {
+            title: "Mailbox Stats",
+            description: "Get folder counts and mailbox statistics",
+          },
+        },
+      },
       default_skill:
         "By default, this skill is enabled, but you can disable it if you don't want it to be available to the agent.",
     },
@@ -570,7 +863,34 @@ const TRANSLATIONS = {
       "API keys allow the holder to programmatically access and manage this AnythingLLM instance.",
     link: "Read the API documentation",
     generate: "Generate New API Key",
+    empty: "No API keys found",
+    actions: "Actions",
+    messages: {
+      error: "Error: {{error}}",
+    },
+    modal: {
+      title: "Create new API key",
+      cancel: "Cancel",
+      close: "Close",
+      create: "Create API Key",
+      helper:
+        "Once created the API key can be used to programmatically access and configure this AnythingLLM instance.",
+      name: {
+        label: "Name",
+        placeholder: "Production integration",
+        helper:
+          "Optional. Use a friendly name so you can identify this key later.",
+      },
+    },
+    row: {
+      copy: "Copy API Key",
+      copied: "Copied",
+      unnamed: "--",
+      deleteConfirm:
+        "Are you sure you want to deactivate this api key?\nAfter you do this it will not longer be useable.\n\nThis action is irreversible.",
+    },
     table: {
+      name: "Name",
       key: "API Key",
       by: "Created By",
       created: "Created",
@@ -690,8 +1010,6 @@ const TRANSLATIONS = {
         description:
           "Paste the API token you received from @BotFather to connect your bot.",
         "bot-token": "Bot Token",
-        "default-workspace": "Default Workspace",
-        "no-workspace": "No available workspaces. A new one will be created.",
         connecting: "Connecting...",
         "connect-bot": "Connect Bot",
       },
@@ -728,20 +1046,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "Failed to revoke user.",
     },
     users: {
-      "pending-title": "Pending Approval",
       "pending-description":
         "Users waiting to be verified. Match the pairing code shown here with the one displayed in their Telegram chat.",
-      "approved-title": "Approved Users",
-      "approved-description":
-        "Users who have been approved to chat with your bot.",
-      user: "User",
-      "pairing-code": "Pairing Code",
-      "no-pending": "No pending requests",
-      "no-approved": "No approved users",
       unknown: "Unknown",
-      approve: "Approve",
-      deny: "Deny",
-      revoke: "Revoke",
     },
   },
   security: {
@@ -1029,6 +1336,12 @@ const TRANSLATIONS = {
     slash_commands: "Slash Commands",
     agent_skills: "Agent Skills",
     manage_agent_skills: "Manage Agent Skills",
+    app_integrations: "App Integrations",
+    custom_skills: "Custom Skills",
+    agent_flows: "Agent Flows",
+    sub_skills: "Sub-skills",
+    no_tools_found: "No matching tools found",
+    loading_mcp_servers: "Loading MCP servers...",
     start_agent_session: "Start Agent Session",
     agent_skills_disabled_in_session:
       "Can't modify skills during an active agent session. Use /exit to end the session first.",

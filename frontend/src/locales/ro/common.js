@@ -577,6 +577,12 @@ const TRANSLATIONS = {
       tool_call_was_rejected:
         "Cererea de utilizare a instrumentului a fost respinsă.",
     },
+    custom_skills: "Abilități personalizate",
+    agent_flows: "Fluxuri de agenți",
+    no_tools_found: "Nu au fost găsite instrumente corespunzătoare.",
+    loading_mcp_servers: "Încărcare servere MCP...",
+    app_integrations: "Integrarea aplicațiilor",
+    sub_skills: "Abilități specifice",
   },
   profile_settings: {
     edit_account: "Editează contul",
@@ -866,6 +872,322 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: "Conectorul GMail",
+        description:
+          "Permite-i agentului tău să interacționeze cu Gmail: caută e-mailuri, citește conversații, redactează proiecte, trimite e-mailuri și gestionează folderul tău de e-mail. Consultă documentația disponibilă aici.",
+        multiUserWarning:
+          "Integrarea cu Gmail nu este disponibilă în modul multi-utilizator, din motive de securitate. Vă rugăm să dezactivați modul multi-utilizator pentru a utiliza această funcție.",
+        configuration: "Configurarea contului Gmail",
+        deploymentId: "Identificator de implementare",
+        deploymentIdHelp:
+          "ID-ul de implementare al aplicației web Google Apps Script",
+        apiKey: "Cheie API",
+        apiKeyHelp:
+          "Cheia API pe care ați configurat în mediul de implementare Google Apps Script",
+        configurationRequired:
+          "Vă rugăm să configurați ID-ul de implementare și cheia API pentru a activa funcționalitățile Gmail.",
+        configured: "Configurat",
+        searchSkills: "Abilități de căutare...",
+        noSkillsFound:
+          "Nu s-au găsit rezultate care să corespundă criteriilor dumneavoastră de căutare.",
+        categories: {
+          search: {
+            title: "Căutați și citiți e-mailuri",
+            description:
+              "Căutați și citiți e-mailuri din folderul dumneavoastră Gmail",
+          },
+          drafts: {
+            title: "Propuneri de e-mail",
+            description: "Creați, editați și gestionați schițele de e-mail.",
+          },
+          send: {
+            title: "Trimite și răspunde la e-mailuri",
+            description: "Trimite e-mailuri și răspunde imediat la discuții",
+          },
+          threads: {
+            title: "Gestionați conversațiile prin e-mail",
+            description:
+              "Gestionați corespondența prin e-mail: marcați ca fiind citite/nepuse în evidență, arhivați, eliminați",
+          },
+          account: {
+            title: "Statistici privind integrarea",
+            description:
+              "Vizualizați statistici privind cutia poștală și informații despre cont",
+          },
+        },
+        skills: {
+          search: {
+            title: "Căutați în e-mailuri",
+            description:
+              "Căutați în e-mailuri folosind sintaxa de interogare a Gmail",
+          },
+          readThread: {
+            title: "Citește thread-ul",
+            description:
+              "Citește întregul fir de e-mail, folosind un identificator (ID).",
+          },
+          createDraft: {
+            title: "Creează o schiță",
+            description: "Creați un proiect nou de e-mail",
+          },
+          createDraftReply: {
+            title: "Creează un răspuns preliminar",
+            description: "Creați un proiect de răspuns la un thread existent.",
+          },
+          updateDraft: {
+            title: "Actualizare proiect",
+            description: "Actualizați un e-mail existent, draft",
+          },
+          getDraft: {
+            title: "Obține versiunea preliminară",
+            description: "Recuperați un proiect specific folosind ID-ul său",
+          },
+          listDrafts: {
+            title: "Propuneri",
+            description: "Enumerați toate e-mailurile draft",
+          },
+          deleteDraft: {
+            title: "Șterge proiectul",
+            description: "Șterge un proiect de email",
+          },
+          sendDraft: {
+            title: "Trimite versiunea preliminară",
+            description: "Trimiteți o versiune existentă a unui e-mail",
+          },
+          sendEmail: {
+            title: "Trimite e-mail",
+            description: "Trimiteți un e-mail imediat.",
+          },
+          replyToThread: {
+            title: "Răspunde la discuție",
+            description: "Răspundeți imediat la un fir de e-mail",
+          },
+          markRead: {
+            title: "Mark Read",
+            description: "Marcați un fir ca fiind citit",
+          },
+          markUnread: {
+            title: "Marchează ca necitit",
+            description: "Marcați un thread ca fiind necitit",
+          },
+          moveToTrash: {
+            title: "Mută în coșul de gunoi",
+            description: "Mută un fir în coșul de gunoi",
+          },
+          moveToArchive: {
+            title: "Arhivă",
+            description: "Arhivează un thread",
+          },
+          moveToInbox: {
+            title: "Mută în Inbox",
+            description: "Mută un fir în folderul „Intrări”",
+          },
+          getMailboxStats: {
+            title: "Statistici cutie poștală",
+            description:
+              "Obține numărul de e-mailuri necitite și statistici privind cutia poștală.",
+          },
+          getInbox: {
+            title: 'Accesează folderul "Inbox"',
+            description:
+              "O modalitate eficientă de a accesa e-mailurile din inbox-ul Gmail.",
+          },
+        },
+      },
+      outlook: {
+        title: "Conector Outlook",
+        description:
+          "Permiteți-i agentului dumneavoastră să interacționeze cu Microsoft Outlook – să caute e-mailuri, să citească conversații, să redacteze proiecte, să trimită e-mailuri și să gestioneze folderul de intrare, folosind Microsoft Graph API. Consultați documentația aici.",
+        multiUserWarning:
+          "Integrarea cu Outlook nu este disponibilă în modul pentru utilizatori multipli, din motive de securitate. Vă rugăm să dezactivați modul pentru utilizatori multipli pentru a utiliza această funcție.",
+        configuration: "Configurarea Outlook-ului",
+        authType: "Tip de cont",
+        authTypeHelp:
+          "Selectați ce tipuri de conturi Microsoft pot fi utilizate pentru autentificare. Opțiunea „Toate conturile” permite autentificarea atât pentru conturi personale, cât și pentru conturi de lucru/școlare. Opțiunea „Doar conturi personale” limitează autentificarea la conturi Microsoft personale. Opțiunea „Doar conturi de organizație” limitează autentificarea la conturi de lucru/școlare dintr-un anumit tenant Azure AD.",
+        authTypeCommon:
+          "Toate conturile (personale și cele legate de muncă/școală)",
+        authTypeConsumers: "Conturile personale Microsoft sunt acceptate.",
+        authTypeOrganization:
+          "Conturi pentru organizații (necesită ID-ul chiriașului)",
+        clientId: "Identificator (pentru client)",
+        clientIdHelp:
+          "Identificatorul aplicației (Client) din înregistrarea aplicației dumneavoastră Azure AD",
+        tenantId: "Codul identificator (pentru chiriaș)",
+        tenantIdHelp:
+          "ID-ul din director (pentru chiriaș) din înregistrarea aplicației dumneavoastră Azure AD. Este necesar doar pentru autentificare, utilizată exclusiv de organizație.",
+        clientSecret: "Confidențialitatea clientului",
+        clientSecretHelp:
+          "Valoarea secretă a clientului, obținută în urma înregistrării aplicației dvs. în Azure AD",
+        configurationRequired:
+          "Vă rugăm să configurați ID-ul clientului și Secretul clientului pentru a activa funcționalitățile Outlook.",
+        authRequired:
+          "În primul rând, salvați-vă datele de autentificare, apoi autentificați-vă cu Microsoft pentru a finaliza configurarea.",
+        authenticateWithMicrosoft: "Autentificați-vă cu Microsoft",
+        authenticated: "Autentificare reușită cu Microsoft Outlook.",
+        revokeAccess: "Anula accesul",
+        configured: "Configurat",
+        searchSkills: "Abilități de căutare...",
+        noSkillsFound:
+          "Nu s-au găsit rezultate care să corespundă criteriilor dumneavoastră de căutare.",
+        categories: {
+          search: {
+            title: "Caută și citește e-mailuri",
+            description:
+              "Căutați și citiți e-mailuri din folderul dumneavoastră Outlook",
+          },
+          drafts: {
+            title: "Propuneri de e-mail",
+            description: "Creați, editați și gestionați schițele de e-mail.",
+          },
+          send: {
+            title: "Trimite e-mailuri",
+            description:
+              "Trimiteți e-mailuri noi sau răspundeți imediat la mesajele primite.",
+          },
+          account: {
+            title: "Statistici privind integrarea",
+            description:
+              "Vizualizați statistici privind cutia poștală și informații despre cont",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "Accesați inbox-ul",
+            description:
+              "Accesați email-urile recente din dosarul dvs. Outlook.",
+          },
+          search: {
+            title: "Căutați în e-mailuri",
+            description:
+              "Căutați în e-mailuri folosind sintaxa de căutare Microsoft",
+          },
+          readThread: {
+            title: "Citește conversația",
+            description: "Citește întreaga corespondență prin e-mail.",
+          },
+          createDraft: {
+            title: "Creați o versiune preliminară",
+            description:
+              "Creați un e-mail nou sau un răspuns la un e-mail existent.",
+          },
+          updateDraft: {
+            title: "Actualizare proiect",
+            description: "Actualizați un e-mail existent, draft",
+          },
+          listDrafts: {
+            title: "Propuneri",
+            description: "Enumerați toate e-mailurile draft",
+          },
+          deleteDraft: {
+            title: "Șterge schița",
+            description: "Șterge un proiect de e-mail",
+          },
+          sendDraft: {
+            title: "Trimite versiunea preliminară",
+            description: "Trimite un e-mail existent, draft",
+          },
+          sendEmail: {
+            title: "Trimite e-mail",
+            description:
+              "Trimiteți un nou e-mail sau răspundeți imediat la un mesaj existent.",
+          },
+          getMailboxStats: {
+            title: "Statistici cutie poștală",
+            description:
+              "Obține numărul de foldere și statisticile pentru cutiile de e-mail.",
+          },
+        },
+      },
+      googleCalendar: {
+        title: "Conector Google Calendar",
+        description:
+          "Permite-ți agentului să interacționeze cu Google Calendar – vizualizează calendare, obține evenimente, creează și actualizează evenimente, și gestionează răspunsurile la invitații. Consultă documentația<a>.",
+        multiUserWarning:
+          "Integrarea cu Google Calendar nu este disponibilă în modul multi-utilizator, din motive de securitate. Vă rugăm să dezactivați modul multi-utilizator pentru a utiliza această funcție.",
+        configuration: "Configurarea calendarului Google",
+        deploymentId: "ID de implementare",
+        deploymentIdHelp:
+          "ID-ul de implementare al aplicației web Google Apps Script",
+        apiKey: "Cheia API",
+        apiKeyHelp:
+          "Cheia API pe care ați configurat în implementarea dumneavoastră de Google Apps Script",
+        configurationRequired:
+          "Vă rugăm să configurați ID-ul de implementare și cheia API pentru a activa funcționalitățile Google Calendar.",
+        configured: "Configurat",
+        searchSkills: "Abilități de căutare...",
+        noSkillsFound:
+          "Nu s-au găsit rezultate care să corespundă criteriilor dumneavoastră de căutare.",
+        categories: {
+          calendars: {
+            title: "Calendare",
+            description: "Vizualizați și gestionați calendarele Google.",
+          },
+          readEvents: {
+            title: "Vezi evenimente",
+            description: "Vizualizați și căutați evenimentele din calendar",
+          },
+          writeEvents: {
+            title: "Creați și actualizați evenimente",
+            description:
+              "Creați evenimente noi și modificați evenimentele existente.",
+          },
+          rsvp: {
+            title: "Gestionarea răspunsurilor",
+            description:
+              "Gestionați starea răspunsului dumneavoastră pentru evenimente",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "Liste de calendare",
+            description:
+              "Enumerați toate calendarele pe care le dețineți sau pentru care aveți abonament.",
+          },
+          getCalendar: {
+            title: "Obțineți detalii despre calendar",
+            description:
+              "Obțineți informații detaliate despre un calendar specific.",
+          },
+          getEvent: {
+            title: "Obține evenimentul",
+            description:
+              "Obțineți informații detaliate despre un eveniment specific.",
+          },
+          getEventsForDay: {
+            title: "Obține evenimente pentru ziua respectivă",
+            description:
+              "Obțineți toate evenimentele programate pentru o anumită dată.",
+          },
+          getEvents: {
+            title: "Obține evenimente (interval de date)",
+            description: "Obține evenimente într-un interval de date specific",
+          },
+          getUpcomingEvents: {
+            title: "Vezi evenimentele viitoare",
+            description:
+              "Găsiți evenimente pentru ziua de azi, pentru această săptămână sau pentru acest lună, folosind cuvinte cheie simple.",
+          },
+          quickAdd: {
+            title: "Adaugă eveniment rapid",
+            description:
+              "Creați un eveniment folosind limbaj natural (de exemplu, „Întâlnire mâine la ora 15:00”)",
+          },
+          createEvent: {
+            title: "Creați eveniment",
+            description:
+              "Creați un eveniment nou, având control complet asupra tuturor proprietăților.",
+          },
+          updateEvent: {
+            title: "Actualizare eveniment",
+            description: "Modificați un eveniment existent din calendar",
+          },
+          setMyStatus: {
+            title: "Stare confirmare participare",
+            description: "Acceptă, refuză sau acceptă cu rezerve evenimentul",
+          },
+        },
+      },
     },
     mcp: {
       title: "Servere MCP",
@@ -1020,7 +1342,34 @@ const TRANSLATIONS = {
       "Cheile API permit deținătorului să acceseze și să gestioneze programatic această instanță AnythingLLM.",
     link: "Citește documentația API",
     generate: "Generează o nouă cheie API",
+    empty: "Nu au fost găsite chei API",
+    actions: "Acțiuni",
+    messages: {
+      error: "Eroare: {{error}}",
+    },
+    modal: {
+      title: "Creează o cheie API nouă",
+      cancel: "Anulează",
+      close: "Închide",
+      create: "Creează cheia API",
+      helper:
+        "După creare, cheia API poate fi folosită pentru a accesa și configura programatic această instanță AnythingLLM.",
+      name: {
+        label: "Nume",
+        placeholder: "Integrare de producție",
+        helper:
+          "Opțional. Folosește un nume clar pentru a putea identifica această cheie mai târziu.",
+      },
+    },
+    row: {
+      copy: "Copiază cheia API",
+      copied: "Copiată",
+      unnamed: "--",
+      deleteConfirm:
+        "Sigur doriți să dezactivați această cheie API?\nDupă aceea nu va mai putea fi folosită.\n\nAceastă acțiune este ireversibilă.",
+    },
     table: {
+      name: "Nume",
       key: "Cheie API",
       by: "Creat de",
       created: "Creat la",
@@ -1135,9 +1484,6 @@ const TRANSLATIONS = {
         description:
           "Lipește token-ul API pe care l-ați primit de la @BotFather și selectați un spațiu de lucru implicit pentru ca botul dumneavoastră să poată interacționa.",
         "bot-token": "Token Bot",
-        "default-workspace": "Spațiu de lucru implicit",
-        "no-workspace":
-          "Nu există spații de lucru disponibile. Va fi creat unul nou.",
         connecting: "Conectare...",
         "connect-bot": "Conectare automată",
       },
@@ -1179,20 +1525,9 @@ const TRANSLATIONS = {
         "Nu a fost posibil să se anuleze contul utilizatorului.",
     },
     users: {
-      "pending-title": "Așteptare aprobare",
       "pending-description":
         "Utilizatorii care așteaptă să fie verificați. Potrivirea codului de asociere afișat aici cu cel afișat în chat-ul lor de pe Telegram.",
-      "approved-title": "Utilizatori autorizați",
-      "approved-description":
-        "Utilizatorii care au fost autorizați să interacționeze cu botul dumneavoastră.",
-      user: "Utilizator",
-      "pairing-code": "Cod de asociere",
-      "no-pending": "Nu există cereri în așteptare.",
-      "no-approved": "Nu există utilizatori autorizați.",
       unknown: "Necunoscut",
-      approve: "Aprobă",
-      deny: "Negarea",
-      revoke: "Anula",
     },
   },
 };

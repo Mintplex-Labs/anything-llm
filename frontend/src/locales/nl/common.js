@@ -410,6 +410,315 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: "GMail-verbinding",
+        description:
+          "Maak het mogelijk voor uw agent om met Gmail te communiceren: e-mails zoeken, threads lezen, e-mails opstellen, e-mails versturen en uw inbox beheren. <a>Bekijk de documentatie</a>.",
+        multiUserWarning:
+          "De integratie met Gmail is niet beschikbaar in de modus voor meerdere gebruikers, om veiligheidsredenen. Schakel de modus voor meerdere gebruikers uit om deze functie te gebruiken.",
+        configuration: "Gmail-instellingen",
+        deploymentId: "Identificatiecode voor de implementatie",
+        deploymentIdHelp: "De deployment-ID van je Google Apps Script web-app",
+        apiKey: "API-sleutel",
+        apiKeyHelp:
+          "De API-sleutel die u hebt geconfigureerd in uw Google Apps Script-implementatie.",
+        configurationRequired:
+          "Configureer de Deployment ID en de API-sleutel om de Gmail-functionaliteit te activeren.",
+        configured: "Geconfigureerd",
+        searchSkills: "Vaardigheden op het gebied van zoeken...",
+        noSkillsFound: "Geen resultaten die overeenkomen met uw zoekopdracht.",
+        categories: {
+          search: {
+            title: "Zoeken en e-mails lezen",
+            description: "Zoek en lees e-mails uit uw Gmail inbox.",
+          },
+          drafts: {
+            title: "Voorbeeld-e-mails",
+            description: "Maak, bewerk en beheer e-mailontwerpen.",
+          },
+          send: {
+            title: "Verzenden en antwoorden op e-mails",
+            description:
+              "Verzend e-mails en reageer direct op discussieberichten.",
+          },
+          threads: {
+            title: "Beheer e-mailconversaties",
+            description:
+              "Beheer e-mailconversaties – markeer als gelezen/niet gelezen, archiveren, verwijderen",
+          },
+          account: {
+            title: "Statistieken over integratie",
+            description:
+              "Bekijk statistieken en accountinformatie van uw e-mail.",
+          },
+        },
+        skills: {
+          search: {
+            title: "Zoek naar e-mails",
+            description:
+              "Zoek naar e-mails met behulp van de zoeksyntax van Gmail.",
+          },
+          readThread: {
+            title: "Lees het gesprek",
+            description: "Lees het volledige e-mailgesprek, gesorteerd op ID.",
+          },
+          createDraft: {
+            title: "Maak een concept",
+            description: "Maak een nieuwe concept-e-mail",
+          },
+          createDraftReply: {
+            title: "Maak een concept-antwoord",
+            description: "Maak een concept-antwoord op een bestaand gesprek.",
+          },
+          updateDraft: {
+            title: "Aanpassen: Ontwerp",
+            description: "Pas een bestaand concept-e-mail aan.",
+          },
+          getDraft: {
+            title: "Bekijk concept",
+            description: "Haal een specifiek ontwerp op, gebaseerd op zijn ID.",
+          },
+          listDrafts: {
+            title: "Ontwerpen",
+            description: "Maak een lijst van alle concept-e-mails.",
+          },
+          deleteDraft: {
+            title: "Verwijder concept",
+            description: "Verwijder een concept-e-mail",
+          },
+          sendDraft: {
+            title: "Verzend concept",
+            description: "Verzend een bestaand e-mailconcept.",
+          },
+          sendEmail: {
+            title: "Stuur e-mail",
+            description: "Stuur onmiddellijk een e-mail.",
+          },
+          replyToThread: {
+            title: "Reageer op dit gesprek",
+            description: "Reageer onmiddellijk op een e-mailthread.",
+          },
+          markRead: {
+            title: "Mark Read",
+            description: "Markeer een draad als gelezen",
+          },
+          markUnread: {
+            title: "Mark ongelezen",
+            description: "Markeer een bericht als ongelezen.",
+          },
+          moveToTrash: {
+            title: "Verplaatsen naar prullenbak",
+            description: "Verplaats een onderwerp naar de prullenbak",
+          },
+          moveToArchive: {
+            title: "Archief",
+            description: "Een gesprek archiveren",
+          },
+          moveToInbox: {
+            title: "Verplaats naar inbox",
+            description: "Verplaats een bericht naar de inbox",
+          },
+          getMailboxStats: {
+            title: "Statistieken van de e-mail inbox",
+            description:
+              "Bekijk het aantal ongelezen berichten en statistieken over uw e-mailbox.",
+          },
+          getInbox: {
+            title: "Open de inbox",
+            description:
+              "Een eenvoudige manier om de e-mails in uw inbox van Gmail te bekijken.",
+          },
+        },
+      },
+      outlook: {
+        title: "Outlook-connector",
+        description:
+          "Laat uw agent in staat zijn om met Microsoft Outlook te communiceren: e-mails zoeken, threads lezen, concepten opstellen, e-mails versturen en uw inbox beheren via de Microsoft Graph API. Raadpleeg de documentatie.",
+        multiUserWarning:
+          "De integratie met Outlook is niet beschikbaar in de modus voor meerdere gebruikers, vanwege veiligheidsoverwegingen. Om deze functie te gebruiken, moet u de modus voor meerdere gebruikers uitschakelen.",
+        configuration: "Outlook-configuratie",
+        authType: "Type account",
+        authTypeHelp:
+          'Kies welke soorten Microsoft-accounts kunnen worden gebruikt voor authenticatie. "Alle accounts" ondersteunt zowel persoonlijke als werk-/schoolaccounts. "Alleen persoonlijke accounts" beperkt zich tot persoonlijke Microsoft-accounts. "Alleen werk-/schoolaccounts" beperkt zich tot werk-/schoolaccounts van een specifieke Azure AD-tenant.',
+        authTypeCommon:
+          "Alle rekeningen (persoonlijke en zakelijke/schoolrekeningen)",
+        authTypeConsumers: "Alleen persoonlijke Microsoft-accounts",
+        authTypeOrganization:
+          "Alleen accounts voor organisaties (vereist Tenant-ID)",
+        clientId: "Toepassings-ID (klant)",
+        clientIdHelp:
+          "De applicatie-ID (ook wel Client ID genoemd) van uw Azure AD-applicatie.",
+        tenantId: "Identificatienummer (huurder)",
+        tenantIdHelp:
+          "De Directory (Tenant) ID uit uw Azure AD-appregistratie. Vereist alleen voor authenticatie binnen een organisatie.",
+        clientSecret: "Geheime sleutel",
+        clientSecretHelp: "De geheime waarde van uw Azure AD-appregistratie",
+        configurationRequired:
+          "Configureer de Client ID en Client Secret om de Outlook-functionaliteit te activeren.",
+        authRequired:
+          "Sla eerst uw gegevens op, en voer vervolgens de authenticatie uit bij Microsoft om het proces te voltooien.",
+        authenticateWithMicrosoft: "Authenticeer met Microsoft",
+        authenticated: "Succesvol verbonden met Microsoft Outlook.",
+        revokeAccess: "Toegang intrekken",
+        configured: "Geconfigureerd",
+        searchSkills: "Vaardigheden op het gebied van zoeken...",
+        noSkillsFound:
+          "Geen overeenkomende vaardigheden zijn gevonden op basis van uw zoekopdracht.",
+        categories: {
+          search: {
+            title: "Zoeken en e-mails lezen",
+            description: "Zoek en lees e-mails uit uw Outlook inbox.",
+          },
+          drafts: {
+            title: "Voorbeeld e-mails",
+            description: "Maak, bewerk en beheer e-mailvoorstellen.",
+          },
+          send: {
+            title: "Verzend e-mails",
+            description:
+              "Verzend nieuwe e-mails of reageer onmiddellijk op berichten.",
+          },
+          account: {
+            title: "Statistieken over integratie",
+            description:
+              "Bekijk statistieken en accountinformatie van uw e-mail.",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "Open de inbox",
+            description: "Bekijk recente e-mails uit uw Outlook inbox.",
+          },
+          search: {
+            title: "Zoeken in e-mails",
+            description:
+              "Zoek naar e-mails met behulp van de syntax van Microsoft Search",
+          },
+          readThread: {
+            title: "Lees het gesprek",
+            description: "Lees het volledige e-mailgesprek",
+          },
+          createDraft: {
+            title: "Maak een concept",
+            description:
+              "Maak een nieuwe concept-e-mail of een concept-antwoord op een bestaande bericht.",
+          },
+          updateDraft: {
+            title: "Versie",
+            description: "Pas een bestaand concept e-mail aan",
+          },
+          listDrafts: {
+            title: "Ontwerpen",
+            description: "Maak een lijst van alle concept-e-mails.",
+          },
+          deleteDraft: {
+            title: "Verwijder concept",
+            description: "Verwijder een concept-e-mail",
+          },
+          sendDraft: {
+            title: "Verzend concept",
+            description: "Verzend een bestaand e-mailontwerp.",
+          },
+          sendEmail: {
+            title: "Stuur e-mail",
+            description:
+              "Verzend een nieuw e-mail of reageer direct op een bestaande bericht.",
+          },
+          getMailboxStats: {
+            title: "Statistieken van de e-mailbox",
+            description: "Haal de aantallen mappen en mailbox-statistieken op.",
+          },
+        },
+      },
+      googleCalendar: {
+        title: "Google Kalender-connector",
+        description:
+          "Maak het mogelijk voor uw agent om met Google Kalender te communiceren: kalenders bekijken, evenementen bekijken, evenementen aanmaken en bijwerken, en RSVP's beheren. <a>Lees de documentatie</a>.",
+        multiUserWarning:
+          "De integratie met Google Kalender is niet beschikbaar in de modus met meerdere gebruikers, vanwege beveiligingsredenen. Om deze functie te gebruiken, dient u de modus met meerdere gebruikers uit te schakelen.",
+        configuration: "Google Kalender instellingen",
+        deploymentId: "Identificatiecode voor de implementatie",
+        deploymentIdHelp: "De deployment-ID van uw Google Apps Script web-app",
+        apiKey: "API-sleutel",
+        apiKeyHelp:
+          "De API-sleutel die u heeft geconfigureerd in uw Google Apps Script-implementatie.",
+        configurationRequired:
+          "Configureer de Deployment ID en de API-sleutel om de Google Calendar-functionaliteit te activeren.",
+        configured: "Geconfigureerd",
+        searchSkills: "Vaardigheden op het gebied van zoeken...",
+        noSkillsFound:
+          "Geen resultaten gevonden die overeenkomen met uw zoekopdracht.",
+        categories: {
+          calendars: {
+            title: "Kalenders",
+            description: "Bekijk en beheer uw Google-agenda's",
+          },
+          readEvents: {
+            title: "Bekijk evenementen",
+            description: "Bekijk en zoek naar evenementen in de agenda",
+          },
+          writeEvents: {
+            title: "Maak en update evenementen",
+            description:
+              "Creëer nieuwe evenementen en wijzig bestaande evenementen.",
+          },
+          rsvp: {
+            title: "Beheer van RSVP-verzoeken",
+            description: "Beheer de status van uw reacties voor evenementen",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "Agenda's",
+            description:
+              "Maak een lijst van alle kalenders die u bezit of waarvoor u een abonnement heeft.",
+          },
+          getCalendar: {
+            title: "Bekijk de details van de agenda",
+            description:
+              "Vind gedetailleerde informatie over een specifieke kalender.",
+          },
+          getEvent: {
+            title: "Evenement bekijken",
+            description:
+              "Vind gedetailleerde informatie over een specifiek evenement.",
+          },
+          getEventsForDay: {
+            title: "Zoek naar evenementen voor de dag",
+            description:
+              "Bekijk alle evenementen die gepland staan voor een specifieke dag.",
+          },
+          getEvents: {
+            title: "Evenementen (tijdsperiode)",
+            description:
+              "Haal evenementen op binnen een aangepaste datumschaal",
+          },
+          getUpcomingEvents: {
+            title: "Bekijk aankomende evenementen",
+            description:
+              "Zoek evenementen voor vandaag, deze week of deze maand met behulp van eenvoudige zoekwoorden.",
+          },
+          quickAdd: {
+            title: "Snel evenement toevoegen",
+            description:
+              "Maak een evenement op basis van natuurlijke taal (bijvoorbeeld: 'Ontmoeting morgen om 15:00 uur')",
+          },
+          createEvent: {
+            title: "Evenement aanmaken",
+            description:
+              "Maak een nieuw evenement en beschik over volledige controle over alle instellingen.",
+          },
+          updateEvent: {
+            title: "Nieuwsupdate",
+            description: "Wijzig een bestaand evenement in uw agenda",
+          },
+          setMyStatus: {
+            title: "Status van reactie bevestigd",
+            description:
+              "Accepteer, weiger of geef een voorlopige bevestiging van een evenement",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP-servers",
@@ -471,7 +780,34 @@ const TRANSLATIONS = {
       "API-sleutels stellen de houder in staat om deze AnythingLLM-instantie programmatisch te openen en beheren.",
     link: "Lees de API-documentatie",
     generate: "Genereer Nieuwe API-sleutel",
+    empty: "Geen API-sleutels gevonden",
+    actions: "Acties",
+    messages: {
+      error: "Fout: {{error}}",
+    },
+    modal: {
+      title: "Nieuwe API-sleutel maken",
+      cancel: "Annuleren",
+      close: "Sluiten",
+      create: "API-sleutel maken",
+      helper:
+        "Na het aanmaken kan de API-sleutel worden gebruikt om programmatisch toegang te krijgen tot deze AnythingLLM-instantie en deze te configureren.",
+      name: {
+        label: "Naam",
+        placeholder: "Productie-integratie",
+        helper:
+          "Optioneel. Gebruik een duidelijke naam zodat je deze sleutel later makkelijk kunt herkennen.",
+      },
+    },
+    row: {
+      copy: "API-sleutel kopiëren",
+      copied: "Gekopieerd",
+      unnamed: "--",
+      deleteConfirm:
+        "Weet je zeker dat je deze API-sleutel wilt uitschakelen?\nDaarna kan deze niet meer worden gebruikt.\n\nDeze actie kan niet ongedaan worden gemaakt.",
+    },
     table: {
+      name: "Naam",
       key: "API-sleutel",
       by: "Aangemaakt Door",
       created: "Aangemaakt",
@@ -860,6 +1196,12 @@ const TRANSLATIONS = {
       tool_call_was_rejected:
         "De aanvraag om het gereedschap te gebruiken is afgewezen.",
     },
+    custom_skills: "Aangepaste vaardigheden",
+    agent_flows: "Stroom van agenten",
+    no_tools_found: "Geen overeenkomende gereedschappen gevonden.",
+    loading_mcp_servers: "MCP-servers worden geladen...",
+    app_integrations: "Integraties met apps",
+    sub_skills: "Specifieke vaardigheden",
   },
   profile_settings: {
     edit_account: "Account bewerken",
@@ -1135,9 +1477,6 @@ const TRANSLATIONS = {
         description:
           "Plak de API-token die je van @BotFather hebt ontvangen en selecteer een standaard werkruimte voor je bot om mee te communiceren.",
         "bot-token": "Bot-token",
-        "default-workspace": "Standaard werkruimte",
-        "no-workspace":
-          "Er zijn geen beschikbare werkplekken. Een nieuwe zal worden aangemaakt.",
         connecting: "Verbinding wordt gemaakt...",
         "connect-bot": "Connect Bot",
       },
@@ -1180,20 +1519,9 @@ const TRANSLATIONS = {
         "Fout bij het intrekken van het gebruikersaccount.",
     },
     users: {
-      "pending-title": "Afhankelijk van goedkeuring",
       "pending-description":
         "Gebruikers die nog geverifieerd moeten worden. Vergelijk de code die hier wordt getoond met de code die in hun Telegram-chat wordt weergegeven.",
-      "approved-title": "Goedgekeurde gebruikers",
-      "approved-description":
-        "Gebruikers die zijn goedgekeurd om met uw bot te communiceren.",
-      user: "Gebruiker",
-      "pairing-code": "Code voor het koppelen",
-      "no-pending": "Er zijn geen lopende verzoeken.",
-      "no-approved": "Geen goedgekeurde gebruikers",
       unknown: "Onbekend",
-      approve: "Goedkeuren",
-      deny: "Afgewijzen",
-      revoke: "Intrekken",
     },
   },
 };
