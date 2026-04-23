@@ -4,6 +4,11 @@ import useUser from "@/hooks/useUser";
 import System from "@/models/system";
 import Memory from "@/models/memory";
 
+export const LIMITS = {
+  workspace: 20,
+  global: 5,
+};
+
 const MemoriesContext = createContext(null);
 
 export function useMemoriesContext() {

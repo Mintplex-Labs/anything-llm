@@ -1,12 +1,7 @@
 import { Plus } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 import { Tooltip } from "react-tooltip";
-import { useMemoriesContext } from "../MemoriesContext";
-
-const LIMITS = {
-  workspace: 20,
-  global: 5,
-};
+import { useMemoriesContext, LIMITS } from "../MemoriesContext";
 
 export default function MemoryTabs() {
   const { workspace, activeTab, setActiveTab, memories, openCreateModal } =
@@ -16,6 +11,10 @@ export default function MemoryTabs() {
     workspace?.name || t("chat_window.memories.tab_workspace");
   const workspaceCount = memories.workspace.length;
   const globalCount = memories.global.length;
+  const atLimit =
+    activeTab === "workspace"
+      ? workspaceCount >= LIMITS.workspace
+      : globalCount >= LIMITS.global;
 
   return (
     <div className="flex items-center justify-between shrink-0 gap-2">
@@ -58,7 +57,8 @@ export default function MemoryTabs() {
       <button
         type="button"
         onClick={openCreateModal}
-        className="-mr-1 flex items-center justify-center size-6 rounded-lg border-none bg-transparent cursor-pointer text-zinc-50 light:text-slate-900 hover:bg-zinc-800 light:hover:bg-slate-200 transition-colors"
+        disabled={atLimit}
+        className="-mr-1 flex items-center justify-center size-6 rounded-lg border-none bg-transparent cursor-pointer text-zinc-50 light:text-slate-900 hover:bg-zinc-800 light:hover:bg-slate-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
       >
         <Plus size={16} weight="bold" />
       </button>

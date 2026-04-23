@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
  * @param {React.RefObject} props.menuRef
  * @param {React.RefObject} props.buttonRef
  * @param {boolean} props.isWorkspace
+ * @param {boolean} props.canMove - hide the move option when the target scope is full
  * @param {function} props.onEdit
  * @param {function} props.onMove
  * @param {function} props.onDelete
@@ -17,6 +18,7 @@ export default function CardMenu({
   menuRef,
   buttonRef,
   isWorkspace,
+  canMove,
   onEdit,
   onMove,
   onDelete,
@@ -37,14 +39,16 @@ export default function CardMenu({
       style={{ top: pos.top, left: pos.left }}
     >
       <MenuItem label={t("chat_window.memories.menu.edit")} onClick={onEdit} />
-      <MenuItem
-        label={
-          isWorkspace
-            ? t("chat_window.memories.menu.move_to_global")
-            : t("chat_window.memories.menu.move_to_workspace")
-        }
-        onClick={onMove}
-      />
+      {canMove && (
+        <MenuItem
+          label={
+            isWorkspace
+              ? t("chat_window.memories.menu.move_to_global")
+              : t("chat_window.memories.menu.move_to_workspace")
+          }
+          onClick={onMove}
+        />
+      )}
       <MenuItem
         label={t("chat_window.memories.menu.delete")}
         onClick={onDelete}
