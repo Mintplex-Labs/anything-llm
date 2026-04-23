@@ -1168,6 +1168,12 @@ const TRANSLATIONS = {
       tool_call_was_approved: "ツールの使用許可が承認されました",
       tool_call_was_rejected: "ツール呼び出しは拒否されました",
     },
+    custom_skills: "カスタマイズ可能なスキル",
+    agent_flows: "エージェント間の流れ",
+    no_tools_found: "一致するツールは見つかりませんでした",
+    loading_mcp_servers: "MCP サーバーの読み込み中...",
+    app_integrations: "アプリケーション連携",
+    sub_skills: "専門スキル",
   },
   profile_settings: {
     edit_account: "アカウントを編集",

@@ -1312,6 +1312,12 @@ const TRANSLATIONS = {
       tool_call_was_approved: "Įrankių užsakymas buvo patvirtintas.",
       tool_call_was_rejected: "Klausimas dėl įrankio buvo atmetamas.",
     },
+    custom_skills: "Individualūs įgūdžiai",
+    agent_flows: "Agentų srautai",
+    no_tools_found: "Nėra rasti atitikusių įrankių.",
+    loading_mcp_servers: "Įkrauname MCP serverius...",
+    app_integrations: "Programų integracijos",
+    sub_skills: "Pagrindinės įgūdžios",
   },
   profile_settings: {
     edit_account: "Redaguoti paskyrą",

@@ -1304,6 +1304,12 @@ const TRANSLATIONS = {
         "Die Genehmigung für die Bestellung der Werkzeuge wurde erteilt.",
       tool_call_was_rejected: "Die Anfrage nach dem Werkzeug wurde abgelehnt.",
     },
+    custom_skills: "Individuelle Fähigkeiten",
+    agent_flows: "Datenströme",
+    no_tools_found: "Keine passenden Werkzeuge gefunden.",
+    loading_mcp_servers: "MCP-Server laden...",
+    app_integrations: "Anwendungen und Integrationen",
+    sub_skills: "Spezifische Fähigkeiten",
   },
   profile_settings: {
     edit_account: "Account bearbeiten",

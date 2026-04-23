@@ -1206,6 +1206,12 @@ const TRANSLATIONS = {
       tool_call_was_rejected:
         "Запрос на предоставление инструмента был отклонен.",
     },
+    custom_skills: "Индивидуальные навыки",
+    agent_flows: "Поток агентов",
+    no_tools_found: "Не найдено соответствующих инструментов.",
+    loading_mcp_servers: "Загрузка серверов MCP...",
+    app_integrations: "Интеграция с приложениями",
+    sub_skills: "Подквалификация",
   },
   profile_settings: {
     edit_account: "Редактировать учётную запись",
