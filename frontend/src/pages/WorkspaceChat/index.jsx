@@ -20,7 +20,7 @@ export default function WorkspaceChat() {
 }
 
 function ShowWorkspaceChat() {
-  const { slug } = useParams();
+  const { slug, threadSlug = null } = useParams();
   const [workspace, setWorkspace] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -55,7 +55,11 @@ function ShowWorkspaceChat() {
     <>
       <div className="w-screen h-screen overflow-hidden bg-zinc-950 light:bg-slate-50 flex">
         {!isMobile && <Sidebar />}
-        <WorkspaceChatContainer loading={loading} workspace={workspace} />
+        <WorkspaceChatContainer
+          key={threadSlug ?? "default"}
+          loading={loading}
+          workspace={workspace}
+        />
       </div>
     </>
   );
