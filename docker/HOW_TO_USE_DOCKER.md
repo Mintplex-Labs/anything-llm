@@ -35,6 +35,14 @@ Use the Dockerized version of AnythingLLM for a much faster and complete startup
 > It is best to mount the containers storage volume to a folder on your host machine
 > so that you can pull in future updates without deleting your existing data!
 
+> [!TIP]
+> The _easiest_ way to boot the container is including `SYS_ADMIN` to the container. This is required for the container to use the built-in Chromium web browser for
+> web-scraping. This can be done by adding `--cap-add SYS_ADMIN` to the docker run command.
+>
+> **However**, if you are not using web-scraping, you can omit this flag OR utilize a seccomp profile to grant only the specific syscalls required for Chrome sandboxing.
+>
+> See [Using a Seccomp Profile (More Secure Alternative to SYS_ADMIN)](#using-a-seccomp-profile-more-secure-alternative-to-sys_admin) for more information.
+
 Pull in the latest image from docker. Supports both `amd64` and `arm64` CPU architectures.
 
 ```shell
@@ -207,3 +215,64 @@ If you are getting errors like `llama:streaming - could not stream chat. Error: 
 ### Still not working?
 
 [Ask for help on Discord](https://discord.gg/6UyHPeGZAC)
+
+## Using a Seccomp Profile (More Secure Alternative to SYS_ADMIN)
+
+The `--cap-add SYS_ADMIN` flag grants broad privileges to the container, which may be a security concern in some environments. A more secure alternative is to use a custom seccomp profile that grants only the specific syscalls required for Chrome sandboxing.
+
+### Why use a seccomp profile?
+
+- **Principle of least privilege**: Only grants the specific syscalls needed for Chrome's sandbox feature
+- **Better security posture**: Avoids giving the container full `SYS_ADMIN` capabilities
+- **Recommended for production**: Especially important when running in shared or sensitive environments
+
+### Setup
+
+1. Download the seccomp profile to your AnythingLLM storage location:
+
+```shell
+curl -o $STORAGE_LOCATION/chrome-seccomp.json https://raw.githubusercontent.com/Mintplex-Labs/anything-llm/master/docker/seccomp/chrome.json
+```
+
+2. Run the container with the seccomp profile instead of `--cap-add SYS_ADMIN`:
+
+**Linux/MacOS:**
+```shell
+export STORAGE_LOCATION=$HOME/anythingllm && \
+mkdir -p $STORAGE_LOCATION && \
+touch "$STORAGE_LOCATION/.env" && \
+docker run -d -p 3001:3001 \
+--security-opt seccomp=$STORAGE_LOCATION/chrome-seccomp.json \
+-v ${STORAGE_LOCATION}:/app/server/storage \
+-v ${STORAGE_LOCATION}/.env:/app/server/.env \
+-e STORAGE_DIR="/app/server/storage" \
+mintplexlabs/anythingllm
+```
+
+**Docker Compose:**
+```yaml
+version: '3.8'
+services:
+  anythingllm:
+    image: mintplexlabs/anythingllm
+    container_name: anythingllm
+    ports:
+    - "3001:3001"
+    security_opt:
+      - seccomp=/path/to/chrome-seccomp.json
+    # ... rest of your configuration
+```
+
+### What syscalls does the profile add?
+
+The seccomp profile adds the following syscalls beyond Docker's default profile to enable Chrome sandboxing:
+
+- `clone3` - Process creation for sandbox
+- `fanotify_init` - File access notifications
+- `statx` - Extended file status
+- `unshare` - Namespace isolation for sandboxing
+
+> [!NOTE]
+> If you are not using web-scraping features, you can omit both `--cap-add SYS_ADMIN` and the seccomp profile entirely.
+
+For more details, see [GitHub Issue #5490](https://github.com/Mintplex-Labs/anything-llm/issues/5490).
