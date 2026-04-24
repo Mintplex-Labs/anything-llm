@@ -32,7 +32,16 @@ export function utcTimeToLocal(utcHour, utcMinute = 0) {
  * @returns {string} Timezone abbreviation (e.g., "PST", "EST", "UTC").
  */
 export function getTimezoneAbbreviation() {
-  return moment().format("z") || "local time";
+  try {
+    const formatter = new Intl.DateTimeFormat(undefined, {
+      timeZoneName: "short",
+    });
+    const parts = formatter.formatToParts(new Date());
+    const tzPart = parts.find((p) => p.type === "timeZoneName");
+    return tzPart?.value || "local time";
+  } catch {
+    return "local time";
+  }
 }
 
 /**
@@ -50,7 +59,7 @@ export function humanizeCron(cron, locale) {
       throwExceptionOnParseError: false,
       locale: toCronstrueLocale(locale),
     });
-    return `${humanized} (${getTimezoneAbbreviation()})`;
+    return `${humanized} ${getTimezoneAbbreviation()}`;
   } catch {
     return cron;
   }
