@@ -354,6 +354,8 @@ function FinalResponseSection({ t, result }) {
     msgToRender = result.text.replace(THOUGHT_REGEX_COMPLETE, "");
   }
 
+  debugger;
+
   return (
     <CollapsibleSection
       title={t("scheduledJobs.runDetail.sections.response")}
