@@ -1648,13 +1648,6 @@ const TRANSLATIONS = {
       continueInThread: "Continuă în acest thread",
       creating: "Crearea...",
       threadFailed: "Nu a reușit să creeze thread-ul.",
-      status: {
-        completed: "Finalizat",
-        failed: "Eșuat",
-        timed_out: "Timpul a expirat",
-        running: "Cursa",
-        queued: "În așteptare",
-      },
       sections: {
         prompt: "Solicitare",
         error: "Eroare",
@@ -1685,6 +1678,13 @@ const TRANSLATIONS = {
         spreadsheet: "Fișă de calcul",
         generic: "Fișier",
       },
+    },
+    status: {
+      completed: null,
+      failed: null,
+      timed_out: null,
+      running: null,
+      queued: null,
     },
   },
 };

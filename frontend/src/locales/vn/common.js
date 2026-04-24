@@ -1622,13 +1622,6 @@ const TRANSLATIONS = {
       continueInThread: "Tiếp tục thảo luận trong chủ đề này",
       creating: "Tạo ra...",
       threadFailed: "Không thể tạo ra luồng (thread).",
-      status: {
-        completed: "Hoàn thành",
-        failed: "Thất bại",
-        timed_out: "Thời gian đã hết",
-        running: "Chạy bộ",
-        queued: "Đang chờ đợi",
-      },
       sections: {
         prompt: "Yêu cầu",
         error: "Lỗi",
@@ -1659,6 +1652,13 @@ const TRANSLATIONS = {
         spreadsheet: "Bảng tính",
         generic: "Tệp",
       },
+    },
+    status: {
+      completed: null,
+      failed: null,
+      timed_out: null,
+      running: null,
+      queued: null,
     },
   },
 };

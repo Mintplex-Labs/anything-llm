@@ -1585,13 +1585,6 @@ const TRANSLATIONS = {
       continueInThread: "스레드에 계속 참여",
       creating: "만들기...",
       threadFailed: "스레드를 생성하는 데 실패했습니다.",
-      status: {
-        completed: "완료",
-        failed: "실패",
-        timed_out: "시간 초과",
-        running: "달리기",
-        queued: "대기 중",
-      },
       sections: {
         prompt: "요청",
         error: "오류",
@@ -1622,6 +1615,13 @@ const TRANSLATIONS = {
         spreadsheet: "스프레드시트",
         generic: "파일",
       },
+    },
+    status: {
+      completed: null,
+      failed: null,
+      timed_out: null,
+      running: null,
+      queued: null,
     },
   },
 };

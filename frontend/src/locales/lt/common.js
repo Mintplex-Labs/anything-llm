@@ -1630,13 +1630,6 @@ const TRANSLATIONS = {
       continueInThread: "Toliau diskusijoje",
       creating: "Kurimas...",
       threadFailed: "Nepavyko sukurti temą",
-      status: {
-        completed: "Baigtas",
-        failed: "Neišvykęs",
-        timed_out: "Laikas baigtas",
-        running: "Bėgimas",
-        queued: "Apsisaugęs",
-      },
       sections: {
         prompt: "Įspūdis",
         error: "Klaida",
@@ -1667,6 +1660,13 @@ const TRANSLATIONS = {
         spreadsheet: "Spalvotas lapas (tabelis)",
         generic: "Failas",
       },
+    },
+    status: {
+      completed: null,
+      failed: null,
+      timed_out: null,
+      running: null,
+      queued: null,
     },
   },
 };

@@ -1519,13 +1519,6 @@ const TRANSLATIONS = {
       continueInThread: "繼續追蹤此主題",
       creating: "創作...",
       threadFailed: "未能建立執行緒",
-      status: {
-        completed: "已完成",
-        failed: "失敗",
-        timed_out: "時間到",
-        running: "跑步",
-        queued: "排隊",
-      },
       sections: {
         prompt: "提示",
         error: "錯誤",
@@ -1556,6 +1549,13 @@ const TRANSLATIONS = {
         spreadsheet: "電子表格",
         generic: "檔案",
       },
+    },
+    status: {
+      completed: null,
+      failed: null,
+      timed_out: null,
+      running: null,
+      queued: null,
     },
   },
 };

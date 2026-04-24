@@ -1650,13 +1650,6 @@ const TRANSLATIONS = {
       continueInThread: "Segueix la discussió",
       creating: "Creant...",
       threadFailed: "No s'ha pogut crear el fil.",
-      status: {
-        completed: "Complet",
-        failed: "Fallit",
-        timed_out: "Ha expirat el temps",
-        running: "Correu",
-        queued: "En la cua",
-      },
       sections: {
         prompt: "Indicació",
         error: "Error",
@@ -1687,6 +1680,13 @@ const TRANSLATIONS = {
         spreadsheet: "Fulla de càlcul",
         generic: "Fitxer",
       },
+    },
+    status: {
+      completed: null,
+      failed: null,
+      timed_out: null,
+      running: null,
+      queued: null,
     },
   },
 };

@@ -1581,13 +1581,6 @@ const TRANSLATIONS = {
       continueInThread: "Jätka teemas",
       creating: "Loomine...",
       threadFailed: "Epäõnnes teema loomist",
-      status: {
-        completed: "Lõpitatud",
-        failed: "Epäõnnes",
-        timed_out: "Aja täis",
-        running: "Jooks",
-        queued: "Ootel",
-      },
       sections: {
         prompt: "Järgmis",
         error: "Viga",
@@ -1618,6 +1611,13 @@ const TRANSLATIONS = {
         spreadsheet: "Lehtaraken",
         generic: "Fail",
       },
+    },
+    status: {
+      completed: null,
+      failed: null,
+      timed_out: null,
+      running: null,
+      queued: null,
     },
   },
 };

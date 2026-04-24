@@ -1611,13 +1611,6 @@ const TRANSLATIONS = {
       continueInThread: "スレッドへの書き込みを続ける",
       creating: "作成中...",
       threadFailed: "スレッドの作成に失敗しました",
-      status: {
-        completed: "完了",
-        failed: "失敗",
-        timed_out: "時間切れ",
-        running: "ランニング",
-        queued: "待ち列",
-      },
       sections: {
         prompt: "指示",
         error: "エラー",
@@ -1648,6 +1641,13 @@ const TRANSLATIONS = {
         spreadsheet: "スプレッドシート",
         generic: "ファイル",
       },
+    },
+    status: {
+      completed: null,
+      failed: null,
+      timed_out: null,
+      running: null,
+      queued: null,
     },
   },
 };

@@ -1640,13 +1640,6 @@ const TRANSLATIONS = {
       continueInThread: "Turpināt diskusiju",
       creating: "Izveidot...",
       threadFailed: "Izdevās izveidot tēmu",
-      status: {
-        completed: "Pilnībā pabeigts",
-        failed: "Neizdevās",
-        timed_out: "Laiks izčuks",
-        running: "Skriešana",
-        queued: "Ievietots rindā",
-      },
       sections: {
         prompt: "Iekšējais stimuls",
         error: "Kļūda",
@@ -1677,6 +1670,13 @@ const TRANSLATIONS = {
         spreadsheet: "Tabulas veidols",
         generic: "Faila",
       },
+    },
+    status: {
+      completed: null,
+      failed: null,
+      timed_out: null,
+      running: null,
+      queued: null,
     },
   },
 };

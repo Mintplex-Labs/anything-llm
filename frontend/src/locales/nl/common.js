@@ -1642,13 +1642,6 @@ const TRANSLATIONS = {
       continueInThread: "Blijf reageren in dit gesprek",
       creating: "Creëren...",
       threadFailed: "Niet in staat om een nieuwe thread te creëren.",
-      status: {
-        completed: "Voltooid",
-        failed: "Mislukt",
-        timed_out: "Tijdslimiet bereikt",
-        running: "Hardlopen",
-        queued: "In de wachtrij",
-      },
       sections: {
         prompt: "Aanvraag",
         error: "Fout",
@@ -1679,6 +1672,13 @@ const TRANSLATIONS = {
         spreadsheet: "Spreadsheet (tabellenblad)",
         generic: "Bestand",
       },
+    },
+    status: {
+      completed: null,
+      failed: null,
+      timed_out: null,
+      running: null,
+      queued: null,
     },
   },
 };

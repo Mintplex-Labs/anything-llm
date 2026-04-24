@@ -1615,13 +1615,6 @@ const TRANSLATIONS = {
       continueInThread: "ادامه در این موضوع",
       creating: "ایجاد...",
       threadFailed: "امکان ایجاد نخ (thread) وجود نداشت.",
-      status: {
-        completed: "کامل شده",
-        failed: "ناشانه",
-        timed_out: "زمان به پایان رسید",
-        running: "دویدن",
-        queued: "در صف انتظار",
-      },
       sections: {
         prompt: "دستورالعمل",
         error: "خطا",
@@ -1652,6 +1645,13 @@ const TRANSLATIONS = {
         spreadsheet: "جدول داده‌ها",
         generic: "فایل",
       },
+    },
+    status: {
+      completed: null,
+      failed: null,
+      timed_out: null,
+      running: null,
+      queued: null,
     },
   },
 };

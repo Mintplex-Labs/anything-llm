@@ -11,23 +11,23 @@ import { useTranslation } from "react-i18next";
 function getStatusesMap(t) {
   return {
     completed: {
-      text: t("scheduledJobs.runDetail.status.completed"),
+      text: t("scheduledJobs.status.completed"),
       style: "font-medium text-white light:text-slate-950",
     },
     failed: {
-      text: t("scheduledJobs.runDetail.status.failed"),
+      text: t("scheduledJobs.status.failed"),
       style: "text-red-400 light:text-red-600",
     },
     timed_out: {
-      text: t("scheduledJobs.runDetail.status.timed_out"),
+      text: t("scheduledJobs.status.timed_out"),
       style: "text-red-400 light:text-red-600",
     },
     running: {
-      text: t("scheduledJobs.runDetail.status.running"),
+      text: t("scheduledJobs.status.running"),
       style: "italic text-zinc-400 light:text-slate-600",
     },
     queued: {
-      text: t("scheduledJobs.runDetail.status.queued"),
+      text: t("scheduledJobs.status.queued"),
       style: "italic text-zinc-400 light:text-slate-600",
     },
     default: {

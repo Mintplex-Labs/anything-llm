@@ -1636,13 +1636,6 @@ const TRANSLATIONS = {
       continueInThread: "İlgili başlıkta devam et",
       creating: "Yaratmak...",
       threadFailed: "İşlem başlatma başarısız oldu.",
-      status: {
-        completed: "Tamamlandı",
-        failed: "Başarısız",
-        timed_out: "Zaman aşımı",
-        running: "Koşmak",
-        queued: "Bekleme sırasına alınmış",
-      },
       sections: {
         prompt: "Uyarı",
         error: "Hata",
@@ -1673,6 +1666,13 @@ const TRANSLATIONS = {
         spreadsheet: "Tablo",
         generic: "Dosya",
       },
+    },
+    status: {
+      completed: null,
+      failed: null,
+      timed_out: null,
+      running: null,
+      queued: null,
     },
   },
 };

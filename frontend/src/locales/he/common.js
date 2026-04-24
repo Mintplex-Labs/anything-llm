@@ -1566,13 +1566,6 @@ const TRANSLATIONS = {
       continueInThread: "להמשיך בדיון",
       creating: "יצירה...",
       threadFailed: "לא הצליח ליצור דיון.",
-      status: {
-        completed: "הושלם",
-        failed: "כשלא הצליח",
-        timed_out: "הזמן פג",
-        running: "ריצה",
-        queued: "באי תור",
-      },
       sections: {
         prompt: "הוראה",
         error: "שגיאה",
@@ -1603,6 +1596,13 @@ const TRANSLATIONS = {
         spreadsheet: "טבלה",
         generic: "קובץ",
       },
+    },
+    status: {
+      completed: null,
+      failed: null,
+      timed_out: null,
+      running: null,
+      queued: null,
     },
   },
 };

@@ -1,21 +1,81 @@
 import cronstrue from "cronstrue/i18n";
+import moment from "moment";
 
 /**
- * Humanize a cron expression.
- * @param {string} cron - The cron expression.
+ * Convert a local hour and minute to UTC using moment.js.
+ * Handles DST and timezone edge cases properly.
+ * @param {number} localHour - Hour in local time (0-23).
+ * @param {number} localMinute - Minute (0-59).
+ * @returns {{ hour: number, minute: number }} Hour and minute in UTC.
+ */
+export function localTimeToUTC(localHour, localMinute = 0) {
+  const local = moment().hour(localHour).minute(localMinute).second(0);
+  const utc = local.clone().utc();
+  return { hour: utc.hour(), minute: utc.minute() };
+}
+
+/**
+ * Convert a UTC hour and minute to local time using moment.js.
+ * Handles DST and timezone edge cases properly.
+ * @param {number} utcHour - Hour in UTC (0-23).
+ * @param {number} utcMinute - Minute (0-59).
+ * @returns {{ hour: number, minute: number }} Hour and minute in local time.
+ */
+export function utcTimeToLocal(utcHour, utcMinute = 0) {
+  const utc = moment.utc().hour(utcHour).minute(utcMinute).second(0);
+  const local = utc.clone().local();
+  return { hour: local.hour(), minute: local.minute() };
+}
+
+/**
+ * Get the user's timezone abbreviation for display.
+ * @returns {string} Timezone abbreviation (e.g., "PST", "EST", "UTC").
+ */
+export function getTimezoneAbbreviation() {
+  return moment().format("z") || "local time";
+}
+
+/**
+ * Humanize a cron expression for display in the user's local timezone.
+ * The cron is stored in UTC, so we convert it to local time for display.
+ * @param {string} cron - The cron expression (in UTC).
  * @param {string} locale - The locale.
- * @returns {string} The humanized cron expression.
+ * @returns {string} The humanized cron expression with timezone indicator.
  */
 export function humanizeCron(cron, locale) {
   if (!cron) return "";
   try {
-    return cronstrue.toString(cron, {
+    const localCron = convertCronToLocalTime(cron);
+    const humanized = cronstrue.toString(localCron, {
       throwExceptionOnParseError: false,
       locale: toCronstrueLocale(locale),
     });
+    return `${humanized} (${getTimezoneAbbreviation()})`;
   } catch {
     return cron;
   }
+}
+
+/**
+ * Convert a UTC cron expression to local time for display purposes.
+ * Only converts the hour field for patterns that have a specific hour.
+ * @param {string} cron - The cron expression in UTC.
+ * @returns {string} The cron expression adjusted to local time.
+ */
+function convertCronToLocalTime(cron) {
+  if (!cron || typeof cron !== "string") return cron;
+  const parts = cron.trim().split(/\s+/);
+  if (parts.length !== 5) return cron;
+
+  const [minute, hour, dom, mon, dow] = parts;
+
+  // Only convert if hour is a specific number (not * or */n)
+  if (/^\d+$/.test(hour) && /^\d+$/.test(minute)) {
+    const local = utcTimeToLocal(parseInt(hour, 10), parseInt(minute, 10));
+    return `${local.minute} ${local.hour} ${dom} ${mon} ${dow}`;
+  }
+
+  return cron;
 }
 
 /**
@@ -53,9 +113,13 @@ export const DEFAULT_BUILDER_STATE = {
  * (ranges, step values in non-minute fields, multiple months, etc.) is
  * reported with `wasFallback: true` so the UI can warn the user that the
  * stored expression cannot be edited visually.
+ *
+ * IMPORTANT: The cron expression is stored in UTC on the backend. This function
+ * converts the hour to local time so the builder shows the user's local time.
+ *
  * Returns: { state, wasFallback }
- * @param {string} cron - The cron expression.
- * @returns {Object} The builder state.
+ * @param {string} cron - The cron expression (in UTC).
+ * @returns {Object} The builder state (with hours in local time).
  */
 export function parseCronToBuilderState(cron) {
   const fallback = { state: { ...DEFAULT_BUILDER_STATE }, wasFallback: true };
@@ -102,20 +166,21 @@ export function parseCronToBuilderState(cron) {
     };
   }
 
-  // Daily at H:M
+  // Daily at H:M - convert UTC to local
   if (/^\d+$/.test(m) && /^\d+$/.test(h) && dom === "*" && dow === "*") {
+    const local = utcTimeToLocal(parseInt(h, 10), parseInt(m, 10));
     return {
       state: {
         ...DEFAULT_BUILDER_STATE,
         frequency: "day",
-        hour: parseInt(h, 10),
-        minute: parseInt(m, 10),
+        hour: local.hour,
+        minute: local.minute,
       },
       wasFallback: false,
     };
   }
 
-  // Weekly on one or more weekdays at H:M
+  // Weekly on one or more weekdays at H:M - convert UTC to local
   if (
     /^\d+$/.test(m) &&
     /^\d+$/.test(h) &&
@@ -130,26 +195,28 @@ export function parseCronToBuilderState(cron) {
           .filter((d) => d >= 0 && d <= 6)
       ),
     ];
+    const local = utcTimeToLocal(parseInt(h, 10), parseInt(m, 10));
     return {
       state: {
         ...DEFAULT_BUILDER_STATE,
         frequency: "week",
-        hour: parseInt(h, 10),
-        minute: parseInt(m, 10),
+        hour: local.hour,
+        minute: local.minute,
         weekdays: days.length ? days : [1],
       },
       wasFallback: false,
     };
   }
 
-  // Monthly on day D at H:M
+  // Monthly on day D at H:M - convert UTC to local
   if (/^\d+$/.test(m) && /^\d+$/.test(h) && /^\d+$/.test(dom) && dow === "*") {
+    const local = utcTimeToLocal(parseInt(h, 10), parseInt(m, 10));
     return {
       state: {
         ...DEFAULT_BUILDER_STATE,
         frequency: "month",
-        hour: parseInt(h, 10),
-        minute: parseInt(m, 10),
+        hour: local.hour,
+        minute: local.minute,
         dayOfMonth: parseInt(dom, 10),
       },
       wasFallback: false,
@@ -161,8 +228,13 @@ export function parseCronToBuilderState(cron) {
 
 /**
  * Build a 5-field cron expression from the visual builder's state.
- * @param {Object} state - The builder state.
- * @returns {string} The cron expression.
+ *
+ * IMPORTANT: The builder state has hours in local time. This function
+ * converts the time to UTC before building the cron expression, since
+ * the backend stores and executes cron expressions in UTC.
+ *
+ * @param {Object} state - The builder state (with time in local timezone).
+ * @returns {string} The cron expression (in UTC).
  */
 export function buildCronFromBuilderState(state) {
   switch (state.frequency) {
@@ -172,18 +244,25 @@ export function buildCronFromBuilderState(state) {
     }
     case "hour":
       return `${state.hourMinuteOffset} * * * *`;
-    case "day":
-      return `${state.minute} ${state.hour} * * *`;
+    case "day": {
+      const utc = localTimeToUTC(state.hour, state.minute);
+      return `${utc.minute} ${utc.hour} * * *`;
+    }
     case "week": {
+      const utc = localTimeToUTC(state.hour, state.minute);
       const days = (state.weekdays?.length ? state.weekdays : [1])
         .slice()
         .sort((a, b) => a - b)
         .join(",");
-      return `${state.minute} ${state.hour} * * ${days}`;
+      return `${utc.minute} ${utc.hour} * * ${days}`;
     }
-    case "month":
-      return `${state.minute} ${state.hour} ${state.dayOfMonth} * *`;
-    default:
-      return "0 9 * * *";
+    case "month": {
+      const utc = localTimeToUTC(state.hour, state.minute);
+      return `${utc.minute} ${utc.hour} ${state.dayOfMonth} * *`;
+    }
+    default: {
+      const utc = localTimeToUTC(9, 0);
+      return `${utc.minute} ${utc.hour} * * *`;
+    }
   }
 }

@@ -1508,6 +1508,13 @@ const TRANSLATIONS = {
       actions: "Actions",
     },
     confirmDelete: "Are you sure you want to delete this scheduled job?",
+    status: {
+      completed: "Completed",
+      failed: "Failed",
+      timed_out: "Timed out",
+      running: "Running",
+      queued: "Queued",
+    },
     toast: {
       deleted: "Job deleted",
       triggered: "Job triggered successfully",
@@ -1604,13 +1611,6 @@ const TRANSLATIONS = {
       continueInThread: "Continue in Thread",
       creating: "Creating...",
       threadFailed: "Failed to create thread",
-      status: {
-        completed: "Completed",
-        failed: "Failed",
-        timed_out: "Timed out",
-        running: "Running",
-        queued: "Queued",
-      },
       sections: {
         prompt: "Prompt",
         error: "Error",

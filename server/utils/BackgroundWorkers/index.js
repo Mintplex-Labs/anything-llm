@@ -5,6 +5,10 @@ const later = require("@breejs/later");
 const PQueue = require("p-queue").default;
 const setLogger = require("../logger");
 
+// Use UTC time for cron interpretation. This ensures consistent behavior
+// regardless of server timezone (e.g., when running in containers).
+later.date.UTC();
+
 class BackgroundService {
   name = "BackgroundWorkerService";
   static _instance = null;

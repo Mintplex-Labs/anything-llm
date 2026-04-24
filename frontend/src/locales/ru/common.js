@@ -1653,13 +1653,6 @@ const TRANSLATIONS = {
       continueInThread: "Продолжить обсуждение в этой теме",
       creating: "Создание...",
       threadFailed: "Не удалось создать нить.",
-      status: {
-        completed: "Завершено",
-        failed: "Не удалось",
-        timed_out: "Время вышло",
-        running: "Бег",
-        queued: "В очереди",
-      },
       sections: {
         prompt: "Инструкция",
         error: "Ошибка",
@@ -1690,6 +1683,13 @@ const TRANSLATIONS = {
         spreadsheet: "Таблица (в электронных таблицах)",
         generic: "Файл",
       },
+    },
+    status: {
+      completed: null,
+      failed: null,
+      timed_out: null,
+      running: null,
+      queued: null,
     },
   },
 };

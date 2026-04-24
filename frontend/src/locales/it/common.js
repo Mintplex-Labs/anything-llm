@@ -1671,13 +1671,6 @@ const TRANSLATIONS = {
       continueInThread: "Continua nella discussione",
       creating: "Creazione...",
       threadFailed: "Impossibile creare il thread.",
-      status: {
-        completed: "Completato",
-        failed: "Fallito",
-        timed_out: "Timeout",
-        running: "Corsa",
-        queued: "In attesa",
-      },
       sections: {
         prompt: "Richiesta",
         error: "Errore",
@@ -1708,6 +1701,13 @@ const TRANSLATIONS = {
         spreadsheet: "Foglio di calcolo",
         generic: "File",
       },
+    },
+    status: {
+      completed: null,
+      failed: null,
+      timed_out: null,
+      running: null,
+      queued: null,
     },
   },
 };

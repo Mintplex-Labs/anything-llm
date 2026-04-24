@@ -2,10 +2,12 @@ const prisma = require("../utils/prisma");
 const later = require("@breejs/later");
 const cronValidate = require("cron-validate").default;
 
-// Configure later.js to use local time instead of UTC.
-// This ensures cron expressions like "0 9 * * *" are interpreted as 9 AM local
-// time rather than 9 AM UTC.
-later.date.localTime();
+// Use UTC time for cron interpretation. This ensures consistent behavior
+// regardless of server timezone (e.g., when running in containers).
+// The frontend is responsible for converting user's local time to UTC
+// when creating/editing schedules, and converting UTC back to local time
+// when displaying.
+later.date.UTC();
 
 const ScheduledJob = {
   writable: ["name", "prompt", "tools", "schedule", "enabled"],

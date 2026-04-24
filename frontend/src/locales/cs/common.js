@@ -1624,13 +1624,6 @@ const TRANSLATIONS = {
       continueInThread: "Pokračovat v tématu",
       creating: "Vytváření...",
       threadFailed: "Nedaří se vytvořit vlákno.",
-      status: {
-        completed: "Dokončeno",
-        failed: "Neúspěšné",
-        timed_out: "Časový limit byl dosažen",
-        running: "Běh",
-        queued: "Na čekací listině",
-      },
       sections: {
         prompt: "Návod",
         error: "Chyba",
@@ -1661,6 +1654,13 @@ const TRANSLATIONS = {
         spreadsheet: "Tabulka (v programu)",
         generic: "Soubor",
       },
+    },
+    status: {
+      completed: null,
+      failed: null,
+      timed_out: null,
+      running: null,
+      queued: null,
     },
   },
 };

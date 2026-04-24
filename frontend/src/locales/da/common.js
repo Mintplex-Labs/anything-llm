@@ -1627,13 +1627,6 @@ const TRANSLATIONS = {
       continueInThread: "Fortsæt i tråden",
       creating: "Oprettelse...",
       threadFailed: "Kunne ikke oprette tråd",
-      status: {
-        completed: "Afsluttet",
-        failed: "Mislykket",
-        timed_out: "Tidsudløbet er nået",
-        running: "Løb",
-        queued: "I venter",
-      },
       sections: {
         prompt: "Opfordring",
         error: "Fejl",
@@ -1664,6 +1657,13 @@ const TRANSLATIONS = {
         spreadsheet: "Regneark",
         generic: "Fil",
       },
+    },
+    status: {
+      completed: null,
+      failed: null,
+      timed_out: null,
+      running: null,
+      queued: null,
     },
   },
 };

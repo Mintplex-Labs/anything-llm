@@ -139,23 +139,23 @@ function RunHeader({
   function getStatusInfo() {
     return {
       completed: {
-        text: t("scheduledJobs.runDetail.status.completed"),
+        text: t("scheduledJobs.status.completed"),
         style: "text-green-400 light:text-green-600",
       },
       failed: {
-        text: t("scheduledJobs.runDetail.status.failed"),
+        text: t("scheduledJobs.status.failed"),
         style: "text-red-400 light:text-red-600",
       },
       timed_out: {
-        text: t("scheduledJobs.runDetail.status.timed_out"),
+        text: t("scheduledJobs.status.timed_out"),
         style: "text-orange-400 light:text-orange-600",
       },
       running: {
-        text: t("scheduledJobs.runDetail.status.running"),
+        text: t("scheduledJobs.status.running"),
         style: "text-yellow-400 light:text-yellow-600",
       },
       queued: {
-        text: t("scheduledJobs.runDetail.status.queued"),
+        text: t("scheduledJobs.status.queued"),
         style: "text-blue-400 light:text-blue-600",
       },
       default: {

@@ -1599,13 +1599,6 @@ const TRANSLATIONS = {
       continueInThread: "تابع في هذا الموضوع/النقاش",
       creating: "إنشاء...",
       threadFailed: "فشل في إنشاء سلسلة (thread).",
-      status: {
-        completed: "تم الانتهاء",
-        failed: "فشل",
-        timed_out: "انتهت المدة المحددة",
-        running: "الركض",
-        queued: "في قائمة الانتظار",
-      },
       sections: {
         prompt: "طلب",
         error: "خطأ",
@@ -1636,6 +1629,13 @@ const TRANSLATIONS = {
         spreadsheet: "جدول البيانات",
         generic: "الملف",
       },
+    },
+    status: {
+      completed: null,
+      failed: null,
+      timed_out: null,
+      running: null,
+      queued: null,
     },
   },
 };

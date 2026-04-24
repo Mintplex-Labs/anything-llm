@@ -1523,13 +1523,6 @@ const TRANSLATIONS = {
       continueInThread: "继续参与该主题讨论",
       creating: "创作...",
       threadFailed: "未能创建线程",
-      status: {
-        completed: "已完成",
-        failed: "失败",
-        timed_out: "超时",
-        running: "跑步",
-        queued: "排队",
-      },
       sections: {
         prompt: "提示",
         error: "错误",
@@ -1560,6 +1553,13 @@ const TRANSLATIONS = {
         spreadsheet: "电子表格",
         generic: "文件",
       },
+    },
+    status: {
+      completed: null,
+      failed: null,
+      timed_out: null,
+      running: null,
+      queued: null,
     },
   },
 };
