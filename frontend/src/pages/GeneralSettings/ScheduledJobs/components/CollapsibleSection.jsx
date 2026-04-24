@@ -5,6 +5,7 @@ import {
   CheckCircle,
   Copy,
 } from "@phosphor-icons/react";
+import { copyMarkdownAsRichText } from "@/utils/clipboard";
 
 // Generic expand/collapse panel used by the run-detail page to wrap each
 // trace section (thinking, tool calls, response, files).
@@ -48,11 +49,9 @@ export default function CollapsibleSection({
 function CopyButton({ content }) {
   const [copied, setCopied] = useState(false);
   const copyToClipboard = async () => {
-    await navigator.clipboard.writeText(content);
+    await copyMarkdownAsRichText(content);
     setCopied(true);
-    setTimeout(() => {
-      setCopied(false);
-    }, 2000);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
