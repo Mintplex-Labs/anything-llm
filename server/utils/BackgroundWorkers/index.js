@@ -122,13 +122,20 @@ class BackgroundService {
     await this.#bootScheduledJobs();
   }
 
-  async stop() {
-    this.#log("Stopping...");
+  /**
+   * Cleanup scheduled jobs (in-process cron timers + p-queue)
+   */
+  #cleanupScheduledJobs() {
     for (const [id, timer] of this.#scheduledJobTimers) {
       timer.clear();
       this.#scheduledJobTimers.delete(id);
     }
     this.#scheduledJobQueue.clear();
+  }
+
+  async stop() {
+    this.#log("Stopping...");
+    this.#cleanupScheduledJobs();
     if (!!this.graceful && !!this.bree) this.graceful.stopBree(this.bree, 0);
     this.bree = null;
     this.graceful = null;

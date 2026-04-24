@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import Admin from "@/models/admin";
-import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import SerpApiIcon from "./icons/serpapi.png";
 import SearchApiIcon from "./icons/searchapi.png";
 import SerperDotDevIcon from "./icons/serper.png";
 import BingSearchIcon from "./icons/bing.png";
+import BaiduSearchIcon from "./icons/baidu.png";
 import SerplySearchIcon from "./icons/serply.png";
 import SearXNGSearchIcon from "./icons/searxng.png";
 import TavilySearchIcon from "./icons/tavily.svg";
@@ -25,6 +25,7 @@ import {
   SearchApiOptions,
   SerperDotDevOptions,
   BingSearchOptions,
+  BaiduSearchOptions,
   SerplySearchOptions,
   SearXNGOptions,
   TavilySearchOptions,
@@ -34,14 +35,6 @@ import {
 } from "./SearchProviderOptions";
 
 const SEARCH_PROVIDERS = [
-  {
-    name: "Please make a selection",
-    value: "none",
-    logo: AnythingLLMIcon,
-    options: () => <React.Fragment />,
-    description:
-      "Web search will be disabled until a provider and keys are provided.",
-  },
   {
     name: "DuckDuckGo",
     value: "duckduckgo-engine",
@@ -79,6 +72,14 @@ const SEARCH_PROVIDERS = [
     logo: BingSearchIcon,
     options: (settings) => <BingSearchOptions settings={settings} />,
     description: "Web search powered by the Bing Search API (paid service).",
+  },
+  {
+    name: "Baidu Search",
+    value: "baidu-search",
+    logo: BaiduSearchIcon,
+    options: (settings) => <BaiduSearchOptions settings={settings} />,
+    description:
+      "Web search powered by Baidu Search for stronger zh-CN retrieval.",
   },
   {
     name: "Serply.io",
@@ -132,7 +133,7 @@ export default function AgentWebSearchSelection({
 }) {
   const searchInputRef = useRef(null);
   const [filteredResults, setFilteredResults] = useState([]);
-  const [selectedProvider, setSelectedProvider] = useState("none");
+  const [selectedProvider, setSelectedProvider] = useState("duckduckgo-engine");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
 
@@ -162,9 +163,11 @@ export default function AgentWebSearchSelection({
   useEffect(() => {
     Admin.systemPreferencesByFields(["agent_search_provider"])
       .then((res) =>
-        setSelectedProvider(res?.settings?.agent_search_provider ?? "none")
+        setSelectedProvider(
+          res?.settings?.agent_search_provider ?? "duckduckgo-engine"
+        )
       )
-      .catch(() => setSelectedProvider("none"));
+      .catch(() => setSelectedProvider("duckduckgo-engine"));
   }, []);
 
   const selectedSearchProviderObject =
@@ -282,11 +285,9 @@ export default function AgentWebSearchSelection({
               </button>
             )}
           </div>
-          {selectedProvider !== "none" && (
-            <div className="mt-4 flex flex-col gap-y-1">
-              {selectedSearchProviderObject.options(settings)}
-            </div>
-          )}
+          <div className="mt-4 flex flex-col gap-y-1">
+            {selectedSearchProviderObject.options(settings)}
+          </div>
         </div>
       </div>
     </div>

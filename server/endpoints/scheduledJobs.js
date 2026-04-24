@@ -1,15 +1,8 @@
 const { ScheduledJob } = require("../models/scheduledJob");
 const { ScheduledJobRun } = require("../models/scheduledJobRun");
-const { Workspace } = require("../models/workspace");
-const { WorkspaceThread } = require("../models/workspaceThread");
-const { WorkspaceChats } = require("../models/workspaceChats");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { isSingleUserMode } = require("../utils/middleware/multiUserProtected");
 const { reqBody, safeJsonParse } = require("../utils/http");
-const { agentSkillsFromSystemSettings } = require("../utils/agents/defaults");
-const ImportedPlugin = require("../utils/agents/imported");
-const { AgentFlows } = require("../utils/agentFlows");
-const MCPCompatibilityLayer = require("../utils/MCP");
 const { BackgroundService } = require("../utils/BackgroundWorkers");
 
 // BackgroundService is a singleton, so `new BackgroundService()` anywhere in
@@ -26,48 +19,11 @@ function scheduledJobEndpoints(app) {
     [validatedRequest, isSingleUserMode],
     async (_request, response) => {
       try {
-        // Built-in skills — already human-readable identifiers
-        const builtIn = (await agentSkillsFromSystemSettings()).map((id) => ({
-          id,
-          name: id,
-        }));
-
-        // Imported plugins — resolve hubId to name from plugin.json
-        const imported = ImportedPlugin.activeImportedPlugins().map((id) => {
-          const hubId = id.replace("@@", "");
-          let name = hubId;
-          try {
-            const plugin = ImportedPlugin.loadPluginByHubId(hubId);
-            if (plugin?.name) name = plugin.name;
-          } catch {}
-          return { id, name };
-        });
-
-        // Agent flows — resolve UUID to flow name
-        const flows = AgentFlows.activeFlowPlugins().map((id) => {
-          const uuid = id.replace("@@flow_", "");
-          let name = uuid;
-          try {
-            const allFlows = AgentFlows.getAllFlows();
-            if (allFlows[uuid]?.name) name = allFlows[uuid].name;
-          } catch {}
-          return { id, name: `Flow: ${name}` };
-        });
-
-        // MCP servers — strip prefix for display
-        const mcp = (await new MCPCompatibilityLayer().activeMCPServers()).map(
-          (id) => ({
-            id,
-            name: `MCP: ${id.replace("@@mcp_", "")}`,
-          })
-        );
-
-        return response
-          .status(200)
-          .json({ tools: [...builtIn, ...imported, ...flows, ...mcp] });
+        const tools = await ScheduledJob.availableTools();
+        return response.status(200).json({ tools });
       } catch (e) {
         console.error(e.message, e);
-        response.sendStatus(500);
+        response.sendStatus(500).json({ tools: [] });
       }
     }
   );
@@ -104,83 +60,33 @@ function scheduledJobEndpoints(app) {
 
   // Mark a run as read
   app.post(
-    "/scheduled-jobs/runs/:runId/read",
+    "/scheduled-jobs/runs/:runId/:action",
     [validatedRequest, isSingleUserMode],
     async (request, response) => {
       try {
-        await ScheduledJobRun.markRead(Number(request.params.runId));
-        return response.status(200).json({ success: true });
-      } catch (e) {
-        console.error(e.message, e);
-        response.sendStatus(500);
-      }
-    }
-  );
+        const { action } = request.params;
 
-  // Continue a run in a workspace thread
-  app.post(
-    "/scheduled-jobs/runs/:runId/continue",
-    [validatedRequest, isSingleUserMode],
-    async (request, response) => {
-      try {
-        const run = await ScheduledJobRun.get({
-          id: Number(request.params.runId),
-        });
-        if (!run) {
-          return response.status(404).json({ error: "Run not found" });
+        if (!["read", "continue"].includes(action))
+          throw new Error("Invalid action");
+
+        if (action === "read") {
+          await ScheduledJobRun.markRead(Number(request.params.runId));
+          return response.status(200).json({ success: true });
         }
 
-        const job = await ScheduledJob.get({ id: run.jobId });
-        if (!job) {
-          return response.status(404).json({ error: "Job not found" });
+        if (action === "continue") {
+          const { workspace, thread, error } =
+            await ScheduledJobRun.continueInThread(
+              Number(request.params.runId)
+            );
+          if (error) return response.status(500).json({ error });
+
+          return response.status(200).json({
+            workspaceSlug: workspace.slug,
+            threadSlug: thread.slug,
+          });
         }
-
-        const result = safeJsonParse(run.result, {});
-        const responseText = result?.text || "No response was generated.";
-
-        // Get or create the "Scheduled Jobs" workspace
-        let workspace = await Workspace.get({ slug: "scheduled-jobs" });
-        if (!workspace) {
-          const wsResult = await Workspace.new("Scheduled Jobs");
-          workspace = wsResult.workspace;
-          if (!workspace) {
-            return response
-              .status(500)
-              .json({ error: "Failed to create workspace" });
-          }
-        }
-
-        const threadName = `${job.name} - ${new Date(run.startedAt).toISOString()}`;
-        const { thread, message: threadError } = await WorkspaceThread.new(
-          workspace,
-          null,
-          { name: threadName }
-        );
-
-        if (!thread) {
-          return response
-            .status(500)
-            .json({ error: threadError || "Failed to create thread" });
-        }
-
-        await WorkspaceChats.new({
-          workspaceId: workspace.id,
-          prompt: job.prompt,
-          response: {
-            text: responseText,
-            sources: result.sources || [],
-            type: "chat",
-          },
-          threadId: thread.id,
-          include: true,
-        });
-
-        return response.status(200).json({
-          workspaceSlug: workspace.slug,
-          threadSlug: thread.slug,
-        });
-      } catch (e) {
-        console.error(e.message, e);
+      } catch {
         response.sendStatus(500);
       }
     }
@@ -192,21 +98,17 @@ function scheduledJobEndpoints(app) {
     [validatedRequest, isSingleUserMode],
     async (_request, response) => {
       try {
-        const jobs = await ScheduledJob.where();
+        const jobs = await ScheduledJob.where({}, null, null, {
+          runs: {
+            take: 1,
+            orderBy: { startedAt: "desc" },
+          },
+        });
 
-        const jobsWithStatus = await Promise.all(
-          jobs.map(async (job) => {
-            const [latestRun] = await ScheduledJobRun.where(
-              { jobId: job.id },
-              1,
-              { startedAt: "desc" }
-            );
-            return {
-              ...job,
-              latestRun: latestRun || null,
-            };
-          })
-        );
+        const jobsWithStatus = jobs.map(({ runs, ...job }) => ({
+          ...job,
+          latestRun: runs[0] || null,
+        }));
 
         return response.status(200).json({ jobs: jobsWithStatus });
       } catch (e) {
@@ -223,32 +125,24 @@ function scheduledJobEndpoints(app) {
     async (request, response) => {
       try {
         const { name, prompt, tools, schedule } = reqBody(request);
+        let errorMessage = null;
 
-        if (!name || !name.trim()) {
-          return response
-            .status(400)
-            .json({ job: null, error: "Name is required" });
+        if (!name?.trim()) {
+          errorMessage = "Name is required";
+        } else if (!prompt?.trim()) {
+          errorMessage = "Prompt is required";
+        } else if (!schedule?.trim()) {
+          errorMessage = "Schedule is required";
+        } else if (!ScheduledJob.isValidCron(schedule)) {
+          errorMessage = "Invalid cron expression";
+        } else if (tools?.length > 0 && !Array.isArray(tools)) {
+          errorMessage = "Tools must be an array";
         }
-        if (!prompt || !prompt.trim()) {
-          return response
-            .status(400)
-            .json({ job: null, error: "Prompt is required" });
-        }
-        if (!schedule || !schedule.trim()) {
-          return response
-            .status(400)
-            .json({ job: null, error: "Schedule is required" });
-        }
-        if (!ScheduledJob.isValidCron(schedule)) {
-          return response
-            .status(400)
-            .json({ job: null, error: "Invalid cron expression" });
-        }
-        if (tools && !Array.isArray(tools)) {
-          return response
-            .status(400)
-            .json({ job: null, error: "Tools must be an array" });
-        }
+        if (errorMessage)
+          return response.status(400).json({
+            job: null,
+            error: errorMessage,
+          });
 
         // New jobs default to enabled, so creating one always counts as an
         // activation. Reject if it would push us past the configured cap.

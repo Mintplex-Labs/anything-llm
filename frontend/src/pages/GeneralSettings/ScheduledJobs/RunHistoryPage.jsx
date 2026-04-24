@@ -9,11 +9,11 @@ import usePolling from "@/hooks/usePolling";
 import showToast from "@/utils/toast";
 import paths from "@/utils/paths";
 import RunRow from "./components/RunRow";
+import { humanizeCron } from "./utils/cron";
 
 export default function RunHistoryPage() {
   const { t } = useTranslation();
   const { id } = useParams();
-  const navigate = useNavigate();
   const [job, setJob] = useState(null);
   const [runs, setRuns] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -44,6 +44,7 @@ export default function RunHistoryPage() {
       showToast(error || t("scheduledJobs.toast.triggerFailed"), "error");
       return;
     }
+
     if (skipped) {
       showToast(
         t(
@@ -57,6 +58,72 @@ export default function RunHistoryPage() {
     }
     fetchRuns();
   };
+
+  if (loading) {
+    return (
+      <RunHistoryLayout job={job}>
+        <div className="flex flex-col items-center justify-center gap-8 py-24 text-center">
+          <p className="text-zinc-400 light:text-slate-600 text-sm">
+            {t("scheduledJobs.loading")}
+          </p>
+        </div>
+      </RunHistoryLayout>
+    );
+  }
+
+  return (
+    <RunHistoryLayout job={job}>
+      <div className="pt-8">
+        <div className="flex items-center px-4 pb-[18px] text-xs font-semibold uppercase tracking-[1.4px] text-zinc-400 light:text-slate-600">
+          <span className="w-[200px]">
+            {t("scheduledJobs.runHistory.table.status")}
+          </span>
+          <span className="w-[260px]">
+            {t("scheduledJobs.runHistory.table.started")}
+          </span>
+          <span className="w-[160px]">
+            {t("scheduledJobs.runHistory.table.duration")}
+          </span>
+          <span className="flex-1">
+            {t("scheduledJobs.runHistory.table.error")}
+          </span>
+        </div>
+        <div className="h-px w-full bg-white/10 light:bg-slate-300" />
+
+        {runs.length === 0 ? (
+          <div className="flex flex-col items-center justify-center gap-8 py-24 text-center">
+            <div className="flex flex-col gap-1.5">
+              <p className="text-base font-semibold text-zinc-50 light:text-slate-950">
+                {t("scheduledJobs.runHistory.emptyTitle")}
+              </p>
+              <p className="text-sm font-medium text-zinc-400 light:text-slate-600">
+                {t("scheduledJobs.runHistory.emptySubtitle")}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleRunNow}
+              disabled={triggering || hasInFlightRun}
+              className="border-none h-9 px-5 rounded-lg bg-zinc-50 text-zinc-950 light:bg-slate-900 light:text-white text-sm font-medium hover:bg-zinc-200 light:hover:bg-slate-800 transition-colors disabled:opacity-50"
+            >
+              {t("scheduledJobs.runHistory.runNow")}
+            </button>
+          </div>
+        ) : (
+          <div className="flex flex-col divide-y divide-white/5 light:divide-slate-200">
+            {runs.map((run) => (
+              <RunRow key={run.id} run={run} jobId={job?.id} />
+            ))}
+          </div>
+        )}
+      </div>
+    </RunHistoryLayout>
+  );
+}
+
+function RunHistoryLayout({ job, children }) {
+  const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
@@ -80,64 +147,12 @@ export default function RunHistoryPage() {
                 name: job?.name || "...",
               })}
             </p>
-            {job && (
-              <p className="text-xs text-zinc-400 light:text-slate-600">
-                {t("scheduledJobs.runHistory.schedule")}{" "}
-                <code>{job.schedule}</code>
-              </p>
-            )}
+            <p className="text-xs text-zinc-400 light:text-slate-600">
+              {t("scheduledJobs.runHistory.schedule")}{" "}
+              <code>{humanizeCron(job?.schedule, i18n.language) || "—"}</code>
+            </p>
           </div>
-
-          {loading ? (
-            <div className="text-zinc-400 light:text-slate-600 text-sm pt-8">
-              {t("scheduledJobs.loading")}
-            </div>
-          ) : (
-            <div className="pt-8">
-              <div className="flex items-center px-4 pb-[18px] text-xs font-semibold uppercase tracking-[1.4px] text-zinc-400 light:text-slate-600">
-                <span className="w-[200px]">
-                  {t("scheduledJobs.runHistory.table.status")}
-                </span>
-                <span className="w-[260px]">
-                  {t("scheduledJobs.runHistory.table.started")}
-                </span>
-                <span className="w-[160px]">
-                  {t("scheduledJobs.runHistory.table.duration")}
-                </span>
-                <span className="flex-1">
-                  {t("scheduledJobs.runHistory.table.error")}
-                </span>
-              </div>
-              <div className="h-px w-full bg-white/10 light:bg-slate-300" />
-
-              {runs.length === 0 ? (
-                <div className="flex flex-col items-center justify-center gap-8 py-24 text-center">
-                  <div className="flex flex-col gap-1.5">
-                    <p className="text-base font-semibold text-zinc-50 light:text-slate-950">
-                      {t("scheduledJobs.runHistory.emptyTitle")}
-                    </p>
-                    <p className="text-sm font-medium text-zinc-400 light:text-slate-600">
-                      {t("scheduledJobs.runHistory.emptySubtitle")}
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleRunNow}
-                    disabled={triggering || hasInFlightRun}
-                    className="border-none h-9 px-5 rounded-lg bg-zinc-50 text-zinc-950 light:bg-slate-900 light:text-white text-sm font-medium hover:bg-zinc-200 light:hover:bg-slate-800 transition-colors disabled:opacity-50"
-                  >
-                    {t("scheduledJobs.runHistory.runNow")}
-                  </button>
-                </div>
-              ) : (
-                <div className="flex flex-col divide-y divide-white/5 light:divide-slate-200">
-                  {runs.map((run) => (
-                    <RunRow key={run.id} run={run} jobId={job?.id} />
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
+          {children}
         </div>
       </div>
     </div>

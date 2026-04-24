@@ -615,6 +615,86 @@ const TRANSLATIONS = {
           },
         },
       },
+      googleCalendar: {
+        title: "חיבור ל-Google Calendar",
+        description:
+          "אפשרו לסוכן שלכם לתקשר עם גוגל קלנדר - לצפות בקלנדרים, לקבל אירועים, ליצור ולעדכן אירועים, ולנהל אישורי השתתפות. <a>קראו את התיעוד</a>.",
+        multiUserWarning:
+          "שילוב עם גוגל קלנדר אינו זמין במצב רב-משתמשים מטעמי אבטחה. אנא כבו את מצב רב-משתמשים כדי להשתמש בתכונה זו.",
+        configuration: "הגדרת גלובל קלנדר",
+        deploymentId: "מזהה הפריסה",
+        deploymentIdHelp: "מזהה הפריסה מהאפליקציה שלך של Google Apps Script",
+        apiKey: "מפתח API",
+        apiKeyHelp:
+          "המפתח של ה-API שקבעת בהגדרות של סקריפט האפליקציות של גוגל.",
+        configurationRequired:
+          "אנא הגדירו את מזהה ההפצה ואת מפתח ה-API כדי לאפשר את הפונקציונליות של גוגל קלנדר.",
+        configured: "מוגדר",
+        searchSkills: "כישורים לחיפוש...",
+        noSkillsFound: "אין התאמות לחיפוש שלך.",
+        categories: {
+          calendars: {
+            title: "יומני",
+            description: "צפו ונהלו את הלוחות שלכם בגוגל",
+          },
+          readEvents: {
+            title: "קרא על אירועים",
+            description: "צפו וחפשו אירועים בלוח השנה",
+          },
+          writeEvents: {
+            title: "יצירה ועדכון אירועים",
+            description: "ליצור אירועים חדשים ולשנות את האירועים הקיימים.",
+          },
+          rsvp: {
+            title: "ניהול אישורי השתתפות",
+            description: "נהלו את סטטוס התגובה שלכם לאירועים",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "רשימת לוחות",
+            description: "רשום את כל הקלנדרים שבבעלותך או אליהם מנויים.",
+          },
+          getCalendar: {
+            title: "קבל פרטים על הקלנדר",
+            description: "קבל מידע מפורט על לוח שנה ספציפי.",
+          },
+          getEvent: {
+            title: "קבל אירוע",
+            description: "קבל מידע מפורט על אירוע ספציפי",
+          },
+          getEventsForDay: {
+            title: "מצא אירועים ליום",
+            description: "קבלו את כל האירועים המתוכננים לתאריך ספציפי.",
+          },
+          getEvents: {
+            title: "קבל אירועים (טווח תאריכים)",
+            description: "קבל אירועים בטווח תאריכים מותאם אישית",
+          },
+          getUpcomingEvents: {
+            title: "רשימת אירועים עתידיים",
+            description:
+              "מצאו אירועים של היום, השבוע או החודש באמצעות מילות מפתח פשוטות.",
+          },
+          quickAdd: {
+            title: "הוספה מהירה של אירוע",
+            description:
+              'ליצור אירוע מתוך טקסט טבעי (למשל, "פגישה מחר בשעה 15:00")',
+          },
+          createEvent: {
+            title: "יצירת אירוע",
+            description: "צור אירוע חדש עם שליטה מלאה על כל התכונות.",
+          },
+          updateEvent: {
+            title: "עדכון אירוע",
+            description: "עדכן אירוע קיים בלוח השנה",
+          },
+          setMyStatus: {
+            title: "הגדר סטטוס אישור השתתפות",
+            description: "לקבל, לדחות, או לקבל באופן זמני אירוע",
+          },
+        },
+      },
     },
     mcp: {
       title: "שרתי MCP",
@@ -1157,6 +1237,12 @@ const TRANSLATIONS = {
       tool_call_was_approved: "הבקשה לקבלת הכלי אושרה.",
       tool_call_was_rejected: "בקשת השימוש בכלי נדחתה.",
     },
+    custom_skills: "כישורים מותאמים אישית",
+    agent_flows: "זרימת סוכנים",
+    no_tools_found: "לא נמצאו כלים תואמים.",
+    loading_mcp_servers: "טעינת שרתי ה-MCP...",
+    app_integrations: "אינטגרציות עם אפליקציות",
+    sub_skills: "כישורים ספציפיים",
   },
   profile_settings: {
     edit_account: "ערוך חשבון",

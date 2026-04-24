@@ -645,6 +645,90 @@ const TRANSLATIONS = {
           },
         },
       },
+      googleCalendar: {
+        title: "„Google Kalendoriaus“ integracija",
+        description:
+          "Įgalinkite savo agentą, kad galėtų bendradarbiauti su „Google Calendar“ – peržiūrėti kalendorius, gauti renginių informaciją, kurti ir atnaujinti renginius bei tvarkyti patvirtimus. <a>Peržiūrėkite dokumentaciją</a>.",
+        multiUserWarning:
+          "„Google Kalendro“ integracija negali būti naudojama kelių vartotojų režimu dėl saugumo priežasčių. Norėdami naudoti šią funkciją, prašome išjungti kelių vartotojų režimą.",
+        configuration: "„Google Kalendoriaus“ konfigūracija",
+        deploymentId: "Įrenginio ID",
+        deploymentIdHelp: "Jūsų „Google Apps Script“ svetainės programos ID",
+        apiKey: "API raktas",
+        apiKeyHelp:
+          "„API raktas“, kurį konfigūravoje savo „Google Apps Script“ programoje.",
+        configurationRequired:
+          "Prašome nustatyti „Deployment ID“ ir API raktą, kad būtų įgalintos „Google Calendar“ funkcijos.",
+        configured: "Nustatytas",
+        searchSkills: "Paieškos įgūdžiai...",
+        noSkillsFound: "Nėra atitikčių jūsų paieškos kriterijams.",
+        categories: {
+          calendars: {
+            title: "Kalendoriai",
+            description: "Peržiūrėkite ir valdykite savo „Google Kalendorius“.",
+          },
+          readEvents: {
+            title: "Peržiūrėti renginius",
+            description: "Peržiūrėkite ir paieškokite kalendoriaus renginių",
+          },
+          writeEvents: {
+            title: "Sukurkite ir atnaujinkite renginius",
+            description: "Sukurkite naujas renginius ir keičkite esamus",
+          },
+          rsvp: {
+            title: "Patvirtinimų valdymas",
+            description: "Valdykite savo atsakymo statusą renginiams",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "Kalendoriai",
+            description:
+              "Peržiūrėkite visus kalendorius, kuriuos turite arba kuriems yra prenumerata.",
+          },
+          getCalendar: {
+            title: "Gaukite kalendoriaus detales",
+            description:
+              "Gaukite išsamią informaciją apie konkrečią kalendorių",
+          },
+          getEvent: {
+            title: "Gaukite renginį",
+            description: "Gaukite išsamią informaciją apie konkrečią renginį",
+          },
+          getEventsForDay: {
+            title: "Rasti renginius šiam dienai",
+            description: "Gaukite visus įvykius, numatytus konkrečią dieną.",
+          },
+          getEvents: {
+            title: "Rodyti renginius (laiko intervalas)",
+            description: "Gauti renginius už nurodytą datų intervalą",
+          },
+          getUpcomingEvents: {
+            title: "Peržiūrėti ateinančias renginius",
+            description:
+              "Raskite renginius šiandien, šią savaitę arba šį mėnesį naudodami paprastus žodžius.",
+          },
+          quickAdd: {
+            title: "Greitas renginio pridėjimas",
+            description:
+              "Sukurkite renginį iš natūralios kalbos (pvz., „Susitikimas rytoj 15:00 val.“)",
+          },
+          createEvent: {
+            title: "Sukurti renginį",
+            description:
+              "Sukurkite naują renginį, turėdami visišką kontrolę per visas jo savybes.",
+          },
+          updateEvent: {
+            title: "Paskelbimo atnaujinimas",
+            description: "Redaguoti esamą kalendoriaus renginį",
+          },
+          setMyStatus: {
+            title: "Nurodykite atsakymo statusą",
+            description:
+              "Prisitaikyti, atsisakyti arba iš esmės pritarti renginiui.",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP serveriai",
@@ -1229,6 +1313,12 @@ const TRANSLATIONS = {
       tool_call_was_approved: "Įrankių užsakymas buvo patvirtintas.",
       tool_call_was_rejected: "Klausimas dėl įrankio buvo atmetamas.",
     },
+    custom_skills: "Individualūs įgūdžiai",
+    agent_flows: "Agentų srautai",
+    no_tools_found: "Nėra rasti atitikusių įrankių.",
+    loading_mcp_servers: "Įkrauname MCP serverius...",
+    app_integrations: "Programų integracijos",
+    sub_skills: "Pagrindinės įgūdžios",
   },
   profile_settings: {
     edit_account: "Redaguoti paskyrą",

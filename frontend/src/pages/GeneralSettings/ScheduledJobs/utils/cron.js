@@ -1,7 +1,11 @@
 import cronstrue from "cronstrue/i18n";
 
-// Render a 5-field cron expression as plain English using cronstrue.
-// Falls back to the raw expression if parsing fails.
+/**
+ * Humanize a cron expression.
+ * @param {string} cron - The cron expression.
+ * @param {string} locale - The locale.
+ * @returns {string} The humanized cron expression.
+ */
 export function humanizeCron(cron, locale) {
   if (!cron) return "";
   try {
@@ -14,17 +18,25 @@ export function humanizeCron(cron, locale) {
   }
 }
 
-// i18next uses BCP-47-ish codes like "zh-tw"; cronstrue's i18n bundle
-// uses "zh_TW". Convert "xx-yy" → "xx_YY" so region-tagged locales resolve
-// instead of silently falling back to English.
+/**
+ * Convert a locale code to a cronstrue locale code.
+ * i18next uses BCP-47-ish codes like "zh-tw"; cronstrue's i18n bundle
+ * uses "zh_TW". Convert "xx-yy" → "xx_YY" so region-tagged locales resolve
+ * instead of silently falling back to English.
+ * @param {string} locale - The locale code.
+ * @returns {string} The cronstrue locale code.
+ */
 function toCronstrueLocale(locale) {
   if (!locale) return undefined;
   const [lang, region] = locale.split("-");
   return region ? `${lang}_${region.toUpperCase()}` : lang;
 }
 
-// Default state for the visual builder. Used when an incoming cron expression
-// cannot be reverse-parsed into one of the builder's supported shapes.
+/**
+ * Default state for the visual builder. Used when an incoming cron expression
+ * cannot be reverse-parsed into one of the builder's supported shapes.
+ * @returns {Object} The default builder state.
+ */
 export const DEFAULT_BUILDER_STATE = {
   frequency: "day",
   minuteInterval: 1,
@@ -35,13 +47,16 @@ export const DEFAULT_BUILDER_STATE = {
   dayOfMonth: 1,
 };
 
-// Parse a 5-field cron expression into the visual builder's state shape.
-// Only recognizes the patterns the builder itself can produce; anything else
-// (ranges, step values in non-minute fields, multiple months, etc.) is
-// reported with `wasFallback: true` so the UI can warn the user that the
-// stored expression cannot be edited visually.
-//
-// Returns: { state, wasFallback }
+/**
+ * Parse a 5-field cron expression into the visual builder's state shape.
+ * Only recognizes the patterns the builder itself can produce; anything else
+ * (ranges, step values in non-minute fields, multiple months, etc.) is
+ * reported with `wasFallback: true` so the UI can warn the user that the
+ * stored expression cannot be edited visually.
+ * Returns: { state, wasFallback }
+ * @param {string} cron - The cron expression.
+ * @returns {Object} The builder state.
+ */
 export function parseCronToBuilderState(cron) {
   const fallback = { state: { ...DEFAULT_BUILDER_STATE }, wasFallback: true };
   if (!cron || typeof cron !== "string") return fallback;
@@ -144,7 +159,11 @@ export function parseCronToBuilderState(cron) {
   return fallback;
 }
 
-// Build a 5-field cron expression from the visual builder's state.
+/**
+ * Build a 5-field cron expression from the visual builder's state.
+ * @param {Object} state - The builder state.
+ * @returns {string} The cron expression.
+ */
 export function buildCronFromBuilderState(state) {
   switch (state.frequency) {
     case "minute": {

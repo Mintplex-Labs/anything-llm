@@ -627,6 +627,87 @@ const TRANSLATIONS = {
           },
         },
       },
+      googleCalendar: {
+        title: "موصل تقويم جوجل",
+        description:
+          "اسمح لمسؤولك بالتفاعل مع تقويم جوجل - عرض التقوائم، والحصول على الأحداث، وإنشاء وتحديث الأحداث، وإدارة الردود. <a>اقرأ الوثائق</a>.",
+        multiUserWarning:
+          "لا تتوفر تكامل تقويم Google في الوضع متعدد المستخدمين لأسباب تتعلق بالسلامة. يرجى تعطيل الوضع متعدد المستخدمين لاستخدام هذه الميزة.",
+        configuration: "تكوين تقويم جوجل",
+        deploymentId: "معرّف التوزيع",
+        deploymentIdHelp:
+          "معرّف النشر من تطبيق الويب الخاص بك في Google Apps Script",
+        apiKey: "مفتاح واجهة برمجة التطبيقات",
+        apiKeyHelp:
+          "مفتاح واجهة برمجة التطبيقات (API) الذي قمت بتكوينه في تطبيق Google Apps Script الخاص بك.",
+        configurationRequired:
+          "يرجى تكوين معرف النشر والمفتاح الخاص للبرنامج، وذلك لتفعيل ميزات تقويم جوجل.",
+        configured: "تم التكوين",
+        searchSkills: "مهارات البحث...",
+        noSkillsFound: "لا توجد مهارات تطابق بحثك.",
+        categories: {
+          calendars: {
+            title: "تقويمات",
+            description: "عرض وإدارة تقويمات Google الخاصة بك.",
+          },
+          readEvents: {
+            title: "قراءة الأحداث",
+            description: "عرض والبحث عن الأحداث في التقويم",
+          },
+          writeEvents: {
+            title: "إنشاء وتحديث الفعاليات",
+            description: "إنشاء فعاليات جديدة وتعديل الفعاليات الموجودة.",
+          },
+          rsvp: {
+            title: "إدارة الردود",
+            description: "حدد حالة استجابتك للأحداث.",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "قوائم التقويمات",
+            description: "اذكر جميع التقاويم التي تملكها أو أنت مشترك فيها.",
+          },
+          getCalendar: {
+            title: "احصل على تفاصيل التقويم",
+            description: "احصل على معلومات تفصيلية حول تقويم معين.",
+          },
+          getEvent: {
+            title: "احصل على تفاصيل الحدث",
+            description: "احصل على معلومات تفصيلية حول حدث معين.",
+          },
+          getEventsForDay: {
+            title: "احصل على قائمة بالأحداث لهذا اليوم",
+            description: "احصل على جميع الفعاليات المجدولة ليوم محدد.",
+          },
+          getEvents: {
+            title: "الحصول على الأحداث (نطاق زمني)",
+            description: "احصل على الأحداث ضمن نطاق تاريخي محدد",
+          },
+          getUpcomingEvents: {
+            title: "اطلع على الفعاليات القادمة",
+            description:
+              "احصل على فعاليات اليوم، أو هذا الأسبوع، أو هذا الشهر باستخدام كلمات مفتاحية بسيطة.",
+          },
+          quickAdd: {
+            title: "إضافة حدث بسرعة",
+            description:
+              'إنشاء حدث من خلال اللغة الطبيعية (على سبيل المثال، "اجتماع غدًا الساعة 3 مساءً")',
+          },
+          createEvent: {
+            title: "إنشاء حدث",
+            description: "إنشاء حدث جديد مع التحكم الكامل في جميع الخصائص.",
+          },
+          updateEvent: {
+            title: "تحديث الحدث",
+            description: "تحديث حدث في التقويم الحالي",
+          },
+          setMyStatus: {
+            title: "تحديد حالة الرد",
+            description: "قبول أو رفض أو قبول بشكل مؤقت حدثًا",
+          },
+        },
+      },
     },
     mcp: {
       title: "خوادم نظام MCP",
@@ -1094,6 +1175,12 @@ const TRANSLATIONS = {
       tool_call_was_approved: "تمت الموافقة على طلب الحصول على الأدوات.",
       tool_call_was_rejected: "تم رفض طلب الاتصال بالأداة.",
     },
+    custom_skills: "المهارات المخصصة",
+    agent_flows: "تدفقات الوكلاء",
+    no_tools_found: "لم يتم العثور على أدوات مطابقة.",
+    loading_mcp_servers: "تحميل خوادم MCP...",
+    app_integrations: "تكامل التطبيقات",
+    sub_skills: "مهارات فرعية",
   },
   profile_settings: {
     edit_account: "تحرير الحساب",

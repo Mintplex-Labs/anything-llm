@@ -422,7 +422,7 @@ const TRANSLATIONS = {
         },
       },
       gmail: {
-        title: "GMail Connector",
+        title: "GMail",
         description:
           "Enable your agent to interact with Gmail - search emails, read threads, compose drafts, send emails, and manage your inbox. <a>Read the documentation</a>.",
         multiUserWarning:
@@ -537,8 +537,90 @@ const TRANSLATIONS = {
           },
         },
       },
+      googleCalendar: {
+        title: "Google Calendar",
+        description:
+          "Enable your agent to interact with Google Calendar - view calendars, get events, create and update events, and manage RSVPs. <a>Read the documentation</a>.",
+        multiUserWarning:
+          "Google Calendar integration is not available in multi-user mode for security reasons. Please disable multi-user mode to use this feature.",
+        configuration: "Google Calendar Configuration",
+        deploymentId: "Deployment ID",
+        deploymentIdHelp:
+          "The deployment ID from your Google Apps Script web app",
+        apiKey: "API Key",
+        apiKeyHelp:
+          "The API key you configured in your Google Apps Script deployment",
+        configurationRequired:
+          "Please configure the Deployment ID and API Key to enable Google Calendar skills.",
+        configured: "Configured",
+        searchSkills: "Search skills...",
+        noSkillsFound: "No skills match your search.",
+        categories: {
+          calendars: {
+            title: "Calendars",
+            description: "View and manage your Google Calendars",
+          },
+          readEvents: {
+            title: "Read Events",
+            description: "View and search calendar events",
+          },
+          writeEvents: {
+            title: "Create & Update Events",
+            description: "Create new events and modify existing ones",
+          },
+          rsvp: {
+            title: "RSVP Management",
+            description: "Manage your response status for events",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "List Calendars",
+            description: "List all calendars you own or are subscribed to",
+          },
+          getCalendar: {
+            title: "Get Calendar Details",
+            description: "Get detailed information about a specific calendar",
+          },
+          getEvent: {
+            title: "Get Event",
+            description: "Get detailed information about a specific event",
+          },
+          getEventsForDay: {
+            title: "Get Events for Day",
+            description: "Get all events scheduled for a specific day",
+          },
+          getEvents: {
+            title: "Get Events (Date Range)",
+            description: "Get events within a custom date range",
+          },
+          getUpcomingEvents: {
+            title: "Get Upcoming Events",
+            description:
+              "Get events for today, this week, or this month using simple keywords",
+          },
+          quickAdd: {
+            title: "Quick Add Event",
+            description:
+              "Create an event from natural language (e.g., 'Meeting tomorrow at 3pm')",
+          },
+          createEvent: {
+            title: "Create Event",
+            description:
+              "Create a new event with full control over all properties",
+          },
+          updateEvent: {
+            title: "Update Event",
+            description: "Update an existing calendar event",
+          },
+          setMyStatus: {
+            title: "Set RSVP Status",
+            description: "Accept, decline, or tentatively accept an event",
+          },
+        },
+      },
       outlook: {
-        title: "Outlook Connector",
+        title: "Outlook",
         description:
           "Enable your agent to interact with Microsoft Outlook - search emails, read threads, compose drafts, send emails, and manage your inbox via Microsoft Graph API. <a>Read the documentation</a>.",
         multiUserWarning:
@@ -1255,6 +1337,12 @@ const TRANSLATIONS = {
     slash_commands: "Slash Commands",
     agent_skills: "Agent Skills",
     manage_agent_skills: "Manage Agent Skills",
+    app_integrations: "App Integrations",
+    custom_skills: "Custom Skills",
+    agent_flows: "Agent Flows",
+    sub_skills: "Sub-skills",
+    no_tools_found: "No matching tools found",
+    loading_mcp_servers: "Loading MCP servers...",
     start_agent_session: "Start Agent Session",
     agent_skills_disabled_in_session:
       "Can't modify skills during an active agent session. Use /exit to end the session first.",
@@ -1404,11 +1492,11 @@ const TRANSLATIONS = {
   },
   scheduledJobs: {
     title: "Scheduled Jobs",
+    enableNotifications: "Enable browser notifications for job results",
     description:
       "Create recurring AI tasks that run on a schedule. Each job runs a prompt with optional tools and saves the result for review.",
     newJob: "New Job",
     loading: "Loading...",
-    empty: "No scheduled jobs yet. Create one to get started.",
     emptyTitle: "No Scheduled Jobs yet",
     emptySubtitle: "Create one to get started.",
     table: {
@@ -1455,13 +1543,10 @@ const TRANSLATIONS = {
       required: "Required",
       requiredFieldsBanner:
         "Please fill out all required fields in order to create job.",
-      selectAll: "Select all",
-      deselectAll: "Deselect all",
       cancel: "Cancel",
       saving: "Saving...",
       updateJob: "Update Job",
       createJob: "Create Job",
-      requiredFields: "Please fill in all required fields",
       jobUpdated: "Job updated",
       jobCreated: "Job created",
     },
@@ -1507,7 +1592,6 @@ const TRANSLATIONS = {
         started: "Started",
         duration: "Duration",
         error: "Error",
-        actions: "Actions",
       },
     },
     runDetail: {
@@ -1516,21 +1600,21 @@ const TRANSLATIONS = {
       back: "Back",
       unknownJob: "Unknown Job",
       runHeading: "{{name}} — Run #{{id}}",
-      duration: "Duration: {{seconds}}s",
+      duration: "Duration: {{value}}",
       continueInThread: "Continue in Thread",
       creating: "Creating...",
       threadFailed: "Failed to create thread",
       status: {
-        completed: "completed",
-        failed: "failed",
-        timed_out: "timed out",
-        running: "running",
-        queued: "queued",
+        completed: "Completed",
+        failed: "Failed",
+        timed_out: "Timed out",
+        running: "Running",
+        queued: "Queued",
       },
       sections: {
         prompt: "Prompt",
         error: "Error",
-        thinking: "Thinking ({{count}} steps)",
+        thinking: "Thoughts ({{count}})",
         toolCalls: "Tool Calls ({{count}})",
         files: "Files ({{count}})",
         response: "Response",
@@ -1541,9 +1625,6 @@ const TRANSLATIONS = {
         completionTokens: "Completion tokens:",
       },
     },
-    runRow: {
-      viewDetails: "View details",
-    },
     toolCall: {
       arguments: "Arguments:",
       showResult: "Show result",
@@ -1552,7 +1633,6 @@ const TRANSLATIONS = {
     file: {
       unknown: "Unknown file",
       download: "Download",
-      downloading: "Downloading...",
       downloadFailed: "Failed to download file",
       types: {
         powerpoint: "PowerPoint",

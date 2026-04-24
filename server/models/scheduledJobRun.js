@@ -172,10 +172,11 @@ const ScheduledJobRun = {
     }
   },
 
-  get: async function (clause = {}) {
+  get: async function (clause = {}, include = {}) {
     try {
       const run = await prisma.scheduled_job_runs.findFirst({
         where: clause,
+        ...(Object.keys(include).length > 0 ? { include } : {}),
       });
       return run || null;
     } catch (error) {
@@ -188,7 +189,8 @@ const ScheduledJobRun = {
     clause = {},
     limit = null,
     orderBy = null,
-    include = {}
+    include = {},
+    offset = 0
   ) {
     try {
       const results = await prisma.scheduled_job_runs.findMany({
@@ -198,6 +200,7 @@ const ScheduledJobRun = {
           ? { orderBy }
           : { orderBy: { startedAt: "desc" } }),
         ...(Object.keys(include).length > 0 ? { include } : {}),
+        ...(offset !== null ? { skip: offset } : {}),
       });
       return results;
     } catch (error) {
@@ -247,6 +250,68 @@ const ScheduledJobRun = {
     } catch (error) {
       console.error("Failed to fail orphaned runs:", error.message);
       return 0;
+    }
+  },
+
+  /**
+   * Continue a run in a workspace thread.
+   * This will create a new workspace and thread specific for the run if they do not exist, and add the run's response to the thread.
+   * @param {number} runId - The ID of the run to continue.
+   * @returns {Promise<{workspace: import("@prisma/client").workspaces | null, thread: import("@prisma/client").workspace_threads | null, error: string | null}>} A promise that resolves to an object containing the workspace, thread, and an error message if applicable.
+   */
+  continueInThread: async function (runId) {
+    try {
+      const { Workspace } = require("./workspace");
+      const { WorkspaceThread } = require("./workspaceThread");
+      const { WorkspaceChats } = require("./workspaceChats");
+      const { safeJsonParse } = require("../utils/http");
+
+      const run = await this.get({ id: Number(runId) }, { job: true });
+      if (!run) throw new Error("Run not found");
+
+      const result = safeJsonParse(run.result, {});
+      const responseText = result?.text || "No response was generated.";
+
+      // Get or create the "Scheduled Jobs" workspace
+      const { workspace, error: workspaceError } = await Workspace.upsert(
+        { slug: "scheduled-jobs" },
+        {
+          name: "Scheduled Jobs",
+          slug: "scheduled-jobs",
+          chatMode: "automatic",
+        }
+      );
+      if (workspaceError)
+        throw new Error(workspaceError || "Failed to create workspace");
+
+      const { thread, message: threadError } =
+        await WorkspaceThread.new(workspace);
+      if (threadError)
+        throw new Error(threadError || "Failed to create thread");
+
+      await WorkspaceChats.new({
+        workspaceId: workspace.id,
+        prompt: run.job.prompt,
+        response: {
+          text: responseText,
+          sources: result.sources || [],
+          type: "chat",
+        },
+        threadId: thread.id,
+        include: true,
+      });
+
+      return {
+        workspace,
+        thread,
+        error: null,
+      };
+    } catch (error) {
+      return {
+        workspace: null,
+        thread: null,
+        error: error.message ?? "Unknown error",
+      };
     }
   },
 };

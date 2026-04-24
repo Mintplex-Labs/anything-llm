@@ -598,6 +598,83 @@ const TRANSLATIONS = {
           },
         },
       },
+      googleCalendar: {
+        title: "Google 日历连接器",
+        description:
+          "让您的代理能够与 Google 日历互动：查看日历、获取活动、创建和更新活动，以及管理确认回复。请参考相关文档。",
+        multiUserWarning:
+          "由于安全原因，在多用户模式下无法使用 Google 日历集成功能。请先禁用多用户模式，然后再使用此功能。",
+        configuration: "谷歌日历配置",
+        deploymentId: "部署ID",
+        deploymentIdHelp: "您的 Google Apps Script 网页应用的部署 ID",
+        apiKey: "API 密钥",
+        apiKeyHelp: "您在 Google Apps Script 部署中配置的 API 密钥。",
+        configurationRequired:
+          "请配置部署 ID 和 API 密钥，以启用 Google 日历功能。",
+        configured: "已配置",
+        searchSkills: "搜索技巧...",
+        noSkillsFound: "未找到与您搜索条件匹配的技能。",
+        categories: {
+          calendars: {
+            title: "日历",
+            description: "查看和管理您的 Google 日历",
+          },
+          readEvents: {
+            title: "查看活动",
+            description: "查看和搜索日历活动",
+          },
+          writeEvents: {
+            title: "创建和更新活动",
+            description: "创建新的活动，并修改现有的活动。",
+          },
+          rsvp: {
+            title: "请回复确认",
+            description: "管理您对活动的响应状态",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "日历列表",
+            description: "列出您拥有的或订阅的全部日历。",
+          },
+          getCalendar: {
+            title: "获取日历详情",
+            description: "获取有关特定日历的详细信息",
+          },
+          getEvent: {
+            title: "获取活动",
+            description: "获取有关特定活动的详细信息",
+          },
+          getEventsForDay: {
+            title: "获取当日活动",
+            description: "获取指定日期的所有活动",
+          },
+          getEvents: {
+            title: "获取活动（日期范围）",
+            description: "获取指定日期范围内的活动",
+          },
+          getUpcomingEvents: {
+            title: "查看即将举办的活动",
+            description: "使用简单的关键词，查找今天、本周或本月的活动",
+          },
+          quickAdd: {
+            title: "快速添加活动",
+            description: "从自然语言（例如“明天下午3点开会”）创建一个活动。",
+          },
+          createEvent: {
+            title: "创建活动",
+            description: "创建一个新的活动，并完全控制所有属性。",
+          },
+          updateEvent: {
+            title: "活动更新",
+            description: "更新现有的日历事件",
+          },
+          setMyStatus: {
+            title: "设置回复状态",
+            description: "接受、拒绝或表示初步接受某个活动",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP 服务器",
@@ -1119,6 +1196,12 @@ const TRANSLATIONS = {
       tool_call_was_approved: "工具使用申请已获得批准。",
       tool_call_was_rejected: "请求获取工具已被拒绝。",
     },
+    custom_skills: "定制技能",
+    agent_flows: "代理人流动",
+    no_tools_found: "未找到匹配的工具",
+    loading_mcp_servers: "正在加载 MCP 服务器…",
+    app_integrations: "应用程序集成",
+    sub_skills: "基本技能",
   },
   profile_settings: {
     edit_account: "编辑帐户",

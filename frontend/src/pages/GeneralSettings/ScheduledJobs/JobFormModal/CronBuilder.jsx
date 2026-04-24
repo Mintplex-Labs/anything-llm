@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import {
   parseCronToBuilderState,
   buildCronFromBuilderState,
-} from "./utils/cron";
+} from "../utils/cron";
 
 const MINUTE_INTERVALS = [1, 2, 5, 10, 15, 20, 30];
 const MINUTES = Array.from({ length: 60 }, (_, i) => i);
@@ -43,7 +43,7 @@ export default function CronBuilder({ value, onChange }) {
   };
 
   return (
-    <div className="flex flex-col gap-3 p-3 bg-theme-settings-input-bg/40 rounded-lg">
+    <div className="flex gap-3 p-3 bg-theme-settings-input-bg/40 rounded-lg">
       {wasFallback && (
         <p className="text-xs text-yellow-400">
           {t("scheduledJobs.builder.fallbackWarning")}

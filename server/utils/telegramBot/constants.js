@@ -1,7 +1,8 @@
 /**
  * Minimum interval between Telegram message edits (ms) to avoid rate limiting
+ * https://core.telegram.org/bots/faq#my-bot-is-hitting-limits-how-do-i-avoid-this
  */
-const STREAM_EDIT_INTERVAL = 600;
+const STREAM_EDIT_INTERVAL = 1_200;
 
 /**
  * Telegram messages cap at 4096 chars. We use 4000 to leave headroom

@@ -55,31 +55,31 @@ export default function JobRow({ job, onTrigger, onToggle, onEdit, onDelete }) {
           ? new Date(job.nextRunAt).toLocaleString()
           : "—"}
       </span>
-      <div className="w-[140px] flex items-center justify-end gap-3.5">
+      <div className="w-[140px] flex items-center justify-end gap-1">
         <button
           type="button"
           onClick={stop(() => onDelete(job.id))}
-          className="border-none text-zinc-400 light:text-slate-950 hover:text-red-400 light:hover:text-red-600 transition-colors"
+          className="border-none p-2 rounded-full text-zinc-400 light:text-slate-950 hover:text-red-400 light:hover:text-red-600 hover:bg-white/10 light:hover:bg-slate-300/50 transition-colors"
           title={t("scheduledJobs.row.delete")}
         >
-          <X className="h-4 w-4" />
+          <X className="h-4 w-4 shrink-0" />
         </button>
         <button
           type="button"
           onClick={stop(() => onEdit(job))}
-          className="border-none text-zinc-400 light:text-slate-950 hover:text-white light:hover:text-slate-700 transition-colors"
+          className="border-none p-2 rounded-full text-zinc-400 light:text-slate-950 hover:text-white light:hover:text-slate-700 hover:bg-white/10 light:hover:bg-slate-300/50 transition-colors"
           title={t("scheduledJobs.row.edit")}
         >
-          <PencilSimple className="h-4 w-4" />
+          <PencilSimple className="h-4 w-4 shrink-0" />
         </button>
         <button
           type="button"
           onClick={stop(() => onTrigger(job.id))}
           disabled={inFlight}
-          className="border-none text-zinc-400 light:text-slate-950 hover:text-white light:hover:text-slate-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          className="border-none p-2 rounded-full text-zinc-400 light:text-slate-950 hover:text-white light:hover:text-slate-700 hover:bg-white/10 light:hover:bg-slate-300/50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
           title={t("scheduledJobs.row.runNow")}
         >
-          <Play className="h-4 w-4" />
+          <Play className="h-4 w-4 shrink-0" />
         </button>
         <button
           type="button"

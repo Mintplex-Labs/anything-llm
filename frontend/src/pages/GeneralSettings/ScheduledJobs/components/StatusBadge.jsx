@@ -1,34 +1,51 @@
 import { useTranslation } from "react-i18next";
 
-// Per-status text styling per the run history figma:
-// - non-terminal (queued, running) → italic zinc-400
-// - completed → white medium
-// - failed / timed_out → red-400
-const STATUS_STYLES = {
-  queued: "italic text-zinc-400 light:text-slate-600",
-  running: "italic text-zinc-400 light:text-slate-600",
-  completed: "font-medium text-white light:text-slate-950",
-  failed: "text-red-400 light:text-red-600",
-  timed_out: "text-red-400 light:text-red-600",
-};
+/**
+ * Per-status text styling per the run history figma:
+ * - non-terminal (queued, running) → italic zinc-400
+ * - completed → white medium
+ * - failed / timed_out → red-400
+ * @param {string} status - The status of the run.
+ * @returns {string} The styled status text.
+ */
+function getStatusesMap(t) {
+  return {
+    completed: {
+      text: t("scheduledJobs.runDetail.status.completed"),
+      style: "font-medium text-white light:text-slate-950",
+    },
+    failed: {
+      text: t("scheduledJobs.runDetail.status.failed"),
+      style: "text-red-400 light:text-red-600",
+    },
+    timed_out: {
+      text: t("scheduledJobs.runDetail.status.timed_out"),
+      style: "text-red-400 light:text-red-600",
+    },
+    running: {
+      text: t("scheduledJobs.runDetail.status.running"),
+      style: "italic text-zinc-400 light:text-slate-600",
+    },
+    queued: {
+      text: t("scheduledJobs.runDetail.status.queued"),
+      style: "italic text-zinc-400 light:text-slate-600",
+    },
+    default: {
+      text: "—",
+      style: "text-zinc-400 light:text-slate-600",
+    },
+  };
+}
 
-// Status text shown in the run history table. Plain text — no pill — to
-// match the run history figma.
+/**
+ * Status text shown in the run history table. Plain text — no pill — to
+ * match the run history figma.
+ * @param {string} status - The status of the run.
+ * @returns {string} The status text.
+ */
 export default function StatusBadge({ status }) {
   const { t } = useTranslation();
-  const statusLabels = {
-    completed: t("scheduledJobs.runDetail.status.completed"),
-    failed: t("scheduledJobs.runDetail.status.failed"),
-    timed_out: t("scheduledJobs.runDetail.status.timed_out"),
-    running: t("scheduledJobs.runDetail.status.running"),
-    queued: t("scheduledJobs.runDetail.status.queued"),
-  };
-  const label = status ? statusLabels[status] || status.replace("_", " ") : "—";
-  return (
-    <span
-      className={`text-sm ${STATUS_STYLES[status] || "text-zinc-400 light:text-slate-600"}`}
-    >
-      {label}
-    </span>
-  );
+  const statusesMap = getStatusesMap(t);
+  const { text, style } = statusesMap[status] || statusesMap.default;
+  return <span className={`text-sm ${style}`}>{text}</span>;
 }

@@ -645,6 +645,90 @@ const TRANSLATIONS = {
           },
         },
       },
+      googleCalendar: {
+        title: "Připojení k kalendáři Google",
+        description:
+          "Umožněte svému agentovi interakci s Google Kalendářem – prohlížení kalendářů, získávání událostí, vytváření a aktualizaci událostí a správu potvrzení účasti. <a>Přečtěte si dokumentaci</a>.",
+        multiUserWarning:
+          "Integrace s Google Kalendářem není dostupná v režimu pro více uživatelů z důvodu bezpečnosti. Pro použití této funkce, prosím, deaktivujte režim pro více uživatelů.",
+        configuration: "Konfigurace kalendáře Google",
+        deploymentId: "ID nasazení",
+        deploymentIdHelp:
+          "ID nasazení z vaší webové aplikace Google Apps Script",
+        apiKey: "Klíč API",
+        apiKeyHelp:
+          "Klíč API, který jste nakonfigurovali ve vaší instalaci Google Apps Script",
+        configurationRequired:
+          "Prosím, nakonfigurujte ID nasazení a API klíč, abyste mohli využívat funkce Google Kalendáře.",
+        configured: "Konfigurováno",
+        searchSkills: "Dovednosti pro vyhledávání...",
+        noSkillsFound: "Žádné výsledky neodpovídají vašemu vyhledávání.",
+        categories: {
+          calendars: {
+            title: "Kalendáře",
+            description: "Zobrazte a spravujte své kalendáře Google.",
+          },
+          readEvents: {
+            title: "Seznam událostí",
+            description: "Zobrazte a vyhledejte události v kalendáři",
+          },
+          writeEvents: {
+            title: "Vytvořit a aktualizovat události",
+            description: "Vytvořte nové akce a upravte stávající.",
+          },
+          rsvp: {
+            title: "Správa odpovědí na pozvánky",
+            description: "Spravujte stav své odpovědi pro události",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "Kalendáře v seznamu",
+            description:
+              "Vypište všechny kalendáře, které vlastníte nebo máte aktivní předplatné.",
+          },
+          getCalendar: {
+            title: "Získejte podrobné informace o kalendáři",
+            description: "Získejte podrobné informace o konkrétním kalendáři.",
+          },
+          getEvent: {
+            title: "Získejte informace o události",
+            description: "Získejte podrobné informace o konkrétním události",
+          },
+          getEventsForDay: {
+            title: "Získejte události pro daný den",
+            description:
+              "Získejte všechny události naplánované pro konkrétní den.",
+          },
+          getEvents: {
+            title: "Zobrazit události (rozsah dat)",
+            description: "Získejte události v definovaném časovém rozsahu",
+          },
+          getUpcomingEvents: {
+            title: "Zobrazit nadcházející akce",
+            description:
+              "Najděte události pro dnešek, tento týden nebo tento měsíc pomocí jednoduchých klíčových slov.",
+          },
+          quickAdd: {
+            title: "Rychlé přidání události",
+            description:
+              "Vytvořte událost z přirozeného jazyka (např. „Schůzka zítra ve 15:00“)",
+          },
+          createEvent: {
+            title: "Vytvořit událost",
+            description:
+              "Vytvořte nový event s plnou kontrolou nad všemi jeho vlastnostmi.",
+          },
+          updateEvent: {
+            title: "Aktualizace události",
+            description: "Aktualizovat existující událost v kalendáři",
+          },
+          setMyStatus: {
+            title: "Nastavit stav potvrzení účasti",
+            description: "Přijmout, zamítnout nebo přijmout událost s rezervou",
+          },
+        },
+      },
     },
     mcp: {
       title: "Servery společnosti MCP",
@@ -1225,6 +1309,12 @@ const TRANSLATIONS = {
       tool_call_was_approved: "Žádost o použití nástroje byla schválena.",
       tool_call_was_rejected: "Žádost o použití nástroje byla zamítnuta.",
     },
+    custom_skills: "Vlastní dovednosti",
+    agent_flows: "Toky agentů",
+    no_tools_found: "Nebyla nalezena žádná odpovídající nářadí.",
+    loading_mcp_servers: "Načítají se servery pro MCP...",
+    app_integrations: "Integrace aplikací",
+    sub_skills: "Specifické dovednosti",
   },
   profile_settings: {
     edit_account: "Upravit účet",
