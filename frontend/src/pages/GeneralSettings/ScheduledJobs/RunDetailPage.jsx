@@ -22,7 +22,11 @@ import GeneratedFileCard from "./components/GeneratedFileCard";
 import moment from "moment";
 import { formatDuration, numberWithCommas } from "@/utils/numbers";
 import DOMPurify from "@/utils/chat/purify";
-import { THOUGHT_REGEX_COMPLETE } from "@/components/WorkspaceChat/ChatContainer/ChatHistory/ThoughtContainer";
+import {
+  THOUGHT_REGEX_COMPLETE,
+  THOUGHT_REGEX_OPEN,
+  THOUGHT_REGEX_CLOSE,
+} from "@/components/WorkspaceChat/ChatContainer/ChatHistory/ThoughtContainer";
 
 export default function RunDetailPage() {
   const { t } = useTranslation();
@@ -349,8 +353,14 @@ function FinalResponseSection({ t, result }) {
   if (!result.text) return null;
   let reasoning = null;
   let msgToRender = result.text;
+
   if (result.text.match(THOUGHT_REGEX_COMPLETE)) {
     reasoning = result.text.match(THOUGHT_REGEX_COMPLETE)?.[0];
+    if (reasoning)
+      reasoning = reasoning
+        .replace(THOUGHT_REGEX_OPEN, "")
+        .replace(THOUGHT_REGEX_CLOSE, "")
+        .trim();
     msgToRender = result.text.replace(THOUGHT_REGEX_COMPLETE, "");
   }
 
