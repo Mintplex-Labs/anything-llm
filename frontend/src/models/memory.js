@@ -8,7 +8,6 @@ import { baseHeaders } from "@/utils/request";
  * @property {number|null} workspaceId
  * @property {"workspace"|"global"} scope
  * @property {string} content
- * @property {number|null} sourceThreadId
  * @property {string|null} lastUsedAt
  * @property {string} createdAt
  * @property {string} updatedAt

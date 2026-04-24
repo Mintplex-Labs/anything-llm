@@ -44,7 +44,7 @@ When finished you MUST call the save-memories tool with your final list. Do not 
     // Phase 1 — discover (user, workspace) groups with unprocessed visible chats.
     // include:true filters out chats deleted via /reset — they must never be summarized.
     const allUnprocessed = await WorkspaceChats.where(
-      { memoryProcessed: false, include: true },
+      { memoryProcessed: null, include: true },
       null,
       { createdAt: "asc" }
     );

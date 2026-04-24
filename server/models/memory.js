@@ -11,7 +11,6 @@ const VALID_SCOPES = ["workspace", "global"];
  * @property {number|null} workspaceId
  * @property {"workspace"|"global"} scope
  * @property {string} content
- * @property {number|null} sourceThreadId
  * @property {Date|null} lastUsedAt
  * @property {Date} createdAt
  * @property {Date} updatedAt
@@ -93,7 +92,6 @@ const Memory = {
    * @param {number|null} [params.workspaceId]
    * @param {"workspace"|"global"} [params.scope]
    * @param {string} params.content
-   * @param {number|null} [params.sourceThreadId]
    * @returns {Promise<{memory: Memory|null, message: string|null}>}
    */
   create: async function ({
@@ -101,7 +99,6 @@ const Memory = {
     workspaceId = null,
     scope = "workspace",
     content,
-    sourceThreadId = null,
   }) {
     try {
       const count = await this.countForScope(userId, workspaceId, scope);
@@ -121,7 +118,6 @@ const Memory = {
           workspaceId: this.validations.workspaceId(workspaceId),
           scope: this.validations.scope(scope),
           content: this.validations.content(content),
-          sourceThreadId: this.validations.workspaceId(sourceThreadId),
         },
       });
       return { memory, message: null };
