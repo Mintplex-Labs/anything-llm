@@ -231,7 +231,7 @@ The `--cap-add SYS_ADMIN` flag grants broad privileges to the container, which m
 1. Download the seccomp profile to your AnythingLLM storage location:
 
 ```shell
-curl -o $STORAGE_LOCATION/chrome-seccomp.json https://raw.githubusercontent.com/Mintplex-Labs/anything-llm/master/docker/seccomp/chrome.json
+curl -o $STORAGE_LOCATION/chrome.hardened.json https://raw.githubusercontent.com/Mintplex-Labs/anything-llm/refs/heads/master/cloud-deployments/chrome.hardened.json
 ```
 
 2. Run the container with the seccomp profile instead of `--cap-add SYS_ADMIN`:
@@ -242,7 +242,7 @@ export STORAGE_LOCATION=$HOME/anythingllm && \
 mkdir -p $STORAGE_LOCATION && \
 touch "$STORAGE_LOCATION/.env" && \
 docker run -d -p 3001:3001 \
---security-opt seccomp=$STORAGE_LOCATION/chrome-seccomp.json \
+--security-opt seccomp=$STORAGE_LOCATION/chrome.hardened.json \
 -v ${STORAGE_LOCATION}:/app/server/storage \
 -v ${STORAGE_LOCATION}/.env:/app/server/.env \
 -e STORAGE_DIR="/app/server/storage" \
@@ -259,7 +259,7 @@ services:
     ports:
     - "3001:3001"
     security_opt:
-      - seccomp=/path/to/chrome-seccomp.json
+      - seccomp=/path/to/chrome.hardened.json
     # ... rest of your configuration
 ```
 
@@ -267,10 +267,10 @@ services:
 
 The seccomp profile adds the following syscalls beyond Docker's default profile to enable Chrome sandboxing:
 
-- `clone3` - Process creation for sandbox
 - `fanotify_init` - File access notifications
-- `statx` - Extended file status
-- `unshare` - Namespace isolation for sandboxing
+- `setdomainname` - Set NIS domain name
+- `sethostname` - Set hostname
+- `vhangup` - Simulate hangup on terminal
 
 > [!NOTE]
 > If you are not using web-scraping features, you can omit both `--cap-add SYS_ADMIN` and the seccomp profile entirely.
