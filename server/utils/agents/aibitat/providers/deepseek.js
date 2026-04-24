@@ -54,6 +54,14 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
     return rest;
   }
 
+  /**
+   * Check if the model is a thinking model
+   * because we need to inject reasoning content into the messages
+   * or else the DeepSeek API will return an error for specific models.
+   * There is no official way to predetect if a model will require this
+   * so we have to hardcode the list of thinking models.
+   * @returns {boolean}
+   */
   get #isThinkingModel() {
     return [
       "deepseek-reasoner",
