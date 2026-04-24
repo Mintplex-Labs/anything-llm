@@ -1,5 +1,6 @@
 const { ModelRouter } = require("../models/modelRouter");
 const { ModelRouterRule } = require("../models/modelRouterRule");
+const { Telemetry } = require("../models/telemetry");
 const { reqBody, userFromSession } = require("../utils/http");
 const {
   flexUserRoleValid,
@@ -62,6 +63,7 @@ function modelRouterEndpoints(app) {
           response.status(400).json({ router, error });
           return;
         }
+        await Telemetry.sendTelemetry("model_router_created");
         response.status(200).json({ router });
       } catch (e) {
         console.error(e);
