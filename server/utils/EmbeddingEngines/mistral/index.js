@@ -17,10 +17,13 @@ class MistralEmbedder {
         model: this.model,
         input: textInput,
       });
-      return response?.data[0]?.embedding || [];
+      const embedding = response?.data[0]?.embedding || [];
+      if (embedding.length === 0)
+        throw new Error("Mistral returned empty embedding for input");
+      return embedding;
     } catch (error) {
       console.error("Failed to get embedding from Mistral.", error.message);
-      return [];
+      throw error;
     }
   }
 
@@ -30,10 +33,13 @@ class MistralEmbedder {
         model: this.model,
         input: textChunks,
       });
-      return response?.data?.map((emb) => emb.embedding) || [];
+      const embeddings = response?.data?.map((emb) => emb.embedding) || [];
+      if (embeddings.length === 0)
+        throw new Error("Mistral returned empty embeddings for batch");
+      return embeddings;
     } catch (error) {
       console.error("Failed to get embeddings from Mistral.", error.message);
-      return new Array(textChunks.length).fill([]);
+      throw new Error(`Mistral Failed to embed: ${error.message}`);
     }
   }
 }
