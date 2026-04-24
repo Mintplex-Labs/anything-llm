@@ -6,6 +6,7 @@ const { Workspace } = require("../models/workspace.js");
 const { safeJsonParse } = require("../utils/http/index.js");
 const { getBaseLLMProviderModel } = require("../utils/helpers/index.js");
 const AIbitat = require("../utils/agents/aibitat/index.js");
+const truncate = require("truncate");
 
 // 20 minutes default; 0 disables the idle check.
 const IDLE_THRESHOLD_MS = Number(
@@ -14,6 +15,10 @@ const IDLE_THRESHOLD_MS = Number(
 
 // Cap per-group chat review so a long-dormant user can't trigger a 500-chat summarization.
 const CHATS_PER_RUN_LIMIT = 20;
+
+// Per-message cap — we keep 20 chats of context but truncate each prompt/response
+// so a single huge message doesn't blow the LLM's context window.
+const MAX_CHARS_PER_MESSAGE = 1500;
 
 const EXTRACTION_SYSTEM_PROMPT = `You are a memory extraction system for a personalized AI assistant. You manage a list of memories about the user that will be injected into future conversations to provide personalized responses.
 
@@ -169,9 +174,12 @@ function buildExtractionUserMessage(currentMemories, chats) {
 
   const formattedChats = chats
     .map((chat) => {
-      const lines = [`User: ${chat.prompt}`];
+      const lines = [`User: ${truncate(chat.prompt, MAX_CHARS_PER_MESSAGE)}`];
       const parsed = safeJsonParse(chat.response);
-      if (parsed?.text) lines.push(`Assistant: ${parsed.text}`);
+      if (parsed?.text)
+        lines.push(
+          `Assistant: ${truncate(parsed.text, MAX_CHARS_PER_MESSAGE)}`
+        );
       return lines.join("\n");
     })
     .join("\n\n");
