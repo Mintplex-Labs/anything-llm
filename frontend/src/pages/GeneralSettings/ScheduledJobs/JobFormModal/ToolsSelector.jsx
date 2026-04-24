@@ -5,9 +5,11 @@ import {
   Check,
   MagnifyingGlass,
   Minus,
+  Warning,
   X,
 } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
+import paths from "@/utils/paths";
 
 /**
  * Build a flat lookup map from categorized tools for quick label resolution.
@@ -222,17 +224,40 @@ export default function ToolsSelector({
                       ) : (
                         <CaretRight size={12} weight="bold" />
                       )}
-                      <span className="flex-1 text-left truncate">
+                      <span className="flex-1 text-left truncate flex items-center gap-1.5">
                         {cat.name}
+                        {cat.requiresSetup && (
+                          <a
+                            href={paths.settings.agentSkills()}
+                            onClick={(e) => e.stopPropagation()}
+                            className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-500/20 text-amber-400 light:bg-amber-100 light:text-amber-700 hover:bg-amber-500/30 light:hover:bg-amber-200 transition-colors"
+                            title={t(
+                              "scheduledJobs.modal.needsSetup",
+                              "This skill requires configuration before use"
+                            )}
+                          >
+                            <Warning size={10} weight="fill" />
+                            {t(
+                              "scheduledJobs.modal.needsSetupLabel",
+                              "Needs Setup"
+                            )}
+                          </a>
+                        )}
                       </span>
                       <span className="text-xs text-zinc-400 light:text-slate-500 mr-1">
                         {enabledCount}/{(cat.items || []).length}
                       </span>
                       <span
-                        onClick={(e) => toggleCategorySelection(cat, e)}
-                        className="cursor-pointer"
+                        onClick={(e) =>
+                          !cat.requiresSetup && toggleCategorySelection(cat, e)
+                        }
+                        className={
+                          cat.requiresSetup
+                            ? "cursor-not-allowed"
+                            : "cursor-pointer"
+                        }
                       >
-                        <Checkbox state={state} />
+                        <Checkbox state={state} disabled={cat.requiresSetup} />
                       </span>
                     </button>
 
@@ -240,18 +265,44 @@ export default function ToolsSelector({
                       <div className="ml-2 border-l border-zinc-700 light:border-slate-200 pl-2 mt-0.5">
                         {(cat.items || []).map((item) => {
                           const isSelected = selectedTools.includes(item.id);
+                          const itemNeedsSetup =
+                            item.requiresSetup || cat.requiresSetup;
 
                           return (
                             <button
                               key={item.id}
                               type="button"
-                              onClick={() => toggleTool(item.id)}
+                              onClick={() =>
+                                !itemNeedsSetup && toggleTool(item.id)
+                              }
+                              disabled={itemNeedsSetup}
                               title={item.description || undefined}
-                              className="border-none flex items-center gap-2 w-full px-2 py-1.5 rounded-md text-sm text-zinc-300 light:text-slate-600 hover:bg-zinc-700/60 light:hover:bg-slate-100 transition-colors"
+                              className={`border-none flex items-center gap-2 w-full px-2 py-1.5 rounded-md text-sm text-zinc-300 light:text-slate-600 transition-colors ${
+                                itemNeedsSetup
+                                  ? "opacity-60 cursor-not-allowed"
+                                  : "hover:bg-zinc-700/60 light:hover:bg-slate-100"
+                              }`}
                             >
                               <div className="flex-1 text-left">
-                                <span className="block truncate">
+                                <span className="flex items-center gap-1.5 truncate">
                                   {item.name}
+                                  {item.requiresSetup && !cat.requiresSetup && (
+                                    <a
+                                      href={paths.settings.agentSkills()}
+                                      onClick={(e) => e.stopPropagation()}
+                                      className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-500/20 text-amber-400 light:bg-amber-100 light:text-amber-700 hover:bg-amber-500/30 light:hover:bg-amber-200 transition-colors"
+                                      title={t(
+                                        "scheduledJobs.modal.needsSetup",
+                                        "This skill requires configuration before use"
+                                      )}
+                                    >
+                                      <Warning size={10} weight="fill" />
+                                      {t(
+                                        "scheduledJobs.modal.needsSetupLabel",
+                                        "Needs Setup"
+                                      )}
+                                    </a>
+                                  )}
                                 </span>
                                 {item.description && (
                                   <span className="block text-xs text-zinc-500 light:text-slate-400 truncate">
@@ -261,6 +312,7 @@ export default function ToolsSelector({
                               </div>
                               <Checkbox
                                 state={isSelected ? "checked" : "unchecked"}
+                                disabled={itemNeedsSetup}
                               />
                             </button>
                           );

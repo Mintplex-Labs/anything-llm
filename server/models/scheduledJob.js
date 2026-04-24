@@ -245,7 +245,7 @@ const ScheduledJob = {
    * @returns {Promise<{
    *   category: string,
    *   name: string,
-   *   items: Array<{ id: string, name: string, description?: string }>
+   *   items: Array<{ id: string, name: string, description?: string, requiresSetup?: boolean }>
    * }[]>}
    */
   availableTools: async function () {
@@ -253,8 +253,36 @@ const ScheduledJob = {
     const ImportedPlugin = require("../utils/agents/imported");
     const { AgentFlows } = require("../utils/agentFlows");
     const MCPCompatibilityLayer = require("../utils/MCP");
+    const {
+      listSQLConnections,
+    } = require("../utils/agents/aibitat/plugins/sql-agent/SQLConnectors");
+    const {
+      GmailBridge,
+    } = require("../utils/agents/aibitat/plugins/gmail/lib");
+    const {
+      GoogleCalendarBridge,
+    } = require("../utils/agents/aibitat/plugins/google-calendar/lib");
+    const {
+      OutlookBridge,
+    } = require("../utils/agents/aibitat/plugins/outlook/lib");
 
     const categories = [];
+
+    // Check which skills need setup
+    const sqlConnections = await listSQLConnections();
+    const sqlNeedsSetup = sqlConnections.length === 0;
+
+    const gmailConfig = await GmailBridge.getConfig();
+    const gmailNeedsSetup = !gmailConfig.deploymentId || !gmailConfig.apiKey;
+
+    const gcalConfig = await GoogleCalendarBridge.getConfig();
+    const gcalNeedsSetup = !gcalConfig.deploymentId || !gcalConfig.apiKey;
+
+    const outlookConfig = await OutlookBridge.getConfig();
+    const outlookNeedsSetup =
+      !outlookConfig.clientId ||
+      !outlookConfig.clientSecret ||
+      !outlookConfig.accessToken;
 
     // Default skills (always available)
     const DEFAULT_SKILLS = [
@@ -291,6 +319,7 @@ const ScheduledJob = {
         id: "sql-agent",
         name: "SQL Agent",
         description: "Query connected SQL databases",
+        requiresSetup: sqlNeedsSetup,
       },
     ];
 
@@ -359,7 +388,11 @@ const ScheduledJob = {
       categories.push({
         category: "gmail-agent",
         name: "Gmail",
-        items: gmailItems,
+        items: gmailItems.map((item) => ({
+          ...item,
+          requiresSetup: gmailNeedsSetup,
+        })),
+        requiresSetup: gmailNeedsSetup,
       });
     }
 
@@ -372,7 +405,11 @@ const ScheduledJob = {
       categories.push({
         category: "google-calendar-agent",
         name: "Google Calendar",
-        items: googleCalendarItems,
+        items: googleCalendarItems.map((item) => ({
+          ...item,
+          requiresSetup: gcalNeedsSetup,
+        })),
+        requiresSetup: gcalNeedsSetup,
       });
     }
 
@@ -382,7 +419,11 @@ const ScheduledJob = {
       categories.push({
         category: "outlook-agent",
         name: "Outlook",
-        items: outlookItems,
+        items: outlookItems.map((item) => ({
+          ...item,
+          requiresSetup: outlookNeedsSetup,
+        })),
+        requiresSetup: outlookNeedsSetup,
       });
     }
 
