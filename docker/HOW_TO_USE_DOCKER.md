@@ -39,7 +39,7 @@ Use the Dockerized version of AnythingLLM for a much faster and complete startup
 > The _easiest_ way to boot the container is including `SYS_ADMIN` to the container. This is required for the container to use the built-in Chromium web browser for
 > web-scraping. This can be done by adding `--cap-add SYS_ADMIN` to the docker run command.
 >
-> **However**, if you are not using web-scraping, you can omit this flag OR utilize a seccomp profile to grant only the specific syscalls required for Chrome sandboxing.
+> **However**, if want to be more secure, you can utilize a seccomp profile to grant only the specific syscalls required for Chrome sandboxing.
 >
 > See [Using a Seccomp Profile (More Secure Alternative to SYS_ADMIN)](#using-a-seccomp-profile-more-secure-alternative-to-sys_admin) for more information.
 
