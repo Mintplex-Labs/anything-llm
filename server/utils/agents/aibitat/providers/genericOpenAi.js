@@ -102,6 +102,12 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
     });
   }
 
+  #includeStreamOptionsUsage() {
+    if (!("GENERIC_OPEN_AI_REPORT_USAGE" in process.env)) return false;
+    if (process.env.GENERIC_OPEN_AI_REPORT_USAGE !== "true") return false;
+    return { include_usage: true };
+  }
+
   /**
    * Stream a chat completion with tool calling support.
    * Uses native tool calling when supported, otherwise falls back to UnTooled.
@@ -131,7 +137,10 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
         messages,
         functions,
         eventHandler,
-        { provider: this }
+        {
+          provider: this,
+          streamOptions: this.#includeStreamOptionsUsage(),
+        }
       );
     } catch (error) {
       console.error(error.message, error);
