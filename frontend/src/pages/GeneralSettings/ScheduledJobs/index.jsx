@@ -38,30 +38,33 @@ export default function ScheduledJobsPage() {
   const handleDelete = async (id) => {
     if (!window.confirm(t("scheduledJobs.confirmDelete"))) return;
     await ScheduledJobs.delete(id);
-    showToast(t("scheduledJobs.toast.deleted"), "success");
+    showToast(t("scheduledJobs.toast.deleted"), "success", { clear: true });
     fetchJobs();
   };
 
   const handleToggle = async (id) => {
     const result = await ScheduledJobs.toggle(id);
-    if (result?.error) showToast(result.error, "error");
+    if (result?.error) showToast(result.error, "error", { clear: true });
     fetchJobs();
   };
 
   const handleTrigger = async (id) => {
     const { success, skipped, error } = await ScheduledJobs.trigger(id);
     if (!success) {
-      showToast(error || t("scheduledJobs.toast.triggerFailed"), "error");
+      showToast(error || t("scheduledJobs.toast.triggerFailed"), "error", {
+        clear: true,
+      });
     } else if (skipped) {
       showToast(
         t(
           "scheduledJobs.toast.triggerSkipped",
           "A run is already in progress for this job"
         ),
-        "info"
+        "info",
+        { clear: true }
       );
     } else {
-      showToast(t("scheduledJobs.toast.triggered"), "success");
+      showToast(t("scheduledJobs.toast.triggered"), "success", { clear: true });
     }
     fetchJobs();
   };
