@@ -156,7 +156,7 @@ export default function AgentModelSelection({
                         value={model.id}
                         selected={workspace?.agentModel === model.id}
                       >
-                        {model.name}
+                        {model.name || model.id}
                       </option>
                     );
                   })}
