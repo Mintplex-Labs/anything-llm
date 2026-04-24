@@ -1,4 +1,5 @@
 const { safeJsonParse } = require("../../utils/http");
+const { stripThinkingFromText } = require("./index.js");
 
 /**
  * Maximum time in milliseconds a scheduled job can run before being terminated.
@@ -70,6 +71,12 @@ function agentActionCb() {
   };
 }
 
+function truncateNotificationBody(bodyText = "") {
+  if (!bodyText) return "Job completed";
+  if (bodyText.length <= 100) return bodyText;
+  return bodyText.slice(0, 100) + (bodyText.length > 100 ? "..." : "");
+}
+
 /**
  * Send a web push notification to the primary user.
  * @param {object} job - The scheduled job object.
@@ -84,14 +91,16 @@ async function sendWebPushNotification(job, runId, textResponse, logFn) {
       pushNotificationService,
     } = require("../../utils/PushNotifications/index.js");
     await pushNotificationService.loadSubscriptions();
+
+    // Strip thinking tags from the text response and then truncate to 100 characters
+    // if the response is longer than 100 characters.
+    let notificationBody = stripThinkingFromText(textResponse);
+    notificationBody = truncateNotificationBody(notificationBody);
     await pushNotificationService.sendNotification({
       to: "primary",
       payload: {
-        title: `Scheduled Job: ${job.name}`,
-        body: textResponse
-          ? textResponse.slice(0, 100) +
-            (textResponse.length > 100 ? "..." : "")
-          : "Job completed",
+        title: `${job.name} completed`,
+        body: notificationBody,
         data: {
           onClickUrl: `/settings/scheduled-jobs/${job.id}/runs/${runId}`,
         },

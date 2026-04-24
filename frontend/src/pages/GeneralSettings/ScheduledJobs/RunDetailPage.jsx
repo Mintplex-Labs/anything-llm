@@ -20,8 +20,9 @@ import CollapsibleSection from "./components/CollapsibleSection";
 import ToolCallCard from "./components/ToolCallCard";
 import GeneratedFileCard from "./components/GeneratedFileCard";
 import moment from "moment";
-import { formatDuration } from "@/utils/numbers";
+import { formatDuration, numberWithCommas } from "@/utils/numbers";
 import DOMPurify from "@/utils/chat/purify";
+import { THOUGHT_REGEX_COMPLETE } from "@/components/WorkspaceChat/ChatContainer/ChatHistory/ThoughtContainer";
 
 export default function RunDetailPage() {
   const { t } = useTranslation();
@@ -344,18 +345,33 @@ function GeneratedFilesSection({ t, result }) {
 
 function FinalResponseSection({ t, result }) {
   if (!result.text) return null;
+  let reasoning = null;
+  let msgToRender = result.text;
+  if (result.text.match(THOUGHT_REGEX_COMPLETE)) {
+    reasoning = result.text.match(THOUGHT_REGEX_COMPLETE)?.[0];
+    msgToRender = result.text.replace(THOUGHT_REGEX_COMPLETE, "");
+  }
 
   return (
     <CollapsibleSection
       title={t("scheduledJobs.runDetail.sections.response")}
       icon={ChatText}
       defaultOpen={true}
-      copyableContent={result.text}
+      copyableContent={msgToRender}
     >
+      {reasoning && (
+        <div className="text-sm text-zinc-50/50 light:text-slate-950/50 markdown border-l-2 border-zinc-700 light:border-slate-400 pl-2 mb-4">
+          <span
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(renderMarkdown(reasoning)),
+            }}
+          />
+        </div>
+      )}
       <div
         className="text-sm text-zinc-50 light:text-slate-950 markdown"
         dangerouslySetInnerHTML={{
-          __html: DOMPurify.sanitize(renderMarkdown(result.text)),
+          __html: DOMPurify.sanitize(renderMarkdown(msgToRender)),
         }}
       />
     </CollapsibleSection>
@@ -365,17 +381,30 @@ function FinalResponseSection({ t, result }) {
 function MetricsSection({ t, metrics }) {
   if (!metrics || Object.keys(metrics).length === 0) return null;
 
+  // Todo: there is a bug where if you create a job that has no tools, we wont get any metrics
+  // To avoid confusion, we should not show the metrics section if there are no metrics.
+  if (!metrics.prompt_tokens || !metrics.completion_tokens) return null;
+
+  function renderModel(metrics) {
+    if (!metrics.model) return null;
+    return (
+      <span className="font-mono text-xs font-normal text-zinc-50/50 light:text-slate-950/50">
+        ({metrics.model})
+      </span>
+    );
+  }
+
   return (
     <div className="border border-zinc-700 light:border-slate-400 rounded-lg p-[18px]">
       <p className="text-sm font-semibold text-zinc-400 light:text-slate-600 uppercase tracking-[1.4px] mb-1">
-        {t("scheduledJobs.runDetail.sections.metrics")}
+        {t("scheduledJobs.runDetail.sections.metrics")} {renderModel(metrics)}
       </p>
       <div className="flex gap-6 text-sm text-zinc-400 light:text-slate-600">
         {metrics.prompt_tokens != null && (
           <span>
             {t("scheduledJobs.runDetail.metrics.promptTokens")}{" "}
             <span className="text-zinc-50 light:text-slate-950">
-              {metrics.prompt_tokens}
+              {numberWithCommas(metrics.prompt_tokens)}
             </span>
           </span>
         )}
@@ -383,7 +412,7 @@ function MetricsSection({ t, metrics }) {
           <span>
             {t("scheduledJobs.runDetail.metrics.completionTokens")}{" "}
             <span className="text-zinc-50 light:text-slate-950">
-              {metrics.completion_tokens}
+              {numberWithCommas(metrics.completion_tokens)}
             </span>
           </span>
         )}
