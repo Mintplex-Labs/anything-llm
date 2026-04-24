@@ -9,7 +9,7 @@ const chalk = require("chalk");
  * @returns {boolean} True if the skill is auto-approved, false otherwise
  */
 function skillIsAutoApproved({ skillName }) {
-  if ((!"AGENT_AUTO_APPROVED_SKILLS") in process.env) return false;
+  if (!("AGENT_AUTO_APPROVED_SKILLS" in process.env)) return false;
   const autoApprovedSkills = String(process.env.AGENT_AUTO_APPROVED_SKILLS)
     .split(",")
     .map((skill) => skill.trim())
