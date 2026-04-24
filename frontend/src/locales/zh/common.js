@@ -320,7 +320,7 @@ const TRANSLATIONS = {
         readActions: "阅读操作",
         writeActions: "编写操作",
         warning:
-          "访问文件系统可能存在风险，因为它可能修改或删除文件。在启用之前，请务必查阅<link>文档</link>。",
+          "访问文件系统可能存在风险，因为它可能修改或删除文件。在启用之前，请务必查阅<a>文档</a>。",
         skills: {
           "read-text-file": {
             title: "读取文件",

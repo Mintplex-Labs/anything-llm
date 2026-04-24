@@ -310,7 +310,7 @@ const TRANSLATIONS = {
         readActions: "閱讀行動",
         writeActions: "撰寫動作",
         warning:
-          "訪問檔案系統可能存在風險，因為它可能會修改或刪除檔案。在啟用之前，請務必查閱相關<link>文件</link>。",
+          "訪問檔案系統可能存在風險，因為它可能會修改或刪除檔案。在啟用之前，請務必查閱相關<a>文件</a>。",
         skills: {
           "read-text-file": {
             title: "開啟檔案",

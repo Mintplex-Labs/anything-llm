@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import Toggle, { SimpleToggleSwitch } from "@/components/lib/Toggle";
+import { Link } from "react-router-dom";
 import { useTranslation, Trans } from "react-i18next";
 import {
   Warning,
@@ -16,6 +17,7 @@ import {
   Copy,
 } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
+import paths from "@/utils/paths";
 
 export const getFileSystemSubSkills = (t) => {
   return [
@@ -186,14 +188,13 @@ export default function FileSystemSkillPanel({
           <p className="text-theme-text-secondary text-opacity-60 text-xs font-medium">
             {t("agent.skill.filesystem.description")}
           </p>
-          <a
-            href="https://docs.useanything.com/agent/usage/file-system-agent"
+          <Link
+            to={paths.docs("/agent/usage/file-system-agent")}
             target="_blank"
-            rel="noopener noreferrer"
             className="text-sky-400 hover:text-sky-500 text-xs font-medium underline"
           >
             {t("agent.skill.filesystem.learnMore")} &rarr;
-          </a>
+          </Link>
         </div>
 
         {enabled && (
@@ -273,9 +274,9 @@ function WarningBanner() {
         <Trans
           i18nKey="agent.skill.filesystem.warning"
           components={{
-            link: (
-              <a
-                href="https://docs.useanything.com/agent/usage/file-system-agent"
+            a: (
+              <Link
+                to={paths.docs("/agent/usage/file-system-agent")}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="underline hover:text-orange-300 light:hover:text-orange-700"

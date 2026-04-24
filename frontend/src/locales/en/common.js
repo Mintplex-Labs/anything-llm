@@ -341,7 +341,7 @@ const TRANSLATIONS = {
         readActions: "Read Actions",
         writeActions: "Write Actions",
         warning:
-          "Filesystem access can be dangerous as it can modify or delete files. Please consult the <link>documentation</link> before enabling.",
+          "Filesystem access can be dangerous as it can modify or delete files. Please consult the <a>documentation</a> before enabling.",
         skills: {
           "read-text-file": {
             title: "Read File",
