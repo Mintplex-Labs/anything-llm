@@ -12,19 +12,10 @@ class MistralEmbedder {
   }
 
   async embedTextInput(textInput) {
-    try {
-      const response = await this.openai.embeddings.create({
-        model: this.model,
-        input: textInput,
-      });
-      const embedding = response?.data[0]?.embedding || [];
-      if (embedding.length === 0)
-        throw new Error("Mistral returned empty embedding for input");
-      return embedding;
-    } catch (error) {
-      console.error("Failed to get embedding from Mistral.", error.message);
-      throw error;
-    }
+    const result = await this.embedChunks(
+      Array.isArray(textInput) ? textInput : [textInput]
+    );
+    return result?.[0] || [];
   }
 
   async embedChunks(textChunks = []) {
