@@ -2,6 +2,7 @@ const prisma = require("../utils/prisma");
 
 const GLOBAL_LIMIT = 5;
 const WORKSPACE_LIMIT = 20;
+const VALID_SCOPES = ["workspace", "global"];
 
 /**
  * @typedef {Object} Memory
@@ -16,7 +17,31 @@ const WORKSPACE_LIMIT = 20;
  * @property {Date} updatedAt
  */
 
+function toInt(v) {
+  const n = Number(v);
+  if (!Number.isInteger(n))
+    throw new Error(`Expected integer, got ${JSON.stringify(v)}`);
+  return n;
+}
+
 const Memory = {
+  validations: {
+    id: (v) => toInt(v),
+    userId: (v = null) => (v === null || v === undefined ? null : toInt(v)),
+    workspaceId: (v = null) =>
+      v === null || v === undefined ? null : toInt(v),
+    scope: (v = "workspace") => {
+      if (!VALID_SCOPES.includes(v))
+        throw new Error(`Invalid scope: ${JSON.stringify(v)}`);
+      return v;
+    },
+    content: (v) => {
+      if (typeof v !== "string" || v.trim().length === 0)
+        throw new Error("Content must be a non-empty string");
+      return v;
+    },
+  },
+
   /**
    * List a user's workspace-scoped memories, newest first.
    * @param {number|null} userId
@@ -26,7 +51,11 @@ const Memory = {
   forUserWorkspace: async function (userId, workspaceId) {
     try {
       const memories = await prisma.memories.findMany({
-        where: { userId, workspaceId, scope: "workspace" },
+        where: {
+          userId: this.validations.userId(userId),
+          workspaceId: this.validations.id(workspaceId),
+          scope: "workspace",
+        },
         orderBy: { createdAt: "desc" },
       });
       return memories;
@@ -44,7 +73,10 @@ const Memory = {
   globalForUser: async function (userId) {
     try {
       const memories = await prisma.memories.findMany({
-        where: { userId, scope: "global" },
+        where: {
+          userId: this.validations.userId(userId),
+          scope: "global",
+        },
         orderBy: { createdAt: "desc" },
       });
       return memories;
@@ -73,7 +105,10 @@ const Memory = {
   }) {
     try {
       const count = await this.countForScope(userId, workspaceId, scope);
-      const limit = scope === "global" ? GLOBAL_LIMIT : WORKSPACE_LIMIT;
+      const limit =
+        this.validations.scope(scope) === "global"
+          ? GLOBAL_LIMIT
+          : WORKSPACE_LIMIT;
       if (count >= limit)
         return {
           memory: null,
@@ -81,7 +116,13 @@ const Memory = {
         };
 
       const memory = await prisma.memories.create({
-        data: { userId, workspaceId, scope, content, sourceThreadId },
+        data: {
+          userId: this.validations.userId(userId),
+          workspaceId: this.validations.workspaceId(workspaceId),
+          scope: this.validations.scope(scope),
+          content: this.validations.content(content),
+          sourceThreadId: this.validations.workspaceId(sourceThreadId),
+        },
       });
       return { memory, message: null };
     } catch (error) {
@@ -99,8 +140,11 @@ const Memory = {
   update: async function (id, { content }) {
     try {
       const memory = await prisma.memories.update({
-        where: { id },
-        data: { content, updatedAt: new Date() },
+        where: { id: this.validations.id(id) },
+        data: {
+          content: this.validations.content(content),
+          updatedAt: new Date(),
+        },
       });
       return { memory, message: null };
     } catch (error) {
@@ -116,7 +160,9 @@ const Memory = {
    */
   delete: async function (id) {
     try {
-      await prisma.memories.delete({ where: { id } });
+      await prisma.memories.delete({
+        where: { id: this.validations.id(id) },
+      });
       return true;
     } catch (error) {
       console.error(error.message);
@@ -132,7 +178,9 @@ const Memory = {
    */
   promoteToGlobal: async function (id) {
     try {
-      const existing = await prisma.memories.findUnique({ where: { id } });
+      const existing = await prisma.memories.findUnique({
+        where: { id: this.validations.id(id) },
+      });
       if (!existing) return { memory: null, message: "Memory not found." };
       if (existing.scope === "global")
         return { memory: existing, message: "Memory is already global." };
@@ -149,7 +197,7 @@ const Memory = {
         };
 
       const memory = await prisma.memories.update({
-        where: { id },
+        where: { id: this.validations.id(id) },
         data: { scope: "global", workspaceId: null, updatedAt: new Date() },
       });
       return { memory, message: null };
@@ -168,7 +216,9 @@ const Memory = {
    */
   demoteToWorkspace: async function (id, workspaceId) {
     try {
-      const existing = await prisma.memories.findUnique({ where: { id } });
+      const existing = await prisma.memories.findUnique({
+        where: { id: this.validations.id(id) },
+      });
       if (!existing) return { memory: null, message: "Memory not found." };
       if (existing.scope === "workspace")
         return {
@@ -188,8 +238,12 @@ const Memory = {
         };
 
       const memory = await prisma.memories.update({
-        where: { id },
-        data: { scope: "workspace", workspaceId, updatedAt: new Date() },
+        where: { id: this.validations.id(id) },
+        data: {
+          scope: "workspace",
+          workspaceId: this.validations.id(workspaceId),
+          updatedAt: new Date(),
+        },
       });
       return { memory, message: null };
     } catch (error) {
@@ -204,10 +258,10 @@ const Memory = {
    * @returns {Promise<void>}
    */
   updateLastUsed: async function (ids = []) {
-    if (!ids.length) return;
+    if (!Array.isArray(ids) || ids.length === 0) return;
     try {
       await prisma.memories.updateMany({
-        where: { id: { in: ids } },
+        where: { id: { in: ids.map(this.validations.id) } },
         data: { lastUsedAt: new Date() },
       });
     } catch (error) {
@@ -224,8 +278,12 @@ const Memory = {
    */
   countForScope: async function (userId, workspaceId, scope) {
     try {
-      const where = { userId, scope };
-      if (scope === "workspace") where.workspaceId = workspaceId;
+      const where = {
+        userId: this.validations.userId(userId),
+        scope: this.validations.scope(scope),
+      };
+      if (scope === "workspace")
+        where.workspaceId = this.validations.workspaceId(workspaceId);
       return await prisma.memories.count({ where });
     } catch (error) {
       console.error(error.message);
@@ -244,14 +302,27 @@ const Memory = {
    */
   replaceWorkspaceMemories: async function (userId, workspaceId, memories) {
     try {
+      const safeMemories = Array.isArray(memories)
+        ? memories.filter((m) => typeof m === "string" && m.trim().length > 0)
+        : [];
+
       await prisma.$transaction(async (tx) => {
         await tx.memories.deleteMany({
-          where: { userId, workspaceId, scope: "workspace" },
+          where: {
+            userId: this.validations.userId(userId),
+            workspaceId: this.validations.id(workspaceId),
+            scope: "workspace",
+          },
         });
 
-        for (const content of memories.slice(0, WORKSPACE_LIMIT)) {
+        for (const content of safeMemories.slice(0, WORKSPACE_LIMIT)) {
           await tx.memories.create({
-            data: { userId, workspaceId, scope: "workspace", content },
+            data: {
+              userId: this.validations.userId(userId),
+              workspaceId: this.validations.id(workspaceId),
+              scope: "workspace",
+              content,
+            },
           });
         }
       });
@@ -271,7 +342,7 @@ const Memory = {
     try {
       await prisma.memories.updateMany({
         where: { userId: null },
-        data: { userId: adminUserId },
+        data: { userId: this.validations.id(adminUserId) },
       });
       return true;
     } catch (error) {
