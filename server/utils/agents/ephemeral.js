@@ -497,6 +497,15 @@ class EphemeralAgentHandler extends AgentHandler {
   }
 
   /**
+   * Gets pending outputs registered by plugins (e.g., file downloads).
+   * These outputs include the proper type for re-rendering in chat history.
+   * @returns {Array<{type: string, payload: object}>}
+   */
+  getPendingOutputs() {
+    return this.aibitat?._pendingOutputs ?? [];
+  }
+
+  /**
    * Determine if the message should invoke the agent handler.
    * This is true when the user explicitly invokes an agent (via @agent prefix)
    * or when the workspace is in automatic mode **and** the provider supports native tool calling.

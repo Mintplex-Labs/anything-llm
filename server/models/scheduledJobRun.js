@@ -337,6 +337,7 @@ const ScheduledJobRun = {
         response: {
           text: responseText,
           sources: result.sources || [],
+          outputs: result.outputs || [],
           type: "chat",
         },
         threadId: thread.id,

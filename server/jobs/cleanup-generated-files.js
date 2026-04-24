@@ -139,10 +139,10 @@ async function scheduledJobRunGeneratedFilenames(batchSize = 50) {
 
       for (const run of runs) {
         try {
-          const response = safeJsonParse(run.result, { generatedFiles: [] });
-          for (const file of response.generatedFiles) {
-            if (!file || !file.storageFilename) continue;
-            storageFilenames.add(file.storageFilename);
+          const response = safeJsonParse(run.result, { outputs: [] });
+          for (const output of response.outputs) {
+            if (!output?.payload?.storageFilename) continue;
+            storageFilenames.add(output.payload.storageFilename);
           }
         } catch {
           continue;

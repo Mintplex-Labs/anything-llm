@@ -324,19 +324,21 @@ function ToolCallsSection({ t, result }) {
 }
 
 function GeneratedFilesSection({ t, result }) {
-  if (!result.generatedFiles || result.generatedFiles.length === 0) return null;
+  // outputs contains {type, payload} objects from agent plugins
+  const outputs = result.outputs || [];
+  if (outputs.length === 0) return null;
 
   return (
     <CollapsibleSection
       title={t("scheduledJobs.runDetail.sections.files", {
-        count: result.generatedFiles.length,
+        count: outputs.length,
       })}
       icon={File}
       defaultOpen={true}
     >
       <div className="space-y-2">
-        {result.generatedFiles.map((file, i) => (
-          <GeneratedFileCard key={i} file={file} />
+        {outputs.map((output, i) => (
+          <GeneratedFileCard key={i} file={output.payload} type={output.type} />
         ))}
       </div>
     </CollapsibleSection>

@@ -16,7 +16,7 @@ const SCHEDULED_JOB_TIMEOUT_MS =
 function agentActionCb() {
   const thoughts = [];
   const toolCalls = [];
-  const generatedFiles = [];
+
   // Use a container object so the reference is preserved when values are updated
   const state = {
     textResponse: "",
@@ -27,11 +27,6 @@ function agentActionCb() {
     send(jsonStr) {
       const data = safeJsonParse(jsonStr, null);
       if (!data) return;
-
-      if (data.type === "fileDownloadCard" && data.content) {
-        generatedFiles.push(data.content);
-        return;
-      }
 
       if (data.type === "statusResponse" && data.content) {
         thoughts.push(data.content);
@@ -64,8 +59,6 @@ function agentActionCb() {
     thoughts,
     /** Tool calls from the agent @type {object[]} */
     toolCalls,
-    /** Generated files from the agent @type {object[]} */
-    generatedFiles,
     /** State container for textResponse and metrics - access via state.textResponse and state.metrics */
     state,
   };

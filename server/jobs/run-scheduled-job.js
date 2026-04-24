@@ -56,8 +56,7 @@ process.on("message", async (payload) => {
       `Starting scheduled job: "${job.name}" (id=${job.id}) with timeout ${SCHEDULED_JOB_TIMEOUT_MS}ms`
     );
     await ScheduledJob.updateRunTimestamps(job.id);
-    const { handler, thoughts, toolCalls, generatedFiles, state } =
-      agentActionCb();
+    const { handler, thoughts, toolCalls, state } = agentActionCb();
 
     const { EphemeralAgentHandler } = require("../utils/agents/ephemeral.js");
     const agentHandler = await new EphemeralAgentHandler({
@@ -111,13 +110,17 @@ process.on("message", async (payload) => {
     });
     const duration = Date.now() - startTime;
 
+    // Get outputs from aibitat which include proper type info (e.g., PptxFileDownload, ExcelFileDownload)
+    // for correct re-rendering when porting to workspace chat
+    const outputs = agentHandler.getPendingOutputs();
+
     status = "success";
     await ScheduledJobRun.complete(runId, {
       result: {
         text: state.textResponse,
         thoughts,
         toolCalls,
-        generatedFiles,
+        outputs,
         metrics: state.metrics,
         duration,
       },

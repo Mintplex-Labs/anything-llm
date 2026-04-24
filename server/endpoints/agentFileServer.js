@@ -161,16 +161,14 @@ async function findInScheduledJobRuns(storageFilename) {
   });
 
   for (const run of runs) {
-    const { generatedFiles = [] } = safeJsonParse(run.result, {
-      generatedFiles: [],
-    });
-    const file = generatedFiles.find(
-      (f) => f?.storageFilename === storageFilename
+    const { outputs = [] } = safeJsonParse(run.result, { outputs: [] });
+    const output = outputs.find(
+      (o) => o?.payload?.storageFilename === storageFilename
     );
-    if (!file) continue;
+    if (!output) continue;
     return {
       workspaceId: null,
-      displayFilename: file.filename || storageFilename,
+      displayFilename: output.payload.filename || storageFilename,
     };
   }
 
