@@ -1557,6 +1557,8 @@ const TRANSLATIONS = {
       triggerFailed: "Nu a reușit să declanșeze execuția.",
       triggerSkipped:
         "Procesul de licitație pentru acest proiect este deja în desfășurare.",
+      killed: "Procesul de angajare s-a încheiat cu succes.",
+      killFailed: "Nu am reușit să opresc activitatea.",
     },
     row: {
       neverRun: "Nu alerga",
@@ -1637,6 +1639,7 @@ const TRANSLATIONS = {
         duration: "Durată",
         error: "Eroare",
       },
+      stopJob: "Întrerupeți activitatea",
     },
     runDetail: {
       loading: "Încărcare detalii despre rulare...",
@@ -1661,6 +1664,8 @@ const TRANSLATIONS = {
         promptTokens: "Cuvinte-cheie:",
         completionTokens: "Token-uri de finalizare:",
       },
+      stopJob: "Încetarea activității",
+      killing: "Oprire...",
     },
     toolCall: {
       arguments: "Argumente:",
@@ -1680,11 +1685,11 @@ const TRANSLATIONS = {
       },
     },
     status: {
-      completed: null,
-      failed: null,
-      timed_out: null,
-      running: null,
-      queued: null,
+      completed: "Finalizat",
+      failed: "Eșuat",
+      timed_out: "Timpul a expirat",
+      running: "Cursa",
+      queued: "În așteptare",
     },
   },
 };

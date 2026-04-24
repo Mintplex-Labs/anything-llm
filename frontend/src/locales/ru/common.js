@@ -1561,6 +1561,8 @@ const TRANSLATIONS = {
       triggered: "Задача успешно выполнена.",
       triggerFailed: "Не удалось запустить задачу.",
       triggerSkipped: "Работа уже начата.",
+      killed: "Работа была успешно завершена.",
+      killFailed: "Не удалось остановить работу",
     },
     row: {
       neverRun: "Никогда не бегите",
@@ -1642,6 +1644,7 @@ const TRANSLATIONS = {
         duration: "Продолжительность",
         error: "Ошибка",
       },
+      stopJob: "Прекратить работу",
     },
     runDetail: {
       loading: "Загрузка информации о ходе выполнения...",
@@ -1666,6 +1669,8 @@ const TRANSLATIONS = {
         promptTokens: "Ключевые слова:",
         completionTokens: "Токены завершения:",
       },
+      stopJob: "Прекратить работу",
+      killing: "Остановка...",
     },
     toolCall: {
       arguments: "Аргументы:",
@@ -1685,11 +1690,11 @@ const TRANSLATIONS = {
       },
     },
     status: {
-      completed: null,
-      failed: null,
-      timed_out: null,
-      running: null,
-      queued: null,
+      completed: "Завершено",
+      failed: "Неудачный",
+      timed_out: "Время вышло",
+      running: "Бег",
+      queued: "В очереди",
     },
   },
 };

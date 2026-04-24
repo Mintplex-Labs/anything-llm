@@ -9,6 +9,7 @@ import {
   Brain,
   Wrench,
   File,
+  Stop,
 } from "@phosphor-icons/react";
 import ScheduledJobs from "@/models/scheduledJobs";
 import usePolling from "@/hooks/usePolling";
@@ -30,6 +31,7 @@ export default function RunDetailPage() {
   const [run, setRun] = useState(null);
   const [job, setJob] = useState(null);
   const [continuing, setContinuing] = useState(false);
+  const [killing, setKilling] = useState(false);
 
   useEffect(() => {
     fetchRun();
@@ -65,6 +67,20 @@ export default function RunDetailPage() {
     navigate(paths.workspace.thread(workspaceSlug, threadSlug));
   };
 
+  const handleKillRun = async () => {
+    setKilling(true);
+    const { success, error } = await ScheduledJobs.killRun(runId);
+    setKilling(false);
+
+    if (!success) {
+      showToast(error || t("scheduledJobs.toast.killFailed"), "error");
+      return;
+    }
+
+    showToast(t("scheduledJobs.toast.killed"), "success");
+    fetchRun();
+  };
+
   if (loading) {
     return (
       <RunDetailLayout>
@@ -94,8 +110,10 @@ export default function RunDetailPage() {
         run={run}
         result={result}
         continuing={continuing}
+        killing={killing}
         onBack={() => navigate(paths.settings.scheduledJobRuns(id))}
         onContinueInThread={handleContinueInThread}
+        onKillRun={handleKillRun}
       />
 
       <div className="mt-6 space-y-4">
@@ -133,8 +151,10 @@ function RunHeader({
   run,
   result,
   continuing,
+  killing,
   onBack,
   onContinueInThread,
+  onKillRun,
 }) {
   function getStatusInfo() {
     return {
@@ -166,6 +186,7 @@ function RunHeader({
   }
   const statusInfo = getStatusInfo();
   const { text, style } = statusInfo[run.status] || statusInfo.default;
+  const isKillable = ["running", "queued"].includes(run.status);
 
   return (
     <div className="w-full flex items-end justify-between gap-x-4 pb-6 border-white/10 light:border-zinc-300 border-b-2">
@@ -198,18 +219,34 @@ function RunHeader({
           )}
         </div>
       </div>
-      {run.status === "completed" && (
-        <button
-          type="button"
-          onClick={onContinueInThread}
-          disabled={continuing}
-          className="border-none h-9 px-5 rounded-lg bg-zinc-50 text-zinc-950 light:bg-slate-900 light:text-white text-sm font-medium hover:bg-zinc-200 light:hover:bg-slate-800 transition-colors disabled:opacity-50 shrink-0"
-        >
-          {continuing
-            ? t("scheduledJobs.runDetail.creating")
-            : t("scheduledJobs.runDetail.continueInThread")}
-        </button>
-      )}
+      <div className="flex items-center gap-2">
+        {isKillable && (
+          <button
+            type="button"
+            onClick={onKillRun}
+            disabled={killing}
+            title={t("scheduledJobs.runDetail.stopJob")}
+            className="border-none h-9 px-5 rounded-lg bg-red-500/20 text-red-400 light:bg-red-100 light:text-red-600 text-sm font-medium hover:bg-red-500/30 light:hover:bg-red-200 transition-colors disabled:opacity-50 shrink-0 flex items-center gap-2"
+          >
+            <Stop className="h-4 w-4" weight="bold" />
+            {killing
+              ? t("scheduledJobs.runDetail.killing")
+              : t("scheduledJobs.runDetail.stopJob")}
+          </button>
+        )}
+        {run.status === "completed" && (
+          <button
+            type="button"
+            onClick={onContinueInThread}
+            disabled={continuing}
+            className="border-none h-9 px-5 rounded-lg bg-zinc-50 text-zinc-950 light:bg-slate-900 light:text-white text-sm font-medium hover:bg-zinc-200 light:hover:bg-slate-800 transition-colors disabled:opacity-50 shrink-0"
+          >
+            {continuing
+              ? t("scheduledJobs.runDetail.creating")
+              : t("scheduledJobs.runDetail.continueInThread")}
+          </button>
+        )}
+      </div>
     </div>
   );
 }

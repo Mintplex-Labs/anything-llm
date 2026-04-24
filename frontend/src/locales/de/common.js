@@ -1569,6 +1569,8 @@ const TRANSLATIONS = {
       triggered: "Die Aufgabe wurde erfolgreich gestartet.",
       triggerFailed: "Fehlgeschlagenes Auslösen der Aufgabe",
       triggerSkipped: "Die Arbeiten für dieses Projekt sind bereits in Gang",
+      killed: "Die Arbeit wurde erfolgreich beendet.",
+      killFailed: "Nicht in der Lage, die Arbeit zu beenden",
     },
     row: {
       neverRun: "Bitte niemals laufen",
@@ -1651,6 +1653,7 @@ const TRANSLATIONS = {
         duration: "Dauer",
         error: "Fehler",
       },
+      stopJob: "Arbeitsplatz verlassen",
     },
     runDetail: {
       loading: "Details zum Ladevorgang werden geladen...",
@@ -1675,6 +1678,8 @@ const TRANSLATIONS = {
         promptTokens: "Auslöse-Token:",
         completionTokens: "Abschluss-Token:",
       },
+      stopJob: "Arbeitsplatz verlassen",
+      killing: "Anhalten...",
     },
     toolCall: {
       arguments: "Argumente:",
@@ -1694,11 +1699,11 @@ const TRANSLATIONS = {
       },
     },
     status: {
-      completed: null,
-      failed: null,
-      timed_out: null,
-      running: null,
-      queued: null,
+      completed: "Abgeschlossen",
+      failed: "Fehlgeschlagen",
+      timed_out: "Zeitüberschreitung",
+      running: "Laufen",
+      queued: "Warteschlange",
     },
   },
 };

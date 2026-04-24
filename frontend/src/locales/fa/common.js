@@ -1523,6 +1523,8 @@ const TRANSLATIONS = {
       triggered: "وظیفه با موفقیت انجام شد.",
       triggerFailed: "عدم اجرای وظیفه",
       triggerSkipped: "کار مربوط به این پروژه از قبل آغاز شده است.",
+      killed: "کار با موفقیت به پایان رسید.",
+      killFailed: "عدم توانایی در متوقف کردن کار",
     },
     row: {
       neverRun: "هرگز سرعت خود را افزایش ندهید.",
@@ -1604,6 +1606,7 @@ const TRANSLATIONS = {
         duration: "مدت زمان",
         error: "خطا",
       },
+      stopJob: "متوقف کردن کار",
     },
     runDetail: {
       loading: "بارگذاری جزئیات اجرای تمرین...",
@@ -1628,6 +1631,8 @@ const TRANSLATIONS = {
         promptTokens: "توکن‌های آغازین:",
         completionTokens: "توکن‌های تکمیل:",
       },
+      stopJob: "متوقف کردن کار",
+      killing: "توقف...",
     },
     toolCall: {
       arguments: "استدلال‌ها:",
@@ -1647,11 +1652,11 @@ const TRANSLATIONS = {
       },
     },
     status: {
-      completed: null,
-      failed: null,
-      timed_out: null,
-      running: null,
-      queued: null,
+      completed: "تکمیل شده",
+      failed: "شکست",
+      timed_out: "زمان به پایان رسید",
+      running: "دویدن",
+      queued: "در صف انتظار",
     },
   },
 };

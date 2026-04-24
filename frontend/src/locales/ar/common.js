@@ -1509,6 +1509,8 @@ const TRANSLATIONS = {
       triggered: "تم تنفيذ المهمة بنجاح.",
       triggerFailed: "لم يتم تشغيل المهمة.",
       triggerSkipped: "تم بالفعل البدء في تنفيذ هذا المشروع.",
+      killed: "تم إيقاف الوظيفة بنجاح.",
+      killFailed: "فشل في إيقاف العمل",
     },
     row: {
       neverRun: "لا تفرط",
@@ -1588,6 +1590,7 @@ const TRANSLATIONS = {
         duration: "المدة",
         error: "خطأ",
       },
+      stopJob: "إيقاف العمل",
     },
     runDetail: {
       loading: "تحميل تفاصيل الجولة...",
@@ -1612,6 +1615,8 @@ const TRANSLATIONS = {
         promptTokens: "رموز التذكير:",
         completionTokens: "رموز الإكمال:",
       },
+      stopJob: "إيقاف التوظيف",
+      killing: "التوقف...",
     },
     toolCall: {
       arguments: "الحجج:",
@@ -1631,11 +1636,11 @@ const TRANSLATIONS = {
       },
     },
     status: {
-      completed: null,
-      failed: null,
-      timed_out: null,
-      running: null,
-      queued: null,
+      completed: "تمت",
+      failed: "فشل",
+      timed_out: "انتهت المدة المحددة",
+      running: "الجري",
+      queued: "في قائمة الانتظار",
     },
   },
 };

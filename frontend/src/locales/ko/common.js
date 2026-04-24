@@ -1494,6 +1494,8 @@ const TRANSLATIONS = {
       triggered: "직업이 성공적으로 시작되었습니다.",
       triggerFailed: "작업 실행에 실패",
       triggerSkipped: "이 프로젝트는 이미 진행 중입니다.",
+      killed: "직업이 성공적으로 종료되었습니다.",
+      killFailed: "일자리를 유지하지 못함",
     },
     row: {
       neverRun: "절대 질주하지 마세요",
@@ -1574,6 +1576,7 @@ const TRANSLATIONS = {
         duration: "기간",
         error: "오류",
       },
+      stopJob: "직업 중단",
     },
     runDetail: {
       loading: "로딩 중: 실행 세부 정보...",
@@ -1598,6 +1601,8 @@ const TRANSLATIONS = {
         promptTokens: "프롬프트 토큰:",
         completionTokens: "완료 토큰:",
       },
+      stopJob: "직업 중단",
+      killing: "멈추다...",
     },
     toolCall: {
       arguments: "논거",
@@ -1617,11 +1622,11 @@ const TRANSLATIONS = {
       },
     },
     status: {
-      completed: null,
-      failed: null,
-      timed_out: null,
-      running: null,
-      queued: null,
+      completed: "완료",
+      failed: "실패",
+      timed_out: "시간 초과",
+      running: "달리기",
+      queued: "대기 중",
     },
   },
 };

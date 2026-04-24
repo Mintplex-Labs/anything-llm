@@ -134,15 +134,21 @@ const ScheduledJobRun = {
 
   fail: async function (id, { error: errorMsg } = {}) {
     try {
-      const run = await prisma.scheduled_job_runs.update({
-        where: { id: Number(id) },
+      // Use updateMany with a filter to avoid overwriting a run that was
+      // already moved to a terminal state (e.g., killed by user).
+      const result = await prisma.scheduled_job_runs.updateMany({
+        where: {
+          id: Number(id),
+          status: { in: this.nonTerminalStatuses },
+        },
         data: {
           status: this.statuses.failed,
           error: String(errorMsg || "Unknown error"),
           completedAt: new Date(),
         },
       });
-      return run;
+      if (result.count === 0) return null;
+      return await this.get({ id: Number(id) });
     } catch (error) {
       console.error(
         "Failed to mark scheduled job run as failed:",
@@ -154,20 +160,56 @@ const ScheduledJobRun = {
 
   timeout: async function (id) {
     try {
-      const run = await prisma.scheduled_job_runs.update({
-        where: { id: Number(id) },
+      // Use updateMany with a filter to avoid overwriting a run that was
+      // already moved to a terminal state (e.g., killed by user).
+      const result = await prisma.scheduled_job_runs.updateMany({
+        where: {
+          id: Number(id),
+          status: { in: this.nonTerminalStatuses },
+        },
         data: {
           status: this.statuses.timed_out,
           error: "Job execution timed out",
           completedAt: new Date(),
         },
       });
-      return run;
+      if (result.count === 0) return null;
+      return await this.get({ id: Number(id) });
     } catch (error) {
       console.error(
         "Failed to mark scheduled job run as timed out:",
         error.message
       );
+      return null;
+    }
+  },
+
+  /**
+   * Kill a running or queued job run. This marks the run as failed with a
+   * user-initiated kill message. The actual worker process termination is
+   * handled by BackgroundService.killRun().
+   * - Killing a run will also mark it as read (user killed it, so dont bother with unread status)
+   * @param {number} id - scheduled_job_runs.id
+   * @returns {Promise<object|null>} The updated run row, or null if not killable
+   */
+  kill: async function (id) {
+    try {
+      const result = await prisma.scheduled_job_runs.updateMany({
+        where: {
+          id: Number(id),
+          status: { in: this.nonTerminalStatuses },
+        },
+        data: {
+          status: this.statuses.failed,
+          error: "Job killed by user",
+          completedAt: new Date(),
+          readAt: new Date(),
+        },
+      });
+      if (result.count === 0) return null;
+      return await this.get({ id: Number(id) });
+    } catch (error) {
+      console.error("Failed to kill scheduled job run:", error.message);
       return null;
     }
   },

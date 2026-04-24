@@ -1429,6 +1429,8 @@ const TRANSLATIONS = {
       triggered: "工作已成功啟動",
       triggerFailed: "未能觸發工作",
       triggerSkipped: "目前，這個項目已經啟動。",
+      killed: "工作已成功停止",
+      killFailed: "未能成功終止工作",
     },
     row: {
       neverRun: "請勿急於完成",
@@ -1508,6 +1510,7 @@ const TRANSLATIONS = {
         duration: "時間",
         error: "錯誤",
       },
+      stopJob: "停止工作",
     },
     runDetail: {
       loading: "載入執行記錄詳細...",
@@ -1532,6 +1535,8 @@ const TRANSLATIONS = {
         promptTokens: "提示詞：",
         completionTokens: "完成標記：",
       },
+      stopJob: "停止工作",
+      killing: "停止...",
     },
     toolCall: {
       arguments: "論點：",
@@ -1551,11 +1556,11 @@ const TRANSLATIONS = {
       },
     },
     status: {
-      completed: null,
-      failed: null,
-      timed_out: null,
-      running: null,
-      queued: null,
+      completed: "已完成",
+      failed: "失敗",
+      timed_out: "時間到",
+      running: "跑步",
+      queued: "排隊",
     },
   },
 };

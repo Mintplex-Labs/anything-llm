@@ -9,12 +9,23 @@ const {
 const { ScheduledJob } = require("../models/scheduledJob.js");
 const { ScheduledJobRun } = require("../models/scheduledJobRun.js");
 
+/** Status of the scheduled job run @type {'success' | 'failed' | 'timed_out' | 'not_found' | 'killed' | undefined} */
+let status;
+let runId = null;
+
+process.on("SIGTERM", async () => {
+  status = "killed";
+  log("Received SIGTERM, marking job as killed by user");
+  if (runId) await ScheduledJobRun.kill(runId);
+  conclude();
+});
+
 process.on("message", async (payload) => {
-  const { jobId, runId } = payload;
-  /** Status of the scheduled job run @type {'success' | 'failed' | 'timed_out' | 'not_found'} */
-  let status;
+  const { jobId, runId: payloadRunId } = payload;
+  runId = payloadRunId;
   let timeoutId = null;
   let errorMessage = null;
+
   // The run row was created by the parent process (BackgroundService) in
   // status `queued` (it may have been waiting in p-queue). The worker
   // transitions it to `running` here so `startedAt` reflects actual execution
@@ -35,7 +46,9 @@ process.on("message", async (payload) => {
     // thought the worker had died). Bail out without touching it further.
     const transitioned = await ScheduledJobRun.markRunning(runId);
     if (!transitioned) {
-      log(`Scheduled job run ${runId} was no longer queued, skipping`);
+      log(
+        `Scheduled job "${job.name}" (id=${job.id}) is no longer queued, skipping`
+      );
       return;
     }
 
@@ -112,8 +125,7 @@ process.on("message", async (payload) => {
     log(`Scheduled job "${job.name}" completed in ${duration}ms)`);
     await sendWebPushNotification(job, runId, state.textResponse, log);
   } catch (error) {
-    const isTimeout = error.message === "SCHEDULED_JOB_TIMEOUT";
-    if (isTimeout) {
+    if (error.message === "SCHEDULED_JOB_TIMEOUT") {
       status = "timed_out";
       log("Scheduled job timed out");
     } else {
@@ -132,7 +144,10 @@ process.on("message", async (payload) => {
       case "failed":
         await ScheduledJobRun.fail(runId, { error: errorMessage });
         break;
+      default: // Do nothing by default (success, killed, other)
+        break;
     }
+
     if (timeoutId) clearTimeout(timeoutId);
     conclude();
   }

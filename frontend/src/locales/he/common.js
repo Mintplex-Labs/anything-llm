@@ -1476,6 +1476,8 @@ const TRANSLATIONS = {
       triggered: "התעסוקה בוצעה בהצלחה.",
       triggerFailed: "לא הצליח להפעיל את העבודה",
       triggerSkipped: "העבודה כבר נמצאת בשלבי ביצוע.",
+      killed: "העבודה הסתיימה בהצלחה.",
+      killFailed: "לא הצלחתי לעצור את העבודה",
     },
     row: {
       neverRun: "לעולם אל תרוץ",
@@ -1555,6 +1557,7 @@ const TRANSLATIONS = {
         duration: "משך זמן",
         error: "שגיאה",
       },
+      stopJob: "להפסיק עבודה",
     },
     runDetail: {
       loading: "טעינת פרטי הריצה...",
@@ -1579,6 +1582,8 @@ const TRANSLATIONS = {
         promptTokens: "מילות מפתח:",
         completionTokens: "טוקנים לסיום:",
       },
+      stopJob: "הפסק עבודה",
+      killing: "עצירה...",
     },
     toolCall: {
       arguments: "טיעונים:",
@@ -1598,11 +1603,11 @@ const TRANSLATIONS = {
       },
     },
     status: {
-      completed: null,
-      failed: null,
-      timed_out: null,
-      running: null,
-      queued: null,
+      completed: "הושלם",
+      failed: "נכשל",
+      timed_out: "הזמן פג",
+      running: "ריצה",
+      queued: "באי תור",
     },
   },
 };

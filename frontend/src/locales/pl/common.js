@@ -1552,6 +1552,8 @@ const TRANSLATIONS = {
       triggered: "Zlecenie zostało pomyślnie uruchomione.",
       triggerFailed: "Nie udało się uruchomić zadania.",
       triggerSkipped: "Prace nad tym projektem są już w toku.",
+      killed: "Praca została pomyślnie zakończona.",
+      killFailed: "Nie udało się zatrzymać pracy",
     },
     row: {
       neverRun: "Nigdy nie należy jechać zbyt szybko.",
@@ -1633,6 +1635,7 @@ const TRANSLATIONS = {
         duration: "Czas trwania",
         error: "Błąd",
       },
+      stopJob: "Zakończ pracę",
     },
     runDetail: {
       loading: "Wczytywanie szczegółów przebiegu...",
@@ -1657,6 +1660,8 @@ const TRANSLATIONS = {
         promptTokens: "Słowa kluczowe:",
         completionTokens: "Tokeny zakończenia:",
       },
+      stopJob: "Zakończ pracę",
+      killing: "Przestań...",
     },
     toolCall: {
       arguments: "Argumenty:",
@@ -1676,11 +1681,11 @@ const TRANSLATIONS = {
       },
     },
     status: {
-      completed: null,
-      failed: null,
-      timed_out: null,
-      running: null,
-      queued: null,
+      completed: "Zakończone",
+      failed: "Nie udało się",
+      timed_out: "Czas wymarł",
+      running: "Bieganie",
+      queued: "W kolejce",
     },
   },
 };

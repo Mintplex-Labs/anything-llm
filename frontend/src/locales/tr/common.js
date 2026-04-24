@@ -1545,6 +1545,8 @@ const TRANSLATIONS = {
       triggered: "İş başarıyla başlatıldı.",
       triggerFailed: "İşin başlatılması başarısız oldu.",
       triggerSkipped: "Bu iş için zaten bir çalışma süreci başlamıştır.",
+      killed: "İş, başarıyla tamamlandı.",
+      killFailed: "İşten ayrılmayı başaramadı",
     },
     row: {
       neverRun: "Asla hızlanmayın.",
@@ -1625,6 +1627,7 @@ const TRANSLATIONS = {
         duration: "Süre",
         error: "Hata",
       },
+      stopJob: "İşten ayrıl",
     },
     runDetail: {
       loading: "Yükleme işleminin ayrıntıları yükleniyor...",
@@ -1649,6 +1652,8 @@ const TRANSLATIONS = {
         promptTokens: "Başlangıç belirteçleri:",
         completionTokens: "Tamamlanmış token'lar:",
       },
+      stopJob: "İşten Çık",
+      killing: "Dur...",
     },
     toolCall: {
       arguments: "Tartışmalar:",
@@ -1668,11 +1673,11 @@ const TRANSLATIONS = {
       },
     },
     status: {
-      completed: null,
-      failed: null,
-      timed_out: null,
-      running: null,
-      queued: null,
+      completed: "Tamamlandı",
+      failed: "Başarısız",
+      timed_out: "Zaman aşımı",
+      running: "Koşmak",
+      queued: "Bekleme halinde",
     },
   },
 };

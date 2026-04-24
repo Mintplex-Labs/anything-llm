@@ -1532,6 +1532,8 @@ const TRANSLATIONS = {
       triggered: "Úkol byl úspěšně spuštěn.",
       triggerFailed: "Nepodařilo se spustit danou úlohu.",
       triggerSkipped: "Práce na tomto projektu již probíhá.",
+      killed: "Práce byla úspěšně ukončena",
+      killFailed: "Nebylo možné zastavit pracovní činnost.",
     },
     row: {
       neverRun: "Nikdy nespěchejte",
@@ -1613,6 +1615,7 @@ const TRANSLATIONS = {
         duration: "Délka",
         error: "Chyba",
       },
+      stopJob: "Zastavit práci",
     },
     runDetail: {
       loading: "Načítám podrobnosti o běhu...",
@@ -1637,6 +1640,8 @@ const TRANSLATIONS = {
         promptTokens: "Klíčová slova:",
         completionTokens: "Tokeny pro dokončení:",
       },
+      stopJob: "Zastavení práce",
+      killing: "Zastavte...",
     },
     toolCall: {
       arguments: "Argumenty:",
@@ -1656,11 +1661,11 @@ const TRANSLATIONS = {
       },
     },
     status: {
-      completed: null,
-      failed: null,
-      timed_out: null,
-      running: null,
-      queued: null,
+      completed: "Dokončeno",
+      failed: "Neúspěšné",
+      timed_out: "Časový limit dosáhl",
+      running: "Běh",
+      queued: "Na čekací listině",
     },
   },
 };

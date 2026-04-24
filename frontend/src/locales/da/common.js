@@ -1536,6 +1536,8 @@ const TRANSLATIONS = {
       triggered: "Job blev korrekt initieret.",
       triggerFailed: "Mislykkedes med at starte jobbet",
       triggerSkipped: "Arbejdet er allerede i gang.",
+      killed: "Arbejdet blev afbrudt med succes.",
+      killFailed: "Mislykkedes med at stoppe arbejdet",
     },
     row: {
       neverRun: "Aldrig køre",
@@ -1616,6 +1618,7 @@ const TRANSLATIONS = {
         duration: "Varighed",
         error: "Fejl",
       },
+      stopJob: "Afbryd ansættelsen",
     },
     runDetail: {
       loading: "Indlæsning af detaljer om kørslen...",
@@ -1640,6 +1643,8 @@ const TRANSLATIONS = {
         promptTokens: "Prompt-ord:",
         completionTokens: "Afslutningsmarkører:",
       },
+      stopJob: "Afslut stillingen",
+      killing: "Afbryde...",
     },
     toolCall: {
       arguments: "Argumenter:",
@@ -1659,11 +1664,11 @@ const TRANSLATIONS = {
       },
     },
     status: {
-      completed: null,
-      failed: null,
-      timed_out: null,
-      running: null,
-      queued: null,
+      completed: "Afsluttet",
+      failed: "Mislykket",
+      timed_out: "Tidsudløb",
+      running: "Løb",
+      queued: "I venter",
     },
   },
 };

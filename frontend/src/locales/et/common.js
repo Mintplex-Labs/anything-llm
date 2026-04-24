@@ -1489,6 +1489,8 @@ const TRANSLATIONS = {
       triggered: "Töö on edukalt käivitunud.",
       triggerFailed: "Ei õnnestunud töö käivitada",
       triggerSkipped: "Töö on juba alguses.",
+      killed: "Töö lõpetati edukalt",
+      killFailed: "Edasi töötamist ei suutnud peatada",
     },
     row: {
       neverRun: "Ära kunagi kiirusta",
@@ -1570,6 +1572,7 @@ const TRANSLATIONS = {
         duration: "Kestvus",
         error: "Viga",
       },
+      stopJob: "Töö peatamine",
     },
     runDetail: {
       loading: "Laadimise ajal saadaval on sõidu üksikasjad...",
@@ -1594,6 +1597,8 @@ const TRANSLATIONS = {
         promptTokens: "Algatusmärgid:",
         completionTokens: "Lõpetamisandmed:",
       },
+      stopJob: "Töö peatamine",
+      killing: "Peatumine...",
     },
     toolCall: {
       arguments: "Argumentid:",
@@ -1613,11 +1618,11 @@ const TRANSLATIONS = {
       },
     },
     status: {
-      completed: null,
-      failed: null,
-      timed_out: null,
-      running: null,
-      queued: null,
+      completed: "Lõpitatud",
+      failed: "Epäõnnestunud",
+      timed_out: "Aja täitunud",
+      running: "Jooksmine",
+      queued: "Ootel",
     },
   },
 };

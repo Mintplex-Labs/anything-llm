@@ -299,6 +299,32 @@ class BackgroundService {
   }
 
   /**
+   * Kill a specific run's worker process. This terminates the worker but does
+   * not update the database — the caller should use ScheduledJobRun.kill()
+   * before or after calling this to mark the run as failed.
+   *
+   * @param {number} jobId - scheduled_jobs.id (parent job)
+   * @param {number} runId - scheduled_job_runs.id (not directly used, but for
+   *   future multi-run support; currently we kill all workers for the jobId)
+   * @returns {boolean} true if a worker was found and killed, false otherwise
+   */
+  killRun(jobId, _runId) {
+    const workers = this.#scheduledJobWorkers.get(Number(jobId));
+    if (!workers || workers.size === 0) return false;
+
+    let killed = false;
+    for (const worker of workers) {
+      try {
+        worker.kill("SIGTERM");
+        killed = true;
+      } catch {
+        /* worker may have already exited */
+      }
+    }
+    return killed;
+  }
+
+  /**
    * Enqueue a scheduled job for execution. Called by both the cron timer
    * (in addScheduledJob) and the manual trigger endpoint. ScheduledJobRun.start()
    * atomically rejects the call if the job already has a run in flight.

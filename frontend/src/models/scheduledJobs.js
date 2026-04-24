@@ -113,6 +113,15 @@ const ScheduledJobs = {
       .then((res) => res.json())
       .catch(() => ({ tools: [] }));
   },
+
+  killRun: async function (runId) {
+    return await fetch(`${API_BASE}/scheduled-jobs/runs/${runId}/kill`, {
+      method: "POST",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .catch((e) => ({ success: false, error: e.message }));
+  },
 };
 
 export default ScheduledJobs;

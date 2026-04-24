@@ -1520,6 +1520,8 @@ const TRANSLATIONS = {
       triggered: "Job triggered successfully",
       triggerFailed: "Failed to trigger job",
       triggerSkipped: "A run is already in progress for this job",
+      killed: "Job stopped successfully",
+      killFailed: "Failed to stop job",
     },
     row: {
       neverRun: "Never run",
@@ -1594,6 +1596,7 @@ const TRANSLATIONS = {
       emptyTitle: "No runs yet for this job",
       emptySubtitle: "Run the job now and view its results.",
       runNow: "Run Now",
+      stopJob: "Stop job",
       table: {
         status: "Status",
         started: "Started",
@@ -1611,6 +1614,8 @@ const TRANSLATIONS = {
       continueInThread: "Continue in Thread",
       creating: "Creating...",
       threadFailed: "Failed to create thread",
+      stopJob: "Stop Job",
+      killing: "Stopping...",
       sections: {
         prompt: "Prompt",
         error: "Error",

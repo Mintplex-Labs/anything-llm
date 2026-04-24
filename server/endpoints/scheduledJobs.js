@@ -59,7 +59,7 @@ function scheduledJobEndpoints(app) {
     }
   );
 
-  // Mark a run as read
+  // Mark a run as read or continue in thread, or kill a running or queued job run
   app.post(
     "/scheduled-jobs/runs/:runId/:action",
     [validatedRequest, isSingleUserMode],
@@ -67,7 +67,7 @@ function scheduledJobEndpoints(app) {
       try {
         const { action } = request.params;
 
-        if (!["read", "continue"].includes(action))
+        if (!["read", "continue", "kill"].includes(action))
           throw new Error("Invalid action");
 
         if (action === "read") {
@@ -86,6 +86,23 @@ function scheduledJobEndpoints(app) {
             workspaceSlug: workspace.slug,
             threadSlug: thread.slug,
           });
+        }
+
+        if (action === "kill") {
+          const run = await ScheduledJobRun.get({
+            id: Number(request.params.runId),
+          });
+          if (!run)
+            return response.status(404).json({ error: "Run not found" });
+          if (!["queued", "running"].includes(run.status)) {
+            return response.status(400).json({
+              error: "Only running or queued jobs can be killed",
+            });
+          }
+
+          const killed = backgroundService.killRun(run.jobId, run.id);
+          if (!killed) await ScheduledJobRun.kill(run.id);
+          return response.status(200).json({ success: true });
         }
       } catch {
         response.sendStatus(500);

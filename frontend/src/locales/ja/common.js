@@ -1520,6 +1520,8 @@ const TRANSLATIONS = {
       triggered: "ジョブが正常に実行されました",
       triggerFailed: "ジョブの実行が失敗しました",
       triggerSkipped: "この仕事については、すでに作業が進んでいます。",
+      killed: "作業は正常に終了しました",
+      killFailed: "仕事をやめることができなかった",
     },
     row: {
       neverRun: "絶対に走らない",
@@ -1600,6 +1602,7 @@ const TRANSLATIONS = {
         duration: "期間",
         error: "エラー",
       },
+      stopJob: "仕事の停止",
     },
     runDetail: {
       loading: "ロード実行の詳細を読み込んでいます...",
@@ -1624,6 +1627,8 @@ const TRANSLATIONS = {
         promptTokens: "プロンプトトークン:",
         completionTokens: "完了トークン：",
       },
+      stopJob: "求人停止",
+      killing: "停止…",
     },
     toolCall: {
       arguments: "主張：",
@@ -1643,11 +1648,11 @@ const TRANSLATIONS = {
       },
     },
     status: {
-      completed: null,
-      failed: null,
-      timed_out: null,
-      running: null,
-      queued: null,
+      completed: "完了",
+      failed: "失敗",
+      timed_out: "時間切れ",
+      running: "ランニング",
+      queued: "待ち列",
     },
   },
 };

@@ -1539,6 +1539,8 @@ const TRANSLATIONS = {
       triggered: "Darbas buvo sėkmingai inicijuotas.",
       triggerFailed: "Nepavyko inicijuoti užduoties",
       triggerSkipped: "Šis projektas jau pradėtas vykdyti.",
+      killed: "Darbas sėkmingai baigtas",
+      killFailed: "Nepavyko sustabdyti darbą",
     },
     row: {
       neverRun: "Niekada nesnydžkite",
@@ -1619,6 +1621,7 @@ const TRANSLATIONS = {
         duration: "Tr উপক",
         error: "Klaida",
       },
+      stopJob: "Pamesti darbas",
     },
     runDetail: {
       loading: "Įkraudami važiavimo duomenis...",
@@ -1643,6 +1646,8 @@ const TRANSLATIONS = {
         promptTokens: "Įspūdingos žymės:",
         completionTokens: "Baigimo žymekliai:",
       },
+      stopJob: "Nutraukite darbą",
+      killing: "Sustabdyti...",
     },
     toolCall: {
       arguments: "Argumentai:",
@@ -1662,11 +1667,11 @@ const TRANSLATIONS = {
       },
     },
     status: {
-      completed: null,
-      failed: null,
-      timed_out: null,
-      running: null,
-      queued: null,
+      completed: "Baigtas",
+      failed: "Nepavyko",
+      timed_out: "Laikas baigėsi",
+      running: "Bėgimas",
+      queued: "Apsisukęs",
     },
   },
 };

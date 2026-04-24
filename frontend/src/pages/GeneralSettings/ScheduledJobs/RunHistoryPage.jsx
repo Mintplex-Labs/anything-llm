@@ -112,7 +112,12 @@ export default function RunHistoryPage() {
         ) : (
           <div className="flex flex-col divide-y divide-white/5 light:divide-slate-200">
             {runs.map((run) => (
-              <RunRow key={run.id} run={run} jobId={job?.id} />
+              <RunRow
+                key={run.id}
+                run={run}
+                jobId={job?.id}
+                onKilled={fetchRuns}
+              />
             ))}
           </div>
         )}

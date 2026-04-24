@@ -1531,6 +1531,8 @@ const TRANSLATIONS = {
       triggered: "Việc tìm kiếm việc làm đã thành công.",
       triggerFailed: "Không thể kích hoạt công việc",
       triggerSkipped: "Công việc này đã bắt đầu triển khai.",
+      killed: "Việc làm đã được hoàn thành thành công.",
+      killFailed: "Không thể ngăn chặn việc chấm dứt hợp đồng",
     },
     row: {
       neverRun: "Không bao giờ chạy",
@@ -1611,6 +1613,7 @@ const TRANSLATIONS = {
         duration: "Thời gian",
         error: "Lỗi",
       },
+      stopJob: "Ngừng làm",
     },
     runDetail: {
       loading: "Hiển thị chi tiết chạy...",
@@ -1635,6 +1638,8 @@ const TRANSLATIONS = {
         promptTokens: "Từ gợi ý:",
         completionTokens: "Các token hoàn thành:",
       },
+      stopJob: "Dừng việc",
+      killing: "Dừng lại...",
     },
     toolCall: {
       arguments: "Các lập luận:",
@@ -1654,11 +1659,11 @@ const TRANSLATIONS = {
       },
     },
     status: {
-      completed: null,
-      failed: null,
-      timed_out: null,
-      running: null,
-      queued: null,
+      completed: "Hoàn thành",
+      failed: "Thất bại",
+      timed_out: "Thời gian đã hết",
+      running: "Chạy bộ",
+      queued: "Đang chờ",
     },
   },
 };

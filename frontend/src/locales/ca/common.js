@@ -1559,6 +1559,8 @@ const TRANSLATIONS = {
       triggered: "La tasca s'ha completat amb èxit.",
       triggerFailed: "No s'ha pogut iniciar la tasca.",
       triggerSkipped: "Ja s'ha iniciat la feina per a aquest projecte.",
+      killed: "La feina s'ha completat amb èxit.",
+      killFailed: "No va poder evitar que es fes la feina.",
     },
     row: {
       neverRun: "Mai no corres",
@@ -1639,6 +1641,7 @@ const TRANSLATIONS = {
         duration: "Durada",
         error: "Error",
       },
+      stopJob: "Aturar la feina",
     },
     runDetail: {
       loading: "Càrrec detalls de la sessió...",
@@ -1663,6 +1666,8 @@ const TRANSLATIONS = {
         promptTokens: "Tokens de desencadenament:",
         completionTokens: "Tokens de finalització:",
       },
+      stopJob: "Finalitzar feina",
+      killing: "Aturar...",
     },
     toolCall: {
       arguments: "Argumentacions:",
@@ -1682,11 +1687,11 @@ const TRANSLATIONS = {
       },
     },
     status: {
-      completed: null,
-      failed: null,
-      timed_out: null,
-      running: null,
-      queued: null,
+      completed: "Complet",
+      failed: "Fallit",
+      timed_out: "Ha expirat el temps",
+      running: "Correu",
+      queued: "En la fila d'espera",
     },
   },
 };

@@ -1550,6 +1550,8 @@ const TRANSLATIONS = {
       triggered: "De werkzaamheden zijn succesvol afgerond.",
       triggerFailed: "Niet mogelijk om de taak uit te voeren",
       triggerSkipped: "Er is al begonnen met het uitvoeren van dit project.",
+      killed: "De werkzaamheden zijn succesvol beëindigd.",
+      killFailed: "Niet in staat geweest om het werk te stoppen.",
     },
     row: {
       neverRun: "Nooit versnellen",
@@ -1631,6 +1633,7 @@ const TRANSLATIONS = {
         duration: "Duur",
         error: "Fout",
       },
+      stopJob: "Werkonderbreking",
     },
     runDetail: {
       loading: "Laad details van de uitvoering in...",
@@ -1655,6 +1658,8 @@ const TRANSLATIONS = {
         promptTokens: "Aanwijstokens:",
         completionTokens: "Voltooiingstokens:",
       },
+      stopJob: "Werkonderbreking",
+      killing: "Stoppen...",
     },
     toolCall: {
       arguments: "Argumenten:",
@@ -1674,11 +1679,11 @@ const TRANSLATIONS = {
       },
     },
     status: {
-      completed: null,
-      failed: null,
-      timed_out: null,
-      running: null,
-      queued: null,
+      completed: "Afgerond",
+      failed: "Mislukt",
+      timed_out: "Tijdslimiet bereikt",
+      running: "Hardlopen",
+      queued: "In de wachtrij",
     },
   },
 };

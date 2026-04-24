@@ -1,8 +1,12 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Circle } from "@phosphor-icons/react";
+import { useTranslation } from "react-i18next";
+import { Circle, Stop } from "@phosphor-icons/react";
 import moment from "moment";
 import paths from "@/utils/paths";
 import StatusBadge from "./StatusBadge";
+import ScheduledJobs from "@/models/scheduledJobs";
+import showToast from "@/utils/toast";
 
 /**
  * Format a run's elapsed time as ms / s / m.
@@ -25,12 +29,31 @@ function formatDuration(run) {
  * navigates to the run detail page.
  * @param {Object} run - The run object.
  * @param {string} jobId - The ID of the job.
+ * @param {function} onKilled - Callback when a run is killed (to refresh the list).
  * @returns {React.ReactNode} The rendered row.
  */
-export default function RunRow({ run, jobId }) {
+export default function RunRow({ run, jobId, onKilled }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
+  const [killing, setKilling] = useState(false);
   const unreadAndTerminal =
-    !run.readAt && run.status !== "running" && run.status !== "queued";
+    !run.readAt && !["running", "queued"].includes(run.status);
+  const isKillable = ["running", "queued"].includes(run.status);
+
+  const handleKill = async (e) => {
+    e.stopPropagation();
+    setKilling(true);
+    const { success, error } = await ScheduledJobs.killRun(run.id);
+    setKilling(false);
+
+    if (!success) {
+      showToast(error || t("scheduledJobs.toast.killFailed"), "error");
+      return;
+    }
+
+    showToast(t("scheduledJobs.toast.killed"), "success");
+    onKilled?.();
+  };
 
   return (
     <button
@@ -46,6 +69,17 @@ export default function RunRow({ run, jobId }) {
             weight="fill"
             className="h-2 w-2 text-blue-400 light:text-blue-600 absolute -left-4"
           />
+        )}
+        {isKillable && (
+          <button
+            type="button"
+            onClick={handleKill}
+            disabled={killing}
+            title={t("scheduledJobs.runHistory.stopJob")}
+            className="border-none ml-2 p-1.5 rounded bg-red-500/20 text-red-400 light:bg-red-100 light:text-red-600 hover:bg-red-500/30 light:hover:bg-red-200 transition-colors disabled:opacity-50"
+          >
+            <Stop className="h-3.5 w-3.5" weight="bold" />
+          </button>
         )}
         <StatusBadge status={run.status} />
       </div>

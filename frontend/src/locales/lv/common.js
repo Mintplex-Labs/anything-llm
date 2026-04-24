@@ -1548,6 +1548,8 @@ const TRANSLATIONS = {
       triggered: "Darbs veiksmīgi izpildīts.",
       triggerFailed: "Neizdevās aktivizēt darbu",
       triggerSkipped: "Šī darba izpilde jau ir sākusies.",
+      killed: "Darbs veiksmīgi pārtraukts",
+      killFailed: "Neizdevās pārtraukt darbu",
     },
     row: {
       neverRun: "Nekad neiet sprintā",
@@ -1629,6 +1631,7 @@ const TRANSLATIONS = {
         duration: "Laiks",
         error: "Kļūda",
       },
+      stopJob: "Aizstāt darbu",
     },
     runDetail: {
       loading: "Ievadīšanas darbību apraksts...",
@@ -1653,6 +1656,8 @@ const TRANSLATIONS = {
         promptTokens: "Ievade:",
         completionTokens: "Pilnībā aprakstīti elementi:",
       },
+      stopJob: "Aizstāt darbu",
+      killing: "Apstādam...",
     },
     toolCall: {
       arguments: "Argumenti:",
@@ -1672,11 +1677,11 @@ const TRANSLATIONS = {
       },
     },
     status: {
-      completed: null,
-      failed: null,
-      timed_out: null,
-      running: null,
-      queued: null,
+      completed: "Pilnots",
+      failed: "Neizdevies",
+      timed_out: "Laiks esot beidzies",
+      running: "Skriešana",
+      queued: "Iekļauts rindā",
     },
   },
 };

@@ -1526,6 +1526,8 @@ const TRANSLATIONS = {
       triggered: "A tarefa foi executada com sucesso.",
       triggerFailed: "Não foi possível iniciar a tarefa.",
       triggerSkipped: "O projeto já está em andamento.",
+      killed: "A tarefa foi concluída com sucesso.",
+      killFailed: "Não conseguiu impedir a demissão.",
     },
     row: {
       neverRun: "Nunca corri",
@@ -1606,6 +1608,7 @@ const TRANSLATIONS = {
         duration: "Duração",
         error: "Erro",
       },
+      stopJob: "Interromper o emprego",
     },
     runDetail: {
       loading: "Carregando detalhes da execução...",
@@ -1630,6 +1633,8 @@ const TRANSLATIONS = {
         promptTokens: "Palavras-chave de gatilho:",
         completionTokens: "Tokens de conclusão:",
       },
+      stopJob: "Interromper o emprego",
+      killing: "Parar...",
     },
     toolCall: {
       arguments: "Argumentos:",
@@ -1649,11 +1654,11 @@ const TRANSLATIONS = {
       },
     },
     status: {
-      completed: null,
-      failed: null,
-      timed_out: null,
-      running: null,
-      queued: null,
+      completed: "Concluído",
+      failed: "Falhou",
+      timed_out: "Tempo esgotado",
+      running: "Corrida",
+      queued: "Em espera",
     },
   },
 };
