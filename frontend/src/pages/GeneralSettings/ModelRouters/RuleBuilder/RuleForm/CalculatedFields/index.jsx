@@ -218,7 +218,7 @@ function ConditionRow({
           type="button"
           onClick={onRemove}
           aria-label={t("model-router.rule-form.remove-condition")}
-          className="border-none shrink-0 mb-2 text-zinc-400 light:text-slate-500 hover:text-red-400 light:hover:text-red-500 transition-colors"
+          className={`border-none shrink-0 self-start ${showLabels ? "mt-[34px]" : "mt-2"} text-zinc-400 light:text-slate-500 hover:text-red-400 light:hover:text-red-500 transition-colors`}
         >
           <X size={16} weight="bold" />
         </button>
