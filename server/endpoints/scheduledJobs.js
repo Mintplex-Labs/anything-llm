@@ -4,6 +4,7 @@ const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { isSingleUserMode } = require("../utils/middleware/multiUserProtected");
 const { reqBody, safeJsonParse } = require("../utils/http");
 const { BackgroundService } = require("../utils/BackgroundWorkers");
+const { Telemetry } = require("../models/telemetry");
 
 // BackgroundService is a singleton, so `new BackgroundService()` anywhere in
 // the codebase returns the same instance that `server/index.js` booted. We
@@ -166,7 +167,7 @@ function scheduledJobEndpoints(app) {
         }
 
         backgroundService.addScheduledJob(job);
-
+        Telemetry.sendTelemetry("scheduled_job_created").catch(() => {});
         return response.status(201).json({ job, error: null });
       } catch (e) {
         console.error(e.message, e);
@@ -325,7 +326,6 @@ function scheduledJobEndpoints(app) {
         }
 
         const run = await backgroundService.enqueueScheduledJob(job.id);
-
         return response
           .status(200)
           .json({ success: true, skipped: !run, error: null });
