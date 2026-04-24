@@ -55,7 +55,11 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   get #isThinkingModel() {
-    return this.model === "deepseek-reasoner";
+    return [
+      "deepseek-reasoner",
+      "deepseek-v4-flash",
+      "deepseek-v4-pro",
+    ].includes(this.model);
   }
 
   get #tooledOptions() {
