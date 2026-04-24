@@ -159,7 +159,7 @@ export default {
     modelRouters: () => {
       return "/settings/model-routers";
     },
-    modelRouterEdit: (id) => {
+    modelRouterRules: (id) => {
       return `/settings/model-routers/${id}`;
     },
     systemPromptVariables: () => "/settings/system-prompt-variables",

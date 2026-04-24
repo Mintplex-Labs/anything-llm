@@ -114,7 +114,7 @@ export default function CalculatedFields({
         type="button"
         onClick={addCondition}
         aria-label={t("model-router.rule-form.add-condition")}
-        className="border-none bg-zinc-50 light:bg-slate-900 text-zinc-900 light:text-white rounded-md p-1 hover:opacity-90 transition-opacity"
+        className="border-none mt-3 bg-zinc-800 light:bg-slate-900 text-white light:text-white rounded-md p-1 hover:opacity-90 transition-opacity"
       >
         <Plus size={16} weight="bold" />
       </button>
@@ -127,7 +127,7 @@ function LogicBadge({ value, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className="border-none shrink-0 bg-zinc-700 light:bg-slate-200 text-white light:text-slate-950 text-xs font-medium leading-4 tracking-[1.2px] uppercase px-2.5 py-1.5 rounded-md hover:opacity-80 transition-opacity"
+      className="border-none shrink-0 self-start bg-zinc-700 light:bg-slate-200 text-white light:text-slate-950 text-xs font-medium leading-4 tracking-[1.2px] uppercase px-2.5 py-1.5 rounded-md hover:opacity-80 transition-opacity"
     >
       {value}
     </button>

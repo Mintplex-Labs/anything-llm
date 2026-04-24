@@ -9,7 +9,7 @@ import showToast from "@/utils/toast";
 import paths from "@/utils/paths";
 import RuleBuilder from "../RuleBuilder";
 
-export default function RouterFormPage() {
+export default function RouterRulesPage() {
   const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();

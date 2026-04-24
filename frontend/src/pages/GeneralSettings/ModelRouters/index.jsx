@@ -158,7 +158,7 @@ function RouterRow({ router, removeRouter, onEdit, showDivider }) {
     }
   };
 
-  const goToRules = () => navigate(paths.settings.modelRouterEdit(router.id));
+  const goToRules = () => navigate(paths.settings.modelRouterRules(router.id));
 
   const handleEditClick = (e) => {
     e.stopPropagation();

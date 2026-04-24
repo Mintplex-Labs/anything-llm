@@ -267,10 +267,10 @@ const router = createBrowserRouter([
       {
         path: "/settings/model-routers/:id",
         lazy: async () => {
-          const { default: RouterFormPage } = await import(
-            "@/pages/GeneralSettings/ModelRouters/RouterForm"
+          const { default: RouterRulesPage } = await import(
+            "@/pages/GeneralSettings/ModelRouters/RouterRulesPage"
           );
-          return { element: <AdminRoute Component={RouterFormPage} /> };
+          return { element: <AdminRoute Component={RouterRulesPage} /> };
         },
       },
       {
