@@ -12,7 +12,6 @@ const {
   recentChatHistory,
   sourceIdentifier,
 } = require("./index");
-const { promptWithMemories } = require("../memories");
 
 const VALID_CHAT_MODE = ["automatic", "chat", "query"];
 
@@ -230,10 +229,7 @@ async function streamChatWithWorkspace(
 
   // Compress & Assemble message to ensure prompt passes token limit with room for response
   // and build system messages based on inputs and history.
-  const systemPrompt = await promptWithMemories({
-    systemPrompt: await chatPrompt(workspace, user),
-    userId: user?.id ?? null,
-    workspaceId: workspace.id,
+  const systemPrompt = await chatPrompt(workspace, user, {
     prompt: updatedMessage,
     rawHistory,
   });

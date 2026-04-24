@@ -9,7 +9,6 @@ const {
   recentChatHistory,
   grepAllSlashCommands,
 } = require("./index");
-const { promptWithMemories } = require("../memories");
 const {
   EphemeralAgentHandler,
   EphemeralEventListener,
@@ -389,10 +388,7 @@ async function chatSync({
 
   // Compress & Assemble message to ensure prompt passes token limit with room for response
   // and build system messages based on inputs and history.
-  const systemPrompt = await promptWithMemories({
-    systemPrompt: await chatPrompt(workspace, user),
-    userId: user?.id ?? null,
-    workspaceId: workspace.id,
+  const systemPrompt = await chatPrompt(workspace, user, {
     prompt: message,
     rawHistory,
   });
@@ -756,10 +752,7 @@ async function streamChat({
 
   // Compress & Assemble message to ensure prompt passes token limit with room for response
   // and build system messages based on inputs and history.
-  const streamSystemPrompt = await promptWithMemories({
-    systemPrompt: await chatPrompt(workspace, user),
-    userId: user?.id ?? null,
-    workspaceId: workspace.id,
+  const streamSystemPrompt = await chatPrompt(workspace, user, {
     prompt: message,
     rawHistory,
   });
