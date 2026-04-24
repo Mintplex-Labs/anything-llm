@@ -299,10 +299,12 @@ const WorkspaceChats = {
     }
   },
   markMemoryProcessed: async function (ids = []) {
-    if (!ids.length) return;
+    if (!Array.isArray(ids) || ids.length === 0) return;
     try {
+      const safeIds = ids.map(Number).filter(Number.isInteger);
+      if (safeIds.length === 0) return;
       await prisma.workspace_chats.updateMany({
-        where: { id: { in: ids } },
+        where: { id: { in: safeIds } },
         data: { memoryProcessed: true },
       });
     } catch (error) {
