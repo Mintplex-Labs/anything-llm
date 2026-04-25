@@ -9,6 +9,7 @@ import { FullScreenLoader } from "@/components/Preloader";
 import { LAST_VISITED_WORKSPACE } from "@/utils/constants";
 
 export default function WorkspaceChat() {
+  const { slug } = useParams();
   const { loading, requiresAuth, mode } = usePasswordModal();
 
   if (loading) return <FullScreenLoader />;
@@ -16,7 +17,12 @@ export default function WorkspaceChat() {
     return <>{requiresAuth !== null && <PasswordModal mode={mode} />}</>;
   }
 
-  return <ShowWorkspaceChat />;
+  return (
+    <div className="w-screen h-screen overflow-hidden bg-zinc-950 light:bg-slate-50 flex">
+      {!isMobile && <Sidebar />}
+      <ShowWorkspaceChat key={slug ?? "default"} />
+    </div>
+  );
 }
 
 function ShowWorkspaceChat() {
@@ -52,15 +58,10 @@ function ShowWorkspaceChat() {
   }, []);
 
   return (
-    <>
-      <div className="w-screen h-screen overflow-hidden bg-zinc-950 light:bg-slate-50 flex">
-        {!isMobile && <Sidebar />}
-        <WorkspaceChatContainer
-          key={threadSlug ?? "default"}
-          loading={loading}
-          workspace={workspace}
-        />
-      </div>
-    </>
+    <WorkspaceChatContainer
+      key={threadSlug ?? "default"}
+      loading={loading}
+      workspace={workspace}
+    />
   );
 }
