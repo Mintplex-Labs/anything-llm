@@ -108,6 +108,7 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
+    "model-router": "Mudel: Router",
   },
   login: {
     "multi-user": {
@@ -1457,6 +1458,153 @@ const TRANSLATIONS = {
         "Kasutajad, kes ootavad kinnitamist. Võrdige siin näidatud vastuvõtusümboli koos nende Telegrami vestluses näidatud sümboliga.",
       unknown: "Tuntud pole",
     },
+  },
+  "model-router": {
+    title: "Mudelid (veedardid)",
+    description:
+      "Mudelrouterid võimaldavad teil määrata reegleid, mis automaatselt suunavad vestlussõnede erinevatese suurmudelite ja pakettidele, lähtudes konkreetsetest tingimustest.",
+    "create-router": "Loo reiting",
+    table: {
+      name: "Nimi",
+      fallback: "Varajane väljapääs, alternatiiv",
+      rules: "Reeglid",
+      workspaces: "Tööruumid",
+    },
+    "no-routers": "Hetkel pole loodud ühtegi mudeli režiinide kohta.",
+    "delete-confirm":
+      "Kas olete kindel, et soovite seadme {{name}} kustutada?\nSee kustutab kõik selle reeglid ja lõhub kõik selle abil kasutatavad tööruumid.\n\nSee toiming on pööratav.",
+    "toast-deleted": "Router on kustutatud",
+    "toast-delete-failed": "Ei õnnestunud režiinide kustutamine: {{error}}",
+    "new-router": {
+      title: "Loo uus reiteerimise mudel",
+      name: "Nimi",
+      "name-placeholder": "Näiteks: Kulusid optimeeriv lahendus",
+      description: "Kirjeldus",
+      "description-placeholder": "Valikuline kirjeldus",
+      "fallback-label": "Varajane alternatiiv ja mudel",
+      "fallback-description":
+        "Kasutatakse, kui pole võimalik leida sobivat marsruuti.",
+      "cooldown-label": "Vaikumise aeg (sekundites)",
+      "cooldown-help":
+        "Kuida kaua marsruudi otsuse andmed säiliks pärast reeglite uuesti hindamist. Väärtuse seadmine 0-le, et kaadimine välja lülitada.",
+      "name-required": "Nimi on vajalik.",
+      "fallback-required": "Pealejuhtiva teenuse ja mudeli on vaja.",
+      cancel: "Katkuda\nTühista",
+      creating: "Loomine...",
+      create: "Loo reitera",
+      "toast-created": "Router on edukalt loodud.",
+    },
+    "edit-router": {
+      "back-to-routers": "Tagasi mudelide reässidele",
+      title: "Konfiguratsioon: {{name}}",
+      description:
+        "Lahendage ruuteri seaded ja määrake alternatiivne andmesidepakkuja/mudel.",
+      name: "Nimi",
+      "description-label": "Kirjeldus",
+      "description-placeholder": "Valikuline kirjeldus",
+      "fallback-label": "Varajane alternatiiv ja mudel",
+      "fallback-description":
+        "Kasutatakse, kui pole leitud ühtki reeglit, mis sobiks",
+      "cooldown-label": "Vaikumise aeg (sekundites)",
+      "cooldown-help":
+        "Kuida kaua marsruuti valiku andmed säiliks, enne kui reegleid uuesti hindatakse. Määrake väärtuseks 0, et kaustamine välja lülitada.",
+      saving: "Säästmine...",
+      save: "Salvesta muutused",
+      "toast-updated": "Router on edukalt värskendatud",
+      "toast-update-failed": "Ei õnnestunud ruuterit värskendada",
+    },
+    rules: {
+      title: "Reite määramise reeglid",
+      description:
+        "Reegleid hindatakse alates kõige olulisemast kuni kõige vähem olulisema. Klõpsake, et muuta järjestust. Esimese mängija võidab.",
+      "add-rule": "Lisada reegel",
+      "delete-confirm": 'Kas soovite kustutada reegli "{{title}}"?',
+      "toast-deleted": "Reegel kustutatud",
+      "toast-delete-failed": "Reegli kustutamine ebaõnnestus",
+      "toast-reorder-failed": "Ei õnnestunud taastada reegleid",
+      "no-rules":
+        "Hetkel pole veel reegleid. Lisage reegel, et alustada marsruuti määramisega.",
+      "title-with-name": "Routeri reeglid: {{name}}",
+      "empty-description":
+        "Lisage reegel, mis määrab, et vestlemisvihtede saadetakse konkreetsetele teenustele ja mudelitele.",
+      "new-rule-button": "Uus reegel",
+    },
+    "rule-form": {
+      "edit-title": "Reegli muutmise funktsioon",
+      "new-title": "Uus reegel",
+      "title-label": "Pealkiri",
+      "title-help":
+        "Kujul, mis koosneb ainult väikeste tähtedest ja rõngastest. Automaatne vormistamine salvestamisel.",
+      "rule-type": "Reegli tüüp",
+      "property-label": "Omand",
+      "property-select": "Vali",
+      "comparator-label": "Samaväärilikkuse kontrollija",
+      "value-label": "Väärtus",
+      "match-description-label": "Mängu kirjeldus",
+      "match-description-placeholder":
+        "nt kasutaja küsib seaduslikest küsimustest, lepingutest või nõuetele vastamise kohta.",
+      "match-description-help":
+        "Selgitage, millisel juhul see reegel peaks kehtima. Routeri tagasijuhitav mudel loeb kasutaja sõnumi ja otsustab, kas see vastab sellele kirjeldusele.",
+      "route-to-label": "Teenusepakkaja ja mudeli leevastus",
+      "route-to-description":
+        "Kui see reegel on kehtiv, siis kasutage seda pakkuja/mudelit.",
+      cancel: "Hüvida",
+      saving: "Säästmine...",
+      "update-rule": "Uuenduse reegel",
+      "create-rule": "Sestamine",
+      "title-required": "Pealkirja on vaja",
+      "toast-updated": "Reegel on uuendatud",
+      "toast-created": "Reegel loodud",
+      "toast-save-failed": "Reegli salvestamine ebaõnnestus",
+      "comparator-select": "Vali",
+      "logic-label": "Kohtumine",
+      "logic-and": "Järgmine",
+      "logic-or": "MISKI järgmistest (VAGRAM)",
+      "add-condition": "Lisada tingimus",
+      "remove-condition": "Eemalda tingimus",
+      "conditions-incomplete":
+        'Sujul "{{index}}" on puudu – täisenda omand, võrdleja ja väärtus.',
+    },
+    "provider-picker": {
+      "select-provider": "Vali teenusepakkaja",
+      "setup-required": "(vajalik on ettevalmistus)",
+      "loading-models": "Mudelite laadimine...",
+      "select-model": "Valige mudel",
+      "enter-model": "Sisestage mudeli nimi",
+      "select-provider-first": "Valige kõigepealt teenusepakkuja.",
+      "configure-to-continue": "Konfigureeri {{name}}, et see jätku.",
+      "configure-provider": "Konfigureeri {{name}}",
+      "setup-credentials":
+        "Sisestage vajalikud andmed, et kasutada {{name}} kui reitingu sihte.",
+      cancel: "Katkuda\nTühista",
+      "save-settings": "Salvesta seaded",
+      "toast-save-failed": "Suutnud seadeid salvestada: {{error}}",
+      "toast-configured": "Teenuse andja on edukalt konfigureeritud.",
+    },
+    "router-selection": {
+      "loading-routers": "Routerid laaditakse...",
+      "no-routers-prefix-settings":
+        "Hetkel pole konfigureeritud ühtegi režiisi.",
+      "no-routers-prefix-workspace":
+        "Pole konfigureeritud mitte ühtegi režiiseri.",
+      "no-routers-link": "Loo seda seadetes, mis on mõeldud mudeli reiteerile.",
+      "model-router-label": "Mudel: Router",
+      "select-router": "Valige ruuter",
+      "select-description": "Valige, millist ruuterit selle töökojas kasutada.",
+      "no-routers-chat":
+        "Puuduvad konfigureeritud ruuterid. Loomitage uus ruuter seadetes > AI pakijad > Mudeli ruuter.",
+      "rule-count": "({{count}} reeglid)",
+    },
+    metrics: {
+      "model-router-default": "Mudel: Router",
+    },
+    chat: {
+      "select-router-error": "Valige ruuter",
+      "invalid-model": "Väärtuslik mudeli valik",
+    },
+    "empty-description":
+      "Hetkel pole konfigureeritud ühtegi režiiverit. Loomistage üks, et alustada.",
+    "new-router-button": "Uus ruuter",
   },
 };
 

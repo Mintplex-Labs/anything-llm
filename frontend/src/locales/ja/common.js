@@ -108,6 +108,7 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "テレグラム",
     },
+    "model-router": "モデルルーター",
   },
   login: {
     "multi-user": {
@@ -1489,6 +1490,151 @@ const TRANSLATIONS = {
         "本人情報の確認待ちのユーザー。ここに表示されているペアリングコードを、彼らがTelegramで表示しているコードと照合してください。",
       unknown: "不明",
     },
+  },
+  "model-router": {
+    title: "モデルルーター",
+    description:
+      "モデルルーターを使用すると、特定の条件に基づいて、チャットメッセージを異なるLLMプロバイダーやモデルに自動的にルーティングするためのルールを定義できます。",
+    "create-router": "ルーターの作成",
+    table: {
+      name: "名前",
+      fallback: "代替案、バックアップ",
+      rules: "ルール",
+      workspaces: "作業スペース",
+    },
+    "no-routers": "現時点では、特定のモデルのルーターは作成されていません。",
+    "delete-confirm":
+      "ルーター「{{name}}」を削除してもよろしいですか？\nこれにより、すべての設定と、それを使用しているすべてのワークスペースとの関連付けが解除されます。\n\nこの操作は元に戻すことができません。",
+    "toast-deleted": "ルーターが削除されました",
+    "toast-delete-failed": "ルーターの削除に失敗しました：{{error}}",
+    "new-router": {
+      title: "新しいモデルのルーターを作成する",
+      name: "名前",
+      "name-placeholder": "例：コスト最適化ツール",
+      description: "説明",
+      "description-placeholder": "任意の説明",
+      "fallback-label": "代替プロバイダおよびモデル",
+      "fallback-description": "ルーティングルールに一致しない場合に利用",
+      "cooldown-label": "キャッシュのクールダウン時間（秒）",
+      "cooldown-help":
+        "ルーティングの決定が再評価されるまでの期間をキャッシュする設定。キャッシュを無効にするには、0に設定してください。",
+      "name-required": "氏名が必要です。",
+      "fallback-required": "代替プロバイダーとモデルが必要です。",
+      cancel: "キャンセル",
+      creating: "作成中…",
+      create: "ルーターを作成する",
+      "toast-created": "ルーターの作成が成功しました",
+    },
+    "edit-router": {
+      "back-to-routers": "モデルルーターに戻る",
+      title: "ルーターの編集: {{name}}",
+      description:
+        "ルーターの設定を更新し、代替プロバイダ/モデルを設定してください。",
+      name: "名前",
+      "description-label": "説明",
+      "description-placeholder": "（任意）説明",
+      "fallback-label": "代替プロバイダーおよびモデル",
+      "fallback-description": "ルーティングルールに一致しない場合に利用",
+      "cooldown-label": "キャッシュのクールダウン時間 (秒)",
+      "cooldown-help":
+        "ルーティングの決定が再評価される前に、どれくらいの期間キャッシュされるかを設定します。キャッシュを無効にするには、0に設定してください。",
+      saving: "保存中...",
+      save: "変更を保存する",
+      "toast-updated": "ルーターのアップデートが正常に完了しました",
+      "toast-update-failed": "ルーターのアップデートが失敗しました",
+    },
+    rules: {
+      title: "ルーティングルール",
+      description:
+        "ルールは優先度に基づいて、上から順に評価されます。並び替えには、ドラッグ＆ドロップをご利用ください。最初に一致したものが勝利となります。",
+      "add-rule": "ルールを追加",
+      "delete-confirm": 'ルール "{{title}}" を削除しますか？',
+      "toast-deleted": "規則が削除されました",
+      "toast-delete-failed": "ルールを削除できませんでした",
+      "toast-reorder-failed": "再注文に関するルールが適用されなかった",
+      "no-rules":
+        "現時点ではルールはまだ設定されていません。「ルーティングを開始するためのルールを追加」",
+      "title-with-name": "ルーターのルール: {{name}}",
+      "empty-description":
+        "チャットメッセージを特定のプロバイダやモデルにルーティングを開始するためのルールを追加する。",
+      "new-rule-button": "新しい規則",
+    },
+    "rule-form": {
+      "edit-title": "ルールを編集する",
+      "new-title": "新しい規則",
+      "title-label": "タイトル",
+      "title-help":
+        "すべて小文字で、アンダースコアのみを使用。保存時に自動で形式が設定されます。",
+      "rule-type": "ルールの種類",
+      "property-label": "不動産",
+      "property-select": "選択",
+      "comparator-label": "比較ツール",
+      "value-label": "価値",
+      "match-description-label": "試合の説明",
+      "match-description-placeholder":
+        "例えば、「ユーザーが、法律、契約、またはコンプライアンスに関する情報を求めている」",
+      "match-description-help":
+        "このルールが適用されるべき状況を説明してください。ルーターは、ユーザーからのメッセージを読み取り、この記述に合致するかどうかを判断します。",
+      "route-to-label": "提供者およびモデルへのアクセス方法",
+      "route-to-description":
+        "このルールに該当する場合、このプロバイダ/モデルを使用してください。",
+      cancel: "キャンセル",
+      saving: "節約...",
+      "update-rule": "更新規則",
+      "create-rule": "ルールを作成",
+      "title-required": "タイトルは必須です",
+      "toast-updated": "ルールが更新されました",
+      "toast-created": "ルールが作成されました",
+      "toast-save-failed": "ルールを保存できませんでした",
+      "comparator-select": "選択",
+      "logic-label": "試合",
+      "logic-and": "以下のすべての項目 (および)",
+      "logic-or": "以下のいずれか (または)",
+      "add-condition": "条件を追加する",
+      "remove-condition": "条件を削除する",
+      "conditions-incomplete":
+        "条件 {{index}} は未記入です。プロパティ、比較演算子、および値を入力してください。",
+    },
+    "provider-picker": {
+      "select-provider": "サービスプロバイダーを選択",
+      "setup-required": "（設定が必要です）",
+      "loading-models": "モデルの読み込み中...",
+      "select-model": "モデルを選択",
+      "enter-model": "モデル名を入力してください",
+      "select-provider-first": "まず、サービスプロバイダーを選択してください。",
+      "configure-to-continue": "{{name}}の設定を完了してください",
+      "configure-provider": "{{name}}を設定する",
+      "setup-credentials":
+        "{{name}} をルーティング先として使用するために、必要な認証情報を入力してください。",
+      cancel: "キャンセル",
+      "save-settings": "設定を保存する",
+      "toast-save-failed": "設定の保存に失敗しました：{{error}}",
+      "toast-configured": "プロバイダの設定が正常に完了しました",
+    },
+    "router-selection": {
+      "loading-routers": "ルーターの読み込み中...",
+      "no-routers-prefix-settings":
+        "現時点では、設定済みのルーターは存在しません。",
+      "no-routers-prefix-workspace": "設定されているルーターは存在しない。",
+      "no-routers-link": "モデルルーターの設定で作成",
+      "model-router-label": "モデルルーター",
+      "select-router": "ルーターを選択する",
+      "select-description":
+        "この作業スペースで使用するルーターを選択してください。",
+      "no-routers-chat":
+        "ルーターは設定されていません。設定 > AI プロバイダ > モデルルーターで作成してください。",
+      "rule-count": "({{count}}のルール)",
+    },
+    metrics: {
+      "model-router-default": "モデルルーター",
+    },
+    chat: {
+      "select-router-error": "ルーターを選択する",
+      "invalid-model": "無効なモデルの選択",
+    },
+    "empty-description":
+      "現時点では、設定されたルーターは存在しません。 まず、一つ作成して設定を開始してください。",
+    "new-router-button": "新しいルーター",
   },
 };
 

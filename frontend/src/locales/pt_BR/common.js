@@ -108,6 +108,7 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
+    "model-router": "Roteador de modelo",
   },
   login: {
     "multi-user": {
@@ -1494,6 +1495,154 @@ const TRANSLATIONS = {
         "Usuários aguardando a verificação. Compare o código de pareamento exibido aqui com o que aparece em seu chat do Telegram.",
       unknown: "Desconhecido",
     },
+  },
+  "model-router": {
+    title: "Roteadores de modelo",
+    description:
+      "Os roteadores de modelo permitem que você defina regras para rotear automaticamente mensagens de bate-papo para diferentes provedores e modelos de LLM com base em condições específicas.",
+    "create-router": "Criar Roteador",
+    table: {
+      name: "Nome",
+      fallback: "Plano de contingência\nAlternativa\nOpção alternativa",
+      rules: "Regras",
+      workspaces: "Espaços de trabalho",
+    },
+    "no-routers": "Atualmente, não foram criados modelos de roteadores.",
+    "delete-confirm":
+      'Tem certeza de que deseja excluir o roteador "{{name}}"?\nIsso removerá todas as suas configurações e desvinculará quaisquer espaços de trabalho que o utilizem.\n\nEsta ação é irreversível.',
+    "toast-deleted": "Roteador excluído",
+    "toast-delete-failed": "Falha ao excluir o roteador: {{error}}",
+    "new-router": {
+      title: "Criar um novo roteador",
+      name: "Nome",
+      "name-placeholder": "ex: Otimizador de Custos",
+      description: "Descrição",
+      "description-placeholder": "Descrição opcional",
+      "fallback-label": "Fornecedor e Modelo de Backup",
+      "fallback-description":
+        "Utilizado quando nenhuma regra de roteamento corresponde.",
+      "cooldown-label": "Tempo de resfriamento do cache (segundos)",
+      "cooldown-help":
+        "Por quanto tempo a decisão de roteamento é armazenada em cache antes de reavaliar as regras. Defina como 0 para desativar o cache.",
+      "name-required": "É necessário fornecer um nome.",
+      "fallback-required":
+        "É necessário um provedor e um modelo de contingência.",
+      cancel: "Cancelar",
+      creating: "Criando...",
+      create: "Criar Roteador",
+      "toast-created": "Roteador criado com sucesso",
+    },
+    "edit-router": {
+      "back-to-routers": "Voltar para roteadores modelo",
+      title: "Editar Roteador: {{name}}",
+      description:
+        "Atualize as configurações do roteador e o provedor/modelo de backup.",
+      name: "Nome",
+      "description-label": "Descrição",
+      "description-placeholder": "Descrição opcional",
+      "fallback-label": "Fornecedor e Modelo de Reserva",
+      "fallback-description":
+        "Utilizado quando nenhuma regra de roteamento corresponde.",
+      "cooldown-label": "Tempo de resfriamento do cache (segundos)",
+      "cooldown-help":
+        "Por quanto tempo a decisão de roteamento é armazenada em cache antes de reavaliar as regras. Defina como 0 para desativar o cache.",
+      saving: "Economizando...",
+      save: "Salvar alterações",
+      "toast-updated": "Roteador atualizado com sucesso.",
+      "toast-update-failed": "Falhou ao atualizar o roteador.",
+    },
+    rules: {
+      title: "Regras de roteamento",
+      description:
+        "As regras são avaliadas da mais importante para a menos importante. Arraste para reordenar. O primeiro a corresponder vence.",
+      "add-rule": "Adicionar Regra",
+      "delete-confirm": 'Excluir a regra "{{title}}"?',
+      "toast-deleted": "Regra removida",
+      "toast-delete-failed": "Falhou ao excluir a regra.",
+      "toast-reorder-failed": "Falhou ao redefinir as regras.",
+      "no-rules":
+        "Ainda não há regras. Adicione uma regra para iniciar o roteamento.",
+      "title-with-name": "Regras do roteador: {{name}}",
+      "empty-description":
+        "Adicione uma regra para direcionar as mensagens de bate-papo para provedores e modelos específicos.",
+      "new-rule-button": "Nova Regra",
+    },
+    "rule-form": {
+      "edit-title": "Editar regra",
+      "new-title": "Nova Regra",
+      "title-label": "Título",
+      "title-help":
+        "Minúsculas, apenas com underlines. Formatação automática ao salvar.",
+      "rule-type": "Tipo de regra",
+      "property-label": "Propriedade",
+      "property-select": "Selecione",
+      "comparator-label": "Comparador",
+      "value-label": "Valor",
+      "match-description-label": "Descrição da partida",
+      "match-description-placeholder":
+        "Por exemplo, o usuário está perguntando sobre temas legais, contratos ou questões de conformidade.",
+      "match-description-help":
+        "Descreva em que situações essa regra deve ser aplicada. O modelo de fallback do roteador irá ler a mensagem do usuário e determinar se ela corresponde a essa descrição.",
+      "route-to-label": "Rota para o Prestador de Serviços & Modelo",
+      "route-to-description":
+        "Quando esta regra for aplicada, utilize este provedor/modelo.",
+      cancel: "Cancelar",
+      saving: "Economizando...",
+      "update-rule": "Regra de atualização",
+      "create-rule": "Criar Regra",
+      "title-required": "O título é obrigatório.",
+      "toast-updated": "Regra atualizada",
+      "toast-created": "Regra criada",
+      "toast-save-failed": "Falhou ao salvar a regra.",
+      "comparator-select": "Selecione",
+      "logic-label": "Partida",
+      "logic-and": "TODOS os seguintes (E)",
+      "logic-or": "QUALQUER um dos seguintes (OU)",
+      "add-condition": "Adicionar condição",
+      "remove-condition": "Remover a condição",
+      "conditions-incomplete":
+        "A condição {{index}} está incompleta — preencha com a propriedade, o comparador e o valor.",
+    },
+    "provider-picker": {
+      "select-provider": "Selecione o fornecedor",
+      "setup-required": "(requer configuração)",
+      "loading-models": "Carregando modelos...",
+      "select-model": "Selecione o modelo",
+      "enter-model": "Insira o nome do modelo",
+      "select-provider-first": "Escolha um fornecedor primeiro.",
+      "configure-to-continue": "Configure {{name}} para continuar",
+      "configure-provider": "Configure {{name}}",
+      "setup-credentials":
+        "Insira as credenciais necessárias para usar {{name}} como destino de roteamento.",
+      cancel: "Cancelar",
+      "save-settings": "Salvar configurações",
+      "toast-save-failed": "Falhou ao salvar as configurações: {{error}}",
+      "toast-configured": "Fornecedor configurado com sucesso.",
+    },
+    "router-selection": {
+      "loading-routers": "Carregando roteadores...",
+      "no-routers-prefix-settings":
+        "Nenhum roteador foi configurado até o momento.",
+      "no-routers-prefix-workspace": "Não há roteadores configurados.",
+      "no-routers-link": "Crie um na seção de configurações do roteador.",
+      "model-router-label": "Roteador de modelo",
+      "select-router": "Selecione um roteador",
+      "select-description":
+        "Selecione o roteador que você deseja utilizar para esta área de trabalho.",
+      "no-routers-chat":
+        "Sem roteadores configurados. Crie um em Configurações > Fornecedores de IA > Roteador de Modelo.",
+      "rule-count": "({{count}} regras)",
+    },
+    metrics: {
+      "model-router-default": "Roteador de modelo",
+    },
+    chat: {
+      "select-router-error": "Selecione um roteador",
+      "invalid-model": "Seleção de modelo inválida",
+    },
+    "empty-description":
+      "Nenhum roteador foi configurado ainda. Crie um para começar.",
+    "new-router-button": "Novo Roteador",
   },
 };
 

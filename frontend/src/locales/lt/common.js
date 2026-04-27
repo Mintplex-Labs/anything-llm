@@ -115,6 +115,7 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "„Telegram“",
     },
+    "model-router": "Modelio routeris",
   },
   login: {
     "multi-user": {
@@ -1506,6 +1507,155 @@ const TRANSLATIONS = {
         "Naudotojai, laukiantys patvirtinimo. Palyginkite čia pateiktą kodą su tuo, kuris rodomas jų „Telegram“ pokalbyje.",
       unknown: "Nenurodytas",
     },
+  },
+  "model-router": {
+    title: "Modelio maršrutizatoriai",
+    description:
+      "Modelinės maršrutizavimo sistemos leidžia nustatyti taisykles, pagal kurių sąlygas automatiškai siųsti pokalbio pranešimus į skirtingus LLM (didžiosios kalbos modelio) paslaugų teikėjus ir modelius.",
+    "create-router": "Sukurti maršrutizavimo sistemą",
+    table: {
+      name: "Pavadinimas",
+      fallback: "Alternatyva; atsarginis variantas",
+      rules: "Taisyklės",
+      workspaces: "Darbo zonos",
+    },
+    "no-routers": "Kol nebuvo sukurta jokių modelinių maršrutizatorių.",
+    "delete-confirm":
+      'Ar esate tikri, kad norite ištrinti maršrutizatorių "{{name}}"?\nTai pašalins visus jo nustatytus reikalavimus ir atjunkia bet kuriuos darbalapius, kurie jį naudoja.\n\nŠis veikimas yra neatsistatomas.',
+    "toast-deleted": "Rutineris ištrintas",
+    "toast-delete-failed": "Nepavyko pašalinti maršrutizatoriaus: {{error}}",
+    "new-router": {
+      title: "Sukurti naują maršrutizavimo modelį",
+      name: "Pavadinimas",
+      "name-placeholder": 'pvz., "Kainos optimizavimo įrankis"',
+      description: "Aprašymas",
+      "description-placeholder": "Neprivaloma aprašymas",
+      "fallback-label": "Alternatyvus tiekėjas ir modelis",
+      "fallback-description":
+        "Naudojama, kai nustatytas jokios nurodyto maršruto taisyklės.",
+      "cooldown-label": "Išjungimo intervalas (sekundės)",
+      "cooldown-help":
+        "Kiek ilgai maršrutavimo sprendimas yra įrašytas į atmintį prieš pervertindamas taisykles. Nustatykite į 0, kad išjungtumėte įrašymą į atmintį.",
+      "name-required": "Reikia nurodyti vardą.",
+      "fallback-required":
+        "Reikia nustatyti alternatyvų paslaugų tiekėją ir modelį.",
+      cancel: "Atšaukti",
+      creating: "Kurimas...",
+      create: "Įrengti maršrutizavimo sistemą",
+      "toast-created": "Rutineris sėkmingai sukurta",
+    },
+    "edit-router": {
+      "back-to-routers": "Grįžti prie modelių maršrutizatorių",
+      title: "Konfigūruoti maršrutizatorių: {{name}}",
+      description:
+        "Atnaujinkite maršrutizatoriaus nustatymus ir pasirinkite alternatyvų paslaugą/modelį.",
+      name: "Pavadinimas",
+      "description-label": "Aprašymas",
+      "description-placeholder": "Neprivaloma aprašymas",
+      "fallback-label": "Alternatyvus tiekėjas ir modelis",
+      "fallback-description":
+        "Naudojamas, kai nustatytos jokios maršrutavimo taisyklės",
+      "cooldown-label": "Pavirto laikotarpis (sekundės)",
+      "cooldown-help":
+        "Kiek laiko maršrutavimo sprendimas yra įrašytas į atmintį prieš pervertindamas taisykles. Nustatyti į 0, kad išjungtų atmintį.",
+      saving: "Taupimas...",
+      save: "Išsaugoti pakeitimus",
+      "toast-updated": "Router sėkmingai atnaujintas",
+      "toast-update-failed": "Nepavyko atnaujinti maršrutizatoriaus.",
+    },
+    rules: {
+      title: "Maršrutizavimo taisymai",
+      description:
+        "Regulės yra vertinamos nuo aukšiausios iki žemiausios prioritetų. Norėdami pakeisti tvarką, perkelkite. Pirmoji atitinkanti programa laimės.",
+      "add-rule": "Pridėti taisykę",
+      "delete-confirm": 'Šalinama taisyne "{{title}}"?',
+      "toast-deleted": "Regulė pašalinta",
+      "toast-delete-failed": "Nepavyko pašalinti nurodyimą",
+      "toast-reorder-failed": "Nepavyko atstatyti taisyklių",
+      "no-rules":
+        "Šiuo metu nustatyta jokių taisyklių. Pridėkite taisykę, kad būtų pradėta maršrutizavimas.",
+      "title-with-name": "Ruterio nurodymai: {{name}}",
+      "empty-description":
+        "Įtraukite taisykę, kad žodžių skelbimo pranešimai būtų siunčiami konkretiems tiekėjams ir modeliams.",
+      "new-rule-button": "Naujas įstatymas",
+    },
+    "rule-form": {
+      "edit-title": "Redagavimo taisyklė",
+      "new-title": "Nauja taisyklė",
+      "title-label": "Pavadinimas",
+      "title-help":
+        "Mažosios raidės, naudojamos tik su pavyzdžiais. Automatiškai formatuojama, kai išsaugoma.",
+      "rule-type": "Reguliavimo tipas",
+      "property-label": "Būdas",
+      "property-select": "Pasirinkti",
+      "comparator-label": "Palyginimo įrankis",
+      "value-label": "Vertė",
+      "match-description-label": "Susidėjimo aprašymas",
+      "match-description-placeholder":
+        "Pavyzdžiui, vartotojas klauso apie teisines temas, sutartus ar atitinkamumo reikalavimus.",
+      "match-description-help":
+        "Aprašykite, kada šis reikalavimas turėtų būti taikomas. Routerio „atsarginis“ modelis perskaitys vartotojo pranešimą ir nustatys, ar jis atitinka šią aprašą.",
+      "route-to-label": "Paslaugos teikėjo ir modelio išvardymas",
+      "route-to-description":
+        "Kai šis nurodymas yra aktuali, naudokite šį tiekėją/modelį.",
+      cancel: "Atšaukti",
+      saving: "Taupymas...",
+      "update-rule": "Atnaujinimo taisyklė",
+      "create-rule": "Sukurti taisymą",
+      "title-required": "Reikia nurodyti pavadinimą",
+      "toast-updated": "Regulė atnaujinta",
+      "toast-created": "Regulė sukurta",
+      "toast-save-failed": "Nepavyko išsaugoti nurodymo",
+      "comparator-select": "Pasirinkite",
+      "logic-label": "Susidūrimas",
+      "logic-and": "Visos iš šių (ir)",
+      "logic-or": "KAS iš toliau (ARBA)",
+      "add-condition": "Pridėti sąlygą",
+      "remove-condition": "Atšalinti sąlygą",
+      "conditions-incomplete":
+        "Sąlyga {{index}} yra nebaigta – reikia nurodyti nuosavybę, lygybės operatorių ir vertę.",
+    },
+    "provider-picker": {
+      "select-provider": "Pasirinkite paslaugų teikėją",
+      "setup-required": "(reikia paruošti)",
+      "loading-models": "Modeliai įkeliamos...",
+      "select-model": "Pasirinkite modelį",
+      "enter-model": "Įveskite modelio pavadinimą",
+      "select-provider-first": "Pirmas žingsnis – pasirinkti paslaugų teikėją.",
+      "configure-to-continue": "Nustatyti {{name}} kad būtų tęsiama",
+      "configure-provider": "Nustatyti {{name}}",
+      "setup-credentials":
+        "Įveskite reikiamus duomenis, kad galėtumėte naudoti {{name}} kaip maršrutizavimo tikslą.",
+      cancel: "Atšaukti",
+      "save-settings": "Įrašyti nustatymus",
+      "toast-save-failed": "Nepavyko išsaugoti nustatymų: {{error}}",
+      "toast-configured": "Paslaugos teikėjas sėkmingai konfigūruotas.",
+    },
+    "router-selection": {
+      "loading-routers": "Įrengiamos maršrutizatorinės sistemos...",
+      "no-routers-prefix-settings":
+        "Nėra konfigūruotų maršrutizavimo įrenginių.",
+      "no-routers-prefix-workspace":
+        "Nėra konfigūruotų maršrutizavimo prietaisų.",
+      "no-routers-link": "Sukurkite vieną „Model Router“ nustatymuose.",
+      "model-router-label": "Modelio maršrutizatorius",
+      "select-router": "Pasirinkite maršrutizatorių",
+      "select-description":
+        "Pasirinkite, kurį maršrutizatorių naudoti šiam darbo ځایui.",
+      "no-routers-chat":
+        "Nefunktuoja jokios maršrutizavimo sistemos. Sukonfigūruokite vieną „Nustatymai > AI paslaugos > Modelio maršrutizatorius“.",
+      "rule-count": "({{count}} taisyklių)",
+    },
+    metrics: {
+      "model-router-default": "Modelio routeris",
+    },
+    chat: {
+      "select-router-error": "Pasirinkite maršrutizatorių",
+      "invalid-model": "Neteisingas modelio pasirinkimas",
+    },
+    "empty-description":
+      "Nėra konfigūruotų maršrutizavimo modelių. Norėdami pradėti, sukurkite vieną.",
+    "new-router-button": "Naujas maršrutizatorius",
   },
 };
 

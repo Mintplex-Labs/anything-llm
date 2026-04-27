@@ -109,6 +109,7 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
+    "model-router": "Modelrouter",
   },
   login: {
     "multi-user": {
@@ -1517,6 +1518,157 @@ const TRANSLATIONS = {
         "Gebruikers die nog geverifieerd moeten worden. Vergelijk de code die hier wordt getoond met de code die in hun Telegram-chat wordt weergegeven.",
       unknown: "Onbekend",
     },
+  },
+  "model-router": {
+    title: "Modellen van routers",
+    description:
+      "Modellen voor routers stellen je in staat om regels te definiëren, zodat chatberichten automatisch naar verschillende LLM-providers en modellen worden gestuurd, op basis van bepaalde voorwaarden.",
+    "create-router": "Router maken",
+    table: {
+      name: "Naam",
+      fallback: "Alternatieve oplossing",
+      rules: "Regels",
+      workspaces: "Werkplekken",
+    },
+    "no-routers": "Er zijn nog geen routermodellen gecreëerd.",
+    "delete-confirm":
+      'Bent u er zeker van dat u de router "{{name}}" wilt verwijderen?\nDit zal alle instellingen en verbindingen met alle workspaces die deze gebruiken, verwijderen.\n\nDeze actie is onomkeerbaar.',
+    "toast-deleted": "Router verwijderd",
+    "toast-delete-failed": "Fout bij het verwijderen van de router: {{error}}",
+    "new-router": {
+      title: "Maak een nieuw routermodel",
+      name: "Naam",
+      "name-placeholder": "bijvoorbeeld, Kostenoptimalisatie",
+      description: "Beschrijving",
+      "description-placeholder": "Optionele beschrijving",
+      "fallback-label": "Alternatieve leverancier & model",
+      "fallback-description":
+        "Wordt gebruikt wanneer er geen route-regel overeenkomt.",
+      "cooldown-label": "Cache-tijd (seconden)",
+      "cooldown-help":
+        "Hoe lang een routebeslissing in het geheugen wordt opgeslagen voordat de regels opnieuw worden geëvalueerd. Stel deze waarde in op 0 om het opslaan uit te schakelen.",
+      "name-required": "Naam is verplicht.",
+      "fallback-required":
+        "Een reserveleverancier en een reservemodel zijn vereist.",
+      cancel: "Annuleren",
+      creating: "Creëren...",
+      create: "Router maken",
+      "toast-created": "Router is succesvol aangemaakt.",
+    },
+    "edit-router": {
+      "back-to-routers": "Terug naar: Modellen routers",
+      title: "Bewerk Router: {{name}}",
+      description:
+        "Pas de instellingen van de router en de back-up provider/model aan.",
+      name: "Naam",
+      "description-label": "Beschrijving",
+      "description-placeholder": "Optionele beschrijving",
+      "fallback-label": "Alternatieve leverancier & model",
+      "fallback-description":
+        "Wordt gebruikt wanneer er geen routingregel overeenkomt.",
+      "cooldown-label": "Cache-tijd (seconden)",
+      "cooldown-help":
+        "Hoe lang een routebeslissing wordt gecached voordat de regels opnieuw worden geëvalueerd. Stel deze waarde in op 0 om caching uit te schakelen.",
+      saving: "Opslaan...",
+      save: "Opslaan wijzigingen",
+      "toast-updated": "Router is succesvol geüpdatet.",
+      "toast-update-failed": "Kon de router niet updaten.",
+    },
+    rules: {
+      title: "Regels voor het routeren",
+      description:
+        "De regels worden van boven naar beneden geëvalueerd, rekening houdend met de prioriteit. Sleep om de volgorde te wijzigen. De eerste match wint.",
+      "add-rule": "Voeg regel toe",
+      "delete-confirm": 'Verwijder regel "{{title}}"?',
+      "toast-deleted": "Regel verwijderd",
+      "toast-delete-failed": "Fout bij het verwijderen van de regel",
+      "toast-reorder-failed": "Fout bij het opnieuw toepassen van regels",
+      "no-rules":
+        "Er zijn nog geen regels. Voeg een regel toe om het routeren te starten.",
+      "title-with-name": "Regels voor de router: {{name}}",
+      "empty-description":
+        "Voeg een regel toe om chatberichten automatisch naar specifieke aanbieders en modellen te routeren.",
+      "new-rule-button": "Nieuwe regel",
+    },
+    "rule-form": {
+      "edit-title": "Regel bewerken",
+      "new-title": "Nieuwe regel",
+      "title-label": "Titel",
+      "title-help":
+        "Klein letters, alleen met underscores. Automatisch opgeslagen in een gestructureerd formaat.",
+      "rule-type": "Regeltype",
+      "property-label": "Eigendom",
+      "property-select": "Selecteer",
+      "comparator-label": "Vergelijker",
+      "value-label": "Waarde",
+      "match-description-label": "Wedstrijdverslag",
+      "match-description-placeholder":
+        "bijvoorbeeld: de gebruiker vraagt naar juridische onderwerpen, contracten of naleving",
+      "match-description-help":
+        "Beschrijf wanneer deze regel van toepassing moet zijn. Het fallback-model van de router leest het bericht van de gebruiker en beslist of het overeenkomt met deze beschrijving.",
+      "route-to-label": "Route naar de leverancier en het model",
+      "route-to-description":
+        "Wanneer deze regel overeenkomt, gebruik dan deze aanbieder/model.",
+      cancel: "Annuleren",
+      saving: "Opslaan...",
+      "update-rule": "Regel voor bijwerken",
+      "create-rule": "Regel aanmaken",
+      "title-required": "Een titel is vereist",
+      "toast-updated": "Regel bijgewerkt",
+      "toast-created": "Regel is opgesteld",
+      "toast-save-failed": "Niet mogelijk om regel op te slaan",
+      "comparator-select": "Selecteer",
+      "logic-label": "Wedstrijd",
+      "logic-and": "ALLE volgende (EN)",
+      "logic-or": "ELK van de volgende (OF)",
+      "add-condition": "Voeg een voorwaarde toe",
+      "remove-condition": "Verwijder de voorwaarde",
+      "conditions-incomplete":
+        "De conditie {{index}} is onvolledig – vul de eigenschappen, de vergelijkingsfunctie en de waarde in.",
+    },
+    "provider-picker": {
+      "select-provider": "Selecteer leverancier",
+      "setup-required": "(vereist)",
+      "loading-models": "Modellen worden geladen...",
+      "select-model": "Kies het model",
+      "enter-model": "Voer de modelnaam in",
+      "select-provider-first": "Kies eerst een leverancier.",
+      "configure-to-continue": "Configure {{name}} om door te gaan",
+      "configure-provider": "Configure {{name}}",
+      "setup-credentials":
+        "Voer de vereiste gegevens in om {{name}} als doel voor het doorsturen te gebruiken.",
+      cancel: "Annuleren",
+      "save-settings": "Opslaan",
+      "toast-save-failed":
+        "Fout bij het opslaan van de instellingen: {{error}}",
+      "toast-configured": "De provider is succesvol geconfigureerd.",
+    },
+    "router-selection": {
+      "loading-routers": "Routers worden geladen...",
+      "no-routers-prefix-settings":
+        "Er zijn nog geen routermodellen geconfigureerd.",
+      "no-routers-prefix-workspace":
+        "Geen router-modellen zijn geconfigureerd.",
+      "no-routers-link":
+        "Maak er één aan in de instellingen van de Model Router.",
+      "model-router-label": "Modelrouter",
+      "select-router": "Kies een router",
+      "select-description":
+        "Selecteer de router die u voor deze werkruimte wilt gebruiken.",
+      "no-routers-chat":
+        "Geen routers zijn geconfigureerd. Maak er een aan in Instellingen > AI-providers > Router voor het model.",
+      "rule-count": "({{count}} regels)",
+    },
+    metrics: {
+      "model-router-default": "Modelrouter",
+    },
+    chat: {
+      "select-router-error": "Kies een router",
+      "invalid-model": "Ongeldige modelselectie",
+    },
+    "empty-description":
+      "Op dit moment zijn er nog geen router-modellen geconfigureerd. Maak er een aan om te beginnen.",
+    "new-router-button": "Nieuwe router",
   },
 };
 

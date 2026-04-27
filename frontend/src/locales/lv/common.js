@@ -108,6 +108,7 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
+    "model-router": "Modeļa routeris",
   },
   login: {
     "multi-user": {
@@ -1516,6 +1517,153 @@ const TRANSLATIONS = {
         "Izmantotāji, kas gaida apstiprinājumu. Salīdziniet šeit norādīto koda numuru ar to, kas redzams viņu Telegram sarunā.",
       unknown: "Nezināms",
     },
+  },
+  "model-router": {
+    title: "Modeļi – routeri",
+    description:
+      "Modeli routeri ļauj definēt noteikumus, kas automātiski nosaka, kā izmantot dažus LLM (liels valodu modeļi) sniedzējus un modeļus, pamatojoties uz noteiktām nosacījumiem.",
+    "create-router": "Izveidot maršrutētāju",
+    table: {
+      name: "Vārds",
+      fallback: "Rezervācija",
+      rules: "Noteikumi",
+      workspaces: "Darba telpas",
+    },
+    "no-routers": "Vēl nav izveidoti neviens modelis routeriem.",
+    "delete-confirm":
+      'Vai jūs noteikti vēlaties dzēst routeri "{{name}}"?\nTas noņems visas tā esošās noteikumus un atslēgs visus darba vietas, kas to izmanto.\n\nŠī darbība nav atvērta atkāpšanai.',
+    "toast-deleted": "Router ir izdzēsts",
+    "toast-delete-failed": "Neizdevās dzēst routeri: {{error}}",
+    "new-router": {
+      title: "Izveidot jaunu maršrutizatora modeli",
+      name: "Vārds",
+      "name-placeholder": "piemēram, izmakas optimizators",
+      description: "Apraksts",
+      "description-placeholder": "Pēc izvēles apraksts",
+      "fallback-label": "Rezervētais sniedzējs un modelis",
+      "fallback-description":
+        "Izmanto, kad neeksistē neviena norādījuma noteikums, kas atbilst.",
+      "cooldown-label": "Piekarešanas laiks (sekundes)",
+      "cooldown-help":
+        "Cik ilgi maršruta lēmums tiek saglabāts, pirms atjaunināt noteikumus. Iestatīts uz 0, lai atspēnotu saglabāšanu.",
+      "name-required": "Ir nepieciešams norādīt vārdu.",
+      "fallback-required":
+        "Nepieciešams norādīt alternatīvu sniedzēju un modeli.",
+      cancel: "Atcelt",
+      creating: "Radīt...",
+      create: "Izveidot maršrutētāju",
+      "toast-created": "Router veiksmīgi izveidots",
+    },
+    "edit-router": {
+      "back-to-routers": "Atgriezieties pie maršrutētāju modeļiem",
+      title: "Ierīces konfigurēšana: {{name}}",
+      description:
+        "Atjauniniet routera iestatījumus un norādiet alternatīvo/rezervu piegādātāju/modeli.",
+      name: "Vārds",
+      "description-label": "Apraksts",
+      "description-placeholder": "Pamatīgs apraksts (ja nepieciešams)",
+      "fallback-label": "Rezervētais pakalpojuma sniedzējs un modelis",
+      "fallback-description": "Izmanto, kad nav atrasti nevieni norādījumi.",
+      "cooldown-label": "Pēcmaksas laiks (sekundes)",
+      "cooldown-help":
+        "Cik ilgi maršruta lēmums tiek saglabāts, pirms atjaunināt noteikumus. Iestatīšana uz 0, lai atspējotu saglabāšanu.",
+      saving: "Ietaupīt...",
+      save: "Saglabāt izmaiņas",
+      "toast-updated": "Router veiksmīgi atjaunināts",
+      "toast-update-failed": "Neizdevās atjaunināt routeri",
+    },
+    rules: {
+      title: "Maršruta noteikumi",
+      description:
+        "Regulām ir novērtētas no augstākās prioritātes līdz zemākajai. Pārvietojiet, lai mainītu secību. Pirmā spēle ir uzvarētāja.",
+      "add-rule": "Pievienot noteikumu",
+      "delete-confirm": 'Dzēst noteikumu "{{title}}"?',
+      "toast-deleted": "Noteikums atcelts",
+      "toast-delete-failed": "Neizdevās izdzēst noteikumu",
+      "toast-reorder-failed": "Neizdevās atjaunot noteikumus",
+      "no-rules":
+        "Vēl nav noteikumu. Pievienojiet noteikumu, lai sāktu maršrutēšanu.",
+      "title-with-name": "Router noteikumi: {{name}}",
+      "empty-description":
+        "Ieviesiet noteikumu, kas nosaka, ka ziņojumi no čata tiks nosūtīti konkrētiem sniedzējiem un modeļiem.",
+      "new-rule-button": "Jauna noteikums",
+    },
+    "rule-form": {
+      "edit-title": "Rediģēšanas noteikums",
+      "new-title": "Jauna noteikums",
+      "title-label": "Nosaukums",
+      "title-help":
+        "Mazās rakstzīmes, tikai ar pazīmēm. Automātiski formatēts saglabošanas laikā.",
+      "rule-type": "Regulas veids",
+      "property-label": "Reālizācijas objekts",
+      "property-select": "Izvēlēties",
+      "comparator-label": "Salīdzinātājs",
+      "value-label": "Vērtība",
+      "match-description-label": "Spēles apraksts",
+      "match-description-placeholder":
+        "piemēram, lietotājs interesējas par juridiskām jautājumiem, līgumiem vai atbilstību normām",
+      "match-description-help":
+        'Aprakstiet, kad šis noteikums jāpiemēro. Routera "rezervētais" modelis izlasīs lietotāja ziņojumu un noskaidrs, vai tas atbilst šai aprakstam.',
+      "route-to-label": "Ceļš uz sniedzēju un modelis",
+      "route-to-description":
+        "Ja šis noteikums ir piemērojams, izmantojiet šo sniedzēju/modeli.",
+      cancel: "Atcelt",
+      saving: "Ietaupīt...",
+      "update-rule": "Atjaunināšanas noteikums",
+      "create-rule": "Izveidot noteikumus",
+      "title-required": "Vajadzīgs nosaukums",
+      "toast-updated": "Noteikums atjaunināts",
+      "toast-created": "Noteikums tika izveidots",
+      "toast-save-failed": "Neizdevās saglabāt noteikumu",
+      "comparator-select": "Izvēlēties",
+      "logic-label": "Spēle",
+      "logic-and": "Visas šīs (un)",
+      "logic-or": "KAD no sekojošajām (vai arī)",
+      "add-condition": "Piešķiriet nosacījumu",
+      "remove-condition": "Atbrīvots no nosacījuma",
+      "conditions-incomplete":
+        "Stāvoklis {{index}} ir nevis pilnīgs — norādiet īpašumu, salīdzinātāju un vērtību.",
+    },
+    "provider-picker": {
+      "select-provider": "Izvēlēties pakalpojumu sniedzēju",
+      "setup-required": "(nepieciešams sagatavot)",
+      "loading-models": "Modelu ievadīšana...",
+      "select-model": "Izvēlēties modeli",
+      "enter-model": "Ievadiet modeļa nosaukumu",
+      "select-provider-first": "Pirms izvēlas, izvēlēties sniedzēju.",
+      "configure-to-continue": "Iespējiet {{name}} turpināt",
+      "configure-provider": "Iestatiet {{name}}",
+      "setup-credentials":
+        "Ievadiet nepieciešamos datus, lai izmantotu {{name}} kā maršruta mērķi.",
+      cancel: "Atcelt",
+      "save-settings": "Saglabāt iestatījumus",
+      "toast-save-failed": "Neizdevās saglabāt iestatījumus: {{error}}",
+      "toast-configured": "Pārdevējs veiksmīgi konfigurēts.",
+    },
+    "router-selection": {
+      "loading-routers": "Ruteri tiek iekraut...",
+      "no-routers-prefix-settings":
+        "Vēl nav konfigurētas nekādas maršrutētāju modeļi.",
+      "no-routers-prefix-workspace": "Nav konfigurēti neviens maršrutētājs.",
+      "no-routers-link": 'Izveidot to "Model Router" iestatījumu sadaļā',
+      "model-router-label": "Modeļa routers",
+      "select-router": "Izvēlieties routeri",
+      "select-description":
+        "Izvēlieties, kuru routeru izmantot šim darba vietai.",
+      "no-routers-chat":
+        'Neirasturāts. Izveidot jaunu routeru, izmantojot "Iestatījumi > AI sniedzēji > Model Router" opciju.',
+      "rule-count": "({{count}} noteikumos)",
+    },
+    metrics: {
+      "model-router-default": "Modeļa routeris",
+    },
+    chat: {
+      "select-router-error": "Izvēlieties maršrutētāju",
+      "invalid-model": "Neizvēlēts vai nepiemērots modelis",
+    },
+    "empty-description":
+      "Vēl nav konfigurēti neviens maršrutētājs. Jāizveido viens, lai sāktu.",
+    "new-router-button": "Jauns maršrutizators",
   },
 };
 

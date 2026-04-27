@@ -116,6 +116,7 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
+    "model-router": "Router de model",
   },
   login: {
     "multi-user": {
@@ -1527,6 +1528,155 @@ const TRANSLATIONS = {
         },
       },
     },
+  },
+  "model-router": {
+    title: "Router de model",
+    description:
+      "Els enrutadors de model et permeten definir regles per enviar automàticament missatges de chat a diferents proveïdors i models d'LLM, segons certes condicions.",
+    "create-router": "Configurar enllaç",
+    table: {
+      name: "Nom",
+      fallback: "Solució alternativa",
+      rules: "Regles",
+      workspaces: "Espais de treball",
+    },
+    "no-routers": "Aquesta és una funció que encara no està disponible.",
+    "delete-confirm":
+      'Estàs segur que vols eliminar el router "{{name}}"?\nAixò eliminarà totes les seves regles i desconnectarà qualsevol espai de treball que l\'utilitzi.\n\nAquesta acció és irreversible.',
+    "toast-deleted": "Router eliminat",
+    "toast-delete-failed": "No s'ha pogut eliminar el router: {{error}}",
+    "new-router": {
+      title: "Crear un nou router",
+      name: "Nom",
+      "name-placeholder": 'Per exemple, "Optimitzador de costos"',
+      description: "Descripció",
+      "description-placeholder": "Descripció opcional",
+      "fallback-label": "Proveïdor i model alternatiu",
+      "fallback-description":
+        "S'utilitza quan no hi ha cap regla de ruteig que coincideixi. També s'utilitza per avaluar les regles classificades per models de llenguatge.",
+      "cooldown-label": "Temps de refredament (segons)",
+      "cooldown-help":
+        "Durant quant temps es guarda la decisió de ruteig abans de tornar a avaluar les regles. Per desactivar la memòria, estableix el valor a 0.",
+      "name-required": "Cal indicar el nom.",
+      "fallback-required":
+        "S'requereix un proveïdor i un model de segona opció.",
+      cancel: "Cancel·lar",
+      creating: "Creant...",
+      create: "Configurar enllaç",
+      "toast-created": "El router s'ha creat amb èxit.",
+    },
+    "edit-router": {
+      "back-to-routers": "Torna a la secció de routers de model",
+      title: "Modificar enllaç: {{name}}",
+      description:
+        "Actualitza la configuració del router i el proveïdor/model de segona opció.",
+      name: "Nom",
+      "description-label": "Descripció",
+      "description-placeholder": "Descripció opcional",
+      "fallback-label": "Proveïdor i model de segona opció",
+      "fallback-description":
+        "Es fa servir quan cap regla de ruteig coincideix. També s'utilitza per avaluar les regles classificades per models de llenguatge.",
+      "cooldown-label": "Temps de refredament (segons)",
+      "cooldown-help":
+        "Durant quant temps es guarda la decisió de ruteig abans de tornar a avaluar les regles. Per desactivar la memòria, configureu aquest valor a 0.",
+      saving: "Guardant...",
+      save: "Guarda canvis",
+      "toast-updated": "El router s'ha actualitzat amb èxit.",
+      "toast-update-failed": "No s'ha pogut actualitzar el router.",
+    },
+    rules: {
+      title: "Regles de ruteig",
+      description:
+        "Les regles es valoren de dalt a sota, seguint l'ordre de prioritat. Arrossegueu per reordenar-les. El primer que coincideixi guanya.",
+      "add-rule": "Afegir regla",
+      "delete-confirm": 'Eliminar la regla "{{title}}"?',
+      "toast-deleted": "Regla eliminada",
+      "toast-delete-failed": "No s'ha pogut eliminar la regla.",
+      "toast-reorder-failed": "No s'ha pogut aplicar la normativa.",
+      "no-rules":
+        "Aún no hi ha cap regla. Afegiu una regla per començar a enrutar.",
+      "title-with-name": "Regles del router: {{name}}",
+      "empty-description":
+        "Afegeix una regla per començar a enviar missatges de chat a proveïdors i models específics.",
+      "new-rule-button": "Nova regla",
+    },
+    "rule-form": {
+      "edit-title": "Modificar regla",
+      "new-title": "Nou reglament",
+      "title-label": "Títol",
+      "title-help":
+        "Només amb minúscules i guions. Format automàtic al guardar.",
+      "rule-type": "Tipus de regla",
+      "property-label": "Proprietat",
+      "property-select": "Seleccionar",
+      "comparator-label": "Comparador",
+      "value-label": "Valor",
+      "match-description-label": "Descripció del partit",
+      "match-description-placeholder":
+        "Per exemple, l'usuari està preguntant sobre temes legals, contractes o conformitat.",
+      "match-description-help":
+        "Descriu quan hauria de ser aplicable aquesta regla. El model de segon nivell del router llegirà el missatge de l'usuari i determinarà si compleix amb aquesta descripció.",
+      "route-to-label": "Ruta cap al proveïdor i model",
+      "route-to-description":
+        "Quan aquesta regla s'aplica, utilitzeu aquest proveïdor/model.",
+      cancel: "Cancel·lar",
+      saving: "Guardant...",
+      "update-rule": "Regla de actualització",
+      "create-rule": "Crear regla",
+      "title-required": "El títol és obligatori",
+      "toast-updated": "Regla actualitzada",
+      "toast-created": "Regla establerta",
+      "toast-save-failed": "No s'ha pogut guardar la regla.",
+      "comparator-select": "Seleccionar",
+      "logic-label": "Partit",
+      "logic-and": "TOTS els següents (I)",
+      "logic-or": "CUALESVÉS de les següents opcions (O)",
+      "add-condition": "Afegir condició",
+      "remove-condition": "Eliminar la condició",
+      "conditions-incomplete":
+        "La condició {{index}} és incompleta: cal afegir la propietat, el comparador i el valor.",
+    },
+    "provider-picker": {
+      "select-provider": "Seleccionar proveïdor",
+      "setup-required": "(requereix-se la configuració)",
+      "loading-models": "Càrrec dels models...",
+      "select-model": "Seleccionar model",
+      "enter-model": "Introduïu el nom del model",
+      "select-provider-first": "Seleccioneu un proveïdor primer.",
+      "configure-to-continue": "Configure {{name}} per continuar",
+      "configure-provider": "Configurar {{name}}",
+      "setup-credentials":
+        "Introduïu les credencials necessàries per utilitzar {{name}} com a destinació de la ruta.",
+      cancel: "Cancelar",
+      "save-settings": "Guardar configuració",
+      "toast-save-failed":
+        "No s'ha pogut guardar les configuracions: {{error}}",
+      "toast-configured": "El proveïdor s'ha configurat amb èxit.",
+    },
+    "router-selection": {
+      "loading-routers": "Carregant enrutadors...",
+      "no-routers-prefix-settings":
+        "No hi ha enquest routers configurats fins ara.",
+      "no-routers-prefix-workspace": "No s'han configurat cap router.",
+      "no-routers-link": "Creeu-ne un a les opcions del router.",
+      "model-router-label": "Router de model",
+      "select-router": "Seleccioneu un router",
+      "select-description":
+        "Seleccioneu el router que vulgueu utilitzar per a aquesta zona de treball.",
+      "no-routers-chat":
+        'No s\'han configurat cap enllaç. Creeu un en la secció "Configuració" > "Proveïdors d\'IA" > "Enllaç de model".',
+      "rule-count": "({{count}} normes)",
+    },
+    metrics: {
+      "model-router-default": "Router de model",
+    },
+    chat: {
+      "select-router-error": "Selecciona un enrutador",
+      "invalid-model": "Selecció de model incorrecta",
+    },
+    "empty-description":
+      "No hi ha enquest routers configurats encara. Crea un per començar.",
+    "new-router-button": "Nou router",
   },
 };
 

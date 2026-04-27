@@ -109,6 +109,7 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
+    "model-router": "Router de ejemplo",
   },
   login: {
     "multi-user": {
@@ -1547,6 +1548,154 @@ const TRANSLATIONS = {
         "Usuarios que están esperando la verificación. Compara el código de emparejamiento que se muestra aquí con el que aparece en su conversación de Telegram.",
       unknown: "Desconocido",
     },
+  },
+  "model-router": {
+    title: "Enrutadores modelo",
+    description:
+      "Los routers de modelos permiten definir reglas para enrutar automáticamente los mensajes de chat a diferentes proveedores y modelos de LLM, según las condiciones establecidas.",
+    "create-router": "Crear enrutador",
+    table: {
+      name: "Nombre",
+      fallback:
+        "Opción alternativa\nPlan de contingencia\nSolución alternativa\nRespaldo",
+      rules: "Reglas",
+      workspaces: "Espacios de trabajo",
+    },
+    "no-routers": "Aún no se han creado modelos de routers.",
+    "delete-confirm":
+      '¿Está seguro de que desea eliminar el router "{{name}}"?\nEsto eliminará todas sus reglas y desconectará cualquier espacio de trabajo que utilice.\n\nEsta acción es irreversible.',
+    "toast-deleted": "Enrutador eliminado",
+    "toast-delete-failed": "No se pudo eliminar el router: {{error}}",
+    "new-router": {
+      title: "Crear un nuevo router",
+      name: "Nombre",
+      "name-placeholder": "p. ej., Optimizador de costes",
+      description: "Descripción",
+      "description-placeholder": "Descripción opcional",
+      "fallback-label": "Proveedor y modelo de respaldo",
+      "fallback-description":
+        "Se utiliza cuando no se cumple ninguna regla de enrutamiento.",
+      "cooldown-label": "Tiempo de enfriamiento (segundos)",
+      "cooldown-help":
+        "Durante cuánto tiempo se guarda la decisión de enrutamiento antes de volver a evaluar las reglas. Establecer en 0 para desactivar el almacenamiento en caché.",
+      "name-required": "Se requiere el nombre.",
+      "fallback-required": "Se requiere un proveedor y un modelo de respaldo.",
+      cancel: "Cancelar",
+      creating: "Creando...",
+      create: "Crear enrutador",
+      "toast-created": "Enrutador creado con éxito.",
+    },
+    "edit-router": {
+      "back-to-routers": "Volver a los enrutadores estándar",
+      title: "Configurar enrutador: {{name}}",
+      description:
+        "Actualice la configuración del router y especifique el proveedor/modelo de respaldo.",
+      name: "Nombre",
+      "description-label": "Descripción",
+      "description-placeholder": "Descripción opcional",
+      "fallback-label": "Proveedor y modelo de respaldo",
+      "fallback-description":
+        "Se utiliza cuando no se encuentra ninguna regla de enrutamiento.",
+      "cooldown-label": "Tiempo de enfriamiento del caché (segundos)",
+      "cooldown-help":
+        "Durante cuánto tiempo se guarda la decisión de enrutamiento antes de volver a evaluar las reglas. Establecer en 0 para desactivar la función de caché.",
+      saving: "Ahorrando...",
+      save: "Guardar cambios",
+      "toast-updated": "El enrutador se ha actualizado correctamente.",
+      "toast-update-failed": "No se pudo actualizar el router.",
+    },
+    rules: {
+      title: "Reglas de enrutamiento",
+      description:
+        "Las reglas se evalúan de arriba a abajo según su prioridad. Arrastre para reordenarlas. El primer resultado es el ganador.",
+      "add-rule": "Añadir regla",
+      "delete-confirm": 'Eliminar la regla "{{title}}"?',
+      "toast-deleted": "Regla eliminada",
+      "toast-delete-failed": "No se pudo eliminar la regla.",
+      "toast-reorder-failed": "No se pudieron aplicar las reglas.",
+      "no-rules":
+        "Aún no hay reglas. Añada una regla para empezar a dirigir el tráfico.",
+      "title-with-name": "Reglas del enrutador: {{name}}",
+      "empty-description":
+        "Agrega una regla para dirigir automáticamente los mensajes de chat a proveedores y modelos específicos.",
+      "new-rule-button": "Nueva norma",
+    },
+    "rule-form": {
+      "edit-title": "Editar regla",
+      "new-title": "Nueva regla",
+      "title-label": "Título",
+      "title-help":
+        "Minúsculas, solo con guiones bajos. Formateo automático al guardar.",
+      "rule-type": "Tipo de regla",
+      "property-label": "Propiedad",
+      "property-select": "Seleccionar",
+      "comparator-label": "Comparador",
+      "value-label": "Valor",
+      "match-description-label": "Descripción del partido",
+      "match-description-placeholder":
+        "Por ejemplo, el usuario está preguntando sobre temas legales, contratos o cumplimiento normativo.",
+      "match-description-help":
+        "Describa cuándo debe aplicarse esta regla. El modelo de respaldo del router leerá el mensaje del usuario y determinará si se ajusta a esta descripción.",
+      "route-to-label": "Ruta hacia el proveedor y modelo",
+      "route-to-description":
+        "Cuando esta regla se cumple, utilice este proveedor/modelo.",
+      cancel: "Cancelar",
+      saving: "Ahorrando...",
+      "update-rule": "Regla de actualización",
+      "create-rule": "Crear regla",
+      "title-required": "El título es obligatorio.",
+      "toast-updated": "Regla actualizada",
+      "toast-created": "Regla establecida",
+      "toast-save-failed": "No se pudo guardar la regla.",
+      "comparator-select": "Seleccionar",
+      "logic-label": "Partido",
+      "logic-and": "TODAS las siguientes (Y)",
+      "logic-or": "CUALQUIERA de las siguientes opciones (O)",
+      "add-condition": "Añadir condición",
+      "remove-condition": "Eliminar la condición",
+      "conditions-incomplete":
+        "La condición {{index}} está incompleta: complete con la propiedad, el comparador y el valor.",
+    },
+    "provider-picker": {
+      "select-provider": "Seleccionar proveedor",
+      "setup-required": "(requiere configuración)",
+      "loading-models": "Cargando modelos...",
+      "select-model": "Seleccionar modelo",
+      "enter-model": "Ingrese el nombre del modelo",
+      "select-provider-first": "Primero, elija un proveedor.",
+      "configure-to-continue": "Configure {{name}} para continuar",
+      "configure-provider": "Configurar {{name}}",
+      "setup-credentials":
+        "Introduzca las credenciales necesarias para utilizar {{name}} como destino de enrutamiento.",
+      cancel: "Cancelar",
+      "save-settings": "Guardar ajustes",
+      "toast-save-failed": "No se pudo guardar la configuración: {{error}}",
+      "toast-configured": "El proveedor se ha configurado correctamente.",
+    },
+    "router-selection": {
+      "loading-routers": "Cargando enrutadores...",
+      "no-routers-prefix-settings":
+        "Ningún enrutador ha sido configurado todavía.",
+      "no-routers-prefix-workspace": "No hay enrutadores configurados.",
+      "no-routers-link": "Cree uno en la configuración del enrutador.",
+      "model-router-label": "Router de ejemplo",
+      "select-router": "Seleccione un enrutador",
+      "select-description":
+        "Seleccione el enrutador que desea utilizar para este espacio de trabajo.",
+      "no-routers-chat":
+        "No hay enrutadores configurados. Cree uno en la sección Configuración > Proveedores de IA > Enrutador de Modelo.",
+      "rule-count": "({{count}} reglas)",
+    },
+    metrics: {
+      "model-router-default": "Router de ejemplo",
+    },
+    chat: {
+      "select-router-error": "Seleccione un router.",
+      "invalid-model": "Selección de modelo no válida",
+    },
+    "empty-description":
+      "Ningún enrutador ha sido configurado todavía. Cree uno para comenzar.",
+    "new-router-button": "Nuevo router",
   },
 };
 

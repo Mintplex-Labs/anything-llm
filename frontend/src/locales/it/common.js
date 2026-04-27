@@ -110,6 +110,7 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
+    "model-router": "Router di esempio",
   },
   login: {
     "multi-user": {
@@ -1545,6 +1546,156 @@ const TRANSLATIONS = {
         "Utenti in attesa di verifica. Confrontare il codice di abbinamento visualizzato qui con quello visualizzato nella loro chat di Telegram.",
       unknown: "Sconosciuto",
     },
+  },
+  "model-router": {
+    title: "Router di esempio",
+    description:
+      "I router di modelli consentono di definire regole per instradare automaticamente i messaggi di chat a diversi fornitori e modelli di LLM in base a determinate condizioni.",
+    "create-router": "Creare un router",
+    table: {
+      name: "Nome",
+      fallback: "Punto di ripristino",
+      rules: "Regole",
+      workspaces: "Spazi di lavoro",
+    },
+    "no-routers":
+      "Al momento non sono state create delle specifiche reti router.",
+    "delete-confirm":
+      'È sicuro che desideri eliminare il router "{{name}}"?\nQuesto eliminerà tutte le sue regole e disconnetterà qualsiasi spazio di lavoro che lo utilizza.\n\nQuesta operazione è irreversibile.',
+    "toast-deleted": "Router eliminato",
+    "toast-delete-failed": "Impossibile eliminare il router: {{error}}",
+    "new-router": {
+      title: "Creare un nuovo router",
+      name: "Nome",
+      "name-placeholder": "ad esempio, Ottimizzatore dei costi",
+      description: "Descrizione",
+      "description-placeholder": "Descrizione opzionale",
+      "fallback-label": "Fornitore e modello di backup",
+      "fallback-description":
+        "Utilizzato quando nessuna regola di routing corrisponde.",
+      "cooldown-label": "Tempo di raffreddamento della cache (secondi)",
+      "cooldown-help":
+        "Per quanto tempo la decisione di routing viene memorizzata prima di riconsiderare le regole. Impostare a 0 per disabilitare la memorizzazione.",
+      "name-required": "È necessario fornire il nome.",
+      "fallback-required":
+        "È necessario specificare un fornitore e un modello di backup.",
+      cancel: "Annulla",
+      creating: "Creazione...",
+      create: "Creare un router",
+      "toast-created": "Il router è stato creato con successo.",
+    },
+    "edit-router": {
+      "back-to-routers": "Ritorna ai router di esempio",
+      title: "Modifica Router: {{name}}",
+      description:
+        "Aggiorna le impostazioni del router e il fornitore/modello di backup.",
+      name: "Nome",
+      "description-label": "Descrizione",
+      "description-placeholder": "Descrizione opzionale",
+      "fallback-label": "Fornitore e modello di backup",
+      "fallback-description":
+        "Utilizzato quando nessuna regola di routing corrisponde.",
+      "cooldown-label": "Tempo di raffreddamento della cache (secondi)",
+      "cooldown-help":
+        "Per quanto tempo una decisione di routing viene memorizzata prima di essere riesaminata. Impostare a 0 per disabilitare la memorizzazione.",
+      saving: "Risparmio...",
+      save: "Salva modifiche",
+      "toast-updated": "Il router è stato aggiornato correttamente.",
+      "toast-update-failed": "Impossibile aggiornare il router.",
+    },
+    rules: {
+      title: "Regole di routing",
+      description:
+        "Le regole vengono valutate in ordine di priorità, dalla cima alla base. Trascina per riordinarle. Vince la prima regola applicata.",
+      "add-rule": "Aggiungi regola",
+      "delete-confirm": 'Eliminare la regola "{{title}}"?',
+      "toast-deleted": "Regola eliminata",
+      "toast-delete-failed": "Impossibile eliminare la regola.",
+      "toast-reorder-failed": "Mancato rispetto delle regole di riordino.",
+      "no-rules":
+        "Al momento non ci sono regole. Aggiungi una regola per iniziare a definire i percorsi.",
+      "title-with-name": "Regole del router: {{name}}",
+      "empty-description":
+        "Aggiungi una regola per indirizzare automaticamente i messaggi di chat a specifici fornitori e modelli.",
+      "new-rule-button": "Nuova regola",
+    },
+    "rule-form": {
+      "edit-title": "Modifica regola",
+      "new-title": "Nuova regola",
+      "title-label": "Titolo",
+      "title-help":
+        "Lettere minuscole, con solo underscore. Formattazione automatica al salvataggio.",
+      "rule-type": "Tipo di regola",
+      "property-label": "Proprietà",
+      "property-select": "Seleziona",
+      "comparator-label": "Comparatore",
+      "value-label": "Valore",
+      "match-description-label": "Descrizione della partita",
+      "match-description-placeholder":
+        "ad esempio, l'utente sta richiedendo informazioni su argomenti legali, contratti o conformità.",
+      "match-description-help":
+        "Descriva in quali circostanze questa regola dovrebbe essere applicata. Il modello di fallback del router leggerà il messaggio dell'utente e determinerà se corrisponde a questa descrizione.",
+      "route-to-label": "Percorso verso il fornitore e modello",
+      "route-to-description":
+        "Quando questa regola si applica, utilizzare questo fornitore/modello.",
+      cancel: "Annulla",
+      saving: "Risparmio...",
+      "update-rule": "Regola di aggiornamento",
+      "create-rule": "Crea regola",
+      "title-required": "Il titolo è obbligatorio.",
+      "toast-updated": "Regola aggiornata",
+      "toast-created": "Regola creata",
+      "toast-save-failed": "Impossibile salvare la regola.",
+      "comparator-select": "Seleziona",
+      "logic-label": "Partita",
+      "logic-and": "Tutti i seguenti punti (E)",
+      "logic-or": "QUALSIASI delle seguenti opzioni (oppure)",
+      "add-condition": "Aggiungi condizione",
+      "remove-condition": "Eliminare la condizione",
+      "conditions-incomplete":
+        "La condizione {{index}} è incompleta: è necessario specificare la proprietà, il comparatore e il valore.",
+    },
+    "provider-picker": {
+      "select-provider": "Seleziona il fornitore",
+      "setup-required": "(necessaria la configurazione)",
+      "loading-models": "Caricamento dei modelli...",
+      "select-model": "Seleziona il modello",
+      "enter-model": "Inserisci il nome del modello",
+      "select-provider-first": "Scegliere prima un fornitore.",
+      "configure-to-continue": "Configura {{name}} per continuare",
+      "configure-provider": "Configura {{name}}",
+      "setup-credentials":
+        "Inserire le credenziali necessarie per utilizzare {{name}} come destinazione di routing.",
+      cancel: "Annulla",
+      "save-settings": "Salva le impostazioni",
+      "toast-save-failed": "Impossibile salvare le impostazioni: {{error}}",
+      "toast-configured": "Fornitore configurato correttamente.",
+    },
+    "router-selection": {
+      "loading-routers": "Caricamento router...",
+      "no-routers-prefix-settings":
+        "Al momento non sono state configurate alcuna rete di router.",
+      "no-routers-prefix-workspace": "Nessun router configurato.",
+      "no-routers-link":
+        "Creare una regola nel menu delle impostazioni del router.",
+      "model-router-label": "Router di esempio",
+      "select-router": "Seleziona un router.",
+      "select-description":
+        "Seleziona il router da utilizzare per questo ambiente di lavoro.",
+      "no-routers-chat":
+        "Nessun router configurato. Creare un router nella sezione Impostazioni > Fornitori di AI > Router del modello.",
+      "rule-count": "({{count}} regole)",
+    },
+    metrics: {
+      "model-router-default": "Router di esempio",
+    },
+    chat: {
+      "select-router-error": "Seleziona un router",
+      "invalid-model": "Selezione del modello non valida",
+    },
+    "empty-description":
+      "Al momento non sono state configurate alcuna rete wireless. Creare una rete per iniziare.",
+    "new-router-button": "Nuovo router",
   },
 };
 
