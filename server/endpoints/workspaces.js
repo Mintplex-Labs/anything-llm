@@ -32,6 +32,9 @@ const {
 } = require("../utils/files/pfp");
 const { getTTSProvider } = require("../utils/TextToSpeech");
 const { WorkspaceThread } = require("../models/workspaceThread");
+const {
+  userScopedChatClause,
+} = require("../utils/helpers/chat/userScopedChatClause");
 
 const truncate = require("truncate");
 const { purgeDocument } = require("../utils/files/purgeDocument");
@@ -456,12 +459,16 @@ function workspaceEndpoints(app) {
         const user = await userFromSession(request, response);
         const workspace = response.locals.workspace;
 
-        await WorkspaceChats.delete({
-          workspaceId: workspace.id,
-          thread_id: null,
-          user_id: user?.id,
-          id: { gte: Number(startingId) },
-        });
+        await WorkspaceChats.delete(
+          userScopedChatClause(
+            {
+              workspaceId: workspace.id,
+              thread_id: null,
+              id: { gte: Number(startingId) },
+            },
+            user
+          )
+        );
 
         response.sendStatus(200).end();
       } catch (e) {
@@ -482,12 +489,16 @@ function workspaceEndpoints(app) {
 
         const user = await userFromSession(request, response);
         const workspace = response.locals.workspace;
-        const existingChat = await WorkspaceChats.get({
-          workspaceId: workspace.id,
-          thread_id: null,
-          user_id: user?.id,
-          id: Number(chatId),
-        });
+        const existingChat = await WorkspaceChats.get(
+          userScopedChatClause(
+            {
+              workspaceId: workspace.id,
+              thread_id: null,
+              id: Number(chatId),
+            },
+            user
+          )
+        );
         if (!existingChat) throw new Error("Invalid chat.");
 
         if (role === "user") {
@@ -521,11 +532,15 @@ function workspaceEndpoints(app) {
         const { chatId } = request.params;
         const { feedback = null } = reqBody(request);
         const user = await userFromSession(request, response);
-        const existingChat = await WorkspaceChats.get({
-          id: Number(chatId),
-          workspaceId: response.locals.workspace.id,
-          user_id: user?.id,
-        });
+        const existingChat = await WorkspaceChats.get(
+          userScopedChatClause(
+            {
+              id: Number(chatId),
+              workspaceId: response.locals.workspace.id,
+            },
+            user
+          )
+        );
 
         if (!existingChat) return response.status(404).json({ success: false });
         await WorkspaceChats.updateFeedbackScore(chatId, feedback);
@@ -620,11 +635,15 @@ function workspaceEndpoints(app) {
         const workspace = response.locals.workspace;
         const user = await userFromSession(request, response);
         const cacheKey = `${workspace.slug}:${chatId}`;
-        const wsChat = await WorkspaceChats.get({
-          id: Number(chatId),
-          workspaceId: workspace.id,
-          user_id: user?.id,
-        });
+        const wsChat = await WorkspaceChats.get(
+          userScopedChatClause(
+            {
+              id: Number(chatId),
+              workspaceId: workspace.id,
+            },
+            user
+          )
+        );
 
         if (!wsChat) return response.sendStatus(404);
         const cachedResponse = responseCache.get(cacheKey);
@@ -815,14 +834,16 @@ function workspaceEndpoints(app) {
             )?.id ?? null
           : null;
         const chatsToFork = await WorkspaceChats.where(
-          {
-            workspaceId: workspace.id,
-            user_id: user?.id,
-            include: true, // only duplicate visible chats
-            thread_id: threadId,
-            api_session_id: null, // Do not include API session chats.
-            id: { lte: Number(chatId) },
-          },
+          userScopedChatClause(
+            {
+              workspaceId: workspace.id,
+              include: true, // only duplicate visible chats
+              thread_id: threadId,
+              api_session_id: null, // Do not include API session chats.
+              id: { lte: Number(chatId) },
+            },
+            user
+          ),
           null,
           { id: "asc" }
         );
@@ -841,7 +862,7 @@ function workspaceEndpoints(app) {
             workspaceId: workspace.id,
             prompt: chat.prompt,
             response: JSON.stringify(chatResponse),
-            user_id: user?.id,
+            user_id: user?.id ?? null,
             thread_id: newThread.id,
           };
         });

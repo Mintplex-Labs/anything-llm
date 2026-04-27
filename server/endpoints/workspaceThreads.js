@@ -17,6 +17,9 @@ const {
   validWorkspaceAndThreadSlug,
 } = require("../utils/middleware/validWorkspace");
 const { WorkspaceChats } = require("../models/workspaceChats");
+const {
+  userScopedChatClause,
+} = require("../utils/helpers/chat/userScopedChatClause");
 const { convertToChatHistory } = require("../utils/helpers/chat/responses");
 const { getModelTag } = require("./utils");
 
@@ -192,12 +195,16 @@ function workspaceThreadEndpoints(app) {
         const workspace = response.locals.workspace;
         const thread = response.locals.thread;
 
-        await WorkspaceChats.delete({
-          workspaceId: Number(workspace.id),
-          thread_id: Number(thread.id),
-          user_id: user?.id,
-          id: { gte: Number(startingId) },
-        });
+        await WorkspaceChats.delete(
+          userScopedChatClause(
+            {
+              workspaceId: Number(workspace.id),
+              thread_id: Number(thread.id),
+              id: { gte: Number(startingId) },
+            },
+            user
+          )
+        );
 
         response.sendStatus(200).end();
       } catch (e) {
@@ -223,12 +230,16 @@ function workspaceThreadEndpoints(app) {
         const user = await userFromSession(request, response);
         const workspace = response.locals.workspace;
         const thread = response.locals.thread;
-        const existingChat = await WorkspaceChats.get({
-          workspaceId: workspace.id,
-          thread_id: thread.id,
-          user_id: user?.id,
-          id: Number(chatId),
-        });
+        const existingChat = await WorkspaceChats.get(
+          userScopedChatClause(
+            {
+              workspaceId: workspace.id,
+              thread_id: thread.id,
+              id: Number(chatId),
+            },
+            user
+          )
+        );
         if (!existingChat) throw new Error("Invalid chat.");
 
         if (role === "user") {
