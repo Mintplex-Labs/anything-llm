@@ -194,9 +194,9 @@ const TRANSLATIONS = {
           "将在找到文档上下文时，仅提供答案 <b>。您需要使用 @agent 命令来使用工具。",
       },
       automatic: {
-        title: "自动",
         description:
           "如果模型和提供者都支持原生工具调用，则会自动使用这些工具。<br />如果不支持原生工具调用，您需要使用 `@agent` 命令来使用工具。",
+        title: null,
       },
     },
     history: {

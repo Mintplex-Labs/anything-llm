@@ -193,9 +193,9 @@ const TRANSLATIONS = {
           "zal alleen antwoorden <b>als de context van het document wordt gevonden.</b>U moet het commando @agent gebruiken om de tools te gebruiken.",
       },
       automatic: {
-        title: "Auto",
         description:
           "zal automatisch tools gebruiken als het model en de provider native tool-aanroepen ondersteunen. <br />Als native tooling niet wordt ondersteund, moet u de `@agent`-commando gebruiken om tools te gebruiken.",
+        title: null,
       },
     },
     history: {

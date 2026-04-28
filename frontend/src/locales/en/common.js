@@ -197,7 +197,7 @@ const TRANSLATIONS = {
     mode: {
       title: "Chat mode",
       automatic: {
-        title: "Auto",
+        title: "Agent",
         description:
           "will automatically use tools if the model and provider support native tool calling.<br />If native tooling is not supported, you will need to use the @agent command to use tools.",
       },

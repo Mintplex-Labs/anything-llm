@@ -194,9 +194,9 @@ const TRANSLATIONS = {
           "vil kun give svar <b>hvis konteksten i dokumentet er fundet.</b>Du skal bruge kommandoen @agent for at bruge værktøjerne.",
       },
       automatic: {
-        title: "Bil",
         description:
           'vil automatisk bruge værktøjer, hvis modellen og udbyderen understøtter native værktøjsanrop. <br />Hvis native værktøjsanrop ikke understøttes, skal du bruge kommandoen "@agent" for at bruge værktøjer.',
+        title: null,
       },
     },
     history: {
