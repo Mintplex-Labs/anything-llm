@@ -51,7 +51,8 @@ class LemonadeEmbedder {
         });
     });
 
-    if (error) throw new Error(`Lemonade Failed to embed: ${error.message}`);
+    if (error)
+      throw new Error(`Lemonade Failed to embed: [${error.type}]: ${error.message}`);
     return data.length > 0 &&
       data.every((embd) => embd.hasOwnProperty("embedding"))
       ? data.map((embd) => embd.embedding)
