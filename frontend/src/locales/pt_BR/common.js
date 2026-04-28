@@ -335,7 +335,7 @@ const TRANSLATIONS = {
         readActions: "Ler ações",
         writeActions: "Ações a serem executadas",
         warning:
-          "O acesso ao sistema de arquivos pode ser perigoso, pois pode modificar ou excluir arquivos. Por favor, consulte a <link>documentação</link> antes de habilitar.",
+          "O acesso ao sistema de arquivos pode ser perigoso, pois pode modificar ou excluir arquivos. Por favor, consulte a <a>documentação</a> antes de habilitar.",
         skills: {
           "read-text-file": {
             title: "Abrir arquivo",

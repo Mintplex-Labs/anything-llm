@@ -727,7 +727,8 @@ const SystemSettings = {
 
       // Anthropic Keys
       AnthropicApiKey: !!process.env.ANTHROPIC_API_KEY,
-      AnthropicModelPref: process.env.ANTHROPIC_MODEL_PREF || "claude-2",
+      AnthropicModelPref:
+        process.env.ANTHROPIC_MODEL_PREF || "claude-sonnet-4-6",
       AnthropicCacheControl: process.env.ANTHROPIC_CACHE_CONTROL || "none",
 
       // Gemini Keys

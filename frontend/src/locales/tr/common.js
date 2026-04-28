@@ -330,7 +330,7 @@ const TRANSLATIONS = {
         readActions: "Okunmuş Eylemler",
         writeActions: "Yapılacak İşler",
         warning:
-          "Dosya sistemine erişim tehlikeli olabilir, çünkü dosyaları değiştirebilir veya silebilir. Bu özelliği etkinleştirmeden önce lütfen <link>belgelendirme</link>'i inceleyin.",
+          "Dosya sistemine erişim tehlikeli olabilir, çünkü dosyaları değiştirebilir veya silebilir. Bu özelliği etkinleştirmeden önce lütfen <a>belgelendirme</a>'i inceleyin.",
         skills: {
           "read-text-file": {
             title: "Dosyayı aç",
