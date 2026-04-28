@@ -347,7 +347,7 @@ const TRANSLATIONS = {
         readActions: "Accions de lectura",
         writeActions: "Accions d'escriptura",
         warning:
-          "L'accés al sistema de fitxers pot ser perillós, ja que pot modificar o eliminar fitxers. Consulta la <link>documentació</link> abans d'activar-ho.",
+          "L'accés al sistema de fitxers pot ser perillós, ja que pot modificar o eliminar fitxers. Consulta la <a>documentació</a> abans d'activar-ho.",
         skills: {
           "read-text-file": {
             title: "Llegeix fitxer",
