@@ -26,31 +26,36 @@ class LemonadeEmbedder {
   }
 
   async embedTextInput(textInput) {
-    try {
-      this.log(`Embedding text input...`);
-      const response = await this.lemonade.embeddings.create({
-        model: this.model,
-        input: textInput,
-      });
-      return response?.data[0]?.embedding || [];
-    } catch (error) {
-      this.log("Failed to get embedding from Lemonade.", error.message);
-      throw new Error(`Lemonade Failed to embed: ${error.message}`);
-    }
+    const result = await this.embedChunks(
+      Array.isArray(textInput) ? textInput : [textInput]
+    );
+    return result?.[0] || [];
   }
 
   async embedChunks(textChunks = []) {
-    try {
-      this.log(`Embedding ${textChunks.length} chunks of text...`);
-      const response = await this.lemonade.embeddings.create({
-        model: this.model,
-        input: textChunks,
-      });
-      return response?.data?.map((emb) => emb.embedding) || [];
-    } catch (error) {
-      this.log("Failed to get embeddings from Lemonade.", error.message);
-      throw new Error(`Lemonade Failed to embed: ${error.message}`);
-    }
+    this.log(`Embedding ${textChunks.length} chunks of text...`);
+    const { data = [], error = null } = await new Promise((resolve) => {
+      this.lemonade.embeddings
+        .create({
+          model: this.model,
+          input: textChunks,
+        })
+        .then((result) => resolve({ data: result?.data, error: null }))
+        .catch((e) => {
+          e.type =
+            e?.response?.data?.error?.code ||
+            e?.response?.status ||
+            "failed_to_embed";
+          e.message = e?.response?.data?.error?.message || e.message;
+          resolve({ data: [], error: e });
+        });
+    });
+
+    if (error) throw new Error(`Lemonade Failed to embed: ${error.message}`);
+    return data.length > 0 &&
+      data.every((embd) => embd.hasOwnProperty("embedding"))
+      ? data.map((embd) => embd.embedding)
+      : null;
   }
 }
 
