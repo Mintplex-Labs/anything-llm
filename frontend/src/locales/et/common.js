@@ -200,7 +200,7 @@ const TRANSLATIONS = {
       automatic: {
         description:
           'kasutab automaatselt tööriistu, kui mudel ja pakkuja toetavad native töörieste kasutamist. <br />Kui native töörieste kasutamine ei toeta, peate kasutama käsku "@agent", et tööriiste kasutada.',
-        title: null,
+        title: "Esindaja",
       },
     },
     history: {

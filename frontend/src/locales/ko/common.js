@@ -199,7 +199,7 @@ const TRANSLATIONS = {
       automatic: {
         description:
           "모델과 제공업체가 네이티브 도구 호출을 지원하는 경우, 자동으로 도구를 사용합니다. <br />네이티브 도구 호출이 지원되지 않는 경우, 도구를 사용하려면 @agent 명령을 사용해야 합니다.",
-        title: null,
+        title: "에이전트",
       },
     },
     history: {

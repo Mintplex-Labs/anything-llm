@@ -196,7 +196,7 @@ const TRANSLATIONS = {
       automatic: {
         description:
           'vil automatisk bruge værktøjer, hvis modellen og udbyderen understøtter native værktøjsanrop. <br />Hvis native værktøjsanrop ikke understøttes, skal du bruge kommandoen "@agent" for at bruge værktøjer.',
-        title: null,
+        title: "Mæglersk",
       },
     },
     history: {

@@ -195,7 +195,7 @@ const TRANSLATIONS = {
       automatic: {
         description:
           "Model ve sağlayıcı tarafından desteklenen araçları otomatik olarak kullanacaktır. Eğer yerel araç çağırma desteklenmiyorsa, araçları kullanmak için @agent komutunu kullanmanız gerekecektir.",
-        title: null,
+        title: "Temsilci",
       },
     },
     history: {

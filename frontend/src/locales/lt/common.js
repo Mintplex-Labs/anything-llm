@@ -199,7 +199,7 @@ const TRANSLATIONS = {
       automatic: {
         description:
           'automatiškai naudosis įrankiais, jei modelis ir paslaugos teikėjas palaiko įrankių vadovavimą. <br />Jei įrankių vadovavimas nepaliekamas, jums reikės naudoti "@agent" komandą, kad galėtumėte naudoti įrankius.',
-        title: null,
+        title: "Agentas",
       },
       chat: {
         title: "Pokalbis",

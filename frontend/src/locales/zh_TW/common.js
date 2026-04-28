@@ -188,7 +188,7 @@ const TRANSLATIONS = {
       automatic: {
         description:
           "如果模型和供應商支援原生工具調用，則系統會自動使用這些工具。<br />如果原生工具調用不受支援，您需要使用 `@agent` 命令來使用工具。",
-        title: null,
+        title: "經紀人",
       },
     },
     history: {

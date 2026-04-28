@@ -194,7 +194,7 @@ const TRANSLATIONS = {
       automatic: {
         description:
           "ネイティブなツール呼び出しをサポートしている場合、モデルとプロバイダーが自動的にツールを使用します。ネイティブなツール呼び出しがサポートされていない場合は、@agentコマンドを使用してツールを使用する必要があります。",
-        title: null,
+        title: "代理人",
       },
     },
     history: {

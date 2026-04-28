@@ -196,7 +196,7 @@ const TRANSLATIONS = {
       automatic: {
         description:
           "utilisera automatiquement les outils si le modèle et le fournisseur prennent en charge l'appel de fonctions natives. <br />Si l'utilisation de fonctions natives n'est pas prise en charge, vous devrez utiliser la commande \"@agent\" pour utiliser les outils.",
-        title: null,
+        title: "Agent",
       },
     },
     history: {

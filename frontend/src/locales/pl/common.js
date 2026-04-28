@@ -202,7 +202,7 @@ const TRANSLATIONS = {
       automatic: {
         description:
           "automatycznie będzie korzystać z narzędzi, jeśli model i dostawca obsługują natywne wywoływanie narzędzi. <br />Jeśli natywne wywoływanie narzędzi nie jest obsługiwane, konieczne będzie użycie komendy `@agent` w celu korzystania z narzędzi.",
-        title: null,
+        title: "Agencja",
       },
     },
     history: {

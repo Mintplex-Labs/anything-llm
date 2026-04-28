@@ -203,7 +203,7 @@ const TRANSLATIONS = {
       automatic: {
         description:
           "wird automatisch Werkzeuge verwenden, wenn das Modell und der Anbieter native Werkzeugaufrufe unterstützen. <br />Wenn native Werkzeugaufrufe nicht unterstützt werden, müssen Sie den Befehl `@agent` verwenden, um Werkzeuge zu nutzen.",
-        title: null,
+        title: "Vertreter",
       },
     },
     history: {

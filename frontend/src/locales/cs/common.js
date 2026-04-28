@@ -210,7 +210,7 @@ const TRANSLATIONS = {
       automatic: {
         description:
           "automaticky použije nástroje, pokud to podporují model a poskytovatel. <br />Pokud není podporováno nativní volání nástrojů, budete muset použít příkaz `@agent` pro použití nástrojů.",
-        title: null,
+        title: "Zástupce",
       },
     },
     history: {

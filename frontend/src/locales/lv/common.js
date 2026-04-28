@@ -202,7 +202,7 @@ const TRANSLATIONS = {
       automatic: {
         description:
           'automātiski izmantos rīkus, ja modelis un sniedzējs atbalsta vietējo rīku izmantošanu. <br />Ja vietējā rīku izmantošana nav atbalstīta, jums būs jāizmantojat "@agent" komandu, lai izmantotu rīkus.',
-        title: null,
+        title: "Aģents",
       },
     },
     history: {

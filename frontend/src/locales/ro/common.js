@@ -204,7 +204,7 @@ const TRANSLATIONS = {
       automatic: {
         description:
           'va utiliza automat instrumentele, dacă modelul și furnizorul suportă apelarea nativă a instrumentelor.<br />Dacă apelarea nativă a instrumentelor nu este suportată, veți avea nevoie să utilizați comanda "@agent" pentru a utiliza instrumentele.',
-        title: null,
+        title: "Agent",
       },
     },
     history: {

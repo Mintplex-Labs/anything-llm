@@ -196,7 +196,7 @@ const TRANSLATIONS = {
       automatic: {
         description:
           "如果模型和提供者都支持原生工具调用，则会自动使用这些工具。<br />如果不支持原生工具调用，您需要使用 `@agent` 命令来使用工具。",
-        title: null,
+        title: "代理",
       },
     },
     history: {

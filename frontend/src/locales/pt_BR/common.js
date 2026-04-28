@@ -202,7 +202,7 @@ const TRANSLATIONS = {
       automatic: {
         description:
           'usará automaticamente as ferramentas, caso o modelo e o provedor suportem a chamada de ferramentas nativas.<br />Se a chamada de ferramentas nativas não for suportada, você precisará usar o comando "@agent" para utilizar as ferramentas.',
-        title: null,
+        title: "Agente",
       },
     },
     history: {

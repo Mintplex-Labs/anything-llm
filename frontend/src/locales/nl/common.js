@@ -195,7 +195,7 @@ const TRANSLATIONS = {
       automatic: {
         description:
           "zal automatisch tools gebruiken als het model en de provider native tool-aanroepen ondersteunen. <br />Als native tooling niet wordt ondersteund, moet u de `@agent`-commando gebruiken om tools te gebruiken.",
-        title: null,
+        title: "Agent",
       },
     },
     history: {

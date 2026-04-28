@@ -202,7 +202,7 @@ const TRANSLATIONS = {
       automatic: {
         description:
           "usarà eines automàticament si el model i el proveïdor suporten crida d'eines nativa.<br />Si no s'admet l'ús d'eines natiu, hauràs d'usar l'ordre @agent per fer servir eines.",
-        title: null,
+        title: "Agent",
       },
       chat: {
         title: "Xat",
