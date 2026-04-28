@@ -12,6 +12,12 @@ const chatHistory = {
     return {
       name: this.name,
       setup: function (aibitat) {
+        // If the agent is aborted (e.g. user sent /reset mid-response), skip
+        // the pending save so a completing in-flight response doesn't reappear.
+        aibitat.onAbort(() => {
+          aibitat._aborted = true;
+        });
+
         // pre-register a workspace chat ID to secure it in the DB
         aibitat.onMessage(async (message) => {
           if (message.from !== "USER") return;
@@ -54,6 +60,7 @@ const chatHistory = {
 
         aibitat.onMessage(async () => {
           try {
+            if (aibitat._aborted) return;
             const lastResponses = aibitat.chats.slice(-2);
             if (lastResponses.length !== 2) return;
             const [prev, last] = lastResponses;
