@@ -14,6 +14,7 @@ const {
   loadYouTubeTranscript,
 } = require("../../utils/extensions/YoutubeTranscript");
 const RuntimeSettings = require("../../utils/runtimeSettings");
+const { htmlToMarkdown } = require("../../utils/htmlToMarkdown");
 
 /**
  * Scrape a generic URL and return the content in the specified format
@@ -169,9 +170,12 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
       },
       async evaluate(page, browser) {
         const result = await page.evaluate((captureAs) => {
-          if (captureAs === "text") return document.body.innerText;
+          // For text mode, capture body HTML so we can convert it to Markdown
+          // server-side and preserve hyperlinks. Raw HTML mode keeps the full
+          // document for downstream querySelector use.
+          if (captureAs === "text") return document.body.innerHTML;
           if (captureAs === "html") return document.documentElement.innerHTML;
-          return document.body.innerText;
+          return document.body.innerHTML;
         }, captureAs);
         await browser.close();
         return result;
@@ -209,7 +213,8 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
 
     const docs = await loader.load();
     for (const doc of docs) pageContents.push(doc.pageContent);
-    return pageContents.join(" ");
+    const rawContent = pageContents.join(" ");
+    return captureAs === "text" ? htmlToMarkdown(rawContent, link) : rawContent;
   } catch (error) {
     console.error(
       "getPageContent failed to be fetched by puppeteer - falling back to fetch!",
@@ -227,7 +232,7 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
         ...validatedHeaders(headers),
       },
     }).then((res) => res.text());
-    return pageText;
+    return captureAs === "text" ? htmlToMarkdown(pageText, link) : pageText;
   } catch (error) {
     console.error("getPageContent failed to be fetched by any method.", error);
   }
