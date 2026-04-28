@@ -9,7 +9,6 @@ import { FullScreenLoader } from "@/components/Preloader";
 import { LAST_VISITED_WORKSPACE } from "@/utils/constants";
 
 export default function WorkspaceChat() {
-  const { slug } = useParams();
   const { loading, requiresAuth, mode } = usePasswordModal();
 
   if (loading) return <FullScreenLoader />;
@@ -20,21 +19,28 @@ export default function WorkspaceChat() {
   return (
     <div className="w-screen h-screen overflow-hidden bg-zinc-950 light:bg-slate-50 flex">
       {!isMobile && <Sidebar />}
-      <ShowWorkspaceChat key={slug ?? "default"} />
+      <ShowWorkspaceChat />
     </div>
   );
 }
 
 function ShowWorkspaceChat() {
-  const { slug, threadSlug = null } = useParams();
+  const { slug } = useParams();
   const [workspace, setWorkspace] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // Tracks which workspace `workspace` belongs to. While a new workspace's
+  // data is in flight, we keep the previous workspace's chat mounted
+  // (Slack/Linear-style transition) instead of flashing a skeleton.
+  const [loadedSlug, setLoadedSlug] = useState(null);
 
   useEffect(() => {
     async function getWorkspace() {
       if (!slug) return;
       const _workspace = await Workspace.bySlug(slug);
-      if (!_workspace) return setLoading(false);
+      if (!_workspace) {
+        setWorkspace(null);
+        setLoadedSlug(slug);
+        return;
+      }
 
       const [suggestedMessages, { showAgentCommand }] = await Promise.all([
         Workspace.getSuggestedMessages(slug),
@@ -45,7 +51,7 @@ function ShowWorkspaceChat() {
         suggestedMessages,
         showAgentCommand,
       });
-      setLoading(false);
+      setLoadedSlug(slug);
       localStorage.setItem(
         LAST_VISITED_WORKSPACE,
         JSON.stringify({
@@ -55,12 +61,11 @@ function ShowWorkspaceChat() {
       );
     }
     getWorkspace();
-  }, []);
+  }, [slug]);
 
   return (
     <WorkspaceChatContainer
-      key={threadSlug ?? "default"}
-      loading={loading}
+      loading={loadedSlug !== slug}
       workspace={workspace}
     />
   );
