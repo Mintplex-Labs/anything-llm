@@ -2,6 +2,7 @@ import { v4 } from "uuid";
 import { safeJsonParse } from "../request";
 import { API_BASE } from "../constants";
 import { useEffect, useState } from "react";
+import { THREAD_RENAME_EVENT } from "@/components/Sidebar/ActiveWorkspaces/ThreadContainer";
 
 export const AGENT_SESSION_START = "agentSessionStart";
 export const AGENT_SESSION_END = "agentSessionEnd";
@@ -25,6 +26,19 @@ export function websocketURI() {
 export default function handleSocketResponse(socket, event, setChatHistory) {
   const data = safeJsonParse(event.data, null);
   if (data === null) return;
+
+  // Handle thread rename
+  if (data.type === "rename_thread") {
+    const { slug, name } = data.content || {};
+    if (slug && name) {
+      window.dispatchEvent(
+        new CustomEvent(THREAD_RENAME_EVENT, {
+          detail: { threadSlug: slug, newName: name },
+        })
+      );
+    }
+    return;
+  }
 
   // No message type is defined then this is a generic message
   // that we need to print to the user as a system response
