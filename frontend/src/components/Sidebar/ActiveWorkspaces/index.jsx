@@ -118,14 +118,7 @@ export default function ActiveWorkspaces() {
                     >
                       <div className="flex gap-x-2 items-center justify-between">
                         <Link
-                          to={
-                            isActive
-                              ? "#"
-                              : paths.workspace.chat(workspace.slug)
-                          }
-                          onClick={(e) => {
-                            if (isActive) e.preventDefault();
-                          }}
+                          to={paths.workspace.chat(workspace.slug)}
                           aria-current={isActive ? "page" : ""}
                           className={`
                             transition-all duration-[200ms]

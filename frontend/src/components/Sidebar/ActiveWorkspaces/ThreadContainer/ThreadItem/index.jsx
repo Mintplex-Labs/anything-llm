@@ -99,10 +99,6 @@ export default function ThreadItem({
           <Link
             ref={ref}
             to={linkTo}
-            onClick={(e) => {
-              if (ctrlPressed || window.location.pathname === linkTo)
-                e.preventDefault();
-            }}
             data-tooltip-id="workspace-thread-name"
             data-tooltip-content={thread.name}
             className="w-full pl-2 py-1 overflow-hidden"
