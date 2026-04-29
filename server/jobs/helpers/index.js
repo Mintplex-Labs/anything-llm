@@ -27,8 +27,28 @@ function updateSourceDocument(docPath = null, jsonContent = {}) {
   });
 }
 
+/**
+ * Strips thought/thinking tags from text (e.g., <thinking>...</thinking>)
+ * Useful for cleaning LLM responses before sending notifications.
+ * @param {string} text - The text to strip thoughts from.
+ * @returns {string} - The text with thought tags and their content removed.
+ */
+const THOUGHT_KEYWORDS = ["thought", "thinking", "think", "thought_chain"];
+const THOUGHT_REGEX_COMPLETE = new RegExp(
+  THOUGHT_KEYWORDS.map(
+    (keyword) =>
+      `<${keyword}\\s*(?:[^>]*?)?\\s*>[\\s\\S]*?<\\/${keyword}\\s*(?:[^>]*?)?>`
+  ).join("|"),
+  "gi"
+);
+
+function stripThinkingFromText(text = "") {
+  return text.replace(THOUGHT_REGEX_COMPLETE, "").trim();
+}
+
 module.exports = {
   log,
   conclude,
   updateSourceDocument,
+  stripThinkingFromText,
 };

@@ -173,6 +173,15 @@ export default {
     telegram: () => {
       return `/settings/external-connections/telegram`;
     },
+    scheduledJobs: () => {
+      return `/settings/scheduled-jobs`;
+    },
+    scheduledJobRuns: (jobId) => {
+      return `/settings/scheduled-jobs/${jobId}/runs`;
+    },
+    scheduledJobRunDetail: (jobId, runId) => {
+      return `/settings/scheduled-jobs/${jobId}/runs/${runId}`;
+    },
   },
   agents: {
     builder: () => {
