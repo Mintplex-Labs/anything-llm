@@ -196,11 +196,17 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
           ).catch(() => {});
         }
 
-        // Remove noise elements (nav, cookie banners, etc.) before extraction
+        // Remove noise elements (nav, cookie banners, etc.) before extraction.
+        // The [class*="kw-highlight"] rule strips Kufer's rotating course-highlight
+        // blocks, which pick 5-9 random courses on every page load and would
+        // otherwise produce a different content hash on every scrape even though
+        // no real change happened. Those courses remain reachable via category
+        // and course-detail pages, so this strip causes no information loss.
         await page.evaluate(() => {
           document.querySelectorAll(
             'header, footer, nav, aside, [class*="cookie"], [id*="cookie"], ' +
-            '[class*="consent"], [id*="consent"], [class*="banner"]'
+            '[class*="consent"], [id*="consent"], [class*="banner"], ' +
+            '[class*="kw-highlight"]'
           ).forEach(el => el.remove());
         });
 
