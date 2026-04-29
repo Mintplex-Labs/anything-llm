@@ -36,6 +36,7 @@ export default function WorkspaceChat({ loading, workspace }) {
       setLoaded({
         key: `${workspace.slug}:${threadSlug ?? "default"}`,
         workspace,
+        threadSlug,
         history: chatHistory,
       });
     }
@@ -95,11 +96,12 @@ export default function WorkspaceChat({ loading, workspace }) {
     <TTSProvider>
       <DnDFileUploaderProvider
         workspace={loaded.workspace}
-        threadSlug={threadSlug}
+        threadSlug={loaded.threadSlug}
       >
         <ChatContainer
           key={loaded.key}
           workspace={loaded.workspace}
+          threadSlug={loaded.threadSlug}
           knownHistory={loaded.history}
         />
       </DnDFileUploaderProvider>
