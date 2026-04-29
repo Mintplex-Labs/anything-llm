@@ -794,7 +794,7 @@ const TRANSLATIONS = {
         readActions: "Cite",
         writeActions: "Acțiuni",
         warning:
-          "Accesul la sistemul de fișiere poate fi periculos, deoarece poate modifica sau șterge fișiere. Vă rugăm să consultați documentația <link>înainte de a-l activa.",
+          "Accesul la sistemul de fișiere poate fi periculos, deoarece poate modifica sau șterge fișiere. Vă rugăm să consultați documentația <a>înainte de a-l activa.",
         skills: {
           "read-text-file": {
             title: "Citește fișierul",

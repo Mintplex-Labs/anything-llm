@@ -338,7 +338,7 @@ const TRANSLATIONS = {
         readActions: "Czytać akcje",
         writeActions: "Działania",
         warning:
-          "Dostęp do systemu plików może być niebezpieczny, ponieważ może modyfikować lub usuwać pliki. Prosimy o zapoznanie się z dokumentacją <link> przed włączeniem tej funkcji.",
+          "Dostęp do systemu plików może być niebezpieczny, ponieważ może modyfikować lub usuwać pliki. Prosimy o zapoznanie się z dokumentacją <a> przed włączeniem tej funkcji.",
         skills: {
           "read-text-file": {
             title: "Otwórz plik",

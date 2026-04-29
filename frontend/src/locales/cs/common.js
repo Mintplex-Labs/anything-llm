@@ -345,7 +345,7 @@ const TRANSLATIONS = {
         readActions: "Činnosti",
         writeActions: "Akce",
         warning:
-          "Přístup k souborovému systému může být nebezpečný, protože může upravovat nebo mazat soubory. Před zapnutím funkce prosím nahlédněte do dokumentace <link>dokumentace</link>.",
+          "Přístup k souborovému systému může být nebezpečný, protože může upravovat nebo mazat soubory. Před zapnutím funkce prosím nahlédněte do dokumentace <a>dokumentace</a>.",
         skills: {
           "read-text-file": {
             title: "Otevřít soubor",

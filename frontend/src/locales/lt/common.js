@@ -344,7 +344,7 @@ const TRANSLATIONS = {
         readActions: "Veikimas",
         writeActions: "Veikimas",
         warning:
-          "Failų sistemos prieigos vartymas gali būti pavojus, nes gali modifikuoti arba ištrinti failus. Prašome, prieš įgalindami, pasikonsultuoti su <link>dokumentacija</link>.",
+          "Failų sistemos prieigos vartymas gali būti pavojus, nes gali modifikuoti arba ištrinti failus. Prašome, prieš įgalindami, pasikonsultuoti su <a>dokumentacija</a>.",
         skills: {
           "read-text-file": {
             title: "Atidaryti failą",

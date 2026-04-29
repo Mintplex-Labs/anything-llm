@@ -329,7 +329,7 @@ const TRANSLATIONS = {
         readActions: "Đọc hành động",
         writeActions: "Các hành động",
         warning:
-          "Việc truy cập hệ thống tệp có thể gây nguy hiểm vì nó có thể sửa đổi hoặc xóa các tệp. Vui lòng tham khảo tài liệu <link> trước khi kích hoạt.",
+          "Việc truy cập hệ thống tệp có thể gây nguy hiểm vì nó có thể sửa đổi hoặc xóa các tệp. Vui lòng tham khảo tài liệu <a> trước khi kích hoạt.",
         skills: {
           "read-text-file": {
             title: "Đọc tệp",

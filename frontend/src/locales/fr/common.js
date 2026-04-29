@@ -332,7 +332,7 @@ const TRANSLATIONS = {
         readActions: "Lire les actions",
         writeActions: "Actions à effectuer",
         warning:
-          "L'accès au système de fichiers peut être dangereux, car il peut modifier ou supprimer des fichiers. Veuillez consulter la <link>documentation</link> avant de l'activer.",
+          "L'accès au système de fichiers peut être dangereux, car il peut modifier ou supprimer des fichiers. Veuillez consulter la <a>documentation</a> avant de l'activer.",
         skills: {
           "read-text-file": {
             title: "Ouvrir le fichier",
