@@ -432,6 +432,16 @@ const SystemSettings = {
         process.env.GENERIC_OPEN_AI_EMBEDDING_MAX_CONCURRENT_CHUNKS || 500,
       GeminiEmbeddingApiKey: !!process.env.GEMINI_EMBEDDING_API_KEY,
 
+      AwsBedrockEmbeddingConnectionMethod:
+        process.env.AWS_BEDROCK_EMBEDDING_CONNECTION_METHOD || "iam",
+      AwsBedrockEmbeddingAccessKeyId:
+        !!process.env.AWS_BEDROCK_EMBEDDING_ACCESS_KEY_ID,
+      AwsBedrockEmbeddingAccessKey:
+        !!process.env.AWS_BEDROCK_EMBEDDING_ACCESS_KEY,
+      AwsBedrockEmbeddingSessionToken:
+        !!process.env.AWS_BEDROCK_EMBEDDING_SESSION_TOKEN,
+      AwsBedrockEmbeddingRegion: process.env.AWS_BEDROCK_EMBEDDING_REGION,
+
       // --------------------------------------------------------
       // VectorDB Provider Selection Settings & Configs
       // --------------------------------------------------------

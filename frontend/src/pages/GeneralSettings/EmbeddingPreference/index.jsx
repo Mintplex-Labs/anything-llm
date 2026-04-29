@@ -17,6 +17,7 @@ import GenericOpenAiLogo from "@/media/llmprovider/generic-openai.png";
 import MistralAiLogo from "@/media/llmprovider/mistral.jpeg";
 import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
 import LemonadeLogo from "@/media/llmprovider/lemonade.png";
+import AwsBedrockLogo from "@/media/llmprovider/bedrock.png";
 
 import PreLoader from "@/components/Preloader";
 import ChangeWarningModal from "@/components/ChangeWarning";
@@ -34,6 +35,7 @@ import GenericOpenAiEmbeddingOptions from "@/components/EmbeddingSelection/Gener
 import OpenRouterOptions from "@/components/EmbeddingSelection/OpenRouterOptions";
 import MistralAiOptions from "@/components/EmbeddingSelection/MistralAiOptions";
 import LemonadeOptions from "@/components/EmbeddingSelection/LemonadeOptions";
+import AwsBedrockEmbeddingOptions from "@/components/EmbeddingSelection/AwsBedrockEmbeddingOptions";
 
 import EmbedderItem from "@/components/EmbeddingSelection/EmbedderItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -64,6 +66,13 @@ const EMBEDDERS = [
     logo: AzureOpenAiLogo,
     options: (settings) => <AzureAiOptions settings={settings} />,
     description: "The enterprise option of OpenAI hosted on Azure services.",
+  },
+  {
+    name: "AWS Bedrock",
+    value: "bedrock",
+    logo: AwsBedrockLogo,
+    options: (settings) => <AwsBedrockEmbeddingOptions settings={settings} />,
+    description: "Run embedding models hosted on AWS Bedrock.",
   },
   {
     name: "Gemini",

@@ -322,6 +322,31 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // AWS Bedrock Embedding Settings
+  AwsBedrockEmbeddingConnectionMethod: {
+    envKey: "AWS_BEDROCK_EMBEDDING_CONNECTION_METHOD",
+    checks: [
+      (input) =>
+        SUPPORTED_CONNECTION_METHODS.includes(input) ? null : "invalid Value",
+    ],
+  },
+  AwsBedrockEmbeddingAccessKeyId: {
+    envKey: "AWS_BEDROCK_EMBEDDING_ACCESS_KEY_ID",
+    checks: [],
+  },
+  AwsBedrockEmbeddingAccessKey: {
+    envKey: "AWS_BEDROCK_EMBEDDING_ACCESS_KEY",
+    checks: [],
+  },
+  AwsBedrockEmbeddingSessionToken: {
+    envKey: "AWS_BEDROCK_EMBEDDING_SESSION_TOKEN",
+    checks: [],
+  },
+  AwsBedrockEmbeddingRegion: {
+    envKey: "AWS_BEDROCK_EMBEDDING_REGION",
+    checks: [isNotEmpty],
+  },
+
   // Generic OpenAI Embedding Settings
   GenericOpenAiEmbeddingApiKey: {
     envKey: "GENERIC_OPEN_AI_EMBEDDING_API_KEY",
