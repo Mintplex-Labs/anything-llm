@@ -55,6 +55,7 @@ AnythingLLM supports multiple users as well where you can control the access and
 
 ## Cool features of AnythingLLM
 
+- [Scheduled Tasks](https://docs.anythingllm.com/scheduled-jobs/overview)
 - [Intelligent Skill Selection](https://docs.anythingllm.com/agent/intelligent-tool-selection) Enable **unlimited** tools for your models while reducing token usage by up to 80% per query
 - [**No-code AI Agent builder**](https://docs.anythingllm.com/agent-flows/overview)
 - [**Full MCP-compatibility**](https://docs.anythingllm.com/mcp-compatibility/overview)

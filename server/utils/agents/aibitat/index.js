@@ -418,6 +418,18 @@ class AIbitat {
   }
 
   /**
+   * Triggered when a tool call completes and returns a result.
+   * Used by scheduled jobs to capture tool results for the execution trace.
+   *
+   * @param listener
+   * @returns
+   */
+  onToolCallResult(listener = () => null) {
+    this.emitter.on("toolCallResult", listener);
+    return this;
+  }
+
+  /**
    * Register an error in the chat history.
    * This will trigger the `onError` event.
    *
@@ -926,6 +938,11 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
 
       const result = await fn.handler(args);
       Telemetry.sendTelemetry("agent_tool_call", { tool: name }, null, true);
+      this.emitter.emit("toolCallResult", {
+        toolName: name,
+        arguments: args,
+        result,
+      });
 
       /**
        * If the tool call has direct output enabled, return the result directly to the chat
@@ -1079,6 +1096,11 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
 
       const result = await fn.handler(args);
       Telemetry.sendTelemetry("agent_tool_call", { tool: name }, null, true);
+      this.emitter.emit("toolCallResult", {
+        toolName: name,
+        arguments: args,
+        result,
+      });
 
       if (this.skipHandleExecution) {
         this.skipHandleExecution = false;
