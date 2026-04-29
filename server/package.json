@@ -82,6 +82,7 @@
     "node-telegram-bot-api": "^0.67.0",
     "ollama": "^0.6.3",
     "openai": "4.95.1",
+   	"oracledb": "^6.10.0",
     "pdf-lib": "1.17.1",
     "pg": "^8.11.5",
     "pinecone-client": "^1.1.0",
