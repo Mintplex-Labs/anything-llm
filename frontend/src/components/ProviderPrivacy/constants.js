@@ -36,6 +36,7 @@ import MilvusLogo from "@/media/vectordbs/milvus.png";
 import VoyageAiLogo from "@/media/embeddingprovider/voyageai.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
 import PGVectorLogo from "@/media/vectordbs/pgvector.png";
+import OceanBaseLogo from "@/media/vectordbs/oceanbase.png";
 import DPAISLogo from "@/media/llmprovider/dpais.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
@@ -262,6 +263,14 @@ const VECTOR_DB_PROVIDER_PRIVACY_MAP = {
       "Access to your instance is managed by you.",
     ],
     logo: PGVectorLogo,
+  },
+  oceanbase: {
+    name: "OceanBase",
+    description: [
+      "Your vectors and document text are stored on your OceanBase instance (MySQL protocol).",
+      "Access to your instance is managed by you.",
+    ],
+    logo: OceanBaseLogo,
   },
   chroma: {
     name: "Chroma",

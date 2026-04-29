@@ -21,6 +21,7 @@ import MilvusLogo from "@/media/vectordbs/milvus.png";
 import ZillizLogo from "@/media/vectordbs/zilliz.png";
 import AstraDBLogo from "@/media/vectordbs/astraDB.png";
 import PGVectorLogo from "@/media/vectordbs/pgvector.png";
+import OceanBaseLogo from "@/media/vectordbs/oceanbase.png";
 
 import LanceDBOptions from "@/components/VectorDBSelection/LanceDBOptions";
 import ChromaDBOptions from "@/components/VectorDBSelection/ChromaDBOptions";
@@ -32,6 +33,7 @@ import MilvusDBOptions from "@/components/VectorDBSelection/MilvusDBOptions";
 import ZillizCloudOptions from "@/components/VectorDBSelection/ZillizCloudOptions";
 import AstraDBOptions from "@/components/VectorDBSelection/AstraDBOptions";
 import PGVectorOptions from "@/components/VectorDBSelection/PGVectorOptions";
+import OceanBaseOptions from "@/components/VectorDBSelection/OceanBaseOptions";
 
 const VECTOR_DBS = [
   {
@@ -48,6 +50,14 @@ const VECTOR_DBS = [
     logo: PGVectorLogo,
     options: (settings) => <PGVectorOptions settings={settings} />,
     description: "Vector search powered by PostgreSQL.",
+  },
+  {
+    name: "OceanBase",
+    value: "oceanbase",
+    logo: OceanBaseLogo,
+    options: (settings) => <OceanBaseOptions settings={settings} />,
+    description:
+      "OceanBase VECTOR indexes via MySQL-compatible protocol (VTB_* tables per workspace).",
   },
   {
     name: "Chroma",
