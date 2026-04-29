@@ -1644,7 +1644,6 @@ const TRANSLATIONS = {
       unknownJob: "Nieznane stanowisko",
       runHeading: "{{name}} – Uruchom {{id}}",
       duration: "Czas trwania: {{value}}",
-      continueInThread: "Kontynuuj dyskusję",
       creating: "Tworzenie...",
       threadFailed: "Nie udało się utworzyć wątku.",
       sections: {
@@ -1662,6 +1661,7 @@ const TRANSLATIONS = {
       },
       stopJob: "Zakończ pracę",
       killing: "Przestań...",
+      continueInThread: "Kontynuuj rozmowę",
     },
     toolCall: {
       arguments: "Argumenty:",

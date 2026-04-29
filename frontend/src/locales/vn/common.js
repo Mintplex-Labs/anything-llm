@@ -1622,7 +1622,6 @@ const TRANSLATIONS = {
       unknownJob: "Vị trí công việc chưa được xác định",
       runHeading: "{{name}} — Chạy lệnh #{{id}}",
       duration: "Thời gian: {{value}}",
-      continueInThread: "Tiếp tục thảo luận trong chủ đề này",
       creating: "Tạo ra...",
       threadFailed: "Không thể tạo ra luồng (thread).",
       sections: {
@@ -1640,6 +1639,7 @@ const TRANSLATIONS = {
       },
       stopJob: "Dừng việc",
       killing: "Dừng lại...",
+      continueInThread: "Tiếp tục trò chuyện",
     },
     toolCall: {
       arguments: "Các lập luận:",

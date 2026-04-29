@@ -1640,7 +1640,6 @@ const TRANSLATIONS = {
       unknownJob: "Nevērtēts darbs",
       runHeading: "{{name}} – Runa Nr. {{id}}",
       duration: "Laiks: {{value}}",
-      continueInThread: "Turpināt diskusiju",
       creating: "Izveidot...",
       threadFailed: "Izdevās izveidot tēmu",
       sections: {
@@ -1658,6 +1657,7 @@ const TRANSLATIONS = {
       },
       stopJob: "Aizstāt darbu",
       killing: "Apstādam...",
+      continueInThread: "Turpināt sarunu",
     },
     toolCall: {
       arguments: "Argumenti:",

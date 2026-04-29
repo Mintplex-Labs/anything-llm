@@ -1630,7 +1630,6 @@ const TRANSLATIONS = {
       unknownJob: "Nenurodytas darbas",
       runHeading: "{{name}} – Treniruotė #{{id}}",
       duration: "Trūkumas: {{value}}",
-      continueInThread: "Toliau diskusijoje",
       creating: "Kurimas...",
       threadFailed: "Nepavyko sukurti temą",
       sections: {
@@ -1648,6 +1647,7 @@ const TRANSLATIONS = {
       },
       stopJob: "Nutraukite darbą",
       killing: "Sustabdyti...",
+      continueInThread: "Tęsti pokalbį",
     },
     toolCall: {
       arguments: "Argumentai:",

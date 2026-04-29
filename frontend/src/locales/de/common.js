@@ -1662,7 +1662,6 @@ const TRANSLATIONS = {
       unknownJob: "Unbekannte Stellenbezeichnung",
       runHeading: "{{name}} – Ausführung #{{id}}",
       duration: "Dauer: {{value}}",
-      continueInThread: "Weiter in diesem Thread",
       creating: "Erstellen...",
       threadFailed: "Fehlgeschlagen beim Erstellen des Threads",
       sections: {
@@ -1680,6 +1679,7 @@ const TRANSLATIONS = {
       },
       stopJob: "Arbeitsplatz verlassen",
       killing: "Anhalten...",
+      continueInThread: "Weiter im Chat",
     },
     toolCall: {
       arguments: "Argumente:",

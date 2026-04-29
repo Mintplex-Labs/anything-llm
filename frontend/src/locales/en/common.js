@@ -1611,7 +1611,7 @@ const TRANSLATIONS = {
       unknownJob: "Unknown Job",
       runHeading: "{{name}} — Run #{{id}}",
       duration: "Duration: {{value}}",
-      continueInThread: "Continue in Thread",
+      continueInThread: "Continue in Chat",
       creating: "Creating...",
       threadFailed: "Failed to create thread",
       stopJob: "Stop Job",

@@ -1615,7 +1615,6 @@ const TRANSLATIONS = {
       unknownJob: "عنوان شغلی نامشخص",
       runHeading: "{{name}} — اجرای شماره {{id}}",
       duration: "مدت زمان: {{value}}",
-      continueInThread: "ادامه در این موضوع",
       creating: "ایجاد...",
       threadFailed: "امکان ایجاد نخ (thread) وجود نداشت.",
       sections: {
@@ -1633,6 +1632,7 @@ const TRANSLATIONS = {
       },
       stopJob: "متوقف کردن کار",
       killing: "توقف...",
+      continueInThread: "ادامه گفتگو در چت",
     },
     toolCall: {
       arguments: "استدلال‌ها:",

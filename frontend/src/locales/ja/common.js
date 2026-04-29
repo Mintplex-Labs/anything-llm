@@ -1611,7 +1611,6 @@ const TRANSLATIONS = {
       unknownJob: "不明な職種",
       runHeading: "{{name}} — 実行: #{{id}}",
       duration: "期間: {{value}}",
-      continueInThread: "スレッドへの書き込みを続ける",
       creating: "作成中...",
       threadFailed: "スレッドの作成に失敗しました",
       sections: {
@@ -1629,6 +1628,7 @@ const TRANSLATIONS = {
       },
       stopJob: "求人停止",
       killing: "停止…",
+      continueInThread: "チャットを続ける",
     },
     toolCall: {
       arguments: "主張：",

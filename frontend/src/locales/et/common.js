@@ -1581,7 +1581,6 @@ const TRANSLATIONS = {
       unknownJob: "Tuntmatu amet",
       runHeading: "{{name}} — Üritus #{{id}}",
       duration: "Kestvus: {{value}}",
-      continueInThread: "Jätka teemas",
       creating: "Loomine...",
       threadFailed: "Epäõnnes teema loomist",
       sections: {
@@ -1599,6 +1598,7 @@ const TRANSLATIONS = {
       },
       stopJob: "Töö peatamine",
       killing: "Peatumine...",
+      continueInThread: "Jätka vestluses",
     },
     toolCall: {
       arguments: "Argumentid:",

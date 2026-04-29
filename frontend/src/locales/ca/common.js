@@ -1650,7 +1650,6 @@ const TRANSLATIONS = {
       unknownJob: "Posició sense especificar",
       runHeading: "{{name}} — Executar la tasca {{id}}",
       duration: "Durada: {{value}}",
-      continueInThread: "Segueix la discussió",
       creating: "Creant...",
       threadFailed: "No s'ha pogut crear el fil.",
       sections: {
@@ -1668,6 +1667,7 @@ const TRANSLATIONS = {
       },
       stopJob: "Finalitzar feina",
       killing: "Aturar...",
+      continueInThread: "Continua la conversa",
     },
     toolCall: {
       arguments: "Argumentacions:",

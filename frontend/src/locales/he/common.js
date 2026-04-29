@@ -1566,7 +1566,6 @@ const TRANSLATIONS = {
       unknownJob: "תפקיד לא ידוע",
       runHeading: "{{name}} — הפעל את מספר {{id}}",
       duration: "משך: {{value}}",
-      continueInThread: "להמשיך בדיון",
       creating: "יצירה...",
       threadFailed: "לא הצליח ליצור דיון.",
       sections: {
@@ -1584,6 +1583,7 @@ const TRANSLATIONS = {
       },
       stopJob: "הפסק עבודה",
       killing: "עצירה...",
+      continueInThread: "להמשיך בשיחה",
     },
     toolCall: {
       arguments: "טיעונים:",

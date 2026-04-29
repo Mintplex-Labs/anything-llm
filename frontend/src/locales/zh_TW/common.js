@@ -1519,7 +1519,6 @@ const TRANSLATIONS = {
       unknownJob: "未知的職位",
       runHeading: "{{name}} — 執行 #{{id}}",
       duration: "時間：{{value}}",
-      continueInThread: "繼續追蹤此主題",
       creating: "創作...",
       threadFailed: "未能建立執行緒",
       sections: {
@@ -1537,6 +1536,7 @@ const TRANSLATIONS = {
       },
       stopJob: "停止工作",
       killing: "停止...",
+      continueInThread: "繼續聊天",
     },
     toolCall: {
       arguments: "論點：",
