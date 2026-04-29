@@ -1627,7 +1627,6 @@ const TRANSLATIONS = {
       unknownJob: "Ukendt stilling",
       runHeading: "{{name}} — Kør #{{id}}",
       duration: "Varighed: {{value}}",
-      continueInThread: "Fortsæt i tråden",
       creating: "Oprettelse...",
       threadFailed: "Kunne ikke oprette tråd",
       sections: {
@@ -1645,6 +1644,7 @@ const TRANSLATIONS = {
       },
       stopJob: "Afslut stillingen",
       killing: "Afbryde...",
+      continueInThread: "Fortsæt i chat",
     },
     toolCall: {
       arguments: "Argumenter:",

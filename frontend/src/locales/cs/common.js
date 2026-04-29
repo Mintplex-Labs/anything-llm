@@ -1624,7 +1624,6 @@ const TRANSLATIONS = {
       unknownJob: "Neznámá pracovní pozice",
       runHeading: "{{name}} — Spustit #{{id}}",
       duration: "Doba trvání: {{value}}",
-      continueInThread: "Pokračovat v tématu",
       creating: "Vytváření...",
       threadFailed: "Nedaří se vytvořit vlákno.",
       sections: {
@@ -1642,6 +1641,7 @@ const TRANSLATIONS = {
       },
       stopJob: "Zastavení práce",
       killing: "Zastavte...",
+      continueInThread: "Pokračovat v chatu",
     },
     toolCall: {
       arguments: "Argumenty:",

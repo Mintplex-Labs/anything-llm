@@ -1523,7 +1523,6 @@ const TRANSLATIONS = {
       unknownJob: "未知的职位",
       runHeading: "{{name}} — 运行 #{{id}}",
       duration: "时长：{{value}}",
-      continueInThread: "继续参与该主题讨论",
       creating: "创作...",
       threadFailed: "未能创建线程",
       sections: {
@@ -1541,6 +1540,7 @@ const TRANSLATIONS = {
       },
       stopJob: "停止工作",
       killing: "停止...",
+      continueInThread: "继续聊天",
     },
     toolCall: {
       arguments: "论点：",

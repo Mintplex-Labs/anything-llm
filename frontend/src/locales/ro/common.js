@@ -1648,7 +1648,6 @@ const TRANSLATIONS = {
       unknownJob: "Loc de muncă necunoscut",
       runHeading: "{{name}} — Executarea #{{id}}",
       duration: "Durată: {{value}}",
-      continueInThread: "Continuă în acest thread",
       creating: "Crearea...",
       threadFailed: "Nu a reușit să creeze thread-ul.",
       sections: {
@@ -1666,6 +1665,7 @@ const TRANSLATIONS = {
       },
       stopJob: "Încetarea activității",
       killing: "Oprire...",
+      continueInThread: "Continuă în chat",
     },
     toolCall: {
       arguments: "Argumente:",

@@ -1670,7 +1670,6 @@ const TRANSLATIONS = {
       unknownJob: "Puesto sin especificar",
       runHeading: "{{name}} — Ejecutar la prueba #{{id}}",
       duration: "Duración: {{value}}",
-      continueInThread: "Continuar en esta conversación",
       creating: "Creando...",
       threadFailed: "No se pudo crear el hilo.",
       sections: {
@@ -1688,6 +1687,7 @@ const TRANSLATIONS = {
       },
       stopJob: "Suspender el empleo",
       killing: "Detener...",
+      continueInThread: "Continuar en el chat",
     },
     toolCall: {
       arguments: "Argumentos:",

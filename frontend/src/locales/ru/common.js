@@ -1653,7 +1653,6 @@ const TRANSLATIONS = {
       unknownJob: "Неизвестная должность",
       runHeading: "{{name}} — Запуск №{{id}}",
       duration: "Продолжительность: {{value}}",
-      continueInThread: "Продолжить обсуждение в этой теме",
       creating: "Создание...",
       threadFailed: "Не удалось создать нить.",
       sections: {
@@ -1671,6 +1670,7 @@ const TRANSLATIONS = {
       },
       stopJob: "Прекратить работу",
       killing: "Остановка...",
+      continueInThread: "Продолжить общение в чате",
     },
     toolCall: {
       arguments: "Аргументы:",

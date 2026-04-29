@@ -1617,7 +1617,6 @@ const TRANSLATIONS = {
       unknownJob: "Cargo não especificado",
       runHeading: "{{name}} — Executar a tarefa #{{id}}",
       duration: "Duração: {{value}}",
-      continueInThread: "Continue na discussão",
       creating: "Criando...",
       threadFailed: "Falhou ao criar a thread.",
       sections: {
@@ -1635,6 +1634,7 @@ const TRANSLATIONS = {
       },
       stopJob: "Interromper o emprego",
       killing: "Parar...",
+      continueInThread: "Continue na conversa",
     },
     toolCall: {
       arguments: "Argumentos:",

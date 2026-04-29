@@ -1585,7 +1585,6 @@ const TRANSLATIONS = {
       unknownJob: "알 수 없는 직업",
       runHeading: "{{name}} — 실행: #{{id}}",
       duration: "기간: {{value}}",
-      continueInThread: "스레드에 계속 참여",
       creating: "만들기...",
       threadFailed: "스레드를 생성하는 데 실패했습니다.",
       sections: {
@@ -1603,6 +1602,7 @@ const TRANSLATIONS = {
       },
       stopJob: "직업 중단",
       killing: "멈추다...",
+      continueInThread: "채팅 계속",
     },
     toolCall: {
       arguments: "논거",

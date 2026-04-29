@@ -1636,7 +1636,6 @@ const TRANSLATIONS = {
       unknownJob: "Bilinmeyen İş",
       runHeading: "{{name}} — Çalışma #{{id}}",
       duration: "Süre: {{value}}",
-      continueInThread: "İlgili başlıkta devam et",
       creating: "Yaratmak...",
       threadFailed: "İşlem başlatma başarısız oldu.",
       sections: {
@@ -1654,6 +1653,7 @@ const TRANSLATIONS = {
       },
       stopJob: "İşten Çık",
       killing: "Dur...",
+      continueInThread: "Sohbeti devam ettir",
     },
     toolCall: {
       arguments: "Tartışmalar:",

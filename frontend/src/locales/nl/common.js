@@ -1642,7 +1642,6 @@ const TRANSLATIONS = {
       unknownJob: "Onbekende functie",
       runHeading: "{{name}} — Uitvoering #{{id}}",
       duration: "Duur: {{value}}",
-      continueInThread: "Blijf reageren in dit gesprek",
       creating: "Creëren...",
       threadFailed: "Niet in staat om een nieuwe thread te creëren.",
       sections: {
@@ -1660,6 +1659,7 @@ const TRANSLATIONS = {
       },
       stopJob: "Werkonderbreking",
       killing: "Stoppen...",
+      continueInThread: "Blijf chatten",
     },
     toolCall: {
       arguments: "Argumenten:",

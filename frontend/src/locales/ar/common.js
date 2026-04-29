@@ -1599,7 +1599,6 @@ const TRANSLATIONS = {
       unknownJob: "وظيفة غير محددة",
       runHeading: "{{name}} — تشغيل المهمة رقم {{id}}",
       duration: "المدة: {{value}}",
-      continueInThread: "تابع في هذا الموضوع/النقاش",
       creating: "إنشاء...",
       threadFailed: "فشل في إنشاء سلسلة (thread).",
       sections: {
@@ -1617,6 +1616,7 @@ const TRANSLATIONS = {
       },
       stopJob: "إيقاف التوظيف",
       killing: "التوقف...",
+      continueInThread: "استمر في الدردشة",
     },
     toolCall: {
       arguments: "الحجج:",
