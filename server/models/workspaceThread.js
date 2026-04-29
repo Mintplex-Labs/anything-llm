@@ -1,6 +1,7 @@
 const prisma = require("../utils/prisma");
 const slugifyModule = require("slugify");
 const { v4: uuidv4 } = require("uuid");
+const truncate = require("truncate");
 
 const WorkspaceThread = {
   defaultName: "Thread",
@@ -120,15 +121,15 @@ const WorkspaceThread = {
     }
   },
 
-  // Will fire on first message (included or not) for a thread and rename the thread with the newName prop.
+  // Will fire on first message (included or not) for a thread and rename the thread based on the prompt.
   autoRenameThread: async function ({
     workspace = null,
     thread = null,
     user = null,
-    newName = null,
+    prompt = null,
     onRename = null,
   }) {
-    if (!workspace || !thread || !newName) return false;
+    if (!workspace || !thread || !prompt) return false;
     if (thread.name !== this.defaultName) return false; // don't rename if already named.
 
     const { WorkspaceChats } = require("./workspaceChats");
@@ -139,7 +140,7 @@ const WorkspaceThread = {
     });
     if (chatCount !== 1) return { renamed: false, thread };
     const { thread: updatedThread } = await this.update(thread, {
-      name: newName,
+      name: truncate(prompt, 22),
     });
 
     onRename?.(updatedThread);
