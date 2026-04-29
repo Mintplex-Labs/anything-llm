@@ -160,6 +160,9 @@ function getModelTag() {
     case "giteeai":
       model = process.env.GITEE_AI_MODEL_PREF;
       break;
+    case "futurmix":
+      model = process.env.FUTURMIX_MODEL_PREF;
+      break;
     case "cohere":
       model = process.env.COHERE_MODEL_PREF;
       break;
