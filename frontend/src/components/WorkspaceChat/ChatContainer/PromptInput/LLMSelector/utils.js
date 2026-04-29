@@ -25,21 +25,20 @@ export function autoScrollToSelectedLLMProvider(
  */
 export function validatedModelSelection(model) {
   try {
-    // If the entire select element is not found, return the model as is and cross our fingers
-    const selectOption = document.getElementById(`workspace-llm-model-select`);
-    if (!selectOption) return model;
+    const el = document.getElementById(`workspace-llm-model-select`);
+    if (!el) return model;
 
-    // If the model is not in the dropdown, return the first model in the dropdown
-    // to prevent invalid provider<>model selection issues
-    const selectedOption = selectOption.querySelector(
-      `option[value="${model}"]`
-    );
-    if (!selectedOption) return selectOption.querySelector(`option`).value;
+    if (el.tagName === "INPUT") {
+      const value = String(el.value ?? model ?? "").trim();
+      return value || null;
+    }
 
-    // If the model is in the dropdown, return the model as is
+    const selectedOption = el.querySelector(`option[value="${model}"]`);
+    if (!selectedOption) return el.querySelector(`option`)?.value ?? null;
+
     return model;
   } catch {
-    return null; // If the dropdown was empty or something else went wrong, return null to abort the save
+    return null;
   }
 }
 

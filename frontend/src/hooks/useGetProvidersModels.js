@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 export const DISABLED_PROVIDERS = [
   "azure",
   "textgenwebui",
-  "generic-openai",
   "bedrock",
 ];
 const PROVIDER_DEFAULT_MODELS = {
