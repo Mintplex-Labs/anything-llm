@@ -1,4 +1,11 @@
-import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import {
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useCallback,
+  useRef,
+  useMemo,
+} from "react";
 import { useTranslation } from "react-i18next";
 import useUser from "@/hooks/useUser";
 import AgentSkillsTab from "./Tabs/AgentSkills";
@@ -50,7 +57,9 @@ export default function ToolsMenu({
   const TABS = useMemo(() => getTabs(t, user), [t, user]);
   const [activeTab, setActiveTab] = useState(TABS[0].key);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const [maxHeight, setMaxHeight] = useState(360);
   const itemCountRef = useRef(0);
+  const popoverRef = useRef(null);
 
   // Always open to the slash commands
   useEffect(() => {
@@ -61,6 +70,24 @@ export default function ToolsMenu({
   useEffect(() => {
     setHighlightedIndex(-1);
   }, [activeTab, showing]);
+
+  // Constrain popover height to the space available in the viewport so it
+  // never overflows off-screen on shorter windows (e.g. centered home view).
+  useLayoutEffect(() => {
+    if (!showing) return;
+    const update = () => {
+      const el = popoverRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const available = centered
+        ? window.innerHeight - rect.top - 16
+        : rect.bottom - 16;
+      setMaxHeight(Math.max(0, Math.min(360, available)));
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, [showing, centered]);
 
   // Keep the parent ref in sync so PromptInput can check it on Enter
   useEffect(() => {
@@ -119,15 +146,15 @@ export default function ToolsMenu({
         onClick={() => setShowing(false)}
       />
       <div
+        ref={popoverRef}
         onMouseDown={(e) => {
           // Prevents prompt textarea from losing focus when clicking inside the menu.
           // Skip for portaled modals so their inputs can still receive focus.
           if (e.currentTarget.contains(e.target)) e.preventDefault();
         }}
+        style={{ maxHeight }}
         className={`absolute left-2 right-2 md:left-14 md:right-auto md:w-[400px] z-50 bg-zinc-800 light:bg-white border border-zinc-700 light:border-slate-300 rounded-lg p-3 flex flex-col gap-2.5 shadow-lg overflow-hidden ${
-          centered
-            ? "top-full mt-2 max-h-[min(360px,calc(100dvh-25rem))]"
-            : "bottom-full mb-2 max-h-[min(360px,calc(100dvh-11rem))]"
+          centered ? "top-full mt-2" : "bottom-full mb-2"
         }`}
       >
         <div className="flex shrink-0 gap-2.5 items-center">
