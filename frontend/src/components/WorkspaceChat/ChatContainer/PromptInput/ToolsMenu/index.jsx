@@ -82,12 +82,12 @@ export default function ToolsMenu({
       const available = centered
         ? window.innerHeight - rect.top - 16
         : rect.bottom - 16;
-      setMaxHeight(Math.max(160, Math.min(360, available)));
+      setMaxHeight(Math.max(0, Math.min(360, available)));
     };
     update();
     window.addEventListener("resize", update);
     return () => window.removeEventListener("resize", update);
-  }, [showing, centered, activeTab]);
+  }, [showing, centered]);
 
   // Keep the parent ref in sync so PromptInput can check it on Enter
   useEffect(() => {
