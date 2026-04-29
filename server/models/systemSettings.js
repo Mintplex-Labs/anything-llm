@@ -61,6 +61,7 @@ const SystemSettings = {
     "feature_flags",
     "meta_page_title",
     "meta_page_favicon",
+    "memory_enabled",
   ],
   supportedFields: [
     "logo_filename",
@@ -94,6 +95,9 @@ const SystemSettings = {
 
     // Hub settings
     "hub_api_key",
+
+    // Memory/Personalization
+    "memory_enabled",
   ],
   validations: {
     footer_data: (updates) => {
@@ -407,6 +411,7 @@ const SystemSettings = {
       JWTSecret: !!process.env.JWT_SECRET,
       StorageDir: process.env.STORAGE_DIR,
       MultiUserMode: await this.isMultiUserMode(),
+      MemoryEnabled: await this.memoriesEnabled(),
       DisableTelemetry: process.env.DISABLE_TELEMETRY || "false",
 
       // --------------------------------------------------------
@@ -617,6 +622,16 @@ const SystemSettings = {
   isMultiUserMode: async function () {
     try {
       const setting = await this.get({ label: "multi_user_mode" });
+      return setting?.value === "true";
+    } catch (error) {
+      console.error(error.message);
+      return false;
+    }
+  },
+
+  memoriesEnabled: async function () {
+    try {
+      const setting = await this.get({ label: "memory_enabled" });
       return setting?.value === "true";
     } catch (error) {
       console.error(error.message);

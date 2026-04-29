@@ -616,7 +616,8 @@ class AgentHandler {
     const workspaceAgentDef = await WORKSPACE_AGENT.getDefinition(
       this.provider,
       this.invocation.workspace,
-      user
+      user,
+      this.invocation.prompt
     );
 
     this.aibitat.agent(USER_AGENT.name, userAgentDef);

@@ -86,6 +86,7 @@ model users {
   prompt_history               prompt_history[]
   desktop_mobile_devices       desktop_mobile_devices[]
   workspace_parsed_files       workspace_parsed_files[]
+  memories                     memories[]
 }
 
 model recovery_codes {
@@ -146,6 +147,7 @@ model workspaces {
   workspace_agent_invocations  workspace_agent_invocations[]
   prompt_history               prompt_history[]
   workspace_parsed_files       workspace_parsed_files[]
+  memories                     memories[]
 }
 
 model workspace_threads {
@@ -187,8 +189,9 @@ model workspace_chats {
   api_session_id String? // String identifier for only the dev API to partition chats in any mode.
   createdAt      DateTime @default(now())
   lastUpdatedAt  DateTime @default(now())
-  feedbackScore  Boolean?
-  users          users?   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  feedbackScore   Boolean?
+  memoryProcessed Boolean? @map("memory_processed")
+  users           users?   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model workspace_agent_invocations {
@@ -394,4 +397,21 @@ model external_communication_connectors {
   active        Boolean  @default(false)
   createdAt     DateTime @default(now())
   lastUpdatedAt DateTime @default(now())
+}
+
+model memories {
+  id          Int       @id @default(autoincrement())
+  userId      Int?      @map("user_id")
+  workspaceId Int?      @map("workspace_id")
+  scope       String    @default("workspace")
+  content     String
+  lastUsedAt  DateTime? @map("last_used_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @default(now()) @map("updated_at")
+
+  user      users?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace workspaces? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([userId, workspaceId])
+  @@index([userId, scope])
 }

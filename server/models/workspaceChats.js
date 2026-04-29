@@ -298,6 +298,33 @@ const WorkspaceChats = {
       return false;
     }
   },
+  markMemoryProcessed: async function (ids = []) {
+    if (!Array.isArray(ids) || ids.length === 0) return;
+    try {
+      const safeIds = ids.map(Number).filter(Number.isInteger);
+      if (safeIds.length === 0) return;
+      await prisma.workspace_chats.updateMany({
+        where: { id: { in: safeIds } },
+        data: { memoryProcessed: true },
+      });
+    } catch (error) {
+      console.error(error.message);
+    }
+  },
+
+  migrateToMultiUser: async function (adminUserId) {
+    try {
+      await prisma.workspace_chats.updateMany({
+        where: { user_id: null },
+        data: { user_id: adminUserId },
+      });
+      return true;
+    } catch (error) {
+      console.error(error.message);
+      return false;
+    }
+  },
+
   bulkCreate: async function (chatsData) {
     // TODO: Replace with createMany when we update prisma to latest version
     // The version of prisma that we are currently using does not support createMany with SQLite

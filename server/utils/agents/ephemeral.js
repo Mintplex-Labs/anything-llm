@@ -345,7 +345,12 @@ class EphemeralAgentHandler extends AgentHandler {
 
     this.aibitat.agent(
       WORKSPACE_AGENT.name,
-      await WORKSPACE_AGENT.getDefinition(this.provider, this.#workspace, user)
+      await WORKSPACE_AGENT.getDefinition(
+        this.provider,
+        this.#workspace,
+        user,
+        this.#prompt
+      )
     );
 
     this.#funcsToLoad = [

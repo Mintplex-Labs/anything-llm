@@ -17,7 +17,7 @@ import GoogleCalendarLogo from "@/pages/Admin/Agents/GoogleCalendarSkillPanel/go
 import OutlookLogo from "@/pages/Admin/Agents/OutlookSkillPanel/outlook.png";
 import { toPercentString } from "@/utils/numbers";
 import { useTranslation } from "react-i18next";
-import { useSourcesSidebar } from "../../SourcesSidebar";
+import { useSourcesSidebar } from "../../ChatSidebar";
 
 const CIRCLE_ICONS = {
   file: FileText,
