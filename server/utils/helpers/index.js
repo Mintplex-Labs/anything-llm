@@ -175,6 +175,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "groq":
       const { GroqLLM } = require("../AiProviders/groq");
       return new GroqLLM(embedder, model);
+    case "chutes":
+      const { ChutesLLM } = require("../AiProviders/chutes");
+      return new ChutesLLM(embedder, model);
     case "koboldcpp":
       const { KoboldCPPLLM } = require("../AiProviders/koboldCPP");
       return new KoboldCPPLLM(embedder, model);
