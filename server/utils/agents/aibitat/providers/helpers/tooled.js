@@ -237,7 +237,7 @@ async function tooledStream(
           };
         } else {
           // Update existing entry with streamed data
-          if (toolCall.id && !toolCallsByIndex[idx].id.startsWith("call_")) {
+          if (toolCall.id && toolCallsByIndex[idx].id.startsWith("call_")) {
             toolCallsByIndex[idx].id = toolCall.id;
           }
           if (toolCall.function?.name) {
