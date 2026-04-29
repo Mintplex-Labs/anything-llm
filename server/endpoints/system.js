@@ -1494,6 +1494,29 @@ function systemEndpoints(app) {
       }
     }
   );
+  // Deepgram STT - returns the API key for the frontend WebSocket connection.
+  // Protected by authentication — only authenticated users can access it.
+  app.get(
+    "/system/deepgram-stt-token",
+    [validatedRequest],
+    async (_, response) => {
+      try {
+        // Allow using the TTS key for STT as well (shared Deepgram key)
+        const apiKey = process.env.TTS_DEEPGRAM_API_KEY || null;
+        if (!apiKey) {
+          return response
+            .status(404)
+            .json({ token: null, error: "No Deepgram API key configured." });
+        }
+        response.status(200).json({ token: apiKey, error: null });
+      } catch (error) {
+        console.error("Error fetching Deepgram STT token:", error);
+        response
+          .status(500)
+          .json({ token: null, error: "Internal server error" });
+      }
+    }
+  );
 }
 
 module.exports = { systemEndpoints };

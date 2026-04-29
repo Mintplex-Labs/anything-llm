@@ -10,6 +10,9 @@ function getTTSProvider() {
     case "generic-openai":
       const { GenericOpenAiTTS } = require("./openAiGeneric");
       return new GenericOpenAiTTS();
+    case "deepgram":
+      const { DeepgramTTS } = require("./deepgram");
+      return new DeepgramTTS();
     default:
       throw new Error("ENV: No TTS_PROVIDER value found in environment!");
   }

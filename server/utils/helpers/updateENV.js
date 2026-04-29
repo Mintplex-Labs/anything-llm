@@ -660,6 +660,20 @@ const KEY_MAPPING = {
     envKey: "TTS_OPEN_AI_COMPATIBLE_ENDPOINT",
     checks: [isValidURL],
   },
+  SpeechToTextProvider: {
+    envKey: "STT_PROVIDER",
+    checks: [], // "native" or "deepgram"
+  },
+
+  // Deepgram TTS
+  TTSDeepgramApiKey: {
+    envKey: "TTS_DEEPGRAM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  TTSDeepgramModel: {
+    envKey: "TTS_DEEPGRAM_MODEL",
+    checks: [],
+  },
 
   // DeepSeek Options
   DeepSeekApiKey: {
@@ -924,6 +938,7 @@ function supportedTTSProvider(input = "") {
     "elevenlabs",
     "piper_local",
     "generic-openai",
+    "deepgram",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid TTS provider.`;
 }

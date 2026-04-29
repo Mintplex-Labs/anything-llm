@@ -474,6 +474,11 @@ const SystemSettings = {
       TTSOpenAICompatibleVoiceModel:
         process.env.TTS_OPEN_AI_COMPATIBLE_VOICE_MODEL,
       TTSOpenAICompatibleEndpoint: process.env.TTS_OPEN_AI_COMPATIBLE_ENDPOINT,
+      // Deepgram TTS
+      TTSDeepgramApiKey: !!process.env.TTS_DEEPGRAM_API_KEY,
+      TTSDeepgramModel: process.env.TTS_DEEPGRAM_MODEL,
+      // STT
+      SpeechToTextProvider: process.env.STT_PROVIDER || "native",
 
       // --------------------------------------------------------
       // Agent Settings & Configs
