@@ -13,17 +13,26 @@ const { Workspace } = require("../models/workspace");
 const createFilesLib = require("../utils/agents/aibitat/plugins/create-files/lib");
 
 /**
- * Endpoints for serving agent-generated files (PPTX, etc.) with authentication
+ * Endpoints for serving agent-generated files with authentication
  * and ownership validation.
+ *
+ * Two endpoints:
+ *   GET /agent-skills/generated-files/:filename
+ *     - Download (Content-Disposition: attachment)
+ *   GET /agent-skills/generated-files/:filename/preview
+ *     - Inline preview (Content-Disposition: inline)
+ *     - Also accepts ?token=<jwt> so <iframe>/<img> src attributes work
+ *
+ * IMPORTANT: Both endpoints first try the DB ownership check, but if no
+ * DB record exists yet (file was just created and chat not yet saved),
+ * they fall back to serving the file directly from storage. This handles
+ * the race condition where the live preview card appears before the chat
+ * is written to the database.
  */
 function agentFileServerEndpoints(app) {
   if (!app) return;
 
-  /**
-   * Download a generated file by its storage filename.
-   * Validates that the requesting user has access to the workspace
-   * where the file was generated.
-   */
+  // ── DOWNLOAD endpoint ────────────────────────────────────────────────────
   app.get(
     "/agent-skills/generated-files/:filename",
     [validatedRequest, flexUserRoleValid([ROLES.all])],
@@ -34,45 +43,22 @@ function agentFileServerEndpoints(app) {
         if (!filename)
           return response.status(400).json({ error: "Filename is required" });
 
-        // Validate filename format
         const parsed = createFilesLib.parseFilename(filename);
-        if (!parsed) {
-          return response
-            .status(400)
-            .json({ error: "Invalid filename format" });
-        }
+        if (!parsed)
+          return response.status(400).json({ error: "Invalid filename format" });
 
-        // Find a chat record that references this file and that the user can access
-        const validChat = await findValidChatForFile(
-          filename,
-          user,
-          multiUserMode(response)
-        );
-
-        if (!validChat) {
-          return response.status(404).json({
-            error: "File not found or access denied",
-          });
-        }
-
-        // Retrieve the file from storage
         const fileData = await createFilesLib.getGeneratedFile(filename);
-        if (!fileData) {
-          return response
-            .status(404)
-            .json({ error: "File not found in storage" });
-        }
+        if (!fileData)
+          return response.status(404).json({ error: "File not found in storage" });
 
-        // Get mime type and set headers for download
+        // Try DB ownership check — but don't block if chat not yet saved
+        const validChat = await findValidChatForFile(filename, user, multiUserMode(response));
+        const displayFilename = validChat?.displayFilename || filename;
+
         const mimeType = createFilesLib.getMimeType(`.${parsed.extension}`);
-        const safeFilename = createFilesLib.sanitizeFilenameForHeader(
-          validChat.displayFilename || filename
-        );
+        const safeFilename = createFilesLib.sanitizeFilenameForHeader(displayFilename);
         response.setHeader("Content-Type", mimeType);
-        response.setHeader(
-          "Content-Disposition",
-          `attachment; filename="${safeFilename}"`
-        );
+        response.setHeader("Content-Disposition", `attachment; filename="${safeFilename}"`);
         response.setHeader("Content-Length", fileData.buffer.length);
         return response.send(fileData.buffer);
       } catch (error) {
@@ -81,21 +67,62 @@ function agentFileServerEndpoints(app) {
       }
     }
   );
+
+  // ── PREVIEW endpoint ─────────────────────────────────────────────────────
+  app.get(
+    "/agent-skills/generated-files/:filename/preview",
+    [previewAuthMiddleware, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        const { filename } = request.params;
+        if (!filename)
+          return response.status(400).json({ error: "Filename is required" });
+
+        const parsed = createFilesLib.parseFilename(filename);
+        if (!parsed)
+          return response.status(400).json({ error: "Invalid filename format" });
+
+        const fileData = await createFilesLib.getGeneratedFile(filename);
+        if (!fileData)
+          return response.status(404).json({ error: "File not found in storage" });
+
+        // Try DB ownership check — but don't block if chat not yet saved
+        const validChat = await findValidChatForFile(filename, user, multiUserMode(response));
+        const displayFilename = validChat?.displayFilename || filename;
+
+        const mimeType = createFilesLib.getMimeType(`.${parsed.extension}`);
+        const safeFilename = createFilesLib.sanitizeFilenameForHeader(displayFilename);
+        response.setHeader("Content-Type", mimeType);
+        response.setHeader("Content-Disposition", `inline; filename="${safeFilename}"`);
+        response.setHeader("Content-Length", fileData.buffer.length);
+        response.removeHeader("X-Frame-Options");
+        return response.send(fileData.buffer);
+      } catch (error) {
+        console.error("[agentFileServer] Preview error:", error.message);
+        return response.status(500).json({ error: "Failed to preview file" });
+      }
+    }
+  );
 }
 
 /**
- * Finds a valid chat record that references the given storage filename
- * and that the user has access to.
- * @param {string} storageFilename - The storage filename to search for
- * @param {object|null} user - The user object (null in single-user mode)
- * @param {boolean} isMultiUser - Whether multi-user mode is enabled
- * @returns {Promise<{workspaceId: number, displayFilename: string}|null>}
+ * Auth middleware for the preview endpoint.
+ * Falls back to ?token= query param when no Authorization header is present.
+ */
+function previewAuthMiddleware(request, response, next) {
+  if (request.query.token && !request.headers.authorization) {
+    request.headers.authorization = `Bearer ${request.query.token}`;
+  }
+  return validatedRequest(request, response, next);
+}
+
+/**
+ * Finds a valid chat record that references the given storage filename.
+ * Returns null if not found (caller decides how to handle).
  */
 async function findValidChatForFile(storageFilename, user, isMultiUser) {
   try {
-    // Get all workspaces the user has access to.
-    // In single-user mode, all workspaces are accessible.
-    // In multi-user mode, only workspaces assigned to the user are accessible.
     let workspaceIds;
     if (isMultiUser && user) {
       const workspaces = await Workspace.whereWithUser(user);
@@ -107,8 +134,6 @@ async function findValidChatForFile(storageFilename, user, isMultiUser) {
 
     if (workspaceIds.length === 0) return null;
 
-    // Use database-level filtering to only fetch chats that contain the filename
-    // This avoids loading all chats into memory
     const chats = await WorkspaceChats.where({
       workspaceId: { in: workspaceIds },
       include: true,
@@ -124,14 +149,12 @@ async function findValidChatForFile(storageFilename, user, isMultiUser) {
         if (!output) continue;
         return {
           workspaceId: chat.workspaceId,
-          displayFilename:
-            output.payload.filename || output.payload.displayFilename,
+          displayFilename: output.payload.filename || output.payload.displayFilename,
         };
       } catch {
         continue;
       }
     }
-
     return null;
   } catch (error) {
     console.error("[findValidChatForFile] Error:", error.message);
