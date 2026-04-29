@@ -202,9 +202,9 @@ const TRANSLATIONS = {
           'werden Antworten nur bei <b> und </b> bereitstellen, falls der Dokumentkontext gefunden wurde. Um die Tools zu nutzen, müssen Sie den Befehl "@agent" verwenden.',
       },
       automatic: {
-        title: "Auto",
         description:
           "wird automatisch Werkzeuge verwenden, wenn das Modell und der Anbieter native Werkzeugaufrufe unterstützen. <br />Wenn native Werkzeugaufrufe nicht unterstützt werden, müssen Sie den Befehl `@agent` verwenden, um Werkzeuge zu nutzen.",
+        title: "Vertreter",
       },
     },
     history: {

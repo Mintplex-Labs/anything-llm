@@ -203,9 +203,9 @@ const TRANSLATIONS = {
           'proporcionará respuestas <b>solo</b> si se encuentra el contexto del documento.<br />Deberá utilizar el comando "@agent" para utilizar las herramientas.',
       },
       automatic: {
-        title: "Coche",
         description:
           'utilizará automáticamente las herramientas si el modelo y el proveedor admiten la llamada a herramientas nativas. Si no se admite la llamada a herramientas nativas, deberá utilizar el comando "@agent" para utilizar las herramientas.',
+        title: "Agente",
       },
     },
     history: {

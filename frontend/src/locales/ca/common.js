@@ -201,9 +201,9 @@ const TRANSLATIONS = {
     mode: {
       title: "Mode de xat",
       automatic: {
-        title: "Automàtic",
         description:
           "usarà eines automàticament si el model i el proveïdor suporten crida d'eines nativa.<br />Si no s'admet l'ús d'eines natiu, hauràs d'usar l'ordre @agent per fer servir eines.",
+        title: "Agent",
       },
       chat: {
         title: "Xat",

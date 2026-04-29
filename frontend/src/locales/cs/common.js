@@ -209,9 +209,9 @@ const TRANSLATIONS = {
           "budou poskytovat odpovědi <b>pouze__, pokud je nalezen kontext dokumentu.</b>Budete muset použít příkaz @agent pro použití nástrojů.",
       },
       automatic: {
-        title: "Auto",
         description:
           "automaticky použije nástroje, pokud to podporují model a poskytovatel. <br />Pokud není podporováno nativní volání nástrojů, budete muset použít příkaz `@agent` pro použití nástrojů.",
+        title: "Zástupce",
       },
     },
     history: {

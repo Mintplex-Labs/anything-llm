@@ -198,9 +198,9 @@ const TRANSLATIONS = {
     mode: {
       title: "Pokalbio režimas",
       automatic: {
-        title: "Auto",
         description:
           'automatiškai naudosis įrankiais, jei modelis ir paslaugos teikėjas palaiko įrankių vadovavimą. <br />Jei įrankių vadovavimas nepaliekamas, jums reikės naudoti "@agent" komandą, kad galėtumėte naudoti įrankius.',
+        title: "Agentas",
       },
       chat: {
         title: "Pokalbis",
