@@ -51,6 +51,7 @@ const groupedProviders = [
   "openai",
   "novita",
   "openrouter",
+  "futurmix",
   "ppio",
   "docker-model-runner",
   "sambanova",

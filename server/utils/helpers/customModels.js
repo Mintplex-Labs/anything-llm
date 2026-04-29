@@ -12,6 +12,7 @@ const { parseNvidiaNimBasePath } = require("../AiProviders/nvidiaNim");
 const { fetchPPIOModels } = require("../AiProviders/ppio");
 const { GeminiLLM } = require("../AiProviders/gemini");
 const { fetchCometApiModels } = require("../AiProviders/cometapi");
+const { fetchFuturMixModels } = require("../AiProviders/futurmix");
 const { parseFoundryBasePath } = require("../AiProviders/foundry");
 const { getDockerModels } = require("../AiProviders/dockerModelRunner");
 const { getAllLemonadeModels } = require("../AiProviders/lemonade");
@@ -36,6 +37,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "apipie",
   "novita",
   "cometapi",
+  "futurmix",
   "xai",
   "gemini",
   "ppio",
@@ -97,6 +99,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getNovitaModels();
     case "cometapi":
       return await getCometApiModels();
+    case "futurmix":
+      return await getFuturMixModels();
     case "xai":
       return await getXAIModels(apiKey);
     case "nvidia-nim":
@@ -1002,6 +1006,20 @@ async function getSambaNovaModels(_apiKey = null) {
     console.error(`SambaNova:getSambaNovaModels`, e.message);
     return { models: [], error: "Could not fetch SambaNova Models" };
   }
+}
+
+async function getFuturMixModels() {
+  const knownModels = await fetchFuturMixModels();
+  if (!Object.keys(knownModels).length === 0)
+    return { models: [], error: null };
+  const models = Object.values(knownModels).map((model) => {
+    return {
+      id: model.id,
+      organization: model.organization,
+      name: model.name,
+    };
+  });
+  return { models, error: null };
 }
 
 module.exports = {

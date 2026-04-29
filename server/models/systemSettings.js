@@ -875,6 +875,10 @@ const SystemSettings = {
       CometApiLLMModelPref: process.env.COMETAPI_LLM_MODEL_PREF,
       CometApiLLMTimeout: process.env.COMETAPI_LLM_TIMEOUT_MS,
 
+      // FuturMix Keys
+      FuturMixApiKey: !!process.env.FUTURMIX_API_KEY,
+      FuturMixModelPref: process.env.FUTURMIX_MODEL_PREF,
+
       // Z.AI Keys
       ZAiApiKey: !!process.env.ZAI_API_KEY,
       ZAiModelPref: process.env.ZAI_MODEL_PREF,

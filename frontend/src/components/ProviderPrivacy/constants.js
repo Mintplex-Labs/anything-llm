@@ -39,6 +39,7 @@ import PGVectorLogo from "@/media/vectordbs/pgvector.png";
 import DPAISLogo from "@/media/llmprovider/dpais.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
+import FuturMixLogo from "@/media/llmprovider/futurmix.png";
 import FoundryLogo from "@/media/llmprovider/foundry-local.png";
 import GiteeAILogo from "@/media/llmprovider/giteeai.png";
 import DockerModelRunnerLogo from "@/media/llmprovider/docker-model-runner.png";
@@ -215,6 +216,11 @@ const LLM_PROVIDER_PRIVACY_MAP = {
     name: "CometAPI",
     policyUrl: "https://apidoc.cometapi.com/privacy-policy-873819m0",
     logo: CometApiLogo,
+  },
+  futurmix: {
+    name: "FuturMix",
+    policyUrl: "https://futurmix.ai/privacy",
+    logo: FuturMixLogo,
   },
   foundry: {
     name: "Microsoft Foundry Local",

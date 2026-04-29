@@ -35,6 +35,7 @@ import PPIOLogo from "@/media/llmprovider/ppio.png";
 import DellProAiStudioLogo from "@/media/llmprovider/dpais.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
+import FuturMixLogo from "@/media/llmprovider/futurmix.png";
 import FoundryLogo from "@/media/llmprovider/foundry-local.png";
 import GiteeAILogo from "@/media/llmprovider/giteeai.png";
 import DockerModelRunnerLogo from "@/media/llmprovider/docker-model-runner.png";
@@ -53,6 +54,7 @@ import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
 import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
 import NovitaLLMOptions from "@/components/LLMSelection/NovitaLLMOptions";
 import CometApiLLMOptions from "@/components/LLMSelection/CometApiLLMOptions";
+import FuturMixOptions from "@/components/LLMSelection/FuturMixOptions";
 import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
 import FireworksAiOptions from "@/components/LLMSelection/FireworksAiOptions";
 import MistralOptions from "@/components/LLMSelection/MistralOptions";
@@ -364,6 +366,15 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <CometApiLLMOptions settings={settings} />,
     description: "500+ AI Models all in one API.",
     requiredConfig: ["CometApiLLMApiKey"],
+  },
+  {
+    name: "FuturMix",
+    value: "futurmix",
+    logo: FuturMixLogo,
+    options: (settings) => <FuturMixOptions settings={settings} />,
+    description:
+      "Unified AI Gateway for 22+ models with a single OpenAI-compatible API.",
+    requiredConfig: ["FuturMixApiKey"],
   },
   {
     name: "Microsoft Foundry Local",
