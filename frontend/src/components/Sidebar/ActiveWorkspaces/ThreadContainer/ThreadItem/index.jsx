@@ -10,7 +10,7 @@ import {
   X,
 } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 const THREAD_CALLOUT_DETAIL_WIDTH = 26;
 export default function ThreadItem({
@@ -96,11 +96,9 @@ export default function ThreadItem({
             )}
           </div>
         ) : (
-          <a
+          <Link
             ref={ref}
-            href={
-              window.location.pathname === linkTo || ctrlPressed ? "#" : linkTo
-            }
+            to={linkTo}
             data-tooltip-id="workspace-thread-name"
             data-tooltip-content={thread.name}
             className="w-full pl-2 py-1 overflow-hidden"
@@ -115,7 +113,7 @@ export default function ThreadItem({
             >
               {thread.name}
             </p>
-          </a>
+          </Link>
         )}
         {!!thread.slug && !thread.deleted && !thread.virtual && (
           <div ref={optionsContainer} className="flex items-center">

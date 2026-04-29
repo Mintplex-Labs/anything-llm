@@ -16,19 +16,31 @@ export default function WorkspaceChat() {
     return <>{requiresAuth !== null && <PasswordModal mode={mode} />}</>;
   }
 
-  return <ShowWorkspaceChat />;
+  return (
+    <div className="w-screen h-screen overflow-hidden bg-zinc-950 light:bg-slate-50 flex">
+      {!isMobile && <Sidebar />}
+      <ShowWorkspaceChat />
+    </div>
+  );
 }
 
 function ShowWorkspaceChat() {
   const { slug } = useParams();
   const [workspace, setWorkspace] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // Tracks which workspace `workspace` belongs to. While a new workspace's
+  // data is in flight, we keep the previous workspace's chat mounted
+  // (Slack/Linear-style transition) instead of flashing a skeleton.
+  const [loadedSlug, setLoadedSlug] = useState(null);
 
   useEffect(() => {
     async function getWorkspace() {
       if (!slug) return;
       const _workspace = await Workspace.bySlug(slug);
-      if (!_workspace) return setLoading(false);
+      if (!_workspace) {
+        setWorkspace(null);
+        setLoadedSlug(slug);
+        return;
+      }
 
       const [suggestedMessages, { showAgentCommand }] = await Promise.all([
         Workspace.getSuggestedMessages(slug),
@@ -39,7 +51,7 @@ function ShowWorkspaceChat() {
         suggestedMessages,
         showAgentCommand,
       });
-      setLoading(false);
+      setLoadedSlug(slug);
       localStorage.setItem(
         LAST_VISITED_WORKSPACE,
         JSON.stringify({
@@ -49,14 +61,12 @@ function ShowWorkspaceChat() {
       );
     }
     getWorkspace();
-  }, []);
+  }, [slug]);
 
   return (
-    <>
-      <div className="w-screen h-screen overflow-hidden bg-zinc-950 light:bg-slate-50 flex">
-        {!isMobile && <Sidebar />}
-        <WorkspaceChatContainer loading={loading} workspace={workspace} />
-      </div>
-    </>
+    <WorkspaceChatContainer
+      loading={loadedSlug !== slug}
+      workspace={workspace}
+    />
   );
 }

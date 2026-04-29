@@ -6,7 +6,7 @@ import ManageWorkspace, {
   useManageWorkspaceModal,
 } from "../../Modals/ManageWorkspace";
 import paths from "@/utils/paths";
-import { useParams, useNavigate, useMatch } from "react-router-dom";
+import { Link, useParams, useNavigate, useMatch } from "react-router-dom";
 import { GearSix, UploadSimple, DotsSixVertical } from "@phosphor-icons/react";
 import useUser from "@/hooks/useUser";
 import ThreadContainer from "./ThreadContainer";
@@ -117,12 +117,8 @@ export default function ActiveWorkspaces() {
                       role="listitem"
                     >
                       <div className="flex gap-x-2 items-center justify-between">
-                        <a
-                          href={
-                            isActive
-                              ? null
-                              : paths.workspace.chat(workspace.slug)
-                          }
+                        <Link
+                          to={paths.workspace.chat(workspace.slug)}
                           aria-current={isActive ? "page" : ""}
                           className={`
                             transition-all duration-[200ms]
@@ -208,7 +204,7 @@ export default function ActiveWorkspaces() {
                               </div>
                             )}
                           </div>
-                        </a>
+                        </Link>
                       </div>
                       {isActive && (
                         <ThreadContainer

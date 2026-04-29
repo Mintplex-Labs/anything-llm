@@ -16,14 +16,16 @@ import { PENDING_HOME_MESSAGE } from "@/utils/constants";
 export default function WorkspaceChat({ loading, workspace }) {
   useWatchForAutoPlayAssistantTTSResponse();
   const { threadSlug = null } = useParams();
-  const [history, setHistory] = useState([]);
-  const [loadingHistory, setLoadingHistory] = useState(true);
+  // Stores { key, workspace, history } currently rendered. Lags the props so
+  // the previous chat stays mounted until the next one's history is ready,
+  // avoiding a skeleton/loader flash on workspace/thread switches.
+  const [loaded, setLoaded] = useState(null);
 
   useEffect(() => {
     async function getHistory() {
       if (loading) return;
       if (!workspace?.slug) {
-        setLoadingHistory(false);
+        setLoaded({ key: "none", workspace: null, history: [] });
         return false;
       }
 
@@ -31,14 +33,18 @@ export default function WorkspaceChat({ loading, workspace }) {
         ? await Workspace.threads.chatHistory(workspace.slug, threadSlug)
         : await Workspace.chatHistory(workspace.slug);
 
-      setHistory(chatHistory);
-      setLoadingHistory(false);
+      setLoaded({
+        key: `${workspace.slug}:${threadSlug ?? "default"}`,
+        workspace,
+        threadSlug,
+        history: chatHistory,
+      });
     }
     getHistory();
-  }, [workspace, loading]);
+  }, [workspace, loading, threadSlug]);
 
   const hasPendingMessage = !!sessionStorage.getItem(PENDING_HOME_MESSAGE);
-  if (loadingHistory) {
+  if (loaded === null) {
     if (hasPendingMessage) {
       return (
         <div className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full" />
@@ -46,7 +52,7 @@ export default function WorkspaceChat({ loading, workspace }) {
     }
     return <LoadingChat />;
   }
-  if (!loading && !loadingHistory && !workspace) {
+  if (!loading && !workspace) {
     return (
       <>
         {loading === false && !workspace && (
@@ -88,8 +94,16 @@ export default function WorkspaceChat({ loading, workspace }) {
   setEventDelegatorForCodeSnippets();
   return (
     <TTSProvider>
-      <DnDFileUploaderProvider workspace={workspace} threadSlug={threadSlug}>
-        <ChatContainer workspace={workspace} knownHistory={history} />
+      <DnDFileUploaderProvider
+        workspace={loaded.workspace}
+        threadSlug={loaded.threadSlug}
+      >
+        <ChatContainer
+          key={loaded.key}
+          workspace={loaded.workspace}
+          threadSlug={loaded.threadSlug}
+          knownHistory={loaded.history}
+        />
       </DnDFileUploaderProvider>
     </TTSProvider>
   );
