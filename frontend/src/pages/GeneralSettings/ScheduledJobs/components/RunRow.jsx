@@ -7,21 +7,19 @@ import paths from "@/utils/paths";
 import StatusBadge from "./StatusBadge";
 import ScheduledJobs from "@/models/scheduledJobs";
 import showToast from "@/utils/toast";
+import { formatDuration } from "@/utils/numbers";
 
 /**
  * Format a run's elapsed time as ms / s / m.
  * @param {Object} run - The run object.
  * @returns {string} The formatted duration.
  */
-function formatDuration(run) {
+function formatRunDuration(run) {
   if (!run.completedAt || !run.startedAt) return "—";
   const duration = moment.duration(
     moment(run.completedAt).diff(moment(run.startedAt))
   );
-  const ms = duration.asMilliseconds();
-  if (ms < 1000) return `${ms}ms`;
-  if (ms < 60000) return `${duration.asSeconds().toFixed(1)}s`;
-  return `${duration.asMinutes().toFixed(1)}m`;
+  return formatDuration(duration.asSeconds());
 }
 
 /**
@@ -87,7 +85,7 @@ export default function RunRow({ run, jobId, onKilled }) {
         {new Date(run.startedAt).toLocaleString()}
       </span>
       <span className="w-[160px] text-sm font-medium text-white light:text-slate-950 truncate">
-        {formatDuration(run)}
+        {formatRunDuration(run)}
       </span>
       <span
         className={`flex-1 text-sm truncate pr-4 ${
