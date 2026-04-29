@@ -188,6 +188,28 @@ class AIbitat {
   }
 
   /**
+   * Send routing metadata to the frontend for the given message UUID.
+   * Only emits if routing metadata exists in handlerProps.
+   * @param {string} messageUuid - The UUID of the message to attach routing info to
+   */
+  flushRoutingMetadata(messageUuid) {
+    const routingMetadata = this.handlerProps?.routingMetadata;
+    if (
+      !messageUuid ||
+      !routingMetadata?.routedTo ||
+      routingMetadata.routedTo.isFallback
+    )
+      return;
+    this.socket?.send?.("reportStreamEvent", {
+      type: "modelRouteNotification",
+      uuid: `${messageUuid}:route`,
+      routedTo: routingMetadata.routedTo,
+    });
+    // Clear after emitting so it only fires once per routing decision
+    this.handlerProps.routingMetadata = null;
+  }
+
+  /**
    * Add an attachment (image) from a tool to be injected into the conversation.
    * The attachment will be added as a user message so the model can "see" it.
    * This leverages existing provider attachment handling for user messages.
@@ -799,6 +821,21 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       }
     }
 
+    // Re-evaluate model router before each turn if a resolver is attached.
+    // This ensures routing rules are applied per-message, not just at initialization.
+    if (this.resolveRoute) {
+      const userPrompt =
+        this.#extractUserPrompt(messages) || route.content || "";
+      const resolved = await this.resolveRoute(userPrompt);
+      if (resolved) {
+        this.defaultProvider = {
+          ...this.defaultProvider,
+          provider: resolved.provider,
+          model: resolved.model,
+        };
+      }
+    }
+
     const provider = this.getProviderForConfig({
       ...this.defaultProvider,
       ...fromConfig,
@@ -874,6 +911,9 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     const eventHandler = (type, data) => {
       this?.socket?.send(type, data);
     };
+
+    // Emit routing notification before the first completion so it appears above the response
+    if (depth === 0) this?.flushRoutingMetadata?.(v4());
 
     /** @type {{ functionCall: { name: string, arguments: string }, textResponse: string }} */
     const completionStream = await this.#safeProviderCall(() =>
@@ -1026,6 +1066,9 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     const eventHandler = (type, data) => {
       this?.socket?.send(type, data);
     };
+
+    // Emit routing notification before the first completion so it appears above the response
+    if (depth === 0) this?.flushRoutingMetadata?.(msgUUID);
 
     // get the chat completion
     const completion = await this.#safeProviderCall(() =>

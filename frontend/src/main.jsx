@@ -256,6 +256,24 @@ const router = createBrowserRouter([
         },
       },
       {
+        path: "/settings/model-routers",
+        lazy: async () => {
+          const { default: ModelRouters } = await import(
+            "@/pages/GeneralSettings/ModelRouters"
+          );
+          return { element: <AdminRoute Component={ModelRouters} /> };
+        },
+      },
+      {
+        path: "/settings/model-routers/:id",
+        lazy: async () => {
+          const { default: RouterRulesPage } = await import(
+            "@/pages/GeneralSettings/ModelRouters/RouterRulesPage"
+          );
+          return { element: <AdminRoute Component={RouterRulesPage} /> };
+        },
+      },
+      {
         path: "/settings/system-prompt-variables",
         lazy: async () => {
           const { default: SystemPromptVariables } = await import(

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import PreLoader from "@/components/Preloader";
 import ChatModelSelection from "./ChatModelSelection";
+import RouterPickerSelection from "./RouterPickerSelection";
 import { useTranslation } from "react-i18next";
 import { PROVIDER_SETUP_EVENT, SAVE_LLM_SELECTOR_EVENT } from "./action";
 import {
@@ -27,6 +28,7 @@ export default function LLMSelectorModal({
   const [settings, setSettings] = useState(null);
   const [selectedLLMProvider, setSelectedLLMProvider] = useState(null);
   const [selectedLLMModel, setSelectedLLMModel] = useState("");
+  const [selectedRouterId, setSelectedRouterId] = useState(null);
   const [availableProviders, setAvailableProviders] = useState(
     WORKSPACE_LLM_PROVIDERS
   );
@@ -48,6 +50,9 @@ export default function LLMSelectorModal({
         setSelectedLLMProvider(providerToSelect);
         autoScrollToSelectedLLMProvider(providerToSelect);
         setSelectedLLMModel(savedModel);
+        setSelectedRouterId(
+          workspace.router_id || systemSettings?.ModelRouterId || null
+        );
 
         if (initialProvider && initialProvider !== savedProvider) {
           setHasChanges(true);
@@ -80,13 +85,22 @@ export default function LLMSelectorModal({
     setSaving(true);
     try {
       setHasChanges(false);
-      const validatedModel = validatedModelSelection(selectedLLMModel);
-      if (!validatedModel) throw new Error("Invalid model selection");
 
-      const { message } = await Workspace.update(slug, {
-        chatProvider: selectedLLMProvider,
-        chatModel: validatedModel,
-      });
+      const isRouter = selectedLLMProvider === "anythingllm-router";
+      if (isRouter && !selectedRouterId)
+        throw new Error(t("model-router.chat.select-router-error"));
+
+      const updateData = isRouter
+        ? { chatProvider: selectedLLMProvider, router_id: selectedRouterId }
+        : {
+            chatProvider: selectedLLMProvider,
+            chatModel: validatedModelSelection(selectedLLMModel),
+          };
+
+      if (!isRouter && !updateData.chatModel)
+        throw new Error(t("model-router.chat.invalid-model"));
+
+      const { message } = await Workspace.update(slug, updateData);
 
       if (!!message) throw new Error(message);
       window.dispatchEvent(new Event(SAVE_LLM_SELECTOR_EVENT));
@@ -138,14 +152,21 @@ export default function LLMSelectorModal({
               )}
             </p>
           </div>
-          {!missingCredentials && (
-            <ChatModelSelection
-              provider={selectedLLMProvider}
-              setHasChanges={setHasChanges}
-              selectedLLMModel={selectedLLMModel}
-              setSelectedLLMModel={setSelectedLLMModel}
-            />
-          )}
+          {!missingCredentials &&
+            (selectedLLMProvider === "anythingllm-router" ? (
+              <RouterPickerSelection
+                selectedRouterId={selectedRouterId}
+                setSelectedRouterId={setSelectedRouterId}
+                setHasChanges={setHasChanges}
+              />
+            ) : (
+              <ChatModelSelection
+                provider={selectedLLMProvider}
+                setHasChanges={setHasChanges}
+                selectedLLMModel={selectedLLMModel}
+                setSelectedLLMModel={setSelectedLLMModel}
+              />
+            ))}
         </div>
         <NoSetupWarning
           showing={missingCredentials}

@@ -51,10 +51,75 @@ async function streamChatWithWorkspace(
   });
   if (isAgentChat) return;
 
-  const LLMConnector = getLLMProvider({
-    provider: workspace?.chatProvider,
-    model: workspace?.chatModel,
-  });
+  let LLMConnector;
+  let routingMetadata = null;
+
+  // Determine if we should use the model router. This applies when:
+  // 1. Workspace explicitly sets chatProvider to "anythingllm-router", OR
+  // 2. Workspace uses system default and system LLM is "anythingllm-router"
+  const effectiveProvider = workspace?.chatProvider || process.env.LLM_PROVIDER;
+  const isRouterProvider = effectiveProvider === "anythingllm-router";
+
+  if (isRouterProvider) {
+    try {
+      const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
+      const { TokenManager } = require("../helpers/tiktoken");
+      // If workspace has its own router_id use it, otherwise use system-level router ID
+      const routerWorkspace = workspace?.router_id
+        ? workspace
+        : {
+            ...workspace,
+            router_id: process.env.MODEL_ROUTER_ID
+              ? Number(process.env.MODEL_ROUTER_ID)
+              : null,
+          };
+      const router = new AnythingLLMModelRouter(routerWorkspace);
+      const tokenManager = new TokenManager();
+      const conversationTokenCount = tokenManager.countFromString(message);
+      const conversationMessageCount = await WorkspaceChats.count({
+        workspaceId: workspace.id,
+        user_id: user?.id || null,
+        thread_id: thread?.id || null,
+        include: true,
+      });
+      await router.resolve(
+        {
+          prompt: message,
+          conversationTokenCount,
+          conversationMessageCount,
+          attachments,
+        },
+        { user, thread }
+      );
+      LLMConnector = router.delegateProvider;
+      routingMetadata = router.routingMetadata;
+
+      // Emit routing notification only when a rule matched and we're switching models
+      if (routingMetadata?.routedTo && !routingMetadata.routedTo.isFallback) {
+        writeResponseChunk(response, {
+          uuid: `${uuid}:route`,
+          type: "modelRouteNotification",
+          routedTo: routingMetadata.routedTo,
+        });
+      }
+    } catch (routerError) {
+      writeResponseChunk(response, {
+        id: uuid,
+        type: "abort",
+        textResponse: null,
+        sources: [],
+        close: true,
+        error: `Model router error: ${routerError.message}`,
+      });
+      return;
+    }
+  } else {
+    LLMConnector = getLLMProvider({
+      provider: workspace?.chatProvider,
+      model: workspace?.chatModel,
+    });
+  }
+
   const VectorDb = getVectorDbClass();
 
   const messageLimit = workspace?.openAiHistory || 20;

@@ -22,7 +22,19 @@ export default function handleChat(
     chatId = null,
     action = null,
     metrics = {},
+    routedTo = null,
   } = chatResult;
+
+  if (type === "modelRouteNotification") {
+    _chatHistory.push({
+      type: "modelRouteNotification",
+      uuid,
+      routedTo,
+      role: "assistant",
+    });
+    setChatHistory([..._chatHistory]);
+    return;
+  }
 
   if (type === "abort" || type === "statusResponse") {
     setLoadingResponse(false);
