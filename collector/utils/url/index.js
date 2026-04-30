@@ -13,7 +13,8 @@ const RuntimeSettings = require("../runtimeSettings");
  */
 
 const VALID_PROTOCOLS = ["https:", "http:"];
-const INVALID_OCTETS = [192, 172, 10, 127];
+const INVALID_OCTETS = [192, 172, 10, 127, 169];
+const BLOCKED_HOSTNAMES = ["localhost", "metadata.google.internal"];
 const runtimeSettings = new RuntimeSettings();
 
 /**
@@ -34,6 +35,9 @@ function isInvalidIp({ hostname }) {
     }
     return false;
   }
+
+  // Block known internal/reserved hostnames (e.g. localhost, cloud metadata endpoints)
+  if (BLOCKED_HOSTNAMES.includes(hostname.toLowerCase())) return true;
 
   const IPRegex = new RegExp(
     /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/gi
