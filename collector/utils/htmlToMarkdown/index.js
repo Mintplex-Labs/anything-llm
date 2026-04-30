@@ -8,6 +8,31 @@ const nhm = new NodeHtmlMarkdown({
 });
 
 /**
+ * Strip elements that are explicitly marked as hidden via attributes or
+ * inline styles. Acts as a safety net for the fetch fallback path where
+ * we can't rely on computed styles (no live browser to evaluate against).
+ * The puppeteer path already does a stronger pass using getComputedStyle.
+ * @param {string} html
+ * @returns {string}
+ */
+function stripHiddenAttrs(html) {
+  const root = parse(html);
+  root
+    .querySelectorAll('[hidden], [aria-hidden="true"]')
+    .forEach((n) => n.remove());
+  for (const el of root.querySelectorAll("[style]")) {
+    const style = el.getAttribute("style") || "";
+    if (
+      /display\s*:\s*none/i.test(style) ||
+      /visibility\s*:\s*hidden/i.test(style)
+    ) {
+      el.remove();
+    }
+  }
+  return root.toString();
+}
+
+/**
  * Resolve relative <a href> and <img src> URLs to absolute URLs against
  * the page URL so the LLM sees followable links. Removes <img> with
  * data-uri (base64) sources entirely - they bloat tokens with no value.
@@ -63,6 +88,19 @@ function flattenTables(html) {
 }
 
 /**
+ * Strip empty markdown anchors of the form `[](url)`. These come from
+ * `<a href><img alt=""></a>` patterns where the image was decorative
+ * (or removed) and only the wrapping anchor survived. A link without
+ * anchor text is unfollowable in any meaningful UI and gives the LLM
+ * a URL with no semantic context, so it costs tokens for no value.
+ * @param {string} markdown
+ * @returns {string}
+ */
+function stripEmptyAnchors(markdown) {
+  return markdown.replace(/(?<!!)\[\]\([^)]*\)\s*/g, "");
+}
+
+/**
  * Convert raw HTML into Markdown that preserves hyperlinks and images
  * so scraped pages keep references the LLM can follow. Resolves relative
  * URLs against `baseUrl` and strips base64 inline images. Falls back to
@@ -74,9 +112,11 @@ function flattenTables(html) {
 function htmlToMarkdown(html, baseUrl) {
   if (!html || typeof html !== "string") return "";
   try {
-    const absolute = normalizeUrls(html, baseUrl);
+    const cleaned = stripHiddenAttrs(html);
+    const absolute = normalizeUrls(cleaned, baseUrl);
     const flattened = flattenTables(absolute);
-    return nhm.translate(flattened).trim();
+    const markdown = nhm.translate(flattened).trim();
+    return stripEmptyAnchors(markdown);
   } catch (error) {
     console.error("htmlToMarkdown failed, falling back to plain text:", error);
     try {

@@ -170,12 +170,30 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
       },
       async evaluate(page, browser) {
         const result = await page.evaluate((captureAs) => {
-          // For text mode, capture body HTML so we can convert it to Markdown
-          // server-side and preserve hyperlinks. Raw HTML mode keeps the full
-          // document for downstream querySelector use.
-          if (captureAs === "text") return document.body.innerHTML;
           if (captureAs === "html") return document.documentElement.innerHTML;
-          return document.body.innerHTML;
+
+          // Drop elements hidden from the user (display:none,
+          // visibility:hidden, aria-hidden) before serializing the body
+          // to HTML so the markdown output matches what was on screen.
+          const liveEls = document.body.querySelectorAll("*");
+          const marked = [];
+          for (const el of liveEls) {
+            const cs = getComputedStyle(el);
+            if (
+              cs.display === "none" ||
+              cs.visibility === "hidden" ||
+              el.getAttribute("aria-hidden") === "true"
+            ) {
+              el.setAttribute("data-scraper-hidden", "1");
+              marked.push(el);
+            }
+          }
+          const clone = document.body.cloneNode(true);
+          clone
+            .querySelectorAll("[data-scraper-hidden]")
+            .forEach((n) => n.remove());
+          for (const el of marked) el.removeAttribute("data-scraper-hidden");
+          return clone.innerHTML;
         }, captureAs);
         await browser.close();
         return result;
