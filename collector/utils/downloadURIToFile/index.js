@@ -36,7 +36,7 @@ async function downloadURIToFile(url, maxTimeout = 10_000) {
     const timeout = setTimeout(() => {
       abortController.abort();
       console.error(
-        `Timeout ${maxTimeout}ms reached while downloading file for URL:`,
+        "Timeout reached while downloading file for URL:",
         url.toString()
       );
     }, maxTimeout);
@@ -72,7 +72,9 @@ async function downloadURIToFile(url, maxTimeout = 10_000) {
       }
     }
 
-    const localFilePath = path.join(WATCH_DIRECTORY, filename);
+    // Sanitize filename with an allowlist to prevent path traversal
+    const sanitizedFilename = path.basename(filename).replace(/[^a-zA-Z0-9._-]/g, "-");
+    const localFilePath = path.join(WATCH_DIRECTORY, sanitizedFilename);
     const writeStream = fs.createWriteStream(localFilePath);
     await pipeline(res.body, writeStream);
 
