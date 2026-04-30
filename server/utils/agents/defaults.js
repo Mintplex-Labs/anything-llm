@@ -70,6 +70,7 @@ const WORKSPACE_AGENT = {
       role: basePrompt,
       functions: [
         ...(await agentSkillsFromSystemSettings()),
+        ...(await clarifyingQuestionsSkillIfEnabled()),
         ...ImportedPlugin.activeImportedPlugins(),
         ...AgentFlows.activeFlowPlugins(),
         ...(await new MCPCompatibilityLayer().activeMCPServers()),
@@ -77,6 +78,27 @@ const WORKSPACE_AGENT = {
     };
   },
 };
+
+/**
+ * Conditionally include the ask-questions sub-tools in the workspace agent's
+ * function list when the admin has enabled clarifying questions.
+ * Returns an empty array when disabled so the tools aren't visible to the LLM.
+ * Names use the parent#child convention so #attachPlugins loads each sub-tool.
+ * @returns {Promise<string[]>}
+ */
+async function clarifyingQuestionsSkillIfEnabled() {
+  const enabled =
+    (await SystemSettings.getValueOrFallback(
+      { label: "agent_clarifying_questions_enabled" },
+      "false"
+    )) === "true";
+  if (!enabled) return [];
+
+  const parentName = AgentPlugins.askQuestions.name;
+  const subPlugins = AgentPlugins.askQuestions.plugin;
+  if (!Array.isArray(subPlugins)) return [];
+  return subPlugins.map((sub) => `${parentName}#${sub.name}`);
+}
 
 /**
  * Fetches and preloads the names/identifiers for plugins that will be dynamically

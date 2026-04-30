@@ -12,6 +12,7 @@ const handledEvents = [
   "wssFailure",
   "rechartVisualize",
   "toolApprovalRequest",
+  "clarificationRequest",
   // Streaming events
   "reportStreamEvent",
 ];
@@ -50,6 +51,8 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
   // toolApprovalRequest doesn't have content field, so check separately
   if (data.type === "toolApprovalRequest") {
     if (!data.requestId || !data.skillName) return;
+  } else if (data.type === "clarificationRequest") {
+    if (!data.requestId || !Array.isArray(data.questions)) return;
   } else if (!handledEvents.includes(data.type) || !data.content) {
     return;
   }
@@ -263,6 +266,32 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
           description: data.description,
           timeoutMs: data.timeoutMs,
           content: `Approval requested for ${data.skillName}`,
+          role: "assistant",
+          sources: [],
+          closed: false,
+          error: null,
+          animate: false,
+          pending: true,
+          metrics: {},
+        },
+      ];
+    });
+  }
+
+  if (data.type === "clarificationRequest") {
+    return setChatHistory((prev) => {
+      return [
+        ...prev.filter((msg) => !!msg.content),
+        {
+          uuid: v4(),
+          type: "clarifyingQuestion",
+          requestId: data.requestId,
+          questions: data.questions || [],
+          allowSkip: data.allowSkip !== false,
+          timeoutMs: data.timeoutMs,
+          content: `Agent has ${data.questions?.length || 0} question${
+            (data.questions?.length || 0) === 1 ? "" : "s"
+          }`,
           role: "assistant",
           sources: [],
           closed: false,
