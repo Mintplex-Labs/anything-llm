@@ -105,6 +105,7 @@ AnythingLLM ayrıca birden fazla kullanıcıyı da destekler; burada örneğin g
 - [PrivateModeAI (chat models)](https://privatemode.ai/)
 - [SambaNova Cloud (chat models)](https://cloud.sambanova.ai/)
 - [Lemonade by AMD](https://lemonade-server.ai)
+- [Minimax](https://platform.minimax.io)
 
 **Embedder modelleri:**
 

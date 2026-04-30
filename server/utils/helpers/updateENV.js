@@ -671,6 +671,16 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // Minimax Options
+  MinimaxApiKey: {
+    envKey: "MINIMAX_API_KEY",
+    checks: [isNotEmpty],
+  },
+  MinimaxModelPref: {
+    envKey: "MINIMAX_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
   // APIPie Options
   ApipieLLMApiKey: {
     envKey: "APIPIE_LLM_API_KEY",
@@ -976,6 +986,7 @@ function supportedLLM(input = "") {
     "privatemode",
     "sambanova",
     "lemonade",
+    "minimax",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }

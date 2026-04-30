@@ -1334,6 +1334,8 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
         return new Providers.SambaNovaProvider({ model: config.model });
       case "lemonade":
         return new Providers.LemonadeProvider({ model: config.model });
+      case "minimax":
+        return new Providers.MinimaxProvider({ model: config.model });
       default:
         throw new Error(
           `Unknown provider: ${config.provider}. Please use a valid provider.`
