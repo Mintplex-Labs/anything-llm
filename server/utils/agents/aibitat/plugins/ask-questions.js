@@ -63,8 +63,7 @@ function normalizeQuestion(raw) {
       kind: "input",
       question: raw.question.trim(),
       inputType,
-      placeholder:
-        typeof raw.placeholder === "string" ? raw.placeholder : null,
+      placeholder: typeof raw.placeholder === "string" ? raw.placeholder : null,
     };
   }
 
