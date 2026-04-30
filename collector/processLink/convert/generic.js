@@ -14,6 +14,7 @@ const {
   loadYouTubeTranscript,
 } = require("../../utils/extensions/YoutubeTranscript");
 const RuntimeSettings = require("../../utils/runtimeSettings");
+const { htmlToMarkdown } = require("../../utils/htmlToMarkdown");
 
 /**
  * Scrape a generic URL and return the content in the specified format
@@ -169,9 +170,30 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
       },
       async evaluate(page, browser) {
         const result = await page.evaluate((captureAs) => {
-          if (captureAs === "text") return document.body.innerText;
           if (captureAs === "html") return document.documentElement.innerHTML;
-          return document.body.innerText;
+
+          // Drop elements hidden from the user (display:none,
+          // visibility:hidden, aria-hidden) before serializing the body
+          // to HTML so the markdown output matches what was on screen.
+          const liveEls = document.body.querySelectorAll("*");
+          const marked = [];
+          for (const el of liveEls) {
+            const cs = getComputedStyle(el);
+            if (
+              cs.display === "none" ||
+              cs.visibility === "hidden" ||
+              el.getAttribute("aria-hidden") === "true"
+            ) {
+              el.setAttribute("data-scraper-hidden", "1");
+              marked.push(el);
+            }
+          }
+          const clone = document.body.cloneNode(true);
+          clone
+            .querySelectorAll("[data-scraper-hidden]")
+            .forEach((n) => n.remove());
+          for (const el of marked) el.removeAttribute("data-scraper-hidden");
+          return clone.innerHTML;
         }, captureAs);
         await browser.close();
         return result;
@@ -209,7 +231,8 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
 
     const docs = await loader.load();
     for (const doc of docs) pageContents.push(doc.pageContent);
-    return pageContents.join(" ");
+    const rawContent = pageContents.join(" ");
+    return captureAs === "text" ? htmlToMarkdown(rawContent, link) : rawContent;
   } catch (error) {
     console.error(
       "getPageContent failed to be fetched by puppeteer - falling back to fetch!",
@@ -227,7 +250,7 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
         ...validatedHeaders(headers),
       },
     }).then((res) => res.text());
-    return pageText;
+    return captureAs === "text" ? htmlToMarkdown(pageText, link) : pageText;
   } catch (error) {
     console.error("getPageContent failed to be fetched by any method.", error);
   }

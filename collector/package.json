@@ -32,6 +32,7 @@
     "mbox-parser": "^1.0.1",
     "mime": "^3.0.0",
     "moment": "^2.29.4",
+    "node-html-markdown": "^1.3.0",
     "node-html-parser": "^6.1.13",
     "node-xlsx": "^0.24.0",
     "officeparser": "^4.0.5",
