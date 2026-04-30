@@ -35,6 +35,7 @@ const { mcpServersEndpoints } = require("./endpoints/mcpServers");
 const { mobileEndpoints } = require("./endpoints/mobile");
 const { webPushEndpoints } = require("./endpoints/webPush");
 const { telegramEndpoints } = require("./endpoints/telegram");
+const { scheduledJobEndpoints } = require("./endpoints/scheduledJobs");
 const {
   outlookAgentEndpoints,
 } = require("./endpoints/utils/outlookAgentUtils");
@@ -95,6 +96,7 @@ mcpServersEndpoints(apiRouter);
 mobileEndpoints(apiRouter);
 webPushEndpoints(apiRouter);
 telegramEndpoints(apiRouter);
+scheduledJobEndpoints(apiRouter);
 outlookAgentEndpoints(apiRouter);
 googleAgentSkillEndpoints(apiRouter);
 // Externally facing embedder endpoints

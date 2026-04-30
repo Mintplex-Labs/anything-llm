@@ -10,7 +10,9 @@ const {
 } = require("../utils/middleware/multiUserProtected");
 const { WorkspaceChats } = require("../models/workspaceChats");
 const { Workspace } = require("../models/workspace");
+const { ScheduledJobRun } = require("../models/scheduledJobRun");
 const createFilesLib = require("../utils/agents/aibitat/plugins/create-files/lib");
+const { Telemetry } = require("../models/telemetry");
 
 /**
  * Endpoints for serving agent-generated files (PPTX, etc.) with authentication
@@ -42,14 +44,13 @@ function agentFileServerEndpoints(app) {
             .json({ error: "Invalid filename format" });
         }
 
-        // Find a chat record that references this file and that the user can access
-        const validChat = await findValidChatForFile(
-          filename,
+        // Find a chat or scheduled job run that references this file
+        const fileSource = await findFileSource(filename, {
           user,
-          multiUserMode(response)
-        );
+          isMultiUser: multiUserMode(response),
+        });
 
-        if (!validChat) {
+        if (!fileSource) {
           return response.status(404).json({
             error: "File not found or access denied",
           });
@@ -66,7 +67,7 @@ function agentFileServerEndpoints(app) {
         // Get mime type and set headers for download
         const mimeType = createFilesLib.getMimeType(`.${parsed.extension}`);
         const safeFilename = createFilesLib.sanitizeFilenameForHeader(
-          validChat.displayFilename || filename
+          fileSource.displayFilename || filename
         );
         response.setHeader("Content-Type", mimeType);
         response.setHeader(
@@ -74,7 +75,11 @@ function agentFileServerEndpoints(app) {
           `attachment; filename="${safeFilename}"`
         );
         response.setHeader("Content-Length", fileData.buffer.length);
-        return response.send(fileData.buffer);
+        response.send(fileData.buffer);
+        Telemetry.sendTelemetry("agent_generated_file_downloaded", {
+          type: mimeType,
+        }).catch(() => {});
+        return;
       } catch (error) {
         console.error("[agentFileServer] Download error:", error.message);
         return response.status(500).json({ error: "Failed to download file" });
@@ -84,59 +89,90 @@ function agentFileServerEndpoints(app) {
 }
 
 /**
- * Finds a valid chat record that references the given storage filename
- * and that the user has access to.
- * @param {string} storageFilename - The storage filename to search for
- * @param {object|null} user - The user object (null in single-user mode)
- * @param {boolean} isMultiUser - Whether multi-user mode is enabled
- * @returns {Promise<{workspaceId: number, displayFilename: string}|null>}
+ * Locates the source record (a workspace chat or a scheduled job run) that
+ * references the given storage filename, and confirms the requester has access.
+ *
+ * Search order:
+ *   1. Workspace chats the user can access (per multi-user permissions).
+ *   2. Scheduled job runs — single-user only, so no per-user access check.
+ *
+ * @param {string} storageFilename
+ * @param {{ user: object|null, isMultiUser: boolean }} ctx
+ * @returns {Promise<{workspaceId: number|null, displayFilename: string}|null>}
  */
-async function findValidChatForFile(storageFilename, user, isMultiUser) {
+async function findFileSource(storageFilename, { user, isMultiUser }) {
   try {
-    // Get all workspaces the user has access to.
-    // In single-user mode, all workspaces are accessible.
-    // In multi-user mode, only workspaces assigned to the user are accessible.
-    let workspaceIds;
-    if (isMultiUser && user) {
-      const workspaces = await Workspace.whereWithUser(user);
-      workspaceIds = workspaces.map((w) => w.id);
-    } else {
-      const workspaces = await Workspace.where();
-      workspaceIds = workspaces.map((w) => w.id);
-    }
-
-    if (workspaceIds.length === 0) return null;
-
-    // Use database-level filtering to only fetch chats that contain the filename
-    // This avoids loading all chats into memory
-    const chats = await WorkspaceChats.where({
-      workspaceId: { in: workspaceIds },
-      include: true,
-      response: { contains: storageFilename },
+    const fromChat = await findInWorkspaceChats(storageFilename, {
+      user,
+      isMultiUser,
     });
+    if (fromChat) return fromChat;
 
-    for (const chat of chats) {
-      try {
-        const response = safeJsonParse(chat.response, { outputs: [] });
-        const output = response.outputs.find(
-          (o) => o?.payload?.storageFilename === storageFilename
-        );
-        if (!output) continue;
-        return {
-          workspaceId: chat.workspaceId,
-          displayFilename:
-            output.payload.filename || output.payload.displayFilename,
-        };
-      } catch {
-        continue;
-      }
-    }
+    if (isMultiUser) return null;
 
-    return null;
+    return await findInScheduledJobRuns(storageFilename);
   } catch (error) {
-    console.error("[findValidChatForFile] Error:", error.message);
+    console.error("[findFileSource] Error:", error.message);
     return null;
   }
+}
+
+// Search workspace chats the user has access to. In single-user mode all
+// workspaces are accessible; in multi-user mode only workspaces assigned to
+// the user are. Returns the matching chat's workspace + display filename.
+async function findInWorkspaceChats(storageFilename, { user, isMultiUser }) {
+  const workspaces =
+    isMultiUser && user
+      ? await Workspace.whereWithUser(user)
+      : await Workspace.where();
+
+  const workspaceIds = workspaces.map((w) => w.id);
+  if (workspaceIds.length === 0) return null;
+
+  // DB-level filter so we don't load every chat into memory.
+  const chats = await WorkspaceChats.where({
+    workspaceId: { in: workspaceIds },
+    include: true,
+    response: { contains: storageFilename },
+  });
+
+  for (const chat of chats) {
+    const { outputs = [] } = safeJsonParse(chat.response, { outputs: [] });
+    const output = outputs.find(
+      (o) => o?.payload?.storageFilename === storageFilename
+    );
+    if (!output) continue;
+    return {
+      workspaceId: chat.workspaceId,
+      displayFilename:
+        output.payload.filename || output.payload.displayFilename,
+    };
+  }
+
+  return null;
+}
+
+// Search completed scheduled job runs. Scheduled jobs are single-user only,
+// so this skips access control. Returns the matching run's display filename.
+async function findInScheduledJobRuns(storageFilename) {
+  const runs = await ScheduledJobRun.where({
+    status: "completed",
+    result: { contains: storageFilename },
+  });
+
+  for (const run of runs) {
+    const { outputs = [] } = safeJsonParse(run.result, { outputs: [] });
+    const output = outputs.find(
+      (o) => o?.payload?.storageFilename === storageFilename
+    );
+    if (!output) continue;
+    return {
+      workspaceId: null,
+      displayFilename: output.payload.filename || storageFilename,
+    };
+  }
+
+  return null;
 }
 
 module.exports = { agentFileServerEndpoints };

@@ -28,17 +28,10 @@ class LemonadeEmbedder {
   }
 
   async embedTextInput(textInput) {
-    try {
-      this.log(`Embedding text input...`);
-      const response = await this.lemonade.embeddings.create({
-        model: this.model,
-        input: textInput,
-      });
-      return response?.data[0]?.embedding || [];
-    } catch (error) {
-      this.log("Failed to get embedding from Lemonade.", error.message);
-      throw error;
-    }
+    const result = await this.embedChunks(
+      Array.isArray(textInput) ? textInput : [textInput]
+    );
+    return result?.[0] || [];
   }
 
   async embedChunks(textChunks = []) {
@@ -48,25 +41,56 @@ class LemonadeEmbedder {
 
     const allResults = [];
     for (const chunk of toChunks(textChunks, this.maxConcurrentChunks)) {
-      try {
-        const response = await this.lemonade.embeddings.create({
-          model: this.model,
-          input: chunk,
-        });
+      const { data = [], error = null } = await new Promise((resolve) => {
+        this.lemonade.embeddings
+          .create({
+            model: this.model,
+            input: chunk,
+          })
+          .then((result) => {
+            if (result?.error) {
+              const errMsg =
+                result.error?.details?.response?.error?.message ||
+                result.error?.message ||
+                "Unknown error";
+              const errType =
+                result.error?.details?.response?.error?.type ||
+                result.error?.type ||
+                "api_error";
+              resolve({
+                data: [],
+                error: { type: errType, message: errMsg },
+              });
+              return;
+            }
+            resolve({ data: result?.data, error: null });
+          })
+          .catch((e) => {
+            e.type =
+              e?.response?.data?.error?.code ||
+              e?.response?.status ||
+              "failed_to_embed";
+            e.message = e?.response?.data?.error?.message || e.message;
+            resolve({ data: [], error: e });
+          });
+      });
 
-        const embeddings = response?.data?.map((emb) => emb.embedding) || [];
-        if (embeddings.length === 0)
-          throw new Error("Lemonade returned empty embeddings for batch");
-
-        allResults.push(...embeddings);
-        reportEmbeddingProgress(allResults.length, textChunks.length);
-      } catch (error) {
-        this.log("Failed to get embeddings from Lemonade.", error.message);
-        throw new Error(`Lemonade Failed to embed: ${error.message}`);
+      if (error) {
+        const errorMsg = `Lemonade Failed to embed: [${error.type}]: ${error.message}`;
+        this.log(errorMsg);
+        throw new Error(errorMsg);
       }
+      allResults.push(...(data || []));
+      reportEmbeddingProgress(
+        Math.min(allResults.length, textChunks.length),
+        textChunks.length
+      );
     }
 
-    return allResults.length > 0 ? allResults : null;
+    return allResults.length > 0 &&
+      allResults.every((embd) => embd.hasOwnProperty("embedding"))
+      ? allResults.map((embd) => embd.embedding)
+      : null;
   }
 }
 

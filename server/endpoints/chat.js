@@ -15,7 +15,6 @@ const {
 const { writeResponseChunk } = require("../utils/helpers/chat/responses");
 const { WorkspaceThread } = require("../models/workspaceThread");
 const { User } = require("../models/user");
-const truncate = require("truncate");
 const { getModelTag } = require("./utils");
 
 function chatEndpoints(app) {
@@ -162,7 +161,7 @@ function chatEndpoints(app) {
           thread,
           workspace,
           user,
-          newName: truncate(message, 22),
+          prompt: message,
           onRename: (thread) => {
             writeResponseChunk(response, {
               action: "rename_thread",
