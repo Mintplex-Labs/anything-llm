@@ -20,7 +20,9 @@ export default function PiperTTS({ chatId, voiceId = null, message }) {
       if (!audioSrc) {
         setLoading(true);
         const client = new PiperTTSClient({ voiceId });
-        const blobUrl = await client.getAudioBlobForText(messageToSpeech(message));
+        const blobUrl = await client.getAudioBlobForText(
+          messageToSpeech(message)
+        );
         setAudioSrc(blobUrl);
         setLoading(false);
       } else {

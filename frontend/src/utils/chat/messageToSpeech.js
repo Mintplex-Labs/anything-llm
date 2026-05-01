@@ -2,7 +2,7 @@
  * Convert a chat message string to plain text suitable for text-to-speech.
  *
  * The chat history we render is Markdown — when we hand that text directly to
- * a TTS engine (Piper, ElevenLabs, OpenAI, the browser's `SpeechSynthesis`,
+ * a TTS engine (Piper, the browser's `SpeechSynthesis`,
  * etc.) the engine reads every special character literally:
  *   - `**bold**` becomes "asterisk asterisk bold asterisk asterisk"
  *   - `_italic_` becomes "underscore italic underscore"
@@ -14,9 +14,8 @@
  * underlying spoken content. It is intentionally regex-based (no extra
  * dependency) so it can be safely used both on the client and inside the
  * native browser TTS path which has no access to the server's markdown-it
- * tokenizer.
- *
- * Tracking issue: https://github.com/Mintplex-Labs/anything-llm/issues/5557
+ * tokenizer. AsyncTTS does not use this helper as the cloud based TTS engines
+ * do not need this cleanup and seem to handle the Markdown syntax just fine.
  *
  * @param {string} message - The raw markdown message body.
  * @returns {string} A plain-text string suitable for TTS.
