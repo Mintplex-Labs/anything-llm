@@ -126,6 +126,25 @@ export function ManagerRoute({ Component }) {
   );
 }
 
+// Allows access only in single user mode — redirects to home in multi-user mode
+export function SingleUserRoute({ Component }) {
+  const { isAuthd, shouldRedirectToOnboarding, multiUserMode } =
+    useIsAuthenticated();
+  if (isAuthd === null) return <FullScreenLoader />;
+
+  if (shouldRedirectToOnboarding) {
+    return <Navigate to={paths.onboarding.home()} />;
+  }
+
+  return isAuthd && !multiUserMode ? (
+    <KeyboardShortcutWrapper>
+      <Component />
+    </KeyboardShortcutWrapper>
+  ) : (
+    <Navigate to={paths.home()} />
+  );
+}
+
 export default function PrivateRoute({ Component }) {
   const { isAuthd, shouldRedirectToOnboarding } = useIsAuthenticated();
   if (isAuthd === null) return <FullScreenLoader />;
