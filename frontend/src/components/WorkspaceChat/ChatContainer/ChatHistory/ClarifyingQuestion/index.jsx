@@ -458,7 +458,7 @@ function Footer({
                 })}
           </button>
         )}
-        {isLast || isSingle ? (
+        {isLast ? (
           <button
             type="button"
             onClick={onSubmitAll}
