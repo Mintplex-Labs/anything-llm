@@ -227,18 +227,25 @@ function AgentClarifyingQuestions() {
               </p>
             </div>
             <input
-              type="number"
+              type="text"
+              inputMode="numeric"
               name="agentClarifyingQuestionsMaxPerTurn"
-              min={1}
-              max={10}
               value={maxPerTurn}
               onChange={(e) => {
-                const v = parseInt(e.target.value);
-                if (!Number.isFinite(v) || v < 1) return;
-                setMaxPerTurn(v);
-                debouncedUpdateMaxPerTurn(v);
+                // Strip any non-digits so the field only ever holds 0-9.
+                // Allow any digit count during typing; clamp on blur.
+                const digitsOnly = e.target.value.replace(/\D/g, "");
+                setMaxPerTurn(digitsOnly);
+                const v = parseInt(digitsOnly, 10);
+                if (Number.isFinite(v) && v >= 1 && v <= 10)
+                  debouncedUpdateMaxPerTurn(v);
               }}
-              onWheel={(e) => e.target.blur()}
+              onBlur={(e) => {
+                const v = parseInt(e.target.value, 10);
+                if (!Number.isFinite(v) || v < 1) setMaxPerTurn(1);
+                else if (v > 10) setMaxPerTurn(10);
+                else setMaxPerTurn(v);
+              }}
               className="border border-white/10 bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-[80px] p-2.5 text-center"
               placeholder="3"
               autoComplete="off"
@@ -259,18 +266,23 @@ function AgentClarifyingQuestions() {
               </p>
             </div>
             <input
-              type="number"
+              type="text"
+              inputMode="numeric"
               name="agentClarifyingQuestionsTimeoutSeconds"
-              min={10}
-              max={600}
               value={timeoutSeconds}
               onChange={(e) => {
-                const v = parseInt(e.target.value);
-                if (!Number.isFinite(v) || v < 10) return;
-                setTimeoutSeconds(v);
-                debouncedUpdateTimeout(v);
+                const digitsOnly = e.target.value.replace(/\D/g, "");
+                setTimeoutSeconds(digitsOnly);
+                const v = parseInt(digitsOnly, 10);
+                if (Number.isFinite(v) && v >= 10 && v <= 600)
+                  debouncedUpdateTimeout(v);
               }}
-              onWheel={(e) => e.target.blur()}
+              onBlur={(e) => {
+                const v = parseInt(e.target.value, 10);
+                if (!Number.isFinite(v) || v < 10) setTimeoutSeconds(10);
+                else if (v > 600) setTimeoutSeconds(600);
+                else setTimeoutSeconds(v);
+              }}
               className="border border-white/10 bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-[80px] p-2.5 text-center"
               placeholder="120"
               autoComplete="off"
