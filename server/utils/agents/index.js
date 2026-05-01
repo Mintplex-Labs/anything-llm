@@ -738,8 +738,8 @@ class AgentHandler {
     this.aibitat.use(AgentPlugins.chatHistory.plugin());
 
     // Stash clarifying-question config on the aibitat instance so the
-    // ask-for-input / ask-for-choice sub-plugins can read the per-turn cap
-    // and timeout without each doing a SystemSettings read.
+    // ask-user sub-plugin can read the per-turn cap and timeout without
+    // doing its own SystemSettings read on every invocation.
     this.aibitat._clarifyConfig = {
       maxPerTurn: Number(
         await SystemSettings.getValueOrFallback(
