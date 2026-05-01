@@ -25,55 +25,65 @@ export default function messageToSpeech(message = "") {
 
   let text = message;
 
-  // 1. Remove fenced code blocks entirely — reading code aloud is rarely
-  //    useful and produces a long stream of unintelligible characters.
+  /*
+   * Remove fenced code blocks entirely — reading code aloud is rarely
+   * useful and produces a long stream of unintelligible characters.
+   */
   text = text.replace(/```[\s\S]*?```/g, " ");
   text = text.replace(/~~~[\s\S]*?~~~/g, " ");
 
-  // 2. Strip inline code wrappers but keep the text inside.
+  // Strip inline code wrappers but keep the text inside.
   text = text.replace(/`([^`]*)`/g, "$1");
 
-  // 3. Images: drop entirely — there's nothing useful to speak.
+  // Images: drop entirely — there's nothing useful to speak.
   text = text.replace(/!\[[^\]]*\]\([^)]*\)/g, " ");
 
-  // 4. Links: keep the visible label, drop the URL.
-  //    `[label](url)` -> `label`
+  /*
+   * Links: keep the visible label, drop the URL.
+   * `[label](url)` -> `label`
+   */
   text = text.replace(/\[([^\]]+)\]\([^)]*\)/g, "$1");
 
-  // 5. Reference-style link definitions: drop the URL line entirely.
+  // Reference-style link definitions: drop the URL line entirely.
   text = text.replace(/^\s*\[[^\]]+\]:\s*\S+.*$/gm, "");
 
-  // 6. Heading markers (`#`, `##`, ...): keep the heading text only.
+  // Heading markers (`#`, `##`, ...): keep the heading text only.
   text = text.replace(/^\s{0,3}#{1,6}\s+/gm, "");
 
-  // 7. Blockquote markers (`>`): drop the leading marker.
+  // Blockquote markers (`>`): drop the leading marker.
   text = text.replace(/^\s{0,3}>\s?/gm, "");
 
-  // 8. Unordered list markers (`-`, `*`, `+`) and ordered list markers
-  //    (`1.`, `12)`): drop the marker, keep the item text.
+  /*
+   * Unordered list markers (`-`, `*`, `+`) and ordered list markers
+   * (`1.`, `12)`): drop the marker, keep the item text.
+   */
   text = text.replace(/^\s*[-*+]\s+/gm, "");
   text = text.replace(/^\s*\d+[.)]\s+/gm, "");
 
-  // 9. Horizontal rules: drop entirely.
+  // Horizontal rules: drop entirely.
   text = text.replace(/^\s{0,3}(?:[-*_]\s*){3,}\s*$/gm, " ");
 
-  // 10. Bold / italic / strikethrough emphasis. Order matters — handle the
-  //     longer markers (`***`, `___`, `**`, `__`, `~~`) before the singletons
-  //     so "asterisk" is never read aloud.
+  /*
+   * Bold / italic / strikethrough emphasis. Order matters — handle the
+   * longer markers (`***`, `___`, `**`, `__`, `~~`) before the singletons
+   * so "asterisk" is never read aloud.
+   */
   text = text.replace(/(\*\*\*|___)([^*_]+)\1/g, "$2");
   text = text.replace(/(\*\*|__)([^*_]+)\1/g, "$2");
   text = text.replace(/(\*|_)([^*_\n]+)\1/g, "$2");
   text = text.replace(/~~([^~]+)~~/g, "$1");
 
-  // 11. Tables: convert pipe separators to commas so rows read naturally,
-  //     and drop the alignment row (`---|---|---`).
+  /*
+   * Tables: convert pipe separators to commas so rows read naturally,
+   * and drop the alignment row (`---|---|---`).
+   */
   text = text.replace(/^\s*\|?\s*[:\-\s|]+\|[:\-\s|]+\s*$/gm, "");
   text = text.replace(/\|/g, ", ");
 
-  // 12. HTML tags: strip but keep their text content.
+  // HTML tags: strip but keep their text content.
   text = text.replace(/<\/?[^>]+>/g, " ");
 
-  // 13. Collapse repeated whitespace (newlines and spaces) to single spaces.
+  // Collapse repeated whitespace (newlines and spaces) to single spaces.
   text = text.replace(/\s+/g, " ").trim();
 
   return text;
