@@ -7,14 +7,12 @@
  * Exports `promptWithMemories(opts)`. Given a base system prompt, it looks up
  * the user's global + workspace memories, reranks the workspace set against
  * the current prompt + recent history (only when there are more than
- * INJECTED_WORKSPACE_LIMIT to choose from), formats the selected memories as
+ * Memory.MAX_INJECTED_WORKSPACE_LIMIT to choose from), formats the selected memories as
  * a markdown section, and appends it to the system prompt. Returns the
  * original prompt unchanged when memories are disabled or the user has none.
  */
 const { Memory } = require("../../models/memory");
 const { SystemSettings } = require("../../models/systemSettings");
-
-const INJECTED_WORKSPACE_LIMIT = 5;
 
 /**
  * Fetches and formats relevant memories for injection into the system prompt.
@@ -39,11 +37,11 @@ async function getMemoriesForPrompt(userId, workspaceId, prompt, rawHistory) {
       return "";
 
     let selectedWorkspace = workspaceMemories;
-    if (workspaceMemories.length > INJECTED_WORKSPACE_LIMIT) {
+    if (workspaceMemories.length > Memory.MAX_INJECTED_WORKSPACE_LIMIT) {
       const hasContext = prompt?.trim() || rawHistory?.length > 0;
       selectedWorkspace = hasContext
         ? await rerankMemories(workspaceMemories, prompt, rawHistory)
-        : workspaceMemories.slice(0, INJECTED_WORKSPACE_LIMIT);
+        : workspaceMemories.slice(0, Memory.MAX_INJECTED_WORKSPACE_LIMIT);
     }
 
     const injectedIds = [
@@ -83,7 +81,7 @@ async function rerankMemories(memories, prompt, rawHistory) {
     const documents = memories.map((m) => ({ text: m.content }));
 
     const reranked = await reranker.rerank(query, documents, {
-      topK: INJECTED_WORKSPACE_LIMIT,
+      topK: Memory.MAX_INJECTED_WORKSPACE_LIMIT,
     });
 
     return reranked.map((r) => memories[r.rerank_corpus_id]);
@@ -92,7 +90,7 @@ async function rerankMemories(memories, prompt, rawHistory) {
       "[Memory Injection] Reranker failed, falling back to recent:",
       error.message
     );
-    return memories.slice(0, INJECTED_WORKSPACE_LIMIT);
+    return memories.slice(0, Memory.MAX_INJECTED_WORKSPACE_LIMIT);
   }
 }
 

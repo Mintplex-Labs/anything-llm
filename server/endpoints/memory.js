@@ -15,8 +15,10 @@ async function memoryFeatureEnabled(_req, response, next) {
   next();
 }
 
-// Loads the memory by :memoryId and, in multi-user mode, scopes the query to the requester's userId.
-// A memory owned by another user returns null here and is indistinguishable from "not found" — 404 either way.
+/**
+ * Loads the memory by :memoryId and, in multi-user mode, scopes the query to the requester's userId.
+ * A memory owned by another user returns null here and is indistinguishable from "not found" — 404 either way.
+ */
 async function validateMemoryOwner(request, response, next) {
   try {
     const clause = { id: Number(request.params.memoryId) };
@@ -79,11 +81,6 @@ function memoryEndpoints(app) {
         const user = await userFromSession(request, response);
         const workspace = response.locals.workspace;
         const { content, scope = "workspace" } = reqBody(request);
-
-        if (!content || !content.trim()) {
-          return response.status(400).json({ error: "Content is required." });
-        }
-
         const { memory, message } = await Memory.create({
           userId: user?.id,
           workspaceId: scope === "global" ? null : workspace.id,
@@ -91,10 +88,7 @@ function memoryEndpoints(app) {
           content: content.trim(),
         });
 
-        if (!memory) {
-          return response.status(400).json({ error: message });
-        }
-
+        if (!memory) return response.status(400).json({ error: message });
         response.status(200).json({ memory });
       } catch (e) {
         console.error(e);
@@ -115,19 +109,11 @@ function memoryEndpoints(app) {
       try {
         const memoryId = Number(request.params.memoryId);
         const { content } = reqBody(request);
-
-        if (!content || !content.trim()) {
-          return response.status(400).json({ error: "Content is required." });
-        }
-
         const { memory, message } = await Memory.update(memoryId, {
           content: content.trim(),
         });
 
-        if (!memory) {
-          return response.status(400).json({ error: message });
-        }
-
+        if (!memory) return response.status(400).json({ error: message });
         response.status(200).json({ memory });
       } catch (e) {
         console.error(e);
@@ -147,7 +133,6 @@ function memoryEndpoints(app) {
     async (request, response) => {
       try {
         const memoryId = Number(request.params.memoryId);
-
         await Memory.delete(memoryId);
         response.status(200).json({ success: true });
       } catch (e) {
@@ -168,11 +153,8 @@ function memoryEndpoints(app) {
     async (request, response) => {
       try {
         const memoryId = Number(request.params.memoryId);
-
         const { memory, message } = await Memory.promoteToGlobal(memoryId);
-        if (!memory) {
-          return response.status(400).json({ error: message });
-        }
+        if (!memory) return response.status(400).json({ error: message });
 
         response.status(200).json({ memory });
       } catch (e) {
@@ -200,10 +182,8 @@ function memoryEndpoints(app) {
           memoryId,
           targetWorkspace.id
         );
-        if (!memory) {
-          return response.status(400).json({ error: message });
-        }
 
+        if (!memory) return response.status(400).json({ error: message });
         response.status(200).json({ memory });
       } catch (e) {
         console.error(e);

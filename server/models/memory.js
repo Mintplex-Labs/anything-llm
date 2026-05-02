@@ -1,9 +1,5 @@
 const prisma = require("../utils/prisma");
 
-const GLOBAL_LIMIT = 5;
-const WORKSPACE_LIMIT = 20;
-const VALID_SCOPES = ["workspace", "global"];
-
 /**
  * @typedef {Object} Memory
  * @property {number} id
@@ -24,13 +20,18 @@ function toInt(v) {
 }
 
 const Memory = {
+  GLOBAL_LIMIT: 5,
+  WORKSPACE_LIMIT: 20,
+  MAX_INJECTED_WORKSPACE_LIMIT: 5,
+  VALID_SCOPES: ["workspace", "global"],
+
   validations: {
     id: (v) => toInt(v),
     userId: (v = null) => (v === null || v === undefined ? null : toInt(v)),
     workspaceId: (v = null) =>
       v === null || v === undefined ? null : toInt(v),
     scope: (v = "workspace") => {
-      if (!VALID_SCOPES.includes(v))
+      if (!this.VALID_SCOPES.includes(v))
         throw new Error(`Invalid scope: ${JSON.stringify(v)}`);
       return v;
     },
@@ -104,8 +105,8 @@ const Memory = {
       const count = await this.countForScope(userId, workspaceId, scope);
       const limit =
         this.validations.scope(scope) === "global"
-          ? GLOBAL_LIMIT
-          : WORKSPACE_LIMIT;
+          ? this.GLOBAL_LIMIT
+          : this.WORKSPACE_LIMIT;
       if (count >= limit)
         return {
           memory: null,
@@ -186,10 +187,10 @@ const Memory = {
         null,
         "global"
       );
-      if (globalCount >= GLOBAL_LIMIT)
+      if (globalCount >= this.GLOBAL_LIMIT)
         return {
           memory: null,
-          message: `Maximum global memory limit (${GLOBAL_LIMIT}) reached.`,
+          message: `Maximum global memory limit (${this.GLOBAL_LIMIT}) reached.`,
         };
 
       const memory = await prisma.memories.update({
@@ -227,10 +228,10 @@ const Memory = {
         workspaceId,
         "workspace"
       );
-      if (wsCount >= WORKSPACE_LIMIT)
+      if (wsCount >= this.WORKSPACE_LIMIT)
         return {
           memory: null,
-          message: `Maximum workspace memory limit (${WORKSPACE_LIMIT}) reached.`,
+          message: `Maximum workspace memory limit (${this.WORKSPACE_LIMIT}) reached.`,
         };
 
       const memory = await prisma.memories.update({
@@ -290,7 +291,7 @@ const Memory = {
   /**
    * Replace all of a user's workspace-scoped memories for a workspace with the given set.
    * Runs in a transaction so a failure mid-write does not leave a partial state.
-   * Caps the input at WORKSPACE_LIMIT.
+   * Caps the input at this.WORKSPACE_LIMIT.
    * @param {number|null} userId
    * @param {number} workspaceId
    * @param {string[]} memories - memory contents to insert
@@ -311,7 +312,7 @@ const Memory = {
           },
         });
 
-        for (const content of safeMemories.slice(0, WORKSPACE_LIMIT)) {
+        for (const content of safeMemories.slice(0, this.WORKSPACE_LIMIT)) {
           await tx.memories.create({
             data: {
               userId: this.validations.userId(userId),
@@ -327,6 +328,84 @@ const Memory = {
       console.error(error.message);
       return false;
     }
+  },
+
+  /**
+   * Apply extracted memories:
+   * - WORKSPACE: Replace all workspace memories with the new set (flexible)
+   * - GLOBAL: Append new memories only (never modify existing)
+   * @param {number|null} userId
+   * @param {number} workspaceId
+   * @param {{content: string, scope: "WORKSPACE"|"GLOBAL"}[]} newMemories - from extraction
+   * @param {number} globalSlots - how many global slots are available
+   * @returns {Promise<{workspaceCount: number, globalCount: number}>}
+   */
+  applyExtractedMemories: async function (
+    userId,
+    workspaceId,
+    newMemories,
+    globalSlots
+  ) {
+    const result = { workspaceCount: 0, globalCount: 0 };
+    try {
+      const safeMemories = Array.isArray(newMemories)
+        ? newMemories.filter(
+            (m) =>
+              typeof m === "object" &&
+              m !== null &&
+              typeof m.content === "string" &&
+              m.content.trim().length > 0 &&
+              ["WORKSPACE", "GLOBAL"].includes(m.scope)
+          )
+        : [];
+
+      const newWorkspace = safeMemories
+        .filter((m) => m.scope === "WORKSPACE")
+        .slice(0, this.WORKSPACE_LIMIT);
+      const newGlobal = safeMemories
+        .filter((m) => m.scope === "GLOBAL")
+        .slice(0, Math.max(0, globalSlots));
+
+      await prisma.$transaction(async (tx) => {
+        // WORKSPACE: delete all and replace with new set
+        await tx.memories.deleteMany({
+          where: {
+            userId: this.validations.userId(userId),
+            workspaceId: this.validations.id(workspaceId),
+            scope: "workspace",
+          },
+        });
+
+        for (const { content } of newWorkspace) {
+          await tx.memories.create({
+            data: {
+              userId: this.validations.userId(userId),
+              workspaceId: this.validations.id(workspaceId),
+              scope: "workspace",
+              content,
+            },
+          });
+        }
+
+        // GLOBAL: append only (existing are never touched)
+        for (const { content } of newGlobal) {
+          await tx.memories.create({
+            data: {
+              userId: this.validations.userId(userId),
+              workspaceId: null,
+              scope: "global",
+              content,
+            },
+          });
+        }
+      });
+
+      result.workspaceCount = newWorkspace.length;
+      result.globalCount = newGlobal.length;
+    } catch (error) {
+      console.error(error.message);
+    }
+    return result;
   },
 
   /**

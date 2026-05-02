@@ -19,20 +19,33 @@ const CHATS_PER_RUN_LIMIT = 20;
 // Per-message cap — we keep 20 chats of context but truncate each prompt/response
 // so a single huge message doesn't blow the LLM's context window.
 const MAX_CHARS_PER_MESSAGE = 1500;
+const EXTRACTION_SYSTEM_PROMPT = `You are a memory extraction system for a personalized AI assistant. Your job is to accumulate useful memories about the user over time.
 
-const EXTRACTION_SYSTEM_PROMPT = `You are a memory extraction system for a personalized AI assistant. You manage a list of memories about the user that will be injected into future conversations to provide personalized responses.
+You will be shown:
+1. Existing GLOBAL memories — established facts about the user (for context, do NOT duplicate or modify these)
+2. Current WORKSPACE memories — can be revised, consolidated, or replaced as the project evolves
+3. Recent conversations to extract new information from
 
 Instructions:
-- Review the conversations and extract any useful facts, preferences, or context about the user
-- Return an updated list of memories (max 20) that combines existing memories with any new information
-- If new information contradicts an old memory, keep only the updated version
-- If an existing memory is still relevant, keep it
+- Extract genuinely useful facts, preferences, or context from the conversations
+- Quality over quantity — only add memories that are clearly valuable for future personalization
 - Each memory should be a single, concise statement (1 sentence max)
 - Focus on: names, preferences, projects, deadlines, relationships, expertise, communication style
 - Skip small talk, pleasantries, and anything not useful for future personalization
-- If nothing worth remembering was said, return the existing memories unchanged
+- Return an empty list if nothing worth saving — that's perfectly fine
 
-When finished you MUST call the save-memories tool with your final list. Do not respond with free-form text — always use the tool.`;
+Memory Scopes:
+
+WORKSPACE memories are flexible — return an updated set that reflects the current project state:
+- You may revise, consolidate, or remove outdated workspace memories
+- Examples: "Working on a React dashboard for client X", "Current sprint deadline is March 15th"
+
+GLOBAL memories are append-only — only add NEW facts not already captured:
+- Do NOT return existing global memories (they're already saved)
+- Only return new global facts discovered in the conversations
+- Examples: "User's name is Alex", "Works as a senior software engineer", "Prefers concise responses"
+
+When finished you MUST call the save-memories tool. An empty list is fine if nothing new was found.`;
 
 (async () => {
   try {
@@ -117,17 +130,43 @@ async function processGroup(groupChats) {
       return;
     }
 
-    const currentMemories = await Memory.forUserWorkspace(userId, workspaceId);
-    const userMessage = buildExtractionUserMessage(currentMemories, chats);
+    const workspaceMemories = await Memory.forUserWorkspace(
+      userId,
+      workspaceId
+    );
+    const globalMemories = await Memory.globalForUser(userId);
+
+    // Early exit if global is full (workspace can always be revised)
+    const globalSlots = Memory.GLOBAL_LIMIT - globalMemories.length;
+    if (
+      globalSlots <= 0 &&
+      workspaceMemories.length >= Memory.WORKSPACE_LIMIT
+    ) {
+      log(`${tag} is at max capacity. Skipping.`);
+      return;
+    }
+
+    const userMessage = buildExtractionUserMessage(
+      workspaceMemories,
+      globalMemories,
+      globalSlots,
+      chats
+    );
     const memories = await extractMemoriesViaAgent({ ...llm, userMessage });
 
-    if (memories) {
-      await Memory.replaceWorkspaceMemories(userId, workspaceId, memories);
+    console.log("memories", JSON.stringify(memories, null, 2));
+    if (memories && memories.length > 0) {
+      const result = await Memory.applyExtractedMemories(
+        userId,
+        workspaceId,
+        memories,
+        globalSlots
+      );
       log(
-        `Extracted ${memories.length} memories for ${tag} in "${workspace.name}". Reviewed ${chats.length} chat(s).`
+        `Applied ${result.workspaceCount} workspace + ${result.globalCount} global memories for ${tag} in "${workspace.name}". Reviewed ${chats.length} chat(s).`
       );
     } else {
-      log(`Extraction returned no memories for ${tag}. Marking processed.`);
+      log(`No new memories extracted for ${tag}. Marking processed.`);
     }
   } catch (error) {
     log(`Error processing ${tag}: ${error.message}`);
@@ -166,12 +205,32 @@ async function loadLatestChats(userId, workspaceId) {
     .reverse();
 }
 
-function buildExtractionUserMessage(currentMemories, chats) {
-  const memoriesList =
-    currentMemories.length > 0
-      ? currentMemories.map((m, i) => `${i + 1}. ${m.content}`).join("\n")
-      : "None yet.";
+function buildExtractionUserMessage(
+  workspaceMemories,
+  globalMemories,
+  globalSlots,
+  chats
+) {
+  const formatMemoryList = (memories) => {
+    if (memories.length === 0) return "None.";
+    return memories.map((m, i) => `${i + 1}. ${m.content}`).join("\n");
+  };
 
+  const sections = [];
+
+  // Global memories (append-only, shown for context)
+  sections.push(
+    `Existing GLOBAL memories (do NOT duplicate these, only add new facts):\n${formatMemoryList(globalMemories)}`
+  );
+  if (globalSlots > 0) sections.push(`Available GLOBAL slots: ${globalSlots}`);
+  else sections.push(`GLOBAL is full — do not return any GLOBAL memories.`);
+
+  // Workspace memories (flexible, can be revised)
+  sections.push(
+    `Current WORKSPACE memories (return updated set as needed):\n${formatMemoryList(workspaceMemories)}`
+  );
+
+  // Conversations
   const formattedChats = chats
     .map((chat) => {
       const lines = [`User: ${truncate(chat.prompt, MAX_CHARS_PER_MESSAGE)}`];
@@ -183,8 +242,9 @@ function buildExtractionUserMessage(currentMemories, chats) {
       return lines.join("\n");
     })
     .join("\n\n");
+  sections.push(`Recent conversations:\n${formattedChats}`);
 
-  return `Current memories for this workspace:\n${memoriesList}\n\nRecent conversations:\n${formattedChats}`;
+  return sections.join("\n\n");
 }
 
 /**
@@ -208,9 +268,24 @@ async function extractMemoriesViaAgent({ provider, model, userMessage }) {
         properties: {
           memories: {
             type: "array",
-            items: { type: "string" },
-            description:
-              "Updated memory statements, one sentence each, max 20 items.",
+            items: {
+              type: "object",
+              properties: {
+                content: {
+                  type: "string",
+                  description: "The memory statement (1 sentence max).",
+                },
+                scope: {
+                  type: "string",
+                  enum: ["WORKSPACE", "GLOBAL"],
+                  description:
+                    "WORKSPACE for task/project-specific items, GLOBAL for universal user traits and preferences.",
+                },
+              },
+              required: ["content", "scope"],
+              additionalProperties: false,
+            },
+            description: "Updated memory objects, max 20 items.",
           },
         },
         required: ["memories"],
@@ -218,7 +293,14 @@ async function extractMemoriesViaAgent({ provider, model, userMessage }) {
       },
       handler: function ({ memories }) {
         extractedMemories = Array.isArray(memories)
-          ? memories.filter((m) => typeof m === "string" && m.trim().length > 0)
+          ? memories.filter(
+              (m) =>
+                typeof m === "object" &&
+                m !== null &&
+                typeof m.content === "string" &&
+                m.content.trim().length > 0 &&
+                ["WORKSPACE", "GLOBAL"].includes(m.scope)
+            )
           : null;
         // We only need the tool's input — short-circuit AIbitat's follow-up
         // model call that would otherwise reason about the tool's return value.
