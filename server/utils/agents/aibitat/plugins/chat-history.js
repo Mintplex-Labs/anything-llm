@@ -1,4 +1,5 @@
 const { WorkspaceChats } = require("../../../../models/workspaceChats");
+const { WorkspaceThread } = require("../../../../models/workspaceThread");
 
 /**
  * Plugin to save chat history to AnythingLLM DB.
@@ -116,6 +117,13 @@ const chatHistory = {
           threadId: invocation?.thread_id || null,
           include: true,
         });
+
+        if (!aibitat._threadRenamed) {
+          aibitat._threadRenamed = await this._autoRenameThread(
+            aibitat,
+            prompt
+          );
+        }
         this._cleanup(aibitat);
       },
       _storeSpecial: async function (
@@ -146,8 +154,41 @@ const chatHistory = {
           threadId: invocation?.thread_id || null,
           include: true,
         });
+
+        if (!aibitat._threadRenamed) {
+          aibitat._threadRenamed = await this._autoRenameThread(
+            aibitat,
+            prompt
+          );
+        }
         options?.postSave();
         this._cleanup(aibitat);
+      },
+
+      _autoRenameThread: async function (aibitat, prompt) {
+        const invocation = aibitat.handlerProps.invocation;
+        if (!invocation?.thread_id) return true;
+
+        const thread = await WorkspaceThread.get({ id: invocation.thread_id });
+        if (!thread) return true;
+
+        const { Workspace } = require("../../../../models/workspace");
+        const workspace = await Workspace.get({ id: invocation.workspace_id });
+        if (!workspace) return true;
+
+        await WorkspaceThread.autoRenameThread({
+          thread,
+          workspace,
+          user: invocation.user_id ? { id: invocation.user_id } : null,
+          prompt,
+          onRename: (updatedThread) => {
+            aibitat.socket?.send("rename_thread", {
+              slug: updatedThread.slug,
+              name: updatedThread.name,
+            });
+          },
+        });
+        return true;
       },
 
       _cleanup: function (aibitat) {
