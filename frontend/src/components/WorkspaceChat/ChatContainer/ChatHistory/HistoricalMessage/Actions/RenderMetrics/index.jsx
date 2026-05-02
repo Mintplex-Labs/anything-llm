@@ -1,24 +1,10 @@
 import { formatDateTimeAsMoment } from "@/utils/directories";
-import { numberWithCommas } from "@/utils/numbers";
+import { formatDuration, numberWithCommas } from "@/utils/numbers";
 import React, { useEffect, useState, useContext } from "react";
 import { isMobile } from "react-device-detect";
 const MetricsContext = React.createContext();
 const SHOW_METRICS_KEY = "anythingllm_show_chat_metrics";
 const SHOW_METRICS_EVENT = "anythingllm_show_metrics_change";
-
-/**
- * @param {number} duration - duration in milliseconds
- * @returns {string}
- */
-function formatDuration(duration) {
-  try {
-    return duration < 1
-      ? `${(duration * 1000).toFixed(0)}ms`
-      : `${duration.toFixed(3)}s`;
-  } catch {
-    return "";
-  }
-}
 
 /**
  * Format the output TPS to a string

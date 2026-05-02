@@ -17,6 +17,7 @@ import {
   Copy,
 } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
+import paths from "@/utils/paths";
 
 export const getFileSystemSubSkills = (t) => {
   return [
@@ -188,7 +189,7 @@ export default function FileSystemSkillPanel({
             {t("agent.skill.filesystem.description")}
           </p>
           <Link
-            to="/docs/guides/agent-skills/filesystem-agent"
+            to={paths.docs("/agent/usage/file-system-agent")}
             target="_blank"
             className="text-sky-400 hover:text-sky-500 text-xs font-medium underline"
           >
@@ -273,10 +274,11 @@ function WarningBanner() {
         <Trans
           i18nKey="agent.skill.filesystem.warning"
           components={{
-            link: (
+            a: (
               <Link
-                to="/docs/guides/agent-skills/filesystem-agent"
+                to={paths.docs("/agent/usage/file-system-agent")}
                 target="_blank"
+                rel="noopener noreferrer"
                 className="underline hover:text-orange-300 light:hover:text-orange-700"
               />
             ),
