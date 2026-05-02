@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { X } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 import ModalWrapper from "@/components/ModalWrapper";
@@ -20,20 +20,26 @@ export default function MemoryModal({
 }) {
   const { t } = useTranslation();
   const [content, setContent] = useState(initialContent);
+  const isCreate = mode === "create";
+  const [title, submitLabel, description] = useMemo(() => {
+    if (isCreate) {
+      return [
+        t("chat_window.memories.modal.create_title"),
+        t("chat_window.memories.modal.create"),
+        t("chat_window.memories.modal.create_description"),
+      ];
+    } else {
+      return [
+        t("chat_window.memories.modal.edit_title"),
+        t("chat_window.memories.modal.save"),
+        t("chat_window.memories.modal.edit_description"),
+      ];
+    }
+  }, [isCreate, t]);
 
   useEffect(() => {
     if (isOpen) setContent(initialContent);
   }, [isOpen, initialContent]);
-  const isCreate = mode === "create";
-  const title = isCreate
-    ? t("chat_window.memories.modal.create_title")
-    : t("chat_window.memories.modal.edit_title");
-  const submitLabel = isCreate
-    ? t("chat_window.memories.modal.create")
-    : t("chat_window.memories.modal.save");
-  const description = isCreate
-    ? t("chat_window.memories.modal.create_description")
-    : t("chat_window.memories.modal.edit_description");
 
   function handleSubmit() {
     if (!content.trim()) return;

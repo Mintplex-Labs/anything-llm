@@ -1376,7 +1376,7 @@ const TRANSLATIONS = {
       toggle: {
         label: "Enable Personalization",
         description:
-          "When enabled, AnythingLLM will learn user preferences and context from conversations",
+          "When enabled, AnythingLLM will learn your preferences and context from conversations",
       },
       menu: {
         edit: "Edit",
