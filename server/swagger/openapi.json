@@ -3741,6 +3741,77 @@
         }
       }
     },
+    "/v1/openai/workspace/{slug}/limits": {
+      "get": {
+        "tags": [
+          "OpenAI Compatible Endpoints"
+        ],
+        "description": "Reads the current message-limit / contingent for a workspace WITHOUT consuming a message. Mirrors the data shown in the billing tab plus the contingent / messages_limit fields injected into chat/completions responses.",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Workspace slug"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "workspace_slug": "kufersql",
+                    "workspace_name": "KuferSQL",
+                    "messageCount": 12,
+                    "messagesLimit": 600,
+                    "messagesRemaining": 588,
+                    "contingent": "12/600",
+                    "messages_limit": 600,
+                    "unlimited": false,
+                    "limitReached": false,
+                    "cycleInfo": {
+                      "cycleNumber": 1,
+                      "cycleDurationMonths": 1,
+                      "currentCycleStart": "2026-05-01T00:00:00.000Z",
+                      "currentCycleEnd": "2026-05-31T23:59:59.999Z",
+                      "nextReset": "2026-06-01T00:00:00.000Z",
+                      "daysRemaining": 27
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Workspace not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/v1/embed": {
       "get": {
         "tags": [

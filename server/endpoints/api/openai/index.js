@@ -368,6 +368,101 @@ function apiOpenAICompatibleEndpoints(app) {
       }
     }
   );
+
+  app.get(
+    "/v1/openai/workspace/:slug/limits",
+    [validApiKey],
+    async (request, response) => {
+      /*
+      #swagger.tags = ['OpenAI Compatible Endpoints']
+      #swagger.description = 'Reads the current message-limit / contingent for a workspace WITHOUT consuming a message. Mirrors the data shown in the billing tab plus the contingent / messages_limit fields injected into chat/completions responses.'
+      #swagger.parameters['slug'] = {
+        in: 'path',
+        description: 'Workspace slug',
+        required: true,
+        type: 'string'
+      }
+      #swagger.responses[200] = {
+        content: {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "example": {
+                "workspace_slug": "kufersql",
+                "workspace_name": "KuferSQL",
+                "messageCount": 12,
+                "messagesLimit": 600,
+                "messagesRemaining": 588,
+                "contingent": "12/600",
+                "messages_limit": 600,
+                "unlimited": false,
+                "limitReached": false,
+                "cycleInfo": {
+                  "cycleNumber": 1,
+                  "cycleDurationMonths": 1,
+                  "currentCycleStart": "2026-05-01T00:00:00.000Z",
+                  "currentCycleEnd": "2026-05-31T23:59:59.999Z",
+                  "nextReset": "2026-06-01T00:00:00.000Z",
+                  "daysRemaining": 27
+                }
+              }
+            }
+          }
+        }
+      }
+      #swagger.responses[403] = {
+        schema: {
+          "$ref": "#/definitions/InvalidAPIKey"
+        }
+      }
+      #swagger.responses[404] = {
+        description: 'Workspace not found.'
+      }
+      */
+      try {
+        const { slug } = request.params;
+        const workspace = await Workspace.get({ slug: String(slug) });
+        if (!workspace) {
+          return response.status(404).json({ error: "Workspace not found." });
+        }
+
+        const { getMessageLimitInfo } = require("../../../utils/helpers");
+        const { messageCount, messagesLimit, contingent, cycleInfo } =
+          await getMessageLimitInfo(workspace);
+
+        const messagesRemaining =
+          messagesLimit !== null && messagesLimit !== undefined
+            ? Math.max(0, messagesLimit - messageCount)
+            : null;
+        const unlimited = messagesLimit === null || messagesLimit === undefined;
+
+        return response.status(200).json({
+          workspace_slug: workspace.slug,
+          workspace_name: workspace.name,
+          messageCount,
+          messagesLimit,
+          messagesRemaining,
+          contingent,
+          messages_limit: messagesLimit,
+          unlimited,
+          limitReached: !unlimited && messageCount >= messagesLimit,
+          cycleInfo: cycleInfo
+            ? {
+                cycleNumber: cycleInfo.cycleNumber,
+                cycleDurationMonths: cycleInfo.cycleDurationMonths,
+                currentCycleStart: cycleInfo.currentCycleStart,
+                currentCycleEnd: cycleInfo.currentCycleEnd,
+                nextReset: cycleInfo.nextReset,
+                daysRemaining: cycleInfo.daysRemaining,
+              }
+            : null,
+        });
+      } catch (e) {
+        console.error(e.message, e);
+        response.status(500).end();
+      }
+    }
+  );
 }
 
 module.exports = { apiOpenAICompatibleEndpoints };
