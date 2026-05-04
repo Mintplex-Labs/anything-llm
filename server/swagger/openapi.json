@@ -3578,7 +3578,7 @@
         "tags": [
           "OpenAI Compatible Endpoints"
         ],
-        "description": "Execute a chat with a workspace with OpenAI compatibility. Supports streaming as well. Model must be a workspace slug from /models.",
+        "description": "Execute a chat with a workspace using an OpenAI-compatible request shape. Supports streaming.<br><br><b>Required fields</b><ul><li><code>model</code> — workspace slug from <code>/v1/openai/models</code></li><li><code>messages</code> — array of OpenAI-style chat messages</li></ul><b>Multimodal (image description)</b><br>Pass the user message <code>content</code> as an array with a text item and one <code>image_url</code> item. <code>image_url.url</code> accepts either a public <code>https://…</code> URL <b>or</b> an inline <code>data:image/&lt;type&gt;;base64,…</code> data URL. Requires a workspace whose chat model supports vision — e.g. <b>Mistral-Small-3.2-24B</b>, <b>Qwen2-VL</b>, <b>GPT-4o</b>, <b>Claude 3.x</b>. See the request-body examples below for the exact shape.<br><br><b>Limitations</b> (subset of the official OpenAI spec):<ul><li><code>image_url.detail</code> is ignored</li><li>non-image content types (<code>input_audio</code>, <code>file</code>, …) are ignored</li></ul>",
         "parameters": [],
         "responses": {
           "200": {
@@ -3610,32 +3610,87 @@
           }
         },
         "requestBody": {
-          "description": "Send a prompt to the workspace with full use of documents as if sending a chat in AnythingLLM. Only supports some values of OpenAI API. See example below.",
+          "description": "Send a prompt to the workspace with full use of documents as if sending a chat in AnythingLLM. The dropdown below offers ready-to-use payloads for plain text, image description via URL, and image description via base64.",
           "required": true,
           "content": {
             "application/json": {
-              "example": {
-                "messages": [
-                  {
-                    "role": "system",
-                    "content": "You are a helpful assistant"
-                  },
-                  {
-                    "role": "user",
-                    "content": "What is AnythingLLM?"
-                  },
-                  {
-                    "role": "assistant",
-                    "content": "AnythingLLM is...."
-                  },
-                  {
-                    "role": "user",
-                    "content": "Follow up question..."
+              "examples": {
+                "text_chat": {
+                  "summary": "Plain text chat",
+                  "value": {
+                    "model": "sample-workspace",
+                    "stream": true,
+                    "temperature": 0.7,
+                    "messages": [
+                      {
+                        "role": "system",
+                        "content": "You are a helpful assistant"
+                      },
+                      {
+                        "role": "user",
+                        "content": "What is AnythingLLM?"
+                      },
+                      {
+                        "role": "assistant",
+                        "content": "AnythingLLM is...."
+                      },
+                      {
+                        "role": "user",
+                        "content": "Follow up question..."
+                      }
+                    ]
                   }
-                ],
-                "model": "sample-workspace",
-                "stream": true,
-                "temperature": 0.7
+                },
+                "image_description_via_url": {
+                  "summary": "Image description — public https URL",
+                  "value": {
+                    "model": "sample-workspace",
+                    "stream": false,
+                    "temperature": 0.2,
+                    "messages": [
+                      {
+                        "role": "user",
+                        "content": [
+                          {
+                            "type": "text",
+                            "text": "Describe the image in one short paragraph."
+                          },
+                          {
+                            "type": "image_url",
+                            "image_url": {
+                              "url": "https://upload.wikimedia.org/wikipedia/commons/3/3a/Cat03.jpg"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "image_description_via_base64": {
+                  "summary": "Image description — inline base64 data URL",
+                  "value": {
+                    "model": "sample-workspace",
+                    "stream": false,
+                    "temperature": 0.2,
+                    "messages": [
+                      {
+                        "role": "user",
+                        "content": [
+                          {
+                            "type": "text",
+                            "text": "Beschreibe das Bild als Alternativtext für eine barrierefreie Webseite."
+                          },
+                          {
+                            "type": "image_url",
+                            "image_url": {
+                              "url": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD…<truncated>"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
               }
             }
           }
