@@ -236,6 +236,16 @@ const AskUser = {
               allowSkip: true,
               timeoutMs: state.timeoutMs,
             });
+
+            // Buffer the completed survey on the aibitat instance so the
+            // chat-history plugin can persist it to workspace_chats.response
+            // alongside citations/outputs when the agent reply is saved.
+            this.super._pendingClarifyingQuestions ??= [];
+            this.super._pendingClarifyingQuestions.push({
+              questions: truncated,
+              result,
+            });
+
             return formatAnswersForAgent(truncated, result) + truncatedNote;
           },
         });

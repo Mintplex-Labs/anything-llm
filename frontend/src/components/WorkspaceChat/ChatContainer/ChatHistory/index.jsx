@@ -359,6 +359,7 @@ function buildMessages({
           forkThread={forkThread}
           metrics={props.metrics}
           outputs={props.outputs}
+          clarifyingQuestions={props.clarifyingQuestions}
         />
       );
     }

@@ -158,11 +158,47 @@ function convertToChatHistory(history = []) {
         feedbackScore,
         metrics: data?.metrics || {},
         ...(data?.outputs?.length > 0 ? { outputs: data.outputs } : {}),
+        ...(data?.clarifyingQuestions?.length > 0
+          ? { clarifyingQuestions: data.clarifyingQuestions }
+          : {}),
       },
     ]);
   }
 
   return formattedHistory.flat();
+}
+
+/**
+ * Render a single saved survey as a tagged Q/A transcript for LLM history.
+ * Mirrors the answer-casing rules in formatAnswersForAgent (ask-questions.js)
+ * so the model sees the same wording it saw mid-turn when the tool resolved.
+ */
+function formatClarifyingSurveyForPrompt(survey) {
+  const questions = Array.isArray(survey?.questions) ? survey.questions : [];
+  const result = survey?.result || {};
+  if (!questions.length) return "";
+
+  let body;
+  if (result.timedOut) {
+    body = "[no response within the time limit]";
+  } else if (result.skipped) {
+    body = "[user let the agent decide]";
+  } else {
+    const answers = Array.isArray(result.answers) ? result.answers : [];
+    body = questions
+      .map((q, i) => {
+        const a = answers[i] || { skipped: true };
+        let answerText;
+        if (a.skipped) answerText = "[skipped]";
+        else if (Array.isArray(a.answer)) answerText = a.answer.join(", ");
+        else if (a.answer === null || a.answer === undefined || a.answer === "")
+          answerText = "[no answer]";
+        else answerText = String(a.answer);
+        return `Q: ${q.question}\nA: ${answerText}`;
+      })
+      .join("\n");
+  }
+  return `<clarifying_questions>\n${body}\n</clarifying_questions>`;
 }
 
 /**
@@ -190,6 +226,19 @@ function convertToPromptHistory(history = []) {
       continue;
     }
 
+    // If the agent saved one or more clarifying-question surveys on this
+    // record, append them to the assistant content so future LLM turns
+    // (agent or normal chat) can recall what the user answered.
+    let assistantContent = data.text;
+    if (data?.clarifyingQuestions?.length > 0) {
+      const surveyBlocks = data.clarifyingQuestions
+        .map(formatClarifyingSurveyForPrompt)
+        .filter(Boolean)
+        .join("\n\n");
+      if (surveyBlocks)
+        assistantContent = `${assistantContent}\n\n${surveyBlocks}`;
+    }
+
     formattedHistory.push([
       {
         role: "user",
@@ -201,7 +250,7 @@ function convertToPromptHistory(history = []) {
       },
       {
         role: "assistant",
-        content: data.text,
+        content: assistantContent,
       },
     ]);
   }
