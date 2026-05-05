@@ -85,10 +85,14 @@ function formatMessagesForTools(messages, options = {}) {
       if (message.originalFunctionCall?.id) {
         const prevMsg = formattedMessages[formattedMessages.length - 1];
         if (!prevMsg || prevMsg.role !== "assistant" || !prevMsg.tool_calls) {
+          const fnReasoningContent =
+            message.originalFunctionCall.reasoningContent || "";
           formattedMessages.push({
             role: "assistant",
             content: null,
-            ...(injectReasoningContent ? { reasoning_content: "" } : {}),
+            ...(injectReasoningContent
+              ? { reasoning_content: fnReasoningContent }
+              : {}),
             tool_calls: [
               {
                 id: message.originalFunctionCall.id,
@@ -138,13 +142,16 @@ function formatMessagesForTools(messages, options = {}) {
               : JSON.stringify(message.content),
         });
       }
-    } else if (
-      injectReasoningContent &&
-      message.role === "assistant" &&
-      !("reasoning_content" in message)
-    ) {
+    } else if (injectReasoningContent && message.role === "assistant") {
+      // Ensure every assistant message has a reasoning_content field
+      // (required by DeepSeek thinking-mode models).
+      // Preserve reasoning_content if already present (snake_case from API),
+      // or migrate reasoningContent (camelCase from chat history).
+      let rc =
+        message.reasoning_content || message.reasoningContent || "";
+      delete message.reasoningContent;
       formattedMessages.push(
-        formatMessageWithAttachments({ ...message, reasoning_content: "" })
+        formatMessageWithAttachments({ ...message, reasoning_content: rc })
       );
     } else {
       formattedMessages.push(formatMessageWithAttachments(message));
@@ -200,6 +207,7 @@ async function tooledStream(
   const result = {
     functionCall: null,
     textResponse: "",
+    reasoningContent: "",
   };
 
   const toolCallsByIndex = {};
@@ -213,6 +221,10 @@ async function tooledStream(
 
     if (!chunk?.choices?.[0]) continue;
     const choice = chunk.choices[0];
+
+    if (choice.delta?.reasoning_content) {
+      result.reasoningContent += choice.delta.reasoning_content;
+    }
 
     if (choice.delta?.content) {
       result.textResponse += choice.delta.content;
@@ -278,6 +290,7 @@ async function tooledStream(
 
   return {
     textResponse: result.textResponse,
+    reasoningContent: result.reasoningContent,
     functionCall: result.functionCall,
     uuid: msgUUID,
     usage,
@@ -325,6 +338,7 @@ async function tooledComplete(
   });
 
   const completion = response.choices[0].message;
+  const reasoningContent = completion.reasoning_content || "";
   const cost = getCostFn(response.usage);
   const usage = response.usage || null;
 
@@ -342,6 +356,7 @@ async function tooledComplete(
     if (functionArgs === null) {
       return {
         textResponse: null,
+        reasoningContent,
         retryWithError: {
           role: "function",
           name: toolCall.function.name,
@@ -359,6 +374,7 @@ async function tooledComplete(
 
     return {
       textResponse: null,
+      reasoningContent,
       functionCall: {
         id: toolCall.id,
         name: toolCall.function.name,
@@ -371,6 +387,7 @@ async function tooledComplete(
 
   return {
     textResponse: completion.content,
+    reasoningContent,
     cost,
     usage,
   };

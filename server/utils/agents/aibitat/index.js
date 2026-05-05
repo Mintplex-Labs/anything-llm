@@ -734,6 +734,11 @@ ${this.getHistory({ to: route.to })
         content: c.content,
         role: c.from === route.to ? "user" : "assistant",
       };
+      // Preserve reasoning_content from previous DeepSeek thinking-model responses
+      // so it can be passed back to the API in subsequent agent turns.
+      if (c.reasoningContent) {
+        message.reasoningContent = c.reasoningContent;
+      }
       // Pass attachments through for user messages that have them
       if (
         c.attachments &&
@@ -818,31 +823,44 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     provider.attachHandlerProps(this.handlerProps);
 
     let content;
+    let reasoningContent = "";
     if (provider.supportsAgentStreaming) {
       this.handlerProps.log?.(
         "[DEBUG] Provider supports agent streaming - will use async execution!"
       );
-      content = await this.handleAsyncExecution(
+      const result = await this.handleAsyncExecution(
         provider,
         messages,
         functions,
         route.from
       );
+      content =
+        typeof result === "string" ? result : (result?.textResponse ?? "");
+      reasoningContent =
+        typeof result === "string" ? "" : (result?.reasoningContent || "");
     } else {
       this.handlerProps.log?.(
         "[DEBUG] Provider does not support agent streaming - will use synchronous execution!"
       );
-      content = await this.handleExecution(
+      const result = await this.handleExecution(
         provider,
         messages,
         functions,
         route.from
       );
+      content =
+        typeof result === "string" ? result : (result?.textResponse ?? "");
+      reasoningContent =
+        typeof result === "string" ? "" : (result?.reasoningContent || "");
     }
 
     // Store the active provider so plugins can access usage metrics
     this.provider = provider;
-    this.newMessage({ ...route, content });
+    this.newMessage({
+      ...route,
+      content,
+      ...(reasoningContent ? { reasoningContent } : {}),
+    });
     return content;
   }
 
@@ -915,7 +933,10 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
               name,
               role: "function",
               content: `Function "${name}" not found. Try again.`,
-              originalFunctionCall: completionStream.functionCall,
+              originalFunctionCall: {
+                ...completionStream.functionCall,
+                reasoningContent: completionStream.reasoningContent || "",
+              },
             },
           ],
           reachedToolLimit ? [] : functions,
@@ -972,7 +993,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
         });
         this?.flushCitations?.(directOutputUUID);
         this?.emitChatId?.(directOutputUUID);
-        return result;
+        return { textResponse: result, reasoningContent: "" };
       }
 
       const toolAttachments = this.collectToolAttachments();
@@ -982,7 +1003,10 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
           name,
           role: "function",
           content: result,
-          originalFunctionCall: completionStream.functionCall,
+          originalFunctionCall: {
+            ...completionStream.functionCall,
+            reasoningContent: completionStream.reasoningContent || "",
+          },
         },
       ];
 
@@ -1014,7 +1038,10 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     });
     this?.flushCitations?.(responseUuid);
     this?.emitChatId?.(responseUuid);
-    return completionStream?.textResponse;
+    return {
+      textResponse: completionStream?.textResponse,
+      reasoningContent: completionStream?.reasoningContent || "",
+    };
   }
 
   /**
@@ -1072,7 +1099,10 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
               name,
               role: "function",
               content: `Function "${name}" not found. Try again.`,
-              originalFunctionCall: completion.functionCall,
+              originalFunctionCall: {
+                ...completion.functionCall,
+                reasoningContent: completion.reasoningContent || "",
+              },
             },
           ],
           reachedToolLimit ? [] : functions,
@@ -1117,7 +1147,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
           metrics: provider.getUsage(),
         });
         this?.flushCitations?.(msgUUID);
-        return result;
+        return { textResponse: result, reasoningContent: "" };
       }
 
       const toolAttachments = this.collectToolAttachments();
@@ -1127,7 +1157,10 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
           name,
           role: "function",
           content: result,
-          originalFunctionCall: completion.functionCall,
+          originalFunctionCall: {
+            ...completion.functionCall,
+            reasoningContent: completion.reasoningContent || "",
+          },
         },
       ];
 
@@ -1159,7 +1192,10 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     });
     this?.flushCitations?.(msgUUID);
     this?.emitChatId?.(msgUUID);
-    return completion?.textResponse;
+    return {
+      textResponse: completion?.textResponse,
+      reasoningContent: completion?.reasoningContent || "",
+    };
   }
 
   /**
