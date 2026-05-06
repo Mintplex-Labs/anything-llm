@@ -39,8 +39,14 @@ const POSITION_OPTIONS = [
   { value: "bottom-right", label: "Rechts" },
 ];
 
+const USER_TEXT_COLOR_OPTIONS = [
+  { value: "#FFFFFF", label: "Weiß" },
+  { value: "#222628", label: "Schwarz" },
+];
+
 const DEFAULT_CONFIG = {
   accentColor: "#607D8B",
+  userTextColor: "#FFFFFF",
   chatIcon: "chatBubble",
   position: "bottom-left",
   name: "Ihr Online-Berater",
@@ -88,6 +94,11 @@ export default function EmbedAppearance() {
         } catch {}
       }
       const loadedConfig = { ...DEFAULT_CONFIG, ...visualConfig };
+      // Migrate legacy pure black to the softer charcoal that pairs better
+      // with warm accent colors and matches the assistant text color in the live widget.
+      if (loadedConfig.userTextColor === "#000000") {
+        loadedConfig.userTextColor = "#222628";
+      }
       setConfig(loadedConfig);
       setInitialConfig(loadedConfig);
 
@@ -287,6 +298,28 @@ export default function EmbedAppearance() {
                       className="bg-transparent text-white text-sm px-2.5 py-2.5 w-full font-mono outline-none"
                       placeholder="#607D8B"
                     />
+                  </div>
+                </SettingsSection>
+
+                <SettingsSection title="Schriftfarbe Nutzer-Sprechblase" hint="Farbe des Texts in den Sprechblasen des Nutzers (auf der Akzentfarbe).">
+                  <div className="flex rounded-lg overflow-hidden border border-white/10 w-fit">
+                    {USER_TEXT_COLOR_OPTIONS.map((opt) => (
+                      <button
+                        key={opt.value}
+                        onClick={() => updateField("userTextColor", opt.value)}
+                        className={`flex items-center gap-2 px-5 py-2 text-sm font-medium transition-all ${
+                          (config.userTextColor || "#FFFFFF") === opt.value
+                            ? "bg-primary-button text-white"
+                            : "bg-theme-settings-input-bg text-theme-text-secondary hover:text-white hover:bg-theme-action-menu-item-hover"
+                        }`}
+                      >
+                        <span
+                          className="w-3.5 h-3.5 rounded-full border border-white/20"
+                          style={{ backgroundColor: opt.value }}
+                        />
+                        {opt.label}
+                      </button>
+                    ))}
                   </div>
                 </SettingsSection>
 
@@ -537,6 +570,16 @@ function WidgetPreview({ config, logoPreview }) {
             </div>
           </div>
 
+          {/* Sample user bubble — fester Vorschau-Streifen unter dem Header */}
+          <div className="flex justify-end px-2 py-2 bg-white flex-shrink-0">
+            <div
+              className="py-1.5 px-3 rounded-t-[18px] rounded-bl-[18px] rounded-br-[4px] mr-[20px] text-xs font-sans shadow-[0_2px_8px_rgba(0,0,0,0.1)]"
+              style={{ backgroundColor: accentColor, color: config.userTextColor || "#FFFFFF" }}
+            >
+              Hallo
+            </div>
+          </div>
+
           {/* Chat Area — scrollable, hidden scrollbar (matches embed widget) */}
           <div className="flex-1 flex flex-col px-2 bg-white overflow-y-auto no-scroll py-4">
             <div className="flex flex-col items-center my-auto">
@@ -550,8 +593,8 @@ function WidgetPreview({ config, logoPreview }) {
                     .map((msg, i) => (
                       <div
                         key={i}
-                        className="rounded-xl px-5 py-3 text-white text-[13px] text-center font-medium"
-                        style={{ backgroundColor: accentColor }}
+                        className="rounded-xl px-5 py-3 text-[13px] text-center font-medium"
+                        style={{ backgroundColor: accentColor, color: config.userTextColor || "#FFFFFF" }}
                       >
                         {msg}
                       </div>

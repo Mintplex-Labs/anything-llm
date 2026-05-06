@@ -74,6 +74,14 @@ function embeddedEndpoints(app) {
           mapped.userBgColor = visualConfig.accentColor;
           mapped.linkColor = visualConfig.accentColor;
         }
+        if (visualConfig.userTextColor) {
+          // Soften legacy pure black so it matches the assistant text color
+          // in the live widget and looks less harsh on warm accent colors.
+          mapped.userTextColor =
+            visualConfig.userTextColor === "#000000"
+              ? "#222628"
+              : visualConfig.userTextColor;
+        }
         if (visualConfig.name) {
           mapped.brandText = visualConfig.name;
           mapped.assistantName = visualConfig.name;
@@ -84,11 +92,17 @@ function embeddedEndpoints(app) {
         if (visualConfig.sendMessageText) mapped.sendMessageText = visualConfig.sendMessageText;
         if (visualConfig.supportEmail) mapped.supportEmail = visualConfig.supportEmail;
 
-        if (visualConfig.defaultMessages && visualConfig.defaultMessages.length > 0) {
-          mapped.defaultMessages = visualConfig.defaultMessages.join(",");
+        if (Array.isArray(visualConfig.defaultMessages)) {
+          const cleaned = visualConfig.defaultMessages
+            .filter((m) => typeof m === "string" && m.trim().length > 0)
+            .map((m) => m.trim());
+          if (cleaned.length > 0) mapped.defaultMessages = cleaned.join(",");
         }
-        if (visualConfig.chatbotBubblesMessages && visualConfig.chatbotBubblesMessages.length > 0) {
-          mapped.chatbotBubblesMessages = visualConfig.chatbotBubblesMessages.join(",");
+        if (Array.isArray(visualConfig.chatbotBubblesMessages)) {
+          const cleaned = visualConfig.chatbotBubblesMessages
+            .filter((m) => typeof m === "string" && m.trim().length > 0)
+            .map((m) => m.trim());
+          if (cleaned.length > 0) mapped.chatbotBubblesMessages = cleaned.join(",");
         }
 
         // Logo: serve from upload endpoint or use URL
