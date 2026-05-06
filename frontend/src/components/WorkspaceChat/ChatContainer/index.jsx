@@ -9,7 +9,7 @@ import Workspace from "@/models/workspace";
 import handleChat, { ABORT_STREAM_EVENT } from "@/utils/chat";
 import { isMobile } from "react-device-detect";
 import { SidebarMobileHeader } from "../../Sidebar";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { v4 } from "uuid";
 import handleSocketResponse, {
   websocketURI,
@@ -35,10 +35,13 @@ import TextSizeMenu from "./TextSizeMenu";
 import WorkspaceModelPicker from "./WorkspaceModelPicker";
 import SourcesSidebar, { SourcesSidebarProvider } from "./SourcesSidebar";
 
-export default function ChatContainer({ workspace, knownHistory = [] }) {
+export default function ChatContainer({
+  workspace,
+  threadSlug = null,
+  knownHistory = [],
+}) {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { threadSlug = null } = useParams();
   const [loadingResponse, setLoadingResponse] = useState(false);
   const [chatHistory, setChatHistory] = useState(knownHistory);
   const [socketId, setSocketId] = useState(null);
