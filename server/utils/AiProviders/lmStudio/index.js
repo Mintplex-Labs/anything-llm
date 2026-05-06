@@ -1,12 +1,14 @@
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
-  handleDefaultStreamResponseV2,
   formatChatHistory,
+  writeResponseChunk,
+  clientAbortedHandler,
 } = require("../../helpers/chat/responses");
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { OpenAI: OpenAIApi } = require("openai");
+const { v4: uuidv4 } = require("uuid");
 
 //  hybrid of openAi LLM chat completion for LMStudio
 class LMStudioLLM {
@@ -268,8 +270,142 @@ class LMStudioLLM {
     return measuredStreamRequest;
   }
 
+  /**
+   * Handles streaming responses from LMStudio.
+   * Parses `delta.reasoning_content` (emitted by LMStudio reasoning models on
+   * its OpenAI-compatible endpoint) and wraps it in <think> tags so the UI
+   * renders the model's thoughts separately from the final answer.
+   * @param {import("express").Response} response
+   * @param {import("../../helpers/chat/LLMPerformanceMonitor").MonitoredStream} stream
+   * @param {Object} responseProps
+   * @returns {Promise<string>}
+   */
   handleStream(response, stream, responseProps) {
-    return handleDefaultStreamResponseV2(response, stream, responseProps);
+    const { uuid = uuidv4(), sources = [] } = responseProps;
+    let hasUsageMetrics = false;
+    let usage = {
+      completion_tokens: 0,
+    };
+
+    return new Promise(async (resolve) => {
+      let fullText = "";
+      let reasoningText = "";
+
+      const handleAbort = () => {
+        stream?.endMeasurement(usage);
+        clientAbortedHandler(resolve, fullText);
+      };
+      response.on("close", handleAbort);
+
+      try {
+        for await (const chunk of stream) {
+          const message = chunk?.choices?.[0];
+          const token = message?.delta?.content;
+          const reasoningToken = message?.delta?.reasoning_content;
+
+          if (
+            chunk.hasOwnProperty("usage") &&
+            !!chunk.usage &&
+            Object.values(chunk.usage).length > 0
+          ) {
+            if (chunk.usage.hasOwnProperty("prompt_tokens")) {
+              usage.prompt_tokens = Number(chunk.usage.prompt_tokens);
+            }
+
+            if (chunk.usage.hasOwnProperty("completion_tokens")) {
+              hasUsageMetrics = true;
+              usage.completion_tokens = Number(chunk.usage.completion_tokens);
+            }
+          }
+
+          // Reasoning models will always return the reasoning text before the token text.
+          if (reasoningToken) {
+            if (reasoningText.length === 0) {
+              writeResponseChunk(response, {
+                uuid,
+                sources: [],
+                type: "textResponseChunk",
+                textResponse: `<think>${reasoningToken}`,
+                close: false,
+                error: false,
+              });
+              reasoningText += `<think>${reasoningToken}`;
+              continue;
+            } else {
+              writeResponseChunk(response, {
+                uuid,
+                sources: [],
+                type: "textResponseChunk",
+                textResponse: reasoningToken,
+                close: false,
+                error: false,
+              });
+              reasoningText += reasoningToken;
+            }
+          }
+
+          // If the reasoning text is not empty, but the reasoning token is empty
+          // and the token text is not empty we need to close the reasoning text and begin sending the token text.
+          if (!!reasoningText && !reasoningToken && token) {
+            writeResponseChunk(response, {
+              uuid,
+              sources: [],
+              type: "textResponseChunk",
+              textResponse: `</think>`,
+              close: false,
+              error: false,
+            });
+            fullText += `${reasoningText}</think>`;
+            reasoningText = "";
+          }
+
+          if (token) {
+            fullText += token;
+            if (!hasUsageMetrics) usage.completion_tokens++;
+            writeResponseChunk(response, {
+              uuid,
+              sources: [],
+              type: "textResponseChunk",
+              textResponse: token,
+              close: false,
+              error: false,
+            });
+          }
+
+          if (
+            message?.hasOwnProperty("finish_reason") &&
+            message.finish_reason !== "" &&
+            message.finish_reason !== null
+          ) {
+            writeResponseChunk(response, {
+              uuid,
+              sources,
+              type: "textResponseChunk",
+              textResponse: "",
+              close: true,
+              error: false,
+            });
+            response.removeListener("close", handleAbort);
+            stream?.endMeasurement(usage);
+            resolve(fullText);
+            break;
+          }
+        }
+      } catch (e) {
+        console.log(`\x1b[43m\x1b[34m[STREAMING ERROR]\x1b[0m ${e.message}`);
+        writeResponseChunk(response, {
+          uuid,
+          type: "abort",
+          textResponse: null,
+          sources: [],
+          close: true,
+          error: e.message,
+        });
+        response.removeListener("close", handleAbort);
+        stream?.endMeasurement(usage);
+        resolve(fullText);
+      }
+    });
   }
 
   /**
