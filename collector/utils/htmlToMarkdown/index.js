@@ -77,14 +77,15 @@ function normalizeUrls(html, baseUrl) {
  * @returns {string}
  */
 function flattenTables(html) {
-  return html
-    .replace(/<table[^>]*>/gi, "<div>")
-    .replace(/<\/table>/gi, "</div>")
-    .replace(/<\/?(thead|tbody)[^>]*>/gi, "")
-    .replace(/<tr[^>]*>/gi, "<div>")
-    .replace(/<\/tr>/gi, "</div>")
-    .replace(/<(td|th)[^>]*>/gi, "<span> ")
-    .replace(/<\/(td|th)>/gi, " </span>");
+  const root = parse(html);
+  for (const el of root.querySelectorAll("table, thead, tbody, tr")) {
+    el.tagName = "div";
+  }
+  for (const el of root.querySelectorAll("td, th")) {
+    el.tagName = "span";
+    el.innerHTML = ` ${el.innerHTML} `;
+  }
+  return root.toString();
 }
 
 /**
