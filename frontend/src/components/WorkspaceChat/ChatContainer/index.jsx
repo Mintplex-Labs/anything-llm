@@ -46,6 +46,7 @@ export default function ChatContainer({
   const [chatHistory, setChatHistory] = useState(knownHistory);
   const [socketId, setSocketId] = useState(null);
   const [websocket, setWebsocket] = useState(null);
+  const [reasoningOption, setReasoningOption] = useState(null);
   const { files, parseAttachments } = useContext(DndUploaderContext);
   const { chatHistoryRef } = useChatContainerQuickScroll();
   const pendingMessageChecked = useRef(false);
@@ -214,6 +215,7 @@ export default function ChatContainer({
 
     const pending = safeJsonParse(sessionStorage.getItem(PENDING_HOME_MESSAGE));
     if (pending?.message) {
+      if (pending.reasoningOption) setReasoningOption(pending.reasoningOption);
       setTimeout(() => {
         sessionStorage.removeItem(PENDING_HOME_MESSAGE);
         sendCommand({
@@ -274,6 +276,7 @@ export default function ChatContainer({
             setSocketId
           ),
         attachments,
+        reasoningOption,
       });
       return;
     }
@@ -398,6 +401,8 @@ export default function ChatContainer({
                 sendCommand={sendCommand}
                 attachments={files}
                 centered={true}
+                reasoningOption={reasoningOption}
+                setReasoningOption={setReasoningOption}
               />
               <QuickActions
                 hasAvailableWorkspace={!!workspace}
@@ -454,6 +459,8 @@ export default function ChatContainer({
                   sendCommand={sendCommand}
                   attachments={files}
                   centered={false}
+                  reasoningOption={reasoningOption}
+                  setReasoningOption={setReasoningOption}
                 />
               </div>
             </div>

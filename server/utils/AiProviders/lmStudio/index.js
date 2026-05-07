@@ -247,11 +247,26 @@ class LMStudioLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = 0.7, reasoningOption = null }
+  ) {
     if (!this.model)
       throw new Error(
         `LMStudio chat: ${this.model} is not valid or defined model for chat completion!`
       );
+
+    const reasoningConfig = {};
+
+    // Because we're using LM Studio open ai compatible api, we have to send
+    // over reasoning_effort values that are compatible
+    if (reasoningOption === "on") {
+      reasoningConfig.reasoning_effort = "low";
+    } else if (reasoningOption === "off") {
+      reasoningConfig.reasoning_effort = "none";
+    } else if (reasoningOption !== null) {
+      reasoningConfig.reasoning_effort = reasoningOption;
+    }
 
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.lmstudio.chat.completions.create({
@@ -259,6 +274,7 @@ class LMStudioLLM {
         stream: true,
         messages,
         temperature,
+        ...reasoningConfig,
       }),
       messages,
       runPromptTokenCalculation: true,
@@ -275,7 +291,7 @@ class LMStudioLLM {
   /**
    * Returns the capabilities of the model.
    * This uses the new /api/v1 endpoint, which returns the model info in a different format.
-   * @returns {Promise<{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}>}
+   * @returns {Promise<{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, reasoningOptions: string[], imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}>}
    */
   async getModelCapabilities() {
     try {
@@ -309,9 +325,15 @@ class LMStudioLLM {
             vision: "unknown",
           };
 
+      const supportsReasoning = "reasoning" in capabilities;
+      const reasoningOptions = supportsReasoning
+        ? capabilities.reasoning?.allowed_options ?? []
+        : [];
+
       return {
         tools: capabilities.trained_for_tool_use,
-        reasoning: "unknown",
+        reasoning: supportsReasoning,
+        reasoningOptions,
         imageGeneration: "unknown", // LM Studio does not support image generation yet.
         vision: capabilities.vision,
       };
@@ -320,6 +342,7 @@ class LMStudioLLM {
       return {
         tools: "unknown",
         reasoning: "unknown",
+        reasoningOptions: [],
         imageGeneration: "unknown",
         vision: "unknown",
       };

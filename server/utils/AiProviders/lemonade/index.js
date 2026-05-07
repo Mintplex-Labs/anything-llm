@@ -136,7 +136,10 @@ class LemonadeLLM {
     ];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = 0.7, reasoningOption }
+  ) {
     await LemonadeLLM.loadModel(this.model);
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.lemonade.chat.completions.create({
@@ -205,10 +208,19 @@ class LemonadeLLM {
         apiKey: process.env.LEMONADE_LLM_API_KEY || null,
       });
 
-      const { labels = [] } = await client.models.retrieve(this.model);
+      const modelInfo = await client.models.retrieve(this.model);
+
+      const labels = modelInfo?.labels || [];
+
+      // Lemonade currently does not expose any reasoning options per model,
+      const reasoningOptions = labels.includes("reasoning")
+        ? ["off", "on", "low", "medium", "high"]
+        : [];
+
       return {
         tools: labels.includes("tool-calling"),
         reasoning: labels.includes("reasoning"),
+        reasoningOptions,
         imageGeneration: "unknown",
         vision: labels.includes("vision"),
       };

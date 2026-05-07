@@ -412,13 +412,30 @@ class GeminiLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = 0.7, reasoningOption = null }
+  ) {
+    const reasoningConfig = {};
+
+    if (reasoningOption) {
+      reasoningConfig.extra_body = {
+        google: {
+          thinking_config: {
+            thinking_level: reasoningOption,
+            include_thoughts: true,
+          },
+        },
+      };
+    }
+    console.log(reasoningConfig);
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.openai.chat.completions.create({
         model: this.model,
         stream: true,
         messages,
         temperature: temperature,
+        ...reasoningConfig,
         stream_options: {
           include_usage: true,
         },
@@ -434,6 +451,42 @@ class GeminiLLM {
 
   handleStream(response, stream, responseProps) {
     return handleDefaultStreamResponseV2(response, stream, responseProps);
+  }
+
+  async getModelCapabilities() {
+    try {
+      const modelInfo = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${this.model}?key=${process.env.GEMINI_API_KEY}`
+      ).then((res) => res.json());
+
+      const supportsThinking = modelInfo.thinking === true;
+
+      const isGemini25 = this.model.includes("gemini-2.5");
+      const isProModel = this.model.includes("gemini-2.5-pro");
+
+      // See Gemini thinking docs here: https://ai.google.dev/gemini-api/docs/openai?hl=en#thinking
+      const reasoningOptions = [];
+
+      if (supportsThinking) {
+        // if the model is gemini-2.5 and not the pro version then reasoning can
+        // be disabled.
+        if (isGemini25 && !isProModel) {
+          reasoningOptions.push("none");
+        }
+        reasoningOptions.push("minimal", "low", "medium", "high");
+      }
+
+      return {
+        reasoning: supportsThinking,
+        reasoningOptions,
+      };
+    } catch (e) {
+      console.error(e);
+      return {
+        reasoning: "unknown",
+        reasoningOptions: [],
+      };
+    }
   }
 
   async compressMessages(promptArgs = {}, rawHistory = []) {

@@ -22,7 +22,8 @@ async function streamChatWithWorkspace(
   chatMode = "automatic",
   user = null,
   thread = null,
-  attachments = []
+  attachments = [],
+  reasoningOption = null
 ) {
   const uuid = uuidv4();
   const updatedMessage = await grepCommand(message, user);
@@ -250,6 +251,7 @@ async function streamChatWithWorkspace(
       await LLMConnector.getChatCompletion(messages, {
         temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
         user: user,
+        reasoningOption,
       });
 
     completeText = textResponse;
@@ -267,6 +269,7 @@ async function streamChatWithWorkspace(
     const stream = await LLMConnector.streamGetChatCompletion(messages, {
       temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
       user: user,
+      reasoningOption,
     });
     completeText = await LLMConnector.handleStream(response, stream, {
       uuid,

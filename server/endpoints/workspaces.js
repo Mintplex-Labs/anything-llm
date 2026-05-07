@@ -11,7 +11,7 @@ const { Workspace } = require("../models/workspace");
 const { Document } = require("../models/documents");
 const { DocumentVectors } = require("../models/vectors");
 const { WorkspaceChats } = require("../models/workspaceChats");
-const { getVectorDbClass } = require("../utils/helpers");
+const { getVectorDbClass, getLLMProvider } = require("../utils/helpers");
 const { handleFileUpload, handlePfpUpload } = require("../utils/files/multer");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { Telemetry } = require("../models/telemetry");
@@ -38,6 +38,7 @@ const { purgeDocument } = require("../utils/files/purgeDocument");
 const { getModelTag } = require("./utils");
 const { searchWorkspaceAndThreads } = require("../utils/helpers/search");
 const { workspaceParsedFilesEndpoints } = require("./workspacesParsedFiles");
+const { SystemSettings } = require("../models/systemSettings");
 
 function workspaceEndpoints(app) {
   if (!app) return;
@@ -381,7 +382,24 @@ function workspaceEndpoints(app) {
           ? await Workspace.getWithUser(user, { slug })
           : await Workspace.get({ slug });
 
-        response.status(200).json({ workspace });
+        const settings = await SystemSettings.currentSettings();
+
+        const llmSettings = {
+          provider: workspace.chatProvider
+            ? workspace.chatProvider
+            : settings.LLMProvider,
+          model: workspace.chatModel ? workspace.chatModel : settings.LLMModel,
+        };
+
+        const llmProvider = getLLMProvider({
+          provider: llmSettings.provider,
+          model: llmSettings.model,
+        });
+
+        llmSettings.capabilities =
+          (await llmProvider.getModelCapabilities?.()) || {};
+
+        response.status(200).json({ workspace, llmSettings });
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();

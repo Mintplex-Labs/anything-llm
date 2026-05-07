@@ -186,9 +186,21 @@ class AnthropicLLM {
     ];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = 0.7, reasoningOption = null }
+  ) {
     await this.assertModelMaxTokens();
     try {
+      const reasoningConfig = {
+        thinking: {
+          type: reasoningOption ? "adaptive" : "disabled",
+        },
+        output_config: {
+          effort: reasoningOption,
+        },
+      };
+
       const systemContent = messages[0].content;
       const result = await LLMPerformanceMonitor.measureAsyncFunction(
         this.anthropic.messages.create({
@@ -197,6 +209,7 @@ class AnthropicLLM {
           system: this.#buildSystemPrompt(systemContent),
           messages: messages.slice(1), // Pop off the system message
           temperature: Number(temperature ?? this.defaultTemp),
+          ...reasoningConfig,
         })
       );
 
@@ -222,9 +235,21 @@ class AnthropicLLM {
     }
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = 0.7, reasoningOption = null }
+  ) {
     await this.assertModelMaxTokens();
     const systemContent = messages[0].content;
+    const reasoningConfig = {
+      thinking: {
+        type: reasoningOption ? "adaptive" : "disabled",
+      },
+      output_config: {
+        effort: reasoningOption,
+      },
+    };
+
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.anthropic.messages.stream({
         model: this.model,
@@ -232,6 +257,7 @@ class AnthropicLLM {
         system: this.#buildSystemPrompt(systemContent),
         messages: messages.slice(1), // Pop off the system message
         temperature: Number(temperature ?? this.defaultTemp),
+        ...reasoningConfig,
       }),
       messages,
       runPromptTokenCalculation: false,
@@ -364,6 +390,30 @@ class AnthropicLLM {
   }
   async embedChunks(textChunks = []) {
     return await this.embedder.embedChunks(textChunks);
+  }
+
+  /**
+   * Returns the capabilities of the model.
+   * @returns {Promise<{reasoning: boolean, reasoningOptions: string[]}>}
+   */
+  async getModelCapabilities() {
+    const model = await this.anthropic.models.retrieve(this.model);
+    const supportsReasoning = model.capabilities?.thinking !== undefined;
+    const effortCapabilities = model.capabilities?.effort;
+    const reasoningOptions = [];
+
+    if (supportsReasoning && effortCapabilities?.supported) {
+      for (const level in effortCapabilities) {
+        if (effortCapabilities[level].supported) {
+          reasoningOptions.push(level);
+        }
+      }
+    }
+
+    return {
+      reasoning: supportsReasoning,
+      reasoningOptions,
+    };
   }
 }
 

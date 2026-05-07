@@ -143,12 +143,20 @@ class OpenAiLLM {
     return temperature;
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = 0.7, reasoningOption = null }
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `OpenAI chat: ${this.model} is not valid for chat completion!`
       );
 
+    const reasoningConfig = {
+      reasoning: {
+        effort: reasoningOption,
+      },
+    };
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.openai.responses
         .create({
@@ -156,6 +164,7 @@ class OpenAiLLM {
           input: messages,
           store: false,
           temperature: this.#temperature(this.model, temperature),
+          ...(reasoningOption ? reasoningConfig : {}),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -182,12 +191,20 @@ class OpenAiLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = 0.7, reasoningOption = null }
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `OpenAI chat: ${this.model} is not valid for chat completion!`
       );
 
+    const reasoningConfig = {
+      reasoning: {
+        effort: reasoningOption,
+      },
+    };
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.openai.responses.create({
         model: this.model,
@@ -195,6 +212,7 @@ class OpenAiLLM {
         input: messages,
         store: false,
         temperature: this.#temperature(this.model, temperature),
+        ...(reasoningOption ? reasoningConfig : {}),
       }),
       messages,
       runPromptTokenCalculation: false,
@@ -293,6 +311,20 @@ class OpenAiLLM {
     const { messageArrayCompressor } = require("../../helpers/chat");
     const messageArray = this.constructPrompt(promptArgs);
     return await messageArrayCompressor(this, messageArray, rawHistory);
+  }
+
+  /**
+   * Returns the capabilities of the model.
+   * @returns {Promise<{reasoning: boolean, reasoningOptions: string[]}>}
+   */
+  async getModelCapabilities() {
+    // OpenAI's API offers no way to programmatically fetch a model's
+    // reasoning capabilities. Static list of accepted values, up to the
+    // user to pick a model that actually supports them.
+    return {
+      reasoning: true,
+      reasoningOptions: ["minimal", "low", "medium", "high", "xhigh"],
+    };
   }
 }
 

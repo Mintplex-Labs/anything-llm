@@ -37,7 +37,8 @@ async function getTargetWorkspace() {
   }
 
   const workspaces = await Workspace.all();
-  return workspaces.length > 0 ? workspaces[0] : null;
+  if (workspaces.length === 0) return null;
+  return await Workspace.bySlug(workspaces[0].slug);
 }
 
 async function createDefaultWorkspace(workspaceName = "My Workspace") {
@@ -184,6 +185,7 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [reasoningOption, setReasoningOption] = useState(null);
   const { files, parseAttachments } = useContext(DndUploaderContext);
 
   useEffect(() => {
@@ -220,7 +222,7 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
 
       sessionStorage.setItem(
         PENDING_HOME_MESSAGE,
-        JSON.stringify({ message, attachments })
+        JSON.stringify({ message, attachments, reasoningOption })
       );
 
       if (targetThread) {
@@ -301,6 +303,8 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
               centered={true}
               workspaceSlug={workspace?.slug}
               threadSlug={threadSlug}
+              reasoningOption={reasoningOption}
+              setReasoningOption={setReasoningOption}
             />
             <QuickActions
               hasAvailableWorkspace={!!workspace}

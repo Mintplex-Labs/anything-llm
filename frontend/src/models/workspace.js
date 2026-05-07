@@ -125,22 +125,31 @@ const Workspace = {
     prompt,
     chatHandler,
     attachments = [],
+    reasoningOption = null,
   }) {
     if (!!threadSlug)
       return this.threads.streamChat(
         { workspaceSlug, threadSlug },
         prompt,
         chatHandler,
-        attachments
+        attachments,
+        reasoningOption
       );
     return this.streamChat(
       { slug: workspaceSlug },
       prompt,
       chatHandler,
-      attachments
+      attachments,
+      reasoningOption
     );
   },
-  streamChat: async function ({ slug }, message, handleChat, attachments = []) {
+  streamChat: async function (
+    { slug },
+    message,
+    handleChat,
+    attachments = [],
+    reasoningOption = null
+  ) {
     const ctrl = new AbortController();
 
     // Listen for the ABORT_STREAM_EVENT key to be emitted by the client
@@ -154,7 +163,7 @@ const Workspace = {
 
     await fetchEventSource(`${API_BASE}/workspace/${slug}/stream-chat`, {
       method: "POST",
-      body: JSON.stringify({ message, attachments }),
+      body: JSON.stringify({ message, attachments, reasoningOption }),
       headers: baseHeaders(),
       signal: ctrl.signal,
       openWhenHidden: true,
@@ -223,7 +232,10 @@ const Workspace = {
       headers: baseHeaders(),
     })
       .then((res) => res.json())
-      .then((res) => res.workspace)
+      .then((res) => {
+        if (!res?.workspace) return null;
+        return { ...res.workspace, llmSettings: res.llmSettings ?? null };
+      })
       .catch(() => null);
     return workspace;
   },
