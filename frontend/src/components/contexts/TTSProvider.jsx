@@ -80,57 +80,45 @@ export function emitAssistantMessageCompleteEvent(chatId) {
  * This is accomplished by looking for a button with the data-auto-play-chat-id attribute that matches the chatId.
  */
 export function useWatchForAutoPlayAssistantTTSResponse() {
-  const autoPlayAssistantTtsResponse = Appearance.get(
-    "autoPlayAssistantTtsResponse"
-  );
-
-  function handleAutoPlayTTSEvent(event) {
-    let autoPlayAttempts = 0;
-    const { chatId } = event.detail;
-
-    /**
-     * Attempt to play the TTS response for the given chatId.
-     * This is a recursive function that will attempt to play the TTS response
-     * for the given chatId until it is successful or the maximum number of attempts
-     * is reached.
-     * @returns {boolean} true if the TTS response was played, false otherwise.
-     */
-    function attemptToPlay() {
-      const playBtn = document.querySelector(
-        `[data-auto-play-chat-id="${chatId}"]`
-      );
-      if (!playBtn) {
-        autoPlayAttempts++;
-        if (autoPlayAttempts > 3) return false;
-        setTimeout(() => {
-          attemptToPlay();
-        }, 1000 * autoPlayAttempts);
-        return false;
-      }
-      playBtn.click();
-      return true;
-    }
-    setTimeout(() => {
-      attemptToPlay();
-    }, 800);
-  }
-
-  // Only bother to listen for these events if the user has autoPlayAssistantTtsResponse
-  // setting enabled.
   useEffect(() => {
-    if (autoPlayAssistantTtsResponse) {
-      window.addEventListener(
+    function handleAutoPlayTTSEvent(event) {
+      // Read preference when the message completes so toggling in this session
+      // always matches localStorage without requiring a workspace remount.
+      if (!Appearance.get("autoPlayAssistantTtsResponse")) return;
+
+      const chatId = event?.detail?.chatId;
+      if (chatId == null || chatId === "") return;
+
+      let autoPlayAttempts = 0;
+
+      function attemptToPlay() {
+        const playBtn = document.querySelector(
+          `[data-auto-play-chat-id="${String(chatId)}"]`
+        );
+        if (!playBtn) {
+          autoPlayAttempts++;
+          if (autoPlayAttempts > 3) return false;
+          setTimeout(() => {
+            attemptToPlay();
+          }, 1000 * autoPlayAttempts);
+          return false;
+        }
+        playBtn.click();
+        return true;
+      }
+      setTimeout(() => {
+        attemptToPlay();
+      }, 800);
+    }
+
+    window.addEventListener(
+      ASSISTANT_MESSAGE_COMPLETE_EVENT,
+      handleAutoPlayTTSEvent
+    );
+    return () =>
+      window.removeEventListener(
         ASSISTANT_MESSAGE_COMPLETE_EVENT,
         handleAutoPlayTTSEvent
       );
-      return () => {
-        window.removeEventListener(
-          ASSISTANT_MESSAGE_COMPLETE_EVENT,
-          handleAutoPlayTTSEvent
-        );
-      };
-    } else {
-      console.log("Assistant TTS auto-play is disabled");
-    }
-  }, [autoPlayAssistantTtsResponse]);
+  }, []);
 }

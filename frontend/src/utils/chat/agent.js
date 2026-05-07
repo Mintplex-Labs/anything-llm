@@ -2,6 +2,7 @@ import { v4 } from "uuid";
 import { safeJsonParse } from "../request";
 import { API_BASE } from "../constants";
 import { useEffect, useState } from "react";
+import { emitAssistantMessageCompleteEvent } from "@/components/contexts/TTSProvider";
 import { THREAD_RENAME_EVENT } from "@/components/Sidebar/ActiveWorkspaces/ThreadContainer";
 
 export const AGENT_SESSION_START = "agentSessionStart";
@@ -73,7 +74,12 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
     // If we get this message we know the provider supports agentic streaming
     socket.supportsAgentStreaming = true;
 
-    return setChatHistory((prev) => {
+    const ttsChatIdOnPersist =
+      data.content?.type === "chatId" && data.content.chatId
+        ? data.content.chatId
+        : null;
+
+    setChatHistory((prev) => {
       if (data.content.type === "removeStatusResponse")
         return [...prev.filter((msg) => msg.uuid !== data.content.uuid)];
 
@@ -203,6 +209,13 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
         );
       }
     });
+
+    if (ttsChatIdOnPersist != null && ttsChatIdOnPersist !== "") {
+      queueMicrotask(() =>
+        emitAssistantMessageCompleteEvent(ttsChatIdOnPersist)
+      );
+    }
+    return;
   }
 
   if (data.type === "fileDownloadCard") {

@@ -12,7 +12,8 @@ export default function handleChat(
   setWebsocket
 ) {
   const {
-    uuid,
+    uuid: streamedUuid,
+    id: streamedId,
     textResponse,
     type,
     sources = [],
@@ -23,6 +24,7 @@ export default function handleChat(
     action = null,
     metrics = {},
   } = chatResult;
+  const uuid = streamedUuid ?? streamedId;
 
   if (type === "abort" || type === "statusResponse") {
     setLoadingResponse(false);
@@ -82,12 +84,15 @@ export default function handleChat(
       chatId,
       metrics,
     });
-    emitAssistantMessageCompleteEvent(chatId);
+    if (chatId != null && chatId !== "") {
+      emitAssistantMessageCompleteEvent(chatId);
+    }
   } else if (
     type === "textResponseChunk" ||
     type === "finalizeResponseStream"
   ) {
     const chatIdx = _chatHistory.findIndex((chat) => chat.uuid === uuid);
+    let finalizedWithoutMatch = false;
     if (chatIdx !== -1) {
       const existingHistory = { ..._chatHistory[chatIdx] };
       let updatedHistory;
@@ -106,7 +111,9 @@ export default function handleChat(
 
         _chatHistory[chatIdx - 1] = { ..._chatHistory[chatIdx - 1], chatId }; // update prompt with chatID
 
-        emitAssistantMessageCompleteEvent(chatId);
+        if (chatId != null && chatId !== "") {
+          emitAssistantMessageCompleteEvent(chatId);
+        }
         setLoadingResponse(false);
       } else {
         updatedHistory = {
@@ -135,8 +142,16 @@ export default function handleChat(
         chatId,
         metrics,
       });
+      finalizedWithoutMatch = type === "finalizeResponseStream";
     }
     setChatHistory([..._chatHistory]);
+
+    if (finalizedWithoutMatch) {
+      setLoadingResponse(false);
+      if (chatId != null && chatId !== "") {
+        emitAssistantMessageCompleteEvent(chatId);
+      }
+    }
   } else if (type === "agentInitWebsocketConnection") {
     setWebsocket(chatResult.websocketUUID);
   } else if (type === "stopGeneration") {
