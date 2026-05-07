@@ -186,20 +186,40 @@ class LemonadeLLM {
     return measuredStreamRequest;
   }
 
-  // Assistant message may use `reasoning_content` or `reasoning` depending on the server.
+  /**
+   * Parses and prepends reasoning from the response and returns the full text response.
+   * Lemonade's OpenAI-compatible endpoint may emit reasoning under either
+   * `reasoning_content` (DeepSeek-style) or `reasoning` (newer servers), so we
+   * accept both shapes.
+   * @param {Object} choice - the first choice from the chat completion response
+   * @returns {string}
+   */
   #parseReasoningFromResponse(choice) {
     const message = choice?.message;
     let textResponse = message?.content;
     const rawReasoning = message?.reasoning_content ?? message?.reasoning;
-    if (
-      typeof rawReasoning === "string" &&
-      rawReasoning.trim().length > 0
-    ) {
+    if (typeof rawReasoning === "string" && rawReasoning.trim().length > 0) {
       textResponse = `<think>${rawReasoning}</think>${textResponse ?? ""}`;
     }
     return textResponse;
   }
 
+  // TODO: This is a copy of the generic handleStream function in responses.js
+  // to specifically handle Lemonade reasoning model `reasoning_content` /
+  // `reasoning` fields. When or if ever possible, we should refactor this to
+  // be in the generic function.
+  /**
+   * Handles streaming responses from Lemonade.
+   * Parses `delta.reasoning_content` / `delta.reasoning` (emitted by Lemonade
+   * reasoning models on its OpenAI-compatible endpoint) and wraps it in
+   * <think> tags so the UI renders the model's thoughts separately from the
+   * final answer. Also closes the <think> block on `finish_reason` if the
+   * model stops mid-reasoning before any content tokens are emitted.
+   * @param {import("express").Response} response
+   * @param {import("../../helpers/chat/LLMPerformanceMonitor").MonitoredStream} stream
+   * @param {Object} responseProps
+   * @returns {Promise<string>}
+   */
   handleStream(response, stream, responseProps) {
     const { uuid = uuidv4(), sources = [] } = responseProps;
     let hasUsageMetrics = false;
@@ -211,6 +231,10 @@ class LemonadeLLM {
       let fullText = "";
       let reasoningText = "";
 
+      // Establish listener to early-abort a streaming response
+      // in case things go sideways or the user does not like the response.
+      // We preserve the generated text but continue as if chat was completed
+      // to preserve previously generated content.
       const handleAbort = () => {
         stream?.endMeasurement(usage);
         clientAbortedHandler(resolve, fullText);
@@ -225,21 +249,24 @@ class LemonadeLLM {
             message?.delta?.reasoning_content ?? message?.delta?.reasoning;
 
           if (
-            chunk.hasOwnProperty("usage") &&
-            !!chunk.usage &&
-            Object.values(chunk.usage).length > 0
+            chunk.hasOwnProperty("usage") && // exists
+            !!chunk.usage && // is not null
+            Object.values(chunk.usage).length > 0 // has values
           ) {
             if (chunk.usage.hasOwnProperty("prompt_tokens")) {
               usage.prompt_tokens = Number(chunk.usage.prompt_tokens);
             }
 
             if (chunk.usage.hasOwnProperty("completion_tokens")) {
-              hasUsageMetrics = true;
+              hasUsageMetrics = true; // to stop estimating counter
               usage.completion_tokens = Number(chunk.usage.completion_tokens);
             }
           }
 
+          // Reasoning models will always return the reasoning text before the token text.
           if (reasoningToken) {
+            // If the reasoning text is empty (''), we need to initialize it
+            // and send the first chunk of reasoning text.
             if (reasoningText.length === 0) {
               writeResponseChunk(response, {
                 uuid,
@@ -264,6 +291,8 @@ class LemonadeLLM {
             }
           }
 
+          // If the reasoning text is not empty, but the reasoning token is empty
+          // and the token text is not empty we need to close the reasoning text and begin sending the token text.
           if (!!reasoningText && !reasoningToken && token) {
             writeResponseChunk(response, {
               uuid,
@@ -279,6 +308,7 @@ class LemonadeLLM {
 
           if (token) {
             fullText += token;
+            // If we never saw a usage metric, we can estimate them by number of completion chunks
             if (!hasUsageMetrics) usage.completion_tokens++;
             writeResponseChunk(response, {
               uuid,
@@ -290,11 +320,16 @@ class LemonadeLLM {
             });
           }
 
+          // LocalAi returns '' and others return null on chunks - the last chunk is not "" or null.
+          // Either way, the key `finish_reason` must be present to determine ending chunk.
           if (
-            message?.hasOwnProperty("finish_reason") &&
+            message?.hasOwnProperty("finish_reason") && // Got valid message and it is an object with finish_reason
             message.finish_reason !== "" &&
             message.finish_reason !== null
           ) {
+            // If the model stops after reasoning but before emitting any
+            // content tokens, the <think> block is still open — close it so
+            // stored history matches what the UI rendered.
             if (reasoningText.length > 0) {
               writeResponseChunk(response, {
                 uuid,
@@ -318,7 +353,7 @@ class LemonadeLLM {
             response.removeListener("close", handleAbort);
             stream?.endMeasurement(usage);
             resolve(fullText);
-            break;
+            break; // Break streaming when a valid finish_reason is first encountered
           }
         }
       } catch (e) {
@@ -331,6 +366,7 @@ class LemonadeLLM {
           close: true,
           error: e.message,
         });
+        response.removeListener("close", handleAbort);
         stream?.endMeasurement(usage);
         resolve(fullText);
       }
