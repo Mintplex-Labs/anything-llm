@@ -225,7 +225,7 @@ class LMStudioLLM {
       !!message?.reasoning_content &&
       message.reasoning_content.trim().length > 0
     )
-      textResponse = `<think>${message.reasoning_content}</think>${textResponse}`;
+      textResponse = `<think>${message.reasoning_content}</think>${textResponse ?? ""}`;
     return textResponse;
   }
 
@@ -285,6 +285,9 @@ class LMStudioLLM {
     return measuredStreamRequest;
   }
 
+  // TODO: This is a copy of the generic handleStream function in responses.js
+  // to specifically handle the LMStudio reasoning model `reasoning_content` field.
+  // When or if ever possible, we should refactor this to be in the generic function.
   /**
    * Handles streaming responses from LMStudio.
    * Parses `delta.reasoning_content` (emitted by LMStudio reasoning models on
@@ -392,6 +395,21 @@ class LMStudioLLM {
             message.finish_reason !== "" &&
             message.finish_reason !== null
           ) {
+            // If the model stops after reasoning but before emitting any
+            // content tokens, the <think> block is still open — close it so
+            // stored history matches what the UI rendered.
+            if (reasoningText.length > 0) {
+              writeResponseChunk(response, {
+                uuid,
+                sources: [],
+                type: "textResponseChunk",
+                textResponse: `</think>`,
+                close: false,
+                error: false,
+              });
+              fullText += `${reasoningText}</think>`;
+              reasoningText = "";
+            }
             writeResponseChunk(response, {
               uuid,
               sources,
