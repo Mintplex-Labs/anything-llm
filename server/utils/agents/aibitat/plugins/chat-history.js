@@ -101,7 +101,8 @@ const chatHistory = {
         const metrics = aibitat.provider?.getUsage?.() ?? {};
         const citations = aibitat._pendingCitations ?? [];
         const outputs = aibitat._pendingOutputs ?? [];
-        const clarifyingQuestions = aibitat._pendingClarifyingQuestions ?? [];
+        const clarifyingQuestions =
+          aibitat._pendingClarifyingQuestionSurveys ?? [];
         await WorkspaceChats.upsert(aibitat.trackedChatId, {
           workspaceId: Number(invocation.workspace_id),
           prompt,
@@ -128,7 +129,8 @@ const chatHistory = {
         const metrics = aibitat.provider?.getUsage?.() ?? {};
         const citations = aibitat._pendingCitations ?? [];
         const outputs = aibitat._pendingOutputs ?? [];
-        const clarifyingQuestions = aibitat._pendingClarifyingQuestions ?? [];
+        const clarifyingQuestions =
+          aibitat._pendingClarifyingQuestionSurveys ?? [];
         const existingSources = options?.sources ?? [];
         await WorkspaceChats.upsert(aibitat.trackedChatId, {
           workspaceId: Number(invocation.workspace_id),
@@ -157,7 +159,7 @@ const chatHistory = {
       _cleanup: function (aibitat) {
         aibitat.clearCitations?.();
         aibitat._pendingOutputs = [];
-        aibitat._pendingClarifyingQuestions = [];
+        aibitat.clearClarifyingQuestionSurveys?.();
         aibitat.clearTrackedChatId();
       },
     };
