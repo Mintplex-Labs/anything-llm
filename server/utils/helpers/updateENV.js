@@ -661,6 +661,18 @@ const KEY_MAPPING = {
     checks: [isValidURL],
   },
 
+  // STT Selection
+  SpeechToTextProvider: {
+    envKey: "STT_PROVIDER",
+    checks: [supportedSTTProvider],
+  },
+
+  // STT OpenAI
+  STTOpenAIModel: {
+    envKey: "STT_OPEN_AI_MODEL",
+    checks: [],
+  },
+
   // DeepSeek Options
   DeepSeekApiKey: {
     envKey: "DEEPSEEK_API_KEY",
@@ -926,6 +938,11 @@ function supportedTTSProvider(input = "") {
     "generic-openai",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid TTS provider.`;
+}
+
+function supportedSTTProvider(input = "") {
+  const validSelection = ["native", "openai"].includes(input);
+  return validSelection ? null : `${input} is not a valid STT provider.`;
 }
 
 function validLocalWhisper(input = "") {

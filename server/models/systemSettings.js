@@ -475,6 +475,11 @@ const SystemSettings = {
         process.env.TTS_OPEN_AI_COMPATIBLE_VOICE_MODEL,
       TTSOpenAICompatibleEndpoint: process.env.TTS_OPEN_AI_COMPATIBLE_ENDPOINT,
 
+      // STT Selection
+      SpeechToTextProvider: process.env.STT_PROVIDER || "native",
+      // STT OpenAI
+      STTOpenAIModel: process.env.STT_OPEN_AI_MODEL,
+
       // --------------------------------------------------------
       // Agent Settings & Configs
       // --------------------------------------------------------

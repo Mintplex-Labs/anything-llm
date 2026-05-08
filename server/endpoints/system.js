@@ -12,7 +12,11 @@ const {
   multiUserMode,
   queryParams,
 } = require("../utils/http");
-const { handleAssetUpload, handlePfpUpload } = require("../utils/files/multer");
+const {
+  handleAssetUpload,
+  handlePfpUpload,
+  handleAudioUpload,
+} = require("../utils/files/multer");
 const { v4 } = require("uuid");
 const { SystemSettings } = require("../models/systemSettings");
 const { User } = require("../models/user");
@@ -1454,6 +1458,43 @@ function systemEndpoints(app) {
         response.status(500).json({
           success: false,
           error: `Failed to delete system prompt variable: ${error.message}`,
+        });
+      }
+    }
+  );
+
+  app.post(
+    "/system/transcribe-audio",
+    [validatedRequest, flexUserRoleValid([ROLES.all]), handleAudioUpload],
+    async (request, response) => {
+      try {
+        if (!request.file?.buffer) {
+          return response
+            .status(400)
+            .json({ success: false, error: "No audio file provided." });
+        }
+
+        const provider = process.env.STT_PROVIDER || "native";
+        if (provider === "native") {
+          return response.status(400).json({
+            success: false,
+            error:
+              "Server-side transcription is disabled. Set STT_PROVIDER to a supported provider.",
+          });
+        }
+
+        const { getSTTProvider } = require("../utils/SpeechToText");
+        const stt = getSTTProvider();
+        const text = await stt.transcribe(
+          request.file.buffer,
+          request.file.originalname || "audio.webm"
+        );
+        return response.status(200).json({ success: true, text });
+      } catch (error) {
+        console.error("STT transcription error:", error);
+        return response.status(500).json({
+          success: false,
+          error: `Transcription failed: ${error.message}`,
         });
       }
     }

@@ -4,8 +4,10 @@ import showToast from "@/utils/toast";
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
+import OpenAiLogo from "@/media/llmprovider/openai.png";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import BrowserNative from "@/components/SpeechToText/BrowserNative";
+import OpenAiSTTOptions from "@/components/SpeechToText/OpenAiOptions";
 
 const PROVIDERS = [
   {
@@ -14,6 +16,13 @@ const PROVIDERS = [
     logo: AnythingLLMIcon,
     options: (settings) => <BrowserNative settings={settings} />,
     description: "Uses your browser's built in STT service if supported.",
+  },
+  {
+    name: "OpenAI",
+    value: "openai",
+    logo: OpenAiLogo,
+    options: (settings) => <OpenAiSTTOptions settings={settings} />,
+    description: "Use OpenAI's Whisper API to transcribe speech to text.",
   },
 ];
 
