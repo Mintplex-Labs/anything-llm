@@ -6,6 +6,7 @@ const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
 const { MODEL_MAP } = require("../modelMap");
+const { toValidNumber } = require("../../http");
 
 class MinimaxLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -20,6 +21,9 @@ class MinimaxLLM {
     });
     this.model =
       modelPreference || process.env.MINIMAX_MODEL_PREF || "MiniMax-M2.7";
+    this.maxTokens = process.env.MINIMAX_MAX_TOKENS
+      ? toValidNumber(process.env.MINIMAX_MAX_TOKENS, null)
+      : null;
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -91,6 +95,7 @@ class MinimaxLLM {
           model: this.model,
           messages,
           temperature,
+          ...(this.maxTokens ? { max_tokens: this.maxTokens } : {}),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -132,6 +137,7 @@ class MinimaxLLM {
         stream: true,
         messages,
         temperature,
+        ...(this.maxTokens ? { max_tokens: this.maxTokens } : {}),
       }),
       messages,
       runPromptTokenCalculation: false,
