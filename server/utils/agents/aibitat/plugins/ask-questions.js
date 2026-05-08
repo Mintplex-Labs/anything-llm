@@ -1,3 +1,5 @@
+const { SystemSettings } = require("../../../../models/systemSettings");
+
 const VALID_INPUT_TYPES = [
   "text",
   "url",
@@ -6,6 +8,10 @@ const VALID_INPUT_TYPES = [
   "email",
   "textarea",
 ];
+
+const DEFAULT_MAX_PER_TURN = 3;
+const DEFAULT_TIMEOUT_MS = 120_000;
+const MIN_TIMEOUT_MS = 10_000;
 
 /**
  * Format a result as a numbered transcript so the LLM can map each answer
@@ -31,19 +37,38 @@ function formatAnswersForAgent(questions, result) {
   return lines.join("\n");
 }
 
-function ensureState(aibitat) {
-  const cfg = aibitat._clarifyConfig || {};
-  if (!aibitat._clarifyState) {
-    aibitat._clarifyState = {
-      asked: 0,
-      maxPerTurn: Number.isFinite(Number(cfg.maxPerTurn))
-        ? Math.max(1, Math.floor(Number(cfg.maxPerTurn)))
-        : 3,
-      timeoutMs: Number.isFinite(Number(cfg.timeoutMs))
-        ? Math.max(10_000, Math.floor(Number(cfg.timeoutMs)))
-        : 120_000,
-    };
-  }
+/**
+ * Lazy-load the per-turn cap and timeout from SystemSettings on first call,
+ * cache on the aibitat instance, and track how many questions have been asked
+ * this turn. Done lazily (rather than in setup) so the plugin stays self-
+ * contained and works for both regular and ephemeral agent runs.
+ */
+async function ensureState(aibitat) {
+  if (aibitat._clarifyState) return aibitat._clarifyState;
+
+  const [maxPerTurnRaw, timeoutMsRaw] = await Promise.all([
+    SystemSettings.getValueOrFallback(
+      { label: "agent_clarifying_questions_max_per_turn" },
+      String(DEFAULT_MAX_PER_TURN)
+    ),
+    SystemSettings.getValueOrFallback(
+      { label: "agent_clarifying_questions_timeout_ms" },
+      String(DEFAULT_TIMEOUT_MS)
+    ),
+  ]);
+
+  const maxPerTurn = Number(maxPerTurnRaw);
+  const timeoutMs = Number(timeoutMsRaw);
+
+  aibitat._clarifyState = {
+    asked: 0,
+    maxPerTurn: Number.isFinite(maxPerTurn)
+      ? Math.max(1, Math.floor(maxPerTurn))
+      : DEFAULT_MAX_PER_TURN,
+    timeoutMs: Number.isFinite(timeoutMs)
+      ? Math.max(MIN_TIMEOUT_MS, Math.floor(timeoutMs))
+      : DEFAULT_TIMEOUT_MS,
+  };
   return aibitat._clarifyState;
 }
 
@@ -90,8 +115,10 @@ const AskUser = {
     return {
       name: "ask-user",
       setup(aibitat) {
-        // Tool is meaningless without a websocket to ask through (API runs).
-        if (!aibitat.socket) return;
+        // Skip when the runtime can't actually prompt the user. The websocket
+        // plugin attaches `requestUserClarification` only when a socket is
+        // present, so API/ephemeral runs would otherwise crash on call.
+        if (typeof aibitat.requestUserClarification !== "function") return;
 
         aibitat.function({
           super: aibitat,
@@ -214,7 +241,7 @@ const AskUser = {
             if (normalized.length < 1)
               return "[ask-user received no well-formed questions after validation]";
 
-            const state = ensureState(this.super);
+            const state = await ensureState(this.super);
             const remaining = state.maxPerTurn - state.asked;
             if (remaining <= 0) {
               return `[clarification limit of ${state.maxPerTurn} reached for this turn — do not ask again, proceed with best judgment]`;

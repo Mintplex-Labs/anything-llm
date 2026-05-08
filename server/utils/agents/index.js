@@ -7,7 +7,6 @@ const { WorkspaceParsedFiles } = require("../../models/workspaceParsedFiles");
 const { User } = require("../../models/user");
 const { Workspace } = require("../../models/workspace");
 const { WorkspaceChats } = require("../../models/workspaceChats");
-const { SystemSettings } = require("../../models/systemSettings");
 const { safeJsonParse } = require("../http");
 const { USER_AGENT, WORKSPACE_AGENT } = require("./defaults");
 const ImportedPlugin = require("./imported");
@@ -736,24 +735,6 @@ class AgentHandler {
       `Attached ${AgentPlugins.chatHistory.name} plugin to Agent cluster`
     );
     this.aibitat.use(AgentPlugins.chatHistory.plugin());
-
-    // Stash clarifying-question config on the aibitat instance so the
-    // ask-user sub-plugin can read the per-turn cap and timeout without
-    // doing its own SystemSettings read on every invocation.
-    this.aibitat._clarifyConfig = {
-      maxPerTurn: Number(
-        await SystemSettings.getValueOrFallback(
-          { label: "agent_clarifying_questions_max_per_turn" },
-          "3"
-        )
-      ),
-      timeoutMs: Number(
-        await SystemSettings.getValueOrFallback(
-          { label: "agent_clarifying_questions_timeout_ms" },
-          "120000"
-        )
-      ),
-    };
 
     // Load required agents (Default + custom)
     await this.#loadAgents();
