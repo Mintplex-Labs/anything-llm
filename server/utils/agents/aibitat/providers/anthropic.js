@@ -8,7 +8,7 @@ const { getAnythingLLMUserAgent } = require("../../../../endpoints/utils");
 
 /**
  * The agent provider for the Anthropic API.
- * By default, the model is set to 'claude-2'.
+ * By default, the model is set to 'claude-sonnet-4-6'.
  */
 class AnthropicProvider extends Provider {
   model;
@@ -23,7 +23,7 @@ class AnthropicProvider extends Provider {
           "User-Agent": getAnythingLLMUserAgent(),
         },
       },
-      model = "claude-3-5-sonnet-20240620",
+      model = "claude-sonnet-4-6",
     } = config;
 
     const client = new Anthropic(options);

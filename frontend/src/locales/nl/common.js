@@ -109,6 +109,7 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
+    "scheduled-jobs": "Geplande taken",
   },
   login: {
     "multi-user": {
@@ -193,9 +194,9 @@ const TRANSLATIONS = {
           "zal alleen antwoorden <b>als de context van het document wordt gevonden.</b>U moet het commando @agent gebruiken om de tools te gebruiken.",
       },
       automatic: {
-        title: "Auto",
         description:
           "zal automatisch tools gebruiken als het model en de provider native tool-aanroepen ondersteunen. <br />Als native tooling niet wordt ondersteund, moet u de `@agent`-commando gebruiken om tools te gebruiken.",
+        title: "Agent",
       },
     },
     history: {
@@ -331,7 +332,7 @@ const TRANSLATIONS = {
         readActions: "Lees acties",
         writeActions: "Schrijf acties",
         warning:
-          "Toegang tot het bestandssysteem kan gevaarlijk zijn, omdat het bestanden kan wijzigen of verwijderen. Raadpleeg de <link>documentatie</link> voordat u dit activeert.",
+          "Toegang tot het bestandssysteem kan gevaarlijk zijn, omdat het bestanden kan wijzigen of verwijderen. Raadpleeg de <a>documentatie</a> voordat u dit activeert.",
         skills: {
           "read-text-file": {
             title: "Bestand openen",
@@ -1196,6 +1197,12 @@ const TRANSLATIONS = {
       tool_call_was_rejected:
         "De aanvraag om het gereedschap te gebruiken is afgewezen.",
     },
+    custom_skills: "Aangepaste vaardigheden",
+    agent_flows: "Stroom van agenten",
+    no_tools_found: "Geen overeenkomende gereedschappen gevonden.",
+    loading_mcp_servers: "MCP-servers worden geladen...",
+    app_integrations: "Integraties met apps",
+    sub_skills: "Specifieke vaardigheden",
   },
   profile_settings: {
     edit_account: "Account bewerken",
@@ -1516,6 +1523,167 @@ const TRANSLATIONS = {
       "pending-description":
         "Gebruikers die nog geverifieerd moeten worden. Vergelijk de code die hier wordt getoond met de code die in hun Telegram-chat wordt weergegeven.",
       unknown: "Onbekend",
+    },
+  },
+  scheduledJobs: {
+    title: "Geplande taken",
+    enableNotifications:
+      "Activeer browser notificaties voor resultaten van vacatures.",
+    description:
+      "Maak herhaalde AI-taken die volgens een schema worden uitgevoerd. Elke taak voert een prompt uit met optionele tools en slaat het resultaat op voor beoordeling.",
+    newJob: "Nieuwe baan",
+    loading: "Laad...",
+    emptyTitle: "Er zijn nog geen geplande taken.",
+    emptySubtitle: "Maak er één om aan de slag te gaan.",
+    table: {
+      name: "Naam",
+      schedule: "Planning/Tijdschema",
+      status: "Status",
+      lastRun: "Laatste rit",
+      nextRun: "Volgende keer",
+      actions: "Acties",
+    },
+    confirmDelete:
+      "Bent u er zeker van dat u deze geplande taak wilt verwijderen?",
+    toast: {
+      deleted: "Vacature verwijderd",
+      triggered: "De werkzaamheden zijn succesvol afgerond.",
+      triggerFailed: "Niet mogelijk om de taak uit te voeren",
+      triggerSkipped: "Er is al begonnen met het uitvoeren van dit project.",
+      killed: "De werkzaamheden zijn succesvol beëindigd.",
+      killFailed: "Niet in staat geweest om het werk te stoppen.",
+    },
+    row: {
+      neverRun: "Nooit versnellen",
+      viewRuns: "Bekijk de resultaten",
+      runNow: "Begin nu",
+      enable: "Aan zetten/Activeren",
+      disable: "Uitschakelen",
+      edit: "Bewerk",
+      delete: "Verwijderen",
+    },
+    modal: {
+      titleEdit: "Wijzig geplande taak",
+      titleNew: "Nieuwe geplande taak",
+      nameLabel: "Naam",
+      namePlaceholder: "bijvoorbeeld: Dagelijkse nieuwsbrief",
+      promptLabel: "Aanvraag",
+      promptPlaceholder:
+        "De instructie om uit te voeren bij elke uitvoering...",
+      scheduleLabel: "Planning/Tijdschema",
+      modeBuilder: "Bouwer",
+      modeCustom: "Op maat gemaakt",
+      cronPlaceholder: "Cron-expressie (bijvoorbeeld 0 9 * * *)",
+      currentSchedule: "Huidelijk schema:",
+      toolsLabel: "Benodigde hulpmiddelen (optioneel)",
+      toolsDescription:
+        "Selecteer welke agent-tools deze taak kan gebruiken. Als er geen tools zijn geselecteerd, voert de taak uit zonder enige tools.",
+      toolsSearch: "Zoeken",
+      toolsNoResults: "Geen van de beschikbare gereedschappen komt overeen.",
+      required: "Vereist",
+      requiredFieldsBanner:
+        "Vul al de vereiste velden in om een vacature aan te maken.",
+      cancel: "Annuleren",
+      saving: "Opslaan...",
+      updateJob: "Werk bijwerken",
+      createJob: "Vacature aanmaken",
+      jobUpdated: "Functie bijgewerkt",
+      jobCreated: "Werk gecreëerd",
+    },
+    builder: {
+      fallbackWarning:
+        'Deze tekst kan niet visueel worden bewerkt. Kies voor "Aanpassen" om deze te behouden, of wijzig hieronder om deze te vervangen.',
+      run: "Lopen",
+      frequency: {
+        minute: "per minuut",
+        hour: "per uur",
+        day: "dagelijks",
+        week: "wekelijks",
+        month: "maandelijks",
+      },
+      every: "Elke",
+      minuteOne: "1 minuut",
+      minuteOther: "{{count}} minuten",
+      atMinute: "Bij het begin van",
+      pastEveryHour: "elke uur",
+      at: "Bij",
+      on: "Op",
+      onDay: "Op een dag",
+      ofEveryMonth: "of per maand",
+      weekdays: {
+        sun: "Zon",
+        mon: "Maandag",
+        tue: "Maandag",
+        wed: "Wedstrijd",
+        thu: "Donderdag",
+        fri: "Vrijdag",
+        sat: "Zaterdag",
+      },
+    },
+    runHistory: {
+      back: "Terug naar vacatures",
+      title: "Historie: {{name}}",
+      schedule: "Planning:",
+      emptyTitle: "Er zijn nog geen resultaten behaald voor deze opdracht.",
+      emptySubtitle: "Voer de taak nu uit en bekijk de resultaten.",
+      runNow: "Start nu",
+      table: {
+        status: "Status",
+        started: "Begonnen",
+        duration: "Duur",
+        error: "Fout",
+      },
+      stopJob: "Werkonderbreking",
+    },
+    runDetail: {
+      loading: "Laad details van de uitvoering in...",
+      notFound: "Geen uitvoering gevonden.",
+      back: "Terug",
+      unknownJob: "Onbekende functie",
+      runHeading: "{{name}} — Uitvoering #{{id}}",
+      duration: "Duur: {{value}}",
+      creating: "Creëren...",
+      threadFailed: "Niet in staat om een nieuwe thread te creëren.",
+      sections: {
+        prompt: "Aanvraag",
+        error: "Fout",
+        thinking: "Denken ({{count}})",
+        toolCalls: "Aanroepen van tools ({{count}})",
+        files: "Bestanden ({{count}})",
+        response: "Antwoord",
+        metrics: "Meetwaarden",
+      },
+      metrics: {
+        promptTokens: "Aanwijstokens:",
+        completionTokens: "Voltooiingstokens:",
+      },
+      stopJob: "Werkonderbreking",
+      killing: "Stoppen...",
+      continueInThread: "Blijf chatten",
+    },
+    toolCall: {
+      arguments: "Argumenten:",
+      showResult: "Toon resultaat",
+      hideResult: "Resultaat verbergen",
+    },
+    file: {
+      unknown: "Onbekend bestand",
+      download: "Downloaden",
+      downloadFailed: "Fout bij het downloaden van het bestand",
+      types: {
+        powerpoint: "PowerPoint",
+        pdf: "PDF-document",
+        word: "Word-document",
+        spreadsheet: "Spreadsheet (tabellenblad)",
+        generic: "Bestand",
+      },
+    },
+    status: {
+      completed: "Afgerond",
+      failed: "Mislukt",
+      timed_out: "Tijdslimiet bereikt",
+      running: "Hardlopen",
+      queued: "In de wachtrij",
     },
   },
 };

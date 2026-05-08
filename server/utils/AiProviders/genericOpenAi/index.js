@@ -208,6 +208,22 @@ class GenericOpenAiLLM {
     return textResponse;
   }
 
+  /**
+   * Includes the usage in the response if the ENV flag is set
+   * using the stream_options: { include_usage: true } option. This is available via ENV
+   * because some providers will crash with invalid options.
+   * @returns {Object}
+   */
+  #includeStreamOptionsUsage() {
+    if (!("GENERIC_OPEN_AI_REPORT_USAGE" in process.env)) return {};
+    if (process.env.GENERIC_OPEN_AI_REPORT_USAGE !== "true") return {};
+    return {
+      stream_options: {
+        include_usage: true,
+      },
+    };
+  }
+
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.openai.chat.completions
@@ -256,6 +272,7 @@ class GenericOpenAiLLM {
         messages,
         temperature,
         max_tokens: this.maxTokens,
+        ...this.#includeStreamOptionsUsage(),
       }),
       messages,
       runPromptTokenCalculation: true,
@@ -402,6 +419,50 @@ class GenericOpenAiLLM {
         resolve(fullText);
       }
     });
+  }
+
+  /**
+   * Whether this provider supports native OpenAI-compatible tool calling.
+   * - This can be any OpenAI compatible provider that supports tool calling
+   * - We check the ENV to see if the provider supports tool calling.
+   * - If the ENV is not set, we default to false.
+   * @returns {boolean}
+   */
+  #supportsCapabilityFromENV(capability = "") {
+    const CapabilityEnvMap = {
+      tools: "PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING",
+      reasoning: "PROVIDER_SUPPORTS_REASONING",
+      imageGeneration: "PROVIDER_SUPPORTS_IMAGE_GENERATION",
+      vision: "PROVIDER_SUPPORTS_VISION",
+    };
+
+    const envKey = CapabilityEnvMap[capability];
+    if (!envKey) return false;
+    if (!(envKey in process.env)) return false;
+    return process.env[envKey]?.includes("generic-openai") || false;
+  }
+
+  /**
+   * Returns the capabilities of the model.
+   * @returns {{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}}
+   */
+  getModelCapabilities() {
+    try {
+      return {
+        tools: this.#supportsCapabilityFromENV("tools"),
+        reasoning: this.#supportsCapabilityFromENV("reasoning"),
+        imageGeneration: this.#supportsCapabilityFromENV("imageGeneration"),
+        vision: this.#supportsCapabilityFromENV("vision"),
+      };
+    } catch (error) {
+      console.error("Error getting model capabilities:", error);
+      return {
+        tools: "unknown",
+        reasoning: "unknown",
+        imageGeneration: "unknown",
+        vision: "unknown",
+      };
+    }
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations

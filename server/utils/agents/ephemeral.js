@@ -55,7 +55,7 @@ class EphemeralAgentHandler extends AgentHandler {
   /**
    * @param {{
    * uuid: string,
-   * workspace: import("@prisma/client").workspaces,
+   * workspace: import("@prisma/client").workspaces|null,
    * prompt: string,
    * userId: import("@prisma/client").users["id"]|null,
    * threadId: import("@prisma/client").workspace_threads["id"]|null,
@@ -65,7 +65,7 @@ class EphemeralAgentHandler extends AgentHandler {
    */
   constructor({
     uuid,
-    workspace,
+    workspace = null,
     prompt,
     userId = null,
     threadId = null,
@@ -95,6 +95,8 @@ class EphemeralAgentHandler extends AgentHandler {
   }
 
   async #chatHistory(limit = 10) {
+    if (!this.#workspace) return [];
+
     try {
       const rawHistory = (
         await WorkspaceChats.where(
@@ -144,7 +146,7 @@ class EphemeralAgentHandler extends AgentHandler {
    */
   #getFallbackProvider() {
     // First, fallback to the workspace chat provider and model if they exist
-    if (this.#workspace.chatProvider && this.#workspace.chatModel) {
+    if (this.#workspace?.chatProvider && this.#workspace?.chatModel) {
       return {
         provider: this.#workspace.chatProvider,
         model: this.#workspace.chatModel,
@@ -183,7 +185,7 @@ class EphemeralAgentHandler extends AgentHandler {
     }
 
     // The provider was explicitly set, so check if the workspace has an agent model set.
-    if (this.#workspace.agentModel) return this.#workspace.agentModel;
+    if (this.#workspace?.agentModel) return this.#workspace.agentModel;
 
     // Otherwise, we have no model to use - so guess a default model to use via the provider
     // and it's system ENV params and if that fails - we return either a base model or null.
@@ -191,7 +193,7 @@ class EphemeralAgentHandler extends AgentHandler {
   }
 
   #providerSetupAndCheck() {
-    this.provider = this.#workspace.agentProvider ?? null;
+    this.provider = this.#workspace?.agentProvider ?? null;
     this.model = this.#fetchModel();
 
     if (!this.provider)
@@ -367,6 +369,8 @@ class EphemeralAgentHandler extends AgentHandler {
    * @returns {Promise<string>} Formatted context string to append to user message
    */
   async #fetchParsedFileContext() {
+    if (!this.#workspace) return "";
+
     const user = this.#userId ? { id: this.#userId } : null;
     const thread = this.#threadId ? { id: this.#threadId } : null;
     const documentManager = new DocumentManager({
@@ -437,6 +441,7 @@ class EphemeralAgentHandler extends AgentHandler {
     args = {
       handler: null,
       telegramChatId: null,
+      toolOverrides: null,
     }
   ) {
     this.aibitat = new AIbitat({
@@ -446,7 +451,7 @@ class EphemeralAgentHandler extends AgentHandler {
       handlerProps: {
         invocation: {
           workspace: this.#workspace,
-          workspace_id: this.#workspace.id,
+          workspace_id: this.#workspace?.id ?? null,
         },
         log: this.log,
       },
@@ -471,6 +476,13 @@ class EphemeralAgentHandler extends AgentHandler {
     // Load required agents (Default + custom)
     await this.#loadAgents();
 
+    // Override tools if specified (e.g., for scheduled jobs with per-job tool selection)
+    if (args.toolOverrides) {
+      this.#funcsToLoad = args.toolOverrides;
+      const agentDef = this.aibitat.agents.get("@agent");
+      if (agentDef) agentDef.functions = args.toolOverrides;
+    }
+
     // Attach all required plugins for functions to operate.
     await this.#attachPlugins(args);
   }
@@ -482,6 +494,15 @@ class EphemeralAgentHandler extends AgentHandler {
       content: this.#stripAgentCommand(this.#prompt),
       attachments: this.#attachments,
     });
+  }
+
+  /**
+   * Gets pending outputs registered by plugins (e.g., file downloads).
+   * These outputs include the proper type for re-rendering in chat history.
+   * @returns {Array<{type: string, payload: object}>}
+   */
+  getPendingOutputs() {
+    return this.aibitat?._pendingOutputs ?? [];
   }
 
   /**

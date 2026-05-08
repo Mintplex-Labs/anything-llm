@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { SpeakerHigh, PauseCircle, CircleNotch } from "@phosphor-icons/react";
 import PiperTTSClient from "@/utils/piperTTS";
+import messageToSpeech from "@/utils/chat/messageToSpeech";
 
 export default function PiperTTS({ chatId, voiceId = null, message }) {
   const playerRef = useRef(null);
@@ -19,7 +20,9 @@ export default function PiperTTS({ chatId, voiceId = null, message }) {
       if (!audioSrc) {
         setLoading(true);
         const client = new PiperTTSClient({ voiceId });
-        const blobUrl = await client.getAudioBlobForText(message);
+        const blobUrl = await client.getAudioBlobForText(
+          messageToSpeech(message)
+        );
         setAudioSrc(blobUrl);
         setLoading(false);
       } else {

@@ -115,6 +115,7 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "„Telegram“",
     },
+    "scheduled-jobs": "Planuojami darbai",
   },
   login: {
     "multi-user": {
@@ -197,9 +198,9 @@ const TRANSLATIONS = {
     mode: {
       title: "Pokalbio režimas",
       automatic: {
-        title: "Auto",
         description:
           'automatiškai naudosis įrankiais, jei modelis ir paslaugos teikėjas palaiko įrankių vadovavimą. <br />Jei įrankių vadovavimas nepaliekamas, jums reikės naudoti "@agent" komandą, kad galėtumėte naudoti įrankius.',
+        title: "Agentas",
       },
       chat: {
         title: "Pokalbis",
@@ -343,7 +344,7 @@ const TRANSLATIONS = {
         readActions: "Veikimas",
         writeActions: "Veikimas",
         warning:
-          "Failų sistemos prieigos vartymas gali būti pavojus, nes gali modifikuoti arba ištrinti failus. Prašome, prieš įgalindami, pasikonsultuoti su <link>dokumentacija</link>.",
+          "Failų sistemos prieigos vartymas gali būti pavojus, nes gali modifikuoti arba ištrinti failus. Prašome, prieš įgalindami, pasikonsultuoti su <a>dokumentacija</a>.",
         skills: {
           "read-text-file": {
             title: "Atidaryti failą",
@@ -1312,6 +1313,12 @@ const TRANSLATIONS = {
       tool_call_was_approved: "Įrankių užsakymas buvo patvirtintas.",
       tool_call_was_rejected: "Klausimas dėl įrankio buvo atmetamas.",
     },
+    custom_skills: "Individualūs įgūdžiai",
+    agent_flows: "Agentų srautai",
+    no_tools_found: "Nėra rasti atitikusių įrankių.",
+    loading_mcp_servers: "Įkrauname MCP serverius...",
+    app_integrations: "Programų integracijos",
+    sub_skills: "Pagrindinės įgūdžios",
   },
   profile_settings: {
     edit_account: "Redaguoti paskyrą",
@@ -1505,6 +1512,166 @@ const TRANSLATIONS = {
       "pending-description":
         "Naudotojai, laukiantys patvirtinimo. Palyginkite čia pateiktą kodą su tuo, kuris rodomas jų „Telegram“ pokalbyje.",
       unknown: "Nenurodytas",
+    },
+  },
+  scheduledJobs: {
+    title: "Planuotos užduotys",
+    enableNotifications:
+      "Įgalinkite naršyklės pranešimus dėl darbo paieškos rezultatų",
+    description:
+      "Sukurkite nuolatines AI užduotis, kurios vyks pagal nustatytą grafiką. Kiekviena užduotis atliks užduotį su galimais įrankiais ir išsaugos rezultatą, kad galėtų būti peržiūrėta.",
+    newJob: "Nauja darbo pozicija",
+    loading: "Įkėlimas...",
+    emptyTitle: "Nėra nurodytų uždučių.",
+    emptySubtitle: "Sukurkite vieną, kad pradėtumėte.",
+    table: {
+      name: "Pavadinimas",
+      schedule: "Programinė tvarka",
+      status: "Statusas",
+      lastRun: "Paskutinė kelionė",
+      nextRun: "Kitas maršrutas",
+      actions: "Veikmai",
+    },
+    confirmDelete:
+      "Ar esate tikri, kad norite ištrinti šią užduotį, kurią įtraukėte į planą?",
+    toast: {
+      deleted: "Darbas ištrintas",
+      triggered: "Darbas buvo sėkmingai inicijuotas.",
+      triggerFailed: "Nepavyko inicijuoti užduoties",
+      triggerSkipped: "Šis projektas jau pradėtas vykdyti.",
+      killed: "Darbas sėkmingai baigtas",
+      killFailed: "Nepavyko sustabdyti darbą",
+    },
+    row: {
+      neverRun: "Niekada nesnydžkite",
+      viewRuns: "Vaizdo įrašai",
+      runNow: "Pradėkite dabar",
+      enable: "Aaktyvinti",
+      disable: "Išjungti",
+      edit: "Redaguo",
+      delete: "Ištrinkti",
+    },
+    modal: {
+      titleEdit: "Redaguoti užplanuotą užduotį",
+      titleNew: "Naujas planuojamas darbas",
+      nameLabel: "Pavadinimas",
+      namePlaceholder: "Pavyzdžiui, kasdieninė naujienų apžvalga",
+      promptLabel: "Instrukcija",
+      promptPlaceholder: "Instrukcija, kad reikia vykdyti kiekvieną kartą...",
+      scheduleLabel: "Programėlė",
+      modeBuilder: "Statybininkas",
+      modeCustom: "Individualus",
+      cronPlaceholder: "Laiko išraiška (pvz., 0 9 * * *)",
+      currentSchedule: "Dabartinė tvarka:",
+      toolsLabel: "Įrankės (neprivalomi)",
+      toolsDescription:
+        "Pasirinkite, kokius agento įrankius šiandiena gali naudoti. Jei nė vienas įrankis nėra pasirinktas, šiandiena veiks be jokių įrankių.",
+      toolsSearch: "Paieška",
+      toolsNoResults: "Nėra įrankių, kurie atitinka",
+      required: "Reikalingas",
+      requiredFieldsBanner:
+        "Prašome užpildyti visus reikalingus laukelius, kad būtų galima sukurti darbo skelbimą.",
+      cancel: "Anuliu",
+      saving: "Taupymas...",
+      updateJob: "Atnaujinti darbą",
+      createJob: "Sukurti darbo poziciją",
+      jobUpdated: "Darbas atnaujintas",
+      jobCreated: "Sukurtas darbas",
+    },
+    builder: {
+      fallbackWarning:
+        'Šią frazę negalima redaguoti vizualiai. Norėdami ją išsaugoti, pasirinkite "Individualus" režimą, arba pakeiskite žemiau esančias ​​vertimes, kad ją pakeistumėte.',
+      run: "Bėgti",
+      frequency: {
+        minute: "būdami kiekvieną minutę",
+        hour: "valandinės",
+        day: "kasdieninis",
+        week: "kas savaitę",
+        month: "kas mėnesį",
+      },
+      every: "Kiekvienas",
+      minuteOne: "1 minutė",
+      minuteOther: "{{count}} minučių",
+      atMinute: "Minutė po minutės",
+      pastEveryHour: "būdami kiekvieną valandą",
+      at: "At",
+      on: "Apie",
+      onDay: "Jau",
+      ofEveryMonth: "iš kiekvieno mėnesio",
+      weekdays: {
+        sun: "Saulė",
+        mon: "Moneta",
+        tue: "Trečiadienis",
+        wed: "Trečiadienis",
+        thu: "Ketvirtadienis",
+        fri: "Penktadienis",
+        sat: "Sekmadienis",
+      },
+    },
+    runHistory: {
+      back: "Grįžti į paieškas",
+      title: "Paleidimo istorija: {{name}}",
+      schedule: "Programinė tvarka:",
+      emptyTitle: "Kol šis darbas nėra baigtas",
+      emptySubtitle: "Atlikite šią užduotį dabar ir peržiūrėkite rezultatus.",
+      runNow: "Pradėkite dabar",
+      table: {
+        status: "Statusas",
+        started: "Pradėtas",
+        duration: "Tr উপক",
+        error: "Klaida",
+      },
+      stopJob: "Pamesti darbas",
+    },
+    runDetail: {
+      loading: "Įkraudami važiavimo duomenis...",
+      notFound: "Nepavyko rasti.",
+      back: "Atgal",
+      unknownJob: "Nenurodytas darbas",
+      runHeading: "{{name}} – Treniruotė #{{id}}",
+      duration: "Trūkumas: {{value}}",
+      creating: "Kurimas...",
+      threadFailed: "Nepavyko sukurti temą",
+      sections: {
+        prompt: "Įspūdis",
+        error: "Klaida",
+        thinking: "Mintys ({{count}})",
+        toolCalls: "Naudojamų įrankių kvietimai ({{count}})",
+        files: "Failai ({{count}})",
+        response: "Atgarsas",
+        metrics: "Matmenys",
+      },
+      metrics: {
+        promptTokens: "Įspūdingos žymės:",
+        completionTokens: "Baigimo žymekliai:",
+      },
+      stopJob: "Nutraukite darbą",
+      killing: "Sustabdyti...",
+      continueInThread: "Tęsti pokalbį",
+    },
+    toolCall: {
+      arguments: "Argumentai:",
+      showResult: "Parodyti rezultatą",
+      hideResult: "Slėpti rezultatą",
+    },
+    file: {
+      unknown: "Nežinomas failas",
+      download: "Atsisiųsti",
+      downloadFailed: "Nepavyko atsisiųsti failą",
+      types: {
+        powerpoint: "PowerPoint",
+        pdf: "PDF dokumentas",
+        word: "Dokumentas, kurį galima redaguoti Microsoft Word programoje",
+        spreadsheet: "Spalvotas lapas (tabelis)",
+        generic: "Failas",
+      },
+    },
+    status: {
+      completed: "Baigtas",
+      failed: "Nepavyko",
+      timed_out: "Laikas baigėsi",
+      running: "Bėgimas",
+      queued: "Apsisukęs",
     },
   },
 };

@@ -108,6 +108,7 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
+    "scheduled-jobs": "Plānotas darba uzdevumi",
   },
   login: {
     "multi-user": {
@@ -200,9 +201,9 @@ const TRANSLATIONS = {
           'sniedz atbildes <b>tikai__, </b>ja dokumenta konteksts ir atrasts.<br />Lai izmantotu rīkus, jums būs jāizmanto komanda "@agent".',
       },
       automatic: {
-        title: "Automobiļs",
         description:
           'automātiski izmantos rīkus, ja modelis un sniedzējs atbalsta vietējo rīku izmantošanu. <br />Ja vietējā rīku izmantošana nav atbalstīta, jums būs jāizmantojat "@agent" komandu, lai izmantotu rīkus.',
+        title: "Aģents",
       },
     },
     history: {
@@ -335,7 +336,7 @@ const TRANSLATIONS = {
         readActions: "Lasīt",
         writeActions: "Rīcības",
         warning:
-          "Pieejums failu sistēmai var būt bīstams, jo tas var mainīt vai dzēst failus. Lūdzu, konsultējieties ar <link>dokumentāciju</link> pirms aktivizēšanas.",
+          "Pieejums failu sistēmai var būt bīstams, jo tas var mainīt vai dzēst failus. Lūdzu, konsultējieties ar <a>dokumentāciju</a> pirms aktivizēšanas.",
         skills: {
           "read-text-file": {
             title: "Atvērt failu",
@@ -1293,6 +1294,12 @@ const TRANSLATIONS = {
       tool_call_was_rejected:
         "Pieprasījums par instrumenta izmantošanu tika atgrūstīts.",
     },
+    custom_skills: "Pielāgotas prasmes",
+    agent_flows: "Aģentu plūsmas",
+    no_tools_found: "Neatradusies atbilstošas instrumentus",
+    loading_mcp_servers: "Ielāde MCP serverus...",
+    app_integrations: "Dienvidligzdas integrācijas",
+    sub_skills: "Īpašās prasmes",
   },
   profile_settings: {
     edit_account: "Rediģēt kontu",
@@ -1515,6 +1522,166 @@ const TRANSLATIONS = {
       "pending-description":
         "Izmantotāji, kas gaida apstiprinājumu. Salīdziniet šeit norādīto koda numuru ar to, kas redzams viņu Telegram sarunā.",
       unknown: "Nezināms",
+    },
+  },
+  scheduledJobs: {
+    title: "Plānotas darba uzdevumi",
+    enableNotifications:
+      "Ievērojiet pārlūkprogrammā atgādinājumus par darbā pieņemšanas rezultātiem",
+    description:
+      "Izveidot atkārtotas AI uzdevumus, kas tiek veiktas saskaņā ar noteiktu grafiku. Katrs uzdevums izmanto norādīto, kā arī var izmantot papildu rīkus, un rezultāts tiek saglabāts, lai to varētu pārskatīt.",
+    newJob: "Jauna darba pozīcija",
+    loading: "Ielāde...",
+    emptyTitle: "Vēl nav plānotu darbu",
+    emptySubtitle: "Izveidot vienu, lai sāktu.",
+    table: {
+      name: "Vārds",
+      schedule: "Kalendārs",
+      status: "Statuss",
+      lastRun: "Pēdējā brauciens",
+      nextRun: "Nākamā trase",
+      actions: "Rīcības",
+    },
+    confirmDelete: "Vai jūs noteikti vēlaties dzēst šo plānoto darbu?",
+    toast: {
+      deleted: "Darbs izdzēsts",
+      triggered: "Darbs veiksmīgi izpildīts.",
+      triggerFailed: "Neizdevās aktivizēt darbu",
+      triggerSkipped: "Šī darba izpilde jau ir sākusies.",
+      killed: "Darbs veiksmīgi pārtraukts",
+      killFailed: "Neizdevās pārtraukt darbu",
+    },
+    row: {
+      neverRun: "Nekad neiet sprintā",
+      viewRuns: "Skatīšanās reģīni",
+      runNow: "Runāt tagad",
+      enable: "Aktivizēt",
+      disable: "Atspējot",
+      edit: "Rediģēt",
+      delete: "Dzēst",
+    },
+    modal: {
+      titleEdit: "Ieraksta plānoto darbu",
+      titleNew: "Jauna plānota darba",
+      nameLabel: "Vārds",
+      namePlaceholder: "piemēram, ikdienas ziņu apkopojums",
+      promptLabel: "Iekšēja aicinājums",
+      promptPlaceholder:
+        "Instrukcija, kas norāda, ka programmu jāizpilda katrā darbībā...",
+      scheduleLabel: "Kalendārs",
+      modeBuilder: "Celtniejs",
+      modeCustom: "Pielāgotais",
+      cronPlaceholder: "Laika izteiksme (piemēram, 0 9 * * *)",
+      currentSchedule: "Pašreizējais grafiks:",
+      toolsLabel: "Rīki (pēc izvēles)",
+      toolsDescription:
+        "Izvēlieties, kādas programmatūras rīkus šis darbs var izmantot. Ja neviens rīks nav izvēlēts, darbs tiks veikts bez jebkurām programmatūras rīkiem.",
+      toolsSearch: "Meklēšana",
+      toolsNoResults: "Nav atrasts neviens atbilstošs rīks.",
+      required: "Nepieciešams",
+      requiredFieldsBanner:
+        "Lūdzu, aizpildiet visus obligātās laukus, lai izveidotu darbā.",
+      cancel: "Atcelt",
+      saving: "Ietaupīt...",
+      updateJob: "Atjaunināt darbu",
+      createJob: "Izveidot darbu",
+      jobUpdated: "Darba statuss atjaunināts",
+      jobCreated: "Izveidots darbs",
+    },
+    builder: {
+      fallbackWarning:
+        'Šo izteikumu nevar redzami rediģēt. Izmantojiet "Custom" režīmu, lai to saglabātu, vai mainiet jebko zemāk, lai to pārvietotu.',
+      run: "Runāt",
+      frequency: {
+        minute: "katru minūti",
+        hour: "laika periodā",
+        day: "katru dienu",
+        week: "katru nedēļu",
+        month: "mēnesī",
+      },
+      every: "Katrs",
+      minuteOne: "1 minūte",
+      minuteOther: "{{count}} minūtes",
+      atMinute: "Katrā minūtē",
+      pastEveryHour: "katru stundu",
+      at: "At",
+      on: "Par",
+      onDay: "Vienā dienā",
+      ofEveryMonth: "katram mēnešam",
+      weekdays: {
+        sun: "Suņa",
+        mon: "Ikdiena",
+        tue: "Otrdiena",
+        wed: "Trešdiena",
+        thu: "Ceturtdien",
+        fri: "Svētdiena",
+        sat: "Sastāvējums",
+      },
+    },
+    runHistory: {
+      back: "Atgriezties uz darba sludinājumiem",
+      title: "Runas vēsture: {{name}}",
+      schedule: "Kalendārs:",
+      emptyTitle: "Vēl nav veikti nekādi darbi",
+      emptySubtitle: "Veiciet darbu šajā laikā un apskatiet tā rezultātus.",
+      runNow: "Runā tagad",
+      table: {
+        status: "Statuss",
+        started: "Sācies",
+        duration: "Laiks",
+        error: "Kļūda",
+      },
+      stopJob: "Aizstāt darbu",
+    },
+    runDetail: {
+      loading: "Ievadīšanas darbību apraksts...",
+      notFound: "Nav atrasta.",
+      back: "Atpakaļ",
+      unknownJob: "Nevērtēts darbs",
+      runHeading: "{{name}} – Runa Nr. {{id}}",
+      duration: "Laiks: {{value}}",
+      creating: "Izveidot...",
+      threadFailed: "Izdevās izveidot tēmu",
+      sections: {
+        prompt: "Iekšējais stimuls",
+        error: "Kļūda",
+        thinking: "Domas ({{count}})",
+        toolCalls: "Rīku izmantošana ({{count}})",
+        files: "Faili ({{count}})",
+        response: "Atbilde",
+        metrics: "Mērījumi",
+      },
+      metrics: {
+        promptTokens: "Ievade:",
+        completionTokens: "Pilnībā aprakstīti elementi:",
+      },
+      stopJob: "Aizstāt darbu",
+      killing: "Apstādam...",
+      continueInThread: "Turpināt sarunu",
+    },
+    toolCall: {
+      arguments: "Argumenti:",
+      showResult: "Rādīt rezultātu",
+      hideResult: "Noslēgt rezultātu",
+    },
+    file: {
+      unknown: "Nezināms failss",
+      download: "Lejupielādēt",
+      downloadFailed: "Neizdevās lejupielādēt failu",
+      types: {
+        powerpoint: "PowerPoint",
+        pdf: "PDF dokumenta",
+        word: "Vārdu dokumenta faila",
+        spreadsheet: "Tabulas veidols",
+        generic: "Faila",
+      },
+    },
+    status: {
+      completed: "Pilnots",
+      failed: "Neizdevies",
+      timed_out: "Laiks esot beidzies",
+      running: "Skriešana",
+      queued: "Iekļauts rindā",
     },
   },
 };
