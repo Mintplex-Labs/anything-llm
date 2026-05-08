@@ -10,7 +10,7 @@ import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
 import StatusResponse from "./StatusResponse";
 import ToolApprovalRequest from "./ToolApprovalRequest";
-import ClarifyingQuestion from "./ClarifyingQuestion";
+import ClarifyingQuestionCard from "./ClarifyingQuestion";
 import FileDownloadCard from "./FileDownloadCard";
 import { useManageWorkspaceModal } from "../../../Modals/ManageWorkspace";
 import ManageWorkspace from "../../../Modals/ManageWorkspace";
@@ -312,7 +312,7 @@ function buildMessages({
 
     if (props.type === "clarifyingQuestion") {
       acc.push(
-        <ClarifyingQuestion
+        <ClarifyingQuestionCard
           key={`clarify-${props.requestId}`}
           requestId={props.requestId}
           questions={props.questions}
