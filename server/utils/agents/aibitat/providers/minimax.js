@@ -22,8 +22,8 @@ class MinimaxProvider extends InheritMultiple([Provider, UnTooled]) {
     this.model = model;
     this.verbose = true;
     this.maxTokens = process.env.MINIMAX_MAX_TOKENS
-      ? toValidNumber(process.env.MINIMAX_MAX_TOKENS, 1024)
-      : 1024;
+      ? toValidNumber(process.env.MINIMAX_MAX_TOKENS, null)
+      : null;
   }
 
   get client() {
@@ -58,7 +58,7 @@ class MinimaxProvider extends InheritMultiple([Provider, UnTooled]) {
       .create({
         model: this.model,
         messages,
-        max_tokens: this.maxTokens,
+        ...(this.maxTokens ? { max_tokens: this.maxTokens } : {}),
       })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
@@ -77,6 +77,7 @@ class MinimaxProvider extends InheritMultiple([Provider, UnTooled]) {
       model: this.model,
       stream: true,
       messages,
+      ...(this.maxTokens ? { max_tokens: this.maxTokens } : {}),
     });
   }
 
