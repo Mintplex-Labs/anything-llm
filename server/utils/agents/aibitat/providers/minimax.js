@@ -129,7 +129,7 @@ class MinimaxProvider extends InheritMultiple([Provider, UnTooled]) {
         cleanedMessages,
         functions,
         eventHandler,
-        {}
+        { provider: this }
       );
     } catch (error) {
       console.error(error.message, error);
@@ -165,7 +165,7 @@ class MinimaxProvider extends InheritMultiple([Provider, UnTooled]) {
         cleanedMessages,
         functions,
         this.getCost.bind(this),
-        {}
+        { provider: this }
       );
 
       if (result.retryWithError) {
