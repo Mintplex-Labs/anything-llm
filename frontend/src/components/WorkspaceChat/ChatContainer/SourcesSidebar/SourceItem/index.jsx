@@ -1,10 +1,15 @@
-import { parseChunkSource, SourceTypeCircle } from "../../ChatHistory/Citation";
+import {
+  parseChunkSource,
+  SourceTypeCircle,
+  getCustomImage,
+} from "../../ChatHistory/Citation";
 import { useTranslation } from "react-i18next";
 
 export default function SourceItem({ source, onClick }) {
   const { t } = useTranslation();
   const info = parseChunkSource(source);
-  const subtitle = info.isUrl ? info.text : t("chat_window.document");
+  const customImage = getCustomImage(info?.icon);
+  const subtitle = info?.isUrl ? info?.text : t("chat_window.document");
 
   return (
     <button
@@ -18,6 +23,7 @@ export default function SourceItem({ source, onClick }) {
           size={16}
           iconSize={10}
           url={info.href}
+          customImage={customImage}
         />
         <p className="flex-1 font-medium text-sm text-white light:text-slate-900 leading-[15px] truncate">
           {source.title}

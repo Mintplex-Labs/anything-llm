@@ -618,12 +618,15 @@ function workspaceEndpoints(app) {
       try {
         const { chatId } = request.params;
         const workspace = response.locals.workspace;
+        const user = await userFromSession(request, response);
         const cacheKey = `${workspace.slug}:${chatId}`;
         const wsChat = await WorkspaceChats.get({
           id: Number(chatId),
           workspaceId: workspace.id,
+          user_id: user?.id,
         });
 
+        if (!wsChat) return response.sendStatus(404);
         const cachedResponse = responseCache.get(cacheKey);
         if (cachedResponse) {
           response.writeHead(200, {

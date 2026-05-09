@@ -109,6 +109,7 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
+    "scheduled-jobs": "Geplante Aufgaben",
   },
   login: {
     "multi-user": {
@@ -201,9 +202,9 @@ const TRANSLATIONS = {
           'werden Antworten nur bei <b> und </b> bereitstellen, falls der Dokumentkontext gefunden wurde. Um die Tools zu nutzen, müssen Sie den Befehl "@agent" verwenden.',
       },
       automatic: {
-        title: "Auto",
         description:
           "wird automatisch Werkzeuge verwenden, wenn das Modell und der Anbieter native Werkzeugaufrufe unterstützen. <br />Wenn native Werkzeugaufrufe nicht unterstützt werden, müssen Sie den Befehl `@agent` verwenden, um Werkzeuge zu nutzen.",
+        title: "Vertreter",
       },
     },
     history: {
@@ -336,7 +337,7 @@ const TRANSLATIONS = {
         readActions: "Lesen von Aktionen",
         writeActions: "Aktionen",
         warning:
-          "Der Zugriff auf das Dateisystem kann gefährlich sein, da er Dateien ändern oder löschen kann. Bitte konsultieren Sie vor der Aktivierung die <link>Dokumentation</link>.",
+          "Der Zugriff auf das Dateisystem kann gefährlich sein, da er Dateien ändern oder löschen kann. Bitte konsultieren Sie vor der Aktivierung die <a>Dokumentation</a>.",
         skills: {
           "read-text-file": {
             title: "Datei öffnen/lesen",
@@ -1304,6 +1305,12 @@ const TRANSLATIONS = {
         "Die Genehmigung für die Bestellung der Werkzeuge wurde erteilt.",
       tool_call_was_rejected: "Die Anfrage nach dem Werkzeug wurde abgelehnt.",
     },
+    custom_skills: "Individuelle Fähigkeiten",
+    agent_flows: "Datenströme",
+    no_tools_found: "Keine passenden Werkzeuge gefunden.",
+    loading_mcp_servers: "MCP-Server laden...",
+    app_integrations: "Anwendungen und Integrationen",
+    sub_skills: "Spezifische Fähigkeiten",
   },
   profile_settings: {
     edit_account: "Account bearbeiten",
@@ -1535,6 +1542,168 @@ const TRANSLATIONS = {
       "pending-description":
         "Benutzer, die noch verifiziert werden müssen. Vergleichen Sie den hier angezeigten Pairing-Code mit dem, der in ihrem Telegram-Chat angezeigt wird.",
       unknown: "Unbekannt",
+    },
+  },
+  scheduledJobs: {
+    title: "Geplante Aufgaben",
+    enableNotifications:
+      "Aktivieren Sie Benachrichtigungen im Browser für Stellenangebote",
+    description:
+      "Erstellen Sie wiederkehrende KI-Aufgaben, die zu einem bestimmten Zeitpunkt ausgeführt werden. Jede Aufgabe führt eine Anfrage aus, optional mit zusätzlichen Werkzeugen, und speichert das Ergebnis zur Überprüfung.",
+    newJob: "Neue Arbeitsstelle",
+    loading: "Laden...",
+    emptyTitle: "Noch keine geplante Aufgaben",
+    emptySubtitle: "Erstellen Sie eines, um anzufangen.",
+    table: {
+      name: "Name",
+      schedule: "Zeitplan",
+      status: "Status",
+      lastRun: "Letzter Lauf",
+      nextRun: "Nächster Lauf",
+      actions: "Aktionen",
+    },
+    confirmDelete:
+      "Sind Sie sicher, dass Sie diesen geplanten Job löschen möchten?",
+    toast: {
+      deleted: "Stellenanzeige gelöscht",
+      triggered: "Die Aufgabe wurde erfolgreich gestartet.",
+      triggerFailed: "Fehlgeschlagenes Auslösen der Aufgabe",
+      triggerSkipped: "Die Arbeiten für dieses Projekt sind bereits in Gang",
+      killed: "Die Arbeit wurde erfolgreich beendet.",
+      killFailed: "Nicht in der Lage, die Arbeit zu beenden",
+    },
+    row: {
+      neverRun: "Bitte niemals laufen",
+      viewRuns: "Laufstrecken",
+      runNow: "Beginnen Sie jetzt",
+      enable: "Aktivieren",
+      disable: "Deaktivieren",
+      edit: "Bearbeiten",
+      delete: "Löschen",
+    },
+    modal: {
+      titleEdit: "Geplante Aufgabe bearbeiten",
+      titleNew: "Neuer geplanter Job",
+      nameLabel: "Name",
+      namePlaceholder: "z.B. Tages-Nachrichten-Zusammenfassung",
+      promptLabel: "Anweisung",
+      promptPlaceholder:
+        "Die Anweisung, dass es bei jeder Ausführung erfolgen soll…",
+      scheduleLabel: "Zeitplan",
+      modeBuilder: "Bauunternehmer",
+      modeCustom: "Maßgeschneidert",
+      cronPlaceholder: "Ausdruck für die Ausführungszeit (z. B. 0 9 * * *)",
+      currentSchedule: "Aktueller Zeitplan:",
+      toolsLabel: "Werkzeuge (optional)",
+      toolsDescription:
+        "Wählen Sie, welche Agenten-Tools für diese Aufgabe verwendet werden können. Wenn keine Tools ausgewählt sind, wird die Aufgabe ohne Verwendung von Tools ausgeführt.",
+      toolsSearch: "Suche",
+      toolsNoResults: "Keine der verfügbaren Werkzeuge passen",
+      required: "Erforderlich",
+      requiredFieldsBanner:
+        "Bitte füllen Sie alle erforderlichen Felder aus, um die Stellenanzeige zu erstellen.",
+      cancel: "Abbrechen",
+      saving: "Sparen...",
+      updateJob: "Stellenanzeige aktualisieren",
+      createJob: "Stellenanzeige erstellen",
+      jobUpdated: "Stellenanzeige aktualisiert",
+      jobCreated: "Arbeitsstelle geschaffen",
+    },
+    builder: {
+      fallbackWarning:
+        'Dieser Text kann nicht visuell bearbeitet werden. Verwenden Sie die Option "Benutzerdefiniert", um ihn beizubehalten, oder ändern Sie die entsprechenden Felder unten, um ihn zu überschreiben.',
+      run: "Laufen",
+      frequency: {
+        minute: "jede Minute",
+        hour: "pro Stunde",
+        day: "täglich",
+        week: "wöchentlich",
+        month: "monatlich",
+      },
+      every: "Jeder",
+      minuteOne: "1 Minute",
+      minuteOther: "{{count}} Minuten",
+      atMinute: "In der Minute",
+      pastEveryHour: "in jeder Stunde",
+      at: "Bei",
+      on: "Über",
+      onDay: "An einem Tag",
+      ofEveryMonth: "für jeden Monat",
+      weekdays: {
+        sun: "Sonne",
+        mon: "Montag",
+        tue: "Dienstag",
+        wed: "Mittwoch",
+        thu: "Donnerstag",
+        fri: "Freitag",
+        sat: "Samstag",
+      },
+    },
+    runHistory: {
+      back: "Zurück zu Stellen",
+      title: "Verlauf: {{name}}",
+      schedule: "Zeitplan:",
+      emptyTitle: "Noch keine Fortschritte bei dieser Aufgabe.",
+      emptySubtitle:
+        "Führen Sie die Aufgabe jetzt aus und überprüfen Sie die Ergebnisse.",
+      runNow: "Jetzt los!",
+      table: {
+        status: "Status",
+        started: "Angefangen",
+        duration: "Dauer",
+        error: "Fehler",
+      },
+      stopJob: "Arbeitsplatz verlassen",
+    },
+    runDetail: {
+      loading: "Details zum Ladevorgang werden geladen...",
+      notFound: "Fehler: Befehl nicht gefunden.",
+      back: "Zurück",
+      unknownJob: "Unbekannte Stellenbezeichnung",
+      runHeading: "{{name}} – Ausführung #{{id}}",
+      duration: "Dauer: {{value}}",
+      creating: "Erstellen...",
+      threadFailed: "Fehlgeschlagen beim Erstellen des Threads",
+      sections: {
+        prompt: "Anfrage",
+        error: "Fehler",
+        thinking: "Gedanken ({{count}})",
+        toolCalls: "Funktionsaufrufe ({{count}})",
+        files: "Dateien ({{count}})",
+        response: "Antwort",
+        metrics: "Kennzahlen",
+      },
+      metrics: {
+        promptTokens: "Auslöse-Token:",
+        completionTokens: "Abschluss-Token:",
+      },
+      stopJob: "Arbeitsplatz verlassen",
+      killing: "Anhalten...",
+      continueInThread: "Weiter im Chat",
+    },
+    toolCall: {
+      arguments: "Argumente:",
+      showResult: "Ergebnis anzeigen",
+      hideResult: "Ergebnis ausblenden",
+    },
+    file: {
+      unknown: "Unbekannte Datei",
+      download: "Herunterladen",
+      downloadFailed: "Datei konnte nicht heruntergeladen werden",
+      types: {
+        powerpoint: "PowerPoint",
+        pdf: "PDF-Dokument",
+        word: "Word-Dokument",
+        spreadsheet: "Tabellenkalkulation",
+        generic: "Datei",
+      },
+    },
+    status: {
+      completed: "Abgeschlossen",
+      failed: "Fehlgeschlagen",
+      timed_out: "Zeitüberschreitung",
+      running: "Laufen",
+      queued: "Warteschlange",
     },
   },
 };

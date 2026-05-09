@@ -7,7 +7,6 @@ import AddPresetModal from "./SlashPresets/AddPresetModal";
 import EditPresetModal from "./SlashPresets/EditPresetModal";
 import PublishEntityModal from "@/components/CommunityHub/PublishEntityModal";
 import showToast from "@/utils/toast";
-import { useIsAgentSessionActive } from "@/utils/chat/agent";
 import { PROMPT_INPUT_EVENT } from "@/components/WorkspaceChat/ChatContainer/PromptInput";
 import useToolsMenuItems from "../../useToolsMenuItems";
 import SlashCommandRow from "./SlashCommandRow";
@@ -20,7 +19,6 @@ export default function SlashCommandsTab({
   registerItemCount,
 }) {
   const { t } = useTranslation();
-  const isActiveAgentSession = useIsAgentSessionActive();
   const {
     isOpen: isAddModalOpen,
     openModal: openAddModal,
@@ -49,38 +47,31 @@ export default function SlashCommandsTab({
     setPresets(presets);
   };
 
-  // Build the list of selectable items for keyboard navigation and rendering
-  // Command names must stay as static English strings since the backend
-  // matches against exact "/reset" and "/exit" commands.
-  const items = useMemo(() => {
-    const builtIn = isActiveAgentSession
-      ? {
-          command: "/exit",
-          description: t("chat_window.preset_exit_description"),
-          autoSubmit: true,
-        }
-      : {
-          command: "/reset",
-          description: t("chat_window.preset_reset_description"),
-          autoSubmit: true,
-        };
-
-    return [
-      builtIn,
+  // Build the list of selectable items for keyboard navigation and rendering.
+  // /reset is a static English string since the backend matches it exactly.
+  // During an agent session it ends the session AND clears the chat.
+  const items = useMemo(
+    () => [
+      {
+        command: "/reset",
+        description: t("chat_window.preset_reset_description"),
+        autoSubmit: true,
+      },
       ...presets.map((preset) => ({
         command: preset.command,
         description: preset.description,
         autoSubmit: false,
         preset,
       })),
-    ];
-  }, [isActiveAgentSession, presets]);
+    ],
+    [presets, t]
+  );
 
   const handleUseCommand = useCallback(
     (command, autoSubmit = false) => {
       setShowing(false);
 
-      // Auto-submit commands (/reset, /exit) fire immediately
+      // Auto-submit commands (/reset) fire immediately
       if (autoSubmit) {
         sendCommand({ text: command, autoSubmit: true });
         promptRef?.current?.focus();
@@ -189,21 +180,19 @@ export default function SlashCommandsTab({
       ))}
 
       {/* Add new */}
-      {!isActiveAgentSession && (
-        <div
-          onClick={openAddModal}
-          className="flex items-center gap-1.5 px-2 py-1 rounded cursor-pointer hover:bg-zinc-700/50 light:hover:bg-slate-100"
-        >
-          <Plus
-            size={12}
-            weight="bold"
-            className="text-white light:text-slate-900"
-          />
-          <span className="text-xs text-white light:text-slate-900">
-            {t("chat_window.add_new")}
-          </span>
-        </div>
-      )}
+      <div
+        onClick={openAddModal}
+        className="flex items-center gap-1.5 px-2 py-1 rounded cursor-pointer hover:bg-zinc-700/50 light:hover:bg-slate-100"
+      >
+        <Plus
+          size={12}
+          weight="bold"
+          className="text-white light:text-slate-900"
+        />
+        <span className="text-xs text-white light:text-slate-900">
+          {t("chat_window.add_new")}
+        </span>
+      </div>
 
       {/* Modals */}
       <AddPresetModal

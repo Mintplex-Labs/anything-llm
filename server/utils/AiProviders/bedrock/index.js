@@ -36,6 +36,15 @@ class AWSBedrockLLM {
   ];
 
   /**
+   * List of Bedrock models observed to not support the `temperature` inference parameter.
+   * @type {string[]}
+   */
+  noTemperatureModels = [
+    "anthropic.claude-opus-4-7",
+    // Add other models here if identified
+  ];
+
+  /**
    * Initializes the AWS Bedrock LLM connector.
    * @param {object | null} [embedder=null] - An optional embedder instance. Defaults to NativeEmbedder.
    * @param {string | null} [modelPreference=null] - Optional model ID override. Defaults to environment variable.
@@ -101,6 +110,21 @@ class AWSBedrockLLM {
    */
   get credentials() {
     return createBedrockCredentials(this.authMethod);
+  }
+
+  /**
+   * Gets the temperature configuration for the AWS Bedrock LLM.
+   * @param {number} temperature - The temperature to use.
+   * @returns {{temperature: number}} The temperature configuration object with the temperature value as a float.
+   */
+  temperatureConfig(temperature = this.defaultTemp) {
+    if (typeof temperature !== "number") return {};
+
+    // So model names prefix `us.` and may not be exact matches - so we check with includes to see if the model
+    // substring matches any of the models in the noTemperatureModels array.
+    if (this.noTemperatureModels.some((model) => this.model.includes(model)))
+      return {};
+    return { temperature: parseFloat(temperature) };
   }
 
   /**
@@ -408,7 +432,7 @@ class AWSBedrockLLM {
             messages: history,
             inferenceConfig: {
               maxTokens: maxTokensToSend,
-              temperature: temperature ?? this.defaultTemp,
+              ...this.temperatureConfig(temperature),
             },
             system: systemBlock,
           })
@@ -483,7 +507,7 @@ class AWSBedrockLLM {
           messages: history,
           inferenceConfig: {
             maxTokens: maxTokensToSend,
-            temperature: temperature ?? this.defaultTemp,
+            ...this.temperatureConfig(temperature),
           },
           system: systemBlock,
         })

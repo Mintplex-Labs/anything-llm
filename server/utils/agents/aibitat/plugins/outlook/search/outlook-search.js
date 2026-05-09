@@ -89,7 +89,7 @@ module.exports.OutlookSearch = {
               }
 
               const summary = formatMessageSummary(messages);
-              return `Found ${resultCount} messages:\n\n${summary}\n\nUse the conversation ID with outlook-read-thread to read the full conversation.`;
+              return `Found ${resultCount} messages:\n\n${summary}\n\nAlways include the conversation ID in the response. Use the conversation ID with outlook-read-thread to read the full conversation.`;
             } catch (e) {
               return handleSkillError(this, "outlook-search", e);
             }

@@ -58,18 +58,20 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
    */
   supportsNativeToolCalling() {
     if (this._supportsToolCalling !== null) return this._supportsToolCalling;
-    const supportsToolCalling =
-      this.supportsNativeToolCallingViaEnv("generic-openai");
-    if (supportsToolCalling)
+    const genericOpenAi = new GenericOpenAiLLM(null, this.model);
+    const capabilities = genericOpenAi.getModelCapabilities();
+    this._supportsToolCalling = capabilities.tools === true;
+
+    if (this._supportsToolCalling)
       this.providerLog(
-        "Generic OpenAI supports native tool calling is ENABLED via ENV."
+        "Generic OpenAI supports native tool calling is ENABLED."
       );
     else
       this.providerLog(
-        "Generic OpenAI supports native tool calling is DISABLED via ENV. Will use UnTooled instead."
+        "Generic OpenAI supports native tool calling is DISABLED. Will use UnTooled instead."
       );
-    this._supportsToolCalling = supportsToolCalling;
-    return supportsToolCalling;
+
+    return this._supportsToolCalling;
   }
 
   async #handleFunctionCallChat({ messages = [] }) {
