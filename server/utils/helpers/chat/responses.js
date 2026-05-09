@@ -189,7 +189,7 @@ function formatClarifyingSurveyForPrompt(survey) {
       .map((q, i) => {
         const a = answers[i] || { skipped: true };
         let answerText;
-        if (a.skipped) answerText = "[skipped]";
+        if (a.skipped) answerText = "[user skipped]";
         else if (Array.isArray(a.answer)) answerText = a.answer.join(", ");
         else if (a.answer === null || a.answer === undefined || a.answer === "")
           answerText = "[no answer]";
