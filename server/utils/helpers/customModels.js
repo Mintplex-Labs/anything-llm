@@ -18,6 +18,7 @@ const { getAllLemonadeModels } = require("../AiProviders/lemonade");
 
 const SUPPORT_CUSTOM_MODELS = [
   "openai",
+  "openai-stt",
   "anthropic",
   "localai",
   "ollama",
@@ -63,6 +64,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
   switch (provider) {
     case "openai":
       return await openAiModels(apiKey);
+    case "openai-stt":
+      return await openAiSttModels(apiKey);
     case "anthropic":
       return await anthropicModels(apiKey);
     case "localai":
@@ -241,6 +244,50 @@ async function openAiModels(apiKey = null) {
   if ((gpts.length > 0 || customModels.length > 0) && !!apiKey)
     process.env.OPEN_AI_KEY = apiKey;
   return { models: [...gpts, ...customModels], error: null };
+}
+
+async function openAiSttModels(apiKey = null) {
+  const fallback = [
+    { id: "whisper-1", name: "whisper-1", organization: "OpenAi" },
+    {
+      id: "gpt-4o-transcribe",
+      name: "gpt-4o-transcribe",
+      organization: "OpenAi",
+    },
+    {
+      id: "gpt-4o-mini-transcribe",
+      name: "gpt-4o-mini-transcribe",
+      organization: "OpenAi",
+    },
+  ];
+
+  const { OpenAI: OpenAIApi } = require("openai");
+  const openai = new OpenAIApi({
+    apiKey: apiKey || process.env.OPEN_AI_KEY,
+  });
+
+  const allModels = await openai.models
+    .list()
+    .then((results) => results.data)
+    .catch((e) => {
+      console.error(`OpenAI:listModels (stt)`, e.message);
+      return null;
+    });
+
+  if (!allModels) return { models: fallback, error: null };
+
+  // The /v1/models response has no category/type field, so we filter by id.
+  // Realtime variants use a separate WebSocket API and are not compatible
+  // with the audio.transcriptions.create endpoint we use server-side.
+  const models = allModels
+    .filter(
+      (m) =>
+        (m.id.includes("whisper") || m.id.includes("transcribe")) &&
+        !m.id.includes("realtime")
+    )
+    .map((m) => ({ ...m, name: m.id, organization: "OpenAi" }));
+
+  return { models: models.length ? models : fallback, error: null };
 }
 
 async function anthropicModels(_apiKey = null) {
