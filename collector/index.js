@@ -18,6 +18,18 @@ const { verifyPayloadIntegrity } = require("./middleware/verifyIntegrity");
 const { httpLogger } = require("./middleware/httpLogger");
 const app = express();
 const FILE_LIMIT = "3GB";
+const DEFAULT_COLLECTOR_PORT = 8888;
+const COLLECTOR_PORT = getCollectorPort();
+
+function getCollectorPort() {
+  const port = Number(process.env.COLLECTOR_PORT || DEFAULT_COLLECTOR_PORT);
+  if (Number.isInteger(port) && port > 0 && port <= 65535) return port;
+
+  console.warn(
+    `Invalid COLLECTOR_PORT "${process.env.COLLECTOR_PORT}". Falling back to ${DEFAULT_COLLECTOR_PORT}.`
+  );
+  return DEFAULT_COLLECTOR_PORT;
+}
 
 // Only log HTTP requests in development mode and if the ENABLE_HTTP_LOGGER environment variable is set to true
 if (
@@ -187,9 +199,9 @@ app.all("*", function (_, response) {
 });
 
 app
-  .listen(8888, async () => {
+  .listen(COLLECTOR_PORT, async () => {
     await wipeCollectorStorage();
-    console.log(`Document processor app listening on port 8888`);
+    console.log(`Document processor app listening on port ${COLLECTOR_PORT}`);
   })
   .on("error", function (_) {
     process.once("SIGUSR2", function () {

@@ -1,5 +1,13 @@
 const { EncryptionManager } = require("../EncryptionManager");
 const { Agent } = require("undici");
+const DEFAULT_COLLECTOR_PORT = 8888;
+
+function getCollectorPort() {
+  const port = Number(process.env.COLLECTOR_PORT || DEFAULT_COLLECTOR_PORT);
+  return Number.isInteger(port) && port > 0 && port <= 65535
+    ? port
+    : DEFAULT_COLLECTOR_PORT;
+}
 
 /**
  * @typedef {Object} CollectorOptions
@@ -26,7 +34,7 @@ class CollectorApi {
   constructor() {
     const { CommunicationKey } = require("../comKey");
     this.comkey = new CommunicationKey();
-    this.endpoint = `http://0.0.0.0:${process.env.COLLECTOR_PORT || 8888}`;
+    this.endpoint = `http://0.0.0.0:${getCollectorPort()}`;
   }
 
   log(text, ...args) {
