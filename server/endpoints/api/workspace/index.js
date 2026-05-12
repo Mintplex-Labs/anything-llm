@@ -15,6 +15,9 @@ const {
 } = require("../../../utils/helpers/chat/responses");
 const { ApiChatHandler } = require("../../../utils/chats/apiChatHandler");
 const { getModelTag } = require("../../utils");
+const {
+  workspaceDeletionProtection,
+} = require("../../../utils/workspaceDeletionProtection");
 
 function apiWorkspaceEndpoints(app) {
   if (!app) return;
@@ -221,7 +224,7 @@ function apiWorkspaceEndpoints(app) {
 
   app.delete(
     "/v1/workspace/:slug",
-    [validApiKey],
+    [validApiKey, workspaceDeletionProtection],
     async (request, response) => {
       /*
     #swagger.tags = ['Workspaces']

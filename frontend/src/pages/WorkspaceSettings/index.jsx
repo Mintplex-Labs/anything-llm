@@ -65,6 +65,9 @@ function ShowWorkspaceChat() {
       setWorkspace({
         ..._workspace,
         vectorDB: _settings?.VectorDB,
+        workspaceDeletionProtection: _settings
+          ? _settings.WorkspaceDeletionProtection === true
+          : true,
         suggestedMessages,
       });
       setLoading(false);

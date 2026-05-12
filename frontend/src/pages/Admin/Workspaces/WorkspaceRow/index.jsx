@@ -3,7 +3,11 @@ import Admin from "@/models/admin";
 import paths from "@/utils/paths";
 import { LinkSimple, Trash } from "@phosphor-icons/react";
 
-export default function WorkspaceRow({ workspace, users: _users }) {
+export default function WorkspaceRow({
+  workspace,
+  users: _users,
+  workspaceDeletionProtection = false,
+}) {
   const rowRef = useRef(null);
   const handleDelete = async () => {
     if (
@@ -45,12 +49,14 @@ export default function WorkspaceRow({ workspace, users: _users }) {
         </td>
         <td className="px-6">{workspace.createdAt}</td>
         <td className="px-6 flex items-center gap-x-6 h-full mt-1">
-          <button
-            onClick={handleDelete}
-            className="text-xs font-medium text-white/80 light:text-black/80 hover:light:text-red-500 hover:text-red-300 rounded-lg px-2 py-1 hover:bg-white hover:light:bg-red-50 hover:bg-opacity-10"
-          >
-            <Trash className="h-5 w-5" />
-          </button>
+          {!workspaceDeletionProtection && (
+            <button
+              onClick={handleDelete}
+              className="text-xs font-medium text-white/80 light:text-black/80 hover:light:text-red-500 hover:text-red-300 rounded-lg px-2 py-1 hover:bg-white hover:light:bg-red-50 hover:bg-opacity-10"
+            >
+              <Trash className="h-5 w-5" />
+            </button>
+          )}
         </td>
       </tr>
     </>

@@ -38,6 +38,9 @@ const { purgeDocument } = require("../utils/files/purgeDocument");
 const { getModelTag } = require("./utils");
 const { searchWorkspaceAndThreads } = require("../utils/helpers/search");
 const { workspaceParsedFilesEndpoints } = require("./workspacesParsedFiles");
+const {
+  workspaceDeletionProtection,
+} = require("../utils/workspaceDeletionProtection");
 
 function workspaceEndpoints(app) {
   if (!app) return;
@@ -270,7 +273,11 @@ function workspaceEndpoints(app) {
 
   app.delete(
     "/workspace/:slug",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      workspaceDeletionProtection,
+    ],
     async (request, response) => {
       try {
         const { slug = "" } = request.params;
