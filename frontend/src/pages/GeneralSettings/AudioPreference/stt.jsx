@@ -5,9 +5,11 @@ import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
 import OpenAiLogo from "@/media/llmprovider/openai.png";
+import GenericOpenAiLogo from "@/media/llmprovider/generic-openai.png";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import BrowserNative from "@/components/SpeechToText/BrowserNative";
 import OpenAiSTTOptions from "@/components/SpeechToText/OpenAiOptions";
+import GenericOpenAiSTTOptions from "@/components/SpeechToText/GenericOpenAiOptions";
 
 const PROVIDERS = [
   {
@@ -23,6 +25,14 @@ const PROVIDERS = [
     logo: OpenAiLogo,
     options: (settings) => <OpenAiSTTOptions settings={settings} />,
     description: "Use OpenAI's Whisper API to transcribe speech to text.",
+  },
+  {
+    name: "Generic OpenAI",
+    value: "generic-openai",
+    logo: GenericOpenAiLogo,
+    options: (settings) => <GenericOpenAiSTTOptions settings={settings} />,
+    description:
+      "Connect to any OpenAI-compatible STT service via a custom configuration.",
   },
 ];
 
