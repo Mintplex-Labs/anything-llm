@@ -828,6 +828,16 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // Cerebras Options
+  CerebrasApiKey: {
+    envKey: "CEREBRAS_API_KEY",
+    checks: [isNotEmpty],
+  },
+  CerebrasModelPref: {
+    envKey: "CEREBRAS_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
   // Lemonade Options
   LemonadeLLMBasePath: {
     envKey: "LEMONADE_LLM_BASE_PATH",
@@ -975,6 +985,7 @@ function supportedLLM(input = "") {
     "docker-model-runner",
     "privatemode",
     "sambanova",
+    "cerebras",
     "lemonade",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;

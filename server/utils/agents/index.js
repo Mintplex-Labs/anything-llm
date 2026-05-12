@@ -273,6 +273,10 @@ class AgentHandler {
         if (!process.env.SAMBANOVA_LLM_API_KEY)
           throw new Error("SambaNova API key must be provided to use agents.");
         break;
+      case "cerebras":
+        if (!process.env.CEREBRAS_API_KEY)
+          throw new Error("Cerebras API key must be provided to use agents.");
+        break;
       case "lemonade":
         if (!process.env.LEMONADE_LLM_BASE_PATH)
           throw new Error("Lemonade base path must be provided to use agents.");
@@ -365,6 +369,8 @@ class AgentHandler {
         return process.env.PRIVATEMODE_LLM_MODEL_PREF ?? null;
       case "sambanova":
         return process.env.SAMBANOVA_LLM_MODEL_PREF ?? null;
+      case "cerebras":
+        return process.env.CEREBRAS_MODEL_PREF ?? "gpt-oss-120b";
       case "lemonade":
         return process.env.LEMONADE_LLM_MODEL_PREF ?? null;
       default:

@@ -172,6 +172,9 @@ function getModelTag() {
     case "sambanova":
       model = process.env.SAMBANOVA_LLM_MODEL_PREF;
       break;
+    case "cerebras":
+      model = process.env.CEREBRAS_MODEL_PREF;
+      break;
     case "lemonade":
       model = process.env.LEMONADE_LLM_MODEL_PREF;
       break;

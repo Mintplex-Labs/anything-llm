@@ -245,6 +245,11 @@ const LLM_PROVIDER_PRIVACY_MAP = {
     policyUrl: "https://sambanova.ai/privacy-policy",
     logo: SambaNovaLogo,
   },
+  cerebras: {
+    name: "Cerebras",
+    policyUrl: "https://www.cerebras.ai/privacy",
+    logo: GenericOpenAiLogo,
+  },
   lemonade: {
     name: "Lemonade",
     description: [

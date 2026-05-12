@@ -111,6 +111,7 @@ AnythingLLM supports multiple users as well where you can control the access and
 - [Docker Model Runner](https://docs.docker.com/ai/model-runner/)
 - [PrivateModeAI (chat models)](https://privatemode.ai/)
 - [SambaNova Cloud (chat models)](https://cloud.sambanova.ai/)
+- [Cerebras Inference (chat models)](https://www.cerebras.ai/inference)
 - [Lemonade by AMD](https://lemonade-server.ai)
 
 **Embedder models:**

@@ -240,6 +240,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "sambanova":
       const { SambaNovaLLM } = require("../AiProviders/sambanova");
       return new SambaNovaLLM(embedder, model);
+    case "cerebras":
+      const { CerebrasLLM } = require("../AiProviders/cerebras");
+      return new CerebrasLLM(embedder, model);
     case "lemonade":
       const { LemonadeLLM } = require("../AiProviders/lemonade");
       return new LemonadeLLM(embedder, model);
@@ -422,6 +425,9 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "sambanova":
       const { SambaNovaLLM } = require("../AiProviders/sambanova");
       return SambaNovaLLM;
+    case "cerebras":
+      const { CerebrasLLM } = require("../AiProviders/cerebras");
+      return CerebrasLLM;
     case "lemonade":
       const { LemonadeLLM } = require("../AiProviders/lemonade");
       return LemonadeLLM;
@@ -507,6 +513,8 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.PRIVATEMODE_LLM_MODEL_PREF;
     case "sambanova":
       return process.env.SAMBANOVA_LLM_MODEL_PREF;
+    case "cerebras":
+      return process.env.CEREBRAS_MODEL_PREF;
     case "lemonade":
       return process.env.LEMONADE_LLM_MODEL_PREF;
     default:

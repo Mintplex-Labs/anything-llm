@@ -320,6 +320,14 @@ class Provider {
           apiKey: process.env.SAMBANOVA_LLM_API_KEY ?? null,
           ...config,
         });
+      case "cerebras":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.cerebras.ai/v1",
+          },
+          apiKey: process.env.CEREBRAS_API_KEY ?? null,
+          ...config,
+        });
       // OSS Model Runners
       // case "anythingllm_ollama":
       //   return new ChatOllama({

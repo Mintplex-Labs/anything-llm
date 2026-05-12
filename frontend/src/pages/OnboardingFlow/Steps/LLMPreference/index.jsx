@@ -70,6 +70,7 @@ import GiteeAiOptions from "@/components/LLMSelection/GiteeAIOptions";
 import DockerModelRunnerOptions from "@/components/LLMSelection/DockerModelRunnerOptions";
 import PrivateModeOptions from "@/components/LLMSelection/PrivateModeOptions";
 import SambaNovaOptions from "@/components/LLMSelection/SambaNovaOptions";
+import CerebrasOptions from "@/components/LLMSelection/CerebrasOptions";
 import LemonadeOptions from "@/components/LLMSelection/LemonadeOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
@@ -175,6 +176,13 @@ const LLMS = [
     logo: SambaNovaLogo,
     options: (settings) => <SambaNovaOptions settings={settings} />,
     description: "Run open source models from SambaNova.",
+  },
+  {
+    name: "Cerebras",
+    value: "cerebras",
+    logo: GenericOpenAiLogo,
+    options: (settings) => <CerebrasOptions settings={settings} />,
+    description: "Run fast inference models from Cerebras.",
   },
   {
     name: "Novita AI",

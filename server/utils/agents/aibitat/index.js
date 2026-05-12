@@ -1332,6 +1332,8 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
         return new Providers.PrivatemodeProvider({ model: config.model });
       case "sambanova":
         return new Providers.SambaNovaProvider({ model: config.model });
+      case "cerebras":
+        return new Providers.CerebrasProvider({ model: config.model });
       case "lemonade":
         return new Providers.LemonadeProvider({ model: config.model });
       default:
