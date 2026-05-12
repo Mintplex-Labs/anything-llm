@@ -297,7 +297,9 @@ export default function MultiUserAuth() {
               </h3>
             </div>
             <p className="text-zinc-400 light:text-zinc-600 text-sm text-center">
-              {t("login.sign-in", { appName: customAppName || "AnythingLLM" })}
+              {t("login.sign-in", {
+                appName: customAppName || t("common.productName"),
+              })}
             </p>
           </div>
         </div>

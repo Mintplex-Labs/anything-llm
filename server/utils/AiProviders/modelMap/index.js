@@ -191,11 +191,16 @@ You can fix this by restarting AnythingLLM so the model map is re-pulled.
    * @returns {number|null} - The context window for the given provider and model
    */
   get(provider = null, model = null) {
-    if (!provider || !this.cachedModelMap || !this.cachedModelMap[provider])
-      return null;
-    if (!model) return this.cachedModelMap[provider];
+    const cachedMap = this.cachedModelMap;
+    const providerModelMap =
+      cachedMap?.[provider] || ContextWindowFinder.modelMap?.[provider];
 
-    const modelContextWindow = this.cachedModelMap[provider][model];
+    if (!provider || !providerModelMap) return null;
+    if (!model) return providerModelMap;
+
+    const modelContextWindow =
+      providerModelMap[model] ||
+      ContextWindowFinder.modelMap?.[provider]?.[model];
     if (!modelContextWindow) {
       this.log("Invalid access to model context window - not found in cache", {
         provider,

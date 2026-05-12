@@ -116,6 +116,8 @@ const LEGACY_MODEL_MAP = {
     "deepseek-chat": 128000,
     "deepseek-coder": 128000,
     "deepseek-reasoner": 128000,
+    "deepseek-v4-flash": 32_768,
+    "deepseek-v4-pro": 32_768,
   },
   xai: {
     "grok-beta": 131072,

@@ -35,6 +35,8 @@ const { mcpServersEndpoints } = require("./endpoints/mcpServers");
 const { mobileEndpoints } = require("./endpoints/mobile");
 const { webPushEndpoints } = require("./endpoints/webPush");
 const { telegramEndpoints } = require("./endpoints/telegram");
+const { wechatEndpoints } = require("./endpoints/wechat");
+const { advancedGatewayEndpoints } = require("./endpoints/advancedGateway");
 const { scheduledJobEndpoints } = require("./endpoints/scheduledJobs");
 const {
   outlookAgentEndpoints,
@@ -46,6 +48,9 @@ const { httpLogger } = require("./middleware/httpLogger");
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
+const rawBodySaver = (request, _response, buffer, encoding) => {
+  if (buffer?.length) request.rawBody = buffer.toString(encoding || "utf8");
+};
 
 // Only log HTTP requests in development mode and if the ENABLE_HTTP_LOGGER environment variable is set to true
 if (
@@ -59,12 +64,13 @@ if (
   );
 }
 app.use(cors({ origin: true }));
-app.use(bodyParser.text({ limit: FILE_LIMIT }));
-app.use(bodyParser.json({ limit: FILE_LIMIT }));
+app.use(bodyParser.text({ limit: FILE_LIMIT, verify: rawBodySaver }));
+app.use(bodyParser.json({ limit: FILE_LIMIT, verify: rawBodySaver }));
 app.use(
   bodyParser.urlencoded({
     limit: FILE_LIMIT,
     extended: true,
+    verify: rawBodySaver,
   })
 );
 
@@ -96,6 +102,8 @@ mcpServersEndpoints(apiRouter);
 mobileEndpoints(apiRouter);
 webPushEndpoints(apiRouter);
 telegramEndpoints(apiRouter);
+wechatEndpoints(apiRouter);
+advancedGatewayEndpoints(apiRouter);
 scheduledJobEndpoints(apiRouter);
 outlookAgentEndpoints(apiRouter);
 googleAgentSkillEndpoints(apiRouter);

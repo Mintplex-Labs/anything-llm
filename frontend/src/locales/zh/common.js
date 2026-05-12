@@ -8,7 +8,7 @@ const TRANSLATIONS = {
     llm: {
       title: "LLM 偏好",
       description:
-        "AnythingLLM 可以与多家 LLM 提供商合作。这将是处理聊天的服务。",
+        "向量知识库可以与多家 LLM 提供商配合使用。这将是处理聊天的服务。",
     },
     userSetup: {
       title: "用户设置",
@@ -32,14 +32,14 @@ const TRANSLATIONS = {
       settingsHint: "这些设置可以随时在设置中重新配置。",
     },
     survey: {
-      title: "欢迎使用 AnythingLLM",
-      description: "帮助我们为你的需求打造 AnythingLLM。可选。",
+      title: "欢迎使用向量知识库",
+      description: "帮助我们根据你的需求打造向量知识库。可选。",
       email: "你的电子邮件是什么？",
-      useCase: "你将如何使用 AnythingLLM？",
+      useCase: "你将如何使用向量知识库？",
       useCaseWork: "用于工作",
       useCasePersonal: "用于个人使用",
       useCaseOther: "其他",
-      comment: "你是如何听说 AnythingLLM 的？",
+      comment: "你是如何听说向量知识库的？",
       commentPlaceholder:
         "Reddit，Twitter，GitHub，YouTube 等 - 让我们知道你是如何找到我们的！",
       skip: "跳过调查",
@@ -47,6 +47,9 @@ const TRANSLATIONS = {
     },
   },
   common: {
+    productName: "向量知识库",
+    defaultSiteTitle: "向量知识库",
+    clear: "清除",
     "workspaces-name": "工作区名称",
     selection: "模型选择",
     save: "保存更改",
@@ -103,7 +106,9 @@ const TRANSLATIONS = {
     },
     channels: "频道",
     "available-channels": {
-      telegram: "电报",
+      telegram: "电报连接器",
+      wechat: "微信连接器",
+      "advanced-gateway": "高级连接器",
     },
     "scheduled-jobs": "计划好的任务",
   },
@@ -158,7 +163,7 @@ const TRANSLATIONS = {
       add: "添加新消息",
       save: "保存消息",
       heading: "向我解释",
-      body: "AnythingLLM 的好处",
+      body: "向量知识库的好处",
     },
     delete: {
       title: "删除工作区",
@@ -706,7 +711,7 @@ const TRANSLATIONS = {
         title: "智能技能选择",
         "beta-badge": "β 版本",
         description:
-          "实现无限工具和按查询减少高达 80% 的 Token 使用量——AnythingLLM 能够自动选择最合适的技能，以应对每个提示。",
+          "实现无限工具调用，并将每次查询的 Token 使用量最高减少 80%——向量知识库能够为每个提示自动选择最合适的技能。",
         "max-tools": {
           title: "麦克斯工具",
           description:
@@ -731,15 +736,15 @@ const TRANSLATIONS = {
   customization: {
     interface: {
       title: "界面偏好设置",
-      description: "设置您的 AnythingLLM 界面偏好。",
+      description: "设置您的向量知识库界面偏好。",
     },
     branding: {
       title: "品牌与白标设置",
-      description: "使用自定义品牌对白标您的 AnythingLLM 实例。",
+      description: "使用自定义品牌对白标您的向量知识库实例。",
     },
     chat: {
       title: "聊天",
-      description: "设置您的 AnythingLLM 聊天偏好。",
+      description: "设置您的向量知识库聊天偏好。",
       auto_submit: {
         title: "自动提交语音输入",
         description: "在静音一段时间后自动提交语音输入",
@@ -772,7 +777,7 @@ const TRANSLATIONS = {
       },
       "display-language": {
         title: "显示语言",
-        description: "选择显示 AnythingLLM 界面所用的语言（若有翻译可用）。",
+        description: "选择显示向量知识库界面所用的语言（若有翻译可用）。",
       },
       logo: {
         title: "品牌标志",
@@ -809,7 +814,7 @@ const TRANSLATIONS = {
   },
   api: {
     title: "API 密钥",
-    description: "API 密钥允许持有者以编程方式访问和管理此 AnythingLLM 实例。",
+    description: "API 密钥允许持有者以编程方式访问和管理此向量知识库实例。",
     link: "阅读 API 文档",
     generate: "生成新的 API 密钥",
     empty: "未找到 API 密钥",
@@ -822,7 +827,7 @@ const TRANSLATIONS = {
       cancel: "取消",
       close: "关闭",
       create: "创建 API 密钥",
-      helper: "创建后，API 密钥可用于以编程方式访问并配置此 AnythingLLM 实例。",
+      helper: "创建后，API 密钥可用于以编程方式访问并配置此向量知识库实例。",
       name: {
         label: "名称",
         placeholder: "生产环境集成",
@@ -846,7 +851,7 @@ const TRANSLATIONS = {
   llm: {
     title: "LLM 首选项",
     description:
-      "这些是你首选的 LLM 聊天和嵌入提供商的凭据和设置。重要的是，确保这些密钥是最新的和正确的，否则 AnythingLLM 将无法正常运行。",
+      "这些是你首选的 LLM 聊天和嵌入提供商的凭据和设置。请确保这些密钥保持最新且正确，否则向量知识库将无法正常运行。",
     provider: "LLM 提供商",
     providers: {
       azure_openai: {
@@ -862,13 +867,21 @@ const TRANSLATIONS = {
       },
     },
   },
+  provider_preset: {
+    title: "条件码导入",
+    placeholder: "输入条件码，例如 SHIJIE_DEEPSEEK_ALI_V1",
+    apply: "应用配置",
+    applying: "正在应用...",
+    imported_status: "已从环境变量导入",
+    success_toast: "已应用 DeepSeek V4 Pro + 阿里 text-embedding-v4 配置",
+  },
   transcription: {
     title: "转录模型首选项",
     description:
       "这些是你的首选转录模型提供商的凭据和设置。重要的是这些密钥是最新且正确的，否则媒体文件和音频将无法转录。",
     provider: "转录提供商",
     "warn-start":
-      "在 RAM 或 CPU 有限的计算机上使用本地耳语模型可能会在处理媒体文件时停止 AnythingLLM。",
+      "在 RAM 或 CPU 有限的计算机上使用本地 Whisper 模型时，向量知识库可能会在处理媒体文件时卡住。",
     "warn-recommend": "我们建议至少 2GB RAM 并上传 <10Mb 的文件。",
     "warn-end": "内置模型将在首次使用时自动下载。",
   },
@@ -877,7 +890,7 @@ const TRANSLATIONS = {
     "desc-start":
       "当使用本身不支持嵌入引擎的 LLM 时，你可能需要额外指定用于嵌入文本的凭据。",
     "desc-end":
-      "嵌入是将文本转换为矢量的过程。需要这些凭据才能将你的文件和提示转换为 AnythingLLM 可以用来处理的格式。",
+      "嵌入是将文本转换为向量的过程。需要这些凭据才能将你的文件和提示转换为向量知识库可以用来处理的格式。",
     provider: {
       title: "嵌入引擎提供商",
     },
@@ -900,7 +913,7 @@ const TRANSLATIONS = {
   vector: {
     title: "向量数据库",
     description:
-      "这些是 AnythingLLM 实例如何运行的凭据和设置。重要的是，这些密钥是最新的和正确的。",
+      "这些是向量知识库实例运行所需的凭据和设置。请确保这些密钥保持最新且正确。",
     provider: {
       title: "向量数据库提供商",
       description: "LanceDB 不需要任何配置。",
@@ -942,8 +955,7 @@ const TRANSLATIONS = {
   },
   privacy: {
     title: "隐私和数据处理",
-    description:
-      "这是你对如何处理连接的第三方提供商和AnythingLLM的数据的配置。",
+    description: "这是你对连接的第三方提供商和向量知识库如何处理数据的配置。",
     anonymous: "启用匿名遥测",
   },
   connectors: {
@@ -1089,22 +1101,22 @@ const TRANSLATIONS = {
       fetching: "正在获取...",
       "fetch-website": "获取网站",
       "privacy-notice":
-        "这些文件将被上传到此 AnythingLLM 实例上的文档处理器。这些文件不会发送或共享给第三方。",
+        "这些文件将被上传到此向量知识库实例上的文档处理器。这些文件不会发送或共享给第三方。",
     },
     pinning: {
       what_pinning: "什么是文档固定？",
       pin_explained_block1:
-        "当您在 AnythingLLM 中<b>固定</b>一个文档时，我们会将整个文档内容注入到您的提示窗口中，让 LLM 能够完全理解它。",
+        "当您在向量知识库中<b>固定</b>一个文档时，我们会将整个文档内容注入到您的提示窗口中，让 LLM 能够完全理解它。",
       pin_explained_block2:
         "这在 <b>大上下文模型</b> 或关键的小文件中效果最佳。",
       pin_explained_block3:
-        "如果默认情况下无法从 AnythingLLM 获取满意的答案，固定文档是提高答案质量的好方法。",
+        "如果默认情况下无法从向量知识库获取满意的答案，固定文档是提高答案质量的好方法。",
       accept: "好的，知道了",
     },
     watching: {
       what_watching: "什么是监控文档？",
       watch_explained_block1:
-        "当您在 AnythingLLM 中<b>监控</b>一个文档时，我们会<i>自动</i>按定期间隔从其原始来源同步文档内容。系统会自动更新在所有使用该文档的工作区中的内容。",
+        "当您在向量知识库中<b>监控</b>一个文档时，我们会<i>自动</i>按定期间隔从其原始来源同步文档内容。系统会自动更新所有使用该文档的工作区中的内容。",
       watch_explained_block2:
         "此功能当前仅支持在线内容，不适用于手动上传的文档。",
       watch_explained_block3_start: "您可以在 ",
@@ -1338,7 +1350,7 @@ const TRANSLATIONS = {
     password: {
       title: "密码保护",
       description:
-        "用密码保护你的AnythingLLM实例。如果你忘记了密码，那么没有恢复方法，所以请确保保存这个密码。",
+        "用密码保护你的向量知识库实例。如果你忘记了密码，将无法恢复，所以请务必保存好这个密码。",
       "password-label": "实例密码",
     },
   },
@@ -1352,7 +1364,7 @@ const TRANSLATIONS = {
   telegram: {
     title: "Telegram 机器人",
     description:
-      "将您的 AnythingLLM 实例与 Telegram 连接起来，这样您就可以从任何设备与您的工作空间进行聊天。",
+      "将您的向量知识库实例与 Telegram 连接起来，这样您就可以从任何设备与您的工作空间进行聊天。",
     setup: {
       step1: {
         title: "第一步：创建您的 Telegram 机器人",
@@ -1408,6 +1420,97 @@ const TRANSLATIONS = {
       "pending-description":
         "等待验证的用户。请将此处显示的配对代码与他们在 Telegram 聊天中显示的配对代码进行匹配。",
       unknown: "未知",
+    },
+  },
+  wechat: {
+    title: "微信连接器",
+    description: "通过腾讯官方 OpenClaw Weixin 二维码扫码连接微信。",
+    enabled: {
+      title: "启用微信连接器",
+      description:
+        "在配置官方桥接能力后，允许当前 AnythingLLM 实例使用微信连接器。",
+    },
+    qr: {
+      placeholder: "生成二维码后，用微信扫码完成连接。",
+      generate: "生成/刷新二维码",
+      alt: "微信登录二维码",
+      "open-link-helper": "如果二维码无法扫描，请用浏览器打开以下链接。",
+    },
+    status: {
+      title: "登录状态",
+      disconnected: "未连接",
+      pending_scan: "等待扫码",
+      connected: "已连接",
+      expired: "已过期",
+      "connected-hint": "已连接，如需重新扫码请先断开连接。",
+      "disconnecting-hint": "正在断开并清理 OpenClaw 登录会话...",
+    },
+    profile: {
+      title: "微信用户信息",
+      avatar: "微信头像",
+      nickname: "昵称",
+      wxid: "wxid/openid",
+      openid: "openid/account",
+      "last-connected": "上次连接",
+      placeholder: "暂无",
+      "best-effort":
+        "资料字段只读取 OpenClaw 元数据；真实凭证仍由 OpenClaw 保存在本地。",
+    },
+    actions: {
+      relogin: "重新登录",
+      disconnect: "断开连接",
+      disconnecting: "正在断开...",
+    },
+    toasts: {
+      "save-failed": "微信连接器设置保存失败。",
+      "qr-failed": "二维码生成失败。",
+      "status-failed": "微信登录状态刷新失败。",
+      "disconnect-failed": "微信连接器断开失败。",
+    },
+    errors: {
+      openclaw_not_installed:
+        "未找到 OpenClaw CLI。请先安装 OpenClaw 或设置 OPENCLAW_BIN。",
+      plugin_missing: "尚未安装 OpenClaw Weixin 插件。",
+      environment_incomplete: "OpenClaw Weixin 环境不完整或目录不可写。",
+      plugin_install_failed: "OpenClaw Weixin 插件安装失败。",
+      qr_generation_failed: "微信二维码生成失败。",
+      login_status_failed: "微信登录状态读取失败。",
+      disconnect_failed: "OpenClaw Weixin 断开失败。",
+    },
+  },
+  advancedGateway: {
+    title: "高级连接器",
+    description:
+      "为 Clawbot、Python、Rust 或其他自定义消息转发服务配置外部 Gateway。",
+    enabled: {
+      title: "启用高级连接器",
+      description: "后续接入外部 Gateway 服务后，允许使用该连接器。",
+    },
+    notes: {
+      title: "Gateway 安全说明",
+      "api-secret":
+        "API Secret 用于外部 Gateway 调用 AnythingLLM webhook 时生成 HMAC 签名。",
+      "gateway-url": "Gateway URL 当前用于记录外部 Gateway 服务地址。",
+      "no-wechat-state":
+        "微信登录态、cookie、token 和本地凭证不会保存在 AnythingLLM 中。",
+      "external-gateway":
+        "真实微信登录、消息接收和消息发送由外部 Gateway、Clawbot 或 OpenClaw 微信插件负责。",
+    },
+    fields: {
+      "gateway-url": "Gateway URL",
+      "api-key": "API Key",
+      "api-secret": "API Secret",
+      "secret-saved": "已保存。留空表示保持不变。",
+    },
+    actions: {
+      test: "测试连接",
+      save: "保存配置",
+    },
+    toasts: {
+      saved: "高级连接器设置已保存。",
+      tested: "高级连接器测试完成。",
+      "save-failed": "高级连接器设置保存失败。",
+      "test-failed": "高级连接器测试失败。",
     },
   },
   scheduledJobs: {

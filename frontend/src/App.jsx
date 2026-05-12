@@ -1,6 +1,6 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import { I18nextProvider } from "react-i18next";
+import { I18nextProvider, useTranslation } from "react-i18next";
 import { AuthProvider } from "@/AuthContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -31,6 +31,7 @@ export default function App() {
               <LogoProvider>
                 <PfpProvider>
                   <I18nextProvider i18n={i18n}>
+                    <DefaultDocumentTitle />
                     <Outlet />
                     <ToastContainer />
                     <KeyboardShortcutsHelp />
@@ -44,4 +45,21 @@ export default function App() {
       </ThemeProvider>
     </ErrorBoundary>
   );
+}
+
+function DefaultDocumentTitle() {
+  const { t, i18n } = useTranslation();
+
+  useEffect(() => {
+    const defaultTitles = new Set([
+      "AnythingLLM",
+      "AnythingLLM | Your personal LLM trained on anything",
+      "向量知识库",
+    ]);
+    if (defaultTitles.has(document.title)) {
+      document.title = t("common.defaultSiteTitle");
+    }
+  }, [i18n.language, t]);
+
+  return null;
 }

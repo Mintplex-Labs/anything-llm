@@ -83,12 +83,22 @@ function formatMessagesForTools(messages, options = {}) {
   for (const message of messages) {
     if (message.role === "function") {
       if (message.originalFunctionCall?.id) {
+        const hasReasoningContent = Object.prototype.hasOwnProperty.call(
+          message.originalFunctionCall,
+          "reasoning_content"
+        );
         const prevMsg = formattedMessages[formattedMessages.length - 1];
         if (!prevMsg || prevMsg.role !== "assistant" || !prevMsg.tool_calls) {
           formattedMessages.push({
             role: "assistant",
             content: null,
-            ...(injectReasoningContent ? { reasoning_content: "" } : {}),
+            ...(hasReasoningContent || injectReasoningContent
+              ? {
+                  reasoning_content: hasReasoningContent
+                    ? message.originalFunctionCall.reasoning_content
+                    : "",
+                }
+              : {}),
             tool_calls: [
               {
                 id: message.originalFunctionCall.id,
@@ -204,6 +214,7 @@ async function tooledStream(
 
   const toolCallsByIndex = {};
   let usage = null;
+  let reasoningContent = "";
 
   for await (const chunk of stream) {
     // Capture usage from final chunk (some providers send usage after finish_reason)
@@ -213,6 +224,7 @@ async function tooledStream(
 
     if (!chunk?.choices?.[0]) continue;
     const choice = chunk.choices[0];
+    reasoningContent += choice.delta?.reasoning_content ?? "";
 
     if (choice.delta?.content) {
       result.textResponse += choice.delta.content;
@@ -273,6 +285,9 @@ async function tooledStream(
       id: firstToolCall.id,
       name: firstToolCall.name,
       arguments: safeJsonParse(firstToolCall.arguments, {}),
+      ...(reasoningContent || formatOptions.injectReasoningContent
+        ? { reasoning_content: reasoningContent }
+        : {}),
     };
   }
 
@@ -338,6 +353,10 @@ async function tooledComplete(
   if (completion.tool_calls && completion.tool_calls.length > 0) {
     const toolCall = completion.tool_calls[0];
     const functionArgs = safeJsonParse(toolCall.function.arguments, null);
+    const hasReasoningContent = Object.prototype.hasOwnProperty.call(
+      completion,
+      "reasoning_content"
+    );
 
     if (functionArgs === null) {
       return {
@@ -350,6 +369,9 @@ async function tooledComplete(
             id: toolCall.id,
             name: toolCall.function.name,
             arguments: toolCall.function.arguments,
+            ...(hasReasoningContent
+              ? { reasoning_content: completion.reasoning_content }
+              : {}),
           },
         },
         cost,
@@ -363,6 +385,9 @@ async function tooledComplete(
         id: toolCall.id,
         name: toolCall.function.name,
         arguments: functionArgs,
+        ...(hasReasoningContent
+          ? { reasoning_content: completion.reasoning_content }
+          : {}),
       },
       cost,
       usage,

@@ -62,6 +62,20 @@ const { SystemPromptVariables } = require("../models/systemPromptVariables");
 const { VALID_COMMANDS } = require("../utils/chats");
 const { AgentSkillWhitelist } = require("../models/agentSkillWhitelist");
 
+const PROVIDER_PRESETS = {
+  SHIJIE_DEEPSEEK_ALI_V1: {
+    llm: {
+      provider: "deepseek",
+      model: "deepseek-v4-pro",
+    },
+    embedder: {
+      provider: "generic-openai",
+      baseUrl: "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      model: "text-embedding-v4",
+    },
+  },
+};
+
 function systemEndpoints(app) {
   if (!app) return;
 
@@ -550,6 +564,66 @@ function systemEndpoints(app) {
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/system/provider-preset/apply",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { code = "" } = reqBody(request);
+        const presetCode = String(code).trim();
+        const preset = PROVIDER_PRESETS[presetCode];
+        if (!preset)
+          return response
+            .status(200)
+            .json({ success: false, error: "invalid_preset_code" });
+
+        if (!process.env.PRESET_DEEPSEEK_API_KEY)
+          return response
+            .status(200)
+            .json({ success: false, error: "missing_deepseek_api_key" });
+        if (!process.env.PRESET_DASHSCOPE_API_KEY)
+          return response
+            .status(200)
+            .json({ success: false, error: "missing_dashscope_api_key" });
+
+        const { error } = await updateENV(
+          {
+            LLMProvider: preset.llm.provider,
+            DeepSeekApiKey: process.env.PRESET_DEEPSEEK_API_KEY,
+            DeepSeekModelPref: preset.llm.model,
+            EmbeddingEngine: preset.embedder.provider,
+            EmbeddingBasePath: preset.embedder.baseUrl,
+            EmbeddingModelPref: preset.embedder.model,
+            GenericOpenAiEmbeddingApiKey: process.env.PRESET_DASHSCOPE_API_KEY,
+          },
+          false,
+          response?.locals?.user?.id
+        );
+
+        if (error) return response.status(200).json({ success: false, error });
+
+        return response.status(200).json({
+          success: true,
+          preset: presetCode,
+          llm: {
+            provider: preset.llm.provider,
+            model: preset.llm.model,
+            api_key_set: true,
+          },
+          embedder: {
+            provider: preset.embedder.provider,
+            base_url: preset.embedder.baseUrl,
+            model: preset.embedder.model,
+            api_key_set: true,
+          },
+        });
+      } catch (e) {
+        console.error(e.message);
+        response.status(500).json({ success: false, error: e.message });
       }
     }
   );

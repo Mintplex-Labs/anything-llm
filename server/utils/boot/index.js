@@ -7,6 +7,9 @@ const eagerLoadContextWindows = require("./eagerLoadContextWindows");
 const markOnboarded = require("./markOnboarded");
 const { PushNotifications } = require("../PushNotifications");
 const { TelegramBotService } = require("../telegramBot");
+const { cleanupOpenClawWeixinLoginChild } = require("../openclawWeixin");
+
+let shutdownHooksRegistered = false;
 
 // Testing SSL? You can make a self signed certificate and point the ENVs to that location
 // make a directory in server called 'sslcert' - cd into it
@@ -19,6 +22,7 @@ const { TelegramBotService } = require("../telegramBot");
 // build and copy frontend to server/public with correct API_BASE and start server in prod model and all should be ok
 function bootSSL(app, port = 3001) {
   try {
+    registerShutdownHooks();
     console.log(
       `\x1b[33m[SSL BOOT ENABLED]\x1b[0m Loading the certificate and key for HTTPS mode...`
     );
@@ -61,6 +65,7 @@ function bootSSL(app, port = 3001) {
 
 function bootHTTP(app, port = 3001) {
   if (!app) throw new Error('No "app" defined - crashing!');
+  registerShutdownHooks();
 
   app
     .listen(port, async () => {
@@ -79,15 +84,29 @@ function bootHTTP(app, port = 3001) {
   return { app, server: null };
 }
 
-function catchSigTerms() {
-  process.once("SIGUSR2", function () {
+function registerShutdownHooks() {
+  if (shutdownHooksRegistered) return;
+  shutdownHooksRegistered = true;
+
+  process.once("SIGUSR2", async function () {
+    await cleanupOpenClawWeixinLoginChild();
     Telemetry.flush();
     process.kill(process.pid, "SIGUSR2");
   });
-  process.on("SIGINT", function () {
+  process.once("SIGINT", async function () {
+    await cleanupOpenClawWeixinLoginChild();
     Telemetry.flush();
     process.kill(process.pid, "SIGINT");
   });
+  process.once("SIGTERM", async function () {
+    await cleanupOpenClawWeixinLoginChild();
+    Telemetry.flush();
+    process.exit(0);
+  });
+}
+
+function catchSigTerms() {
+  registerShutdownHooks();
 }
 
 module.exports = {

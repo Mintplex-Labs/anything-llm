@@ -2,11 +2,11 @@ const prisma = require("../utils/prisma");
 const { safeJsonParse } = require("../utils/http");
 
 const ExternalCommunicationConnector = {
-  supportedTypes: ["telegram"],
+  supportedTypes: ["telegram", "wechat", "advanced_gateway"],
 
   /**
    * Get a connector by type.
-   * @param {'telegram'} type
+   * @param {'telegram'|'wechat'|'advanced_gateway'} type
    * @returns {Promise<{id: number, type: string, config: object, active: boolean}|null>}
    */
   get: async function (type) {
@@ -28,7 +28,7 @@ const ExternalCommunicationConnector = {
 
   /**
    * Create or update a connector's config and active state.
-   * @param {'telegram'} type
+   * @param {'telegram'|'wechat'|'advanced_gateway'} type
    * @param {object} config
    * @param {boolean} active
    * @returns {Promise<{connector: object|null, error: string|null}>}
@@ -76,7 +76,7 @@ const ExternalCommunicationConnector = {
 
   /**
    * Merge partial config updates into an existing connector.
-   * @param {'telegram'} type
+   * @param {'telegram'|'wechat'|'advanced_gateway'} type
    * @param {object} configUpdates - Partial config to merge.
    * @returns {Promise<{connector: object|null, error: string|null}>}
    */
@@ -91,7 +91,7 @@ const ExternalCommunicationConnector = {
 
   /**
    * Delete a connector entirely.
-   * @param {'telegram'} type
+   * @param {'telegram'|'wechat'|'advanced_gateway'} type
    * @returns {Promise<boolean>}
    */
   delete: async function (type) {

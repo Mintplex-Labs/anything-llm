@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useCallback, useEffect, useState, useRef } from "react";
 import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import System from "@/models/system";
@@ -41,6 +41,7 @@ import { useModal } from "@/hooks/useModal";
 import ModalWrapper from "@/components/ModalWrapper";
 import CTAButton from "@/components/lib/CTAButton";
 import { useTranslation } from "react-i18next";
+import ProviderPresetImport from "@/components/ProviderPresetImport";
 
 const EMBEDDERS = [
   {
@@ -224,17 +225,19 @@ export default function GeneralEmbeddingPreference() {
     }
   };
 
-  useEffect(() => {
-    async function fetchKeys() {
-      const _settings = await System.keys();
-      setSettings(_settings);
-      setSelectedEmbedder(_settings?.EmbeddingEngine || "native");
-      setHasEmbeddings(_settings?.HasExistingEmbeddings || false);
-      setHasCachedEmbeddings(_settings?.HasCachedEmbeddings || false);
-      setLoading(false);
-    }
-    fetchKeys();
+  const refreshSettings = useCallback(async () => {
+    const _settings = await System.keys();
+    setSettings(_settings);
+    setSelectedEmbedder(_settings?.EmbeddingEngine || "native");
+    setHasEmbeddings(_settings?.HasExistingEmbeddings || false);
+    setHasCachedEmbeddings(_settings?.HasCachedEmbeddings || false);
+    setHasChanges(false);
+    setLoading(false);
   }, []);
+
+  useEffect(() => {
+    refreshSettings();
+  }, [refreshSettings]);
 
   useEffect(() => {
     const filtered = EMBEDDERS.filter((embedder) =>
@@ -375,6 +378,7 @@ export default function GeneralEmbeddingPreference() {
                 )}
               </div>
               <div
+                key={`${selectedEmbedder}-${settings?.EmbeddingBasePath}-${settings?.EmbeddingModelPref}-${settings?.GenericOpenAiEmbeddingApiKey}`}
                 onChange={() => setHasChanges(true)}
                 className="mt-4 flex flex-col gap-y-1"
               >
@@ -383,6 +387,7 @@ export default function GeneralEmbeddingPreference() {
                     (embedder) => embedder.value === selectedEmbedder
                   )?.options(settings)}
               </div>
+              <ProviderPresetImport onApplied={refreshSettings} />
             </div>
           </form>
         </div>

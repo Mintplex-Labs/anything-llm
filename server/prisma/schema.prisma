@@ -396,6 +396,19 @@ model external_communication_connectors {
   lastUpdatedAt DateTime @default(now())
 }
 
+model wechat_gateway_threads {
+  id             Int      @id @default(autoincrement())
+  wxid           String   @unique
+  nickname       String?
+  workspace_slug String
+  thread_slug    String
+  createdAt      DateTime @default(now())
+  lastUpdatedAt  DateTime @default(now())
+
+  @@index([workspace_slug])
+  @@index([thread_slug])
+}
+
 model scheduled_jobs {
   id        Int                  @id @default(autoincrement())
   name      String

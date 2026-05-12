@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
@@ -83,6 +83,7 @@ import LemonadeOptions from "@/components/LLMSelection/LemonadeOptions";
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
+import ProviderPresetImport from "@/components/ProviderPresetImport";
 
 export const AVAILABLE_LLM_PROVIDERS = [
   {
@@ -465,15 +466,17 @@ export default function GeneralLLMPreference() {
     }
   };
 
-  useEffect(() => {
-    async function fetchKeys() {
-      const _settings = await System.keys();
-      setSettings(_settings);
-      setSelectedLLM(_settings?.LLMProvider);
-      setLoading(false);
-    }
-    fetchKeys();
+  const refreshSettings = useCallback(async () => {
+    const _settings = await System.keys();
+    setSettings(_settings);
+    setSelectedLLM(_settings?.LLMProvider);
+    setHasChanges(false);
+    setLoading(false);
   }, []);
+
+  useEffect(() => {
+    refreshSettings();
+  }, [refreshSettings]);
 
   // Some more complex LLM options do not bubble up the change event, so we need to listen to the custom event
   // we can emit from the LLM options component using window.dispatchEvent(new Event(LLM_PREFERENCE_CHANGED_EVENT));
@@ -625,6 +628,7 @@ export default function GeneralLLMPreference() {
                 )}
               </div>
               <div
+                key={`${selectedLLM}-${settings?.DeepSeekModelPref}-${settings?.DeepSeekApiKey}`}
                 onChange={() => setHasChanges(true)}
                 className="mt-4 flex flex-col gap-y-1"
               >
@@ -633,6 +637,7 @@ export default function GeneralLLMPreference() {
                     (llm) => llm.value === selectedLLM
                   )?.options?.(settings)}
               </div>
+              <ProviderPresetImport onApplied={refreshSettings} />
             </div>
           </form>
         </div>

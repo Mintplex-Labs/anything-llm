@@ -28,6 +28,8 @@ import useAppVersion from "@/hooks/useAppVersion";
 export default function SettingsSidebar() {
   const { t } = useTranslation();
   const { logo } = useLogo();
+  const productName = t("common.productName");
+  const showTextBrand = productName !== "AnythingLLM";
   const { user } = useUser();
   const sidebarRef = useRef(null);
   const [showSidebar, setShowSidebar] = useState(false);
@@ -56,13 +58,18 @@ export default function SettingsSidebar() {
           >
             <List className="h-6 w-6" />
           </button>
-          <div className="flex items-center justify-center flex-grow">
+          <div className="flex items-center justify-center flex-grow gap-x-2">
             <img
               src={logo}
               alt="Logo"
               className="block mx-auto h-6 w-auto"
               style={{ maxHeight: "40px", objectFit: "contain" }}
             />
+            {showTextBrand && (
+              <span className="text-sm font-semibold text-theme-text-primary light:text-slate-700 whitespace-nowrap">
+                {productName}
+              </span>
+            )}
           </div>
           <div className="w-12"></div>
         </div>
@@ -87,13 +94,18 @@ export default function SettingsSidebar() {
             <div className="w-full h-full flex flex-col overflow-x-hidden items-between">
               {/* Header Information */}
               <div className="flex w-full items-center justify-between gap-x-4">
-                <div className="flex shrink-1 w-fit items-center justify-start">
+                <div className="flex shrink-1 w-fit items-center justify-start gap-x-2">
                   <img
                     src={logo}
                     alt="Logo"
                     className="rounded w-full max-h-[40px]"
                     style={{ objectFit: "contain" }}
                   />
+                  {showTextBrand && (
+                    <span className="text-sm font-semibold text-theme-text-primary whitespace-nowrap">
+                      {productName}
+                    </span>
+                  )}
                 </div>
                 <div className="flex gap-x-2 items-center text-slate-500 shrink-0">
                   <a
@@ -140,7 +152,7 @@ export default function SettingsSidebar() {
       <div>
         <Link
           to={paths.home()}
-          className="flex shrink-0 max-w-[55%] items-center justify-start mx-[20.5px] my-[18px]"
+          className="flex shrink-0 max-w-[80%] items-center justify-start gap-x-2 mx-[20.5px] my-[18px]"
         >
           <img
             src={logo}
@@ -148,6 +160,11 @@ export default function SettingsSidebar() {
             className="rounded max-h-[24px]"
             style={{ objectFit: "contain" }}
           />
+          {showTextBrand && (
+            <span className="text-sm font-semibold text-theme-text-primary light:text-slate-700 whitespace-nowrap">
+              {productName}
+            </span>
+          )}
         </Link>
         <div
           ref={sidebarRef}
@@ -372,6 +389,18 @@ const SidebarOptions = ({ user = null, t }) => (
             {
               btnText: t("settings.available-channels.telegram"),
               href: paths.settings.telegram(),
+              flex: true,
+              hidden: !!user,
+            },
+            {
+              btnText: t("settings.available-channels.wechat"),
+              href: paths.settings.wechat(),
+              flex: true,
+              hidden: !!user,
+            },
+            {
+              btnText: t("settings.available-channels.advanced-gateway"),
+              href: paths.settings.advancedGateway(),
               flex: true,
               hidden: !!user,
             },

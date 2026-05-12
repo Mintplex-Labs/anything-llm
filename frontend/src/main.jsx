@@ -375,6 +375,30 @@ const router = createBrowserRouter([
         },
       },
       {
+        path: "/settings/external-connections/wechat",
+        lazy: async () => {
+          const { default: WeChatConnectorSettings } = await import(
+            "@/pages/GeneralSettings/Connections/WeChatConnector"
+          );
+          return {
+            element: <AdminRoute Component={WeChatConnectorSettings} />,
+          };
+        },
+      },
+      {
+        path: "/settings/external-connections/advanced-gateway",
+        lazy: async () => {
+          const { default: AdvancedGatewayConnectorSettings } = await import(
+            "@/pages/GeneralSettings/Connections/AdvancedGatewayConnector"
+          );
+          return {
+            element: (
+              <AdminRoute Component={AdvancedGatewayConnectorSettings} />
+            ),
+          };
+        },
+      },
+      {
         path: "/settings/scheduled-jobs",
         lazy: async () => {
           const { default: ScheduledJobs } = await import(

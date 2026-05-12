@@ -173,6 +173,12 @@ export default {
     telegram: () => {
       return `/settings/external-connections/telegram`;
     },
+    wechat: () => {
+      return `/settings/external-connections/wechat`;
+    },
+    advancedGateway: () => {
+      return `/settings/external-connections/advanced-gateway`;
+    },
     scheduledJobs: () => {
       return `/settings/scheduled-jobs`;
     },

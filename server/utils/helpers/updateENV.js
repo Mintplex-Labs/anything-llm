@@ -1347,6 +1347,10 @@ function dumpENV() {
 
     // Allow auto-approval of skills
     "AGENT_AUTO_APPROVED_SKILLS",
+
+    // Preset provider import keys.
+    "PRESET_DEEPSEEK_API_KEY",
+    "PRESET_DASHSCOPE_API_KEY",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.

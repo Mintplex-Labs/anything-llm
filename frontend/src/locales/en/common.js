@@ -49,6 +49,9 @@ const TRANSLATIONS = {
     },
   },
   common: {
+    productName: "AnythingLLM",
+    defaultSiteTitle: "AnythingLLM | Your personal LLM trained on anything",
+    clear: "Clear",
     "workspaces-name": "Workspace Name",
     selection: "Model Selection",
     saving: "Saving...",
@@ -113,7 +116,9 @@ const TRANSLATIONS = {
     "mobile-app": "AnythingLLM Mobile",
     channels: "Channels",
     "available-channels": {
-      telegram: "Telegram",
+      telegram: "Telegram Connector",
+      wechat: "WeChat Connector",
+      "advanced-gateway": "Advanced Gateway Connector",
     },
   },
   login: {
@@ -916,6 +921,15 @@ const TRANSLATIONS = {
       },
     },
   },
+  provider_preset: {
+    title: "Preset Code Import",
+    placeholder: "Enter preset code, for example SHIJIE_DEEPSEEK_ALI_V1",
+    apply: "Apply configuration",
+    applying: "Applying...",
+    imported_status: "Imported from environment variables",
+    success_toast:
+      "Applied DeepSeek V4 Pro + Ali text-embedding-v4 configuration",
+  },
   transcription: {
     title: "Transcription Model Preference",
     description:
@@ -1050,6 +1064,104 @@ const TRANSLATIONS = {
       "pending-description":
         "Users waiting to be verified. Match the pairing code shown here with the one displayed in their Telegram chat.",
       unknown: "Unknown",
+    },
+  },
+  wechat: {
+    title: "WeChat Connector",
+    description:
+      "Connect WeChat by scanning the official Tencent OpenClaw Weixin QR code.",
+    enabled: {
+      title: "Enable WeChat Connector",
+      description:
+        "Allow this AnythingLLM instance to use the WeChat connector when an official bridge is configured.",
+    },
+    qr: {
+      placeholder: "Generate a QR code and scan it with WeChat to connect.",
+      generate: "Generate/Refresh QR Code",
+      alt: "WeChat login QR code",
+      "open-link-helper":
+        "If the QR code cannot be scanned, open this link in your browser.",
+    },
+    status: {
+      title: "Login Status",
+      disconnected: "Disconnected",
+      pending_scan: "Waiting for scan",
+      connected: "Connected",
+      expired: "Expired",
+      "connected-hint":
+        "Connected. Disconnect first if you need to scan a new QR code.",
+      "disconnecting-hint":
+        "Disconnecting and cleaning up the OpenClaw login session...",
+    },
+    profile: {
+      title: "WeChat User",
+      avatar: "WeChat avatar",
+      nickname: "Nickname",
+      wxid: "wxid/openid",
+      openid: "openid/account",
+      "last-connected": "Last connected",
+      placeholder: "Not available",
+      "best-effort":
+        "Profile fields are read from OpenClaw metadata only; credentials stay on disk with OpenClaw.",
+    },
+    actions: {
+      relogin: "Re-login",
+      disconnect: "Disconnect",
+      disconnecting: "Disconnecting...",
+    },
+    toasts: {
+      "save-failed": "Failed to save WeChat connector settings.",
+      "qr-failed": "Failed to generate QR code.",
+      "status-failed": "Failed to refresh WeChat login status.",
+      "disconnect-failed": "Failed to disconnect WeChat connector.",
+    },
+    errors: {
+      openclaw_not_installed:
+        "OpenClaw CLI was not found. Set OPENCLAW_BIN or install OpenClaw first.",
+      plugin_missing: "OpenClaw Weixin plugin is not installed.",
+      environment_incomplete:
+        "OpenClaw Weixin environment is incomplete or not writable.",
+      plugin_install_failed: "Failed to install OpenClaw Weixin plugin.",
+      qr_generation_failed: "Failed to generate a WeChat QR code.",
+      login_status_failed: "Failed to read WeChat login status.",
+      disconnect_failed: "Failed to disconnect OpenClaw Weixin.",
+    },
+  },
+  advancedGateway: {
+    title: "Advanced Gateway Connector",
+    description:
+      "Configure a custom external gateway for Clawbot, Python, Rust, or other message relay services.",
+    enabled: {
+      title: "Enable Advanced Gateway Connector",
+      description:
+        "Allow external gateway services to be used after they are implemented.",
+    },
+    notes: {
+      title: "Gateway security notes",
+      "api-secret":
+        "API Secret is used by external Gateways to generate HMAC signatures for AnythingLLM webhooks.",
+      "gateway-url":
+        "Gateway URL is currently recorded as the address of your external Gateway service.",
+      "no-wechat-state":
+        "WeChat login state, cookies, tokens, and local credentials are not stored in AnythingLLM.",
+      "external-gateway":
+        "Real WeChat login, message receiving, and message sending are handled by your external Gateway, Clawbot, or OpenClaw WeChat plugin.",
+    },
+    fields: {
+      "gateway-url": "Gateway URL",
+      "api-key": "API Key",
+      "api-secret": "API Secret",
+      "secret-saved": "Saved. Leave blank to keep unchanged.",
+    },
+    actions: {
+      test: "Test Connection",
+      save: "Save Config",
+    },
+    toasts: {
+      saved: "Advanced Gateway connector settings saved.",
+      tested: "Advanced Gateway connection test complete.",
+      "save-failed": "Failed to save Advanced Gateway connector settings.",
+      "test-failed": "Failed to test Advanced Gateway connector.",
     },
   },
   security: {

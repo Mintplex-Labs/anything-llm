@@ -26,11 +26,42 @@ class CollectorApi {
   constructor() {
     const { CommunicationKey } = require("../comKey");
     this.comkey = new CommunicationKey();
-    this.endpoint = `http://0.0.0.0:${process.env.COLLECTOR_PORT || 8888}`;
+    this.endpoint =
+      process.env.COLLECTOR_ENDPOINT ||
+      `http://${
+        process.env.NODE_ENV === "development" ? "localhost" : "0.0.0.0"
+      }:${process.env.COLLECTOR_PORT || 8888}`;
   }
 
   log(text, ...args) {
     console.log(`\x1b[36m[CollectorApi]\x1b[0m ${text}`, ...args);
+  }
+
+  #safeReasonFromBody(body = "") {
+    if (!body) return null;
+    try {
+      const parsed = JSON.parse(body);
+      return (
+        parsed?.reason ||
+        parsed?.error ||
+        parsed?.msg ||
+        parsed?.message ||
+        body.slice(0, 500)
+      );
+    } catch {
+      return body.slice(0, 500);
+    }
+  }
+
+  async #throwIfFailed(res, route = "collector request") {
+    if (res.ok) return;
+    const body = await res.text().catch(() => "");
+    const reason = this.#safeReasonFromBody(body);
+    throw new Error(
+      `${route} failed (${res.status})${
+        reason ? `: ${reason}` : ": Response could not be completed"
+      }`
+    );
   }
 
   /**
@@ -99,8 +130,8 @@ class CollectorApi {
       body: data,
       dispatcher: new Agent({ headersTimeout: 600000 }),
     })
-      .then((res) => {
-        if (!res.ok) throw new Error("Response could not be completed");
+      .then(async (res) => {
+        await this.#throwIfFailed(res, "POST /process");
         return res.json();
       })
       .then((res) => res)
@@ -139,8 +170,8 @@ class CollectorApi {
       },
       body: data,
     })
-      .then((res) => {
-        if (!res.ok) throw new Error("Response could not be completed");
+      .then(async (res) => {
+        await this.#throwIfFailed(res, "POST /process-link");
         return res.json();
       })
       .then((res) => res)
@@ -174,8 +205,8 @@ class CollectorApi {
       },
       body: data,
     })
-      .then((res) => {
-        if (!res.ok) throw new Error("Response could not be completed");
+      .then(async (res) => {
+        await this.#throwIfFailed(res, "POST /process-raw-text");
         return res.json();
       })
       .then((res) => res)
@@ -204,8 +235,8 @@ class CollectorApi {
       // substantially so that they do not show a failure to the user early.
       dispatcher: this.extensionRequestAgent,
     })
-      .then((res) => {
-        if (!res.ok) throw new Error("Response could not be completed");
+      .then(async (res) => {
+        await this.#throwIfFailed(res, `${method} ${endpoint}`);
         return res.json();
       })
       .then((res) => res)
@@ -241,8 +272,8 @@ class CollectorApi {
       },
       body: data,
     })
-      .then((res) => {
-        if (!res.ok) throw new Error("Response could not be completed");
+      .then(async (res) => {
+        await this.#throwIfFailed(res, "POST /util/get-link");
         return res.json();
       })
       .then((res) => res)
@@ -282,8 +313,8 @@ class CollectorApi {
       },
       body: data,
     })
-      .then((res) => {
-        if (!res.ok) throw new Error("Response could not be completed");
+      .then(async (res) => {
+        await this.#throwIfFailed(res, "POST /parse");
         return res.json();
       })
       .then((res) => res)

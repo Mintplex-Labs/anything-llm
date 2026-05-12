@@ -74,7 +74,7 @@ export default function CustomAppName() {
           name="customAppName"
           type="text"
           className="border-none bg-theme-settings-input-bg mt-2 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-fit py-2 px-4"
-          placeholder="AnythingLLM"
+          placeholder={t("common.productName")}
           required={true}
           autoComplete="off"
           onChange={handleChange}
@@ -86,7 +86,7 @@ export default function CustomAppName() {
             onClick={(e) => updateCustomAppName(e, "")}
             className="text-white text-base font-medium hover:text-opacity-60"
           >
-            Clear
+            {t("common.clear")}
           </button>
         )}
       </div>
@@ -95,7 +95,7 @@ export default function CustomAppName() {
           type="submit"
           className="transition-all mt-2 w-fit duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
         >
-          Save
+          {t("common.save")}
         </button>
       )}
     </form>

@@ -239,7 +239,17 @@ class LanceDb extends VectorDatabase {
     const hasNamespace = await this.hasNamespace(namespace);
     if (hasNamespace) {
       const collection = await client.openTable(namespace);
-      await collection.add(data);
+      await collection.add(data).catch((error) => {
+        if (
+          error.message?.includes("FixedSizeList") ||
+          error.message?.includes("Values length")
+        ) {
+          throw new Error(
+            "LanceDB vector dimension mismatch. Existing vectors in this workspace were created with a different embedding dimension. Reset this workspace vector database or switch back to the original embedding model, then upload again."
+          );
+        }
+        throw error;
+      });
       return true;
     }
 

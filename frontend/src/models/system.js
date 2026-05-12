@@ -189,6 +189,18 @@ const System = {
         return { newValues: null, error: e.message };
       });
   },
+  applyProviderPreset: async (code) => {
+    return await fetch(`${API_BASE}/system/provider-preset/apply`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ code }),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
+      });
+  },
   updateSystemPassword: async (data) => {
     return await fetch(`${API_BASE}/system/update-password`, {
       method: "POST",

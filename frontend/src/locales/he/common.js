@@ -48,6 +48,9 @@ const TRANSLATIONS = {
     },
   },
   common: {
+    productName: "AnythingLLM",
+    defaultSiteTitle: "AnythingLLM | Your personal LLM trained on anything",
+    clear: "Clear",
     "workspaces-name": "שם סביבת העבודה",
     selection: "בחירת מודל",
     saving: "שומר...",
