@@ -50,6 +50,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "privatemode",
   "sambanova",
   "lemonade",
+  "deepgram-stt",
   // Embedding Engines
   "native-embedder",
   "cohere-embedder",
@@ -136,6 +137,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getLemonadeModels(basePath);
     case "lemonade-embedder":
       return await getLemonadeModels(basePath, "embedding");
+    case "deepgram-stt":
+      return await getDeepgramSTTModels(apiKey);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -953,6 +956,44 @@ async function getLemonadeModels(basePath = null, task = "chat") {
   } catch (e) {
     console.error(`Lemonade:getLemonadeModels`, e.message);
     return { models: [], error: "Could not fetch Lemonade Models" };
+  }
+}
+
+/**
+ * Get Deepgram STT models from the Management API.
+ * https://api.deepgram.com/v1/models returns { stt: [...], tts: [...] }.
+ * @param {string} _apiKey - Deepgram API key. Falls back to STT_DEEPGRAM_API_KEY.
+ * @returns {Promise<{models: Array<{id: string, name: string, organization: string}>, error: string | null}>}
+ */
+async function getDeepgramSTTModels(_apiKey = null) {
+  const apiKey =
+    _apiKey === true
+      ? process.env.STT_DEEPGRAM_API_KEY
+      : _apiKey || process.env.STT_DEEPGRAM_API_KEY || null;
+  if (!apiKey)
+    return { models: [], error: "No Deepgram API key was provided." };
+
+  try {
+    const response = await fetch("https://api.deepgram.com/v1/models", {
+      method: "GET",
+      headers: { Authorization: `Token ${apiKey}` },
+    });
+    if (!response.ok) throw new Error(`Deepgram returned ${response.status}`);
+
+    const data = await response.json();
+    const models = (data?.stt ?? [])
+      .filter((m) => m.batch !== false)
+      .map((m) => ({
+        id: m.canonical_name,
+        name: m.name || m.canonical_name,
+        organization: "Deepgram",
+      }));
+
+    if (models.length > 0 && _apiKey) process.env.STT_DEEPGRAM_API_KEY = apiKey;
+    return { models, error: null };
+  } catch (e) {
+    console.error(`Deepgram:getDeepgramSTTModels`, e.message);
+    return { models: [], error: "Could not fetch Deepgram STT models" };
   }
 }
 
