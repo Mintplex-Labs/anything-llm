@@ -673,6 +673,16 @@ const KEY_MAPPING = {
     checks: [],
   },
 
+  // STT Lemonade
+  STTLemonadeBasePath: {
+    envKey: "STT_LEMONADE_BASE_PATH",
+    checks: [isValidURL],
+  },
+  STTLemonadeModelPref: {
+    envKey: "STT_LEMONADE_MODEL_PREF",
+    checks: [],
+  },
+
   // DeepSeek Options
   DeepSeekApiKey: {
     envKey: "DEEPSEEK_API_KEY",
@@ -941,7 +951,7 @@ function supportedTTSProvider(input = "") {
 }
 
 function supportedSTTProvider(input = "") {
-  const validSelection = ["native", "openai"].includes(input);
+  const validSelection = ["native", "openai", "lemonade"].includes(input);
   return validSelection ? null : `${input} is not a valid STT provider.`;
 }
 
