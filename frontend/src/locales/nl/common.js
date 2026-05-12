@@ -1,1529 +1,1333 @@
 // Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
-  onboarding: {
-    survey: {
-      email: "Wat is je e-mailadres?",
-      useCase: "Waarvoor ga je AnythingLLM gebruiken?",
-      useCaseWork: "Voor werk",
-      useCasePersonal: "Voor persoonlijk gebruik",
-      useCaseOther: "Anders",
-      comment: "Hoe heb je over AnythingLLM gehoord?",
-      commentPlaceholder:
-        "Reddit, Twitter, GitHub, YouTube, enz. - Laat ons weten hoe je ons gevonden hebt!",
-      skip: "Enquête overslaan",
-      thankYou: "Bedankt voor je feedback!",
-      title: "Welkom bij AnythingLLM",
-      description:
-        "Help ons AnythingLLM af te stemmen op jouw behoeften. (Optioneel)",
+  "onboarding": {
+    "survey": {
+      "email": "Wat is je e-mailadres?",
+      "useCase": "Waarvoor ga je AnythingLLM gebruiken?",
+      "useCaseWork": "Voor werk",
+      "useCasePersonal": "Voor persoonlijk gebruik",
+      "useCaseOther": "Anders",
+      "comment": "Hoe heb je over AnythingLLM gehoord?",
+      "commentPlaceholder": "Reddit, Twitter, GitHub, YouTube, enz. - Laat ons weten hoe je ons gevonden hebt!",
+      "skip": "Enquête overslaan",
+      "thankYou": "Bedankt voor je feedback!",
+      "title": "Welkom bij AnythingLLM",
+      "description": "Help ons AnythingLLM af te stemmen op jouw behoeften. (Optioneel)"
     },
-    home: {
-      getStarted: "Aan de slag",
-      welcome: "Welkom",
+    "home": {
+      "getStarted": "Aan de slag",
+      "welcome": "Welkom"
     },
-    llm: {
-      title: "LLM-voorkeuren",
-      description:
-        "AnythingLLM kan samenwerken met veel LLM-aanbieders. Deze service verzorgt de chatfunctie.",
+    "llm": {
+      "title": "LLM-voorkeuren",
+      "description": "AnythingLLM kan samenwerken met veel LLM-aanbieders. Deze service verzorgt de chatfunctie."
     },
-    userSetup: {
-      title: "Gebruikersinstellingen",
-      description: "Configureer uw gebruikersinstellingen.",
-      howManyUsers: "Hoeveel gebruikers zullen deze instantie gebruiken?",
-      justMe: "Alleen ik",
-      myTeam: "Mijn team",
-      instancePassword: "Instancewachtwoord",
-      setPassword: "Wilt u een wachtwoord instellen?",
-      passwordReq: "Wachtwoorden moeten minimaal 8 tekens lang zijn.",
-      passwordWarn:
-        "Het is belangrijk om dit wachtwoord te bewaren, omdat er geen herstelmethode is.",
-      adminUsername: "Gebruikersnaam van het beheerdersaccount",
-      adminPassword: "Wachtwoord van het beheerdersaccount",
-      adminPasswordReq: "Wachtwoorden moeten minimaal 8 tekens lang zijn.",
-      teamHint:
-        "Standaard bent u de enige beheerder. Zodra de onboarding is voltooid, kunt u gebruikers of beheerders aanmaken en anderen uitnodigen. Raak uw wachtwoord niet kwijt, want alleen beheerders kunnen wachtwoorden opnieuw instellen.",
+    "userSetup": {
+      "title": "Gebruikersinstellingen",
+      "description": "Configureer uw gebruikersinstellingen.",
+      "howManyUsers": "Hoeveel gebruikers zullen deze instantie gebruiken?",
+      "justMe": "Alleen ik",
+      "myTeam": "Mijn team",
+      "instancePassword": "Instancewachtwoord",
+      "setPassword": "Wilt u een wachtwoord instellen?",
+      "passwordReq": "Wachtwoorden moeten minimaal 8 tekens lang zijn.",
+      "passwordWarn": "Het is belangrijk om dit wachtwoord te bewaren, omdat er geen herstelmethode is.",
+      "adminUsername": "Gebruikersnaam van het beheerdersaccount",
+      "adminPassword": "Wachtwoord van het beheerdersaccount",
+      "adminPasswordReq": "Wachtwoorden moeten minimaal 8 tekens lang zijn.",
+      "teamHint": "Standaard bent u de enige beheerder. Zodra de onboarding is voltooid, kunt u gebruikers of beheerders aanmaken en anderen uitnodigen. Raak uw wachtwoord niet kwijt, want alleen beheerders kunnen wachtwoorden opnieuw instellen."
     },
-    data: {
-      title: "Gegevensverwerking en privacy",
-      description:
-        "Wij streven naar transparantie en controle als het gaat om uw persoonlijke gegevens.",
-      settingsHint:
-        "Deze instellingen kunnen op elk moment opnieuw worden geconfigureerd in de instellingen.",
-    },
+    "data": {
+      "title": "Gegevensverwerking en privacy",
+      "description": "Wij streven naar transparantie en controle als het gaat om uw persoonlijke gegevens.",
+      "settingsHint": "Deze instellingen kunnen op elk moment opnieuw worden geconfigureerd in de instellingen."
+    }
   },
-  common: {
+  "common": {
     "workspaces-name": "Werkruimten Naam",
-    selection: "Model Selectie",
-    saving: "Opslaan...",
-    save: "Wijzigingen opslaan",
-    previous: "Vorige pagina",
-    next: "Volgende pagina",
-    optional: "Optioneel",
-    yes: "Ja",
-    no: "Nee",
-    search: "Zoeken",
-    username_requirements:
-      "De gebruikersnaam moet 2-32 tekens bevatten, beginnen met een kleine letter en mag alleen kleine letters, cijfers, underscores, koppeltekens en punten bevatten.",
-    on: "Over",
-    none: "Geen",
-    stopped: "Gestopt",
-    loading: "Laad",
-    refresh: "Verfrissen",
+    "selection": "Model Selectie",
+    "saving": "Opslaan...",
+    "save": "Wijzigingen opslaan",
+    "previous": "Vorige pagina",
+    "next": "Volgende pagina",
+    "optional": "Optioneel",
+    "yes": "Ja",
+    "no": "Nee",
+    "search": "Zoeken",
+    "username_requirements": "De gebruikersnaam moet 2-32 tekens bevatten, beginnen met een kleine letter en mag alleen kleine letters, cijfers, underscores, koppeltekens en punten bevatten.",
+    "on": "Over",
+    "none": "Geen",
+    "stopped": "Gestopt",
+    "loading": "Laad",
+    "refresh": "Verfrissen"
   },
-  settings: {
-    title: "Instelling Instanties",
-    invites: "Uitnodigingen",
-    users: "Gebruikers",
-    workspaces: "Werkruimten",
+  "settings": {
+    "title": "Instelling Instanties",
+    "invites": "Uitnodigingen",
+    "users": "Gebruikers",
+    "workspaces": "Werkruimten",
     "workspace-chats": "Werkruimte Chats",
-    customization: "Aanpassing",
+    "customization": "Aanpassing",
     "api-keys": "Ontwikkelaar API",
-    llm: "LLM",
-    transcription: "Transcriptie",
-    embedder: "Inbedder",
+    "llm": "LLM",
+    "transcription": "Transcriptie",
+    "embedder": "Inbedder",
     "text-splitting": "Tekst Splitsen & Chunking",
     "voice-speech": "Stem & Spraak",
     "vector-database": "Vector Database",
-    embeds: "Chat Inbedden",
-    security: "Veiligheid",
+    "embeds": "Chat Inbedden",
+    "security": "Veiligheid",
     "event-logs": "Gebeurtenislogboeken",
-    privacy: "Privacy & Gegevens",
+    "privacy": "Privacy & Gegevens",
     "ai-providers": "AI Providers",
     "agent-skills": "Agent Vaardigheden",
-    admin: "Beheerder",
-    tools: "Hulpmiddelen",
+    "admin": "Beheerder",
+    "tools": "Hulpmiddelen",
     "experimental-features": "Experimentele Functies",
-    contact: "Contact Ondersteuning",
+    "contact": "Contact Ondersteuning",
     "browser-extension": "Browser Extensie",
     "system-prompt-variables": "Systeempromptvariabelen",
-    interface: "UI-voorkeuren",
-    branding: "Branding & Whitelabeling",
-    chat: "Chat",
+    "interface": "UI-voorkeuren",
+    "branding": "Branding & Whitelabeling",
+    "chat": "Chat",
     "mobile-app": "AnythingLLM Mobiele App",
     "community-hub": {
-      title: "Centraal punt",
-      trending: "Bekijk populaire onderwerpen",
+      "title": "Centraal punt",
+      "trending": "Bekijk populaire onderwerpen",
       "your-account": "Uw account",
-      "import-item": "Importeren",
+      "import-item": "Importeren"
     },
-    channels: "Kanaal",
+    "channels": "Kanaal",
     "available-channels": {
-      telegram: "Telegram",
-    },
+      "telegram": "Telegram"
+    }
   },
-  login: {
+  "login": {
     "multi-user": {
-      welcome: "Welkom bij",
+      "welcome": "Welkom bij",
       "placeholder-username": "Gebruikersnaam",
       "placeholder-password": "Wachtwoord",
-      login: "Inloggen",
-      validating: "Bezig met valideren...",
+      "login": "Inloggen",
+      "validating": "Bezig met valideren...",
       "forgot-pass": "Wachtwoord vergeten",
-      reset: "Reset",
+      "reset": "Reset"
     },
     "sign-in": "Meld je aan bij je {{appName}} account.",
     "password-reset": {
-      title: "Wachtwoord Resetten",
-      description:
-        "Geef de benodigde informatie hieronder om je wachtwoord te resetten.",
+      "title": "Wachtwoord Resetten",
+      "description": "Geef de benodigde informatie hieronder om je wachtwoord te resetten.",
       "recovery-codes": "Herstelcodes",
-      "back-to-login": "Terug naar Inloggen",
-    },
+      "back-to-login": "Terug naar Inloggen"
+    }
   },
   "new-workspace": {
-    title: "Nieuwe Werkruimte",
-    placeholder: "Mijn Werkruimte",
+    "title": "Nieuwe Werkruimte",
+    "placeholder": "Mijn Werkruimte"
   },
   "workspaces—settings": {
-    general: "Algemene Instellingen",
-    chat: "Chat Instellingen",
-    vector: "Vector Database",
-    members: "Leden",
-    agent: "Agent Configuratie",
+    "general": "Algemene Instellingen",
+    "chat": "Chat Instellingen",
+    "vector": "Vector Database",
+    "members": "Leden",
+    "agent": "Agent Configuratie"
   },
-  general: {
-    vector: {
-      title: "Vector Teller",
-      description: "Totaal aantal vectoren in je vector database.",
+  "general": {
+    "vector": {
+      "title": "Vector Teller",
+      "description": "Totaal aantal vectoren in je vector database."
     },
-    names: {
-      description: "Dit zal alleen de weergavenaam van je werkruimte wijzigen.",
+    "names": {
+      "description": "Dit zal alleen de weergavenaam van je werkruimte wijzigen."
     },
-    message: {
-      title: "Voorgestelde Chatberichten",
-      description:
-        "Pas de berichten aan die aan je werkruimtegebruikers worden voorgesteld.",
-      add: "Nieuw bericht toevoegen",
-      save: "Berichten opslaan",
-      heading: "Leg me uit",
-      body: "de voordelen van AnythingLLM",
+    "message": {
+      "title": "Voorgestelde Chatberichten",
+      "description": "Pas de berichten aan die aan je werkruimtegebruikers worden voorgesteld.",
+      "add": "Nieuw bericht toevoegen",
+      "save": "Berichten opslaan",
+      "heading": "Leg me uit",
+      "body": "de voordelen van AnythingLLM"
     },
-    delete: {
-      title: "Werkruimte Verwijderen",
-      description:
-        "Verwijder deze werkruimte en al zijn gegevens. Dit zal de werkruimte voor alle gebruikers verwijderen.",
-      delete: "Werkruimte Verwijderen",
-      deleting: "Werkruimte Verwijderen...",
+    "delete": {
+      "title": "Werkruimte Verwijderen",
+      "description": "Verwijder deze werkruimte en al zijn gegevens. Dit zal de werkruimte voor alle gebruikers verwijderen.",
+      "delete": "Werkruimte Verwijderen",
+      "deleting": "Werkruimte Verwijderen...",
       "confirm-start": "Je staat op het punt je gehele",
-      "confirm-end":
-        "werkruimte te verwijderen. Dit zal alle vector inbeddingen in je vector database verwijderen.\n\nDe originele bronbestanden blijven onaangetast. Deze actie is onomkeerbaar.",
-    },
+      "confirm-end": "werkruimte te verwijderen. Dit zal alle vector inbeddingen in je vector database verwijderen.\n\nDe originele bronbestanden blijven onaangetast. Deze actie is onomkeerbaar."
+    }
   },
-  chat: {
-    llm: {
-      title: "Werkruimte LLM Provider",
-      description:
-        "De specifieke LLM-provider en -model die voor deze werkruimte zal worden gebruikt. Standaard wordt de systeem LLM-provider en instellingen gebruikt.",
-      search: "Zoek alle LLM-providers",
+  "chat": {
+    "llm": {
+      "title": "Werkruimte LLM Provider",
+      "description": "De specifieke LLM-provider en -model die voor deze werkruimte zal worden gebruikt. Standaard wordt de systeem LLM-provider en instellingen gebruikt.",
+      "search": "Zoek alle LLM-providers"
     },
-    model: {
-      title: "Werkruimte Chatmodel",
-      description:
-        "Het specifieke chatmodel dat voor deze werkruimte zal worden gebruikt. Indien leeg, wordt de systeem LLM-voorkeur gebruikt.",
+    "model": {
+      "title": "Werkruimte Chatmodel",
+      "description": "Het specifieke chatmodel dat voor deze werkruimte zal worden gebruikt. Indien leeg, wordt de systeem LLM-voorkeur gebruikt."
     },
-    mode: {
-      title: "Chatmodus",
-      chat: {
-        title: "Chat",
-        description:
-          "zal antwoorden genereren met behulp van de algemene kennis van het LLM en de context uit het document <b>en</b>. <br />Om tools te gebruiken, moet u het commando `@agent` gebruiken.",
+    "mode": {
+      "title": "Chatmodus",
+      "chat": {
+        "title": "Chat",
+        "description": "zal antwoorden genereren met behulp van de algemene kennis van het LLM en de context uit het document <b>en</b>. <br />Om tools te gebruiken, moet u het commando `@agent` gebruiken."
       },
-      query: {
-        title: "Query",
-        description:
-          "zal alleen antwoorden <b>als de context van het document wordt gevonden.</b>U moet het commando @agent gebruiken om de tools te gebruiken.",
+      "query": {
+        "title": "Query",
+        "description": "zal alleen antwoorden <b>als de context van het document wordt gevonden.</b>U moet het commando @agent gebruiken om de tools te gebruiken."
       },
-      automatic: {
-        title: "Auto",
-        description:
-          "zal automatisch tools gebruiken als het model en de provider native tool-aanroepen ondersteunen. <br />Als native tooling niet wordt ondersteund, moet u de `@agent`-commando gebruiken om tools te gebruiken.",
-      },
+      "automatic": {
+        "title": "Auto",
+        "description": "zal automatisch tools gebruiken als het model en de provider native tool-aanroepen ondersteunen. <br />Als native tooling niet wordt ondersteund, moet u de `@agent`-commando gebruiken om tools te gebruiken."
+      }
     },
-    history: {
-      title: "Chatgeschiedenis",
-      "desc-start":
-        "Het aantal vorige chats dat in het kortetermijngeheugen van de reactie wordt opgenomen.",
-      recommend: "Aanbevolen 20. ",
-      "desc-end":
-        "Alles meer dan 45 leidt waarschijnlijk tot continue chatfouten, afhankelijk van de berichtgrootte.",
+    "history": {
+      "title": "Chatgeschiedenis",
+      "desc-start": "Het aantal vorige chats dat in het kortetermijngeheugen van de reactie wordt opgenomen.",
+      "recommend": "Aanbevolen 20. ",
+      "desc-end": "Alles meer dan 45 leidt waarschijnlijk tot continue chatfouten, afhankelijk van de berichtgrootte."
     },
-    prompt: {
-      title: "Prompt",
-      description:
-        "De prompt die in deze werkruimte zal worden gebruikt. Definieer de context en instructies voor de AI om een reactie te genereren. Je moet een zorgvuldig samengestelde prompt geven zodat de AI een relevante en nauwkeurige reactie kan genereren.",
-      history: {
-        title: "Geschiedenis van systeemprompts",
-        clearAll: "Alles wissen",
-        noHistory: "Geen geschiedenis van systeemprompts beschikbaar",
-        restore: "Herstellen",
-        delete: "Verwijderen",
-        deleteConfirm:
-          "Weet u zeker dat u dit geschiedenisitem wilt verwijderen?",
-        clearAllConfirm:
-          "Weet u zeker dat u alle geschiedenis wilt wissen? Deze actie kan niet ongedaan worden gemaakt.",
-        expand: "Uitbreiden",
-        publish: "Publiceren naar Community Hub",
-      },
+    "prompt": {
+      "title": "Prompt",
+      "description": "De prompt die in deze werkruimte zal worden gebruikt. Definieer de context en instructies voor de AI om een reactie te genereren. Je moet een zorgvuldig samengestelde prompt geven zodat de AI een relevante en nauwkeurige reactie kan genereren.",
+      "history": {
+        "title": "Geschiedenis van systeemprompts",
+        "clearAll": "Alles wissen",
+        "noHistory": "Geen geschiedenis van systeemprompts beschikbaar",
+        "restore": "Herstellen",
+        "delete": "Verwijderen",
+        "deleteConfirm": "Weet u zeker dat u dit geschiedenisitem wilt verwijderen?",
+        "clearAllConfirm": "Weet u zeker dat u alle geschiedenis wilt wissen? Deze actie kan niet ongedaan worden gemaakt.",
+        "expand": "Uitbreiden",
+        "publish": "Publiceren naar Community Hub"
+      }
     },
-    refusal: {
-      title: "Afwijzingsreactie in Querymodus",
+    "refusal": {
+      "title": "Afwijzingsreactie in Querymodus",
       "desc-start": "Wanneer in",
-      query: "query",
-      "desc-end":
-        "modus, wil je wellicht een aangepaste afwijzingsreactie geven wanneer er geen context wordt gevonden.",
+      "query": "query",
+      "desc-end": "modus, wil je wellicht een aangepaste afwijzingsreactie geven wanneer er geen context wordt gevonden.",
       "tooltip-title": "Waarom zie ik dit?",
-      "tooltip-description":
-        "U bevindt zich in de querymodus, die alleen informatie uit uw documenten gebruikt. Schakel over naar de chatmodus voor flexibelere gesprekken, of klik hier om onze documentatie te raadplegen voor meer informatie over chatmodi.",
+      "tooltip-description": "U bevindt zich in de querymodus, die alleen informatie uit uw documenten gebruikt. Schakel over naar de chatmodus voor flexibelere gesprekken, of klik hier om onze documentatie te raadplegen voor meer informatie over chatmodi."
     },
-    temperature: {
-      title: "LLM Temperatuur",
-      "desc-start":
-        'Deze instelling bepaalt hoe "creatief" je LLM-antwoorden zullen zijn.',
-      "desc-end":
-        "Hoe hoger het getal, hoe creatiever. Voor sommige modellen kan dit leiden tot onsamenhangende antwoorden als het te hoog wordt ingesteld.",
-      hint: "De meeste LLM's hebben verschillende acceptabele reeksen van geldige waarden. Raadpleeg je LLM-provider voor die informatie.",
-    },
+    "temperature": {
+      "title": "LLM Temperatuur",
+      "desc-start": "Deze instelling bepaalt hoe \"creatief\" je LLM-antwoorden zullen zijn.",
+      "desc-end": "Hoe hoger het getal, hoe creatiever. Voor sommige modellen kan dit leiden tot onsamenhangende antwoorden als het te hoog wordt ingesteld.",
+      "hint": "De meeste LLM's hebben verschillende acceptabele reeksen van geldige waarden. Raadpleeg je LLM-provider voor die informatie."
+    }
   },
   "vector-workspace": {
-    identifier: "Vector database-identificator",
-    snippets: {
-      title: "Maximale Contextfragmenten",
-      description:
-        "Deze instelling bepaalt het maximale aantal contextfragmenten dat per chat of query naar de LLM wordt verzonden.",
-      recommend: "Aanbevolen: 4",
+    "identifier": "Vector database-identificator",
+    "snippets": {
+      "title": "Maximale Contextfragmenten",
+      "description": "Deze instelling bepaalt het maximale aantal contextfragmenten dat per chat of query naar de LLM wordt verzonden.",
+      "recommend": "Aanbevolen: 4"
     },
-    doc: {
-      title: "Document gelijkenisdrempel",
-      description:
-        "De minimale gelijkenisscore die vereist is voor een bron om als gerelateerd aan de chat te worden beschouwd. Hoe hoger het getal, hoe meer vergelijkbaar de bron moet zijn met de chat.",
-      zero: "Geen beperking",
-      low: "Laag (gelijkenisscore ≥ .25)",
-      medium: "Middel (gelijkenisscore ≥ .50)",
-      high: "Hoog (gelijkenisscore ≥ .75)",
+    "doc": {
+      "title": "Document gelijkenisdrempel",
+      "description": "De minimale gelijkenisscore die vereist is voor een bron om als gerelateerd aan de chat te worden beschouwd. Hoe hoger het getal, hoe meer vergelijkbaar de bron moet zijn met de chat.",
+      "zero": "Geen beperking",
+      "low": "Laag (gelijkenisscore ≥ .25)",
+      "medium": "Middel (gelijkenisscore ≥ .50)",
+      "high": "Hoog (gelijkenisscore ≥ .75)"
     },
-    reset: {
-      reset: "Vector Database Resetten",
-      resetting: "Vectoren wissen...",
-      confirm:
-        "Je staat op het punt de vector database van deze werkruimte te resetten. Dit zal alle momenteel ingebedde vectoren verwijderen.\n\nDe originele bronbestanden blijven onaangetast. Deze actie is onomkeerbaar.",
-      error: "Werkruimte vector database kon niet worden gereset!",
-      success: "Werkruimte vector database is gereset!",
-    },
+    "reset": {
+      "reset": "Vector Database Resetten",
+      "resetting": "Vectoren wissen...",
+      "confirm": "Je staat op het punt de vector database van deze werkruimte te resetten. Dit zal alle momenteel ingebedde vectoren verwijderen.\n\nDe originele bronbestanden blijven onaangetast. Deze actie is onomkeerbaar.",
+      "error": "Werkruimte vector database kon niet worden gereset!",
+      "success": "Werkruimte vector database is gereset!"
+    }
   },
-  agent: {
-    "performance-warning":
-      "De prestaties van LLM's die geen tool-aanroep expliciet ondersteunen, zijn sterk afhankelijk van de capaciteiten en nauwkeurigheid van het model. Sommige vaardigheden kunnen beperkt of niet-functioneel zijn.",
-    provider: {
-      title: "Werkruimte Agent LLM Provider",
-      description:
-        "De specifieke LLM-provider en -model die voor het @agent-agent van deze werkruimte zal worden gebruikt.",
+  "agent": {
+    "performance-warning": "De prestaties van LLM's die geen tool-aanroep expliciet ondersteunen, zijn sterk afhankelijk van de capaciteiten en nauwkeurigheid van het model. Sommige vaardigheden kunnen beperkt of niet-functioneel zijn.",
+    "provider": {
+      "title": "Werkruimte Agent LLM Provider",
+      "description": "De specifieke LLM-provider en -model die voor het @agent-agent van deze werkruimte zal worden gebruikt."
     },
-    mode: {
-      chat: {
-        title: "Werkruimte Agent Chatmodel",
-        description:
-          "Het specifieke chatmodel dat zal worden gebruikt voor het @agent-agent van deze werkruimte.",
+    "mode": {
+      "chat": {
+        "title": "Werkruimte Agent Chatmodel",
+        "description": "Het specifieke chatmodel dat zal worden gebruikt voor het @agent-agent van deze werkruimte."
       },
-      title: "Werkruimte Agentmodel",
-      description:
-        "Het specifieke LLM-model dat voor het @agent-agent van deze werkruimte zal worden gebruikt.",
-      wait: "-- wachten op modellen --",
+      "title": "Werkruimte Agentmodel",
+      "description": "Het specifieke LLM-model dat voor het @agent-agent van deze werkruimte zal worden gebruikt.",
+      "wait": "-- wachten op modellen --"
     },
-    skill: {
-      rag: {
-        title: "RAG & langetermijngeheugen",
-        description:
-          'Sta de agent toe om je lokale documenten te gebruiken om een vraag te beantwoorden of vraag de agent om stukken inhoud "te onthouden" voor langetermijngeheugenopslag.',
+    "skill": {
+      "rag": {
+        "title": "RAG & langetermijngeheugen",
+        "description": "Sta de agent toe om je lokale documenten te gebruiken om een vraag te beantwoorden of vraag de agent om stukken inhoud \"te onthouden\" voor langetermijngeheugenopslag."
       },
-      view: {
-        title: "Documenten bekijken & samenvatten",
-        description:
-          "Sta de agent toe om de inhoud van momenteel ingebedde werkruimtebestanden op te sommen en samen te vatten.",
+      "view": {
+        "title": "Documenten bekijken & samenvatten",
+        "description": "Sta de agent toe om de inhoud van momenteel ingebedde werkruimtebestanden op te sommen en samen te vatten."
       },
-      scrape: {
-        title: "Websites schrapen",
-        description:
-          "Sta de agent toe om de inhoud van websites te bezoeken en te schrapen.",
+      "scrape": {
+        "title": "Websites schrapen",
+        "description": "Sta de agent toe om de inhoud van websites te bezoeken en te schrapen."
       },
-      generate: {
-        title: "Grafieken genereren",
-        description:
-          "Sta de standaardagent toe om verschillende soorten grafieken te genereren uit verstrekte of in de chat gegeven gegevens.",
+      "generate": {
+        "title": "Grafieken genereren",
+        "description": "Sta de standaardagent toe om verschillende soorten grafieken te genereren uit verstrekte of in de chat gegeven gegevens."
       },
-      web: {
-        title: "Live web zoeken en browsen",
-        description:
-          "Maak het mogelijk voor uw agent om het internet te doorzoeken om uw vragen te beantwoorden, door een verbinding te maken met een webzoekprovider (SERP).",
+      "web": {
+        "title": "Live web zoeken en browsen",
+        "description": "Maak het mogelijk voor uw agent om het internet te doorzoeken om uw vragen te beantwoorden, door een verbinding te maken met een webzoekprovider (SERP)."
       },
-      sql: {
-        title: "SQL-connector",
-        description:
-          "Maak het mogelijk voor uw agent om SQL te gebruiken om uw vragen te beantwoorden, door verbinding te maken met verschillende SQL-databaseproviders.",
+      "sql": {
+        "title": "SQL-connector",
+        "description": "Maak het mogelijk voor uw agent om SQL te gebruiken om uw vragen te beantwoorden, door verbinding te maken met verschillende SQL-databaseproviders."
       },
-      default_skill:
-        "Standaard is deze functie ingeschakeld, maar u kunt deze uitschakelen als u niet wilt dat de agent er gebruik van kan maken.",
-      filesystem: {
-        title: "Toegang tot het bestandssysteem",
-        description:
-          "Geef uw agent de mogelijkheid om bestanden te lezen, te schrijven, te zoeken en te beheren binnen een aangewezen map. Ondersteunt het bewerken van bestanden, het navigeren door mappen en het zoeken naar inhoud.",
-        learnMore:
-          "Meer informatie over hoe u deze vaardigheid kunt toepassen.",
-        configuration: "Configuratie",
-        readActions: "Lees acties",
-        writeActions: "Schrijf acties",
-        warning:
-          "Toegang tot het bestandssysteem kan gevaarlijk zijn, omdat het bestanden kan wijzigen of verwijderen. Raadpleeg de <a>documentatie</a> voordat u dit activeert.",
-        skills: {
+      "default_skill": "Standaard is deze functie ingeschakeld, maar u kunt deze uitschakelen als u niet wilt dat de agent er gebruik van kan maken.",
+      "filesystem": {
+        "title": "Toegang tot het bestandssysteem",
+        "description": "Geef uw agent de mogelijkheid om bestanden te lezen, te schrijven, te zoeken en te beheren binnen een aangewezen map. Ondersteunt het bewerken van bestanden, het navigeren door mappen en het zoeken naar inhoud.",
+        "learnMore": "Meer informatie over hoe u deze vaardigheid kunt toepassen.",
+        "configuration": "Configuratie",
+        "readActions": "Lees acties",
+        "writeActions": "Schrijf acties",
+        "warning": "Toegang tot het bestandssysteem kan gevaarlijk zijn, omdat het bestanden kan wijzigen of verwijderen. Raadpleeg de <a>documentatie</a> voordat u dit activeert.",
+        "skills": {
           "read-text-file": {
-            title: "Bestand openen",
-            description:
-              "Lees de inhoud van bestanden (tekst, code, PDF, afbeeldingen, enz.)",
+            "title": "Bestand openen",
+            "description": "Lees de inhoud van bestanden (tekst, code, PDF, afbeeldingen, enz.)"
           },
           "read-multiple-files": {
-            title: "Lees meerdere bestanden",
-            description: "Lees meerdere bestanden tegelijkertijd.",
+            "title": "Lees meerdere bestanden",
+            "description": "Lees meerdere bestanden tegelijkertijd."
           },
           "list-directory": {
-            title: "Lijst met contactgegevens",
-            description:
-              "Maak een lijst van bestanden en mappen binnen een map.",
+            "title": "Lijst met contactgegevens",
+            "description": "Maak een lijst van bestanden en mappen binnen een map."
           },
           "search-files": {
-            title: "Bestanden zoeken",
-            description: "Zoek naar bestanden op naam of inhoud",
+            "title": "Bestanden zoeken",
+            "description": "Zoek naar bestanden op naam of inhoud"
           },
           "get-file-info": {
-            title: "Fijlsinformatie bekijken",
-            description: "Verkrijg gedetailleerde metadata over bestanden.",
+            "title": "Fijlsinformatie bekijken",
+            "description": "Verkrijg gedetailleerde metadata over bestanden."
           },
           "edit-file": {
-            title: "Bestand bewerken",
-            description: "Voer wijzigingen uit op tekstbestanden, per regel.",
+            "title": "Bestand bewerken",
+            "description": "Voer wijzigingen uit op tekstbestanden, per regel."
           },
           "create-directory": {
-            title: "Maak een directory",
-            description: "Maak nieuwe mappen aan",
+            "title": "Maak een directory",
+            "description": "Maak nieuwe mappen aan"
           },
           "move-file": {
-            title: "Verplaats/Hernoem bestand",
-            description: "Verplaats of wijzig de naam van bestanden en mappen.",
+            "title": "Verplaats/Hernoem bestand",
+            "description": "Verplaats of wijzig de naam van bestanden en mappen."
           },
           "copy-file": {
-            title: "Kopieer bestand",
-            description: "Kopieer bestanden en mappen",
+            "title": "Kopieer bestand",
+            "description": "Kopieer bestanden en mappen"
           },
           "write-text-file": {
-            title: "Maak een tekstbestand",
-            description:
-              "Maak nieuwe tekstbestanden aan of vervang bestaande tekstbestanden.",
-          },
-        },
+            "title": "Maak een tekstbestand",
+            "description": "Maak nieuwe tekstbestanden aan of vervang bestaande tekstbestanden."
+          }
+        }
       },
-      createFiles: {
-        title: "Documentcreatie",
-        description:
-          "Laat uw agent documenten in binair formaat aanmaken, zoals PowerPoint-presentaties, Excel-tabellen, Word-documenten en PDF-bestanden. Bestanden kunnen direct worden gedownload vanuit het chatvenster.",
-        configuration: "Beschikbare documenttypen",
-        skills: {
+      "createFiles": {
+        "title": "Documentcreatie",
+        "description": "Laat uw agent documenten in binair formaat aanmaken, zoals PowerPoint-presentaties, Excel-tabellen, Word-documenten en PDF-bestanden. Bestanden kunnen direct worden gedownload vanuit het chatvenster.",
+        "configuration": "Beschikbare documenttypen",
+        "skills": {
           "create-text-file": {
-            title: "Tekstbestanden",
-            description:
-              "Maak tekstbestanden met elk gewenst inhoud en bestandsextensie (bijvoorbeeld .txt, .md, .json, .csv, enz.).",
+            "title": "Tekstbestanden",
+            "description": "Maak tekstbestanden met elk gewenst inhoud en bestandsextensie (bijvoorbeeld .txt, .md, .json, .csv, enz.)."
           },
           "create-pptx": {
-            title: "Presentaties met PowerPoint",
-            description:
-              "Maak nieuwe PowerPoint-presentaties met dia's, titels en opsommingstekens.",
+            "title": "Presentaties met PowerPoint",
+            "description": "Maak nieuwe PowerPoint-presentaties met dia's, titels en opsommingstekens."
           },
           "create-pdf": {
-            title: "PDF-documenten",
-            description:
-              "Maak PDF-documenten aan vanuit Markdown of gewone tekst, met basisstijling.",
+            "title": "PDF-documenten",
+            "description": "Maak PDF-documenten aan vanuit Markdown of gewone tekst, met basisstijling."
           },
           "create-xlsx": {
-            title: "Excel-tabellen",
-            description:
-              "Maak Excel-documenten voor tabelgegevens, met tabbladen en opmaak.",
+            "title": "Excel-tabellen",
+            "description": "Maak Excel-documenten voor tabelgegevens, met tabbladen en opmaak."
           },
           "create-docx": {
-            title: "Word-documenten",
-            description: "Maak Word-documenten met basisstijlen en -opmaak.",
-          },
-        },
+            "title": "Word-documenten",
+            "description": "Maak Word-documenten met basisstijlen en -opmaak."
+          }
+        }
       },
-      gmail: {
-        title: "GMail-verbinding",
-        description:
-          "Maak het mogelijk voor uw agent om met Gmail te communiceren: e-mails zoeken, threads lezen, e-mails opstellen, e-mails versturen en uw inbox beheren. <a>Bekijk de documentatie</a>.",
-        multiUserWarning:
-          "De integratie met Gmail is niet beschikbaar in de modus voor meerdere gebruikers, om veiligheidsredenen. Schakel de modus voor meerdere gebruikers uit om deze functie te gebruiken.",
-        configuration: "Gmail-instellingen",
-        deploymentId: "Identificatiecode voor de implementatie",
-        deploymentIdHelp: "De deployment-ID van je Google Apps Script web-app",
-        apiKey: "API-sleutel",
-        apiKeyHelp:
-          "De API-sleutel die u hebt geconfigureerd in uw Google Apps Script-implementatie.",
-        configurationRequired:
-          "Configureer de Deployment ID en de API-sleutel om de Gmail-functionaliteit te activeren.",
-        configured: "Geconfigureerd",
-        searchSkills: "Vaardigheden op het gebied van zoeken...",
-        noSkillsFound: "Geen resultaten die overeenkomen met uw zoekopdracht.",
-        categories: {
-          search: {
-            title: "Zoeken en e-mails lezen",
-            description: "Zoek en lees e-mails uit uw Gmail inbox.",
+      "gmail": {
+        "title": "GMail-verbinding",
+        "description": "Maak het mogelijk voor uw agent om met Gmail te communiceren: e-mails zoeken, threads lezen, e-mails opstellen, e-mails versturen en uw inbox beheren. <a>Bekijk de documentatie</a>.",
+        "multiUserWarning": "De integratie met Gmail is niet beschikbaar in de modus voor meerdere gebruikers, om veiligheidsredenen. Schakel de modus voor meerdere gebruikers uit om deze functie te gebruiken.",
+        "configuration": "Gmail-instellingen",
+        "deploymentId": "Identificatiecode voor de implementatie",
+        "deploymentIdHelp": "De deployment-ID van je Google Apps Script web-app",
+        "apiKey": "API-sleutel",
+        "apiKeyHelp": "De API-sleutel die u hebt geconfigureerd in uw Google Apps Script-implementatie.",
+        "configurationRequired": "Configureer de Deployment ID en de API-sleutel om de Gmail-functionaliteit te activeren.",
+        "configured": "Geconfigureerd",
+        "searchSkills": "Vaardigheden op het gebied van zoeken...",
+        "noSkillsFound": "Geen resultaten die overeenkomen met uw zoekopdracht.",
+        "categories": {
+          "search": {
+            "title": "Zoeken en e-mails lezen",
+            "description": "Zoek en lees e-mails uit uw Gmail inbox."
           },
-          drafts: {
-            title: "Voorbeeld-e-mails",
-            description: "Maak, bewerk en beheer e-mailontwerpen.",
+          "drafts": {
+            "title": "Voorbeeld-e-mails",
+            "description": "Maak, bewerk en beheer e-mailontwerpen."
           },
-          send: {
-            title: "Verzenden en antwoorden op e-mails",
-            description:
-              "Verzend e-mails en reageer direct op discussieberichten.",
+          "send": {
+            "title": "Verzenden en antwoorden op e-mails",
+            "description": "Verzend e-mails en reageer direct op discussieberichten."
           },
-          threads: {
-            title: "Beheer e-mailconversaties",
-            description:
-              "Beheer e-mailconversaties – markeer als gelezen/niet gelezen, archiveren, verwijderen",
+          "threads": {
+            "title": "Beheer e-mailconversaties",
+            "description": "Beheer e-mailconversaties – markeer als gelezen/niet gelezen, archiveren, verwijderen"
           },
-          account: {
-            title: "Statistieken over integratie",
-            description:
-              "Bekijk statistieken en accountinformatie van uw e-mail.",
-          },
+          "account": {
+            "title": "Statistieken over integratie",
+            "description": "Bekijk statistieken en accountinformatie van uw e-mail."
+          }
         },
-        skills: {
-          search: {
-            title: "Zoek naar e-mails",
-            description:
-              "Zoek naar e-mails met behulp van de zoeksyntax van Gmail.",
+        "skills": {
+          "search": {
+            "title": "Zoek naar e-mails",
+            "description": "Zoek naar e-mails met behulp van de zoeksyntax van Gmail."
           },
-          readThread: {
-            title: "Lees het gesprek",
-            description: "Lees het volledige e-mailgesprek, gesorteerd op ID.",
+          "readThread": {
+            "title": "Lees het gesprek",
+            "description": "Lees het volledige e-mailgesprek, gesorteerd op ID."
           },
-          createDraft: {
-            title: "Maak een concept",
-            description: "Maak een nieuwe concept-e-mail",
+          "createDraft": {
+            "title": "Maak een concept",
+            "description": "Maak een nieuwe concept-e-mail"
           },
-          createDraftReply: {
-            title: "Maak een concept-antwoord",
-            description: "Maak een concept-antwoord op een bestaand gesprek.",
+          "createDraftReply": {
+            "title": "Maak een concept-antwoord",
+            "description": "Maak een concept-antwoord op een bestaand gesprek."
           },
-          updateDraft: {
-            title: "Aanpassen: Ontwerp",
-            description: "Pas een bestaand concept-e-mail aan.",
+          "updateDraft": {
+            "title": "Aanpassen: Ontwerp",
+            "description": "Pas een bestaand concept-e-mail aan."
           },
-          getDraft: {
-            title: "Bekijk concept",
-            description: "Haal een specifiek ontwerp op, gebaseerd op zijn ID.",
+          "getDraft": {
+            "title": "Bekijk concept",
+            "description": "Haal een specifiek ontwerp op, gebaseerd op zijn ID."
           },
-          listDrafts: {
-            title: "Ontwerpen",
-            description: "Maak een lijst van alle concept-e-mails.",
+          "listDrafts": {
+            "title": "Ontwerpen",
+            "description": "Maak een lijst van alle concept-e-mails."
           },
-          deleteDraft: {
-            title: "Verwijder concept",
-            description: "Verwijder een concept-e-mail",
+          "deleteDraft": {
+            "title": "Verwijder concept",
+            "description": "Verwijder een concept-e-mail"
           },
-          sendDraft: {
-            title: "Verzend concept",
-            description: "Verzend een bestaand e-mailconcept.",
+          "sendDraft": {
+            "title": "Verzend concept",
+            "description": "Verzend een bestaand e-mailconcept."
           },
-          sendEmail: {
-            title: "Stuur e-mail",
-            description: "Stuur onmiddellijk een e-mail.",
+          "sendEmail": {
+            "title": "Stuur e-mail",
+            "description": "Stuur onmiddellijk een e-mail."
           },
-          replyToThread: {
-            title: "Reageer op dit gesprek",
-            description: "Reageer onmiddellijk op een e-mailthread.",
+          "replyToThread": {
+            "title": "Reageer op dit gesprek",
+            "description": "Reageer onmiddellijk op een e-mailthread."
           },
-          markRead: {
-            title: "Mark Read",
-            description: "Markeer een draad als gelezen",
+          "markRead": {
+            "title": "Mark Read",
+            "description": "Markeer een draad als gelezen"
           },
-          markUnread: {
-            title: "Mark ongelezen",
-            description: "Markeer een bericht als ongelezen.",
+          "markUnread": {
+            "title": "Mark ongelezen",
+            "description": "Markeer een bericht als ongelezen."
           },
-          moveToTrash: {
-            title: "Verplaatsen naar prullenbak",
-            description: "Verplaats een onderwerp naar de prullenbak",
+          "moveToTrash": {
+            "title": "Verplaatsen naar prullenbak",
+            "description": "Verplaats een onderwerp naar de prullenbak"
           },
-          moveToArchive: {
-            title: "Archief",
-            description: "Een gesprek archiveren",
+          "moveToArchive": {
+            "title": "Archief",
+            "description": "Een gesprek archiveren"
           },
-          moveToInbox: {
-            title: "Verplaats naar inbox",
-            description: "Verplaats een bericht naar de inbox",
+          "moveToInbox": {
+            "title": "Verplaats naar inbox",
+            "description": "Verplaats een bericht naar de inbox"
           },
-          getMailboxStats: {
-            title: "Statistieken van de e-mail inbox",
-            description:
-              "Bekijk het aantal ongelezen berichten en statistieken over uw e-mailbox.",
+          "getMailboxStats": {
+            "title": "Statistieken van de e-mail inbox",
+            "description": "Bekijk het aantal ongelezen berichten en statistieken over uw e-mailbox."
           },
-          getInbox: {
-            title: "Open de inbox",
-            description:
-              "Een eenvoudige manier om de e-mails in uw inbox van Gmail te bekijken.",
-          },
-        },
+          "getInbox": {
+            "title": "Open de inbox",
+            "description": "Een eenvoudige manier om de e-mails in uw inbox van Gmail te bekijken."
+          }
+        }
       },
-      outlook: {
-        title: "Outlook-connector",
-        description:
-          "Laat uw agent in staat zijn om met Microsoft Outlook te communiceren: e-mails zoeken, threads lezen, concepten opstellen, e-mails versturen en uw inbox beheren via de Microsoft Graph API. Raadpleeg de documentatie.",
-        multiUserWarning:
-          "De integratie met Outlook is niet beschikbaar in de modus voor meerdere gebruikers, vanwege veiligheidsoverwegingen. Om deze functie te gebruiken, moet u de modus voor meerdere gebruikers uitschakelen.",
-        configuration: "Outlook-configuratie",
-        authType: "Type account",
-        authTypeHelp:
-          'Kies welke soorten Microsoft-accounts kunnen worden gebruikt voor authenticatie. "Alle accounts" ondersteunt zowel persoonlijke als werk-/schoolaccounts. "Alleen persoonlijke accounts" beperkt zich tot persoonlijke Microsoft-accounts. "Alleen werk-/schoolaccounts" beperkt zich tot werk-/schoolaccounts van een specifieke Azure AD-tenant.',
-        authTypeCommon:
-          "Alle rekeningen (persoonlijke en zakelijke/schoolrekeningen)",
-        authTypeConsumers: "Alleen persoonlijke Microsoft-accounts",
-        authTypeOrganization:
-          "Alleen accounts voor organisaties (vereist Tenant-ID)",
-        clientId: "Toepassings-ID (klant)",
-        clientIdHelp:
-          "De applicatie-ID (ook wel Client ID genoemd) van uw Azure AD-applicatie.",
-        tenantId: "Identificatienummer (huurder)",
-        tenantIdHelp:
-          "De Directory (Tenant) ID uit uw Azure AD-appregistratie. Vereist alleen voor authenticatie binnen een organisatie.",
-        clientSecret: "Geheime sleutel",
-        clientSecretHelp: "De geheime waarde van uw Azure AD-appregistratie",
-        configurationRequired:
-          "Configureer de Client ID en Client Secret om de Outlook-functionaliteit te activeren.",
-        authRequired:
-          "Sla eerst uw gegevens op, en voer vervolgens de authenticatie uit bij Microsoft om het proces te voltooien.",
-        authenticateWithMicrosoft: "Authenticeer met Microsoft",
-        authenticated: "Succesvol verbonden met Microsoft Outlook.",
-        revokeAccess: "Toegang intrekken",
-        configured: "Geconfigureerd",
-        searchSkills: "Vaardigheden op het gebied van zoeken...",
-        noSkillsFound:
-          "Geen overeenkomende vaardigheden zijn gevonden op basis van uw zoekopdracht.",
-        categories: {
-          search: {
-            title: "Zoeken en e-mails lezen",
-            description: "Zoek en lees e-mails uit uw Outlook inbox.",
+      "outlook": {
+        "title": "Outlook-connector",
+        "description": "Laat uw agent in staat zijn om met Microsoft Outlook te communiceren: e-mails zoeken, threads lezen, concepten opstellen, e-mails versturen en uw inbox beheren via de Microsoft Graph API. Raadpleeg de documentatie.",
+        "multiUserWarning": "De integratie met Outlook is niet beschikbaar in de modus voor meerdere gebruikers, vanwege veiligheidsoverwegingen. Om deze functie te gebruiken, moet u de modus voor meerdere gebruikers uitschakelen.",
+        "configuration": "Outlook-configuratie",
+        "authType": "Type account",
+        "authTypeHelp": "Kies welke soorten Microsoft-accounts kunnen worden gebruikt voor authenticatie. \"Alle accounts\" ondersteunt zowel persoonlijke als werk-/schoolaccounts. \"Alleen persoonlijke accounts\" beperkt zich tot persoonlijke Microsoft-accounts. \"Alleen werk-/schoolaccounts\" beperkt zich tot werk-/schoolaccounts van een specifieke Azure AD-tenant.",
+        "authTypeCommon": "Alle rekeningen (persoonlijke en zakelijke/schoolrekeningen)",
+        "authTypeConsumers": "Alleen persoonlijke Microsoft-accounts",
+        "authTypeOrganization": "Alleen accounts voor organisaties (vereist Tenant-ID)",
+        "clientId": "Toepassings-ID (klant)",
+        "clientIdHelp": "De applicatie-ID (ook wel Client ID genoemd) van uw Azure AD-applicatie.",
+        "tenantId": "Identificatienummer (huurder)",
+        "tenantIdHelp": "De Directory (Tenant) ID uit uw Azure AD-appregistratie. Vereist alleen voor authenticatie binnen een organisatie.",
+        "clientSecret": "Geheime sleutel",
+        "clientSecretHelp": "De geheime waarde van uw Azure AD-appregistratie",
+        "configurationRequired": "Configureer de Client ID en Client Secret om de Outlook-functionaliteit te activeren.",
+        "authRequired": "Sla eerst uw gegevens op, en voer vervolgens de authenticatie uit bij Microsoft om het proces te voltooien.",
+        "authenticateWithMicrosoft": "Authenticeer met Microsoft",
+        "authenticated": "Succesvol verbonden met Microsoft Outlook.",
+        "revokeAccess": "Toegang intrekken",
+        "configured": "Geconfigureerd",
+        "searchSkills": "Vaardigheden op het gebied van zoeken...",
+        "noSkillsFound": "Geen overeenkomende vaardigheden zijn gevonden op basis van uw zoekopdracht.",
+        "categories": {
+          "search": {
+            "title": "Zoeken en e-mails lezen",
+            "description": "Zoek en lees e-mails uit uw Outlook inbox."
           },
-          drafts: {
-            title: "Voorbeeld e-mails",
-            description: "Maak, bewerk en beheer e-mailvoorstellen.",
+          "drafts": {
+            "title": "Voorbeeld e-mails",
+            "description": "Maak, bewerk en beheer e-mailvoorstellen."
           },
-          send: {
-            title: "Verzend e-mails",
-            description:
-              "Verzend nieuwe e-mails of reageer onmiddellijk op berichten.",
+          "send": {
+            "title": "Verzend e-mails",
+            "description": "Verzend nieuwe e-mails of reageer onmiddellijk op berichten."
           },
-          account: {
-            title: "Statistieken over integratie",
-            description:
-              "Bekijk statistieken en accountinformatie van uw e-mail.",
-          },
+          "account": {
+            "title": "Statistieken over integratie",
+            "description": "Bekijk statistieken en accountinformatie van uw e-mail."
+          }
         },
-        skills: {
-          getInbox: {
-            title: "Open de inbox",
-            description: "Bekijk recente e-mails uit uw Outlook inbox.",
+        "skills": {
+          "getInbox": {
+            "title": "Open de inbox",
+            "description": "Bekijk recente e-mails uit uw Outlook inbox."
           },
-          search: {
-            title: "Zoeken in e-mails",
-            description:
-              "Zoek naar e-mails met behulp van de syntax van Microsoft Search",
+          "search": {
+            "title": "Zoeken in e-mails",
+            "description": "Zoek naar e-mails met behulp van de syntax van Microsoft Search"
           },
-          readThread: {
-            title: "Lees het gesprek",
-            description: "Lees het volledige e-mailgesprek",
+          "readThread": {
+            "title": "Lees het gesprek",
+            "description": "Lees het volledige e-mailgesprek"
           },
-          createDraft: {
-            title: "Maak een concept",
-            description:
-              "Maak een nieuwe concept-e-mail of een concept-antwoord op een bestaande bericht.",
+          "createDraft": {
+            "title": "Maak een concept",
+            "description": "Maak een nieuwe concept-e-mail of een concept-antwoord op een bestaande bericht."
           },
-          updateDraft: {
-            title: "Versie",
-            description: "Pas een bestaand concept e-mail aan",
+          "updateDraft": {
+            "title": "Versie",
+            "description": "Pas een bestaand concept e-mail aan"
           },
-          listDrafts: {
-            title: "Ontwerpen",
-            description: "Maak een lijst van alle concept-e-mails.",
+          "listDrafts": {
+            "title": "Ontwerpen",
+            "description": "Maak een lijst van alle concept-e-mails."
           },
-          deleteDraft: {
-            title: "Verwijder concept",
-            description: "Verwijder een concept-e-mail",
+          "deleteDraft": {
+            "title": "Verwijder concept",
+            "description": "Verwijder een concept-e-mail"
           },
-          sendDraft: {
-            title: "Verzend concept",
-            description: "Verzend een bestaand e-mailontwerp.",
+          "sendDraft": {
+            "title": "Verzend concept",
+            "description": "Verzend een bestaand e-mailontwerp."
           },
-          sendEmail: {
-            title: "Stuur e-mail",
-            description:
-              "Verzend een nieuw e-mail of reageer direct op een bestaande bericht.",
+          "sendEmail": {
+            "title": "Stuur e-mail",
+            "description": "Verzend een nieuw e-mail of reageer direct op een bestaande bericht."
           },
-          getMailboxStats: {
-            title: "Statistieken van de e-mailbox",
-            description: "Haal de aantallen mappen en mailbox-statistieken op.",
-          },
-        },
+          "getMailboxStats": {
+            "title": "Statistieken van de e-mailbox",
+            "description": "Haal de aantallen mappen en mailbox-statistieken op."
+          }
+        }
       },
-      googleCalendar: {
-        title: "Google Kalender-connector",
-        description:
-          "Maak het mogelijk voor uw agent om met Google Kalender te communiceren: kalenders bekijken, evenementen bekijken, evenementen aanmaken en bijwerken, en RSVP's beheren. <a>Lees de documentatie</a>.",
-        multiUserWarning:
-          "De integratie met Google Kalender is niet beschikbaar in de modus met meerdere gebruikers, vanwege beveiligingsredenen. Om deze functie te gebruiken, dient u de modus met meerdere gebruikers uit te schakelen.",
-        configuration: "Google Kalender instellingen",
-        deploymentId: "Identificatiecode voor de implementatie",
-        deploymentIdHelp: "De deployment-ID van uw Google Apps Script web-app",
-        apiKey: "API-sleutel",
-        apiKeyHelp:
-          "De API-sleutel die u heeft geconfigureerd in uw Google Apps Script-implementatie.",
-        configurationRequired:
-          "Configureer de Deployment ID en de API-sleutel om de Google Calendar-functionaliteit te activeren.",
-        configured: "Geconfigureerd",
-        searchSkills: "Vaardigheden op het gebied van zoeken...",
-        noSkillsFound:
-          "Geen resultaten gevonden die overeenkomen met uw zoekopdracht.",
-        categories: {
-          calendars: {
-            title: "Kalenders",
-            description: "Bekijk en beheer uw Google-agenda's",
+      "googleCalendar": {
+        "title": "Google Kalender-connector",
+        "description": "Maak het mogelijk voor uw agent om met Google Kalender te communiceren: kalenders bekijken, evenementen bekijken, evenementen aanmaken en bijwerken, en RSVP's beheren. <a>Lees de documentatie</a>.",
+        "multiUserWarning": "De integratie met Google Kalender is niet beschikbaar in de modus met meerdere gebruikers, vanwege beveiligingsredenen. Om deze functie te gebruiken, dient u de modus met meerdere gebruikers uit te schakelen.",
+        "configuration": "Google Kalender instellingen",
+        "deploymentId": "Identificatiecode voor de implementatie",
+        "deploymentIdHelp": "De deployment-ID van uw Google Apps Script web-app",
+        "apiKey": "API-sleutel",
+        "apiKeyHelp": "De API-sleutel die u heeft geconfigureerd in uw Google Apps Script-implementatie.",
+        "configurationRequired": "Configureer de Deployment ID en de API-sleutel om de Google Calendar-functionaliteit te activeren.",
+        "configured": "Geconfigureerd",
+        "searchSkills": "Vaardigheden op het gebied van zoeken...",
+        "noSkillsFound": "Geen resultaten gevonden die overeenkomen met uw zoekopdracht.",
+        "categories": {
+          "calendars": {
+            "title": "Kalenders",
+            "description": "Bekijk en beheer uw Google-agenda's"
           },
-          readEvents: {
-            title: "Bekijk evenementen",
-            description: "Bekijk en zoek naar evenementen in de agenda",
+          "readEvents": {
+            "title": "Bekijk evenementen",
+            "description": "Bekijk en zoek naar evenementen in de agenda"
           },
-          writeEvents: {
-            title: "Maak en update evenementen",
-            description:
-              "Creëer nieuwe evenementen en wijzig bestaande evenementen.",
+          "writeEvents": {
+            "title": "Maak en update evenementen",
+            "description": "Creëer nieuwe evenementen en wijzig bestaande evenementen."
           },
-          rsvp: {
-            title: "Beheer van RSVP-verzoeken",
-            description: "Beheer de status van uw reacties voor evenementen",
-          },
+          "rsvp": {
+            "title": "Beheer van RSVP-verzoeken",
+            "description": "Beheer de status van uw reacties voor evenementen"
+          }
         },
-        skills: {
-          listCalendars: {
-            title: "Agenda's",
-            description:
-              "Maak een lijst van alle kalenders die u bezit of waarvoor u een abonnement heeft.",
+        "skills": {
+          "listCalendars": {
+            "title": "Agenda's",
+            "description": "Maak een lijst van alle kalenders die u bezit of waarvoor u een abonnement heeft."
           },
-          getCalendar: {
-            title: "Bekijk de details van de agenda",
-            description:
-              "Vind gedetailleerde informatie over een specifieke kalender.",
+          "getCalendar": {
+            "title": "Bekijk de details van de agenda",
+            "description": "Vind gedetailleerde informatie over een specifieke kalender."
           },
-          getEvent: {
-            title: "Evenement bekijken",
-            description:
-              "Vind gedetailleerde informatie over een specifiek evenement.",
+          "getEvent": {
+            "title": "Evenement bekijken",
+            "description": "Vind gedetailleerde informatie over een specifiek evenement."
           },
-          getEventsForDay: {
-            title: "Zoek naar evenementen voor de dag",
-            description:
-              "Bekijk alle evenementen die gepland staan voor een specifieke dag.",
+          "getEventsForDay": {
+            "title": "Zoek naar evenementen voor de dag",
+            "description": "Bekijk alle evenementen die gepland staan voor een specifieke dag."
           },
-          getEvents: {
-            title: "Evenementen (tijdsperiode)",
-            description:
-              "Haal evenementen op binnen een aangepaste datumschaal",
+          "getEvents": {
+            "title": "Evenementen (tijdsperiode)",
+            "description": "Haal evenementen op binnen een aangepaste datumschaal"
           },
-          getUpcomingEvents: {
-            title: "Bekijk aankomende evenementen",
-            description:
-              "Zoek evenementen voor vandaag, deze week of deze maand met behulp van eenvoudige zoekwoorden.",
+          "getUpcomingEvents": {
+            "title": "Bekijk aankomende evenementen",
+            "description": "Zoek evenementen voor vandaag, deze week of deze maand met behulp van eenvoudige zoekwoorden."
           },
-          quickAdd: {
-            title: "Snel evenement toevoegen",
-            description:
-              "Maak een evenement op basis van natuurlijke taal (bijvoorbeeld: 'Ontmoeting morgen om 15:00 uur')",
+          "quickAdd": {
+            "title": "Snel evenement toevoegen",
+            "description": "Maak een evenement op basis van natuurlijke taal (bijvoorbeeld: 'Ontmoeting morgen om 15:00 uur')"
           },
-          createEvent: {
-            title: "Evenement aanmaken",
-            description:
-              "Maak een nieuw evenement en beschik over volledige controle over alle instellingen.",
+          "createEvent": {
+            "title": "Evenement aanmaken",
+            "description": "Maak een nieuw evenement en beschik over volledige controle over alle instellingen."
           },
-          updateEvent: {
-            title: "Nieuwsupdate",
-            description: "Wijzig een bestaand evenement in uw agenda",
+          "updateEvent": {
+            "title": "Nieuwsupdate",
+            "description": "Wijzig een bestaand evenement in uw agenda"
           },
-          setMyStatus: {
-            title: "Status van reactie bevestigd",
-            description:
-              "Accepteer, weiger of geef een voorlopige bevestiging van een evenement",
-          },
-        },
-      },
+          "setMyStatus": {
+            "title": "Status van reactie bevestigd",
+            "description": "Accepteer, weiger of geef een voorlopige bevestiging van een evenement"
+          }
+        }
+      }
     },
-    mcp: {
-      title: "MCP-servers",
+    "mcp": {
+      "title": "MCP-servers",
       "loading-from-config": "MCP-servers laden vanuit een configuratiebestand",
       "learn-more": "Meer informatie over MCP-servers.",
       "no-servers-found": "Geen MCP-servers gevonden.",
-      "tool-warning":
-        "Om de beste prestaties te garanderen, overweeg dan om ongewenste tools uit te schakelen om de context te behouden.",
+      "tool-warning": "Om de beste prestaties te garanderen, overweeg dan om ongewenste tools uit te schakelen om de context te behouden.",
       "stop-server": "Stoppen met de MCP-server",
       "start-server": "Start de MCP-server",
       "delete-server": "Verwijder de MCP-server",
-      "tool-count-warning":
-        "Deze MCP-server heeft <b> bepaalde tools ingeschakeld</b> die context gebruiken in elke chat. <br /> Overweeg om ongewenste tools uit te schakelen om context te besparen.",
+      "tool-count-warning": "Deze MCP-server heeft <b> bepaalde tools ingeschakeld</b> die context gebruiken in elke chat. <br /> Overweeg om ongewenste tools uit te schakelen om context te besparen.",
       "startup-command": "Startcommando",
-      command: "Instructie",
-      arguments: "Argumenten",
-      "not-running-warning":
-        "Deze MCP-server is niet actief – deze kan zijn uitgeschakeld of een fout ervaren tijdens het opstarten.",
+      "command": "Instructie",
+      "arguments": "Argumenten",
+      "not-running-warning": "Deze MCP-server is niet actief – deze kan zijn uitgeschakeld of een fout ervaren tijdens het opstarten.",
       "tool-call-arguments": "Argumenten voor het aanroepen van een tool",
-      "tools-enabled": "hulpmiddelen zijn geactiveerd",
+      "tools-enabled": "hulpmiddelen zijn geactiveerd"
     },
-    settings: {
-      title: "Instellingen voor vaardigheden van agenten",
+    "settings": {
+      "title": "Instellingen voor vaardigheden van agenten",
       "max-tool-calls": {
-        title: "Maximaal aantal tool-aanroepen per antwoord",
-        description:
-          "Het maximale aantal tools dat een agent kan gebruiken om een enkele reactie te genereren. Dit voorkomt dat tools onbeperkt worden aangeroepen en dat er oneindige loops ontstaan.",
+        "title": "Maximaal aantal tool-aanroepen per antwoord",
+        "description": "Het maximale aantal tools dat een agent kan gebruiken om een enkele reactie te genereren. Dit voorkomt dat tools onbeperkt worden aangeroepen en dat er oneindige loops ontstaan."
       },
       "intelligent-skill-selection": {
-        title: "Intelligente selectie van vaardigheden",
+        "title": "Intelligente selectie van vaardigheden",
         "beta-badge": "Betaling",
-        description:
-          'Maak gebruik van een onbeperkt aantal tools en verminder het gebruik van "cut tokens" met tot wel 80% per query – AnythingLLM selecteert automatisch de juiste vaardigheden voor elke vraag.',
+        "description": "Maak gebruik van een onbeperkt aantal tools en verminder het gebruik van \"cut tokens\" met tot wel 80% per query – AnythingLLM selecteert automatisch de juiste vaardigheden voor elke vraag.",
         "max-tools": {
-          title: "Max Tools",
-          description:
-            "Het maximale aantal tools dat kan worden geselecteerd voor elke query. Wij raden aan om deze waarde hoger in te stellen voor modellen met een grotere context.",
-        },
-      },
-    },
+          "title": "Max Tools",
+          "description": "Het maximale aantal tools dat kan worden geselecteerd voor elke query. Wij raden aan om deze waarde hoger in te stellen voor modellen met een grotere context."
+        }
+      }
+    }
   },
-  recorded: {
-    title: "Werkruimte Chats",
-    description:
-      "Dit zijn alle opgenomen chats en berichten die door gebruikers zijn verzonden, gerangschikt op hun aanmaakdatum.",
-    export: "Exporteren",
-    table: {
-      id: "Id",
-      by: "Verzonden Door",
-      workspace: "Werkruimte",
-      prompt: "Prompt",
-      response: "Response",
-      at: "Verzonden Om",
-    },
+  "recorded": {
+    "title": "Werkruimte Chats",
+    "description": "Dit zijn alle opgenomen chats en berichten die door gebruikers zijn verzonden, gerangschikt op hun aanmaakdatum.",
+    "export": "Exporteren",
+    "table": {
+      "id": "Id",
+      "by": "Verzonden Door",
+      "workspace": "Werkruimte",
+      "prompt": "Prompt",
+      "response": "Response",
+      "at": "Verzonden Om"
+    }
   },
-  api: {
-    title: "API-sleutels",
-    description:
-      "API-sleutels stellen de houder in staat om deze AnythingLLM-instantie programmatisch te openen en beheren.",
-    link: "Lees de API-documentatie",
-    generate: "Genereer Nieuwe API-sleutel",
-    empty: "Geen API-sleutels gevonden",
-    actions: "Acties",
-    messages: {
-      error: "Fout: {{error}}",
+  "api": {
+    "title": "API-sleutels",
+    "description": "API-sleutels stellen de houder in staat om deze AnythingLLM-instantie programmatisch te openen en beheren.",
+    "link": "Lees de API-documentatie",
+    "generate": "Genereer Nieuwe API-sleutel",
+    "empty": "Geen API-sleutels gevonden",
+    "actions": "Acties",
+    "messages": {
+      "error": "Fout: {{error}}"
     },
-    modal: {
-      title: "Nieuwe API-sleutel maken",
-      cancel: "Annuleren",
-      close: "Sluiten",
-      create: "API-sleutel maken",
-      helper:
-        "Na het aanmaken kan de API-sleutel worden gebruikt om programmatisch toegang te krijgen tot deze AnythingLLM-instantie en deze te configureren.",
-      name: {
-        label: "Naam",
-        placeholder: "Productie-integratie",
-        helper:
-          "Optioneel. Gebruik een duidelijke naam zodat je deze sleutel later makkelijk kunt herkennen.",
-      },
+    "modal": {
+      "title": "Nieuwe API-sleutel maken",
+      "cancel": "Annuleren",
+      "close": "Sluiten",
+      "create": "API-sleutel maken",
+      "helper": "Na het aanmaken kan de API-sleutel worden gebruikt om programmatisch toegang te krijgen tot deze AnythingLLM-instantie en deze te configureren.",
+      "name": {
+        "label": "Naam",
+        "placeholder": "Productie-integratie",
+        "helper": "Optioneel. Gebruik een duidelijke naam zodat je deze sleutel later makkelijk kunt herkennen."
+      }
     },
-    row: {
-      copy: "API-sleutel kopiëren",
-      copied: "Gekopieerd",
-      unnamed: "--",
-      deleteConfirm:
-        "Weet je zeker dat je deze API-sleutel wilt uitschakelen?\nDaarna kan deze niet meer worden gebruikt.\n\nDeze actie kan niet ongedaan worden gemaakt.",
+    "row": {
+      "copy": "API-sleutel kopiëren",
+      "copied": "Gekopieerd",
+      "unnamed": "--",
+      "deleteConfirm": "Weet je zeker dat je deze API-sleutel wilt uitschakelen?\nDaarna kan deze niet meer worden gebruikt.\n\nDeze actie kan niet ongedaan worden gemaakt."
     },
-    table: {
-      name: "Naam",
-      key: "API-sleutel",
-      by: "Aangemaakt Door",
-      created: "Aangemaakt",
-    },
+    "table": {
+      "name": "Naam",
+      "key": "API-sleutel",
+      "by": "Aangemaakt Door",
+      "created": "Aangemaakt"
+    }
   },
-  llm: {
-    title: "LLM Voorkeur",
-    description:
-      "Dit zijn de inloggegevens en instellingen voor je voorkeurs LLM-chat & inbeddingprovider. Het is belangrijk dat deze sleutels actueel en correct zijn, anders zal AnythingLLM niet goed werken.",
-    provider: "LLM Provider",
-    providers: {
-      azure_openai: {
-        azure_service_endpoint: "Azure Service Endpoint",
-        api_key: "API Key",
-        chat_deployment_name: "Chat Deployment Naam",
-        chat_model_token_limit: "Chat Model Token Limiet",
-        model_type: "Model Type",
-        default: "Standaard",
-        reasoning: "Redeneren",
-        model_type_tooltip:
-          "Als uw implementatie een redeneermodel gebruikt (o1, o1-mini, o3-mini, enz.), stel dit dan in op 'Redeneren'. Anders kunnen uw chatverzoeken mislukken.",
-      },
-    },
+  "llm": {
+    "title": "LLM Voorkeur",
+    "description": "Dit zijn de inloggegevens en instellingen voor je voorkeurs LLM-chat & inbeddingprovider. Het is belangrijk dat deze sleutels actueel en correct zijn, anders zal AnythingLLM niet goed werken.",
+    "provider": "LLM Provider",
+    "providers": {
+      "azure_openai": {
+        "azure_service_endpoint": "Azure Service Endpoint",
+        "api_key": "API Key",
+        "chat_deployment_name": "Chat Deployment Naam",
+        "chat_model_token_limit": "Chat Model Token Limiet",
+        "model_type": "Model Type",
+        "default": "Standaard",
+        "reasoning": "Redeneren",
+        "model_type_tooltip": "Als uw implementatie een redeneermodel gebruikt (o1, o1-mini, o3-mini, enz.), stel dit dan in op 'Redeneren'. Anders kunnen uw chatverzoeken mislukken."
+      }
+    }
   },
-  transcription: {
-    title: "Transcriptiemodel Voorkeur",
-    description:
-      "Dit zijn de inloggegevens en instellingen voor je voorkeurs transcriptiemodelprovider. Het is belangrijk dat deze sleutels actueel en correct zijn, anders worden media en audio niet getranscribeerd.",
-    provider: "Transcriptieprovider",
-    "warn-start":
-      "Het gebruik van het lokale fluistermodel op machines met beperkte RAM of CPU kan AnythingLLM vertragen bij het verwerken van mediabestanden.",
-    "warn-recommend":
-      "We raden minstens 2GB RAM aan en upload bestanden <10Mb.",
-    "warn-end":
-      "Het ingebouwde model wordt automatisch gedownload bij het eerste gebruik.",
+  "transcription": {
+    "title": "Transcriptiemodel Voorkeur",
+    "description": "Dit zijn de inloggegevens en instellingen voor je voorkeurs transcriptiemodelprovider. Het is belangrijk dat deze sleutels actueel en correct zijn, anders worden media en audio niet getranscribeerd.",
+    "provider": "Transcriptieprovider",
+    "warn-start": "Het gebruik van het lokale fluistermodel op machines met beperkte RAM of CPU kan AnythingLLM vertragen bij het verwerken van mediabestanden.",
+    "warn-recommend": "We raden minstens 2GB RAM aan en upload bestanden <10Mb.",
+    "warn-end": "Het ingebouwde model wordt automatisch gedownload bij het eerste gebruik."
   },
-  embedding: {
-    title: "Inbedding Voorkeur",
-    "desc-start":
-      "Bij het gebruik van een LLM die geen ingebouwde ondersteuning voor een inbeddingengine heeft, moet je mogelijk aanvullende inloggegevens opgeven voor het inbedden van tekst.",
-    "desc-end":
-      "Inbedding is het proces van het omzetten van tekst in vectoren. Deze inloggegevens zijn vereist om je bestanden en prompts om te zetten naar een formaat dat AnythingLLM kan gebruiken om te verwerken.",
-    provider: {
-      title: "Inbedding Provider",
-    },
+  "embedding": {
+    "title": "Inbedding Voorkeur",
+    "desc-start": "Bij het gebruik van een LLM die geen ingebouwde ondersteuning voor een inbeddingengine heeft, moet je mogelijk aanvullende inloggegevens opgeven voor het inbedden van tekst.",
+    "desc-end": "Inbedding is het proces van het omzetten van tekst in vectoren. Deze inloggegevens zijn vereist om je bestanden en prompts om te zetten naar een formaat dat AnythingLLM kan gebruiken om te verwerken.",
+    "provider": {
+      "title": "Inbedding Provider"
+    }
   },
-  text: {
-    title: "Tekst Splitsen & Chunking Voorkeuren",
-    "desc-start":
-      "Soms wil je misschien de standaard manier wijzigen waarop nieuwe documenten worden gesplitst en gechunkt voordat ze in je vector database worden ingevoerd.",
-    "desc-end":
-      "Je moet deze instelling alleen wijzigen als je begrijpt hoe tekstsplitsing werkt en de bijbehorende effecten.",
-    size: {
-      title: "Tekst Chunk Grootte",
-      description:
-        "Dit is de maximale lengte van tekens die aanwezig kan zijn in een enkele vector.",
-      recommend: "Inbed model maximale lengte is",
+  "text": {
+    "title": "Tekst Splitsen & Chunking Voorkeuren",
+    "desc-start": "Soms wil je misschien de standaard manier wijzigen waarop nieuwe documenten worden gesplitst en gechunkt voordat ze in je vector database worden ingevoerd.",
+    "desc-end": "Je moet deze instelling alleen wijzigen als je begrijpt hoe tekstsplitsing werkt en de bijbehorende effecten.",
+    "size": {
+      "title": "Tekst Chunk Grootte",
+      "description": "Dit is de maximale lengte van tekens die aanwezig kan zijn in een enkele vector.",
+      "recommend": "Inbed model maximale lengte is"
     },
-    overlap: {
-      title: "Tekst Chunk Overlap",
-      description:
-        "Dit is de maximale overlap van tekens die optreedt tijdens het chunking tussen twee aangrenzende tekstchunks.",
-    },
+    "overlap": {
+      "title": "Tekst Chunk Overlap",
+      "description": "Dit is de maximale overlap van tekens die optreedt tijdens het chunking tussen twee aangrenzende tekstchunks."
+    }
   },
-  vector: {
-    title: "Vector Database",
-    description:
-      "Dit zijn de inloggegevens en instellingen voor hoe je AnythingLLM-instantie zal functioneren. Het is belangrijk dat deze sleutels actueel en correct zijn.",
-    provider: {
-      title: "Vector Database Provider",
-      description: "Er is geen configuratie nodig voor LanceDB.",
-    },
+  "vector": {
+    "title": "Vector Database",
+    "description": "Dit zijn de inloggegevens en instellingen voor hoe je AnythingLLM-instantie zal functioneren. Het is belangrijk dat deze sleutels actueel en correct zijn.",
+    "provider": {
+      "title": "Vector Database Provider",
+      "description": "Er is geen configuratie nodig voor LanceDB."
+    }
   },
-  embeddable: {
-    title: "Inbedbare Chat Widgets",
-    description:
-      "Inbedbare chatwidgets zijn openbare chatinterfaces die zijn gekoppeld aan een enkele werkruimte. Hiermee kun je werkruimten bouwen die je vervolgens kunt publiceren naar de wereld.",
-    create: "Maak inbedding",
-    table: {
-      workspace: "Werkruimte",
-      chats: "Verzonden Chats",
-      active: "Actieve Domeinen",
-      created: "Aangemaakt",
-    },
+  "embeddable": {
+    "title": "Inbedbare Chat Widgets",
+    "description": "Inbedbare chatwidgets zijn openbare chatinterfaces die zijn gekoppeld aan een enkele werkruimte. Hiermee kun je werkruimten bouwen die je vervolgens kunt publiceren naar de wereld.",
+    "create": "Maak inbedding",
+    "table": {
+      "workspace": "Werkruimte",
+      "chats": "Verzonden Chats",
+      "active": "Actieve Domeinen",
+      "created": "Aangemaakt"
+    }
   },
   "embed-chats": {
-    title: "Inbedding Chats",
-    export: "Exporteren",
-    description:
-      "Dit zijn alle opgenomen chats en berichten van elke inbedding die je hebt gepubliceerd.",
-    table: {
-      embed: "Inbedding",
-      sender: "Afzender",
-      message: "Bericht",
-      response: "Reactie",
-      at: "Verzonden Om",
-    },
+    "title": "Inbedding Chats",
+    "export": "Exporteren",
+    "description": "Dit zijn alle opgenomen chats en berichten van elke inbedding die je hebt gepubliceerd.",
+    "table": {
+      "embed": "Inbedding",
+      "sender": "Afzender",
+      "message": "Bericht",
+      "response": "Reactie",
+      "at": "Verzonden Om"
+    }
   },
-  event: {
-    title: "Gebeurtenislogboeken",
-    description:
-      "Bekijk alle acties en gebeurtenissen die op deze instantie plaatsvinden voor monitoring.",
-    clear: "Gebeurtenislogboeken Wissen",
-    table: {
-      type: "Gebeurtenistype",
-      user: "Gebruiker",
-      occurred: "Opgetreden Op",
-    },
+  "event": {
+    "title": "Gebeurtenislogboeken",
+    "description": "Bekijk alle acties en gebeurtenissen die op deze instantie plaatsvinden voor monitoring.",
+    "clear": "Gebeurtenislogboeken Wissen",
+    "table": {
+      "type": "Gebeurtenistype",
+      "user": "Gebruiker",
+      "occurred": "Opgetreden Op"
+    }
   },
-  privacy: {
-    title: "Privacy & Gegevensverwerking",
-    description:
-      "Dit is je configuratie voor hoe verbonden derden en AnythingLLM je gegevens verwerken.",
-    anonymous: "Anonieme Telemetrie Ingeschakeld",
+  "privacy": {
+    "title": "Privacy & Gegevensverwerking",
+    "description": "Dit is je configuratie voor hoe verbonden derden en AnythingLLM je gegevens verwerken.",
+    "anonymous": "Anonieme Telemetrie Ingeschakeld"
   },
-  connectors: {
+  "connectors": {
     "search-placeholder": "Zoek naar data-connectoren",
     "no-connectors": "Geen data-connectoren gevonden.",
-    github: {
-      name: "GitHub-repository",
-      description:
-        "Importeer een volledige openbare of privé GitHub-repository met één klik.",
-      URL: "URL van de GitHub-repository",
-      URL_explained: "URL van de GitHub-repository die u wilt verzamelen.",
-      token: "GitHub-toegangstoken",
-      optional: "optioneel",
-      token_explained: "Toegangstoken om rate limiting te voorkomen.",
-      token_explained_start: "Zonder een ",
-      token_explained_link1: "Persoonlijk toegangstoken",
-      token_explained_middle:
-        ", kan de GitHub API het aantal bestanden dat kan worden verzameld beperken vanwege rate limiting. U kunt ",
-      token_explained_link2: "een tijdelijk toegangstoken aanmaken",
-      token_explained_end: " om dit probleem te voorkomen.",
-      ignores: "Bestanden die genegeerd worden",
-      git_ignore:
-        "Lijst in .gitignore-indeling om specifieke bestanden te negeren tijdens het verzamelen. Druk op Enter na elke vermelding die u wilt opslaan.",
-      task_explained:
-        "Zodra de taak is voltooid, zijn alle bestanden beschikbaar om in te sluiten in werkruimtes in de documentkiezer.",
-      branch: "De branch waarvan u bestanden wilt verzamelen.",
-      branch_loading: "-- beschikbare branches laden --",
-      branch_explained: "De branch waarvan u bestanden wilt verzamelen.",
-      token_information:
-        "Zonder het invullen van het <b>GitHub-toegangstoken</b> kan deze dataconnector alleen de <b>top-level</b> bestanden van de repository verzamelen vanwege de limieten voor het aantal aanvragen via de openbare API van GitHub.",
-      token_personal:
-        "Vraag hier een gratis persoonlijk toegangstoken aan met een GitHub-account.",
+    "github": {
+      "name": "GitHub-repository",
+      "description": "Importeer een volledige openbare of privé GitHub-repository met één klik.",
+      "URL": "URL van de GitHub-repository",
+      "URL_explained": "URL van de GitHub-repository die u wilt verzamelen.",
+      "token": "GitHub-toegangstoken",
+      "optional": "optioneel",
+      "token_explained": "Toegangstoken om rate limiting te voorkomen.",
+      "token_explained_start": "Zonder een ",
+      "token_explained_link1": "Persoonlijk toegangstoken",
+      "token_explained_middle": ", kan de GitHub API het aantal bestanden dat kan worden verzameld beperken vanwege rate limiting. U kunt ",
+      "token_explained_link2": "een tijdelijk toegangstoken aanmaken",
+      "token_explained_end": " om dit probleem te voorkomen.",
+      "ignores": "Bestanden die genegeerd worden",
+      "git_ignore": "Lijst in .gitignore-indeling om specifieke bestanden te negeren tijdens het verzamelen. Druk op Enter na elke vermelding die u wilt opslaan.",
+      "task_explained": "Zodra de taak is voltooid, zijn alle bestanden beschikbaar om in te sluiten in werkruimtes in de documentkiezer.",
+      "branch": "De branch waarvan u bestanden wilt verzamelen.",
+      "branch_loading": "-- beschikbare branches laden --",
+      "branch_explained": "De branch waarvan u bestanden wilt verzamelen.",
+      "token_information": "Zonder het invullen van het <b>GitHub-toegangstoken</b> kan deze dataconnector alleen de <b>top-level</b> bestanden van de repository verzamelen vanwege de limieten voor het aantal aanvragen via de openbare API van GitHub.",
+      "token_personal": "Vraag hier een gratis persoonlijk toegangstoken aan met een GitHub-account."
     },
-    gitlab: {
-      name: "GitLab-repository",
-      description:
-        "Importeer een volledige openbare of privé GitLab-repository met één klik.",
-      URL: "URL van de GitLab-repository",
-      URL_explained: "URL van de GitLab-repository die u wilt verzamelen.",
-      token: "GitLab-toegangstoken",
-      optional: "optioneel",
-      token_description:
-        "Selecteer extra entiteiten om op te halen via de GitLab API.",
-      token_explained_start: "Zonder een ",
-      token_explained_link1: "Persoonlijk toegangstoken",
-      token_explained_middle:
-        ", kan de GitLab API het aantal bestanden dat kan worden verzameld beperken vanwege rate limiting. U kunt ",
-      token_explained_link2: "een tijdelijk toegangstoken aanmaken",
-      token_explained_end: " om dit probleem te voorkomen.",
-      fetch_issues: "Problemen ophalen als documenten",
-      ignores: "Bestanden negeren",
-      git_ignore:
-        "Lijst in  .gitignore-formaat om specifieke bestanden te negeren tijdens het verzamelen. Druk op Enter na elke vermelding die u wilt opslaan.",
-      task_explained:
-        "Zodra de taak is voltooid, zijn alle bestanden beschikbaar om in te sluiten in werkruimtes in de documentkiezer.",
-      branch: "Branch waarvan u bestanden wilt verzamelen",
-      branch_loading: "-- beschikbare branches laden --",
-      branch_explained: "Branch waarvan u bestanden wilt verzamelen.",
-      token_information:
-        "Zonder het invullen van het <b>GitLab-toegangstoken</b> kan deze dataconnector alleen de <b>top-level</b> bestanden van de repository verzamelen vanwege de limieten voor het aantal aanvragen via de openbare GitLab API.",
-      token_personal:
-        "Vraag hier een gratis persoonlijk toegangstoken aan met een GitLab-account.",
+    "gitlab": {
+      "name": "GitLab-repository",
+      "description": "Importeer een volledige openbare of privé GitLab-repository met één klik.",
+      "URL": "URL van de GitLab-repository",
+      "URL_explained": "URL van de GitLab-repository die u wilt verzamelen.",
+      "token": "GitLab-toegangstoken",
+      "optional": "optioneel",
+      "token_description": "Selecteer extra entiteiten om op te halen via de GitLab API.",
+      "token_explained_start": "Zonder een ",
+      "token_explained_link1": "Persoonlijk toegangstoken",
+      "token_explained_middle": ", kan de GitLab API het aantal bestanden dat kan worden verzameld beperken vanwege rate limiting. U kunt ",
+      "token_explained_link2": "een tijdelijk toegangstoken aanmaken",
+      "token_explained_end": " om dit probleem te voorkomen.",
+      "fetch_issues": "Problemen ophalen als documenten",
+      "ignores": "Bestanden negeren",
+      "git_ignore": "Lijst in  .gitignore-formaat om specifieke bestanden te negeren tijdens het verzamelen. Druk op Enter na elke vermelding die u wilt opslaan.",
+      "task_explained": "Zodra de taak is voltooid, zijn alle bestanden beschikbaar om in te sluiten in werkruimtes in de documentkiezer.",
+      "branch": "Branch waarvan u bestanden wilt verzamelen",
+      "branch_loading": "-- beschikbare branches laden --",
+      "branch_explained": "Branch waarvan u bestanden wilt verzamelen.",
+      "token_information": "Zonder het invullen van het <b>GitLab-toegangstoken</b> kan deze dataconnector alleen de <b>top-level</b> bestanden van de repository verzamelen vanwege de limieten voor het aantal aanvragen via de openbare GitLab API.",
+      "token_personal": "Vraag hier een gratis persoonlijk toegangstoken aan met een GitLab-account."
     },
-    youtube: {
-      name: "YouTube-transcriptie",
-      description:
-        "Importeer de transcriptie van een volledige YouTube-video via een link.",
-      URL: "URL van de YouTube-video",
-      URL_explained_start:
-        "Voer de URL van een YouTube-video in om de transcriptie ervan op te halen. De video moet ",
-      URL_explained_link: "ondertiteling hebben en",
-      URL_explained_end: "beschikbaar zijn.",
-      task_explained:
-        "Zodra de transcriptie is voltooid, kan deze worden ingesloten in werkruimtes in de documentkiezer.",
+    "youtube": {
+      "name": "YouTube-transcriptie",
+      "description": "Importeer de transcriptie van een volledige YouTube-video via een link.",
+      "URL": "URL van de YouTube-video",
+      "URL_explained_start": "Voer de URL van een YouTube-video in om de transcriptie ervan op te halen. De video moet ",
+      "URL_explained_link": "ondertiteling hebben en",
+      "URL_explained_end": "beschikbaar zijn.",
+      "task_explained": "Zodra de transcriptie is voltooid, kan deze worden ingesloten in werkruimtes in de documentkiezer."
     },
     "website-depth": {
-      name: "Bulk Link Scraper",
-      description:
-        "Schraap een website en de bijbehorende sublinks tot een bepaalde diepte.",
-      URL: "URL van de website",
-      URL_explained: "URL van de website die u wilt schrapen.",
-      depth: "Crawldiepte",
-      depth_explained:
-        "Dit is het aantal sublinks dat de tool vanaf de oorspronkelijke URL moet volgen.",
-      max_pages: "Maximum aantal pagina's",
-      max_pages_explained: "Maximum aantal links om te schrapen.",
-      task_explained:
-        "Zodra de taak is voltooid, is alle geschraapte inhoud beschikbaar om in te sluiten in werkruimtes in de documentkiezer.",
+      "name": "Bulk Link Scraper",
+      "description": "Schraap een website en de bijbehorende sublinks tot een bepaalde diepte.",
+      "URL": "URL van de website",
+      "URL_explained": "URL van de website die u wilt schrapen.",
+      "depth": "Crawldiepte",
+      "depth_explained": "Dit is het aantal sublinks dat de tool vanaf de oorspronkelijke URL moet volgen.",
+      "max_pages": "Maximum aantal pagina's",
+      "max_pages_explained": "Maximum aantal links om te schrapen.",
+      "task_explained": "Zodra de taak is voltooid, is alle geschraapte inhoud beschikbaar om in te sluiten in werkruimtes in de documentkiezer."
     },
-    confluence: {
-      name: "Confluence",
-      description: "Importeer een volledige Confluence-pagina met één klik.",
-      deployment_type: "Confluence-implementatietype",
-      deployment_type_explained:
-        "Bepaal of uw Confluence-instantie wordt gehost in de Atlassian-cloud of zelf gehost.",
-      base_url: "Confluence-basis-URL",
-      base_url_explained: "Dit is de basis-URL van uw Confluence-ruimte.",
-      space_key: "Confluence-spacesleutel",
-      space_key_explained:
-        "Dit is de spacesleutel van uw Confluence-instantie die zal worden gebruikt. Begint meestal met ~",
-      username: "Confluence-gebruikersnaam",
-      username_explained: "Uw Confluence-gebruikersnaam",
-      auth_type: "Confluence-authenticatietype",
-      auth_type_explained:
-        "Selecteer het authenticatietype dat u wilt gebruiken om toegang te krijgen tot uw Confluence-pagina's.",
-      auth_type_username: "Gebruikersnaam en toegangstoken",
-      auth_type_personal: "Persoonlijk toegangstoken",
-      token: "Confluence-toegangstoken",
-      token_explained_start:
-        "U moet een toegangstoken opgeven voor authenticatie. U kunt ",
-      token_explained_link: "hier",
-      token_desc: " een toegangstoken genereren voor authenticatie",
-      pat_token: "Persoonlijk Confluence-toegangstoken",
-      pat_token_explained: "Uw persoonlijke Confluence-toegangstoken.",
-      task_explained:
-        "Zodra de taak is voltooid, is de pagina-inhoud beschikbaar om in te sluiten in werkruimtes in de documentkiezer.",
-      bypass_ssl: "SSL-certificaatvalidatie overslaan",
-      bypass_ssl_explained:
-        "Schakel deze optie in om SSL-certificaatvalidatie te omzeilen voor zelfgehoste Confluence-instanties met een zelfondertekend certificaat",
+    "confluence": {
+      "name": "Confluence",
+      "description": "Importeer een volledige Confluence-pagina met één klik.",
+      "deployment_type": "Confluence-implementatietype",
+      "deployment_type_explained": "Bepaal of uw Confluence-instantie wordt gehost in de Atlassian-cloud of zelf gehost.",
+      "base_url": "Confluence-basis-URL",
+      "base_url_explained": "Dit is de basis-URL van uw Confluence-ruimte.",
+      "space_key": "Confluence-spacesleutel",
+      "space_key_explained": "Dit is de spacesleutel van uw Confluence-instantie die zal worden gebruikt. Begint meestal met ~",
+      "username": "Confluence-gebruikersnaam",
+      "username_explained": "Uw Confluence-gebruikersnaam",
+      "auth_type": "Confluence-authenticatietype",
+      "auth_type_explained": "Selecteer het authenticatietype dat u wilt gebruiken om toegang te krijgen tot uw Confluence-pagina's.",
+      "auth_type_username": "Gebruikersnaam en toegangstoken",
+      "auth_type_personal": "Persoonlijk toegangstoken",
+      "token": "Confluence-toegangstoken",
+      "token_explained_start": "U moet een toegangstoken opgeven voor authenticatie. U kunt ",
+      "token_explained_link": "hier",
+      "token_desc": " een toegangstoken genereren voor authenticatie",
+      "pat_token": "Persoonlijk Confluence-toegangstoken",
+      "pat_token_explained": "Uw persoonlijke Confluence-toegangstoken.",
+      "task_explained": "Zodra de taak is voltooid, is de pagina-inhoud beschikbaar om in te sluiten in werkruimtes in de documentkiezer.",
+      "bypass_ssl": "SSL-certificaatvalidatie overslaan",
+      "bypass_ssl_explained": "Schakel deze optie in om SSL-certificaatvalidatie te omzeilen voor zelfgehoste Confluence-instanties met een zelfondertekend certificaat"
     },
-    manage: {
-      documents: "Documenten",
+    "manage": {
+      "documents": "Documenten",
       "data-connectors": "Gegevensconnectoren",
-      "desktop-only":
-        "Het bewerken van deze instellingen is alleen mogelijk op een desktopapparaat. Ga naar deze pagina op uw desktop om verder te gaan.",
-      dismiss: "Afwijzen",
-      editing: "Bewerken",
+      "desktop-only": "Het bewerken van deze instellingen is alleen mogelijk op een desktopapparaat. Ga naar deze pagina op uw desktop om verder te gaan.",
+      "dismiss": "Afwijzen",
+      "editing": "Bewerken"
     },
-    directory: {
+    "directory": {
       "my-documents": "Mijn documenten",
       "new-folder": "Nieuwe map",
       "search-document": "Zoek naar een document",
       "no-documents": "Geen documenten",
       "move-workspace": "Verplaatsen naar werkruimte",
-      "delete-confirmation":
-        "Weet u zeker dat u deze bestanden en mappen wilt verwijderen?\nHiermee worden de bestanden automatisch uit het systeem en alle bestaande werkruimten verwijderd.\nDeze actie is niet onomkeerbaar.",
-      "removing-message":
-        "{{count}} documenten en {{folderCount}} mappen worden verwijderd. Even geduld alstublieft.",
+      "delete-confirmation": "Weet u zeker dat u deze bestanden en mappen wilt verwijderen?\nHiermee worden de bestanden automatisch uit het systeem en alle bestaande werkruimten verwijderd.\nDeze actie is niet onomkeerbaar.",
+      "removing-message": "{{count}} documenten en {{folderCount}} mappen worden verwijderd. Even geduld alstublieft.",
       "move-success": "{{count}} documenten succesvol verplaatst.",
-      no_docs: "Geen documenten",
-      select_all: "Alles selecteren",
-      deselect_all: "Alles deselecteren",
-      remove_selected: "Verwijderen Geselecteerd",
-      save_embed: "Opslaan en embedden",
+      "no_docs": "Geen documenten",
+      "select_all": "Alles selecteren",
+      "deselect_all": "Alles deselecteren",
+      "remove_selected": "Verwijderen Geselecteerd",
+      "save_embed": "Opslaan en embedden",
       "total-documents_one": "{{count}} document",
-      "total-documents_other": "{{count}} documenten",
+      "total-documents_other": "{{count}} documenten"
     },
-    upload: {
+    "upload": {
       "processor-offline": "Documentverwerker niet beschikbaar",
-      "processor-offline-desc":
-        "We kunnen uw bestanden momenteel niet uploaden omdat de documentverwerker offline is. Probeer het later opnieuw.",
+      "processor-offline-desc": "We kunnen uw bestanden momenteel niet uploaden omdat de documentverwerker offline is. Probeer het later opnieuw.",
       "click-upload": "Klik om te uploaden of sleep en laat vallen",
-      "file-types":
-        "Ondersteunt tekstbestanden, csv's, spreadsheets, audiobestanden en meer!",
+      "file-types": "Ondersteunt tekstbestanden, csv's, spreadsheets, audiobestanden en meer!",
       "or-submit-link": "Of dien een link in",
       "placeholder-link": "https://example.com",
-      fetching: "Bezig met ophalen...",
+      "fetching": "Bezig met ophalen...",
       "fetch-website": "Website ophalen",
-      "privacy-notice":
-        "Deze bestanden worden geüpload naar de documentverwerker die op deze AnythingLLM-instantie draait. Deze bestanden worden niet verzonden naar of gedeeld met derden.",
+      "privacy-notice": "Deze bestanden worden geüpload naar de documentverwerker die op deze AnythingLLM-instantie draait. Deze bestanden worden niet verzonden naar of gedeeld met derden."
     },
-    pinning: {
-      what_pinning: "Wat is het vastzetten van documenten?",
-      pin_explained_block1:
-        "Wanneer u een document vastzet in AnythingLLM, injecteren we de volledige inhoud van het document in uw promptvenster, zodat uw LLM het volledig kan begrijpen.",
-      pin_explained_block2:
-        "Dit werkt het beste met modellen met een grote context of kleine bestanden die essentieel zijn voor de kennisbasis.",
-      pin_explained_block3:
-        "Als u standaard niet de gewenste antwoorden krijgt van AnythingLLM, is vastzetten een uitstekende manier om met één klik antwoorden van hogere kwaliteit te krijgen.",
-      accept: "Oké, begrepen.",
+    "pinning": {
+      "what_pinning": "Wat is het vastzetten van documenten?",
+      "pin_explained_block1": "Wanneer u een document vastzet in AnythingLLM, injecteren we de volledige inhoud van het document in uw promptvenster, zodat uw LLM het volledig kan begrijpen.",
+      "pin_explained_block2": "Dit werkt het beste met modellen met een grote context of kleine bestanden die essentieel zijn voor de kennisbasis.",
+      "pin_explained_block3": "Als u standaard niet de gewenste antwoorden krijgt van AnythingLLM, is vastzetten een uitstekende manier om met één klik antwoorden van hogere kwaliteit te krijgen.",
+      "accept": "Oké, begrepen."
     },
-    watching: {
-      what_watching: "Wat doet het volgen van een document?",
-      watch_explained_block1:
-        "Wanneer u een document in AnythingLLM volgt, synchroniseren we de inhoud van uw document automatisch met regelmatige tussenpozen vanuit de originele bron. Hierdoor wordt de inhoud in elke werkruimte waar dit bestand wordt beheerd automatisch bijgewerkt.",
-      watch_explained_block2:
-        "Deze functie ondersteunt momenteel online content en is niet beschikbaar voor handmatig geüploade documenten.",
-      watch_explained_block3_start:
-        "U kunt beheren welke documenten worden gevolgd vanuit de ",
-      watch_explained_block3_link: "Bestandsbeheer",
-      watch_explained_block3_end: " beheerdersweergave.",
-      accept: "Oké, begrepen",
+    "watching": {
+      "what_watching": "Wat doet het volgen van een document?",
+      "watch_explained_block1": "Wanneer u een document in AnythingLLM volgt, synchroniseren we de inhoud van uw document automatisch met regelmatige tussenpozen vanuit de originele bron. Hierdoor wordt de inhoud in elke werkruimte waar dit bestand wordt beheerd automatisch bijgewerkt.",
+      "watch_explained_block2": "Deze functie ondersteunt momenteel online content en is niet beschikbaar voor handmatig geüploade documenten.",
+      "watch_explained_block3_start": "U kunt beheren welke documenten worden gevolgd vanuit de ",
+      "watch_explained_block3_link": "Bestandsbeheer",
+      "watch_explained_block3_end": " beheerdersweergave.",
+      "accept": "Oké, begrepen"
     },
-    obsidian: {
-      vault_location: "Locatie van de kluis",
-      vault_description:
-        "Selecteer uw Obsidian-kluismap om alle notities en hun koppelingen te importeren.",
-      selected_files: "{{count}} markdown-bestanden gevonden",
-      importing: "Kluis importeren...",
-      import_vault: "Kluis importeren",
-      processing_time:
-        "Dit kan even duren, afhankelijk van de grootte van uw kluis.",
-      vault_warning:
-        "Zorg ervoor dat uw Obsidian-kluis niet geopend is om conflicten te voorkomen.",
-    },
+    "obsidian": {
+      "vault_location": "Locatie van de kluis",
+      "vault_description": "Selecteer uw Obsidian-kluismap om alle notities en hun koppelingen te importeren.",
+      "selected_files": "{{count}} markdown-bestanden gevonden",
+      "importing": "Kluis importeren...",
+      "import_vault": "Kluis importeren",
+      "processing_time": "Dit kan even duren, afhankelijk van de grootte van uw kluis.",
+      "vault_warning": "Zorg ervoor dat uw Obsidian-kluis niet geopend is om conflicten te voorkomen."
+    }
   },
-  chat_window: {
-    send_message: "Een bericht verzenden",
-    attach_file: "Een bestand aan deze chat toevoegen",
-    text_size: "Tekstgrootte wijzigen.",
-    microphone: "Spreek je prompt uit.",
-    send: "Promptbericht naar werkruimte verzenden",
-    attachments_processing:
-      "Bijlagen worden verwerkt. Even geduld alstublieft...",
-    tts_speak_message: "TTS-spreekbericht",
-    copy: "Kopiëren",
-    regenerate: "Opnieuw genereren",
-    regenerate_response: "Reactie opnieuw genereren",
-    good_response: "Goede reactie",
-    more_actions: "Meer acties",
-    fork: "Fork",
-    delete: "Verwijderen",
-    cancel: "Annuleren",
-    edit_prompt: "Prompt bewerken",
-    edit_response: "Reactie bewerken",
-    preset_reset_description:
-      "Wis je chatgeschiedenis en begin een nieuwe chat",
-    add_new_preset: "Nieuwe preset toevoegen",
-    command: "Commando",
-    your_command: "jouw-commando",
-    placeholder_prompt: "Dit is de inhoud die wordt ingevoegd voor je prompt.",
-    description: "Beschrijving",
-    placeholder_description: "Reageert met een gedicht over LLM's.",
-    save: "Opslaan",
-    small: "Klein",
-    normal: "Normaal",
-    large: "Groot",
-    workspace_llm_manager: {
-      search: "Zoek naar LLM-aanbieders",
-      loading_workspace_settings: "Werkruimte-instellingen laden...",
-      available_models: "Beschikbare modellen voor {{provider}}",
-      available_models_description: "Selecteer een model voor deze werkruimte.",
-      save: "Gebruik dit model",
-      saving: "Model instellen als standaard voor de werkruimte...",
-      missing_credentials: "Deze aanbieder mist logingegevens!",
-      missing_credentials_description: "Klik om logingegevens in te stellen",
+  "chat_window": {
+    "send_message": "Een bericht verzenden",
+    "attach_file": "Een bestand aan deze chat toevoegen",
+    "text_size": "Tekstgrootte wijzigen.",
+    "microphone": "Spreek je prompt uit.",
+    "send": "Promptbericht naar werkruimte verzenden",
+    "attachments_processing": "Bijlagen worden verwerkt. Even geduld alstublieft...",
+    "tts_speak_message": "TTS-spreekbericht",
+    "copy": "Kopiëren",
+    "regenerate": "Opnieuw genereren",
+    "regenerate_response": "Reactie opnieuw genereren",
+    "good_response": "Goede reactie",
+    "more_actions": "Meer acties",
+    "fork": "Fork",
+    "delete": "Verwijderen",
+    "cancel": "Annuleren",
+    "edit_prompt": "Prompt bewerken",
+    "edit_response": "Reactie bewerken",
+    "preset_reset_description": "Wis je chatgeschiedenis en begin een nieuwe chat",
+    "add_new_preset": "Nieuwe preset toevoegen",
+    "command": "Commando",
+    "your_command": "jouw-commando",
+    "placeholder_prompt": "Dit is de inhoud die wordt ingevoegd voor je prompt.",
+    "description": "Beschrijving",
+    "placeholder_description": "Reageert met een gedicht over LLM's.",
+    "save": "Opslaan",
+    "small": "Klein",
+    "normal": "Normaal",
+    "large": "Groot",
+    "workspace_llm_manager": {
+      "search": "Zoek naar LLM-aanbieders",
+      "loading_workspace_settings": "Werkruimte-instellingen laden...",
+      "available_models": "Beschikbare modellen voor {{provider}}",
+      "available_models_description": "Selecteer een model voor deze werkruimte.",
+      "save": "Gebruik dit model",
+      "saving": "Model instellen als standaard voor de werkruimte...",
+      "missing_credentials": "Deze aanbieder mist logingegevens!",
+      "missing_credentials_description": "Klik om logingegevens in te stellen"
     },
-    submit: "Indienen",
-    edit_info_user:
-      '"Verzenden" herstelt het antwoord van de AI. "Opslaan" wijzigt alleen uw bericht.',
-    edit_info_assistant:
-      "Uw wijzigingen worden direct op deze reactie opgeslagen.",
-    see_less: "Minder zien",
-    see_more: "Meer zien",
-    tools: "Gereedschap",
-    text_size_label: "Lettergrootte",
-    select_model: "Kies het model",
-    sources: "Bronnen",
-    document: "Document",
-    similarity_match: "wedstrijd",
-    source_count_one: "{{count}} verwijzing",
-    source_count_other: "{{count}} referenties",
-    preset_exit_description: "Beëindig de huidige agent-sessie",
-    add_new: "Voeg toe",
-    edit: "Bewerk",
-    publish: "Publiceren",
-    stop_generating: "Stoppen met het genereren van antwoorden",
-    slash_commands: "Korte commando's",
-    agent_skills: "Vaardigheden van agenten",
-    manage_agent_skills: "Beheer van de vaardigheden van de agent",
-    agent_skills_disabled_in_session:
-      "Het is niet mogelijk om vaardigheden aan te passen tijdens een actieve sessie. Gebruik eerst de commando `/exit` om de sessie te beëindigen.",
-    start_agent_session: "Start Agent Sessie",
-    use_agent_session_to_use_tools:
-      'U kunt tools in de chat gebruiken door een sessie met een agent te starten, beginnend met "@agent" aan het begin van uw bericht.',
-    agent_invocation: {
-      model_wants_to_call: "De klant wil een gesprek plannen.",
-      approve: "Goedkeuren",
-      reject: "Afgewijzen",
-      always_allow: "Zorg er altijd voor dat {{skillName}} aanwezig is.",
-      tool_call_was_approved:
-        "De aanvraag voor het gereedschap is goedgekeurd.",
-      tool_call_was_rejected:
-        "De aanvraag om het gereedschap te gebruiken is afgewezen.",
+    "submit": "Indienen",
+    "edit_info_user": "\"Verzenden\" herstelt het antwoord van de AI. \"Opslaan\" wijzigt alleen uw bericht.",
+    "edit_info_assistant": "Uw wijzigingen worden direct op deze reactie opgeslagen.",
+    "see_less": "Minder zien",
+    "see_more": "Meer zien",
+    "tools": "Gereedschap",
+    "text_size_label": "Lettergrootte",
+    "select_model": "Kies het model",
+    "sources": "Bronnen",
+    "document": "Document",
+    "similarity_match": "wedstrijd",
+    "source_count_one": "{{count}} verwijzing",
+    "source_count_other": "{{count}} referenties",
+    "preset_exit_description": "Beëindig de huidige agent-sessie",
+    "add_new": "Voeg toe",
+    "edit": "Bewerk",
+    "publish": "Publiceren",
+    "stop_generating": "Stoppen met het genereren van antwoorden",
+    "slash_commands": "Korte commando's",
+    "agent_skills": "Vaardigheden van agenten",
+    "manage_agent_skills": "Beheer van de vaardigheden van de agent",
+    "agent_skills_disabled_in_session": "Het is niet mogelijk om vaardigheden aan te passen tijdens een actieve sessie. Gebruik eerst de commando `/exit` om de sessie te beëindigen.",
+    "start_agent_session": "Start Agent Sessie",
+    "use_agent_session_to_use_tools": "U kunt tools in de chat gebruiken door een sessie met een agent te starten, beginnend met \"@agent\" aan het begin van uw bericht.",
+    "agent_invocation": {
+      "model_wants_to_call": "De klant wil een gesprek plannen.",
+      "approve": "Goedkeuren",
+      "reject": "Afgewijzen",
+      "always_allow": "Zorg er altijd voor dat {{skillName}} aanwezig is.",
+      "tool_call_was_approved": "De aanvraag voor het gereedschap is goedgekeurd.",
+      "tool_call_was_rejected": "De aanvraag om het gereedschap te gebruiken is afgewezen.",
+      "clarifying_question_header": "De agent heeft meer informatie nodig.",
+      "clarifying_skip": "Laat de agent beslissen.",
+      "clarifying_submit": "Indienen",
+      "clarifying_skipped": "U laat de agent zelf beslissen.",
+      "clarifying_timeout": "Geen antwoord is tijdig ingediend.",
+      "clarifying_pagination": "{{current}} van {{total}}",
+      "clarifying_prev_aria": "Vorige vraag",
+      "clarifying_next_aria": "Volgende vraag",
+      "clarifying_close_aria": "Sluiten en overslaan",
+      "clarifying_other": "Andere",
+      "clarifying_other_placeholder": "Voer uw antwoord in",
+      "batch_progress": "{{answered}} van {{total}} heeft gereageerd",
+      "batch_skip_this": "Overslaan",
+      "batch_submit_all": "Verzend alle",
+      "batch_next": "Volgende",
+      "answer_skipped": "[gebruiker heeft overgeslagen]"
     },
-    custom_skills: "Aangepaste vaardigheden",
-    agent_flows: "Stroom van agenten",
-    no_tools_found: "Geen overeenkomende gereedschappen gevonden.",
-    loading_mcp_servers: "MCP-servers worden geladen...",
-    app_integrations: "Integraties met apps",
-    sub_skills: "Specifieke vaardigheden",
+    "custom_skills": "Aangepaste vaardigheden",
+    "agent_flows": "Stroom van agenten",
+    "no_tools_found": "Geen overeenkomende gereedschappen gevonden.",
+    "loading_mcp_servers": "MCP-servers worden geladen...",
+    "app_integrations": "Integraties met apps",
+    "sub_skills": "Specifieke vaardigheden"
   },
-  profile_settings: {
-    edit_account: "Account bewerken",
-    profile_picture: "Profielafbeelding",
-    remove_profile_picture: "Profielafbeelding verwijderen",
-    username: "Gebruikersnaam",
-    new_password: "Nieuw wachtwoord",
-    password_description: "Wachtwoord moet minimaal 8 tekens lang zijn",
-    cancel: "Annuleren",
-    update_account: "Account bijwerken",
-    theme: "Themavoorkeur",
-    language: "Voorkeurstaal",
-    failed_upload: "Uploaden van profielafbeelding mislukt: {{error}}",
-    upload_success: "Profielafbeelding geüpload.",
-    failed_remove: "Verwijderen van profielafbeelding mislukt: {{error}}",
-    profile_updated: "Profiel bijgewerkt.",
-    failed_update_user: "Gebruiker bijwerken mislukt: {{error}}",
-    account: "Account",
-    support: "Ondersteuning",
-    signout: "Afmelden",
+  "profile_settings": {
+    "edit_account": "Account bewerken",
+    "profile_picture": "Profielafbeelding",
+    "remove_profile_picture": "Profielafbeelding verwijderen",
+    "username": "Gebruikersnaam",
+    "new_password": "Nieuw wachtwoord",
+    "password_description": "Wachtwoord moet minimaal 8 tekens lang zijn",
+    "cancel": "Annuleren",
+    "update_account": "Account bijwerken",
+    "theme": "Themavoorkeur",
+    "language": "Voorkeurstaal",
+    "failed_upload": "Uploaden van profielafbeelding mislukt: {{error}}",
+    "upload_success": "Profielafbeelding geüpload.",
+    "failed_remove": "Verwijderen van profielafbeelding mislukt: {{error}}",
+    "profile_updated": "Profiel bijgewerkt.",
+    "failed_update_user": "Gebruiker bijwerken mislukt: {{error}}",
+    "account": "Account",
+    "support": "Ondersteuning",
+    "signout": "Afmelden"
   },
-  customization: {
-    interface: {
-      title: "UI-voorkeuren",
-      description: "Stel uw UI-voorkeuren in voor AnythingLLM.",
+  "customization": {
+    "interface": {
+      "title": "UI-voorkeuren",
+      "description": "Stel uw UI-voorkeuren in voor AnythingLLM."
     },
-    branding: {
-      title: "Branding & Whitelabeling",
-      description:
-        "Geef uw AnythingLLM-instantie een whitelabel met uw eigen branding.",
+    "branding": {
+      "title": "Branding & Whitelabeling",
+      "description": "Geef uw AnythingLLM-instantie een whitelabel met uw eigen branding."
     },
-    chat: {
-      title: "Chat",
-      description: "Stel uw chatvoorkeuren in voor AnythingLLM.",
-      auto_submit: {
-        title: "Spraakinvoer automatisch verzenden",
-        description:
-          "Verzend spraakinvoer automatisch na een periode van stilte",
+    "chat": {
+      "title": "Chat",
+      "description": "Stel uw chatvoorkeuren in voor AnythingLLM.",
+      "auto_submit": {
+        "title": "Spraakinvoer automatisch verzenden",
+        "description": "Verzend spraakinvoer automatisch na een periode van stilte"
       },
-      auto_speak: {
-        title: "Antwoorden automatisch uitspreken",
-        description: "Spreek antwoorden van de AI automatisch uit",
+      "auto_speak": {
+        "title": "Antwoorden automatisch uitspreken",
+        "description": "Spreek antwoorden van de AI automatisch uit"
       },
-      spellcheck: {
-        title: "Spellingscontrole inschakelen",
-        description:
-          "Schakel de spellingscontrole in of uit in het chatinvoerveld",
-      },
+      "spellcheck": {
+        "title": "Spellingscontrole inschakelen",
+        "description": "Schakel de spellingscontrole in of uit in het chatinvoerveld"
+      }
     },
-    items: {
-      theme: {
-        title: "Thema",
-        description: "Selecteer uw favoriete kleurenthema voor de applicatie.",
+    "items": {
+      "theme": {
+        "title": "Thema",
+        "description": "Selecteer uw favoriete kleurenthema voor de applicatie."
       },
       "show-scrollbar": {
-        title: "Scrollbalk weergeven",
-        description: "Schakel de scrollbalk in of uit in het chatvenster.",
+        "title": "Scrollbalk weergeven",
+        "description": "Schakel de scrollbalk in of uit in het chatvenster."
       },
       "support-email": {
-        title: "E-mailadres voor ondersteuning",
-        description:
-          "Stel het e-mailadres voor ondersteuning in dat toegankelijk moet zijn voor gebruikers wanneer ze hulp nodig hebben.",
+        "title": "E-mailadres voor ondersteuning",
+        "description": "Stel het e-mailadres voor ondersteuning in dat toegankelijk moet zijn voor gebruikers wanneer ze hulp nodig hebben."
       },
       "app-name": {
-        title: "Naam",
-        description:
-          "Stel een naam in die op de inlogpagina voor alle gebruikers wordt weergegeven.",
+        "title": "Naam",
+        "description": "Stel een naam in die op de inlogpagina voor alle gebruikers wordt weergegeven."
       },
       "display-language": {
-        title: "Weergavetaal",
-        description:
-          "Selecteer de gewenste taal waarin de gebruikersinterface van AnythingLLM moet worden weergegeven - wanneer vertalingen beschikbaar zijn.",
+        "title": "Weergavetaal",
+        "description": "Selecteer de gewenste taal waarin de gebruikersinterface van AnythingLLM moet worden weergegeven - wanneer vertalingen beschikbaar zijn."
       },
-      logo: {
-        title: "Merklogo",
-        description: "Upload uw eigen logo om op alle pagina's te tonen.",
-        add: "Voeg een eigen logo toe",
-        recommended: "Aanbevolen formaat: 800 x 200",
-        remove: "Verwijderen",
-        replace: "Vervangen",
+      "logo": {
+        "title": "Merklogo",
+        "description": "Upload uw eigen logo om op alle pagina's te tonen.",
+        "add": "Voeg een eigen logo toe",
+        "recommended": "Aanbevolen formaat: 800 x 200",
+        "remove": "Verwijderen",
+        "replace": "Vervangen"
       },
       "browser-appearance": {
-        title: "Browserweergave",
-        description:
-          "Pas de weergave van het browsertabblad en de titel aan wanneer de app is geopend.",
-        tab: {
-          title: "Titel",
-          description:
-            "Stel een aangepaste tabtitel in wanneer de app in een browser wordt geopend.",
+        "title": "Browserweergave",
+        "description": "Pas de weergave van het browsertabblad en de titel aan wanneer de app is geopend.",
+        "tab": {
+          "title": "Titel",
+          "description": "Stel een aangepaste tabtitel in wanneer de app in een browser wordt geopend."
         },
-        favicon: {
-          title: "Favicon",
-          description:
-            "Gebruik een aangepaste favicon voor het browsertabblad.",
-        },
+        "favicon": {
+          "title": "Favicon",
+          "description": "Gebruik een aangepaste favicon voor het browsertabblad."
+        }
       },
       "sidebar-footer": {
-        title: "Voettekst items in de zijbalk",
-        description:
-          "Pas de voettekst items aan die onderaan de zijbalk worden weergegeven.",
-        icon: "Pictogram",
-        link: "Link",
+        "title": "Voettekst items in de zijbalk",
+        "description": "Pas de voettekst items aan die onderaan de zijbalk worden weergegeven.",
+        "icon": "Pictogram",
+        "link": "Link"
       },
       "render-html": {
-        title: "HTML weergeven in chat",
-        description:
-          "HTML-reacties weergeven in assistentreacties.\nLet op: Dit kan resulteren in een veel hogere kwaliteit van de reacties, maar kan ook leiden tot potentiële beveiligingsrisico's.",
-      },
-    },
+        "title": "HTML weergeven in chat",
+        "description": "HTML-reacties weergeven in assistentreacties.\nLet op: Dit kan resulteren in een veel hogere kwaliteit van de reacties, maar kan ook leiden tot potentiële beveiligingsrisico's."
+      }
+    }
   },
   "main-page": {
-    quickActions: {
-      createAgent: "Maak een agent",
-      editWorkspace: "Werkruimte bewerken",
-      uploadDocument: "Upload een document",
+    "quickActions": {
+      "createAgent": "Maak een agent",
+      "editWorkspace": "Werkruimte bewerken",
+      "uploadDocument": "Upload een document"
     },
-    greeting: "Hoe kan ik u vandaag helpen?",
+    "greeting": "Hoe kan ik u vandaag helpen?"
   },
   "keyboard-shortcuts": {
-    title: "Sneltoetsen",
-    shortcuts: {
-      settings: "Instellingen openen",
-      workspaceSettings: "Huidige werkruimte-instellingen openen",
-      home: "Naar de startpagina gaan",
-      workspaces: "Werkruimtes beheren",
-      apiKeys: "Instellingen voor API-sleutels",
-      llmPreferences: "LLM-voorkeuren",
-      chatSettings: "Chat-instellingen",
-      help: "Help voor toetsenbordsneltoetsen weergeven",
-      showLLMSelector: "LLM-selector voor werkruimtes weergeven",
-    },
+    "title": "Sneltoetsen",
+    "shortcuts": {
+      "settings": "Instellingen openen",
+      "workspaceSettings": "Huidige werkruimte-instellingen openen",
+      "home": "Naar de startpagina gaan",
+      "workspaces": "Werkruimtes beheren",
+      "apiKeys": "Instellingen voor API-sleutels",
+      "llmPreferences": "LLM-voorkeuren",
+      "chatSettings": "Chat-instellingen",
+      "help": "Help voor toetsenbordsneltoetsen weergeven",
+      "showLLMSelector": "LLM-selector voor werkruimtes weergeven"
+    }
   },
-  community_hub: {
-    publish: {
-      system_prompt: {
-        success_title: "Geslaagd!",
-        success_description:
-          "Uw systeemprompt is gepubliceerd op de Community Hub!",
-        success_thank_you: "Bedankt voor het delen met de community!",
-        view_on_hub: "Bekijken op Community Hub",
-        modal_title: "Systeemprompt publiceren",
-        name_label: "Naam",
-        name_description: "Dit is de weergavenaam van je systeemprompt.",
-        name_placeholder: "Mijn systeemprompt",
-        description_label: "Beschrijving",
-        description_description:
-          "Dit is de beschrijving van je systeemprompt. Gebruik dit om het doel van je systeemprompt te beschrijven.",
-        tags_label: "Tags",
-        tags_description:
-          "Tags worden gebruikt om je systeemprompt te labelen voor gemakkelijker zoeken. Je kunt meerdere tags toevoegen. Maximaal 5 tags. Maximaal 20 tekens per tag.",
-        tags_placeholder: "Typ en druk op Enter om tags toe te voegen",
-        visibility_label: "Zichtbaarheid",
-        public_description:
-          "Openbare systeemprompts zijn voor iedereen zichtbaar.",
-        private_description:
-          "Privé systeemprompts zijn alleen voor jou zichtbaar.",
-        publish_button: "Publiceren naar Community Hub",
-        submitting: "Publiceren...",
-        prompt_label: "Prompt",
-        prompt_description:
-          "Dit is de daadwerkelijke systeemprompt die gebruikt zal worden om de LLM te begeleiden.",
-        prompt_placeholder: "Voer hier uw systeemprompt in...",
+  "community_hub": {
+    "publish": {
+      "system_prompt": {
+        "success_title": "Geslaagd!",
+        "success_description": "Uw systeemprompt is gepubliceerd op de Community Hub!",
+        "success_thank_you": "Bedankt voor het delen met de community!",
+        "view_on_hub": "Bekijken op Community Hub",
+        "modal_title": "Systeemprompt publiceren",
+        "name_label": "Naam",
+        "name_description": "Dit is de weergavenaam van je systeemprompt.",
+        "name_placeholder": "Mijn systeemprompt",
+        "description_label": "Beschrijving",
+        "description_description": "Dit is de beschrijving van je systeemprompt. Gebruik dit om het doel van je systeemprompt te beschrijven.",
+        "tags_label": "Tags",
+        "tags_description": "Tags worden gebruikt om je systeemprompt te labelen voor gemakkelijker zoeken. Je kunt meerdere tags toevoegen. Maximaal 5 tags. Maximaal 20 tekens per tag.",
+        "tags_placeholder": "Typ en druk op Enter om tags toe te voegen",
+        "visibility_label": "Zichtbaarheid",
+        "public_description": "Openbare systeemprompts zijn voor iedereen zichtbaar.",
+        "private_description": "Privé systeemprompts zijn alleen voor jou zichtbaar.",
+        "publish_button": "Publiceren naar Community Hub",
+        "submitting": "Publiceren...",
+        "prompt_label": "Prompt",
+        "prompt_description": "Dit is de daadwerkelijke systeemprompt die gebruikt zal worden om de LLM te begeleiden.",
+        "prompt_placeholder": "Voer hier uw systeemprompt in..."
       },
-      agent_flow: {
-        success_title: "Succes!",
-        success_description:
-          "Je agentflow is gepubliceerd op de Community Hub!",
-        success_thank_you: "Bedankt voor het delen met de community!",
-        view_on_hub: "Bekijk op de Community Hub",
-        modal_title: "Agentflow publiceren",
-        name_label: "Naam",
-        name_description: "Dit is de weergavenaam van je agentflow.",
-        name_placeholder: "Mijn agentflow",
-        description_label: "Beschrijving",
-        description_description:
-          "Dit is de beschrijving van je agentflow. Gebruik dit om het doel van je agentflow te beschrijven.",
-        tags_label: "Tags",
-        tags_description:
-          "Tags worden gebruikt om je agentflow te labelen voor eenvoudiger zoeken. Je kunt meerdere tags toevoegen. Maximaal 5 tags. Maximaal 20 tekens per tag.",
-        tags_placeholder: "Typ en druk op Enter om tags toe te voegen",
-        visibility_label: "Zichtbaarheid",
-        submitting: "Publiceren...",
-        submit: "Publiceren naar Community Hub",
-        privacy_note:
-          "Agentflows worden altijd als privé geüpload om gevoelige gegevens te beschermen. U kunt de zichtbaarheid in de Community Hub wijzigen na publicatie. Controleer of uw flow geen gevoelige of privé-informatie bevat voordat u publiceert.",
+      "agent_flow": {
+        "success_title": "Succes!",
+        "success_description": "Je agentflow is gepubliceerd op de Community Hub!",
+        "success_thank_you": "Bedankt voor het delen met de community!",
+        "view_on_hub": "Bekijk op de Community Hub",
+        "modal_title": "Agentflow publiceren",
+        "name_label": "Naam",
+        "name_description": "Dit is de weergavenaam van je agentflow.",
+        "name_placeholder": "Mijn agentflow",
+        "description_label": "Beschrijving",
+        "description_description": "Dit is de beschrijving van je agentflow. Gebruik dit om het doel van je agentflow te beschrijven.",
+        "tags_label": "Tags",
+        "tags_description": "Tags worden gebruikt om je agentflow te labelen voor eenvoudiger zoeken. Je kunt meerdere tags toevoegen. Maximaal 5 tags. Maximaal 20 tekens per tag.",
+        "tags_placeholder": "Typ en druk op Enter om tags toe te voegen",
+        "visibility_label": "Zichtbaarheid",
+        "submitting": "Publiceren...",
+        "submit": "Publiceren naar Community Hub",
+        "privacy_note": "Agentflows worden altijd als privé geüpload om gevoelige gegevens te beschermen. U kunt de zichtbaarheid in de Community Hub wijzigen na publicatie. Controleer of uw flow geen gevoelige of privé-informatie bevat voordat u publiceert."
       },
-      generic: {
-        unauthenticated: {
-          title: "Authenticatie vereist",
-          description:
-            "U moet zich authenticeren bij de AnythingLLM Community Hub voordat u items kunt publiceren.",
-          button: "Verbinden met Community Hub",
-        },
+      "generic": {
+        "unauthenticated": {
+          "title": "Authenticatie vereist",
+          "description": "U moet zich authenticeren bij de AnythingLLM Community Hub voordat u items kunt publiceren.",
+          "button": "Verbinden met Community Hub"
+        }
       },
-      slash_command: {
-        success_title: "Succes!",
-        success_description:
-          "Je slash-commando is gepubliceerd op de Community Hub!",
-        success_thank_you: "Bedankt voor het delen met de community!",
-        view_on_hub: "Bekijk op de Community Hub",
-        modal_title: "Slash-commando publiceren",
-        name_label: "Naam",
-        name_description: "Dit is de weergavenaam van je slash-commando.",
-        name_placeholder: "Mijn slash-commando",
-        description_label: "Beschrijving",
-        description_description:
-          "Dit is de beschrijving van je slash-commando. Gebruik dit om het doel van je slash-commando te beschrijven.",
-        tags_label: "Tags",
-        tags_description:
-          "Tags worden gebruikt om je slash-commando te labelen voor eenvoudiger zoeken. Je kunt meerdere tags toevoegen. Max 5 tags. Maximaal 20 tekens per tag.",
-        tags_placeholder: "Typ en druk op Enter om tags toe te voegen",
-        visibility_label: "Zichtbaarheid",
-        public_description:
-          "Openbare slash-opdrachten zijn voor iedereen zichtbaar.",
-        private_description:
-          "Privé slash-opdrachten zijn alleen voor jou zichtbaar.",
-        publish_button: "Publiceren naar Community Hub",
-        submitting: "Publiceren...",
-        prompt_label: "Prompt",
-        prompt_description:
-          "Dit is de prompt die wordt gebruikt wanneer de slash-opdracht wordt geactiveerd.",
-        prompt_placeholder: "Voer hier je prompt in...",
-      },
-    },
+      "slash_command": {
+        "success_title": "Succes!",
+        "success_description": "Je slash-commando is gepubliceerd op de Community Hub!",
+        "success_thank_you": "Bedankt voor het delen met de community!",
+        "view_on_hub": "Bekijk op de Community Hub",
+        "modal_title": "Slash-commando publiceren",
+        "name_label": "Naam",
+        "name_description": "Dit is de weergavenaam van je slash-commando.",
+        "name_placeholder": "Mijn slash-commando",
+        "description_label": "Beschrijving",
+        "description_description": "Dit is de beschrijving van je slash-commando. Gebruik dit om het doel van je slash-commando te beschrijven.",
+        "tags_label": "Tags",
+        "tags_description": "Tags worden gebruikt om je slash-commando te labelen voor eenvoudiger zoeken. Je kunt meerdere tags toevoegen. Max 5 tags. Maximaal 20 tekens per tag.",
+        "tags_placeholder": "Typ en druk op Enter om tags toe te voegen",
+        "visibility_label": "Zichtbaarheid",
+        "public_description": "Openbare slash-opdrachten zijn voor iedereen zichtbaar.",
+        "private_description": "Privé slash-opdrachten zijn alleen voor jou zichtbaar.",
+        "publish_button": "Publiceren naar Community Hub",
+        "submitting": "Publiceren...",
+        "prompt_label": "Prompt",
+        "prompt_description": "Dit is de prompt die wordt gebruikt wanneer de slash-opdracht wordt geactiveerd.",
+        "prompt_placeholder": "Voer hier je prompt in..."
+      }
+    }
   },
-  security: {
-    title: "Veiligheid",
-    multiuser: {
-      title: "Multi-Gebruikersmodus",
-      description:
-        "Stel je instantie in om je team te ondersteunen door Multi-Gebruikersmodus in te schakelen.",
-      enable: {
+  "security": {
+    "title": "Veiligheid",
+    "multiuser": {
+      "title": "Multi-Gebruikersmodus",
+      "description": "Stel je instantie in om je team te ondersteunen door Multi-Gebruikersmodus in te schakelen.",
+      "enable": {
         "is-enable": "Multi-Gebruikersmodus is Ingeschakeld",
-        enable: "Schakel Multi-Gebruikersmodus In",
-        description:
-          "Standaard ben je de enige beheerder. Als beheerder moet je accounts aanmaken voor alle nieuwe gebruikers of beheerders. Verlies je wachtwoord niet, want alleen een beheerdersgebruiker kan wachtwoorden resetten.",
-        username: "Beheerdersaccount gebruikersnaam",
-        password: "Beheerdersaccount wachtwoord",
-      },
+        "enable": "Schakel Multi-Gebruikersmodus In",
+        "description": "Standaard ben je de enige beheerder. Als beheerder moet je accounts aanmaken voor alle nieuwe gebruikers of beheerders. Verlies je wachtwoord niet, want alleen een beheerdersgebruiker kan wachtwoorden resetten.",
+        "username": "Beheerdersaccount gebruikersnaam",
+        "password": "Beheerdersaccount wachtwoord"
+      }
     },
-    password: {
-      title: "Wachtwoordbeveiliging",
-      description:
-        "Bescherm je AnythingLLM-instantie met een wachtwoord. Als je dit vergeet, is er geen herstelmethode, dus zorg ervoor dat je dit wachtwoord opslaat.",
-      "password-label": "Instances wachtwoord",
-    },
+    "password": {
+      "title": "Wachtwoordbeveiliging",
+      "description": "Bescherm je AnythingLLM-instantie met een wachtwoord. Als je dit vergeet, is er geen herstelmethode, dus zorg ervoor dat je dit wachtwoord opslaat.",
+      "password-label": "Instances wachtwoord"
+    }
   },
-  home: {
-    welcome: "Welkom",
-    chooseWorkspace: "Kies een werkruimte om te beginnen!",
-    notAssigned:
-      "Je bent nog niet toegewezen aan een werkruimte.\nNeem contact op met je beheerder om toegang te vragen tot een werkruimte.",
-    goToWorkspace: 'Ga naar de werkruimte "{{workspace}}"',
+  "home": {
+    "welcome": "Welkom",
+    "chooseWorkspace": "Kies een werkruimte om te beginnen!",
+    "notAssigned": "Je bent nog niet toegewezen aan een werkruimte.\nNeem contact op met je beheerder om toegang te vragen tot een werkruimte.",
+    "goToWorkspace": "Ga naar de werkruimte \"{{workspace}}\""
   },
-  telegram: {
-    title: "Telegram Bot",
-    description:
-      "Verbind uw AnythingLLM-instantie met Telegram, zodat u vanuit elk apparaat kunt communiceren met uw werkruimtes.",
-    setup: {
-      step1: {
-        title: "Stap 1: Maak je Telegram-bot",
-        description:
-          "Open het @BotFather-kanaal in Telegram, stuur `/newbot` naar @BotFather, volg de instructies en kopieer het API-token.",
+  "telegram": {
+    "title": "Telegram Bot",
+    "description": "Verbind uw AnythingLLM-instantie met Telegram, zodat u vanuit elk apparaat kunt communiceren met uw werkruimtes.",
+    "setup": {
+      "step1": {
+        "title": "Stap 1: Maak je Telegram-bot",
+        "description": "Open het @BotFather-kanaal in Telegram, stuur `/newbot` naar @BotFather, volg de instructies en kopieer het API-token.",
         "open-botfather": "Open BotFather",
         "instruction-1": "1. Open het link of scan de QR-code",
-        "instruction-2":
-          "2. Stuur <code>/newbot</code> naar <code>@BotFather</code>",
+        "instruction-2": "2. Stuur <code>/newbot</code> naar <code>@BotFather</code>",
         "instruction-3": "3. Kies een naam en gebruikersnaam voor je bot",
-        "instruction-4": "4. Kopieer de API-token die je ontvangt",
+        "instruction-4": "4. Kopieer de API-token die je ontvangt"
       },
-      step2: {
-        title: "Stap 2: Verbind uw bot",
-        description:
-          "Plak de API-token die je van @BotFather hebt ontvangen en selecteer een standaard werkruimte voor je bot om mee te communiceren.",
+      "step2": {
+        "title": "Stap 2: Verbind uw bot",
+        "description": "Plak de API-token die je van @BotFather hebt ontvangen en selecteer een standaard werkruimte voor je bot om mee te communiceren.",
         "bot-token": "Bot-token",
-        connecting: "Verbinding wordt gemaakt...",
-        "connect-bot": "Connect Bot",
+        "connecting": "Verbinding wordt gemaakt...",
+        "connect-bot": "Connect Bot"
       },
-      security: {
-        title: "Aanbevolen beveiligingsinstellingen",
-        description:
-          "Voor extra beveiliging, configureer deze instellingen via @BotFather.",
+      "security": {
+        "title": "Aanbevolen beveiligingsinstellingen",
+        "description": "Voor extra beveiliging, configureer deze instellingen via @BotFather.",
         "disable-groups": "— Voorkom het toevoegen van bots aan groepen",
-        "disable-inline":
-          "— Voorkom dat de bot wordt gebruikt in inline zoekopdrachten",
-        "obscure-username":
-          "Gebruik een bot-username dat niet direct herkenbaar is, om de vindbaarheid te verminderen.",
+        "disable-inline": "— Voorkom dat de bot wordt gebruikt in inline zoekopdrachten",
+        "obscure-username": "Gebruik een bot-username dat niet direct herkenbaar is, om de vindbaarheid te verminderen."
       },
       "toast-enter-token": "Voer alstublieft een bot-token in.",
-      "toast-connect-failed": "Verbinding met de bot is mislukt.",
+      "toast-connect-failed": "Verbinding met de bot is mislukt."
     },
-    connected: {
-      status: "Verbonden",
-      "status-disconnected":
-        "Niet verbonden – het token kan verlopen zijn of ongeldig",
+    "connected": {
+      "status": "Verbonden",
+      "status-disconnected": "Niet verbonden – het token kan verlopen zijn of ongeldig",
       "placeholder-token": "Plak het nieuwe bot-token...",
-      reconnect: "Herstellen van de verbinding",
-      workspace: "Werkplek",
+      "reconnect": "Herstellen van de verbinding",
+      "workspace": "Werkplek",
       "bot-link": "Bot-link",
       "voice-response": "Spraakherkenning",
-      disconnecting: "Verbinding verbreken...",
-      disconnect: "Aansluiting verbreiden",
+      "disconnecting": "Verbinding verbreken...",
+      "disconnect": "Aansluiting verbreiden",
       "voice-text-only": "Alleen tekst",
-      "voice-mirror":
-        "Spiegel (antwoord met spraak wanneer de gebruiker spraak verzendt)",
-      "voice-always":
-        "Zorg ervoor dat er altijd een audio-opname (een geluidsfragment) bij de reactie wordt toegevoegd.",
-      "toast-disconnect-failed":
-        "Het was niet mogelijk om de robot los te koppelen.",
+      "voice-mirror": "Spiegel (antwoord met spraak wanneer de gebruiker spraak verzendt)",
+      "voice-always": "Zorg ervoor dat er altijd een audio-opname (een geluidsfragment) bij de reactie wordt toegevoegd.",
+      "toast-disconnect-failed": "Het was niet mogelijk om de robot los te koppelen.",
       "toast-reconnect-failed": "Fout bij het opnieuw verbinden van de bot.",
       "toast-voice-failed": "Niet mogelijk om de spraakmodus bij te werken.",
       "toast-approve-failed": "Fout bij goedkeuren van gebruiker.",
       "toast-deny-failed": "Niet in staat om gebruiker te weigeren.",
-      "toast-revoke-failed":
-        "Fout bij het intrekken van het gebruikersaccount.",
+      "toast-revoke-failed": "Fout bij het intrekken van het gebruikersaccount."
     },
-    users: {
-      "pending-description":
-        "Gebruikers die nog geverifieerd moeten worden. Vergelijk de code die hier wordt getoond met de code die in hun Telegram-chat wordt weergegeven.",
-      unknown: "Onbekend",
-    },
-  },
-};
+    "users": {
+      "pending-description": "Gebruikers die nog geverifieerd moeten worden. Vergelijk de code die hier wordt getoond met de code die in hun Telegram-chat wordt weergegeven.",
+      "unknown": "Onbekend"
+    }
+  }
+}
 
 export default TRANSLATIONS;

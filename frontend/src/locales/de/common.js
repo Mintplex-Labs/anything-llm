@@ -1,1548 +1,1333 @@
 // Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
-  onboarding: {
-    home: {
-      getStarted: "Jetzt starten",
-      welcome: "Herzlich willkommen",
+  "onboarding": {
+    "home": {
+      "getStarted": "Jetzt starten",
+      "welcome": "Herzlich willkommen"
     },
-    llm: {
-      title: "LLM-Einstellung",
-      description:
-        "AnythingLLM ist mit vielen LLM-Anbietern kompatibel. Der ausgewählte Dienst wird für die Chats verwendet.",
+    "llm": {
+      "title": "LLM-Einstellung",
+      "description": "AnythingLLM ist mit vielen LLM-Anbietern kompatibel. Der ausgewählte Dienst wird für die Chats verwendet."
     },
-    userSetup: {
-      title: "Benutzer Setup",
-      description: "Konfigurieren Sie Ihre Benutzereinstellungen.",
-      howManyUsers: "Wie viele Benutzer werden diese Instanz verwenden?",
-      justMe: "Nur ich",
-      myTeam: "Mein Team",
-      instancePassword: "Passwort für diese Instanz",
-      setPassword: "Möchten Sie ein Passwort einrichten?",
-      passwordReq: "Das Passwort muss mindestens 8 Zeichen enthalten.",
-      passwordWarn:
-        "Dieses Passwort sollte sicher aufbewahrt werden, da Wiederherstellung nicht möglich ist.",
-      adminUsername: "Benutzername des Admin-Accounts",
-      adminPassword: "Passwort des Admin-Accounts",
-      adminPasswordReq: "Das Passwort muss mindestens 8 Zeichen enthalten.",
-      teamHint:
-        "Zu Beginn sind Sie der einzige Admin. Nach der Einrichtung können Sie weitere Benutzer oder Admins einladen. Verlieren Sie Ihr Passwort nicht – nur Admins können Passwörter zurücksetzen.",
+    "userSetup": {
+      "title": "Benutzer Setup",
+      "description": "Konfigurieren Sie Ihre Benutzereinstellungen.",
+      "howManyUsers": "Wie viele Benutzer werden diese Instanz verwenden?",
+      "justMe": "Nur ich",
+      "myTeam": "Mein Team",
+      "instancePassword": "Passwort für diese Instanz",
+      "setPassword": "Möchten Sie ein Passwort einrichten?",
+      "passwordReq": "Das Passwort muss mindestens 8 Zeichen enthalten.",
+      "passwordWarn": "Dieses Passwort sollte sicher aufbewahrt werden, da Wiederherstellung nicht möglich ist.",
+      "adminUsername": "Benutzername des Admin-Accounts",
+      "adminPassword": "Passwort des Admin-Accounts",
+      "adminPasswordReq": "Das Passwort muss mindestens 8 Zeichen enthalten.",
+      "teamHint": "Zu Beginn sind Sie der einzige Admin. Nach der Einrichtung können Sie weitere Benutzer oder Admins einladen. Verlieren Sie Ihr Passwort nicht – nur Admins können Passwörter zurücksetzen."
     },
-    data: {
-      title: "Datenverarbeitung & Datenschutz",
-      description:
-        "Wir setzen uns für Transparenz und Kontrolle im Umgang mit Ihren persönlichen Daten ein.",
-      settingsHint:
-        "Diese Einstellungen können jederzeit in den Einstellungen angepasst werden.",
+    "data": {
+      "title": "Datenverarbeitung & Datenschutz",
+      "description": "Wir setzen uns für Transparenz und Kontrolle im Umgang mit Ihren persönlichen Daten ein.",
+      "settingsHint": "Diese Einstellungen können jederzeit in den Einstellungen angepasst werden."
     },
-    survey: {
-      title: "Willkommen bei AnythingLLM",
-      description:
-        "Helfen Sie uns, AnythingLLM an Ihre Bedürfnisse anzupassen. (Optional)",
-      email: "Wie lautet Ihre E-Mail-Adresse?",
-      useCase: "Wofür möchten Sie AnythingLLM verwenden?",
-      useCaseWork: "Beruflich",
-      useCasePersonal: "Privat",
-      useCaseOther: "Sonstiges",
-      comment: "Wie haben Sie von AnythingLLM erfahren?",
-      commentPlaceholder:
-        "Reddit, Twitter, GitHub, YouTube, etc. – Teilen Sie uns mit, wie Sie uns entdeckt haben!",
-      skip: "Umfrage überspringen",
-      thankYou: "Vielen Dank für Ihr Feedback!",
-    },
+    "survey": {
+      "title": "Willkommen bei AnythingLLM",
+      "description": "Helfen Sie uns, AnythingLLM an Ihre Bedürfnisse anzupassen. (Optional)",
+      "email": "Wie lautet Ihre E-Mail-Adresse?",
+      "useCase": "Wofür möchten Sie AnythingLLM verwenden?",
+      "useCaseWork": "Beruflich",
+      "useCasePersonal": "Privat",
+      "useCaseOther": "Sonstiges",
+      "comment": "Wie haben Sie von AnythingLLM erfahren?",
+      "commentPlaceholder": "Reddit, Twitter, GitHub, YouTube, etc. – Teilen Sie uns mit, wie Sie uns entdeckt haben!",
+      "skip": "Umfrage überspringen",
+      "thankYou": "Vielen Dank für Ihr Feedback!"
+    }
   },
-  common: {
+  "common": {
     "workspaces-name": "Namen der Workspaces",
-    selection: "Modellauswahl",
-    saving: "Speichern...",
-    save: "Änderungen speichern",
-    previous: "Vorherige Seite",
-    next: "Nächste Seite",
-    optional: "Optional",
-    yes: "Ja",
-    no: "Nein",
-    search: "Suchen",
-    username_requirements:
-      "Der Benutzername muss 2-32 Zeichen lang sein, mit einem Kleinbuchstaben beginnen und darf nur Kleinbuchstaben, Zahlen, Unterstriche, Bindestriche und Punkte enthalten.",
-    on: "Über",
-    none: "Keine",
-    stopped: "Gestoppt",
-    loading: "Laden",
-    refresh: "Erfrischen",
+    "selection": "Modellauswahl",
+    "saving": "Speichern...",
+    "save": "Änderungen speichern",
+    "previous": "Vorherige Seite",
+    "next": "Nächste Seite",
+    "optional": "Optional",
+    "yes": "Ja",
+    "no": "Nein",
+    "search": "Suchen",
+    "username_requirements": "Der Benutzername muss 2-32 Zeichen lang sein, mit einem Kleinbuchstaben beginnen und darf nur Kleinbuchstaben, Zahlen, Unterstriche, Bindestriche und Punkte enthalten.",
+    "on": "Über",
+    "none": "Keine",
+    "stopped": "Gestoppt",
+    "loading": "Laden",
+    "refresh": "Erfrischen"
   },
-  settings: {
-    title: "Instanzeinstellungen",
-    invites: "Einladungen",
-    users: "Benutzer",
-    workspaces: "Workspaces",
+  "settings": {
+    "title": "Instanzeinstellungen",
+    "invites": "Einladungen",
+    "users": "Benutzer",
+    "workspaces": "Workspaces",
     "workspace-chats": "Workspace-Chats",
-    customization: "Personalisierung",
-    interface: "UI-Einstellungen",
-    branding: "Branding & Whitelabeling",
-    chat: "Chat",
+    "customization": "Personalisierung",
+    "interface": "UI-Einstellungen",
+    "branding": "Branding & Whitelabeling",
+    "chat": "Chat",
     "api-keys": "Entwickler-API",
-    llm: "LLM",
-    transcription: "Transkription",
-    embedder: "Einbettung",
+    "llm": "LLM",
+    "transcription": "Transkription",
+    "embedder": "Einbettung",
     "text-splitting": "Textsplitting & Chunking",
     "voice-speech": "Sprache & Sprachausgabe",
     "vector-database": "Vektordatenbank",
-    embeds: "Chat-Einbettung",
-    security: "Sicherheit",
+    "embeds": "Chat-Einbettung",
+    "security": "Sicherheit",
     "event-logs": "Ereignisprotokolle",
-    privacy: "Datenschutz & Datenverarbeitung",
+    "privacy": "Datenschutz & Datenverarbeitung",
     "ai-providers": "KI-Anbieter",
     "agent-skills": "Agentenfähigkeiten",
-    admin: "Administrator",
-    tools: "Werkzeuge",
+    "admin": "Administrator",
+    "tools": "Werkzeuge",
     "experimental-features": "Experimentelle Funktionen",
-    contact: "Support kontaktieren",
+    "contact": "Support kontaktieren",
     "browser-extension": "Browser-Extension",
     "system-prompt-variables": "Systempromptvariablen",
     "mobile-app": "AnythingLLM Mobile",
     "community-hub": {
-      title: "Community Hub",
-      trending: "Neuigkeiten",
+      "title": "Community Hub",
+      "trending": "Neuigkeiten",
       "your-account": "Community Hub Account",
-      "import-item": "Community Import",
+      "import-item": "Community Import"
     },
-    channels: "Kanäle",
+    "channels": "Kanäle",
     "available-channels": {
-      telegram: "Telegram",
-    },
+      "telegram": "Telegram"
+    }
   },
-  login: {
+  "login": {
     "multi-user": {
-      welcome: "Willkommen",
+      "welcome": "Willkommen",
       "placeholder-username": "Benutzername",
       "placeholder-password": "Passwort",
-      login: "Anmelden",
-      validating: "Überprüfung...",
+      "login": "Anmelden",
+      "validating": "Überprüfung...",
       "forgot-pass": "Passwort vergessen",
-      reset: "Zurücksetzen",
+      "reset": "Zurücksetzen"
     },
     "sign-in": "Melden Sie sich bei Ihrem {{appName}} Konto an.",
     "password-reset": {
-      title: "Passwort zurücksetzen",
-      description:
-        "Geben Sie die erforderlichen Informationen unten ein, um Ihr Passwort zurückzusetzen.",
+      "title": "Passwort zurücksetzen",
+      "description": "Geben Sie die erforderlichen Informationen unten ein, um Ihr Passwort zurückzusetzen.",
       "recovery-codes": "Wiederherstellungscodes",
-      "back-to-login": "Zurück zur Anmeldung",
-    },
+      "back-to-login": "Zurück zur Anmeldung"
+    }
   },
   "main-page": {
-    quickActions: {
-      createAgent: "Erstelle einen Agenten",
-      editWorkspace: "Arbeitsbereich bearbeiten",
-      uploadDocument: "Ein Dokument hochladen",
+    "quickActions": {
+      "createAgent": "Erstelle einen Agenten",
+      "editWorkspace": "Arbeitsbereich bearbeiten",
+      "uploadDocument": "Ein Dokument hochladen"
     },
-    greeting: "Wie kann ich Ihnen heute helfen?",
+    "greeting": "Wie kann ich Ihnen heute helfen?"
   },
   "new-workspace": {
-    title: "Neuer Workspace",
-    placeholder: "Mein Workspace",
+    "title": "Neuer Workspace",
+    "placeholder": "Mein Workspace"
   },
   "workspaces—settings": {
-    general: "Allgemeine Einstellungen",
-    chat: "Chat-Einstellungen",
-    vector: "Vektordatenbank",
-    members: "Mitglieder",
-    agent: "Agentenkonfiguration",
+    "general": "Allgemeine Einstellungen",
+    "chat": "Chat-Einstellungen",
+    "vector": "Vektordatenbank",
+    "members": "Mitglieder",
+    "agent": "Agentenkonfiguration"
   },
-  general: {
-    vector: {
-      title: "Vektoranzahl",
-      description: "Gesamtanzahl der Vektoren in Ihrer Vektordatenbank.",
+  "general": {
+    "vector": {
+      "title": "Vektoranzahl",
+      "description": "Gesamtanzahl der Vektoren in Ihrer Vektordatenbank."
     },
-    names: {
-      description: "Dies ändert nur den Anzeigenamen Ihres Workspace.",
+    "names": {
+      "description": "Dies ändert nur den Anzeigenamen Ihres Workspace."
     },
-    message: {
-      title: "Vorgeschlagene Chat-Nachrichten",
-      description:
-        "Passen Sie die Nachrichten an, die Ihren Workspace-Benutzern vorgeschlagen werden.",
-      add: "Neue Nachricht hinzufügen",
-      save: "Nachrichten speichern",
-      heading: "Erkläre mir",
-      body: "die Vorteile von AnythingLLM",
+    "message": {
+      "title": "Vorgeschlagene Chat-Nachrichten",
+      "description": "Passen Sie die Nachrichten an, die Ihren Workspace-Benutzern vorgeschlagen werden.",
+      "add": "Neue Nachricht hinzufügen",
+      "save": "Nachrichten speichern",
+      "heading": "Erkläre mir",
+      "body": "die Vorteile von AnythingLLM"
     },
-    delete: {
-      title: "Workspace löschen",
-      description:
-        "Löschen Sie diesen Workspace und alle seine Daten. Dies löscht den Workspace für alle Benutzer.",
-      delete: "Workspace löschen",
-      deleting: "Workspace wird gelöscht...",
+    "delete": {
+      "title": "Workspace löschen",
+      "description": "Löschen Sie diesen Workspace und alle seine Daten. Dies löscht den Workspace für alle Benutzer.",
+      "delete": "Workspace löschen",
+      "deleting": "Workspace wird gelöscht...",
       "confirm-start": "Sie sind dabei, Ihren gesamten",
-      "confirm-end":
-        "Workspace zu löschen. Dies entfernt alle Vektoreinbettungen in Ihrer Vektordatenbank.\n\nDie ursprünglichen Quelldateien bleiben unberührt. Diese Aktion ist irreversibel.",
-    },
+      "confirm-end": "Workspace zu löschen. Dies entfernt alle Vektoreinbettungen in Ihrer Vektordatenbank.\n\nDie ursprünglichen Quelldateien bleiben unberührt. Diese Aktion ist irreversibel."
+    }
   },
-  chat: {
-    llm: {
-      title: "Workspace-LLM-Anbieter",
-      description:
-        "Der spezifische LLM-Anbieter und das Modell, das für diesen Workspace verwendet wird. Standardmäßig wird der System-LLM-Anbieter und dessen Einstellungen verwendet.",
-      search: "Durchsuchen Sie alle LLM-Anbieter",
+  "chat": {
+    "llm": {
+      "title": "Workspace-LLM-Anbieter",
+      "description": "Der spezifische LLM-Anbieter und das Modell, das für diesen Workspace verwendet wird. Standardmäßig wird der System-LLM-Anbieter und dessen Einstellungen verwendet.",
+      "search": "Durchsuchen Sie alle LLM-Anbieter"
     },
-    model: {
-      title: "Workspace-Chat-Modell",
-      description:
-        "Das spezifische Chat-Modell, das für diesen Workspace verwendet wird. Wenn leer, wird die System-LLM-Präferenz verwendet.",
+    "model": {
+      "title": "Workspace-Chat-Modell",
+      "description": "Das spezifische Chat-Modell, das für diesen Workspace verwendet wird. Wenn leer, wird die System-LLM-Präferenz verwendet."
     },
-    mode: {
-      title: "Chat-Modus",
-      chat: {
-        title: "Chat",
-        description:
-          "wird Antworten basierend auf dem allgemeinen Wissen des LLM und dem gegebenen Dokumentkontext liefern.<br />Um die Tools zu nutzen, müssen Sie den Befehl `@agent` verwenden.",
+    "mode": {
+      "title": "Chat-Modus",
+      "chat": {
+        "title": "Chat",
+        "description": "wird Antworten basierend auf dem allgemeinen Wissen des LLM und dem gegebenen Dokumentkontext liefern.<br />Um die Tools zu nutzen, müssen Sie den Befehl `@agent` verwenden."
       },
-      query: {
-        title: "Abfrage",
-        description:
-          'werden Antworten nur bei <b> und </b> bereitstellen, falls der Dokumentkontext gefunden wurde. Um die Tools zu nutzen, müssen Sie den Befehl "@agent" verwenden.',
+      "query": {
+        "title": "Abfrage",
+        "description": "werden Antworten nur bei <b> und </b> bereitstellen, falls der Dokumentkontext gefunden wurde. Um die Tools zu nutzen, müssen Sie den Befehl \"@agent\" verwenden."
       },
-      automatic: {
-        title: "Auto",
-        description:
-          "wird automatisch Werkzeuge verwenden, wenn das Modell und der Anbieter native Werkzeugaufrufe unterstützen. <br />Wenn native Werkzeugaufrufe nicht unterstützt werden, müssen Sie den Befehl `@agent` verwenden, um Werkzeuge zu nutzen.",
-      },
+      "automatic": {
+        "title": "Auto",
+        "description": "wird automatisch Werkzeuge verwenden, wenn das Modell und der Anbieter native Werkzeugaufrufe unterstützen. <br />Wenn native Werkzeugaufrufe nicht unterstützt werden, müssen Sie den Befehl `@agent` verwenden, um Werkzeuge zu nutzen."
+      }
     },
-    history: {
-      title: "Chat-Verlauf",
-      "desc-start":
-        "Die Anzahl der vorherigen Chats, die in das Kurzzeitgedächtnis der Antwort einbezogen werden.",
-      recommend: "Empfohlen 20. ",
-      "desc-end":
-        "Alles über 45 führt wahrscheinlich zu kontinuierlichen Chat-Ausfällen, abhängig von der Nachrichtengröße.",
+    "history": {
+      "title": "Chat-Verlauf",
+      "desc-start": "Die Anzahl der vorherigen Chats, die in das Kurzzeitgedächtnis der Antwort einbezogen werden.",
+      "recommend": "Empfohlen 20. ",
+      "desc-end": "Alles über 45 führt wahrscheinlich zu kontinuierlichen Chat-Ausfällen, abhängig von der Nachrichtengröße."
     },
-    prompt: {
-      title: "Prompt",
-      description:
-        "Der Prompt, der in diesem Workspace verwendet wird. Definieren Sie den Kontext und die Anweisungen für die KI, um eine Antwort zu generieren. Sie sollten einen sorgfältig formulierten Prompt bereitstellen, damit die KI eine relevante und genaue Antwort generieren kann.",
-      history: {
-        title: "Systemprompt-Historie",
-        clearAll: "Alles löschen",
-        noHistory: "Keine Einträge im Verlauf vorhanden",
-        restore: "Wiederherstellen",
-        delete: "Löschen",
-        publish: "Im Community Hub veröffentlichen",
-        deleteConfirm: "Möchten Sie diesen Eintrag wirklich löschen?",
-        clearAllConfirm:
-          "Möchten Sie wirklich alle Einträge löschen? Diese Aktion ist unwiderruflich.",
-        expand: "Ausklappen",
-      },
+    "prompt": {
+      "title": "Prompt",
+      "description": "Der Prompt, der in diesem Workspace verwendet wird. Definieren Sie den Kontext und die Anweisungen für die KI, um eine Antwort zu generieren. Sie sollten einen sorgfältig formulierten Prompt bereitstellen, damit die KI eine relevante und genaue Antwort generieren kann.",
+      "history": {
+        "title": "Systemprompt-Historie",
+        "clearAll": "Alles löschen",
+        "noHistory": "Keine Einträge im Verlauf vorhanden",
+        "restore": "Wiederherstellen",
+        "delete": "Löschen",
+        "publish": "Im Community Hub veröffentlichen",
+        "deleteConfirm": "Möchten Sie diesen Eintrag wirklich löschen?",
+        "clearAllConfirm": "Möchten Sie wirklich alle Einträge löschen? Diese Aktion ist unwiderruflich.",
+        "expand": "Ausklappen"
+      }
     },
-    refusal: {
-      title: "Abfragemodus-Ablehnungsantwort",
+    "refusal": {
+      "title": "Abfragemodus-Ablehnungsantwort",
       "desc-start": "Wenn im",
-      query: "Abfrage",
-      "desc-end":
-        "modus, möchten Sie vielleicht eine benutzerdefinierte Ablehnungsantwort zurückgeben, wenn kein Kontext gefunden wird.",
+      "query": "Abfrage",
+      "desc-end": "modus, möchten Sie vielleicht eine benutzerdefinierte Ablehnungsantwort zurückgeben, wenn kein Kontext gefunden wird.",
       "tooltip-title": "Warum sehe ich das?",
-      "tooltip-description":
-        "Sie befinden sich im Abfragemodus, der nur Informationen aus Ihren Dokumenten verwendet. Wechseln Sie in den Chat-Modus für flexiblere Gespräche oder klicken Sie hier, um unsere Dokumentation zu besuchen und mehr über Chat-Modi zu erfahren.",
+      "tooltip-description": "Sie befinden sich im Abfragemodus, der nur Informationen aus Ihren Dokumenten verwendet. Wechseln Sie in den Chat-Modus für flexiblere Gespräche oder klicken Sie hier, um unsere Dokumentation zu besuchen und mehr über Chat-Modi zu erfahren."
     },
-    temperature: {
-      title: "LLM-Temperatur",
-      "desc-start":
-        'Diese Einstellung steuert, wie "kreativ" Ihre LLM-Antworten sein werden.',
-      "desc-end":
-        "Je höher die Zahl, desto kreativer. Bei einigen Modellen kann dies zu unverständlichen Antworten führen, wenn sie zu hoch eingestellt ist.",
-      hint: "Die meisten LLMs haben verschiedene akzeptable Bereiche gültiger Werte. Konsultieren Sie Ihren LLM-Anbieter für diese Informationen.",
-    },
+    "temperature": {
+      "title": "LLM-Temperatur",
+      "desc-start": "Diese Einstellung steuert, wie \"kreativ\" Ihre LLM-Antworten sein werden.",
+      "desc-end": "Je höher die Zahl, desto kreativer. Bei einigen Modellen kann dies zu unverständlichen Antworten führen, wenn sie zu hoch eingestellt ist.",
+      "hint": "Die meisten LLMs haben verschiedene akzeptable Bereiche gültiger Werte. Konsultieren Sie Ihren LLM-Anbieter für diese Informationen."
+    }
   },
   "vector-workspace": {
-    identifier: "Vektordatenbank-Identifikator",
-    snippets: {
-      title: "Maximale Kontext-Snippets",
-      description:
-        "Diese Einstellung steuert die maximale Anzahl von Kontext-Snippets, die pro Chat oder Abfrage an das LLM gesendet werden.",
-      recommend: "Empfohlen: 4",
+    "identifier": "Vektordatenbank-Identifikator",
+    "snippets": {
+      "title": "Maximale Kontext-Snippets",
+      "description": "Diese Einstellung steuert die maximale Anzahl von Kontext-Snippets, die pro Chat oder Abfrage an das LLM gesendet werden.",
+      "recommend": "Empfohlen: 4"
     },
-    doc: {
-      title: "Dokumentähnlichkeitsschwelle",
-      description:
-        "Der minimale Ähnlichkeitswert, der erforderlich ist, damit eine Quelle als relevant für den Chat betrachtet wird. Je höher die Zahl, desto ähnlicher muss die Quelle dem Chat sein.",
-      zero: "Keine Einschränkung",
-      low: "Niedrig (Ähnlichkeitswert ≥ .25)",
-      medium: "Mittel (Ähnlichkeitswert ≥ .50)",
-      high: "Hoch (Ähnlichkeitswert ≥ .75)",
+    "doc": {
+      "title": "Dokumentähnlichkeitsschwelle",
+      "description": "Der minimale Ähnlichkeitswert, der erforderlich ist, damit eine Quelle als relevant für den Chat betrachtet wird. Je höher die Zahl, desto ähnlicher muss die Quelle dem Chat sein.",
+      "zero": "Keine Einschränkung",
+      "low": "Niedrig (Ähnlichkeitswert ≥ .25)",
+      "medium": "Mittel (Ähnlichkeitswert ≥ .50)",
+      "high": "Hoch (Ähnlichkeitswert ≥ .75)"
     },
-    reset: {
-      reset: "Vektordatenbank zurücksetzen",
-      resetting: "Vektoren werden gelöscht...",
-      confirm:
-        "Sie sind dabei, die Vektordatenbank dieses Workspace zurückzusetzen. Dies entfernt alle derzeit eingebetteten Vektoreinbettungen.\n\nDie ursprünglichen Quelldateien bleiben unberührt. Diese Aktion ist irreversibel.",
-      error: "Die Workspace-Vektordatenbank konnte nicht zurückgesetzt werden!",
-      success: "Die Workspace-Vektordatenbank wurde zurückgesetzt!",
-    },
+    "reset": {
+      "reset": "Vektordatenbank zurücksetzen",
+      "resetting": "Vektoren werden gelöscht...",
+      "confirm": "Sie sind dabei, die Vektordatenbank dieses Workspace zurückzusetzen. Dies entfernt alle derzeit eingebetteten Vektoreinbettungen.\n\nDie ursprünglichen Quelldateien bleiben unberührt. Diese Aktion ist irreversibel.",
+      "error": "Die Workspace-Vektordatenbank konnte nicht zurückgesetzt werden!",
+      "success": "Die Workspace-Vektordatenbank wurde zurückgesetzt!"
+    }
   },
-  agent: {
-    provider: {
-      title: "Workspace-Agent LLM-Anbieter",
-      description:
-        "Der spezifische LLM-Anbieter und das Modell, das für den @agent-Agenten dieses Workspace verwendet wird.",
+  "agent": {
+    "provider": {
+      "title": "Workspace-Agent LLM-Anbieter",
+      "description": "Der spezifische LLM-Anbieter und das Modell, das für den @agent-Agenten dieses Workspace verwendet wird."
     },
-    mode: {
-      chat: {
-        title: "Workspace-Agent Chat-Modell",
-        description:
-          "Das spezifische Chat-Modell, das für den @agent-Agenten dieses Workspace verwendet wird.",
+    "mode": {
+      "chat": {
+        "title": "Workspace-Agent Chat-Modell",
+        "description": "Das spezifische Chat-Modell, das für den @agent-Agenten dieses Workspace verwendet wird."
       },
-      title: "Workspace-Agent-Modell",
-      description:
-        "Das spezifische LLM-Modell, das für den @agent-Agenten dieses Workspace verwendet wird.",
-      wait: "-- warte auf Modelle --",
+      "title": "Workspace-Agent-Modell",
+      "description": "Das spezifische LLM-Modell, das für den @agent-Agenten dieses Workspace verwendet wird.",
+      "wait": "-- warte auf Modelle --"
     },
-    skill: {
-      rag: {
-        title: "RAG & Langzeitgedächtnis",
-        description:
-          'Erlauben Sie dem Agenten, Ihre lokalen Dokumente zu nutzen, um eine Abfrage zu beantworten oder bitten Sie den Agenten, Inhalte für den Langzeitabruf zu "merken".',
+    "skill": {
+      "rag": {
+        "title": "RAG & Langzeitgedächtnis",
+        "description": "Erlauben Sie dem Agenten, Ihre lokalen Dokumente zu nutzen, um eine Abfrage zu beantworten oder bitten Sie den Agenten, Inhalte für den Langzeitabruf zu \"merken\"."
       },
-      view: {
-        title: "Dokumente anzeigen & zusammenfassen",
-        description:
-          "Erlauben Sie dem Agenten, den Inhalt der aktuell eingebetteten Workspace-Dateien aufzulisten und zusammenzufassen.",
+      "view": {
+        "title": "Dokumente anzeigen & zusammenfassen",
+        "description": "Erlauben Sie dem Agenten, den Inhalt der aktuell eingebetteten Workspace-Dateien aufzulisten und zusammenzufassen."
       },
-      scrape: {
-        title: "Websites durchsuchen",
-        description:
-          "Erlauben Sie dem Agenten, Websites zu besuchen und deren Inhalt zu extrahieren.",
+      "scrape": {
+        "title": "Websites durchsuchen",
+        "description": "Erlauben Sie dem Agenten, Websites zu besuchen und deren Inhalt zu extrahieren."
       },
-      generate: {
-        title: "Diagramme generieren",
-        description:
-          "Aktivieren Sie den Standard-Agenten, um verschiedene Arten von Diagrammen aus bereitgestellten oder im Chat gegebenen Daten zu generieren.",
+      "generate": {
+        "title": "Diagramme generieren",
+        "description": "Aktivieren Sie den Standard-Agenten, um verschiedene Arten von Diagrammen aus bereitgestellten oder im Chat gegebenen Daten zu generieren."
       },
-      web: {
-        title: "Live-Websuche und -Browsing",
-        description:
-          "Ermöglichen Sie Ihrem Agenten, das Internet zu durchsuchen, um Ihre Fragen zu beantworten, indem Sie eine Verbindung zu einem Anbieter von Web-Suchdiensten (SERP) herstellen.",
+      "web": {
+        "title": "Live-Websuche und -Browsing",
+        "description": "Ermöglichen Sie Ihrem Agenten, das Internet zu durchsuchen, um Ihre Fragen zu beantworten, indem Sie eine Verbindung zu einem Anbieter von Web-Suchdiensten (SERP) herstellen."
       },
-      sql: {
-        title: "SQL-Verbindung",
-        description:
-          "Ermöglichen Sie Ihrem Agenten, SQL zu nutzen, um Ihre Fragen zu beantworten, indem Sie eine Verbindung zu verschiedenen SQL-Datenbankanbietern herstellen.",
+      "sql": {
+        "title": "SQL-Verbindung",
+        "description": "Ermöglichen Sie Ihrem Agenten, SQL zu nutzen, um Ihre Fragen zu beantworten, indem Sie eine Verbindung zu verschiedenen SQL-Datenbankanbietern herstellen."
       },
-      default_skill:
-        "Standardmäßig ist diese Funktion aktiviert, aber Sie können sie deaktivieren, wenn Sie nicht möchten, dass sie für den Agenten verfügbar ist.",
-      filesystem: {
-        title: "Zugriff auf das Dateisystem",
-        description:
-          "Ermöglichen Sie Ihrem Agenten, Dateien innerhalb eines bestimmten Verzeichnisses zu lesen, zu schreiben, zu suchen und zu verwalten. Unterstützt die Bearbeitung von Dateien, die Navigation durch Verzeichnisse und die Suche nach Inhalten.",
-        learnMore:
-          "Erfahren Sie mehr darüber, wie Sie diese Fähigkeit effektiv einsetzen können.",
-        configuration: "Konfiguration",
-        readActions: "Lesen von Aktionen",
-        writeActions: "Aktionen",
-        warning:
-          "Der Zugriff auf das Dateisystem kann gefährlich sein, da er Dateien ändern oder löschen kann. Bitte konsultieren Sie vor der Aktivierung die <a>Dokumentation</a>.",
-        skills: {
+      "default_skill": "Standardmäßig ist diese Funktion aktiviert, aber Sie können sie deaktivieren, wenn Sie nicht möchten, dass sie für den Agenten verfügbar ist.",
+      "filesystem": {
+        "title": "Zugriff auf das Dateisystem",
+        "description": "Ermöglichen Sie Ihrem Agenten, Dateien innerhalb eines bestimmten Verzeichnisses zu lesen, zu schreiben, zu suchen und zu verwalten. Unterstützt die Bearbeitung von Dateien, die Navigation durch Verzeichnisse und die Suche nach Inhalten.",
+        "learnMore": "Erfahren Sie mehr darüber, wie Sie diese Fähigkeit effektiv einsetzen können.",
+        "configuration": "Konfiguration",
+        "readActions": "Lesen von Aktionen",
+        "writeActions": "Aktionen",
+        "warning": "Der Zugriff auf das Dateisystem kann gefährlich sein, da er Dateien ändern oder löschen kann. Bitte konsultieren Sie vor der Aktivierung die <a>Dokumentation</a>.",
+        "skills": {
           "read-text-file": {
-            title: "Datei öffnen/lesen",
-            description:
-              "Inhalte von Dateien (Text, Code, PDF, Bilder usw.) lesen",
+            "title": "Datei öffnen/lesen",
+            "description": "Inhalte von Dateien (Text, Code, PDF, Bilder usw.) lesen"
           },
           "read-multiple-files": {
-            title: "Mehrere Dateien lesen",
-            description: "Mehrere Dateien gleichzeitig lesen",
+            "title": "Mehrere Dateien lesen",
+            "description": "Mehrere Dateien gleichzeitig lesen"
           },
           "list-directory": {
-            title: "Verzeichnis",
-            description: "Dateien und Verzeichnisse in einem Ordner auflisten",
+            "title": "Verzeichnis",
+            "description": "Dateien und Verzeichnisse in einem Ordner auflisten"
           },
           "search-files": {
-            title: "Dateien suchen",
-            description: "Dateien nach Name oder Inhalt suchen",
+            "title": "Dateien suchen",
+            "description": "Dateien nach Name oder Inhalt suchen"
           },
           "get-file-info": {
-            title: "Dateieninformationen abrufen",
-            description: "Erhalten Sie detaillierte Metadaten über Dateien.",
+            "title": "Dateieninformationen abrufen",
+            "description": "Erhalten Sie detaillierte Metadaten über Dateien."
           },
           "edit-file": {
-            title: "Datei bearbeiten",
-            description:
-              "Führen Sie Änderungen in Textdateien zeilenweise durch.",
+            "title": "Datei bearbeiten",
+            "description": "Führen Sie Änderungen in Textdateien zeilenweise durch."
           },
           "create-directory": {
-            title: "Ordner erstellen",
-            description: "Neue Verzeichnisse erstellen",
+            "title": "Ordner erstellen",
+            "description": "Neue Verzeichnisse erstellen"
           },
           "move-file": {
-            title: "Datei verschieben/umbenennen",
-            description:
-              "Dateien und Verzeichnisse verschieben oder umbenennen.",
+            "title": "Datei verschieben/umbenennen",
+            "description": "Dateien und Verzeichnisse verschieben oder umbenennen."
           },
           "copy-file": {
-            title: "Datei kopieren",
-            description: "Dateien und Verzeichnisse kopieren",
+            "title": "Datei kopieren",
+            "description": "Dateien und Verzeichnisse kopieren"
           },
           "write-text-file": {
-            title: "Textdatei erstellen",
-            description:
-              "Erstellen Sie neue Textdateien oder überschreiben Sie vorhandene Textdateien.",
-          },
-        },
+            "title": "Textdatei erstellen",
+            "description": "Erstellen Sie neue Textdateien oder überschreiben Sie vorhandene Textdateien."
+          }
+        }
       },
-      createFiles: {
-        title: "Dokumentenerstellung",
-        description:
-          "Ermöglichen Sie Ihrem Agenten, binäre Dokumentformate wie PowerPoint-Präsentationen, Excel-Tabellen, Word-Dokumente und PDFs zu erstellen. Die Dateien können direkt aus dem Chat-Fenster heruntergeladen werden.",
-        configuration: "Verfügbare Dokumenttypen",
-        skills: {
+      "createFiles": {
+        "title": "Dokumentenerstellung",
+        "description": "Ermöglichen Sie Ihrem Agenten, binäre Dokumentformate wie PowerPoint-Präsentationen, Excel-Tabellen, Word-Dokumente und PDFs zu erstellen. Die Dateien können direkt aus dem Chat-Fenster heruntergeladen werden.",
+        "configuration": "Verfügbare Dokumenttypen",
+        "skills": {
           "create-text-file": {
-            title: "Textdateien",
-            description:
-              "Erstellen Sie Textdateien mit beliebigen Inhalten und Dateiendungen (.txt, .md, .json, .csv usw.)",
+            "title": "Textdateien",
+            "description": "Erstellen Sie Textdateien mit beliebigen Inhalten und Dateiendungen (.txt, .md, .json, .csv usw.)"
           },
           "create-pptx": {
-            title: "Präsentationen mit PowerPoint",
-            description:
-              "Erstellen Sie neue PowerPoint-Präsentationen mit Folien, Überschriften und Stichpunkten.",
+            "title": "Präsentationen mit PowerPoint",
+            "description": "Erstellen Sie neue PowerPoint-Präsentationen mit Folien, Überschriften und Stichpunkten."
           },
           "create-pdf": {
-            title: "PDF-Dokumente",
-            description:
-              "Erstellen Sie PDF-Dokumente aus Markdown- oder reinen Textdateien mit grundlegender Formatierung.",
+            "title": "PDF-Dokumente",
+            "description": "Erstellen Sie PDF-Dokumente aus Markdown- oder reinen Textdateien mit grundlegender Formatierung."
           },
           "create-xlsx": {
-            title: "Excel-Tabellen",
-            description:
-              "Erstellen Sie Excel-Dokumente für tabellarische Daten mit Tabellen und Formatierungen.",
+            "title": "Excel-Tabellen",
+            "description": "Erstellen Sie Excel-Dokumente für tabellarische Daten mit Tabellen und Formatierungen."
           },
           "create-docx": {
-            title: "Word-Dokumente",
-            description:
-              "Erstellen Sie Word-Dokumente mit grundlegender Formatierung und Gestaltung.",
-          },
-        },
+            "title": "Word-Dokumente",
+            "description": "Erstellen Sie Word-Dokumente mit grundlegender Formatierung und Gestaltung."
+          }
+        }
       },
-      gmail: {
-        title: "Gmail-Verbindung",
-        description:
-          "Ermöglichen Sie Ihrem Agenten, mit Gmail zu interagieren: E-Mails durchsuchen, E-Mail-Threads lesen, Entwürfe erstellen, E-Mails senden und Ihren Posteingang verwalten. <a>Lesen Sie die Dokumentation</a>.",
-        multiUserWarning:
-          "Die Integration mit Gmail ist aus Sicherheitsgründen nicht im Mehrbenutzermodus verfügbar. Bitte deaktivieren Sie den Mehrbenutzermodus, um diese Funktion zu nutzen.",
-        configuration: "Gmail-Konfiguration",
-        deploymentId: "Deployment-ID",
-        deploymentIdHelp:
-          "Die Bereitstellungs-ID Ihrer Google Apps Script Webanwendung",
-        apiKey: "API-Schlüssel",
-        apiKeyHelp:
-          "Der API-Schlüssel, den Sie in Ihrer Google Apps Script-Bereitstellung konfiguriert haben",
-        configurationRequired:
-          "Bitte konfigurieren Sie die Deployment-ID und den API-Schlüssel, um die Gmail-Funktionen zu aktivieren.",
-        configured: "Konfiguriert",
-        searchSkills: "Suchfähigkeiten...",
-        noSkillsFound: "Keine Ergebnisse zu Ihrer Suche.",
-        categories: {
-          search: {
-            title: "Nachrichten suchen und lesen",
-            description:
-              "Suchen und lesen Sie E-Mails aus Ihrem Gmail-Posteingang.",
+      "gmail": {
+        "title": "Gmail-Verbindung",
+        "description": "Ermöglichen Sie Ihrem Agenten, mit Gmail zu interagieren: E-Mails durchsuchen, E-Mail-Threads lesen, Entwürfe erstellen, E-Mails senden und Ihren Posteingang verwalten. <a>Lesen Sie die Dokumentation</a>.",
+        "multiUserWarning": "Die Integration mit Gmail ist aus Sicherheitsgründen nicht im Mehrbenutzermodus verfügbar. Bitte deaktivieren Sie den Mehrbenutzermodus, um diese Funktion zu nutzen.",
+        "configuration": "Gmail-Konfiguration",
+        "deploymentId": "Deployment-ID",
+        "deploymentIdHelp": "Die Bereitstellungs-ID Ihrer Google Apps Script Webanwendung",
+        "apiKey": "API-Schlüssel",
+        "apiKeyHelp": "Der API-Schlüssel, den Sie in Ihrer Google Apps Script-Bereitstellung konfiguriert haben",
+        "configurationRequired": "Bitte konfigurieren Sie die Deployment-ID und den API-Schlüssel, um die Gmail-Funktionen zu aktivieren.",
+        "configured": "Konfiguriert",
+        "searchSkills": "Suchfähigkeiten...",
+        "noSkillsFound": "Keine Ergebnisse zu Ihrer Suche.",
+        "categories": {
+          "search": {
+            "title": "Nachrichten suchen und lesen",
+            "description": "Suchen und lesen Sie E-Mails aus Ihrem Gmail-Posteingang."
           },
-          drafts: {
-            title: "Entwurf-E-Mails",
-            description:
-              "Erstellen, bearbeiten und verwalten von E-Mail-Entwürfen",
+          "drafts": {
+            "title": "Entwurf-E-Mails",
+            "description": "Erstellen, bearbeiten und verwalten von E-Mail-Entwürfen"
           },
-          send: {
-            title: "E-Mails senden und beantworten",
-            description:
-              "Senden Sie E-Mails und antworten Sie sofort auf Nachrichten.",
+          "send": {
+            "title": "E-Mails senden und beantworten",
+            "description": "Senden Sie E-Mails und antworten Sie sofort auf Nachrichten."
           },
-          threads: {
-            title: "E-Mail-Verläufe verwalten",
-            description:
-              "E-Mail-Threads verwalten – als gelesen/unleserlich markieren, archivieren, in den Papierkorb verschieben",
+          "threads": {
+            "title": "E-Mail-Verläufe verwalten",
+            "description": "E-Mail-Threads verwalten – als gelesen/unleserlich markieren, archivieren, in den Papierkorb verschieben"
           },
-          account: {
-            title: "Statistiken zur Integration",
-            description:
-              "Anzeigen von Postfachstatistiken und Kontoinformationen",
-          },
+          "account": {
+            "title": "Statistiken zur Integration",
+            "description": "Anzeigen von Postfachstatistiken und Kontoinformationen"
+          }
         },
-        skills: {
-          search: {
-            title: "E-Mails durchsuchen",
-            description: "E-Mails mit der Gmail-Suchsyntax durchsuchen",
+        "skills": {
+          "search": {
+            "title": "E-Mails durchsuchen",
+            "description": "E-Mails mit der Gmail-Suchsyntax durchsuchen"
           },
-          readThread: {
-            title: "Den Thread lesen",
-            description:
-              "Lesen Sie den vollständigen E-Mail-Thread anhand der ID",
+          "readThread": {
+            "title": "Den Thread lesen",
+            "description": "Lesen Sie den vollständigen E-Mail-Thread anhand der ID"
           },
-          createDraft: {
-            title: "Entwurf erstellen",
-            description: "Erstelle eine neue Entwurf-E-Mail",
+          "createDraft": {
+            "title": "Entwurf erstellen",
+            "description": "Erstelle eine neue Entwurf-E-Mail"
           },
-          createDraftReply: {
-            title: "Entwurf für Antwort erstellen",
-            description:
-              "Erstellen Sie eine Entwurfsantwort an ein bestehendes Thema.",
+          "createDraftReply": {
+            "title": "Entwurf für Antwort erstellen",
+            "description": "Erstellen Sie eine Entwurfsantwort an ein bestehendes Thema."
           },
-          updateDraft: {
-            title: "Entwurf aktualisieren",
-            description: "Eine bestehende Entwurf-E-Mail aktualisieren",
+          "updateDraft": {
+            "title": "Entwurf aktualisieren",
+            "description": "Eine bestehende Entwurf-E-Mail aktualisieren"
           },
-          getDraft: {
-            title: "Entwurf anfordern",
-            description:
-              "Eine bestimmte Entwurfversion anhand ihrer ID abrufen.",
+          "getDraft": {
+            "title": "Entwurf anfordern",
+            "description": "Eine bestimmte Entwurfversion anhand ihrer ID abrufen."
           },
-          listDrafts: {
-            title: "Entwürfe",
-            description: "Liste alle Entwurf-E-Mails auf",
+          "listDrafts": {
+            "title": "Entwürfe",
+            "description": "Liste alle Entwurf-E-Mails auf"
           },
-          deleteDraft: {
-            title: "Entwurf löschen",
-            description: "Einen Entwurf für eine E-Mail löschen",
+          "deleteDraft": {
+            "title": "Entwurf löschen",
+            "description": "Einen Entwurf für eine E-Mail löschen"
           },
-          sendDraft: {
-            title: "Entwurf senden",
-            description: "Senden Sie eine bestehende Entwurf-E-Mail",
+          "sendDraft": {
+            "title": "Entwurf senden",
+            "description": "Senden Sie eine bestehende Entwurf-E-Mail"
           },
-          sendEmail: {
-            title: "E-Mail senden",
-            description: "Senden Sie sofort eine E-Mail.",
+          "sendEmail": {
+            "title": "E-Mail senden",
+            "description": "Senden Sie sofort eine E-Mail."
           },
-          replyToThread: {
-            title: "Antwort auf den Thread",
-            description: "Antworten Sie umgehend auf einen E-Mail-Thread.",
+          "replyToThread": {
+            "title": "Antwort auf den Thread",
+            "description": "Antworten Sie umgehend auf einen E-Mail-Thread."
           },
-          markRead: {
-            title: "Mark Read",
-            description: "Markiere einen Thread als gelesen.",
+          "markRead": {
+            "title": "Mark Read",
+            "description": "Markiere einen Thread als gelesen."
           },
-          markUnread: {
-            title: "Als nicht gelesen markieren",
-            description: "Markiere einen Thread als nicht gelesen.",
+          "markUnread": {
+            "title": "Als nicht gelesen markieren",
+            "description": "Markiere einen Thread als nicht gelesen."
           },
-          moveToTrash: {
-            title: "In den Papierkorb verschieben",
-            description: "Ein Thema in den Papierkorb verschieben",
+          "moveToTrash": {
+            "title": "In den Papierkorb verschieben",
+            "description": "Ein Thema in den Papierkorb verschieben"
           },
-          moveToArchive: {
-            title: "Archiv",
-            description: "Thread archivieren",
+          "moveToArchive": {
+            "title": "Archiv",
+            "description": "Thread archivieren"
           },
-          moveToInbox: {
-            title: "Zum Posteingang verschieben",
-            description: "Einen Thread in den Posteingang verschieben",
+          "moveToInbox": {
+            "title": "Zum Posteingang verschieben",
+            "description": "Einen Thread in den Posteingang verschieben"
           },
-          getMailboxStats: {
-            title: "Statistiken für E-Mail-Postfach",
-            description:
-              "Erhalten Sie Informationen über die Anzahl nicht gelesener E-Mails und Statistiken für Ihr Postfach.",
+          "getMailboxStats": {
+            "title": "Statistiken für E-Mail-Postfach",
+            "description": "Erhalten Sie Informationen über die Anzahl nicht gelesener E-Mails und Statistiken für Ihr Postfach."
           },
-          getInbox: {
-            title: "E-Mail-Postfach öffnen",
-            description:
-              "Ein einfacher und effizienter Weg, um E-Mails aus dem Gmail-Posteingang zu erhalten.",
-          },
-        },
+          "getInbox": {
+            "title": "E-Mail-Postfach öffnen",
+            "description": "Ein einfacher und effizienter Weg, um E-Mails aus dem Gmail-Posteingang zu erhalten."
+          }
+        }
       },
-      outlook: {
-        title: "Outlook-Verbindung",
-        description:
-          "Ermöglichen Sie Ihrem Agenten, mit Microsoft Outlook zu interagieren – Suchen Sie E-Mails, lesen Sie Threads, erstellen Sie Entwürfe, senden Sie E-Mails und verwalten Sie Ihren Posteingang über die Microsoft Graph API. <a> Lesen Sie die Dokumentation</a>.",
-        multiUserWarning:
-          "Die Integration mit Outlook ist aus Sicherheitsgründen nicht im Mehrbenutzermodus verfügbar. Um diese Funktion nutzen zu können, bitte den Mehrbenutzermodus deaktivieren.",
-        configuration: "Konfiguration von Outlook",
-        authType: "Kontotyp",
-        authTypeHelp:
-          "Wählen Sie, welche Arten von Microsoft-Konten zur Authentifizierung verwendet werden können. „Alle Konten“ unterstützt sowohl persönliche als auch Arbeits-/Schulkonten. „Nur persönliche Konten“ beschränkt sich auf persönliche Microsoft-Konten. „Nur Arbeits-/Schulkonten“ beschränkt sich auf Arbeits-/Schulkonten eines bestimmten Azure AD-Mandanten.",
-        authTypeCommon: "Alle Konten (persönliche und Arbeits-/Schulkonten)",
-        authTypeConsumers: "Nur persönliche Microsoft-Konten",
-        authTypeOrganization:
-          "Nur Konten für Organisationen (benötigt eine Tenant-ID)",
-        clientId: "Anwendungs-ID (Kunden-ID)",
-        clientIdHelp:
-          "Die Anwendungs-ID (Client-ID) von Ihrer Azure AD-Anwendung",
-        tenantId: "Verzeichnis-ID (Mieter)",
-        tenantIdHelp:
-          "Die Verzeichnis-ID (für den Mieter) aus Ihrer Azure AD-App-Registrierung. Dies ist nur für die Authentifizierung innerhalb einer Organisation erforderlich.",
-        clientSecret: "Client-Schlüssel",
-        clientSecretHelp:
-          "Der geheime Wert, den Sie für die Registrierung Ihrer Azure AD-Anwendung festgelegt haben.",
-        configurationRequired:
-          "Bitte konfigurieren Sie die Client-ID und den Client-Schlüssel, um die Outlook-Funktionen zu aktivieren.",
-        authRequired:
-          "Speichern Sie zuerst Ihre Anmeldedaten, und anschließend melden Sie sich bei Microsoft an, um die Einrichtung abzuschließen.",
-        authenticateWithMicrosoft: "Mit Microsoft anmelden",
-        authenticated: "Erfolgreiche Authentifizierung mit Microsoft Outlook.",
-        revokeAccess: "Zugriff widerrufen",
-        configured: "Konfiguriert",
-        searchSkills: "Suchfähigkeiten...",
-        noSkillsFound:
-          "Keine der angebotenen Fähigkeiten passen zu Ihrer Suche.",
-        categories: {
-          search: {
-            title: "Nachrichten suchen und lesen",
-            description:
-              "Suchen und lesen Sie E-Mails aus Ihrem Outlook-Posteingang.",
+      "outlook": {
+        "title": "Outlook-Verbindung",
+        "description": "Ermöglichen Sie Ihrem Agenten, mit Microsoft Outlook zu interagieren – Suchen Sie E-Mails, lesen Sie Threads, erstellen Sie Entwürfe, senden Sie E-Mails und verwalten Sie Ihren Posteingang über die Microsoft Graph API. <a> Lesen Sie die Dokumentation</a>.",
+        "multiUserWarning": "Die Integration mit Outlook ist aus Sicherheitsgründen nicht im Mehrbenutzermodus verfügbar. Um diese Funktion nutzen zu können, bitte den Mehrbenutzermodus deaktivieren.",
+        "configuration": "Konfiguration von Outlook",
+        "authType": "Kontotyp",
+        "authTypeHelp": "Wählen Sie, welche Arten von Microsoft-Konten zur Authentifizierung verwendet werden können. „Alle Konten“ unterstützt sowohl persönliche als auch Arbeits-/Schulkonten. „Nur persönliche Konten“ beschränkt sich auf persönliche Microsoft-Konten. „Nur Arbeits-/Schulkonten“ beschränkt sich auf Arbeits-/Schulkonten eines bestimmten Azure AD-Mandanten.",
+        "authTypeCommon": "Alle Konten (persönliche und Arbeits-/Schulkonten)",
+        "authTypeConsumers": "Nur persönliche Microsoft-Konten",
+        "authTypeOrganization": "Nur Konten für Organisationen (benötigt eine Tenant-ID)",
+        "clientId": "Anwendungs-ID (Kunden-ID)",
+        "clientIdHelp": "Die Anwendungs-ID (Client-ID) von Ihrer Azure AD-Anwendung",
+        "tenantId": "Verzeichnis-ID (Mieter)",
+        "tenantIdHelp": "Die Verzeichnis-ID (für den Mieter) aus Ihrer Azure AD-App-Registrierung. Dies ist nur für die Authentifizierung innerhalb einer Organisation erforderlich.",
+        "clientSecret": "Client-Schlüssel",
+        "clientSecretHelp": "Der geheime Wert, den Sie für die Registrierung Ihrer Azure AD-Anwendung festgelegt haben.",
+        "configurationRequired": "Bitte konfigurieren Sie die Client-ID und den Client-Schlüssel, um die Outlook-Funktionen zu aktivieren.",
+        "authRequired": "Speichern Sie zuerst Ihre Anmeldedaten, und anschließend melden Sie sich bei Microsoft an, um die Einrichtung abzuschließen.",
+        "authenticateWithMicrosoft": "Mit Microsoft anmelden",
+        "authenticated": "Erfolgreiche Authentifizierung mit Microsoft Outlook.",
+        "revokeAccess": "Zugriff widerrufen",
+        "configured": "Konfiguriert",
+        "searchSkills": "Suchfähigkeiten...",
+        "noSkillsFound": "Keine der angebotenen Fähigkeiten passen zu Ihrer Suche.",
+        "categories": {
+          "search": {
+            "title": "Nachrichten suchen und lesen",
+            "description": "Suchen und lesen Sie E-Mails aus Ihrem Outlook-Posteingang."
           },
-          drafts: {
-            title: "Entwurf-E-Mails",
-            description:
-              "Erstellen, bearbeiten und verwalten von E-Mail-Entwürfen",
+          "drafts": {
+            "title": "Entwurf-E-Mails",
+            "description": "Erstellen, bearbeiten und verwalten von E-Mail-Entwürfen"
           },
-          send: {
-            title: "E-Mails versenden",
-            description:
-              "Neue E-Mails senden oder sofort auf Nachrichten antworten",
+          "send": {
+            "title": "E-Mails versenden",
+            "description": "Neue E-Mails senden oder sofort auf Nachrichten antworten"
           },
-          account: {
-            title: "Statistiken zur Integration",
-            description:
-              "Anzeigen von Postfachstatistiken und Kontoinformationen",
-          },
+          "account": {
+            "title": "Statistiken zur Integration",
+            "description": "Anzeigen von Postfachstatistiken und Kontoinformationen"
+          }
         },
-        skills: {
-          getInbox: {
-            title: "E-Mail-Postfach öffnen",
-            description:
-              "Abrufen von aktuellen E-Mails aus Ihrem Outlook-Posteingang",
+        "skills": {
+          "getInbox": {
+            "title": "E-Mail-Postfach öffnen",
+            "description": "Abrufen von aktuellen E-Mails aus Ihrem Outlook-Posteingang"
           },
-          search: {
-            title: "E-Mails durchsuchen",
-            description:
-              "E-Mails mithilfe der Syntax von Microsoft Search durchsuchen",
+          "search": {
+            "title": "E-Mails durchsuchen",
+            "description": "E-Mails mithilfe der Syntax von Microsoft Search durchsuchen"
           },
-          readThread: {
-            title: "Lesen der Konversation",
-            description: "Den vollständigen E-Mail-Austausch durchlesen.",
+          "readThread": {
+            "title": "Lesen der Konversation",
+            "description": "Den vollständigen E-Mail-Austausch durchlesen."
           },
-          createDraft: {
-            title: "Entwurf erstellen",
-            description:
-              "Erstellen Sie eine neue Entwurf-E-Mail oder einen Entwurf-Antwort auf eine bestehende Nachricht.",
+          "createDraft": {
+            "title": "Entwurf erstellen",
+            "description": "Erstellen Sie eine neue Entwurf-E-Mail oder einen Entwurf-Antwort auf eine bestehende Nachricht."
           },
-          updateDraft: {
-            title: "Entwurf aktualisieren",
-            description: "Aktualisieren Sie eine bestehende Entwurf-E-Mail",
+          "updateDraft": {
+            "title": "Entwurf aktualisieren",
+            "description": "Aktualisieren Sie eine bestehende Entwurf-E-Mail"
           },
-          listDrafts: {
-            title: "Entwurf-Listen",
-            description: "Zeigen Sie alle Entwurfse-Mails an",
+          "listDrafts": {
+            "title": "Entwurf-Listen",
+            "description": "Zeigen Sie alle Entwurfse-Mails an"
           },
-          deleteDraft: {
-            title: "Entwurf löschen",
-            description: "Einen Entwurf einer E-Mail löschen",
+          "deleteDraft": {
+            "title": "Entwurf löschen",
+            "description": "Einen Entwurf einer E-Mail löschen"
           },
-          sendDraft: {
-            title: "Entwurf senden",
-            description: "Senden Sie eine bestehende E-Mail-Entwurf",
+          "sendDraft": {
+            "title": "Entwurf senden",
+            "description": "Senden Sie eine bestehende E-Mail-Entwurf"
           },
-          sendEmail: {
-            title: "E-Mail senden",
-            description:
-              "Senden Sie eine neue E-Mail oder antworten Sie sofort auf eine bestehende Nachricht.",
+          "sendEmail": {
+            "title": "E-Mail senden",
+            "description": "Senden Sie eine neue E-Mail oder antworten Sie sofort auf eine bestehende Nachricht."
           },
-          getMailboxStats: {
-            title: "Statistiken für den Posteingang",
-            description:
-              "Erhalten Sie Informationen über die Anzahl der Ordner und Statistiken für E-Mail-Postfächer.",
-          },
-        },
+          "getMailboxStats": {
+            "title": "Statistiken für den Posteingang",
+            "description": "Erhalten Sie Informationen über die Anzahl der Ordner und Statistiken für E-Mail-Postfächer."
+          }
+        }
       },
-      googleCalendar: {
-        title: "Google Kalender-Verbindung",
-        description:
-          "Ermöglichen Sie Ihrem Agenten, mit Google Kalender zu interagieren – Kalender anzeigen, Ereignisse einsehen, erstellen und aktualisieren, sowie Rückmeldungen verwalten. <a> Lesen Sie die Dokumentation </a>.",
-        multiUserWarning:
-          "Die Integration mit Google Kalender ist aus Sicherheitsgründen nicht im Mehrbenutzermodus verfügbar. Bitte deaktivieren Sie den Mehrbenutzermodus, um diese Funktion nutzen zu können.",
-        configuration: "Konfiguration des Google Kalenders",
-        deploymentId: "Deployment-ID",
-        deploymentIdHelp:
-          "Die Bereitstellungs-ID Ihrer Google Apps Script Web-Anwendung",
-        apiKey: "API-Schlüssel",
-        apiKeyHelp:
-          "Der API-Schlüssel, den Sie in Ihrer Google Apps Script-Bereitstellung konfiguriert haben",
-        configurationRequired:
-          "Bitte konfigurieren Sie die Deployment-ID und den API-Schlüssel, um die Google Calendar-Funktionen zu aktivieren.",
-        configured: "Konfiguriert",
-        searchSkills: "Suchfähigkeiten...",
-        noSkillsFound: "Keine Übereinstimmungen zu Ihrer Suche.",
-        categories: {
-          calendars: {
-            title: "Kalender",
-            description: "Überprüfen und verwalten Sie Ihre Google-Kalender.",
+      "googleCalendar": {
+        "title": "Google Kalender-Verbindung",
+        "description": "Ermöglichen Sie Ihrem Agenten, mit Google Kalender zu interagieren – Kalender anzeigen, Ereignisse einsehen, erstellen und aktualisieren, sowie Rückmeldungen verwalten. <a> Lesen Sie die Dokumentation </a>.",
+        "multiUserWarning": "Die Integration mit Google Kalender ist aus Sicherheitsgründen nicht im Mehrbenutzermodus verfügbar. Bitte deaktivieren Sie den Mehrbenutzermodus, um diese Funktion nutzen zu können.",
+        "configuration": "Konfiguration des Google Kalenders",
+        "deploymentId": "Deployment-ID",
+        "deploymentIdHelp": "Die Bereitstellungs-ID Ihrer Google Apps Script Web-Anwendung",
+        "apiKey": "API-Schlüssel",
+        "apiKeyHelp": "Der API-Schlüssel, den Sie in Ihrer Google Apps Script-Bereitstellung konfiguriert haben",
+        "configurationRequired": "Bitte konfigurieren Sie die Deployment-ID und den API-Schlüssel, um die Google Calendar-Funktionen zu aktivieren.",
+        "configured": "Konfiguriert",
+        "searchSkills": "Suchfähigkeiten...",
+        "noSkillsFound": "Keine Übereinstimmungen zu Ihrer Suche.",
+        "categories": {
+          "calendars": {
+            "title": "Kalender",
+            "description": "Überprüfen und verwalten Sie Ihre Google-Kalender."
           },
-          readEvents: {
-            title: "Veranstaltungen lesen",
-            description: "Kalenderereignisse anzeigen und suchen",
+          "readEvents": {
+            "title": "Veranstaltungen lesen",
+            "description": "Kalenderereignisse anzeigen und suchen"
           },
-          writeEvents: {
-            title: "Erstellen und aktualisieren von Veranstaltungen",
-            description:
-              "Erstellen Sie neue Veranstaltungen und ändern Sie bestehende",
+          "writeEvents": {
+            "title": "Erstellen und aktualisieren von Veranstaltungen",
+            "description": "Erstellen Sie neue Veranstaltungen und ändern Sie bestehende"
           },
-          rsvp: {
-            title: "Verwaltung von Rückmeldungen",
-            description:
-              "Verwalten Sie den Status Ihrer Teilnahme an Veranstaltungen",
-          },
+          "rsvp": {
+            "title": "Verwaltung von Rückmeldungen",
+            "description": "Verwalten Sie den Status Ihrer Teilnahme an Veranstaltungen"
+          }
         },
-        skills: {
-          listCalendars: {
-            title: "Kalenderlisten",
-            description:
-              "Listen Sie alle Kalender auf, die Sie besitzen oder für die Sie ein Abonnement haben.",
+        "skills": {
+          "listCalendars": {
+            "title": "Kalenderlisten",
+            "description": "Listen Sie alle Kalender auf, die Sie besitzen oder für die Sie ein Abonnement haben."
           },
-          getCalendar: {
-            title: "Details zum Kalender anzeigen",
-            description:
-              "Erhalten Sie detaillierte Informationen über einen bestimmten Kalender.",
+          "getCalendar": {
+            "title": "Details zum Kalender anzeigen",
+            "description": "Erhalten Sie detaillierte Informationen über einen bestimmten Kalender."
           },
-          getEvent: {
-            title: "Veranstaltung finden",
-            description:
-              "Erhalten Sie detaillierte Informationen über ein bestimmtes Ereignis.",
+          "getEvent": {
+            "title": "Veranstaltung finden",
+            "description": "Erhalten Sie detaillierte Informationen über ein bestimmtes Ereignis."
           },
-          getEventsForDay: {
-            title: "Veranstaltungen für den Tag",
-            description:
-              "Alle Veranstaltungen, die für einen bestimmten Tag geplant sind, anzeigen.",
+          "getEventsForDay": {
+            "title": "Veranstaltungen für den Tag",
+            "description": "Alle Veranstaltungen, die für einen bestimmten Tag geplant sind, anzeigen."
           },
-          getEvents: {
-            title: "Veranstaltungen (Zeitraum) anzeigen",
-            description:
-              "Ereignisse innerhalb eines benutzerdefinierten Datumsbereichs abrufen",
+          "getEvents": {
+            "title": "Veranstaltungen (Zeitraum) anzeigen",
+            "description": "Ereignisse innerhalb eines benutzerdefinierten Datumsbereichs abrufen"
           },
-          getUpcomingEvents: {
-            title: "Anstehende Veranstaltungen anzeigen",
-            description:
-              "Finden Sie Veranstaltungen für heute, diese Woche oder diesen Monat, indem Sie einfache Suchbegriffe verwenden.",
+          "getUpcomingEvents": {
+            "title": "Anstehende Veranstaltungen anzeigen",
+            "description": "Finden Sie Veranstaltungen für heute, diese Woche oder diesen Monat, indem Sie einfache Suchbegriffe verwenden."
           },
-          quickAdd: {
-            title: "Schnellere Veranstaltung hinzufügen",
-            description:
-              "Erstellen Sie eine Veranstaltung aus natürlicher Sprache (z. B. „Treffen morgen um 15:00 Uhr“)",
+          "quickAdd": {
+            "title": "Schnellere Veranstaltung hinzufügen",
+            "description": "Erstellen Sie eine Veranstaltung aus natürlicher Sprache (z. B. „Treffen morgen um 15:00 Uhr“)"
           },
-          createEvent: {
-            title: "Ereignis erstellen",
-            description:
-              "Erstellen Sie ein neues Ereignis mit vollständiger Kontrolle über alle Eigenschaften.",
+          "createEvent": {
+            "title": "Ereignis erstellen",
+            "description": "Erstellen Sie ein neues Ereignis mit vollständiger Kontrolle über alle Eigenschaften."
           },
-          updateEvent: {
-            title: "Aktualisierungsereignis",
-            description: "Ein bestehendes Kalendereintrag aktualisieren",
+          "updateEvent": {
+            "title": "Aktualisierungsereignis",
+            "description": "Ein bestehendes Kalendereintrag aktualisieren"
           },
-          setMyStatus: {
-            title: "Status der Rückmeldung",
-            description: "Teilen, ablehnen oder vorläufig zustimmen",
-          },
-        },
-      },
+          "setMyStatus": {
+            "title": "Status der Rückmeldung",
+            "description": "Teilen, ablehnen oder vorläufig zustimmen"
+          }
+        }
+      }
     },
-    "performance-warning":
-      "Die Leistung von LLMs, die keine explizite Unterstützung für das Aufrufen von Tools bieten, hängt stark von den Fähigkeiten und der Genauigkeit des Modells ab. Einige Fähigkeiten können eingeschränkt oder nicht funktionsfähig sein.",
-    mcp: {
-      title: "MCP-Servern",
-      "loading-from-config":
-        "Laden von MCP-Servern aus einer Konfigurationsdatei",
+    "performance-warning": "Die Leistung von LLMs, die keine explizite Unterstützung für das Aufrufen von Tools bieten, hängt stark von den Fähigkeiten und der Genauigkeit des Modells ab. Einige Fähigkeiten können eingeschränkt oder nicht funktionsfähig sein.",
+    "mcp": {
+      "title": "MCP-Servern",
+      "loading-from-config": "Laden von MCP-Servern aus einer Konfigurationsdatei",
       "learn-more": "Erfahren Sie mehr über MCP-Server.",
       "no-servers-found": "Keine MCP-Server gefunden",
-      "tool-warning":
-        "Für die beste Leistung sollten Sie unnötige Werkzeuge deaktivieren, um den Kontext zu schonen.",
+      "tool-warning": "Für die beste Leistung sollten Sie unnötige Werkzeuge deaktivieren, um den Kontext zu schonen.",
       "stop-server": "MCP-Server stoppen",
       "start-server": "MCP-Server starten",
       "delete-server": "MCP-Server löschen",
-      "tool-count-warning":
-        "Dieser MCP-Server hat <b>{{count}} Tools aktiviert, </b> die Kontext verbrauchen werden, wenn eine Chat-Sitzung stattfindet. <br /> Erwägen Sie, unerwünschte Tools zu deaktivieren, um Kontext zu sparen.",
+      "tool-count-warning": "Dieser MCP-Server hat <b>{{count}} Tools aktiviert, </b> die Kontext verbrauchen werden, wenn eine Chat-Sitzung stattfindet. <br /> Erwägen Sie, unerwünschte Tools zu deaktivieren, um Kontext zu sparen.",
       "startup-command": "Startbefehl",
-      command: "Befehl",
-      arguments: "Argumente",
-      "not-running-warning":
-        "Dieser MCP-Server ist nicht aktiv – er kann gestoppt sein oder bei der Startsequenz einen Fehler aufweisen.",
+      "command": "Befehl",
+      "arguments": "Argumente",
+      "not-running-warning": "Dieser MCP-Server ist nicht aktiv – er kann gestoppt sein oder bei der Startsequenz einen Fehler aufweisen.",
       "tool-call-arguments": "Argumente für die Funktionsaufrufe",
-      "tools-enabled": "Werkzeuge aktiviert",
+      "tools-enabled": "Werkzeuge aktiviert"
     },
-    settings: {
-      title: "Einstellungen für Agenten-Fähigkeiten",
+    "settings": {
+      "title": "Einstellungen für Agenten-Fähigkeiten",
       "max-tool-calls": {
-        title: "Maximale Anzahl an Tool-Anfragen pro Antwort",
-        description:
-          "Die maximale Anzahl an Werkzeugen, die ein Agent verketten kann, um eine einzelne Antwort zu generieren. Dies verhindert, dass Werkzeuge unkontrolliert aufgerufen werden und zu endlosen Schleifen führen.",
+        "title": "Maximale Anzahl an Tool-Anfragen pro Antwort",
+        "description": "Die maximale Anzahl an Werkzeugen, die ein Agent verketten kann, um eine einzelne Antwort zu generieren. Dies verhindert, dass Werkzeuge unkontrolliert aufgerufen werden und zu endlosen Schleifen führen."
       },
       "intelligent-skill-selection": {
-        title: "Intelligente Auswahl von Fähigkeiten",
+        "title": "Intelligente Auswahl von Fähigkeiten",
         "beta-badge": "Beta-Version",
-        description:
-          "Ermöglichen Sie die uneingeschränkte Nutzung von Werkzeugen und reduzieren Sie die Token-Nutzung pro Anfrage um bis zu 80 % – AnythingLLM wählt automatisch die passenden Fähigkeiten für jede Anfrage aus.",
+        "description": "Ermöglichen Sie die uneingeschränkte Nutzung von Werkzeugen und reduzieren Sie die Token-Nutzung pro Anfrage um bis zu 80 % – AnythingLLM wählt automatisch die passenden Fähigkeiten für jede Anfrage aus.",
         "max-tools": {
-          title: "Max Tools",
-          description:
-            "Die maximale Anzahl der auszuwählenden Werkzeuge für jede Abfrage. Wir empfehlen, diesen Wert für größere Modelle mit größerem Kontext auf einen höheren Wert einzustellen.",
-        },
-      },
-    },
+          "title": "Max Tools",
+          "description": "Die maximale Anzahl der auszuwählenden Werkzeuge für jede Abfrage. Wir empfehlen, diesen Wert für größere Modelle mit größerem Kontext auf einen höheren Wert einzustellen."
+        }
+      }
+    }
   },
-  recorded: {
-    title: "Workspace-Chats",
-    description:
-      "Dies sind alle aufgezeichneten Chats und Nachrichten, die von Benutzern gesendet wurden, geordnet nach ihrem Erstellungsdatum.",
-    export: "Exportieren",
-    table: {
-      id: "Id",
-      by: "Gesendet von",
-      workspace: "Workspace",
-      prompt: "Prompt",
-      response: "Antwort",
-      at: "Gesendet am",
-    },
+  "recorded": {
+    "title": "Workspace-Chats",
+    "description": "Dies sind alle aufgezeichneten Chats und Nachrichten, die von Benutzern gesendet wurden, geordnet nach ihrem Erstellungsdatum.",
+    "export": "Exportieren",
+    "table": {
+      "id": "Id",
+      "by": "Gesendet von",
+      "workspace": "Workspace",
+      "prompt": "Prompt",
+      "response": "Antwort",
+      "at": "Gesendet am"
+    }
   },
-  customization: {
-    interface: {
-      title: "UI Einstellungen",
-      description: "Passen Sie die Benutzeroberfläche von AnythingLLM an.",
+  "customization": {
+    "interface": {
+      "title": "UI Einstellungen",
+      "description": "Passen Sie die Benutzeroberfläche von AnythingLLM an."
     },
-    branding: {
-      title: "Branding & Whitelabeling",
-      description:
-        "Individualisieren Sie Ihre AnythingLLM-Instanz durch eigenes Branding.",
+    "branding": {
+      "title": "Branding & Whitelabeling",
+      "description": "Individualisieren Sie Ihre AnythingLLM-Instanz durch eigenes Branding."
     },
-    chat: {
-      title: "Chat",
-      description: "Passen Sie Ihre Chat-Einstellungen für AnythingLLM an.",
-      auto_submit: {
-        title: "Spracheingaben automatisch senden",
-        description:
-          "Automatische Übermittlung der Spracheingabe nach einer Sprechpause.",
+    "chat": {
+      "title": "Chat",
+      "description": "Passen Sie Ihre Chat-Einstellungen für AnythingLLM an.",
+      "auto_submit": {
+        "title": "Spracheingaben automatisch senden",
+        "description": "Automatische Übermittlung der Spracheingabe nach einer Sprechpause."
       },
-      auto_speak: {
-        title: "Antworten automatisch vorlesen",
-        description: "Antworten der KI automatisch vorlesen lassen",
+      "auto_speak": {
+        "title": "Antworten automatisch vorlesen",
+        "description": "Antworten der KI automatisch vorlesen lassen"
       },
-      spellcheck: {
-        title: "Rechtschreibprüfung aktivieren",
-        description:
-          "Aktivieren oder deaktivieren Sie die Rechtschreibprüfung im Chat-Eingabefeld.",
-      },
+      "spellcheck": {
+        "title": "Rechtschreibprüfung aktivieren",
+        "description": "Aktivieren oder deaktivieren Sie die Rechtschreibprüfung im Chat-Eingabefeld."
+      }
     },
-    items: {
-      theme: {
-        title: "Farbschema",
-        description: "Wählen Sie Ihr bevorzugtes Farbschema für die Anwendung.",
+    "items": {
+      "theme": {
+        "title": "Farbschema",
+        "description": "Wählen Sie Ihr bevorzugtes Farbschema für die Anwendung."
       },
       "show-scrollbar": {
-        title: "Scrollbar anzeigen",
-        description:
-          "Aktivieren oder deaktivieren Sie die Scrollbar im Chat-Fenster.",
+        "title": "Scrollbar anzeigen",
+        "description": "Aktivieren oder deaktivieren Sie die Scrollbar im Chat-Fenster."
       },
       "support-email": {
-        title: "Support-E-Mail",
-        description: "Legen Sie die E-Mail-Adresse für den Kundensupport fest.",
+        "title": "Support-E-Mail",
+        "description": "Legen Sie die E-Mail-Adresse für den Kundensupport fest."
       },
       "app-name": {
-        title: "Name",
-        description:
-          "Geben Sie einen Anwendungsnamen ein, der auf der Login-Seite erscheint.",
+        "title": "Name",
+        "description": "Geben Sie einen Anwendungsnamen ein, der auf der Login-Seite erscheint."
       },
       "display-language": {
-        title: "Sprache",
-        description:
-          "Wählen Sie die bevorzugte Sprache für die Benutzeroberfläche.",
+        "title": "Sprache",
+        "description": "Wählen Sie die bevorzugte Sprache für die Benutzeroberfläche."
       },
-      logo: {
-        title: "Eigenes Logo",
-        description:
-          "Laden Sie Ihr eigenes Logo hoch, das auf allen Seiten angezeigt wird.",
-        add: "Eigenes Logo hinzufügen",
-        recommended: "Empfohlene Größe: 800 x 200",
-        remove: "Löschen",
-        replace: "Ersetzen",
+      "logo": {
+        "title": "Eigenes Logo",
+        "description": "Laden Sie Ihr eigenes Logo hoch, das auf allen Seiten angezeigt wird.",
+        "add": "Eigenes Logo hinzufügen",
+        "recommended": "Empfohlene Größe: 800 x 200",
+        "remove": "Löschen",
+        "replace": "Ersetzen"
       },
       "browser-appearance": {
-        title: "Browser-Ansicht",
-        description:
-          "Individualisieren Sie die Ansicht von Browser-Tab und -Titel, während die App geöffnet ist.",
-        tab: {
-          title: "Titel",
-          description:
-            "Bestimmen Sie einen individuellen Tab-Titel, wenn die App im Browser geöffnet ist.",
+        "title": "Browser-Ansicht",
+        "description": "Individualisieren Sie die Ansicht von Browser-Tab und -Titel, während die App geöffnet ist.",
+        "tab": {
+          "title": "Titel",
+          "description": "Bestimmen Sie einen individuellen Tab-Titel, wenn die App im Browser geöffnet ist."
         },
-        favicon: {
-          title: "Tab-Icon",
-          description: "Nutzen Sie ein eigenes Icon für den Tab im Browser.",
-        },
+        "favicon": {
+          "title": "Tab-Icon",
+          "description": "Nutzen Sie ein eigenes Icon für den Tab im Browser."
+        }
       },
       "sidebar-footer": {
-        title: "Fußzeilenelemente der Seitenleiste",
-        description:
-          "Individualisieren Sie die Elemente in der Fußzeile am unteren Ende der Seitenleiste.",
-        icon: "Icon",
-        link: "Link",
+        "title": "Fußzeilenelemente der Seitenleiste",
+        "description": "Individualisieren Sie die Elemente in der Fußzeile am unteren Ende der Seitenleiste.",
+        "icon": "Icon",
+        "link": "Link"
       },
       "render-html": {
-        title: "HTML-Code in einem Chat anzeigen",
-        description:
-          "HTML-Antworten in den Antworten des Assistenten anzeigen.\nDies kann zu einer viel höheren Qualität der Antwort führen, aber auch zu potenziellen Sicherheitsrisiken führen.",
-      },
-    },
+        "title": "HTML-Code in einem Chat anzeigen",
+        "description": "HTML-Antworten in den Antworten des Assistenten anzeigen.\nDies kann zu einer viel höheren Qualität der Antwort führen, aber auch zu potenziellen Sicherheitsrisiken führen."
+      }
+    }
   },
-  api: {
-    title: "API-Schlüssel",
-    description:
-      "API-Schlüssel ermöglichen es dem Besitzer, programmatisch auf diese AnythingLLM-Instanz zuzugreifen und sie zu verwalten.",
-    link: "Lesen Sie die API-Dokumentation",
-    generate: "Neuen API-Schlüssel generieren",
-    empty: "Keine API-Schlüssel gefunden",
-    actions: "Aktionen",
-    messages: {
-      error: "Fehler: {{error}}",
+  "api": {
+    "title": "API-Schlüssel",
+    "description": "API-Schlüssel ermöglichen es dem Besitzer, programmatisch auf diese AnythingLLM-Instanz zuzugreifen und sie zu verwalten.",
+    "link": "Lesen Sie die API-Dokumentation",
+    "generate": "Neuen API-Schlüssel generieren",
+    "empty": "Keine API-Schlüssel gefunden",
+    "actions": "Aktionen",
+    "messages": {
+      "error": "Fehler: {{error}}"
     },
-    modal: {
-      title: "Neuen API-Schlüssel erstellen",
-      cancel: "Abbrechen",
-      close: "Schließen",
-      create: "API-Schlüssel erstellen",
-      helper:
-        "Nach der Erstellung kann der API-Schlüssel verwendet werden, um programmgesteuert auf diese AnythingLLM-Instanz zuzugreifen und sie zu konfigurieren.",
-      name: {
-        label: "Name",
-        placeholder: "Produktionsintegration",
-        helper:
-          "Optional. Verwenden Sie einen leicht verständlichen Namen, damit Sie diesen Schlüssel später wiedererkennen.",
-      },
+    "modal": {
+      "title": "Neuen API-Schlüssel erstellen",
+      "cancel": "Abbrechen",
+      "close": "Schließen",
+      "create": "API-Schlüssel erstellen",
+      "helper": "Nach der Erstellung kann der API-Schlüssel verwendet werden, um programmgesteuert auf diese AnythingLLM-Instanz zuzugreifen und sie zu konfigurieren.",
+      "name": {
+        "label": "Name",
+        "placeholder": "Produktionsintegration",
+        "helper": "Optional. Verwenden Sie einen leicht verständlichen Namen, damit Sie diesen Schlüssel später wiedererkennen."
+      }
     },
-    row: {
-      copy: "API-Schlüssel kopieren",
-      copied: "Kopiert",
-      unnamed: "--",
-      deleteConfirm:
-        "Möchten Sie diesen API-Schlüssel wirklich deaktivieren?\nDanach kann er nicht mehr verwendet werden.\n\nDiese Aktion kann nicht rückgängig gemacht werden.",
+    "row": {
+      "copy": "API-Schlüssel kopieren",
+      "copied": "Kopiert",
+      "unnamed": "--",
+      "deleteConfirm": "Möchten Sie diesen API-Schlüssel wirklich deaktivieren?\nDanach kann er nicht mehr verwendet werden.\n\nDiese Aktion kann nicht rückgängig gemacht werden."
     },
-    table: {
-      name: "Name",
-      key: "API-Schlüssel",
-      by: "Erstellt von",
-      created: "Erstellt",
-    },
+    "table": {
+      "name": "Name",
+      "key": "API-Schlüssel",
+      "by": "Erstellt von",
+      "created": "Erstellt"
+    }
   },
-  llm: {
-    title: "LLM-Präferenz",
-    description:
-      "Dies sind die Anmeldeinformationen und Einstellungen für Ihren bevorzugten LLM-Chat- und Einbettungsanbieter. Es ist wichtig, dass diese Schlüssel aktuell und korrekt sind, sonst wird AnythingLLM nicht richtig funktionieren.",
-    provider: "LLM-Anbieter",
-    providers: {
-      azure_openai: {
-        azure_service_endpoint: "Azure-Service-Endpoint",
-        api_key: "API-Schlüssel",
-        chat_deployment_name: "Name der Chat-Deployment",
-        chat_model_token_limit: "Chat-Modell Token-Begrenzung",
-        model_type: "Art des Modells",
-        default: "Standard",
-        reasoning: "Reasoning",
-        model_type_tooltip:
-          'Wenn Ihre Bereitstellung ein Reasoning-Modell verwendet (z. B. o1, o1-mini, o3-mini usw.), setzen Sie dies auf "Reasoning". Andernfalls können Ihre Chat-Anfragen fehlschlagen.',
-      },
-    },
+  "llm": {
+    "title": "LLM-Präferenz",
+    "description": "Dies sind die Anmeldeinformationen und Einstellungen für Ihren bevorzugten LLM-Chat- und Einbettungsanbieter. Es ist wichtig, dass diese Schlüssel aktuell und korrekt sind, sonst wird AnythingLLM nicht richtig funktionieren.",
+    "provider": "LLM-Anbieter",
+    "providers": {
+      "azure_openai": {
+        "azure_service_endpoint": "Azure-Service-Endpoint",
+        "api_key": "API-Schlüssel",
+        "chat_deployment_name": "Name der Chat-Deployment",
+        "chat_model_token_limit": "Chat-Modell Token-Begrenzung",
+        "model_type": "Art des Modells",
+        "default": "Standard",
+        "reasoning": "Reasoning",
+        "model_type_tooltip": "Wenn Ihre Bereitstellung ein Reasoning-Modell verwendet (z. B. o1, o1-mini, o3-mini usw.), setzen Sie dies auf \"Reasoning\". Andernfalls können Ihre Chat-Anfragen fehlschlagen."
+      }
+    }
   },
-  transcription: {
-    title: "Transkriptionsmodell-Präferenz",
-    description:
-      "Dies sind die Anmeldeinformationen und Einstellungen für Ihren bevorzugten Transkriptionsmodellanbieter. Es ist wichtig, dass diese Schlüssel aktuell und korrekt sind, sonst werden Mediendateien und Audio nicht transkribiert.",
-    provider: "Transkriptionsanbieter",
-    "warn-start":
-      "Die Verwendung des lokalen Whisper-Modells auf Maschinen mit begrenztem RAM oder CPU kann AnythingLLM bei der Verarbeitung von Mediendateien zum Stillstand bringen.",
-    "warn-recommend":
-      "Wir empfehlen mindestens 2 GB RAM und das Hochladen von Dateien <10 MB.",
-    "warn-end":
-      "Das eingebaute Modell wird bei der ersten Verwendung automatisch heruntergeladen.",
+  "transcription": {
+    "title": "Transkriptionsmodell-Präferenz",
+    "description": "Dies sind die Anmeldeinformationen und Einstellungen für Ihren bevorzugten Transkriptionsmodellanbieter. Es ist wichtig, dass diese Schlüssel aktuell und korrekt sind, sonst werden Mediendateien und Audio nicht transkribiert.",
+    "provider": "Transkriptionsanbieter",
+    "warn-start": "Die Verwendung des lokalen Whisper-Modells auf Maschinen mit begrenztem RAM oder CPU kann AnythingLLM bei der Verarbeitung von Mediendateien zum Stillstand bringen.",
+    "warn-recommend": "Wir empfehlen mindestens 2 GB RAM und das Hochladen von Dateien <10 MB.",
+    "warn-end": "Das eingebaute Modell wird bei der ersten Verwendung automatisch heruntergeladen."
   },
-  embedding: {
-    title: "Einbettungspräferenz",
-    "desc-start":
-      "Bei der Verwendung eines LLM, das keine native Unterstützung für eine Einbettungs-Engine bietet, müssen Sie möglicherweise zusätzlich Anmeldeinformationen für die Texteinbettung angeben.",
-    "desc-end":
-      "Einbettung ist der Prozess, Text in Vektoren umzuwandeln. Diese Anmeldeinformationen sind erforderlich, um Ihre Dateien und Prompts in ein Format umzuwandeln, das AnythingLLM zur Verarbeitung verwenden kann.",
-    provider: {
-      title: "Einbettungsanbieter",
-    },
+  "embedding": {
+    "title": "Einbettungspräferenz",
+    "desc-start": "Bei der Verwendung eines LLM, das keine native Unterstützung für eine Einbettungs-Engine bietet, müssen Sie möglicherweise zusätzlich Anmeldeinformationen für die Texteinbettung angeben.",
+    "desc-end": "Einbettung ist der Prozess, Text in Vektoren umzuwandeln. Diese Anmeldeinformationen sind erforderlich, um Ihre Dateien und Prompts in ein Format umzuwandeln, das AnythingLLM zur Verarbeitung verwenden kann.",
+    "provider": {
+      "title": "Einbettungsanbieter"
+    }
   },
-  text: {
-    title: "Textsplitting & Chunking-Präferenzen",
-    "desc-start":
-      "Manchmal möchten Sie vielleicht die Standardmethode ändern, wie neue Dokumente gesplittet und gechunkt werden, bevor sie in Ihre Vektordatenbank eingefügt werden.",
-    "desc-end":
-      "Sie sollten diese Einstellung nur ändern, wenn Sie verstehen, wie Textsplitting funktioniert und welche Nebenwirkungen es hat.",
-    size: {
-      title: "Textchunk-Größe",
-      description:
-        "Dies ist die maximale Länge der Zeichen, die in einem einzelnen Vektor vorhanden sein können.",
-      recommend: "Die maximale Länge des Einbettungsmodells beträgt",
+  "text": {
+    "title": "Textsplitting & Chunking-Präferenzen",
+    "desc-start": "Manchmal möchten Sie vielleicht die Standardmethode ändern, wie neue Dokumente gesplittet und gechunkt werden, bevor sie in Ihre Vektordatenbank eingefügt werden.",
+    "desc-end": "Sie sollten diese Einstellung nur ändern, wenn Sie verstehen, wie Textsplitting funktioniert und welche Nebenwirkungen es hat.",
+    "size": {
+      "title": "Textchunk-Größe",
+      "description": "Dies ist die maximale Länge der Zeichen, die in einem einzelnen Vektor vorhanden sein können.",
+      "recommend": "Die maximale Länge des Einbettungsmodells beträgt"
     },
-    overlap: {
-      title: "Textchunk-Überlappung",
-      description:
-        "Dies ist die maximale Überlappung von Zeichen, die während des Chunkings zwischen zwei benachbarten Textchunks auftritt.",
-    },
+    "overlap": {
+      "title": "Textchunk-Überlappung",
+      "description": "Dies ist die maximale Überlappung von Zeichen, die während des Chunkings zwischen zwei benachbarten Textchunks auftritt."
+    }
   },
-  vector: {
-    title: "Vektordatenbank",
-    description:
-      "Dies sind die Anmeldeinformationen und Einstellungen für die Funktionsweise Ihrer AnythingLLM-Instanz. Es ist wichtig, dass diese Schlüssel aktuell und korrekt sind.",
-    provider: {
-      title: "Vektordatenbankanbieter",
-      description: "Für LanceDB ist keine Konfiguration erforderlich.",
-    },
+  "vector": {
+    "title": "Vektordatenbank",
+    "description": "Dies sind die Anmeldeinformationen und Einstellungen für die Funktionsweise Ihrer AnythingLLM-Instanz. Es ist wichtig, dass diese Schlüssel aktuell und korrekt sind.",
+    "provider": {
+      "title": "Vektordatenbankanbieter",
+      "description": "Für LanceDB ist keine Konfiguration erforderlich."
+    }
   },
-  embeddable: {
-    title: "Einbettbare Chat-Widgets",
-    description:
-      "Einbettbare Chat-Widgets sind öffentlich zugängliche Chat-Schnittstellen, die an einen einzelnen Workspace gebunden sind. Diese ermöglichen es Ihnen, Workspaces zu erstellen, die Sie dann weltweit veröffentlichen können.",
-    create: "Einbettung erstellen",
-    table: {
-      workspace: "Workspace",
-      chats: "Gesendete Chats",
-      active: "Aktive Domains",
-      created: "Erstellt",
-    },
+  "embeddable": {
+    "title": "Einbettbare Chat-Widgets",
+    "description": "Einbettbare Chat-Widgets sind öffentlich zugängliche Chat-Schnittstellen, die an einen einzelnen Workspace gebunden sind. Diese ermöglichen es Ihnen, Workspaces zu erstellen, die Sie dann weltweit veröffentlichen können.",
+    "create": "Einbettung erstellen",
+    "table": {
+      "workspace": "Workspace",
+      "chats": "Gesendete Chats",
+      "active": "Aktive Domains",
+      "created": "Erstellt"
+    }
   },
   "embed-chats": {
-    title: "Eingebettete Chats",
-    export: "Exportieren",
-    description:
-      "Dies sind alle aufgezeichneten Chats und Nachrichten von jeder Einbettung, die Sie veröffentlicht haben.",
-    table: {
-      embed: "Einbettung",
-      sender: "Absender",
-      message: "Nachricht",
-      response: "Antwort",
-      at: "Gesendet am",
-    },
+    "title": "Eingebettete Chats",
+    "export": "Exportieren",
+    "description": "Dies sind alle aufgezeichneten Chats und Nachrichten von jeder Einbettung, die Sie veröffentlicht haben.",
+    "table": {
+      "embed": "Einbettung",
+      "sender": "Absender",
+      "message": "Nachricht",
+      "response": "Antwort",
+      "at": "Gesendet am"
+    }
   },
-  event: {
-    title: "Ereignisprotokolle",
-    description:
-      "Sehen Sie alle Aktionen und Ereignisse, die auf dieser Instanz zur Überwachung stattfinden.",
-    clear: "Ereignisprotokolle löschen",
-    table: {
-      type: "Ereignistyp",
-      user: "Benutzer",
-      occurred: "Aufgetreten am",
-    },
+  "event": {
+    "title": "Ereignisprotokolle",
+    "description": "Sehen Sie alle Aktionen und Ereignisse, die auf dieser Instanz zur Überwachung stattfinden.",
+    "clear": "Ereignisprotokolle löschen",
+    "table": {
+      "type": "Ereignistyp",
+      "user": "Benutzer",
+      "occurred": "Aufgetreten am"
+    }
   },
-  privacy: {
-    title: "Datenschutz & Datenverarbeitung",
-    description:
-      "Dies ist Ihre Konfiguration dafür, wie verbundene Drittanbieter und AnythingLLM Ihre Daten behandeln.",
-    anonymous: "Anonyme Telemetrie aktiviert",
+  "privacy": {
+    "title": "Datenschutz & Datenverarbeitung",
+    "description": "Dies ist Ihre Konfiguration dafür, wie verbundene Drittanbieter und AnythingLLM Ihre Daten behandeln.",
+    "anonymous": "Anonyme Telemetrie aktiviert"
   },
-  connectors: {
+  "connectors": {
     "search-placeholder": "Datenverbindungen durchsuchen",
     "no-connectors": "Keine Datenverbindungen gefunden.",
-    obsidian: {
-      vault_location: "Ort des Vaults",
-      vault_description:
-        "Ordner des Obsidian-Vaults auswählen, um sämtliche Notizen inkl. Verknüpfungen zu importieren.",
-      selected_files: "{{count}} Markdown-Dateien gefunden",
-      importing: "Vault wird importiert...",
-      import_vault: "Vault importieren",
-      processing_time: "Dies kann je nach Größe Ihres Vaults etwas dauern",
-      vault_warning:
-        "Bitte schließen Sie Ihr Obsidian-Vault, um mögliche Konflikte zu vermeiden.",
+    "obsidian": {
+      "vault_location": "Ort des Vaults",
+      "vault_description": "Ordner des Obsidian-Vaults auswählen, um sämtliche Notizen inkl. Verknüpfungen zu importieren.",
+      "selected_files": "{{count}} Markdown-Dateien gefunden",
+      "importing": "Vault wird importiert...",
+      "import_vault": "Vault importieren",
+      "processing_time": "Dies kann je nach Größe Ihres Vaults etwas dauern",
+      "vault_warning": "Bitte schließen Sie Ihr Obsidian-Vault, um mögliche Konflikte zu vermeiden."
     },
-    github: {
-      name: "GitHub Repository",
-      description:
-        "Importieren Sie ein öffentliches oder privates GitHub-Repository mit einem einzigen Klick.",
-      URL: "GitHub Repo URL",
-      URL_explained: "URL des GitHub-Repositories, das Sie sammeln möchten.",
-      token: "GitHub Zugriffstoken",
-      optional: "optional",
-      token_explained: "Zugriffstoken um Ratenlimits zu vermeiden.",
-      token_explained_start: "Ohne einen ",
-      token_explained_link1: "persönlichen Zugriffstoken",
-      token_explained_middle:
-        " kann die GitHub-API aufgrund von Ratenlimits die Anzahl der abrufbaren Dateien einschränken. Sie können ",
-      token_explained_link2: "einen temporären Zugriffstoken erstellen",
-      token_explained_end: ", um dieses Problem zu vermeiden.",
-      ignores: "Datei-Ausschlüsse",
-      git_ignore:
-        "Liste im .gitignore-Format, um bestimmte Dateien während der Sammlung zu ignorieren. Drücken Sie Enter nach jedem Eintrag, den Sie speichern möchten.",
-      task_explained:
-        "Sobald der Vorgang abgeschlossen ist, sind alle Dateien im Dokumenten-Picker zur Einbettung in Workspaces verfügbar.",
-      branch: "Branch, von dem Sie Dateien sammeln möchten.",
-      branch_loading: "-- lade verfügbare Branches --",
-      branch_explained: "Branch, von dem Sie Dateien sammeln möchten.",
-      token_information:
-        "Ohne Angabe des <b>GitHub Zugriffstokens</b> kann dieser Datenkonnektor aufgrund der öffentlichen API-Ratenlimits von GitHub nur die <b>Top-Level</b>-Dateien des Repositories sammeln.",
-      token_personal:
-        "Holen Sie sich hier einen kostenlosen persönlichen Zugriffstoken mit einem GitHub-Konto.",
+    "github": {
+      "name": "GitHub Repository",
+      "description": "Importieren Sie ein öffentliches oder privates GitHub-Repository mit einem einzigen Klick.",
+      "URL": "GitHub Repo URL",
+      "URL_explained": "URL des GitHub-Repositories, das Sie sammeln möchten.",
+      "token": "GitHub Zugriffstoken",
+      "optional": "optional",
+      "token_explained": "Zugriffstoken um Ratenlimits zu vermeiden.",
+      "token_explained_start": "Ohne einen ",
+      "token_explained_link1": "persönlichen Zugriffstoken",
+      "token_explained_middle": " kann die GitHub-API aufgrund von Ratenlimits die Anzahl der abrufbaren Dateien einschränken. Sie können ",
+      "token_explained_link2": "einen temporären Zugriffstoken erstellen",
+      "token_explained_end": ", um dieses Problem zu vermeiden.",
+      "ignores": "Datei-Ausschlüsse",
+      "git_ignore": "Liste im .gitignore-Format, um bestimmte Dateien während der Sammlung zu ignorieren. Drücken Sie Enter nach jedem Eintrag, den Sie speichern möchten.",
+      "task_explained": "Sobald der Vorgang abgeschlossen ist, sind alle Dateien im Dokumenten-Picker zur Einbettung in Workspaces verfügbar.",
+      "branch": "Branch, von dem Sie Dateien sammeln möchten.",
+      "branch_loading": "-- lade verfügbare Branches --",
+      "branch_explained": "Branch, von dem Sie Dateien sammeln möchten.",
+      "token_information": "Ohne Angabe des <b>GitHub Zugriffstokens</b> kann dieser Datenkonnektor aufgrund der öffentlichen API-Ratenlimits von GitHub nur die <b>Top-Level</b>-Dateien des Repositories sammeln.",
+      "token_personal": "Holen Sie sich hier einen kostenlosen persönlichen Zugriffstoken mit einem GitHub-Konto."
     },
-    gitlab: {
-      name: "GitLab Repository",
-      description:
-        "Importieren Sie ein öffentliches oder privates GitLab-Repository mit einem einzigen Klick.",
-      URL: "GitLab Repo URL",
-      URL_explained: "URL des GitLab-Repositories, das Sie sammeln möchten.",
-      token: "GitLab Zugriffstoken",
-      optional: "optional",
-      token_description:
-        "Wählen Sie zusätzliche Entitäten aus, die von der GitLab-API abgerufen werden sollen.",
-      token_explained_start: "Ohne einen ",
-      token_explained_link1: "persönlichen Zugriffstoken",
-      token_explained_middle:
-        " kann die GitLab-API aufgrund von Ratenlimits die Anzahl der abrufbaren Dateien einschränken. Sie können ",
-      token_explained_link2: "einen temporären Zugriffstoken erstellen",
-      token_explained_end: ", um dieses Problem zu vermeiden.",
-      fetch_issues: "Issues als Dokumente abrufen",
-      ignores: "Datei-Ausschlüsse",
-      git_ignore:
-        "Liste im .gitignore-Format, um bestimmte Dateien während der Sammlung zu ignorieren. Drücken Sie Enter nach jedem Eintrag, den Sie speichern möchten.",
-      task_explained:
-        "Sobald der Vorgang abgeschlossen ist, sind alle Dateien im Dokumenten-Picker zur Einbettung in Workspaces verfügbar.",
-      branch: "Branch, von dem Sie Dateien sammeln möchten",
-      branch_loading: "-- lade verfügbare Branches --",
-      branch_explained: "Branch, von dem Sie Dateien sammeln möchten.",
-      token_information:
-        "Ohne Angabe des <b>GitLab Zugriffstokens</b> kann dieser Datenkonnektor aufgrund der öffentlichen API-Ratenlimits von GitLab nur die <b>Top-Level</b>-Dateien des Repositories sammeln.",
-      token_personal:
-        "Holen Sie sich hier einen kostenlosen persönlichen Zugriffstoken mit einem GitLab-Konto.",
+    "gitlab": {
+      "name": "GitLab Repository",
+      "description": "Importieren Sie ein öffentliches oder privates GitLab-Repository mit einem einzigen Klick.",
+      "URL": "GitLab Repo URL",
+      "URL_explained": "URL des GitLab-Repositories, das Sie sammeln möchten.",
+      "token": "GitLab Zugriffstoken",
+      "optional": "optional",
+      "token_description": "Wählen Sie zusätzliche Entitäten aus, die von der GitLab-API abgerufen werden sollen.",
+      "token_explained_start": "Ohne einen ",
+      "token_explained_link1": "persönlichen Zugriffstoken",
+      "token_explained_middle": " kann die GitLab-API aufgrund von Ratenlimits die Anzahl der abrufbaren Dateien einschränken. Sie können ",
+      "token_explained_link2": "einen temporären Zugriffstoken erstellen",
+      "token_explained_end": ", um dieses Problem zu vermeiden.",
+      "fetch_issues": "Issues als Dokumente abrufen",
+      "ignores": "Datei-Ausschlüsse",
+      "git_ignore": "Liste im .gitignore-Format, um bestimmte Dateien während der Sammlung zu ignorieren. Drücken Sie Enter nach jedem Eintrag, den Sie speichern möchten.",
+      "task_explained": "Sobald der Vorgang abgeschlossen ist, sind alle Dateien im Dokumenten-Picker zur Einbettung in Workspaces verfügbar.",
+      "branch": "Branch, von dem Sie Dateien sammeln möchten",
+      "branch_loading": "-- lade verfügbare Branches --",
+      "branch_explained": "Branch, von dem Sie Dateien sammeln möchten.",
+      "token_information": "Ohne Angabe des <b>GitLab Zugriffstokens</b> kann dieser Datenkonnektor aufgrund der öffentlichen API-Ratenlimits von GitLab nur die <b>Top-Level</b>-Dateien des Repositories sammeln.",
+      "token_personal": "Holen Sie sich hier einen kostenlosen persönlichen Zugriffstoken mit einem GitLab-Konto."
     },
-    youtube: {
-      name: "YouTube Transkript",
-      description:
-        "Importieren Sie die Transkription eines YouTube-Videos über einen Link.",
-      URL: "YouTube Video URL",
-      URL_explained_start:
-        "Geben Sie die URL eines beliebigen YouTube-Videos ein, um dessen Transkript abzurufen. Das Video muss über ",
-      URL_explained_link: "Untertitel",
-      URL_explained_end: " verfügen.",
-      task_explained:
-        "Sobald der Vorgang abgeschlossen ist, ist das Transkript im Dokumenten-Picker zur Einbettung in Workspaces verfügbar.",
+    "youtube": {
+      "name": "YouTube Transkript",
+      "description": "Importieren Sie die Transkription eines YouTube-Videos über einen Link.",
+      "URL": "YouTube Video URL",
+      "URL_explained_start": "Geben Sie die URL eines beliebigen YouTube-Videos ein, um dessen Transkript abzurufen. Das Video muss über ",
+      "URL_explained_link": "Untertitel",
+      "URL_explained_end": " verfügen.",
+      "task_explained": "Sobald der Vorgang abgeschlossen ist, ist das Transkript im Dokumenten-Picker zur Einbettung in Workspaces verfügbar."
     },
     "website-depth": {
-      name: "Massen-Link-Scraper",
-      description:
-        "Durchsuchen Sie eine Website und ihre Unterlinks bis zu einer bestimmten Tiefe.",
-      URL: "Website URL",
-      URL_explained:
-        "Geben Sie die Start-URL der Website ein, die Sie durchsuchen möchten.",
-      depth: "Durchsuchungstiefe",
-      depth_explained:
-        "Das ist die Menge an Unterseiten, die abhängig der originalen URL durchsucht werden sollen.",
-      max_pages: "Maximale Seitenanzahl",
-      max_pages_explained: "Maximale Anzahl der zu durchsuchenden Seiten.",
-      task_explained:
-        "Sobald der Vorgang abgeschlossen ist, sind alle gesammelten Inhalte im Dokumenten-Picker zur Einbettung in Workspaces verfügbar.",
+      "name": "Massen-Link-Scraper",
+      "description": "Durchsuchen Sie eine Website und ihre Unterlinks bis zu einer bestimmten Tiefe.",
+      "URL": "Website URL",
+      "URL_explained": "Geben Sie die Start-URL der Website ein, die Sie durchsuchen möchten.",
+      "depth": "Durchsuchungstiefe",
+      "depth_explained": "Das ist die Menge an Unterseiten, die abhängig der originalen URL durchsucht werden sollen.",
+      "max_pages": "Maximale Seitenanzahl",
+      "max_pages_explained": "Maximale Anzahl der zu durchsuchenden Seiten.",
+      "task_explained": "Sobald der Vorgang abgeschlossen ist, sind alle gesammelten Inhalte im Dokumenten-Picker zur Einbettung in Workspaces verfügbar."
     },
-    confluence: {
-      name: "Confluence",
-      description:
-        "Importieren Sie eine komplette Confluence-Seite mit einem einzigen Klick.",
-      deployment_type: "Confluence Bereitstellungstyp",
-      deployment_type_explained:
-        "Bestimmen Sie, ob Ihre Confluence-Instanz in der Atlassian Cloud oder selbst gehostet ist.",
-      base_url: "Confluence Basis-URL",
-      base_url_explained: "Dies ist die Basis-URL Ihres Confluence-Bereichs.",
-      space_key: "Confluence Space-Key",
-      space_key_explained:
-        "Dies ist der Space-Key Ihrer Confluence-Instanz, der verwendet wird. Beginnt normalerweise mit ~",
-      username: "Confluence Benutzername",
-      username_explained: "Ihr Confluence Benutzername.",
-      auth_type: "Confluence Authentifizierungstyp",
-      auth_type_explained:
-        "Wählen Sie den Authentifizierungstyp, den Sie verwenden möchten, um auf Ihre Confluence-Seiten zuzugreifen.",
-      auth_type_username: "Benutzername und Zugriffstoken",
-      auth_type_personal: "Persönliches Zugriffstoken",
-      token: "Confluence API-Token",
-      token_explained_start:
-        "Sie müssen ein Zugriffstoken für die Authentifizierung bereitstellen. Sie können ein Zugriffstoken",
-      token_explained_link: "hier",
-      token_desc: "Zugriffstoken für die Authentifizierung.",
-      pat_token: "Confluence persönliches Zugriffstoken",
-      pat_token_explained: "Ihr Confluence persönliches Zugriffstoken.",
-      task_explained:
-        "Sobald der Vorgang abgeschlossen ist, ist der Seiteninhalt im Dokumenten-Picker zur Einbettung in Workspaces verfügbar.",
-      bypass_ssl: "SSL-Zertifikatsvalidierung umgehen",
-      bypass_ssl_explained:
-        "Aktivieren Sie diese Option, um die SSL-Zertifikatsvalidierung für selbst gehostete Confluence-Instanzen mit selbstsignierten Zertifikaten zu umgehen.",
+    "confluence": {
+      "name": "Confluence",
+      "description": "Importieren Sie eine komplette Confluence-Seite mit einem einzigen Klick.",
+      "deployment_type": "Confluence Bereitstellungstyp",
+      "deployment_type_explained": "Bestimmen Sie, ob Ihre Confluence-Instanz in der Atlassian Cloud oder selbst gehostet ist.",
+      "base_url": "Confluence Basis-URL",
+      "base_url_explained": "Dies ist die Basis-URL Ihres Confluence-Bereichs.",
+      "space_key": "Confluence Space-Key",
+      "space_key_explained": "Dies ist der Space-Key Ihrer Confluence-Instanz, der verwendet wird. Beginnt normalerweise mit ~",
+      "username": "Confluence Benutzername",
+      "username_explained": "Ihr Confluence Benutzername.",
+      "auth_type": "Confluence Authentifizierungstyp",
+      "auth_type_explained": "Wählen Sie den Authentifizierungstyp, den Sie verwenden möchten, um auf Ihre Confluence-Seiten zuzugreifen.",
+      "auth_type_username": "Benutzername und Zugriffstoken",
+      "auth_type_personal": "Persönliches Zugriffstoken",
+      "token": "Confluence API-Token",
+      "token_explained_start": "Sie müssen ein Zugriffstoken für die Authentifizierung bereitstellen. Sie können ein Zugriffstoken",
+      "token_explained_link": "hier",
+      "token_desc": "Zugriffstoken für die Authentifizierung.",
+      "pat_token": "Confluence persönliches Zugriffstoken",
+      "pat_token_explained": "Ihr Confluence persönliches Zugriffstoken.",
+      "task_explained": "Sobald der Vorgang abgeschlossen ist, ist der Seiteninhalt im Dokumenten-Picker zur Einbettung in Workspaces verfügbar.",
+      "bypass_ssl": "SSL-Zertifikatsvalidierung umgehen",
+      "bypass_ssl_explained": "Aktivieren Sie diese Option, um die SSL-Zertifikatsvalidierung für selbst gehostete Confluence-Instanzen mit selbstsignierten Zertifikaten zu umgehen."
     },
-    manage: {
-      documents: "Dokumente",
+    "manage": {
+      "documents": "Dokumente",
       "data-connectors": "Datenverbindungen",
-      "desktop-only":
-        "Diese Einstellungen können nur auf einem Desktop-Gerät bearbeitet werden. Bitte rufen Sie diese Seite auf Ihrem Desktop auf, um fortzufahren.",
-      dismiss: "Schließen",
-      editing: "Bearbeite",
+      "desktop-only": "Diese Einstellungen können nur auf einem Desktop-Gerät bearbeitet werden. Bitte rufen Sie diese Seite auf Ihrem Desktop auf, um fortzufahren.",
+      "dismiss": "Schließen",
+      "editing": "Bearbeite"
     },
-    directory: {
+    "directory": {
       "my-documents": "Meine Dokumente",
       "new-folder": "Neuer Ordner",
       "search-document": "Dokument suchen",
       "no-documents": "Keine Dokumente",
       "move-workspace": "In Workspace verschieben",
-      "delete-confirmation":
-        "Sind Sie sicher, dass Sie diese Dateien und Ordner löschen möchten?\nDies wird die Dateien vom System entfernen und sie automatisch aus allen vorhandenen Workspaces entfernen.\nDiese Aktion kann nicht rückgängig gemacht werden.",
-      "removing-message":
-        "Entferne {{count}} Dokumente und {{folderCount}} Ordner. Bitte warten.",
+      "delete-confirmation": "Sind Sie sicher, dass Sie diese Dateien und Ordner löschen möchten?\nDies wird die Dateien vom System entfernen und sie automatisch aus allen vorhandenen Workspaces entfernen.\nDiese Aktion kann nicht rückgängig gemacht werden.",
+      "removing-message": "Entferne {{count}} Dokumente und {{folderCount}} Ordner. Bitte warten.",
       "move-success": "{{count}} Dokumente erfolgreich verschoben.",
-      select_all: "Alle auswählen",
-      deselect_all: "Auswahl abbrechen",
-      no_docs: "Keine Dokumente vorhanden.",
-      remove_selected: "Ausgewähltes entfernen",
-      save_embed: "Speichern und Einbetten",
+      "select_all": "Alle auswählen",
+      "deselect_all": "Auswahl abbrechen",
+      "no_docs": "Keine Dokumente vorhanden.",
+      "remove_selected": "Ausgewähltes entfernen",
+      "save_embed": "Speichern und Einbetten",
       "total-documents_one": "{{count}} Dokument",
-      "total-documents_other": "{{count}} Dokumente",
+      "total-documents_other": "{{count}} Dokumente"
     },
-    upload: {
+    "upload": {
       "processor-offline": "Dokumentenprozessor nicht verfügbar",
-      "processor-offline-desc":
-        "Wir können Ihre Dateien momentan nicht hochladen, da der Dokumentenprozessor offline ist. Bitte versuchen Sie es später erneut.",
-      "click-upload":
-        "Klicken Sie zum Hochladen oder ziehen Sie Dateien per Drag & Drop",
-      "file-types":
-        "unterstützt Textdateien, CSVs, Tabellenkalkulationen, Audiodateien und mehr!",
+      "processor-offline-desc": "Wir können Ihre Dateien momentan nicht hochladen, da der Dokumentenprozessor offline ist. Bitte versuchen Sie es später erneut.",
+      "click-upload": "Klicken Sie zum Hochladen oder ziehen Sie Dateien per Drag & Drop",
+      "file-types": "unterstützt Textdateien, CSVs, Tabellenkalkulationen, Audiodateien und mehr!",
       "or-submit-link": "oder einen Link einreichen",
       "placeholder-link": "https://beispiel.de",
-      fetching: "Wird abgerufen...",
+      "fetching": "Wird abgerufen...",
       "fetch-website": "Website abrufen",
-      "privacy-notice":
-        "Diese Dateien werden zum Dokumentenprozessor hochgeladen, der auf dieser AnythingLLM-Instanz läuft. Diese Dateien werden nicht an Dritte gesendet oder geteilt.",
+      "privacy-notice": "Diese Dateien werden zum Dokumentenprozessor hochgeladen, der auf dieser AnythingLLM-Instanz läuft. Diese Dateien werden nicht an Dritte gesendet oder geteilt."
     },
-    pinning: {
-      what_pinning: "Was bedeutet es Dokumente anzuheften?",
-      pin_explained_block1:
-        "Wenn du ein Dokument <b>anheftest</b>, wird den kompletten Inhalt des Dokuments mit deinem Prompt versendet, wodurch das LLM den vollen Kontext besitzt",
-      pin_explained_block2:
-        "Das funktioniert am besten bei <b>sehr großen Dokumenten</b> sowie für kleine Dokumenten, dessen Inhalt für die Wissensbasis absolut wichtig sind.",
-      pin_explained_block3:
-        "Wenn du nicht standardmäßig die erwünschten Ergebnisse bekommst, kann das anheften eine gute Methode sein, um Antworten mit einer besseren Qualität mit nur einem Klick zu erhalten.",
-      accept: "Alles klar, ich habe es verstanden.",
+    "pinning": {
+      "what_pinning": "Was bedeutet es Dokumente anzuheften?",
+      "pin_explained_block1": "Wenn du ein Dokument <b>anheftest</b>, wird den kompletten Inhalt des Dokuments mit deinem Prompt versendet, wodurch das LLM den vollen Kontext besitzt",
+      "pin_explained_block2": "Das funktioniert am besten bei <b>sehr großen Dokumenten</b> sowie für kleine Dokumenten, dessen Inhalt für die Wissensbasis absolut wichtig sind.",
+      "pin_explained_block3": "Wenn du nicht standardmäßig die erwünschten Ergebnisse bekommst, kann das anheften eine gute Methode sein, um Antworten mit einer besseren Qualität mit nur einem Klick zu erhalten.",
+      "accept": "Alles klar, ich habe es verstanden."
     },
-    watching: {
-      what_watching: "Was bedeutet es ein Dokument zu beobachten?",
-      watch_explained_block1:
-        "Wenn du ein Dokument <b>beobachtest,</b> werden wir <i>automatisch</i> das Dokument von der Datenquelle in regelmäßigen Abständen aktualisieren. Dadurch wird der Inhalt automatisch in allen Workspaces aktualisiert, wo sich das Dokument befindet.",
-      watch_explained_block2:
-        "Diese Funktion unterstützt aktuell nur Online-Quellen und ist somit nicht verfügbar für selbst hochgeladene Dokumente",
-      watch_explained_block3_start: "Du kannst im ",
-      watch_explained_block3_link: "Dateimanager",
-      watch_explained_block3_end:
-        " entscheiden, welche Dokumente du beobachten möchtest.",
-      accept: "Alles klar, ich habe es verstanden.",
-    },
+    "watching": {
+      "what_watching": "Was bedeutet es ein Dokument zu beobachten?",
+      "watch_explained_block1": "Wenn du ein Dokument <b>beobachtest,</b> werden wir <i>automatisch</i> das Dokument von der Datenquelle in regelmäßigen Abständen aktualisieren. Dadurch wird der Inhalt automatisch in allen Workspaces aktualisiert, wo sich das Dokument befindet.",
+      "watch_explained_block2": "Diese Funktion unterstützt aktuell nur Online-Quellen und ist somit nicht verfügbar für selbst hochgeladene Dokumente",
+      "watch_explained_block3_start": "Du kannst im ",
+      "watch_explained_block3_link": "Dateimanager",
+      "watch_explained_block3_end": " entscheiden, welche Dokumente du beobachten möchtest.",
+      "accept": "Alles klar, ich habe es verstanden."
+    }
   },
-  chat_window: {
-    attachments_processing: "Anhänge werden verarbeitet. Bitte warten...",
-    send_message: "Schreibe eine Nachricht",
-    attach_file: "Füge eine Datei zum Chat hinzu",
-    text_size: "Ändere die Größe des Textes.",
-    microphone: "Spreche deinen Prompt ein.",
-    send: "Versende den Prompt an den Workspace.",
-    tts_speak_message: "Nachricht vorlesen (TTS)",
-    copy: "Kopieren",
-    regenerate: "Neu generieren",
-    regenerate_response: "Antwort neu generieren",
-    good_response: "Gute Antwort",
-    more_actions: "Weitere Aktionen",
-    fork: "Abzweigen",
-    delete: "Löschen",
-    cancel: "Abbrechen",
-    edit_prompt: "Prompt bearbeiten",
-    edit_response: "Antwort bearbeiten",
-    preset_reset_description: "Chatverlauf löschen und neuen Chat starten",
-    add_new_preset: "Neues Preset anlegen",
-    command: "Befehl",
-    your_command: "dein-befehl",
-    placeholder_prompt: "Dieser Text wird vor deinem Prompt eingefügt.",
-    description: "Beschreibung",
-    placeholder_description: "Antwortet mit einem Gedicht über LLMs.",
-    save: "Speichern",
-    small: "Klein",
-    normal: "Standard",
-    large: "Groß",
-    workspace_llm_manager: {
-      search: "LLM-Provider durchsuchen",
-      loading_workspace_settings: "Workspace-Einstellungen werden geladen",
-      available_models: "Verfügbare Modelle von {{provider}}",
-      available_models_description:
-        "Wählen Sie ein Modell für diesen Workspace",
-      save: "Modell verwenden",
-      saving: "Standardmodell für Workspace wird eingestellt...",
-      missing_credentials: "Für diesen Anbieter fehlen Anmeldedaten!",
-      missing_credentials_description: "Klicken, um Zugangsdaten einzurichten",
+  "chat_window": {
+    "attachments_processing": "Anhänge werden verarbeitet. Bitte warten...",
+    "send_message": "Schreibe eine Nachricht",
+    "attach_file": "Füge eine Datei zum Chat hinzu",
+    "text_size": "Ändere die Größe des Textes.",
+    "microphone": "Spreche deinen Prompt ein.",
+    "send": "Versende den Prompt an den Workspace.",
+    "tts_speak_message": "Nachricht vorlesen (TTS)",
+    "copy": "Kopieren",
+    "regenerate": "Neu generieren",
+    "regenerate_response": "Antwort neu generieren",
+    "good_response": "Gute Antwort",
+    "more_actions": "Weitere Aktionen",
+    "fork": "Abzweigen",
+    "delete": "Löschen",
+    "cancel": "Abbrechen",
+    "edit_prompt": "Prompt bearbeiten",
+    "edit_response": "Antwort bearbeiten",
+    "preset_reset_description": "Chatverlauf löschen und neuen Chat starten",
+    "add_new_preset": "Neues Preset anlegen",
+    "command": "Befehl",
+    "your_command": "dein-befehl",
+    "placeholder_prompt": "Dieser Text wird vor deinem Prompt eingefügt.",
+    "description": "Beschreibung",
+    "placeholder_description": "Antwortet mit einem Gedicht über LLMs.",
+    "save": "Speichern",
+    "small": "Klein",
+    "normal": "Standard",
+    "large": "Groß",
+    "workspace_llm_manager": {
+      "search": "LLM-Provider durchsuchen",
+      "loading_workspace_settings": "Workspace-Einstellungen werden geladen",
+      "available_models": "Verfügbare Modelle von {{provider}}",
+      "available_models_description": "Wählen Sie ein Modell für diesen Workspace",
+      "save": "Modell verwenden",
+      "saving": "Standardmodell für Workspace wird eingestellt...",
+      "missing_credentials": "Für diesen Anbieter fehlen Anmeldedaten!",
+      "missing_credentials_description": "Klicken, um Zugangsdaten einzurichten"
     },
-    submit: "Absenden",
-    edit_info_user:
-      '"Absenden" generiert die Antwort des KI-Systems neu. "Speichern" aktualisiert lediglich Ihre Nachricht.',
-    edit_info_assistant:
-      "Ihre Änderungen werden direkt in diese Antwort gespeichert.",
-    see_less: "Weniger anzeigen",
-    see_more: "Mehr anzeigen",
-    tools: "Werkzeuge",
-    text_size_label: "Schriftgröße",
-    select_model: "Modell auswählen",
-    sources: "Quellen",
-    document: "Dokument",
-    similarity_match: "Spiel",
-    source_count_one: "{{count}} Referenz",
-    source_count_other: "{{count}} Verweise",
-    preset_exit_description: "Behalte die aktuelle Agentensitzung",
-    add_new: "Neu hinzufügen",
-    edit: "Bearbeiten",
-    publish: "Veröffentlichen",
-    stop_generating: "Stoppen Sie die Generierung von Antworten",
-    slash_commands: "Befehlszeilen",
-    agent_skills: "Fähigkeiten von Agenten",
-    manage_agent_skills: "Verwalten Sie die Fähigkeiten von Agenten",
-    agent_skills_disabled_in_session:
-      "Es ist nicht möglich, während einer aktiven Sitzung die Fähigkeiten zu ändern. Verwenden Sie zuerst den Befehl `/exit`, um die Sitzung zu beenden.",
-    start_agent_session: "Starte eine Agent-Sitzung",
-    use_agent_session_to_use_tools:
-      'Sie können Tools im Chat nutzen, indem Sie eine Agentensitzung mit "@agent" am Anfang Ihrer Anfrage starten.',
-    agent_invocation: {
-      model_wants_to_call: "Das Modell möchte anrufen.",
-      approve: "Genehmigen",
-      reject: "Ablehnen",
-      always_allow: "Bitte stellen Sie immer {{skillName}} sicher.",
-      tool_call_was_approved:
-        "Die Genehmigung für die Bestellung der Werkzeuge wurde erteilt.",
-      tool_call_was_rejected: "Die Anfrage nach dem Werkzeug wurde abgelehnt.",
+    "submit": "Absenden",
+    "edit_info_user": "\"Absenden\" generiert die Antwort des KI-Systems neu. \"Speichern\" aktualisiert lediglich Ihre Nachricht.",
+    "edit_info_assistant": "Ihre Änderungen werden direkt in diese Antwort gespeichert.",
+    "see_less": "Weniger anzeigen",
+    "see_more": "Mehr anzeigen",
+    "tools": "Werkzeuge",
+    "text_size_label": "Schriftgröße",
+    "select_model": "Modell auswählen",
+    "sources": "Quellen",
+    "document": "Dokument",
+    "similarity_match": "Spiel",
+    "source_count_one": "{{count}} Referenz",
+    "source_count_other": "{{count}} Verweise",
+    "preset_exit_description": "Behalte die aktuelle Agentensitzung",
+    "add_new": "Neu hinzufügen",
+    "edit": "Bearbeiten",
+    "publish": "Veröffentlichen",
+    "stop_generating": "Stoppen Sie die Generierung von Antworten",
+    "slash_commands": "Befehlszeilen",
+    "agent_skills": "Fähigkeiten von Agenten",
+    "manage_agent_skills": "Verwalten Sie die Fähigkeiten von Agenten",
+    "agent_skills_disabled_in_session": "Es ist nicht möglich, während einer aktiven Sitzung die Fähigkeiten zu ändern. Verwenden Sie zuerst den Befehl `/exit`, um die Sitzung zu beenden.",
+    "start_agent_session": "Starte eine Agent-Sitzung",
+    "use_agent_session_to_use_tools": "Sie können Tools im Chat nutzen, indem Sie eine Agentensitzung mit \"@agent\" am Anfang Ihrer Anfrage starten.",
+    "agent_invocation": {
+      "model_wants_to_call": "Das Modell möchte anrufen.",
+      "approve": "Genehmigen",
+      "reject": "Ablehnen",
+      "always_allow": "Bitte stellen Sie immer {{skillName}} sicher.",
+      "tool_call_was_approved": "Die Genehmigung für die Bestellung der Werkzeuge wurde erteilt.",
+      "tool_call_was_rejected": "Die Anfrage nach dem Werkzeug wurde abgelehnt.",
+      "clarifying_question_header": "Der Agent benötigt weitere Informationen.",
+      "clarifying_skip": "Lassen Sie den Agenten entscheiden.",
+      "clarifying_submit": "Absenden",
+      "clarifying_skipped": "Sie lassen den Vertreter die Entscheidung treffen.",
+      "clarifying_timeout": "Keine Antwort wurde rechtzeitig eingereicht.",
+      "clarifying_pagination": "{{current}} von {{total}}",
+      "clarifying_prev_aria": "Vorherige Frage",
+      "clarifying_next_aria": "Nächste Frage",
+      "clarifying_close_aria": "Schließen und überspringen",
+      "clarifying_other": "Andere",
+      "clarifying_other_placeholder": "Geben Sie Ihre Antwort ein",
+      "batch_progress": "{{answered}} von {{total}} hat geantwortet",
+      "batch_skip_this": "Überspringen",
+      "batch_submit_all": "Alle Dokumente einreichen",
+      "batch_next": "Nächster",
+      "answer_skipped": "[Benutzer übersprungen]"
     },
-    custom_skills: "Individuelle Fähigkeiten",
-    agent_flows: "Datenströme",
-    no_tools_found: "Keine passenden Werkzeuge gefunden.",
-    loading_mcp_servers: "MCP-Server laden...",
-    app_integrations: "Anwendungen und Integrationen",
-    sub_skills: "Spezifische Fähigkeiten",
+    "custom_skills": "Individuelle Fähigkeiten",
+    "agent_flows": "Datenströme",
+    "no_tools_found": "Keine passenden Werkzeuge gefunden.",
+    "loading_mcp_servers": "MCP-Server laden...",
+    "app_integrations": "Anwendungen und Integrationen",
+    "sub_skills": "Spezifische Fähigkeiten"
   },
-  profile_settings: {
-    edit_account: "Account bearbeiten",
-    profile_picture: "Profilbild",
-    remove_profile_picture: "Profilbild entfernen",
-    username: "Nutzername",
-    new_password: "Neues Passwort",
-    password_description: "Das Passwort muss mindestens 8 Zeichen haben.",
-    cancel: "Abbrechen",
-    update_account: "Account updaten",
-    theme: "Bevorzugtes Design",
-    language: "Bevorzugte Sprache",
-    failed_upload: "Profilbild konnte nicht hochgeladen werden: {{error}}",
-    upload_success: "Profilbild hochgeladen.",
-    failed_remove: "Profilbild konnte nicht entfernt werden: {{error}}",
-    profile_updated: "Profil wurde aktualisiert.",
-    failed_update_user: "Benutzer konnte nicht aktualisiert werden: {{error}}",
-    account: "Account",
-    support: "Support",
-    signout: "Abmelden",
+  "profile_settings": {
+    "edit_account": "Account bearbeiten",
+    "profile_picture": "Profilbild",
+    "remove_profile_picture": "Profilbild entfernen",
+    "username": "Nutzername",
+    "new_password": "Neues Passwort",
+    "password_description": "Das Passwort muss mindestens 8 Zeichen haben.",
+    "cancel": "Abbrechen",
+    "update_account": "Account updaten",
+    "theme": "Bevorzugtes Design",
+    "language": "Bevorzugte Sprache",
+    "failed_upload": "Profilbild konnte nicht hochgeladen werden: {{error}}",
+    "upload_success": "Profilbild hochgeladen.",
+    "failed_remove": "Profilbild konnte nicht entfernt werden: {{error}}",
+    "profile_updated": "Profil wurde aktualisiert.",
+    "failed_update_user": "Benutzer konnte nicht aktualisiert werden: {{error}}",
+    "account": "Account",
+    "support": "Support",
+    "signout": "Abmelden"
   },
   "keyboard-shortcuts": {
-    title: "Tastaturkürzel",
-    shortcuts: {
-      settings: "Einstellungen öffnen",
-      workspaceSettings: "Workspace Einstellungen öffnen",
-      home: "Zur Startseite",
-      workspaces: "Workspaces verwalten",
-      apiKeys: "API-Schlüssel Einstellungen",
-      llmPreferences: "LLM-Einstellungen",
-      chatSettings: "Chat Einstellungen",
-      help: "Tastenkürzel Hilfe anzeigen",
-      showLLMSelector: "LLM-Auswahl für Workspace zeigen",
-    },
+    "title": "Tastaturkürzel",
+    "shortcuts": {
+      "settings": "Einstellungen öffnen",
+      "workspaceSettings": "Workspace Einstellungen öffnen",
+      "home": "Zur Startseite",
+      "workspaces": "Workspaces verwalten",
+      "apiKeys": "API-Schlüssel Einstellungen",
+      "llmPreferences": "LLM-Einstellungen",
+      "chatSettings": "Chat Einstellungen",
+      "help": "Tastenkürzel Hilfe anzeigen",
+      "showLLMSelector": "LLM-Auswahl für Workspace zeigen"
+    }
   },
-  community_hub: {
-    publish: {
-      system_prompt: {
-        success_title: "Erfolg!",
-        success_description:
-          "Ihre System-Anweisung wurde im Community Hub veröffentlicht!",
-        success_thank_you: "Vielen Dank für die Weitergabe an die Community!",
-        view_on_hub: "Ansicht im Community Hub",
-        modal_title:
-          "Veröffentlichen Sie das System, um die Benutzer zu informieren, dass das System nicht mehr verfügbar ist.",
-        name_label: "Name",
-        visibility_label: "Sichtbarkeit",
-        public_description: "Öffentliche Anweisungen sind für alle sichtbar.",
-        private_description:
-          "Private System-Nachrichten sind nur für Sie sichtbar.",
-        publish_button: "Veröffentlichen Sie im Community Hub",
-        submitting: "Veröffentlichung...",
-        prompt_label: "Prompt",
-        prompt_description:
-          "Dies ist der eigentliche Systemprompt, der verwendet wird, um das LLM zu steuern.",
-        prompt_placeholder: "Bitte geben Sie Ihren Systemprompt hier ein...",
-        name_description: "Dies ist der Anzeigename für Ihren Systemprompt.",
-        name_placeholder: "Mein System-Prompt",
-        description_label: "Beschreibung",
-        description_description:
-          "Dies ist die Beschreibung Ihres System-Prompts. Verwenden Sie dies, um den Zweck Ihres System-Prompts zu beschreiben.",
-        tags_label: "Schlüsselwörter",
-        tags_description:
-          "Die Tags werden verwendet, um Ihre Systemanweisung für eine einfachere Suche zu kennzeichnen. Sie können mehrere Tags hinzufügen. Maximal 5 Tags. Maximal 20 Zeichen pro Tag.",
-        tags_placeholder:
-          "Geben Sie den Text ein und drücken Sie die Eingabetaste, um Tags hinzuzufügen.",
+  "community_hub": {
+    "publish": {
+      "system_prompt": {
+        "success_title": "Erfolg!",
+        "success_description": "Ihre System-Anweisung wurde im Community Hub veröffentlicht!",
+        "success_thank_you": "Vielen Dank für die Weitergabe an die Community!",
+        "view_on_hub": "Ansicht im Community Hub",
+        "modal_title": "Veröffentlichen Sie das System, um die Benutzer zu informieren, dass das System nicht mehr verfügbar ist.",
+        "name_label": "Name",
+        "visibility_label": "Sichtbarkeit",
+        "public_description": "Öffentliche Anweisungen sind für alle sichtbar.",
+        "private_description": "Private System-Nachrichten sind nur für Sie sichtbar.",
+        "publish_button": "Veröffentlichen Sie im Community Hub",
+        "submitting": "Veröffentlichung...",
+        "prompt_label": "Prompt",
+        "prompt_description": "Dies ist der eigentliche Systemprompt, der verwendet wird, um das LLM zu steuern.",
+        "prompt_placeholder": "Bitte geben Sie Ihren Systemprompt hier ein...",
+        "name_description": "Dies ist der Anzeigename für Ihren Systemprompt.",
+        "name_placeholder": "Mein System-Prompt",
+        "description_label": "Beschreibung",
+        "description_description": "Dies ist die Beschreibung Ihres System-Prompts. Verwenden Sie dies, um den Zweck Ihres System-Prompts zu beschreiben.",
+        "tags_label": "Schlüsselwörter",
+        "tags_description": "Die Tags werden verwendet, um Ihre Systemanweisung für eine einfachere Suche zu kennzeichnen. Sie können mehrere Tags hinzufügen. Maximal 5 Tags. Maximal 20 Zeichen pro Tag.",
+        "tags_placeholder": "Geben Sie den Text ein und drücken Sie die Eingabetaste, um Tags hinzuzufügen."
       },
-      agent_flow: {
-        success_title: "Erfolg!",
-        success_description:
-          "Ihr Agent Flow wurde auf dem Community Hub veröffentlicht!",
-        success_thank_you: "Vielen Dank für die Weitergabe an die Community!",
-        view_on_hub: "Ansicht im Community Hub",
-        modal_title: "Veröffentlichen Sie den Agentenfluss.",
-        name_label: "Name",
-        name_description: "Dies ist der Anzeigename für Ihren Agentenablauf.",
-        name_placeholder: "Mein Agent Flow",
-        description_label: "Beschreibung",
-        description_description:
-          "Dies ist die Beschreibung Ihres Agentenflusses. Verwenden Sie diese, um den Zweck Ihres Agentenflusses zu beschreiben.",
-        tags_label: "Schlüsselwörter",
-        tags_description:
-          "Die Tags werden verwendet, um Ihren Agentenfluss leichter durchsuchbar zu machen. Sie können mehrere Tags hinzufügen. Maximal 5 Tags. Maximal 20 Zeichen pro Tag.",
-        tags_placeholder:
-          "Geben Sie Tags ein und drücken Sie die Eingabetaste, um sie hinzuzufügen.",
-        visibility_label: "Sichtbarkeit",
-        submitting: "Veröffentlichung...",
-        submit: "Veröffentlichen Sie im Community Hub",
-        privacy_note:
-          "Agent-Prozesse werden immer privat hochgeladen, um sensible Daten zu schützen. Sie können die Sichtbarkeit im Community Hub nach der Veröffentlichung ändern. Bitte überprüfen Sie, ob Ihr Prozess keine sensiblen oder privaten Informationen enthält, bevor Sie ihn veröffentlichen.",
+      "agent_flow": {
+        "success_title": "Erfolg!",
+        "success_description": "Ihr Agent Flow wurde auf dem Community Hub veröffentlicht!",
+        "success_thank_you": "Vielen Dank für die Weitergabe an die Community!",
+        "view_on_hub": "Ansicht im Community Hub",
+        "modal_title": "Veröffentlichen Sie den Agentenfluss.",
+        "name_label": "Name",
+        "name_description": "Dies ist der Anzeigename für Ihren Agentenablauf.",
+        "name_placeholder": "Mein Agent Flow",
+        "description_label": "Beschreibung",
+        "description_description": "Dies ist die Beschreibung Ihres Agentenflusses. Verwenden Sie diese, um den Zweck Ihres Agentenflusses zu beschreiben.",
+        "tags_label": "Schlüsselwörter",
+        "tags_description": "Die Tags werden verwendet, um Ihren Agentenfluss leichter durchsuchbar zu machen. Sie können mehrere Tags hinzufügen. Maximal 5 Tags. Maximal 20 Zeichen pro Tag.",
+        "tags_placeholder": "Geben Sie Tags ein und drücken Sie die Eingabetaste, um sie hinzuzufügen.",
+        "visibility_label": "Sichtbarkeit",
+        "submitting": "Veröffentlichung...",
+        "submit": "Veröffentlichen Sie im Community Hub",
+        "privacy_note": "Agent-Prozesse werden immer privat hochgeladen, um sensible Daten zu schützen. Sie können die Sichtbarkeit im Community Hub nach der Veröffentlichung ändern. Bitte überprüfen Sie, ob Ihr Prozess keine sensiblen oder privaten Informationen enthält, bevor Sie ihn veröffentlichen."
       },
-      generic: {
-        unauthenticated: {
-          title: "Benötigte Authentifizierung",
-          description:
-            "Sie müssen sich vor der Veröffentlichung von Inhalten über den AnythingLLM Community Hub authentifizieren.",
-          button: "Verbinden Sie sich mit dem Community Hub",
-        },
+      "generic": {
+        "unauthenticated": {
+          "title": "Benötigte Authentifizierung",
+          "description": "Sie müssen sich vor der Veröffentlichung von Inhalten über den AnythingLLM Community Hub authentifizieren.",
+          "button": "Verbinden Sie sich mit dem Community Hub"
+        }
       },
-      slash_command: {
-        success_title: "Erfolg!",
-        success_description:
-          "Ihre Slash-Befehle wurden im Community Hub veröffentlicht!",
-        success_thank_you: "Vielen Dank für die Weitergabe an die Community!",
-        view_on_hub: "Ansicht im Community Hub",
-        modal_title: "Slash-Befehle veröffentlichen",
-        name_label: "Name",
-        name_description: "Dies ist der Anzeigename für Ihren Slash-Befehl.",
-        name_placeholder: "Meine Slash-Befehle",
-        description_label: "Beschreibung",
-        description_description:
-          "Dies ist die Beschreibung für Ihren Slash-Befehl. Verwenden Sie diese, um den Zweck Ihres Slash-Befehls zu beschreiben.",
-        tags_label: "Schlüsselwörter",
-        tags_description:
-          "Die Tags werden verwendet, um Ihren Slash-Befehl zu kennzeichnen und die Suche zu erleichtern. Sie können mehrere Tags hinzufügen. Maximal 5 Tags. Maximal 20 Zeichen pro Tag.",
-        tags_placeholder:
-          "Geben Sie Tags ein und drücken Sie die Eingabetaste, um sie hinzuzufügen.",
-        visibility_label: "Sichtbarkeit",
-        public_description:
-          "Öffentliche Slash-Befehle sind für jeden sichtbar.",
-        private_description: "Private Slash-Befehle sind nur für Sie sichtbar.",
-        publish_button: "Veröffentlichen Sie im Community Hub",
-        submitting: "Veröffentlichung...",
-        prompt_label:
-          "Bitte geben Sie den Namen des Produkts an, das Sie verkaufen möchten.",
-        prompt_description:
-          "Dies ist der Befehl, der verwendet wird, wenn der Slash-Befehl ausgelöst wird.",
-        prompt_placeholder: "Bitte geben Sie Ihre Anfrage hier ein...",
-      },
-    },
+      "slash_command": {
+        "success_title": "Erfolg!",
+        "success_description": "Ihre Slash-Befehle wurden im Community Hub veröffentlicht!",
+        "success_thank_you": "Vielen Dank für die Weitergabe an die Community!",
+        "view_on_hub": "Ansicht im Community Hub",
+        "modal_title": "Slash-Befehle veröffentlichen",
+        "name_label": "Name",
+        "name_description": "Dies ist der Anzeigename für Ihren Slash-Befehl.",
+        "name_placeholder": "Meine Slash-Befehle",
+        "description_label": "Beschreibung",
+        "description_description": "Dies ist die Beschreibung für Ihren Slash-Befehl. Verwenden Sie diese, um den Zweck Ihres Slash-Befehls zu beschreiben.",
+        "tags_label": "Schlüsselwörter",
+        "tags_description": "Die Tags werden verwendet, um Ihren Slash-Befehl zu kennzeichnen und die Suche zu erleichtern. Sie können mehrere Tags hinzufügen. Maximal 5 Tags. Maximal 20 Zeichen pro Tag.",
+        "tags_placeholder": "Geben Sie Tags ein und drücken Sie die Eingabetaste, um sie hinzuzufügen.",
+        "visibility_label": "Sichtbarkeit",
+        "public_description": "Öffentliche Slash-Befehle sind für jeden sichtbar.",
+        "private_description": "Private Slash-Befehle sind nur für Sie sichtbar.",
+        "publish_button": "Veröffentlichen Sie im Community Hub",
+        "submitting": "Veröffentlichung...",
+        "prompt_label": "Bitte geben Sie den Namen des Produkts an, das Sie verkaufen möchten.",
+        "prompt_description": "Dies ist der Befehl, der verwendet wird, wenn der Slash-Befehl ausgelöst wird.",
+        "prompt_placeholder": "Bitte geben Sie Ihre Anfrage hier ein..."
+      }
+    }
   },
-  security: {
-    title: "Sicherheit",
-    multiuser: {
-      title: "Mehrbenutzer-Modus",
-      description:
-        "Richten Sie Ihre Instanz ein, um Ihr Team zu unterstützen, indem Sie den Mehrbenutzer-Modus aktivieren.",
-      enable: {
+  "security": {
+    "title": "Sicherheit",
+    "multiuser": {
+      "title": "Mehrbenutzer-Modus",
+      "description": "Richten Sie Ihre Instanz ein, um Ihr Team zu unterstützen, indem Sie den Mehrbenutzer-Modus aktivieren.",
+      "enable": {
         "is-enable": "Mehrbenutzer-Modus ist aktiviert",
-        enable: "Mehrbenutzer-Modus aktivieren",
-        description:
-          "Standardmäßig sind Sie der einzige Administrator. Als Administrator müssen Sie Konten für alle neuen Benutzer oder Administratoren erstellen. Verlieren Sie Ihr Passwort nicht, da nur ein Administrator-Benutzer Passwörter zurücksetzen kann.",
-        username: "Administrator-Kontoname",
-        password: "Administrator-Kontopasswort",
-      },
+        "enable": "Mehrbenutzer-Modus aktivieren",
+        "description": "Standardmäßig sind Sie der einzige Administrator. Als Administrator müssen Sie Konten für alle neuen Benutzer oder Administratoren erstellen. Verlieren Sie Ihr Passwort nicht, da nur ein Administrator-Benutzer Passwörter zurücksetzen kann.",
+        "username": "Administrator-Kontoname",
+        "password": "Administrator-Kontopasswort"
+      }
     },
-    password: {
-      title: "Passwortschutz",
-      description:
-        "Schützen Sie Ihre AnythingLLM-Instanz mit einem Passwort. Wenn Sie dieses vergessen, gibt es keine Wiederherstellungsmethode, also stellen Sie sicher, dass Sie dieses Passwort speichern.",
-      "password-label": "Instanzpasswort",
-    },
+    "password": {
+      "title": "Passwortschutz",
+      "description": "Schützen Sie Ihre AnythingLLM-Instanz mit einem Passwort. Wenn Sie dieses vergessen, gibt es keine Wiederherstellungsmethode, also stellen Sie sicher, dass Sie dieses Passwort speichern.",
+      "password-label": "Instanzpasswort"
+    }
   },
-  home: {
-    welcome: "Willkommen",
-    chooseWorkspace: "Wählen Sie ein Arbeitsbereich, um zu beginnen!",
-    notAssigned:
-      "Sie sind nicht zugewiesen zu einem Arbeitsbereich.\nBitte kontaktieren Sie Ihren Administrator, um Zugriff auf einen Arbeitsbereich zu erhalten.",
-    goToWorkspace: 'Zurück zum Arbeitsbereich "{{workspace}}"',
+  "home": {
+    "welcome": "Willkommen",
+    "chooseWorkspace": "Wählen Sie ein Arbeitsbereich, um zu beginnen!",
+    "notAssigned": "Sie sind nicht zugewiesen zu einem Arbeitsbereich.\nBitte kontaktieren Sie Ihren Administrator, um Zugriff auf einen Arbeitsbereich zu erhalten.",
+    "goToWorkspace": "Zurück zum Arbeitsbereich \"{{workspace}}\""
   },
-  telegram: {
-    title: "Telegram-Bot",
-    description:
-      "Verbinden Sie Ihre AnyLLM-Instanz mit Telegram, damit Sie von jedem Gerät mit Ihren Arbeitsbereichen chatten können.",
-    setup: {
-      step1: {
-        title: "Schritt 1: Erstellen Sie Ihren Telegram-Bot",
-        description:
-          "Öffnen Sie @BotFather in Telegram, senden Sie <code>/newbot</code> an <code>@BotFather</code>, befolgen Sie die Anweisungen und kopieren Sie den API-Token.",
+  "telegram": {
+    "title": "Telegram-Bot",
+    "description": "Verbinden Sie Ihre AnyLLM-Instanz mit Telegram, damit Sie von jedem Gerät mit Ihren Arbeitsbereichen chatten können.",
+    "setup": {
+      "step1": {
+        "title": "Schritt 1: Erstellen Sie Ihren Telegram-Bot",
+        "description": "Öffnen Sie @BotFather in Telegram, senden Sie <code>/newbot</code> an <code>@BotFather</code>, befolgen Sie die Anweisungen und kopieren Sie den API-Token.",
         "open-botfather": "Öffnen Sie BotFather",
         "instruction-1": "1. Öffnen Sie den Link oder scannen Sie den QR-Code",
-        "instruction-2":
-          "2. Senden Sie <code>/newbot</code> an <code>@BotFather</code>",
-        "instruction-3":
-          "3. Wählen Sie einen Namen und einen Benutzernamen für Ihren Bot aus.",
-        "instruction-4": "4. Kopieren Sie den API-Token, den Sie erhalten.",
+        "instruction-2": "2. Senden Sie <code>/newbot</code> an <code>@BotFather</code>",
+        "instruction-3": "3. Wählen Sie einen Namen und einen Benutzernamen für Ihren Bot aus.",
+        "instruction-4": "4. Kopieren Sie den API-Token, den Sie erhalten."
       },
-      step2: {
-        title: "Schritt 2: Verbinden Sie Ihren Bot",
-        description:
-          "Fügen Sie den API-Token ein, den Sie von @BotFather erhalten haben, und wählen Sie einen Standard-Arbeitsbereich für Ihren Bot aus, mit dem er kommunizieren soll.",
+      "step2": {
+        "title": "Schritt 2: Verbinden Sie Ihren Bot",
+        "description": "Fügen Sie den API-Token ein, den Sie von @BotFather erhalten haben, und wählen Sie einen Standard-Arbeitsbereich für Ihren Bot aus, mit dem er kommunizieren soll.",
         "bot-token": "Bot-Token",
-        connecting: "Verbinde...",
-        "connect-bot": "Connect-Bot",
+        "connecting": "Verbinde...",
+        "connect-bot": "Connect-Bot"
       },
-      security: {
-        title: "Empfohlene Sicherheitseinstellungen",
-        description:
-          "Für zusätzliche Sicherheit, konfigurieren Sie diese Einstellungen über @BotFather.",
-        "disable-groups":
-          "– Verhinderung der automatisierten Anmeldung von Bots in Gruppen",
-        "disable-inline":
-          "– Verhindern Sie die Verwendung von Bots in der Inline-Suche",
-        "obscure-username":
-          "Verwenden Sie einen Benutzernamen für den Bot, der nicht offensichtlich ist, um die Auffindbarkeit zu reduzieren.",
+      "security": {
+        "title": "Empfohlene Sicherheitseinstellungen",
+        "description": "Für zusätzliche Sicherheit, konfigurieren Sie diese Einstellungen über @BotFather.",
+        "disable-groups": "– Verhinderung der automatisierten Anmeldung von Bots in Gruppen",
+        "disable-inline": "– Verhindern Sie die Verwendung von Bots in der Inline-Suche",
+        "obscure-username": "Verwenden Sie einen Benutzernamen für den Bot, der nicht offensichtlich ist, um die Auffindbarkeit zu reduzieren."
       },
       "toast-enter-token": "Bitte geben Sie einen Bot-Token ein.",
-      "toast-connect-failed":
-        "Verbindung zum Bot konnte nicht hergestellt werden.",
+      "toast-connect-failed": "Verbindung zum Bot konnte nicht hergestellt werden."
     },
-    connected: {
-      status: "Verbunden",
-      "status-disconnected":
-        "Abgekoppelt – Token möglicherweise abgelaufen oder ungültig",
+    "connected": {
+      "status": "Verbunden",
+      "status-disconnected": "Abgekoppelt – Token möglicherweise abgelaufen oder ungültig",
       "placeholder-token": "Neuen Bot-Token einfügen...",
-      reconnect: "Wiederherstellen",
-      workspace: "Arbeitsbereich",
+      "reconnect": "Wiederherstellen",
+      "workspace": "Arbeitsbereich",
       "bot-link": "Link",
       "voice-response": "Sprachantwort",
-      disconnecting: "Abmelden...",
-      disconnect: "Abkoppeln",
+      "disconnecting": "Abmelden...",
+      "disconnect": "Abkoppeln",
       "voice-text-only": "Nur Text",
-      "voice-mirror":
-        "Echo (Antworten mit Sprache, wenn der Benutzer Sprache sendet)",
-      "voice-always":
-        "Bitte immer Sprachnachrichten senden (Audio mit jeder Antwort hinzufügen)",
-      "toast-disconnect-failed":
-        "Es konnte nicht erfolgreich die Verbindung zum Bot trennen.",
-      "toast-reconnect-failed":
-        "Verbindung zum Bot konnte nicht hergestellt werden.",
-      "toast-voice-failed":
-        "Fehlgeschlagen bei der Aktualisierung des Sprachmodus.",
+      "voice-mirror": "Echo (Antworten mit Sprache, wenn der Benutzer Sprache sendet)",
+      "voice-always": "Bitte immer Sprachnachrichten senden (Audio mit jeder Antwort hinzufügen)",
+      "toast-disconnect-failed": "Es konnte nicht erfolgreich die Verbindung zum Bot trennen.",
+      "toast-reconnect-failed": "Verbindung zum Bot konnte nicht hergestellt werden.",
+      "toast-voice-failed": "Fehlgeschlagen bei der Aktualisierung des Sprachmodus.",
       "toast-approve-failed": "Benutzer konnte nicht autorisiert werden.",
       "toast-deny-failed": "Nicht in der Lage, den Benutzer abzuweisen.",
-      "toast-revoke-failed":
-        "Fehlgeschlagener Versuch, das Benutzerkonto zu deaktivieren.",
+      "toast-revoke-failed": "Fehlgeschlagener Versuch, das Benutzerkonto zu deaktivieren."
     },
-    users: {
-      "pending-description":
-        "Benutzer, die noch verifiziert werden müssen. Vergleichen Sie den hier angezeigten Pairing-Code mit dem, der in ihrem Telegram-Chat angezeigt wird.",
-      unknown: "Unbekannt",
-    },
-  },
-};
+    "users": {
+      "pending-description": "Benutzer, die noch verifiziert werden müssen. Vergleichen Sie den hier angezeigten Pairing-Code mit dem, der in ihrem Telegram-Chat angezeigt wird.",
+      "unknown": "Unbekannt"
+    }
+  }
+}
 
 export default TRANSLATIONS;
