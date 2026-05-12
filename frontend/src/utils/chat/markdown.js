@@ -78,6 +78,16 @@ markdown.renderer.rules.image = function (tokens, idx) {
 
 markdown.use(markdownItKatexPlugin);
 
+// ── Stream-aware Pre-Processor (2026-05-12) ────────────────────────────────
+// Während Streaming sind `[Text](url-noch-am-streamen` ohne `)` partial.
+// markdown-it würde "Text" verstecken bis `)` kommt → 400ms-Hänger.
+// Pre-Processor: zeige "Text" als Bold sobald `]` da ist, bis `)` ankommt.
+function streamSafePreprocess(text) {
+  // Match: am Ende des Strings ein unfertiger Link [Text](url-ohne-)
+  // Replace mit fettem Text + Loading-Hinweis
+  return text.replace(/\[([^\]]+)\]\([^)\s]*$/, "**$1**");
+}
+
 export default function renderMarkdown(text = "") {
-  return markdown.render(text);
+  return markdown.render(streamSafePreprocess(text));
 }
