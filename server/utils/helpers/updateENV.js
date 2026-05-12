@@ -311,6 +311,26 @@ const KEY_MAPPING = {
     envKey: "EMBEDDING_OUTPUT_DIMENSIONS",
     checks: [],
   },
+  DocumentEmbeddingMode: {
+    envKey: "DOCUMENT_EMBEDDING_MODE",
+    checks: [validDocumentEmbeddingMode],
+  },
+  EmbeddingBatchCompletionWindow: {
+    envKey: "EMBEDDING_BATCH_COMPLETION_WINDOW",
+    checks: [validBatchCompletionWindow],
+  },
+  EmbeddingBatchPollIntervalSeconds: {
+    envKey: "EMBEDDING_BATCH_POLL_INTERVAL_SECONDS",
+    checks: [nonZero],
+  },
+  EmbeddingBatchMaxItemsPerFile: {
+    envKey: "EMBEDDING_BATCH_MAX_ITEMS_PER_FILE",
+    checks: [nonZero],
+  },
+  EmbeddingBatchJobRetentionDays: {
+    envKey: "EMBEDDING_BATCH_JOB_RETENTION_DAYS",
+    checks: [nonZero],
+  },
   OllamaEmbeddingBatchSize: {
     envKey: "OLLAMA_EMBEDDING_BATCH_SIZE",
     checks: [nonZero],
@@ -1019,6 +1039,19 @@ function supportedEmbeddingModel(input = "") {
   return supported.includes(input)
     ? null
     : `Invalid Embedding model type. Must be one of ${supported.join(", ")}.`;
+}
+
+function validDocumentEmbeddingMode(input = "") {
+  const supported = ["direct", "batch"];
+  return supported.includes(input)
+    ? null
+    : `Invalid document embedding mode. Must be one of ${supported.join(", ")}.`;
+}
+
+function validBatchCompletionWindow(input = "") {
+  return input === "24h"
+    ? null
+    : 'Invalid batch completion window. Must be "24h".';
 }
 
 function supportedVectorDB(input = "") {

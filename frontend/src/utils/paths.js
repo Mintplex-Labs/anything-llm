@@ -152,6 +152,9 @@ export default {
     logs: () => {
       return "/settings/event-logs";
     },
+    batchJobs: () => {
+      return "/settings/batch-jobs";
+    },
     privacy: () => {
       return "/settings/privacy";
     },

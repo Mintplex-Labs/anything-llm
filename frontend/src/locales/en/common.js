@@ -52,6 +52,8 @@ const TRANSLATIONS = {
     productName: "AnythingLLM",
     defaultSiteTitle: "AnythingLLM | Your personal LLM trained on anything",
     clear: "Clear",
+    thread: "Thread",
+    default: "Default",
     "workspaces-name": "Workspace Name",
     selection: "Model Selection",
     saving: "Saving...",
@@ -92,6 +94,7 @@ const TRANSLATIONS = {
     transcription: "Transcription",
     embedder: "Embedder",
     "text-splitting": "Text Splitter & Chunking",
+    "batch-jobs": "Batch Jobs",
     "voice-speech": "Voice & Speech",
     "vector-database": "Vector Database",
     embeds: "Chat Embed",
@@ -312,6 +315,11 @@ const TRANSLATIONS = {
         title: "RAG & long-term memory",
         description:
           'Allow the agent to leverage your local documents to answer a query or ask the agent to "remember" pieces of content for long-term memory retrieval.',
+      },
+      ingest: {
+        title: "Document ingest",
+        description:
+          "Allow the agent to add already uploaded or parsed documents to the current workspace knowledge base.",
       },
       view: {
         title: "View & summarize documents",
@@ -950,6 +958,41 @@ const TRANSLATIONS = {
       "Embedding is the process of turning text into vectors. These credentials are required to turn your files and prompts into a format which AnythingLLM can use to process.",
     provider: {
       title: "Embedding Provider",
+    },
+    "document-mode": {
+      title: "Document Embedding Mode",
+      direct: {
+        title: "Direct real-time",
+        description:
+          "Files are embedded immediately after upload. This is faster but billed at real-time embedding rates.",
+      },
+      batch: {
+        title: "Batch async",
+        description:
+          "Files are submitted as asynchronous batch jobs. Cost is lower, but documents are searchable only after completion.",
+      },
+      note: "This setting only affects document ingestion and workspace embedding rebuilds. Chat, search, and RAG queries always use direct real-time embeddings.",
+    },
+  },
+  "batch-jobs": {
+    title: "Batch Jobs",
+    description: "Review asynchronous document embedding jobs.",
+    table: {
+      "job-id": "Job ID",
+      workspace: "Workspace",
+      status: "Status",
+      "retry-count": "Retries",
+      "next-retry": "Next Retry",
+      created: "Created",
+      updated: "Updated",
+      error: "Last Error",
+      action: "Action",
+    },
+    retry: {
+      label: "Retry",
+      working: "Retrying...",
+      started: "Batch job polling resumed.",
+      failed: "Failed to resume batch job polling.",
     },
   },
   text: {

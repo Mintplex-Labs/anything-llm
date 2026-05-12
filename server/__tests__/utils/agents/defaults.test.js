@@ -112,6 +112,9 @@ describe("WORKSPACE_AGENT.getDefinition", () => {
 
     expect(definition).toHaveProperty("functions");
     expect(Array.isArray(definition.functions)).toBe(true);
+    expect(definition.functions).toEqual(
+      expect.arrayContaining(["document-ingest-agent"])
+    );
   });
 
   it("should use LMStudio specific prompt when workspace has no openAiPrompt", async () => {
@@ -128,4 +131,3 @@ describe("WORKSPACE_AGENT.getDefinition", () => {
     expect(definition.role).toContain("helpful ai assistant");
   });
 });
-

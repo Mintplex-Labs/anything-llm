@@ -120,6 +120,7 @@ const memory = {
             try {
               const workspace = this.super.handlerProps.invocation.workspace;
               const vectorDB = getVectorDbClass();
+              this.super.handlerProps.log("memory.store: direct memory write");
               const { error } = await vectorDB.addDocumentToNamespace(
                 workspace.slug,
                 {

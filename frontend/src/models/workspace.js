@@ -40,20 +40,21 @@ const Workspace = {
     return { workspace, message };
   },
   modifyEmbeddings: async function (slug, changes = {}) {
-    const { workspace, message } = await fetch(
-      `${API_BASE}/workspace/${slug}/update-embeddings`,
-      {
-        method: "POST",
-        body: JSON.stringify(changes), // contains 'adds' and 'removes' keys that are arrays of filepaths
-        headers: baseHeaders(),
-      }
-    )
+    const {
+      workspace,
+      message,
+      batchJob = null,
+    } = await fetch(`${API_BASE}/workspace/${slug}/update-embeddings`, {
+      method: "POST",
+      body: JSON.stringify(changes), // contains 'adds' and 'removes' keys that are arrays of filepaths
+      headers: baseHeaders(),
+    })
       .then((res) => res.json())
       .catch((e) => {
         return { workspace: null, message: e.message };
       });
 
-    return { workspace, message };
+    return { workspace, message, batchJob };
   },
   removeQueuedEmbedding: async function (slug, filename) {
     return fetch(`${API_BASE}/workspace/${slug}/embed-queue`, {

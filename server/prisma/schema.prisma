@@ -33,6 +33,9 @@ model workspace_documents {
   metadata             String?
   pinned               Boolean?              @default(false)
   watched              Boolean?              @default(false)
+  embeddingStatus      String                @default("completed")
+  embeddingError       String?
+  embeddingBatchJobId  String?
   createdAt            DateTime              @default(now())
   lastUpdatedAt        DateTime              @default(now())
   workspace            workspaces            @relation(fields: [workspaceId], references: [id])
@@ -270,6 +273,45 @@ model event_logs {
   userId     Int?
   occurredAt DateTime @default(now())
 
+  @@index([event])
+}
+
+model embedding_batch_jobs {
+  id           Int      @id @default(autoincrement())
+  jobId        String   @unique
+  workspaceId  Int
+  workspaceSlug String
+  documentIds  String
+  documentPaths String
+  status       String   @default("queued")
+  provider     String
+  model        String
+  inputFileId  String?
+  batchId      String?
+  outputFileId String?
+  errorFileId  String?
+  createdBy    Int?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+  completedAt  DateTime?
+  lastError    String?
+  retryCount   Int      @default(0)
+  nextRetryAt  DateTime?
+  lastTransientError String?
+
+  @@index([status])
+  @@index([workspaceId])
+  @@index([jobId])
+}
+
+model embedding_batch_job_events {
+  id         Int      @id @default(autoincrement())
+  jobId      String
+  event      String
+  metadata   String?
+  occurredAt DateTime @default(now())
+
+  @@index([jobId])
   @@index([event])
 }
 

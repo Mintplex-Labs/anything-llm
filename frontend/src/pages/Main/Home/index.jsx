@@ -26,6 +26,7 @@ import useUser from "@/hooks/useUser";
 import TextSizeMenu from "@/components/WorkspaceChat/ChatContainer/TextSizeMenu";
 import WorkspaceModelPicker from "@/components/WorkspaceChat/ChatContainer/WorkspaceModelPicker";
 import { ChatTooltips } from "@/components/WorkspaceChat/ChatContainer/ChatTooltips";
+import { useChatThreadDrafts } from "@/contexts/ChatThreadDraftProvider";
 
 async function getTargetWorkspace() {
   const lastVisited = safeJsonParse(
@@ -59,6 +60,7 @@ export default function Home() {
   const [workspaceLoading, setWorkspaceLoading] = useState(true);
   const [dragging, setDragging] = useState(false);
   const pendingFilesRef = useRef([]);
+  const { hasWorkspaceActivity } = useChatThreadDrafts();
 
   useEffect(() => {
     async function init() {
@@ -105,6 +107,7 @@ export default function Home() {
         if (!ws) return;
         setWorkspace(ws);
       }
+      if (hasWorkspaceActivity(ws.slug)) return;
       const { thread } = await Workspace.threads.new(ws.slug);
       if (thread) setThreadSlug(thread.slug);
     }
@@ -112,7 +115,7 @@ export default function Home() {
     window.addEventListener(PASTE_ATTACHMENT_EVENT, handlePaste);
     return () =>
       window.removeEventListener(PASTE_ATTACHMENT_EVENT, handlePaste);
-  }, [workspace, threadSlug]);
+  }, [workspace, threadSlug, hasWorkspaceActivity]);
 
   async function handleDropWithoutWorkspace(acceptedFiles) {
     setDragging(false);
@@ -120,6 +123,7 @@ export default function Home() {
     const ws = await createDefaultWorkspace(t("new-workspace.placeholder"));
     if (!ws) return;
     setWorkspace(ws);
+    if (hasWorkspaceActivity(ws.slug)) return;
     const { thread } = await Workspace.threads.new(ws.slug);
     if (thread) setThreadSlug(thread.slug);
   }
@@ -127,6 +131,7 @@ export default function Home() {
   async function handleDropWithWorkspace(acceptedFiles) {
     setDragging(false);
     pendingFilesRef.current = acceptedFiles;
+    if (hasWorkspaceActivity(workspace.slug)) return;
     const { thread } = await Workspace.threads.new(workspace.slug);
     if (thread) setThreadSlug(thread.slug);
   }
@@ -185,6 +190,7 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const { files, parseAttachments } = useContext(DndUploaderContext);
+  const { hasWorkspaceActivity } = useChatThreadDrafts();
 
   useEffect(() => {
     window.dispatchEvent(
@@ -213,6 +219,10 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
       }
 
       if (!targetThread) {
+        if (hasWorkspaceActivity(targetWorkspace.slug)) {
+          navigate(paths.workspace.chat(targetWorkspace.slug));
+          return;
+        }
         const { thread } = await Workspace.threads.new(targetWorkspace.slug);
         targetThread = thread?.slug;
         if (thread) setThreadSlug(thread.slug);

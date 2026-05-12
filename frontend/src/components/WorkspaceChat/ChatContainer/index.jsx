@@ -1,22 +1,14 @@
-import { useState, useEffect, useContext, useRef } from "react";
+import { useEffect, useContext, useRef } from "react";
 import ChatHistory from "./ChatHistory";
-import { CLEAR_ATTACHMENTS_EVENT, DndUploaderContext } from "./DnDWrapper";
+import { DndUploaderContext } from "./DnDWrapper";
 import PromptInput, {
   PROMPT_INPUT_EVENT,
   PROMPT_INPUT_ID,
 } from "./PromptInput";
 import Workspace from "@/models/workspace";
-import handleChat, { ABORT_STREAM_EVENT } from "@/utils/chat";
 import { isMobile } from "react-device-detect";
 import { SidebarMobileHeader } from "../../Sidebar";
 import { useNavigate } from "react-router-dom";
-import { v4 } from "uuid";
-import handleSocketResponse, {
-  websocketURI,
-  AGENT_SESSION_END,
-  AGENT_SESSION_START,
-  setAgentSessionActive,
-} from "@/utils/chat/agent";
 import DnDFileUploaderWrapper from "./DnDWrapper";
 import SpeechRecognition, {
   useSpeechRecognition,
@@ -34,6 +26,7 @@ import SuggestedMessages from "@/components/lib/SuggestedMessages";
 import TextSizeMenu from "./TextSizeMenu";
 import WorkspaceModelPicker from "./WorkspaceModelPicker";
 import SourcesSidebar, { SourcesSidebarProvider } from "./SourcesSidebar";
+import { useChatThreadDrafts } from "@/contexts/ChatThreadDraftProvider";
 
 export default function ChatContainer({
   workspace,
@@ -42,14 +35,21 @@ export default function ChatContainer({
 }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [loadingResponse, setLoadingResponse] = useState(false);
-  const [chatHistory, setChatHistory] = useState(knownHistory);
-  const [socketId, setSocketId] = useState(null);
-  const [websocket, setWebsocket] = useState(null);
+  const {
+    getDraft,
+    mergeServerHistory,
+    setMessages,
+    startStream,
+    respondToApproval,
+    getChatKey,
+  } = useChatThreadDrafts();
+  const chatKey = getChatKey(workspace?.slug, threadSlug);
+  const draft = getDraft(workspace?.slug, threadSlug);
+  const chatHistory = draft?.messages || knownHistory;
+  const loadingResponse = !!draft?.isStreaming;
   const { files, parseAttachments } = useContext(DndUploaderContext);
   const { chatHistoryRef } = useChatContainerQuickScroll();
   const pendingMessageChecked = useRef(false);
-  const pendingResetRef = useRef(false);
 
   const { listening, resetTranscript } = useSpeechRecognition({
     clearTranscriptOnListen: true,
@@ -69,6 +69,20 @@ export default function ChatContainer({
     );
   }
 
+  useEffect(() => {
+    if (!workspace?.slug) return;
+    mergeServerHistory({
+      workspaceSlug: workspace.slug,
+      threadSlug,
+      history: knownHistory,
+    });
+  }, [workspace?.slug, threadSlug, knownHistory, mergeServerHistory]);
+
+  function updateChatHistory(messagesOrUpdater) {
+    if (!chatKey) return;
+    setMessages(chatKey, messagesOrUpdater);
+  }
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     const currentMessage =
@@ -79,29 +93,22 @@ export default function ChatContainer({
     // PromptInput remounts (empty→chat transition), it won't restore stale text
     clearPromptInputDraft(threadSlug ?? workspace.slug);
 
-    const prevChatHistory = [
-      ...chatHistory,
-      {
-        content: currentMessage,
-        role: "user",
-        attachments: parseAttachments(),
-      },
-      {
-        content: "",
-        role: "assistant",
-        pending: true,
-        userMessage: currentMessage,
-        animate: true,
-      },
-    ];
+    const attachments = parseAttachments();
 
     if (listening) {
       // Stop the mic if the send button is clicked
       endSTTSession();
     }
-    setChatHistory(prevChatHistory);
     setMessageEmit("");
-    setLoadingResponse(true);
+    startStream({
+      workspaceSlug: workspace.slug,
+      threadSlug,
+      prompt: currentMessage,
+      attachments,
+      history: chatHistory,
+      parseAttachments,
+      sendToExistingAgent: !!draft?.isAgentRunning,
+    });
   };
 
   function endSTTSession() {
@@ -168,44 +175,16 @@ export default function ChatContainer({
     // it won't restore stale text.
     clearPromptInputDraft(threadSlug ?? workspace.slug);
 
-    // If we are auto-submitting
-    // Then we can replace the current text since this is not accumulating.
-    let prevChatHistory;
-    if (history.length > 0) {
-      // use pre-determined history chain.
-      prevChatHistory = [
-        ...history,
-        {
-          content: "",
-          role: "assistant",
-          pending: true,
-          userMessage: text,
-          attachments,
-          animate: true,
-        },
-      ];
-    } else {
-      prevChatHistory = [
-        ...chatHistory,
-        {
-          content: text,
-          role: "user",
-          attachments,
-        },
-        {
-          content: "",
-          role: "assistant",
-          pending: true,
-          userMessage: text,
-          attachments,
-          animate: true,
-        },
-      ];
-    }
-
-    setChatHistory(prevChatHistory);
     setMessageEmit("");
-    setLoadingResponse(true);
+    startStream({
+      workspaceSlug: workspace.slug,
+      threadSlug,
+      prompt: text,
+      attachments,
+      history: history.length > 0 ? history : chatHistory,
+      parseAttachments,
+      sendToExistingAgent: !!draft?.isAgentRunning,
+    });
   };
 
   useEffect(() => {
@@ -224,154 +203,6 @@ export default function ChatContainer({
       }, 100);
     }
   }, [workspace?.slug]);
-
-  useEffect(() => {
-    async function fetchReply() {
-      const promptMessage =
-        chatHistory.length > 0 ? chatHistory[chatHistory.length - 1] : null;
-      const remHistory = chatHistory.length > 0 ? chatHistory.slice(0, -1) : [];
-      var _chatHistory = [...remHistory];
-
-      // Override hook for new messages to now go to agents until the connection closes
-      if (!!websocket) {
-        if (!promptMessage || !promptMessage?.userMessage) return false;
-        const attachments = promptMessage?.attachments ?? parseAttachments();
-        window.dispatchEvent(new CustomEvent(CLEAR_ATTACHMENTS_EVENT));
-        websocket.send(
-          JSON.stringify({
-            type: "awaitingFeedback",
-            feedback: promptMessage?.userMessage,
-            attachments,
-          })
-        );
-
-        // /reset during an active agent session should end the session AND
-        // clear the chat in a single action. The send above triggers the
-        // server to abort the agent and close the socket; fall through to the
-        // /reset flow below which resets memory + clears chat history.
-        if (promptMessage.userMessage.trim() !== "/reset") return;
-        pendingResetRef.current = true;
-      }
-
-      if (!promptMessage || !promptMessage?.userMessage) return false;
-
-      // If running and edit or regeneration, this history will already have attachments
-      // so no need to parse the current state.
-      const attachments = promptMessage?.attachments ?? parseAttachments();
-      window.dispatchEvent(new CustomEvent(CLEAR_ATTACHMENTS_EVENT));
-
-      await Workspace.multiplexStream({
-        workspaceSlug: workspace.slug,
-        threadSlug,
-        prompt: promptMessage.userMessage,
-        chatHandler: (chatResult) =>
-          handleChat(
-            chatResult,
-            setLoadingResponse,
-            setChatHistory,
-            remHistory,
-            _chatHistory,
-            setSocketId
-          ),
-        attachments,
-      });
-      return;
-    }
-    loadingResponse === true && fetchReply();
-  }, [loadingResponse, chatHistory, workspace]);
-
-  // TODO: Simplify this WSS stuff
-  useEffect(() => {
-    let socket = null;
-
-    function handleWSS() {
-      try {
-        if (!socketId || !!websocket) return;
-        socket = new WebSocket(
-          `${websocketURI()}/api/agent-invocation/${socketId}`
-        );
-        socket.supportsAgentStreaming = false;
-
-        window.addEventListener(ABORT_STREAM_EVENT, () => {
-          setAgentSessionActive(false);
-          window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
-          socket?.close();
-        });
-
-        socket.addEventListener("message", (event) => {
-          setLoadingResponse(true);
-          try {
-            handleSocketResponse(socket, event, setChatHistory);
-          } catch {
-            console.error("Failed to parse data");
-            setAgentSessionActive(false);
-            window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
-            socket.close();
-          }
-          setLoadingResponse(false);
-        });
-
-        socket.addEventListener("close", (_event) => {
-          setAgentSessionActive(false);
-          window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
-          // When the close was triggered by /reset, skip the "Agent session
-          // complete." status - the pending /reset flow will clear history.
-          if (pendingResetRef.current) {
-            pendingResetRef.current = false;
-          } else {
-            setChatHistory((prev) => [
-              ...prev.filter((msg) => !!msg.content),
-              {
-                uuid: v4(),
-                type: "statusResponse",
-                content: "Agent session complete.",
-                role: "assistant",
-                sources: [],
-                closed: true,
-                error: null,
-                animate: false,
-                pending: false,
-              },
-            ]);
-          }
-          setLoadingResponse(false);
-          setWebsocket(null);
-          setSocketId(null);
-        });
-        setWebsocket(socket);
-        setAgentSessionActive(true);
-        window.dispatchEvent(new CustomEvent(AGENT_SESSION_START));
-        window.dispatchEvent(new CustomEvent(CLEAR_ATTACHMENTS_EVENT));
-      } catch (e) {
-        setChatHistory((prev) => [
-          ...prev.filter((msg) => !!msg.content),
-          {
-            uuid: v4(),
-            type: "abort",
-            content: e.message,
-            role: "assistant",
-            sources: [],
-            closed: true,
-            error: e.message,
-            animate: false,
-            pending: false,
-          },
-        ]);
-        setLoadingResponse(false);
-        setWebsocket(null);
-        setSocketId(null);
-      }
-    }
-    handleWSS();
-
-    return () => {
-      if (socket) {
-        setAgentSessionActive(false);
-        window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
-        socket.close();
-      }
-    };
-  }, [socketId]);
 
   const isEmpty =
     chatHistory.length === 0 && !sessionStorage.getItem(PENDING_HOME_MESSAGE);
@@ -442,9 +273,11 @@ export default function ChatContainer({
                     history={chatHistory}
                     workspace={workspace}
                     sendCommand={sendCommand}
-                    updateHistory={setChatHistory}
+                    updateHistory={updateChatHistory}
                     regenerateAssistantMessage={regenerateAssistantMessage}
-                    websocket={websocket}
+                    chatKey={chatKey}
+                    approvalState={draft?.pendingApproval}
+                    onToolApprovalResponse={respondToApproval}
                   />
                 </MetricsProvider>
                 <PromptInput

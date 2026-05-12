@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { CaretDown, Check, X, Hammer } from "@phosphor-icons/react";
 import AgentSkillWhitelist from "@/models/agentSkillWhitelist";
 import { useTranslation } from "react-i18next";
@@ -10,55 +10,42 @@ export default function ToolApprovalRequest({
   description = null,
   timeoutMs = null,
   websocket,
+  approvalState = null,
   onResponse,
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [responded, setResponded] = useState(false);
-  const [approved, setApproved] = useState(null);
   const [alwaysAllow, setAlwaysAllow] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(timeoutMs);
-  const startTimeRef = useRef(null);
+  const [fallbackRequestedAt] = useState(() => Date.now());
   const hasPayload = payload && Object.keys(payload).length > 0;
+  const approved =
+    approvalState?.approved === true || approvalState?.approved === false
+      ? approvalState.approved
+      : null;
+  const responded = approved !== null;
+  const requestedAt = approvalState?.requestedAt || fallbackRequestedAt;
 
   useEffect(() => {
     if (!timeoutMs || responded) return;
-    if (startTimeRef.current === null) {
-      startTimeRef.current = Date.now();
-    }
 
     const intervalId = setInterval(() => {
-      const elapsed = Date.now() - startTimeRef.current;
+      const elapsed = Date.now() - requestedAt;
       const remaining = Math.max(0, timeoutMs - elapsed);
       setTimeRemaining(remaining);
-
-      if (remaining <= 0) {
-        clearInterval(intervalId);
-        handleTimeout();
-      }
     }, 50);
 
     return () => clearInterval(intervalId);
-  }, [timeoutMs, responded]);
-
-  function handleTimeout() {
-    if (responded) return;
-    setResponded(true);
-    setApproved(false);
-    onResponse?.(false);
-  }
+  }, [timeoutMs, responded, requestedAt]);
 
   async function handleResponse(isApproved) {
     if (responded) return;
-
-    setResponded(true);
-    setApproved(isApproved);
 
     // If user approved and checked "Always allow", add to whitelist
     if (isApproved && alwaysAllow) {
       await AgentSkillWhitelist.addToWhitelist(skillName);
     }
 
-    if (websocket && websocket.readyState === WebSocket.OPEN) {
+    if (!onResponse && websocket && websocket.readyState === WebSocket.OPEN) {
       websocket.send(
         JSON.stringify({
           type: "toolApprovalResponse",

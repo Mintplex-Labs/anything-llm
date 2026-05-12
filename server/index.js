@@ -113,6 +113,11 @@ embeddedEndpoints(apiRouter);
 // Externally facing browser extension endpoints
 browserExtensionEndpoints(apiRouter);
 
+const { resumeActiveBatchJobs } = require("./utils/DocumentEmbeddingBatch");
+resumeActiveBatchJobs().catch((error) =>
+  console.error("[EmbeddingBatch] Failed to resume active jobs.", error.message)
+);
+
 if (process.env.NODE_ENV !== "development") {
   const { MetaGenerator } = require("./utils/boot/MetaGenerator");
   const IndexPage = new MetaGenerator();

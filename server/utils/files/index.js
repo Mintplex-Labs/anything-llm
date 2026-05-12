@@ -80,10 +80,13 @@ async function viewLocalFiles() {
         await getPinnedWorkspacesByDocument(filenames);
       const watchedDocumentsFilenames =
         await getWatchedDocumentFilenames(filenames);
+      const embeddingStatusesByDocument =
+        await getEmbeddingStatusesByDocument(filenames);
       for (const item of subdocs.items) {
         item.pinnedWorkspaces = pinnedWorkspacesByDocument[item.name] || [];
         item.watched =
           watchedDocumentsFilenames.hasOwnProperty(item.name) || false;
+        item.embeddingStatuses = embeddingStatusesByDocument[item.name] || {};
       }
 
       directory.items.push(subdocs);
@@ -151,12 +154,15 @@ async function getDocumentsByFolder(folderName = "") {
     await getPinnedWorkspacesByDocument(filenames);
   const watchedDocumentsFilenames =
     await getWatchedDocumentFilenames(filenames);
+  const embeddingStatusesByDocument =
+    await getEmbeddingStatusesByDocument(filenames);
   for (let doc of documents) {
     doc.pinnedWorkspaces = pinnedWorkspacesByDocument[doc.name] || [];
     doc.watched = Object.prototype.hasOwnProperty.call(
       watchedDocumentsFilenames,
       doc.name
     );
+    doc.embeddingStatuses = embeddingStatusesByDocument[doc.name] || {};
   }
 
   return { folder: folderName, documents, code: 200, error: null };
@@ -363,6 +369,39 @@ async function getWatchedDocumentFilenames(filenames = []) {
   ).reduce((result, { workspaceId, docpath }) => {
     const filename = filenames[docpath];
     result[filename] = workspaceId;
+    return result;
+  }, {});
+}
+
+/**
+ * @param {string[]} filenames - record of document paths to filenames
+ * @returns {Promise<Record<string, Record<string, {status: string, error: string|null, batchJobId: string|null}>>>}
+ */
+async function getEmbeddingStatusesByDocument(filenames = []) {
+  return (
+    await Document.where(
+      {
+        docpath: { in: Object.keys(filenames) },
+      },
+      null,
+      null,
+      null,
+      {
+        workspaceId: true,
+        docpath: true,
+        embeddingStatus: true,
+        embeddingError: true,
+        embeddingBatchJobId: true,
+      }
+    )
+  ).reduce((result, doc) => {
+    const filename = filenames[doc.docpath];
+    if (!result[filename]) result[filename] = {};
+    result[filename][doc.workspaceId] = {
+      status: doc.embeddingStatus || "completed",
+      error: doc.embeddingError || null,
+      batchJobId: doc.embeddingBatchJobId || null,
+    };
     return result;
   }, {});
 }

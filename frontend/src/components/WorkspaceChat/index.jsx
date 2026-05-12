@@ -12,10 +12,12 @@ import {
   useWatchForAutoPlayAssistantTTSResponse,
 } from "../contexts/TTSProvider";
 import { PENDING_HOME_MESSAGE } from "@/utils/constants";
+import { useChatThreadDrafts } from "@/contexts/ChatThreadDraftProvider";
 
 export default function WorkspaceChat({ loading, workspace }) {
   useWatchForAutoPlayAssistantTTSResponse();
   const { threadSlug = null } = useParams();
+  const { getDraft, mergeServerHistory } = useChatThreadDrafts();
   // Stores { key, workspace, history } currently rendered. Lags the props so
   // the previous chat stays mounted until the next one's history is ready,
   // avoiding a skeleton/loader flash on workspace/thread switches.
@@ -29,9 +31,24 @@ export default function WorkspaceChat({ loading, workspace }) {
         return false;
       }
 
+      const draft = getDraft(workspace.slug, threadSlug);
+      if (draft) {
+        setLoaded({
+          key: `${workspace.slug}:${threadSlug ?? "default"}`,
+          workspace,
+          threadSlug,
+          history: draft.messages,
+        });
+      }
+
       const chatHistory = threadSlug
         ? await Workspace.threads.chatHistory(workspace.slug, threadSlug)
         : await Workspace.chatHistory(workspace.slug);
+      mergeServerHistory({
+        workspaceSlug: workspace.slug,
+        threadSlug,
+        history: chatHistory,
+      });
 
       setLoaded({
         key: `${workspace.slug}:${threadSlug ?? "default"}`,
@@ -41,7 +58,7 @@ export default function WorkspaceChat({ loading, workspace }) {
       });
     }
     getHistory();
-  }, [workspace, loading, threadSlug]);
+  }, [workspace, loading, threadSlug, getDraft, mergeServerHistory]);
 
   const hasPendingMessage = !!sessionStorage.getItem(PENDING_HOME_MESSAGE);
   if (loaded === null) {

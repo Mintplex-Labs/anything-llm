@@ -54,6 +54,8 @@ export default function WorkspaceFileRow({
   }
 
   const isMovedItem = movedItems?.some((movedItem) => movedItem.id === item.id);
+  const embeddingStatus = item?.embeddingStatuses?.[workspace.id] || null;
+  const isProcessing = embeddingStatus?.status === "processing";
   return (
     <div
       className={`text-theme-text-primary text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 h-[34px] items-center file-row ${
@@ -98,7 +100,16 @@ export default function WorkspaceFileRow({
         </p>
       </div>
       <div className="col-span-2 flex justify-end items-center">
-        {hasChanges ? (
+        {isProcessing ? (
+          <div
+            className="bg-yellow-600/20 rounded-3xl whitespace-nowrap"
+            title={`Batch job: ${embeddingStatus.batchJobId || "pending"}`}
+          >
+            <p className="text-xs px-2 py-0.5 text-yellow-300 light:text-yellow-700">
+              Processing
+            </p>
+          </div>
+        ) : hasChanges ? (
           <div className="w-4 h-4 ml-2 flex-shrink-0" />
         ) : (
           <div className="flex gap-x-2 items-center">

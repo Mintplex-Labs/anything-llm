@@ -80,9 +80,22 @@ const Document = {
     }
   },
 
-  addDocuments: async function (workspace, additions = [], userId = null) {
+  addDocuments: async function (
+    workspace,
+    additions = [],
+    userId = null,
+    options = {}
+  ) {
+    const {
+      isBatchMode,
+      enqueueBatchDocuments,
+    } = require("../utils/DocumentEmbeddingBatch");
     const VectorDb = getVectorDbClass();
     if (additions.length === 0) return { failed: [], embedded: [] };
+
+    if (isBatchMode(options?.embeddingModeOverride))
+      return await enqueueBatchDocuments({ workspace, additions, userId });
+
     const { fileData } = require("../utils/files");
     const { emitProgress } = require("../utils/EmbeddingWorkerManager");
     const embedded = [];

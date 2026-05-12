@@ -15,6 +15,7 @@ import KeyboardShortcutsHelp from "@/components/KeyboardShortcutsHelp";
 import ImageLightbox from "@/components/ImageLightbox";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorBoundaryFallback from "./components/ErrorBoundaryFallback";
+import { ChatThreadDraftProvider } from "@/contexts/ChatThreadDraftProvider";
 
 export default function App() {
   const location = useLocation();
@@ -31,11 +32,13 @@ export default function App() {
               <LogoProvider>
                 <PfpProvider>
                   <I18nextProvider i18n={i18n}>
-                    <DefaultDocumentTitle />
-                    <Outlet />
-                    <ToastContainer />
-                    <KeyboardShortcutsHelp />
-                    <ImageLightbox />
+                    <ChatThreadDraftProvider>
+                      <DefaultDocumentTitle />
+                      <Outlet />
+                      <ToastContainer />
+                      <KeyboardShortcutsHelp />
+                      <ImageLightbox />
+                    </ChatThreadDraftProvider>
                   </I18nextProvider>
                 </PfpProvider>
               </LogoProvider>

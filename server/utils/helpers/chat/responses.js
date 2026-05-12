@@ -158,6 +158,9 @@ function convertToChatHistory(history = []) {
         feedbackScore,
         metrics: data?.metrics || {},
         ...(data?.outputs?.length > 0 ? { outputs: data.outputs } : {}),
+        ...(data?.agentEvents?.length > 0
+          ? { agentEvents: data.agentEvents }
+          : {}),
       },
     ]);
   }

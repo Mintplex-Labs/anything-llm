@@ -33,6 +33,9 @@ export default forwardRef(function (
     updateHistory,
     regenerateAssistantMessage,
     websocket = null,
+    chatKey = null,
+    approvalState = null,
+    onToolApprovalResponse,
   },
   ref
 ) {
@@ -184,6 +187,9 @@ export default forwardRef(function (
         saveEditedMessage,
         forkThread,
         websocket,
+        chatKey,
+        approvalState,
+        onToolApprovalResponse,
       }),
     [
       workspace,
@@ -192,6 +198,9 @@ export default forwardRef(function (
       saveEditedMessage,
       forkThread,
       websocket,
+      chatKey,
+      approvalState,
+      onToolApprovalResponse,
     ]
   );
   const lastMessageInfo = useMemo(() => getLastMessageInfo(history), [history]);
@@ -280,10 +289,40 @@ function buildMessages({
   saveEditedMessage,
   forkThread,
   websocket,
+  chatKey,
+  approvalState,
+  onToolApprovalResponse,
 }) {
   return history.reduce((acc, props, index) => {
     const isLastBotReply =
       index === history.length - 1 && props.role === "assistant";
+
+    if (props.role === "assistant" && props.agentEvents?.length > 0) {
+      for (const timelineMessage of agentEventsToTimelineMessages(
+        props.agentEvents
+      )) {
+        if (timelineMessage.type === "toolApprovalRequest") {
+          acc.push(
+            <ToolApprovalRequest
+              key={`persisted-tool-approval-${timelineMessage.requestId}`}
+              requestId={timelineMessage.requestId}
+              skillName={timelineMessage.skillName}
+              payload={timelineMessage.payload}
+              description={timelineMessage.description}
+              timeoutMs={timelineMessage.timeoutMs}
+              approvalState={timelineMessage}
+            />
+          );
+          continue;
+        }
+
+        if (acc.length > 0 && Array.isArray(acc[acc.length - 1])) {
+          acc[acc.length - 1].push(timelineMessage);
+        } else {
+          acc.push([timelineMessage]);
+        }
+      }
+    }
 
     if (props?.type === "statusResponse" && !!props.content) {
       if (acc.length > 0 && Array.isArray(acc[acc.length - 1])) {
@@ -304,6 +343,12 @@ function buildMessages({
           description={props.description}
           timeoutMs={props.timeoutMs}
           websocket={websocket}
+          approvalState={
+            approvalState?.requestId === props.requestId ? approvalState : props
+          }
+          onResponse={(approved) =>
+            onToolApprovalResponse?.(chatKey, props.requestId, approved)
+          }
         />
       );
       return acc;
@@ -349,4 +394,91 @@ function buildMessages({
     }
     return acc;
   }, []);
+}
+
+function agentEventsToTimelineMessages(agentEvents = []) {
+  const approvalResults = new Map(
+    agentEvents
+      .filter((event) => event.type === "approval_result")
+      .map((event) => [event.requestId, event])
+  );
+
+  return agentEvents
+    .map((event, index) => {
+      if (event.type === "agent_thought") {
+        return {
+          uuid: event.id || `agent-thought-${index}`,
+          type: "statusResponse",
+          content: event.content,
+          role: "assistant",
+          sources: [],
+          closed: true,
+          error: null,
+          animate: false,
+          pending: false,
+          metrics: {},
+        };
+      }
+
+      if (event.type === "tool_call") {
+        return {
+          uuid: event.uuid || event.id || `tool-call-${index}`,
+          type: "statusResponse",
+          content: event.content || `Tool call: ${event.toolName || "unknown"}`,
+          role: "assistant",
+          sources: [],
+          closed: true,
+          error: null,
+          animate: false,
+          pending: false,
+          metrics: {},
+        };
+      }
+
+      if (event.type === "tool_result") {
+        return {
+          uuid: event.uuid || event.id || `tool-result-${index}`,
+          type: "statusResponse",
+          content: event.content || `Tool returned a result.`,
+          role: "assistant",
+          sources: [],
+          closed: true,
+          error: null,
+          animate: false,
+          pending: false,
+          metrics: {},
+        };
+      }
+
+      if (event.type === "approval_request") {
+        const result = approvalResults.get(event.requestId);
+        return {
+          ...event,
+          type: "toolApprovalRequest",
+          approved:
+            result?.approved === true || result?.approved === false
+              ? result.approved
+              : null,
+          responded: !!result,
+        };
+      }
+
+      if (event.type === "error") {
+        return {
+          uuid: event.id || `agent-error-${index}`,
+          type: "statusResponse",
+          content: event.content,
+          role: "assistant",
+          sources: [],
+          closed: true,
+          error: event.content,
+          animate: false,
+          pending: false,
+          metrics: {},
+        };
+      }
+
+      return null;
+    })
+    .filter(Boolean);
 }

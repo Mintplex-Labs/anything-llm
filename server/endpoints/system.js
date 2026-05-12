@@ -41,6 +41,7 @@ const {
 const { fetchPfp, determinePfpFilepath } = require("../utils/files/pfp");
 const { exportChatsAsType } = require("../utils/helpers/chat/convertTo");
 const { EventLogs } = require("../models/eventLogs");
+const { EmbeddingBatchJob } = require("../models/embeddingBatchJob");
 const { CollectorApi } = require("../utils/collectorApi");
 const {
   recoverAccount,
@@ -1150,6 +1151,41 @@ function systemEndpoints(app) {
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/system/embedding-batch-jobs",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { limit = 50 } = reqBody(request);
+        const jobs = await EmbeddingBatchJob.listWithEvents(Number(limit));
+        response.status(200).json({ jobs });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/system/embedding-batch-jobs/:jobId/retry",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { jobId } = request.params;
+        const {
+          continueBatchPolling,
+        } = require("../utils/DocumentEmbeddingBatch");
+        const result = await continueBatchPolling(String(jobId), {
+          manual: true,
+        });
+        response.status(200).json(result);
+      } catch (e) {
+        console.error(e);
+        response.status(500).json({ success: false, error: e.message });
       }
     }
   );

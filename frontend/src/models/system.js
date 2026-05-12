@@ -629,6 +629,32 @@ const System = {
         return { success: false, error: e.message };
       });
   },
+  embeddingBatchJobs: async (limit = 50) => {
+    return await fetch(`${API_BASE}/system/embedding-batch-jobs`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ limit }),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { jobs: [] };
+      });
+  },
+  retryEmbeddingBatchJob: async (jobId) => {
+    return await fetch(
+      `${API_BASE}/system/embedding-batch-jobs/${jobId}/retry`,
+      {
+        method: "POST",
+        headers: baseHeaders(),
+      }
+    )
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
+      });
+  },
   deleteChat: async (chatId) => {
     return await fetch(`${API_BASE}/system/workspace-chats/${chatId}`, {
       method: "DELETE",

@@ -143,6 +143,17 @@ export default function DocumentSettings({ workspace }) {
         clear: true,
       });
     });
+    embedPromise.then(({ batchJob, message }) => {
+      if (batchJob) {
+        showToast(
+          `Async document embedding job submitted: ${batchJob.jobId}`,
+          "success",
+          { clear: true }
+        );
+      } else if (message) {
+        showToast(message, "error", { clear: true });
+      }
+    });
 
     setLoading(false);
     setLoadingMessage("");

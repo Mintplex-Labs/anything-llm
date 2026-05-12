@@ -295,6 +295,7 @@ export default function GeneralEmbeddingPreference() {
                   </CTAButton>
                 )}
               </div>
+              <DocumentEmbeddingMode settings={settings} />
               <div className="text-base font-bold text-white mt-6 mb-4">
                 {t("embedding.provider.title")}
               </div>
@@ -399,6 +400,57 @@ export default function GeneralEmbeddingPreference() {
           onConfirm={handleSaveSettings}
         />
       </ModalWrapper>
+    </div>
+  );
+}
+
+function DocumentEmbeddingMode({ settings }) {
+  const { t } = useTranslation();
+  const currentMode = settings?.DocumentEmbeddingMode || "direct";
+  return (
+    <div className="w-full max-w-[640px] mt-6">
+      <div className="text-base font-bold text-white mb-3">
+        {t("embedding.document-mode.title")}
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <label className="bg-theme-settings-input-bg rounded-lg border border-white/10 p-4 cursor-pointer flex gap-x-3">
+          <input
+            type="radio"
+            name="DocumentEmbeddingMode"
+            value="direct"
+            defaultChecked={currentMode === "direct"}
+            className="mt-1"
+          />
+          <span>
+            <span className="block text-sm font-semibold text-white">
+              {t("embedding.document-mode.direct.title")}
+            </span>
+            <span className="block text-xs text-description mt-1 leading-5">
+              {t("embedding.document-mode.direct.description")}
+            </span>
+          </span>
+        </label>
+        <label className="bg-theme-settings-input-bg rounded-lg border border-white/10 p-4 cursor-pointer flex gap-x-3">
+          <input
+            type="radio"
+            name="DocumentEmbeddingMode"
+            value="batch"
+            defaultChecked={currentMode === "batch"}
+            className="mt-1"
+          />
+          <span>
+            <span className="block text-sm font-semibold text-white">
+              {t("embedding.document-mode.batch.title")}
+            </span>
+            <span className="block text-xs text-description mt-1 leading-5">
+              {t("embedding.document-mode.batch.description")}
+            </span>
+          </span>
+        </label>
+      </div>
+      <p className="text-xs text-description mt-3 leading-5">
+        {t("embedding.document-mode.note")}
+      </p>
     </div>
   );
 }

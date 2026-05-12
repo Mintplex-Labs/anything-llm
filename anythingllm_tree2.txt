@@ -1,0 +1,647 @@
+server/prisma
+├── migrations
+│   ├── 20230921191814_init
+│   │   └── migration.sql
+│   ├── 20231101001441_init
+│   │   └── migration.sql
+│   ├── 20231101195421_init
+│   │   └── migration.sql
+│   ├── 20231129012019_add
+│   │   └── migration.sql
+│   ├── 20240113013409_init
+│   │   └── migration.sql
+│   ├── 20240118201333_init
+│   │   └── migration.sql
+│   ├── 20240202002020_init
+│   │   └── migration.sql
+│   ├── 20240206181106_init
+│   │   └── migration.sql
+│   ├── 20240206211916_init
+│   │   └── migration.sql
+│   ├── 20240208224848_init
+│   │   └── migration.sql
+│   ├── 20240210004405_init
+│   │   └── migration.sql
+│   ├── 20240216214639_init
+│   │   └── migration.sql
+│   ├── 20240219211018_init
+│   │   └── migration.sql
+│   ├── 20240301002308_init
+│   │   └── migration.sql
+│   ├── 20240326231053_init
+│   │   └── migration.sql
+│   ├── 20240405015034_init
+│   │   └── migration.sql
+│   ├── 20240412183346_init
+│   │   └── migration.sql
+│   ├── 20240425004220_init
+│   │   └── migration.sql
+│   ├── 20240430230707_init
+│   │   └── migration.sql
+│   ├── 20240510032311_init
+│   │   └── migration.sql
+│   ├── 20240618224346_init
+│   │   └── migration.sql
+│   ├── 20240821215625_init
+│   │   └── migration.sql
+│   ├── 20240824005054_init
+│   │   └── migration.sql
+│   ├── 20241003192954_init
+│   │   └── migration.sql
+│   ├── 20241029203722_init
+│   │   └── migration.sql
+│   ├── 20241029233509_init
+│   │   └── migration.sql
+│   ├── 20250102204948_init
+│   │   └── migration.sql
+│   ├── 20250226005538_init
+│   │   └── migration.sql
+│   ├── 20250318154720_init
+│   │   └── migration.sql
+│   ├── 20250506214129_init
+│   │   └── migration.sql
+│   ├── 20250709230835_init
+│   │   └── migration.sql
+│   ├── 20250725194841_init
+│   │   └── migration.sql
+│   ├── 20250808171557_init
+│   │   └── migration.sql
+│   ├── 20260130040204_init
+│   │   └── migration.sql
+│   ├── 20260313192859_init
+│   │   └── migration.sql
+│   ├── 20260319202916_init
+│   │   └── migration.sql
+│   ├── 20260406120000_init
+│   │   └── migration.sql
+│   ├── 20260423191158_init
+│   │   └── migration.sql
+│   ├── 20260511000000_add_wechat_gateway_threads
+│   │   └── migration.sql
+│   ├── 20260512000000_add_embedding_batch_jobs
+│   │   └── migration.sql
+│   └── migration_lock.toml
+├── schema.prisma
+└── seed.js
+server/models
+├── agentSkillWhitelist.js
+├── apiKeys.js
+├── browserExtensionApiKey.js
+├── cacheData.js
+├── communityHub.js
+├── documentSyncQueue.js
+├── documentSyncRun.js
+├── documents.js
+├── embedChats.js
+├── embedConfig.js
+├── embeddingBatchJob.js
+├── eventLogs.js
+├── externalCommunicationConnector.js
+├── invite.js
+├── mobileDevice.js
+├── passwordRecovery.js
+├── promptHistory.js
+├── scheduledJob.js
+├── scheduledJobRun.js
+├── slashCommandsPresets.js
+├── systemPromptVariables.js
+├── systemSettings.js
+├── telemetry.js
+├── temporaryAuthToken.js
+├── user.js
+├── vectors.js
+├── wechatGatewayThread.js
+├── workspace.js
+├── workspaceAgentInvocation.js
+├── workspaceChats.js
+├── workspaceParsedFiles.js
+├── workspaceThread.js
+├── workspaceUsers.js
+└── workspacesSuggestedMessages.js
+server/utils
+├── AiProviders
+│   ├── anthropic
+│   │   └── index.js
+│   ├── apipie
+│   │   └── index.js
+│   ├── azureOpenAi
+│   │   └── index.js
+│   ├── bedrock
+│   │   ├── index.js
+│   │   └── utils.js
+│   ├── cohere
+│   │   └── index.js
+│   ├── cometapi
+│   │   ├── constants.js
+│   │   └── index.js
+│   ├── deepseek
+│   │   └── index.js
+│   ├── dellProAiStudio
+│   │   └── index.js
+│   ├── dockerModelRunner
+│   │   └── index.js
+│   ├── fireworksAi
+│   │   └── index.js
+│   ├── foundry
+│   │   └── index.js
+│   ├── gemini
+│   │   ├── defaultModels.js
+│   │   ├── index.js
+│   │   └── syncStaticLists.mjs
+│   ├── genericOpenAi
+│   │   └── index.js
+│   ├── giteeai
+│   │   └── index.js
+│   ├── groq
+│   │   └── index.js
+│   ├── huggingface
+│   │   └── index.js
+│   ├── koboldCPP
+│   │   └── index.js
+│   ├── lemonade
+│   │   └── index.js
+│   ├── liteLLM
+│   │   └── index.js
+│   ├── lmStudio
+│   │   └── index.js
+│   ├── localAi
+│   │   └── index.js
+│   ├── mistral
+│   │   └── index.js
+│   ├── modelMap
+│   │   ├── index.js
+│   │   └── legacy.js
+│   ├── moonshotAi
+│   │   └── index.js
+│   ├── novita
+│   │   └── index.js
+│   ├── nvidiaNim
+│   │   └── index.js
+│   ├── ollama
+│   │   └── index.js
+│   ├── openAi
+│   │   └── index.js
+│   ├── openRouter
+│   │   └── index.js
+│   ├── perplexity
+│   │   ├── index.js
+│   │   ├── models.js
+│   │   └── scripts
+│   ├── ppio
+│   │   └── index.js
+│   ├── privatemode
+│   │   └── index.js
+│   ├── sambanova
+│   │   └── index.js
+│   ├── textGenWebUI
+│   │   └── index.js
+│   ├── togetherAi
+│   │   └── index.js
+│   ├── xai
+│   │   └── index.js
+│   └── zai
+│       └── index.js
+├── BackgroundWorkers
+│   └── index.js
+├── DocumentEmbeddingBatch
+│   └── index.js
+├── DocumentManager
+│   └── index.js
+├── EmbeddingEngines
+│   ├── azureOpenAi
+│   │   └── index.js
+│   ├── cohere
+│   │   └── index.js
+│   ├── gemini
+│   │   └── index.js
+│   ├── genericOpenAi
+│   │   └── index.js
+│   ├── lemonade
+│   │   └── index.js
+│   ├── liteLLM
+│   │   └── index.js
+│   ├── lmstudio
+│   │   └── index.js
+│   ├── localAi
+│   │   └── index.js
+│   ├── mistral
+│   │   └── index.js
+│   ├── native
+│   │   ├── constants.js
+│   │   └── index.js
+│   ├── ollama
+│   │   └── index.js
+│   ├── openAi
+│   │   └── index.js
+│   ├── openRouter
+│   │   └── index.js
+│   └── voyageAi
+│       └── index.js
+├── EmbeddingRerankers
+│   └── native
+│       └── index.js
+├── EmbeddingWorkerManager.js
+├── EncryptionManager
+│   └── index.js
+├── MCP
+│   ├── hypervisor
+│   │   └── index.js
+│   └── index.js
+├── PasswordRecovery
+│   └── index.js
+├── PushNotifications
+│   └── index.js
+├── TextSplitter
+│   └── index.js
+├── TextToSpeech
+│   ├── elevenLabs
+│   │   └── index.js
+│   ├── index.js
+│   ├── openAi
+│   │   └── index.js
+│   └── openAiGeneric
+│       └── index.js
+├── agentFlows
+│   ├── executor.js
+│   ├── executors
+│   │   ├── api-call.js
+│   │   ├── llm-instruction.js
+│   │   └── web-scraping.js
+│   ├── flowTypes.js
+│   └── index.js
+├── agents
+│   ├── aibitat
+│   │   ├── error.js
+│   │   ├── example
+│   │   ├── index.js
+│   │   ├── plugins
+│   │   ├── providers
+│   │   └── utils
+│   ├── defaults.js
+│   ├── ephemeral.js
+│   ├── imported-manifest.schema.json
+│   ├── imported.js
+│   └── index.js
+├── boot
+│   ├── MetaGenerator.js
+│   ├── eagerLoadContextWindows.js
+│   ├── index.js
+│   └── markOnboarded.js
+├── chats
+│   ├── agents.js
+│   ├── apiChatHandler.js
+│   ├── commands
+│   │   └── reset.js
+│   ├── embed.js
+│   ├── index.js
+│   ├── openaiCompatible.js
+│   └── stream.js
+├── collectorApi
+│   └── index.js
+├── comKey
+│   └── index.js
+├── database
+│   └── index.js
+├── files
+│   ├── index.js
+│   ├── logo.js
+│   ├── multer.js
+│   ├── pfp.js
+│   └── purgeDocument.js
+├── helpers
+│   ├── admin
+│   │   └── index.js
+│   ├── agents.js
+│   ├── camelcase.js
+│   ├── chat
+│   │   ├── LLMPerformanceMonitor.js
+│   │   ├── convertTo.js
+│   │   ├── index.js
+│   │   └── responses.js
+│   ├── customModels.js
+│   ├── index.js
+│   ├── portAvailabilityChecker.js
+│   ├── search.js
+│   ├── shell.js
+│   ├── tiktoken.js
+│   └── updateENV.js
+├── http
+│   └── index.js
+├── logger
+│   └── index.js
+├── middleware
+│   ├── chatHistoryViewable.js
+│   ├── communityHubDownloadsEnabled.js
+│   ├── embedMiddleware.js
+│   ├── featureFlagEnabled.js
+│   ├── isSupportedRepoProviders.js
+│   ├── multiUserProtected.js
+│   ├── simpleSSOEnabled.js
+│   ├── validApiKey.js
+│   ├── validBrowserExtensionApiKey.js
+│   ├── validWorkspace.js
+│   └── validatedRequest.js
+├── openclawWeixin
+│   └── index.js
+├── prisma
+│   ├── PRISMA.md
+│   └── index.js
+├── telegramBot
+│   ├── chat
+│   │   ├── agent.js
+│   │   └── stream.js
+│   ├── constants.js
+│   ├── index.js
+│   └── utils
+│       ├── commands
+│       ├── format.js
+│       ├── index.js
+│       ├── media.js
+│       ├── messageQueue.js
+│       ├── navigation
+│       └── verification.js
+├── telemetry
+│   └── index.js
+├── vectorDbProviders
+│   ├── astra
+│   │   ├── ASTRA_SETUP.md
+│   │   └── index.js
+│   ├── base.js
+│   ├── chroma
+│   │   └── index.js
+│   ├── chromacloud
+│   │   └── index.js
+│   ├── lance
+│   │   └── index.js
+│   ├── milvus
+│   │   ├── MILVUS_SETUP.md
+│   │   └── index.js
+│   ├── pgvector
+│   │   ├── SETUP.md
+│   │   └── index.js
+│   ├── pinecone
+│   │   ├── PINECONE_SETUP.md
+│   │   └── index.js
+│   ├── qdrant
+│   │   ├── QDRANT_SETUP.md
+│   │   └── index.js
+│   ├── weaviate
+│   │   ├── WEAVIATE_SETUP.md
+│   │   └── index.js
+│   └── zilliz
+│       └── index.js
+└── vectorStore
+    └── resetAllVectorStores.js
+server/endpoints
+├── admin.js
+├── advancedGateway.js
+├── agentFileServer.js
+├── agentFlows.js
+├── agentSkillWhitelist.js
+├── agentWebsocket.js
+├── api
+│   ├── admin
+│   │   └── index.js
+│   ├── auth
+│   │   └── index.js
+│   ├── document
+│   │   └── index.js
+│   ├── embed
+│   │   └── index.js
+│   ├── index.js
+│   ├── openai
+│   │   ├── compatibility-test-script.cjs
+│   │   ├── helpers.js
+│   │   └── index.js
+│   ├── system
+│   │   └── index.js
+│   ├── userManagement
+│   │   └── index.js
+│   ├── workspace
+│   │   └── index.js
+│   └── workspaceThread
+│       └── index.js
+├── browserExtension.js
+├── chat.js
+├── communityHub.js
+├── document.js
+├── embed
+│   └── index.js
+├── embedManagement.js
+├── experimental
+│   ├── imported-agent-plugins.js
+│   ├── index.js
+│   └── liveSync.js
+├── extensions
+│   └── index.js
+├── invite.js
+├── mcpServers.js
+├── mobile
+│   ├── index.js
+│   ├── middleware
+│   │   └── index.js
+│   └── utils
+│       └── index.js
+├── scheduledJobs.js
+├── system.js
+├── telegram.js
+├── utils
+│   ├── dockerModelRunnerUtils.js
+│   ├── googleAgentSkillEndpoints.js
+│   ├── lemonadeUtilsEndpoints.js
+│   └── outlookAgentUtils.js
+├── utils.js
+├── webPush.js
+├── wechat.js
+├── workspaceThreads.js
+├── workspaces.js
+└── workspacesParsedFiles.js
+server/jobs
+├── cleanup-generated-files.js
+├── cleanup-orphan-documents.js
+├── embedding-worker.js
+├── handle-telegram-chat.js
+├── helpers
+│   ├── index.js
+│   └── scheduled-job-helper.js
+├── run-scheduled-job.js
+└── sync-watched-documents.js
+frontend/src/pages/GeneralSettings
+├── ApiKeys
+│   ├── ApiKeyRow
+│   │   └── index.jsx
+│   ├── NewApiKeyModal
+│   │   └── index.jsx
+│   └── index.jsx
+├── AudioPreference
+│   ├── index.jsx
+│   ├── stt.jsx
+│   └── tts.jsx
+├── BatchJobs
+│   └── index.jsx
+├── BrowserExtensionApiKey
+│   ├── BrowserExtensionApiKeyRow
+│   │   └── index.jsx
+│   ├── NewBrowserExtensionApiKeyModal
+│   │   └── index.jsx
+│   └── index.jsx
+├── ChatEmbedWidgets
+│   ├── EmbedChats
+│   │   ├── ChatRow
+│   │   ├── MarkdownRenderer.jsx
+│   │   └── index.jsx
+│   ├── EmbedConfigs
+│   │   ├── EmbedRow
+│   │   ├── NewEmbedModal
+│   │   └── index.jsx
+│   └── index.jsx
+├── Chats
+│   ├── ChatRow
+│   │   └── index.jsx
+│   ├── MarkdownRenderer.jsx
+│   └── index.jsx
+├── CommunityHub
+│   ├── Authentication
+│   │   ├── UserItems
+│   │   ├── index.jsx
+│   │   └── useUserItems.js
+│   ├── ImportItem
+│   │   ├── Steps
+│   │   └── index.jsx
+│   ├── Trending
+│   │   ├── HubItems
+│   │   └── index.jsx
+│   └── utils.js
+├── Connections
+│   ├── AdvancedGatewayConnector
+│   │   └── index.jsx
+│   ├── TelegramBot
+│   │   ├── ConnectedView
+│   │   ├── SetupView
+│   │   └── index.jsx
+│   └── WeChatConnector
+│       └── index.jsx
+├── EmbeddingPreference
+│   └── index.jsx
+├── EmbeddingTextSplitterPreference
+│   └── index.jsx
+├── LLMPreference
+│   └── index.jsx
+├── MobileConnections
+│   ├── ConnectionModal
+│   │   ├── bg.png
+│   │   ├── gplay-badge.svg
+│   │   └── index.jsx
+│   ├── DeviceRow
+│   │   └── index.jsx
+│   └── index.jsx
+├── PrivacyAndData
+│   └── index.jsx
+├── ScheduledJobs
+│   ├── JobFormModal
+│   │   ├── CronBuilder.jsx
+│   │   ├── FormActions.jsx
+│   │   ├── JobDescription.jsx
+│   │   ├── JobSchedule.jsx
+│   │   ├── ToolsSelector.jsx
+│   │   └── index.jsx
+│   ├── RunDetailPage.jsx
+│   ├── RunHistoryPage.jsx
+│   ├── components
+│   │   ├── CollapsibleSection.jsx
+│   │   ├── GeneratedFileCard.jsx
+│   │   ├── JobRow.jsx
+│   │   ├── RunRow.jsx
+│   │   ├── StatusBadge.jsx
+│   │   └── ToolCallCard.jsx
+│   ├── index.jsx
+│   └── utils
+│       └── cron.js
+├── Security
+│   └── index.jsx
+├── Settings
+│   ├── Branding
+│   │   └── index.jsx
+│   ├── Chat
+│   │   └── index.jsx
+│   ├── Interface
+│   │   └── index.jsx
+│   └── components
+│       ├── AutoSpeak
+│       ├── AutoSubmit
+│       ├── ChatRenderHTML
+│       ├── CustomAppName
+│       ├── CustomLogo
+│       ├── CustomSiteSettings
+│       ├── FooterCustomization
+│       ├── LanguagePreference
+│       ├── ShowScrollbar
+│       ├── SpellCheck
+│       ├── SupportEmail
+│       └── ThemePreference
+├── TranscriptionPreference
+│   └── index.jsx
+└── VectorDatabase
+    └── index.jsx
+frontend/src/models
+├── admin.js
+├── advancedGateway.js
+├── agentFlows.js
+├── agentSkillWhitelist.js
+├── appearance.js
+├── browserExtensionApiKey.js
+├── communityHub.js
+├── dataConnector.js
+├── document.js
+├── embed.js
+├── experimental
+│   ├── agentPlugins.js
+│   └── liveSync.js
+├── files.js
+├── googleAgentSkills.js
+├── invite.js
+├── mcpServers.js
+├── mobile.js
+├── outlookAgent.js
+├── promptHistory.js
+├── scheduledJobs.js
+├── system.js
+├── systemPromptVariable.js
+├── telegram.js
+├── utils
+│   ├── dmrUtils.js
+│   └── lemonadeUtils.js
+├── wechat.js
+├── workspace.js
+└── workspaceThread.js
+frontend/src/utils
+├── chat
+│   ├── agent.js
+│   ├── hljs-libraries
+│   │   └── svelte.js
+│   ├── index.js
+│   ├── markdown.js
+│   ├── messageToSpeech.js
+│   ├── plugins
+│   │   └── markdown-katex.js
+│   ├── purify.js
+│   └── themes
+│       ├── github-dark.css
+│       └── github.css
+├── clipboard.js
+├── constants.js
+├── dates.js
+├── directories.js
+├── keyboardShortcuts.js
+├── numbers.js
+├── paths.js
+├── piperTTS
+│   ├── index.js
+│   └── worker.js
+├── request.js
+├── session.js
+├── toast.js
+├── types.js
+└── username.js
+
+244 directories, 401 files

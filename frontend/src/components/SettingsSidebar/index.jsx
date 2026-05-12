@@ -263,6 +263,12 @@ const SidebarOptions = ({ user = null, t }) => (
               roles: ["admin"],
             },
             {
+              btnText: t("settings.batch-jobs"),
+              href: paths.settings.batchJobs(),
+              flex: true,
+              roles: ["admin"],
+            },
+            {
               btnText: t("settings.voice-speech"),
               href: paths.settings.audioPreference(),
               flex: true,

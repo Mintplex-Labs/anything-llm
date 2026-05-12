@@ -34,6 +34,14 @@ export const getDefaultSkills = (t) => ({
     image: RAGImage,
     skill: "rag-memory",
   },
+  "document-ingest-agent": {
+    title: t("agent.skill.ingest.title"),
+    description: t("agent.skill.ingest.description"),
+    component: DefaultSkillPanel,
+    icon: FilePlus,
+    image: SummarizeImage,
+    skill: "document-ingest-agent",
+  },
   "document-summarizer": {
     title: t("agent.skill.view.title"),
     description: t("agent.skill.view.description"),

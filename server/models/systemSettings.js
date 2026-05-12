@@ -424,6 +424,15 @@ const SystemSettings = {
         process.env.EMBEDDING_OUTPUT_DIMENSIONS || null,
       EmbeddingModelMaxChunkLength:
         process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH,
+      DocumentEmbeddingMode: process.env.DOCUMENT_EMBEDDING_MODE || "direct",
+      EmbeddingBatchCompletionWindow:
+        process.env.EMBEDDING_BATCH_COMPLETION_WINDOW || "24h",
+      EmbeddingBatchPollIntervalSeconds:
+        process.env.EMBEDDING_BATCH_POLL_INTERVAL_SECONDS || 30,
+      EmbeddingBatchMaxItemsPerFile:
+        process.env.EMBEDDING_BATCH_MAX_ITEMS_PER_FILE || 50000,
+      EmbeddingBatchJobRetentionDays:
+        process.env.EMBEDDING_BATCH_JOB_RETENTION_DAYS || 30,
       OllamaEmbeddingBatchSize: process.env.OLLAMA_EMBEDDING_BATCH_SIZE || 1,
       VoyageAiApiKey: !!process.env.VOYAGEAI_API_KEY,
       GenericOpenAiEmbeddingApiKey:

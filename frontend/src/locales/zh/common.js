@@ -50,6 +50,8 @@ const TRANSLATIONS = {
     productName: "向量知识库",
     defaultSiteTitle: "向量知识库",
     clear: "清除",
+    thread: "线程",
+    default: "默认",
     "workspaces-name": "工作区名称",
     selection: "模型选择",
     save: "保存更改",
@@ -83,6 +85,7 @@ const TRANSLATIONS = {
     transcription: "转录模型",
     embedder: "嵌入器（Embedder）",
     "text-splitting": "文本分割",
+    "batch-jobs": "批处理任务",
     "voice-speech": "语音和讲话",
     "vector-database": "向量数据库",
     embeds: "嵌入式对话",
@@ -292,6 +295,10 @@ const TRANSLATIONS = {
         title: "检索增强生成和长期记忆",
         description:
           '允许代理利用你的本地文档来回答查询，或要求代理"记住"长期记忆检索的内容片段。',
+      },
+      ingest: {
+        title: "文档入库",
+        description: "允许代理把已上传或已解析的文档加入当前工作区知识库。",
       },
       view: {
         title: "查看和总结文档",
@@ -893,6 +900,40 @@ const TRANSLATIONS = {
       "嵌入是将文本转换为向量的过程。需要这些凭据才能将你的文件和提示转换为向量知识库可以用来处理的格式。",
     provider: {
       title: "嵌入引擎提供商",
+    },
+    "document-mode": {
+      title: "文档向量化模式",
+      direct: {
+        title: "Direct 实时调用",
+        description: "文件上传后立即向量化，速度快但成本按实时调用计费。",
+      },
+      batch: {
+        title: "Batch 异步调用（省钱，非实时）",
+        description:
+          "文件上传后创建异步批处理任务，成本更低，但需要等待任务完成后文档才可被检索。",
+      },
+      note: "该设置只影响文档入库和工作区重建向量，不影响聊天、搜索和 RAG 查询。",
+    },
+  },
+  "batch-jobs": {
+    title: "Batch Jobs / 批处理任务",
+    description: "集中查看所有异步文档向量化任务。",
+    table: {
+      "job-id": "Job ID",
+      workspace: "Workspace",
+      status: "状态",
+      "retry-count": "重试次数",
+      "next-retry": "下次重试",
+      created: "创建时间",
+      updated: "更新时间",
+      error: "最后错误",
+      action: "操作",
+    },
+    retry: {
+      label: "继续轮询",
+      working: "处理中...",
+      started: "已恢复批处理任务轮询。",
+      failed: "恢复批处理任务轮询失败。",
     },
   },
   text: {

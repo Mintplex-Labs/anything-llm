@@ -5,6 +5,7 @@ import { Plus, CircleNotch, Trash } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import ThreadItem from "./ThreadItem";
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 export const THREAD_RENAME_EVENT = "renameThread";
 
 export default function ThreadContainer({
@@ -15,6 +16,7 @@ export default function ThreadContainer({
   const [threads, setThreads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [ctrlPressed, setCtrlPressed] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const chatHandler = (event) => {
@@ -135,7 +137,7 @@ export default function ThreadContainer({
         activeIdx={activeThreadIdx}
         isActive={activeThreadIdx === 0}
         workspace={workspace}
-        thread={{ slug: null, name: "default" }}
+        thread={{ slug: null, name: t("common.default") }}
         hasNext={threads.length > 0 || isVirtualThread}
       />
       {threads.map((thread, i) => (

@@ -229,8 +229,9 @@ function workspaceEndpoints(app) {
           isNativeEmbedder,
           embedFiles,
         } = require("../utils/EmbeddingWorkerManager");
+        const { isBatchMode } = require("../utils/DocumentEmbeddingBatch");
 
-        if (isNativeEmbedder() && adds.length > 0) {
+        if (!isBatchMode() && isNativeEmbedder() && adds.length > 0) {
           await embedFiles(
             currWorkspace.slug,
             adds,
@@ -246,7 +247,11 @@ function workspaceEndpoints(app) {
           return;
         }
 
-        const { failedToEmbed = [], errors = [] } = await Document.addDocuments(
+        const {
+          failedToEmbed = [],
+          errors = [],
+          batchJob = null,
+        } = await Document.addDocuments(
           currWorkspace,
           adds,
           response.locals?.user?.id
@@ -254,6 +259,7 @@ function workspaceEndpoints(app) {
         const updatedWorkspace = await Workspace.get({ id: currWorkspace.id });
         response.status(200).json({
           workspace: updatedWorkspace,
+          batchJob: batchJob || null,
           message:
             failedToEmbed.length > 0
               ? `${failedToEmbed.length} documents failed to add.\n\n${errors

@@ -102,6 +102,7 @@ const chatHistory = {
         const metrics = aibitat.provider?.getUsage?.() ?? {};
         const citations = aibitat._pendingCitations ?? [];
         const outputs = aibitat._pendingOutputs ?? [];
+        const agentEvents = aibitat._agentEvents ?? [];
         await WorkspaceChats.upsert(aibitat.trackedChatId, {
           workspaceId: Number(invocation.workspace_id),
           prompt,
@@ -112,6 +113,7 @@ const chatHistory = {
             attachments,
             metrics,
             ...(outputs.length > 0 ? { outputs } : {}),
+            ...(agentEvents.length > 0 ? { agentEvents } : {}),
           },
           user: { id: invocation?.user_id || null },
           threadId: invocation?.thread_id || null,
@@ -134,6 +136,7 @@ const chatHistory = {
         const metrics = aibitat.provider?.getUsage?.() ?? {};
         const citations = aibitat._pendingCitations ?? [];
         const outputs = aibitat._pendingOutputs ?? [];
+        const agentEvents = aibitat._agentEvents ?? [];
         const existingSources = options?.sources ?? [];
         await WorkspaceChats.upsert(aibitat.trackedChatId, {
           workspaceId: Number(invocation.workspace_id),
@@ -149,6 +152,7 @@ const chatHistory = {
             attachments,
             metrics,
             ...(outputs.length > 0 ? { outputs } : {}),
+            ...(agentEvents.length > 0 ? { agentEvents } : {}),
           },
           user: { id: invocation?.user_id || null },
           threadId: invocation?.thread_id || null,
@@ -194,6 +198,7 @@ const chatHistory = {
       _cleanup: function (aibitat) {
         aibitat.clearCitations?.();
         aibitat._pendingOutputs = [];
+        aibitat._agentEvents = [];
         aibitat.clearTrackedChatId();
       },
     };

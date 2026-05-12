@@ -294,6 +294,11 @@ const ScheduledJob = {
         description: "Recall and cite information from embedded documents",
       },
       {
+        id: "document-ingest-agent",
+        name: "Document Ingest",
+        description: "Add uploaded or parsed documents to the workspace",
+      },
+      {
         id: "document-summarizer",
         name: "Document Summarizer",
         description: "Summarize documents in the workspace",

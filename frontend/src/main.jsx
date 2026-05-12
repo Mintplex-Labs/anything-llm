@@ -116,6 +116,17 @@ const router = createBrowserRouter([
         },
       },
       {
+        path: "/settings/batch-jobs",
+        lazy: async () => {
+          const { default: BatchJobs } = await import(
+            "@/pages/GeneralSettings/BatchJobs"
+          );
+          return {
+            element: <AdminRoute Component={BatchJobs} />,
+          };
+        },
+      },
+      {
         path: "/settings/vector-database",
         lazy: async () => {
           const { default: GeneralVectorDatabase } = await import(

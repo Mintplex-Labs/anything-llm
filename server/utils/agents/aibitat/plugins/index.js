@@ -4,6 +4,7 @@ const { websocket } = require("./websocket.js");
 const { docSummarizer } = require("./summarize.js");
 const { chatHistory } = require("./chat-history.js");
 const { memory } = require("./memory.js");
+const { documentIngestAgent } = require("./document-ingest-agent.js");
 const { rechart } = require("./rechart.js");
 const { sqlAgent } = require("./sql-agent/index.js");
 const { filesystemAgent } = require("./filesystem/index.js");
@@ -19,6 +20,7 @@ module.exports = {
   docSummarizer,
   chatHistory,
   memory,
+  documentIngestAgent,
   rechart,
   sqlAgent,
   filesystemAgent,
@@ -34,6 +36,7 @@ module.exports = {
   [docSummarizer.name]: docSummarizer,
   [chatHistory.name]: chatHistory,
   [memory.name]: memory,
+  [documentIngestAgent.name]: documentIngestAgent,
   [rechart.name]: rechart,
   [sqlAgent.name]: sqlAgent,
   [filesystemAgent.name]: filesystemAgent,

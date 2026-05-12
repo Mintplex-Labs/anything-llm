@@ -510,11 +510,14 @@ function apiWorkspaceEndpoints(app) {
         }
 
         await Document.removeDocuments(currWorkspace, deletes);
-        await Document.addDocuments(currWorkspace, adds);
+        const { batchJob = null } = await Document.addDocuments(
+          currWorkspace,
+          adds
+        );
         const updatedWorkspace = await Workspace.get({
           id: Number(currWorkspace.id),
         });
-        response.status(200).json({ workspace: updatedWorkspace });
+        response.status(200).json({ workspace: updatedWorkspace, batchJob });
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();

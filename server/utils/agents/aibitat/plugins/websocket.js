@@ -27,6 +27,76 @@ const WEBSOCKET_BAIL_COMMANDS = [
   "/halt",
   "/reset", // Will not reset but will bail. Powerusers always do this and the LLM responds.
 ];
+
+function recordAgentEvent(aibitat, event = {}) {
+  if (!event.type) return;
+  if (!Array.isArray(aibitat._agentEvents)) aibitat._agentEvents = [];
+  aibitat._agentEvents.push({
+    id: uuidv4(),
+    createdAt: Date.now(),
+    ...event,
+  });
+}
+
+function eventFromSocketPayload(type, content = {}) {
+  if (type === "statusResponse") {
+    return {
+      type: "agent_thought",
+      content,
+    };
+  }
+  if (type === "wssFailure") {
+    return {
+      type: "error",
+      content,
+    };
+  }
+  if (type !== "reportStreamEvent" || !content?.type) return null;
+
+  if (content.type === "textResponseChunk") {
+    return {
+      type: "assistant_delta",
+      uuid: content.uuid,
+      content: content.content || "",
+    };
+  }
+  if (content.type === "fullTextResponse") {
+    return {
+      type: "final_message",
+      uuid: content.uuid,
+      content: content.content || "",
+    };
+  }
+  if (content.type === "toolCallInvocation") {
+    return {
+      type: "tool_call",
+      uuid: content.uuid,
+      content: content.content || "",
+      toolName: content.toolName,
+      arguments: content.arguments,
+    };
+  }
+  if (content.type === "toolCallResult") {
+    return {
+      type: "tool_result",
+      uuid: content.uuid,
+      content: content.content || "",
+      toolName: content.toolName,
+      arguments: content.arguments,
+      result: content.result,
+    };
+  }
+  if (content.type === "chatId") {
+    return {
+      type: "final_message",
+      uuid: content.uuid,
+      chatId: content.chatId,
+      content: "",
+    };
+  }
+  return null;
+}
+
 const websocket = {
   name: "websocket",
   startupConfig: {
@@ -60,6 +130,10 @@ const websocket = {
           aibitat.introspect(
             `Error encountered while running: ${errorMessage}`
           );
+          recordAgentEvent(aibitat, {
+            type: "error",
+            content: errorMessage,
+          });
           socket.send(
             JSON.stringify({ type: "wssFailure", content: errorMessage })
           );
@@ -68,6 +142,10 @@ const websocket = {
 
         aibitat.introspect = (messageText) => {
           if (!introspection) return; // Dump thoughts when not wanted.
+          recordAgentEvent(aibitat, {
+            type: "agent_thought",
+            content: messageText,
+          });
           socket.send(
             JSON.stringify({
               type: "statusResponse",
@@ -81,9 +159,22 @@ const websocket = {
         // type param must be set or else msg will not be shown or handled in UI.
         aibitat.socket = {
           send: (type = "__unhandled", content = "") => {
+            const event = eventFromSocketPayload(type, content);
+            if (event) recordAgentEvent(aibitat, event);
             socket.send(JSON.stringify({ type, content }));
           },
         };
+
+        aibitat.emitter.on("toolCallResult", ({ toolName, arguments: args, result }) => {
+          aibitat.socket.send("reportStreamEvent", {
+            type: "toolCallResult",
+            uuid: `tool_result:${uuidv4()}`,
+            toolName,
+            arguments: args,
+            result,
+            content: `Tool ${toolName} returned a result.`,
+          });
+        });
 
         /**
          * Request user approval before executing a tool/skill.
@@ -144,6 +235,12 @@ const websocket = {
 
                 delete socket.handleToolApproval;
                 clearTimeout(timeoutId);
+                recordAgentEvent(aibitat, {
+                  type: "approval_result",
+                  requestId,
+                  skillName,
+                  approved: !!data.approved,
+                });
 
                 if (data.approved) {
                   return resolve({
@@ -161,6 +258,15 @@ const websocket = {
               }
             };
 
+            recordAgentEvent(aibitat, {
+              type: "approval_request",
+              requestId,
+              skillName,
+              payload,
+              description,
+              timeoutMs: TOOL_APPROVAL_TIMEOUT_MS,
+              requestedAt: Date.now(),
+            });
             socket.send(
               JSON.stringify({
                 type: "toolApprovalRequest",
@@ -174,6 +280,13 @@ const websocket = {
 
             timeoutId = setTimeout(() => {
               delete socket.handleToolApproval;
+              recordAgentEvent(aibitat, {
+                type: "approval_result",
+                requestId,
+                skillName,
+                approved: false,
+                reason: "timeout",
+              });
               console.log(
                 chalk.yellow(
                   `Tool approval request timed out after ${TOOL_APPROVAL_TIMEOUT_MS}ms`
