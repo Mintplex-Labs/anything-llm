@@ -2,9 +2,10 @@ import { SkipForward, Check, ArrowRight } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 
 /**
- * Survey footer: progress count (multi-question only), skip button (when
- * allowed) and the primary advance/submit button. The primary button switches
- * between "Next" mid-batch and "Submit" on the last question.
+ * Survey footer for explicit-submit flows (input questions, multi-select
+ * choice, or single-select choice with the free-text "Other" entry active).
+ * For choice questions Skip lives inline in ChoiceForm; for input questions
+ * there is no inline anchor so Skip rides along here when `allowSkip` is set.
  */
 export default function Footer({
   isSingle,
@@ -21,7 +22,7 @@ export default function Footer({
   return (
     <div className="flex items-center justify-between gap-2 mt-1">
       {!isSingle && (
-        <div className="text-xs text-white/50 light:text-slate-500">
+        <div className="text-xs text-zinc-400 light:text-slate-500">
           {t("chat_window.agent_invocation.batch_progress", {
             answered: answeredCount,
             total,

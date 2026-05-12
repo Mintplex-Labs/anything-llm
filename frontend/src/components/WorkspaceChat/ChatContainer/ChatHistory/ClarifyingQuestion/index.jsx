@@ -77,10 +77,16 @@ export default function ClarifyingQuestionCard({
 
   function handleSkipThis() {
     updateDraft({ skipped: true });
-    if (!isLast) setIndex(index + 1);
+    if (isLast) return handleSubmitAll();
+    setIndex(index + 1);
   }
 
   function handleNext() {
+    if (isLast) return handleSubmitAll();
+    setIndex(index + 1);
+  }
+
+  function handleAutoAdvance() {
     if (isLast) return handleSubmitAll();
     setIndex(index + 1);
   }
@@ -99,27 +105,37 @@ export default function ClarifyingQuestionCard({
     send({ skipped: true });
   }
 
+  const isChoice = currentQuestion?.kind === "choice";
+  const isInput = currentQuestion?.kind === "input";
+  const showFooter =
+    !responded &&
+    (isInput ||
+      (isChoice &&
+        (currentQuestion.multiSelect || currentDraft?.otherSelected)));
+
   return (
     <div className="flex justify-center w-full my-1 pr-4">
       <div className="w-full flex flex-col">
         <div
-          style={{ borderRadius: "16px" }}
-          className="relative bg-zinc-800 light:bg-slate-100 p-4 pb-3 flex flex-col gap-y-3 overflow-hidden"
+          style={{ borderRadius: "20px" }}
+          className="relative border border-solid border-zinc-700 light:border-zinc-300 bg-transparent p-[18px] flex flex-col gap-[18px] overflow-hidden"
         >
-          <Header
-            question={currentQuestion?.question}
-            index={index}
-            total={total}
-            isSingle={isSingle}
-            responded={responded}
-            onPrev={handlePrev}
-            onNext={handleNext}
-            onClose={handleClose}
-            isFirst={isFirst}
-            isLast={isLast}
-          />
+          {!responded && (
+            <Header
+              question={currentQuestion?.question}
+              index={index}
+              total={total}
+              isSingle={isSingle}
+              responded={responded}
+              onPrev={handlePrev}
+              onNext={handleNext}
+              onClose={handleClose}
+              isFirst={isFirst}
+              isLast={isLast}
+            />
+          )}
 
-          {!responded && currentQuestion?.kind === "input" && (
+          {!responded && isInput && (
             <InputForm
               question={currentQuestion}
               draft={currentDraft}
@@ -128,19 +144,24 @@ export default function ClarifyingQuestionCard({
             />
           )}
 
-          {!responded && currentQuestion?.kind === "choice" && (
+          {!responded && isChoice && (
             <ChoiceForm
               question={currentQuestion}
               draft={currentDraft}
               onChange={(patch) => updateDraft({ skipped: false, ...patch })}
+              onAutoAdvance={
+                currentQuestion.multiSelect ? null : handleAutoAdvance
+              }
+              allowSkip={allowSkip}
+              onSkip={handleSkipThis}
             />
           )}
 
-          {!responded && (
+          {showFooter && (
             <Footer
               isSingle={isSingle}
               isLast={isLast}
-              allowSkip={allowSkip}
+              allowSkip={allowSkip && isInput}
               answeredCount={answeredCount}
               total={total}
               onSkipThis={handleSkipThis}
@@ -165,9 +186,9 @@ export default function ClarifyingQuestionCard({
           )}
 
           {timeoutMs && !responded && (
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-zinc-700 light:bg-slate-300">
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-zinc-700 light:bg-zinc-300">
               <div
-                className="h-full bg-sky-500 light:bg-sky-600 transition-none"
+                className="h-full bg-white light:bg-slate-900 transition-none"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>

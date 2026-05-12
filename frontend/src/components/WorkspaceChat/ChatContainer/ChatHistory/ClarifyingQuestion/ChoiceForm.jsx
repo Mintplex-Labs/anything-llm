@@ -1,88 +1,135 @@
+import { PencilSimple } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 
 /**
- * Radio (single-select) or checkbox (multiSelect) list, with an optional
- * "Other" entry that, when checked, reveals a free-text input. The "Other"
- * value is merged into the answer at submit time by `answerForDraft`.
+ * Numbered-card choice list. Supports single-select (click auto-advances via
+ * onAutoAdvance) and multi-select (clicks toggle selection, parent owns the
+ * submit step). An "Other" row reveals a free-text input when activated;
+ * its value is merged into the answer at submit time by `answerForDraft`.
+ *
+ * When the question allows skipping, the Skip button renders inline next to
+ * the Other row instead of in the Footer.
  */
-export default function ChoiceForm({ question, draft, onChange }) {
+export default function ChoiceForm({
+  question,
+  draft,
+  onChange,
+  onAutoAdvance,
+  allowSkip,
+  onSkip,
+}) {
   const { t } = useTranslation();
+  const showOther = question.allowOther !== false;
 
-  function toggleSingle(opt) {
-    onChange({ selected: opt, otherSelected: false });
-  }
-  function toggleMulti(opt) {
-    const list = Array.isArray(draft.selected) ? draft.selected : [];
-    const next = list.includes(opt)
-      ? list.filter((o) => o !== opt)
-      : [...list, opt];
-    onChange({ selected: next, otherSelected: false });
-  }
   function isChecked(opt) {
     if (question.multiSelect)
       return Array.isArray(draft.selected) && draft.selected.includes(opt);
     return draft.selected === opt;
   }
 
-  return (
-    <div className="flex flex-col gap-y-1.5">
-      {question.options.map((opt, idx) => (
-        <label
-          key={`${opt}-${idx}`}
-          className="flex items-start gap-2 cursor-pointer text-white/90 light:text-slate-800 text-sm hover:bg-white/5 light:hover:bg-slate-200 px-2 py-1 rounded"
-        >
-          <input
-            type={question.multiSelect ? "checkbox" : "radio"}
-            checked={isChecked(opt)}
-            onChange={() =>
-              question.multiSelect ? toggleMulti(opt) : toggleSingle(opt)
-            }
-            className="mt-0.5"
-          />
-          <div className="flex flex-col">
-            <span>{opt}</span>
-            {question.optionDescriptions?.[idx] && (
-              <span className="text-xs text-white/50 light:text-slate-500">
-                {question.optionDescriptions[idx]}
-              </span>
-            )}
-          </div>
-        </label>
-      ))}
+  function handleSelect(opt) {
+    if (question.multiSelect) {
+      const list = Array.isArray(draft.selected) ? draft.selected : [];
+      const next = list.includes(opt)
+        ? list.filter((o) => o !== opt)
+        : [...list, opt];
+      onChange({ selected: next, otherSelected: false });
+      return;
+    }
+    onChange({ selected: opt, otherSelected: false });
+    onAutoAdvance?.();
+  }
 
-      {question.allowOther !== false && (
-        <div className="border-t border-white/10 mt-1 pt-2">
-          <label className="flex items-start gap-2 cursor-pointer text-white/90 light:text-slate-800 text-sm">
-            <input
-              type={question.multiSelect ? "checkbox" : "radio"}
-              checked={!!draft.otherSelected}
-              onChange={() => {
-                if (!question.multiSelect)
-                  onChange({
-                    selected: null,
-                    otherSelected: !draft.otherSelected,
-                  });
-                else onChange({ otherSelected: !draft.otherSelected });
-              }}
-              className="mt-0.5"
-            />
-            <div className="flex flex-col w-full">
-              <span>{t("chat_window.agent_invocation.clarifying_other")}</span>
-              {draft.otherSelected && (
-                <input
-                  autoFocus
-                  type="text"
-                  value={draft.otherText || ""}
-                  onChange={(e) => onChange({ otherText: e.target.value })}
-                  placeholder={t(
-                    "chat_window.agent_invocation.clarifying_other_placeholder"
-                  )}
-                  className="mt-1 w-full border border-white/10 bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none p-2"
-                />
+  function handleOtherToggle() {
+    if (question.multiSelect) {
+      onChange({ otherSelected: !draft.otherSelected });
+      return;
+    }
+    onChange({ selected: null, otherSelected: !draft.otherSelected });
+  }
+
+  return (
+    <div className="flex flex-col w-full">
+      {question.options.map((opt, idx) => {
+        const selected = isChecked(opt);
+        return (
+          <button
+            key={`${opt}-${idx}`}
+            type="button"
+            aria-pressed={selected}
+            onClick={() => handleSelect(opt)}
+            className={`border-none w-full flex items-center gap-[9px] p-2 rounded-lg text-left transition-colors ${
+              selected
+                ? "bg-zinc-800 light:bg-slate-200"
+                : "bg-transparent hover:bg-zinc-800/60 light:hover:bg-slate-200/60"
+            }`}
+          >
+            <span className="flex items-center justify-center shrink-0 w-7 h-7 rounded-lg bg-zinc-700 light:bg-slate-300 text-white light:text-slate-900 text-base font-medium leading-6">
+              {idx + 1}
+            </span>
+            <span className="flex flex-col min-w-0">
+              <span className="text-white light:text-slate-900 text-sm leading-5">
+                {opt}
+              </span>
+              {question.optionDescriptions?.[idx] && (
+                <span className="text-xs text-zinc-400 light:text-slate-500 leading-4">
+                  {question.optionDescriptions[idx]}
+                </span>
               )}
-            </div>
-          </label>
+            </span>
+          </button>
+        );
+      })}
+
+      {showOther && (
+        <div className="flex items-center w-full">
+          <button
+            type="button"
+            aria-pressed={!!draft.otherSelected}
+            onClick={handleOtherToggle}
+            className={`border-none flex flex-1 min-w-0 items-center gap-[9px] p-2 rounded-lg text-left transition-colors ${
+              draft.otherSelected
+                ? "bg-zinc-800 light:bg-slate-200"
+                : "bg-transparent hover:bg-zinc-800/60 light:hover:bg-slate-200/60"
+            }`}
+          >
+            <span className="flex items-center justify-center shrink-0 w-7 h-7 rounded-lg bg-zinc-700 light:bg-slate-300 text-white light:text-slate-900">
+              <PencilSimple size={16} />
+            </span>
+            <span
+              className={`text-sm leading-5 ${
+                draft.otherSelected
+                  ? "text-white light:text-slate-900"
+                  : "text-zinc-400 light:text-slate-600"
+              }`}
+            >
+              {t("chat_window.agent_invocation.clarifying_other")}
+            </span>
+          </button>
+
+          {allowSkip && (
+            <button
+              type="button"
+              onClick={onSkip}
+              className="border border-solid border-zinc-600 light:border-slate-300 bg-transparent rounded-lg h-7 px-3 flex items-center justify-center text-white light:text-slate-900 text-xs font-medium leading-4 shrink-0 hover:bg-zinc-700/40 light:hover:bg-slate-200/60"
+            >
+              {t("chat_window.agent_invocation.batch_skip_this")}
+            </button>
+          )}
         </div>
+      )}
+
+      {showOther && draft.otherSelected && (
+        <input
+          autoFocus
+          type="text"
+          value={draft.otherText || ""}
+          onChange={(e) => onChange({ otherText: e.target.value })}
+          placeholder={t(
+            "chat_window.agent_invocation.clarifying_other_placeholder"
+          )}
+          className="mt-2 w-full border border-solid border-zinc-700 light:border-slate-500 bg-zinc-800 light:bg-white text-white light:text-slate-900 placeholder:text-zinc-500 light:placeholder:text-slate-500 text-sm rounded-lg focus:outline-white light:focus:outline-slate-400 outline-none p-2"
+        />
       )}
     </div>
   );
