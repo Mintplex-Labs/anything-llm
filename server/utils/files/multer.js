@@ -178,6 +178,11 @@ function handleAudioUpload(request, response, next) {
   const upload = multer({
     storage: multer.memoryStorage(),
     limits: { fileSize: 25 * 1024 * 1024 }, // 25MB matches OpenAI Whisper limit
+    fileFilter: (_req, file, cb) => {
+      if (!file.mimetype?.startsWith("audio/"))
+        return cb(new Error("Only audio uploads are allowed."));
+      cb(null, true);
+    },
   }).single("audio");
   upload(request, response, function (err) {
     if (err) {
