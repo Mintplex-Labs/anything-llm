@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Appearance from "@/models/appearance";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
@@ -21,6 +22,7 @@ const MIME_CANDIDATES = [
  * @returns {React.ReactElement} The ServerSTT component
  */
 export default function ServerSTT({ sendCommand }) {
+  const { t } = useTranslation();
   const [listening, setListening] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [stream, setStream] = useState(null);
@@ -39,7 +41,7 @@ export default function ServerSTT({ sendCommand }) {
 
   const startListening = useCallback(async () => {
     if (!navigator.mediaDevices?.getUserMedia) {
-      showToast("Microphone access is not supported in this browser.", "error");
+      showToast(t("chat_window.stt_unsupported"), "error");
       return;
     }
 
@@ -74,7 +76,8 @@ export default function ServerSTT({ sendCommand }) {
           blob,
           recorder.mimeType,
           sendCommand,
-          setProcessing
+          setProcessing,
+          t
         );
       };
 
@@ -84,13 +87,9 @@ export default function ServerSTT({ sendCommand }) {
       setListening(true);
     } catch (e) {
       console.error("Failed to start microphone:", e);
-      showToast(
-        "Could not access the microphone. Please grant permission and try again.",
-        "error",
-        { clear: true }
-      );
+      showToast(t("chat_window.stt_mic_denied"), "error", { clear: true });
     }
-  }, [sendCommand]);
+  }, [sendCommand, t]);
 
   return (
     <MicButton
@@ -102,7 +101,13 @@ export default function ServerSTT({ sendCommand }) {
   );
 }
 
-async function uploadAndDispatch(blob, mimeType, sendCommand, setProcessing) {
+async function uploadAndDispatch(
+  blob,
+  mimeType,
+  sendCommand,
+  setProcessing,
+  t
+) {
   setProcessing(true);
   const extension = mimeType.includes("ogg") ? "ogg" : "webm";
   const { text, error } = await System.transcribeAudio(
@@ -112,7 +117,9 @@ async function uploadAndDispatch(blob, mimeType, sendCommand, setProcessing) {
   setProcessing(false);
 
   if (error) {
-    showToast(`Transcription failed: ${error}`, "error", { clear: true });
+    showToast(t("chat_window.stt_transcription_failed", { error }), "error", {
+      clear: true,
+    });
     return;
   }
   if (!text) return;
