@@ -419,6 +419,12 @@ class Provider {
    * @returns {number}
    */
   static contextLimit(provider = "openai", modelName) {
+    if (typeof provider !== "string") {
+      console.warn(
+        `[Provider.contextLimit] Expected a provider tag string, received ${typeof provider}. Falling back to 8k context window.`
+      );
+      return 8_000;
+    }
     const llm = getLLMProviderClass({ provider });
     if (!llm || !llm.hasOwnProperty("promptWindowLimit")) return 8_000;
     return llm.promptWindowLimit(modelName);

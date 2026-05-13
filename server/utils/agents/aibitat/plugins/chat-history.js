@@ -99,7 +99,7 @@ const chatHistory = {
         { prompt, response, attachments = [] } = {}
       ) {
         const invocation = aibitat.handlerProps.invocation;
-        const metrics = aibitat.provider?.getUsage?.() ?? {};
+        const metrics = aibitat.activeProvider?.getUsage?.() ?? {};
         const citations = aibitat._pendingCitations ?? [];
         const outputs = aibitat._pendingOutputs ?? [];
         await WorkspaceChats.upsert(aibitat.trackedChatId, {
@@ -131,7 +131,7 @@ const chatHistory = {
         { prompt, response, attachments = [], options = {} } = {}
       ) {
         const invocation = aibitat.handlerProps.invocation;
-        const metrics = aibitat.provider?.getUsage?.() ?? {};
+        const metrics = aibitat.activeProvider?.getUsage?.() ?? {};
         const citations = aibitat._pendingCitations ?? [];
         const outputs = aibitat._pendingOutputs ?? [];
         const existingSources = options?.sources ?? [];

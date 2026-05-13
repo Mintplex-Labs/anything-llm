@@ -5,6 +5,7 @@ const Providers = require("./providers/index.js");
 const { Telemetry } = require("../../../models/telemetry.js");
 const { v4 } = require("uuid");
 const { ToolReranker } = require("./utils/toolReranker.js");
+const { trimMessagesToContextWindow } = require("./utils/messageWindow.js");
 
 /**
  * AIbitat is a class that manages the conversation between agents.
@@ -778,13 +779,25 @@ ${this.getHistory({ to: route.to })
       }
     }
 
-    const messages = [
-      {
-        content: fromConfig.role,
-        role: "system",
+    const messages = trimMessagesToContextWindow({
+      messages: [
+        {
+          content: fromConfig.role,
+          role: "system",
+        },
+        ...chatHistory,
+      ],
+      provider: this.defaultProvider.provider,
+      model: this.defaultProvider.model,
+      onTruncate: ({ droppedPairs, contextLimit, remainingTokens }) => {
+        this.handlerProps?.log?.(
+          `[warning]: Agent context window approaching limit (${contextLimit} tokens). Trimmed ${droppedPairs} oldest conversation pair(s) from agent history. ~${remainingTokens} tokens remaining.`
+        );
+        this?.introspect?.(
+          `Conversation history exceeded the model's context window. Dropped the ${droppedPairs} oldest message pair(s) to keep the chat going.`
+        );
       },
-      ...chatHistory,
-    ];
+    });
 
     // get the functions that the node can call
     let functions = fromConfig.functions
@@ -840,8 +853,10 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       );
     }
 
-    // Store the active provider so plugins can access usage metrics
-    this.provider = provider;
+    // Store the active provider instance so plugins can access usage metrics.
+    // Do NOT overwrite `this.provider` (the string provider tag) — utilities
+    // like `Provider.contextLimit` rely on it staying a string across turns.
+    this.activeProvider = provider;
     this.newMessage({ ...route, content });
     return content;
   }
