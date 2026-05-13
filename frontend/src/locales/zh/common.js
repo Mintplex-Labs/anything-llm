@@ -52,6 +52,9 @@ const TRANSLATIONS = {
     clear: "清除",
     thread: "线程",
     default: "默认",
+    running: "运行中",
+    completed: "已完成",
+    "return-running-thread": "返回正在运行的线程",
     "workspaces-name": "工作区名称",
     selection: "模型选择",
     save: "保存更改",
@@ -876,7 +879,7 @@ const TRANSLATIONS = {
   },
   provider_preset: {
     title: "条件码导入",
-    placeholder: "输入条件码，例如 SHIJIE_DEEPSEEK_ALI_V1",
+    placeholder: "输入条件码",
     apply: "应用配置",
     applying: "正在应用...",
     imported_status: "已从环境变量导入",

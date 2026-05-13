@@ -4,12 +4,14 @@ import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 import {
   ArrowCounterClockwise,
+  CircleNotch,
   DotsThree,
   PencilSimple,
   Trash,
   X,
 } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 
 const THREAD_CALLOUT_DETAIL_WIDTH = 26;
@@ -22,9 +24,11 @@ export default function ThreadItem({
   onRemove,
   toggleMarkForDeletion,
   hasNext,
+  activity = null,
   ctrlPressed = false,
 }) {
   const { slug: urlSlug, threadSlug = null } = useParams();
+  const { t } = useTranslation();
   const workspaceSlug = workspace?.slug ?? urlSlug;
   const optionsContainer = useRef(null);
   const [showOptions, setShowOptions] = useState(false);
@@ -71,7 +75,11 @@ export default function ThreadItem({
         className="h-full"
       />
       <div
-        className={`flex w-full items-center justify-between pr-2 group relative ${isActive ? "bg-[var(--theme-sidebar-thread-selected)] light:bg-blue-200" : "hover:bg-theme-sidebar-subitem-hover light:hover:bg-slate-300"} rounded-[4px]`}
+        className={`flex w-full items-center justify-between pr-2 group relative ${
+          isActive
+            ? "bg-[var(--theme-sidebar-thread-selected)] light:bg-blue-200"
+            : "hover:bg-theme-sidebar-subitem-hover light:hover:bg-slate-300"
+        } rounded-[4px]`}
       >
         {thread.deleted ? (
           <div className="w-full flex justify-between">
@@ -100,19 +108,23 @@ export default function ThreadItem({
             ref={ref}
             to={linkTo}
             data-tooltip-id="workspace-thread-name"
-            data-tooltip-content={thread.name}
+            data-tooltip-content={threadStatusLabel(thread.name, activity, t)}
             className="w-full pl-2 py-1 overflow-hidden"
             aria-current={isActive ? "page" : ""}
+            state={{ userSelectedThread: true }}
           >
-            <p
-              className={`text-left text-sm truncate max-w-[150px] ${
-                isActive
-                  ? "font-semibold text-theme-text-primary light:text-blue-900"
-                  : "text-theme-text-primary font-medium light:text-slate-800"
-              }`}
-            >
-              {thread.name}
-            </p>
+            <div className="flex items-center gap-x-2 min-w-0">
+              <ThreadActivityIndicator activity={activity} />
+              <p
+                className={`text-left text-sm truncate max-w-[150px] ${
+                  isActive
+                    ? "font-semibold text-theme-text-primary light:text-blue-900"
+                    : "text-theme-text-primary font-medium light:text-slate-800"
+                }`}
+              >
+                {thread.name}
+              </p>
+            </div>
           </Link>
         )}
         {!!thread.slug && !thread.deleted && !thread.virtual && (
@@ -161,6 +173,34 @@ export default function ThreadItem({
       </div>
     </div>
   );
+}
+
+function threadStatusLabel(name, activity, t) {
+  if (!activity?.status) return name;
+  return `${name} - ${t(`common.${activity.status}`)}`;
+}
+
+function ThreadActivityIndicator({ activity }) {
+  if (activity?.status === "running") {
+    return (
+      <span className="relative flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-sky-400/10 animate-pulse-glow">
+        <span className="absolute h-3 w-3 rounded-full bg-sky-400/30 light:bg-blue-600/30" />
+        <CircleNotch
+          size={12}
+          weight="bold"
+          className="relative shrink-0 animate-spin text-sky-300 light:text-blue-700"
+        />
+      </span>
+    );
+  }
+
+  if (activity?.status === "completed") {
+    return (
+      <span className="h-2 w-2 shrink-0 rounded-full bg-sky-400 light:bg-blue-600" />
+    );
+  }
+
+  return null;
 }
 
 function OptionsMenu({

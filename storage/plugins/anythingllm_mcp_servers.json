@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "rust-core-tools": {
+      "command": "/Users/shijie/rust_core/target-local/release/rust_core",
+      "args": [
+        "mcp-server"
+      ],
+      "env": {
+        "RUST_LOG": "info"
+      },
+      "anythingllm": {
+        "autoStart": true
+      }
+    }
+  }
+}

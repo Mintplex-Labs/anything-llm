@@ -50,6 +50,7 @@ export default function ChatContainer({
   const { files, parseAttachments } = useContext(DndUploaderContext);
   const { chatHistoryRef } = useChatContainerQuickScroll();
   const pendingMessageChecked = useRef(false);
+  const restoredChatKeysRef = useRef(new Set());
 
   const { listening, resetTranscript } = useSpeechRecognition({
     clearTranscriptOnListen: true,
@@ -70,13 +71,15 @@ export default function ChatContainer({
   }
 
   useEffect(() => {
-    if (!workspace?.slug) return;
+    if (!workspace?.slug || !chatKey) return;
+    if (restoredChatKeysRef.current.has(chatKey)) return;
+    restoredChatKeysRef.current.add(chatKey);
     mergeServerHistory({
       workspaceSlug: workspace.slug,
       threadSlug,
       history: knownHistory,
     });
-  }, [workspace?.slug, threadSlug, knownHistory, mergeServerHistory]);
+  }, [workspace?.slug, threadSlug, chatKey, knownHistory, mergeServerHistory]);
 
   function updateChatHistory(messagesOrUpdater) {
     if (!chatKey) return;
@@ -271,6 +274,7 @@ export default function ChatContainer({
                   <ChatHistory
                     ref={chatHistoryRef}
                     history={chatHistory}
+                    agentEvents={draft?.agentEvents || []}
                     workspace={workspace}
                     sendCommand={sendCommand}
                     updateHistory={updateChatHistory}

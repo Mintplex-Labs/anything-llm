@@ -20,6 +20,9 @@ import { safeJsonParse } from "@/utils/request";
 
 const ChatThreadDraftContext = createContext(null);
 const STORAGE_PREFIX = "chat-thread-draft";
+const ACTIVE_RUNNING_STORAGE_KEY = "chat-thread-active-running";
+const RUNNING_STATUS = "running";
+const COMPLETED_STATUS = "completed";
 
 export function getChatThreadKey(workspaceSlug, threadSlug = null) {
   if (!workspaceSlug) return null;
@@ -30,12 +33,167 @@ function getStorageKey(workspaceSlug, threadSlug = null) {
   return `${STORAGE_PREFIX}:${workspaceSlug}:${threadSlug || "default"}`;
 }
 
+function parseChatKey(chatKey) {
+  if (!chatKey) return { workspaceSlug: null, threadSlug: null };
+  const [workspaceSlug, ...threadParts] = chatKey.split(":");
+  const threadPart = threadParts.join(":") || "default";
+  return {
+    workspaceSlug,
+    threadSlug: threadPart === "default" ? null : threadPart,
+  };
+}
+
+function getThreadPath(workspaceSlug, threadSlug = null) {
+  if (!workspaceSlug) return "/";
+  return threadSlug
+    ? `/workspace/${workspaceSlug}/t/${threadSlug}`
+    : `/workspace/${workspaceSlug}`;
+}
+
+function draftMessageId(message = {}) {
+  if (message.type === "toolApprovalRequest" && message.requestId) {
+    return `approval:${message.requestId}`;
+  }
+  if (message.chatId) return `chat:${message.chatId}:${message.role || ""}`;
+  if (message.uuid) return `uuid:${message.uuid}`;
+  if (message.draftId) return `draft:${message.draftId}`;
+  return null;
+}
+
+function normalizeDraftMessage(message = {}) {
+  const now = Date.now();
+  const isApproval =
+    message.type === "toolApprovalRequest" && message.requestId;
+  const stableId = isApproval
+    ? `approval:${message.requestId}`
+    : message.uuid || message.draftId || v4();
+  const next = {
+    ...message,
+    uuid: stableId,
+    draftId: message.draftId || stableId,
+    createdAt: message.createdAt || now,
+  };
+  if (!next.role) next.role = "assistant";
+  if (isApproval && !next.content)
+    next.content = `Approval requested for ${message.skillName}`;
+  return next;
+}
+
+function restoreMissingPromptMessages(messages = []) {
+  const existingUserPrompts = new Set(
+    messages
+      .filter((message) => message?.role === "user" && message.content)
+      .map((message) => message.content)
+  );
+  const restored = [];
+  messages.forEach((message) => {
+    if (
+      message.role === "assistant" &&
+      message.userMessage &&
+      !existingUserPrompts.has(message.userMessage)
+    ) {
+      existingUserPrompts.add(message.userMessage);
+      restored.push(
+        normalizeDraftMessage({
+          role: "user",
+          content: message.userMessage,
+          attachments: message.attachments || [],
+          chatId: message.chatId,
+          uuid: `recovered-user:${message.uuid || message.draftId || message.userMessage}`,
+          draftId: `recovered-user:${message.uuid || message.draftId || message.userMessage}`,
+          draftRecovered: true,
+        })
+      );
+    }
+    restored.push(message);
+  });
+  return restored;
+}
+
+function normalizeDraftMessages(messages = []) {
+  return dedupeMessagesById(
+    messages.filter(Boolean).map(normalizeDraftMessage)
+  );
+}
+
+function normalizeStoredDraftMessages(messages = []) {
+  return normalizeDraftMessages(restoreMissingPromptMessages(messages));
+}
+
+function isLiveDraftMessage(message = {}) {
+  return !!(
+    message.pending ||
+    message.animate ||
+    message.userMessage ||
+    message.draftRecovered ||
+    message.type === "toolApprovalRequest" ||
+    (!message.chatId && message.draftId)
+  );
+}
+
+function mergeDuplicateMessage(existing, incoming) {
+  if (isLiveDraftMessage(incoming)) return { ...existing, ...incoming };
+  if (isLiveDraftMessage(existing)) return { ...incoming, ...existing };
+  return {
+    ...incoming,
+    ...existing,
+    agentEvents: existing.agentEvents || incoming.agentEvents,
+  };
+}
+
+function dedupeMessagesById(messages = []) {
+  const merged = [];
+  const seen = new Map();
+
+  messages.forEach((message) => {
+    const key = draftMessageId(message);
+    if (!key) {
+      merged.push(message);
+      return;
+    }
+
+    const idx = seen.get(key);
+    if (idx !== undefined) {
+      merged[idx] = mergeDuplicateMessage(merged[idx], message);
+      return;
+    }
+
+    seen.set(key, merged.length);
+    merged.push(message);
+  });
+
+  return merged;
+}
+
+function mergeMessagesById(serverHistory = [], localMessages = []) {
+  const merged = [];
+  const seen = new Map();
+
+  [
+    ...normalizeDraftMessages(serverHistory),
+    ...normalizeDraftMessages(localMessages),
+  ].forEach((message) => {
+    const key = draftMessageId(message);
+    if (key && seen.has(key)) {
+      const idx = seen.get(key);
+      merged[idx] = mergeDuplicateMessage(merged[idx], message);
+      return;
+    }
+    if (key) seen.set(key, merged.length);
+    merged.push(message);
+  });
+
+  return merged;
+}
+
 function draftFromStorageValue(value) {
   if (!value || !value.workspaceSlug) return null;
   return {
     workspaceSlug: value.workspaceSlug,
     threadSlug: value.threadSlug ?? null,
-    messages: Array.isArray(value.messages) ? value.messages : [],
+    messages: normalizeStoredDraftMessages(
+      Array.isArray(value.messages) ? value.messages : []
+    ),
     agentEvents: Array.isArray(value.agentEvents) ? value.agentEvents : [],
     pendingApproval: value.pendingApproval ?? null,
     activeToolCall: value.activeToolCall ?? null,
@@ -50,7 +208,7 @@ function createDraft({ workspaceSlug, threadSlug = null, messages = [] }) {
   return {
     workspaceSlug,
     threadSlug,
-    messages,
+    messages: normalizeDraftMessages(messages),
     agentEvents: [],
     pendingApproval: null,
     activeToolCall: null,
@@ -117,30 +275,72 @@ function restoreStoredDrafts() {
   return drafts;
 }
 
-function normalizeEvent(event) {
+function restoreActiveRunningState() {
+  if (typeof window === "undefined") {
+    return { activeRunningThread: null, threadActivityByKey: {} };
+  }
+  const stored = safeJsonParse(
+    sessionStorage.getItem(ACTIVE_RUNNING_STORAGE_KEY),
+    {}
+  );
   return {
-    id: event.id || v4(),
-    createdAt: event.createdAt || Date.now(),
-    ...event,
+    activeRunningThread: stored?.activeRunningThread || null,
+    threadActivityByKey: stored?.threadActivityByKey || {},
   };
 }
 
-function mergeMessages(serverHistory = [], localMessages = []) {
-  if (!localMessages.length) return serverHistory;
-  if (!serverHistory.length) return localMessages;
-
-  const serverIds = new Set(
-    serverHistory
-      .map((msg) => msg.chatId || msg.uuid)
-      .filter((id) => id !== null && id !== undefined)
+function persistActiveRunningState(activeRunningThread, threadActivityByKey) {
+  if (typeof window === "undefined") return;
+  const hasActivity =
+    activeRunningThread || Object.keys(threadActivityByKey || {}).length > 0;
+  if (!hasActivity) {
+    sessionStorage.removeItem(ACTIVE_RUNNING_STORAGE_KEY);
+    return;
+  }
+  sessionStorage.setItem(
+    ACTIVE_RUNNING_STORAGE_KEY,
+    JSON.stringify({ activeRunningThread, threadActivityByKey })
   );
-  const extras = localMessages.filter((msg) => {
-    const id = msg.chatId || msg.uuid;
-    if (!id) return true;
-    return !serverIds.has(id);
-  });
+}
 
-  return [...serverHistory, ...extras];
+function agentEventKey(event = {}) {
+  if (!event?.type) return null;
+  if (event.type === "approval_request" || event.type === "approval_result") {
+    return event.requestId ? `${event.type}:${event.requestId}` : null;
+  }
+  if (event.type === "tool_call" || event.type === "tool_result") {
+    const toolId = event.toolCallId || event.uuid || event.id;
+    return toolId ? `${event.type}:${toolId}` : null;
+  }
+  if (event.uuid) return `${event.type}:${event.uuid}`;
+  if (event.chatId) return `${event.type}:${event.chatId}`;
+  if (event.id) return `id:${event.id}`;
+  if (event.content) return `${event.type}:${event.content}`;
+  const timestamp = event.timestamp || event.createdAt;
+  return timestamp ? `${event.type}:${timestamp}` : null;
+}
+
+function mergeAgentEventsByKey(events = [], event) {
+  const key = agentEventKey(event);
+  if (!key) return [...events, event];
+  const idx = events.findIndex((existing) => agentEventKey(existing) === key);
+  if (idx < 0) return [...events, event];
+  return events.map((existing, index) =>
+    index === idx ? { ...existing, ...event } : existing
+  );
+}
+
+function normalizeEvent(event) {
+  const createdAt = event.createdAt || event.timestamp || Date.now();
+  const normalized = {
+    ...event,
+    createdAt,
+  };
+  const key = agentEventKey(normalized);
+  return {
+    ...normalized,
+    id: normalized.id || key || v4(),
+  };
 }
 
 function hasUnfinishedDraft(draft) {
@@ -149,9 +349,26 @@ function hasUnfinishedDraft(draft) {
     draft?.isAgentRunning ||
     draft?.pendingApproval ||
     draft?.activeToolCall ||
-    draft?.agentEvents?.length ||
     draft?.messages?.some((msg) => msg.pending || msg.animate)
   );
+}
+
+function isFinalDraftAssistantMessage(message = {}) {
+  return (
+    message.role === "assistant" &&
+    ![
+      "statusResponse",
+      "toolApprovalRequest",
+      "toolCallInvocation",
+      "toolCallResult",
+    ].includes(message.type)
+  );
+}
+
+function isFinalAgentSocketEvent(data = {}) {
+  if (data.type !== "reportStreamEvent" || !data.content) return false;
+  if (data.content.type === "fullTextResponse") return true;
+  return data.content.type === "chatId" && !!data.content.chatId;
 }
 
 function agentEventFromChatResult(chatResult = {}) {
@@ -287,7 +504,13 @@ function agentEventFromSocketData(data = {}) {
       content: "",
     };
   }
-  if (content.type === "removeStatusResponse") return null;
+  if (content.type === "removeStatusResponse") {
+    return {
+      type: "remove_agent_event",
+      uuid: content.uuid,
+      targetUuid: content.uuid,
+    };
+  }
 
   return {
     type: "agent_thought",
@@ -299,31 +522,153 @@ function agentEventFromSocketData(data = {}) {
 
 export function ChatThreadDraftProvider({ children }) {
   const [drafts, setDrafts] = useState(() => restoreStoredDrafts());
+  const [runningState, setRunningState] = useState(() =>
+    restoreActiveRunningState()
+  );
   const draftsRef = useRef(drafts);
+  const runningStateRef = useRef(runningState);
   const websocketRefs = useRef({});
   const approvalTimeoutRefs = useRef({});
   const pendingResetRefs = useRef({});
+  const stoppedThreadRefs = useRef({});
+  const erroredThreadRefs = useRef({});
+  const confirmPersistedRef = useRef(null);
 
   useEffect(() => {
     draftsRef.current = drafts;
   }, [drafts]);
 
+  useEffect(() => {
+    runningStateRef.current = runningState;
+  }, [runningState]);
+
+  const updateRunningState = useCallback((updater) => {
+    setRunningState((prev) => {
+      const next = updater(prev);
+      persistActiveRunningState(
+        next.activeRunningThread,
+        next.threadActivityByKey
+      );
+      runningStateRef.current = next;
+      return next;
+    });
+  }, []);
+
+  const markThreadRunning = useCallback(
+    (chatKey) => {
+      const { workspaceSlug, threadSlug } = parseChatKey(chatKey);
+      if (!workspaceSlug) return;
+      const now = Date.now();
+      updateRunningState((prev) => {
+        const existing = prev.threadActivityByKey?.[chatKey];
+        const activity = {
+          workspaceSlug,
+          threadSlug,
+          chatKey,
+          status: RUNNING_STATUS,
+          startedAt: existing?.startedAt || now,
+          updatedAt: now,
+        };
+        return {
+          activeRunningThread: activity,
+          threadActivityByKey: {
+            ...(prev.threadActivityByKey || {}),
+            [chatKey]: activity,
+          },
+        };
+      });
+    },
+    [updateRunningState]
+  );
+
+  const markThreadCompleted = useCallback(
+    (chatKey) => {
+      const { workspaceSlug, threadSlug } = parseChatKey(chatKey);
+      if (!workspaceSlug) return;
+      const now = Date.now();
+      updateRunningState((prev) => {
+        const existing = prev.threadActivityByKey?.[chatKey];
+        const activity = {
+          workspaceSlug,
+          threadSlug,
+          chatKey,
+          status: COMPLETED_STATUS,
+          startedAt: existing?.startedAt || now,
+          updatedAt: now,
+        };
+        return {
+          activeRunningThread:
+            prev.activeRunningThread?.chatKey === chatKey
+              ? activity
+              : prev.activeRunningThread,
+          threadActivityByKey: {
+            ...(prev.threadActivityByKey || {}),
+            [chatKey]: activity,
+          },
+        };
+      });
+    },
+    [updateRunningState]
+  );
+
+  const clearThreadRunning = useCallback(
+    (chatKey) => {
+      updateRunningState((prev) => {
+        const nextActivity = { ...(prev.threadActivityByKey || {}) };
+        const existing = nextActivity[chatKey];
+        if (existing?.status === RUNNING_STATUS) delete nextActivity[chatKey];
+        return {
+          activeRunningThread:
+            prev.activeRunningThread?.chatKey === chatKey
+              ? null
+              : prev.activeRunningThread,
+          threadActivityByKey: nextActivity,
+        };
+      });
+    },
+    [updateRunningState]
+  );
+
+  const clearThreadActivity = useCallback(
+    (workspaceSlug, threadSlug = null) => {
+      const chatKey = getChatThreadKey(workspaceSlug, threadSlug);
+      updateRunningState((prev) => {
+        const nextActivity = { ...(prev.threadActivityByKey || {}) };
+        delete nextActivity[chatKey];
+        return {
+          activeRunningThread:
+            prev.activeRunningThread?.chatKey === chatKey
+              ? null
+              : prev.activeRunningThread,
+          threadActivityByKey: nextActivity,
+        };
+      });
+    },
+    [updateRunningState]
+  );
+
   const updateDraft = useCallback((chatKey, updater) => {
     setDrafts((prev) => {
       let current = prev[chatKey];
       if (!current) {
-        const [workspaceSlug, threadPart] = chatKey.split(":");
+        const { workspaceSlug, threadSlug } = parseChatKey(chatKey);
         current = createDraft({
           workspaceSlug,
-          threadSlug: threadPart === "default" ? null : threadPart,
+          threadSlug,
         });
       }
       const next = {
-        ...updater(current),
+        ...updater({
+          ...current,
+          messages: normalizeDraftMessages(current.messages || []),
+        }),
         updatedAt: Date.now(),
       };
+      next.messages = normalizeDraftMessages(next.messages || []);
       persistDraft(next);
-      return { ...prev, [chatKey]: next };
+      const nextDrafts = { ...prev, [chatKey]: next };
+      draftsRef.current = nextDrafts;
+      return nextDrafts;
     });
   }, []);
 
@@ -335,11 +680,13 @@ export function ChatThreadDraftProvider({ children }) {
         if (existing) {
           const next = {
             ...existing,
-            messages: mergeMessages(messages, existing.messages),
+            messages: mergeMessagesById(messages, existing.messages),
             updatedAt: Date.now(),
           };
           persistDraft(next);
-          return { ...prev, [chatKey]: next };
+          const nextDrafts = { ...prev, [chatKey]: next };
+          draftsRef.current = nextDrafts;
+          return nextDrafts;
         }
 
         const restored = draftFromStorageValue(
@@ -355,7 +702,9 @@ export function ChatThreadDraftProvider({ children }) {
             messages,
           });
         persistDraft(next);
-        return { ...prev, [chatKey]: next };
+        const nextDrafts = { ...prev, [chatKey]: next };
+        draftsRef.current = nextDrafts;
+        return nextDrafts;
       });
       return chatKey;
     },
@@ -365,26 +714,28 @@ export function ChatThreadDraftProvider({ children }) {
   const appendAgentEvent = useCallback(
     (chatKey, rawEvent) => {
       if (!rawEvent) return;
+      if (rawEvent.type === "remove_agent_event") {
+        const targetId = rawEvent.targetUuid || rawEvent.uuid || rawEvent.id;
+        if (!targetId) return;
+        updateDraft(chatKey, (draft) => ({
+          ...draft,
+          agentEvents: (draft.agentEvents || []).filter(
+            (event) => event.uuid !== targetId && event.id !== targetId
+          ),
+        }));
+        return;
+      }
+
       const event = normalizeEvent(rawEvent);
       updateDraft(chatKey, (draft) => {
         let agentEvents = draft.agentEvents || [];
         let pendingApproval = draft.pendingApproval || null;
         let activeToolCall = draft.activeToolCall || null;
 
-        if (event.type === "tool_call" && event.uuid) {
-          const idx = agentEvents.findIndex(
-            (item) => item.type === "tool_call" && item.uuid === event.uuid
-          );
-          if (idx >= 0) {
-            agentEvents = agentEvents.map((item, itemIdx) =>
-              itemIdx === idx ? { ...item, ...event } : item
-            );
-          } else {
-            agentEvents = [...agentEvents, event];
-          }
+        agentEvents = mergeAgentEventsByKey(agentEvents, event);
+
+        if (event.type === "tool_call") {
           activeToolCall = event;
-        } else {
-          agentEvents = [...agentEvents, event];
         }
 
         if (event.type === "tool_result") activeToolCall = null;
@@ -409,7 +760,7 @@ export function ChatThreadDraftProvider({ children }) {
           typeof messagesOrUpdater === "function"
             ? messagesOrUpdater(draft.messages || [])
             : messagesOrUpdater;
-        return { ...draft, messages: messages || [] };
+        return { ...draft, messages: normalizeDraftMessages(messages || []) };
       });
     },
     [updateDraft]
@@ -422,6 +773,40 @@ export function ChatThreadDraftProvider({ children }) {
     [updateDraft]
   );
 
+  const completeDraftLocally = useCallback(
+    (chatKey) => {
+      markThreadCompleted(chatKey);
+      updateDraft(chatKey, (draft) => {
+        const finalAssistantIndex = [...(draft.messages || [])]
+          .reverse()
+          .findIndex(isFinalDraftAssistantMessage);
+        const targetIndex =
+          finalAssistantIndex >= 0
+            ? (draft.messages || []).length - 1 - finalAssistantIndex
+            : -1;
+        return {
+          ...draft,
+          messages: (draft.messages || []).map((message, index) =>
+            index === targetIndex
+              ? {
+                  ...message,
+                  closed: true,
+                  animate: false,
+                  pending: false,
+                }
+              : message
+          ),
+          pendingApproval: null,
+          activeToolCall: null,
+          isStreaming: false,
+          isAgentRunning: false,
+          persistError: null,
+        };
+      });
+    },
+    [markThreadCompleted, updateDraft]
+  );
+
   const clearDraftAfterPersisted = useCallback(
     (chatKey, persistedHistory = []) => {
       const draft = draftsRef.current[chatKey];
@@ -429,7 +814,7 @@ export function ChatThreadDraftProvider({ children }) {
       removeStoredDraft(draft.workspaceSlug, draft.threadSlug);
       setDrafts((prev) => {
         if (!prev[chatKey]) return prev;
-        return {
+        const nextDrafts = {
           ...prev,
           [chatKey]: {
             ...prev[chatKey],
@@ -446,19 +831,24 @@ export function ChatThreadDraftProvider({ children }) {
             updatedAt: Date.now(),
           },
         };
+        draftsRef.current = nextDrafts;
+        return nextDrafts;
       });
     },
     []
   );
 
   const confirmPersisted = useCallback(
-    async (chatKey) => {
+    async (chatKey, attempt = 0) => {
       const draft = draftsRef.current[chatKey];
       if (!draft || !draft.messages.length) return;
       const assistant = [...draft.messages]
         .reverse()
         .find((msg) => msg.role === "assistant" && msg.chatId);
-      if (!assistant?.chatId) return;
+      if (!assistant?.chatId) {
+        completeDraftLocally(chatKey);
+        return;
+      }
 
       try {
         const history = draft.threadSlug
@@ -470,34 +860,45 @@ export function ChatThreadDraftProvider({ children }) {
         const persisted = history.find(
           (msg) => msg.role === "assistant" && msg.chatId === assistant.chatId
         );
-        const requiresEvents = (draft.agentEvents || []).some(
-          (event) =>
-            !["user_message", "assistant_delta", "final_message"].includes(
-              event.type
-            )
-        );
-        if (
-          persisted &&
-          (!requiresEvents || persisted.agentEvents?.length > 0)
-        ) {
+        if (persisted) {
+          markThreadCompleted(chatKey);
           clearDraftAfterPersisted(chatKey, history);
+          return;
+        }
+
+        completeDraftLocally(chatKey);
+        if (attempt < 3) {
+          setTimeout(
+            () => confirmPersistedRef.current?.(chatKey, attempt + 1),
+            750 * (attempt + 1)
+          );
           return;
         }
 
         updateDraft(chatKey, (current) => ({
           ...current,
           persistError:
-            "Message completed, but the agent timeline has not been confirmed in server history yet.",
+            "Message completed locally, but server history has not returned the final assistant message yet.",
         }));
       } catch (error) {
+        completeDraftLocally(chatKey);
         updateDraft(chatKey, (current) => ({
           ...current,
           persistError: error.message,
         }));
       }
     },
-    [clearDraftAfterPersisted, updateDraft]
+    [
+      clearDraftAfterPersisted,
+      completeDraftLocally,
+      markThreadCompleted,
+      updateDraft,
+    ]
   );
+
+  useEffect(() => {
+    confirmPersistedRef.current = confirmPersisted;
+  }, [confirmPersisted]);
 
   const scheduleApprovalTimeout = useCallback(
     (chatKey, approval) => {
@@ -586,6 +987,7 @@ export function ChatThreadDraftProvider({ children }) {
         isAgentRunning: true,
         isStreaming: false,
       }));
+      markThreadRunning(chatKey);
 
       socket.addEventListener("message", (event) => {
         const data = safeJsonParse(event.data, null);
@@ -593,11 +995,16 @@ export function ChatThreadDraftProvider({ children }) {
         if (agentEvent) appendAgentEvent(chatKey, agentEvent);
         if (agentEvent?.type === "approval_request")
           scheduleApprovalTimeout(chatKey, agentEvent);
+        const isFinalMessage = isFinalAgentSocketEvent(data);
 
         try {
           handleSocketResponse(socket, event, (messagesOrUpdater) =>
             setMessages(chatKey, messagesOrUpdater)
           );
+          if (isFinalMessage) {
+            completeDraftLocally(chatKey);
+            setTimeout(() => confirmPersisted(chatKey), 500);
+          }
         } catch {
           appendAgentEvent(chatKey, {
             type: "error",
@@ -611,22 +1018,6 @@ export function ChatThreadDraftProvider({ children }) {
         delete websocketRefs.current[chatKey];
         setAgentSessionActive(false);
         window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
-        if (!pendingResetRefs.current[chatKey]) {
-          setMessages(chatKey, (prev) => [
-            ...prev.filter((msg) => !!msg.content),
-            {
-              uuid: v4(),
-              type: "statusResponse",
-              content: "Agent session complete.",
-              role: "assistant",
-              sources: [],
-              closed: true,
-              error: null,
-              animate: false,
-              pending: false,
-            },
-          ]);
-        }
         pendingResetRefs.current[chatKey] = false;
         updateDraft(chatKey, (draft) => ({
           ...draft,
@@ -634,10 +1025,21 @@ export function ChatThreadDraftProvider({ children }) {
           isStreaming: false,
           activeToolCall: null,
         }));
+        if (
+          stoppedThreadRefs.current[chatKey] ||
+          erroredThreadRefs.current[chatKey]
+        ) {
+          clearThreadRunning(chatKey);
+        } else {
+          markThreadCompleted(chatKey);
+        }
+        stoppedThreadRefs.current[chatKey] = false;
+        erroredThreadRefs.current[chatKey] = false;
         setTimeout(() => confirmPersisted(chatKey), 500);
       });
 
       socket.addEventListener("error", () => {
+        erroredThreadRefs.current[chatKey] = true;
         appendAgentEvent(chatKey, {
           type: "error",
           content: "Agent websocket connection failed.",
@@ -646,7 +1048,11 @@ export function ChatThreadDraftProvider({ children }) {
     },
     [
       appendAgentEvent,
+      clearThreadRunning,
+      completeDraftLocally,
       confirmPersisted,
+      markThreadCompleted,
+      markThreadRunning,
       scheduleApprovalTimeout,
       setMessages,
       updateDraft,
@@ -672,11 +1078,17 @@ export function ChatThreadDraftProvider({ children }) {
       const existingMessages =
         history.length > 0 ? history : draft?.messages || [];
       const socket = websocketRefs.current[chatKey];
+      const now = Date.now();
 
       if (sendToExistingAgent && socket?.readyState === WebSocket.OPEN) {
+        const feedbackMessageId = v4();
+        markThreadRunning(chatKey);
         setMessages(chatKey, [
           ...existingMessages,
           {
+            uuid: feedbackMessageId,
+            draftId: feedbackMessageId,
+            createdAt: now,
             content: prompt,
             role: "user",
             attachments,
@@ -703,36 +1115,30 @@ export function ChatThreadDraftProvider({ children }) {
         history.length > 0 &&
         history[history.length - 1]?.role === "user" &&
         history[history.length - 1]?.content === prompt;
+      const userMessage = normalizeDraftMessage({
+        content: prompt,
+        role: "user",
+        attachments,
+        createdAt: now,
+      });
+      const assistantPlaceholder = normalizeDraftMessage({
+        content: "",
+        role: "assistant",
+        pending: true,
+        userMessage: prompt,
+        attachments,
+        animate: true,
+        createdAt: now + 1,
+      });
       const prevChatHistory = historyAlreadyHasPrompt
-        ? [
-            ...history,
-            {
-              content: "",
-              role: "assistant",
-              pending: true,
-              userMessage: prompt,
-              attachments,
-              animate: true,
-            },
-          ]
+        ? [...normalizeDraftMessages(history), assistantPlaceholder]
         : [
-            ...existingMessages,
-            {
-              content: prompt,
-              role: "user",
-              attachments,
-            },
-            {
-              content: "",
-              role: "assistant",
-              pending: true,
-              userMessage: prompt,
-              attachments,
-              animate: true,
-            },
+            ...normalizeDraftMessages(existingMessages),
+            userMessage,
+            assistantPlaceholder,
           ];
       const remHistory = prevChatHistory.slice(0, -1);
-      const workingHistory = [...remHistory];
+      const workingHistory = [...prevChatHistory];
 
       setMessages(chatKey, prevChatHistory);
       appendAgentEvent(chatKey, {
@@ -740,32 +1146,52 @@ export function ChatThreadDraftProvider({ children }) {
         content: prompt,
         attachments,
       });
+      markThreadRunning(chatKey);
       setStreaming(chatKey, true);
 
-      await Workspace.multiplexStream({
-        workspaceSlug,
-        threadSlug,
-        prompt,
-        chatHandler: (chatResult) => {
-          const event = agentEventFromChatResult(chatResult);
-          if (event) appendAgentEvent(chatKey, event);
-          handleChat(
-            chatResult,
-            (value) => setStreaming(chatKey, value),
-            (messagesOrUpdater) => setMessages(chatKey, messagesOrUpdater),
-            remHistory,
-            workingHistory,
-            (websocketUUID) => openAgentSocket(chatKey, websocketUUID)
-          );
-        },
-        attachments: attachments || parseAttachments(),
-      });
-      setTimeout(() => confirmPersisted(chatKey), 500);
+      try {
+        await Workspace.multiplexStream({
+          workspaceSlug,
+          threadSlug,
+          prompt,
+          chatHandler: (chatResult) => {
+            const event = agentEventFromChatResult(chatResult);
+            if (event) appendAgentEvent(chatKey, event);
+            if (
+              chatResult.type === "finalizeResponseStream" ||
+              chatResult.type === "textResponse"
+            ) {
+              markThreadCompleted(chatKey);
+            }
+            if (chatResult.type === "abort") clearThreadRunning(chatKey);
+            handleChat(
+              chatResult,
+              (value) => setStreaming(chatKey, value),
+              (messagesOrUpdater) => setMessages(chatKey, messagesOrUpdater),
+              remHistory,
+              workingHistory,
+              (websocketUUID) => openAgentSocket(chatKey, websocketUUID)
+            );
+          },
+          attachments: attachments || parseAttachments(),
+        });
+        setTimeout(() => confirmPersisted(chatKey), 500);
+      } catch (error) {
+        appendAgentEvent(chatKey, {
+          type: "error",
+          content: error.message || "Chat stream failed.",
+        });
+        setStreaming(chatKey, false);
+        clearThreadRunning(chatKey);
+      }
     },
     [
       appendAgentEvent,
+      clearThreadRunning,
       confirmPersisted,
       ensureDraft,
+      markThreadCompleted,
+      markThreadRunning,
       openAgentSocket,
       setMessages,
       setStreaming,
@@ -776,6 +1202,7 @@ export function ChatThreadDraftProvider({ children }) {
     (chatKey = null) => {
       const keys = chatKey ? [chatKey] : Object.keys(draftsRef.current);
       keys.forEach((key) => {
+        stoppedThreadRefs.current[key] = true;
         websocketRefs.current[key]?.close();
         appendAgentEvent(key, {
           type: "error",
@@ -788,9 +1215,10 @@ export function ChatThreadDraftProvider({ children }) {
           pendingApproval: null,
           activeToolCall: null,
         }));
+        clearThreadRunning(key);
       });
     },
-    [appendAgentEvent, updateDraft]
+    [appendAgentEvent, clearThreadRunning, updateDraft]
   );
 
   useEffect(() => {
@@ -817,7 +1245,7 @@ export function ChatThreadDraftProvider({ children }) {
       });
       updateDraft(chatKey, (draft) => ({
         ...draft,
-        messages: mergeMessages(history, draft.messages),
+        messages: mergeMessagesById(history, draft.messages),
       }));
       return chatKey;
     },
@@ -835,9 +1263,44 @@ export function ChatThreadDraftProvider({ children }) {
       Object.values(draftsRef.current).some(
         (draft) =>
           draft.workspaceSlug === workspaceSlug && hasUnfinishedDraft(draft)
+      ) ||
+      Object.values(runningStateRef.current.threadActivityByKey || {}).some(
+        (activity) =>
+          activity.workspaceSlug === workspaceSlug &&
+          activity.status === RUNNING_STATUS
       ),
     []
   );
+
+  const getThreadActivity = useCallback((workspaceSlug, threadSlug = null) => {
+    const chatKey = getChatThreadKey(workspaceSlug, threadSlug);
+    return runningStateRef.current.threadActivityByKey?.[chatKey] || null;
+  }, []);
+
+  const hasThreadActivity = useCallback(
+    (workspaceSlug, threadSlug = null) =>
+      getThreadActivity(workspaceSlug, threadSlug),
+    [getThreadActivity]
+  );
+
+  const getRunningThreads = useCallback(
+    () =>
+      Object.values(runningStateRef.current.threadActivityByKey || {}).filter(
+        (activity) => activity.status === RUNNING_STATUS
+      ),
+    []
+  );
+
+  const getRunningThread = useCallback((workspaceSlug) => {
+    const runningThreads = Object.values(
+      runningStateRef.current.threadActivityByKey || {}
+    ).filter(
+      (activity) =>
+        activity.workspaceSlug === workspaceSlug &&
+        activity.status === RUNNING_STATUS
+    );
+    return runningThreads.sort((a, b) => b.updatedAt - a.updatedAt)[0] || null;
+  }, []);
 
   const value = useMemo(
     () => ({
@@ -850,12 +1313,26 @@ export function ChatThreadDraftProvider({ children }) {
       respondToApproval,
       stopStream,
       hasWorkspaceActivity,
+      hasThreadActivity,
+      getThreadActivity,
+      getRunningThreads,
+      getRunningThread,
+      clearThreadActivity,
+      activeRunningThread: runningState.activeRunningThread,
+      threadActivityByKey: runningState.threadActivityByKey,
+      getThreadPath,
       getChatKey: getChatThreadKey,
     }),
     [
       drafts,
+      runningState,
       ensureDraft,
       getDraft,
+      clearThreadActivity,
+      getRunningThread,
+      getRunningThreads,
+      getThreadActivity,
+      hasThreadActivity,
       hasWorkspaceActivity,
       mergeServerHistory,
       respondToApproval,

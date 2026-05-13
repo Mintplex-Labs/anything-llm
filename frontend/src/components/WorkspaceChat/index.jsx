@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Workspace from "@/models/workspace";
 import LoadingChat from "./LoadingChat";
 import ChatContainer from "./ChatContainer";
 import paths from "@/utils/paths";
 import ModalWrapper from "../ModalWrapper";
-import { useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { DnDFileUploaderProvider } from "./ChatContainer/DnDWrapper";
 import { WarningCircle } from "@phosphor-icons/react";
 import {
@@ -17,24 +17,63 @@ import { useChatThreadDrafts } from "@/contexts/ChatThreadDraftProvider";
 export default function WorkspaceChat({ loading, workspace }) {
   useWatchForAutoPlayAssistantTTSResponse();
   const { threadSlug = null } = useParams();
-  const { getDraft, mergeServerHistory } = useChatThreadDrafts();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const {
+    getDraft,
+    mergeServerHistory,
+    getRunningThread,
+    getThreadPath,
+    getThreadActivity,
+    clearThreadActivity,
+  } = useChatThreadDrafts();
   // Stores { key, workspace, history } currently rendered. Lags the props so
   // the previous chat stays mounted until the next one's history is ready,
   // avoiding a skeleton/loader flash on workspace/thread switches.
   const [loaded, setLoaded] = useState(null);
+  const restoredChatKeysRef = useRef(new Set());
+  const setLoadedIfChanged = useCallback((next) => {
+    setLoaded((prev) => {
+      if (
+        prev?.key === next.key &&
+        prev?.workspace === next.workspace &&
+        prev?.threadSlug === next.threadSlug &&
+        prev?.history === next.history
+      ) {
+        return prev;
+      }
+      return next;
+    });
+  }, []);
 
   useEffect(() => {
+    let cancelled = false;
     async function getHistory() {
       if (loading) return;
       if (!workspace?.slug) {
-        setLoaded({ key: "none", workspace: null, history: [] });
+        setLoadedIfChanged({ key: "none", workspace: null, history: [] });
+        return false;
+      }
+
+      const key = `${workspace.slug}:${threadSlug ?? "default"}`;
+      const runningThread = getRunningThread(workspace.slug);
+      if (
+        !location.state?.userSelectedThread &&
+        runningThread &&
+        !threadSlug &&
+        runningThread.threadSlug &&
+        (runningThread.threadSlug || null) !== (threadSlug || null)
+      ) {
+        navigate(getThreadPath(workspace.slug, runningThread.threadSlug), {
+          replace: true,
+        });
         return false;
       }
 
       const draft = getDraft(workspace.slug, threadSlug);
       if (draft) {
-        setLoaded({
-          key: `${workspace.slug}:${threadSlug ?? "default"}`,
+        setLoadedIfChanged({
+          key,
           workspace,
           threadSlug,
           history: draft.messages,
@@ -44,21 +83,49 @@ export default function WorkspaceChat({ loading, workspace }) {
       const chatHistory = threadSlug
         ? await Workspace.threads.chatHistory(workspace.slug, threadSlug)
         : await Workspace.chatHistory(workspace.slug);
-      mergeServerHistory({
-        workspaceSlug: workspace.slug,
-        threadSlug,
-        history: chatHistory,
-      });
+      if (cancelled) return;
+      if (!restoredChatKeysRef.current.has(key)) {
+        restoredChatKeysRef.current.add(key);
+        mergeServerHistory({
+          workspaceSlug: workspace.slug,
+          threadSlug,
+          history: chatHistory,
+        });
+      }
 
-      setLoaded({
-        key: `${workspace.slug}:${threadSlug ?? "default"}`,
-        workspace,
-        threadSlug,
-        history: chatHistory,
-      });
+      if (!draft) {
+        setLoadedIfChanged({
+          key,
+          workspace,
+          threadSlug,
+          history: chatHistory,
+        });
+      }
     }
     getHistory();
-  }, [workspace, loading, threadSlug, getDraft, mergeServerHistory]);
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    workspace,
+    loading,
+    threadSlug,
+    getDraft,
+    getRunningThread,
+    getThreadPath,
+    location.state?.userSelectedThread,
+    mergeServerHistory,
+    navigate,
+    setLoadedIfChanged,
+  ]);
+
+  useEffect(() => {
+    if (!workspace?.slug) return;
+    const activity = getThreadActivity(workspace.slug, threadSlug);
+    if (activity?.status === "completed") {
+      clearThreadActivity(workspace.slug, threadSlug);
+    }
+  }, [workspace?.slug, threadSlug, getThreadActivity, clearThreadActivity]);
 
   const hasPendingMessage = !!sessionStorage.getItem(PENDING_HOME_MESSAGE);
   if (loaded === null) {

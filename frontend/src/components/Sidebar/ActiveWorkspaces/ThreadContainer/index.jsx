@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import ThreadItem from "./ThreadItem";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useChatThreadDrafts } from "@/contexts/ChatThreadDraftProvider";
 export const THREAD_RENAME_EVENT = "renameThread";
 
 export default function ThreadContainer({
@@ -17,6 +18,7 @@ export default function ThreadContainer({
   const [loading, setLoading] = useState(true);
   const [ctrlPressed, setCtrlPressed] = useState(false);
   const { t } = useTranslation();
+  const { hasThreadActivity, clearThreadActivity } = useChatThreadDrafts();
 
   useEffect(() => {
     const chatHandler = (event) => {
@@ -120,6 +122,13 @@ export default function ThreadContainer({
     return idx >= 0 ? idx + 1 : 0;
   }
 
+  useEffect(() => {
+    const currentActivity = hasThreadActivity(workspace.slug, threadSlug);
+    if (currentActivity?.status === "completed") {
+      clearThreadActivity(workspace.slug, threadSlug);
+    }
+  }, [workspace.slug, threadSlug, hasThreadActivity, clearThreadActivity]);
+
   if (loading) {
     return (
       <div className="flex flex-col bg-pulse w-full h-10 items-center justify-center">
@@ -129,6 +138,10 @@ export default function ThreadContainer({
   }
 
   const activeThreadIdx = getActiveThreadIdx();
+  const defaultActivity = displayActivity(
+    hasThreadActivity(workspace.slug, null),
+    activeThreadIdx === 0
+  );
 
   return (
     <div className="flex flex-col" role="list" aria-label="Threads">
@@ -138,22 +151,30 @@ export default function ThreadContainer({
         isActive={activeThreadIdx === 0}
         workspace={workspace}
         thread={{ slug: null, name: t("common.default") }}
+        activity={defaultActivity}
         hasNext={threads.length > 0 || isVirtualThread}
       />
-      {threads.map((thread, i) => (
-        <ThreadItem
-          key={thread.slug}
-          idx={i + 1}
-          ctrlPressed={ctrlPressed}
-          toggleMarkForDeletion={toggleForDeletion}
-          activeIdx={activeThreadIdx}
-          isActive={activeThreadIdx === i + 1}
-          workspace={workspace}
-          onRemove={removeThread}
-          thread={thread}
-          hasNext={i !== threads.length - 1 || isVirtualThread}
-        />
-      ))}
+      {threads.map((thread, i) => {
+        const isActiveThread = activeThreadIdx === i + 1;
+        return (
+          <ThreadItem
+            key={thread.slug}
+            idx={i + 1}
+            ctrlPressed={ctrlPressed}
+            toggleMarkForDeletion={toggleForDeletion}
+            activeIdx={activeThreadIdx}
+            isActive={isActiveThread}
+            workspace={workspace}
+            onRemove={removeThread}
+            thread={thread}
+            activity={displayActivity(
+              hasThreadActivity(workspace.slug, thread.slug),
+              isActiveThread
+            )}
+            hasNext={i !== threads.length - 1 || isVirtualThread}
+          />
+        );
+      })}
       {isVirtualThread && (
         <ThreadItem
           idx={activeThreadIdx}
@@ -172,6 +193,11 @@ export default function ThreadContainer({
       <NewThreadButton workspace={workspace} />
     </div>
   );
+}
+
+function displayActivity(activity, isActive) {
+  if (activity?.status === "completed" && isActive) return null;
+  return activity;
 }
 
 function NewThreadButton({ workspace }) {

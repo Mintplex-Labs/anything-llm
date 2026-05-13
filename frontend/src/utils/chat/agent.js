@@ -16,11 +16,65 @@ const handledEvents = [
   // Streaming events
   "reportStreamEvent",
 ];
+const NON_FINAL_ASSISTANT_MESSAGE_TYPES = new Set([
+  "statusResponse",
+  "toolApprovalRequest",
+  "toolCallInvocation",
+  "toolCallResult",
+]);
+const AGENT_TIMELINE_STREAM_TYPES = new Set([
+  "statusResponse",
+  "toolCallInvocation",
+  "toolCallResult",
+  "removeStatusResponse",
+]);
+
+function canAdoptAssistantMessage(message = {}) {
+  return (
+    message?.role === "assistant" &&
+    !NON_FINAL_ASSISTANT_MESSAGE_TYPES.has(message.type)
+  );
+}
 
 export function websocketURI() {
   const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
   if (API_BASE === "/api") return `${wsProtocol}//${window.location.host}`;
   return `${wsProtocol}//${new URL(import.meta.env.VITE_API_BASE).host}`;
+}
+
+function findAssistantMessageIndex(messages = [], uuid = null) {
+  const exactIdx = uuid
+    ? messages.findIndex(
+        (message) => message.uuid === uuid && canAdoptAssistantMessage(message)
+      )
+    : -1;
+  if (exactIdx !== -1) return exactIdx;
+
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const message = messages[i];
+    if (
+      canAdoptAssistantMessage(message) &&
+      !message.chatId &&
+      (message.pending || message.animate || message.userMessage)
+    ) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+function appendDisplayMessage(messages = [], message) {
+  return [
+    ...messages.filter(
+      (item) =>
+        !!item.content ||
+        item.role === "user" ||
+        item.pending ||
+        item.animate ||
+        item.type === "toolApprovalRequest"
+    ),
+    message,
+  ];
 }
 
 export default function handleSocketResponse(socket, event, setChatHistory) {
@@ -74,29 +128,27 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
     socket.supportsAgentStreaming = true;
 
     return setChatHistory((prev) => {
-      if (data.content.type === "removeStatusResponse")
-        return [...prev.filter((msg) => msg.uuid !== data.content.uuid)];
+      if (AGENT_TIMELINE_STREAM_TYPES.has(data.content.type)) return prev;
 
-      const knownMessage = data.content.uuid
-        ? prev.find((msg) => msg.uuid === data.content.uuid)
-        : null;
+      const knownMessageIdx = findAssistantMessageIndex(
+        prev,
+        data.content.uuid
+      );
+      const knownMessage = knownMessageIdx >= 0 ? prev[knownMessageIdx] : null;
       if (!knownMessage) {
         if (data.content.type === "fullTextResponse") {
-          return [
-            ...prev.filter((msg) => !!msg.content),
-            {
-              uuid: data.content.uuid,
-              type: "textResponse",
-              content: data.content.content,
-              role: "assistant",
-              sources: [],
-              closed: true,
-              error: null,
-              animate: false,
-              pending: false,
-              metrics: {},
-            },
-          ];
+          return appendDisplayMessage(prev, {
+            uuid: data.content.uuid,
+            type: "textResponse",
+            content: data.content.content,
+            role: "assistant",
+            sources: [],
+            closed: true,
+            error: null,
+            animate: false,
+            pending: false,
+            metrics: {},
+          });
         }
 
         // Handle textResponseChunk initialization as textResponse instead of statusResponse.
@@ -107,28 +159,9 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
           // If this first chunk is just a non-text char (like \n, \t, etc.) then we need to ignore it.
           // Some providers like LMStudio will do this and it depends on the chat template as well.
           if (data.content.content.trim() === "") return prev;
-          return [
-            ...prev.filter((msg) => !!msg.content),
-            {
-              uuid: data.content.uuid,
-              type: "textResponse",
-              content: data.content.content,
-              role: "assistant",
-              sources: [],
-              closed: true,
-              error: null,
-              animate: false,
-              pending: false,
-              metrics: {},
-            },
-          ];
-        }
-
-        return [
-          ...prev.filter((msg) => !!msg.content),
-          {
+          return appendDisplayMessage(prev, {
             uuid: data.content.uuid,
-            type: "statusResponse",
+            type: "textResponse",
             content: data.content.content,
             role: "assistant",
             sources: [],
@@ -137,35 +170,69 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
             animate: false,
             pending: false,
             metrics: {},
-          },
-        ];
+          });
+        }
+
+        return prev;
       } else {
         const { type, content, uuid } = data.content;
-        // For tool call invocations, we need to update the existing message entirely since it is accumulated
-        // and we dont know if the function will have arguments or not while streaming - so replace the existing message entirely
-        if (type === "toolCallInvocation") {
-          const knownMessage = prev.find((msg) => msg.uuid === uuid);
-          if (!knownMessage)
-            return [...prev, { uuid, type: "toolCallInvocation", content }]; // If the message is not known, add it to the end of the list
-          return [
-            ...prev.filter((msg) => msg.uuid !== uuid),
-            { ...knownMessage, content },
-          ]; // If the message is known, replace it with the new content
+
+        if (AGENT_TIMELINE_STREAM_TYPES.has(type)) return prev;
+
+        if (type === "fullTextResponse") {
+          return prev.map((msg, index) =>
+            index === knownMessageIdx
+              ? {
+                  ...msg,
+                  uuid: uuid || msg.uuid,
+                  type: "textResponse",
+                  content,
+                  role: "assistant",
+                  sources: [],
+                  closed: true,
+                  error: null,
+                  animate: false,
+                  pending: false,
+                  metrics: msg.metrics || {},
+                }
+              : msg
+          );
+        }
+
+        if (type === "textResponseChunk" && knownMessage.uuid !== uuid) {
+          return prev.map((msg, index) =>
+            index === knownMessageIdx
+              ? {
+                  ...msg,
+                  uuid: uuid || msg.uuid,
+                  type: "textResponse",
+                  content: (msg.content || "") + content,
+                  pending: false,
+                }
+              : msg
+          );
         }
 
         if (type === "usageMetrics") {
           if (!data.content.metrics) return prev;
-          return prev.map((msg) =>
-            msg.uuid === uuid ? { ...msg, metrics: data.content.metrics } : msg
+          return prev.map((msg, index) =>
+            index === knownMessageIdx
+              ? {
+                  ...msg,
+                  uuid: uuid || msg.uuid,
+                  metrics: data.content.metrics,
+                }
+              : msg
           );
         }
 
         if (type === "citations") {
           if (!data.content.citations) return prev;
-          return prev.map((msg) =>
-            msg.uuid === uuid
+          return prev.map((msg, index) =>
+            index === knownMessageIdx
               ? {
                   ...msg,
+                  uuid: uuid || msg.uuid,
                   sources: [...(msg.sources || []), ...data.content.citations],
                 }
               : msg
@@ -174,36 +241,34 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
 
         if (type === "chatId") {
           if (!data.content.chatId) return prev;
-          return prev.map((msg) =>
-            msg.uuid === uuid ? { ...msg, chatId: data.content.chatId } : msg
+          return prev.map((msg, index) =>
+            index === knownMessageIdx
+              ? { ...msg, uuid: uuid || msg.uuid, chatId: data.content.chatId }
+              : msg
           );
         }
 
         if (type === "textResponseChunk") {
-          return prev
-            .map((msg) =>
-              msg.uuid === uuid
-                ? {
-                    ...msg,
-                    type: "textResponse",
-                    content: msg.content + content,
-                  }
-                : msg?.content
-                  ? msg
-                  : null
-            )
-            .filter((msg) => !!msg);
+          if (content.trim() === "") return prev;
+          return prev.map((msg, index) =>
+            index === knownMessageIdx
+              ? {
+                  ...msg,
+                  uuid: uuid || msg.uuid,
+                  type: "textResponse",
+                  content: (msg.content || "") + content,
+                  pending: false,
+                }
+              : msg
+          );
         }
 
-        // Generic text response - will be put in the agent thought bubble
-        return prev.map((msg) =>
-          msg.uuid === data.content.uuid
-            ? { ...msg, content: msg.content + data.content.content }
-            : msg
-        );
+        return prev;
       }
     });
   }
+
+  if (data.type === "statusResponse") return;
 
   if (data.type === "fileDownloadCard") {
     return setChatHistory((prev) => {
@@ -266,26 +331,34 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
 
   if (data.type === "toolApprovalRequest") {
     return setChatHistory((prev) => {
-      return [
-        ...prev.filter((msg) => !!msg.content),
-        {
-          uuid: v4(),
-          type: "toolApprovalRequest",
-          requestId: data.requestId,
-          skillName: data.skillName,
-          payload: data.payload,
-          description: data.description,
-          timeoutMs: data.timeoutMs,
-          content: `Approval requested for ${data.skillName}`,
-          role: "assistant",
-          sources: [],
-          closed: false,
-          error: null,
-          animate: false,
-          pending: true,
-          metrics: {},
-        },
-      ];
+      const approval = {
+        uuid: `approval:${data.requestId}`,
+        draftId: `approval:${data.requestId}`,
+        type: "toolApprovalRequest",
+        requestId: data.requestId,
+        skillName: data.skillName,
+        payload: data.payload,
+        description: data.description,
+        timeoutMs: data.timeoutMs,
+        content: `Approval requested for ${data.skillName}`,
+        role: "assistant",
+        sources: [],
+        closed: false,
+        error: null,
+        animate: false,
+        pending: true,
+        metrics: {},
+      };
+      const existingIdx = prev.findIndex(
+        (msg) =>
+          msg.type === "toolApprovalRequest" && msg.requestId === data.requestId
+      );
+      if (existingIdx >= 0) {
+        return prev.map((msg, index) =>
+          index === existingIdx ? { ...msg, ...approval } : msg
+        );
+      }
+      return appendDisplayMessage(prev, approval);
     });
   }
 

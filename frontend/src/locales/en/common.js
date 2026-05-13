@@ -54,6 +54,9 @@ const TRANSLATIONS = {
     clear: "Clear",
     thread: "Thread",
     default: "Default",
+    running: "Running",
+    completed: "Completed",
+    "return-running-thread": "Return to running thread",
     "workspaces-name": "Workspace Name",
     selection: "Model Selection",
     saving: "Saving...",
@@ -931,7 +934,7 @@ const TRANSLATIONS = {
   },
   provider_preset: {
     title: "Preset Code Import",
-    placeholder: "Enter preset code, for example SHIJIE_DEEPSEEK_ALI_V1",
+    placeholder: "Enter preset code",
     apply: "Apply configuration",
     applying: "Applying...",
     imported_status: "Imported from environment variables",

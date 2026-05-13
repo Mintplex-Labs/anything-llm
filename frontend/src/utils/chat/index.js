@@ -2,6 +2,49 @@ import { THREAD_RENAME_EVENT } from "@/components/Sidebar/ActiveWorkspaces/Threa
 import { emitAssistantMessageCompleteEvent } from "@/components/contexts/TTSProvider";
 export const ABORT_STREAM_EVENT = "abort-chat-stream";
 
+const NON_FINAL_ASSISTANT_MESSAGE_TYPES = new Set([
+  "statusResponse",
+  "toolApprovalRequest",
+  "toolCallInvocation",
+  "toolCallResult",
+]);
+
+function canAdoptAssistantMessage(message = {}) {
+  return (
+    message?.role === "assistant" &&
+    !NON_FINAL_ASSISTANT_MESSAGE_TYPES.has(message.type)
+  );
+}
+
+function findAssistantMessageIndex(history, uuid = null) {
+  const exactIdx = uuid
+    ? history.findIndex(
+        (chat) => chat.uuid === uuid && canAdoptAssistantMessage(chat)
+      )
+    : -1;
+  if (exactIdx !== -1) return exactIdx;
+
+  for (let i = history.length - 1; i >= 0; i--) {
+    const message = history[i];
+    if (
+      canAdoptAssistantMessage(message) &&
+      !message.chatId &&
+      (message.pending || message.animate || message.userMessage)
+    ) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+function syncPreviousUserChatId(history, assistantIdx, chatId) {
+  if (!chatId) return;
+  const userIdx = assistantIdx - 1;
+  if (history[userIdx]?.role === "user") {
+    history[userIdx] = { ...history[userIdx], chatId };
+  }
+}
+
 // For handling of chat responses in the frontend by their various types.
 export default function handleChat(
   chatResult,
@@ -24,7 +67,11 @@ export default function handleChat(
     metrics = {},
   } = chatResult;
 
-  if (type === "abort" || type === "statusResponse") {
+  if (type === "statusResponse") {
+    return;
+  }
+
+  if (type === "abort") {
     setLoadingResponse(false);
     setChatHistory([
       ...remHistory,
@@ -55,9 +102,24 @@ export default function handleChat(
     });
   } else if (type === "textResponse") {
     setLoadingResponse(false);
-    setChatHistory([
-      ...remHistory,
-      {
+    const chatIdx = findAssistantMessageIndex(_chatHistory, uuid);
+    if (chatIdx !== -1) {
+      _chatHistory[chatIdx] = {
+        ..._chatHistory[chatIdx],
+        uuid: uuid || _chatHistory[chatIdx].uuid,
+        content: textResponse,
+        role: "assistant",
+        sources,
+        closed: close,
+        error,
+        animate: !close,
+        pending: false,
+        chatId,
+        metrics,
+      };
+      syncPreviousUserChatId(_chatHistory, chatIdx, chatId);
+    } else {
+      _chatHistory.push({
         uuid,
         content: textResponse,
         role: "assistant",
@@ -68,26 +130,15 @@ export default function handleChat(
         pending: false,
         chatId,
         metrics,
-      },
-    ]);
-    _chatHistory.push({
-      uuid,
-      content: textResponse,
-      role: "assistant",
-      sources,
-      closed: close,
-      error,
-      animate: !close,
-      pending: false,
-      chatId,
-      metrics,
-    });
+      });
+    }
+    setChatHistory([..._chatHistory]);
     emitAssistantMessageCompleteEvent(chatId);
   } else if (
     type === "textResponseChunk" ||
     type === "finalizeResponseStream"
   ) {
-    const chatIdx = _chatHistory.findIndex((chat) => chat.uuid === uuid);
+    const chatIdx = findAssistantMessageIndex(_chatHistory, uuid);
     if (chatIdx !== -1) {
       const existingHistory = { ..._chatHistory[chatIdx] };
       let updatedHistory;
@@ -97,6 +148,7 @@ export default function handleChat(
       if (type === "finalizeResponseStream") {
         updatedHistory = {
           ...existingHistory,
+          uuid: uuid || existingHistory.uuid,
           closed: close,
           animate: !close,
           pending: false,
@@ -104,14 +156,16 @@ export default function handleChat(
           metrics,
         };
 
-        _chatHistory[chatIdx - 1] = { ..._chatHistory[chatIdx - 1], chatId }; // update prompt with chatID
+        syncPreviousUserChatId(_chatHistory, chatIdx, chatId);
 
         emitAssistantMessageCompleteEvent(chatId);
         setLoadingResponse(false);
       } else {
         updatedHistory = {
           ...existingHistory,
-          content: existingHistory.content + textResponse,
+          uuid: uuid || existingHistory.uuid,
+          type: "textResponse",
+          content: (existingHistory.content || "") + textResponse,
           ...(sources && sources.length > 0 ? { sources } : {}),
           error,
           closed: close,
@@ -140,7 +194,11 @@ export default function handleChat(
   } else if (type === "agentInitWebsocketConnection") {
     setWebsocket(chatResult.websocketUUID);
   } else if (type === "stopGeneration") {
-    const chatIdx = _chatHistory.length - 1;
+    const chatIdx = findAssistantMessageIndex(_chatHistory);
+    if (chatIdx === -1) {
+      setLoadingResponse(false);
+      return;
+    }
     const existingHistory = { ..._chatHistory[chatIdx] };
     const updatedHistory = {
       ...existingHistory,

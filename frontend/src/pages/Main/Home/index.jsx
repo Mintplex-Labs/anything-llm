@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import { isMobile } from "react-device-detect";
 import { SidebarMobileHeader } from "@/components/Sidebar";
@@ -54,13 +60,25 @@ async function createDefaultWorkspace(workspaceName = "My Workspace") {
 
 export default function Home() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { user } = useUser();
   const [workspace, setWorkspace] = useState(null);
   const [threadSlug, setThreadSlug] = useState(null);
   const [workspaceLoading, setWorkspaceLoading] = useState(true);
   const [dragging, setDragging] = useState(false);
   const pendingFilesRef = useRef([]);
-  const { hasWorkspaceActivity } = useChatThreadDrafts();
+  const { hasWorkspaceActivity, getRunningThread, getThreadPath } =
+    useChatThreadDrafts();
+
+  const navigateToRunningThread = useCallback(
+    (workspaceSlug) => {
+      const runningThread = getRunningThread(workspaceSlug);
+      if (!runningThread) return false;
+      navigate(getThreadPath(workspaceSlug, runningThread.threadSlug));
+      return true;
+    },
+    [getRunningThread, getThreadPath, navigate]
+  );
 
   useEffect(() => {
     async function init() {
@@ -107,7 +125,11 @@ export default function Home() {
         if (!ws) return;
         setWorkspace(ws);
       }
-      if (hasWorkspaceActivity(ws.slug)) return;
+      if (navigateToRunningThread(ws.slug)) return;
+      if (hasWorkspaceActivity(ws.slug)) {
+        navigate(paths.workspace.chat(ws.slug));
+        return;
+      }
       const { thread } = await Workspace.threads.new(ws.slug);
       if (thread) setThreadSlug(thread.slug);
     }
@@ -115,7 +137,13 @@ export default function Home() {
     window.addEventListener(PASTE_ATTACHMENT_EVENT, handlePaste);
     return () =>
       window.removeEventListener(PASTE_ATTACHMENT_EVENT, handlePaste);
-  }, [workspace, threadSlug, hasWorkspaceActivity]);
+  }, [
+    workspace,
+    threadSlug,
+    hasWorkspaceActivity,
+    navigate,
+    navigateToRunningThread,
+  ]);
 
   async function handleDropWithoutWorkspace(acceptedFiles) {
     setDragging(false);
@@ -123,7 +151,11 @@ export default function Home() {
     const ws = await createDefaultWorkspace(t("new-workspace.placeholder"));
     if (!ws) return;
     setWorkspace(ws);
-    if (hasWorkspaceActivity(ws.slug)) return;
+    if (navigateToRunningThread(ws.slug)) return;
+    if (hasWorkspaceActivity(ws.slug)) {
+      navigate(paths.workspace.chat(ws.slug));
+      return;
+    }
     const { thread } = await Workspace.threads.new(ws.slug);
     if (thread) setThreadSlug(thread.slug);
   }
@@ -131,7 +163,11 @@ export default function Home() {
   async function handleDropWithWorkspace(acceptedFiles) {
     setDragging(false);
     pendingFilesRef.current = acceptedFiles;
-    if (hasWorkspaceActivity(workspace.slug)) return;
+    if (navigateToRunningThread(workspace.slug)) return;
+    if (hasWorkspaceActivity(workspace.slug)) {
+      navigate(paths.workspace.chat(workspace.slug));
+      return;
+    }
     const { thread } = await Workspace.threads.new(workspace.slug);
     if (thread) setThreadSlug(thread.slug);
   }
@@ -190,7 +226,11 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const { files, parseAttachments } = useContext(DndUploaderContext);
-  const { hasWorkspaceActivity } = useChatThreadDrafts();
+  const { hasWorkspaceActivity, getRunningThread, getThreadPath } =
+    useChatThreadDrafts();
+  const runningThread = workspace?.slug
+    ? getRunningThread(workspace.slug)
+    : null;
 
   useEffect(() => {
     window.dispatchEvent(
@@ -219,8 +259,17 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
       }
 
       if (!targetThread) {
+        const activeThread = getRunningThread(targetWorkspace.slug);
+        if (activeThread) {
+          navigate(
+            getThreadPath(targetWorkspace.slug, activeThread.threadSlug)
+          );
+          setLoading(false);
+          return;
+        }
         if (hasWorkspaceActivity(targetWorkspace.slug)) {
           navigate(paths.workspace.chat(targetWorkspace.slug));
+          setLoading(false);
           return;
         }
         const { thread } = await Workspace.threads.new(targetWorkspace.slug);
@@ -312,6 +361,19 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
               workspaceSlug={workspace?.slug}
               threadSlug={threadSlug}
             />
+            {runningThread && (
+              <button
+                type="button"
+                onClick={() =>
+                  navigate(
+                    getThreadPath(workspace.slug, runningThread.threadSlug)
+                  )
+                }
+                className="mt-4 text-sm font-semibold text-sky-300 light:text-blue-700 hover:underline"
+              >
+                {t("common.return-running-thread")}
+              </button>
+            )}
             <QuickActions
               hasAvailableWorkspace={!!workspace}
               onCreateAgent={() => navigate(paths.settings.agentSkills())}

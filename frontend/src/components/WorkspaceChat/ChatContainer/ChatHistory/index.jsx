@@ -1,5 +1,6 @@
 import {
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   useMemo,
@@ -28,6 +29,7 @@ import { MessageActionsProvider } from "./MessageActionsContext";
 export default forwardRef(function (
   {
     history = [],
+    agentEvents = [],
     workspace,
     sendCommand,
     updateHistory,
@@ -40,6 +42,8 @@ export default forwardRef(function (
   ref
 ) {
   const lastScrollTopRef = useRef(0);
+  const scrollPositionsRef = useRef({});
+  const suppressAutoScrollRef = useRef(false);
   const chatHistoryRef = useRef(null);
   const { threadSlug = null } = useParams();
   const { showing, hideModal } = useManageWorkspaceModal();
@@ -50,14 +54,42 @@ export default forwardRef(function (
   const { textSizeClass } = useTextSize();
 
   useEffect(() => {
+    if (suppressAutoScrollRef.current) {
+      suppressAutoScrollRef.current = false;
+      return;
+    }
     if (!isUserScrolling && (isAtBottom || isStreaming)) {
       scrollToBottom(false); // Use instant scroll for auto-scrolling
     }
   }, [history, isAtBottom, isStreaming, isUserScrolling]);
 
+  useLayoutEffect(() => {
+    const element = chatHistoryRef.current;
+    if (!element || !chatKey) return;
+
+    suppressAutoScrollRef.current = true;
+    window.requestAnimationFrame(() => {
+      const current = chatHistoryRef.current;
+      if (!current) return;
+
+      const savedScrollTop = scrollPositionsRef.current[chatKey];
+      const nextScrollTop =
+        typeof savedScrollTop === "number"
+          ? savedScrollTop
+          : current.scrollHeight;
+      current.scrollTo({ top: nextScrollTop });
+      const isBottom =
+        current.scrollHeight - current.scrollTop - current.clientHeight < 2;
+      setIsAtBottom(isBottom);
+      setIsUserScrolling(!isBottom);
+      lastScrollTopRef.current = current.scrollTop;
+    });
+  }, [chatKey]);
+
   const handleScroll = (e) => {
     const { scrollTop, scrollHeight, clientHeight } = e.target;
     const isBottom = scrollHeight - scrollTop - clientHeight < 2;
+    if (chatKey) scrollPositionsRef.current[chatKey] = scrollTop;
 
     // Detect if this is a user-initiated scroll
     if (Math.abs(scrollTop - lastScrollTopRef.current) > 10) {
@@ -188,6 +220,7 @@ export default forwardRef(function (
         forkThread,
         websocket,
         chatKey,
+        agentEvents,
         approvalState,
         onToolApprovalResponse,
       }),
@@ -199,6 +232,7 @@ export default forwardRef(function (
       forkThread,
       websocket,
       chatKey,
+      agentEvents,
       approvalState,
       onToolApprovalResponse,
     ]
@@ -280,6 +314,7 @@ const getLastMessageInfo = (history) => {
  * @param {Function} param0.saveEditedMessage - The function to save the edited message.
  * @param {Function} param0.forkThread - The function to fork the thread.
  * @param {WebSocket} param0.websocket - The active websocket connection for agent communication.
+ * @param {Array} param0.agentEvents - Live agent timeline events for the active draft.
  * @returns {Array} The compiled history of messages.
  */
 function buildMessages({
@@ -290,18 +325,84 @@ function buildMessages({
   forkThread,
   websocket,
   chatKey,
+  agentEvents,
   approvalState,
   onToolApprovalResponse,
 }) {
+  const liveApprovalRequestIds = new Set(
+    history
+      .filter((message) => message.type === "toolApprovalRequest")
+      .map((message) => message.requestId)
+      .filter(Boolean)
+  );
+  const renderedApprovalRequestIds = new Set();
+  const hasPersistedAgentEvents = history.some(
+    (message) => message.role === "assistant" && message.agentEvents?.length > 0
+  );
+  const liveTimelineMessages = hasPersistedAgentEvents
+    ? []
+    : agentEventsToTimelineMessages(agentEvents);
+
   return history.reduce((acc, props, index) => {
     const isLastBotReply =
       index === history.length - 1 && props.role === "assistant";
+
+    if (isLastBotReply && liveTimelineMessages.length > 0) {
+      for (const timelineMessage of liveTimelineMessages) {
+        if (timelineMessage.type === "toolApprovalRequest") {
+          if (
+            liveApprovalRequestIds.has(timelineMessage.requestId) ||
+            renderedApprovalRequestIds.has(timelineMessage.requestId)
+          ) {
+            continue;
+          }
+          renderedApprovalRequestIds.add(timelineMessage.requestId);
+          acc.push(
+            <ToolApprovalRequest
+              key={`live-tool-approval-${timelineMessage.requestId}`}
+              requestId={timelineMessage.requestId}
+              skillName={timelineMessage.skillName}
+              payload={timelineMessage.payload}
+              description={timelineMessage.description}
+              timeoutMs={timelineMessage.timeoutMs}
+              websocket={websocket}
+              approvalState={
+                approvalState?.requestId === timelineMessage.requestId
+                  ? approvalState
+                  : timelineMessage
+              }
+              onResponse={(approved) =>
+                onToolApprovalResponse?.(
+                  chatKey,
+                  timelineMessage.requestId,
+                  approved
+                )
+              }
+            />
+          );
+          continue;
+        }
+
+        if (acc.length > 0 && Array.isArray(acc[acc.length - 1])) {
+          acc[acc.length - 1].push(timelineMessage);
+        } else {
+          acc.push([timelineMessage]);
+        }
+      }
+    }
 
     if (props.role === "assistant" && props.agentEvents?.length > 0) {
       for (const timelineMessage of agentEventsToTimelineMessages(
         props.agentEvents
       )) {
         if (timelineMessage.type === "toolApprovalRequest") {
+          if (
+            liveApprovalRequestIds.has(timelineMessage.requestId) ||
+            renderedApprovalRequestIds.has(timelineMessage.requestId)
+          ) {
+            continue;
+          }
+          renderedApprovalRequestIds.add(timelineMessage.requestId);
           acc.push(
             <ToolApprovalRequest
               key={`persisted-tool-approval-${timelineMessage.requestId}`}
@@ -334,6 +435,8 @@ function buildMessages({
     }
 
     if (props.type === "toolApprovalRequest") {
+      if (renderedApprovalRequestIds.has(props.requestId)) return acc;
+      renderedApprovalRequestIds.add(props.requestId);
       acc.push(
         <ToolApprovalRequest
           key={`tool-approval-${props.requestId}`}
@@ -373,7 +476,7 @@ function buildMessages({
     } else {
       acc.push(
         <HistoricalMessage
-          key={index}
+          key={getMessageRenderKey(props, index)}
           uuid={props.uuid}
           message={props.content}
           role={props.role}
@@ -396,14 +499,60 @@ function buildMessages({
   }, []);
 }
 
+function getMessageRenderKey(message = {}, index) {
+  if (message.type === "toolApprovalRequest" && message.requestId) {
+    return `approval:${message.requestId}`;
+  }
+  return message.chatId || message.uuid || message.draftId || index;
+}
+
+function timelineEventKey(event = {}) {
+  if (event.type === "approval_request" || event.type === "approval_result") {
+    return event.requestId ? `${event.type}:${event.requestId}` : null;
+  }
+  if (event.type === "tool_call" || event.type === "tool_result") {
+    const toolId = event.toolCallId || event.uuid || event.id;
+    return toolId ? `${event.type}:${toolId}` : null;
+  }
+  if (event.uuid) return `${event.type}:${event.uuid}`;
+  if (event.id) return `id:${event.id}`;
+  if (event.content) return `${event.type}:${event.content}`;
+  return null;
+}
+
+function dedupeTimelineEvents(agentEvents = []) {
+  const deduped = [];
+  const positions = new Map();
+
+  agentEvents.forEach((event) => {
+    const key = timelineEventKey(event);
+    if (!key) {
+      deduped.push(event);
+      return;
+    }
+
+    const existingIdx = positions.get(key);
+    if (existingIdx !== undefined) {
+      deduped[existingIdx] = { ...deduped[existingIdx], ...event };
+      return;
+    }
+
+    positions.set(key, deduped.length);
+    deduped.push(event);
+  });
+
+  return deduped;
+}
+
 function agentEventsToTimelineMessages(agentEvents = []) {
+  const dedupedEvents = dedupeTimelineEvents(agentEvents);
   const approvalResults = new Map(
-    agentEvents
+    dedupedEvents
       .filter((event) => event.type === "approval_result")
       .map((event) => [event.requestId, event])
   );
 
-  return agentEvents
+  return dedupedEvents
     .map((event, index) => {
       if (event.type === "agent_thought") {
         return {
