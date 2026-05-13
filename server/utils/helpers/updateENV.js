@@ -1305,6 +1305,7 @@ function dumpENV() {
 
     "STORAGE_DIR",
     "SERVER_PORT",
+    "COLLECTOR_PORT",
     // For persistent data encryption
     "SIG_KEY",
     "SIG_SALT",
