@@ -91,16 +91,20 @@ const WorkspaceThread = {
     { workspaceSlug, threadSlug },
     message,
     handleChat,
-    attachments = []
+    attachments = [],
+    abortSignal = null
   ) {
-    const ctrl = new AbortController();
+    const ctrl = abortSignal ? null : new AbortController();
+    const signal = abortSignal || ctrl?.signal;
 
     // Listen for the ABORT_STREAM_EVENT key to be emitted by the client
     // to early abort the streaming response. On abort we send a special `stopGeneration`
     // event to be handled which resets the UI for us to be able to send another message.
     // The backend response abort handling is done in each LLM's handleStreamResponse.
     window.addEventListener(ABORT_STREAM_EVENT, () => {
-      ctrl.abort();
+      if (ctrl) ctrl.abort();
+      else if (abortSignal && !abortSignal.aborted)
+        abortSignal.abort();
       handleChat({ id: v4(), type: "stopGeneration" });
     });
 
@@ -110,7 +114,7 @@ const WorkspaceThread = {
         method: "POST",
         body: JSON.stringify({ message, attachments }),
         headers: baseHeaders(),
-        signal: ctrl.signal,
+        signal,
         openWhenHidden: true,
         async onopen(response) {
           if (response.ok) {
@@ -128,7 +132,7 @@ const WorkspaceThread = {
               close: true,
               error: `An error occurred while streaming response. Code ${response.status}`,
             });
-            ctrl.abort();
+            if (ctrl) ctrl.abort();
             throw new Error("Invalid Status code response.");
           } else {
             handleChat({
@@ -139,7 +143,7 @@ const WorkspaceThread = {
               close: true,
               error: `An error occurred while streaming response. Unknown Error.`,
             });
-            ctrl.abort();
+            if (ctrl) ctrl.abort();
             throw new Error("Unknown error");
           }
         },
@@ -156,7 +160,7 @@ const WorkspaceThread = {
             close: true,
             error: `An error occurred while streaming response. ${err.message}`,
           });
-          ctrl.abort();
+          if (ctrl) ctrl.abort();
           throw new Error();
         },
       }

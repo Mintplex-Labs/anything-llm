@@ -6,7 +6,10 @@ import PromptInput, {
   PROMPT_INPUT_ID,
 } from "./PromptInput";
 import Workspace from "@/models/workspace";
-import handleChat, { ABORT_STREAM_EVENT } from "@/utils/chat";
+import handleChat, {
+  ABORT_STREAM_EVENT,
+  cacheStreamingHistory,
+} from "@/utils/chat";
 import { isMobile } from "react-device-detect";
 import { SidebarMobileHeader } from "../../Sidebar";
 import { useNavigate } from "react-router-dom";
@@ -226,6 +229,8 @@ export default function ChatContainer({
   }, [workspace?.slug]);
 
   useEffect(() => {
+    const abortController = new AbortController();
+
     async function fetchReply() {
       const promptMessage =
         chatHistory.length > 0 ? chatHistory[chatHistory.length - 1] : null;
@@ -233,6 +238,10 @@ export default function ChatContainer({
       var _chatHistory = [...remHistory];
 
       // Override hook for new messages to now go to agents until the connection closes
+      // Register _chatHistory in the streaming cache so that switching threads
+      // and switching back will restore in-progress streaming messages.
+      cacheStreamingHistory(workspace.slug, threadSlug, _chatHistory);
+
       if (!!websocket) {
         if (!promptMessage || !promptMessage?.userMessage) return false;
         const attachments = promptMessage?.attachments ?? parseAttachments();
@@ -274,10 +283,18 @@ export default function ChatContainer({
             setSocketId
           ),
         attachments,
+        abortSignal: abortController.signal,
       });
       return;
     }
     loadingResponse === true && fetchReply();
+
+    // Abort the SSE connection when this effect cleans up (e.g. component
+    // unmounts due to thread switch). This triggers the server-side
+    // persistOrphanedStream flow to save the complete response.
+    return () => {
+      if (!abortController.signal.aborted) abortController.abort();
+    };
   }, [loadingResponse, chatHistory, workspace]);
 
   // TODO: Simplify this WSS stuff

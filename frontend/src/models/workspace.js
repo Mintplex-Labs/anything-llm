@@ -125,30 +125,42 @@ const Workspace = {
     prompt,
     chatHandler,
     attachments = [],
+    abortSignal = null,
   }) {
     if (!!threadSlug)
       return this.threads.streamChat(
         { workspaceSlug, threadSlug },
         prompt,
         chatHandler,
-        attachments
+        attachments,
+        abortSignal
       );
     return this.streamChat(
       { slug: workspaceSlug },
       prompt,
       chatHandler,
-      attachments
+      attachments,
+      abortSignal
     );
   },
-  streamChat: async function ({ slug }, message, handleChat, attachments = []) {
-    const ctrl = new AbortController();
+  streamChat: async function (
+    { slug },
+    message,
+    handleChat,
+    attachments = [],
+    abortSignal = null
+  ) {
+    const ctrl = abortSignal ? null : new AbortController();
+    const signal = abortSignal || ctrl?.signal;
 
     // Listen for the ABORT_STREAM_EVENT key to be emitted by the client
     // to early abort the streaming response. On abort we send a special `stopGeneration`
     // event to be handled which resets the UI for us to be able to send another message.
     // The backend response abort handling is done in each LLM's handleStreamResponse.
     window.addEventListener(ABORT_STREAM_EVENT, () => {
-      ctrl.abort();
+      if (ctrl) ctrl.abort();
+      else if (abortSignal && !abortSignal.aborted)
+        abortSignal.abort();
       handleChat({ id: v4(), type: "stopGeneration" });
     });
 
@@ -156,7 +168,7 @@ const Workspace = {
       method: "POST",
       body: JSON.stringify({ message, attachments }),
       headers: baseHeaders(),
-      signal: ctrl.signal,
+      signal,
       openWhenHidden: true,
       async onopen(response) {
         if (response.ok) {

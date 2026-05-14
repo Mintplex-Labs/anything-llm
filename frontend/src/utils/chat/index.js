@@ -2,6 +2,28 @@ import { THREAD_RENAME_EVENT } from "@/components/Sidebar/ActiveWorkspaces/Threa
 import { emitAssistantMessageCompleteEvent } from "@/components/contexts/TTSProvider";
 export const ABORT_STREAM_EVENT = "abort-chat-stream";
 
+// Module-level cache for in-progress streaming history.
+// Key: `${workspaceSlug}:${threadSlug}`, Value: reference to the _chatHistory array.
+// Since handleChat directly mutates the array, the cache automatically stays current.
+const _streamingHistoryCache = new Map();
+let _currentCacheKey = null;
+
+export function cacheStreamingHistory(workspaceSlug, threadSlug, chatHistoryArray) {
+  const key = `${workspaceSlug}:${threadSlug ?? "default"}`;
+  _currentCacheKey = key;
+  _streamingHistoryCache.set(key, chatHistoryArray);
+}
+
+export function getStreamingHistory(workspaceSlug, threadSlug) {
+  const key = `${workspaceSlug}:${threadSlug ?? "default"}`;
+  return _streamingHistoryCache.get(key) || null;
+}
+
+export function clearStreamingHistory(workspaceSlug, threadSlug) {
+  const key = `${workspaceSlug}:${threadSlug ?? "default"}`;
+  _streamingHistoryCache.delete(key);
+}
+
 // For handling of chat responses in the frontend by their various types.
 export default function handleChat(
   chatResult,
@@ -26,6 +48,8 @@ export default function handleChat(
 
   if (type === "abort" || type === "statusResponse") {
     setLoadingResponse(false);
+    // Clear streaming cache when stream ends (abort or status)
+    if (_currentCacheKey) _streamingHistoryCache.delete(_currentCacheKey);
     setChatHistory([
       ...remHistory,
       {
@@ -55,6 +79,7 @@ export default function handleChat(
     });
   } else if (type === "textResponse") {
     setLoadingResponse(false);
+    if (_currentCacheKey) _streamingHistoryCache.delete(_currentCacheKey);
     setChatHistory([
       ...remHistory,
       {
@@ -95,6 +120,7 @@ export default function handleChat(
       // If the response is finalized, we can set the loading state to false.
       // and append the metrics to the history.
       if (type === "finalizeResponseStream") {
+        if (_currentCacheKey) _streamingHistoryCache.delete(_currentCacheKey);
         updatedHistory = {
           ...existingHistory,
           closed: close,
@@ -140,6 +166,7 @@ export default function handleChat(
   } else if (type === "agentInitWebsocketConnection") {
     setWebsocket(chatResult.websocketUUID);
   } else if (type === "stopGeneration") {
+    if (_currentCacheKey) _streamingHistoryCache.delete(_currentCacheKey);
     const chatIdx = _chatHistory.length - 1;
     const existingHistory = { ..._chatHistory[chatIdx] };
     const updatedHistory = {
