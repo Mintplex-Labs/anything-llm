@@ -38,6 +38,21 @@ export function clearPromptInputDraft(storageKey) {
   } catch {}
 }
 
+/**
+ * Immediately saves a draft value for a given thread/workspace key.
+ * Used to restore a user's message after a provider error so they don't
+ * lose their typed text when the LLM backend returns an abort/error response.
+ * @param {string} storageKey - thread slug or workspace slug
+ * @param {string} value - the message text to save as a draft
+ */
+export function savePromptInputDraft(storageKey, value) {
+  try {
+    const map = safeJsonParse(localStorage.getItem(USER_PROMPT_INPUT_MAP), {});
+    map[storageKey] = value;
+    localStorage.setItem(USER_PROMPT_INPUT_MAP, JSON.stringify(map));
+  } catch {}
+}
+
 export default function usePromptInputStorage({ promptInput, setPromptInput }) {
   const { threadSlug = null, slug: workspaceSlug } = useParams();
   useEffect(() => {
