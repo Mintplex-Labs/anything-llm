@@ -35,6 +35,7 @@ import DockerModelRunnerLogo from "@/media/llmprovider/docker-model-runner.png";
 import PrivateModeLogo from "@/media/llmprovider/privatemode.png";
 import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
 import LemonadeLogo from "@/media/llmprovider/lemonade.png";
+import ChutesLogo from "@/media/llmprovider/chutes.png";
 
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
@@ -71,6 +72,7 @@ import DockerModelRunnerOptions from "@/components/LLMSelection/DockerModelRunne
 import PrivateModeOptions from "@/components/LLMSelection/PrivateModeOptions";
 import SambaNovaOptions from "@/components/LLMSelection/SambaNovaOptions";
 import LemonadeOptions from "@/components/LLMSelection/LemonadeOptions";
+import ChutesAiOptions from "@/components/LLMSelection/ChutesAiOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import System from "@/models/system";
@@ -335,6 +337,14 @@ const LLMS = [
     logo: GiteeAILogo,
     options: (settings) => <GiteeAiOptions settings={settings} />,
     description: "Run GiteeAI's powerful LLMs.",
+  },
+  {
+    name: "Chutes AI",
+    value: "chutes",
+    logo: ChutesLogo,
+    options: (settings) => <ChutesAiOptions settings={settings} />,
+    description:
+      "Decentralized AI inference on Bittensor SN64, TEE-secured, OpenAI-compatible.",
   },
 ];
 
