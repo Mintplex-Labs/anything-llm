@@ -165,16 +165,19 @@ const websocket = {
           },
         };
 
-        aibitat.emitter.on("toolCallResult", ({ toolName, arguments: args, result }) => {
-          aibitat.socket.send("reportStreamEvent", {
-            type: "toolCallResult",
-            uuid: `tool_result:${uuidv4()}`,
-            toolName,
-            arguments: args,
-            result,
-            content: `Tool ${toolName} returned a result.`,
-          });
-        });
+        aibitat.emitter.on(
+          "toolCallResult",
+          ({ toolName, arguments: args, result }) => {
+            aibitat.socket.send("reportStreamEvent", {
+              type: "toolCallResult",
+              uuid: `tool_result:${uuidv4()}`,
+              toolName,
+              arguments: args,
+              result,
+              content: `Tool ${toolName} returned a result.`,
+            });
+          }
+        );
 
         /**
          * Request user approval before executing a tool/skill.

@@ -1,6 +1,19 @@
 const { SystemSettings } = require("../../../../../models/systemSettings");
 const { safeJsonParse } = require("../../../../http");
 
+const DEFAULT_BRIDGE_REQUEST_TIMEOUT_MS = 25 * 1_000;
+
+function googleCalendarBridgeRequestTimeoutMs() {
+  const envTimeout = parseInt(
+    process.env.GOOGLE_CALENDAR_AGENT_REQUEST_TIMEOUT_MS ||
+      process.env.GOOGLE_APPS_SCRIPT_TIMEOUT_MS,
+    10
+  );
+  return !isNaN(envTimeout) && envTimeout > 0
+    ? envTimeout
+    : DEFAULT_BRIDGE_REQUEST_TIMEOUT_MS;
+}
+
 /**
  * Google Calendar Bridge Library
  * Handles communication with the AnythingLLM Google Calendar Google Apps Script deployment.
@@ -138,6 +151,11 @@ class GoogleCalendarBridge {
       return { success: false, error: initResult.error };
     }
 
+    const timeoutMs = googleCalendarBridgeRequestTimeoutMs();
+    const controller = new AbortController();
+    const startedAt = Date.now();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
     try {
       const response = await fetch(this.#getBaseUrl(), {
         method: "POST",
@@ -150,6 +168,7 @@ class GoogleCalendarBridge {
           action,
           ...params,
         }),
+        signal: controller.signal,
       });
 
       if (!response.ok) {
@@ -167,10 +186,20 @@ class GoogleCalendarBridge {
 
       return { success: true, data: result.data };
     } catch (error) {
+      if (error.name === "AbortError") {
+        return {
+          success: false,
+          error: `Google Calendar API request timed out after ${timeoutMs}ms`,
+        };
+      }
+
       return {
         success: false,
         error: `Google Calendar API request failed: ${error.message}`,
       };
+    } finally {
+      clearTimeout(timeoutId);
+      this.#log(`Request ${action} completed in ${Date.now() - startedAt}ms`);
     }
   }
 

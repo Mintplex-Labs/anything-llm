@@ -19,18 +19,22 @@ const chatHistory = {
           aibitat._aborted = true;
         });
 
-        // pre-register a workspace chat ID to secure it in the DB
-        aibitat.onMessage(async (message) => {
+        let pendingTrackedChatIdPromise = null;
+        const ensureTrackedChatId = async (message) => {
           if (message.from !== "USER") return;
+          if (aibitat.trackedChatId) return;
+          if (pendingTrackedChatIdPromise) return pendingTrackedChatIdPromise;
 
-          /**
-           * If we don't have a tracked chat ID, we need to create a new one so we can upsert the response later.
-           * Normally, if this was a totally fresh chat from the user, we can assume that the message from the socket is
-           * the message we want to store for the prompt. However, if this is a regeneration of a previous message and that message
-           * called tools the history could include intermediate messages so need to search backwards to find the most recent user message
-           * as that is actually the prompt.
-           */
-          if (!aibitat.trackedChatId) {
+          pendingTrackedChatIdPromise = (async () => {
+            if (aibitat.trackedChatId) return;
+
+            /**
+             * If we don't have a tracked chat ID, we need to create a new one so we can upsert the response later.
+             * Normally, if this was a totally fresh chat from the user, we can assume that the message from the socket is
+             * the message we want to store for the prompt. However, if this is a regeneration of a previous message and that message
+             * called tools the history could include intermediate messages so need to search backwards to find the most recent user message
+             * as that is actually the prompt.
+             */
             let userMessage = message.content;
             if (userMessage.startsWith("@agent:")) {
               const lastUserMsgIndex = aibitat._chats.findLastIndex(
@@ -56,7 +60,18 @@ const chatHistory = {
               response: {},
             });
             if (chat) aibitat.registerChatId(chat.id);
-          }
+          })().finally(() => {
+            pendingTrackedChatIdPromise = null;
+          });
+
+          return pendingTrackedChatIdPromise;
+        };
+
+        aibitat.ensureTrackedChatId = ensureTrackedChatId;
+
+        // pre-register a workspace chat ID to secure it in the DB
+        aibitat.onMessage((message) => {
+          ensureTrackedChatId(message).catch(() => {});
         });
 
         aibitat.onMessage(async () => {

@@ -1,59 +1,20 @@
 import { THREAD_RENAME_EVENT } from "@/components/Sidebar/ActiveWorkspaces/ThreadContainer";
-import { emitAssistantMessageCompleteEvent } from "@/components/contexts/TTSProvider";
+
 export const ABORT_STREAM_EVENT = "abort-chat-stream";
 
-const NON_FINAL_ASSISTANT_MESSAGE_TYPES = new Set([
-  "statusResponse",
-  "toolApprovalRequest",
-  "toolCallInvocation",
-  "toolCallResult",
-]);
-
-function canAdoptAssistantMessage(message = {}) {
-  return (
-    message?.role === "assistant" &&
-    !NON_FINAL_ASSISTANT_MESSAGE_TYPES.has(message.type)
+export function dispatchThreadRename(thread) {
+  if (!thread?.slug || !thread?.name) return;
+  window.dispatchEvent(
+    new CustomEvent(THREAD_RENAME_EVENT, {
+      detail: {
+        threadSlug: thread.slug,
+        newName: thread.name,
+      },
+    })
   );
 }
 
-function findAssistantMessageIndex(history, uuid = null) {
-  const exactIdx = uuid
-    ? history.findIndex(
-        (chat) => chat.uuid === uuid && canAdoptAssistantMessage(chat)
-      )
-    : -1;
-  if (exactIdx !== -1) return exactIdx;
-
-  for (let i = history.length - 1; i >= 0; i--) {
-    const message = history[i];
-    if (
-      canAdoptAssistantMessage(message) &&
-      !message.chatId &&
-      (message.pending || message.animate || message.userMessage)
-    ) {
-      return i;
-    }
-  }
-  return -1;
-}
-
-function syncPreviousUserChatId(history, assistantIdx, chatId) {
-  if (!chatId) return;
-  const userIdx = assistantIdx - 1;
-  if (history[userIdx]?.role === "user") {
-    history[userIdx] = { ...history[userIdx], chatId };
-  }
-}
-
-// For handling of chat responses in the frontend by their various types.
-export default function handleChat(
-  chatResult,
-  setLoadingResponse,
-  setChatHistory,
-  remHistory,
-  _chatHistory,
-  setWebsocket
-) {
+export default function handleChat(chatResult = {}) {
   const {
     uuid,
     textResponse,
@@ -65,173 +26,98 @@ export default function handleChat(
     chatId = null,
     action = null,
     metrics = {},
+    websocketUUID = null,
+    thread = null,
   } = chatResult;
 
+  if (action === "rename_thread") dispatchThreadRename(thread);
+
+  if (type === "agentInitWebsocketConnection") {
+    return {
+      type: "agent_socket_start",
+      websocketUUID,
+    };
+  }
+
   if (type === "statusResponse") {
-    return;
+    return {
+      type: "timeline_event",
+      event: {
+        type: "thought",
+        uuid,
+        content: textResponse || "",
+        animate,
+      },
+    };
+  }
+
+  if (type === "textResponseChunk") {
+    if (close) {
+      return {
+        type: "assistant_final",
+        uuid,
+        content: textResponse || "",
+        sources,
+        chatId,
+        metrics,
+        closed: true,
+      };
+    }
+
+    return {
+      type: "assistant_delta",
+      uuid,
+      content: textResponse || "",
+      sources,
+      closed: !!close,
+      chatId,
+      metrics,
+    };
+  }
+
+  if (type === "textResponse" || type === "finalizeResponseStream") {
+    return {
+      type: "assistant_final",
+      uuid,
+      content: textResponse || "",
+      sources,
+      chatId,
+      metrics,
+      closed: !!close,
+    };
   }
 
   if (type === "abort") {
-    setLoadingResponse(false);
-    setChatHistory([
-      ...remHistory,
-      {
-        type,
-        uuid,
-        content: textResponse,
-        role: "assistant",
-        sources,
-        closed: true,
-        error,
-        animate,
-        pending: false,
-        metrics,
-      },
-    ]);
-    _chatHistory.push({
-      type,
+    return {
+      type: "assistant_error",
       uuid,
-      content: textResponse,
-      role: "assistant",
-      sources,
-      closed: true,
-      error,
-      animate,
-      pending: false,
-      metrics,
-    });
-  } else if (type === "textResponse") {
-    setLoadingResponse(false);
-    const chatIdx = findAssistantMessageIndex(_chatHistory, uuid);
-    if (chatIdx !== -1) {
-      _chatHistory[chatIdx] = {
-        ..._chatHistory[chatIdx],
-        uuid: uuid || _chatHistory[chatIdx].uuid,
-        content: textResponse,
-        role: "assistant",
-        sources,
-        closed: close,
-        error,
-        animate: !close,
-        pending: false,
-        chatId,
-        metrics,
-      };
-      syncPreviousUserChatId(_chatHistory, chatIdx, chatId);
-    } else {
-      _chatHistory.push({
-        uuid,
-        content: textResponse,
-        role: "assistant",
-        sources,
-        closed: close,
-        error,
-        animate: !close,
-        pending: false,
-        chatId,
-        metrics,
-      });
-    }
-    setChatHistory([..._chatHistory]);
-    emitAssistantMessageCompleteEvent(chatId);
-  } else if (
-    type === "textResponseChunk" ||
-    type === "finalizeResponseStream"
-  ) {
-    const chatIdx = findAssistantMessageIndex(_chatHistory, uuid);
-    if (chatIdx !== -1) {
-      const existingHistory = { ..._chatHistory[chatIdx] };
-      let updatedHistory;
-
-      // If the response is finalized, we can set the loading state to false.
-      // and append the metrics to the history.
-      if (type === "finalizeResponseStream") {
-        updatedHistory = {
-          ...existingHistory,
-          uuid: uuid || existingHistory.uuid,
-          closed: close,
-          animate: !close,
-          pending: false,
-          chatId,
-          metrics,
-        };
-
-        syncPreviousUserChatId(_chatHistory, chatIdx, chatId);
-
-        emitAssistantMessageCompleteEvent(chatId);
-        setLoadingResponse(false);
-      } else {
-        updatedHistory = {
-          ...existingHistory,
-          uuid: uuid || existingHistory.uuid,
-          type: "textResponse",
-          content: (existingHistory.content || "") + textResponse,
-          ...(sources && sources.length > 0 ? { sources } : {}),
-          error,
-          closed: close,
-          animate: !close,
-          pending: false,
-          chatId,
-          metrics,
-        };
-      }
-      _chatHistory[chatIdx] = updatedHistory;
-    } else {
-      _chatHistory.push({
-        uuid,
-        sources,
-        error,
-        content: textResponse,
-        role: "assistant",
-        closed: close,
-        animate: !close,
-        pending: false,
-        chatId,
-        metrics,
-      });
-    }
-    setChatHistory([..._chatHistory]);
-  } else if (type === "agentInitWebsocketConnection") {
-    setWebsocket(chatResult.websocketUUID);
-  } else if (type === "stopGeneration") {
-    const chatIdx = findAssistantMessageIndex(_chatHistory);
-    if (chatIdx === -1) {
-      setLoadingResponse(false);
-      return;
-    }
-    const existingHistory = { ..._chatHistory[chatIdx] };
-    const updatedHistory = {
-      ...existingHistory,
-      sources: [],
-      closed: true,
-      error: null,
-      animate: false,
-      pending: false,
-      metrics,
+      content: error || textResponse || "Stream aborted.",
+      error: error || textResponse || "Stream aborted.",
     };
-    _chatHistory[chatIdx] = updatedHistory;
-
-    setChatHistory([..._chatHistory]);
-    setLoadingResponse(false);
   }
 
-  // Action Handling via special 'action' attribute on response.
-  if (action === "reset_chat") setChatHistory([]);
-
-  // If thread was updated automatically based on chat prompt
-  // then we can handle the updating of the thread here.
-  if (action === "rename_thread") {
-    if (!!chatResult?.thread?.slug && chatResult.thread.name) {
-      window.dispatchEvent(
-        new CustomEvent(THREAD_RENAME_EVENT, {
-          detail: {
-            threadSlug: chatResult.thread.slug,
-            newName: chatResult.thread.name,
-          },
-        })
-      );
-    }
+  if (type === "stopGeneration") {
+    return {
+      type: "stop_generation",
+      uuid,
+      content: "Generation stopped by user.",
+    };
   }
+
+  if (type === "wssFailure") {
+    return {
+      type: "assistant_error",
+      uuid,
+      content: error || textResponse || "Websocket connection failed.",
+      error: error || textResponse || "Websocket connection failed.",
+    };
+  }
+
+  if (action === "reset_chat") {
+    return { type: "reset_chat" };
+  }
+
+  return null;
 }
 
 export function getWorkspaceSystemPrompt(workspace) {

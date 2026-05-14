@@ -3,6 +3,7 @@ const {
   isBatchMode,
   isTransientBatchError,
   retryDelayMs,
+  buildWorkspaceDocumentRecord,
 } = require("../../../utils/DocumentEmbeddingBatch");
 
 describe("DocumentEmbeddingBatch mode selection", () => {
@@ -74,5 +75,33 @@ describe("DocumentEmbeddingBatch retry classification", () => {
     expect(retryDelayMs(1)).toBe(2_000);
     expect(retryDelayMs(2)).toBe(4_000);
     expect(retryDelayMs(10)).toBe(10_000);
+  });
+});
+
+describe("DocumentEmbeddingBatch manifest recovery", () => {
+  it("can rebuild a workspace document record from a saved manifest", () => {
+    const record = buildWorkspaceDocumentRecord({
+      docId: "doc-1",
+      job: { jobId: "job-1", workspaceId: 7 },
+      docManifest: {
+        docpath: "custom-documents/example.json",
+        data: {
+          title: "Example",
+          pageContent: "should not be stored in metadata",
+          wordCount: 10,
+        },
+      },
+    });
+
+    expect(record).toEqual({
+      docId: "doc-1",
+      filename: "example.json",
+      docpath: "custom-documents/example.json",
+      workspaceId: 7,
+      metadata: JSON.stringify({ title: "Example", wordCount: 10 }),
+      embeddingStatus: "processing",
+      embeddingError: null,
+      embeddingBatchJobId: "job-1",
+    });
   });
 });

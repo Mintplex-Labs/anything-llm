@@ -7,7 +7,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { v4 } from "uuid";
 import Workspace from "@/models/workspace";
 import handleChat, { ABORT_STREAM_EVENT } from "@/utils/chat";
 import handleSocketResponse, {
@@ -16,13 +15,24 @@ import handleSocketResponse, {
   setAgentSessionActive,
   websocketURI,
 } from "@/utils/chat/agent";
+import { emitAssistantMessageCompleteEvent } from "@/components/contexts/TTSProvider";
 import { safeJsonParse } from "@/utils/request";
+import {
+  TURN_STATUSES,
+  appendTimelineEventToItems,
+  createTurn,
+  findAssistantTurn,
+  isAssistantTurn,
+  mergeServerHistoryIntoTurns as mergeServerHistoryIntoTurnItems,
+  normalizeTimelineEvent,
+  normalizeTurnItems,
+  updateAssistantTurnInItems,
+} from "@/utils/chat/turns";
 
 const ChatThreadDraftContext = createContext(null);
 const STORAGE_PREFIX = "chat-thread-draft";
 const ACTIVE_RUNNING_STORAGE_KEY = "chat-thread-active-running";
-const RUNNING_STATUS = "running";
-const COMPLETED_STATUS = "completed";
+const RUNNING_STALE_TIMEOUT_MS = 6 * 60 * 1000;
 
 export function getChatThreadKey(workspaceSlug, threadSlug = null) {
   if (!workspaceSlug) return null;
@@ -50,166 +60,12 @@ function getThreadPath(workspaceSlug, threadSlug = null) {
     : `/workspace/${workspaceSlug}`;
 }
 
-function draftMessageId(message = {}) {
-  if (message.type === "toolApprovalRequest" && message.requestId) {
-    return `approval:${message.requestId}`;
-  }
-  if (message.chatId) return `chat:${message.chatId}:${message.role || ""}`;
-  if (message.uuid) return `uuid:${message.uuid}`;
-  if (message.draftId) return `draft:${message.draftId}`;
-  return null;
-}
-
-function normalizeDraftMessage(message = {}) {
-  const now = Date.now();
-  const isApproval =
-    message.type === "toolApprovalRequest" && message.requestId;
-  const stableId = isApproval
-    ? `approval:${message.requestId}`
-    : message.uuid || message.draftId || v4();
-  const next = {
-    ...message,
-    uuid: stableId,
-    draftId: message.draftId || stableId,
-    createdAt: message.createdAt || now,
-  };
-  if (!next.role) next.role = "assistant";
-  if (isApproval && !next.content)
-    next.content = `Approval requested for ${message.skillName}`;
-  return next;
-}
-
-function restoreMissingPromptMessages(messages = []) {
-  const existingUserPrompts = new Set(
-    messages
-      .filter((message) => message?.role === "user" && message.content)
-      .map((message) => message.content)
-  );
-  const restored = [];
-  messages.forEach((message) => {
-    if (
-      message.role === "assistant" &&
-      message.userMessage &&
-      !existingUserPrompts.has(message.userMessage)
-    ) {
-      existingUserPrompts.add(message.userMessage);
-      restored.push(
-        normalizeDraftMessage({
-          role: "user",
-          content: message.userMessage,
-          attachments: message.attachments || [],
-          chatId: message.chatId,
-          uuid: `recovered-user:${message.uuid || message.draftId || message.userMessage}`,
-          draftId: `recovered-user:${message.uuid || message.draftId || message.userMessage}`,
-          draftRecovered: true,
-        })
-      );
-    }
-    restored.push(message);
-  });
-  return restored;
-}
-
-function normalizeDraftMessages(messages = []) {
-  return dedupeMessagesById(
-    messages.filter(Boolean).map(normalizeDraftMessage)
-  );
-}
-
-function normalizeStoredDraftMessages(messages = []) {
-  return normalizeDraftMessages(restoreMissingPromptMessages(messages));
-}
-
-function isLiveDraftMessage(message = {}) {
-  return !!(
-    message.pending ||
-    message.animate ||
-    message.userMessage ||
-    message.draftRecovered ||
-    message.type === "toolApprovalRequest" ||
-    (!message.chatId && message.draftId)
-  );
-}
-
-function mergeDuplicateMessage(existing, incoming) {
-  if (isLiveDraftMessage(incoming)) return { ...existing, ...incoming };
-  if (isLiveDraftMessage(existing)) return { ...incoming, ...existing };
-  return {
-    ...incoming,
-    ...existing,
-    agentEvents: existing.agentEvents || incoming.agentEvents,
-  };
-}
-
-function dedupeMessagesById(messages = []) {
-  const merged = [];
-  const seen = new Map();
-
-  messages.forEach((message) => {
-    const key = draftMessageId(message);
-    if (!key) {
-      merged.push(message);
-      return;
-    }
-
-    const idx = seen.get(key);
-    if (idx !== undefined) {
-      merged[idx] = mergeDuplicateMessage(merged[idx], message);
-      return;
-    }
-
-    seen.set(key, merged.length);
-    merged.push(message);
-  });
-
-  return merged;
-}
-
-function mergeMessagesById(serverHistory = [], localMessages = []) {
-  const merged = [];
-  const seen = new Map();
-
-  [
-    ...normalizeDraftMessages(serverHistory),
-    ...normalizeDraftMessages(localMessages),
-  ].forEach((message) => {
-    const key = draftMessageId(message);
-    if (key && seen.has(key)) {
-      const idx = seen.get(key);
-      merged[idx] = mergeDuplicateMessage(merged[idx], message);
-      return;
-    }
-    if (key) seen.set(key, merged.length);
-    merged.push(message);
-  });
-
-  return merged;
-}
-
-function draftFromStorageValue(value) {
-  if (!value || !value.workspaceSlug) return null;
-  return {
-    workspaceSlug: value.workspaceSlug,
-    threadSlug: value.threadSlug ?? null,
-    messages: normalizeStoredDraftMessages(
-      Array.isArray(value.messages) ? value.messages : []
-    ),
-    agentEvents: Array.isArray(value.agentEvents) ? value.agentEvents : [],
-    pendingApproval: value.pendingApproval ?? null,
-    activeToolCall: value.activeToolCall ?? null,
-    isStreaming: !!value.isStreaming,
-    isAgentRunning: !!value.isAgentRunning,
-    updatedAt: value.updatedAt || Date.now(),
-    persistError: value.persistError || null,
-  };
-}
-
-function createDraft({ workspaceSlug, threadSlug = null, messages = [] }) {
+function createDraft({ workspaceSlug, threadSlug = null, items = [] }) {
   return {
     workspaceSlug,
     threadSlug,
-    messages: normalizeDraftMessages(messages),
-    agentEvents: [],
+    items: normalizeTurnItems(items),
+    activeTurnId: null,
     pendingApproval: null,
     activeToolCall: null,
     isStreaming: false,
@@ -219,10 +75,41 @@ function createDraft({ workspaceSlug, threadSlug = null, messages = [] }) {
   };
 }
 
+function draftFromStorageValue(value) {
+  if (!value || !value.workspaceSlug) return null;
+  const updatedAt = value.updatedAt || Date.now();
+  const staleRuntime =
+    (value.isStreaming || value.isAgentRunning) &&
+    Date.now() - updatedAt > RUNNING_STALE_TIMEOUT_MS;
+  const draft = {
+    workspaceSlug: value.workspaceSlug,
+    threadSlug: value.threadSlug ?? null,
+    items: normalizeTurnItems(Array.isArray(value.items) ? value.items : []),
+    activeTurnId: staleRuntime ? null : value.activeTurnId || null,
+    pendingApproval: staleRuntime ? null : value.pendingApproval || null,
+    activeToolCall: staleRuntime ? null : value.activeToolCall || null,
+    isStreaming: staleRuntime ? false : !!value.isStreaming,
+    isAgentRunning: staleRuntime ? false : !!value.isAgentRunning,
+    updatedAt,
+    persistError: staleRuntime
+      ? "This agent session timed out locally because no response was received."
+      : value.persistError || null,
+  };
+
+  if (staleRuntime && value.activeTurnId) {
+    draft.items = failTurnItems(
+      draft.items,
+      value.activeTurnId,
+      draft.persistError
+    );
+  }
+  return draft;
+}
+
 function serializableDraft(draft) {
   return {
-    messages: draft.messages,
-    agentEvents: draft.agentEvents,
+    items: draft.items,
+    activeTurnId: draft.activeTurnId,
     pendingApproval: draft.pendingApproval,
     activeToolCall: draft.activeToolCall,
     isStreaming: draft.isStreaming,
@@ -234,17 +121,34 @@ function serializableDraft(draft) {
   };
 }
 
+function hasUnfinishedDraft(draft = {}) {
+  return !!(
+    draft.isStreaming ||
+    draft.isAgentRunning ||
+    draft.pendingApproval ||
+    draft.activeToolCall ||
+    draft.items?.some(
+      (item) => isAssistantTurn(item) && item.status === TURN_STATUSES.running
+    )
+  );
+}
+
+function hasLocalDraftItems(draft = {}) {
+  return draft.items?.some(
+    (item) =>
+      item?.turnId?.startsWith?.("turn:") ||
+      (isAssistantTurn(item) && item.status !== TURN_STATUSES.completed)
+  );
+}
+
 function persistDraft(draft) {
   if (typeof window === "undefined" || !draft?.workspaceSlug) return;
   const key = getStorageKey(draft.workspaceSlug, draft.threadSlug);
   const hasDraft =
-    draft.agentEvents.length > 0 ||
-    draft.pendingApproval ||
-    draft.activeToolCall ||
-    draft.isStreaming ||
-    draft.isAgentRunning ||
+    hasUnfinishedDraft(draft) ||
+    hasLocalDraftItems(draft) ||
     draft.persistError ||
-    draft.messages.some((msg) => msg.pending || msg.animate || msg.userMessage);
+    draft.items.length > 0;
 
   if (!hasDraft) {
     sessionStorage.removeItem(key);
@@ -275,6 +179,50 @@ function restoreStoredDrafts() {
   return drafts;
 }
 
+function isRunningActivityStale(activity = {}, now = Date.now()) {
+  if (activity.status !== TURN_STATUSES.running) return false;
+  const lastSeen = activity.updatedAt || activity.startedAt || now;
+  return now - lastSeen > RUNNING_STALE_TIMEOUT_MS;
+}
+
+function staleFailureActivity(activity = {}, now = Date.now()) {
+  return {
+    ...activity,
+    status: TURN_STATUSES.failed,
+    reason:
+      activity.reason ||
+      "This agent session timed out because no final response was received.",
+    updatedAt: now,
+  };
+}
+
+function normalizeRunningState(stored = {}) {
+  const now = Date.now();
+  const threadActivityByKey = {};
+  Object.entries(stored?.threadActivityByKey || {}).forEach(
+    ([chatKey, activity]) => {
+      if (!activity?.chatKey) return;
+      threadActivityByKey[chatKey] = isRunningActivityStale(activity, now)
+        ? staleFailureActivity(activity, now)
+        : activity;
+    }
+  );
+
+  const activeRunningThread = stored?.activeRunningThread;
+  const normalizedActive =
+    activeRunningThread && !isRunningActivityStale(activeRunningThread, now)
+      ? activeRunningThread
+      : null;
+
+  return {
+    activeRunningThread:
+      normalizedActive?.status === TURN_STATUSES.running
+        ? normalizedActive
+        : null,
+    threadActivityByKey,
+  };
+}
+
 function restoreActiveRunningState() {
   if (typeof window === "undefined") {
     return { activeRunningThread: null, threadActivityByKey: {} };
@@ -283,10 +231,7 @@ function restoreActiveRunningState() {
     sessionStorage.getItem(ACTIVE_RUNNING_STORAGE_KEY),
     {}
   );
-  return {
-    activeRunningThread: stored?.activeRunningThread || null,
-    threadActivityByKey: stored?.threadActivityByKey || {},
-  };
+  return normalizeRunningState(stored);
 }
 
 function persistActiveRunningState(activeRunningThread, threadActivityByKey) {
@@ -303,220 +248,69 @@ function persistActiveRunningState(activeRunningThread, threadActivityByKey) {
   );
 }
 
-function agentEventKey(event = {}) {
-  if (!event?.type) return null;
-  if (event.type === "approval_request" || event.type === "approval_result") {
-    return event.requestId ? `${event.type}:${event.requestId}` : null;
-  }
-  if (event.type === "tool_call" || event.type === "tool_result") {
-    const toolId = event.toolCallId || event.uuid || event.id;
-    return toolId ? `${event.type}:${toolId}` : null;
-  }
-  if (event.uuid) return `${event.type}:${event.uuid}`;
-  if (event.chatId) return `${event.type}:${event.chatId}`;
-  if (event.id) return `id:${event.id}`;
-  if (event.content) return `${event.type}:${event.content}`;
-  const timestamp = event.timestamp || event.createdAt;
-  return timestamp ? `${event.type}:${timestamp}` : null;
-}
-
-function mergeAgentEventsByKey(events = [], event) {
-  const key = agentEventKey(event);
-  if (!key) return [...events, event];
-  const idx = events.findIndex((existing) => agentEventKey(existing) === key);
-  if (idx < 0) return [...events, event];
-  return events.map((existing, index) =>
-    index === idx ? { ...existing, ...event } : existing
+function failTurnItems(items = [], turnId, reason) {
+  return updateAssistantTurnInItems(
+    appendTimelineEventToItems(items, turnId, {
+      type: "error",
+      content: reason,
+    }),
+    turnId,
+    {
+      status: TURN_STATUSES.failed,
+      error: reason,
+    }
   );
 }
 
-function normalizeEvent(event) {
-  const createdAt = event.createdAt || event.timestamp || Date.now();
-  const normalized = {
-    ...event,
-    createdAt,
-  };
-  const key = agentEventKey(normalized);
+function completeTurnPatch(turn, patch = {}) {
+  const nextFinalContent =
+    patch.finalContent !== undefined
+      ? patch.finalContent
+      : patch.content !== undefined && patch.content !== ""
+        ? patch.content
+        : turn.finalContent || "";
+
   return {
-    ...normalized,
-    id: normalized.id || key || v4(),
+    ...patch,
+    finalContent: nextFinalContent,
+    sources: patch.sources || turn.sources || [],
+    metrics: patch.metrics || turn.metrics || {},
+    status: TURN_STATUSES.completed,
+    error: null,
   };
 }
 
-function hasUnfinishedDraft(draft) {
-  return !!(
-    draft?.isStreaming ||
-    draft?.isAgentRunning ||
-    draft?.pendingApproval ||
-    draft?.activeToolCall ||
-    draft?.messages?.some((msg) => msg.pending || msg.animate)
-  );
+function assistantTurnByChatId(items = [], chatId = null) {
+  if (!chatId) return null;
+  return items.find((item) => isAssistantTurn(item) && item.chatId === chatId);
 }
 
-function isFinalDraftAssistantMessage(message = {}) {
-  return (
-    message.role === "assistant" &&
-    ![
-      "statusResponse",
-      "toolApprovalRequest",
-      "toolCallInvocation",
-      "toolCallResult",
-    ].includes(message.type)
-  );
+function canApplyTurnEvent(draft, turnId) {
+  if (!draft || !turnId) return null;
+  const turn = findAssistantTurn(draft.items || [], turnId);
+  return turn?.turnId === turnId ? turn : null;
 }
 
-function isFinalAgentSocketEvent(data = {}) {
-  if (data.type !== "reportStreamEvent" || !data.content) return false;
-  if (data.content.type === "fullTextResponse") return true;
-  return data.content.type === "chatId" && !!data.content.chatId;
+function chatTurnDebugEnabled() {
+  try {
+    return window?.localStorage?.getItem("chatTurnDebug") === "true";
+  } catch {
+    return false;
+  }
 }
 
-function agentEventFromChatResult(chatResult = {}) {
-  const { type, uuid, textResponse, error, chatId, metrics, sources, close } =
-    chatResult;
-
-  if (type === "textResponseChunk") {
-    return {
-      type: "assistant_delta",
-      uuid,
-      content: textResponse || "",
-      sources: sources || [],
-      closed: !!close,
-    };
-  }
-  if (type === "finalizeResponseStream" || type === "textResponse") {
-    return {
-      type: "final_message",
-      uuid,
-      chatId,
-      content: textResponse || "",
-      sources: sources || [],
-      metrics: metrics || {},
-    };
-  }
-  if (type === "statusResponse") {
-    return {
-      type: "agent_thought",
-      uuid,
-      content: textResponse || "",
-    };
-  }
-  if (type === "abort") {
-    return {
-      type: "error",
-      uuid,
-      content: error || textResponse || "Stream aborted.",
-    };
-  }
-  if (type === "stopGeneration") {
-    return {
-      type: "error",
-      uuid,
-      content: "Generation stopped by user.",
-    };
-  }
-  return null;
+function debugChatTurn(label, payload = {}) {
+  if (!chatTurnDebugEnabled()) return;
+  console.debug("[chat-turn]", label, payload);
 }
 
-function agentEventFromSocketData(data = {}) {
-  if (data.type === "statusResponse") {
-    return {
-      type: "agent_thought",
-      content: data.content,
-      animate: data.animate,
-    };
-  }
-  if (data.type === "toolApprovalRequest") {
-    return {
-      type: "approval_request",
-      requestId: data.requestId,
-      skillName: data.skillName,
-      payload: data.payload,
-      description: data.description,
-      timeoutMs: data.timeoutMs,
-      requestedAt: Date.now(),
-    };
-  }
-  if (data.type === "wssFailure") {
-    return {
-      type: "error",
-      content: data.content,
-    };
-  }
-  if (data.type === "fileDownloadCard") {
-    return {
-      type: "tool_result",
-      content: data.content,
-      payload: data.content,
-    };
-  }
-  if (data.type === "rechartVisualize") {
-    return {
-      type: "tool_result",
-      content: data.content,
-      payload: data.content,
-    };
-  }
-  if (data.type !== "reportStreamEvent" || !data.content) return null;
-
-  const content = data.content;
-  if (content.type === "textResponseChunk") {
-    return {
-      type: "assistant_delta",
-      uuid: content.uuid,
-      content: content.content || "",
-    };
-  }
-  if (content.type === "fullTextResponse") {
-    return {
-      type: "final_message",
-      uuid: content.uuid,
-      content: content.content || "",
-    };
-  }
-  if (content.type === "toolCallInvocation") {
-    return {
-      type: "tool_call",
-      uuid: content.uuid,
-      content: content.content || "",
-      toolName: content.toolName,
-      arguments: content.arguments,
-    };
-  }
-  if (content.type === "toolCallResult") {
-    return {
-      type: "tool_result",
-      uuid: content.uuid,
-      content: content.content || "",
-      toolName: content.toolName,
-      arguments: content.arguments,
-      result: content.result,
-    };
-  }
-  if (content.type === "usageMetrics" || content.type === "citations") {
-    return null;
-  }
-  if (content.type === "chatId") {
-    return {
-      type: "final_message",
-      uuid: content.uuid,
-      chatId: content.chatId,
-      content: "",
-    };
-  }
-  if (content.type === "removeStatusResponse") {
-    return {
-      type: "remove_agent_event",
-      uuid: content.uuid,
-      targetUuid: content.uuid,
-    };
-  }
-
+function turnRuntimeSnapshot(draft = {}, turnId = null) {
+  const turn = findAssistantTurn(draft?.items || [], turnId);
   return {
-    type: "agent_thought",
-    uuid: content.uuid,
-    content: content.content || "",
-    sourceType: content.type,
+    activeTurnId: draft?.activeTurnId || null,
+    isStreaming: !!draft?.isStreaming,
+    isAgentRunning: !!draft?.isAgentRunning,
+    status: turn?.status || null,
   };
 }
 
@@ -529,7 +323,6 @@ export function ChatThreadDraftProvider({ children }) {
   const runningStateRef = useRef(runningState);
   const websocketRefs = useRef({});
   const approvalTimeoutRefs = useRef({});
-  const pendingResetRefs = useRef({});
   const stoppedThreadRefs = useRef({});
   const erroredThreadRefs = useRef({});
   const confirmPersistedRef = useRef(null);
@@ -544,7 +337,7 @@ export function ChatThreadDraftProvider({ children }) {
 
   const updateRunningState = useCallback((updater) => {
     setRunningState((prev) => {
-      const next = updater(prev);
+      const next = normalizeRunningState(updater(normalizeRunningState(prev)));
       persistActiveRunningState(
         next.activeRunningThread,
         next.threadActivityByKey
@@ -554,10 +347,33 @@ export function ChatThreadDraftProvider({ children }) {
     });
   }, []);
 
+  const updateDraft = useCallback((chatKey, updater) => {
+    setDrafts((prev) => {
+      let current = prev[chatKey];
+      if (!current) {
+        const { workspaceSlug, threadSlug } = parseChatKey(chatKey);
+        current = createDraft({ workspaceSlug, threadSlug });
+      }
+
+      const next = {
+        ...updater({
+          ...current,
+          items: normalizeTurnItems(current.items || []),
+        }),
+        updatedAt: Date.now(),
+      };
+      next.items = normalizeTurnItems(next.items || []);
+      persistDraft(next);
+      const nextDrafts = { ...prev, [chatKey]: next };
+      draftsRef.current = nextDrafts;
+      return nextDrafts;
+    });
+  }, []);
+
   const markThreadRunning = useCallback(
-    (chatKey) => {
+    (chatKey, turnId) => {
       const { workspaceSlug, threadSlug } = parseChatKey(chatKey);
-      if (!workspaceSlug) return;
+      if (!workspaceSlug || !turnId) return;
       const now = Date.now();
       updateRunningState((prev) => {
         const existing = prev.threadActivityByKey?.[chatKey];
@@ -565,8 +381,9 @@ export function ChatThreadDraftProvider({ children }) {
           workspaceSlug,
           threadSlug,
           chatKey,
-          status: RUNNING_STATUS,
-          startedAt: existing?.startedAt || now,
+          turnId,
+          status: TURN_STATUSES.running,
+          startedAt: existing?.turnId === turnId ? existing.startedAt : now,
           updatedAt: now,
         };
         return {
@@ -582,9 +399,9 @@ export function ChatThreadDraftProvider({ children }) {
   );
 
   const markThreadCompleted = useCallback(
-    (chatKey) => {
+    (chatKey, turnId) => {
       const { workspaceSlug, threadSlug } = parseChatKey(chatKey);
-      if (!workspaceSlug) return;
+      if (!workspaceSlug || !turnId) return;
       const now = Date.now();
       updateRunningState((prev) => {
         const existing = prev.threadActivityByKey?.[chatKey];
@@ -592,13 +409,15 @@ export function ChatThreadDraftProvider({ children }) {
           workspaceSlug,
           threadSlug,
           chatKey,
-          status: COMPLETED_STATUS,
+          turnId,
+          status: TURN_STATUSES.completed,
           startedAt: existing?.startedAt || now,
           updatedAt: now,
         };
         return {
           activeRunningThread:
-            prev.activeRunningThread?.chatKey === chatKey
+            prev.activeRunningThread?.chatKey === chatKey &&
+            prev.activeRunningThread?.turnId === turnId
               ? activity
               : prev.activeRunningThread,
           threadActivityByKey: {
@@ -611,15 +430,77 @@ export function ChatThreadDraftProvider({ children }) {
     [updateRunningState]
   );
 
+  const markThreadFailed = useCallback(
+    (chatKey, turnId, reason = null) => {
+      const { workspaceSlug, threadSlug } = parseChatKey(chatKey);
+      if (!workspaceSlug || !turnId) return;
+      const now = Date.now();
+      const failureReason =
+        reason ||
+        "The agent session ended before a final response was received.";
+      updateRunningState((prev) => {
+        const existing = prev.threadActivityByKey?.[chatKey];
+        const activity = {
+          workspaceSlug,
+          threadSlug,
+          chatKey,
+          turnId,
+          status: TURN_STATUSES.failed,
+          reason: failureReason,
+          startedAt: existing?.startedAt || now,
+          updatedAt: now,
+        };
+        return {
+          activeRunningThread:
+            prev.activeRunningThread?.chatKey === chatKey &&
+            prev.activeRunningThread?.turnId === turnId
+              ? null
+              : prev.activeRunningThread,
+          threadActivityByKey: {
+            ...(prev.threadActivityByKey || {}),
+            [chatKey]: activity,
+          },
+        };
+      });
+      updateDraft(chatKey, (draft) => {
+        const next = {
+          ...draft,
+          items: failTurnItems(draft.items, turnId, failureReason),
+          activeTurnId:
+            draft.activeTurnId === turnId ? null : draft.activeTurnId,
+          pendingApproval: null,
+          activeToolCall: null,
+          isStreaming: false,
+          isAgentRunning: false,
+          persistError: failureReason,
+        };
+        debugChatTurn("assistant_error:after", {
+          chatKey,
+          turnId,
+          reason: failureReason,
+          ...turnRuntimeSnapshot(next, turnId),
+        });
+        return next;
+      });
+    },
+    [updateDraft, updateRunningState]
+  );
+
   const clearThreadRunning = useCallback(
-    (chatKey) => {
+    (chatKey, turnId = null) => {
       updateRunningState((prev) => {
         const nextActivity = { ...(prev.threadActivityByKey || {}) };
         const existing = nextActivity[chatKey];
-        if (existing?.status === RUNNING_STATUS) delete nextActivity[chatKey];
+        if (
+          existing?.status === TURN_STATUSES.running &&
+          (!turnId || existing.turnId === turnId)
+        ) {
+          delete nextActivity[chatKey];
+        }
         return {
           activeRunningThread:
-            prev.activeRunningThread?.chatKey === chatKey
+            prev.activeRunningThread?.chatKey === chatKey &&
+            (!turnId || prev.activeRunningThread?.turnId === turnId)
               ? null
               : prev.activeRunningThread,
           threadActivityByKey: nextActivity,
@@ -647,60 +528,69 @@ export function ChatThreadDraftProvider({ children }) {
     [updateRunningState]
   );
 
-  const updateDraft = useCallback((chatKey, updater) => {
-    setDrafts((prev) => {
-      let current = prev[chatKey];
-      if (!current) {
-        const { workspaceSlug, threadSlug } = parseChatKey(chatKey);
-        current = createDraft({
-          workspaceSlug,
-          threadSlug,
-        });
-      }
-      const next = {
-        ...updater({
+  useEffect(() => {
+    const interval = setInterval(() => {
+      updateRunningState((state) => state);
+    }, 30 * 1000);
+    return () => clearInterval(interval);
+  }, [updateRunningState]);
+
+  useEffect(() => {
+    Object.entries(runningState.threadActivityByKey || {}).forEach(
+      ([chatKey, activity]) => {
+        if (activity.status !== TURN_STATUSES.failed || !activity.turnId)
+          return;
+        const draft = draftsRef.current[chatKey];
+        const turn = findAssistantTurn(draft?.items || [], activity.turnId);
+        if (!turn || turn.status === TURN_STATUSES.failed) return;
+        updateDraft(chatKey, (current) => ({
           ...current,
-          messages: normalizeDraftMessages(current.messages || []),
-        }),
-        updatedAt: Date.now(),
-      };
-      next.messages = normalizeDraftMessages(next.messages || []);
-      persistDraft(next);
-      const nextDrafts = { ...prev, [chatKey]: next };
-      draftsRef.current = nextDrafts;
-      return nextDrafts;
-    });
-  }, []);
+          items: failTurnItems(
+            current.items,
+            activity.turnId,
+            activity.reason ||
+              "The agent session ended before a final response was received."
+          ),
+          activeTurnId:
+            current.activeTurnId === activity.turnId
+              ? null
+              : current.activeTurnId,
+          pendingApproval: null,
+          activeToolCall: null,
+          isStreaming: false,
+          isAgentRunning: false,
+          persistError: activity.reason,
+        }));
+      }
+    );
+  }, [runningState.threadActivityByKey, updateDraft]);
 
   const ensureDraft = useCallback(
-    ({ workspaceSlug, threadSlug = null, messages = [] }) => {
+    ({ workspaceSlug, threadSlug = null, items = [], history = [] }) => {
       const chatKey = getChatThreadKey(workspaceSlug, threadSlug);
       setDrafts((prev) => {
-        const existing = prev[chatKey];
-        if (existing) {
-          const next = {
-            ...existing,
-            messages: mergeMessagesById(messages, existing.messages),
-            updatedAt: Date.now(),
-          };
-          persistDraft(next);
-          const nextDrafts = { ...prev, [chatKey]: next };
-          draftsRef.current = nextDrafts;
-          return nextDrafts;
-        }
-
         const restored = draftFromStorageValue(
           safeJsonParse(
             sessionStorage.getItem(getStorageKey(workspaceSlug, threadSlug))
           )
         );
-        const next =
-          restored ||
-          createDraft({
-            workspaceSlug,
-            threadSlug,
-            messages,
-          });
+        const existing = prev[chatKey] || restored;
+        const seedItems =
+          history.length > 0
+            ? mergeServerHistoryIntoTurnItems(history, existing?.items || [], {
+                chatKey,
+              })
+            : normalizeTurnItems(items);
+        const next = existing
+          ? {
+              ...existing,
+              items:
+                seedItems.length > 0
+                  ? mergeServerHistoryIntoTurnItems([], seedItems)
+                  : existing.items,
+              updatedAt: Date.now(),
+            }
+          : createDraft({ workspaceSlug, threadSlug, items: seedItems });
         persistDraft(next);
         const nextDrafts = { ...prev, [chatKey]: next };
         draftsRef.current = nextDrafts;
@@ -711,144 +601,230 @@ export function ChatThreadDraftProvider({ children }) {
     []
   );
 
-  const appendAgentEvent = useCallback(
-    (chatKey, rawEvent) => {
+  const updateAssistantTurn = useCallback(
+    (chatKey, turnId, patch = {}) => {
+      updateDraft(chatKey, (draft) => ({
+        ...draft,
+        items: updateAssistantTurnInItems(draft.items, turnId, patch),
+      }));
+    },
+    [updateDraft]
+  );
+
+  const appendTimelineEvent = useCallback(
+    (chatKey, turnId, rawEvent) => {
       if (!rawEvent) return;
-      if (rawEvent.type === "remove_agent_event") {
-        const targetId = rawEvent.targetUuid || rawEvent.uuid || rawEvent.id;
-        if (!targetId) return;
-        updateDraft(chatKey, (draft) => ({
-          ...draft,
-          agentEvents: (draft.agentEvents || []).filter(
-            (event) => event.uuid !== targetId && event.id !== targetId
-          ),
-        }));
-        return;
-      }
+      const event =
+        rawEvent.type === "remove_agent_event"
+          ? rawEvent
+          : normalizeTimelineEvent(rawEvent);
 
-      const event = normalizeEvent(rawEvent);
       updateDraft(chatKey, (draft) => {
-        let agentEvents = draft.agentEvents || [];
-        let pendingApproval = draft.pendingApproval || null;
-        let activeToolCall = draft.activeToolCall || null;
-
-        agentEvents = mergeAgentEventsByKey(agentEvents, event);
-
-        if (event.type === "tool_call") {
-          activeToolCall = event;
-        }
-
-        if (event.type === "tool_result") activeToolCall = null;
-        if (event.type === "approval_request") pendingApproval = event;
-        if (event.type === "approval_result") pendingApproval = null;
-
-        return {
+        const next = {
           ...draft,
-          agentEvents,
-          pendingApproval,
-          activeToolCall,
+          items: appendTimelineEventToItems(draft.items, turnId, event),
         };
+
+        if (event.type === "tool_call") next.activeToolCall = event;
+        if (event.type === "tool_result") next.activeToolCall = null;
+        if (event.type === "approval_request") next.pendingApproval = event;
+        if (event.type === "approval_result") next.pendingApproval = null;
+        return next;
       });
     },
     [updateDraft]
   );
 
-  const setMessages = useCallback(
-    (chatKey, messagesOrUpdater) => {
-      updateDraft(chatKey, (draft) => {
-        const messages =
-          typeof messagesOrUpdater === "function"
-            ? messagesOrUpdater(draft.messages || [])
-            : messagesOrUpdater;
-        return { ...draft, messages: normalizeDraftMessages(messages || []) };
+  const completeAssistantTurn = useCallback(
+    (chatKey, turnId, patch = {}) => {
+      const draft = draftsRef.current[chatKey];
+      const turn = findAssistantTurn(draft?.items || [], turnId);
+      if (!turn) return;
+      debugChatTurn("assistant_final:before", {
+        chatKey,
+        turnId,
+        eventChatId: patch.chatId || null,
+        ...turnRuntimeSnapshot(draft, turnId),
       });
-    },
-    [updateDraft]
-  );
-
-  const setStreaming = useCallback(
-    (chatKey, value) => {
-      updateDraft(chatKey, (draft) => ({ ...draft, isStreaming: !!value }));
-    },
-    [updateDraft]
-  );
-
-  const completeDraftLocally = useCallback(
-    (chatKey) => {
-      markThreadCompleted(chatKey);
-      updateDraft(chatKey, (draft) => {
-        const finalAssistantIndex = [...(draft.messages || [])]
-          .reverse()
-          .findIndex(isFinalDraftAssistantMessage);
-        const targetIndex =
-          finalAssistantIndex >= 0
-            ? (draft.messages || []).length - 1 - finalAssistantIndex
-            : -1;
-        return {
-          ...draft,
-          messages: (draft.messages || []).map((message, index) =>
-            index === targetIndex
-              ? {
-                  ...message,
-                  closed: true,
-                  animate: false,
-                  pending: false,
-                }
-              : message
-          ),
+      updateDraft(chatKey, (current) => {
+        const nextItems = updateAssistantTurnInItems(
+          current.items,
+          turnId,
+          completeTurnPatch(turn, patch)
+        );
+        const next = {
+          ...current,
+          items: nextItems,
+          activeTurnId:
+            current.activeTurnId === turnId ? null : current.activeTurnId,
           pendingApproval: null,
           activeToolCall: null,
           isStreaming: false,
           isAgentRunning: false,
           persistError: null,
         };
+        debugChatTurn("assistant_final:after", {
+          chatKey,
+          turnId,
+          ...turnRuntimeSnapshot(next, turnId),
+        });
+        return next;
       });
+      markThreadCompleted(chatKey, turnId);
+      if (patch.chatId) emitAssistantMessageCompleteEvent(patch.chatId);
     },
     [markThreadCompleted, updateDraft]
   );
 
-  const clearDraftAfterPersisted = useCallback(
-    (chatKey, persistedHistory = []) => {
-      const draft = draftsRef.current[chatKey];
-      if (!draft) return;
-      removeStoredDraft(draft.workspaceSlug, draft.threadSlug);
-      setDrafts((prev) => {
-        if (!prev[chatKey]) return prev;
-        const nextDrafts = {
-          ...prev,
-          [chatKey]: {
-            ...prev[chatKey],
-            messages:
-              persistedHistory.length > 0
-                ? persistedHistory
-                : prev[chatKey].messages,
-            agentEvents: [],
-            pendingApproval: null,
-            activeToolCall: null,
-            isStreaming: false,
-            isAgentRunning: false,
-            persistError: null,
-            updatedAt: Date.now(),
-          },
-        };
-        draftsRef.current = nextDrafts;
-        return nextDrafts;
-      });
+  const failAssistantTurn = useCallback(
+    (chatKey, turnId, reason) => {
+      markThreadFailed(chatKey, turnId, reason);
     },
-    []
+    [markThreadFailed]
+  );
+
+  const applyTurnEvent = useCallback(
+    (chatKey, turnId, event) => {
+      if (!event || !turnId) return;
+      if (event.type === "agent_socket_start") return event;
+
+      if (event.type === "timeline_event") {
+        const turn = canApplyTurnEvent(draftsRef.current[chatKey], turnId);
+        if (!turn) return null;
+        appendTimelineEvent(chatKey, turnId, event.event);
+        return event;
+      }
+
+      if (event.type === "assistant_delta") {
+        const currentTurn = canApplyTurnEvent(
+          draftsRef.current[chatKey],
+          turnId
+        );
+        if (!currentTurn || currentTurn.status !== TURN_STATUSES.running)
+          return null;
+        updateDraft(chatKey, (draft) => {
+          const turn = canApplyTurnEvent(draft, turnId);
+          if (!turn) return draft;
+          if (turn.status !== TURN_STATUSES.running) return draft;
+          return {
+            ...draft,
+            items: updateAssistantTurnInItems(draft.items, turnId, {
+              finalContent: `${turn.finalContent || ""}${event.content || ""}`,
+              sources:
+                event.sources?.length > 0 ? event.sources : turn.sources || [],
+              metrics: event.metrics || turn.metrics || {},
+              chatId: event.chatId || turn.chatId,
+              status: TURN_STATUSES.running,
+            }),
+            isStreaming: true,
+            activeTurnId: turnId,
+          };
+        });
+        markThreadRunning(chatKey, turnId);
+        return event;
+      }
+
+      if (event.type === "assistant_patch") {
+        const currentTurn = canApplyTurnEvent(
+          draftsRef.current[chatKey],
+          turnId
+        );
+        if (!currentTurn) return null;
+        updateDraft(chatKey, (draft) => {
+          const turn = canApplyTurnEvent(draft, turnId);
+          if (!turn) return draft;
+          const patch = event.patch || {};
+          return {
+            ...draft,
+            items: updateAssistantTurnInItems(draft.items, turnId, {
+              ...patch,
+              sources: event.appendSources
+                ? [...(turn.sources || []), ...(patch.sources || [])]
+                : patch.sources || turn.sources || [],
+              metrics: patch.metrics || turn.metrics || {},
+            }),
+          };
+        });
+        return event;
+      }
+
+      if (event.type === "assistant_final") {
+        const draft = draftsRef.current[chatKey];
+        const turn = canApplyTurnEvent(draft, turnId);
+        if (!turn) return null;
+        if (turn.status === TURN_STATUSES.failed) return null;
+        debugChatTurn("assistant_final:event", {
+          chatKey,
+          turnId,
+          eventChatId: event.chatId || null,
+          eventContentLength: event.content?.length || 0,
+          ...turnRuntimeSnapshot(draft, turnId),
+        });
+        const finalContent =
+          event.content && event.content.length > 0
+            ? event.content
+            : turn?.finalContent || "";
+        completeAssistantTurn(chatKey, turnId, {
+          finalContent,
+          chatId: event.chatId || turn?.chatId,
+          sources:
+            event.sources?.length > 0 ? event.sources : turn?.sources || [],
+          metrics: event.metrics || turn?.metrics || {},
+        });
+        return event;
+      }
+
+      if (event.type === "assistant_error") {
+        const turn = canApplyTurnEvent(draftsRef.current[chatKey], turnId);
+        if (!turn) return null;
+        const reason =
+          event.error ||
+          event.content ||
+          "Chat stream failed before completion.";
+        debugChatTurn("assistant_error:event", {
+          chatKey,
+          turnId,
+          reason,
+          ...turnRuntimeSnapshot(draftsRef.current[chatKey], turnId),
+        });
+        appendTimelineEvent(chatKey, turnId, {
+          type: "error",
+          content: reason,
+        });
+        failAssistantTurn(chatKey, turnId, reason);
+        return event;
+      }
+
+      if (event.type === "stop_generation") {
+        const turn = canApplyTurnEvent(draftsRef.current[chatKey], turnId);
+        if (!turn) return null;
+        const reason = event.content || "Generation stopped by user.";
+        appendTimelineEvent(chatKey, turnId, {
+          type: "error",
+          content: reason,
+        });
+        failAssistantTurn(chatKey, turnId, reason);
+        return event;
+      }
+
+      return event;
+    },
+    [
+      appendTimelineEvent,
+      completeAssistantTurn,
+      failAssistantTurn,
+      markThreadRunning,
+      updateDraft,
+    ]
   );
 
   const confirmPersisted = useCallback(
-    async (chatKey, attempt = 0) => {
+    async (chatKey, turnId, expectedChatId = null, attempt = 0) => {
       const draft = draftsRef.current[chatKey];
-      if (!draft || !draft.messages.length) return;
-      const assistant = [...draft.messages]
-        .reverse()
-        .find((msg) => msg.role === "assistant" && msg.chatId);
-      if (!assistant?.chatId) {
-        completeDraftLocally(chatKey);
-        return;
-      }
+      if (!draft || !turnId) return;
+      const turn = findAssistantTurn(draft.items, turnId);
+      const chatId = expectedChatId || turn?.chatId;
+      if (!chatId) return;
 
       try {
         const history = draft.threadSlug
@@ -858,18 +834,37 @@ export function ChatThreadDraftProvider({ children }) {
             )
           : await Workspace.chatHistory(draft.workspaceSlug);
         const persisted = history.find(
-          (msg) => msg.role === "assistant" && msg.chatId === assistant.chatId
+          (msg) => msg.role === "assistant" && msg.chatId === chatId
         );
         if (persisted) {
-          markThreadCompleted(chatKey);
-          clearDraftAfterPersisted(chatKey, history);
+          updateDraft(chatKey, (current) => {
+            const items = mergeServerHistoryIntoTurnItems(
+              history,
+              current.items,
+              { chatKey }
+            );
+            const shouldKeepDraft = hasUnfinishedDraft({ ...current, items });
+            if (!shouldKeepDraft) {
+              removeStoredDraft(current.workspaceSlug, current.threadSlug);
+            }
+            return {
+              ...current,
+              items,
+              persistError: null,
+            };
+          });
           return;
         }
 
-        completeDraftLocally(chatKey);
         if (attempt < 3) {
           setTimeout(
-            () => confirmPersistedRef.current?.(chatKey, attempt + 1),
+            () =>
+              confirmPersistedRef.current?.(
+                chatKey,
+                turnId,
+                chatId,
+                attempt + 1
+              ),
             750 * (attempt + 1)
           );
           return;
@@ -881,19 +876,13 @@ export function ChatThreadDraftProvider({ children }) {
             "Message completed locally, but server history has not returned the final assistant message yet.",
         }));
       } catch (error) {
-        completeDraftLocally(chatKey);
         updateDraft(chatKey, (current) => ({
           ...current,
           persistError: error.message,
         }));
       }
     },
-    [
-      clearDraftAfterPersisted,
-      completeDraftLocally,
-      markThreadCompleted,
-      updateDraft,
-    ]
+    [updateDraft]
   );
 
   useEffect(() => {
@@ -901,39 +890,42 @@ export function ChatThreadDraftProvider({ children }) {
   }, [confirmPersisted]);
 
   const scheduleApprovalTimeout = useCallback(
-    (chatKey, approval) => {
+    (chatKey, turnId, approval) => {
       if (!approval?.requestId || !approval.timeoutMs) return;
-      const timeoutKey = `${chatKey}:${approval.requestId}`;
+      const timeoutKey = `${chatKey}:${turnId}:${approval.requestId}`;
       clearTimeout(approvalTimeoutRefs.current[timeoutKey]);
-      const elapsed = Date.now() - (approval.requestedAt || Date.now());
+      const elapsed =
+        Date.now() - (approval.requestedAt || approval.createdAt || Date.now());
       const remaining = Math.max(0, approval.timeoutMs - elapsed);
       approvalTimeoutRefs.current[timeoutKey] = setTimeout(() => {
         const draft = draftsRef.current[chatKey];
-        if (draft?.pendingApproval?.requestId !== approval.requestId) return;
-        appendAgentEvent(chatKey, {
+        if (
+          draft?.pendingApproval?.requestId !== approval.requestId ||
+          draft?.activeTurnId !== turnId
+        ) {
+          return;
+        }
+        appendTimelineEvent(chatKey, turnId, {
           type: "approval_result",
           requestId: approval.requestId,
           skillName: approval.skillName,
           approved: false,
           reason: "timeout",
         });
-        setMessages(chatKey, (messages) =>
-          messages.map((msg) =>
-            msg.type === "toolApprovalRequest" &&
-            msg.requestId === approval.requestId
-              ? { ...msg, pending: false, approved: false, responded: true }
-              : msg
-          )
-        );
       }, remaining);
     },
-    [appendAgentEvent, setMessages]
+    [appendTimelineEvent]
   );
 
   useEffect(() => {
     Object.entries(drafts).forEach(([chatKey, draft]) => {
-      if (draft.pendingApproval)
-        scheduleApprovalTimeout(chatKey, draft.pendingApproval);
+      if (draft.pendingApproval && draft.activeTurnId) {
+        scheduleApprovalTimeout(
+          chatKey,
+          draft.activeTurnId,
+          draft.pendingApproval
+        );
+      }
     });
   }, [drafts, scheduleApprovalTimeout]);
 
@@ -941,21 +933,15 @@ export function ChatThreadDraftProvider({ children }) {
     async (chatKey, requestId, approved) => {
       const draft = draftsRef.current[chatKey];
       const approval = draft?.pendingApproval;
-      if (!approval || approval.requestId !== requestId) return;
+      const turnId = draft?.activeTurnId;
+      if (!approval || approval.requestId !== requestId || !turnId) return;
 
-      appendAgentEvent(chatKey, {
+      appendTimelineEvent(chatKey, turnId, {
         type: "approval_result",
         requestId,
         skillName: approval.skillName,
         approved: !!approved,
       });
-      setMessages(chatKey, (messages) =>
-        messages.map((msg) =>
-          msg.type === "toolApprovalRequest" && msg.requestId === requestId
-            ? { ...msg, pending: false, approved: !!approved, responded: true }
-            : msg
-        )
-      );
 
       const socket = websocketRefs.current[chatKey];
       if (socket?.readyState === WebSocket.OPEN) {
@@ -968,11 +954,11 @@ export function ChatThreadDraftProvider({ children }) {
         );
       }
     },
-    [appendAgentEvent, setMessages]
+    [appendTimelineEvent]
   );
 
   const openAgentSocket = useCallback(
-    (chatKey, websocketUUID) => {
+    (chatKey, turnId, websocketUUID) => {
       if (!websocketUUID || websocketRefs.current[chatKey]) return;
       const socket = new WebSocket(
         `${websocketURI()}/api/agent-invocation/${websocketUUID}`
@@ -984,32 +970,32 @@ export function ChatThreadDraftProvider({ children }) {
       window.dispatchEvent(new CustomEvent(AGENT_SESSION_START));
       updateDraft(chatKey, (draft) => ({
         ...draft,
+        activeTurnId: turnId,
         isAgentRunning: true,
         isStreaming: false,
       }));
-      markThreadRunning(chatKey);
+      markThreadRunning(chatKey, turnId);
 
       socket.addEventListener("message", (event) => {
-        const data = safeJsonParse(event.data, null);
-        const agentEvent = agentEventFromSocketData(data);
-        if (agentEvent) appendAgentEvent(chatKey, agentEvent);
-        if (agentEvent?.type === "approval_request")
-          scheduleApprovalTimeout(chatKey, agentEvent);
-        const isFinalMessage = isFinalAgentSocketEvent(data);
-
-        try {
-          handleSocketResponse(socket, event, (messagesOrUpdater) =>
-            setMessages(chatKey, messagesOrUpdater)
-          );
-          if (isFinalMessage) {
-            completeDraftLocally(chatKey);
-            setTimeout(() => confirmPersisted(chatKey), 500);
+        const normalizedEvent = handleSocketResponse(socket, event);
+        debugChatTurn("websocket:event", {
+          chatKey,
+          turnId,
+          eventType: normalizedEvent?.type || null,
+        });
+        const applied = applyTurnEvent(chatKey, turnId, normalizedEvent);
+        if (applied?.type === "timeline_event") {
+          const timelineEvent = normalizeTimelineEvent(applied.event || {});
+          if (timelineEvent.type === "approval_request") {
+            scheduleApprovalTimeout(chatKey, turnId, timelineEvent);
           }
-        } catch {
-          appendAgentEvent(chatKey, {
-            type: "error",
-            content: "Failed to parse agent websocket data.",
-          });
+        }
+        if (applied?.type === "assistant_final" && applied.chatId) {
+          socket.lastFinalChatId = applied.chatId;
+        }
+        if (applied?.type === "assistant_final") socket.sawFinalMessage = true;
+        if (applied?.type === "assistant_error") {
+          erroredThreadRefs.current[chatKey] = true;
           socket.close();
         }
       });
@@ -1018,43 +1004,59 @@ export function ChatThreadDraftProvider({ children }) {
         delete websocketRefs.current[chatKey];
         setAgentSessionActive(false);
         window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
-        pendingResetRefs.current[chatKey] = false;
-        updateDraft(chatKey, (draft) => ({
-          ...draft,
-          isAgentRunning: false,
-          isStreaming: false,
-          activeToolCall: null,
-        }));
-        if (
-          stoppedThreadRefs.current[chatKey] ||
-          erroredThreadRefs.current[chatKey]
-        ) {
-          clearThreadRunning(chatKey);
+        debugChatTurn("websocket:close", {
+          chatKey,
+          turnId,
+          sawFinalMessage: !!socket.sawFinalMessage,
+          lastFinalChatId: socket.lastFinalChatId || null,
+          stopped: !!stoppedThreadRefs.current[chatKey],
+          errored: !!erroredThreadRefs.current[chatKey],
+          ...turnRuntimeSnapshot(draftsRef.current[chatKey], turnId),
+        });
+        const socketFailureReason =
+          "Agent websocket connection failed before a final response.";
+        if (stoppedThreadRefs.current[chatKey]) {
+          clearThreadRunning(chatKey, turnId);
+        } else if (erroredThreadRefs.current[chatKey]) {
+          applyTurnEvent(chatKey, turnId, {
+            type: "assistant_error",
+            content: socketFailureReason,
+            error: socketFailureReason,
+          });
+        } else if (socket.sawFinalMessage || socket.lastFinalChatId) {
+          markThreadCompleted(chatKey, turnId);
         } else {
-          markThreadCompleted(chatKey);
+          applyTurnEvent(chatKey, turnId, {
+            type: "assistant_error",
+            content: "Agent websocket closed before a final response.",
+            error: "Agent websocket closed before a final response.",
+          });
         }
         stoppedThreadRefs.current[chatKey] = false;
         erroredThreadRefs.current[chatKey] = false;
-        setTimeout(() => confirmPersisted(chatKey), 500);
+        setTimeout(
+          () =>
+            confirmPersisted(chatKey, turnId, socket.lastFinalChatId || null),
+          500
+        );
       });
 
       socket.addEventListener("error", () => {
         erroredThreadRefs.current[chatKey] = true;
-        appendAgentEvent(chatKey, {
-          type: "error",
+        applyTurnEvent(chatKey, turnId, {
+          type: "assistant_error",
           content: "Agent websocket connection failed.",
+          error: "Agent websocket connection failed.",
         });
       });
     },
     [
-      appendAgentEvent,
+      applyTurnEvent,
       clearThreadRunning,
-      completeDraftLocally,
       confirmPersisted,
       markThreadCompleted,
       markThreadRunning,
       scheduleApprovalTimeout,
-      setMessages,
       updateDraft,
     ]
   );
@@ -1072,129 +1074,88 @@ export function ChatThreadDraftProvider({ children }) {
       const chatKey = ensureDraft({
         workspaceSlug,
         threadSlug,
-        messages: history,
+        history,
       });
-      const draft = draftsRef.current[chatKey];
-      const existingMessages =
-        history.length > 0 ? history : draft?.messages || [];
       const socket = websocketRefs.current[chatKey];
-      const now = Date.now();
+      const preparedAttachments = attachments || parseAttachments();
+      const { turnId, items: turnItems } = createTurn({
+        prompt,
+        attachments: preparedAttachments,
+        chatKey,
+      });
+
+      updateDraft(chatKey, (draft) => ({
+        ...draft,
+        items: [...(draft.items || []), ...turnItems],
+        activeTurnId: turnId,
+        pendingApproval: null,
+        activeToolCall: null,
+        isStreaming: !sendToExistingAgent,
+        isAgentRunning: !!sendToExistingAgent,
+        persistError: null,
+      }));
+      markThreadRunning(chatKey, turnId);
 
       if (sendToExistingAgent && socket?.readyState === WebSocket.OPEN) {
-        const feedbackMessageId = v4();
-        markThreadRunning(chatKey);
-        setMessages(chatKey, [
-          ...existingMessages,
-          {
-            uuid: feedbackMessageId,
-            draftId: feedbackMessageId,
-            createdAt: now,
-            content: prompt,
-            role: "user",
-            attachments,
-          },
-        ]);
-        appendAgentEvent(chatKey, {
-          type: "user_message",
-          content: prompt,
-          attachments,
-        });
         socket.send(
           JSON.stringify({
             type: "awaitingFeedback",
             feedback: prompt,
-            attachments,
+            attachments: preparedAttachments,
           })
         );
-        if (prompt.trim() === "/reset")
-          pendingResetRefs.current[chatKey] = true;
+        appendTimelineEvent(chatKey, turnId, {
+          type: "thought",
+          content: "Sent follow-up input to the active agent session.",
+        });
         return;
       }
 
-      const historyAlreadyHasPrompt =
-        history.length > 0 &&
-        history[history.length - 1]?.role === "user" &&
-        history[history.length - 1]?.content === prompt;
-      const userMessage = normalizeDraftMessage({
-        content: prompt,
-        role: "user",
-        attachments,
-        createdAt: now,
-      });
-      const assistantPlaceholder = normalizeDraftMessage({
-        content: "",
-        role: "assistant",
-        pending: true,
-        userMessage: prompt,
-        attachments,
-        animate: true,
-        createdAt: now + 1,
-      });
-      const prevChatHistory = historyAlreadyHasPrompt
-        ? [...normalizeDraftMessages(history), assistantPlaceholder]
-        : [
-            ...normalizeDraftMessages(existingMessages),
-            userMessage,
-            assistantPlaceholder,
-          ];
-      const remHistory = prevChatHistory.slice(0, -1);
-      const workingHistory = [...prevChatHistory];
-
-      setMessages(chatKey, prevChatHistory);
-      appendAgentEvent(chatKey, {
-        type: "user_message",
-        content: prompt,
-        attachments,
-      });
-      markThreadRunning(chatKey);
-      setStreaming(chatKey, true);
-
       try {
+        let completedChatId = null;
         await Workspace.multiplexStream({
           workspaceSlug,
           threadSlug,
           prompt,
           chatHandler: (chatResult) => {
-            const event = agentEventFromChatResult(chatResult);
-            if (event) appendAgentEvent(chatKey, event);
-            if (
-              chatResult.type === "finalizeResponseStream" ||
-              chatResult.type === "textResponse"
-            ) {
-              markThreadCompleted(chatKey);
+            const event = handleChat(chatResult);
+            debugChatTurn("sse:event", {
+              chatKey,
+              turnId,
+              rawType: chatResult?.type || null,
+              eventType: event?.type || null,
+              close: !!chatResult?.close,
+            });
+            const applied = applyTurnEvent(chatKey, turnId, event);
+            if (applied?.type === "agent_socket_start") {
+              openAgentSocket(chatKey, turnId, applied.websocketUUID);
             }
-            if (chatResult.type === "abort") clearThreadRunning(chatKey);
-            handleChat(
-              chatResult,
-              (value) => setStreaming(chatKey, value),
-              (messagesOrUpdater) => setMessages(chatKey, messagesOrUpdater),
-              remHistory,
-              workingHistory,
-              (websocketUUID) => openAgentSocket(chatKey, websocketUUID)
-            );
+            if (applied?.type === "assistant_final") {
+              completedChatId = applied.chatId || completedChatId;
+            }
           },
-          attachments: attachments || parseAttachments(),
+          attachments: preparedAttachments,
         });
-        setTimeout(() => confirmPersisted(chatKey), 500);
+        setTimeout(
+          () => confirmPersisted(chatKey, turnId, completedChatId),
+          500
+        );
       } catch (error) {
-        appendAgentEvent(chatKey, {
-          type: "error",
+        applyTurnEvent(chatKey, turnId, {
+          type: "assistant_error",
           content: error.message || "Chat stream failed.",
+          error: error.message || "Chat stream failed.",
         });
-        setStreaming(chatKey, false);
-        clearThreadRunning(chatKey);
       }
     },
     [
-      appendAgentEvent,
-      clearThreadRunning,
+      appendTimelineEvent,
+      applyTurnEvent,
       confirmPersisted,
       ensureDraft,
-      markThreadCompleted,
       markThreadRunning,
       openAgentSocket,
-      setMessages,
-      setStreaming,
+      updateDraft,
     ]
   );
 
@@ -1202,23 +1163,18 @@ export function ChatThreadDraftProvider({ children }) {
     (chatKey = null) => {
       const keys = chatKey ? [chatKey] : Object.keys(draftsRef.current);
       keys.forEach((key) => {
+        const draft = draftsRef.current[key];
+        const turnId = draft?.activeTurnId;
+        if (!turnId) return;
         stoppedThreadRefs.current[key] = true;
         websocketRefs.current[key]?.close();
-        appendAgentEvent(key, {
-          type: "error",
+        applyTurnEvent(key, turnId, {
+          type: "stop_generation",
           content: "Generation stopped by user.",
         });
-        updateDraft(key, (draft) => ({
-          ...draft,
-          isStreaming: false,
-          isAgentRunning: false,
-          pendingApproval: null,
-          activeToolCall: null,
-        }));
-        clearThreadRunning(key);
       });
     },
-    [appendAgentEvent, clearThreadRunning, updateDraft]
+    [applyTurnEvent]
   );
 
   useEffect(() => {
@@ -1238,14 +1194,12 @@ export function ChatThreadDraftProvider({ children }) {
 
   const mergeServerHistory = useCallback(
     ({ workspaceSlug, threadSlug = null, history = [] }) => {
-      const chatKey = ensureDraft({
-        workspaceSlug,
-        threadSlug,
-        messages: history,
-      });
+      const chatKey = ensureDraft({ workspaceSlug, threadSlug });
       updateDraft(chatKey, (draft) => ({
         ...draft,
-        messages: mergeMessagesById(history, draft.messages),
+        items: mergeServerHistoryIntoTurnItems(history, draft.items, {
+          chatKey,
+        }),
       }));
       return chatKey;
     },
@@ -1267,7 +1221,7 @@ export function ChatThreadDraftProvider({ children }) {
       Object.values(runningStateRef.current.threadActivityByKey || {}).some(
         (activity) =>
           activity.workspaceSlug === workspaceSlug &&
-          activity.status === RUNNING_STATUS
+          activity.status === TURN_STATUSES.running
       ),
     []
   );
@@ -1286,7 +1240,7 @@ export function ChatThreadDraftProvider({ children }) {
   const getRunningThreads = useCallback(
     () =>
       Object.values(runningStateRef.current.threadActivityByKey || {}).filter(
-        (activity) => activity.status === RUNNING_STATUS
+        (activity) => activity.status === TURN_STATUSES.running
       ),
     []
   );
@@ -1297,10 +1251,31 @@ export function ChatThreadDraftProvider({ children }) {
     ).filter(
       (activity) =>
         activity.workspaceSlug === workspaceSlug &&
-        activity.status === RUNNING_STATUS
+        activity.status === TURN_STATUSES.running
     );
     return runningThreads.sort((a, b) => b.updatedAt - a.updatedAt)[0] || null;
   }, []);
+
+  const getAssistantTurnByChatId = useCallback((chatKey, chatId) => {
+    return assistantTurnByChatId(
+      draftsRef.current[chatKey]?.items || [],
+      chatId
+    );
+  }, []);
+
+  const updateUserItem = useCallback(
+    (chatKey, chatId, patch = {}) => {
+      updateDraft(chatKey, (draft) => ({
+        ...draft,
+        items: draft.items.map((item) =>
+          item.type === "user" && item.chatId === chatId
+            ? { ...item, ...patch, updatedAt: Date.now() }
+            : item
+        ),
+      }));
+    },
+    [updateDraft]
+  );
 
   const value = useMemo(
     () => ({
@@ -1308,7 +1283,11 @@ export function ChatThreadDraftProvider({ children }) {
       getDraft,
       ensureDraft,
       mergeServerHistory,
-      setMessages,
+      createTurn,
+      appendTimelineEvent,
+      updateAssistantTurn,
+      completeAssistantTurn,
+      failAssistantTurn,
       startStream,
       respondToApproval,
       stopStream,
@@ -1317,6 +1296,8 @@ export function ChatThreadDraftProvider({ children }) {
       getThreadActivity,
       getRunningThreads,
       getRunningThread,
+      getAssistantTurnByChatId,
+      updateUserItem,
       clearThreadActivity,
       activeRunningThread: runningState.activeRunningThread,
       threadActivityByKey: runningState.threadActivityByKey,
@@ -1324,11 +1305,14 @@ export function ChatThreadDraftProvider({ children }) {
       getChatKey: getChatThreadKey,
     }),
     [
-      drafts,
-      runningState,
-      ensureDraft,
-      getDraft,
+      appendTimelineEvent,
       clearThreadActivity,
+      completeAssistantTurn,
+      drafts,
+      ensureDraft,
+      failAssistantTurn,
+      getAssistantTurnByChatId,
+      getDraft,
       getRunningThread,
       getRunningThreads,
       getThreadActivity,
@@ -1336,9 +1320,11 @@ export function ChatThreadDraftProvider({ children }) {
       hasWorkspaceActivity,
       mergeServerHistory,
       respondToApproval,
-      setMessages,
+      runningState,
       startStream,
       stopStream,
+      updateAssistantTurn,
+      updateUserItem,
     ]
   );
 

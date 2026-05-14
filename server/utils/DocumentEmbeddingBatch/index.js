@@ -388,6 +388,31 @@ function parseCustomId(customId) {
   return { docId: match[1], chunkIndex: Number(match[2]) };
 }
 
+function buildWorkspaceDocumentRecord({ docId, docManifest, job }) {
+  const { pageContent: _pageContent, ...metadata } = docManifest.data || {};
+  return {
+    docId,
+    filename: docManifest.docpath.split("/")[1],
+    docpath: docManifest.docpath,
+    workspaceId: job.workspaceId,
+    metadata: JSON.stringify(metadata),
+    embeddingStatus: "processing",
+    embeddingError: null,
+    embeddingBatchJobId: job.jobId,
+  };
+}
+
+async function ensureWorkspaceDocumentForBatch({ docId, docManifest, job }) {
+  const existingDoc = await prisma.workspace_documents.findFirst({
+    where: { docId },
+  });
+  if (existingDoc) return existingDoc;
+
+  return await prisma.workspace_documents.create({
+    data: buildWorkspaceDocumentRecord({ docId, docManifest, job }),
+  });
+}
+
 async function downloadOutputFile(outputFileId) {
   const response = await batchClient().files.content(outputFileId);
   return await response.text();
@@ -437,10 +462,11 @@ async function writeBatchOutput(jobId, outputFileId) {
 
   for (const [docId, vectorRecords] of Object.entries(vectorsByDoc)) {
     const docManifest = manifest[docId];
-    const existingDoc = await prisma.workspace_documents.findFirst({
-      where: { docId, embeddingBatchJobId: jobId },
+    await ensureWorkspaceDocumentForBatch({
+      docId,
+      docManifest,
+      job,
     });
-    if (!existingDoc) continue;
 
     const vectors = vectorRecords.filter(Boolean);
     await storeVectorResult(toChunks(vectors, 500), docManifest.docpath);
@@ -629,4 +655,5 @@ module.exports = {
   isTransientBatchError,
   retryDelayMs,
   maxRetries,
+  buildWorkspaceDocumentRecord,
 };

@@ -10,14 +10,29 @@ module.exports.GmailGetInbox = {
           super: aibitat,
           name: this.name,
           description:
-            "Get the inbox emails from Gmail. Returns the inbox emails with the details of the email. " +
-            "Supports optional query and limit parameters to filter the emails.",
+            "Get inbox email threads from Gmail, including the latest or most recent received email. " +
+            "Use this tool when the user asks for the newest email, latest email title, latest email content, inbox list, or unread inbox messages. " +
+            "Returns thread IDs, subjects, dates, read state, and message counts. Use gmail-read-thread with the returned thread ID when the user asks for the full body/content.",
           examples: [
             {
               prompt: "What's in my inbox?",
               call: JSON.stringify({
                 query: "",
                 limit: 10,
+              }),
+            },
+            {
+              prompt: "What is the title of my latest email?",
+              call: JSON.stringify({
+                query: "",
+                limit: 1,
+              }),
+            },
+            {
+              prompt: "Read the content of my most recent email",
+              call: JSON.stringify({
+                query: "",
+                limit: 1,
               }),
             },
             {

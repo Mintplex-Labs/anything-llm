@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 import renderMarkdown from "@/utils/chat/markdown";
 import DOMPurify from "dompurify";
 import CommunityHub from "@/models/communityHub";
-import { setEventDelegatorForCodeSnippets } from "@/components/WorkspaceChat";
+import { setEventDelegatorForCodeSnippets } from "@/utils/chat/codeBlockCopy";
 
 export default function AgentSkill({ item, settings, setStep }) {
   const [loading, setLoading] = useState(false);

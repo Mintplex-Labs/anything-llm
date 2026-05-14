@@ -56,6 +56,7 @@ const TRANSLATIONS = {
     default: "Default",
     running: "Running",
     completed: "Completed",
+    failed: "Failed",
     "return-running-thread": "Return to running thread",
     "workspaces-name": "Workspace Name",
     selection: "Model Selection",

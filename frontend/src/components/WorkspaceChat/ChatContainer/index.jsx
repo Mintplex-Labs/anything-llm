@@ -1,4 +1,4 @@
-import { useEffect, useContext, useRef } from "react";
+import { useEffect, useContext, useRef, useMemo } from "react";
 import ChatHistory from "./ChatHistory";
 import { DndUploaderContext } from "./DnDWrapper";
 import PromptInput, {
@@ -27,6 +27,7 @@ import TextSizeMenu from "./TextSizeMenu";
 import WorkspaceModelPicker from "./WorkspaceModelPicker";
 import SourcesSidebar, { SourcesSidebarProvider } from "./SourcesSidebar";
 import { useChatThreadDrafts } from "@/contexts/ChatThreadDraftProvider";
+import { mergeServerHistoryIntoTurns } from "@/utils/chat/turns";
 
 export default function ChatContainer({
   workspace,
@@ -38,14 +39,17 @@ export default function ChatContainer({
   const {
     getDraft,
     mergeServerHistory,
-    setMessages,
     startStream,
     respondToApproval,
     getChatKey,
   } = useChatThreadDrafts();
   const chatKey = getChatKey(workspace?.slug, threadSlug);
   const draft = getDraft(workspace?.slug, threadSlug);
-  const chatHistory = draft?.messages || knownHistory;
+  const knownItems = useMemo(
+    () => mergeServerHistoryIntoTurns(knownHistory, [], { chatKey }),
+    [knownHistory, chatKey]
+  );
+  const chatItems = draft?.items || knownItems;
   const loadingResponse = !!draft?.isStreaming;
   const { files, parseAttachments } = useContext(DndUploaderContext);
   const { chatHistoryRef } = useChatContainerQuickScroll();
@@ -81,11 +85,6 @@ export default function ChatContainer({
     });
   }, [workspace?.slug, threadSlug, chatKey, knownHistory, mergeServerHistory]);
 
-  function updateChatHistory(messagesOrUpdater) {
-    if (!chatKey) return;
-    setMessages(chatKey, messagesOrUpdater);
-  }
-
   const handleSubmit = async (event) => {
     event.preventDefault();
     const currentMessage =
@@ -108,7 +107,7 @@ export default function ChatContainer({
       threadSlug,
       prompt: currentMessage,
       attachments,
-      history: chatHistory,
+      history: knownHistory,
       parseAttachments,
       sendToExistingAgent: !!draft?.isAgentRunning,
     });
@@ -120,14 +119,20 @@ export default function ChatContainer({
   }
 
   const regenerateAssistantMessage = (chatId) => {
-    const updatedHistory = chatHistory.slice(0, -1);
-    const lastUserMessage = updatedHistory.slice(-1)[0];
+    const assistantIdx = chatItems.findIndex(
+      (item) => item.type === "assistant_turn" && item.chatId === chatId
+    );
+    const assistantTurn = chatItems[assistantIdx];
+    const lastUserMessage = chatItems.find(
+      (item) => item.id === assistantTurn?.userMessageId
+    );
+    if (!lastUserMessage?.content) return;
     Workspace.deleteChats(workspace.slug, [chatId])
       .then(() =>
         sendCommand({
           text: lastUserMessage.content,
           autoSubmit: true,
-          history: updatedHistory,
+          history: knownHistory,
           attachments: lastUserMessage?.attachments,
         })
       )
@@ -184,7 +189,7 @@ export default function ChatContainer({
       threadSlug,
       prompt: text,
       attachments,
-      history: history.length > 0 ? history : chatHistory,
+      history: history.length > 0 ? history : knownHistory,
       parseAttachments,
       sendToExistingAgent: !!draft?.isAgentRunning,
     });
@@ -208,7 +213,7 @@ export default function ChatContainer({
   }, [workspace?.slug]);
 
   const isEmpty =
-    chatHistory.length === 0 && !sessionStorage.getItem(PENDING_HOME_MESSAGE);
+    chatItems.length === 0 && !sessionStorage.getItem(PENDING_HOME_MESSAGE);
 
   if (isEmpty) {
     return (
@@ -273,11 +278,9 @@ export default function ChatContainer({
                 <MetricsProvider>
                   <ChatHistory
                     ref={chatHistoryRef}
-                    history={chatHistory}
-                    agentEvents={draft?.agentEvents || []}
+                    items={chatItems}
                     workspace={workspace}
                     sendCommand={sendCommand}
-                    updateHistory={updateChatHistory}
                     regenerateAssistantMessage={regenerateAssistantMessage}
                     chatKey={chatKey}
                     approvalState={draft?.pendingApproval}

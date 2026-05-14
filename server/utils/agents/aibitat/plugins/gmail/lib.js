@@ -8,6 +8,18 @@ const { humanFileSize } = require("../../../../helpers");
 const { safeJsonParse } = require("../../../../http");
 
 const MAX_TOTAL_ATTACHMENT_SIZE = 20 * 1024 * 1024; // 20MB limit for all attachments combined
+const DEFAULT_BRIDGE_REQUEST_TIMEOUT_MS = 25 * 1_000;
+
+function gmailBridgeRequestTimeoutMs() {
+  const envTimeout = parseInt(
+    process.env.GMAIL_AGENT_REQUEST_TIMEOUT_MS ||
+      process.env.GOOGLE_APPS_SCRIPT_TIMEOUT_MS,
+    10
+  );
+  return !isNaN(envTimeout) && envTimeout > 0
+    ? envTimeout
+    : DEFAULT_BRIDGE_REQUEST_TIMEOUT_MS;
+}
 
 /**
  * Validates and prepares a file attachment for email.
@@ -342,6 +354,11 @@ class GmailBridge {
       return { success: false, error: initResult.error };
     }
 
+    const timeoutMs = gmailBridgeRequestTimeoutMs();
+    const controller = new AbortController();
+    const startedAt = Date.now();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
     try {
       const response = await fetch(this.#getBaseUrl(), {
         method: "POST",
@@ -354,6 +371,7 @@ class GmailBridge {
           action,
           ...params,
         }),
+        signal: controller.signal,
       });
 
       if (!response.ok) {
@@ -371,10 +389,20 @@ class GmailBridge {
 
       return { success: true, data: result.data, quota: result.quota };
     } catch (error) {
+      if (error.name === "AbortError") {
+        return {
+          success: false,
+          error: `Gmail API request timed out after ${timeoutMs}ms`,
+        };
+      }
+
       return {
         success: false,
         error: `Gmail API request failed: ${error.message}`,
       };
+    } finally {
+      clearTimeout(timeoutId);
+      this.#log(`Request ${action} completed in ${Date.now() - startedAt}ms`);
     }
   }
 

@@ -6,6 +6,15 @@ const { Telemetry } = require("../../../models/telemetry.js");
 const { v4 } = require("uuid");
 const { ToolReranker } = require("./utils/toolReranker.js");
 
+const DEFAULT_TOOL_EXECUTION_TIMEOUT_MS = 30 * 1_000;
+
+function agentToolExecutionTimeoutMs() {
+  const envTimeout = parseInt(process.env.AGENT_TOOL_TIMEOUT_MS, 10);
+  return !isNaN(envTimeout) && envTimeout > 0
+    ? envTimeout
+    : DEFAULT_TOOL_EXECUTION_TIMEOUT_MS;
+}
+
 /**
  * AIbitat is a class that manages the conversation between agents.
  * It is designed to solve a task with LLM.
@@ -465,6 +474,14 @@ class AIbitat {
   async start(message) {
     // register the message in the chat history
     this.newMessage(message);
+
+    // Some plugins pre-register backing records from the initial user message.
+    // Await them before provider execution so final stream metadata (chatId) is
+    // available even when tools and the model return very quickly.
+    if (typeof this.ensureTrackedChatId === "function") {
+      await this.ensureTrackedChatId(message);
+    }
+
     this.emitter.emit("start", message, this);
 
     // ask the node to reply
@@ -866,6 +883,55 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
   }
 
   /**
+   * Execute a tool with a bounded timeout so a stuck handler cannot prevent
+   * toolCallResult emission and leave the frontend waiting indefinitely.
+   *
+   * @param {{handler: Function}} fn - The function config to execute.
+   * @param {object} args - Tool arguments.
+   * @param {string} name - Tool name.
+   * @returns {Promise<any>} Tool result or a timeout error string.
+   */
+  async #executeToolHandler(fn, args = {}, name = "") {
+    const timeoutMs = agentToolExecutionTimeoutMs();
+    const startedAt = Date.now();
+    let timeoutId = null;
+    const timeoutResult = Symbol("tool-timeout");
+
+    this.handlerProps?.log?.(
+      `[debug]: Tool ${name} handler started with timeout ${timeoutMs}ms`
+    );
+
+    try {
+      const result = await Promise.race([
+        fn.handler(args),
+        new Promise((resolve) => {
+          timeoutId = setTimeout(() => resolve(timeoutResult), timeoutMs);
+        }),
+      ]);
+
+      const elapsedMs = Date.now() - startedAt;
+      if (result === timeoutResult) {
+        const message = `Tool ${name} timed out after ${timeoutMs}ms.`;
+        this.handlerProps?.log?.(`[warning]: ${message}`);
+        this?.introspect?.(`${message} Continuing with a timeout result.`);
+        return `Error: ${message}`;
+      }
+
+      this.handlerProps?.log?.(
+        `[debug]: Tool ${name} handler completed in ${elapsedMs}ms`
+      );
+      return result;
+    } catch (error) {
+      this.handlerProps?.log?.(
+        `[error]: Tool ${name} handler failed after ${Date.now() - startedAt}ms: ${error.message}`
+      );
+      throw error;
+    } finally {
+      if (timeoutId) clearTimeout(timeoutId);
+    }
+  }
+
+  /**
    * Handle the async (streaming) execution of the provider
    * with tool calls.
    *
@@ -883,7 +949,11 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     byAgent = null,
     depth = 0
   ) {
+    let emittedFullTextResponse = false;
     const eventHandler = (type, data) => {
+      if (type === "reportStreamEvent" && data?.type === "fullTextResponse") {
+        emittedFullTextResponse = true;
+      }
       this?.socket?.send(type, data);
     };
 
@@ -936,7 +1006,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
         `[debug]: ${fn.caller} is attempting to call \`${name}\` tool ${JSON.stringify(args, null, 2)}`
       );
 
-      const result = await fn.handler(args);
+      const result = await this.#executeToolHandler(fn, args, name);
       Telemetry.sendTelemetry("agent_tool_call", { tool: name }, null, true);
       this.emitter.emit("toolCallResult", {
         toolName: name,
@@ -1007,6 +1077,13 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     }
 
     const responseUuid = completionStream?.uuid || v4();
+    if (!emittedFullTextResponse && completionStream?.textResponse) {
+      eventHandler?.("reportStreamEvent", {
+        type: "fullTextResponse",
+        uuid: responseUuid,
+        content: completionStream.textResponse,
+      });
+    }
     eventHandler?.("reportStreamEvent", {
       type: "usageMetrics",
       uuid: responseUuid,
@@ -1094,7 +1171,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
         `[debug]: ${fn.caller} is attempting to call \`${name}\` tool`
       );
 
-      const result = await fn.handler(args);
+      const result = await this.#executeToolHandler(fn, args, name);
       Telemetry.sendTelemetry("agent_tool_call", { tool: name }, null, true);
       this.emitter.emit("toolCallResult", {
         toolName: name,

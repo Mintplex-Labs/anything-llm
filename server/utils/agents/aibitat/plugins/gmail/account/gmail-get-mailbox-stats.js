@@ -11,7 +11,8 @@ module.exports.GmailGetMailboxStats = {
           name: this.name,
           description:
             "Used for general account information. Reports Gmail mailbox statistics including unread counts for inbox, " +
-            "priority inbox, starred messages, and spam folder.",
+            "priority inbox, starred messages, and spam folder. This tool does not list, search, or read emails. " +
+            "For latest email title/content use gmail-get-inbox first, then gmail-read-thread with the returned thread ID.",
           examples: [
             {
               prompt: "How much of my mailbox quota is remaining?",
@@ -58,7 +59,8 @@ module.exports.GmailGetMailboxStats = {
                 `Priority Inbox Unread: ${stats.priorityInboxUnreadCount}\n` +
                 `Starred Unread: ${stats.starredUnreadCount}\n` +
                 `Spam Unread: ${stats.spamUnreadCount}\n\n` +
-                `Use gmail-search to find and read specific emails.`
+                `This is a statistics-only result and does not list any email titles or bodies. ` +
+                `Use gmail-get-inbox to fetch the latest inbox emails, gmail-search to find specific emails, and gmail-read-thread to read a selected thread.`
               );
             } catch (e) {
               this.super.handlerProps.log(

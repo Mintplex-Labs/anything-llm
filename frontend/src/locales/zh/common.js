@@ -54,6 +54,7 @@ const TRANSLATIONS = {
     default: "默认",
     running: "运行中",
     completed: "已完成",
+    failed: "失败",
     "return-running-thread": "返回正在运行的线程",
     "workspaces-name": "工作区名称",
     selection: "模型选择",

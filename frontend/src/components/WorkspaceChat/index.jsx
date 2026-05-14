@@ -13,6 +13,7 @@ import {
 } from "../contexts/TTSProvider";
 import { PENDING_HOME_MESSAGE } from "@/utils/constants";
 import { useChatThreadDrafts } from "@/contexts/ChatThreadDraftProvider";
+import { setEventDelegatorForCodeSnippets } from "@/utils/chat/codeBlockCopy";
 
 export default function WorkspaceChat({ loading, workspace }) {
   useWatchForAutoPlayAssistantTTSResponse();
@@ -76,7 +77,7 @@ export default function WorkspaceChat({ loading, workspace }) {
           key,
           workspace,
           threadSlug,
-          history: draft.messages,
+          history: [],
         });
       }
 
@@ -122,7 +123,7 @@ export default function WorkspaceChat({ loading, workspace }) {
   useEffect(() => {
     if (!workspace?.slug) return;
     const activity = getThreadActivity(workspace.slug, threadSlug);
-    if (activity?.status === "completed") {
+    if (["completed", "failed"].includes(activity?.status)) {
       clearThreadActivity(workspace.slug, threadSlug);
     }
   }, [workspace?.slug, threadSlug, getThreadActivity, clearThreadActivity]);
@@ -193,37 +194,4 @@ export default function WorkspaceChat({ loading, workspace }) {
   );
 }
 
-// Enables us to safely markdown and sanitize all responses without risk of injection
-// but still be able to attach a handler to copy code snippets on all elements
-// that are code snippets.
-function copyCodeSnippet(uuid) {
-  const target = document.querySelector(`[data-code="${uuid}"]`);
-  if (!target) return false;
-  const markdown =
-    target.parentElement?.parentElement?.querySelector(
-      "pre:first-of-type"
-    )?.innerText;
-  if (!markdown) return false;
-
-  window.navigator.clipboard.writeText(markdown);
-  target.classList.add("text-green-500");
-  const originalText = target.innerHTML;
-  target.innerText = "Copied!";
-  target.setAttribute("disabled", true);
-
-  setTimeout(() => {
-    target.classList.remove("text-green-500");
-    target.innerHTML = originalText;
-    target.removeAttribute("disabled");
-  }, 2500);
-}
-
-// Listens and hunts for all data-code-snippet clicks.
-export function setEventDelegatorForCodeSnippets() {
-  document?.addEventListener("click", function (e) {
-    const target = e.target.closest("[data-code-snippet]");
-    const uuidCode = target?.dataset?.code;
-    if (!uuidCode) return false;
-    copyCodeSnippet(uuidCode);
-  });
-}
+export { setEventDelegatorForCodeSnippets };

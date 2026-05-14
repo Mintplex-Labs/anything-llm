@@ -6,6 +6,7 @@ import hljs from "highlight.js";
 import "./themes/github-dark.css";
 import "./themes/github.css";
 import { v4 } from "uuid";
+import { setEventDelegatorForCodeSnippets } from "./codeBlockCopy";
 
 // Register custom lanaguages
 import hljsDefineSvelte from "./hljs-libraries/svelte";
@@ -79,5 +80,6 @@ markdown.renderer.rules.image = function (tokens, idx) {
 markdown.use(markdownItKatexPlugin);
 
 export default function renderMarkdown(text = "") {
+  setEventDelegatorForCodeSnippets();
   return markdown.render(text);
 }

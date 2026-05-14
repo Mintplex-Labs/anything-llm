@@ -117,14 +117,19 @@ export default function ThreadContainer({
   }
 
   function getActiveThreadIdx() {
+    const rows = getSortedThreadRows(
+      threads,
+      workspace.slug,
+      hasThreadActivity
+    );
     if (isVirtualThread) return threads.length + 1;
-    const idx = threads.findIndex((t) => t?.slug === threadSlug);
+    const idx = rows.findIndex((row) => row.thread?.slug === threadSlug);
     return idx >= 0 ? idx + 1 : 0;
   }
 
   useEffect(() => {
     const currentActivity = hasThreadActivity(workspace.slug, threadSlug);
-    if (currentActivity?.status === "completed") {
+    if (["completed", "failed"].includes(currentActivity?.status)) {
       clearThreadActivity(workspace.slug, threadSlug);
     }
   }, [workspace.slug, threadSlug, hasThreadActivity, clearThreadActivity]);
@@ -137,6 +142,11 @@ export default function ThreadContainer({
     );
   }
 
+  const threadRows = getSortedThreadRows(
+    threads,
+    workspace.slug,
+    hasThreadActivity
+  );
   const activeThreadIdx = getActiveThreadIdx();
   const defaultActivity = displayActivity(
     hasThreadActivity(workspace.slug, null),
@@ -154,7 +164,7 @@ export default function ThreadContainer({
         activity={defaultActivity}
         hasNext={threads.length > 0 || isVirtualThread}
       />
-      {threads.map((thread, i) => {
+      {threadRows.map(({ thread, activity }, i) => {
         const isActiveThread = activeThreadIdx === i + 1;
         return (
           <ThreadItem
@@ -167,11 +177,8 @@ export default function ThreadContainer({
             workspace={workspace}
             onRemove={removeThread}
             thread={thread}
-            activity={displayActivity(
-              hasThreadActivity(workspace.slug, thread.slug),
-              isActiveThread
-            )}
-            hasNext={i !== threads.length - 1 || isVirtualThread}
+            activity={displayActivity(activity, isActiveThread)}
+            hasNext={i !== threadRows.length - 1 || isVirtualThread}
           />
         );
       })}
@@ -197,7 +204,33 @@ export default function ThreadContainer({
 
 function displayActivity(activity, isActive) {
   if (activity?.status === "completed" && isActive) return null;
+  if (activity?.status === "failed" && isActive) return null;
   return activity;
+}
+
+function activitySortRank(activity) {
+  if (activity?.status === "running") return 0;
+  if (activity?.status === "failed") return 1;
+  if (activity?.status === "completed") return 2;
+  return 3;
+}
+
+function getSortedThreadRows(threads, workspaceSlug, hasThreadActivity) {
+  return threads
+    .map((thread, index) => ({
+      thread,
+      index,
+      activity: hasThreadActivity(workspaceSlug, thread.slug),
+    }))
+    .sort((a, b) => {
+      const rankDiff =
+        activitySortRank(a.activity) - activitySortRank(b.activity);
+      if (rankDiff !== 0) return rankDiff;
+      if (activitySortRank(a.activity) < 3) {
+        return (b.activity?.updatedAt || 0) - (a.activity?.updatedAt || 0);
+      }
+      return a.index - b.index;
+    });
 }
 
 function NewThreadButton({ workspace }) {
