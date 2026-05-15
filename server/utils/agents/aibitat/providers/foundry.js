@@ -6,6 +6,7 @@ const {
   parseFoundryBasePath,
   FoundryLLM,
 } = require("../../../AiProviders/foundry/index.js");
+const { getFetchWithCustomTimeout } = require("../../../AiProviders/helpers");
 
 /**
  * The agent provider for the Foundry provider.
@@ -21,6 +22,10 @@ class FoundryProvider extends InheritMultiple([Provider, UnTooled]) {
       baseURL: parseFoundryBasePath(process.env.FOUNDRY_BASE_PATH),
       apiKey: null,
       maxRetries: 3,
+      fetch: getFetchWithCustomTimeout(
+        process.env.FOUNDRY_RESPONSE_TIMEOUT,
+        FoundryProvider.slog
+      ),
     });
 
     this._client = client;
@@ -34,6 +39,10 @@ class FoundryProvider extends InheritMultiple([Provider, UnTooled]) {
    */
   get client() {
     return this._client;
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[FoundryProvider]\x1b[0m ${text}`, ...args);
   }
 
   get supportsAgentStreaming() {

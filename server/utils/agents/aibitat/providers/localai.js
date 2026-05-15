@@ -4,6 +4,7 @@ const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
+const { getFetchWithCustomTimeout } = require("../../../AiProviders/helpers");
 
 /**
  * The agent provider for the LocalAI provider.
@@ -20,6 +21,10 @@ class LocalAiProvider extends InheritMultiple([Provider, UnTooled]) {
       baseURL: process.env.LOCAL_AI_BASE_PATH,
       apiKey: process.env.LOCAL_AI_API_KEY ?? null,
       maxRetries: 3,
+      fetch: getFetchWithCustomTimeout(
+        process.env.LOCAL_AI_RESPONSE_TIMEOUT,
+        LocalAiProvider.slog
+      ),
     });
 
     this._client = client;
@@ -30,6 +35,10 @@ class LocalAiProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get client() {
     return this._client;
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[LocalAiProvider]\x1b[0m ${text}`, ...args);
   }
 
   get supportsAgentStreaming() {

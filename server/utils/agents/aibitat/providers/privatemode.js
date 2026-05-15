@@ -3,6 +3,7 @@ const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 const { PrivatemodeLLM } = require("../../../AiProviders/privatemode/index.js");
+const { getFetchWithCustomTimeout } = require("../../../AiProviders/helpers");
 
 /**
  * The agent provider for the Privatemodel provider.
@@ -21,6 +22,10 @@ class PrivatemodelProvider extends InheritMultiple([Provider, UnTooled]) {
       ),
       apiKey: null,
       maxRetries: 3,
+      fetch: getFetchWithCustomTimeout(
+        process.env.PRIVATEMODE_LLM_RESPONSE_TIMEOUT,
+        PrivatemodelProvider.slog
+      ),
     });
 
     this._client = client;
@@ -30,6 +35,10 @@ class PrivatemodelProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get client() {
     return this._client;
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[PrivatemodelProvider]\x1b[0m ${text}`, ...args);
   }
 
   get supportsAgentStreaming() {

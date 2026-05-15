@@ -2,6 +2,7 @@ const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
+const { getFetchWithCustomTimeout } = require("../../../AiProviders/helpers");
 
 /**
  * The agent provider for the xAI provider.
@@ -16,6 +17,10 @@ class XAIProvider extends InheritMultiple([Provider, UnTooled]) {
       baseURL: "https://api.x.ai/v1",
       apiKey: process.env.XAI_LLM_API_KEY,
       maxRetries: 3,
+      fetch: getFetchWithCustomTimeout(
+        process.env.XAI_LLM_RESPONSE_TIMEOUT,
+        XAIProvider.slog
+      ),
     });
 
     this._client = client;
@@ -25,6 +30,10 @@ class XAIProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get client() {
     return this._client;
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[XAIProvider]\x1b[0m ${text}`, ...args);
   }
 
   get supportsAgentStreaming() {

@@ -1,4 +1,5 @@
 const { toChunks, reportEmbeddingProgress } = require("../../helpers");
+const { getFetchWithCustomTimeout } = require("../../AiProviders/helpers");
 
 const MODEL_MAP = {
   "gemini-embedding-001": 2048,
@@ -16,6 +17,10 @@ class GeminiEmbedder {
       apiKey: process.env.GEMINI_EMBEDDING_API_KEY,
       // Even models that are v1 in gemini API can be used with v1beta/openai/ endpoint and nobody knows why.
       baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
+      fetch: getFetchWithCustomTimeout(
+        process.env.GEMINI_RESPONSE_TIMEOUT,
+        GeminiEmbedder.slog
+      ),
     });
 
     this.maxConcurrentChunks = 4;
@@ -32,6 +37,10 @@ class GeminiEmbedder {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[GeminiEmbedder]\x1b[0m ${text}`, ...args);
   }
 
   get outputDimensions() {

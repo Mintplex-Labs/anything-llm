@@ -3,6 +3,7 @@ const {
   maximumChunkLength,
   reportEmbeddingProgress,
 } = require("../../helpers");
+const { getFetchWithCustomTimeout } = require("../../AiProviders/helpers");
 
 class LocalAiEmbedder {
   constructor() {
@@ -17,6 +18,10 @@ class LocalAiEmbedder {
     this.openai = new OpenAIApi({
       baseURL: process.env.EMBEDDING_BASE_PATH,
       apiKey: process.env.LOCAL_AI_API_KEY ?? null,
+      fetch: getFetchWithCustomTimeout(
+        process.env.LOCAL_AI_RESPONSE_TIMEOUT,
+        LocalAiEmbedder.slog
+      ),
     });
 
     // Limit of how many strings we can process in a single pass to stay with resource or network limits
@@ -33,6 +38,10 @@ class LocalAiEmbedder {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[LocalAiEmbedder]\x1b[0m ${text}`, ...args);
   }
 
   get outputDimensions() {

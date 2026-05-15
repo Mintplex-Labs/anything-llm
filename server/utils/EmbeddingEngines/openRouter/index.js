@@ -1,4 +1,5 @@
 const { toChunks, reportEmbeddingProgress } = require("../../helpers");
+const { getFetchWithCustomTimeout } = require("../../AiProviders/helpers");
 
 class OpenRouterEmbedder {
   constructor() {
@@ -13,6 +14,10 @@ class OpenRouterEmbedder {
         "HTTP-Referer": "https://anythingllm.com",
         "X-Title": "AnythingLLM",
       },
+      fetch: getFetchWithCustomTimeout(
+        process.env.OPENROUTER_RESPONSE_TIMEOUT,
+        OpenRouterEmbedder.slog
+      ),
     });
     this.model = process.env.EMBEDDING_MODEL_PREF || "baai/bge-m3";
 
@@ -25,6 +30,10 @@ class OpenRouterEmbedder {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[OpenRouterEmbedder]\x1b[0m ${text}`, ...args);
   }
 
   async embedTextInput(textInput) {

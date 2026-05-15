@@ -8,6 +8,7 @@ const {
   DockerModelRunnerLLM,
   parseDockerModelRunnerEndpoint,
 } = require("../../../AiProviders/dockerModelRunner/index.js");
+const { getFetchWithCustomTimeout } = require("../../../AiProviders/helpers");
 
 /**
  * The agent provider for the Docker Model Runner.
@@ -29,6 +30,10 @@ class DockerModelRunnerProvider extends InheritMultiple([Provider, UnTooled]) {
       ),
       apiKey: null,
       maxRetries: 3,
+      fetch: getFetchWithCustomTimeout(
+        process.env.DOCKER_MODEL_RUNNER_RESPONSE_TIMEOUT,
+        DockerModelRunnerProvider.slog
+      ),
     });
 
     this._client = client;
@@ -39,6 +44,10 @@ class DockerModelRunnerProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get client() {
     return this._client;
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[DockerModelRunnerProvider]\x1b[0m ${text}`, ...args);
   }
 
   get supportsAgentStreaming() {

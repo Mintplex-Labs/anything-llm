@@ -4,6 +4,7 @@ const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
+const { getFetchWithCustomTimeout } = require("../../../AiProviders/helpers");
 
 /**
  * The agent provider for the GroqAI provider.
@@ -20,6 +21,10 @@ class GroqProvider extends InheritMultiple([Provider, UnTooled]) {
       baseURL: "https://api.groq.com/openai/v1",
       apiKey: process.env.GROQ_API_KEY,
       maxRetries: 3,
+      fetch: getFetchWithCustomTimeout(
+        process.env.GROQ_RESPONSE_TIMEOUT,
+        GroqProvider.slog
+      ),
     });
 
     this._client = client;
@@ -30,6 +35,10 @@ class GroqProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get client() {
     return this._client;
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[GroqProvider]\x1b[0m ${text}`, ...args);
   }
 
   get supportsAgentStreaming() {

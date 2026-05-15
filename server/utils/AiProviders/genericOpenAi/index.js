@@ -10,6 +10,7 @@ const {
 const { v4: uuidv4 } = require("uuid");
 const { toValidNumber } = require("../../http");
 const { getAnythingLLMUserAgent } = require("../../../endpoints/utils");
+const { getFetchWithCustomTimeout } = require("../helpers");
 
 class GenericOpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -28,6 +29,10 @@ class GenericOpenAiLLM {
         "User-Agent": getAnythingLLMUserAgent(),
         ...GenericOpenAiLLM.parseCustomHeaders(),
       },
+      fetch: getFetchWithCustomTimeout(
+        process.env.GENERIC_OPEN_AI_RESPONSE_TIMEOUT,
+        GenericOpenAiLLM.slog
+      ),
     });
     this.model =
       modelPreference ?? process.env.GENERIC_OPEN_AI_MODEL_PREF ?? null;
@@ -49,6 +54,10 @@ class GenericOpenAiLLM {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[GenericOpenAiLLM]\x1b[0m ${text}`, ...args);
   }
 
   /**

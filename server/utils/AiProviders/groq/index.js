@@ -6,6 +6,7 @@ const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
 const { MODEL_MAP } = require("../modelMap");
+const { getFetchWithCustomTimeout } = require("../helpers");
 
 class GroqLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -16,6 +17,10 @@ class GroqLLM {
     this.openai = new OpenAIApi({
       baseURL: "https://api.groq.com/openai/v1",
       apiKey: process.env.GROQ_API_KEY,
+      fetch: getFetchWithCustomTimeout(
+        process.env.GROQ_RESPONSE_TIMEOUT,
+        GroqLLM.slog
+      ),
     });
     this.model =
       modelPreference || process.env.GROQ_MODEL_PREF || "llama-3.1-8b-instant";
@@ -43,6 +48,10 @@ class GroqLLM {
 
   #log(text, ...args) {
     console.log(`\x1b[32m[GroqAi]\x1b[0m ${text}`, ...args);
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[GroqLLM]\x1b[0m ${text}`, ...args);
   }
 
   streamingEnabled() {

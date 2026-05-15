@@ -8,7 +8,9 @@ const {
   LMStudioLLM,
   parseLMStudioBasePath,
 } = require("../../../AiProviders/lmStudio/index.js");
+const { getFetchWithCustomTimeout } = require("../../../AiProviders/helpers");
 
+const DEFAULT_LM_STUDIO_SOCKET_TIMEOUT = 900000; // 15 minutes
 /**
  * The agent provider for the LMStudio.
  * Supports true OpenAI-compatible tool calling when the model supports it,
@@ -30,6 +32,11 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
       baseURL: parseLMStudioBasePath(process.env.LMSTUDIO_BASE_PATH),
       apiKey,
       maxRetries: 3,
+      fetch: getFetchWithCustomTimeout(
+        process.env.LMSTUDIO_RESPONSE_TIMEOUT,
+        LMStudioProvider.slog,
+        DEFAULT_LM_STUDIO_SOCKET_TIMEOUT
+      ),
     });
 
     this._client = client;
@@ -40,6 +47,10 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get client() {
     return this._client;
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[LMStudioProvider]\x1b[0m ${text}`, ...args);
   }
 
   get supportsAgentStreaming() {

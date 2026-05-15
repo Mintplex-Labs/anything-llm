@@ -7,6 +7,7 @@ const { RetryError } = require("../error.js");
 const { toValidNumber } = require("../../../http/index.js");
 const { getAnythingLLMUserAgent } = require("../../../../endpoints/utils");
 const { GenericOpenAiLLM } = require("../../../AiProviders/genericOpenAi");
+const { getFetchWithCustomTimeout } = require("../../../AiProviders/helpers");
 
 /**
  * The agent provider for the Generic OpenAI provider.
@@ -28,6 +29,10 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
         "User-Agent": getAnythingLLMUserAgent(),
         ...GenericOpenAiLLM.parseCustomHeaders(),
       },
+      fetch: getFetchWithCustomTimeout(
+        process.env.GENERIC_OPEN_AI_RESPONSE_TIMEOUT,
+        GenericOpenAiProvider.slog
+      ),
     });
 
     this._client = client;
@@ -41,6 +46,10 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get client() {
     return this._client;
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[GenericOpenAiProvider]\x1b[0m ${text}`, ...args);
   }
 
   get supportsAgentStreaming() {

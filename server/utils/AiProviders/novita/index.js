@@ -11,6 +11,7 @@ const { safeJsonParse } = require("../../http");
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
+const { getFetchWithCustomTimeout } = require("../helpers");
 const cacheFolder = path.resolve(
   process.env.STORAGE_DIR
     ? path.resolve(process.env.STORAGE_DIR, "models", "novita")
@@ -34,6 +35,10 @@ class NovitaLLM {
         "HTTP-Referer": "https://anythingllm.com",
         "X-Novita-Source": "anythingllm",
       },
+      fetch: getFetchWithCustomTimeout(
+        process.env.NOVITA_LLM_RESPONSE_TIMEOUT,
+        NovitaLLM.slog
+      ),
     });
     this.model =
       modelPreference ||
@@ -59,6 +64,10 @@ class NovitaLLM {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[NovitaLLM]\x1b[0m ${text}`, ...args);
   }
 
   /**

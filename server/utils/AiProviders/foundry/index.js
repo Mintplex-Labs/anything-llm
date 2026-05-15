@@ -10,6 +10,7 @@ const {
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 
 const { OpenAI: OpenAIApi } = require("openai");
+const { getFetchWithCustomTimeout } = require("../helpers");
 
 class FoundryLLM {
   /** @see FoundryLLM.cacheContextWindows */
@@ -24,6 +25,10 @@ class FoundryLLM {
     this.openai = new OpenAIApi({
       baseURL: parseFoundryBasePath(process.env.FOUNDRY_BASE_PATH),
       apiKey: null,
+      fetch: getFetchWithCustomTimeout(
+        process.env.FOUNDRY_RESPONSE_TIMEOUT,
+        FoundryLLM.slog
+      ),
     });
 
     this.embedder = embedder ?? new NativeEmbedder();
@@ -33,8 +38,8 @@ class FoundryLLM {
     this.#log(`Loaded with model: ${this.model}`);
   }
 
-  static #slog(text, ...args) {
-    console.log(`\x1b[36m[FoundryLLM]\x1b[0m ${text}`, ...args);
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[FoundryLLM]\x1b[0m ${text}`, ...args);
   }
 
   #log(text, ...args) {
@@ -95,9 +100,9 @@ class FoundryLLM {
           FoundryLLM.modelContextWindows[model.id] = contextWindow;
         }
       );
-      FoundryLLM.#slog(`Context windows cached for all models!`);
+      FoundryLLM.slog(`Context windows cached for all models!`);
     } catch (e) {
-      FoundryLLM.#slog(`Error caching context windows: ${e.message}`);
+      FoundryLLM.slog(`Error caching context windows: ${e.message}`);
       return;
     }
   }
@@ -122,7 +127,7 @@ class FoundryLLM {
 
   static promptWindowLimit(modelName) {
     if (Object.keys(FoundryLLM.modelContextWindows).length === 0) {
-      this.#slog(
+      this.slog(
         "No context windows cached - Context window may be inaccurately reported."
       );
       return process.env.FOUNDRY_MODEL_TOKEN_LIMIT || 4096;

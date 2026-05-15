@@ -8,7 +8,9 @@ const {
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { OpenAI: OpenAIApi } = require("openai");
 const { humanFileSize } = require("../../helpers");
+const { getFetchWithCustomTimeout } = require("../helpers");
 
+const DEFAULT_LEMONADE_SOCKET_TIMEOUT = 900000; // 15 minutes
 class LemonadeLLM {
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.LEMONADE_LLM_BASE_PATH)
@@ -21,6 +23,11 @@ class LemonadeLLM {
       baseURL: parseLemonadeServerEndpoint(
         process.env.LEMONADE_LLM_BASE_PATH,
         "openai"
+      ),
+      fetch: getFetchWithCustomTimeout(
+        process.env.LEMONADE_RESPONSE_TIMEOUT,
+        LemonadeLLM.slog,
+        DEFAULT_LEMONADE_SOCKET_TIMEOUT
       ),
       apiKey: process.env.LEMONADE_LLM_API_KEY || null,
     });
@@ -198,6 +205,10 @@ class LemonadeLLM {
   async getModelCapabilities() {
     try {
       const client = new OpenAIApi({
+        fetch: getFetchWithCustomTimeout(
+          process.env.LEMONADE_RESPONSE_TIMEOUT,
+          LemonadeLLM.slog
+        ),
         baseURL: parseLemonadeServerEndpoint(
           process.env.LEMONADE_LLM_BASE_PATH,
           "openai"

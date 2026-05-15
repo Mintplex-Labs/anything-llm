@@ -6,6 +6,7 @@ const {
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
+const { getFetchWithCustomTimeout } = require("../helpers");
 
 class TextGenWebUILLM {
   constructor(embedder = null) {
@@ -20,6 +21,10 @@ class TextGenWebUILLM {
     this.openai = new OpenAIApi({
       baseURL: this.basePath,
       apiKey: process.env.TEXT_GEN_WEB_UI_API_KEY ?? null,
+      fetch: getFetchWithCustomTimeout(
+        process.env.TEXT_GEN_WEB_UI_RESPONSE_TIMEOUT,
+        TextGenWebUILLM.slog
+      ),
     });
     this.model = null;
     this.limits = {
@@ -35,6 +40,10 @@ class TextGenWebUILLM {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[TextGenWebUILLM]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {

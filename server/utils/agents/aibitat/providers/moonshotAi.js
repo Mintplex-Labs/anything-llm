@@ -2,6 +2,7 @@ const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
+const { getFetchWithCustomTimeout } = require("../../../AiProviders/helpers");
 
 class MoonshotAiProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
@@ -13,6 +14,10 @@ class MoonshotAiProvider extends InheritMultiple([Provider, UnTooled]) {
       baseURL: "https://api.moonshot.ai/v1",
       apiKey: process.env.MOONSHOT_AI_API_KEY,
       maxRetries: 3,
+      fetch: getFetchWithCustomTimeout(
+        process.env.MOONSHOT_AI_RESPONSE_TIMEOUT,
+        MoonshotAiProvider.slog
+      ),
     });
 
     this._client = client;
@@ -29,6 +34,10 @@ class MoonshotAiProvider extends InheritMultiple([Provider, UnTooled]) {
    */
   get client() {
     return this._client;
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[MoonshotAiProvider]\x1b[0m ${text}`, ...args);
   }
 
   get supportsAgentStreaming() {

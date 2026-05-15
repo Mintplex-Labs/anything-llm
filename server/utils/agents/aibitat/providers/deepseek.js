@@ -5,6 +5,7 @@ const UnTooled = require("./helpers/untooled.js");
 const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
 const { toValidNumber } = require("../../../http/index.js");
+const { getFetchWithCustomTimeout } = require("../../../AiProviders/helpers");
 
 class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
@@ -16,6 +17,10 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
       baseURL: "https://api.deepseek.com/v1",
       apiKey: process.env.DEEPSEEK_API_KEY ?? null,
       maxRetries: 3,
+      fetch: getFetchWithCustomTimeout(
+        process.env.DEEPSEEK_RESPONSE_TIMEOUT,
+        DeepSeekProvider.slog
+      ),
     });
 
     this._client = client;
@@ -28,6 +33,10 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get client() {
     return this._client;
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[DeepSeekProvider]\x1b[0m ${text}`, ...args);
   }
 
   get supportsAgentStreaming() {

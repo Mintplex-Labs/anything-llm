@@ -6,7 +6,11 @@ const { OllamaAILLM } = require("../../../AiProviders/ollama");
 const { Ollama } = require("ollama");
 const { v4 } = require("uuid");
 const { safeJsonParse } = require("../../../http");
+const {
+  getFetchWithCustomTimeout,
+} = require("../../../AiProviders/helpers/index.js");
 
+const DEFAULT_OLLAMA_SOCKET_TIMEOUT = 90000; // 15 min
 /**
  * The agent provider for the Ollama provider.
  * Supports true OpenAI-compatible tool calling when the model supports it,
@@ -28,7 +32,11 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     this._client = new Ollama({
       host: basePath,
       headers: headers,
-      fetch: OllamaAILLM.applyOllamaFetch(),
+      fetch: getFetchWithCustomTimeout(
+        process.env.OLLAMA_RESPONSE_TIMEOUT,
+        OllamaAILLM.slog,
+        DEFAULT_OLLAMA_SOCKET_TIMEOUT
+      ),
     });
     this.model = model;
     this.verbose = true;

@@ -8,7 +8,9 @@ const {
   LemonadeLLM,
   parseLemonadeServerEndpoint,
 } = require("../../../AiProviders/lemonade/index.js");
+const { getFetchWithCustomTimeout } = require("../../../AiProviders/helpers");
 
+const DEFAULT_LEMONADE_SOCKET_TIMEOUT = 900000; // 15 minutes
 /**
  * The agent provider for the Lemonade.
  */
@@ -29,6 +31,11 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
       ),
       apiKey: process.env.LEMONADE_LLM_API_KEY || null,
       maxRetries: 3,
+      fetch: getFetchWithCustomTimeout(
+        process.env.LEMONADE_RESPONSE_TIMEOUT,
+        LemonadeProvider.slog,
+        DEFAULT_LEMONADE_SOCKET_TIMEOUT
+      ),
     });
 
     this._client = client;
@@ -40,6 +47,10 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get client() {
     return this._client;
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[LemonadeProvider]\x1b[0m ${text}`, ...args);
   }
 
   get supportsAgentStreaming() {

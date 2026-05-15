@@ -9,7 +9,9 @@ const {
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { Ollama } = require("ollama");
 const { v4: uuidv4 } = require("uuid");
+const { getFetchWithCustomTimeout } = require("../helpers");
 
+const DEFAULT_OLLAMA_SOCKET_TIMEOUT = 900000; // 15 minutes
 // Docs: https://github.com/jmorganca/ollama/blob/main/docs/api.md
 class OllamaAILLM {
   /** @see OllamaAILLM.cacheContextWindows */
@@ -33,7 +35,11 @@ class OllamaAILLM {
     this.client = new Ollama({
       host: this.basePath,
       headers: headers,
-      fetch: OllamaAILLM.applyOllamaFetch(),
+      fetch: getFetchWithCustomTimeout(
+        process.env.OLLAMA_RESPONSE_TIMEOUT,
+        OllamaAILLM.slog,
+        DEFAULT_OLLAMA_SOCKET_TIMEOUT
+      ),
     });
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
@@ -49,7 +55,7 @@ class OllamaAILLM {
     console.log(`\x1b[32m[Ollama]\x1b[0m ${text}`, ...args);
   }
 
-  static #slog(text, ...args) {
+  static slog(text, ...args) {
     console.log(`\x1b[32m[Ollama]\x1b[0m ${text}`, ...args);
   }
 
@@ -107,9 +113,9 @@ class OllamaAILLM {
         OllamaAILLM.modelContextWindows[showInfo.name] =
           showInfo.model_info[contextWindowKey];
       });
-      OllamaAILLM.#slog(`Context windows cached for all models!`);
+      OllamaAILLM.slog(`Context windows cached for all models!`);
     } catch (e) {
-      OllamaAILLM.#slog(`Error caching context windows`, e);
+      OllamaAILLM.slog(`Error caching context windows`, e);
       return;
     }
   }
@@ -126,53 +132,13 @@ class OllamaAILLM {
     );
   }
 
-  /**
-   * Apply a custom fetch function to the Ollama client.
-   * This is useful when we want to bypass the default 5m timeout for global fetch
-   * for machines which run responses very slowly.
-   * @returns {Function} The custom fetch function.
-   */
-  static applyOllamaFetch() {
-    try {
-      if (!("OLLAMA_RESPONSE_TIMEOUT" in process.env)) return fetch;
-      const { Agent } = require("undici");
-      const moment = require("moment");
-      let timeout = process.env.OLLAMA_RESPONSE_TIMEOUT;
-
-      if (!timeout || isNaN(Number(timeout)) || Number(timeout) <= 5 * 60_000) {
-        OllamaAILLM.#slog(
-          "Timeout option was not set, is not a number, or is less than 5 minutes in ms - falling back to default",
-          { timeout }
-        );
-        return fetch;
-      } else timeout = Number(timeout);
-
-      const noTimeoutFetch = (input, init = {}) => {
-        return fetch(input, {
-          ...init,
-          dispatcher: new Agent({ headersTimeout: timeout }),
-        });
-      };
-
-      const humanDiff = moment.duration(timeout).humanize();
-      OllamaAILLM.#slog(`Applying custom fetch w/timeout of ${humanDiff}.`);
-      return noTimeoutFetch;
-    } catch (error) {
-      OllamaAILLM.#slog(
-        "Error applying custom fetch - using default fetch",
-        error
-      );
-      return fetch;
-    }
-  }
-
   streamingEnabled() {
     return "streamGetChatCompletion" in this;
   }
 
   static promptWindowLimit(modelName) {
     if (Object.keys(OllamaAILLM.modelContextWindows).length === 0) {
-      this.#slog(
+      this.slog(
         "No context windows cached - Context window may be inaccurately reported."
       );
       return Number(process.env.OLLAMA_MODEL_TOKEN_LIMIT) || 4096;

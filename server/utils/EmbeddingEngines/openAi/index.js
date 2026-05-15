@@ -1,4 +1,5 @@
 const { toChunks, reportEmbeddingProgress } = require("../../helpers");
+const { getFetchWithCustomTimeout } = require("../../AiProviders/helpers");
 
 class OpenAiEmbedder {
   constructor() {
@@ -7,6 +8,10 @@ class OpenAiEmbedder {
     const { OpenAI: OpenAIApi } = require("openai");
     this.openai = new OpenAIApi({
       apiKey: process.env.OPEN_AI_KEY,
+      fetch: getFetchWithCustomTimeout(
+        process.env.OPEN_AI_RESPONSE_TIMEOUT,
+        OpenAiEmbedder.slog
+      ),
     });
     this.model = process.env.EMBEDDING_MODEL_PREF || "text-embedding-ada-002";
 
@@ -19,6 +24,10 @@ class OpenAiEmbedder {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[OpenAiEmbedder]\x1b[0m ${text}`, ...args);
   }
 
   async embedTextInput(textInput) {

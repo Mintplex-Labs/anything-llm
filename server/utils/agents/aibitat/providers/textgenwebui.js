@@ -2,6 +2,7 @@ const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
+const { getFetchWithCustomTimeout } = require("../../../AiProviders/helpers");
 
 /**
  * The agent provider for the Oobabooga provider.
@@ -15,6 +16,10 @@ class TextWebGenUiProvider extends InheritMultiple([Provider, UnTooled]) {
       baseURL: process.env.TEXT_GEN_WEB_UI_BASE_PATH,
       apiKey: process.env.TEXT_GEN_WEB_UI_API_KEY ?? null,
       maxRetries: 3,
+      fetch: getFetchWithCustomTimeout(
+        process.env.TEXT_GEN_WEB_UI_RESPONSE_TIMEOUT,
+        TextWebGenUiProvider.slog
+      ),
     });
 
     this._client = client;
@@ -24,6 +29,10 @@ class TextWebGenUiProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get client() {
     return this._client;
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[TextWebGenUiProvider]\x1b[0m ${text}`, ...args);
   }
 
   get supportsAgentStreaming() {

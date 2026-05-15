@@ -6,6 +6,7 @@ const {
   handleDefaultStreamResponseV2,
   formatChatHistory,
 } = require("../../helpers/chat/responses");
+const { getFetchWithCustomTimeout } = require("../helpers");
 
 class LocalAiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -17,6 +18,10 @@ class LocalAiLLM {
     this.openai = new OpenAIApi({
       baseURL: process.env.LOCAL_AI_BASE_PATH,
       apiKey: process.env.LOCAL_AI_API_KEY ?? null,
+      fetch: getFetchWithCustomTimeout(
+        process.env.LOCAL_AI_RESPONSE_TIMEOUT,
+        LocalAiLLM.slog
+      ),
     });
     this.model = modelPreference || process.env.LOCAL_AI_MODEL_PREF;
     this.limits = {
@@ -27,6 +32,10 @@ class LocalAiLLM {
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[LocalAiLLM]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {

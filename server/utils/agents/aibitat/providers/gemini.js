@@ -3,6 +3,7 @@ const Provider = require("./ai-provider.js");
 const { RetryError } = require("../error.js");
 const { safeJsonParse } = require("../../../http");
 const { v4 } = require("uuid");
+const { getFetchWithCustomTimeout } = require("../../../AiProviders/helpers");
 
 /**
  * The agent provider for the Gemini provider.
@@ -19,6 +20,10 @@ class GeminiProvider extends Provider {
       baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
       apiKey: process.env.GEMINI_API_KEY,
       maxRetries: 0,
+      fetch: getFetchWithCustomTimeout(
+        process.env.GEMINI_RESPONSE_TIMEOUT,
+        GeminiProvider.slog
+      ),
     });
 
     this._client = client;
@@ -28,6 +33,10 @@ class GeminiProvider extends Provider {
 
   get client() {
     return this._client;
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[GeminiProvider]\x1b[0m ${text}`, ...args);
   }
 
   /**

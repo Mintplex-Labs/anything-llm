@@ -8,6 +8,7 @@ const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { v4: uuidv4 } = require("uuid");
+const { getFetchWithCustomTimeout } = require("../helpers");
 
 class KoboldCPPLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -22,6 +23,10 @@ class KoboldCPPLLM {
     this.openai = new OpenAIApi({
       baseURL: this.basePath,
       apiKey: null,
+      fetch: getFetchWithCustomTimeout(
+        process.env.KOBOLD_CPP_RESPONSE_TIMEOUT,
+        KoboldCPPLLM.slog
+      ),
     });
     this.model = modelPreference ?? process.env.KOBOLD_CPP_MODEL_PREF ?? null;
     if (!this.model) throw new Error("KoboldCPP must have a valid model set.");
@@ -39,6 +44,10 @@ class KoboldCPPLLM {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[KoboldCPPLLM]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {

@@ -7,6 +7,9 @@ const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { OpenAI: OpenAIApi } = require("openai");
+const { getFetchWithCustomTimeout } = require("../helpers");
+
+const DEFAULT_LM_STUDIO_SOCKET_TIMEOUT = 900000; // 15 minutes
 
 //  hybrid of openAi LLM chat completion for LMStudio
 class LMStudioLLM {
@@ -20,6 +23,11 @@ class LMStudioLLM {
     this.className = "LMStudioLLM";
     const apiKey = process.env.LMSTUDIO_AUTH_TOKEN ?? null;
     this.lmstudio = new OpenAIApi({
+      fetch: getFetchWithCustomTimeout(
+        process.env.LMSTUDIO_RESPONSE_TIMEOUT,
+        LMStudioLLM.slog,
+        DEFAULT_LM_STUDIO_SOCKET_TIMEOUT
+      ),
       baseURL: parseLMStudioBasePath(process.env.LMSTUDIO_BASE_PATH), // here is the URL to your LMStudio instance
       apiKey,
     });
@@ -47,7 +55,7 @@ class LMStudioLLM {
     console.log(`\x1b[32m[LMStudio]\x1b[0m ${text}`, ...args);
   }
 
-  static #slog(text, ...args) {
+  static slog(text, ...args) {
     console.log(`\x1b[32m[LMStudio]\x1b[0m ${text}`, ...args);
   }
 
@@ -100,13 +108,13 @@ class LMStudioLLM {
           });
         })
         .catch((e) => {
-          LMStudioLLM.#slog(`Error caching context windows`, e);
+          LMStudioLLM.slog(`Error caching context windows`, e);
           return;
         });
 
-      LMStudioLLM.#slog(`Context windows cached for all models!`);
+      LMStudioLLM.slog(`Context windows cached for all models!`);
     } catch (e) {
-      LMStudioLLM.#slog(`Error caching context windows`, e);
+      LMStudioLLM.slog(`Error caching context windows`, e);
       return;
     }
   }
@@ -129,7 +137,7 @@ class LMStudioLLM {
 
   static promptWindowLimit(modelName) {
     if (Object.keys(LMStudioLLM.modelContextWindows).length === 0) {
-      this.#slog(
+      this.slog(
         "No context windows cached - Context window may be inaccurately reported."
       );
       return process.env.LMSTUDIO_MODEL_TOKEN_LIMIT || 4096;

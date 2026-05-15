@@ -11,6 +11,7 @@ const {
   writeResponseChunk,
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
+const { getFetchWithCustomTimeout } = require("../helpers");
 const cacheFolder = path.resolve(
   process.env.STORAGE_DIR
     ? path.resolve(process.env.STORAGE_DIR, "models", "giteeai")
@@ -27,6 +28,10 @@ class GiteeAILLM {
     this.openai = new OpenAIApi({
       apiKey: process.env.GITEE_AI_API_KEY,
       baseURL: "https://ai.gitee.com/v1",
+      fetch: getFetchWithCustomTimeout(
+        process.env.GITEE_AI_RESPONSE_TIMEOUT,
+        GiteeAILLM.slog
+      ),
     });
     this.model = modelPreference || process.env.GITEE_AI_MODEL_PREF || "";
     this.limits = {
@@ -47,6 +52,10 @@ class GiteeAILLM {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[GiteeAILLM]\x1b[0m ${text}`, ...args);
   }
 
   models() {

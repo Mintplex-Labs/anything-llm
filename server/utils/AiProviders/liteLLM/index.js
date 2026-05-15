@@ -6,6 +6,7 @@ const {
   handleDefaultStreamResponseV2,
   formatChatHistory,
 } = require("../../helpers/chat/responses");
+const { getFetchWithCustomTimeout } = require("../helpers");
 
 class LiteLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -20,6 +21,10 @@ class LiteLLM {
     this.openai = new OpenAIApi({
       baseURL: this.basePath,
       apiKey: process.env.LITE_LLM_API_KEY ?? null,
+      fetch: getFetchWithCustomTimeout(
+        process.env.LITE_LLM_RESPONSE_TIMEOUT,
+        LiteLLM.slog
+      ),
     });
     this.model = modelPreference ?? process.env.LITE_LLM_MODEL_PREF ?? null;
 
@@ -37,6 +42,10 @@ class LiteLLM {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[LiteLLM]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {

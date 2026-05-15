@@ -6,6 +6,7 @@ const {
   handleDefaultStreamResponseV2,
   formatChatHistory,
 } = require("../../helpers/chat/responses");
+const { getFetchWithCustomTimeout } = require("../helpers");
 
 class MistralLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -17,6 +18,10 @@ class MistralLLM {
     this.openai = new OpenAIApi({
       baseURL: "https://api.mistral.ai/v1",
       apiKey: process.env.MISTRAL_API_KEY ?? null,
+      fetch: getFetchWithCustomTimeout(
+        process.env.MISTRAL_RESPONSE_TIMEOUT,
+        MistralLLM.slog
+      ),
     });
     this.model =
       modelPreference || process.env.MISTRAL_MODEL_PREF || "mistral-tiny";
@@ -33,6 +38,10 @@ class MistralLLM {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[MistralLLM]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {

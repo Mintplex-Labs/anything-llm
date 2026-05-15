@@ -5,6 +5,7 @@ const {
 const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
+const { getFetchWithCustomTimeout } = require("../helpers");
 
 class HuggingFaceLLM {
   constructor(embedder = null, _modelPreference = null) {
@@ -18,6 +19,10 @@ class HuggingFaceLLM {
     this.openai = new OpenAIApi({
       baseURL: `${process.env.HUGGING_FACE_LLM_ENDPOINT}/v1`,
       apiKey: process.env.HUGGING_FACE_LLM_API_KEY,
+      fetch: getFetchWithCustomTimeout(
+        process.env.HUGGING_FACE_LLM_RESPONSE_TIMEOUT,
+        HuggingFaceLLM.slog
+      ),
     });
     // When using HF inference server - the model param is not required so
     // we can stub it here. HF Endpoints can only run one model at a time.
@@ -31,6 +36,10 @@ class HuggingFaceLLM {
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.2;
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[HuggingFaceLLM]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {

@@ -4,6 +4,7 @@ const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
+const { getFetchWithCustomTimeout } = require("../../../AiProviders/helpers");
 
 /**
  * The agent provider for LiteLLM.
@@ -20,6 +21,10 @@ class LiteLLMProvider extends InheritMultiple([Provider, UnTooled]) {
       baseURL: process.env.LITE_LLM_BASE_PATH,
       apiKey: process.env.LITE_LLM_API_KEY ?? null,
       maxRetries: 3,
+      fetch: getFetchWithCustomTimeout(
+        process.env.LITE_LLM_RESPONSE_TIMEOUT,
+        LiteLLMProvider.slog
+      ),
     });
 
     this._client = client;
@@ -30,6 +35,10 @@ class LiteLLMProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get client() {
     return this._client;
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[LiteLLMProvider]\x1b[0m ${text}`, ...args);
   }
 
   get supportsAgentStreaming() {

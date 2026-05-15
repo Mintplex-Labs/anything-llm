@@ -1,6 +1,8 @@
 const { parseLemonadeServerEndpoint } = require("../../AiProviders/lemonade");
 const { toChunks, reportEmbeddingProgress } = require("../../helpers");
+const { getFetchWithCustomTimeout } = require("../../AiProviders/helpers");
 
+const DEFAULT_LEMONADE_SOCKET_TIMEOUT = 900000; // 15 minutes
 class LemonadeEmbedder {
   constructor() {
     if (!process.env.EMBEDDING_BASE_PATH)
@@ -15,6 +17,11 @@ class LemonadeEmbedder {
         "openai"
       ),
       apiKey: process.env.LEMONADE_LLM_API_KEY || null,
+      fetch: getFetchWithCustomTimeout(
+        process.env.LEMONADE_RESPONSE_TIMEOUT,
+        LemonadeEmbedder.slog,
+        DEFAULT_LEMONADE_SOCKET_TIMEOUT
+      ),
     });
     this.model = process.env.EMBEDDING_MODEL_PREF;
 
@@ -25,6 +32,10 @@ class LemonadeEmbedder {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[LemonadeEmbedder]\x1b[0m ${text}`, ...args);
   }
 
   async embedTextInput(textInput) {

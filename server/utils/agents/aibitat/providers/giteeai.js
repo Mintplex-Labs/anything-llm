@@ -2,6 +2,7 @@ const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
+const { getFetchWithCustomTimeout } = require("../../../AiProviders/helpers");
 
 class GiteeAIProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
@@ -13,6 +14,10 @@ class GiteeAIProvider extends InheritMultiple([Provider, UnTooled]) {
       baseURL: "https://ai.gitee.com/v1",
       apiKey: process.env.GITEE_AI_API_KEY ?? null,
       maxRetries: 3,
+      fetch: getFetchWithCustomTimeout(
+        process.env.GITEE_AI_RESPONSE_TIMEOUT,
+        GiteeAIProvider.slog
+      ),
     });
     this.model = model;
     this.verbose = true;
@@ -20,6 +25,10 @@ class GiteeAIProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get client() {
     return this._client;
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[GiteeAIProvider]\x1b[0m ${text}`, ...args);
   }
 
   get supportsAgentStreaming() {

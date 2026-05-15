@@ -6,6 +6,7 @@ const {
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
+const { getFetchWithCustomTimeout } = require("../helpers");
 
 class PrivatemodeLLM {
   static contextWindows = {
@@ -25,6 +26,10 @@ class PrivatemodeLLM {
     this.client = new OpenAIApi({
       baseURL: PrivatemodeLLM.parseBasePath(),
       apiKey: null,
+      fetch: getFetchWithCustomTimeout(
+        process.env.PRIVATEMODE_LLM_RESPONSE_TIMEOUT,
+        PrivatemodeLLM.slog
+      ),
     });
 
     this.model = modelPreference || process.env.PRIVATEMODE_LLM_MODEL_PREF;
@@ -61,6 +66,10 @@ class PrivatemodeLLM {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[PrivatemodeLLM]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {

@@ -11,6 +11,7 @@ const { safeJsonParse } = require("../../http");
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
+const { getFetchWithCustomTimeout } = require("../helpers");
 
 const cacheFolder = path.resolve(
   process.env.STORAGE_DIR
@@ -29,6 +30,10 @@ class ApiPieLLM {
     this.openai = new OpenAIApi({
       baseURL: this.basePath,
       apiKey: process.env.APIPIE_LLM_API_KEY ?? null,
+      fetch: getFetchWithCustomTimeout(
+        process.env.APIPIE_LLM_RESPONSE_TIMEOUT,
+        ApiPieLLM.slog
+      ),
     });
     this.model =
       modelPreference ||
@@ -51,6 +56,10 @@ class ApiPieLLM {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[ApiPieLLM]\x1b[0m ${text}`, ...args);
   }
 
   // This checks if the .cached_at file has a timestamp that is more than 1Week (in millis)

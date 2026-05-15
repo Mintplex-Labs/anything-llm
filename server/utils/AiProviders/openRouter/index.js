@@ -11,6 +11,7 @@ const { safeJsonParse } = require("../../http");
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
+const { getFetchWithCustomTimeout } = require("../helpers");
 const cacheFolder = path.resolve(
   process.env.STORAGE_DIR
     ? path.resolve(process.env.STORAGE_DIR, "models", "openrouter")
@@ -42,6 +43,10 @@ class OpenRouterLLM {
         "HTTP-Referer": "https://anythingllm.com",
         "X-Title": "AnythingLLM",
       },
+      fetch: getFetchWithCustomTimeout(
+        process.env.OPENROUTER_RESPONSE_TIMEOUT,
+        OpenRouterLLM.slog
+      ),
     });
     this.model =
       modelPreference || process.env.OPENROUTER_MODEL_PREF || "openrouter/auto";
@@ -90,6 +95,10 @@ class OpenRouterLLM {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[OpenRouterLLM]\x1b[0m ${text}`, ...args);
   }
 
   /**

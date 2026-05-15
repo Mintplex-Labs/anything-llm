@@ -3,6 +3,7 @@ const {
   maximumChunkLength,
   reportEmbeddingProgress,
 } = require("../../helpers");
+const { getFetchWithCustomTimeout } = require("../../AiProviders/helpers");
 
 class LiteLLMEmbedder {
   constructor() {
@@ -15,12 +16,20 @@ class LiteLLMEmbedder {
     this.openai = new OpenAIApi({
       baseURL: this.basePath,
       apiKey: process.env.LITE_LLM_API_KEY ?? null,
+      fetch: getFetchWithCustomTimeout(
+        process.env.LITE_LLM_RESPONSE_TIMEOUT,
+        LiteLLMEmbedder.slog
+      ),
     });
     this.model = process.env.EMBEDDING_MODEL_PREF || "text-embedding-ada-002";
 
     // Limit of how many strings we can process in a single pass to stay with resource or network limits
     this.maxConcurrentChunks = 500;
     this.embeddingMaxChunkLength = maximumChunkLength();
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[LiteLLMEmbedder]\x1b[0m ${text}`, ...args);
   }
 
   async embedTextInput(textInput) {

@@ -3,6 +3,7 @@ const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 const { parseNvidiaNimBasePath } = require("../../../AiProviders/nvidiaNim");
+const { getFetchWithCustomTimeout } = require("../../../AiProviders/helpers");
 
 /**
  * The agent provider for the Nvidia NIM provider.
@@ -18,6 +19,10 @@ class NvidiaNimProvider extends InheritMultiple([Provider, UnTooled]) {
       baseURL: parseNvidiaNimBasePath(process.env.NVIDIA_NIM_LLM_BASE_PATH),
       apiKey: null,
       maxRetries: 0,
+      fetch: getFetchWithCustomTimeout(
+        process.env.NVIDIA_NIM_LLM_RESPONSE_TIMEOUT,
+        NvidiaNimProvider.slog
+      ),
     });
 
     this._client = client;
@@ -27,6 +32,10 @@ class NvidiaNimProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get client() {
     return this._client;
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[NvidiaNimProvider]\x1b[0m ${text}`, ...args);
   }
 
   get supportsAgentStreaming() {

@@ -1,3 +1,5 @@
+const { getFetchWithCustomTimeout } = require("../../AiProviders/helpers");
+
 class MistralEmbedder {
   constructor() {
     if (!process.env.MISTRAL_API_KEY)
@@ -7,8 +9,16 @@ class MistralEmbedder {
     this.openai = new OpenAIApi({
       baseURL: "https://api.mistral.ai/v1",
       apiKey: process.env.MISTRAL_API_KEY ?? null,
+      fetch: getFetchWithCustomTimeout(
+        process.env.MISTRAL_RESPONSE_TIMEOUT,
+        MistralEmbedder.slog
+      ),
     });
     this.model = process.env.EMBEDDING_MODEL_PREF || "mistral-embed";
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[MistralEmbedder]\x1b[0m ${text}`, ...args);
   }
 
   async embedTextInput(textInput) {

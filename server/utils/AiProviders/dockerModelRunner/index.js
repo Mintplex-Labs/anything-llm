@@ -11,6 +11,7 @@ const {
 const { OpenAI: OpenAIApi } = require("openai");
 const { humanFileSize } = require("../../helpers");
 const { safeJsonParse } = require("../../http");
+const { getFetchWithCustomTimeout } = require("../helpers");
 
 class DockerModelRunnerLLM {
   static cacheTime = 1000 * 60 * 60 * 24; // 24 hours
@@ -32,6 +33,10 @@ class DockerModelRunnerLLM {
         process.env.DOCKER_MODEL_RUNNER_BASE_PATH
       ),
       apiKey: null,
+      fetch: getFetchWithCustomTimeout(
+        process.env.DOCKER_MODEL_RUNNER_RESPONSE_TIMEOUT,
+        DockerModelRunnerLLM.slog
+      ),
     });
 
     this.model =

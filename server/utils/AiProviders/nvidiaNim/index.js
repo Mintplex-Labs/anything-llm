@@ -6,6 +6,7 @@ const {
   handleDefaultStreamResponseV2,
   formatChatHistory,
 } = require("../../helpers/chat/responses");
+const { getFetchWithCustomTimeout } = require("../helpers");
 
 class NvidiaNimLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -17,6 +18,10 @@ class NvidiaNimLLM {
     this.nvidiaNim = new OpenAIApi({
       baseURL: parseNvidiaNimBasePath(process.env.NVIDIA_NIM_LLM_BASE_PATH),
       apiKey: null,
+      fetch: getFetchWithCustomTimeout(
+        process.env.NVIDIA_NIM_LLM_RESPONSE_TIMEOUT,
+        NvidiaNimLLM.slog
+      ),
     });
 
     this.model = modelPreference || process.env.NVIDIA_NIM_LLM_MODEL_PREF;
@@ -35,6 +40,10 @@ class NvidiaNimLLM {
 
   #log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[NvidiaNimLLM]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {

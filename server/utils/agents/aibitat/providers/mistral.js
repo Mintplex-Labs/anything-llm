@@ -2,6 +2,7 @@ const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
+const { getFetchWithCustomTimeout } = require("../../../AiProviders/helpers");
 
 /**
  * The agent provider for the Mistral provider.
@@ -20,6 +21,10 @@ class MistralProvider extends InheritMultiple([Provider, UnTooled]) {
       baseURL: "https://api.mistral.ai/v1",
       apiKey: process.env.MISTRAL_API_KEY,
       maxRetries: 3,
+      fetch: getFetchWithCustomTimeout(
+        process.env.MISTRAL_RESPONSE_TIMEOUT,
+        MistralProvider.slog
+      ),
     });
 
     this._client = client;
@@ -29,6 +34,10 @@ class MistralProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get client() {
     return this._client;
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[MistralProvider]\x1b[0m ${text}`, ...args);
   }
 
   get supportsAgentStreaming() {

@@ -8,6 +8,7 @@ const {
 const fs = require("fs");
 const path = require("path");
 const { safeJsonParse } = require("../../http");
+const { getFetchWithCustomTimeout } = require("../helpers");
 
 const cacheFolder = path.resolve(
   process.env.STORAGE_DIR
@@ -86,6 +87,10 @@ class TogetherAiLLM {
     this.openai = new OpenAIApi({
       baseURL: "https://api.together.xyz/v1",
       apiKey: process.env.TOGETHER_AI_API_KEY ?? null,
+      fetch: getFetchWithCustomTimeout(
+        process.env.TOGETHER_AI_RESPONSE_TIMEOUT,
+        TogetherAiLLM.slog
+      ),
     });
     this.model = modelPreference || process.env.TOGETHER_AI_MODEL_PREF;
     this.limits = {
@@ -96,6 +101,10 @@ class TogetherAiLLM {
 
     this.embedder = !embedder ? new NativeEmbedder() : embedder;
     this.defaultTemp = 0.7;
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[TogetherAiLLM]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {

@@ -7,6 +7,7 @@ const {
   formatChatHistory,
 } = require("../../helpers/chat/responses");
 const { MODEL_MAP } = require("../modelMap");
+const { getFetchWithCustomTimeout } = require("../helpers");
 
 class XAiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -18,6 +19,10 @@ class XAiLLM {
     this.openai = new OpenAIApi({
       baseURL: "https://api.x.ai/v1",
       apiKey: process.env.XAI_LLM_API_KEY,
+      fetch: getFetchWithCustomTimeout(
+        process.env.XAI_LLM_RESPONSE_TIMEOUT,
+        XAiLLM.slog
+      ),
     });
     this.model =
       modelPreference || process.env.XAI_LLM_MODEL_PREF || "grok-beta";
@@ -36,6 +41,10 @@ class XAiLLM {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[XAiLLM]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {

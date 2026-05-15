@@ -3,6 +3,7 @@ const Provider = require("./ai-provider.js");
 const { RetryError } = require("../error.js");
 const { v4 } = require("uuid");
 const { safeJsonParse } = require("../../../http");
+const { getFetchWithCustomTimeout } = require("../../../AiProviders/helpers");
 
 /**
  * The agent provider for the OpenAI API.
@@ -15,6 +16,10 @@ class OpenAIProvider extends Provider {
       options = {
         apiKey: process.env.OPEN_AI_KEY,
         maxRetries: 3,
+        fetch: getFetchWithCustomTimeout(
+          process.env.OPEN_AI_RESPONSE_TIMEOUT,
+          OpenAIProvider.slog
+        ),
       },
       model = "gpt-4o",
     } = config;
@@ -24,6 +29,10 @@ class OpenAIProvider extends Provider {
     super(client);
 
     this.model = model;
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[OpenAIProvider]\x1b[0m ${text}`, ...args);
   }
 
   get supportsAgentStreaming() {

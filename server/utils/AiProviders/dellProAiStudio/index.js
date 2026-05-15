@@ -6,6 +6,7 @@ const {
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
+const { getFetchWithCustomTimeout } = require("../helpers");
 
 //  hybrid of openAi LLM chat completion for Dell Pro AI Studio
 class DellProAiStudioLLM {
@@ -18,6 +19,10 @@ class DellProAiStudioLLM {
     this.dpais = new OpenAIApi({
       baseURL: DellProAiStudioLLM.parseBasePath(),
       apiKey: null,
+      fetch: getFetchWithCustomTimeout(
+        process.env.DPAIS_LLM_RESPONSE_TIMEOUT,
+        DellProAiStudioLLM.slog
+      ),
     });
 
     this.model = modelPreference || process.env.DPAIS_LLM_MODEL_PREF;
@@ -52,6 +57,10 @@ class DellProAiStudioLLM {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[DellProAiStudioLLM]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {

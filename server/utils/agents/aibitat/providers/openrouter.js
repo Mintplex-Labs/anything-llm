@@ -4,6 +4,7 @@ const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
+const { getFetchWithCustomTimeout } = require("../../../AiProviders/helpers");
 
 /**
  * The agent provider for the OpenRouter provider.
@@ -26,6 +27,10 @@ class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
         "HTTP-Referer": "https://anythingllm.com",
         "X-Title": "AnythingLLM",
       },
+      fetch: getFetchWithCustomTimeout(
+        process.env.OPENROUTER_RESPONSE_TIMEOUT,
+        OpenRouterProvider.slog
+      ),
     });
 
     this._client = client;
@@ -36,6 +41,10 @@ class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get client() {
     return this._client;
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[OpenRouterProvider]\x1b[0m ${text}`, ...args);
   }
 
   get supportsAgentStreaming() {

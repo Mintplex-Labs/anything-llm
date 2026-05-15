@@ -8,6 +8,7 @@ const { safeJsonParse } = require("../../http");
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
+const { getFetchWithCustomTimeout } = require("../helpers");
 const cacheFolder = path.resolve(
   process.env.STORAGE_DIR
     ? path.resolve(process.env.STORAGE_DIR, "models", "ppio")
@@ -28,6 +29,10 @@ class PPIOLLM {
         "HTTP-Referer": "https://anythingllm.com",
         "X-API-Source": "anythingllm",
       },
+      fetch: getFetchWithCustomTimeout(
+        process.env.PPIO_RESPONSE_TIMEOUT,
+        PPIOLLM.slog
+      ),
     });
     this.model =
       modelPreference ||
@@ -52,6 +57,10 @@ class PPIOLLM {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[PPIOLLM]\x1b[0m ${text}`, ...args);
   }
 
   async #syncModels() {

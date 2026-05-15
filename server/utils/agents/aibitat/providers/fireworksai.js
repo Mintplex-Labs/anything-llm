@@ -2,6 +2,7 @@ const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
+const { getFetchWithCustomTimeout } = require("../../../AiProviders/helpers");
 
 /**
  * The agent provider for the FireworksAI provider.
@@ -18,6 +19,10 @@ class FireworksAIProvider extends InheritMultiple([Provider, UnTooled]) {
       baseURL: "https://api.fireworks.ai/inference/v1",
       apiKey: process.env.FIREWORKS_AI_LLM_API_KEY,
       maxRetries: 0,
+      fetch: getFetchWithCustomTimeout(
+        process.env.FIREWORKS_AI_LLM_RESPONSE_TIMEOUT,
+        FireworksAIProvider.slog
+      ),
     });
 
     this._client = client;
@@ -27,6 +32,10 @@ class FireworksAIProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get client() {
     return this._client;
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[FireworksAIProvider]\x1b[0m ${text}`, ...args);
   }
 
   get supportsAgentStreaming() {

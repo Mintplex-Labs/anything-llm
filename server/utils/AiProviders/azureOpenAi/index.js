@@ -6,6 +6,7 @@ const {
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
+const { getFetchWithCustomTimeout } = require("../helpers");
 
 class AzureOpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -19,6 +20,10 @@ class AzureOpenAiLLM {
     this.openai = new OpenAI({
       apiKey: process.env.AZURE_OPENAI_KEY,
       baseURL: AzureOpenAiLLM.formatBaseUrl(process.env.AZURE_OPENAI_ENDPOINT),
+      fetch: getFetchWithCustomTimeout(
+        process.env.AZURE_OPENAI_RESPONSE_TIMEOUT,
+        AzureOpenAiLLM.slog
+      ),
     });
     this.model =
       modelPreference ||
@@ -67,6 +72,10 @@ class AzureOpenAiLLM {
 
   #log(text, ...args) {
     console.log(`\x1b[32m[AzureOpenAi]\x1b[0m ${text}`, ...args);
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[AzureOpenAiLLM]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {

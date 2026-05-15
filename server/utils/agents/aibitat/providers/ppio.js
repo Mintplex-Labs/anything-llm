@@ -2,6 +2,7 @@ const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
+const { getFetchWithCustomTimeout } = require("../../../AiProviders/helpers");
 
 /**
  * The agent provider for the PPIO AI provider.
@@ -20,6 +21,10 @@ class PPIOProvider extends InheritMultiple([Provider, UnTooled]) {
         "HTTP-Referer": "https://anythingllm.com",
         "X-API-Source": "anythingllm",
       },
+      fetch: getFetchWithCustomTimeout(
+        process.env.PPIO_RESPONSE_TIMEOUT,
+        PPIOProvider.slog
+      ),
     });
 
     this._client = client;
@@ -29,6 +34,10 @@ class PPIOProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get client() {
     return this._client;
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[PPIOProvider]\x1b[0m ${text}`, ...args);
   }
 
   get supportsAgentStreaming() {

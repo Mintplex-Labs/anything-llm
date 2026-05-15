@@ -8,6 +8,7 @@ const {
 const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
+const { getFetchWithCustomTimeout } = require("../helpers");
 
 const cacheFolder = path.resolve(
   process.env.STORAGE_DIR
@@ -25,6 +26,10 @@ class FireworksAiLLM {
     this.openai = new OpenAIApi({
       baseURL: "https://api.fireworks.ai/inference/v1",
       apiKey: process.env.FIREWORKS_AI_LLM_API_KEY ?? null,
+      fetch: getFetchWithCustomTimeout(
+        process.env.FIREWORKS_AI_LLM_RESPONSE_TIMEOUT,
+        FireworksAiLLM.slog
+      ),
     });
     this.model = modelPreference || process.env.FIREWORKS_AI_LLM_MODEL_PREF;
     this.limits = {
@@ -44,6 +49,10 @@ class FireworksAiLLM {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[FireworksAiLLM]\x1b[0m ${text}`, ...args);
   }
 
   // This checks if the .cached_at file has a timestamp that is more than 1Week (in millis)

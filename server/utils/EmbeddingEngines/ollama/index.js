@@ -3,8 +3,9 @@ const {
   reportEmbeddingProgress,
 } = require("../../helpers");
 const { Ollama } = require("ollama");
-const { OllamaAILLM } = require("../../AiProviders/ollama");
+const { getFetchWithCustomTimeout } = require("../../AiProviders/helpers");
 
+const DEFAULT_OLLAMA_SOCKET_TIMEOUT = 900000; // 15 minutes
 class OllamaEmbedder {
   constructor() {
     if (!process.env.EMBEDDING_BASE_PATH)
@@ -27,13 +28,20 @@ class OllamaEmbedder {
     this.client = new Ollama({
       host: this.basePath,
       headers,
-      fetch: OllamaAILLM.applyOllamaFetch(),
+      fetch: getFetchWithCustomTimeout(
+        process.env.OLLAMA_RESPONSE_TIMEOUT,
+        OllamaEmbedder.slog,
+        DEFAULT_OLLAMA_SOCKET_TIMEOUT
+      ),
     });
     this.log(
       `initialized with model ${this.model} at ${this.basePath}. Batch size: ${this.maxConcurrentChunks}, num_ctx: ${this.embeddingMaxChunkLength}`
     );
   }
 
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[OllamaEmbedder]\x1b[0m ${text}`, ...args);
+  }
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
   }

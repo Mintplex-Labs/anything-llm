@@ -2,6 +2,7 @@ const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
+const { getFetchWithCustomTimeout } = require("../../../AiProviders/helpers");
 
 /**
  * The agent provider for the TogetherAI provider.
@@ -16,6 +17,10 @@ class TogetherAIProvider extends InheritMultiple([Provider, UnTooled]) {
       baseURL: "https://api.together.xyz/v1",
       apiKey: process.env.TOGETHER_AI_API_KEY,
       maxRetries: 3,
+      fetch: getFetchWithCustomTimeout(
+        process.env.TOGETHER_AI_RESPONSE_TIMEOUT,
+        TogetherAIProvider.slog
+      ),
     });
 
     this._client = client;
@@ -25,6 +30,10 @@ class TogetherAIProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get client() {
     return this._client;
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[TogetherAIProvider]\x1b[0m ${text}`, ...args);
   }
 
   get supportsAgentStreaming() {

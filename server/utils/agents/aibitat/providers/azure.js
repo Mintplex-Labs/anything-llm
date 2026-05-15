@@ -3,6 +3,7 @@ const { AzureOpenAiLLM } = require("../../../AiProviders/azureOpenAi");
 const Provider = require("./ai-provider.js");
 const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
+const { getFetchWithCustomTimeout } = require("../../../AiProviders/helpers");
 
 /**
  * The agent provider for the Azure OpenAI API.
@@ -15,6 +16,10 @@ class AzureOpenAiProvider extends Provider {
     const client = new OpenAI({
       apiKey: process.env.AZURE_OPENAI_KEY,
       baseURL: AzureOpenAiLLM.formatBaseUrl(process.env.AZURE_OPENAI_ENDPOINT),
+      fetch: getFetchWithCustomTimeout(
+        process.env.AZURE_OPENAI_RESPONSE_TIMEOUT,
+        AzureOpenAiProvider.slog
+      ),
     });
     super(client);
     this.model =
@@ -22,6 +27,10 @@ class AzureOpenAiProvider extends Provider {
       process.env.AZURE_OPENAI_MODEL_PREF ||
       process.env.OPEN_MODEL_PREF;
     this.verbose = true;
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[AzureOpenAiProvider]\x1b[0m ${text}`, ...args);
   }
 
   get supportsAgentStreaming() {

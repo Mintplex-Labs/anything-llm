@@ -7,6 +7,7 @@ const {
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
+const { getFetchWithCustomTimeout } = require("../helpers");
 
 function perplexityModels() {
   const { MODELS } = require("./models.js");
@@ -23,6 +24,10 @@ class PerplexityLLM {
     this.openai = new OpenAIApi({
       baseURL: "https://api.perplexity.ai",
       apiKey: process.env.PERPLEXITY_API_KEY ?? null,
+      fetch: getFetchWithCustomTimeout(
+        process.env.PERPLEXITY_RESPONSE_TIMEOUT,
+        PerplexityLLM.slog
+      ),
     });
     this.model =
       modelPreference ||
@@ -36,6 +41,10 @@ class PerplexityLLM {
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[PerplexityLLM]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {

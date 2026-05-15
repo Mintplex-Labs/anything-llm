@@ -9,6 +9,7 @@ const { MODEL_MAP } = require("../modelMap");
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
+const { getFetchWithCustomTimeout } = require("../helpers");
 
 class OpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -18,6 +19,10 @@ class OpenAiLLM {
 
     this.openai = new OpenAIApi({
       apiKey: process.env.OPEN_AI_KEY,
+      fetch: getFetchWithCustomTimeout(
+        process.env.OPEN_AI_RESPONSE_TIMEOUT,
+        OpenAiLLM.slog
+      ),
     });
     this.model = modelPreference || process.env.OPEN_MODEL_PREF || "gpt-4o";
     this.limits = {
@@ -35,6 +40,10 @@ class OpenAiLLM {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[OpenAiLLM]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {

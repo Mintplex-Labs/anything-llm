@@ -1,4 +1,5 @@
 const { toChunks, reportEmbeddingProgress } = require("../../helpers");
+const { getFetchWithCustomTimeout } = require("../../AiProviders/helpers");
 
 class AzureOpenAiEmbedder {
   constructor() {
@@ -14,6 +15,10 @@ class AzureOpenAiEmbedder {
       apiKey: process.env.AZURE_OPENAI_KEY,
       endpoint: process.env.AZURE_OPENAI_ENDPOINT,
       apiVersion: this.apiVersion,
+      fetch: getFetchWithCustomTimeout(
+        process.env.AZURE_OPENAI_RESPONSE_TIMEOUT,
+        AzureOpenAiEmbedder.slog
+      ),
     });
 
     // We cannot assume the model fallback since the model is based on the deployment name
@@ -31,6 +36,10 @@ class AzureOpenAiEmbedder {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[AzureOpenAiEmbedder]\x1b[0m ${text}`, ...args);
   }
 
   async embedTextInput(textInput) {

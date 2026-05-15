@@ -3,7 +3,9 @@ const {
   maximumChunkLength,
   reportEmbeddingProgress,
 } = require("../../helpers");
+const { getFetchWithCustomTimeout } = require("../../AiProviders/helpers");
 
+const DEFAULT_LM_STUDIO_SOCKET_TIMEOUT = 900000; // 15 minutes
 class LMStudioEmbedder {
   constructor() {
     if (!process.env.EMBEDDING_BASE_PATH)
@@ -17,6 +19,11 @@ class LMStudioEmbedder {
     this.lmstudio = new OpenAIApi({
       baseURL: parseLMStudioBasePath(process.env.EMBEDDING_BASE_PATH),
       apiKey,
+      fetch: getFetchWithCustomTimeout(
+        process.env.LMSTUDIO_RESPONSE_TIMEOUT,
+        LMStudioEmbedder.slog,
+        DEFAULT_LM_STUDIO_SOCKET_TIMEOUT
+      ),
     });
     this.model = process.env.EMBEDDING_MODEL_PREF;
 
@@ -27,6 +34,10 @@ class LMStudioEmbedder {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[LMStudioEmbedder]\x1b[0m ${text}`, ...args);
   }
 
   async #isAlive() {

@@ -8,6 +8,7 @@ const {
   writeResponseChunk,
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
+const { getFetchWithCustomTimeout } = require("../helpers");
 
 class DeepSeekLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -19,6 +20,10 @@ class DeepSeekLLM {
     this.openai = new OpenAIApi({
       apiKey: process.env.DEEPSEEK_API_KEY,
       baseURL: "https://api.deepseek.com/v1",
+      fetch: getFetchWithCustomTimeout(
+        process.env.DEEPSEEK_RESPONSE_TIMEOUT,
+        DeepSeekLLM.slog
+      ),
     });
     this.model =
       modelPreference || process.env.DEEPSEEK_MODEL_PREF || "deepseek-chat";
@@ -37,6 +42,10 @@ class DeepSeekLLM {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[DeepSeekLLM]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {

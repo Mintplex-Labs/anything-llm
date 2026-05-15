@@ -5,6 +5,7 @@ const UnTooled = require("./helpers/untooled.js");
 const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
 const { NovitaLLM } = require("../../../AiProviders/novita/index.js");
+const { getFetchWithCustomTimeout } = require("../../../AiProviders/helpers");
 
 /**
  * The agent provider for the Novita AI provider.
@@ -25,6 +26,10 @@ class NovitaProvider extends InheritMultiple([Provider, UnTooled]) {
         "HTTP-Referer": "https://anythingllm.com",
         "X-Novita-Source": "anythingllm",
       },
+      fetch: getFetchWithCustomTimeout(
+        process.env.NOVITA_LLM_RESPONSE_TIMEOUT,
+        NovitaProvider.slog
+      ),
     });
 
     this._client = client;
@@ -39,6 +44,10 @@ class NovitaProvider extends InheritMultiple([Provider, UnTooled]) {
    */
   get client() {
     return this._client;
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[NovitaProvider]\x1b[0m ${text}`, ...args);
   }
 
   get supportsAgentStreaming() {

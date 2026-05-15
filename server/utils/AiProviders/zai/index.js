@@ -6,6 +6,7 @@ const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
 const { MODEL_MAP } = require("../modelMap");
+const { getFetchWithCustomTimeout } = require("../helpers");
 
 class ZAiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -16,6 +17,10 @@ class ZAiLLM {
     this.openai = new OpenAIApi({
       baseURL: "https://api.z.ai/api/paas/v4",
       apiKey: process.env.ZAI_API_KEY,
+      fetch: getFetchWithCustomTimeout(
+        process.env.ZAI_RESPONSE_TIMEOUT,
+        ZAiLLM.slog
+      ),
     });
     this.model = modelPreference || process.env.ZAI_MODEL_PREF || "glm-4.5";
     this.limits = {
@@ -33,6 +38,10 @@ class ZAiLLM {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[ZAiLLM]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {

@@ -11,6 +11,7 @@ const {
 const { MODEL_MAP } = require("../modelMap");
 const { defaultGeminiModels, v1BetaModels } = require("./defaultModels");
 const { safeJsonParse } = require("../../http");
+const { getFetchWithCustomTimeout } = require("../helpers");
 const cacheFolder = path.resolve(
   process.env.STORAGE_DIR
     ? path.resolve(process.env.STORAGE_DIR, "models", "gemini")
@@ -41,6 +42,10 @@ class GeminiLLM {
       apiKey: process.env.GEMINI_API_KEY,
       // Even models that are v1 in gemini API can be used with v1beta/openai/ endpoint and nobody knows why.
       baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
+      fetch: getFetchWithCustomTimeout(
+        process.env.GEMINI_RESPONSE_TIMEOUT,
+        GeminiLLM.slog
+      ),
     });
 
     this.limits = {
@@ -73,6 +78,10 @@ class GeminiLLM {
 
   #log(text, ...args) {
     console.log(`\x1b[32m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[GeminiLLM]\x1b[0m ${text}`, ...args);
   }
 
   // This checks if the .cached_at file has a timestamp that is more than 1Week (in millis)

@@ -8,6 +8,7 @@ const {
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
 const { MODEL_MAP } = require("../modelMap");
+const { getFetchWithCustomTimeout } = require("../helpers");
 
 class SambaNovaLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -19,6 +20,10 @@ class SambaNovaLLM {
     this.openai = new OpenAIApi({
       baseURL: "https://api.sambanova.ai/v1",
       apiKey: process.env.SAMBANOVA_LLM_API_KEY,
+      fetch: getFetchWithCustomTimeout(
+        process.env.SAMBANOVA_LLM_RESPONSE_TIMEOUT,
+        SambaNovaLLM.slog
+      ),
     });
     this.model = modelPreference || process.env.SAMBANOVA_LLM_MODEL_PREF;
     this.limits = {
@@ -36,6 +41,10 @@ class SambaNovaLLM {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[SambaNovaLLM]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {

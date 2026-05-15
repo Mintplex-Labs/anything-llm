@@ -12,6 +12,7 @@ const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { COMETAPI_IGNORE_PATTERNS } = require("./constants");
+const { getFetchWithCustomTimeout } = require("../helpers");
 const cacheFolder = path.resolve(
   process.env.STORAGE_DIR
     ? path.resolve(process.env.STORAGE_DIR, "models", "cometapi")
@@ -34,6 +35,10 @@ class CometApiLLM {
         "HTTP-Referer": "https://anythingllm.com",
         "X-CometAPI-Source": "anythingllm",
       },
+      fetch: getFetchWithCustomTimeout(
+        process.env.COMETAPI_LLM_RESPONSE_TIMEOUT,
+        CometApiLLM.slog
+      ),
     });
     this.model =
       modelPreference || process.env.COMETAPI_LLM_MODEL_PREF || "gpt-5-mini";
@@ -57,6 +62,10 @@ class CometApiLLM {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[CometApiLLM]\x1b[0m ${text}`, ...args);
   }
 
   /**

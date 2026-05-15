@@ -7,6 +7,7 @@ const {
   formatChatHistory,
 } = require("../../helpers/chat/responses");
 const { MODEL_MAP } = require("../modelMap");
+const { getFetchWithCustomTimeout } = require("../helpers");
 
 class MoonshotAiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -18,6 +19,10 @@ class MoonshotAiLLM {
     this.openai = new OpenAIApi({
       baseURL: "https://api.moonshot.ai/v1",
       apiKey: process.env.MOONSHOT_AI_API_KEY,
+      fetch: getFetchWithCustomTimeout(
+        process.env.MOONSHOT_AI_RESPONSE_TIMEOUT,
+        MoonshotAiLLM.slog
+      ),
     });
     this.model =
       modelPreference ||
@@ -38,6 +43,10 @@ class MoonshotAiLLM {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[MoonshotAiLLM]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {

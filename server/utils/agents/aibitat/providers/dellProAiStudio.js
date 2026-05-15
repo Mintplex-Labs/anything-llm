@@ -5,6 +5,7 @@ const UnTooled = require("./helpers/untooled.js");
 const {
   DellProAiStudioLLM,
 } = require("../../../AiProviders/dellProAiStudio/index.js");
+const { getFetchWithCustomTimeout } = require("../../../AiProviders/helpers");
 
 /**
  * The agent provider for Dell Pro AI Studio.
@@ -22,6 +23,10 @@ class DellProAiStudioProvider extends InheritMultiple([Provider, UnTooled]) {
     const client = new OpenAI({
       baseURL: DellProAiStudioLLM.parseBasePath(), // Will use process.env.DPAIS_LLM_BASE_PATH if not provided
       apiKey: null,
+      fetch: getFetchWithCustomTimeout(
+        process.env.DPAIS_LLM_RESPONSE_TIMEOUT,
+        DellProAiStudioProvider.slog
+      ),
     });
 
     this._client = client;
@@ -31,6 +36,10 @@ class DellProAiStudioProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get client() {
     return this._client;
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[DellProAiStudioProvider]\x1b[0m ${text}`, ...args);
   }
 
   get supportsAgentStreaming() {

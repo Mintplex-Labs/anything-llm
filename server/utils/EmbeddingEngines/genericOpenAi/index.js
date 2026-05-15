@@ -3,6 +3,7 @@ const {
   maximumChunkLength,
   reportEmbeddingProgress,
 } = require("../../helpers");
+const { getFetchWithCustomTimeout } = require("../../AiProviders/helpers");
 
 class GenericOpenAiEmbedder {
   constructor() {
@@ -16,6 +17,10 @@ class GenericOpenAiEmbedder {
     this.openai = new OpenAIApi({
       baseURL: this.basePath,
       apiKey: process.env.GENERIC_OPEN_AI_EMBEDDING_API_KEY ?? null,
+      fetch: getFetchWithCustomTimeout(
+        process.env.GENERIC_OPEN_AI_RESPONSE_TIMEOUT,
+        GenericOpenAiEmbedder.slog
+      ),
     });
     this.model = process.env.EMBEDDING_MODEL_PREF ?? null;
     this.embeddingMaxChunkLength = maximumChunkLength();
@@ -31,6 +36,10 @@ class GenericOpenAiEmbedder {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[GenericOpenAiEmbedder]\x1b[0m ${text}`, ...args);
   }
 
   /**
