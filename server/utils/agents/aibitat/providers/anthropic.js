@@ -5,6 +5,7 @@ const Provider = require("./ai-provider.js");
 const { v4 } = require("uuid");
 const { safeJsonParse } = require("../../../http");
 const { getAnythingLLMUserAgent } = require("../../../../endpoints/utils");
+const { getFetchWithCustomTimeout } = require("../../../AiProviders/helpers");
 
 /**
  * The agent provider for the Anthropic API.
@@ -22,6 +23,10 @@ class AnthropicProvider extends Provider {
         defaultHeaders: {
           "User-Agent": getAnythingLLMUserAgent(),
         },
+        fetch: getFetchWithCustomTimeout(
+          process.env.ANTHROPIC_RESPONSE_TIMEOUT,
+          AnthropicProvider.slog
+        ),
       },
       model = "claude-sonnet-4-6",
     } = config;
@@ -30,6 +35,10 @@ class AnthropicProvider extends Provider {
 
     super(client);
     this.model = model;
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[AnthropicProvider]\x1b[0m ${text}`, ...args);
   }
 
   /**

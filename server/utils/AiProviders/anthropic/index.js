@@ -10,6 +10,7 @@ const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { getAnythingLLMUserAgent } = require("../../../endpoints/utils");
+const { getFetchWithCustomTimeout } = require("../helpers");
 
 class AnthropicLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -24,6 +25,10 @@ class AnthropicLLM {
       defaultHeaders: {
         "User-Agent": getAnythingLLMUserAgent(),
       },
+      fetch: getFetchWithCustomTimeout(
+        process.env.ANTHROPIC_RESPONSE_TIMEOUT,
+        AnthropicLLM.slog
+      ),
     });
     this.anthropic = anthropic;
     this.model =
@@ -51,6 +56,10 @@ class AnthropicLLM {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  static slog(text, ...args) {
+    console.log(`\x1b[32m[AnthropicLLM]\x1b[0m ${text}`, ...args);
   }
 
   streamingEnabled() {
