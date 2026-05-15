@@ -4,7 +4,6 @@ const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
-const { toValidNumber } = require("../../../http/index.js");
 
 class MinimaxProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
@@ -21,9 +20,6 @@ class MinimaxProvider extends InheritMultiple([Provider, UnTooled]) {
     this._client = client;
     this.model = model;
     this.verbose = true;
-    this.maxTokens = process.env.MINIMAX_MAX_TOKENS
-      ? toValidNumber(process.env.MINIMAX_MAX_TOKENS, null)
-      : null;
   }
 
   get client() {
@@ -58,7 +54,6 @@ class MinimaxProvider extends InheritMultiple([Provider, UnTooled]) {
       .create({
         model: this.model,
         messages,
-        ...(this.maxTokens ? { max_tokens: this.maxTokens } : {}),
       })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
@@ -77,7 +72,6 @@ class MinimaxProvider extends InheritMultiple([Provider, UnTooled]) {
       model: this.model,
       stream: true,
       messages,
-      ...(this.maxTokens ? { max_tokens: this.maxTokens } : {}),
     });
   }
 

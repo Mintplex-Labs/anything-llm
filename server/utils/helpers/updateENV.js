@@ -680,15 +680,6 @@ const KEY_MAPPING = {
     envKey: "MINIMAX_MODEL_PREF",
     checks: [isNotEmpty],
   },
-  MinimaxMaxTokens: {
-    envKey: "MINIMAX_MAX_TOKENS",
-    checks: [
-      (input) => {
-        if (!input) return null;
-        return nonZero(input);
-      },
-    ],
-  },
 
   // APIPie Options
   ApipieLLMApiKey: {

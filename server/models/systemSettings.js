@@ -909,7 +909,6 @@ const SystemSettings = {
       // Minimax Keys
       MinimaxApiKey: !!process.env.MINIMAX_API_KEY,
       MinimaxModelPref: process.env.MINIMAX_MODEL_PREF,
-      MinimaxMaxTokens: process.env.MINIMAX_MAX_TOKENS,
     };
   },
 
