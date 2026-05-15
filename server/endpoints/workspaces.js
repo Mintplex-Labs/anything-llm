@@ -40,7 +40,7 @@ const { searchWorkspaceAndThreads } = require("../utils/helpers/search");
 const { workspaceParsedFilesEndpoints } = require("./workspacesParsedFiles");
 const {
   workspaceDeletionProtection,
-} = require("../utils/workspaceDeletionProtection");
+} = require("../utils/middleware/workspaceDeletionProtection");
 
 function workspaceEndpoints(app) {
   if (!app) return;

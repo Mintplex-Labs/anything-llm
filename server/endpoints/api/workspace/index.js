@@ -17,7 +17,7 @@ const { ApiChatHandler } = require("../../../utils/chats/apiChatHandler");
 const { getModelTag } = require("../../utils");
 const {
   workspaceDeletionProtection,
-} = require("../../../utils/workspaceDeletionProtection");
+} = require("../../../utils/middleware/workspaceDeletionProtection");
 
 function apiWorkspaceEndpoints(app) {
   if (!app) return;

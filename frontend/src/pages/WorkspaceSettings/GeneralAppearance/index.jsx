@@ -7,7 +7,7 @@ import SuggestedChatMessages from "./SuggestedChatMessages";
 import DeleteWorkspace from "./DeleteWorkspace";
 import CTAButton from "@/components/lib/CTAButton";
 
-export default function GeneralInfo({ slug, workspace: workspaceSettings }) {
+export default function GeneralInfo({ slug, deletionProtected = false }) {
   const [workspace, setWorkspace] = useState(null);
   const [hasChanges, setHasChanges] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -64,9 +64,7 @@ export default function GeneralInfo({ slug, workspace: workspaceSettings }) {
         />
       </form>
       <SuggestedChatMessages slug={workspace.slug} />
-      {!workspaceSettings?.workspaceDeletionProtection && (
-        <DeleteWorkspace workspace={workspace} />
-      )}
+      {!deletionProtected && <DeleteWorkspace workspace={workspace} />}
     </div>
   );
 }

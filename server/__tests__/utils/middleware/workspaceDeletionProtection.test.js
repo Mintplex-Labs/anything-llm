@@ -1,9 +1,8 @@
 const {
-  isWorkspaceDeletionProtected,
   workspaceDeletionProtection,
-} = require("../../utils/workspaceDeletionProtection");
+} = require("../../../utils/middleware/workspaceDeletionProtection");
 
-describe("workspace deletion protection", () => {
+describe("workspaceDeletionProtection middleware", () => {
   const originalValue = process.env.WORKSPACE_DELETION_PROTECTION;
   const hadValue = "WORKSPACE_DELETION_PROTECTION" in process.env;
 
@@ -15,21 +14,7 @@ describe("workspace deletion protection", () => {
     }
   });
 
-  it("is disabled when WORKSPACE_DELETION_PROTECTION is not present", () => {
-    delete process.env.WORKSPACE_DELETION_PROTECTION;
-
-    expect(isWorkspaceDeletionProtected()).toBe(false);
-  });
-
-  it("is enabled when WORKSPACE_DELETION_PROTECTION is present", () => {
-    process.env.WORKSPACE_DELETION_PROTECTION = "";
-    expect(isWorkspaceDeletionProtected()).toBe(true);
-
-    process.env.WORKSPACE_DELETION_PROTECTION = "false";
-    expect(isWorkspaceDeletionProtected()).toBe(true);
-  });
-
-  it("allows deletion routes when protection is disabled", () => {
+  it("calls next when WORKSPACE_DELETION_PROTECTION is not present", () => {
     delete process.env.WORKSPACE_DELETION_PROTECTION;
     const next = jest.fn();
 
@@ -38,7 +23,7 @@ describe("workspace deletion protection", () => {
     expect(next).toHaveBeenCalledTimes(1);
   });
 
-  it("blocks deletion routes when protection is enabled", () => {
+  it("returns 403 when WORKSPACE_DELETION_PROTECTION is present with any value", () => {
     process.env.WORKSPACE_DELETION_PROTECTION = "1";
     const next = jest.fn();
     const response = {

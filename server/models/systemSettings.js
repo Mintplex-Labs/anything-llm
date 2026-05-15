@@ -12,9 +12,6 @@ const { getBaseLLMProviderModel } = require("../utils/helpers");
 const {
   ConnectionStringParser,
 } = require("../utils/agents/aibitat/plugins/sql-agent/SQLConnectors/utils");
-const {
-  isWorkspaceDeletionProtected,
-} = require("../utils/workspaceDeletionProtection");
 
 function isNullOrNaN(value) {
   if (value === null) return true;
@@ -500,7 +497,8 @@ const SystemSettings = {
       // Disable View Chat History for the whole instance.
       DisableViewChatHistory:
         "DISABLE_VIEW_CHAT_HISTORY" in process.env || false,
-      WorkspaceDeletionProtection: isWorkspaceDeletionProtected(),
+      WorkspaceDeletionProtection:
+        "WORKSPACE_DELETION_PROTECTION" in process.env || false,
 
       // --------------------------------------------------------
       // Simple SSO Settings

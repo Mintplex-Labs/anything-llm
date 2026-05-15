@@ -30,7 +30,7 @@ const {
 } = require("../utils/middleware/simpleSSOEnabled");
 const {
   workspaceDeletionProtection,
-} = require("../utils/workspaceDeletionProtection");
+} = require("../utils/middleware/workspaceDeletionProtection");
 
 function adminEndpoints(app) {
   if (!app) return;

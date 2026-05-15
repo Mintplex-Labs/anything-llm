@@ -58,8 +58,7 @@ function WorkspacesContainer() {
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
   const [workspaces, setWorkspaces] = useState([]);
-  const [workspaceDeletionProtection, setWorkspaceDeletionProtection] =
-    useState(false);
+  const [deletionProtected, setDeletionProtected] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -70,9 +69,7 @@ function WorkspacesContainer() {
       ]);
       setUsers(_users);
       setWorkspaces(_workspaces);
-      setWorkspaceDeletionProtection(
-        _settings ? _settings.WorkspaceDeletionProtection === true : true
-      );
+      setDeletionProtected(_settings?.WorkspaceDeletionProtection === true);
       setLoading(false);
     }
     fetchData();
@@ -119,7 +116,7 @@ function WorkspacesContainer() {
             key={workspace.id}
             workspace={workspace}
             users={users}
-            workspaceDeletionProtection={workspaceDeletionProtection}
+            deletionProtected={deletionProtected}
           />
         ))}
       </tbody>
