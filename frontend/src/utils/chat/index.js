@@ -1,4 +1,9 @@
 import { THREAD_RENAME_EVENT } from "@/components/Sidebar/ActiveWorkspaces/ThreadContainer";
+import {
+  debugChatTurn,
+  normalizedEventSummary,
+  rawEventSummary,
+} from "@/utils/chat/debug";
 
 export const ABORT_STREAM_EVENT = "abort-chat-stream";
 
@@ -30,17 +35,24 @@ export default function handleChat(chatResult = {}) {
     thread = null,
   } = chatResult;
 
+  let normalized = null;
+
   if (action === "rename_thread") dispatchThreadRename(thread);
 
   if (type === "agentInitWebsocketConnection") {
-    return {
+    normalized = {
       type: "agent_socket_start",
       websocketUUID,
     };
+    debugChatTurn("normalize:event", {
+      ...rawEventSummary(chatResult, "SSE"),
+      ...normalizedEventSummary(normalized, "SSE"),
+    });
+    return normalized;
   }
 
   if (type === "statusResponse") {
-    return {
+    normalized = {
       type: "timeline_event",
       event: {
         type: "thought",
@@ -49,11 +61,16 @@ export default function handleChat(chatResult = {}) {
         animate,
       },
     };
+    debugChatTurn("normalize:event", {
+      ...rawEventSummary(chatResult, "SSE"),
+      ...normalizedEventSummary(normalized, "SSE"),
+    });
+    return normalized;
   }
 
   if (type === "textResponseChunk") {
     if (close) {
-      return {
+      normalized = {
         type: "assistant_final",
         uuid,
         content: textResponse || "",
@@ -62,9 +79,14 @@ export default function handleChat(chatResult = {}) {
         metrics,
         closed: true,
       };
+      debugChatTurn("normalize:event", {
+        ...rawEventSummary(chatResult, "SSE"),
+        ...normalizedEventSummary(normalized, "SSE"),
+      });
+      return normalized;
     }
 
-    return {
+    normalized = {
       type: "assistant_delta",
       uuid,
       content: textResponse || "",
@@ -73,10 +95,15 @@ export default function handleChat(chatResult = {}) {
       chatId,
       metrics,
     };
+    debugChatTurn("normalize:event", {
+      ...rawEventSummary(chatResult, "SSE"),
+      ...normalizedEventSummary(normalized, "SSE"),
+    });
+    return normalized;
   }
 
   if (type === "textResponse" || type === "finalizeResponseStream") {
-    return {
+    normalized = {
       type: "assistant_final",
       uuid,
       content: textResponse || "",
@@ -85,38 +112,67 @@ export default function handleChat(chatResult = {}) {
       metrics,
       closed: !!close,
     };
+    debugChatTurn("normalize:event", {
+      ...rawEventSummary(chatResult, "SSE"),
+      ...normalizedEventSummary(normalized, "SSE"),
+    });
+    return normalized;
   }
 
   if (type === "abort") {
-    return {
+    normalized = {
       type: "assistant_error",
       uuid,
       content: error || textResponse || "Stream aborted.",
       error: error || textResponse || "Stream aborted.",
     };
+    debugChatTurn("normalize:event", {
+      ...rawEventSummary(chatResult, "SSE"),
+      ...normalizedEventSummary(normalized, "SSE"),
+    });
+    return normalized;
   }
 
   if (type === "stopGeneration") {
-    return {
+    normalized = {
       type: "stop_generation",
       uuid,
       content: "Generation stopped by user.",
     };
+    debugChatTurn("normalize:event", {
+      ...rawEventSummary(chatResult, "SSE"),
+      ...normalizedEventSummary(normalized, "SSE"),
+    });
+    return normalized;
   }
 
   if (type === "wssFailure") {
-    return {
+    normalized = {
       type: "assistant_error",
       uuid,
       content: error || textResponse || "Websocket connection failed.",
       error: error || textResponse || "Websocket connection failed.",
     };
+    debugChatTurn("normalize:event", {
+      ...rawEventSummary(chatResult, "SSE"),
+      ...normalizedEventSummary(normalized, "SSE"),
+    });
+    return normalized;
   }
 
   if (action === "reset_chat") {
-    return { type: "reset_chat" };
+    normalized = { type: "reset_chat" };
+    debugChatTurn("normalize:event", {
+      ...rawEventSummary(chatResult, "SSE"),
+      ...normalizedEventSummary(normalized, "SSE"),
+    });
+    return normalized;
   }
 
+  debugChatTurn("normalize:event", {
+    ...rawEventSummary(chatResult, "SSE"),
+    normalizedType: null,
+  });
   return null;
 }
 

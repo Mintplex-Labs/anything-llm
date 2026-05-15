@@ -18,6 +18,7 @@ import usePromptInputStorage from "@/hooks/usePromptInputStorage";
 import ToolsMenu, { TOOLS_MENU_KEYBOARD_EVENT } from "./ToolsMenu";
 import { useSearchParams } from "react-router-dom";
 import { useIsAgentSessionActive } from "@/utils/chat/agent";
+import { debugChatTurn } from "@/utils/chat/debug";
 
 export const PROMPT_INPUT_ID = "primary-prompt-input";
 export const PROMPT_INPUT_EVENT = "set_prompt_input";
@@ -103,6 +104,27 @@ export default function PromptInput({
     resetTextAreaHeight();
   }, [isStreaming]);
 
+  useEffect(() => {
+    debugChatTurn("PromptInput:renderState", {
+      workspaceSlug: workspaceSlug || workspace?.slug || null,
+      threadSlug,
+      isStreaming: !!isStreaming,
+      isDisabled: !!isDisabled,
+      agentSessionActive: !!agentSessionActive,
+      stopButtonVisible: !!isStreaming,
+      sendButtonVisible: !isStreaming,
+      promptLength: promptInput.length,
+    });
+  }, [
+    agentSessionActive,
+    isDisabled,
+    isStreaming,
+    promptInput.length,
+    threadSlug,
+    workspace?.slug,
+    workspaceSlug,
+  ]);
+
   /**
    * Save the current state before changes
    * @param {number} adjustment
@@ -186,7 +208,15 @@ export default function PromptInput({
     // Is simple enter key press w/o shift key
     if (event.keyCode === 13 && !event.shiftKey) {
       event.preventDefault();
-      if (isStreaming || isDisabled) return; // Prevent submission if streaming or disabled
+      if (isStreaming || isDisabled) {
+        debugChatTurn("PromptInput:submitBlocked", {
+          workspaceSlug: workspaceSlug || workspace?.slug || null,
+          threadSlug,
+          isStreaming: !!isStreaming,
+          isDisabled: !!isDisabled,
+        });
+        return;
+      } // Prevent submission if streaming or disabled
       setShowTools(false);
       return submit(event);
     }

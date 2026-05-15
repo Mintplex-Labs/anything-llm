@@ -2,6 +2,11 @@ import { API_BASE } from "../constants";
 import { safeJsonParse } from "../request";
 import { useEffect, useState } from "react";
 import { THREAD_RENAME_EVENT } from "@/components/Sidebar/ActiveWorkspaces/ThreadContainer";
+import {
+  debugChatTurn,
+  normalizedEventSummary,
+  rawEventSummary,
+} from "@/utils/chat/debug";
 
 export const AGENT_SESSION_START = "agentSessionStart";
 export const AGENT_SESSION_END = "agentSessionEnd";
@@ -155,24 +160,44 @@ function reportStreamEvent(content = {}) {
 
 export default function handleSocketResponse(_socket, event) {
   const data = safeJsonParse(event.data, null);
-  if (data === null) return null;
+  if (data === null) {
+    debugChatTurn("normalize:event", {
+      source: "WebSocket",
+      rawType: "unparseable",
+      normalizedType: null,
+      contentLength: typeof event.data === "string" ? event.data.length : 0,
+    });
+    return null;
+  }
+
+  let normalized = null;
 
   if (data.type === "rename_thread") {
     dispatchThreadRename(data.content);
-    return { type: "thread_rename", content: data.content };
+    normalized = { type: "thread_rename", content: data.content };
+    debugChatTurn("normalize:event", {
+      ...rawEventSummary(data, "WebSocket"),
+      ...normalizedEventSummary(normalized, "WebSocket"),
+    });
+    return normalized;
   }
 
   if (!data.hasOwnProperty("type")) {
-    return {
+    normalized = {
       type: "assistant_final",
       content: data.content || "",
     };
+    debugChatTurn("normalize:event", {
+      ...rawEventSummary(data, "WebSocket"),
+      ...normalizedEventSummary(normalized, "WebSocket"),
+    });
+    return normalized;
   }
 
   if (data.type === "chatId") {
     const content =
       data.content && typeof data.content === "object" ? data.content : data;
-    return {
+    normalized = {
       type: "assistant_final",
       uuid: content.uuid,
       content: content.content || "",
@@ -181,10 +206,15 @@ export default function handleSocketResponse(_socket, event) {
       metrics: content.metrics || {},
       closed: !!content.close,
     };
+    debugChatTurn("normalize:event", {
+      ...rawEventSummary(data, "WebSocket"),
+      ...normalizedEventSummary(normalized, "WebSocket"),
+    });
+    return normalized;
   }
 
   if (data.type === "statusResponse") {
-    return {
+    normalized = {
       type: "timeline_event",
       event: {
         type: "thought",
@@ -192,11 +222,16 @@ export default function handleSocketResponse(_socket, event) {
         animate: data.animate,
       },
     };
+    debugChatTurn("normalize:event", {
+      ...rawEventSummary(data, "WebSocket"),
+      ...normalizedEventSummary(normalized, "WebSocket"),
+    });
+    return normalized;
   }
 
   if (data.type === "toolApprovalRequest") {
     if (!data.requestId || !data.skillName) return null;
-    return {
+    normalized = {
       type: "timeline_event",
       event: {
         type: "approval_request",
@@ -209,18 +244,28 @@ export default function handleSocketResponse(_socket, event) {
         content: `Approval requested for ${data.skillName}`,
       },
     };
+    debugChatTurn("normalize:event", {
+      ...rawEventSummary(data, "WebSocket"),
+      ...normalizedEventSummary(normalized, "WebSocket"),
+    });
+    return normalized;
   }
 
   if (data.type === "wssFailure") {
-    return {
+    normalized = {
       type: "assistant_error",
       content: data.content || "Agent websocket connection failed.",
       error: data.content || "Agent websocket connection failed.",
     };
+    debugChatTurn("normalize:event", {
+      ...rawEventSummary(data, "WebSocket"),
+      ...normalizedEventSummary(normalized, "WebSocket"),
+    });
+    return normalized;
   }
 
   if (data.type === "fileDownloadCard") {
-    return {
+    normalized = {
       type: "timeline_event",
       event: {
         type: "tool_result",
@@ -229,10 +274,15 @@ export default function handleSocketResponse(_socket, event) {
         result: data.content,
       },
     };
+    debugChatTurn("normalize:event", {
+      ...rawEventSummary(data, "WebSocket"),
+      ...normalizedEventSummary(normalized, "WebSocket"),
+    });
+    return normalized;
   }
 
   if (data.type === "rechartVisualize") {
-    return {
+    normalized = {
       type: "timeline_event",
       event: {
         type: "tool_result",
@@ -241,13 +291,23 @@ export default function handleSocketResponse(_socket, event) {
         result: data.content,
       },
     };
+    debugChatTurn("normalize:event", {
+      ...rawEventSummary(data, "WebSocket"),
+      ...normalizedEventSummary(normalized, "WebSocket"),
+    });
+    return normalized;
   }
 
   if (data.type === "reportStreamEvent") {
-    return reportStreamEvent(data.content || {});
+    normalized = reportStreamEvent(data.content || {});
+    debugChatTurn("normalize:event", {
+      ...rawEventSummary(data, "WebSocket"),
+      ...normalizedEventSummary(normalized, "WebSocket"),
+    });
+    return normalized;
   }
 
-  return {
+  normalized = {
     type: "timeline_event",
     event: {
       type: "thought",
@@ -255,6 +315,11 @@ export default function handleSocketResponse(_socket, event) {
       payload: data,
     },
   };
+  debugChatTurn("normalize:event", {
+    ...rawEventSummary(data, "WebSocket"),
+    ...normalizedEventSummary(normalized, "WebSocket"),
+  });
+  return normalized;
 }
 
 let _agentSessionActive = false;

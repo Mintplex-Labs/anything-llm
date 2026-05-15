@@ -27,7 +27,15 @@ import TextSizeMenu from "./TextSizeMenu";
 import WorkspaceModelPicker from "./WorkspaceModelPicker";
 import SourcesSidebar, { SourcesSidebarProvider } from "./SourcesSidebar";
 import { useChatThreadDrafts } from "@/contexts/ChatThreadDraftProvider";
-import { mergeServerHistoryIntoTurns } from "@/utils/chat/turns";
+import {
+  isAssistantTurn,
+  mergeServerHistoryIntoTurns,
+} from "@/utils/chat/turns";
+import { debugChatTurn } from "@/utils/chat/debug";
+
+function lastAssistantTurn(items = []) {
+  return [...items].reverse().find((item) => isAssistantTurn(item));
+}
 
 export default function ChatContainer({
   workspace,
@@ -51,6 +59,7 @@ export default function ChatContainer({
   );
   const chatItems = draft?.items || knownItems;
   const loadingResponse = !!draft?.isStreaming;
+  const latestAssistantTurn = lastAssistantTurn(chatItems);
   const { files, parseAttachments } = useContext(DndUploaderContext);
   const { chatHistoryRef } = useChatContainerQuickScroll();
   const pendingMessageChecked = useRef(false);
@@ -84,6 +93,26 @@ export default function ChatContainer({
       history: knownHistory,
     });
   }, [workspace?.slug, threadSlug, chatKey, knownHistory, mergeServerHistory]);
+
+  useEffect(() => {
+    debugChatTurn("ChatContainer:runtime", {
+      chatKey,
+      loadingResponse,
+      activeTurnId: draft?.activeTurnId || null,
+      isStreaming: !!draft?.isStreaming,
+      isAgentRunning: !!draft?.isAgentRunning,
+      lastAssistantTurnId: latestAssistantTurn?.turnId || null,
+      lastAssistantStatus: latestAssistantTurn?.status || null,
+    });
+  }, [
+    chatKey,
+    draft?.activeTurnId,
+    draft?.isAgentRunning,
+    draft?.isStreaming,
+    latestAssistantTurn?.status,
+    latestAssistantTurn?.turnId,
+    loadingResponse,
+  ]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();

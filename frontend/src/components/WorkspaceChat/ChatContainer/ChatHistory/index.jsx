@@ -21,6 +21,7 @@ import useChatHistoryScrollHandle from "@/hooks/useChatHistoryScrollHandle";
 import { ThoughtExpansionProvider } from "./ThoughtContainer";
 import { MessageActionsProvider } from "./MessageActionsContext";
 import { useChatThreadDrafts } from "@/contexts/ChatThreadDraftProvider";
+import { debugChatTurn } from "@/utils/chat/debug";
 
 export default forwardRef(function (
   {
@@ -48,6 +49,26 @@ export default forwardRef(function (
   const { showScrollbar } = Appearance.getSettings();
   const { textSizeClass } = useTextSize();
   const { updateAssistantTurn, updateUserItem } = useChatThreadDrafts();
+
+  useEffect(() => {
+    const assistantTurns = items
+      .filter((item) => item.type === "assistant_turn")
+      .map((item) => ({
+        turnId: item.turnId,
+        status: item.status,
+        finalContentLength: item.finalContent?.length || 0,
+        timelineEventCount: item.timeline?.length || 0,
+      }));
+    debugChatTurn("ChatHistory:renderState", {
+      chatKey,
+      isStreaming,
+      itemCount: items.length,
+      runningTurnIds: assistantTurns
+        .filter((item) => item.status === "running")
+        .map((item) => item.turnId),
+      lastAssistantTurn: assistantTurns[assistantTurns.length - 1] || null,
+    });
+  }, [chatKey, isStreaming, items]);
 
   useEffect(() => {
     if (suppressAutoScrollRef.current) {

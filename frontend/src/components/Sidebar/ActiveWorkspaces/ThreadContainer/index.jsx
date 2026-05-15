@@ -7,6 +7,7 @@ import ThreadItem from "./ThreadItem";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useChatThreadDrafts } from "@/contexts/ChatThreadDraftProvider";
+import { debugChatTurn } from "@/utils/chat/debug";
 export const THREAD_RENAME_EVENT = "renameThread";
 
 export default function ThreadContainer({
@@ -134,14 +135,6 @@ export default function ThreadContainer({
     }
   }, [workspace.slug, threadSlug, hasThreadActivity, clearThreadActivity]);
 
-  if (loading) {
-    return (
-      <div className="flex flex-col bg-pulse w-full h-10 items-center justify-center">
-        <p className="text-xs text-white animate-pulse">loading threads....</p>
-      </div>
-    );
-  }
-
   const threadRows = getSortedThreadRows(
     threads,
     workspace.slug,
@@ -152,6 +145,28 @@ export default function ThreadContainer({
     hasThreadActivity(workspace.slug, null),
     activeThreadIdx === 0
   );
+
+  useEffect(() => {
+    debugChatTurn("ThreadContainer:renderState", {
+      workspaceSlug: workspace.slug,
+      activeThreadSlug: threadSlug,
+      defaultActivityStatus: defaultActivity?.status || null,
+      runningRows: threadRows
+        .filter((row) => row.activity?.status === "running")
+        .map((row) => ({
+          threadSlug: row.thread.slug,
+          turnId: row.activity.turnId,
+        })),
+    });
+  }, [defaultActivity?.status, threadRows, threadSlug, workspace.slug]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col bg-pulse w-full h-10 items-center justify-center">
+        <p className="text-xs text-white animate-pulse">loading threads....</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col" role="list" aria-label="Threads">
@@ -203,16 +218,13 @@ export default function ThreadContainer({
 }
 
 function displayActivity(activity, isActive) {
-  if (activity?.status === "completed" && isActive) return null;
-  if (activity?.status === "failed" && isActive) return null;
-  return activity;
+  if (isActive) return activity?.status === "running" ? activity : null;
+  return activity?.status === "running" ? activity : null;
 }
 
 function activitySortRank(activity) {
   if (activity?.status === "running") return 0;
-  if (activity?.status === "failed") return 1;
-  if (activity?.status === "completed") return 2;
-  return 3;
+  return 1;
 }
 
 function getSortedThreadRows(threads, workspaceSlug, hasThreadActivity) {
@@ -226,7 +238,7 @@ function getSortedThreadRows(threads, workspaceSlug, hasThreadActivity) {
       const rankDiff =
         activitySortRank(a.activity) - activitySortRank(b.activity);
       if (rankDiff !== 0) return rankDiff;
-      if (activitySortRank(a.activity) < 3) {
+      if (activitySortRank(a.activity) === 0) {
         return (b.activity?.updatedAt || 0) - (a.activity?.updatedAt || 0);
       }
       return a.index - b.index;

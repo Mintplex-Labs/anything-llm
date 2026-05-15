@@ -13,8 +13,10 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
+import { debugChatTurn } from "@/utils/chat/debug";
 
 const THREAD_CALLOUT_DETAIL_WIDTH = 26;
+
 export default function ThreadItem({
   idx,
   activeIdx,
@@ -37,6 +39,23 @@ export default function ThreadItem({
     : !thread.slug
       ? paths.workspace.chat(workspaceSlug)
       : paths.workspace.thread(workspaceSlug, thread.slug);
+
+  useEffect(() => {
+    debugChatTurn("ThreadItem:activity", {
+      workspaceSlug,
+      threadSlug: thread?.slug ?? null,
+      isActive,
+      activityStatus: activity?.status || null,
+      activityTurnId: activity?.turnId || null,
+      runningIndicatorVisible: activity?.status === "running",
+    });
+  }, [
+    activity?.status,
+    activity?.turnId,
+    isActive,
+    thread?.slug,
+    workspaceSlug,
+  ]);
 
   const { ref } = useScrollActiveItemIntoView({
     isActive,

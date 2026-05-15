@@ -15,7 +15,7 @@ function loadHandleChat() {
     new URL("../src/utils/chat/index.js", import.meta.url),
     "utf8"
   );
-  src = src.replace(/import[^\n]+\n/, "");
+  src = src.replace(/import\s+(?:[^;]|\n)*?;\n/g, "");
   src = src.replace(
     "export const ABORT_STREAM_EVENT",
     "const ABORT_STREAM_EVENT"
@@ -32,6 +32,13 @@ function loadHandleChat() {
   src += "\nresult = handleChat;";
   const sandbox = {
     result: null,
+    debugChatTurn() {},
+    normalizedEventSummary(event) {
+      return { normalizedType: event?.type || null };
+    },
+    rawEventSummary(raw) {
+      return { rawType: raw?.type || null };
+    },
     window: { dispatchEvent() {} },
     CustomEvent: function CustomEvent() {},
   };
@@ -44,7 +51,7 @@ function loadHandleSocketResponse() {
     new URL("../src/utils/chat/agent.js", import.meta.url),
     "utf8"
   );
-  src = src.replace(/^import[^\n]+\n/gm, "");
+  src = src.replace(/import\s+(?:[^;]|\n)*?;\n/g, "");
   src = src.replace(
     "export const AGENT_SESSION_START",
     "const AGENT_SESSION_START"
@@ -58,15 +65,19 @@ function loadHandleSocketResponse() {
     "export default function handleSocketResponse",
     "function handleSocketResponse"
   );
-  src = src.replace(
-    "import.meta.env.VITE_API_BASE",
-    '"http://localhost:3001"'
-  );
+  src = src.replace("import.meta.env.VITE_API_BASE", '"http://localhost:3001"');
   src = src.slice(0, src.indexOf("let _agentSessionActive"));
   src += "\nresult = handleSocketResponse;";
   const sandbox = {
     API_BASE: "/api",
     result: null,
+    debugChatTurn() {},
+    normalizedEventSummary(event) {
+      return { normalizedType: event?.type || null };
+    },
+    rawEventSummary(raw) {
+      return { rawType: raw?.type || null };
+    },
     safeJsonParse: (value, fallback) => {
       try {
         return JSON.parse(value);
@@ -130,6 +141,79 @@ function applyDeltaIfRunning(draft, turnId, content) {
     activeTurnId: turnId,
     isStreaming: true,
   };
+}
+
+function normalizeRunningState(stored = {}) {
+  const threadActivityByKey = {};
+  Object.entries(stored.threadActivityByKey || {}).forEach(
+    ([chatKey, activity]) => {
+      if (activity?.status === TURN_STATUSES.running) {
+        threadActivityByKey[chatKey] = activity;
+      }
+    }
+  );
+
+  return {
+    activeRunningThread:
+      stored.activeRunningThread?.status === TURN_STATUSES.running
+        ? stored.activeRunningThread
+        : null,
+    threadActivityByKey,
+  };
+}
+
+function markRunning(state, chatKey, turnId) {
+  const activity = {
+    workspaceSlug: "ws",
+    threadSlug: null,
+    chatKey,
+    turnId,
+    status: TURN_STATUSES.running,
+    updatedAt: Date.now(),
+  };
+  return normalizeRunningState({
+    activeRunningThread: activity,
+    threadActivityByKey: {
+      ...(state.threadActivityByKey || {}),
+      [chatKey]: activity,
+    },
+  });
+}
+
+function markSettled(state, chatKey, turnId) {
+  const threadActivityByKey = { ...(state.threadActivityByKey || {}) };
+  delete threadActivityByKey[chatKey];
+  return normalizeRunningState({
+    activeRunningThread:
+      state.activeRunningThread?.chatKey === chatKey &&
+      state.activeRunningThread?.turnId === turnId
+        ? null
+        : state.activeRunningThread,
+    threadActivityByKey,
+  });
+}
+
+function hasWorkspaceActivity(state, workspaceSlug) {
+  return Object.values(state.threadActivityByKey || {}).some(
+    (activity) =>
+      activity.workspaceSlug === workspaceSlug &&
+      activity.status === TURN_STATUSES.running
+  );
+}
+
+function getRunningThread(state, workspaceSlug) {
+  return (
+    Object.values(state.threadActivityByKey || {}).find(
+      (activity) =>
+        activity.workspaceSlug === workspaceSlug &&
+        activity.status === TURN_STATUSES.running
+    ) || null
+  );
+}
+
+function hasThreadActivity(state, chatKey) {
+  const activity = state.threadActivityByKey?.[chatKey];
+  return activity?.status === TURN_STATUSES.running ? activity : null;
 }
 
 const handleChat = loadHandleChat();
@@ -219,7 +303,10 @@ assert.equal(draft.isStreaming, false);
 const beforeLateDelta = completed.finalContent;
 draft = applyDeltaIfRunning(draft, first.turnId, " late");
 assert.equal(findAssistantTurn(draft.items, first.turnId).status, "completed");
-assert.equal(findAssistantTurn(draft.items, first.turnId).finalContent, beforeLateDelta);
+assert.equal(
+  findAssistantTurn(draft.items, first.turnId).finalContent,
+  beforeLateDelta
+);
 
 const failedTurn = createTurn({ prompt: "fail", chatKey: "ws:default" });
 let failedDraft = {
@@ -293,6 +380,47 @@ assert.equal(
 );
 assert.equal(persistedDraft.activeTurnId, null);
 assert.equal(persistedDraft.isStreaming, false);
+
+const chatKey = "ws:default";
+let runningState = { activeRunningThread: null, threadActivityByKey: {} };
+runningState = markRunning(runningState, chatKey, "turn-running");
+assert.equal(hasWorkspaceActivity(runningState, "ws"), true);
+assert.equal(getRunningThread(runningState, "ws")?.turnId, "turn-running");
+assert.equal(hasThreadActivity(runningState, chatKey)?.turnId, "turn-running");
+runningState = markSettled(runningState, chatKey, "turn-running");
+assert.equal(hasWorkspaceActivity(runningState, "ws"), false);
+assert.equal(getRunningThread(runningState, "ws"), null);
+assert.equal(hasThreadActivity(runningState, chatKey), null);
+assert.deepEqual(runningState.threadActivityByKey, {});
+assert.equal(runningState.activeRunningThread, null);
+
+const settledState = normalizeRunningState({
+  activeRunningThread: {
+    workspaceSlug: "ws",
+    chatKey,
+    turnId: "turn-complete",
+    status: TURN_STATUSES.completed,
+  },
+  threadActivityByKey: {
+    [chatKey]: {
+      workspaceSlug: "ws",
+      chatKey,
+      turnId: "turn-complete",
+      status: TURN_STATUSES.completed,
+    },
+    "ws:failed": {
+      workspaceSlug: "ws",
+      chatKey: "ws:failed",
+      turnId: "turn-failed",
+      status: TURN_STATUSES.failed,
+    },
+  },
+});
+assert.equal(settledState.activeRunningThread, null);
+assert.deepEqual(settledState.threadActivityByKey, {});
+assert.equal(hasWorkspaceActivity(settledState, "ws"), false);
+assert.equal(getRunningThread(settledState, "ws"), null);
+assert.equal(hasThreadActivity(settledState, chatKey), null);
 
 for (const file of [
   "../src/models/workspace.js",

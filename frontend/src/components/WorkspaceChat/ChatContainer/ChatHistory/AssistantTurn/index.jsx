@@ -1,4 +1,4 @@
-import { memo, useMemo } from "react";
+import { memo, useEffect, useMemo } from "react";
 import { Warning } from "@phosphor-icons/react";
 import Citations from "../Citation";
 import Actions from "../HistoricalMessage/Actions";
@@ -16,6 +16,7 @@ import { useTranslation } from "react-i18next";
 import MarkdownOutput from "./MarkdownOutput";
 import ThoughtTimeline from "./ThoughtTimeline";
 import ToolEvent from "./ToolEvent";
+import { debugChatTurn } from "@/utils/chat/debug";
 
 function AssistantTurn({
   turn,
@@ -70,6 +71,31 @@ function AssistantTurn({
   const isFailed = turn.status === "failed";
   const isRefusalMessage =
     turn.finalContent === chatQueryRefusalResponse(workspace);
+
+  useEffect(() => {
+    debugChatTurn("AssistantTurn:renderState", {
+      chatKey,
+      turnId: turn.turnId,
+      chatId: turn.chatId || null,
+      status: turn.status,
+      isRunning,
+      dotLoaderVisible: isRunning && !turn.finalContent,
+      finalContentLength: turn.finalContent?.length || 0,
+      timelineEventCount: turn.timeline?.length || 0,
+      thoughtCount: thoughts.length,
+      toolEventCount: toolEvents.length,
+    });
+  }, [
+    chatKey,
+    isRunning,
+    thoughts.length,
+    toolEvents.length,
+    turn.chatId,
+    turn.finalContent,
+    turn.status,
+    turn.timeline,
+    turn.turnId,
+  ]);
 
   if (completeDelete) return null;
 
