@@ -95,7 +95,7 @@ async function streamChatWithWorkspace(
   // If we are here we know that we are in a workspace that is:
   // 1. Chatting in "chat" mode and may or may _not_ have embeddings
   // 2. Chatting in "query" mode and has at least 1 embedding
-  let completeText;
+  let completeText = "";
   let metrics = {};
   let contextTexts = [];
   let sources = [];
@@ -268,10 +268,18 @@ async function streamChatWithWorkspace(
       temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
       user: user,
     });
-    completeText = await LLMConnector.handleStream(response, stream, {
+    completeText = (await LLMConnector.handleStream(response, stream, {
       uuid,
       sources,
-    });
+      persistContext: {
+        workspaceId: workspace.id,
+        prompt: message,
+        threadId: thread?.id || null,
+        user,
+        chatMode,
+        attachments,
+      },
+    })) || "";
     metrics = stream.metrics;
   }
 

@@ -31,6 +31,8 @@ function agentWebsocket(app) {
 
       socket.on("message", relayToSocket);
       socket.on("close", () => {
+        socket.removeListener("message", relayToSocket);
+        if (agentHandler.aibitat) agentHandler.aibitat.abort();
         agentHandler.closeAlert();
         WorkspaceAgentInvocation.close(String(request.params.uuid));
         return;

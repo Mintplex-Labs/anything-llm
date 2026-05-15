@@ -17,107 +17,156 @@ function clientAbortedHandler(resolve, fullText) {
  * @returns {Promise<string>}
  */
 function handleDefaultStreamResponseV2(response, stream, responseProps) {
-  const { uuid = uuidv4(), sources = [] } = responseProps;
+  const {
+    uuid = uuidv4(),
+    sources = [],
+    persistContext = null,
+  } = responseProps;
 
-  // Why are we doing this?
-  // OpenAI do enable the usage metrics in the stream response but:
-  // 1. This parameter is not available in our current API version (TODO: update)
-  // 2. The usage metrics are not available in _every_ provider that uses this function
-  // 3. We need to track the usage metrics for every provider that uses this function - not just OpenAI
-  // Other keys are added by the LLMPerformanceMonitor.measureStream method
   let hasUsageMetrics = false;
   let usage = {
-    // prompt_tokens can be in this object if the provider supports it - otherwise we manually count it
-    // When the stream is created in the LLMProviders `streamGetChatCompletion` `LLMPerformanceMonitor.measureStream` call.
     completion_tokens: 0,
   };
+  let clientDisconnected = false;
 
   return new Promise(async (resolve) => {
     let fullText = "";
 
-    // Establish listener to early-abort a streaming response
-    // in case things go sideways or the user does not like the response.
-    // We preserve the generated text but continue as if chat was completed
-    // to preserve previously generated content.
+    // When the client disconnects (e.g. user switches thread), we stop writing
+    // chunks to the response but let the LLM stream continue so we can persist
+    // the complete response to the database in the background.
     const handleAbort = () => {
+      clientDisconnected = true;
       stream?.endMeasurement(usage);
-      clientAbortedHandler(resolve, fullText);
+      // Do NOT resolve here — let the stream finish naturally so we get the
+      // full text and can persist it via persistOrphanedStream below.
     };
     response.on("close", handleAbort);
 
-    // Now handle the chunks from the streamed response and append to fullText.
     try {
       for await (const chunk of stream) {
         const message = chunk?.choices?.[0];
         const token = message?.delta?.content;
 
-        // If we see usage metrics in the chunk, we can use them directly
-        // instead of estimating them, but we only want to assign values if
-        // the response object is the exact same key:value pair we expect.
         if (
-          chunk.hasOwnProperty("usage") && // exists
-          !!chunk.usage && // is not null
-          Object.values(chunk.usage).length > 0 // has values
+          chunk.hasOwnProperty("usage") &&
+          !!chunk.usage &&
+          Object.values(chunk.usage).length > 0
         ) {
           if (chunk.usage.hasOwnProperty("prompt_tokens")) {
             usage.prompt_tokens = Number(chunk.usage.prompt_tokens);
           }
 
           if (chunk.usage.hasOwnProperty("completion_tokens")) {
-            hasUsageMetrics = true; // to stop estimating counter
+            hasUsageMetrics = true;
             usage.completion_tokens = Number(chunk.usage.completion_tokens);
           }
         }
 
         if (token) {
           fullText += token;
-          // If we never saw a usage metric, we can estimate them by number of completion chunks
           if (!hasUsageMetrics) usage.completion_tokens++;
-          writeResponseChunk(response, {
-            uuid,
-            sources: [],
-            type: "textResponseChunk",
-            textResponse: token,
-            close: false,
-            error: false,
-          });
+          // Only write to the response if the client is still connected.
+          if (!clientDisconnected) {
+            writeResponseChunk(response, {
+              uuid,
+              sources: [],
+              type: "textResponseChunk",
+              textResponse: token,
+              close: false,
+              error: false,
+            });
+          }
         }
 
-        // LocalAi returns '' and others return null on chunks - the last chunk is not "" or null.
-        // Either way, the key `finish_reason` must be present to determine ending chunk.
         if (
-          message?.hasOwnProperty("finish_reason") && // Got valid message and it is an object with finish_reason
+          message?.hasOwnProperty("finish_reason") &&
           message.finish_reason !== "" &&
           message.finish_reason !== null
         ) {
-          writeResponseChunk(response, {
-            uuid,
-            sources,
-            type: "textResponseChunk",
-            textResponse: "",
-            close: true,
-            error: false,
-          });
+          if (!clientDisconnected) {
+            writeResponseChunk(response, {
+              uuid,
+              sources,
+              type: "textResponseChunk",
+              textResponse: "",
+              close: true,
+              error: false,
+            });
+          }
           response.removeListener("close", handleAbort);
           stream?.endMeasurement(usage);
-          resolve(fullText);
-          break; // Break streaming when a valid finish_reason is first encountered
+          // If client disconnected, resolve empty so the main flow skips
+          // persistence — persistOrphanedStream already handled it above.
+          resolve(clientDisconnected ? "" : fullText);
+          break;
         }
       }
     } catch (e) {
       console.log(`\x1b[43m\x1b[34m[STREAMING ERROR]\x1b[0m ${e.message}`);
-      writeResponseChunk(response, {
-        uuid,
-        type: "abort",
-        textResponse: null,
-        sources: [],
-        close: true,
-        error: e.message,
-      });
+      if (!clientDisconnected) {
+        writeResponseChunk(response, {
+          uuid,
+          type: "abort",
+          textResponse: null,
+          sources: [],
+          close: true,
+          error: e.message,
+        });
+      }
       stream?.endMeasurement(usage);
-      resolve(fullText); // Return what we currently have - if anything.
+      resolve(clientDisconnected ? "" : fullText);
+    }
+
+    // Stream finished. If the client disconnected, persist the full response
+    // to the database in the background so it's not lost.
+    if (clientDisconnected && fullText.length > 0 && persistContext) {
+      persistOrphanedStream({
+        uuid,
+        text: fullText,
+        sources,
+        metrics: usage,
+        ...persistContext,
+      });
     }
   });
+}
+
+/**
+ * Persists a complete streaming response to the database after the client
+ * has disconnected (e.g. user switched threads while LLM was still generating).
+ * This runs in the background — errors are logged but do not affect the user.
+ */
+async function persistOrphanedStream({
+  uuid,
+  text,
+  sources,
+  metrics,
+  workspaceId,
+  prompt,
+  threadId,
+  user,
+  chatMode,
+  attachments,
+}) {
+  if (!text || text.length === 0) return;
+  try {
+    const { WorkspaceChats } = require("../../../models/workspaceChats");
+    await WorkspaceChats.new({
+      workspaceId,
+      prompt,
+      response: { text, sources, type: chatMode, attachments, metrics },
+      threadId,
+      user,
+    });
+    console.log(
+      `\x1b[32m[ORPHANED STREAM]\x1b[0m Persisted orphaned stream response for workspace ${workspaceId} (thread ${threadId}).`
+    );
+  } catch (e) {
+    console.error(
+      `\x1b[31m[ORPHANED STREAM]\x1b[0m Failed to persist orphaned stream: ${e.message}`
+    );
+  }
 }
 
 function convertToChatHistory(history = []) {
@@ -221,6 +270,7 @@ function safeJSONStringify(obj) {
 }
 
 function writeResponseChunk(response, data) {
+  if (!response || !response.writable || response.destroyed) return;
   response.write(`data: ${safeJSONStringify(data)}\n\n`);
   return;
 }
@@ -274,6 +324,7 @@ module.exports = {
   convertToPromptHistory,
   writeResponseChunk,
   clientAbortedHandler,
+  persistOrphanedStream,
   formatChatHistory,
   safeJSONStringify,
 };

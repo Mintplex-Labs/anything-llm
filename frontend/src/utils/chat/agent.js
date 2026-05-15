@@ -321,14 +321,15 @@ export function useIsAgentSessionActive() {
     () => !!getAgentSessionActive()
   );
   useEffect(() => {
-    function listenForAgentSession() {
-      if (!window) return;
-      window.addEventListener(AGENT_SESSION_START, () =>
-        setActiveSession(true)
-      );
-      window.addEventListener(AGENT_SESSION_END, () => setActiveSession(false));
-    }
-    listenForAgentSession();
+    if (!window) return;
+    const onStart = () => setActiveSession(true);
+    const onEnd = () => setActiveSession(false);
+    window.addEventListener(AGENT_SESSION_START, onStart);
+    window.addEventListener(AGENT_SESSION_END, onEnd);
+    return () => {
+      window.removeEventListener(AGENT_SESSION_START, onStart);
+      window.removeEventListener(AGENT_SESSION_END, onEnd);
+    };
   }, []);
 
   return activeSession;
