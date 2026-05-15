@@ -5,6 +5,10 @@ const Providers = require("./providers/index.js");
 const { Telemetry } = require("../../../models/telemetry.js");
 const { v4 } = require("uuid");
 const { ToolReranker } = require("./utils/toolReranker.js");
+const {
+  storeToolRun,
+  prepareToolResultForModel,
+} = require("../toolResultStore.js");
 
 const DEFAULT_TOOL_EXECUTION_TIMEOUT_MS = 30 * 1_000;
 
@@ -1007,11 +1011,17 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       );
 
       const result = await this.#executeToolHandler(fn, args, name);
+      const toolRun = await storeToolRun({
+        toolName: name,
+        arguments: args,
+        result,
+      });
+      const modelResult = prepareToolResultForModel(result, toolRun);
       Telemetry.sendTelemetry("agent_tool_call", { tool: name }, null, true);
       this.emitter.emit("toolCallResult", {
         toolName: name,
         arguments: args,
-        result,
+        result: toolRun,
       });
 
       /**
@@ -1033,7 +1043,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
         eventHandler?.("reportStreamEvent", {
           type: "fullTextResponse",
           uuid: directOutputUUID,
-          content: result,
+          content: modelResult,
         });
         eventHandler?.("reportStreamEvent", {
           type: "usageMetrics",
@@ -1042,7 +1052,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
         });
         this?.flushCitations?.(directOutputUUID);
         this?.emitChatId?.(directOutputUUID);
-        return result;
+        return modelResult;
       }
 
       const toolAttachments = this.collectToolAttachments();
@@ -1051,7 +1061,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
         {
           name,
           role: "function",
-          content: result,
+          content: modelResult,
           originalFunctionCall: completionStream.functionCall,
         },
       ];
@@ -1172,11 +1182,17 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       );
 
       const result = await this.#executeToolHandler(fn, args, name);
+      const toolRun = await storeToolRun({
+        toolName: name,
+        arguments: args,
+        result,
+      });
+      const modelResult = prepareToolResultForModel(result, toolRun);
       Telemetry.sendTelemetry("agent_tool_call", { tool: name }, null, true);
       this.emitter.emit("toolCallResult", {
         toolName: name,
         arguments: args,
-        result,
+        result: toolRun,
       });
 
       if (this.skipHandleExecution) {
@@ -1194,7 +1210,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
           metrics: provider.getUsage(),
         });
         this?.flushCitations?.(msgUUID);
-        return result;
+        return modelResult;
       }
 
       const toolAttachments = this.collectToolAttachments();
@@ -1203,7 +1219,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
         {
           name,
           role: "function",
-          content: result,
+          content: modelResult,
           originalFunctionCall: completion.functionCall,
         },
       ];

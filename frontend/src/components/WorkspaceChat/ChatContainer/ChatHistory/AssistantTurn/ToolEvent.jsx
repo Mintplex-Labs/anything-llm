@@ -27,6 +27,7 @@ export default function ToolEvent({
         payload={event.payload}
         description={event.description}
         timeoutMs={event.timeoutMs}
+        allowAlwaysAllow={event.allowAlwaysAllow !== false}
         approvalState={
           approvalState?.requestId === event.requestId
             ? approvalState

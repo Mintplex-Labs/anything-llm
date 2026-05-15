@@ -53,7 +53,10 @@ module.exports.FilesystemWriteTextFile = {
                 `Using the filesystem-write-text-file tool.`
               );
 
-              const validPath = await filesystem.validatePath(filePath);
+              const validPath = await filesystem.validateWritePath(filePath, {
+                ...(this.super.handlerProps.fileAccessContext || {}),
+                tool: this.name,
+              });
               this.super.introspect(
                 `${this.caller}: Writing to file ${filePath}`
               );

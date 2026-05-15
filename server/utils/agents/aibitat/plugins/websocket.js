@@ -3,8 +3,16 @@ const { Telemetry } = require("../../../../models/telemetry");
 const { v4: uuidv4 } = require("uuid");
 const { safeJsonParse } = require("../../../http");
 const { skillIsAutoApproved } = require("../../../helpers/agents");
+const { resolveEffectivePolicy } = require("../../../fileAccessPolicy");
+const { shellAgent } = require("./shell/index.js");
+const {
+  sanitizeAgentEvent,
+  summarizeToolResult,
+} = require("../../toolResultStore.js");
 const SOCKET_TIMEOUT_MS = 300 * 1_000; // 5 mins
 const TOOL_APPROVAL_TIMEOUT_MS = 120 * 1_000; // 2 mins for tool approval
+const SHELL_AGENT_NAME = "shell-agent";
+const WORKSPACE_AGENT_NAME = "@agent";
 
 /**
  * Websocket Interface plugin. It prints the messages on the console and asks for feedback
@@ -31,14 +39,67 @@ const WEBSOCKET_BAIL_COMMANDS = [
 function recordAgentEvent(aibitat, event = {}) {
   if (!event.type) return;
   if (!Array.isArray(aibitat._agentEvents)) aibitat._agentEvents = [];
-  aibitat._agentEvents.push({
-    id: uuidv4(),
-    createdAt: Date.now(),
-    ...event,
-  });
+  aibitat._agentEvents.push(
+    sanitizeAgentEvent({
+      ...event,
+      id: event.id || uuidv4(),
+      createdAt: event.createdAt || Date.now(),
+    })
+  );
+}
+
+function sanitizeReportStreamContent(content = {}) {
+  if (content?.type === "toolCallInvocation") {
+    return {
+      type: "toolCallInvocation",
+      uuid: content.uuid,
+      toolName: content.toolName,
+      content: content.content || `Calling ${content.toolName || "tool"}...`,
+    };
+  }
+
+  if (content?.type !== "toolCallResult") return content;
+  const resultSummary =
+    content.result &&
+    typeof content.result === "object" &&
+    content.result.summary
+      ? content.result
+      : summarizeToolResult({
+          toolName: content.toolName,
+          result: content.result,
+        });
+
+  return {
+    type: "toolCallResult",
+    uuid: content.uuid,
+    toolName: content.toolName,
+    content:
+      resultSummary.summary ||
+      content.content ||
+      `Tool ${content.toolName || "unknown"} returned a result.`,
+    summary: resultSummary.summary,
+    outputPreview: resultSummary.outputPreview,
+    resultSize: resultSummary.resultSize,
+    truncated: resultSummary.truncated,
+    runId: resultSummary.runId,
+    stored: resultSummary.stored,
+    storageError: resultSummary.storageError,
+    exitCode: resultSummary.exitCode,
+    timedOut: resultSummary.timedOut,
+    root: resultSummary.root,
+    fileCount: resultSummary.fileCount,
+    excludedCount: resultSummary.excludedCount,
+    totalSize: resultSummary.totalSize,
+  };
+}
+
+function sanitizeSocketPayload(type, content = {}) {
+  if (type !== "reportStreamEvent") return content;
+  return sanitizeReportStreamContent(content);
 }
 
 function eventFromSocketPayload(type, content = {}) {
+  content = sanitizeSocketPayload(type, content);
   if (type === "statusResponse") {
     return {
       type: "agent_thought",
@@ -73,17 +134,26 @@ function eventFromSocketPayload(type, content = {}) {
       uuid: content.uuid,
       content: content.content || "",
       toolName: content.toolName,
-      arguments: content.arguments,
     };
   }
   if (content.type === "toolCallResult") {
     return {
       type: "tool_result",
       uuid: content.uuid,
-      content: content.content || "",
+      content: content.summary || content.content || "",
       toolName: content.toolName,
-      arguments: content.arguments,
-      result: content.result,
+      runId: content.runId,
+      stored: content.stored,
+      storageError: content.storageError,
+      resultSize: content.resultSize,
+      truncated: content.truncated,
+      outputPreview: content.outputPreview,
+      exitCode: content.exitCode,
+      timedOut: content.timedOut,
+      root: content.root,
+      fileCount: content.fileCount,
+      excludedCount: content.excludedCount,
+      totalSize: content.totalSize,
     };
   }
   if (content.type === "chatId") {
@@ -95,6 +165,54 @@ function eventFromSocketPayload(type, content = {}) {
     };
   }
   return null;
+}
+
+/*
+ * Keep old call sites using eventFromSocketPayload, but ensure no raw tool result
+ * can leak through to the frontend or saved agentEvents.
+ */
+function socketSend(socket, type, content = {}) {
+  socket.send(
+    JSON.stringify({ type, content: sanitizeSocketPayload(type, content) })
+  );
+}
+
+async function syncFileAccessPolicyFromClient(aibitat, data = {}) {
+  const sessionMode = data?.fileAccess?.mode || data?.fileAccess?.sessionMode;
+  if (!sessionMode) return;
+
+  const fileAccessContext = {
+    ...(aibitat.handlerProps?.fileAccessContext || {}),
+    sessionMode,
+  };
+  aibitat.handlerProps.fileAccessContext = fileAccessContext;
+  aibitat.fileAccessPolicy = await resolveEffectivePolicy(fileAccessContext);
+
+  const workspaceAgent = aibitat.agents.get(WORKSPACE_AGENT_NAME);
+  if (workspaceAgent) {
+    const currentFunctions = Array.isArray(workspaceAgent.functions)
+      ? workspaceAgent.functions
+      : [];
+    if (aibitat.fileAccessPolicy.mode === "open") {
+      if (!currentFunctions.includes(SHELL_AGENT_NAME))
+        currentFunctions.push(SHELL_AGENT_NAME);
+      if (!aibitat.functions.has(SHELL_AGENT_NAME)) {
+        aibitat.use(shellAgent.plugin({}));
+        aibitat.handlerProps.log?.(
+          `[FileAccessPolicy] websocket attachPlugins attached shell-agent in open mode`
+        );
+      }
+      workspaceAgent.functions = currentFunctions;
+    } else {
+      workspaceAgent.functions = currentFunctions.filter(
+        (name) => name !== SHELL_AGENT_NAME
+      );
+    }
+  }
+
+  aibitat.handlerProps.log?.(
+    `[FileAccessPolicy] websocket feedback fileAccessMode=${sessionMode} resolvedMode=${aibitat.fileAccessPolicy.mode} shellFiltered=${aibitat.fileAccessPolicy.mode !== "open"} workspaceAgentDef.functions.shell=${!!aibitat.agents.get(WORKSPACE_AGENT_NAME)?.functions?.includes?.(SHELL_AGENT_NAME)}`
+  );
 }
 
 const websocket = {
@@ -159,9 +277,10 @@ const websocket = {
         // type param must be set or else msg will not be shown or handled in UI.
         aibitat.socket = {
           send: (type = "__unhandled", content = "") => {
-            const event = eventFromSocketPayload(type, content);
+            const safeContent = sanitizeSocketPayload(type, content);
+            const event = eventFromSocketPayload(type, safeContent);
             if (event) recordAgentEvent(aibitat, event);
-            socket.send(JSON.stringify({ type, content }));
+            socketSend(socket, type, safeContent);
           },
         };
 
@@ -194,33 +313,37 @@ const websocket = {
           skillName,
           payload = {},
           description = null,
+          forceApproval = false,
+          allowAlwaysAllow = true,
         }) {
-          if (skillIsAutoApproved({ skillName })) {
+          if (!forceApproval && skillIsAutoApproved({ skillName })) {
             return {
               approved: true,
               message: "Skill is auto-approved.",
             };
           }
 
-          const {
-            AgentSkillWhitelist,
-          } = require("../../../../models/agentSkillWhitelist");
-          const isWhitelisted = await AgentSkillWhitelist.isWhitelisted(
-            skillName,
-            userId
-          );
-          if (isWhitelisted) {
-            console.log(
-              chalk.green(
-                userId
-                  ? `User ${userId} - `
-                  : "" + `Skill ${skillName} is whitelisted - auto-approved.`
-              )
+          if (!forceApproval) {
+            const {
+              AgentSkillWhitelist,
+            } = require("../../../../models/agentSkillWhitelist");
+            const isWhitelisted = await AgentSkillWhitelist.isWhitelisted(
+              skillName,
+              userId
             );
-            return {
-              approved: true,
-              message: "Skill is whitelisted - auto-approved.",
-            };
+            if (isWhitelisted) {
+              console.log(
+                chalk.green(
+                  userId
+                    ? `User ${userId} - `
+                    : "" + `Skill ${skillName} is whitelisted - auto-approved.`
+                )
+              );
+              return {
+                approved: true,
+                message: "Skill is whitelisted - auto-approved.",
+              };
+            }
           }
 
           const requestId = uuidv4();
@@ -267,6 +390,7 @@ const websocket = {
               skillName,
               payload,
               description,
+              allowAlwaysAllow,
               timeoutMs: TOOL_APPROVAL_TIMEOUT_MS,
               requestedAt: Date.now(),
             });
@@ -277,6 +401,7 @@ const websocket = {
                 skillName,
                 payload,
                 description,
+                allowAlwaysAllow,
                 timeoutMs: TOOL_APPROVAL_TIMEOUT_MS,
               })
             );
@@ -351,10 +476,18 @@ const websocket = {
                 if (data.type !== "awaitingFeedback") return;
                 delete socket.handleFeedback;
                 clearTimeout(socketTimeout);
-                resolve({
-                  feedback: data.feedback,
-                  attachments: data.attachments || [],
-                });
+                syncFileAccessPolicyFromClient(aibitat, data)
+                  .catch((error) =>
+                    aibitat.handlerProps.log?.(
+                      `[FileAccessPolicy] failed to sync websocket feedback mode: ${error.message}`
+                    )
+                  )
+                  .finally(() =>
+                    resolve({
+                      feedback: data.feedback,
+                      attachments: data.attachments || [],
+                    })
+                  );
                 return;
               };
 

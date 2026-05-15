@@ -43,7 +43,10 @@ module.exports.FilesystemGetFileInfo = {
                 `Using the filesystem-get-file-info tool.`
               );
 
-              const validPath = await filesystem.validatePath(filePath);
+              const validPath = await filesystem.validateReadPath(filePath, {
+                ...(this.super.handlerProps.fileAccessContext || {}),
+                tool: this.name,
+              });
 
               this.super.introspect(
                 `${this.caller}: Getting info for ${filePath}`

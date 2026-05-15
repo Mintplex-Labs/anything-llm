@@ -3,6 +3,8 @@ process.env.NODE_ENV === "development"
   : require("dotenv").config();
 
 require("./utils/logger")();
+const { hydrateProviderSettingsBackup } = require("./utils/helpers/updateENV");
+hydrateProviderSettingsBackup();
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");

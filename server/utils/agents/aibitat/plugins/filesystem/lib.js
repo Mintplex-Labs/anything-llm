@@ -4,6 +4,12 @@ const os = require("os");
 const { randomBytes } = require("crypto");
 const { createTwoFilesPatch } = require("diff");
 const { humanFileSize } = require("../../../../helpers");
+const {
+  validateReadPath,
+  validateWritePath,
+  getAllowedDirectories,
+  explainDenial,
+} = require("../../../../fileAccessPolicy");
 
 /**
  * Manages filesystem operations with security constraints.
@@ -268,6 +274,7 @@ class FilesystemManager {
       const filename = path.basename(filePath);
       const result = await collectorApi.parseDocument(filename, {
         absolutePath: filePath,
+        skipFileAccessPolicy: true,
       });
 
       if (!result || !result.success) {
@@ -395,6 +402,12 @@ class FilesystemManager {
     return [...this.#allowedDirectories];
   }
 
+  async getPolicyAllowedDirectories(context = {}) {
+    return (await getAllowedDirectories(context, "read"))
+      .map((dir) => dir.resolvedPath || dir.path)
+      .filter(Boolean);
+  }
+
   /**
    * Ensures the filesystem is initialized before use.
    * @returns {Promise<void>}
@@ -472,6 +485,48 @@ class FilesystemManager {
       }
       throw error;
     }
+  }
+
+  async validateReadPath(requestedPath, context = {}) {
+    const result = await this.#validatePolicyPath(
+      requestedPath,
+      context,
+      "read"
+    );
+    if (!result.allowed)
+      throw new Error(
+        `${result.reason}: ${result.message || explainDenial(result.reason)}`
+      );
+    return result.path;
+  }
+
+  async validateWritePath(requestedPath, context = {}) {
+    const result = await this.#validatePolicyPath(
+      requestedPath,
+      context,
+      "write"
+    );
+    if (!result.allowed)
+      throw new Error(
+        `${result.reason}: ${result.message || explainDenial(result.reason)}`
+      );
+    return result.path;
+  }
+
+  async #validatePolicyPath(requestedPath, context = {}, operation = "read") {
+    const validator =
+      operation === "write" ? validateWritePath : validateReadPath;
+    if (path.isAbsolute(this.#expandHome(String(requestedPath || "")))) {
+      return await validator(requestedPath, context);
+    }
+
+    const allowedDirs = await this.getPolicyAllowedDirectories(context);
+    for (const dir of allowedDirs) {
+      const candidate = path.resolve(dir, requestedPath);
+      const result = await validator(candidate, context);
+      if (result.allowed) return result;
+    }
+    return await validator(requestedPath, context);
   }
 
   /**

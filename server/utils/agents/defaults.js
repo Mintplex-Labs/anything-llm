@@ -39,7 +39,28 @@ const SKILL_FILTER_CONFIG = {
       require("./aibitat/plugins/outlook/lib").OutlookBridge.isToolAvailable(),
     disabledSettingKey: "disabled_outlook_skills",
   },
+  "shell-agent": {
+    getAvailability: () => true,
+    disabledSettingKey: null,
+  },
 };
+
+const SHELL_AGENT_NAME = AgentPlugins.shellAgent.name;
+
+function uniqueFunctions(functions = []) {
+  return [...new Set((functions || []).filter(Boolean))];
+}
+
+function functionsForFileAccessPolicy(functions = [], fileAccessPolicy = {}) {
+  const nextFunctions = uniqueFunctions(functions);
+  if (fileAccessPolicy?.mode === "open") {
+    if (!nextFunctions.includes(SHELL_AGENT_NAME))
+      nextFunctions.push(SHELL_AGENT_NAME);
+    return nextFunctions;
+  }
+
+  return nextFunctions.filter((name) => name !== SHELL_AGENT_NAME);
+}
 
 const USER_AGENT = {
   name: "USER",
@@ -116,13 +137,15 @@ async function agentSkillsFromSystemSettings() {
     const config = SKILL_FILTER_CONFIG[skillName];
     skillFilterState[skillName] = {
       available: await config.getAvailability(),
-      disabledSubSkills: safeJsonParse(
-        await SystemSettings.getValueOrFallback(
-          { label: config.disabledSettingKey },
-          "[]"
-        ),
-        []
-      ),
+      disabledSubSkills: config.disabledSettingKey
+        ? safeJsonParse(
+            await SystemSettings.getValueOrFallback(
+              { label: config.disabledSettingKey },
+              "[]"
+            ),
+            []
+          )
+        : [],
     };
   }
 
@@ -157,4 +180,6 @@ module.exports = {
   USER_AGENT,
   WORKSPACE_AGENT,
   agentSkillsFromSystemSettings,
+  functionsForFileAccessPolicy,
+  SHELL_AGENT_NAME,
 };

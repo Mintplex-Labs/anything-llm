@@ -4,7 +4,12 @@ process.env.NODE_ENV === "development"
 const { viewLocalFiles, normalizePath, isWithin } = require("../utils/files");
 const { purgeDocument, purgeFolder } = require("../utils/files/purgeDocument");
 const { getVectorDbClass } = require("../utils/helpers");
-const { updateENV, dumpENV } = require("../utils/helpers/updateENV");
+const {
+  dumpENV,
+  exportProviderSettingsBackup,
+  importProviderSettingsBackup,
+  updateENV,
+} = require("../utils/helpers/updateENV");
 const {
   reqBody,
   makeJWT,
@@ -58,6 +63,12 @@ const {
   simpleSSOEnabled,
   simpleSSOLoginDisabled,
 } = require("../utils/middleware/simpleSSOEnabled");
+const {
+  getGlobalPolicy,
+  setGlobalPolicy,
+  resolveEffectivePolicy,
+  auditLog,
+} = require("../utils/fileAccessPolicy");
 const { TemporaryAuthToken } = require("../models/temporaryAuthToken");
 const { SystemPromptVariables } = require("../models/systemPromptVariables");
 const { VALID_COMMANDS } = require("../utils/chats");
@@ -87,6 +98,97 @@ function systemEndpoints(app) {
   app.get("/migrate", async (_, response) => {
     response.sendStatus(200);
   });
+
+  app.get(
+    "/system/file-access-policy",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        const sessionMode = request.query?.sessionMode || null;
+        const globalPolicy = await getGlobalPolicy();
+        const effectivePolicy = await resolveEffectivePolicy({
+          globalPolicy,
+          sessionMode,
+          user,
+        });
+        const canModifyGlobal =
+          !multiUserMode(response) || user?.role === ROLES.admin;
+        const auditLogs = canModifyGlobal
+          ? await EventLogs.where(
+              { event: { startsWith: "file_access_" } },
+              20,
+              { occurredAt: "desc" }
+            )
+          : [];
+
+        response.status(200).json({
+          success: true,
+          policy: {
+            defaultMode: globalPolicy.defaultMode,
+            effectiveMode: effectivePolicy.mode,
+            authorizedDirectories: effectivePolicy.authorizedDirectories,
+            openBlacklist: globalPolicy.openBlacklist,
+            canUseTerminal: effectivePolicy.mode === "open",
+            canModifyGlobal,
+            auditLogs,
+          },
+        });
+      } catch (e) {
+        console.error(e.message, e);
+        response.status(500).json({ success: false, error: e.message });
+      }
+    }
+  );
+
+  app.patch(
+    "/system/file-access-policy",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        const updates = reqBody(request);
+        if (updates.defaultMode === "open" && updates.confirmOpen !== true) {
+          response.status(400).json({
+            success: false,
+            error: "Open mode requires explicit confirmation.",
+            reason: "approval_required",
+          });
+          return;
+        }
+
+        const result = await setGlobalPolicy(updates, user);
+        response.status(result.success ? 200 : 400).json(result);
+      } catch (e) {
+        console.error(e.message, e);
+        response.status(500).json({ success: false, error: e.message });
+      }
+    }
+  );
+
+  app.post(
+    "/system/file-access-policy/session-event",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        const {
+          mode,
+          workspaceSlug = null,
+          threadSlug = null,
+        } = reqBody(request);
+        await auditLog("file_access_session_mode_changed", {
+          user,
+          mode,
+          metadata: { workspaceSlug, threadSlug },
+        });
+        response.status(200).json({ success: true });
+      } catch (e) {
+        console.error(e.message, e);
+        response.status(500).json({ success: false, error: e.message });
+      }
+    }
+  );
 
   app.get("/env-dump", async (_, response) => {
     if (process.env.NODE_ENV !== "production")
@@ -565,6 +667,43 @@ function systemEndpoints(app) {
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.get(
+    "/system/provider-settings/export",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const query = queryParams(request);
+        const includeSecrets = query.includeSecrets === "true";
+        const backup = exportProviderSettingsBackup({ includeSecrets });
+        response.status(200).json({
+          success: true,
+          backup,
+        });
+      } catch (e) {
+        console.error(e.message);
+        response.status(500).json({ success: false, error: e.message });
+      }
+    }
+  );
+
+  app.post(
+    "/system/provider-settings/import",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const query = queryParams(request);
+        const body = reqBody(request);
+        const overwrite = query.overwrite === "true" || body.overwrite === true;
+        const payload = body.backup || body;
+        const result = importProviderSettingsBackup(payload, { overwrite });
+        response.status(result.success ? 200 : 400).json(result);
+      } catch (e) {
+        console.error(e.message);
+        response.status(500).json({ success: false, error: e.message });
       }
     }
   );

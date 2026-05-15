@@ -16,21 +16,18 @@ const {
   normalizePath,
   sanitizeFileName,
 } = require("../../../files");
+const {
+  validateReadPath,
+  resolveEffectivePolicy,
+  auditLog,
+  DENIAL_REASONS,
+  explainDenial,
+} = require("../../../fileAccessPolicy");
 
 const TOOL_NAME = "document-ingest-agent";
 const APPROVAL_DESCRIPTION =
   "是否使用 Batch 异步模式入库？Batch 成本更低，但文档完成前不可检索。";
 const DEFAULT_FILE_TYPES = ["pdf", "docx", "txt", "md", "csv"];
-const ALLOWED_HOME_DIRS = ["Desktop", "Documents", "Downloads"];
-const BLOCKED_SEGMENTS = new Set([
-  ".env",
-  ".ssh",
-  ".openclaw",
-  "node_modules",
-  "storage",
-]);
-const BLOCKED_ABSOLUTE_ROOTS = ["/System", "/Library", "/Applications"];
-
 function isInsideOrEqual(outer, inner) {
   const relative = path.relative(outer, inner);
   return relative === "" || (!!relative && !relative.startsWith(".."));
@@ -56,42 +53,11 @@ function safeRealpath(targetPath = "") {
   }
 }
 
-function allowedLocalRoots() {
-  return ALLOWED_HOME_DIRS.map((dir) => path.join(os.homedir(), dir))
-    .map((dirPath) => safeRealpath(dirPath) || path.resolve(dirPath))
-    .filter(Boolean);
-}
-
 function safeDisplayPath(realPath = "") {
   const home = safeRealpath(os.homedir()) || os.homedir();
   if (realPath && isInsideOrEqual(home, realPath))
     return path.relative(home, realPath).split(path.sep).join("/");
   return path.basename(realPath);
-}
-
-function pathSegments(realPath = "") {
-  return String(realPath || "")
-    .split(path.sep)
-    .filter(Boolean);
-}
-
-function blockedPathReason(realPath = "") {
-  if (!realPath) return "path_not_found";
-  for (const blockedRoot of BLOCKED_ABSOLUTE_ROOTS) {
-    if (isInsideOrEqual(blockedRoot, realPath)) return "blocked_system_path";
-  }
-
-  const segments = pathSegments(realPath);
-  for (const segment of segments) {
-    if (BLOCKED_SEGMENTS.has(segment)) return "blocked_sensitive_path";
-    if (segment.startsWith(".")) return "blocked_hidden_path";
-  }
-  return null;
-}
-
-function isAllowedLocalPath(realPath = "") {
-  const roots = allowedLocalRoots();
-  return roots.some((root) => isInsideOrEqual(root, realPath));
 }
 
 function resolveLocalPath(inputPath = "") {
@@ -173,25 +139,25 @@ function matchesGlob(realPath = "", rootPath = "", pattern = null) {
   return matcher.test(relativePath) || matcher.test(path.basename(realPath));
 }
 
-function localPathSafetyError(realPath = "") {
+async function localPathSafetyError(realPath = "", context = {}) {
   if (!realPath) return "path_not_found";
-  const blockedReason = blockedPathReason(realPath);
-  if (blockedReason) return blockedReason;
-  if (!isAllowedLocalPath(realPath)) return "path_not_allowed";
-  return null;
+  const validation = await validateReadPath(realPath, context);
+  return validation.allowed ? null : validation.reason;
 }
 
-function scanLocalPath({
+async function scanLocalPath({
   inputPath,
   recursive = true,
   fileTypes = DEFAULT_FILE_TYPES,
   glob = null,
+  context = {},
 }) {
   const rootPath = resolveLocalPath(inputPath);
-  const rootError = localPathSafetyError(rootPath);
+  const rootError = await localPathSafetyError(rootPath, context);
   if (rootError)
     return {
       error: rootError,
+      rootPath,
       scannedFiles: [],
       files: [],
       skippedFiles: [
@@ -206,6 +172,7 @@ function scanLocalPath({
   const files = [];
   const skippedFiles = [];
   const seen = new Set();
+  let estimatedBytes = 0;
 
   function recordSkip(realPath, reason) {
     skippedFiles.push({
@@ -214,16 +181,31 @@ function scanLocalPath({
     });
   }
 
-  function visit(realPath, scanRoot) {
-    const safetyError = localPathSafetyError(realPath);
+  async function visit(realPath, scanRoot) {
+    const safetyError = await localPathSafetyError(realPath, context);
     if (safetyError) {
       recordSkip(realPath, safetyError);
       return;
     }
 
-    const stat = fs.statSync(realPath);
+    let stat;
+    try {
+      stat = fs.statSync(realPath);
+    } catch {
+      recordSkip(realPath, "path_not_readable");
+      return;
+    }
+
     if (stat.isDirectory()) {
-      for (const entry of fs.readdirSync(realPath, { withFileTypes: true })) {
+      let entries = [];
+      try {
+        entries = fs.readdirSync(realPath, { withFileTypes: true });
+      } catch {
+        recordSkip(realPath, "path_not_readable");
+        return;
+      }
+
+      for (const entry of entries) {
         const childPath = path.join(realPath, entry.name);
         const childRealPath = safeRealpath(childPath);
         if (!childRealPath) {
@@ -231,18 +213,21 @@ function scanLocalPath({
           continue;
         }
 
-        const childSafetyError = localPathSafetyError(childRealPath);
+        const childSafetyError = await localPathSafetyError(
+          childRealPath,
+          context
+        );
         if (childSafetyError) {
           recordSkip(childRealPath, childSafetyError);
           continue;
         }
 
         if (entry.isDirectory()) {
-          if (recursive) visit(childRealPath, scanRoot);
+          if (recursive) await visit(childRealPath, scanRoot);
           continue;
         }
         if (entry.isFile() || entry.isSymbolicLink())
-          visit(childRealPath, scanRoot);
+          await visit(childRealPath, scanRoot);
       }
       return;
     }
@@ -255,6 +240,7 @@ function scanLocalPath({
     if (seen.has(realPath)) return;
     seen.add(realPath);
     scannedFiles.push(safeDisplayPath(realPath));
+    estimatedBytes += stat.size;
 
     if (!supportedFileType(realPath, fileTypes)) {
       recordSkip(realPath, "unsupported_file_type");
@@ -272,8 +258,15 @@ function scanLocalPath({
     });
   }
 
-  visit(rootPath, rootPath);
-  return { error: null, scannedFiles, files, skippedFiles };
+  await visit(rootPath, rootPath);
+  return {
+    error: null,
+    rootPath,
+    scannedFiles,
+    files,
+    skippedFiles,
+    estimatedBytes,
+  };
 }
 
 function isUnsafeDocumentIdentifier(identifier = "") {
@@ -650,7 +643,7 @@ const documentIngestAgent = {
               path: {
                 type: "string",
                 description:
-                  "A local file or directory path to scan, parse, and ingest. Supports ~, absolute paths, and relative paths. Allowed roots are Desktop, Documents, and Downloads.",
+                  "A local file or directory path to scan, parse, and ingest. Supports ~, absolute paths, and relative paths that are allowed by the current file access mode.",
               },
               recursive: {
                 type: "boolean",
@@ -729,6 +722,53 @@ const documentIngestAgent = {
             // continue with direct ingest instead of aborting the document import.
             return approval.approved ? "batch" : "direct";
           },
+          requestScanApproval: async function (scanResult = {}, context = {}) {
+            const policy = await resolveEffectivePolicy(context);
+            const excludedByReason = scanResult.skippedFiles.reduce(
+              (acc, file) => {
+                acc[file.reason] = (acc[file.reason] || 0) + 1;
+                return acc;
+              },
+              {}
+            );
+            const payload = {
+              root: scanResult.rootPath,
+              mode: policy.mode,
+              estimatedFiles: scanResult.files.length,
+              scannedFiles: scanResult.scannedFiles.length,
+              excludedCount: scanResult.skippedFiles.length,
+              excludedByReason,
+              estimatedBytes: scanResult.estimatedBytes || 0,
+              fileTypes: scanResult.fileTypes || DEFAULT_FILE_TYPES,
+              glob: scanResult.glob || null,
+            };
+
+            await auditLog("file_access_scan_previewed", {
+              user: context.user || context.invocation?.user_id || null,
+              workspace: context.workspace || context.invocation?.workspace,
+              thread: context.thread || context.invocation,
+              mode: policy.mode,
+              tool: TOOL_NAME,
+              root: scanResult.rootPath,
+              allowed: null,
+              metadata: payload,
+            });
+
+            if (!this.super.requestToolApproval)
+              return {
+                approved: false,
+                message: explainDenial(DENIAL_REASONS.approvalRequired),
+              };
+
+            return await this.super.requestToolApproval({
+              skillName: TOOL_NAME,
+              description:
+                "Approve this local directory scan before files are parsed and indexed.",
+              payload,
+              forceApproval: true,
+              allowAlwaysAllow: false,
+            });
+          },
           batchSupportResponse: function ({
             source,
             scannedFiles,
@@ -751,13 +791,22 @@ const documentIngestAgent = {
             this.super.handlerProps.log(
               "document-ingest-agent: local path scan"
             );
-            const scanResult = scanLocalPath({
+            const fileAccessContext = {
+              ...(this.super.handlerProps.fileAccessContext || {}),
+              tool: TOOL_NAME,
+            };
+            const fileTypes = input.file_types || DEFAULT_FILE_TYPES;
+            const glob = input.glob || null;
+            const scanResult = await scanLocalPath({
               inputPath: input.path,
               recursive:
                 typeof input.recursive === "boolean" ? input.recursive : true,
-              fileTypes: input.file_types || DEFAULT_FILE_TYPES,
-              glob: input.glob || null,
+              fileTypes,
+              glob,
+              context: fileAccessContext,
             });
+            scanResult.fileTypes = fileTypes;
+            scanResult.glob = glob;
 
             if (scanResult.error)
               return JSON.stringify({
@@ -781,6 +830,25 @@ const documentIngestAgent = {
                 batchJobId: null,
                 embeddingStatus: null,
                 error: "no_supported_files_found",
+              });
+
+            const scanApproval = await this.requestScanApproval(
+              scanResult,
+              fileAccessContext
+            );
+            if (!scanApproval.approved)
+              return JSON.stringify({
+                success: false,
+                source: "local_path",
+                scannedFiles: scanResult.scannedFiles,
+                importedFiles: [],
+                skippedFiles: scanResult.skippedFiles,
+                batchJobId: null,
+                embeddingStatus: null,
+                reason: DENIAL_REASONS.approvalDenied,
+                error:
+                  scanApproval.message ||
+                  explainDenial(DENIAL_REASONS.approvalDenied),
               });
 
             const embeddingModeOverride = await this.selectEmbeddingMode({
@@ -824,6 +892,19 @@ const documentIngestAgent = {
             );
             const workspace = this.super.handlerProps.invocation.workspace;
             const userId = this.super.handlerProps.invocation.user_id || null;
+            await auditLog("file_access_index_started", {
+              user: userId,
+              workspace,
+              thread: this.super.handlerProps.invocation,
+              mode: (await resolveEffectivePolicy(fileAccessContext)).mode,
+              tool: TOOL_NAME,
+              root: scanResult.rootPath,
+              allowed: true,
+              metadata: {
+                fileCount: scanResult.files.length,
+                excludedCount: scanResult.skippedFiles.length,
+              },
+            });
             const {
               failedToEmbed = [],
               errors: addErrors = [],

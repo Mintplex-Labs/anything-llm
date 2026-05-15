@@ -406,6 +406,13 @@ function adminEndpoints(app) {
             case "disabled_filesystem_skills":
               requestedSettings[label] = safeJsonParse(setting?.value, []);
               break;
+            case "file_access_default_mode":
+              requestedSettings[label] = setting?.value || "sandbox";
+              break;
+            case "file_access_authorized_directories":
+            case "file_access_open_blacklist":
+              requestedSettings[label] = safeJsonParse(setting?.value, []);
+              break;
             case "disabled_create_files_skills":
               requestedSettings[label] = safeJsonParse(setting?.value, []);
               break;
@@ -474,8 +481,25 @@ function adminEndpoints(app) {
           updates = filteredUpdates;
         }
 
-        await SystemSettings.updateSettings(updates);
-        response.status(200).json({ success: true, error: null });
+        const result = await SystemSettings.updateSettings(updates);
+        const fileAccessKeys = [
+          "file_access_default_mode",
+          "file_access_authorized_directories",
+          "file_access_open_blacklist",
+        ];
+        if (result.success && fileAccessKeys.some((key) => key in updates)) {
+          await EventLogs.logEvent(
+            "file_access_global_policy_updated",
+            {
+              updatedKeys: Object.keys(updates).filter((key) =>
+                fileAccessKeys.includes(key)
+              ),
+              mode: updates.file_access_default_mode || null,
+            },
+            user?.id
+          );
+        }
+        response.status(200).json(result);
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();

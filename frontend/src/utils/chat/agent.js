@@ -10,6 +10,8 @@ import {
 
 export const AGENT_SESSION_START = "agentSessionStart";
 export const AGENT_SESSION_END = "agentSessionEnd";
+const MAX_TOOL_OUTPUT_PREVIEW_CHARS = 500;
+const MAX_TIMELINE_EVENT_CHARS = 500;
 
 export function websocketURI() {
   const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
@@ -25,6 +27,69 @@ function dispatchThreadRename(content = {}) {
       detail: { threadSlug: slug, newName: name },
     })
   );
+}
+
+function truncateText(value = "", maxChars = MAX_TIMELINE_EVENT_CHARS) {
+  const text = String(value || "");
+  return text.length > maxChars ? `${text.slice(0, maxChars)}...` : text;
+}
+
+function compactApprovalPayload(payload = {}) {
+  if (!payload || typeof payload !== "object") return payload;
+  const allowedKeys = [
+    "command",
+    "cwd",
+    "mode",
+    "risk",
+    "root",
+    "estimatedFiles",
+    "scannedFiles",
+    "excludedCount",
+    "estimatedBytes",
+    "fileTypes",
+    "glob",
+    "excludedByReason",
+  ];
+  return allowedKeys.reduce((acc, key) => {
+    if (payload[key] === undefined) return acc;
+    acc[key] =
+      typeof payload[key] === "string"
+        ? truncateText(payload[key], MAX_TIMELINE_EVENT_CHARS)
+        : payload[key];
+    return acc;
+  }, {});
+}
+
+function toolResultEvent(content = {}) {
+  return {
+    type: "timeline_event",
+    event: {
+      type: "tool_result",
+      uuid: content.uuid,
+      content: truncateText(
+        content.summary ||
+          content.content ||
+          `Tool ${content.toolName || "unknown"} returned a result.`
+      ),
+      toolName: content.toolName,
+      summary: content.summary,
+      runId: content.runId,
+      stored: content.stored,
+      storageError: content.storageError,
+      resultSize: content.resultSize,
+      truncated: content.truncated,
+      exitCode: content.exitCode,
+      timedOut: content.timedOut,
+      root: content.root,
+      fileCount: content.fileCount,
+      excludedCount: content.excludedCount,
+      totalSize: content.totalSize,
+      outputPreview: truncateText(
+        content.outputPreview || "",
+        MAX_TOOL_OUTPUT_PREVIEW_CHARS
+      ),
+    },
+  };
 }
 
 function reportStreamEvent(content = {}) {
@@ -101,27 +166,14 @@ function reportStreamEvent(content = {}) {
       event: {
         type: "tool_call",
         uuid,
-        content: content.content || "",
+        content: truncateText(content.content || ""),
         toolName: content.toolName,
-        args: content.arguments,
-        payload: content,
       },
     };
   }
 
   if (type === "toolCallResult") {
-    return {
-      type: "timeline_event",
-      event: {
-        type: "tool_result",
-        uuid,
-        content: content.content || "",
-        toolName: content.toolName,
-        args: content.arguments,
-        result: content.result,
-        payload: content,
-      },
-    };
+    return toolResultEvent(content);
   }
 
   if (type === "statusResponse") {
@@ -130,8 +182,7 @@ function reportStreamEvent(content = {}) {
       event: {
         type: "thought",
         uuid,
-        content: content.content || "",
-        payload: content,
+        content: truncateText(content.content || ""),
       },
     };
   }
@@ -237,8 +288,9 @@ export default function handleSocketResponse(_socket, event) {
         type: "approval_request",
         requestId: data.requestId,
         skillName: data.skillName,
-        payload: data.payload,
-        description: data.description,
+        payload: compactApprovalPayload(data.payload),
+        description: truncateText(data.description || ""),
+        allowAlwaysAllow: data.allowAlwaysAllow !== false,
         timeoutMs: data.timeoutMs,
         requestedAt: Date.now(),
         content: `Approval requested for ${data.skillName}`,
@@ -270,8 +322,7 @@ export default function handleSocketResponse(_socket, event) {
       event: {
         type: "tool_result",
         content: "File generated.",
-        payload: data.content,
-        result: data.content,
+        summary: "File generated.",
       },
     };
     debugChatTurn("normalize:event", {
@@ -287,8 +338,7 @@ export default function handleSocketResponse(_socket, event) {
       event: {
         type: "tool_result",
         content: "Chart generated.",
-        payload: data.content,
-        result: data.content,
+        summary: "Chart generated.",
       },
     };
     debugChatTurn("normalize:event", {
@@ -311,8 +361,7 @@ export default function handleSocketResponse(_socket, event) {
     type: "timeline_event",
     event: {
       type: "thought",
-      content: data.content || "",
-      payload: data,
+      content: truncateText(data.content || ""),
     },
   };
   debugChatTurn("normalize:event", {

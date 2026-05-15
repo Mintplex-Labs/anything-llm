@@ -8,12 +8,21 @@ const { User } = require("../../models/user");
 const { Workspace } = require("../../models/workspace");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { safeJsonParse } = require("../http");
-const { USER_AGENT, WORKSPACE_AGENT } = require("./defaults");
+const {
+  USER_AGENT,
+  WORKSPACE_AGENT,
+  functionsForFileAccessPolicy,
+  SHELL_AGENT_NAME,
+} = require("./defaults");
 const ImportedPlugin = require("./imported");
 const { AgentFlows } = require("../agentFlows");
 const MCPCompatibilityLayer = require("../MCP");
-const { getAndClearInvocationAttachments } = require("../chats/agents");
+const {
+  getAndClearInvocationAttachments,
+  getInvocationFileAccess,
+} = require("../chats/agents");
 const { DocumentManager } = require("../DocumentManager");
+const { resolveEffectivePolicy } = require("../fileAccessPolicy");
 
 class AgentHandler {
   #invocationUUID;
@@ -24,6 +33,7 @@ class AgentHandler {
   provider = null;
   model = null;
   attachments = [];
+  fileAccessContext = {};
 
   constructor({ uuid }) {
     this.#invocationUUID = uuid;
@@ -603,6 +613,10 @@ class AgentHandler {
       const AIbitatPlugin = AgentPlugins[name];
       this.aibitat.use(AIbitatPlugin.plugin(callOpts));
       this.log(`Attached ${name} plugin to Agent cluster`);
+      if (name === SHELL_AGENT_NAME)
+        this.log(
+          `[FileAccessPolicy] attachPlugins attached shell-agent in ${this.aibitat?.fileAccessPolicy?.mode || "unknown"} mode`
+        );
     }
   }
 
@@ -618,6 +632,10 @@ class AgentHandler {
       this.invocation.workspace,
       user
     );
+    workspaceAgentDef.functions = functionsForFileAccessPolicy(
+      workspaceAgentDef.functions || [],
+      this.aibitat?.fileAccessPolicy
+    );
 
     this.aibitat.agent(USER_AGENT.name, userAgentDef);
     this.aibitat.agent(WORKSPACE_AGENT.name, workspaceAgentDef);
@@ -625,6 +643,13 @@ class AgentHandler {
       ...(userAgentDef?.functions || []),
       ...(workspaceAgentDef?.functions || []),
     ];
+    this.#funcsToLoad = functionsForFileAccessPolicy(
+      this.#funcsToLoad,
+      this.aibitat?.fileAccessPolicy
+    );
+    this.log(
+      `[FileAccessPolicy] sessionMode=${this.fileAccessContext?.sessionMode || "none"} resolvedMode=${this.aibitat?.fileAccessPolicy?.mode || "unknown"} workspaceAgentDef.functions.shell=${workspaceAgentDef.functions.includes(SHELL_AGENT_NAME)} funcsToLoad.shell=${this.#funcsToLoad.includes(SHELL_AGENT_NAME)}`
+    );
   }
 
   async init() {
@@ -633,6 +658,17 @@ class AgentHandler {
 
     // Retrieve cached attachments (images, etc.) from the HTTP request
     this.attachments = getAndClearInvocationAttachments(this.#invocationUUID);
+    const cachedFileAccess = getInvocationFileAccess(this.#invocationUUID);
+    this.fileAccessContext = {
+      sessionMode:
+        cachedFileAccess?.mode || cachedFileAccess?.sessionMode || null,
+      invocation: this.invocation,
+      workspace: this.invocation.workspace,
+      user: this.invocation.user_id ? { id: this.invocation.user_id } : null,
+      thread: this.invocation.thread_id
+        ? { id: this.invocation.thread_id }
+        : null,
+    };
 
     return this;
   }
@@ -712,8 +748,16 @@ class AgentHandler {
       handlerProps: {
         invocation: this.invocation,
         log: this.log,
+        fileAccessContext: this.fileAccessContext,
       },
     });
+
+    this.aibitat.fileAccessPolicy = await resolveEffectivePolicy(
+      this.fileAccessContext
+    );
+    this.log(
+      `[FileAccessPolicy] createAIbitat sessionMode=${this.fileAccessContext?.sessionMode || "none"} resolvedMode=${this.aibitat.fileAccessPolicy.mode}`
+    );
 
     // Register callback to fetch fresh parsed file context on each chat turn
     // This injects parsed files into user messages instead of system prompt

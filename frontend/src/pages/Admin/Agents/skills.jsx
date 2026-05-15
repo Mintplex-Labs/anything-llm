@@ -14,6 +14,7 @@ import {
   ChartBar,
   FolderOpen,
   FilePlus,
+  Terminal,
 } from "@phosphor-icons/react";
 import RAGImage from "@/media/agents/rag-memory.png";
 import SummarizeImage from "@/media/agents/view-summarize.png";
@@ -103,6 +104,15 @@ export const getConfigurableSkills = (
     description: t("agent.skill.sql.description"),
     component: AgentSQLConnectorSelection,
     skill: "sql-agent",
+  },
+  "shell-agent": {
+    title: "Shell",
+    description:
+      "Execute local shell commands. Only available in Open file access mode and always requires approval.",
+    component: GenericSkillPanel,
+    skill: "shell-agent",
+    icon: Terminal,
+    image: FileSystemImage,
   },
 });
 

@@ -67,7 +67,13 @@ module.exports.FilesystemReadMultipleFiles = {
               const results = await Promise.all(
                 paths.map(async (filePath) => {
                   try {
-                    const validPath = await filesystem.validatePath(filePath);
+                    const validPath = await filesystem.validateReadPath(
+                      filePath,
+                      {
+                        ...(this.super.handlerProps.fileAccessContext || {}),
+                        tool: this.name,
+                      }
+                    );
                     const filename = path.basename(validPath);
 
                     if (filesystem.isImageFile(validPath)) {

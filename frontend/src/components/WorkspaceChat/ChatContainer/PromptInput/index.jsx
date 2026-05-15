@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import debounce from "lodash.debounce";
-import { ArrowUp, At } from "@phosphor-icons/react";
+import { ArrowUp, At, CaretDown, Shield } from "@phosphor-icons/react";
 import StopGenerationButton from "./StopGenerationButton";
 import SpeechToText from "./SpeechToText";
 import { Tooltip } from "react-tooltip";
@@ -19,10 +20,16 @@ import ToolsMenu, { TOOLS_MENU_KEYBOARD_EVENT } from "./ToolsMenu";
 import { useSearchParams } from "react-router-dom";
 import { useIsAgentSessionActive } from "@/utils/chat/agent";
 import { debugChatTurn } from "@/utils/chat/debug";
+import FileAccessPolicy from "@/models/fileAccessPolicy";
 
 export const PROMPT_INPUT_ID = "primary-prompt-input";
 export const PROMPT_INPUT_EVENT = "set_prompt_input";
 const MAX_EDIT_STACK_SIZE = 100;
+const FILE_ACCESS_MODE_OPTIONS = [
+  FileAccessPolicy.modes.sandbox,
+  FileAccessPolicy.modes.authorized,
+  FileAccessPolicy.modes.open,
+];
 
 /**
  * @param {Workspace} props.workspace - workspace object
@@ -414,6 +421,11 @@ export default function PromptInput({
                     textareaRef={textareaRef}
                     autoOpenedToolsRef={autoOpenedToolsRef}
                   />
+                  <FileAccessModeButton
+                    workspaceSlug={workspaceSlug || workspace?.slug}
+                    threadSlug={threadSlug}
+                    textareaRef={textareaRef}
+                  />
                 </div>
                 <div className="flex gap-x-2 items-center">
                   <SpeechToText sendCommand={sendCommand} />
@@ -432,6 +444,202 @@ export default function PromptInput({
           </div>
         </div>
       </form>
+    </div>
+  );
+}
+
+function FileAccessModeButton({ workspaceSlug, threadSlug, textareaRef }) {
+  const [showMenu, setShowMenu] = useState(false);
+  const [menuStyle, setMenuStyle] = useState({});
+  const buttonRef = useRef(null);
+  const menuRef = useRef(null);
+  const [mode, setMode] = useState(
+    () =>
+      FileAccessPolicy.getSessionMode(workspaceSlug, threadSlug) ||
+      FileAccessPolicy.modes.sandbox
+  );
+  const [defaultMode, setDefaultMode] = useState(
+    FileAccessPolicy.modes.sandbox
+  );
+
+  useEffect(() => {
+    let mounted = true;
+    const sessionMode = FileAccessPolicy.getSessionMode(
+      workspaceSlug,
+      threadSlug
+    );
+    FileAccessPolicy.getPolicy(sessionMode).then((res) => {
+      if (!mounted || !res?.policy) return;
+      const nextMode =
+        sessionMode ||
+        res.policy.effectiveMode ||
+        res.policy.defaultMode ||
+        FileAccessPolicy.modes.sandbox;
+      setMode(FileAccessPolicy.normalizeMode(nextMode));
+      setDefaultMode(
+        FileAccessPolicy.normalizeMode(
+          res.policy.defaultMode || FileAccessPolicy.modes.sandbox
+        )
+      );
+      if (!sessionMode)
+        FileAccessPolicy.setSessionMode(nextMode, workspaceSlug, threadSlug);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, [workspaceSlug, threadSlug]);
+
+  const config = {
+    sandbox: {
+      label: "Sandbox",
+      color: "text-zinc-300 light:text-slate-600",
+      active: "bg-zinc-700 light:bg-slate-200",
+      tooltip: "仅访问项目内部文件",
+    },
+    authorized: {
+      label: "Authorized",
+      color: "text-sky-400 light:text-sky-600",
+      active: "bg-sky-900/40 light:bg-sky-100",
+      tooltip: "可访问桌面、文稿、下载等授权目录",
+    },
+    open: {
+      label: "Open",
+      color: "text-red-400 light:text-red-600",
+      active: "bg-red-900/40 light:bg-red-100",
+      tooltip: "完全访问本机文件与终端（高风险）",
+    },
+  };
+
+  useEffect(() => {
+    if (!showMenu) return;
+
+    function positionMenu() {
+      const rect = buttonRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      const menuWidth = 180;
+      const menuHeight = 136;
+      setMenuStyle({
+        position: "fixed",
+        left: `${Math.min(
+          Math.max(8, rect.left),
+          window.innerWidth - menuWidth - 8
+        )}px`,
+        top: `${Math.max(8, rect.top - menuHeight)}px`,
+        width: `${menuWidth}px`,
+        zIndex: 9999,
+      });
+    }
+
+    function handlePointerDown(event) {
+      if (buttonRef.current?.contains(event.target)) return;
+      if (menuRef.current?.contains(event.target)) return;
+      setShowMenu(false);
+    }
+
+    function handleEscape(event) {
+      if (event.key === "Escape") setShowMenu(false);
+    }
+
+    positionMenu();
+    window.addEventListener("resize", positionMenu);
+    window.addEventListener("scroll", positionMenu, true);
+    window.addEventListener("keydown", handleEscape);
+    document.addEventListener("mousedown", handlePointerDown);
+    return () => {
+      window.removeEventListener("resize", positionMenu);
+      window.removeEventListener("scroll", positionMenu, true);
+      window.removeEventListener("keydown", handleEscape);
+      document.removeEventListener("mousedown", handlePointerDown);
+    };
+  }, [showMenu]);
+
+  async function setSessionMode(nextMode) {
+    const normalized = FileAccessPolicy.normalizeMode(nextMode);
+    if (
+      normalized === FileAccessPolicy.modes.open &&
+      !window.confirm(
+        "Open mode grants broad local file access and enables shell commands after approval. Continue?"
+      )
+    ) {
+      return;
+    }
+    FileAccessPolicy.setSessionMode(normalized, workspaceSlug, threadSlug);
+    debugChatTurn("FileAccessModeButton:setSessionMode", {
+      workspaceSlug,
+      threadSlug,
+      fileAccessMode: normalized,
+    });
+    setMode(normalized);
+    setShowMenu(false);
+    textareaRef?.current?.focus();
+    await FileAccessPolicy.logSessionModeChange({
+      mode: normalized,
+      workspaceSlug,
+      threadSlug,
+    });
+  }
+
+  const current = config[mode] || config.sandbox;
+  return (
+    <div className="relative">
+      <button
+        ref={buttonRef}
+        type="button"
+        onClick={() => setShowMenu((prev) => !prev)}
+        data-tooltip-id="file-access-mode"
+        data-tooltip-content={current.tooltip}
+        className={`group border-none cursor-pointer flex items-center justify-center gap-x-1 h-6 px-2 rounded-full hover:bg-zinc-700 light:hover:bg-slate-200 ${showMenu ? current.active : ""}`}
+        aria-label={`File access mode: ${current.label}`}
+      >
+        <Shield size={15} className={current.color} weight="bold" />
+        <span className={`text-xs font-medium ${current.color}`}>
+          {current.label}
+        </span>
+        <CaretDown size={12} className={current.color} />
+      </button>
+      <Tooltip
+        id="file-access-mode"
+        place="bottom"
+        delayShow={300}
+        className="tooltip !text-xs z-99"
+      />
+      {showMenu &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div
+            ref={menuRef}
+            style={menuStyle}
+            className="rounded-lg border border-white/10 light:border-slate-200 bg-zinc-900 light:bg-white shadow-xl overflow-hidden"
+          >
+            {FILE_ACCESS_MODE_OPTIONS.map((option) => (
+              <button
+                key={option}
+                type="button"
+                onClick={() => setSessionMode(option)}
+                className={`w-full border-none text-left px-3 py-2 flex items-center gap-x-2 hover:bg-zinc-800 light:hover:bg-slate-100 ${
+                  option === mode ? "bg-zinc-800 light:bg-slate-100" : ""
+                }`}
+              >
+                <Shield
+                  size={15}
+                  className={config[option].color}
+                  weight="bold"
+                />
+                <div className="flex flex-col">
+                  <span className="text-sm text-white light:text-slate-900">
+                    {config[option].label}
+                  </span>
+                  {option === defaultMode && (
+                    <span className="text-[10px] text-white/50 light:text-slate-500">
+                      Global default
+                    </span>
+                  )}
+                </div>
+              </button>
+            ))}
+          </div>,
+          document.body
+        )}
     </div>
   );
 }

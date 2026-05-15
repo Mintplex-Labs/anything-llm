@@ -34,6 +34,11 @@ const ChatThreadDraftContext = createContext(null);
 const STORAGE_PREFIX = "chat-thread-draft";
 const ACTIVE_RUNNING_STORAGE_KEY = "chat-thread-active-running";
 const RUNNING_STALE_TIMEOUT_MS = 6 * 60 * 1000;
+const MAX_DRAFT_STORAGE_CHARS = 450_000;
+const MAX_FINAL_CONTENT_STORAGE_CHARS = 5_000;
+const MAX_TIMELINE_EVENT_CHARS = 500;
+const MAX_TOOL_OUTPUT_PREVIEW_CHARS = 500;
+const MAX_STORED_TIMELINE_EVENTS = 20;
 
 export function getChatThreadKey(workspaceSlug, threadSlug = null) {
   if (!workspaceSlug) return null;
@@ -107,12 +112,170 @@ function draftFromStorageValue(value) {
   return draft;
 }
 
-function serializableDraft(draft) {
+function truncateText(value = "", maxChars = MAX_TIMELINE_EVENT_CHARS) {
+  const text = String(value || "");
+  return text.length > maxChars ? `${text.slice(0, maxChars)}...` : text;
+}
+
+function compactPayload(payload = {}) {
+  if (!payload || typeof payload !== "object") return payload;
+  const allowedKeys = [
+    "command",
+    "cwd",
+    "mode",
+    "risk",
+    "root",
+    "estimatedFiles",
+    "scannedFiles",
+    "excludedCount",
+    "estimatedBytes",
+    "fileTypes",
+    "glob",
+    "excludedByReason",
+  ];
+  return allowedKeys.reduce((acc, key) => {
+    if (payload[key] === undefined) return acc;
+    acc[key] =
+      typeof payload[key] === "string"
+        ? truncateText(payload[key], MAX_TIMELINE_EVENT_CHARS)
+        : payload[key];
+    return acc;
+  }, {});
+}
+
+function sanitizeTimelineEventForStorage(event = {}) {
+  if (!event || typeof event !== "object") return null;
+  const base = {
+    id: event.id,
+    uuid: event.uuid,
+    type: event.type,
+    createdAt: event.createdAt,
+    updatedAt: event.updatedAt,
+    status: event.status,
+    content: truncateText(event.summary || event.content || ""),
+  };
+
+  if (event.type === "tool_call") {
+    return {
+      ...base,
+      toolName: event.toolName,
+      content: truncateText(
+        event.content || `Calling ${event.toolName || "tool"}...`
+      ),
+    };
+  }
+
+  if (event.type === "tool_result") {
+    return {
+      ...base,
+      toolName: event.toolName,
+      runId: event.runId,
+      stored: event.stored,
+      storageError: event.storageError,
+      resultSize: event.resultSize,
+      truncated: event.truncated,
+      exitCode: event.exitCode,
+      timedOut: event.timedOut,
+      root: event.root,
+      fileCount: event.fileCount,
+      excludedCount: event.excludedCount,
+      totalSize: event.totalSize,
+      outputPreview: truncateText(
+        event.outputPreview || "",
+        MAX_TOOL_OUTPUT_PREVIEW_CHARS
+      ),
+    };
+  }
+
+  if (event.type === "approval_request") {
+    return {
+      ...base,
+      requestId: event.requestId,
+      skillName: event.skillName,
+      description: truncateText(event.description || ""),
+      allowAlwaysAllow: event.allowAlwaysAllow,
+      timeoutMs: event.timeoutMs,
+      requestedAt: event.requestedAt,
+      payload: compactPayload(event.payload),
+    };
+  }
+
+  if (event.type === "approval_result") {
+    return {
+      ...base,
+      requestId: event.requestId,
+      skillName: event.skillName,
+      approved: event.approved,
+      reason: event.reason,
+    };
+  }
+
+  return base;
+}
+
+function serializeItemForStorage(item = {}, { minimal = false } = {}) {
+  if (item.type === "user") {
+    return {
+      id: item.id,
+      turnId: item.turnId,
+      type: item.type,
+      role: item.role,
+      content: minimal ? "" : truncateText(item.content || "", 2_000),
+      chatId: item.chatId,
+      createdAt: item.createdAt,
+      attachments: [],
+    };
+  }
+
+  if (isAssistantTurn(item)) {
+    const timeline = minimal
+      ? []
+      : (item.timeline || [])
+          .slice(-MAX_STORED_TIMELINE_EVENTS)
+          .map(sanitizeTimelineEventForStorage)
+          .filter(Boolean);
+    const shouldStoreFinalContent =
+      item.status !== TURN_STATUSES.completed || !item.chatId;
+    return {
+      id: item.id,
+      turnId: item.turnId,
+      type: item.type,
+      role: item.role,
+      userMessageId: item.userMessageId,
+      status: item.status,
+      chatId: item.chatId,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+      error: truncateText(item.error || ""),
+      finalContent:
+        minimal || !shouldStoreFinalContent
+          ? ""
+          : truncateText(
+              item.finalContent || "",
+              MAX_FINAL_CONTENT_STORAGE_CHARS
+            ),
+      sources: minimal ? [] : item.sources || [],
+      metrics: minimal ? {} : item.metrics || {},
+      timeline,
+    };
+  }
+
+  return null;
+}
+
+function serializeDraftForStorage(draft, { minimal = false } = {}) {
+  const items = (draft.items || [])
+    .map((item) => serializeItemForStorage(item, { minimal }))
+    .filter(Boolean);
   return {
-    items: draft.items,
+    items,
     activeTurnId: draft.activeTurnId,
-    pendingApproval: draft.pendingApproval,
-    activeToolCall: draft.activeToolCall,
+    pendingApproval: minimal
+      ? null
+      : sanitizeTimelineEventForStorage(draft.pendingApproval),
+    activeToolCall: minimal
+      ? null
+      : sanitizeTimelineEventForStorage(draft.activeToolCall),
     isStreaming: draft.isStreaming,
     isAgentRunning: draft.isAgentRunning,
     updatedAt: draft.updatedAt,
@@ -120,6 +283,15 @@ function serializableDraft(draft) {
     threadSlug: draft.threadSlug,
     persistError: draft.persistError || null,
   };
+}
+
+function isStorageQuotaError(error) {
+  return (
+    error?.name === "QuotaExceededError" ||
+    error?.name === "NS_ERROR_DOM_QUOTA_REACHED" ||
+    error?.code === 22 ||
+    error?.code === 1014
+  );
 }
 
 function hasUnfinishedDraft(draft = {}) {
@@ -205,7 +377,33 @@ function persistDraft(draft) {
     return;
   }
 
-  sessionStorage.setItem(key, JSON.stringify(serializableDraft(draft)));
+  try {
+    const serialized = JSON.stringify(serializeDraftForStorage(draft));
+    if (serialized.length > MAX_DRAFT_STORAGE_CHARS) {
+      const sizeError = new Error("Draft exceeded storage limit.");
+      sizeError.name = "QuotaExceededError";
+      throw sizeError;
+    }
+    sessionStorage.setItem(key, serialized);
+  } catch (error) {
+    debugChatTurn("persistDraft:storageFallback", {
+      key,
+      error: error?.message || String(error),
+      quota: isStorageQuotaError(error),
+    });
+    try {
+      sessionStorage.setItem(
+        key,
+        JSON.stringify(serializeDraftForStorage(draft, { minimal: true }))
+      );
+    } catch (minimalError) {
+      debugChatTurn("persistDraft:storageDropped", {
+        key,
+        error: minimalError?.message || String(minimalError),
+      });
+      sessionStorage.removeItem(key);
+    }
+  }
 }
 
 function removeStoredDraft(workspaceSlug, threadSlug = null) {
@@ -1386,6 +1584,7 @@ export function ChatThreadDraftProvider({ children }) {
       threadSlug = null,
       prompt,
       attachments = [],
+      fileAccessMode = null,
       history = [],
       parseAttachments = () => [],
       sendToExistingAgent = false,
@@ -1400,6 +1599,7 @@ export function ChatThreadDraftProvider({ children }) {
         workspaceSlug,
         threadSlug,
         sendToExistingAgent,
+        fileAccessMode,
         historyLength: history.length,
       });
       const socket = websocketRefs.current[chatKey];
@@ -1444,6 +1644,7 @@ export function ChatThreadDraftProvider({ children }) {
             type: "awaitingFeedback",
             feedback: prompt,
             attachments: preparedAttachments,
+            fileAccess: { mode: fileAccessMode },
           })
         );
         appendTimelineEvent(chatKey, turnId, {
@@ -1477,6 +1678,7 @@ export function ChatThreadDraftProvider({ children }) {
             }
           },
           attachments: preparedAttachments,
+          fileAccessMode,
         });
         setTimeout(
           () => confirmPersisted(chatKey, turnId, completedChatId),

@@ -388,9 +388,9 @@ export default function LLMPreference({
     const data = {};
     const formData = new FormData(form);
     data.LLMProvider = selectedLLM;
-    // Default to AnythingLLM embedder and LanceDB
-    data.EmbeddingEngine = "native";
-    data.VectorDB = "lancedb";
+    // Only seed embedder/vector defaults when the server has no existing values.
+    if (!settings?.EmbeddingEngine) data.EmbeddingEngine = "native";
+    if (!settings?.VectorDB) data.VectorDB = "lancedb";
     for (var [key, value] of formData.entries()) data[key] = value;
 
     const { error } = await System.updateSystem(data);

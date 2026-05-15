@@ -293,6 +293,22 @@ class CollectorApi {
    */
   async parseDocument(filename = "", parseOptions = {}) {
     if (!filename) return false;
+    if (parseOptions.absolutePath && !parseOptions.skipFileAccessPolicy) {
+      const { validateReadPath } = require("../fileAccessPolicy");
+      const validation = await validateReadPath(
+        parseOptions.absolutePath,
+        parseOptions.fileAccessContext || {}
+      );
+      if (!validation.allowed) {
+        return {
+          success: false,
+          reason: validation.reason,
+          message: validation.message,
+          documents: [],
+        };
+      }
+      parseOptions.absolutePath = validation.path;
+    }
 
     const data = JSON.stringify({
       filename,

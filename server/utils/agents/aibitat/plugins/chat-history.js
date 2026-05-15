@@ -1,5 +1,6 @@
 const { WorkspaceChats } = require("../../../../models/workspaceChats");
 const { WorkspaceThread } = require("../../../../models/workspaceThread");
+const { sanitizeAgentEvent } = require("../../toolResultStore.js");
 
 /**
  * Plugin to save chat history to AnythingLLM DB.
@@ -117,7 +118,9 @@ const chatHistory = {
         const metrics = aibitat.provider?.getUsage?.() ?? {};
         const citations = aibitat._pendingCitations ?? [];
         const outputs = aibitat._pendingOutputs ?? [];
-        const agentEvents = aibitat._agentEvents ?? [];
+        const agentEvents = (aibitat._agentEvents ?? []).map(
+          sanitizeAgentEvent
+        );
         await WorkspaceChats.upsert(aibitat.trackedChatId, {
           workspaceId: Number(invocation.workspace_id),
           prompt,
@@ -151,7 +154,9 @@ const chatHistory = {
         const metrics = aibitat.provider?.getUsage?.() ?? {};
         const citations = aibitat._pendingCitations ?? [];
         const outputs = aibitat._pendingOutputs ?? [];
-        const agentEvents = aibitat._agentEvents ?? [];
+        const agentEvents = (aibitat._agentEvents ?? []).map(
+          sanitizeAgentEvent
+        );
         const existingSources = options?.sources ?? [];
         await WorkspaceChats.upsert(aibitat.trackedChatId, {
           workspaceId: Number(invocation.workspace_id),

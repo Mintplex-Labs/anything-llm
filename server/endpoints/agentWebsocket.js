@@ -7,6 +7,7 @@ const {
   WEBSOCKET_BAIL_COMMANDS,
 } = require("../utils/agents/aibitat/plugins/websocket");
 const { safeJsonParse } = require("../utils/http");
+const { clearInvocationFileAccess } = require("../utils/chats/agents");
 
 // Setup listener for incoming messages to relay to socket so it can be handled by agent plugin.
 function relayToSocket(message) {
@@ -33,6 +34,7 @@ function agentWebsocket(app) {
       socket.on("close", () => {
         agentHandler.closeAlert();
         WorkspaceAgentInvocation.close(String(request.params.uuid));
+        clearInvocationFileAccess(String(request.params.uuid));
         return;
       });
 

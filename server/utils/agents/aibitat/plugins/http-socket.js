@@ -2,6 +2,7 @@ const chalk = require("chalk");
 const { Telemetry } = require("../../../../models/telemetry");
 const { v4: uuidv4 } = require("uuid");
 const { skillIsAutoApproved } = require("../../../helpers/agents");
+const { summarizeToolResult } = require("../../toolResultStore.js");
 const TOOL_APPROVAL_TIMEOUT_MS = 120 * 1_000; // 2 mins for tool approval
 
 /**
@@ -35,6 +36,56 @@ function getWorkerIPC() {
   }
 
   return null;
+}
+
+function sanitizeReportStreamContent(content = {}) {
+  if (content?.type === "toolCallInvocation") {
+    return {
+      type: "toolCallInvocation",
+      uuid: content.uuid,
+      toolName: content.toolName,
+      content: content.content || `Calling ${content.toolName || "tool"}...`,
+    };
+  }
+
+  if (content?.type !== "toolCallResult") return content;
+  const resultSummary =
+    content.result &&
+    typeof content.result === "object" &&
+    content.result.summary
+      ? content.result
+      : summarizeToolResult({
+          toolName: content.toolName,
+          result: content.result,
+        });
+
+  return {
+    type: "toolCallResult",
+    uuid: content.uuid,
+    toolName: content.toolName,
+    content:
+      resultSummary.summary ||
+      content.content ||
+      `Tool ${content.toolName || "unknown"} returned a result.`,
+    summary: resultSummary.summary,
+    outputPreview: resultSummary.outputPreview,
+    resultSize: resultSummary.resultSize,
+    truncated: resultSummary.truncated,
+    runId: resultSummary.runId,
+    stored: resultSummary.stored,
+    storageError: resultSummary.storageError,
+    exitCode: resultSummary.exitCode,
+    timedOut: resultSummary.timedOut,
+    root: resultSummary.root,
+    fileCount: resultSummary.fileCount,
+    excludedCount: resultSummary.excludedCount,
+    totalSize: resultSummary.totalSize,
+  };
+}
+
+function sanitizeSocketPayload(type, content = {}) {
+  if (type !== "reportStreamEvent") return content;
+  return sanitizeReportStreamContent(content);
 }
 
 /**
@@ -99,9 +150,28 @@ const httpSocket = {
         // type param must be set or else msg will not be shown or handled in UI.
         aibitat.socket = {
           send: (type = "__unhandled", content = "") => {
-            handler.send(JSON.stringify({ type, content }));
+            handler.send(
+              JSON.stringify({
+                type,
+                content: sanitizeSocketPayload(type, content),
+              })
+            );
           },
         };
+
+        aibitat.emitter.on(
+          "toolCallResult",
+          ({ toolName, arguments: args, result }) => {
+            aibitat.socket.send("reportStreamEvent", {
+              type: "toolCallResult",
+              uuid: `tool_result:${uuidv4()}`,
+              toolName,
+              arguments: args,
+              result,
+              content: `Tool ${toolName} returned a result.`,
+            });
+          }
+        );
 
         /**
          * Request user approval before executing a tool/skill.
@@ -118,29 +188,34 @@ const httpSocket = {
           skillName,
           payload = {},
           description = null,
+          forceApproval = false,
         }) {
-          if (skillIsAutoApproved({ skillName })) {
+          if (!forceApproval && skillIsAutoApproved({ skillName })) {
             return {
               approved: true,
               message: "Skill is auto-approved.",
             };
           }
 
-          const {
-            AgentSkillWhitelist,
-          } = require("../../../../models/agentSkillWhitelist");
-          const isWhitelisted = await AgentSkillWhitelist.isWhitelisted(
-            skillName,
-            null
-          );
-          if (isWhitelisted) {
-            console.log(
-              chalk.green(`Skill ${skillName} is whitelisted - auto-approved.`)
+          if (!forceApproval) {
+            const {
+              AgentSkillWhitelist,
+            } = require("../../../../models/agentSkillWhitelist");
+            const isWhitelisted = await AgentSkillWhitelist.isWhitelisted(
+              skillName,
+              null
             );
-            return {
-              approved: true,
-              message: "Skill is whitelisted - auto-approved.",
-            };
+            if (isWhitelisted) {
+              console.log(
+                chalk.green(
+                  `Skill ${skillName} is whitelisted - auto-approved.`
+                )
+              );
+              return {
+                approved: true,
+                message: "Skill is whitelisted - auto-approved.",
+              };
+            }
           }
 
           // Tool approval only available in Telegram worker context

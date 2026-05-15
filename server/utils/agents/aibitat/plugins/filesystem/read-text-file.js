@@ -70,7 +70,10 @@ module.exports.FilesystemReadTextFile = {
                 return "Error: Cannot specify both head and tail parameters simultaneously.";
               }
 
-              const validPath = await filesystem.validatePath(filePath);
+              const validPath = await filesystem.validateReadPath(filePath, {
+                ...(this.super.handlerProps.fileAccessContext || {}),
+                tool: this.name,
+              });
 
               if (filesystem.isImageFile(validPath)) {
                 this.super.introspect(

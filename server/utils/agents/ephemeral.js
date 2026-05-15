@@ -14,11 +14,14 @@ const {
   USER_AGENT,
   WORKSPACE_AGENT,
   agentSkillsFromSystemSettings,
+  functionsForFileAccessPolicy,
+  SHELL_AGENT_NAME,
 } = require("./defaults");
 const { AgentHandler } = require(".");
 const {
   WorkspaceAgentInvocation,
 } = require("../../models/workspaceAgentInvocation");
+const { resolveEffectivePolicy } = require("../fileAccessPolicy");
 
 /**
  * This is an instance and functional Agent handler, but it does not utilize
@@ -42,6 +45,7 @@ class EphemeralAgentHandler extends AgentHandler {
   #funcsToLoad = [];
   /** @type {Array<{name: string, mime: string, contentString: string}>} attachments for multimodal support */
   #attachments = [];
+  #fileAccess = {};
 
   /** @type {AIbitat|null} */
   aibitat = null;
@@ -61,6 +65,7 @@ class EphemeralAgentHandler extends AgentHandler {
    * threadId: import("@prisma/client").workspace_threads["id"]|null,
    * sessionId: string|null,
    * attachments: Array<{name: string, mime: string, contentString: string}>
+   * fileAccess: object
    * }} parameters
    */
   constructor({
@@ -71,6 +76,7 @@ class EphemeralAgentHandler extends AgentHandler {
     threadId = null,
     sessionId = null,
     attachments = [],
+    fileAccess = {},
   }) {
     super({ uuid });
     this.#invocationUUID = uuid;
@@ -84,6 +90,7 @@ class EphemeralAgentHandler extends AgentHandler {
     this.#threadId = threadId;
     this.#sessionId = sessionId;
     this.#attachments = attachments;
+    this.#fileAccess = fileAccess || {};
   }
 
   log(text, ...args) {
@@ -334,6 +341,10 @@ class EphemeralAgentHandler extends AgentHandler {
       const AIbitatPlugin = AgentPlugins[name];
       this.aibitat.use(AIbitatPlugin.plugin(callOpts));
       this.log(`Attached ${name} plugin to Agent cluster`);
+      if (name === SHELL_AGENT_NAME)
+        this.log(
+          `[FileAccessPolicy] attachPlugins attached shell-agent in ${this.aibitat?.fileAccessPolicy?.mode || "unknown"} mode`
+        );
     }
   }
 
@@ -344,11 +355,17 @@ class EphemeralAgentHandler extends AgentHandler {
     const user = this.#userId
       ? await User.get({ id: Number(this.#userId) })
       : null;
-
-    this.aibitat.agent(
-      WORKSPACE_AGENT.name,
-      await WORKSPACE_AGENT.getDefinition(this.provider, this.#workspace, user)
+    const workspaceAgentDef = await WORKSPACE_AGENT.getDefinition(
+      this.provider,
+      this.#workspace,
+      user
     );
+    workspaceAgentDef.functions = functionsForFileAccessPolicy(
+      workspaceAgentDef.functions || [],
+      this.aibitat?.fileAccessPolicy
+    );
+
+    this.aibitat.agent(WORKSPACE_AGENT.name, workspaceAgentDef);
 
     this.#funcsToLoad = [
       ...(await agentSkillsFromSystemSettings()),
@@ -356,6 +373,13 @@ class EphemeralAgentHandler extends AgentHandler {
       ...AgentFlows.activeFlowPlugins(),
       ...(await new MCPCompatibilityLayer().activeMCPServers()),
     ];
+    this.#funcsToLoad = functionsForFileAccessPolicy(
+      this.#funcsToLoad,
+      this.aibitat?.fileAccessPolicy
+    );
+    this.log(
+      `[FileAccessPolicy] sessionMode=${this.#fileAccess?.mode || this.#fileAccess?.sessionMode || "none"} resolvedMode=${this.aibitat?.fileAccessPolicy?.mode || "unknown"} workspaceAgentDef.functions.shell=${workspaceAgentDef.functions.includes(SHELL_AGENT_NAME)} funcsToLoad.shell=${this.#funcsToLoad.includes(SHELL_AGENT_NAME)}`
+    );
   }
 
   async init() {
@@ -452,10 +476,32 @@ class EphemeralAgentHandler extends AgentHandler {
         invocation: {
           workspace: this.#workspace,
           workspace_id: this.#workspace?.id ?? null,
+          user_id: this.#userId || null,
+          thread_id: this.#threadId || null,
         },
         log: this.log,
+        fileAccessContext: {
+          sessionMode:
+            this.#fileAccess?.mode || this.#fileAccess?.sessionMode || null,
+          workspace: this.#workspace,
+          user: this.#userId ? { id: this.#userId } : null,
+          thread: this.#threadId ? { id: this.#threadId } : null,
+          invocation: {
+            workspace: this.#workspace,
+            workspace_id: this.#workspace?.id ?? null,
+            user_id: this.#userId || null,
+            thread_id: this.#threadId || null,
+          },
+        },
       },
     });
+
+    this.aibitat.fileAccessPolicy = await resolveEffectivePolicy(
+      this.aibitat.handlerProps.fileAccessContext
+    );
+    this.log(
+      `[FileAccessPolicy] createAIbitat sessionMode=${this.aibitat.handlerProps.fileAccessContext?.sessionMode || "none"} resolvedMode=${this.aibitat.fileAccessPolicy.mode}`
+    );
 
     // Register callback to fetch fresh parsed file context on each chat turn
     // This injects parsed files into user messages instead of system prompt

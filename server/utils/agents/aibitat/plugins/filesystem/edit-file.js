@@ -86,7 +86,10 @@ module.exports.FilesystemEditFile = {
                 return "Error: At least one edit operation must be provided.";
               }
 
-              const validPath = await filesystem.validatePath(filePath);
+              const validPath = await filesystem.validateWritePath(filePath, {
+                ...(this.super.handlerProps.fileAccessContext || {}),
+                tool: this.name,
+              });
 
               this.super.introspect(
                 `${this.caller}: ${dryRun ? "Previewing" : "Applying"} ${edits.length} edit(s) to ${filePath}`

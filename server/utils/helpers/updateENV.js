@@ -3,6 +3,13 @@ const {
   SUPPORTED_CONNECTION_METHODS,
 } = require("../AiProviders/bedrock/utils");
 const { resetAllVectorStores } = require("../vectorStore/resetAllVectorStores");
+const {
+  exportBackupValues,
+  hydrateFromBackup,
+  importBackupValues,
+  maskValues,
+  persistCurrentEnvBackup,
+} = require("../providerSettingsBackup");
 
 const KEY_MAPPING = {
   LLMProvider: {
@@ -881,6 +888,179 @@ const KEY_MAPPING = {
   },
 };
 
+const PROVIDER_SETTING_KEYS = [
+  "LLMProvider",
+  "OpenAiKey",
+  "OpenAiModelPref",
+  "AzureOpenAiEndpoint",
+  "AzureOpenAiTokenLimit",
+  "AzureOpenAiKey",
+  "AzureOpenAiModelPref",
+  "AzureOpenAiEmbeddingModelPref",
+  "AzureOpenAiModelType",
+  "AnthropicApiKey",
+  "AnthropicModelPref",
+  "AnthropicCacheControl",
+  "GeminiLLMApiKey",
+  "GeminiLLMModelPref",
+  "GeminiSafetySetting",
+  "LMStudioBasePath",
+  "LMStudioModelPref",
+  "LMStudioTokenLimit",
+  "LMStudioAuthToken",
+  "LocalAiBasePath",
+  "LocalAiModelPref",
+  "LocalAiTokenLimit",
+  "LocalAiApiKey",
+  "OllamaLLMBasePath",
+  "OllamaLLMModelPref",
+  "OllamaLLMTokenLimit",
+  "OllamaLLMKeepAliveSeconds",
+  "OllamaLLMAuthToken",
+  "MistralApiKey",
+  "MistralModelPref",
+  "HuggingFaceLLMEndpoint",
+  "HuggingFaceLLMAccessToken",
+  "HuggingFaceLLMTokenLimit",
+  "KoboldCPPBasePath",
+  "KoboldCPPModelPref",
+  "KoboldCPPTokenLimit",
+  "KoboldCPPMaxTokens",
+  "TextGenWebUIBasePath",
+  "TextGenWebUITokenLimit",
+  "TextGenWebUIAPIKey",
+  "LiteLLMModelPref",
+  "LiteLLMTokenLimit",
+  "LiteLLMBasePath",
+  "LiteLLMApiKey",
+  "GenericOpenAiBasePath",
+  "GenericOpenAiModelPref",
+  "GenericOpenAiTokenLimit",
+  "GenericOpenAiKey",
+  "GenericOpenAiMaxTokens",
+  "AwsBedrockLLMConnectionMethod",
+  "AwsBedrockLLMAccessKeyId",
+  "AwsBedrockLLMAccessKey",
+  "AwsBedrockLLMSessionToken",
+  "AwsBedrockLLMAPIKey",
+  "AwsBedrockLLMRegion",
+  "AwsBedrockLLMModel",
+  "AwsBedrockLLMTokenLimit",
+  "AwsBedrockLLMMaxOutputTokens",
+  "DellProAiStudioBasePath",
+  "DellProAiStudioModelPref",
+  "DellProAiStudioTokenLimit",
+  "EmbeddingEngine",
+  "EmbeddingBasePath",
+  "EmbeddingModelPref",
+  "EmbeddingModelMaxChunkLength",
+  "EmbeddingOutputDimensions",
+  "DocumentEmbeddingMode",
+  "EmbeddingBatchCompletionWindow",
+  "EmbeddingBatchPollIntervalSeconds",
+  "EmbeddingBatchMaxItemsPerFile",
+  "EmbeddingBatchJobRetentionDays",
+  "OllamaEmbeddingBatchSize",
+  "GeminiEmbeddingApiKey",
+  "GenericOpenAiEmbeddingApiKey",
+  "GenericOpenAiEmbeddingMaxConcurrentChunks",
+  "VectorDB",
+  "ChromaEndpoint",
+  "ChromaApiHeader",
+  "ChromaApiKey",
+  "ChromaCloudApiKey",
+  "ChromaCloudTenant",
+  "ChromaCloudDatabase",
+  "WeaviateEndpoint",
+  "WeaviateApiKey",
+  "QdrantEndpoint",
+  "QdrantApiKey",
+  "PineConeKey",
+  "PineConeIndex",
+  "MilvusAddress",
+  "MilvusUsername",
+  "MilvusPassword",
+  "ZillizEndpoint",
+  "ZillizApiToken",
+  "AstraDBApplicationToken",
+  "AstraDBEndpoint",
+  "PGVectorConnectionString",
+  "PGVectorTableName",
+  "TogetherAiApiKey",
+  "TogetherAiModelPref",
+  "FireworksAiLLMApiKey",
+  "FireworksAiLLMModelPref",
+  "PerplexityApiKey",
+  "PerplexityModelPref",
+  "OpenRouterApiKey",
+  "OpenRouterModelPref",
+  "OpenRouterTimeout",
+  "NovitaLLMApiKey",
+  "NovitaLLMModelPref",
+  "NovitaLLMTimeout",
+  "GroqApiKey",
+  "GroqModelPref",
+  "CohereApiKey",
+  "CohereModelPref",
+  "VoyageAiApiKey",
+  "DeepSeekApiKey",
+  "DeepSeekModelPref",
+  "ApipieLLMApiKey",
+  "ApipieLLMModelPref",
+  "XAIApiKey",
+  "XAIModelPref",
+  "NvidiaNimLLMBasePath",
+  "NvidiaNimLLMModelPref",
+  "PPIOApiKey",
+  "PPIOModelPref",
+  "MoonshotAiApiKey",
+  "MoonshotAiModelPref",
+  "FoundryBasePath",
+  "FoundryModelPref",
+  "FoundryModelTokenLimit",
+  "CometApiLLMApiKey",
+  "CometApiLLMModelPref",
+  "CometApiLLMTimeout",
+  "ZAiApiKey",
+  "ZAiModelPref",
+  "GiteeAIApiKey",
+  "GiteeAIModelPref",
+  "GiteeAITokenLimit",
+  "DockerModelRunnerBasePath",
+  "DockerModelRunnerModelPref",
+  "DockerModelRunnerModelTokenLimit",
+  "PrivateModeBasePath",
+  "PrivateModeModelPref",
+  "SambaNovaLLMApiKey",
+  "SambaNovaLLMModelPref",
+  "LemonadeLLMBasePath",
+  "LemonadeLLMApiKey",
+  "LemonadeLLMModelPref",
+  "LemonadeLLMModelTokenLimit",
+];
+
+const EXTRA_PROVIDER_ENV_KEYS = [
+  "PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING",
+  "PROVIDER_SUPPORTS_REASONING",
+  "PROVIDER_SUPPORTS_IMAGE_GENERATION",
+  "PROVIDER_SUPPORTS_VISION",
+  "GENERIC_OPEN_AI_REPORT_USAGE",
+  "GENERIC_OPENAI_STREAMING_DISABLED",
+  "GENERIC_OPEN_AI_CUSTOM_HEADERS",
+  "AWS_BEDROCK_STREAMING_DISABLED",
+  "OLLAMA_RESPONSE_TIMEOUT",
+  "NVIDIA_NIM_LLM_MODEL_TOKEN_LIMIT",
+];
+
+const PROVIDER_ENV_KEYS = [
+  ...new Set([
+    ...PROVIDER_SETTING_KEYS.map((key) => KEY_MAPPING[key]?.envKey).filter(
+      Boolean
+    ),
+    ...EXTRA_PROVIDER_ENV_KEYS,
+  ]),
+];
+
 function isNotEmpty(input = "") {
   return !input || input.length === 0 ? "Value cannot be empty" : null;
 }
@@ -1282,8 +1462,64 @@ async function updateENV(newENVs = {}, force = false, userId = null) {
     await runAfterAllFunc(newValues, userId);
 
   await logChangesToEventLog(newValues, userId);
+  if (!error) persistProviderSettingsBackup();
   if (process.env.NODE_ENV === "production") dumpENV();
   return { newValues, error: error?.length > 0 ? error : false };
+}
+
+function persistProviderSettingsBackup() {
+  try {
+    return persistCurrentEnvBackup(PROVIDER_ENV_KEYS);
+  } catch (error) {
+    console.warn(
+      `[ProviderSettingsBackup] Failed to persist provider backup: ${error.message}`
+    );
+    return {
+      success: false,
+      error: "provider_backup_write_failed",
+    };
+  }
+}
+
+function providerSelectionMissing() {
+  return !process.env.LLM_PROVIDER || !process.env.VECTOR_DB;
+}
+
+function hydrateProviderSettingsBackup() {
+  const result = hydrateFromBackup(PROVIDER_ENV_KEYS);
+  if (!result.success) {
+    if (providerSelectionMissing()) {
+      console.warn(
+        `[ProviderSettingsBackup] Provider backup could not be applied (${result.error}). Required provider selections are missing.`
+      );
+    }
+    return result;
+  }
+
+  const appliedKeys = Object.keys(result.applied || {});
+  if (appliedKeys.length > 0) {
+    console.log(
+      `[ProviderSettingsBackup] Restored ${appliedKeys.length} missing provider setting(s) from backup.`
+    );
+    if (process.env.NODE_ENV === "production") dumpENV();
+  } else if (!result.exists && providerSelectionMissing()) {
+    console.warn(
+      "[ProviderSettingsBackup] No provider backup exists and required provider selections are missing. Configure LLM/vector providers before use."
+    );
+  }
+
+  return result;
+}
+
+function exportProviderSettingsBackup(options = {}) {
+  return exportBackupValues(PROVIDER_ENV_KEYS, options);
+}
+
+function importProviderSettingsBackup(payload = {}, options = {}) {
+  const result = importBackupValues(payload, PROVIDER_ENV_KEYS, options);
+  if (result.success && process.env.NODE_ENV === "production") dumpENV();
+  if (result.applied) result.applied = maskValues(result.applied);
+  return result;
 }
 
 async function executeValidationChecks(checks, value, force) {
@@ -1414,5 +1650,11 @@ function dumpENV() {
 
 module.exports = {
   dumpENV,
+  exportProviderSettingsBackup,
+  hydrateProviderSettingsBackup,
+  importProviderSettingsBackup,
+  persistProviderSettingsBackup,
+  PROVIDER_ENV_KEYS,
+  PROVIDER_SETTING_KEYS,
   updateENV,
 };

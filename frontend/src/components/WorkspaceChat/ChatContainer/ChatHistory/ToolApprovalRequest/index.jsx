@@ -9,6 +9,7 @@ export default function ToolApprovalRequest({
   payload = {},
   description = null,
   timeoutMs = null,
+  allowAlwaysAllow = true,
   websocket,
   approvalState = null,
   onResponse,
@@ -89,6 +90,7 @@ export default function ToolApprovalRequest({
                 skillName={skillName}
                 alwaysAllow={alwaysAllow}
                 setAlwaysAllow={setAlwaysAllow}
+                allowAlwaysAllow={allowAlwaysAllow}
                 onApprove={() => handleResponse(true)}
                 onReject={() => handleResponse(false)}
               />
@@ -169,6 +171,7 @@ function ToolApprovalResponseOption({
   skillName,
   alwaysAllow,
   setAlwaysAllow,
+  allowAlwaysAllow = true,
   onApprove,
   onReject,
 }) {
@@ -193,17 +196,19 @@ function ToolApprovalResponseOption({
           {t("chat_window.agent_invocation.reject")}
         </button>
       </div>
-      <label className="flex items-center gap-2 cursor-pointer text-white/60 light:text-slate-600 text-xs hover:text-white/80 light:hover:text-slate-800 transition-colors">
-        <input
-          type="checkbox"
-          checked={alwaysAllow}
-          onChange={(e) => setAlwaysAllow(e.target.checked)}
-          className="w-3.5 h-3.5 rounded border-white/20 bg-transparent cursor-pointer"
-        />
-        <span>
-          {t("chat_window.agent_invocation.always_allow", { skillName })}
-        </span>
-      </label>
+      {allowAlwaysAllow && (
+        <label className="flex items-center gap-2 cursor-pointer text-white/60 light:text-slate-600 text-xs hover:text-white/80 light:hover:text-slate-800 transition-colors">
+          <input
+            type="checkbox"
+            checked={alwaysAllow}
+            onChange={(e) => setAlwaysAllow(e.target.checked)}
+            className="w-3.5 h-3.5 rounded border-white/20 bg-transparent cursor-pointer"
+          />
+          <span>
+            {t("chat_window.agent_invocation.always_allow", { skillName })}
+          </span>
+        </label>
+      )}
     </div>
   );
 }

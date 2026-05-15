@@ -127,7 +127,24 @@ module.exports.FilesystemSearchFiles = {
               );
 
               await filesystem.ensureInitialized();
-              const allowedDirs = filesystem.getAllowedDirectories();
+              const fileAccessContext = {
+                ...(this.super.handlerProps.fileAccessContext || {}),
+                tool: this.name,
+              };
+              const allowedDirs =
+                await filesystem.getPolicyAllowedDirectories(fileAccessContext);
+              const safeExcludePatterns = [
+                ...new Set([
+                  ...(excludePatterns || []),
+                  "**/.ssh/**",
+                  "**/.env*",
+                  "**/.git/**",
+                  "**/node_modules/**",
+                  "System/**",
+                  "Library/**",
+                  "Applications/**",
+                ]),
+              ];
 
               if (allowedDirs.length === 0) {
                 return "Error: No allowed directories configured";
@@ -158,7 +175,7 @@ module.exports.FilesystemSearchFiles = {
                     const { files } = searchFilesWithRipgrepGlob({
                       searchPath: dir,
                       patterns: effectivePatterns,
-                      excludePatterns,
+                      excludePatterns: safeExcludePatterns,
                       maxResults: maxResults - allResults.length,
                     });
 
@@ -184,7 +201,8 @@ module.exports.FilesystemSearchFiles = {
                   return await readMatchingFileContents.call(
                     this,
                     limitedResults,
-                    maxFilesToRead
+                    maxFilesToRead,
+                    fileAccessContext
                   );
                 }
 
@@ -205,7 +223,7 @@ module.exports.FilesystemSearchFiles = {
                     searchPath: dir,
                     pattern,
                     filePattern,
-                    excludePatterns,
+                    excludePatterns: safeExcludePatterns,
                     caseSensitive,
                     maxResults: maxResults - allResults.length,
                   });
@@ -233,7 +251,8 @@ module.exports.FilesystemSearchFiles = {
                 return await readMatchingFileContents.call(
                   this,
                   uniqueFiles,
-                  maxFilesToRead
+                  maxFilesToRead,
+                  fileAccessContext
                 );
               }
 
@@ -395,7 +414,7 @@ function formatSearchResults(results, maxResults) {
  * @param {number} maxFiles - Maximum number of files to read
  * @returns {Promise<string>} Combined file contents
  */
-async function readMatchingFileContents(filePaths, maxFiles) {
+async function readMatchingFileContents(filePaths, maxFiles, context = {}) {
   const filesToRead = filePaths.slice(0, maxFiles);
   const skippedCount = filePaths.length - filesToRead.length;
 
@@ -406,14 +425,15 @@ async function readMatchingFileContents(filePaths, maxFiles) {
   const results = [];
   for (const filePath of filesToRead) {
     try {
-      const content = await filesystem.readFileContent(filePath);
+      const validPath = await filesystem.validateReadPath(filePath, context);
+      const content = await filesystem.readFileContent(validPath);
       const filename = path.basename(filePath);
 
       this.super.addCitation?.({
-        id: `fs-${Buffer.from(filePath).toString("base64url").slice(0, 32)}`,
+        id: `fs-${Buffer.from(validPath).toString("base64url").slice(0, 32)}`,
         title: filename,
         text: content,
-        chunkSource: filePath,
+        chunkSource: validPath,
         score: null,
       });
 

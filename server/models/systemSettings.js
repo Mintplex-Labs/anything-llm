@@ -57,6 +57,9 @@ const SystemSettings = {
     "disabled_outlook_skills",
     "outlook_agent_config",
     "imported_agent_skills",
+    "file_access_default_mode",
+    "file_access_authorized_directories",
+    "file_access_open_blacklist",
     "custom_app_name",
     "feature_flags",
     "meta_page_title",
@@ -82,6 +85,9 @@ const SystemSettings = {
     "disabled_outlook_skills",
     "outlook_agent_config",
     "agent_sql_connections",
+    "file_access_default_mode",
+    "file_access_authorized_directories",
+    "file_access_open_blacklist",
     "custom_app_name",
     "default_system_prompt",
 
@@ -348,6 +354,29 @@ const SystemSettings = {
       } catch {
         console.error(`Failed to merge connections`);
         return JSON.stringify(existingConnections ?? []);
+      }
+    },
+    file_access_default_mode: (mode) => {
+      const value = String(mode || "sandbox").toLowerCase();
+      if (!["sandbox", "authorized", "open"].includes(value)) return "sandbox";
+      return value;
+    },
+    file_access_authorized_directories: (updates) => {
+      try {
+        const directories =
+          typeof updates === "string" ? safeJsonParse(updates, []) : updates;
+        return JSON.stringify(Array.isArray(directories) ? directories : []);
+      } catch {
+        return JSON.stringify([]);
+      }
+    },
+    file_access_open_blacklist: (updates) => {
+      try {
+        const rules =
+          typeof updates === "string" ? safeJsonParse(updates, []) : updates;
+        return JSON.stringify(Array.isArray(rules) ? rules : []);
+      } catch {
+        return JSON.stringify([]);
       }
     },
     experimental_live_file_sync: (update) => {

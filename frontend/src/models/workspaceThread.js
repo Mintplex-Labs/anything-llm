@@ -91,7 +91,8 @@ const WorkspaceThread = {
     { workspaceSlug, threadSlug },
     message,
     handleChat,
-    attachments = []
+    attachments = [],
+    fileAccessMode = null
   ) {
     const ctrl = new AbortController();
 
@@ -110,7 +111,11 @@ const WorkspaceThread = {
         `${API_BASE}/workspace/${workspaceSlug}/thread/${threadSlug}/stream-chat`,
         {
           method: "POST",
-          body: JSON.stringify({ message, attachments }),
+          body: JSON.stringify({
+            message,
+            attachments,
+            fileAccess: { mode: fileAccessMode },
+          }),
           headers: baseHeaders(),
           signal: ctrl.signal,
           openWhenHidden: true,

@@ -32,6 +32,7 @@ import {
   mergeServerHistoryIntoTurns,
 } from "@/utils/chat/turns";
 import { debugChatTurn } from "@/utils/chat/debug";
+import FileAccessPolicy from "@/models/fileAccessPolicy";
 
 function lastAssistantTurn(items = []) {
   return [...items].reverse().find((item) => isAssistantTurn(item));
@@ -81,6 +82,10 @@ export default function ChatContainer({
         detail: { messageContent, writeMode },
       })
     );
+  }
+
+  function currentFileAccessMode() {
+    return FileAccessPolicy.getSessionMode(workspace?.slug, threadSlug);
   }
 
   useEffect(() => {
@@ -136,6 +141,7 @@ export default function ChatContainer({
       threadSlug,
       prompt: currentMessage,
       attachments,
+      fileAccessMode: currentFileAccessMode(),
       history: knownHistory,
       parseAttachments,
       sendToExistingAgent: !!draft?.isAgentRunning,
@@ -218,6 +224,7 @@ export default function ChatContainer({
       threadSlug,
       prompt: text,
       attachments,
+      fileAccessMode: currentFileAccessMode(),
       history: history.length > 0 ? history : knownHistory,
       parseAttachments,
       sendToExistingAgent: !!draft?.isAgentRunning,
@@ -266,6 +273,8 @@ export default function ChatContainer({
                 sendCommand={sendCommand}
                 attachments={files}
                 centered={true}
+                workspaceSlug={workspace.slug}
+                threadSlug={threadSlug}
               />
               <QuickActions
                 hasAvailableWorkspace={!!workspace}
@@ -323,6 +332,8 @@ export default function ChatContainer({
                   sendCommand={sendCommand}
                   attachments={files}
                   centered={false}
+                  workspaceSlug={workspace.slug}
+                  threadSlug={threadSlug}
                 />
               </div>
             </div>

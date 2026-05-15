@@ -12,6 +12,7 @@ const { Workspace } = require("../../models/workspace");
  * @type {Map<string, Array>}
  */
 const invocationAttachmentsCache = new Map();
+const invocationFileAccessCache = new Map();
 
 /**
  * Store attachments for an invocation UUID
@@ -35,6 +36,18 @@ function getAndClearInvocationAttachments(uuid) {
   return attachments;
 }
 
+function cacheInvocationFileAccess(uuid, fileAccess = {}) {
+  invocationFileAccessCache.set(uuid, fileAccess || {});
+}
+
+function getInvocationFileAccess(uuid) {
+  return invocationFileAccessCache.get(uuid) || {};
+}
+
+function clearInvocationFileAccess(uuid) {
+  invocationFileAccessCache.delete(uuid);
+}
+
 async function grepAgents({
   uuid,
   response,
@@ -43,6 +56,7 @@ async function grepAgents({
   user = null,
   thread = null,
   attachments = [],
+  fileAccess = {},
 }) {
   let nativeToolingEnabled = false;
 
@@ -80,6 +94,7 @@ async function grepAgents({
 
     // Cache attachments for the websocket handler to retrieve later
     cacheInvocationAttachments(newInvocation.uuid, attachments);
+    cacheInvocationFileAccess(newInvocation.uuid, fileAccess);
 
     writeResponseChunk(response, {
       id: uuid,
@@ -108,4 +123,10 @@ async function grepAgents({
   return false;
 }
 
-module.exports = { grepAgents, getAndClearInvocationAttachments };
+module.exports = {
+  grepAgents,
+  getAndClearInvocationAttachments,
+  cacheInvocationFileAccess,
+  getInvocationFileAccess,
+  clearInvocationFileAccess,
+};
