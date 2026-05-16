@@ -60,13 +60,15 @@ function getFetchWithCustomTimeout(
     const { Agent } = require("undici");
     const moment = require("moment");
 
+    const agent = new Agent({
+      headersTimeout: timeout,
+      bodyTimeout: timeout,
+    });
+
     const customFetch = (input, init = {}) => {
       return fetch(input, {
         ...init,
-        dispatcher: new Agent({
-          headersTimeout: timeout,
-          bodyTimeout: timeout,
-        }),
+        dispatcher: agent,
       });
     };
 
