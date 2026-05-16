@@ -10,7 +10,7 @@ const {
   getFetchWithCustomTimeout,
 } = require("../../../AiProviders/helpers/index.js");
 
-const DEFAULT_OLLAMA_SOCKET_TIMEOUT = 90000; // 15 min
+const DEFAULT_OLLAMA_SOCKET_TIMEOUT = 900000; // 15 min
 /**
  * The agent provider for the Ollama provider.
  * Supports true OpenAI-compatible tool calling when the model supports it,
