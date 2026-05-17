@@ -1,6 +1,112 @@
 const prisma = require("../utils/prisma");
 const moment = require("moment");
 
+// TTL cache for MCP variable results to avoid hammering MCP servers on every message.
+// Failures are cached at a shorter TTL so a broken variable doesn't spam logs every turn.
+const _mcpVariableCache = new Map();
+const MCP_VARIABLE_TTL_MS = 30_000;
+const MCP_VARIABLE_FAILURE_TTL_MS = 10_000;
+const MCP_VARIABLE_TIMEOUT_MS = 3_000;
+
+/**
+ * Parse and resolve an {mcp.<server>.<tool>} variable, with a TTL cache and hard timeout.
+ * Returns empty string on any failure so a broken MCP server never 500s a chat request.
+ * @param {string} key - e.g. "mcp.lastfm.lastfm_get_now_playing"
+ * @returns {Promise<string>}
+ */
+async function _resolveMcpVariable(key) {
+  const cached = _mcpVariableCache.get(key);
+  if (cached && cached.expiresAt > Date.now()) return cached.value;
+
+  // key format: "mcp.<serverName>.<toolName>"
+  const withoutPrefix = key.substring(4); // strip "mcp."
+  const dotIndex = withoutPrefix.indexOf(".");
+  if (dotIndex === -1) return "";
+
+  const serverName = withoutPrefix.substring(0, dotIndex);
+  const toolName = withoutPrefix.substring(dotIndex + 1);
+  if (!serverName || !toolName) return "";
+
+  try {
+    // Lazy require avoids circular dependency issues at module load time.
+    const MCPCompatibilityLayer = require("../utils/MCP");
+    const mcpLayer = new MCPCompatibilityLayer();
+    // Boot is idempotent — early-returns when servers are already running — but is
+    // required for the cold-start case where the user has an mcp variable but has
+    // never invoked an agent or opened the MCP admin page.
+    await mcpLayer.bootMCPServers();
+    const mcp = mcpLayer.mcps[serverName];
+    if (!mcp) {
+      console.warn(
+        `[MCP Variable] Server "${serverName}" not found or not running`
+      );
+      _mcpVariableCache.set(key, {
+        value: "",
+        expiresAt: Date.now() + MCP_VARIABLE_FAILURE_TTL_MS,
+      });
+      return "";
+    }
+
+    // Race the tool call against a hard timeout. Clearing the timer on the
+    // success path matters: otherwise each successful resolution leaves a
+    // 3-second dangling setTimeout that keeps the event loop alive (which
+    // surfaces as "Jest did not exit" in tests and as wasted timer slots
+    // under chat load in production).
+    let timeoutHandle;
+    const timeoutPromise = new Promise((_, reject) => {
+      timeoutHandle = setTimeout(
+        () => reject(new Error("MCP variable resolver timed out")),
+        MCP_VARIABLE_TIMEOUT_MS
+      );
+    });
+    let result;
+    try {
+      result = await Promise.race([
+        mcp.callTool({ name: toolName, arguments: {} }),
+        timeoutPromise,
+      ]);
+    } finally {
+      clearTimeout(timeoutHandle);
+    }
+
+    const value = _extractMcpText(result);
+    _mcpVariableCache.set(key, {
+      value,
+      expiresAt: Date.now() + MCP_VARIABLE_TTL_MS,
+    });
+    return value;
+  } catch (error) {
+    console.warn(`[MCP Variable] Failed to resolve {${key}}:`, error.message);
+    _mcpVariableCache.set(key, {
+      value: "",
+      expiresAt: Date.now() + MCP_VARIABLE_FAILURE_TTL_MS,
+    });
+    return "";
+  }
+}
+
+/**
+ * Extract a human-readable string from an MCP callTool result.
+ * Prefers concatenated text content blocks; falls back to JSON.
+ * @param {*} result
+ * @returns {string}
+ */
+function _extractMcpText(result) {
+  if (!result) return "";
+  if (typeof result === "string") return result;
+  if (Array.isArray(result?.content)) {
+    const parts = result.content
+      .filter((item) => item?.type === "text" && typeof item.text === "string")
+      .map((item) => item.text);
+    if (parts.length > 0) return parts.join("\n");
+  }
+  try {
+    return JSON.stringify(result);
+  } catch {
+    return "";
+  }
+}
+
 /**
  * @typedef {Object} SystemPromptVariable
  * @property {number} id
@@ -245,6 +351,13 @@ const SystemPromptVariables = {
         const isWorkspaceOrUserVariable = ["workspace.", "user."].some(
           (prefix) => key.startsWith(prefix)
         );
+
+        // Handle MCP server variables: {mcp.<serverName>.<toolName>}
+        if (key.startsWith("mcp.")) {
+          const value = await _resolveMcpVariable(key);
+          result = result.replace(match, value);
+          continue;
+        }
 
         // Handle class-based variables with current workspace's or user's data
         if (isWorkspaceOrUserVariable) {
