@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require("uuid");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
+const { searchWorkspace } = require("../HybridSearch/dispatch");
 const { chatPrompt, sourceIdentifier } = require("./index");
 const { EmbedChats } = require("../../models/embedChats");
 const {
@@ -89,14 +90,13 @@ async function streamChatWithForEmbed(
 
   const vectorSearchResults =
     embeddingsCount !== 0
-      ? await VectorDb.performSimilaritySearch({
+      ? await searchWorkspace(VectorDb, embed.workspace, {
           namespace: embed.workspace.slug,
           input: message,
           LLMConnector,
           similarityThreshold: embed.workspace?.similarityThreshold,
           topN: embed.workspace?.topN,
           filterIdentifiers: pinnedDocIdentifiers,
-          rerank: embed.workspace?.vectorSearchMode === "rerank",
         })
       : {
           contextTexts: [],

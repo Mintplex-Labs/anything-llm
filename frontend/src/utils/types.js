@@ -12,6 +12,9 @@ export function castToType(key, value) {
     topN: {
       cast: (value) => Number(value),
     },
+    hybridSearchAlpha: {
+      cast: (value) => parseFloat(value),
+    },
   };
 
   if (!definitions.hasOwnProperty(key)) return value;

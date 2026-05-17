@@ -7,6 +7,9 @@ const { v4: uuidv4 } = require("uuid");
 const { sourceIdentifier } = require("../../chats");
 const { NativeEmbeddingReranker } = require("../../EmbeddingRerankers/native");
 const { VectorDatabase } = require("../base");
+const { reciprocalRankFusion } = require("../../HybridSearch/fusion/rrf");
+const { bm25Cache } = require("../../HybridSearch/cache");
+const { config: hybridConfig } = require("../../HybridSearch/config");
 const path = require("path");
 
 /**
@@ -28,6 +31,10 @@ class LanceDb extends VectorDatabase {
 
   get name() {
     return "LanceDb";
+  }
+
+  capabilities() {
+    return { nativeHybrid: true, sparseIndex: false, fts: true };
   }
 
   /** @returns {Promise<{client: LanceClient}>} */
@@ -295,6 +302,7 @@ class LanceDb extends VectorDatabase {
 
     if (vectorIds.length === 0) return;
     await table.delete(`id IN (${vectorIds.map((v) => `'${v}'`).join(",")})`);
+    bm25Cache.invalidateNamespace(namespace);
     return true;
   }
 
@@ -396,11 +404,141 @@ class LanceDb extends VectorDatabase {
       }
 
       await DocumentVectors.bulkInsert(documentVectors);
+      bm25Cache.invalidateNamespace(namespace);
       return { vectorized: true, error: null };
     } catch (e) {
       this.logger("addDocumentToNamespace", e.message);
       return { vectorized: false, error: e.message };
     }
+  }
+
+  /**
+   * Ensure an FTS index exists on the `text` column for the given table.
+   * LanceDB requires this for fullTextSearch() to work. The call is idempotent —
+   * an existing index is reused. Failures are non-fatal (caller falls back to
+   * vector-only search and logs a warning).
+   */
+  async ensureFTSIndex(collection) {
+    try {
+      await collection.createIndex("text", {
+        config: { type: "fts" },
+        replace: false,
+      });
+    } catch (e) {
+      // Index already exists or column missing — both are tolerable here.
+      if (!/already exists|exist/i.test(e?.message || "")) {
+        this.logger(`ensureFTSIndex warning: ${e.message}`);
+      }
+    }
+  }
+
+  /**
+   * Native hybrid search for LanceDB.
+   *
+   * Runs vector search and FTS in parallel, then fuses with Reciprocal Rank Fusion.
+   * Weights come from hybridAlpha: dense=alpha, sparse=(1-alpha). We avoid LanceDB's
+   * built-in hybrid reranker because the JS SDK surface for it is still evolving
+   * and we want consistent fusion semantics across providers.
+   */
+  async performHybridSearch({
+    namespace = null,
+    input = "",
+    LLMConnector = null,
+    similarityThreshold = 0.25,
+    topN = 4,
+    filterIdentifiers = [],
+    hybridAlpha = 0.5,
+  }) {
+    if (!namespace || !input || !LLMConnector)
+      throw new Error("Invalid request to performHybridSearch.");
+
+    const { client } = await this.connect();
+    if (!(await this.namespaceExists(client, namespace))) {
+      return {
+        contextTexts: [],
+        sources: [],
+        message: "Invalid query - no documents found for workspace!",
+      };
+    }
+
+    const collection = await client.openTable(namespace);
+    await this.ensureFTSIndex(collection);
+    const queryVector = await LLMConnector.embedTextInput(input);
+    const candidateLimit = Math.min(
+      hybridConfig.poolMax,
+      Math.max(topN * hybridConfig.poolMultiplier, 25)
+    );
+
+    const [vectorHits, ftsHits] = await Promise.all([
+      collection
+        .vectorSearch(queryVector)
+        .distanceType("cosine")
+        .limit(candidateLimit)
+        .toArray(),
+      collection
+        .query()
+        .fullTextSearch(input, { columns: ["text"] })
+        .limit(candidateLimit)
+        .toArray()
+        .catch((e) => {
+          this.logger(`FTS query failed, hybrid degrading to vector-only: ${e.message}`);
+          return [];
+        }),
+    ]);
+
+    const idOf = (row) => row.id ?? row.vectorId ?? row.text?.slice(0, 64);
+    const itemFor = (row) => {
+      const { vector: _v, ...rest } = row;
+      return rest;
+    };
+
+    const denseRanked = vectorHits.map((row) => ({
+      id: String(idOf(row)),
+      score: this.distanceToSimilarity(row._distance),
+      item: {
+        ...itemFor(row),
+        _denseScore: this.distanceToSimilarity(row._distance),
+      },
+    }));
+    const sparseRanked = ftsHits.map((row) => ({
+      id: String(idOf(row)),
+      score: typeof row._score === "number" ? row._score : 0,
+      item: itemFor(row),
+    }));
+    const sparseRankMap = new Map(sparseRanked.map((r, i) => [r.id, i]));
+
+    const fused = reciprocalRankFusion([denseRanked, sparseRanked], {
+      weights: [hybridAlpha, 1 - hybridAlpha],
+      k: hybridConfig.rrfK,
+    });
+
+    const contextTexts = [];
+    const sourceDocuments = [];
+    for (const { id, item, score } of fused) {
+      const dense = item._denseScore ?? null;
+      if (dense !== null && dense < similarityThreshold) continue;
+      if (filterIdentifiers.includes(sourceIdentifier(item))) {
+        this.logger(
+          "A source was filtered from context as it's parent document is pinned."
+        );
+        continue;
+      }
+      contextTexts.push(item.text);
+      const { _denseScore: _d, ...clean } = item;
+      sourceDocuments.push({
+        ...clean,
+        score,
+        hybridScore: score,
+        denseScore: dense,
+        sparseRank: sparseRankMap.has(id) ? sparseRankMap.get(id) : null,
+      });
+      if (contextTexts.length >= topN) break;
+    }
+
+    const sources = sourceDocuments.map((metadata, i) => ({
+      metadata: { ...metadata, text: contextTexts[i] },
+    }));
+    return { contextTexts, sources: this.curateSources(sources), message: false };
   }
 
   async performSimilaritySearch({

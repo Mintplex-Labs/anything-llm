@@ -29,7 +29,8 @@ function isNullOrNaN(value) {
  * @property {string} agentProvider - The agent provider of the workspace
  * @property {string} agentModel - The agent model of the workspace
  * @property {string} queryRefusalResponse - The query refusal response of the workspace
- * @property {string} vectorSearchMode - The vector search mode of the workspace
+ * @property {string} vectorSearchMode - The vector search mode of the workspace (default|rerank|hybrid)
+ * @property {number} hybridSearchAlpha - Weight for dense vs sparse in hybrid search (0=keyword only, 1=vector only, 0.5=balanced)
  */
 
 const Workspace = {
@@ -56,6 +57,7 @@ const Workspace = {
     "agentModel",
     "queryRefusalResponse",
     "vectorSearchMode",
+    "hybridSearchAlpha",
   ],
 
   validations: {
@@ -126,10 +128,18 @@ const Workspace = {
       if (
         !value ||
         typeof value !== "string" ||
-        !["default", "rerank"].includes(value)
+        !["default", "rerank", "hybrid"].includes(value)
       )
         return "default";
       return value;
+    },
+    hybridSearchAlpha: (value) => {
+      if (value === null || value === undefined) return 0.5;
+      const alpha = parseFloat(value);
+      if (isNullOrNaN(alpha)) return 0.5;
+      if (alpha < 0) return 0.0;
+      if (alpha > 1) return 1.0;
+      return alpha;
     },
   },
 

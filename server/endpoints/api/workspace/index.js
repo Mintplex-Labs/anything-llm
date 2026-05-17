@@ -5,6 +5,7 @@ const { DocumentVectors } = require("../../../models/vectors");
 const { Workspace } = require("../../../models/workspace");
 const { WorkspaceChats } = require("../../../models/workspaceChats");
 const { getVectorDbClass, getLLMProvider } = require("../../../utils/helpers");
+const { searchWorkspace } = require("../../../utils/HybridSearch/dispatch");
 const { multiUserMode, reqBody } = require("../../../utils/http");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
 const { VALID_CHAT_MODE } = require("../../../utils/chats/stream");
@@ -981,13 +982,12 @@ function apiWorkspaceEndpoints(app) {
           return input;
         };
 
-        const results = await VectorDb.performSimilaritySearch({
+        const results = await searchWorkspace(VectorDb, workspace, {
           namespace: workspace.slug,
           input: String(query),
           LLMConnector: getLLMProvider(),
           similarityThreshold: parseSimilarityThreshold(),
           topN: parseTopN(),
-          rerank: workspace?.vectorSearchMode === "rerank",
         });
 
         response.status(200).json({
