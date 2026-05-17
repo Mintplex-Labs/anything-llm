@@ -44,7 +44,10 @@ async function appSideBM25Strategy(provider, params) {
   if (!namespace || !input || !LLMConnector)
     throw new Error("Invalid request to appSideBM25Strategy.");
 
-  const candidateTopN = Math.min(poolMax, Math.max(topN, topN * poolMultiplier));
+  const candidateTopN = Math.min(
+    poolMax,
+    Math.max(topN, topN * poolMultiplier)
+  );
 
   const t0 = Date.now();
   const dense = await provider.performSimilaritySearch({

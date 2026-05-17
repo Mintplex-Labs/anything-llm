@@ -88,7 +88,9 @@ class BM25 {
     this.b = opts.b ?? config.bm25B;
     this.stopwords = opts.stopwords ?? STOPWORDS;
     this.docs = docs;
-    this.docTokens = docs.map((d) => tokenize(d.text, { stopwords: this.stopwords }));
+    this.docTokens = docs.map((d) =>
+      tokenize(d.text, { stopwords: this.stopwords })
+    );
     this.docLengths = this.docTokens.map((t) => t.length);
     this.avgDocLength =
       this.docLengths.reduce((acc, n) => acc + n, 0) / (docs.length || 1);

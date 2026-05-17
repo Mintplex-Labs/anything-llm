@@ -21,7 +21,8 @@ const telemetry = require("./telemetry");
  */
 
 function getCapabilities(provider) {
-  if (typeof provider?.capabilities === "function") return provider.capabilities();
+  if (typeof provider?.capabilities === "function")
+    return provider.capabilities();
   return { nativeHybrid: false };
 }
 

@@ -420,8 +420,11 @@ class LanceDb extends VectorDatabase {
    */
   async ensureFTSIndex(collection) {
     try {
+      // Use the SDK's typed index factory. Plain `{config: {type: "fts"}}` is
+      // silently accepted but produces a non-inverted index — fullTextSearch then
+      // fails at query time with "Index is not an inverted index".
       await collection.createIndex("text", {
-        config: { type: "fts" },
+        config: lancedb.Index.fts(),
         replace: false,
       });
     } catch (e) {
@@ -481,7 +484,9 @@ class LanceDb extends VectorDatabase {
         .limit(candidateLimit)
         .toArray()
         .catch((e) => {
-          this.logger(`FTS query failed, hybrid degrading to vector-only: ${e.message}`);
+          this.logger(
+            `FTS query failed, hybrid degrading to vector-only: ${e.message}`
+          );
           return [];
         }),
     ]);
@@ -538,7 +543,11 @@ class LanceDb extends VectorDatabase {
     const sources = sourceDocuments.map((metadata, i) => ({
       metadata: { ...metadata, text: contextTexts[i] },
     }));
-    return { contextTexts, sources: this.curateSources(sources), message: false };
+    return {
+      contextTexts,
+      sources: this.curateSources(sources),
+      message: false,
+    };
   }
 
   async performSimilaritySearch({

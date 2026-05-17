@@ -40,7 +40,10 @@ function fnv1a(str) {
 }
 
 function buildKey(namespace, docs) {
-  const ids = docs.map((d) => d.id).sort().join("|");
+  const ids = docs
+    .map((d) => d.id)
+    .sort()
+    .join("|");
   return `${namespace}::${fnv1a(ids)}::${docs.length}`;
 }
 
@@ -79,7 +82,11 @@ class BM25Cache {
     this.store.set(key, { bm25, expiresAt: now + config.bm25CacheTtlMs });
     this.misses++;
     this.evictIfOverflow();
-    logger.debug("bm25 cache miss", { key, misses: this.misses, size: this.store.size });
+    logger.debug("bm25 cache miss", {
+      key,
+      misses: this.misses,
+      size: this.store.size,
+    });
     return bm25;
   }
 
@@ -101,7 +108,8 @@ class BM25Cache {
         dropped++;
       }
     }
-    if (dropped > 0) logger.info("bm25 cache invalidated", { namespace, dropped });
+    if (dropped > 0)
+      logger.info("bm25 cache invalidated", { namespace, dropped });
     return dropped;
   }
 
