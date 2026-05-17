@@ -48,6 +48,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "docker-model-runner",
   "privatemode",
   "sambanova",
+  "cerebras",
   "lemonade",
   // Embedding Engines
   "native-embedder",
@@ -129,6 +130,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getPrivatemodeModels(basePath, "generate");
     case "sambanova":
       return await getSambaNovaModels(apiKey);
+    case "cerebras":
+      return await getCerebrasModels(apiKey);
     case "lemonade":
       return await getLemonadeModels(basePath);
     case "lemonade-embedder":
@@ -1001,6 +1004,44 @@ async function getSambaNovaModels(_apiKey = null) {
   } catch (e) {
     console.error(`SambaNova:getSambaNovaModels`, e.message);
     return { models: [], error: "Could not fetch SambaNova Models" };
+  }
+}
+
+/**
+ * Get Cerebras models
+ * @param {string|boolean|null} _apiKey - The API key to use
+ * @returns {Promise<{models: Array<{id: string, organization: string, name: string}>, error: string | null}>}
+ */
+async function getCerebrasModels(_apiKey = null) {
+  try {
+    const apiKey =
+      _apiKey === true
+        ? process.env.CEREBRAS_API_KEY
+        : _apiKey || process.env.CEREBRAS_API_KEY || null;
+    const { OpenAI: OpenAIApi } = require("openai");
+    const openai = new OpenAIApi({
+      baseURL: "https://api.cerebras.ai/v1",
+      apiKey,
+    });
+    const models = await openai.models
+      .list()
+      .then((results) => results.data)
+      .then((models) =>
+        models.map((model) => ({
+          id: model.id,
+          organization: model.owned_by || "Cerebras",
+          name: model.id,
+        }))
+      )
+      .catch((e) => {
+        console.error(`Cerebras:listModels`, e.message);
+        return [];
+      });
+    if (models.length > 0 && !!apiKey) process.env.CEREBRAS_API_KEY = apiKey;
+    return { models, error: null };
+  } catch (e) {
+    console.error(`Cerebras:getCerebrasModels`, e.message);
+    return { models: [], error: "Could not fetch Cerebras Models" };
   }
 }
 

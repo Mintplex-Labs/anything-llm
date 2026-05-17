@@ -899,6 +899,11 @@ const SystemSettings = {
       SambaNovaLLMApiKey: !!process.env.SAMBANOVA_LLM_API_KEY,
       SambaNovaLLMModelPref: process.env.SAMBANOVA_LLM_MODEL_PREF,
 
+      // Cerebras Keys
+      CerebrasApiKey: !!process.env.CEREBRAS_API_KEY,
+      CerebrasModelPref:
+        process.env.CEREBRAS_MODEL_PREF || "gpt-oss-120b",
+
       // Lemonade Keys
       LemonadeLLMBasePath: process.env.LEMONADE_LLM_BASE_PATH,
       LemonadeLLMApiKey: !!process.env.LEMONADE_LLM_API_KEY,
