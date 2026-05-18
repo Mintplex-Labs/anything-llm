@@ -4,28 +4,138 @@ const moment = require("moment");
 // TTL cache for MCP variable results to avoid hammering MCP servers on every message.
 // Failures are cached at a shorter TTL so a broken variable doesn't spam logs every turn.
 const _mcpVariableCache = new Map();
+// Schema cache for MCP tool inputSchemas, used to map positional args to named parameters.
+const _mcpSchemaCache = new Map();
 const MCP_VARIABLE_TTL_MS = 30_000;
 const MCP_VARIABLE_FAILURE_TTL_MS = 10_000;
+const MCP_SCHEMA_TTL_MS = 5 * 60_000; // schemas change rarely; 5-minute TTL is fine
 const MCP_VARIABLE_TIMEOUT_MS = 3_000;
 
 /**
- * Parse and resolve an {mcp.<server>.<tool>} variable, with a TTL cache and hard timeout.
- * Returns empty string on any failure so a broken MCP server never 500s a chat request.
- * @param {string} key - e.g. "mcp.lastfm.lastfm_get_now_playing"
+ * Resolve a single arg token from an MCP variable expression.
+ * If the token matches a key in allVariables it is resolved like any other
+ * prompt variable; otherwise it is treated as a literal string.
+ * MCP variable keys ("mcp.*") are intentionally excluded to prevent recursion.
+ * @param {string} rawArg
+ * @param {import('./systemPromptVariables').SystemPromptVariable[]} allVariables
+ * @param {number|null} userId
+ * @param {number|null} workspaceId
  * @returns {Promise<string>}
  */
-async function _resolveMcpVariable(key) {
-  const cached = _mcpVariableCache.get(key);
-  if (cached && cached.expiresAt > Date.now()) return cached.value;
+async function _resolveArg(rawArg, allVariables, userId, workspaceId) {
+  if (rawArg.startsWith("mcp.")) return rawArg; // no recursion
+  const variable = allVariables.find((v) => v.key === rawArg);
+  if (!variable) return rawArg; // literal
 
-  // key format: "mcp.<serverName>.<toolName>"
+  if (typeof variable.value !== "function") return String(variable.value ?? "");
+
+  try {
+    if (rawArg.startsWith("workspace."))
+      return String((await variable.value(workspaceId)) ?? "");
+    if (rawArg.startsWith("user."))
+      return String((await variable.value(userId)) ?? "");
+    // system variables: time, date, datetime
+    const val =
+      variable.value.constructor.name === "AsyncFunction"
+        ? await variable.value()
+        : variable.value();
+    return String(val ?? "");
+  } catch {
+    return "";
+  }
+}
+
+/**
+ * Map positional arg values to named parameters using the tool's inputSchema.
+ * Results are cached at MCP_SCHEMA_TTL_MS to avoid repeated listTools calls.
+ * All arg values are strings; MCP servers are expected to coerce types if needed.
+ * @param {object} mcp - MCP client instance
+ * @param {string} serverName
+ * @param {string} toolName
+ * @param {string[]} positionalArgs - already-resolved arg values
+ * @returns {Promise<Record<string, string>>}
+ */
+async function _buildMcpToolArguments(
+  mcp,
+  serverName,
+  toolName,
+  positionalArgs
+) {
+  if (!positionalArgs.length) return {};
+
+  const cacheKey = `${serverName}:${toolName}`;
+  let schemaEntry = _mcpSchemaCache.get(cacheKey);
+  if (!schemaEntry || schemaEntry.expiresAt <= Date.now()) {
+    const { tools } = await mcp.listTools();
+    const tool = tools.find((t) => t.name === toolName);
+    const schema = tool?.inputSchema ?? {};
+    schemaEntry = { schema, expiresAt: Date.now() + MCP_SCHEMA_TTL_MS };
+    _mcpSchemaCache.set(cacheKey, schemaEntry);
+  }
+
+  const { schema } = schemaEntry;
+  const paramNames =
+    Array.isArray(schema.required) && schema.required.length
+      ? schema.required
+      : Object.keys(schema.properties ?? {});
+
+  const args = {};
+  positionalArgs.forEach((val, i) => {
+    if (paramNames[i]) args[paramNames[i]] = val;
+  });
+  return args;
+}
+
+/**
+ * Parse and resolve an {mcp.<server>.<tool>[:<arg1>,<arg2>,...]} variable.
+ * Args are either literal strings or other variable keys (e.g. "workspace.city",
+ * "user.id") resolved before the tool is called. The cache key includes resolved
+ * arg values plus userId/workspaceId so different contexts don't share stale entries.
+ * Returns empty string on any failure so a broken MCP server never 500s a chat request.
+ * @param {string} key - e.g. "mcp.lastfm.get_now_playing" or "mcp.weather.forecast:workspace.city,7"
+ * @param {{ userId: number|null, workspaceId: number|null, allVariables: object[] }} context
+ * @returns {Promise<string>}
+ */
+async function _resolveMcpVariable(key, context = {}) {
+  const { userId = null, workspaceId = null, allVariables = [] } = context;
+
+  // Parse "mcp.<serverName>.<toolName>[:<rawArg1>,<rawArg2>,...]"
   const withoutPrefix = key.substring(4); // strip "mcp."
-  const dotIndex = withoutPrefix.indexOf(".");
-  if (dotIndex === -1) return "";
+  const colonIndex = withoutPrefix.indexOf(":");
+  const toolPath =
+    colonIndex === -1 ? withoutPrefix : withoutPrefix.substring(0, colonIndex);
+  const rawArgsString =
+    colonIndex === -1 ? "" : withoutPrefix.substring(colonIndex + 1);
 
-  const serverName = withoutPrefix.substring(0, dotIndex);
-  const toolName = withoutPrefix.substring(dotIndex + 1);
+  const dotIndex = toolPath.indexOf(".");
+  if (dotIndex === -1) return "";
+  const serverName = toolPath.substring(0, dotIndex);
+  const toolName = toolPath.substring(dotIndex + 1);
   if (!serverName || !toolName) return "";
+
+  const rawArgs = rawArgsString
+    ? rawArgsString
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean)
+    : [];
+
+  // Resolve any variable-reference args before building the cache key so that
+  // "workspace.city" → "Paris" is what ends up in the key (context-specific).
+  const resolvedArgs = rawArgs.length
+    ? await Promise.all(
+        rawArgs.map((a) => _resolveArg(a, allVariables, userId, workspaceId))
+      )
+    : [];
+
+  // Cache key: tool path + resolved args + user/workspace context (only when args
+  // are present, since zero-arg tools have no user/workspace dependency).
+  const cacheKey = resolvedArgs.length
+    ? `${toolPath}:${resolvedArgs.join(",")}:u=${userId ?? ""}:w=${workspaceId ?? ""}`
+    : toolPath;
+
+  const cached = _mcpVariableCache.get(cacheKey);
+  if (cached && cached.expiresAt > Date.now()) return cached.value;
 
   try {
     // Lazy require avoids circular dependency issues at module load time.
@@ -40,7 +150,7 @@ async function _resolveMcpVariable(key) {
       console.warn(
         `[MCP Variable] Server "${serverName}" not found or not running`
       );
-      _mcpVariableCache.set(key, {
+      _mcpVariableCache.set(cacheKey, {
         value: "",
         expiresAt: Date.now() + MCP_VARIABLE_FAILURE_TTL_MS,
       });
@@ -62,7 +172,15 @@ async function _resolveMcpVariable(key) {
     let result;
     try {
       result = await Promise.race([
-        mcp.callTool({ name: toolName, arguments: {} }),
+        (async () => {
+          const args = await _buildMcpToolArguments(
+            mcp,
+            serverName,
+            toolName,
+            resolvedArgs
+          );
+          return mcp.callTool({ name: toolName, arguments: args });
+        })(),
         timeoutPromise,
       ]);
     } finally {
@@ -70,14 +188,14 @@ async function _resolveMcpVariable(key) {
     }
 
     const value = _extractMcpText(result);
-    _mcpVariableCache.set(key, {
+    _mcpVariableCache.set(cacheKey, {
       value,
       expiresAt: Date.now() + MCP_VARIABLE_TTL_MS,
     });
     return value;
   } catch (error) {
     console.warn(`[MCP Variable] Failed to resolve {${key}}:`, error.message);
-    _mcpVariableCache.set(key, {
+    _mcpVariableCache.set(cacheKey, {
       value: "",
       expiresAt: Date.now() + MCP_VARIABLE_FAILURE_TTL_MS,
     });
@@ -352,9 +470,13 @@ const SystemPromptVariables = {
           (prefix) => key.startsWith(prefix)
         );
 
-        // Handle MCP server variables: {mcp.<serverName>.<toolName>}
+        // Handle MCP server variables: {mcp.<serverName>.<toolName>[:<arg1>,<arg2>,...]}
         if (key.startsWith("mcp.")) {
-          const value = await _resolveMcpVariable(key);
+          const value = await _resolveMcpVariable(key, {
+            userId,
+            workspaceId,
+            allVariables,
+          });
           result = result.replace(match, value);
           continue;
         }

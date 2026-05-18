@@ -163,9 +163,13 @@ export default function ChatPromptSettings({
             <span className="bg-theme-settings-input-bg px-1 py-0.5 rounded font-mono">
               {"{mcp.<server>.<tool>}"}
             </span>
-            {" "}— e.g.{" "}
+            {" "}or pass arguments with{" "}
             <span className="bg-theme-settings-input-bg px-1 py-0.5 rounded font-mono">
-              {"{mcp.weather.get_forecast}"}
+              {"{mcp.<server>.<tool>:arg1,arg2}"}
+            </span>
+            {" "}— args can be literals or other variable keys like{" "}
+            <span className="bg-theme-settings-input-bg px-1 py-0.5 rounded font-mono">
+              {"workspace.name"}
             </span>
             . Results are cached for 30 seconds.
           </p>
