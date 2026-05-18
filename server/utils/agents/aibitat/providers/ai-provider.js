@@ -405,6 +405,14 @@ class Provider {
           apiKey: process.env.LEMONADE_LLM_API_KEY || null,
           ...config,
         });
+      case "minimax":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.minimax.io/v1",
+          },
+          apiKey: process.env.MINIMAX_API_KEY || null,
+          ...config,
+        });
       default:
         throw new Error(
           `Unsupported provider ${JSON.stringify(provider)} for this task.`

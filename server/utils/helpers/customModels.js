@@ -49,6 +49,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "privatemode",
   "sambanova",
   "lemonade",
+  "minimax",
   // Embedding Engines
   "native-embedder",
   "cohere-embedder",
@@ -133,6 +134,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getLemonadeModels(basePath);
     case "lemonade-embedder":
       return await getLemonadeModels(basePath, "embedding");
+    case "minimax":
+      return await getMinimaxModels(apiKey);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -582,6 +585,72 @@ async function getElevenLabsModels(apiKey = null) {
   }
 
   if (models.length > 0 && !!apiKey) process.env.TTS_ELEVEN_LABS_KEY = apiKey;
+  return { models, error: null };
+}
+
+async function getMinimaxModels(_apiKey = null) {
+  const { OpenAI: OpenAIApi } = require("openai");
+  const apiKey =
+    _apiKey === true
+      ? process.env.MINIMAX_API_KEY
+      : _apiKey || process.env.MINIMAX_API_KEY || null;
+  const openai = new OpenAIApi({
+    baseURL: "https://api.minimax.io/v1",
+    apiKey,
+  });
+  const models = await openai.models
+    .list()
+    .then((results) => results.data)
+    .then((models) =>
+      models.map((model) => ({
+        id: model.id,
+        name: model.id,
+        organization: model.owned_by || "minimax",
+      }))
+    )
+    .catch((e) => {
+      console.error(`Minimax:listModels`, e.message);
+      return [
+        {
+          id: "MiniMax-M2.7",
+          name: "MiniMax-M2.7",
+          organization: "minimax",
+        },
+        {
+          id: "MiniMax-M2.7-highspeed",
+          name: "MiniMax-M2.7-highspeed",
+          organization: "minimax",
+        },
+        {
+          id: "MiniMax-M2.5",
+          name: "MiniMax-M2.5",
+          organization: "minimax",
+        },
+        {
+          id: "MiniMax-M2.5-highspeed",
+          name: "MiniMax-M2.5-highspeed",
+          organization: "minimax",
+        },
+        {
+          id: "MiniMax-M2.1",
+          name: "MiniMax-M2.1",
+          organization: "minimax",
+        },
+        {
+          id: "MiniMax-M2.1-highspeed",
+          name: "MiniMax-M2.1-highspeed",
+          organization: "minimax",
+        },
+        {
+          id: "MiniMax-M2",
+          name: "MiniMax-M2",
+          organization: "minimax",
+        },
+      ];
+    });
+
+  // Api Key was successful so lets save it for future uses
+  if (models.length > 0 && !!apiKey) process.env.MINIMAX_API_KEY = apiKey;
   return { models, error: null };
 }
 
