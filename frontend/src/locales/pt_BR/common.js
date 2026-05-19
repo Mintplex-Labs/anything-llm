@@ -1287,6 +1287,43 @@ const TRANSLATIONS = {
     loading_mcp_servers: "Carregando servidores MCP...",
     app_integrations: "Integrações de aplicativos",
     sub_skills: "Habilidades específicas",
+    memories: {
+      title: "Memórias",
+      empty:
+        "Até agora, não há lembranças. Após você interagir mais com o chatbot, novas lembranças serão criadas ou",
+      empty_cta: "criar uma nova memória",
+      tab_workspace: "Espaço de trabalho",
+      tab_global: "Global",
+      toggle: {
+        label: "Ativar a personalização",
+        description:
+          "Permita que seu assistente lembre-se de fatos sobre você ou sobre este ambiente de trabalho e utilize essas informações em conversas.",
+      },
+      auto_extraction: {
+        label: "Memórias Automáticas",
+        description:
+          "Peça ao seu assistente para criar automaticamente memórias em segundo plano.",
+      },
+      menu: {
+        edit: "Editar",
+        delete: "Excluir",
+        move_to_global: "Migrar para o âmbito global",
+        move_to_workspace: "Mova para o espaço de trabalho",
+      },
+      modal: {
+        create_title: "Crie Memória",
+        edit_title: "Editar Memória",
+        create_description:
+          'As memórias devem ser uma única declaração concisa. Exemplo: "O usuário prefere Python em vez de JavaScript".',
+        edit_description: "Atualize o conteúdo desta memória.",
+        label: "Memória",
+        placeholder:
+          "por exemplo, o nome do usuário é Joe, o usuário trabalha com AnythingLLM, etc.",
+        create: "Criar",
+        save: "Salvar",
+        cancel: "Cancelar",
+      },
+    },
   },
   profile_settings: {
     edit_account: "Editar conta",

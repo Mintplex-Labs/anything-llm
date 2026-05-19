@@ -1243,6 +1243,43 @@ const TRANSLATIONS = {
     loading_mcp_servers: "טעינת שרתי ה-MCP...",
     app_integrations: "אינטגרציות עם אפליקציות",
     sub_skills: "כישורים ספציפיים",
+    memories: {
+      title: "זיכרונות",
+      empty:
+        "עד כה, אין זיכרונות. לאחר שתתקשרו עם הצ'אטבוט, זיכרונות נוספים יתמלאו.",
+      empty_cta: "ליצור זיכרון חדש",
+      tab_workspace: "חלל עבודה",
+      tab_global: "גלובלי",
+      toggle: {
+        label: "אפשרות להתאים אישית",
+        description:
+          "אפשר לאשתף את העוזר שלך במידע עלייך או על סביבת העבודה, ובכך להשתמש בו בשיחות.",
+      },
+      auto_extraction: {
+        label: "זיכרונות אוטומטיים",
+        description:
+          "אפשר להגדיר את העוזר שלך ליצור תזכורות באופן אוטומטי ברקע.",
+      },
+      menu: {
+        edit: "עריכה",
+        delete: "מחיקה",
+        move_to_global: "התפשטות גלובלית",
+        move_to_workspace: "מעבר למרחב העבודה",
+      },
+      modal: {
+        create_title: "צור זיכרון",
+        edit_title: "עריכת זיכרון",
+        create_description:
+          'הזיכרונות צריכים להיות הצהרה אחת, תמציתית. לדוגמה: "המשתמש מעדיף את Python על פני JavaScript".',
+        edit_description: "עדכן את התוכן של הזיכרון הזה.",
+        label: "זיכרון",
+        placeholder:
+          "לדוגמה, שם המשתמש הוא ג'ואי, המשתמש עובד על פלטפורמת AnythingLLM, וכן הלאה.",
+        create: "צור",
+        save: "שמור",
+        cancel: "בטל",
+      },
+    },
   },
   profile_settings: {
     edit_account: "ערוך חשבון",

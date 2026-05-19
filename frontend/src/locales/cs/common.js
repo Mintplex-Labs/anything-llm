@@ -1315,6 +1315,43 @@ const TRANSLATIONS = {
     loading_mcp_servers: "Načítají se servery pro MCP...",
     app_integrations: "Integrace aplikací",
     sub_skills: "Specifické dovednosti",
+    memories: {
+      title: "Paměti",
+      empty:
+        "Dosud žádné vzpomínky. Jak budete více komunikovat s chatbotem, budou se postupně objevovat další.",
+      empty_cta: "vytvořit nový paměťový záznam",
+      tab_workspace: "Pracovní prostor",
+      tab_global: "Globální",
+      toggle: {
+        label: "Povolte personalizaci",
+        description:
+          "Nechte svého asistenta, aby si vybavil informace o vás nebo o tomto pracovním prostoru a použil je při konverzaci.",
+      },
+      auto_extraction: {
+        label: "Automatické vzpomínky",
+        description:
+          "Nechte, aby vám váš asistent automaticky vytvářel vzpomínky na pozadí.",
+      },
+      menu: {
+        edit: "Upravit",
+        delete: "Smazat",
+        move_to_global: "Přechod na globální úroveň",
+        move_to_workspace: "Přesun do pracovního prostředí",
+      },
+      modal: {
+        create_title: "Vytvořte vzpomínku",
+        edit_title: "Upravit paměť",
+        create_description:
+          "Paměti by měly být jednoznačné a stručné. Například: „Uživatel preferuje Python před JavaScriptem“",
+        edit_description: "Aktualizujte obsah této paměti.",
+        label: "Paměť",
+        placeholder:
+          "např. Jméno uživatele je Joe, uživatel pracuje na AnythingLLM, atd.",
+        create: "Vytvořit",
+        save: "Uložit",
+        cancel: "Zrušit",
+      },
+    },
   },
   profile_settings: {
     edit_account: "Upravit účet",
