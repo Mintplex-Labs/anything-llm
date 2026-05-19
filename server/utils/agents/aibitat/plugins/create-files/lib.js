@@ -276,7 +276,9 @@ class CreateFilesManager {
    * @returns {Buffer|string|null} Logo as Buffer, data URI string, or null if file not found
    */
   getLogo({ forDarkBackground = false, format = "buffer" } = {}) {
-    const assetsPath = path.join(__dirname, "../../../../../storage/assets");
+    // On Docker this is pre-packed images local to this lib.
+    // Does not honor Whitelabeling changes/preferences right now.
+    const assetsPath = path.join(__dirname, "assets");
     const filename = forDarkBackground
       ? "anything-llm.png"
       : "anything-llm-invert.png";

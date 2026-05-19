@@ -50,6 +50,7 @@ const {
 const { SlashCommandPresets } = require("../models/slashCommandsPresets");
 const { EncryptionManager } = require("../utils/EncryptionManager");
 const { BrowserExtensionApiKey } = require("../models/browserExtensionApiKey");
+const { MobileDevice } = require("../models/mobileDevice");
 const {
   chatHistoryViewable,
 } = require("../utils/middleware/chatHistoryViewable");
@@ -623,6 +624,7 @@ function systemEndpoints(app) {
         await BrowserExtensionApiKey.migrateApiKeysToMultiUser(user.id);
         await Memory.migrateToMultiUser(user.id);
         await WorkspaceChats.migrateToMultiUser(user.id);
+        await MobileDevice.migrateDevicesToMultiUser(user.id);
         await AgentSkillWhitelist.clearSingleUserWhitelist();
         await updateENV(
           {
