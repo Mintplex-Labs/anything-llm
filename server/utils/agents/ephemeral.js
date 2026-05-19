@@ -571,7 +571,7 @@ class EphemeralEventListener extends EventEmitter {
   packMessages() {
     const thoughts = [];
     const outputs = [];
-    let textResponse = "";
+    let textResponse = null;
     for (let msg of this.messages) {
       if (msg.type === "statusResponse") {
         thoughts.push(msg.content);
@@ -583,22 +583,10 @@ class EphemeralEventListener extends EventEmitter {
         continue;
       }
 
-      if (msg.type === "reportStreamEvent") {
-        if (msg.content.type === "textResponseChunk") {
-          textResponse += msg.content.content;
-          continue;
-        }
-        if (msg.content.type === "fullTextResponse") {
-          textResponse = msg.content.content;
-          continue;
-        }
-      }
-
-      // Fallback: messages with no type (final onMessage from AIbitat) or unhandled types
-      // These contain the complete response in msg.content
-      if (!msg.type && msg.content && typeof msg.content === "string") {
-        textResponse = msg.content;
-      }
+      // All other message types are treated as the text response
+      // This preserves original behavior where any non-statusResponse message
+      // sets the textResponse
+      textResponse = msg.content;
     }
     return { thoughts, textResponse, outputs };
   }
