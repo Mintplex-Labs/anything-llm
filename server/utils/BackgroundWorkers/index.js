@@ -41,7 +41,6 @@ class BackgroundService {
   #memoryJobs = [
     {
       name: "extract-memories",
-      timeout: "10s",
       interval: process.env.MEMORY_EXTRACTION_INTERVAL || "3hr",
     },
   ];
