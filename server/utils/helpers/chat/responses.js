@@ -34,6 +34,7 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
 
   return new Promise(async (resolve) => {
     let fullText = "";
+    let reasoningText = "";
 
     // Establish listener to early-abort a streaming response
     // in case things go sideways or the user does not like the response.
@@ -50,6 +51,7 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
       for await (const chunk of stream) {
         const message = chunk?.choices?.[0];
         const token = message?.delta?.content;
+        const reasoningToken = message?.delta?.reasoning_content;
 
         // If we see usage metrics in the chunk, we can use them directly
         // instead of estimating them, but we only want to assign values if
@@ -67,6 +69,49 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
             hasUsageMetrics = true; // to stop estimating counter
             usage.completion_tokens = Number(chunk.usage.completion_tokens);
           }
+        }
+
+        // Reasoning models will always return the reasoning text before the token text.
+        if (reasoningToken) {
+          // If the reasoning text is empty (''), we need to initialize it
+          // and send the first chunk of reasoning text.
+          if (reasoningText.length === 0) {
+            writeResponseChunk(response, {
+              uuid,
+              sources: [],
+              type: "textResponseChunk",
+              textResponse: `<think>${reasoningToken}`,
+              close: false,
+              error: false,
+            });
+            reasoningText += `<think>${reasoningToken}`;
+            continue;
+          } else {
+            writeResponseChunk(response, {
+              uuid,
+              sources: [],
+              type: "textResponseChunk",
+              textResponse: reasoningToken,
+              close: false,
+              error: false,
+            });
+            reasoningText += reasoningToken;
+          }
+        }
+
+        // If the reasoning text is not empty, but the reasoning token is empty
+        // and the token text is not empty we need to close the reasoning text and begin sending the token text.
+        if (!!reasoningText && !reasoningToken && token) {
+          writeResponseChunk(response, {
+            uuid,
+            sources: [],
+            type: "textResponseChunk",
+            textResponse: `</think>`,
+            close: false,
+            error: false,
+          });
+          fullText += `${reasoningText}</think>`;
+          reasoningText = "";
         }
 
         if (token) {

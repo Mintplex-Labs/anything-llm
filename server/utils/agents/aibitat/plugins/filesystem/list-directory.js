@@ -101,7 +101,7 @@ module.exports.FilesystemListDirectory = {
                 entries.map(async (entry) => {
                   const entryPath = path.join(validPath, entry.name);
                   try {
-                    const stats = await fs.stat(entryPath);
+                    const stats = await fs.lstat(entryPath);
                     return {
                       name: entry.name,
                       isDirectory: entry.isDirectory(),

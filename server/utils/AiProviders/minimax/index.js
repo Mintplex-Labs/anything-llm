@@ -2,24 +2,24 @@ const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
-const { MODEL_MAP } = require("../modelMap");
 const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
+const { MODEL_MAP } = require("../modelMap");
 
-class DeepSeekLLM {
+class MinimaxLLM {
   constructor(embedder = null, modelPreference = null) {
-    if (!process.env.DEEPSEEK_API_KEY)
-      throw new Error("No DeepSeek API key was set.");
-    this.className = "DeepSeekLLM";
     const { OpenAI: OpenAIApi } = require("openai");
+    if (!process.env.MINIMAX_API_KEY)
+      throw new Error("No Minimax API key was set.");
+    this.className = "MinimaxLLM";
 
     this.openai = new OpenAIApi({
-      apiKey: process.env.DEEPSEEK_API_KEY,
-      baseURL: "https://api.deepseek.com/v1",
+      baseURL: "https://api.minimax.io/v1",
+      apiKey: process.env.MINIMAX_API_KEY,
     });
     this.model =
-      modelPreference || process.env.DEEPSEEK_MODEL_PREF || "deepseek-chat";
+      modelPreference || process.env.MINIMAX_MODEL_PREF || "MiniMax-M2.7";
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -54,11 +54,11 @@ class DeepSeekLLM {
   }
 
   static promptWindowLimit(modelName) {
-    return MODEL_MAP.get("deepseek", modelName) ?? 8192;
+    return MODEL_MAP.get("minimax", modelName) ?? 196000;
   }
 
   promptWindowLimit() {
-    return MODEL_MAP.get("deepseek", this.model) ?? 8192;
+    return MODEL_MAP.get("minimax", this.model) ?? 196000;
   }
 
   async isValidChatCompletionModel(modelName = "") {
@@ -79,25 +79,10 @@ class DeepSeekLLM {
     return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
   }
 
-  /**
-   * Parses and prepends reasoning from the response and returns the full text response.
-   * @param {Object} response
-   * @returns {string}
-   */
-  #parseReasoningFromResponse({ message }) {
-    let textResponse = message?.content;
-    if (
-      !!message?.reasoning_content &&
-      message.reasoning_content.trim().length > 0
-    )
-      textResponse = `<think>${message.reasoning_content}</think>${textResponse}`;
-    return textResponse;
-  }
-
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
-        `DeepSeek chat: ${this.model} is not valid for chat completion!`
+        `Minimax chat: ${this.model} is not valid for chat completion!`
       );
 
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
@@ -117,11 +102,11 @@ class DeepSeekLLM {
       result?.output?.choices?.length === 0
     )
       throw new Error(
-        `Invalid response body returned from DeepSeek: ${JSON.stringify(result.output)}`
+        `Invalid response body returned from Minimax: ${JSON.stringify(result.output)}`
       );
 
     return {
-      textResponse: this.#parseReasoningFromResponse(result.output.choices[0]),
+      textResponse: result.output.choices[0].message.content,
       metrics: {
         prompt_tokens: result.output.usage.prompt_tokens || 0,
         completion_tokens: result.output.usage.completion_tokens || 0,
@@ -138,7 +123,7 @@ class DeepSeekLLM {
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
-        `DeepSeek chat: ${this.model} is not valid for chat completion!`
+        `Minimax stream: ${this.model} is not valid for chat completion!`
       );
 
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
@@ -176,5 +161,5 @@ class DeepSeekLLM {
 }
 
 module.exports = {
-  DeepSeekLLM,
+  MinimaxLLM,
 };
