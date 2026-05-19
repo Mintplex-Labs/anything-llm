@@ -905,6 +905,10 @@ const SystemSettings = {
       LemonadeLLMModelPref: process.env.LEMONADE_LLM_MODEL_PREF,
       LemonadeLLMModelTokenLimit:
         process.env.LEMONADE_LLM_MODEL_TOKEN_LIMIT || 8192,
+
+      // Minimax Keys
+      MinimaxApiKey: !!process.env.MINIMAX_API_KEY,
+      MinimaxModelPref: process.env.MINIMAX_MODEL_PREF,
     };
   },
 
