@@ -182,9 +182,7 @@ async function chatSync({
     const eventListener = new EphemeralEventListener();
     await agentHandler.init();
     await agentHandler.createAIbitat({ handler: eventListener });
-
-    // Wait for agent to complete
-    const agentPromise = agentHandler.startAgentCluster();
+    agentHandler.startAgentCluster();
 
     // The cluster has started and now we wait for close event since
     // this is a synchronous call for an agent, so we return everything at once.
@@ -192,9 +190,6 @@ async function chatSync({
     return await eventListener
       .waitForClose()
       .then(async ({ thoughts, textResponse, outputs }) => {
-        // Wait for agent cluster to fully complete before getting outputs
-        await agentPromise;
-
         // Merge outputs from packMessages with outputs from aibitat (contains file download metadata with proper types)
         // These are needed for the download endpoint to authorize file access
         const allOutputs = [...outputs, ...agentHandler.getPendingOutputs()];
@@ -543,17 +538,13 @@ async function streamChat({
     await agentHandler.init();
     await agentHandler.createAIbitat({ handler: eventListener });
 
-    // Start agent cluster (don't await - streaming handles completion)
-    const agentPromise = agentHandler.startAgentCluster();
+    agentHandler.startAgentCluster();
 
     // The cluster has started and now we wait for close event since
     // and stream back any results we get from agents as they come in.
     return eventListener
       .streamAgentEvents(response, uuid)
       .then(async ({ thoughts, textResponse, outputs }) => {
-        // Wait for agent cluster to fully complete before getting outputs
-        await agentPromise;
-
         // Merge outputs from packMessages with outputs from aibitat (contains file download metadata with proper types)
         // These are needed for the download endpoint to authorize file access
         const allOutputs = [...outputs, ...agentHandler.getPendingOutputs()];
