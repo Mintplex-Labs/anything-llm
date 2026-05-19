@@ -31,7 +31,7 @@ const Memory = {
     workspaceId: (v = null) =>
       v === null || v === undefined ? null : toInt(v),
     scope: (v = "workspace") => {
-      if (!this.VALID_SCOPES.includes(v))
+      if (!Memory.VALID_SCOPES.includes(v))
         throw new Error(`Invalid scope: ${JSON.stringify(v)}`);
       return v;
     },
@@ -331,14 +331,16 @@ const Memory = {
   },
 
   /**
-   * Apply extracted memories:
-   * - WORKSPACE: Replace all workspace memories with the new set (flexible)
-   * - GLOBAL: Append new memories only (never modify existing)
+   * Apply extracted memories from the two-phase Observer/Reflector pipeline.
+   * Each memory has an `action` field:
+   *   - "create": insert a new memory (WORKSPACE or GLOBAL)
+   *   - "update": revise an existing WORKSPACE memory by ID
+   * Skipped items are already filtered out before this method is called.
    * @param {number|null} userId
    * @param {number} workspaceId
-   * @param {{content: string, scope: "WORKSPACE"|"GLOBAL"}[]} newMemories - from extraction
+   * @param {{content: string, scope: "WORKSPACE"|"GLOBAL", action: "create"|"update", updateId?: number}[]} newMemories
    * @param {number} globalSlots - how many global slots are available
-   * @returns {Promise<{workspaceCount: number, globalCount: number}>}
+   * @returns {Promise<{workspaceCount: number, globalCount: number, updatedCount: number}>}
    */
   applyExtractedMemories: async function (
     userId,
@@ -346,7 +348,7 @@ const Memory = {
     newMemories,
     globalSlots
   ) {
-    const result = { workspaceCount: 0, globalCount: 0 };
+    const result = { workspaceCount: 0, globalCount: 0, updatedCount: 0 };
     try {
       const safeMemories = Array.isArray(newMemories)
         ? newMemories.filter(
@@ -355,27 +357,24 @@ const Memory = {
               m !== null &&
               typeof m.content === "string" &&
               m.content.trim().length > 0 &&
-              ["WORKSPACE", "GLOBAL"].includes(m.scope)
+              ["WORKSPACE", "GLOBAL"].includes(m.scope) &&
+              ["create", "update"].includes(m.action)
           )
         : [];
 
-      const newWorkspace = safeMemories
+      const creates = safeMemories.filter((m) => m.action === "create");
+      const updates = safeMemories.filter(
+        (m) => m.action === "update" && typeof m.updateId === "number"
+      );
+
+      const newWorkspace = creates
         .filter((m) => m.scope === "WORKSPACE")
         .slice(0, this.WORKSPACE_LIMIT);
-      const newGlobal = safeMemories
+      const newGlobal = creates
         .filter((m) => m.scope === "GLOBAL")
         .slice(0, Math.max(0, globalSlots));
 
       await prisma.$transaction(async (tx) => {
-        // WORKSPACE: delete all and replace with new set
-        await tx.memories.deleteMany({
-          where: {
-            userId: this.validations.userId(userId),
-            workspaceId: this.validations.id(workspaceId),
-            scope: "workspace",
-          },
-        });
-
         for (const { content } of newWorkspace) {
           await tx.memories.create({
             data: {
@@ -387,7 +386,6 @@ const Memory = {
           });
         }
 
-        // GLOBAL: append only (existing are never touched)
         for (const { content } of newGlobal) {
           await tx.memories.create({
             data: {
@@ -398,10 +396,18 @@ const Memory = {
             },
           });
         }
+
+        for (const { updateId, content } of updates) {
+          await tx.memories.update({
+            where: { id: this.validations.id(updateId) },
+            data: { content, updatedAt: new Date() },
+          });
+        }
       });
 
       result.workspaceCount = newWorkspace.length;
       result.globalCount = newGlobal.length;
+      result.updatedCount = updates.length;
     } catch (error) {
       console.error(error.message);
     }

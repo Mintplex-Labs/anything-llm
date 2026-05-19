@@ -62,6 +62,7 @@ const SystemSettings = {
     "meta_page_title",
     "meta_page_favicon",
     "memory_enabled",
+    "memory_auto_extraction",
   ],
   supportedFields: [
     "logo_filename",
@@ -98,6 +99,7 @@ const SystemSettings = {
 
     // Memory/Personalization
     "memory_enabled",
+    "memory_auto_extraction",
   ],
   validations: {
     footer_data: (updates) => {
@@ -177,6 +179,45 @@ const SystemSettings = {
       } catch {
         console.error(`Could not validate agent skills.`);
         return JSON.stringify([]);
+      }
+    },
+    memory_enabled: async (update) => {
+      try {
+        const enabled = String(update) === "true";
+        const {
+          BackgroundService,
+        } = require("../utils/BackgroundWorkers/index.js");
+        const bgService = new BackgroundService();
+        const autoSetting = await SystemSettings.get({
+          label: "memory_auto_extraction",
+        });
+        const autoOn = !autoSetting || autoSetting.value === "true";
+        await bgService.syncMemoryJob(enabled && autoOn);
+        return String(enabled);
+      } catch (e) {
+        console.error(
+          `Failed to run validation function on memory_enabled`,
+          e.message
+        );
+        return String(update);
+      }
+    },
+    memory_auto_extraction: async (update) => {
+      try {
+        const enabled = String(update) === "true";
+        const {
+          BackgroundService,
+        } = require("../utils/BackgroundWorkers/index.js");
+        const bgService = new BackgroundService();
+        const memoriesOn = await SystemSettings.memoriesEnabled();
+        await bgService.syncMemoryJob(memoriesOn && enabled);
+        return String(enabled);
+      } catch (e) {
+        console.error(
+          `Failed to run validation function on memory_auto_extraction`,
+          e.message
+        );
+        return String(update);
       }
     },
     disabled_agent_skills: (updates) => {
@@ -412,6 +453,7 @@ const SystemSettings = {
       StorageDir: process.env.STORAGE_DIR,
       MultiUserMode: await this.isMultiUserMode(),
       MemoryEnabled: await this.memoriesEnabled(),
+      MemoryAutoExtraction: await this.memoryAutoExtractionSetting(),
       DisableTelemetry: process.env.DISABLE_TELEMETRY || "false",
 
       // --------------------------------------------------------
@@ -636,6 +678,27 @@ const SystemSettings = {
     } catch (error) {
       console.error(error.message);
       return false;
+    }
+  },
+
+  autoMemoriesEnabled: async function () {
+    try {
+      if (!(await this.memoriesEnabled())) return false;
+      const setting = await this.get({ label: "memory_auto_extraction" });
+      return !setting || setting.value === "true";
+    } catch (error) {
+      console.error(error.message);
+      return false;
+    }
+  },
+
+  memoryAutoExtractionSetting: async function () {
+    try {
+      const setting = await this.get({ label: "memory_auto_extraction" });
+      return !setting || setting.value === "true";
+    } catch (error) {
+      console.error(error.message);
+      return true;
     }
   },
 

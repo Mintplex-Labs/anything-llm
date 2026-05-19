@@ -1376,7 +1376,12 @@ const TRANSLATIONS = {
       toggle: {
         label: "Enable Personalization",
         description:
-          "When enabled, AnythingLLM will learn your preferences and context from conversations",
+          "Allow your assistant to recall facts about you or this workspace and use them in conversations",
+      },
+      auto_extraction: {
+        label: "Automatic Memories",
+        description:
+          "Have your assistant automatically create memories in the background",
       },
       menu: {
         edit: "Edit",

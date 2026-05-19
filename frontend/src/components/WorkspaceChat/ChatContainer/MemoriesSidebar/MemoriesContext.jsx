@@ -29,12 +29,14 @@ export function MemoriesProvider({ workspace, children }) {
   const [modalState, setModalState] = useState({ open: false, mode: "create" });
   const [editingMemory, setEditingMemory] = useState(null);
   const [enabled, setEnabled] = useState(false);
+  const [autoExtraction, setAutoExtraction] = useState(true);
   const [loadingEnabled, setLoadingEnabled] = useState(true);
 
   useEffect(() => {
     if (!sidebarOpen) return;
     System.keys().then((settings) => {
       setEnabled(!!settings?.MemoryEnabled);
+      setAutoExtraction(settings?.MemoryAutoExtraction !== false);
       setLoadingEnabled(false);
     });
   }, [sidebarOpen]);
@@ -107,6 +109,8 @@ export function MemoriesProvider({ workspace, children }) {
     activeMemories,
     enabled,
     setEnabled,
+    autoExtraction,
+    setAutoExtraction,
     loadingEnabled,
     modalState,
     editingMemory,

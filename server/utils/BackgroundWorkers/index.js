@@ -13,6 +13,7 @@ class BackgroundService {
   name = "BackgroundWorkerService";
   static _instance = null;
   documentSyncEnabled = false;
+  memoryExtractionEnabled = false;
   #root = path.resolve(__dirname, "../../jobs");
   #scheduledJobTimers = new Map();
   #scheduledJobQueue = new PQueue({
@@ -35,8 +36,12 @@ class BackgroundService {
       timeout: "5m",
       interval: "8hr",
     },
+  ];
+
+  #memoryJobs = [
     {
       name: "extract-memories",
+      timeout: "10s",
       interval: process.env.MEMORY_EXTRACTION_INTERVAL || "3hr",
     },
   ];
@@ -95,9 +100,11 @@ class BackgroundService {
 
   async boot() {
     const { DocumentSyncQueue } = require("../../models/documentSyncQueue");
+    const { SystemSettings } = require("../../models/systemSettings");
     const { ScheduledJobRun } = require("../../models/scheduledJobRun");
 
     this.documentSyncEnabled = await DocumentSyncQueue.enabled();
+    this.memoryExtractionEnabled = await SystemSettings.autoMemoriesEnabled();
 
     // Mark any orphaned scheduled job runs as failed (server crashed mid-execution)
     const orphanedCount = await ScheduledJobRun.failOrphanedRuns();
@@ -153,8 +160,35 @@ class BackgroundService {
   /** @returns {import("@mintplex-labs/bree").Job[]} */
   jobs() {
     const activeJobs = [...this.#alwaysRunJobs];
+    if (this.memoryExtractionEnabled) activeJobs.push(...this.#memoryJobs);
     if (this.documentSyncEnabled) activeJobs.push(...this.#documentSyncJobs);
     return activeJobs;
+  }
+
+  /**
+   * Sync the memory extraction job based on current settings.
+   * Called when memory_enabled or memory_auto_extraction changes.
+   * @param {boolean} enabled - The desired state (should the extraction job run?)
+   */
+  async syncMemoryJob(enabled) {
+    if (!this.bree) return;
+
+    const jobName = this.#memoryJobs[0].name;
+    const isCurrentlyRunning = this.bree.config.jobs.some(
+      (j) => j.name === jobName
+    );
+
+    if (enabled && !isCurrentlyRunning) {
+      this.memoryExtractionEnabled = true;
+      await this.bree.add(this.#memoryJobs[0]);
+      await this.bree.start(jobName);
+      this.#log(`Added and started ${jobName} job`);
+    } else if (!enabled && isCurrentlyRunning) {
+      this.memoryExtractionEnabled = false;
+      await this.bree.stop(jobName);
+      await this.bree.remove(jobName);
+      this.#log(`Stopped and removed ${jobName} job`);
+    }
   }
 
   onError(error, _workerMetadata) {

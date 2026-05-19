@@ -436,6 +436,9 @@ function adminEndpoints(app) {
             case "memory_enabled":
               requestedSettings[label] = setting?.value || "false";
               break;
+            case "memory_auto_extraction":
+              requestedSettings[label] = setting?.value ?? "true";
+              break;
             default:
               break;
           }
