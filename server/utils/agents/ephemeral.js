@@ -570,15 +570,37 @@ class EphemeralEventListener extends EventEmitter {
    */
   packMessages() {
     const thoughts = [];
-    let textResponse = null;
+    const outputs = [];
+    let textResponse = "";
     for (let msg of this.messages) {
-      if (msg.type !== "statusResponse") {
-        textResponse = msg.content;
-      } else {
+      if (msg.type === "statusResponse") {
         thoughts.push(msg.content);
+        continue;
+      }
+
+      if (msg.type === "fileDownloadCard") {
+        outputs.push(msg.content);
+        continue;
+      }
+
+      if (msg.type === "reportStreamEvent") {
+        if (msg.content.type === "textResponseChunk") {
+          textResponse += msg.content.content;
+          continue;
+        }
+        if (msg.content.type === "fullTextResponse") {
+          textResponse = msg.content.content;
+          continue;
+        }
+      }
+
+      // Fallback: messages with no type (final onMessage from AIbitat) or unhandled types
+      // These contain the complete response in msg.content
+      if (!msg.type && msg.content && typeof msg.content === "string") {
+        textResponse = msg.content;
       }
     }
-    return { thoughts, textResponse };
+    return { thoughts, textResponse, outputs };
   }
 
   /**
@@ -614,6 +636,16 @@ class EphemeralEventListener extends EventEmitter {
           close: false,
           error: null,
           animate: true,
+        });
+      }
+
+      if (data.type === "fileDownloadCard") {
+        return writeResponseChunk(response, {
+          id: uuid,
+          type: "fileDownload",
+          fileDownload: data.content,
+          close: false,
+          error: null,
         });
       }
 

@@ -182,14 +182,23 @@ async function chatSync({
     const eventListener = new EphemeralEventListener();
     await agentHandler.init();
     await agentHandler.createAIbitat({ handler: eventListener });
-    agentHandler.startAgentCluster();
+
+    // Wait for agent to complete
+    const agentPromise = agentHandler.startAgentCluster();
 
     // The cluster has started and now we wait for close event since
     // this is a synchronous call for an agent, so we return everything at once.
     // After this, we conclude the call as we normally do.
     return await eventListener
       .waitForClose()
-      .then(async ({ thoughts, textResponse }) => {
+      .then(async ({ thoughts, textResponse, outputs }) => {
+        // Wait for agent cluster to fully complete before getting outputs
+        await agentPromise;
+
+        // Merge outputs from packMessages with outputs from aibitat (contains file download metadata with proper types)
+        // These are needed for the download endpoint to authorize file access
+        const allOutputs = [...outputs, ...agentHandler.getPendingOutputs()];
+
         await WorkspaceChats.new({
           workspaceId: workspace.id,
           prompt: String(message),
@@ -199,6 +208,7 @@ async function chatSync({
             attachments,
             type: chatMode,
             thoughts,
+            outputs: allOutputs,
           },
           include: false,
           apiSessionId: sessionId,
@@ -211,6 +221,7 @@ async function chatSync({
           error: null,
           textResponse,
           thoughts,
+          outputs,
         };
       });
   }
@@ -531,13 +542,22 @@ async function streamChat({
     const eventListener = new EphemeralEventListener();
     await agentHandler.init();
     await agentHandler.createAIbitat({ handler: eventListener });
-    agentHandler.startAgentCluster();
+
+    // Start agent cluster (don't await - streaming handles completion)
+    const agentPromise = agentHandler.startAgentCluster();
 
     // The cluster has started and now we wait for close event since
     // and stream back any results we get from agents as they come in.
     return eventListener
       .streamAgentEvents(response, uuid)
-      .then(async ({ thoughts, textResponse }) => {
+      .then(async ({ thoughts, textResponse, outputs }) => {
+        // Wait for agent cluster to fully complete before getting outputs
+        await agentPromise;
+
+        // Merge outputs from packMessages with outputs from aibitat (contains file download metadata with proper types)
+        // These are needed for the download endpoint to authorize file access
+        const allOutputs = [...outputs, ...agentHandler.getPendingOutputs()];
+
         await WorkspaceChats.new({
           workspaceId: workspace.id,
           prompt: String(message),
@@ -547,6 +567,7 @@ async function streamChat({
             attachments: attachments,
             type: chatMode,
             thoughts,
+            outputs: allOutputs,
           },
           include: true,
           threadId: thread?.id || null,
@@ -557,6 +578,7 @@ async function streamChat({
           type: "finalizeResponseStream",
           textResponse,
           thoughts,
+          outputs,
           close: true,
           error: false,
         });
