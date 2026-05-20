@@ -80,7 +80,7 @@ function modelRouterEndpoints(app) {
         const data = reqBody(request);
         const { router, error } = await ModelRouter.update(Number(id), data);
         if (error) return response.status(400).json({ router, error });
-        ModelRouterService.getInstance().invalidateRouter(Number(id));
+        ModelRouterService.invalidateRouter(Number(id));
         return response.status(200).json({ router });
       } catch (e) {
         console.error(e);
@@ -100,7 +100,7 @@ function modelRouterEndpoints(app) {
           return response
             .status(400)
             .json({ success: false, error: "Failed to delete router." });
-        ModelRouterService.getInstance().invalidateRouter(Number(id));
+        ModelRouterService.invalidateRouter(Number(id));
         return response.status(200).json({ success: true });
       } catch (e) {
         console.error(e);
@@ -126,7 +126,7 @@ function modelRouterEndpoints(app) {
         if (error) return response.status(400).json({ rule, error });
 
         await Telemetry.sendTelemetry("model_router_rule_created");
-        ModelRouterService.getInstance().invalidateRouter(routerId);
+        ModelRouterService.invalidateRouter(routerId);
         return response.status(200).json({ rule });
       } catch (e) {
         console.error(e);
@@ -150,7 +150,7 @@ function modelRouterEndpoints(app) {
         const { success, error } =
           await ModelRouterRule.reorderRules(ruleUpdates);
         if (error) return response.status(400).json({ success, error });
-        ModelRouterService.getInstance().invalidateRouter(Number(id));
+        ModelRouterService.invalidateRouter(Number(id));
         return response.status(200).json({ success });
       } catch (e) {
         console.error(e);
@@ -171,7 +171,7 @@ function modelRouterEndpoints(app) {
           data
         );
         if (error) return response.status(400).json({ rule, error });
-        ModelRouterService.getInstance().invalidateRouter(Number(id));
+        ModelRouterService.invalidateRouter(Number(id));
         return response.status(200).json({ rule });
       } catch (e) {
         console.error(e);
@@ -191,7 +191,7 @@ function modelRouterEndpoints(app) {
           return response
             .status(400)
             .json({ success: false, error: "Failed to delete rule." });
-        ModelRouterService.getInstance().invalidateRouter(Number(id));
+        ModelRouterService.invalidateRouter(Number(id));
         return response.status(200).json({ success: true });
       } catch (e) {
         console.error(e);

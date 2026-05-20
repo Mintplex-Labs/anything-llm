@@ -3,11 +3,6 @@ const {
   classifyWithLLM,
 } = require("../agents/aibitat/plugins/router-classifier");
 
-const DEFAULT_STICKY_MS = 300_000; // 5 minutes
-const REGEX_INPUT_CAP = 10_000;
-
-let instance = null;
-
 /**
  * Singleton service for model routing with built-in caching and rule evaluation.
  *
@@ -16,11 +11,26 @@ let instance = null;
  *    Cached for the full sticky window.
  * 2. Sticky route — when a rule matches, the model "sticks" so follow-up messages
  *    that don't match any rule stay on the same model instead of bouncing to fallback.
+ *
+ * TTL management:
+ * - LLM classification cache: cached for the full sticky window
+ * - Sticky route: cached for the full sticky window
+ * - LLM no match cooldown: 30s debounce for "no match" LLM results
+ * -- We want to avoid spamming the LLM with no match results, but still re-evaluate quickly when the topic changes.
+ * - If there has been a match, we want to keep the model for the full sticky window since we likely want to keep the same model for the same topic.
+ *
+ * This is purely time based caching, not classified by some other model or service simply because it is straightforward and easy to implement
+ * without introducing additional complexity and overhead on lower-end devices.
  */
 class ModelRouterService {
+  static instance = null;
+  static DEFAULT_STICKY_MS = 300_000; // 5 minutes
+  static LLM_NO_MATCH_COOLDOWN_MS = 30_000; // 30s debounce for "no match" LLM results
+  static REGEX_INPUT_CAP = 10_000;
+
   constructor() {
-    if (instance) return instance;
-    instance = this;
+    if (ModelRouterService.instance) return ModelRouterService.instance;
+    ModelRouterService.instance = this;
 
     this.routerCache = new Map();
     this.stickyRoutes = new Map();
@@ -34,8 +44,8 @@ class ModelRouterService {
    * @returns {ModelRouterService}
    */
   static getInstance() {
-    if (!instance) new ModelRouterService();
-    return instance;
+    if (!ModelRouterService.instance) new ModelRouterService();
+    return ModelRouterService.instance;
   }
 
   log(text, ...args) {
@@ -80,19 +90,12 @@ class ModelRouterService {
    * Invalidate the cached router config (e.g., after rules are edited).
    * @param {number} routerId
    */
-  invalidateRouter(routerId) {
+  static invalidateRouter(routerId) {
+    const svc = ModelRouterService.getInstance();
     const cacheKey = `router:${routerId}`;
-    if (!this.routerCache.has(cacheKey)) return;
-    this.log(`Invalidated cached router (id: ${routerId})`);
-    this.routerCache.delete(cacheKey);
-  }
-
-  /**
-   * Clear all cached routers.
-   */
-  invalidateAllRouters() {
-    this.routerCache.clear();
-    this.log(`Invalidated all cached routers`);
+    if (!svc.routerCache.has(cacheKey)) return;
+    svc.log(`Invalidated cached router (id: ${routerId})`);
+    svc.routerCache.delete(cacheKey);
   }
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -116,7 +119,7 @@ class ModelRouterService {
    * @param {number} stickyMs
    * @returns {{ provider: string, model: string, ruleTitle: string|null, ruleType: string|null, isFallback: boolean }|null}
    */
-  getStickyRoute(key, stickyMs = DEFAULT_STICKY_MS) {
+  getStickyRoute(key, stickyMs = ModelRouterService.DEFAULT_STICKY_MS) {
     if (stickyMs <= 0) return null;
     const entry = this.stickyRoutes.get(key);
     if (!entry) {
@@ -195,22 +198,27 @@ class ModelRouterService {
    * @param {number} ttlMs
    * @returns {Object|null} The cached matched rule (or null sentinel meaning "no match"), or undefined if no cache
    */
-  getCachedLLMResult(key, ttlMs = DEFAULT_STICKY_MS) {
+  getCachedLLMResult(key, ttlMs = ModelRouterService.DEFAULT_STICKY_MS) {
     const entry = this.llmCache.get(key);
     if (!entry) {
       this.log(`LLM cache: MISS (no entry)`);
       return undefined;
     }
+    // "No match" results use a short cooldown so we don't spam the LLM on
+    // rapid messages, but still re-evaluate quickly when the topic changes.
+    const effectiveTtl = entry.result
+      ? ttlMs
+      : ModelRouterService.LLM_NO_MATCH_COOLDOWN_MS;
     const ageMs = Date.now() - entry.cachedAt;
-    if (ageMs > ttlMs) {
+    if (ageMs > effectiveTtl) {
       this.llmCache.delete(key);
       this.log(
-        `LLM cache: EXPIRED (age: ${Math.round(ageMs / 1000)}s > ${Math.round(ttlMs / 1000)}s)`
+        `LLM cache: EXPIRED (age: ${Math.round(ageMs / 1000)}s > ${Math.round(effectiveTtl / 1000)}s)`
       );
       return undefined;
     }
     this.log(
-      `LLM cache: HIT → ${entry.result ? `"${entry.result.title}"` : "no match"} (age: ${Math.round(ageMs / 1000)}s, ttl: ${Math.round((ttlMs - ageMs) / 1000)}s remaining)`
+      `LLM cache: HIT → ${entry.result ? `"${entry.result.title}"` : "no match"} (age: ${Math.round(ageMs / 1000)}s, ttl: ${Math.round((effectiveTtl - ageMs) / 1000)}s remaining)`
     );
     return entry.result;
   }
@@ -474,7 +482,7 @@ class ModelRouterService {
 
     try {
       const regex = new RegExp(pattern, flags);
-      return regex.test(input.slice(0, REGEX_INPUT_CAP));
+      return regex.test(input.slice(0, ModelRouterService.REGEX_INPUT_CAP));
     } catch {
       return false;
     }

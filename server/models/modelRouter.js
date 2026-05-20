@@ -41,10 +41,11 @@ const ModelRouter = {
         error: "Fallback provider and model are required.",
       };
 
+    const { ModelRouterService } = require("../utils/router");
     const cooldown_seconds =
       data.cooldown_seconds != null
         ? this.validations.cooldown_seconds(data.cooldown_seconds)
-        : 30;
+        : ModelRouterService.DEFAULT_STICKY_MS;
 
     try {
       const router = await prisma.model_routers.create({
