@@ -1,5 +1,6 @@
 const { Prisma } = require("@prisma/client");
 const prisma = require("../utils/prisma");
+const { safeJsonParse } = require("../utils/http");
 
 const VALID_TYPES = ["calculated", "llm"];
 const VALID_PROPERTIES = [
@@ -20,7 +21,7 @@ const VALID_COMPARATORS = [
   "neq",
   "between",
 ];
-const VALID_CONDITION_LOGIC = ["AND", "OR"];
+const VALID_CONDITION_LOGIC = ["AND"];
 const TITLE_REGEX = /^[a-z0-9_]+$/;
 
 const ModelRouterRule = {
@@ -36,15 +37,14 @@ const ModelRouterRule = {
     if (!title)
       return {
         rule: null,
-        message:
-          "Title is required and must be lowercase with underscores only.",
+        error: "Title is required and must be lowercase with underscores only.",
       };
 
     const type = VALID_TYPES.includes(data.type) ? data.type : null;
     if (!type)
       return {
         rule: null,
-        message: `Type must be one of: ${VALID_TYPES.join(", ")}`,
+        error: `Type must be one of: ${VALID_TYPES.join(", ")}`,
       };
 
     let conditionLogic = null;
@@ -55,16 +55,14 @@ const ModelRouterRule = {
         data.condition_logic,
         data.conditions
       );
-      if (validated.error) return { rule: null, message: validated.error };
+      if (validated.error) return { rule: null, error: validated.error };
       conditionLogic = validated.condition_logic;
       serializedConditions = validated.serialized;
-    }
-
-    if (type === "llm") {
+    } else if (type === "llm") {
       if (!data.description || !data.description.trim())
         return {
           rule: null,
-          message:
+          error:
             "Description is required for LLM rules. Describe when this rule should match.",
         };
     }
@@ -72,14 +70,14 @@ const ModelRouterRule = {
     if (!data.route_provider || !data.route_model)
       return {
         rule: null,
-        message: "Route provider and model are required.",
+        error: "Route provider and model are required.",
       };
 
     try {
       const rule = await prisma.model_router_rules.create({
         data: {
           router_id: Number(routerId),
-          enabled: data.enabled !== false,
+          enabled: true, // new rules are always enabled
           priority: Number(data.priority),
           type,
           title,
@@ -94,25 +92,12 @@ const ModelRouterRule = {
       return { rule: this._hydrate(rule), error: null };
     } catch (error) {
       console.error(error.message);
-      // P2002 is the unique constraint violation error code
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === "P2002"
-      ) {
-        const target = error.meta?.target;
-        if (target?.includes("title"))
-          return {
-            rule: null,
-            message: "A rule with that title already exists on this router.",
-          };
-        if (target?.includes("priority"))
-          return {
-            rule: null,
-            message: "A rule with that priority already exists on this router.",
-          };
-        return { rule: null, error: "Duplicate rule constraint violated." };
-      }
-      return { rule: null, error: error.message };
+      return (
+        handleUniqueConstraintError(error) || {
+          rule: null,
+          error: error.message,
+        }
+      );
     }
   },
 
@@ -142,17 +127,16 @@ const ModelRouterRule = {
     }
   },
 
+  /**
+   * Get all rules for a given router, ordered by priority.
+   * -> delegate to the where method
+   * @param {number} routerId
+   * @returns {Promise<Array<{id: number, title: string, description: string, enabled: boolean, priority: number, type: string, route_provider: string, route_model: string, created_by: number, createdAt: Date, lastUpdatedAt: Date}>>}
+   */
   forRouter: async function (routerId) {
-    try {
-      const rules = await prisma.model_router_rules.findMany({
-        where: { router_id: Number(routerId) },
-        orderBy: { priority: "asc" },
-      });
-      return rules.map((r) => this._hydrate(r));
-    } catch (error) {
-      console.error(error.message);
-      return [];
-    }
+    return this.where({ router_id: Number(routerId) }, null, {
+      priority: "asc",
+    });
   },
 
   update: async function (id = null, data = {}) {
@@ -214,25 +198,12 @@ const ModelRouterRule = {
       return { rule: this._hydrate(rule), error: null };
     } catch (error) {
       console.error(error.message);
-      // P2002 is the unique constraint violation error code
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === "P2002"
-      ) {
-        const target = error.meta?.target;
-        if (target?.includes("title"))
-          return {
-            rule: null,
-            error: "A rule with that title already exists on this router.",
-          };
-        if (target?.includes("priority"))
-          return {
-            rule: null,
-            error: "A rule with that priority already exists on this router.",
-          };
-        return { rule: null, error: "Duplicate rule constraint violated." };
-      }
-      return { rule: null, error: error.message };
+      return (
+        handleUniqueConstraintError(error) || {
+          rule: null,
+          error: error.message,
+        }
+      );
     }
   },
 
@@ -290,22 +261,26 @@ const ModelRouterRule = {
       return { error: "At least one condition is required." };
 
     const normalized = [];
-    for (let i = 0; i < conditions.length; i++) {
-      const c = conditions[i] || {};
-      if (!VALID_PROPERTIES.includes(c.property))
+    for (const [i, c] of conditions.entries()) {
+      const cond = c || {};
+      if (!VALID_PROPERTIES.includes(cond.property))
         return {
           error: `Condition ${i + 1}: property must be one of: ${VALID_PROPERTIES.join(", ")}`,
         };
-      if (!VALID_COMPARATORS.includes(c.comparator))
+      if (!VALID_COMPARATORS.includes(cond.comparator))
         return {
           error: `Condition ${i + 1}: comparator must be one of: ${VALID_COMPARATORS.join(", ")}`,
         };
-      if (c.value === undefined || c.value === null || String(c.value) === "")
+      if (
+        cond.value === undefined ||
+        cond.value === null ||
+        String(cond.value) === ""
+      )
         return { error: `Condition ${i + 1}: value is required.` };
       normalized.push({
-        property: c.property,
-        comparator: c.comparator,
-        value: String(c.value),
+        property: cond.property,
+        comparator: cond.comparator,
+        value: String(cond.value),
       });
     }
 
@@ -322,15 +297,7 @@ const ModelRouterRule = {
    */
   _hydrate: function (rule) {
     if (!rule) return null;
-    if (!rule.conditions) return { ...rule, conditions: null };
-    try {
-      return { ...rule, conditions: JSON.parse(rule.conditions) };
-    } catch (error) {
-      console.error(
-        `Failed to parse conditions for rule ${rule.id}: ${error.message}`
-      );
-      return { ...rule, conditions: null };
-    }
+    return { ...rule, conditions: safeJsonParse(rule.conditions, null) };
   },
 };
 
@@ -343,6 +310,27 @@ function assignEnum(updates, data, key, validList, label) {
     };
   updates[key] = data[key];
   return null;
+}
+
+function handleUniqueConstraintError(error) {
+  if (
+    !(error instanceof Prisma.PrismaClientKnownRequestError) ||
+    error.code !== "P2002"
+  )
+    return null;
+
+  const target = error.meta?.target;
+  if (target?.includes("title"))
+    return {
+      rule: null,
+      error: "A rule with that title already exists on this router.",
+    };
+  if (target?.includes("priority"))
+    return {
+      rule: null,
+      error: "A rule with that priority already exists on this router.",
+    };
+  return { rule: null, error: "Duplicate rule constraint violated." };
 }
 
 module.exports = { ModelRouterRule };

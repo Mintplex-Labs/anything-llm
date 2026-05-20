@@ -187,12 +187,8 @@ function RouterRow({ router, removeRouter, onEdit, showDivider }) {
       return;
 
     const { success, error } = await ModelRouter.delete(router.id);
-    if (success) {
-      showToast(t("model-router.toast-deleted"), "info");
-      removeRouter(router.id);
-    } else {
-      showToast(t("model-router.toast-delete-failed", { error }), "error");
-    }
+    if (success) removeRouter(router.id);
+    else showToast(t("model-router.toast-delete-failed", { error }), "error");
   };
 
   const goToRules = () => navigate(paths.settings.modelRouterRules(router.id));
@@ -217,13 +213,7 @@ function RouterRow({ router, removeRouter, onEdit, showDivider }) {
         <span className="text-sm font-normal leading-5 text-zinc-400 light:text-slate-500">
           {router.ruleCount || 0}
         </span>
-        <span
-          className={`text-sm font-normal leading-5 ${
-            router.workspaceCount > 0
-              ? "text-green-400 light:text-green-600"
-              : "text-zinc-400 light:text-slate-500"
-          }`}
-        >
+        <span className="text-sm font-normal leading-5 text-zinc-400 light:text-slate-500">
           {router.workspaceCount || 0}
         </span>
         <div className="flex items-center justify-end gap-[14px]">
