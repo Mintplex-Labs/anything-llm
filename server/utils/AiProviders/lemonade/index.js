@@ -152,9 +152,29 @@ class LemonadeLLM {
     return textResponse;
   }
 
+  #constructReasoningConfig(reasoningOption) {
+    const reasoningConfig = {};
+    /*
+     *  `reasoning_effort` expects compatible values, we first convert 'off' and
+     *  'on' to 'none' and 'low'.
+     * 400 Invalid 'reasoning_effort' value: 'arbitrary_string'. Supported values: none, minimal, low, medium, high, xhigh.
+     */
+    const openaiCompatibleReasoningValues = {
+      on: "low",
+      off: "none",
+    };
+
+    if (reasoningOption) {
+      reasoningConfig.reasoning_effort =
+        openaiCompatibleReasoningValues[reasoningOption] ?? reasoningOption;
+    }
+
+    return reasoningConfig;
+  }
+
   async getChatCompletion(
     messages = null,
-    { temperature = 0.7, reasoningOption }
+    { temperature = 0.7, reasoningOption = null }
   ) {
     await LemonadeLLM.loadModel(this.model);
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
@@ -162,6 +182,7 @@ class LemonadeLLM {
         model: this.model,
         messages,
         temperature,
+        ...this.#constructReasoningConfig(reasoningOption),
       })
     );
 
@@ -186,7 +207,10 @@ class LemonadeLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = 0.7, reasoningOption = null }
+  ) {
     await LemonadeLLM.loadModel(this.model);
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.lemonade.chat.completions.create({
@@ -194,6 +218,7 @@ class LemonadeLLM {
         stream: true,
         messages,
         temperature,
+        ...this.#constructReasoningConfig(reasoningOption),
       }),
       messages,
       runPromptTokenCalculation: true,

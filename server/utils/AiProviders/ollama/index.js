@@ -278,7 +278,7 @@ class OllamaAILLM {
           stream: false,
           messages,
           keep_alive: this.keepAlive,
-          ...this.#getReasoningConfig(reasoningOption),
+          ...this.#constructReasoningConfig(reasoningOption),
           options: {
             temperature,
             num_ctx: this.promptWindowLimit(),
@@ -324,7 +324,7 @@ class OllamaAILLM {
     };
   }
 
-  #getReasoningConfig(reasoningOption) {
+  #constructReasoningConfig(reasoningOption) {
     const reasoningConfig = {};
 
     const ollamaCompatibleReasoningControl = {
@@ -350,7 +350,7 @@ class OllamaAILLM {
         stream: true,
         messages,
         keep_alive: this.keepAlive,
-        ...this.#getReasoningConfig(reasoningOption),
+        ...this.#constructReasoningConfig(reasoningOption),
         options: {
           temperature,
           num_ctx: this.promptWindowLimit(),
