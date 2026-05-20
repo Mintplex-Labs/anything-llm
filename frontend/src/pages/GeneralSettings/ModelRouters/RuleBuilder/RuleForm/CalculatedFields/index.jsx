@@ -1,14 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Plus, X } from "@phosphor-icons/react";
 
-const PROPERTIES = [
-  { value: "promptContent", label: "Prompt Content" },
-  { value: "conversationTokenCount", label: "Conversation Token Count" },
-  { value: "conversationMessageCount", label: "Conversation Message Count" },
-  { value: "currentHour", label: "Current Hour (0-23)" },
-  { value: "hasImageAttachment", label: "Has Image Attachment" },
-];
-
 const NUMERIC_PROPERTIES = [
   "conversationTokenCount",
   "conversationMessageCount",
@@ -17,46 +9,85 @@ const NUMERIC_PROPERTIES = [
 
 const BOOLEAN_PROPERTIES = ["hasImageAttachment"];
 
-const STRING_COMPARATORS = [
-  { value: "contains", label: "contains" },
-  { value: "matches", label: "matches (regex)" },
-  { value: "eq", label: "equals" },
-  { value: "neq", label: "not equals" },
-];
+function createProperties(t) {
+  return [
+    {
+      value: "promptContent",
+      label: t("model-router.rule-form.prop-prompt-content"),
+    },
+    {
+      value: "conversationTokenCount",
+      label: t("model-router.rule-form.prop-token-count"),
+    },
+    {
+      value: "conversationMessageCount",
+      label: t("model-router.rule-form.prop-message-count"),
+    },
+    {
+      value: "currentHour",
+      label: t("model-router.rule-form.prop-current-hour"),
+    },
+    {
+      value: "hasImageAttachment",
+      label: t("model-router.rule-form.prop-has-image"),
+    },
+  ];
+}
 
-const NUMERIC_COMPARATORS = [
-  { value: "gt", label: "greater than" },
-  { value: "gte", label: "greater than or equal" },
-  { value: "lt", label: "less than" },
-  { value: "lte", label: "less than or equal" },
-  { value: "eq", label: "equals" },
-  { value: "neq", label: "not equals" },
-  { value: "between", label: "between (inclusive)" },
-];
+function createStringComparators(t) {
+  return [
+    { value: "contains", label: t("model-router.rule-form.cmp-contains") },
+    { value: "matches", label: t("model-router.rule-form.cmp-matches-regex") },
+    { value: "eq", label: t("model-router.rule-form.cmp-equals") },
+    { value: "neq", label: t("model-router.rule-form.cmp-not-equals") },
+  ];
+}
 
-function comparatorsFor(property) {
+function createNumericComparators(t) {
+  return [
+    { value: "gt", label: t("model-router.rule-form.cmp-greater-than") },
+    {
+      value: "gte",
+      label: t("model-router.rule-form.cmp-greater-than-or-equal"),
+    },
+    { value: "lt", label: t("model-router.rule-form.cmp-less-than") },
+    { value: "lte", label: t("model-router.rule-form.cmp-less-than-or-equal") },
+    { value: "eq", label: t("model-router.rule-form.cmp-equals") },
+    { value: "neq", label: t("model-router.rule-form.cmp-not-equals") },
+    { value: "between", label: t("model-router.rule-form.cmp-between") },
+  ];
+}
+
+function comparatorsFor(t, property) {
   return NUMERIC_PROPERTIES.includes(property)
-    ? NUMERIC_COMPARATORS
-    : STRING_COMPARATORS;
+    ? createNumericComparators(t)
+    : createStringComparators(t);
 }
 
-function valuePlaceholder(property, comparator) {
-  if (comparator === "between")
-    return property === "currentHour" ? "e.g. 9,17 (9am to 5pm)" : "e.g. 10,50";
-  if (property === "currentHour") return "e.g. 18 (0-23)";
-  if (property === "conversationMessageCount") return "e.g. 10";
-  if (NUMERIC_PROPERTIES.includes(property)) return "e.g. 4000";
-  if (comparator === "contains") return "e.g. code, python, rust";
-  if (comparator === "matches") return "e.g. /\\bpython\\b/i";
-  return "e.g. code";
+function valuePlaceholder(t, property, comparator) {
+  if (comparator === "between") {
+    return property === "currentHour"
+      ? t("model-router.rule-form.placeholder-between-hour")
+      : t("model-router.rule-form.placeholder-between-numeric");
+  }
+  if (property === "currentHour")
+    return t("model-router.rule-form.placeholder-hour");
+  if (property === "conversationMessageCount")
+    return t("model-router.rule-form.placeholder-message-count");
+  if (NUMERIC_PROPERTIES.includes(property))
+    return t("model-router.rule-form.placeholder-numeric");
+  if (comparator === "contains")
+    return t("model-router.rule-form.placeholder-contains");
+  if (comparator === "matches")
+    return t("model-router.rule-form.placeholder-matches");
+  return t("model-router.rule-form.placeholder-default");
 }
 
-function valueHelp(property, comparator) {
+function valueHelp(t, property, comparator) {
   if (NUMERIC_PROPERTIES.includes(property)) return null;
   if (comparator === "contains")
-    return "Comma-separated list — matches if the prompt contains any of the values (case-insensitive).";
-  if (comparator === "matches")
-    return "Regex pattern. Use /pattern/flags for case sensitivity (defaults to case-insensitive).";
+    return t("model-router.rule-form.help-contains");
+  if (comparator === "matches") return t("model-router.rule-form.help-matches");
   return null;
 }
 
@@ -152,8 +183,8 @@ function ConditionRow({
       onChange({ property: nextProperty, comparator: "eq", value: "true" });
       return;
     }
-    const prevComparators = comparatorsFor(condition.property);
-    const nextComparators = comparatorsFor(nextProperty);
+    const prevComparators = comparatorsFor(t, condition.property);
+    const nextComparators = comparatorsFor(t, nextProperty);
     const comparatorStillValid =
       !!condition.comparator &&
       nextComparators.some((c) => c.value === condition.comparator) &&
@@ -161,13 +192,12 @@ function ConditionRow({
     onChange({
       property: nextProperty,
       comparator: comparatorStillValid ? condition.comparator : "",
-      // Clear the value when switching from a boolean property since True/False
-      // isn't meaningful for other properties.
       value: BOOLEAN_PROPERTIES.includes(condition.property)
         ? ""
         : condition.value,
     });
   };
+  const properties = createProperties(t);
 
   return (
     <div className="flex items-end gap-x-5">
@@ -187,7 +217,7 @@ function ConditionRow({
             <option value="">
               {t("model-router.rule-form.property-select")}
             </option>
-            {PROPERTIES.map((p) => (
+            {properties.map((p) => (
               <option key={p.value} value={p.value}>
                 {p.label}
               </option>
@@ -241,6 +271,7 @@ function FieldColumn({ label, children }) {
 }
 
 function BooleanValueField({ value, onChange }) {
+  const { t } = useTranslation();
   return (
     <select
       value={value || "true"}
@@ -248,15 +279,15 @@ function BooleanValueField({ value, onChange }) {
       className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-700 text-sm rounded-[8px] outline-none block w-full h-8 px-3.5"
       required
     >
-      <option value="true">True</option>
-      <option value="false">False</option>
+      <option value="true">{t("model-router.rule-form.bool-true")}</option>
+      <option value="false">{t("model-router.rule-form.bool-false")}</option>
     </select>
   );
 }
 
 function ComparatorAndValueFields({ condition, onChange, showLabels }) {
   const { t } = useTranslation();
-  const comparators = comparatorsFor(condition.property);
+  const comparators = comparatorsFor(t, condition.property);
   return (
     <>
       <FieldColumn
@@ -287,6 +318,7 @@ function ComparatorAndValueFields({ condition, onChange, showLabels }) {
           value={condition.value}
           onChange={(e) => onChange({ value: e.target.value })}
           placeholder={valuePlaceholder(
+            t,
             condition.property,
             condition.comparator
           )}
@@ -295,9 +327,9 @@ function ComparatorAndValueFields({ condition, onChange, showLabels }) {
           }`}
           required
         />
-        {valueHelp(condition.property, condition.comparator) && (
+        {valueHelp(t, condition.property, condition.comparator) && (
           <p className="text-xs leading-4 text-zinc-400 light:text-slate-600">
-            {valueHelp(condition.property, condition.comparator)}
+            {valueHelp(t, condition.property, condition.comparator)}
           </p>
         )}
       </FieldColumn>

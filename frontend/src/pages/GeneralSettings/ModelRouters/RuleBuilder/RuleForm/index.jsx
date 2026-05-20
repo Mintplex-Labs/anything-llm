@@ -8,20 +8,20 @@ import LLMProviderModelPicker from "../../LLMProviderModelPicker";
 import CalculatedFields from "./CalculatedFields";
 import LLMDescriptionField from "./LLMDescriptionField";
 
-const RULE_TYPES = [
-  {
-    value: "calculated",
-    label: "Calculated",
-    description:
-      "Match based on message properties like content, token count, or time of day.",
-  },
-  {
-    value: "llm",
-    label: "LLM Classified",
-    description:
-      "Use the fallback model to decide if the message matches a description you provide.",
-  },
-];
+function createRuleTypes(t) {
+  return [
+    {
+      value: "calculated",
+      label: t("model-router.rule-form.type-calculated-label"),
+      description: t("model-router.rule-form.type-calculated-description"),
+    },
+    {
+      value: "llm",
+      label: t("model-router.rule-form.type-llm-label"),
+      description: t("model-router.rule-form.type-llm-description"),
+    },
+  ];
+}
 
 function emptyCondition() {
   return { property: "", comparator: "", value: "" };
@@ -44,6 +44,7 @@ export default function RuleForm({
   onSaved,
 }) {
   const { t } = useTranslation();
+  const ruleTypes = createRuleTypes(t);
   const isEditing = !!existingRule;
   const [loading, setLoading] = useState(false);
   const [ruleType, setRuleType] = useState(existingRule?.type || "calculated");
@@ -162,9 +163,6 @@ export default function RuleForm({
                   className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-700 placeholder:text-zinc-400 light:placeholder:text-slate-400 text-sm rounded-[8px] outline-none block w-full h-8 px-3.5 font-mono"
                   required
                 />
-                <p className="text-xs leading-4 text-zinc-400 light:text-slate-600">
-                  {t("model-router.rule-form.title-help")}
-                </p>
               </div>
               <div className="flex flex-col gap-y-1.5 w-[300px]">
                 <label className="text-sm font-medium leading-5 text-white light:text-slate-950">
@@ -175,14 +173,14 @@ export default function RuleForm({
                   onChange={(e) => setRuleType(e.target.value)}
                   className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-700 text-sm rounded-[8px] outline-none block w-full h-8 px-3.5"
                 >
-                  {RULE_TYPES.map((rt) => (
+                  {ruleTypes.map((rt) => (
                     <option key={rt.value} value={rt.value}>
                       {rt.label}
                     </option>
                   ))}
                 </select>
                 <p className="text-xs leading-4 text-zinc-400 light:text-slate-600">
-                  {RULE_TYPES.find((rt) => rt.value === ruleType)?.description}
+                  {ruleTypes.find((rt) => rt.value === ruleType)?.description}
                 </p>
               </div>
             </div>
