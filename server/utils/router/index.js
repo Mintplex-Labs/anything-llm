@@ -159,6 +159,30 @@ class ModelRouterService {
     this.stickyRoutes.delete(key);
   }
 
+  /**
+   * Reset all routing state for a given workspace context (sticky route,
+   * LLM classification cache, and last-notified route). Safe to call even
+   * when the workspace has no router — returns early in that case.
+   * @param {Object} workspace
+   * @param {Object|null} user
+   * @param {Object|null} thread
+   */
+  static resetForWorkspace(workspace, user = null, thread = null) {
+    if (!workspace?.router_id) return;
+    const svc = ModelRouterService.getInstance();
+    const key = svc.routeCacheKey(
+      user?.id ?? null,
+      workspace.slug,
+      thread?.slug ?? null
+    );
+    svc.stickyRoutes.delete(key);
+    svc.llmCache.delete(key);
+    svc.lastNotifiedRoute.delete(key);
+    svc.log(
+      `Reset routing state for key "${key}" (workspace: ${workspace.slug})`
+    );
+  }
+
   // ─────────────────────────────────────────────────────────────────────────────
   // LLM classification cache
   // ─────────────────────────────────────────────────────────────────────────────
