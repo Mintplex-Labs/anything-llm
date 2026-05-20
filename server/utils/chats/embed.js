@@ -31,10 +31,25 @@ async function streamChatWithForEmbed(
     embed.workspace.openAiTemp = parseFloat(temperatureOverride);
 
   const uuid = uuidv4();
-  const LLMConnector = getLLMProvider({
-    provider: embed?.workspace?.chatProvider,
-    model: chatModel ?? embed.workspace?.chatModel,
-  });
+  const { connector: LLMConnector, error: routerError } =
+    await resolveLLMConnectorForEmbed({
+      embed,
+      chatModel,
+      message,
+      sessionId,
+    });
+
+  if (routerError) {
+    return writeResponseChunk(response, {
+      id: uuid,
+      type: "abort",
+      textResponse: null,
+      sources: [],
+      close: true,
+      error: routerError,
+    });
+  }
+
   const VectorDb = getVectorDbClass();
 
   const messageLimit = embed.message_limit ?? 20;
@@ -222,6 +237,73 @@ async function recentEmbedChatHistory(sessionId, embed, messageLimit = 20) {
     })
   ).reverse();
   return { rawHistory, chatHistory: convertToPromptHistory(rawHistory) };
+}
+
+/**
+ * Resolves the LLM connector for embed chats, either directly or via the model router.
+ * @returns {Promise<{ connector: Object, error: string|null }>}
+ */
+async function resolveLLMConnectorForEmbed({
+  embed,
+  chatModel,
+  message,
+  sessionId,
+}) {
+  const workspace = embed?.workspace;
+  const effectiveProvider = workspace?.chatProvider || process.env.LLM_PROVIDER;
+  const isRouterProvider = effectiveProvider === "anythingllm-router";
+
+  if (!isRouterProvider) {
+    return {
+      connector: getLLMProvider({
+        provider: workspace?.chatProvider,
+        model: chatModel ?? workspace?.chatModel,
+      }),
+      error: null,
+    };
+  }
+
+  try {
+    const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
+    const { TokenManager } = require("../helpers/tiktoken");
+
+    const routerWorkspace = workspace?.router_id
+      ? workspace
+      : {
+          ...workspace,
+          router_id: process.env.MODEL_ROUTER_ID
+            ? Number(process.env.MODEL_ROUTER_ID)
+            : null,
+        };
+
+    const router = new AnythingLLMModelRouter(routerWorkspace);
+    const tokenManager = new TokenManager();
+    const conversationTokenCount = tokenManager.countFromString(message);
+    const conversationMessageCount = await EmbedChats.count({
+      embed_id: embed.id,
+      session_id: sessionId,
+    });
+
+    await router.resolve(
+      {
+        prompt: message,
+        conversationTokenCount,
+        conversationMessageCount,
+        attachments: [],
+      },
+      { user: null, thread: null }
+    );
+
+    return {
+      connector: router.delegateProvider,
+      error: null,
+    };
+  } catch (routerError) {
+    return {
+      connector: null,
+      error: `Model router error: ${routerError.message}`,
+    };
+  }
 }
 
 module.exports = {
