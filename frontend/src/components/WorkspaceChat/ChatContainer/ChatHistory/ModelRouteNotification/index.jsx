@@ -36,7 +36,7 @@ export default function ModelRouteNotification({ routedTo, isStreaming }) {
                 model: routedTo.model,
               }}
               components={{
-                span: <span />,
+                route: <span className="text-zinc-50 light:text-slate-950" />,
               }}
             />
           )}

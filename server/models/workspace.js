@@ -133,13 +133,7 @@ const Workspace = {
       return value;
     },
     router_id: (value) => {
-      if (
-        value === null ||
-        value === undefined ||
-        value === "" ||
-        value === "none"
-      )
-        return null;
+      if ([null, undefined, "", "none"].includes(value)) return null;
       const id = Number(value);
       if (isNaN(id)) return null;
       return id;
@@ -673,6 +667,7 @@ const Workspace = {
       workspace?.agentProvider ??
       workspace?.chatProvider ??
       process.env.LLM_PROVIDER;
+
     // Model router delegates to a resolved provider at chat time.
     // Check the router's fallback provider for tool calling support
     // as a reasonable proxy for the router's capabilities.
@@ -695,6 +690,7 @@ const Workspace = {
       );
       return (await fallbackProvider.supportsNativeToolCalling?.()) ?? false;
     }
+
     const model =
       workspace?.agentModel ??
       workspace?.chatModel ??

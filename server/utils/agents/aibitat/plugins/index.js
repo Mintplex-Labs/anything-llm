@@ -11,7 +11,6 @@ const { createFilesAgent } = require("./create-files/index.js");
 const { gmailAgent } = require("./gmail/index.js");
 const { outlookAgent } = require("./outlook/index.js");
 const { googleCalendarAgent } = require("./google-calendar/index.js");
-const { routerClassifier } = require("./router-classifier.js");
 
 module.exports = {
   webScraping,
@@ -27,7 +26,6 @@ module.exports = {
   gmailAgent,
   outlookAgent,
   googleCalendarAgent,
-  routerClassifier,
 
   // Plugin name aliases so they can be pulled by slug as well.
   [webScraping.name]: webScraping,
@@ -43,5 +41,4 @@ module.exports = {
   [gmailAgent.name]: gmailAgent,
   [outlookAgent.name]: outlookAgent,
   [googleCalendarAgent.name]: googleCalendarAgent,
-  [routerClassifier.name]: routerClassifier,
 };
