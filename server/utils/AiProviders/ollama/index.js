@@ -273,13 +273,14 @@ class OllamaAILLM {
   ) {
     const reasoningConfig = {};
 
-    if (reasoningOption !== null) {
+    const ollamaCompatibleReasoningControl = {
+      on: true,
+      off: false,
+    };
+
+    if (reasoningOption) {
       reasoningConfig.think =
-        reasoningOption === "on"
-          ? true
-          : reasoningOption === "off"
-            ? false
-            : reasoningOption;
+        ollamaCompatibleReasoningControl[reasoningOption] ?? reasoningOption;
     }
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.client
