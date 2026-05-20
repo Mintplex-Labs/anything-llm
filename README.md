@@ -53,14 +53,15 @@ AnythingLLM is the all-in-one AI application that lets you build a private, full
 
 AnythingLLM supports multiple users as well where you can control the access and experience per user without compromising the security or privacy of the instance or your intellectual property.
 
-## Cool features of AnythingLLM
+## Cool Features of AnythingLLM
 
+- [Automatic & User Managed Memories](https://docs.anythingllm.com/features/memories)
 - [Scheduled Tasks](https://docs.anythingllm.com/scheduled-jobs/overview)
 - [Intelligent Skill Selection](https://docs.anythingllm.com/agent/intelligent-tool-selection) Enable **unlimited** tools for your models while reducing token usage by up to 80% per query
-- [**No-code AI Agent builder**](https://docs.anythingllm.com/agent-flows/overview)
-- [**Full MCP-compatibility**](https://docs.anythingllm.com/mcp-compatibility/overview)
-- **Multi-modal support (both closed and open-source LLMs!)**
-- [**Custom AI Agents**](https://docs.anythingllm.com/agent/custom/introduction)
+- [No-code AI Agent builder](https://docs.anythingllm.com/agent-flows/overview)
+- [MCP-compatibility](https://docs.anythingllm.com/mcp-compatibility/overview)
+- [Multi-modal support (both closed and open-source LLMs!)](https://docs.anythingllm.com/features/multimodal)
+- [Custom AI Agents](https://docs.anythingllm.com/agent/custom/introduction)
 - 👤 Multi-user instance support and permissioning _Docker version only_
 - 🦾 Agents inside your workspace (browse the web, etc)
 - 💬 [Custom Embeddable Chat widget for your website](https://github.com/Mintplex-Labs/anythingllm-embed/blob/main/README.md) _Docker version only_
