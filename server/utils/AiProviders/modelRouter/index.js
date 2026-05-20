@@ -13,6 +13,7 @@ class AnythingLLMModelRouter {
     this.embedder = embedder;
     this.router = null;
     this.resolvedRoute = null;
+    this.usedCachedRoute = false;
     this.delegateProvider = null;
     this.defaultTemp = 0.7;
     this.log(
@@ -41,6 +42,7 @@ class AnythingLLMModelRouter {
 
     if (cached) {
       this.resolvedRoute = cached;
+      this.usedCachedRoute = true;
       this.log(
         `Using cached route: ${cached.provider}/${cached.model} (rule: ${cached.ruleTitle || "fallback"})`
       );
@@ -72,6 +74,7 @@ class AnythingLLMModelRouter {
         ruleTitle: this.resolvedRoute.ruleTitle,
         ruleType: this.resolvedRoute.ruleType,
         isFallback: this.resolvedRoute.isFallback,
+        isCached: this.usedCachedRoute,
         routerName: this.router?.name,
         fallbackProvider: this.router?.fallback_provider,
         fallbackModel: this.router?.fallback_model,

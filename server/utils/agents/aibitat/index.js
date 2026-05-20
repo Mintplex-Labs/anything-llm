@@ -197,7 +197,7 @@ class AIbitat {
     if (
       !messageUuid ||
       !routingMetadata?.routedTo ||
-      routingMetadata.routedTo.isFallback
+      routingMetadata.routedTo.isCached
     )
       return;
     this.socket?.send?.("reportStreamEvent", {
@@ -205,8 +205,6 @@ class AIbitat {
       uuid: `${messageUuid}:route`,
       routedTo: routingMetadata.routedTo,
     });
-    // Clear after emitting so it only fires once per routing decision
-    this.handlerProps.routingMetadata = null;
   }
 
   /**

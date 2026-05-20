@@ -4,6 +4,11 @@ const {
   classifyWithLLM,
 } = require("../agents/aibitat/plugins/router-classifier");
 
+const LOG_PREFIX = "\x1b[35m[ModelRouter]\x1b[0m";
+function log(text, ...args) {
+  console.log(`${LOG_PREFIX} ${text}`, ...args);
+}
+
 /**
  * Load the router config and rules for a workspace.
  * @param {Object} workspace - A workspaces record with router_id set
@@ -25,13 +30,26 @@ async function resolveRouterForWorkspace(workspace) {
  */
 async function evaluateRouting(router, rules, context) {
   const enabledRules = rules.filter((r) => r.enabled);
+  log(
+    `Evaluating ${enabledRules.length} enabled rules (of ${rules.length} total) for router "${router.name}"`
+  );
+  log(
+    `Context: prompt="${(context.prompt || "").slice(0, 100)}${context.prompt?.length > 100 ? "..." : ""}", ` +
+      `tokens=${context.conversationTokenCount ?? 0}, messages=${context.conversationMessageCount ?? 0}, ` +
+      `attachments=${context.attachments?.length ?? 0}`
+  );
 
   let i = 0;
   while (i < enabledRules.length) {
     const rule = enabledRules[i];
 
     if (rule.type === "calculated") {
-      if (evaluateRule(rule, context)) {
+      const matched = evaluateRule(rule, context);
+      log(
+        `Rule #${i + 1} "${rule.title}" (calculated, ${rule.condition_logic}): ${matched ? "MATCHED" : "no match"}`
+      );
+      if (matched) {
+        log(`→ Routing to ${rule.route_provider}/${rule.route_model}`);
         return routeFromRule(rule);
       }
       i++;
@@ -39,21 +57,34 @@ async function evaluateRouting(router, rules, context) {
     }
 
     if (rule.type === "llm") {
-      // Collect contiguous LLM rules into one batch for a single LLM call
       const llmBatch = [];
       while (i < enabledRules.length && enabledRules[i].type === "llm") {
         llmBatch.push(enabledRules[i]);
         i++;
       }
+      log(
+        `Evaluating LLM batch of ${llmBatch.length} rules: [${llmBatch.map((r) => `"${r.title}"`).join(", ")}]`
+      );
       const matched = await classifyWithLLM(llmBatch, context.prompt, router);
-      if (matched) return routeFromRule(matched);
+      if (matched) {
+        log(
+          `LLM classified as "${matched.title}" → Routing to ${matched.route_provider}/${matched.route_model}`
+        );
+        return routeFromRule(matched);
+      }
+      log(`LLM batch: no match`);
       continue;
     }
 
-    // Unknown type, skip
+    log(
+      `Rule #${i + 1} "${rule.title}": unknown type "${rule.type}", skipping`
+    );
     i++;
   }
 
+  log(
+    `No rules matched → Using fallback ${router.fallback_provider}/${router.fallback_model}`
+  );
   return {
     provider: router.fallback_provider,
     model: router.fallback_model,

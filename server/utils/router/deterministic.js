@@ -1,3 +1,8 @@
+const LOG_PREFIX = "\x1b[35m[ModelRouter]\x1b[0m";
+function log(text, ...args) {
+  console.log(`${LOG_PREFIX}   ${text}`, ...args);
+}
+
 /**
  * Evaluate a calculated rule against the given context. A rule holds one or
  * more conditions joined by `condition_logic` ("AND" or "OR"). An empty
@@ -12,9 +17,24 @@ function evaluateRule(rule, context) {
   if (!Array.isArray(conditions) || conditions.length === 0) return false;
 
   const method = logic === "OR" ? "some" : "every";
-  return conditions[method]((c) =>
-    evaluateCondition(c.property, c.comparator, c.value, context)
-  );
+  const results = conditions.map((c) => {
+    const result = evaluateCondition(
+      c.property,
+      c.comparator,
+      c.value,
+      context
+    );
+    const contextVal = getContextValue(c.property, context);
+    const displayVal =
+      c.property === "promptContent"
+        ? `"${String(contextVal).slice(0, 50)}${contextVal?.length > 50 ? "..." : ""}"`
+        : contextVal;
+    log(
+      `${c.property} ${c.comparator} "${c.value}" → context=${displayVal} → ${result}`
+    );
+    return result;
+  });
+  return results[method === "some" ? "some" : "every"]((r) => r);
 }
 
 /**
