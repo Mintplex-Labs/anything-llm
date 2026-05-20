@@ -570,7 +570,7 @@ export default function AdminAgents() {
           if (!selectedSkill?.imported && !selectedFlow) setHasChanges(true);
         }}
         ref={formEl}
-        className="flex-1 flex gap-x-6 p-4 mt-10"
+        className="flex-1 flex gap-x-6 p-4 mt-10 min-h-0 overflow-hidden"
       >
         <input
           name="system::default_agent_skills"
@@ -689,8 +689,8 @@ export default function AdminAgents() {
         </div>
 
         {/* Selected agent skill setting panel */}
-        <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
-          <div className="bg-theme-bg-secondary text-white rounded-xl flex-1 p-4 overflow-y-scroll overflow-x-visible no-scroll">
+        <div className="flex-[2] flex flex-col gap-y-[18px] mt-10 min-h-0 overflow-hidden">
+          <div className="bg-theme-bg-secondary text-white rounded-xl flex-1 min-h-0 p-4 overflow-y-auto overflow-x-visible no-scroll">
             {SelectedSkillComponent ? (
               <>
                 {selectedMcpServer ? (
@@ -783,7 +783,7 @@ function SkillLayout({ children, hasChanges, handleSubmit, handleCancel }) {
       <Sidebar />
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] w-full h-full flex"
+        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] w-full h-full flex min-h-0"
       >
         {children}
         <ContextualSaveBar

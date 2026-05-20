@@ -304,7 +304,7 @@ function ConfigurationSection({
   const showTenantId = authType === "organization";
 
   return (
-    <div className="border border-theme-sidebar-border/50 rounded-lg overflow-hidden mt-2">
+    <div className="border border-theme-sidebar-border/50 rounded-lg mt-2">
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
@@ -401,6 +401,37 @@ function ConfigurationSection({
             />
           </div>
 
+          <div className="flex flex-col gap-y-2">
+            <div className="flex items-center gap-x-2">
+              <label className="text-theme-text-primary text-sm font-medium">
+                {t("agent.skill.outlook.clientSecret")}
+              </label>
+              <Info
+                data-tooltip-id="client-secret-tooltip"
+                size={16}
+                className="text-theme-text-secondary"
+              />
+              <Tooltip
+                id="client-secret-tooltip"
+                place="top"
+                delayShow={300}
+                className="tooltip !text-xs !opacity-100"
+              >
+                {t("agent.skill.outlook.clientSecretHelp")}
+              </Tooltip>
+            </div>
+            <input
+              type="password"
+              value={clientSecret}
+              onChange={(e) => {
+                setClientSecret(e.target.value);
+                setHasChanges(true);
+              }}
+              placeholder="Your client secret..."
+              className="w-full px-3 py-2 bg-theme-bg-primary border border-theme-sidebar-border rounded-lg text-theme-text-primary text-sm placeholder:text-theme-text-secondary/50"
+            />
+          </div>
+
           {showTenantId && (
             <div className="flex flex-col gap-y-2">
               <div className="flex items-center gap-x-2">
@@ -433,37 +464,6 @@ function ConfigurationSection({
               />
             </div>
           )}
-
-          <div className="flex flex-col gap-y-2">
-            <div className="flex items-center gap-x-2">
-              <label className="text-theme-text-primary text-sm font-medium">
-                {t("agent.skill.outlook.clientSecret")}
-              </label>
-              <Info
-                data-tooltip-id="client-secret-tooltip"
-                size={16}
-                className="text-theme-text-secondary"
-              />
-              <Tooltip
-                id="client-secret-tooltip"
-                place="top"
-                delayShow={300}
-                className="tooltip !text-xs !opacity-100"
-              >
-                {t("agent.skill.outlook.clientSecretHelp")}
-              </Tooltip>
-            </div>
-            <input
-              type="password"
-              value={clientSecret}
-              onChange={(e) => {
-                setClientSecret(e.target.value);
-                setHasChanges(true);
-              }}
-              placeholder="Your client secret..."
-              className="w-full px-3 py-2 bg-theme-bg-primary border border-theme-sidebar-border rounded-lg text-theme-text-primary text-sm placeholder:text-theme-text-secondary/50"
-            />
-          </div>
 
           {!hasCredentials && (
             <div className="flex items-center gap-x-2 p-3 bg-orange-500/10 border border-orange-500/30 rounded-lg">
