@@ -376,14 +376,34 @@ class GeminiLLM {
       },
     ];
   }
+  #constructReasoningConfig(reasoningOption) {
+    const reasoningConfig = {};
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+    if (reasoningOption) {
+      reasoningConfig.extra_body = {
+        google: {
+          thinking_config: {
+            thinking_level: reasoningOption,
+            include_thoughts: true,
+          },
+        },
+      };
+    }
+
+    return reasoningConfig;
+  }
+
+  async getChatCompletion(
+    messages = null,
+    { temperature = 0.7, reasoningOption = null }
+  ) {
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.openai.chat.completions
         .create({
           model: this.model,
           messages,
           temperature: temperature,
+          ...this.#constructReasoningConfig(reasoningOption),
         })
         .catch((e) => {
           console.error(e);
@@ -416,26 +436,13 @@ class GeminiLLM {
     messages = null,
     { temperature = 0.7, reasoningOption = null }
   ) {
-    const reasoningConfig = {};
-
-    if (reasoningOption) {
-      reasoningConfig.extra_body = {
-        google: {
-          thinking_config: {
-            thinking_level: reasoningOption,
-            include_thoughts: true,
-          },
-        },
-      };
-    }
-    console.log(reasoningConfig);
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.openai.chat.completions.create({
         model: this.model,
         stream: true,
         messages,
         temperature: temperature,
-        ...reasoningConfig,
+        ...this.#constructReasoningConfig(reasoningOption),
         stream_options: {
           include_usage: true,
         },
