@@ -29,16 +29,22 @@ export default function RuleRow({
         isEditing ? "ring-1 ring-blue-500/60" : ""
       } ${isDisabled ? "opacity-50" : ""}`}
     >
-      <div
-        {...dragHandleProps}
-        className="cursor-grab shrink-0 text-zinc-400 light:text-slate-500 hover:text-white light:hover:text-slate-700 transition-colors"
-        aria-label="Drag to reorder"
-      >
-        <DotsSixVertical size={24} weight="bold" />
-      </div>
-      <p className="shrink-0 text-sm font-semibold text-zinc-400 light:text-slate-500 tabular-nums">
-        #{rule.priority}
-      </p>
+      {dragHandleProps ? (
+        <div
+          {...dragHandleProps}
+          className="cursor-grab shrink-0 text-zinc-400 light:text-slate-500 hover:text-white light:hover:text-slate-700 transition-colors"
+          aria-label="Drag to reorder"
+        >
+          <DotsSixVertical size={24} weight="bold" />
+        </div>
+      ) : (
+        <div className="shrink-0 w-6" />
+      )}
+      {dragHandleProps && (
+        <p className="shrink-0 text-sm font-semibold text-zinc-400 light:text-slate-500 tabular-nums">
+          #{rule.priority}
+        </p>
+      )}
       <div className="flex flex-col flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium leading-5 text-white light:text-slate-900 truncate">

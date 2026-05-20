@@ -15,45 +15,82 @@ function RulesList({
   onToggle,
   onDragEnd,
 }) {
+  const { t } = useTranslation();
+  const calculatedRules = rules.filter((r) => r.type === "calculated");
+  const llmRules = rules.filter((r) => r.type === "llm");
+
   return (
-    <div className="mt-6">
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId="rules">
-          {(provided) => (
-            <div
-              ref={provided.innerRef}
-              {...provided.droppableProps}
-              className="flex flex-col gap-y-2"
-            >
-              {rules.map((rule, index) => (
-                <Draggable
-                  key={rule.id}
-                  draggableId={rule.id.toString()}
-                  index={index}
+    <div className="mt-6 flex flex-col gap-y-6">
+      {calculatedRules.length > 0 && (
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 light:text-slate-400 mb-2">
+            {t(
+              "model-router.rules.calculated-section-label",
+              "Calculated rules — evaluated first, in priority order"
+            )}
+          </p>
+          <DragDropContext onDragEnd={onDragEnd}>
+            <Droppable droppableId="calculated-rules">
+              {(provided) => (
+                <div
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                  className="flex flex-col gap-y-2"
                 >
-                  {(provided, snapshot) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      className={snapshot.isDragging ? "opacity-60" : ""}
+                  {calculatedRules.map((rule, index) => (
+                    <Draggable
+                      key={rule.id}
+                      draggableId={rule.id.toString()}
+                      index={index}
                     >
-                      <RuleRow
-                        rule={rule}
-                        isEditing={editingRule?.id === rule.id}
-                        onEdit={() => onEdit(rule)}
-                        onDelete={() => onDelete(rule)}
-                        onToggle={() => onToggle(rule)}
-                        dragHandleProps={provided.dragHandleProps}
-                      />
-                    </div>
-                  )}
-                </Draggable>
-              ))}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          className={snapshot.isDragging ? "opacity-60" : ""}
+                        >
+                          <RuleRow
+                            rule={rule}
+                            isEditing={editingRule?.id === rule.id}
+                            onEdit={() => onEdit(rule)}
+                            onDelete={() => onDelete(rule)}
+                            onToggle={() => onToggle(rule)}
+                            dragHandleProps={provided.dragHandleProps}
+                          />
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
+        </div>
+      )}
+
+      {llmRules.length > 0 && (
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 light:text-slate-400 mb-2">
+            {t(
+              "model-router.rules.llm-section-label",
+              "LLM rules — evaluated as a batch if no calculated rule matched"
+            )}
+          </p>
+          <div className="flex flex-col gap-y-2">
+            {llmRules.map((rule) => (
+              <RuleRow
+                key={rule.id}
+                rule={rule}
+                isEditing={editingRule?.id === rule.id}
+                onEdit={() => onEdit(rule)}
+                onDelete={() => onDelete(rule)}
+                onToggle={() => onToggle(rule)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -132,14 +169,23 @@ export default function RuleBuilder({
 
   const onDragEnd = async (result) => {
     if (!result.destination) return;
-    const reordered = Array.from(rules);
+    const calcRules = rules.filter((r) => r.type === "calculated");
+    const llmRules = rules.filter((r) => r.type === "llm");
+    const reordered = Array.from(calcRules);
     const [moved] = reordered.splice(result.source.index, 1);
     reordered.splice(result.destination.index, 0, moved);
 
-    const ruleUpdates = reordered.map((rule, index) => ({
-      id: rule.id,
-      priority: index + 1,
-    }));
+    // Calculated rules get priorities 1..N, LLM rules get N+1..M
+    const ruleUpdates = [
+      ...reordered.map((rule, index) => ({
+        id: rule.id,
+        priority: index + 1,
+      })),
+      ...llmRules.map((rule, index) => ({
+        id: rule.id,
+        priority: reordered.length + index + 1,
+      })),
+    ];
 
     const { success } = await ModelRouterAPI.reorderRules(
       routerId,

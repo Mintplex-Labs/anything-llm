@@ -977,7 +977,7 @@ const TRANSLATIONS = {
       title: "Routing Rules",
       "title-with-name": "Router Rules: {{name}}",
       description:
-        "Rules are evaluated top-to-bottom by priority. Drag to reorder. First match wins.",
+        "Define the rules that determine when and how chat messages go to specific providers and models.",
       "add-rule": "Add Rule",
       "delete-confirm": 'Delete rule "{{title}}"?',
       "toast-deleted": "Rule deleted",
