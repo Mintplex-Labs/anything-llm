@@ -9,7 +9,7 @@ function workspaceDeletionProtection(_request, response, next) {
   if (!("WORKSPACE_DELETION_PROTECTION" in process.env)) return next();
   return response.status(403).json({
     success: false,
-    error: "Workspace deletion is protected by the system administrator.",
+    error: "Workspace deletion is blocked by the system administrator.",
   });
 }
 

@@ -64,7 +64,7 @@ export default function GeneralInfo({ slug, deletionProtected = false }) {
         />
       </form>
       <SuggestedChatMessages slug={workspace.slug} />
-      {!deletionProtected && <DeleteWorkspace workspace={workspace} />}
+      <DeleteWorkspace workspace={workspace} visible={!deletionProtected} />
     </div>
   );
 }

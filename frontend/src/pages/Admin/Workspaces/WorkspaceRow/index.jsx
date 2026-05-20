@@ -29,7 +29,7 @@ export default function WorkspaceRow({
         <th scope="row" className="px-6 whitespace-nowrap">
           {workspace.name}
         </th>
-        <td className="px-6 flex items-center">
+        <td className="px-6">
           <a
             href={paths.workspace.chat(workspace.slug)}
             target="_blank"
@@ -48,7 +48,7 @@ export default function WorkspaceRow({
           </a>
         </td>
         <td className="px-6">{workspace.createdAt}</td>
-        <td className="px-6 flex items-center gap-x-6 h-full mt-1">
+        <td className="px-6">
           {!deletionProtected && (
             <button
               onClick={handleDelete}
