@@ -7,6 +7,79 @@ import showToast from "@/utils/toast";
 import RuleForm from "./RuleForm";
 import RuleRow from "./RuleRow";
 
+function RulesList({
+  rules,
+  editingRule,
+  onEdit,
+  onDelete,
+  onToggle,
+  onDragEnd,
+}) {
+  return (
+    <div className="mt-6">
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Droppable droppableId="rules">
+          {(provided) => (
+            <div
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+              className="flex flex-col gap-y-2"
+            >
+              {rules.map((rule, index) => (
+                <Draggable
+                  key={rule.id}
+                  draggableId={rule.id.toString()}
+                  index={index}
+                >
+                  {(provided, snapshot) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      className={snapshot.isDragging ? "opacity-60" : ""}
+                    >
+                      <RuleRow
+                        rule={rule}
+                        isEditing={editingRule?.id === rule.id}
+                        onEdit={() => onEdit(rule)}
+                        onDelete={() => onDelete(rule)}
+                        onToggle={() => onToggle(rule)}
+                        dragHandleProps={provided.dragHandleProps}
+                      />
+                    </div>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
+    </div>
+  );
+}
+
+function EmptyRulesState({ onCreateRule }) {
+  const { t } = useTranslation();
+  return (
+    <div className="flex flex-col items-center justify-center gap-8 py-28">
+      <div className="flex flex-col items-center gap-1.5 text-center">
+        <p className="text-base font-semibold leading-6 text-zinc-50 light:text-slate-900">
+          {t("model-router.rules.no-rules")}
+        </p>
+        <p className="text-sm font-medium leading-5 text-zinc-400 light:text-slate-500 max-w-[370px]">
+          {t("model-router.rules.empty-description")}
+        </p>
+      </div>
+      <button
+        onClick={onCreateRule}
+        className="flex items-center justify-center h-9 px-5 py-2.5 rounded-lg bg-slate-50 text-zinc-950 text-sm font-medium leading-5 hover:opacity-90 transition-opacity duration-200"
+      >
+        {t("model-router.rules.new-rule-button")}
+      </button>
+    </div>
+  );
+}
+
 export default function RuleBuilder({
   routerId,
   routerName,
@@ -82,7 +155,7 @@ export default function RuleBuilder({
   const hasRules = rules && rules.length > 0;
 
   return (
-    <div className="mt-8">
+    <div>
       <div className="flex items-end justify-between pb-6 border-b border-white/20 light:border-slate-300">
         <div className="flex flex-col gap-y-2">
           <p className="text-lg font-semibold leading-7 text-white light:text-slate-900">
@@ -105,62 +178,16 @@ export default function RuleBuilder({
       </div>
 
       {hasRules ? (
-        <div className="mt-6">
-          <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable droppableId="rules">
-              {(provided) => (
-                <div
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                  className="flex flex-col gap-y-2"
-                >
-                  {rules.map((rule, index) => (
-                    <Draggable
-                      key={rule.id}
-                      draggableId={rule.id.toString()}
-                      index={index}
-                    >
-                      {(provided, snapshot) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          className={snapshot.isDragging ? "opacity-60" : ""}
-                        >
-                          <RuleRow
-                            rule={rule}
-                            isEditing={editingRule?.id === rule.id}
-                            onEdit={() => openEdit(rule)}
-                            onDelete={() => handleDelete(rule)}
-                            onToggle={() => handleToggle(rule)}
-                            dragHandleProps={provided.dragHandleProps}
-                          />
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </DragDropContext>
-        </div>
+        <RulesList
+          rules={rules}
+          editingRule={editingRule}
+          onEdit={openEdit}
+          onDelete={handleDelete}
+          onToggle={handleToggle}
+          onDragEnd={onDragEnd}
+        />
       ) : (
-        <div className="flex flex-col items-center justify-center gap-8 py-28">
-          <div className="flex flex-col items-center gap-1.5 text-center">
-            <p className="text-base font-semibold leading-6 text-zinc-50 light:text-slate-900">
-              {t("model-router.rules.no-rules")}
-            </p>
-            <p className="text-sm font-medium leading-5 text-zinc-400 light:text-slate-500 max-w-[370px]">
-              {t("model-router.rules.empty-description")}
-            </p>
-          </div>
-          <button
-            onClick={openCreate}
-            className="flex items-center justify-center h-9 px-5 py-2.5 rounded-lg bg-slate-50 text-zinc-950 text-sm font-medium leading-5 hover:opacity-90 transition-opacity duration-200"
-          >
-            {t("model-router.rules.new-rule-button")}
-          </button>
-        </div>
+        <EmptyRulesState onCreateRule={openCreate} />
       )}
 
       {isOpen && (

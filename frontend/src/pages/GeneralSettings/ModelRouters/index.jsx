@@ -48,6 +48,44 @@ export default function ModelRouters() {
 
   const isEmpty = !loading && routers.length === 0;
 
+  if (loading)
+    return (
+      <Layout t={t}>
+        <LoadingState />
+      </Layout>
+    );
+
+  if (isEmpty)
+    return (
+      <Layout t={t}>
+        <EmptyState onCreateClick={openCreateModal} t={t} />
+        <NewRouterModal
+          isOpen={isOpen}
+          closeModal={handleModalClose}
+          onSuccess={fetchRouters}
+          router={editingRouter}
+        />
+      </Layout>
+    );
+
+  return (
+    <Layout t={t} showAction={!isEmpty} onAction={openCreateModal}>
+      <RouterList
+        routers={routers}
+        removeRouter={removeRouter}
+        openEditModal={openEditModal}
+      />
+      <NewRouterModal
+        isOpen={isOpen}
+        closeModal={handleModalClose}
+        onSuccess={fetchRouters}
+        router={editingRouter}
+      />
+    </Layout>
+  );
+}
+
+function Layout({ t, showAction, onAction, children }) {
   return (
     <div className="w-screen h-screen overflow-hidden bg-zinc-950 light:bg-slate-50 flex md:mt-0 mt-6">
       <Sidebar />
@@ -65,9 +103,9 @@ export default function ModelRouters() {
                 {t("model-router.description")}
               </p>
             </div>
-            {!isEmpty && (
+            {showAction && (
               <button
-                onClick={openCreateModal}
+                onClick={onAction}
                 className="shrink-0 flex items-center justify-center h-9 px-5 py-2.5 rounded-lg bg-slate-50 text-zinc-950 text-sm font-medium leading-5 hover:opacity-90 transition-opacity duration-200"
               >
                 {t("model-router.new-router-button")}
@@ -84,40 +122,39 @@ export default function ModelRouters() {
               <span aria-hidden="true" />
             </div>
             <div className="mt-[18px] border-t border-white/20 light:border-slate-300" />
-
-            {loading ? (
-              <div className="flex items-center justify-center py-20">
-                <CircleNotch className="h-8 w-8 text-zinc-400 animate-spin" />
-              </div>
-            ) : isEmpty ? (
-              <EmptyState onAction={openCreateModal} t={t} />
-            ) : (
-              <div className="flex flex-col">
-                {routers.map((router, idx) => (
-                  <RouterRow
-                    key={router.id}
-                    router={router}
-                    removeRouter={removeRouter}
-                    onEdit={() => openEditModal(router)}
-                    showDivider={idx < routers.length - 1}
-                  />
-                ))}
-              </div>
-            )}
+            {children}
           </div>
         </div>
-        <NewRouterModal
-          isOpen={isOpen}
-          closeModal={handleModalClose}
-          onSuccess={fetchRouters}
-          router={editingRouter}
-        />
       </div>
     </div>
   );
 }
 
-function EmptyState({ onAction, t }) {
+function LoadingState() {
+  return (
+    <div className="flex items-center justify-center py-20">
+      <CircleNotch className="h-8 w-8 text-zinc-400 animate-spin" />
+    </div>
+  );
+}
+
+function RouterList({ routers, removeRouter, openEditModal }) {
+  return (
+    <div className="flex flex-col">
+      {routers.map((router, idx) => (
+        <RouterRow
+          key={router.id}
+          router={router}
+          removeRouter={removeRouter}
+          onEdit={() => openEditModal(router)}
+          showDivider={idx < routers.length - 1}
+        />
+      ))}
+    </div>
+  );
+}
+
+function EmptyState({ onCreateClick, t }) {
   return (
     <div className="flex flex-col items-center justify-center gap-8 py-28">
       <div className="flex flex-col items-center gap-1.5 text-center">
@@ -129,7 +166,7 @@ function EmptyState({ onAction, t }) {
         </p>
       </div>
       <button
-        onClick={onAction}
+        onClick={onCreateClick}
         className="flex items-center justify-center h-9 px-5 py-2.5 rounded-lg bg-slate-50 text-zinc-950 text-sm font-medium leading-5 hover:opacity-90 transition-opacity duration-200"
       >
         {t("model-router.new-router-button")}

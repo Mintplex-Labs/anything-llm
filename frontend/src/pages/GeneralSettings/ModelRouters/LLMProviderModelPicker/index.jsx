@@ -27,7 +27,8 @@ export default function LLMProviderModelPicker({
   const { isOpen, openModal, closeModal } = useModal();
 
   useEffect(() => {
-    if (defaultProvider && !selectedProvider) setSelectedProvider(defaultProvider);
+    if (defaultProvider && !selectedProvider)
+      setSelectedProvider(defaultProvider);
   }, [defaultProvider]);
 
   useEffect(() => {

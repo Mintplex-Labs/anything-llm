@@ -31,6 +31,30 @@ export default function RouterRulesPage() {
     fetchRouter();
   }, [id]);
 
+  if (loading)
+    return (
+      <Layout t={t}>
+        <div className="flex items-center justify-center py-20">
+          <CircleNotch className="h-8 w-8 text-zinc-400 light:text-slate-400 animate-spin" />
+        </div>
+      </Layout>
+    );
+
+  return (
+    <Layout t={t}>
+      <RuleBuilder
+        routerId={router.id}
+        routerName={router.name}
+        rules={router.rules || []}
+        onRulesChanged={fetchRouter}
+      />
+    </Layout>
+  );
+}
+
+function Layout({ t, children }) {
+  const navigate = useNavigate();
+
   return (
     <div className="w-screen h-screen overflow-hidden bg-zinc-950 light:bg-slate-50 flex md:mt-0 mt-6">
       <Sidebar />
@@ -46,19 +70,7 @@ export default function RouterRulesPage() {
             <ArrowLeft className="h-4 w-4" />
             {t("model-router.edit-router.back-to-routers")}
           </button>
-
-          {loading ? (
-            <div className="flex items-center justify-center py-20">
-              <CircleNotch className="h-8 w-8 text-zinc-400 light:text-slate-400 animate-spin" />
-            </div>
-          ) : (
-            <RuleBuilder
-              routerId={router.id}
-              routerName={router.name}
-              rules={router.rules || []}
-              onRulesChanged={fetchRouter}
-            />
-          )}
+          {children}
         </div>
       </div>
     </div>
