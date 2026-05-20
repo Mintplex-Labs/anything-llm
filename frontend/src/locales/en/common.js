@@ -942,14 +942,14 @@ const TRANSLATIONS = {
       "name-placeholder": "e.g. Cost Optimizer",
       description: "Description",
       "description-placeholder": "Optional description",
-      "fallback-label": "Fallback Provider & Model",
+      "fallback-label": "Primary Provider & Model",
       "fallback-description":
         "Used when no routing rule matches. Also used to evaluate LLM-classified rules.",
       "cooldown-label": "Cache Cooldown (seconds)",
       "cooldown-help":
         "How long a routing decision is cached before re-evaluating rules. Set to 0 to disable caching.",
       "name-required": "Name is required.",
-      "fallback-required": "Fallback provider and model are required.",
+      "fallback-required": "Primary provider and model are required.",
       cancel: "Cancel",
       creating: "Creating...",
       create: "Create Router",

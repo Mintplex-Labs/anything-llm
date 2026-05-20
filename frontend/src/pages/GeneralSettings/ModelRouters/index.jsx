@@ -191,13 +191,6 @@ function RouterRow({ router, removeRouter, onEdit, showDivider }) {
         </span>
         <div className="flex items-center justify-end gap-[14px]">
           <button
-            onClick={handleDelete}
-            aria-label={t("model-router.toast-deleted")}
-            className="text-zinc-400 light:text-slate-500 hover:text-red-400 light:hover:text-red-500 transition-colors"
-          >
-            <X size={16} weight="bold" />
-          </button>
-          <button
             onClick={handleEditClick}
             aria-label={t("model-router.edit-router.title", {
               name: router.name,
@@ -205,6 +198,13 @@ function RouterRow({ router, removeRouter, onEdit, showDivider }) {
             className="text-zinc-400 light:text-slate-500 hover:text-white light:hover:text-slate-900 transition-colors"
           >
             <PencilSimple size={16} weight="bold" />
+          </button>
+          <button
+            onClick={handleDelete}
+            aria-label={t("model-router.toast-deleted")}
+            className="text-zinc-400 light:text-slate-500 hover:text-red-400 light:hover:text-red-500 transition-colors"
+          >
+            <X size={16} weight="bold" />
           </button>
         </div>
       </div>

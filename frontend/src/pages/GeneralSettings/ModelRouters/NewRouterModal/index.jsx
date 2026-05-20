@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { CircleNotch, X } from "@phosphor-icons/react";
 import ModelRouter from "@/models/modelRouter";
+import System from "@/models/system";
 import showToast from "@/utils/toast";
 import ModalWrapper from "@/components/ModalWrapper";
 import LLMProviderModelPicker from "../LLMProviderModelPicker";
@@ -15,7 +16,14 @@ export default function NewRouterModal({
   const { t } = useTranslation();
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [systemSettings, setSystemSettings] = useState(null);
   const isEdit = !!router;
+
+  useEffect(() => {
+    if (isOpen && !isEdit) {
+      System.keys().then((settings) => setSystemSettings(settings));
+    }
+  }, [isOpen, isEdit]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -126,8 +134,10 @@ export default function NewRouterModal({
             modelFieldName="fallback_model"
             label={t("model-router.new-router.fallback-label")}
             description={t("model-router.new-router.fallback-description")}
-            defaultProvider={router?.fallback_provider}
-            defaultModel={router?.fallback_model}
+            defaultProvider={
+              router?.fallback_provider ?? systemSettings?.LLMProvider
+            }
+            defaultModel={router?.fallback_model ?? systemSettings?.LLMModel}
           />
 
           <div className="flex flex-col gap-y-1.5">
