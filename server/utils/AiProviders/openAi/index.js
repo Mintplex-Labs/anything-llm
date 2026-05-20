@@ -143,6 +143,18 @@ class OpenAiLLM {
     return temperature;
   }
 
+  #constructReasoningConfig(reasoningOption) {
+    const reasoningConfig = {};
+
+    if (reasoningOption) {
+      reasoningConfig.reasoning = {
+        effort: reasoningOption,
+      };
+    }
+
+    return reasoningConfig;
+  }
+
   async getChatCompletion(
     messages = null,
     { temperature = 0.7, reasoningOption = null }
@@ -152,11 +164,6 @@ class OpenAiLLM {
         `OpenAI chat: ${this.model} is not valid for chat completion!`
       );
 
-    const reasoningConfig = {
-      reasoning: {
-        effort: reasoningOption,
-      },
-    };
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.openai.responses
         .create({
@@ -164,7 +171,7 @@ class OpenAiLLM {
           input: messages,
           store: false,
           temperature: this.#temperature(this.model, temperature),
-          ...(reasoningOption ? reasoningConfig : {}),
+          ...this.#constructReasoningConfig(reasoningOption),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -199,12 +206,8 @@ class OpenAiLLM {
       throw new Error(
         `OpenAI chat: ${this.model} is not valid for chat completion!`
       );
+    console.log(this.#constructReasoningConfig(reasoningOption));
 
-    const reasoningConfig = {
-      reasoning: {
-        effort: reasoningOption,
-      },
-    };
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.openai.responses.create({
         model: this.model,
@@ -212,7 +215,7 @@ class OpenAiLLM {
         input: messages,
         store: false,
         temperature: this.#temperature(this.model, temperature),
-        ...(reasoningOption ? reasoningConfig : {}),
+        ...this.#constructReasoningConfig(reasoningOption),
       }),
       messages,
       runPromptTokenCalculation: false,
@@ -323,7 +326,7 @@ class OpenAiLLM {
     // user to pick a model that actually supports them.
     return {
       reasoning: true,
-      reasoningOptions: ["minimal", "low", "medium", "high", "xhigh"],
+      reasoningOptions: ["none", "minimal", "low", "medium", "high", "xhigh"],
     };
   }
 }
