@@ -271,17 +271,6 @@ class OllamaAILLM {
     messages = null,
     { temperature = 0.7, reasoningOption = null }
   ) {
-    const reasoningConfig = {};
-
-    const ollamaCompatibleReasoningControl = {
-      on: true,
-      off: false,
-    };
-
-    if (reasoningOption) {
-      reasoningConfig.think =
-        ollamaCompatibleReasoningControl[reasoningOption] ?? reasoningOption;
-    }
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.client
         .chat({
@@ -289,7 +278,7 @@ class OllamaAILLM {
           stream: false,
           messages,
           keep_alive: this.keepAlive,
-          ...reasoningConfig,
+          ...this.#getReasoningConfig(reasoningOption),
           options: {
             temperature,
             num_ctx: this.promptWindowLimit(),
@@ -335,27 +324,33 @@ class OllamaAILLM {
     };
   }
 
+  #getReasoningConfig(reasoningOption) {
+    const reasoningConfig = {};
+
+    const ollamaCompatibleReasoningControl = {
+      on: true,
+      off: false,
+    };
+
+    if (reasoningOption) {
+      reasoningConfig.think =
+        ollamaCompatibleReasoningControl[reasoningOption] ?? reasoningOption;
+    }
+
+    return reasoningConfig;
+  }
+
   async streamGetChatCompletion(
     messages = null,
     { temperature = 0.7, reasoningOption = null }
   ) {
-    const reasoningConfig = {};
-
-    if (reasoningOption !== null) {
-      reasoningConfig.think =
-        reasoningOption === "on"
-          ? true
-          : reasoningOption === "off"
-            ? false
-            : reasoningOption;
-    }
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.client.chat({
         model: this.model,
         stream: true,
         messages,
         keep_alive: this.keepAlive,
-        ...reasoningConfig,
+        ...this.#getReasoningConfig(reasoningOption),
         options: {
           temperature,
           num_ctx: this.promptWindowLimit(),
