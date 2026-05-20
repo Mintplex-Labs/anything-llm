@@ -55,6 +55,7 @@ AnythingLLM supports multiple users as well where you can control the access and
 
 ## Cool Features of AnythingLLM
 
+- [Dynamic Model Routing](https://docs.anythingllm.com/model-router/overview) - Automatically route chats to the best provider & model for the conversation based on rules you define.
 - [Automatic & User Managed Memories](https://docs.anythingllm.com/features/memories)
 - [Scheduled Tasks](https://docs.anythingllm.com/scheduled-jobs/overview)
 - [Intelligent Skill Selection](https://docs.anythingllm.com/agent/intelligent-tool-selection) Enable **unlimited** tools for your models while reducing token usage by up to 80% per query
