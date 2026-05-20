@@ -1149,7 +1149,6 @@ const TRANSLATIONS = {
     similarity_match: "試合",
     source_count_one: "{{count}} 参照",
     source_count_other: "{{count}} への参照",
-    preset_exit_description: "現在のエージェントセッションを停止する",
     add_new: "新しいものを追加する",
     edit: "編集",
     publish: "出版",

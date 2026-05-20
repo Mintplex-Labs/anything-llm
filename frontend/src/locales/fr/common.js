@@ -1192,7 +1192,6 @@ const TRANSLATIONS = {
     similarity_match: "match",
     source_count_one: "{{count}} référence",
     source_count_other: "Références à {{count}}",
-    preset_exit_description: "Arrêter la session actuelle de l'agent",
     add_new: "Ajouter",
     edit: "Modifier",
     publish: "Publier",

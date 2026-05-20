@@ -1354,7 +1354,6 @@ const TRANSLATIONS = {
     see_more: "Veu més",
     preset_reset_description:
       "Esborra l'historial del xat i comença un xat nou",
-    preset_exit_description: "Atura la sessió de l'agent actual",
     add_new_preset: " Afegeix una nova ordre predefinida",
     add_new: "Afegeix nou",
     edit: "Edita",

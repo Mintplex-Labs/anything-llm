@@ -1277,7 +1277,6 @@ const TRANSLATIONS = {
     similarity_match: "mecz",
     source_count_one: "{{count}} – odniesienie",
     source_count_other: "{{count}} – odnośniki",
-    preset_exit_description: "Zakończ bieżącą sesję z przedstawicielem",
     add_new: "Dodaj nowe",
     edit: "Edytuj",
     publish: "Opublikować",

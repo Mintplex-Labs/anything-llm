@@ -1165,7 +1165,6 @@ const TRANSLATIONS = {
     similarity_match: "trận đấu",
     source_count_one: "{{count}} tham khảo",
     source_count_other: "{{count}} – Tham khảo",
-    preset_exit_description: "Dừng lại phiên làm việc hiện tại",
     add_new: "Thêm mới",
     edit: "Chỉnh sửa",
     publish: "Đăng tải",

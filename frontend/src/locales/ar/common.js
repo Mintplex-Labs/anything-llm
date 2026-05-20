@@ -1155,7 +1155,6 @@ const TRANSLATIONS = {
     similarity_match: "مباراة",
     source_count_one: "{{count}}، المرجع",
     source_count_other: "{{count}} المرجع",
-    preset_exit_description: "إيقاف الجلسة الحالية للمتصفح",
     add_new: "أضف جديدًا",
     edit: "تحرير",
     publish: "نشر",

@@ -1161,7 +1161,6 @@ const TRANSLATIONS = {
     similarity_match: "مسابقه",
     source_count_one: "{{count}}، مرجع",
     source_count_other: "{{count}}، منابع",
-    preset_exit_description: "متوقف کردن جلسه فعلی با نمایندگی",
     add_new: "اضافه کردن موارد جدید",
     edit: "ویرایش",
     publish: "انتشار",

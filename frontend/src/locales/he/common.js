@@ -1217,7 +1217,6 @@ const TRANSLATIONS = {
     similarity_match: "משחק",
     source_count_one: "{{count}} - הפניה",
     source_count_other: "{{count}} – מקורות",
-    preset_exit_description: "עצירת הפעולה הנוכחית של המשתמש",
     add_new: "הוסף חדש",
     edit: "עריכה",
     publish: "להוציא לאור",

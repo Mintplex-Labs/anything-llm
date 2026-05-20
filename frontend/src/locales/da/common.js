@@ -1168,7 +1168,6 @@ const TRANSLATIONS = {
     similarity_match: "kamp",
     source_count_one: "{{count}} henvisning",
     source_count_other: "{{count}} referencer",
-    preset_exit_description: "Afslut den aktuelle agent-session",
     add_new: "Tilføj nyt",
     edit: "Rediger",
     publish: "Udgive",

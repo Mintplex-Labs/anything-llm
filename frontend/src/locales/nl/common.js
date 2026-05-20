@@ -1175,7 +1175,6 @@ const TRANSLATIONS = {
     similarity_match: "wedstrijd",
     source_count_one: "{{count}} verwijzing",
     source_count_other: "{{count}} referenties",
-    preset_exit_description: "Beëindig de huidige agent-sessie",
     add_new: "Voeg toe",
     edit: "Bewerk",
     publish: "Publiceren",

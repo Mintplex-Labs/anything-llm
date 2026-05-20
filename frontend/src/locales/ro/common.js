@@ -557,7 +557,6 @@ const TRANSLATIONS = {
     similarity_match: "meci",
     source_count_one: "{{count}} – referință",
     source_count_other: "Referințe către {{count}}",
-    preset_exit_description: "Întrerupeți sesiunea actuală a agentului",
     add_new: "Adaugă",
     edit: "Editează",
     publish: "Publica",

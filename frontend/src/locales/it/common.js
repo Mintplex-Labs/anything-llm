@@ -1196,7 +1196,6 @@ const TRANSLATIONS = {
     similarity_match: "partita",
     source_count_one: "Riferimento {{count}}",
     source_count_other: "Riferimenti a {{count}}",
-    preset_exit_description: "Interrompere la sessione corrente con l'agente.",
     add_new: "Aggiungi nuovo",
     edit: "Modifica",
     publish: "Pubblicare",

@@ -1089,7 +1089,6 @@ const TRANSLATIONS = {
     similarity_match: "相符度",
     source_count_one: "{{count}} 筆參考資料",
     source_count_other: "{{count}} 筆參考資料",
-    preset_exit_description: "暫停目前的智慧代理人工作階段",
     add_new: "新增",
     edit: "編輯",
     publish: "發佈",

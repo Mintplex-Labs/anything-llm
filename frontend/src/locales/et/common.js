@@ -1228,7 +1228,6 @@ const TRANSLATIONS = {
     similarity_match: "mäng",
     source_count_one: "{{count}} viidatud",
     source_count_other: "Viidatud allikad",
-    preset_exit_description: "Lõpeta hetkeseisuga",
     add_new: "Lisada uus",
     edit: "Redigeerimine",
     publish: "Avaldada",

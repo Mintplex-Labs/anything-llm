@@ -1268,7 +1268,6 @@ const TRANSLATIONS = {
     see_more: "Rodyti daugiau",
     preset_reset_description:
       "Išvalyti pokalbių istoriją ir pradėti naują pokalbį",
-    preset_exit_description: "Sustabdyti esamą agento sesiją",
     add_new_preset: " Pridėti naują šabloną",
     add_new: "Pridėti naują",
     edit: "Redaguoti",
