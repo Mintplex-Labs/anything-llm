@@ -10,9 +10,10 @@ const { v4 } = require("uuid");
  */
 class GeminiProvider extends Provider {
   model;
+  reasoningOption;
 
   constructor(config = {}) {
-    const { model = "gemini-2.0-flash-lite" } = config;
+    const { model = "gemini-2.0-flash-lite", reasoningOption = null } = config;
     super();
     this.className = "GeminiProvider";
     const client = new OpenAI({
@@ -23,7 +24,22 @@ class GeminiProvider extends Provider {
 
     this._client = client;
     this.model = model;
+    this.reasoningOption = reasoningOption;
     this.verbose = true;
+  }
+
+  get reasoningConfig() {
+    if (!this.reasoningOption) return {};
+    return {
+      extra_body: {
+        google: {
+          thinking_config: {
+            thinking_level: this.reasoningOption,
+            include_thoughts: true,
+          },
+        },
+      },
+    };
   }
 
   get client() {
@@ -215,6 +231,7 @@ class GeminiProvider extends Provider {
               parallel_tool_calls: false,
             }
           : {}),
+        ...this.reasoningConfig,
       });
 
       const completion = {
@@ -330,6 +347,7 @@ class GeminiProvider extends Provider {
               parallel_tool_calls: false,
             }
           : {}),
+        ...this.reasoningConfig,
       });
 
       if (response.usage) this.recordUsage(response.usage);

@@ -12,7 +12,10 @@ const { USER_AGENT, WORKSPACE_AGENT } = require("./defaults");
 const ImportedPlugin = require("./imported");
 const { AgentFlows } = require("../agentFlows");
 const MCPCompatibilityLayer = require("../MCP");
-const { getAndClearInvocationAttachments } = require("../chats/agents");
+const {
+  getAndClearInvocationAttachments,
+  getAndClearInvocationReasoningOption,
+} = require("../chats/agents");
 const { DocumentManager } = require("../DocumentManager");
 
 class AgentHandler {
@@ -24,6 +27,7 @@ class AgentHandler {
   provider = null;
   model = null;
   attachments = [];
+  reasoningOption = null;
 
   constructor({ uuid }) {
     this.#invocationUUID = uuid;
@@ -639,6 +643,9 @@ class AgentHandler {
 
     // Retrieve cached attachments (images, etc.) from the HTTP request
     this.attachments = getAndClearInvocationAttachments(this.#invocationUUID);
+    this.reasoningOption = getAndClearInvocationReasoningOption(
+      this.#invocationUUID
+    );
 
     return this;
   }
@@ -714,6 +721,7 @@ class AgentHandler {
     this.aibitat = new AIbitat({
       provider: this.provider ?? "openai",
       model: this.model ?? "gpt-4o",
+      reasoningOption: this.reasoningOption,
       chats: await this.#chatHistory(20),
       handlerProps: {
         invocation: this.invocation,

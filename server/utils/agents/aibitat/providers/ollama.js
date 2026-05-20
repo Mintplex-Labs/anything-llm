@@ -14,11 +14,13 @@ const { safeJsonParse } = require("../../../http");
  */
 class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
+  reasoningOption;
 
   constructor(config = {}) {
     const {
       // options = {},
       model = null,
+      reasoningOption = null,
     } = config;
 
     super();
@@ -31,8 +33,19 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
       fetch: OllamaAILLM.applyOllamaFetch(),
     });
     this.model = model;
+    this.reasoningOption = reasoningOption;
     this.verbose = true;
     this._supportsToolCalling = null;
+  }
+
+  get reasoningConfig() {
+    if (!this.reasoningOption) return {};
+    const ollamaCompatibleReasoningControl = { on: true, off: false };
+    return {
+      think:
+        ollamaCompatibleReasoningControl[this.reasoningOption] ??
+        this.reasoningOption,
+    };
   }
 
   get client() {
@@ -77,6 +90,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
       model: this.model,
       messages,
       options: this.queryOptions,
+      ...this.reasoningConfig,
     });
     return response?.message?.content || null;
   }
@@ -88,6 +102,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
       messages,
       stream: true,
       options: this.queryOptions,
+      ...this.reasoningConfig,
     });
   }
 
@@ -312,6 +327,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
         tools,
         stream: true,
         options: this.queryOptions,
+        ...this.reasoningConfig,
       });
 
       let textResponse = "";
@@ -507,6 +523,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
         messages: formattedMessages,
         tools,
         options: this.queryOptions,
+        ...this.reasoningConfig,
       });
 
       // Record usage (Ollama uses prompt_eval_count/eval_count)

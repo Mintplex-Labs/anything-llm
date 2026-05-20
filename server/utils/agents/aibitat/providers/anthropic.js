@@ -13,6 +13,7 @@ const { getAnythingLLMUserAgent } = require("../../../../endpoints/utils");
 class AnthropicProvider extends Provider {
   model;
   maxTokens = null;
+  reasoningOption;
 
   constructor(config = {}) {
     const {
@@ -24,12 +25,25 @@ class AnthropicProvider extends Provider {
         },
       },
       model = "claude-sonnet-4-6",
+      reasoningOption = null,
     } = config;
 
     const client = new Anthropic(options);
 
     super(client);
     this.model = model;
+    this.reasoningOption = reasoningOption;
+  }
+
+  get reasoningConfig() {
+    return {
+      thinking: {
+        type: this.reasoningOption ? "adaptive" : "disabled",
+      },
+      output_config: {
+        effort: this.reasoningOption,
+      },
+    };
   }
 
   /**
@@ -256,6 +270,7 @@ class AnthropicProvider extends Provider {
           ...(Array.isArray(functions) && functions?.length > 0
             ? { tools: this.#formatFunctions(functions) }
             : {}),
+          ...this.reasoningConfig,
         },
         { headers: { "anthropic-beta": "tools-2024-04-04" } } // Required to we can use tools.
       );
@@ -403,6 +418,7 @@ class AnthropicProvider extends Provider {
           ...(Array.isArray(functions) && functions?.length > 0
             ? { tools: this.#formatFunctions(functions) }
             : {}),
+          ...this.reasoningConfig,
         },
         { headers: { "anthropic-beta": "tools-2024-04-04" } } // Required to we can use tools.
       );

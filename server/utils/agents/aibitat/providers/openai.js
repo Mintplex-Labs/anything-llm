@@ -10,6 +10,8 @@ const { safeJsonParse } = require("../../../http");
  */
 class OpenAIProvider extends Provider {
   model;
+  reasoningOption;
+
   constructor(config = {}) {
     const {
       options = {
@@ -17,6 +19,7 @@ class OpenAIProvider extends Provider {
         maxRetries: 3,
       },
       model = "gpt-4o",
+      reasoningOption = null,
     } = config;
 
     const client = new OpenAI(options);
@@ -24,6 +27,12 @@ class OpenAIProvider extends Provider {
     super(client);
 
     this.model = model;
+    this.reasoningOption = reasoningOption;
+  }
+
+  get reasoningConfig() {
+    if (!this.reasoningOption) return {};
+    return { reasoning: { effort: this.reasoningOption } };
   }
 
   get supportsAgentStreaming() {
@@ -155,6 +164,7 @@ class OpenAIProvider extends Provider {
         ...(Array.isArray(functions) && functions?.length > 0
           ? { tools: this.#formatFunctions(functions) }
           : {}),
+        ...this.reasoningConfig,
       });
 
       const completion = {
@@ -277,6 +287,7 @@ class OpenAIProvider extends Provider {
         ...(Array.isArray(functions) && functions?.length > 0
           ? { tools: this.#formatFunctions(functions) }
           : {}),
+        ...this.reasoningConfig,
       });
 
       if (response.usage) this.recordUsage(response.usage);

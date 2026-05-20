@@ -49,6 +49,7 @@ async function streamChatWithWorkspace(
     workspace,
     thread,
     attachments,
+    reasoningOption,
   });
   if (isAgentChat) return;
 

@@ -16,9 +16,10 @@ const {
  */
 class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
+  reasoningOption;
 
   /**
-   * @param {{model?: string}} config
+   * @param {{model?: string, reasoningOption?: string|null}} config
    */
   constructor(config = {}) {
     super();
@@ -34,8 +35,21 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
 
     this._client = client;
     this.model = model;
+    this.reasoningOption = config?.reasoningOption ?? null;
     this.verbose = true;
     this._supportsToolCalling = null;
+  }
+
+  get reasoningConfig() {
+    if (!this.reasoningOption) return {};
+    // Map our toggle values into the OpenAI-compatible `reasoning_effort` enum
+    // that LMStudio accepts: none, minimal, low, medium, high, xhigh.
+    const openaiCompatibleReasoningValues = { on: "low", off: "none" };
+    return {
+      reasoning_effort:
+        openaiCompatibleReasoningValues[this.reasoningOption] ??
+        this.reasoningOption,
+    };
   }
 
   get client() {
@@ -67,6 +81,7 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
       .create({
         model: this.model,
         messages,
+        ...this.reasoningConfig,
       })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
@@ -86,6 +101,7 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
       model: this.model,
       stream: true,
       messages,
+      ...this.reasoningConfig,
     });
   }
 

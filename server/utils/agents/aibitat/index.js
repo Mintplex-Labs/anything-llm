@@ -97,6 +97,7 @@ class AIbitat {
     };
     this.provider = this.defaultProvider.provider;
     this.model = this.defaultProvider.model;
+    this.reasoningOption = this.defaultProvider.reasoningOption ?? null;
   }
 
   /**
@@ -1262,16 +1263,29 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
    */
   getProviderForConfig(config) {
     if (typeof config.provider === "object") return config.provider;
+    const reasoningOption = config.reasoningOption ?? this.reasoningOption;
 
     switch (config.provider) {
       case "openai":
-        return new Providers.OpenAIProvider({ model: config.model });
+        return new Providers.OpenAIProvider({
+          model: config.model,
+          reasoningOption,
+        });
       case "anthropic":
-        return new Providers.AnthropicProvider({ model: config.model });
+        return new Providers.AnthropicProvider({
+          model: config.model,
+          reasoningOption,
+        });
       case "lmstudio":
-        return new Providers.LMStudioProvider({ model: config.model });
+        return new Providers.LMStudioProvider({
+          model: config.model,
+          reasoningOption,
+        });
       case "ollama":
-        return new Providers.OllamaProvider({ model: config.model });
+        return new Providers.OllamaProvider({
+          model: config.model,
+          reasoningOption,
+        });
       case "groq":
         return new Providers.GroqProvider({ model: config.model });
       case "togetherai":
@@ -1315,7 +1329,10 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       case "ppio":
         return new Providers.PPIOProvider({ model: config.model });
       case "gemini":
-        return new Providers.GeminiProvider({ model: config.model });
+        return new Providers.GeminiProvider({
+          model: config.model,
+          reasoningOption,
+        });
       case "dpais":
         return new Providers.DellProAiStudioProvider({ model: config.model });
       case "cometapi":
@@ -1333,7 +1350,10 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       case "sambanova":
         return new Providers.SambaNovaProvider({ model: config.model });
       case "lemonade":
-        return new Providers.LemonadeProvider({ model: config.model });
+        return new Providers.LemonadeProvider({
+          model: config.model,
+          reasoningOption,
+        });
       case "minimax":
         return new Providers.MinimaxProvider({ model: config.model });
       default:

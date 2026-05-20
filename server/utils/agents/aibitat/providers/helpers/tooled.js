@@ -195,6 +195,7 @@ async function tooledStream(
     stream_options: { include_usage: true },
     messages: formattedMessages,
     ...(tools.length > 0 ? { tools } : {}),
+    ...(provider?.reasoningConfig ?? {}),
   });
 
   const result = {
@@ -322,6 +323,7 @@ async function tooledComplete(
     stream: false,
     messages: formattedMessages,
     ...(tools.length > 0 ? { tools } : {}),
+    ...(provider?.reasoningConfig ?? {}),
   });
 
   const completion = response.choices[0].message;

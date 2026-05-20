@@ -14,6 +14,13 @@ const { Workspace } = require("../../models/workspace");
 const invocationAttachmentsCache = new Map();
 
 /**
+ * In-memory cache for the reasoning effort selected on an agent invocation.
+ * Lives across the HTTP -> WebSocket handoff in the same way as attachments.
+ * @type {Map<string, string>}
+ */
+const invocationReasoningOptionCache = new Map();
+
+/**
  * Store attachments for an invocation UUID
  * @param {string} uuid - The invocation UUID
  * @param {Array} attachments - The attachments array
@@ -35,6 +42,28 @@ function getAndClearInvocationAttachments(uuid) {
   return attachments;
 }
 
+/**
+ * Store the reasoning effort for an invocation UUID.
+ * @param {string} uuid - The invocation UUID
+ * @param {string|null} reasoningOption - The reasoning effort value (e.g. "low", "high")
+ */
+function cacheInvocationReasoningOption(uuid, reasoningOption = null) {
+  if (reasoningOption) {
+    invocationReasoningOptionCache.set(uuid, reasoningOption);
+  }
+}
+
+/**
+ * Retrieve and remove the reasoning effort for an invocation UUID.
+ * @param {string} uuid - The invocation UUID
+ * @returns {string|null} The reasoning effort (null if none cached)
+ */
+function getAndClearInvocationReasoningOption(uuid) {
+  const reasoningOption = invocationReasoningOptionCache.get(uuid) || null;
+  invocationReasoningOptionCache.delete(uuid);
+  return reasoningOption;
+}
+
 async function grepAgents({
   uuid,
   response,
@@ -43,6 +72,7 @@ async function grepAgents({
   user = null,
   thread = null,
   attachments = [],
+  reasoningOption = null,
 }) {
   let nativeToolingEnabled = false;
 
@@ -78,8 +108,9 @@ async function grepAgents({
       return;
     }
 
-    // Cache attachments for the websocket handler to retrieve later
+    // Cache attachments + reasoning option for the websocket handler to retrieve later
     cacheInvocationAttachments(newInvocation.uuid, attachments);
+    cacheInvocationReasoningOption(newInvocation.uuid, reasoningOption);
 
     writeResponseChunk(response, {
       id: uuid,
@@ -108,4 +139,8 @@ async function grepAgents({
   return false;
 }
 
-module.exports = { grepAgents, getAndClearInvocationAttachments };
+module.exports = {
+  grepAgents,
+  getAndClearInvocationAttachments,
+  getAndClearInvocationReasoningOption,
+};
