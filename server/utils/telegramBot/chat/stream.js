@@ -1,5 +1,6 @@
 const { WorkspaceChats } = require("../../../models/workspaceChats");
 const { getLLMProvider, getVectorDbClass } = require("../../helpers");
+const { searchWorkspace } = require("../../HybridSearch/dispatch");
 const { DocumentManager } = require("../../DocumentManager");
 const {
   sourceIdentifier,
@@ -218,14 +219,13 @@ async function buildSearchContext({
 }) {
   const vectorSearchResults =
     embeddingsCount !== 0
-      ? await VectorDb.performSimilaritySearch({
+      ? await searchWorkspace(VectorDb, workspace, {
           namespace: workspace.slug,
           input: message,
           LLMConnector,
           similarityThreshold: workspace?.similarityThreshold,
           topN: workspace?.topN,
           filterIdentifiers: pinnedDocIdentifiers,
-          rerank: workspace?.vectorSearchMode === "rerank",
         })
       : { contextTexts: [], sources: [], message: null };
 

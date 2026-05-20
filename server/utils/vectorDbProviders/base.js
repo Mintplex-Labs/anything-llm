@@ -158,6 +158,36 @@ class VectorDatabase {
   }
 
   /**
+   * Declare provider feature flags for retrieval strategies.
+   * Override on subclasses that implement native hybrid (BM25 + vector inside the DB)
+   * or expose a sparse index. Defaults to semantic-only.
+   * @returns {{nativeHybrid:boolean, sparseIndex:boolean, fts:boolean}}
+   */
+  capabilities() {
+    return { nativeHybrid: false, sparseIndex: false, fts: false };
+  }
+
+  /**
+   * Optional: perform a native hybrid (keyword + vector) search.
+   * Implement on providers whose underlying DB supports it. Must return the same
+   * shape as performSimilaritySearch.
+   * @param {Object} params
+   * @param {string} params.namespace
+   * @param {string} params.input
+   * @param {any} params.LLMConnector
+   * @param {number} [params.similarityThreshold]
+   * @param {number} [params.topN]
+   * @param {string[]} [params.filterIdentifiers]
+   * @param {number} [params.hybridAlpha] - 0 keyword only, 1 vector only
+   * @returns {Promise<{contextTexts:string[], sources:any[], message:string|boolean}>}
+   */
+  async performHybridSearch(_params) {
+    throw new Error(
+      `${this.name} does not implement performHybridSearch; the orchestrator should route to the app-side fallback.`
+    );
+  }
+
+  /**
    * Get namespace stats
    * @param {Object} reqBody - Request body
    * @param {string} reqBody.namespace - Namespace to get stats for

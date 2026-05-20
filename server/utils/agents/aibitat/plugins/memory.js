@@ -1,5 +1,6 @@
 const { v4 } = require("uuid");
 const { getVectorDbClass, getLLMProvider } = require("../../../helpers");
+const { searchWorkspace } = require("../../../HybridSearch/dispatch");
 const { Deduplicator } = require("../utils/dedupe");
 
 const memory = {
@@ -86,14 +87,16 @@ const memory = {
                 model: workspace?.chatModel,
               });
               const vectorDB = getVectorDbClass();
-              const { contextTexts = [] } =
-                await vectorDB.performSimilaritySearch({
+              const { contextTexts = [] } = await searchWorkspace(
+                vectorDB,
+                workspace,
+                {
                   namespace: workspace.slug,
                   input: query,
                   LLMConnector,
                   topN: workspace?.topN ?? 4,
-                  rerank: workspace?.vectorSearchMode === "rerank",
-                });
+                }
+              );
 
               if (contextTexts.length === 0) {
                 this.super.introspect(
