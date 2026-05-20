@@ -15,32 +15,29 @@ import System from "@/models/system";
 import ModelRouterAPI from "@/models/modelRouter";
 import { SIDEBAR_TOGGLE_EVENT } from "@/components/Sidebar/SidebarToggle";
 
+async function resolveModelName(workspace, systemSettings, t) {
+  const effectiveProvider =
+    workspace.chatProvider ?? systemSettings?.LLMProvider;
+
+  if (effectiveProvider !== "anythingllm-router")
+    return workspace.chatModel ?? systemSettings?.LLMModel ?? "";
+
+  const routerId = workspace.router_id || systemSettings?.ModelRouterId;
+  if (!routerId) return t("model-router.metrics.model-router-default");
+
+  const { router } = await ModelRouterAPI.get(routerId);
+  if (!router?.name) return t("model-router.metrics.model-router-default");
+
+  return router.name;
+}
+
 async function fetchModelName(slug, setModelName, t) {
   if (!slug) return;
   const [workspace, systemSettings] = await Promise.all([
     Workspace.bySlug(slug),
     System.keys(),
   ]);
-
-  const effectiveProvider =
-    workspace.chatProvider ?? systemSettings?.LLMProvider;
-
-  // If using the model router, show the router name instead of a model name
-  if (effectiveProvider === "anythingllm-router") {
-    const routerId = workspace.router_id || systemSettings?.ModelRouterId;
-    if (routerId) {
-      const { router } = await ModelRouterAPI.get(routerId);
-      if (router?.name) {
-        setModelName(router.name);
-        return;
-      }
-    }
-    setModelName(t("model-router.metrics.model-router-default"));
-    return;
-  }
-
-  const model = workspace.chatModel ?? systemSettings?.LLMModel ?? "";
-  setModelName(model);
+  setModelName(await resolveModelName(workspace, systemSettings, t));
 }
 
 export default function WorkspaceModelPicker({ workspaceSlug = null }) {
