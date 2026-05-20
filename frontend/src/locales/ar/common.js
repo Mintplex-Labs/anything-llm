@@ -108,6 +108,7 @@ const TRANSLATIONS = {
       telegram: "تليجرام",
     },
     "scheduled-jobs": "المهام المجدولة",
+    "model-router": "نموذج جهاز التوجيه",
   },
   login: {
     "multi-user": {
@@ -1677,6 +1678,185 @@ const TRANSLATIONS = {
       timed_out: "انتهت المدة المحددة",
       running: "الجري",
       queued: "في قائمة الانتظار",
+    },
+  },
+  "model-router": {
+    title: "نماذج أجهزة التوجيه",
+    description:
+      "تتيح لك أجهزة التوجيه المخصصة تحديد قواعد لتوجيه رسائل الدردشة تلقائيًا إلى مزودي ونماذج LLM المختلفة بناءً على شروط معينة.",
+    table: {
+      name: "الاسم",
+      fallback: "الخيار الاحتياطي",
+      rules: "القواعد",
+      workspaces: "مساحات العمل",
+    },
+    "no-routers": "لا توجد حاليًا أجهزة توجيه نموذجية.",
+    "empty-description":
+      "لم يتم تكوين أي من أجهزة التوجيه بعد. قم بإنشاء واحد للبدء.",
+    "new-router-button": "جهاز توجيه جديد",
+    "delete-confirm":
+      'هل أنت متأكد من أنك تريد حذف جهاز التوجيه "{{name}}"؟\nسيؤدي ذلك إلى إزالة جميع قواعده وقطع الاتصال بأي مساح عمل تستخدمه.\n\nهذا الإجراء غير قابل للتراجع.',
+    "toast-deleted": "تم حذف جهاز التوجيه.",
+    "toast-delete-failed": "فشل حذف جهاز التوجيه: {{error}}",
+    "new-router": {
+      title: "إنشاء جهاز توجيه جديد",
+      name: "الاسم",
+      "name-placeholder": "مثال: مُحسِّن التكاليف",
+      description: "الوصف",
+      "description-placeholder": "وصف اختياري",
+      "fallback-label": "المزود الرئيسي والنظام",
+      "fallback-description":
+        "يُستخدم عندما لا تتطابق أي قاعدة مسار. كما يُستخدم أيضًا لتقييم القواعد التي تم تصنيفها بواسطة نموذج لغوي كبير.",
+      "cooldown-label": "فترة التبريد (بالثواني)",
+      "cooldown-help":
+        "كم من الوقت يتم تخزين قرار التوجيه قبل إعادة تقييم القواعد؟ اضبط القيمة على 0 لتعطيل التخزين.",
+      "name-required": "الاسم مطلوب.",
+      "fallback-required": "يجب تحديد المورد الرئيسي ونموذج التوريد.",
+      cancel: "إلغاء",
+      create: "إنشاء جهاز توجيه",
+    },
+    "edit-router": {
+      "back-to-routers": "العودة إلى أجهزة التوجيه النموذجية",
+      title: "تحرير جهاز التوجيه: {{name}}",
+      save: "حفظ التغييرات",
+      "toast-update-failed": "فشل في تحديث جهاز التوجيه.",
+    },
+    rules: {
+      title: "قواعد التوجيه",
+      "title-with-name": "قواعد جهاز التوجيه: {{name}}",
+      description:
+        "حدد القواعد التي تحدد متى وكيف يتم إرسال رسائل الدردشة إلى مزودي الخدمات والنماذج المحددة.",
+      "add-rule": "إضافة قاعدة",
+      "delete-confirm": 'حذف القاعدة "{{title}}"؟',
+      "toast-delete-failed": "فشل حذف القاعدة.",
+      "toast-reorder-failed": "فشل في تطبيق قواعد إعادة الطلب.",
+      "no-rules": "لا توجد قواعد حتى الآن.",
+      "empty-description":
+        "أضف قاعدة لتوجيه رسائل الدردشة إلى مزودي خدمات وموديلات محددة.",
+      "new-rule-button": "قاعدة جديدة",
+      "calculated-section-label":
+        "القواعد المحسوبة – يتم تقييمها أولاً، بترتيب الأولوية.",
+      "llm-section-label":
+        "قواعد LLM - يتم تقييمها كمجموعة إذا لم تتطابق أي من القواعد المحسوبة",
+      "llm-rule-body":
+        'قم بمطابقة <desc>"{{description}}"</desc> ثم انتقل إلى <route>{{route}}</route>',
+      "calculated-no-conditions":
+        "بدون شروط — الطريق إلى <route>{{route}}</route>",
+      "calculated-single-condition":
+        'إذا كانت <prop>{{property}}</prop> {{comparator}} <val>"{{value}}"</val>، فقم بتوجيهها إلى <route>{{route}}</route>',
+      "calculated-multi-condition":
+        "إذا كان {{quantifier}} من <cond>، فإن المسار يجب أن يكون إلى <route>، {{route}}، </route>",
+      "comparator-contains": "يحتوي على",
+      "comparator-matches": "المباريات",
+      "comparator-between": "بين",
+      "badge-llm": "نموذج لغوي كبير",
+      "badge-calculated": "تم حسابه",
+      "aria-drag-to-reorder": "اسحب لتغيير الترتيب",
+      "aria-edit-rule": "قاعدة التحرير",
+      "aria-delete-rule": "حذف القاعدة",
+      "quantifier-any": "أي",
+      "quantifier-all": "كل",
+    },
+    "rule-form": {
+      "title-label": "العنوان",
+      "rule-type": "نوع القاعدة",
+      "property-label": "العقار",
+      "property-select": "اختر",
+      "comparator-label": "مقارن",
+      "comparator-select": "اختر",
+      "value-label": "القيمة",
+      "add-condition": "أضف شرطًا",
+      "remove-condition": "إزالة الشرط",
+      "conditions-incomplete":
+        "الشرط {{index}} غير مكتمل – يرجى إدخال معلومات عن الخاصية والمقارن والقيمة.",
+      "match-description-label": "وصف المباراة",
+      "match-description-placeholder":
+        "على سبيل المثال، المستخدم يسأل عن قضايا قانونية، أو العقود، أو الامتثال للقوانين.",
+      "match-description-help":
+        "صف الموقف الذي تريد فيه تطبيق هذه القاعدة. يتم تقييم ذلك بواسطة نموذج اللغة الكبير (LLM) الخاص بك لتحديد ما إذا كان يجب استخدامه أم لا.",
+      "route-to-label": "طريق الوصول إلى المورد ونموذج العمل",
+      "route-to-description":
+        "عندما يتطابق هذا القانون، استخدم هذا المزود/النموذج.",
+      cancel: "إلغاء",
+      saving: "حفظ...",
+      "update-rule": "قاعدة التحديث",
+      "create-rule": "إنشاء قاعدة",
+      "title-required": "العنوان مطلوب.",
+      "toast-save-failed": "فشل في حفظ القاعدة.",
+      "type-calculated-label": "تم حسابه",
+      "type-calculated-description":
+        "ابحث عن التطابقات بناءً على خصائص الرسالة مثل المحتوى، أو عدد الرموز، أو وقت اليوم.",
+      "type-llm-label": "تصنيف نموذج اللغة الكبير",
+      "type-llm-description":
+        "استخدم نموذج لغوي كبير لتصنيف الرسالة بناءً على الوصف الذي تقدمه.",
+      "prop-prompt-content": "محتوى مُجهز مسبقًا",
+      "prop-token-count": "عدد الرموز المستخدمة في المحادثة",
+      "prop-message-count": "عدد الرسائل في المحادثة",
+      "prop-current-hour": "الساعة الحالية (من 0 إلى 23)",
+      "prop-has-image": "هل يوجد مرفق صورة؟",
+      "cmp-contains": "يحتوي على",
+      "cmp-matches-regex": "مطابقات (تعبيرات نمطية)",
+      "cmp-equals": "يساوي",
+      "cmp-not-equals": "لا يساوي",
+      "cmp-greater-than": "أكبر من",
+      "cmp-greater-than-or-equal": "أكبر من أو يساوي",
+      "cmp-less-than": "أقل من",
+      "cmp-less-than-or-equal": "أقل من أو يساوي",
+      "cmp-between": "بين (بما في ذلك)",
+      "placeholder-between-hour":
+        "على سبيل المثال: 9:17 (من الساعة 9 صباحًا إلى 5 مساءً)",
+      "placeholder-between-numeric": "مثال: 10,50",
+      "placeholder-hour": "مثال: 18 (0-23)",
+      "placeholder-message-count": "على سبيل المثال: 10",
+      "placeholder-numeric": "مثال: 4000",
+      "placeholder-contains": "على سبيل المثال: كود، بايثون، رست",
+      "placeholder-matches": "مثال: /\\bpython\\b/i",
+      "placeholder-default": "مثال: كود",
+      "help-contains":
+        "قائمة مفصولة بفواصل — تطابق إذا احتوى السؤال على أي من القيم (مع تجاهل حالة الأحرف).",
+      "help-matches":
+        "نمط التعابير النمطية. استخدم `/pattern/ مع العلامات للتحكم في حساسية الحالة (القيمة الافتراضية هي عدم الحساسية للحالة).",
+      "bool-true": "صحيح",
+      "bool-false": "خاطئ",
+    },
+    "provider-picker": {
+      "select-provider": "اختر المزود",
+      "setup-required": "(يتطلب إعدادًا مسبقًا)",
+      "loading-models": "تحميل النماذج...",
+      "select-model": "اختر الطراز",
+      "enter-model": "أدخل اسم النموذج",
+      "select-provider-first": "اختر مزود الخدمة أولاً.",
+      "configure-to-continue": "قم بتكوين {{name}} للمتابعة.",
+      "configure-provider": "تكوين {{name}}",
+      "setup-credentials":
+        "أدخل بيانات الاعتماد المطلوبة لاستخدام {{name}} كوجهة توجيه.",
+      cancel: "إلغاء",
+      "save-settings": "حفظ الإعدادات",
+      "toast-save-failed": "فشل في حفظ الإعدادات: {{error}}",
+    },
+    "router-selection": {
+      "loading-routers": "تحميل أجهزة التوجيه المخصصة...",
+      "no-routers-prefix-settings":
+        "لم يتم تكوين أي من أجهزة التوجيه (routers) بعد.",
+      "no-routers-prefix-workspace": "لا توجد أجهزة توجيه مُكوّنة.",
+      "no-routers-link": "قم بإنشائه في إعدادات جهاز التوجيه (Model Router).",
+      "model-router-label": "جهاز توجيه نموذجي",
+      "select-router": "اختر جهاز توجيه.",
+      "select-description":
+        "اختر جهاز التوجيه الذي ستستخدمه لهذا الموقف العملي.",
+      "no-routers-chat":
+        'لا توجد أجهزة توجيه مُكوّنة. قم بإنشاء واحدة في قسم "إعدادات" > "مقدمو الخدمات" > "جهاز توجيه النموذج".',
+      "rule-count": "(قواعد {{count}})",
+    },
+    metrics: {
+      "model-router-default": "نموذج جهاز التوجيه",
+    },
+    chat: {
+      "select-router-error": "اختر جهاز توجيه.",
+      "invalid-model": "اختيار نموذج غير صالح",
+      "routed-to": "تم توجيهه إلى <route>{{model}}</route>",
+      "routed-to-rule":
+        "تم توجيهه إلى <route>{{model}}</route> عبر <rule>{{ruleTitle}}</rule>",
     },
   },
 };

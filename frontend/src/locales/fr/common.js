@@ -109,6 +109,7 @@ const TRANSLATIONS = {
       telegram: "Telegram",
     },
     "scheduled-jobs": "Tâches planifiées",
+    "model-router": "Routeur modèle",
   },
   login: {
     "multi-user": {
@@ -1728,6 +1729,184 @@ const TRANSLATIONS = {
       timed_out: "Temps écoulé",
       running: "Course à pied",
       queued: "En attente",
+    },
+  },
+  "model-router": {
+    title: "Routeurs modèles",
+    description:
+      "Les routeurs modèles vous permettent de définir des règles pour acheminer automatiquement les messages de chat vers différents fournisseurs et modèles de LLM, en fonction de conditions spécifiques.",
+    table: {
+      name: "Nom",
+      fallback: "Plan de secours",
+      rules: "Règles",
+      workspaces: "Espaces de travail",
+    },
+    "no-routers": "Aucun routeur modèle disponible pour le moment.",
+    "empty-description":
+      "Aucun routeur n'est configuré pour le moment. Créez-en un pour commencer.",
+    "new-router-button": "Nouveau routeur",
+    "delete-confirm":
+      'Êtes-vous certain de vouloir supprimer le routeur "{{name}}" ?\nCela supprimera toutes ses règles et déconnectera tous les espaces de travail qui l\'utilisent.\n\nCette action est irréversible.',
+    "toast-deleted": "Routeur supprimé",
+    "toast-delete-failed": "Échec de la suppression du routeur : {{error}}",
+    "new-router": {
+      title: "Créer un nouveau routeur",
+      name: "Nom",
+      "name-placeholder": "par exemple, Optimiseur de coûts",
+      description: "Description",
+      "description-placeholder": "Description facultative",
+      "fallback-label": "Prestataire principal et modèle",
+      "fallback-description":
+        "Utilisé lorsque aucune règle de routage ne correspond. Il est également utilisé pour évaluer les règles classifiées par un modèle de langage.",
+      "cooldown-label": "Durée de recharge (secondes)",
+      "cooldown-help":
+        "Combien de temps la décision de routage est-elle mise en cache avant de réévaluer les règles ? Définissez cette valeur sur 0 pour désactiver la mise en cache.",
+      "name-required": "Le nom est obligatoire.",
+      "fallback-required":
+        "Le fournisseur principal et le modèle sont obligatoires.",
+      cancel: "Annuler",
+      create: "Créer un routeur",
+    },
+    "edit-router": {
+      "back-to-routers": "Retour aux routeurs modèles",
+      title: "Modifier le routeur : {{name}}",
+      save: "Enregistrer les modifications",
+      "toast-update-failed": "Impossible de mettre à jour le routeur.",
+    },
+    rules: {
+      title: "Règles de routage",
+      "title-with-name": "Règles du routeur : {{name}}",
+      description:
+        "Définir les règles qui déterminent quand et comment les messages de chat sont envoyés à des fournisseurs et des modèles spécifiques.",
+      "add-rule": "Ajouter une règle",
+      "delete-confirm": 'Supprimer la règle "{{title}}"?',
+      "toast-delete-failed": "Impossible de supprimer la règle.",
+      "toast-reorder-failed":
+        "Erreur lors de la tentative de réappliquer les règles.",
+      "no-rules": "Aucune règle établie pour le moment.",
+      "empty-description":
+        "Ajoutez une règle pour diriger automatiquement les messages de chat vers des fournisseurs et des modèles spécifiques.",
+      "new-rule-button": "Nouvelle règle",
+      "calculated-section-label": "Règles calculées – évaluées en priorité",
+      "llm-section-label":
+        "Règles LLM – évaluées par lots si aucune règle calculée ne correspond",
+      "llm-rule-body":
+        'Correspondance avec "<desc>" puis redirection vers "<route>"{{route}}"</route>"',
+      "calculated-no-conditions":
+        "Aucune condition – itinéraire vers <route>{{route}}</route>",
+      "calculated-single-condition":
+        'Si <prop>{{property}}</prop> {{comparator}} <val>"{{value}}"</val> alors, rediriger vers <route>{{route}}</route>',
+      "calculated-multi-condition":
+        "Si {{quantifier}} de <cond>{{conditions}}</cond> alors, suivre le chemin vers <route>{{route}}</route>",
+      "comparator-contains": "contient",
+      "comparator-matches": "matchs",
+      "comparator-between": "entre",
+      "badge-llm": "Modèle de langage de grande taille",
+      "badge-calculated": "Calculé",
+      "aria-drag-to-reorder": "Faites glisser pour réorganiser",
+      "aria-edit-rule": "Modifier la règle",
+      "aria-delete-rule": "Supprimer la règle",
+      "quantifier-any": "CHACUN",
+      "quantifier-all": "TOUT",
+    },
+    "rule-form": {
+      "title-label": "Titre",
+      "rule-type": "Type de règle",
+      "property-label": "Propriété",
+      "property-select": "Sélectionner",
+      "comparator-label": "Comparateur",
+      "comparator-select": "Sélectionner",
+      "value-label": "Valeur",
+      "add-condition": "Ajouter une condition",
+      "remove-condition": "Supprimer la condition",
+      "conditions-incomplete":
+        "La condition {{index}} est incomplète — veuillez remplir les champs propriété, comparateur et valeur.",
+      "match-description-label": "Description du match",
+      "match-description-placeholder":
+        "Par exemple, l'utilisateur pose des questions sur des sujets juridiques, des contrats ou la conformité.",
+      "match-description-help":
+        "Décrivez la situation dans laquelle vous souhaitez que cette règle s'applique. Votre modèle de langage évaluera cette description pour déterminer si elle doit être utilisée.",
+      "route-to-label": "Itinéraire vers le prestataire et modèle",
+      "route-to-description":
+        "Lorsque cette règle s'applique, utilisez ce fournisseur/modèle.",
+      cancel: "Annuler",
+      saving: "Économiser...",
+      "update-rule": "Règle de mise à jour",
+      "create-rule": "Créer une règle",
+      "title-required": "Le titre est obligatoire.",
+      "toast-save-failed": "Échec de la sauvegarde de la règle.",
+      "type-calculated-label": "Calculé",
+      "type-calculated-description":
+        "Correspondance basée sur des propriétés du message, telles que le contenu, le nombre de tokens ou l'heure de la journée.",
+      "type-llm-label": "Catégorisation LLM",
+      "type-llm-description":
+        "Utilisez un modèle de langage pour classer le message en fonction d'une description que vous fournissez.",
+      "prop-prompt-content": "Contenu demandé",
+      "prop-token-count": "Nombre de jetons de conversation",
+      "prop-message-count": "Nombre de messages de conversation",
+      "prop-current-hour": "Heure actuelle (de 0 à 23)",
+      "prop-has-image": "Possède une image associée",
+      "cmp-contains": "contient",
+      "cmp-matches-regex": "expressions régulières (regex)",
+      "cmp-equals": "égale à",
+      "cmp-not-equals": "n'est pas égal à",
+      "cmp-greater-than": "supérieur à",
+      "cmp-greater-than-or-equal": "supérieur ou égal",
+      "cmp-less-than": "inférieur à",
+      "cmp-less-than-or-equal": "inférieur ou égal",
+      "cmp-between": "entre (y compris)",
+      "placeholder-between-hour": "par exemple, 9h17 (de 9h00 à 17h00)",
+      "placeholder-between-numeric": "par exemple, 10,50",
+      "placeholder-hour": "par exemple, 18 (0-23)",
+      "placeholder-message-count": "par exemple, 10",
+      "placeholder-numeric": "par exemple, 4000",
+      "placeholder-contains": "par exemple, code, Python, Rust",
+      "placeholder-matches": "par exemple, /\\bpython\\b/i",
+      "placeholder-default": "par exemple, code",
+      "help-contains":
+        "Liste séparée par des virgules — correspond si la requête contient l'une des valeurs (sans tenir compte de la casse).",
+      "help-matches":
+        "Modèle d'expression régulière. Utilisez `/pattern/ et les drapeaux appropriés pour tenir compte de la casse (par défaut, la casse n'est pas prise en compte).",
+      "bool-true": "Vrai",
+      "bool-false": "Faux",
+    },
+    "provider-picker": {
+      "select-provider": "Sélectionner le prestataire",
+      "setup-required": "(nécessite une configuration préalable)",
+      "loading-models": "Chargement des modèles...",
+      "select-model": "Sélectionner le modèle",
+      "enter-model": "Entrez le nom du modèle",
+      "select-provider-first": "Choisissez d'abord un fournisseur.",
+      "configure-to-continue": "Configurer {{name}} pour continuer",
+      "configure-provider": "Configurer {{name}}",
+      "setup-credentials":
+        "Entrez les informations nécessaires pour utiliser {{name}} comme destination de routage.",
+      cancel: "Annuler",
+      "save-settings": "Enregistrer les paramètres",
+      "toast-save-failed": "Échec de la sauvegarde des paramètres : {{error}}",
+    },
+    "router-selection": {
+      "loading-routers": "Chargement des routeurs personnalisés...",
+      "no-routers-prefix-settings": "Aucun routeur configuré pour le moment.",
+      "no-routers-prefix-workspace": "Aucun routeur configuré.",
+      "no-routers-link": "Créez-en un dans les paramètres du routeur.",
+      "model-router-label": "Routeur modèle",
+      "select-router": "Choisissez un routeur",
+      "select-description":
+        "Choisissez le routeur à utiliser pour cet espace de travail.",
+      "no-routers-chat":
+        "Aucun routeur n'est configuré. Créez-en un dans les paramètres > Fournisseurs d'IA > Routeur de modèle.",
+      "rule-count": "({{count}} règles)",
+    },
+    metrics: {
+      "model-router-default": "Routeur modèle",
+    },
+    chat: {
+      "select-router-error": "Choisissez un routeur",
+      "invalid-model": "Sélection de modèle non valide",
+      "routed-to": "Dirigé vers <route>{{model}}</route>",
+      "routed-to-rule":
+        "Dirigé vers <route>{{model}}</route> via <rule>{{ruleTitle}}</rule>",
     },
   },
 };

@@ -109,6 +109,7 @@ const TRANSLATIONS = {
       telegram: "テレグラム",
     },
     "scheduled-jobs": "計画された作業",
+    "model-router": "モデルルーター",
   },
   login: {
     "multi-user": {
@@ -1690,6 +1691,184 @@ const TRANSLATIONS = {
       timed_out: "時間切れ",
       running: "ランニング",
       queued: "待ち列",
+    },
+  },
+  "model-router": {
+    title: "モデルルーター",
+    description:
+      "モデルルーターを使用すると、特定の条件に基づいて、チャットメッセージを異なるLLMプロバイダーやモデルに自動的にルーティングするためのルールを定義できます。",
+    table: {
+      name: "名前",
+      fallback: "代替案",
+      rules: "ルール",
+      workspaces: "作業スペース",
+    },
+    "no-routers": "現時点では、特定のモデルのルーターはまだありません。",
+    "empty-description":
+      "現時点では、設定されたルーターはありません。設定を開始するために、一つ作成してください。",
+    "new-router-button": "新しいルーター",
+    "delete-confirm":
+      "ルーター「{{name}}」を削除してもよろしいですか？\nこれにより、すべての設定と、それを使用しているすべてのワークスペースとの関連を解除します。\n\nこの操作は取り消すことができません。",
+    "toast-deleted": "ルーターが削除されました",
+    "toast-delete-failed": "ルーターの削除に失敗しました: {{error}}",
+    "new-router": {
+      title: "新しいモデルのルーターを作成する",
+      name: "名前",
+      "name-placeholder": "例：コスト最適化ツール",
+      description: "説明",
+      "description-placeholder": "任意の説明",
+      "fallback-label": "主要なプロバイダーおよびモデル",
+      "fallback-description":
+        "以下の状況で使用されます。\n* どのルーティングルールにも一致しない場合\n* LLMによって分類されたルールを評価する場合",
+      "cooldown-label": "キャッシュクールダウン (秒)",
+      "cooldown-help":
+        "ルーティングの決定が再評価されるまでの、キャッシュの保持時間を設定します。キャッシュを無効にするには、0に設定してください。",
+      "name-required": "氏名が必須です。",
+      "fallback-required": "主要な提供者とモデルが必要です。",
+      cancel: "キャンセル",
+      create: "ルーターを作成する",
+    },
+    "edit-router": {
+      "back-to-routers": "モデルルーターに戻る",
+      title: "ルーターの編集: {{name}}",
+      save: "変更を保存",
+      "toast-update-failed": "ルーターのアップデートが失敗しました",
+    },
+    rules: {
+      title: "ルーティングルール",
+      "title-with-name": "ルーティングルール：{{name}}",
+      description:
+        "特定のプロバイダやモデルにチャットメッセージが送信されるタイミングと方法を決定するルールを定義する。",
+      "add-rule": "ルールを追加",
+      "delete-confirm": 'ルール "{{title}}"を削除しますか？',
+      "toast-delete-failed": "ルールを削除できませんでした",
+      "toast-reorder-failed": "再注文に関するルールが適用されなかった",
+      "no-rules": "まだルールは決まっていません。",
+      "empty-description":
+        "チャットメッセージを特定のプロバイダやモデルにルーティングを開始するためのルールを追加する。",
+      "new-rule-button": "新しい規則",
+      "calculated-section-label":
+        "計算されたルール — 優先順位に基づいて、最初に評価",
+      "llm-section-label":
+        "LLMのルール—計算されたルールに一致しない場合に、まとめて評価",
+      "llm-rule-body":
+        "次に、<desc>「{{description}}」</desc> にマッチし、その後、<route>へルーティングします。",
+      "calculated-no-conditions":
+        "条件なし—ルート：<route>へ、{{route}}、</route>",
+      "calculated-single-condition":
+        'もし <prop>が条件{{property}}、</prop>が条件{{comparator}}、そして<val>が条件 "{{value}}"、</val>である場合、<route>へ移動する',
+      "calculated-multi-condition":
+        "もし、[{{quantifier}}]が[<cond>]である場合、[{{conditions}}]、[</cond>]を通過して、[<route>]、[{{route}}]、[</route>]へ移動する。",
+      "comparator-contains": "これには",
+      "comparator-matches": "試合",
+      "comparator-between": "間、間隔",
+      "badge-llm": "大規模言語モデル",
+      "badge-calculated": "計算された",
+      "aria-drag-to-reorder": "ドラッグして並び順を変更",
+      "aria-edit-rule": "編集規則",
+      "aria-delete-rule": "ルールを削除する",
+      "quantifier-any": "何でも",
+      "quantifier-all": "すべて",
+    },
+    "rule-form": {
+      "title-label": "タイトル",
+      "rule-type": "ルールの種類",
+      "property-label": "不動産",
+      "property-select": "選択",
+      "comparator-label": "比較ツール",
+      "comparator-select": "選択",
+      "value-label": "価値",
+      "add-condition": "条件を追加する",
+      "remove-condition": "条件を削除する",
+      "conditions-incomplete":
+        "条件 {{index}} は不完全です。プロパティ、比較演算子、および値を入力してください。",
+      "match-description-label": "試合の説明",
+      "match-description-placeholder":
+        "例えば、「ユーザーが、法律、契約、またはコンプライアンスに関する情報を求めている」",
+      "match-description-help":
+        "このルールが適用される状況を説明してください。LLMは、この状況に基づいて、このルールを使用すべきかどうかを判断します。",
+      "route-to-label": "提供者およびモデルへのアクセス方法",
+      "route-to-description":
+        "このルールに合致する場合、このプロバイダ/モデルを使用してください。",
+      cancel: "キャンセル",
+      saving: "保存中...",
+      "update-rule": "更新ルール",
+      "create-rule": "ルールを作成",
+      "title-required": "タイトルは必須です",
+      "toast-save-failed": "ルールを保存できませんでした",
+      "type-calculated-label": "計算された",
+      "type-calculated-description":
+        "メッセージの内容、トークン数、または時間帯などのプロパティに基づいてマッチングを行う。",
+      "type-llm-label": "LLM 分類",
+      "type-llm-description":
+        "LLM（大規模言語モデル）を使用して、提供された説明に基づいてメッセージを分類します。",
+      "prop-prompt-content": "プロンプトの内容",
+      "prop-token-count": "会話トークンの数",
+      "prop-message-count": "会話メッセージの件数",
+      "prop-current-hour": "現在時間 (0-23)",
+      "prop-has-image": "画像が添付されている",
+      "cmp-contains": "これには",
+      "cmp-matches-regex": "正規表現とのマッチング",
+      "cmp-equals": "等しい",
+      "cmp-not-equals": "等しいとは限らない",
+      "cmp-greater-than": "より大きい",
+      "cmp-greater-than-or-equal": "「以上」",
+      "cmp-less-than": "より少ない",
+      "cmp-less-than-or-equal": "以下",
+      "cmp-between": "（これを含む）",
+      "placeholder-between-hour": "例：9:00～17:00",
+      "placeholder-between-numeric": "例：10,50",
+      "placeholder-hour": "例：18 (0-23)",
+      "placeholder-message-count": "例：10",
+      "placeholder-numeric": "例：4000",
+      "placeholder-contains": "例えば、コード、Python、Rust",
+      "placeholder-matches": "例：/\\bpython\\b/i",
+      "placeholder-default": "例：コード",
+      "help-contains":
+        "カンマ区切りのリスト—プロンプトに指定された値のいずれかが含まれている場合に一致します（大文字・小文字を区別しません）。",
+      "help-matches":
+        "正規表現パターン。大文字・小文字を区別する設定 (デフォルトは大文字・小文字を区別しない) を `/pattern/` のフラグで指定します。",
+      "bool-true": "真",
+      "bool-false": "誤り",
+    },
+    "provider-picker": {
+      "select-provider": "サービスプロバイダーを選択",
+      "setup-required": "（設定が必要です）",
+      "loading-models": "モデルの読み込み中...",
+      "select-model": "モデルを選択",
+      "enter-model": "モデル名を入力してください",
+      "select-provider-first": "まず、サービスプロバイダーを選んでください。",
+      "configure-to-continue": "{{name}}の設定を完了してください",
+      "configure-provider": "{{name}} の設定",
+      "setup-credentials":
+        "{{name}} をルーティング先として使用するために、必要な認証情報を入力してください。",
+      cancel: "キャンセル",
+      "save-settings": "設定を保存する",
+      "toast-save-failed": "設定の保存に失敗しました：{{error}}",
+    },
+    "router-selection": {
+      "loading-routers": "カスタムルーターの読み込み中...",
+      "no-routers-prefix-settings":
+        "現時点では、どのルーターも設定されていません。",
+      "no-routers-prefix-workspace": "設定されたルーターは存在しません。",
+      "no-routers-link": "モデルルーターの設定で作成",
+      "model-router-label": "モデルルーター",
+      "select-router": "ルーターを選択する",
+      "select-description":
+        "この作業スペースで使用するルーターを選択してください。",
+      "no-routers-chat":
+        "ルーターは設定されていません。設定 > AI プロバイダ > モデルルーターで作成してください。",
+      "rule-count": "({{count}}のルール)",
+    },
+    metrics: {
+      "model-router-default": "モデルルーター",
+    },
+    chat: {
+      "select-router-error": "ルーターを選択する",
+      "invalid-model": "無効なモデルの選択",
+      "routed-to": "<route>、{{model}}、</route> 宛にルーティング",
+      "routed-to-rule":
+        "<route>～</route>を経由して、<rule>～</rule>へルーティング",
     },
   },
 };

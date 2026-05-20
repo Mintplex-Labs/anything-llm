@@ -111,6 +111,7 @@ const TRANSLATIONS = {
       telegram: "تلگرام",
     },
     "scheduled-jobs": "وظایف برنامه‌ریزی شده",
+    "model-router": "روتر نمونه",
   },
   login: {
     "multi-user": {
@@ -1694,6 +1695,184 @@ const TRANSLATIONS = {
       timed_out: "زمان به پایان رسید",
       running: "دویدن",
       queued: "در صف انتظار",
+    },
+  },
+  "model-router": {
+    title: "روترهای مدل",
+    description:
+      "روترهای مدل‌سازی به شما این امکان را می‌دهند که قوانین را برای مسیریابی خودکار پیام‌های چت به ارائه دهندگان و مدل‌های مختلف LLM، بر اساس شرایط، تعریف کنید.",
+    table: {
+      name: "نام",
+      fallback: "روش جایگزین",
+      rules: "قوانین",
+      workspaces: "فضاهای کاری",
+    },
+    "no-routers": "هنوز هیچ مدل روتر در دسترس نیست.",
+    "empty-description":
+      "هنوز هیچ روتر مدلی پیکربندی نشده است. برای شروع، یکی از آن‌ها را ایجاد کنید.",
+    "new-router-button": "روتر جدید",
+    "delete-confirm":
+      'آیا مطمئن هستید که می‌خواهید روتر "{{name}}" را حذف کنید؟\nاین کار تمام تنظیمات و ارتباطات آن را حذف کرده و هر فضای کاری که از آن استفاده می‌کند را از بین می‌برد.\n\nاین عمل غیرقابل بازگشت است.',
+    "toast-deleted": "دستگاه روتر حذف شد",
+    "toast-delete-failed": "عدم حذف روتر: {{error}}",
+    "new-router": {
+      title: "ایجاد یک روتر جدید",
+      name: "نام",
+      "name-placeholder": "به عنوان مثال: ابزار بهینه‌سازی هزینه‌ها",
+      description: "توضیحات",
+      "description-placeholder": "توضیحات اختیاری",
+      "fallback-label": "ارائه دهنده اصلی و مدل",
+      "fallback-description":
+        "از زمانی استفاده می‌شود که هیچ قانون مسیریابی با شرایط موجود مطابقت نداشته باشد. همچنین برای ارزیابی قوانین طبقه‌بندی شده توسط مدل‌های زبان بزرگ (LLM) نیز استفاده می‌شود.",
+      "cooldown-label": "مدت زمان انقضا (ثانیه)",
+      "cooldown-help":
+        "مدت زمانی که تصمیم‌گیری مسیریابی پس از بررسی مجدد قوانین ذخیره می‌شود. برای غیرفعال کردن ذخیره‌سازی، این مقدار را روی 0 تنظیم کنید.",
+      "name-required": "نام الزامی است.",
+      "fallback-required": "نرم‌افزار و مدل اصلی باید ارائه شوند.",
+      cancel: "لغو کردن",
+      create: "ایجاد روتر",
+    },
+    "edit-router": {
+      "back-to-routers": "بازگشت به روترهای مدل",
+      title: "تنظیم روتر: {{name}}",
+      save: "ذخیره تغییرات",
+      "toast-update-failed": "عدم به‌روزرسانی روتر",
+    },
+    rules: {
+      title: "قوانین مسیریابی",
+      "title-with-name": "قوانین مسیری‌دهی: {{name}}",
+      description:
+        "قواعدی را مشخص کنید که تعیین می‌کنند پیام‌های چت به چه ارائه دهندگان و مدل‌هایی ارسال می‌شوند و در چه زمان و نحوی.",
+      "add-rule": "اضافه کردن قانون",
+      "delete-confirm": 'حذف قانون "{{title}}"؟',
+      "toast-delete-failed": "عدم حذف قانون",
+      "toast-reorder-failed": "عدم توانایی در اعمال مجدد قوانین",
+      "no-rules": "هنوز قوانین مشخصی وجود ندارد.",
+      "empty-description":
+        "یک قانون را اضافه کنید تا پیام‌های چت را به صورت خاص به ارائه دهندگان و مدل‌های مشخص هدایت کند.",
+      "new-rule-button": "قانون جدید",
+      "calculated-section-label": "قواعد محاسبه‌شده - ابتدا، با اولویت‌بندی",
+      "llm-section-label":
+        "قوانین LLM — در صورتی که هیچ یک از قوانین محاسبه شده با داده‌های موجود مطابقت نداشته باشند، به صورت یک دسته ارزیابی می‌شوند.",
+      "llm-rule-body":
+        'مطابقت با <desc>"{{description}}"</desc>، سپس مسیریابی به <route>{{route}}</route>',
+      "calculated-no-conditions":
+        "بدون هیچ شرط – مسیر به سمت <route>{{route}}</route>",
+      "calculated-single-condition":
+        'اگر <prop>، {{property}}، </prop>، {{comparator}}، <val>، "{{value}}"، </val> باشد، مسیر را به <route>، {{route}}، </route> تعیین کنید.',
+      "calculated-multi-condition":
+        "اگر {{quantifier}} از نوع <cond> باشد، مسیر را به <route>{{route}}</route> تغییر دهید.",
+      "comparator-contains": "شامل",
+      "comparator-matches": "مسابقات",
+      "comparator-between": "بین",
+      "badge-llm": "مدل زبان بزرگ (LLM)",
+      "badge-calculated": "محاسبه شده",
+      "aria-drag-to-reorder":
+        "برای تغییر ترتیب، این عناصر را بکشید و رها کنید.",
+      "aria-edit-rule": "قانون ویرایش",
+      "aria-delete-rule": "حذف قانون/قانون",
+      "quantifier-any": "هر",
+      "quantifier-all": "همه",
+    },
+    "rule-form": {
+      "title-label": "عنوان",
+      "rule-type": "نوع قانون",
+      "property-label": "املاک",
+      "property-select": "انتخاب",
+      "comparator-label": "مقایسه کننده",
+      "comparator-select": "انتخاب",
+      "value-label": "ارزش",
+      "add-condition": "اضافه کردن شرط",
+      "remove-condition": "حذف شرط",
+      "conditions-incomplete":
+        "شرط {{index}} ناقص است – لطفاً اطلاعات مربوط به ویژگی، مقایسه و مقدار را پر کنید.",
+      "match-description-label": "توضیحات مسابقه",
+      "match-description-placeholder":
+        "به عنوان مثال، کاربر در مورد موضوعات حقوقی، قراردادها یا رعایت قوانین سوال می کند.",
+      "match-description-help":
+        "وضعیتی را توصیف کنید که در آن می‌خواهید این قانون اعمال شود. مدل زبانی شما این را ارزیابی می‌کند تا مشخص کند آیا باید از این قانون استفاده شود یا خیر.",
+      "route-to-label": "مسیر به سمت ارائه خدمات و مدل",
+      "route-to-description":
+        "زمانی که این قانون اعمال شود، از این ارائه‌دهنده/مدل استفاده کنید.",
+      cancel: "لغو کردن",
+      saving: "ذخیره...",
+      "update-rule": "قانون به‌روزرسانی",
+      "create-rule": "ایجاد قانون",
+      "title-required": "عنوان الزامی است",
+      "toast-save-failed": "عدم موفقیت در ذخیره قانون/قانون",
+      "type-calculated-label": "محاسبه شده",
+      "type-calculated-description":
+        "براساس ویژگی‌های پیام مانند محتوا، تعداد توکن‌ها، یا زمان روز، تطابق را انجام دهید.",
+      "type-llm-label": "دسته‌بندی مدل‌های زبانی بزرگ",
+      "type-llm-description":
+        "از یک مدل زبان بزرگ (LLM) برای دسته‌بندی پیام بر اساس توضیحی که ارائه می‌دهید، استفاده کنید.",
+      "prop-prompt-content": "محتوای اولیه",
+      "prop-token-count": "تعداد توکن‌های مکالمه",
+      "prop-message-count": "تعداد پیام‌های مکالمه",
+      "prop-current-hour": "ساعت فعلی (۰ تا ۲۳)",
+      "prop-has-image": "آیا تصویر به آن متصل شده است؟",
+      "cmp-contains": "شامل",
+      "cmp-matches-regex": "الگوهای تطبیق (regex)",
+      "cmp-equals": "برابر",
+      "cmp-not-equals": "برابر نیست",
+      "cmp-greater-than": "بزرگتر از",
+      "cmp-greater-than-or-equal": "بزرگتر یا مساوی",
+      "cmp-less-than": "کمتر از",
+      "cmp-less-than-or-equal": "کمتر یا مساوی",
+      "cmp-between": "بین (شامل)",
+      "placeholder-between-hour":
+        "به عنوان مثال، 9 تا 17 (از ساعت 9 صبح تا 5 بعد از ظهر)",
+      "placeholder-between-numeric": "به عنوان مثال: ۱۰,۵۰",
+      "placeholder-hour": "به عنوان مثال: 18 (0-23)",
+      "placeholder-message-count": "به عنوان مثال، 10",
+      "placeholder-numeric": "به عنوان مثال: 4000",
+      "placeholder-contains": "به عنوان مثال: کد، پایتون، رست",
+      "placeholder-matches": "به عنوان مثال: /\\bpython\\b/i",
+      "placeholder-default": "به عنوان مثال، کد",
+      "help-contains":
+        "لیست جدا شده با کاما - تطابق زمانی که متن ورودی شامل هر یک از مقادیر (بدون در نظر گرفتن حروف بزرگ و کوچک) باشد.",
+      "help-matches":
+        "الگو (Regex). برای تشخیص حساسیت به حروف بزرگ و کوچک، از عبارت `/pattern/flags` استفاده کنید (به طور پیش‌فرض، تشخیص حساسیت به حروف بزرگ و کوچک غیرفعال است).",
+      "bool-true": "درست",
+      "bool-false": "غلط",
+    },
+    "provider-picker": {
+      "select-provider": "انتخاب ارائه دهنده",
+      "setup-required": "(نیاز به آماده‌سازی)",
+      "loading-models": "بارگذاری مدل‌ها...",
+      "select-model": "انتخاب مدل",
+      "enter-model": "نام مدل را وارد کنید",
+      "select-provider-first": "ابتدا، یک ارائه دهنده را انتخاب کنید.",
+      "configure-to-continue": "تنظیم {{name}} برای ادامه",
+      "configure-provider": "تنظیم {{name}}",
+      "setup-credentials":
+        "برای استفاده از {{name}} به عنوان مقصد، اطلاعات مورد نیاز را وارد کنید.",
+      cancel: "لغو کردن",
+      "save-settings": "ذخیره تنظیمات",
+      "toast-save-failed": "عدم موفقیت در ذخیره تنظیمات: {{error}}",
+    },
+    "router-selection": {
+      "loading-routers": "بارگذاری روترهای سفارشی...",
+      "no-routers-prefix-settings": "هنوز هیچ روتر مدل‌دار پیکربندی نشده است.",
+      "no-routers-prefix-workspace": "هیچ روتری با تنظیمات خاص وجود ندارد.",
+      "no-routers-link": "یک نمونه را در تنظیمات روتر ایجاد کنید.",
+      "model-router-label": "روتر نمونه",
+      "select-router": "یک روتر را انتخاب کنید",
+      "select-description":
+        "انتخاب کنید که کدام روتر برای این محیط کاری باید استفاده شود.",
+      "no-routers-chat":
+        "هیچ روتر تنظیم نشده است. یک روتر را در قسمت تنظیمات > ارائه دهندگان هوش مصنوعی > روتر مدل ایجاد کنید.",
+      "rule-count": "(قوانین {{count}})",
+    },
+    metrics: {
+      "model-router-default": "روتر نمونه",
+    },
+    chat: {
+      "select-router-error": "یک روتر را انتخاب کنید",
+      "invalid-model": "انتخاب مدل نامعتبر",
+      "routed-to": "به {{model}} ارسال شده، مربوط به <route> و </route>",
+      "routed-to-rule":
+        "به <route>{{model}}</route> از طریق <rule>{{ruleTitle}}</rule> ارسال شد.",
     },
   },
 };

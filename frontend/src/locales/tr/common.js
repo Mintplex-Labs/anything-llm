@@ -110,6 +110,7 @@ const TRANSLATIONS = {
       telegram: "Telegram",
     },
     "scheduled-jobs": "Planlanan İşler",
+    "model-router": "Model Router",
   },
   login: {
     "multi-user": {
@@ -1715,6 +1716,184 @@ const TRANSLATIONS = {
       timed_out: "Zaman aşımı",
       running: "Koşmak",
       queued: "Bekleme halinde",
+    },
+  },
+  "model-router": {
+    title: "Model Router'ler",
+    description:
+      "Model yönlendiriciler, belirli koşullara göre sohbet mesajlarını otomatik olarak farklı LLM sağlayıcılarına ve modellere yönlendirmek için kurallar tanımlamanıza olanak tanır.",
+    table: {
+      name: "Ad",
+      fallback: "Yedek çözüm",
+      rules: "Kurallar",
+      workspaces: "Çalışma alanları",
+    },
+    "no-routers": "Şu anda herhangi bir model yönlendirici bulunmamaktadır.",
+    "empty-description":
+      "Henüz herhangi bir yönlendirici yapılandırılmamış. Başlamak için bir tane oluşturun.",
+    "new-router-button": "Yeni Router",
+    "delete-confirm":
+      "Emin misiniz, \"{{name}}\" adlı router'ı silmek istiyorsunuz?\n\nBu işlem, tüm kurallarını kaldıracak ve bu router'ı kullanan tüm çalışma alanlarını bağlantısını kesecektir.\n\nBu işlem geri alınamaz.",
+    "toast-deleted": "Router silindi",
+    "toast-delete-failed": "Router'ın silinmesi başarısız oldu: {{error}}",
+    "new-router": {
+      title: "Yeni bir model yönlendirici oluşturun",
+      name: "Ad",
+      "name-placeholder": "Örneğin, Maliyet Optimizasyonu",
+      description: "Açıklama",
+      "description-placeholder": "İsteğe bağlı açıklama",
+      "fallback-label": "Ana Sağlayıcı ve Model",
+      "fallback-description":
+        "Kullanılırken, hiçbir yönlendirme kuralı eşleşmediğinde. Ayrıca, LLM tarafından sınıflandırılan kuralların değerlendirilmesinde de kullanılır.",
+      "cooldown-label": "Önbellek Soğuma Süresi (saniye)",
+      "cooldown-help":
+        "Yol seçimi kararı, kuralların yeniden değerlendirilmeden önce ne kadar süre boyunca önbelleğe alınır? Bu değeri 0 olarak ayarlamak, önbelleklemenin devre dışı kalmasını sağlar.",
+      "name-required": "İsim zorunludur.",
+      "fallback-required": "Temel sağlayıcı ve model bilgisi gereklidir.",
+      cancel: "İptal et",
+      create: "Router oluştur",
+    },
+    "edit-router": {
+      "back-to-routers": "Model Router'lara geri dön",
+      title: "Router'ı Düzenle: {{name}}",
+      save: "Değişiklikleri Kaydet",
+      "toast-update-failed": "Router'ı güncelleyemedi",
+    },
+    rules: {
+      title: "Yönlendirme Kuralları",
+      "title-with-name": "Ruter Kuralları: {{name}}",
+      description:
+        "Belirleyin, hangi mesajların hangi sağlayıcılara ve modellere gönderileceği, hangi zamanlarda ve nasıl yapılacağı ile ilgili kuralları.",
+      "add-rule": "Kuralı ekle",
+      "delete-confirm": '"{{title}}" kuralını silmek mi?',
+      "toast-delete-failed": "Kural silme işlemi başarısız oldu.",
+      "toast-reorder-failed": "Yeniden sıralama kurallarının uygulanmaması",
+      "no-rules": "Henüz herhangi bir kural belirlenmemiş",
+      "empty-description":
+        "Belirli sağlayıcılara ve modellere mesajları yönlendirmeye başlamak için bir kural ekleyin.",
+      "new-rule-button": "Yeni Kural",
+      "calculated-section-label":
+        "Belirlenen kurallar — öncelik sırasına göre değerlendirilir",
+      "llm-section-label":
+        "LLM kuralları — eğer hiçbir hesaplanmış kural eşleşmiyorsa, toplu olarak değerlendirilir.",
+      "llm-rule-body":
+        'Ardından "<desc>" içindeki "{{description}}" öğesini eşleştirin ve ardından <route>\'ye yönlendirin.',
+      "calculated-no-conditions": "Şart yok — <route>'a giden rota",
+      "calculated-single-condition":
+        'Eğer <prop> {{property}} </prop> {{comparator}} <val> "{{value}}" </val> ise, rotayı <route> {{route}} </route> olarak belirle.',
+      "calculated-multi-condition":
+        "Eğer {{quantifier}} (TAG_0) {{conditions}} (TAG_1) ise, rotayı <route> (PLACEHOLDER_2) __PLACEHOLDER_3__ (TAG_3) olarak belirle.",
+      "comparator-contains": "içerir",
+      "comparator-matches": "Maçlar",
+      "comparator-between": "arasında",
+      "badge-llm": "Büyük Dil Modeli",
+      "badge-calculated": "Hesaplanmış",
+      "aria-drag-to-reorder": "Kaydırarak yeniden düzenleyin",
+      "aria-edit-rule": "Düzenleme kuralı",
+      "aria-delete-rule": "Kuralı sil",
+      "quantifier-any": "HERHANGİ",
+      "quantifier-all": "TÜM",
+    },
+    "rule-form": {
+      "title-label": "Başlık",
+      "rule-type": "Kural Türü",
+      "property-label": "Mülk",
+      "property-select": "Seç",
+      "comparator-label": "Karşılaştırma",
+      "comparator-select": "Seç",
+      "value-label": "Değer",
+      "add-condition": "Koşul ekle",
+      "remove-condition": "Koşulu ortadan kaldır",
+      "conditions-incomplete":
+        "Koşul {{index}} eksik — özellik, karşılaştırma ve değeri belirtin.",
+      "match-description-label": "Maç Açıklaması",
+      "match-description-placeholder":
+        "Örneğin, kullanıcı yasal konular, sözleşmeler veya uyumluluk hakkında bilgi almak istiyor.",
+      "match-description-help":
+        "Bu kuralın hangi durumda uygulanması gerektiğini açıklayın. Bu, LLM'iniz tarafından değerlendirilerek, kullanılıp kullanılmaması belirlenecektir.",
+      "route-to-label": "Sağlayıcıya ve Modelin Yol Haritası",
+      "route-to-description":
+        "Bu kural eşleştiğinde, bu sağlayıcıyı/modeli kullanın.",
+      cancel: "İptal et",
+      saving: "Kaydet...",
+      "update-rule": "Güncelleme Kuralı",
+      "create-rule": "Kural Oluştur",
+      "title-required": "Başlık zorunludur",
+      "toast-save-failed": "Kuralı kaydetme başarısız oldu",
+      "type-calculated-label": "Hesaplanmış",
+      "type-calculated-description":
+        "Mesaj özelliklerine (içerik, token sayısı veya günün saati gibi) göre eşleştirme yapın.",
+      "type-llm-label": "LLM Kategorize Edilmiş",
+      "type-llm-description":
+        "Bir LLM (Büyük Dil Modeli) kullanarak, sağladığınız açıklamaya göre mesajı sınıflandırın.",
+      "prop-prompt-content": "İçerik",
+      "prop-token-count": "Konuşma Token Sayısı",
+      "prop-message-count": "Mesaj Sayısı",
+      "prop-current-hour": "Mevcut Saat (0-23)",
+      "prop-has-image": "Resim eklenmiş mi?",
+      "cmp-contains": "içerir",
+      "cmp-matches-regex": "eşleşmeler (düzenli ifadeler)",
+      "cmp-equals": "eşittir",
+      "cmp-not-equals": "eşit değildir",
+      "cmp-greater-than": "daha büyük",
+      "cmp-greater-than-or-equal": "büyük veya eşit",
+      "cmp-less-than": "daha az",
+      "cmp-less-than-or-equal": "daha az veya eşit",
+      "cmp-between": "(dahil olmak üzere)",
+      "placeholder-between-hour": "Örneğin, 9:17 (sabah 9'dan akşam 5'e kadar)",
+      "placeholder-between-numeric": "Örneğin: 10,50",
+      "placeholder-hour": "Örneğin, 18 (0-23)",
+      "placeholder-message-count": "Örneğin: 10",
+      "placeholder-numeric": "Örneğin, 4000",
+      "placeholder-contains": "örneğin, kod, Python, Rust",
+      "placeholder-matches": "Örneğin: /\\bpython\\b/i",
+      "placeholder-default": "Örneğin, kod",
+      "help-contains":
+        "Virgülle ayrılmış liste — Eğer sorgu içinde belirtilen değerlerden herhangi biri varsa eşleşir (büyük/küçük harf duyarlılığı olmadan).",
+      "help-matches":
+        "Düzenli ifade kalıbı. Büyük/küçük harf duyarlılığını belirtmek için `/pattern/flag`lerini kullanın (varsayılan olarak büyük/küçük harf duyarlılığı devre dışıdır).",
+      "bool-true": "Doğru",
+      "bool-false": "Yanlış",
+    },
+    "provider-picker": {
+      "select-provider": "Satıcıyı seçin",
+      "setup-required": "(Kurulum gerektirir)",
+      "loading-models": "Modeller yükleniyor...",
+      "select-model": "Model seçin",
+      "enter-model": "Model adını girin",
+      "select-provider-first": "Öncelikle bir sağlayıcı seçin.",
+      "configure-to-continue": "{{name}}'ı yapılandırarak devam et",
+      "configure-provider": "{{name}}'ı yapılandırın",
+      "setup-credentials":
+        "Gerekli kimlik bilgilerini girerek {{name}}'ı yönlendirme hedefi olarak kullanın.",
+      cancel: "İptal et",
+      "save-settings": "Ayarları kaydet",
+      "toast-save-failed": "Ayarların kaydedilemedi: {{error}}",
+    },
+    "router-selection": {
+      "loading-routers": "Özel yönlendiricileri yükleniyor...",
+      "no-routers-prefix-settings":
+        "Henüz herhangi bir yönlendirici model yapılandırılmamış.",
+      "no-routers-prefix-workspace":
+        "Hiçbir ağ geçimi modeli yapılandırılmamış.",
+      "no-routers-link": "Model Router ayarlarında bir tane oluşturun.",
+      "model-router-label": "Model Router",
+      "select-router": "Bir yönlendirici seçin",
+      "select-description":
+        "Bu çalışma alanı için hangi yönlendiriciyi kullanacağınızı seçin.",
+      "no-routers-chat":
+        "Hiçbir yönlendirici yapılandırılmamış. Ayarlar > Yapay Zeka Sağlayıcıları > Model Yönlendirici bölümünde bir tane oluşturun.",
+      "rule-count": "({{count}} kuralları)",
+    },
+    metrics: {
+      "model-router-default": "Model Router",
+    },
+    chat: {
+      "select-router-error": "Bir yönlendirici seçin",
+      "invalid-model": "Geçersiz model seçimi",
+      "routed-to": "Yönlendirildi: <route> {{model}} </route>",
+      "routed-to-rule":
+        "Yönlendirildi: <route> aracılığıyla {{model}} üzerinden </route>, <rule> aracılığıyla {{ruleTitle}} üzerinden </rule>",
     },
   },
 };
