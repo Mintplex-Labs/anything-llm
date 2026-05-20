@@ -1056,6 +1056,9 @@ const TRANSLATIONS = {
     chat: {
       "select-router-error": "Select a router",
       "invalid-model": "Invalid model selection",
+      "routed-to": "Routed to <route>{{model}}</route>",
+      "routed-to-rule":
+        "Routed to <route>{{model}}</route> via <rule>{{ruleTitle}}</rule>",
     },
   },
   transcription: {

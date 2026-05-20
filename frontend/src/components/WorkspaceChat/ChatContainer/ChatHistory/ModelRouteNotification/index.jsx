@@ -1,5 +1,6 @@
 import { Shuffle } from "@phosphor-icons/react";
 import RouterAnimation from "@/media/animations/router-animation.webm";
+import { Trans } from "react-i18next";
 
 /**
  * Ephemeral notification shown during streaming when the model router
@@ -16,15 +17,28 @@ export default function ModelRouteNotification({ routedTo, isStreaming }) {
       <div className="rounded-[20px] border border-zinc-700 light:border-slate-300 px-4 py-2 flex items-center gap-2">
         <RouterIcon isStreaming={isStreaming} />
         <span className="text-sm text-zinc-400 light:text-slate-600 whitespace-nowrap">
-          Routed to{" "}
-          <span className="text-zinc-50 light:text-slate-950">
-            {routedTo.model}
-          </span>
-          {routedTo.ruleTitle && (
-            <>
-              {" "}
-              via <span>{routedTo.ruleTitle}</span>
-            </>
+          {routedTo.ruleTitle ? (
+            <Trans
+              i18nKey="model-router.chat.routed-to-rule"
+              values={{
+                model: routedTo.model,
+                ruleTitle: routedTo.ruleTitle,
+              }}
+              components={{
+                route: <span className="text-zinc-50 light:text-slate-950" />,
+                rule: <span />,
+              }}
+            />
+          ) : (
+            <Trans
+              i18nKey="model-router.chat.routed-to"
+              values={{
+                model: routedTo.model,
+              }}
+              components={{
+                span: <span />,
+              }}
+            />
           )}
         </span>
       </div>
@@ -33,11 +47,10 @@ export default function ModelRouteNotification({ routedTo, isStreaming }) {
 }
 
 function RouterIcon({ isStreaming }) {
-  if (!isStreaming) {
+  if (!isStreaming)
     return (
       <Shuffle className="w-4 h-4 text-zinc-50 light:text-slate-950 flex-shrink-0" />
     );
-  }
 
   return (
     <video
