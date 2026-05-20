@@ -206,7 +206,6 @@ class OpenAiLLM {
       throw new Error(
         `OpenAI chat: ${this.model} is not valid for chat completion!`
       );
-    console.log(this.#constructReasoningConfig(reasoningOption));
 
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.openai.responses.create({
