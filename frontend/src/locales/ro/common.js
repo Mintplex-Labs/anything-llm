@@ -584,6 +584,43 @@ const TRANSLATIONS = {
     loading_mcp_servers: "Încărcare servere MCP...",
     app_integrations: "Integrarea aplicațiilor",
     sub_skills: "Abilități specifice",
+    memories: {
+      title: "Amintiri",
+      empty:
+        "Până acum, nu există nicio amintire. După ce interacționați mai mult cu chatbot-ul, veți începe să aveți mai multe amintiri.",
+      empty_cta: "crează o nouă amintire",
+      tab_workspace: "Spațiu de lucru",
+      tab_global: "Global",
+      toggle: {
+        label: "Activează personalizarea",
+        description:
+          "Permite-i asistentului tău să reamintească informații despre tine sau despre acest spațiu de lucru și să le folosească în conversații.",
+      },
+      auto_extraction: {
+        label: "Amintiri automate",
+        description:
+          "Permite-i asistentului să creeze automat amintiri în fundal.",
+      },
+      menu: {
+        edit: "Editează",
+        delete: "Șterge",
+        move_to_global: "Migrarea către nivel global",
+        move_to_workspace: "Mutare către spațiul de lucru",
+      },
+      modal: {
+        create_title: "Creați amintiri",
+        edit_title: "Modifică memoria",
+        create_description:
+          "Amintirile ar trebui să fie formulate într-un singur enunț, clar și concis. De exemplu: „Utilizatorul preferă Python față de JavaScript”.",
+        edit_description: "Actualizați conținutul acestui memorie.",
+        label: "Memorie",
+        placeholder:
+          "De exemplu, numele utilizatorului este Joe, utilizatorul lucrează cu AnythingLLM, etc.",
+        create: "Creați",
+        save: "Salvați",
+        cancel: "Anula",
+      },
+    },
   },
   profile_settings: {
     edit_account: "Editează contul",

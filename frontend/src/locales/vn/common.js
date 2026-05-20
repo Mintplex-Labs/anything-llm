@@ -1191,6 +1191,43 @@ const TRANSLATIONS = {
     loading_mcp_servers: "Đang tải các máy chủ MCP...",
     app_integrations: "Tích hợp ứng dụng",
     sub_skills: "Kỹ năng chuyên môn",
+    memories: {
+      title: "Những kỷ niệm",
+      empty:
+        "Hiện tại chưa có thông tin nào. Sau khi bạn tương tác với chatbot, các thông tin sẽ dần được điền vào.",
+      empty_cta: "tạo ra một ký ức mới",
+      tab_workspace: "Không gian làm việc",
+      tab_global: "Toàn cầu",
+      toggle: {
+        label: "Kích hoạt tùy chỉnh",
+        description:
+          "Cho phép trợ lý của bạn nhớ lại thông tin về bạn hoặc không gian làm việc này và sử dụng chúng trong các cuộc trò chuyện.",
+      },
+      auto_extraction: {
+        label: "Nhớ ôtô",
+        description:
+          "Yêu cầu trợ lý của bạn tự động tạo ra các khoảnh khắc đáng nhớ trong nền.",
+      },
+      menu: {
+        edit: "Chỉnh sửa",
+        delete: "Xóa",
+        move_to_global: "Di chuyển sang cấp toàn cầu",
+        move_to_workspace: "Di chuyển đến không gian làm việc",
+      },
+      modal: {
+        create_title: "Tạo ra ký ức",
+        edit_title: "Chỉnh sửa bộ nhớ",
+        create_description:
+          'Những ghi nhớ nên là một câu ngắn gọn và rõ ràng. Ví dụ: "Người dùng thích Python hơn JavaScript".',
+        edit_description: "Cập nhật nội dung của bộ nhớ này.",
+        label: "Bộ nhớ",
+        placeholder:
+          "Ví dụ: Tên người dùng là Joe, người dùng làm việc trên AnythingLLM, v.v.",
+        create: "Tạo",
+        save: "Lưu",
+        cancel: "Hủy",
+      },
+    },
   },
   profile_settings: {
     edit_account: "Chỉnh sửa Tài khoản",

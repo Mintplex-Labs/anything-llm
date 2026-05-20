@@ -1175,6 +1175,43 @@ const TRANSLATIONS = {
     loading_mcp_servers: "MCP サーバーの読み込み中...",
     app_integrations: "アプリケーション連携",
     sub_skills: "専門スキル",
+    memories: {
+      title: "思い出",
+      empty:
+        "現時点では、記憶はまだありません。チャットボットとのやり取りを続けると、徐々に記憶が埋まっていくでしょう。",
+      empty_cta: "新しい記憶を作成する",
+      tab_workspace: "作業スペース",
+      tab_global: "世界的な",
+      toggle: {
+        label: "パーソナライズ機能を有効にする",
+        description:
+          "アシスタントに、あなたやこの作業スペースに関する情報を思い出させ、会話の中で活用してもらうようにしましょう。",
+      },
+      auto_extraction: {
+        label: "自動生成された思い出",
+        description:
+          "アシスタントに、バックグラウンドで自動的に思い出を作成させるように設定してください。",
+      },
+      menu: {
+        edit: "編集",
+        delete: "削除",
+        move_to_global: "グローバルへ",
+        move_to_workspace: "ワークスペースへ移動",
+      },
+      modal: {
+        create_title: "記憶を創造する",
+        edit_title: "メモリの編集",
+        create_description:
+          "記憶は、簡潔で一文で表現されるべきです。例：「ユーザーはPythonをJavaScriptよりも好む」",
+        edit_description: "この記憶の内容を更新してください。",
+        label: "記憶",
+        placeholder:
+          "例：ユーザー名がジョー、ユーザーが使用しているツールがAnythingLLMなど。",
+        create: "作成する",
+        save: "保存",
+        cancel: "キャンセル",
+      },
+    },
   },
   profile_settings: {
     edit_account: "アカウントを編集",

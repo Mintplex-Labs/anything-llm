@@ -1195,6 +1195,43 @@ const TRANSLATIONS = {
     loading_mcp_servers: "Indlæser MCP-servere...",
     app_integrations: "App-integrationer",
     sub_skills: "Specifikke færdigheder",
+    memories: {
+      title: "Erindringer",
+      empty:
+        "Indtil videre er der ingen minder. Når du interagerer med chatbotten, vil der gradvist opstå flere minder.",
+      empty_cta: "opret et nyt minde",
+      tab_workspace: "Arbejdsområde",
+      tab_global: "Global",
+      toggle: {
+        label: "Aktiver personlig tilpasning",
+        description:
+          "Lad din assistent huske fakta om dig eller dette arbejdsområde, og brug dem i samtaler.",
+      },
+      auto_extraction: {
+        label: "Automatisk hukommelse",
+        description:
+          "Lad din assistent automatisk oprette minder i baggrunden.",
+      },
+      menu: {
+        edit: "Rediger",
+        delete: "Slette",
+        move_to_global: "Flyt til globalt niveau",
+        move_to_workspace: "Flyt til arbejdsområdet",
+      },
+      modal: {
+        create_title: "Opret minde",
+        edit_title: "Rediger hukommelse",
+        create_description:
+          'Huskene bør være en enkelt, præcis sætning. F.eks. "Brugeren foretrækker Python frem for JavaScript".',
+        edit_description: "Opdater indholdet i denne hukommelse.",
+        label: "Hukommelse",
+        placeholder:
+          "f.eks. Brugerens navn er Joe, brugeren arbejder med AnythingLLM, osv.",
+        create: "Opret",
+        save: "Gem",
+        cancel: "Annullér",
+      },
+    },
   },
   profile_settings: {
     edit_account: "Rediger konto",

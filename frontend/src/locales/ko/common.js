@@ -1256,6 +1256,42 @@ const TRANSLATIONS = {
     loading_mcp_servers: "MCP 서버 로딩 중...",
     app_integrations: "앱 통합",
     sub_skills: "세부 기술",
+    memories: {
+      title: "추억",
+      empty:
+        "현재까지 기억은 없습니다. 하지만 챗봇과 상호 작용하면 점차 기억이 채워질 것입니다.",
+      empty_cta: "새로운 기억을 만들다",
+      tab_workspace: "업무 공간",
+      tab_global: "글로벌",
+      toggle: {
+        label: "개인 맞춤 설정 활성화",
+        description:
+          "조수에게 당신이나 이 업무 공간에 대한 정보를 기억하도록 하고, 대화에서 활용하도록 하세요.",
+      },
+      auto_extraction: {
+        label: "자동으로 기록된 기억",
+        description: "비서에게 자동으로 추억을 저장하도록 설정하세요.",
+      },
+      menu: {
+        edit: "편집",
+        delete: "삭제",
+        move_to_global: "글로벌로 확장",
+        move_to_workspace: "워크스페이스로 이동",
+      },
+      modal: {
+        create_title: "기억 만들기",
+        edit_title: "메모리 편집",
+        create_description:
+          '기억은 간결하고 명확한 문장으로 표현해야 합니다. 예: "사용자는 JavaScript보다 Python을 선호합니다"',
+        edit_description: "이 메모의 내용을 업데이트하세요.",
+        label: "기억",
+        placeholder:
+          "예: 사용자의 이름은 조, 사용자는 AnythingLLM에서 근무, 등",
+        create: "만들다",
+        save: "저장",
+        cancel: "취소",
+      },
+    },
   },
   profile_settings: {
     edit_account: "계정 정보 수정",

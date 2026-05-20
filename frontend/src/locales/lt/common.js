@@ -1319,6 +1319,43 @@ const TRANSLATIONS = {
     loading_mcp_servers: "Įkrauname MCP serverius...",
     app_integrations: "Programų integracijos",
     sub_skills: "Pagrindinės įgūdžios",
+    memories: {
+      title: "Atmintys",
+      empty:
+        "Kol kas nėra jokios atminimo. Kai su chatbotu daugiau bendrausite, atminimas bus užpildytas.",
+      empty_cta: "sukurti naują atmintį",
+      tab_workspace: "Darbo zona",
+      tab_global: "Pasaulinis",
+      toggle: {
+        label: "Aaktyvinkite individualizavimą",
+        description:
+          "Leiskite savo asistentui prisiminti faktus apie jus arba šią darbo vietą ir naudoti juos pokalbiuose.",
+      },
+      auto_extraction: {
+        label: "Automatinės atminimo saugojimo sistemos",
+        description:
+          "Įgalinkite savo asistentą automatiškai kurti atminimo, dirbdamas fone.",
+      },
+      menu: {
+        edit: "Redaguoti",
+        delete: "Šalinti",
+        move_to_global: "Perėjimas į pasaulinį lygį",
+        move_to_workspace: "Perkelkite į darbo vietą",
+      },
+      modal: {
+        create_title: "Sukurkite atmintį",
+        edit_title: "Redaguoti atmintį",
+        create_description:
+          'Atmintis turėtų būti vienas, glaustas sakinys. Pavyzdžiui: "Naudotojas preferuoja Pythoną, o ne JavaScriptą".',
+        edit_description: "Atnaujink šios informacijos turinį.",
+        label: "Atmintis",
+        placeholder:
+          "Pavyzdžiui, vartotojo vardas yra Joe, vartotojas dirba „AnythingLLM“ sistemoje ir pan.",
+        create: "Sukurti",
+        save: "Įrašyti",
+        cancel: "Atšaukti",
+      },
+    },
   },
   profile_settings: {
     edit_account: "Redaguoti paskyrą",

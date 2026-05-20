@@ -1311,6 +1311,43 @@ const TRANSLATIONS = {
     loading_mcp_servers: "MCP-Server laden...",
     app_integrations: "Anwendungen und Integrationen",
     sub_skills: "Spezifische Fähigkeiten",
+    memories: {
+      title: "Erinnerungen",
+      empty:
+        "Bisher gibt es keine Erinnerungen. Wenn Sie jedoch mehr mit dem Chatbot interagieren, werden weitere Erinnerungen erstellt oder",
+      empty_cta: "erstellen Sie einen neuen Speicher",
+      tab_workspace: "Arbeitsbereich",
+      tab_global: "Global",
+      toggle: {
+        label: "Personalisierung aktivieren",
+        description:
+          "Ermöglichen Sie Ihrem Assistenten, Informationen über Sie oder diesen Arbeitsbereich zu speichern und diese Informationen in Gesprächen zu verwenden.",
+      },
+      auto_extraction: {
+        label: "Automatische Erinnerungen",
+        description:
+          "Lassen Sie Ihren Assistenten automatisch Erinnerungen erstellen, ohne dass Sie aktiv eingreifen müssen.",
+      },
+      menu: {
+        edit: "Bearbeiten",
+        delete: "Löschen",
+        move_to_global: "Internationalisieren",
+        move_to_workspace: "Wechsel zu Arbeitsbereich",
+      },
+      modal: {
+        create_title: "Erinnerung schaffen",
+        edit_title: "Speicher bearbeiten",
+        create_description:
+          "Erinnerungen sollten eine einzelne, prägnante Aussage sein. Zum Beispiel: „Benutzer bevorzugt Python gegenüber JavaScript“",
+        edit_description: "Aktualisieren Sie den Inhalt dieses Speichers.",
+        label: "Gedächtnis",
+        placeholder:
+          "z.B. Benutzername: Joe, Benutzer arbeitet an AnythingLLM, usw.",
+        create: "Erstellen",
+        save: "Speichern",
+        cancel: "Abbrechen",
+      },
+    },
   },
   profile_settings: {
     edit_account: "Account bearbeiten",
