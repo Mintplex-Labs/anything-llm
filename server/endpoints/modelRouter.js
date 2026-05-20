@@ -60,12 +60,10 @@ function modelRouterEndpoints(app) {
           data,
           user?.id || null
         );
-        if (error) {
-          response.status(400).json({ router, error });
-          return;
-        }
+
+        if (error) return response.status(400).json({ router, error });
         await Telemetry.sendTelemetry("model_router_created");
-        response.status(200).json({ router });
+        return response.status(200).json({ router });
       } catch (e) {
         console.error(e);
         response.sendStatus(500);
@@ -81,12 +79,9 @@ function modelRouterEndpoints(app) {
         const { id } = request.params;
         const data = reqBody(request);
         const { router, error } = await ModelRouter.update(Number(id), data);
-        if (error) {
-          response.status(400).json({ router, error });
-          return;
-        }
+        if (error) return response.status(400).json({ router, error });
         ModelRouterService.getInstance().invalidateRouter(Number(id));
-        response.status(200).json({ router });
+        return response.status(200).json({ router });
       } catch (e) {
         console.error(e);
         response.sendStatus(500);
@@ -101,14 +96,12 @@ function modelRouterEndpoints(app) {
       try {
         const { id } = request.params;
         const success = await ModelRouter.delete(Number(id));
-        if (!success) {
-          response
+        if (!success)
+          return response
             .status(400)
             .json({ success: false, error: "Failed to delete router." });
-          return;
-        }
         ModelRouterService.getInstance().invalidateRouter(Number(id));
-        response.status(200).json({ success: true });
+        return response.status(200).json({ success: true });
       } catch (e) {
         console.error(e);
         response.sendStatus(500);
@@ -130,12 +123,11 @@ function modelRouterEndpoints(app) {
           data,
           user?.id || null
         );
-        if (error) {
-          response.status(400).json({ rule, error });
-          return;
-        }
+        if (error) return response.status(400).json({ rule, error });
+
+        await Telemetry.sendTelemetry("model_router_rule_created");
         ModelRouterService.getInstance().invalidateRouter(routerId);
-        response.status(200).json({ rule });
+        return response.status(200).json({ rule });
       } catch (e) {
         console.error(e);
         response.sendStatus(500);
@@ -150,20 +142,16 @@ function modelRouterEndpoints(app) {
       try {
         const { id } = request.params;
         const { ruleUpdates } = reqBody(request);
-        if (!Array.isArray(ruleUpdates)) {
-          response
+        if (!Array.isArray(ruleUpdates))
+          return response
             .status(400)
             .json({ success: false, error: "ruleUpdates must be an array." });
-          return;
-        }
+
         const { success, error } =
           await ModelRouterRule.reorderRules(ruleUpdates);
-        if (error) {
-          response.status(400).json({ success, error });
-          return;
-        }
+        if (error) return response.status(400).json({ success, error });
         ModelRouterService.getInstance().invalidateRouter(Number(id));
-        response.status(200).json({ success });
+        return response.status(200).json({ success });
       } catch (e) {
         console.error(e);
         response.sendStatus(500);
@@ -182,12 +170,9 @@ function modelRouterEndpoints(app) {
           Number(ruleId),
           data
         );
-        if (error) {
-          response.status(400).json({ rule, error });
-          return;
-        }
+        if (error) return response.status(400).json({ rule, error });
         ModelRouterService.getInstance().invalidateRouter(Number(id));
-        response.status(200).json({ rule });
+        return response.status(200).json({ rule });
       } catch (e) {
         console.error(e);
         response.sendStatus(500);
@@ -202,14 +187,12 @@ function modelRouterEndpoints(app) {
       try {
         const { id, ruleId } = request.params;
         const success = await ModelRouterRule.delete(Number(ruleId));
-        if (!success) {
-          response
+        if (!success)
+          return response
             .status(400)
             .json({ success: false, error: "Failed to delete rule." });
-          return;
-        }
         ModelRouterService.getInstance().invalidateRouter(Number(id));
-        response.status(200).json({ success: true });
+        return response.status(200).json({ success: true });
       } catch (e) {
         console.error(e);
         response.sendStatus(500);

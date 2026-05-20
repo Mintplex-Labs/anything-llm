@@ -140,6 +140,10 @@ const ModelRouter = {
     }
   },
 
+  /**
+   * Get all model routers with their rule and workspace counts.
+   * @returns {Promise<Array<{id: number, name: string, description: string, fallback_provider: string, fallback_model: string, cooldown_seconds: number, createdAt: Date, ruleCount: number, workspaceCount: number}>>}
+   */
   getAllWithCounts: async function () {
     try {
       const routers = await prisma.model_routers.findMany({

@@ -82,10 +82,9 @@ class ModelRouterService {
    */
   invalidateRouter(routerId) {
     const cacheKey = `router:${routerId}`;
-    if (this.routerCache.has(cacheKey)) {
-      this.log(`Invalidated cached router (id: ${routerId})`);
-      this.routerCache.delete(cacheKey);
-    }
+    if (!this.routerCache.has(cacheKey)) return;
+    this.log(`Invalidated cached router (id: ${routerId})`);
+    this.routerCache.delete(cacheKey);
   }
 
   /**
