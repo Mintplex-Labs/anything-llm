@@ -1039,7 +1039,7 @@ const TRANSLATIONS = {
       "toast-configured": "Provider configured successfully",
     },
     "router-selection": {
-      "loading-routers": "Loading routers...",
+      "loading-routers": "Loading custom routers...",
       "no-routers-prefix-settings": "No model routers configured yet.",
       "no-routers-prefix-workspace": "No model routers configured.",
       "no-routers-link": "Create one in Model Router settings",
