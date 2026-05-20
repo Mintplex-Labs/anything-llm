@@ -5,6 +5,7 @@ import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { BookOpen } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
+import System from "@/models/system";
 import WorkspaceRow from "./WorkspaceRow";
 import NewWorkspaceModal from "./NewWorkspaceModal";
 import { useModal } from "@/hooks/useModal";
@@ -57,13 +58,18 @@ function WorkspacesContainer() {
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
   const [workspaces, setWorkspaces] = useState([]);
+  const [deletionProtected, setDeletionProtected] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
-      const _users = await Admin.users();
-      const _workspaces = await Admin.workspaces();
+      const [_users, _workspaces, _settings] = await Promise.all([
+        Admin.users(),
+        Admin.workspaces(),
+        System.keys(),
+      ]);
       setUsers(_users);
       setWorkspaces(_workspaces);
+      setDeletionProtected(_settings?.WorkspaceDeletionProtection === true);
       setLoading(false);
     }
     fetchData();
@@ -110,6 +116,7 @@ function WorkspacesContainer() {
             key={workspace.id}
             workspace={workspace}
             users={users}
+            deletionProtected={deletionProtected}
           />
         ))}
       </tbody>

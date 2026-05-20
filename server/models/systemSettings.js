@@ -497,6 +497,8 @@ const SystemSettings = {
       // Disable View Chat History for the whole instance.
       DisableViewChatHistory:
         "DISABLE_VIEW_CHAT_HISTORY" in process.env || false,
+      WorkspaceDeletionProtection:
+        "WORKSPACE_DELETION_PROTECTION" in process.env || false,
 
       // --------------------------------------------------------
       // Simple SSO Settings
