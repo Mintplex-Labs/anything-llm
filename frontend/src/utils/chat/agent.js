@@ -85,7 +85,9 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
       if (data.content.type === "modelRouteNotification") {
         if (!data.content.routedTo) return prev;
         return [
-          ...prev,
+          ...prev.filter(
+            (msg) => !(msg.role === "assistant" && msg.pending && !msg.content)
+          ),
           {
             uuid: data.content.uuid,
             type: "modelRouteNotification",
