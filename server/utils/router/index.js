@@ -227,16 +227,52 @@ class ModelRouterService {
   // ─────────────────────────────────────────────────────────────────────────────
 
   /**
-   * Check if a route notification should be emitted (i.e., the model actually changed).
-   * Updates the tracked last-notified route if it changed.
+   * Check if a route notification should be emitted.
+   * Notifies when:
+   * - First message routes to a non-fallback model (a rule matched)
+   * - Model changes from one to another
+   * - Falls back from a non-fallback model to fallback
+   *
+   * Does NOT notify when:
+   * - First message uses fallback (just the default behavior)
+   * - Same model as last time
+   *
    * @param {string} key - The route cache key for this user/workspace/thread
-   * @param {{ provider: string, model: string }} route - The resolved route
-   * @returns {boolean} true if the route changed and a notification should fire
+   * @param {{ provider: string, model: string, isFallback: boolean }} route - The resolved route
+   * @returns {boolean} true if a notification should fire
    */
   shouldNotify(key, route) {
     const last = this.lastNotifiedRoute.get(key);
-    if (last && last.provider === route.provider && last.model === route.model)
+
+    // Same model as before — no notification
+    if (
+      last &&
+      last.provider === route.provider &&
+      last.model === route.model
+    ) {
       return false;
+    }
+
+    // First message (no previous route recorded)
+    if (!last) {
+      // Only notify if a rule matched (not just using the fallback default)
+      if (route.isFallback) {
+        // Record it but don't notify — this is just the default
+        this.lastNotifiedRoute.set(key, {
+          provider: route.provider,
+          model: route.model,
+        });
+        return false;
+      }
+      // A rule matched on first message — notify
+      this.lastNotifiedRoute.set(key, {
+        provider: route.provider,
+        model: route.model,
+      });
+      return true;
+    }
+
+    // Model changed — always notify (includes falling back to default)
     this.lastNotifiedRoute.set(key, {
       provider: route.provider,
       model: route.model,

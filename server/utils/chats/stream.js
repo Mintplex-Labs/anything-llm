@@ -64,7 +64,7 @@ async function streamChatWithWorkspace(
   });
 
   if (routerError) {
-    writeResponseChunk(response, {
+    return writeResponseChunk(response, {
       id: uuid,
       type: "abort",
       textResponse: null,
@@ -72,7 +72,6 @@ async function streamChatWithWorkspace(
       close: true,
       error: routerError,
     });
-    return;
   }
 
   if (routingMetadata?.routedTo?.shouldNotify) {
