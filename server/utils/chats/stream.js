@@ -94,8 +94,7 @@ async function streamChatWithWorkspace(
       LLMConnector = router.delegateProvider;
       routingMetadata = router.routingMetadata;
 
-      // Emit routing notification for fresh routing decisions (not cached)
-      if (routingMetadata?.routedTo && !routingMetadata.routedTo.isCached) {
+      if (routingMetadata?.routedTo?.shouldNotify) {
         writeResponseChunk(response, {
           uuid: `${uuid}:route`,
           type: "modelRouteNotification",

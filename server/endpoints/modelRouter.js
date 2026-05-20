@@ -1,6 +1,7 @@
 const { ModelRouter } = require("../models/modelRouter");
 const { ModelRouterRule } = require("../models/modelRouterRule");
 const { Telemetry } = require("../models/telemetry");
+const { ModelRouterService } = require("../utils/router");
 const { reqBody, userFromSession } = require("../utils/http");
 const {
   flexUserRoleValid,
@@ -84,6 +85,7 @@ function modelRouterEndpoints(app) {
           response.status(400).json({ router, error });
           return;
         }
+        ModelRouterService.getInstance().invalidateRouter(Number(id));
         response.status(200).json({ router });
       } catch (e) {
         console.error(e);
@@ -105,6 +107,7 @@ function modelRouterEndpoints(app) {
             .json({ success: false, error: "Failed to delete router." });
           return;
         }
+        ModelRouterService.getInstance().invalidateRouter(Number(id));
         response.status(200).json({ success: true });
       } catch (e) {
         console.error(e);
@@ -121,8 +124,9 @@ function modelRouterEndpoints(app) {
         const { id } = request.params;
         const user = await userFromSession(request, response);
         const data = reqBody(request);
+        const routerId = Number(id);
         const { rule, error } = await ModelRouterRule.create(
-          Number(id),
+          routerId,
           data,
           user?.id || null
         );
@@ -130,6 +134,7 @@ function modelRouterEndpoints(app) {
           response.status(400).json({ rule, error });
           return;
         }
+        ModelRouterService.getInstance().invalidateRouter(routerId);
         response.status(200).json({ rule });
       } catch (e) {
         console.error(e);
@@ -143,6 +148,7 @@ function modelRouterEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
+        const { id } = request.params;
         const { ruleUpdates } = reqBody(request);
         if (!Array.isArray(ruleUpdates)) {
           response
@@ -156,6 +162,7 @@ function modelRouterEndpoints(app) {
           response.status(400).json({ success, error });
           return;
         }
+        ModelRouterService.getInstance().invalidateRouter(Number(id));
         response.status(200).json({ success });
       } catch (e) {
         console.error(e);
@@ -169,7 +176,7 @@ function modelRouterEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
-        const { ruleId } = request.params;
+        const { id, ruleId } = request.params;
         const data = reqBody(request);
         const { rule, error } = await ModelRouterRule.update(
           Number(ruleId),
@@ -179,6 +186,7 @@ function modelRouterEndpoints(app) {
           response.status(400).json({ rule, error });
           return;
         }
+        ModelRouterService.getInstance().invalidateRouter(Number(id));
         response.status(200).json({ rule });
       } catch (e) {
         console.error(e);
@@ -192,7 +200,7 @@ function modelRouterEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
-        const { ruleId } = request.params;
+        const { id, ruleId } = request.params;
         const success = await ModelRouterRule.delete(Number(ruleId));
         if (!success) {
           response
@@ -200,6 +208,7 @@ function modelRouterEndpoints(app) {
             .json({ success: false, error: "Failed to delete rule." });
           return;
         }
+        ModelRouterService.getInstance().invalidateRouter(Number(id));
         response.status(200).json({ success: true });
       } catch (e) {
         console.error(e);

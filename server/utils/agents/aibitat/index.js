@@ -197,7 +197,7 @@ class AIbitat {
     if (
       !messageUuid ||
       !routingMetadata?.routedTo ||
-      routingMetadata.routedTo.isCached
+      !routingMetadata.routedTo.shouldNotify
     )
       return;
     this.socket?.send?.("reportStreamEvent", {
