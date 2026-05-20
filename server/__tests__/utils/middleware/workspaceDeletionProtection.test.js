@@ -37,7 +37,7 @@ describe("workspaceDeletionProtection middleware", () => {
     expect(response.status).toHaveBeenCalledWith(403);
     expect(response.json).toHaveBeenCalledWith({
       success: false,
-      error: "Workspace deletion is protected by the system administrator.",
+      error: "Workspace deletion is blocked by the system administrator.",
     });
   });
 });
