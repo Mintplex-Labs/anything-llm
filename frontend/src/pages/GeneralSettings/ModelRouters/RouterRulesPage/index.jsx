@@ -65,7 +65,7 @@ function Layout({ t, children }) {
         <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
           <button
             onClick={() => navigate(paths.settings.modelRouters())}
-            className="flex items-center gap-x-2 text-zinc-400 light:text-slate-500 hover:text-white light:hover:text-slate-900 text-sm mb-4 transition-colors"
+            className="border-none flex items-center gap-x-2 text-zinc-400 light:text-slate-500 hover:text-white light:hover:text-slate-900 text-sm mb-4 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             {t("model-router.edit-router.back-to-routers")}

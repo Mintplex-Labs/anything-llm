@@ -104,9 +104,6 @@ export default function LLMProviderModelPicker({
     const _settings = await System.keys();
     setSettings(_settings ?? {});
     closeModal();
-    showToast(t("model-router.provider-picker.toast-configured"), "success", {
-      clear: true,
-    });
   }
 
   const selectedLlm = availableProviders.find(

@@ -106,7 +106,7 @@ function Layout({ t, showAction, onAction, children }) {
             {showAction && (
               <button
                 onClick={onAction}
-                className="shrink-0 flex items-center justify-center h-9 px-5 py-2.5 rounded-lg bg-slate-50 text-zinc-950 text-sm font-medium leading-5 hover:opacity-90 transition-opacity duration-200"
+                className="border-none shrink-0 flex items-center justify-center h-9 px-5 py-2.5 rounded-lg bg-slate-50 text-zinc-950 text-sm font-medium leading-5 hover:opacity-90 transition-opacity duration-200"
               >
                 {t("model-router.new-router-button")}
               </button>
@@ -167,7 +167,7 @@ function EmptyState({ onCreateClick, t }) {
       </div>
       <button
         onClick={onCreateClick}
-        className="flex items-center justify-center h-9 px-5 py-2.5 rounded-lg bg-slate-50 text-zinc-950 text-sm font-medium leading-5 hover:opacity-90 transition-opacity duration-200"
+        className="border-none flex items-center justify-center h-9 px-5 py-2.5 rounded-lg bg-slate-50 text-zinc-950 text-sm font-medium leading-5 hover:opacity-90 transition-opacity duration-200"
       >
         {t("model-router.new-router-button")}
       </button>
@@ -222,14 +222,14 @@ function RouterRow({ router, removeRouter, onEdit, showDivider }) {
             aria-label={t("model-router.edit-router.title", {
               name: router.name,
             })}
-            className="text-zinc-400 light:text-slate-500 hover:text-white light:hover:text-slate-900 transition-colors"
+            className="border-none text-zinc-400 light:text-slate-500 hover:text-white light:hover:text-slate-900 transition-colors"
           >
             <PencilSimple size={16} weight="bold" />
           </button>
           <button
             onClick={handleDelete}
             aria-label={t("model-router.toast-deleted")}
-            className="text-zinc-400 light:text-slate-500 hover:text-red-400 light:hover:text-red-500 transition-colors"
+            className="border-none text-zinc-400 light:text-slate-500 hover:text-red-400 light:hover:text-red-500 transition-colors"
           >
             <X size={16} weight="bold" />
           </button>

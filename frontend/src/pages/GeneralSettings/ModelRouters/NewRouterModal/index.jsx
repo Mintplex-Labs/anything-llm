@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { CircleNotch, X } from "@phosphor-icons/react";
 import ModelRouter from "@/models/modelRouter";
 import System from "@/models/system";
-import showToast from "@/utils/toast";
 import ModalWrapper from "@/components/ModalWrapper";
 import LLMProviderModelPicker from "../LLMProviderModelPicker";
 
@@ -57,15 +56,6 @@ export default function NewRouterModal({
     setLoading(false);
 
     if (saved) {
-      showToast(
-        t(
-          isEdit
-            ? "model-router.edit-router.toast-updated"
-            : "model-router.new-router.toast-created"
-        ),
-        "success",
-        { clear: true }
-      );
       onSuccess();
       closeModal();
     } else {

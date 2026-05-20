@@ -103,7 +103,7 @@ function EmptyRulesState({ onCreateRule }) {
       </div>
       <button
         onClick={onCreateRule}
-        className="flex items-center justify-center h-9 px-5 py-2.5 rounded-lg bg-slate-50 text-zinc-950 text-sm font-medium leading-5 hover:opacity-90 transition-opacity duration-200"
+        className="border-none flex items-center justify-center h-9 px-5 py-2.5 rounded-lg bg-slate-50 text-zinc-950 text-sm font-medium leading-5 hover:opacity-90 transition-opacity duration-200"
       >
         {t("model-router.rules.new-rule-button")}
       </button>
@@ -144,12 +144,8 @@ export default function RuleBuilder({
     )
       return;
     const { success } = await ModelRouterAPI.deleteRule(routerId, rule.id);
-    if (success) {
-      showToast(t("model-router.rules.toast-deleted"), "info");
-      onRulesChanged();
-    } else {
-      showToast(t("model-router.rules.toast-delete-failed"), "error");
-    }
+    if (success) onRulesChanged();
+    else showToast(t("model-router.rules.toast-delete-failed"), "error");
   };
 
   const handleToggle = async (rule) => {
@@ -185,11 +181,8 @@ export default function RuleBuilder({
       routerId,
       ruleUpdates
     );
-    if (success) {
-      onRulesChanged();
-    } else {
-      showToast(t("model-router.rules.toast-reorder-failed"), "error");
-    }
+    if (success) onRulesChanged();
+    else showToast(t("model-router.rules.toast-reorder-failed"), "error");
   };
 
   const hasRules = rules && rules.length > 0;
@@ -210,7 +203,7 @@ export default function RuleBuilder({
         {hasRules && (
           <button
             onClick={openCreate}
-            className="shrink-0 flex items-center justify-center h-9 px-5 py-2.5 rounded-lg bg-slate-50 text-zinc-950 text-sm font-medium leading-5 hover:opacity-90 transition-opacity duration-200"
+            className="border-none shrink-0 flex items-center justify-center h-9 px-5 py-2.5 rounded-lg bg-slate-50 text-zinc-950 text-sm font-medium leading-5 hover:opacity-90 transition-opacity duration-200"
           >
             {t("model-router.rules.add-rule")}
           </button>

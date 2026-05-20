@@ -110,13 +110,6 @@ export default function RuleForm({
 
     setLoading(false);
     if (result.rule) {
-      showToast(
-        isEditing
-          ? t("model-router.rule-form.toast-updated")
-          : t("model-router.rule-form.toast-created"),
-        "success",
-        { clear: true }
-      );
       onSaved();
       closeModal();
     } else {

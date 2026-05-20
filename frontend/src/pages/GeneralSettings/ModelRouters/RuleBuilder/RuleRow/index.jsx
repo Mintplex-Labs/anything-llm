@@ -1,6 +1,7 @@
 import { Trans, useTranslation } from "react-i18next";
 import { Trash, PencilSimple, DotsSixVertical } from "@phosphor-icons/react";
 import { SimpleToggleSwitch } from "@/components/lib/Toggle";
+import truncate from "truncate";
 
 const COMPARATOR_SYMBOLS = {
   gt: ">",
@@ -110,7 +111,7 @@ function LLMRuleBody({ rule }) {
       <Trans
         i18nKey="model-router.rules.llm-rule-body"
         values={{
-          description: rule.description,
+          description: truncate(rule.description, 100),
           route: `${rule.route_provider}/${rule.route_model}`,
         }}
         components={{
@@ -174,7 +175,7 @@ function CalculatedRuleBody({ rule }) {
     .map(
       (c) => `${c.property} ${getComparatorLabel(t, c.comparator)} "${c.value}"`
     )
-    .join(", ");
+    .join(" AND ");
 
   return (
     <p className="text-sm font-medium leading-5 text-zinc-400 light:text-slate-500 truncate">
@@ -182,7 +183,7 @@ function CalculatedRuleBody({ rule }) {
         i18nKey="model-router.rules.calculated-multi-condition"
         values={{
           quantifier: t(`model-router.rules.quantifier-${quantifier}`),
-          conditions: conditionsSummary,
+          conditions: truncate(conditionsSummary, 100),
           route,
         }}
         components={{
