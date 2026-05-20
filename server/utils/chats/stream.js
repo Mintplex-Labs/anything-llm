@@ -229,9 +229,13 @@ async function streamChatWithWorkspace(
 
   // Compress & Assemble message to ensure prompt passes token limit with room for response
   // and build system messages based on inputs and history.
+  const systemPrompt = await chatPrompt(workspace, user, {
+    prompt: updatedMessage,
+    rawHistory,
+  });
   const messages = await LLMConnector.compressMessages(
     {
-      systemPrompt: await chatPrompt(workspace, user),
+      systemPrompt,
       userPrompt: updatedMessage,
       contextTexts,
       chatHistory,

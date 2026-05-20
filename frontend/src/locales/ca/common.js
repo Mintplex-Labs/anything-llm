@@ -1406,6 +1406,43 @@ const TRANSLATIONS = {
     loading_mcp_servers: "Carregant servidors MCP...",
     app_integrations: "Integracions d'aplicacions",
     sub_skills: "Habilitats específiques",
+    memories: {
+      title: "Recordos",
+      empty:
+        "Aquesta és la primera interacció. Amb més interaccions amb el bot, es podran afegir més records.",
+      empty_cta: "crear un nou record",
+      tab_workspace: "Espai de treball",
+      tab_global: "Global",
+      toggle: {
+        label: "Activar la personalització",
+        description:
+          "Permiteu que el vostre assistent recordi fets sobre vosaltres o sobre aquest espai de treball i els utilitzi en les converses.",
+      },
+      auto_extraction: {
+        label: "Memòries automàtiques",
+        description:
+          "Deixa que el teu assistent creï automàticament memòries de fons.",
+      },
+      menu: {
+        edit: "Editar",
+        delete: "Eliminar",
+        move_to_global: "Passar a nivell global",
+        move_to_workspace: "Canviar a l'espai de treball",
+      },
+      modal: {
+        create_title: "Crea un record",
+        edit_title: "Editar memòria",
+        create_description:
+          'Els records han de ser una única declaració concisa. Per exemple: "L\'usuari prefereix Python a JavaScript".',
+        edit_description: "Actualitza el contingut d'aquesta memòria.",
+        label: "Memòria",
+        placeholder:
+          "Per exemple, el nom de l'usuari és Joe, l'usuari treballa a AnythLLM, etc.",
+        create: "Crear",
+        save: "Guarda",
+        cancel: "Cancel·lar",
+      },
+    },
   },
   profile_settings: {
     edit_account: "Edita el compte",

@@ -1203,6 +1203,43 @@ const TRANSLATIONS = {
     loading_mcp_servers: "MCP-servers worden geladen...",
     app_integrations: "Integraties met apps",
     sub_skills: "Specifieke vaardigheden",
+    memories: {
+      title: "Herinneringen",
+      empty:
+        "Tot nu toe zijn er geen herinneringen. Naarmate je meer interactie hebt met de chatbot, zullen er meer herinneringen worden gevuld.",
+      empty_cta: "creëer een nieuwe herinnering",
+      tab_workspace: "Werkplek",
+      tab_global: "Wereldwijd",
+      toggle: {
+        label: "Activeer personalisatie",
+        description:
+          "Laat uw assistent informatie over u of deze werkplek onthouden en deze gebruiken in gesprekken.",
+      },
+      auto_extraction: {
+        label: "Automatische herinneringen",
+        description:
+          "Laat uw assistent automatisch herinneringen creëren in de achtergrond.",
+      },
+      menu: {
+        edit: "Bewerk",
+        delete: "Verwijderen",
+        move_to_global: "Ga naar Global",
+        move_to_workspace: "Ga naar het werkgebied",
+      },
+      modal: {
+        create_title: "Creëer een herinnering",
+        edit_title: "Bewerk geheugen",
+        create_description:
+          'Herinneringen moeten een enkele, beknopte uitspraak zijn. Bijvoorbeeld: "Gebruiker geeft de voorkeur aan Python boven JavaScript".',
+        edit_description: "Update de inhoud van deze opslag.",
+        label: "Geheugen",
+        placeholder:
+          "bijvoorbeeld: De naam van de gebruiker is Joe, de gebruiker werkt aan AnythingLLM, enz.",
+        create: "Creëren",
+        save: "Opslaan",
+        cancel: "Annuleren",
+      },
+    },
   },
   profile_settings: {
     edit_account: "Account bewerken",

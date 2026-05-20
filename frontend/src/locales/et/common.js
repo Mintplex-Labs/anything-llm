@@ -1254,6 +1254,42 @@ const TRANSLATIONS = {
     loading_mcp_servers: "MCP-serverite laadimine...",
     app_integrations: "Rakenduste integreerimine",
     sub_skills: "Alamspetsid",
+    memories: {
+      title: "Mälestused",
+      empty:
+        "Hetkel pole veel mälestusi. Kui sa chatbotiga rohkem interakteerud, siis mälestused hakkavad täituma.",
+      empty_cta: "loo uus mälestus",
+      tab_workspace: "Tööruum",
+      tab_global: "Globaalne",
+      toggle: {
+        label: "Aktiveeri isikupärastamine",
+        description:
+          "Lase oma assistendil meeles pidada fakte sinust või sellest tööruumist ning kasutada neid vestluses.",
+      },
+      auto_extraction: {
+        label: "Automaatne mälestuste salvestamine",
+        description: "Las teie abistaja automaatselt loob mälestusi taustal.",
+      },
+      menu: {
+        edit: "Redigeerimine",
+        delete: "Hüvida",
+        move_to_global: "Liigu ülemaailmsele tasandile",
+        move_to_workspace: "Siirus, tööruumi kasutamine",
+      },
+      modal: {
+        create_title: "Loo mälestus",
+        edit_title: "Muuda mälestust",
+        create_description:
+          'Mõtted peaksid olema lühikesed ja selged. Näiteks: "Kasutaja eelistab Pythoni JavaScripti ees".',
+        edit_description: "Päivitage selle andmealade sisu.",
+        label: "Mälestus",
+        placeholder:
+          "Näiteks kasutaja nimi on Joe, kasutaja töötab ettevõttes AnythingLLM jne.",
+        create: "Loo",
+        save: "Salvesta",
+        cancel: "Katkuda\nTühista",
+      },
+    },
   },
   profile_settings: {
     edit_account: "Muuda kontot",
