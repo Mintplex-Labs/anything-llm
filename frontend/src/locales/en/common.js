@@ -1366,6 +1366,42 @@ const TRANSLATIONS = {
       tool_call_was_approved: "Tool call was approved",
       tool_call_was_rejected: "Tool call was rejected",
     },
+    memories: {
+      title: "Memories",
+      empty:
+        "No memories so far. After you interact with the chatbot more memories will fill in or",
+      empty_cta: "create a new memory",
+      tab_workspace: "Workspace",
+      tab_global: "Global",
+      toggle: {
+        label: "Enable Personalization",
+        description:
+          "Allow your assistant to recall facts about you or this workspace and use them in conversations",
+      },
+      auto_extraction: {
+        label: "Automatic Memories",
+        description:
+          "Have your assistant automatically create memories in the background",
+      },
+      menu: {
+        edit: "Edit",
+        delete: "Delete",
+        move_to_global: "Move to Global",
+        move_to_workspace: "Move to Workspace",
+      },
+      modal: {
+        create_title: "Create Memory",
+        edit_title: "Edit Memory",
+        create_description:
+          'Memories should be a single, concise statement. e.g. "User prefers Python over JavaScript"',
+        edit_description: "Update the content of this memory.",
+        label: "Memory",
+        placeholder: "e.g. User's name is Joe, User works on AnythingLLM, etc.",
+        create: "Create",
+        save: "Save",
+        cancel: "Cancel",
+      },
+    },
   },
   profile_settings: {
     edit_account: "Edit Account",

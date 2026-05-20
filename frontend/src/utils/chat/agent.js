@@ -2,6 +2,7 @@ import { v4 } from "uuid";
 import { safeJsonParse } from "../request";
 import { API_BASE } from "../constants";
 import { useEffect, useState } from "react";
+import { emitAssistantMessageCompleteEvent } from "@/components/contexts/TTSProvider";
 import { THREAD_RENAME_EVENT } from "@/components/Sidebar/ActiveWorkspaces/ThreadContainer";
 
 export const AGENT_SESSION_START = "agentSessionStart";
@@ -72,6 +73,10 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
     // Enable agent streaming for the next message so we can handle streaming or non-streaming responses
     // If we get this message we know the provider supports agentic streaming
     socket.supportsAgentStreaming = true;
+
+    // trigger TTS auto-play
+    if (data.content?.type === "chatId" && data.content?.chatId)
+      emitAssistantMessageCompleteEvent(data.content.chatId);
 
     return setChatHistory((prev) => {
       if (data.content.type === "removeStatusResponse")

@@ -347,7 +347,12 @@ class EphemeralAgentHandler extends AgentHandler {
 
     this.aibitat.agent(
       WORKSPACE_AGENT.name,
-      await WORKSPACE_AGENT.getDefinition(this.provider, this.#workspace, user)
+      await WORKSPACE_AGENT.getDefinition(
+        this.provider,
+        this.#workspace,
+        user,
+        this.#prompt
+      )
     );
 
     this.#funcsToLoad = [
@@ -570,15 +575,25 @@ class EphemeralEventListener extends EventEmitter {
    */
   packMessages() {
     const thoughts = [];
+    const outputs = [];
     let textResponse = null;
     for (let msg of this.messages) {
-      if (msg.type !== "statusResponse") {
-        textResponse = msg.content;
-      } else {
+      if (msg.type === "statusResponse") {
         thoughts.push(msg.content);
+        continue;
       }
+
+      if (msg.type === "fileDownloadCard") {
+        outputs.push(msg.content);
+        continue;
+      }
+
+      // All other message types are treated as the text response
+      // This preserves original behavior where any non-statusResponse message
+      // sets the textResponse
+      textResponse = msg.content;
     }
-    return { thoughts, textResponse };
+    return { thoughts, textResponse, outputs };
   }
 
   /**
@@ -614,6 +629,16 @@ class EphemeralEventListener extends EventEmitter {
           close: false,
           error: null,
           animate: true,
+        });
+      }
+
+      if (data.type === "fileDownloadCard") {
+        return writeResponseChunk(response, {
+          id: uuid,
+          type: "fileDownload",
+          fileDownload: data.content,
+          close: false,
+          error: null,
         });
       }
 

@@ -1300,6 +1300,42 @@ const TRANSLATIONS = {
     loading_mcp_servers: "Ielāde MCP serverus...",
     app_integrations: "Dienvidligzdas integrācijas",
     sub_skills: "Īpašās prasmes",
+    memories: {
+      title: "Atgādinājumi",
+      empty:
+        "Līdz šim nav atmiņu. Kad jūs vairāk iejiegsas ar šo chatbot, atmiņas automātiski sāks pieaugt.",
+      empty_cta: "izveidot jaunu atmiņu",
+      tab_workspace: "Darba vieta",
+      tab_global: "Vispārīgs",
+      toggle: {
+        label: "Ievērojiet personīgu pielāgošanu",
+        description:
+          "Ļauj savam asistējam atgāstīt informāciju par Tevi vai šo darba vietu un izmantot šo informāciju sarunās.",
+      },
+      auto_extraction: {
+        label: "Automātiskas atmiņas",
+        description: "Ļauj savam asistējam automātiski veidot atmiņas fons.",
+      },
+      menu: {
+        edit: "Rediģēt",
+        delete: "Dzēst",
+        move_to_global: "Migrācija uz globālu",
+        move_to_workspace: "Pārvarieties",
+      },
+      modal: {
+        create_title: "Izveidot atmiņas",
+        edit_title: "Rediģēt atmiņas",
+        create_description:
+          'Atgādinājumi jāizteicas kā vienots, skaidrs paziņojums. Piemēram: "Izmantotājs dod priekšroku Python valodai, nevis JavaScript".',
+        edit_description: "Atjaunini šī atmiņas saturu.",
+        label: "Atmiņa",
+        placeholder:
+          "piemēram, lietotāja vārds ir Jo, lietotājs strādā AnythLLM, utt.",
+        create: "Izveidot",
+        save: "Saglabāt",
+        cancel: "Atcelt",
+      },
+    },
   },
   profile_settings: {
     edit_account: "Rediģēt kontu",

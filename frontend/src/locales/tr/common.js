@@ -1207,6 +1207,43 @@ const TRANSLATIONS = {
     loading_mcp_servers: "MCP sunucularının yüklenmesi...",
     app_integrations: "Uygulama Entegrasyonları",
     sub_skills: "Alt beceriler",
+    memories: {
+      title: "Anılar",
+      empty:
+        "Şimdilik herhangi bir anı oluşmadı. Chatbot ile etkileşiminiz arttıkça, daha fazla anı oluşacaktır.",
+      empty_cta: "yeni bir anı yarat",
+      tab_workspace: "Çalışma alanı",
+      tab_global: "Küresel",
+      toggle: {
+        label: "Kişiselleştirme özelliğini etkinleştirin",
+        description:
+          "Asistanınızın, sizin veya bu çalışma ortamıyla ilgili bilgileri hatırlamasını ve bunları konuşmalarda kullanmasını sağlayın.",
+      },
+      auto_extraction: {
+        label: "Otomatik Anılar",
+        description:
+          "Yardımcınızın, arka planda otomatik olarak anıları kaydetmesini sağlayın.",
+      },
+      menu: {
+        edit: "Düzenle",
+        delete: "Sil",
+        move_to_global: "Küresel ölçeğe geçin",
+        move_to_workspace: "Çalışma Alanına Geç",
+      },
+      modal: {
+        create_title: "Anılar Oluştur",
+        edit_title: "Bellek düzenle",
+        create_description:
+          'Anılar, tek ve öz bir ifade şeklinde olmalıdır. Örneğin: "Kullanıcı, JavaScript yerine Python\'ı tercih ediyor"',
+        edit_description: "Bu belleğin içeriğini güncelleyin.",
+        label: "Bellek",
+        placeholder:
+          "Örneğin, kullanıcının adı Joe, kullanıcı AnythingLLM üzerinde çalışıyor, vb.",
+        create: "Yarat",
+        save: "Kaydet",
+        cancel: "İptal et",
+      },
+    },
   },
   profile_settings: {
     edit_account: "Hesabı Düzenle",

@@ -1115,6 +1115,41 @@ const TRANSLATIONS = {
     loading_mcp_servers: "正在載入 MCP 伺服器...",
     app_integrations: "應用程式整合",
     sub_skills: "細項技能",
+    memories: {
+      title: "回憶",
+      empty:
+        "目前還沒有相關的回憶。當您與聊天機器人互動後，相關的回憶就會逐漸產生。",
+      empty_cta: "創造新的回憶",
+      tab_workspace: "工作空間",
+      tab_global: "全球",
+      toggle: {
+        label: "啟用個人化功能",
+        description:
+          "讓您的助手能夠回憶關於您或這個工作空間的相關資訊，並在對話中使用這些資訊。",
+      },
+      auto_extraction: {
+        label: "自動回憶",
+        description: "請讓您的助理自動在背景中建立記憶",
+      },
+      menu: {
+        edit: "編輯",
+        delete: "刪除",
+        move_to_global: "擴展至全球",
+        move_to_workspace: "遷移至工作空間",
+      },
+      modal: {
+        create_title: "建立回憶",
+        edit_title: "編輯記憶",
+        create_description:
+          "回憶應該簡潔明瞭，用單一的陳述來表達。例如：「使用者更偏好 Python 語言，而非 JavaScript 語言」。",
+        edit_description: "更新此記憶的內容。",
+        label: "記憶",
+        placeholder: "例如：使用者姓名為 Joe，使用者正在使用 AnythingLLM 等。",
+        create: "創造",
+        save: "儲存",
+        cancel: "取消",
+      },
+    },
   },
   profile_settings: {
     edit_account: "編輯帳戶",

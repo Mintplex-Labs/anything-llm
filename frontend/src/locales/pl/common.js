@@ -1304,6 +1304,43 @@ const TRANSLATIONS = {
     loading_mcp_servers: "Ładowanie serwerów MCP...",
     app_integrations: "Integracje z aplikacjami",
     sub_skills: "Specyficzne umiejętności",
+    memories: {
+      title: "Wspomnienia",
+      empty:
+        "Na razie nie ma żadnych wspomnień. Po interakcji z chatbotem, więcej informacji i wspomnień się pojawi.",
+      empty_cta: "stworzyć nową pamięć",
+      tab_workspace: "Przestrzeń robocza",
+      tab_global: "Globalny",
+      toggle: {
+        label: "Włącz personalizację",
+        description:
+          "Pozwól swojemu asystentowi przypominać informacje na temat Ciebie lub tego miejsca pracy i wykorzystywać je podczas rozmów.",
+      },
+      auto_extraction: {
+        label: "Automatyczne wspomnienia",
+        description:
+          "Poproś swojego asystenta o automatyczne tworzenie wspomnień w tle.",
+      },
+      menu: {
+        edit: "Edytuj",
+        delete: "Usuń",
+        move_to_global: "Przejdź do globalnego widoku",
+        move_to_workspace: "Przejdź do przestrzeni roboczej",
+      },
+      modal: {
+        create_title: "Stwórz wspomnienie",
+        edit_title: "Edytuj pamięć",
+        create_description:
+          "Pamiętnik powinien zawierać jedno, zwięzłe stwierdzenie. Na przykład: „Użytkownik preferuje Python zamiast JavaScript”.",
+        edit_description: "Zaktualizuj zawartość tej pamięci.",
+        label: "Pamięć",
+        placeholder:
+          "np. Imię użytkownika to Joe, użytkownik pracuje w firmie AnythingLLM, itp.",
+        create: "Stwórz",
+        save: "Zapisz",
+        cancel: "Anuluj",
+      },
+    },
   },
   profile_settings: {
     edit_account: "Edytuj konto",
