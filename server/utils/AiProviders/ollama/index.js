@@ -267,7 +267,20 @@ class OllamaAILLM {
     ];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = 0.7, reasoningOption = null }
+  ) {
+    const reasoningConfig = {};
+
+    if (reasoningOption !== null) {
+      reasoningConfig.think =
+        reasoningOption === "on"
+          ? true
+          : reasoningOption === "off"
+            ? false
+            : reasoningOption;
+    }
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.client
         .chat({
@@ -275,6 +288,7 @@ class OllamaAILLM {
           stream: false,
           messages,
           keep_alive: this.keepAlive,
+          ...reasoningConfig,
           options: {
             temperature,
             num_ctx: this.promptWindowLimit(),
@@ -320,13 +334,27 @@ class OllamaAILLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = 0.7, reasoningOption = null }
+  ) {
+    const reasoningConfig = {};
+
+    if (reasoningOption !== null) {
+      reasoningConfig.think =
+        reasoningOption === "on"
+          ? true
+          : reasoningOption === "off"
+            ? false
+            : reasoningOption;
+    }
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.client.chat({
         model: this.model,
         stream: true,
         messages,
         keep_alive: this.keepAlive,
+        ...reasoningConfig,
         options: {
           temperature,
           num_ctx: this.promptWindowLimit(),
@@ -478,9 +506,25 @@ class OllamaAILLM {
       const { capabilities = [] } = await this.client.show({
         model: this.model,
       });
+
+      const supportsReasoning = capabilities.includes("thinking");
+      const reasoningOptions = [];
+
+      if (supportsReasoning) {
+        // expose basic toggle values
+        reasoningOptions.push(...["on", "off"]);
+      }
+
+      // As far as i can tell right now the only reasoning model ollama serves
+      // that consumes effort values is gpt-oss
+      if (this.model.includes("gpt-oss")) {
+        reasoningOptions.push(...["low", "medium", "high"]);
+      }
+
       return {
         tools: capabilities.includes("tools") ? true : false,
-        reasoning: capabilities.includes("thinking") ? true : false,
+        reasoning: supportsReasoning,
+        reasoningOptions,
         imageGeneration: false, // we dont have any image generation capabilities for Ollama or anywhere right now.
         vision: capabilities.includes("vision") ? true : false,
       };
