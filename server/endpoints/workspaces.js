@@ -38,6 +38,9 @@ const { purgeDocument } = require("../utils/files/purgeDocument");
 const { getModelTag } = require("./utils");
 const { searchWorkspaceAndThreads } = require("../utils/helpers/search");
 const { workspaceParsedFilesEndpoints } = require("./workspacesParsedFiles");
+const {
+  workspaceDeletionProtection,
+} = require("../utils/middleware/workspaceDeletionProtection");
 
 function workspaceEndpoints(app) {
   if (!app) return;
@@ -270,7 +273,11 @@ function workspaceEndpoints(app) {
 
   app.delete(
     "/workspace/:slug",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      workspaceDeletionProtection,
+    ],
     async (request, response) => {
       try {
         const { slug = "" } = request.params;
@@ -618,12 +625,15 @@ function workspaceEndpoints(app) {
       try {
         const { chatId } = request.params;
         const workspace = response.locals.workspace;
+        const user = await userFromSession(request, response);
         const cacheKey = `${workspace.slug}:${chatId}`;
         const wsChat = await WorkspaceChats.get({
           id: Number(chatId),
           workspaceId: workspace.id,
+          user_id: user?.id,
         });
 
+        if (!wsChat) return response.sendStatus(404);
         const cachedResponse = responseCache.get(cacheKey);
         if (cachedResponse) {
           response.writeHead(200, {

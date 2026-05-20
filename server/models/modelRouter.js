@@ -111,17 +111,14 @@ const ModelRouter = {
           rules: {
             orderBy: { priority: "asc" },
           },
-          _count: {
-            select: { workspaces: true },
-          },
         },
       });
       if (!router) return null;
-      const { _count, rules, ...rest } = router;
+      const workspaceCount = await this.workspaceCount(router.id);
       return {
-        ...rest,
-        rules: rules.map(ModelRouterRule._hydrate),
-        workspaceCount: _count.workspaces,
+        ...router,
+        rules: router.rules.map(ModelRouterRule._hydrate),
+        workspaceCount,
       };
     } catch (error) {
       console.error(error.message);
@@ -151,16 +148,18 @@ const ModelRouter = {
           _count: {
             select: {
               rules: true,
-              workspaces: true,
             },
           },
         },
       });
-      return routers.map(({ _count, ...router }) => ({
-        ...router,
-        ruleCount: _count.rules,
-        workspaceCount: _count.workspaces,
-      }));
+      const results = await Promise.all(
+        routers.map(async ({ _count, ...router }) => ({
+          ...router,
+          ruleCount: _count.rules,
+          workspaceCount: await this.workspaceCount(router.id),
+        }))
+      );
+      return results;
     } catch (error) {
       console.error(error.message);
       return [];

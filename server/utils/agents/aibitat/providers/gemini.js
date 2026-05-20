@@ -207,7 +207,13 @@ class GeminiProvider extends Provider {
         stream: true,
         stream_options: { include_usage: true },
         ...(Array.isArray(functions) && functions?.length > 0
-          ? { tools: this.#formatFunctions(functions), tool_choice: "auto" }
+          ? {
+              tools: this.#formatFunctions(functions),
+              tool_choice: "auto",
+              // AIbitat runs one tool per turn; parallel calls cause a 400
+              // on the next request due to a tool call/result count mismatch.
+              parallel_tool_calls: false,
+            }
           : {}),
       });
 
@@ -236,6 +242,14 @@ class GeminiProvider extends Provider {
 
         if (tool_calls) {
           const toolCall = tool_calls[0];
+          // Defensive fallback if Gemini ignores parallel_tool_calls: false.
+          // Keep the first call only; extra calls would cause a 400 next request.
+          if (completion.functionCall) {
+            this.providerLog(
+              `Discarding parallel tool call (only one tool per turn is supported): ${toolCall?.function?.name}`
+            );
+            continue;
+          }
           completion.functionCall = {
             name: this.prefixToolCall(toolCall.function.name, "strip"),
             call_id: toolCall.id,
@@ -308,7 +322,13 @@ class GeminiProvider extends Provider {
         stream: false,
         messages: this.#formatMessages(messages),
         ...(Array.isArray(functions) && functions?.length > 0
-          ? { tools: this.#formatFunctions(functions), tool_choice: "auto" }
+          ? {
+              tools: this.#formatFunctions(functions),
+              tool_choice: "auto",
+              // AIbitat runs one tool per turn; parallel calls cause a 400
+              // on the next request due to a tool call/result count mismatch.
+              parallel_tool_calls: false,
+            }
           : {}),
       });
 

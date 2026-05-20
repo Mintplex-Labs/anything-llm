@@ -15,6 +15,9 @@ const { Agent } = require("undici");
 // so no additional security is needed on the endpoint directly. Auth is done however by the express
 // middleware prior to leaving the node-side of the application so that is good enough >:)
 class CollectorApi {
+  /** @type {number} - The default collector port */
+  static DEFAULT_COLLECTOR_PORT = 8888;
+
   /** @type {number} - The maximum timeout for extension requests in milliseconds */
   extensionRequestTimeout = 15 * 60_000; // 15 minutes
   /** @type {Agent} - The agent for extension requests */
@@ -23,10 +26,29 @@ class CollectorApi {
     bodyTimeout: this.extensionRequestTimeout,
   });
 
+  /**
+   * Gets the collector port from the environment variables.
+   * If the port is not set, it will fall back to the default port.
+   * If the port is invalid, it will log a warning and return the default port.
+   * @returns {number}
+   */
+  static getCollectorPort() {
+    if (!("COLLECTOR_PORT" in process.env)) return this.DEFAULT_COLLECTOR_PORT;
+    const port = Number(
+      process.env.COLLECTOR_PORT || this.DEFAULT_COLLECTOR_PORT
+    );
+    if (Number.isInteger(port) && port > 0 && port <= 65535) return port;
+
+    console.warn(
+      `Invalid COLLECTOR_PORT "${process.env.COLLECTOR_PORT}". Falling back to ${this.DEFAULT_COLLECTOR_PORT}.`
+    );
+    return this.DEFAULT_COLLECTOR_PORT;
+  }
+
   constructor() {
     const { CommunicationKey } = require("../comKey");
     this.comkey = new CommunicationKey();
-    this.endpoint = `http://0.0.0.0:${process.env.COLLECTOR_PORT || 8888}`;
+    this.endpoint = `http://0.0.0.0:${CollectorApi.getCollectorPort()}`;
   }
 
   log(text, ...args) {

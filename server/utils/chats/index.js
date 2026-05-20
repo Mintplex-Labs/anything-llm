@@ -82,21 +82,30 @@ async function recentChatHistory({
 }
 
 /**
- * Returns the base prompt for the chat. This method will also do variable
- * substitution on the prompt if there are any defined variables in the prompt.
+ * Returns the base prompt for the chat with memories appended (when enabled).
+ * Also does variable substitution on the prompt if there are any defined variables.
  * @param {Object|null} workspace - the workspace object
  * @param {Object|null} user - the user object
- * @returns {Promise<string>} - the base prompt
+ * @param {{prompt?: string, rawHistory?: object[]}} [opts] - current user message + chat history, used for reranking injected memories
+ * @returns {Promise<string>}
  */
-async function chatPrompt(workspace, user = null) {
+async function chatPrompt(workspace, user = null, opts = {}) {
   const { SystemSettings } = require("../../models/systemSettings");
+  const { promptWithMemories } = require("../memories");
   const basePrompt =
     workspace?.openAiPrompt ?? SystemSettings.saneDefaultSystemPrompt;
-  return await SystemPromptVariables.expandSystemPromptVariables(
+  const systemPrompt = await SystemPromptVariables.expandSystemPromptVariables(
     basePrompt,
     user?.id,
     workspace?.id
   );
+  return promptWithMemories({
+    systemPrompt,
+    userId: user?.id ?? null,
+    workspaceId: workspace?.id,
+    prompt: opts.prompt ?? "",
+    rawHistory: opts.rawHistory ?? [],
+  });
 }
 
 // We use this util function to deduplicate sources from similarity searching

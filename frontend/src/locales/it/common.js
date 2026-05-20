@@ -110,6 +110,7 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
+    "scheduled-jobs": "Lavori pianificati",
   },
   login: {
     "multi-user": {
@@ -195,9 +196,9 @@ const TRANSLATIONS = {
           'fornirà risposte <b>solo</b> se il contesto del documento viene trovato.<br />Sarà necessario utilizzare il comando "@agent" per utilizzare gli strumenti.',
       },
       automatic: {
-        title: "Auto",
         description:
           'utilizzerà automaticamente gli strumenti se il modello e il provider supportano la chiamata nativa agli strumenti. Se la chiamata nativa agli strumenti non è supportata, sarà necessario utilizzare il comando "@agent" per utilizzare gli strumenti.',
+        title: "Agente",
       },
     },
     history: {
@@ -334,7 +335,7 @@ const TRANSLATIONS = {
         readActions: "Leggi le azioni",
         writeActions: "Azioni da eseguire",
         warning:
-          "L'accesso al file system può essere pericoloso, in quanto può modificare o eliminare file. Si prega di consultare la <link>documentazione</link> prima di abilitarlo.",
+          "L'accesso al file system può essere pericoloso, in quanto può modificare o eliminare file. Si prega di consultare la <a>documentazione</a> prima di abilitarlo.",
         skills: {
           "read-text-file": {
             title: "Apri file",
@@ -1217,6 +1218,49 @@ const TRANSLATIONS = {
       tool_call_was_rejected:
         "La richiesta di accesso all'attrezzatura è stata rifiutata.",
     },
+    custom_skills: "Competenze personalizzate",
+    agent_flows: "Flussi di agenti",
+    no_tools_found: "Nessuno strumento corrispondente trovato.",
+    loading_mcp_servers: "Inizio caricamento dei server MCP...",
+    app_integrations: "Integrazioni di applicazioni",
+    sub_skills: "Competenze specifiche",
+    memories: {
+      title: "Ricordi",
+      empty:
+        "Al momento, non ci sono ricordi. Tuttavia, interagendo maggiormente con il chatbot, questi si riempiranno di dettagli.",
+      empty_cta: "creare un nuovo ricordo",
+      tab_workspace: "Spazio di lavoro",
+      tab_global: "Globale",
+      toggle: {
+        label: "Attiva la personalizzazione",
+        description:
+          "Permetti al tuo assistente di ricordare informazioni su di te o su questo ambiente di lavoro e di utilizzarle nelle conversazioni.",
+      },
+      auto_extraction: {
+        label: "Ricordi automatici",
+        description:
+          "Chiedete al vostro assistente di creare automaticamente ricordi in background.",
+      },
+      menu: {
+        edit: "Modifica",
+        delete: "Elimina",
+        move_to_global: "Passa a Global",
+        move_to_workspace: "Passa all'area di lavoro",
+      },
+      modal: {
+        create_title: "Crea un ricordo",
+        edit_title: "Modifica la memoria",
+        create_description:
+          'I ricordi dovrebbero essere espressi in una singola frase, concisa. Ad esempio: "L\'utente preferisce Python rispetto a JavaScript".',
+        edit_description: "Aggiorna il contenuto di questa memoria.",
+        label: "Memoria",
+        placeholder:
+          "ad esempio, il nome dell'utente è Joe, l'utente lavora su AnythingLLM, ecc.",
+        create: "Creare",
+        save: "Salva",
+        cancel: "Annulla",
+      },
+    },
   },
   profile_settings: {
     edit_account: "Modifica account",
@@ -1544,6 +1588,168 @@ const TRANSLATIONS = {
       "pending-description":
         "Utenti in attesa di verifica. Confrontare il codice di abbinamento visualizzato qui con quello visualizzato nella loro chat di Telegram.",
       unknown: "Sconosciuto",
+    },
+  },
+  scheduledJobs: {
+    title: "Lavori pianificati",
+    enableNotifications:
+      "Abilitare le notifiche del browser per i risultati delle ricerche di lavoro",
+    description:
+      "Definisci attività di intelligenza artificiale ricorrenti che vengono eseguite su un programma prestabilito. Ogni attività esegue un prompt con strumenti opzionali e salva il risultato per la revisione.",
+    newJob: "Nuovo lavoro",
+    loading: "Caricamento...",
+    emptyTitle: "Al momento non ci sono attività pianificate.",
+    emptySubtitle: "Crea uno per iniziare.",
+    table: {
+      name: "Nome",
+      schedule: "Programma",
+      status: "Stato",
+      lastRun: "Ultima corsa",
+      nextRun: "Prossima corsa",
+      actions: "Azioni",
+    },
+    confirmDelete:
+      "È sicuro che desideri eliminare questa attività programmata?",
+    toast: {
+      deleted: "Lavoro eliminato",
+      triggered: "L'attività è stata avviata correttamente.",
+      triggerFailed: "Non è stato possibile avviare il lavoro.",
+      triggerSkipped: "Sono già in corso i lavori per questo progetto.",
+      killed: "L'attività è stata interrotta con successo.",
+      killFailed: "Non è stato possibile interrompere l'attività lavorativa.",
+    },
+    row: {
+      neverRun: "Non correre mai",
+      viewRuns: "Orari",
+      runNow: "Inizia ora",
+      enable: "Abilitare",
+      disable: "Disattivare",
+      edit: "Modifica",
+      delete: "Elimina",
+    },
+    modal: {
+      titleEdit: "Modifica attività programmata",
+      titleNew: "Nuovo lavoro programmato",
+      nameLabel: "Nome",
+      namePlaceholder: 'ad esempio, "Rassegna giornalistica quotidiana"',
+      promptLabel: "Suggerimento",
+      promptPlaceholder:
+        "L'istruzione per eseguire l'operazione ad ogni esecuzione...",
+      scheduleLabel: "Programma",
+      modeBuilder: "Costruttore",
+      modeCustom: "Personalizzato",
+      cronPlaceholder: "Espressione della cron (ad esempio, 0 9 * * *)",
+      currentSchedule: "Orario attuale:",
+      toolsLabel: "Strumenti (opzionali)",
+      toolsDescription:
+        "Seleziona quali strumenti di automazione possono essere utilizzati per questo lavoro. Se nessuno strumento è selezionato, il lavoro verrà eseguito senza l'utilizzo di alcun strumento.",
+      toolsSearch: "Ricerca",
+      toolsNoResults: "Non sono state trovate corrispondenze.",
+      required: "Necessario",
+      requiredFieldsBanner:
+        "Si prega di compilare tutti i campi obbligatori per creare l'annuncio di lavoro.",
+      cancel: "Annulla",
+      saving: "Risparmio...",
+      updateJob: "Aggiorna l'annuncio di lavoro",
+      createJob: "Creare un'offerta di lavoro",
+      jobUpdated: "Posizione aggiornata",
+      jobCreated: "Posizione creata",
+    },
+    builder: {
+      fallbackWarning:
+        'Questa espressione non può essere modificata visivamente. Seleziona "Personalizzato" per mantenerla, oppure modifica qualsiasi elemento sottostante per sovrascriverla.',
+      run: "Correre",
+      frequency: {
+        minute: "ogni minuto",
+        hour: "a ore",
+        day: "quotidiano",
+        week: "settimanale",
+        month: "mensile",
+      },
+      every: "Ogni",
+      minuteOne: "1 minuto",
+      minuteOther: "{{count}} minuti",
+      atMinute: "A ogni minuto",
+      pastEveryHour: "ogni ora",
+      at: "A",
+      on: "Su",
+      onDay: "In un giorno",
+      ofEveryMonth: "di ogni mese",
+      weekdays: {
+        sun: "Sole",
+        mon: "Mon",
+        tue: "Domenica",
+        wed: "Mercoledì",
+        thu: "Giovedì",
+        fri: "Venerdì",
+        sat: "Sabato",
+      },
+    },
+    runHistory: {
+      back: "Ritorna alle offerte di lavoro",
+      title: "Cronologia: {{name}}",
+      schedule: "Programma:",
+      emptyTitle:
+        "Al momento, non ci sono stati risultati positivi per questa posizione.",
+      emptySubtitle: "Avvia l'operazione e visualizza i risultati.",
+      runNow: "Inizia subito",
+      table: {
+        status: "Stato",
+        started: "Iniziato",
+        duration: "Durata",
+        error: "Errore",
+      },
+      stopJob: "Interrompere l'attività lavorativa",
+    },
+    runDetail: {
+      loading: "Caricamento dei dettagli dell'esecuzione...",
+      notFound: "Comando non trovato.",
+      back: "Indietro",
+      unknownJob: "Posizione non specificata",
+      runHeading: "{{name}} — Esecuzione #{{id}}",
+      duration: "Durata: {{value}}",
+      creating: "Creazione...",
+      threadFailed: "Impossibile creare il thread.",
+      sections: {
+        prompt: "Richiesta",
+        error: "Errore",
+        thinking: "Pensieri ({{count}})",
+        toolCalls: "Chiamate a strumenti ({{count}})",
+        files: "File ({{count}})",
+        response: "Risposta",
+        metrics: "Metriche",
+      },
+      metrics: {
+        promptTokens: "Parole chiave:",
+        completionTokens: "Token di completamento:",
+      },
+      stopJob: "Interruzione del lavoro",
+      killing: "Fermare...",
+      continueInThread: "Continua la conversazione",
+    },
+    toolCall: {
+      arguments: "Argomentazioni:",
+      showResult: "Mostra risultato",
+      hideResult: "Nascondi risultato",
+    },
+    file: {
+      unknown: "File sconosciuto",
+      download: "Scarica",
+      downloadFailed: "Impossibile scaricare il file.",
+      types: {
+        powerpoint: "PowerPoint",
+        pdf: "Documento in formato PDF",
+        word: "Documento Word",
+        spreadsheet: "Foglio di calcolo",
+        generic: "File",
+      },
+    },
+    status: {
+      completed: "Completato",
+      failed: "Fallito",
+      timed_out: "Tempo scaduto",
+      running: "Corsa",
+      queued: "In attesa",
     },
   },
 };

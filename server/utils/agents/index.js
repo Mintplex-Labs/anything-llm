@@ -277,6 +277,10 @@ class AgentHandler {
         if (!process.env.LEMONADE_LLM_BASE_PATH)
           throw new Error("Lemonade base path must be provided to use agents.");
         break;
+      case "minimax":
+        if (!process.env.MINIMAX_API_KEY)
+          throw new Error("Minimax API key must be provided to use agents.");
+        break;
       default:
         throw new Error(
           "No workspace agent provider set. Please set your agent provider in the workspace's settings"
@@ -367,6 +371,8 @@ class AgentHandler {
         return process.env.SAMBANOVA_LLM_MODEL_PREF ?? null;
       case "lemonade":
         return process.env.LEMONADE_LLM_MODEL_PREF ?? null;
+      case "minimax":
+        return process.env.MINIMAX_MODEL_PREF ?? "MiniMax-M2.7";
       default:
         return null;
     }
@@ -661,7 +667,8 @@ class AgentHandler {
     const workspaceAgentDef = await WORKSPACE_AGENT.getDefinition(
       this.provider,
       this.invocation.workspace,
-      user
+      user,
+      this.invocation.prompt
     );
 
     this.aibitat.agent(USER_AGENT.name, userAgentDef);

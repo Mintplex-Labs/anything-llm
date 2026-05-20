@@ -945,6 +945,36 @@ does not extend the close button beyond the viewport. */
   background-color: #cccccc;
 }
 
+/* Scoped to the scheduled jobs tool call card — the default white-scrollbar
+   is tuned for dark surfaces and looks harsh over light backgrounds. */
+.tool-call-scrollbar {
+  scrollbar-width: thin;
+}
+
+[data-theme="light"] .tool-call-scrollbar {
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+[data-theme="light"] .tool-call-scrollbar::-webkit-scrollbar {
+  width: 3px;
+  height: 3px;
+  background-color: transparent;
+}
+
+[data-theme="light"] .tool-call-scrollbar::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+[data-theme="light"] .tool-call-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 4px;
+  border: 2px solid transparent;
+}
+
+[data-theme="light"] .tool-call-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
+}
+
 /* Recharts rendering styles */
 .recharts-text > * {
   fill: #fff;
@@ -1105,4 +1135,28 @@ does not extend the close button beyond the viewport. */
 .checklist-completed {
   -webkit-animation: fadein 0.3s linear forwards;
   animation: fadein 0.3s linear forwards;
+}
+
+/* Form control font fallback for non-Latin scripts */
+button,
+input,
+select,
+textarea {
+  font-family:
+    "plus-jakarta-sans",
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    "Noto Sans",
+    sans-serif,
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+    "Segoe UI Symbol",
+    "Noto Color Emoji" !important;
 }
