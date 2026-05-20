@@ -921,7 +921,6 @@ const TRANSLATIONS = {
     title: "Model Routers",
     description:
       "Model routers let you define rules to automatically route chat messages to different LLM providers and models based on conditions.",
-    "create-router": "Create Router",
     table: {
       name: "Name",
       fallback: "Fallback",
@@ -951,26 +950,12 @@ const TRANSLATIONS = {
       "name-required": "Name is required.",
       "fallback-required": "Primary provider and model are required.",
       cancel: "Cancel",
-      creating: "Creating...",
       create: "Create Router",
-      "toast-created": "Router created successfully",
     },
     "edit-router": {
       "back-to-routers": "Back to Model Routers",
       title: "Edit Router: {{name}}",
-      description: "Update the router settings and fallback provider/model.",
-      name: "Name",
-      "description-label": "Description",
-      "description-placeholder": "Optional description",
-      "fallback-label": "Fallback Provider & Model",
-      "fallback-description":
-        "Used when no routing rule matches. Also used to evaluate LLM-classified rules.",
-      "cooldown-label": "Cache Cooldown (seconds)",
-      "cooldown-help":
-        "How long a routing decision is cached before re-evaluating rules. Set to 0 to disable caching.",
-      saving: "Saving...",
       save: "Save Changes",
-      "toast-updated": "Router updated successfully",
       "toast-update-failed": "Failed to update router",
     },
     rules: {
@@ -980,7 +965,6 @@ const TRANSLATIONS = {
         "Define the rules that determine when and how chat messages go to specific providers and models.",
       "add-rule": "Add Rule",
       "delete-confirm": 'Delete rule "{{title}}"?',
-      "toast-deleted": "Rule deleted",
       "toast-delete-failed": "Failed to delete rule",
       "toast-reorder-failed": "Failed to reorder rules",
       "no-rules": "No rules yet",
@@ -999,8 +983,6 @@ const TRANSLATIONS = {
         'If <prop>{{property}}</prop> {{comparator}} <val>"{{value}}"</val> then route to <route>{{route}}</route>',
       "calculated-multi-condition":
         "If {{quantifier}} of <cond>{{conditions}}</cond> then route to <route>{{route}}</route>",
-      "quantifier-any": "ANY",
-      "quantifier-all": "ALL",
       "comparator-contains": "contains",
       "comparator-matches": "matches",
       "comparator-between": "between",
@@ -1009,10 +991,10 @@ const TRANSLATIONS = {
       "aria-drag-to-reorder": "Drag to reorder",
       "aria-edit-rule": "Edit rule",
       "aria-delete-rule": "Delete rule",
+      "quantifier-any": "ANY",
+      "quantifier-all": "ALL",
     },
     "rule-form": {
-      "edit-title": "Edit Rule",
-      "new-title": "New Rule",
       "title-label": "Title",
       "rule-type": "Rule Type",
       "property-label": "Property",
@@ -1020,9 +1002,6 @@ const TRANSLATIONS = {
       "comparator-label": "Comparator",
       "comparator-select": "Select",
       "value-label": "Value",
-      "logic-label": "Match",
-      "logic-and": "ALL of the following (AND)",
-      "logic-or": "ANY of the following (OR)",
       "add-condition": "Add condition",
       "remove-condition": "Remove condition",
       "conditions-incomplete":
@@ -1039,8 +1018,6 @@ const TRANSLATIONS = {
       "update-rule": "Update Rule",
       "create-rule": "Create Rule",
       "title-required": "Title is required",
-      "toast-updated": "Rule updated",
-      "toast-created": "Rule created",
       "toast-save-failed": "Failed to save rule",
       "type-calculated-label": "Calculated",
       "type-calculated-description":
@@ -1091,7 +1068,6 @@ const TRANSLATIONS = {
       cancel: "Cancel",
       "save-settings": "Save settings",
       "toast-save-failed": "Failed to save settings: {{error}}",
-      "toast-configured": "Provider configured successfully",
     },
     "router-selection": {
       "loading-routers": "Loading custom routers...",
@@ -1515,7 +1491,6 @@ const TRANSLATIONS = {
     see_less: "See Less",
     see_more: "See More",
     preset_reset_description: "Clear your chat history and begin a new chat",
-    preset_exit_description: "Halt the current agent session",
     add_new_preset: " Add New Preset",
     add_new: "Add new",
     edit: "Edit",
