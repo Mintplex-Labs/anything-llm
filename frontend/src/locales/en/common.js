@@ -987,6 +987,28 @@ const TRANSLATIONS = {
       "empty-description":
         "Add a rule to start routing chat messages to specific providers and models.",
       "new-rule-button": "New Rule",
+      "calculated-section-label":
+        "Calculated rules — evaluated first, in priority order",
+      "llm-section-label":
+        "LLM rules — evaluated as a batch if no calculated rule matched",
+      "llm-rule-body":
+        'Match <desc>"{{description}}"</desc> then route to <route>{{route}}</route>',
+      "calculated-no-conditions":
+        "No conditions — route to <route>{{route}}</route>",
+      "calculated-single-condition":
+        'If <prop>{{property}}</prop> {{comparator}} <val>"{{value}}"</val> then route to <route>{{route}}</route>',
+      "calculated-multi-condition":
+        "If {{quantifier}} of <cond>{{conditions}}</cond> then route to <route>{{route}}</route>",
+      "quantifier-any": "ANY",
+      "quantifier-all": "ALL",
+      "comparator-contains": "contains",
+      "comparator-matches": "matches",
+      "comparator-between": "between",
+      "badge-llm": "LLM",
+      "badge-calculated": "Calculated",
+      "aria-drag-to-reorder": "Drag to reorder",
+      "aria-edit-rule": "Edit rule",
+      "aria-delete-rule": "Delete rule",
     },
     "rule-form": {
       "edit-title": "Edit Rule",

@@ -1,17 +1,29 @@
+import { Trans, useTranslation } from "react-i18next";
 import { Trash, PencilSimple, DotsSixVertical } from "@phosphor-icons/react";
 import { SimpleToggleSwitch } from "@/components/lib/Toggle";
 
-const COMPARATOR_LABELS = {
-  contains: "contains",
-  matches: "matches",
+const COMPARATOR_SYMBOLS = {
   gt: ">",
   gte: ">=",
   lt: "<",
   lte: "<=",
   eq: "=",
   neq: "!=",
-  between: "between",
 };
+
+function createComparatorLabels(t) {
+  return {
+    contains: t("model-router.rules.comparator-contains"),
+    matches: t("model-router.rules.comparator-matches"),
+    between: t("model-router.rules.comparator-between"),
+    ...COMPARATOR_SYMBOLS,
+  };
+}
+
+function getComparatorLabel(t, comparator) {
+  const labels = createComparatorLabels(t);
+  return labels[comparator] || comparator;
+}
 
 export default function RuleRow({
   rule,
@@ -21,6 +33,7 @@ export default function RuleRow({
   onToggle,
   dragHandleProps,
 }) {
+  const { t } = useTranslation();
   const isDisabled = !rule.enabled;
 
   return (
@@ -33,7 +46,7 @@ export default function RuleRow({
         <div
           {...dragHandleProps}
           className="cursor-grab shrink-0 text-zinc-400 light:text-slate-500 hover:text-white light:hover:text-slate-700 transition-colors"
-          aria-label="Drag to reorder"
+          aria-label={t("model-router.rules.aria-drag-to-reorder")}
         >
           <DotsSixVertical size={24} weight="bold" />
         </div>
@@ -52,11 +65,11 @@ export default function RuleRow({
           </span>
           {rule.type === "llm" ? (
             <span className="shrink-0 text-[10px] font-medium px-1.5 py-0.5 rounded bg-fuchsia-500/20 text-fuchsia-400 light:bg-fuchsia-100 light:text-fuchsia-700">
-              LLM
+              {t("model-router.rules.badge-llm")}
             </span>
           ) : (
             <span className="shrink-0 text-[10px] font-medium px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 light:bg-blue-100 light:text-blue-700">
-              Calculated
+              {t("model-router.rules.badge-calculated")}
             </span>
           )}
         </div>
@@ -75,14 +88,14 @@ export default function RuleRow({
         <button
           onClick={onEdit}
           className="border-none text-zinc-400 light:text-slate-500 hover:text-white light:hover:text-slate-900 transition-colors"
-          aria-label="Edit rule"
+          aria-label={t("model-router.rules.aria-edit-rule")}
         >
           <PencilSimple size={16} weight="bold" />
         </button>
         <button
           onClick={onDelete}
           className="border-none text-zinc-400 light:text-slate-500 hover:text-red-400 light:hover:text-red-500 transition-colors"
-          aria-label="Delete rule"
+          aria-label={t("model-router.rules.aria-delete-rule")}
         >
           <Trash size={16} weight="bold" />
         </button>
@@ -94,68 +107,91 @@ export default function RuleRow({
 function LLMRuleBody({ rule }) {
   return (
     <p className="text-sm font-medium leading-5 text-zinc-400 light:text-slate-500 truncate">
-      Match{" "}
-      <span className="font-mono text-fuchsia-400 light:text-fuchsia-500">
-        &quot;{rule.description}&quot;
-      </span>{" "}
-      then route to{" "}
-      <span className="text-zinc-200 light:text-slate-700">
-        {rule.route_provider}/{rule.route_model}
-      </span>
+      <Trans
+        i18nKey="model-router.rules.llm-rule-body"
+        values={{
+          description: rule.description,
+          route: `${rule.route_provider}/${rule.route_model}`,
+        }}
+        components={{
+          desc: (
+            <span className="font-mono text-fuchsia-400 light:text-fuchsia-500" />
+          ),
+          route: <span className="text-zinc-200 light:text-slate-700" />,
+        }}
+      />
     </p>
   );
 }
 
 function CalculatedRuleBody({ rule }) {
+  const { t } = useTranslation();
   const conditions = Array.isArray(rule.conditions) ? rule.conditions : [];
-  const routeTo = (
-    <span className="text-zinc-200 light:text-slate-700">
-      {rule.route_provider}/{rule.route_model}
-    </span>
-  );
+  const route = `${rule.route_provider}/${rule.route_model}`;
 
   if (conditions.length === 0) {
     return (
       <p className="text-sm font-medium leading-5 text-zinc-400 light:text-slate-500 truncate">
-        No conditions — route to {routeTo}
+        <Trans
+          i18nKey="model-router.rules.calculated-no-conditions"
+          values={{ route }}
+          components={{
+            route: <span className="text-zinc-200 light:text-slate-700" />,
+          }}
+        />
       </p>
     );
   }
 
   if (conditions.length === 1) {
+    const c = conditions[0];
     return (
       <p className="text-sm font-medium leading-5 text-zinc-400 light:text-slate-500 truncate">
-        If <ConditionText condition={conditions[0]} /> then route to {routeTo}
+        <Trans
+          i18nKey="model-router.rules.calculated-single-condition"
+          values={{
+            property: c.property,
+            comparator: getComparatorLabel(t, c.comparator),
+            value: c.value,
+            route,
+          }}
+          components={{
+            prop: (
+              <span className="font-mono text-blue-400 light:text-blue-500" />
+            ),
+            val: (
+              <span className="font-mono text-blue-400 light:text-blue-500" />
+            ),
+            route: <span className="text-zinc-200 light:text-slate-700" />,
+          }}
+        />
       </p>
     );
   }
 
-  const quantifier = rule.condition_logic === "OR" ? "ANY" : "ALL";
+  const quantifier = rule.condition_logic === "OR" ? "any" : "all";
+  const conditionsSummary = conditions
+    .map(
+      (c) => `${c.property} ${getComparatorLabel(t, c.comparator)} "${c.value}"`
+    )
+    .join(", ");
+
   return (
     <p className="text-sm font-medium leading-5 text-zinc-400 light:text-slate-500 truncate">
-      If {quantifier} of{" "}
-      {conditions.map((c, i) => (
-        <span key={i}>
-          <ConditionText condition={c} />
-          {i < conditions.length - 1 ? ", " : ""}
-        </span>
-      ))}{" "}
-      then route to {routeTo}
+      <Trans
+        i18nKey="model-router.rules.calculated-multi-condition"
+        values={{
+          quantifier: t(`model-router.rules.quantifier-${quantifier}`),
+          conditions: conditionsSummary,
+          route,
+        }}
+        components={{
+          cond: (
+            <span className="font-mono text-blue-400 light:text-blue-500" />
+          ),
+          route: <span className="text-zinc-200 light:text-slate-700" />,
+        }}
+      />
     </p>
-  );
-}
-
-function ConditionText({ condition }) {
-  const label = COMPARATOR_LABELS[condition.comparator] || condition.comparator;
-  return (
-    <>
-      <span className="font-mono text-blue-400 light:text-blue-500">
-        {condition.property}
-      </span>{" "}
-      {label}{" "}
-      <span className="font-mono text-blue-400 light:text-blue-500">
-        &quot;{condition.value}&quot;
-      </span>
-    </>
   );
 }

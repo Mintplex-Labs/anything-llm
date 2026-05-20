@@ -24,10 +24,7 @@ function RulesList({
       {calculatedRules.length > 0 && (
         <div>
           <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 light:text-slate-400 mb-2">
-            {t(
-              "model-router.rules.calculated-section-label",
-              "Calculated rules — evaluated first, in priority order"
-            )}
+            {t("model-router.rules.calculated-section-label")}
           </p>
           <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId="calculated-rules">
@@ -72,10 +69,7 @@ function RulesList({
       {llmRules.length > 0 && (
         <div>
           <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 light:text-slate-400 mb-2">
-            {t(
-              "model-router.rules.llm-section-label",
-              "LLM rules — evaluated as a batch if no calculated rule matched"
-            )}
+            {t("model-router.rules.llm-section-label")}
           </p>
           <div className="flex flex-col gap-y-2">
             {llmRules.map((rule) => (
