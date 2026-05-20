@@ -474,6 +474,20 @@ class AgentHandler {
             : null,
         };
 
+    // Resolve the thread slug from the numeric thread_id so the route cache key
+    // matches the key used everywhere else.
+    let thread = null;
+    if (this.invocation.thread_id) {
+      if (!this._threadSlug) {
+        const { WorkspaceThread } = require("../../models/workspaceThread");
+        const threadRecord = await WorkspaceThread.get({
+          id: this.invocation.thread_id,
+        });
+        this._threadSlug = threadRecord?.slug || null;
+      }
+      thread = this._threadSlug ? { slug: this._threadSlug } : null;
+    }
+
     const router = new AnythingLLMModelRouter(routerWorkspace);
     await router.resolve(
       {
@@ -482,9 +496,7 @@ class AgentHandler {
       },
       {
         user: this.invocation.user_id ? { id: this.invocation.user_id } : null,
-        thread: this.invocation.thread_id
-          ? { slug: this.invocation.thread_id }
-          : null,
+        thread,
       }
     );
 
@@ -774,8 +786,15 @@ class AgentHandler {
 
     // If the workspace uses the model router, attach a resolver so routing
     // is re-evaluated on every agent turn instead of only at initialization.
+    // Skip the first invocation since routing was already resolved during init()
+    // and re-resolving would cause shouldNotify to return false (route already recorded).
     if (this.routingMetadata) {
+      let isFirstCall = true;
       this.aibitat.resolveRoute = async (prompt) => {
+        if (isFirstCall) {
+          isFirstCall = false;
+          return { provider: this.provider, model: this.model };
+        }
         try {
           await this.#resolveRouterProvider(prompt);
           this.aibitat.handlerProps.routingMetadata =
