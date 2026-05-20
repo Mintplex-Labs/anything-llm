@@ -26,6 +26,14 @@ export default function LLMProviderModelPicker({
   const [settings, setSettings] = useState(null);
   const { isOpen, openModal, closeModal } = useModal();
 
+  useEffect(() => {
+    if (defaultProvider && !selectedProvider) setSelectedProvider(defaultProvider);
+  }, [defaultProvider]);
+
+  useEffect(() => {
+    if (defaultModel && !selectedModel) setSelectedModel(defaultModel);
+  }, [defaultModel]);
+
   const availableProviders = AVAILABLE_LLM_PROVIDERS.filter(
     (llm) => !EXCLUDED_PROVIDERS.includes(llm.value)
   );
