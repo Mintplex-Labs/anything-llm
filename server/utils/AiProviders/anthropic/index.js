@@ -185,6 +185,16 @@ class AnthropicLLM {
       },
     ];
   }
+  #constructReasoningConfig(reasoningOption) {
+    return {
+      thinking: {
+        type: reasoningOption ? "adaptive" : "disabled",
+      },
+      output_config: {
+        effort: reasoningOption,
+      },
+    };
+  }
 
   async getChatCompletion(
     messages = null,
@@ -192,15 +202,6 @@ class AnthropicLLM {
   ) {
     await this.assertModelMaxTokens();
     try {
-      const reasoningConfig = {
-        thinking: {
-          type: reasoningOption ? "adaptive" : "disabled",
-        },
-        output_config: {
-          effort: reasoningOption,
-        },
-      };
-
       const systemContent = messages[0].content;
       const result = await LLMPerformanceMonitor.measureAsyncFunction(
         this.anthropic.messages.create({
@@ -209,7 +210,7 @@ class AnthropicLLM {
           system: this.#buildSystemPrompt(systemContent),
           messages: messages.slice(1), // Pop off the system message
           temperature: Number(temperature ?? this.defaultTemp),
-          ...reasoningConfig,
+          ...this.#constructReasoningConfig(reasoningOption),
         })
       );
 
@@ -241,14 +242,6 @@ class AnthropicLLM {
   ) {
     await this.assertModelMaxTokens();
     const systemContent = messages[0].content;
-    const reasoningConfig = {
-      thinking: {
-        type: reasoningOption ? "adaptive" : "disabled",
-      },
-      output_config: {
-        effort: reasoningOption,
-      },
-    };
 
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.anthropic.messages.stream({
@@ -257,7 +250,7 @@ class AnthropicLLM {
         system: this.#buildSystemPrompt(systemContent),
         messages: messages.slice(1), // Pop off the system message
         temperature: Number(temperature ?? this.defaultTemp),
-        ...reasoningConfig,
+        ...this.#constructReasoningConfig(reasoningOption),
       }),
       messages,
       runPromptTokenCalculation: false,
