@@ -131,8 +131,11 @@ class ModelRouterService {
       );
       return null;
     }
+
+    // Refresh TTL on access so follow-up messages keep the route "hot"
+    entry.stickyAt = Date.now();
     this.log(
-      `Sticky route: HIT → ${entry.route.provider}/${entry.route.model} (age: ${Math.round(ageMs / 1000)}s, ttl: ${Math.round((stickyMs - ageMs) / 1000)}s remaining)`
+      `Sticky route: HIT → ${entry.route.provider}/${entry.route.model} (ttl reset, ${Math.round(stickyMs / 1000)}s window renewed)`
     );
     return entry.route;
   }
