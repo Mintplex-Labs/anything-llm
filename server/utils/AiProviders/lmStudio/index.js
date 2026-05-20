@@ -274,14 +274,19 @@ class LMStudioLLM {
 
     const reasoningConfig = {};
 
-    // Because we're using LM Studio open ai compatible api, we have to send
-    // over reasoning_effort values that are compatible
-    if (reasoningOption === "on") {
-      reasoningConfig.reasoning_effort = "low";
-    } else if (reasoningOption === "off") {
-      reasoningConfig.reasoning_effort = "none";
-    } else if (reasoningOption !== null) {
-      reasoningConfig.reasoning_effort = reasoningOption;
+    /*
+     *  `reasoning_effort` expects compatible values, we first convert 'off' and
+     *  'on' to 'none' and 'low'.
+     * 400 Invalid 'reasoning_effort' value: 'arbitrary_string'. Supported values: none, minimal, low, medium, high, xhigh.
+     */
+    const openaiCompatibleReasoningValues = {
+      on: "low",
+      off: "none",
+    };
+
+    if (reasoningOption) {
+      reasoningConfig.reasoning_effort =
+        openaiCompatibleReasoningValues[reasoningOption] ?? reasoningOption;
     }
 
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
@@ -342,9 +347,7 @@ class LMStudioLLM {
           };
 
       const supportsReasoning = "reasoning" in capabilities;
-      const reasoningOptions = supportsReasoning
-        ? capabilities.reasoning?.allowed_options ?? []
-        : [];
+      const reasoningOptions = capabilities.reasoning?.allowed_options ?? [];
 
       return {
         tools: capabilities.trained_for_tool_use,
