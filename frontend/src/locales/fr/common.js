@@ -776,6 +776,18 @@ const TRANSLATIONS = {
             "Le nombre maximal d'outils à sélectionner pour chaque requête. Nous recommandons de définir cette valeur sur une valeur plus élevée pour les modèles de contexte plus importants.",
         },
       },
+      "clarifying-questions": {
+        title:
+          "Permettre à l'agent de poser des questions pour clarifier les points.",
+        "beta-badge": "Bêta",
+        description:
+          "Lorsque cette fonctionnalité est activée, les agents peuvent faire des pauses pour poser des questions de clarification si votre demande est ambiguë.",
+        "max-per-turn": {
+          title: "Nombre maximal de questions par tour",
+          description:
+            "Combien de questions de clarification un agent peut poser lors d'une seule enquête ?",
+        },
+      },
     },
   },
   recorded: {
@@ -1212,6 +1224,21 @@ const TRANSLATIONS = {
       tool_call_was_approved: "La demande d'outils a été approuvée.",
       tool_call_was_rejected:
         "La demande d'utilisation de l'outil a été rejetée.",
+      clarifying_skip: "Laissez l'agent décider.",
+      clarifying_submit: "Soumettre",
+      clarifying_skipped: "Vous laissez l'agent prendre la décision.",
+      clarifying_timeout: "Aucune réponse n'a été soumise dans les délais.",
+      clarifying_pagination: "{{current}} de {{total}}",
+      clarifying_prev_aria: "Question précédente",
+      clarifying_next_aria: "Prochaine question",
+      clarifying_close_aria: "Fermer et passer au suivant",
+      clarifying_other: "Autres",
+      clarifying_other_placeholder: "Saisissez votre réponse",
+      batch_progress: "{{answered}} de {{total}} a répondu",
+      batch_skip_this: "Sautez/Ignorez",
+      batch_submit_all: "Soumettre tout",
+      batch_next: "Suivant",
+      answer_skipped: "[l'utilisateur a manqué]",
     },
     custom_skills: "Compétences spécifiques",
     agent_flows: "Flux des agents",

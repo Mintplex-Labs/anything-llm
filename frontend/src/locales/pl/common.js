@@ -775,6 +775,18 @@ const TRANSLATIONS = {
             "Maksymalna liczba narzędzi, które można wybrać dla każdego zapytania. Zalecamy ustawienie tej wartości na wyższe poziomy dla modeli o większym kontekście.",
         },
       },
+      "clarifying-questions": {
+        title:
+          "Pozwól agentowi zadawać pytania, które pomogą wyjaśnić sytuację.",
+        "beta-badge": "BEETA",
+        description:
+          "Po włączeniu, agenci mogą wstrzymać działanie, aby zadać krótkie, wyjaśniające pytania, jeśli zapytanie jest niejednoznaczne.",
+        "max-per-turn": {
+          title: "Maksymalna liczba pytań na turę",
+          description:
+            "Ile pytań wyjaśniających może zadać agent podczas jednej ankiety?",
+        },
+      },
     },
   },
   recorded: {
@@ -1297,6 +1309,21 @@ const TRANSLATIONS = {
       tool_call_was_approved:
         "Zgłoszenie dotyczące narzędzia zostało zatwierdzone.",
       tool_call_was_rejected: "Żądanie użycia narzędzia zostało odrzucone.",
+      clarifying_skip: "Pozwól agentowi podjąć decyzję",
+      clarifying_submit: "Prześlij",
+      clarifying_skipped: "Pozwól agencji podjąć decyzję.",
+      clarifying_timeout: "Brak odpowiedzi złożonej w odpowiednim terminie.",
+      clarifying_pagination: "{{current}} w {{total}}",
+      clarifying_prev_aria: "Poprzednie pytanie",
+      clarifying_next_aria: "Następne pytanie",
+      clarifying_close_aria: "Zamknij i pomiń",
+      clarifying_other: "Inne",
+      clarifying_other_placeholder: "Wprowadź swoją odpowiedź",
+      batch_progress: "{{answered}} z {{total}} odpowiedział",
+      batch_skip_this: "Przełączyć",
+      batch_submit_all: "Prześlij wszystkie",
+      batch_next: "Następne",
+      answer_skipped: "[użytkownik pominął]",
     },
     custom_skills: "Dostosowane umiejętności",
     agent_flows: "Przepływy agencji",

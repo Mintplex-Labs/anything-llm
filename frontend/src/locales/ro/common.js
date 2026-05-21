@@ -577,6 +577,21 @@ const TRANSLATIONS = {
       tool_call_was_approved: "Cererea de achiziție a fost aprobată.",
       tool_call_was_rejected:
         "Cererea de utilizare a instrumentului a fost respinsă.",
+      clarifying_skip: "Lasă-l pe agent să ia decizia.",
+      clarifying_submit: "Trimite",
+      clarifying_skipped: "Lasă-l pe agent să ia decizia.",
+      clarifying_timeout: "Nu a fost depusă răspunsul în termenul stabilit.",
+      clarifying_pagination: "{{current}} din {{total}}",
+      clarifying_prev_aria: "Întrebarea anterioară",
+      clarifying_next_aria: "Următoarea întrebare",
+      clarifying_close_aria: "Închide și sări",
+      clarifying_other: "Altele",
+      clarifying_other_placeholder: "Introduceți răspunsul",
+      batch_progress: "{{answered}} de la {{total}} a răspuns",
+      batch_skip_this: "Sări peste",
+      batch_submit_all: "Trimiteți toate",
+      batch_next: "Următorul",
+      answer_skipped: "[utilizatorul a sărit peste]",
     },
     custom_skills: "Abilități personalizate",
     agent_flows: "Fluxuri de agenți",
@@ -1265,6 +1280,18 @@ const TRANSLATIONS = {
           title: "Max Tools",
           description:
             "Numărul maxim de instrumente care pot fi selectate pentru fiecare interogare. Recomandăm stabilirea acestui parametru la valori mai mari pentru modelele cu un context mai amplu.",
+        },
+      },
+      "clarifying-questions": {
+        title:
+          "Permite agentului să pună întrebări suplimentare pentru a clarifica anumite aspecte.",
+        "beta-badge": "Versiune de test",
+        description:
+          "Când este activată, agenții pot întrerupe discuția pentru a pune întrebări scurte și clare, dacă solicitarea dumneavoastră este ambiguă.",
+        "max-per-turn": {
+          title: "Numărul maxim de întrebări per tur",
+          description:
+            "Câte întrebări suplimentare poate adresa agentul în cadrul unui singur sondaj.",
         },
       },
     },

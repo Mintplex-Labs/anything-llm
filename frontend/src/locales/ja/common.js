@@ -739,6 +739,18 @@ const TRANSLATIONS = {
             "各クエリで選択できるツール数の上限。大規模なコンテキストモデルを使用する場合は、この値をより高い値に設定することをお勧めします。",
         },
       },
+      "clarifying-questions": {
+        title:
+          "エージェントが、詳細を確認するための質問をしてもらうことを許可する",
+        "beta-badge": "β版",
+        description:
+          "設定が有効になっている場合、エージェントは、指示が曖昧な場合に、簡単な確認のための質問をすることができます。",
+        "max-per-turn": {
+          title: "1ターンあたりの質問数",
+          description:
+            "調査において、担当者が尋ねることができる質問の最大数はいくつですか。",
+        },
+      },
     },
   },
   recorded: {
@@ -1168,6 +1180,21 @@ const TRANSLATIONS = {
       always_allow: "常に、{{skillName}}を確保してください。",
       tool_call_was_approved: "ツールの使用許可が承認されました",
       tool_call_was_rejected: "ツール呼び出しは拒否されました",
+      clarifying_skip: "エージェントに判断を委ねる",
+      clarifying_submit: "送信",
+      clarifying_skipped: "その決定は、エージェントに委ねます。",
+      clarifying_timeout: "指定された時間内に回答が提出されなかった。",
+      clarifying_pagination: "{{current}} は、{{total}} の",
+      clarifying_prev_aria: "前の質問",
+      clarifying_next_aria: "次の質問",
+      clarifying_close_aria: "閉じる、スキップ",
+      clarifying_other: "その他",
+      clarifying_other_placeholder: "回答を入力してください",
+      batch_progress: "{{answered}} は、{{total}} の質問に回答",
+      batch_skip_this: "スキップ",
+      batch_submit_all: "すべてを提出",
+      batch_next: "次",
+      answer_skipped: "[ユーザーがこの項目をスキップしました]",
     },
     custom_skills: "カスタマイズ可能なスキル",
     agent_flows: "エージェント間の流れ",
