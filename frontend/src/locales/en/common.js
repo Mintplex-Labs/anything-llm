@@ -760,16 +760,11 @@ const TRANSLATIONS = {
         title: "Allow agent to ask clarifying questions",
         "beta-badge": "BETA",
         description:
-          "When enabled, agents can pause to ask short clarifying questions if your prompt is ambiguous. Off by default. Not available for API/programmatic agent runs.",
+          "When enabled, agents can pause to ask short clarifying questions if your prompt is ambiguous.",
         "max-per-turn": {
           title: "Max questions per turn",
           description:
-            "How many clarifying questions the agent may ask in a single response. Lower is less interruptive.",
-        },
-        timeout: {
-          title: "Response timeout (seconds)",
-          description:
-            "If the user does not respond within this time, the agent proceeds with its best judgment.",
+            "How many clarifying questions the agent may ask in a single survey.",
         },
       },
     },

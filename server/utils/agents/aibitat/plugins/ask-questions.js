@@ -11,7 +11,6 @@ const VALID_INPUT_TYPES = [
 
 const DEFAULT_MAX_PER_TURN = 3;
 const DEFAULT_TIMEOUT_MS = 120_000;
-const MIN_TIMEOUT_MS = 10_000;
 
 /**
  * Format a result as a numbered transcript so the LLM can map each answer
@@ -46,28 +45,19 @@ function formatAnswersForAgent(questions, result) {
 async function ensureState(aibitat) {
   if (aibitat._clarifyState) return aibitat._clarifyState;
 
-  const [maxPerTurnRaw, timeoutMsRaw] = await Promise.all([
-    SystemSettings.getValueOrFallback(
-      { label: "agent_clarifying_questions_max_per_turn" },
-      String(DEFAULT_MAX_PER_TURN)
-    ),
-    SystemSettings.getValueOrFallback(
-      { label: "agent_clarifying_questions_timeout_ms" },
-      String(DEFAULT_TIMEOUT_MS)
-    ),
-  ]);
+  const maxPerTurnRaw = await SystemSettings.getValueOrFallback(
+    { label: "agent_clarifying_questions_max_per_turn" },
+    String(DEFAULT_MAX_PER_TURN)
+  );
 
   const maxPerTurn = Number(maxPerTurnRaw);
-  const timeoutMs = Number(timeoutMsRaw);
 
   aibitat._clarifyState = {
     asked: 0,
     maxPerTurn: Number.isFinite(maxPerTurn)
       ? Math.max(1, Math.floor(maxPerTurn))
       : DEFAULT_MAX_PER_TURN,
-    timeoutMs: Number.isFinite(timeoutMs)
-      ? Math.max(MIN_TIMEOUT_MS, Math.floor(timeoutMs))
-      : DEFAULT_TIMEOUT_MS,
+    timeoutMs: DEFAULT_TIMEOUT_MS,
   };
   return aibitat._clarifyState;
 }

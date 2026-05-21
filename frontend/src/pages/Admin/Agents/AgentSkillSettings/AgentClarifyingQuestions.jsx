@@ -10,7 +10,6 @@ export default function AgentClarifyingQuestions() {
   const { t } = useTranslation();
   const [enabled, setEnabled] = useState(false);
   const [maxPerTurn, setMaxPerTurn] = useState(3);
-  const [timeoutSeconds, setTimeoutSeconds] = useState(120);
   const [loading, setLoading] = useState(true);
 
   const debouncedUpdateMaxPerTurn = useMemo(
@@ -23,25 +22,11 @@ export default function AgentClarifyingQuestions() {
     []
   );
 
-  const debouncedUpdateTimeout = useMemo(
-    () =>
-      debounce(async (seconds) => {
-        await Admin.updateSystemPreferences({
-          agent_clarifying_questions_timeout_ms: String(
-            Math.max(10, Number(seconds)) * 1000
-          ),
-        });
-      }, 800),
-    []
-  );
-
   useEffect(() => {
     System.keys()
       .then((res) => {
         setEnabled(!!res.AgentClarifyingQuestionsEnabled);
         setMaxPerTurn(parseInt(res.AgentClarifyingQuestionsMaxPerTurn) || 3);
-        const ms = parseInt(res.AgentClarifyingQuestionsTimeoutMs) || 120000;
-        setTimeoutSeconds(Math.round(ms / 1000));
       })
       .finally(() => setLoading(false));
   }, []);
@@ -49,9 +34,8 @@ export default function AgentClarifyingQuestions() {
   useEffect(() => {
     return () => {
       debouncedUpdateMaxPerTurn.cancel();
-      debouncedUpdateTimeout.cancel();
     };
-  }, [debouncedUpdateMaxPerTurn, debouncedUpdateTimeout]);
+  }, [debouncedUpdateMaxPerTurn]);
 
   async function toggleEnabled(next) {
     setEnabled(next);
@@ -102,57 +86,18 @@ export default function AgentClarifyingQuestions() {
               </p>
             </div>
             <input
-              type="text"
-              inputMode="numeric"
+              type="number"
               name="agentClarifyingQuestionsMaxPerTurn"
+              min={1}
               value={maxPerTurn}
               onChange={(e) => {
-                const digitsOnly = e.target.value.replace(/\D/g, "");
-                setMaxPerTurn(digitsOnly);
-                const v = parseInt(digitsOnly, 10);
-                if (Number.isFinite(v) && v >= 1 && v <= 10)
-                  debouncedUpdateMaxPerTurn(v);
+                if (e.target.value < 1) return;
+                debouncedUpdateMaxPerTurn(e.target.value);
+                setMaxPerTurn(parseInt(e.target.value));
               }}
-              onBlur={(e) => {
-                const v = parseInt(e.target.value, 10);
-                if (!Number.isFinite(v) || v < 1) setMaxPerTurn(1);
-                else if (v > 10) setMaxPerTurn(10);
-                else setMaxPerTurn(v);
-              }}
+              onWheel={(e) => e.target.blur()}
               className="border border-white/10 bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-[80px] p-2.5 text-center"
               placeholder="3"
-              autoComplete="off"
-            />
-          </div>
-          <div className="flex items-center gap-x-4">
-            <div className="flex flex-col gap-y-1 flex-1">
-              <label className="block text-md font-medium text-white">
-                {t("agent.settings.clarifying-questions.timeout.title")}
-              </label>
-              <p className="text-xs text-white/60">
-                {t("agent.settings.clarifying-questions.timeout.description")}
-              </p>
-            </div>
-            <input
-              type="text"
-              inputMode="numeric"
-              name="agentClarifyingQuestionsTimeoutSeconds"
-              value={timeoutSeconds}
-              onChange={(e) => {
-                const digitsOnly = e.target.value.replace(/\D/g, "");
-                setTimeoutSeconds(digitsOnly);
-                const v = parseInt(digitsOnly, 10);
-                if (Number.isFinite(v) && v >= 10 && v <= 600)
-                  debouncedUpdateTimeout(v);
-              }}
-              onBlur={(e) => {
-                const v = parseInt(e.target.value, 10);
-                if (!Number.isFinite(v) || v < 10) setTimeoutSeconds(10);
-                else if (v > 600) setTimeoutSeconds(600);
-                else setTimeoutSeconds(v);
-              }}
-              className="border border-white/10 bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-[80px] p-2.5 text-center"
-              placeholder="120"
               autoComplete="off"
             />
           </div>
