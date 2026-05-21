@@ -56,6 +56,7 @@ const Workspace = {
     "agentModel",
     "queryRefusalResponse",
     "vectorSearchMode",
+    "router_id",
   ],
 
   validations: {
@@ -130,6 +131,12 @@ const Workspace = {
       )
         return "default";
       return value;
+    },
+    router_id: (value) => {
+      if ([null, undefined, "", "none"].includes(value)) return null;
+      const id = Number(value);
+      if (isNaN(id)) return null;
+      return id;
     },
   },
 
@@ -243,6 +250,17 @@ const Workspace = {
     if (validatedUpdates?.chatProvider === "default") {
       validatedUpdates.chatProvider = null;
       validatedUpdates.chatModel = null;
+    }
+
+    // When switching to anythingllm-router, chatModel is not used.
+    // When switching away from anythingllm-router, clear router_id.
+    if (validatedUpdates?.chatProvider === "anythingllm-router") {
+      validatedUpdates.chatModel = null;
+    } else if (
+      validatedUpdates?.chatProvider &&
+      validatedUpdates.chatProvider !== "anythingllm-router"
+    ) {
+      validatedUpdates.router_id = null;
     }
 
     return this._update(id, validatedUpdates);
@@ -649,6 +667,30 @@ const Workspace = {
       workspace?.agentProvider ??
       workspace?.chatProvider ??
       process.env.LLM_PROVIDER;
+
+    // Model router delegates to a resolved provider at chat time.
+    // Check the router's fallback provider for tool calling support
+    // as a reasonable proxy for the router's capabilities.
+    if (provider === "anythingllm-router") {
+      const { ModelRouter } = require("./modelRouter");
+      const routerId =
+        workspace?.router_id ||
+        (process.env.MODEL_ROUTER_ID
+          ? Number(process.env.MODEL_ROUTER_ID)
+          : null);
+      if (!routerId) return false;
+      const router = await ModelRouter.get({ id: routerId });
+      if (!router) return false;
+      const fallbackConfig = {
+        provider: router.fallback_provider,
+        model: router.fallback_model,
+      };
+      const fallbackProvider = new AIbitat(fallbackConfig).getProviderForConfig(
+        fallbackConfig
+      );
+      return (await fallbackProvider.supportsNativeToolCalling?.()) ?? false;
+    }
+
     const model =
       workspace?.agentModel ??
       workspace?.chatModel ??

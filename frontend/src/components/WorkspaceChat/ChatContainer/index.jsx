@@ -37,6 +37,8 @@ import { ChatSidebarProvider } from "./ChatSidebar";
 import SourcesSidebar from "./SourcesSidebar";
 import MemoriesSidebar from "./MemoriesSidebar";
 
+const FILTERED_MESSAGE_TYPES = ["modelRouteNotification"];
+
 export default function ChatContainer({
   workspace,
   threadSlug = null,
@@ -112,14 +114,18 @@ export default function ChatContainer({
   }
 
   const regenerateAssistantMessage = (chatId) => {
-    const updatedHistory = chatHistory.slice(0, -1);
-    const lastUserMessage = updatedHistory.slice(-1)[0];
+    // If the previous event was a model route notification, we need to remove it from the history
+    // or else it will overwrite the prompt with `modelRouteNotification` as plaintext.
+    const filteredHistory = chatHistory
+      .slice(0, -1)
+      .filter((msg) => !FILTERED_MESSAGE_TYPES.includes(msg.type));
+    const lastUserMessage = filteredHistory.slice(-1)[0];
     Workspace.deleteChats(workspace.slug, [chatId])
       .then(() =>
         sendCommand({
           text: lastUserMessage.content,
           autoSubmit: true,
-          history: updatedHistory,
+          history: filteredHistory,
           attachments: lastUserMessage?.attachments,
         })
       )

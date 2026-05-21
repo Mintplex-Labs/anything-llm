@@ -9,6 +9,11 @@ const KEY_MAPPING = {
     envKey: "LLM_PROVIDER",
     checks: [isNotEmpty, supportedLLM],
   },
+  // Model Router Settings
+  ModelRouterId: {
+    envKey: "MODEL_ROUTER_ID",
+    checks: [],
+  },
   // OpenAI Settings
   OpenAiKey: {
     envKey: "OPEN_AI_KEY",
@@ -987,6 +992,7 @@ function supportedLLM(input = "") {
     "sambanova",
     "lemonade",
     "minimax",
+    "anythingllm-router",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }

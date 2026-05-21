@@ -16,6 +16,7 @@ import ManageWorkspace from "../../../Modals/ManageWorkspace";
 import { ArrowDown } from "@phosphor-icons/react";
 import debounce from "lodash.debounce";
 import Chartable from "./Chartable";
+import ModelRouteNotification from "./ModelRouteNotification";
 import Workspace from "@/models/workspace";
 import { useParams } from "react-router-dom";
 import paths from "@/utils/paths";
@@ -291,6 +292,25 @@ function buildMessages({
       } else {
         acc.push([props]);
       }
+      return acc;
+    }
+
+    if (props.type === "modelRouteNotification") {
+      const lastMsg = history[history.length - 1];
+      const isLast =
+        index === history.length - 1 ||
+        (index === history.length - 2 &&
+          (lastMsg?.animate || lastMsg?.pending));
+      const isStreaming =
+        isLast &&
+        (index === history.length - 1 || lastMsg?.animate || lastMsg?.pending);
+      acc.push(
+        <ModelRouteNotification
+          key={`route-${props.uuid}`}
+          routedTo={props.routedTo}
+          isStreaming={isStreaming}
+        />
+      );
       return acc;
     }
 

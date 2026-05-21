@@ -44,6 +44,7 @@ import LemonadeLogo from "@/media/llmprovider/lemonade.png";
 import MinimaxLogo from "@/media/llmprovider/minimax.png";
 
 import PreLoader from "@/components/Preloader";
+import ModelRouterOptions from "@/components/LLMSelection/ModelRouterOptions";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
 import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
@@ -87,6 +88,15 @@ import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
 
 export const AVAILABLE_LLM_PROVIDERS = [
+  {
+    name: "Model Router",
+    value: "anythingllm-router",
+    logo: AnythingLLMIcon,
+    options: (settings) => <ModelRouterOptions settings={settings} />,
+    description:
+      "Route messages to different LLM providers based on rules you define.",
+    requiredConfig: [],
+  },
   {
     name: "OpenAI",
     value: "openai",

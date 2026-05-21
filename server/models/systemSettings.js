@@ -490,6 +490,7 @@ const SystemSettings = {
       // --------------------------------------------------------
       LLMProvider: llmProvider,
       LLMModel: getBaseLLMProviderModel({ provider: llmProvider }) || null,
+      ModelRouterId: process.env.MODEL_ROUTER_ID || null,
       ...this.llmPreferenceKeys(),
 
       // --------------------------------------------------------

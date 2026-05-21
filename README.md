@@ -55,8 +55,9 @@ AnythingLLM supports multiple users as well where you can control the access and
 
 ## Cool Features of AnythingLLM
 
-- [Automatic & User Managed Memories](https://docs.anythingllm.com/features/memories)
-- [Scheduled Tasks](https://docs.anythingllm.com/scheduled-jobs/overview)
+- [Dynamic Model Routing](https://docs.anythingllm.com/model-router/overview) - Automatically route chats to the best provider & model for the conversation based on rules you define.
+- [Automatic & User Managed Memories](https://docs.anythingllm.com/features/memories) - Have your LLM remember important information about you or your workspace.
+- [Scheduled Tasks](https://docs.anythingllm.com/scheduled-jobs/overview) - Run recurring tasks or prompts on a cron schedule with full agent capabilities.
 - [Intelligent Skill Selection](https://docs.anythingllm.com/agent/intelligent-tool-selection) Enable **unlimited** tools for your models while reducing token usage by up to 80% per query
 - [No-code AI Agent builder](https://docs.anythingllm.com/agent-flows/overview)
 - [MCP-compatibility](https://docs.anythingllm.com/mcp-compatibility/overview)
