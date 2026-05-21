@@ -291,6 +291,14 @@ class Provider {
           apiKey: process.env.COMETAPI_LLM_API_KEY ?? null,
           ...config,
         });
+      case "futurmix":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://futurmix.ai/v1",
+          },
+          apiKey: process.env.FUTURMIX_API_KEY ?? null,
+          ...config,
+        });
       case "giteeai":
         return new ChatOpenAI({
           configuration: {

@@ -785,6 +785,16 @@ const KEY_MAPPING = {
     checks: [],
   },
 
+  // FuturMix Options
+  FuturMixApiKey: {
+    envKey: "FUTURMIX_API_KEY",
+    checks: [isNotEmpty],
+  },
+  FuturMixModelPref: {
+    envKey: "FUTURMIX_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
   // Z.AI Options
   ZAiApiKey: {
     envKey: "ZAI_API_KEY",
@@ -984,6 +994,7 @@ function supportedLLM(input = "") {
     "dpais",
     "moonshotai",
     "cometapi",
+    "futurmix",
     "foundry",
     "zai",
     "giteeai",
