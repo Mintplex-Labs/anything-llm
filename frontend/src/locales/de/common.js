@@ -779,6 +779,18 @@ const TRANSLATIONS = {
             "Die maximale Anzahl der auszuwählenden Werkzeuge für jede Abfrage. Wir empfehlen, diesen Wert für größere Modelle mit größerem Kontext auf einen höheren Wert einzustellen.",
         },
       },
+      "clarifying-questions": {
+        title:
+          "Ermöglichen Sie dem Vertreter, Nachfragen zu stellen, um Unklarheiten zu beseitigen.",
+        "beta-badge": "TESTVERSION",
+        description:
+          "Wenn die Funktion aktiviert ist, können die Agenten eine kurze, klärende Frage stellen, falls Ihre Anfrage unklar ist.",
+        "max-per-turn": {
+          title: "Maximale Anzahl an Fragen pro Zug",
+          description:
+            "Wie viele Nachfragen darf der Mitarbeiter während einer einzelnen Befragung stellen?",
+        },
+      },
     },
   },
   recorded: {
@@ -1304,6 +1316,21 @@ const TRANSLATIONS = {
       tool_call_was_approved:
         "Die Genehmigung für die Bestellung der Werkzeuge wurde erteilt.",
       tool_call_was_rejected: "Die Anfrage nach dem Werkzeug wurde abgelehnt.",
+      clarifying_skip: "Lassen Sie den Agenten entscheiden.",
+      clarifying_submit: "Absenden",
+      clarifying_skipped: "Sie lassen den Agenten die Entscheidung treffen.",
+      clarifying_timeout: "Keine Antwort wurde rechtzeitig eingereicht.",
+      clarifying_pagination: "{{current}} von {{total}}",
+      clarifying_prev_aria: "Vorherige Frage",
+      clarifying_next_aria: "Nächste Frage",
+      clarifying_close_aria: "Schließen und überspringen",
+      clarifying_other: "Andere",
+      clarifying_other_placeholder: "Geben Sie Ihre Antwort ein",
+      batch_progress: "{{answered}} von {{total}} hat geantwortet",
+      batch_skip_this: "Überspringen",
+      batch_submit_all: "Alle Dokumente einreichen",
+      batch_next: "Nächster",
+      answer_skipped: "[Benutzer übersprungen]",
     },
     custom_skills: "Individuelle Fähigkeiten",
     agent_flows: "Datenströme",

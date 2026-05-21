@@ -767,6 +767,18 @@ const TRANSLATIONS = {
             "Her sorgu için seçilebilecek maksimum araç sayısı. Daha büyük bağlam modelleri için bu değeri daha yüksek bir değere ayarlamayı öneririz.",
         },
       },
+      "clarifying-questions": {
+        title:
+          "Temsilcinin, konuyu daha iyi anlaması için açıklayıcı sorular sormasına izin verin.",
+        "beta-badge": "BETAM",
+        description:
+          "Etkinleştirildiğinde, ajanlar, talimatınız belirsiz olduğu takdirde, kısa açıklayıcı sorular sorarak durabilirler.",
+        "max-per-turn": {
+          title: "Her turda sorulabilecek maksimum soru sayısı",
+          description:
+            "Bir anket sırasında, temsilci tarafından sorulabilecek en fazla sayıda açıklayıcı soru sayısı nedir?",
+        },
+      },
     },
   },
   recorded: {
@@ -1200,6 +1212,21 @@ const TRANSLATIONS = {
       always_allow: "Her zaman {{skillName}}'ı sağlayın.",
       tool_call_was_approved: "Araç talebi onaylandı.",
       tool_call_was_rejected: "Ara çağrısı reddedildi.",
+      clarifying_skip: "Temsilcinin karar vermesine izin verin.",
+      clarifying_submit: "Gönder",
+      clarifying_skipped: "Kararı, temsilcinin belirlemesine izin verin.",
+      clarifying_timeout: "Zamanında yanıt alınamadı.",
+      clarifying_pagination: "{{current}}'ın {{total}}'deki karşılığı",
+      clarifying_prev_aria: "Önceki soru",
+      clarifying_next_aria: "Bir sonraki soru",
+      clarifying_close_aria: "Kapalı ve atla",
+      clarifying_other: "Diğer",
+      clarifying_other_placeholder: "Cevabınızı yazın",
+      batch_progress: "{{answered}}'ın {{total}}'den gelen sorusu yanıtlandı.",
+      batch_skip_this: "Atlamak",
+      batch_submit_all: "Tümünü gönder",
+      batch_next: "Sonra",
+      answer_skipped: "[Kullanıcı atladı]",
     },
     custom_skills: "Özel Beceri",
     agent_flows: "Ajans Akışları",

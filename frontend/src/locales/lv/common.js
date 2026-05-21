@@ -767,6 +767,16 @@ const TRANSLATIONS = {
             "Maksimālais rīku skaits, kas var tikt izvēlts katrai meklēšanai. Mēs iesakām iestatīt šo vērtību, lai iegūtu lielāku kontekstu modelus.",
         },
       },
+      "clarifying-questions": {
+        title: "Ļauj aģentam uzdot skaidrotas jautājumus",
+        "beta-badge": "BETA",
+        description:
+          "Kad tas ir aktivizēts, aģenti var pārtraukt darbību, lai uzdotu īsas, skaidrotas jautājumus, ja jūsu lūdzes formulējums ir neprecīzs.",
+        "max-per-turn": {
+          title: "Maksimālais jautājumu skaits vienā runda",
+          description: "Cik jautājumus aģents var uzdot vienā intervā?",
+        },
+      },
     },
   },
   recorded: {
@@ -1293,6 +1303,21 @@ const TRANSLATIONS = {
       tool_call_was_approved: "Instrumentu pieprasījums tika apstiprināts.",
       tool_call_was_rejected:
         "Pieprasījums par instrumenta izmantošanu tika atgrūstīts.",
+      clarifying_skip: "Ļauj aģentam paņemt lēmumu",
+      clarifying_submit: "Iesniedz",
+      clarifying_skipped: "Jūs atstājiet šo lēmumu aģentam.",
+      clarifying_timeout: "Atbildes netika iesniedzta laikā.",
+      clarifying_pagination: "{{current}} no {{total}}",
+      clarifying_prev_aria: "Iepriekšējais jautājums",
+      clarifying_next_aria: "Nākamais jautājums",
+      clarifying_close_aria: "Aizvērt un pāriet",
+      clarifying_other: "Citi",
+      clarifying_other_placeholder: "Ierakstiet savu atbildi",
+      batch_progress: "{{answered}} no {{total}} atbildēja",
+      batch_skip_this: "Pārvietoties",
+      batch_submit_all: "Iesniedziet visus",
+      batch_next: "Nākamais",
+      answer_skipped: "[lietotājs nepiespēra]",
     },
     custom_skills: "Pielāgotas prasmes",
     agent_flows: "Aģentu plūsmas",

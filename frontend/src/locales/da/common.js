@@ -751,6 +751,17 @@ const TRANSLATIONS = {
             "Det maksimale antal værktøjer, der kan vælges for hver forespørgsel. Vi anbefaler at indstille dette til højere værdier for større modeller med mere kontekst.",
         },
       },
+      "clarifying-questions": {
+        title: "Lad agenten stille afklarende spørgsmål",
+        "beta-badge": "TESTVERSION",
+        description:
+          "Når funktionen er aktiveret, kan agenterne stoppe op og stille korte, afklarende spørgsmål, hvis din anmodning er tvetydig.",
+        "max-per-turn": {
+          title: "Maksimalt antal spørgsmål pr. runde",
+          description:
+            "Hvor mange spørgsmål agenten må stille i en enkelt undersøgelse.",
+        },
+      },
     },
   },
   recorded: {
@@ -1188,6 +1199,21 @@ const TRANSLATIONS = {
       tool_call_was_approved:
         "Anmodningen om at bruge værktøjet blev godkendt.",
       tool_call_was_rejected: "Anmodningen om at bruge værktøjet blev afvist.",
+      clarifying_skip: "Lad agenten træffe beslutningen",
+      clarifying_submit: "Indsend",
+      clarifying_skipped: "Du lader agenten træffe den beslutning.",
+      clarifying_timeout: "Ingen svar blev indsendt rettidigt.",
+      clarifying_pagination: "{{current}} af {{total}}",
+      clarifying_prev_aria: "Forrige spørgsmål",
+      clarifying_next_aria: "Næste spørgsmål",
+      clarifying_close_aria: "Luk og spring over",
+      clarifying_other: "Andre",
+      clarifying_other_placeholder: "Indtast dit svar",
+      batch_progress: "{{answered}} fra {{total}} svarede",
+      batch_skip_this: "Spring over",
+      batch_submit_all: "Indsend alle",
+      batch_next: "Næste",
+      answer_skipped: "[bruger hopped over]",
     },
     custom_skills: "Skræddersyede færdigheder",
     agent_flows: "Agentstrømme",

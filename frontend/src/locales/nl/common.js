@@ -760,6 +760,18 @@ const TRANSLATIONS = {
             "Het maximale aantal tools dat kan worden geselecteerd voor elke query. Wij raden aan om deze waarde hoger in te stellen voor modellen met een grotere context.",
         },
       },
+      "clarifying-questions": {
+        title:
+          "Laat de agent vragen stellen om de situatie beter te begrijpen.",
+        "beta-badge": "TESTFASE",
+        description:
+          "Wanneer deze functie is ingeschakeld, kunnen de agenten een korte, verduidelijkende vraag stellen als uw opdracht onduidelijk is.",
+        "max-per-turn": {
+          title: "Aantal vragen per beurt",
+          description:
+            "Hoeveel vragen voor verduidelijking mag de agent stellen tijdens één enquête?",
+        },
+      },
     },
   },
   recorded: {
@@ -1196,6 +1208,21 @@ const TRANSLATIONS = {
         "De aanvraag voor het gereedschap is goedgekeurd.",
       tool_call_was_rejected:
         "De aanvraag om het gereedschap te gebruiken is afgewezen.",
+      clarifying_skip: "Laat de agent beslissen",
+      clarifying_submit: "Indienen",
+      clarifying_skipped: "U laat de agent zelf beslissen.",
+      clarifying_timeout: "Geen antwoord is op tijd ingediend.",
+      clarifying_pagination: "{{current}} van {{total}}",
+      clarifying_prev_aria: "Vorige vraag",
+      clarifying_next_aria: "Volgende vraag",
+      clarifying_close_aria: "Sluiten en overslaan",
+      clarifying_other: "Andere",
+      clarifying_other_placeholder: "Voer uw antwoord in",
+      batch_progress: "{{answered}} van {{total}} heeft gereageerd",
+      batch_skip_this: "Overslaan",
+      batch_submit_all: "Verzend alle",
+      batch_next: "Volgende",
+      answer_skipped: "[gebruiker heeft overgeslagen]",
     },
     custom_skills: "Aangepaste vaardigheden",
     agent_flows: "Stroom van agenten",
