@@ -110,10 +110,10 @@ function normalizeQuestion(raw) {
 }
 
 const AskUser = {
-  name: "ask-user",
+  name: "request-user-input",
   plugin: function () {
     return {
-      name: "ask-user",
+      name: "request-user-input",
       setup(aibitat) {
         // Skip when the runtime can't actually prompt the user. The websocket
         // plugin attaches `requestUserClarification` only when a socket is
@@ -122,15 +122,12 @@ const AskUser = {
 
         aibitat.function({
           super: aibitat,
-          name: "ask-user",
+          name: "request-user-input",
           description:
-            "Ask the user one or more clarifying questions and wait for answers. " +
-            "USE WHEN: the user's request is ambiguous and you genuinely cannot proceed without a missing detail. " +
-            "DO NOT USE WHEN: the answer is already in the conversation, obvious from context, or you can make a reasonable choice and proceed. " +
-            "Pass an array of question objects in 'questions'. Each item has kind:'input' (free-form, with inputType: text|url|number|date|email|textarea) or kind:'choice' (with options[]). " +
-            "BATCH questions that don't depend on each other into one call (e.g. PRD intake: name + users + deadline). " +
-            "Use SEPARATE sequential calls when a later question's wording or options depend on the user's answer to an earlier one. " +
-            "Each question counts toward the per-turn cap. The response is a numbered Q/A transcript.",
+            "Prompt the user for input via an interactive form. " +
+            "This is the ONLY way to ask the user questions - text responses cannot receive replies. " +
+            "Call this tool when you need a URL, file path, name, date, preference, or any other detail to proceed. " +
+            "The user will see a form and their answers are returned to you.",
           examples: [
             {
               prompt: "Scrape a link for me",
@@ -140,19 +137,6 @@ const AskUser = {
                     kind: "input",
                     question: "Which URL would you like me to scrape?",
                     inputType: "url",
-                  },
-                ],
-              }),
-            },
-            {
-              prompt: "What format should I use?",
-              call: JSON.stringify({
-                questions: [
-                  {
-                    kind: "choice",
-                    question: "Which output format would you like?",
-                    options: ["JSON", "CSV", "Markdown table", "Plain text"],
-                    allowOther: true,
                   },
                 ],
               }),

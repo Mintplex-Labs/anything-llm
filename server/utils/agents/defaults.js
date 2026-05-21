@@ -66,18 +66,26 @@ const WORKSPACE_AGENT = {
     user = null,
     prompt = ""
   ) => {
-    const role = await Provider.systemPrompt({
-      provider,
-      workspace,
-      user,
-      prompt,
-    });
+    let [role, clarifyingQuestionsSkills] = await Promise.all([
+      Provider.systemPrompt({
+        provider,
+        workspace,
+        user,
+        prompt,
+      }),
+      clarifyingQuestionsSkillIfEnabled(),
+    ]);
+
+    // If clarifying questions tools are enabled, add a note to the role that the user must use the request-user-input tool to ask questions.
+    if (!!clarifyingQuestionsSkills?.length)
+      role +=
+        "\n\nWhen you need information from the user (URLs, file paths, preferences, choices, etc.), you MUST use the request-user-input tool. Do not ask questions in your text response - the user cannot reply to text. Only the tool can collect user input.";
 
     return {
       role,
       functions: [
         ...(await agentSkillsFromSystemSettings()),
-        ...(await clarifyingQuestionsSkillIfEnabled()),
+        ...clarifyingQuestionsSkills,
         ...ImportedPlugin.activeImportedPlugins(),
         ...AgentFlows.activeFlowPlugins(),
         ...(await new MCPCompatibilityLayer().activeMCPServers()),
