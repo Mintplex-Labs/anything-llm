@@ -772,6 +772,17 @@ const TRANSLATIONS = {
             "O número máximo de ferramentas que podem ser selecionadas para cada consulta. Recomendamos definir este valor para modelos com contextos maiores.",
         },
       },
+      "clarifying-questions": {
+        title: "Permita que o agente faça perguntas para esclarecer dúvidas.",
+        "beta-badge": "VERSÃO BETA",
+        description:
+          "Quando ativado, os agentes podem fazer pausas para fazer perguntas curtas e esclarecedoras, caso a sua solicitação seja ambígua.",
+        "max-per-turn": {
+          title: "Número máximo de perguntas por turno",
+          description:
+            "Quantas perguntas de esclarecimento o agente pode fazer em uma única pesquisa.",
+        },
+      },
     },
   },
   recorded: {
@@ -1280,6 +1291,21 @@ const TRANSLATIONS = {
       tool_call_was_approved: "A solicitação de ferramentas foi aprovada.",
       tool_call_was_rejected:
         "A solicitação de acesso à ferramenta foi rejeitada.",
+      clarifying_skip: "Deixe o agente tomar a decisão.",
+      clarifying_submit: "Enviar",
+      clarifying_skipped: "Você deixa o agente tomar a decisão.",
+      clarifying_timeout: "Nenhuma resposta foi enviada a tempo.",
+      clarifying_pagination: "{{current}} de {{total}}",
+      clarifying_prev_aria: "Pergunta anterior",
+      clarifying_next_aria: "Próxima pergunta",
+      clarifying_close_aria: "Fechar e pular",
+      clarifying_other: "Outros",
+      clarifying_other_placeholder: "Digite sua resposta",
+      batch_progress: "{{answered}} de {{total}} respondeu",
+      batch_skip_this: "Pular",
+      batch_submit_all: "Enviar todos",
+      batch_next: "Próximo",
+      answer_skipped: "[usuário pulou]",
     },
     custom_skills: "Habilidades personalizadas",
     agent_flows: "Fluxo de Agentes",

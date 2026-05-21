@@ -54,6 +54,15 @@ class AIbitat {
   _toolAttachments = [];
 
   /**
+   * Buffer for clarifying-question surveys completed during tool execution.
+   * Each entry is one ask-user invocation (questions + the user's result),
+   * drained by the chat-history plugin into workspace_chats.response so the
+   * filled-in survey persists alongside citations/outputs.
+   * @type {Array<{questions: Array<Object>, result: Object}>}
+   */
+  _pendingClarifyingQuestionSurveys = [];
+
+  /**
    * Get the default maximum number of tools an agent can chain for a single response.
    * @returns {number}
    */
@@ -216,6 +225,24 @@ class AIbitat {
   addToolAttachment(attachment) {
     if (!attachment || !attachment.contentString) return;
     this._toolAttachments.push(attachment);
+  }
+
+  /**
+   * Add a completed clarifying-question survey to the pending buffer.
+   * The chat-history plugin drains this buffer when persisting the agent reply.
+   * @param {{questions: Array<Object>, result: Object}} survey - The survey to add
+   */
+  addClarifyingQuestionSurvey(survey) {
+    if (!survey || typeof survey !== "object") return;
+    this._pendingClarifyingQuestionSurveys.push(survey);
+  }
+
+  /**
+   * Clear all pending clarifying-question surveys. Called after surveys
+   * have been persisted to the workspace_chats record.
+   */
+  clearClarifyingQuestionSurveys() {
+    this._pendingClarifyingQuestionSurveys = [];
   }
 
   /**

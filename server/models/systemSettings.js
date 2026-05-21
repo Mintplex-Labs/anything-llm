@@ -57,6 +57,8 @@ const SystemSettings = {
     "disabled_outlook_skills",
     "outlook_agent_config",
     "imported_agent_skills",
+    "agent_clarifying_questions_enabled",
+    "agent_clarifying_questions_max_per_turn",
     "custom_app_name",
     "feature_flags",
     "meta_page_title",
@@ -84,6 +86,8 @@ const SystemSettings = {
     "disabled_outlook_skills",
     "outlook_agent_config",
     "agent_sql_connections",
+    "agent_clarifying_questions_enabled",
+    "agent_clarifying_questions_max_per_turn",
     "custom_app_name",
     "default_system_prompt",
 
@@ -395,6 +399,15 @@ const SystemSettings = {
         return JSON.stringify(existingConnections ?? []);
       }
     },
+    agent_clarifying_questions_enabled: (update) => {
+      if (typeof update === "boolean") return update ? "true" : "false";
+      return String(update) === "true" ? "true" : "false";
+    },
+    agent_clarifying_questions_max_per_turn: (update) => {
+      const n = Number(update);
+      if (!Number.isFinite(n) || n < 1) return 3;
+      return Math.min(Math.floor(n), 10);
+    },
     experimental_live_file_sync: (update) => {
       if (typeof update === "boolean")
         return update === true ? "enabled" : "disabled";
@@ -561,6 +574,17 @@ const SystemSettings = {
       AgentSkillMaxToolCalls: AIbitat.defaultMaxToolCalls(),
       AgentSkillRerankerEnabled: ToolReranker.isEnabled(),
       AgentSkillRerankerTopN: ToolReranker.getTopN(),
+      AgentClarifyingQuestionsEnabled:
+        (await this.getValueOrFallback(
+          { label: "agent_clarifying_questions_enabled" },
+          "false"
+        )) === "true",
+      AgentClarifyingQuestionsMaxPerTurn: Number(
+        (await this.getValueOrFallback(
+          { label: "agent_clarifying_questions_max_per_turn" },
+          "3"
+        )) || 3
+      ),
     };
   },
 

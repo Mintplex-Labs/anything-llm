@@ -756,6 +756,17 @@ const TRANSLATIONS = {
             "The maximum number of tools to select for each query. We recommend setting this to higher values for larger context models.",
         },
       },
+      "clarifying-questions": {
+        title: "Allow agent to ask clarifying questions",
+        "beta-badge": "BETA",
+        description:
+          "When enabled, agents can pause to ask short clarifying questions if your prompt is ambiguous.",
+        "max-per-turn": {
+          title: "Max questions per turn",
+          description:
+            "How many clarifying questions the agent may ask in a single survey.",
+        },
+      },
     },
   },
   recorded: {
@@ -1540,6 +1551,21 @@ const TRANSLATIONS = {
       always_allow: "Always allow {{skillName}}",
       tool_call_was_approved: "Tool call was approved",
       tool_call_was_rejected: "Tool call was rejected",
+      clarifying_skip: "Let agent decide",
+      clarifying_submit: "Submit",
+      clarifying_skipped: "You let the agent decide.",
+      clarifying_timeout: "No response submitted in time.",
+      clarifying_pagination: "{{current}} of {{total}}",
+      clarifying_prev_aria: "Previous question",
+      clarifying_next_aria: "Next question",
+      clarifying_close_aria: "Close and skip",
+      clarifying_other: "Other",
+      clarifying_other_placeholder: "Type your answer",
+      batch_progress: "{{answered}} of {{total}} answered",
+      batch_skip_this: "Skip",
+      batch_submit_all: "Submit all",
+      batch_next: "Next",
+      answer_skipped: "[user skipped]",
     },
     memories: {
       title: "Memories",

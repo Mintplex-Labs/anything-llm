@@ -10,6 +10,7 @@ import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
 import StatusResponse from "./StatusResponse";
 import ToolApprovalRequest from "./ToolApprovalRequest";
+import ClarifyingQuestionCard from "./ClarifyingQuestion";
 import FileDownloadCard from "./FileDownloadCard";
 import { useManageWorkspaceModal } from "../../../Modals/ManageWorkspace";
 import ManageWorkspace from "../../../Modals/ManageWorkspace";
@@ -329,6 +330,20 @@ function buildMessages({
       return acc;
     }
 
+    if (props.type === "clarifyingQuestion") {
+      acc.push(
+        <ClarifyingQuestionCard
+          key={`clarify-${props.requestId}`}
+          requestId={props.requestId}
+          questions={props.questions}
+          allowSkip={props.allowSkip}
+          timeoutMs={props.timeoutMs}
+          websocket={websocket}
+        />
+      );
+      return acc;
+    }
+
     if (props.type === "rechartVisualize" && !!props.content) {
       acc.push(<Chartable key={props.uuid} props={props} />);
     } else if (props.type === "fileDownloadCard" && !!props.content) {
@@ -364,6 +379,7 @@ function buildMessages({
           forkThread={forkThread}
           metrics={props.metrics}
           outputs={props.outputs}
+          clarifyingQuestions={props.clarifyingQuestions}
         />
       );
     }
