@@ -94,6 +94,7 @@ AnythingLLM supports multiple users as well where you can control the access and
 - [Fireworks AI (chat models)](https://fireworks.ai/)
 - [Perplexity (chat models)](https://www.perplexity.ai/)
 - [OpenRouter (chat models)](https://openrouter.ai/)
+- [Tuning Engines (OpenAI-compatible gateway)](https://tuningengines.com/)
 - [DeepSeek (chat models)](https://deepseek.com/)
 - [Mistral](https://mistral.ai/)
 - [Groq](https://groq.com/)
