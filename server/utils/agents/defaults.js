@@ -95,7 +95,7 @@ const WORKSPACE_AGENT = {
 };
 
 /**
- * Conditionally include the ask-questions sub-tools in the workspace agent's
+ * Conditionally include the request-user-input sub-tools in the workspace agent's
  * function list when the admin has enabled clarifying questions.
  * Returns an empty array when disabled so the tools aren't visible to the LLM.
  * Names use the parent#child convention so #attachPlugins loads each sub-tool.
@@ -109,8 +109,8 @@ async function clarifyingQuestionsSkillIfEnabled() {
     )) === "true";
   if (!enabled) return [];
 
-  const parentName = AgentPlugins.askQuestions.name;
-  const subPlugins = AgentPlugins.askQuestions.plugin;
+  const parentName = AgentPlugins.requestUserInput.name;
+  const subPlugins = AgentPlugins.requestUserInput.plugin;
   if (!Array.isArray(subPlugins)) return [];
   return subPlugins.map((sub) => `${parentName}#${sub.name}`);
 }

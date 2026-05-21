@@ -254,12 +254,12 @@ const AskUser = {
   },
 };
 
-const askQuestions = {
-  name: "ask-questions",
+const requestUserInput = {
+  name: "request-user-input",
   startupConfig: {
     params: {},
   },
   plugin: [AskUser],
 };
 
-module.exports = { askQuestions };
+module.exports = { requestUserInput };

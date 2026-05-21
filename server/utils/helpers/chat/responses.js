@@ -215,7 +215,7 @@ function convertToChatHistory(history = []) {
 
 /**
  * Render a single saved survey as a tagged Q/A transcript for LLM history.
- * Mirrors the answer-casing rules in formatAnswersForAgent (ask-questions.js)
+ * Mirrors the answer-casing rules in formatAnswersForAgent (request-user-input.js)
  * so the model sees the same wording it saw mid-turn when the tool resolved.
  */
 function formatClarifyingSurveyForPrompt(survey) {
