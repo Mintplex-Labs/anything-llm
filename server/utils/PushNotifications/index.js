@@ -170,7 +170,7 @@ class PushNotifications {
    * @param {Object} options - The options for the notification.
    * @param {"primary"|number} [options.to] - The subscription to send the notification to. "all" sends to all subscriptions, "primary" sends to the primary user (single user mode only), a number sends subscription to specific user
    * @param {PushNotificationPayload} [options.payload] - The payload to send to the clients.
-   * @returns {void}
+   * @returns {Promise<void>}
    */
   sendNotification({ to = "primary", payload = {} } = {}) {
     if (this.#subscriptions.size === 0)
@@ -180,10 +180,16 @@ class PushNotifications {
         `.sendNotification() - Subscription for user ${to} not found`
       );
     this.#log(`.sendNotification() - Sending notification to user ${to}`);
-    this.pushService.sendNotification(
-      this.#subscriptions.get(to),
-      JSON.stringify(payload)
-    );
+    return this.pushService
+      .sendNotification(this.#subscriptions.get(to), JSON.stringify(payload))
+      .then((res) => {
+        this.#log(
+          `.sendNotification() - Delivered (status: ${res.statusCode})`
+        );
+      })
+      .catch((err) => {
+        this.#log(`.sendNotification() - Failed: ${err.message}`);
+      });
   }
 
   /**

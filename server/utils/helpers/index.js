@@ -243,6 +243,15 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "lemonade":
       const { LemonadeLLM } = require("../AiProviders/lemonade");
       return new LemonadeLLM(embedder, model);
+    case "minimax":
+      const { MinimaxLLM } = require("../AiProviders/minimax");
+      return new MinimaxLLM(embedder, model);
+    case "anythingllm-router":
+      // Model router is handled separately in stream.js via AnythingLLMModelRouter.
+      // This case should not be hit directly - if it is, throw a descriptive error.
+      throw new Error(
+        "anythingllm-router provider must be resolved via AnythingLLMModelRouter class, not getLLMProvider directly."
+      );
     default:
       throw new Error(
         `ENV: No valid LLM_PROVIDER value found in environment! Using ${process.env.LLM_PROVIDER}`
@@ -425,6 +434,12 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "lemonade":
       const { LemonadeLLM } = require("../AiProviders/lemonade");
       return LemonadeLLM;
+    case "minimax":
+      const { MinimaxLLM } = require("../AiProviders/minimax");
+      return MinimaxLLM;
+    case "anythingllm-router":
+      const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
+      return AnythingLLMModelRouter;
     default:
       return null;
   }
@@ -509,6 +524,8 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.SAMBANOVA_LLM_MODEL_PREF;
     case "lemonade":
       return process.env.LEMONADE_LLM_MODEL_PREF;
+    case "minimax":
+      return process.env.MINIMAX_MODEL_PREF;
     default:
       return null;
   }

@@ -55,7 +55,7 @@ class EphemeralAgentHandler extends AgentHandler {
   /**
    * @param {{
    * uuid: string,
-   * workspace: import("@prisma/client").workspaces,
+   * workspace: import("@prisma/client").workspaces|null,
    * prompt: string,
    * userId: import("@prisma/client").users["id"]|null,
    * threadId: import("@prisma/client").workspace_threads["id"]|null,
@@ -65,7 +65,7 @@ class EphemeralAgentHandler extends AgentHandler {
    */
   constructor({
     uuid,
-    workspace,
+    workspace = null,
     prompt,
     userId = null,
     threadId = null,
@@ -95,6 +95,8 @@ class EphemeralAgentHandler extends AgentHandler {
   }
 
   async #chatHistory(limit = 10) {
+    if (!this.#workspace) return [];
+
     try {
       const rawHistory = (
         await WorkspaceChats.where(
@@ -143,8 +145,14 @@ class EphemeralAgentHandler extends AgentHandler {
    * @returns {object|null} - An object with provider and model keys.
    */
   #getFallbackProvider() {
+    // If workspace chat uses the model router, fall back to it.
+    // Model is null here since the router determines it at resolve time.
+    if (this.#workspace?.chatProvider === "anythingllm-router") {
+      return { provider: "anythingllm-router", model: null };
+    }
+
     // First, fallback to the workspace chat provider and model if they exist
-    if (this.#workspace.chatProvider && this.#workspace.chatModel) {
+    if (this.#workspace?.chatProvider && this.#workspace?.chatModel) {
       return {
         provider: this.#workspace.chatProvider,
         model: this.#workspace.chatModel,
@@ -154,6 +162,10 @@ class EphemeralAgentHandler extends AgentHandler {
     // If workspace does not have chat provider and model fallback
     // to system provider and try to load provider default model
     const systemProvider = process.env.LLM_PROVIDER;
+    if (systemProvider === "anythingllm-router") {
+      return { provider: "anythingllm-router", model: null };
+    }
+
     const systemModel = this.providerDefault(systemProvider);
     if (systemProvider && systemModel) {
       return {
@@ -183,21 +195,54 @@ class EphemeralAgentHandler extends AgentHandler {
     }
 
     // The provider was explicitly set, so check if the workspace has an agent model set.
-    if (this.#workspace.agentModel) return this.#workspace.agentModel;
+    if (this.#workspace?.agentModel) return this.#workspace.agentModel;
 
     // Otherwise, we have no model to use - so guess a default model to use via the provider
     // and it's system ENV params and if that fails - we return either a base model or null.
     return this.providerDefault();
   }
 
-  #providerSetupAndCheck() {
-    this.provider = this.#workspace.agentProvider ?? null;
+  async #providerSetupAndCheck() {
+    this.provider = this.#workspace?.agentProvider ?? null;
     this.model = this.#fetchModel();
+
+    // If provider resolved to model router, resolve the actual provider/model
+    if (this.provider === "anythingllm-router") {
+      await this.#resolveRouterProvider();
+    }
 
     if (!this.provider)
       throw new Error("No valid provider found for the agent.");
     this.log(`Start ${this.#invocationUUID}::${this.provider}:${this.model}`);
     this.checkSetup();
+  }
+
+  async #resolveRouterProvider(prompt = null) {
+    const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
+    const routerWorkspace = this.#workspace?.router_id
+      ? this.#workspace
+      : {
+          ...this.#workspace,
+          router_id: process.env.MODEL_ROUTER_ID
+            ? Number(process.env.MODEL_ROUTER_ID)
+            : null,
+        };
+
+    const router = new AnythingLLMModelRouter(routerWorkspace);
+    await router.resolve(
+      {
+        prompt: prompt || this.#prompt,
+        attachments: this.#attachments || [],
+      },
+      {
+        user: this.#userId ? { id: this.#userId } : null,
+        thread: this.#threadId ? { id: this.#threadId } : null,
+      }
+    );
+
+    this.provider = router.resolvedRoute.provider;
+    this.model = router.resolvedRoute.model;
+    this.routingMetadata = router.routingMetadata;
   }
 
   async #attachPlugins(args) {
@@ -345,7 +390,12 @@ class EphemeralAgentHandler extends AgentHandler {
 
     this.aibitat.agent(
       WORKSPACE_AGENT.name,
-      await WORKSPACE_AGENT.getDefinition(this.provider, this.#workspace, user)
+      await WORKSPACE_AGENT.getDefinition(
+        this.provider,
+        this.#workspace,
+        user,
+        this.#prompt
+      )
     );
 
     this.#funcsToLoad = [
@@ -357,7 +407,7 @@ class EphemeralAgentHandler extends AgentHandler {
   }
 
   async init() {
-    this.#providerSetupAndCheck();
+    await this.#providerSetupAndCheck();
     return this;
   }
 
@@ -367,6 +417,8 @@ class EphemeralAgentHandler extends AgentHandler {
    * @returns {Promise<string>} Formatted context string to append to user message
    */
   async #fetchParsedFileContext() {
+    if (!this.#workspace) return "";
+
     const user = this.#userId ? { id: this.#userId } : null;
     const thread = this.#threadId ? { id: this.#threadId } : null;
     const documentManager = new DocumentManager({
@@ -437,6 +489,7 @@ class EphemeralAgentHandler extends AgentHandler {
     args = {
       handler: null,
       telegramChatId: null,
+      toolOverrides: null,
     }
   ) {
     this.aibitat = new AIbitat({
@@ -446,15 +499,35 @@ class EphemeralAgentHandler extends AgentHandler {
       handlerProps: {
         invocation: {
           workspace: this.#workspace,
-          workspace_id: this.#workspace.id,
+          workspace_id: this.#workspace?.id ?? null,
         },
         log: this.log,
+        routingMetadata: this.routingMetadata || null,
       },
     });
 
     // Register callback to fetch fresh parsed file context on each chat turn
     // This injects parsed files into user messages instead of system prompt
     this.aibitat.fetchParsedFileContext = () => this.#fetchParsedFileContext();
+
+    // If the workspace uses the model router, attach a resolver so routing
+    // is re-evaluated on every agent turn instead of only at initialization.
+    if (this.routingMetadata) {
+      this.aibitat.resolveRoute = async (prompt) => {
+        try {
+          await this.#resolveRouterProvider(prompt);
+          this.aibitat.handlerProps.routingMetadata =
+            this.routingMetadata || null;
+          return { provider: this.provider, model: this.model };
+        } catch (e) {
+          this.log(
+            "Router re-resolution failed, keeping current route",
+            e.message
+          );
+          return null;
+        }
+      };
+    }
 
     // Attach HTTP response object if defined for chunk streaming.
     // When telegramChatId is provided, tool approval via Telegram is enabled.
@@ -471,6 +544,13 @@ class EphemeralAgentHandler extends AgentHandler {
     // Load required agents (Default + custom)
     await this.#loadAgents();
 
+    // Override tools if specified (e.g., for scheduled jobs with per-job tool selection)
+    if (args.toolOverrides) {
+      this.#funcsToLoad = args.toolOverrides;
+      const agentDef = this.aibitat.agents.get("@agent");
+      if (agentDef) agentDef.functions = args.toolOverrides;
+    }
+
     // Attach all required plugins for functions to operate.
     await this.#attachPlugins(args);
   }
@@ -482,6 +562,15 @@ class EphemeralAgentHandler extends AgentHandler {
       content: this.#stripAgentCommand(this.#prompt),
       attachments: this.#attachments,
     });
+  }
+
+  /**
+   * Gets pending outputs registered by plugins (e.g., file downloads).
+   * These outputs include the proper type for re-rendering in chat history.
+   * @returns {Array<{type: string, payload: object}>}
+   */
+  getPendingOutputs() {
+    return this.aibitat?._pendingOutputs ?? [];
   }
 
   /**
@@ -549,15 +638,25 @@ class EphemeralEventListener extends EventEmitter {
    */
   packMessages() {
     const thoughts = [];
+    const outputs = [];
     let textResponse = null;
     for (let msg of this.messages) {
-      if (msg.type !== "statusResponse") {
-        textResponse = msg.content;
-      } else {
+      if (msg.type === "statusResponse") {
         thoughts.push(msg.content);
+        continue;
       }
+
+      if (msg.type === "fileDownloadCard") {
+        outputs.push(msg.content);
+        continue;
+      }
+
+      // All other message types are treated as the text response
+      // This preserves original behavior where any non-statusResponse message
+      // sets the textResponse
+      textResponse = msg.content;
     }
-    return { thoughts, textResponse };
+    return { thoughts, textResponse, outputs };
   }
 
   /**
@@ -593,6 +692,16 @@ class EphemeralEventListener extends EventEmitter {
           close: false,
           error: null,
           animate: true,
+        });
+      }
+
+      if (data.type === "fileDownloadCard") {
+        return writeResponseChunk(response, {
+          id: uuid,
+          type: "fileDownload",
+          fileDownload: data.content,
+          close: false,
+          error: null,
         });
       }
 

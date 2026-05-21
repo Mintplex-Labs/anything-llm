@@ -115,6 +115,8 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "„Telegram“",
     },
+    "scheduled-jobs": "Planuojami darbai",
+    "model-router": "Modelio maršrutizatorius",
   },
   login: {
     "multi-user": {
@@ -197,9 +199,9 @@ const TRANSLATIONS = {
     mode: {
       title: "Pokalbio režimas",
       automatic: {
-        title: "Auto",
         description:
           'automatiškai naudosis įrankiais, jei modelis ir paslaugos teikėjas palaiko įrankių vadovavimą. <br />Jei įrankių vadovavimas nepaliekamas, jums reikės naudoti "@agent" komandą, kad galėtumėte naudoti įrankius.',
+        title: "Agentas",
       },
       chat: {
         title: "Pokalbis",
@@ -1266,7 +1268,6 @@ const TRANSLATIONS = {
     see_more: "Rodyti daugiau",
     preset_reset_description:
       "Išvalyti pokalbių istoriją ir pradėti naują pokalbį",
-    preset_exit_description: "Sustabdyti esamą agento sesiją",
     add_new_preset: " Pridėti naują šabloną",
     add_new: "Pridėti naują",
     edit: "Redaguoti",
@@ -1318,6 +1319,43 @@ const TRANSLATIONS = {
     loading_mcp_servers: "Įkrauname MCP serverius...",
     app_integrations: "Programų integracijos",
     sub_skills: "Pagrindinės įgūdžios",
+    memories: {
+      title: "Atmintys",
+      empty:
+        "Kol kas nėra jokios atminimo. Kai su chatbotu daugiau bendrausite, atminimas bus užpildytas.",
+      empty_cta: "sukurti naują atmintį",
+      tab_workspace: "Darbo zona",
+      tab_global: "Pasaulinis",
+      toggle: {
+        label: "Aaktyvinkite individualizavimą",
+        description:
+          "Leiskite savo asistentui prisiminti faktus apie jus arba šią darbo vietą ir naudoti juos pokalbiuose.",
+      },
+      auto_extraction: {
+        label: "Automatinės atminimo saugojimo sistemos",
+        description:
+          "Įgalinkite savo asistentą automatiškai kurti atminimo, dirbdamas fone.",
+      },
+      menu: {
+        edit: "Redaguoti",
+        delete: "Šalinti",
+        move_to_global: "Perėjimas į pasaulinį lygį",
+        move_to_workspace: "Perkelkite į darbo vietą",
+      },
+      modal: {
+        create_title: "Sukurkite atmintį",
+        edit_title: "Redaguoti atmintį",
+        create_description:
+          'Atmintis turėtų būti vienas, glaustas sakinys. Pavyzdžiui: "Naudotojas preferuoja Pythoną, o ne JavaScriptą".',
+        edit_description: "Atnaujink šios informacijos turinį.",
+        label: "Atmintis",
+        placeholder:
+          "Pavyzdžiui, vartotojo vardas yra Joe, vartotojas dirba „AnythingLLM“ sistemoje ir pan.",
+        create: "Sukurti",
+        save: "Įrašyti",
+        cancel: "Atšaukti",
+      },
+    },
   },
   profile_settings: {
     edit_account: "Redaguoti paskyrą",
@@ -1511,6 +1549,345 @@ const TRANSLATIONS = {
       "pending-description":
         "Naudotojai, laukiantys patvirtinimo. Palyginkite čia pateiktą kodą su tuo, kuris rodomas jų „Telegram“ pokalbyje.",
       unknown: "Nenurodytas",
+    },
+  },
+  scheduledJobs: {
+    title: "Planuotos užduotys",
+    enableNotifications:
+      "Įgalinkite naršyklės pranešimus dėl darbo paieškos rezultatų",
+    description:
+      "Sukurkite nuolatines AI užduotis, kurios vyks pagal nustatytą grafiką. Kiekviena užduotis atliks užduotį su galimais įrankiais ir išsaugos rezultatą, kad galėtų būti peržiūrėta.",
+    newJob: "Nauja darbo pozicija",
+    loading: "Įkėlimas...",
+    emptyTitle: "Nėra nurodytų uždučių.",
+    emptySubtitle: "Sukurkite vieną, kad pradėtumėte.",
+    table: {
+      name: "Pavadinimas",
+      schedule: "Programinė tvarka",
+      status: "Statusas",
+      lastRun: "Paskutinė kelionė",
+      nextRun: "Kitas maršrutas",
+      actions: "Veikmai",
+    },
+    confirmDelete:
+      "Ar esate tikri, kad norite ištrinti šią užduotį, kurią įtraukėte į planą?",
+    toast: {
+      deleted: "Darbas ištrintas",
+      triggered: "Darbas buvo sėkmingai inicijuotas.",
+      triggerFailed: "Nepavyko inicijuoti užduoties",
+      triggerSkipped: "Šis projektas jau pradėtas vykdyti.",
+      killed: "Darbas sėkmingai baigtas",
+      killFailed: "Nepavyko sustabdyti darbą",
+    },
+    row: {
+      neverRun: "Niekada nesnydžkite",
+      viewRuns: "Vaizdo įrašai",
+      runNow: "Pradėkite dabar",
+      enable: "Aaktyvinti",
+      disable: "Išjungti",
+      edit: "Redaguo",
+      delete: "Ištrinkti",
+    },
+    modal: {
+      titleEdit: "Redaguoti užplanuotą užduotį",
+      titleNew: "Naujas planuojamas darbas",
+      nameLabel: "Pavadinimas",
+      namePlaceholder: "Pavyzdžiui, kasdieninė naujienų apžvalga",
+      promptLabel: "Instrukcija",
+      promptPlaceholder: "Instrukcija, kad reikia vykdyti kiekvieną kartą...",
+      scheduleLabel: "Programėlė",
+      modeBuilder: "Statybininkas",
+      modeCustom: "Individualus",
+      cronPlaceholder: "Laiko išraiška (pvz., 0 9 * * *)",
+      currentSchedule: "Dabartinė tvarka:",
+      toolsLabel: "Įrankės (neprivalomi)",
+      toolsDescription:
+        "Pasirinkite, kokius agento įrankius šiandiena gali naudoti. Jei nė vienas įrankis nėra pasirinktas, šiandiena veiks be jokių įrankių.",
+      toolsSearch: "Paieška",
+      toolsNoResults: "Nėra įrankių, kurie atitinka",
+      required: "Reikalingas",
+      requiredFieldsBanner:
+        "Prašome užpildyti visus reikalingus laukelius, kad būtų galima sukurti darbo skelbimą.",
+      cancel: "Anuliu",
+      saving: "Taupymas...",
+      updateJob: "Atnaujinti darbą",
+      createJob: "Sukurti darbo poziciją",
+      jobUpdated: "Darbas atnaujintas",
+      jobCreated: "Sukurtas darbas",
+    },
+    builder: {
+      fallbackWarning:
+        'Šią frazę negalima redaguoti vizualiai. Norėdami ją išsaugoti, pasirinkite "Individualus" režimą, arba pakeiskite žemiau esančias ​​vertimes, kad ją pakeistumėte.',
+      run: "Bėgti",
+      frequency: {
+        minute: "būdami kiekvieną minutę",
+        hour: "valandinės",
+        day: "kasdieninis",
+        week: "kas savaitę",
+        month: "kas mėnesį",
+      },
+      every: "Kiekvienas",
+      minuteOne: "1 minutė",
+      minuteOther: "{{count}} minučių",
+      atMinute: "Minutė po minutės",
+      pastEveryHour: "būdami kiekvieną valandą",
+      at: "At",
+      on: "Apie",
+      onDay: "Jau",
+      ofEveryMonth: "iš kiekvieno mėnesio",
+      weekdays: {
+        sun: "Saulė",
+        mon: "Moneta",
+        tue: "Trečiadienis",
+        wed: "Trečiadienis",
+        thu: "Ketvirtadienis",
+        fri: "Penktadienis",
+        sat: "Sekmadienis",
+      },
+    },
+    runHistory: {
+      back: "Grįžti į paieškas",
+      title: "Paleidimo istorija: {{name}}",
+      schedule: "Programinė tvarka:",
+      emptyTitle: "Kol šis darbas nėra baigtas",
+      emptySubtitle: "Atlikite šią užduotį dabar ir peržiūrėkite rezultatus.",
+      runNow: "Pradėkite dabar",
+      table: {
+        status: "Statusas",
+        started: "Pradėtas",
+        duration: "Tr উপক",
+        error: "Klaida",
+      },
+      stopJob: "Pamesti darbas",
+    },
+    runDetail: {
+      loading: "Įkraudami važiavimo duomenis...",
+      notFound: "Nepavyko rasti.",
+      back: "Atgal",
+      unknownJob: "Nenurodytas darbas",
+      runHeading: "{{name}} – Treniruotė #{{id}}",
+      duration: "Trūkumas: {{value}}",
+      creating: "Kurimas...",
+      threadFailed: "Nepavyko sukurti temą",
+      sections: {
+        prompt: "Įspūdis",
+        error: "Klaida",
+        thinking: "Mintys ({{count}})",
+        toolCalls: "Naudojamų įrankių kvietimai ({{count}})",
+        files: "Failai ({{count}})",
+        response: "Atgarsas",
+        metrics: "Matmenys",
+      },
+      metrics: {
+        promptTokens: "Įspūdingos žymės:",
+        completionTokens: "Baigimo žymekliai:",
+      },
+      stopJob: "Nutraukite darbą",
+      killing: "Sustabdyti...",
+      continueInThread: "Tęsti pokalbį",
+    },
+    toolCall: {
+      arguments: "Argumentai:",
+      showResult: "Parodyti rezultatą",
+      hideResult: "Slėpti rezultatą",
+    },
+    file: {
+      unknown: "Nežinomas failas",
+      download: "Atsisiųsti",
+      downloadFailed: "Nepavyko atsisiųsti failą",
+      types: {
+        powerpoint: "PowerPoint",
+        pdf: "PDF dokumentas",
+        word: "Dokumentas, kurį galima redaguoti Microsoft Word programoje",
+        spreadsheet: "Spalvotas lapas (tabelis)",
+        generic: "Failas",
+      },
+    },
+    status: {
+      completed: "Baigtas",
+      failed: "Nepavyko",
+      timed_out: "Laikas baigėsi",
+      running: "Bėgimas",
+      queued: "Apsisukęs",
+    },
+  },
+  "model-router": {
+    title: "Modelio maršrutizatoriai",
+    description:
+      "Modelinės maršrutizavimo priemonės leidžia nustatyti taisykles, pagal kurių sąlygas, kad pokalbių pranešimai būtų automatiškai siunčiami į skirtingus LLM (didžios kalbos modelio) paslaugų teikėjus ir modelius.",
+    table: {
+      name: "Pavadinimas",
+      fallback: "Alternatyva",
+      rules: "Sąlygos",
+      workspaces: "Darbo zonos",
+    },
+    "no-routers": "Kol nėra modelių routerių.",
+    "empty-description":
+      "Nėra konfigūruotų maršrutizavimo modelių. Norėdami pradėti, sukurkite vieną.",
+    "new-router-button": "Naujas maršrutizatorius",
+    "delete-confirm":
+      'Ar esate tikri, kad norite ištrinti routerį "{{name}}"?\nTai pašalins visus jo nustatymus ir atjunkia bet kuriuos darbalapius, kurie jį naudoja.\n\nŠis veikimas yra neatsistatomas.',
+    "toast-deleted": "Rutineris ištrintas",
+    "toast-delete-failed": "Nepavyko pašalinti maršrutizatorių: {{error}}",
+    "new-router": {
+      title: "Sukurti naują maršrutizavimo modelį",
+      name: "Pavadinimas",
+      "name-placeholder": 'Pavyzdžiui, "Kainos optimizavimo"',
+      description: "Aprašymas",
+      "description-placeholder": "Neprivaloma aprašymas",
+      "fallback-label": "Pagrindinis tiekėjas ir modelis",
+      "fallback-description":
+        "Naudojamas, kai nėra jokios nustatytos tvarkos, kurios atitiktų. Taip pat naudojamas, kad įvertintų LLM (didžiosios kalbos modelio) klasifikuotas tvarkas.",
+      "cooldown-label": '"Pasiliekimo trukmė (sekundės)"',
+      "cooldown-help":
+        "Kiek ilgai maršrutavimo sprendimas yra įrašytas į atmintį prieš perkėsdamas taisykles. Nustatyti į 0, kad išjungtų įrašymą į atmintį.",
+      "name-required": "Reikia nurodyti pavardę.",
+      "fallback-required": "Reikia nurodyti pagrindinį tiekėją ir modelį.",
+      cancel: "Atšaukti",
+      create: "Sukurti maršrutizavimo sistemą",
+    },
+    "edit-router": {
+      "back-to-routers": "Grįžti prie modelių maršrutizatorių",
+      title: "Konfigūruoti maršrutizatorių: {{name}}",
+      save: "Įrašyti pakeitimus",
+      "toast-update-failed": "Nepavyko atnaujinti maršrutizatoriaus.",
+    },
+    rules: {
+      title: "Maršrutizavimo taisyklės",
+      "title-with-name": "Ruterio nurodymai: {{name}}",
+      description:
+        "Nustatykite taisykles, kurios nustato, kada ir kaip pokalvio pranešimai perduodami konkretiems tiekėjams ir modeliams.",
+      "add-rule": "Pridėti taisymą",
+      "delete-confirm": 'Ištrinkite taisykę "{{title}}"?',
+      "toast-delete-failed": "Nepavyko pašalinti taisymą",
+      "toast-reorder-failed": "Nepavyko atstatyti taisyklių",
+      "no-rules": "Vis dar nėra nustatytų taisyklių",
+      "empty-description":
+        "Įveskite taisykę, kad žinių pranešimai būtų siunčiami konkretiems tiekėjams ir modeliams.",
+      "new-rule-button": "Naujas narys",
+      "calculated-section-label":
+        "Nustatytos taisyklės – įvertintos pirmajame prioritetų reike,",
+      "llm-section-label":
+        "LLM taisyklės – vertinamos lotelyje, jei nė viena iš išvestų taisyklių nesutapo su įvestu duomenų rinkiniu.",
+      "llm-rule-body":
+        'Atvykite į <desc>"{{description}}"</desc> vietą, o tada keliaukite į <route>{{route}}</route>.',
+      "calculated-no-conditions":
+        "Nėra sąlygų – maršrutas į <route>{{route}}</route>",
+      "calculated-single-condition":
+        "Jei <prop> yra {{property}} ir </prop>, o {{comparator}} yra <val> ir {{value}}, o </val> yra, tada kelias yra į <route> ir {{route}}",
+      "calculated-multi-condition":
+        "Jei {{quantifier}} yra <cond> ir {{conditions}} yra </cond>, tuomet keliauti į <route> ir {{route}} yra </route>",
+      "comparator-contains": "apima",
+      "comparator-matches": "susidūrimai",
+      "comparator-between": "tarpe",
+      "badge-llm": "Didžiosios kalbos modelio (LLM)",
+      "badge-calculated": "Skaičiuota",
+      "aria-drag-to-reorder": "Trinkite, kad pakeistumėte tvarką",
+      "aria-edit-rule": "Regulės redagavimas",
+      "aria-delete-rule": "Šalinimo taisyklė",
+      "quantifier-any": "KAS",
+      "quantifier-all": "VISI",
+    },
+    "rule-form": {
+      "title-label": "Pavadinimas",
+      "rule-type": "Reguliavimo tipas",
+      "property-label": "Būdas",
+      "property-select": "Pasirinkti",
+      "comparator-label": "Palyginimo įrankis",
+      "comparator-select": "Pasirinkite",
+      "value-label": "Vertė",
+      "add-condition": "Pridėti sąlygą",
+      "remove-condition": "Nesusitraukite",
+      "conditions-incomplete":
+        "Sąlyga {{index}} yra nebaigta – užpildykite nuosavybę, lygybės operatorių ir vertę.",
+      "match-description-label": "Susidėjimo aprašymas",
+      "match-description-placeholder":
+        "Pavyzdžiui, vartotojas klauso apie teisines temas, sutartus ar atitinkamumo reikalavimus.",
+      "match-description-help":
+        "Aprašykite situaciją, kai norite, kad šis narys būtų taikomas. Jį įvertina jūsų LLM, kad nustatytų, ar jis turėtų būti panaudotas.",
+      "route-to-label": "Paslaugų teikėjo ir modelio maršrutas",
+      "route-to-description":
+        "Kai šis nurodymas yra aktuali, naudokite šią paslaugą/modelį.",
+      cancel: "Anuliu",
+      saving: "Taupimas...",
+      "update-rule": "Atnaujinimo taisyklė",
+      "create-rule": "Sukurti taisykę",
+      "title-required": "Reikalingas pavadinimas",
+      "toast-save-failed": "Nepavyko įrašyti taisykę",
+      "type-calculated-label": "Skaičiuota",
+      "type-calculated-description":
+        "Susipažinkite, remdamiesi pranešimų savybėmis, tokiomis kaip turinys, žodžių skaičius arba dienos valandų.",
+      "type-llm-label": "„LLM“ kategorizuotas",
+      "type-llm-description":
+        "Naudokite didelio kalbos modelį (LLM) norėdami klasifikuoti pranešimą remdamiesi jūsų pateikiamu aprašymu.",
+      "prop-prompt-content": "Pranešimo turinys",
+      "prop-token-count": "Pokalbio žodžių skaičius",
+      "prop-message-count": "Pokalbio pranešimų skaičius",
+      "prop-current-hour": "Dabartinė valanda (0-23)",
+      "prop-has-image": "Ar yra vaizdo failas?",
+      "cmp-contains": "įtrauktas, sudėtas",
+      "cmp-matches-regex": "susiformavimai (regex)",
+      "cmp-equals": "lygu",
+      "cmp-not-equals": "neprilygsta",
+      "cmp-greater-than": "didesnis nei",
+      "cmp-greater-than-or-equal": "didesnis arba lygus",
+      "cmp-less-than": "mažiau nei",
+      "cmp-less-than-or-equal": "mažiau nei arba lygu",
+      "cmp-between": "(įskaitant)",
+      "placeholder-between-hour": "pvz., 9:17 (nuo 9:00 iki 17:00)",
+      "placeholder-between-numeric": "pvz., 10,50",
+      "placeholder-hour": "pvz., 18 (0-23)",
+      "placeholder-message-count": "pvz., 10",
+      "placeholder-numeric": "pvz., 4000",
+      "placeholder-contains": "pvz., kodas, Python, Rust",
+      "placeholder-matches": "pvz. /\\bpython\\b/i",
+      "placeholder-default": "pvz., kodas",
+      "help-contains":
+        "Sustabdoma sąrašas – atitinka, jei užklausoje yra bet kuris iš nurodytų vertybių (neatsižvelgiant į rašybą).",
+      "help-matches":
+        "RegEkspresinės sąlygos šablonas. Naudokite `/pattern/flagus` skirti atitikčiai atmetant mažosios ir didosios abekes (numatytinė konfigūracija – atmetimas atitinka).",
+      "bool-true": "Teisingai",
+      "bool-false": "Netiesa",
+    },
+    "provider-picker": {
+      "select-provider": "Pasirinkite paslaugos teikėją",
+      "setup-required": "(reikia paruošti)",
+      "loading-models": "Modeliai įkėjami...",
+      "select-model": "Pasirinkite modelį",
+      "enter-model": "Įveskite modelio pavadinimą",
+      "select-provider-first": "Pirmas žingsnis – pasirinkti paslaugų teikėją.",
+      "configure-to-continue": "Konfigūruokite {{name}}, kad būtų tęsiama",
+      "configure-provider": "Nustatyti {{name}}",
+      "setup-credentials":
+        "Įveskite reikiamus duomenis, kad galėtumėte naudoti {{name}} kaip maršrutizavimo tikslą.",
+      cancel: "Anuliu",
+      "save-settings": "Įrašyti nustatymus",
+      "toast-save-failed": "Nepavyko išsaugoti nustatymų: {{error}}",
+    },
+    "router-selection": {
+      "loading-routers": "Įrengiamos pritaikytos maršrutizavimo sistemos...",
+      "no-routers-prefix-settings":
+        "Nėra konfigūruotų maršrutizavimo įrenginių.",
+      "no-routers-prefix-workspace":
+        "Nėra konfigūruotų maršrutizavimo prietaisų.",
+      "no-routers-link": "Sukurkite vieną „Model Router“ nustatymuose.",
+      "model-router-label": "Modelio maršrutizatorius",
+      "select-router": "Pasirinkite maršrutizatorių",
+      "select-description":
+        "Pasirinkite, kurį maršrutizatorių naudoti šiam darbo ځایui.",
+      "no-routers-chat":
+        "Nėra konfigūruotų maršrutizatorių. Sukonfigūruokite vieną, spustelėję „Nustatymai > AI paslaugų teikėjai > Modelio maršrutizatorius“.",
+      "rule-count": "({{count}} taisykos)",
+    },
+    metrics: {
+      "model-router-default": "Modelio routeris",
+    },
+    chat: {
+      "select-router-error": "Pasirinkite maršrutizatorių",
+      "invalid-model": "Neteisingas modelio pasirinkimas",
+      "routed-to": "Siųsta į <route>{{model}}</route>",
+      "routed-to-rule":
+        "Peradresuota per <route>{{model}}</route> pagal <rule>{{ruleTitle}}</rule>",
     },
   },
 };

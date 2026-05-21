@@ -22,6 +22,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
     "@aws-sdk/client-bedrock-runtime": "^3.775.0",
+    "@breejs/later": "4.2.0",
     "@datastax/astra-db-ts": "^0.1.3",
     "@ladjs/graceful": "^3.2.2",
     "@lancedb/lancedb": "0.15.0",
@@ -54,6 +55,7 @@
     "chromadb": "^2.0.1",
     "cohere-ai": "^7.19.0",
     "cors": "^2.8.5",
+    "cron-validate": "1.4.5",
     "diff": "7.0.0",
     "docx": "9.6.1",
     "dompurify": "3.3.3",
@@ -82,6 +84,7 @@
     "node-telegram-bot-api": "^0.67.0",
     "ollama": "^0.6.3",
     "openai": "4.95.1",
+    "p-queue": "6.6.2",
     "pdf-lib": "1.17.1",
     "pg": "^8.11.5",
     "pinecone-client": "^1.1.0",
