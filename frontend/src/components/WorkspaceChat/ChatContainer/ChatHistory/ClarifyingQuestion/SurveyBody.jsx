@@ -1,12 +1,9 @@
 import { useTranslation } from "react-i18next";
 import { formatAnswerDisplay } from "./utils";
 
-function StatusMessage({ messageKey }) {
-  const { t } = useTranslation();
+function StatusMessage({ message }) {
   return (
-    <div className="text-xs text-white/60 light:text-slate-600">
-      {t(messageKey)}
-    </div>
+    <div className="text-xs text-white/60 light:text-slate-600">{message}</div>
   );
 }
 
@@ -62,15 +59,21 @@ function AnswersList({ questions, answers }) {
  *   The survey's resolution payload — same shape returned by the websocket.
  */
 export default function SurveyBody({ questions = [], result = {} }) {
+  const { t } = useTranslation();
+
   if (result.timedOut) {
     return (
-      <StatusMessage messageKey="chat_window.agent_invocation.clarifying_timeout" />
+      <StatusMessage
+        message={t("chat_window.agent_invocation.clarifying_timeout")}
+      />
     );
   }
 
   if (result.skipped) {
     return (
-      <StatusMessage messageKey="chat_window.agent_invocation.clarifying_skipped" />
+      <StatusMessage
+        message={t("chat_window.agent_invocation.clarifying_skipped")}
+      />
     );
   }
 
