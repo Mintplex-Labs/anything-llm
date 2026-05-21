@@ -268,52 +268,136 @@ function getEmbeddingEngineSelection() {
   const engineSelection = process.env.EMBEDDING_ENGINE;
   switch (engineSelection) {
     case "openai":
-      const { OpenAiEmbedder } = require("../EmbeddingEngines/openAi");
-      return new OpenAiEmbedder();
+      try {
+        const { OpenAiEmbedder } = require("../EmbeddingEngines/openAi");
+        return new OpenAiEmbedder();
+      } catch (err) {
+        throw new Error(
+          `Failed to initialize OpenAI embedder: ${err.message}. Ensure the openai package is installed and EMBEDDING_ENGINE is set correctly.`
+        );
+      }
     case "azure":
-      const {
-        AzureOpenAiEmbedder,
-      } = require("../EmbeddingEngines/azureOpenAi");
-      return new AzureOpenAiEmbedder();
+      try {
+        const {
+          AzureOpenAiEmbedder,
+        } = require("../EmbeddingEngines/azureOpenAi");
+        return new AzureOpenAiEmbedder();
+      } catch (err) {
+        throw new Error(
+          `Failed to initialize Azure OpenAI embedder: ${err.message}. Check your AZURE_* environment variables and ensure the embedding engine path is valid.`
+        );
+      }
     case "localai":
-      const { LocalAiEmbedder } = require("../EmbeddingEngines/localAi");
-      return new LocalAiEmbedder();
+      try {
+        const { LocalAiEmbedder } = require("../EmbeddingEngines/localAi");
+        return new LocalAiEmbedder();
+      } catch (err) {
+        throw new Error(
+          `Failed to initialize LocalAI embedder: ${err.message}. Ensure LocalAI is running and LOCAL_AI_BASE_URL is set correctly.`
+        );
+      }
     case "ollama":
-      const { OllamaEmbedder } = require("../EmbeddingEngines/ollama");
-      return new OllamaEmbedder();
+      try {
+        const { OllamaEmbedder } = require("../EmbeddingEngines/ollama");
+        return new OllamaEmbedder();
+      } catch (err) {
+        throw new Error(
+          `Failed to initialize Ollama embedder: ${err.message}. Ensure Ollama is running and OLLAMA_BASE_URL is set correctly.`
+        );
+      }
     case "native":
       return new NativeEmbedder();
     case "lmstudio":
-      const { LMStudioEmbedder } = require("../EmbeddingEngines/lmstudio");
-      return new LMStudioEmbedder();
+      try {
+        const { LMStudioEmbedder } = require("../EmbeddingEngines/lmstudio");
+        return new LMStudioEmbedder();
+      } catch (err) {
+        throw new Error(
+          `Failed to initialize LM Studio embedder: ${err.message}. Ensure LM Studio is running and LMSTUDIO_BASE_URL is set correctly.`
+        );
+      }
     case "cohere":
-      const { CohereEmbedder } = require("../EmbeddingEngines/cohere");
-      return new CohereEmbedder();
+      try {
+        const { CohereEmbedder } = require("../EmbeddingEngines/cohere");
+        return new CohereEmbedder();
+      } catch (err) {
+        throw new Error(
+          `Failed to initialize Cohere embedder: ${err.message}. Ensure COHERE_API_KEY is set in your environment.`
+        );
+      }
     case "voyageai":
-      const { VoyageAiEmbedder } = require("../EmbeddingEngines/voyageAi");
-      return new VoyageAiEmbedder();
+      try {
+        const { VoyageAiEmbedder } = require("../EmbeddingEngines/voyageAi");
+        return new VoyageAiEmbedder();
+      } catch (err) {
+        throw new Error(
+          `Failed to initialize VoyageAI embedder: ${err.message}. Ensure VOYAGE_AI_API_KEY is set in your environment.`
+        );
+      }
     case "litellm":
-      const { LiteLLMEmbedder } = require("../EmbeddingEngines/liteLLM");
-      return new LiteLLMEmbedder();
+      try {
+        const { LiteLLMEmbedder } = require("../EmbeddingEngines/liteLLM");
+        return new LiteLLMEmbedder();
+      } catch (err) {
+        throw new Error(
+          `Failed to initialize LiteLLM embedder: ${err.message}. Check your LITELLM configuration.`
+        );
+      }
     case "mistral":
-      const { MistralEmbedder } = require("../EmbeddingEngines/mistral");
-      return new MistralEmbedder();
+      try {
+        const { MistralEmbedder } = require("../EmbeddingEngines/mistral");
+        return new MistralEmbedder();
+      } catch (err) {
+        throw new Error(
+          `Failed to initialize Mistral embedder: ${err.message}. Ensure MISTRAL_API_KEY is set in your environment.`
+        );
+      }
     case "generic-openai":
-      const {
-        GenericOpenAiEmbedder,
-      } = require("../EmbeddingEngines/genericOpenAi");
-      return new GenericOpenAiEmbedder();
+      try {
+        const {
+          GenericOpenAiEmbedder,
+        } = require("../EmbeddingEngines/genericOpenAi");
+        return new GenericOpenAiEmbedder();
+      } catch (err) {
+        throw new Error(
+          `Failed to initialize Generic OpenAI embedder: ${err.message}. Check GENERIC_OPEN_AI_BASE_URL and GENERIC_OPEN_AI_API_KEY.`
+        );
+      }
     case "gemini":
-      const { GeminiEmbedder } = require("../EmbeddingEngines/gemini");
-      return new GeminiEmbedder();
+      try {
+        const { GeminiEmbedder } = require("../EmbeddingEngines/gemini");
+        return new GeminiEmbedder();
+      } catch (err) {
+        throw new Error(
+          `Failed to initialize Gemini embedder: ${err.message}. Ensure GEMINI_API_KEY is set in your environment.`
+        );
+      }
     case "openrouter":
-      const { OpenRouterEmbedder } = require("../EmbeddingEngines/openRouter");
-      return new OpenRouterEmbedder();
+      try {
+        const { OpenRouterEmbedder } = require("../EmbeddingEngines/openRouter");
+        return new OpenRouterEmbedder();
+      } catch (err) {
+        throw new Error(
+          `Failed to initialize OpenRouter embedder: ${err.message}. Ensure OPENROUTER_API_KEY is set in your environment.`
+        );
+      }
     case "lemonade":
-      const { LemonadeEmbedder } = require("../EmbeddingEngines/lemonade");
-      return new LemonadeEmbedder();
-    default:
+      try {
+        const { LemonadeEmbedder } = require("../EmbeddingEngines/lemonade");
+        return new LemonadeEmbedder();
+      } catch (err) {
+        throw new Error(
+          `Failed to initialize Lemonade embedder: ${err.message}. Check your Lemonade configuration.`
+        );
+      }
+    case null:
+    case undefined:
+    case "":
       return new NativeEmbedder();
+    default:
+      throw new Error(
+        `Unknown EMBEDDING_ENGINE value: "${engineSelection}". Valid options are: openai, azure, localai, ollama, native, lmstudio, cohere, voyageai, litellm, mistral, generic-openai, gemini, openrouter, lemonade. Falling back to native embedder is no longer allowed for unknown values - set a valid engine or leave unset to use native.`
+      );
   }
 }
 
