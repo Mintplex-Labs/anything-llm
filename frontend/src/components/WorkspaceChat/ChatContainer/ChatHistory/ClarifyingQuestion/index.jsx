@@ -7,6 +7,111 @@ import Footer from "./Footer";
 import SurveyBody from "./SurveyBody";
 import { answerForDraft, emptyDraftFor } from "./utils";
 
+function TimeoutProgressBar({ percent }) {
+  return (
+    <div className="absolute bottom-0 left-0 right-0 h-1 bg-zinc-700 light:bg-slate-300">
+      <div
+        className="h-full bg-sky-500 light:bg-sky-600 transition-none"
+        style={{ width: `${percent}%` }}
+      />
+    </div>
+  );
+}
+
+function CardWrapper({ children }) {
+  return (
+    <div className="flex justify-center w-full my-1 pr-4">
+      <div className="w-full flex flex-col">
+        <div
+          style={{ borderRadius: "20px" }}
+          className="relative border border-solid border-zinc-700 light:border-zinc-300 bg-transparent p-[18px] flex flex-col gap-[18px] overflow-hidden"
+        >
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ActiveInputForm({ question, draft, updateDraft, onSubmit }) {
+  if (question?.kind !== "input") return null;
+  return (
+    <InputForm
+      question={question}
+      draft={draft}
+      onChange={(value) => updateDraft({ skipped: false, value })}
+      onSubmit={onSubmit}
+    />
+  );
+}
+
+function ActiveChoiceForm({
+  question,
+  draft,
+  updateDraft,
+  onAutoAdvance,
+  allowSkip,
+  onSkip,
+}) {
+  if (question?.kind !== "choice") return null;
+  return (
+    <ChoiceForm
+      question={question}
+      draft={draft}
+      onChange={(patch) => updateDraft({ skipped: false, ...patch })}
+      onAutoAdvance={
+        question.multiSelect
+          ? null
+          : (patch) => onAutoAdvance({ skipped: false, ...patch })
+      }
+      allowSkip={allowSkip}
+      onSkip={onSkip}
+    />
+  );
+}
+
+function ActiveFooter({
+  question,
+  draft,
+  isSingle,
+  isLast,
+  allowSkip,
+  answeredCount,
+  total,
+  onSkipThis,
+  onNext,
+  onSubmitAll,
+}) {
+  const isChoice = question?.kind === "choice";
+  const isInput = question?.kind === "input";
+  const showFooter =
+    isInput || (isChoice && (question.multiSelect || draft?.otherSelected));
+
+  if (!showFooter) return null;
+
+  return (
+    <Footer
+      isSingle={isSingle}
+      isLast={isLast}
+      allowSkip={allowSkip && isInput}
+      answeredCount={answeredCount}
+      total={total}
+      onSkipThis={onSkipThis}
+      onNext={onNext}
+      onSubmitAll={onSubmitAll}
+    />
+  );
+}
+
+function CompletedSurvey({ questions, drafts, submittedResult }) {
+  const result =
+    submittedResult?.timedOut || submittedResult?.skipped
+      ? submittedResult
+      : { answers: questions.map((q, i) => answerForDraft(q, drafts[i])) };
+
+  return <SurveyBody questions={questions} result={result} />;
+}
+
 /**
  * Live, interactive clarifying-question card. Walks the user through one or
  * more questions in a single batch (paginated), then renders a read-only
@@ -76,8 +181,9 @@ export default function ClarifyingQuestionCard({
   }
 
   function handleSkipThis() {
-    updateDraft({ skipped: true });
-    if (isLast) return handleSubmitAll();
+    const skipPatch = { skipped: true };
+    updateDraft(skipPatch);
+    if (isLast) return handleSubmitAll(skipPatch);
     setIndex(index + 1);
   }
 
@@ -86,8 +192,8 @@ export default function ClarifyingQuestionCard({
     setIndex(index + 1);
   }
 
-  function handleAutoAdvance() {
-    if (isLast) return handleSubmitAll();
+  function handleAutoAdvance(pendingPatch) {
+    if (isLast) return handleSubmitAll(pendingPatch);
     setIndex(index + 1);
   }
 
@@ -96,8 +202,11 @@ export default function ClarifyingQuestionCard({
     setIndex(index - 1);
   }
 
-  function handleSubmitAll() {
-    const answers = questions.map((q, i) => answerForDraft(q, drafts[i]));
+  function handleSubmitAll(pendingPatch) {
+    const resolved = pendingPatch
+      ? drafts.map((d, i) => (i === index ? { ...d, ...pendingPatch } : d))
+      : drafts;
+    const answers = questions.map((q, i) => answerForDraft(q, resolved[i]));
     send({ skipped: false, answers });
   }
 
@@ -105,96 +214,60 @@ export default function ClarifyingQuestionCard({
     send({ skipped: true });
   }
 
-  const isChoice = currentQuestion?.kind === "choice";
-  const isInput = currentQuestion?.kind === "input";
-  const showFooter =
-    !responded &&
-    (isInput ||
-      (isChoice &&
-        (currentQuestion.multiSelect || currentDraft?.otherSelected)));
-
   return (
-    <div className="flex justify-center w-full my-1 pr-4">
-      <div className="w-full flex flex-col">
-        <div
-          style={{ borderRadius: "20px" }}
-          className="relative border border-solid border-zinc-700 light:border-zinc-300 bg-transparent p-[18px] flex flex-col gap-[18px] overflow-hidden"
-        >
-          {!responded && (
-            <Header
-              question={currentQuestion?.question}
-              index={index}
-              total={total}
-              isSingle={isSingle}
-              responded={responded}
-              onPrev={handlePrev}
-              onNext={handleNext}
-              onClose={handleClose}
-              isFirst={isFirst}
-              isLast={isLast}
-            />
-          )}
-
-          {!responded && isInput && (
-            <InputForm
-              question={currentQuestion}
-              draft={currentDraft}
-              onChange={(value) => updateDraft({ skipped: false, value })}
-              onSubmit={isSingle ? handleSubmitAll : handleNext}
-            />
-          )}
-
-          {!responded && isChoice && (
-            <ChoiceForm
-              question={currentQuestion}
-              draft={currentDraft}
-              onChange={(patch) => updateDraft({ skipped: false, ...patch })}
-              onAutoAdvance={
-                currentQuestion.multiSelect ? null : handleAutoAdvance
-              }
-              allowSkip={allowSkip}
-              onSkip={handleSkipThis}
-            />
-          )}
-
-          {showFooter && (
-            <Footer
-              isSingle={isSingle}
-              isLast={isLast}
-              allowSkip={allowSkip && isInput}
-              answeredCount={answeredCount}
-              total={total}
-              onSkipThis={handleSkipThis}
-              onNext={handleNext}
-              onSubmitAll={handleSubmitAll}
-            />
-          )}
-
-          {responded && (
-            <SurveyBody
-              questions={questions}
-              result={
-                submittedResult?.timedOut || submittedResult?.skipped
-                  ? submittedResult
-                  : {
-                      answers: questions.map((q, i) =>
-                        answerForDraft(q, drafts[i])
-                      ),
-                    }
-              }
-            />
-          )}
-
-          {timeoutMs && !responded && (
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-zinc-700 light:bg-zinc-300">
-              <div
-                className="h-full bg-white light:bg-slate-900 transition-none"
-                style={{ width: `${progressPercent}%` }}
-              />
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+    <CardWrapper>
+      {!responded && (
+        <>
+          <Header
+            question={currentQuestion?.question}
+            index={index}
+            total={total}
+            isSingle={isSingle}
+            responded={responded}
+            onPrev={handlePrev}
+            onNext={handleNext}
+            onClose={handleClose}
+            isFirst={isFirst}
+            isLast={isLast}
+          />
+          <ActiveInputForm
+            question={currentQuestion}
+            draft={currentDraft}
+            updateDraft={updateDraft}
+            onSubmit={isSingle ? handleSubmitAll : handleNext}
+          />
+          <ActiveChoiceForm
+            question={currentQuestion}
+            draft={currentDraft}
+            updateDraft={updateDraft}
+            onAutoAdvance={handleAutoAdvance}
+            allowSkip={allowSkip}
+            onSkip={handleSkipThis}
+          />
+          <ActiveFooter
+            question={currentQuestion}
+            draft={currentDraft}
+            isSingle={isSingle}
+            isLast={isLast}
+            allowSkip={allowSkip}
+            answeredCount={answeredCount}
+            total={total}
+            onSkipThis={handleSkipThis}
+            onNext={handleNext}
+            onSubmitAll={handleSubmitAll}
+          />
+        </>
+      )}
+      {responded && (
+        <CompletedSurvey
+          questions={questions}
+          drafts={drafts}
+          submittedResult={submittedResult}
+        />
+      )}
+      {timeoutMs && !responded && (
+        <TimeoutProgressBar percent={progressPercent} />
+      )}
+    </CardWrapper>
   );
 }
