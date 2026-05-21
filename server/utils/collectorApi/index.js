@@ -207,6 +207,39 @@ class CollectorApi {
       });
   }
 
+  /**
+   * Convert an audio file in the shared hotdir to WAV via the collector's
+   * FFMPEG wrapper. The source file is trashed by the collector; caller must
+   * read and trash the resulting wav file.
+   * @param {string} filename - The filename of the source audio in the hotdir
+   * @returns {Promise<Object>} - The response from the collector API
+   */
+  async convertAudioToWav(filename = "") {
+    if (!filename) return false;
+
+    const data = JSON.stringify({ filename });
+    return await fetch(`${this.endpoint}/util/convert-audio-to-wav`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Integrity": this.comkey.sign(data),
+        "X-Payload-Signer": this.comkey.encrypt(
+          new EncryptionManager().xPayload
+        ),
+      },
+      body: data,
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Response could not be completed");
+        return res.json();
+      })
+      .then((res) => res)
+      .catch((e) => {
+        this.log(e.message);
+        return { success: false, reason: e.message, wavFilename: null };
+      });
+  }
+
   // We will not ever expose the document processor to the frontend API so instead we relay
   // all requests through the server. You can use this function to directly expose a specific endpoint
   // on the document processor.
