@@ -205,6 +205,21 @@ async function tooledStream(
 
   const toolCallsByIndex = {};
   let usage = null;
+  let reasoningText = "";
+
+  // Emit a `</think>` chunk and reset reasoning state. Used whenever we
+  // transition out of a reasoning stretch (into visible text, into a tool
+  // call, or at end of stream) so the frontend regex stays balanced.
+  const closeReasoningIfOpen = () => {
+    if (reasoningText.length === 0) return;
+    result.textResponse += "</think>";
+    eventHandler?.("reportStreamEvent", {
+      type: "textResponseChunk",
+      uuid: msgUUID,
+      content: "</think>",
+    });
+    reasoningText = "";
+  };
 
   for await (const chunk of stream) {
     // Capture usage from final chunk (some providers send usage after finish_reason)
@@ -215,7 +230,26 @@ async function tooledStream(
     if (!chunk?.choices?.[0]) continue;
     const choice = chunk.choices[0];
 
+    // Reasoning models (LM Studio, Lemonade, DeepSeek, etc.) emit thinking
+    // tokens via `delta.reasoning_content`. Wrap them in <think>...</think>
+    // so the frontend's ThoughtContainer collapses them into a pane.
+    const reasoningToken = choice.delta?.reasoning_content;
+    if (reasoningToken) {
+      const wrappedChunk =
+        reasoningText.length === 0
+          ? `<think>${reasoningToken}`
+          : reasoningToken;
+      reasoningText += reasoningToken;
+      result.textResponse += wrappedChunk;
+      eventHandler?.("reportStreamEvent", {
+        type: "textResponseChunk",
+        uuid: msgUUID,
+        content: wrappedChunk,
+      });
+    }
+
     if (choice.delta?.content) {
+      closeReasoningIfOpen();
       result.textResponse += choice.delta.content;
       eventHandler?.("reportStreamEvent", {
         type: "textResponseChunk",
@@ -225,6 +259,7 @@ async function tooledStream(
     }
 
     if (choice.delta?.tool_calls) {
+      closeReasoningIfOpen();
       for (const toolCall of choice.delta.tool_calls) {
         const idx = toolCall.index ?? 0;
 
@@ -259,6 +294,10 @@ async function tooledStream(
       }
     }
   }
+
+  // Defensive close in case the stream ended mid-reasoning (e.g. abort, or a
+  // provider that emits reasoning but no follow-up content/tool_call).
+  closeReasoningIfOpen();
 
   // Auto-record usage if provider is passed and usage is available
   if (provider?.recordUsage && usage) {
@@ -371,8 +410,16 @@ async function tooledComplete(
     };
   }
 
+  // Wrap any reasoning content in <think>...</think> so the frontend can
+  // collapse it into a thought pane, matching the streaming path.
+  const reasoning = completion.reasoning_content;
+  const textResponse =
+    reasoning && reasoning.trim().length > 0
+      ? `<think>${reasoning}</think>${completion.content ?? ""}`
+      : completion.content;
+
   return {
-    textResponse: completion.content,
+    textResponse,
     cost,
     usage,
   };

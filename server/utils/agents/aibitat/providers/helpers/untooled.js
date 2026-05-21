@@ -190,7 +190,16 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
     if (history[history.length - 1].role !== "user") return null;
 
     const msgUUID = v4();
+    // `textResponse` stays content-only so safeJsonParse below can still
+    // match a tool-call JSON payload. `displayedResponse` mirrors what was
+    // shown to the user — reasoning wrapped in <think>...</think> followed
+    // by content — and is returned as the text response when no tool call
+    // is parsed. The live status bubble uses human-readable framing
+    // ("Thinking:" / "Done thinking.") instead of raw tags because the
+    // StatusResponse component renders text literally.
     let textResponse = "";
+    let displayedResponse = "";
+    let reasoningText = "";
     const historyMessages = this.buildToolCallMessages(history, functions);
     const stream = await chatCb({ messages: historyMessages });
 
@@ -204,19 +213,54 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
       if (!chunk?.choices?.[0]) continue; // Skip if no choices
       const choice = chunk.choices[0];
 
-      if (choice.delta?.content) {
-        textResponse += choice.delta.content;
+      const reasoningToken = choice.delta?.reasoning_content;
+      if (reasoningToken) {
+        const liveChunk =
+          reasoningText.length === 0
+            ? `Thinking:\n\n${reasoningToken}`
+            : reasoningToken;
+        displayedResponse +=
+          reasoningText.length === 0
+            ? `<think>${reasoningToken}`
+            : reasoningToken;
+        reasoningText += reasoningToken;
         eventHandler?.("reportStreamEvent", {
           type: "statusResponse",
           uuid: msgUUID,
-          content: choice.delta.content,
+          content: liveChunk,
+        });
+      }
+
+      if (choice.delta?.content) {
+        const closingReasoning = reasoningText.length > 0;
+        const liveChunk = closingReasoning
+          ? `\n\nDone thinking.\n\n${choice.delta.content}`
+          : choice.delta.content;
+        if (closingReasoning) {
+          displayedResponse += `</think>`;
+          reasoningText = "";
+        }
+        textResponse += choice.delta.content;
+        displayedResponse += choice.delta.content;
+        eventHandler?.("reportStreamEvent", {
+          type: "statusResponse",
+          uuid: msgUUID,
+          content: liveChunk,
         });
       }
     }
 
+    // Stream ended while still inside a reasoning block (e.g. model
+    // produced only reasoning then stopped). Close the tag in the
+    // returned text so the frontend regex stays balanced.
+    if (reasoningText.length > 0) {
+      displayedResponse += `</think>`;
+      reasoningText = "";
+    }
+
     const call = safeJsonParse(textResponse, null);
     if (call === null)
-      return { toolCall: null, text: textResponse, uuid: msgUUID }; // failed to parse, so must be regular text response.
+      return { toolCall: null, text: displayedResponse, uuid: msgUUID }; // failed to parse, so must be regular text response.
 
     const { valid, reason } = this.validFuncCall(call, functions);
     if (!valid) {
@@ -335,14 +379,43 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
         );
         const msgUUID = v4();
         completion = { content: "" };
+        let reasoningText = "";
         const stream = await chatCallback({
           messages: this.cleanMsgs(messages),
         });
 
+        const closeReasoningIfOpen = () => {
+          if (reasoningText.length === 0) return;
+          completion.content += "</think>";
+          eventHandler?.("reportStreamEvent", {
+            type: "textResponseChunk",
+            uuid: msgUUID,
+            content: "</think>",
+          });
+          reasoningText = "";
+        };
+
         for await (const chunk of stream) {
           if (!chunk?.choices?.[0]) continue; // Skip if no choices
           const choice = chunk.choices[0];
+
+          const reasoningToken = choice.delta?.reasoning_content;
+          if (reasoningToken) {
+            const wrappedChunk =
+              reasoningText.length === 0
+                ? `<think>${reasoningToken}`
+                : reasoningToken;
+            reasoningText += reasoningToken;
+            completion.content += wrappedChunk;
+            eventHandler?.("reportStreamEvent", {
+              type: "textResponseChunk",
+              uuid: msgUUID,
+              content: wrappedChunk,
+            });
+          }
+
           if (choice.delta?.content) {
+            closeReasoningIfOpen();
             completion.content += choice.delta.content;
             eventHandler?.("reportStreamEvent", {
               type: "textResponseChunk",
@@ -351,6 +424,8 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
             });
           }
         }
+
+        closeReasoningIfOpen();
       }
 
       // The UnTooled class inherited Deduplicator is mostly useful to prevent the agent
@@ -414,10 +489,18 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
         // If the response from the callback is the raw OpenAI Spec response object, we can use that directly.
         // Otherwise, we will assume the response is just the string output we wanted (see: `#handleFunctionCallChat` which returns the content only)
         // This handles both streaming and non-streaming completions.
-        completion =
-          typeof response === "string"
-            ? { content: response }
-            : response.choices?.[0]?.message;
+        if (typeof response === "string") {
+          completion = { content: response };
+        } else {
+          const message = response.choices?.[0]?.message ?? {};
+          const reasoning = message.reasoning_content;
+          completion = {
+            content:
+              reasoning && reasoning.trim().length > 0
+                ? `<think>${reasoning}</think>${message.content ?? ""}`
+                : message.content,
+          };
+        }
       }
 
       // The UnTooled class inherited Deduplicator is mostly useful to prevent the agent
