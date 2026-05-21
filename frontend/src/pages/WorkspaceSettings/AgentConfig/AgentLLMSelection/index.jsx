@@ -42,6 +42,7 @@ const ENABLED_PROVIDERS = [
   "sambanova",
   "lemonade",
   "minimax",
+  "anyapi",
   // TODO: More agent support.
   // "huggingface"     // Can be done but already has issues with no-chat templated. Needs to be tested.
 ];

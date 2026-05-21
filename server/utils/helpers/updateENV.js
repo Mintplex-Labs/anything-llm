@@ -686,6 +686,16 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // AnyAPI Options
+  AnyAPIApiKey: {
+    envKey: "ANYAPI_API_KEY",
+    checks: [isNotEmpty],
+  },
+  AnyAPIModelPref: {
+    envKey: "ANYAPI_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
   // APIPie Options
   ApipieLLMApiKey: {
     envKey: "APIPIE_LLM_API_KEY",
@@ -992,6 +1002,7 @@ function supportedLLM(input = "") {
     "sambanova",
     "lemonade",
     "minimax",
+    "anyapi",
     "anythingllm-router",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;

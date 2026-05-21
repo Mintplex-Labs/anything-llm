@@ -108,6 +108,7 @@ AnythingLLM还支持多用户，您可以控制每个用户的访问权限和体
 - [SambaNova Cloud (chat models)](https://cloud.sambanova.ai/)
 - [Lemonade by AMD](https://lemonade-server.ai)
 - [Minimax](https://platform.minimax.io)
+- [AnyAPI (chat models)](https://anyapi.ai/)
 
 **支持的嵌入模型：**
 

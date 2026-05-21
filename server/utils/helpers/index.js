@@ -246,6 +246,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "minimax":
       const { MinimaxLLM } = require("../AiProviders/minimax");
       return new MinimaxLLM(embedder, model);
+    case "anyapi":
+      const { AnyAPILLM } = require("../AiProviders/anyapi");
+      return new AnyAPILLM(embedder, model);
     case "anythingllm-router":
       // Model router is handled separately in stream.js via AnythingLLMModelRouter.
       // This case should not be hit directly - if it is, throw a descriptive error.
@@ -437,6 +440,9 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "minimax":
       const { MinimaxLLM } = require("../AiProviders/minimax");
       return MinimaxLLM;
+    case "anyapi":
+      const { AnyAPILLM } = require("../AiProviders/anyapi");
+      return AnyAPILLM;
     case "anythingllm-router":
       const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
       return AnythingLLMModelRouter;
@@ -526,6 +532,8 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.LEMONADE_LLM_MODEL_PREF;
     case "minimax":
       return process.env.MINIMAX_MODEL_PREF;
+    case "anyapi":
+      return process.env.ANYAPI_MODEL_PREF;
     default:
       return null;
   }

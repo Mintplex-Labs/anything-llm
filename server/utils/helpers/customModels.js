@@ -50,6 +50,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "sambanova",
   "lemonade",
   "minimax",
+  "anyapi",
   // Embedding Engines
   "native-embedder",
   "cohere-embedder",
@@ -136,6 +137,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getLemonadeModels(basePath, "embedding");
     case "minimax":
       return await getMinimaxModels(apiKey);
+    case "anyapi":
+      return await getAnyAPIModels(apiKey);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -1071,6 +1074,77 @@ async function getSambaNovaModels(_apiKey = null) {
     console.error(`SambaNova:getSambaNovaModels`, e.message);
     return { models: [], error: "Could not fetch SambaNova Models" };
   }
+}
+
+async function getAnyAPIModels(_apiKey = null) {
+  const { OpenAI: OpenAIApi } = require("openai");
+  const apiKey =
+    _apiKey === true
+      ? process.env.ANYAPI_API_KEY
+      : _apiKey || process.env.ANYAPI_API_KEY || null;
+  const openai = new OpenAIApi({
+    baseURL: "https://api.anyapi.io/v1",
+    apiKey,
+  });
+  const models = await openai.models
+    .list()
+    .then((results) => results.data)
+    .then((models) =>
+      models.map((model) => ({
+        id: model.id,
+        name: model.id,
+        organization: model.owned_by || "anyapi",
+      }))
+    )
+    .catch((e) => {
+      console.error(`AnyAPI:listModels`, e.message);
+      return [
+        {
+          id: "gpt-4o",
+          name: "gpt-4o",
+          organization: "anyapi",
+        },
+        {
+          id: "gpt-4o-mini",
+          name: "gpt-4o-mini",
+          organization: "anyapi",
+        },
+        {
+          id: "claude-sonnet-4",
+          name: "claude-sonnet-4",
+          organization: "anyapi",
+        },
+        {
+          id: "claude-opus-4",
+          name: "claude-opus-4",
+          organization: "anyapi",
+        },
+        {
+          id: "gemini-2.5-flash",
+          name: "gemini-2.5-flash",
+          organization: "anyapi",
+        },
+        {
+          id: "gemini-2.5-pro",
+          name: "gemini-2.5-pro",
+          organization: "anyapi",
+        },
+        {
+          id: "deepseek-v3",
+          name: "deepseek-v3",
+          organization: "anyapi",
+        },
+        {
+          id: "deepseek-r1",
+          name: "deepseek-r1",
+          organization: "anyapi",
+        },
+      ];
+    });
+
+  // Api Key was successful so lets save it for future uses
+  if (models.length > 0 && !!apiKey) process.env.ANYAPI_API_KEY = apiKey;
+  return { models, error: null };
 }
 
 module.exports = {

@@ -99,6 +99,7 @@ AnythingLLMは複数ユーザーもサポートしており、インスタンス
 - [SambaNova Cloud (chat models)](https://cloud.sambanova.ai/)
 - [Lemonade by AMD](https://lemonade-server.ai)
 - [Minimax](https://platform.minimax.io)
+- [AnyAPI (chat models)](https://anyapi.ai/)
 
 **埋め込みモデル：**
 

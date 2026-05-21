@@ -42,6 +42,7 @@ import PrivateModeLogo from "@/media/llmprovider/privatemode.png";
 import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
 import LemonadeLogo from "@/media/llmprovider/lemonade.png";
 import MinimaxLogo from "@/media/llmprovider/minimax.png";
+import AnyAPILogo from "@/media/llmprovider/anyapi.png";
 
 import PreLoader from "@/components/Preloader";
 import ModelRouterOptions from "@/components/LLMSelection/ModelRouterOptions";
@@ -82,6 +83,7 @@ import PrivateModeOptions from "@/components/LLMSelection/PrivateModeOptions";
 import SambaNovaOptions from "@/components/LLMSelection/SambaNovaOptions";
 import LemonadeOptions from "@/components/LLMSelection/LemonadeOptions";
 import MinimaxOptions from "@/components/LLMSelection/MinimaxOptions";
+import AnyAPIOptions from "@/components/LLMSelection/AnyAPIOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -412,6 +414,14 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <GiteeAIOptions settings={settings} />,
     description: "Run GiteeAI's powerful LLMs.",
     requiredConfig: ["GiteeAIApiKey"],
+  },
+  {
+    name: "AnyAPI",
+    value: "anyapi",
+    logo: AnyAPILogo,
+    options: (settings) => <AnyAPIOptions settings={settings} />,
+    description: "Run LLMs via AnyAPI's unified OpenAI-compatible interface.",
+    requiredConfig: ["AnyApiKey"],
   },
   {
     name: "Minimax",

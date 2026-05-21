@@ -178,6 +178,9 @@ function getModelTag() {
     case "minimax":
       model = process.env.MINIMAX_MODEL_PREF;
       break;
+    case "anyapi":
+      model = process.env.ANYAPI_MODEL_PREF;
+      break;
     default:
       model = "--";
       break;

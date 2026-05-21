@@ -46,6 +46,7 @@ import PrivateModeLogo from "@/media/llmprovider/privatemode.png";
 import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
 import LemonadeLogo from "@/media/llmprovider/lemonade.png";
 import MinimaxLogo from "@/media/llmprovider/minimax.png";
+import AnyAPILogo from "@/media/llmprovider/anyapi.png";
 
 const LLM_PROVIDER_PRIVACY_MAP = {
   openai: {
@@ -257,6 +258,13 @@ const LLM_PROVIDER_PRIVACY_MAP = {
     name: "Minimax",
     policyUrl: "https://platform.minimax.io/protocol/privacy-policy",
     logo: MinimaxLogo,
+  },
+  anyapi: {
+    name: "AnyAPI",
+    description: [
+      "Your model and chats are only accessible on the server running AnyAPI.",
+    ],
+    logo: AnyAPILogo,
   },
 };
 

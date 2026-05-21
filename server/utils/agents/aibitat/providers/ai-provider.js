@@ -413,6 +413,14 @@ class Provider {
           apiKey: process.env.MINIMAX_API_KEY || null,
           ...config,
         });
+      case "anyapi":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.anyapi.io/v1",
+          },
+          apiKey: process.env.ANYAPI_API_KEY || null,
+          ...config,
+        });
       default:
         throw new Error(
           `Unsupported provider ${JSON.stringify(provider)} for this task.`
