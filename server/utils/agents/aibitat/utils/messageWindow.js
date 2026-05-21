@@ -1,7 +1,9 @@
 const { TokenManager } = require("../../../helpers/tiktoken");
 const Provider = require("../providers/ai-provider");
 
-// Reserve a portion of the context window for the model's response, tools, and provider overhead.
+// Reserve 15% of the context window for the model's response, tool definitions, and provider overhead.
+// Tool tokens aren't tallied directly here since the cost is provider-specific — agents with
+// large tool counts should enable ToolReranker (intelligent skill selection).
 const CONTEXT_BUDGET_RATIO = 0.85;
 
 function countMessageTokens(tokenManager, message) {
