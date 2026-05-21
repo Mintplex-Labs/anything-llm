@@ -1551,7 +1551,6 @@ const TRANSLATIONS = {
       always_allow: "Always allow {{skillName}}",
       tool_call_was_approved: "Tool call was approved",
       tool_call_was_rejected: "Tool call was rejected",
-      clarifying_question_header: "Agent needs more information",
       clarifying_skip: "Let agent decide",
       clarifying_submit: "Submit",
       clarifying_skipped: "You let the agent decide.",
