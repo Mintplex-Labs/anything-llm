@@ -989,6 +989,7 @@ async function getDeepgramSTTModels(_apiKey = null) {
         organization: "Deepgram",
       }));
 
+    // Api Key was successful so lets save it for future uses
     if (models.length > 0 && _apiKey) process.env.STT_DEEPGRAM_API_KEY = apiKey;
     return { models, error: null };
   } catch (e) {
