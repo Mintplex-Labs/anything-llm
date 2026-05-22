@@ -397,8 +397,7 @@ class ModelRouterService {
         api_session_id: apiSessionId || null,
       };
       if (!apiSessionId) countClause.include = true;
-      conversationMessageCount =
-        (await WorkspaceChats.count(countClause)) + 1;
+      conversationMessageCount = (await WorkspaceChats.count(countClause)) + 1;
     }
 
     return {

@@ -984,10 +984,35 @@ function apiWorkspaceEndpoints(app) {
           return input;
         };
 
+        const effectiveProvider =
+          workspace?.chatProvider || process.env.LLM_PROVIDER;
+        let LLMConnector;
+        if (effectiveProvider === "anythingllm-router") {
+          const {
+            AnythingLLMModelRouter,
+          } = require("../../../utils/AiProviders/modelRouter");
+          const routerWorkspace = workspace?.router_id
+            ? workspace
+            : {
+                ...workspace,
+                router_id: process.env.MODEL_ROUTER_ID
+                  ? Number(process.env.MODEL_ROUTER_ID)
+                  : null,
+              };
+          const router = new AnythingLLMModelRouter(routerWorkspace);
+          await router.resolve({ prompt: String(query) }, {});
+          LLMConnector = router.delegateProvider;
+        } else {
+          LLMConnector = getLLMProvider({
+            provider: workspace?.chatProvider,
+            model: workspace?.chatModel,
+          });
+        }
+
         const results = await VectorDb.performSimilaritySearch({
           namespace: workspace.slug,
           input: String(query),
-          LLMConnector: getLLMProvider(),
+          LLMConnector,
           similarityThreshold: parseSimilarityThreshold(),
           topN: parseTopN(),
           rerank: workspace?.vectorSearchMode === "rerank",

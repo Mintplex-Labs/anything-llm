@@ -58,16 +58,24 @@ function apiOpenAICompatibleEndpoints(app) {
       const data = [];
       const workspaces = await Workspace.where();
       for (const workspace of workspaces) {
+        let ownedBy;
         const provider = workspace?.chatProvider ?? process.env.LLM_PROVIDER;
-        let LLMProvider = getLLMProvider({
-          provider,
-          model: workspace?.chatModel,
-        });
+
+        if (provider === "anythingllm-router") {
+          ownedBy = `${provider}-${workspace?.chatModel || "auto"}`;
+        } else {
+          const LLMProvider = getLLMProvider({
+            provider,
+            model: workspace?.chatModel,
+          });
+          ownedBy = `${provider}-${LLMProvider.model}`;
+        }
+
         data.push({
           id: workspace.slug,
           object: "model",
           created: Math.floor(Number(new Date(workspace.createdAt)) / 1000),
-          owned_by: `${provider}-${LLMProvider.model}`,
+          owned_by: ownedBy,
         });
       }
       return response.status(200).json({
