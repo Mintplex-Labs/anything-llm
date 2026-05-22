@@ -17,10 +17,51 @@ async function chatSync({
 }) {
   const uuid = uuidv4();
   const chatMode = workspace?.chatMode ?? "automatic";
-  const LLMConnector = getLLMProvider({
-    provider: workspace?.chatProvider,
-    model: workspace?.chatModel,
-  });
+
+  let LLMConnector;
+  const effectiveProvider = workspace?.chatProvider || process.env.LLM_PROVIDER;
+  if (effectiveProvider === "anythingllm-router") {
+    const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
+    const { ModelRouterService } = require("../router");
+
+    const routerWorkspace = workspace?.router_id
+      ? workspace
+      : {
+          ...workspace,
+          router_id: process.env.MODEL_ROUTER_ID
+            ? Number(process.env.MODEL_ROUTER_ID)
+            : null,
+        };
+
+    const router = new AnythingLLMModelRouter(routerWorkspace);
+    const ctx = await ModelRouterService.gatherRoutingContext({
+      workspace,
+      message: prompt,
+      chatHistoryOverride: {
+        rawHistory: history,
+        chatHistory: history,
+      },
+      messageCountOverride: history.length,
+    });
+
+    await router.resolve(
+      {
+        prompt,
+        conversationTokenCount: ctx.conversationTokenCount,
+        conversationMessageCount: ctx.conversationMessageCount,
+        attachments,
+      },
+      { user: null, thread: null }
+    );
+
+    LLMConnector = router.delegateProvider;
+  } else {
+    LLMConnector = getLLMProvider({
+      provider: workspace?.chatProvider,
+      model: workspace?.chatModel,
+    });
+  }
+
   const VectorDb = getVectorDbClass();
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
@@ -220,10 +261,51 @@ async function streamChat({
 }) {
   const uuid = uuidv4();
   const chatMode = workspace?.chatMode ?? "automatic";
-  const LLMConnector = getLLMProvider({
-    provider: workspace?.chatProvider,
-    model: workspace?.chatModel,
-  });
+
+  let LLMConnector;
+  const effectiveProvider = workspace?.chatProvider || process.env.LLM_PROVIDER;
+  if (effectiveProvider === "anythingllm-router") {
+    const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
+    const { ModelRouterService } = require("../router");
+
+    const routerWorkspace = workspace?.router_id
+      ? workspace
+      : {
+          ...workspace,
+          router_id: process.env.MODEL_ROUTER_ID
+            ? Number(process.env.MODEL_ROUTER_ID)
+            : null,
+        };
+
+    const router = new AnythingLLMModelRouter(routerWorkspace);
+    const ctx = await ModelRouterService.gatherRoutingContext({
+      workspace,
+      message: prompt,
+      chatHistoryOverride: {
+        rawHistory: history,
+        chatHistory: history,
+      },
+      messageCountOverride: history.length,
+    });
+
+    await router.resolve(
+      {
+        prompt,
+        conversationTokenCount: ctx.conversationTokenCount,
+        conversationMessageCount: ctx.conversationMessageCount,
+        attachments,
+      },
+      { user: null, thread: null }
+    );
+
+    LLMConnector = router.delegateProvider;
+  } else {
+    LLMConnector = getLLMProvider({
+      provider: workspace?.chatProvider,
+      model: workspace?.chatModel,
+    });
+  }
+
   const VectorDb = getVectorDbClass();
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);

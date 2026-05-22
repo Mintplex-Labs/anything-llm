@@ -31,13 +31,16 @@ async function streamChatWithForEmbed(
     embed.workspace.openAiTemp = parseFloat(temperatureOverride);
 
   const uuid = uuidv4();
-  const { connector: LLMConnector, error: routerError } =
-    await resolveLLMConnectorForEmbed({
-      embed,
-      chatModel,
-      message,
-      sessionId,
-    });
+  const {
+    connector: LLMConnector,
+    prefetchedContext,
+    error: routerError,
+  } = await resolveLLMConnectorForEmbed({
+    embed,
+    chatModel,
+    message,
+    sessionId,
+  });
 
   if (routerError) {
     return writeResponseChunk(response, {
@@ -76,31 +79,29 @@ async function streamChatWithForEmbed(
   let contextTexts = [];
   let sources = [];
   let pinnedDocIdentifiers = [];
-  const { rawHistory, chatHistory } = await recentEmbedChatHistory(
-    sessionId,
-    embed,
-    messageLimit
-  );
+  const {
+    rawHistory,
+    chatHistory,
+    pinnedDocs: prefetchedPinnedDocs,
+  } = prefetchedContext ??
+  (await recentEmbedChatHistory(sessionId, embed, messageLimit));
 
-  // See stream.js comment for more information on this implementation.
-  await new DocumentManager({
-    workspace: embed.workspace,
-    maxTokens: LLMConnector.promptWindowLimit(),
-  })
-    .pinnedDocs()
-    .then((pinnedDocs) => {
-      pinnedDocs.forEach((doc) => {
-        const { pageContent, ...metadata } = doc;
-        pinnedDocIdentifiers.push(sourceIdentifier(doc));
-        contextTexts.push(doc.pageContent);
-        sources.push({
-          text:
-            pageContent.slice(0, 1_000) +
-            "...continued on in source document...",
-          ...metadata,
-        });
-      });
+  const pinnedDocs =
+    prefetchedPinnedDocs ??
+    (await new DocumentManager({
+      workspace: embed.workspace,
+      maxTokens: LLMConnector.promptWindowLimit(),
+    }).pinnedDocs());
+  pinnedDocs.forEach((doc) => {
+    const { pageContent, ...metadata } = doc;
+    pinnedDocIdentifiers.push(sourceIdentifier(doc));
+    contextTexts.push(doc.pageContent);
+    sources.push({
+      text:
+        pageContent.slice(0, 1_000) + "...continued on in source document...",
+      ...metadata,
     });
+  });
 
   const vectorSearchResults =
     embeddingsCount !== 0
@@ -259,14 +260,14 @@ async function resolveLLMConnectorForEmbed({
         provider: workspace?.chatProvider,
         model: chatModel ?? workspace?.chatModel,
       }),
+      prefetchedContext: null,
       error: null,
     };
   }
 
   try {
     const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
-    const { TokenManager } = require("../helpers/tiktoken");
-
+    const { ModelRouterService } = require("../router");
     const routerWorkspace = workspace?.router_id
       ? workspace
       : {
@@ -277,18 +278,28 @@ async function resolveLLMConnectorForEmbed({
         };
 
     const router = new AnythingLLMModelRouter(routerWorkspace);
-    const tokenManager = new TokenManager();
-    const conversationTokenCount = tokenManager.countFromString(message);
-    const conversationMessageCount = await EmbedChats.count({
+    const messageLimit = workspace?.openAiHistory || 20;
+    const embedHistory = await recentEmbedChatHistory(
+      sessionId,
+      embed,
+      messageLimit
+    );
+    const embedMessageCount = await EmbedChats.count({
       embed_id: embed.id,
       session_id: sessionId,
+    });
+    const ctx = await ModelRouterService.gatherRoutingContext({
+      workspace,
+      message,
+      chatHistoryOverride: embedHistory,
+      messageCountOverride: embedMessageCount,
     });
 
     await router.resolve(
       {
         prompt: message,
-        conversationTokenCount,
-        conversationMessageCount,
+        conversationTokenCount: ctx.conversationTokenCount,
+        conversationMessageCount: ctx.conversationMessageCount,
         attachments: [],
       },
       { user: null, thread: null }
@@ -296,11 +307,17 @@ async function resolveLLMConnectorForEmbed({
 
     return {
       connector: router.delegateProvider,
+      prefetchedContext: {
+        rawHistory: embedHistory.rawHistory,
+        chatHistory: embedHistory.chatHistory,
+        pinnedDocs: ctx.pinnedDocs,
+      },
       error: null,
     };
   } catch (routerError) {
     return {
       connector: null,
+      prefetchedContext: null,
       error: `Model router error: ${routerError.message}`,
     };
   }

@@ -189,7 +189,7 @@ async function chatSync({
     // After this, we conclude the call as we normally do.
     return await eventListener
       .waitForClose()
-      .then(async ({ thoughts, textResponse, outputs }) => {
+      .then(async ({ thoughts, textResponse, outputs, metrics }) => {
         // Merge outputs from packMessages with outputs from aibitat (contains file download metadata with proper types)
         // These are needed for the download endpoint to authorize file access
         const allOutputs = [...outputs, ...agentHandler.getPendingOutputs()];
@@ -204,6 +204,7 @@ async function chatSync({
             type: chatMode,
             thoughts,
             outputs: allOutputs,
+            metrics,
           },
           include: false,
           apiSessionId: sessionId,
@@ -217,14 +218,53 @@ async function chatSync({
           textResponse,
           thoughts,
           outputs,
+          metrics,
         };
       });
   }
 
-  const LLMConnector = getLLMProvider({
-    provider: workspace?.chatProvider,
-    model: workspace?.chatModel,
-  });
+  let LLMConnector;
+  const effectiveProvider = workspace?.chatProvider || process.env.LLM_PROVIDER;
+  if (effectiveProvider === "anythingllm-router") {
+    const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
+    const { ModelRouterService } = require("../router");
+
+    const routerWorkspace = workspace?.router_id
+      ? workspace
+      : {
+          ...workspace,
+          router_id: process.env.MODEL_ROUTER_ID
+            ? Number(process.env.MODEL_ROUTER_ID)
+            : null,
+        };
+
+    const router = new AnythingLLMModelRouter(routerWorkspace);
+    const ctx = await ModelRouterService.gatherRoutingContext({
+      workspace,
+      user,
+      thread,
+      message,
+      apiSessionId: sessionId,
+    });
+
+    await router.resolve(
+      {
+        prompt: message,
+        conversationTokenCount: ctx.conversationTokenCount,
+        conversationMessageCount: ctx.conversationMessageCount,
+        attachments,
+      },
+      { user, thread }
+    );
+
+    LLMConnector = router.delegateProvider;
+  } else {
+    LLMConnector = getLLMProvider({
+      provider: workspace?.chatProvider,
+      model: workspace?.chatModel,
+    });
+  }
+
   const VectorDb = getVectorDbClass();
   const messageLimit = workspace?.openAiHistory || 20;
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
@@ -548,7 +588,7 @@ async function streamChat({
     // and stream back any results we get from agents as they come in.
     return eventListener
       .streamAgentEvents(response, uuid)
-      .then(async ({ thoughts, textResponse, outputs }) => {
+      .then(async ({ thoughts, textResponse, outputs, metrics }) => {
         // Merge outputs from packMessages with outputs from aibitat (contains file download metadata with proper types)
         // These are needed for the download endpoint to authorize file access
         const allOutputs = [...outputs, ...agentHandler.getPendingOutputs()];
@@ -563,6 +603,7 @@ async function streamChat({
             type: chatMode,
             thoughts,
             outputs: allOutputs,
+            metrics,
           },
           include: true,
           threadId: thread?.id || null,
@@ -576,14 +617,52 @@ async function streamChat({
           outputs,
           close: true,
           error: false,
+          metrics,
         });
       });
   }
 
-  const LLMConnector = getLLMProvider({
-    provider: workspace?.chatProvider,
-    model: workspace?.chatModel,
-  });
+  let LLMConnector;
+  const effectiveProvider = workspace?.chatProvider || process.env.LLM_PROVIDER;
+  if (effectiveProvider === "anythingllm-router") {
+    const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
+    const { ModelRouterService } = require("../router");
+
+    const routerWorkspace = workspace?.router_id
+      ? workspace
+      : {
+          ...workspace,
+          router_id: process.env.MODEL_ROUTER_ID
+            ? Number(process.env.MODEL_ROUTER_ID)
+            : null,
+        };
+
+    const router = new AnythingLLMModelRouter(routerWorkspace);
+    const ctx = await ModelRouterService.gatherRoutingContext({
+      workspace,
+      user,
+      thread,
+      message,
+      apiSessionId: sessionId,
+    });
+
+    await router.resolve(
+      {
+        prompt: message,
+        conversationTokenCount: ctx.conversationTokenCount,
+        conversationMessageCount: ctx.conversationMessageCount,
+        attachments,
+      },
+      { user, thread }
+    );
+
+    LLMConnector = router.delegateProvider;
+  } else {
+    LLMConnector = getLLMProvider({
+      provider: workspace?.chatProvider,
+      model: workspace?.chatModel,
+    });
+  }
 
   const VectorDb = getVectorDbClass();
   const messageLimit = workspace?.openAiHistory || 20;

@@ -292,6 +292,126 @@ class ModelRouterService {
   }
 
   // ─────────────────────────────────────────────────────────────────────────────
+  // Conversation context helpers
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  /**
+   * Gather all conversation context needed for routing decisions. Fetches
+   * chat history, system prompt, pinned docs, and parsed files — everything
+   * that contributes to the token count sent to the LLM.
+   *
+   * Returns all fetched data so callers can re-use it downstream without
+   * hitting the DB or filesystem a second time.
+   *
+   * @param {Object} opts
+   * @param {Object} opts.workspace - The workspace record
+   * @param {Object|null} [opts.user] - The user object (or null)
+   * @param {Object|null} [opts.thread] - The thread object with at least { id } (or null)
+   * @param {string} opts.message - The current user prompt
+   * @param {Object} [opts.chatHistoryOverride] - If provided, skip DB lookup and use these directly
+   * @param {Object[]} [opts.chatHistoryOverride.rawHistory] - Raw DB rows
+   * @param {{role:string,content:string}[]} [opts.chatHistoryOverride.chatHistory] - Prompt-formatted history
+   * @param {number|null} [opts.messageCountOverride] - If provided, use this as the true message count instead of querying WorkspaceChats
+   * @param {string|null} [opts.apiSessionId] - If provided, scope chat history and count to this API session
+   * @returns {Promise<{
+   *   rawHistory: Object[],
+   *   chatHistory: {role:string,content:string}[],
+   *   systemPrompt: string,
+   *   contextTexts: string[],
+   *   pinnedDocs: Object[],
+   *   parsedFiles: Object[],
+   *   conversationTokenCount: number,
+   *   conversationMessageCount: number
+   * }>}
+   */
+  static async gatherRoutingContext({
+    workspace,
+    user = null,
+    thread = null,
+    message = "",
+    chatHistoryOverride = null,
+    messageCountOverride = null,
+    apiSessionId = null,
+  }) {
+    const { chatPrompt, recentChatHistory } = require("../chats");
+    const { DocumentManager } = require("../DocumentManager");
+    const {
+      WorkspaceParsedFiles,
+    } = require("../../models/workspaceParsedFiles");
+    const { TokenManager } = require("../helpers/tiktoken");
+
+    const messageLimit = workspace?.openAiHistory || 20;
+
+    const { rawHistory, chatHistory } = chatHistoryOverride
+      ? chatHistoryOverride
+      : await recentChatHistory({
+          user,
+          workspace,
+          thread,
+          messageLimit,
+          apiSessionId,
+        });
+
+    const systemPrompt = await chatPrompt(workspace, user, {
+      prompt: message,
+      rawHistory,
+    });
+
+    const pinnedDocs = await new DocumentManager({ workspace }).pinnedDocs();
+    const parsedFiles = await WorkspaceParsedFiles.getContextFiles(
+      workspace,
+      thread || null,
+      user || null
+    );
+
+    const contextTexts = [
+      ...pinnedDocs.map((doc) => doc.pageContent),
+      ...parsedFiles.map((doc) => doc.pageContent),
+    ];
+
+    const tokenManager = new TokenManager();
+    const systemTokens = tokenManager.countFromString(systemPrompt);
+    const contextTokens = contextTexts.reduce(
+      (sum, text) => sum + tokenManager.countFromString(text || ""),
+      0
+    );
+    const historyTokens = chatHistory.reduce(
+      (sum, msg) => sum + tokenManager.countFromString(msg.content || ""),
+      0
+    );
+    const messageTokens = tokenManager.countFromString(message);
+
+    // Use the true DB count for message count rather than the capped
+    // chatHistory length, so routing rules based on conversation length
+    // evaluate against the real total.
+    let conversationMessageCount;
+    if (messageCountOverride != null) {
+      conversationMessageCount = messageCountOverride;
+    } else {
+      const { WorkspaceChats } = require("../../models/workspaceChats");
+      conversationMessageCount = await WorkspaceChats.count({
+        workspaceId: workspace.id,
+        user_id: user?.id || null,
+        thread_id: thread?.id || null,
+        api_session_id: apiSessionId || null,
+        include: true,
+      });
+    }
+
+    return {
+      rawHistory,
+      chatHistory,
+      systemPrompt,
+      contextTexts,
+      pinnedDocs,
+      parsedFiles,
+      conversationTokenCount:
+        systemTokens + contextTokens + historyTokens + messageTokens,
+      conversationMessageCount,
+    };
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────
   // Route evaluation
   // ─────────────────────────────────────────────────────────────────────────────
 

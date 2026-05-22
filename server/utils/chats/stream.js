@@ -54,10 +54,11 @@ async function streamChatWithWorkspace(
   const {
     connector: LLMConnector,
     routingMetadata,
+    prefetchedContext,
     error: routerError,
   } = await resolveLLMConnector({
     workspace,
-    message,
+    message: updatedMessage,
     user,
     thread,
     attachments,
@@ -127,44 +128,42 @@ async function streamChatWithWorkspace(
   let contextTexts = [];
   let sources = [];
   let pinnedDocIdentifiers = [];
-  const { rawHistory, chatHistory } = await recentChatHistory({
-    user,
-    workspace,
-    thread,
-    messageLimit,
+
+  // If the router pre-fetched context we can reuse it; otherwise fetch fresh.
+  const {
+    rawHistory,
+    chatHistory,
+    pinnedDocs: prefetchedPinnedDocs,
+    parsedFiles: prefetchedParsedFiles,
+  } = prefetchedContext ??
+  (await recentChatHistory({ user, workspace, thread, messageLimit }));
+
+  // Pinned docs — reuse pre-fetched if available, otherwise fetch with token cap.
+  const pinnedDocs =
+    prefetchedPinnedDocs ??
+    (await new DocumentManager({
+      workspace,
+      maxTokens: LLMConnector.promptWindowLimit(),
+    }).pinnedDocs());
+  pinnedDocs.forEach((doc) => {
+    const { pageContent, ...metadata } = doc;
+    pinnedDocIdentifiers.push(sourceIdentifier(doc));
+    contextTexts.push(doc.pageContent);
+    sources.push({
+      text:
+        pageContent.slice(0, 1_000) + "...continued on in source document...",
+      ...metadata,
+    });
   });
 
-  // Look for pinned documents and see if the user decided to use this feature. We will also do a vector search
-  // as pinning is a supplemental tool but it should be used with caution since it can easily blow up a context window.
-  // However we limit the maximum of appended context to 80% of its overall size, mostly because if it expands beyond this
-  // it will undergo prompt compression anyway to make it work. If there is so much pinned that the context here is bigger than
-  // what the model can support - it would get compressed anyway and that really is not the point of pinning. It is really best
-  // suited for high-context models.
-  await new DocumentManager({
-    workspace,
-    maxTokens: LLMConnector.promptWindowLimit(),
-  })
-    .pinnedDocs()
-    .then((pinnedDocs) => {
-      pinnedDocs.forEach((doc) => {
-        const { pageContent, ...metadata } = doc;
-        pinnedDocIdentifiers.push(sourceIdentifier(doc));
-        contextTexts.push(doc.pageContent);
-        sources.push({
-          text:
-            pageContent.slice(0, 1_000) +
-            "...continued on in source document...",
-          ...metadata,
-        });
-      });
-    });
-
-  // Inject any parsed files for this workspace/thread/user
-  const parsedFiles = await WorkspaceParsedFiles.getContextFiles(
-    workspace,
-    thread || null,
-    user || null
-  );
+  // Parsed files — reuse pre-fetched if available, otherwise fetch fresh.
+  const parsedFiles =
+    prefetchedParsedFiles ??
+    (await WorkspaceParsedFiles.getContextFiles(
+      workspace,
+      thread || null,
+      user || null
+    ));
   parsedFiles.forEach((doc) => {
     const { pageContent, ...metadata } = doc;
     contextTexts.push(doc.pageContent);
@@ -256,10 +255,13 @@ async function streamChatWithWorkspace(
 
   // Compress & Assemble message to ensure prompt passes token limit with room for response
   // and build system messages based on inputs and history.
-  const systemPrompt = await chatPrompt(workspace, user, {
-    prompt: updatedMessage,
-    rawHistory,
-  });
+  // Reuse the system prompt from routing pre-fetch when available.
+  const systemPrompt =
+    prefetchedContext?.systemPrompt ??
+    (await chatPrompt(workspace, user, {
+      prompt: updatedMessage,
+      rawHistory,
+    }));
   const messages = await LLMConnector.compressMessages(
     {
       systemPrompt,
@@ -363,13 +365,14 @@ async function resolveLLMConnector({
         model: workspace?.chatModel,
       }),
       routingMetadata: null,
+      prefetchedContext: null,
       error: null,
     };
   }
 
   try {
     const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
-    const { TokenManager } = require("../helpers/tiktoken");
+    const { ModelRouterService } = require("../router");
 
     const routerWorkspace = workspace?.router_id
       ? workspace
@@ -381,20 +384,18 @@ async function resolveLLMConnector({
         };
 
     const router = new AnythingLLMModelRouter(routerWorkspace);
-    const tokenManager = new TokenManager();
-    const conversationTokenCount = tokenManager.countFromString(message);
-    const conversationMessageCount = await WorkspaceChats.count({
-      workspaceId: workspace.id,
-      user_id: user?.id || null,
-      thread_id: thread?.id || null,
-      include: true,
+    const ctx = await ModelRouterService.gatherRoutingContext({
+      workspace,
+      user,
+      thread,
+      message,
     });
 
     await router.resolve(
       {
         prompt: message,
-        conversationTokenCount,
-        conversationMessageCount,
+        conversationTokenCount: ctx.conversationTokenCount,
+        conversationMessageCount: ctx.conversationMessageCount,
         attachments,
       },
       { user, thread }
@@ -403,12 +404,14 @@ async function resolveLLMConnector({
     return {
       connector: router.delegateProvider,
       routingMetadata: router.routingMetadata,
+      prefetchedContext: ctx,
       error: null,
     };
   } catch (routerError) {
     return {
       connector: null,
       routingMetadata: null,
+      prefetchedContext: null,
       error: `Model router error: ${routerError.message}`,
     };
   }
