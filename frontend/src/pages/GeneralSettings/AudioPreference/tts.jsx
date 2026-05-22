@@ -9,12 +9,14 @@ import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import ElevenLabsIcon from "@/media/ttsproviders/elevenlabs.png";
 import PiperTTSIcon from "@/media/ttsproviders/piper.png";
 import GenericOpenAiLogo from "@/media/ttsproviders/generic-openai.png";
+import KokoroIcon from "@/media/ttsproviders/kokoro.png";
 
 import BrowserNative from "@/components/TextToSpeech/BrowserNative";
 import OpenAiTTSOptions from "@/components/TextToSpeech/OpenAiOptions";
 import ElevenLabsTTSOptions from "@/components/TextToSpeech/ElevenLabsOptions";
 import PiperTTSOptions from "@/components/TextToSpeech/PiperTTSOptions";
 import OpenAiGenericTTSOptions from "@/components/TextToSpeech/OpenAiGenericOptions";
+import KokoroTTSOptions from "@/components/TextToSpeech/KokoroOptions";
 
 const PROVIDERS = [
   {
@@ -52,6 +54,14 @@ const PROVIDERS = [
     options: (settings) => <OpenAiGenericTTSOptions settings={settings} />,
     description:
       "Connect to an OpenAI compatible TTS service running locally or remotely.",
+  },
+  {
+    name: "Kokoro",
+    value: "kokoro",
+    logo: KokoroIcon,
+    options: (settings) => <KokoroTTSOptions settings={settings} />,
+    description:
+      "Connect to a self-hosted kokoro-fastapi server for high-quality open-source voices.",
   },
 ];
 

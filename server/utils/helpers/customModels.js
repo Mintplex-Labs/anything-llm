@@ -18,6 +18,7 @@ const { getAllLemonadeModels } = require("../AiProviders/lemonade");
 
 const SUPPORT_CUSTOM_MODELS = [
   "openai",
+  "kokoro-tts",
   "anthropic",
   "localai",
   "ollama",
@@ -64,6 +65,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
   switch (provider) {
     case "openai":
       return await openAiModels(apiKey);
+    case "kokoro-tts":
+      return await kokoroTtsVoices(basePath, apiKey);
     case "anthropic":
       return await anthropicModels(apiKey);
     case "localai":
@@ -244,6 +247,37 @@ async function openAiModels(apiKey = null) {
   if ((gpts.length > 0 || customModels.length > 0) && !!apiKey)
     process.env.OPEN_AI_KEY = apiKey;
   return { models: [...gpts, ...customModels], error: null };
+}
+
+// Pulls the live voice list from a self-hosted kokoro-fastapi server's
+// /audio/voices endpoint. basePath is the OpenAI-compatible base URL the
+// user pointed at their kokoro instance (e.g. http://localhost:8880/v1).
+async function kokoroTtsVoices(basePath = null, apiKey = null) {
+  const endpoint = basePath || process.env.TTS_KOKORO_ENDPOINT;
+  if (!endpoint)
+    return { models: [], error: "No Kokoro endpoint was provided." };
+
+  const url = `${endpoint.replace(/\/+$/, "")}/audio/voices`;
+  const headers = { "Content-Type": "application/json" };
+  const key = typeof apiKey === "boolean" ? null : apiKey;
+  if (key) headers.Authorization = `Bearer ${key}`;
+
+  const voices = await fetch(url, { method: "GET", headers })
+    .then((res) => {
+      if (!res.ok) throw new Error(res.statusText || "Failed to load voices");
+      return res.json();
+    })
+    .then((data) => (Array.isArray(data?.voices) ? data.voices : []))
+    .catch((e) => {
+      console.error(`Kokoro:listVoices`, e.message);
+      return null;
+    });
+
+  if (!voices)
+    return { models: [], error: "Could not reach Kokoro voices endpoint." };
+
+  const models = voices.map((id) => ({ id, name: id, organization: "Kokoro" }));
+  return { models, error: null };
 }
 
 async function anthropicModels(_apiKey = null) {
