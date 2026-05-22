@@ -275,9 +275,7 @@ function isWithin(outer, inner) {
   // Reject parent traversal and absolute paths
   // path.relative() returns an absolute path when paths are on different drives on Windows
   return (
-    !rel.startsWith(`..${path.sep}`) &&
-    rel !== ".." &&
-    !path.isAbsolute(rel)
+    !rel.startsWith(`..${path.sep}`) && rel !== ".." && !path.isAbsolute(rel)
   );
 }
 
