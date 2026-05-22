@@ -389,13 +389,14 @@ class ModelRouterService {
       conversationMessageCount = messageCountOverride;
     } else {
       const { WorkspaceChats } = require("../../models/workspaceChats");
-      conversationMessageCount = await WorkspaceChats.count({
+      const countClause = {
         workspaceId: workspace.id,
         user_id: user?.id || null,
         thread_id: thread?.id || null,
         api_session_id: apiSessionId || null,
-        include: true,
-      });
+      };
+      if (!apiSessionId) countClause.include = true;
+      conversationMessageCount = await WorkspaceChats.count(countClause);
     }
 
     return {
