@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require("uuid");
 const { DocumentManager } = require("../DocumentManager");
 const { WorkspaceChats } = require("../../models/workspaceChats");
-const { getVectorDbClass, getLLMProvider } = require("../helpers");
+const { getVectorDbClass, resolveProviderConnector } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const {
   chatPrompt,
@@ -223,47 +223,14 @@ async function chatSync({
       });
   }
 
-  let LLMConnector;
-  const effectiveProvider = workspace?.chatProvider || process.env.LLM_PROVIDER;
-  if (effectiveProvider === "anythingllm-router") {
-    const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
-    const { ModelRouterService } = require("../router");
-
-    const routerWorkspace = workspace?.router_id
-      ? workspace
-      : {
-          ...workspace,
-          router_id: process.env.MODEL_ROUTER_ID
-            ? Number(process.env.MODEL_ROUTER_ID)
-            : null,
-        };
-
-    const router = new AnythingLLMModelRouter(routerWorkspace);
-    const ctx = await ModelRouterService.gatherRoutingContext({
-      workspace,
-      user,
-      thread,
-      message,
-      apiSessionId: sessionId,
-    });
-
-    await router.resolve(
-      {
-        prompt: message,
-        conversationTokenCount: ctx.conversationTokenCount,
-        conversationMessageCount: ctx.conversationMessageCount,
-        attachments,
-      },
-      { user, thread }
-    );
-
-    LLMConnector = router.delegateProvider;
-  } else {
-    LLMConnector = getLLMProvider({
-      provider: workspace?.chatProvider,
-      model: workspace?.chatModel,
-    });
-  }
+  const { connector: LLMConnector } = await resolveProviderConnector({
+    workspace,
+    prompt: message,
+    user,
+    thread,
+    attachments,
+    apiSessionId: sessionId,
+  });
 
   const VectorDb = getVectorDbClass();
   const messageLimit = workspace?.openAiHistory || 20;
@@ -622,47 +589,14 @@ async function streamChat({
       });
   }
 
-  let LLMConnector;
-  const effectiveProvider = workspace?.chatProvider || process.env.LLM_PROVIDER;
-  if (effectiveProvider === "anythingllm-router") {
-    const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
-    const { ModelRouterService } = require("../router");
-
-    const routerWorkspace = workspace?.router_id
-      ? workspace
-      : {
-          ...workspace,
-          router_id: process.env.MODEL_ROUTER_ID
-            ? Number(process.env.MODEL_ROUTER_ID)
-            : null,
-        };
-
-    const router = new AnythingLLMModelRouter(routerWorkspace);
-    const ctx = await ModelRouterService.gatherRoutingContext({
-      workspace,
-      user,
-      thread,
-      message,
-      apiSessionId: sessionId,
-    });
-
-    await router.resolve(
-      {
-        prompt: message,
-        conversationTokenCount: ctx.conversationTokenCount,
-        conversationMessageCount: ctx.conversationMessageCount,
-        attachments,
-      },
-      { user, thread }
-    );
-
-    LLMConnector = router.delegateProvider;
-  } else {
-    LLMConnector = getLLMProvider({
-      provider: workspace?.chatProvider,
-      model: workspace?.chatModel,
-    });
-  }
+  const { connector: LLMConnector } = await resolveProviderConnector({
+    workspace,
+    prompt: message,
+    user,
+    thread,
+    attachments,
+    apiSessionId: sessionId,
+  });
 
   const VectorDb = getVectorDbClass();
   const messageLimit = workspace?.openAiHistory || 20;

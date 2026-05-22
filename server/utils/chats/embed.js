@@ -1,5 +1,5 @@
 const { v4: uuidv4 } = require("uuid");
-const { getVectorDbClass, getLLMProvider } = require("../helpers");
+const { getVectorDbClass, resolveProviderConnector } = require("../helpers");
 const { chatPrompt, sourceIdentifier } = require("./index");
 const { EmbedChats } = require("../../models/embedChats");
 const {
@@ -250,34 +250,12 @@ async function resolveLLMConnectorForEmbed({
   message,
   sessionId,
 }) {
-  const workspace = embed?.workspace;
-  const effectiveProvider = workspace?.chatProvider || process.env.LLM_PROVIDER;
-  const isRouterProvider = effectiveProvider === "anythingllm-router";
-
-  if (!isRouterProvider) {
-    return {
-      connector: getLLMProvider({
-        provider: workspace?.chatProvider,
-        model: chatModel ?? workspace?.chatModel,
-      }),
-      prefetchedContext: null,
-      error: null,
-    };
-  }
-
+  // If a chat model is provided, use it to override the workspace chat model
+  // otherwise use the workspace chat model as we do everywhere else.
+  const workspace = chatModel
+    ? { ...embed?.workspace, chatModel }
+    : embed?.workspace;
   try {
-    const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
-    const { ModelRouterService } = require("../router");
-    const routerWorkspace = workspace?.router_id
-      ? workspace
-      : {
-          ...workspace,
-          router_id: process.env.MODEL_ROUTER_ID
-            ? Number(process.env.MODEL_ROUTER_ID)
-            : null,
-        };
-
-    const router = new AnythingLLMModelRouter(routerWorkspace);
     const messageLimit = workspace?.openAiHistory || 20;
     const embedHistory = await recentEmbedChatHistory(
       sessionId,
@@ -287,31 +265,26 @@ async function resolveLLMConnectorForEmbed({
     const embedMessageCount = await EmbedChats.count({
       embed_id: embed.id,
       session_id: sessionId,
-    });
-    const ctx = await ModelRouterService.gatherRoutingContext({
-      workspace,
-      message,
-      chatHistoryOverride: embedHistory,
-      messageCountOverride: embedMessageCount,
+      include: true,
     });
 
-    await router.resolve(
-      {
-        prompt: message,
-        conversationTokenCount: ctx.conversationTokenCount,
-        conversationMessageCount: ctx.conversationMessageCount,
-        attachments: [],
-      },
-      { user: null, thread: null }
-    );
+    const { connector, prefetchedContext } = await resolveProviderConnector({
+      workspace,
+      prompt: message,
+      chatHistoryOverride: embedHistory,
+      // +1 to include the current in-flight message to ensure routing rules are evaluated against the real total.
+      messageCountOverride: embedMessageCount + 1,
+    });
 
     return {
-      connector: router.delegateProvider,
-      prefetchedContext: {
-        rawHistory: embedHistory.rawHistory,
-        chatHistory: embedHistory.chatHistory,
-        pinnedDocs: ctx.pinnedDocs,
-      },
+      connector,
+      prefetchedContext: prefetchedContext
+        ? {
+            rawHistory: embedHistory.rawHistory,
+            chatHistory: embedHistory.chatHistory,
+            pinnedDocs: prefetchedContext.pinnedDocs,
+          }
+        : null,
       error: null,
     };
   } catch (routerError) {

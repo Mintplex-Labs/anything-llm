@@ -1,5 +1,8 @@
 const { v4 } = require("uuid");
-const { getVectorDbClass, getLLMProvider } = require("../../../helpers");
+const {
+  getVectorDbClass,
+  resolveProviderConnector,
+} = require("../../../helpers");
 const { Deduplicator } = require("../utils/dedupe");
 
 const memory = {
@@ -81,30 +84,11 @@ const memory = {
           search: async function (query = "") {
             try {
               const workspace = this.super.handlerProps.invocation.workspace;
-              const effectiveProvider =
-                workspace?.chatProvider || process.env.LLM_PROVIDER;
-              let LLMConnector;
-              if (effectiveProvider === "anythingllm-router") {
-                const {
-                  AnythingLLMModelRouter,
-                } = require("../../AiProviders/modelRouter");
-                const routerWorkspace = workspace?.router_id
-                  ? workspace
-                  : {
-                      ...workspace,
-                      router_id: process.env.MODEL_ROUTER_ID
-                        ? Number(process.env.MODEL_ROUTER_ID)
-                        : null,
-                    };
-                const router = new AnythingLLMModelRouter(routerWorkspace);
-                await router.resolve({ prompt: query }, {});
-                LLMConnector = router.delegateProvider;
-              } else {
-                LLMConnector = getLLMProvider({
-                  provider: workspace?.chatProvider,
-                  model: workspace?.chatModel,
+              const { connector: LLMConnector } =
+                await resolveProviderConnector({
+                  workspace,
+                  prompt: query,
                 });
-              }
               const vectorDB = getVectorDbClass();
               const { contextTexts = [] } =
                 await vectorDB.performSimilaritySearch({

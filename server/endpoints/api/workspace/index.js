@@ -4,7 +4,10 @@ const { Telemetry } = require("../../../models/telemetry");
 const { DocumentVectors } = require("../../../models/vectors");
 const { Workspace } = require("../../../models/workspace");
 const { WorkspaceChats } = require("../../../models/workspaceChats");
-const { getVectorDbClass, getLLMProvider } = require("../../../utils/helpers");
+const {
+  getVectorDbClass,
+  resolveProviderConnector,
+} = require("../../../utils/helpers");
 const { multiUserMode, reqBody } = require("../../../utils/http");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
 const { VALID_CHAT_MODE } = require("../../../utils/chats/stream");
@@ -984,30 +987,10 @@ function apiWorkspaceEndpoints(app) {
           return input;
         };
 
-        const effectiveProvider =
-          workspace?.chatProvider || process.env.LLM_PROVIDER;
-        let LLMConnector;
-        if (effectiveProvider === "anythingllm-router") {
-          const {
-            AnythingLLMModelRouter,
-          } = require("../../../utils/AiProviders/modelRouter");
-          const routerWorkspace = workspace?.router_id
-            ? workspace
-            : {
-                ...workspace,
-                router_id: process.env.MODEL_ROUTER_ID
-                  ? Number(process.env.MODEL_ROUTER_ID)
-                  : null,
-              };
-          const router = new AnythingLLMModelRouter(routerWorkspace);
-          await router.resolve({ prompt: String(query) }, {});
-          LLMConnector = router.delegateProvider;
-        } else {
-          LLMConnector = getLLMProvider({
-            provider: workspace?.chatProvider,
-            model: workspace?.chatModel,
-          });
-        }
+        const { connector: LLMConnector } = await resolveProviderConnector({
+          workspace,
+          prompt: String(query),
+        });
 
         const results = await VectorDb.performSimilaritySearch({
           namespace: workspace.slug,

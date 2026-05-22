@@ -2,7 +2,7 @@ const { v4: uuidv4 } = require("uuid");
 const { DocumentManager } = require("../DocumentManager");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { WorkspaceParsedFiles } = require("../../models/workspaceParsedFiles");
-const { getVectorDbClass, getLLMProvider } = require("../helpers");
+const { getVectorDbClass, resolveProviderConnector } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const { grepAgents } = require("./agents");
 const {
@@ -344,10 +344,6 @@ async function streamChatWithWorkspace(
   return;
 }
 
-/**
- * Resolves the LLM connector, either directly or via the model router.
- * @returns {Promise<{ connector: Object, routingMetadata: Object|null, error: string|null }>}
- */
 async function resolveLLMConnector({
   workspace,
   message,
@@ -355,58 +351,15 @@ async function resolveLLMConnector({
   thread,
   attachments,
 }) {
-  const effectiveProvider = workspace?.chatProvider || process.env.LLM_PROVIDER;
-  const isRouterProvider = effectiveProvider === "anythingllm-router";
-
-  if (!isRouterProvider) {
-    return {
-      connector: getLLMProvider({
-        provider: workspace?.chatProvider,
-        model: workspace?.chatModel,
-      }),
-      routingMetadata: null,
-      prefetchedContext: null,
-      error: null,
-    };
-  }
-
   try {
-    const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
-    const { ModelRouterService } = require("../router");
-
-    const routerWorkspace = workspace?.router_id
-      ? workspace
-      : {
-          ...workspace,
-          router_id: process.env.MODEL_ROUTER_ID
-            ? Number(process.env.MODEL_ROUTER_ID)
-            : null,
-        };
-
-    const router = new AnythingLLMModelRouter(routerWorkspace);
-    const ctx = await ModelRouterService.gatherRoutingContext({
+    const result = await resolveProviderConnector({
       workspace,
+      prompt: message,
       user,
       thread,
-      message,
+      attachments,
     });
-
-    await router.resolve(
-      {
-        prompt: message,
-        conversationTokenCount: ctx.conversationTokenCount,
-        conversationMessageCount: ctx.conversationMessageCount,
-        attachments,
-      },
-      { user, thread }
-    );
-
-    return {
-      connector: router.delegateProvider,
-      routingMetadata: router.routingMetadata,
-      prefetchedContext: ctx,
-      error: null,
-    };
+    return { ...result, error: null };
   } catch (routerError) {
     return {
       connector: null,
