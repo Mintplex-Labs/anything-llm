@@ -1,3 +1,6 @@
+// Set required env vars before requiring modules
+process.env.STORAGE_DIR = __dirname;
+
 const path = require("path");
 const { isWithin } = require("../../../utils/files");
 

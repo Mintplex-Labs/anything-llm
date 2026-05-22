@@ -199,11 +199,10 @@ async function wipeCollectorStorage() {
 function isWithin(outer, inner) {
   if (outer === inner) return false;
   const rel = path.relative(outer, inner);
-  // Reject parent traversal (../ on POSIX, ..\\ on Windows) and absolute paths
+  // Reject parent traversal and absolute paths
   // path.relative() returns an absolute path when paths are on different drives on Windows
   return (
-    !rel.startsWith("../") &&
-    !rel.startsWith("..\\") &&
+    !rel.startsWith(`..${path.sep}`) &&
     rel !== ".." &&
     !path.isAbsolute(rel)
   );
