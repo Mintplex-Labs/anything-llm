@@ -383,7 +383,8 @@ class ModelRouterService {
 
     // Use the true DB count for message count rather than the capped
     // chatHistory length, so routing rules based on conversation length
-    // evaluate against the real total.
+    // evaluate against the real total. +1 to include the current in-flight
+    // message so ">=3" fires on the user's 3rd message, not the 4th.
     let conversationMessageCount;
     if (messageCountOverride != null) {
       conversationMessageCount = messageCountOverride;
@@ -396,7 +397,8 @@ class ModelRouterService {
         api_session_id: apiSessionId || null,
       };
       if (!apiSessionId) countClause.include = true;
-      conversationMessageCount = await WorkspaceChats.count(countClause);
+      conversationMessageCount =
+        (await WorkspaceChats.count(countClause)) + 1;
     }
 
     return {
