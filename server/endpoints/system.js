@@ -625,6 +625,7 @@ function systemEndpoints(app) {
         await Memory.migrateToMultiUser(user.id);
         await WorkspaceChats.migrateToMultiUser(user.id);
         await MobileDevice.migrateDevicesToMultiUser(user.id);
+        await SlashCommandPresets.migrateToMultiUser(user.id);
         await AgentSkillWhitelist.clearSingleUserWhitelist();
         await updateENV(
           {
