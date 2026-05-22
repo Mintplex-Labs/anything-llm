@@ -13,7 +13,7 @@ const RuntimeSettings = require("../runtimeSettings");
  */
 
 const VALID_PROTOCOLS = ["https:", "http:"];
-const INVALID_OCTETS = [192, 172, 10, 127];
+const INVALID_OCTETS = [192, 172, 10, 127, 169];
 const runtimeSettings = new RuntimeSettings();
 
 /**

@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import { CaretDown, Check, X, Hammer } from "@phosphor-icons/react";
 import AgentSkillWhitelist from "@/models/agentSkillWhitelist";
 import { useTranslation } from "react-i18next";
+import useTimeoutProgress from "@/hooks/useTimeoutProgress";
 
 export default function ToolApprovalRequest({
   requestId,
@@ -16,29 +17,13 @@ export default function ToolApprovalRequest({
   const [responded, setResponded] = useState(false);
   const [approved, setApproved] = useState(null);
   const [alwaysAllow, setAlwaysAllow] = useState(false);
-  const [timeRemaining, setTimeRemaining] = useState(timeoutMs);
-  const startTimeRef = useRef(null);
   const hasPayload = payload && Object.keys(payload).length > 0;
 
-  useEffect(() => {
-    if (!timeoutMs || responded) return;
-    if (startTimeRef.current === null) {
-      startTimeRef.current = Date.now();
-    }
-
-    const intervalId = setInterval(() => {
-      const elapsed = Date.now() - startTimeRef.current;
-      const remaining = Math.max(0, timeoutMs - elapsed);
-      setTimeRemaining(remaining);
-
-      if (remaining <= 0) {
-        clearInterval(intervalId);
-        handleTimeout();
-      }
-    }, 50);
-
-    return () => clearInterval(intervalId);
-  }, [timeoutMs, responded]);
+  const progressPercent = useTimeoutProgress(timeoutMs, {
+    active: !responded,
+    intervalMs: 50,
+    onTimeout: handleTimeout,
+  });
 
   function handleTimeout() {
     if (responded) return;
@@ -70,8 +55,6 @@ export default function ToolApprovalRequest({
 
     onResponse?.(isApproved);
   }
-
-  const progressPercent = timeoutMs ? (timeRemaining / timeoutMs) * 100 : 0;
 
   return (
     <div className="flex justify-center w-full my-1 pr-4">

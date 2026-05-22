@@ -10,12 +10,14 @@ import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
 import StatusResponse from "./StatusResponse";
 import ToolApprovalRequest from "./ToolApprovalRequest";
+import ClarifyingQuestionCard from "./ClarifyingQuestion";
 import FileDownloadCard from "./FileDownloadCard";
 import { useManageWorkspaceModal } from "../../../Modals/ManageWorkspace";
 import ManageWorkspace from "../../../Modals/ManageWorkspace";
 import { ArrowDown } from "@phosphor-icons/react";
 import debounce from "lodash.debounce";
 import Chartable from "./Chartable";
+import ModelRouteNotification from "./ModelRouteNotification";
 import Workspace from "@/models/workspace";
 import { useParams } from "react-router-dom";
 import paths from "@/utils/paths";
@@ -294,6 +296,25 @@ function buildMessages({
       return acc;
     }
 
+    if (props.type === "modelRouteNotification") {
+      const lastMsg = history[history.length - 1];
+      const isLast =
+        index === history.length - 1 ||
+        (index === history.length - 2 &&
+          (lastMsg?.animate || lastMsg?.pending));
+      const isStreaming =
+        isLast &&
+        (index === history.length - 1 || lastMsg?.animate || lastMsg?.pending);
+      acc.push(
+        <ModelRouteNotification
+          key={`route-${props.uuid}`}
+          routedTo={props.routedTo}
+          isStreaming={isStreaming}
+        />
+      );
+      return acc;
+    }
+
     if (props.type === "toolApprovalRequest") {
       acc.push(
         <ToolApprovalRequest
@@ -302,6 +323,20 @@ function buildMessages({
           skillName={props.skillName}
           payload={props.payload}
           description={props.description}
+          timeoutMs={props.timeoutMs}
+          websocket={websocket}
+        />
+      );
+      return acc;
+    }
+
+    if (props.type === "clarifyingQuestion") {
+      acc.push(
+        <ClarifyingQuestionCard
+          key={`clarify-${props.requestId}`}
+          requestId={props.requestId}
+          questions={props.questions}
+          allowSkip={props.allowSkip}
           timeoutMs={props.timeoutMs}
           websocket={websocket}
         />
@@ -344,6 +379,7 @@ function buildMessages({
           forkThread={forkThread}
           metrics={props.metrics}
           outputs={props.outputs}
+          clarifyingQuestions={props.clarifyingQuestions}
         />
       );
     }

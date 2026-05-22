@@ -110,6 +110,7 @@ const TRANSLATIONS = {
       telegram: "Telegram",
     },
     "scheduled-jobs": "Geplande taken",
+    "model-router": "Modelrouter",
   },
   login: {
     "multi-user": {
@@ -759,6 +760,18 @@ const TRANSLATIONS = {
             "Het maximale aantal tools dat kan worden geselecteerd voor elke query. Wij raden aan om deze waarde hoger in te stellen voor modellen met een grotere context.",
         },
       },
+      "clarifying-questions": {
+        title:
+          "Laat de agent vragen stellen om de situatie beter te begrijpen.",
+        "beta-badge": "TESTFASE",
+        description:
+          "Wanneer deze functie is ingeschakeld, kunnen de agenten een korte, verduidelijkende vraag stellen als uw opdracht onduidelijk is.",
+        "max-per-turn": {
+          title: "Aantal vragen per beurt",
+          description:
+            "Hoeveel vragen voor verduidelijking mag de agent stellen tijdens één enquête?",
+        },
+      },
     },
   },
   recorded: {
@@ -1174,7 +1187,6 @@ const TRANSLATIONS = {
     similarity_match: "wedstrijd",
     source_count_one: "{{count}} verwijzing",
     source_count_other: "{{count}} referenties",
-    preset_exit_description: "Beëindig de huidige agent-sessie",
     add_new: "Voeg toe",
     edit: "Bewerk",
     publish: "Publiceren",
@@ -1196,6 +1208,21 @@ const TRANSLATIONS = {
         "De aanvraag voor het gereedschap is goedgekeurd.",
       tool_call_was_rejected:
         "De aanvraag om het gereedschap te gebruiken is afgewezen.",
+      clarifying_skip: "Laat de agent beslissen",
+      clarifying_submit: "Indienen",
+      clarifying_skipped: "U laat de agent zelf beslissen.",
+      clarifying_timeout: "Geen antwoord is op tijd ingediend.",
+      clarifying_pagination: "{{current}} van {{total}}",
+      clarifying_prev_aria: "Vorige vraag",
+      clarifying_next_aria: "Volgende vraag",
+      clarifying_close_aria: "Sluiten en overslaan",
+      clarifying_other: "Andere",
+      clarifying_other_placeholder: "Voer uw antwoord in",
+      batch_progress: "{{answered}} van {{total}} heeft gereageerd",
+      batch_skip_this: "Overslaan",
+      batch_submit_all: "Verzend alle",
+      batch_next: "Volgende",
+      answer_skipped: "[gebruiker heeft overgeslagen]",
     },
     custom_skills: "Aangepaste vaardigheden",
     agent_flows: "Stroom van agenten",
@@ -1203,6 +1230,43 @@ const TRANSLATIONS = {
     loading_mcp_servers: "MCP-servers worden geladen...",
     app_integrations: "Integraties met apps",
     sub_skills: "Specifieke vaardigheden",
+    memories: {
+      title: "Herinneringen",
+      empty:
+        "Tot nu toe zijn er geen herinneringen. Naarmate je meer interactie hebt met de chatbot, zullen er meer herinneringen worden gevuld.",
+      empty_cta: "creëer een nieuwe herinnering",
+      tab_workspace: "Werkplek",
+      tab_global: "Wereldwijd",
+      toggle: {
+        label: "Activeer personalisatie",
+        description:
+          "Laat uw assistent informatie over u of deze werkplek onthouden en deze gebruiken in gesprekken.",
+      },
+      auto_extraction: {
+        label: "Automatische herinneringen",
+        description:
+          "Laat uw assistent automatisch herinneringen creëren in de achtergrond.",
+      },
+      menu: {
+        edit: "Bewerk",
+        delete: "Verwijderen",
+        move_to_global: "Ga naar Global",
+        move_to_workspace: "Ga naar het werkgebied",
+      },
+      modal: {
+        create_title: "Creëer een herinnering",
+        edit_title: "Bewerk geheugen",
+        create_description:
+          'Herinneringen moeten een enkele, beknopte uitspraak zijn. Bijvoorbeeld: "Gebruiker geeft de voorkeur aan Python boven JavaScript".',
+        edit_description: "Update de inhoud van deze opslag.",
+        label: "Geheugen",
+        placeholder:
+          "bijvoorbeeld: De naam van de gebruiker is Joe, de gebruiker werkt aan AnythingLLM, enz.",
+        create: "Creëren",
+        save: "Opslaan",
+        cancel: "Annuleren",
+      },
+    },
   },
   profile_settings: {
     edit_account: "Account bewerken",
@@ -1684,6 +1748,187 @@ const TRANSLATIONS = {
       timed_out: "Tijdslimiet bereikt",
       running: "Hardlopen",
       queued: "In de wachtrij",
+    },
+  },
+  "model-router": {
+    title: "Modellen routers",
+    description:
+      "Met model routers kun je regels definiëren om chatberichten automatisch naar verschillende LLM-providers en modellen te sturen, op basis van bepaalde criteria.",
+    table: {
+      name: "Naam",
+      fallback: "Alternatieve oplossing",
+      rules: "Regels",
+      workspaces: "Werkplekken",
+    },
+    "no-routers": "Er zijn nog geen modellen van routers beschikbaar.",
+    "empty-description":
+      "Er zijn nog geen router-modellen geconfigureerd. Maak er een aan om te beginnen.",
+    "new-router-button": "Nieuwe router",
+    "delete-confirm":
+      'Bent u er zeker van dat u de router "{{name}}" wilt verwijderen?\nDit zal alle instellingen en verbindingen met alle werkruimtes die deze gebruiken, annuleren.\n\nDeze actie is onomkeerbaar.',
+    "toast-deleted": "Router verwijderd",
+    "toast-delete-failed": "Fout bij het verwijderen van de router: {{error}}",
+    "new-router": {
+      title: "Maak een nieuw routermodel",
+      name: "Naam",
+      "name-placeholder": "bijvoorbeeld, Kostenoptimalisatie",
+      description: "Beschrijving",
+      "description-placeholder": "Optionele beschrijving",
+      "fallback-label": "Aanbiedende partij & Model",
+      "fallback-description":
+        "Wordt gebruikt wanneer er geen routingregel overeenkomt. Wordt ook gebruikt om regels te evalueren die door een LLM (Large Language Model) zijn geclassificeerd.",
+      "cooldown-label": "Cache-tijd (seconden)",
+      "cooldown-help":
+        "Hoe lang een routebeslissing wordt opgeslagen voordat de regels opnieuw worden geëvalueerd. Stel deze waarde in op 0 om het opslaan uit te schakelen.",
+      "name-required": "Naam is verplicht.",
+      "fallback-required": "De primaire leverancier en het model zijn vereist.",
+      cancel: "Annuleren",
+      create: "Router maken",
+    },
+    "edit-router": {
+      "back-to-routers": "Terug naar routermodellen",
+      title: "Bewerk Router: {{name}}",
+      save: "Opslaan",
+      "toast-update-failed": "Kon de router niet updaten.",
+    },
+    rules: {
+      title: "Regels voor het routeren",
+      "title-with-name": "Regels voor de router: {{name}}",
+      description:
+        "Definieer de regels die bepalen wanneer en hoe chatberichten naar specifieke aanbieders en modellen worden gestuurd.",
+      "add-rule": "Voeg regel toe",
+      "delete-confirm": 'Verwijder regel "{{title}}"?',
+      "toast-delete-failed": "Fout bij het verwijderen van de regel",
+      "toast-reorder-failed": "Fout bij het opnieuw toepassen van regels",
+      "no-rules": "Er zijn nog geen regels",
+      "empty-description":
+        "Voeg een regel toe om chatberichten naar specifieke providers en modellen te routeren.",
+      "new-rule-button": "Nieuwe regel",
+      "calculated-section-label":
+        "Bepaalde regels – eerst geëvalueerd, in volgorde van prioriteit",
+      "llm-section-label":
+        "Regels voor LLM – worden geëvalueerd als een batch als er geen regel overeenkomt met de berekende waarde.",
+      "llm-rule-body":
+        "Vergelijk <desc> met {{description}} en </desc>, en ga vervolgens naar <route> {{route}} </route>",
+      "calculated-no-conditions":
+        "Geen voorwaarden – route naar <route>{{route}}</route>",
+      "calculated-single-condition":
+        'Als <prop>{{property}}</prop> {{comparator}} <val>"{{value}}"</val> dan ga naar <route>{{route}}</route>',
+      "calculated-multi-condition":
+        "Als {{quantifier}}<cond>{{conditions}}</cond> dan ga naar <route>{{route}}</route>",
+      "comparator-contains": "bevat",
+      "comparator-matches": "wedstrijden",
+      "comparator-between": "tussen",
+      "badge-llm": "Grote taalmodel",
+      "badge-calculated": "Berekend",
+      "aria-drag-to-reorder": "Sleep en laat de volgorde wijzigen",
+      "aria-edit-rule": "Regel bewerken",
+      "aria-delete-rule": "Regel verwijderen",
+      "quantifier-any": "ALLE",
+      "quantifier-all": "ALLES",
+    },
+    "rule-form": {
+      "title-label": "Titel",
+      "rule-type": "Regeltype",
+      "property-label": "Eigendom",
+      "property-select": "Selecteer",
+      "comparator-label": "Vergelijker",
+      "comparator-select": "Selecteer",
+      "value-label": "Waarde",
+      "add-condition": "Voeg een voorwaarde toe",
+      "remove-condition": "Verwijder de voorwaarde",
+      "conditions-incomplete":
+        "De conditie {{index}} is onvolledig – vul de eigenschap, vergelijkingswaarde en waarde in.",
+      "match-description-label": "Wedstrijdomschrijving",
+      "match-description-placeholder":
+        "bijvoorbeeld: de gebruiker vraagt naar juridische onderwerpen, contracten of naleving",
+      "match-description-help":
+        "Beschrijf de situatie waarin u deze regel wilt toepassen. Dit wordt geëvalueerd door uw LLM om te bepalen of deze gebruikt moet worden.",
+      "route-to-label": "Route naar de leverancier & Model",
+      "route-to-description":
+        "Als deze regel overeenkomt, gebruik dan deze aanbieder/model.",
+      cancel: "Annuleren",
+      saving: "Opslaan...",
+      "update-rule": "Regel voor bijwerken",
+      "create-rule": "Regel maken",
+      "title-required": "Een titel is vereist",
+      "toast-save-failed": "Fout bij het opslaan van de regel",
+      "type-calculated-label": "Berekend",
+      "type-calculated-description":
+        "Selecteer op basis van kenmerken van de berichten, zoals inhoud, aantal tokens, of tijdstip van de dag.",
+      "type-llm-label": "LLM - Geclassificeerd",
+      "type-llm-description":
+        "Gebruik een LLM (Large Language Model) om het bericht te categoriseren op basis van een beschrijving die u verstrekt.",
+      "prop-prompt-content": "Inhoud",
+      "prop-token-count": "Aantal gebruikte tokens in de conversatie",
+      "prop-message-count": "Aantal gesprekken",
+      "prop-current-hour": "Huidige tijd (0-23)",
+      "prop-has-image": "Bevat afbeelding",
+      "cmp-contains": "bevat",
+      "cmp-matches-regex": "regex-patronen",
+      "cmp-equals": "gelijk aan",
+      "cmp-not-equals": "gelijk is niet",
+      "cmp-greater-than": "groter dan",
+      "cmp-greater-than-or-equal": "groter dan of gelijk aan",
+      "cmp-less-than": "minder dan",
+      "cmp-less-than-or-equal": "minder dan of gelijk aan",
+      "cmp-between": "tussen (inclusief)",
+      "placeholder-between-hour": "bijvoorbeeld 9:17 (van 9:00 tot 17:00)",
+      "placeholder-between-numeric": "bijvoorbeeld 10,50",
+      "placeholder-hour": "bijvoorbeeld 18 (0-23)",
+      "placeholder-message-count": "bijvoorbeeld: 10",
+      "placeholder-numeric": "bijvoorbeeld 4000",
+      "placeholder-contains": "bijvoorbeeld, code, python, rust",
+      "placeholder-matches": "bijvoorbeeld: /\\bpython\\b/i",
+      "placeholder-default": "bijvoorbeeld, code",
+      "help-contains":
+        "Lijst met komma's – overeenkomt als de vraag een van de waarden bevat (ongeacht hoofdletter).",
+      "help-matches":
+        "Reguliere express patroon. Gebruik `/patroon/vlaggen` voor hoofdlettergevoeligheid (standaard is hoofdletterongevoelig).",
+      "bool-true": "Correct",
+      "bool-false": "Onjuist",
+    },
+    "provider-picker": {
+      "select-provider": "Kies leverancier",
+      "setup-required": "(vereiste installatie)",
+      "loading-models": "Modellen worden geladen...",
+      "select-model": "Kies het model",
+      "enter-model": "Voer het modelnummer in",
+      "select-provider-first": "Kies eerst een leverancier.",
+      "configure-to-continue": "Configure {{name}} om verder te gaan",
+      "configure-provider": "Configureer {{name}}",
+      "setup-credentials":
+        "Voer de vereiste gegevens in om {{name}} als doel voor het routeren te gebruiken.",
+      cancel: "Annuleren",
+      "save-settings": "Instellingen opslaan",
+      "toast-save-failed":
+        "Fout bij het opslaan van de instellingen: {{error}}",
+    },
+    "router-selection": {
+      "loading-routers": "Aanpassen van routers...",
+      "no-routers-prefix-settings":
+        "Er zijn nog geen routermodellen geconfigureerd.",
+      "no-routers-prefix-workspace":
+        "Geen router-modellen zijn geconfigureerd.",
+      "no-routers-link":
+        "Maak er één aan in de instellingen van de Model Router.",
+      "model-router-label": "Modelrouter",
+      "select-router": "Kies een router",
+      "select-description":
+        "Kies welke router u wilt gebruiken voor deze werkruimte.",
+      "no-routers-chat":
+        "Geen routers zijn geconfigureerd. Maak er een aan in Instellingen > AI-leveranciers > Router.",
+      "rule-count": "({{count}} regels)",
+    },
+    metrics: {
+      "model-router-default": "Modelrouter",
+    },
+    chat: {
+      "select-router-error": "Kies een router",
+      "invalid-model": "Ongeldige modelselectie",
+      "routed-to": "Verwezen naar <route>{{model}}</route>",
+      "routed-to-rule":
+        "Verzonden via <route>{{model}}</route> via <rule>{{ruleTitle}}</rule>",
     },
   },
 };

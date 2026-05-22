@@ -143,6 +143,22 @@ class LemonadeLLM {
     ];
   }
 
+  /**
+   * Parses and prepends reasoning from the response and returns the full text response.
+   * Used for getChatCompletions to render thinking text if present in full response.
+   * @param {Object} message - The message object from the Lemonade response.
+   * @returns {string}
+   */
+  #parseReasoningFromResponse({ message }) {
+    let textResponse = message?.content ?? "";
+    if (
+      !!message?.reasoning_content &&
+      message.reasoning_content.trim().length > 0
+    )
+      textResponse = `<think>${message.reasoning_content}</think>${textResponse}`;
+    return textResponse;
+  }
+
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
     await LemonadeLLM.loadModel(this.model);
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
@@ -160,7 +176,7 @@ class LemonadeLLM {
       return null;
 
     return {
-      textResponse: result.output.choices[0].message.content,
+      textResponse: this.#parseReasoningFromResponse(result.output.choices[0]),
       metrics: {
         prompt_tokens: result.output.usage?.prompt_tokens || 0,
         completion_tokens: result.output.usage?.completion_tokens || 0,

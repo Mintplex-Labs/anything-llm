@@ -51,10 +51,37 @@ async function streamChatWithWorkspace(
   });
   if (isAgentChat) return;
 
-  const LLMConnector = getLLMProvider({
-    provider: workspace?.chatProvider,
-    model: workspace?.chatModel,
+  const {
+    connector: LLMConnector,
+    routingMetadata,
+    error: routerError,
+  } = await resolveLLMConnector({
+    workspace,
+    message,
+    user,
+    thread,
+    attachments,
   });
+
+  if (routerError) {
+    return writeResponseChunk(response, {
+      id: uuid,
+      type: "abort",
+      textResponse: null,
+      sources: [],
+      close: true,
+      error: routerError,
+    });
+  }
+
+  if (routingMetadata?.routedTo?.shouldNotify) {
+    writeResponseChunk(response, {
+      uuid: `${uuid}:route`,
+      type: "modelRouteNotification",
+      routedTo: routingMetadata.routedTo,
+    });
+  }
+
   const VectorDb = getVectorDbClass();
 
   const messageLimit = workspace?.openAiHistory || 20;
@@ -229,9 +256,13 @@ async function streamChatWithWorkspace(
 
   // Compress & Assemble message to ensure prompt passes token limit with room for response
   // and build system messages based on inputs and history.
+  const systemPrompt = await chatPrompt(workspace, user, {
+    prompt: updatedMessage,
+    rawHistory,
+  });
   const messages = await LLMConnector.compressMessages(
     {
-      systemPrompt: await chatPrompt(workspace, user),
+      systemPrompt,
       userPrompt: updatedMessage,
       contextTexts,
       chatHistory,
@@ -309,6 +340,78 @@ async function streamChatWithWorkspace(
     metrics,
   });
   return;
+}
+
+/**
+ * Resolves the LLM connector, either directly or via the model router.
+ * @returns {Promise<{ connector: Object, routingMetadata: Object|null, error: string|null }>}
+ */
+async function resolveLLMConnector({
+  workspace,
+  message,
+  user,
+  thread,
+  attachments,
+}) {
+  const effectiveProvider = workspace?.chatProvider || process.env.LLM_PROVIDER;
+  const isRouterProvider = effectiveProvider === "anythingllm-router";
+
+  if (!isRouterProvider) {
+    return {
+      connector: getLLMProvider({
+        provider: workspace?.chatProvider,
+        model: workspace?.chatModel,
+      }),
+      routingMetadata: null,
+      error: null,
+    };
+  }
+
+  try {
+    const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
+    const { TokenManager } = require("../helpers/tiktoken");
+
+    const routerWorkspace = workspace?.router_id
+      ? workspace
+      : {
+          ...workspace,
+          router_id: process.env.MODEL_ROUTER_ID
+            ? Number(process.env.MODEL_ROUTER_ID)
+            : null,
+        };
+
+    const router = new AnythingLLMModelRouter(routerWorkspace);
+    const tokenManager = new TokenManager();
+    const conversationTokenCount = tokenManager.countFromString(message);
+    const conversationMessageCount = await WorkspaceChats.count({
+      workspaceId: workspace.id,
+      user_id: user?.id || null,
+      thread_id: thread?.id || null,
+      include: true,
+    });
+
+    await router.resolve(
+      {
+        prompt: message,
+        conversationTokenCount,
+        conversationMessageCount,
+        attachments,
+      },
+      { user, thread }
+    );
+
+    return {
+      connector: router.delegateProvider,
+      routingMetadata: router.routingMetadata,
+      error: null,
+    };
+  } catch (routerError) {
+    return {
+      connector: null,
+      routingMetadata: null,
+      error: `Model router error: ${routerError.message}`,
+    };
+  }
 }
 
 module.exports = {
