@@ -107,6 +107,85 @@ describe("Qianfan LLM provider wiring", () => {
     expect(() => handler.checkSetup()).not.toThrow();
   });
 
+  test("Qianfan agent provider uses native OpenAI-compatible tool calling", async () => {
+    process.env.QIANFAN_API_KEY = "bce-v3/test-key";
+    const QianfanProvider = require("../../../utils/agents/aibitat/providers/qianfan");
+    const provider = new QianfanProvider({ model: "ernie-4.5-turbo-128k" });
+    provider._client = {
+      chat: {
+        completions: {
+          create: jest.fn().mockResolvedValue({
+            choices: [
+              {
+                message: {
+                  content: "",
+                  tool_calls: [
+                    {
+                      id: "call_weather",
+                      type: "function",
+                      function: {
+                        name: "get_weather",
+                        arguments: '{"city":"Hangzhou"}',
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+            usage: { prompt_tokens: 10, completion_tokens: 9, total_tokens: 19 },
+          }),
+        },
+      },
+    };
+
+    const functions = [
+      {
+        name: "get_weather",
+        description: "Get weather for a city",
+        parameters: {
+          type: "object",
+          properties: {
+            city: { type: "string", description: "City name" },
+          },
+          required: ["city"],
+        },
+      },
+    ];
+    const result = await provider.complete(
+      [{ role: "user", content: "Use the tool for Hangzhou." }],
+      functions
+    );
+
+    expect(provider.supportsNativeToolCalling()).toBe(true);
+    expect(provider._client.chat.completions.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        model: "ernie-4.5-turbo-128k",
+        stream: false,
+        tools: [
+          {
+            type: "function",
+            function: {
+              name: "get_weather",
+              description: "Get weather for a city",
+              parameters: functions[0].parameters,
+            },
+          },
+        ],
+      })
+    );
+    expect(result).toEqual(
+      expect.objectContaining({
+        textResponse: null,
+        functionCall: {
+          id: "call_weather",
+          name: "get_weather",
+          arguments: { city: "Hangzhou" },
+        },
+        usage: { prompt_tokens: 10, completion_tokens: 9, total_tokens: 19 },
+      })
+    );
+  });
+
   test("custom model discovery maps qianfan /v2/models responses", async () => {
     global.fetch = jest.fn().mockResolvedValue({
       json: jest.fn().mockResolvedValue({
