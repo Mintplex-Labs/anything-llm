@@ -42,6 +42,7 @@ import PrivateModeLogo from "@/media/llmprovider/privatemode.png";
 import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
 import LemonadeLogo from "@/media/llmprovider/lemonade.png";
 import MinimaxLogo from "@/media/llmprovider/minimax.png";
+import QianfanLogo from "@/media/llmprovider/qianfan.png";
 
 import PreLoader from "@/components/Preloader";
 import ModelRouterOptions from "@/components/LLMSelection/ModelRouterOptions";
@@ -82,6 +83,7 @@ import PrivateModeOptions from "@/components/LLMSelection/PrivateModeOptions";
 import SambaNovaOptions from "@/components/LLMSelection/SambaNovaOptions";
 import LemonadeOptions from "@/components/LLMSelection/LemonadeOptions";
 import MinimaxOptions from "@/components/LLMSelection/MinimaxOptions";
+import QianfanOptions from "@/components/LLMSelection/QianfanOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -420,6 +422,14 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <MinimaxOptions settings={settings} />,
     description: "Run Minimax's powerful M2 LLMs.",
     requiredConfig: ["MinimaxApiKey"],
+  },
+  {
+    name: "Baidu Qianfan / ERNIE",
+    value: "qianfan",
+    logo: QianfanLogo,
+    options: (settings) => <QianfanOptions settings={settings} />,
+    description: "Run Baidu Qianfan and ERNIE chat models.",
+    requiredConfig: ["QianfanApiKey"],
   },
   {
     name: "Generic OpenAI",

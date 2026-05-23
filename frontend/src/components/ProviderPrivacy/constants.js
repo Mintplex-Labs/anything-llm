@@ -46,6 +46,7 @@ import PrivateModeLogo from "@/media/llmprovider/privatemode.png";
 import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
 import LemonadeLogo from "@/media/llmprovider/lemonade.png";
 import MinimaxLogo from "@/media/llmprovider/minimax.png";
+import QianfanLogo from "@/media/llmprovider/qianfan.png";
 
 const LLM_PROVIDER_PRIVACY_MAP = {
   openai: {
@@ -257,6 +258,13 @@ const LLM_PROVIDER_PRIVACY_MAP = {
     name: "Minimax",
     policyUrl: "https://platform.minimax.io/protocol/privacy-policy",
     logo: MinimaxLogo,
+  },
+  qianfan: {
+    name: "Baidu Qianfan / ERNIE",
+    description: [
+      "Data is shared with Baidu AI Cloud Qianfan according to the terms of your Baidu AI Cloud account.",
+    ],
+    logo: QianfanLogo,
   },
 };
 

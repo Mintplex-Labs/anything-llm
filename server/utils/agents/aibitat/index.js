@@ -1404,6 +1404,8 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
         return new Providers.LemonadeProvider({ model: config.model });
       case "minimax":
         return new Providers.MinimaxProvider({ model: config.model });
+      case "qianfan":
+        return new Providers.QianfanProvider({ model: config.model });
       default:
         throw new Error(
           `Unknown provider: ${config.provider}. Please use a valid provider.`

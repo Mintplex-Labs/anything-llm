@@ -36,6 +36,7 @@ import PrivateModeLogo from "@/media/llmprovider/privatemode.png";
 import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
 import LemonadeLogo from "@/media/llmprovider/lemonade.png";
 import MinimaxLogo from "@/media/llmprovider/minimax.png";
+import QianfanLogo from "@/media/llmprovider/qianfan.png";
 
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
@@ -73,6 +74,7 @@ import PrivateModeOptions from "@/components/LLMSelection/PrivateModeOptions";
 import SambaNovaOptions from "@/components/LLMSelection/SambaNovaOptions";
 import LemonadeOptions from "@/components/LLMSelection/LemonadeOptions";
 import MinimaxOptions from "@/components/LLMSelection/MinimaxOptions";
+import QianfanOptions from "@/components/LLMSelection/QianfanOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import System from "@/models/system";
@@ -344,6 +346,13 @@ const LLMS = [
     logo: MinimaxLogo,
     options: (settings) => <MinimaxOptions settings={settings} />,
     description: "Run Minimax's powerful M2 LLMs.",
+  },
+  {
+    name: "Baidu Qianfan / ERNIE",
+    value: "qianfan",
+    logo: QianfanLogo,
+    options: (settings) => <QianfanOptions settings={settings} />,
+    description: "Run Baidu Qianfan and ERNIE chat models.",
   },
 ];
 

@@ -178,6 +178,9 @@ function getModelTag() {
     case "minimax":
       model = process.env.MINIMAX_MODEL_PREF;
       break;
+    case "qianfan":
+      model = process.env.QIANFAN_MODEL_PREF;
+      break;
     default:
       model = "--";
       break;

@@ -15,6 +15,7 @@ const { fetchCometApiModels } = require("../AiProviders/cometapi");
 const { parseFoundryBasePath } = require("../AiProviders/foundry");
 const { getDockerModels } = require("../AiProviders/dockerModelRunner");
 const { getAllLemonadeModels } = require("../AiProviders/lemonade");
+const { qianfanModels } = require("../AiProviders/qianfan");
 
 const SUPPORT_CUSTOM_MODELS = [
   "openai",
@@ -50,6 +51,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "sambanova",
   "lemonade",
   "minimax",
+  "qianfan",
   "generic-openai",
   // Embedding Engines
   "native-embedder",
@@ -137,6 +139,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getLemonadeModels(basePath, "embedding");
     case "minimax":
       return await getMinimaxModels(apiKey);
+    case "qianfan":
+      return await getQianfanModels(apiKey);
     case "generic-openai":
       return await getGenericOpenAiModels(basePath, apiKey);
     default:
@@ -1105,6 +1109,11 @@ async function getGenericOpenAiModels(basePath = null, apiKey = null) {
     console.error(`GenericOpenAI:getGenericOpenAiModels`, e.message);
     return { models: [], error: "Could not fetch Generic OpenAI Models" };
   }
+}
+
+async function getQianfanModels(apiKey = null) {
+  const models = await qianfanModels(apiKey);
+  return { models, error: null };
 }
 
 module.exports = {

@@ -686,6 +686,16 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // Qianfan Options
+  QianfanApiKey: {
+    envKey: "QIANFAN_API_KEY",
+    checks: [isNotEmpty],
+  },
+  QianfanModelPref: {
+    envKey: "QIANFAN_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
   // APIPie Options
   ApipieLLMApiKey: {
     envKey: "APIPIE_LLM_API_KEY",
@@ -992,6 +1002,7 @@ function supportedLLM(input = "") {
     "sambanova",
     "lemonade",
     "minimax",
+    "qianfan",
     "anythingllm-router",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;

@@ -1014,6 +1014,11 @@ const SystemSettings = {
       // Minimax Keys
       MinimaxApiKey: !!process.env.MINIMAX_API_KEY,
       MinimaxModelPref: process.env.MINIMAX_MODEL_PREF,
+
+      // Qianfan Keys
+      QianfanApiKey: !!process.env.QIANFAN_API_KEY,
+      QianfanModelPref:
+        process.env.QIANFAN_MODEL_PREF || "ernie-4.5-turbo-128k",
     };
   },
 
