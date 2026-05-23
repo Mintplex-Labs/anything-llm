@@ -50,8 +50,9 @@ export default function LLMProviderModelPicker({
   function isConfigured(providerValue) {
     if (!settings) return true;
     const llm = availableProviders.find((l) => l.value === providerValue);
-    if (!llm?.requiredConfig?.length) return true;
-    return llm.requiredConfig.every((key) => !!settings[key]);
+    const keys = llm?.connectionConfig || llm?.requiredConfig;
+    if (!keys?.length) return true;
+    return keys.every((key) => !!settings[key]);
   }
 
   useEffect(() => {

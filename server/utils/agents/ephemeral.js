@@ -229,15 +229,26 @@ class EphemeralAgentHandler extends AgentHandler {
         };
 
     const router = new AnythingLLMModelRouter(routerWorkspace);
+    const { ModelRouterService } = require("../router");
+    const workspace = this.#workspace;
+    const user = this.#userId ? { id: this.#userId } : null;
+    const effectivePrompt = prompt || this.#prompt;
+    const ctx = await ModelRouterService.gatherRoutingContext({
+      workspace,
+      user,
+      thread: this.#threadId ? { id: this.#threadId } : null,
+      message: effectivePrompt,
+      apiSessionId: this.#sessionId,
+    });
+
     await router.resolve(
       {
-        prompt: prompt || this.#prompt,
+        prompt: effectivePrompt,
+        conversationTokenCount: ctx.conversationTokenCount,
+        conversationMessageCount: ctx.conversationMessageCount,
         attachments: this.#attachments || [],
       },
-      {
-        user: this.#userId ? { id: this.#userId } : null,
-        thread: this.#threadId ? { id: this.#threadId } : null,
-      }
+      { user, thread: this.#threadId ? { id: this.#threadId } : null }
     );
 
     this.provider = router.resolvedRoute.provider;
@@ -634,12 +645,13 @@ class EphemeralEventListener extends EventEmitter {
 
   /**
    * Compacts all messages in class and returns them in a condensed format.
-   * @returns {{thoughts: string[], textResponse: string}}
+   * @returns {{thoughts: string[], textResponse: string, outputs: object[], metrics: object}}
    */
   packMessages() {
     const thoughts = [];
     const outputs = [];
     let textResponse = null;
+    let metrics = {};
     for (let msg of this.messages) {
       if (msg.type === "statusResponse") {
         thoughts.push(msg.content);
@@ -651,12 +663,20 @@ class EphemeralEventListener extends EventEmitter {
         continue;
       }
 
-      // All other message types are treated as the text response
-      // This preserves original behavior where any non-statusResponse message
-      // sets the textResponse
+      if (msg.type === "reportStreamEvent") {
+        const inner = msg.content;
+        if (inner?.type === "textResponseChunk" && inner?.content)
+          textResponse = (textResponse || "") + inner.content;
+        if (inner?.type === "fullTextResponse" && inner?.content)
+          textResponse = inner.content;
+        if (inner?.type === "usageMetrics" && inner?.metrics)
+          metrics = inner.metrics;
+        continue;
+      }
+
       textResponse = msg.content;
     }
-    return { thoughts, textResponse, outputs };
+    return { thoughts, textResponse, outputs, metrics };
   }
 
   /**
@@ -703,6 +723,47 @@ class EphemeralEventListener extends EventEmitter {
           close: false,
           error: null,
         });
+      }
+
+      if (data.type === "reportStreamEvent") {
+        const inner = data.content;
+        if (!inner?.type) return;
+
+        if (inner.type === "textResponseChunk") {
+          return writeResponseChunk(response, {
+            id: uuid,
+            type: "textResponseChunk",
+            textResponse: inner.content,
+            sources: [],
+            close: false,
+            error: null,
+          });
+        }
+
+        if (inner.type === "fullTextResponse") {
+          return writeResponseChunk(response, {
+            id: uuid,
+            type: "textResponse",
+            textResponse: inner.content,
+            sources: [],
+            attachments: [],
+            close: true,
+            error: null,
+            animate: false,
+          });
+        }
+
+        if (inner.type === "usageMetrics" && inner.metrics) {
+          return writeResponseChunk(response, {
+            id: uuid,
+            type: "usageMetrics",
+            metrics: inner.metrics,
+            close: false,
+            error: null,
+          });
+        }
+
+        return;
       }
 
       return writeResponseChunk(response, {

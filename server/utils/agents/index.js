@@ -489,15 +489,29 @@ class AgentHandler {
     }
 
     const router = new AnythingLLMModelRouter(routerWorkspace);
+    const { ModelRouterService } = require("../router");
+    const workspace = this.invocation.workspace;
+    const user = this.invocation.user_id
+      ? { id: this.invocation.user_id }
+      : null;
+    const effectivePrompt = prompt || this.invocation.prompt;
+    const ctx = await ModelRouterService.gatherRoutingContext({
+      workspace,
+      user,
+      thread: this.invocation.thread_id
+        ? { id: this.invocation.thread_id }
+        : null,
+      message: effectivePrompt,
+    });
+
     await router.resolve(
       {
-        prompt: prompt || this.invocation.prompt,
+        prompt: effectivePrompt,
+        conversationTokenCount: ctx.conversationTokenCount,
+        conversationMessageCount: ctx.conversationMessageCount,
         attachments: this.attachments || [],
       },
-      {
-        user: this.invocation.user_id ? { id: this.invocation.user_id } : null,
-        thread,
-      }
+      { user, thread }
     );
 
     this.provider = router.resolvedRoute.provider;

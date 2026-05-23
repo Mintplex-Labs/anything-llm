@@ -168,11 +168,7 @@ export default function NewRouterModal({
               {loading ? (
                 <>
                   <CircleNotch className="h-4 w-4 animate-spin" />
-                  {t(
-                    isEdit
-                      ? "model-router.edit-router.saving"
-                      : "model-router.new-router.creating"
-                  )}
+                  {t("common.saving")}
                 </>
               ) : isEdit ? (
                 t("model-router.edit-router.save")

@@ -434,6 +434,7 @@ export const AVAILABLE_LLM_PROVIDERS = [
       "GenericOpenAiTokenLimit",
       "GenericOpenAiKey",
     ],
+    connectionConfig: ["GenericOpenAiBasePath"],
   },
 ];
 

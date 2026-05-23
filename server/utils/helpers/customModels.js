@@ -50,6 +50,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "sambanova",
   "lemonade",
   "minimax",
+  "generic-openai",
   // Embedding Engines
   "native-embedder",
   "cohere-embedder",
@@ -136,6 +137,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getLemonadeModels(basePath, "embedding");
     case "minimax":
       return await getMinimaxModels(apiKey);
+    case "generic-openai":
+      return await getGenericOpenAiModels(basePath, apiKey);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -1070,6 +1073,37 @@ async function getSambaNovaModels(_apiKey = null) {
   } catch (e) {
     console.error(`SambaNova:getSambaNovaModels`, e.message);
     return { models: [], error: "Could not fetch SambaNova Models" };
+  }
+}
+
+async function getGenericOpenAiModels(basePath = null, apiKey = null) {
+  try {
+    const { OpenAI: OpenAIApi } = require("openai");
+    const openai = new OpenAIApi({
+      baseURL: basePath || process.env.GENERIC_OPEN_AI_BASE_PATH,
+      apiKey: apiKey || process.env.GENERIC_OPEN_AI_API_KEY || null,
+    });
+    const models = await openai.models
+      .list()
+      .then((results) => results.data)
+      .then((models) =>
+        models.map((model) => ({
+          id: model.id,
+          name: model.id,
+          organization: model.owned_by ?? "generic-openai",
+        }))
+      )
+      .catch((e) => {
+        console.error(`GenericOpenAI:listModels`, e.message);
+        return [];
+      });
+
+    if (models.length > 0 && !!apiKey)
+      process.env.GENERIC_OPEN_AI_API_KEY = apiKey;
+    return { models, error: null };
+  } catch (e) {
+    console.error(`GenericOpenAI:getGenericOpenAiModels`, e.message);
+    return { models: [], error: "Could not fetch Generic OpenAI Models" };
   }
 }
 
