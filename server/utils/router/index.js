@@ -491,10 +491,17 @@ class ModelRouterService {
     this.log(
       `Evaluating ${enabledRules.length} enabled rules (of ${rules.length} total) for router "${router.name}"`
     );
+
+    // For debugging purposes, truncate the prompt to 50 characters.
+    const truncatedPrompt = (
+      String(context.prompt).length > 50
+        ? String(context.prompt).slice(0, 25) +
+          "..." +
+          String(context.prompt).slice(-25)
+        : String(context.prompt)
+    ).replace(/[\n\r\t]+/g, " ");
     this.log(
-      `Context: prompt="${(context.prompt || "").slice(0, 100)}${context.prompt?.length > 100 ? "..." : ""}", ` +
-        `tokens=${context.conversationTokenCount ?? 0}, messages=${context.conversationMessageCount ?? 0}, ` +
-        `attachments=${context.attachments?.length ?? 0}`
+      `Context: prompt="${truncatedPrompt}", tokens=${context.conversationTokenCount ?? 0}, messages=${context.conversationMessageCount ?? 0}, attachments=${context.attachments?.length ?? 0}`
     );
   }
 
