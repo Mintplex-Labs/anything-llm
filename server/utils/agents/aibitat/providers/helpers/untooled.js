@@ -339,9 +339,47 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
           messages: this.cleanMsgs(messages),
         });
 
+        let reasoningText = "";
         for await (const chunk of stream) {
           if (!chunk?.choices?.[0]) continue; // Skip if no choices
           const choice = chunk.choices[0];
+
+          const reasoningToken =
+            choice.delta?.reasoning_content ||
+            choice.delta?.reasoningContent?.text ||
+            choice.delta?.thinking;
+
+          if (reasoningToken) {
+            if (reasoningText.length === 0) {
+              const startTag = "<think>";
+              eventHandler?.("reportStreamEvent", {
+                type: "textResponseChunk",
+                uuid: msgUUID,
+                content: startTag + reasoningToken,
+              });
+              reasoningText += startTag + reasoningToken;
+            } else {
+              eventHandler?.("reportStreamEvent", {
+                type: "textResponseChunk",
+                uuid: msgUUID,
+                content: reasoningToken,
+              });
+              reasoningText += reasoningToken;
+            }
+            continue;
+          }
+
+          if (reasoningText.length > 0 && !reasoningToken && choice.delta?.content) {
+            const endTag = "</think>";
+            eventHandler?.("reportStreamEvent", {
+              type: "textResponseChunk",
+              uuid: msgUUID,
+              content: endTag,
+            });
+            completion.content += reasoningText + endTag;
+            reasoningText = "";
+          }
+
           if (choice.delta?.content) {
             completion.content += choice.delta.content;
             eventHandler?.("reportStreamEvent", {
@@ -350,6 +388,16 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
               content: choice.delta.content,
             });
           }
+        }
+
+        if (reasoningText.length > 0 && !completion.content.endsWith("</think>")) {
+          const endTag = "</think>";
+          eventHandler?.("reportStreamEvent", {
+            type: "textResponseChunk",
+            uuid: msgUUID,
+            content: endTag,
+          });
+          completion.content += reasoningText + endTag;
         }
       }
 
@@ -424,8 +472,17 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
       // from calling the exact same function over and over in a loop within a single chat exchange
       // _but_ we should enable it to call previously used tools in a new chat interaction.
       this.deduplicator.reset("runs");
+      let textResponse = completion.content;
+      const reasoningContent =
+        completion.reasoning_content ||
+        completion.reasoningContent?.text ||
+        completion.thinking;
+      if (reasoningContent && reasoningContent.trim().length > 0) {
+        textResponse = `<think>${reasoningContent}</think>${textResponse || ""}`;
+      }
+
       return {
-        textResponse: completion.content,
+        textResponse,
         cost: 0,
       };
     } catch (error) {

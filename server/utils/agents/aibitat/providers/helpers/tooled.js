@@ -204,6 +204,7 @@ async function tooledStream(
 
   const toolCallsByIndex = {};
   let usage = null;
+  let reasoningText = "";
 
   for await (const chunk of stream) {
     // Capture usage from final chunk (some providers send usage after finish_reason)
@@ -213,6 +214,43 @@ async function tooledStream(
 
     if (!chunk?.choices?.[0]) continue;
     const choice = chunk.choices[0];
+
+    const reasoningToken =
+      choice.delta?.reasoning_content ||
+      choice.delta?.reasoningContent?.text ||
+      choice.delta?.thinking;
+
+    if (reasoningToken) {
+      if (reasoningText.length === 0) {
+        const startTag = "<think>";
+        eventHandler?.("reportStreamEvent", {
+          type: "textResponseChunk",
+          uuid: msgUUID,
+          content: startTag + reasoningToken,
+        });
+        reasoningText += startTag + reasoningToken;
+      } else {
+        eventHandler?.("reportStreamEvent", {
+          type: "textResponseChunk",
+          uuid: msgUUID,
+          content: reasoningToken,
+        });
+        reasoningText += reasoningToken;
+      }
+      continue;
+    }
+
+    const isStandardToken = !!choice.delta?.content || !!choice.delta?.tool_calls;
+    if (reasoningText.length > 0 && !reasoningToken && isStandardToken) {
+      const endTag = "</think>";
+      eventHandler?.("reportStreamEvent", {
+        type: "textResponseChunk",
+        uuid: msgUUID,
+        content: endTag,
+      });
+      result.textResponse += reasoningText + endTag;
+      reasoningText = "";
+    }
 
     if (choice.delta?.content) {
       result.textResponse += choice.delta.content;
@@ -257,6 +295,16 @@ async function tooledStream(
         }
       }
     }
+  }
+
+  if (reasoningText.length > 0 && !result.textResponse.endsWith("</think>")) {
+    const endTag = "</think>";
+    eventHandler?.("reportStreamEvent", {
+      type: "textResponseChunk",
+      uuid: msgUUID,
+      content: endTag,
+    });
+    result.textResponse += reasoningText + endTag;
   }
 
   // Auto-record usage if provider is passed and usage is available
@@ -369,8 +417,17 @@ async function tooledComplete(
     };
   }
 
+  let textResponse = completion.content;
+  const reasoningContent =
+    completion.reasoning_content ||
+    completion.reasoningContent?.text ||
+    completion.thinking;
+  if (reasoningContent && reasoningContent.trim().length > 0) {
+    textResponse = `<think>${reasoningContent}</think>${textResponse || ""}`;
+  }
+
   return {
-    textResponse: completion.content,
+    textResponse,
     cost,
     usage,
   };

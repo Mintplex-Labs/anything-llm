@@ -85,3 +85,49 @@ describe("UnTooled: validFuncCall", () => {
     expect(result.reason).toBe("Unknown argument: unknown provided but not in schema.");
   });
 });
+
+describe("UnTooled: complete with reasoning", () => {
+  const untooled = new UnTooled();
+
+  it("should extract reasoning_content and prepend it wrapped in <think> tags", async () => {
+    const chatCallback = jest.fn().mockResolvedValue({
+      choices: [{
+        message: {
+          content: "Hello world",
+          reasoning_content: "Hmm, let me think...",
+        }
+      }]
+    });
+
+    const result = await untooled.complete([{ role: "user", content: "hi" }], [], chatCallback);
+    expect(result.textResponse).toBe("<think>Hmm, let me think...</think>Hello world");
+  });
+
+  it("should extract reasoningContent.text and prepend it wrapped in <think> tags", async () => {
+    const chatCallback = jest.fn().mockResolvedValue({
+      choices: [{
+        message: {
+          content: "Hello world",
+          reasoningContent: { text: "Hmm, let me think..." },
+        }
+      }]
+    });
+
+    const result = await untooled.complete([{ role: "user", content: "hi" }], [], chatCallback);
+    expect(result.textResponse).toBe("<think>Hmm, let me think...</think>Hello world");
+  });
+
+  it("should extract thinking and prepend it wrapped in <think> tags", async () => {
+    const chatCallback = jest.fn().mockResolvedValue({
+      choices: [{
+        message: {
+          content: "Hello world",
+          thinking: "Hmm, let me think...",
+        }
+      }]
+    });
+
+    const result = await untooled.complete([{ role: "user", content: "hi" }], [], chatCallback);
+    expect(result.textResponse).toBe("<think>Hmm, let me think...</think>Hello world");
+  });
+});
