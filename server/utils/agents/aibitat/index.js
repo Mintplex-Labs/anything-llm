@@ -54,6 +54,15 @@ class AIbitat {
   _toolAttachments = [];
 
   /**
+   * Buffer for clarifying-question surveys completed during tool execution.
+   * Each entry is one ask-user invocation (questions + the user's result),
+   * drained by the chat-history plugin into workspace_chats.response so the
+   * filled-in survey persists alongside citations/outputs.
+   * @type {Array<{questions: Array<Object>, result: Object}>}
+   */
+  _pendingClarifyingQuestionSurveys = [];
+
+  /**
    * Get the default maximum number of tools an agent can chain for a single response.
    * @returns {number}
    */
@@ -188,6 +197,26 @@ class AIbitat {
   }
 
   /**
+   * Send routing metadata to the frontend for the given message UUID.
+   * Only emits if routing metadata exists in handlerProps.
+   * @param {string} messageUuid - The UUID of the message to attach routing info to
+   */
+  flushRoutingMetadata(messageUuid) {
+    const routingMetadata = this.handlerProps?.routingMetadata;
+    if (
+      !messageUuid ||
+      !routingMetadata?.routedTo ||
+      !routingMetadata.routedTo.shouldNotify
+    )
+      return;
+    this.socket?.send?.("reportStreamEvent", {
+      type: "modelRouteNotification",
+      uuid: `${messageUuid}:route`,
+      routedTo: routingMetadata.routedTo,
+    });
+  }
+
+  /**
    * Add an attachment (image) from a tool to be injected into the conversation.
    * The attachment will be added as a user message so the model can "see" it.
    * This leverages existing provider attachment handling for user messages.
@@ -196,6 +225,24 @@ class AIbitat {
   addToolAttachment(attachment) {
     if (!attachment || !attachment.contentString) return;
     this._toolAttachments.push(attachment);
+  }
+
+  /**
+   * Add a completed clarifying-question survey to the pending buffer.
+   * The chat-history plugin drains this buffer when persisting the agent reply.
+   * @param {{questions: Array<Object>, result: Object}} survey - The survey to add
+   */
+  addClarifyingQuestionSurvey(survey) {
+    if (!survey || typeof survey !== "object") return;
+    this._pendingClarifyingQuestionSurveys.push(survey);
+  }
+
+  /**
+   * Clear all pending clarifying-question surveys. Called after surveys
+   * have been persisted to the workspace_chats record.
+   */
+  clearClarifyingQuestionSurveys() {
+    this._pendingClarifyingQuestionSurveys = [];
   }
 
   /**
@@ -414,6 +461,18 @@ class AIbitat {
     ) => null
   ) {
     this.emitter.on("replyError", listener);
+    return this;
+  }
+
+  /**
+   * Triggered when a tool call completes and returns a result.
+   * Used by scheduled jobs to capture tool results for the execution trace.
+   *
+   * @param listener
+   * @returns
+   */
+  onToolCallResult(listener = () => null) {
+    this.emitter.on("toolCallResult", listener);
     return this;
   }
 
@@ -799,6 +858,21 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       }
     }
 
+    // Re-evaluate model router before each turn if a resolver is attached.
+    // This ensures routing rules are applied per-message, not just at initialization.
+    if (this.resolveRoute) {
+      const userPrompt =
+        this.#extractUserPrompt(messages) || route.content || "";
+      const resolved = await this.resolveRoute(userPrompt);
+      if (resolved) {
+        this.defaultProvider = {
+          ...this.defaultProvider,
+          provider: resolved.provider,
+          model: resolved.model,
+        };
+      }
+    }
+
     const provider = this.getProviderForConfig({
       ...this.defaultProvider,
       ...fromConfig,
@@ -875,6 +949,9 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       this?.socket?.send(type, data);
     };
 
+    // Emit routing notification before the first completion so it appears above the response
+    if (depth === 0) this?.flushRoutingMetadata?.(v4());
+
     /** @type {{ functionCall: { name: string, arguments: string }, textResponse: string }} */
     const completionStream = await this.#safeProviderCall(() =>
       provider.stream(messages, functions, eventHandler)
@@ -943,6 +1020,11 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
 
       const result = await fn.handler(args);
       Telemetry.sendTelemetry("agent_tool_call", { tool: name }, null, true);
+      this.emitter.emit("toolCallResult", {
+        toolName: name,
+        arguments: args,
+        result,
+      });
 
       /**
        * If the tool call has direct output enabled, return the result directly to the chat
@@ -1044,6 +1126,9 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       this?.socket?.send(type, data);
     };
 
+    // Emit routing notification before the first completion so it appears above the response
+    if (depth === 0) this?.flushRoutingMetadata?.(msgUUID);
+
     // get the chat completion
     const completion = await this.#safeProviderCall(() =>
       provider.complete(messages, functions)
@@ -1119,6 +1204,11 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
 
       const result = await fn.handler(args);
       Telemetry.sendTelemetry("agent_tool_call", { tool: name }, null, true);
+      this.emitter.emit("toolCallResult", {
+        toolName: name,
+        arguments: args,
+        result,
+      });
 
       if (this.skipHandleExecution) {
         this.skipHandleExecution = false;
@@ -1352,6 +1442,8 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
         return new Providers.SambaNovaProvider({ model: config.model });
       case "lemonade":
         return new Providers.LemonadeProvider({ model: config.model });
+      case "minimax":
+        return new Providers.MinimaxProvider({ model: config.model });
       default:
         throw new Error(
           `Unknown provider: ${config.provider}. Please use a valid provider.`

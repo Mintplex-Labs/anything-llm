@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require("uuid");
 const { DocumentManager } = require("../DocumentManager");
 const { WorkspaceChats } = require("../../models/workspaceChats");
-const { getVectorDbClass, getLLMProvider } = require("../helpers");
+const { getVectorDbClass, resolveProviderConnector } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const {
   chatPrompt,
@@ -189,7 +189,11 @@ async function chatSync({
     // After this, we conclude the call as we normally do.
     return await eventListener
       .waitForClose()
-      .then(async ({ thoughts, textResponse }) => {
+      .then(async ({ thoughts, textResponse, outputs, metrics }) => {
+        // Merge outputs from packMessages with outputs from aibitat (contains file download metadata with proper types)
+        // These are needed for the download endpoint to authorize file access
+        const allOutputs = [...outputs, ...agentHandler.getPendingOutputs()];
+
         await WorkspaceChats.new({
           workspaceId: workspace.id,
           prompt: String(message),
@@ -199,6 +203,8 @@ async function chatSync({
             attachments,
             type: chatMode,
             thoughts,
+            outputs: allOutputs,
+            metrics,
           },
           include: false,
           apiSessionId: sessionId,
@@ -211,14 +217,21 @@ async function chatSync({
           error: null,
           textResponse,
           thoughts,
+          outputs,
+          metrics,
         };
       });
   }
 
-  const LLMConnector = getLLMProvider({
-    provider: workspace?.chatProvider,
-    model: workspace?.chatModel,
+  const { connector: LLMConnector } = await resolveProviderConnector({
+    workspace,
+    prompt: message,
+    user,
+    thread,
+    attachments,
+    apiSessionId: sessionId,
   });
+
   const VectorDb = getVectorDbClass();
   const messageLimit = workspace?.openAiHistory || 20;
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
@@ -388,9 +401,13 @@ async function chatSync({
 
   // Compress & Assemble message to ensure prompt passes token limit with room for response
   // and build system messages based on inputs and history.
+  const systemPrompt = await chatPrompt(workspace, user, {
+    prompt: message,
+    rawHistory,
+  });
   const messages = await LLMConnector.compressMessages(
     {
-      systemPrompt: await chatPrompt(workspace, user),
+      systemPrompt,
       userPrompt: message,
       contextTexts,
       chatHistory,
@@ -531,13 +548,18 @@ async function streamChat({
     const eventListener = new EphemeralEventListener();
     await agentHandler.init();
     await agentHandler.createAIbitat({ handler: eventListener });
+
     agentHandler.startAgentCluster();
 
     // The cluster has started and now we wait for close event since
     // and stream back any results we get from agents as they come in.
     return eventListener
       .streamAgentEvents(response, uuid)
-      .then(async ({ thoughts, textResponse }) => {
+      .then(async ({ thoughts, textResponse, outputs, metrics }) => {
+        // Merge outputs from packMessages with outputs from aibitat (contains file download metadata with proper types)
+        // These are needed for the download endpoint to authorize file access
+        const allOutputs = [...outputs, ...agentHandler.getPendingOutputs()];
+
         await WorkspaceChats.new({
           workspaceId: workspace.id,
           prompt: String(message),
@@ -547,6 +569,8 @@ async function streamChat({
             attachments: attachments,
             type: chatMode,
             thoughts,
+            outputs: allOutputs,
+            metrics,
           },
           include: true,
           threadId: thread?.id || null,
@@ -557,15 +581,21 @@ async function streamChat({
           type: "finalizeResponseStream",
           textResponse,
           thoughts,
+          outputs,
           close: true,
           error: false,
+          metrics,
         });
       });
   }
 
-  const LLMConnector = getLLMProvider({
-    provider: workspace?.chatProvider,
-    model: workspace?.chatModel,
+  const { connector: LLMConnector } = await resolveProviderConnector({
+    workspace,
+    prompt: message,
+    user,
+    thread,
+    attachments,
+    apiSessionId: sessionId,
   });
 
   const VectorDb = getVectorDbClass();
@@ -748,9 +778,13 @@ async function streamChat({
 
   // Compress & Assemble message to ensure prompt passes token limit with room for response
   // and build system messages based on inputs and history.
+  const streamSystemPrompt = await chatPrompt(workspace, user, {
+    prompt: message,
+    rawHistory,
+  });
   const messages = await LLMConnector.compressMessages(
     {
-      systemPrompt: await chatPrompt(workspace, user),
+      systemPrompt: streamSystemPrompt,
       userPrompt: message,
       contextTexts,
       chatHistory,

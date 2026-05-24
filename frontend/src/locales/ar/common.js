@@ -107,6 +107,8 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "تليجرام",
     },
+    "scheduled-jobs": "المهام المجدولة",
+    "model-router": "نموذج جهاز التوجيه",
   },
   login: {
     "multi-user": {
@@ -192,9 +194,9 @@ const TRANSLATIONS = {
           'سيوفر الإجابات <b>فقط</b> إذا تم العثور على سياق الوثيقة. <br />ستحتاج إلى استخدام الأمر "@agent" لاستخدام الأدوات.',
       },
       automatic: {
-        title: "سيارة",
         description:
           'سيتم استخدام الأدوات تلقائيًا إذا كان النموذج والمزود يدعمان استدعاء الأدوات الأصلية. إذا لم يتم دعم الأدوات الأصلية، فسيتعين عليك استخدام الأمر "@agent" لاستخدام الأدوات.',
+        title: "وكيل",
       },
     },
     history: {
@@ -328,7 +330,7 @@ const TRANSLATIONS = {
         readActions: "اقرأ الإجراءات",
         writeActions: "الإجراءات",
         warning:
-          "الوصول إلى نظام الملفات يمكن أن يكون خطيرًا، لأنه يمكنه تعديل أو حذف الملفات. يرجى الرجوع إلى الوثائق <link> قبل تمكينه.",
+          "الوصول إلى نظام الملفات يمكن أن يكون خطيرًا، لأنه يمكنه تعديل أو حذف الملفات. يرجى الرجوع إلى الوثائق قبل تمكينه.",
         skills: {
           "read-text-file": {
             title: "اقرأ الملف",
@@ -746,99 +748,15 @@ const TRANSLATIONS = {
             "الحد الأقصى لعدد الأدوات التي يمكن اختيارها لكل استعلام. ونوصي بتعيين هذه القيمة على قيم أعلى بالنسبة للنماذج ذات السياق الأكبر.",
         },
       },
-      sql: {
-        title: "موصل SQL",
+      "clarifying-questions": {
+        title: "اسمح للمتحدث بطرح أسئلة توضيحية.",
+        "beta-badge": "مرحلة تجريبية",
         description:
-          "اسمح لمسؤولك بالاستفادة من SQL للإجابة على أسئلتك من خلال الاتصال بمقدمي قواعد البيانات المختلفة.",
-      },
-      default_skill:
-        "افتراضيًا، يتم تفعيل هذه الميزة، ولكن يمكنك تعطيلها إذا لم ترغب في أن تكون متاحة للممثل.",
-      filesystem: {
-        title: "الوصول إلى نظام الملفات",
-        description:
-          "السماح لمسؤولك بقراءة وكتابة الملفات والبحث عنها وإدارتها داخل مجلد محدد. يدعم تعديل الملفات وتصفح المجلدات والبحث عن المحتوى.",
-        learnMore: "تعرف على المزيد حول كيفية استخدام هذه المهارة.",
-        configuration: "التكوين",
-        readActions: "اقرأ الإجراءات",
-        writeActions: "الإجراءات",
-        warning:
-          "الوصول إلى نظام الملفات يمكن أن يكون خطيرًا، لأنه يمكنه تعديل أو حذف الملفات. يرجى الرجوع إلى الوثائق <link> قبل تمكينه.",
-        skills: {
-          "read-text-file": {
-            title: "اقرأ الملف",
-            description:
-              "قراءة محتويات الملفات (النصوص، الشيفرة، ملفات PDF، الصور، إلخ).",
-          },
-          "read-multiple-files": {
-            title: "قراءة ملفات متعددة",
-            description: "اقرأ ملفات متعددة في وقت واحد.",
-          },
-          "list-directory": {
-            title: "قائمة الاتجاهات",
-            description: "اعرض قائمة الملفات والمجلدات الموجودة في مجلد معين.",
-          },
-          "search-files": {
-            title: "البحث عن الملفات",
-            description: "ابحث عن الملفات حسب الاسم أو محتواها.",
-          },
-          "get-file-info": {
-            title: "الحصول على معلومات الملف",
-            description: "احصل على بيانات وصف تفصيلية حول الملفات.",
-          },
-          "edit-file": {
-            title: "تحرير الملف",
-            description:
-              "قم بإجراء التعديلات على ملفات النصوص بناءً على الأسطر.",
-          },
-          "create-directory": {
-            title: "إنشاء مجلد",
-            description: "إنشاء مجلدات جديدة",
-          },
-          "move-file": {
-            title: "تحريك/إعادة تسمية الملف",
-            description: "انقل أو غير أسماء الملفات والمجلدات.",
-          },
-          "copy-file": {
-            title: "نسخ الملف",
-            description: "نسخ الملفات والمجلدات",
-          },
-          "write-text-file": {
-            title: "إنشاء ملف نصي",
-            description:
-              "إنشاء ملفات نصية جديدة أو استبدال الملفات النصية الموجودة.",
-          },
-        },
-      },
-      createFiles: {
-        title: "إنشاء المستندات",
-        description:
-          "اسمح لمسؤولك بإنشاء ملفات بتنسيقات ثنائية مثل عروض PowerPoint وجداول Excel ووثائق Word وملفات PDF. يمكن تنزيل الملفات مباشرة من نافذة الدردشة.",
-        configuration: "أنواع المستندات المتاحة",
-        skills: {
-          "create-text-file": {
-            title: "ملفات النصوص",
-            description:
-              "إنشاء ملفات نصية تحتوي على أي محتوى وتنسيق (مثل .txt، .md، .json، .csv، إلخ).",
-          },
-          "create-pptx": {
-            title: "عروض تقديمية باستخدام برنامج باوربوينت",
-            description:
-              "إنشاء عروض تقديمية جديدة باستخدام برنامج باوربوينت، تتضمن الشرائح والعناوين والنقاط.",
-          },
-          "create-pdf": {
-            title: "ملفات PDF",
-            description:
-              "إنشاء مستندات PDF من ملفات Markdown أو النصوص البسيطة مع تنسيق أساسي.",
-          },
-          "create-xlsx": {
-            title: "جداول بيانات في برنامج إكسل",
-            description:
-              "إنشاء مستندات Excel للبيانات الجدولية مع الأوراق والتصميم.",
-          },
-          "create-docx": {
-            title: "ملفات مستندات مايكروسوفت",
-            description: "إنشاء مستندات Word مع تنسيق وتصميم أساسي.",
-          },
+          "عند تفعيلها، يمكن للوكلاء التوقف للتحقق من أي أسئلة توضيحية قصيرة إذا كان طلبك غامضًا.",
+        "max-per-turn": {
+          title: "الحد الأقصى لعدد الأسئلة في كل دور",
+          description:
+            "كم عدد الأسئلة التوضيحية التي يمكن للممثل طرحها في استبيان واحد؟",
         },
       },
     },
@@ -1248,7 +1166,6 @@ const TRANSLATIONS = {
     similarity_match: "مباراة",
     source_count_one: "{{count}}، المرجع",
     source_count_other: "{{count}} المرجع",
-    preset_exit_description: "إيقاف الجلسة الحالية للمتصفح",
     add_new: "أضف جديدًا",
     edit: "تحرير",
     publish: "نشر",
@@ -1268,6 +1185,63 @@ const TRANSLATIONS = {
       always_allow: "تأكد دائمًا من {{skillName}}",
       tool_call_was_approved: "تمت الموافقة على طلب الحصول على الأدوات.",
       tool_call_was_rejected: "تم رفض طلب الاتصال بالأداة.",
+      clarifying_skip: "اترك الأمر للمتخصص",
+      clarifying_submit: "إرسال",
+      clarifying_skipped: "دع الوكيل هو من يحدد القرار.",
+      clarifying_timeout: "لم يتم تقديم الرد في الوقت المحدد.",
+      clarifying_pagination: "{{current}} من {{total}}",
+      clarifying_prev_aria: "السؤال السابق",
+      clarifying_next_aria: "السؤال التالي",
+      clarifying_close_aria: "إغلاق وتخطي",
+      clarifying_other: "باقي",
+      clarifying_other_placeholder: "اكتب إجابتك",
+      batch_progress: "{{answered}} من {{total}} أجاب",
+      batch_skip_this: "تخطي",
+      batch_submit_all: "إرسال الكل",
+      batch_next: "التالي",
+      answer_skipped: "[تم تخطي المستخدم]",
+    },
+    custom_skills: "المهارات المخصصة",
+    agent_flows: "تدفقات الوكلاء",
+    no_tools_found: "لم يتم العثور على أدوات مطابقة.",
+    loading_mcp_servers: "تحميل خوادم MCP...",
+    app_integrations: "تكامل التطبيقات",
+    sub_skills: "مهارات فرعية",
+    memories: {
+      title: "ذكريات",
+      empty:
+        "حتى الآن، لا توجد ذكريات. بعد التفاعل مع برنامج الدردشة، ستتراكم المزيد من الذكريات.",
+      empty_cta: "إنشاء ذاكرة جديدة",
+      tab_workspace: "مساحة العمل",
+      tab_global: "عالمي",
+      toggle: {
+        label: "تمكين التخصيص",
+        description:
+          "اسمح لمساعدك بالرجوع إلى معلومات حولك أو عن هذا المكان، واستخدام هذه المعلومات في المحادثات.",
+      },
+      auto_extraction: {
+        label: "ذكريات آلية",
+        description: "اترك مساعدك يقوم تلقائيًا بتسجيل الذكريات في الخلفية.",
+      },
+      menu: {
+        edit: "تحرير",
+        delete: "حذف",
+        move_to_global: "انتقل إلى المستوى العالمي",
+        move_to_workspace: "انتقل إلى مساحة العمل",
+      },
+      modal: {
+        create_title: "إنشاء ذاكرة",
+        edit_title: "تحرير الذاكرة",
+        create_description:
+          'يجب أن تكون الذكريات عبارة عن جملة واحدة وموجزة. على سبيل المثال: "يفضل المستخدم لغة بايثون على لغة جافاسكربت".',
+        edit_description: "قم بتحديث محتوى هذه الذاكرة.",
+        label: "الذاكرة",
+        placeholder:
+          'على سبيل المثال: اسم المستخدم هو "جو"، المستخدم يعمل على برنامج "AnythingLLM"، إلخ.',
+        create: "إنشاء",
+        save: "احفظ",
+        cancel: "إلغاء",
+      },
     },
   },
   profile_settings: {
@@ -1572,6 +1546,342 @@ const TRANSLATIONS = {
       "pending-description":
         "المستخدمون في انتظار التحقق. قارن رمز المطابقة المعروض هنا بالرمز المعروض في محادثتهم على تطبيق Telegram.",
       unknown: "غير معروف",
+    },
+  },
+  scheduledJobs: {
+    title: "المهام المجدولة",
+    enableNotifications: "قم بتمكين إشعارات المتصفح لنتائج البحث عن وظائف.",
+    description:
+      "إنشاء مهام ذكاء اصطناعي متكررة تعمل وفق جدول زمني. تقوم كل مهمة بتشغيل استعلام مع أدوات اختيارية، وتخزين النتيجة للمراجعة.",
+    newJob: "وظيفة جديدة",
+    loading: "جاري التحميل...",
+    emptyTitle: "لا توجد مهام محددة حتى الآن.",
+    emptySubtitle: "ابدأ بإنشاء واحد.",
+    table: {
+      name: "الاسم",
+      schedule: "الجدول الزمني",
+      status: "الحالة",
+      lastRun: "آخر مرة",
+      nextRun: "الرحلة التالية",
+      actions: "الإجراءات",
+    },
+    confirmDelete: "هل أنت متأكد من أنك تريد حذف هذه المهمة المجدولة؟",
+    toast: {
+      deleted: "تم حذف الوظيفة",
+      triggered: "تم تنفيذ المهمة بنجاح.",
+      triggerFailed: "لم يتم تشغيل المهمة.",
+      triggerSkipped: "تم بالفعل البدء في تنفيذ هذا المشروع.",
+      killed: "تم إيقاف الوظيفة بنجاح.",
+      killFailed: "فشل في إيقاف العمل",
+    },
+    row: {
+      neverRun: "لا تفرط",
+      viewRuns: "تسجيلات",
+      runNow: "ابدأ الآن",
+      enable: "تمكين",
+      disable: "تعطيل",
+      edit: "تحرير",
+      delete: "حذف",
+    },
+    modal: {
+      titleEdit: "تعديل المهمة المجدولة",
+      titleNew: "وظيفة جديدة مُجدولة",
+      nameLabel: "الاسم",
+      namePlaceholder: "على سبيل المثال: ملخص الأخبار اليومية",
+      promptLabel: "طلب",
+      promptPlaceholder: "التوجيه بتشغيل البرنامج في كل مرة يتم تنفيذها...",
+      scheduleLabel: "الجدول الزمني",
+      modeBuilder: "مقاول",
+      modeCustom: "مخصص",
+      cronPlaceholder: "تعبير الوقت (مثل 0 9 * * *)",
+      currentSchedule: "الجدول الزمني الحالي:",
+      toolsLabel: "الأدوات (اختياري)",
+      toolsDescription:
+        "حدد الأدوات التي يمكن لهذه المهمة استخدامها. إذا لم يتم تحديد أي أدوات، فستتم إكمال المهمة بدون استخدام أي أدوات.",
+      toolsSearch: "البحث",
+      toolsNoResults: "لا توجد أدوات مطابقة",
+      required: "مطلوب",
+      requiredFieldsBanner: "يرجى ملء جميع الحقول المطلوبة لإنشاء الوظيفة.",
+      cancel: "إلغاء",
+      saving: "حفظ...",
+      updateJob: "تحديث الوظيفة",
+      createJob: "إنشاء وظيفة",
+      jobUpdated: "تم تحديث الوظيفة",
+      jobCreated: "تم إنشاء وظيفة",
+    },
+    builder: {
+      fallbackWarning:
+        'لا يمكن تعديل هذا النص بصريًا. إذا كنت ترغب في الاحتفاظ به، فاختر "مخصص". وإلا، يمكنك تغيير أي شيء أسفله لاستبداله.',
+      run: "شغل",
+      frequency: {
+        minute: "كل دقيقة",
+        hour: "ساعي",
+        day: "يوميًا",
+        week: "أسبوعي",
+        month: "شهريًا",
+      },
+      every: "كل",
+      minuteOne: "دقيقة واحدة",
+      minuteOther: "{{count}} دقيقة",
+      atMinute: "في الدقيقة",
+      pastEveryHour: "كل ساعة",
+      at: "في",
+      on: "على",
+      onDay: "في يوم",
+      ofEveryMonth: "في كل شهر",
+      weekdays: {
+        sun: "الشمس",
+        mon: "الاثنين",
+        tue: "الثلاثاء",
+        wed: "الخميس",
+        thu: "الخميس",
+        fri: "يوم الجمعة",
+        sat: "السبت",
+      },
+    },
+    runHistory: {
+      back: "العودة إلى الوظائف",
+      title: "سجل التشغيل: {{name}}",
+      schedule: "الجدول الزمني:",
+      emptyTitle: "لم يتم تحقيق أي تقدم حتى الآن في هذا المشروع.",
+      emptySubtitle: "ابدأ تنفيذ المهمة الآن، وشاهد نتائجها.",
+      runNow: "ابدأ الآن",
+      table: {
+        status: "الحالة",
+        started: "بدأ",
+        duration: "المدة",
+        error: "خطأ",
+      },
+      stopJob: "إيقاف العمل",
+    },
+    runDetail: {
+      loading: "تحميل تفاصيل الجولة...",
+      notFound: "لم يتم العثور على الأمر.",
+      back: "الرجوع",
+      unknownJob: "وظيفة غير محددة",
+      runHeading: "{{name}} — تشغيل المهمة رقم {{id}}",
+      duration: "المدة: {{value}}",
+      creating: "إنشاء...",
+      threadFailed: "فشل في إنشاء سلسلة (thread).",
+      sections: {
+        prompt: "طلب",
+        error: "خطأ",
+        thinking: "الأفكار ({{count}})",
+        toolCalls: "استدعاء الأدوات ({{count}})",
+        files: "الملفات ({{count}})",
+        response: "الرد",
+        metrics: "المقاييس",
+      },
+      metrics: {
+        promptTokens: "رموز التذكير:",
+        completionTokens: "رموز الإكمال:",
+      },
+      stopJob: "إيقاف التوظيف",
+      killing: "التوقف...",
+      continueInThread: "استمر في الدردشة",
+    },
+    toolCall: {
+      arguments: "الحجج:",
+      showResult: "اعرض النتيجة",
+      hideResult: "إخفاء النتيجة",
+    },
+    file: {
+      unknown: "ملف غير معروف",
+      download: "تنزيل",
+      downloadFailed: "فشل تنزيل الملف.",
+      types: {
+        powerpoint: "برنامج باوربوينت",
+        pdf: "ملف PDF",
+        word: "ملف مستند (Word)",
+        spreadsheet: "جدول البيانات",
+        generic: "الملف",
+      },
+    },
+    status: {
+      completed: "تمت",
+      failed: "فشل",
+      timed_out: "انتهت المدة المحددة",
+      running: "الجري",
+      queued: "في قائمة الانتظار",
+    },
+  },
+  "model-router": {
+    title: "نماذج أجهزة التوجيه",
+    description:
+      "تتيح لك أجهزة التوجيه المخصصة تحديد قواعد لتوجيه رسائل الدردشة تلقائيًا إلى مزودي ونماذج LLM المختلفة بناءً على شروط معينة.",
+    table: {
+      name: "الاسم",
+      fallback: "الخيار الاحتياطي",
+      rules: "القواعد",
+      workspaces: "مساحات العمل",
+    },
+    "no-routers": "لا توجد حاليًا أجهزة توجيه نموذجية.",
+    "empty-description":
+      "لم يتم تكوين أي من أجهزة التوجيه بعد. قم بإنشاء واحد للبدء.",
+    "new-router-button": "جهاز توجيه جديد",
+    "delete-confirm":
+      'هل أنت متأكد من أنك تريد حذف جهاز التوجيه "{{name}}"؟\nسيؤدي ذلك إلى إزالة جميع قواعده وقطع الاتصال بأي مساح عمل تستخدمه.\n\nهذا الإجراء غير قابل للتراجع.',
+    "toast-deleted": "تم حذف جهاز التوجيه.",
+    "toast-delete-failed": "فشل حذف جهاز التوجيه: {{error}}",
+    "new-router": {
+      title: "إنشاء جهاز توجيه جديد",
+      name: "الاسم",
+      "name-placeholder": "مثال: مُحسِّن التكاليف",
+      description: "الوصف",
+      "description-placeholder": "وصف اختياري",
+      "fallback-label": "المزود الرئيسي والنظام",
+      "fallback-description":
+        "يُستخدم عندما لا تتطابق أي قاعدة مسار. كما يُستخدم أيضًا لتقييم القواعد التي تم تصنيفها بواسطة نموذج لغوي كبير.",
+      "cooldown-label": "فترة التبريد (بالثواني)",
+      "cooldown-help":
+        "كم من الوقت يتم تخزين قرار التوجيه قبل إعادة تقييم القواعد؟ اضبط القيمة على 0 لتعطيل التخزين.",
+      "name-required": "الاسم مطلوب.",
+      "fallback-required": "يجب تحديد المورد الرئيسي ونموذج التوريد.",
+      cancel: "إلغاء",
+      create: "إنشاء جهاز توجيه",
+    },
+    "edit-router": {
+      "back-to-routers": "العودة إلى أجهزة التوجيه النموذجية",
+      title: "تحرير جهاز التوجيه: {{name}}",
+      save: "حفظ التغييرات",
+      "toast-update-failed": "فشل في تحديث جهاز التوجيه.",
+    },
+    rules: {
+      title: "قواعد التوجيه",
+      "title-with-name": "قواعد جهاز التوجيه: {{name}}",
+      description:
+        "حدد القواعد التي تحدد متى وكيف يتم إرسال رسائل الدردشة إلى مزودي الخدمات والنماذج المحددة.",
+      "add-rule": "إضافة قاعدة",
+      "delete-confirm": 'حذف القاعدة "{{title}}"؟',
+      "toast-delete-failed": "فشل حذف القاعدة.",
+      "toast-reorder-failed": "فشل في تطبيق قواعد إعادة الطلب.",
+      "no-rules": "لا توجد قواعد حتى الآن.",
+      "empty-description":
+        "أضف قاعدة لتوجيه رسائل الدردشة إلى مزودي خدمات وموديلات محددة.",
+      "new-rule-button": "قاعدة جديدة",
+      "calculated-section-label":
+        "القواعد المحسوبة – يتم تقييمها أولاً، بترتيب الأولوية.",
+      "llm-section-label":
+        "قواعد LLM - يتم تقييمها كمجموعة إذا لم تتطابق أي من القواعد المحسوبة",
+      "llm-rule-body":
+        'قم بمطابقة <desc>"{{description}}"</desc> ثم انتقل إلى <route>{{route}}</route>',
+      "calculated-no-conditions":
+        "بدون شروط — الطريق إلى <route>{{route}}</route>",
+      "calculated-single-condition":
+        'إذا كانت <prop>{{property}}</prop> {{comparator}} <val>"{{value}}"</val>، فقم بتوجيهها إلى <route>{{route}}</route>',
+      "calculated-multi-condition":
+        "إذا كان {{quantifier}} من <cond>، فإن المسار يجب أن يكون إلى <route>، {{route}}، </route>",
+      "comparator-contains": "يحتوي على",
+      "comparator-matches": "المباريات",
+      "comparator-between": "بين",
+      "badge-llm": "نموذج لغوي كبير",
+      "badge-calculated": "تم حسابه",
+      "aria-drag-to-reorder": "اسحب لتغيير الترتيب",
+      "aria-edit-rule": "قاعدة التحرير",
+      "aria-delete-rule": "حذف القاعدة",
+      "quantifier-any": "أي",
+      "quantifier-all": "كل",
+    },
+    "rule-form": {
+      "title-label": "العنوان",
+      "rule-type": "نوع القاعدة",
+      "property-label": "العقار",
+      "property-select": "اختر",
+      "comparator-label": "مقارن",
+      "comparator-select": "اختر",
+      "value-label": "القيمة",
+      "add-condition": "أضف شرطًا",
+      "remove-condition": "إزالة الشرط",
+      "conditions-incomplete":
+        "الشرط {{index}} غير مكتمل – يرجى إدخال معلومات عن الخاصية والمقارن والقيمة.",
+      "match-description-label": "وصف المباراة",
+      "match-description-placeholder":
+        "على سبيل المثال، المستخدم يسأل عن قضايا قانونية، أو العقود، أو الامتثال للقوانين.",
+      "match-description-help":
+        "صف الموقف الذي تريد فيه تطبيق هذه القاعدة. يتم تقييم ذلك بواسطة نموذج اللغة الكبير (LLM) الخاص بك لتحديد ما إذا كان يجب استخدامه أم لا.",
+      "route-to-label": "طريق الوصول إلى المورد ونموذج العمل",
+      "route-to-description":
+        "عندما يتطابق هذا القانون، استخدم هذا المزود/النموذج.",
+      cancel: "إلغاء",
+      saving: "حفظ...",
+      "update-rule": "قاعدة التحديث",
+      "create-rule": "إنشاء قاعدة",
+      "title-required": "العنوان مطلوب.",
+      "toast-save-failed": "فشل في حفظ القاعدة.",
+      "type-calculated-label": "تم حسابه",
+      "type-calculated-description":
+        "ابحث عن التطابقات بناءً على خصائص الرسالة مثل المحتوى، أو عدد الرموز، أو وقت اليوم.",
+      "type-llm-label": "تصنيف نموذج اللغة الكبير",
+      "type-llm-description":
+        "استخدم نموذج لغوي كبير لتصنيف الرسالة بناءً على الوصف الذي تقدمه.",
+      "prop-prompt-content": "محتوى مُجهز مسبقًا",
+      "prop-token-count": "عدد الرموز المستخدمة في المحادثة",
+      "prop-message-count": "عدد الرسائل في المحادثة",
+      "prop-current-hour": "الساعة الحالية (من 0 إلى 23)",
+      "prop-has-image": "هل يوجد مرفق صورة؟",
+      "cmp-contains": "يحتوي على",
+      "cmp-matches-regex": "مطابقات (تعبيرات نمطية)",
+      "cmp-equals": "يساوي",
+      "cmp-not-equals": "لا يساوي",
+      "cmp-greater-than": "أكبر من",
+      "cmp-greater-than-or-equal": "أكبر من أو يساوي",
+      "cmp-less-than": "أقل من",
+      "cmp-less-than-or-equal": "أقل من أو يساوي",
+      "cmp-between": "بين (بما في ذلك)",
+      "placeholder-between-hour":
+        "على سبيل المثال: 9:17 (من الساعة 9 صباحًا إلى 5 مساءً)",
+      "placeholder-between-numeric": "مثال: 10,50",
+      "placeholder-hour": "مثال: 18 (0-23)",
+      "placeholder-message-count": "على سبيل المثال: 10",
+      "placeholder-numeric": "مثال: 4000",
+      "placeholder-contains": "على سبيل المثال: كود، بايثون، رست",
+      "placeholder-matches": "مثال: /\\bpython\\b/i",
+      "placeholder-default": "مثال: كود",
+      "help-contains":
+        "قائمة مفصولة بفواصل — تطابق إذا احتوى السؤال على أي من القيم (مع تجاهل حالة الأحرف).",
+      "help-matches":
+        "نمط التعابير النمطية. استخدم `/pattern/ مع العلامات للتحكم في حساسية الحالة (القيمة الافتراضية هي عدم الحساسية للحالة).",
+      "bool-true": "صحيح",
+      "bool-false": "خاطئ",
+    },
+    "provider-picker": {
+      "select-provider": "اختر المزود",
+      "setup-required": "(يتطلب إعدادًا مسبقًا)",
+      "loading-models": "تحميل النماذج...",
+      "select-model": "اختر الطراز",
+      "enter-model": "أدخل اسم النموذج",
+      "select-provider-first": "اختر مزود الخدمة أولاً.",
+      "configure-to-continue": "قم بتكوين {{name}} للمتابعة.",
+      "configure-provider": "تكوين {{name}}",
+      "setup-credentials":
+        "أدخل بيانات الاعتماد المطلوبة لاستخدام {{name}} كوجهة توجيه.",
+      cancel: "إلغاء",
+      "save-settings": "حفظ الإعدادات",
+      "toast-save-failed": "فشل في حفظ الإعدادات: {{error}}",
+    },
+    "router-selection": {
+      "loading-routers": "تحميل أجهزة التوجيه المخصصة...",
+      "no-routers-prefix-settings":
+        "لم يتم تكوين أي من أجهزة التوجيه (routers) بعد.",
+      "no-routers-prefix-workspace": "لا توجد أجهزة توجيه مُكوّنة.",
+      "no-routers-link": "قم بإنشائه في إعدادات جهاز التوجيه (Model Router).",
+      "model-router-label": "جهاز توجيه نموذجي",
+      "select-router": "اختر جهاز توجيه.",
+      "select-description":
+        "اختر جهاز التوجيه الذي ستستخدمه لهذا الموقف العملي.",
+      "no-routers-chat":
+        'لا توجد أجهزة توجيه مُكوّنة. قم بإنشاء واحدة في قسم "إعدادات" > "مقدمو الخدمات" > "جهاز توجيه النموذج".',
+      "rule-count": "(قواعد {{count}})",
+    },
+    metrics: {
+      "model-router-default": "نموذج جهاز التوجيه",
+    },
+    chat: {
+      "select-router-error": "اختر جهاز توجيه.",
+      "invalid-model": "اختيار نموذج غير صالح",
+      "routed-to": "تم توجيهه إلى <route>{{model}}</route>",
+      "routed-to-rule":
+        "تم توجيهه إلى <route>{{model}}</route> عبر <rule>{{ruleTitle}}</rule>",
     },
   },
 };

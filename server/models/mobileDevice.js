@@ -225,6 +225,27 @@ const MobileDevice = {
       return [];
     }
   },
+
+  /**
+   * Migrates all mobile devices with null userId to the specified user.
+   * Called during multi-user mode enablement to assign orphaned devices to the new admin.
+   * @param {number} userId - The admin user ID to assign devices to
+   * @returns {Promise<void>}
+   */
+  migrateDevicesToMultiUser: async function (userId) {
+    try {
+      await prisma.desktop_mobile_devices.updateMany({
+        where: { userId: null },
+        data: { userId: userId },
+      });
+      console.log("Successfully migrated mobile devices to multi-user mode");
+    } catch (error) {
+      console.error(
+        "Error migrating mobile devices to multi-user mode:",
+        error
+      );
+    }
+  },
 };
 
 module.exports = { MobileDevice };

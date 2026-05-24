@@ -5,6 +5,7 @@ const { safeJsonParse } = require("../../../http");
 const { skillIsAutoApproved } = require("../../../helpers/agents");
 const SOCKET_TIMEOUT_MS = 300 * 1_000; // 5 mins
 const TOOL_APPROVAL_TIMEOUT_MS = 120 * 1_000; // 2 mins for tool approval
+const CLARIFICATION_DEFAULT_TIMEOUT_MS = 120 * 1_000; // 2 mins for clarifying questions
 
 /**
  * Websocket Interface plugin. It prints the messages on the console and asks for feedback
@@ -16,6 +17,7 @@ const TOOL_APPROVAL_TIMEOUT_MS = 120 * 1_000; // 2 mins for tool approval
 //   awaitResponse?: any
 //   handleFeedback?: (message: string) => void;
 //   handleToolApproval?: (message: string) => void;
+//   handleClarificationResponse?: (message: string) => void;
 // }
 
 const WEBSOCKET_BAIL_COMMANDS = [
@@ -185,6 +187,96 @@ const websocket = {
                   "Tool approval request timed out. User did not respond in time.",
               });
             }, TOOL_APPROVAL_TIMEOUT_MS);
+          });
+        };
+
+        /**
+         * Ask the user one or more clarifying questions in a single card and
+         * wait for their answers. With more than one question the card
+         * paginates; with exactly one it renders a simple form. Sends one
+         * websocket request and resolves when the user submits the whole set,
+         * skips, or the timeout elapses.
+         *
+         * @param {Object} options
+         * @param {Array<Object>} options.questions - Question objects, each with shape:
+         *   { kind: "input"|"choice", question: string, ... per-kind fields }
+         * @param {boolean} [options.allowSkip=true] - Whether the user can skip individual questions
+         * @param {number} [options.timeoutMs] - Override timeout (ms)
+         * @returns {Promise<{ skipped: boolean, timedOut: boolean, answers: Array<{skipped: boolean, answer: any}> }>}
+         */
+        aibitat.requestUserClarification = async function ({
+          questions = [],
+          allowSkip = true,
+          timeoutMs = CLARIFICATION_DEFAULT_TIMEOUT_MS,
+        }) {
+          const requestId = uuidv4();
+          return new Promise((resolve) => {
+            let timeoutId = null;
+
+            socket.handleClarificationResponse = (message) => {
+              try {
+                const data = safeJsonParse(message, {});
+                if (
+                  data?.type !== "clarificationResponse" ||
+                  data?.requestId !== requestId
+                )
+                  return;
+
+                delete socket.handleClarificationResponse;
+                clearTimeout(timeoutId);
+
+                if (data.skipped) {
+                  return resolve({
+                    skipped: true,
+                    timedOut: false,
+                    answers: questions.map(() => ({
+                      skipped: true,
+                      answer: null,
+                    })),
+                  });
+                }
+
+                const answers = Array.isArray(data.answers) ? data.answers : [];
+                const normalized = questions.map((_, i) => {
+                  const a = answers[i] || {};
+                  return {
+                    skipped: !!a.skipped,
+                    answer: a.answer ?? null,
+                  };
+                });
+                return resolve({
+                  skipped: false,
+                  timedOut: false,
+                  answers: normalized,
+                });
+              } catch (e) {
+                console.error("Error handling clarification response:", e);
+              }
+            };
+
+            socket.send(
+              JSON.stringify({
+                type: "clarificationRequest",
+                requestId,
+                questions,
+                allowSkip,
+                timeoutMs,
+              })
+            );
+
+            timeoutId = setTimeout(() => {
+              delete socket.handleClarificationResponse;
+              console.log(
+                chalk.yellow(
+                  `Clarification request timed out after ${timeoutMs}ms`
+                )
+              );
+              resolve({
+                skipped: false,
+                timedOut: true,
+                answers: questions.map(() => ({ skipped: true, answer: null })),
+              });
+            }, timeoutMs);
           });
         };
 

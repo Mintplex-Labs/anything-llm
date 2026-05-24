@@ -5,4 +5,6 @@
 
 */
 -- DropTable
-DROP TABLE IF EXISTS "welcome_messages" CASCADE;
+PRAGMA foreign_keys=off;
+DROP TABLE "welcome_messages";
+PRAGMA foreign_keys=on;

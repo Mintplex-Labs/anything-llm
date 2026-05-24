@@ -2,7 +2,7 @@ const { v4: uuidv4 } = require("uuid");
 const { DocumentManager } = require("../DocumentManager");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { WorkspaceParsedFiles } = require("../../models/workspaceParsedFiles");
-const { getVectorDbClass, getLLMProvider } = require("../helpers");
+const { getVectorDbClass, resolveProviderConnector } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const { grepAgents } = require("./agents");
 const {
@@ -51,10 +51,38 @@ async function streamChatWithWorkspace(
   });
   if (isAgentChat) return;
 
-  const LLMConnector = getLLMProvider({
-    provider: workspace?.chatProvider,
-    model: workspace?.chatModel,
+  const {
+    connector: LLMConnector,
+    routingMetadata,
+    prefetchedContext,
+    error: routerError,
+  } = await resolveLLMConnector({
+    workspace,
+    message: updatedMessage,
+    user,
+    thread,
+    attachments,
   });
+
+  if (routerError) {
+    return writeResponseChunk(response, {
+      id: uuid,
+      type: "abort",
+      textResponse: null,
+      sources: [],
+      close: true,
+      error: routerError,
+    });
+  }
+
+  if (routingMetadata?.routedTo?.shouldNotify) {
+    writeResponseChunk(response, {
+      uuid: `${uuid}:route`,
+      type: "modelRouteNotification",
+      routedTo: routingMetadata.routedTo,
+    });
+  }
+
   const VectorDb = getVectorDbClass();
 
   const messageLimit = workspace?.openAiHistory || 20;
@@ -100,44 +128,42 @@ async function streamChatWithWorkspace(
   let contextTexts = [];
   let sources = [];
   let pinnedDocIdentifiers = [];
-  const { rawHistory, chatHistory } = await recentChatHistory({
-    user,
-    workspace,
-    thread,
-    messageLimit,
+
+  // If the router pre-fetched context we can reuse it; otherwise fetch fresh.
+  const {
+    rawHistory,
+    chatHistory,
+    pinnedDocs: prefetchedPinnedDocs,
+    parsedFiles: prefetchedParsedFiles,
+  } = prefetchedContext ??
+  (await recentChatHistory({ user, workspace, thread, messageLimit }));
+
+  // Pinned docs — reuse pre-fetched if available, otherwise fetch with token cap.
+  const pinnedDocs =
+    prefetchedPinnedDocs ??
+    (await new DocumentManager({
+      workspace,
+      maxTokens: LLMConnector.promptWindowLimit(),
+    }).pinnedDocs());
+  pinnedDocs.forEach((doc) => {
+    const { pageContent, ...metadata } = doc;
+    pinnedDocIdentifiers.push(sourceIdentifier(doc));
+    contextTexts.push(doc.pageContent);
+    sources.push({
+      text:
+        pageContent.slice(0, 1_000) + "...continued on in source document...",
+      ...metadata,
+    });
   });
 
-  // Look for pinned documents and see if the user decided to use this feature. We will also do a vector search
-  // as pinning is a supplemental tool but it should be used with caution since it can easily blow up a context window.
-  // However we limit the maximum of appended context to 80% of its overall size, mostly because if it expands beyond this
-  // it will undergo prompt compression anyway to make it work. If there is so much pinned that the context here is bigger than
-  // what the model can support - it would get compressed anyway and that really is not the point of pinning. It is really best
-  // suited for high-context models.
-  await new DocumentManager({
-    workspace,
-    maxTokens: LLMConnector.promptWindowLimit(),
-  })
-    .pinnedDocs()
-    .then((pinnedDocs) => {
-      pinnedDocs.forEach((doc) => {
-        const { pageContent, ...metadata } = doc;
-        pinnedDocIdentifiers.push(sourceIdentifier(doc));
-        contextTexts.push(doc.pageContent);
-        sources.push({
-          text:
-            pageContent.slice(0, 1_000) +
-            "...continued on in source document...",
-          ...metadata,
-        });
-      });
-    });
-
-  // Inject any parsed files for this workspace/thread/user
-  const parsedFiles = await WorkspaceParsedFiles.getContextFiles(
-    workspace,
-    thread || null,
-    user || null
-  );
+  // Parsed files — reuse pre-fetched if available, otherwise fetch fresh.
+  const parsedFiles =
+    prefetchedParsedFiles ??
+    (await WorkspaceParsedFiles.getContextFiles(
+      workspace,
+      thread || null,
+      user || null
+    ));
   parsedFiles.forEach((doc) => {
     const { pageContent, ...metadata } = doc;
     contextTexts.push(doc.pageContent);
@@ -229,9 +255,16 @@ async function streamChatWithWorkspace(
 
   // Compress & Assemble message to ensure prompt passes token limit with room for response
   // and build system messages based on inputs and history.
+  // Reuse the system prompt from routing pre-fetch when available.
+  const systemPrompt =
+    prefetchedContext?.systemPrompt ??
+    (await chatPrompt(workspace, user, {
+      prompt: updatedMessage,
+      rawHistory,
+    }));
   const messages = await LLMConnector.compressMessages(
     {
-      systemPrompt: await chatPrompt(workspace, user),
+      systemPrompt,
       userPrompt: updatedMessage,
       contextTexts,
       chatHistory,
@@ -309,6 +342,32 @@ async function streamChatWithWorkspace(
     metrics,
   });
   return;
+}
+
+async function resolveLLMConnector({
+  workspace,
+  message,
+  user,
+  thread,
+  attachments,
+}) {
+  try {
+    const result = await resolveProviderConnector({
+      workspace,
+      prompt: message,
+      user,
+      thread,
+      attachments,
+    });
+    return { ...result, error: null };
+  } catch (routerError) {
+    return {
+      connector: null,
+      routingMetadata: null,
+      prefetchedContext: null,
+      error: `Model router error: ${routerError.message}`,
+    };
+  }
 }
 
 module.exports = {

@@ -109,6 +109,8 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
+    "scheduled-jobs": "Sarcini programate",
+    "model-router": "Model de router",
   },
   login: {
     "multi-user": {
@@ -202,9 +204,9 @@ const TRANSLATIONS = {
           "vor oferi răspunsuri doar dacă contextul documentului este identificat.<b>Veți avea nevoie să utilizați comanda @agent pentru a utiliza instrumentele.",
       },
       automatic: {
-        title: "Mașină",
         description:
           'va utiliza automat instrumentele, dacă modelul și furnizorul suportă apelarea nativă a instrumentelor.<br />Dacă apelarea nativă a instrumentelor nu este suportată, veți avea nevoie să utilizați comanda "@agent" pentru a utiliza instrumentele.',
+        title: "Agent",
       },
     },
     history: {
@@ -555,7 +557,6 @@ const TRANSLATIONS = {
     similarity_match: "meci",
     source_count_one: "{{count}} – referință",
     source_count_other: "Referințe către {{count}}",
-    preset_exit_description: "Întrerupeți sesiunea actuală a agentului",
     add_new: "Adaugă",
     edit: "Editează",
     publish: "Publica",
@@ -576,6 +577,64 @@ const TRANSLATIONS = {
       tool_call_was_approved: "Cererea de achiziție a fost aprobată.",
       tool_call_was_rejected:
         "Cererea de utilizare a instrumentului a fost respinsă.",
+      clarifying_skip: "Lasă-l pe agent să ia decizia.",
+      clarifying_submit: "Trimite",
+      clarifying_skipped: "Lasă-l pe agent să ia decizia.",
+      clarifying_timeout: "Nu a fost depusă răspunsul în termenul stabilit.",
+      clarifying_pagination: "{{current}} din {{total}}",
+      clarifying_prev_aria: "Întrebarea anterioară",
+      clarifying_next_aria: "Următoarea întrebare",
+      clarifying_close_aria: "Închide și sări",
+      clarifying_other: "Altele",
+      clarifying_other_placeholder: "Introduceți răspunsul",
+      batch_progress: "{{answered}} de la {{total}} a răspuns",
+      batch_skip_this: "Sări peste",
+      batch_submit_all: "Trimiteți toate",
+      batch_next: "Următorul",
+      answer_skipped: "[utilizatorul a sărit peste]",
+    },
+    custom_skills: "Abilități personalizate",
+    agent_flows: "Fluxuri de agenți",
+    no_tools_found: "Nu au fost găsite instrumente corespunzătoare.",
+    loading_mcp_servers: "Încărcare servere MCP...",
+    app_integrations: "Integrarea aplicațiilor",
+    sub_skills: "Abilități specifice",
+    memories: {
+      title: "Amintiri",
+      empty:
+        "Până acum, nu există nicio amintire. După ce interacționați mai mult cu chatbot-ul, veți începe să aveți mai multe amintiri.",
+      empty_cta: "crează o nouă amintire",
+      tab_workspace: "Spațiu de lucru",
+      tab_global: "Global",
+      toggle: {
+        label: "Activează personalizarea",
+        description:
+          "Permite-i asistentului tău să reamintească informații despre tine sau despre acest spațiu de lucru și să le folosească în conversații.",
+      },
+      auto_extraction: {
+        label: "Amintiri automate",
+        description:
+          "Permite-i asistentului să creeze automat amintiri în fundal.",
+      },
+      menu: {
+        edit: "Editează",
+        delete: "Șterge",
+        move_to_global: "Migrarea către nivel global",
+        move_to_workspace: "Mutare către spațiul de lucru",
+      },
+      modal: {
+        create_title: "Creați amintiri",
+        edit_title: "Modifică memoria",
+        create_description:
+          "Amintirile ar trebui să fie formulate într-un singur enunț, clar și concis. De exemplu: „Utilizatorul preferă Python față de JavaScript”.",
+        edit_description: "Actualizați conținutul acestui memorie.",
+        label: "Memorie",
+        placeholder:
+          "De exemplu, numele utilizatorului este Joe, utilizatorul lucrează cu AnythingLLM, etc.",
+        create: "Creați",
+        save: "Salvați",
+        cancel: "Anula",
+      },
     },
   },
   profile_settings: {
@@ -787,7 +846,7 @@ const TRANSLATIONS = {
         readActions: "Cite",
         writeActions: "Acțiuni",
         warning:
-          "Accesul la sistemul de fișiere poate fi periculos, deoarece poate modifica sau șterge fișiere. Vă rugăm să consultați documentația <link>înainte de a-l activa.",
+          "Accesul la sistemul de fișiere poate fi periculos, deoarece poate modifica sau șterge fișiere. Vă rugăm să consultați documentația <a>înainte de a-l activa.",
         skills: {
           "read-text-file": {
             title: "Citește fișierul",
@@ -1223,100 +1282,16 @@ const TRANSLATIONS = {
             "Numărul maxim de instrumente care pot fi selectate pentru fiecare interogare. Recomandăm stabilirea acestui parametru la valori mai mari pentru modelele cu un context mai amplu.",
         },
       },
-      sql: {
-        title: "Conector SQL",
+      "clarifying-questions": {
+        title:
+          "Permite agentului să pună întrebări suplimentare pentru a clarifica anumite aspecte.",
+        "beta-badge": "Versiune de test",
         description:
-          "Permite-ți agentului să utilizeze SQL pentru a răspunde la întrebările tale, conectându-se la diverși furnizori de baze de date SQL.",
-      },
-      default_skill:
-        "Implicit, această funcție este activată, dar puteți dezactiva-o dacă nu doriți ca agentul să o utilizeze.",
-      filesystem: {
-        title: "Acces la sistemul de fișiere",
-        description:
-          "Permite reprezentantului dumneavoastră să citească, să scrie, să caute și să gestioneze fișiere într-un director specific. Suportă editarea fișierelor, navigarea în director și căutarea conținutului.",
-        learnMore:
-          "Aflați mai multe despre cum să utilizați această abilitate.",
-        configuration: "Configurare",
-        readActions: "Cite",
-        writeActions: "Acțiuni",
-        warning:
-          "Accesul la sistemul de fișiere poate fi periculos, deoarece poate modifica sau șterge fișiere. Vă rugăm să consultați documentația <link>înainte de a-l activa.",
-        skills: {
-          "read-text-file": {
-            title: "Citește fișierul",
-            description:
-              "Citează conținutul fișierelor (text, cod, PDF, imagini, etc.)",
-          },
-          "read-multiple-files": {
-            title: "Citește mai multe fișiere",
-            description: "Citiți mai multe fișiere simultan",
-          },
-          "list-directory": {
-            title: "Lista de contacte",
-            description: "Enumeră fișierele și directoarele dintr-un folder",
-          },
-          "search-files": {
-            title: "Caută fișiere",
-            description: "Căutați fișiere după nume sau conținut",
-          },
-          "get-file-info": {
-            title: "Obține informații despre fișier",
-            description: "Obțineți metadate detaliate despre fișiere.",
-          },
-          "edit-file": {
-            title: "Modifică fișierul",
-            description: "Realizați modificări pe linii în fișierele de text.",
-          },
-          "create-directory": {
-            title: "Creați o directoare",
-            description: "Creați noi directoare",
-          },
-          "move-file": {
-            title: "Mută/Redenumirea fișierului",
-            description: "Mută sau redenumește fișierele și directoarele.",
-          },
-          "copy-file": {
-            title: "Copiază fișier",
-            description: "Copiați fișiere și directoare",
-          },
-          "write-text-file": {
-            title: "Creați un fișier de text",
-            description:
-              "Creați fișiere de text noi sau suprascrieți fișierele de text existente.",
-          },
-        },
-      },
-      createFiles: {
-        title: "Crearea de documente",
-        description:
-          "Permite-ți agentului să creeze formate de documente binare, cum ar fi prezentări PowerPoint, fișe Excel, documente Word și fișiere PDF. Fișierele pot fi descărcate direct din fereastra de chat.",
-        configuration: "Tipuri de documente disponibile",
-        skills: {
-          "create-text-file": {
-            title: "Fișiere text",
-            description:
-              "Creați fișiere text cu orice conținut și extensie (de exemplu, .txt, .md, .json, .csv, etc.)",
-          },
-          "create-pptx": {
-            title: "Prezentări PowerPoint",
-            description:
-              "Creați prezentări noi în PowerPoint, cu diapozitive, titluri și puncte.",
-          },
-          "create-pdf": {
-            title: "Documente în format PDF",
-            description:
-              "Creați documente PDF din fișiere Markdown sau text simplu, cu un stil de formatare de bază.",
-          },
-          "create-xlsx": {
-            title: "Fișe Excel",
-            description:
-              "Creați fișiere Excel pentru date tabulare, cu foi și stilizare.",
-          },
-          "create-docx": {
-            title: "Fișiere în format Word",
-            description:
-              "Creați documente Word cu un stil și formatare de bază.",
-          },
+          "Când este activată, agenții pot întrerupe discuția pentru a pune întrebări scurte și clare, dacă solicitarea dumneavoastră este ambiguă.",
+        "max-per-turn": {
+          title: "Numărul maxim de întrebări per tur",
+          description:
+            "Câte întrebări suplimentare poate adresa agentul în cadrul unui singur sondaj.",
         },
       },
     },
@@ -1618,6 +1593,347 @@ const TRANSLATIONS = {
       "pending-description":
         "Utilizatorii care așteaptă să fie verificați. Potrivirea codului de asociere afișat aici cu cel afișat în chat-ul lor de pe Telegram.",
       unknown: "Necunoscut",
+    },
+  },
+  scheduledJobs: {
+    title: "Sarcini programate",
+    enableNotifications:
+      "Activați notificările din browser pentru rezultatele căutării de locuri de muncă.",
+    description:
+      "Creați sarcini AI repetitive, care rulează conform unui program. Fiecare sarcină execută un prompt, folosind opțional anumite instrumente, și salvează rezultatul pentru a fi revizuit ulterior.",
+    newJob: "Loc de muncă nou",
+    loading: "Se încarcă...",
+    emptyTitle: "Momentan, nu există sarcini programate.",
+    emptySubtitle: "Creați unul pentru a începe.",
+    table: {
+      name: "Nume",
+      schedule: "Program",
+      status: "Stare",
+      lastRun: "Ultima cursă",
+      nextRun: "Următoarea cursă",
+      actions: "Acțiuni",
+    },
+    confirmDelete:
+      "Sunteți sigur că doriți să eliminați această sarcină programată?",
+    toast: {
+      deleted: "Locul de muncă a fost șters",
+      triggered: "Job-ul a fost executat cu succes.",
+      triggerFailed: "Nu a reușit să declanșeze execuția.",
+      triggerSkipped:
+        "Procesul de licitație pentru acest proiect este deja în desfășurare.",
+      killed: "Procesul de angajare s-a încheiat cu succes.",
+      killFailed: "Nu am reușit să opresc activitatea.",
+    },
+    row: {
+      neverRun: "Nu alerga",
+      viewRuns: "Rute disponibile",
+      runNow: "Începeți acum",
+      enable: "Activează",
+      disable: "Dezactivează",
+      edit: "Editează",
+      delete: "Șterge",
+    },
+    modal: {
+      titleEdit: "Modifică programarea unei sarcini",
+      titleNew: "Job nou programat",
+      nameLabel: "Nume",
+      namePlaceholder: "de exemplu, „Rezumatul zilnic de știri”",
+      promptLabel: "Solicitare",
+      promptPlaceholder: "Instrucțiunea de a rula la fiecare execuție...",
+      scheduleLabel: "Program",
+      modeBuilder: "Constructor",
+      modeCustom: "Personalizat",
+      cronPlaceholder: "Expresia cron (de exemplu, 0 9 * * *)",
+      currentSchedule: "Programul actual:",
+      toolsLabel: "Unelte (opționale)",
+      toolsDescription:
+        "Selectați instrumentele disponibile pentru acest job. Dacă niciun instrument nu este selectat, job-ul va rula fără a utiliza niciun instrument.",
+      toolsSearch: "Caută",
+      toolsNoResults: "Nu există unelte potrivite.",
+      required: "Necesare",
+      requiredFieldsBanner:
+        "Vă rugăm să completați toate câmpurile obligatorii pentru a crea o ofertă de loc de muncă.",
+      cancel: "Anula",
+      saving: "Economisire...",
+      updateJob: "Actualizare post",
+      createJob: "Creați o nouă poziție",
+      jobUpdated: "Postul a fost actualizat",
+      jobCreated: "Loc de muncă creat",
+    },
+    builder: {
+      fallbackWarning:
+        'Această expresie nu poate fi modificată vizual. Selectați "Personalizat" pentru a o păstra, sau modificați orice element de mai jos pentru a o suprascrie.',
+      run: "Alătura",
+      frequency: {
+        minute: "în fiecare minut",
+        hour: "pe oră",
+        day: "zilnic",
+        week: "săptămânal",
+        month: "lunar",
+      },
+      every: "Fiecare",
+      minuteOne: "1 minut",
+      minuteOther: "{{count}} minute(s)",
+      atMinute: "La minut",
+      pastEveryHour: "în fiecare oră",
+      at: "La",
+      on: "În",
+      onDay: "Într-o zi",
+      ofEveryMonth: "pentru fiecare lună",
+      weekdays: {
+        sun: "Soare",
+        mon: "O singură",
+        tue: "Marți",
+        wed: "Miercuri",
+        thu: "Joi",
+        fri: "Ziua de vineri",
+        sat: "Sat",
+      },
+    },
+    runHistory: {
+      back: "Înapoi la anunțuri de angajare",
+      title: "Istoric de rulare: {{name}}",
+      schedule: "Program:",
+      emptyTitle: "Nu am obținut încă rezultate pentru acest proiect.",
+      emptySubtitle: "Executați sarcina acum și verificați rezultatele.",
+      runNow: "Începeți acum",
+      table: {
+        status: "Stare",
+        started: "A început",
+        duration: "Durată",
+        error: "Eroare",
+      },
+      stopJob: "Întrerupeți activitatea",
+    },
+    runDetail: {
+      loading: "Încărcare detalii despre rulare...",
+      notFound: "Nu s-a găsit.",
+      back: "Înapoi",
+      unknownJob: "Loc de muncă necunoscut",
+      runHeading: "{{name}} — Executarea #{{id}}",
+      duration: "Durată: {{value}}",
+      creating: "Crearea...",
+      threadFailed: "Nu a reușit să creeze thread-ul.",
+      sections: {
+        prompt: "Solicitare",
+        error: "Eroare",
+        thinking: "Gânduri ({{count}})",
+        toolCalls: "Apeluri către instrumente ({{count}})",
+        files: "Fișiere ({{count}})",
+        response: "Răspuns",
+        metrics: "Indicatori",
+      },
+      metrics: {
+        promptTokens: "Cuvinte-cheie:",
+        completionTokens: "Token-uri de finalizare:",
+      },
+      stopJob: "Încetarea activității",
+      killing: "Oprire...",
+      continueInThread: "Continuă în chat",
+    },
+    toolCall: {
+      arguments: "Argumente:",
+      showResult: "Afișează rezultatul",
+      hideResult: "Ascunde rezultatul",
+    },
+    file: {
+      unknown: "Fișier necunoscut",
+      download: "Descarcă",
+      downloadFailed: "Nu a reușit să descarce fișierul",
+      types: {
+        powerpoint: "PowerPoint",
+        pdf: "Fișier PDF",
+        word: "Fișier Word",
+        spreadsheet: "Fișă de calcul",
+        generic: "Fișier",
+      },
+    },
+    status: {
+      completed: "Finalizat",
+      failed: "Eșuat",
+      timed_out: "Timpul a expirat",
+      running: "Cursa",
+      queued: "În așteptare",
+    },
+  },
+  "model-router": {
+    title: "Modele de routere",
+    description:
+      "Router-ele de model vă permit să definiți reguli pentru a direcționa automat mesajele de chat către diferiți furnizori și modele de LLM, în funcție de anumite condiții.",
+    table: {
+      name: "Nume",
+      fallback: "Opțiune de rezervă",
+      rules: "Reguli",
+      workspaces: "Spații de lucru",
+    },
+    "no-routers": "Nu există încă modele de routere disponibile.",
+    "empty-description":
+      "Momentan, nu există routere configurate. Creați unul pentru a începe.",
+    "new-router-button": "Router nou",
+    "delete-confirm":
+      'Sunteți sigur că doriți să ștergeți routerul "{{name}}"?\nAceasta va elimina toate regulile sale și va deconecta orice spațiu de lucru care îl utilizează.\n\nAceastă acțiune este ireversibilă.',
+    "toast-deleted": "Router-ul a fost șters",
+    "toast-delete-failed": "Nu a reușit să ștergă routerul: {{error}}",
+    "new-router": {
+      title: "Creați un nou router",
+      name: "Nume",
+      "name-placeholder": "de exemplu, Optimizatorul de Costuri",
+      description: "Descriere",
+      "description-placeholder": "Descriere opțională",
+      "fallback-label": "Furnizor principal și model",
+      "fallback-description":
+        "Utilizat atunci când nu există nicio regulă de rutare care să se potrivească. De asemenea, este folosit pentru a evalua regulile clasificate de modelele lingvistice mari (LLM).",
+      "cooldown-label": "Perioada de răcire a cache-ului (secunde)",
+      "cooldown-help":
+        "Cât timp este stocată în memorie decizia de rutare înainte de a fi reevaluată? Setarea la 0 dezactivează stocarea în memorie.",
+      "name-required": "Numele este obligatoriu.",
+      "fallback-required":
+        "Este necesară identificarea furnizorului principal și a modelului specific.",
+      cancel: "Anula",
+      create: "Creați un router",
+    },
+    "edit-router": {
+      "back-to-routers": "Înapoi la router-ele de model",
+      title: "Modifică routerul: {{name}}",
+      save: "Salvați modificările",
+      "toast-update-failed": "Nu a reușit să actualizeze router-ul.",
+    },
+    rules: {
+      title: "Reguli de rutare",
+      "title-with-name": "Reguli pentru router: {{name}}",
+      description:
+        "Stabiliți regulile care determină momentul și modul în care mesajele din chat sunt trimise către furnizori și modele specifici.",
+      "add-rule": "Adaugă regulă",
+      "delete-confirm": 'Șterge regula "{{title}}"?',
+      "toast-delete-failed": "Nu a reușit să șterga regulă",
+      "toast-reorder-failed": "Nu s-a reușit reconfigurarea regulilor.",
+      "no-rules": "Nu există reguli încă",
+      "empty-description":
+        "Adăugați o regulă pentru a direcționa mesajele de chat către furnizori și modele specifice.",
+      "new-rule-button": "Nouă regulă",
+      "calculated-section-label":
+        "Reguli calculate – evaluatează-le în ordine de prioritate",
+      "llm-section-label":
+        "Regulile LLM – evaluatează rezultatul ca un lot, dacă nicio regulă calculată nu se potrivește",
+      "llm-rule-body":
+        'Executați operațiunea <desc>"{{description}}"</desc> și apoi direcționați rezultatul către <route>{{route}}</route>',
+      "calculated-no-conditions":
+        "Fără condiții – traseu către <route> {{route}} </route>",
+      "calculated-single-condition":
+        'Dacă <prop>{{property}}</prop> {{comparator}} <val>"{{value}}"</val> atunci, direcționează către <route>{{route}}</route>',
+      "calculated-multi-condition":
+        "Dacă {{quantifier}} din <cond>{{conditions}}</cond> este adevărat, atunci traseul este către <route>{{route}}</route>",
+      "comparator-contains": "conține",
+      "comparator-matches": "meciuri",
+      "comparator-between": "între",
+      "badge-llm": "Model lingvistic mare",
+      "badge-calculated": "Calculat",
+      "aria-drag-to-reorder": "Vă rugăm să reordonați",
+      "aria-edit-rule": "Regula de editare",
+      "aria-delete-rule": "Șterge regula",
+      "quantifier-any": "ORICE",
+      "quantifier-all": "TOATE",
+    },
+    "rule-form": {
+      "title-label": "Titlu",
+      "rule-type": "Tip de regulă",
+      "property-label": "Proprietate",
+      "property-select": "Alege",
+      "comparator-label": "Comparator",
+      "comparator-select": "Alege",
+      "value-label": "Valoare",
+      "add-condition": "Adaugă o condiție",
+      "remove-condition": "Elimină condiția",
+      "conditions-incomplete":
+        "Condiția {{index}} este necompletă — completați proprietatea, comparatorul și valoarea.",
+      "match-description-label": "Descrierea meciului",
+      "match-description-placeholder":
+        "De exemplu, utilizatorul solicită informații despre aspecte juridice, contracte sau conformitate.",
+      "match-description-help":
+        "Descrieți situația în care doriți ca această regulă să se aplice. Aceasta este evaluată de modelul dumneavoastră lingvistic pentru a determina dacă ar trebui utilizată.",
+      "route-to-label": "Calea către furnizor și modelul de funcționare",
+      "route-to-description":
+        "Când această regulă se potrivește, utilizați acest furnizor/model.",
+      cancel: "Anula",
+      saving: "Economisire...",
+      "update-rule": "Regula de actualizare",
+      "create-rule": "Creați regulă",
+      "title-required": "Este obligatoriu să specificați un titlu.",
+      "toast-save-failed": "Nu a reușit să salveze regula.",
+      "type-calculated-label": "Calculat",
+      "type-calculated-description":
+        "Potriviți în funcție de proprietățile mesajelor, cum ar fi conținutul, numărul de token-uri sau ora din zi.",
+      "type-llm-label": "Clasificare LLM",
+      "type-llm-description":
+        "Utilizați un model de limbaj pentru a clasifica mesajul, pe baza unei descrieri pe care o furnizați.",
+      "prop-prompt-content": "Conținut solicitat",
+      "prop-token-count": "Numărul de token-uri în conversație",
+      "prop-message-count": "Numărul de mesaje în conversație",
+      "prop-current-hour": "Ora curentă (0-23)",
+      "prop-has-image": "Are atașat un fișier imagine",
+      "cmp-contains": "conține",
+      "cmp-matches-regex": "potriviri (expresii regulate)",
+      "cmp-equals": "echivalează cu",
+      "cmp-not-equals": "nu este egal",
+      "cmp-greater-than": "mai mare decât",
+      "cmp-greater-than-or-equal": "mai mare sau egal",
+      "cmp-less-than": "mai puțin de",
+      "cmp-less-than-or-equal": "mai mic sau egal",
+      "cmp-between": "între (inclusiv)",
+      "placeholder-between-hour":
+        "de exemplu, 9:17 (de la 9 dimineața până la 17:00)",
+      "placeholder-between-numeric": "de exemplu, 10,50",
+      "placeholder-hour": "de exemplu, 18 (0-23)",
+      "placeholder-message-count": "de exemplu, 10",
+      "placeholder-numeric": "de exemplu, 4000",
+      "placeholder-contains": "de exemplu, cod, Python, Rust",
+      "placeholder-matches": "de exemplu, /\\bpython\\b/i",
+      "placeholder-default": "de exemplu, cod",
+      "help-contains":
+        "Listă separată prin virgulă — se potrivește dacă solicitarea conține oricare dintre valorile specificate (fără a ține cont de majuscule).",
+      "help-matches":
+        "Model de expresie regulată. Utilizați `/pattern/cu flag-uri pentru a specifica dacă trebuie sau nu să se țină cont de majuscule și minuscule (implicit, nu se ține cont de majuscule și minuscule).",
+      "bool-true": "Corect",
+      "bool-false": "Fals",
+    },
+    "provider-picker": {
+      "select-provider": "Selectați furnizorul",
+      "setup-required": "(necesită configurare)",
+      "loading-models": "Încărcare modele...",
+      "select-model": "Selectați modelul",
+      "enter-model": "Introduceți numele modelului",
+      "select-provider-first": "Alege mai întâi un furnizor.",
+      "configure-to-continue": "Configurați {{name}} pentru a continua",
+      "configure-provider": "Configurați {{name}}",
+      "setup-credentials":
+        "Introduceți datele de autentificare necesare pentru a utiliza {{name}} ca destinație de rutare.",
+      cancel: "Anula",
+      "save-settings": "Salvați setările",
+      "toast-save-failed":
+        "Nu a fost posibil să se salveze setările: {{error}}",
+    },
+    "router-selection": {
+      "loading-routers": "Încărcare rutere personalizate...",
+      "no-routers-prefix-settings": "Nu există routere configurate în prezent.",
+      "no-routers-prefix-workspace": "Nu există routere configurate.",
+      "no-routers-link": "Creați unul în setările routerului (Model Router).",
+      "model-router-label": "Model de router",
+      "select-router": "Alege un router",
+      "select-description":
+        "Alege router-ul pe care dorești să-l folosești pentru acest spațiu de lucru.",
+      "no-routers-chat":
+        "Nu există routere configurate. Creați unul în secțiunea Setări > Furnizori de AI > Router de model.",
+      "rule-count": "(__REGULI__)",
+    },
+    metrics: {
+      "model-router-default": "Model de router",
+    },
+    chat: {
+      "select-router-error": "Alege un router",
+      "invalid-model": "Selectarea incorectă a modelului",
+      "routed-to": "Trimis către <route>{{model}}</route>",
+      "routed-to-rule":
+        "Trasează spre <route>{{model}}</route> prin intermediul <rule>{{ruleTitle}}</rule>",
     },
   },
 };

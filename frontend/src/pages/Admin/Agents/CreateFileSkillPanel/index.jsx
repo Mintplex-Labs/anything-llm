@@ -11,7 +11,7 @@ import {
 } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
 
-const getCreateFileSkills = (t) => [
+export const getCreateFileSkills = (t) => [
   {
     name: "create-text-file",
     title: t("agent.skill.createFiles.skills.create-text-file.title"),
