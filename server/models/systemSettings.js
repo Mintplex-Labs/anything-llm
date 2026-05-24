@@ -2,7 +2,6 @@ const path = require("path");
 const prisma = require("../utils/prisma");
 const { default: slugify } = require("slugify");
 const { isValidUrl, safeJsonParse } = require("../utils/http");
-const prisma = require("../utils/prisma");
 const { MetaGenerator } = require("../utils/boot/MetaGenerator");
 const { PGVector } = require("../utils/vectorDbProviders/pgvector");
 const { NativeEmbedder } = require("../utils/EmbeddingEngines/native");
