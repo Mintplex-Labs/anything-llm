@@ -3,20 +3,22 @@ ALTER TABLE "workspaces" ADD COLUMN "router_id" INTEGER;
 
 -- CreateTable
 CREATE TABLE "model_routers" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
     "fallback_provider" TEXT NOT NULL,
     "fallback_model" TEXT NOT NULL,
     "cooldown_seconds" INTEGER NOT NULL DEFAULT 30,
     "created_by" INTEGER,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "lastUpdatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "lastUpdatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "model_routers_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "model_router_rules" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "id" SERIAL NOT NULL,
     "router_id" INTEGER NOT NULL,
     "enabled" BOOLEAN NOT NULL DEFAULT true,
     "priority" INTEGER NOT NULL,
@@ -28,9 +30,10 @@ CREATE TABLE "model_router_rules" (
     "route_provider" TEXT NOT NULL,
     "route_model" TEXT NOT NULL,
     "created_by" INTEGER,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "lastUpdatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT "model_router_rules_router_id_fkey" FOREIGN KEY ("router_id") REFERENCES "model_routers" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "lastUpdatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "model_router_rules_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -44,3 +47,6 @@ CREATE INDEX "model_router_rules_router_id_enabled_priority_idx" ON "model_route
 
 -- CreateIndex
 CREATE UNIQUE INDEX "model_router_rules_router_id_title_key" ON "model_router_rules"("router_id", "title");
+
+-- AddForeignKey
+ALTER TABLE "model_router_rules" ADD CONSTRAINT "model_router_rules_router_id_fkey" FOREIGN KEY ("router_id") REFERENCES "model_routers"("id") ON DELETE CASCADE ON UPDATE CASCADE;
