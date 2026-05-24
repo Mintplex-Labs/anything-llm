@@ -132,12 +132,12 @@ class LMStudioLLM {
       this.#slog(
         "No context windows cached - Context window may be inaccurately reported."
       );
-      return process.env.LMSTUDIO_MODEL_TOKEN_LIMIT || 4096;
+      return process.env.LMSTUDIO_MODEL_TOKEN_LIMIT || 16384;
     }
 
     let userDefinedLimit = null;
     const systemDefinedLimit =
-      Number(this.modelContextWindows[modelName]) || 4096;
+      Number(this.modelContextWindows[modelName]) || 16384;
 
     if (
       process.env.LMSTUDIO_MODEL_TOKEN_LIMIT &&
@@ -212,6 +212,22 @@ class LMStudioLLM {
     ];
   }
 
+  /**
+   * Parses and prepends reasoning from the response and returns the full text response.
+   * Used for getChatCompletions to render thinking text if present in full response.
+   * @param {Object} message - The message object from the LMStudio response.
+   * @returns {string}
+   */
+  #parseReasoningFromResponse({ message }) {
+    let textResponse = message?.content ?? "";
+    if (
+      !!message?.reasoning_content &&
+      message.reasoning_content.trim().length > 0
+    )
+      textResponse = `<think>${message.reasoning_content}</think>${textResponse}`;
+    return textResponse;
+  }
+
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
     if (!this.model)
       throw new Error(
@@ -233,7 +249,7 @@ class LMStudioLLM {
       return null;
 
     return {
-      textResponse: result.output.choices[0].message.content,
+      textResponse: this.#parseReasoningFromResponse(result.output.choices[0]),
       metrics: {
         prompt_tokens: result.output.usage?.prompt_tokens || 0,
         completion_tokens: result.output.usage?.completion_tokens || 0,

@@ -257,6 +257,12 @@ const SidebarOptions = ({ user = null, t }) => (
               flex: true,
               roles: ["admin"],
             },
+            {
+              btnText: t("settings.model-router"),
+              href: paths.settings.modelRouters(),
+              flex: true,
+              roles: ["admin"],
+            },
           ]}
         />
         <Option
@@ -394,6 +400,12 @@ const SidebarOptions = ({ user = null, t }) => (
               href: paths.settings.logs(),
               flex: true,
               roles: ["admin"],
+            },
+            {
+              btnText: t("settings.scheduled-jobs"),
+              href: paths.settings.scheduledJobs(),
+              flex: true,
+              hidden: !!user,
             },
             {
               btnText: t("settings.api-keys"),

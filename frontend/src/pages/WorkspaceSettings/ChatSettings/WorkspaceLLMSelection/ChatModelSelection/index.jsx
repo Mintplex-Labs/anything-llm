@@ -81,7 +81,7 @@ export default function ChatModelSelection({
                   value={model.id}
                   selected={workspace?.chatModel === model.id}
                 >
-                  {model.id}
+                  {model.name || model.id}
                 </option>
               );
             })}
@@ -99,7 +99,7 @@ export default function ChatModelSelection({
                       value={model.id}
                       selected={workspace?.chatModel === model.id}
                     >
-                      {model.name}
+                      {model.name || model.id}
                     </option>
                   ))}
                 </optgroup>

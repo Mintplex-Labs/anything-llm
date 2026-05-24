@@ -33,6 +33,10 @@ const DYNAMIC_KEY_ALLOWLIST = [
   "chat.mode.automatic.description",
   "chat.mode.chat.description",
   "chat.mode.query.description",
+
+  // Used for model router rules
+  "model-router.rules.quantifier-any",
+  "model-router.rules.quantifier-all",
 ];
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
