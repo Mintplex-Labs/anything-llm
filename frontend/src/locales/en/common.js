@@ -1130,7 +1130,7 @@ const TRANSLATIONS = {
     "desc-start":
       "Sometimes, you may want to change the default way that new documents are split and chunked before being inserted into your vector database.",
     "desc-end":
-      "You should only modify this setting if you understand how text splitting works and it's side effects.",
+      "AnythingLLM currently uses <strategy>LangChain's RecursiveCharacterTextSplitter</strategy> for document chunking. You should only modify these settings if you understand how that strategy affects retrieval quality and chunk size. See the <docs>LangChain recursive text splitter docs</docs> for more detail.",
     size: {
       title: "Text Chunk Size",
       description:

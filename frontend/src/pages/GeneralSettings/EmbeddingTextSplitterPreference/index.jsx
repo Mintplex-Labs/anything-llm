@@ -6,7 +6,7 @@ import CTAButton from "@/components/lib/CTAButton";
 import Admin from "@/models/admin";
 import showToast from "@/utils/toast";
 import { numberWithCommas } from "@/utils/numbers";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { useModal } from "@/hooks/useModal";
 import ModalWrapper from "@/components/ModalWrapper";
 import ChangeWarningModal from "@/components/ChangeWarning";
@@ -117,7 +117,20 @@ export default function EmbeddingTextSplitterPreference() {
                 </div>
                 <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
                   {t("text.desc-start")} <br />
-                  {t("text.desc-end")}
+                  <Trans
+                    i18nKey="text.desc-end"
+                    components={{
+                      strategy: <code className="text-[11px] text-white/80" />,
+                      docs: (
+                        <a
+                          className="text-primary-button hover:underline"
+                          href="https://js.langchain.com/docs/concepts/text_splitters/recursive_text_splitter/"
+                          target="_blank"
+                          rel="noreferrer"
+                        />
+                      ),
+                    }}
+                  />
                 </p>
               </div>
               <div className="w-full justify-end flex">
