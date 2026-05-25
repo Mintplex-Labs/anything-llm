@@ -413,6 +413,14 @@ class Provider {
           apiKey: process.env.MINIMAX_API_KEY || null,
           ...config,
         });
+      case "cerebras":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.cerebras.ai/v1",
+          },
+          apiKey: process.env.CEREBRAS_API_KEY || null,
+          ...config,
+        });
       default:
         throw new Error(
           `Unsupported provider ${JSON.stringify(provider)} for this task.`

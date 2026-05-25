@@ -42,6 +42,7 @@ import PrivateModeLogo from "@/media/llmprovider/privatemode.png";
 import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
 import LemonadeLogo from "@/media/llmprovider/lemonade.png";
 import MinimaxLogo from "@/media/llmprovider/minimax.png";
+import CerebrasLogo from "@/media/llmprovider/cerebras.png";
 
 import PreLoader from "@/components/Preloader";
 import ModelRouterOptions from "@/components/LLMSelection/ModelRouterOptions";
@@ -82,6 +83,7 @@ import PrivateModeOptions from "@/components/LLMSelection/PrivateModeOptions";
 import SambaNovaOptions from "@/components/LLMSelection/SambaNovaOptions";
 import LemonadeOptions from "@/components/LLMSelection/LemonadeOptions";
 import MinimaxOptions from "@/components/LLMSelection/MinimaxOptions";
+import CerebrasLLMOptions from "@/components/LLMSelection/CerebrasLLMOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -420,6 +422,14 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <MinimaxOptions settings={settings} />,
     description: "Run Minimax's powerful M2 LLMs.",
     requiredConfig: ["MinimaxApiKey"],
+  },
+  {
+    name: "Cerebras",
+    value: "cerebras",
+    logo: CerebrasLogo,
+    options: (settings) => <CerebrasLLMOptions settings={settings} />,
+    description: "Run models at instant speed on Cerebras inference.",
+    requiredConfig: ["CerebrasApiKey"],
   },
   {
     name: "Generic OpenAI",

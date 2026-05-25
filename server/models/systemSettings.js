@@ -1014,6 +1014,10 @@ const SystemSettings = {
       // Minimax Keys
       MinimaxApiKey: !!process.env.MINIMAX_API_KEY,
       MinimaxModelPref: process.env.MINIMAX_MODEL_PREF,
+
+      // Cerebras Keys
+      CerebrasApiKey: !!process.env.CEREBRAS_API_KEY,
+      CerebrasModelPref: process.env.CEREBRAS_MODEL_PREF,
     };
   },
 

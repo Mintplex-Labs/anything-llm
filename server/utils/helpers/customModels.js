@@ -50,6 +50,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "sambanova",
   "lemonade",
   "minimax",
+  "cerebras",
   "generic-openai",
   // Embedding Engines
   "native-embedder",
@@ -137,6 +138,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getLemonadeModels(basePath, "embedding");
     case "minimax":
       return await getMinimaxModels(apiKey);
+    case "cerebras":
+      return await getCerebrasModels(apiKey);
     case "generic-openai":
       return await getGenericOpenAiModels(basePath, apiKey);
     default:
@@ -1073,6 +1076,41 @@ async function getSambaNovaModels(_apiKey = null) {
   } catch (e) {
     console.error(`SambaNova:getSambaNovaModels`, e.message);
     return { models: [], error: "Could not fetch SambaNova Models" };
+  }
+}
+
+async function getCerebrasModels(_apiKey = null) {
+  try {
+    const apiKey =
+      _apiKey === true
+        ? process.env.CEREBRAS_API_KEY
+        : _apiKey || process.env.CEREBRAS_API_KEY || null;
+    const { OpenAI: OpenAIApi } = require("openai");
+    const openai = new OpenAIApi({
+      baseURL: "https://api.cerebras.ai/v1",
+      apiKey,
+    });
+    const models = await openai.models
+      .list()
+      .then((results) => results.data)
+      .then((models) =>
+        models.map((model) => ({
+          id: model.id,
+          name: model.id,
+          organization: model.owned_by ?? "Cerebras",
+        }))
+      )
+      .catch((e) => {
+        console.error(`Cerebras:listModels`, e.message);
+        return [];
+      });
+
+    // Api Key was successful so lets save it for future uses
+    if (models.length > 0 && !!apiKey) process.env.CEREBRAS_API_KEY = apiKey;
+    return { models, error: null };
+  } catch (e) {
+    console.error(`Cerebras:getCerebrasModels`, e.message);
+    return { models: [], error: "Could not fetch Cerebras Models" };
   }
 }
 
