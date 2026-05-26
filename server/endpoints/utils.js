@@ -175,6 +175,9 @@ function getModelTag() {
     case "lemonade":
       model = process.env.LEMONADE_LLM_MODEL_PREF;
       break;
+    case "minimax":
+      model = process.env.MINIMAX_MODEL_PREF;
+      break;
     default:
       model = "--";
       break;

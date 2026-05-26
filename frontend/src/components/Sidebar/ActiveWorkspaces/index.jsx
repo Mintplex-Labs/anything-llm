@@ -6,7 +6,7 @@ import ManageWorkspace, {
   useManageWorkspaceModal,
 } from "../../Modals/ManageWorkspace";
 import paths from "@/utils/paths";
-import { useParams, useNavigate, useMatch } from "react-router-dom";
+import { Link, useParams, useNavigate, useMatch } from "react-router-dom";
 import { GearSix, UploadSimple, DotsSixVertical } from "@phosphor-icons/react";
 import useUser from "@/hooks/useUser";
 import ThreadContainer from "./ThreadContainer";
@@ -117,14 +117,8 @@ export default function ActiveWorkspaces() {
                       role="listitem"
                     >
                       <div className="flex gap-x-2 items-center justify-between">
-                        <a
-                          href={
-                            isActive
-                              ? null
-                              : paths.workspace.chat(workspace.slug)
-                          }
-                          data-tooltip-id="workspace-name"
-                          data-tooltip-content={workspace.name}
+                        <Link
+                          to={paths.workspace.chat(workspace.slug)}
                           aria-current={isActive ? "page" : ""}
                           className={`
                             transition-all duration-[200ms]
@@ -144,7 +138,11 @@ export default function ActiveWorkspaces() {
                                 weight="bold"
                               />
                             </div>
-                            <div className="flex items-center space-x-2 overflow-hidden flex-grow">
+                            <div
+                              data-tooltip-id="workspace-name"
+                              data-tooltip-content={workspace.name}
+                              className="flex items-center space-x-2 overflow-hidden flex-grow"
+                            >
                               <div className="w-[130px] overflow-hidden">
                                 <p
                                   className={`
@@ -168,6 +166,8 @@ export default function ActiveWorkspaces() {
                                     setSelectedWs(workspace);
                                     showModal();
                                   }}
+                                  data-tooltip-id="upload-workspace"
+                                  data-tooltip-content="Upload documents to this workspace for RAG indexing"
                                   className={`group/upload border-none rounded-md flex items-center justify-center ml-auto p-[2px] ${isActive ? "hover:bg-zinc-500 light:hover:bg-sky-800/30" : "hover:bg-zinc-500 light:hover:bg-slate-400"}`}
                                 >
                                   <UploadSimple
@@ -188,6 +188,8 @@ export default function ActiveWorkspaces() {
                                   }}
                                   className={`group/gear rounded-md flex items-center justify-center ml-auto p-[2px] ${isActive ? "hover:bg-zinc-500 light:hover:bg-sky-800/30" : "hover:bg-zinc-500 light:hover:bg-slate-400"}`}
                                   aria-label="General appearance settings"
+                                  data-tooltip-id="gear-workspace"
+                                  data-tooltip-content="General appearance settings"
                                 >
                                   <GearSix
                                     color={
@@ -202,7 +204,7 @@ export default function ActiveWorkspaces() {
                               </div>
                             )}
                           </div>
-                        </a>
+                        </Link>
                       </div>
                       {isActive && (
                         <ThreadContainer

@@ -57,19 +57,35 @@ const WORKSPACE_AGENT = {
    * @param {string} provider
    * @param {import("@prisma/client").workspaces | null} workspace
    * @param {import("@prisma/client").users | null} user
+   * @param {string} [prompt] - Current user message for memory reranking
    * @returns {Promise<{ role: string, functions: object[] }>}
    */
-  getDefinition: async (provider = null, workspace = null, user = null) => {
-    const basePrompt = await Provider.systemPrompt({
-      provider,
-      workspace,
-      user,
-    });
+  getDefinition: async (
+    provider = null,
+    workspace = null,
+    user = null,
+    prompt = ""
+  ) => {
+    let [role, clarifyingQuestionsSkills] = await Promise.all([
+      Provider.systemPrompt({
+        provider,
+        workspace,
+        user,
+        prompt,
+      }),
+      clarifyingQuestionsSkillIfEnabled(),
+    ]);
+
+    // If clarifying questions tools are enabled, add a note to the role that the user must use the request-user-input tool to ask questions.
+    if (!!clarifyingQuestionsSkills?.length)
+      role +=
+        "\n\nWhen you need information from the user (URLs, file paths, preferences, choices, etc.), you MUST use the request-user-input tool. Do not ask questions in your text response - the user cannot reply to text. Only the tool can collect user input.";
 
     return {
-      role: basePrompt,
+      role,
       functions: [
         ...(await agentSkillsFromSystemSettings()),
+        ...clarifyingQuestionsSkills,
         ...ImportedPlugin.activeImportedPlugins(),
         ...AgentFlows.activeFlowPlugins(),
         ...(await new MCPCompatibilityLayer().activeMCPServers()),
@@ -77,6 +93,27 @@ const WORKSPACE_AGENT = {
     };
   },
 };
+
+/**
+ * Conditionally include the request-user-input sub-tools in the workspace agent's
+ * function list when the admin has enabled clarifying questions.
+ * Returns an empty array when disabled so the tools aren't visible to the LLM.
+ * Names use the parent#child convention so #attachPlugins loads each sub-tool.
+ * @returns {Promise<string[]>}
+ */
+async function clarifyingQuestionsSkillIfEnabled() {
+  const enabled =
+    (await SystemSettings.getValueOrFallback(
+      { label: "agent_clarifying_questions_enabled" },
+      "false"
+    )) === "true";
+  if (!enabled) return [];
+
+  const parentName = AgentPlugins.requestUserInput.name;
+  const subPlugins = AgentPlugins.requestUserInput.plugin;
+  if (!Array.isArray(subPlugins)) return [];
+  return subPlugins.map((sub) => `${parentName}#${sub.name}`);
+}
 
 /**
  * Fetches and preloads the names/identifiers for plugins that will be dynamically

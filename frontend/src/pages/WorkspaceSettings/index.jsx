@@ -49,6 +49,7 @@ function ShowWorkspaceChat() {
   const { slug, tab } = useParams();
   const { user } = useUser();
   const [workspace, setWorkspace] = useState(null);
+  const [deletionProtected, setDeletionProtected] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -67,6 +68,7 @@ function ShowWorkspaceChat() {
         vectorDB: _settings?.VectorDB,
         suggestedMessages,
       });
+      setDeletionProtected(_settings?.WorkspaceDeletionProtection === true);
       setLoading(false);
     }
     getWorkspace();
@@ -117,7 +119,11 @@ function ShowWorkspaceChat() {
           />
         </div>
         <div className="px-16 py-6">
-          <TabContent slug={slug} workspace={workspace} />
+          <TabContent
+            slug={slug}
+            workspace={workspace}
+            deletionProtected={deletionProtected}
+          />
         </div>
       </div>
     </div>

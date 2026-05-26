@@ -9,7 +9,7 @@ const { reqBody } = require("../http");
 async function validEmbedConfig(request, response, next) {
   const { embedId } = request.params;
 
-  const embed = await EmbedConfig.getWithWorkspace({ uuid: embedId });
+  const embed = await EmbedConfig.getWithWorkspace({ uuid: String(embedId) });
   if (!embed) {
     response.sendStatus(404).end();
     return;
