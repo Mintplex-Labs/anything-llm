@@ -116,6 +116,8 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
+    "scheduled-jobs": "Feines programades",
+    "model-router": "Router de model",
   },
   login: {
     "multi-user": {
@@ -200,9 +202,9 @@ const TRANSLATIONS = {
     mode: {
       title: "Mode de xat",
       automatic: {
-        title: "Automàtic",
         description:
           "usarà eines automàticament si el model i el proveïdor suporten crida d'eines nativa.<br />Si no s'admet l'ús d'eines natiu, hauràs d'usar l'ordre @agent per fer servir eines.",
+        title: "Agent",
       },
       chat: {
         title: "Xat",
@@ -347,7 +349,7 @@ const TRANSLATIONS = {
         readActions: "Accions de lectura",
         writeActions: "Accions d'escriptura",
         warning:
-          "L'accés al sistema de fitxers pot ser perillós, ja que pot modificar o eliminar fitxers. Consulta la <link>documentació</link> abans d'activar-ho.",
+          "L'accés al sistema de fitxers pot ser perillós, ja que pot modificar o eliminar fitxers. Consulta la <a>documentació</a> abans d'activar-ho.",
         skills: {
           "read-text-file": {
             title: "Llegeix fitxer",
@@ -780,6 +782,17 @@ const TRANSLATIONS = {
           title: "Màxim d'eines",
           description:
             "El nombre màxim d'eines a seleccionar per a cada consulta. Recomanem valors més alts per a models amb contextos més grans.",
+        },
+      },
+      "clarifying-questions": {
+        title: "Permetre que l'agent faci preguntes per aclarir aspectes.",
+        "beta-badge": "Versió beta",
+        description:
+          "Quan estiguin activades, els agents poden fer una pausa per fer preguntes breus i clares si la vostra petició és ambigua.",
+        "max-per-turn": {
+          title: "Número màxim de preguntes per ronda",
+          description:
+            "Quant preguntes de aclariment pot fer l'agent en una sola enquesta.",
         },
       },
     },
@@ -1352,7 +1365,6 @@ const TRANSLATIONS = {
     see_more: "Veu més",
     preset_reset_description:
       "Esborra l'historial del xat i comença un xat nou",
-    preset_exit_description: "Atura la sessió de l'agent actual",
     add_new_preset: " Afegeix una nova ordre predefinida",
     add_new: "Afegeix nou",
     edit: "Edita",
@@ -1398,6 +1410,64 @@ const TRANSLATIONS = {
       always_allow: "Permet sempre {{skillName}}",
       tool_call_was_approved: "La crida a l'eina ha estat aprovada",
       tool_call_was_rejected: "La crida a l'eina ha estat rebutjada",
+      clarifying_skip: "Deixeu que l'agent decideixi.",
+      clarifying_submit: "Enviar",
+      clarifying_skipped: "Deixeu que l'agent prengi la decisió.",
+      clarifying_timeout: "No s'ha entregat la resposta a temps.",
+      clarifying_pagination: "{{current}} de {{total}}",
+      clarifying_prev_aria: "Pregunta anterior",
+      clarifying_next_aria: "Següent pregunta",
+      clarifying_close_aria: "Tancar i saltar",
+      clarifying_other: "Altres",
+      clarifying_other_placeholder: "Escriu la teva resposta",
+      batch_progress: "{{answered}} de {{total}} ha respost",
+      batch_skip_this: "Saltar",
+      batch_submit_all: "Enviar-ho tot",
+      batch_next: "Següent",
+      answer_skipped: "[l'usuari va saltar]",
+    },
+    custom_skills: "Habilitats personalitzades",
+    agent_flows: "Fluxos d'agents",
+    no_tools_found: "No s'han trobat eines corresponents.",
+    loading_mcp_servers: "Carregant servidors MCP...",
+    app_integrations: "Integracions d'aplicacions",
+    sub_skills: "Habilitats específiques",
+    memories: {
+      title: "Recordos",
+      empty:
+        "Aquesta és la primera interacció. Amb més interaccions amb el bot, es podran afegir més records.",
+      empty_cta: "crear un nou record",
+      tab_workspace: "Espai de treball",
+      tab_global: "Global",
+      toggle: {
+        label: "Activar la personalització",
+        description:
+          "Permiteu que el vostre assistent recordi fets sobre vosaltres o sobre aquest espai de treball i els utilitzi en les converses.",
+      },
+      auto_extraction: {
+        label: "Memòries automàtiques",
+        description:
+          "Deixa que el teu assistent creï automàticament memòries de fons.",
+      },
+      menu: {
+        edit: "Editar",
+        delete: "Eliminar",
+        move_to_global: "Passar a nivell global",
+        move_to_workspace: "Canviar a l'espai de treball",
+      },
+      modal: {
+        create_title: "Crea un record",
+        edit_title: "Editar memòria",
+        create_description:
+          'Els records han de ser una única declaració concisa. Per exemple: "L\'usuari prefereix Python a JavaScript".',
+        edit_description: "Actualitza el contingut d'aquesta memòria.",
+        label: "Memòria",
+        placeholder:
+          "Per exemple, el nom de l'usuari és Joe, l'usuari treballa a AnythLLM, etc.",
+        create: "Crear",
+        save: "Guarda",
+        cancel: "Cancel·lar",
+      },
     },
   },
   profile_settings: {
@@ -1526,6 +1596,347 @@ const TRANSLATIONS = {
           button: "Connecta al Centre de la comunitat",
         },
       },
+    },
+  },
+  scheduledJobs: {
+    title: "Feines programades",
+    enableNotifications:
+      "Activa les notificacions del navegador per als resultats de la cerca de feina.",
+    description:
+      "Crea tasques d'IA recurrents que s'executen segons un horari. Cada tasca executa una consulta amb eines opcionals i guarda el resultat per a la seva revisió.",
+    newJob: "Nou lloc de treball",
+    loading: "Cargant...",
+    emptyTitle: "No hi ha tasques programades.",
+    emptySubtitle: "Creeu un per començar.",
+    table: {
+      name: "Nom",
+      schedule: "Horari",
+      status: "Estat",
+      lastRun: "Última sortida",
+      nextRun: "Proper següent",
+      actions: "Accions",
+    },
+    confirmDelete: "Estàs segur que vols eliminar aquesta tasca programada?",
+    toast: {
+      deleted: "Emple o eliminat",
+      triggered: "La tasca s'ha completat amb èxit.",
+      triggerFailed: "No s'ha pogut iniciar la tasca.",
+      triggerSkipped: "Ja s'ha iniciat la feina per a aquest projecte.",
+      killed: "La feina s'ha completat amb èxit.",
+      killFailed: "No va poder evitar que es fes la feina.",
+    },
+    row: {
+      neverRun: "Mai no corres",
+      viewRuns: "Horaris de funcionament",
+      runNow: "Corre ara",
+      enable: "Activar",
+      disable: "Desactivar",
+      edit: "Editar",
+      delete: "Eliminar",
+    },
+    modal: {
+      titleEdit: "Modificar tasca programada",
+      titleNew: "Nova tasca programada",
+      nameLabel: "Nom",
+      namePlaceholder: 'Per exemple, "Resum diari de notícies"',
+      promptLabel: "Indicació",
+      promptPlaceholder: "L'instrucció per executar-se en cada execució...",
+      scheduleLabel: "Horari",
+      modeBuilder: "Constructor",
+      modeCustom: "Personalitzat",
+      cronPlaceholder: "Execució de la tasca (per exemple, 0 9 * * *)",
+      currentSchedule: "Horari actual:",
+      toolsLabel: "Eines (opcional)",
+      toolsDescription:
+        "Seleccioneu quins eines d'agent pot utilitzar aquest treball. Si cap, seleccioneu, el treball es realitzarà sense cap eina.",
+      toolsSearch: "Cerca",
+      toolsNoResults: "No hi ha cap eina que coincideixi.",
+      required: "Obligatori",
+      requiredFieldsBanner:
+        "Si us plau, compliu tots els camps obligatoris per crear l'oferta de treball.",
+      cancel: "Cancel·lar",
+      saving: "Guardant...",
+      updateJob: "Actualitzar lloc de treball",
+      createJob: "Crear un lloc de treball",
+      jobUpdated: "Pàgina actualitzada",
+      jobCreated: "Creació d'un lloc de treball",
+    },
+    builder: {
+      fallbackWarning:
+        'Aquesta expressió no es pot modificar visualment. Per mantenir-la, utilitzeu l\'opció "Personalitzat". Si voleu, podeu modificar qualsevol element de sota per sobrescribir-la.',
+      run: "Corre",
+      frequency: {
+        minute: "cada minut",
+        hour: "per hora",
+        day: "diari",
+        week: "setmanal",
+        month: "mensal",
+      },
+      every: "Cada",
+      minuteOne: "1 minut",
+      minuteOther: "{{count}} minuts",
+      atMinute: "En el moment",
+      pastEveryHour: "cada hora",
+      at: "A",
+      on: "Sobre",
+      onDay: "En un dia",
+      ofEveryMonth: "de cada mes",
+      weekdays: {
+        sun: "Sol",
+        mon: "Mon",
+        tue: "Dimarts",
+        wed: "Dijous",
+        thu: "Dijous",
+        fri: "Divendres",
+        sat: "Dissabte",
+      },
+    },
+    runHistory: {
+      back: "Torna a les feines",
+      title: "Històric de curses: {{name}}",
+      schedule: "Horari:",
+      emptyTitle: "Aún no hi ha candidats per a aquesta posició.",
+      emptySubtitle: "Inicia la tasca ara i consulta els resultats.",
+      runNow: "Comença ara",
+      table: {
+        status: "Estat",
+        started: "Comencat",
+        duration: "Durada",
+        error: "Error",
+      },
+      stopJob: "Aturar la feina",
+    },
+    runDetail: {
+      loading: "Càrrec detalls de la sessió...",
+      notFound: "No s'ha trobat la sortida.",
+      back: "Cap endavant",
+      unknownJob: "Posició sense especificar",
+      runHeading: "{{name}} — Executar la tasca {{id}}",
+      duration: "Durada: {{value}}",
+      creating: "Creant...",
+      threadFailed: "No s'ha pogut crear el fil.",
+      sections: {
+        prompt: "Indicació",
+        error: "Error",
+        thinking: "Pensaments ({{count}})",
+        toolCalls: "Crides a les eines ({{count}})",
+        files: "Fitxers ({{count}})",
+        response: "Resposta",
+        metrics: "Mètriques",
+      },
+      metrics: {
+        promptTokens: "Tokens de desencadenament:",
+        completionTokens: "Tokens de finalització:",
+      },
+      stopJob: "Finalitzar feina",
+      killing: "Aturar...",
+      continueInThread: "Continua la conversa",
+    },
+    toolCall: {
+      arguments: "Argumentacions:",
+      showResult: "Mostrar resultat",
+      hideResult: "Ocultar resultat",
+    },
+    file: {
+      unknown: "Fitxer desconegut",
+      download: "Descarregar",
+      downloadFailed: "No s'ha pogut descarregar el fitxer.",
+      types: {
+        powerpoint: "PowerPoint",
+        pdf: "Document en format PDF",
+        word: "Document de text",
+        spreadsheet: "Fulla de càlcul",
+        generic: "Fitxer",
+      },
+    },
+    status: {
+      completed: "Complet",
+      failed: "Fallit",
+      timed_out: "Ha expirat el temps",
+      running: "Correu",
+      queued: "En la fila d'espera",
+    },
+  },
+  "model-router": {
+    title: "Router de model",
+    description:
+      "Els enrutadors de model et permeten definir regles per enviar automàticament missatges de chat a diferents proveïdors i models d'LLM, segons determinades condicions.",
+    table: {
+      name: "Nom",
+      fallback: "Solució alternativa",
+      rules: "Regles",
+      workspaces: "Espais de treball",
+    },
+    "no-routers": "Aún no hi ha models de routers disponibles.",
+    "empty-description":
+      "No hi ha enquest routers configurats encara. Cree un per començar.",
+    "new-router-button": "Nou router",
+    "delete-confirm":
+      'Estàs segur que vols eliminar el router "{{name}}"?\nAixò eliminarà totes les seves regles i desconnectarà qualsevol espai de treball que l\'utilitzi.\n\nAquesta acció és irreversible.',
+    "toast-deleted": "Router eliminat",
+    "toast-delete-failed": "No s'ha pogut eliminar el router: {{error}}",
+    "new-router": {
+      title: "Crear un nou router",
+      name: "Nom",
+      "name-placeholder": "p. ex., Optimitzador de costos",
+      description: "Descripció",
+      "description-placeholder": "Descripció opcional",
+      "fallback-label": "Proveïdor principal i model",
+      "fallback-description":
+        "Es fa servir quan cap regla de ruteig coincideix. També s'utilitza per avaluar les regles classificades per models de llenguatge.",
+      "cooldown-label": "Temps de refredament (segons)",
+      "cooldown-help":
+        "Durant quant temps es guarda la decisió de ruteig abans de reavaluar les regles. Per desactivar la memòria, configureu-lo a 0.",
+      "name-required": "És obligatori indicar el nom.",
+      "fallback-required": "Es requereix el proveïdor principal i el model.",
+      cancel: "Cancelar",
+      create: "Configurar enrutador",
+    },
+    "edit-router": {
+      "back-to-routers": "Cap al model de routers",
+      title: "Editar en el router: {{name}}",
+      save: "Desar",
+      "toast-update-failed": "No s'ha pogut actualitzar el router.",
+    },
+    rules: {
+      title: "Regles de ruteig",
+      "title-with-name": "Regles del router: {{name}}",
+      description:
+        "Estableix les regles que determinen quan i com s'envien els missatges de chat a determinats proveïdors i models.",
+      "add-rule": "Afegir regla",
+      "delete-confirm": 'Eliminar la regla "{{title}}"?',
+      "toast-delete-failed": "No s'ha pogut eliminar la regla.",
+      "toast-reorder-failed": "No s'ha pogut reimplementar les regles.",
+      "no-rules": "Aquesta situació encara no té cap regla.",
+      "empty-description":
+        "Afegiu una regla per enviar els missatges de chat a proveïdors i models específics.",
+      "new-rule-button": "Nova norma",
+      "calculated-section-label":
+        "Regles calculades – avaluades primer, en ordre de prioritat",
+      "llm-section-label":
+        "Regles LLM — s'han d'analitzar en lots si cap regla calculada no coincideix",
+      "llm-rule-body":
+        'Primer, esdevenir <desc>"{{description}}"</desc>, i després, dirigir-se a <route>{{route}}</route>',
+      "calculated-no-conditions":
+        "Sense condicions — ruta a <route>{{route}}</route>",
+      "calculated-single-condition":
+        'Si <prop>{{property}}</prop> {{comparator}} <val>"{{value}}"</val>, llavors dirigir-se a <route>{{route}}</route>',
+      "calculated-multi-condition":
+        "Si {{quantifier}} de <cond> és {{conditions}}, de </cond>, llavors, dirigeix-te a <route> {{route}} </route>",
+      "comparator-contains": "conté",
+      "comparator-matches": "partits",
+      "comparator-between": "entre",
+      "badge-llm": "Model de llarga recorrència (LLM)",
+      "badge-calculated": "Calculat",
+      "aria-drag-to-reorder": "Arrossega per reordenar",
+      "aria-edit-rule": "Regla d'edició",
+      "aria-delete-rule": "Eliminar regla",
+      "quantifier-any": "QUALSESO",
+      "quantifier-all": "TOT",
+    },
+    "rule-form": {
+      "title-label": "Títol",
+      "rule-type": "Tipus de regla",
+      "property-label": "Proprietat",
+      "property-select": "Seleccionar",
+      "comparator-label": "Comparador",
+      "comparator-select": "Seleccionar",
+      "value-label": "Valor",
+      "add-condition": "Afegir condició",
+      "remove-condition": "Eliminar la condició",
+      "conditions-incomplete":
+        "L'estat {{index}} és incomple - ompliu les propietats, el comparador i el valor.",
+      "match-description-label": "Descripció del partit",
+      "match-description-placeholder":
+        "Per exemple, l'usuari està preguntant sobre temes legals, contractes o sobre el compliment de les normatives.",
+      "match-description-help":
+        "Descriu la situació en què vols que aquesta regla s'apliqui. El teu model de llenguatge (LLM) la avaluarà per determinar si cal utilitzar-la.",
+      "route-to-label": "Ruta cap al proveïdor i model",
+      "route-to-description":
+        "Quan aquesta regla es compleixi, utilitzeu aquest proveïdor/model.",
+      cancel: "Cancel·lar",
+      saving: "Guardant...",
+      "update-rule": "Regla d'actualització",
+      "create-rule": "Crear regla",
+      "title-required": "El títol és obligatori.",
+      "toast-save-failed": "No s'ha pogut guardar la regla.",
+      "type-calculated-label": "Calculat",
+      "type-calculated-description":
+        "Comparar segons propietats del missatge, com el contingut, el nombre de tokens o l'hora del dia.",
+      "type-llm-label": "Clasificació de LLM",
+      "type-llm-description":
+        "Utilitzeu un model de llenguatge per classificar el missatge en funció de la descripció que proporcioneu.",
+      "prop-prompt-content": "Contingut de la petició",
+      "prop-token-count": "Nombre de tokens de conversa",
+      "prop-message-count": "Nombre de missatges de conversa",
+      "prop-current-hour": "Hora actual (0-23)",
+      "prop-has-image": "Inclou una imatge",
+      "cmp-contains": "conté",
+      "cmp-matches-regex": "expressions regulars (regex)",
+      "cmp-equals": "és igual a",
+      "cmp-not-equals": "no és igual a",
+      "cmp-greater-than": "major que",
+      "cmp-greater-than-or-equal": "major o igual",
+      "cmp-less-than": "menys de",
+      "cmp-less-than-or-equal": "menys o igual",
+      "cmp-between": "entre (incloent-ho)",
+      "placeholder-between-hour":
+        "Per exemple, de 9:17 del matí a les 17:00 (5 de la tarda)",
+      "placeholder-between-numeric": "per exemple, 10,50",
+      "placeholder-hour": "Per exemple, 18 (0-23)",
+      "placeholder-message-count": "p. ex. 10",
+      "placeholder-numeric": "p. ex., 4000",
+      "placeholder-contains": "p. ex., codi, Python, Rust",
+      "placeholder-matches": "p. ex. /\\bpython\\b/i",
+      "placeholder-default": "p. ex., codi",
+      "help-contains":
+        "Llista separada per comes — coincideix si la consulta conté algun dels valors (sense diferenciar majúscules i minúscules).",
+      "help-matches":
+        "Patró de regex. Utilitzeu `/patró/flags` per a tenir en compte la distinció entre majúscules i minúscules (per defecte, no la tenen en compte).",
+      "bool-true": "Veritable",
+      "bool-false": "Fals",
+    },
+    "provider-picker": {
+      "select-provider": "Seleccionar proveïdor",
+      "setup-required": "(requereix una configuració)",
+      "loading-models": "Carregant models...",
+      "select-model": "Seleccionar model",
+      "enter-model": "Introduïu el nom del model",
+      "select-provider-first": "Seleccioneu un proveïdor primer.",
+      "configure-to-continue": "Configure {{name}} per continuar",
+      "configure-provider": "Configurar {{name}}",
+      "setup-credentials":
+        "Introduïu les credencials necessàries per utilitzar {{name}} com a destinació de la ruta.",
+      cancel: "Cancel·lar",
+      "save-settings": "Guardar configuració",
+      "toast-save-failed":
+        "No s'ha pogut guardar les configuracions: {{error}}",
+    },
+    "router-selection": {
+      "loading-routers": "Càrrec dels enrils personalitzats...",
+      "no-routers-prefix-settings":
+        "No s'han configurat encara cap dels enllaços de ràdia.",
+      "no-routers-prefix-workspace":
+        "No s'han configurat els enllaços de xarxa.",
+      "no-routers-link":
+        "Creeu-ne un a les configuracions del router de model.",
+      "model-router-label": "Router de model",
+      "select-router": "Seleccioneu un enrutador",
+      "select-description":
+        "Seleccioneu el router que vulgueu utilitzar per a aquesta zona de treball.",
+      "no-routers-chat":
+        "No s'han configurat cap enllaç. Creeu un nou enllaç a les opcions > Proveïdors d'IA > Router de model.",
+      "rule-count": "({{count}} normes)",
+    },
+    metrics: {
+      "model-router-default": "Router de model",
+    },
+    chat: {
+      "select-router-error": "Seleccioneu un enrutador",
+      "invalid-model": "Selecció de model incorrecta",
+      "routed-to": "Enviat a <route>{{model}}</route>",
+      "routed-to-rule":
+        "Enviat a través de <route>{{model}}</route> a través de <rule>{{ruleTitle}}</rule>",
     },
   },
 };

@@ -109,6 +109,8 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
+    "scheduled-jobs": "Planlanan İşler",
+    "model-router": "Model Router",
   },
   login: {
     "multi-user": {
@@ -193,9 +195,9 @@ const TRANSLATIONS = {
           "yalnızca ilgili belgenin bağlamında yanıtlar sağlayacaktır.<b>Kullanılabilir araçları kullanmak için @agent komutunu kullanmanız gerekecektir.</b>",
       },
       automatic: {
-        title: "Oto",
         description:
           "Model ve sağlayıcı tarafından desteklenen araçları otomatik olarak kullanacaktır. Eğer yerel araç çağırma desteklenmiyorsa, araçları kullanmak için @agent komutunu kullanmanız gerekecektir.",
+        title: "Temsilci",
       },
     },
     history: {
@@ -330,7 +332,7 @@ const TRANSLATIONS = {
         readActions: "Okunmuş Eylemler",
         writeActions: "Yapılacak İşler",
         warning:
-          "Dosya sistemine erişim tehlikeli olabilir, çünkü dosyaları değiştirebilir veya silebilir. Bu özelliği etkinleştirmeden önce lütfen <link>belgelendirme</link>'i inceleyin.",
+          "Dosya sistemine erişim tehlikeli olabilir, çünkü dosyaları değiştirebilir veya silebilir. Bu özelliği etkinleştirmeden önce lütfen <a>belgelendirme</a>'i inceleyin.",
         skills: {
           "read-text-file": {
             title: "Dosyayı aç",
@@ -765,101 +767,16 @@ const TRANSLATIONS = {
             "Her sorgu için seçilebilecek maksimum araç sayısı. Daha büyük bağlam modelleri için bu değeri daha yüksek bir değere ayarlamayı öneririz.",
         },
       },
-      sql: {
-        title: "SQL Bağlayıcı",
+      "clarifying-questions": {
+        title:
+          "Temsilcinin, konuyu daha iyi anlaması için açıklayıcı sorular sormasına izin verin.",
+        "beta-badge": "BETAM",
         description:
-          "Temsilcinizin, çeşitli SQL veri tabanı sağlayıcılarına bağlanarak SQL'i kullanarak sorularınızı yanıtlamasına olanak tanıyın.",
-      },
-      default_skill:
-        "Varsayılan olarak bu özellik etkinleştirilmiştir, ancak ajanın kullanmasına izin vermek istemiyorsanız, bu özelliği devre dışı bırakabilirsiniz.",
-      filesystem: {
-        title: "Dosya Sistemi Erişimi",
-        description:
-          "Temsilcinizin, belirli bir klasör içindeki dosyaları okuma, yazma, arama ve yönetme yeteneğini etkinleştirin. Dosya düzenleme, klasör gezinme ve içerik arama özelliklerini destekler.",
-        learnMore:
-          "Bu beceriye nasıl başlanacağını ve nasıl kullanılacağını daha detaylı bir şekilde öğrenin.",
-        configuration: "Yapılandırma",
-        readActions: "Okunmuş Eylemler",
-        writeActions: "Yapılacak İşler",
-        warning:
-          "Dosya sistemine erişim tehlikeli olabilir, çünkü dosyaları değiştirebilir veya silebilir. Bu özelliği etkinleştirmeden önce lütfen <link>belgelendirme</link>'i inceleyin.",
-        skills: {
-          "read-text-file": {
-            title: "Dosyayı aç",
-            description:
-              "Dosyalardaki içeriği okuyun (metin, kod, PDF, resimler vb.)",
-          },
-          "read-multiple-files": {
-            title: "Birden fazla dosyayı okuyun",
-            description: "Birden fazla dosyayı aynı anda okuyun",
-          },
-          "list-directory": {
-            title: "Yönerge Listesi",
-            description: "Bir klasördeki dosyaları ve dizinleri listeleyin.",
-          },
-          "search-files": {
-            title: "Dosyaları Arayın",
-            description: "Dosyaları adlarına veya içeriğine göre arayın",
-          },
-          "get-file-info": {
-            title: "Dosya Hakkında Bilgi Al",
-            description: "Dosyalara ilişkin ayrıntılı meta verileri elde edin.",
-          },
-          "edit-file": {
-            title: "Dosya Düzenle",
-            description: "Metin dosyalarında satır bazlı değişiklikler yapın.",
-          },
-          "create-directory": {
-            title: "Klasör Oluştur",
-            description: "Yeni klasörler oluşturun",
-          },
-          "move-file": {
-            title: "Dosya taşı/yeniden adlandır",
-            description:
-              "Dosyaları ve dizinleri taşıyın veya yeniden adlandırın.",
-          },
-          "copy-file": {
-            title: "Dosyayı Kopyala",
-            description: "Dosyaları ve dizinleri kopyala",
-          },
-          "write-text-file": {
-            title: "Metin dosyası oluştur",
-            description:
-              "Yeni metin dosyaları oluşturun veya mevcut metin dosyalarını üzerine yazın.",
-          },
-        },
-      },
-      createFiles: {
-        title: "Belge Oluşturma",
-        description:
-          "Temsilcinizin, PowerPoint sunumları, Excel tabloları, Word belgeleri ve PDF dosyaları gibi ikili belge formatları oluşturmasına olanak tanıyın. Dosyalar doğrudan sohbet penceresinden indirilebilir.",
-        configuration: "Mevcut Belgeler Türleri",
-        skills: {
-          "create-text-file": {
-            title: "Metin dosyaları",
-            description:
-              "Herhangi bir içerik ve uzantıyla (örneğin .txt, .md, .json, .csv vb.) metin dosyaları oluşturun.",
-          },
-          "create-pptx": {
-            title: "PowerPoint sunumları",
-            description:
-              "Yeni PowerPoint sunumları oluşturun, slaytlar, başlıklar ve madde işaretleri ekleyin.",
-          },
-          "create-pdf": {
-            title: "PDF belgeleri",
-            description:
-              "Temel stillerle markdown veya düz metinlerden PDF belgeleri oluşturun.",
-          },
-          "create-xlsx": {
-            title: "Excel elektronik tabloları",
-            description:
-              "Tablo formatındaki veriler için, sayfalar ve stil özellikleriyle Excel belgeleri oluşturun.",
-          },
-          "create-docx": {
-            title: "Kelime belgeleri",
-            description:
-              "Temel stil ve biçimlendirme ile Word belgeleri oluşturun.",
-          },
+          "Etkinleştirildiğinde, ajanlar, talimatınız belirsiz olduğu takdirde, kısa açıklayıcı sorular sorarak durabilirler.",
+        "max-per-turn": {
+          title: "Her turda sorulabilecek maksimum soru sayısı",
+          description:
+            "Bir anket sırasında, temsilci tarafından sorulabilecek en fazla sayıda açıklayıcı soru sayısı nedir?",
         },
       },
     },
@@ -1276,7 +1193,6 @@ const TRANSLATIONS = {
     similarity_match: "maç",
     source_count_one: "{{count}} ile ilgili bilgi",
     source_count_other: "{{count}} referansları",
-    preset_exit_description: "Mevcut ajan oturumunu durdurun",
     add_new: "Yeni ekle",
     edit: "Düzenle",
     publish: "Yayınla",
@@ -1296,6 +1212,64 @@ const TRANSLATIONS = {
       always_allow: "Her zaman {{skillName}}'ı sağlayın.",
       tool_call_was_approved: "Araç talebi onaylandı.",
       tool_call_was_rejected: "Ara çağrısı reddedildi.",
+      clarifying_skip: "Temsilcinin karar vermesine izin verin.",
+      clarifying_submit: "Gönder",
+      clarifying_skipped: "Kararı, temsilcinin belirlemesine izin verin.",
+      clarifying_timeout: "Zamanında yanıt alınamadı.",
+      clarifying_pagination: "{{current}}'ın {{total}}'deki karşılığı",
+      clarifying_prev_aria: "Önceki soru",
+      clarifying_next_aria: "Bir sonraki soru",
+      clarifying_close_aria: "Kapalı ve atla",
+      clarifying_other: "Diğer",
+      clarifying_other_placeholder: "Cevabınızı yazın",
+      batch_progress: "{{answered}}'ın {{total}}'den gelen sorusu yanıtlandı.",
+      batch_skip_this: "Atlamak",
+      batch_submit_all: "Tümünü gönder",
+      batch_next: "Sonra",
+      answer_skipped: "[Kullanıcı atladı]",
+    },
+    custom_skills: "Özel Beceri",
+    agent_flows: "Ajans Akışları",
+    no_tools_found: "Uyumlu herhangi bir araç bulunamadı",
+    loading_mcp_servers: "MCP sunucularının yüklenmesi...",
+    app_integrations: "Uygulama Entegrasyonları",
+    sub_skills: "Alt beceriler",
+    memories: {
+      title: "Anılar",
+      empty:
+        "Şimdilik herhangi bir anı oluşmadı. Chatbot ile etkileşiminiz arttıkça, daha fazla anı oluşacaktır.",
+      empty_cta: "yeni bir anı yarat",
+      tab_workspace: "Çalışma alanı",
+      tab_global: "Küresel",
+      toggle: {
+        label: "Kişiselleştirme özelliğini etkinleştirin",
+        description:
+          "Asistanınızın, sizin veya bu çalışma ortamıyla ilgili bilgileri hatırlamasını ve bunları konuşmalarda kullanmasını sağlayın.",
+      },
+      auto_extraction: {
+        label: "Otomatik Anılar",
+        description:
+          "Yardımcınızın, arka planda otomatik olarak anıları kaydetmesini sağlayın.",
+      },
+      menu: {
+        edit: "Düzenle",
+        delete: "Sil",
+        move_to_global: "Küresel ölçeğe geçin",
+        move_to_workspace: "Çalışma Alanına Geç",
+      },
+      modal: {
+        create_title: "Anılar Oluştur",
+        edit_title: "Bellek düzenle",
+        create_description:
+          'Anılar, tek ve öz bir ifade şeklinde olmalıdır. Örneğin: "Kullanıcı, JavaScript yerine Python\'ı tercih ediyor"',
+        edit_description: "Bu belleğin içeriğini güncelleyin.",
+        label: "Bellek",
+        placeholder:
+          "Örneğin, kullanıcının adı Joe, kullanıcı AnythingLLM üzerinde çalışıyor, vb.",
+        create: "Yarat",
+        save: "Kaydet",
+        cancel: "İptal et",
+      },
     },
   },
   profile_settings: {
@@ -1609,6 +1583,343 @@ const TRANSLATIONS = {
       "pending-description":
         "Doğrulama işlemi bekleyen kullanıcılar. Burada gösterilen eşleştirme kodunu, Telegram sohbetlerinde görüntülenen kodla karşılaştırın.",
       unknown: "Bilinmiyor",
+    },
+  },
+  scheduledJobs: {
+    title: "Planlanan İşler",
+    enableNotifications:
+      "İş ilanları sonuçları için tarayıcı bildirimlerini etkinleştirin.",
+    description:
+      "Tekrarlayan yapay zeka görevlerini, belirli bir zaman çizelgesine göre otomatik olarak çalıştırın. Her görev, isteğe bağlı araçlarla birlikte bir sorguyu çalıştırır ve sonuçları inceleme için kaydeder.",
+    newJob: "Yeni iş",
+    loading: "Yükleniyor...",
+    emptyTitle: "Şu anda planlanan herhangi bir iş yok.",
+    emptySubtitle: "Başlamak için bir tane oluşturun.",
+    table: {
+      name: "Ad",
+      schedule: "Program",
+      status: "Durum",
+      lastRun: "Son Çalışma",
+      nextRun: "Sonuç",
+      actions: "Eylemler",
+    },
+    confirmDelete: "Bu planlanan görevi silmekten emin misiniz?",
+    toast: {
+      deleted: "İş kayboldu",
+      triggered: "İş başarıyla başlatıldı.",
+      triggerFailed: "İşin başlatılması başarısız oldu.",
+      triggerSkipped: "Bu iş için zaten bir çalışma süreci başlamıştır.",
+      killed: "İş, başarıyla tamamlandı.",
+      killFailed: "İşten ayrılmayı başaramadı",
+    },
+    row: {
+      neverRun: "Asla hızlanmayın.",
+      viewRuns: "Çalışma seansları",
+      runNow: "Hemen harekete geçin",
+      enable: "Etkinleştir",
+      disable: "Devre dışı bırak",
+      edit: "Düzenle",
+      delete: "Sil",
+    },
+    modal: {
+      titleEdit: "Planlanan Görevi Düzenle",
+      titleNew: "Yeni Planlanan İş",
+      nameLabel: "Ad",
+      namePlaceholder: "Örneğin, Günlük Haber Özeti",
+      promptLabel: "Talep",
+      promptPlaceholder: "Her çalışmada çalıştırılma talimatı...",
+      scheduleLabel: "Program",
+      modeBuilder: "İnşaatçı",
+      modeCustom: "Özel",
+      cronPlaceholder: "Cron ifadesi (örneğin, 0 9 * * *)",
+      currentSchedule: "Mevcut program:",
+      toolsLabel: "Araçlar (İsteğe Bağlı)",
+      toolsDescription:
+        "Bu iş için kullanılabilen ajan araçlarını seçin. Eğer hiçbir araç seçilmezse, iş herhangi bir araç olmadan çalışacaktır.",
+      toolsSearch: "Arama",
+      toolsNoResults: "Hiçbir araç bulunamadı",
+      required: "Gereklidir",
+      requiredFieldsBanner:
+        "Lütfen iş ilanını oluşturmak için gerekli tüm alanları doldurunuz.",
+      cancel: "İptal et",
+      saving: "Kaydet...",
+      updateJob: "İş Tanımını Güncelle",
+      createJob: "İş Tanımı Oluştur",
+      jobUpdated: "İş pozisyonu güncellendi",
+      jobCreated: "İş pozisyonu oluşturuldu",
+    },
+    builder: {
+      fallbackWarning:
+        'Bu ifade görsel olarak düzenlenemez. Mevcut haliyle bırakmak için "Özel" seçeneğine geçin veya aşağıdaki herhangi bir alanı değiştirerek üzerine yazın.',
+      run: "Koş",
+      frequency: {
+        minute: "her dakika",
+        hour: "saatlik",
+        day: "günlük",
+        week: "haftalık",
+        month: "aylık",
+      },
+      every: "Her",
+      minuteOne: "1 dakika",
+      minuteOther: "{{count}} dakika",
+      atMinute: "Dakikada",
+      pastEveryHour: "geçmişte, her saat",
+      at: "Saat",
+      on: "On",
+      onDay: "Bir gün",
+      ofEveryMonth: "her ayın",
+      weekdays: {
+        sun: "Güneş",
+        mon: "Pazartesi",
+        tue: "Salı",
+        wed: "Salı",
+        thu: "Perşembe",
+        fri: "Cuma",
+        sat: "Satmak",
+      },
+    },
+    runHistory: {
+      back: "İş ilanlarına dön",
+      title: "Geçmiş Çalışmalar: {{name}}",
+      schedule: "Program:",
+      emptyTitle: "Bu iş için henüz herhangi bir ilerleme kaydedilmedi.",
+      emptySubtitle: "Şimdi işlemi başlatın ve sonuçlarını görüntüleyin.",
+      runNow: "Şimdi koşun",
+      table: {
+        status: "Durum",
+        started: "Başlangıç",
+        duration: "Süre",
+        error: "Hata",
+      },
+      stopJob: "İşten ayrıl",
+    },
+    runDetail: {
+      loading: "Yükleme işleminin ayrıntıları yükleniyor...",
+      notFound: "İstenen komut bulunamadı.",
+      back: "Geri",
+      unknownJob: "Bilinmeyen İş",
+      runHeading: "{{name}} — Çalışma #{{id}}",
+      duration: "Süre: {{value}}",
+      creating: "Yaratmak...",
+      threadFailed: "İşlem başlatma başarısız oldu.",
+      sections: {
+        prompt: "Uyarı",
+        error: "Hata",
+        thinking: "Düşünceler ({{count}})",
+        toolCalls: "Araç Çağrıları ({{count}})",
+        files: "Dosyalar ({{count}})",
+        response: "Cevap",
+        metrics: "Ölçüm değerleri",
+      },
+      metrics: {
+        promptTokens: "Başlangıç belirteçleri:",
+        completionTokens: "Tamamlanmış token'lar:",
+      },
+      stopJob: "İşten Çık",
+      killing: "Dur...",
+      continueInThread: "Sohbeti devam ettir",
+    },
+    toolCall: {
+      arguments: "Tartışmalar:",
+      showResult: "Sonuçları göster",
+      hideResult: "Sonucu gizle",
+    },
+    file: {
+      unknown: "Bilinmeyen dosya",
+      download: "İndir",
+      downloadFailed: "Dosya indirme işlemi başarısız oldu",
+      types: {
+        powerpoint: "PowerPoint",
+        pdf: "PDF belgesi",
+        word: "Kelime Belgesi",
+        spreadsheet: "Tablo",
+        generic: "Dosya",
+      },
+    },
+    status: {
+      completed: "Tamamlandı",
+      failed: "Başarısız",
+      timed_out: "Zaman aşımı",
+      running: "Koşmak",
+      queued: "Bekleme halinde",
+    },
+  },
+  "model-router": {
+    title: "Model Router'ler",
+    description:
+      "Model yönlendiriciler, belirli koşullara göre sohbet mesajlarını otomatik olarak farklı LLM sağlayıcılarına ve modellere yönlendirmek için kurallar tanımlamanıza olanak tanır.",
+    table: {
+      name: "Ad",
+      fallback: "Yedek çözüm",
+      rules: "Kurallar",
+      workspaces: "Çalışma alanları",
+    },
+    "no-routers": "Şu anda herhangi bir model yönlendirici bulunmamaktadır.",
+    "empty-description":
+      "Henüz herhangi bir yönlendirici yapılandırılmamış. Başlamak için bir tane oluşturun.",
+    "new-router-button": "Yeni Router",
+    "delete-confirm":
+      "Emin misiniz, \"{{name}}\" adlı router'ı silmek istiyorsunuz?\n\nBu işlem, tüm kurallarını kaldıracak ve bu router'ı kullanan tüm çalışma alanlarını bağlantısını kesecektir.\n\nBu işlem geri alınamaz.",
+    "toast-deleted": "Router silindi",
+    "toast-delete-failed": "Router'ın silinmesi başarısız oldu: {{error}}",
+    "new-router": {
+      title: "Yeni bir model yönlendirici oluşturun",
+      name: "Ad",
+      "name-placeholder": "Örneğin, Maliyet Optimizasyonu",
+      description: "Açıklama",
+      "description-placeholder": "İsteğe bağlı açıklama",
+      "fallback-label": "Ana Sağlayıcı ve Model",
+      "fallback-description":
+        "Kullanılırken, hiçbir yönlendirme kuralı eşleşmediğinde. Ayrıca, LLM tarafından sınıflandırılan kuralların değerlendirilmesinde de kullanılır.",
+      "cooldown-label": "Önbellek Soğuma Süresi (saniye)",
+      "cooldown-help":
+        "Yol seçimi kararı, kuralların yeniden değerlendirilmeden önce ne kadar süre boyunca önbelleğe alınır? Bu değeri 0 olarak ayarlamak, önbelleklemenin devre dışı kalmasını sağlar.",
+      "name-required": "İsim zorunludur.",
+      "fallback-required": "Temel sağlayıcı ve model bilgisi gereklidir.",
+      cancel: "İptal et",
+      create: "Router oluştur",
+    },
+    "edit-router": {
+      "back-to-routers": "Model Router'lara geri dön",
+      title: "Router'ı Düzenle: {{name}}",
+      save: "Değişiklikleri Kaydet",
+      "toast-update-failed": "Router'ı güncelleyemedi",
+    },
+    rules: {
+      title: "Yönlendirme Kuralları",
+      "title-with-name": "Ruter Kuralları: {{name}}",
+      description:
+        "Belirleyin, hangi mesajların hangi sağlayıcılara ve modellere gönderileceği, hangi zamanlarda ve nasıl yapılacağı ile ilgili kuralları.",
+      "add-rule": "Kuralı ekle",
+      "delete-confirm": '"{{title}}" kuralını silmek mi?',
+      "toast-delete-failed": "Kural silme işlemi başarısız oldu.",
+      "toast-reorder-failed": "Yeniden sıralama kurallarının uygulanmaması",
+      "no-rules": "Henüz herhangi bir kural belirlenmemiş",
+      "empty-description":
+        "Belirli sağlayıcılara ve modellere mesajları yönlendirmeye başlamak için bir kural ekleyin.",
+      "new-rule-button": "Yeni Kural",
+      "calculated-section-label":
+        "Belirlenen kurallar — öncelik sırasına göre değerlendirilir",
+      "llm-section-label":
+        "LLM kuralları — eğer hiçbir hesaplanmış kural eşleşmiyorsa, toplu olarak değerlendirilir.",
+      "llm-rule-body":
+        'Ardından "<desc>" içindeki "{{description}}" öğesini eşleştirin ve ardından <route>\'ye yönlendirin.',
+      "calculated-no-conditions": "Şart yok — <route>'a giden rota",
+      "calculated-single-condition":
+        'Eğer <prop> {{property}} </prop> {{comparator}} <val> "{{value}}" </val> ise, rotayı <route> {{route}} </route> olarak belirle.',
+      "calculated-multi-condition":
+        "Eğer {{quantifier}} (TAG_0) {{conditions}} (TAG_1) ise, rotayı <route> (PLACEHOLDER_2) __PLACEHOLDER_3__ (TAG_3) olarak belirle.",
+      "comparator-contains": "içerir",
+      "comparator-matches": "Maçlar",
+      "comparator-between": "arasında",
+      "badge-llm": "Büyük Dil Modeli",
+      "badge-calculated": "Hesaplanmış",
+      "aria-drag-to-reorder": "Kaydırarak yeniden düzenleyin",
+      "aria-edit-rule": "Düzenleme kuralı",
+      "aria-delete-rule": "Kuralı sil",
+      "quantifier-any": "HERHANGİ",
+      "quantifier-all": "TÜM",
+    },
+    "rule-form": {
+      "title-label": "Başlık",
+      "rule-type": "Kural Türü",
+      "property-label": "Mülk",
+      "property-select": "Seç",
+      "comparator-label": "Karşılaştırma",
+      "comparator-select": "Seç",
+      "value-label": "Değer",
+      "add-condition": "Koşul ekle",
+      "remove-condition": "Koşulu ortadan kaldır",
+      "conditions-incomplete":
+        "Koşul {{index}} eksik — özellik, karşılaştırma ve değeri belirtin.",
+      "match-description-label": "Maç Açıklaması",
+      "match-description-placeholder":
+        "Örneğin, kullanıcı yasal konular, sözleşmeler veya uyumluluk hakkında bilgi almak istiyor.",
+      "match-description-help":
+        "Bu kuralın hangi durumda uygulanması gerektiğini açıklayın. Bu, LLM'iniz tarafından değerlendirilerek, kullanılıp kullanılmaması belirlenecektir.",
+      "route-to-label": "Sağlayıcıya ve Modelin Yol Haritası",
+      "route-to-description":
+        "Bu kural eşleştiğinde, bu sağlayıcıyı/modeli kullanın.",
+      cancel: "İptal et",
+      saving: "Kaydet...",
+      "update-rule": "Güncelleme Kuralı",
+      "create-rule": "Kural Oluştur",
+      "title-required": "Başlık zorunludur",
+      "toast-save-failed": "Kuralı kaydetme başarısız oldu",
+      "type-calculated-label": "Hesaplanmış",
+      "type-calculated-description":
+        "Mesaj özelliklerine (içerik, token sayısı veya günün saati gibi) göre eşleştirme yapın.",
+      "type-llm-label": "LLM Kategorize Edilmiş",
+      "type-llm-description":
+        "Bir LLM (Büyük Dil Modeli) kullanarak, sağladığınız açıklamaya göre mesajı sınıflandırın.",
+      "prop-prompt-content": "İçerik",
+      "prop-token-count": "Konuşma Token Sayısı",
+      "prop-message-count": "Mesaj Sayısı",
+      "prop-current-hour": "Mevcut Saat (0-23)",
+      "prop-has-image": "Resim eklenmiş mi?",
+      "cmp-contains": "içerir",
+      "cmp-matches-regex": "eşleşmeler (düzenli ifadeler)",
+      "cmp-equals": "eşittir",
+      "cmp-not-equals": "eşit değildir",
+      "cmp-greater-than": "daha büyük",
+      "cmp-greater-than-or-equal": "büyük veya eşit",
+      "cmp-less-than": "daha az",
+      "cmp-less-than-or-equal": "daha az veya eşit",
+      "cmp-between": "(dahil olmak üzere)",
+      "placeholder-between-hour": "Örneğin, 9:17 (sabah 9'dan akşam 5'e kadar)",
+      "placeholder-between-numeric": "Örneğin: 10,50",
+      "placeholder-hour": "Örneğin, 18 (0-23)",
+      "placeholder-message-count": "Örneğin: 10",
+      "placeholder-numeric": "Örneğin, 4000",
+      "placeholder-contains": "örneğin, kod, Python, Rust",
+      "placeholder-matches": "Örneğin: /\\bpython\\b/i",
+      "placeholder-default": "Örneğin, kod",
+      "help-contains":
+        "Virgülle ayrılmış liste — Eğer sorgu içinde belirtilen değerlerden herhangi biri varsa eşleşir (büyük/küçük harf duyarlılığı olmadan).",
+      "help-matches":
+        "Düzenli ifade kalıbı. Büyük/küçük harf duyarlılığını belirtmek için `/pattern/flag`lerini kullanın (varsayılan olarak büyük/küçük harf duyarlılığı devre dışıdır).",
+      "bool-true": "Doğru",
+      "bool-false": "Yanlış",
+    },
+    "provider-picker": {
+      "select-provider": "Satıcıyı seçin",
+      "setup-required": "(Kurulum gerektirir)",
+      "loading-models": "Modeller yükleniyor...",
+      "select-model": "Model seçin",
+      "enter-model": "Model adını girin",
+      "select-provider-first": "Öncelikle bir sağlayıcı seçin.",
+      "configure-to-continue": "{{name}}'ı yapılandırarak devam et",
+      "configure-provider": "{{name}}'ı yapılandırın",
+      "setup-credentials":
+        "Gerekli kimlik bilgilerini girerek {{name}}'ı yönlendirme hedefi olarak kullanın.",
+      cancel: "İptal et",
+      "save-settings": "Ayarları kaydet",
+      "toast-save-failed": "Ayarların kaydedilemedi: {{error}}",
+    },
+    "router-selection": {
+      "loading-routers": "Özel yönlendiricileri yükleniyor...",
+      "no-routers-prefix-settings":
+        "Henüz herhangi bir yönlendirici model yapılandırılmamış.",
+      "no-routers-prefix-workspace":
+        "Hiçbir ağ geçimi modeli yapılandırılmamış.",
+      "no-routers-link": "Model Router ayarlarında bir tane oluşturun.",
+      "model-router-label": "Model Router",
+      "select-router": "Bir yönlendirici seçin",
+      "select-description":
+        "Bu çalışma alanı için hangi yönlendiriciyi kullanacağınızı seçin.",
+      "no-routers-chat":
+        "Hiçbir yönlendirici yapılandırılmamış. Ayarlar > Yapay Zeka Sağlayıcıları > Model Yönlendirici bölümünde bir tane oluşturun.",
+      "rule-count": "({{count}} kuralları)",
+    },
+    metrics: {
+      "model-router-default": "Model Router",
+    },
+    chat: {
+      "select-router-error": "Bir yönlendirici seçin",
+      "invalid-model": "Geçersiz model seçimi",
+      "routed-to": "Yönlendirildi: <route> {{model}} </route>",
+      "routed-to-rule":
+        "Yönlendirildi: <route> aracılığıyla {{model}} üzerinden </route>, <rule> aracılığıyla {{ruleTitle}} üzerinden </rule>",
     },
   },
 };

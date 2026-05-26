@@ -108,6 +108,8 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
+    "scheduled-jobs": "Tâches planifiées",
+    "model-router": "Routeur modèle",
   },
   login: {
     "multi-user": {
@@ -194,9 +196,9 @@ const TRANSLATIONS = {
           'fournira des réponses <b>uniquement</b> si le contexte du document est trouvé.<br />Vous devrez utiliser la commande "@agent" pour utiliser les outils.',
       },
       automatic: {
-        title: "Voiture",
         description:
           "utilisera automatiquement les outils si le modèle et le fournisseur prennent en charge l'appel de fonctions natives. <br />Si l'utilisation de fonctions natives n'est pas prise en charge, vous devrez utiliser la commande \"@agent\" pour utiliser les outils.",
+        title: "Agent",
       },
     },
     history: {
@@ -331,7 +333,7 @@ const TRANSLATIONS = {
         readActions: "Lire les actions",
         writeActions: "Actions à effectuer",
         warning:
-          "L'accès au système de fichiers peut être dangereux, car il peut modifier ou supprimer des fichiers. Veuillez consulter la <link>documentation</link> avant de l'activer.",
+          "L'accès au système de fichiers peut être dangereux, car il peut modifier ou supprimer des fichiers. Veuillez consulter la <a>documentation</a> avant de l'activer.",
         skills: {
           "read-text-file": {
             title: "Ouvrir le fichier",
@@ -774,102 +776,16 @@ const TRANSLATIONS = {
             "Le nombre maximal d'outils à sélectionner pour chaque requête. Nous recommandons de définir cette valeur sur une valeur plus élevée pour les modèles de contexte plus importants.",
         },
       },
-      sql: {
-        title: "Connecteur SQL",
+      "clarifying-questions": {
+        title:
+          "Permettre à l'agent de poser des questions pour clarifier les points.",
+        "beta-badge": "Bêta",
         description:
-          "Permettez à votre agent d'utiliser SQL pour répondre à vos questions en lui fournissant un accès à divers fournisseurs de bases de données SQL.",
-      },
-      default_skill:
-        "Par défaut, cette fonctionnalité est activée, mais vous pouvez la désactiver si vous ne souhaitez pas qu'elle soit disponible pour l'agent.",
-      filesystem: {
-        title: "Accès au système de fichiers",
-        description:
-          "Permettez à votre agent de lire, écrire, rechercher et gérer des fichiers dans un répertoire spécifié. Prend en charge la modification de fichiers, la navigation dans les répertoires et la recherche de contenu.",
-        learnMore: "En savoir plus sur la manière d'utiliser cette compétence.",
-        configuration: "Configuration",
-        readActions: "Lire les actions",
-        writeActions: "Actions à effectuer",
-        warning:
-          "L'accès au système de fichiers peut être dangereux, car il peut modifier ou supprimer des fichiers. Veuillez consulter la <link>documentation</link> avant de l'activer.",
-        skills: {
-          "read-text-file": {
-            title: "Ouvrir le fichier",
-            description:
-              "Lire le contenu des fichiers (texte, code, PDF, images, etc.)",
-          },
-          "read-multiple-files": {
-            title: "Lire plusieurs fichiers",
-            description: "Lire plusieurs fichiers simultanément.",
-          },
-          "list-directory": {
-            title: "Annuaire",
-            description:
-              "Énumérer les fichiers et les répertoires d'un dossier.",
-          },
-          "search-files": {
-            title: "Rechercher des fichiers",
-            description: "Rechercher des fichiers par nom ou par contenu",
-          },
-          "get-file-info": {
-            title: "Obtenir des informations sur le fichier",
-            description: "Obtenez des métadonnées détaillées sur les fichiers.",
-          },
-          "edit-file": {
-            title: "Modifier le fichier",
-            description:
-              "Effectuez des modifications basées sur des lignes dans les fichiers de texte.",
-          },
-          "create-directory": {
-            title: "Créer un répertoire",
-            description: "Créer de nouveaux répertoires",
-          },
-          "move-file": {
-            title: "Déplacer/Renommer le fichier",
-            description:
-              "Déplacez ou renommez des fichiers et des répertoires.",
-          },
-          "copy-file": {
-            title: "Copier le fichier",
-            description: "Copier des fichiers et des répertoires",
-          },
-          "write-text-file": {
-            title: "Créer un fichier texte",
-            description:
-              "Créer de nouveaux fichiers texte ou remplacer des fichiers texte existants.",
-          },
-        },
-      },
-      createFiles: {
-        title: "Création de documents",
-        description:
-          "Permettez à votre agent de créer des documents au format binaire, tels que des présentations PowerPoint, des feuilles de calcul Excel, des documents Word et des fichiers PDF. Les fichiers peuvent être téléchargés directement depuis la fenêtre de chat.",
-        configuration: "Types de documents disponibles",
-        skills: {
-          "create-text-file": {
-            title: "Fichiers de texte",
-            description:
-              "Créez des fichiers texte avec n'importe quel contenu et extension (par exemple, .txt, .md, .json, .csv, etc.)",
-          },
-          "create-pptx": {
-            title: "Présentations PowerPoint",
-            description:
-              "Créez de nouvelles présentations PowerPoint avec des diapositives, des titres et des puces.",
-          },
-          "create-pdf": {
-            title: "Documents au format PDF",
-            description:
-              "Créez des documents PDF à partir de fichiers Markdown ou de texte brut, avec un style de base.",
-          },
-          "create-xlsx": {
-            title: "Feuilles de calcul Excel",
-            description:
-              "Créez des documents Excel pour les données tabulaires, avec des feuilles et un style.",
-          },
-          "create-docx": {
-            title: "Documents au format Word",
-            description:
-              "Créez des documents Word avec un style et une mise en page de base.",
-          },
+          "Lorsque cette fonctionnalité est activée, les agents peuvent faire des pauses pour poser des questions de clarification si votre demande est ambiguë.",
+        "max-per-turn": {
+          title: "Nombre maximal de questions par tour",
+          description:
+            "Combien de questions de clarification un agent peut poser lors d'une seule enquête ?",
         },
       },
     },
@@ -1288,7 +1204,6 @@ const TRANSLATIONS = {
     similarity_match: "match",
     source_count_one: "{{count}} référence",
     source_count_other: "Références à {{count}}",
-    preset_exit_description: "Arrêter la session actuelle de l'agent",
     add_new: "Ajouter",
     edit: "Modifier",
     publish: "Publier",
@@ -1309,6 +1224,64 @@ const TRANSLATIONS = {
       tool_call_was_approved: "La demande d'outils a été approuvée.",
       tool_call_was_rejected:
         "La demande d'utilisation de l'outil a été rejetée.",
+      clarifying_skip: "Laissez l'agent décider.",
+      clarifying_submit: "Soumettre",
+      clarifying_skipped: "Vous laissez l'agent prendre la décision.",
+      clarifying_timeout: "Aucune réponse n'a été soumise dans les délais.",
+      clarifying_pagination: "{{current}} de {{total}}",
+      clarifying_prev_aria: "Question précédente",
+      clarifying_next_aria: "Prochaine question",
+      clarifying_close_aria: "Fermer et passer au suivant",
+      clarifying_other: "Autres",
+      clarifying_other_placeholder: "Saisissez votre réponse",
+      batch_progress: "{{answered}} de {{total}} a répondu",
+      batch_skip_this: "Sautez/Ignorez",
+      batch_submit_all: "Soumettre tout",
+      batch_next: "Suivant",
+      answer_skipped: "[l'utilisateur a manqué]",
+    },
+    custom_skills: "Compétences spécifiques",
+    agent_flows: "Flux des agents",
+    no_tools_found: "Aucun outil correspondant n'a été trouvé.",
+    loading_mcp_servers: "Chargement des serveurs MCP...",
+    app_integrations: "Intégrations d'applications",
+    sub_skills: "Compétences spécifiques",
+    memories: {
+      title: "Souvenirs",
+      empty:
+        "Pour l'instant, aucune donnée mémorisée. Cependant, à mesure que vous interagissez davantage avec le chatbot, de nouveaux souvenirs seront enregistrés.",
+      empty_cta: "créer un nouveau souvenir",
+      tab_workspace: "Espace de travail",
+      tab_global: "Global",
+      toggle: {
+        label: "Activer la personnalisation",
+        description:
+          "Permettez à votre assistant de se souvenir d'informations sur vous ou sur cet espace de travail et de les utiliser lors de conversations.",
+      },
+      auto_extraction: {
+        label: "Souvenirs automatisés",
+        description:
+          "Faites en sorte que votre assistant crée automatiquement des souvenirs en arrière-plan.",
+      },
+      menu: {
+        edit: "Modifier",
+        delete: "Supprimer",
+        move_to_global: "Passer à l'échelle mondiale",
+        move_to_workspace: "Passer à l'espace de travail",
+      },
+      modal: {
+        create_title: "Créer un souvenir",
+        edit_title: "Modifier la mémoire",
+        create_description:
+          "Les souvenirs doivent être exprimés sous une seule et concise phrase. Par exemple : « L'utilisateur préfère Python à JavaScript ».",
+        edit_description: "Mettez à jour le contenu de cette mémoire.",
+        label: "Mémoire",
+        placeholder:
+          "Par exemple, le nom de l'utilisateur est Joe, l'utilisateur travaille sur AnythingLLM, etc.",
+        create: "Créer",
+        save: "Enregistrer",
+        cancel: "Annuler",
+      },
     },
   },
   profile_settings: {
@@ -1621,6 +1594,345 @@ const TRANSLATIONS = {
       "pending-description":
         "Utilisateurs en attente de vérification. Correspondez le code de correspondance affiché ici avec celui qui apparaît dans leur conversation Telegram.",
       unknown: "Inconnu",
+    },
+  },
+  scheduledJobs: {
+    title: "Tâches planifiées",
+    enableNotifications:
+      "Activer les notifications du navigateur pour les résultats de recherche d'emploi.",
+    description:
+      "Créez des tâches d'IA récurrentes qui s'exécutent selon un calendrier. Chaque tâche exécute une requête avec des outils optionnels et enregistre le résultat pour examen ultérieur.",
+    newJob: "Nouvelle offre d'emploi",
+    loading: "Chargement...",
+    emptyTitle: "Aucune tâche planifiée pour le moment.",
+    emptySubtitle: "Créez-en un pour commencer.",
+    table: {
+      name: "Nom",
+      schedule: "Calendrier",
+      status: "État",
+      lastRun: "Dernière course",
+      nextRun: "Prochaine course",
+      actions: "Actions",
+    },
+    confirmDelete:
+      "Êtes-vous certain de vouloir supprimer cette tâche planifiée ?",
+    toast: {
+      deleted: "Emploi supprimé",
+      triggered: "La tâche a été exécutée avec succès.",
+      triggerFailed: "N'a pas réussi à lancer la tâche",
+      triggerSkipped: "Le projet est déjà en cours.",
+      killed: "La tâche a été exécutée avec succès.",
+      killFailed: "Impossible d'arrêter le travail.",
+    },
+    row: {
+      neverRun: "Ne jamais courir",
+      viewRuns: "Afficher les résultats",
+      runNow: "Partons maintenant",
+      enable: "Activer",
+      disable: "Désactiver",
+      edit: "Modifier",
+      delete: "Supprimer",
+    },
+    modal: {
+      titleEdit: "Modifier la tâche planifiée",
+      titleNew: "Nouvelle tâche planifiée",
+      nameLabel: "Nom",
+      namePlaceholder: 'par exemple, "Résumé quotidien des actualités"',
+      promptLabel: "Demande",
+      promptPlaceholder: "L'instruction de s'exécuter à chaque exécution...",
+      scheduleLabel: "Calendrier",
+      modeBuilder: "Constructeur",
+      modeCustom: "Personnalisé",
+      cronPlaceholder: "Expression de temps (par exemple, 0 9 * * *)",
+      currentSchedule: "Planning actuel :",
+      toolsLabel: "Outils (facultatifs)",
+      toolsDescription:
+        "Sélectionnez les outils d'agent que cette tâche peut utiliser. Si aucun outil n'est sélectionné, la tâche s'exécutera sans aucun outil.",
+      toolsSearch: "Rechercher",
+      toolsNoResults: "Aucun outil ne correspond",
+      required: "Nécessaire",
+      requiredFieldsBanner:
+        "Veuillez remplir tous les champs obligatoires afin de créer l'annonce.",
+      cancel: "Annuler",
+      saving: "Économiser...",
+      updateJob: "Mettre à jour l'emploi",
+      createJob: "Créer un emploi",
+      jobUpdated: "Poste mis à jour",
+      jobCreated: "Emploi créé",
+    },
+    builder: {
+      fallbackWarning:
+        'Cette expression ne peut pas être modifiée visuellement. Pour la conserver, passez en mode "Personnalisé". Sinon, modifiez tout ce qui se trouve en dessous pour la remplacer.',
+      run: "Courir",
+      frequency: {
+        minute: "chaque minute",
+        hour: "par heure",
+        day: "quotidien",
+        week: "hebdomadaire",
+        month: "mensuel",
+      },
+      every: "Chaque",
+      minuteOne: "1 minute",
+      minuteOther: "{{count}} minutes",
+      atMinute: "À la minute",
+      pastEveryHour: "chaque heure",
+      at: "À",
+      on: "Sur",
+      onDay: "Un jour",
+      ofEveryMonth: "chaque mois",
+      weekdays: {
+        sun: "Soleil",
+        mon: "Moi",
+        tue: "Mardi",
+        wed: "Mercredi",
+        thu: "Jeudi",
+        fri: "Vendredi",
+        sat: "Samedi",
+      },
+    },
+    runHistory: {
+      back: "Retour à la liste des offres d'emploi",
+      title: "Historique des exécutions : {{name}}",
+      schedule: "Calendrier :",
+      emptyTitle: "Aucun résultat pour cette tâche.",
+      emptySubtitle:
+        "Exécutez la tâche immédiatement et consultez les résultats.",
+      runNow: "Partir maintenant",
+      table: {
+        status: "Statut",
+        started: "Débuté",
+        duration: "Durée",
+        error: "Erreur",
+      },
+      stopJob: "Arrêter le travail",
+    },
+    runDetail: {
+      loading: "Affichage des détails de la course...",
+      notFound: "La commande n'a pas été trouvée.",
+      back: "Retour",
+      unknownJob: "Poste non spécifié",
+      runHeading: "{{name}} — Exécution n°{{id}}",
+      duration: "Durée : {{value}}",
+      creating: "Créer...",
+      threadFailed: "Impossible de créer le thread.",
+      sections: {
+        prompt: "Demande",
+        error: "Erreur",
+        thinking: "Pensées ({{count}})",
+        toolCalls: "Appels aux outils ({{count}})",
+        files: "Fichiers ({{count}})",
+        response: "Réponse",
+        metrics: "Indicateurs",
+      },
+      metrics: {
+        promptTokens: "Mots-clés de requête:",
+        completionTokens: "Jetons de complétion :",
+      },
+      stopJob: "Arrêter le travail",
+      killing: "Arrêt...",
+      continueInThread: "Continuer la conversation",
+    },
+    toolCall: {
+      arguments: "Arguments:",
+      showResult: "Afficher le résultat",
+      hideResult: "Masquer le résultat",
+    },
+    file: {
+      unknown: "Fichier inconnu",
+      download: "Télécharger",
+      downloadFailed: "Échec du téléchargement du fichier",
+      types: {
+        powerpoint: "PowerPoint",
+        pdf: "Document au format PDF",
+        word: "Document Word",
+        spreadsheet: "Tableur",
+        generic: "Fichier",
+      },
+    },
+    status: {
+      completed: "Terminé",
+      failed: "Échoué",
+      timed_out: "Temps écoulé",
+      running: "Course à pied",
+      queued: "En attente",
+    },
+  },
+  "model-router": {
+    title: "Routeurs modèles",
+    description:
+      "Les routeurs modèles vous permettent de définir des règles pour acheminer automatiquement les messages de chat vers différents fournisseurs et modèles de LLM, en fonction de conditions spécifiques.",
+    table: {
+      name: "Nom",
+      fallback: "Plan de secours",
+      rules: "Règles",
+      workspaces: "Espaces de travail",
+    },
+    "no-routers": "Aucun routeur modèle disponible pour le moment.",
+    "empty-description":
+      "Aucun routeur n'est configuré pour le moment. Créez-en un pour commencer.",
+    "new-router-button": "Nouveau routeur",
+    "delete-confirm":
+      'Êtes-vous certain de vouloir supprimer le routeur "{{name}}" ?\nCela supprimera toutes ses règles et déconnectera tous les espaces de travail qui l\'utilisent.\n\nCette action est irréversible.',
+    "toast-deleted": "Routeur supprimé",
+    "toast-delete-failed": "Échec de la suppression du routeur : {{error}}",
+    "new-router": {
+      title: "Créer un nouveau routeur",
+      name: "Nom",
+      "name-placeholder": "par exemple, Optimiseur de coûts",
+      description: "Description",
+      "description-placeholder": "Description facultative",
+      "fallback-label": "Prestataire principal et modèle",
+      "fallback-description":
+        "Utilisé lorsque aucune règle de routage ne correspond. Il est également utilisé pour évaluer les règles classifiées par un modèle de langage.",
+      "cooldown-label": "Durée de recharge (secondes)",
+      "cooldown-help":
+        "Combien de temps la décision de routage est-elle mise en cache avant de réévaluer les règles ? Définissez cette valeur sur 0 pour désactiver la mise en cache.",
+      "name-required": "Le nom est obligatoire.",
+      "fallback-required":
+        "Le fournisseur principal et le modèle sont obligatoires.",
+      cancel: "Annuler",
+      create: "Créer un routeur",
+    },
+    "edit-router": {
+      "back-to-routers": "Retour aux routeurs modèles",
+      title: "Modifier le routeur : {{name}}",
+      save: "Enregistrer les modifications",
+      "toast-update-failed": "Impossible de mettre à jour le routeur.",
+    },
+    rules: {
+      title: "Règles de routage",
+      "title-with-name": "Règles du routeur : {{name}}",
+      description:
+        "Définir les règles qui déterminent quand et comment les messages de chat sont envoyés à des fournisseurs et des modèles spécifiques.",
+      "add-rule": "Ajouter une règle",
+      "delete-confirm": 'Supprimer la règle "{{title}}"?',
+      "toast-delete-failed": "Impossible de supprimer la règle.",
+      "toast-reorder-failed":
+        "Erreur lors de la tentative de réappliquer les règles.",
+      "no-rules": "Aucune règle établie pour le moment.",
+      "empty-description":
+        "Ajoutez une règle pour diriger automatiquement les messages de chat vers des fournisseurs et des modèles spécifiques.",
+      "new-rule-button": "Nouvelle règle",
+      "calculated-section-label": "Règles calculées – évaluées en priorité",
+      "llm-section-label":
+        "Règles LLM – évaluées par lots si aucune règle calculée ne correspond",
+      "llm-rule-body":
+        'Correspondance avec "<desc>" puis redirection vers "<route>"{{route}}"</route>"',
+      "calculated-no-conditions":
+        "Aucune condition – itinéraire vers <route>{{route}}</route>",
+      "calculated-single-condition":
+        'Si <prop>{{property}}</prop> {{comparator}} <val>"{{value}}"</val> alors, rediriger vers <route>{{route}}</route>',
+      "calculated-multi-condition":
+        "Si {{quantifier}} de <cond>{{conditions}}</cond> alors, suivre le chemin vers <route>{{route}}</route>",
+      "comparator-contains": "contient",
+      "comparator-matches": "matchs",
+      "comparator-between": "entre",
+      "badge-llm": "Modèle de langage de grande taille",
+      "badge-calculated": "Calculé",
+      "aria-drag-to-reorder": "Faites glisser pour réorganiser",
+      "aria-edit-rule": "Modifier la règle",
+      "aria-delete-rule": "Supprimer la règle",
+      "quantifier-any": "CHACUN",
+      "quantifier-all": "TOUT",
+    },
+    "rule-form": {
+      "title-label": "Titre",
+      "rule-type": "Type de règle",
+      "property-label": "Propriété",
+      "property-select": "Sélectionner",
+      "comparator-label": "Comparateur",
+      "comparator-select": "Sélectionner",
+      "value-label": "Valeur",
+      "add-condition": "Ajouter une condition",
+      "remove-condition": "Supprimer la condition",
+      "conditions-incomplete":
+        "La condition {{index}} est incomplète — veuillez remplir les champs propriété, comparateur et valeur.",
+      "match-description-label": "Description du match",
+      "match-description-placeholder":
+        "Par exemple, l'utilisateur pose des questions sur des sujets juridiques, des contrats ou la conformité.",
+      "match-description-help":
+        "Décrivez la situation dans laquelle vous souhaitez que cette règle s'applique. Votre modèle de langage évaluera cette description pour déterminer si elle doit être utilisée.",
+      "route-to-label": "Itinéraire vers le prestataire et modèle",
+      "route-to-description":
+        "Lorsque cette règle s'applique, utilisez ce fournisseur/modèle.",
+      cancel: "Annuler",
+      saving: "Économiser...",
+      "update-rule": "Règle de mise à jour",
+      "create-rule": "Créer une règle",
+      "title-required": "Le titre est obligatoire.",
+      "toast-save-failed": "Échec de la sauvegarde de la règle.",
+      "type-calculated-label": "Calculé",
+      "type-calculated-description":
+        "Correspondance basée sur des propriétés du message, telles que le contenu, le nombre de tokens ou l'heure de la journée.",
+      "type-llm-label": "Catégorisation LLM",
+      "type-llm-description":
+        "Utilisez un modèle de langage pour classer le message en fonction d'une description que vous fournissez.",
+      "prop-prompt-content": "Contenu demandé",
+      "prop-token-count": "Nombre de jetons de conversation",
+      "prop-message-count": "Nombre de messages de conversation",
+      "prop-current-hour": "Heure actuelle (de 0 à 23)",
+      "prop-has-image": "Possède une image associée",
+      "cmp-contains": "contient",
+      "cmp-matches-regex": "expressions régulières (regex)",
+      "cmp-equals": "égale à",
+      "cmp-not-equals": "n'est pas égal à",
+      "cmp-greater-than": "supérieur à",
+      "cmp-greater-than-or-equal": "supérieur ou égal",
+      "cmp-less-than": "inférieur à",
+      "cmp-less-than-or-equal": "inférieur ou égal",
+      "cmp-between": "entre (y compris)",
+      "placeholder-between-hour": "par exemple, 9h17 (de 9h00 à 17h00)",
+      "placeholder-between-numeric": "par exemple, 10,50",
+      "placeholder-hour": "par exemple, 18 (0-23)",
+      "placeholder-message-count": "par exemple, 10",
+      "placeholder-numeric": "par exemple, 4000",
+      "placeholder-contains": "par exemple, code, Python, Rust",
+      "placeholder-matches": "par exemple, /\\bpython\\b/i",
+      "placeholder-default": "par exemple, code",
+      "help-contains":
+        "Liste séparée par des virgules — correspond si la requête contient l'une des valeurs (sans tenir compte de la casse).",
+      "help-matches":
+        "Modèle d'expression régulière. Utilisez `/pattern/ et les drapeaux appropriés pour tenir compte de la casse (par défaut, la casse n'est pas prise en compte).",
+      "bool-true": "Vrai",
+      "bool-false": "Faux",
+    },
+    "provider-picker": {
+      "select-provider": "Sélectionner le prestataire",
+      "setup-required": "(nécessite une configuration préalable)",
+      "loading-models": "Chargement des modèles...",
+      "select-model": "Sélectionner le modèle",
+      "enter-model": "Entrez le nom du modèle",
+      "select-provider-first": "Choisissez d'abord un fournisseur.",
+      "configure-to-continue": "Configurer {{name}} pour continuer",
+      "configure-provider": "Configurer {{name}}",
+      "setup-credentials":
+        "Entrez les informations nécessaires pour utiliser {{name}} comme destination de routage.",
+      cancel: "Annuler",
+      "save-settings": "Enregistrer les paramètres",
+      "toast-save-failed": "Échec de la sauvegarde des paramètres : {{error}}",
+    },
+    "router-selection": {
+      "loading-routers": "Chargement des routeurs personnalisés...",
+      "no-routers-prefix-settings": "Aucun routeur configuré pour le moment.",
+      "no-routers-prefix-workspace": "Aucun routeur configuré.",
+      "no-routers-link": "Créez-en un dans les paramètres du routeur.",
+      "model-router-label": "Routeur modèle",
+      "select-router": "Choisissez un routeur",
+      "select-description":
+        "Choisissez le routeur à utiliser pour cet espace de travail.",
+      "no-routers-chat":
+        "Aucun routeur n'est configuré. Créez-en un dans les paramètres > Fournisseurs d'IA > Routeur de modèle.",
+      "rule-count": "({{count}} règles)",
+    },
+    metrics: {
+      "model-router-default": "Routeur modèle",
+    },
+    chat: {
+      "select-router-error": "Choisissez un routeur",
+      "invalid-model": "Sélection de modèle non valide",
+      "routed-to": "Dirigé vers <route>{{model}}</route>",
+      "routed-to-rule":
+        "Dirigé vers <route>{{model}}</route> via <rule>{{ruleTitle}}</rule>",
     },
   },
 };
