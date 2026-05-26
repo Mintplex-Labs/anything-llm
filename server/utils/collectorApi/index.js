@@ -212,10 +212,15 @@ class CollectorApi {
    * FFMPEG wrapper. The source file is trashed by the collector; caller must
    * read and trash the resulting wav file.
    * @param {string} filename - The filename of the source audio in the hotdir
-   * @returns {Promise<Object>} - The response from the collector API
+   * @returns {Promise<{success: boolean, reason: string|null, wavFilename: string|null}>}
    */
   async convertAudioToWav(filename = "") {
-    if (!filename) return false;
+    if (!filename)
+      return {
+        success: false,
+        reason: "No filename provided.",
+        wavFilename: null,
+      };
 
     const data = JSON.stringify({ filename });
     return await fetch(`${this.endpoint}/util/convert-audio-to-wav`, {
@@ -233,7 +238,7 @@ class CollectorApi {
         if (!res.ok) throw new Error("Response could not be completed");
         return res.json();
       })
-      .then((res) => res)
+      .then((json) => json)
       .catch((e) => {
         this.log(e.message);
         return { success: false, reason: e.message, wavFilename: null };
