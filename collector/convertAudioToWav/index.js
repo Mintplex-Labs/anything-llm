@@ -1,4 +1,4 @@
-const fs = require("fs");
+const fs = require("fs/promises");
 const path = require("path");
 const { WATCH_DIRECTORY } = require("../utils/constants");
 const { isWithin, trashFile, normalizePath } = require("../utils/files");
@@ -26,12 +26,15 @@ async function convertAudioToWav(filename) {
       wavFilename: null,
     };
 
-  if (!fs.existsSync(inputPath))
+  try {
+    await fs.access(inputPath);
+  } catch {
     return {
       success: false,
       reason: `${filename} does not exist in hotdir.`,
       wavFilename: null,
     };
+  }
 
   const wavFilename = `${path.parse(filename).name}.wav`;
   const outputPath = path.resolve(WATCH_DIRECTORY, wavFilename);
