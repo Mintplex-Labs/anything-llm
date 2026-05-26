@@ -54,6 +54,7 @@ export default function PromptInput({
   const formRef = useRef(null);
   const textareaRef = useRef(null);
   const [_, setFocused] = useState(false);
+  const isComposingRef = useRef(false);
   const undoStack = useRef([]);
   const redoStack = useRef([]);
   const { textSizeClass } = useTextSize();
@@ -137,6 +138,13 @@ export default function PromptInput({
    * @param {KeyboardEvent} event
    */
   function captureEnterOrUndo(event) {
+    const isComposing =
+      isComposingRef.current ||
+      event.isComposing ||
+      event.nativeEvent?.isComposing ||
+      event.keyCode === 229;
+    if (isComposing) return;
+
     // Forward keyboard events to the ToolsMenu when open
     if (showTools) {
       if (
@@ -299,7 +307,7 @@ export default function PromptInput({
   }
 
   function handleChange(e) {
-    debouncedSaveState(-1);
+    if (!isComposingRef.current) debouncedSaveState(-1);
     adjustTextArea(e);
     const value = e.target.value;
     setPromptInput(value);
@@ -309,6 +317,16 @@ export default function PromptInput({
       setShowTools(false);
       autoOpenedToolsRef.current = false;
     }
+  }
+
+  function handleCompositionStart() {
+    isComposingRef.current = true;
+  }
+
+  function handleCompositionEnd(e) {
+    isComposingRef.current = false;
+    adjustTextArea(e);
+    setPromptInput(e.target.value);
   }
 
   return (
@@ -349,6 +367,8 @@ export default function PromptInput({
                   ref={textareaRef}
                   onChange={handleChange}
                   onKeyDown={captureEnterOrUndo}
+                  onCompositionStart={handleCompositionStart}
+                  onCompositionEnd={handleCompositionEnd}
                   onPaste={(e) => {
                     saveCurrentState();
                     handlePasteEvent(e);
