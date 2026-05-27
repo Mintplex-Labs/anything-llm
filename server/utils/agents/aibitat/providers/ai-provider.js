@@ -413,6 +413,14 @@ class Provider {
           apiKey: process.env.MINIMAX_API_KEY || null,
           ...config,
         });
+      case "qianfan":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://qianfan.baidubce.com/v2",
+          },
+          apiKey: process.env.QIANFAN_API_KEY || null,
+          ...config,
+        });
       default:
         throw new Error(
           `Unsupported provider ${JSON.stringify(provider)} for this task.`
