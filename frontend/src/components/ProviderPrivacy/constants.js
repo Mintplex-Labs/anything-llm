@@ -46,6 +46,7 @@ import PrivateModeLogo from "@/media/llmprovider/privatemode.png";
 import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
 import LemonadeLogo from "@/media/llmprovider/lemonade.png";
 import MinimaxLogo from "@/media/llmprovider/minimax.png";
+import CerebrasLogo from "@/media/llmprovider/cerebras.png";
 
 const LLM_PROVIDER_PRIVACY_MAP = {
   openai: {
@@ -257,6 +258,11 @@ const LLM_PROVIDER_PRIVACY_MAP = {
     name: "Minimax",
     policyUrl: "https://platform.minimax.io/protocol/privacy-policy",
     logo: MinimaxLogo,
+  },
+  cerebras: {
+    name: "Cerebras",
+    policyUrl: "https://www.cerebras.ai/privacy-policy",
+    logo: CerebrasLogo,
   },
 };
 
