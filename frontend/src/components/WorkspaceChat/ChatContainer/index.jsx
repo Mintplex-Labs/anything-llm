@@ -53,6 +53,28 @@ export default function ChatContainer({
   const pendingMessageChecked = useRef(false);
   const pendingResetRef = useRef(false);
 
+  const isEmpty =
+    chatHistory.length === 0 && !sessionStorage.getItem(PENDING_HOME_MESSAGE);
+
+  /**
+   * Keep chat history bottom-padding in sync with the prompt input's
+   * actual rendered height so expanding input never covers messages.
+   */
+  useEffect(() => {
+    if (isEmpty) return;
+    const wrapper = document.getElementById("prompt-input-wrapper");
+    const chatEl = document.getElementById("chat-history");
+    if (!wrapper || !chatEl) return;
+
+    const observer = new ResizeObserver(([entry]) => {
+      const inputHeight =
+        entry.borderBoxSize?.[0]?.blockSize ?? entry.target.offsetHeight;
+      chatEl.style.paddingBottom = `${inputHeight}px`;
+    });
+    observer.observe(wrapper);
+    return () => observer.disconnect();
+  }, [isEmpty]);
+
   const { listening, resetTranscript } = useSpeechRecognition({
     clearTranscriptOnListen: true,
   });
@@ -376,9 +398,6 @@ export default function ChatContainer({
       }
     };
   }, [socketId]);
-
-  const isEmpty =
-    chatHistory.length === 0 && !sessionStorage.getItem(PENDING_HOME_MESSAGE);
 
   if (isEmpty) {
     return (

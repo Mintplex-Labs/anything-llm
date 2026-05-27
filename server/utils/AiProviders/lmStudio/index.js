@@ -132,12 +132,12 @@ class LMStudioLLM {
       this.#slog(
         "No context windows cached - Context window may be inaccurately reported."
       );
-      return process.env.LMSTUDIO_MODEL_TOKEN_LIMIT || 4096;
+      return process.env.LMSTUDIO_MODEL_TOKEN_LIMIT || 16384;
     }
 
     let userDefinedLimit = null;
     const systemDefinedLimit =
-      Number(this.modelContextWindows[modelName]) || 4096;
+      Number(this.modelContextWindows[modelName]) || 16384;
 
     if (
       process.env.LMSTUDIO_MODEL_TOKEN_LIMIT &&
