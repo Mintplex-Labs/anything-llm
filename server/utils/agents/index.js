@@ -378,7 +378,7 @@ class AgentHandler {
       case "minimax":
         return process.env.MINIMAX_MODEL_PREF ?? "MiniMax-M2.7";
       case "cerebras":
-        return process.env.CEREBRAS_MODEL_PREF ?? "llama3.1-8b";
+        return process.env.CEREBRAS_MODEL_PREF ?? "gpt-oss-120b";
       default:
         return null;
     }

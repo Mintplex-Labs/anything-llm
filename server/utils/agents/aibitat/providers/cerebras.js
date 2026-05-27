@@ -14,12 +14,12 @@ class CerebrasProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
 
   constructor(config = {}) {
-    const { model = "llama3.1-8b" } = config;
+    const { model = "gpt-oss-120b" } = config;
     super();
     const client = new OpenAI({
       baseURL: "https://api.cerebras.ai/v1",
       apiKey: process.env.CEREBRAS_API_KEY,
-      maxRetries: 3,
+      maxRetries: 1,
     });
 
     this._client = client;

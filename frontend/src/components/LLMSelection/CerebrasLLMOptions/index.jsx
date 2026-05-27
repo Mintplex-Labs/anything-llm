@@ -32,21 +32,22 @@ export default function CerebrasLLMOptions({ settings }) {
   );
 }
 
-function CerebrasModelSelection({ apiKey, settings }) {
+/**
+ * Cerebras model selection component
+ * @param {Object} props - The component props
+ * @param {string} props.apiKey - The Cerebras API key (not used since we only need public models for now)
+ * @param {Object} props.settings - The system settings
+ * @returns {JSX.Element} The Cerebras model selection component
+ */
+function CerebrasModelSelection({ apiKey: _apiKey, settings }) {
   const [customModels, setCustomModels] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function findCustomModels() {
-      if (!apiKey) {
-        setCustomModels([]);
-        setLoading(true);
-        return;
-      }
-
       try {
         setLoading(true);
-        const { models } = await System.customModels("cerebras", apiKey);
+        const { models } = await System.customModels("cerebras");
         setCustomModels(models || []);
       } catch (error) {
         console.error("Failed to fetch custom models:", error);
@@ -56,7 +57,7 @@ function CerebrasModelSelection({ apiKey, settings }) {
       }
     }
     findCustomModels();
-  }, [apiKey]);
+  }, []);
 
   if (loading) {
     return (
@@ -73,9 +74,6 @@ function CerebrasModelSelection({ apiKey, settings }) {
             --loading available models--
           </option>
         </select>
-        <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
-          Enter a valid API key to view all available models for your account.
-        </p>
       </div>
     );
   }
@@ -99,16 +97,13 @@ function CerebrasModelSelection({ apiKey, settings }) {
                   value={model.id}
                   selected={settings?.CerebrasModelPref === model.id}
                 >
-                  {model.id}
+                  {model.name}
                 </option>
               );
             })}
           </optgroup>
         )}
       </select>
-      <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
-        Select the Cerebras model you want to use for your conversations.
-      </p>
     </div>
   );
 }
