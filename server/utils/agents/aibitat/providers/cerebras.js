@@ -4,6 +4,7 @@ const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
+const { CerebrasLLM } = require("../../../AiProviders/cerebras");
 
 /**
  * The agent provider for the Cerebras provider.
@@ -38,24 +39,14 @@ class CerebrasProvider extends InheritMultiple([Provider, UnTooled]) {
 
   /**
    * Whether this provider supports native OpenAI-compatible tool calling.
-   * - Since Cerebras models vary in tool calling support, we check the ENV.
-   * - If the ENV is not set, we default to false.
    * @returns {boolean}
    */
-  supportsNativeToolCalling() {
+  async supportsNativeToolCalling() {
     if (this._supportsToolCalling !== null) return this._supportsToolCalling;
-    const supportsToolCalling =
-      this.supportsNativeToolCallingViaEnv("cerebras");
-    if (supportsToolCalling)
-      this.providerLog(
-        "Cerebras supports native tool calling is ENABLED via ENV."
-      );
-    else
-      this.providerLog(
-        "Cerebras supports native tool calling is DISABLED via ENV. Will use UnTooled instead."
-      );
-    this._supportsToolCalling = supportsToolCalling;
-    return supportsToolCalling;
+    const cerebras = new CerebrasLLM(null, this.model);
+    const capabilities = await cerebras.getModelCapabilities();
+    this._supportsToolCalling = capabilities.tools === true;
+    return this._supportsToolCalling;
   }
 
   async #handleFunctionCallChat({ messages = [] }) {
@@ -172,6 +163,32 @@ class CerebrasProvider extends InheritMultiple([Provider, UnTooled]) {
       }
       throw error;
     }
+  }
+
+  /**
+   * Updates the stored usage metrics from a provider response.
+   * Override in subclasses to handle provider-specific usage formats.
+   * @param {Object} usage - The usage object from the provider response
+   * @param {Object} time_info - The time info object from the provider response (Cerebras specific)
+   */
+  recordUsage(usage = {}, time_info = {}) {
+    // assume start time
+    let duration = (Date.now() - this._requestStartTime) / 1000;
+    const promptTokens = usage.prompt_tokens || 0;
+    const completionTokens = usage.completion_tokens || 0;
+    if (time_info?.completion_time) duration = time_info.completion_time;
+
+    this.lastUsage = {
+      prompt_tokens: promptTokens,
+      completion_tokens: completionTokens,
+      total_tokens: usage.total_tokens,
+      outputTps:
+        completionTokens && duration > 0 ? completionTokens / duration : 0,
+      duration,
+      model: this.model,
+      provider: this.constructor.name,
+      timestamp: new Date(),
+    };
   }
 
   /**

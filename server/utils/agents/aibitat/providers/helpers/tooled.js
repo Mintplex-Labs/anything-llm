@@ -204,12 +204,12 @@ async function tooledStream(
 
   const toolCallsByIndex = {};
   let usage = null;
+  let time_info = null;
 
   for await (const chunk of stream) {
     // Capture usage from final chunk (some providers send usage after finish_reason)
-    if (chunk?.usage) {
-      usage = chunk.usage;
-    }
+    if (chunk?.usage) usage = chunk.usage;
+    if (chunk?.time_info) time_info = chunk.time_info;
 
     if (!chunk?.choices?.[0]) continue;
     const choice = chunk.choices[0];
@@ -262,7 +262,7 @@ async function tooledStream(
   // Auto-record usage if provider is passed and usage is available
   if (provider?.recordUsage && usage) {
     try {
-      provider.recordUsage(usage);
+      provider.recordUsage(usage, time_info);
     } catch {}
   }
 

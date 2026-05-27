@@ -112,7 +112,11 @@ class CerebrasLLM {
       this.#slog(
         "No context windows cached - Context window may be inaccurately reported."
       );
-      return process.env.CEREBRAS_MODEL_TOKEN_LIMIT || 128000;
+      return (
+        Number(process.env.CEREBRAS_MODEL_TOKEN_LIMIT) || // Legacy support for old ENV
+        MODEL_MAP.get("cerebras", modelName) || // Use the model map for the context window
+        128000 // Default to 128000 if no context window is found and modelMap is not available
+      );
     }
     return Number(CerebrasLLM.modelContextWindows[modelName]) || 128000;
   }
