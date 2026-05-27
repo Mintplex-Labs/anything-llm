@@ -122,10 +122,17 @@ AnythingLLM supports multiple users as well where you can control the access and
 - [AnythingLLM Native Embedder](/server/storage/models/README.md) (default)
 - [OpenAI](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
+- [Gemini](https://ai.google.dev/)
 - [LocalAI (all)](https://localai.io/)
 - [Ollama (all)](https://ollama.ai/)
 - [LM Studio (all)](https://lmstudio.ai)
+- [Lemonade](https://lemonade-server.ai)
+- [OpenRouter](https://openrouter.ai/)
+- [LiteLLM](https://github.com/BerriAI/litellm)
 - [Cohere](https://cohere.com/)
+- [Voyage AI](https://www.voyageai.com/)
+- [Mistral](https://mistral.ai/)
+- Generic OpenAI-compatible embedding APIs
 
 **Audio Transcription models:**
 
