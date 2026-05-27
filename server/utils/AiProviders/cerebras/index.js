@@ -8,6 +8,8 @@ const {
 const { MODEL_MAP } = require("../modelMap");
 
 class CerebrasLLM {
+  static modelContextWindows = {};
+
   constructor(embedder = null, modelPreference = null) {
     const { OpenAI: OpenAIApi } = require("openai");
     if (!process.env.CEREBRAS_API_KEY)
@@ -19,20 +21,74 @@ class CerebrasLLM {
       apiKey: process.env.CEREBRAS_API_KEY,
     });
     this.model =
-      modelPreference || process.env.CEREBRAS_MODEL_PREF || "llama3.1-8b";
+      modelPreference || process.env.CEREBRAS_MODEL_PREF || "gpt-oss-120b";
+    // Lazy load the limits to avoid blocking the main thread on cacheContextWindows
+    this.limits = null;
+
+    this.embedder = embedder ?? new NativeEmbedder();
+    this.defaultTemp = 0;
+
+    CerebrasLLM.cacheContextWindows(true);
+    this.#log(`Initialized with model: ${this.model}`);
+  }
+
+  #log(text, ...args) {
+    console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  static #slog(text, ...args) {
+    console.log(`\x1b[36m[CerebrasLLM]\x1b[0m ${text}`, ...args);
+  }
+
+  async assertModelContextLimits() {
+    if (this.limits !== null) return;
+    await CerebrasLLM.cacheContextWindows();
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
       user: this.promptWindowLimit() * 0.7,
     };
-
-    this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
-    this.log(`Initialized with model: ${this.model}`);
   }
 
-  log(text, ...args) {
-    console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  /**
+   * Cache the context windows for the LMStudio models.
+   * This is done once and then cached for the lifetime of the server. This is absolutely necessary to ensure that the context windows are correct.
+   *
+   * This is a convenience to ensure that the context windows are correct and that the user
+   * does not have to manually set the context window for each model.
+   * @param {boolean} force - Force the cache to be refreshed.
+   * @returns {Promise<void>} - A promise that resolves when the cache is refreshed.
+   */
+  static async cacheContextWindows(force = false) {
+    try {
+      // Skip if we already have cached context windows and we're not forcing a refresh
+      if (Object.keys(CerebrasLLM.modelContextWindows).length > 0 && !force)
+        return;
+
+      await fetch("https://api.cerebras.ai/public/v1/models")
+        .then((res) => {
+          if (!res.ok)
+            throw new Error(`Cerebras:cacheContextWindows - ${res.statusText}`);
+          return res.json();
+        })
+        .then(({ data: models }) => {
+          models.forEach((model) => {
+            if (!model.limits.max_context_length) return;
+            if (isNaN(model.limits.max_context_length)) return;
+            CerebrasLLM.modelContextWindows[model.id] =
+              model.limits.max_context_length;
+          });
+        })
+        .catch((e) => {
+          CerebrasLLM.#slog(`Error caching context windows`, e);
+          return;
+        });
+
+      CerebrasLLM.#slog(`Context windows cached for all models!`);
+    } catch (e) {
+      CerebrasLLM.#slog(`Error caching context windows`, e);
+      return;
+    }
   }
 
   #appendContext(contextTexts = []) {
@@ -52,11 +108,17 @@ class CerebrasLLM {
   }
 
   static promptWindowLimit(modelName) {
-    return MODEL_MAP.get("cerebras", modelName) ?? 8192;
+    if (Object.keys(CerebrasLLM.modelContextWindows).length === 0) {
+      this.#slog(
+        "No context windows cached - Context window may be inaccurately reported."
+      );
+      return process.env.CEREBRAS_MODEL_TOKEN_LIMIT || 128000;
+    }
+    return Number(CerebrasLLM.modelContextWindows[modelName]) || 128000;
   }
 
   promptWindowLimit() {
-    return MODEL_MAP.get("cerebras", this.model) ?? 8192;
+    return this.constructor.promptWindowLimit(this.model);
   }
 
   // The Cerebras inference API is OpenAI-compatible, so any model the account
@@ -68,12 +130,25 @@ class CerebrasLLM {
 
   /**
    * Generates appropriate content array for a message + attachments.
-   * Cerebras serves text-only models, so attachments are ignored.
    * @param {{userPrompt:string, attachments: import("../../helpers").Attachment[]}}
-   * @returns {string}
+   * @returns {string|object[]}
    */
-  #generateContent({ userPrompt }) {
-    return userPrompt;
+  #generateContent({ userPrompt, attachments = [] }) {
+    if (!attachments.length) {
+      return userPrompt;
+    }
+
+    const content = [{ type: "text", text: userPrompt }];
+    for (let attachment of attachments) {
+      content.push({
+        type: "image_url",
+        image_url: {
+          url: attachment.contentString,
+          detail: "auto",
+        },
+      });
+    }
+    return content.flat();
   }
 
   constructPrompt({
@@ -97,12 +172,21 @@ class CerebrasLLM {
     ];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
-      throw new Error(
-        `Cerebras chat: ${this.model} is not valid for chat completion!`
-      );
+  /**
+   * Do we need this?
+   * Parses and prepends reasoning from the response and returns the full text response.
+   * Used for getChatCompletions to render thinking text if present in full response.
+   * @param {Object} message - The message object from the LMStudio response.
+   * @returns {string}
+   */
+  #parseReasoningFromResponse({ message }) {
+    let textResponse = message?.content ?? "";
+    if (!!message?.reasoning && message.reasoning.trim().length > 0)
+      textResponse = `<think>${message.reasoning}</think>${textResponse}`;
+    return textResponse;
+  }
 
+  async getChatCompletion(messages = null, { temperature = 0.7 }) {
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.openai.chat.completions
         .create({
@@ -111,24 +195,27 @@ class CerebrasLLM {
           temperature,
         })
         .catch((e) => {
+          console.error(e);
           throw new Error(e.message);
         })
     );
 
     if (
-      !Object.prototype.hasOwnProperty.call(result.output, "choices") ||
+      !result.output.hasOwnProperty("choices") ||
       result.output.choices.length === 0
     )
       return null;
 
     return {
-      textResponse: result.output.choices[0].message.content,
+      textResponse: this.#parseReasoningFromResponse(result.output.choices[0]),
       metrics: {
         prompt_tokens: result.output.usage.prompt_tokens || 0,
         completion_tokens: result.output.usage.completion_tokens || 0,
         total_tokens: result.output.usage.total_tokens || 0,
-        outputTps: result.output.usage.completion_tokens / result.duration,
-        duration: result.duration,
+        outputTps:
+          result.output.usage.completion_tokens /
+          result.output.time_info.completion_time,
+        duration: result.output.time_info.completion_time,
         model: this.model,
         provider: this.className,
         timestamp: new Date(),
@@ -137,11 +224,6 @@ class CerebrasLLM {
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
-      throw new Error(
-        `Cerebras chat: ${this.model} is not valid for chat completion!`
-      );
-
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.openai.chat.completions.create({
         model: this.model,
@@ -150,7 +232,7 @@ class CerebrasLLM {
         temperature,
       }),
       messages,
-      runPromptTokenCalculation: true,
+      runPromptTokenCalculation: false,
       modelTag: this.model,
       provider: this.className,
     });
@@ -159,6 +241,45 @@ class CerebrasLLM {
 
   handleStream(response, stream, responseProps) {
     return handleDefaultStreamResponseV2(response, stream, responseProps);
+  }
+
+  /**
+   * Returns the capabilities of the model.
+   * This uses the new /public/v1/models endpoint, which returns the model capabilities.
+   * @returns {Promise<{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}>}
+   */
+  async getModelCapabilities() {
+    try {
+      const capabilities =
+        (await fetch(`https://api.cerebras.ai/public/v1/models/${this.model}`, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((res) => {
+            if (!res.ok)
+              throw new Error(
+                `Cerebras:getModelCapabilities - ${res.statusText}`
+              );
+            return res.json();
+          })
+          .then(({ capabilities }) => capabilities)) || {};
+
+      return {
+        tools: capabilities?.tools,
+        reasoning: capabilities?.reasoning,
+        imageGeneration: false,
+        vision: capabilities?.vision,
+      };
+    } catch (error) {
+      console.error("Error getting model capabilities:", error);
+      return {
+        tools: "unknown",
+        reasoning: "unknown",
+        imageGeneration: "unknown",
+        vision: "unknown",
+      };
+    }
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations
@@ -170,6 +291,7 @@ class CerebrasLLM {
   }
 
   async compressMessages(promptArgs = {}, rawHistory = []) {
+    await this.assertModelContextLimits();
     const { messageArrayCompressor } = require("../../helpers/chat");
     const messageArray = this.constructPrompt(promptArgs);
     return await messageArrayCompressor(this, messageArray, rawHistory);
