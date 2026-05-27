@@ -57,6 +57,14 @@ const HistoricalMessage = ({
   const isRefusalMessage =
     role === "assistant" && message === chatQueryRefusalResponse(workspace);
 
+  // Agent loop turns that reason and then call a tool emit a message whose
+  // entire content is a `<think>...</think>` block with no visible answer.
+  // Those bubbles have nothing to copy/speak/edit, so suppress the action bar
+  // (otherwise a hover copy button appears under each thought and copies an
+  // empty string once useCopyText strips the reasoning).
+  const hasActionableContent =
+    role !== "assistant" || visibleResponseContent(message).length > 0;
+
   if (completeDelete) return null;
 
   if (!!error) {
@@ -166,25 +174,27 @@ const HistoricalMessage = ({
             <HistoricalOutputs outputs={outputs} />
           </div>
         )}
-        <div className="flex items-start md:items-center gap-x-1">
-          <TTSMessage
-            slug={workspace?.slug}
-            chatId={chatId}
-            message={message}
-          />
-          <Actions
-            message={message}
-            feedbackScore={feedbackScore}
-            chatId={chatId}
-            slug={workspace?.slug}
-            isLastMessage={isLastMessage}
-            regenerateMessage={regenerateMessage}
-            isEditing={isEditing}
-            role={role}
-            forkThread={forkThread}
-            metrics={metrics}
-          />
-        </div>
+        {hasActionableContent && (
+          <div className="flex items-start md:items-center gap-x-1">
+            <TTSMessage
+              slug={workspace?.slug}
+              chatId={chatId}
+              message={message}
+            />
+            <Actions
+              message={message}
+              feedbackScore={feedbackScore}
+              chatId={chatId}
+              slug={workspace?.slug}
+              isLastMessage={isLastMessage}
+              regenerateMessage={regenerateMessage}
+              isEditing={isEditing}
+              role={role}
+              forkThread={forkThread}
+              metrics={metrics}
+            />
+          </div>
+        )}
         {role === "assistant" && <Citations sources={sources} />}
       </div>
     </div>
@@ -290,6 +300,29 @@ function TruncatableContent({ children }) {
       )}
     </>
   );
+}
+
+/**
+ * Returns the visible (non-reasoning) portion of an assistant message — i.e.
+ * what `RenderChatContent` would actually paint as the answer after thought
+ * blocks are collapsed into the ThoughtChainComponent. Used to decide whether
+ * a message is a pure reasoning bubble (no answer) and should skip the action bar.
+ * @param {string} message
+ * @returns {string} the message with `<think>...</think>` blocks removed, trimmed
+ */
+function visibleResponseContent(message = "") {
+  if (!message) return "";
+
+  // Open thought with no matching close = the whole message is reasoning
+  // (mid-stream or aborted), mirroring RenderChatContent's `msgToRender = ""`.
+  if (message.match(THOUGHT_REGEX_OPEN) && !message.match(THOUGHT_REGEX_CLOSE))
+    return "";
+
+  // Strip every complete thought block. The shared THOUGHT_REGEX_COMPLETE has
+  // no `g` flag (and is used with stateful `.match()` elsewhere), so build a
+  // fresh global copy here to catch the multiple-thought agent-loop case too.
+  const completeThoughts = new RegExp(THOUGHT_REGEX_COMPLETE.source, "g");
+  return message.replace(completeThoughts, "").trim();
 }
 
 const RenderChatContent = memo(
