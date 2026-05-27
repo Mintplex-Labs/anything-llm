@@ -109,6 +109,7 @@ const TRANSLATIONS = {
       telegram: "Telegram",
     },
     "scheduled-jobs": "Plānotas darba uzdevumi",
+    "model-router": "Modeļa routers",
   },
   login: {
     "multi-user": {
@@ -766,6 +767,16 @@ const TRANSLATIONS = {
             "Maksimālais rīku skaits, kas var tikt izvēlts katrai meklēšanai. Mēs iesakām iestatīt šo vērtību, lai iegūtu lielāku kontekstu modelus.",
         },
       },
+      "clarifying-questions": {
+        title: "Ļauj aģentam uzdot skaidrotas jautājumus",
+        "beta-badge": "BETA",
+        description:
+          "Kad tas ir aktivizēts, aģenti var pārtraukt darbību, lai uzdotu īsas, skaidrotas jautājumus, ja jūsu lūdzes formulējums ir neprecīzs.",
+        "max-per-turn": {
+          title: "Maksimālais jautājumu skaits vienā runda",
+          description: "Cik jautājumus aģents var uzdot vienā intervā?",
+        },
+      },
     },
   },
   recorded: {
@@ -1272,7 +1283,6 @@ const TRANSLATIONS = {
     similarity_match: "spēle",
     source_count_one: "{{count}} – atsauce",
     source_count_other: "Atsauces uz {{count}}",
-    preset_exit_description: "Aizust klientu sesiju",
     add_new: "Pievienot jaunu",
     edit: "Rediģēt",
     publish: "Publicēt",
@@ -1293,6 +1303,21 @@ const TRANSLATIONS = {
       tool_call_was_approved: "Instrumentu pieprasījums tika apstiprināts.",
       tool_call_was_rejected:
         "Pieprasījums par instrumenta izmantošanu tika atgrūstīts.",
+      clarifying_skip: "Ļauj aģentam paņemt lēmumu",
+      clarifying_submit: "Iesniedz",
+      clarifying_skipped: "Jūs atstājiet šo lēmumu aģentam.",
+      clarifying_timeout: "Atbildes netika iesniedzta laikā.",
+      clarifying_pagination: "{{current}} no {{total}}",
+      clarifying_prev_aria: "Iepriekšējais jautājums",
+      clarifying_next_aria: "Nākamais jautājums",
+      clarifying_close_aria: "Aizvērt un pāriet",
+      clarifying_other: "Citi",
+      clarifying_other_placeholder: "Ierakstiet savu atbildi",
+      batch_progress: "{{answered}} no {{total}} atbildēja",
+      batch_skip_this: "Pārvietoties",
+      batch_submit_all: "Iesniedziet visus",
+      batch_next: "Nākamais",
+      answer_skipped: "[lietotājs nepiespēra]",
     },
     custom_skills: "Pielāgotas prasmes",
     agent_flows: "Aģentu plūsmas",
@@ -1300,6 +1325,42 @@ const TRANSLATIONS = {
     loading_mcp_servers: "Ielāde MCP serverus...",
     app_integrations: "Dienvidligzdas integrācijas",
     sub_skills: "Īpašās prasmes",
+    memories: {
+      title: "Atgādinājumi",
+      empty:
+        "Līdz šim nav atmiņu. Kad jūs vairāk iejiegsas ar šo chatbot, atmiņas automātiski sāks pieaugt.",
+      empty_cta: "izveidot jaunu atmiņu",
+      tab_workspace: "Darba vieta",
+      tab_global: "Vispārīgs",
+      toggle: {
+        label: "Ievērojiet personīgu pielāgošanu",
+        description:
+          "Ļauj savam asistējam atgāstīt informāciju par Tevi vai šo darba vietu un izmantot šo informāciju sarunās.",
+      },
+      auto_extraction: {
+        label: "Automātiskas atmiņas",
+        description: "Ļauj savam asistējam automātiski veidot atmiņas fons.",
+      },
+      menu: {
+        edit: "Rediģēt",
+        delete: "Dzēst",
+        move_to_global: "Migrācija uz globālu",
+        move_to_workspace: "Pārvarieties",
+      },
+      modal: {
+        create_title: "Izveidot atmiņas",
+        edit_title: "Rediģēt atmiņas",
+        create_description:
+          'Atgādinājumi jāizteicas kā vienots, skaidrs paziņojums. Piemēram: "Izmantotājs dod priekšroku Python valodai, nevis JavaScript".',
+        edit_description: "Atjaunini šī atmiņas saturu.",
+        label: "Atmiņa",
+        placeholder:
+          "piemēram, lietotāja vārds ir Jo, lietotājs strādā AnythLLM, utt.",
+        create: "Izveidot",
+        save: "Saglabāt",
+        cancel: "Atcelt",
+      },
+    },
   },
   profile_settings: {
     edit_account: "Rediģēt kontu",
@@ -1682,6 +1743,184 @@ const TRANSLATIONS = {
       timed_out: "Laiks esot beidzies",
       running: "Skriešana",
       queued: "Iekļauts rindā",
+    },
+  },
+  "model-router": {
+    title: "Modeļi: Routeri",
+    description:
+      "Modeli routeri ļauj definēt noteikumus, kas automātiski nosaka, kā sūtīt tērzēšanas ziņojus dažādiem LLM (liels valodu modeļi) sniedzējiem un modeļiem, pamatojoties uz noteiktiem nosacījumiem.",
+    table: {
+      name: "Vārds",
+      fallback: "Rezervētais",
+      rules: "Noteikumi",
+      workspaces: "Darba vietas",
+    },
+    "no-routers": "Vēl nav pieejami modeļi ar router funkcijām.",
+    "empty-description":
+      "Vēl nav konfigurētas nekādas maršrutētāju modeļi. Izveidoiet vienu, lai sāktu.",
+    "new-router-button": "Jauns maršrutētājs",
+    "delete-confirm":
+      'Vai jūs noteikti vēlaties dzēst routeri "{{name}}"?\nTas noņems visas tā esošās regulas un atslēgs visus darba vietas, kas to izmanto.\n\nŠī darbība ir neatgriezeniska.',
+    "toast-deleted": "Router ir izdzēsts",
+    "toast-delete-failed": "Neizdevās izdzēst routeri: {{error}}",
+    "new-router": {
+      title: "Izveidot jaunu maršrutizatora modeli",
+      name: "Vārds",
+      "name-placeholder": 'piemēram, "Izmaksas optimizators"',
+      description: "Apraksts",
+      "description-placeholder": "Pēc izvēles apraksts",
+      "fallback-label": "Galvenais pakalpojuma sniedzējs un modelis",
+      "fallback-description":
+        "Izmanto, kad nav atrast nekādu noteikumu, kas atbilst. Tāpat izmanto, lai novērtētu LLM (liels valodas modelis) klasificētos noteikumus.",
+      "cooldown-label": "Pēcmaksas laiks (sekundes)",
+      "cooldown-help":
+        "Cik ilgi maršruta lēmums tiek saglabāts, pirms atjauninātas noteikumi. Iestatīšana uz 0 atspējo saglabāšanu.",
+      "name-required": "Vajadzīgs ir vārds.",
+      "fallback-required":
+        "Neaizstājams pakalpojuma sniedzējs un attiecīgā modeļa nosaukums ir obligāts.",
+      cancel: "Atcelt",
+      create: "Izveidot routeri",
+    },
+    "edit-router": {
+      "back-to-routers": "Atgriezies pie modeļu routeru",
+      title: "Ierīces konfigurēšana: {{name}}",
+      save: "Saglabāt izmaiņas",
+      "toast-update-failed": "Neizdevās atjaunināt routeri",
+    },
+    rules: {
+      title: "Maršruta noteikumi",
+      "title-with-name": "Router noteikumi: {{name}}",
+      description:
+        "Izveidot noteikumus, kas nosaka, kad un kā ziņojumi tiek nosūtīti konkrētiem pakalpojumu sniedzējiem un modeļiem.",
+      "add-rule": "Piešķir noteikumus",
+      "delete-confirm": 'Dzēst noteikumu "{{title}}"?',
+      "toast-delete-failed": "Neizdevās dzēst noteikumu",
+      "toast-reorder-failed": "Nespēja atkārtot noteikumus",
+      "no-rules": "Vēl nav noteiktu noteikumu.",
+      "empty-description":
+        "Ieviesiet noteikumu, lai sāktu sūtīt ziņojus no čata konkrētiem sniedzējiem un modeļiem.",
+      "new-rule-button": "Jauna noteikums",
+      "calculated-section-label":
+        "Ierakstītās regulas – novērtējamas pirmā, prioritārajā secībā",
+      "llm-section-label":
+        "LLM noteikumi – novērtēti kā vienas reizes, ja neviens aprēķināts noteikums neatbilst",
+      "llm-rule-body":
+        'Izvēlēties <desc>"{{description}}"</desc> un pēc tam pāriet uz <route>{{route}}</route>',
+      "calculated-no-conditions":
+        "Bez ierobežojumiem – maršruta ceļš uz <route>{{route}}</route>",
+      "calculated-single-condition":
+        'Ja <prop> {{property}} </prop> {{comparator}} <val> " {{value}} " </val> tad pāriet uz <route> {{route}} </route>',
+      "calculated-multi-condition":
+        "Ja {{quantifier}} ir <cond> un {{conditions}} ir </cond>, tad maršruta ceļš ir uz <route> un {{route}} un </route>",
+      "comparator-contains": "iekļauj",
+      "comparator-matches": "mačs, spēle",
+      "comparator-between": "starp",
+      "badge-llm": "Lielais modelis",
+      "badge-calculated": "Aprēķināts",
+      "aria-drag-to-reorder": "Viegli pārkārtot, velkot",
+      "aria-edit-rule": "Ieraksta noteikums",
+      "aria-delete-rule": "Dzēst noteikumu",
+      "quantifier-any": "KADUNKT",
+      "quantifier-all": "VISI",
+    },
+    "rule-form": {
+      "title-label": "Nosaukums",
+      "rule-type": "Regulas tipa",
+      "property-label": "Reāls īpašums",
+      "property-select": "Izvēlieties",
+      "comparator-label": "Salīdzenības rīks",
+      "comparator-select": "Izvēlēties",
+      "value-label": "Vērtība",
+      "add-condition": "Piešķiriet nosacījumu",
+      "remove-condition": "Atbrīvot no nosacījuma",
+      "conditions-incomplete":
+        "Stāvoklis {{index}} ir nevis pilnīgs — norādiet īpašumu, salīdzinājumu un vērtību.",
+      "match-description-label": "Spēles apraksts",
+      "match-description-placeholder":
+        "piemēram, lietotājs interesējas par juridiskām jautājumiem, līgumiem vai atbilstību normām",
+      "match-description-help":
+        "Aizstājiet situāciju, kad vēlaties, lai šis noteikums būtu piemērojams. Šo novērtēs jūsu mākslīgā intelektu, lai noskaidrotu, vai to vajadzētu izmantot.",
+      "route-to-label": "Ceļš uz sniedzēju un modelis",
+      "route-to-description":
+        "Ja šis noteikums ir piemērojams, izmantojiet šo sniedzēju/modeli.",
+      cancel: "Atcelt",
+      saving: "Ietaupīt...",
+      "update-rule": "Atjaunināšanas noteikums",
+      "create-rule": "Izveidot noteikumus",
+      "title-required": "Vajadzīgs nosaukums",
+      "toast-save-failed": "Neizdevās saglabāt noteikumu",
+      "type-calculated-label": "Aprēķināts",
+      "type-calculated-description":
+        "Izvēlieties sūtījumus, pamatojoties uz tā īpašībām, piemēram, satura, tokenu skaitu vai dienas laiku.",
+      "type-llm-label": "LLM klasiificēts",
+      "type-llm-description":
+        "Izmantojiet lielu valodu modeli (LLM), lai klasificētu ziņojumu, ņemot vērā to, ko jūs sniegsiet.",
+      "prop-prompt-content": "Ieteiktais saturs",
+      "prop-token-count": "Sarunas žetonu skaits",
+      "prop-message-count": "Sarunu vēstures skaits",
+      "prop-current-hour": "Pašreizējais laiks (0-23)",
+      "prop-has-image": "Vai ir pievienots attēls?",
+      "cmp-contains": "satina",
+      "cmp-matches-regex": "atbilstības pārbaudes (regulārās izteiksmes)",
+      "cmp-equals": "līdzvērtība",
+      "cmp-not-equals": "nav vienāds",
+      "cmp-greater-than": "lielāks par",
+      "cmp-greater-than-or-equal": "lielāks vai vienāds",
+      "cmp-less-than": "mazāk nekā",
+      "cmp-less-than-or-equal": "mazāk vai vienādas",
+      "cmp-between": "starp (iekļaujot)",
+      "placeholder-between-hour": "piemēram, 9:17 (no 9:00 līdz 17:00)",
+      "placeholder-between-numeric": "piemēram, 10,50",
+      "placeholder-hour": "piemēram, 18 (0-23)",
+      "placeholder-message-count": "piemēram, 10",
+      "placeholder-numeric": "piemēram, 4000",
+      "placeholder-contains": "piemēram, kods, Python, Rust",
+      "placeholder-matches": "piemēram, /\\bpython\\b/i",
+      "placeholder-default": "piemēram, kods",
+      "help-contains":
+        "Saraksts, kas atdala komātām — atbilst, ja jautājumā ir iekļautas kāda no vērtībām (neievērojot apakšrakstus).",
+      "help-matches":
+        "RegEx shablon. Izmantojiet `/shablon/zīmīgus vārdus`, lai noteiktu atšķirību starp lielajiem un malajiem rakstiem (par apakšā ir atvērtā atšķirība).",
+      "bool-true": "Patiesi",
+      "bool-false": "Nepieklājīgs",
+    },
+    "provider-picker": {
+      "select-provider": "Izvēlēties pakalpojumu sniedzēju",
+      "setup-required": "(nepieciešama sagatavošana)",
+      "loading-models": "Modelu ievadīšana...",
+      "select-model": "Izvēlēties modeli",
+      "enter-model": "Ievadiet modeļa nosaukumu",
+      "select-provider-first": "Pirmkārt, izvēlieties sniedzēju.",
+      "configure-to-continue": "Iespējiet {{name}} turpināt",
+      "configure-provider": "Ierīkojiet {{name}}",
+      "setup-credentials":
+        "Ievadiet nepieciešamos datus, lai izmantotu {{name}} kā maršruta mērķi.",
+      cancel: "Atcelt",
+      "save-settings": "Saglabāt iestatījumus",
+      "toast-save-failed": "Neizdevās saglabāt iestatījumus: {{error}}",
+    },
+    "router-selection": {
+      "loading-routers": "Ielāde pielāgotām routeriem...",
+      "no-routers-prefix-settings": "Vēl nav konfigurēti neviens maršrutētājs.",
+      "no-routers-prefix-workspace": "Nav konfigurēti nekādi maršrutētāji.",
+      "no-routers-link": 'Izveidot to "Model Router" iestatījumu sadaļā',
+      "model-router-label": "Modeļa routeris",
+      "select-router": "Izvēlieties maršrutizatoru",
+      "select-description":
+        "Izvēlieties, kuru routeru izmantot šim darba vietai.",
+      "no-routers-chat":
+        'Neizveidoti nekādi maršrutētāji. Izveidoiet vienu, izmantojot "Iestatījumi > AI nodrošinātāji > Maršrutētāja modelis".',
+      "rule-count": "({{count}} noteikumos)",
+    },
+    metrics: {
+      "model-router-default": "Modeļa routers",
+    },
+    chat: {
+      "select-router-error": "Izvēlieties routeri",
+      "invalid-model": "Neizdevusies modeļa izvēle",
+      "routed-to": "Sūtīts uz <route>{{model}}</route>",
+      "routed-to-rule":
+        "Aizvedēts pa <route>{{model}}</route> ceļu, izmantojot <rule>{{ruleTitle}}</rule>",
     },
   },
 };

@@ -117,6 +117,7 @@ const TRANSLATIONS = {
       telegram: "Telegram",
     },
     "scheduled-jobs": "Naplánované úlohy",
+    "model-router": "Modelový router",
   },
   login: {
     "multi-user": {
@@ -768,6 +769,17 @@ const TRANSLATIONS = {
             "Maximální počet nástrojů, které lze vybrat pro každou dotaz. Doporučujeme nastavit tuto hodnotu na vyšší, pro modely s větším kontextem.",
         },
       },
+      "clarifying-questions": {
+        title: "Umožněte zástupci, aby kladl upřesňující otázky.",
+        "beta-badge": "BETA",
+        description:
+          "Pokud je tato funkce povolena, agenti mohou přerušit konverzaci a položit stručné upřesňující otázky, pokud je vaše žádost nejasná.",
+        "max-per-turn": {
+          title: "Maximální počet otázek za kolo",
+          description:
+            "Kolik otázek pro objasnění může agent položit během jedné dotazní?",
+        },
+      },
     },
   },
   recorded: {
@@ -1288,7 +1300,6 @@ const TRANSLATIONS = {
     similarity_match: "zápas",
     source_count_one: "{{count}} – odkaz",
     source_count_other: "{{count}} – odkazy",
-    preset_exit_description: "Zastavte aktuální relaci s agentem",
     add_new: "Přidat nové",
     edit: "Upravit",
     publish: "Publikovat",
@@ -1308,6 +1319,21 @@ const TRANSLATIONS = {
       always_allow: "Vždy dbejte na to, aby {{skillName}}",
       tool_call_was_approved: "Žádost o použití nástroje byla schválena.",
       tool_call_was_rejected: "Žádost o použití nástroje byla zamítnuta.",
+      clarifying_skip: "Nechte, aby agent rozhodl",
+      clarifying_submit: "Odeslat",
+      clarifying_skipped: "Necháte rozhodnutí na zástupci.",
+      clarifying_timeout: "Odpověď nebyla doručena včas.",
+      clarifying_pagination: "{{current}} společnosti {{total}}",
+      clarifying_prev_aria: "Předchozí otázka",
+      clarifying_next_aria: "Následující otázka",
+      clarifying_close_aria: "Zavřít a přeskočit",
+      clarifying_other: "Ostatní",
+      clarifying_other_placeholder: "Zadejte své odpovědi",
+      batch_progress: "{{answered}} z {{total}} odpověděl",
+      batch_skip_this: "Přeskočit",
+      batch_submit_all: "Zašlete vše",
+      batch_next: "Další",
+      answer_skipped: "[uživatel přeskočil]",
     },
     custom_skills: "Vlastní dovednosti",
     agent_flows: "Toky agentů",
@@ -1315,6 +1341,43 @@ const TRANSLATIONS = {
     loading_mcp_servers: "Načítají se servery pro MCP...",
     app_integrations: "Integrace aplikací",
     sub_skills: "Specifické dovednosti",
+    memories: {
+      title: "Paměti",
+      empty:
+        "Dosud žádné vzpomínky. Jak budete více komunikovat s chatbotem, budou se postupně objevovat další.",
+      empty_cta: "vytvořit nový paměťový záznam",
+      tab_workspace: "Pracovní prostor",
+      tab_global: "Globální",
+      toggle: {
+        label: "Povolte personalizaci",
+        description:
+          "Nechte svého asistenta, aby si vybavil informace o vás nebo o tomto pracovním prostoru a použil je při konverzaci.",
+      },
+      auto_extraction: {
+        label: "Automatické vzpomínky",
+        description:
+          "Nechte, aby vám váš asistent automaticky vytvářel vzpomínky na pozadí.",
+      },
+      menu: {
+        edit: "Upravit",
+        delete: "Smazat",
+        move_to_global: "Přechod na globální úroveň",
+        move_to_workspace: "Přesun do pracovního prostředí",
+      },
+      modal: {
+        create_title: "Vytvořte vzpomínku",
+        edit_title: "Upravit paměť",
+        create_description:
+          "Paměti by měly být jednoznačné a stručné. Například: „Uživatel preferuje Python před JavaScriptem“",
+        edit_description: "Aktualizujte obsah této paměti.",
+        label: "Paměť",
+        placeholder:
+          "např. Jméno uživatele je Joe, uživatel pracuje na AnythingLLM, atd.",
+        create: "Vytvořit",
+        save: "Uložit",
+        cancel: "Zrušit",
+      },
+    },
   },
   profile_settings: {
     edit_account: "Upravit účet",
@@ -1666,6 +1729,185 @@ const TRANSLATIONS = {
       timed_out: "Časový limit dosáhl",
       running: "Běh",
       queued: "Na čekací listině",
+    },
+  },
+  "model-router": {
+    title: "Modely routerů",
+    description:
+      "Modely routrů vám umožňují definovat pravidla, která automaticky směrují zprávy z chatu na různé poskytovatele a modely LLM (Large Language Models) na základě určitých podmínek.",
+    table: {
+      name: "Jméno",
+      fallback: "Záložní řešení",
+      rules: "Pravidla",
+      workspaces: "Prostory pro práci",
+    },
+    "no-routers": "Dosud nejsou k dispozici žádné modely routerů.",
+    "empty-description":
+      "Dosud nebyly nakonfigurovány žádné modely routerů. Vytvořte jeden, abyste mohli začít.",
+    "new-router-button": "Nový router",
+    "delete-confirm":
+      'Jste si jistí, že chcete smazat router "{{name}}"?\nTím se odstraní všechny jeho pravidla a odpojí se všechny pracovní prostory, které jej používají.\n\nTato akce je nevratná.',
+    "toast-deleted": "Router byl smazán",
+    "toast-delete-failed": "Nešlo odstranit router: {{error}}",
+    "new-router": {
+      title: "Vytvořit nový model routeru",
+      name: "Jméno",
+      "name-placeholder": "např. Nástroj pro optimalizaci nákladů",
+      description: "Popis",
+      "description-placeholder": "Volitelné popisy",
+      "fallback-label": "Hlavní poskytovatel a model",
+      "fallback-description":
+        "Používá se, když žádná z definovaných pravidel pro směrování neplatí. Používá se také k vyhodnocení pravidel, která jsou klasifikována pomocí LLM (Large Language Model).",
+      "cooldown-label": "Doba chladnutí (sekundy)",
+      "cooldown-help":
+        "Jak dlouho je rozhodnutí o routingu ukládáno v paměti, než se znovu zkontrolují pravidla. Nastavení na 0 vypne ukládání.",
+      "name-required": "Je nutné uvést jméno.",
+      "fallback-required": "Je nutné uvést primární dodavatele a jeho model.",
+      cancel: "Zrušit",
+      create: "Vytvořte směrovač",
+    },
+    "edit-router": {
+      "back-to-routers": "Zpět na modely routerů",
+      title: "Upravit router: {{name}}",
+      save: "Uložit změny",
+      "toast-update-failed": "Nezdařilo se aktualizovat router.",
+    },
+    rules: {
+      title: "Pravidla pro směrování",
+      "title-with-name": "Pravidla pro směrovač: {{name}}",
+      description:
+        "Definujte pravidla, která určují, kdy a jak jsou zprávy v chatu směrovány konkrétním poskytovatelům a modelům.",
+      "add-rule": "Přidat pravidlo",
+      "delete-confirm": 'Smazat pravidlo "{{title}}"?',
+      "toast-delete-failed": "Nedařilo se smazat pravidlo.",
+      "toast-reorder-failed": "Neúspěšné opětovné nastavení pravidel",
+      "no-rules": "Dosud neexistují žádná pravidla.",
+      "empty-description":
+        "Přidejte pravidlo, které způsobí směrování chatových zpráv k určitým poskytovatelům a modelům.",
+      "new-rule-button": "Nová pravidla",
+      "calculated-section-label":
+        "Stanovené pravidla – posouzení v prioritním pořadí",
+      "llm-section-label":
+        "Pravidla LLM – jsou hodnocena jako soubor, pokud žádné z vypočítaných pravidel nebylo nalezeno.",
+      "llm-rule-body":
+        'Spusťte <desc>"{{description}}"</desc>, poté předejte na <route>{{route}}</route>',
+      "calculated-no-conditions":
+        "Bez podmínek – trasa do <route>{{route}}</route>",
+      "calculated-single-condition":
+        'Pokud je <prop> {{property}} </prop> {{comparator}} <val>"{{value}}"</val>, pak přejít na <route>{{route}}</route>',
+      "calculated-multi-condition":
+        "Pokud {{quantifier}} z <cond>{{conditions}}</cond> pak směr je <route>{{route}}</route>",
+      "comparator-contains": "obsahuje",
+      "comparator-matches": "zápasy",
+      "comparator-between": "mezi",
+      "badge-llm": "Velký jazykový model (LLM)",
+      "badge-calculated": "Vypočítáno",
+      "aria-drag-to-reorder": "Přetáhněte, aby se položky uspořádaly znovu",
+      "aria-edit-rule": "Upravit pravidlo",
+      "aria-delete-rule": "Odstranit pravidlo",
+      "quantifier-any": "JAKÝKOLI",
+      "quantifier-all": "VŠECHNO",
+    },
+    "rule-form": {
+      "title-label": "Nadpis",
+      "rule-type": "Typ pravidla",
+      "property-label": "Nemovitost",
+      "property-select": "Vybrat",
+      "comparator-label": "Srovnávací nástroj",
+      "comparator-select": "Vybrat",
+      "value-label": "Hodnota",
+      "add-condition": "Přidat podmínku",
+      "remove-condition": "Odstranit podmínku",
+      "conditions-incomplete":
+        "Podmínka {{index}} není kompletní – vyplňte vlastnosti, porovnávací operátor a hodnotu.",
+      "match-description-label": "Popis utkání",
+      "match-description-placeholder":
+        "např. Uživatel se ptá na právní otázky, smlouvy nebo dodržování předpisů.",
+      "match-description-help":
+        "Popište situaci, ve které by se tato pravidla měla použít. Vaše LLM tuto situaci vyhodnotí, aby určila, zda by měla být použita.",
+      "route-to-label": "Cesta k poskytovateli a model",
+      "route-to-description":
+        "Pokud platí toto pravidlo, použijte tohoto poskytovatele/model.",
+      cancel: "Zrušit",
+      saving: "Úspora...",
+      "update-rule": "Pravidlo aktualizace",
+      "create-rule": "Vytvořte pravidlo",
+      "title-required": "Název je povinný",
+      "toast-save-failed": "Nedařilo se uložit pravidlo",
+      "type-calculated-label": "Vypočítáno",
+      "type-calculated-description":
+        "Porovnávejte podle vlastností zprávy, jako je obsah, počet tokenů nebo čas dne.",
+      "type-llm-label": "Kategorie podle LLM",
+      "type-llm-description":
+        "Použijte jazykový model (LLM) k klasifikaci zprávy na základě popisu, který poskytnete.",
+      "prop-prompt-content": "Obsah, který je požadován",
+      "prop-token-count": "Počet tokenů v konverzaci",
+      "prop-message-count": "Počet zpráv v konverzaci",
+      "prop-current-hour": "Současná hodina (0-23)",
+      "prop-has-image": "Má přílohu ve formě obrázku",
+      "cmp-contains": "obsahuje",
+      "cmp-matches-regex": "vyhovující (regulární výrazy)",
+      "cmp-equals": "se rovná",
+      "cmp-not-equals": "není rovno",
+      "cmp-greater-than": "větší než",
+      "cmp-greater-than-or-equal": "větší nebo rovno",
+      "cmp-less-than": "méně než",
+      "cmp-less-than-or-equal": "méně nebo rovno",
+      "cmp-between": "mezi (včetně)",
+      "placeholder-between-hour": "např. 9:17 (od 9:00 do 17:00)",
+      "placeholder-between-numeric": "např. 10,50",
+      "placeholder-hour": "např. 18 (0-23)",
+      "placeholder-message-count": "např. 10",
+      "placeholder-numeric": "např. 4000",
+      "placeholder-contains": "např. kód, Python, Rust",
+      "placeholder-matches": "např. `/\\bpython\\b/i`",
+      "placeholder-default": "např. kód",
+      "help-contains":
+        "Seznam oddělený čárkami – odpovídá, pokud vstup obsahuje některý z uvedených hodnot (bez ohledu na velikost písmen).",
+      "help-matches":
+        "Předpona regulárního výrazu. Pro zachování citlivosti na velikost písmen použijte `/pattern/s` (s – case-sensitive).",
+      "bool-true": "Skutečné",
+      "bool-false": "Nesprávně",
+    },
+    "provider-picker": {
+      "select-provider": "Vyberte dodavatele",
+      "setup-required": "(vyžaduje se příprava)",
+      "loading-models": "Načítají se modely...",
+      "select-model": "Vyberte model",
+      "enter-model": "Zadejte název modelu",
+      "select-provider-first": "Nejprve vyberte dodavatele.",
+      "configure-to-continue": "Konfigurujte {{name}} pro pokračování.",
+      "configure-provider": "Konfigurujte {{name}}",
+      "setup-credentials":
+        "Zadejte požadovaná přihlašovací údaje, aby bylo možné použít {{name}} jako cílový bod pro směrování.",
+      cancel: "Zrušit",
+      "save-settings": "Uložit nastavení",
+      "toast-save-failed": "Nepodařilo se uložit nastavení: {{error}}",
+    },
+    "router-selection": {
+      "loading-routers": "Načítají se vlastní routovací protokoly...",
+      "no-routers-prefix-settings":
+        "V současné době nejsou žádné routery nakonfigurovány.",
+      "no-routers-prefix-workspace":
+        "Nejsou nakonfigurovány žádné modely routerů.",
+      "no-routers-link": "Vytvořte ho v nastavení modelu routeru.",
+      "model-router-label": "Modelový router",
+      "select-router": "Vyberte si router",
+      "select-description":
+        "Vyberte, který router chcete použít pro tuto pracovní stanici.",
+      "no-routers-chat":
+        "Nejsou nakonfigurovány žádné routery. Vytvořte jeden v části Nastavení > Poskytovatelé AI > Router modelu.",
+      "rule-count": "({{count}} pravidla)",
+    },
+    metrics: {
+      "model-router-default": "Modelový router",
+    },
+    chat: {
+      "select-router-error": "Vyberte si router",
+      "invalid-model": "Neplatná volba modelu",
+      "routed-to": "Přesměrováno na <route>{{model}}</route>",
+      "routed-to-rule":
+        "Přesměrováno na <route>{{model}}</route> prostřednictvím <rule>{{ruleTitle}}</rule>",
     },
   },
 };

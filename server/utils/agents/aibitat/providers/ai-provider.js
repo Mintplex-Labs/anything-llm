@@ -320,6 +320,22 @@ class Provider {
           apiKey: process.env.SAMBANOVA_LLM_API_KEY ?? null,
           ...config,
         });
+      case "minimax":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.minimax.io/v1",
+          },
+          apiKey: process.env.MINIMAX_API_KEY || null,
+          ...config,
+        });
+      case "cerebras":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.cerebras.ai/v1",
+          },
+          apiKey: process.env.CEREBRAS_API_KEY || null,
+          ...config,
+        });
       // OSS Model Runners
       // case "anythingllm_ollama":
       //   return new ChatOllama({
@@ -440,24 +456,34 @@ class Provider {
   }
 
   /**
-   * Get the system prompt for a provider.
-   * @param {string} provider
-   * @param {import("@prisma/client").workspaces | null} workspace
-   * @param {import("@prisma/client").users | null} user
+   * Get the system prompt for a provider, with memories appended (when enabled).
+   * @param {object} opts
+   * @param {string} opts.provider
+   * @param {import("@prisma/client").workspaces | null} opts.workspace
+   * @param {import("@prisma/client").users | null} opts.user
+   * @param {string} [opts.prompt] - current user message, used for reranking injected memories
    * @returns {Promise<string>}
    */
   static async systemPrompt({
     provider = null,
     workspace = null,
     user = null,
+    prompt = "",
   }) {
-    if (!workspace?.openAiPrompt)
-      return Provider.defaultSystemPromptForProvider(provider);
-    return await SystemPromptVariables.expandSystemPromptVariables(
-      workspace.openAiPrompt,
-      user?.id || null,
-      workspace.id
-    );
+    const { promptWithMemories } = require("../../../memories");
+    const basePrompt = !workspace?.openAiPrompt
+      ? Provider.defaultSystemPromptForProvider(provider)
+      : await SystemPromptVariables.expandSystemPromptVariables(
+          workspace.openAiPrompt,
+          user?.id || null,
+          workspace.id
+        );
+    return promptWithMemories({
+      systemPrompt: basePrompt,
+      userId: user?.id ?? null,
+      workspaceId: workspace?.id,
+      prompt,
+    });
   }
 
   /**
