@@ -50,6 +50,7 @@ class CerebrasProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   async #handleFunctionCallChat({ messages = [] }) {
+    await CerebrasLLM.cacheContextWindows();
     return await this.client.chat.completions
       .create({
         model: this.model,
@@ -68,6 +69,7 @@ class CerebrasProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   async #handleFunctionCallStream({ messages = [] }) {
+    await CerebrasLLM.cacheContextWindows();
     return await this.client.chat.completions.create({
       model: this.model,
       stream: true,
@@ -98,6 +100,7 @@ class CerebrasProvider extends InheritMultiple([Provider, UnTooled]) {
     );
 
     try {
+      await CerebrasLLM.cacheContextWindows();
       return await tooledStream(
         this.client,
         this.model,
@@ -138,6 +141,7 @@ class CerebrasProvider extends InheritMultiple([Provider, UnTooled]) {
     }
 
     try {
+      await CerebrasLLM.cacheContextWindows();
       const result = await tooledComplete(
         this.client,
         this.model,
