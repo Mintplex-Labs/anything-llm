@@ -40,8 +40,20 @@ const DEFAULT_WORKSPACE_PROMPT =
  * @property {number} total_tokens - Total tokens used
  * @property {number} duration - Duration in seconds
  * @property {number} outputTps - Output tokens per second
- * @property {string} model - Model name
- * @property {Date} timestamp - Timestamp of the completion
+ * @property {string|null} model - Model name
+ * @property {string|null} provider - Provider class name
+ * @property {Date|null} timestamp - Timestamp of the completion
+ */
+
+/**
+ * @typedef {Object} AgentProviderInstance
+ * @property {string} model - The model identifier string.
+ * @property {boolean} [verbose] - Whether to log verbose introspection messages.
+ * @property {boolean} supportsAgentStreaming - Whether the provider supports streaming tool-call execution.
+ * @property {(handlerProps: Object) => void} attachHandlerProps - Attach invocation/handler context to the provider.
+ * @property {(messages: Array, functions?: Array, eventHandler?: Function) => Promise<{functionCall: any, textResponse: string}>} stream - Stream a chat completion with tool calling.
+ * @property {(messages: Array, functions?: Array) => Promise<{functionCall: any, textResponse: string, result?: string}>} complete - Non-streaming chat completion with tool calling.
+ * @property {() => ProviderUsageMetrics} getUsage - Get usage metrics from the last completion.
  */
 
 class Provider {
@@ -435,8 +447,21 @@ class Provider {
    * @returns {number}
    */
   static contextLimit(provider = "openai", modelName) {
+    if (typeof provider !== "string") {
+      console.log(
+        `\x1b[43m\x1b[30m[.contextLimit warning] A non-string provider for .contextLimit was given — Returning fallback context limit of 8000.\x1b[0m\n\x1b[43m\x1b[30mThis is a bug and should be reported so that context windows are properly managed by AnythingLLM.\x1b[0m`
+      );
+      console.trace();
+      return 8_000;
+    }
+
     const llm = getLLMProviderClass({ provider });
-    if (!llm || !llm.hasOwnProperty("promptWindowLimit")) return 8_000;
+    if (!llm || !llm.hasOwnProperty("promptWindowLimit")) {
+      console.warn(
+        `\x1b[33m[.contextLimit warning]\x1b[0m Could not determine .promptWindowLimit for provider ${provider}. This could lead to incorrect context window management by AnythingLLM since we cannot determine the context window limit for this provider/model combination.`
+      );
+      return 8_000;
+    }
     return llm.promptWindowLimit(modelName);
   }
 
