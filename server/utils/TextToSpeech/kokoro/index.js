@@ -7,7 +7,7 @@ class KokoroTTS {
 
     const { OpenAI: OpenAIApi } = require("openai");
     this.openai = new OpenAIApi({
-      apiKey: process.env.TTS_KOKORO_KEY || "not-needed",
+      apiKey: process.env.TTS_KOKORO_KEY || null,
       baseURL: process.env.TTS_KOKORO_ENDPOINT,
     });
     this.model = "kokoro";

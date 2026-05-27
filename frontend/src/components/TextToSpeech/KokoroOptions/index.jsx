@@ -79,13 +79,19 @@ function KokoroVoiceSelection({ settings, endpoint }) {
         return;
       }
       setLoading(true);
-      const { models } = await System.customModels(
-        "kokoro-tts",
-        null,
-        endpoint
-      );
-      setVoices(models || []);
-      setLoading(false);
+      try {
+        const { models } = await System.customModels(
+          "kokoro-tts",
+          null,
+          endpoint
+        );
+        setVoices(models || []);
+      } catch (e) {
+        console.error(e);
+        setVoices([]);
+      } finally {
+        setLoading(false);
+      }
     }
     findVoices();
   }, [endpoint]);
