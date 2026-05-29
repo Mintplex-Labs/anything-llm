@@ -22,7 +22,6 @@ const CHUNKS_BEFORE_APPROVAL = 3;
  * @property {string} content The text content of the text to summarize
  * @property {import("../index")|null} [aibitat] The aibitat instance used to report progress and request approval to continue
  * @property {string|null} [skillName] The skill requesting summarization, used for the tool approval request
- * @property {string|null} [caller] The agent calling the skill, used to prefix introspection messages
  */
 
 /**
@@ -85,10 +84,8 @@ async function summarizeContent({
   content,
   aibitat = null,
   skillName = null,
-  caller = null,
 }) {
-  const introspect = (message) =>
-    aibitat?.introspect?.(caller ? `${caller}: ${message}` : message);
+  const introspect = (message) => aibitat?.introspect?.(message);
 
   const llm = getLLMProvider({ provider, model });
   const tokenManager = new TokenManager(model);

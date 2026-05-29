@@ -172,7 +172,6 @@ const docSummarizer = {
                 content: document.content,
                 aibitat: this.super,
                 skillName: this.name,
-                caller: this.caller,
               });
             } catch (error) {
               this.super.handlerProps.log(

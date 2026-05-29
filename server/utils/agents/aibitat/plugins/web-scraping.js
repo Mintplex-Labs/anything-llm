@@ -147,7 +147,6 @@ const webScraping = {
               content,
               aibitat: this.super,
               skillName: this.name,
-              caller: this.caller,
             });
           },
         });
