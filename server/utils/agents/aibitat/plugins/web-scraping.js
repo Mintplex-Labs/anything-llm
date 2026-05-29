@@ -145,6 +145,15 @@ const webScraping = {
               model: this.super.model,
               controllerSignal: this.controller.signal,
               content,
+              introspect: (message) =>
+                this.super.introspect(`${this.caller}: ${message}`),
+              requestApproval: this.super.requestToolApproval
+                ? (description) =>
+                    this.super.requestToolApproval({
+                      skillName: this.name,
+                      description,
+                    })
+                : null,
             });
           },
         });
