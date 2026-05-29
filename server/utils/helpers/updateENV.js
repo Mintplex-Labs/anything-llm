@@ -676,11 +676,11 @@ const KEY_MAPPING = {
   // STT Deepgram
   STTDeepgramApiKey: {
     envKey: "STT_DEEPGRAM_API_KEY",
-    checks: [],
+    checks: [isNotEmpty],
   },
   STTDeepgramModel: {
     envKey: "STT_DEEPGRAM_MODEL",
-    checks: [],
+    checks: [isNotEmpty],
   },
 
   // DeepSeek Options

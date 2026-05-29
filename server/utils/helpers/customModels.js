@@ -980,15 +980,20 @@ async function getDeepgramSTTModels(_apiKey = null) {
     });
     if (!response.ok) throw new Error(`Deepgram returned ${response.status}`);
 
+    let models = new Map();
     const data = await response.json();
-    const models = (data?.stt ?? [])
+    (data?.stt ?? [])
       .filter((m) => m.batch !== false)
-      .map((m) => ({
-        id: m.canonical_name,
-        name: m.name || m.canonical_name,
-        organization: "Deepgram",
-      }));
+      .forEach((m) => {
+        if (models.has(m.canonical_name)) return;
+        models.set(m.canonical_name, {
+          id: m.canonical_name,
+          name: m.canonical_name,
+          organization: "Deepgram",
+        });
+      });
 
+    models = Array.from(models.values());
     // Api Key was successful so lets save it for future uses
     if (models.length > 0 && _apiKey) process.env.STT_DEEPGRAM_API_KEY = apiKey;
     return { models, error: null };
