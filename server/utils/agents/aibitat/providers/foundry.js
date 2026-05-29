@@ -20,7 +20,6 @@ class FoundryProvider extends InheritMultiple([Provider, UnTooled]) {
     const client = new OpenAI({
       baseURL: parseFoundryBasePath(process.env.FOUNDRY_BASE_PATH),
       apiKey: null,
-      maxRetries: 3,
     });
 
     this._client = client;

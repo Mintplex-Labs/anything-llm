@@ -15,7 +15,6 @@ class XAIProvider extends InheritMultiple([Provider, UnTooled]) {
     const client = new OpenAI({
       baseURL: "https://api.x.ai/v1",
       apiKey: process.env.XAI_LLM_API_KEY,
-      maxRetries: 3,
     });
 
     this._client = client;

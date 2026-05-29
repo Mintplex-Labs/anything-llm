@@ -20,7 +20,6 @@ class PrivatemodelProvider extends InheritMultiple([Provider, UnTooled]) {
         process.env.PRIVATEMODE_LLM_BASE_PATH
       ),
       apiKey: null,
-      maxRetries: 3,
     });
 
     this._client = client;
