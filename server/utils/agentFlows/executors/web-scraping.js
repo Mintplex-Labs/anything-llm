@@ -67,14 +67,8 @@ async function executeWebScraping(config, context) {
     provider: aibitat.defaultProvider.provider,
     model: aibitat.defaultProvider.model,
     content,
-    introspect,
-    requestApproval: aibitat.requestToolApproval
-      ? (description) =>
-          aibitat.requestToolApproval({
-            skillName: "web-scraping",
-            description,
-          })
-      : null,
+    aibitat,
+    skillName: "web-scraping",
   });
 
   introspect(`Successfully summarized content`);

@@ -20,8 +20,9 @@ const CHUNKS_BEFORE_APPROVAL = 3;
  * @property {string} model The LLM Model to use for summarization (inherited)
  * @property {AbortController['signal']} controllerSignal Abort signal checked between sections to stop summarization early
  * @property {string} content The text content of the text to summarize
- * @property {(message: string) => void} [introspect] Reports progress back to the UI
- * @property {((description: string) => Promise<{approved: boolean}>)|null} [requestApproval] Asks the user whether to continue summarizing the remaining sections
+ * @property {import("../index")|null} [aibitat] The aibitat instance used to report progress and request approval to continue
+ * @property {string|null} [skillName] The skill requesting summarization, used for the tool approval request
+ * @property {string|null} [caller] The agent calling the skill, used to prefix introspection messages
  */
 
 /**
@@ -82,9 +83,13 @@ async function summarizeContent({
   model = null,
   controllerSignal,
   content,
-  introspect = () => {},
-  requestApproval = null,
+  aibitat = null,
+  skillName = null,
+  caller = null,
 }) {
+  const introspect = (message) =>
+    aibitat?.introspect?.(caller ? `${caller}: ${message}` : message);
+
   const llm = getLLMProvider({ provider, model });
   const tokenManager = new TokenManager(model);
   const contextWindow = llm.promptWindowLimit();
@@ -103,19 +108,18 @@ async function summarizeContent({
     // After the first few sections, check in with the user before continuing
     // through the rest of the document. Approving here continues to the end
     // without asking again.
-    if (i === CHUNKS_BEFORE_APPROVAL && requestApproval) {
+    if (i === CHUNKS_BEFORE_APPROVAL && aibitat?.requestToolApproval) {
       const remaining = chunks.length - i;
-      const { approved } = await requestApproval(
-        `There ${pluralize("is", remaining)} ${pluralize(
+      const approval = await aibitat.requestToolApproval({
+        skillName,
+        description: `There ${pluralize("is", remaining)} ${pluralize(
           "section",
           remaining,
           true
-        )} of content left to summarize. Continue?`
-      );
-      if (!approved) {
-        introspect(
-          `Stopping early - returning the key points gathered so far.`
-        );
+        )} of content left to summarize. Continue?`,
+      });
+      if (!approval.approved) {
+        introspect(`User rejected the ${skillName} request.`);
         break;
       }
     }
