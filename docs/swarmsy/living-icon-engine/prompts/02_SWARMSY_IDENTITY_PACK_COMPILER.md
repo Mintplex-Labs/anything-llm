@@ -500,7 +500,7 @@ No illegal vandalism, trespass, property damage, unsafe stunts, harassment, or c
 [Insert]
 
 ## Next File To Run
-03_SWARMSY_LORE_BIBLE_EXPANDER.md or 04_SWARMSY_30_DAY_CAMPAIGN_BUILDER.md
+03_SWARMSY_LORE_AND_MYTHOLOGY_BIBLE.md
 ```
 
 ---
@@ -514,27 +514,32 @@ Choose one:
 ### If identity/lore still feels weak:
 Tell the user to run:
 
-`03_SWARMSY_LORE_BIBLE_EXPANDER.md`
+`03_SWARMSY_LORE_AND_MYTHOLOGY_BIBLE.md`
 
-### If identity is strong enough and they want action:
+### If identity is strong enough and they want to build visuals:
 Tell the user to run:
 
-`04_SWARMSY_30_DAY_CAMPAIGN_BUILDER.md`
+`04_SWARMSY_SYMBOL_AND_VISUAL_WORLD_BUILDER.md`
 
-### If the user needs visuals first:
+### If the user wants products/sales next:
 Tell the user to run:
 
-`05_SWARMSY_VISUAL_IDENTITY_AND_ASSET_BRIEF.md`
+`05_SWARMSY_PRODUCT_AND_EMPIRE_LADDER.md`
 
-### If the user wants products/sales first:
+### If the user wants content, SEO, PR, outreach, and digital swarm next:
 Tell the user to run:
 
-`06_SWARMSY_PRODUCT_AND_DROP_SYSTEM.md`
+`06_SWARMSY_CONTENT_AND_PR_MACHINE.md`
 
-### If the user wants social content first:
+### If the user wants legal-safe street/digital activations next:
 Tell the user to run:
 
-`07_SWARMSY_CONTENT_MACHINE_BUILDER.md`
+`07_SWARMSY_LEGAL_ACTIVATION_AND_STREET_SIGNAL_SYSTEM.md`
+
+### If the user has completed files 03–07 and wants the full campaign:
+Tell the user to run:
+
+`08_SWARMSY_30_DAY_MOMENTUM_CAMPAIGN.md`
 
 ---
 
@@ -563,17 +568,17 @@ This file expects a modular prompt system.
 Suggested tree:
 
 ```text
-00_SWARMSY_START_HERE.md
+00_SWARMSY_LIVING_ICON_ENGINE_MASTER_STANDARDS.md
 01_SWARMSY_USER_INTAKE_76_QUESTIONS.md
 02_SWARMSY_IDENTITY_PACK_COMPILER.md
-03_SWARMSY_LORE_BIBLE_EXPANDER.md
-04_SWARMSY_30_DAY_CAMPAIGN_BUILDER.md
-05_SWARMSY_VISUAL_IDENTITY_AND_ASSET_BRIEF.md
-06_SWARMSY_PRODUCT_AND_DROP_SYSTEM.md
-07_SWARMSY_CONTENT_MACHINE_BUILDER.md
-08_SWARMSY_LEGAL_GUERRILLA_MARKETING_BUILDER.md
-09_SWARMSY_PROJECT_MANAGER_DASHBOARD.md
-10_SWARMSY_WEEKLY_REVIEW_AND_NEXT_ACTIONS.md
+03_SWARMSY_LORE_AND_MYTHOLOGY_BIBLE.md
+04_SWARMSY_SYMBOL_AND_VISUAL_WORLD_BUILDER.md
+05_SWARMSY_PRODUCT_AND_EMPIRE_LADDER.md
+06_SWARMSY_CONTENT_AND_PR_MACHINE.md
+07_SWARMSY_LEGAL_ACTIVATION_AND_STREET_SIGNAL_SYSTEM.md
+08_SWARMSY_30_DAY_MOMENTUM_CAMPAIGN.md
+09_SWARMSY_DAY_1_PR_CAMPAIGN_BUILDER.md
+10_SWARMSY_FINAL_AI_PROJECT_MANAGER_MEMORY_LOCK.md
 ```
 
 Do not jump to later files until the identity foundation exists.
