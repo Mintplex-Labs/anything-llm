@@ -20,6 +20,8 @@ Provide a truthful status view for SWARMSY doctrine docs so runtime checks can v
 
 Manifest paths include the `docs/` prefix.
 
+Optional advanced doctrine groups, such as Spark Library and SPARKY Operator Playbooks, may appear in the manifest with `required: false`. They are useful after the core SWARMSY HIVE setup, but they must not block first-run readiness.
+
 ## Helper Functions
 
 File: `server/utils/swarmsy/requiredDocs.js`
