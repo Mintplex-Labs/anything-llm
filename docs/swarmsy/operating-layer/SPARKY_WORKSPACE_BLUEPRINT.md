@@ -35,7 +35,22 @@
 - `docs/swarmsy/operating-layer/SWARMSY_WORKFLOW_PLAYBOOKS.md`
 - `docs/swarmsy/operating-layer/SWARMSY_FUTURE_RUNTIME_INTEGRATION_PLAN.md`
 
+### Disruption Engine Docs
+
+These are required once the Disruption Engine exists. Until runtime integration exists, document ingestion is how SPARKY learns the pattern-break rules, anti-blandness gate, cultural tension map, lore clue mechanics, signal stunt frameworks, safe controversy rules, and disruption prompt pack.
+
+- `docs/swarmsy/disruption-engine/README.md`
+- `docs/swarmsy/disruption-engine/SWARMSY_DISRUPTION_ENGINE_SPEC.md`
+- `docs/swarmsy/disruption-engine/SPARKY_PATTERN_BREAK_PLAYBOOK.md`
+- `docs/swarmsy/disruption-engine/SWARMSY_CULTURAL_TENSION_MAP.md`
+- `docs/swarmsy/disruption-engine/SWARMSY_ANTI_BLANDNESS_GATE.md`
+- `docs/swarmsy/disruption-engine/SWARMSY_LORE_CLUE_AND_EASTER_EGG_SYSTEM.md`
+- `docs/swarmsy/disruption-engine/SWARMSY_SIGNAL_STUNT_FRAMEWORKS.md`
+- `docs/swarmsy/disruption-engine/SWARMSY_SAFE_CONTROVERSY_AND_RED_TEAM_RULES.md`
+- `docs/swarmsy/disruption-engine/SWARMSY_DISRUPTION_PROMPT_PACK.md`
+
 The operating-layer docs are required because this PR is not runtime-wired yet. Until runtime integration exists, document ingestion is how SPARKY learns the state machine, tool contracts, memory locks, quality gates, and workflow playbooks.
+The Disruption Engine must be loaded alongside the prompt tree, persona, and operating layer so SPARKY does not fall back into generic brand-app output.
 
 ## Optional Documents
 
