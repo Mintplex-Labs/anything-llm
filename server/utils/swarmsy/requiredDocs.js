@@ -25,17 +25,18 @@ function normalizeManifestPath(manifestPath) {
     throw new Error("Manifest path must be a non-empty string.");
   }
 
-  const posixPath = manifestPath.replace(/\\/g, "/");
+  const posixPath = String(manifestPath || "").replace(/\\/g, "/");
   if (path.posix.isAbsolute(posixPath) || path.isAbsolute(manifestPath)) {
     throw new Error("Absolute paths are not allowed.");
   }
 
+  const pathSegments = posixPath.split("/");
+  if (pathSegments.includes("..")) {
+    throw new Error("Path traversal is not allowed.");
+  }
+
   const normalizedPath = path.posix.normalize(posixPath);
-  if (
-    normalizedPath === ".." ||
-    normalizedPath.startsWith("../") ||
-    normalizedPath.includes("/../")
-  ) {
+  if (normalizedPath === "." || normalizedPath.startsWith("../")) {
     throw new Error("Path traversal is not allowed.");
   }
 
@@ -123,6 +124,13 @@ function getDocumentStatus(docsRootStatus, manifestPath, required) {
 
   let fileStats = null;
   try {
+    const pathStats = fs.lstatSync(pathInfo.absolutePath);
+    if (pathStats.isSymbolicLink()) {
+      status.present = true;
+      status.error = "Document path must not be a symbolic link.";
+      return status;
+    }
+
     fileStats = fs.statSync(pathInfo.absolutePath);
   } catch (error) {
     if (error.code === "ENOENT") {

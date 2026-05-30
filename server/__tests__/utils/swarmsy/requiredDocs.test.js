@@ -200,7 +200,7 @@ describe("swarmsy required docs status helper", () => {
             id: "required",
             label: "Required Group",
             required: true,
-            paths: ["../secrets.txt"],
+            paths: ["docs/swarmsy/../secret.md"],
           },
         ],
       },
@@ -209,6 +209,38 @@ describe("swarmsy required docs status helper", () => {
     expect(status.groups[0].files[0].present).toBe(false);
     expect(status.groups[0].files[0].loadable).toBe(false);
     expect(status.groups[0].files[0].error).toContain("Invalid manifest path");
+  });
+
+  it("marks symlink docs as present but not loadable without reading target", () => {
+    const tmpRoot = createTempRoot();
+    process.env.SWARMSY_DOCTRINE_DOCS_ROOT = tmpRoot;
+
+    const targetPath = writeDoc(tmpRoot, "docs/swarmsy/target.md", "real content");
+    const symlinkPath = path.join(tmpRoot, "docs/swarmsy/symlink.md");
+    fs.symlinkSync(targetPath, symlinkPath);
+    const readSpy = jest.spyOn(fs, "readFileSync");
+
+    const status = getSwarmsyRequiredDocsStatus({
+      manifest: {
+        name: "Symlink File",
+        groups: [
+          {
+            id: "required",
+            label: "Required Group",
+            required: true,
+            paths: ["docs/swarmsy/symlink.md"],
+          },
+        ],
+      },
+    });
+
+    expect(status.groups[0].files[0]).toMatchObject({
+      present: true,
+      loadable: false,
+      bytes: 0,
+      error: "Document path must not be a symbolic link.",
+    });
+    expect(readSpy).not.toHaveBeenCalledWith(symlinkPath, "utf8");
   });
 
   it("accepts docs/swarmsy paths when docs root is filesystem root", () => {
@@ -298,6 +330,7 @@ describe("swarmsy required docs status helper", () => {
   it("handles non-ENOENT stat failures as present but not loadable", () => {
     const tmpRoot = createTempRoot();
     process.env.SWARMSY_DOCTRINE_DOCS_ROOT = tmpRoot;
+    writeDoc(tmpRoot, "docs/swarmsy/eacces.md", "blocked");
 
     const originalStatSync = fs.statSync;
     jest.spyOn(fs, "statSync").mockImplementation((targetPath, ...rest) => {
