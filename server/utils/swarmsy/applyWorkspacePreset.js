@@ -47,7 +47,10 @@ async function createSwarmsyHiveWorkspace(creatorId = null) {
   );
 
   if (!workspace) {
-    return { workspace: null, message: message || "Failed to create workspace" };
+    return {
+      workspace: null,
+      message: message || "Failed to create workspace",
+    };
   }
 
   let finalWorkspace = workspace;
