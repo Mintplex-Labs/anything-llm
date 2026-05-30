@@ -68,6 +68,9 @@ A SWARMSY workspace must not behave like a blank document folder. It should beha
 
 ## Optional Advanced Document Group
 
-`docs/swarmsy/spark-library/`
+- Spark Library docs (`docs/swarmsy/spark-library/`)
+- SPARKY Operator docs (`docs/swarmsy/sparky-operator/`)
 
 Spark Library docs are optional but recommended when users want to expand an identity into music, games, bots, websites, digital idols, worlds, lore media, or multi-industry products.
+
+SPARKY Operator docs teach the assistant how to guide users through AnythingLLM capabilities, wrong-click recovery, provider setup, document loading, intent routing, and project-command workflows.

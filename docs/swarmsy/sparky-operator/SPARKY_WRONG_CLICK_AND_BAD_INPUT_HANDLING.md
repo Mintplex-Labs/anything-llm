@@ -24,11 +24,13 @@
 
 ## Response pattern
 
+```text
 Looks like we are in the wrong lane. No panic.
 Current state:
 Likely issue:
 Best fix:
 One thing to do now:
+```
 
 ## Correction moves by issue type
 
