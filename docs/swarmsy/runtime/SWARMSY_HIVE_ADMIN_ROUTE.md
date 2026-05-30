@@ -1,0 +1,113 @@
+# SWARMSY HIVE Admin Route
+
+This document describes the runtime admin/API route that creates the `SWARMSY HIVE` workspace preset on demand.
+
+## Route
+
+- **Method:** `POST`
+- **Path:** `/api/admin/swarmsy/workspace-preset/hive`
+- **Preset:** `SWARMSY HIVE`
+
+## Auth and Admin Requirement
+
+This route uses the existing authenticated admin middleware pattern:
+
+- `validatedRequest`
+- `flexUserRoleValid([ROLES.admin, ROLES.manager])`
+
+Behavior:
+
+- In multi-user mode, only `admin` and `manager` roles can call it.
+- In single-user mode, it remains authenticated and available through the existing validated request flow.
+
+## Request Shape
+
+No request body is required.
+
+## Response Shape
+
+Success response:
+
+```json
+{
+  "success": true,
+  "workspace": {},
+  "message": null,
+  "preset": "SWARMSY HIVE",
+  "suggestedMessages": []
+}
+```
+
+Failure response:
+
+```json
+{
+  "success": false,
+  "workspace": null,
+  "message": "Reason here",
+  "preset": "SWARMSY HIVE"
+}
+```
+
+## Runtime Behavior
+
+The route:
+
+1. Resolves the current authenticated user (if present).
+2. Checks for an existing `SWARMSY HIVE` workspace for the same creator:
+   - In multi-user mode, by workspace name plus workspace-user relationship.
+   - In single-user mode, by workspace name.
+3. Uses a route-local per-creator creation lock to serialize concurrent create attempts for the same creator.
+4. Re-checks for an existing workspace inside that lock before creating.
+5. Returns the existing workspace if found (no silent duplicate creation).
+6. Otherwise calls `createSwarmsyHiveWorkspace(creatorId)`.
+7. Returns the refreshed workspace from the preset utility.
+8. Returns suggested messages from `WorkspaceSuggestedMessages.getMessages(slug)`.
+
+## Duplicate Behavior
+
+- Duplicate creation for the same creator is prevented by a route-local per-creator lock plus an in-lock existing-workspace re-check before invoking preset creation.
+- If one already exists, the route returns `success: true` with the existing workspace and a clear message.
+- This lock is a runtime guard for this route until a future DB-level preset marker can enforce uniqueness more strictly.
+
+## Partial Preset Warning Condition
+
+- If workspace creation succeeds but `suggestedMessages` is empty, the route returns:
+  - `"Workspace created, but no suggested messages were returned."`
+- This indicates a partial-preset condition callers should treat as warning-level.
+
+## Manual Test Steps
+
+1. Start the backend.
+2. Authenticate as an admin or manager.
+3. Call:
+   - `POST /api/admin/swarmsy/workspace-preset/hive`
+4. Verify response includes:
+   - `success: true`
+   - `preset: "SWARMSY HIVE"`
+   - `workspace.name === "SWARMSY HIVE"`
+5. Verify workspace settings:
+   - SPARKY system prompt is present on workspace.
+   - Suggested messages are present.
+6. Call the same endpoint again with the same authenticated user and verify:
+   - No new duplicate workspace is created.
+   - Existing workspace is returned with a duplicate-safe message.
+
+## Rollback Notes
+
+To roll back this runtime wiring:
+
+1. Remove route `POST /api/admin/swarmsy/workspace-preset/hive` from `server/endpoints/admin.js`.
+2. Remove this documentation file.
+3. Keep `applyWorkspacePreset.js` and preset JSON if docs-only availability is still desired.
+
+No database rollback is required.
+
+## What Remains for Future Onboarding Wizard
+
+This PR adds an on-demand runtime admin route only.
+
+Still pending:
+
+- First-run onboarding wizard integration to call this route as an explicit user action.
+- Optional UX around selecting SWARMSY mode during guided setup.
