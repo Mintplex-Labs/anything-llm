@@ -39,6 +39,12 @@ The following document groups should be loaded into the workspace:
 - App Mode docs
 - User-generated memory locks and campaign outputs
 
+## Optional Advanced Doctrine Documents
+
+- Spark Library docs (`docs/swarmsy/spark-library/`)
+
+Spark Library docs are optional but recommended when users want to expand an identity into music, games, bots, websites, digital idols, worlds, lore media, or multi-industry products.
+
 ---
 
 ## Default Suggested Messages

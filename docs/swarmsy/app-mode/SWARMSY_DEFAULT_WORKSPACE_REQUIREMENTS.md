@@ -65,3 +65,9 @@ Research
 Assets
 
 A SWARMSY workspace must not behave like a blank document folder. It should behave like a command centre.
+
+## Optional Advanced Document Group
+
+`docs/swarmsy/spark-library/`
+
+Spark Library docs are optional but recommended when users want to expand an identity into music, games, bots, websites, digital idols, worlds, lore media, or multi-industry products.
