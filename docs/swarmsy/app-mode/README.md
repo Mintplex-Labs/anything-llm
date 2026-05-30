@@ -20,3 +20,8 @@ The Disruption Engine prevents bland output.
 The app’s primary purpose is project momentum, not open-ended chat.
 
 This folder is not runtime wiring yet. It defines the future app mode that later PRs should implement one safe slice at a time.
+
+## Preset Docs
+
+- [`SWARMSY_DEFAULT_WORKSPACE_PRESET.md`](./SWARMSY_DEFAULT_WORKSPACE_PRESET.md) — Default workspace preset for SWARMSY HIVE (name, purpose, sections, suggested messages, behaviour, acceptance criteria).
+- [`SPARKY_SYSTEM_PROMPT_PRESET.md`](./SPARKY_SYSTEM_PROMPT_PRESET.md) — Copy-paste system prompt preset for the SPARKY operator role.

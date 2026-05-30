@@ -12,6 +12,7 @@
 ## Phase 2 — Default Workspace Preset
 
 - Goal: Create a `SWARMSY HIVE` workspace preset.
+- Spec doc: [`SWARMSY_DEFAULT_WORKSPACE_PRESET.md`](./SWARMSY_DEFAULT_WORKSPACE_PRESET.md).
 - Likely files/directories: frontend workspace creation flows, server workspace preset logic, SWARMSY docs references.
 - Runtime risk: Medium.
 - Acceptance criteria: New projects can start with a SWARMSY HIVE preset and required sections.
@@ -21,6 +22,7 @@
 ## Phase 3 — SPARKY System Prompt Preset
 
 - Goal: Expose SPARKY as default agent/system prompt preset.
+- Spec doc: [`SPARKY_SYSTEM_PROMPT_PRESET.md`](./SPARKY_SYSTEM_PROMPT_PRESET.md).
 - Likely files/directories: prompt preset config, agent/persona selection UI, server prompt routing.
 - Runtime risk: Medium.
 - Acceptance criteria: SPARKY preset is selectable/default for SWARMSY mode and loads doctrine safely.
