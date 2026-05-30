@@ -50,6 +50,12 @@ async function createSwarmsyHiveWorkspace(creatorId = null) {
     return { workspace: null, message: message || "Failed to create workspace" };
   }
 
+  // Workspace.new() overwrites openAiPrompt with the global default,
+  // so explicitly persist the SPARKY prompt after creation.
+  if (preset.systemPrompt) {
+    await Workspace.update(workspace.id, { openAiPrompt: preset.systemPrompt });
+  }
+
   if (preset.suggestedMessages && preset.suggestedMessages.length > 0) {
     await WorkspaceSuggestedMessages.saveAll(
       preset.suggestedMessages,
