@@ -145,7 +145,7 @@ Use this structure for every routing decision:
 - AnythingLLM capability to use: Admin/status tools + Docs + Vector status.
 - Next question if needed: "Are we in the correct workspace and thread?"
 - Output format: Likely issue + one next step.
-- Failure/recovery path: Route to required docs ingestion helper.
+- Failure/recovery path: Route to required docs status helper and manual docs loading/re-indexing guidance.
 
 ### model_setup
 - What user might say: "Model is broken/weak."

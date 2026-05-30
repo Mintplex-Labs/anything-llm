@@ -11,7 +11,7 @@ Use this flow when the workspace is empty or underloaded.
    - SPARKY persona docs
    - Operating layer docs
    - Disruption/app-mode docs
-4. If missing, direct user/admin to required docs ingestion helper.
+4. If missing, direct the user/admin to the required docs status helper and manual docs loading guidance.
 5. If user has no project docs, start intake.
 6. If user has existing docs, ask user to upload/import.
 7. If memory lock exists, load it first.
