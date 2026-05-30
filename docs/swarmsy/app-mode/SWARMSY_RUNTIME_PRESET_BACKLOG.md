@@ -47,6 +47,15 @@
 - Validation/tests: Ingestion tests for missing/partial/full docs and retrieval checks.
 - Rollback note: Disable helper and keep manual docs ingestion path.
 
+## Phase 5.5 — SPARKY Operator Guidance Layer
+
+- Goal: Add SPARKY operator playbooks that map AnythingLLM tools, intent routing, and recovery flows.
+- Likely files/directories: `docs/swarmsy/sparky-operator/`.
+- Runtime risk: Low (docs-only).
+- Acceptance criteria: SPARKY operator docs clearly define tool choice, wrong-click recovery, provider troubleshooting, and project-command routing.
+- Validation/tests: Documentation review and path/link sanity checks.
+- Rollback note: Remove or revise docs without runtime impact.
+
 ## Phase 6 — Project Dashboard Surface
 
 - Goal: Add dashboard UI or dashboard-like output surface.
