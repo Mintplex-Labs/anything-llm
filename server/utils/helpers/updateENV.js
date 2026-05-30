@@ -673,6 +673,16 @@ const KEY_MAPPING = {
     checks: [],
   },
 
+  // STT Deepgram
+  STTDeepgramApiKey: {
+    envKey: "STT_DEEPGRAM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  STTDeepgramModel: {
+    envKey: "STT_DEEPGRAM_MODEL",
+    checks: [isNotEmpty],
+  },
+
   // DeepSeek Options
   DeepSeekApiKey: {
     envKey: "DEEPSEEK_API_KEY",
@@ -941,7 +951,7 @@ function supportedTTSProvider(input = "") {
 }
 
 function supportedSTTProvider(input = "") {
-  const validSelection = ["native", "openai"].includes(input);
+  const validSelection = ["native", "openai", "deepgram"].includes(input);
   return validSelection ? null : `${input} is not a valid STT provider.`;
 }
 

@@ -480,6 +480,10 @@ const SystemSettings = {
       // STT OpenAI
       STTOpenAIModel: process.env.STT_OPEN_AI_MODEL,
 
+      // STT Deepgram
+      STTDeepgramApiKey: !!process.env.STT_DEEPGRAM_API_KEY,
+      STTDeepgramModel: process.env.STT_DEEPGRAM_MODEL,
+
       // --------------------------------------------------------
       // Agent Settings & Configs
       // --------------------------------------------------------
