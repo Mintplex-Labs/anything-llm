@@ -39,6 +39,7 @@
 - `triaged -> blocked` if dependency missing.
 - `triaged -> planned` if actionable.
 - `planned -> ready` when prerequisites are met.
+- `planned -> blocked` when planning reveals missing assets, approval, research, user input, or another dependency.
 - `ready -> doing` when execution begins.
 - `doing -> waiting_user|waiting_research|waiting_assets|review` depending on blocker/review status.
 - `blocked -> triaged` when the blocker is removed but the task needs reassessment.
@@ -59,6 +60,11 @@
 - `review -> doing` when revisions are required.
 - `review -> blocked` when approval cannot continue due to dependency.
 - `review -> archived` when the reviewed task is no longer needed.
+- `done -> triaged` when completed work is reopened because requirements changed, feedback arrived, or follow-up work is needed.
+- `archived -> triaged` when archived work is restored for reassessment.
+- `archived -> planned` when archived work is restored and the previous plan is still valid.
 - `done -> archived` by lifecycle policy or user choice.
 
 No task may remain in `blocked`, `waiting_user`, `waiting_research`, or `waiting_assets` without a clear unblock condition, owner, and next checkpoint.
+
+Reopened tasks must keep their original history. SPARKY must not erase the prior outcome. It should add a new update explaining why the task was reopened, who requested it, and what changed.
