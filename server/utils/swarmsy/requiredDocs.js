@@ -83,6 +83,39 @@ function isPathInsideRoot(absolutePath, docsRootAbsolute) {
   );
 }
 
+function pathHasSymlinkComponent(absolutePath, docsRootAbsolute) {
+  const relativePath = path.relative(docsRootAbsolute, absolutePath);
+
+  if (
+    relativePath === "" ||
+    relativePath.startsWith("..") ||
+    path.isAbsolute(relativePath)
+  ) {
+    return false;
+  }
+
+  const pathParts = relativePath.split(path.sep).filter(Boolean);
+  let currentPath = docsRootAbsolute;
+
+  for (const pathPart of pathParts) {
+    currentPath = path.join(currentPath, pathPart);
+
+    try {
+      if (fs.lstatSync(currentPath).isSymbolicLink()) {
+        return true;
+      }
+    } catch (error) {
+      if (error.code === "ENOENT") {
+        return false;
+      }
+
+      throw error;
+    }
+  }
+
+  return false;
+}
+
 function resolveManifestPath(docsRoot, manifestPath) {
   const normalizedPath = normalizeManifestPath(manifestPath);
   const docsRootAbsolute = path.resolve(docsRoot);
@@ -93,7 +126,7 @@ function resolveManifestPath(docsRoot, manifestPath) {
     throw new Error("Resolved path is outside configured docs root.");
   }
 
-  return { normalizedPath, absolutePath };
+  return { normalizedPath, absolutePath, docsRootAbsolute };
 }
 
 function getDocumentStatus(docsRootStatus, manifestPath, required) {
@@ -124,10 +157,11 @@ function getDocumentStatus(docsRootStatus, manifestPath, required) {
 
   let fileStats = null;
   try {
-    const pathStats = fs.lstatSync(pathInfo.absolutePath);
-    if (pathStats.isSymbolicLink()) {
+    if (pathHasSymlinkComponent(pathInfo.absolutePath, pathInfo.docsRootAbsolute)) {
       status.present = true;
-      status.error = "Document path must not be a symbolic link.";
+      status.loadable = false;
+      status.bytes = 0;
+      status.error = "Document path must not include symbolic links.";
       return status;
     }
 

@@ -238,9 +238,51 @@ describe("swarmsy required docs status helper", () => {
       present: true,
       loadable: false,
       bytes: 0,
-      error: "Document path must not be a symbolic link.",
+      error: "Document path must not include symbolic links.",
     });
     expect(readSpy).not.toHaveBeenCalledWith(symlinkPath, "utf8");
+  });
+
+  it("marks parent directory symlink as present but not loadable without reading target", () => {
+    const tmpRoot = createTempRoot();
+    const externalRoot = createTempRoot("swarmsy-external");
+    process.env.SWARMSY_DOCTRINE_DOCS_ROOT = tmpRoot;
+
+    const externalDir = path.join(externalRoot, "docs", "swarmsy");
+    fs.mkdirSync(externalDir, { recursive: true });
+    fs.writeFileSync(path.join(externalDir, "secret.md"), "external content", "utf8");
+
+    const symlinkDirParent = path.join(tmpRoot, "docs");
+    fs.mkdirSync(symlinkDirParent, { recursive: true });
+    const symlinkDir = path.join(symlinkDirParent, "swarmsy");
+    fs.symlinkSync(externalDir, symlinkDir);
+
+    const readSpy = jest.spyOn(fs, "readFileSync");
+
+    const status = getSwarmsyRequiredDocsStatus({
+      manifest: {
+        name: "Symlink Parent Dir",
+        groups: [
+          {
+            id: "required",
+            label: "Required Group",
+            required: true,
+            paths: ["docs/swarmsy/secret.md"],
+          },
+        ],
+      },
+    });
+
+    expect(status.groups[0].files[0]).toMatchObject({
+      present: true,
+      loadable: false,
+      bytes: 0,
+      error: "Document path must not include symbolic links.",
+    });
+    expect(readSpy).not.toHaveBeenCalledWith(
+      path.join(tmpRoot, "docs", "swarmsy", "secret.md"),
+      "utf8"
+    );
   });
 
   it("accepts docs/swarmsy paths when docs root is filesystem root", () => {
