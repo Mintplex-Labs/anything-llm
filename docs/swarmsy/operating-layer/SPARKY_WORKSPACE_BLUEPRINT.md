@@ -59,6 +59,9 @@ The Disruption Engine must be loaded alongside the prompt tree, persona, and ope
 - Brand asset packs
 - Prior campaign reports
 - Media list and PR contacts
+- Spark Library docs (`docs/swarmsy/spark-library/`)
+
+Spark Library docs are optional but recommended when users want to expand an identity into music, games, bots, websites, digital idols, worlds, lore media, or multi-industry products.
 
 ## Suggested Folder Structure
 

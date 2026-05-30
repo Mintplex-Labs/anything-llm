@@ -79,6 +79,21 @@
         "docs/swarmsy/app-mode/SWARMSY_GENERIC_ANYTHINGLLM_DEMOTION_RULES.md",
         "docs/swarmsy/app-mode/SWARMSY_RUNTIME_PRESET_BACKLOG.md"
       ]
+    },
+    {
+      "id": "spark-library",
+      "label": "Spark Library and Media Expansion Engine",
+      "required": false,
+      "paths": [
+        "docs/swarmsy/spark-library/README.md",
+        "docs/swarmsy/spark-library/SWARMSY_SPARK_LIBRARY_SPEC.md",
+        "docs/swarmsy/spark-library/LIVING_ICON_CASE_PATTERN_LIBRARY.md",
+        "docs/swarmsy/spark-library/SWARMSY_MEDIA_EXPANSION_ENGINE.md",
+        "docs/swarmsy/spark-library/SWARMSY_AI_CREATIVE_TOOLS_MATRIX.md",
+        "docs/swarmsy/spark-library/SWARMSY_OWNED_COMMUNITY_BOT_PLAYBOOK.md",
+        "docs/swarmsy/spark-library/SWARMSY_WORLD_AND_CHARACTER_ARCHETYPES.md",
+        "docs/swarmsy/spark-library/SWARMSY_GK_PATTERN_CAPTURE_TEMPLATE.md"
+      ]
     }
   ]
 }
