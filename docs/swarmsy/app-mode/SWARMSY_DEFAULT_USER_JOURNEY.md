@@ -8,13 +8,14 @@
 4. Create/load `SWARMSY HIVE`.
 5. Check provider/model readiness.
 6. Load required doctrine docs.
-7. Run `01_SWARMSY_USER_INTAKE_76_QUESTIONS.md`.
-8. Generate `SWARMSY_INTAKE_HANDOFF.md`.
-9. Run identity compiler.
-10. Build lore, visuals, product ladder, content/PR, legal-safe activation, 30-day campaign.
-11. Build Day 1 PR campaign pack.
-12. Create final AI project-manager memory lock.
-13. Continue with Day 2 / Week 2 / next drop / weekly review.
+7. Load SPARKY operator docs as an important guidance layer after core doctrine (not a first-run blocker).
+8. Run `01_SWARMSY_USER_INTAKE_76_QUESTIONS.md`.
+9. Generate `SWARMSY_INTAKE_HANDOFF.md`.
+10. Run identity compiler.
+11. Build lore, visuals, product ladder, content/PR, legal-safe activation, 30-day campaign.
+12. Build Day 1 PR campaign pack.
+13. Create final AI project-manager memory lock.
+14. Continue with Day 2 / Week 2 / next drop / weekly review.
 
 ## Returning User Journey
 
