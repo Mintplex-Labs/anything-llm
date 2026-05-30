@@ -1,6 +1,6 @@
 # SWARMSY Default Workspace Preset — Wiring Notes
 
-This document explains what was wired in PR #6, what remains docs-only, how future PRs should finish the integration, how to test the preset manually, and rollback notes.
+This document explains what was wired in PR #6 and PR #7, what remains docs-only, how future PRs should finish the integration, how to test the preset manually, and rollback notes.
 
 ---
 
@@ -41,13 +41,43 @@ No database migrations. No new dependencies. No new endpoints. Not automatically
 
 ---
 
+## What Was Added in PR #7
+
+### Admin/API Runtime Route
+
+```
+POST /api/admin/swarmsy/workspace-preset/hive
+```
+
+Implemented in:
+
+```
+server/endpoints/admin.js
+```
+
+Behavior:
+
+- Protected by existing authenticated admin middleware pattern:
+  - `validatedRequest`
+  - `flexUserRoleValid([ROLES.admin, ROLES.manager])`
+- Calls `createSwarmsyHiveWorkspace(creatorId)` from the preset utility.
+- Returns a refreshed/current workspace object from the utility.
+- Returns suggested messages from existing model APIs.
+- Prevents duplicate creation for the same creator when lookup is straightforward:
+  - Multi-user: checks workspace name + creator workspace relationship.
+  - Single-user: checks workspace name.
+- Does not auto-create on boot.
+- Does not auto-create for every user.
+
+---
+
 ## What Remains Docs-Only
 
 The following behaviours from `SWARMSY_DEFAULT_WORKSPACE_PRESET.md` are **not yet runtime-wired**:
 
 | Behaviour | Status | Next PR |
 |---|---|---|
-| Workspace auto-created on first boot/setup | Docs-only | Phase 2 follow-up |
+| Workspace auto-created on first boot/setup | Docs-only (intentionally not wired) | Keep docs-only unless explicitly approved |
 | SPARKY loaded as default persona in UI | Docs-only | Phase 3 |
 | Face/Hidden Identity first-run prompt | Docs-only | Phase 4 |
 | Required doctrine documents ingested automatically | Docs-only | Phase 5 |
@@ -58,7 +88,17 @@ The following behaviours from `SWARMSY_DEFAULT_WORKSPACE_PRESET.md` are **not ye
 
 ## How Future PRs Should Finish Integration
 
-### Option A — Boot-time seeding (recommended for single-user mode)
+### Option A — Keep on-demand admin route (current state)
+
+Current production-safe wiring is the on-demand admin route:
+
+```
+POST /api/admin/swarmsy/workspace-preset/hive
+```
+
+This keeps SWARMSY HIVE creation explicit, authenticated, and non-boot-time.
+
+### Option B — Boot-time seeding (not currently recommended)
 
 Import and call `createSwarmsyHiveWorkspace()` inside `server/utils/boot/index.js` or a new `server/utils/boot/seedSwarmsyWorkspace.js` file, guarded by:
 
@@ -76,16 +116,6 @@ app.listen(port, async () => {
   // ...
 });
 ```
-
-### Option B — Admin UI trigger (recommended for multi-user mode)
-
-Add a new endpoint:
-
-```
-POST /api/swarmsy/create-hive-workspace
-```
-
-That calls `createSwarmsyHiveWorkspace(userId)` from the authed admin/manager context.
 
 ### Option C — Onboarding flow integration (Phase 4)
 
@@ -105,7 +135,22 @@ console.log(preset.suggestedMessages.length); // => 8
 console.log(preset.systemPrompt.includes("SPARKY")); // => true
 ```
 
-### 2. Create the workspace programmatically (requires running server with DB)
+### 2. Create the workspace via runtime route (requires running server with DB)
+
+```bash
+curl -X POST \
+  http://localhost:3001/api/admin/swarmsy/workspace-preset/hive \
+  -H "Authorization: ******"
+```
+
+Expected:
+
+- `success: true`
+- `preset: "SWARMSY HIVE"`
+- Workspace returned with SPARKY prompt
+- Suggested messages present in response
+
+### 3. Create the workspace programmatically (optional, direct utility call)
 
 ```js
 const { createSwarmsyHiveWorkspace } = require("./server/utils/swarmsy/applyWorkspacePreset");
@@ -114,10 +159,10 @@ console.log(workspace?.name); // => "SWARMSY HIVE"
 console.log(message); // => null on success
 ```
 
-### 3. Verify in the UI
+### 4. Verify in the UI
 
 1. Start the server.
-2. Call `createSwarmsyHiveWorkspace()` from a script or REPL.
+2. Call `POST /api/admin/swarmsy/workspace-preset/hive`.
 3. Open the AnythingLLM UI.
 4. Confirm the `SWARMSY HIVE` workspace exists.
 5. Confirm SPARKY system prompt is set on the workspace.
@@ -135,19 +180,19 @@ console.log(message); // => null on success
 | Generic AnythingLLM capability | Preserved |
 | Boot sequence | No (utility is available, not auto-called) |
 | Existing workspaces | Not affected |
-| Endpoints | No new endpoints |
+| Endpoints | Yes — one new authenticated admin route |
 
 ---
 
 ## Rollback Notes
 
-No runtime changes were made in this PR. The preset is a config file and a utility module only.
+Runtime changes include one authenticated admin route for on-demand workspace preset creation.
 
 To roll back:
 
-1. Delete `server/config/swarmsy/SWARMSY_HIVE_WORKSPACE_PRESET.json`
-2. Delete `server/utils/swarmsy/applyWorkspacePreset.js`
-3. Delete this wiring doc if desired
+1. Remove `POST /api/admin/swarmsy/workspace-preset/hive` from `server/endpoints/admin.js`
+2. Optionally delete `docs/swarmsy/runtime/SWARMSY_HIVE_ADMIN_ROUTE.md`
+3. Keep `server/config/swarmsy/SWARMSY_HIVE_WORKSPACE_PRESET.json` and `server/utils/swarmsy/applyWorkspacePreset.js` for docs-only preset availability
 
 No database rollback is required because no boot-time auto-creation was wired in this PR.
 

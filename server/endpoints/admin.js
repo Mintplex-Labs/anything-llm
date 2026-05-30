@@ -9,6 +9,13 @@ const { DocumentVectors } = require("../models/vectors");
 const { Workspace } = require("../models/workspace");
 const { WorkspaceChats } = require("../models/workspaceChats");
 const {
+  WorkspaceSuggestedMessages,
+} = require("../models/workspacesSuggestedMessages");
+const {
+  createSwarmsyHiveWorkspace,
+  PRESET_NAME,
+} = require("../utils/swarmsy/applyWorkspacePreset");
+const {
   getVectorDbClass,
   getEmbeddingEngineSelection,
 } = require("../utils/helpers");
@@ -492,6 +499,72 @@ function adminEndpoints(app) {
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/admin/swarmsy/workspace-preset/hive",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        const creatorId = user?.id ?? null;
+        const existingWorkspace = await Workspace.get(
+          creatorId
+            ? {
+                name: PRESET_NAME,
+                workspace_users: { some: { user_id: Number(creatorId) } },
+              }
+            : { name: PRESET_NAME }
+        );
+
+        if (existingWorkspace) {
+          const suggestedMessages =
+            await WorkspaceSuggestedMessages.getMessages(
+              existingWorkspace.slug
+            );
+          return response.status(200).json({
+            success: true,
+            workspace: existingWorkspace,
+            message: "SWARMSY HIVE workspace already exists for this creator.",
+            preset: PRESET_NAME,
+            suggestedMessages,
+          });
+        }
+
+        const { workspace, message } =
+          await createSwarmsyHiveWorkspace(creatorId);
+        if (!workspace) {
+          return response.status(400).json({
+            success: false,
+            workspace: null,
+            message: message || "Failed to create SWARMSY HIVE workspace.",
+            preset: PRESET_NAME,
+          });
+        }
+
+        const suggestedMessages = await WorkspaceSuggestedMessages.getMessages(
+          workspace.slug
+        );
+        return response.status(200).json({
+          success: true,
+          workspace,
+          message:
+            suggestedMessages.length > 0
+              ? null
+              : "Workspace created. Suggested messages were saved by preset utility.",
+          preset: PRESET_NAME,
+          suggestedMessages,
+        });
+      } catch (error) {
+        console.error(error);
+        return response.status(500).json({
+          success: false,
+          workspace: null,
+          message: "Failed to create SWARMSY HIVE workspace preset.",
+          preset: PRESET_NAME,
+        });
       }
     }
   );
