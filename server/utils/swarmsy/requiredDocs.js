@@ -74,13 +74,19 @@ function getDoctrineDocsRootStatus() {
   }
 }
 
+function isPathInsideRoot(absolutePath, docsRootAbsolute) {
+  const relativePath = path.relative(docsRootAbsolute, absolutePath);
+  return (
+    relativePath === "" ||
+    (!relativePath.startsWith("..") && !path.isAbsolute(relativePath))
+  );
+}
+
 function resolveManifestPath(docsRoot, manifestPath) {
   const normalizedPath = normalizeManifestPath(manifestPath);
   const docsRootAbsolute = path.resolve(docsRoot);
   const absolutePath = path.resolve(docsRootAbsolute, normalizedPath);
-  const isInsideRoot =
-    absolutePath === docsRootAbsolute ||
-    absolutePath.startsWith(`${docsRootAbsolute}${path.sep}`);
+  const isInsideRoot = isPathInsideRoot(absolutePath, docsRootAbsolute);
 
   if (!isInsideRoot) {
     throw new Error("Resolved path is outside configured docs root.");

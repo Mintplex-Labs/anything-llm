@@ -211,6 +211,28 @@ describe("swarmsy required docs status helper", () => {
     expect(status.groups[0].files[0].error).toContain("Invalid manifest path");
   });
 
+  it("accepts docs/swarmsy paths when docs root is filesystem root", () => {
+    process.env.SWARMSY_DOCTRINE_DOCS_ROOT = path.parse(process.cwd()).root;
+
+    const status = getSwarmsyRequiredDocsStatus({
+      manifest: {
+        name: "Root Path",
+        groups: [
+          {
+            id: "required",
+            label: "Required Group",
+            required: true,
+            paths: ["docs/swarmsy/missing.md"],
+          },
+        ],
+      },
+    });
+
+    expect(status.docsRoot).toBe(path.parse(process.cwd()).root);
+    expect(status.docsRootAvailable).toBe(true);
+    expect(status.groups[0].files[0].error).toBe("Document is missing.");
+  });
+
   it("marks missing docs as not present and not loadable", () => {
     const tmpRoot = createTempRoot();
     process.env.SWARMSY_DOCTRINE_DOCS_ROOT = tmpRoot;
