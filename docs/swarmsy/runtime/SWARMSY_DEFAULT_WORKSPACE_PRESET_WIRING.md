@@ -34,6 +34,7 @@ Exports two functions:
 - `createSwarmsyHiveWorkspace(creatorId?)` — creates the workspace using existing AnythingLLM APIs:
   - `Workspace.new(name, creatorId, { openAiPrompt })` — creates the workspace record
   - `Workspace.update(workspace.id, { openAiPrompt })` — intentionally reapplies the SPARKY system prompt after creation because `Workspace.new(...)` persists the global default prompt during create
+  - `Workspace.get({ id })` — refreshes the workspace record after the prompt update so the returned object contains the SPARKY prompt rather than the stale generic default
   - `WorkspaceSuggestedMessages.saveAll(messages, slug)` — seeds the 8 starter messages
 
 No database migrations. No new dependencies. No new endpoints. Not automatically invoked on boot.
