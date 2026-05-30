@@ -4,10 +4,10 @@
 
 ## Allowed Bot Uses
 
-- Telegram group helper bot
-- Discord lore bot
-- FAQ bot
-- Quest/clue bot
+- Telegram Group Helper Bot
+- Discord Lore Bot
+- FAQ Bot
+- Quest/Clue Bot
 - Community Moderator Bot
 - Comment Draft Bot
 - Campaign Reminder Bot
@@ -31,33 +31,6 @@
 - platform evasion
 
 ## Bot Role Definitions
-
-### Lore Keeper Bot
-- **Purpose:** Serve canonical lore snippets and references.
-- **Allowed behaviour:** Retrieve approved lore entries and citations.
-- **Forbidden behaviour:** Invent lore as facts or claim fake events.
-- **Example messages:** “Lore Log 03 is live: [link].”
-- **Human review level:** Medium.
-- **Data/privacy note:** Store only needed request logs.
-- **Platform compliance note:** Respect API limits and disclosure rules.
-
-### Quest Master Bot
-- **Purpose:** Run clue paths and unlock logic.
-- **Allowed behaviour:** Deliver timed clues and validate submissions.
-- **Forbidden behaviour:** Manipulative dark patterns or forced sharing.
-- **Example messages:** “Clue #2 unlocked. Solve before 20:00 UTC.”
-- **Human review level:** High.
-- **Data/privacy note:** Avoid collecting sensitive personal data.
-- **Platform compliance note:** Keep quest participation opt-in.
-
-### Drop Alert Bot
-- **Purpose:** Notify opt-in users about releases.
-- **Allowed behaviour:** Send scheduled release notifications.
-- **Forbidden behaviour:** Mass unsolicited DMs.
-- **Example messages:** “Drop goes live in 30 minutes. Details: [link].”
-- **Human review level:** Low-Medium.
-- **Data/privacy note:** Maintain clear consent and unsubscribe controls.
-- **Platform compliance note:** Follow anti-spam requirements.
 
 ### Proof Collector Bot
 - **Purpose:** Gather first-party proof artifacts.
