@@ -1,0 +1,70 @@
+# SWARMSY Task State Machine
+
+## Task Types
+
+- identity
+- lore
+- visual
+- product
+- content
+- pr
+- activation
+- research
+- admin
+- sales
+- proof
+- review
+- memory
+
+## State Definitions
+
+| State | Meaning | Enter when | Leave when | Required fields | Example SWARMSY task | What SPARKY should do |
+|---|---|---|---|---|---|---|
+| captured | Task is logged but not assessed | New request arrives | Triage starts | title, source, task_type | "Draft Day 1 drop caption" | Capture cleanly and tag type |
+| triaged | Priority/risk clarified | Task reviewed for value/risk | Plan exists or blocked found | priority, risk_level, owner | "Need legal-safe activation angle" | Decide urgency and dependencies |
+| planned | Steps and outputs defined | Triage completed | Ready to execute or blocked | plan_steps, expected_output, due_window | "Create 5-post PR arc" | Generate execution plan |
+| blocked | Cannot proceed yet | Missing dependency detected | Dependency resolved | blocker_reason, blocker_owner | "Cannot publish without product photos" | Surface blocker and unblock action |
+| ready | Ready for execution | Plan complete and no blocker | Work starts | acceptance_criteria, assets_list | "Day 1 pack ready for draft" | Queue for immediate doing |
+| doing | Active execution underway | Work has started | Needs user/research/assets or enters review | start_time, current_step | "Drafting press email set" | Produce deliverables and update progress |
+| waiting_user | User input/action required | Human decision or action required | User responds/completes action | user_request, deadline_hint | "Approve Hidden Identity lock" | Ask concise question and pause |
+| waiting_research | Verification data needed | Current facts must be checked | Research complete or limitation accepted | research_question, source_requirements | "Need current hashtag viability" | Run/queue research and mark claims pending |
+| waiting_assets | Files/media needed | Required assets unavailable | Assets uploaded/ingested | missing_assets, format_requirements | "Need logo + product shots" | Request exact files and fallback path |
+| review | Output ready for checks | Draft complete | Approved or sent back to doing | draft_link, quality_gate_status | "Review 30-day campaign sheet" | Run quality gates and proof check |
+| done | Task accepted and complete | Review passes and accepted | Archived or reopened | completion_note, proof_links | "Day 1 package delivered" | Log outcome and trigger next action |
+| archived | Historical closed record | Done task no longer active | Reopened for change | archive_reason, archived_at | "Q1 lore refresh complete" | Keep for memory/reference |
+
+## Transition Rules
+
+- `captured -> triaged` for every task.
+- `triaged -> blocked` if dependency missing.
+- `triaged -> planned` if actionable.
+- `planned -> ready` when prerequisites are met.
+- `planned -> blocked` when planning reveals missing assets, approval, research, user input, or another dependency.
+- `ready -> doing` when execution begins.
+- `doing -> waiting_user|waiting_research|waiting_assets|review` depending on blocker/review status.
+- `blocked -> triaged` when the blocker is removed but the task needs reassessment.
+- `blocked -> planned` when the missing dependency is resolved and the plan is still valid.
+- `blocked -> archived` when the blocker makes the task obsolete.
+- `waiting_user -> triaged` when the user supplies enough information to reassess the task.
+- `waiting_user -> planned` when the user supplies the missing decision/input and the plan remains valid.
+- `waiting_user -> archived` when the user cancels or abandons the task.
+- `waiting_research -> planned` when research is completed and the task plan is still valid.
+- `waiting_research -> triaged` when research changes the task scope.
+- `waiting_research -> blocked` when research reveals an unresolved dependency.
+- `waiting_research -> archived` when research proves the task should not continue.
+- `waiting_assets -> ready` when all required assets are supplied and no planning changes are needed.
+- `waiting_assets -> planned` when supplied assets require plan updates.
+- `waiting_assets -> triaged` when supplied assets change the task scope.
+- `waiting_assets -> archived` when assets are no longer needed or the task is cancelled.
+- `review -> done` when output passes quality gates.
+- `review -> doing` when revisions are required.
+- `review -> blocked` when approval cannot continue due to dependency.
+- `review -> archived` when the reviewed task is no longer needed.
+- `done -> triaged` when completed work is reopened because requirements changed, feedback arrived, or follow-up work is needed.
+- `archived -> triaged` when archived work is restored for reassessment.
+- `archived -> planned` when archived work is restored and the previous plan is still valid.
+- `done -> archived` by lifecycle policy or user choice.
+
+No task may remain in `blocked`, `waiting_user`, `waiting_research`, or `waiting_assets` without a clear unblock condition, owner, and next checkpoint.
+
+Reopened tasks must keep their original history. SPARKY must not erase the prior outcome. It should add a new update explaining why the task was reopened, who requested it, and what changed.
