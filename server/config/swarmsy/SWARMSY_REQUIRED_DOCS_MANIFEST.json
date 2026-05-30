@@ -94,6 +94,22 @@
         "docs/swarmsy/spark-library/SWARMSY_WORLD_AND_CHARACTER_ARCHETYPES.md",
         "docs/swarmsy/spark-library/SWARMSY_GK_PATTERN_CAPTURE_TEMPLATE.md"
       ]
+    },
+    {
+      "id": "sparky-operator",
+      "label": "SPARKY AnythingLLM Operator Playbooks",
+      "required": false,
+      "paths": [
+        "docs/swarmsy/sparky-operator/README.md",
+        "docs/swarmsy/sparky-operator/SPARKY_ANYTHINGLLM_CAPABILITY_MAP.md",
+        "docs/swarmsy/sparky-operator/SPARKY_USER_INTENT_ROUTER.md",
+        "docs/swarmsy/sparky-operator/SPARKY_USER_RECOVERY_PLAYBOOKS.md",
+        "docs/swarmsy/sparky-operator/SPARKY_TOOL_CHOICE_RULES.md",
+        "docs/swarmsy/sparky-operator/SPARKY_EMPTY_WORKSPACE_RECOVERY.md",
+        "docs/swarmsy/sparky-operator/SPARKY_MODEL_PROVIDER_TROUBLESHOOTING.md",
+        "docs/swarmsy/sparky-operator/SPARKY_WRONG_CLICK_AND_BAD_INPUT_HANDLING.md",
+        "docs/swarmsy/sparky-operator/SPARKY_PROJECT_COMMAND_EXAMPLES.md"
+      ]
     }
   ]
 }
