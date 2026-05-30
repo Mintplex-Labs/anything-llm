@@ -53,8 +53,9 @@ async function findSwarmsyHiveWorkspace(creatorId = null) {
 }
 
 async function withSwarmsyHiveCreationLock(lockKey, action) {
-  const existingLock = swarmsyHiveCreationLocks.get(lockKey);
-  if (existingLock) await existingLock;
+  while (swarmsyHiveCreationLocks.has(lockKey)) {
+    await swarmsyHiveCreationLocks.get(lockKey);
+  }
 
   let releaseLock = null;
   const currentLock = new Promise((resolve) => {
@@ -65,8 +66,8 @@ async function withSwarmsyHiveCreationLock(lockKey, action) {
   try {
     return await action();
   } finally {
-    if (typeof releaseLock === "function") releaseLock();
     swarmsyHiveCreationLocks.delete(lockKey);
+    if (typeof releaseLock === "function") releaseLock();
   }
 }
 
