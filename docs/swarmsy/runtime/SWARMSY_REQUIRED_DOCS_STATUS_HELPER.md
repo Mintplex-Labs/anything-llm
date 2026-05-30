@@ -73,7 +73,8 @@ If `SWARMSY_DOCTRINE_DOCS_ROOT` is not set, the helper resolves docs from the lo
 
 ## Docker/Runtime Caveat
 
-Container/runtime mounts must include repository docs in the configured root parent. If docs are mounted under `/app/docs`, set root to `/app`, not `/app/docs`.
+The helper resolves paths from the server runtime filesystem (`SWARMSY_DOCTRINE_DOCS_ROOT`).
+In Docker, mount docs into the container and set the root to the mount parent (for docs at `/app/docs`, use `/app`, not `/app/docs`).
 
 ## Status-Only Limitation
 
@@ -98,9 +99,10 @@ Rollback is safe and limited:
 
 ```bash
 AUTH_TOKEN="<YOUR_ADMIN_JWT>"
+AUTH_HEADER="Bearer ${AUTH_TOKEN}"
 
 curl http://localhost:3001/api/admin/swarmsy/required-docs/status \
-  -H "Authorization: ******"
+  -H "Authorization: ${AUTH_HEADER}"
 ```
 
-Replace <YOUR_ADMIN_JWT> above with your admin JWT. Keep the ****** unless your deployment uses a different authorization scheme.
+Replace `<YOUR_ADMIN_JWT>` with your admin JWT, and redact token values in shared logs/screenshots.
