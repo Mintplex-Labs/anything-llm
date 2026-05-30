@@ -13,23 +13,23 @@ SPARKY needs a “spark” library of proven cultural patterns so it can build s
 
 ## SWARMSY Safety Rules
 
-- no fake claims
-- no fake bots
-- no fake engagement
-- no fake proof
-- no fake press
-- no fake sales
-- no fake community
-- no spam
-- no botnets
-- no mass unsolicited DMs
-- no reckless illegal instructions
-- no platform manipulation
-- no impersonation
-- replace spam with signal
-- bots are staff, not fake fans
-- shock the attention system, not the law
-- break the mould, not the law
+- No fake claims
+- No fake bots
+- No fake engagement
+- No fake proof
+- No fake press
+- No fake sales
+- No fake community
+- No spam
+- No botnets
+- No mass unsolicited DMs
+- No reckless illegal instructions
+- No platform manipulation
+- No impersonation
+- Replace spam with signal
+- Bots are staff, not fake fans
+- Shock the attention system, not the law
+- Break the mould, not the law
 
 ## Document map
 

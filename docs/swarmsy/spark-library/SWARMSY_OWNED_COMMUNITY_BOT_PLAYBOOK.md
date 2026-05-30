@@ -7,15 +7,15 @@
 - Telegram group helper bot
 - Discord lore bot
 - FAQ bot
-- quest/clue bot
-- moderation assistant
-- comment draft assistant
-- campaign reminder bot
-- opt-in newsletter bot
-- proof collection bot
-- community role bot
-- customer-support bot
-- game leaderboard bot
+- Quest/clue bot
+- Community Moderator Bot
+- Comment Draft Bot
+- Campaign Reminder Bot
+- Opt-in Newsletter Bot
+- Proof Collector Bot
+- Community Role Bot
+- Customer Support Bot
+- Game Leaderboard Bot
 
 ## Not Allowed
 
