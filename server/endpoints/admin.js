@@ -16,6 +16,9 @@ const {
   PRESET_NAME,
 } = require("../utils/swarmsy/applyWorkspacePreset");
 const {
+  getSwarmsyRequiredDocsStatus,
+} = require("../utils/swarmsy/requiredDocs");
+const {
   getVectorDbClass,
   getEmbeddingEngineSelection,
 } = require("../utils/helpers");
@@ -592,6 +595,23 @@ function adminEndpoints(app) {
           workspace: null,
           message: "Failed to create SWARMSY HIVE workspace preset.",
           preset: PRESET_NAME,
+        });
+      }
+    }
+  );
+
+  app.get(
+    "/admin/swarmsy/required-docs/status",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (_request, response) => {
+      try {
+        const status = getSwarmsyRequiredDocsStatus();
+        return response.status(200).json(status);
+      } catch (error) {
+        console.error(error);
+        return response.status(500).json({
+          success: false,
+          message: "Failed to resolve SWARMSY required docs status.",
         });
       }
     }
