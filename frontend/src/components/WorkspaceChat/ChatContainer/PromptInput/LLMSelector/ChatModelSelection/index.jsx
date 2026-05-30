@@ -7,9 +7,22 @@ export default function ChatModelSelection({
   setHasChanges,
   selectedLLMModel,
   setSelectedLLMModel,
+  ollamaConnection = null,
+  savedOllamaConnectionId = null,
 }) {
-  const { defaultModels, customModels, loading } =
-    useGetProviderModels(provider);
+  // Wait for the workspace's saved Ollama connection to resolve before fetching
+  // — otherwise we'd briefly hit the env-default server and risk overwriting
+  // models in flight.
+  const waitingForOllamaConnection =
+    provider === "ollama" && !!savedOllamaConnectionId && !ollamaConnection;
+  const { defaultModels, customModels, loading } = useGetProviderModels(
+    provider,
+    {
+      basePath: ollamaConnection?.basePath ?? null,
+      authToken: ollamaConnection?.authToken ?? null,
+      skip: waitingForOllamaConnection,
+    }
+  );
   if (DISABLED_PROVIDERS.includes(provider)) return null;
 
   if (loading) {

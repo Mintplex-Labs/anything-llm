@@ -4,6 +4,7 @@ import AgentLLMItem from "./AgentLLMItem";
 import { AVAILABLE_LLM_PROVIDERS } from "@/pages/GeneralSettings/LLMPreference";
 import { CaretUpDown, Gauge, MagnifyingGlass, X } from "@phosphor-icons/react";
 import AgentModelSelection from "../AgentModelSelection";
+import OllamaConnectionSelector from "@/components/OllamaConnectionSelector";
 import { useTranslation } from "react-i18next";
 
 const ENABLED_PROVIDERS = [
@@ -80,6 +81,10 @@ export default function AgentLLMSelection({
   const [filteredLLMs, setFilteredLLMs] = useState([]);
   const [selectedLLM, setSelectedLLM] = useState(
     workspace?.agentProvider ?? "none"
+  );
+  const [ollamaConnection, setOllamaConnection] = useState(null);
+  const [ollamaConnectionResolved, setOllamaConnectionResolved] = useState(
+    !workspace?.ollamaConnectionId
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
@@ -212,8 +217,24 @@ export default function AgentLLMSelection({
             provider={selectedLLM}
             workspace={workspace}
             setHasChanges={setHasChanges}
+            ollamaConnection={
+              selectedLLM === "ollama" ? ollamaConnection : null
+            }
+            ollamaConnectionResolved={
+              selectedLLM === "ollama" ? ollamaConnectionResolved : true
+            }
           />
         </div>
+      )}
+      {selectedLLM === "ollama" && (
+        <OllamaConnectionSelector
+          workspace={workspace}
+          setHasChanges={setHasChanges}
+          onConnectionChange={(c) => {
+            setOllamaConnection(c);
+            setOllamaConnectionResolved(true);
+          }}
+        />
       )}
     </div>
   );

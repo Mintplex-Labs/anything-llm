@@ -13,6 +13,7 @@ import {
 } from "./utils";
 import LLMSelectorSidePanel from "./LLMSelector";
 import { NoSetupWarning } from "./SetupProvider";
+import OllamaConnectionInline from "./OllamaConnectionInline";
 import showToast from "@/utils/toast";
 import Workspace from "@/models/workspace";
 import System from "@/models/system";
@@ -29,6 +30,10 @@ export default function LLMSelectorModal({
   const [selectedLLMProvider, setSelectedLLMProvider] = useState(null);
   const [selectedLLMModel, setSelectedLLMModel] = useState("");
   const [selectedRouterId, setSelectedRouterId] = useState(null);
+  const [selectedOllamaConnectionId, setSelectedOllamaConnectionId] =
+    useState(null);
+  const [resolvedOllamaConnection, setResolvedOllamaConnection] =
+    useState(null);
   const [availableProviders, setAvailableProviders] = useState(
     WORKSPACE_LLM_PROVIDERS
   );
@@ -53,6 +58,7 @@ export default function LLMSelectorModal({
         setSelectedRouterId(
           workspace.router_id || systemSettings?.ModelRouterId || null
         );
+        setSelectedOllamaConnectionId(workspace.ollamaConnectionId || null);
 
         if (initialProvider && initialProvider !== savedProvider) {
           setHasChanges(true);
@@ -96,6 +102,12 @@ export default function LLMSelectorModal({
             chatProvider: selectedLLMProvider,
             chatModel: validatedModelSelection(selectedLLMModel),
           };
+
+      if (selectedLLMProvider === "ollama") {
+        updateData.ollamaConnectionId = selectedOllamaConnectionId
+          ? Number(selectedOllamaConnectionId)
+          : null;
+      }
 
       if (!isRouter && !updateData.chatModel)
         throw new Error(t("model-router.chat.invalid-model"));
@@ -160,12 +172,34 @@ export default function LLMSelectorModal({
                 setHasChanges={setHasChanges}
               />
             ) : (
-              <ChatModelSelection
-                provider={selectedLLMProvider}
-                setHasChanges={setHasChanges}
-                selectedLLMModel={selectedLLMModel}
-                setSelectedLLMModel={setSelectedLLMModel}
-              />
+              <>
+                {selectedLLMProvider === "ollama" && (
+                  <OllamaConnectionInline
+                    selectedConnectionId={selectedOllamaConnectionId}
+                    onChange={(id, connection, opts = {}) => {
+                      setSelectedOllamaConnectionId(id);
+                      setResolvedOllamaConnection(connection);
+                      if (!opts.initial) setHasChanges(true);
+                    }}
+                  />
+                )}
+                <ChatModelSelection
+                  provider={selectedLLMProvider}
+                  setHasChanges={setHasChanges}
+                  selectedLLMModel={selectedLLMModel}
+                  setSelectedLLMModel={setSelectedLLMModel}
+                  ollamaConnection={
+                    selectedLLMProvider === "ollama"
+                      ? resolvedOllamaConnection
+                      : null
+                  }
+                  savedOllamaConnectionId={
+                    selectedLLMProvider === "ollama"
+                      ? selectedOllamaConnectionId
+                      : null
+                  }
+                />
+              </>
             ))}
         </div>
         <NoSetupWarning

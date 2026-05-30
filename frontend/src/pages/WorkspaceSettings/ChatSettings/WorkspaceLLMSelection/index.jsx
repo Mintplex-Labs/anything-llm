@@ -5,6 +5,7 @@ import { AVAILABLE_LLM_PROVIDERS } from "@/pages/GeneralSettings/LLMPreference";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import ChatModelSelection from "./ChatModelSelection";
 import RouterSelection from "./RouterSelection";
+import OllamaConnectionSelector from "@/components/OllamaConnectionSelector";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
@@ -42,6 +43,10 @@ export default function WorkspaceLLMSelection({
   const [filteredLLMs, setFilteredLLMs] = useState([]);
   const [selectedLLM, setSelectedLLM] = useState(
     workspace?.chatProvider ?? "default"
+  );
+  const [ollamaConnection, setOllamaConnection] = useState(null);
+  const [ollamaConnectionResolved, setOllamaConnectionResolved] = useState(
+    !workspace?.ollamaConnectionId
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
@@ -163,13 +168,31 @@ export default function WorkspaceLLMSelection({
         selectedLLM={selectedLLM}
         workspace={workspace}
         setHasChanges={setHasChanges}
+        ollamaConnection={ollamaConnection}
+        ollamaConnectionResolved={ollamaConnectionResolved}
       />
+      {selectedLLM === "ollama" && (
+        <OllamaConnectionSelector
+          workspace={workspace}
+          setHasChanges={setHasChanges}
+          onConnectionChange={(c) => {
+            setOllamaConnection(c);
+            setOllamaConnectionResolved(true);
+          }}
+        />
+      )}
     </div>
   );
 }
 
 // TODO: Add this to agent selector as well as make generic component.
-function ModelSelector({ selectedLLM, workspace, setHasChanges }) {
+function ModelSelector({
+  selectedLLM,
+  workspace,
+  setHasChanges,
+  ollamaConnection,
+  ollamaConnectionResolved = true,
+}) {
   if (selectedLLM === "anythingllm-router") {
     return (
       <RouterSelection workspace={workspace} setHasChanges={setHasChanges} />
@@ -205,6 +228,10 @@ function ModelSelector({ selectedLLM, workspace, setHasChanges }) {
       provider={selectedLLM}
       workspace={workspace}
       setHasChanges={setHasChanges}
+      ollamaConnection={selectedLLM === "ollama" ? ollamaConnection : null}
+      ollamaConnectionResolved={
+        selectedLLM === "ollama" ? ollamaConnectionResolved : true
+      }
     />
   );
 }

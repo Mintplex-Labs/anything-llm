@@ -5,6 +5,7 @@ import { CaretDown, CaretUp, Info, CircleNotch } from "@phosphor-icons/react";
 import useProviderEndpointAutoDiscovery from "@/hooks/useProviderEndpointAutoDiscovery";
 import { Tooltip } from "react-tooltip";
 import { Link } from "react-router-dom";
+import ConnectionsManager from "./ConnectionsManager";
 
 export default function OllamaLLMOptions({ settings }) {
   const {
@@ -271,6 +272,10 @@ export default function OllamaLLMOptions({ settings }) {
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="mt-2 pt-6 border-t border-white/10">
+        <ConnectionsManager />
       </div>
     </div>
   );

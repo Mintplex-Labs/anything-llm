@@ -37,10 +37,25 @@ export default function AgentModelSelection({
   provider,
   workspace,
   setHasChanges,
+  ollamaConnection = null,
+  ollamaConnectionResolved = true,
 }) {
   const { slug } = useParams();
-  const { defaultModels, customModels, loading } =
-    useGetProviderModels(provider);
+  // Hold off on fetching with env defaults while the workspace's saved Ollama
+  // connection is still resolving — otherwise we'd race and possibly show
+  // models from the wrong server first.
+  const waitingForOllamaConnection =
+    provider === "ollama" &&
+    !!workspace?.ollamaConnectionId &&
+    !ollamaConnectionResolved;
+  const { defaultModels, customModels, loading } = useGetProviderModels(
+    provider,
+    {
+      basePath: ollamaConnection?.basePath ?? null,
+      authToken: ollamaConnection?.authToken ?? null,
+      skip: waitingForOllamaConnection,
+    }
+  );
 
   const { t } = useTranslation();
   if (DISABLED_PROVIDERS.includes(provider)) {

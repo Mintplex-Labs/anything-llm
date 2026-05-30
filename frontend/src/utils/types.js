@@ -15,6 +15,9 @@ export function castToType(key, value) {
     router_id: {
       cast: (value) => (value ? Number(value) : null),
     },
+    ollamaConnectionId: {
+      cast: (value) => (value ? Number(value) : null),
+    },
   };
 
   if (!definitions.hasOwnProperty(key)) return value;

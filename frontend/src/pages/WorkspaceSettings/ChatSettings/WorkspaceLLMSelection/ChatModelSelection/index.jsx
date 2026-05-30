@@ -7,9 +7,24 @@ export default function ChatModelSelection({
   provider,
   workspace,
   setHasChanges,
+  ollamaConnection = null,
+  ollamaConnectionResolved = true,
 }) {
-  const { defaultModels, customModels, loading } =
-    useGetProviderModels(provider);
+  // Don't fetch with env defaults while we're still resolving the workspace's
+  // saved Ollama connection — would race against the correct fetch and may
+  // briefly populate the dropdown with the wrong server's models.
+  const waitingForOllamaConnection =
+    provider === "ollama" &&
+    !!workspace?.ollamaConnectionId &&
+    !ollamaConnectionResolved;
+  const { defaultModels, customModels, loading } = useGetProviderModels(
+    provider,
+    {
+      basePath: ollamaConnection?.basePath ?? null,
+      authToken: ollamaConnection?.authToken ?? null,
+      skip: waitingForOllamaConnection,
+    }
+  );
   const { t } = useTranslation();
   if (DISABLED_PROVIDERS.includes(provider)) return null;
 

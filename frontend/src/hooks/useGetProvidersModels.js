@@ -55,16 +55,26 @@ const groupedProviders = [
   "docker-model-runner",
   "sambanova",
 ];
-export default function useGetProviderModels(provider = null) {
+export default function useGetProviderModels(
+  provider = null,
+  { basePath = null, authToken = null, skip = false } = {}
+) {
   const [defaultModels, setDefaultModels] = useState([]);
   const [customModels, setCustomModels] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let cancelled = false;
     async function fetchProviderModels() {
-      if (!provider) return;
+      if (!provider || skip) return;
       setLoading(true);
-      const { models = [] } = await System.customModels(provider);
+      const { models = [] } = await System.customModels(
+        provider,
+        authToken,
+        basePath
+      );
+      // A newer fetch (e.g. user switched connections) has superseded this one.
+      if (cancelled) return;
       if (
         PROVIDER_DEFAULT_MODELS.hasOwnProperty(provider) &&
         !groupedProviders.includes(provider)
@@ -80,7 +90,10 @@ export default function useGetProviderModels(provider = null) {
       setLoading(false);
     }
     fetchProviderModels();
-  }, [provider]);
+    return () => {
+      cancelled = true;
+    };
+  }, [provider, basePath, authToken, skip]);
 
   return { defaultModels, customModels, loading };
 }
