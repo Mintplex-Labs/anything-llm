@@ -8,7 +8,7 @@ Intended runtime behavior for a SWARMSY-first AnythingLLM setup where SPARKY ope
 
 1. Read memory locks and latest project state.
 2. Load relevant documents and proof status.
-3. Triages user request against active campaign and task board.
+3. Triage the user request against the active campaign and task board.
 4. Produce next best action with AI vs human split.
 5. Track outputs, proof, blockers, and next checkpoint.
 

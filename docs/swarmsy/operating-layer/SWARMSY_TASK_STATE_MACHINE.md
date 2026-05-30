@@ -41,5 +41,24 @@
 - `planned -> ready` when prerequisites are met.
 - `ready -> doing` when execution begins.
 - `doing -> waiting_user|waiting_research|waiting_assets|review` depending on blocker/review status.
-- `review -> done` only when quality gates pass.
+- `blocked -> triaged` when the blocker is removed but the task needs reassessment.
+- `blocked -> planned` when the missing dependency is resolved and the plan is still valid.
+- `blocked -> archived` when the blocker makes the task obsolete.
+- `waiting_user -> triaged` when the user supplies enough information to reassess the task.
+- `waiting_user -> planned` when the user supplies the missing decision/input and the plan remains valid.
+- `waiting_user -> archived` when the user cancels or abandons the task.
+- `waiting_research -> planned` when research is completed and the task plan is still valid.
+- `waiting_research -> triaged` when research changes the task scope.
+- `waiting_research -> blocked` when research reveals an unresolved dependency.
+- `waiting_research -> archived` when research proves the task should not continue.
+- `waiting_assets -> ready` when all required assets are supplied and no planning changes are needed.
+- `waiting_assets -> planned` when supplied assets require plan updates.
+- `waiting_assets -> triaged` when supplied assets change the task scope.
+- `waiting_assets -> archived` when assets are no longer needed or the task is cancelled.
+- `review -> done` when output passes quality gates.
+- `review -> doing` when revisions are required.
+- `review -> blocked` when approval cannot continue due to dependency.
+- `review -> archived` when the reviewed task is no longer needed.
 - `done -> archived` by lifecycle policy or user choice.
+
+No task may remain in `blocked`, `waiting_user`, `waiting_research`, or `waiting_assets` without a clear unblock condition, owner, and next checkpoint.

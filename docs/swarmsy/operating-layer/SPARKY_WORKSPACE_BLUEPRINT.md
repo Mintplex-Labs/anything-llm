@@ -7,6 +7,8 @@
 
 ## Required Documents to Load
 
+### Living Icon Engine doctrine/persona docs
+
 - `docs/swarmsy/living-icon-engine/prompts/00_SWARMSY_LIVING_ICON_ENGINE_MASTER_STANDARDS.md`
 - `docs/swarmsy/living-icon-engine/prompts/01_SWARMSY_USER_INTAKE_76_QUESTIONS.md`
 - `docs/swarmsy/living-icon-engine/prompts/02_SWARMSY_IDENTITY_PACK_COMPILER.md`
@@ -19,6 +21,21 @@
 - `docs/swarmsy/living-icon-engine/prompts/09_SWARMSY_DAY_1_PR_CAMPAIGN_BUILDER.md`
 - `docs/swarmsy/living-icon-engine/prompts/10_SWARMSY_FINAL_AI_PROJECT_MANAGER_MEMORY_LOCK.md`
 - `docs/swarmsy/living-icon-engine/personas/11_SWARMSY_SPARKY_PERSONA_SYSTEM_PROMPT.md`
+
+### Operating-layer specs
+
+- `docs/swarmsy/operating-layer/README.md`
+- `docs/swarmsy/operating-layer/SWARMSY_PROJECT_MANAGER_RUNTIME_SPEC.md`
+- `docs/swarmsy/operating-layer/SPARKY_WORKSPACE_BLUEPRINT.md`
+- `docs/swarmsy/operating-layer/SPARKY_SKILLS_REGISTRY.md`
+- `docs/swarmsy/operating-layer/SWARMSY_TASK_STATE_MACHINE.md`
+- `docs/swarmsy/operating-layer/SWARMSY_TOOL_CONTRACTS.md`
+- `docs/swarmsy/operating-layer/SWARMSY_MEMORY_AND_LOCK_RULES.md`
+- `docs/swarmsy/operating-layer/SWARMSY_QUALITY_GATES.md`
+- `docs/swarmsy/operating-layer/SWARMSY_WORKFLOW_PLAYBOOKS.md`
+- `docs/swarmsy/operating-layer/SWARMSY_FUTURE_RUNTIME_INTEGRATION_PLAN.md`
+
+The operating-layer docs are required because this PR is not runtime-wired yet. Until runtime integration exists, document ingestion is how SPARKY learns the state machine, tool contracts, memory locks, quality gates, and workflow playbooks.
 
 ## Optional Documents
 
