@@ -6,6 +6,8 @@ This PR is not runtime wiring.
 
 This PR prepares the architecture through docs/spec definitions only.
 
+`docs/swarmsy/app-mode/` now defines the SWARMSY opinionated product mode and should drive future runtime phases one safe slice at a time.
+
 Future PRs can safely implement one piece at a time.
 
 ## Implementation Phases
