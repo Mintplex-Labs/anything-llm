@@ -57,6 +57,7 @@ const Workspace = {
     "queryRefusalResponse",
     "vectorSearchMode",
     "router_id",
+    "ollamaConnectionId",
   ],
 
   validations: {
@@ -133,6 +134,12 @@ const Workspace = {
       return value;
     },
     router_id: (value) => {
+      if ([null, undefined, "", "none"].includes(value)) return null;
+      const id = Number(value);
+      if (isNaN(id)) return null;
+      return id;
+    },
+    ollamaConnectionId: (value) => {
       if ([null, undefined, "", "none"].includes(value)) return null;
       const id = Number(value);
       if (isNaN(id)) return null;

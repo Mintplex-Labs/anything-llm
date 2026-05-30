@@ -16,6 +16,9 @@ const { embedManagementEndpoints } = require("./endpoints/embedManagement");
 const { getVectorDbClass } = require("./utils/helpers");
 const { adminEndpoints } = require("./endpoints/admin");
 const { modelRouterEndpoints } = require("./endpoints/modelRouter");
+const {
+  ollamaConnectionEndpoints,
+} = require("./endpoints/ollamaConnections");
 const { inviteEndpoints } = require("./endpoints/invite");
 const { utilEndpoints } = require("./endpoints/utils");
 const { developerEndpoints } = require("./endpoints/api");
@@ -84,6 +87,7 @@ workspaceThreadEndpoints(apiRouter);
 chatEndpoints(apiRouter);
 adminEndpoints(apiRouter);
 modelRouterEndpoints(apiRouter);
+ollamaConnectionEndpoints(apiRouter);
 inviteEndpoints(apiRouter);
 embedManagementEndpoints(apiRouter);
 utilEndpoints(apiRouter);

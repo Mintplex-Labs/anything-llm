@@ -789,9 +789,17 @@ class AgentHandler {
       socket: null,
     }
   ) {
+    const ollamaConnection =
+      this.provider === "ollama" &&
+      this.invocation?.workspace?.ollamaConnectionId
+        ? await require("../../models/ollamaConnection").OllamaConnection.get({
+            id: Number(this.invocation.workspace.ollamaConnectionId),
+          })
+        : null;
     this.aibitat = new AIbitat({
       provider: this.provider ?? "openai",
       model: this.model ?? "gpt-4o",
+      connection: ollamaConnection,
       chats: await this.#chatHistory(20),
       handlerProps: {
         invocation: this.invocation,

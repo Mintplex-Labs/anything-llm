@@ -12,20 +12,47 @@ const { v4: uuidv4 } = require("uuid");
 
 // Docs: https://github.com/jmorganca/ollama/blob/main/docs/api.md
 class OllamaAILLM {
-  /** @see OllamaAILLM.cacheContextWindows */
+  /**
+   * Per-basePath model context window cache.
+   * Shape: { [basePath]: { [modelName]: number } }
+   * @see OllamaAILLM.cacheContextWindows
+   */
   static modelContextWindows = {};
 
-  constructor(embedder = null, modelPreference = null) {
-    if (!process.env.OLLAMA_BASE_PATH)
-      throw new Error("No Ollama Base Path was set.");
+  /**
+   * Resolve the active connection config, preferring an explicit `connection`
+   * override (from a stored ollama_connections row) and falling back to env vars.
+   * @param {{basePath?:string,authToken?:string|null,keepAlive?:number|null,responseTimeout?:number|null}|null} connection
+   */
+  static resolveConfig(connection = null) {
+    const basePath = connection?.basePath || process.env.OLLAMA_BASE_PATH;
+    const authToken = connection?.authToken ?? process.env.OLLAMA_AUTH_TOKEN;
+    const keepAlive =
+      connection?.keepAlive != null
+        ? Number(connection.keepAlive)
+        : process.env.OLLAMA_KEEP_ALIVE_TIMEOUT
+          ? Number(process.env.OLLAMA_KEEP_ALIVE_TIMEOUT)
+          : 300;
+    const responseTimeout =
+      connection?.responseTimeout != null
+        ? Number(connection.responseTimeout)
+        : process.env.OLLAMA_RESPONSE_TIMEOUT
+          ? Number(process.env.OLLAMA_RESPONSE_TIMEOUT)
+          : null;
+    return { basePath, authToken, keepAlive, responseTimeout };
+  }
+
+  constructor(embedder = null, modelPreference = null, connection = null) {
+    const { basePath, authToken, keepAlive, responseTimeout } =
+      OllamaAILLM.resolveConfig(connection);
+    if (!basePath) throw new Error("No Ollama Base Path was set.");
 
     this.className = "OllamaAILLM";
-    this.authToken = process.env.OLLAMA_AUTH_TOKEN;
-    this.basePath = process.env.OLLAMA_BASE_PATH;
+    this.connection = connection || null;
+    this.authToken = authToken;
+    this.basePath = basePath;
     this.model = modelPreference || process.env.OLLAMA_MODEL_PREF;
-    this.keepAlive = process.env.OLLAMA_KEEP_ALIVE_TIMEOUT
-      ? Number(process.env.OLLAMA_KEEP_ALIVE_TIMEOUT)
-      : 300; // Default 5-minute timeout for Ollama model loading.
+    this.keepAlive = keepAlive;
 
     const headers = this.authToken
       ? { Authorization: `Bearer ${this.authToken}` }
@@ -33,7 +60,7 @@ class OllamaAILLM {
     this.client = new Ollama({
       host: this.basePath,
       headers: headers,
-      fetch: OllamaAILLM.applyOllamaFetch(),
+      fetch: OllamaAILLM.applyOllamaFetch(responseTimeout),
     });
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
@@ -41,8 +68,8 @@ class OllamaAILLM {
     // Lazy load the limits to avoid blocking the main thread on cacheContextWindows
     this.limits = null;
 
-    OllamaAILLM.cacheContextWindows(true);
-    this.#log(`initialized with model: ${this.model}`);
+    OllamaAILLM.cacheContextWindows(true, { basePath, authToken });
+    this.#log(`initialized with model: ${this.model} @ ${this.basePath}`);
   }
 
   #log(text, ...args) {
@@ -55,34 +82,41 @@ class OllamaAILLM {
 
   async assertModelContextLimits() {
     if (this.limits !== null) return;
-    await OllamaAILLM.cacheContextWindows();
+    await OllamaAILLM.cacheContextWindows(false, {
+      basePath: this.basePath,
+      authToken: this.authToken,
+    });
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
       user: this.promptWindowLimit() * 0.7,
     };
     this.#log(
-      `model ${this.model} is using a max context window of ${this.promptWindowLimit()}/${OllamaAILLM.maxContextWindow(this.model)} tokens.`
+      `model ${this.model} is using a max context window of ${this.promptWindowLimit()}/${OllamaAILLM.maxContextWindow(this.model, this.basePath)} tokens.`
     );
   }
 
   /**
-   * Cache the context windows for the Ollama models.
-   * This is done once and then cached for the lifetime of the server. This is absolutely necessary to ensure that the context windows are correct.
+   * Cache the context windows for the Ollama models on a specific basePath.
+   * Each Ollama server (basePath) gets its own cache entry so that multiple
+   * connections don't clobber each other.
    *
-   * This is a convenience to ensure that the context windows are correct and that the user
-   * does not have to manually set the context window for each model.
-   * @param {boolean} force - Force the cache to be refreshed.
-   * @returns {Promise<void>} - A promise that resolves when the cache is refreshed.
+   * @param {boolean} force - Force the cache for this basePath to be refreshed.
+   * @param {{basePath?:string, authToken?:string|null}} target - which Ollama instance to inspect.
+   * @returns {Promise<void>}
    */
-  static async cacheContextWindows(force = false) {
+  static async cacheContextWindows(force = false, target = {}) {
     try {
-      // Skip if we already have cached context windows and we're not forcing a refresh
-      if (Object.keys(OllamaAILLM.modelContextWindows).length > 0 && !force)
-        return;
+      const basePath = target.basePath || process.env.OLLAMA_BASE_PATH;
+      const authToken =
+        target.authToken !== undefined
+          ? target.authToken
+          : process.env.OLLAMA_AUTH_TOKEN;
+      if (!basePath) return;
 
-      const authToken = process.env.OLLAMA_AUTH_TOKEN;
-      const basePath = process.env.OLLAMA_BASE_PATH;
+      const existing = OllamaAILLM.modelContextWindows[basePath];
+      if (existing && Object.keys(existing).length > 0 && !force) return;
+
       const client = new Ollama({
         host: basePath,
         headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
@@ -97,17 +131,17 @@ class OllamaAILLM {
           .then((info) => ({ name: model.name, ...info }))
       );
       const infos = await Promise.all(infoPromises);
+      const bucket = (OllamaAILLM.modelContextWindows[basePath] =
+        OllamaAILLM.modelContextWindows[basePath] || {});
       infos.forEach((showInfo) => {
         if (showInfo.capabilities.includes("embedding")) return;
         const contextWindowKey = Object.keys(showInfo.model_info).find((key) =>
           key.endsWith(".context_length")
         );
-        if (!contextWindowKey)
-          return (OllamaAILLM.modelContextWindows[showInfo.name] = 4096);
-        OllamaAILLM.modelContextWindows[showInfo.name] =
-          showInfo.model_info[contextWindowKey];
+        if (!contextWindowKey) return (bucket[showInfo.name] = 4096);
+        bucket[showInfo.name] = showInfo.model_info[contextWindowKey];
       });
-      OllamaAILLM.#slog(`Context windows cached for all models!`);
+      OllamaAILLM.#slog(`Context windows cached for ${basePath}`);
     } catch (e) {
       OllamaAILLM.#slog(`Error caching context windows`, e);
       return;
@@ -130,23 +164,27 @@ class OllamaAILLM {
    * Apply a custom fetch function to the Ollama client.
    * This is useful when we want to bypass the default 5m timeout for global fetch
    * for machines which run responses very slowly.
+   * @param {number|null} overrideTimeoutMs - Per-connection timeout override in ms.
    * @returns {Function} The custom fetch function.
    */
-  static applyOllamaFetch() {
+  static applyOllamaFetch(overrideTimeoutMs = null) {
     try {
-      if (!("OLLAMA_RESPONSE_TIMEOUT" in process.env)) return fetch;
-      const { Agent } = require("undici");
-      const moment = require("moment");
-      let timeout = process.env.OLLAMA_RESPONSE_TIMEOUT;
+      const envTimeout = process.env.OLLAMA_RESPONSE_TIMEOUT;
+      let timeout = overrideTimeoutMs != null ? overrideTimeoutMs : envTimeout;
+      if (timeout === undefined || timeout === null || timeout === "")
+        return fetch;
+      timeout = Number(timeout);
 
-      if (!timeout || isNaN(Number(timeout)) || Number(timeout) <= 5 * 60_000) {
+      if (isNaN(timeout) || timeout <= 5 * 60_000) {
         OllamaAILLM.#slog(
           "Timeout option was not set, is not a number, or is less than 5 minutes in ms - falling back to default",
           { timeout }
         );
         return fetch;
-      } else timeout = Number(timeout);
+      }
 
+      const { Agent } = require("undici");
+      const moment = require("moment");
       const noTimeoutFetch = (input, init = {}) => {
         return fetch(input, {
           ...init,
@@ -170,8 +208,11 @@ class OllamaAILLM {
     return "streamGetChatCompletion" in this;
   }
 
-  static promptWindowLimit(modelName) {
-    if (Object.keys(OllamaAILLM.modelContextWindows).length === 0) {
+  static promptWindowLimit(modelName, basePath = null) {
+    const resolvedBasePath = basePath || process.env.OLLAMA_BASE_PATH;
+    const bucket =
+      OllamaAILLM.modelContextWindows[resolvedBasePath] || {};
+    if (Object.keys(bucket).length === 0) {
       this.#slog(
         "No context windows cached - Context window may be inaccurately reported."
       );
@@ -179,7 +220,10 @@ class OllamaAILLM {
     }
 
     let userDefinedLimit = null;
-    const systemDefinedLimit = OllamaAILLM.maxContextWindow(modelName);
+    const systemDefinedLimit = OllamaAILLM.maxContextWindow(
+      modelName,
+      resolvedBasePath
+    );
 
     if (
       process.env.OLLAMA_MODEL_TOKEN_LIMIT &&
@@ -200,13 +244,15 @@ class OllamaAILLM {
   }
 
   promptWindowLimit() {
-    return this.constructor.promptWindowLimit(this.model);
+    return this.constructor.promptWindowLimit(this.model, this.basePath);
   }
 
-  static maxContextWindow(modelName = null) {
-    if (Object.keys(OllamaAILLM.modelContextWindows).length === 0 || !modelName)
-      return 4096;
-    return Number(OllamaAILLM.modelContextWindows[modelName]) || 16384;
+  static maxContextWindow(modelName = null, basePath = null) {
+    const resolvedBasePath = basePath || process.env.OLLAMA_BASE_PATH;
+    const bucket =
+      OllamaAILLM.modelContextWindows[resolvedBasePath] || {};
+    if (!modelName || Object.keys(bucket).length === 0) return 4096;
+    return Number(bucket[modelName]) || 16384;
   }
 
   async isValidChatCompletionModel(_ = "") {

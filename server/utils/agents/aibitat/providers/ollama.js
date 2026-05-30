@@ -19,16 +19,20 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     const {
       // options = {},
       model = null,
+      connection = null,
     } = config;
 
     super();
-    const authToken = process.env.OLLAMA_AUTH_TOKEN;
-    const basePath = process.env.OLLAMA_BASE_PATH;
+    const { basePath, authToken, responseTimeout } =
+      OllamaAILLM.resolveConfig(connection);
     const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
+    this.connection = connection || null;
+    this.basePath = basePath;
+    this.authToken = authToken;
     this._client = new Ollama({
       host: basePath,
       headers: headers,
-      fetch: OllamaAILLM.applyOllamaFetch(),
+      fetch: OllamaAILLM.applyOllamaFetch(responseTimeout),
     });
     this.model = model;
     this.verbose = true;
@@ -50,7 +54,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
    */
   async supportsNativeToolCalling() {
     if (this._supportsToolCalling !== null) return this._supportsToolCalling;
-    const ollama = new OllamaAILLM(null, this.model);
+    const ollama = new OllamaAILLM(null, this.model, this.connection);
     const capabilities = await ollama.getModelCapabilities();
     this._supportsToolCalling = capabilities.tools === true;
     return this._supportsToolCalling;
@@ -58,10 +62,10 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get queryOptions() {
     this.providerLog(
-      `${this.model} is using a max context window of ${OllamaAILLM.promptWindowLimit(this.model)}/${OllamaAILLM.maxContextWindow(this.model)} tokens.`
+      `${this.model} is using a max context window of ${OllamaAILLM.promptWindowLimit(this.model, this.basePath)}/${OllamaAILLM.maxContextWindow(this.model, this.basePath)} tokens.`
     );
     return {
-      num_ctx: OllamaAILLM.promptWindowLimit(this.model),
+      num_ctx: OllamaAILLM.promptWindowLimit(this.model, this.basePath),
     };
   }
 
@@ -72,7 +76,10 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
    * @returns {Promise<string|null>} The completion.
    */
   async #handleFunctionCallChat({ messages = [] }) {
-    await OllamaAILLM.cacheContextWindows();
+    await OllamaAILLM.cacheContextWindows(false, {
+      basePath: this.basePath,
+      authToken: this.authToken,
+    });
     const response = await this.client.chat({
       model: this.model,
       messages,
@@ -82,7 +89,10 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   async #handleFunctionCallStream({ messages = [] }) {
-    await OllamaAILLM.cacheContextWindows();
+    await OllamaAILLM.cacheContextWindows(false, {
+      basePath: this.basePath,
+      authToken: this.authToken,
+    });
     return await this.client.chat({
       model: this.model,
       messages,
@@ -301,7 +311,10 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
         "OllamaProvider.stream (tooled) - will process this chat completion."
       );
       this.resetUsage();
-      await OllamaAILLM.cacheContextWindows();
+      await OllamaAILLM.cacheContextWindows(false, {
+        basePath: this.basePath,
+        authToken: this.authToken,
+      });
       const msgUUID = v4();
       const formattedMessages = this.#formatMessagesForOllamaTools(messages);
       const tools = formatFunctionsToTools(functions);
@@ -498,7 +511,10 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
 
     if (useNative) {
       this.resetUsage();
-      await OllamaAILLM.cacheContextWindows();
+      await OllamaAILLM.cacheContextWindows(false, {
+        basePath: this.basePath,
+        authToken: this.authToken,
+      });
       const formattedMessages = this.#formatMessagesForOllamaTools(messages);
       const tools = formatFunctionsToTools(functions);
 

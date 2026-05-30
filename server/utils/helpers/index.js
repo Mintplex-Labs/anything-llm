@@ -130,10 +130,11 @@ function getVectorDbClass(getExactly = null) {
  * Returns the LLMProvider with its embedder attached via system or via defined provider.
  * @notice Use resolveProviderConnector instead as this function DOES NOT handle the anythingllm-router provider.
  * You should only use this function if you are absolutely sure you are not using the anythingllm-router provider ever in your code.
- * @param {{provider: string | null, model: string | null} | null} params - Initialize params for LLMs provider
+ * @param {{provider: string | null, model: string | null, connection?: Object | null} | null} params - Initialize params for LLMs provider.
+ *  `connection` is an optional provider-specific connection record (currently only honored by the Ollama provider).
  * @returns {BaseLLMProvider}
  */
-function getLLMProvider({ provider = null, model = null } = {}) {
+function getLLMProvider({ provider = null, model = null, connection = null } = {}) {
   const LLMSelection = provider ?? process.env.LLM_PROVIDER ?? "openai";
   const embedder = getEmbeddingEngineSelection();
 
@@ -158,7 +159,7 @@ function getLLMProvider({ provider = null, model = null } = {}) {
       return new LocalAiLLM(embedder, model);
     case "ollama":
       const { OllamaAILLM } = require("../AiProviders/ollama");
-      return new OllamaAILLM(embedder, model);
+      return new OllamaAILLM(embedder, model, connection);
     case "togetherai":
       const { TogetherAiLLM } = require("../AiProviders/togetherAi");
       return new TogetherAiLLM(embedder, model);
@@ -652,10 +653,17 @@ async function resolveProviderConnector({
   const effectiveProvider = workspace?.chatProvider || process.env.LLM_PROVIDER;
 
   if (effectiveProvider !== "anythingllm-router") {
+    const connection =
+      effectiveProvider === "ollama" && workspace?.ollamaConnectionId
+        ? await require("../../models/ollamaConnection").OllamaConnection.get({
+            id: Number(workspace.ollamaConnectionId),
+          })
+        : null;
     return {
       connector: getLLMProvider({
         provider: workspace?.chatProvider,
         model: workspace?.chatModel,
+        connection,
       }),
       routingMetadata: null,
       prefetchedContext: null,

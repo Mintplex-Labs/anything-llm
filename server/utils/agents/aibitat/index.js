@@ -1352,7 +1352,10 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       case "lmstudio":
         return new Providers.LMStudioProvider({ model: config.model });
       case "ollama":
-        return new Providers.OllamaProvider({ model: config.model });
+        return new Providers.OllamaProvider({
+          model: config.model,
+          connection: config.connection || null,
+        });
       case "groq":
         return new Providers.GroqProvider({ model: config.model });
       case "togetherai":

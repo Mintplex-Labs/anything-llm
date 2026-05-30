@@ -503,9 +503,16 @@ class EphemeralAgentHandler extends AgentHandler {
       toolOverrides: null,
     }
   ) {
+    const ollamaConnection =
+      this.provider === "ollama" && this.#workspace?.ollamaConnectionId
+        ? await require("../../models/ollamaConnection").OllamaConnection.get({
+            id: Number(this.#workspace.ollamaConnectionId),
+          })
+        : null;
     this.aibitat = new AIbitat({
       provider: this.provider ?? "openai",
       model: this.model ?? "gpt-4o",
+      connection: ollamaConnection,
       chats: await this.#chatHistory(20),
       handlerProps: {
         invocation: {

@@ -140,6 +140,7 @@ model workspaces {
   queryRefusalResponse         String?
   vectorSearchMode             String?                        @default("default")
   router_id                    Int? // No relation to prevent whole table migration (SQLite limitation)
+  ollamaConnectionId           Int? // No relation to prevent whole table migration (SQLite limitation)
   workspace_users              workspace_users[]
   documents                    workspace_documents[]
   workspace_suggested_messages workspace_suggested_messages[]
@@ -485,4 +486,15 @@ model model_router_rules {
   @@unique([router_id, title])
   @@index([router_id])
   @@index([router_id, enabled, priority])
+}
+
+model ollama_connections {
+  id              Int      @id @default(autoincrement())
+  name            String   @unique
+  basePath        String
+  authToken       String?
+  keepAlive       Int?
+  responseTimeout Int?
+  createdAt       DateTime @default(now())
+  lastUpdatedAt   DateTime @default(now())
 }
