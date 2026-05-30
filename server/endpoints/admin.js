@@ -39,6 +39,37 @@ const {
   workspaceDeletionProtection,
 } = require("../utils/middleware/workspaceDeletionProtection");
 
+const swarmsyHiveCreationLocks = new Map();
+
+async function findSwarmsyHiveWorkspace(creatorId = null) {
+  return Workspace.get(
+    creatorId
+      ? {
+          name: PRESET_NAME,
+          workspace_users: { some: { user_id: Number(creatorId) } },
+        }
+      : { name: PRESET_NAME }
+  );
+}
+
+async function withSwarmsyHiveCreationLock(lockKey, action) {
+  const existingLock = swarmsyHiveCreationLocks.get(lockKey);
+  if (existingLock) await existingLock;
+
+  let releaseLock = null;
+  const currentLock = new Promise((resolve) => {
+    releaseLock = resolve;
+  });
+  swarmsyHiveCreationLocks.set(lockKey, currentLock);
+
+  try {
+    return await action();
+  } finally {
+    if (typeof releaseLock === "function") releaseLock();
+    swarmsyHiveCreationLocks.delete(lockKey);
+  }
+}
+
 function adminEndpoints(app) {
   if (!app) return;
 
@@ -510,52 +541,48 @@ function adminEndpoints(app) {
       try {
         const user = await userFromSession(request, response);
         const creatorId = user?.id ?? null;
-        const existingWorkspace = await Workspace.get(
-          creatorId
-            ? {
-                name: PRESET_NAME,
-                workspace_users: { some: { user_id: Number(creatorId) } },
-              }
-            : { name: PRESET_NAME }
-        );
+        const creatorLockKey = creatorId ? String(creatorId) : "global";
+        // Route-local idempotency guard until a DB-level unique preset marker exists.
+        return await withSwarmsyHiveCreationLock(creatorLockKey, async () => {
+          const existingWorkspace = await findSwarmsyHiveWorkspace(creatorId);
+          if (existingWorkspace) {
+            const suggestedMessages =
+              await WorkspaceSuggestedMessages.getMessages(
+                existingWorkspace.slug
+              );
+            return response.status(200).json({
+              success: true,
+              workspace: existingWorkspace,
+              message:
+                "SWARMSY HIVE workspace already exists for this creator.",
+              preset: PRESET_NAME,
+              suggestedMessages,
+            });
+          }
 
-        if (existingWorkspace) {
+          const { workspace, message } =
+            await createSwarmsyHiveWorkspace(creatorId);
+          if (!workspace) {
+            return response.status(400).json({
+              success: false,
+              workspace: null,
+              message: message || "Failed to create SWARMSY HIVE workspace.",
+              preset: PRESET_NAME,
+            });
+          }
+
           const suggestedMessages =
-            await WorkspaceSuggestedMessages.getMessages(
-              existingWorkspace.slug
-            );
+            await WorkspaceSuggestedMessages.getMessages(workspace.slug);
           return response.status(200).json({
             success: true,
-            workspace: existingWorkspace,
-            message: "SWARMSY HIVE workspace already exists for this creator.",
+            workspace,
+            message:
+              suggestedMessages.length > 0
+                ? null
+                : "Workspace created, but no suggested messages were returned.",
             preset: PRESET_NAME,
             suggestedMessages,
           });
-        }
-
-        const { workspace, message } =
-          await createSwarmsyHiveWorkspace(creatorId);
-        if (!workspace) {
-          return response.status(400).json({
-            success: false,
-            workspace: null,
-            message: message || "Failed to create SWARMSY HIVE workspace.",
-            preset: PRESET_NAME,
-          });
-        }
-
-        const suggestedMessages = await WorkspaceSuggestedMessages.getMessages(
-          workspace.slug
-        );
-        return response.status(200).json({
-          success: true,
-          workspace,
-          message:
-            suggestedMessages.length > 0
-              ? null
-              : "Workspace created. Suggested messages were saved by preset utility.",
-          preset: PRESET_NAME,
-          suggestedMessages,
         });
       } catch (error) {
         console.error(error);

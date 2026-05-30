@@ -63,11 +63,15 @@ Behavior:
 - Calls `createSwarmsyHiveWorkspace(creatorId)` from the preset utility.
 - Returns a refreshed/current workspace object from the utility.
 - Returns suggested messages from existing model APIs.
-- Prevents duplicate creation for the same creator when lookup is straightforward:
+- Prevents duplicate creation for the same creator with a route-local per-creator creation lock and an in-lock existence re-check:
   - Multi-user: checks workspace name + creator workspace relationship.
   - Single-user: checks workspace name.
+- Returns warning text when workspace creation succeeds but suggested messages are empty:
+  - `Workspace created, but no suggested messages were returned.`
 - Does not auto-create on boot.
 - Does not auto-create for every user.
+
+The lock is a pragmatic runtime idempotency guard for this route. A future DB-level preset marker can harden uniqueness further.
 
 ---
 

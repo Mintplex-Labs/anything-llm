@@ -57,15 +57,24 @@ The route:
 2. Checks for an existing `SWARMSY HIVE` workspace for the same creator:
    - In multi-user mode, by workspace name plus workspace-user relationship.
    - In single-user mode, by workspace name.
-3. Returns the existing workspace if found (no silent duplicate creation).
-4. Otherwise calls `createSwarmsyHiveWorkspace(creatorId)`.
-5. Returns the refreshed workspace from the preset utility.
-6. Returns suggested messages from `WorkspaceSuggestedMessages.getMessages(slug)`.
+3. Uses a route-local per-creator creation lock to serialize concurrent create attempts for the same creator.
+4. Re-checks for an existing workspace inside that lock before creating.
+5. Returns the existing workspace if found (no silent duplicate creation).
+6. Otherwise calls `createSwarmsyHiveWorkspace(creatorId)`.
+7. Returns the refreshed workspace from the preset utility.
+8. Returns suggested messages from `WorkspaceSuggestedMessages.getMessages(slug)`.
 
 ## Duplicate Behavior
 
-- Duplicate creation for the same creator is prevented by checking existing workspace ownership and name before invoking preset creation.
+- Duplicate creation for the same creator is prevented by a route-local per-creator lock plus an in-lock existing-workspace re-check before invoking preset creation.
 - If one already exists, the route returns `success: true` with the existing workspace and a clear message.
+- This lock is a runtime guard for this route until a future DB-level preset marker can enforce uniqueness more strictly.
+
+## Partial Preset Warning Condition
+
+- If workspace creation succeeds but `suggestedMessages` is empty, the route returns:
+  - `"Workspace created, but no suggested messages were returned."`
+- This indicates a partial-preset condition callers should treat as warning-level.
 
 ## Manual Test Steps
 
