@@ -1494,7 +1494,7 @@ function systemEndpoints(app) {
         console.error("STT transcription error:", error);
         return response.status(500).json({
           success: false,
-          error: `Transcription failed: ${error.message}`,
+          error: error.message || "Transcription failed",
         });
       }
     }

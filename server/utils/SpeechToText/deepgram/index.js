@@ -47,24 +47,32 @@ class DeepgramSTT {
     url.searchParams.set("model", this.model);
     url.searchParams.set("smart_format", "true");
 
-    const response = await fetch(url.toString(), {
+    return await fetch(url.toString(), {
       method: "POST",
       headers: {
         Authorization: `Token ${this.apiKey}`,
         "Content-Type": this.#contentTypeFromFilename(filename),
       },
       body: audioBuffer,
-    });
-
-    if (!response.ok) {
-      const errBody = await response.text().catch(() => "");
-      throw new Error(
-        `Deepgram transcription failed (${response.status}): ${errBody}`
-      );
-    }
-
-    const result = await response.json();
-    return result?.results?.channels?.[0]?.alternatives?.[0]?.transcript ?? "";
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          const errBody = await response.text().catch(() => "");
+          throw new Error(
+            `Deepgram transcription failed (${response.status}) - ${errBody}`
+          );
+        }
+        return response.json();
+      })
+      .then((result) => {
+        return (
+          result?.results?.channels?.[0]?.alternatives?.[0]?.transcript ?? ""
+        );
+      })
+      .catch((error) => {
+        this.#log(`Deepgram transcription failed - ${error.message}`);
+        throw new Error(`Deepgram transcription failed - ${error.message}`);
+      });
   }
 }
 
