@@ -157,7 +157,9 @@ function getDocumentStatus(docsRootStatus, manifestPath, required) {
 
   let fileStats = null;
   try {
-    if (pathHasSymlinkComponent(pathInfo.absolutePath, pathInfo.docsRootAbsolute)) {
+    if (
+      pathHasSymlinkComponent(pathInfo.absolutePath, pathInfo.docsRootAbsolute)
+    ) {
       status.present = true;
       status.loadable = false;
       status.bytes = 0;
