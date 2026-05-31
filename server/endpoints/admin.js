@@ -1,4 +1,3 @@
-const fs = require("fs");
 const path = require("path");
 const { ApiKey } = require("../models/apiKeys");
 const { BrowserExtensionApiKey } = require("../models/browserExtensionApiKey");
@@ -783,28 +782,23 @@ function adminEndpoints(app) {
           }
 
           const absoluteDocPath = path.resolve(docsRoot, docPath);
-          let content = "";
-
-          try {
-            content = fs.readFileSync(absoluteDocPath, "utf8");
-          } catch (error) {
-            failed.push({
-              path: docPath,
-              stage: "read",
-              error: `Failed to read doctrine file: ${error.message}`,
-            });
-            continue;
-          }
-
           const {
             success,
             reason,
             documents = [],
-          } = await collector.processRawText(content, {
-            title: path.basename(docPath),
-            docSource: "SWARMSY required doctrine docs",
-            description: docPath,
-            chunkSource,
+          } = await collector.forwardExtensionRequest({
+            endpoint: "/process",
+            method: "POST",
+            body: {
+              filename: path.basename(docPath),
+              options: { absolutePath: absoluteDocPath },
+              metadata: {
+                title: path.basename(docPath),
+                docSource: "SWARMSY required doctrine docs",
+                description: docPath,
+                chunkSource,
+              },
+            },
           });
 
           if (!success || documents.length === 0 || !documents[0]?.location) {
