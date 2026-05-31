@@ -50,4 +50,18 @@ There is no dedicated Memory Lock database persistence in this PR.
 
 The pasted memory lock is included in the immediate handoff message routed into chat, so it follows normal workspace chat history storage and retention after submission.
 
-A future PR can add Memory Lock storage, viewing, import history, or richer continuity tooling.
+## Future Memory Lock Storage and Viewer
+
+A future runtime PR will add dedicated Memory Lock storage and a viewer.
+
+The specs for that future layer are defined in [`docs/swarmsy/memory-locks/`](../memory-locks/README.md):
+
+- [`MEMORY_LOCK_VIEWER_SPEC.md`](../memory-locks/MEMORY_LOCK_VIEWER_SPEC.md) — what the viewer should display and support
+- [`MEMORY_LOCK_STORAGE_SPEC.md`](../memory-locks/MEMORY_LOCK_STORAGE_SPEC.md) — how storage should be scoped, versioned, and managed
+- [`MEMORY_LOCK_SCHEMA.md`](../memory-locks/MEMORY_LOCK_SCHEMA.md) — structured schema for a Memory Lock document
+- [`MEMORY_LOCK_UPDATE_RULES.md`](../memory-locks/MEMORY_LOCK_UPDATE_RULES.md) — rules governing when and how locks may be updated
+- [`MEMORY_LOCK_IMPORT_FLOW.md`](../memory-locks/MEMORY_LOCK_IMPORT_FLOW.md) — import flow with confirmation step
+- [`MEMORY_LOCK_PRIVACY_AND_RETENTION.md`](../memory-locks/MEMORY_LOCK_PRIVACY_AND_RETENTION.md) — privacy boundaries and retention rules
+- [`ANTI_DRIFT_RULES.md`](../memory-locks/ANTI_DRIFT_RULES.md) — rules SPARKY must follow to prevent identity and project drift
+
+Those docs are planning and specification only. No runtime code, database tables, or UI components are added in the spec PR.

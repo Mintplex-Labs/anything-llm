@@ -79,6 +79,7 @@
 ## Phase 7 — Memory Lock Viewer
 
 - Goal: Show latest identity/lore/campaign locks.
+- Spec docs: [`docs/swarmsy/memory-locks/`](../memory-locks/README.md) — viewer spec, storage spec, schema, update rules, import flow, privacy/retention rules, and anti-drift rules are defined there. These are planning documents only; no runtime code has been added yet.
 - Likely files/directories: memory lock storage/read endpoints, lock display components, project history views.
 - Runtime risk: Medium.
 - Acceptance criteria: Latest lock is visible and continuity is preserved across sessions.
