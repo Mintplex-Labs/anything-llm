@@ -142,7 +142,6 @@ function ConnectionModal({ isOpen, closeModal, onSuccess, connection }) {
       basePath: form.get("basePath"),
       authToken: form.get("authToken") || null,
       keepAlive: form.get("keepAlive") || null,
-      responseTimeout: form.get("responseTimeout") || null,
     };
 
     setSubmitting(true);
@@ -199,13 +198,6 @@ function ConnectionModal({ isOpen, closeModal, onSuccess, connection }) {
             type="number"
             defaultValue={connection?.keepAlive ?? ""}
             placeholder="300"
-          />
-          <Field
-            label="Response timeout (ms, optional)"
-            name="responseTimeout"
-            type="number"
-            defaultValue={connection?.responseTimeout ?? ""}
-            placeholder="Leave blank for default"
           />
           <div className="flex justify-end gap-3 pt-2">
             <button

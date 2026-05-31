@@ -23,8 +23,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     } = config;
 
     super();
-    const { basePath, authToken, responseTimeout } =
-      OllamaAILLM.resolveConfig(connection);
+    const { basePath, authToken } = OllamaAILLM.resolveConfig(connection);
     const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
     this.connection = connection || null;
     this.basePath = basePath;
@@ -32,7 +31,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     this._client = new Ollama({
       host: basePath,
       headers: headers,
-      fetch: OllamaAILLM.applyOllamaFetch(responseTimeout),
+      fetch: OllamaAILLM.applyOllamaFetch(),
     });
     this.model = model;
     this.verbose = true;

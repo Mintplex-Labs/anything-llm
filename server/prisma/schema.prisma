@@ -489,12 +489,11 @@ model model_router_rules {
 }
 
 model ollama_connections {
-  id              Int      @id @default(autoincrement())
-  name            String   @unique
-  basePath        String
-  authToken       String?
-  keepAlive       Int?
-  responseTimeout Int?
-  createdAt       DateTime @default(now())
-  lastUpdatedAt   DateTime @default(now())
+  id            Int      @id @default(autoincrement())
+  name          String   @unique
+  basePath      String
+  authToken     String?
+  keepAlive     Int?
+  createdAt     DateTime @default(now())
+  lastUpdatedAt DateTime @default(now())
 }

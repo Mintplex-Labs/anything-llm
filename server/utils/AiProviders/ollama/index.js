@@ -22,7 +22,9 @@ class OllamaAILLM {
   /**
    * Resolve the active connection config, preferring an explicit `connection`
    * override (from a stored ollama_connections row) and falling back to env vars.
-   * @param {{basePath?:string,authToken?:string|null,keepAlive?:number|null,responseTimeout?:number|null}|null} connection
+   * Response-timeout stays env-only (see OLLAMA_RESPONSE_TIMEOUT) to match how
+   * the system-wide Ollama settings expose timing controls.
+   * @param {{basePath?:string,authToken?:string|null,keepAlive?:number|null}|null} connection
    */
   static resolveConfig(connection = null) {
     const basePath = connection?.basePath || process.env.OLLAMA_BASE_PATH;
@@ -33,17 +35,11 @@ class OllamaAILLM {
         : process.env.OLLAMA_KEEP_ALIVE_TIMEOUT
           ? Number(process.env.OLLAMA_KEEP_ALIVE_TIMEOUT)
           : 300;
-    const responseTimeout =
-      connection?.responseTimeout != null
-        ? Number(connection.responseTimeout)
-        : process.env.OLLAMA_RESPONSE_TIMEOUT
-          ? Number(process.env.OLLAMA_RESPONSE_TIMEOUT)
-          : null;
-    return { basePath, authToken, keepAlive, responseTimeout };
+    return { basePath, authToken, keepAlive };
   }
 
   constructor(embedder = null, modelPreference = null, connection = null) {
-    const { basePath, authToken, keepAlive, responseTimeout } =
+    const { basePath, authToken, keepAlive } =
       OllamaAILLM.resolveConfig(connection);
     if (!basePath) throw new Error("No Ollama Base Path was set.");
 
@@ -60,7 +56,7 @@ class OllamaAILLM {
     this.client = new Ollama({
       host: this.basePath,
       headers: headers,
-      fetch: OllamaAILLM.applyOllamaFetch(responseTimeout),
+      fetch: OllamaAILLM.applyOllamaFetch(),
     });
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
@@ -164,27 +160,23 @@ class OllamaAILLM {
    * Apply a custom fetch function to the Ollama client.
    * This is useful when we want to bypass the default 5m timeout for global fetch
    * for machines which run responses very slowly.
-   * @param {number|null} overrideTimeoutMs - Per-connection timeout override in ms.
    * @returns {Function} The custom fetch function.
    */
-  static applyOllamaFetch(overrideTimeoutMs = null) {
+  static applyOllamaFetch() {
     try {
-      const envTimeout = process.env.OLLAMA_RESPONSE_TIMEOUT;
-      let timeout = overrideTimeoutMs != null ? overrideTimeoutMs : envTimeout;
-      if (timeout === undefined || timeout === null || timeout === "")
-        return fetch;
-      timeout = Number(timeout);
+      if (!("OLLAMA_RESPONSE_TIMEOUT" in process.env)) return fetch;
+      const { Agent } = require("undici");
+      const moment = require("moment");
+      let timeout = process.env.OLLAMA_RESPONSE_TIMEOUT;
 
-      if (isNaN(timeout) || timeout <= 5 * 60_000) {
+      if (!timeout || isNaN(Number(timeout)) || Number(timeout) <= 5 * 60_000) {
         OllamaAILLM.#slog(
           "Timeout option was not set, is not a number, or is less than 5 minutes in ms - falling back to default",
           { timeout }
         );
         return fetch;
-      }
+      } else timeout = Number(timeout);
 
-      const { Agent } = require("undici");
-      const moment = require("moment");
       const noTimeoutFetch = (input, init = {}) => {
         return fetch(input, {
           ...init,

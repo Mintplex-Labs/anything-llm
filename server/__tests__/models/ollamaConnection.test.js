@@ -67,23 +67,22 @@ describe("OllamaConnection.validations", () => {
     });
   });
 
-  describe("keepAlive / responseTimeout", () => {
-    const numericFields = ["keepAlive", "responseTimeout"];
-    it.each(numericFields)("rounds and accepts positive numbers (%s)", (field) => {
-      expect(OllamaConnection.validations[field]("300")).toBe(300);
-      expect(OllamaConnection.validations[field](120.7)).toBe(121);
+  describe("keepAlive", () => {
+    it("rounds and accepts positive numbers", () => {
+      expect(OllamaConnection.validations.keepAlive("300")).toBe(300);
+      expect(OllamaConnection.validations.keepAlive(120.7)).toBe(121);
     });
 
-    it.each(numericFields)("accepts zero (%s)", (field) => {
-      expect(OllamaConnection.validations[field](0)).toBe(0);
+    it("accepts zero", () => {
+      expect(OllamaConnection.validations.keepAlive(0)).toBe(0);
     });
 
-    it.each(numericFields)("rejects negative/NaN/empty (%s)", (field) => {
-      expect(OllamaConnection.validations[field](-1)).toBeNull();
-      expect(OllamaConnection.validations[field]("abc")).toBeNull();
-      expect(OllamaConnection.validations[field]("")).toBeNull();
-      expect(OllamaConnection.validations[field](null)).toBeNull();
-      expect(OllamaConnection.validations[field](undefined)).toBeNull();
+    it("rejects negative/NaN/empty", () => {
+      expect(OllamaConnection.validations.keepAlive(-1)).toBeNull();
+      expect(OllamaConnection.validations.keepAlive("abc")).toBeNull();
+      expect(OllamaConnection.validations.keepAlive("")).toBeNull();
+      expect(OllamaConnection.validations.keepAlive(null)).toBeNull();
+      expect(OllamaConnection.validations.keepAlive(undefined)).toBeNull();
     });
   });
 });
@@ -95,17 +94,16 @@ describe("OllamaConnection._sanitize", () => {
       basePath: "http://prod:11434",
       authToken: "tok",
       keepAlive: "60",
-      responseTimeout: "30000",
       id: 999, // not writable
       createdAt: new Date(), // not writable
       foo: "bar", // not writable
+      responseTimeout: 30000, // no longer writable
     });
     expect(result).toEqual({
       name: "Prod",
       basePath: "http://prod:11434",
       authToken: "tok",
       keepAlive: 60,
-      responseTimeout: 30000,
     });
   });
 

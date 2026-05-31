@@ -2,7 +2,7 @@ const { Prisma } = require("@prisma/client");
 const prisma = require("../utils/prisma");
 
 const OllamaConnection = {
-  writable: ["name", "basePath", "authToken", "keepAlive", "responseTimeout"],
+  writable: ["name", "basePath", "authToken", "keepAlive"],
 
   validations: {
     name: (value) => {
@@ -19,12 +19,6 @@ const OllamaConnection = {
       return String(value);
     },
     keepAlive: (value) => {
-      if (value === null || value === undefined || value === "") return null;
-      const num = Number(value);
-      if (Number.isNaN(num) || num < 0) return null;
-      return Math.round(num);
-    },
-    responseTimeout: (value) => {
       if (value === null || value === undefined || value === "") return null;
       const num = Number(value);
       if (Number.isNaN(num) || num < 0) return null;
