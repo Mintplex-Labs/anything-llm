@@ -6,8 +6,6 @@ export const INTAKE_STARTERS = {
   hidden: `Start my SWARMSY intake in Hidden Identity Mode. Load and follow ${INTAKE_PROMPT_PATH}. Prioritise privacy boundaries, alias/persona structure, proof-safe lore, and hidden identity consistency. Do not invent or shorten the intake unless I ask.`,
   "existing-project":
     "Help me import an existing project into SWARMSY HIVE. First ask what project notes, links, proof, assets, products, social channels, and existing lore I already have. Then prepare an intake handoff before rebuilding anything.",
-  "memory-lock":
-    "Help me continue from an existing SWARMSY memory lock. Ask me to paste or upload the latest memory lock first. Do not restart the identity unless I explicitly ask for a rebuild.",
 };
 
 export function getIntakeStarterMessage(mode) {
@@ -16,6 +14,8 @@ export function getIntakeStarterMessage(mode) {
 }
 
 export function canStartSwarmsyIntake(status, selectedMode) {
+  if (selectedMode === "memory-lock") return false;
+
   return Boolean(
     status?.workspace?.exists &&
       status?.workspace?.ready &&

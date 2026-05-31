@@ -63,6 +63,22 @@ When onboarding status confirms readiness:
   - `Existing Project`
   - `Load Memory Lock`
 - show `Start SWARMSY Intake`
+- allow `Load Memory Lock` to open a paste panel for returning users
+
+### 5. Returning user memory-lock continuation
+
+When the user selects `Load Memory Lock` in a ready HIVE:
+
+- show `Paste your latest SWARMSY memory lock.`
+- show `SPARKY will continue from this state instead of restarting your identity.`
+- block empty submit with `Paste a memory lock before continuing.`
+- hand off the pasted memory lock into SWARMSY HIVE chat using the existing pending-home-message mechanism
+- do not restart intake as part of this flow
+
+When the HIVE is not ready:
+
+- keep memory-lock continuation blocked
+- show `Create and load your SWARMSY HIVE before continuing from a memory lock.`
 
 ## Start Intake Handoff
 
@@ -77,13 +93,14 @@ The handoff uses existing AnythingLLM chat routing and message-seeding flow so u
 For blocked readiness states (no HIVE, underloaded HIVE, doctrine unavailable), `Start SWARMSY Intake` remains blocked.
 
 See: [`SWARMSY_START_INTAKE_HANDOFF.md`](./SWARMSY_START_INTAKE_HANDOFF.md)
+See also: [`SWARMSY_MEMORY_LOCK_CONTINUE_FLOW.md`](./SWARMSY_MEMORY_LOCK_CONTINUE_FLOW.md)
 
 ## Scope Limits Preserved
 
 This UI does **not** add:
 
 - dashboard UI
-- Memory Lock viewer
+- Memory Lock viewer/storage
 - Campaign Day generator
 - Spark Library changes
 - new doctrine docs
@@ -101,6 +118,8 @@ This UI does **not** add:
 3. Confirm the no-HIVE state shows `Create SWARMSY HIVE`.
 4. Confirm the underloaded state shows `Load Required Doctrine Docs`.
 5. Confirm the ready state shows the four identity mode buttons and `Start SWARMSY Intake`.
-6. Confirm selecting each identity mode and starting intake routes to SWARMSY HIVE chat with the mapped starter instruction.
-7. Confirm doctrine-unavailable, missing-HIVE, and underloaded-HIVE states keep `Start SWARMSY Intake` blocked.
-8. Confirm partial ingestion shows failed items and retry guidance.
+6. Confirm `Load Memory Lock` opens a paste panel only when the HIVE is ready.
+7. Confirm empty memory-lock input is blocked with the expected validation copy.
+8. Confirm continuing from a pasted memory lock routes to SWARMSY HIVE chat with the continuation starter message.
+9. Confirm doctrine-unavailable, missing-HIVE, and underloaded-HIVE states keep `Start SWARMSY Intake` blocked and memory-lock continuation blocked.
+10. Confirm partial ingestion shows failed items and retry guidance.

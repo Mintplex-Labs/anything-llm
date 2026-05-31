@@ -46,7 +46,8 @@
   - no-HIVE, underloaded, ready, and doctrine-unavailable states are visible
   - Face Identity Mode, Hidden Identity Mode, Existing Project, and Load Memory Lock choices are visible once ready
   - `Start SWARMSY Intake` now hands off into SWARMSY HIVE chat with mode-specific SPARKY starter messages and readiness gating (no admin routes)
-- Remaining scope: dashboard, Memory Lock viewer, and broader guided flow.
+  - `Load Memory Lock` now opens a returning-user paste flow that hands the pasted lock to SPARKY without restarting intake or identity
+- Remaining scope: dashboard, Memory Lock viewer/storage, and broader guided flow.
 
 ## Phase 5 — Required Docs Ingestion Helper
 

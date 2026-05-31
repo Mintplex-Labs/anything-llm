@@ -32,10 +32,24 @@ The selected identity mode maps to a mode-specific SPARKY starter message:
   - `Start my SWARMSY intake in Hidden Identity Mode. Load and follow docs/swarmsy/living-icon-engine/prompts/01_SWARMSY_USER_INTAKE_76_QUESTIONS.md. Prioritise privacy boundaries, alias/persona structure, proof-safe lore, and hidden identity consistency. Do not invent or shorten the intake unless I ask.`
 - Existing Project
   - `Help me import an existing project into SWARMSY HIVE. First ask what project notes, links, proof, assets, products, social channels, and existing lore I already have. Then prepare an intake handoff before rebuilding anything.`
-- Load Memory Lock
-  - `Help me continue from an existing SWARMSY memory lock. Ask me to paste or upload the latest memory lock first. Do not restart the identity unless I explicitly ask for a rebuild.`
 
 The intake prompt file path is referenced directly and not inlined into frontend code.
+
+## Memory Lock Continuation
+
+`Load Memory Lock` no longer uses the generic `Start SWARMSY Intake` starter path.
+
+Instead, onboarding opens a paste panel and sends a returning-user continuation starter directly into SWARMSY HIVE chat with the pasted memory lock included.
+
+That starter instructs SPARKY to:
+
+- continue from the provided lock
+- not restart identity unless explicitly asked
+- not rebuild lore unless explicitly asked
+- treat the memory lock as higher priority than a fresh intake
+- ask clarifying questions if the lock is unclear
+
+There is still no dedicated Memory Lock database persistence in this slice; the pasted lock is submitted as a normal chat message and follows workspace chat history retention.
 
 ## Chat Flow Convention
 
@@ -51,6 +65,6 @@ If auto-send needs to be relaxed in a future safety slice, composer prefill with
 - no `/api/admin/...` calls from onboarding UI
 - no custom chat system
 - no dashboard
-- no Memory Lock viewer
+- no Memory Lock viewer/storage
 - no Campaign Day generator
 - no package/build/dependency changes required for this slice
