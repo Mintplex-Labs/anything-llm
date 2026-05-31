@@ -6,6 +6,9 @@ const {
 const {
   createSwarmsyHiveWorkspace,
 } = require("../utils/swarmsy/applyWorkspacePreset");
+const {
+  ingestSwarmsyRequiredDocs,
+} = require("../utils/swarmsy/ingestRequiredDocs");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const {
   flexUserRoleValid,
@@ -45,6 +48,29 @@ function swarmsyCreateHiveSuccess(workspace, created = false) {
         ? "SWARMSY HIVE was created. Next, check doctrine readiness before starting intake."
         : "Your SWARMSY HIVE already exists. Check onboarding status before starting intake.",
     },
+  };
+}
+
+function swarmsyMissingHiveForDocsIngestion() {
+  return {
+    success: false,
+    workspace: {
+      exists: false,
+    },
+    message: "No SWARMSY HIVE workspace exists for this user yet.",
+    nextAction: {
+      type: "create_hive",
+      label: "Create SWARMSY HIVE",
+    },
+  };
+}
+
+function swarmsyDocsIngestionNextAction() {
+  return {
+    type: "check_onboarding_status",
+    label: "Check HIVE readiness",
+    message:
+      "Doctrine docs were processed. Check onboarding status before starting intake.",
   };
 }
 
@@ -128,6 +154,36 @@ async function swarmsyOnboardingCreateHive(request, response) {
   }
 }
 
+async function swarmsyOnboardingIngestRequiredDocs(request, response) {
+  try {
+    const user = await userFromSession(request, response);
+    const workspace = await findUserSwarmsyHiveWorkspace(user);
+    if (!workspace) {
+      return response.status(404).json(swarmsyMissingHiveForDocsIngestion());
+    }
+
+    const result = await ingestSwarmsyRequiredDocs({
+      workspace,
+      userId: user?.id ? Number(user.id) : response.locals?.user?.id ?? null,
+    });
+
+    if (result.errorCode === "COLLECTOR_OFFLINE") {
+      return response.status(503).json(result);
+    }
+
+    return response.status(200).json({
+      ...result,
+      nextAction: swarmsyDocsIngestionNextAction(),
+    });
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({
+      success: false,
+      message: "Failed to ingest SWARMSY required docs.",
+    });
+  }
+}
+
 function __resetSwarmsyHiveCreationLocksForTests() {
   swarmsyHiveCreationLocks.clear();
 }
@@ -146,11 +202,18 @@ function swarmsyEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.all])],
     swarmsyOnboardingCreateHive
   );
+
+  app.post(
+    "/swarmsy/onboarding/ingest-required-docs",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    swarmsyOnboardingIngestRequiredDocs
+  );
 }
 
 module.exports = {
   __resetSwarmsyHiveCreationLocksForTests,
   swarmsyEndpoints,
   swarmsyOnboardingCreateHive,
+  swarmsyOnboardingIngestRequiredDocs,
   swarmsyOnboardingStatus,
 };

@@ -42,12 +42,24 @@ User-safe onboarding routes:
 
 - `GET /api/swarmsy/onboarding/status`
 - `POST /api/swarmsy/onboarding/create-hive`
+- `POST /api/swarmsy/onboarding/ingest-required-docs`
 
 This route reads the existing required-docs status helper and user-owned workspace state without exposing admin-only controls to normal users.
 
 The create route remains idempotent and should be followed by status checks to confirm doctrine readiness.
 
 - Docs: [`SWARMSY_USER_SAFE_CREATE_HIVE_ROUTE.md`](./SWARMSY_USER_SAFE_CREATE_HIVE_ROUTE.md)
+- Docs: [`SWARMSY_USER_SAFE_REQUIRED_DOCS_INGESTION_ROUTE.md`](./SWARMSY_USER_SAFE_REQUIRED_DOCS_INGESTION_ROUTE.md)
+
+The ingestion route:
+
+- requires authenticated non-admin access
+- targets only the current user's own HIVE (or the single-user global HIVE fallback)
+- does not accept arbitrary workspace targeting
+- ingests only required doctrine docs
+- returns per-file `ingested`, `skipped`, and `failed` arrays
+- returns `COLLECTOR_OFFLINE` when document processing is unavailable
+- still expects the next onboarding step to be checking onboarding status
 
 ## Response Shape
 

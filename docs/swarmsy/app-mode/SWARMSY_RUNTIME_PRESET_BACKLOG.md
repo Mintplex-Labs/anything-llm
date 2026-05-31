@@ -40,6 +40,7 @@
 - Runtime slice delivered:
   - `GET /api/swarmsy/onboarding/status`
   - `POST /api/swarmsy/onboarding/create-hive` (user-safe, idempotent, no docs ingestion)
+  - `POST /api/swarmsy/onboarding/ingest-required-docs` (user-safe, current-user/global HIVE only, no arbitrary targeting)
 - Remaining scope: onboarding UI, dashboard, and broader guided flow.
 
 ## Phase 5 — Required Docs Ingestion Helper

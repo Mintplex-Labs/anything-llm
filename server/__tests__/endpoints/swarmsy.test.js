@@ -11,6 +11,9 @@ jest.mock("../../utils/swarmsy/onboardingStatus", () => ({
 jest.mock("../../utils/swarmsy/applyWorkspacePreset", () => ({
   createSwarmsyHiveWorkspace: jest.fn(),
 }));
+jest.mock("../../utils/swarmsy/ingestRequiredDocs", () => ({
+  ingestSwarmsyRequiredDocs: jest.fn(),
+}));
 
 jest.mock("../../utils/middleware/validatedRequest", () => ({
   validatedRequest: jest.fn(),
@@ -32,6 +35,9 @@ const {
   createSwarmsyHiveWorkspace,
 } = require("../../utils/swarmsy/applyWorkspacePreset");
 const {
+  ingestSwarmsyRequiredDocs,
+} = require("../../utils/swarmsy/ingestRequiredDocs");
+const {
   validatedRequest,
 } = require("../../utils/middleware/validatedRequest");
 const {
@@ -41,6 +47,7 @@ const {
 const {
   swarmsyEndpoints,
   swarmsyOnboardingCreateHive,
+  swarmsyOnboardingIngestRequiredDocs,
   swarmsyOnboardingStatus,
   __resetSwarmsyHiveCreationLocksForTests,
 } = require("../../endpoints/swarmsy");
@@ -68,6 +75,7 @@ describe("swarmsy endpoints", () => {
 
     expect(flexUserRoleValid).toHaveBeenNthCalledWith(1, [ROLES.all]);
     expect(flexUserRoleValid).toHaveBeenNthCalledWith(2, [ROLES.all]);
+    expect(flexUserRoleValid).toHaveBeenNthCalledWith(3, [ROLES.all]);
     expect(app.get).toHaveBeenCalledWith(
       "/swarmsy/onboarding/status",
       [validatedRequest, mockRoleMiddleware],
@@ -77,6 +85,11 @@ describe("swarmsy endpoints", () => {
       "/swarmsy/onboarding/create-hive",
       [validatedRequest, mockRoleMiddleware],
       swarmsyOnboardingCreateHive
+    );
+    expect(app.post).toHaveBeenCalledWith(
+      "/swarmsy/onboarding/ingest-required-docs",
+      [validatedRequest, mockRoleMiddleware],
+      swarmsyOnboardingIngestRequiredDocs
     );
   });
 
@@ -89,6 +102,18 @@ describe("swarmsy endpoints", () => {
     swarmsyEndpoints(app);
 
     const [, middlewares] = app.post.mock.calls[0];
+    expect(middlewares[0]).toBe(validatedRequest);
+  });
+
+  it("keeps ingest-required-docs protected by existing auth middleware", () => {
+    const app = {
+      get: jest.fn(),
+      post: jest.fn(),
+    };
+
+    swarmsyEndpoints(app);
+
+    const [, middlewares] = app.post.mock.calls[1];
     expect(middlewares[0]).toBe(validatedRequest);
   });
 
@@ -299,5 +324,155 @@ describe("swarmsy endpoints", () => {
     const payloadA = responseA.json.mock.calls[0][0];
     const payloadB = responseB.json.mock.calls[0][0];
     expect([payloadA.created, payloadB.created].sort()).toEqual([false, true]);
+  });
+
+  it("ingests required docs into the current authenticated user's SWARMSY HIVE", async () => {
+    const request = { headers: {} };
+    const response = responseMock();
+    const user = { id: 12, role: "default" };
+    const workspace = {
+      id: 1,
+      slug: "swarmsy-hive",
+      name: "SWARMSY HIVE",
+      documents: [],
+    };
+
+    userFromSession.mockResolvedValue(user);
+    findUserSwarmsyHiveWorkspace.mockResolvedValue(workspace);
+    ingestSwarmsyRequiredDocs.mockResolvedValue({
+      success: true,
+      workspace: {
+        exists: true,
+        id: 1,
+        slug: "swarmsy-hive",
+        name: "SWARMSY HIVE",
+      },
+      ingested: [{ path: "docs/swarmsy/core.md" }],
+      skipped: [],
+      failed: [],
+      partial: false,
+      message: "SWARMSY required docs ingested successfully.",
+    });
+
+    await swarmsyOnboardingIngestRequiredDocs(request, response);
+
+    expect(userFromSession).toHaveBeenCalledWith(request, response);
+    expect(findUserSwarmsyHiveWorkspace).toHaveBeenCalledWith(user);
+    expect(ingestSwarmsyRequiredDocs).toHaveBeenCalledWith({
+      workspace,
+      userId: 12,
+    });
+    expect(response.status).toHaveBeenCalledWith(200);
+    expect(response.json).toHaveBeenCalledWith({
+      success: true,
+      workspace: {
+        exists: true,
+        id: 1,
+        slug: "swarmsy-hive",
+        name: "SWARMSY HIVE",
+      },
+      ingested: [{ path: "docs/swarmsy/core.md" }],
+      skipped: [],
+      failed: [],
+      partial: false,
+      message: "SWARMSY required docs ingested successfully.",
+      nextAction: {
+        type: "check_onboarding_status",
+        label: "Check HIVE readiness",
+        message:
+          "Doctrine docs were processed. Check onboarding status before starting intake.",
+      },
+    });
+  });
+
+  it("returns setup-needed response when the current user has no SWARMSY HIVE", async () => {
+    const request = { headers: {} };
+    const response = responseMock();
+    const user = { id: 12, role: "default" };
+
+    userFromSession.mockResolvedValue(user);
+    findUserSwarmsyHiveWorkspace.mockResolvedValue(null);
+
+    await swarmsyOnboardingIngestRequiredDocs(request, response);
+
+    expect(ingestSwarmsyRequiredDocs).not.toHaveBeenCalled();
+    expect(response.status).toHaveBeenCalledWith(404);
+    expect(response.json).toHaveBeenCalledWith({
+      success: false,
+      workspace: {
+        exists: false,
+      },
+      message: "No SWARMSY HIVE workspace exists for this user yet.",
+      nextAction: {
+        type: "create_hive",
+        label: "Create SWARMSY HIVE",
+      },
+    });
+  });
+
+  it("uses single-user global HIVE lookup when no authenticated user is present", async () => {
+    const request = { headers: {} };
+    const response = responseMock();
+    const workspace = {
+      id: 7,
+      slug: "swarmsy-hive-global",
+      name: "SWARMSY HIVE",
+      documents: [],
+    };
+
+    userFromSession.mockResolvedValue(null);
+    findUserSwarmsyHiveWorkspace.mockResolvedValue(workspace);
+    ingestSwarmsyRequiredDocs.mockResolvedValue({
+      success: true,
+      workspace: {
+        exists: true,
+        id: 7,
+        slug: "swarmsy-hive-global",
+        name: "SWARMSY HIVE",
+      },
+      ingested: [],
+      skipped: [],
+      failed: [],
+      partial: false,
+      message: "SWARMSY required docs ingested successfully.",
+    });
+
+    await swarmsyOnboardingIngestRequiredDocs(request, response);
+
+    expect(findUserSwarmsyHiveWorkspace).toHaveBeenCalledWith(null);
+    expect(ingestSwarmsyRequiredDocs).toHaveBeenCalledWith({
+      workspace,
+      userId: null,
+    });
+    expect(response.status).toHaveBeenCalledWith(200);
+  });
+
+  it("returns collector offline response from the shared ingestion helper", async () => {
+    const request = { headers: {} };
+    const response = responseMock();
+    const user = { id: 12, role: "default" };
+    const workspace = {
+      id: 1,
+      slug: "swarmsy-hive",
+      name: "SWARMSY HIVE",
+      documents: [],
+    };
+
+    userFromSession.mockResolvedValue(user);
+    findUserSwarmsyHiveWorkspace.mockResolvedValue(workspace);
+    ingestSwarmsyRequiredDocs.mockResolvedValue({
+      success: false,
+      errorCode: "COLLECTOR_OFFLINE",
+      message: "Document processing API is not online.",
+    });
+
+    await swarmsyOnboardingIngestRequiredDocs(request, response);
+
+    expect(response.status).toHaveBeenCalledWith(503);
+    expect(response.json).toHaveBeenCalledWith({
+      success: false,
+      errorCode: "COLLECTOR_OFFLINE",
+      message: "Document processing API is not online.",
+    });
   });
 });
