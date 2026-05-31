@@ -20,6 +20,8 @@ You may target a workspace by `workspaceId` or `workspaceSlug`.
 
 If neither is provided, the route targets the current creator's existing SWARMSY HIVE workspace.
 
+> **Cross-creator targeting**: admins and managers may target any workspace by `workspaceId` or `workspaceSlug`, including workspaces owned by other users. The route still enforces that the resolved workspace is the `SWARMSY HIVE` preset, but it does not restrict targeting to workspaces owned by the caller.
+
 ```json
 {
   "workspaceId": 12
@@ -49,6 +51,7 @@ If neither is provided, the route targets the current creator's existing SWARMSY
   "ingested": [],
   "skipped": [],
   "failed": [],
+  "cleanupWarnings": [],
   "partial": false,
   "message": "SWARMSY required docs ingested successfully."
 }
@@ -58,8 +61,9 @@ If neither is provided, the route targets the current creator's existing SWARMSY
 
 - `ingested`: required docs successfully attached.
 - `skipped`: docs not ingested because they were unavailable/not loadable or already attached.
-- `failed`: per-file failures (read/collect/embed/cleanup) captured without aborting the run.
-- `partial`: `true` when one or more files failed.
+- `failed`: per-file failures (read/collect/embed) captured without aborting the run.
+- `cleanupWarnings`: post-ingest cleanup failures (purge source/vector cache) that did not prevent the doc from being attached. These do **not** affect `partial`.
+- `partial`: `true` when one or more files failed at the collect or embed stage.
 
 ### Duplicate/Skip Behavior
 

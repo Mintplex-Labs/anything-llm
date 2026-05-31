@@ -83,13 +83,11 @@ function getRequestedWorkspaceTarget(payload = {}) {
       ? payload.workspaceSlug.trim()
       : "";
   const hasWorkspaceSlug = workspaceSlug.length > 0;
-  const hasWorkspaceId =
-    payload.workspaceId !== undefined &&
-    payload.workspaceId !== null &&
-    String(payload.workspaceId).trim() !== "";
+  const rawId = payload.workspaceId;
+  const hasWorkspaceId = rawId !== undefined && rawId !== null;
 
   if (hasWorkspaceId) {
-    const workspaceId = Number(payload.workspaceId);
+    const workspaceId = typeof rawId === "number" ? rawId : Number(rawId);
     if (!Number.isInteger(workspaceId) || workspaceId <= 0) {
       return { valid: false, workspaceId: null, workspaceSlug: null };
     }
@@ -768,6 +766,7 @@ function adminEndpoints(app) {
         const ingested = [];
         const skipped = [...unavailablePaths];
         const failed = [];
+        const cleanupWarnings = [];
         const docsRoot = path.resolve(status.docsRoot);
 
         for (const docPath of loadablePaths) {
@@ -841,7 +840,7 @@ function adminEndpoints(app) {
           try {
             await purgeSourceDocument(generatedDocLocation);
           } catch (error) {
-            failed.push({
+            cleanupWarnings.push({
               path: docPath,
               stage: "cleanup",
               error: `Failed to purge source document: ${error.message}`,
@@ -851,7 +850,7 @@ function adminEndpoints(app) {
           try {
             await purgeVectorCache(generatedDocLocation);
           } catch (error) {
-            failed.push({
+            cleanupWarnings.push({
               path: docPath,
               stage: "cleanup",
               error: `Failed to purge vector cache: ${error.message}`,
@@ -883,6 +882,7 @@ function adminEndpoints(app) {
           ingested,
           skipped,
           failed,
+          cleanupWarnings,
           partial,
           message,
         });
