@@ -10,7 +10,13 @@ import SwarmsyOnboarding from "@/models/swarmsyOnboarding";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 import { PENDING_HOME_MESSAGE } from "@/utils/constants";
-import { canStartSwarmsyIntake, getIntakeStarterMessage } from "./handoff";
+import {
+  ACTION_HUB_GROUPS,
+  ACTION_HUB_HELPER_COPY,
+  ACTION_HUB_TITLE,
+  getActionHubActionState,
+} from "./actionHub";
+import { getIntakeStarterMessage } from "./handoff";
 import {
   buildCampaignDayStarterMessage,
   canUseCampaignCalendar,
@@ -254,8 +260,21 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
 
   const copy = statusCopy(activeStatus);
   const intakeStarter = getIntakeStarterMessage(selectedMode);
-  const canStartIntake = canStartSwarmsyIntake(activeStatus, selectedMode);
   const canCreateCampaignDay = canUseCalendar && Boolean(campaignDate?.trim());
+  const actionHubState = getActionHubActionState({
+    status: activeStatus,
+    selectedMode,
+    busyAction,
+  });
+  const selectedIdentityMode = IDENTITY_MODES.find(
+    (mode) => mode.id === selectedMode && mode.id !== "memory-lock"
+  );
+  const buildGroup = ACTION_HUB_GROUPS.find((group) => group.id === "build");
+  const continueGroup = ACTION_HUB_GROUPS.find(
+    (group) => group.id === "continue"
+  );
+  const launchGroup = ACTION_HUB_GROUPS.find((group) => group.id === "launch");
+  const verifyGroup = ACTION_HUB_GROUPS.find((group) => group.id === "verify");
 
   async function refreshReadiness() {
     setBusyAction("refresh");
@@ -308,36 +327,26 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
   }
 
   function startIntake() {
-    if (!activeStatus?.workspace?.exists) {
-      showToast("Create your SWARMSY HIVE before starting intake.", "warning");
+    const disabledReason = actionHubState.actions.startIntake.disabledReason;
+    if (disabledReason) {
+      showToast(disabledReason, "warning");
       return;
     }
+    setBusyAction("start-intake");
 
-    if (doctrineUnavailable(activeStatus)) {
-      showToast("Doctrine readiness cannot be confirmed right now.", "warning");
-      return;
-    }
-
-    if (!activeStatus?.workspace?.ready) {
-      showToast(
-        "Load required doctrine docs before starting intake.",
-        "warning"
+    try {
+      sessionStorage.setItem(
+        PENDING_HOME_MESSAGE,
+        JSON.stringify({ message: intakeStarter, attachments: [] })
       );
-      return;
-    }
-
-    if (!activeStatus?.workspace?.slug || !intakeStarter) {
+    } catch {
       showToast(
-        "Select an identity mode to prepare the SWARMSY intake handoff.",
-        "warning"
+        "The intake handoff could not be stored for chat. Enable browser session storage or try again.",
+        "error"
       );
+      setBusyAction(null);
       return;
     }
-
-    sessionStorage.setItem(
-      PENDING_HOME_MESSAGE,
-      JSON.stringify({ message: intakeStarter, attachments: [] })
-    );
     navigate(paths.workspace.chat(activeStatus.workspace.slug));
   }
 
@@ -362,14 +371,17 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
   }
 
   function continueFromMemoryLock() {
+    setBusyAction("memory-lock");
     if (!canLoadMemoryLock) {
       showToast(MEMORY_LOCK_BLOCKED_MESSAGE, "warning");
+      setBusyAction(null);
       return;
     }
 
     const starterMessage = buildMemoryLockStarterMessage(memoryLockInput);
     if (!starterMessage) {
       setMemoryLockError(MEMORY_LOCK_EMPTY_ERROR);
+      setBusyAction(null);
       return;
     }
 
@@ -382,19 +394,23 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
       setMemoryLockError(
         "This memory lock could not be stored for chat handoff. Paste a shorter lock or enable browser session storage, then try again."
       );
+      setBusyAction(null);
       return;
     }
     navigate(paths.workspace.chat(activeStatus.workspace.slug));
   }
 
   function createCampaignDay() {
+    setBusyAction("campaign-calendar");
     if (!canUseCalendar) {
       showToast(campaignBlockedMessage, "warning");
+      setBusyAction(null);
       return;
     }
 
     if (!campaignDate?.trim()) {
       showToast(CAMPAIGN_DATE_EMPTY_ERROR, "warning");
+      setBusyAction(null);
       return;
     }
 
@@ -406,6 +422,7 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
 
     if (!starterMessage) {
       showToast(CAMPAIGN_DATE_EMPTY_ERROR, "warning");
+      setBusyAction(null);
       return;
     }
 
@@ -419,6 +436,7 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
         "This campaign handoff could not be stored for chat handoff. Use shorter inputs and try again.",
         "error"
       );
+      setBusyAction(null);
       return;
     }
 
@@ -442,8 +460,10 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
   }
 
   function sendProofReviewToSparky() {
+    setBusyAction("proof-review");
     if (!activeStatus?.workspace?.exists) {
       showToast(PROOF_TRACKER_HIVE_MISSING_MESSAGE, "warning");
+      setBusyAction(null);
       return;
     }
 
@@ -452,6 +472,7 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
       activeStatus?.doctrine?.docsRootAvailable !== true
     ) {
       showToast(PROOF_TRACKER_DOCTRINE_UNAVAILABLE_MESSAGE, "warning");
+      setBusyAction(null);
       return;
     }
 
@@ -461,11 +482,13 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
       Number(activeStatus?.doctrine?.requiredNonLoadable || 0) > 0
     ) {
       showToast(PROOF_TRACKER_UNDERLOADED_MESSAGE, "warning");
+      setBusyAction(null);
       return;
     }
 
     if (!activeStatus?.workspace?.slug) {
       showToast(PROOF_TRACKER_DOCTRINE_UNAVAILABLE_MESSAGE, "warning");
+      setBusyAction(null);
       return;
     }
 
@@ -480,6 +503,7 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
       setProofReviewError(
         "This proof note could not be stored for chat handoff. Paste a shorter note or enable browser session storage, then try again."
       );
+      setBusyAction(null);
       return;
     }
 
@@ -590,6 +614,7 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
             <ActionButton
               icon={CheckCircle}
               busy={busyAction === "create-hive"}
+              disabled={Boolean(busyAction) && busyAction !== "create-hive"}
               onClick={createHive}
             >
               Create SWARMSY HIVE
@@ -602,6 +627,7 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
               <ActionButton
                 icon={CheckCircle}
                 busy={busyAction === "ingest-docs"}
+                disabled={Boolean(busyAction) && busyAction !== "ingest-docs"}
                 onClick={ingestRequiredDocs}
               >
                 Load Required Doctrine Docs
@@ -609,46 +635,14 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
             )}
 
           <ActionButton
-            icon={CheckCircle}
-            busy={false}
-            disabled={!canLoadMemoryLock}
-            onClick={openMemoryLockPanel}
-          >
-            Load Memory Lock
-          </ActionButton>
-
-          <ActionButton
-            icon={CheckCircle}
-            busy={false}
-            disabled={!canStartIntake}
-            onClick={startIntake}
-          >
-            Start SWARMSY Intake
-          </ActionButton>
-
-          <ActionButton
-            icon={CheckCircle}
-            busy={false}
-            disabled={!canUseProofTracker}
-            onClick={openProofReviewPanel}
-          >
-            Review Proof / Find Proof Gaps
-          </ActionButton>
-
-          <ActionButton
             icon={ArrowClockwise}
             busy={busyAction === "refresh"}
+            disabled={Boolean(busyAction) && busyAction !== "refresh"}
             onClick={refreshReadiness}
           >
             Check HIVE Readiness
           </ActionButton>
         </div>
-
-        {!canLoadMemoryLock && (
-          <p className="text-sm text-theme-text-secondary">
-            {MEMORY_LOCK_BLOCKED_MESSAGE}
-          </p>
-        )}
 
         {lastActionResult?.kind === "ingest-docs" &&
           (lastActionResult?.partial || !lastActionResult?.success) && (
@@ -670,254 +664,380 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
             </div>
           )}
 
-        {activeStatus?.workspace?.ready && (
+        {activeStatus?.workspace?.exists && (
           <div className="rounded-2xl border border-theme-sidebar-border bg-theme-bg-secondary p-5">
-            <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-theme-text-secondary">
-              Identity mode
-            </h2>
-            <div className="mt-4 grid gap-3 md:grid-cols-2">
-              {IDENTITY_MODES.map((mode) => {
-                const selected = selectedMode === mode.id;
-                return (
-                  <button
-                    key={mode.id}
-                    type="button"
-                    onClick={() => {
-                      if (mode.id === "memory-lock") {
-                        openMemoryLockPanel();
-                        return;
-                      }
-
-                      setMemoryLockPanelOpen(false);
-                      setMemoryLockInput("");
-                      setMemoryLockError("");
-                      setSelectedMode(mode.id);
-                    }}
-                    className={`rounded-2xl border p-4 text-left transition ${
-                      selected
-                        ? "border-teal bg-teal/10"
-                        : "border-theme-sidebar-border hover:bg-theme-bg-menu"
-                    }`}
-                  >
-                    <p className="text-base font-semibold text-theme-text-primary">
-                      {mode.label}
-                    </p>
-                    <p className="mt-2 text-sm text-theme-text-secondary">
-                      {mode.description}
-                    </p>
-                  </button>
-                );
-              })}
+            <div className="space-y-2">
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-theme-text-secondary">
+                {ACTION_HUB_TITLE}
+              </p>
+              <h2 className="text-2xl font-semibold text-theme-text-primary">
+                Choose the next command for SPARKY.
+              </h2>
+              <p className="max-w-3xl text-sm text-theme-text-secondary">
+                {ACTION_HUB_HELPER_COPY}
+              </p>
             </div>
 
-            {memoryLockPanelOpen && (
-              <div className="mt-4 rounded-2xl border border-theme-sidebar-border bg-theme-bg-menu p-4">
+            <div className="mt-6 grid gap-4 lg:grid-cols-2">
+              <div className="rounded-2xl border border-theme-sidebar-border bg-theme-bg-menu p-5">
                 <div className="space-y-2">
-                  <h3 className="text-base font-semibold text-theme-text-primary">
-                    Paste your latest SWARMSY memory lock.
+                  <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-theme-text-secondary">
+                    {buildGroup.title}
                   </h3>
                   <p className="text-sm text-theme-text-secondary">
-                    SPARKY will continue from this state instead of restarting
-                    your identity.
+                    {buildGroup.description}
                   </p>
                 </div>
 
-                <textarea
-                  aria-label="SWARMSY memory lock"
-                  aria-describedby={
-                    memoryLockError ? MEMORY_LOCK_ERROR_ID : undefined
-                  }
-                  aria-invalid={Boolean(memoryLockError)}
-                  value={memoryLockInput}
-                  onChange={(event) => {
-                    setMemoryLockInput(event.target.value);
-                    if (memoryLockError) {
-                      setMemoryLockError("");
-                    }
-                  }}
-                  placeholder="Paste your SWARMSY memory lock here."
-                  className="mt-4 min-h-[220px] w-full rounded-2xl border border-theme-sidebar-border bg-theme-bg-secondary p-3 text-sm text-theme-text-primary outline-none focus:border-teal"
-                />
+                <div className="mt-4 grid gap-3 md:grid-cols-2">
+                  {IDENTITY_MODES.map((mode) => {
+                    const selected =
+                      selectedMode === mode.id ||
+                      (mode.id === "memory-lock" && memoryLockPanelOpen);
+                    return (
+                      <button
+                        key={mode.id}
+                        type="button"
+                        disabled={Boolean(busyAction)}
+                        onClick={() => {
+                          if (mode.id === "memory-lock") {
+                            openMemoryLockPanel();
+                            return;
+                          }
 
-                {memoryLockError && (
-                  <p
-                    id={MEMORY_LOCK_ERROR_ID}
-                    role="alert"
-                    className="mt-3 text-sm text-red-400"
-                  >
-                    {memoryLockError}
+                          setMemoryLockPanelOpen(false);
+                          setMemoryLockInput("");
+                          setMemoryLockError("");
+                          setSelectedMode(mode.id);
+                        }}
+                        className={`rounded-2xl border p-4 text-left transition ${
+                          selected
+                            ? "border-teal bg-teal/10"
+                            : "border-theme-sidebar-border hover:bg-theme-bg-secondary"
+                        } disabled:cursor-not-allowed disabled:opacity-60`}
+                      >
+                        <p className="text-base font-semibold text-theme-text-primary">
+                          {mode.label}
+                        </p>
+                        <p className="mt-2 text-sm text-theme-text-secondary">
+                          {mode.description}
+                        </p>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="mt-4 rounded-2xl border border-theme-sidebar-border bg-theme-bg-secondary p-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-theme-text-secondary">
+                    {buildGroup.actions.join(" · ")}
                   </p>
-                )}
-
-                <div className="mt-4 flex flex-wrap gap-3">
-                  <button
-                    type="button"
-                    onClick={closeMemoryLockPanel}
-                    className="rounded-lg border border-theme-sidebar-border px-4 py-2 text-sm font-medium text-theme-text-primary transition hover:bg-theme-bg-secondary"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    onClick={continueFromMemoryLock}
-                    className="rounded-lg border border-teal bg-teal px-4 py-2 text-sm font-medium text-black transition hover:opacity-90"
-                  >
-                    Continue from Memory Lock
-                  </button>
+                  <p className="mt-2 text-sm text-theme-text-secondary">
+                    {selectedIdentityMode
+                      ? `${selectedIdentityMode.label} selected. ${selectedIdentityMode.description}`
+                      : "Choose Face Identity Mode, Hidden Identity Mode, or Existing Project before starting intake."}
+                  </p>
+                  {actionHubState.actions.startIntake.disabledReason && (
+                    <p className="mt-3 text-sm text-theme-text-secondary">
+                      {actionHubState.actions.startIntake.disabledReason}
+                    </p>
+                  )}
+                  <div className="mt-4">
+                    <ActionButton
+                      icon={CheckCircle}
+                      busy={actionHubState.actions.startIntake.busy}
+                      disabled={actionHubState.actions.startIntake.disabled}
+                      onClick={startIntake}
+                    >
+                      Start Intake
+                    </ActionButton>
+                  </div>
                 </div>
               </div>
-            )}
+
+              <div className="rounded-2xl border border-theme-sidebar-border bg-theme-bg-menu p-5">
+                <div className="space-y-2">
+                  <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-theme-text-secondary">
+                    {continueGroup.title}
+                  </h3>
+                  <p className="text-sm text-theme-text-secondary">
+                    {continueGroup.description}
+                  </p>
+                </div>
+
+                <div className="mt-4 rounded-2xl border border-theme-sidebar-border bg-theme-bg-secondary p-4">
+                  <p className="text-base font-semibold text-theme-text-primary">
+                    {continueGroup.actions[0]}
+                  </p>
+                  <p className="mt-2 text-sm text-theme-text-secondary">
+                    {continueGroup.description}
+                  </p>
+                  {actionHubState.actions.loadMemoryLock.disabledReason && (
+                    <p className="mt-3 text-sm text-theme-text-secondary">
+                      {actionHubState.actions.loadMemoryLock.disabledReason}
+                    </p>
+                  )}
+                  <div className="mt-4">
+                    <ActionButton
+                      icon={CheckCircle}
+                      busy={actionHubState.actions.loadMemoryLock.busy}
+                      disabled={actionHubState.actions.loadMemoryLock.disabled}
+                      onClick={openMemoryLockPanel}
+                    >
+                      Load Memory Lock
+                    </ActionButton>
+                  </div>
+                </div>
+
+                {memoryLockPanelOpen && (
+                  <div className="mt-4 rounded-2xl border border-theme-sidebar-border bg-theme-bg-secondary p-4">
+                    <div className="space-y-2">
+                      <h3 className="text-base font-semibold text-theme-text-primary">
+                        Paste your latest SWARMSY memory lock.
+                      </h3>
+                      <p className="text-sm text-theme-text-secondary">
+                        SPARKY will continue from this state instead of
+                        restarting your identity.
+                      </p>
+                    </div>
+
+                    <textarea
+                      aria-label="SWARMSY memory lock"
+                      aria-describedby={
+                        memoryLockError ? MEMORY_LOCK_ERROR_ID : undefined
+                      }
+                      aria-invalid={Boolean(memoryLockError)}
+                      value={memoryLockInput}
+                      onChange={(event) => {
+                        setMemoryLockInput(event.target.value);
+                        if (memoryLockError) {
+                          setMemoryLockError("");
+                        }
+                      }}
+                      placeholder="Paste your SWARMSY memory lock here."
+                      className="mt-4 min-h-[220px] w-full rounded-2xl border border-theme-sidebar-border bg-theme-bg-menu p-3 text-sm text-theme-text-primary outline-none focus:border-teal"
+                    />
+
+                    {memoryLockError && (
+                      <p
+                        id={MEMORY_LOCK_ERROR_ID}
+                        role="alert"
+                        className="mt-3 text-sm text-red-400"
+                      >
+                        {memoryLockError}
+                      </p>
+                    )}
+
+                    <div className="mt-4 flex flex-wrap gap-3">
+                      <button
+                        type="button"
+                        disabled={Boolean(busyAction)}
+                        onClick={closeMemoryLockPanel}
+                        className="rounded-lg border border-theme-sidebar-border px-4 py-2 text-sm font-medium text-theme-text-primary transition hover:bg-theme-bg-menu disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        Cancel
+                      </button>
+                      <ActionButton
+                        icon={CheckCircle}
+                        busy={busyAction === "memory-lock"}
+                        disabled={
+                          Boolean(busyAction) && busyAction !== "memory-lock"
+                        }
+                        onClick={continueFromMemoryLock}
+                      >
+                        Continue from Memory Lock
+                      </ActionButton>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="rounded-2xl border border-theme-sidebar-border bg-theme-bg-menu p-5">
+                <div className="space-y-2">
+                  <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-theme-text-secondary">
+                    {launchGroup.title}
+                  </h3>
+                  <p className="text-sm text-theme-text-secondary">
+                    {launchGroup.description}
+                  </p>
+                </div>
+
+                <div className="mt-4 rounded-2xl border border-theme-sidebar-border bg-theme-bg-secondary p-4">
+                  <p className="text-base font-semibold text-theme-text-primary">
+                    {launchGroup.actions[0]}
+                  </p>
+                  <p className="mt-2 text-sm text-theme-text-secondary">
+                    {launchGroup.description}
+                  </p>
+
+                  <div className="mt-4 grid gap-3 md:grid-cols-2">
+                    <label className="block text-sm text-theme-text-primary">
+                      <span className="mb-1 block text-theme-text-secondary">
+                        Selected date
+                      </span>
+                      <input
+                        type="date"
+                        value={campaignDate}
+                        disabled={
+                          actionHubState.actions.campaignCalendar.disabled
+                        }
+                        onChange={(event) =>
+                          setCampaignDate(event.target.value)
+                        }
+                        className="w-full rounded-lg border border-theme-sidebar-border bg-theme-bg-menu px-3 py-2 text-sm text-theme-text-primary outline-none focus:border-teal disabled:cursor-not-allowed disabled:opacity-60"
+                      />
+                    </label>
+
+                    <label className="block text-sm text-theme-text-primary">
+                      <span className="mb-1 block text-theme-text-secondary">
+                        Campaign focus (optional)
+                      </span>
+                      <input
+                        type="text"
+                        value={campaignFocus}
+                        disabled={
+                          actionHubState.actions.campaignCalendar.disabled
+                        }
+                        onChange={(event) =>
+                          setCampaignFocus(event.target.value)
+                        }
+                        placeholder="Optional focus for this day."
+                        className="w-full rounded-lg border border-theme-sidebar-border bg-theme-bg-menu px-3 py-2 text-sm text-theme-text-primary outline-none focus:border-teal disabled:cursor-not-allowed disabled:opacity-60"
+                      />
+                    </label>
+                  </div>
+
+                  <label className="mt-3 block text-sm text-theme-text-primary">
+                    <span className="mb-1 block text-theme-text-secondary">
+                      Proof/assets/results to consider (optional)
+                    </span>
+                    <textarea
+                      value={campaignProofAssets}
+                      disabled={
+                        actionHubState.actions.campaignCalendar.disabled
+                      }
+                      onChange={(event) =>
+                        setCampaignProofAssets(event.target.value)
+                      }
+                      placeholder="Optional proof, assets, or result context."
+                      className="min-h-[120px] w-full rounded-lg border border-theme-sidebar-border bg-theme-bg-menu px-3 py-2 text-sm text-theme-text-primary outline-none focus:border-teal disabled:cursor-not-allowed disabled:opacity-60"
+                    />
+                  </label>
+
+                  {actionHubState.actions.campaignCalendar.disabledReason && (
+                    <p className="mt-3 text-sm text-theme-text-secondary">
+                      {actionHubState.actions.campaignCalendar.disabledReason}
+                    </p>
+                  )}
+
+                  <div className="mt-4">
+                    <ActionButton
+                      icon={CheckCircle}
+                      busy={actionHubState.actions.campaignCalendar.busy}
+                      disabled={
+                        actionHubState.actions.campaignCalendar.disabled ||
+                        !canCreateCampaignDay
+                      }
+                      onClick={createCampaignDay}
+                    >
+                      Create Campaign Day
+                    </ActionButton>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-theme-sidebar-border bg-theme-bg-menu p-5">
+                <div className="space-y-2">
+                  <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-theme-text-secondary">
+                    {verifyGroup.title}
+                  </h3>
+                  <p className="text-sm text-theme-text-secondary">
+                    {verifyGroup.description}
+                  </p>
+                </div>
+
+                <div className="mt-4 rounded-2xl border border-theme-sidebar-border bg-theme-bg-secondary p-4">
+                  <p className="text-base font-semibold text-theme-text-primary">
+                    {verifyGroup.actions[0]}
+                  </p>
+                  <p className="mt-2 text-sm text-theme-text-secondary">
+                    {verifyGroup.description}
+                  </p>
+
+                  {!proofReviewPanelOpen ? (
+                    <div className="mt-4 space-y-3">
+                      {actionHubState.actions.reviewProof.disabledReason && (
+                        <p className="text-sm text-theme-text-secondary">
+                          {actionHubState.actions.reviewProof.disabledReason}
+                        </p>
+                      )}
+                      <ActionButton
+                        icon={CheckCircle}
+                        busy={actionHubState.actions.reviewProof.busy}
+                        disabled={actionHubState.actions.reviewProof.disabled}
+                        onClick={openProofReviewPanel}
+                      >
+                        Review Proof / Find Proof Gaps
+                      </ActionButton>
+                    </div>
+                  ) : (
+                    <div className="mt-4 rounded-2xl border border-theme-sidebar-border bg-theme-bg-menu p-4">
+                      <p className="text-sm text-theme-text-secondary">
+                        Paste proof, links, notes, screenshot descriptions,
+                        sales results, comments, press mentions, product
+                        details, or campaign results.
+                      </p>
+                      <textarea
+                        aria-label="SWARMSY proof review notes"
+                        aria-describedby={
+                          proofReviewError ? PROOF_TRACKER_ERROR_ID : undefined
+                        }
+                        aria-invalid={Boolean(proofReviewError)}
+                        value={proofReviewInput}
+                        onChange={(event) => {
+                          setProofReviewInput(event.target.value);
+                          if (proofReviewError) {
+                            setProofReviewError("");
+                          }
+                        }}
+                        placeholder="Paste proof, links, notes, screenshot descriptions, sales results, comments, press mentions, product details, or campaign results."
+                        className="mt-3 min-h-[180px] w-full rounded-2xl border border-theme-sidebar-border bg-theme-bg-secondary p-3 text-sm text-theme-text-primary outline-none focus:border-teal"
+                      />
+                      {proofReviewError && (
+                        <p
+                          id={PROOF_TRACKER_ERROR_ID}
+                          role="alert"
+                          className="mt-3 text-sm text-red-400"
+                        >
+                          {proofReviewError}
+                        </p>
+                      )}
+                      <div className="mt-4 flex flex-wrap gap-3">
+                        <button
+                          type="button"
+                          disabled={Boolean(busyAction)}
+                          onClick={closeProofReviewPanel}
+                          className="rounded-lg border border-theme-sidebar-border px-4 py-2 text-sm font-medium text-theme-text-primary transition hover:bg-theme-bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          Cancel
+                        </button>
+                        <ActionButton
+                          icon={CheckCircle}
+                          busy={busyAction === "proof-review"}
+                          disabled={
+                            Boolean(busyAction) && busyAction !== "proof-review"
+                          }
+                          onClick={sendProofReviewToSparky}
+                        >
+                          Send Proof Review to SPARKY
+                        </ActionButton>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         )}
-
-        <div className="rounded-2xl border border-theme-sidebar-border bg-theme-bg-secondary p-5">
-          <div className="space-y-2">
-            <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-theme-text-secondary">
-              SWARMSY Campaign Calendar
-            </h2>
-            <p className="text-sm text-theme-text-secondary">
-              Pick a day and send SPARKY a campaign command.
-            </p>
-          </div>
-
-          <div className="mt-4 grid gap-3 md:grid-cols-2">
-            <label className="block text-sm text-theme-text-primary">
-              <span className="mb-1 block text-theme-text-secondary">
-                Selected date
-              </span>
-              <input
-                type="date"
-                value={campaignDate}
-                disabled={!canUseCalendar}
-                onChange={(event) => setCampaignDate(event.target.value)}
-                className="w-full rounded-lg border border-theme-sidebar-border bg-theme-bg-menu px-3 py-2 text-sm text-theme-text-primary outline-none focus:border-teal disabled:cursor-not-allowed disabled:opacity-60"
-              />
-            </label>
-
-            <label className="block text-sm text-theme-text-primary">
-              <span className="mb-1 block text-theme-text-secondary">
-                Campaign focus (optional)
-              </span>
-              <input
-                type="text"
-                value={campaignFocus}
-                disabled={!canUseCalendar}
-                onChange={(event) => setCampaignFocus(event.target.value)}
-                placeholder="Optional focus for this day."
-                className="w-full rounded-lg border border-theme-sidebar-border bg-theme-bg-menu px-3 py-2 text-sm text-theme-text-primary outline-none focus:border-teal disabled:cursor-not-allowed disabled:opacity-60"
-              />
-            </label>
-          </div>
-
-          <label className="mt-3 block text-sm text-theme-text-primary">
-            <span className="mb-1 block text-theme-text-secondary">
-              Proof/assets/results to consider (optional)
-            </span>
-            <textarea
-              value={campaignProofAssets}
-              disabled={!canUseCalendar}
-              onChange={(event) => setCampaignProofAssets(event.target.value)}
-              placeholder="Optional proof, assets, or result context."
-              className="min-h-[120px] w-full rounded-lg border border-theme-sidebar-border bg-theme-bg-menu px-3 py-2 text-sm text-theme-text-primary outline-none focus:border-teal disabled:cursor-not-allowed disabled:opacity-60"
-            />
-          </label>
-
-          {campaignBlockedMessage && (
-            <p className="mt-3 text-sm text-theme-text-secondary">
-              {campaignBlockedMessage}
-            </p>
-          )}
-
-          <div className="mt-4">
-            <button
-              type="button"
-              disabled={!canCreateCampaignDay}
-              onClick={createCampaignDay}
-              className="rounded-lg border border-teal bg-teal px-4 py-2 text-sm font-medium text-black transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              Create Campaign Day
-            </button>
-          </div>
-        </div>
-
-        <div className="rounded-2xl border border-theme-sidebar-border bg-theme-bg-secondary p-5">
-          <div className="space-y-2">
-            <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-theme-text-secondary">
-              SWARMSY Proof Tracker
-            </h2>
-            <p className="text-sm text-theme-text-secondary">
-              Review proof and find claim gaps before making campaign, PR,
-              product, or content claims.
-            </p>
-          </div>
-
-          {!proofReviewPanelOpen ? (
-            <div className="mt-4 space-y-3">
-              {proofTrackerBlockedMessage && (
-                <p className="text-sm text-theme-text-secondary">
-                  {proofTrackerBlockedMessage}
-                </p>
-              )}
-              <button
-                type="button"
-                disabled={!canUseProofTracker}
-                onClick={openProofReviewPanel}
-                className="rounded-lg border border-teal bg-teal px-4 py-2 text-sm font-medium text-black transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                Review Proof / Find Proof Gaps
-              </button>
-            </div>
-          ) : (
-            <div className="mt-4 rounded-2xl border border-theme-sidebar-border bg-theme-bg-menu p-4">
-              <p className="text-sm text-theme-text-secondary">
-                Paste proof, links, notes, screenshot descriptions, sales
-                results, comments, press mentions, product details, or campaign
-                results.
-              </p>
-              <textarea
-                aria-label="SWARMSY proof review notes"
-                aria-describedby={
-                  proofReviewError ? PROOF_TRACKER_ERROR_ID : undefined
-                }
-                aria-invalid={Boolean(proofReviewError)}
-                value={proofReviewInput}
-                onChange={(event) => {
-                  setProofReviewInput(event.target.value);
-                  if (proofReviewError) {
-                    setProofReviewError("");
-                  }
-                }}
-                placeholder="Paste proof, links, notes, screenshot descriptions, sales results, comments, press mentions, product details, or campaign results."
-                className="mt-3 min-h-[180px] w-full rounded-2xl border border-theme-sidebar-border bg-theme-bg-secondary p-3 text-sm text-theme-text-primary outline-none focus:border-teal"
-              />
-              {proofReviewError && (
-                <p
-                  id={PROOF_TRACKER_ERROR_ID}
-                  role="alert"
-                  className="mt-3 text-sm text-red-400"
-                >
-                  {proofReviewError}
-                </p>
-              )}
-              <div className="mt-4 flex flex-wrap gap-3">
-                <button
-                  type="button"
-                  onClick={closeProofReviewPanel}
-                  className="rounded-lg border border-theme-sidebar-border px-4 py-2 text-sm font-medium text-theme-text-primary transition hover:bg-theme-bg-secondary"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={sendProofReviewToSparky}
-                  className="rounded-lg border border-teal bg-teal px-4 py-2 text-sm font-medium text-black transition hover:opacity-90"
-                >
-                  Send Proof Review to SPARKY
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
       </div>
     </div>
   );
