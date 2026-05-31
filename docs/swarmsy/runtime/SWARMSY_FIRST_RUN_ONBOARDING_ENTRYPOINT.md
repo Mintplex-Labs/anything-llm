@@ -4,6 +4,8 @@ This runtime slice adds user-safe onboarding routes for SWARMSY first-run flows.
 
 It does **not** add the full onboarding wizard, dashboard UI, Spark Library changes, or new doctrine docs.
 
+The follow-up UI slice now uses these routes from the normal user home surface and still avoids admin-route access.
+
 ## Route
 
 - **Method:** `GET`
@@ -152,3 +154,15 @@ Expected result: reject the request with the existing auth middleware response.
 ### Admin/setup reminder
 
 If doctrine docs are unavailable on disk or still pending ingestion, normal user UI must not call admin routes directly. Use an authorized setup path instead.
+
+## Visible UI Follow-Up
+
+The first visible SWARMSY onboarding UI now lives on the normal user home surface and uses only:
+
+- `GET /api/swarmsy/onboarding/status`
+- `POST /api/swarmsy/onboarding/create-hive`
+- `POST /api/swarmsy/onboarding/ingest-required-docs`
+
+It does **not** add dashboard UI or a Memory Lock viewer.
+
+It keeps the `Start SWARMSY Intake` handoff visible, but leaves direct chat automation for a later PR if that handoff needs to be safer or more explicit.

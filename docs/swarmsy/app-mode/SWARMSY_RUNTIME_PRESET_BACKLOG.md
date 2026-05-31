@@ -41,7 +41,12 @@
   - `GET /api/swarmsy/onboarding/status`
   - `POST /api/swarmsy/onboarding/create-hive` (user-safe, idempotent, no docs ingestion)
   - `POST /api/swarmsy/onboarding/ingest-required-docs` (user-safe, current-user/global HIVE only, no arbitrary targeting)
-- Remaining scope: onboarding UI, dashboard, and broader guided flow.
+- Runtime UI delivered:
+  - normal-user home surface shows SWARMSY onboarding instead of the generic blank start where SWARMSY onboarding mode is active
+  - no-HIVE, underloaded, ready, and doctrine-unavailable states are visible
+  - Face Identity Mode, Hidden Identity Mode, Existing Project, and Load Memory Lock choices are visible once ready
+  - `Start SWARMSY Intake` is exposed as a guided next action without using admin routes
+- Remaining scope: direct chat handoff, dashboard, Memory Lock viewer, and broader guided flow.
 
 ## Phase 5 — Required Docs Ingestion Helper
 
