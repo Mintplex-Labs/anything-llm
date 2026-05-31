@@ -37,6 +37,10 @@
 - Acceptance criteria: First-run users see SWARMSY framing and mode options.
 - Validation/tests: Onboarding flow tests and copy rendering checks.
 - Rollback note: Route users back to existing onboarding entry point.
+- Runtime slice delivered:
+  - `GET /api/swarmsy/onboarding/status`
+  - `POST /api/swarmsy/onboarding/create-hive` (user-safe, idempotent, no docs ingestion)
+- Remaining scope: onboarding UI, dashboard, and broader guided flow.
 
 ## Phase 5 — Required Docs Ingestion Helper
 

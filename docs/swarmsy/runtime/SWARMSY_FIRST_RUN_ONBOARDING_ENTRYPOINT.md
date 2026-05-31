@@ -1,6 +1,6 @@
 # SWARMSY First-Run Onboarding Entrypoint
 
-This runtime slice adds a user-safe onboarding status route for SWARMSY first-run flows.
+This runtime slice adds user-safe onboarding routes for SWARMSY first-run flows.
 
 It does **not** add the full onboarding wizard, dashboard UI, Spark Library changes, or new doctrine docs.
 
@@ -38,9 +38,16 @@ Existing admin SWARMSY routes remain setup/admin tools:
 
 Normal onboarding must use user-safe endpoints instead of calling `/api/admin/...` directly.
 
+User-safe onboarding routes:
+
+- `GET /api/swarmsy/onboarding/status`
+- `POST /api/swarmsy/onboarding/create-hive`
+
 This route reads the existing required-docs status helper and user-owned workspace state without exposing admin-only controls to normal users.
 
-A future PR may add a user-safe `POST /api/swarmsy/onboarding/create-hive` route if workspace creation needs to be initiated from the normal-user onboarding flow.
+The create route remains idempotent and should be followed by status checks to confirm doctrine readiness.
+
+- Docs: [`SWARMSY_USER_SAFE_CREATE_HIVE_ROUTE.md`](./SWARMSY_USER_SAFE_CREATE_HIVE_ROUTE.md)
 
 ## Response Shape
 
