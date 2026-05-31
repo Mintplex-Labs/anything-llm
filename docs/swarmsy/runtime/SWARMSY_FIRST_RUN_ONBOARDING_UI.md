@@ -66,13 +66,17 @@ When onboarding status confirms readiness:
 
 ## Start Intake Handoff
 
-This PR keeps the intake handoff visible without inventing the intake itself.
+The onboarding UI now hands users directly into SWARMSY HIVE chat when they click `Start SWARMSY Intake` in a ready state.
 
-For Face and Hidden Identity modes, the UI tells the user to open `SWARMSY HIVE` and start intake with SPARKY using:
+The selected identity mode is preserved in a mode-specific starter message sent to SPARKY, and the intake file stays referenced (not inlined):
 
 - `docs/swarmsy/living-icon-engine/prompts/01_SWARMSY_USER_INTAKE_76_QUESTIONS.md`
 
-The direct chat wiring is intentionally left as the next PR if more automation is needed.
+The handoff uses existing AnythingLLM chat routing and message-seeding flow so users do not land in a generic blank chat.
+
+For blocked readiness states (no HIVE, underloaded HIVE, doctrine unavailable), `Start SWARMSY Intake` remains blocked.
+
+See: [`SWARMSY_START_INTAKE_HANDOFF.md`](./SWARMSY_START_INTAKE_HANDOFF.md)
 
 ## Scope Limits Preserved
 
@@ -97,9 +101,6 @@ This UI does **not** add:
 3. Confirm the no-HIVE state shows `Create SWARMSY HIVE`.
 4. Confirm the underloaded state shows `Load Required Doctrine Docs`.
 5. Confirm the ready state shows the four identity mode buttons and `Start SWARMSY Intake`.
-6. Confirm doctrine-unavailable states do not show the HIVE as ready.
-7. Confirm partial ingestion shows failed items and retry guidance.
-
-## Next PR
-
-The next SWARMSY onboarding PR should wire the `Start SWARMSY Intake` handoff directly into chat safely if the product still wants a one-click transition.
+6. Confirm selecting each identity mode and starting intake routes to SWARMSY HIVE chat with the mapped starter instruction.
+7. Confirm doctrine-unavailable, missing-HIVE, and underloaded-HIVE states keep `Start SWARMSY Intake` blocked.
+8. Confirm partial ingestion shows failed items and retry guidance.

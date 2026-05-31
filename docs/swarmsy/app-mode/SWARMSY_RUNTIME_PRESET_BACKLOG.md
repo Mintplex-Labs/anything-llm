@@ -45,8 +45,8 @@
   - normal-user home surface shows SWARMSY onboarding instead of the generic blank start where SWARMSY onboarding mode is active
   - no-HIVE, underloaded, ready, and doctrine-unavailable states are visible
   - Face Identity Mode, Hidden Identity Mode, Existing Project, and Load Memory Lock choices are visible once ready
-  - `Start SWARMSY Intake` is exposed as a guided next action without using admin routes
-- Remaining scope: direct chat handoff, dashboard, Memory Lock viewer, and broader guided flow.
+  - `Start SWARMSY Intake` now hands off into SWARMSY HIVE chat with mode-specific SPARKY starter messages and readiness gating (no admin routes)
+- Remaining scope: dashboard, Memory Lock viewer, and broader guided flow.
 
 ## Phase 5 — Required Docs Ingestion Helper
 

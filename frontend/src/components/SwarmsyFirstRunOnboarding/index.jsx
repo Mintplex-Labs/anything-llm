@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   ArrowClockwise,
-  ArrowSquareOut,
   CheckCircle,
   SpinnerGap,
   WarningCircle,
@@ -10,9 +9,8 @@ import { useNavigate } from "react-router-dom";
 import SwarmsyOnboarding from "@/models/swarmsyOnboarding";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
-
-const INTAKE_PROMPT_PATH =
-  "docs/swarmsy/living-icon-engine/prompts/01_SWARMSY_USER_INTAKE_76_QUESTIONS.md";
+import { PENDING_HOME_MESSAGE } from "@/utils/constants";
+import { canStartSwarmsyIntake, getIntakeStarterMessage } from "./handoff";
 
 const IDENTITY_MODES = [
   {
@@ -136,58 +134,6 @@ function friendlyFailedItem(item = {}) {
   };
 }
 
-function intakeGuidance(mode, status, existingProjectWorkspace) {
-  if (!mode) return null;
-
-  if (mode === "face") {
-    return {
-      title: "Start my SWARMSY intake.",
-      description: `Open ${status?.workspace?.name || "SWARMSY HIVE"} and have SPARKY run the intake from ${INTAKE_PROMPT_PATH}.`,
-      nextLabel: "Open SWARMSY HIVE",
-      href: status?.workspace?.slug
-        ? paths.workspace.chat(status.workspace.slug)
-        : null,
-    };
-  }
-
-  if (mode === "hidden") {
-    return {
-      title: "Start my SWARMSY intake.",
-      description: `Open ${status?.workspace?.name || "SWARMSY HIVE"} and have SPARKY run the hidden-identity intake from ${INTAKE_PROMPT_PATH}.`,
-      nextLabel: "Open SWARMSY HIVE",
-      href: status?.workspace?.slug
-        ? paths.workspace.chat(status.workspace.slug)
-        : null,
-    };
-  }
-
-  if (mode === "existing-project") {
-    return {
-      title: "Existing project handoff stays as the next action in this PR.",
-      description: existingProjectWorkspace?.slug
-        ? "Open your current project workspace, then wire the intake/chat handoff in the next PR."
-        : "An existing project workspace was not detected here yet. Keep the choice visible and wire project handoff in the next PR.",
-      nextLabel: existingProjectWorkspace?.slug
-        ? "Open Existing Project"
-        : null,
-      href: existingProjectWorkspace?.slug
-        ? paths.workspace.chat(existingProjectWorkspace.slug)
-        : null,
-    };
-  }
-
-  return {
-    title:
-      "Memory Lock handoff stays visible, but the viewer is not in scope here.",
-    description:
-      "Keep this mode selectable now, then add the Memory Lock viewer and chat handoff in the next PR.",
-    nextLabel: status?.workspace?.slug ? "Open SWARMSY HIVE" : null,
-    href: status?.workspace?.slug
-      ? paths.workspace.chat(status.workspace.slug)
-      : null,
-  };
-}
-
 function ActionButton({ busy, icon: Icon, children, ...props }) {
   return (
     <button
@@ -206,16 +152,12 @@ function ActionButton({ busy, icon: Icon, children, ...props }) {
   );
 }
 
-export default function SwarmsyFirstRunOnboarding({
-  children = null,
-  fallbackWorkspace = null,
-}) {
+export default function SwarmsyFirstRunOnboarding({ children = null }) {
   const navigate = useNavigate();
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(true);
   const [busyAction, setBusyAction] = useState(null);
   const [selectedMode, setSelectedMode] = useState(null);
-  const [showIntakeGuidance, setShowIntakeGuidance] = useState(false);
   const [lastActionResult, setLastActionResult] = useState(null);
 
   const loadStatus = useCallback(async () => {
@@ -254,22 +196,12 @@ export default function SwarmsyFirstRunOnboarding({
   useEffect(() => {
     if (status?.workspace?.ready) return;
     setSelectedMode(null);
-    setShowIntakeGuidance(false);
   }, [status?.workspace?.ready]);
-
-  const existingProjectWorkspace = useMemo(() => {
-    if (!fallbackWorkspace?.slug) return null;
-    if (fallbackWorkspace.slug === status?.workspace?.slug) return null;
-    return fallbackWorkspace;
-  }, [fallbackWorkspace, status?.workspace?.slug]);
 
   const activeStatus = status || createFallbackStatus();
   const copy = statusCopy(activeStatus);
-  const intakeNextStep = intakeGuidance(
-    selectedMode,
-    activeStatus,
-    existingProjectWorkspace
-  );
+  const intakeStarter = getIntakeStarterMessage(selectedMode);
+  const canStartIntake = canStartSwarmsyIntake(activeStatus, selectedMode);
 
   async function refreshReadiness() {
     setBusyAction("refresh");
@@ -319,6 +251,40 @@ export default function SwarmsyFirstRunOnboarding({
     }
     await loadStatus();
     setBusyAction(null);
+  }
+
+  function startIntake() {
+    if (!activeStatus?.workspace?.exists) {
+      showToast("Create your SWARMSY HIVE before starting intake.", "warning");
+      return;
+    }
+
+    if (doctrineUnavailable(activeStatus)) {
+      showToast("Doctrine readiness cannot be confirmed right now.", "warning");
+      return;
+    }
+
+    if (!activeStatus?.workspace?.ready) {
+      showToast(
+        "Load required doctrine docs before starting intake.",
+        "warning"
+      );
+      return;
+    }
+
+    if (!activeStatus?.workspace?.slug || !intakeStarter) {
+      showToast(
+        "Select an identity mode to prepare the SWARMSY intake handoff.",
+        "warning"
+      );
+      return;
+    }
+
+    sessionStorage.setItem(
+      PENDING_HOME_MESSAGE,
+      JSON.stringify({ message: intakeStarter, attachments: [] })
+    );
+    navigate(paths.workspace.chat(activeStatus.workspace.slug));
   }
 
   if (
@@ -443,23 +409,21 @@ export default function SwarmsyFirstRunOnboarding({
             )}
 
           <ActionButton
+            icon={CheckCircle}
+            busy={false}
+            disabled={!canStartIntake}
+            onClick={startIntake}
+          >
+            Start SWARMSY Intake
+          </ActionButton>
+
+          <ActionButton
             icon={ArrowClockwise}
             busy={busyAction === "refresh"}
             onClick={refreshReadiness}
           >
             Check HIVE Readiness
           </ActionButton>
-
-          {activeStatus?.workspace?.ready && (
-            <ActionButton
-              icon={ArrowSquareOut}
-              busy={false}
-              disabled={!selectedMode}
-              onClick={() => setShowIntakeGuidance(true)}
-            >
-              Start SWARMSY Intake
-            </ActionButton>
-          )}
         </div>
 
         {lastActionResult?.kind === "ingest-docs" &&
@@ -496,7 +460,6 @@ export default function SwarmsyFirstRunOnboarding({
                     type="button"
                     onClick={() => {
                       setSelectedMode(mode.id);
-                      setShowIntakeGuidance(false);
                     }}
                     className={`rounded-2xl border p-4 text-left transition ${
                       selected
@@ -513,42 +476,6 @@ export default function SwarmsyFirstRunOnboarding({
                   </button>
                 );
               })}
-            </div>
-          </div>
-        )}
-
-        {showIntakeGuidance && intakeNextStep && (
-          <div className="rounded-2xl border border-theme-sidebar-border bg-theme-bg-secondary p-5">
-            <h2 className="text-lg font-semibold text-theme-text-primary">
-              {intakeNextStep.title}
-            </h2>
-            <p className="mt-3 max-w-3xl text-sm leading-6 text-theme-text-secondary">
-              {intakeNextStep.description}
-            </p>
-            {(selectedMode === "face" || selectedMode === "hidden") && (
-              <p className="mt-3 text-xs leading-5 text-theme-text-secondary">
-                Chat handoff stays as a clear next action here. This PR does not
-                invent the intake; it leaves the direct chat wiring to the next
-                slice if more automation is needed.
-              </p>
-            )}
-            <div className="mt-4 flex flex-wrap gap-3">
-              {intakeNextStep.href && (
-                <ActionButton
-                  icon={ArrowSquareOut}
-                  busy={false}
-                  onClick={() => navigate(intakeNextStep.href)}
-                >
-                  {intakeNextStep.nextLabel}
-                </ActionButton>
-              )}
-              <ActionButton
-                icon={ArrowClockwise}
-                busy={busyAction === "refresh"}
-                onClick={refreshReadiness}
-              >
-                Check HIVE Readiness
-              </ActionButton>
             </div>
           </div>
         )}
