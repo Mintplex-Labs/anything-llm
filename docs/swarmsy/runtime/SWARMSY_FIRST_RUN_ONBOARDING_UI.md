@@ -107,6 +107,28 @@ When the HIVE is not ready, campaign calendar handoff is blocked with readiness-
 - `Load required doctrine docs before using the campaign calendar.`
 - `Doctrine readiness cannot be confirmed. Check HIVE readiness before using the campaign calendar.`
 
+### 7. Proof tracker handoff
+
+The onboarding UI now includes `SWARMSY Proof Tracker` as a lightweight proof-review handoff.
+
+- action: `Review Proof / Find Proof Gaps`
+- optional panel lets users paste proof, links, notes, screenshot descriptions, sales/product/social evidence, and campaign results
+- `Send Proof Review to SPARKY` routes to SWARMSY HIVE chat with a proof-review starter
+- empty proof is allowed and still requests a proof-gap checklist
+
+When the HIVE is not ready, proof review handoff is blocked with readiness-specific copy:
+
+- `Create your SWARMSY HIVE before reviewing proof.`
+- `Load required doctrine docs before reviewing proof.`
+- `Doctrine readiness cannot be confirmed. Check HIVE readiness before reviewing proof.`
+
+This is intentionally lightweight:
+
+- no dedicated proof database yet
+- no proof dashboard/viewer yet
+- proof notes submit into normal SWARMSY HIVE chat history after handoff
+- SPARKY must not invent proof when reviewing claims
+
 ## Start Intake Handoff
 
 The onboarding UI now hands users directly into SWARMSY HIVE chat when they click `Start SWARMSY Intake` in a ready state.
@@ -122,6 +144,7 @@ For blocked readiness states (no HIVE, underloaded HIVE, doctrine unavailable), 
 See: [`SWARMSY_START_INTAKE_HANDOFF.md`](./SWARMSY_START_INTAKE_HANDOFF.md)
 See also: [`SWARMSY_MEMORY_LOCK_CONTINUE_FLOW.md`](./SWARMSY_MEMORY_LOCK_CONTINUE_FLOW.md)
 See also: [`SWARMSY_CAMPAIGN_CALENDAR_HANDOFF.md`](./SWARMSY_CAMPAIGN_CALENDAR_HANDOFF.md)
+See also: [`SWARMSY_PROOF_TRACKER_HANDOFF.md`](./SWARMSY_PROOF_TRACKER_HANDOFF.md)
 
 ## Scope Limits Preserved
 
@@ -153,3 +176,8 @@ This UI does **not** add:
 10. Confirm `Create Campaign Day` starter includes selected date and `09_SWARMSY_DAY_1_PR_CAMPAIGN_BUILDER.md`, and says selected date only with no Day 2/Week 2/30-day generation unless asked.
 11. Confirm doctrine-unavailable, missing-HIVE, and underloaded-HIVE states keep `Start SWARMSY Intake` blocked and memory-lock continuation blocked.
 12. Confirm partial ingestion shows failed items and retry guidance.
+13. Confirm `Review Proof / Find Proof Gaps` is blocked for missing-HIVE, underloaded-HIVE, and doctrine-unavailable states with the expected blocked copy.
+14. Confirm empty proof submission still routes to SWARMSY HIVE chat and requests proof-gap checklist behavior.
+15. Confirm pasted proof appears in the proof-review starter and includes anti-invention rules.
+16. Confirm canceling the proof panel clears pasted proof and proof error state.
+17. Confirm proof handoff `sessionStorage` failures show the expected accessible error copy.

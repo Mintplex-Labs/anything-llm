@@ -22,6 +22,14 @@ import {
   MEMORY_LOCK_BLOCKED_MESSAGE,
   MEMORY_LOCK_EMPTY_ERROR,
 } from "./memoryLock";
+import {
+  buildProofReviewStarterMessage,
+  canReviewProof,
+  getProofTrackerBlockedMessage,
+  PROOF_TRACKER_DOCTRINE_UNAVAILABLE_MESSAGE,
+  PROOF_TRACKER_HIVE_MISSING_MESSAGE,
+  PROOF_TRACKER_UNDERLOADED_MESSAGE,
+} from "./proofTracker";
 
 const IDENTITY_MODES = [
   {
@@ -46,6 +54,7 @@ const IDENTITY_MODES = [
   },
 ];
 const MEMORY_LOCK_ERROR_ID = "swarmsy-memory-lock-error";
+const PROOF_TRACKER_ERROR_ID = "swarmsy-proof-tracker-error";
 const CAMPAIGN_DATE_EMPTY_ERROR = "Pick a date to create a campaign day.";
 
 function getDefaultCampaignDate() {
@@ -180,11 +189,17 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
   const [memoryLockInput, setMemoryLockInput] = useState("");
   const [memoryLockError, setMemoryLockError] = useState("");
   const [memoryLockPanelOpen, setMemoryLockPanelOpen] = useState(false);
+  const [proofReviewInput, setProofReviewInput] = useState("");
+  const [proofReviewError, setProofReviewError] = useState("");
+  const [proofReviewPanelOpen, setProofReviewPanelOpen] = useState(false);
   const [campaignDate, setCampaignDate] = useState(getDefaultCampaignDate);
   const [campaignFocus, setCampaignFocus] = useState("");
   const [campaignProofAssets, setCampaignProofAssets] = useState("");
   const activeStatus = status || createFallbackStatus();
   const canLoadMemoryLock = canContinueFromMemoryLock(activeStatus);
+  const canUseProofTracker = canReviewProof(activeStatus);
+  const proofTrackerBlockedMessage =
+    getProofTrackerBlockedMessage(activeStatus);
   const canUseCalendar = canUseCampaignCalendar(activeStatus);
   const campaignBlockedMessage =
     getCampaignCalendarBlockedMessage(activeStatus);
@@ -229,6 +244,13 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
     setMemoryLockInput("");
     setMemoryLockError("");
   }, [canLoadMemoryLock]);
+
+  useEffect(() => {
+    if (canUseProofTracker) return;
+    setProofReviewPanelOpen(false);
+    setProofReviewInput("");
+    setProofReviewError("");
+  }, [canUseProofTracker]);
 
   const copy = statusCopy(activeStatus);
   const intakeStarter = getIntakeStarterMessage(selectedMode);
@@ -403,6 +425,68 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
     navigate(paths.workspace.chat(activeStatus.workspace.slug));
   }
 
+  function openProofReviewPanel() {
+    if (!canUseProofTracker) {
+      showToast(proofTrackerBlockedMessage, "warning");
+      return;
+    }
+
+    setProofReviewError("");
+    setProofReviewPanelOpen(true);
+  }
+
+  function closeProofReviewPanel() {
+    setProofReviewError("");
+    setProofReviewInput("");
+    setProofReviewPanelOpen(false);
+  }
+
+  function sendProofReviewToSparky() {
+    if (!activeStatus?.workspace?.exists) {
+      showToast(PROOF_TRACKER_HIVE_MISSING_MESSAGE, "warning");
+      return;
+    }
+
+    if (
+      activeStatus?.doctrine?.statusAvailable !== true ||
+      activeStatus?.doctrine?.docsRootAvailable !== true
+    ) {
+      showToast(PROOF_TRACKER_DOCTRINE_UNAVAILABLE_MESSAGE, "warning");
+      return;
+    }
+
+    if (
+      !activeStatus?.workspace?.ready ||
+      Number(activeStatus?.doctrine?.requiredMissing || 0) > 0 ||
+      Number(activeStatus?.doctrine?.requiredNonLoadable || 0) > 0
+    ) {
+      showToast(PROOF_TRACKER_UNDERLOADED_MESSAGE, "warning");
+      return;
+    }
+
+    if (!activeStatus?.workspace?.slug) {
+      showToast(PROOF_TRACKER_DOCTRINE_UNAVAILABLE_MESSAGE, "warning");
+      return;
+    }
+
+    const starterMessage = buildProofReviewStarterMessage(proofReviewInput);
+
+    try {
+      sessionStorage.setItem(
+        PENDING_HOME_MESSAGE,
+        JSON.stringify({ message: starterMessage, attachments: [] })
+      );
+    } catch {
+      setProofReviewError(
+        "This proof note could not be stored for chat handoff. Paste a shorter note or enable browser session storage, then try again."
+      );
+      return;
+    }
+
+    closeProofReviewPanel();
+    navigate(paths.workspace.chat(activeStatus.workspace.slug));
+  }
+
   if (
     !loading &&
     activeStatus?.mode &&
@@ -540,6 +624,15 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
             onClick={startIntake}
           >
             Start SWARMSY Intake
+          </ActionButton>
+
+          <ActionButton
+            icon={CheckCircle}
+            busy={false}
+            disabled={!canUseProofTracker}
+            onClick={openProofReviewPanel}
+          >
+            Review Proof / Find Proof Gaps
           </ActionButton>
 
           <ActionButton
@@ -745,6 +838,85 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
               Create Campaign Day
             </button>
           </div>
+        </div>
+
+        <div className="rounded-2xl border border-theme-sidebar-border bg-theme-bg-secondary p-5">
+          <div className="space-y-2">
+            <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-theme-text-secondary">
+              SWARMSY Proof Tracker
+            </h2>
+            <p className="text-sm text-theme-text-secondary">
+              Review proof and find claim gaps before making campaign, PR,
+              product, or content claims.
+            </p>
+          </div>
+
+          {!proofReviewPanelOpen ? (
+            <div className="mt-4 space-y-3">
+              {proofTrackerBlockedMessage && (
+                <p className="text-sm text-theme-text-secondary">
+                  {proofTrackerBlockedMessage}
+                </p>
+              )}
+              <button
+                type="button"
+                disabled={!canUseProofTracker}
+                onClick={openProofReviewPanel}
+                className="rounded-lg border border-teal bg-teal px-4 py-2 text-sm font-medium text-black transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                Review Proof / Find Proof Gaps
+              </button>
+            </div>
+          ) : (
+            <div className="mt-4 rounded-2xl border border-theme-sidebar-border bg-theme-bg-menu p-4">
+              <p className="text-sm text-theme-text-secondary">
+                Paste proof, links, notes, screenshot descriptions, sales
+                results, comments, press mentions, product details, or campaign
+                results.
+              </p>
+              <textarea
+                aria-label="SWARMSY proof review notes"
+                aria-describedby={
+                  proofReviewError ? PROOF_TRACKER_ERROR_ID : undefined
+                }
+                aria-invalid={Boolean(proofReviewError)}
+                value={proofReviewInput}
+                onChange={(event) => {
+                  setProofReviewInput(event.target.value);
+                  if (proofReviewError) {
+                    setProofReviewError("");
+                  }
+                }}
+                placeholder="Paste proof, links, notes, screenshot descriptions, sales results, comments, press mentions, product details, or campaign results."
+                className="mt-3 min-h-[180px] w-full rounded-2xl border border-theme-sidebar-border bg-theme-bg-secondary p-3 text-sm text-theme-text-primary outline-none focus:border-teal"
+              />
+              {proofReviewError && (
+                <p
+                  id={PROOF_TRACKER_ERROR_ID}
+                  role="alert"
+                  className="mt-3 text-sm text-red-400"
+                >
+                  {proofReviewError}
+                </p>
+              )}
+              <div className="mt-4 flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={closeProofReviewPanel}
+                  className="rounded-lg border border-theme-sidebar-border px-4 py-2 text-sm font-medium text-theme-text-primary transition hover:bg-theme-bg-secondary"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={sendProofReviewToSparky}
+                  className="rounded-lg border border-teal bg-teal px-4 py-2 text-sm font-medium text-black transition hover:opacity-90"
+                >
+                  Send Proof Review to SPARKY
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -115,6 +115,18 @@
 - Acceptance criteria: Claims are clearly marked as proven, blocked, or proof-gap.
 - Validation/tests: Proof state tests, claim gating tests, and UI validation.
 - Rollback note: Disable automated gating and keep proof logging as advisory.
+- Runtime slice delivered:
+  - lightweight onboarding action `Review Proof / Find Proof Gaps`
+  - optional proof note panel for links, notes, screenshot descriptions, and result context
+  - proof-review starter handoff into normal SWARMSY HIVE chat via pending-home-message storage
+  - readiness gating aligned with missing-HIVE / underloaded / doctrine-unavailable guardrails
+  - anti-fabrication rules in starter (`Do not invent proof`, no fake social/sales/press claims)
+- Explicitly out of scope in current slice:
+  - dedicated proof database/storage
+  - proof dashboard/viewer
+  - campaign generator
+  - Memory Lock persistence
+  - admin route calls
 
 ## Phase 10 — Local AI Setup Helper
 
