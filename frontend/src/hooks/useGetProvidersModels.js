@@ -55,10 +55,27 @@ const groupedProviders = [
   "docker-model-runner",
   "sambanova",
 ];
-export default function useGetProviderModels(
-  provider = null,
-  { basePath = null, authToken = null, skip = false } = {}
-) {
+/**
+ * @typedef {Object} UseGetProviderModelsOptions
+ * @property {string|null} [basePath]   Per-connection Ollama base URL override.
+ * @property {string|null} [authToken]  Per-connection Ollama auth token override.
+ * @property {boolean}     [skip]       When true, no fetch is performed and
+ *                                      `loading` stays in its initial state.
+ *                                      Useful to gate the fetch on async
+ *                                      state still being resolved upstream.
+ */
+
+/**
+ * @param {string|null} provider
+ * @param {UseGetProviderModelsOptions} [options]
+ */
+export default function useGetProviderModels(provider = null, options = {}) {
+  // Pulled out so the effect deps stay primitives — passing `options`
+  // directly would re-fire on every parent render due to a new object identity.
+  const basePath = options.basePath ?? null;
+  const authToken = options.authToken ?? null;
+  const skip = options.skip ?? false;
+
   const [defaultModels, setDefaultModels] = useState([]);
   const [customModels, setCustomModels] = useState([]);
   const [loading, setLoading] = useState(true);
