@@ -120,12 +120,17 @@ export default function ConnectionsManager() {
         )}
       </div>
 
-      <ConnectionModal
-        isOpen={isOpen}
-        closeModal={handleClose}
-        onSuccess={refresh}
-        connection={editing}
-      />
+      {/* Mount the modal only while it's open so each open re-runs the
+          useState initializers against the current connection prop. Otherwise
+          the controlled fields stay stuck on their first-mount empty values. */}
+      {isOpen && (
+        <ConnectionModal
+          isOpen={isOpen}
+          closeModal={handleClose}
+          onSuccess={refresh}
+          connection={editing}
+        />
+      )}
     </div>
   );
 }
