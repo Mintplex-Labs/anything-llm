@@ -88,12 +88,24 @@
 
 ## Phase 8 — Campaign Day Command Generator
 
-- Goal: Allow Day 1 / Day 2 / Week 2 flows from memory lock.
-- Likely files/directories: campaign command generators, workflow triggers, timeline state logic.
-- Runtime risk: High.
-- Acceptance criteria: System can generate and continue campaign-day commands with state continuity.
-- Validation/tests: Campaign flow tests for day/week transitions and lock-based continuation.
-- Rollback note: Revert to manual command templates without automated generation.
+- Goal: Add a lightweight campaign calendar handoff command surface.
+- Likely files/directories: onboarding UI handoff panel, campaign starter-message helper, runtime handoff docs.
+- Runtime risk: Medium.
+- Acceptance criteria: Users can pick a selected date and route one campaign-day command to SWARMSY HIVE using the reusable Day 1 prompt reference.
+- Validation/tests: Onboarding UI regression checks and message-content verification for selected-date-only constraints.
+- Rollback note: Remove campaign calendar surface and keep manual campaign command entry in chat.
+- Runtime slice delivered:
+  - `SWARMSY Campaign Calendar` panel in onboarding UI with native date selector
+  - `Create Campaign Day` handoff into SWARMSY HIVE chat via pending-home-message storage
+  - starter message references `docs/swarmsy/living-icon-engine/prompts/09_SWARMSY_DAY_1_PR_CAMPAIGN_BUILDER.md`
+  - starter enforces selected-date-only output and explicitly blocks Day 2, Week 2, and 30-day generation unless user asks
+  - readiness gating mirrors onboarding guardrails (missing HIVE, underloaded doctrine, doctrine unavailable)
+- Explicitly out of scope:
+  - Day 2 templates
+  - Week 2 templates
+  - full 30-day campaign generation
+  - scheduler/notifications/automation
+  - persistent campaign database or dashboard management UI
 
 ## Phase 9 — Proof Tracker
 

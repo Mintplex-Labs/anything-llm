@@ -12,6 +12,11 @@ import showToast from "@/utils/toast";
 import { PENDING_HOME_MESSAGE } from "@/utils/constants";
 import { canStartSwarmsyIntake, getIntakeStarterMessage } from "./handoff";
 import {
+  buildCampaignDayStarterMessage,
+  canUseCampaignCalendar,
+  getCampaignCalendarBlockedMessage,
+} from "./campaignCalendar";
+import {
   buildMemoryLockStarterMessage,
   canContinueFromMemoryLock,
   MEMORY_LOCK_BLOCKED_MESSAGE,
@@ -41,6 +46,13 @@ const IDENTITY_MODES = [
   },
 ];
 const MEMORY_LOCK_ERROR_ID = "swarmsy-memory-lock-error";
+const CAMPAIGN_DATE_EMPTY_ERROR = "Pick a date to create a campaign day.";
+
+function getDefaultCampaignDate() {
+  const now = new Date();
+  const timezoneOffsetMs = now.getTimezoneOffset() * 60 * 1000;
+  return new Date(now.getTime() - timezoneOffsetMs).toISOString().slice(0, 10);
+}
 
 function createFallbackStatus(message) {
   return {
@@ -168,8 +180,14 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
   const [memoryLockInput, setMemoryLockInput] = useState("");
   const [memoryLockError, setMemoryLockError] = useState("");
   const [memoryLockPanelOpen, setMemoryLockPanelOpen] = useState(false);
+  const [campaignDate, setCampaignDate] = useState(getDefaultCampaignDate);
+  const [campaignFocus, setCampaignFocus] = useState("");
+  const [campaignProofAssets, setCampaignProofAssets] = useState("");
   const activeStatus = status || createFallbackStatus();
   const canLoadMemoryLock = canContinueFromMemoryLock(activeStatus);
+  const canUseCalendar = canUseCampaignCalendar(activeStatus);
+  const campaignBlockedMessage =
+    getCampaignCalendarBlockedMessage(activeStatus);
 
   const loadStatus = useCallback(async () => {
     const response = await SwarmsyOnboarding.status();
@@ -215,6 +233,7 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
   const copy = statusCopy(activeStatus);
   const intakeStarter = getIntakeStarterMessage(selectedMode);
   const canStartIntake = canStartSwarmsyIntake(activeStatus, selectedMode);
+  const canCreateCampaignDay = canUseCalendar && Boolean(campaignDate?.trim());
 
   async function refreshReadiness() {
     setBusyAction("refresh");
@@ -343,6 +362,44 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
       );
       return;
     }
+    navigate(paths.workspace.chat(activeStatus.workspace.slug));
+  }
+
+  function createCampaignDay() {
+    if (!canUseCalendar) {
+      showToast(campaignBlockedMessage, "warning");
+      return;
+    }
+
+    if (!campaignDate?.trim()) {
+      showToast(CAMPAIGN_DATE_EMPTY_ERROR, "warning");
+      return;
+    }
+
+    const starterMessage = buildCampaignDayStarterMessage({
+      selectedDate: campaignDate,
+      campaignFocus,
+      proofAssetsResults: campaignProofAssets,
+    });
+
+    if (!starterMessage) {
+      showToast(CAMPAIGN_DATE_EMPTY_ERROR, "warning");
+      return;
+    }
+
+    try {
+      sessionStorage.setItem(
+        PENDING_HOME_MESSAGE,
+        JSON.stringify({ message: starterMessage, attachments: [] })
+      );
+    } catch {
+      showToast(
+        "This campaign handoff could not be stored for chat handoff. Use shorter inputs and try again.",
+        "error"
+      );
+      return;
+    }
+
     navigate(paths.workspace.chat(activeStatus.workspace.slug));
   }
 
@@ -619,6 +676,76 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
             )}
           </div>
         )}
+
+        <div className="rounded-2xl border border-theme-sidebar-border bg-theme-bg-secondary p-5">
+          <div className="space-y-2">
+            <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-theme-text-secondary">
+              SWARMSY Campaign Calendar
+            </h2>
+            <p className="text-sm text-theme-text-secondary">
+              Pick a day and send SPARKY a campaign command.
+            </p>
+          </div>
+
+          <div className="mt-4 grid gap-3 md:grid-cols-2">
+            <label className="block text-sm text-theme-text-primary">
+              <span className="mb-1 block text-theme-text-secondary">
+                Selected date
+              </span>
+              <input
+                type="date"
+                value={campaignDate}
+                disabled={!canUseCalendar}
+                onChange={(event) => setCampaignDate(event.target.value)}
+                className="w-full rounded-lg border border-theme-sidebar-border bg-theme-bg-menu px-3 py-2 text-sm text-theme-text-primary outline-none focus:border-teal disabled:cursor-not-allowed disabled:opacity-60"
+              />
+            </label>
+
+            <label className="block text-sm text-theme-text-primary">
+              <span className="mb-1 block text-theme-text-secondary">
+                Campaign focus (optional)
+              </span>
+              <input
+                type="text"
+                value={campaignFocus}
+                disabled={!canUseCalendar}
+                onChange={(event) => setCampaignFocus(event.target.value)}
+                placeholder="Optional focus for this day."
+                className="w-full rounded-lg border border-theme-sidebar-border bg-theme-bg-menu px-3 py-2 text-sm text-theme-text-primary outline-none focus:border-teal disabled:cursor-not-allowed disabled:opacity-60"
+              />
+            </label>
+          </div>
+
+          <label className="mt-3 block text-sm text-theme-text-primary">
+            <span className="mb-1 block text-theme-text-secondary">
+              Proof/assets/results to consider (optional)
+            </span>
+            <textarea
+              value={campaignProofAssets}
+              disabled={!canUseCalendar}
+              onChange={(event) => setCampaignProofAssets(event.target.value)}
+              placeholder="Optional proof, assets, or result context."
+              className="min-h-[120px] w-full rounded-lg border border-theme-sidebar-border bg-theme-bg-menu px-3 py-2 text-sm text-theme-text-primary outline-none focus:border-teal disabled:cursor-not-allowed disabled:opacity-60"
+            />
+          </label>
+
+          {campaignBlockedMessage && (
+            <p className="mt-3 text-sm text-theme-text-secondary">
+              {campaignBlockedMessage}
+            </p>
+          )}
+
+          <div className="mt-4">
+            <button
+              type="button"
+              disabled={!canCreateCampaignDay}
+              onClick={createCampaignDay}
+              className="rounded-lg border border-teal bg-teal px-4 py-2 text-sm font-medium text-black transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              Create Campaign Day
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

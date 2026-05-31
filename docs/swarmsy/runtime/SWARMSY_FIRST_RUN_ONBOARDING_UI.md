@@ -80,6 +80,33 @@ When the HIVE is not ready:
 - keep memory-lock continuation blocked
 - show `Create and load your SWARMSY HIVE before continuing from a memory lock.`
 
+### 6. Campaign calendar handoff
+
+The onboarding UI now includes `SWARMSY Campaign Calendar` as a lightweight command surface.
+
+- helper copy: `Pick a day and send SPARKY a campaign command.`
+- user selects one date
+- user can optionally add campaign focus and proof/assets/results context
+- click `Create Campaign Day` to route to SWARMSY HIVE chat with a seeded campaign-day starter message
+
+The starter references this reusable campaign-day engine path (not inlined):
+
+- `docs/swarmsy/living-icon-engine/prompts/09_SWARMSY_DAY_1_PR_CAMPAIGN_BUILDER.md`
+
+The starter also enforces:
+
+- selected date only
+- no Day 2 output
+- no Week 2 output
+- no 30-day calendar unless explicitly requested
+- no invented missing facts (SPARKY must ask for minimum missing information)
+
+When the HIVE is not ready, campaign calendar handoff is blocked with readiness-specific copy:
+
+- `Create your SWARMSY HIVE before using the campaign calendar.`
+- `Load required doctrine docs before using the campaign calendar.`
+- `Doctrine readiness cannot be confirmed. Check HIVE readiness before using the campaign calendar.`
+
 ## Start Intake Handoff
 
 The onboarding UI now hands users directly into SWARMSY HIVE chat when they click `Start SWARMSY Intake` in a ready state.
@@ -94,6 +121,7 @@ For blocked readiness states (no HIVE, underloaded HIVE, doctrine unavailable), 
 
 See: [`SWARMSY_START_INTAKE_HANDOFF.md`](./SWARMSY_START_INTAKE_HANDOFF.md)
 See also: [`SWARMSY_MEMORY_LOCK_CONTINUE_FLOW.md`](./SWARMSY_MEMORY_LOCK_CONTINUE_FLOW.md)
+See also: [`SWARMSY_CAMPAIGN_CALENDAR_HANDOFF.md`](./SWARMSY_CAMPAIGN_CALENDAR_HANDOFF.md)
 
 ## Scope Limits Preserved
 
@@ -101,7 +129,7 @@ This UI does **not** add:
 
 - dashboard UI
 - Memory Lock viewer/storage
-- Campaign Day generator
+- Campaign dashboard/scheduler automation
 - Spark Library changes
 - new doctrine docs
 - new dependencies
@@ -121,5 +149,7 @@ This UI does **not** add:
 6. Confirm `Load Memory Lock` opens a paste panel only when the HIVE is ready.
 7. Confirm empty memory-lock input is blocked with the expected validation copy.
 8. Confirm continuing from a pasted memory lock routes to SWARMSY HIVE chat with the continuation starter message.
-9. Confirm doctrine-unavailable, missing-HIVE, and underloaded-HIVE states keep `Start SWARMSY Intake` blocked and memory-lock continuation blocked.
-10. Confirm partial ingestion shows failed items and retry guidance.
+9. Confirm campaign calendar handoff stays blocked for missing-HIVE, underloaded-HIVE, and doctrine-unavailable states with the expected blocked copy.
+10. Confirm `Create Campaign Day` starter includes selected date and `09_SWARMSY_DAY_1_PR_CAMPAIGN_BUILDER.md`, and says selected date only with no Day 2/Week 2/30-day generation unless asked.
+11. Confirm doctrine-unavailable, missing-HIVE, and underloaded-HIVE states keep `Start SWARMSY Intake` blocked and memory-lock continuation blocked.
+12. Confirm partial ingestion shows failed items and retry guidance.
