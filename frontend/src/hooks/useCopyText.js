@@ -1,4 +1,5 @@
 import { THOUGHT_REGEX_COMPLETE } from "@/components/WorkspaceChat/ChatContainer/ChatHistory/ThoughtContainer";
+import { copyMarkdownAsRichText } from "@/utils/clipboard";
 import { useState } from "react";
 
 export default function useCopyText(delay = 2500) {
@@ -8,11 +9,9 @@ export default function useCopyText(delay = 2500) {
 
     // Filter thinking blocks from the content if they exist
     const nonThinkingContent = content.replace(THOUGHT_REGEX_COMPLETE, "");
-    navigator?.clipboard?.writeText(nonThinkingContent);
-    setCopied(nonThinkingContent);
-    setTimeout(() => {
-      setCopied(false);
-    }, delay);
+    await copyMarkdownAsRichText(nonThinkingContent);
+    setCopied(true);
+    setTimeout(() => setCopied(false), delay);
   };
 
   return { copyText, copied };

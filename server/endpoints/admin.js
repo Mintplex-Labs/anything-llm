@@ -28,6 +28,9 @@ const ImportedPlugin = require("../utils/agents/imported");
 const {
   simpleSSOLoginDisabledMiddleware,
 } = require("../utils/middleware/simpleSSOEnabled");
+const {
+  workspaceDeletionProtection,
+} = require("../utils/middleware/workspaceDeletionProtection");
 
 function adminEndpoints(app) {
   if (!app) return;
@@ -291,7 +294,11 @@ function adminEndpoints(app) {
 
   app.delete(
     "/admin/workspaces/:id",
-    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
+    [
+      validatedRequest,
+      strictMultiUserRoleValid([ROLES.admin, ROLES.manager]),
+      workspaceDeletionProtection,
+    ],
     async (request, response) => {
       try {
         const { id } = request.params;
@@ -432,6 +439,12 @@ function adminEndpoints(app) {
             case "meta_page_favicon":
               requestedSettings[label] =
                 await SystemSettings.getValueOrFallback({ label }, null);
+              break;
+            case "memory_enabled":
+              requestedSettings[label] = setting?.value || "false";
+              break;
+            case "memory_auto_extraction":
+              requestedSettings[label] = setting?.value ?? "true";
               break;
             default:
               break;

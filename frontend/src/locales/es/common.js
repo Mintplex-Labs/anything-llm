@@ -109,6 +109,8 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
+    "scheduled-jobs": "Tareas programadas",
+    "model-router": "Router de ejemplo",
   },
   login: {
     "multi-user": {
@@ -202,9 +204,9 @@ const TRANSLATIONS = {
           'proporcionará respuestas <b>solo</b> si se encuentra el contexto del documento.<br />Deberá utilizar el comando "@agent" para utilizar las herramientas.',
       },
       automatic: {
-        title: "Coche",
         description:
           'utilizará automáticamente las herramientas si el modelo y el proveedor admiten la llamada a herramientas nativas. Si no se admite la llamada a herramientas nativas, deberá utilizar el comando "@agent" para utilizar las herramientas.',
+        title: "Agente",
       },
     },
     history: {
@@ -341,7 +343,7 @@ const TRANSLATIONS = {
         readActions: "Leer acciones",
         writeActions: "Acciones a realizar",
         warning:
-          "El acceso al sistema de archivos puede ser peligroso, ya que puede modificar o eliminar archivos. Consulte la <link>documentación</link> antes de habilitarlo.",
+          "El acceso al sistema de archivos puede ser peligroso, ya que puede modificar o eliminar archivos. Consulte la <a>documentación</a> antes de habilitarlo.",
         skills: {
           "read-text-file": {
             title: "Abrir archivo",
@@ -782,6 +784,17 @@ const TRANSLATIONS = {
           title: "Herramientas Max",
           description:
             "El número máximo de herramientas que se pueden seleccionar para cada consulta. Recomendamos establecer este valor en un número más alto para modelos con un contexto más amplio.",
+        },
+      },
+      "clarifying-questions": {
+        title: "Permitir que el agente formule preguntas para aclarar.",
+        "beta-badge": "Versión de prueba",
+        description:
+          "Cuando esté activado, los agentes podrán hacer pausas para formular preguntas aclaratorias breves si su solicitud es ambigua.",
+        "max-per-turn": {
+          title: "Número máximo de preguntas por turno.",
+          description:
+            "¿Cuántas preguntas de aclaración puede hacer el agente en una única encuesta?",
         },
       },
     },
@@ -1299,7 +1312,6 @@ const TRANSLATIONS = {
     similarity_match: "partido",
     source_count_one: "{{count}} de referencia",
     source_count_other: "{{count}} referencias",
-    preset_exit_description: "Detener la sesión actual del agente.",
     add_new: "Añadir nuevo",
     edit: "Editar",
     publish: "Publicar",
@@ -1319,6 +1331,64 @@ const TRANSLATIONS = {
       always_allow: "Siempre asegúrese de que haya {{skillName}}",
       tool_call_was_approved: "La solicitud de herramientas ha sido aprobada.",
       tool_call_was_rejected: "La solicitud de herramienta fue rechazada.",
+      clarifying_skip: "Deje que el agente decida.",
+      clarifying_submit: "Enviar",
+      clarifying_skipped: "Deje que el agente tome la decisión.",
+      clarifying_timeout: "No se recibió la respuesta a tiempo.",
+      clarifying_pagination: "{{current}} de {{total}}",
+      clarifying_prev_aria: "Pregunta anterior",
+      clarifying_next_aria: "Siguiente pregunta",
+      clarifying_close_aria: "Cerrar y saltar",
+      clarifying_other: "Otros",
+      clarifying_other_placeholder: "Escribe tu respuesta",
+      batch_progress: "{{answered}} de {{total}} respondió",
+      batch_skip_this: "Saltar",
+      batch_submit_all: "Enviar todo",
+      batch_next: "Siguiente",
+      answer_skipped: "[el usuario saltó la sección]",
+    },
+    custom_skills: "Habilidades personalizadas",
+    agent_flows: "Flujos de agentes",
+    no_tools_found: "No se encontraron herramientas coincidentes.",
+    loading_mcp_servers: "Cargando servidores de MCP...",
+    app_integrations: "Integraciones de aplicaciones",
+    sub_skills: "Habilidades específicas",
+    memories: {
+      title: "Recuerdos",
+      empty:
+        "Hasta ahora, no hay recuerdos registrados. Sin embargo, a medida que interactúes más con el chatbot, se crearán nuevos recuerdos.",
+      empty_cta: "crear un nuevo recuerdo",
+      tab_workspace: "Espacio de trabajo",
+      tab_global: "Global",
+      toggle: {
+        label: "Habilitar la personalización",
+        description:
+          "Permita que su asistente recuerde datos sobre usted o sobre este entorno de trabajo y los utilice en las conversaciones.",
+      },
+      auto_extraction: {
+        label: "Memorias automáticas",
+        description:
+          "Deje que su asistente cree recuerdos automáticamente en segundo plano.",
+      },
+      menu: {
+        edit: "Editar",
+        delete: "Eliminar",
+        move_to_global: "Pasar a nivel global",
+        move_to_workspace: "Ir a la pantalla de trabajo",
+      },
+      modal: {
+        create_title: "Crear recuerdos",
+        edit_title: "Editar memoria",
+        create_description:
+          'Las memorias deben ser una declaración concisa y única. Por ejemplo: "El usuario prefiere Python a JavaScript".',
+        edit_description: "Actualiza el contenido de esta memoria.",
+        label: "Memoria",
+        placeholder:
+          "Por ejemplo, el nombre del usuario es Joe, el usuario trabaja en AnythingLLM, etc.",
+        create: "Crear",
+        save: "Guardar",
+        cancel: "Cancelar",
+      },
     },
   },
   profile_settings: {
@@ -1546,6 +1616,344 @@ const TRANSLATIONS = {
       "pending-description":
         "Usuarios que están esperando la verificación. Compara el código de emparejamiento que se muestra aquí con el que aparece en su conversación de Telegram.",
       unknown: "Desconocido",
+    },
+  },
+  scheduledJobs: {
+    title: "Tareas programadas",
+    enableNotifications:
+      "Activar las notificaciones del navegador para los resultados de búsqueda de empleo.",
+    description:
+      "Cree tareas de IA recurrentes que se ejecuten según un horario. Cada tarea ejecuta una instrucción con herramientas opcionales y guarda el resultado para su revisión.",
+    newJob: "Nuevo trabajo",
+    loading: "Cargando...",
+    emptyTitle: "Aún no hay tareas programadas.",
+    emptySubtitle: "Cree uno para empezar.",
+    table: {
+      name: "Nombre",
+      schedule: "Horario",
+      status: "Estado",
+      lastRun: "Última carrera",
+      nextRun: "Próxima carrera",
+      actions: "Acciones",
+    },
+    confirmDelete: "¿Está seguro de que desea eliminar esta tarea programada?",
+    toast: {
+      deleted: "Trabajo eliminado",
+      triggered: "La tarea se ha completado con éxito.",
+      triggerFailed: "No se pudo iniciar la tarea.",
+      triggerSkipped: "Ya se ha iniciado el trabajo.",
+      killed: "La tarea se completó con éxito.",
+      killFailed: "No logró detener el trabajo.",
+    },
+    row: {
+      neverRun: "Nunca corras",
+      viewRuns: "Ejecución de pruebas",
+      runNow: "¡Corre ahora!",
+      enable: "Habilitar",
+      disable: "Desactivar",
+      edit: "Editar",
+      delete: "Eliminar",
+    },
+    modal: {
+      titleEdit: "Modificar tarea programada",
+      titleNew: "Nueva tarea programada",
+      nameLabel: "Nombre",
+      namePlaceholder: "p. ej., Resumen diario de noticias",
+      promptLabel: "Solicitud",
+      promptPlaceholder: "La instrucción para ejecutarlo en cada ejecución...",
+      scheduleLabel: "Horario",
+      modeBuilder: "Constructor",
+      modeCustom: "Personalizado",
+      cronPlaceholder: "Expresión de cron (por ejemplo, 0 9 * * *)",
+      currentSchedule: "Horario actual:",
+      toolsLabel: "Herramientas (opcional)",
+      toolsDescription:
+        "Seleccione las herramientas disponibles para esta tarea. Si ninguna herramienta está seleccionada, la tarea se ejecutará sin utilizar ninguna herramienta.",
+      toolsSearch: "Buscar",
+      toolsNoResults: "No se encontraron herramientas que coincidan.",
+      required: "Requerido",
+      requiredFieldsBanner:
+        "Por favor, complete todos los campos obligatorios para crear el anuncio de empleo.",
+      cancel: "Cancelar",
+      saving: "Ahorrando...",
+      updateJob: "Actualizar puesto de trabajo",
+      createJob: "Crear empleo",
+      jobUpdated: "Puesto actualizado",
+      jobCreated: "Puesto creado",
+    },
+    builder: {
+      fallbackWarning:
+        'Esta expresión no se puede modificar visualmente. Cambie a "Personalizado" para mantenerla, o modifique cualquier cosa debajo para reemplazarla.',
+      run: "Correr",
+      frequency: {
+        minute: "cada minuto",
+        hour: "por hora",
+        day: "diario",
+        week: "semanal",
+        month: "mensual",
+      },
+      every: "Cada",
+      minuteOne: "1 minuto",
+      minuteOther: "{{count}} minutos",
+      atMinute: "En el minuto",
+      pastEveryHour: "cada hora",
+      at: "A partir de",
+      on: "Sobre",
+      onDay: "En un día",
+      ofEveryMonth: "de cada mes",
+      weekdays: {
+        sun: "Sol",
+        mon: "Una",
+        tue: "Martes",
+        wed: "Miércoles",
+        thu: "Jueves",
+        fri: "Viernes",
+        sat: "Sábado",
+      },
+    },
+    runHistory: {
+      back: "Volver a las ofertas de empleo",
+      title: "Historial de ejecuciones: {{name}}",
+      schedule: "Horario:",
+      emptyTitle: "Aún no hay candidatos para este puesto.",
+      emptySubtitle: "Ejecute la tarea ahora y vea los resultados.",
+      runNow: "¡Corre ahora!",
+      table: {
+        status: "Estado",
+        started: "Comenzó",
+        duration: "Duración",
+        error: "Error",
+      },
+      stopJob: "Suspender el empleo",
+    },
+    runDetail: {
+      loading: "Cargando detalles de la ejecución...",
+      notFound: "No se encontró la ejecución.",
+      back: "Regreso; Atrás",
+      unknownJob: "Puesto sin especificar",
+      runHeading: "{{name}} — Ejecutar la prueba #{{id}}",
+      duration: "Duración: {{value}}",
+      creating: "Creando...",
+      threadFailed: "No se pudo crear el hilo.",
+      sections: {
+        prompt: "Indicación",
+        error: "Error",
+        thinking: "Ideas ({{count}})",
+        toolCalls: "Llamadas a herramientas ({{count}})",
+        files: "Archivos ({{count}})",
+        response: "Respuesta",
+        metrics: "Indicadores",
+      },
+      metrics: {
+        promptTokens: "Palabras clave:",
+        completionTokens: "Tokens de finalización:",
+      },
+      stopJob: "Suspender el empleo",
+      killing: "Detener...",
+      continueInThread: "Continuar en el chat",
+    },
+    toolCall: {
+      arguments: "Argumentos:",
+      showResult: "Mostrar resultado",
+      hideResult: "Ocultar resultado",
+    },
+    file: {
+      unknown: "Archivo desconocido",
+      download: "Descargar",
+      downloadFailed: "No se pudo descargar el archivo.",
+      types: {
+        powerpoint: "Presentación de diapositivas",
+        pdf: "Documento en formato PDF",
+        word: "Documento de Word",
+        spreadsheet: "Hoja de cálculo",
+        generic: "Archivo",
+      },
+    },
+    status: {
+      completed: "Completado",
+      failed: "Fracasado",
+      timed_out: "Tiempo agotado",
+      running: "Correr",
+      queued: "En cola",
+    },
+  },
+  "model-router": {
+    title: "Enrutadores modelo",
+    description:
+      "Los enrutadores de modelos le permiten definir reglas para dirigir automáticamente los mensajes de chat a diferentes proveedores y modelos de LLM, según las condiciones.",
+    table: {
+      name: "Nombre",
+      fallback:
+        "Plan de contingencia\nOpción alternativa\nSolución alternativa\nRecurso alternativo",
+      rules: "Reglas",
+      workspaces: "Espacios de trabajo",
+    },
+    "no-routers": "Aún no existen modelos de routers.",
+    "empty-description":
+      "Ningún enrutador ha sido configurado aún. Cree uno para comenzar.",
+    "new-router-button": "Nuevo router",
+    "delete-confirm":
+      '¿Está seguro de que desea eliminar el enrutador "{{name}}"?\nEsto eliminará todas sus reglas y desconectará cualquier espacio de trabajo que lo utilice.\n\nEsta acción es irreversible.',
+    "toast-deleted": "Enrutador eliminado",
+    "toast-delete-failed": "No se pudo eliminar el router: {{error}}",
+    "new-router": {
+      title: "Crear un nuevo router",
+      name: "Nombre",
+      "name-placeholder": "p. ej., Optimizador de costes",
+      description: "Descripción",
+      "description-placeholder": "Descripción opcional",
+      "fallback-label": "Proveedor principal y modelo",
+      "fallback-description":
+        "Se utiliza cuando no se encuentra ninguna regla de enrutamiento que coincida. También se utiliza para evaluar las reglas clasificadas por modelos de lenguaje.",
+      "cooldown-label": "Tiempo de enfriamiento (segundos)",
+      "cooldown-help":
+        "Durante cuánto tiempo se guarda la decisión de enrutamiento antes de volver a evaluar las reglas. Establecer en 0 para desactivar el almacenamiento en caché.",
+      "name-required": "Se requiere el nombre.",
+      "fallback-required": "Se requiere el proveedor principal y el modelo.",
+      cancel: "Cancelar",
+      create: "Crear enrutador",
+    },
+    "edit-router": {
+      "back-to-routers": "Volver a los enrutadores modelo",
+      title: "Editar enrutador: {{name}}",
+      save: "Guardar cambios",
+      "toast-update-failed": "No se pudo actualizar el router.",
+    },
+    rules: {
+      title: "Reglas de enrutamiento",
+      "title-with-name": "Reglas del enrutador: {{name}}",
+      description:
+        "Defina las reglas que determinan cuándo y cómo se envían los mensajes de chat a proveedores y modelos específicos.",
+      "add-rule": "Añadir regla",
+      "delete-confirm": 'Eliminar la regla "{{title}}"?',
+      "toast-delete-failed": "No se pudo eliminar la regla.",
+      "toast-reorder-failed": "No se pudieron aplicar las reglas.",
+      "no-rules": "Aún no hay reglas.",
+      "empty-description":
+        "Agrega una regla para dirigir específicamente los mensajes de chat a ciertos proveedores y modelos.",
+      "new-rule-button": "Nueva regla",
+      "calculated-section-label":
+        "Reglas calculadas — evaluadas en primer lugar, siguiendo un orden de prioridad.",
+      "llm-section-label":
+        "Reglas de LLM: evaluadas por lotes si ninguna regla calculada coincide.",
+      "llm-rule-body":
+        'Coincide con "<desc>"{{description}}"</desc>" y luego redirige a <route>{{route}}</route>',
+      "calculated-no-conditions":
+        "Sin condiciones — ruta a <route>{{route}}</route>",
+      "calculated-single-condition":
+        'Si [<prop>] [{{property}}] [</prop>] [{{comparator}}] [<val>] "[{{value}}]" [</val>], entonces dirigir a [<route>] [{{route}}] [</route>].',
+      "calculated-multi-condition":
+        "Si {{quantifier}} de <cond>{{conditions}}</cond> entonces, dirigir a <route>{{route}}</route>",
+      "comparator-contains": "contiene",
+      "comparator-matches": "partidos",
+      "comparator-between": "entre",
+      "badge-llm": "Modelo de lenguaje grande (LLM)",
+      "badge-calculated": "Calculado",
+      "aria-drag-to-reorder": "Arrastra para reordenar",
+      "aria-edit-rule": "Regla de edición",
+      "aria-delete-rule": "Eliminar regla",
+      "quantifier-any": "CUALQUIERA",
+      "quantifier-all": "TODO",
+    },
+    "rule-form": {
+      "title-label": "Título",
+      "rule-type": "Tipo de regla",
+      "property-label": "Propiedad",
+      "property-select": "Seleccionar",
+      "comparator-label": "Comparador",
+      "comparator-select": "Seleccionar",
+      "value-label": "Valor",
+      "add-condition": "Añadir condición",
+      "remove-condition": "Eliminar la condición",
+      "conditions-incomplete":
+        "La condición {{index}} está incompleta: complete con la propiedad, el comparador y el valor.",
+      "match-description-label": "Descripción del partido",
+      "match-description-placeholder":
+        "Por ejemplo, el usuario está preguntando sobre temas legales, contratos o cumplimiento normativo.",
+      "match-description-help":
+        "Describa la situación en la que desea que esta regla se aplique. Su modelo de lenguaje evaluará esta descripción para determinar si debe utilizarse.",
+      "route-to-label": "Ruta hacia el proveedor y modelo",
+      "route-to-description":
+        "Cuando esta regla se cumple, utilice este proveedor/modelo.",
+      cancel: "Cancelar",
+      saving: "Ahorrando...",
+      "update-rule": "Regla de actualización",
+      "create-rule": "Crear regla",
+      "title-required": "El título es obligatorio.",
+      "toast-save-failed": "No se pudo guardar la regla.",
+      "type-calculated-label": "Calculado",
+      "type-calculated-description":
+        "Coincide en función de las propiedades del mensaje, como el contenido, el número de tokens o la hora del día.",
+      "type-llm-label": "Clasificación de LLM",
+      "type-llm-description":
+        "Utilice un modelo de lenguaje para clasificar el mensaje según una descripción que usted proporcione.",
+      "prop-prompt-content": "Contenido solicitado",
+      "prop-token-count": "Número de tokens en la conversación",
+      "prop-message-count": "Número de mensajes de conversación",
+      "prop-current-hour": "Hora actual (0-23)",
+      "prop-has-image": "¿Tiene adjunto una imagen?",
+      "cmp-contains": "contiene",
+      "cmp-matches-regex": "coincidencias (expresiones regulares)",
+      "cmp-equals": "igual a",
+      "cmp-not-equals": "no es igual a",
+      "cmp-greater-than": "mayor que",
+      "cmp-greater-than-or-equal": "mayor o igual que",
+      "cmp-less-than": "menor que",
+      "cmp-less-than-or-equal": "menor o igual que",
+      "cmp-between": "entre (incluyendo)",
+      "placeholder-between-hour": "p.ej., 9:17 (de 9:00 a 17:00)",
+      "placeholder-between-numeric": "p. ej. 10,50",
+      "placeholder-hour": "p.ej. 18 (0-23)",
+      "placeholder-message-count": "p. ej. 10",
+      "placeholder-numeric": "p.ej. 4000",
+      "placeholder-contains": "p. ej., código, Python, Rust",
+      "placeholder-matches": "p. ej. /\\bpython\\b/i",
+      "placeholder-default": "p. ej., código",
+      "help-contains":
+        "Lista separada por comas — coincide si la consulta contiene alguno de los valores (sin distinguir mayúsculas y minúsculas).",
+      "help-matches":
+        "Patrón de expresión regular. Utilice `/patrón/flags` para habilitar o deshabilitar la sensibilidad a mayúsculas y minúsculas (por defecto, la sensibilidad a mayúsculas y minúsculas está desactivada).",
+      "bool-true": "Verdadero",
+      "bool-false": "Falso",
+    },
+    "provider-picker": {
+      "select-provider": "Seleccionar proveedor",
+      "setup-required": "(requiere configuración)",
+      "loading-models": "Cargando modelos...",
+      "select-model": "Seleccionar modelo",
+      "enter-model": "Introduzca el nombre del modelo",
+      "select-provider-first": "Primero, elija un proveedor.",
+      "configure-to-continue": "Configure {{name}} para continuar",
+      "configure-provider": "Configurar {{name}}",
+      "setup-credentials":
+        "Ingrese las credenciales necesarias para utilizar {{name}} como destino de enrutamiento.",
+      cancel: "Cancelar",
+      "save-settings": "Guardar ajustes",
+      "toast-save-failed": "No se pudo guardar la configuración: {{error}}",
+    },
+    "router-selection": {
+      "loading-routers": "Cargando enrutadores personalizados...",
+      "no-routers-prefix-settings":
+        "Ningún enrutador ha sido configurado todavía.",
+      "no-routers-prefix-workspace": "No se han configurado enrutadores.",
+      "no-routers-link": "Cree uno en la configuración del enrutador.",
+      "model-router-label": "Router de ejemplo",
+      "select-router": "Seleccione un enrutador.",
+      "select-description":
+        "Seleccione el enrutador que desea utilizar para este espacio de trabajo.",
+      "no-routers-chat":
+        "No hay enrutadores configurados. Cree uno en la sección Configuración > Proveedores de IA > Enrutador de Modelo.",
+      "rule-count": "({{count}} reglas)",
+    },
+    metrics: {
+      "model-router-default": "Router de modelo",
+    },
+    chat: {
+      "select-router-error": "Seleccione un router",
+      "invalid-model": "Selección de modelo no válida",
+      "routed-to": "Dirigido a <route>{{model}}</route>",
+      "routed-to-rule":
+        "Enviado a <route>{{model}}</route> a través de <rule>{{ruleTitle}}</rule>",
     },
   },
 };

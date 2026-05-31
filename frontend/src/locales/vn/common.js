@@ -109,6 +109,8 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
+    "scheduled-jobs": "Công việc theo lịch trình",
+    "model-router": "Router mẫu",
   },
   login: {
     "multi-user": {
@@ -193,9 +195,9 @@ const TRANSLATIONS = {
           "sẽ cung cấp câu trả lời <b>chỉ</b> nếu ngữ cảnh của tài liệu được tìm thấy.<br />Bạn sẽ cần sử dụng lệnh @agent để sử dụng các công cụ.",
       },
       automatic: {
-        title: "Tự động",
         description:
           "sẽ tự động sử dụng các công cụ nếu mô hình và nhà cung cấp hỗ trợ gọi công cụ gốc. Nếu không hỗ trợ gọi công cụ gốc, bạn sẽ cần sử dụng lệnh `@agent` để sử dụng các công cụ.",
+        title: "Đại lý",
       },
     },
     history: {
@@ -328,7 +330,7 @@ const TRANSLATIONS = {
         readActions: "Đọc hành động",
         writeActions: "Các hành động",
         warning:
-          "Việc truy cập hệ thống tệp có thể gây nguy hiểm vì nó có thể sửa đổi hoặc xóa các tệp. Vui lòng tham khảo tài liệu <link> trước khi kích hoạt.",
+          "Việc truy cập hệ thống tệp có thể gây nguy hiểm vì nó có thể sửa đổi hoặc xóa các tệp. Vui lòng tham khảo tài liệu <a> trước khi kích hoạt.",
         skills: {
           "read-text-file": {
             title: "Đọc tệp",
@@ -751,6 +753,17 @@ const TRANSLATIONS = {
             "Số lượng công cụ tối đa có thể chọn cho mỗi truy vấn. Chúng tôi khuyến nghị đặt giá trị này thành các giá trị lớn hơn đối với các mô hình có ngữ cảnh lớn hơn.",
         },
       },
+      "clarifying-questions": {
+        title: "Cho phép đại lý đặt câu hỏi để làm rõ",
+        "beta-badge": "Giai đoạn thử nghiệm",
+        description:
+          "Khi được kích hoạt, các trợ lý có thể tạm dừng để đặt câu hỏi ngắn gọn để làm rõ nếu yêu cầu của bạn không rõ ràng.",
+        "max-per-turn": {
+          title: "Số lượng câu hỏi tối đa trong mỗi lượt",
+          description:
+            "Người đại diện có thể đặt bao nhiêu câu hỏi để làm rõ trong một cuộc khảo sát duy nhất?",
+        },
+      },
     },
   },
   recorded: {
@@ -1163,7 +1176,6 @@ const TRANSLATIONS = {
     similarity_match: "trận đấu",
     source_count_one: "{{count}} tham khảo",
     source_count_other: "{{count}} – Tham khảo",
-    preset_exit_description: "Dừng lại phiên làm việc hiện tại",
     add_new: "Thêm mới",
     edit: "Chỉnh sửa",
     publish: "Đăng tải",
@@ -1183,6 +1195,64 @@ const TRANSLATIONS = {
       always_allow: "Luôn luôn đảm bảo {{skillName}}",
       tool_call_was_approved: "Đã được phê duyệt yêu cầu dụng cụ.",
       tool_call_was_rejected: "Yêu cầu gọi công cụ đã bị từ chối.",
+      clarifying_skip: "Để đại lý quyết định",
+      clarifying_submit: "Gửi",
+      clarifying_skipped: "Bạn để đại lý quyết định.",
+      clarifying_timeout: "Không có phản hồi được gửi đúng thời hạn.",
+      clarifying_pagination: "{{current}} thuộc về {{total}}",
+      clarifying_prev_aria: "Câu hỏi trước",
+      clarifying_next_aria: "Câu hỏi tiếp theo",
+      clarifying_close_aria: "Đóng và bỏ qua",
+      clarifying_other: "Các mục khác",
+      clarifying_other_placeholder: "Nhập câu trả lời của bạn",
+      batch_progress: "{{answered}} của {{total}} đã trả lời",
+      batch_skip_this: "Bỏ qua",
+      batch_submit_all: "Gửi tất cả",
+      batch_next: "Tiếp theo",
+      answer_skipped: "[người dùng bỏ qua]",
+    },
+    custom_skills: "Kỹ năng tùy chỉnh",
+    agent_flows: "Dòng chảy của đại lý",
+    no_tools_found: "Không tìm thấy công cụ tương ứng.",
+    loading_mcp_servers: "Đang tải các máy chủ MCP...",
+    app_integrations: "Tích hợp ứng dụng",
+    sub_skills: "Kỹ năng chuyên môn",
+    memories: {
+      title: "Những kỷ niệm",
+      empty:
+        "Hiện tại chưa có thông tin nào. Sau khi bạn tương tác với chatbot, các thông tin sẽ dần được điền vào.",
+      empty_cta: "tạo ra một ký ức mới",
+      tab_workspace: "Không gian làm việc",
+      tab_global: "Toàn cầu",
+      toggle: {
+        label: "Kích hoạt tùy chỉnh",
+        description:
+          "Cho phép trợ lý của bạn nhớ lại thông tin về bạn hoặc không gian làm việc này và sử dụng chúng trong các cuộc trò chuyện.",
+      },
+      auto_extraction: {
+        label: "Nhớ ôtô",
+        description:
+          "Yêu cầu trợ lý của bạn tự động tạo ra các khoảnh khắc đáng nhớ trong nền.",
+      },
+      menu: {
+        edit: "Chỉnh sửa",
+        delete: "Xóa",
+        move_to_global: "Di chuyển sang cấp toàn cầu",
+        move_to_workspace: "Di chuyển đến không gian làm việc",
+      },
+      modal: {
+        create_title: "Tạo ra ký ức",
+        edit_title: "Chỉnh sửa bộ nhớ",
+        create_description:
+          'Những ghi nhớ nên là một câu ngắn gọn và rõ ràng. Ví dụ: "Người dùng thích Python hơn JavaScript".',
+        edit_description: "Cập nhật nội dung của bộ nhớ này.",
+        label: "Bộ nhớ",
+        placeholder:
+          "Ví dụ: Tên người dùng là Joe, người dùng làm việc trên AnythingLLM, v.v.",
+        create: "Tạo",
+        save: "Lưu",
+        cancel: "Hủy",
+      },
     },
   },
   profile_settings: {
@@ -1498,6 +1568,345 @@ const TRANSLATIONS = {
       "pending-description":
         "Người dùng đang chờ xác nhận. So sánh mã ghép đôi được hiển thị ở đây với mã hiển thị trong cuộc trò chuyện Telegram của họ.",
       unknown: "Không xác định",
+    },
+  },
+  scheduledJobs: {
+    title: "Công việc theo lịch trình",
+    enableNotifications:
+      "Kích hoạt thông báo trình duyệt để nhận kết quả tìm kiếm việc làm",
+    description:
+      "Tạo các tác vụ AI lặp đi lặp lại, chạy theo lịch trình. Mỗi tác vụ sẽ thực hiện một yêu cầu với các công cụ tùy chọn và lưu kết quả để xem xét.",
+    newJob: "Vị trí công việc mới",
+    loading: "Đang tải...",
+    emptyTitle: "Hiện chưa có công việc nào được lên lịch.",
+    emptySubtitle: "Tạo một cái để bắt đầu.",
+    table: {
+      name: "Tên",
+      schedule: "Lịch trình",
+      status: "Trạng thái",
+      lastRun: "Lần chạy cuối",
+      nextRun: "Chuyến đi tiếp theo",
+      actions: "Hành động",
+    },
+    confirmDelete: "Bạn có chắc chắn muốn xóa công việc này?",
+    toast: {
+      deleted: "Việc xóa công việc",
+      triggered: "Việc tìm kiếm việc làm đã thành công.",
+      triggerFailed: "Không thể kích hoạt công việc",
+      triggerSkipped: "Công việc này đã bắt đầu triển khai.",
+      killed: "Việc làm đã được hoàn thành thành công.",
+      killFailed: "Không thể ngăn chặn việc chấm dứt hợp đồng",
+    },
+    row: {
+      neverRun: "Không bao giờ chạy",
+      viewRuns: "Xem theo các lượt",
+      runNow: "Hãy bắt đầu ngay bây giờ.",
+      enable: "Kích hoạt",
+      disable: "Tắt",
+      edit: "Chỉnh sửa",
+      delete: "Xóa",
+    },
+    modal: {
+      titleEdit: "Chỉnh sửa công việc theo lịch",
+      titleNew: "Công việc mới theo lịch trình",
+      nameLabel: "Tên",
+      namePlaceholder: "Ví dụ: Tóm tắt tin tức hàng ngày",
+      promptLabel: "Yêu cầu",
+      promptPlaceholder: "Hướng dẫn để chạy trong mỗi lần thực hiện...",
+      scheduleLabel: "Lịch trình",
+      modeBuilder: "Nhà xây dựng",
+      modeCustom: "Tùy chỉnh",
+      cronPlaceholder: "Biểu thức Cron (ví dụ: 0 9 * * *)",
+      currentSchedule: "Lịch trình hiện tại:",
+      toolsLabel: "Dụng cụ (Tùy chọn)",
+      toolsDescription:
+        "Chọn các công cụ hỗ trợ mà công việc này có thể sử dụng. Nếu không chọn công cụ nào, công việc sẽ chạy mà không sử dụng bất kỳ công cụ nào.",
+      toolsSearch: "Tìm kiếm",
+      toolsNoResults: "Không có công cụ nào phù hợp",
+      required: "Yêu cầu",
+      requiredFieldsBanner:
+        "Vui lòng điền đầy đủ các trường thông tin bắt buộc để tạo công việc.",
+      cancel: "Hủy",
+      saving: "Tiết kiệm...",
+      updateJob: "Cập nhật công việc",
+      createJob: "Tạo công việc",
+      jobUpdated: "Thông tin công việc đã được cập nhật",
+      jobCreated: "Vị trí được tạo",
+    },
+    builder: {
+      fallbackWarning:
+        'Biểu thức này không thể chỉnh sửa trực quan. Để giữ nguyên, hãy chuyển sang chế độ "Tùy chỉnh". Hoặc, bạn có thể thay đổi bất kỳ nội dung nào bên dưới để ghi đè lên biểu thức này.',
+      run: "Chạy",
+      frequency: {
+        minute: "mỗi phút",
+        hour: "theo giờ",
+        day: "hàng ngày",
+        week: "hàng tuần",
+        month: "hàng tháng",
+      },
+      every: "Mỗi",
+      minuteOne: "1 phút",
+      minuteOther: "{{count}} phút",
+      atMinute: "Tại phút",
+      pastEveryHour: "hàng giờ",
+      at: "Tại",
+      on: "Về",
+      onDay: "Trong ngày",
+      ofEveryMonth: "của mỗi tháng",
+      weekdays: {
+        sun: "Mặt trời",
+        mon: "Thứ hai",
+        tue: "Thứ hai",
+        wed: "Thứ Ba",
+        thu: "Tháng",
+        fri: "Thứ Sáu",
+        sat: "Thứ Sáu",
+      },
+    },
+    runHistory: {
+      back: "Quay lại tìm việc",
+      title: "Lịch sử hoạt động: {{name}}",
+      schedule: "Lịch trình:",
+      emptyTitle: "Hiện tại, công việc này chưa có kết quả cụ thể.",
+      emptySubtitle: "Thực hiện công việc ngay bây giờ và xem kết quả.",
+      runNow: "Hãy bắt đầu ngay bây giờ.",
+      table: {
+        status: "Trạng thái",
+        started: "Bắt đầu",
+        duration: "Thời gian",
+        error: "Lỗi",
+      },
+      stopJob: "Ngừng làm",
+    },
+    runDetail: {
+      loading: "Hiển thị chi tiết chạy...",
+      notFound: "Không tìm thấy lệnh.",
+      back: "Quay lại",
+      unknownJob: "Vị trí công việc chưa được xác định",
+      runHeading: "{{name}} — Chạy lệnh #{{id}}",
+      duration: "Thời gian: {{value}}",
+      creating: "Tạo ra...",
+      threadFailed: "Không thể tạo ra luồng (thread).",
+      sections: {
+        prompt: "Yêu cầu",
+        error: "Lỗi",
+        thinking: "Ý kiến ({{count}})",
+        toolCalls: "Gọi công cụ ({{count}})",
+        files: "Tệp tin ({{count}})",
+        response: "Phản hồi",
+        metrics: "Các chỉ số",
+      },
+      metrics: {
+        promptTokens: "Từ gợi ý:",
+        completionTokens: "Các token hoàn thành:",
+      },
+      stopJob: "Dừng việc",
+      killing: "Dừng lại...",
+      continueInThread: "Tiếp tục trò chuyện",
+    },
+    toolCall: {
+      arguments: "Các lập luận:",
+      showResult: "Hiển thị kết quả",
+      hideResult: "Ẩn kết quả",
+    },
+    file: {
+      unknown: "Tệp không xác định",
+      download: "Tải xuống",
+      downloadFailed: "Không thể tải xuống tệp",
+      types: {
+        powerpoint: "Trình chiếu PowerPoint",
+        pdf: "Tài liệu PDF",
+        word: "Tệp Word",
+        spreadsheet: "Bảng tính",
+        generic: "Tệp",
+      },
+    },
+    status: {
+      completed: "Hoàn thành",
+      failed: "Thất bại",
+      timed_out: "Thời gian đã hết",
+      running: "Chạy bộ",
+      queued: "Đang chờ",
+    },
+  },
+  "model-router": {
+    title: "Máy định tuyến mẫu",
+    description:
+      "Các router mẫu cho phép bạn định nghĩa các quy tắc để tự động định tuyến tin nhắn trò chuyện đến các nhà cung cấp và mô hình LLM khác nhau dựa trên các điều kiện cụ thể.",
+    table: {
+      name: "Tên",
+      fallback: "Phương án dự phòng",
+      rules: "Quy tắc",
+      workspaces: "Không gian làm việc",
+    },
+    "no-routers": "Hiện tại chưa có mẫu router nào.",
+    "empty-description":
+      "Hiện tại chưa có bất kỳ bộ định tuyến nào được cấu hình. Hãy tạo một để bắt đầu.",
+    "new-router-button": "Router mới",
+    "delete-confirm":
+      'Bạn có chắc chắn muốn xóa thiết bị định tuyến "{{name}}"?\nHành động này sẽ xóa tất cả các cài đặt và ngắt kết nối mọi không gian làm việc đang sử dụng nó.\n\nHành động này là không thể hoàn tác.',
+    "toast-deleted": "Thiết bị định tuyến đã bị xóa",
+    "toast-delete-failed": "Không thể xóa thiết bị định tuyến: {{error}}",
+    "new-router": {
+      title: "Tạo một router mới",
+      name: "Tên",
+      "name-placeholder": "Ví dụ: Công cụ tối ưu hóa chi phí",
+      description: "Mô tả",
+      "description-placeholder": "Mô tả tùy chọn",
+      "fallback-label": "Nhà cung cấp chính và mô hình",
+      "fallback-description":
+        "Sử dụng khi không có quy tắc định tuyến nào phù hợp. Cũng được sử dụng để đánh giá các quy tắc phân loại của LLM.",
+      "cooldown-label": "Thời gian làm nguội bộ nhớ đệm (giây)",
+      "cooldown-help":
+        "Thời gian quyết định định tuyến được lưu trong bộ nhớ trước khi đánh giá lại các quy tắc. Đặt giá trị thành 0 để tắt tính năng lưu trữ.",
+      "name-required": "Tên là bắt buộc.",
+      "fallback-required": "Nhà cung cấp và mẫu hình chính là bắt buộc.",
+      cancel: "Hủy",
+      create: "Tạo Router",
+    },
+    "edit-router": {
+      "back-to-routers": "Quay lại: Máy chủ định tuyến",
+      title: "Chỉnh sửa Router: {{name}}",
+      save: "Lưu",
+      "toast-update-failed": "Không thể cập nhật thiết bị định tuyến.",
+    },
+    rules: {
+      title: "Quy tắc định tuyến",
+      "title-with-name": "Quy tắc định tuyến: {{name}}",
+      description:
+        "Xác định các quy tắc quy định việc tin nhắn trò chuyện được gửi đến các nhà cung cấp và mô hình cụ thể khi nào và như thế nào.",
+      "add-rule": "Thêm quy tắc",
+      "delete-confirm": 'Xóa quy tắc "{{title}}"?',
+      "toast-delete-failed": "Không thể xóa quy tắc.",
+      "toast-reorder-failed": "Không thể áp dụng các quy tắc mới.",
+      "no-rules": "Chưa có quy định nào",
+      "empty-description":
+        "Thêm quy tắc để định tuyến tin nhắn trò chuyện đến các nhà cung cấp và mô hình cụ thể.",
+      "new-rule-button": "Quy định mới",
+      "calculated-section-label":
+        "Quy tắc đã được tính toán – được đánh giá theo thứ tự ưu tiên",
+      "llm-section-label":
+        "Quy tắc LLM — được đánh giá theo lô nếu không có quy tắc nào được tính toán phù hợp",
+      "llm-rule-body":
+        'So sánh <desc>"{{description}}"</desc>, sau đó chuyển hướng đến <route>{{route}}</route>',
+      "calculated-no-conditions":
+        "Không có điều kiện – đường đi đến <route>{{route}}</route>",
+      "calculated-single-condition":
+        'Nếu <prop> có {{property}} và </prop> thì {{comparator}} và <val> "{{value}}" và </val>, thì điều hướng đến <route> {{route}} và </route>',
+      "calculated-multi-condition":
+        "Nếu {{quantifier}} thuộc loại <cond> và </cond>, thì đường đi sẽ là <route> và {{route}} </route>",
+      "comparator-contains": "chứa",
+      "comparator-matches": "trận đấu",
+      "comparator-between": "giữa",
+      "badge-llm": "Mô hình ngôn ngữ lớn",
+      "badge-calculated": "Tính toán",
+      "aria-drag-to-reorder": "Kéo để sắp xếp lại",
+      "aria-edit-rule": "Quy tắc chỉnh sửa",
+      "aria-delete-rule": "Xóa quy tắc",
+      "quantifier-any": "BẤT KỂ",
+      "quantifier-all": "TẤT CẢ",
+    },
+    "rule-form": {
+      "title-label": "Tiêu đề",
+      "rule-type": "Loại quy tắc",
+      "property-label": "Bất động sản",
+      "property-select": "Chọn",
+      "comparator-label": "Công cụ so sánh",
+      "comparator-select": "Chọn",
+      "value-label": "Giá trị",
+      "add-condition": "Thêm điều kiện",
+      "remove-condition": "Loại bỏ điều kiện",
+      "conditions-incomplete":
+        "Điều kiện {{index}} chưa đầy đủ – vui lòng điền thông tin về thuộc tính, đối sánh và giá trị.",
+      "match-description-label": "Mô tả trận đấu",
+      "match-description-placeholder":
+        "Ví dụ: Người dùng đang hỏi về các vấn đề pháp lý, hợp đồng hoặc tuân thủ quy định",
+      "match-description-help":
+        "Mô tả tình huống mà bạn muốn quy tắc này được áp dụng. Điều này sẽ được LLM của bạn đánh giá để xác định xem quy tắc này có nên được sử dụng hay không.",
+      "route-to-label": "Đường đi và mô hình",
+      "route-to-description":
+        "Khi quy tắc này khớp, hãy sử dụng nhà cung cấp/mô hình này.",
+      cancel: "Hủy",
+      saving: "Tiết kiệm...",
+      "update-rule": "Quy tắc cập nhật",
+      "create-rule": "Tạo quy tắc",
+      "title-required": "Tiêu đề là bắt buộc.",
+      "toast-save-failed": "Không thể lưu quy tắc",
+      "type-calculated-label": "Tính toán",
+      "type-calculated-description":
+        "So sánh dựa trên các thuộc tính của thông điệp như nội dung, số lượng token hoặc thời điểm trong ngày.",
+      "type-llm-label": "Phân loại theo LLM",
+      "type-llm-description":
+        "Sử dụng một mô hình ngôn ngữ lớn (LLM) để phân loại tin nhắn dựa trên mô tả mà bạn cung cấp.",
+      "prop-prompt-content": "Nội dung gợi ý",
+      "prop-token-count": "Đếm số lượng token trong cuộc trò chuyện",
+      "prop-message-count": "Số lượng tin nhắn trong cuộc trò chuyện",
+      "prop-current-hour": "Thời gian hiện tại (0-23)",
+      "prop-has-image": "Có kèm theo hình ảnh",
+      "cmp-contains": "chứa",
+      "cmp-matches-regex": "so sánh (biểu thức chính quy)",
+      "cmp-equals": "bằng",
+      "cmp-not-equals": "không bằng",
+      "cmp-greater-than": "lớn hơn",
+      "cmp-greater-than-or-equal": "lớn hơn hoặc bằng",
+      "cmp-less-than": "ít hơn",
+      "cmp-less-than-or-equal": "ít hơn hoặc bằng",
+      "cmp-between": "bao gồm (tính cả)",
+      "placeholder-between-hour": "Ví dụ: 9:17 (từ 9 giờ sáng đến 5 giờ chiều)",
+      "placeholder-between-numeric": "Ví dụ: 10,50",
+      "placeholder-hour": "Ví dụ: 18 (0-23)",
+      "placeholder-message-count": "ví dụ: 10",
+      "placeholder-numeric": "ví dụ: 4000",
+      "placeholder-contains": "ví dụ: mã, Python, Rust",
+      "placeholder-matches": "ví dụ: /\\bpython\\b/i",
+      "placeholder-default": "ví dụ: mã",
+      "help-contains":
+        "Danh sách được phân tách bằng dấu phẩy — khớp nếu câu hỏi chứa bất kỳ giá trị nào (không phân biệt chữ hoa chữ thường).",
+      "help-matches":
+        "Mẫu biểu thức chính quy. Sử dụng `/pattern/flags` để kiểm soát sự phân biệt chữ hoa/thường (mặc định là không phân biệt).",
+      "bool-true": "Đúng",
+      "bool-false": "Sai",
+    },
+    "provider-picker": {
+      "select-provider": "Chọn nhà cung cấp",
+      "setup-required": "(cần thiết phải chuẩn bị)",
+      "loading-models": "Đang tải mô hình...",
+      "select-model": "Chọn mẫu",
+      "enter-model": "Nhập tên mẫu",
+      "select-provider-first":
+        "Bước đầu tiên là chọn một nhà cung cấp dịch vụ.",
+      "configure-to-continue": "Cấu hình {{name}} để tiếp tục",
+      "configure-provider": "Cấu hình {{name}}",
+      "setup-credentials":
+        "Nhập thông tin đăng nhập cần thiết để sử dụng {{name}} làm đích chuyển tiếp.",
+      cancel: "Hủy",
+      "save-settings": "Lưu cài đặt",
+      "toast-save-failed": "Không thể lưu cài đặt: {{error}}",
+    },
+    "router-selection": {
+      "loading-routers": "Tải router tùy chỉnh...",
+      "no-routers-prefix-settings":
+        "Hiện tại chưa có bất kỳ bộ định tuyến nào được cấu hình.",
+      "no-routers-prefix-workspace":
+        "Không có bất kỳ bộ định tuyến nào được cấu hình.",
+      "no-routers-link": "Tạo một trong cài đặt của Router mẫu",
+      "model-router-label": "Máy định tuyến mẫu",
+      "select-router": "Chọn một bộ định tuyến",
+      "select-description":
+        "Chọn router nào để sử dụng cho không gian làm việc này.",
+      "no-routers-chat":
+        "Không có bộ định tuyến nào được cấu hình. Tạo một bộ định tuyến trong mục Cài đặt > Nhà cung cấp AI > Bộ định tuyến Mô hình.",
+      "rule-count": "(__Quy tắc {{count}})",
+    },
+    metrics: {
+      "model-router-default": "Mẫu Router",
+    },
+    chat: {
+      "select-router-error": "Chọn một bộ định tuyến",
+      "invalid-model": "Lựa chọn mô hình không hợp lệ",
+      "routed-to": "Được chuyển đến <route>{{model}}</route>",
+      "routed-to-rule":
+        "Được chuyển đến <route>{{model}}</route> thông qua <rule>{{ruleTitle}}</rule>",
     },
   },
 };

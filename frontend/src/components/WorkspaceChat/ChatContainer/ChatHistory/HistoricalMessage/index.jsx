@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useRef, useState } from "react";
+import React, { memo, useLayoutEffect, useRef, useState } from "react";
 import { Info, Warning } from "@phosphor-icons/react";
 import Actions from "./Actions";
 import renderMarkdown from "@/utils/chat/markdown";
@@ -19,10 +19,11 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { chatQueryRefusalResponse } from "@/utils/chat";
 import HistoricalOutputs from "./HistoricalOutputs";
+import HistoricalClarifyingQuestions from "./HistoricalClarifyingQuestions";
 import { openImageLightbox } from "@/components/ImageLightbox";
 
 const HistoricalMessage = ({
-  uuid = v4(),
+  uuid: uuidProp,
   message,
   role,
   workspace,
@@ -37,7 +38,12 @@ const HistoricalMessage = ({
   forkThread,
   metrics = {},
   outputs = [],
+  clarifyingQuestions = [],
 }) => {
+  // Freeze uuid on first render. User messages arrive without a uuid and this value
+  // is used as the wrapper div's `key` — a default param fallback would regenerate
+  // on every render and remount the subtree, wiping TruncatableContent state.
+  const [uuid] = useState(() => uuidProp ?? v4());
   const { t } = useTranslation();
   const { isEditing } = useEditMessage({ chatId, role });
   const { isDeleted, completeDelete, onEndAnimation } = useWatchDeleteMessage({
@@ -141,6 +147,7 @@ const HistoricalMessage = ({
           />
         ) : (
           <div className="break-words">
+            <HistoricalClarifyingQuestions surveys={clarifyingQuestions} />
             <RenderChatContent role={role} message={message} messageId={uuid} />
             {isRefusalMessage && (
               <Link
@@ -201,7 +208,9 @@ export default memo(
       prevProps.isLastMessage === nextProps.isLastMessage &&
       prevProps.chatId === nextProps.chatId &&
       JSON.stringify(prevProps.metrics) === JSON.stringify(nextProps.metrics) &&
-      JSON.stringify(prevProps.sources) === JSON.stringify(nextProps.sources)
+      JSON.stringify(prevProps.sources) === JSON.stringify(nextProps.sources) &&
+      JSON.stringify(prevProps.clarifyingQuestions) ===
+        JSON.stringify(nextProps.clarifyingQuestions)
     );
   }
 );
@@ -238,7 +247,9 @@ function TruncatableContent({ children }) {
   const [isOverflowing, setIsOverflowing] = useState(false);
   const { t } = useTranslation();
 
-  useEffect(() => {
+  // useLayoutEffect (not useEffect) so collapse applies before paint — avoids a
+  // one-frame flash of uncollapsed content on mount.
+  useLayoutEffect(() => {
     if (contentRef.current) {
       setIsOverflowing(contentRef.current.scrollHeight > 250);
     }

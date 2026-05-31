@@ -5,6 +5,7 @@ import App from "@/App.jsx";
 import PrivateRoute, {
   AdminRoute,
   ManagerRoute,
+  SingleUserRoute,
 } from "@/components/PrivateRoute";
 import Login from "@/pages/Login";
 import SimpleSSOPassthrough from "@/pages/Login/SSO/simple";
@@ -51,15 +52,7 @@ const router = createBrowserRouter([
           );
           return { element: <PrivateRoute Component={WorkspaceChat} /> };
         },
-      },
-      {
-        path: "/workspace/:slug/t/:threadSlug",
-        lazy: async () => {
-          const { default: WorkspaceChat } = await import(
-            "@/pages/WorkspaceChat"
-          );
-          return { element: <PrivateRoute Component={WorkspaceChat} /> };
-        },
+        children: [{ path: "t/:threadSlug" }],
       },
       {
         path: "/accept-invite/:code",
@@ -256,6 +249,24 @@ const router = createBrowserRouter([
         },
       },
       {
+        path: "/settings/model-routers",
+        lazy: async () => {
+          const { default: ModelRouters } = await import(
+            "@/pages/GeneralSettings/ModelRouters"
+          );
+          return { element: <AdminRoute Component={ModelRouters} /> };
+        },
+      },
+      {
+        path: "/settings/model-routers/:id",
+        lazy: async () => {
+          const { default: RouterRulesPage } = await import(
+            "@/pages/GeneralSettings/ModelRouters/RouterRulesPage"
+          );
+          return { element: <AdminRoute Component={RouterRulesPage} /> };
+        },
+      },
+      {
         path: "/settings/system-prompt-variables",
         lazy: async () => {
           const { default: SystemPromptVariables } = await import(
@@ -379,6 +390,35 @@ const router = createBrowserRouter([
             "@/pages/GeneralSettings/Connections/TelegramBot"
           );
           return { element: <AdminRoute Component={TelegramBotSettings} /> };
+        },
+      },
+      {
+        path: "/settings/scheduled-jobs",
+        lazy: async () => {
+          const { default: ScheduledJobs } = await import(
+            "@/pages/GeneralSettings/ScheduledJobs"
+          );
+          return { element: <SingleUserRoute Component={ScheduledJobs} /> };
+        },
+      },
+      {
+        path: "/settings/scheduled-jobs/:id/runs",
+        lazy: async () => {
+          const { default: ScheduledJobRuns } = await import(
+            "@/pages/GeneralSettings/ScheduledJobs/RunHistoryPage"
+          );
+          return { element: <SingleUserRoute Component={ScheduledJobRuns} /> };
+        },
+      },
+      {
+        path: "/settings/scheduled-jobs/:id/runs/:runId",
+        lazy: async () => {
+          const { default: ScheduledJobRunDetail } = await import(
+            "@/pages/GeneralSettings/ScheduledJobs/RunDetailPage"
+          );
+          return {
+            element: <SingleUserRoute Component={ScheduledJobRunDetail} />,
+          };
         },
       },
       // Catch-all route for 404s

@@ -61,7 +61,7 @@ export default function ChatModelSelection({
                 value={model.id}
                 selected={selectedLLMModel === model.id}
               >
-                {model.id}
+                {model.name || model.id}
               </option>
             );
           })}

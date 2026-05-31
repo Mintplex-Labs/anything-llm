@@ -222,6 +222,18 @@ function WorkspaceAndThreadTooltips() {
         delayShow={800}
         className="tooltip !text-xs z-99"
       />
+      <Tooltip
+        id="upload-workspace"
+        place="top"
+        delayShow={300}
+        className="tooltip !text-xs z-99"
+      />
+      <Tooltip
+        id="gear-workspace"
+        place="top"
+        delayShow={300}
+        className="tooltip !text-xs z-99"
+      />
     </React.Fragment>,
     document.body
   );
