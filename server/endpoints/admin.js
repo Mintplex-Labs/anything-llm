@@ -20,7 +20,6 @@ const {
   getSwarmsyRequiredDocsStatus,
 } = require("../utils/swarmsy/requiredDocs");
 const { CollectorApi } = require("../utils/collectorApi");
-const { purgeSourceDocument, purgeVectorCache } = require("../utils/files");
 const {
   getVectorDbClass,
   getEmbeddingEngineSelection,
@@ -766,7 +765,6 @@ function adminEndpoints(app) {
         const ingested = [];
         const skipped = [...unavailablePaths];
         const failed = [];
-        const cleanupWarnings = [];
         const docsRoot = path.resolve(status.docsRoot);
 
         for (const docPath of loadablePaths) {
@@ -836,26 +834,6 @@ function adminEndpoints(app) {
             });
             existingChunkSources.add(chunkSource);
           }
-
-          try {
-            await purgeSourceDocument(generatedDocLocation);
-          } catch (error) {
-            cleanupWarnings.push({
-              path: docPath,
-              stage: "cleanup",
-              error: `Failed to purge source document: ${error.message}`,
-            });
-          }
-
-          try {
-            await purgeVectorCache(generatedDocLocation);
-          } catch (error) {
-            cleanupWarnings.push({
-              path: docPath,
-              stage: "cleanup",
-              error: `Failed to purge vector cache: ${error.message}`,
-            });
-          }
         }
 
         const alreadyAttachedCount = skipped.filter(
@@ -882,7 +860,6 @@ function adminEndpoints(app) {
           ingested,
           skipped,
           failed,
-          cleanupWarnings,
           partial,
           message,
         });
