@@ -8,6 +8,8 @@ CREATE TABLE "ollama_connections" (
     "basePath" TEXT NOT NULL,
     "authToken" TEXT,
     "keepAlive" INTEGER,
+    "tokenLimit" INTEGER,
+    "modelPref" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "lastUpdatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

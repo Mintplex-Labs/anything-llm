@@ -23,11 +23,13 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     } = config;
 
     super();
-    const { basePath, authToken } = OllamaAILLM.resolveConfig(connection);
+    const { basePath, authToken, tokenLimit } =
+      OllamaAILLM.resolveConfig(connection);
     const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
     this.connection = connection || null;
     this.basePath = basePath;
     this.authToken = authToken;
+    this.tokenLimit = tokenLimit;
     this._client = new Ollama({
       host: basePath,
       headers: headers,
@@ -61,10 +63,14 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get queryOptions() {
     this.providerLog(
-      `${this.model} is using a max context window of ${OllamaAILLM.promptWindowLimit(this.model, this.basePath)}/${OllamaAILLM.maxContextWindow(this.model, this.basePath)} tokens.`
+      `${this.model} is using a max context window of ${OllamaAILLM.promptWindowLimit(this.model, this.basePath, this.tokenLimit)}/${OllamaAILLM.maxContextWindow(this.model, this.basePath)} tokens.`
     );
     return {
-      num_ctx: OllamaAILLM.promptWindowLimit(this.model, this.basePath),
+      num_ctx: OllamaAILLM.promptWindowLimit(
+        this.model,
+        this.basePath,
+        this.tokenLimit
+      ),
     };
   }
 

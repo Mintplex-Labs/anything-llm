@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { PencilSimple, Plus, X } from "@phosphor-icons/react";
 import ModalWrapper from "@/components/ModalWrapper";
 import OllamaConnection from "@/models/ollamaConnection";
+import System from "@/models/system";
 import { useModal } from "@/hooks/useModal";
 import showToast from "@/utils/toast";
 
@@ -132,6 +133,22 @@ export default function ConnectionsManager() {
 function ConnectionModal({ isOpen, closeModal, onSuccess, connection }) {
   const isEdit = !!connection;
   const [submitting, setSubmitting] = useState(false);
+  // Controlled state for the fields the Ollama Model dropdown depends on
+  // (basePath + authToken). Keeps the model list in sync as the user edits.
+  const [basePath, setBasePath] = useState(connection?.basePath || "");
+  const [authTokenField, setAuthTokenField] = useState(
+    connection?.authToken ? "*".repeat(20) : ""
+  );
+  const [modelPref, setModelPref] = useState(connection?.modelPref || "");
+
+  // When the auth-token input still shows the asterisk mask, prefer the real
+  // saved token for the live model fetch so the dropdown can actually reach
+  // a protected Ollama server during edit.
+  const isMaskedAuth =
+    !!connection?.authToken && /^\*+$/.test(authTokenField);
+  const effectiveAuthToken = isMaskedAuth
+    ? connection.authToken
+    : authTokenField || null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -139,10 +156,13 @@ function ConnectionModal({ isOpen, closeModal, onSuccess, connection }) {
     const form = new FormData(e.target);
     const payload = {
       name: form.get("name"),
-      basePath: form.get("basePath"),
-      authToken: form.get("authToken") || null,
-      keepAlive: form.get("keepAlive") || null,
+      basePath,
+      keepAlive: form.get("keepAlive"),
+      tokenLimit: form.get("tokenLimit") || null,
+      modelPref: modelPref || null,
     };
+    // Treat an all-asterisk submission as "no change" to the saved token.
+    if (!isMaskedAuth) payload.authToken = authTokenField || null;
 
     setSubmitting(true);
     const { error } = isEdit
@@ -179,25 +199,47 @@ function ConnectionModal({ isOpen, closeModal, onSuccess, connection }) {
             placeholder="Local Ollama"
           />
           <Field
-            label="Base path"
+            label="Ollama Base URL"
             name="basePath"
             required
-            defaultValue={connection?.basePath || ""}
+            value={basePath}
+            onChange={(e) => setBasePath(e.target.value)}
             placeholder="http://localhost:11434"
           />
-          <Field
-            label="Auth token (optional)"
-            name="authToken"
-            type="password"
-            defaultValue={connection?.authToken || ""}
-            placeholder="Bearer token, if required"
+          <SelectField
+            label="Ollama Keep Alive"
+            name="keepAlive"
+            defaultValue={String(connection?.keepAlive ?? 300)}
+            options={[
+              { value: "0", label: "No cache" },
+              { value: "300", label: "5 minutes" },
+              { value: "3600", label: "1 hour" },
+              { value: "-1", label: "Forever" },
+            ]}
           />
           <Field
-            label="Keep-alive (seconds, optional)"
-            name="keepAlive"
+            label="Model context window"
+            name="tokenLimit"
             type="number"
-            defaultValue={connection?.keepAlive ?? ""}
-            placeholder="300"
+            min={1}
+            defaultValue={connection?.tokenLimit ?? ""}
+            placeholder="Automatically managed"
+          />
+          <Field
+            label="Authentication Token"
+            name="authToken"
+            type="password"
+            value={authTokenField}
+            onChange={(e) => setAuthTokenField(e.target.value)}
+            placeholder="Bearer token, if required"
+            autoComplete="off"
+            spellCheck={false}
+          />
+          <OllamaModelField
+            basePath={basePath}
+            authToken={effectiveAuthToken}
+            value={modelPref}
+            onChange={setModelPref}
           />
           <div className="flex justify-end gap-3 pt-2">
             <button
@@ -227,8 +269,14 @@ function Field({
   type = "text",
   required,
   defaultValue,
+  value,
+  onChange,
   placeholder,
+  min,
+  autoComplete,
+  spellCheck,
 }) {
+  const controlled = value !== undefined;
   return (
     <label className="flex flex-col gap-1.5 text-sm text-zinc-200">
       <span>{label}</span>
@@ -236,10 +284,111 @@ function Field({
         name={name}
         type={type}
         required={required}
-        defaultValue={defaultValue}
+        {...(controlled
+          ? { value, onChange }
+          : { defaultValue, onChange })}
         placeholder={placeholder}
+        min={min}
+        autoComplete={autoComplete}
+        spellCheck={spellCheck}
         className="bg-zinc-800 text-white placeholder:text-zinc-500 rounded-md border border-white/10 px-3 py-2 text-sm focus:outline-none focus:border-white/30"
       />
+    </label>
+  );
+}
+
+function OllamaModelField({ basePath, authToken, value, onChange }) {
+  const [models, setModels] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchModels() {
+      if (!basePath) {
+        setModels([]);
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
+      setError(null);
+      try {
+        const { models = [], error: fetchError } = await System.customModels(
+          "ollama",
+          authToken,
+          basePath
+        );
+        if (cancelled) return;
+        if (fetchError) setError(fetchError);
+        setModels(models || []);
+      } catch (e) {
+        if (!cancelled) setError(e.message);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+    fetchModels();
+    return () => {
+      cancelled = true;
+    };
+  }, [basePath, authToken]);
+
+  // Make sure the saved model stays visible even before the live list loads,
+  // so the dropdown doesn't appear to "lose" the user's previous selection
+  // while we're fetching from the server.
+  const knownModelIds = new Set(models.map((m) => m.id));
+  const savedNotInList = value && !knownModelIds.has(value);
+
+  return (
+    <label className="flex flex-col gap-1.5 text-sm text-zinc-200">
+      <span>Ollama Model</span>
+      <select
+        value={value || ""}
+        onChange={(e) => onChange(e.target.value)}
+        disabled={loading || (!basePath && !value)}
+        className="bg-zinc-800 text-white rounded-md border border-white/10 px-3 py-2 text-sm focus:outline-none focus:border-white/30 disabled:opacity-60"
+      >
+        <option value="">
+          {!basePath
+            ? "Enter Ollama URL first"
+            : loading
+              ? "Loading available models…"
+              : models.length === 0
+                ? "No models discovered — use connection default"
+                : "Use connection default"}
+        </option>
+        {savedNotInList && <option value={value}>{value} (saved)</option>}
+        {models.map((m) => (
+          <option key={m.id} value={m.id}>
+            {m.name || m.id}
+          </option>
+        ))}
+      </select>
+      <span className="text-xs text-zinc-500">
+        Optional. Workspaces using this connection without their own model
+        selection will fall back to this one. Leave blank to defer to the
+        global <code>OLLAMA_MODEL_PREF</code>.
+      </span>
+      {error && <span className="text-xs text-red-400">{error}</span>}
+    </label>
+  );
+}
+
+function SelectField({ label, name, defaultValue, options }) {
+  return (
+    <label className="flex flex-col gap-1.5 text-sm text-zinc-200">
+      <span>{label}</span>
+      <select
+        name={name}
+        defaultValue={defaultValue}
+        className="bg-zinc-800 text-white rounded-md border border-white/10 px-3 py-2 text-sm focus:outline-none focus:border-white/30"
+      >
+        {options.map((o) => (
+          <option key={o.value} value={o.value}>
+            {o.label}
+          </option>
+        ))}
+      </select>
     </label>
   );
 }

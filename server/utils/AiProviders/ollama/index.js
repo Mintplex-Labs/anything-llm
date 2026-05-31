@@ -24,7 +24,7 @@ class OllamaAILLM {
    * override (from a stored ollama_connections row) and falling back to env vars.
    * Response-timeout stays env-only (see OLLAMA_RESPONSE_TIMEOUT) to match how
    * the system-wide Ollama settings expose timing controls.
-   * @param {{basePath?:string,authToken?:string|null,keepAlive?:number|null}|null} connection
+   * @param {{basePath?:string,authToken?:string|null,keepAlive?:number|null,tokenLimit?:number|null}|null} connection
    */
   static resolveConfig(connection = null) {
     const basePath = connection?.basePath || process.env.OLLAMA_BASE_PATH;
@@ -35,11 +35,13 @@ class OllamaAILLM {
         : process.env.OLLAMA_KEEP_ALIVE_TIMEOUT
           ? Number(process.env.OLLAMA_KEEP_ALIVE_TIMEOUT)
           : 300;
-    return { basePath, authToken, keepAlive };
+    const tokenLimit =
+      connection?.tokenLimit != null ? Number(connection.tokenLimit) : null;
+    return { basePath, authToken, keepAlive, tokenLimit };
   }
 
   constructor(embedder = null, modelPreference = null, connection = null) {
-    const { basePath, authToken, keepAlive } =
+    const { basePath, authToken, keepAlive, tokenLimit } =
       OllamaAILLM.resolveConfig(connection);
     if (!basePath) throw new Error("No Ollama Base Path was set.");
 
@@ -47,8 +49,15 @@ class OllamaAILLM {
     this.connection = connection || null;
     this.authToken = authToken;
     this.basePath = basePath;
-    this.model = modelPreference || process.env.OLLAMA_MODEL_PREF;
+    // Precedence: explicit caller > connection default > env default. The
+    // connection-level default lets workspaces inherit a sensible model when
+    // they don't override it themselves.
+    this.model =
+      modelPreference ||
+      connection?.modelPref ||
+      process.env.OLLAMA_MODEL_PREF;
     this.keepAlive = keepAlive;
+    this.tokenLimit = tokenLimit;
 
     const headers = this.authToken
       ? { Authorization: `Bearer ${this.authToken}` }
@@ -200,7 +209,7 @@ class OllamaAILLM {
     return "streamGetChatCompletion" in this;
   }
 
-  static promptWindowLimit(modelName, basePath = null) {
+  static promptWindowLimit(modelName, basePath = null, overrideLimit = null) {
     const resolvedBasePath = basePath || process.env.OLLAMA_BASE_PATH;
     const bucket =
       OllamaAILLM.modelContextWindows[resolvedBasePath] || {};
@@ -208,21 +217,27 @@ class OllamaAILLM {
       this.#slog(
         "No context windows cached - Context window may be inaccurately reported."
       );
+      if (overrideLimit && Number(overrideLimit) > 0)
+        return Number(overrideLimit);
       return Number(process.env.OLLAMA_MODEL_TOKEN_LIMIT) || 4096;
     }
 
+    // The per-connection override beats the env-level limit. Fall back to env
+    // when no override is set so existing single-server installs keep working.
     let userDefinedLimit = null;
-    const systemDefinedLimit = OllamaAILLM.maxContextWindow(
-      modelName,
-      resolvedBasePath
-    );
-
-    if (
+    if (overrideLimit != null && Number(overrideLimit) > 0)
+      userDefinedLimit = Number(overrideLimit);
+    else if (
       process.env.OLLAMA_MODEL_TOKEN_LIMIT &&
       !isNaN(Number(process.env.OLLAMA_MODEL_TOKEN_LIMIT)) &&
       Number(process.env.OLLAMA_MODEL_TOKEN_LIMIT) > 0
     )
       userDefinedLimit = Number(process.env.OLLAMA_MODEL_TOKEN_LIMIT);
+
+    const systemDefinedLimit = OllamaAILLM.maxContextWindow(
+      modelName,
+      resolvedBasePath
+    );
 
     // The user defined limit is always higher priority than the context window limit, but it cannot be higher than the context window limit
     // so we return the minimum of the two, if there is no user defined limit, we return the system defined limit as-is.
@@ -236,7 +251,11 @@ class OllamaAILLM {
   }
 
   promptWindowLimit() {
-    return this.constructor.promptWindowLimit(this.model, this.basePath);
+    return this.constructor.promptWindowLimit(
+      this.model,
+      this.basePath,
+      this.tokenLimit
+    );
   }
 
   static maxContextWindow(modelName = null, basePath = null) {

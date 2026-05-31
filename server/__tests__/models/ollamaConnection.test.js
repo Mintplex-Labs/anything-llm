@@ -73,16 +73,54 @@ describe("OllamaConnection.validations", () => {
       expect(OllamaConnection.validations.keepAlive(120.7)).toBe(121);
     });
 
-    it("accepts zero", () => {
+    it("accepts zero (no cache) and -1 (forever) sentinels", () => {
       expect(OllamaConnection.validations.keepAlive(0)).toBe(0);
+      expect(OllamaConnection.validations.keepAlive(-1)).toBe(-1);
     });
 
-    it("rejects negative/NaN/empty", () => {
-      expect(OllamaConnection.validations.keepAlive(-1)).toBeNull();
+    it("rejects other negatives, NaN, and empty values", () => {
+      expect(OllamaConnection.validations.keepAlive(-2)).toBeNull();
       expect(OllamaConnection.validations.keepAlive("abc")).toBeNull();
       expect(OllamaConnection.validations.keepAlive("")).toBeNull();
       expect(OllamaConnection.validations.keepAlive(null)).toBeNull();
       expect(OllamaConnection.validations.keepAlive(undefined)).toBeNull();
+    });
+  });
+
+  describe("tokenLimit", () => {
+    it("rounds and accepts positive integers", () => {
+      expect(OllamaConnection.validations.tokenLimit("16384")).toBe(16384);
+      expect(OllamaConnection.validations.tokenLimit(8192.4)).toBe(8192);
+    });
+
+    it("rejects zero, negative, NaN, and empty values", () => {
+      expect(OllamaConnection.validations.tokenLimit(0)).toBeNull();
+      expect(OllamaConnection.validations.tokenLimit(-100)).toBeNull();
+      expect(OllamaConnection.validations.tokenLimit("abc")).toBeNull();
+      expect(OllamaConnection.validations.tokenLimit("")).toBeNull();
+      expect(OllamaConnection.validations.tokenLimit(null)).toBeNull();
+      expect(OllamaConnection.validations.tokenLimit(undefined)).toBeNull();
+    });
+  });
+
+  describe("modelPref", () => {
+    it("trims a non-empty model name", () => {
+      expect(OllamaConnection.validations.modelPref("  llama3:latest  ")).toBe(
+        "llama3:latest"
+      );
+    });
+
+    it("truncates long names to 255 chars", () => {
+      const long = "m".repeat(300);
+      expect(OllamaConnection.validations.modelPref(long)).toHaveLength(255);
+    });
+
+    it("returns null for empty/whitespace/non-string values", () => {
+      expect(OllamaConnection.validations.modelPref("")).toBeNull();
+      expect(OllamaConnection.validations.modelPref("   ")).toBeNull();
+      expect(OllamaConnection.validations.modelPref(null)).toBeNull();
+      expect(OllamaConnection.validations.modelPref(undefined)).toBeNull();
+      expect(OllamaConnection.validations.modelPref(123)).toBeNull();
     });
   });
 });
@@ -93,17 +131,21 @@ describe("OllamaConnection._sanitize", () => {
       name: "Prod",
       basePath: "http://prod:11434",
       authToken: "tok",
-      keepAlive: "60",
+      keepAlive: "300",
+      tokenLimit: "16384",
+      modelPref: "llama3:latest",
       id: 999, // not writable
       createdAt: new Date(), // not writable
       foo: "bar", // not writable
-      responseTimeout: 30000, // no longer writable
+      responseTimeout: 30000, // not writable
     });
     expect(result).toEqual({
       name: "Prod",
       basePath: "http://prod:11434",
       authToken: "tok",
-      keepAlive: 60,
+      keepAlive: 300,
+      tokenLimit: 16384,
+      modelPref: "llama3:latest",
     });
   });
 

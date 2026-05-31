@@ -2,7 +2,14 @@ const { Prisma } = require("@prisma/client");
 const prisma = require("../utils/prisma");
 
 const OllamaConnection = {
-  writable: ["name", "basePath", "authToken", "keepAlive"],
+  writable: [
+    "name",
+    "basePath",
+    "authToken",
+    "keepAlive",
+    "tokenLimit",
+    "modelPref",
+  ],
 
   validations: {
     name: (value) => {
@@ -18,11 +25,30 @@ const OllamaConnection = {
       if (typeof value !== "string") return null;
       return String(value);
     },
+    // Matches global OllamaLLMKeepAliveSeconds: 0 (no cache), 300 (5m),
+    // 3600 (1h), or -1 (forever).
     keepAlive: (value) => {
       if (value === null || value === undefined || value === "") return null;
       const num = Number(value);
-      if (Number.isNaN(num) || num < 0) return null;
+      if (Number.isNaN(num)) return null;
+      if (num !== -1 && num < 0) return null;
       return Math.round(num);
+    },
+    // Matches global OllamaLLMTokenLimit: a positive integer or null (auto).
+    tokenLimit: (value) => {
+      if (value === null || value === undefined || value === "") return null;
+      const num = Number(value);
+      if (Number.isNaN(num) || num <= 0) return null;
+      return Math.round(num);
+    },
+    // Default model for this connection — falls back to the env's
+    // OLLAMA_MODEL_PREF when null. Used when a workspace selects this
+    // connection without specifying its own chatModel.
+    modelPref: (value) => {
+      if (value === null || value === undefined || value === "") return null;
+      if (typeof value !== "string") return null;
+      const trimmed = value.trim();
+      return trimmed.length === 0 ? null : trimmed.slice(0, 255);
     },
   },
 

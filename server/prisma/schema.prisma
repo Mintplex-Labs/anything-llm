@@ -494,6 +494,8 @@ model ollama_connections {
   basePath      String
   authToken     String?
   keepAlive     Int?
+  tokenLimit    Int?
+  modelPref     String?
   createdAt     DateTime @default(now())
   lastUpdatedAt DateTime @default(now())
 }
