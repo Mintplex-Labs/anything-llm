@@ -10,6 +10,9 @@ function getSTTProvider() {
     case "deepgram":
       const { DeepgramSTT } = require("./deepgram");
       return new DeepgramSTT();
+    case "generic-openai":
+      const { GenericOpenAiSTT } = require("./openAiGeneric");
+      return new GenericOpenAiSTT();
     default:
       throw new Error(
         `STT_PROVIDER "${provider}" is not a server-side provider.`

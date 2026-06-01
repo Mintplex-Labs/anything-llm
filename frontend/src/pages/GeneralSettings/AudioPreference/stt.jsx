@@ -8,11 +8,13 @@ import OpenAiLogo from "@/media/llmprovider/openai.png";
 import DeepgramLogo from "@/media/ttsproviders/deepgram.png";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import LemonadeLogo from "@/media/llmprovider/lemonade.png";
+import GenericOpenAiLogo from "@/media/llmprovider/generic-openai.png";
 
 import BrowserNative from "@/components/SpeechToText/BrowserNative";
 import OpenAiSTTOptions from "@/components/SpeechToText/OpenAiOptions";
 import DeepgramSTTOptions from "@/components/SpeechToText/DeepgramOptions";
 import LemonadeSTTOptions from "@/components/SpeechToText/LemonadeOptions";
+import GenericOpenAiSTTOptions from "@/components/SpeechToText/GenericOpenAiOptions";
 
 const PROVIDERS = [
   {
@@ -42,6 +44,14 @@ const PROVIDERS = [
     logo: DeepgramLogo,
     options: (settings) => <DeepgramSTTOptions settings={settings} />,
     description: "Transcribe speech using Deepgram's hosted Nova models.",
+  },
+  {
+    name: "Generic OpenAI",
+    value: "generic-openai",
+    logo: GenericOpenAiLogo,
+    options: (settings) => <GenericOpenAiSTTOptions settings={settings} />,
+    description:
+      "Connect to any OpenAI-compatible STT service via a custom configuration.",
   },
 ];
 

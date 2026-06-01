@@ -698,6 +698,20 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // STT OpenAI Generic
+  STTOpenAICompatibleKey: {
+    envKey: "STT_OPEN_AI_COMPATIBLE_KEY",
+    checks: [],
+  },
+  STTOpenAICompatibleModel: {
+    envKey: "STT_OPEN_AI_COMPATIBLE_MODEL",
+    checks: [],
+  },
+  STTOpenAICompatibleEndpoint: {
+    envKey: "STT_OPEN_AI_COMPATIBLE_ENDPOINT",
+    checks: [isValidURL],
+  },
+
   // DeepSeek Options
   DeepSeekApiKey: {
     envKey: "DEEPSEEK_API_KEY",
@@ -986,9 +1000,13 @@ function supportedTTSProvider(input = "") {
 }
 
 function supportedSTTProvider(input = "") {
-  const validSelection = ["native", "openai", "lemonade", "deepgram"].includes(
-    input
-  );
+  const validSelection = [
+    "native",
+    "openai",
+    "lemonade",
+    "deepgram",
+    "generic-openai",
+  ].includes(input);
   return validSelection ? null : `${input} is not a valid STT provider.`;
 }
 
