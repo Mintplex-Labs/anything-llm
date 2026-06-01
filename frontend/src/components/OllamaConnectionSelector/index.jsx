@@ -30,12 +30,13 @@ export default function OllamaConnectionSelector({
       // Fall back to System default if the saved id was deleted on the backend
       // so callers gating on the resolved connection don't wait forever.
       const matchId =
-        selectedId !== "" && rows.find((c) => String(c.id) === selectedId)
+        selectedId !== "" &&
+        rows.find((connection) => String(connection.id) === selectedId)
           ? selectedId
           : "";
       if (matchId !== selectedId) setSelectedId(matchId);
       const match = matchId
-        ? rows.find((c) => String(c.id) === matchId) || null
+        ? rows.find((connection) => String(connection.id) === matchId) || null
         : null;
       onConnectionChange?.(match);
     });
@@ -47,7 +48,8 @@ export default function OllamaConnectionSelector({
     setSelectedId(value);
     setHasChanges(true);
     const match = value
-      ? connections.find((c) => String(c.id) === value) || null
+      ? connections.find((connection) => String(connection.id) === value) ||
+        null
       : null;
     onConnectionChange?.(match);
   };
@@ -76,9 +78,9 @@ export default function OllamaConnectionSelector({
         className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
       >
         <option value="">System default (env vars)</option>
-        {connections.map((c) => (
-          <option key={c.id} value={c.id}>
-            {c.name} — {c.basePath}
+        {connections.map((connection) => (
+          <option key={connection.id} value={connection.id}>
+            {connection.name} — {connection.basePath}
           </option>
         ))}
       </select>

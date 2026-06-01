@@ -16,9 +16,11 @@ function ollamaConnectionEndpoints(app) {
       try {
         const connections = await OllamaConnection.where({});
         const withCounts = await Promise.all(
-          connections.map(async (c) => ({
-            ...c,
-            workspaceCount: await OllamaConnection.workspaceCount(c.id),
+          connections.map(async (connection) => ({
+            ...connection,
+            workspaceCount: await OllamaConnection.workspaceCount(
+              connection.id
+            ),
           }))
         );
         response.status(200).json({ connections: withCounts });

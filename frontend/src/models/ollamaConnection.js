@@ -7,10 +7,10 @@ const OllamaConnection = {
       method: "GET",
       headers: baseHeaders(),
     })
-      .then((res) => res.json())
-      .then((res) => res?.connections || [])
-      .catch((e) => {
-        console.error(e);
+      .then((response) => response.json())
+      .then((data) => data?.connections || [])
+      .catch((error) => {
+        console.error(error);
         return [];
       });
   },
@@ -21,10 +21,10 @@ const OllamaConnection = {
       headers: baseHeaders(),
       body: JSON.stringify(data),
     })
-      .then((res) => res.json())
-      .catch((e) => {
-        console.error(e);
-        return { connection: null, error: e.message };
+      .then((response) => response.json())
+      .catch((error) => {
+        console.error(error);
+        return { connection: null, error: error.message };
       });
   },
 
@@ -34,10 +34,10 @@ const OllamaConnection = {
       headers: baseHeaders(),
       body: JSON.stringify(data),
     })
-      .then((res) => res.json())
-      .catch((e) => {
-        console.error(e);
-        return { connection: null, error: e.message };
+      .then((response) => response.json())
+      .catch((error) => {
+        console.error(error);
+        return { connection: null, error: error.message };
       });
   },
 
@@ -46,10 +46,10 @@ const OllamaConnection = {
       method: "DELETE",
       headers: baseHeaders(),
     })
-      .then((res) => res.json())
-      .catch((e) => {
-        console.error(e);
-        return { success: false, error: e.message };
+      .then((response) => response.json())
+      .catch((error) => {
+        console.error(error);
+        return { success: false, error: error.message };
       });
   },
 };

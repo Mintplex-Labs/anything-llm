@@ -23,8 +23,10 @@ export default function OllamaConnectionInline({
       // so the model fetch isn't permanently gated waiting for a ghost.
       if (selectedConnectionId) {
         const match =
-          rows.find((c) => String(c.id) === String(selectedConnectionId)) ||
-          null;
+          rows.find(
+            (connection) =>
+              String(connection.id) === String(selectedConnectionId)
+          ) || null;
         if (match) onChange?.(selectedConnectionId, match, { initial: true });
         else onChange?.(null, null, { initial: true });
       } else {
@@ -37,7 +39,8 @@ export default function OllamaConnectionInline({
   const handleChange = (e) => {
     const value = e.target.value;
     const match = value
-      ? connections.find((c) => String(c.id) === value) || null
+      ? connections.find((connection) => String(connection.id) === value) ||
+        null
       : null;
     onChange?.(value || null, match);
   };
@@ -54,9 +57,9 @@ export default function OllamaConnectionInline({
         className="bg-zinc-900 light:bg-white text-white light:text-slate-900 text-sm rounded-lg h-8 w-full px-2.5 outline-none border border-zinc-900 light:border-slate-400 cursor-pointer disabled:cursor-not-allowed"
       >
         <option value="">System default (env vars)</option>
-        {connections.map((c) => (
-          <option key={c.id} value={c.id}>
-            {c.name} — {c.basePath}
+        {connections.map((connection) => (
+          <option key={connection.id} value={connection.id}>
+            {connection.name} — {connection.basePath}
           </option>
         ))}
       </select>

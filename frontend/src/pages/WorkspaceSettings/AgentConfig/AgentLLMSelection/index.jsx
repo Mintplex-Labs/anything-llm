@@ -230,8 +230,8 @@ export default function AgentLLMSelection({
         <OllamaConnectionSelector
           workspace={workspace}
           setHasChanges={setHasChanges}
-          onConnectionChange={(c) => {
-            setOllamaConnection(c);
+          onConnectionChange={(connection) => {
+            setOllamaConnection(connection);
             setOllamaConnectionResolved(true);
           }}
         />

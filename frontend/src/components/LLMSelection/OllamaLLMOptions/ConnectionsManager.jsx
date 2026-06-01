@@ -30,8 +30,8 @@ export default function ConnectionsManager() {
     setEditing(null);
     openModal();
   };
-  const openEdit = (c) => {
-    setEditing(c);
+  const openEdit = (connection) => {
+    setEditing(connection);
     openModal();
   };
   const handleClose = () => {
@@ -39,15 +39,15 @@ export default function ConnectionsManager() {
     setEditing(null);
   };
 
-  const handleDelete = async (c) => {
+  const handleDelete = async (connection) => {
     const msg =
-      c.workspaceCount > 0
-        ? `Delete "${c.name}"? ${c.workspaceCount} workspace(s) use it and will fall back to env defaults.`
-        : `Delete "${c.name}"?`;
+      connection.workspaceCount > 0
+        ? `Delete "${connection.name}"? ${connection.workspaceCount} workspace(s) use it and will fall back to env defaults.`
+        : `Delete "${connection.name}"?`;
     if (!window.confirm(msg)) return;
-    const { success, error } = await OllamaConnection.delete(c.id);
+    const { success, error } = await OllamaConnection.delete(connection.id);
     if (success) {
-      setConnections((prev) => prev.filter((r) => r.id !== c.id));
+      setConnections((prev) => prev.filter((row) => row.id !== connection.id));
       showToast("Connection deleted", "success");
     } else showToast(`Delete failed: ${error}`, "error");
   };
@@ -87,29 +87,33 @@ export default function ConnectionsManager() {
             No named connections yet.
           </p>
         ) : (
-          connections.map((c, idx) => (
+          connections.map((connection, idx) => (
             <div
-              key={c.id}
+              key={connection.id}
               className={`grid grid-cols-[2fr_3fr_1fr_72px] gap-x-4 items-center px-4 py-2 text-sm ${
                 idx > 0 ? "border-t border-white/5" : ""
               }`}
             >
-              <span className="text-white truncate">{c.name}</span>
-              <span className="text-zinc-400 truncate">{c.basePath}</span>
-              <span className="text-zinc-400">{c.workspaceCount || 0}</span>
+              <span className="text-white truncate">{connection.name}</span>
+              <span className="text-zinc-400 truncate">
+                {connection.basePath}
+              </span>
+              <span className="text-zinc-400">
+                {connection.workspaceCount || 0}
+              </span>
               <div className="flex justify-end gap-3">
                 <button
                   type="button"
-                  onClick={() => openEdit(c)}
-                  aria-label={`Edit ${c.name}`}
+                  onClick={() => openEdit(connection)}
+                  aria-label={`Edit ${connection.name}`}
                   className="border-none text-zinc-400 hover:text-white"
                 >
                   <PencilSimple size={16} weight="bold" />
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleDelete(c)}
-                  aria-label={`Delete ${c.name}`}
+                  onClick={() => handleDelete(connection)}
+                  aria-label={`Delete ${connection.name}`}
                   className="border-none text-zinc-400 hover:text-red-400"
                 >
                   <X size={16} weight="bold" />
@@ -338,7 +342,7 @@ function OllamaModelField({ basePath, authToken, value, onChange }) {
   // Make sure the saved model stays visible even before the live list loads,
   // so the dropdown doesn't appear to "lose" the user's previous selection
   // while we're fetching from the server.
-  const knownModelIds = new Set(models.map((m) => m.id));
+  const knownModelIds = new Set(models.map((model) => model.id));
   const savedNotInList = value && !knownModelIds.has(value);
 
   return (
@@ -360,9 +364,9 @@ function OllamaModelField({ basePath, authToken, value, onChange }) {
                 : "Use connection default"}
         </option>
         {savedNotInList && <option value={value}>{value} (saved)</option>}
-        {models.map((m) => (
-          <option key={m.id} value={m.id}>
-            {m.name || m.id}
+        {models.map((model) => (
+          <option key={model.id} value={model.id}>
+            {model.name || model.id}
           </option>
         ))}
       </select>
@@ -385,9 +389,9 @@ function SelectField({ label, name, defaultValue, options }) {
         defaultValue={defaultValue}
         className="bg-zinc-800 text-white rounded-md border border-white/10 px-3 py-2 text-sm focus:outline-none focus:border-white/30"
       >
-        {options.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.label}
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
           </option>
         ))}
       </select>
