@@ -3,9 +3,15 @@ const path = require("path");
 const filesystem = require("./lib.js");
 
 async function copyRecursive(source, destination) {
-  const stats = await fs.stat(source);
+  const lstat = await fs.lstat(source);
 
-  if (stats.isDirectory()) {
+  if (lstat.isSymbolicLink()) {
+    throw new Error(
+      `Cannot copy symbolic link: ${source}. Symlinks are not allowed during copy operations.`
+    );
+  }
+
+  if (lstat.isDirectory()) {
     await fs.mkdir(destination, { recursive: true });
     const entries = await fs.readdir(source);
     for (const entry of entries) {

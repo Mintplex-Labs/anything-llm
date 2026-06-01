@@ -108,6 +108,7 @@ const TRANSLATIONS = {
       telegram: "텔레그램",
     },
     "scheduled-jobs": "예정된 작업",
+    "model-router": "모델 라우터",
   },
   login: {
     "multi-user": {
@@ -737,6 +738,17 @@ const TRANSLATIONS = {
             "각 쿼리에 사용할 수 있는 최대 도구 수입니다. 큰 컨텍스트 모델의 경우, 이 값을 더 높은 값으로 설정하는 것을 권장합니다.",
         },
       },
+      "clarifying-questions": {
+        title: "대리인에게 추가 질문을 할 수 있도록 허용",
+        "beta-badge": "베타",
+        description:
+          "활성화되면, 에이전트는 요청이 모호할 경우 간단한 확인 질문을 할 수 있습니다.",
+        "max-per-turn": {
+          title: "각 턴당 질문 횟수 제한",
+          description:
+            "담당자가 단일 설문 조사에서 질문할 수 있는 질문의 수는 몇 개입니까?",
+        },
+      },
     },
   },
   recorded: {
@@ -1229,7 +1241,6 @@ const TRANSLATIONS = {
     similarity_match: "경쟁",
     source_count_one: "{{count}} 참조",
     source_count_other: "{{count}} 관련 참고 자료",
-    preset_exit_description: "현재 에이전트 세션을 중단",
     add_new: "새로운 항목 추가",
     edit: "수정",
     publish: "출판",
@@ -1249,6 +1260,21 @@ const TRANSLATIONS = {
       always_allow: "항상 {{skillName}}을 허용",
       tool_call_was_approved: "도구 사용 승인",
       tool_call_was_rejected: "도구 호출이 거부되었습니다.",
+      clarifying_skip: "에이전트에게 결정하도록 맡기세요",
+      clarifying_submit: "제출",
+      clarifying_skipped: "당신은 에이전트에게 결정권을 넘겨주세요.",
+      clarifying_timeout: "제한 시간 내에 답변이 제출되지 않았습니다.",
+      clarifying_pagination: "{{current}}의 {{total}}",
+      clarifying_prev_aria: "이전 질문",
+      clarifying_next_aria: "다음 질문",
+      clarifying_close_aria: "닫고 건너뛰기",
+      clarifying_other: "그 외",
+      clarifying_other_placeholder: "본인의 답변을 입력하세요",
+      batch_progress: "{{answered}}가 {{total}}에 답변",
+      batch_skip_this: "넘어가",
+      batch_submit_all: "모든 항목 제출",
+      batch_next: "다음",
+      answer_skipped: "[사용자가 건너뛰었습니다]",
     },
     custom_skills: "맞춤형 기술",
     agent_flows: "에이전트 흐름",
@@ -1256,6 +1282,46 @@ const TRANSLATIONS = {
     loading_mcp_servers: "MCP 서버 로딩 중...",
     app_integrations: "앱 통합",
     sub_skills: "세부 기술",
+    memories: {
+      title: "추억",
+      empty:
+        "현재까지 기억은 없습니다. 하지만 챗봇과 상호 작용하면 점차 기억이 채워질 것입니다.",
+      empty_cta: "새로운 기억을 만들다",
+      tab_workspace: "업무 공간",
+      tab_global: "글로벌",
+      toggle: {
+        label: "개인 맞춤 설정 활성화",
+        description:
+          "조수에게 당신이나 이 업무 공간에 대한 정보를 기억하도록 하고, 대화에서 활용하도록 하세요.",
+      },
+      auto_extraction: {
+        label: "자동으로 기록된 기억",
+        description: "비서에게 자동으로 추억을 저장하도록 설정하세요.",
+      },
+      menu: {
+        edit: "편집",
+        delete: "삭제",
+        move_to_global: "글로벌로 확장",
+        move_to_workspace: "워크스페이스로 이동",
+      },
+      modal: {
+        create_title: "기억 만들기",
+        edit_title: "메모리 편집",
+        create_description:
+          '기억은 간결하고 명확한 문장으로 표현해야 합니다. 예: "사용자는 JavaScript보다 Python을 선호합니다"',
+        edit_description: "이 메모의 내용을 업데이트하세요.",
+        label: "기억",
+        placeholder:
+          "예: 사용자의 이름은 조, 사용자는 AnythingLLM에서 근무, 등",
+        create: "만들다",
+        save: "저장",
+        cancel: "취소",
+      },
+    },
+    stt_unsupported: "이 브라우저에서는 마이크 접근이 지원되지 않습니다.",
+    stt_mic_denied:
+      "마이크에 접근할 수 없습니다. 권한을 부여하고 다시 시도해 주십시오.",
+    stt_transcription_failed: "전사 오류: {{error}}",
   },
   profile_settings: {
     edit_account: "계정 정보 수정",
@@ -1627,6 +1693,179 @@ const TRANSLATIONS = {
       timed_out: "시간 초과",
       running: "달리기",
       queued: "대기 중",
+    },
+  },
+  "model-router": {
+    title: "모델 라우터",
+    description:
+      "모델 라우터는 특정 조건에 따라 채팅 메시지를 자동으로 다른 LLM 제공업체 및 모델로 전달하는 규칙을 정의할 수 있도록 합니다.",
+    table: {
+      name: "이름",
+      fallback: "대체",
+      rules: "규칙",
+      workspaces: "업무 공간",
+    },
+    "no-routers": "현재 모델형 라우터는 없습니다.",
+    "empty-description":
+      "아직 라우터 모델은 설정되지 않았습니다. 시작하려면 하나를 설정하십시오.",
+    "new-router-button": "새로운 라우터",
+    "delete-confirm":
+      '라우터 "{{name}}"을 삭제하시겠습니까?\n이 작업은 모든 규칙을 삭제하고 해당 라우터를 사용하는 모든 워크스페이스를 분리합니다.\n\n이 작업은 되돌릴 수 없습니다.',
+    "toast-deleted": "라우터 삭제",
+    "toast-delete-failed": "라우터 삭제에 실패했습니다: {{error}}",
+    "new-router": {
+      title: "새로운 모델 라우터 생성",
+      name: "이름",
+      "name-placeholder": "예: 비용 최적화",
+      description: "설명",
+      "description-placeholder": "선택 사항 설명",
+      "fallback-label": "주요 공급업체 및 모델",
+      "fallback-description":
+        "다음과 같은 경우에 사용됩니다. 특정 경로 규칙과 일치하는 규칙이 없을 때, LLM(대규모 언어 모델)에 의해 분류된 규칙을 평가하는 데에도 사용됩니다.",
+      "cooldown-label": "캐시 쿨다운 (초)",
+      "cooldown-help":
+        "라우팅 결정이 규칙 재평가 전에 얼마나 오래 캐싱되는지 설정합니다. 0으로 설정하면 캐싱을 비활성화합니다.",
+      "name-required": "이름이 필요합니다.",
+      "fallback-required": "주요 공급업체 및 모델 정보가 필요합니다.",
+      cancel: "취소",
+      create: "라우터 생성",
+    },
+    "edit-router": {
+      "back-to-routers": "모델 라우터로 돌아가기",
+      title: "라우터 편집: {{name}}",
+      save: "변경 사항 저장",
+      "toast-update-failed": "라우터 업데이트에 실패했습니다.",
+    },
+    rules: {
+      title: "라우팅 규칙",
+      "title-with-name": "라우터 규칙: {{name}}",
+      description:
+        "특정 제공업체 및 모델로 메시지가 전송되는 시기와 방법을 결정하는 규칙을 정의합니다.",
+      "add-rule": "규칙 추가",
+      "delete-confirm": '규칙 "{{title}}" 삭제하시겠습니까?',
+      "toast-delete-failed": "규칙 삭제에 실패했습니다.",
+      "toast-reorder-failed": "재정렬 규칙 적용 실패",
+      "no-rules": "규정이 아직 정해지지 않았습니다.",
+      "empty-description":
+        "특정 제공업체 및 모델로 채팅 메시지를 라우팅하는 규칙을 추가합니다.",
+      "new-rule-button": "새로운 규칙",
+      "calculated-section-label": "계산된 규칙 – 우선 순위에 따라 평가",
+      "llm-section-label":
+        "LLM 규칙 — 계산된 규칙이 일치하는 경우 일괄적으로 평가",
+      "llm-rule-body":
+        '다음 단계는 <desc>"{{description}}"</desc>을 매칭한 후, <route>{{route}}</route>로 경로를 지정하는 것입니다.',
+      "calculated-no-conditions": "특정 조건 없음 – <route> 경로로 이동",
+      "calculated-single-condition":
+        '만약 <prop> {{property}} </prop> {{comparator}} <val> "{{value}}" </val> 이면, <route> {{route}} </route>로 이동합니다.',
+      "calculated-multi-condition":
+        "만약 {{quantifier}} (태그 0)가 {{conditions}} (태그 1)인 경우, <route> (태그 2)로 이동합니다.",
+      "comparator-contains": "포함",
+      "comparator-matches": "경쟁",
+      "comparator-between": "사이",
+      "badge-llm": "대규모 언어 모델 (LLM)",
+      "badge-calculated": "계산된",
+      "aria-drag-to-reorder": "드래그하여 순서를 변경",
+      "aria-edit-rule": "편집 규칙",
+      "aria-delete-rule": "규칙 삭제",
+      "quantifier-any": "어떤",
+      "quantifier-all": "모든",
+    },
+    "rule-form": {
+      "title-label": "제목",
+      "rule-type": "규칙 유형",
+      "property-label": "부동산",
+      "property-select": "선택",
+      "comparator-label": "비교",
+      "comparator-select": "선택",
+      "value-label": "가치",
+      "add-condition": "조건 추가",
+      "remove-condition": "조건 제거",
+      "conditions-incomplete":
+        "조건 {{index}}이 불완전합니다. 속성, 비교 연산자, 값을 채워주세요.",
+      "match-description-label": "경기 설명",
+      "match-description-placeholder":
+        "예를 들어, 사용자가 법률, 계약, 또는 규정 준수에 대해 질문하는 경우",
+      "match-description-help":
+        "이 규칙이 적용되어야 하는 상황을 설명해주세요. LLM은 이를 평가하여 실제로 적용할지 여부를 결정합니다.",
+      "route-to-label": "제공업체 및 모델 경로",
+      "route-to-description":
+        "이 규칙과 일치하는 경우, 이 제공업체/모델을 사용하십시오.",
+      cancel: "취소",
+      saving: "저축 중...",
+      "update-rule": "업데이트 규칙",
+      "create-rule": "규칙 생성",
+      "title-required": "제목이 필요합니다",
+      "toast-save-failed": "규칙 저장에 실패했습니다.",
+      "type-calculated-label": "계산된",
+      "type-calculated-description":
+        "콘텐츠, 토큰 수, 또는 시간 등의 메시지 속성을 기준으로 매칭합니다.",
+      "type-llm-label": "LLM 분류",
+      "type-llm-description":
+        "제공해 주신 설명에 따라 LLM을 사용하여 메시지를 분류합니다.",
+      "prop-prompt-content": "요청 내용",
+      "prop-token-count": "대화 토큰 수",
+      "prop-message-count": "대화 메시지 수",
+      "prop-current-hour": "현재 시간 (0-23)",
+      "prop-has-image": "이미지 첨부 파일이 있는지",
+      "cmp-contains": "포함",
+      "cmp-matches-regex": "정규 표현 일치",
+      "cmp-equals": "동등한",
+      "cmp-not-equals": "같지 않음",
+      "cmp-greater-than": "보다 큼",
+      "cmp-greater-than-or-equal": "보다 크거나 같음",
+      "cmp-less-than": "보다 적은",
+      "cmp-less-than-or-equal": "보다 작거나 같음",
+      "cmp-between": "(포함)",
+      "placeholder-between-hour": "예: 오전 9시부터 오후 5시 (총 8시간)",
+      "placeholder-between-numeric": "예: 10, 50",
+      "placeholder-hour": "예: 18 (0-23)",
+      "placeholder-message-count": "예: 10",
+      "placeholder-numeric": "예: 4000",
+      "placeholder-contains": "예: 코드, 파이썬, 러스트",
+      "placeholder-matches": "예: /\\bpython\\b/i",
+      "placeholder-default": "예: 코드",
+      "help-contains":
+        "쉼표로 구분된 목록 – 프롬프트에 지정된 값 중 하나라도 포함되면 일치합니다 (대소문자를 구분하지 않음).",
+      "help-matches":
+        "정규 표현 패턴. 대소문자를 구분하는 옵션(`/pattern/`)을 사용하거나 (기본값은 대소문자를 구분하지 않음) 구분하지 않도록 설정할 수 있습니다.",
+      "bool-true": "진실",
+      "bool-false": "거짓",
+    },
+    "provider-picker": {
+      "select-provider": "제공업체 선택",
+      "setup-required": "(설치가 필요)",
+      "loading-models": "모델 로딩 중...",
+      "select-model": "모델 선택",
+      "enter-model": "모델 이름을 입력하세요",
+      "select-provider-first": "먼저 제공 업체를 선택하세요.",
+      "configure-to-continue": "{{name}} 설정을 통해 계속 진행",
+      "configure-provider": "{{name}} 설정",
+      "setup-credentials":
+        "{{name}}를 라우팅 대상으로 사용하기 위한 필요한 자격 증명을 입력하세요.",
+      cancel: "취소",
+      "save-settings": "설정을 저장",
+      "toast-save-failed": "설정 저장 실패: {{error}}",
+    },
+    "router-selection": {
+      "loading-routers": "사용자 정의 라우터 로딩 중...",
+      "no-routers-prefix-settings": "아직 라우터 모델은 설정되지 않았습니다.",
+      "no-routers-prefix-workspace": "라우터 설정이 구성되지 않았습니다.",
+      "no-routers-link": "모델 라우터 설정에서 하나를 만듭니다.",
+      "model-router-label": "모델 라우터",
+      "select-router": "라우터를 선택하세요",
+      "select-description": "이 작업 공간에 사용할 라우터를 선택하세요.",
+      "no-routers-chat":
+        "라우터가 구성되지 않았습니다. 설정 > AI 제공업체 > 모델 라우터에서 새 라우터를 만드세요.",
+      "rule-count": "({{count}} 규칙)",
+    },
+    metrics: {
+      "model-router-default": "모델 라우터",
+    },
+    chat: {
+      "select-router-error": "라우터를 선택하세요",
+      "invalid-model": "유효하지 않은 모델 선택",
+      "routed-to": "<route> 정보가 {{model}}에 전달되었습니다.",
+      "routed-to-rule": "<route>에서 {{model}}를 통해 </route>로 연결",
     },
   },
 };

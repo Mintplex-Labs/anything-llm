@@ -9,6 +9,11 @@ const KEY_MAPPING = {
     envKey: "LLM_PROVIDER",
     checks: [isNotEmpty, supportedLLM],
   },
+  // Model Router Settings
+  ModelRouterId: {
+    envKey: "MODEL_ROUTER_ID",
+    checks: [],
+  },
   // OpenAI Settings
   OpenAiKey: {
     envKey: "OPEN_AI_KEY",
@@ -661,6 +666,66 @@ const KEY_MAPPING = {
     checks: [isValidURL],
   },
 
+  // Kokoro TTS (self-hosted kokoro-fastapi)
+  TTSKokoroEndpoint: {
+    envKey: "TTS_KOKORO_ENDPOINT",
+    checks: [isValidURL],
+  },
+  TTSKokoroKey: {
+    envKey: "TTS_KOKORO_KEY",
+    checks: [],
+  },
+  TTSKokoroVoiceModel: {
+    envKey: "TTS_KOKORO_VOICE_MODEL",
+    checks: [isNotEmpty],
+  },
+
+  // STT Selection
+  SpeechToTextProvider: {
+    envKey: "STT_PROVIDER",
+    checks: [supportedSTTProvider],
+  },
+
+  // STT OpenAI
+  STTOpenAIModel: {
+    envKey: "STT_OPEN_AI_MODEL",
+    checks: [],
+  },
+
+  // STT Lemonade
+  STTLemonadeBasePath: {
+    envKey: "STT_LEMONADE_BASE_PATH",
+    checks: [isValidURL],
+  },
+  STTLemonadeModelPref: {
+    envKey: "STT_LEMONADE_MODEL_PREF",
+    checks: [],
+  },
+
+  // STT Deepgram
+  STTDeepgramApiKey: {
+    envKey: "STT_DEEPGRAM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  STTDeepgramModel: {
+    envKey: "STT_DEEPGRAM_MODEL",
+    checks: [isNotEmpty],
+  },
+
+  // STT OpenAI Generic
+  STTOpenAICompatibleKey: {
+    envKey: "STT_OPEN_AI_COMPATIBLE_KEY",
+    checks: [],
+  },
+  STTOpenAICompatibleModel: {
+    envKey: "STT_OPEN_AI_COMPATIBLE_MODEL",
+    checks: [],
+  },
+  STTOpenAICompatibleEndpoint: {
+    envKey: "STT_OPEN_AI_COMPATIBLE_ENDPOINT",
+    checks: [isValidURL],
+  },
+
   // DeepSeek Options
   DeepSeekApiKey: {
     envKey: "DEEPSEEK_API_KEY",
@@ -668,6 +733,26 @@ const KEY_MAPPING = {
   },
   DeepSeekModelPref: {
     envKey: "DEEPSEEK_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
+  // Minimax Options
+  MinimaxApiKey: {
+    envKey: "MINIMAX_API_KEY",
+    checks: [isNotEmpty],
+  },
+  MinimaxModelPref: {
+    envKey: "MINIMAX_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
+  // Cerebras Options
+  CerebrasApiKey: {
+    envKey: "CEREBRAS_API_KEY",
+    checks: [isNotEmpty],
+  },
+  CerebrasModelPref: {
+    envKey: "CEREBRAS_MODEL_PREF",
     checks: [isNotEmpty],
   },
 
@@ -924,8 +1009,20 @@ function supportedTTSProvider(input = "") {
     "elevenlabs",
     "piper_local",
     "generic-openai",
+    "kokoro",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid TTS provider.`;
+}
+
+function supportedSTTProvider(input = "") {
+  const validSelection = [
+    "native",
+    "openai",
+    "lemonade",
+    "deepgram",
+    "generic-openai",
+  ].includes(input);
+  return validSelection ? null : `${input} is not a valid STT provider.`;
 }
 
 function validLocalWhisper(input = "") {
@@ -976,6 +1073,9 @@ function supportedLLM(input = "") {
     "privatemode",
     "sambanova",
     "lemonade",
+    "minimax",
+    "cerebras",
+    "anythingllm-router",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
@@ -1288,6 +1388,7 @@ function dumpENV() {
 
     "STORAGE_DIR",
     "SERVER_PORT",
+    "COLLECTOR_PORT",
     // For persistent data encryption
     "SIG_KEY",
     "SIG_SALT",
@@ -1305,6 +1406,7 @@ function dumpENV() {
     "HTTPS_KEY_PATH",
     // Other Configuration Keys
     "DISABLE_VIEW_CHAT_HISTORY",
+    "DISABLE_SWAGGER_DOCS",
     // Simple SSO
     "SIMPLE_SSO_ENABLED",
     "SIMPLE_SSO_NO_LOGIN",

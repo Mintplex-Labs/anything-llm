@@ -19,6 +19,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { chatQueryRefusalResponse } from "@/utils/chat";
 import HistoricalOutputs from "./HistoricalOutputs";
+import HistoricalClarifyingQuestions from "./HistoricalClarifyingQuestions";
 import { openImageLightbox } from "@/components/ImageLightbox";
 
 const HistoricalMessage = ({
@@ -37,6 +38,7 @@ const HistoricalMessage = ({
   forkThread,
   metrics = {},
   outputs = [],
+  clarifyingQuestions = [],
 }) => {
   // Freeze uuid on first render. User messages arrive without a uuid and this value
   // is used as the wrapper div's `key` — a default param fallback would regenerate
@@ -145,6 +147,7 @@ const HistoricalMessage = ({
           />
         ) : (
           <div className="break-words">
+            <HistoricalClarifyingQuestions surveys={clarifyingQuestions} />
             <RenderChatContent role={role} message={message} messageId={uuid} />
             {isRefusalMessage && (
               <Link
@@ -205,7 +208,9 @@ export default memo(
       prevProps.isLastMessage === nextProps.isLastMessage &&
       prevProps.chatId === nextProps.chatId &&
       JSON.stringify(prevProps.metrics) === JSON.stringify(nextProps.metrics) &&
-      JSON.stringify(prevProps.sources) === JSON.stringify(nextProps.sources)
+      JSON.stringify(prevProps.sources) === JSON.stringify(nextProps.sources) &&
+      JSON.stringify(prevProps.clarifyingQuestions) ===
+        JSON.stringify(nextProps.clarifyingQuestions)
     );
   }
 );

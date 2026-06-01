@@ -111,6 +111,7 @@ const TRANSLATIONS = {
       telegram: "Telegram",
     },
     "scheduled-jobs": "Planlagte opgaver",
+    "model-router": "Model-router",
   },
   login: {
     "multi-user": {
@@ -750,6 +751,17 @@ const TRANSLATIONS = {
             "Det maksimale antal værktøjer, der kan vælges for hver forespørgsel. Vi anbefaler at indstille dette til højere værdier for større modeller med mere kontekst.",
         },
       },
+      "clarifying-questions": {
+        title: "Lad agenten stille afklarende spørgsmål",
+        "beta-badge": "TESTVERSION",
+        description:
+          "Når funktionen er aktiveret, kan agenterne stoppe op og stille korte, afklarende spørgsmål, hvis din anmodning er tvetydig.",
+        "max-per-turn": {
+          title: "Maksimalt antal spørgsmål pr. runde",
+          description:
+            "Hvor mange spørgsmål agenten må stille i en enkelt undersøgelse.",
+        },
+      },
     },
   },
   recorded: {
@@ -1167,7 +1179,6 @@ const TRANSLATIONS = {
     similarity_match: "kamp",
     source_count_one: "{{count}} henvisning",
     source_count_other: "{{count}} referencer",
-    preset_exit_description: "Afslut den aktuelle agent-session",
     add_new: "Tilføj nyt",
     edit: "Rediger",
     publish: "Udgive",
@@ -1188,6 +1199,21 @@ const TRANSLATIONS = {
       tool_call_was_approved:
         "Anmodningen om at bruge værktøjet blev godkendt.",
       tool_call_was_rejected: "Anmodningen om at bruge værktøjet blev afvist.",
+      clarifying_skip: "Lad agenten træffe beslutningen",
+      clarifying_submit: "Indsend",
+      clarifying_skipped: "Du lader agenten træffe den beslutning.",
+      clarifying_timeout: "Ingen svar blev indsendt rettidigt.",
+      clarifying_pagination: "{{current}} af {{total}}",
+      clarifying_prev_aria: "Forrige spørgsmål",
+      clarifying_next_aria: "Næste spørgsmål",
+      clarifying_close_aria: "Luk og spring over",
+      clarifying_other: "Andre",
+      clarifying_other_placeholder: "Indtast dit svar",
+      batch_progress: "{{answered}} fra {{total}} svarede",
+      batch_skip_this: "Spring over",
+      batch_submit_all: "Indsend alle",
+      batch_next: "Næste",
+      answer_skipped: "[bruger hopped over]",
     },
     custom_skills: "Skræddersyede færdigheder",
     agent_flows: "Agentstrømme",
@@ -1195,6 +1221,47 @@ const TRANSLATIONS = {
     loading_mcp_servers: "Indlæser MCP-servere...",
     app_integrations: "App-integrationer",
     sub_skills: "Specifikke færdigheder",
+    memories: {
+      title: "Erindringer",
+      empty:
+        "Indtil videre er der ingen minder. Når du interagerer med chatbotten, vil der gradvist opstå flere minder.",
+      empty_cta: "opret et nyt minde",
+      tab_workspace: "Arbejdsområde",
+      tab_global: "Global",
+      toggle: {
+        label: "Aktiver personlig tilpasning",
+        description:
+          "Lad din assistent huske fakta om dig eller dette arbejdsområde, og brug dem i samtaler.",
+      },
+      auto_extraction: {
+        label: "Automatisk hukommelse",
+        description:
+          "Lad din assistent automatisk oprette minder i baggrunden.",
+      },
+      menu: {
+        edit: "Rediger",
+        delete: "Slette",
+        move_to_global: "Flyt til globalt niveau",
+        move_to_workspace: "Flyt til arbejdsområdet",
+      },
+      modal: {
+        create_title: "Opret minde",
+        edit_title: "Rediger hukommelse",
+        create_description:
+          'Huskene bør være en enkelt, præcis sætning. F.eks. "Brugeren foretrækker Python frem for JavaScript".',
+        edit_description: "Opdater indholdet i denne hukommelse.",
+        label: "Hukommelse",
+        placeholder:
+          "f.eks. Brugerens navn er Joe, brugeren arbejder med AnythingLLM, osv.",
+        create: "Opret",
+        save: "Gem",
+        cancel: "Annullér",
+      },
+    },
+    stt_unsupported: "Mikrofonadgang understøttes ikke i denne browser.",
+    stt_mic_denied:
+      "Kunne ikke få adgang til mikrofonen. Vær venligst opmærksom på, at du skal give tilladelse, og prøv igen.",
+    stt_transcription_failed: "Transkribering mislykkedes: {{error}}",
   },
   profile_settings: {
     edit_account: "Rediger konto",
@@ -1669,6 +1736,183 @@ const TRANSLATIONS = {
       timed_out: "Tidsudløb",
       running: "Løb",
       queued: "I venter",
+    },
+  },
+  "model-router": {
+    title: "Model-routere",
+    description:
+      "Modelleringsroutere giver dig mulighed for at definere regler, der automatisk videresender chatbeskeder til forskellige LLM-udbydere og -modeller baseret på bestemte betingelser.",
+    table: {
+      name: "Navn",
+      fallback: "Alternativ",
+      rules: "Regler",
+      workspaces: "Arbejdsområder",
+    },
+    "no-routers": "Der findes endnu ingen modeller af routere.",
+    "empty-description":
+      "Ingen routere er endnu konfigureret. Opret en for at komme i gang.",
+    "new-router-button": "Ny router",
+    "delete-confirm":
+      'Er du sikker på, at du vil slette routeren "{{name}}"?\nDette vil fjerne alle dens regler og afbryde alle arbejdsområder, der bruger den.\n\nDenne handling er irreversibel.',
+    "toast-deleted": "Router slettet",
+    "toast-delete-failed": "Kunne ikke slette routeren: {{error}}",
+    "new-router": {
+      title: "Opret en ny router-model",
+      name: "Navn",
+      "name-placeholder": "f.eks. Omkostningsoptimering",
+      description: "Beskrivelse",
+      "description-placeholder": "Valgfri beskrivelse",
+      "fallback-label": "Primær leverandør og model",
+      "fallback-description":
+        "Bruges, når ingen af de eksisterende routingregler matcher. Bruges også til at evaluere regler, der er klassificeret af en LLM (Large Language Model).",
+      "cooldown-label": "Cache-nedkøling (sekunder)",
+      "cooldown-help":
+        "Hvor længe en rutebeslutning gemmes, før reglerne evalueres igen. Indstil til 0 for at deaktivere caching.",
+      "name-required": "Navn er påkrævet.",
+      "fallback-required": "Primær leverandør og model er påkrævet.",
+      cancel: "Annullér",
+      create: "Opret router",
+    },
+    "edit-router": {
+      "back-to-routers": "Tilbage til routermodeller",
+      title: "Rediger router: {{name}}",
+      save: "Gem ændringer",
+      "toast-update-failed": "Kunne ikke opdatere routeren",
+    },
+    rules: {
+      title: "Ruteinstrukser",
+      "title-with-name": "Router-regler: {{name}}",
+      description:
+        "Definer reglerne, der bestemmer, hvornår og hvordan chatbeskeder sendes til specifikke leverandører og modeller.",
+      "add-rule": "Tilføj regel",
+      "delete-confirm": 'Slette regel "{{title}}"?',
+      "toast-delete-failed": "Kunne ikke slette reglen",
+      "toast-reorder-failed": "Kunne ikke genoprette reglerne",
+      "no-rules": "Ingen regler endnu",
+      "empty-description":
+        "Tilføj en regel, der styrer, hvordan chatbeskeder skal dirigeres til specifikke leverandører og modeller.",
+      "new-rule-button": "Ny regel",
+      "calculated-section-label":
+        "Definerede regler – vurderes først, i prioriteret rækkefølge",
+      "llm-section-label":
+        "Regler for LLM – vurderes som en batch, hvis ingen af de beregnede regler matcher",
+      "llm-rule-body":
+        'Matcher <desc>"{{description}}"</desc>, og derefter rute til <route>{{route}}</route>',
+      "calculated-no-conditions":
+        "Ingen betingelser – rute til <route>{{route}}</route>",
+      "calculated-single-condition":
+        'Hvis <prop>{{property}}</prop> {{comparator}} <val> "_{{value}}_"</val>, så følg ruten til <route>{{route}}</route>',
+      "calculated-multi-condition":
+        "Hvis {{quantifier}} fra <cond> er tilfældet, så følg ruten til <route>",
+      "comparator-contains": "indeholder",
+      "comparator-matches": "kampe",
+      "comparator-between": "mellem",
+      "badge-llm": "LLM",
+      "badge-calculated": "Beregnet",
+      "aria-drag-to-reorder": "Træk for at omorganisere",
+      "aria-edit-rule": "Rediger regel",
+      "aria-delete-rule": "Slet regel",
+      "quantifier-any": "ALT",
+      "quantifier-all": "ALT",
+    },
+    "rule-form": {
+      "title-label": "Overskrift",
+      "rule-type": "Regeltype",
+      "property-label": "Ejendom",
+      "property-select": "Vælg",
+      "comparator-label": "Sammenligning",
+      "comparator-select": "Vælg",
+      "value-label": "Værdi",
+      "add-condition": "Tilføj betingelse",
+      "remove-condition": "Fjern betingelsen",
+      "conditions-incomplete":
+        "Betingelsen {{index}} er ikke fuldstændig – angiv ejendom, sammenligningsparameter og værdi.",
+      "match-description-label": "Kampbeskrivelse",
+      "match-description-placeholder":
+        "f.eks. Brugeren spørger om juridiske emner, kontrakter eller overholdelse af regler",
+      "match-description-help":
+        "Beskriv situationen, hvor du ønsker, at denne regel skal gælde. Dette evalueres af dit LLM for at afgøre, om den skal bruges.",
+      "route-to-label": "Rute til leverandør og model",
+      "route-to-description":
+        "Når denne regel matcher, skal denne leverandør/model bruges.",
+      cancel: "Annullér",
+      saving: "Gem...",
+      "update-rule": "Opdateringsregel",
+      "create-rule": "Opret regel",
+      "title-required": "Overskrift er påkrævet",
+      "toast-save-failed": "Kunne ikke gemme reglen",
+      "type-calculated-label": "Beregnet",
+      "type-calculated-description":
+        "Sammenlign baseret på egenskaber ved beskeder, såsom indhold, antal tokens eller tidspunktet på dagen.",
+      "type-llm-label": "Klassificeret LLM",
+      "type-llm-description":
+        "Brug en LLM (Large Language Model) til at klassificere beskeden baseret på en beskrivelse, du giver.",
+      "prop-prompt-content": "Indhold i anmodningen",
+      "prop-token-count": "Antal samtale-tokens",
+      "prop-message-count": "Antal samtalede beskeder",
+      "prop-current-hour": "Aktuelt tidspunkt (0-23)",
+      "prop-has-image": "Indeholder billedvedhæftet",
+      "cmp-contains": "indeholder",
+      "cmp-matches-regex": "matcher (regulært udtryk)",
+      "cmp-equals": "er lig med",
+      "cmp-not-equals": "er ikke lig med",
+      "cmp-greater-than": "større end",
+      "cmp-greater-than-or-equal": "større end eller lig med",
+      "cmp-less-than": "mindre end",
+      "cmp-less-than-or-equal": "mindre end eller lig med",
+      "cmp-between": "mellem (inklusive)",
+      "placeholder-between-hour": "f.eks. 9,17 (fra kl. 9 til 17)",
+      "placeholder-between-numeric": "f.eks. 10,50",
+      "placeholder-hour": "f.eks. 18 (0-23)",
+      "placeholder-message-count": "f.eks. 10",
+      "placeholder-numeric": "f.eks. 4000",
+      "placeholder-contains": "f.eks. kode, Python, Rust",
+      "placeholder-matches": "f.eks. /\\bpython\\b/i",
+      "placeholder-default": "f.eks. kode",
+      "help-contains":
+        "Liste med komma-adskilte værdier – matcher, hvis forespørgslen indeholder et af værdierne (uanset store/små bogstaver).",
+      "help-matches":
+        "RegEx-mønster. Brug `/mønster/flager` for at angive, om der skal tages højde for store og små bogstaver (standard er, at det ikke skal).",
+      "bool-true": "Sandt",
+      "bool-false": "Forkert",
+    },
+    "provider-picker": {
+      "select-provider": "Vælg leverandør",
+      "setup-required": "(kræver opsætning)",
+      "loading-models": "Indlæser modeller...",
+      "select-model": "Vælg model",
+      "enter-model": "Angiv modelnavn",
+      "select-provider-first": "Vælg først en leverandør",
+      "configure-to-continue": "Konfigurer {{name}} for at fortsætte",
+      "configure-provider": "Konfigurer {{name}}",
+      "setup-credentials":
+        "Indtast de nødvendige oplysninger for at bruge {{name}} som destinationsadresse.",
+      cancel: "Annullér",
+      "save-settings": "Gem indstillinger",
+      "toast-save-failed": "Kunne ikke gemme indstillinger: {{error}}",
+    },
+    "router-selection": {
+      "loading-routers": "Indlæser brugerdefinerede routere...",
+      "no-routers-prefix-settings": "Ingen routere er endnu konfigureret.",
+      "no-routers-prefix-workspace": "Ingen routere er konfigureret.",
+      "no-routers-link": "Opret én i indstillingerne for Model Router",
+      "model-router-label": "Model Router",
+      "select-router": "Vælg en router",
+      "select-description":
+        "Vælg hvilken router, der skal bruges til dette arbejdsområde.",
+      "no-routers-chat":
+        "Ingen routere er konfigureret. Opret en i Indstillinger > AI-udbydere > Model Router.",
+      "rule-count": "({{count}} regler)",
+    },
+    metrics: {
+      "model-router-default": "Modelrouter",
+    },
+    chat: {
+      "select-router-error": "Vælg en router",
+      "invalid-model": "Forkert modelvalg",
+      "routed-to": "Henvist til <route>{{model}}</route>",
+      "routed-to-rule":
+        "Rute via <route>{{model}}</route> gennem <rule>{{ruleTitle}}</rule>",
     },
   },
 };
