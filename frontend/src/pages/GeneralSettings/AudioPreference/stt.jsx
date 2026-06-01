@@ -5,10 +5,15 @@ import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
 import OpenAiLogo from "@/media/llmprovider/openai.png";
-import GenericOpenAiLogo from "@/media/llmprovider/generic-openai.png";
+import DeepgramLogo from "@/media/ttsproviders/deepgram.png";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
+import LemonadeLogo from "@/media/llmprovider/lemonade.png";
+import GenericOpenAiLogo from "@/media/llmprovider/generic-openai.png";
+
 import BrowserNative from "@/components/SpeechToText/BrowserNative";
 import OpenAiSTTOptions from "@/components/SpeechToText/OpenAiOptions";
+import DeepgramSTTOptions from "@/components/SpeechToText/DeepgramOptions";
+import LemonadeSTTOptions from "@/components/SpeechToText/LemonadeOptions";
 import GenericOpenAiSTTOptions from "@/components/SpeechToText/GenericOpenAiOptions";
 
 const PROVIDERS = [
@@ -25,6 +30,20 @@ const PROVIDERS = [
     logo: OpenAiLogo,
     options: (settings) => <OpenAiSTTOptions settings={settings} />,
     description: "Use OpenAI's Whisper API to transcribe speech to text.",
+  },
+  {
+    name: "Lemonade",
+    value: "lemonade",
+    logo: LemonadeLogo,
+    options: (settings) => <LemonadeSTTOptions settings={settings} />,
+    description: "Transcribe speech via your local Lemonade server.",
+  },
+  {
+    name: "Deepgram",
+    value: "deepgram",
+    logo: DeepgramLogo,
+    options: (settings) => <DeepgramSTTOptions settings={settings} />,
+    description: "Transcribe speech using Deepgram's hosted Nova models.",
   },
   {
     name: "Generic OpenAI",
