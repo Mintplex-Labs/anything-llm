@@ -6,6 +6,8 @@ export default function KokoroTTSOptions({ settings }) {
     settings?.TTSKokoroEndpoint || "http://localhost:8880/v1"
   );
   const [inputEndpoint, setInputEndpoint] = useState(endpoint);
+  const [apiKey, setApiKey] = useState(settings?.TTSKokoroKey);
+  const [inputApiKey, setInputApiKey] = useState(apiKey);
 
   return (
     <div className="w-full flex flex-col gap-y-7">
@@ -54,6 +56,8 @@ export default function KokoroTTSOptions({ settings }) {
             defaultValue={settings?.TTSKokoroKey ? "*".repeat(20) : ""}
             autoComplete="off"
             spellCheck={false}
+            onChange={(e) => setInputApiKey(e.target.value)}
+            onBlur={() => setApiKey(inputApiKey)}
           />
           <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
             Optional — only required if you front your Kokoro server with auth.
@@ -61,13 +65,17 @@ export default function KokoroTTSOptions({ settings }) {
         </div>
       </div>
       <div className="flex gap-x-4">
-        <KokoroVoiceSelection settings={settings} endpoint={endpoint} />
+        <KokoroVoiceSelection
+          settings={settings}
+          endpoint={endpoint}
+          apiKey={apiKey}
+        />
       </div>
     </div>
   );
 }
 
-function KokoroVoiceSelection({ settings, endpoint }) {
+function KokoroVoiceSelection({ settings, endpoint, apiKey = null }) {
   const [voices, setVoices] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -82,19 +90,18 @@ function KokoroVoiceSelection({ settings, endpoint }) {
       try {
         const { models } = await System.customModels(
           "kokoro-tts",
-          null,
+          apiKey,
           endpoint
         );
         setVoices(models || []);
-      } catch (e) {
-        console.error(e);
+      } catch {
         setVoices([]);
       } finally {
         setLoading(false);
       }
     }
     findVoices();
-  }, [endpoint]);
+  }, [endpoint, apiKey]);
 
   if (loading) {
     return (
