@@ -541,6 +541,10 @@ const SystemSettings = {
       // STT OpenAI
       STTOpenAIModel: process.env.STT_OPEN_AI_MODEL,
 
+      // STT Lemonade
+      STTLemonadeBasePath: process.env.STT_LEMONADE_BASE_PATH,
+      STTLemonadeModelPref: process.env.STT_LEMONADE_MODEL_PREF,
+
       // STT Deepgram
       STTDeepgramApiKey: !!process.env.STT_DEEPGRAM_API_KEY,
       STTDeepgramModel: process.env.STT_DEEPGRAM_MODEL,

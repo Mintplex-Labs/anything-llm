@@ -60,6 +60,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "lemonade-embedder",
   // STT Engines
   "deepgram-stt",
+  "lemonade-stt",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -139,6 +140,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getSambaNovaModels(apiKey);
     case "lemonade":
       return await getLemonadeModels(basePath);
+    case "lemonade-stt":
+      return await getLemonadeSTTModels(basePath);
     case "lemonade-embedder":
       return await getLemonadeModels(basePath, "embedding");
     case "minimax":
@@ -1032,6 +1035,16 @@ async function getLemonadeModels(basePath = null, task = "chat") {
   } catch (e) {
     console.error(`Lemonade:getLemonadeModels`, e.message);
     return { models: [], error: "Could not fetch Lemonade Models" };
+  }
+}
+
+async function getLemonadeSTTModels(basePath = null) {
+  try {
+    const models = await getAllLemonadeModels(basePath, "transcription");
+    return { models, error: null };
+  } catch (e) {
+    console.error(`Lemonade:getLemonadeSTTModels`, e.message);
+    return { models: [], error: "Could not fetch Lemonade STT Models" };
   }
 }
 

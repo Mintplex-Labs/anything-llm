@@ -7,9 +7,12 @@ import CTAButton from "@/components/lib/CTAButton";
 import OpenAiLogo from "@/media/llmprovider/openai.png";
 import DeepgramLogo from "@/media/ttsproviders/deepgram.png";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
+import LemonadeLogo from "@/media/llmprovider/lemonade.png";
+
 import BrowserNative from "@/components/SpeechToText/BrowserNative";
 import OpenAiSTTOptions from "@/components/SpeechToText/OpenAiOptions";
 import DeepgramSTTOptions from "@/components/SpeechToText/DeepgramOptions";
+import LemonadeSTTOptions from "@/components/SpeechToText/LemonadeOptions";
 
 const PROVIDERS = [
   {
@@ -25,6 +28,13 @@ const PROVIDERS = [
     logo: OpenAiLogo,
     options: (settings) => <OpenAiSTTOptions settings={settings} />,
     description: "Use OpenAI's Whisper API to transcribe speech to text.",
+  },
+  {
+    name: "Lemonade",
+    value: "lemonade",
+    logo: LemonadeLogo,
+    options: (settings) => <LemonadeSTTOptions settings={settings} />,
+    description: "Transcribe speech via your local Lemonade server.",
   },
   {
     name: "Deepgram",
