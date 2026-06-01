@@ -1285,7 +1285,6 @@ async function kokoroTtsVoices(basePath = null, apiKey = null) {
     name: voice.name,
     organization: "Kokoro",
   }));
-  console.log(models);
   return { models, error: null };
 }
 
