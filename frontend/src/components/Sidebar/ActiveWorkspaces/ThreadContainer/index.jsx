@@ -40,7 +40,9 @@ export default function ThreadContainer({
   useEffect(() => {
     async function fetchThreads() {
       if (!workspace.slug) return;
-      const { threads, defaultThreadChatCount } = await Workspace.threads.all(workspace.slug);
+      const { threads, defaultThreadChatCount } = await Workspace.threads.all(
+        workspace.slug
+      );
       setLoading(false);
       setThreads(threads);
       setDefaultThreadHasChats(defaultThreadChatCount > 0);
@@ -115,7 +117,8 @@ export default function ThreadContainer({
   }
 
   function getActiveThreadIdx() {
-    if (isVirtualThread) return threads.length + (defaultThreadHasChats ? 1 : 0);
+    if (isVirtualThread)
+      return threads.length + (defaultThreadHasChats ? 1 : 0);
     // On a bare workspace route with no default chats, show virtual thread as active
     if (!threadSlug && !defaultThreadHasChats)
       return threads.length + (defaultThreadHasChats ? 1 : 0);
