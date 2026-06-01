@@ -48,20 +48,20 @@ const PROVIDERS = [
     description: "Run TTS models locally in your browser privately.",
   },
   {
-    name: "OpenAI Compatible",
-    value: "generic-openai",
-    logo: GenericOpenAiLogo,
-    options: (settings) => <OpenAiGenericTTSOptions settings={settings} />,
-    description:
-      "Connect to an OpenAI compatible TTS service running locally or remotely.",
-  },
-  {
     name: "Kokoro",
     value: "kokoro",
     logo: KokoroIcon,
     options: (settings) => <KokoroTTSOptions settings={settings} />,
     description:
       "Connect to a self-hosted kokoro-fastapi server for high-quality open-source voices.",
+  },
+  {
+    name: "OpenAI Compatible",
+    value: "generic-openai",
+    logo: GenericOpenAiLogo,
+    options: (settings) => <OpenAiGenericTTSOptions settings={settings} />,
+    description:
+      "Connect to an OpenAI compatible TTS service running locally or remotely.",
   },
 ];
 
