@@ -666,6 +666,20 @@ const KEY_MAPPING = {
     checks: [isValidURL],
   },
 
+  // Kokoro TTS (self-hosted kokoro-fastapi)
+  TTSKokoroEndpoint: {
+    envKey: "TTS_KOKORO_ENDPOINT",
+    checks: [isValidURL],
+  },
+  TTSKokoroKey: {
+    envKey: "TTS_KOKORO_KEY",
+    checks: [],
+  },
+  TTSKokoroVoiceModel: {
+    envKey: "TTS_KOKORO_VOICE_MODEL",
+    checks: [isNotEmpty],
+  },
+
   // STT Selection
   SpeechToTextProvider: {
     envKey: "STT_PROVIDER",
@@ -995,6 +1009,7 @@ function supportedTTSProvider(input = "") {
     "elevenlabs",
     "piper_local",
     "generic-openai",
+    "kokoro",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid TTS provider.`;
 }

@@ -535,6 +535,10 @@ const SystemSettings = {
       TTSOpenAICompatibleVoiceModel:
         process.env.TTS_OPEN_AI_COMPATIBLE_VOICE_MODEL,
       TTSOpenAICompatibleEndpoint: process.env.TTS_OPEN_AI_COMPATIBLE_ENDPOINT,
+      // Kokoro TTS
+      TTSKokoroEndpoint: process.env.TTS_KOKORO_ENDPOINT,
+      TTSKokoroKey: !!process.env.TTS_KOKORO_KEY,
+      TTSKokoroVoiceModel: process.env.TTS_KOKORO_VOICE_MODEL,
 
       // STT Selection
       SpeechToTextProvider: process.env.STT_PROVIDER || "native",
