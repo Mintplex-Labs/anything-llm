@@ -98,6 +98,7 @@ const TRANSLATIONS = {
     privacy: "Privacy & Data",
     "ai-providers": "AI Providers",
     "agent-skills": "Agent Skills",
+    "model-router": "Model Router",
     "community-hub": {
       title: "Community Hub",
       trending: "Explore Trending",
@@ -755,6 +756,17 @@ const TRANSLATIONS = {
             "The maximum number of tools to select for each query. We recommend setting this to higher values for larger context models.",
         },
       },
+      "clarifying-questions": {
+        title: "Allow agent to ask clarifying questions",
+        "beta-badge": "BETA",
+        description:
+          "When enabled, agents can pause to ask short clarifying questions if your prompt is ambiguous.",
+        "max-per-turn": {
+          title: "Max questions per turn",
+          description:
+            "How many clarifying questions the agent may ask in a single survey.",
+        },
+      },
     },
   },
   recorded: {
@@ -914,6 +926,181 @@ const TRANSLATIONS = {
         default: "Default",
         reasoning: "Reasoning",
       },
+    },
+  },
+  "model-router": {
+    title: "Model Routers",
+    description:
+      "Model routers let you define rules to automatically route chat messages to different LLM providers and models based on conditions.",
+    table: {
+      name: "Name",
+      fallback: "Fallback",
+      rules: "Rules",
+      workspaces: "Workspaces",
+    },
+    "no-routers": "No model routers yet",
+    "empty-description":
+      "No model routers configured yet. Create one to get started.",
+    "new-router-button": "New Router",
+    "delete-confirm":
+      'Are you sure you want to delete the router "{{name}}"?\nThis will remove all its rules and unlink any workspaces using it.\n\nThis action is irreversible.',
+    "toast-deleted": "Router deleted",
+    "toast-delete-failed": "Failed to delete router: {{error}}",
+    "new-router": {
+      title: "Create New Model Router",
+      name: "Name",
+      "name-placeholder": "e.g. Cost Optimizer",
+      description: "Description",
+      "description-placeholder": "Optional description",
+      "fallback-label": "Primary Provider & Model",
+      "fallback-description":
+        "Used when no routing rule matches. Also used to evaluate LLM-classified rules.",
+      "cooldown-label": "Cache Cooldown (seconds)",
+      "cooldown-help":
+        "How long a routing decision is cached before re-evaluating rules. Set to 0 to disable caching.",
+      "name-required": "Name is required.",
+      "fallback-required": "Primary provider and model are required.",
+      cancel: "Cancel",
+      create: "Create Router",
+    },
+    "edit-router": {
+      "back-to-routers": "Back to Model Routers",
+      title: "Edit Router: {{name}}",
+      save: "Save Changes",
+      "toast-update-failed": "Failed to update router",
+    },
+    rules: {
+      title: "Routing Rules",
+      "title-with-name": "Router Rules: {{name}}",
+      description:
+        "Define the rules that determine when and how chat messages go to specific providers and models.",
+      "add-rule": "Add Rule",
+      "delete-confirm": 'Delete rule "{{title}}"?',
+      "toast-delete-failed": "Failed to delete rule",
+      "toast-reorder-failed": "Failed to reorder rules",
+      "no-rules": "No rules yet",
+      "empty-description":
+        "Add a rule to start routing chat messages to specific providers and models.",
+      "new-rule-button": "New Rule",
+      "calculated-section-label":
+        "Calculated rules — evaluated first, in priority order",
+      "llm-section-label":
+        "LLM rules — evaluated as a batch if no calculated rule matched",
+      "llm-rule-body":
+        'Match <desc>"{{description}}"</desc> then route to <route>{{route}}</route>',
+      "calculated-no-conditions":
+        "No conditions — route to <route>{{route}}</route>",
+      "calculated-single-condition":
+        'If <prop>{{property}}</prop> {{comparator}} <val>"{{value}}"</val> then route to <route>{{route}}</route>',
+      "calculated-multi-condition":
+        "If {{quantifier}} of <cond>{{conditions}}</cond> then route to <route>{{route}}</route>",
+      "comparator-contains": "contains",
+      "comparator-matches": "matches",
+      "comparator-between": "between",
+      "badge-llm": "LLM",
+      "badge-calculated": "Calculated",
+      "aria-drag-to-reorder": "Drag to reorder",
+      "aria-edit-rule": "Edit rule",
+      "aria-delete-rule": "Delete rule",
+      "quantifier-any": "ANY",
+      "quantifier-all": "ALL",
+    },
+    "rule-form": {
+      "title-label": "Title",
+      "rule-type": "Rule Type",
+      "property-label": "Property",
+      "property-select": "Select",
+      "comparator-label": "Comparator",
+      "comparator-select": "Select",
+      "value-label": "Value",
+      "add-condition": "Add condition",
+      "remove-condition": "Remove condition",
+      "conditions-incomplete":
+        "Condition {{index}} is incomplete — fill in property, comparator, and value.",
+      "match-description-label": "Match Description",
+      "match-description-placeholder":
+        "e.g. The user is asking about legal topics, contracts, or compliance",
+      "match-description-help":
+        "Describe the situation when you want this rule to match. This is evaluated by your LLM to determine if it should be used.",
+      "route-to-label": "Route to Provider & Model",
+      "route-to-description": "When this rule matches, use this provider/model",
+      cancel: "Cancel",
+      saving: "Saving...",
+      "update-rule": "Update Rule",
+      "create-rule": "Create Rule",
+      "title-required": "Title is required",
+      "toast-save-failed": "Failed to save rule",
+      "type-calculated-label": "Calculated",
+      "type-calculated-description":
+        "Match based on message properties like content, token count, or time of day.",
+      "type-llm-label": "LLM Classified",
+      "type-llm-description":
+        "Use an LLM to classify the message based on a description you provide.",
+      "prop-prompt-content": "Prompt Content",
+      "prop-token-count": "Conversation Token Count",
+      "prop-message-count": "Conversation Message Count",
+      "prop-current-hour": "Current Hour (0-23)",
+      "prop-has-image": "Has Image Attachment",
+      "cmp-contains": "contains",
+      "cmp-matches-regex": "matches (regex)",
+      "cmp-equals": "equals",
+      "cmp-not-equals": "not equals",
+      "cmp-greater-than": "greater than",
+      "cmp-greater-than-or-equal": "greater than or equal",
+      "cmp-less-than": "less than",
+      "cmp-less-than-or-equal": "less than or equal",
+      "cmp-between": "between (inclusive)",
+      "placeholder-between-hour": "e.g. 9,17 (9am to 5pm)",
+      "placeholder-between-numeric": "e.g. 10,50",
+      "placeholder-hour": "e.g. 18 (0-23)",
+      "placeholder-message-count": "e.g. 10",
+      "placeholder-numeric": "e.g. 4000",
+      "placeholder-contains": "e.g. code, python, rust",
+      "placeholder-matches": "e.g. /\\bpython\\b/i",
+      "placeholder-default": "e.g. code",
+      "help-contains":
+        "Comma-separated list — matches if the prompt contains any of the values (case-insensitive).",
+      "help-matches":
+        "Regex pattern. Use /pattern/flags for case sensitivity (defaults to case-insensitive).",
+      "bool-true": "True",
+      "bool-false": "False",
+    },
+    "provider-picker": {
+      "select-provider": "Select provider",
+      "setup-required": "(setup required)",
+      "loading-models": "Loading models...",
+      "select-model": "Select model",
+      "enter-model": "Enter model name",
+      "select-provider-first": "Select a provider first",
+      "configure-to-continue": "Configure {{name}} to continue",
+      "configure-provider": "Configure {{name}}",
+      "setup-credentials":
+        "Enter the required credentials to use {{name}} as a routing target.",
+      cancel: "Cancel",
+      "save-settings": "Save settings",
+      "toast-save-failed": "Failed to save settings: {{error}}",
+    },
+    "router-selection": {
+      "loading-routers": "Loading custom routers...",
+      "no-routers-prefix-settings": "No model routers configured yet.",
+      "no-routers-prefix-workspace": "No model routers configured.",
+      "no-routers-link": "Create one in Model Router settings",
+      "model-router-label": "Model Router",
+      "select-router": "Select a router",
+      "select-description": "Select which router to use for this workspace.",
+      "no-routers-chat":
+        "No routers configured. Create one in Settings > AI Providers > Model Router.",
+      "rule-count": "({{count}} rules)",
+    },
+    metrics: {
+      "model-router-default": "Model Router",
+    },
+    chat: {
+      "select-router-error": "Select a router",
+      "invalid-model": "Invalid model selection",
+      "routed-to": "Routed to <route>{{model}}</route>",
+      "routed-to-rule":
+        "Routed to <route>{{model}}</route> via <rule>{{ruleTitle}}</rule>",
     },
   },
   transcription: {
@@ -1319,7 +1506,6 @@ const TRANSLATIONS = {
     see_less: "See Less",
     see_more: "See More",
     preset_reset_description: "Clear your chat history and begin a new chat",
-    preset_exit_description: "Halt the current agent session",
     add_new_preset: " Add New Preset",
     add_new: "Add new",
     edit: "Edit",
@@ -1369,6 +1555,57 @@ const TRANSLATIONS = {
       always_allow: "Always allow {{skillName}}",
       tool_call_was_approved: "Tool call was approved",
       tool_call_was_rejected: "Tool call was rejected",
+      clarifying_skip: "Let agent decide",
+      clarifying_submit: "Submit",
+      clarifying_skipped: "You let the agent decide.",
+      clarifying_timeout: "No response submitted in time.",
+      clarifying_pagination: "{{current}} of {{total}}",
+      clarifying_prev_aria: "Previous question",
+      clarifying_next_aria: "Next question",
+      clarifying_close_aria: "Close and skip",
+      clarifying_other: "Other",
+      clarifying_other_placeholder: "Type your answer",
+      batch_progress: "{{answered}} of {{total}} answered",
+      batch_skip_this: "Skip",
+      batch_submit_all: "Submit all",
+      batch_next: "Next",
+      answer_skipped: "[user skipped]",
+    },
+    memories: {
+      title: "Memories",
+      empty:
+        "No memories so far. After you interact with the chatbot more memories will fill in or",
+      empty_cta: "create a new memory",
+      tab_workspace: "Workspace",
+      tab_global: "Global",
+      toggle: {
+        label: "Enable Personalization",
+        description:
+          "Allow your assistant to recall facts about you or this workspace and use them in conversations",
+      },
+      auto_extraction: {
+        label: "Automatic Memories",
+        description:
+          "Have your assistant automatically create memories in the background",
+      },
+      menu: {
+        edit: "Edit",
+        delete: "Delete",
+        move_to_global: "Move to Global",
+        move_to_workspace: "Move to Workspace",
+      },
+      modal: {
+        create_title: "Create Memory",
+        edit_title: "Edit Memory",
+        create_description:
+          'Memories should be a single, concise statement. e.g. "User prefers Python over JavaScript"',
+        edit_description: "Update the content of this memory.",
+        label: "Memory",
+        placeholder: "e.g. User's name is Joe, User works on AnythingLLM, etc.",
+        create: "Create",
+        save: "Save",
+        cancel: "Cancel",
+      },
     },
   },
   profile_settings: {

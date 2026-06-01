@@ -11,6 +11,7 @@ const { createFilesAgent } = require("./create-files/index.js");
 const { gmailAgent } = require("./gmail/index.js");
 const { outlookAgent } = require("./outlook/index.js");
 const { googleCalendarAgent } = require("./google-calendar/index.js");
+const { requestUserInput } = require("./request-user-input.js");
 
 module.exports = {
   webScraping,
@@ -26,6 +27,7 @@ module.exports = {
   gmailAgent,
   outlookAgent,
   googleCalendarAgent,
+  requestUserInput,
 
   // Plugin name aliases so they can be pulled by slug as well.
   [webScraping.name]: webScraping,
@@ -41,4 +43,5 @@ module.exports = {
   [gmailAgent.name]: gmailAgent,
   [outlookAgent.name]: outlookAgent,
   [googleCalendarAgent.name]: googleCalendarAgent,
+  [requestUserInput.name]: requestUserInput,
 };

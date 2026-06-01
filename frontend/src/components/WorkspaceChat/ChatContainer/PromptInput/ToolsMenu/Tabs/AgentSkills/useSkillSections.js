@@ -1,6 +1,10 @@
 import { useMemo } from "react";
 import { titleCase } from "text-case";
-import { getSubSkillsForSkill, hasSubSkills } from "./skillRegistry";
+import {
+  getSubSkillsForSkill,
+  hasSubSkills,
+  isSkillMultiUserSupported,
+} from "./skillRegistry";
 
 /**
  * Builds a skill item with optional sub-skills.
@@ -47,6 +51,7 @@ export default function useSkillSections({
   importedSkills,
   flows,
   mcpServers,
+  isMultiUser,
   isSkillEnabled,
   toggleSkill,
   isSubSkillEnabled,
@@ -86,9 +91,10 @@ export default function useSkillSections({
       });
     }
 
-    // App Integrations
+    // App Integrations — skip skills unsupported in multi-user mode
     const appIntegrationItems = [];
     for (const [key, { title }] of Object.entries(appIntegrationSkills)) {
+      if (isMultiUser && !isSkillMultiUserSupported(key)) continue;
       appIntegrationItems.push(
         buildSkillItem({
           key,
@@ -175,6 +181,7 @@ export default function useSkillSections({
     importedSkills,
     flows,
     mcpServers,
+    isMultiUser,
     isSkillEnabled,
     toggleSkill,
     isSubSkillEnabled,

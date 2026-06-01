@@ -28,7 +28,11 @@ class AIbitat {
    */
   skipHandleExecution = false;
 
-  provider = null;
+  _provider = null;
+
+  /** @type {import("./providers/ai-provider").AgentProviderInstance|null} */
+  _providerInstance = null;
+
   defaultProvider = null;
   defaultInterrupt;
   maxRounds;
@@ -52,6 +56,15 @@ class AIbitat {
    * @type {Array<{name: string, mime: string, contentString: string}>}
    */
   _toolAttachments = [];
+
+  /**
+   * Buffer for clarifying-question surveys completed during tool execution.
+   * Each entry is one ask-user invocation (questions + the user's result),
+   * drained by the chat-history plugin into workspace_chats.response so the
+   * filled-in survey persists alongside citations/outputs.
+   * @type {Array<{questions: Array<Object>, result: Object}>}
+   */
+  _pendingClarifyingQuestionSurveys = [];
 
   /**
    * Get the default maximum number of tools an agent can chain for a single response.
@@ -104,6 +117,31 @@ class AIbitat {
    */
   get chats() {
     return this._chats;
+  }
+
+  get provider() {
+    return this._provider;
+  }
+
+  set provider(value) {
+    if (value !== null && typeof value !== "string") {
+      console.trace(); // print this for user report debugging so call stack is visible
+      throw new TypeError(
+        `aibitat.provider must be a string tag (e.g. "openai"), got ${typeof value}. ` +
+          `Use aibitat.providerInstance to to get/store the provider instance.`
+      );
+    }
+    this._provider = value;
+  }
+
+  /** @returns {import("./providers/ai-provider").AgentProviderInstance} */
+  get providerInstance() {
+    return this._providerInstance;
+  }
+
+  /** @param {import("./providers/ai-provider").AgentProviderInstance|null} value */
+  set providerInstance(value) {
+    this._providerInstance = value;
   }
 
   /**
@@ -188,6 +226,26 @@ class AIbitat {
   }
 
   /**
+   * Send routing metadata to the frontend for the given message UUID.
+   * Only emits if routing metadata exists in handlerProps.
+   * @param {string} messageUuid - The UUID of the message to attach routing info to
+   */
+  flushRoutingMetadata(messageUuid) {
+    const routingMetadata = this.handlerProps?.routingMetadata;
+    if (
+      !messageUuid ||
+      !routingMetadata?.routedTo ||
+      !routingMetadata.routedTo.shouldNotify
+    )
+      return;
+    this.socket?.send?.("reportStreamEvent", {
+      type: "modelRouteNotification",
+      uuid: `${messageUuid}:route`,
+      routedTo: routingMetadata.routedTo,
+    });
+  }
+
+  /**
    * Add an attachment (image) from a tool to be injected into the conversation.
    * The attachment will be added as a user message so the model can "see" it.
    * This leverages existing provider attachment handling for user messages.
@@ -196,6 +254,24 @@ class AIbitat {
   addToolAttachment(attachment) {
     if (!attachment || !attachment.contentString) return;
     this._toolAttachments.push(attachment);
+  }
+
+  /**
+   * Add a completed clarifying-question survey to the pending buffer.
+   * The chat-history plugin drains this buffer when persisting the agent reply.
+   * @param {{questions: Array<Object>, result: Object}} survey - The survey to add
+   */
+  addClarifyingQuestionSurvey(survey) {
+    if (!survey || typeof survey !== "object") return;
+    this._pendingClarifyingQuestionSurveys.push(survey);
+  }
+
+  /**
+   * Clear all pending clarifying-question surveys. Called after surveys
+   * have been persisted to the workspace_chats record.
+   */
+  clearClarifyingQuestionSurveys() {
+    this._pendingClarifyingQuestionSurveys = [];
   }
 
   /**
@@ -811,19 +887,33 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       }
     }
 
-    const provider = this.getProviderForConfig({
+    // Re-evaluate model router before each turn if a resolver is attached.
+    // This ensures routing rules are applied per-message, not just at initialization.
+    if (this.resolveRoute) {
+      const userPrompt =
+        this.#extractUserPrompt(messages) || route.content || "";
+      const resolved = await this.resolveRoute(userPrompt);
+      if (resolved) {
+        this.defaultProvider = {
+          ...this.defaultProvider,
+          provider: resolved.provider,
+          model: resolved.model,
+        };
+      }
+    }
+
+    this.providerInstance = this.getProviderForConfig({
       ...this.defaultProvider,
       ...fromConfig,
     });
-    provider.attachHandlerProps(this.handlerProps);
+    this.providerInstance.attachHandlerProps(this.handlerProps);
 
     let content;
-    if (provider.supportsAgentStreaming) {
+    if (this.providerInstance.supportsAgentStreaming) {
       this.handlerProps.log?.(
         "[DEBUG] Provider supports agent streaming - will use async execution!"
       );
       content = await this.handleAsyncExecution(
-        provider,
         messages,
         functions,
         route.from
@@ -832,16 +922,9 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       this.handlerProps.log?.(
         "[DEBUG] Provider does not support agent streaming - will use synchronous execution!"
       );
-      content = await this.handleExecution(
-        provider,
-        messages,
-        functions,
-        route.from
-      );
+      content = await this.handleExecution(messages, functions, route.from);
     }
 
-    // Store the active provider so plugins can access usage metrics
-    this.provider = provider;
     this.newMessage({ ...route, content });
     return content;
   }
@@ -867,9 +950,8 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
 
   /**
    * Handle the async (streaming) execution of the provider
-   * with tool calls.
+   * with tool calls. Reads the provider from this.providerInstance.
    *
-   * @param provider
    * @param messages
    * @param functions
    * @param byAgent
@@ -877,7 +959,6 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
    * @returns {Promise<string>}
    */
   async handleAsyncExecution(
-    provider,
     messages = [],
     functions = [],
     byAgent = null,
@@ -887,9 +968,12 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       this?.socket?.send(type, data);
     };
 
+    // Emit routing notification before the first completion so it appears above the response
+    if (depth === 0) this?.flushRoutingMetadata?.(v4());
+
     /** @type {{ functionCall: { name: string, arguments: string }, textResponse: string }} */
     const completionStream = await this.#safeProviderCall(() =>
-      provider.stream(messages, functions, eventHandler)
+      this.providerInstance.stream(messages, functions, eventHandler)
     );
 
     if (completionStream.functionCall) {
@@ -908,7 +992,6 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
 
       if (!fn) {
         return await this.handleAsyncExecution(
-          provider,
           [
             ...messages,
             {
@@ -926,7 +1009,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
 
       fn.caller = byAgent || "agent";
 
-      if (provider?.verbose) {
+      if (this.providerInstance?.verbose) {
         this?.introspect?.(
           `${fn.caller} is executing \`${name}\` tool ${JSON.stringify(args, null, 2)}`
         );
@@ -968,7 +1051,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
         eventHandler?.("reportStreamEvent", {
           type: "usageMetrics",
           uuid: directOutputUUID,
-          metrics: provider.getUsage(),
+          metrics: this.providerInstance.getUsage(),
         });
         this?.flushCitations?.(directOutputUUID);
         this?.emitChatId?.(directOutputUUID);
@@ -998,7 +1081,6 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       }
 
       return await this.handleAsyncExecution(
-        provider,
         newMessages,
         reachedToolLimit ? [] : functions,
         byAgent,
@@ -1010,7 +1092,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     eventHandler?.("reportStreamEvent", {
       type: "usageMetrics",
       uuid: responseUuid,
-      metrics: provider.getUsage(),
+      metrics: this.providerInstance.getUsage(),
     });
     this?.flushCitations?.(responseUuid);
     this?.emitChatId?.(responseUuid);
@@ -1019,9 +1101,8 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
 
   /**
    * Handle the synchronous (non-streaming) execution of the provider
-   * with tool calls.
+   * with tool calls. Reads the provider from this.providerInstance.
    *
-   * @param provider
    * @param messages
    * @param functions
    * @param byAgent
@@ -1031,7 +1112,6 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
    * @returns {Promise<string>}
    */
   async handleExecution(
-    provider,
     messages = [],
     functions = [],
     byAgent = null,
@@ -1044,9 +1124,12 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       this?.socket?.send(type, data);
     };
 
+    // Emit routing notification before the first completion so it appears above the response
+    if (depth === 0) this?.flushRoutingMetadata?.(msgUUID);
+
     // get the chat completion
     const completion = await this.#safeProviderCall(() =>
-      provider.complete(messages, functions)
+      this.providerInstance.complete(messages, functions)
     );
 
     if (completion.functionCall) {
@@ -1065,7 +1148,6 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
 
       if (!fn) {
         return await this.handleExecution(
-          provider,
           [
             ...messages,
             {
@@ -1084,7 +1166,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
 
       fn.caller = byAgent || "agent";
 
-      if (provider?.verbose) {
+      if (this.providerInstance?.verbose) {
         this?.introspect?.(
           `[debug]: ${fn.caller} is attempting to call \`${name}\` tool`
         );
@@ -1114,7 +1196,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
         eventHandler?.("reportStreamEvent", {
           type: "usageMetrics",
           uuid: msgUUID,
-          metrics: provider.getUsage(),
+          metrics: this.providerInstance.getUsage(),
         });
         this?.flushCitations?.(msgUUID);
         return result;
@@ -1143,7 +1225,6 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       }
 
       return await this.handleExecution(
-        provider,
         newMessages,
         reachedToolLimit ? [] : functions,
         byAgent,
@@ -1155,7 +1236,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     eventHandler?.("reportStreamEvent", {
       type: "usageMetrics",
       uuid: msgUUID,
-      metrics: provider.getUsage(),
+      metrics: this.providerInstance.getUsage(),
     });
     this?.flushCitations?.(msgUUID);
     this?.emitChatId?.(msgUUID);
@@ -1334,6 +1415,10 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
         return new Providers.SambaNovaProvider({ model: config.model });
       case "lemonade":
         return new Providers.LemonadeProvider({ model: config.model });
+      case "minimax":
+        return new Providers.MinimaxProvider({ model: config.model });
+      case "cerebras":
+        return new Providers.CerebrasProvider({ model: config.model });
       default:
         throw new Error(
           `Unknown provider: ${config.provider}. Please use a valid provider.`

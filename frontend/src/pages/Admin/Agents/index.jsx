@@ -40,6 +40,8 @@ const IGNORE_CHANGE_SETTINGS = [
   "agentSkillRerankerEnabled",
   "agentSkillRerankerTopN",
   "agentSkillMaxToolCalls",
+  "agentClarifyingQuestionsEnabled",
+  "agentClarifyingQuestionsMaxPerTurn",
 ];
 
 export default function AdminAgents() {
