@@ -44,9 +44,7 @@ class LiteLLMProvider extends InheritMultiple([Provider, UnTooled]) {
    */
   supportsNativeToolCalling() {
     if (this._supportsToolCalling !== null) return this._supportsToolCalling;
-    const supportsToolCalling =
-      process.env.PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING?.includes("litellm");
-
+    const supportsToolCalling = this.supportsNativeToolCallingViaEnv("litellm");
     if (supportsToolCalling)
       this.providerLog(
         "LiteLLM supports native tool calling is ENABLED via ENV."
@@ -113,7 +111,8 @@ class LiteLLMProvider extends InheritMultiple([Provider, UnTooled]) {
         this.model,
         messages,
         functions,
-        eventHandler
+        eventHandler,
+        { provider: this }
       );
     } catch (error) {
       console.error(error.message, error);
@@ -152,7 +151,8 @@ class LiteLLMProvider extends InheritMultiple([Provider, UnTooled]) {
         this.model,
         messages,
         functions,
-        this.getCost.bind(this)
+        this.getCost.bind(this),
+        { provider: this }
       );
 
       if (result.retryWithError) {

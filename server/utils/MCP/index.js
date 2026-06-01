@@ -39,6 +39,22 @@ class MCPCompatibilityLayer extends MCPHypervisor {
     }
     if (!tools || !tools.length) return null;
 
+    const suppressedTools = this.getSuppressedTools(name);
+    const totalTools = tools.length;
+    tools = tools.filter((tool) => !suppressedTools.includes(tool.name));
+    const suppressedCount = totalTools - tools.length;
+
+    if (suppressedCount > 0) {
+      this.log(
+        `MCP server ${name}: ${suppressedCount} tool(s) suppressed, ${tools.length} tool(s) enabled`
+      );
+    }
+
+    if (!tools.length) {
+      this.log(`MCP server ${name}: All tools are suppressed, skipping`);
+      return null;
+    }
+
     const plugins = [];
     for (const tool of tools) {
       plugins.push({
@@ -237,6 +253,17 @@ class MCPCompatibilityLayer extends MCPHypervisor {
     } catch (e) {
       return `[Unserializable: ${e.message}]`;
     }
+  }
+
+  /**
+   * Toggle tool suppression for an MCP server
+   * @param {string} serverName - The name of the MCP server
+   * @param {string} toolName - The name of the tool to toggle
+   * @param {boolean} enabled - Whether the tool should be enabled (true) or suppressed (false)
+   * @returns {Promise<{success: boolean, error: string | null, suppressedTools: string[]}>}
+   */
+  async toggleToolSuppression(serverName, toolName, enabled) {
+    return this.updateSuppressedTools(serverName, toolName, enabled);
   }
 }
 module.exports = MCPCompatibilityLayer;

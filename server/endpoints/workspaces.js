@@ -38,6 +38,9 @@ const { purgeDocument } = require("../utils/files/purgeDocument");
 const { getModelTag } = require("./utils");
 const { searchWorkspaceAndThreads } = require("../utils/helpers/search");
 const { workspaceParsedFilesEndpoints } = require("./workspacesParsedFiles");
+const {
+  workspaceDeletionProtection,
+} = require("../utils/middleware/workspaceDeletionProtection");
 
 function workspaceEndpoints(app) {
   if (!app) return;
@@ -224,6 +227,28 @@ function workspaceEndpoints(app) {
           deletes,
           response.locals?.user?.id
         );
+
+        const {
+          isNativeEmbedder,
+          embedFiles,
+        } = require("../utils/EmbeddingWorkerManager");
+
+        if (isNativeEmbedder() && adds.length > 0) {
+          await embedFiles(
+            currWorkspace.slug,
+            adds,
+            currWorkspace.id,
+            response.locals?.user?.id ?? null
+          );
+          const updatedWorkspace = await Workspace.get({
+            id: currWorkspace.id,
+          });
+          response
+            .status(200)
+            .json({ workspace: updatedWorkspace, message: null });
+          return;
+        }
+
         const { failedToEmbed = [], errors = [] } = await Document.addDocuments(
           currWorkspace,
           adds,
@@ -248,7 +273,11 @@ function workspaceEndpoints(app) {
 
   app.delete(
     "/workspace/:slug",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      workspaceDeletionProtection,
+    ],
     async (request, response) => {
       try {
         const { slug = "" } = request.params;
@@ -454,9 +483,9 @@ function workspaceEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
     async (request, response) => {
       try {
-        const { chatId, newText = null } = reqBody(request);
+        const { chatId, newText = null, role = "assistant" } = reqBody(request);
         if (!newText || !String(newText).trim())
-          throw new Error("Cannot save empty response");
+          throw new Error("Cannot save empty edit");
 
         const user = await userFromSession(request, response);
         const workspace = response.locals.workspace;
@@ -468,15 +497,20 @@ function workspaceEndpoints(app) {
         });
         if (!existingChat) throw new Error("Invalid chat.");
 
-        const chatResponse = safeJsonParse(existingChat.response, null);
-        if (!chatResponse) throw new Error("Failed to parse chat response");
-
-        await WorkspaceChats._update(existingChat.id, {
-          response: JSON.stringify({
-            ...chatResponse,
-            text: String(newText),
-          }),
-        });
+        if (role === "user") {
+          await WorkspaceChats._update(existingChat.id, {
+            prompt: String(newText),
+          });
+        } else {
+          const chatResponse = safeJsonParse(existingChat.response, null);
+          if (!chatResponse) throw new Error("Failed to parse chat response");
+          await WorkspaceChats._update(existingChat.id, {
+            response: JSON.stringify({
+              ...chatResponse,
+              text: String(newText),
+            }),
+          });
+        }
 
         response.sendStatus(200).end();
       } catch (e) {
@@ -493,21 +527,16 @@ function workspaceEndpoints(app) {
       try {
         const { chatId } = request.params;
         const { feedback = null } = reqBody(request);
+        const user = await userFromSession(request, response);
         const existingChat = await WorkspaceChats.get({
           id: Number(chatId),
           workspaceId: response.locals.workspace.id,
+          user_id: user?.id,
         });
 
-        if (!existingChat) {
-          response.status(404).end();
-          return;
-        }
-
-        const result = await WorkspaceChats.updateFeedbackScore(
-          chatId,
-          feedback
-        );
-        response.status(200).json({ success: result });
+        if (!existingChat) return response.status(404).json({ success: false });
+        await WorkspaceChats.updateFeedbackScore(chatId, feedback);
+        return response.status(200).json({ success: true });
       } catch (error) {
         console.error("Error updating chat feedback:", error);
         response.status(500).end();
@@ -596,12 +625,15 @@ function workspaceEndpoints(app) {
       try {
         const { chatId } = request.params;
         const workspace = response.locals.workspace;
+        const user = await userFromSession(request, response);
         const cacheKey = `${workspace.slug}:${chatId}`;
         const wsChat = await WorkspaceChats.get({
           id: Number(chatId),
           workspaceId: workspace.id,
+          user_id: user?.id,
         });
 
+        if (!wsChat) return response.sendStatus(404);
         const cachedResponse = responseCache.get(cacheKey);
         if (cachedResponse) {
           response.writeHead(200, {
@@ -1055,6 +1087,83 @@ function workspaceEndpoints(app) {
       } catch (error) {
         console.error("Error searching for workspaces:", error);
         response.sendStatus(500).end();
+      }
+    }
+  );
+
+  // SSE endpoint for embedding progress
+  app.get(
+    "/workspace/:slug/embed-progress",
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      validWorkspaceSlug,
+    ],
+    async (request, response) => {
+      try {
+        const workspace = response.locals.workspace;
+        const {
+          addSSEConnection,
+          removeSSEConnection,
+        } = require("../utils/EmbeddingWorkerManager");
+
+        response.setHeader("Cache-Control", "no-cache");
+        response.setHeader("Content-Type", "text/event-stream");
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Connection", "keep-alive");
+        response.flushHeaders();
+        addSSEConnection(workspace.slug, response);
+        request.on("close", () => {
+          removeSSEConnection(workspace.slug, response);
+        });
+      } catch (e) {
+        console.error(e.message, e);
+        response.status(500).end();
+      }
+    }
+  );
+
+  app.delete(
+    "/workspace/:slug/embed-queue",
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      validWorkspaceSlug,
+    ],
+    async (request, response) => {
+      try {
+        const workspace = response.locals.workspace;
+        const { filename } = reqBody(request);
+        if (!filename) {
+          response
+            .status(400)
+            .json({ success: false, error: "Missing filename" });
+          return;
+        }
+
+        const { removeQueuedFile } = require("../utils/EmbeddingWorkerManager");
+        const sent = removeQueuedFile(workspace.slug, filename);
+        response.status(200).json({ success: sent });
+      } catch (e) {
+        console.error(e.message, e);
+        response.status(500).json({ success: false, error: e.message });
+      }
+    }
+  );
+
+  app.get(
+    "/workspace/:slug/is-agent-command-available",
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
+    async (_, response) => {
+      try {
+        response.status(200).json({
+          showAgentCommand: await Workspace.isAgentCommandAvailable(
+            response.locals.workspace
+          ),
+        });
+      } catch (error) {
+        console.error("Error checking if agent command is available:", error);
+        response.status(500).json({ showAgentCommand: true });
       }
     }
   );

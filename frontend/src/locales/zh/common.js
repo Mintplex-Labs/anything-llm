@@ -2,8 +2,8 @@
 const TRANSLATIONS = {
   onboarding: {
     home: {
-      title: "欢迎使用",
       getStarted: "开始",
+      welcome: "欢迎",
     },
     llm: {
       title: "LLM 偏好",
@@ -45,16 +45,9 @@ const TRANSLATIONS = {
       skip: "跳过调查",
       thankYou: "感谢你的反馈！",
     },
-    workspace: {
-      title: "创建你的第一个工作区",
-      description: "创建你的第一个工作区并开始使用 AnythingLLM。",
-    },
   },
   common: {
     "workspaces-name": "工作区名称",
-    error: "错误",
-    success: "成功",
-    user: "用户",
     selection: "模型选择",
     save: "保存更改",
     saving: "保存中...",
@@ -66,10 +59,14 @@ const TRANSLATIONS = {
     search: "搜索",
     username_requirements:
       "用户名必须为 2-32 个字符，以小写字母开头，只能包含小写字母、数字、下划线、连字符和句点。",
+    on: "关于",
+    none: "没有",
+    stopped: "停止",
+    loading: "正在加载…",
+    refresh: "重新开始；更新",
   },
   settings: {
     title: "设置",
-    system: "系统",
     invites: "邀请",
     users: "用户",
     workspaces: "工作区",
@@ -86,7 +83,6 @@ const TRANSLATIONS = {
     "voice-speech": "语音和讲话",
     "vector-database": "向量数据库",
     embeds: "嵌入式对话",
-    "embed-chats": "嵌入式对话历史记录",
     security: "用户与安全",
     "event-logs": "事件日志",
     privacy: "隐私与数据",
@@ -105,6 +101,12 @@ const TRANSLATIONS = {
       "your-account": "您的账户",
       "import-item": "进口商品",
     },
+    channels: "频道",
+    "available-channels": {
+      telegram: "电报",
+    },
+    "scheduled-jobs": "计划好的任务",
+    "model-router": "型号路由器",
   },
   login: {
     "multi-user": {
@@ -121,90 +123,10 @@ const TRANSLATIONS = {
       title: "重置密码",
       description: "请提供以下必要信息以重置你的密码。",
       "recovery-codes": "恢复代码",
-      "recovery-code": "恢复代码 {{index}}",
       "back-to-login": "返回登录",
     },
   },
   "main-page": {
-    noWorkspaceError: "请在开始聊天前创建一个工作区。",
-    checklist: {
-      title: "入门指南",
-      tasksLeft: "剩余任务",
-      completed: "你正在成为AnythingLLM专家的路上！",
-      dismiss: "关闭",
-      tasks: {
-        create_workspace: {
-          title: "创建工作区",
-          description: "创建你的第一个工作区以开始使用",
-          action: "创建",
-        },
-        send_chat: {
-          title: "发送聊天",
-          description: "开始与你的AI助手对话",
-          action: "聊天",
-        },
-        embed_document: {
-          title: "嵌入文档",
-          description: "添加你的第一个文档到工作区",
-          action: "嵌入",
-        },
-        setup_system_prompt: {
-          title: "设置系统提示",
-          description: "配置你的AI助手的行为",
-          action: "设置",
-        },
-        define_slash_command: {
-          title: "定义斜杠命令",
-          description: "为你的助手创建自定义命令",
-          action: "定义",
-        },
-        visit_community: {
-          title: "访问社区中心",
-          description: "探索社区资源和模板",
-          action: "浏览",
-        },
-      },
-    },
-    quickLinks: {
-      title: "快捷链接",
-      sendChat: "发送聊天",
-      embedDocument: "嵌入文档",
-      createWorkspace: "创建工作区",
-    },
-    exploreMore: {
-      title: "探索更多功能",
-      features: {
-        customAgents: {
-          title: "自定义AI代理",
-          description: "无需编程即可构建强大的AI代理和自动化流程。",
-          primaryAction: "使用@agent聊天",
-          secondaryAction: "构建代理流程",
-        },
-        slashCommands: {
-          title: "斜杠命令",
-          description: "使用自定义斜杠命令节省时间并注入提示。",
-          primaryAction: "创建斜杠命令",
-          secondaryAction: "在中心探索",
-        },
-        systemPrompts: {
-          title: "系统提示",
-          description: "修改系统提示以自定义工作区的AI回复。",
-          primaryAction: "修改系统提示",
-          secondaryAction: "管理提示变量",
-        },
-      },
-    },
-    announcements: {
-      title: "更新与公告",
-    },
-    resources: {
-      title: "资源",
-      links: {
-        docs: "文档",
-        star: "在Github上加星标",
-      },
-      keyboardShortcuts: "键盘快捷键",
-    },
     quickActions: {
       createAgent: "创建代理",
       editWorkspace: "编辑工作区",
@@ -239,12 +161,6 @@ const TRANSLATIONS = {
       heading: "向我解释",
       body: "AnythingLLM 的好处",
     },
-    pfp: {
-      title: "助理头像",
-      description: "为此工作区自定义助手的个人资料图像。",
-      image: "工作区图像",
-      remove: "移除工作区图像",
-    },
     delete: {
       title: "删除工作区",
       description: "删除此工作区及其所有数据。这将删除所有用户的工作区。",
@@ -266,21 +182,23 @@ const TRANSLATIONS = {
       title: "工作区聊天模型",
       description:
         "将用于此工作区的特定聊天模型。如果为空，将使用系统 LLM 首选项。",
-      wait: "-- 等待模型 --",
     },
     mode: {
       title: "聊天模式",
       chat: {
         title: "聊天",
-        "desc-start": "将提供 LLM 的一般知识",
-        and: "和",
-        "desc-end": "找到的文档上下文的答案。",
+        description:
+          "将提供答案，利用LLM的通用知识和提供的文档内容<b>和</b>。您需要使用@agent命令来使用工具。",
       },
       query: {
         title: "查询",
-        "desc-start": "将会提供答案",
-        only: "仅当",
-        "desc-end": "找到文档上下文时。",
+        description:
+          "将在找到文档上下文时，仅提供答案 <b>。您需要使用 @agent 命令来使用工具。",
+      },
+      automatic: {
+        description:
+          "如果模型和提供者都支持原生工具调用，则会自动使用这些工具。<br />如果不支持原生工具调用，您需要使用 `@agent` 命令来使用工具。",
+        title: "代理",
       },
     },
     history: {
@@ -366,9 +284,6 @@ const TRANSLATIONS = {
       wait: "-- 等待模型 --",
     },
     skill: {
-      title: "默认代理技能",
-      description:
-        "使用这些预构建的技能提高默认代理的自然能力。此设置适用于所有工作区。",
       rag: {
         title: "检索增强生成和长期记忆",
         description:
@@ -386,11 +301,6 @@ const TRANSLATIONS = {
         title: "生成图表",
         description: "使默认代理能够从提供的数据或聊天中生成各种类型的图表。",
       },
-      save: {
-        title: "生成并保存文件到浏览器",
-        description:
-          "使默认代理能够生成并写入文件，这些文件可以保存并在你的浏览器中下载。",
-      },
       web: {
         title: "实时网络搜索和浏览",
         description:
@@ -403,6 +313,417 @@ const TRANSLATIONS = {
       },
       default_skill:
         "默认情况下，这项技能已启用。但是，如果您不想让该技能被代理使用，您可以将其禁用。",
+      filesystem: {
+        title: "文件系统访问",
+        description:
+          "允许您的代理能够读取、写入、搜索和管理指定目录中的文件。 支持文件编辑、目录导航和内容搜索功能。",
+        learnMore: "了解更多关于如何使用这项技能的信息。",
+        configuration: "配置",
+        readActions: "阅读操作",
+        writeActions: "编写操作",
+        warning:
+          "访问文件系统可能存在风险，因为它可能修改或删除文件。在启用之前，请务必查阅<a>文档</a>。",
+        skills: {
+          "read-text-file": {
+            title: "读取文件",
+            description: "读取文件内容（包括文本、代码、PDF、图像等）",
+          },
+          "read-multiple-files": {
+            title: "读取多个文件",
+            description: "同时读取多个文件",
+          },
+          "list-directory": {
+            title: "目录",
+            description: "列出文件夹中的文件和目录",
+          },
+          "search-files": {
+            title: "搜索文件",
+            description: "按文件名或内容搜索文件",
+          },
+          "get-file-info": {
+            title: "获取文件信息",
+            description: "获取有关文件的详细元数据",
+          },
+          "edit-file": {
+            title: "编辑文件",
+            description: "对文本文件进行基于行的编辑。",
+          },
+          "create-directory": {
+            title: "创建目录",
+            description: "创建新的目录",
+          },
+          "move-file": {
+            title: "移动/重命名文件",
+            description: "移动或重命名文件和目录",
+          },
+          "copy-file": {
+            title: "复制文件",
+            description: "复制文件和目录",
+          },
+          "write-text-file": {
+            title: "创建文本文件",
+            description: "创建新的文本文件，或覆盖现有的文本文件。",
+          },
+        },
+      },
+      createFiles: {
+        title: "文档创建",
+        description:
+          "允许您的代理创建二进制文档格式，例如PowerPoint演示文稿、Excel电子表格、Word文档和PDF文件。文件可以直接从聊天窗口下载。",
+        configuration: "可用的文件类型",
+        skills: {
+          "create-text-file": {
+            title: "文本文件",
+            description:
+              "创建包含任何内容和扩展名的文本文件（如 .txt、.md、.json、.csv 等）。",
+          },
+          "create-pptx": {
+            title: "PowerPoint 演示文稿",
+            description: "创建新的幻灯片演示文稿，包括幻灯片、标题和项目符号。",
+          },
+          "create-pdf": {
+            title: "PDF 文档",
+            description:
+              "使用 Markdown 或纯文本，并进行基本的排版，创建 PDF 文档。",
+          },
+          "create-xlsx": {
+            title: "Excel电子表格",
+            description: "创建包含表格数据、工作表和样式的 Excel 文档。",
+          },
+          "create-docx": {
+            title: "Word 文档",
+            description: "创建包含基本样式和格式的 Word 文档",
+          },
+        },
+      },
+      gmail: {
+        title: "Gmail 连接器",
+        description:
+          "让您的代理能够与Gmail互动：搜索邮件、阅读邮件线程、撰写草稿、发送邮件以及管理您的收件箱。请参考相关文档。",
+        multiUserWarning:
+          "为了安全原因，在多用户模式下无法使用 Gmail 集成功能。请先禁用多用户模式，然后才能使用此功能。",
+        configuration: "Gmail 设置",
+        deploymentId: "部署 ID",
+        deploymentIdHelp: "您的 Google Apps Script 网页应用的部署 ID",
+        apiKey: "API 密钥",
+        apiKeyHelp: "您在 Google Apps Script 部署中配置的 API 密钥。",
+        configurationRequired: "请配置部署 ID 和 API 密钥，以启用 Gmail 功能。",
+        configured: "已配置",
+        searchSkills: "搜索技巧...",
+        noSkillsFound: "未找到与您的搜索条件匹配的技能。",
+        categories: {
+          search: {
+            title: "搜索和阅读电子邮件",
+            description: "搜索并阅读您 Gmail 收件箱中的邮件。",
+          },
+          drafts: {
+            title: "草稿邮件",
+            description: "创建、编辑和管理电子邮件草稿",
+          },
+          send: {
+            title: "发送和回复电子邮件",
+            description: "立即发送电子邮件并回复讨论串",
+          },
+          threads: {
+            title: "管理电子邮件线程",
+            description: "管理邮件线程 - 标记为已读/未读，归档，删除",
+          },
+          account: {
+            title: "集成统计",
+            description: "查看邮件收件箱统计数据和账户信息",
+          },
+        },
+        skills: {
+          search: {
+            title: "搜索邮件",
+            description: "使用 Gmail 的查询语法搜索电子邮件",
+          },
+          readThread: {
+            title: "阅读此主题",
+            description: "阅读由ID发起的完整邮件往来",
+          },
+          createDraft: {
+            title: "创建草稿",
+            description: "创建一个新的电子邮件草稿",
+          },
+          createDraftReply: {
+            title: "创建草稿回复",
+            description: "创建一个针对现有主题的回应草稿",
+          },
+          updateDraft: {
+            title: "更新草稿",
+            description: "更新已有的电子邮件草稿",
+          },
+          getDraft: {
+            title: "获取草稿",
+            description: "通过ID检索特定草稿",
+          },
+          listDrafts: {
+            title: "草稿清单",
+            description: "列出所有草稿邮件",
+          },
+          deleteDraft: {
+            title: "删除草稿",
+            description: "删除草稿邮件",
+          },
+          sendDraft: {
+            title: "发送草稿",
+            description: "发送已有的电子邮件草稿",
+          },
+          sendEmail: {
+            title: "发送电子邮件",
+            description: "立即发送一封电子邮件",
+          },
+          replyToThread: {
+            title: "回复主题",
+            description: "立即回复邮件线程",
+          },
+          markRead: {
+            title: "马克·瑞德",
+            description: "将某个主题标记为已阅读",
+          },
+          markUnread: {
+            title: "标记为未读",
+            description: "将某个主题标记为未读",
+          },
+          moveToTrash: {
+            title: "移动到垃圾箱",
+            description: "将某个主题归档到垃圾箱",
+          },
+          moveToArchive: {
+            title: "存档",
+            description: "存档该主题",
+          },
+          moveToInbox: {
+            title: "移动到收件箱",
+            description: "将某个主题移动到收件箱",
+          },
+          getMailboxStats: {
+            title: "邮箱统计",
+            description: "获取未读邮件数量和邮箱统计信息",
+          },
+          getInbox: {
+            title: "查看收件箱",
+            description: "一种便捷的方式，可以从 Gmail 中获取收件邮件。",
+          },
+        },
+      },
+      outlook: {
+        title: "Outlook 连接器",
+        description:
+          "让您的代理通过 Microsoft Graph API 与 Microsoft Outlook 交互——搜索邮件、阅读邮件线程、撰写草稿、发送邮件以及管理您的收件箱。请查阅相关文档。",
+        multiUserWarning:
+          "由于安全原因，在多用户模式下无法使用 Outlook 集成功能。请先关闭多用户模式，然后再使用此功能。",
+        configuration: "Outlook 设置",
+        authType: "账户类型",
+        authTypeHelp:
+          '选择哪些类型的 Microsoft 账户可以进行身份验证。 "所有账户" 支持个人账户和工作/学校账户。 "仅限个人账户" 仅限于个人 Microsoft 账户。 "仅限工作/学校账户" 仅限于特定 Azure AD 租户的工作/学校账户。',
+        authTypeCommon: "所有账户（包括个人账户和工作/学习账户）",
+        authTypeConsumers: "仅限个人 Microsoft 账户",
+        authTypeOrganization: "仅限组织账户 (需要租户 ID)",
+        clientId: "申请人（客户）ID",
+        clientIdHelp: "您 Azure AD 应用程序注册的应用程序 ID",
+        tenantId: "租户 ID",
+        tenantIdHelp:
+          "您的 Azure AD 应用注册的“租户 ID”。仅在组织内部身份验证时需要。",
+        clientSecret: "客户端密钥",
+        clientSecretHelp: "您的 Azure AD 应用程序注册的客户端机密值",
+        configurationRequired:
+          "请配置客户端 ID 和客户端密钥，以便启用 Outlook 相关功能。",
+        authRequired:
+          "首先保存您的凭据，然后通过 Microsoft 进行身份验证以完成设置。",
+        authenticateWithMicrosoft: "使用 Microsoft 身份验证",
+        authenticated: "已成功与 Microsoft Outlook 认证。",
+        revokeAccess: "撤销权限",
+        configured: "已配置",
+        searchSkills: "搜索技巧...",
+        noSkillsFound: "未找到与您的搜索条件匹配的技能。",
+        categories: {
+          search: {
+            title: "搜索和阅读电子邮件",
+            description: "搜索并阅读您 Outlook 收件箱中的电子邮件。",
+          },
+          drafts: {
+            title: "草稿邮件",
+            description: "创建、编辑和管理电子邮件草稿",
+          },
+          send: {
+            title: "发送电子邮件",
+            description: "立即发送新邮件或回复消息",
+          },
+          account: {
+            title: "集成统计",
+            description: "查看邮件收件箱统计数据和账户信息",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "查看收件箱",
+            description: "从您的 Outlook 收件箱获取最近的邮件",
+          },
+          search: {
+            title: "搜索邮件",
+            description: "使用 Microsoft 搜索语法搜索电子邮件",
+          },
+          readThread: {
+            title: "阅读对话",
+            description: "阅读完整的电子邮件对话记录",
+          },
+          createDraft: {
+            title: "创建草稿",
+            description: "创建一个新的电子邮件草稿，或回复一个已存在的邮件。",
+          },
+          updateDraft: {
+            title: "更新草稿",
+            description: "更新已有的电子邮件草稿",
+          },
+          listDrafts: {
+            title: "草稿清单",
+            description: "列出所有草稿邮件",
+          },
+          deleteDraft: {
+            title: "删除草稿",
+            description: "删除草稿邮件",
+          },
+          sendDraft: {
+            title: "发送草稿",
+            description: "发送已有的邮件草稿",
+          },
+          sendEmail: {
+            title: "发送电子邮件",
+            description: "立即发送一封新的电子邮件，或回复已存在的消息。",
+          },
+          getMailboxStats: {
+            title: "邮件收件统计",
+            description: "获取文件夹数量和邮箱统计信息",
+          },
+        },
+      },
+      googleCalendar: {
+        title: "Google 日历连接器",
+        description:
+          "让您的代理能够与 Google 日历互动：查看日历、获取活动、创建和更新活动，以及管理确认回复。请参考相关文档。",
+        multiUserWarning:
+          "由于安全原因，在多用户模式下无法使用 Google 日历集成功能。请先禁用多用户模式，然后再使用此功能。",
+        configuration: "谷歌日历配置",
+        deploymentId: "部署ID",
+        deploymentIdHelp: "您的 Google Apps Script 网页应用的部署 ID",
+        apiKey: "API 密钥",
+        apiKeyHelp: "您在 Google Apps Script 部署中配置的 API 密钥。",
+        configurationRequired:
+          "请配置部署 ID 和 API 密钥，以启用 Google 日历功能。",
+        configured: "已配置",
+        searchSkills: "搜索技巧...",
+        noSkillsFound: "未找到与您搜索条件匹配的技能。",
+        categories: {
+          calendars: {
+            title: "日历",
+            description: "查看和管理您的 Google 日历",
+          },
+          readEvents: {
+            title: "查看活动",
+            description: "查看和搜索日历活动",
+          },
+          writeEvents: {
+            title: "创建和更新活动",
+            description: "创建新的活动，并修改现有的活动。",
+          },
+          rsvp: {
+            title: "请回复确认",
+            description: "管理您对活动的响应状态",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "日历列表",
+            description: "列出您拥有的或订阅的全部日历。",
+          },
+          getCalendar: {
+            title: "获取日历详情",
+            description: "获取有关特定日历的详细信息",
+          },
+          getEvent: {
+            title: "获取活动",
+            description: "获取有关特定活动的详细信息",
+          },
+          getEventsForDay: {
+            title: "获取当日活动",
+            description: "获取指定日期的所有活动",
+          },
+          getEvents: {
+            title: "获取活动（日期范围）",
+            description: "获取指定日期范围内的活动",
+          },
+          getUpcomingEvents: {
+            title: "查看即将举办的活动",
+            description: "使用简单的关键词，查找今天、本周或本月的活动",
+          },
+          quickAdd: {
+            title: "快速添加活动",
+            description: "从自然语言（例如“明天下午3点开会”）创建一个活动。",
+          },
+          createEvent: {
+            title: "创建活动",
+            description: "创建一个新的活动，并完全控制所有属性。",
+          },
+          updateEvent: {
+            title: "活动更新",
+            description: "更新现有的日历事件",
+          },
+          setMyStatus: {
+            title: "设置回复状态",
+            description: "接受、拒绝或表示初步接受某个活动",
+          },
+        },
+      },
+    },
+    mcp: {
+      title: "MCP 服务器",
+      "loading-from-config": "从配置文件加载 MCP 服务器",
+      "learn-more": "了解更多关于 MCP 服务器的信息。",
+      "no-servers-found": "未找到任何 MCP 服务器",
+      "tool-warning": "为了获得最佳性能，建议禁用不必要的工具，以节省上下文。",
+      "stop-server": "停止 MCP 服务器",
+      "start-server": "启动 MCP 服务器",
+      "delete-server": "删除 MCP 服务器",
+      "tool-count-warning":
+        "这个 MCP 服务器启用了 <b> 工具，这些工具会在每次聊天中使用上下文信息。</b> 建议禁用不需要的工具，以节省上下文。<br />",
+      "startup-command": "启动命令",
+      command: "命令",
+      arguments: "争论",
+      "not-running-warning":
+        "这个 MCP 服务器目前处于停止状态，可能是因为在启动时出现了错误或被手动停止。",
+      "tool-call-arguments": "工具调用的参数",
+      "tools-enabled": "工具已启用",
+    },
+    settings: {
+      title: "代理技能设置",
+      "max-tool-calls": {
+        title: "每个回复的最大请求次数",
+        description:
+          "单个代理可以使用的最大工具数量，用于生成单个响应。 这样可以防止工具调用数量过多，从而避免无限循环。",
+      },
+      "intelligent-skill-selection": {
+        title: "智能技能选择",
+        "beta-badge": "β 版本",
+        description:
+          "实现无限工具和按查询减少高达 80% 的 Token 使用量——AnythingLLM 能够自动选择最合适的技能，以应对每个提示。",
+        "max-tools": {
+          title: "麦克斯工具",
+          description:
+            "可以选取的工具的最大数量，用于每个查询。我们建议将此值设置为较高的值，以便在处理大型上下文模型时。",
+        },
+      },
+      "clarifying-questions": {
+        title: "允许代理人提出进一步的疑问",
+        "beta-badge": "测试版",
+        description:
+          "启用后，代理可以暂停，并向您提出简短的澄清问题，以解决您的提示可能存在歧义的情况。",
+        "max-per-turn": {
+          title: "每回合可以提出的问题数量",
+          description: "在一次调查中，销售代表可以提出多少澄清性问题？",
+        },
+      },
     },
   },
   recorded: {
@@ -460,10 +781,6 @@ const TRANSLATIONS = {
         title: "名称",
         description: "设置所有用户在登录页面看到的名称。",
       },
-      "chat-message-alignment": {
-        title: "聊天消息对齐方式",
-        description: "选择在聊天界面中使用的消息对齐模式。",
-      },
       "display-language": {
         title: "显示语言",
         description: "选择显示 AnythingLLM 界面所用的语言（若有翻译可用）。",
@@ -475,17 +792,6 @@ const TRANSLATIONS = {
         recommended: "推荐尺寸：800 x 200",
         remove: "移除",
         replace: "替换",
-      },
-      "welcome-messages": {
-        title: "欢迎信息",
-        description: "自定义显示给用户的欢迎信息。仅非管理员用户可见这些信息。",
-        new: "新建",
-        system: "系统",
-        user: "用户",
-        message: "信息",
-        assistant: "AnythingLLM 聊天助手",
-        "double-click": "双击进行编辑...",
-        save: "保存信息",
       },
       "browser-appearance": {
         title: "浏览器外观",
@@ -517,7 +823,32 @@ const TRANSLATIONS = {
     description: "API 密钥允许持有者以编程方式访问和管理此 AnythingLLM 实例。",
     link: "阅读 API 文档",
     generate: "生成新的 API 密钥",
+    empty: "未找到 API 密钥",
+    actions: "操作",
+    messages: {
+      error: "错误：{{error}}",
+    },
+    modal: {
+      title: "创建新的 API 密钥",
+      cancel: "取消",
+      close: "关闭",
+      create: "创建 API 密钥",
+      helper: "创建后，API 密钥可用于以编程方式访问并配置此 AnythingLLM 实例。",
+      name: {
+        label: "名称",
+        placeholder: "生产环境集成",
+        helper: "可选。使用一个易于识别的名称，以便之后识别此密钥。",
+      },
+    },
+    row: {
+      copy: "复制 API 密钥",
+      copied: "已复制",
+      unnamed: "--",
+      deleteConfirm:
+        "确定要停用此 API 密钥吗？\n停用后将无法再使用。\n\n此操作不可撤销。",
+    },
     table: {
+      name: "名称",
       key: "API 密钥",
       by: "创建者",
       created: "创建时间",
@@ -624,9 +955,6 @@ const TRANSLATIONS = {
     title: "隐私和数据处理",
     description:
       "这是你对如何处理连接的第三方提供商和AnythingLLM的数据的配置。",
-    llm: "LLM 选择",
-    embedding: "嵌入首选项",
-    vector: "向量数据库",
     anonymous: "启用匿名遥测",
   },
   connectors: {
@@ -664,7 +992,6 @@ const TRANSLATIONS = {
       URL_explained: "您希望收集的 GitLab 仓库链接。",
       token: "GitLab 访问令牌",
       optional: "可选",
-      token_explained: "用于避免速率限制的访问令牌。",
       token_description: "选择要从 GitLab API 获取的额外实体。",
       token_explained_start: "如果没有 ",
       token_explained_link1: "个人访问令牌",
@@ -693,9 +1020,6 @@ const TRANSLATIONS = {
       URL_explained_link: "隐藏字幕",
       URL_explained_end: " 功能。",
       task_explained: "完成后，转录内容将可用于在文档选择器中嵌入至工作区。",
-      language: "字幕语言",
-      language_explained: "选择您希望收集的字幕语言。",
-      loading_languages: "-- 正在加载可用语言 --",
     },
     "website-depth": {
       name: "批量链接爬虫",
@@ -752,20 +1076,18 @@ const TRANSLATIONS = {
       "search-document": "搜索文档",
       "no-documents": "暂无文档",
       "move-workspace": "移动到工作区",
-      name: "名称",
       "delete-confirmation":
         "您确定要删除这些文件和文件夹吗？\n这将从系统中移除这些文件，并自动将其从所有关联工作区中移除。\n此操作无法撤销。",
       "removing-message":
         "正在删除 {{count}} 个文档和 {{folderCount}} 个文件夹，请稍候。",
       "move-success": "成功移动了 {{count}} 个文档。",
-      date: "日期",
-      type: "类型",
       no_docs: "暂无文档",
       select_all: "全选",
       deselect_all: "取消全选",
       remove_selected: "移除所选",
-      costs: "*嵌入时一次性费用",
       save_embed: "保存并嵌入",
+      "total-documents_one": "{{count}} 文件",
+      "total-documents_other": "{{count}} 类型的文件",
     },
     upload: {
       "processor-offline": "文档处理器不可用",
@@ -802,8 +1124,6 @@ const TRANSLATIONS = {
       accept: "好的，知道了",
     },
     obsidian: {
-      name: "Obsidian",
-      description: "一键导入 Obsidian 仓库。",
       vault_location: "仓库位置",
       vault_description:
         "选择你的 Obsidian 仓库文件夹，以导入所有笔记及其关联。",
@@ -815,16 +1135,8 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
-    welcome: "欢迎来到你的新工作区。",
-    get_started: "开始使用，请先",
-    get_started_default: "开始使用",
-    upload: "上传文档",
-    or: "或",
-    send_chat: "发送一条对话。",
     send_message: "发送消息",
     attach_file: "向此对话附加文件",
-    slash: "查看所有可用的聊天斜杠命令。",
-    agents: "查看所有可用的聊天助手。",
     text_size: "更改文字大小。",
     microphone: "语音输入你的提示。",
     send: "将提示消息发送到工作区",
@@ -835,19 +1147,11 @@ const TRANSLATIONS = {
     regenerate_response: "重新回应",
     good_response: "反应良好",
     more_actions: "更多操作",
-    hide_citations: "隐藏引文",
-    show_citations: "显示引文",
-    pause_tts_speech_message: "暂停 TTS 语音播报",
     fork: "分叉",
     delete: "删除",
-    save_submit: "提交保存",
     cancel: "取消",
     edit_prompt: "编辑问题",
     edit_response: "编辑回应",
-    at_agent: "@agent",
-    default_agent_description: " - 此工作区的预设代理。",
-    custom_agents_coming_soon: "自定义代理功能即将推出！",
-    slash_reset: "/reset",
     preset_reset_description: "清除聊天纪录并开始新的聊天",
     add_new_preset: "新增预设",
     command: "指令",
@@ -868,6 +1172,96 @@ const TRANSLATIONS = {
       saving: "正在保存",
       missing_credentials: "缺少凭证",
       missing_credentials_description: "缺少凭证说明",
+    },
+    submit: "提交",
+    edit_info_user: "“提交”会重新生成 AI 的回复。 “保存”只会更新您的消息。",
+    edit_info_assistant: "您所做的修改将直接保存到此处。",
+    see_less: "查看更多",
+    see_more: "查看更多",
+    tools: "工具",
+    text_size_label: "字体大小",
+    select_model: "选择型号",
+    sources: "来源",
+    document: "文件",
+    similarity_match: "比赛",
+    source_count_one: "{{count}} 参考",
+    source_count_other: "{{count}} 相关资料",
+    add_new: "添加新",
+    edit: "编辑",
+    publish: "出版",
+    stop_generating: "停止生成回复",
+    slash_commands: "快捷命令",
+    agent_skills: "代理人技能",
+    manage_agent_skills: "管理代理人技能",
+    agent_skills_disabled_in_session:
+      "在活动会话期间，无法修改技能。首先使用 /exit 命令结束会话。",
+    start_agent_session: "开始代理会",
+    use_agent_session_to_use_tools:
+      "您可以通过在提示词的开头使用'@agent'来启动与代理的聊天，从而使用聊天工具。",
+    agent_invocation: {
+      model_wants_to_call: "该型号希望进行通话。",
+      approve: "批准",
+      reject: "拒绝",
+      always_allow: "请务必留出 {{skillName}}",
+      tool_call_was_approved: "工具使用申请已获得批准。",
+      tool_call_was_rejected: "请求获取工具已被拒绝。",
+      clarifying_skip: "让代理人来决定",
+      clarifying_submit: "提交",
+      clarifying_skipped: "您可以让代理人自行决定。",
+      clarifying_timeout: "未在规定时间内提交回复。",
+      clarifying_pagination: "{{current}} 来自 {{total}}",
+      clarifying_prev_aria: "上一问题",
+      clarifying_next_aria: "下一个问题",
+      clarifying_close_aria: "关闭并跳过",
+      clarifying_other: "其他",
+      clarifying_other_placeholder: "请在此处输入您的答案。",
+      batch_progress: "{{answered}} 在 {{total}} 提问",
+      batch_skip_this: "跳过",
+      batch_submit_all: "提交所有",
+      batch_next: "接下来",
+      answer_skipped: "[用户已跳过]",
+    },
+    custom_skills: "定制技能",
+    agent_flows: "代理人流动",
+    no_tools_found: "未找到匹配的工具",
+    loading_mcp_servers: "正在加载 MCP 服务器…",
+    app_integrations: "应用程序集成",
+    sub_skills: "基本技能",
+    memories: {
+      title: "回忆",
+      empty:
+        "目前还没有任何记忆。当您与聊天机器人进行更多互动时，记忆会逐渐填充。",
+      empty_cta: "创建一个新的记忆",
+      tab_workspace: "工作空间",
+      tab_global: "全球",
+      toggle: {
+        label: "启用个性化设置",
+        description:
+          "让你的助手能够回忆起与你或这个工作场所相关的事实，并在对话中使用这些信息。",
+      },
+      auto_extraction: {
+        label: "自动回忆",
+        description: "让您的助手在后台自动创建回忆。",
+      },
+      menu: {
+        edit: "编辑",
+        delete: "删除",
+        move_to_global: "拓展全球市场",
+        move_to_workspace: "转移到工作空间",
+      },
+      modal: {
+        create_title: "创造回忆",
+        edit_title: "编辑内存",
+        create_description:
+          "记忆应该用简洁明了的语句表达。例如：“用户更喜欢使用 Python 而不是 JavaScript”。",
+        edit_description: "更新此存储内容的资料。",
+        label: "记忆",
+        placeholder:
+          "例如，用户的姓名是 Joe，用户在 AnythingLLM 上工作，等等。",
+        create: "创造",
+        save: "保存",
+        cancel: "取消",
+      },
     },
   },
   profile_settings: {
@@ -927,14 +1321,11 @@ const TRANSLATIONS = {
         private_description: "私人系统提示仅对您可见。",
         publish_button: "发布到社区中心",
         submitting: "发布中...",
-        submit: "发布到社区中心",
         prompt_label: "提示",
         prompt_description: "这是将用于引导 LLM 的实际系统提示。",
         prompt_placeholder: "在此输入您的系统提示...",
       },
       agent_flow: {
-        public_description: "公共代理流程对所有人可见。",
-        private_description: "私人代理流程仅对您可见。",
         success_title: "成功！",
         success_description: "您的代理流程已发布到社区中心！",
         success_thank_you: "感谢您分享到社群！",
@@ -951,7 +1342,6 @@ const TRANSLATIONS = {
           "标签用于标记您的代理流程，以便于搜索。您可以添加多个标签。最多 5 个标签。每个标签最多 20 个字符。",
         tags_placeholder: "输入并按 Enter 键添加标签",
         visibility_label: "可见性",
-        publish_button: "发布到社区中心",
         submitting: "发布中...",
         submit: "发布到社区中心",
         privacy_note:
@@ -977,9 +1367,6 @@ const TRANSLATIONS = {
         description_label: "描述",
         description_description:
           "这是您斜线指令的描述。用它来描述您斜线指令的目的。",
-        command_label: "指令",
-        command_description: "这是使用者将输入以触发此预设的斜线指令。",
-        command_placeholder: "我的命令",
         tags_label: "标签",
         tags_description:
           "标签用于标记您的斜线指令，以便于搜索。您可以添加多个标签。最多 5 个标签。每个标签最多 20 个字符。",
@@ -1022,6 +1409,394 @@ const TRANSLATIONS = {
     notAssigned:
       "你目前还没有分配到任何工作区。\n请联系你的管理员请求访问一个工作区。",
     goToWorkspace: '前往 "{{workspace}}"',
+  },
+  telegram: {
+    title: "Telegram 机器人",
+    description:
+      "将您的 AnythingLLM 实例与 Telegram 连接起来，这样您就可以从任何设备与您的工作空间进行聊天。",
+    setup: {
+      step1: {
+        title: "第一步：创建您的 Telegram 机器人",
+        description:
+          "打开 Telegram 上的 @BotFather，发送 `/newbot` 到 <code>@BotFather</code>，按照提示操作，并复制 API 令牌。",
+        "open-botfather": "启动 BotFather",
+        "instruction-1": "1. 打开链接或扫描二维码",
+        "instruction-2":
+          "2. 将 <code>/newbot</code> 发送给 <code>@BotFather</code>",
+        "instruction-3": "3. 为您的机器人选择一个名称和用户名",
+        "instruction-4": "4. 复制您收到的 API 令牌",
+      },
+      step2: {
+        title: "步骤 2：连接您的机器人",
+        description:
+          "将您从 @BotFather 获得的 API 令牌粘贴到指定位置，并选择一个默认的工作区，以便您的机器人可以进行对话。",
+        "bot-token": "机器人代币",
+        connecting: "正在连接...",
+        "connect-bot": "连接机器人",
+      },
+      security: {
+        title: "推荐的安全设置",
+        description: "为了进一步增强安全性，请在 @BotFather 中配置这些设置。",
+        "disable-groups": "— 阻止机器人加入群组",
+        "disable-inline": "— 阻止机器人被用于内联搜索",
+        "obscure-username":
+          "使用一个不显眼的机器人用户名，以降低其被发现的可能性。",
+      },
+      "toast-enter-token": "请您输入一个机器人令牌。",
+      "toast-connect-failed": "未能连接机器人。",
+    },
+    connected: {
+      status: "连接",
+      "status-disconnected": "未连接—— 令牌可能已过期或无效",
+      "placeholder-token": "粘贴新的机器人令牌...",
+      reconnect: "重新连接",
+      workspace: "工作空间",
+      "bot-link": "机器人链接",
+      "voice-response": "语音响应",
+      disconnecting: "断开连接...",
+      disconnect: "断开",
+      "voice-text-only": "仅提供文字",
+      "voice-mirror": "回声（当用户发送语音时，会以语音形式回复）",
+      "voice-always": "请务必在回复中添加语音（发送音频）。",
+      "toast-disconnect-failed": "未能成功断开机器人。",
+      "toast-reconnect-failed": "机器人连接失败。",
+      "toast-voice-failed": "无法更新语音模式。",
+      "toast-approve-failed": "未能批准用户。",
+      "toast-deny-failed": "未能拒绝用户请求。",
+      "toast-revoke-failed": "未能撤销用户权限。",
+    },
+    users: {
+      "pending-description":
+        "等待验证的用户。请将此处显示的配对代码与他们在 Telegram 聊天中显示的配对代码进行匹配。",
+      unknown: "未知",
+    },
+  },
+  scheduledJobs: {
+    title: "计划好的任务",
+    enableNotifications: "启用浏览器通知，以便及时获取招聘结果",
+    description:
+      "创建可重复执行的 AI 任务，并设置执行时间表。每个任务会执行一个提示，并可以选择使用辅助工具，然后保存结果供后续审查。",
+    newJob: "新工作",
+    loading: "正在加载...",
+    emptyTitle: "目前没有计划好的任务。",
+    emptySubtitle: "创建一个，开始吧。",
+    table: {
+      name: "姓名",
+      schedule: "时间表",
+      status: "状态",
+      lastRun: "最后一次",
+      nextRun: "下一次尝试",
+      actions: "行动",
+    },
+    confirmDelete: "您确定要删除这个已计划的任务吗？",
+    toast: {
+      deleted: "已删除工作",
+      triggered: "工作已成功启动",
+      triggerFailed: "未能启动任务",
+      triggerSkipped: "目前，这项工作已经开始进行中。",
+      killed: "工作已成功停止。",
+      killFailed: "未能阻止工作",
+    },
+    row: {
+      neverRun: "切勿奔跑",
+      viewRuns: "观看记录",
+      runNow: "现在就行动",
+      enable: "启用",
+      disable: "禁用",
+      edit: "编辑",
+      delete: "删除",
+    },
+    modal: {
+      titleEdit: "编辑计划任务",
+      titleNew: "新建任务",
+      nameLabel: "姓名",
+      namePlaceholder: "例如：每日新闻摘要",
+      promptLabel: "提示",
+      promptPlaceholder: "“在每次执行时执行以下指令…”",
+      scheduleLabel: "时间表",
+      modeBuilder: "建筑师",
+      modeCustom: "定制",
+      cronPlaceholder: "Cron 表达式（例如：0 9 * * *）",
+      currentSchedule: "当前时间表：",
+      toolsLabel: "工具（可选）",
+      toolsDescription:
+        "选择此任务可以使用的任何代理工具。如果未选择任何工具，则任务将不会使用任何工具。",
+      toolsSearch: "搜索",
+      toolsNoResults: "没有合适的工具",
+      required: "必需",
+      requiredFieldsBanner: "请务必填写所有必填字段，以便创建职位。",
+      cancel: "取消",
+      saving: "节省...",
+      updateJob: "更新职位",
+      createJob: "创建工作",
+      jobUpdated: "工作信息已更新",
+      jobCreated: "创造了工作",
+    },
+    builder: {
+      fallbackWarning:
+        "这个表达式无法通过图形界面进行编辑。请选择“自定义”选项来保留它，或者修改下面的内容来覆盖它。",
+      run: "跑步",
+      frequency: {
+        minute: "每分钟",
+        hour: "每小时",
+        day: "每日",
+        week: "每周",
+        month: "每月",
+      },
+      every: "每一个",
+      minuteOne: "1 分钟",
+      minuteOther: "{{count}} 分钟",
+      atMinute: "在…分",
+      pastEveryHour: "过去每个小时",
+      at: "在",
+      on: "关于",
+      onDay: "在某一天",
+      ofEveryMonth: "每个月",
+      weekdays: {
+        sun: "太阳",
+        mon: "周一",
+        tue: "周二",
+        wed: "周三",
+        thu: "星期四",
+        fri: "周五",
+        sat: "星期六",
+      },
+    },
+    runHistory: {
+      back: "返回工作列表",
+      title: "运行历史：{{name}}",
+      schedule: "时间表：",
+      emptyTitle: "目前为止，这项工作还没有取得任何成果。",
+      emptySubtitle: "立即运行任务，并查看其结果。",
+      runNow: "立即行动",
+      table: {
+        status: "状态",
+        started: "开始",
+        duration: "时长",
+        error: "错误",
+      },
+      stopJob: "停止工作",
+    },
+    runDetail: {
+      loading: "正在加载运行详情...",
+      notFound: "未找到。",
+      back: "返回",
+      unknownJob: "未知的职位",
+      runHeading: "{{name}} — 运行 #{{id}}",
+      duration: "时长：{{value}}",
+      creating: "创作...",
+      threadFailed: "未能创建线程",
+      sections: {
+        prompt: "提示",
+        error: "错误",
+        thinking: "想法 ({{count}})",
+        toolCalls: "工具调用 ({{count}})",
+        files: "文件 ({{count}})",
+        response: "回应",
+        metrics: "指标",
+      },
+      metrics: {
+        promptTokens: "提示词：",
+        completionTokens: "完成标记：",
+      },
+      stopJob: "停止工作",
+      killing: "停止...",
+      continueInThread: "继续聊天",
+    },
+    toolCall: {
+      arguments: "论点：",
+      showResult: "显示结果",
+      hideResult: "隐藏结果",
+    },
+    file: {
+      unknown: "未知的文件",
+      download: "下载",
+      downloadFailed: "未能下载文件",
+      types: {
+        powerpoint: "幻灯片",
+        pdf: "PDF 格式文档",
+        word: "文档",
+        spreadsheet: "电子表格",
+        generic: "文件",
+      },
+    },
+    status: {
+      completed: "已完成",
+      failed: "失败",
+      timed_out: "超时",
+      running: "跑步",
+      queued: "排队",
+    },
+  },
+  "model-router": {
+    title: "型号路由器",
+    description:
+      "模型路由器允许您定义规则，根据特定条件自动将聊天消息路由到不同的LLM提供商和模型。",
+    table: {
+      name: "姓名",
+      fallback: "备用方案",
+      rules: "规则",
+      workspaces: "工作空间",
+    },
+    "no-routers": "目前还没有发布任何型号的路由器。",
+    "empty-description": "目前还没有配置任何路由器模型。请创建一个来开始。",
+    "new-router-button": "新的路由器",
+    "delete-confirm":
+      '您确定要删除路由器 "{{name}}" 吗？\n这将删除所有其规则，并断开使用该路由器的所有工作空间。\n\n此操作是不可逆的。',
+    "toast-deleted": "路由器已删除",
+    "toast-delete-failed": "未能删除路由器：{{error}}",
+    "new-router": {
+      title: "创建新的路由器模型",
+      name: "姓名",
+      "name-placeholder": "例如：成本优化器",
+      description: "描述",
+      "description-placeholder": "可选描述",
+      "fallback-label": "主要服务提供方及模型",
+      "fallback-description":
+        "当没有任何路由规则匹配时，也会使用。此外，还用于评估由大型语言模型（LLM）分类的规则。",
+      "cooldown-label": "缓存冷却时间 (秒)",
+      "cooldown-help":
+        "路由决策在重新评估规则之前，被缓存的时间长度。将设置为 0 以禁用缓存。",
+      "name-required": "姓名是必填项。",
+      "fallback-required": "需要提供主要服务提供方和模型。",
+      cancel: "取消",
+      create: "创建路由器",
+    },
+    "edit-router": {
+      "back-to-routers": "返回：路由器模型",
+      title: "编辑路由器：{{name}}",
+      save: "保存更改",
+      "toast-update-failed": "无法更新路由器",
+    },
+    rules: {
+      title: "路由规则",
+      "title-with-name": "路由规则：{{name}}",
+      description:
+        "明确规定哪些聊天消息应该发送给哪些提供商和模型，以及发送的方式。",
+      "add-rule": "添加规则",
+      "delete-confirm": '删除规则 "{{title}}"?',
+      "toast-delete-failed": "未能删除规则",
+      "toast-reorder-failed": "未能重新应用规则",
+      "no-rules": "目前还没有任何规定。",
+      "empty-description":
+        "添加一条规则，以便将聊天消息路由到特定的提供商和模型。",
+      "new-rule-button": "新的规定",
+      "calculated-section-label": "计算规则——按照优先级顺序进行评估",
+      "llm-section-label":
+        "LLM 规则——如果没有任何规则计算结果与给定条件匹配，则作为批量进行评估",
+      "llm-rule-body": "匹配“{{description}}”后，然后将结果路由到“<route>”",
+      "calculated-no-conditions":
+        "无任何条件——前往<route>，{{route}}，</route>",
+      "calculated-single-condition":
+        '如果满足条件：<prop> {{property}}，</prop> {{comparator}}，<val>"{{value}}"，</val>，则将路由到 <route>{{route}}</route>',
+      "calculated-multi-condition":
+        "如果满足<cond>的条件，则将路径设置为<route>",
+      "comparator-contains": "包含",
+      "comparator-matches": "比赛",
+      "comparator-between": "之间",
+      "badge-llm": "大型语言模型",
+      "badge-calculated": "计算得出",
+      "aria-drag-to-reorder": "拖动以重新排序",
+      "aria-edit-rule": "编辑规则",
+      "aria-delete-rule": "删除规则",
+      "quantifier-any": "任何",
+      "quantifier-all": "全部",
+    },
+    "rule-form": {
+      "title-label": "标题",
+      "rule-type": "规则类型",
+      "property-label": "房产",
+      "property-select": "选择",
+      "comparator-label": "比较器",
+      "comparator-select": "选择",
+      "value-label": "价值",
+      "add-condition": "添加条件",
+      "remove-condition": "移除条件",
+      "conditions-incomplete": "条件{{index}}不完整——请填写属性、比较器和值。",
+      "match-description-label": "比赛描述",
+      "match-description-placeholder":
+        "例如，用户可能咨询有关法律、合同或合规等问题。",
+      "match-description-help":
+        "描述您希望该规则适用的情况。您的LLM会评估这些情况，以确定是否应该使用该规则。",
+      "route-to-label": "向服务提供商的路径及模型",
+      "route-to-description": "当此规则匹配时，请使用此提供商/模型。",
+      cancel: "取消",
+      saving: "节省...",
+      "update-rule": "更新规则",
+      "create-rule": "创建规则",
+      "title-required": "标题是必需的",
+      "toast-save-failed": "未能保存规则",
+      "type-calculated-label": "计算得出",
+      "type-calculated-description":
+        "根据消息的属性（如内容、标记数量或发送时间）进行匹配。",
+      "type-llm-label": "大型语言模型分类",
+      "type-llm-description":
+        "使用大型语言模型（LLM），根据您提供的描述对消息进行分类。",
+      "prop-prompt-content": "提示内容",
+      "prop-token-count": "对话标记数量",
+      "prop-message-count": "对话消息数量",
+      "prop-current-hour": "当前时间 (0-23)",
+      "prop-has-image": "是否包含图片",
+      "cmp-contains": "包含",
+      "cmp-matches-regex": "匹配（正则表达式）",
+      "cmp-equals": "等于",
+      "cmp-not-equals": "不等于",
+      "cmp-greater-than": "大于",
+      "cmp-greater-than-or-equal": "大于或等于",
+      "cmp-less-than": "少于",
+      "cmp-less-than-or-equal": "小于或等于",
+      "cmp-between": "包括...在内",
+      "placeholder-between-hour": "例如：9:00-17:00 (上午9点到下午5点)",
+      "placeholder-between-numeric": "例如：10, 50",
+      "placeholder-hour": "例如：18 (0-23)",
+      "placeholder-message-count": "例如：10",
+      "placeholder-numeric": "例如：4000",
+      "placeholder-contains": "例如：代码、Python、Rust",
+      "placeholder-matches": "例如：/\\bpython\\b/i",
+      "placeholder-default": "例如：代码",
+      "help-contains":
+        "用逗号分隔的列表 — 如果提示包含任何这些值（不区分大小写），则匹配。",
+      "help-matches":
+        "正则表达式模式。 使用 `/pattern/flags` 选项来指定大小写敏感性（默认情况下，大小写不敏感）。",
+      "bool-true": "真实",
+      "bool-false": "错误",
+    },
+    "provider-picker": {
+      "select-provider": "选择供应商",
+      "setup-required": "（需要进行设置）",
+      "loading-models": "正在加载模型...",
+      "select-model": "选择型号",
+      "enter-model": "请输入型号名称",
+      "select-provider-first": "首先选择一个服务提供商。",
+      "configure-to-continue": "配置 {{name}} 以继续运行",
+      "configure-provider": "配置 {{name}}",
+      "setup-credentials": "输入必要的凭据，以便使用 {{name}} 作为路由目标。",
+      cancel: "取消",
+      "save-settings": "保存设置",
+      "toast-save-failed": "未能保存设置：{{error}}",
+    },
+    "router-selection": {
+      "loading-routers": "正在加载自定义路由器...",
+      "no-routers-prefix-settings": "目前尚未配置任何路由器型号。",
+      "no-routers-prefix-workspace": "没有配置任何型号的路由器。",
+      "no-routers-link": "在模型路由器设置中创建一项",
+      "model-router-label": "型号路由器",
+      "select-router": "选择一个路由器",
+      "select-description": "选择用于此工作区域的路由器。",
+      "no-routers-chat":
+        "没有配置任何路由器。请在“设置 > AI 提供方 > 路由器”中创建一个。",
+      "rule-count": "({{count}} 的规则)",
+    },
+    metrics: {
+      "model-router-default": "型号路由器",
+    },
+    chat: {
+      "select-router-error": "选择一个路由器",
+      "invalid-model": "无效的模型选择",
+      "routed-to": "已发送至 <route>{{model}}</route>",
+      "routed-to-rule":
+        "通过<route>、{{model}}、</route>，到达<rule>、{{ruleTitle}}、</rule>",
+    },
   },
 };
 

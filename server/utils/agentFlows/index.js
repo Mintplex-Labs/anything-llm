@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
 const { FlowExecutor, FLOW_TYPES } = require("./executor");
-const { normalizePath } = require("../files");
+const { normalizePath, isWithin } = require("../files");
 const { safeJsonParse } = require("../http");
 
 /**
@@ -71,7 +71,12 @@ class AgentFlows {
       const flowJsonPath = normalizePath(
         path.join(AgentFlows.flowsDir, `${uuid}.json`)
       );
-      if (!uuid || !fs.existsSync(flowJsonPath)) return null;
+      if (
+        !uuid ||
+        !fs.existsSync(flowJsonPath) ||
+        !isWithin(AgentFlows.flowsDir, flowJsonPath)
+      )
+        return null;
       const flow = safeJsonParse(fs.readFileSync(flowJsonPath, "utf8"), null);
       if (!flow) return null;
 
@@ -100,6 +105,7 @@ class AgentFlows {
       if (!uuid) uuid = uuidv4();
       const normalizedUuid = normalizePath(`${uuid}.json`);
       const filePath = path.join(AgentFlows.flowsDir, normalizedUuid);
+      if (!isWithin(AgentFlows.flowsDir, filePath)) return null;
 
       // Prevent saving flows with unsupported blocks or importing
       // flows with unsupported blocks (eg: file writing or code execution on Desktop importing to Docker)
@@ -151,7 +157,8 @@ class AgentFlows {
       const filePath = normalizePath(
         path.join(AgentFlows.flowsDir, `${uuid}.json`)
       );
-      if (!fs.existsSync(filePath)) throw new Error(`Flow ${uuid} not found`);
+      if (!fs.existsSync(filePath) || !isWithin(AgentFlows.flowsDir, filePath))
+        throw new Error(`Flow ${uuid} not found`);
       fs.rmSync(filePath);
       return { success: true };
     } catch (error) {

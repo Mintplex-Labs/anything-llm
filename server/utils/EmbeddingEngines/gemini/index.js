@@ -1,4 +1,4 @@
-const { toChunks } = require("../../helpers");
+const { toChunks, reportEmbeddingProgress } = require("../../helpers");
 
 const MODEL_MAP = {
   "gemini-embedding-001": 2048,
@@ -68,6 +68,7 @@ class GeminiEmbedder {
     // we concurrently execute each max batch of text chunks possible.
     // Refer to constructor maxConcurrentChunks for more info.
     const embeddingRequests = [];
+    let chunksProcessed = 0;
     for (const chunk of toChunks(textChunks, this.maxConcurrentChunks)) {
       embeddingRequests.push(
         new Promise((resolve) => {
@@ -78,9 +79,13 @@ class GeminiEmbedder {
               dimensions: this.outputDimensions,
             })
             .then((result) => {
+              chunksProcessed += chunk.length;
+              reportEmbeddingProgress(chunksProcessed, textChunks.length);
               resolve({ data: result?.data, error: null });
             })
             .catch((e) => {
+              chunksProcessed += chunk.length;
+              reportEmbeddingProgress(chunksProcessed, textChunks.length);
               e.type =
                 e?.response?.data?.error?.code ||
                 e?.response?.status ||

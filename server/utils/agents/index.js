@@ -3,13 +3,17 @@ const AgentPlugins = require("./aibitat/plugins");
 const {
   WorkspaceAgentInvocation,
 } = require("../../models/workspaceAgentInvocation");
+const { WorkspaceParsedFiles } = require("../../models/workspaceParsedFiles");
 const { User } = require("../../models/user");
+const { Workspace } = require("../../models/workspace");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { safeJsonParse } = require("../http");
 const { USER_AGENT, WORKSPACE_AGENT } = require("./defaults");
 const ImportedPlugin = require("./imported");
 const { AgentFlows } = require("../agentFlows");
 const MCPCompatibilityLayer = require("../MCP");
+const { getAndClearInvocationAttachments } = require("../chats/agents");
+const { DocumentManager } = require("../DocumentManager");
 
 class AgentHandler {
   #invocationUUID;
@@ -19,6 +23,7 @@ class AgentHandler {
   channel = null;
   provider = null;
   model = null;
+  attachments = [];
 
   constructor({ uuid }) {
     this.#invocationUUID = uuid;
@@ -30,6 +35,41 @@ class AgentHandler {
 
   closeAlert() {
     this.log(`End ${this.#invocationUUID}::${this.provider}:${this.model}`);
+  }
+
+  /**
+   * Determine if the message should invoke the agent handler.
+   * This is true when the user explicitly invokes an agent (via @agent prefix)
+   * or when the workspace is in automatic mode **and** the provider supports native tool calling.
+   * @param {object} parameters
+   * @param {string} parameters.message - The message to check for agent invocation.
+   * @param { import("@prisma/client").workspaces} parameters.workspace - The workspace to check for agent invocation.
+   * @param {string} parameters.chatMode - The chat mode to check for agent invocation.
+   * @returns {Promise<boolean>}
+   */
+  static async isAgentInvocation({
+    message,
+    workspace = null,
+    chatMode = null,
+  }) {
+    if (this.#isAgentCommandInvocation({ message })) return true;
+    if (chatMode === "automatic") {
+      if (!workspace) return false;
+      if (await Workspace.supportsNativeToolCalling(workspace)) return true;
+      return false;
+    }
+    return false;
+  }
+
+  /**
+   * Determine if the message provided is an agent invocation.
+   * @param {{message:string}} parameters
+   * @returns {boolean}
+   */
+  static #isAgentCommandInvocation({ message }) {
+    const agentHandles = WorkspaceAgentInvocation.parseAgents(message);
+    if (agentHandles.length > 0) return true;
+    return false;
   }
 
   async #chatHistory(limit = 10) {
@@ -237,6 +277,14 @@ class AgentHandler {
         if (!process.env.LEMONADE_LLM_BASE_PATH)
           throw new Error("Lemonade base path must be provided to use agents.");
         break;
+      case "minimax":
+        if (!process.env.MINIMAX_API_KEY)
+          throw new Error("Minimax API key must be provided to use agents.");
+        break;
+      case "cerebras":
+        if (!process.env.CEREBRAS_API_KEY)
+          throw new Error("Cerebras API key must be provided to use agents.");
+        break;
       default:
         throw new Error(
           "No workspace agent provider set. Please set your agent provider in the workspace's settings"
@@ -327,6 +375,10 @@ class AgentHandler {
         return process.env.SAMBANOVA_LLM_MODEL_PREF ?? null;
       case "lemonade":
         return process.env.LEMONADE_LLM_MODEL_PREF ?? null;
+      case "minimax":
+        return process.env.MINIMAX_MODEL_PREF ?? "MiniMax-M2.7";
+      case "cerebras":
+        return process.env.CEREBRAS_MODEL_PREF ?? "gpt-oss-120b";
       default:
         return null;
     }
@@ -341,6 +393,12 @@ class AgentHandler {
    * @returns {object|null} - An object with provider and model keys.
    */
   #getFallbackProvider() {
+    // If workspace chat uses the model router, fall back to it.
+    // Model is null here since the router determines it at resolve time.
+    if (this.invocation.workspace.chatProvider === "anythingllm-router") {
+      return { provider: "anythingllm-router", model: null };
+    }
+
     // First, fallback to the workspace chat provider and model if they exist
     if (
       this.invocation.workspace.chatProvider &&
@@ -355,6 +413,10 @@ class AgentHandler {
     // If workspace does not have chat provider and model fallback
     // to system provider and try to load provider default model
     const systemProvider = process.env.LLM_PROVIDER;
+    if (systemProvider === "anythingllm-router") {
+      return { provider: "anythingllm-router", model: null };
+    }
+
     const systemModel = this.providerDefault(systemProvider);
     if (systemProvider && systemModel) {
       return {
@@ -392,14 +454,75 @@ class AgentHandler {
     return this.providerDefault();
   }
 
-  #providerSetupAndCheck() {
+  async #providerSetupAndCheck() {
     this.provider = this.invocation.workspace.agentProvider ?? null; // set provider to workspace agent provider if it exists
     this.model = this.#fetchModel();
+
+    // If provider resolved to model router, resolve the actual provider/model
+    if (this.provider === "anythingllm-router") {
+      await this.#resolveRouterProvider();
+    }
 
     if (!this.provider)
       throw new Error("No valid provider found for the agent.");
     this.log(`Start ${this.#invocationUUID}::${this.provider}:${this.model}`);
     this.checkSetup();
+  }
+
+  async #resolveRouterProvider(prompt = null) {
+    const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
+    const routerWorkspace = this.invocation.workspace.router_id
+      ? this.invocation.workspace
+      : {
+          ...this.invocation.workspace,
+          router_id: process.env.MODEL_ROUTER_ID
+            ? Number(process.env.MODEL_ROUTER_ID)
+            : null,
+        };
+
+    // Resolve the thread slug from the numeric thread_id so the route cache key
+    // matches the key used everywhere else.
+    let thread = null;
+    if (this.invocation.thread_id) {
+      if (!this._threadSlug) {
+        const { WorkspaceThread } = require("../../models/workspaceThread");
+        const threadRecord = await WorkspaceThread.get({
+          id: this.invocation.thread_id,
+        });
+        this._threadSlug = threadRecord?.slug || null;
+      }
+      thread = this._threadSlug ? { slug: this._threadSlug } : null;
+    }
+
+    const router = new AnythingLLMModelRouter(routerWorkspace);
+    const { ModelRouterService } = require("../router");
+    const workspace = this.invocation.workspace;
+    const user = this.invocation.user_id
+      ? { id: this.invocation.user_id }
+      : null;
+    const effectivePrompt = prompt || this.invocation.prompt;
+    const ctx = await ModelRouterService.gatherRoutingContext({
+      workspace,
+      user,
+      thread: this.invocation.thread_id
+        ? { id: this.invocation.thread_id }
+        : null,
+      message: effectivePrompt,
+    });
+
+    await router.resolve(
+      {
+        prompt: effectivePrompt,
+        conversationTokenCount: ctx.conversationTokenCount,
+        conversationMessageCount: ctx.conversationMessageCount,
+        attachments: this.attachments || [],
+      },
+      { user, thread }
+    );
+
+    this.provider = router.resolvedRoute.provider;
+    this.model = router.resolvedRoute.model;
+    this.routingMetadata = router.routingMetadata;
   }
 
   async #validInvocation() {
@@ -576,7 +699,8 @@ class AgentHandler {
     const workspaceAgentDef = await WORKSPACE_AGENT.getDefinition(
       this.provider,
       this.invocation.workspace,
-      user
+      user,
+      this.invocation.prompt
     );
 
     this.aibitat.agent(USER_AGENT.name, userAgentDef);
@@ -589,8 +713,75 @@ class AgentHandler {
 
   async init() {
     await this.#validInvocation();
-    this.#providerSetupAndCheck();
+    await this.#providerSetupAndCheck();
+
+    // Retrieve cached attachments (images, etc.) from the HTTP request
+    this.attachments = getAndClearInvocationAttachments(this.#invocationUUID);
+
     return this;
+  }
+
+  /**
+   * Fetch fresh parsed files and pinned documents, format them for injection into user messages.
+   * Called on every chat turn to ensure context is always up-to-date.
+   * @returns {Promise<string>} Formatted context string to append to user message
+   */
+  async #fetchParsedFileContext() {
+    const user = this.invocation.user_id
+      ? { id: this.invocation.user_id }
+      : null;
+    const thread = this.invocation.thread_id
+      ? { id: this.invocation.thread_id }
+      : null;
+    const documentManager = new DocumentManager({
+      workspace: this.invocation.workspace,
+    });
+
+    return Promise.all([
+      WorkspaceParsedFiles.getContextFiles(
+        this.invocation.workspace,
+        thread,
+        user
+      ),
+      documentManager.pinnedDocs(),
+    ])
+      .then(([parsedFiles, pinnedDocs]) => {
+        const allDocuments = [
+          ...(parsedFiles || []).map((doc) => ({
+            name: doc.title || "Uploaded Document",
+            content: doc.pageContent,
+          })),
+          ...(pinnedDocs || []).map((doc) => ({
+            name: doc.title || doc.metadata?.title || "Pinned Document",
+            content: doc.pageContent,
+          })),
+        ];
+
+        if (allDocuments.length === 0) return "";
+        if (parsedFiles?.length > 0)
+          this.log(
+            `Injecting ${parsedFiles.length} parsed file(s) into user message`
+          );
+        if (pinnedDocs?.length > 0)
+          this.log(
+            `Injecting ${pinnedDocs.length} pinned document(s) into user message`
+          );
+
+        return (
+          "\n\n<attached_documents>\n" +
+          allDocuments
+            .map((doc, i) => {
+              const filename = doc.name || `Document ${i + 1}`;
+              return `<document name="${filename}">\n${doc.content}\n</document>`;
+            })
+            .join("\n") +
+          "\n</attached_documents>"
+        );
+      })
+      .catch((e) => {
+        this.log("Error fetching parsed file context", e.message);
+        return "";
+      });
   }
 
   async createAIbitat(
@@ -605,8 +796,39 @@ class AgentHandler {
       handlerProps: {
         invocation: this.invocation,
         log: this.log,
+        routingMetadata: this.routingMetadata || null,
       },
     });
+
+    // Register callback to fetch fresh parsed file context on each chat turn
+    // This injects parsed files into user messages instead of system prompt
+    this.aibitat.fetchParsedFileContext = () => this.#fetchParsedFileContext();
+
+    // If the workspace uses the model router, attach a resolver so routing
+    // is re-evaluated on every agent turn instead of only at initialization.
+    // Skip the first invocation since routing was already resolved during init()
+    // and re-resolving would cause shouldNotify to return false (route already recorded).
+    if (this.routingMetadata) {
+      let isFirstCall = true;
+      this.aibitat.resolveRoute = async (prompt) => {
+        if (isFirstCall) {
+          isFirstCall = false;
+          return { provider: this.provider, model: this.model };
+        }
+        try {
+          await this.#resolveRouterProvider(prompt);
+          this.aibitat.handlerProps.routingMetadata =
+            this.routingMetadata || null;
+          return { provider: this.provider, model: this.model };
+        } catch (e) {
+          this.log(
+            "Router re-resolution failed, keeping current route",
+            e.message
+          );
+          return null;
+        }
+      };
+    }
 
     // Attach standard websocket plugin for frontend communication.
     this.log(`Attached ${AgentPlugins.websocket.name} plugin to Agent cluster`);
@@ -615,6 +837,7 @@ class AgentHandler {
         socket: args.socket,
         muteUserReply: true,
         introspection: true,
+        userId: this.invocation.user_id || null,
       })
     );
 
@@ -631,11 +854,28 @@ class AgentHandler {
     await this.#attachPlugins(args);
   }
 
+  /**
+   * Strip the @agent command from the message if it exists.
+   * Prevents hallucination by the agent when the @agent command is used from the model thinking
+   * it is an agent or something itself.
+   * If the user sent nothing after the @agent command - assume its a greeting.
+   * @param {string} message - The message to strip the @agent command from.
+   * @returns {string} The message with the @agent command stripped.
+   */
+  #stripAgentCommand(message = "") {
+    const stripped = String(message)
+      .replace(/^@agent\s*/, "")
+      .trim();
+    if (!stripped) return "Hello!";
+    return stripped;
+  }
+
   startAgentCluster() {
     return this.aibitat.start({
       from: USER_AGENT.name,
       to: this.channel ?? WORKSPACE_AGENT.name,
-      content: this.invocation.prompt,
+      content: this.#stripAgentCommand(this.invocation.prompt),
+      attachments: this.attachments,
     });
   }
 }

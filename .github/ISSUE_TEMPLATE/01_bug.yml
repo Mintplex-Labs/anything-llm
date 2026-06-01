@@ -40,3 +40,21 @@ body:
         quickly. This is not required, but it is helpful.
     validations:
       required: false
+
+  - type: textarea
+    id: llm-provider
+    attributes:
+      label: LLM Provider & Model (if applicable)
+      description: What LLM provider and model are you using? (e.g., OpenAI GPT-4, Anthropic, Ollama, etc.)
+      placeholder: e.g., Ollama / qwen2.5-coder-32b-instruct
+    validations:
+      required: false
+
+  - type: textarea
+    id: embedder-provider
+    attributes:
+      label: Embedder Provider & Model (if applicable)
+      description: What embedding provider and model are you using? (e.g., OpenAI text-embedding-ada-002, Lemonade, etc.)
+      placeholder: e.g., Lemonade / nomic-embed-text-v1-GGUF
+    validations:
+      required: false

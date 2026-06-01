@@ -33,6 +33,7 @@ function isNullOrNaN(value) {
  */
 
 const Workspace = {
+  VALID_CHAT_MODES: ["chat", "query", "automatic"],
   defaultPrompt: SystemSettings.saneDefaultSystemPrompt,
 
   // Used for generic updates so we can validate keys in request body
@@ -55,6 +56,7 @@ const Workspace = {
     "agentModel",
     "queryRefusalResponse",
     "vectorSearchMode",
+    "router_id",
   ],
 
   validations: {
@@ -93,7 +95,8 @@ const Workspace = {
       return n;
     },
     chatMode: (value) => {
-      if (!value || !["chat", "query"].includes(value)) return "chat";
+      if (!value || !Workspace.VALID_CHAT_MODES.includes(value))
+        return "automatic";
       return value;
     },
     chatProvider: (value) => {
@@ -128,6 +131,12 @@ const Workspace = {
       )
         return "default";
       return value;
+    },
+    router_id: (value) => {
+      if ([null, undefined, "", "none"].includes(value)) return null;
+      const id = Number(value);
+      if (isNaN(id)) return null;
+      return id;
     },
   },
 
@@ -205,6 +214,7 @@ const Workspace = {
       const workspace = await prisma.workspaces.create({
         data: {
           name: this.validations.name(name),
+          chatMode: "automatic",
           ...this.validateFields(additionalFields),
           slug,
         },
@@ -240,6 +250,17 @@ const Workspace = {
     if (validatedUpdates?.chatProvider === "default") {
       validatedUpdates.chatProvider = null;
       validatedUpdates.chatModel = null;
+    }
+
+    // When switching to anythingllm-router, chatModel is not used.
+    // When switching away from anythingllm-router, clear router_id.
+    if (validatedUpdates?.chatProvider === "anythingllm-router") {
+      validatedUpdates.chatModel = null;
+    } else if (
+      validatedUpdates?.chatProvider &&
+      validatedUpdates.chatProvider !== "anythingllm-router"
+    ) {
+      validatedUpdates.router_id = null;
     }
 
     return this._update(id, validatedUpdates);
@@ -564,6 +585,29 @@ const Workspace = {
   },
 
   /**
+   * Upsert a workspace.
+   * If the workspace does not exist, it will be created.
+   * If the workspace exists, it will be updated (if data is provided).
+   * @param {Object} clause - The clause to upsert the workspace by.
+   * @param {Object} createData - The data to create the workspace with.
+   * @param {Object} updateData - The data to update the workspace with if it already exists.
+   * @returns {Promise<{workspace: import("@prisma/client").workspaces | null, error: string | null}>} A promise that resolves to an object containing the upserted workspace and an error message if applicable.
+   */
+  upsert: async function (clause = {}, createData = {}, updateData = {}) {
+    try {
+      const workspace = await prisma.workspaces.upsert({
+        where: clause,
+        update: updateData,
+        create: createData,
+      });
+      return { workspace, error: null };
+    } catch (error) {
+      console.error(error.message);
+      return { workspace: null, error: error.message };
+    }
+  },
+
+  /**
    * Get the prompt history for a workspace.
    * @param {Object} options - The options to get prompt history for.
    * @param {number} options.workspaceId - The ID of the workspace to get prompt history for.
@@ -608,6 +652,70 @@ const Workspace = {
       console.error(error.message);
       return false;
     }
+  },
+
+  /**
+   * Checks if the workspace's chat provider/model waterfall supports native tool calling.
+   * @param {Workspace} workspace - The workspace object to check
+   * @returns {Promise<boolean>}
+   */
+  supportsNativeToolCalling: async function (workspace = {}) {
+    if (!workspace) return false;
+    const { getBaseLLMProviderModel } = require("../utils/helpers");
+    const AIbitat = require("../utils/agents/aibitat");
+    const provider =
+      workspace?.agentProvider ??
+      workspace?.chatProvider ??
+      process.env.LLM_PROVIDER;
+
+    // Model router delegates to a resolved provider at chat time.
+    // Check the router's fallback provider for tool calling support
+    // as a reasonable proxy for the router's capabilities.
+    if (provider === "anythingllm-router") {
+      const { ModelRouter } = require("./modelRouter");
+      const routerId =
+        workspace?.router_id ||
+        (process.env.MODEL_ROUTER_ID
+          ? Number(process.env.MODEL_ROUTER_ID)
+          : null);
+      if (!routerId) return false;
+      const router = await ModelRouter.get({ id: routerId });
+      if (!router) return false;
+      const fallbackConfig = {
+        provider: router.fallback_provider,
+        model: router.fallback_model,
+      };
+      const fallbackProvider = new AIbitat(fallbackConfig).getProviderForConfig(
+        fallbackConfig
+      );
+      return (await fallbackProvider.supportsNativeToolCalling?.()) ?? false;
+    }
+
+    const model =
+      workspace?.agentModel ??
+      workspace?.chatModel ??
+      getBaseLLMProviderModel({ provider });
+    const agentConfig = { provider, model };
+    const agentProvider = new AIbitat(agentConfig).getProviderForConfig(
+      agentConfig
+    );
+    const nativeToolCalling = await agentProvider.supportsNativeToolCalling?.();
+    return nativeToolCalling;
+  },
+
+  /**
+   * Checks if the agent command is available for a workspace
+   * by checking if the workspace's agent provider supports native tool calling.
+   * - If the workspaces chat provider/model supports native tool calling, then the agent command is NOT available
+   * as it will be assumed the model is capable of handling tool calls.
+   * Otherwise, the agent command is available and the user must opt-in to "@agent" to use tool calls.
+   * @param {Workspace} workspace - The workspace object to check
+   * @returns {Promise<boolean>}
+   */
+  isAgentCommandAvailable: async function (workspace) {
+    if (workspace.chatMode !== "automatic") return true;
+    const nativeToolCalling = await this.supportsNativeToolCalling(workspace);
+    return nativeToolCalling === false;
   },
 };
 

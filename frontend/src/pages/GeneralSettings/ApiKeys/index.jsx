@@ -84,10 +84,13 @@ export default function AdminApiKeys() {
                 containerClassName="flex w-full"
               />
             ) : (
-              <table className="w-full text-xs text-left rounded-lg min-w-[640px] border-spacing-0">
+              <table className="w-full text-xs text-left rounded-lg min-w-[720px] border-spacing-0 md:mt-6 mt-0">
                 <thead className="text-theme-text-secondary text-xs leading-[18px] font-bold uppercase border-white/10 border-b">
                   <tr>
                     <th scope="col" className="px-6 py-3 rounded-tl-lg">
+                      {t("api.table.name")}
+                    </th>
+                    <th scope="col" className="px-6 py-3">
                       {t("api.table.key")}
                     </th>
                     <th scope="col" className="px-6 py-3">
@@ -97,15 +100,15 @@ export default function AdminApiKeys() {
                       {t("api.table.created")}
                     </th>
                     <th scope="col" className="px-6 py-3 rounded-tr-lg">
-                      {" "}
+                      {t("api.actions")}
                     </th>
                   </tr>
                 </thead>
                 <tbody>
                   {apiKeys.length === 0 ? (
                     <tr className="bg-transparent text-theme-text-secondary text-sm font-medium">
-                      <td colSpan="4" className="px-6 py-4 text-center">
-                        No API keys found
+                      <td colSpan="5" className="px-6 py-4 text-center">
+                        {t("api.empty")}
                       </td>
                     </tr>
                   ) : (

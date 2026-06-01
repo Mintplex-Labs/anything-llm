@@ -298,6 +298,33 @@ const WorkspaceChats = {
       return false;
     }
   },
+  markMemoryProcessed: async function (ids = []) {
+    if (!Array.isArray(ids) || ids.length === 0) return;
+    try {
+      const safeIds = ids.map(Number).filter(Number.isInteger);
+      if (safeIds.length === 0) return;
+      await prisma.workspace_chats.updateMany({
+        where: { id: { in: safeIds } },
+        data: { memoryProcessed: true },
+      });
+    } catch (error) {
+      console.error(error.message);
+    }
+  },
+
+  migrateToMultiUser: async function (adminUserId) {
+    try {
+      await prisma.workspace_chats.updateMany({
+        where: { user_id: null },
+        data: { user_id: adminUserId },
+      });
+      return true;
+    } catch (error) {
+      console.error(error.message);
+      return false;
+    }
+  },
+
   bulkCreate: async function (chatsData) {
     // TODO: Replace with createMany when we update prisma to latest version
     // The version of prisma that we are currently using does not support createMany with SQLite
@@ -313,6 +340,45 @@ const WorkspaceChats = {
     } catch (error) {
       console.error(error.message);
       return { chats: null, message: error.message };
+    }
+  },
+  upsert: async function (
+    chatId = null,
+    data = {
+      workspaceId: null,
+      prompt: null,
+      response: {},
+      user: null,
+      threadId: null,
+      include: true,
+      apiSessionId: null,
+    }
+  ) {
+    try {
+      const payload = {
+        workspaceId: data.workspaceId,
+        response: safeJSONStringify(data.response),
+        user_id: data.user?.id || null,
+        thread_id: data.threadId,
+        api_session_id: data.apiSessionId,
+        include: data.include,
+      };
+
+      const { chat } = await prisma.workspace_chats.upsert({
+        where: {
+          id: Number(chatId),
+          user_id: data.user?.id || null,
+        },
+        // On updates, we already have the prompt so we don't need to set it again.
+        update: { ...payload, lastUpdatedAt: new Date() },
+
+        // On creates, we need to set the prompt or else record will fail.
+        create: { ...payload, prompt: data.prompt },
+      });
+      return { chat, message: null };
+    } catch (error) {
+      console.error(error.message);
+      return { chat: null, message: error.message };
     }
   },
 };

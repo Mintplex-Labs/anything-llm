@@ -32,7 +32,7 @@ async function asAudio({
 
   if (!!error) {
     console.error(`Error encountered for parsing of ${filename}.`);
-    trashFile(fullFilePath);
+    if (!options.absolutePath) trashFile(fullFilePath);
     return {
       success: false,
       reason: error,
@@ -42,7 +42,7 @@ async function asAudio({
 
   if (!content?.length) {
     console.error(`Resulting text content was empty for ${filename}.`);
-    trashFile(fullFilePath);
+    if (!options.absolutePath) trashFile(fullFilePath);
     return {
       success: false,
       reason: `No text content found in ${filename}.`,
@@ -69,7 +69,7 @@ async function asAudio({
     filename: `${slugify(filename)}-${data.id}`,
     options: { parseOnly: options.parseOnly },
   });
-  trashFile(fullFilePath);
+  if (!options.absolutePath) trashFile(fullFilePath);
   console.log(
     `[SUCCESS]: ${filename} transcribed, converted & ready for embedding.\n`
   );

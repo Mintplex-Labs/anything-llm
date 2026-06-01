@@ -27,7 +27,7 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
         process.env.LEMONADE_LLM_BASE_PATH,
         "openai"
       ),
-      apiKey: null,
+      apiKey: process.env.LEMONADE_LLM_API_KEY || null,
       maxRetries: 3,
     });
 
@@ -66,7 +66,7 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
 
     // Labels can be missing for tool calling models, so we also check if ENV flag is set
     const supportsToolCallingFlag =
-      process.env.PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING?.includes("lemonade");
+      this.supportsNativeToolCallingViaEnv("lemonade");
     if (supportsToolCallingFlag) {
       this.providerLog(
         "Lemonade supports native tool calling is ENABLED via ENV."
@@ -135,7 +135,8 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
         this.model,
         messages,
         functions,
-        eventHandler
+        eventHandler,
+        { provider: this }
       );
     } catch (error) {
       console.error(error.message, error);
@@ -175,7 +176,8 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
         this.model,
         messages,
         functions,
-        this.getCost.bind(this)
+        this.getCost.bind(this),
+        { provider: this }
       );
 
       if (result.retryWithError) {

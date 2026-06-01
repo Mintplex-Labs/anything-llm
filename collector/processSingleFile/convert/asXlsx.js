@@ -145,7 +145,7 @@ async function asXlsx({
       documents: [],
     };
   } finally {
-    trashFile(fullFilePath);
+    if (!options.absolutePath) trashFile(fullFilePath);
   }
 
   if (documents.length === 0) {

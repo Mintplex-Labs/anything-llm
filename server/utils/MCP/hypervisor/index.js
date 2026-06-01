@@ -131,6 +131,66 @@ class MCPHypervisor {
   }
 
   /**
+   * Update the suppressed tools for an MCP server
+   * @param {string} serverName - The name of the MCP server
+   * @param {string} toolName - The name of the tool to toggle
+   * @param {boolean} enabled - Whether the tool should be enabled (true) or suppressed (false)
+   * @returns {{success: boolean, error: string | null, suppressedTools: string[]}}
+   */
+  updateSuppressedTools(serverName, toolName, enabled) {
+    const servers = safeJsonParse(
+      fs.readFileSync(this.mcpServerJSONPath, "utf8"),
+      { mcpServers: {} }
+    );
+
+    if (!servers.mcpServers[serverName]) {
+      return {
+        success: false,
+        error: `MCP server ${serverName} not found in config file.`,
+        suppressedTools: [],
+      };
+    }
+
+    const server = servers.mcpServers[serverName];
+    if (!server.anythingllm) server.anythingllm = {};
+    if (!Array.isArray(server.anythingllm.suppressedTools))
+      server.anythingllm.suppressedTools = [];
+
+    const suppressedTools = server.anythingllm.suppressedTools;
+
+    if (enabled) {
+      const index = suppressedTools.indexOf(toolName);
+      if (index > -1) suppressedTools.splice(index, 1);
+    } else {
+      if (!suppressedTools.includes(toolName)) suppressedTools.push(toolName);
+    }
+
+    server.anythingllm.suppressedTools = suppressedTools;
+    servers.mcpServers[serverName] = server;
+
+    fs.writeFileSync(
+      this.mcpServerJSONPath,
+      JSON.stringify(servers, null, 2),
+      "utf8"
+    );
+
+    this.log(
+      `MCP server ${serverName} tool ${toolName} ${enabled ? "enabled" : "suppressed"}`
+    );
+    return { success: true, error: null, suppressedTools };
+  }
+
+  /**
+   * Get the suppressed tools for an MCP server
+   * @param {string} serverName - The name of the MCP server
+   * @returns {string[]} - Array of suppressed tool names
+   */
+  getSuppressedTools(serverName) {
+    const config = this.mcpServerConfigs.find((s) => s.name === serverName);
+    return config?.server?.anythingllm?.suppressedTools || [];
+  }
+
+  /**
    * Reload the MCP servers - can be used to reload the MCP servers without restarting the server or app
    * and will also apply changes to the config file if any where made.
    */

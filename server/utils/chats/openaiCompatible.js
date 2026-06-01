@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require("uuid");
 const { DocumentManager } = require("../DocumentManager");
 const { WorkspaceChats } = require("../../models/workspaceChats");
-const { getVectorDbClass, getLLMProvider } = require("../helpers");
+const { getVectorDbClass, resolveProviderConnector } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const { chatPrompt, sourceIdentifier } = require("./index");
 
@@ -16,11 +16,21 @@ async function chatSync({
   temperature = null,
 }) {
   const uuid = uuidv4();
-  const chatMode = workspace?.chatMode ?? "chat";
-  const LLMConnector = getLLMProvider({
-    provider: workspace?.chatProvider,
-    model: workspace?.chatModel,
+  const chatMode = workspace?.chatMode ?? "automatic";
+
+  const { connector: LLMConnector } = await resolveProviderConnector({
+    workspace,
+    prompt,
+    attachments,
+    chatHistoryOverride: {
+      rawHistory: history,
+      chatHistory: history,
+    },
+    // Do not +1 to this, since OAI message history ends in a user message
+    // and does not need to re-include an uncounted user message.
+    messageCountOverride: history.length,
   });
+
   const VectorDb = getVectorDbClass();
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
@@ -219,11 +229,21 @@ async function streamChat({
   temperature = null,
 }) {
   const uuid = uuidv4();
-  const chatMode = workspace?.chatMode ?? "chat";
-  const LLMConnector = getLLMProvider({
-    provider: workspace?.chatProvider,
-    model: workspace?.chatModel,
+  const chatMode = workspace?.chatMode ?? "automatic";
+
+  const { connector: LLMConnector } = await resolveProviderConnector({
+    workspace,
+    prompt,
+    attachments,
+    chatHistoryOverride: {
+      rawHistory: history,
+      chatHistory: history,
+    },
+    // Do not +1 to this, since OAI message history ends in a user message
+    // and does not need to re-include an uncounted user message.
+    messageCountOverride: history.length,
   });
+
   const VectorDb = getVectorDbClass();
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);

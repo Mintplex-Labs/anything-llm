@@ -209,7 +209,7 @@ export default function OllamaLLMOptions({ settings }) {
                 type="number"
                 name="OllamaLLMTokenLimit"
                 className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-                placeholder="Auto-detected from model"
+                placeholder="Automatically managed"
                 min={1}
                 value={maxTokens}
                 onChange={(e) =>

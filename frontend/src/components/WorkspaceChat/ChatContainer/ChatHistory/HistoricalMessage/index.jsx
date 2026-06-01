@@ -1,9 +1,7 @@
-import React, { memo } from "react";
+import React, { memo, useLayoutEffect, useRef, useState } from "react";
 import { Info, Warning } from "@phosphor-icons/react";
-import UserIcon from "../../../../UserIcon";
 import Actions from "./Actions";
 import renderMarkdown from "@/utils/chat/markdown";
-import { userFromStorage } from "@/utils/request";
 import Citations from "../Citation";
 import { v4 } from "uuid";
 import DOMPurify from "@/utils/chat/purify";
@@ -20,9 +18,12 @@ import paths from "@/utils/paths";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { chatQueryRefusalResponse } from "@/utils/chat";
+import HistoricalOutputs from "./HistoricalOutputs";
+import HistoricalClarifyingQuestions from "./HistoricalClarifyingQuestions";
+import { openImageLightbox } from "@/components/ImageLightbox";
 
 const HistoricalMessage = ({
-  uuid = v4(),
+  uuid: uuidProp,
   message,
   role,
   workspace,
@@ -36,8 +37,13 @@ const HistoricalMessage = ({
   saveEditedMessage,
   forkThread,
   metrics = {},
-  alignmentCls = "",
+  outputs = [],
+  clarifyingQuestions = [],
 }) => {
+  // Freeze uuid on first render. User messages arrive without a uuid and this value
+  // is used as the wrapper div's `key` — a default param fallback would regenerate
+  // on every render and remount the subtree, wiping TruncatableContent state.
+  const [uuid] = useState(() => uuidProp ?? v4());
   const { t } = useTranslation();
   const { isEditing } = useEditMessage({ chatId, role });
   const { isDeleted, completeDelete, onEndAnimation } = useWatchDeleteMessage({
@@ -53,91 +59,59 @@ const HistoricalMessage = ({
   const isRefusalMessage =
     role === "assistant" && message === chatQueryRefusalResponse(workspace);
 
+  if (completeDelete) return null;
+
   if (!!error) {
     return (
-      <div
-        key={uuid}
-        className={`flex justify-center items-end w-full bg-theme-bg-chat`}
-      >
-        <div className="py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
-          <div className={`flex gap-x-5 ${alignmentCls}`}>
-            <ProfileImage role={role} workspace={workspace} />
-            <div className="p-2 rounded-lg bg-red-50 text-red-500">
-              <span className="inline-block">
-                <Warning className="h-4 w-4 mb-1 inline-block" /> Could not
-                respond to message.
-              </span>
-              <p className="text-xs font-mono mt-2 border-l-2 border-red-300 pl-2 bg-red-200 p-2 rounded-sm">
-                {error}
-              </p>
-            </div>
+      <div key={uuid} className="flex justify-start w-full">
+        <div className="py-4 pl-0 pr-4 flex flex-col md:max-w-[80%]">
+          <div className="p-2 rounded-lg bg-red-50 text-red-500">
+            <span className="inline-block">
+              <Warning className="h-4 w-4 mb-1 inline-block" /> Could not
+              respond to message.
+            </span>
+            <p className="text-xs font-mono mt-2 border-l-2 border-red-300 pl-2 bg-red-200 p-2 rounded-sm">
+              {error}
+            </p>
           </div>
         </div>
       </div>
     );
   }
 
-  if (completeDelete) return null;
+  if (role === "user") {
+    if (isEditing) {
+      return (
+        <div key={uuid} className="flex justify-end w-full py-4 px-4">
+          <EditMessageForm
+            role={role}
+            chatId={chatId}
+            message={message}
+            attachments={attachments}
+            adjustTextArea={adjustTextArea}
+            saveChanges={saveEditedMessage}
+          />
+        </div>
+      );
+    }
 
-  return (
-    <div
-      key={uuid}
-      onAnimationEnd={onEndAnimation}
-      className={`${
-        isDeleted ? "animate-remove" : ""
-      } flex justify-center items-end w-full group bg-theme-bg-chat`}
-    >
-      <div className="py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
-        <div className={`flex gap-x-5 ${alignmentCls}`}>
-          <div className="flex flex-col items-center">
-            <ProfileImage role={role} workspace={workspace} />
-            <div className="mt-1 -mb-10">
-              {role === "assistant" && (
-                <TTSMessage
-                  slug={workspace?.slug}
-                  chatId={chatId}
-                  message={message}
-                />
-              )}
-            </div>
-          </div>
-          {isEditing ? (
-            <EditMessageForm
-              role={role}
-              chatId={chatId}
-              message={message}
-              attachments={attachments}
-              adjustTextArea={adjustTextArea}
-              saveChanges={saveEditedMessage}
-            />
-          ) : (
-            <div className="break-words">
+    return (
+      <div
+        key={uuid}
+        onAnimationEnd={onEndAnimation}
+        className={`${isDeleted ? "animate-remove" : ""} flex justify-end w-full group`}
+      >
+        <div className="py-4 px-4 flex flex-col items-end">
+          <div className="bg-zinc-800 light:bg-slate-100 rounded-[20px] rounded-br-none px-4 py-3.5 max-w-[600px] [&_p]:m-0">
+            <TruncatableContent>
               <RenderChatContent
                 role={role}
                 message={message}
                 messageId={uuid}
               />
-              {isRefusalMessage && (
-                <Link
-                  data-tooltip-id="query-refusal-info"
-                  data-tooltip-content={`${t("chat.refusal.tooltip-description")}`}
-                  className="!no-underline group !flex w-fit"
-                  to={paths.chatModes()}
-                  target="_blank"
-                >
-                  <div className="flex flex-row items-center gap-x-1 group-hover:opacity-100 opacity-60 w-fit">
-                    <Info className="text-theme-text-secondary" />
-                    <p className="!m-0 !p-0 text-theme-text-secondary !no-underline text-xs cursor-pointer">
-                      {t("chat.refusal.tooltip-title")}
-                    </p>
-                  </div>
-                </Link>
-              )}
               <ChatAttachments attachments={attachments} />
-            </div>
-          )}
-        </div>
-        <div className="flex gap-x-5 ml-14">
+            </TruncatableContent>
+          </div>
           <Actions
             message={message}
             feedbackScore={feedbackScore}
@@ -149,7 +123,69 @@ const HistoricalMessage = ({
             role={role}
             forkThread={forkThread}
             metrics={metrics}
-            alignmentCls={alignmentCls}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      key={uuid}
+      onAnimationEnd={onEndAnimation}
+      className={`${isDeleted ? "animate-remove" : ""} flex justify-start w-full group`}
+    >
+      <div className="py-4 px-4 md:pl-0 flex flex-col w-full">
+        {isEditing ? (
+          <EditMessageForm
+            role={role}
+            chatId={chatId}
+            message={message}
+            attachments={attachments}
+            adjustTextArea={adjustTextArea}
+            saveChanges={saveEditedMessage}
+          />
+        ) : (
+          <div className="break-words">
+            <HistoricalClarifyingQuestions surveys={clarifyingQuestions} />
+            <RenderChatContent role={role} message={message} messageId={uuid} />
+            {isRefusalMessage && (
+              <Link
+                data-tooltip-id="query-refusal-info"
+                data-tooltip-content={`${t("chat.refusal.tooltip-description")}`}
+                className="!no-underline group !flex w-fit"
+                to={paths.chatModes()}
+                target="_blank"
+              >
+                <div className="flex flex-row items-center gap-x-1 group-hover:opacity-100 opacity-60 w-fit">
+                  <Info className="text-theme-text-secondary" />
+                  <p className="!m-0 !p-0 text-theme-text-secondary !no-underline text-xs cursor-pointer">
+                    {t("chat.refusal.tooltip-title")}
+                  </p>
+                </div>
+              </Link>
+            )}
+            <ChatAttachments attachments={attachments} />
+            <HistoricalOutputs outputs={outputs} />
+          </div>
+        )}
+        <div className="flex items-start md:items-center gap-x-1">
+          <TTSMessage
+            slug={workspace?.slug}
+            chatId={chatId}
+            message={message}
+          />
+          <Actions
+            message={message}
+            feedbackScore={feedbackScore}
+            chatId={chatId}
+            slug={workspace?.slug}
+            isLastMessage={isLastMessage}
+            regenerateMessage={regenerateMessage}
+            isEditing={isEditing}
+            role={role}
+            forkThread={forkThread}
+            metrics={metrics}
           />
         </div>
         {role === "assistant" && <Citations sources={sources} />}
@@ -158,56 +194,106 @@ const HistoricalMessage = ({
   );
 };
 
-function ProfileImage({ role, workspace }) {
-  if (role === "assistant" && workspace.pfpUrl) {
-    return (
-      <div className="relative w-[35px] h-[35px] rounded-full flex-shrink-0 overflow-hidden">
-        <img
-          src={workspace.pfpUrl}
-          alt="Workspace profile picture"
-          className="absolute top-0 left-0 w-full h-full object-cover rounded-full bg-white"
-        />
-      </div>
-    );
-  }
-
-  return (
-    <UserIcon
-      user={{
-        uid: role === "user" ? userFromStorage()?.username : workspace.slug,
-      }}
-      role={role}
-    />
-  );
-}
-
 export default memo(
   HistoricalMessage,
   // Skip re-render the historical message:
-  // if the content is the exact same AND (not streaming)
-  // the lastMessage status is the same (regen icon)
-  // and the chatID matches between renders. (feedback icons)
+  // - if the content is the exact same
+  // - AND (not streaming)
+  // - the lastMessage status is the same (regen icon)
+  // - the chatID matches between renders. (feedback icons)
+  // - the metrics are the same (metrics are updated in real time)
   (prevProps, nextProps) => {
     return (
       prevProps.message === nextProps.message &&
       prevProps.isLastMessage === nextProps.isLastMessage &&
-      prevProps.chatId === nextProps.chatId
+      prevProps.chatId === nextProps.chatId &&
+      JSON.stringify(prevProps.metrics) === JSON.stringify(nextProps.metrics) &&
+      JSON.stringify(prevProps.sources) === JSON.stringify(nextProps.sources) &&
+      JSON.stringify(prevProps.clarifyingQuestions) ===
+        JSON.stringify(nextProps.clarifyingQuestions)
     );
   }
 );
 
+/**
+ * Currently only renders image attachments as clickable thumbnails that open in the lightbox.
+ * Other attachment types may be supported here in the future.
+ */
 function ChatAttachments({ attachments = [] }) {
   if (!attachments.length) return null;
   return (
-    <div className="flex flex-wrap gap-2">
-      {attachments.map((item) => (
-        <img
+    <div className="flex flex-wrap gap-4 mt-4">
+      {attachments.map((item, index) => (
+        <button
+          type="button"
           key={item.name}
-          src={item.contentString}
-          className="max-w-[300px] rounded-md"
-        />
+          onClick={() => openImageLightbox(attachments, index)}
+          className="p-0 border-none bg-transparent cursor-pointer hover:opacity-80 transition-opacity"
+        >
+          <img
+            alt={`Attachment: ${item.name}`}
+            src={item.contentString}
+            className="w-[120px] h-[120px] object-cover rounded-lg"
+          />
+        </button>
       ))}
     </div>
+  );
+}
+
+function TruncatableContent({ children }) {
+  const contentRef = useRef(null);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isOverflowing, setIsOverflowing] = useState(false);
+  const { t } = useTranslation();
+
+  // useLayoutEffect (not useEffect) so collapse applies before paint — avoids a
+  // one-frame flash of uncollapsed content on mount.
+  useLayoutEffect(() => {
+    if (contentRef.current) {
+      setIsOverflowing(contentRef.current.scrollHeight > 250);
+    }
+  }, []);
+
+  const showTruncation = !isExpanded && isOverflowing;
+
+  return (
+    <>
+      <div className="relative">
+        <div
+          ref={contentRef}
+          className={showTruncation ? "max-h-[250px] overflow-hidden" : ""}
+        >
+          {children}
+        </div>
+        {showTruncation && (
+          <>
+            <div
+              className="absolute bottom-0 left-0 right-0 h-[36px] light:hidden pointer-events-none"
+              style={{
+                background:
+                  "linear-gradient(180deg, rgba(39, 39, 42, 0.00) 0%, rgba(39, 39, 42, 0.65) 50%, #27272A 100%)",
+              }}
+            />
+            <div
+              className="absolute bottom-0 left-0 right-0 h-[36px] hidden light:block pointer-events-none"
+              style={{
+                background:
+                  "linear-gradient(180deg, rgba(241, 245, 249, 0.00) 0%, rgba(241, 245, 249, 0.65) 50%, #F1F5F9 100%)",
+              }}
+            />
+          </>
+        )}
+      </div>
+      {isOverflowing && (
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="text-zinc-300 light:text-slate-700 hover:text-white light:hover:text-slate-900 text-xs font-medium leading-4 mt-2"
+        >
+          {isExpanded ? t("chat_window.see_less") : t("chat_window.see_more")}
+        </button>
+      )}
+    </>
   );
 }
 
@@ -218,7 +304,7 @@ const RenderChatContent = memo(
     if (role !== "assistant")
       return (
         <span
-          className="flex flex-col gap-y-1"
+          className="flex flex-col gap-y-1 text-white light:text-slate-900"
           dangerouslySetInnerHTML={{
             __html: DOMPurify.sanitize(renderMarkdown(message)),
           }}
@@ -252,7 +338,7 @@ const RenderChatContent = memo(
           <ThoughtChainComponent content={thoughtChain} messageId={messageId} />
         )}
         <span
-          className="flex flex-col gap-y-1"
+          className="flex flex-col gap-y-1 text-white light:text-slate-900"
           dangerouslySetInnerHTML={{
             __html: DOMPurify.sanitize(renderMarkdown(msgToRender)),
           }}

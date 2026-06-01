@@ -1,4 +1,5 @@
 const { parseLemonadeServerEndpoint } = require("../../AiProviders/lemonade");
+const { toChunks, reportEmbeddingProgress } = require("../../helpers");
 
 class LemonadeEmbedder {
   constructor() {
@@ -13,10 +14,11 @@ class LemonadeEmbedder {
         process.env.EMBEDDING_BASE_PATH,
         "openai"
       ),
-      apiKey: null,
+      apiKey: process.env.LEMONADE_LLM_API_KEY || null,
     });
     this.model = process.env.EMBEDDING_MODEL_PREF;
 
+    this.maxConcurrentChunks = 50;
     this.embeddingMaxChunkLength =
       process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH || 8_191;
   }
@@ -26,31 +28,69 @@ class LemonadeEmbedder {
   }
 
   async embedTextInput(textInput) {
-    try {
-      this.log(`Embedding text input...`);
-      const response = await this.lemonade.embeddings.create({
-        model: this.model,
-        input: textInput,
-      });
-      return response?.data[0]?.embedding || [];
-    } catch (error) {
-      console.error("Failed to get embedding from Lemonade.", error.message);
-      return [];
-    }
+    const result = await this.embedChunks(
+      Array.isArray(textInput) ? textInput : [textInput]
+    );
+    return result?.[0] || [];
   }
 
   async embedChunks(textChunks = []) {
-    try {
-      this.log(`Embedding ${textChunks.length} chunks of text...`);
-      const response = await this.lemonade.embeddings.create({
-        model: this.model,
-        input: textChunks,
+    this.log(
+      `Embedding ${textChunks.length} chunks of text with ${this.model}.`
+    );
+
+    const allResults = [];
+    for (const chunk of toChunks(textChunks, this.maxConcurrentChunks)) {
+      const { data = [], error = null } = await new Promise((resolve) => {
+        this.lemonade.embeddings
+          .create({
+            model: this.model,
+            input: chunk,
+          })
+          .then((result) => {
+            if (result?.error) {
+              const errMsg =
+                result.error?.details?.response?.error?.message ||
+                result.error?.message ||
+                "Unknown error";
+              const errType =
+                result.error?.details?.response?.error?.type ||
+                result.error?.type ||
+                "api_error";
+              resolve({
+                data: [],
+                error: { type: errType, message: errMsg },
+              });
+              return;
+            }
+            resolve({ data: result?.data, error: null });
+          })
+          .catch((e) => {
+            e.type =
+              e?.response?.data?.error?.code ||
+              e?.response?.status ||
+              "failed_to_embed";
+            e.message = e?.response?.data?.error?.message || e.message;
+            resolve({ data: [], error: e });
+          });
       });
-      return response?.data?.map((emb) => emb.embedding) || [];
-    } catch (error) {
-      console.error("Failed to get embeddings from Lemonade.", error.message);
-      return new Array(textChunks.length).fill([]);
+
+      if (error) {
+        const errorMsg = `Lemonade Failed to embed: [${error.type}]: ${error.message}`;
+        this.log(errorMsg);
+        throw new Error(errorMsg);
+      }
+      allResults.push(...(data || []));
+      reportEmbeddingProgress(
+        Math.min(allResults.length, textChunks.length),
+        textChunks.length
+      );
     }
+
+    return allResults.length > 0 &&
+      allResults.every((embd) => embd.hasOwnProperty("embedding"))
+      ? allResults.map((embd) => embd.embedding)
+      : null;
   }
 }
 

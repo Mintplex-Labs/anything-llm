@@ -21,6 +21,8 @@ class ContextWindowFinder {
     moonshot: "moonshot",
     zai: "vercel_ai_gateway", // Vercel has correct context windows for Z.AI models
     sambanova: "sambanova",
+    minimax: "minimax",
+    cerebras: "cerebras",
   };
   static expiryMs = 1000 * 60 * 60 * 24 * 3; // 3 days
   static remoteUrl =

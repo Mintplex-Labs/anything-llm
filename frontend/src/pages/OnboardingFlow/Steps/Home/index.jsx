@@ -1,64 +1,56 @@
 import paths from "@/utils/paths";
-import LGroupImg from "./l_group.png";
-import RGroupImg from "./r_group.png";
-import LGroupImgLight from "./l_group-light.png";
-import RGroupImgLight from "./r_group-light.png";
-import AnythingLLMLogo from "@/media/logo/anything-llm.png";
 import { useNavigate } from "react-router-dom";
-import { useTheme } from "@/hooks/useTheme";
 import { useTranslation } from "react-i18next";
 import useRedirectToHomeOnOnboardingComplete from "@/hooks/useOnboardingComplete";
-
-const IMG_SRCSET = {
-  light: {
-    l: LGroupImgLight,
-    r: RGroupImgLight,
-  },
-  default: {
-    l: LGroupImg,
-    r: RGroupImg,
-  },
-};
+import { OnboardingLogoSVG } from "./components/OnboardingLogoSVG";
 
 export default function OnboardingHome() {
   const navigate = useNavigate();
   useRedirectToHomeOnOnboardingComplete();
-  const { theme } = useTheme();
   const { t } = useTranslation();
-  const srcSet = IMG_SRCSET?.[theme] || IMG_SRCSET.default;
 
   return (
-    <>
-      <div className="relative w-screen h-screen flex overflow-hidden bg-theme-bg-primary">
-        <div
-          className="hidden md:block fixed bottom-10 left-10 w-[320px] h-[320px] bg-no-repeat bg-contain"
-          style={{ backgroundImage: `url(${srcSet.l})` }}
-        ></div>
+    <div className="relative w-screen h-screen flex flex-col overflow-hidden bg-zinc-950 light:bg-slate-50">
+      {/* Dark mode background gradient */}
+      <div
+        className="absolute inset-0 light:hidden"
+        style={{
+          background:
+            "radial-gradient(ellipse 160% 100% at 50% 0%, rgba(130, 152, 178, 0.45) 0%, rgba(60, 87, 105, 0.25) 45%, transparent 90%)",
+        }}
+      />
+      {/* Light mode background gradient */}
+      <div
+        className="absolute inset-0 hidden light:block"
+        style={{
+          background:
+            "radial-gradient(ellipse 160% 100% at 50% 0%, rgba(176, 200, 224, 0.7) 0%, rgba(195, 213, 230, 0.45) 50%, transparent 90%)",
+        }}
+      />
 
-        <div
-          className="hidden md:block fixed top-10 right-10 w-[320px] h-[320px] bg-no-repeat bg-contain"
-          style={{ backgroundImage: `url(${srcSet.r})` }}
-        ></div>
-
-        <div className="relative flex justify-center items-center m-auto">
-          <div className="flex flex-col justify-center items-center">
-            <p className="text-theme-text-primary font-thin text-[24px]">
-              {t("onboarding.home.title")}
-            </p>
-            <img
-              src={AnythingLLMLogo}
-              alt="AnythingLLM"
-              className="md:h-[50px] flex-shrink-0 max-w-[300px] light:invert"
-            />
-            <button
-              onClick={() => navigate(paths.onboarding.llmPreference())}
-              className="border-[2px] border-theme-text-primary animate-pulse light:animate-none w-full md:max-w-[350px] md:min-w-[300px] text-center py-3 bg-theme-button-primary hover:bg-theme-bg-secondary text-theme-text-primary font-semibold text-sm my-10 rounded-md "
-            >
-              {t("onboarding.home.getStarted")}
-            </button>
-          </div>
-        </div>
+      <div className="relative z-10 flex justify-center pt-[58px]">
+        <p className="text-white/80 light:text-slate-600 text-3xl font-semibold">
+          AnythingLLM
+        </p>
       </div>
-    </>
+
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center -mt-8">
+        <div className="absolute flex items-center justify-center w-full px-4 md:px-0 md:max-w-[852px] md:w-[56%]">
+          <OnboardingLogoSVG />
+        </div>
+
+        <h1 className="relative font-medium text-white light:text-slate-700 text-[64px] md:text-[96px] lg:text-[160px] leading-none tracking-[-0.06em] select-none">
+          {t("onboarding.home.welcome")}
+        </h1>
+
+        <button
+          type="button"
+          onClick={() => navigate(paths.onboarding.llmPreference())}
+          className="relative border-none z-10 h-[36px] w-[300px] py-2.5 px-5 rounded-lg bg-slate-50 hover:bg-slate-300 font-medium text-sm mt-[42px] text-zinc-900 light:text-white light:bg-slate-900 light:hover:bg-slate-800 text-center flex justify-center items-center transition-colors duration-200"
+        >
+          {t("onboarding.home.getStarted")}
+        </button>
+      </div>
+    </div>
   );
 }

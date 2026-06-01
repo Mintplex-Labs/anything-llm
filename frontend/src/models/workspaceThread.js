@@ -184,18 +184,19 @@ const WorkspaceThread = {
         return false;
       });
   },
-  _updateChatResponse: async function (
+  _updateChat: async function (
     workspaceSlug = "",
     threadSlug = "",
     chatId,
-    newText
+    newText,
+    role = "assistant"
   ) {
     return await fetch(
       `${API_BASE}/workspace/${workspaceSlug}/thread/${threadSlug}/update-chat`,
       {
         method: "POST",
         headers: baseHeaders(),
-        body: JSON.stringify({ chatId, newText }),
+        body: JSON.stringify({ chatId, newText, role }),
       }
     )
       .then((res) => {

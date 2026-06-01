@@ -23,7 +23,11 @@ import { safeJsonParse } from "@/utils/request";
 import QuickActions from "@/components/lib/QuickActions";
 import SuggestedMessages from "@/components/lib/SuggestedMessages";
 import useUser from "@/hooks/useUser";
+import ChatSettingsMenu from "@/components/WorkspaceChat/ChatContainer/ChatSettingsMenu";
+import WorkspaceModelPicker from "@/components/WorkspaceChat/ChatContainer/WorkspaceModelPicker";
 import { ChatTooltips } from "@/components/WorkspaceChat/ChatContainer/ChatTooltips";
+import { ChatSidebarProvider } from "@/components/WorkspaceChat/ChatContainer/ChatSidebar";
+import MemoriesSidebar from "@/components/WorkspaceChat/ChatContainer/MemoriesSidebar";
 
 async function getTargetWorkspace() {
   const lastVisited = safeJsonParse(
@@ -62,11 +66,15 @@ export default function Home() {
     async function init() {
       const ws = await getTargetWorkspace();
       if (ws) {
-        const [suggestedMessages, pfpUrl] = await Promise.all([
+        const [suggestedMessages, { showAgentCommand }] = await Promise.all([
           Workspace.getSuggestedMessages(ws.slug),
-          Workspace.fetchPfp(ws.slug),
+          Workspace.agentCommandAvailable(ws.slug),
         ]);
-        setWorkspace({ ...ws, suggestedMessages, pfpUrl });
+        setWorkspace({
+          ...ws,
+          suggestedMessages,
+          showAgentCommand,
+        });
       }
       setWorkspaceLoading(false);
     }
@@ -129,7 +137,7 @@ export default function Home() {
     return (
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-hidden"
+        className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-zinc-900 light:bg-white w-full h-full overflow-hidden"
       />
     );
   }
@@ -242,6 +250,12 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
     writeMode = "replace",
   }) {
     if (autoSubmit) {
+      if (writeMode === "append") {
+        const currentText =
+          document.getElementById(PROMPT_INPUT_ID)?.value ?? "";
+        text = currentText + text;
+      }
+      if (!text.trim()) return;
       submitMessage(text.trim());
       return;
     }
@@ -267,43 +281,51 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
   }
 
   return (
-    <div
-      style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-      className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-hidden"
-    >
-      {isMobile && <SidebarMobileHeader />}
-      <DnDFileUploaderWrapper>
-        <div className="flex flex-col h-full w-full items-center justify-center">
-          <div className="flex flex-col items-center w-full max-w-[750px]">
-            <h1 className="text-white text-xl md:text-2xl mb-11 text-center">
-              {t("main-page.greeting")}
-            </h1>
-            <PromptInput
-              submit={handleSubmit}
-              isStreaming={loading}
-              sendCommand={sendCommand}
-              attachments={files}
-              centered={true}
-              workspaceSlug={workspace?.slug}
-              threadSlug={threadSlug}
-            />
-            <QuickActions
-              hasAvailableWorkspace={!!workspace}
-              onCreateAgent={() => navigate(paths.settings.agentSkills())}
-              onEditWorkspace={handleEditWorkspace}
-              onUploadDocument={() =>
-                document.getElementById("dnd-chat-file-uploader")?.click()
-              }
-            />
-          </div>
-          <SuggestedMessages
-            suggestedMessages={workspace?.suggestedMessages}
-            sendCommand={sendCommand}
-          />
+    <ChatSidebarProvider>
+      <div
+        style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
+        className="relative flex md:ml-[2px] md:mr-[16px] md:my-[16px] w-full h-full z-[2]"
+      >
+        <ChatSettingsMenu />
+        <div className="flex-1 min-w-0 transition-all duration-500 relative md:rounded-[16px] bg-zinc-900 light:bg-white w-full h-full overflow-hidden border-none light:border-solid light:border light:border-theme-modal-border">
+          {isMobile && <SidebarMobileHeader />}
+          <WorkspaceModelPicker workspaceSlug={workspace?.slug} />
+          <DnDFileUploaderWrapper>
+            <div className="flex flex-col h-full w-full items-center justify-center">
+              <div className="flex flex-col items-center w-full max-w-[750px]">
+                <h1 className="text-white text-xl md:text-2xl mb-11 text-center">
+                  {t("main-page.greeting")}
+                </h1>
+                <PromptInput
+                  workspace={workspace}
+                  submit={handleSubmit}
+                  isStreaming={loading}
+                  sendCommand={sendCommand}
+                  attachments={files}
+                  centered={true}
+                  workspaceSlug={workspace?.slug}
+                  threadSlug={threadSlug}
+                />
+                <QuickActions
+                  hasAvailableWorkspace={!!workspace}
+                  onCreateAgent={() => navigate(paths.settings.agentSkills())}
+                  onEditWorkspace={handleEditWorkspace}
+                  onUploadDocument={() =>
+                    document.getElementById("dnd-chat-file-uploader")?.click()
+                  }
+                />
+              </div>
+              <SuggestedMessages
+                suggestedMessages={workspace?.suggestedMessages}
+                sendCommand={sendCommand}
+              />
+            </div>
+          </DnDFileUploaderWrapper>
+          <ChatTooltips />
         </div>
-      </DnDFileUploaderWrapper>
-      <ChatTooltips />
-    </div>
+        <MemoriesSidebar workspace={workspace} />
+      </div>
+    </ChatSidebarProvider>
   );
 }
 
@@ -312,7 +334,7 @@ function NoWorkspacesAssigned() {
   return (
     <div
       style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-      className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-hidden"
+      className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-zinc-900 light:bg-white w-full h-full overflow-hidden"
     >
       <div className="flex flex-col h-full w-full items-center justify-center">
         <p className="text-white/60 text-sm text-center whitespace-pre-line">

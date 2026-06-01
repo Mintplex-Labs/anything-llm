@@ -1,7 +1,7 @@
 name: Run backend tests
 
 concurrency:
-  group: build-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 on:
@@ -65,6 +65,9 @@ jobs:
       - name: Install collector dependencies
         if: steps.cache-collector.outputs.cache-hit != 'true'
         run: cd collector && yarn install --frozen-lockfile
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: "true"
+          SHARP_IGNORE_GLOBAL_LIBVIPS: "true"
 
       - name: Setup environment and Prisma
         run: yarn setup:envs && yarn prisma:setup

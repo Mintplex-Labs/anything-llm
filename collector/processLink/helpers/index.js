@@ -6,6 +6,16 @@ const { ACCEPTED_MIMES } = require("../../utils/constants");
 const { validYoutubeVideoUrl } = require("../../utils/url");
 
 /**
+ * Parse a Content-Type header value and return the MIME type without charset or other parameters.
+ * @param {string|null} contentTypeHeader - The raw Content-Type header value
+ * @returns {string|null} - The MIME type (e.g., "application/pdf") or null
+ */
+function parseContentType(contentTypeHeader) {
+  if (!contentTypeHeader) return null;
+  return contentTypeHeader.toLowerCase().split(";")[0].trim() || null;
+}
+
+/**
  * Get the content type of a resource
  * - Sends a HEAD request to the URL and returns the Content-Type header with a 5 second timeout
  * @param {string} url - The URL to get the content type of
@@ -34,8 +44,9 @@ async function getContentTypeFromURL(url) {
         contentType: null,
       };
 
-    const contentType = res.headers.get("Content-Type")?.toLowerCase();
-    const contentTypeWithoutCharset = contentType?.split(";")[0].trim();
+    const contentTypeWithoutCharset = parseContentType(
+      res.headers.get("Content-Type")
+    );
     if (!contentTypeWithoutCharset)
       return {
         success: false,
@@ -171,6 +182,7 @@ async function processAsFile({ uri, saveAsDocument = true }) {
 }
 
 module.exports = {
+  parseContentType,
   returnResult,
   getContentTypeFromURL,
   determineContentType,

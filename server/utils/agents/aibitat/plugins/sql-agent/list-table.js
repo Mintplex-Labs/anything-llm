@@ -6,6 +6,18 @@ module.exports.SqlAgentListTables = {
       getDBClient,
     } = require("./SQLConnectors/index.js");
 
+    function formatQueryForDisplay(query, params = []) {
+      if (!params.length) return query;
+      let formatted = query;
+      params.forEach((param, index) => {
+        const value = typeof param === "string" ? `'${param}'` : param;
+        formatted = formatted.replace(`$${index + 1}`, value);
+        formatted = formatted.replace(`@p${index}`, value);
+        formatted = formatted.replace("?", value);
+      });
+      return formatted;
+    }
+
     return {
       name: "sql-list-tables",
       setup(aibitat) {
@@ -61,8 +73,16 @@ module.exports.SqlAgentListTables = {
                 `${this.caller}: Checking what are the available tables in the ${databaseConfig.database_id} database.`
               );
 
-              this.super.introspect(`Running SQL: ${db.getTablesSql()}`);
-              const result = await db.runQuery(db.getTablesSql(database_id));
+              const sqlQuery = db.getTablesSql();
+              const isParameterized =
+                typeof sqlQuery === "object" && sqlQuery.query;
+              const queryString = isParameterized ? sqlQuery.query : sqlQuery;
+              const queryParams = isParameterized ? sqlQuery.params : [];
+
+              this.super.introspect(
+                `Running SQL: ${formatQueryForDisplay(queryString, queryParams)}`
+              );
+              const result = await db.runQuery(queryString, queryParams);
               if (result.error) {
                 this.super.handlerProps.log(
                   `sql-list-tables tool reported error`,

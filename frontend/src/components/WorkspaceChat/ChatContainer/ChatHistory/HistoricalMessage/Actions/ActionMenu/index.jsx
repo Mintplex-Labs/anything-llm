@@ -22,6 +22,7 @@ function ActionMenu({ chatId, forkThread, isEditing, role }) {
   };
 
   useEffect(() => {
+    if (!open) return;
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setOpen(false);
@@ -32,7 +33,7 @@ function ActionMenu({ chatId, forkThread, isEditing, role }) {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [open]);
 
   if (!chatId || isEditing || role === "user") return null;
 
@@ -40,7 +41,7 @@ function ActionMenu({ chatId, forkThread, isEditing, role }) {
     <div className="mt-2 -ml-0.5 relative" ref={menuRef}>
       <button
         onClick={toggleMenu}
-        className="border-none text-[var(--theme-sidebar-footer-icon-fill)] hover:text-[var(--theme-sidebar-footer-icon-fill)] transition-colors duration-200"
+        className="border-none text-zinc-300 light:text-slate-500 transition-colors duration-200"
         data-tooltip-id="action-menu"
         data-tooltip-content={t("chat_window.more_actions")}
         aria-label={t("chat_window.more_actions")}

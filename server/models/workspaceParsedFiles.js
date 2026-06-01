@@ -43,6 +43,11 @@ const WorkspaceParsedFiles = {
     }
   },
 
+  /**
+   * Gets a parsed file by its ID or a clause.
+   * @param {object} clause - The clause to filter the parsed files.
+   * @returns {Promise<import("@prisma/client").workspace_parsed_files | null>} The parsed file.
+   */
   get: async function (clause = {}) {
     try {
       const file = await prisma.workspace_parsed_files.findFirst({
@@ -77,10 +82,10 @@ const WorkspaceParsedFiles = {
 
   delete: async function (clause = {}) {
     try {
-      await prisma.workspace_parsed_files.deleteMany({
+      const result = await prisma.workspace_parsed_files.deleteMany({
         where: clause,
       });
-      return true;
+      return result.count > 0;
     } catch (error) {
       console.error(error.message);
       return false;
@@ -95,9 +100,20 @@ const WorkspaceParsedFiles = {
     return _sum.tokenCountEstimate || 0;
   },
 
-  moveToDocumentsAndEmbed: async function (fileId, workspace) {
+  /**
+   * Moves a parsed file to the documents and embeds it.
+   * @param {import("@prisma/client").users | null} user - The user performing the operation.
+   * @param {number} fileId - The ID of the parsed file.
+   * @param {import("@prisma/client").workspaces} workspace - The workspace the file belongs to.
+   * @returns {Promise<{ success: boolean, error: string | null, document: import("@prisma/client").workspace_documents | null }>} The result of the operation.
+   */
+  moveToDocumentsAndEmbed: async function (user = null, fileId, workspace) {
     try {
-      const parsedFile = await this.get({ id: parseInt(fileId) });
+      const parsedFile = await this.get({
+        id: parseInt(fileId),
+        ...(user ? { userId: user.id } : {}),
+        workspaceId: workspace.id,
+      });
       if (!parsedFile) throw new Error("File not found");
 
       // Get file location from metadata

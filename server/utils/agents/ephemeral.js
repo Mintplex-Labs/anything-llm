@@ -5,7 +5,10 @@ const MCPCompatibilityLayer = require("../MCP");
 const { AgentFlows } = require("../agentFlows");
 const { httpSocket } = require("./aibitat/plugins/http-socket.js");
 const { User } = require("../../models/user");
+const { Workspace } = require("../../models/workspace");
 const { WorkspaceChats } = require("../../models/workspaceChats");
+const { WorkspaceParsedFiles } = require("../../models/workspaceParsedFiles");
+const { DocumentManager } = require("../DocumentManager");
 const { safeJsonParse } = require("../http");
 const {
   USER_AGENT,
@@ -37,6 +40,8 @@ class EphemeralAgentHandler extends AgentHandler {
   #prompt = null;
   /** @type {string[]} the functions to load into the agent (Aibitat plugins) */
   #funcsToLoad = [];
+  /** @type {Array<{name: string, mime: string, contentString: string}>} attachments for multimodal support */
+  #attachments = [];
 
   /** @type {AIbitat|null} */
   aibitat = null;
@@ -50,20 +55,22 @@ class EphemeralAgentHandler extends AgentHandler {
   /**
    * @param {{
    * uuid: string,
-   * workspace: import("@prisma/client").workspaces,
+   * workspace: import("@prisma/client").workspaces|null,
    * prompt: string,
    * userId: import("@prisma/client").users["id"]|null,
    * threadId: import("@prisma/client").workspace_threads["id"]|null,
-   * sessionId: string|null
+   * sessionId: string|null,
+   * attachments: Array<{name: string, mime: string, contentString: string}>
    * }} parameters
    */
   constructor({
     uuid,
-    workspace,
+    workspace = null,
     prompt,
     userId = null,
     threadId = null,
     sessionId = null,
+    attachments = [],
   }) {
     super({ uuid });
     this.#invocationUUID = uuid;
@@ -76,6 +83,7 @@ class EphemeralAgentHandler extends AgentHandler {
     this.#userId = userId;
     this.#threadId = threadId;
     this.#sessionId = sessionId;
+    this.#attachments = attachments;
   }
 
   log(text, ...args) {
@@ -87,6 +95,8 @@ class EphemeralAgentHandler extends AgentHandler {
   }
 
   async #chatHistory(limit = 10) {
+    if (!this.#workspace) return [];
+
     try {
       const rawHistory = (
         await WorkspaceChats.where(
@@ -135,8 +145,14 @@ class EphemeralAgentHandler extends AgentHandler {
    * @returns {object|null} - An object with provider and model keys.
    */
   #getFallbackProvider() {
+    // If workspace chat uses the model router, fall back to it.
+    // Model is null here since the router determines it at resolve time.
+    if (this.#workspace?.chatProvider === "anythingllm-router") {
+      return { provider: "anythingllm-router", model: null };
+    }
+
     // First, fallback to the workspace chat provider and model if they exist
-    if (this.#workspace.chatProvider && this.#workspace.chatModel) {
+    if (this.#workspace?.chatProvider && this.#workspace?.chatModel) {
       return {
         provider: this.#workspace.chatProvider,
         model: this.#workspace.chatModel,
@@ -146,6 +162,10 @@ class EphemeralAgentHandler extends AgentHandler {
     // If workspace does not have chat provider and model fallback
     // to system provider and try to load provider default model
     const systemProvider = process.env.LLM_PROVIDER;
+    if (systemProvider === "anythingllm-router") {
+      return { provider: "anythingllm-router", model: null };
+    }
+
     const systemModel = this.providerDefault(systemProvider);
     if (systemProvider && systemModel) {
       return {
@@ -175,21 +195,65 @@ class EphemeralAgentHandler extends AgentHandler {
     }
 
     // The provider was explicitly set, so check if the workspace has an agent model set.
-    if (this.#workspace.agentModel) return this.#workspace.agentModel;
+    if (this.#workspace?.agentModel) return this.#workspace.agentModel;
 
     // Otherwise, we have no model to use - so guess a default model to use via the provider
     // and it's system ENV params and if that fails - we return either a base model or null.
     return this.providerDefault();
   }
 
-  #providerSetupAndCheck() {
-    this.provider = this.#workspace.agentProvider ?? null;
+  async #providerSetupAndCheck() {
+    this.provider = this.#workspace?.agentProvider ?? null;
     this.model = this.#fetchModel();
+
+    // If provider resolved to model router, resolve the actual provider/model
+    if (this.provider === "anythingllm-router") {
+      await this.#resolveRouterProvider();
+    }
 
     if (!this.provider)
       throw new Error("No valid provider found for the agent.");
     this.log(`Start ${this.#invocationUUID}::${this.provider}:${this.model}`);
     this.checkSetup();
+  }
+
+  async #resolveRouterProvider(prompt = null) {
+    const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
+    const routerWorkspace = this.#workspace?.router_id
+      ? this.#workspace
+      : {
+          ...this.#workspace,
+          router_id: process.env.MODEL_ROUTER_ID
+            ? Number(process.env.MODEL_ROUTER_ID)
+            : null,
+        };
+
+    const router = new AnythingLLMModelRouter(routerWorkspace);
+    const { ModelRouterService } = require("../router");
+    const workspace = this.#workspace;
+    const user = this.#userId ? { id: this.#userId } : null;
+    const effectivePrompt = prompt || this.#prompt;
+    const ctx = await ModelRouterService.gatherRoutingContext({
+      workspace,
+      user,
+      thread: this.#threadId ? { id: this.#threadId } : null,
+      message: effectivePrompt,
+      apiSessionId: this.#sessionId,
+    });
+
+    await router.resolve(
+      {
+        prompt: effectivePrompt,
+        conversationTokenCount: ctx.conversationTokenCount,
+        conversationMessageCount: ctx.conversationMessageCount,
+        attachments: this.#attachments || [],
+      },
+      { user, thread: this.#threadId ? { id: this.#threadId } : null }
+    );
+
+    this.provider = router.resolvedRoute.provider;
+    this.model = router.resolvedRoute.model;
+    this.routingMetadata = router.routingMetadata;
   }
 
   async #attachPlugins(args) {
@@ -337,7 +401,12 @@ class EphemeralAgentHandler extends AgentHandler {
 
     this.aibitat.agent(
       WORKSPACE_AGENT.name,
-      await WORKSPACE_AGENT.getDefinition(this.provider, this.#workspace, user)
+      await WORKSPACE_AGENT.getDefinition(
+        this.provider,
+        this.#workspace,
+        user,
+        this.#prompt
+      )
     );
 
     this.#funcsToLoad = [
@@ -349,13 +418,89 @@ class EphemeralAgentHandler extends AgentHandler {
   }
 
   async init() {
-    this.#providerSetupAndCheck();
+    await this.#providerSetupAndCheck();
     return this;
+  }
+
+  /**
+   * Fetch fresh parsed files and pinned documents, format them for injection into user messages.
+   * Called on every chat turn to ensure context is always up-to-date.
+   * @returns {Promise<string>} Formatted context string to append to user message
+   */
+  async #fetchParsedFileContext() {
+    if (!this.#workspace) return "";
+
+    const user = this.#userId ? { id: this.#userId } : null;
+    const thread = this.#threadId ? { id: this.#threadId } : null;
+    const documentManager = new DocumentManager({
+      workspace: this.#workspace,
+    });
+
+    return Promise.all([
+      WorkspaceParsedFiles.getContextFiles(this.#workspace, thread, user),
+      documentManager.pinnedDocs(),
+    ])
+      .then(([parsedFiles, pinnedDocs]) => {
+        const allDocuments = [
+          ...(parsedFiles || []).map((doc) => ({
+            name: doc.title || "Uploaded Document",
+            content: doc.pageContent,
+          })),
+          ...(pinnedDocs || []).map((doc) => ({
+            name: doc.title || doc.metadata?.title || "Pinned Document",
+            content: doc.pageContent,
+          })),
+        ];
+
+        if (allDocuments.length === 0) return "";
+
+        if (parsedFiles?.length > 0)
+          this.log(
+            `Injecting ${parsedFiles.length} parsed file(s) into user message`
+          );
+        if (pinnedDocs?.length > 0)
+          this.log(
+            `Injecting ${pinnedDocs.length} pinned document(s) into user message`
+          );
+
+        return (
+          "\n\n<attached_documents>\n" +
+          allDocuments
+            .map((doc, i) => {
+              const filename = doc.name || `Document ${i + 1}`;
+              return `<document name="${filename}">\n${doc.content}\n</document>`;
+            })
+            .join("\n") +
+          "\n</attached_documents>"
+        );
+      })
+      .catch((e) => {
+        this.log("Error fetching parsed file context", e.message);
+        return "";
+      });
+  }
+
+  /**
+   * Strip the @agent command from the message if it exists.
+   * Prevents hallucination by the agent when the @agent command is used from the model thinking
+   * it is an agent or something itself.
+   * If the user sent nothing after the @agent command - assume its a greeting.
+   * @param {string} message - The message to strip the @agent command from.
+   * @returns {string} The message with the @agent command stripped.
+   */
+  #stripAgentCommand(message = "") {
+    const stripped = String(message)
+      .replace(/^@agent\s*/, "")
+      .trim();
+    if (!stripped) return "Hello!";
+    return stripped;
   }
 
   async createAIbitat(
     args = {
       handler: null,
+      telegramChatId: null,
+      toolOverrides: null,
     }
   ) {
     this.aibitat = new AIbitat({
@@ -365,24 +510,57 @@ class EphemeralAgentHandler extends AgentHandler {
       handlerProps: {
         invocation: {
           workspace: this.#workspace,
-          workspace_id: this.#workspace.id,
+          workspace_id: this.#workspace?.id ?? null,
         },
         log: this.log,
+        routingMetadata: this.routingMetadata || null,
       },
     });
 
+    // Register callback to fetch fresh parsed file context on each chat turn
+    // This injects parsed files into user messages instead of system prompt
+    this.aibitat.fetchParsedFileContext = () => this.#fetchParsedFileContext();
+
+    // If the workspace uses the model router, attach a resolver so routing
+    // is re-evaluated on every agent turn instead of only at initialization.
+    if (this.routingMetadata) {
+      this.aibitat.resolveRoute = async (prompt) => {
+        try {
+          await this.#resolveRouterProvider(prompt);
+          this.aibitat.handlerProps.routingMetadata =
+            this.routingMetadata || null;
+          return { provider: this.provider, model: this.model };
+        } catch (e) {
+          this.log(
+            "Router re-resolution failed, keeping current route",
+            e.message
+          );
+          return null;
+        }
+      };
+    }
+
     // Attach HTTP response object if defined for chunk streaming.
+    // When telegramChatId is provided, tool approval via Telegram is enabled.
     this.log(`Attached ${httpSocket.name} plugin to Agent cluster`);
     this.aibitat.use(
       httpSocket.plugin({
         handler: args.handler,
         muteUserReply: true,
         introspection: true,
+        telegramChatId: args.telegramChatId,
       })
     );
 
     // Load required agents (Default + custom)
     await this.#loadAgents();
+
+    // Override tools if specified (e.g., for scheduled jobs with per-job tool selection)
+    if (args.toolOverrides) {
+      this.#funcsToLoad = args.toolOverrides;
+      const agentDef = this.aibitat.agents.get("@agent");
+      if (agentDef) agentDef.functions = args.toolOverrides;
+    }
 
     // Attach all required plugins for functions to operate.
     await this.#attachPlugins(args);
@@ -392,8 +570,39 @@ class EphemeralAgentHandler extends AgentHandler {
     return this.aibitat.start({
       from: USER_AGENT.name,
       to: this.channel ?? WORKSPACE_AGENT.name,
-      content: this.#prompt,
+      content: this.#stripAgentCommand(this.#prompt),
+      attachments: this.#attachments,
     });
+  }
+
+  /**
+   * Gets pending outputs registered by plugins (e.g., file downloads).
+   * These outputs include the proper type for re-rendering in chat history.
+   * @returns {Array<{type: string, payload: object}>}
+   */
+  getPendingOutputs() {
+    return this.aibitat?._pendingOutputs ?? [];
+  }
+
+  /**
+   * Determine if the message should invoke the agent handler.
+   * This is true when the user explicitly invokes an agent (via @agent prefix)
+   * or when the workspace is in automatic mode **and** the provider supports native tool calling.
+   * @param {{message: string, workspace?: object, chatMode?: string}} parameters
+   * @returns {Promise<boolean>}
+   */
+  static async isAgentInvocation({
+    message,
+    workspace = null,
+    chatMode = null,
+  }) {
+    if (this.#isAgentCommandInvocation({ message })) return true;
+    if (chatMode === "automatic") {
+      if (!workspace) return false;
+      if (await Workspace.supportsNativeToolCalling(workspace)) return true;
+      return false;
+    }
+    return false;
   }
 
   /**
@@ -401,7 +610,7 @@ class EphemeralAgentHandler extends AgentHandler {
    * @param {{message:string}} parameters
    * @returns {boolean}
    */
-  static isAgentInvocation({ message }) {
+  static #isAgentCommandInvocation({ message }) {
     const agentHandles = WorkspaceAgentInvocation.parseAgents(message);
     if (agentHandles.length > 0) return true;
     return false;
@@ -436,19 +645,38 @@ class EphemeralEventListener extends EventEmitter {
 
   /**
    * Compacts all messages in class and returns them in a condensed format.
-   * @returns {{thoughts: string[], textResponse: string}}
+   * @returns {{thoughts: string[], textResponse: string, outputs: object[], metrics: object}}
    */
   packMessages() {
     const thoughts = [];
+    const outputs = [];
     let textResponse = null;
+    let metrics = {};
     for (let msg of this.messages) {
-      if (msg.type !== "statusResponse") {
-        textResponse = msg.content;
-      } else {
+      if (msg.type === "statusResponse") {
         thoughts.push(msg.content);
+        continue;
       }
+
+      if (msg.type === "fileDownloadCard") {
+        outputs.push(msg.content);
+        continue;
+      }
+
+      if (msg.type === "reportStreamEvent") {
+        const inner = msg.content;
+        if (inner?.type === "textResponseChunk" && inner?.content)
+          textResponse = (textResponse || "") + inner.content;
+        if (inner?.type === "fullTextResponse" && inner?.content)
+          textResponse = inner.content;
+        if (inner?.type === "usageMetrics" && inner?.metrics)
+          metrics = inner.metrics;
+        continue;
+      }
+
+      textResponse = msg.content;
     }
-    return { thoughts, textResponse };
+    return { thoughts, textResponse, outputs, metrics };
   }
 
   /**
@@ -485,6 +713,57 @@ class EphemeralEventListener extends EventEmitter {
           error: null,
           animate: true,
         });
+      }
+
+      if (data.type === "fileDownloadCard") {
+        return writeResponseChunk(response, {
+          id: uuid,
+          type: "fileDownload",
+          fileDownload: data.content,
+          close: false,
+          error: null,
+        });
+      }
+
+      if (data.type === "reportStreamEvent") {
+        const inner = data.content;
+        if (!inner?.type) return;
+
+        if (inner.type === "textResponseChunk") {
+          return writeResponseChunk(response, {
+            id: uuid,
+            type: "textResponseChunk",
+            textResponse: inner.content,
+            sources: [],
+            close: false,
+            error: null,
+          });
+        }
+
+        if (inner.type === "fullTextResponse") {
+          return writeResponseChunk(response, {
+            id: uuid,
+            type: "textResponse",
+            textResponse: inner.content,
+            sources: [],
+            attachments: [],
+            close: true,
+            error: null,
+            animate: false,
+          });
+        }
+
+        if (inner.type === "usageMetrics" && inner.metrics) {
+          return writeResponseChunk(response, {
+            id: uuid,
+            type: "usageMetrics",
+            metrics: inner.metrics,
+            close: false,
+            error: null,
+          });
+        }
+
+        return;
       }
 
       return writeResponseChunk(response, {

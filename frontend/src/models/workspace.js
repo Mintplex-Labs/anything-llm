@@ -55,6 +55,15 @@ const Workspace = {
 
     return { workspace, message };
   },
+  removeQueuedEmbedding: async function (slug, filename) {
+    return fetch(`${API_BASE}/workspace/${slug}/embed-queue`, {
+      method: "DELETE",
+      body: JSON.stringify({ filename }),
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .catch(() => ({ success: false }));
+  },
   chatHistory: async function (slug) {
     const history = await fetch(`${API_BASE}/workspace/${slug}/chats`, {
       method: "GET",
@@ -99,20 +108,16 @@ const Workspace = {
       return this.threads._deleteEditedChats(slug, threadSlug, startingId);
     return this._deleteEditedChats(slug, startingId);
   },
-  updateChatResponse: async function (
+  updateChat: async function (
     slug = "",
     threadSlug = "",
     chatId,
-    newText
+    newText,
+    role = "assistant"
   ) {
     if (!!threadSlug)
-      return this.threads._updateChatResponse(
-        slug,
-        threadSlug,
-        chatId,
-        newText
-      );
-    return this._updateChatResponse(slug, chatId, newText);
+      return this.threads._updateChat(slug, threadSlug, chatId, newText, role);
+    return this._updateChat(slug, chatId, newText, role);
   },
   multiplexStream: async function ({
     workspaceSlug,
@@ -398,11 +403,11 @@ const Workspace = {
         return { success: false, error: e.message };
       });
   },
-  _updateChatResponse: async function (slug = "", chatId, newText) {
+  _updateChat: async function (slug = "", chatId, newText, role = "assistant") {
     return await fetch(`${API_BASE}/workspace/${slug}/update-chat`, {
       method: "POST",
       headers: baseHeaders(),
-      body: JSON.stringify({ chatId, newText }),
+      body: JSON.stringify({ chatId, newText, role }),
     })
       .then((res) => {
         if (res.ok) return true;
@@ -571,6 +576,27 @@ const Workspace = {
         return { workspaces: [], threads: [] };
       });
     return response;
+  },
+
+  /**
+   * Checks if the agent command is available for a workspace
+   * by checking if the workspace's agent provider supports native tool calling.
+   *
+   * This can be model specific or enabled via ENV flag.
+   * @param {string} slug - workspace slug
+   * @returns {Promise<{showAgentCommand: boolean}>}
+   */
+  agentCommandAvailable: async function (slug = null) {
+    if (!slug) return { showAgentCommand: true };
+    return await fetch(
+      `${API_BASE}/workspace/${slug}/is-agent-command-available`,
+      { headers: baseHeaders() }
+    )
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { showAgentCommand: true };
+      });
   },
 
   threads: WorkspaceThread,

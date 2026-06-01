@@ -11,6 +11,9 @@ const { safeJsonParse } = require("../utils/http");
 // Setup listener for incoming messages to relay to socket so it can be handled by agent plugin.
 function relayToSocket(message) {
   if (this.handleFeedback) return this?.handleFeedback?.(message);
+  if (this.handleToolApproval) return this?.handleToolApproval?.(message);
+  if (this.handleClarificationResponse)
+    return this?.handleClarificationResponse?.(message);
   this.checkBailCommand(message);
 }
 

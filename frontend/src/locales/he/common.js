@@ -2,8 +2,8 @@
 const TRANSLATIONS = {
   onboarding: {
     home: {
-      title: "ברוכים הבאים ל",
       getStarted: "להתחלה",
+      welcome: "ברוכים הבאים",
     },
     llm: {
       title: "העדפות מודל שפה (LLM)",
@@ -46,17 +46,9 @@ const TRANSLATIONS = {
       skip: "דלג על הסקר",
       thankYou: "תודה על המשוב!",
     },
-    workspace: {
-      title: "צור את סביבת העבודה הראשונה שלך",
-      description:
-        "צור את סביבת העבודה הראשונה שלך והתחל לעבוד עם AnythingLLM.",
-    },
   },
   common: {
     "workspaces-name": "שם סביבת העבודה",
-    error: "שגיאה",
-    success: "הצלחה",
-    user: "משתמש",
     selection: "בחירת מודל",
     saving: "שומר...",
     save: "שמור שינויים",
@@ -68,10 +60,14 @@ const TRANSLATIONS = {
     search: "חיפוש",
     username_requirements:
       "שם המשתמש חייב להיות באורך 2-32 תווים, להתחיל באות קטנה ולהכיל רק אותיות קטנות, מספרים, קווים תחתונים, מקפים ונקודות.",
+    on: "על",
+    none: "אין",
+    stopped: "עצר",
+    loading: "טעינה",
+    refresh: "רענן",
   },
   settings: {
     title: "הגדרות מופע",
-    system: "הגדרות כלליות",
     invites: "הזמנות",
     users: "משתמשים",
     workspaces: "סביבות עבודה",
@@ -88,7 +84,6 @@ const TRANSLATIONS = {
     "voice-speech": "קול ודיבור",
     "vector-database": "מסד נתונים וקטורי",
     embeds: "הטמעות צ'אט (Embeds)",
-    "embed-chats": "היסטוריית הטמעות צ'אט",
     security: "אבטחה",
     "event-logs": "יומני אירועים",
     privacy: "פרטיות ונתונים",
@@ -107,6 +102,12 @@ const TRANSLATIONS = {
       "your-account": "החשבון שלך",
       "import-item": "ייבוא פריט",
     },
+    channels: "ערוצים",
+    "available-channels": {
+      telegram: "טלגרם",
+    },
+    "scheduled-jobs": "משימות מתוכננות",
+    "model-router": "מודל של נתב",
   },
   login: {
     "multi-user": {
@@ -123,92 +124,10 @@ const TRANSLATIONS = {
       title: "איפוס סיסמה",
       description: "ספק את המידע הדרוש למטה כדי לאפס את סיסמתך.",
       "recovery-codes": "קודיי שחזור",
-      "recovery-code": "קוד שחזור {{index}}",
       "back-to-login": "חזרה להתחברות",
     },
   },
   "main-page": {
-    noWorkspaceError: "אנא צור סביבת עבודה לפני התחלת צ'אט.",
-    checklist: {
-      title: "תחילת עבודה",
-      tasksLeft: "משימות נותרו",
-      completed: "אתה בדרך להפוך למומחה AnythingLLM!",
-      dismiss: "סגור",
-      tasks: {
-        create_workspace: {
-          title: "צור סביבת עבודה",
-          description: "צור את סביבת העבודה הראשונה שלך כדי להתחיל",
-          action: "צור",
-        },
-        send_chat: {
-          title: "שלח צ'אט",
-          description: "התחל שיחה עם עוזר ה-AI שלך",
-          action: "צ'אט",
-        },
-        embed_document: {
-          title: "הטמע מסמך",
-          description: "הוסף את המסמך הראשון שלך לסביבת העבודה",
-          action: "הטמע",
-        },
-        setup_system_prompt: {
-          title: "הגדר הנחיית מערכת",
-          description: "הגדר את התנהגות עוזר ה-AI שלך",
-          action: "הגדר",
-        },
-        define_slash_command: {
-          title: "הגדר פקודת סלאש",
-          description: "צור פקודות מותאמות אישית עבור העוזר שלך",
-          action: "הגדר",
-        },
-        visit_community: {
-          title: "בקר במרכז הקהילה",
-          description: "גלה משאבים ותבניות מהקהילה",
-          action: "עיין",
-        },
-      },
-    },
-    quickLinks: {
-      title: "קישורים מהירים",
-      sendChat: "שלח צ'אט",
-      embedDocument: "הטמע מסמך",
-      createWorkspace: "צור סביבת עבודה",
-    },
-    exploreMore: {
-      title: "גלה תכונות נוספות",
-      features: {
-        customAgents: {
-          title: "סוכני AI מותאמים אישית",
-          description: "בנה סוכני AI ואוטומציות חזקות ללא קוד.",
-          primaryAction: "צ'אט באמצעות @agent",
-          secondaryAction: "בנה זרימת סוכן",
-        },
-        slashCommands: {
-          title: "פקודות סלאש",
-          description:
-            "חסוך זמן והזרק הנחיות באמצעות פקודות סלאש מותאמות אישית.",
-          primaryAction: "צור פקודת סלאש",
-          secondaryAction: "גלה במרכז הקהילה",
-        },
-        systemPrompts: {
-          title: "הנחיות מערכת",
-          description:
-            "שנה את הנחיית המערכת כדי להתאים אישית את תשובות ה-AI של סביבת עבודה.",
-          primaryAction: "שנה הנחיית מערכת",
-          secondaryAction: "נהל משתני הנחיה",
-        },
-      },
-    },
-    announcements: {
-      title: "עדכונים והודעות",
-    },
-    resources: {
-      title: "משאבים",
-      links: {
-        docs: "תיעוד",
-        star: "סמן בכוכב ב-Github",
-      },
-      keyboardShortcuts: "קיצורי מקלדת",
-    },
     quickActions: {
       createAgent: "צור סוכן",
       editWorkspace: "ערוך את סביבת העבודה",
@@ -243,12 +162,6 @@ const TRANSLATIONS = {
       heading: "הסבר לי",
       body: "את היתרונות של AnythingLLM",
     },
-    pfp: {
-      title: "תמונת פרופיל של העוזר",
-      description: "התאם אישית את תמונת הפרופיל של העוזר עבור סביבת עבודה זו.",
-      image: "תמונת סביבת עבודה",
-      remove: "הסר תמונת סביבת עבודה",
-    },
     delete: {
       title: "מחק סביבת עבודה",
       description:
@@ -271,21 +184,23 @@ const TRANSLATIONS = {
       title: "מודל צ'אט של סביבת העבודה",
       description:
         "מודל הצ'אט הספציפי שישמש עבור סביבת עבודה זו. אם ריק, ישתמש בהעדפת ה-LLM של המערכת.",
-      wait: "-- ממתין למודלים --",
     },
     mode: {
       title: "מצב צ'אט",
       chat: {
         title: "צ'אט",
-        "desc-start": "יספק תשובות עם הידע הכללי של מודל השפה",
-        and: "וכן",
-        "desc-end": "מהקשר המסמכים שנמצא.",
+        description:
+          "יוכל לספק תשובות בהתבסס על הידע הכללי של ה-LLM ועל ההקשר הרלוונטי מהמסמכים. <b> ו-</b>\nתצטרכו להשתמש בפקודה @agent כדי להשתמש בכלי.",
       },
       query: {
         title: "שאילתה",
-        "desc-start": "יספק תשובות",
-        only: "רק",
-        "desc-end": "אם נמצא הקשר במסמכים.",
+        description:
+          "יוענו עם תשובות <b>רק</b>במידה ויימצא הקשר של המסמך.<br />תצטרכו להשתמש בפקודה @agent כדי להשתמש בכלי.",
+      },
+      automatic: {
+        description:
+          "התוכנה תשתמש באופן אוטומטי בכלים אם המודל והספק תומכים בהם. <br />אם אין תמיכה בכלים מקומיים, תצטרכו להשתמש בפקודה @agent כדי להשתמש בכלים.",
+        title: "סוכן",
       },
     },
     history: {
@@ -376,9 +291,6 @@ const TRANSLATIONS = {
       wait: "-- ממתין למודלים --",
     },
     skill: {
-      title: "כישורי סוכן ברירת מחדל",
-      description:
-        "שפר את היכולות הטבעיות של סוכן ברירת המחדל עם כישורים מובנים אלה. הגדרה זו חלה על כל סביבות העבודה.",
       rag: {
         title: "RAG וזיכרון לטווח ארוך",
         description:
@@ -398,11 +310,6 @@ const TRANSLATIONS = {
         description:
           "אפשר לסוכן ברירת המחדל ליצור סוגים שונים של תרשימים מנתונים שסופקו או ניתנו בצ'אט.",
       },
-      save: {
-        title: "יצירה ושמירה של קבצים לדפדפן",
-        description:
-          "אפשר לסוכן ברירת המחדל ליצור ולכתוב לקבצים שנשמרים וניתנים להורדה בדפדפן שלך.",
-      },
       web: {
         title: "חיפוש וגלישה באינטרנט בזמן אמת",
         description:
@@ -415,6 +322,429 @@ const TRANSLATIONS = {
       },
       default_skill:
         "כברירת מחדל, הכישורים הזה מופעל, אך ניתן להשבית אותו אם אינכם רוצים שהוא יהיה זמין עבור הסוכן.",
+      filesystem: {
+        title: "גישה למערכת הקבצים",
+        description:
+          "אפשרו למתווך שלכם לקרוא, לכתוב, לחפש ולנהל קבצים בספריית מסוימת. תומך בעריכת קבצים, ניווט בספריות וחיפוש תוכן.",
+        learnMore: "למידע נוסף על השימוש בכישרון זה",
+        configuration: "הגדרות",
+        readActions: "קריאת פעולות",
+        writeActions: "פעולות",
+        warning:
+          "גישה למערכת הקבצים עלולה להיות מסוכנת, שכן היא עלולה לשנות או למחוק קבצים. אנא התייעצו עם ה<a>תיעוד</a> לפני הפעלתה.",
+        skills: {
+          "read-text-file": {
+            title: "קרא קובץ",
+            description: "קריאת תוכן קבצים (טקסט, קוד, PDF, תמונות וכו')",
+          },
+          "read-multiple-files": {
+            title: "קריאת מספר קבצים",
+            description: "קרא מספר קבצים בו זמנית.",
+          },
+          "list-directory": {
+            title: "רשימת אנשי קשר",
+            description: "רשימת קבצים וספריות בתיקייה",
+          },
+          "search-files": {
+            title: "חיפוש קבצים",
+            description: "חיפוש קבצים לפי שם או תוכן",
+          },
+          "get-file-info": {
+            title: "קבל מידע על הקובץ",
+            description: "קבל מידע מפורט על קבצים",
+          },
+          "edit-file": {
+            title: "ערוך קובץ",
+            description: "בצעו עריכה של קבצי טקסט על בסיס שורות.",
+          },
+          "create-directory": {
+            title: "יצירת תיקייה",
+            description: "ליצור תיקיות חדשות",
+          },
+          "move-file": {
+            title: "העתקה/שינוי שם של קובץ",
+            description: "הזיזו או שנו את שמות הקבצים והתיקיות.",
+          },
+          "copy-file": {
+            title: "העתק קובץ",
+            description: "העתקת קבצים וספריות",
+          },
+          "write-text-file": {
+            title: "יצירת קובץ טקסט",
+            description: "יצירת קבצי טקסט חדשים או החלפת קבצי טקסט קיימים",
+          },
+        },
+      },
+      createFiles: {
+        title: "יצירת מסמכים",
+        description:
+          "אפשרו למתווך שלכם ליצור פורמטים של מסמכים בינאריים, כמו מצגות של פאוורPoint, גיליונות אלקטרוניים של Excel, מסמכי Word ו-PDF. ניתן להוריד את הקבצים ישירות מהחלון של השיחה.",
+        configuration: "סוגי המסמכים הזמינים",
+        skills: {
+          "create-text-file": {
+            title: "קבצי טקסט",
+            description:
+              "צרו קבצי טקסט עם כל תוכן ותוספת (כגון .txt, .md, .json, .csv וכו').",
+          },
+          "create-pptx": {
+            title: "מצגות של פאוור פוינט",
+            description:
+              "צרו מצגות חדשות בפורמט PowerPoint, הכוללות שקופיות, כותרות ונקודות עיקריות.",
+          },
+          "create-pdf": {
+            title: "מסמכים בפורמט PDF",
+            description:
+              "יצירת מסמכים בפורמט PDF ממחרוזות markdown או טקסט פשוט, עם עיצוב בסיסי.",
+          },
+          "create-xlsx": {
+            title: "גיליונות אקסל",
+            description:
+              "צור מסמכי Excel עבור נתונים טבלאיים, הכוללים גיליונות ועריכת עיצוב.",
+          },
+          "create-docx": {
+            title: "מסמכים בפורמט Word",
+            description: "צור מסמכים בפורמט Word עם עיצוב ועיצוב בסיסיים.",
+          },
+        },
+      },
+      gmail: {
+        title: "חיבור ל-GMail",
+        description:
+          'אפשר לאгент שלכם לתקשר עם Gmail – לחפש הודעות דוא"ל, לקרוא דיונים, ליצור טיוטות, לשלוח הודעות דוא"ל ולנהל תיבת הדואר. <a>קרא את התיעוד</a>.',
+        multiUserWarning:
+          "שילוב עם ג'ימל אינו זמין במצב רב משתמשים מטעמי אבטחה. אנא כבו את מצב רב משתמשים כדי להשתמש בתכונה זו.",
+        configuration: "הגדרת חשבון Gmail",
+        deploymentId: "מזהה הפריסה",
+        deploymentIdHelp: "מזהה הפריסה מהאפליקציה שלך של Google Apps Script.",
+        apiKey: "מפתח API",
+        apiKeyHelp:
+          "מפתח ה-API שבה הגדרת בסביבת העבודה של Google Apps Script שלך.",
+        configurationRequired:
+          "אנא הגדירו את מזהה ההפצה ואת מפתח ה-API כדי לאפשר את יכולות Gmail.",
+        configured: "הוגדר",
+        searchSkills: "כישורים לחיפוש...",
+        noSkillsFound: "לא נמצאו תוצאות התואמות את החיפוש שלך.",
+        categories: {
+          search: {
+            title: 'חיפוש וקריאת הודעות דוא"ל',
+            description: 'חפש וקרא הודעות דוא"ל מהתיבת הדוא"ל של ג\'ימל שלך.',
+          },
+          drafts: {
+            title: 'הודעות דוא"ל לדוגמה',
+            description: 'יצירה, עריכה וניהול של טיוטות של הודעות דוא"ל.',
+          },
+          send: {
+            title: "שליחה ומתן מענה למיילים",
+            description: "שלחו מיילים ונענו לדיונים באופן מיידי.",
+          },
+          threads: {
+            title: 'ניהול שרשראות דוא"ל',
+            description:
+              'ניהול תכתובות דוא"ל – סימון כ"קרא/לא קרא", ארכיון, תיבת זבל',
+          },
+          account: {
+            title: "נתונים על שילוב",
+            description: "צפו בסטטיסטיקות של תיבת הדואר ובתמונות החשבון",
+          },
+        },
+        skills: {
+          search: {
+            title: 'חיפוש הודעות דוא"ל',
+            description: "חיפוש הודעות דוא\"ל באמצעות תחביר שאילתות של ג'ימייל",
+          },
+          readThread: {
+            title: "קרא את השרשור",
+            description: "קרא את כל שרשרת האימיילים שנוצרה על ידי ID.",
+          },
+          createDraft: {
+            title: "יצירת טיוטה",
+            description: "צור טיוטת אימייל חדשה",
+          },
+          createDraftReply: {
+            title: "יצירת תגובה ראשונית",
+            description: "צור תגובה ראשונית לפורום קיים.",
+          },
+          updateDraft: {
+            title: "גרסה עדכנית",
+            description: 'עדכן הודעת דוא"ל קיימת',
+          },
+          getDraft: {
+            title: "קבל טיוטה",
+            description: "השגת גרסה ספציפית לפי מספר זיהוי",
+          },
+          listDrafts: {
+            title: "גרסאות טיוטה",
+            description: "רשום את כל ההודעות המאובזרות",
+          },
+          deleteDraft: {
+            title: "מחיקת טיוטה",
+            description: "מחיקת תגובה מקושטת",
+          },
+          sendDraft: {
+            title: "שלח טיוטה",
+            description: "שלח גרסה קיימת של מייל",
+          },
+          sendEmail: {
+            title: "שלח אימייל",
+            description: "שלח מייל באופן מיידי",
+          },
+          replyToThread: {
+            title: "תגובה לדיון",
+            description: "התגובה מיידית לשרשור אימיילים",
+          },
+          markRead: {
+            title: "מרק רד",
+            description: 'סמנו נושא כ"קרא"',
+          },
+          markUnread: {
+            title: "סמן כלא קרא",
+            description: "סמנו נושא כלא קרא",
+          },
+          moveToTrash: {
+            title: "העבר למיחזור",
+            description: "העברת נושא לקבצי האשפה",
+          },
+          moveToArchive: {
+            title: "ארכיון",
+            description: "שמור את הדיון",
+          },
+          moveToInbox: {
+            title: "העבר לסמאר",
+            description: "העבר את הדיון לתיבת הדואר הנכנס",
+          },
+          getMailboxStats: {
+            title: "סטטיסטיקות של תיבת דואר",
+            description:
+              "קבל ספירה של הודעות שטרם נקראו וסטטיסטיקות של תיבת הדואר.",
+          },
+          getInbox: {
+            title: "קבל תיבת הדואר",
+            description:
+              'דרך פשוטה ומהירה לקבל את הודעות הדוא"ל מהתיבת הדוא"ל של ג\'ימל',
+          },
+        },
+      },
+      outlook: {
+        title: "חיבור ל-Outlook",
+        description:
+          'אפשר לאגנט שלכם לתקשר עם Microsoft Outlook – לחפש הודעות דוא"ל, לקרוא דיונים, ליצור טיוטות, לשלוח הודעות דוא"ל ולנהל תיבת הדואר שלכם באמצעות Microsoft Graph API. <a>קראו את התיעוד</a>.',
+        multiUserWarning:
+          "שילוב עם Outlook אינו זמין במצב רב-משתמשים מטעמי אבטחה. אנא בטל את מצב רב-משתמשים כדי להשתמש בתכונה זו.",
+        configuration: "הגדרת תצורה (Outlook)",
+        authType: "סוג חשבון",
+        authTypeHelp:
+          'בחר איזה סוגי חשבונות מיקרוסופט יכולים לאמת. "כל החשבונות" תומך הן בחשבונות אישיים והן בחשבונות עבודה/לימודים. "רק חשבונות אישיים" מגביל את השימוש לחשבונות מיקרוסופט אישיים בלבד. "רק חשבונות ארגוניים" מגביל את השימוש לחשבונות עבודה/לימודים מחשבון Azure AD ספציפי.',
+        authTypeCommon: "כל החשבונות (אישיים וקשורים לעבודה/לימודים)",
+        authTypeConsumers: "חשבונות אישיים של מיקרוסופט בלבד",
+        authTypeOrganization: "חשבונות רק עבור ארגונים (דורש מזהה שוכר)",
+        clientId: "מספר זיהוי של לקוח (יישום)",
+        clientIdHelp: "מזהה היישום (לקוח) מההרשמה של היישום שלך ב-Azure AD",
+        tenantId: "מספר מזהה (שוכר)",
+        tenantIdHelp:
+          "מזהה ה-ID של הלקוח (שוכר) מההרשמה של היישום שלך ב-Azure AD. נדרש רק לאימות מתוך הארגון בלבד.",
+        clientSecret: "סוד לקוח",
+        clientSecretHelp:
+          "הערך הסודי של הלקוח מההרשמה של היישום שלך ב-Azure AD",
+        configurationRequired:
+          "אנא הגדירו את מזהה הלקוח והסיסמה כדי לאפשר את יכולות Outlook.",
+        authRequired:
+          "שמרו את הפרטים שלכם תחילה, ולאחר מכן השתמשו באימות של מיקרוסופט כדי להשלים את ההגדרה.",
+        authenticateWithMicrosoft: "אימות באמצעות מיקרוסופט",
+        authenticated: "התחברות מוצלחת עם Microsoft Outlook.",
+        revokeAccess: "ביטול גישה",
+        configured: "מוגדר",
+        searchSkills: "כישורים במחקר...",
+        noSkillsFound: "אין התאמות לחיפוש שלך.",
+        categories: {
+          search: {
+            title: 'חיפוש וקריאת הודעות דוא"ל',
+            description: 'חפש וקרא הודעות דוא"ל מהתיבת הדוא"ל של Outlook שלך.',
+          },
+          drafts: {
+            title: 'הודעות דוא"ל לדוגמה',
+            description: 'יצירה, עריכה וניהול של טיוטות של הודעות דוא"ל',
+          },
+          send: {
+            title: 'שלח הודעות דוא"ל',
+            description: "שלחו מיילים חדשים או הגיבו למיילים באופן מיידי.",
+          },
+          account: {
+            title: "נתוני אינטגרציה",
+            description: "צפו בסטטיסטיקות של תיבת הדואר ובמידע על החשבון.",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "קבל תיבת דואר",
+            description: "קבל מיילים חדשים מהתיבת הדואר שלך ב-Outlook.",
+          },
+          search: {
+            title: 'חיפוש הודעות דוא"ל',
+            description: 'חיפוש הודעות דוא"ל באמצעות תחביר החיפוש של Microsoft',
+          },
+          readThread: {
+            title: "קרא שיחה",
+            description: 'קראו את כל רצף ההודעות בדוא"ל.',
+          },
+          createDraft: {
+            title: "יצירת טיוטה",
+            description: "צור טיוטת מייל חדשה או טיוטת תגובה למייל קיים.",
+          },
+          updateDraft: {
+            title: "גרסה עדכנית",
+            description: 'עדכן הודעת דוא"ל קיימת',
+          },
+          listDrafts: {
+            title: "גרסאות ראשוניות",
+            description: "רשום את כל ההודעות המיילים המוצעות",
+          },
+          deleteDraft: {
+            title: "מחיקת טיוטה",
+            description: "מחיקת טיוטת אימייל",
+          },
+          sendDraft: {
+            title: "שלח טיוטה",
+            description: "שלח גרסה קיימת של מייל",
+          },
+          sendEmail: {
+            title: "שלח מייל",
+            description: "שלח מייל חדש או הגיב למייל קיים באופן מיידי.",
+          },
+          getMailboxStats: {
+            title: "סטטיסטיקות של תיבת דואר",
+            description: "קבל ספירת תיקיות ונתונים סטטיסטיים עבור תיבות דואר.",
+          },
+        },
+      },
+      googleCalendar: {
+        title: "חיבור ל-Google Calendar",
+        description:
+          "אפשרו לסוכן שלכם לתקשר עם גוגל קלנדר - לצפות בקלנדרים, לקבל אירועים, ליצור ולעדכן אירועים, ולנהל אישורי השתתפות. <a>קראו את התיעוד</a>.",
+        multiUserWarning:
+          "שילוב עם גוגל קלנדר אינו זמין במצב רב-משתמשים מטעמי אבטחה. אנא כבו את מצב רב-משתמשים כדי להשתמש בתכונה זו.",
+        configuration: "הגדרת גלובל קלנדר",
+        deploymentId: "מזהה הפריסה",
+        deploymentIdHelp: "מזהה הפריסה מהאפליקציה שלך של Google Apps Script",
+        apiKey: "מפתח API",
+        apiKeyHelp:
+          "המפתח של ה-API שקבעת בהגדרות של סקריפט האפליקציות של גוגל.",
+        configurationRequired:
+          "אנא הגדירו את מזהה ההפצה ואת מפתח ה-API כדי לאפשר את הפונקציונליות של גוגל קלנדר.",
+        configured: "מוגדר",
+        searchSkills: "כישורים לחיפוש...",
+        noSkillsFound: "אין התאמות לחיפוש שלך.",
+        categories: {
+          calendars: {
+            title: "יומני",
+            description: "צפו ונהלו את הלוחות שלכם בגוגל",
+          },
+          readEvents: {
+            title: "קרא על אירועים",
+            description: "צפו וחפשו אירועים בלוח השנה",
+          },
+          writeEvents: {
+            title: "יצירה ועדכון אירועים",
+            description: "ליצור אירועים חדשים ולשנות את האירועים הקיימים.",
+          },
+          rsvp: {
+            title: "ניהול אישורי השתתפות",
+            description: "נהלו את סטטוס התגובה שלכם לאירועים",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "רשימת לוחות",
+            description: "רשום את כל הקלנדרים שבבעלותך או אליהם מנויים.",
+          },
+          getCalendar: {
+            title: "קבל פרטים על הקלנדר",
+            description: "קבל מידע מפורט על לוח שנה ספציפי.",
+          },
+          getEvent: {
+            title: "קבל אירוע",
+            description: "קבל מידע מפורט על אירוע ספציפי",
+          },
+          getEventsForDay: {
+            title: "מצא אירועים ליום",
+            description: "קבלו את כל האירועים המתוכננים לתאריך ספציפי.",
+          },
+          getEvents: {
+            title: "קבל אירועים (טווח תאריכים)",
+            description: "קבל אירועים בטווח תאריכים מותאם אישית",
+          },
+          getUpcomingEvents: {
+            title: "רשימת אירועים עתידיים",
+            description:
+              "מצאו אירועים של היום, השבוע או החודש באמצעות מילות מפתח פשוטות.",
+          },
+          quickAdd: {
+            title: "הוספה מהירה של אירוע",
+            description:
+              'ליצור אירוע מתוך טקסט טבעי (למשל, "פגישה מחר בשעה 15:00")',
+          },
+          createEvent: {
+            title: "יצירת אירוע",
+            description: "צור אירוע חדש עם שליטה מלאה על כל התכונות.",
+          },
+          updateEvent: {
+            title: "עדכון אירוע",
+            description: "עדכן אירוע קיים בלוח השנה",
+          },
+          setMyStatus: {
+            title: "הגדר סטטוס אישור השתתפות",
+            description: "לקבל, לדחות, או לקבל באופן זמני אירוע",
+          },
+        },
+      },
+    },
+    mcp: {
+      title: "שרתי MCP",
+      "loading-from-config": "טעינת שרתי MCP מהקובץ בתצורה",
+      "learn-more": "למידע נוסף על שרתי MCP.",
+      "no-servers-found": "לא נמצאו שרתי MCP.",
+      "tool-warning":
+        "על מנת להשיג את הביצועים הטובים ביותר, שקלו לבטל כלים לא רצויים כדי לחסוך במשאבים.",
+      "stop-server": "עצור את שרת ה-MCP",
+      "start-server": "הפעל שרת MCP",
+      "delete-server": "מחיקת שרת ה-MCP",
+      "tool-count-warning":
+        "שרת ה-MCP הזה כולל <b>כלי{{count}} שפעילים, אשר יצרוך מידע הקשר בכל צ'אט. </b> מומלץ לבטל את הכליות הלא רצויות כדי לחסוך במידע ההקשר.",
+      "startup-command": "פקודת התחלה",
+      command: "פקודה",
+      arguments: "טיעונים",
+      "not-running-warning":
+        "שרת ה-MCP הזה אינו פועל – ייתכן שהוא מושבת או שהוא חווה תקלה בעת ההפעלה.",
+      "tool-call-arguments": "ארגומנטים לפונקציות",
+      "tools-enabled": "הכלים פעלו/היו זמינים",
+    },
+    settings: {
+      title: "הגדרות מיומנויות של סוכן",
+      "max-tool-calls": {
+        title: 'מספר קריאות "Max Tool" לכל תגובה',
+        description:
+          "מספר הכלים המקסימלי שאгент יכול לקשור כדי ליצור תגובה אחת. זה מונע קריאות מרובות של כלים ומחזורים אינסופיים.",
+      },
+      "intelligent-skill-selection": {
+        title: "בחירת מיומנויות בהתאם ליכולות",
+        "beta-badge": "בטא",
+        description:
+          "אפשרו שימוש בלתי מוגבל בכלים וצמצום השימוש בטוקנים עד 80% לכל שאילתה – ה-AnythingLLM בוחר באופן אוטומטי את הכישורים המתאימים ביותר לכל בקשה.",
+        "max-tools": {
+          title: "כלים של מקס",
+          description:
+            "מספר המינימום של כלי העבודה שניתן לבחור עבור כל שאילתה. אנו ממליצים להגדיר ערך גבוה יותר עבור מודלים עם הקשר רחב יותר.",
+        },
+      },
+      "clarifying-questions": {
+        title: "אפשר לסוכן לשאול שאלות הבהרה.",
+        "beta-badge": "בטא",
+        description:
+          "כאשר הפונקציה מופעלת, ניתן לבקש מהנציגים לעצור ולשאול שאלות קצרות להבהרה, במקרה שההנחיה שלך אינה ברורה.",
+        "max-per-turn": {
+          title: "מספר שאלות מקסימלי לסיבוב",
+          description: "כמה שאלות הבהרה יכול סוכן לשאול במהלך סקר אחד?",
+        },
+      },
     },
   },
   recorded: {
@@ -474,10 +804,6 @@ const TRANSLATIONS = {
         title: "שם",
         description: "הגדר שם שיוצג בדף ההתחברות לכל המשתמשים.",
       },
-      "chat-message-alignment": {
-        title: "יישור הודעות צ'אט",
-        description: "בחר את מצב יישור ההודעות בעת שימוש בממשק הצ'אט.",
-      },
       "display-language": {
         title: "שפת תצוגה",
         description:
@@ -490,18 +816,6 @@ const TRANSLATIONS = {
         recommended: "גודל מומלץ: 800x200",
         remove: "הסר",
         replace: "החלף",
-      },
-      "welcome-messages": {
-        title: "הודעות פתיחה",
-        description:
-          "התאם אישית את הודעות הפתיחה המוצגות למשתמשים שלך. רק משתמשים שאינם מנהלים יראו הודעות אלה.",
-        new: "חדש",
-        system: "מערכת",
-        user: "משתמש",
-        message: "הודעה",
-        assistant: "עוזר הצ'אט של AnythingLLM",
-        "double-click": "לחץ פעמיים לעריכה...",
-        save: "שמור הודעות",
       },
       "browser-appearance": {
         title: "מראה הדפדפן",
@@ -537,7 +851,33 @@ const TRANSLATIONS = {
       "מפתחות API מאפשרים למחזיק בהם לגשת ולנהל באופן תכנותי את מופע AnythingLLM זה.",
     link: "קרא את תיעוד ה-API",
     generate: "צור מפתח API חדש",
+    empty: "לא נמצאו מפתחות API",
+    actions: "פעולות",
+    messages: {
+      error: "שגיאה: {{error}}",
+    },
+    modal: {
+      title: "יצירת מפתח API חדש",
+      cancel: "ביטול",
+      close: "סגירה",
+      create: "צור מפתח API",
+      helper:
+        "לאחר יצירתו, ניתן להשתמש במפתח ה-API כדי לגשת למופע AnythingLLM זה ולהגדיר אותו באופן תכנותי.",
+      name: {
+        label: "שם",
+        placeholder: "אינטגרציית ייצור",
+        helper: "אופציונלי. השתמש בשם ברור כדי שתוכל לזהות את המפתח הזה בהמשך.",
+      },
+    },
+    row: {
+      copy: "העתק מפתח API",
+      copied: "הועתק",
+      unnamed: "--",
+      deleteConfirm:
+        "האם אתה בטוח שברצונך להשבית את מפתח ה-API הזה?\nלאחר מכן לא יהיה ניתן להשתמש בו יותר.\n\nלא ניתן לבטל פעולה זו.",
+    },
     table: {
+      name: "שם",
       key: "מפתח API",
       by: "נוצר על ידי",
       created: "נוצר",
@@ -647,17 +987,12 @@ const TRANSLATIONS = {
     title: "פרטיות וטיפול בנתונים",
     description:
       "זוהי התצורה שלך לאופן שבו ספקים צד שלישי מחוברים ו-AnythingLLM מטפלים בנתונים שלך.",
-    llm: "בחירת מודל שפה (LLM)",
-    embedding: "העדפות הטמעה",
-    vector: "מסד נתונים וקטורי",
     anonymous: "טלמטריה אנונימית מופעלת",
   },
   connectors: {
     "search-placeholder": "חפש מחברי נתונים",
     "no-connectors": "לא נמצאו מחברי נתונים.",
     obsidian: {
-      name: "Obsidian",
-      description: "ייבא כספת Obsidian בלחיצה אחת.",
       vault_location: "מיקום כספת",
       vault_description:
         "בחר את תיקיית כספת ה-Obsidian שלך כדי לייבא את כל ההערות והחיבורים ביניהן.",
@@ -701,7 +1036,6 @@ const TRANSLATIONS = {
       URL_explained: "כתובת ה-URL של מאגר ה-GitLab שברצונך לאסוף.",
       token: "אסימון גישה של GitLab",
       optional: "אופציונלי",
-      token_explained: "אסימון גישה למניעת הגבלת קצב.",
       token_description: "בחר ישויות נוספות לאחזור מה-API של GitLab.",
       token_explained_start: "ללא ",
       token_explained_link1: "אסימון גישה אישי",
@@ -732,9 +1066,6 @@ const TRANSLATIONS = {
       URL_explained_end: " זמינות.",
       task_explained:
         "לאחר השלמה, התמלול יהיה זמין להטמעה בסביבות עבודה בבורר המסמכים.",
-      language: "שפת התמלול",
-      language_explained: "בחר את שפת התמלול שברצונך לאסוף.",
-      loading_languages: "-- טוען שפות זמינות --",
     },
     "website-depth": {
       name: "גרדן קישורים המוני",
@@ -794,20 +1125,18 @@ const TRANSLATIONS = {
       "search-document": "חפש מסמך",
       "no-documents": "אין מסמכים",
       "move-workspace": "העבר לסביבת עבודה",
-      name: "שם",
       "delete-confirmation":
         "האם אתה בטוח שברצונך למחוק קבצים ותיקיות אלה?\nפעולה זו תסיר את הקבצים מהמערכת ותסיר אותם אוטומטית מכל סביבת עבודה קיימת.\nפעולה זו אינה הפיכה.",
       "removing-message":
         "מסיר {{count}} מסמכים ו-{{folderCount}} תיקיות. אנא המתן.",
       "move-success": "{{count}} מסמכים הועברו בהצלחה.",
-      date: "תאריך",
-      type: "סוג",
       no_docs: "אין מסמכים",
       select_all: "בחר הכל",
       deselect_all: "בטל בחירת הכל",
       remove_selected: "הסר נבחרים",
-      costs: "*עלות חד פעמית להטמעות",
       save_embed: "שמור והטמע",
+      "total-documents_one": "{{count}} מסמך",
+      "total-documents_other": "מסמכים {{count}}",
     },
     upload: {
       "processor-offline": "מעבד המסמכים אינו זמין",
@@ -846,17 +1175,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
-    welcome: "ברוכים הבאים לסביבת העבודה החדשה שלך.",
-    get_started: "כדי להתחיל, או",
-    get_started_default: "כדי להתחיל",
-    upload: "העלה מסמך",
-    or: "או",
     attachments_processing: "קבצים מצורפים בעיבוד. אנא המתן...",
-    send_chat: "שלח צ'אט.",
     send_message: "שלח הודעה",
     attach_file: "צרף קובץ לצ'אט זה",
-    slash: "הצג את כל פקודות הסלאש הזמינות לצ'אט.",
-    agents: "הצג את כל הסוכנים הזמינים שתוכל להשתמש בהם לצ'אט.",
     text_size: "שנה גודל טקסט.",
     microphone: "אמור את ההנחיה שלך.",
     send: "שלח הודעת הנחיה לסביבת העבודה",
@@ -866,19 +1187,11 @@ const TRANSLATIONS = {
     regenerate_response: "צור תגובה מחדש",
     good_response: "תגובה טובה",
     more_actions: "פעולות נוספות",
-    hide_citations: "הסתר ציטוטים",
-    show_citations: "הצג ציטוטים",
-    pause_tts_speech_message: "השהה הקראת הודעה (TTS)",
     fork: "פצל (Fork)",
     delete: "מחק",
-    save_submit: "שמור ושלח",
     cancel: "בטל",
     edit_prompt: "ערוך הנחיה",
     edit_response: "ערוך תגובה",
-    at_agent: "@agent",
-    default_agent_description: " - סוכן ברירת המחדל עבור סביבת עבודה זו.",
-    custom_agents_coming_soon: "סוכנים מותאמים אישית יגיעו בקרוב!",
-    slash_reset: "/reset",
     preset_reset_description: "נקה את היסטוריית הצ'אט שלך והתחל צ'אט חדש",
     add_new_preset: " הוסף הגדרה קבועה חדשה",
     command: "פקודה",
@@ -899,6 +1212,98 @@ const TRANSLATIONS = {
       saving: "מגדיר מודל כברירת מחדל של סביבת העבודה...",
       missing_credentials: "חסרים אישורים לספק זה!",
       missing_credentials_description: "לחץ להגדרת אישורים",
+    },
+    submit: "הגש",
+    edit_info_user:
+      '"שלח" מחזיר את התגובה של הבינה המלאכותית. "שמור" מעדכן רק את ההודעה שלך.',
+    edit_info_assistant: "השינויים שאתם מבצעים יישמרו ישירות בתגובה זו.",
+    see_less: "ראה פחות",
+    see_more: "לראות עוד",
+    tools: "כלים",
+    text_size_label: "גודל הטקסט",
+    select_model: "בחר מודל",
+    sources: "מקורות",
+    document: "מסמך",
+    similarity_match: "משחק",
+    source_count_one: "{{count}} - הפניה",
+    source_count_other: "{{count}} – מקורות",
+    add_new: "הוסף חדש",
+    edit: "עריכה",
+    publish: "להוציא לאור",
+    stop_generating: "הפסיקו ליצור תגובה",
+    slash_commands: "פקודות קיצור",
+    agent_skills: "כישורים של סוכן",
+    manage_agent_skills: "ניהול מיומנויות של סוכנים",
+    agent_skills_disabled_in_session:
+      'לא ניתן לשנות כישורים במהלך סשן פעיל. יש להשתמש בפקודה "/exit" כדי לסיים את הסשן תחילה.',
+    start_agent_session: "התחלת סשן עם סוכן",
+    use_agent_session_to_use_tools:
+      "ניתן להשתמש בכלי הדיון באמצעות פתיחת סשן עם נציג על ידי שימוש בסימן '@agent' בתחילת ההודעה.",
+    agent_invocation: {
+      model_wants_to_call: "המודל רוצה להתקשר",
+      approve: "אישור",
+      reject: "דחייה",
+      always_allow: "יש תמיד להקצות {{skillName}}",
+      tool_call_was_approved: "הבקשה לקבלת הכלי אושרה.",
+      tool_call_was_rejected: "בקשת השימוש בכלי נדחתה.",
+      clarifying_skip: "השליח יחליט",
+      clarifying_submit: "הגש",
+      clarifying_skipped: "אתם מאפשרים לסוכן לקבל את ההחלטה.",
+      clarifying_timeout: "לא התקבל מענה בזמן.",
+      clarifying_pagination: "{{current}} של {{total}}",
+      clarifying_prev_aria: "השאלה הקודמת",
+      clarifying_next_aria: "השאלה הבאה",
+      clarifying_close_aria: "סגור ודלג",
+      clarifying_other: "שאר",
+      clarifying_other_placeholder: "הקלידו את התשובה",
+      batch_progress: "{{answered}} מ-{{total}} השיב",
+      batch_skip_this: "למעלה",
+      batch_submit_all: "יש לשלוח את כל",
+      batch_next: "הבא",
+      answer_skipped: "[המשתמש עבר לשלב הבא]",
+    },
+    custom_skills: "כישורים מותאמים אישית",
+    agent_flows: "זרימת סוכנים",
+    no_tools_found: "לא נמצאו כלים תואמים.",
+    loading_mcp_servers: "טעינת שרתי ה-MCP...",
+    app_integrations: "אינטגרציות עם אפליקציות",
+    sub_skills: "כישורים ספציפיים",
+    memories: {
+      title: "זיכרונות",
+      empty:
+        "עד כה, אין זיכרונות. לאחר שתתקשרו עם הצ'אטבוט, זיכרונות נוספים יתמלאו.",
+      empty_cta: "ליצור זיכרון חדש",
+      tab_workspace: "חלל עבודה",
+      tab_global: "גלובלי",
+      toggle: {
+        label: "אפשרות להתאים אישית",
+        description:
+          "אפשר לאשתף את העוזר שלך במידע עלייך או על סביבת העבודה, ובכך להשתמש בו בשיחות.",
+      },
+      auto_extraction: {
+        label: "זיכרונות אוטומטיים",
+        description:
+          "אפשר להגדיר את העוזר שלך ליצור תזכורות באופן אוטומטי ברקע.",
+      },
+      menu: {
+        edit: "עריכה",
+        delete: "מחיקה",
+        move_to_global: "התפשטות גלובלית",
+        move_to_workspace: "מעבר למרחב העבודה",
+      },
+      modal: {
+        create_title: "צור זיכרון",
+        edit_title: "עריכת זיכרון",
+        create_description:
+          'הזיכרונות צריכים להיות הצהרה אחת, תמציתית. לדוגמה: "המשתמש מעדיף את Python על פני JavaScript".',
+        edit_description: "עדכן את התוכן של הזיכרון הזה.",
+        label: "זיכרון",
+        placeholder:
+          "לדוגמה, שם המשתמש הוא ג'ואי, המשתמש עובד על פלטפורמת AnythingLLM, וכן הלאה.",
+        create: "צור",
+        save: "שמור",
+        cancel: "בטל",
+      },
     },
   },
   profile_settings: {
@@ -958,14 +1363,11 @@ const TRANSLATIONS = {
         private_description: "הנחיות מערכת פרטיות נראות רק לך.",
         publish_button: "פרסם במרכז הקהילה",
         submitting: "מפרסם...",
-        submit: "פרסם במרכז הקהילה",
         prompt_label: "הנחיה",
         prompt_description: "זוהי הנחיית המערכת בפועל שתשמש להנחיית מודל השפה.",
         prompt_placeholder: "הזן את הנחיית המערכת שלך כאן...",
       },
       agent_flow: {
-        public_description: "זרימות סוכן ציבוריות נראות לכולם.",
-        private_description: "זרימות סוכן פרטיות נראות רק לך.",
         success_title: "הצלחה!",
         success_description: "זרימת הסוכן שלך פורסמה במרכז הקהילה!",
         success_thank_you: "תודה על השיתוף בקהילה!",
@@ -982,7 +1384,6 @@ const TRANSLATIONS = {
           "תגיות משמשות לתיוג זרימת הסוכן שלך לחיפוש קל יותר. ניתן להוסיף מספר תגיות. עד 5 תגיות. עד 20 תווים לתגית.",
         tags_placeholder: "הקלד והקש אנטר להוספת תגיות",
         visibility_label: "נראות",
-        publish_button: "פרסם במרכז הקהילה",
         submitting: "מפרסם...",
         submit: "פרסם במרכז הקהילה",
         privacy_note:
@@ -1000,10 +1401,6 @@ const TRANSLATIONS = {
         description_label: "תיאור",
         description_description:
           "זהו התיאור של פקודת הסלאש שלך. השתמש בזה כדי לתאר את מטרת הפקודה.",
-        command_label: "פקודה",
-        command_description:
-          "זוהי פקודת הסלאש שמשתמשים יקלידו כדי להפעיל הגדרה קבועה זו.",
-        command_placeholder: "הפקודה-שלי",
         tags_label: "תגיות",
         tags_description:
           "תגיות משמשות לתיוג פקודת הסלאש שלך לחיפוש קל יותר. ניתן להוסיף מספר תגיות. עד 5 תגיות. עד 20 תווים לתגית.",
@@ -1055,6 +1452,400 @@ const TRANSLATIONS = {
     notAssigned:
       "אינך מוקצה לכל סביבת עבודה.\nיש ליצור קשר עם המנהל שלך כדי לבקש גישה לסביבת עבודה.",
     goToWorkspace: 'עבור לסביבת עבודה "{{workspace}}"',
+  },
+  telegram: {
+    title: "בוט של טלגרם",
+    description:
+      "חברו את ההתקנה של AnythingLLM ל-Telegram, כך שתוכלו לתקשר עם סביבות העבודה שלכם ממכשיר כלשהו.",
+    setup: {
+      step1: {
+        title: "שלב 1: צרו את הבוט שלכם ב-Telegram",
+        description:
+          "פתח את <code> ב-Telegram, שלח </code> לכתובת <code>@BotFather, עקוב אחר ההוראות, והעתק את מזהה ה-API.",
+        "open-botfather": "פתוח את BotFather",
+        "instruction-1": "1. פתחו את הקישור או סרקו את קוד ה-QR",
+        "instruction-2":
+          "2. שלחו את <code>/newbot</code> לכתובת <code>@BotFather</code>",
+        "instruction-3": "3. בחרו שם וכינוי משתמש עבור הבוט שלכם",
+        "instruction-4": "4. העתק את מזהה ה-API שקיבלת.",
+      },
+      step2: {
+        title: "שלב 2: חברו את הבוט שלכם",
+        description:
+          "הדבק את טוקן ה-API שקיבלת מחשבון @BotFather ובחר את חלל העבודה הראשי עבור הבוט שלך, כדי שיוכל לתקשר.",
+        "bot-token": "טוקן בוט",
+        connecting: "חיבור...",
+        "connect-bot": "צ'אטבוט",
+      },
+      security: {
+        title: "הגדרות אבטחה מומלצות",
+        description:
+          "לנוחיות נוספת, יש לבצע את ההגדרות הללו דרך חשבון ה-@BotFather.",
+        "disable-groups": "— למנוע הוספת רובוטים לקבוצות",
+        "disable-inline": "– למנוע שימוש בבוט בחיפוש ישיר",
+        "obscure-username":
+          "השתמש בשם משתמש של בוט שאינו בולט, כדי להקטין את הסיכוי שהוא יימצא.",
+      },
+      "toast-enter-token": "אנא הזן את טוקן הבוט.",
+      "toast-connect-failed": "לא הצליח להתחבר עם הבוט.",
+    },
+    connected: {
+      status: "מחובר",
+      "status-disconnected": "נתקע – הטוקן עשוי להיות פג או לא תקין",
+      "placeholder-token": "הדבק את מפתח הבוט החדש...",
+      reconnect: "שוב קשר",
+      workspace: "חלל עבודה",
+      "bot-link": "קישור לבוט",
+      "voice-response": "תגובה קולית",
+      disconnecting: "ניתוק...",
+      disconnect: "ניתוק",
+      "voice-text-only": "טקסט בלבד",
+      "voice-mirror": "משקף (להגיב בקול כאשר המשתמש שולח קול)",
+      "voice-always": "יש לציין תמיד (לשלוח קבצי אודיו עם כל תגובה)",
+      "toast-disconnect-failed": "לא הצלחתי לבטל את פעולת הבוט.",
+      "toast-reconnect-failed": "לא הצליח לשחזר את הבוט.",
+      "toast-voice-failed": "לא הצליח לעדכן את מצב השמע.",
+      "toast-approve-failed": "לא ניתן לאשר את המשתמש.",
+      "toast-deny-failed": "לא הצליח לסרב לבקשה של המשתמש.",
+      "toast-revoke-failed": "לא הצלחתי לבטל את החשבון של המשתמש.",
+    },
+    users: {
+      "pending-description":
+        "משתמשים הממתינים לאישור. יש להתאים את הקוד שמוצג כאן עם הקוד המוצג בשיחה שלהם ב-Telegram.",
+      unknown: "לא ידוע",
+    },
+  },
+  scheduledJobs: {
+    title: "משימות מתוכננות",
+    enableNotifications: "אפשר להפעיל התראות בדפדפן עבור תוצאות חיפוש עבודה.",
+    description:
+      "צור משימות AI חוזרות שיופעלו על פי לוח זמנים. כל משימה תפעיל שאילתה עם כלים אופציונליים ותשמור על התוצאה לבדיקה.",
+    newJob: "תפקיד חדש",
+    loading: "טעינה...",
+    emptyTitle: "אין משימות מתוכננות עדיין",
+    emptySubtitle: "צרו אחד כדי להתחיל.",
+    table: {
+      name: "שם",
+      schedule: "לוח זמנים",
+      status: "סטטוס",
+      lastRun: "הפעולה האחרונה",
+      nextRun: "הפעולה הבאה",
+      actions: "פעולות",
+    },
+    confirmDelete: "האם אתה בטוח שאתה רוצה למחוק משימה זו שתוכננה?",
+    toast: {
+      deleted: "המשרה נמחקת",
+      triggered: "התעסוקה בוצעה בהצלחה.",
+      triggerFailed: "לא הצליח להפעיל את העבודה",
+      triggerSkipped: "העבודה כבר נמצאת בשלבי ביצוע.",
+      killed: "העבודה הסתיימה בהצלחה.",
+      killFailed: "לא הצלחתי לעצור את העבודה",
+    },
+    row: {
+      neverRun: "לעולם אל תרוץ",
+      viewRuns: "מסלולים",
+      runNow: "תתחילו עכשיו",
+      enable: "אפשר",
+      disable: "לכבות",
+      edit: "עריכה",
+      delete: "מחיקה",
+    },
+    modal: {
+      titleEdit: "עריכת משימה מתוכננת",
+      titleNew: "משימה מתוזמנת חדשה",
+      nameLabel: "שם",
+      namePlaceholder: "לדוגמה: תקציר חדשות יומי",
+      promptLabel: "הוראה",
+      promptPlaceholder: "ההוראה להפעיל בכל ביצוע...",
+      scheduleLabel: "לוח זמנים",
+      modeBuilder: "מבנה",
+      modeCustom: "מותאם אישית",
+      cronPlaceholder: "ביטוי לזמני ביצוע (למשל, 0 9 * * *)",
+      currentSchedule: "לוח הזמנים הנוכחי:",
+      toolsLabel: "כלים (אופציונלי)",
+      toolsDescription:
+        "בחר את כלי העבודה שניתן להשתמש בהם עבור משימה זו. אם לא נבחרו כלים, המשימה תפעל ללא שימוש בכלים.",
+      toolsSearch: "חיפוש",
+      toolsNoResults: "אין כלים המתאימים",
+      required: "נדרש",
+      requiredFieldsBanner: "אנא מלאו את כל השדות הנדרשים כדי ליצור משרה.",
+      cancel: "בטל",
+      saving: "חיסכון...",
+      updateJob: "עדכון משרה",
+      createJob: "יצירת משרה",
+      jobUpdated: "פרסום מעודכן",
+      jobCreated: "תפקיד נוצר",
+    },
+    builder: {
+      fallbackWarning:
+        'הביטוי הזה אינו ניתן לעריכה באופן ויזואלי. עברו למצב "מותאם אישית" כדי לשמור עליו, או שנה את כל מה שמתחת כדי להחליף אותו.',
+      run: "לרוץ",
+      frequency: {
+        minute: "כל דקה",
+        hour: "לכל שעה",
+        day: "יומי",
+        week: "שבועי",
+        month: "חודשי",
+      },
+      every: "כל",
+      minuteOne: "1 דקה",
+      minuteOther: "{{count}} דקות",
+      atMinute: "במהלך",
+      pastEveryHour: "כל שעה",
+      at: "במהלך",
+      on: "על",
+      onDay: "ביום",
+      ofEveryMonth: "של כל חודש",
+      weekdays: {
+        sun: "שמש",
+        mon: "יום שני",
+        tue: "יום שני",
+        wed: "יום רביעי",
+        thu: "יום רביעי",
+        fri: "יום שישי",
+        sat: "שבת",
+      },
+    },
+    runHistory: {
+      back: "חזרה למחיפוש עבודה",
+      title: "היסטוריית ריצות: {{name}}",
+      schedule: "לוח זמנים:",
+      emptyTitle: "עדיין לא בוצעו עבודות עבור פרויקט זה.",
+      emptySubtitle: "הפעל את העבודה עכשיו וראה את התוצאות שלה.",
+      runNow: "התחילו עכשיו",
+      table: {
+        status: "סטטוס",
+        started: "התחיל",
+        duration: "משך זמן",
+        error: "שגיאה",
+      },
+      stopJob: "להפסיק עבודה",
+    },
+    runDetail: {
+      loading: "טעינת פרטי הריצה...",
+      notFound: "לא נמצאה פעולה.",
+      back: "חזרה",
+      unknownJob: "תפקיד לא ידוע",
+      runHeading: "{{name}} — הפעל את מספר {{id}}",
+      duration: "משך: {{value}}",
+      creating: "יצירה...",
+      threadFailed: "לא הצליח ליצור דיון.",
+      sections: {
+        prompt: "הוראה",
+        error: "שגיאה",
+        thinking: "מחשבות ({{count}})",
+        toolCalls: "קריאות לכלי ({{count}})",
+        files: "קבצים ({{count}})",
+        response: "תגובה",
+        metrics: "מדדים",
+      },
+      metrics: {
+        promptTokens: "מילות מפתח:",
+        completionTokens: "טוקנים לסיום:",
+      },
+      stopJob: "הפסק עבודה",
+      killing: "עצירה...",
+      continueInThread: "להמשיך בשיחה",
+    },
+    toolCall: {
+      arguments: "טיעונים:",
+      showResult: "הצג תוצאה",
+      hideResult: "הסתר תוצאה",
+    },
+    file: {
+      unknown: "קובץ לא מזוהה",
+      download: "הורדה",
+      downloadFailed: "לא הצליח להוריד את הקובץ",
+      types: {
+        powerpoint: "פאוורPoint",
+        pdf: "מסמך PDF",
+        word: "מסמך מילה",
+        spreadsheet: "טבלה",
+        generic: "קובץ",
+      },
+    },
+    status: {
+      completed: "הושלם",
+      failed: "נכשל",
+      timed_out: "הזמן פג",
+      running: "ריצה",
+      queued: "באי תור",
+    },
+  },
+  "model-router": {
+    title: "מודלים של ראוטרים",
+    description:
+      "נתב מודל מאפשר לך להגדיר כללים כך שהודעות צ'אט יועברו באופן אוטומטי לספקי ומודלים שונים של מודלים של שפה, בהתאם לתנאים.",
+    table: {
+      name: "שם",
+      fallback: "תוכנית מגירה",
+      rules: "כללים",
+      workspaces: "חללי עבודה",
+    },
+    "no-routers": "עדיין אין מודלים של נתבים",
+    "empty-description":
+      "אין מכשירי רשת מוגדרים עדיין. יש להגדיר אחד כדי להתחיל.",
+    "new-router-button": "ראוטר חדש",
+    "delete-confirm":
+      'האם אתה בטוח שאתה רוצה למחוק את הראוטר "{{name}}"?\nפעולה זו תסיר את כל הכללים שלה ותנתק כל סביבת עבודה המשתמשת בה.\n\nפעולה זו אינה ניתנת לבטל.',
+    "toast-deleted": "נת המס שלך הוסרו",
+    "toast-delete-failed": "לא הצלחתי למחוק את הראוטר: {{error}}",
+    "new-router": {
+      title: "יצירת מכשיר מודם חדש",
+      name: "שם",
+      "name-placeholder": "למשל, כלי אופטימיזציה של עלויות",
+      description: "תיאור",
+      "description-placeholder": "תיאור אופציונלי",
+      "fallback-label": "ספק ראשי ומודל",
+      "fallback-description":
+        "משמש כאשר אין כלל ניתוב התואם. משמש גם להערכת כללים שסווגו על ידי מודל שפה גדול (LLM).",
+      "cooldown-label": "זמן קירור (שניות)",
+      "cooldown-help":
+        "כמה זמן החלטת המסלול נשמרת לפני הערכת החוקים מחדש. הגדרות ל-0 כדי לבטל את השמירה.",
+      "name-required": "יש לציין שם.",
+      "fallback-required": "יש לציין את ספק השירות העיקרי ואת המודל הרלוונטי.",
+      cancel: "בטל",
+      create: "יצירת נתב",
+    },
+    "edit-router": {
+      "back-to-routers": "חזרה למודלים של ראוטרים",
+      title: "עריכת נתב: {{name}}",
+      save: "שמור שינויים",
+      "toast-update-failed": "לא הצלחתי לעדכן את הנתב.",
+    },
+    rules: {
+      title: "כללי ניתוב",
+      "title-with-name": "כללי ניתוב: {{name}}",
+      description:
+        "הגדירו את הכללים שקובעים מתי וכיצד הודעות צ'אט מועברות לספקים ודגמים ספציפיים.",
+      "add-rule": "הוסף כלל",
+      "delete-confirm": 'מחיקת הכלל "{{title}}"?',
+      "toast-delete-failed": "לא הצליח למחוק את הכלל.",
+      "toast-reorder-failed": "לא הצליח ליישם את הכללים",
+      "no-rules": "עדיין אין כללים.",
+      "empty-description":
+        "הוסף כלל שיגרום לניתוב הודעות צ'אט לספקים ומודלים ספציפיים.",
+      "new-rule-button": "חוק חדש",
+      "calculated-section-label": "כללים שנקבעו – נבדקו תחילה, בסדר עדיפויות.",
+      "llm-section-label":
+        "כללי LLM – נבדקים כקבוצה, אם אף אחד מהכללים שחושבו לא התאים.",
+      "llm-rule-body":
+        'בצע את הפעולה "<desc>"{{description}}" "</desc>" ואז פנה ל-<route>{{route}}</route>',
+      "calculated-no-conditions":
+        "ללא תנאים – מסל הגעה ל<route>{{route}}</route>",
+      "calculated-single-condition":
+        "אם <prop> נמצא במיקום {{property}} וגם </prop> נמצא במיקום {{comparator}} וגם <val> נמצא במיקום {{value}} אז, יש להעביר את המסלול ל-<route> במיקום {{route}}",
+      "calculated-multi-condition":
+        "אם {{quantifier}} של <cond> נמצא ב{{conditions}} של </cond>, אז יש לכוון את המסלול ל<route> של {{route}} של </route>",
+      "comparator-contains": "כולל",
+      "comparator-matches": "משחקים",
+      "comparator-between": "בין",
+      "badge-llm": "מודל שפה גדול (LLM)",
+      "badge-calculated": "חישב",
+      "aria-drag-to-reorder": "גרור כדי לסדר מחדש",
+      "aria-edit-rule": "כלל עריכה",
+      "aria-delete-rule": "מחיקת חוק",
+      "quantifier-any": "כל",
+      "quantifier-all": "כל",
+    },
+    "rule-form": {
+      "title-label": "כותרת",
+      "rule-type": "סוג כלל",
+      "property-label": "רכוש",
+      "property-select": "בחר",
+      "comparator-label": "מַשְׁבֵּח",
+      "comparator-select": "בחר",
+      "value-label": "ערך",
+      "add-condition": "הוסף תנאי",
+      "remove-condition": "להסיר את התנאי",
+      "conditions-incomplete":
+        "התנאי {{index}} אינו שלם – יש למלא את השדה עבור המיקום, המשוואה והערך.",
+      "match-description-label": "תיאור המשחק",
+      "match-description-placeholder":
+        "למשל, המשתמש שואל על נושאים משפטיים, חוזים או נושאים הקשורים לציות לחוק.",
+      "match-description-help":
+        "תארו את המצב שבו אתם רוצים שהכלל הזה יחול. ה-LLM שלכם ישמש כדי לקבוע אם יש להשתמש בו.",
+      "route-to-label": "מסלול להגעה לספק והמודל",
+      "route-to-description": "כאשר כלל זה מתאים, יש להשתמש בספק/מודל הזה.",
+      cancel: "בטל",
+      saving: "חיסכון...",
+      "update-rule": "כלל עדכון",
+      "create-rule": "יצירת כלל",
+      "title-required": "יש לציין כותרת.",
+      "toast-save-failed": "לא הצליח לשמור את הכלל",
+      "type-calculated-label": "חישב",
+      "type-calculated-description":
+        "התאמה על סמך תכונות של ההודעה, כגון תוכן, מספר הטוקנים או שעת היום.",
+      "type-llm-label": "קטגוריית LLM",
+      "type-llm-description":
+        "השתמש במודל שפה גדול (LLM) כדי לסווג את ההודעה על סמך תיאור שאתה מספק.",
+      "prop-prompt-content": "תוכן מומלץ",
+      "prop-token-count": "ספירת טוקנים בשיחה",
+      "prop-message-count": "מספר הודעות שיחה",
+      "prop-current-hour": "שעה הנוכחית (0-23)",
+      "prop-has-image": "האם יש תמונה מצורפת?",
+      "cmp-contains": "כולל",
+      "cmp-matches-regex": "ביטויים (רגולרי)",
+      "cmp-equals": "שווה ל",
+      "cmp-not-equals": "אינו שווה",
+      "cmp-greater-than": "גדול יותר",
+      "cmp-greater-than-or-equal": "גדול או שווה",
+      "cmp-less-than": "פחות מ",
+      "cmp-less-than-or-equal": "פחות או שווה ל",
+      "cmp-between": "בין (כולל)",
+      "placeholder-between-hour": "למשל, 9:17 (מ-9 בבוקר עד 17:00)",
+      "placeholder-between-numeric": "למשל, 10,50",
+      "placeholder-hour": "למשל, 18 (0-23)",
+      "placeholder-message-count": "למשל, 10",
+      "placeholder-numeric": "למשל, 4000",
+      "placeholder-contains": "למשל, שפת תכנות, פייתון, רוסט",
+      "placeholder-matches": "לדוגמה: /\\bpython\\b/i",
+      "placeholder-default": "לדוגמה, קוד",
+      "help-contains":
+        "רשימה המופרדת בפסיקים – תואמת אם השאילתה מכילה אחד מהערכים (ללא התחשבות בגודל האותיות).",
+      "help-matches":
+        "תבנית רגולרי. יש להשתמש ב-/pattern/ עם דגלים כדי להגדיר רגישות לאותיות (ברירת המחדל היא אי רגישות לאותיות).",
+      "bool-true": "נכון",
+      "bool-false": "לא נכון",
+    },
+    "provider-picker": {
+      "select-provider": "בחר ספק",
+      "setup-required": "(נדרש התקנה)",
+      "loading-models": "טעינת מודלים...",
+      "select-model": "בחר מודל",
+      "enter-model": "הזן שם המודל",
+      "select-provider-first": "בחרו ספק תחילה",
+      "configure-to-continue": "הגדר את {{name}} כדי להמשיך",
+      "configure-provider": "הגדר {{name}}",
+      "setup-credentials":
+        "הזן את הפרטים הנדרשים כדי להשתמש ב-{{name}} כמיקוד.",
+      cancel: "בטל",
+      "save-settings": "שמירת הגדרות",
+      "toast-save-failed": "לא הצליח לשמור הגדרות: {{error}}",
+    },
+    "router-selection": {
+      "loading-routers": "טעינת מכשירי רשת מותאמים אישית...",
+      "no-routers-prefix-settings": "עדיין לא הגדרתי נתב מסוג מסוים.",
+      "no-routers-prefix-workspace": "אין מכשירי רשת מוגדרים.",
+      "no-routers-link": "צור אחת בהגדרות של רשת הווירטואלית.",
+      "model-router-label": "מודם לדוגמה",
+      "select-router": "בחר נתב",
+      "select-description":
+        "בחר את הראוטר שתרצה להשתמש בו עבור אזור העבודה הזה.",
+      "no-routers-chat":
+        'אין מכשירי רשת מוגדרים. צרו אחד בתפריט "הגדרות" > "ספקי בינה מלאכותית" > "מכשיר רשת".',
+      "rule-count": "({{count}} כללים)",
+    },
+    metrics: {
+      "model-router-default": "מודל של רשת אלחוטית",
+    },
+    chat: {
+      "select-router-error": "בחר/י נתב",
+      "invalid-model": "בחירת מודל לא תקינה",
+      "routed-to": "מופנה ל-{{model}} בתוך <route>",
+      "routed-to-rule":
+        "נשלח דרך <route>{{model}}</route> באמצעות <rule>{{ruleTitle}}</rule>",
+    },
   },
 };
 

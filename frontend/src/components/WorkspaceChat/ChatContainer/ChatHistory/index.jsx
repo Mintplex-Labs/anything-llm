@@ -9,19 +9,23 @@ import {
 import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
 import StatusResponse from "./StatusResponse";
+import ToolApprovalRequest from "./ToolApprovalRequest";
+import ClarifyingQuestionCard from "./ClarifyingQuestion";
+import FileDownloadCard from "./FileDownloadCard";
 import { useManageWorkspaceModal } from "../../../Modals/ManageWorkspace";
 import ManageWorkspace from "../../../Modals/ManageWorkspace";
 import { ArrowDown } from "@phosphor-icons/react";
 import debounce from "lodash.debounce";
 import Chartable from "./Chartable";
+import ModelRouteNotification from "./ModelRouteNotification";
 import Workspace from "@/models/workspace";
 import { useParams } from "react-router-dom";
 import paths from "@/utils/paths";
 import Appearance from "@/models/appearance";
 import useTextSize from "@/hooks/useTextSize";
 import useChatHistoryScrollHandle from "@/hooks/useChatHistoryScrollHandle";
-import { useChatMessageAlignment } from "@/hooks/useChatMessageAlignment";
 import { ThoughtExpansionProvider } from "./ThoughtContainer";
+import { MessageActionsProvider } from "./MessageActionsContext";
 
 export default forwardRef(function (
   {
@@ -30,6 +34,7 @@ export default forwardRef(function (
     sendCommand,
     updateHistory,
     regenerateAssistantMessage,
+    websocket = null,
   },
   ref
 ) {
@@ -42,7 +47,6 @@ export default forwardRef(function (
   const isStreaming = history[history.length - 1]?.animate;
   const { showScrollbar } = Appearance.getSettings();
   const { textSizeClass } = useTextSize();
-  const { getMessageAlignment } = useChatMessageAlignment();
 
   useEffect(() => {
     if (!isUserScrolling && (isAtBottom || isStreaming)) {
@@ -52,7 +56,7 @@ export default forwardRef(function (
 
   const handleScroll = (e) => {
     const { scrollTop, scrollHeight, clientHeight } = e.target;
-    const isBottom = scrollHeight - scrollTop === clientHeight;
+    const isBottom = scrollHeight - scrollTop - clientHeight < 2;
 
     // Detect if this is a user-initiated scroll
     if (Math.abs(scrollTop - lastScrollTopRef.current) > 10) {
@@ -98,10 +102,28 @@ export default forwardRef(function (
     chatId,
     role,
     attachments = [],
+    saveOnly = false,
   }) => {
     if (!editedMessage) return; // Don't save empty edits.
 
-    // if the edit was a user message, we will auto-regenerate the response and delete all
+    // "Save" on a user message: update the prompt text without regenerating
+    if (role === "user" && saveOnly) {
+      const updatedHistory = [...history];
+      const targetIdx = history.findIndex((msg) => msg.chatId === chatId);
+      if (targetIdx < 0) return;
+      updatedHistory[targetIdx].content = editedMessage;
+      updateHistory(updatedHistory);
+      await Workspace.updateChat(
+        workspace.slug,
+        threadSlug,
+        chatId,
+        editedMessage,
+        "user"
+      );
+      return;
+    }
+
+    // "Submit" on a user message: auto-regenerate the response and delete all
     // messages post modified message
     if (role === "user") {
       // remove all messages after the edited message
@@ -133,7 +155,7 @@ export default forwardRef(function (
       if (targetIdx < 0) return;
       updatedHistory[targetIdx].content = editedMessage;
       updateHistory(updatedHistory);
-      await Workspace.updateChatResponse(
+      await Workspace.updateChat(
         workspace.slug,
         threadSlug,
         chatId,
@@ -163,7 +185,7 @@ export default forwardRef(function (
         regenerateAssistantMessage,
         saveEditedMessage,
         forkThread,
-        getMessageAlignment,
+        websocket,
       }),
     [
       workspace,
@@ -171,6 +193,7 @@ export default forwardRef(function (
       regenerateAssistantMessage,
       saveEditedMessage,
       forkThread,
+      websocket,
     ]
   );
   const lastMessageInfo = useMemo(() => getLastMessageInfo(history), [history]);
@@ -189,24 +212,28 @@ export default forwardRef(function (
   );
 
   return (
-    <ThoughtExpansionProvider>
-      <div
-        className={`markdown text-white/80 light:text-theme-text-primary font-light ${textSizeClass} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start ${showScrollbar ? "show-scrollbar" : "no-scroll"}`}
-        id="chat-history"
-        ref={chatHistoryRef}
-        onScroll={handleScroll}
-      >
-        {compiledHistory.map((item, index) =>
-          Array.isArray(item) ? renderStatusResponse(item, index) : item
-        )}
-        {showing && (
-          <ManageWorkspace
-            hideModal={hideModal}
-            providedSlug={workspace.slug}
-          />
-        )}
+    <MessageActionsProvider>
+      <ThoughtExpansionProvider>
+        <div
+          className={`markdown text-white/80 light:text-theme-text-primary font-light ${textSizeClass} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col items-center justify-start ${showScrollbar ? "show-scrollbar" : "no-scroll"}`}
+          id="chat-history"
+          ref={chatHistoryRef}
+          onScroll={handleScroll}
+        >
+          <div className="w-full max-w-[750px]">
+            {compiledHistory.map((item, index) =>
+              Array.isArray(item) ? renderStatusResponse(item, index) : item
+            )}
+          </div>
+          {showing && (
+            <ManageWorkspace
+              hideModal={hideModal}
+              providedSlug={workspace.slug}
+            />
+          )}
+        </div>
         {!isAtBottom && (
-          <div className="fixed bottom-40 right-10 md:right-20 z-50 cursor-pointer animate-pulse">
+          <div className="absolute bottom-40 right-10 z-50 cursor-pointer animate-pulse">
             <div className="flex flex-col items-center">
               <div
                 className="p-1 rounded-full border border-white/10 bg-white/10 hover:bg-white/20 hover:text-white"
@@ -220,8 +247,8 @@ export default forwardRef(function (
             </div>
           </div>
         )}
-      </div>
-    </ThoughtExpansionProvider>
+      </ThoughtExpansionProvider>
+    </MessageActionsProvider>
   );
 });
 
@@ -245,7 +272,7 @@ const getLastMessageInfo = (history) => {
  * @param {Function} param0.regenerateAssistantMessage - The function to regenerate the assistant message.
  * @param {Function} param0.saveEditedMessage - The function to save the edited message.
  * @param {Function} param0.forkThread - The function to fork the thread.
- * @param {Function} param0.getMessageAlignment - The function to get the alignment of the message (returns class).
+ * @param {WebSocket} param0.websocket - The active websocket connection for agent communication.
  * @returns {Array} The compiled history of messages.
  */
 function buildMessages({
@@ -254,7 +281,7 @@ function buildMessages({
   regenerateAssistantMessage,
   saveEditedMessage,
   forkThread,
-  getMessageAlignment,
+  websocket,
 }) {
   return history.reduce((acc, props, index) => {
     const isLastBotReply =
@@ -269,10 +296,58 @@ function buildMessages({
       return acc;
     }
 
-    if (props.type === "rechartVisualize" && !!props.content) {
+    if (props.type === "modelRouteNotification") {
+      const lastMsg = history[history.length - 1];
+      const isLast =
+        index === history.length - 1 ||
+        (index === history.length - 2 &&
+          (lastMsg?.animate || lastMsg?.pending));
+      const isStreaming =
+        isLast &&
+        (index === history.length - 1 || lastMsg?.animate || lastMsg?.pending);
       acc.push(
-        <Chartable key={props.uuid} workspace={workspace} props={props} />
+        <ModelRouteNotification
+          key={`route-${props.uuid}`}
+          routedTo={props.routedTo}
+          isStreaming={isStreaming}
+        />
       );
+      return acc;
+    }
+
+    if (props.type === "toolApprovalRequest") {
+      acc.push(
+        <ToolApprovalRequest
+          key={`tool-approval-${props.requestId}`}
+          requestId={props.requestId}
+          skillName={props.skillName}
+          payload={props.payload}
+          description={props.description}
+          timeoutMs={props.timeoutMs}
+          websocket={websocket}
+        />
+      );
+      return acc;
+    }
+
+    if (props.type === "clarifyingQuestion") {
+      acc.push(
+        <ClarifyingQuestionCard
+          key={`clarify-${props.requestId}`}
+          requestId={props.requestId}
+          questions={props.questions}
+          allowSkip={props.allowSkip}
+          timeoutMs={props.timeoutMs}
+          websocket={websocket}
+        />
+      );
+      return acc;
+    }
+
+    if (props.type === "rechartVisualize" && !!props.content) {
+      acc.push(<Chartable key={props.uuid} props={props} />);
+    } else if (props.type === "fileDownloadCard" && !!props.content) {
+      acc.push(<FileDownloadCard key={props.uuid} props={props} />);
     } else if (isLastBotReply && props.animate) {
       acc.push(
         <PromptReply
@@ -282,7 +357,6 @@ function buildMessages({
           pending={props.pending}
           sources={props.sources}
           error={props.error}
-          workspace={workspace}
           closed={props.closed}
         />
       );
@@ -304,7 +378,8 @@ function buildMessages({
           saveEditedMessage={saveEditedMessage}
           forkThread={forkThread}
           metrics={props.metrics}
-          alignmentCls={getMessageAlignment?.(props.role)}
+          outputs={props.outputs}
+          clarifyingQuestions={props.clarifyingQuestions}
         />
       );
     }

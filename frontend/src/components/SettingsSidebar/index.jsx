@@ -10,6 +10,7 @@ import {
   PencilSimpleLine,
   Nut,
   Toolbox,
+  Plugs,
 } from "@phosphor-icons/react";
 import AgentIcon from "@/media/animations/agent-static.png";
 import CommunityHubIcon from "@/media/illustrations/community-hub.png";
@@ -256,6 +257,12 @@ const SidebarOptions = ({ user = null, t }) => (
               flex: true,
               roles: ["admin"],
             },
+            {
+              btnText: t("settings.model-router"),
+              href: paths.settings.modelRouters(),
+              flex: true,
+              roles: ["admin"],
+            },
           ]}
         />
         <Option
@@ -316,6 +323,7 @@ const SidebarOptions = ({ user = null, t }) => (
               className="h-5 w-5 flex-shrink-0 light:invert"
             />
           }
+          user={user}
           childOptions={[
             {
               btnText: t("settings.community-hub.trending"),
@@ -363,6 +371,19 @@ const SidebarOptions = ({ user = null, t }) => (
           ]}
         />
         <Option
+          btnText={t("settings.channels")}
+          icon={<Plugs className="h-5 w-5 flex-shrink-0" />}
+          user={user}
+          childOptions={[
+            {
+              btnText: t("settings.available-channels.telegram"),
+              href: paths.settings.telegram(),
+              flex: true,
+              hidden: !!user,
+            },
+          ]}
+        />
+        <Option
           btnText={t("settings.tools")}
           icon={<Toolbox className="h-5 w-5 flex-shrink-0" />}
           user={user}
@@ -379,6 +400,12 @@ const SidebarOptions = ({ user = null, t }) => (
               href: paths.settings.logs(),
               flex: true,
               roles: ["admin"],
+            },
+            {
+              btnText: t("settings.scheduled-jobs"),
+              href: paths.settings.scheduledJobs(),
+              flex: true,
+              hidden: !!user,
             },
             {
               btnText: t("settings.api-keys"),

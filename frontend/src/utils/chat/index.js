@@ -22,7 +22,19 @@ export default function handleChat(
     chatId = null,
     action = null,
     metrics = {},
+    routedTo = null,
   } = chatResult;
+
+  if (type === "modelRouteNotification") {
+    _chatHistory.push({
+      type: "modelRouteNotification",
+      uuid,
+      routedTo,
+      role: "assistant",
+    });
+    setChatHistory([..._chatHistory]);
+    return;
+  }
 
   if (type === "abort" || type === "statusResponse") {
     setLoadingResponse(false);
@@ -158,10 +170,7 @@ export default function handleChat(
   }
 
   // Action Handling via special 'action' attribute on response.
-  if (action === "reset_chat") {
-    // Chat was reset, keep reset message and clear everything else.
-    setChatHistory([_chatHistory.pop()]);
-  }
+  if (action === "reset_chat") setChatHistory([]);
 
   // If thread was updated automatically based on chat prompt
   // then we can handle the updating of the thread here.

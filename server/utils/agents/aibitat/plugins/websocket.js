@@ -1,6 +1,11 @@
 const chalk = require("chalk");
 const { Telemetry } = require("../../../../models/telemetry");
+const { v4: uuidv4 } = require("uuid");
+const { safeJsonParse } = require("../../../http");
+const { skillIsAutoApproved } = require("../../../helpers/agents");
 const SOCKET_TIMEOUT_MS = 300 * 1_000; // 5 mins
+const TOOL_APPROVAL_TIMEOUT_MS = 120 * 1_000; // 2 mins for tool approval
+const CLARIFICATION_DEFAULT_TIMEOUT_MS = 120 * 1_000; // 2 mins for clarifying questions
 
 /**
  * Websocket Interface plugin. It prints the messages on the console and asks for feedback
@@ -11,6 +16,8 @@ const SOCKET_TIMEOUT_MS = 300 * 1_000; // 5 mins
 //   askForFeedback?: any
 //   awaitResponse?: any
 //   handleFeedback?: (message: string) => void;
+//   handleToolApproval?: (message: string) => void;
+//   handleClarificationResponse?: (message: string) => void;
 // }
 
 const WEBSOCKET_BAIL_COMMANDS = [
@@ -43,6 +50,7 @@ const websocket = {
     socket, // @type AIbitatWebSocket
     muteUserReply = true, // Do not post messages to "USER" back to frontend.
     introspection = false, // when enabled will attach socket to Aibitat object with .introspect method which reports status updates to frontend.
+    userId = null, // User ID for multi-user mode whitelist lookups
   }) {
     return {
       name: this.name,
@@ -79,6 +87,199 @@ const websocket = {
           },
         };
 
+        /**
+         * Request user approval before executing a tool/skill.
+         * This sends a request to the frontend and blocks until the user responds.
+         * If the skill is whitelisted, approval is granted automatically.
+         *
+         * @param {Object} options - The approval request options
+         * @param {string} options.skillName - The name of the skill/tool requesting approval
+         * @param {Object} [options.payload={}] - Optional payload data to display to the user
+         * @param {string} [options.description] - Optional description of what the skill will do
+         * @returns {Promise<{approved: boolean, message: string}>} - The approval result
+         */
+        aibitat.requestToolApproval = async function ({
+          skillName,
+          payload = {},
+          description = null,
+        }) {
+          if (skillIsAutoApproved({ skillName })) {
+            return {
+              approved: true,
+              message: "Skill is auto-approved.",
+            };
+          }
+
+          const {
+            AgentSkillWhitelist,
+          } = require("../../../../models/agentSkillWhitelist");
+          const isWhitelisted = await AgentSkillWhitelist.isWhitelisted(
+            skillName,
+            userId
+          );
+          if (isWhitelisted) {
+            console.log(
+              chalk.green(
+                userId
+                  ? `User ${userId} - `
+                  : "" + `Skill ${skillName} is whitelisted - auto-approved.`
+              )
+            );
+            return {
+              approved: true,
+              message: "Skill is whitelisted - auto-approved.",
+            };
+          }
+
+          const requestId = uuidv4();
+          return new Promise((resolve) => {
+            let timeoutId = null;
+
+            socket.handleToolApproval = (message) => {
+              try {
+                const data = safeJsonParse(message, {});
+                if (
+                  data?.type !== "toolApprovalResponse" ||
+                  data?.requestId !== requestId
+                )
+                  return;
+
+                delete socket.handleToolApproval;
+                clearTimeout(timeoutId);
+
+                if (data.approved) {
+                  return resolve({
+                    approved: true,
+                    message: "User approved the tool execution.",
+                  });
+                }
+
+                return resolve({
+                  approved: false,
+                  message: "Tool call was rejected by the user.",
+                });
+              } catch (e) {
+                console.error("Error handling tool approval response:", e);
+              }
+            };
+
+            socket.send(
+              JSON.stringify({
+                type: "toolApprovalRequest",
+                requestId,
+                skillName,
+                payload,
+                description,
+                timeoutMs: TOOL_APPROVAL_TIMEOUT_MS,
+              })
+            );
+
+            timeoutId = setTimeout(() => {
+              delete socket.handleToolApproval;
+              console.log(
+                chalk.yellow(
+                  `Tool approval request timed out after ${TOOL_APPROVAL_TIMEOUT_MS}ms`
+                )
+              );
+              resolve({
+                approved: false,
+                message:
+                  "Tool approval request timed out. User did not respond in time.",
+              });
+            }, TOOL_APPROVAL_TIMEOUT_MS);
+          });
+        };
+
+        /**
+         * Ask the user one or more clarifying questions in a single card and
+         * wait for their answers. With more than one question the card
+         * paginates; with exactly one it renders a simple form. Sends one
+         * websocket request and resolves when the user submits the whole set,
+         * skips, or the timeout elapses.
+         *
+         * @param {Object} options
+         * @param {Array<Object>} options.questions - Question objects, each with shape:
+         *   { kind: "input"|"choice", question: string, ... per-kind fields }
+         * @param {boolean} [options.allowSkip=true] - Whether the user can skip individual questions
+         * @param {number} [options.timeoutMs] - Override timeout (ms)
+         * @returns {Promise<{ skipped: boolean, timedOut: boolean, answers: Array<{skipped: boolean, answer: any}> }>}
+         */
+        aibitat.requestUserClarification = async function ({
+          questions = [],
+          allowSkip = true,
+          timeoutMs = CLARIFICATION_DEFAULT_TIMEOUT_MS,
+        }) {
+          const requestId = uuidv4();
+          return new Promise((resolve) => {
+            let timeoutId = null;
+
+            socket.handleClarificationResponse = (message) => {
+              try {
+                const data = safeJsonParse(message, {});
+                if (
+                  data?.type !== "clarificationResponse" ||
+                  data?.requestId !== requestId
+                )
+                  return;
+
+                delete socket.handleClarificationResponse;
+                clearTimeout(timeoutId);
+
+                if (data.skipped) {
+                  return resolve({
+                    skipped: true,
+                    timedOut: false,
+                    answers: questions.map(() => ({
+                      skipped: true,
+                      answer: null,
+                    })),
+                  });
+                }
+
+                const answers = Array.isArray(data.answers) ? data.answers : [];
+                const normalized = questions.map((_, i) => {
+                  const a = answers[i] || {};
+                  return {
+                    skipped: !!a.skipped,
+                    answer: a.answer ?? null,
+                  };
+                });
+                return resolve({
+                  skipped: false,
+                  timedOut: false,
+                  answers: normalized,
+                });
+              } catch (e) {
+                console.error("Error handling clarification response:", e);
+              }
+            };
+
+            socket.send(
+              JSON.stringify({
+                type: "clarificationRequest",
+                requestId,
+                questions,
+                allowSkip,
+                timeoutMs,
+              })
+            );
+
+            timeoutId = setTimeout(() => {
+              delete socket.handleClarificationResponse;
+              console.log(
+                chalk.yellow(
+                  `Clarification request timed out after ${timeoutMs}ms`
+                )
+              );
+              resolve({
+                skipped: false,
+                timedOut: true,
+                answers: questions.map(() => ({ skipped: true, answer: null })),
+              });
+            }, timeoutMs);
+          });
+        };
+
         // aibitat.onStart(() => {
         //   console.log("🚀 starting chat ...");
         // });
@@ -96,13 +297,16 @@ const websocket = {
         });
 
         aibitat.onInterrupt(async (node) => {
-          const feedback = await socket.askForFeedback(socket, node);
+          const { feedback, attachments } = await socket.askForFeedback(
+            socket,
+            node
+          );
           if (WEBSOCKET_BAIL_COMMANDS.includes(feedback)) {
             socket.close();
             return;
           }
 
-          await aibitat.continue(feedback);
+          await aibitat.continue(feedback, attachments);
         });
 
         /**
@@ -110,7 +314,7 @@ const websocket = {
          *
          * @param socket The content to summarize. // AIbitatWebSocket & { receive: any, echo: any }
          * @param node The chat node // { from: string; to: string }
-         * @returns The summarized content.
+         * @returns {{ feedback: string, attachments: Array }} The feedback and any attachments.
          */
         socket.askForFeedback = (socket, node) => {
           socket.awaitResponse = (question = "waiting...") => {
@@ -123,7 +327,10 @@ const websocket = {
                 if (data.type !== "awaitingFeedback") return;
                 delete socket.handleFeedback;
                 clearTimeout(socketTimeout);
-                resolve(data.feedback);
+                resolve({
+                  feedback: data.feedback,
+                  attachments: data.attachments || [],
+                });
                 return;
               };
 
@@ -133,7 +340,7 @@ const websocket = {
                     `Client took too long to respond, chat thread is dead after ${SOCKET_TIMEOUT_MS}ms`
                   )
                 );
-                resolve("exit");
+                resolve({ feedback: "exit", attachments: [] });
                 return;
               }, SOCKET_TIMEOUT_MS);
             });

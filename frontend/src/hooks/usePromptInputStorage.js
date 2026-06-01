@@ -24,6 +24,20 @@ import { safeJsonParse } from "@/utils/request";
  * @param {Function} props.setPromptInput - State setter function for prompt input
  * @returns {void}
  */
+/**
+ * Immediately clears the stored draft for a given thread/workspace key.
+ * Used before state updates that may remount PromptInput to prevent
+ * stale text from being restored.
+ * @param {string} storageKey - thread slug or workspace slug
+ */
+export function clearPromptInputDraft(storageKey) {
+  try {
+    const map = safeJsonParse(localStorage.getItem(USER_PROMPT_INPUT_MAP), {});
+    map[storageKey] = "";
+    localStorage.setItem(USER_PROMPT_INPUT_MAP, JSON.stringify(map));
+  } catch {}
+}
+
 export default function usePromptInputStorage({ promptInput, setPromptInput }) {
   const { threadSlug = null, slug: workspaceSlug } = useParams();
   useEffect(() => {

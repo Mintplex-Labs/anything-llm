@@ -5,10 +5,9 @@ import { useEffect, useRef, useState } from "react";
 import WorkspaceName from "./WorkspaceName";
 import SuggestedChatMessages from "./SuggestedChatMessages";
 import DeleteWorkspace from "./DeleteWorkspace";
-import WorkspacePfp from "./WorkspacePfp";
 import CTAButton from "@/components/lib/CTAButton";
 
-export default function GeneralInfo({ slug }) {
+export default function GeneralInfo({ slug, deletionProtected = false }) {
   const [workspace, setWorkspace] = useState(null);
   const [hasChanges, setHasChanges] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -65,8 +64,7 @@ export default function GeneralInfo({ slug }) {
         />
       </form>
       <SuggestedChatMessages slug={workspace.slug} />
-      <WorkspacePfp workspace={workspace} slug={slug} />
-      <DeleteWorkspace workspace={workspace} />
+      <DeleteWorkspace workspace={workspace} visible={!deletionProtected} />
     </div>
   );
 }

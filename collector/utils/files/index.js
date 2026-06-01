@@ -132,8 +132,9 @@ function writeToServerDocuments({
 
   if (!fs.existsSync(destination))
     fs.mkdirSync(destination, { recursive: true });
+  const safeFilename = sanitizeFileName(filename);
   const destinationFilePath = normalizePath(
-    path.resolve(destination, filename) + ".json"
+    path.resolve(destination, safeFilename) + ".json"
   );
 
   fs.writeFileSync(destinationFilePath, JSON.stringify(data, null, 4), {
@@ -210,10 +211,19 @@ function normalizePath(filepath = "") {
   return result;
 }
 
+/**
+ * Strips characters that are illegal in Windows filenames, including Unicode
+ * quotation marks (U+201C, U+201D, etc.) that can get corrupted into ASCII
+ * double-quotes during charset conversion in the upload pipeline.
+ * @param {string} fileName - The filename to sanitize.
+ * @returns {string} - The sanitized filename.
+ */
 function sanitizeFileName(fileName) {
   if (!fileName) return fileName;
-  //eslint-disable-next-line
-  return fileName.replace(/[<>:"\/\\|?*]/g, "");
+  return fileName.replace(
+    /[<>:"/\\|?*\u201C\u201D\u201E\u201F\u2018\u2019\u201A\u201B]/g,
+    ""
+  );
 }
 
 module.exports = {

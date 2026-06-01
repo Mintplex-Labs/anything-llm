@@ -95,6 +95,33 @@ function mcpServersEndpoints(app) {
       }
     }
   );
+
+  app.post(
+    "/mcp-servers/toggle-tool",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { serverName, toolName, enabled } = reqBody(request);
+        const result = await new MCPCompatibilityLayer().toggleToolSuppression(
+          serverName,
+          toolName,
+          enabled
+        );
+        return response.status(200).json({
+          success: result.success,
+          error: result.error,
+          suppressedTools: result.suppressedTools,
+        });
+      } catch (error) {
+        console.error("Error toggling MCP tool:", error);
+        return response.status(500).json({
+          success: false,
+          error: error.message,
+          suppressedTools: [],
+        });
+      }
+    }
+  );
 }
 
 module.exports = { mcpServersEndpoints };

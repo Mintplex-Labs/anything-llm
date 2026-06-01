@@ -1,4 +1,8 @@
-const { toChunks, maximumChunkLength } = require("../../helpers");
+const {
+  toChunks,
+  maximumChunkLength,
+  reportEmbeddingProgress,
+} = require("../../helpers");
 
 class LocalAiEmbedder {
   constructor() {
@@ -50,6 +54,7 @@ class LocalAiEmbedder {
 
   async embedChunks(textChunks = []) {
     const embeddingRequests = [];
+    let chunksProcessed = 0;
     for (const chunk of toChunks(textChunks, this.maxConcurrentChunks)) {
       embeddingRequests.push(
         new Promise((resolve) => {
@@ -60,9 +65,13 @@ class LocalAiEmbedder {
               dimensions: this.outputDimensions,
             })
             .then((result) => {
+              chunksProcessed += chunk.length;
+              reportEmbeddingProgress(chunksProcessed, textChunks.length);
               resolve({ data: result?.data, error: null });
             })
             .catch((e) => {
+              chunksProcessed += chunk.length;
+              reportEmbeddingProgress(chunksProcessed, textChunks.length);
               e.type =
                 e?.response?.data?.error?.code ||
                 e?.response?.status ||

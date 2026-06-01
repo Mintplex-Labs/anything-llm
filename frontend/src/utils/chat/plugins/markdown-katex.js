@@ -1,4 +1,5 @@
 import katex from "katex";
+import "katex/dist/katex.min.css";
 
 // Test if potential opening or closing delimieter
 // Assumes that there is a "$" at state.src[pos]

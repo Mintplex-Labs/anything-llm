@@ -1,5 +1,8 @@
 const { parseLMStudioBasePath } = require("../../AiProviders/lmStudio");
-const { maximumChunkLength } = require("../../helpers");
+const {
+  maximumChunkLength,
+  reportEmbeddingProgress,
+} = require("../../helpers");
 
 class LMStudioEmbedder {
   constructor() {
@@ -58,8 +61,8 @@ class LMStudioEmbedder {
     // get dropped or go unanswered >:(
     let results = [];
     let hasError = false;
-    for (const chunk of textChunks) {
-      if (hasError) break; // If an error occurred don't continue and exit early.
+    for (const [idx, chunk] of textChunks.entries()) {
+      if (hasError) break;
       results.push(
         await this.lmstudio.embeddings
           .create({
@@ -74,7 +77,7 @@ class LMStudioEmbedder {
                 type: "EMPTY_ARR",
                 message: "The embedding was empty from LMStudio",
               };
-            console.log(`Embedding length: ${embedding.length}`);
+            reportEmbeddingProgress(idx + 1, textChunks.length);
             return { data: embedding, error: null };
           })
           .catch((e) => {

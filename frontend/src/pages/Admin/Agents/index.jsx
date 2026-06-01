@@ -4,6 +4,7 @@ import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import Admin from "@/models/admin";
 import System from "@/models/system";
+import MCPServers from "@/models/mcpServers";
 import showToast from "@/utils/toast";
 import {
   CaretLeft,
@@ -12,11 +13,16 @@ import {
   Robot,
   Hammer,
   FlowArrow,
+  Package,
 } from "@phosphor-icons/react";
 import ContextualSaveBar from "@/components/ContextualSaveBar";
 import { castToType } from "@/utils/types";
 import { FullScreenLoader } from "@/components/Preloader";
-import { getDefaultSkills, getConfigurableSkills } from "./skills";
+import {
+  getDefaultSkills,
+  getConfigurableSkills,
+  getAppIntegrationSkills,
+} from "./skills.jsx";
 import { DefaultBadge } from "./Badges/default";
 import ImportedSkillList from "./Imported/SkillList";
 import ImportedSkillConfig from "./Imported/ImportedSkillConfig";
@@ -28,6 +34,15 @@ import ServerPanel from "./MCPServers/ServerPanel";
 import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
 import AgentFlows from "@/models/agentFlows";
+import AgentSkillSettings from "./AgentSkillSettings";
+
+const IGNORE_CHANGE_SETTINGS = [
+  "agentSkillRerankerEnabled",
+  "agentSkillRerankerTopN",
+  "agentSkillMaxToolCalls",
+  "agentClarifyingQuestionsEnabled",
+  "agentClarifyingQuestionsMaxPerTurn",
+];
 
 export default function AdminAgents() {
   const { t } = useTranslation();
@@ -50,8 +65,36 @@ export default function AdminAgents() {
   const [mcpServers, setMcpServers] = useState([]);
   const [selectedMcpServer, setSelectedMcpServer] = useState(null);
 
+  const [fileSystemAgentAvailable, setFileSystemAgentAvailable] =
+    useState(false);
+  const [createFilesAgentAvailable, setCreateFilesAgentAvailable] =
+    useState(false);
+
   const defaultSkills = getDefaultSkills(t);
-  const configurableSkills = getConfigurableSkills(t);
+  const allConfigurableSkills = getConfigurableSkills(t, {
+    fileSystemAgentAvailable,
+    createFilesAgentAvailable,
+  });
+  const allAppIntegrationSkills = getAppIntegrationSkills(t);
+
+  // Filter skills based on mode restrictions
+  // singleUserOnly -> hidden in multi-user mode
+  // multiUserOnly -> hidden when NOT in multi-user mode
+  const isMultiUserMode = settings?.MultiUserMode ?? false;
+  const filterSkillsByMode = ([_, skillConfig]) => {
+    if (!skillConfig.mode) return true;
+    if (skillConfig.mode.includes("singleUserOnly") && isMultiUserMode)
+      return false;
+    if (skillConfig.mode.includes("multiUserOnly") && !isMultiUserMode)
+      return false;
+    return true;
+  };
+  const configurableSkills = Object.fromEntries(
+    Object.entries(allConfigurableSkills).filter(filterSkillsByMode)
+  );
+  const appIntegrationSkills = Object.fromEntries(
+    Object.entries(allAppIntegrationSkills).filter(filterSkillsByMode)
+  );
 
   // Alert user if they try to leave the page with unsaved changes
   useEffect(() => {
@@ -69,23 +112,36 @@ export default function AdminAgents() {
 
   useEffect(() => {
     async function fetchSettings() {
-      const _settings = await System.keys();
-      const _preferences = await Admin.systemPreferencesByFields([
-        "disabled_agent_skills",
-        "default_agent_skills",
-        "imported_agent_skills",
-        "active_agent_flows",
+      const [
+        _settings,
+        _preferences,
+        flowsRes,
+        fsAgentAvailable,
+        createFilesAvailable,
+      ] = await Promise.all([
+        System.keys(),
+        Admin.systemPreferencesByFields([
+          "disabled_agent_skills",
+          "default_agent_skills",
+          "imported_agent_skills",
+          "active_agent_flows",
+        ]),
+        AgentFlows.listFlows(),
+        System.isFileSystemAgentAvailable(),
+        System.isCreateFilesAgentAvailable(),
       ]);
-      const { flows = [] } = await AgentFlows.listFlows();
 
+      const { flows = [] } = flowsRes;
       setSettings({ ..._settings, preferences: _preferences.settings } ?? {});
       setAgentSkills(_preferences.settings?.default_agent_skills ?? []);
       setDisabledAgentSkills(
         _preferences.settings?.disabled_agent_skills ?? []
       );
       setImportedSkills(_preferences.settings?.imported_agent_skills ?? []);
-      setActiveFlowIds(_preferences.settings?.active_agent_flows ?? []);
+      setActiveFlowIds(flows.filter((f) => f.active).map((f) => f.uuid));
       setAgentFlows(flows);
+      setFileSystemAgentAvailable(fsAgentAvailable);
+      setCreateFilesAgentAvailable(createFilesAvailable);
       setLoading(false);
     }
     fetchSettings();
@@ -188,6 +244,8 @@ export default function AdminAgents() {
     SelectedSkillComponent = ImportedSkillConfig;
   } else if (configurableSkills[selectedSkill]) {
     SelectedSkillComponent = configurableSkills[selectedSkill]?.component;
+  } else if (appIntegrationSkills[selectedSkill]) {
+    SelectedSkillComponent = appIntegrationSkills[selectedSkill]?.component;
   } else {
     SelectedSkillComponent = defaultSkills[selectedSkill]?.component;
   }
@@ -232,6 +290,49 @@ export default function AdminAgents() {
     setMcpServers((prev) =>
       prev.filter((server) => server.name !== serverName)
     );
+  };
+
+  const handleMCPToolToggle = async (serverName, toolName, enabled) => {
+    const { success, error, suppressedTools } = await MCPServers.toggleTool(
+      serverName,
+      toolName,
+      enabled
+    );
+
+    if (!success) {
+      showToast(error || "Failed to toggle tool.", "error", { clear: true });
+      return;
+    }
+
+    setMcpServers((prev) =>
+      prev.map((server) => {
+        if (server.name !== serverName) return server;
+        return {
+          ...server,
+          config: {
+            ...server.config,
+            anythingllm: {
+              ...server.config?.anythingllm,
+              suppressedTools,
+            },
+          },
+        };
+      })
+    );
+
+    setSelectedMcpServer((prev) => {
+      if (!prev || prev.name !== serverName) return prev;
+      return {
+        ...prev,
+        config: {
+          ...prev.config,
+          anythingllm: {
+            ...prev.config?.anythingllm,
+            suppressedTools,
+          },
+        },
+      };
+    });
   };
 
   if (loading) {
@@ -295,6 +396,17 @@ export default function AdminAgents() {
               activeSkills={agentSkills}
             />
 
+            <div className="text-theme-text-primary flex items-center gap-x-2 mt-6">
+              <Package size={24} />
+              <p className="text-lg font-medium">App Integrations</p>
+            </div>
+            <SkillList
+              skills={appIntegrationSkills}
+              selectedSkill={selectedSkill}
+              handleClick={handleSkillClick}
+              activeSkills={agentSkills}
+            />
+
             <div className="text-theme-text-primary flex items-center gap-x-2">
               <Plug size={24} />
               <p className="text-lg font-medium">Custom Skills</p>
@@ -313,6 +425,7 @@ export default function AdminAgents() {
               flows={agentFlows}
               selectedFlow={selectedFlow}
               handleClick={handleFlowClick}
+              activeFlowIds={activeFlowIds}
             />
             <input
               type="hidden"
@@ -357,7 +470,7 @@ export default function AdminAgents() {
                   </button>
                 </div>
                 <div className="flex-1 overflow-y-auto p-4">
-                  <div className=" bg-theme-bg-secondary text-white rounded-xl p-4 overflow-y-scroll no-scroll">
+                  <div className=" bg-theme-bg-secondary text-white rounded-xl p-4 overflow-y-scroll overflow-x-visible no-scroll">
                     {SelectedSkillComponent ? (
                       <>
                         {selectedMcpServer ? (
@@ -365,6 +478,7 @@ export default function AdminAgents() {
                             server={selectedMcpServer}
                             toggleServer={toggleMCP}
                             onDelete={handleMCPServerDelete}
+                            onToggleTool={handleMCPToolToggle}
                           />
                         ) : selectedFlow ? (
                           <FlowPanel
@@ -395,7 +509,7 @@ export default function AdminAgents() {
                                 setHasChanges={setHasChanges}
                                 {...defaultSkills[selectedSkill]}
                               />
-                            ) : (
+                            ) : configurableSkills?.[selectedSkill] ? (
                               // The selected skill is a configurable skill - show the configurable skill panel
                               <SelectedSkillComponent
                                 skill={configurableSkills[selectedSkill]?.skill}
@@ -407,6 +521,21 @@ export default function AdminAgents() {
                                 setHasChanges={setHasChanges}
                                 hasChanges={hasChanges}
                                 {...configurableSkills[selectedSkill]}
+                              />
+                            ) : (
+                              // The selected skill is an app integration skill
+                              <SelectedSkillComponent
+                                skill={
+                                  appIntegrationSkills[selectedSkill]?.skill
+                                }
+                                settings={settings}
+                                toggleSkill={toggleAgentSkill}
+                                enabled={agentSkills.includes(
+                                  appIntegrationSkills[selectedSkill]?.skill
+                                )}
+                                setHasChanges={setHasChanges}
+                                hasChanges={hasChanges}
+                                {...appIntegrationSkills[selectedSkill]}
                               />
                             )}
                           </>
@@ -438,9 +567,10 @@ export default function AdminAgents() {
     >
       <form
         onSubmit={handleSubmit}
-        onChange={() =>
-          !selectedSkill?.imported && !selectedFlow && setHasChanges(true)
-        }
+        onChange={(e) => {
+          if (IGNORE_CHANGE_SETTINGS.includes(e.target.name)) return;
+          if (!selectedSkill?.imported && !selectedFlow) setHasChanges(true);
+        }}
         ref={formEl}
         className="flex-1 flex gap-x-6 p-4 mt-10"
       >
@@ -463,11 +593,12 @@ export default function AdminAgents() {
 
         {/* Skill settings nav - Make this section scrollable */}
         <div className="flex flex-col min-w-[360px] h-[calc(100vh-90px)]">
-          <div className="flex-none mb-4">
+          <div className="flex-none flex justify-between items-center mb-4">
             <div className="text-theme-text-primary flex items-center gap-x-2">
               <Robot size={24} />
               <p className="text-lg font-medium">Agent Skills</p>
             </div>
+            <AgentSkillSettings />
           </div>
 
           <div className="flex-1 overflow-y-auto pr-2 pb-4">
@@ -484,6 +615,17 @@ export default function AdminAgents() {
               {/* Configurable skills */}
               <SkillList
                 skills={configurableSkills}
+                selectedSkill={selectedSkill}
+                handleClick={handleSkillClick}
+                activeSkills={agentSkills}
+              />
+
+              <div className="text-theme-text-primary flex items-center gap-x-2 mt-6">
+                <Package size={24} />
+                <p className="text-lg font-medium">App Integrations</p>
+              </div>
+              <SkillList
+                skills={appIntegrationSkills}
                 selectedSkill={selectedSkill}
                 handleClick={handleSkillClick}
                 activeSkills={agentSkills}
@@ -526,6 +668,7 @@ export default function AdminAgents() {
                 flows={agentFlows}
                 selectedFlow={selectedFlow}
                 handleClick={handleFlowClick}
+                activeFlowIds={activeFlowIds}
               />
 
               <MCPServerHeader
@@ -549,7 +692,7 @@ export default function AdminAgents() {
 
         {/* Selected agent skill setting panel */}
         <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
-          <div className="bg-theme-bg-secondary text-white rounded-xl flex-1 p-4 overflow-y-scroll no-scroll">
+          <div className="bg-theme-bg-secondary text-white rounded-xl flex-1 p-4 overflow-y-scroll overflow-x-visible no-scroll">
             {SelectedSkillComponent ? (
               <>
                 {selectedMcpServer ? (
@@ -557,6 +700,7 @@ export default function AdminAgents() {
                     server={selectedMcpServer}
                     toggleServer={toggleMCP}
                     onDelete={handleMCPServerDelete}
+                    onToggleTool={handleMCPToolToggle}
                   />
                 ) : selectedFlow ? (
                   <FlowPanel
@@ -587,7 +731,7 @@ export default function AdminAgents() {
                         setHasChanges={setHasChanges}
                         {...defaultSkills[selectedSkill]}
                       />
-                    ) : (
+                    ) : configurableSkills?.[selectedSkill] ? (
                       // The selected skill is a configurable skill - show the configurable skill panel
                       <SelectedSkillComponent
                         skill={configurableSkills[selectedSkill]?.skill}
@@ -599,6 +743,19 @@ export default function AdminAgents() {
                         setHasChanges={setHasChanges}
                         hasChanges={hasChanges}
                         {...configurableSkills[selectedSkill]}
+                      />
+                    ) : (
+                      // The selected skill is an app integration skill
+                      <SelectedSkillComponent
+                        skill={appIntegrationSkills[selectedSkill]?.skill}
+                        settings={settings}
+                        toggleSkill={toggleAgentSkill}
+                        enabled={agentSkills.includes(
+                          appIntegrationSkills[selectedSkill]?.skill
+                        )}
+                        setHasChanges={setHasChanges}
+                        hasChanges={hasChanges}
+                        {...appIntegrationSkills[selectedSkill]}
                       />
                     )}
                   </>
@@ -647,6 +804,7 @@ function SkillList({
   selectedSkill = null,
   handleClick = null,
   activeSkills = [],
+  Icon = null,
 }) {
   if (skills.length === 0) return null;
 
@@ -673,7 +831,14 @@ function SkillList({
             }`}
             onClick={() => handleClick?.(skill)}
           >
-            <div className="text-sm font-light">{settings.title}</div>
+            <div className="flex items-center gap-x-2">
+              {settings.Icon ? (
+                <settings.Icon size={16} />
+              ) : (
+                Icon && <Icon size={16} />
+              )}
+              <div className="text-sm font-light">{settings.title}</div>
+            </div>
             <div className="flex items-center gap-x-2">
               {isDefault ? (
                 <DefaultBadge title={skill} />

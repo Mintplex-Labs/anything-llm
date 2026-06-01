@@ -131,7 +131,9 @@ class ConfluencePagesLoader {
       /\n{3,}/g,
       "\n\n"
     );
-    const pageUrl = `${this.baseUrl}/spaces/${this.spaceKey}/pages/${page.id}`;
+    const pageUrl = `${this.baseUrl}${this.cloud ? "/wiki" : ""}/spaces/${
+      this.spaceKey
+    }/pages/${page.id}`;
 
     return {
       pageContent: textWithPreservedStructure,

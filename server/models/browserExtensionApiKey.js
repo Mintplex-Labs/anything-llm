@@ -87,6 +87,28 @@ const BrowserExtensionApiKey = {
   },
 
   /**
+   * Deletes all browser extension API keys for a user.
+   * Should be called when a user is deleted to revoke all their keys.
+   * @param {number} userId - The user ID whose keys should be deleted
+   * @returns {Promise<{success: boolean, error: string|null}>}
+   */
+  deleteAllForUser: async function (userId) {
+    try {
+      if (!userId) return { success: false, error: "User ID is required" };
+      await prisma.browser_extension_api_keys.deleteMany({
+        where: { user_id: parseInt(userId) },
+      });
+      return { success: true, error: null };
+    } catch (error) {
+      console.error(
+        "Failed to delete browser extension API keys for user",
+        error
+      );
+      return { success: false, error: error.message };
+    }
+  },
+
+  /**
    * Gets browser keys by params
    * @param {object} clause
    * @param {number|null} limit

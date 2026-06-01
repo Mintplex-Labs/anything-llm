@@ -33,7 +33,7 @@ class OllamaAILLM {
     this.client = new Ollama({
       host: this.basePath,
       headers: headers,
-      fetch: this.#applyFetch(),
+      fetch: OllamaAILLM.applyOllamaFetch(),
     });
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
@@ -132,7 +132,7 @@ class OllamaAILLM {
    * for machines which run responses very slowly.
    * @returns {Function} The custom fetch function.
    */
-  #applyFetch() {
+  static applyOllamaFetch() {
     try {
       if (!("OLLAMA_RESPONSE_TIMEOUT" in process.env)) return fetch;
       const { Agent } = require("undici");
@@ -140,7 +140,7 @@ class OllamaAILLM {
       let timeout = process.env.OLLAMA_RESPONSE_TIMEOUT;
 
       if (!timeout || isNaN(Number(timeout)) || Number(timeout) <= 5 * 60_000) {
-        this.#log(
+        OllamaAILLM.#slog(
           "Timeout option was not set, is not a number, or is less than 5 minutes in ms - falling back to default",
           { timeout }
         );
@@ -155,10 +155,13 @@ class OllamaAILLM {
       };
 
       const humanDiff = moment.duration(timeout).humanize();
-      this.#log(`Applying custom fetch w/timeout of ${humanDiff}.`);
+      OllamaAILLM.#slog(`Applying custom fetch w/timeout of ${humanDiff}.`);
       return noTimeoutFetch;
     } catch (error) {
-      this.#log("Error applying custom fetch - using default fetch", error);
+      OllamaAILLM.#slog(
+        "Error applying custom fetch - using default fetch",
+        error
+      );
       return fetch;
     }
   }
@@ -274,7 +277,6 @@ class OllamaAILLM {
           keep_alive: this.keepAlive,
           options: {
             temperature,
-            use_mlock: true,
             num_ctx: this.promptWindowLimit(),
           },
         })
@@ -327,7 +329,6 @@ class OllamaAILLM {
         keep_alive: this.keepAlive,
         options: {
           temperature,
-          use_mlock: true,
           num_ctx: this.promptWindowLimit(),
         },
       }),

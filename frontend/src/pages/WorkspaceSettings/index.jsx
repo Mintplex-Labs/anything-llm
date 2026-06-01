@@ -49,6 +49,7 @@ function ShowWorkspaceChat() {
   const { slug, tab } = useParams();
   const { user } = useUser();
   const [workspace, setWorkspace] = useState(null);
+  const [deletionProtected, setDeletionProtected] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -67,6 +68,7 @@ function ShowWorkspaceChat() {
         vectorDB: _settings?.VectorDB,
         suggestedMessages,
       });
+      setDeletionProtected(_settings?.WorkspaceDeletionProtection === true);
       setLoading(false);
     }
     getWorkspace();
@@ -76,7 +78,7 @@ function ShowWorkspaceChat() {
 
   const TabContent = TABS[tab];
   return (
-    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
+    <div className="w-screen h-screen overflow-hidden bg-zinc-950 light:bg-slate-50 flex">
       {!isMobile && <Sidebar />}
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
@@ -117,7 +119,11 @@ function ShowWorkspaceChat() {
           />
         </div>
         <div className="px-16 py-6">
-          <TabContent slug={slug} workspace={workspace} />
+          <TabContent
+            slug={slug}
+            workspace={workspace}
+            deletionProtected={deletionProtected}
+          />
         </div>
       </div>
     </div>

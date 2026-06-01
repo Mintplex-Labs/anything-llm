@@ -1,4 +1,5 @@
 const { ApiKey } = require("../models/apiKeys");
+const { BrowserExtensionApiKey } = require("../models/browserExtensionApiKey");
 const { Document } = require("../models/documents");
 const { EventLogs } = require("../models/eventLogs");
 const { Invite } = require("../models/invite");
@@ -27,6 +28,9 @@ const ImportedPlugin = require("../utils/agents/imported");
 const {
   simpleSSOLoginDisabledMiddleware,
 } = require("../utils/middleware/simpleSSOEnabled");
+const {
+  workspaceDeletionProtection,
+} = require("../utils/middleware/workspaceDeletionProtection");
 
 function adminEndpoints(app) {
   if (!app) return;
@@ -137,6 +141,7 @@ function adminEndpoints(app) {
           return;
         }
 
+        await BrowserExtensionApiKey.deleteAllForUser(Number(id));
         await User.delete({ id: Number(id) });
         await EventLogs.logEvent(
           "user_deleted",
@@ -289,7 +294,11 @@ function adminEndpoints(app) {
 
   app.delete(
     "/admin/workspaces/:id",
-    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
+    [
+      validatedRequest,
+      strictMultiUserRoleValid([ROLES.admin, ROLES.manager]),
+      workspaceDeletionProtection,
+    ],
     async (request, response) => {
       try {
         const { id } = request.params;
@@ -324,6 +333,7 @@ function adminEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
+        const user = await userFromSession(request, response);
         const requestedSettings = {};
         const labels = request.query.labels?.split(",") || [];
         const needEmbedder = [
@@ -339,9 +349,26 @@ function adminEndpoints(app) {
           "meta_page_favicon",
         ];
 
+        // Managers can only read a limited set of settings.
+        // These match the ManagerRoute pages in the frontend.
+        const managerAllowedFields = [
+          "custom_app_name",
+          "footer_data",
+          "support_email",
+          "meta_page_title",
+          "meta_page_favicon",
+        ];
+
         for (const label of labels) {
           // Skip any settings that are not explicitly defined as public
           if (!SystemSettings.publicFields.includes(label)) continue;
+
+          // Managers can only read manager-allowed fields
+          if (
+            user?.role === ROLES.manager &&
+            !managerAllowedFields.includes(label)
+          )
+            continue;
 
           // Only get the embedder if the setting actually needs it
           let embedder = needEmbedder.includes(label)
@@ -383,6 +410,18 @@ function adminEndpoints(app) {
             case "disabled_agent_skills":
               requestedSettings[label] = safeJsonParse(setting?.value, []);
               break;
+            case "disabled_filesystem_skills":
+              requestedSettings[label] = safeJsonParse(setting?.value, []);
+              break;
+            case "disabled_create_files_skills":
+              requestedSettings[label] = safeJsonParse(setting?.value, []);
+              break;
+            case "disabled_gmail_skills":
+              requestedSettings[label] = safeJsonParse(setting?.value, []);
+              break;
+            case "disabled_outlook_skills":
+              requestedSettings[label] = safeJsonParse(setting?.value, []);
+              break;
             case "imported_agent_skills":
               requestedSettings[label] = ImportedPlugin.listImportedPlugins();
               break;
@@ -400,6 +439,12 @@ function adminEndpoints(app) {
             case "meta_page_favicon":
               requestedSettings[label] =
                 await SystemSettings.getValueOrFallback({ label }, null);
+              break;
+            case "memory_enabled":
+              requestedSettings[label] = setting?.value || "false";
+              break;
+            case "memory_auto_extraction":
+              requestedSettings[label] = setting?.value ?? "true";
               break;
             default:
               break;
@@ -419,7 +464,29 @@ function adminEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
-        const updates = reqBody(request);
+        const user = await userFromSession(request, response);
+        let updates = reqBody(request);
+
+        // Managers can only update a limited set of settings.
+        // These match the ManagerRoute pages in the frontend.
+        // Admin users can update all supportedFields without restriction.
+        if (user?.role === ROLES.manager) {
+          const managerAllowedFields = [
+            "custom_app_name",
+            "footer_data",
+            "support_email",
+            "meta_page_title",
+            "meta_page_favicon",
+          ];
+          const filteredUpdates = {};
+          for (const key of Object.keys(updates)) {
+            if (managerAllowedFields.includes(key)) {
+              filteredUpdates[key] = updates[key];
+            }
+          }
+          updates = filteredUpdates;
+        }
+
         await SystemSettings.updateSettings(updates);
         response.status(200).json({ success: true, error: null });
       } catch (e) {
@@ -455,10 +522,11 @@ function adminEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        const { apiKey, error } = await ApiKey.create(user.id);
+        const { name = null } = reqBody(request);
+        const { apiKey, error } = await ApiKey.create(user.id, name);
         await EventLogs.logEvent(
           "api_key_created",
-          { createdBy: user?.username },
+          { createdBy: user?.username, name: apiKey?.name },
           user?.id
         );
         return response.status(200).json({

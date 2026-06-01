@@ -9,12 +9,13 @@ import Workspace from "@/models/workspace";
 import handleChat, { ABORT_STREAM_EVENT } from "@/utils/chat";
 import { isMobile } from "react-device-detect";
 import { SidebarMobileHeader } from "../../Sidebar";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { v4 } from "uuid";
 import handleSocketResponse, {
   websocketURI,
   AGENT_SESSION_END,
   AGENT_SESSION_START,
+  setAgentSessionActive,
 } from "@/utils/chat/agent";
 import DnDFileUploaderWrapper from "./DnDWrapper";
 import SpeechRecognition, {
@@ -24,16 +25,25 @@ import { ChatTooltips } from "./ChatTooltips";
 import { MetricsProvider } from "./ChatHistory/HistoricalMessage/Actions/RenderMetrics";
 import useChatContainerQuickScroll from "@/hooks/useChatContainerQuickScroll";
 import { PENDING_HOME_MESSAGE } from "@/utils/constants";
+import { clearPromptInputDraft } from "@/hooks/usePromptInputStorage";
 import { safeJsonParse } from "@/utils/request";
 import { useTranslation } from "react-i18next";
 import paths from "@/utils/paths";
 import QuickActions from "@/components/lib/QuickActions";
 import SuggestedMessages from "@/components/lib/SuggestedMessages";
+import ChatSettingsMenu from "./ChatSettingsMenu";
+import WorkspaceModelPicker from "./WorkspaceModelPicker";
+import { ChatSidebarProvider } from "./ChatSidebar";
+import SourcesSidebar from "./SourcesSidebar";
+import MemoriesSidebar from "./MemoriesSidebar";
 
-export default function ChatContainer({ workspace, knownHistory = [] }) {
+export default function ChatContainer({
+  workspace,
+  threadSlug = null,
+  knownHistory = [],
+}) {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { threadSlug = null } = useParams();
   const [loadingResponse, setLoadingResponse] = useState(false);
   const [chatHistory, setChatHistory] = useState(knownHistory);
   const [socketId, setSocketId] = useState(null);
@@ -41,6 +51,29 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   const { files, parseAttachments } = useContext(DndUploaderContext);
   const { chatHistoryRef } = useChatContainerQuickScroll();
   const pendingMessageChecked = useRef(false);
+  const pendingResetRef = useRef(false);
+
+  const isEmpty =
+    chatHistory.length === 0 && !sessionStorage.getItem(PENDING_HOME_MESSAGE);
+
+  /**
+   * Keep chat history bottom-padding in sync with the prompt input's
+   * actual rendered height so expanding input never covers messages.
+   */
+  useEffect(() => {
+    if (isEmpty) return;
+    const wrapper = document.getElementById("prompt-input-wrapper");
+    const chatEl = document.getElementById("chat-history");
+    if (!wrapper || !chatEl) return;
+
+    const observer = new ResizeObserver(([entry]) => {
+      const inputHeight =
+        entry.borderBoxSize?.[0]?.blockSize ?? entry.target.offsetHeight;
+      chatEl.style.paddingBottom = `${inputHeight}px`;
+    });
+    observer.observe(wrapper);
+    return () => observer.disconnect();
+  }, [isEmpty]);
 
   const { listening, resetTranscript } = useSpeechRecognition({
     clearTranscriptOnListen: true,
@@ -65,6 +98,10 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     const currentMessage =
       document.getElementById(PROMPT_INPUT_ID)?.value || "";
     if (!currentMessage) return false;
+
+    // Clear the localStorage draft for this thread/workspace so that if the
+    // PromptInput remounts (empty→chat transition), it won't restore stale text
+    clearPromptInputDraft(threadSlug ?? workspace.slug);
 
     const prevChatHistory = [
       ...chatHistory,
@@ -97,14 +134,16 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   }
 
   const regenerateAssistantMessage = (chatId) => {
-    const updatedHistory = chatHistory.slice(0, -1);
-    const lastUserMessage = updatedHistory.slice(-1)[0];
+    const filteredHistory = chatHistory.slice(0, -1);
+    const lastUserMessage = filteredHistory.findLast(
+      (msg) => msg.role === "user"
+    );
     Workspace.deleteChats(workspace.slug, [chatId])
       .then(() =>
         sendCommand({
           text: lastUserMessage.content,
           autoSubmit: true,
-          history: updatedHistory,
+          history: filteredHistory,
           attachments: lastUserMessage?.attachments,
         })
       )
@@ -118,7 +157,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
    * @param {boolean} options.autoSubmit - Determines if the text should be sent immediately or if it should be added to the message state (default: false)
    * @param {Object[]} options.history - The history of the chat prior to this message for overriding the current chat history
    * @param {Object[import("./DnDWrapper").Attachment]} options.attachments - The attachments to send to the LLM for this message
-   * @param {'replace' | 'append'} options.writeMode - Replace current text or append to existing text (default: replace)
+   * @param {'replace' | 'append' | 'prepend'} options.writeMode - Replace current text or append to existing text (default: replace)
    * @returns {void}
    */
   const sendCommand = async ({
@@ -134,6 +173,11 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
       return;
     }
 
+    if (writeMode === "prepend") {
+      const currentText = document.getElementById(PROMPT_INPUT_ID)?.value ?? "";
+      text = currentText + " " + text;
+    }
+
     // If we are auto-submitting in append mode
     // than we need to update text with whatever is in the prompt input + the text we are sending.
     // @note: `message` will not work here since it is not updated yet.
@@ -144,6 +188,12 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     }
 
     if (!text || text === "") return false;
+
+    // Clear the localStorage draft so that if the PromptInput remounts
+    // (e.g. /reset causing empty→chat or chat→empty transitions),
+    // it won't restore stale text.
+    clearPromptInputDraft(threadSlug ?? workspace.slug);
+
     // If we are auto-submitting
     // Then we can replace the current text since this is not accumulating.
     let prevChatHistory;
@@ -211,14 +261,22 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
       // Override hook for new messages to now go to agents until the connection closes
       if (!!websocket) {
         if (!promptMessage || !promptMessage?.userMessage) return false;
+        const attachments = promptMessage?.attachments ?? parseAttachments();
         window.dispatchEvent(new CustomEvent(CLEAR_ATTACHMENTS_EVENT));
         websocket.send(
           JSON.stringify({
             type: "awaitingFeedback",
             feedback: promptMessage?.userMessage,
+            attachments,
           })
         );
-        return;
+
+        // /reset during an active agent session should end the session AND
+        // clear the chat in a single action. The send above triggers the
+        // server to abort the agent and close the socket; fall through to the
+        // /reset flow below which resets memory + clears chat history.
+        if (promptMessage.userMessage.trim() !== "/reset") return;
+        pendingResetRef.current = true;
       }
 
       if (!promptMessage || !promptMessage?.userMessage) return false;
@@ -250,17 +308,20 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
 
   // TODO: Simplify this WSS stuff
   useEffect(() => {
+    let socket = null;
+
     function handleWSS() {
       try {
         if (!socketId || !!websocket) return;
-        const socket = new WebSocket(
+        socket = new WebSocket(
           `${websocketURI()}/api/agent-invocation/${socketId}`
         );
         socket.supportsAgentStreaming = false;
 
         window.addEventListener(ABORT_STREAM_EVENT, () => {
+          setAgentSessionActive(false);
           window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
-          websocket.close();
+          socket?.close();
         });
 
         socket.addEventListener("message", (event) => {
@@ -269,6 +330,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
             handleSocketResponse(socket, event, setChatHistory);
           } catch {
             console.error("Failed to parse data");
+            setAgentSessionActive(false);
             window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
             socket.close();
           }
@@ -276,26 +338,34 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         });
 
         socket.addEventListener("close", (_event) => {
+          setAgentSessionActive(false);
           window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
-          setChatHistory((prev) => [
-            ...prev.filter((msg) => !!msg.content),
-            {
-              uuid: v4(),
-              type: "statusResponse",
-              content: "Agent session complete.",
-              role: "assistant",
-              sources: [],
-              closed: true,
-              error: null,
-              animate: false,
-              pending: false,
-            },
-          ]);
+          // When the close was triggered by /reset, skip the "Agent session
+          // complete." status - the pending /reset flow will clear history.
+          if (pendingResetRef.current) {
+            pendingResetRef.current = false;
+          } else {
+            setChatHistory((prev) => [
+              ...prev.filter((msg) => !!msg.content),
+              {
+                uuid: v4(),
+                type: "statusResponse",
+                content: "Agent session complete.",
+                role: "assistant",
+                sources: [],
+                closed: true,
+                error: null,
+                animate: false,
+                pending: false,
+              },
+            ]);
+          }
           setLoadingResponse(false);
           setWebsocket(null);
           setSocketId(null);
         });
         setWebsocket(socket);
+        setAgentSessionActive(true);
         window.dispatchEvent(new CustomEvent(AGENT_SESSION_START));
         window.dispatchEvent(new CustomEvent(CLEAR_ATTACHMENTS_EVENT));
       } catch (e) {
@@ -319,85 +389,110 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
       }
     }
     handleWSS();
-  }, [socketId]);
 
-  const isEmpty =
-    chatHistory.length === 0 && !sessionStorage.getItem(PENDING_HOME_MESSAGE);
+    return () => {
+      if (socket) {
+        setAgentSessionActive(false);
+        window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
+        socket.close();
+      }
+    };
+  }, [socketId]);
 
   if (isEmpty) {
     return (
-      <div
-        style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-hidden"
-      >
-        {isMobile && <SidebarMobileHeader />}
-        <DnDFileUploaderWrapper>
-          <div className="flex flex-col h-full w-full items-center justify-center">
-            <div className="flex flex-col items-center w-full max-w-[750px]">
-              <h1 className="text-white text-xl md:text-2xl mb-11 text-center">
-                {t("main-page.greeting")}
-              </h1>
-              <PromptInput
-                submit={handleSubmit}
-                isStreaming={loadingResponse}
-                sendCommand={sendCommand}
-                attachments={files}
-                centered={true}
-              />
-              <QuickActions
-                hasAvailableWorkspace={!!workspace}
-                onCreateAgent={() => navigate(paths.settings.agentSkills())}
-                onEditWorkspace={() =>
-                  navigate(
-                    paths.workspace.settings.generalAppearance(workspace.slug)
-                  )
-                }
-                onUploadDocument={() =>
-                  document.getElementById("dnd-chat-file-uploader")?.click()
-                }
-              />
-            </div>
-            <SuggestedMessages
-              suggestedMessages={workspace?.suggestedMessages}
-              sendCommand={sendCommand}
-            />
+      <ChatSidebarProvider>
+        <div
+          style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
+          className="relative flex md:ml-[2px] md:mr-[16px] md:my-[16px] w-full h-full z-[2]"
+        >
+          <ChatSettingsMenu />
+          <div className="flex-1 min-w-0 transition-all duration-500 relative md:rounded-[16px] bg-zinc-900 light:bg-white w-full h-full overflow-hidden border-none light:border-solid light:border light:border-theme-modal-border">
+            {isMobile && <SidebarMobileHeader />}
+            <WorkspaceModelPicker workspaceSlug={workspace.slug} />
+            <DnDFileUploaderWrapper>
+              <div className="flex flex-col h-full w-full items-center justify-center">
+                <div className="flex flex-col items-center w-full max-w-[750px]">
+                  <h1 className="text-white text-xl md:text-2xl mb-11 text-center">
+                    {t("main-page.greeting")}
+                  </h1>
+                  <PromptInput
+                    workspace={workspace}
+                    submit={handleSubmit}
+                    isStreaming={loadingResponse}
+                    sendCommand={sendCommand}
+                    attachments={files}
+                    centered={true}
+                  />
+                  <QuickActions
+                    hasAvailableWorkspace={!!workspace}
+                    onCreateAgent={() => navigate(paths.settings.agentSkills())}
+                    onEditWorkspace={() =>
+                      navigate(
+                        paths.workspace.settings.generalAppearance(
+                          workspace.slug
+                        )
+                      )
+                    }
+                    onUploadDocument={() =>
+                      document.getElementById("dnd-chat-file-uploader")?.click()
+                    }
+                  />
+                </div>
+                <SuggestedMessages
+                  suggestedMessages={workspace?.suggestedMessages}
+                  sendCommand={sendCommand}
+                />
+              </div>
+            </DnDFileUploaderWrapper>
+            <ChatTooltips />
           </div>
-        </DnDFileUploaderWrapper>
-        <ChatTooltips />
-      </div>
+          <MemoriesSidebar workspace={workspace} />
+        </div>
+      </ChatSidebarProvider>
     );
   }
 
   return (
-    <div
-      style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-      className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll no-scroll z-[2]"
-    >
-      {isMobile && <SidebarMobileHeader />}
-      <DnDFileUploaderWrapper>
-        <div className="flex flex-col h-full w-full">
-          <div className="contents">
-            <MetricsProvider>
-              <ChatHistory
-                ref={chatHistoryRef}
-                history={chatHistory}
-                workspace={workspace}
-                sendCommand={sendCommand}
-                updateHistory={setChatHistory}
-                regenerateAssistantMessage={regenerateAssistantMessage}
-              />
-            </MetricsProvider>
-            <PromptInput
-              submit={handleSubmit}
-              isStreaming={loadingResponse}
-              sendCommand={sendCommand}
-              attachments={files}
-              centered={false}
-            />
-          </div>
+    <ChatSidebarProvider>
+      <div
+        style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
+        className="relative flex md:ml-[2px] md:mr-[16px] md:my-[16px] w-full h-full z-[2]"
+      >
+        <ChatSettingsMenu />
+        <div className="flex-1 min-w-0 transition-all duration-500 relative md:rounded-[16px] bg-zinc-900 light:bg-white text-white light:text-slate-900 h-full overflow-hidden border-none light:border-solid light:border light:border-theme-modal-border">
+          {isMobile && <SidebarMobileHeader />}
+          <WorkspaceModelPicker workspaceSlug={workspace.slug} />
+          <DnDFileUploaderWrapper>
+            <div className="flex flex-col h-full w-full pb-20 md:pb-0">
+              <div className="contents">
+                <MetricsProvider>
+                  <ChatHistory
+                    ref={chatHistoryRef}
+                    history={chatHistory}
+                    workspace={workspace}
+                    sendCommand={sendCommand}
+                    updateHistory={setChatHistory}
+                    regenerateAssistantMessage={regenerateAssistantMessage}
+                    websocket={websocket}
+                  />
+                </MetricsProvider>
+                <PromptInput
+                  workspace={workspace}
+                  submit={handleSubmit}
+                  isStreaming={loadingResponse}
+                  sendCommand={sendCommand}
+                  attachments={files}
+                  centered={false}
+                />
+              </div>
+            </div>
+          </DnDFileUploaderWrapper>
+          <ChatTooltips />
         </div>
-      </DnDFileUploaderWrapper>
-      <ChatTooltips />
-    </div>
+        <SourcesSidebar />
+        <MemoriesSidebar workspace={workspace} />
+      </div>
+    </ChatSidebarProvider>
   );
 }

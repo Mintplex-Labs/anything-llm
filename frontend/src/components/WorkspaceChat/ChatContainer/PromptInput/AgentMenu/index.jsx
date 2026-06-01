@@ -34,14 +34,6 @@ export default function AvailableAgentsButton({ showing, setShowAgents }) {
   );
 }
 
-function AbilityTag({ text }) {
-  return (
-    <div className="px-2 bg-theme-action-menu-item-hover text-theme-text-secondary text-xs w-fit rounded-sm">
-      <p>{text}</p>
-    </div>
-  );
-}
-
 export function AvailableAgents({
   showing,
   setShowing,
@@ -108,26 +100,6 @@ export function AvailableAgents({
                 <div className="text-theme-text-primary text-sm">
                   <b>{t("chat_window.at_agent")}</b>
                   {t("chat_window.default_agent_description")}
-                </div>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  <AbilityTag text="rag-search" />
-                  <AbilityTag text="web-scraping" />
-                  <AbilityTag text="web-browsing" />
-                  <AbilityTag text="save-file-to-browser" />
-                  <AbilityTag text="list-documents" />
-                  <AbilityTag text="summarize-document" />
-                  <AbilityTag text="chart-generation" />
-                </div>
-              </div>
-            </button>
-            <button
-              type="button"
-              disabled={true}
-              className="w-full rounded-xl flex flex-col justify-start group"
-            >
-              <div className="w-full flex-col text-center flex pointer-events-none">
-                <div className="text-theme-text-secondary text-xs italic">
-                  {t("chat_window.custom_agents_coming_soon")}
                 </div>
               </div>
             </button>

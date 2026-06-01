@@ -141,50 +141,63 @@ export const ThoughtChainComponent = forwardRef(
     }
 
     return (
-      <div className="flex justify-start items-end transition-all duration-200 w-full md:max-w-[800px]">
-        <div className="pb-2 w-full flex gap-x-5 flex-col relative">
-          <div
-            style={{
-              transition: "all 0.1s ease-in-out",
-              borderRadius: "6px",
-            }}
-            className={`${isExpanded ? "" : `${canExpand ? "hover:bg-theme-sidebar-item-hover" : ""}`} items-start bg-theme-bg-chat-input py-2 px-4 flex gap-x-2`}
-          >
+      <div className="flex justify-center w-full">
+        <div className="w-full flex flex-col">
+          <div className="w-full">
             <div
-              className={`w-7 h-7 flex justify-center flex-shrink-0 ${!isExpanded ? "items-center" : "items-start pt-[2px]"}`}
+              style={{
+                transition: "all 0.1s ease-in-out",
+                borderRadius: "16px",
+              }}
+              className="relative bg-zinc-800 light:bg-slate-100 p-4"
             >
-              {isThinking || isComplete ? (
-                <>
-                  <video
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className={`w-7 h-7 transition-opacity duration-200 light:invert light:opacity-50 ${isThinking ? "opacity-100" : "opacity-0 hidden"}`}
-                    data-tooltip-id="cot-thinking"
-                    data-tooltip-content="Model is thinking..."
-                    aria-label="Model is thinking..."
-                  >
-                    <source src={ThinkingAnimation} type="video/webm" />
-                  </video>
-                  <img
-                    src={ThinkingStatic}
-                    alt="Thinking complete"
-                    className={`w-6 h-6 transition-opacity duration-200 light:invert light:opacity-50 ${!isThinking && isComplete ? "opacity-100" : "opacity-0 hidden"}`}
-                    data-tooltip-id="cot-thinking"
-                    data-tooltip-content="Model has finished thinking"
-                    aria-label="Model has finished thinking"
-                  />
-                </>
-              ) : null}
-            </div>
-            <div className="flex-1 min-w-0">
-              <div
-                className={`overflow-hidden transition-all transform duration-300 ease-in-out origin-top ${isExpanded ? "" : "max-h-6"}`}
-              >
-                <div
-                  className={`text-theme-text-secondary font-mono leading-6 ${isExpanded ? "-ml-[5.5px] -mt-[4px]" : "mt-[2px]"}`}
+              <div className="absolute top-4 left-4 w-[18px] h-[18px]">
+                {isThinking || isComplete ? (
+                  <>
+                    <video
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      className={`w-[18px] h-[18px] scale-[115%] transition-opacity duration-200 light:invert light:opacity-50 ${isThinking ? "opacity-100" : "opacity-0 hidden"}`}
+                      data-tooltip-id="cot-thinking"
+                      data-tooltip-content="Model is thinking..."
+                      aria-label="Model is thinking..."
+                    >
+                      <source src={ThinkingAnimation} type="video/webm" />
+                    </video>
+                    <img
+                      src={ThinkingStatic}
+                      alt="Thinking complete"
+                      className={`w-[18px] h-[18px] transition-opacity duration-200 light:invert light:opacity-50 ${!isThinking && isComplete ? "opacity-100" : "opacity-0 hidden"}`}
+                      data-tooltip-id="cot-thinking"
+                      data-tooltip-content="Model has finished thinking"
+                      aria-label="Model has finished thinking"
+                    />
+                  </>
+                ) : null}
+              </div>
+              {canExpand && (
+                <button
+                  onClick={handleExpandClick}
+                  className="absolute top-4 right-4 border-none text-zinc-200 light:text-slate-800 transition-colors"
+                  data-tooltip-id="expand-cot"
+                  data-tooltip-content={
+                    isExpanded ? "Hide thought chain" : "Show thought chain"
+                  }
+                  aria-label={
+                    isExpanded ? "Hide thought chain" : "Show thought chain"
+                  }
                 >
+                  <CaretDown
+                    className={`w-4 h-4 transform transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
+                  />
+                </button>
+              )}
+              <div
+                className={`ml-[28px] mr-[26px] transition-[max-height] duration-300 ease-in-out origin-top ${isExpanded ? "" : "overflow-hidden max-h-[18px]"}`}
+              >
+                <div className="text-zinc-200 light:text-slate-800 font-mono text-sm leading-[18px] [&_p]:m-0">
                   <span
                     className={`block w-full ${!isExpanded ? "truncate" : ""}`}
                     dangerouslySetInnerHTML={{
@@ -197,25 +210,6 @@ export const ThoughtChainComponent = forwardRef(
                   />
                 </div>
               </div>
-            </div>
-            <div className="flex items-center gap-x-2">
-              {canExpand ? (
-                <button
-                  onClick={handleExpandClick}
-                  data-tooltip-id="expand-cot"
-                  data-tooltip-content={
-                    isExpanded ? "Hide thought chain" : "Show thought chain"
-                  }
-                  className="border-none text-theme-text-secondary hover:text-theme-text-primary transition-colors p-1 rounded-full hover:bg-theme-sidebar-item-hover"
-                  aria-label={
-                    isExpanded ? "Hide thought chain" : "Show thought chain"
-                  }
-                >
-                  <CaretDown
-                    className={`w-4 h-4 transform transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
-                  />
-                </button>
-              ) : null}
             </div>
           </div>
         </div>

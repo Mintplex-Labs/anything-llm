@@ -63,7 +63,7 @@ markdown.renderer.rules.strong_close = () => "</strong>";
 markdown.renderer.rules.link_open = (tokens, idx) => {
   const token = tokens[idx];
   const href = token.attrs.find((attr) => attr[0] === "href");
-  return `<a href="${href[1]}" target="_blank" rel="noopener noreferrer">`;
+  return `<a href="${HTMLEncode(href[1])}" target="_blank" rel="noopener noreferrer">`;
 };
 
 // Custom renderer for responsive images rendered in markdown
@@ -73,7 +73,7 @@ markdown.renderer.rules.image = function (tokens, idx) {
   const src = token.attrs[srcIndex][1];
   const alt = token.content || "";
 
-  return `<div class="w-full max-w-[800px]"><img src="${src}" alt="${alt}" class="w-full h-auto" /></div>`;
+  return `<div class="w-full max-w-[800px]"><img src="${HTMLEncode(src)}" alt="${HTMLEncode(alt)}" class="w-full h-auto" /></div>`;
 };
 
 markdown.use(markdownItKatexPlugin);

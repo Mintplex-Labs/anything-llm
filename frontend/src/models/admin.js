@@ -205,10 +205,11 @@ const Admin = {
         return { apiKeys: [], error: e.message };
       });
   },
-  generateApiKey: async function () {
+  generateApiKey: async function (data = {}) {
     return fetch(`${API_BASE}/admin/generate-api-key`, {
       method: "POST",
       headers: baseHeaders(),
+      body: JSON.stringify(data),
     })
       .then((res) => {
         if (!res.ok) {

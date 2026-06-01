@@ -284,6 +284,21 @@ function normalizePath(filepath = "") {
   return result;
 }
 
+/**
+ * Strips characters that are illegal in Windows filenames, including Unicode
+ * quotation marks (U+201C, U+201D, etc.) that can get corrupted into ASCII
+ * double-quotes during charset conversion in the upload pipeline.
+ * @param {string} fileName - The filename to sanitize.
+ * @returns {string} - The sanitized filename.
+ */
+function sanitizeFileName(fileName) {
+  if (!fileName) return fileName;
+  return fileName.replace(
+    /[<>:"/\\|?*\u201C\u201D\u201E\u201F\u2018\u2019\u201A\u201B]/g,
+    ""
+  );
+}
+
 // Check if the vector-cache folder is empty or not
 // useful for it the user is changing embedders as this will
 // break the previous cache.
@@ -500,4 +515,5 @@ module.exports = {
   purgeEntireVectorCache,
   getDocumentsByFolder,
   hotdirPath,
+  sanitizeFileName,
 };

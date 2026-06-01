@@ -1,5 +1,13 @@
 import { API_BASE } from "./constants";
 
+/**
+ * Check if a href matches the current pathname.
+ * Matches exactly or as a parent path (e.g. /settings/model-routers matches /settings/model-routers/1).
+ */
+export function isPathMatch(href, pathname) {
+  return pathname === href || pathname.startsWith(href + "/");
+}
+
 function applyOptions(path, options = {}) {
   let updatedPath = path;
   if (!options || Object.keys(options).length === 0) return updatedPath;
@@ -52,8 +60,8 @@ export default {
   discord: () => {
     return "https://discord.com/invite/6UyHPeGZAC";
   },
-  docs: () => {
-    return "https://docs.anythingllm.com";
+  docs: (path = "") => {
+    return `https://docs.anythingllm.com${path}`;
   },
   chatModes: () => {
     return "https://docs.anythingllm.com/features/chat-modes";
@@ -148,6 +156,12 @@ export default {
     apiKeys: () => {
       return "/settings/api-keys";
     },
+    modelRouters: () => {
+      return "/settings/model-routers";
+    },
+    modelRouterRules: (id) => {
+      return `/settings/model-routers/${id}`;
+    },
     systemPromptVariables: () => "/settings/system-prompt-variables",
     logs: () => {
       return "/settings/event-logs";
@@ -169,6 +183,18 @@ export default {
     },
     mobileConnections: () => {
       return `/settings/mobile-connections`;
+    },
+    telegram: () => {
+      return `/settings/external-connections/telegram`;
+    },
+    scheduledJobs: () => {
+      return `/settings/scheduled-jobs`;
+    },
+    scheduledJobRuns: (jobId) => {
+      return `/settings/scheduled-jobs/${jobId}/runs`;
+    },
+    scheduledJobRunDetail: (jobId, runId) => {
+      return `/settings/scheduled-jobs/${jobId}/runs/${runId}`;
     },
   },
   agents: {

@@ -4,6 +4,7 @@ const { APIError } = require("./error.js");
 const Providers = require("./providers/index.js");
 const { Telemetry } = require("../../../models/telemetry.js");
 const { v4 } = require("uuid");
+const { ToolReranker } = require("./utils/toolReranker.js");
 
 /**
  * AIbitat is a class that manages the conversation between agents.
@@ -27,22 +28,72 @@ class AIbitat {
    */
   skipHandleExecution = false;
 
-  provider = null;
+  _provider = null;
+
+  /** @type {import("./providers/ai-provider").AgentProviderInstance|null} */
+  _providerInstance = null;
+
   defaultProvider = null;
   defaultInterrupt;
   maxRounds;
   _chats;
-
+  _trackedChatId = null;
   agents = new Map();
   channels = new Map();
   functions = new Map();
 
+  /**
+   * Buffer for citations collected during tool execution.
+   * Citations are flushed to the frontend when the response is finalized.
+   * @type {Array<{id: string, title: string, text: string, chunkSource?: string, score?: number}>}
+   */
+  _pendingCitations = [];
+
+  /**
+   * Buffer for attachments (images) collected during tool execution.
+   * Tools can call addToolAttachment() to queue images for injection into the conversation.
+   * These are injected as a user message so all providers' existing attachment handling works.
+   * @type {Array<{name: string, mime: string, contentString: string}>}
+   */
+  _toolAttachments = [];
+
+  /**
+   * Buffer for clarifying-question surveys completed during tool execution.
+   * Each entry is one ask-user invocation (questions + the user's result),
+   * drained by the chat-history plugin into workspace_chats.response so the
+   * filled-in survey persists alongside citations/outputs.
+   * @type {Array<{questions: Array<Object>, result: Object}>}
+   */
+  _pendingClarifyingQuestionSurveys = [];
+
+  /**
+   * Get the default maximum number of tools an agent can chain for a single response.
+   * @returns {number}
+   */
+  static defaultMaxToolCalls() {
+    const envMaxToolCalls = parseInt(process.env.AGENT_MAX_TOOL_CALLS, 10);
+    return !isNaN(envMaxToolCalls) && envMaxToolCalls > 0
+      ? envMaxToolCalls
+      : 10;
+  }
+
+  /**
+   * Create a new AIbitat instance.
+   * @param {Object} props - The properties for the AIbitat instance.
+   * @param {Array} props.chats - [default: []] The chat history between agents and channels.
+   * @param {string} props.interrupt - [default: "NEVER"] The interrupt mode for the AIbitat instance.
+   * @param {number} props.maxRounds - [default: 100] The maximum number of rounds for the AIbitat instance.
+   * @param {number} props.maxToolCalls - [default: AIbitat.defaultMaxToolCalls()] The maximum number of tools an agent can chain for a single response.
+   * @param {string} props.provider - [default: "openai"] The provider for the AIbitat instance.
+   * @param {Object} props.handlerProps - The handler properties for the AIbitat instance.
+   * @param {Object} rest - The rest of the properties for the AIbitat instance.
+   */
   constructor(props = {}) {
     const {
       chats = [],
       interrupt = "NEVER",
       maxRounds = 100,
-      maxToolCalls = 10,
+      maxToolCalls = AIbitat.defaultMaxToolCalls(),
       provider = "openai",
       handlerProps = {}, // Inherited props we can spread so aibitat can access.
       ...rest
@@ -68,12 +119,170 @@ class AIbitat {
     return this._chats;
   }
 
+  get provider() {
+    return this._provider;
+  }
+
+  set provider(value) {
+    if (value !== null && typeof value !== "string") {
+      console.trace(); // print this for user report debugging so call stack is visible
+      throw new TypeError(
+        `aibitat.provider must be a string tag (e.g. "openai"), got ${typeof value}. ` +
+          `Use aibitat.providerInstance to to get/store the provider instance.`
+      );
+    }
+    this._provider = value;
+  }
+
+  /** @returns {import("./providers/ai-provider").AgentProviderInstance} */
+  get providerInstance() {
+    return this._providerInstance;
+  }
+
+  /** @param {import("./providers/ai-provider").AgentProviderInstance|null} value */
+  set providerInstance(value) {
+    this._providerInstance = value;
+  }
+
   /**
    * Install a plugin.
    */
   use(plugin) {
     plugin.setup(this);
     return this;
+  }
+
+  /**
+   * Register a new chat ID for tracking for a given conversation exchange
+   * @param {number} chatId - The ID of the chat to register.
+   */
+  registerChatId(chatId = null) {
+    if (!chatId) return;
+    this._trackedChatId = Number(chatId);
+  }
+
+  /**
+   * Get the tracked chat ID for a given conversation exchange
+   * @returns {number|null} The ID of the chat to register.
+   */
+  get trackedChatId() {
+    return this._trackedChatId ?? null;
+  }
+
+  /**
+   * Clear the tracked chat ID for a given conversation exchange
+   */
+  clearTrackedChatId() {
+    this._trackedChatId = null;
+  }
+
+  /**
+   * Emit the tracked chat ID to the frontend via the websocket
+   * plugin (assumed to be attached).
+   * @param {string} [uuid] - The message UUID to associate with this chatId
+   */
+  emitChatId(uuid = null) {
+    if (!this.trackedChatId || !uuid) return null;
+    this.socket?.send?.("reportStreamEvent", {
+      type: "chatId",
+      uuid,
+      chatId: this.trackedChatId,
+    });
+  }
+
+  /**
+   * Add citation(s) to be reported when the response is finalized.
+   * Citations are buffered and flushed with the correct message UUID.
+   * @param {{id: string, title: string, text: string, chunkSource?: string, score?: number}|Array<{id: string, title: string, text: string, chunkSource?: string, score?: number}>} citations - Citation object or array of citation objects
+   */
+  addCitation(citations) {
+    if (!citations) return;
+    if (Array.isArray(citations))
+      this._pendingCitations.push(...citations.filter(Boolean));
+    else if (typeof citations === "object")
+      this._pendingCitations.push(citations);
+  }
+
+  /**
+   * Flush all pending citations to the frontend with the given message UUID.
+   * Called automatically when the agent response is finalized.
+   * Note: Does not clear citations - they are cleared by chat-history plugin after persisting.
+   * @param {string} messageUuid - The UUID of the message to attach citations to
+   */
+  flushCitations(messageUuid) {
+    if (!messageUuid || this._pendingCitations.length === 0) return;
+    this.socket?.send?.("reportStreamEvent", {
+      type: "citations",
+      uuid: messageUuid,
+      citations: this._pendingCitations,
+    });
+  }
+
+  /**
+   * Clear all pending citations. Called after citations have been persisted.
+   */
+  clearCitations() {
+    this._pendingCitations = [];
+  }
+
+  /**
+   * Send routing metadata to the frontend for the given message UUID.
+   * Only emits if routing metadata exists in handlerProps.
+   * @param {string} messageUuid - The UUID of the message to attach routing info to
+   */
+  flushRoutingMetadata(messageUuid) {
+    const routingMetadata = this.handlerProps?.routingMetadata;
+    if (
+      !messageUuid ||
+      !routingMetadata?.routedTo ||
+      !routingMetadata.routedTo.shouldNotify
+    )
+      return;
+    this.socket?.send?.("reportStreamEvent", {
+      type: "modelRouteNotification",
+      uuid: `${messageUuid}:route`,
+      routedTo: routingMetadata.routedTo,
+    });
+  }
+
+  /**
+   * Add an attachment (image) from a tool to be injected into the conversation.
+   * The attachment will be added as a user message so the model can "see" it.
+   * This leverages existing provider attachment handling for user messages.
+   * @param {{name: string, mime: string, contentString: string}} attachment - The attachment object with name, mime type, and base64 data URL
+   */
+  addToolAttachment(attachment) {
+    if (!attachment || !attachment.contentString) return;
+    this._toolAttachments.push(attachment);
+  }
+
+  /**
+   * Add a completed clarifying-question survey to the pending buffer.
+   * The chat-history plugin drains this buffer when persisting the agent reply.
+   * @param {{questions: Array<Object>, result: Object}} survey - The survey to add
+   */
+  addClarifyingQuestionSurvey(survey) {
+    if (!survey || typeof survey !== "object") return;
+    this._pendingClarifyingQuestionSurveys.push(survey);
+  }
+
+  /**
+   * Clear all pending clarifying-question surveys. Called after surveys
+   * have been persisted to the workspace_chats record.
+   */
+  clearClarifyingQuestionSurveys() {
+    this._pendingClarifyingQuestionSurveys = [];
+  }
+
+  /**
+   * Collect and clear any pending tool attachments.
+   * @returns {Array<{name: string, mime: string, contentString: string}>} The collected attachments
+   */
+  collectToolAttachments() {
+    if (this._toolAttachments.length === 0) return [];
+    const attachments = [...this._toolAttachments];
+    this._toolAttachments = [];
+    return attachments;
   }
 
   /**
@@ -285,6 +494,18 @@ class AIbitat {
   }
 
   /**
+   * Triggered when a tool call completes and returns a result.
+   * Used by scheduled jobs to capture tool results for the execution trace.
+   *
+   * @param listener
+   * @returns
+   */
+  onToolCallResult(listener = () => null) {
+    this.emitter.on("toolCallResult", listener);
+    return this;
+  }
+
+  /**
    * Register an error in the chat history.
    * This will trigger the `onError` event.
    *
@@ -492,9 +713,7 @@ class AIbitat {
       {
         role: "user",
         content: `You are in a role play game. The following roles are available:
-${availableNodes
-  .map((node) => `@${node}: ${this.getAgentConfig(node).role}`)
-  .join("\n")}.
+${availableNodes.map((node) => `@${node}: ${this.getAgentConfig(node).role}`).join("\n")}.
 
 Read the following conversation.
 
@@ -533,6 +752,27 @@ Only return the role.
   }
 
   /**
+   * Extract the user's prompt from the messages array for tool reranking.
+   * Gets the content of the last user message.
+   * @param {Array} messages - Array of chat messages
+   * @returns {string|null} The user's prompt or null if not found
+   */
+  #extractUserPrompt(messages) {
+    if (!messages || !Array.isArray(messages)) return null;
+
+    // Find the last user message
+    for (let i = messages.length - 1; i >= 0; i--) {
+      const msg = messages[i];
+      if (msg.role === "user" && msg.content) {
+        return typeof msg.content === "string"
+          ? msg.content
+          : JSON.stringify(msg.content);
+      }
+    }
+    return null;
+  }
+
+  /**
    * Check if the chat has reached the maximum number of rounds.
    */
   hasReachedMaximumRounds(from = "", to = "") {
@@ -564,10 +804,22 @@ ${this.getHistory({ to: route.to })
     }
 
     // This is normal chat between user<->agent
-    return this.getHistory(route).map((c) => ({
-      content: c.content,
-      role: c.from === route.to ? "user" : "assistant",
-    }));
+    // Include attachments if present (for vision/multimodal support)
+    return this.getHistory(route).map((c) => {
+      const message = {
+        content: c.content,
+        role: c.from === route.to ? "user" : "assistant",
+      };
+      // Pass attachments through for user messages that have them
+      if (
+        c.attachments &&
+        c.attachments.length > 0 &&
+        message.role === "user"
+      ) {
+        message.attachments = c.attachments;
+      }
+      return message;
+    });
   }
 
   /**
@@ -584,6 +836,24 @@ ${this.getHistory({ to: route.to })
   async reply(route) {
     const fromConfig = this.getAgentConfig(route.from);
     const chatHistory = this.getOrFormatNodeChatHistory(route);
+
+    // Fetch fresh parsed file context and inject into the last user message
+    if (this.fetchParsedFileContext) {
+      const parsedContext = await this.fetchParsedFileContext();
+      if (parsedContext) {
+        // Find the last user message and append context to it
+        for (let i = chatHistory.length - 1; i >= 0; i--) {
+          if (chatHistory[i].role === "user") {
+            chatHistory[i] = {
+              ...chatHistory[i],
+              content: chatHistory[i].content + parsedContext,
+            };
+            break;
+          }
+        }
+      }
+    }
+
     const messages = [
       {
         content: fromConfig.role,
@@ -593,23 +863,57 @@ ${this.getHistory({ to: route.to })
     ];
 
     // get the functions that the node can call
-    const functions = fromConfig.functions
+    let functions = fromConfig.functions
       ?.map((name) => this.functions.get(this.#parseFunctionName(name)))
       .filter((a) => !!a);
 
-    const provider = this.getProviderForConfig({
+    // Rerank tools based on user prompt if enabled
+    if (ToolReranker.isEnabled() && functions?.length) {
+      const toolReranker = new ToolReranker();
+      const userPrompt = this.#extractUserPrompt(messages);
+      if (userPrompt)
+        functions = await toolReranker.rerank(userPrompt, functions);
+    } else {
+      if (functions?.length > ToolReranker.defaultTopN) {
+        this.handlerProps.log?.(
+          `
+
+\x1b[44m[HINT]\x1b[0m: You are injecting \x1b[0;93m${functions.length} tools\x1b[0m into every request.
+Consider enabling \x1b[0;93mIntelligent Skill Selection\x1b[0m to reduce token usage from tool call bloat by up to \x1b[0;93m80% per request\x1b[0m.
+https://docs.anythingllm.com/agent/intelligent-tool-selection
+
+`
+        );
+      }
+    }
+
+    // Re-evaluate model router before each turn if a resolver is attached.
+    // This ensures routing rules are applied per-message, not just at initialization.
+    if (this.resolveRoute) {
+      const userPrompt =
+        this.#extractUserPrompt(messages) || route.content || "";
+      const resolved = await this.resolveRoute(userPrompt);
+      if (resolved) {
+        this.defaultProvider = {
+          ...this.defaultProvider,
+          provider: resolved.provider,
+          model: resolved.model,
+        };
+      }
+    }
+
+    this.providerInstance = this.getProviderForConfig({
       ...this.defaultProvider,
       ...fromConfig,
     });
-    provider.attachHandlerProps(this.handlerProps);
+    this.providerInstance.attachHandlerProps(this.handlerProps);
 
     let content;
-    if (provider.supportsAgentStreaming) {
+    if (this.providerInstance.supportsAgentStreaming) {
       this.handlerProps.log?.(
         "[DEBUG] Provider supports agent streaming - will use async execution!"
       );
       content = await this.handleAsyncExecution(
-        provider,
         messages,
         functions,
         route.from
@@ -618,12 +922,7 @@ ${this.getHistory({ to: route.to })
       this.handlerProps.log?.(
         "[DEBUG] Provider does not support agent streaming - will use synchronous execution!"
       );
-      content = await this.handleExecution(
-        provider,
-        messages,
-        functions,
-        route.from
-      );
+      content = await this.handleExecution(messages, functions, route.from);
     }
 
     this.newMessage({ ...route, content });
@@ -631,10 +930,28 @@ ${this.getHistory({ to: route.to })
   }
 
   /**
-   * Handle the async (streaming) execution of the provider
-   * with tool calls.
+   * Wrapper for provider calls that catches errors and converts them to APIError.
+   * This ensures provider errors are properly surfaced to the user instead of crashing.
    *
-   * @param provider
+   * @param {Function} providerCall - Async function that calls the provider
+   * @returns {Promise<any>} - The result of the provider call
+   * @throws {APIError} - If the provider call fails
+   */
+  async #safeProviderCall(providerCall) {
+    try {
+      return await providerCall();
+    } catch (error) {
+      console.error(`[AIbitat] Provider error: ${error.message}`, {
+        hide_meta: true,
+      });
+      throw new APIError(`The agent model failed to respond: ${error.message}`);
+    }
+  }
+
+  /**
+   * Handle the async (streaming) execution of the provider
+   * with tool calls. Reads the provider from this.providerInstance.
+   *
    * @param messages
    * @param functions
    * @param byAgent
@@ -642,7 +959,6 @@ ${this.getHistory({ to: route.to })
    * @returns {Promise<string>}
    */
   async handleAsyncExecution(
-    provider,
     messages = [],
     functions = [],
     byAgent = null,
@@ -652,35 +968,30 @@ ${this.getHistory({ to: route.to })
       this?.socket?.send(type, data);
     };
 
+    // Emit routing notification before the first completion so it appears above the response
+    if (depth === 0) this?.flushRoutingMetadata?.(v4());
+
     /** @type {{ functionCall: { name: string, arguments: string }, textResponse: string }} */
-    const completionStream = await provider.stream(
-      messages,
-      functions,
-      eventHandler
+    const completionStream = await this.#safeProviderCall(() =>
+      this.providerInstance.stream(messages, functions, eventHandler)
     );
 
     if (completionStream.functionCall) {
-      if (depth >= this.maxToolCalls) {
-        this.handlerProps?.log?.(
-          `[warning]: Maximum tool call limit (${this.maxToolCalls}) reached. Making final response without tools.`
-        );
-        this?.introspect?.(
-          `Maximum tool call limit (${this.maxToolCalls}) reached. Generating a final response from what I have so far.`
-        );
-
-        const finalStream = await provider.stream(messages, [], eventHandler);
-        const finalResponse =
-          finalStream?.textResponse ||
-          "I reached the maximum number of tool calls allowed for a single response. Here is what I have so far based on the tools I was able to run.";
-        return finalResponse;
-      }
-
       const { name, arguments: args } = completionStream.functionCall;
       const fn = this.functions.get(name);
+      const reachedToolLimit = depth >= this.maxToolCalls;
+
+      if (reachedToolLimit) {
+        this.handlerProps?.log?.(
+          `[warning]: Maximum tool call limit (${this.maxToolCalls}) reached. Executing final tool call then generating response.`
+        );
+        this?.introspect?.(
+          `Maximum tool call limit (${this.maxToolCalls}) reached. After this tool I will generate a final response.`
+        );
+      }
 
       if (!fn) {
         return await this.handleAsyncExecution(
-          provider,
           [
             ...messages,
             {
@@ -690,7 +1001,7 @@ ${this.getHistory({ to: route.to })
               originalFunctionCall: completionStream.functionCall,
             },
           ],
-          functions,
+          reachedToolLimit ? [] : functions,
           byAgent,
           depth + 1
         );
@@ -698,7 +1009,7 @@ ${this.getHistory({ to: route.to })
 
       fn.caller = byAgent || "agent";
 
-      if (provider?.verbose) {
+      if (this.providerInstance?.verbose) {
         this?.introspect?.(
           `${fn.caller} is executing \`${name}\` tool ${JSON.stringify(args, null, 2)}`
         );
@@ -710,6 +1021,11 @@ ${this.getHistory({ to: route.to })
 
       const result = await fn.handler(args);
       Telemetry.sendTelemetry("agent_tool_call", { tool: name }, null, true);
+      this.emitter.emit("toolCallResult", {
+        toolName: name,
+        arguments: args,
+        result,
+      });
 
       /**
        * If the tool call has direct output enabled, return the result directly to the chat
@@ -726,77 +1042,112 @@ ${this.getHistory({ to: route.to })
         this.handlerProps?.log?.(
           `${fn.caller} tool call resulted in direct output! Returning raw result as string. NO MORE TOOL CALLS WILL BE EXECUTED.`
         );
+        const directOutputUUID = completionStream?.uuid || v4();
         eventHandler?.("reportStreamEvent", {
           type: "fullTextResponse",
-          uuid: v4(),
+          uuid: directOutputUUID,
           content: result,
         });
+        eventHandler?.("reportStreamEvent", {
+          type: "usageMetrics",
+          uuid: directOutputUUID,
+          metrics: this.providerInstance.getUsage(),
+        });
+        this?.flushCitations?.(directOutputUUID);
+        this?.emitChatId?.(directOutputUUID);
         return result;
       }
 
+      const toolAttachments = this.collectToolAttachments();
+      const newMessages = [
+        ...messages,
+        {
+          name,
+          role: "function",
+          content: result,
+          originalFunctionCall: completionStream.functionCall,
+        },
+      ];
+
+      if (toolAttachments.length > 0) {
+        this.handlerProps?.log?.(
+          `[debug]: Injecting ${toolAttachments.length} image attachment(s) from tool result`
+        );
+        newMessages.push({
+          role: "user",
+          content: "[Attached image(s) from tool result]",
+          attachments: toolAttachments,
+        });
+      }
+
       return await this.handleAsyncExecution(
-        provider,
-        [
-          ...messages,
-          {
-            name,
-            role: "function",
-            content: result,
-            originalFunctionCall: completionStream.functionCall,
-          },
-        ],
-        functions,
+        newMessages,
+        reachedToolLimit ? [] : functions,
         byAgent,
         depth + 1
       );
     }
 
+    const responseUuid = completionStream?.uuid || v4();
+    eventHandler?.("reportStreamEvent", {
+      type: "usageMetrics",
+      uuid: responseUuid,
+      metrics: this.providerInstance.getUsage(),
+    });
+    this?.flushCitations?.(responseUuid);
+    this?.emitChatId?.(responseUuid);
     return completionStream?.textResponse;
   }
 
   /**
    * Handle the synchronous (non-streaming) execution of the provider
-   * with tool calls.
+   * with tool calls. Reads the provider from this.providerInstance.
    *
-   * @param provider
    * @param messages
    * @param functions
    * @param byAgent
+   * @param depth
+   * @param msgUUID - The message UUID to use for event correlation (created at depth=0)
    *
    * @returns {Promise<string>}
    */
   async handleExecution(
-    provider,
     messages = [],
     functions = [],
     byAgent = null,
-    depth = 0
+    depth = 0,
+    msgUUID = null
   ) {
+    // Create a stable UUID at the start of execution for event correlation
+    if (!msgUUID) msgUUID = v4();
+    const eventHandler = (type, data) => {
+      this?.socket?.send(type, data);
+    };
+
+    // Emit routing notification before the first completion so it appears above the response
+    if (depth === 0) this?.flushRoutingMetadata?.(msgUUID);
+
     // get the chat completion
-    const completion = await provider.complete(messages, functions);
+    const completion = await this.#safeProviderCall(() =>
+      this.providerInstance.complete(messages, functions)
+    );
 
     if (completion.functionCall) {
-      if (depth >= this.maxToolCalls) {
+      const { name, arguments: args } = completion.functionCall;
+      const fn = this.functions.get(name);
+      const reachedToolLimit = depth >= this.maxToolCalls;
+
+      if (reachedToolLimit) {
         this.handlerProps?.log?.(
-          `[warning]: Maximum tool call limit (${this.maxToolCalls}) reached. Making final response without tools.`
+          `[warning]: Maximum tool call limit (${this.maxToolCalls}) reached. Executing final tool call then generating response.`
         );
         this?.introspect?.(
-          `Maximum tool call limit (${this.maxToolCalls}) reached. Generating a final response from what I have so far.`
-        );
-
-        const finalCompletion = await provider.complete(messages, []);
-        return (
-          finalCompletion?.textResponse ||
-          "I reached the maximum number of tool calls allowed for a single response. Here is what I have so far based on the tools I was able to run."
+          `Maximum tool call limit (${this.maxToolCalls}) reached. After this tool I will generate a final response.`
         );
       }
 
-      const { name, arguments: args } = completion.functionCall;
-      const fn = this.functions.get(name);
-
       if (!fn) {
         return await this.handleExecution(
-          provider,
           [
             ...messages,
             {
@@ -806,15 +1157,16 @@ ${this.getHistory({ to: route.to })
               originalFunctionCall: completion.functionCall,
             },
           ],
-          functions,
+          reachedToolLimit ? [] : functions,
           byAgent,
-          depth + 1
+          depth + 1,
+          msgUUID
         );
       }
 
       fn.caller = byAgent || "agent";
 
-      if (provider?.verbose) {
+      if (this.providerInstance?.verbose) {
         this?.introspect?.(
           `[debug]: ${fn.caller} is attempting to call \`${name}\` tool`
         );
@@ -826,6 +1178,11 @@ ${this.getHistory({ to: route.to })
 
       const result = await fn.handler(args);
       Telemetry.sendTelemetry("agent_tool_call", { tool: name }, null, true);
+      this.emitter.emit("toolCallResult", {
+        toolName: name,
+        arguments: args,
+        result,
+      });
 
       if (this.skipHandleExecution) {
         this.skipHandleExecution = false;
@@ -836,26 +1193,53 @@ ${this.getHistory({ to: route.to })
         this.handlerProps?.log?.(
           `${fn.caller} tool call resulted in direct output! Returning raw result as string. NO MORE TOOL CALLS WILL BE EXECUTED.`
         );
+        eventHandler?.("reportStreamEvent", {
+          type: "usageMetrics",
+          uuid: msgUUID,
+          metrics: this.providerInstance.getUsage(),
+        });
+        this?.flushCitations?.(msgUUID);
         return result;
       }
 
+      const toolAttachments = this.collectToolAttachments();
+      const newMessages = [
+        ...messages,
+        {
+          name,
+          role: "function",
+          content: result,
+          originalFunctionCall: completion.functionCall,
+        },
+      ];
+
+      if (toolAttachments.length > 0) {
+        this.handlerProps?.log?.(
+          `[debug]: Injecting ${toolAttachments.length} image attachment(s) from tool result`
+        );
+        newMessages.push({
+          role: "user",
+          content: "[Attached image(s) from tool result]",
+          attachments: toolAttachments,
+        });
+      }
+
       return await this.handleExecution(
-        provider,
-        [
-          ...messages,
-          {
-            name,
-            role: "function",
-            content: result,
-            originalFunctionCall: completion.functionCall,
-          },
-        ],
-        functions,
+        newMessages,
+        reachedToolLimit ? [] : functions,
         byAgent,
-        depth + 1
+        depth + 1,
+        msgUUID
       );
     }
 
+    eventHandler?.("reportStreamEvent", {
+      type: "usageMetrics",
+      uuid: msgUUID,
+      metrics: this.providerInstance.getUsage(),
+    });
+    this?.flushCitations?.(msgUUID);
+    this?.emitChatId?.(msgUUID);
     return completion?.textResponse;
   }
 
@@ -865,9 +1249,10 @@ ${this.getHistory({ to: route.to })
    * Provide a feedback where it was interrupted if you want to.
    *
    * @param feedback The feedback to the interruption if any.
+   * @param attachments Optional attachments (images) to include with the feedback.
    * @returns
    */
-  async continue(feedback) {
+  async continue(feedback, attachments = []) {
     const lastChat = this._chats.at(-1);
     if (!lastChat || lastChat.state !== "interrupt") {
       throw new Error("No chat to continue");
@@ -887,6 +1272,7 @@ ${this.getHistory({ to: route.to })
         from,
         to,
         content: feedback,
+        ...(attachments?.length > 0 ? { attachments } : {}),
       };
 
       // register the message in the chat history
@@ -1029,6 +1415,10 @@ ${this.getHistory({ to: route.to })
         return new Providers.SambaNovaProvider({ model: config.model });
       case "lemonade":
         return new Providers.LemonadeProvider({ model: config.model });
+      case "minimax":
+        return new Providers.MinimaxProvider({ model: config.model });
+      case "cerebras":
+        return new Providers.CerebrasProvider({ model: config.model });
       default:
         throw new Error(
           `Unknown provider: ${config.provider}. Please use a valid provider.`

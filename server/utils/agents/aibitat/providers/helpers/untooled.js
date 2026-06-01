@@ -18,7 +18,9 @@ class UnTooled {
           `${prevMsg}\n${msg.content}`;
         return;
       }
-      modifiedMessages.push(msg);
+      // Format messages with attachments for multimodal support
+      // Uses formatMessageWithAttachments inherited from Provider base class
+      modifiedMessages.push(this.formatMessageWithAttachments(msg));
     });
     return modifiedMessages;
   }
@@ -119,6 +121,11 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
   }
 
   buildToolCallMessages(history = [], functions = []) {
+    // Format history messages with attachments for multimodal support
+    const formattedHistory = history.map((msg) =>
+      this.formatMessageWithAttachments(msg)
+    );
+
     return [
       {
         content: `You are a program which picks the most optimal function and parameters to call.
@@ -138,7 +145,7 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
       Now pick a function if there is an appropriate one to use given the last user message and the given conversation so far.`,
         role: "system",
       },
-      ...history,
+      ...formattedHistory,
     ];
   }
 

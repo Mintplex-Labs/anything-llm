@@ -10,7 +10,7 @@ export default function FileRow({ item, selected, toggleSelection }) {
   return (
     <tr
       onClick={() => toggleSelection(item)}
-      className={`text-theme-text-primary text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 hover:bg-theme-file-picker-hover cursor-pointer file-row ${
+      className={`text-theme-text-primary text-xs grid grid-cols-12 py-2 pl-8 pr-8 hover:bg-theme-file-picker-hover cursor-pointer file-row ${
         selected ? "selected light:text-white" : ""
       }`}
     >

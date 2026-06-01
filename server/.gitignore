@@ -4,12 +4,15 @@
 server/.env
 storage/assets/*
 !storage/assets/anything-llm.png
+!storage/assets/anything-llm-invert.png
 storage/documents/*
 storage/comkey/*
 storage/tmp/*
 storage/vector-cache/*.json
 storage/exports
 storage/imports
+storage/anythingllm-fs/*
+storage/generated-files/*
 storage/plugins/agent-skills/*
 storage/plugins/agent-flows/*
 storage/plugins/office-extensions/*

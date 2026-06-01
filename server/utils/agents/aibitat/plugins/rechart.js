@@ -16,7 +16,12 @@ const rechart = {
           name: this.name,
           tracker: new Deduplicator(),
           description:
-            "Generates the JSON data required to generate a RechartJS chart to the user based on their prompt and available data.",
+            "Create a chart, graph, or data visualization. Generate bar charts, line graphs, pie charts, area charts, or scatter plots to visualize data, statistics, trends, or results. Use to display numbers and data visually.",
+          examples: [
+            { prompt: "Create a chart from that data" },
+            { prompt: "Make a bar graph of the results" },
+            { prompt: "Visualize these numbers" },
+          ],
           parameters: {
             $schema: "http://json-schema.org/draft-07/schema#",
             type: "object",

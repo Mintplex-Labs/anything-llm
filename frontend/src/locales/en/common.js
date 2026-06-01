@@ -1,7 +1,7 @@
 const TRANSLATIONS = {
   onboarding: {
     home: {
-      title: "Welcome to",
+      welcome: "Welcome",
       getStarted: "Get Started",
     },
     llm: {
@@ -20,7 +20,6 @@ const TRANSLATIONS = {
       passwordReq: "Passwords must be at least 8 characters.",
       passwordWarn:
         "It's important to save this password because there is no recovery method.",
-
       adminUsername: "Admin account username",
       adminPassword: "Admin account password",
       adminPasswordReq: "Passwords must be at least 8 characters.",
@@ -37,7 +36,6 @@ const TRANSLATIONS = {
     survey: {
       title: "Welcome to AnythingLLM",
       description: "Help us make AnythingLLM built for your needs. Optional.",
-
       email: "What's your email?",
       useCase: "What will you use AnythingLLM for?",
       useCaseWork: "For work",
@@ -49,17 +47,9 @@ const TRANSLATIONS = {
       skip: "Skip Survey",
       thankYou: "Thank you for your feedback!",
     },
-    workspace: {
-      title: "Create your first workspace",
-      description:
-        "Create your first workspace and get started with AnythingLLM.",
-    },
   },
   common: {
     "workspaces-name": "Workspace Name",
-    error: "error",
-    success: "success",
-    user: "User",
     selection: "Model Selection",
     saving: "Saving...",
     save: "Save changes",
@@ -68,9 +58,14 @@ const TRANSLATIONS = {
     optional: "Optional",
     yes: "Yes",
     no: "No",
+    on: "On",
+    none: "None",
+    stopped: "Stopped",
     search: "Search",
     username_requirements:
       "Username must be 2-32 characters, start with a lowercase letter, and only contain lowercase letters, numbers, underscores, hyphens, and periods.",
+    loading: "Loading",
+    refresh: "Refresh",
   },
   home: {
     welcome: "Welcome",
@@ -79,11 +74,8 @@ const TRANSLATIONS = {
       "You currently aren't assigned to any workspaces.\nPlease contact your administrator to request access to a workspace.",
     goToWorkspace: 'Go to "{{workspace}}"',
   },
-
-  // Setting Sidebar menu items.
   settings: {
     title: "Instance Settings",
-    system: "General Settings",
     invites: "Invites",
     users: "Users",
     workspaces: "Workspaces",
@@ -100,12 +92,13 @@ const TRANSLATIONS = {
     "voice-speech": "Voice & Speech",
     "vector-database": "Vector Database",
     embeds: "Chat Embed",
-    "embed-chats": "Chat Embed History",
     security: "Security",
     "event-logs": "Event Logs",
+    "scheduled-jobs": "Scheduled Jobs",
     privacy: "Privacy & Data",
     "ai-providers": "AI Providers",
     "agent-skills": "Agent Skills",
+    "model-router": "Model Router",
     "community-hub": {
       title: "Community Hub",
       trending: "Explore Trending",
@@ -119,9 +112,11 @@ const TRANSLATIONS = {
     contact: "Contact Support",
     "browser-extension": "Browser Extension",
     "mobile-app": "AnythingLLM Mobile",
+    channels: "Channels",
+    "available-channels": {
+      telegram: "Telegram",
+    },
   },
-
-  // Page Definitions
   login: {
     "multi-user": {
       welcome: "Welcome",
@@ -139,107 +134,21 @@ const TRANSLATIONS = {
       description:
         "Provide the necessary information below to reset your password.",
       "recovery-codes": "Recovery Codes",
-      "recovery-code": "Recovery Code {{index}}",
       "back-to-login": "Back to Login",
     },
   },
-
   "main-page": {
     greeting: "How can I help you today?",
-    noWorkspaceError: "Please create a workspace before starting a chat.",
-    checklist: {
-      title: "Getting Started",
-      tasksLeft: "tasks left",
-      completed: "You're on your way to becoming an AnythingLLM expert!",
-      dismiss: "close",
-      tasks: {
-        create_workspace: {
-          title: "Create a workspace",
-          description: "Create your first workspace to get started",
-          action: "Create",
-        },
-        send_chat: {
-          title: "Send a chat",
-          description: "Start a conversation with your AI assistant",
-          action: "Chat",
-        },
-        embed_document: {
-          title: "Embed a document",
-          description: "Add your first document to your workspace",
-          action: "Embed",
-        },
-        setup_system_prompt: {
-          title: "Set up a system prompt",
-          description: "Configure your AI assistant's behavior",
-          action: "Set Up",
-        },
-        define_slash_command: {
-          title: "Define a slash command",
-          description: "Create custom commands for your assistant",
-          action: "Define",
-        },
-        visit_community: {
-          title: "Visit Community Hub",
-          description: "Explore community resources and templates",
-          action: "Browse",
-        },
-      },
-    },
     quickActions: {
       createAgent: "Create an Agent",
       editWorkspace: "Edit Workspace",
       uploadDocument: "Upload a Document",
     },
-    quickLinks: {
-      title: "Quick Links",
-      sendChat: "Send Chat",
-      embedDocument: "Embed a Document",
-      createWorkspace: "Create Workspace",
-    },
-    exploreMore: {
-      title: "Explore more features",
-      features: {
-        customAgents: {
-          title: "Custom AI Agents",
-          description: "Build powerful AI Agents and automations with no code.",
-          primaryAction: "Chat using @agent",
-          secondaryAction: "Build an agent flow",
-        },
-        slashCommands: {
-          title: "Slash Commands",
-          description:
-            "Save time and inject prompts using custom slash commands.",
-          primaryAction: "Create a Slash Command",
-          secondaryAction: "Explore on Hub",
-        },
-        systemPrompts: {
-          title: "System Prompts",
-          description:
-            "Modify the system prompt to customize the AI replies of a workspace.",
-          primaryAction: "Modify a System Prompt",
-          secondaryAction: "Manage prompt variables",
-        },
-      },
-    },
-    announcements: {
-      title: "Updates & Announcements",
-    },
-    resources: {
-      title: "Resources",
-      links: {
-        docs: "Docs",
-        star: "Star on Github",
-      },
-      keyboardShortcuts: "Keyboard Shortcuts",
-    },
   },
-
   "new-workspace": {
     title: "New Workspace",
     placeholder: "My Workspace",
   },
-
-  // Workspace Settings menu items
   "workspaces—settings": {
     general: "General Settings",
     chat: "Chat Settings",
@@ -247,8 +156,6 @@ const TRANSLATIONS = {
     members: "Members",
     agent: "Agent Configuration",
   },
-
-  // General Appearance
   general: {
     vector: {
       title: "Vector Count",
@@ -266,13 +173,6 @@ const TRANSLATIONS = {
       heading: "Explain to me",
       body: "the benefits of AnythingLLM",
     },
-    pfp: {
-      title: "Assistant Profile Image",
-      description:
-        "Customize the profile image of the assistant for this workspace.",
-      image: "Workspace Image",
-      remove: "Remove Workspace Image",
-    },
     delete: {
       title: "Delete Workspace",
       description:
@@ -284,8 +184,6 @@ const TRANSLATIONS = {
         "workspace. This will remove all vector embeddings in your vector database.\n\nThe original source files will remain untouched. This action is irreversible.",
     },
   },
-
-  // Chat Settings
   chat: {
     llm: {
       title: "Workspace LLM Provider",
@@ -297,21 +195,23 @@ const TRANSLATIONS = {
       title: "Workspace Chat model",
       description:
         "The specific chat model that will be used for this workspace. If empty, will use the system LLM preference.",
-      wait: "-- waiting for models --",
     },
     mode: {
       title: "Chat mode",
+      automatic: {
+        title: "Agent",
+        description:
+          "will automatically use tools if the model and provider support native tool calling.<br />If native tooling is not supported, you will need to use the @agent command to use tools.",
+      },
       chat: {
         title: "Chat",
-        "desc-start": "will provide answers with the LLM's general knowledge",
-        and: "and",
-        "desc-end": "document context that is found.",
+        description:
+          "will provide answers with the LLM's general knowledge <b>and</b> document context that is found.<br />You will need to use the @agent command to use tools.",
       },
       query: {
         title: "Query",
-        "desc-start": "will provide answers",
-        only: "only",
-        "desc-end": "if document context is found.",
+        description:
+          "will provide answers <b>only</b> if document context is found.<br />You will need to use the @agent command to use tools.",
       },
     },
     history: {
@@ -358,8 +258,6 @@ const TRANSLATIONS = {
       hint: "Most LLMs have various acceptable ranges of valid values. Consult your LLM provider for that information.",
     },
   },
-
-  // Vector Database
   "vector-workspace": {
     identifier: "Vector database identifier",
     snippets: {
@@ -386,8 +284,6 @@ const TRANSLATIONS = {
       success: "Workspace vector database was reset!",
     },
   },
-
-  // Agent Configuration
   agent: {
     "performance-warning":
       "Performance of LLMs that do not explicitly support tool-calling is highly dependent on the model's capabilities and accuracy. Some abilities may be limited or non-functional.",
@@ -407,11 +303,7 @@ const TRANSLATIONS = {
         "The specific LLM model that will be used for this workspace's @agent agent.",
       wait: "-- waiting for models --",
     },
-
     skill: {
-      title: "Default agent skills",
-      description:
-        "Improve the natural abilities of the default agent with these pre-built skills. This set up applies to all workspaces.",
       rag: {
         title: "RAG & long-term memory",
         description:
@@ -432,11 +324,6 @@ const TRANSLATIONS = {
         description:
           "Enable the default agent to generate various types of charts from data provided or given in chat.",
       },
-      save: {
-        title: "Generate & save files",
-        description:
-          "Enable the default agent to generate and write to files that can be saved to your computer.",
-      },
       web: {
         title: "Web Search",
         description:
@@ -447,12 +334,441 @@ const TRANSLATIONS = {
         description:
           "Enable your agent to be able to leverage SQL to answer you questions by connecting to various SQL database providers.",
       },
+      filesystem: {
+        title: "File System Access",
+        description:
+          "Enable your agent to read, write, search, and manage files within a designated directory. Supports file editing, directory navigation, and content search.",
+        learnMore: "Learn more about this how to use this skill",
+        configuration: "Configuration",
+        readActions: "Read Actions",
+        writeActions: "Write Actions",
+        warning:
+          "Filesystem access can be dangerous as it can modify or delete files. Please consult the <a>documentation</a> before enabling.",
+        skills: {
+          "read-text-file": {
+            title: "Read File",
+            description:
+              "Read contents of files (text, code, PDF, images, etc.)",
+          },
+          "read-multiple-files": {
+            title: "Read Multiple Files",
+            description: "Read multiple files at once",
+          },
+          "list-directory": {
+            title: "List Directory",
+            description: "List files and directories in a folder",
+          },
+          "search-files": {
+            title: "Search Files",
+            description: "Search for files by name or content",
+          },
+          "get-file-info": {
+            title: "Get File Info",
+            description: "Get detailed metadata about files",
+          },
+          "write-text-file": {
+            title: "Write Text File",
+            description:
+              "Create new text files or overwrite existing text files",
+          },
+          "edit-file": {
+            title: "Edit File",
+            description: "Make line-based edits to text files",
+          },
+          "create-directory": {
+            title: "Create Directory",
+            description: "Create new directories",
+          },
+          "copy-file": {
+            title: "Copy File",
+            description: "Copy files and directories",
+          },
+          "move-file": {
+            title: "Move/Rename File",
+            description: "Move or rename files and directories",
+          },
+        },
+      },
+      createFiles: {
+        title: "Document Creation",
+        description:
+          "Enable your agent to create binary document formats like PowerPoint presentations, Excel spreadsheets, Word documents, and PDFs. Files can be downloaded directly from the chat window.",
+        configuration: "Available Document Types",
+        skills: {
+          "create-text-file": {
+            title: "Text Files",
+            description:
+              "Create text files with any content and extension (.txt, .md, .json, .csv, etc.)",
+          },
+          "create-pptx": {
+            title: "PowerPoint Presentations",
+            description:
+              "Create new PowerPoint presentations with slides, titles, and bullet points",
+          },
+          "create-pdf": {
+            title: "PDF Documents",
+            description:
+              "Create PDF documents from markdown or plain text with basic styling",
+          },
+          "create-xlsx": {
+            title: "Excel Spreadsheets",
+            description:
+              "Create Excel documents for tabular data with sheets and styling",
+          },
+          "create-docx": {
+            title: "Word Documents",
+            description:
+              "Create Word documents with basic styling and formatting",
+          },
+        },
+      },
+      gmail: {
+        title: "GMail",
+        description:
+          "Enable your agent to interact with Gmail - search emails, read threads, compose drafts, send emails, and manage your inbox. <a>Read the documentation</a>.",
+        multiUserWarning:
+          "Gmail integration is not available in multi-user mode for security reasons. Please disable multi-user mode to use this feature.",
+        configuration: "Gmail Configuration",
+        deploymentId: "Deployment ID",
+        deploymentIdHelp:
+          "The deployment ID from your Google Apps Script web app",
+        apiKey: "API Key",
+        apiKeyHelp:
+          "The API key you configured in your Google Apps Script deployment",
+        configurationRequired:
+          "Please configure the Deployment ID and API Key to enable Gmail skills.",
+        configured: "Configured",
+        searchSkills: "Search skills...",
+        noSkillsFound: "No skills match your search.",
+        categories: {
+          search: {
+            title: "Search & Read Emails",
+            description: "Search and read emails from your Gmail inbox",
+          },
+          drafts: {
+            title: "Draft Emails",
+            description: "Create, edit, and manage email drafts",
+          },
+          send: {
+            title: "Send & Reply to Emails",
+            description: "Send emails and reply to threads immediately",
+          },
+          threads: {
+            title: "Manage Email Threads",
+            description:
+              "Manage email threads - mark read/unread, archive, trash",
+          },
+          account: {
+            title: "Integration Statistics",
+            description: "View mailbox statistics and account information",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "Get Inbox",
+            description: "Streamlined way to get the inbox emails from Gmail",
+          },
+          search: {
+            title: "Search Emails",
+            description: "Search emails using Gmail query syntax",
+          },
+          readThread: {
+            title: "Read Thread",
+            description: "Read a full email thread by ID",
+          },
+          createDraft: {
+            title: "Create Draft",
+            description: "Create a new draft email",
+          },
+          createDraftReply: {
+            title: "Create Draft Reply",
+            description: "Create a draft reply to an existing thread",
+          },
+          updateDraft: {
+            title: "Update Draft",
+            description: "Update an existing draft email",
+          },
+          getDraft: {
+            title: "Get Draft",
+            description: "Retrieve a specific draft by ID",
+          },
+          listDrafts: {
+            title: "List Drafts",
+            description: "List all draft emails",
+          },
+          deleteDraft: {
+            title: "Delete Draft",
+            description: "Delete a draft email",
+          },
+          sendDraft: {
+            title: "Send Draft",
+            description: "Send an existing draft email",
+          },
+          sendEmail: {
+            title: "Send Email",
+            description: "Send an email immediately",
+          },
+          replyToThread: {
+            title: "Reply to Thread",
+            description: "Reply to an email thread immediately",
+          },
+          markRead: {
+            title: "Mark Read",
+            description: "Mark a thread as read",
+          },
+          markUnread: {
+            title: "Mark Unread",
+            description: "Mark a thread as unread",
+          },
+          moveToTrash: {
+            title: "Move to Trash",
+            description: "Move a thread to trash",
+          },
+          moveToArchive: {
+            title: "Archive",
+            description: "Archive a thread",
+          },
+          moveToInbox: {
+            title: "Move to Inbox",
+            description: "Move a thread to inbox",
+          },
+          getMailboxStats: {
+            title: "Mailbox Stats",
+            description: "Get unread counts and mailbox statistics",
+          },
+        },
+      },
+      googleCalendar: {
+        title: "Google Calendar",
+        description:
+          "Enable your agent to interact with Google Calendar - view calendars, get events, create and update events, and manage RSVPs. <a>Read the documentation</a>.",
+        multiUserWarning:
+          "Google Calendar integration is not available in multi-user mode for security reasons. Please disable multi-user mode to use this feature.",
+        configuration: "Google Calendar Configuration",
+        deploymentId: "Deployment ID",
+        deploymentIdHelp:
+          "The deployment ID from your Google Apps Script web app",
+        apiKey: "API Key",
+        apiKeyHelp:
+          "The API key you configured in your Google Apps Script deployment",
+        configurationRequired:
+          "Please configure the Deployment ID and API Key to enable Google Calendar skills.",
+        configured: "Configured",
+        searchSkills: "Search skills...",
+        noSkillsFound: "No skills match your search.",
+        categories: {
+          calendars: {
+            title: "Calendars",
+            description: "View and manage your Google Calendars",
+          },
+          readEvents: {
+            title: "Read Events",
+            description: "View and search calendar events",
+          },
+          writeEvents: {
+            title: "Create & Update Events",
+            description: "Create new events and modify existing ones",
+          },
+          rsvp: {
+            title: "RSVP Management",
+            description: "Manage your response status for events",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "List Calendars",
+            description: "List all calendars you own or are subscribed to",
+          },
+          getCalendar: {
+            title: "Get Calendar Details",
+            description: "Get detailed information about a specific calendar",
+          },
+          getEvent: {
+            title: "Get Event",
+            description: "Get detailed information about a specific event",
+          },
+          getEventsForDay: {
+            title: "Get Events for Day",
+            description: "Get all events scheduled for a specific day",
+          },
+          getEvents: {
+            title: "Get Events (Date Range)",
+            description: "Get events within a custom date range",
+          },
+          getUpcomingEvents: {
+            title: "Get Upcoming Events",
+            description:
+              "Get events for today, this week, or this month using simple keywords",
+          },
+          quickAdd: {
+            title: "Quick Add Event",
+            description:
+              "Create an event from natural language (e.g., 'Meeting tomorrow at 3pm')",
+          },
+          createEvent: {
+            title: "Create Event",
+            description:
+              "Create a new event with full control over all properties",
+          },
+          updateEvent: {
+            title: "Update Event",
+            description: "Update an existing calendar event",
+          },
+          setMyStatus: {
+            title: "Set RSVP Status",
+            description: "Accept, decline, or tentatively accept an event",
+          },
+        },
+      },
+      outlook: {
+        title: "Outlook",
+        description:
+          "Enable your agent to interact with Microsoft Outlook - search emails, read threads, compose drafts, send emails, and manage your inbox via Microsoft Graph API. <a>Read the documentation</a>.",
+        multiUserWarning:
+          "Outlook integration is not available in multi-user mode for security reasons. Please disable multi-user mode to use this feature.",
+        configuration: "Outlook Configuration",
+        authType: "Account Type",
+        authTypeHelp:
+          "Choose which types of Microsoft accounts can authenticate. 'All accounts' supports both personal and work/school accounts. 'Personal only' restricts to personal Microsoft accounts. 'Organization only' restricts to work/school accounts from a specific Azure AD tenant.",
+        authTypeCommon: "All accounts (personal & work/school)",
+        authTypeConsumers: "Personal Microsoft accounts only",
+        authTypeOrganization: "Organization accounts only (requires Tenant ID)",
+        clientId: "Application (Client) ID",
+        clientIdHelp:
+          "The Application (Client) ID from your Azure AD app registration",
+        tenantId: "Directory (Tenant) ID",
+        tenantIdHelp:
+          "The Directory (Tenant) ID from your Azure AD app registration. Required only for organization-only authentication.",
+        clientSecret: "Client Secret",
+        clientSecretHelp:
+          "The client secret value from your Azure AD app registration",
+        configurationRequired:
+          "Please configure the Client ID and Client Secret to enable Outlook skills.",
+        authRequired:
+          "Save your credentials first, then authenticate with Microsoft to complete the setup.",
+        authenticateWithMicrosoft: "Authenticate with Microsoft",
+        authenticated: "Successfully authenticated with Microsoft Outlook.",
+        revokeAccess: "Revoke Access",
+        configured: "Configured",
+        searchSkills: "Search skills...",
+        noSkillsFound: "No skills match your search.",
+        categories: {
+          search: {
+            title: "Search & Read Emails",
+            description: "Search and read emails from your Outlook inbox",
+          },
+          drafts: {
+            title: "Draft Emails",
+            description: "Create, edit, and manage email drafts",
+          },
+          send: {
+            title: "Send Emails",
+            description: "Send new emails or reply to messages immediately",
+          },
+          account: {
+            title: "Integration Statistics",
+            description: "View mailbox statistics and account information",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "Get Inbox",
+            description: "Get recent emails from your Outlook inbox",
+          },
+          search: {
+            title: "Search Emails",
+            description: "Search emails using Microsoft Search syntax",
+          },
+          readThread: {
+            title: "Read Conversation",
+            description: "Read a full email conversation thread",
+          },
+          createDraft: {
+            title: "Create Draft",
+            description:
+              "Create a new draft email or draft reply to an existing message",
+          },
+          updateDraft: {
+            title: "Update Draft",
+            description: "Update an existing draft email",
+          },
+          listDrafts: {
+            title: "List Drafts",
+            description: "List all draft emails",
+          },
+          deleteDraft: {
+            title: "Delete Draft",
+            description: "Delete a draft email",
+          },
+          sendDraft: {
+            title: "Send Draft",
+            description: "Send an existing draft email",
+          },
+          sendEmail: {
+            title: "Send Email",
+            description:
+              "Send a new email or reply to an existing message immediately",
+          },
+          getMailboxStats: {
+            title: "Mailbox Stats",
+            description: "Get folder counts and mailbox statistics",
+          },
+        },
+      },
       default_skill:
         "By default, this skill is enabled, but you can disable it if you don't want it to be available to the agent.",
     },
+    mcp: {
+      title: "MCP Servers",
+      "loading-from-config": "Loading MCP Servers from configuration file",
+      "learn-more": "Learn more about MCP Servers.",
+      "no-servers-found": "No MCP servers found",
+      "tool-warning":
+        "For the best performance, consider disabling unwanted tools to conserve context.",
+      "tools-enabled": "tools enabled",
+      "stop-server": "Stop MCP Server",
+      "start-server": "Start MCP Server",
+      "delete-server": "Delete MCP Server",
+      "tool-count-warning":
+        "This MCP server has <b>{{count}} tools enabled</b> that will consume context in every chat.<br />Consider disabling unwanted tools to conserve context.",
+      "startup-command": "Startup Command",
+      command: "Command",
+      arguments: "Arguments",
+      "not-running-warning":
+        "This MCP server is not running - it may be stopped or experiencing an error on startup.",
+      "tool-call-arguments": "Tool call arguments",
+    },
+    settings: {
+      title: "Agent Skill Settings",
+      "max-tool-calls": {
+        title: "Max Tool Calls Per Response",
+        description:
+          "The maximum number of tools an agent can chain to generate a single response. This prevents runaway tool calls and infinite loops.",
+      },
+      "intelligent-skill-selection": {
+        title: "Intelligent Skill Selection",
+        "beta-badge": "Beta",
+        description:
+          "Enable unlimited tools and cut token usage by up to 80% per query — AnythingLLM automatically selects the right skills for every prompt.",
+        "max-tools": {
+          title: "Max Tools",
+          description:
+            "The maximum number of tools to select for each query. We recommend setting this to higher values for larger context models.",
+        },
+      },
+      "clarifying-questions": {
+        title: "Allow agent to ask clarifying questions",
+        "beta-badge": "BETA",
+        description:
+          "When enabled, agents can pause to ask short clarifying questions if your prompt is ambiguous.",
+        "max-per-turn": {
+          title: "Max questions per turn",
+          description:
+            "How many clarifying questions the agent may ask in a single survey.",
+        },
+      },
+    },
   },
-
-  // Workspace Chats
   recorded: {
     title: "Workspace Chats",
     description:
@@ -467,7 +783,6 @@ const TRANSLATIONS = {
       at: "Sent At",
     },
   },
-
   customization: {
     interface: {
       title: "UI Preferences",
@@ -514,11 +829,6 @@ const TRANSLATIONS = {
         description:
           "Set a name that is displayed on the login page to all users.",
       },
-      "chat-message-alignment": {
-        title: "Chat Message Alignment",
-        description:
-          "Select the message alignment mode when using the chat interface.",
-      },
       "display-language": {
         title: "Display Language",
         description:
@@ -531,18 +841,6 @@ const TRANSLATIONS = {
         recommended: "Recommended size: 800 x 200",
         remove: "Remove",
         replace: "Replace",
-      },
-      "welcome-messages": {
-        title: "Welcome Messages",
-        description:
-          "Customize the welcome messages displayed to your users. Only non-admin users will see these messages.",
-        new: "New",
-        system: "system",
-        user: "user",
-        message: "message",
-        assistant: "AnythingLLM Chat Assistant",
-        "double-click": "Double click to edit...",
-        save: "Save Messages",
       },
       "browser-appearance": {
         title: "Browser Appearance",
@@ -572,21 +870,45 @@ const TRANSLATIONS = {
       },
     },
   },
-
-  // API Keys
   api: {
     title: "API Keys",
     description:
       "API keys allow the holder to programmatically access and manage this AnythingLLM instance.",
     link: "Read the API documentation",
     generate: "Generate New API Key",
+    empty: "No API keys found",
+    actions: "Actions",
+    messages: {
+      error: "Error: {{error}}",
+    },
+    modal: {
+      title: "Create new API key",
+      cancel: "Cancel",
+      close: "Close",
+      create: "Create API Key",
+      helper:
+        "Once created the API key can be used to programmatically access and configure this AnythingLLM instance.",
+      name: {
+        label: "Name",
+        placeholder: "Production integration",
+        helper:
+          "Optional. Use a friendly name so you can identify this key later.",
+      },
+    },
+    row: {
+      copy: "Copy API Key",
+      copied: "Copied",
+      unnamed: "--",
+      deleteConfirm:
+        "Are you sure you want to deactivate this api key?\nAfter you do this it will not longer be useable.\n\nThis action is irreversible.",
+    },
     table: {
+      name: "Name",
       key: "API Key",
       by: "Created By",
       created: "Created",
     },
   },
-
   llm: {
     title: "LLM Preference",
     description:
@@ -606,7 +928,181 @@ const TRANSLATIONS = {
       },
     },
   },
-
+  "model-router": {
+    title: "Model Routers",
+    description:
+      "Model routers let you define rules to automatically route chat messages to different LLM providers and models based on conditions.",
+    table: {
+      name: "Name",
+      fallback: "Fallback",
+      rules: "Rules",
+      workspaces: "Workspaces",
+    },
+    "no-routers": "No model routers yet",
+    "empty-description":
+      "No model routers configured yet. Create one to get started.",
+    "new-router-button": "New Router",
+    "delete-confirm":
+      'Are you sure you want to delete the router "{{name}}"?\nThis will remove all its rules and unlink any workspaces using it.\n\nThis action is irreversible.',
+    "toast-deleted": "Router deleted",
+    "toast-delete-failed": "Failed to delete router: {{error}}",
+    "new-router": {
+      title: "Create New Model Router",
+      name: "Name",
+      "name-placeholder": "e.g. Cost Optimizer",
+      description: "Description",
+      "description-placeholder": "Optional description",
+      "fallback-label": "Primary Provider & Model",
+      "fallback-description":
+        "Used when no routing rule matches. Also used to evaluate LLM-classified rules.",
+      "cooldown-label": "Cache Cooldown (seconds)",
+      "cooldown-help":
+        "How long a routing decision is cached before re-evaluating rules. Set to 0 to disable caching.",
+      "name-required": "Name is required.",
+      "fallback-required": "Primary provider and model are required.",
+      cancel: "Cancel",
+      create: "Create Router",
+    },
+    "edit-router": {
+      "back-to-routers": "Back to Model Routers",
+      title: "Edit Router: {{name}}",
+      save: "Save Changes",
+      "toast-update-failed": "Failed to update router",
+    },
+    rules: {
+      title: "Routing Rules",
+      "title-with-name": "Router Rules: {{name}}",
+      description:
+        "Define the rules that determine when and how chat messages go to specific providers and models.",
+      "add-rule": "Add Rule",
+      "delete-confirm": 'Delete rule "{{title}}"?',
+      "toast-delete-failed": "Failed to delete rule",
+      "toast-reorder-failed": "Failed to reorder rules",
+      "no-rules": "No rules yet",
+      "empty-description":
+        "Add a rule to start routing chat messages to specific providers and models.",
+      "new-rule-button": "New Rule",
+      "calculated-section-label":
+        "Calculated rules — evaluated first, in priority order",
+      "llm-section-label":
+        "LLM rules — evaluated as a batch if no calculated rule matched",
+      "llm-rule-body":
+        'Match <desc>"{{description}}"</desc> then route to <route>{{route}}</route>',
+      "calculated-no-conditions":
+        "No conditions — route to <route>{{route}}</route>",
+      "calculated-single-condition":
+        'If <prop>{{property}}</prop> {{comparator}} <val>"{{value}}"</val> then route to <route>{{route}}</route>',
+      "calculated-multi-condition":
+        "If {{quantifier}} of <cond>{{conditions}}</cond> then route to <route>{{route}}</route>",
+      "comparator-contains": "contains",
+      "comparator-matches": "matches",
+      "comparator-between": "between",
+      "badge-llm": "LLM",
+      "badge-calculated": "Calculated",
+      "aria-drag-to-reorder": "Drag to reorder",
+      "aria-edit-rule": "Edit rule",
+      "aria-delete-rule": "Delete rule",
+      "quantifier-any": "ANY",
+      "quantifier-all": "ALL",
+    },
+    "rule-form": {
+      "title-label": "Title",
+      "rule-type": "Rule Type",
+      "property-label": "Property",
+      "property-select": "Select",
+      "comparator-label": "Comparator",
+      "comparator-select": "Select",
+      "value-label": "Value",
+      "add-condition": "Add condition",
+      "remove-condition": "Remove condition",
+      "conditions-incomplete":
+        "Condition {{index}} is incomplete — fill in property, comparator, and value.",
+      "match-description-label": "Match Description",
+      "match-description-placeholder":
+        "e.g. The user is asking about legal topics, contracts, or compliance",
+      "match-description-help":
+        "Describe the situation when you want this rule to match. This is evaluated by your LLM to determine if it should be used.",
+      "route-to-label": "Route to Provider & Model",
+      "route-to-description": "When this rule matches, use this provider/model",
+      cancel: "Cancel",
+      saving: "Saving...",
+      "update-rule": "Update Rule",
+      "create-rule": "Create Rule",
+      "title-required": "Title is required",
+      "toast-save-failed": "Failed to save rule",
+      "type-calculated-label": "Calculated",
+      "type-calculated-description":
+        "Match based on message properties like content, token count, or time of day.",
+      "type-llm-label": "LLM Classified",
+      "type-llm-description":
+        "Use an LLM to classify the message based on a description you provide.",
+      "prop-prompt-content": "Prompt Content",
+      "prop-token-count": "Conversation Token Count",
+      "prop-message-count": "Conversation Message Count",
+      "prop-current-hour": "Current Hour (0-23)",
+      "prop-has-image": "Has Image Attachment",
+      "cmp-contains": "contains",
+      "cmp-matches-regex": "matches (regex)",
+      "cmp-equals": "equals",
+      "cmp-not-equals": "not equals",
+      "cmp-greater-than": "greater than",
+      "cmp-greater-than-or-equal": "greater than or equal",
+      "cmp-less-than": "less than",
+      "cmp-less-than-or-equal": "less than or equal",
+      "cmp-between": "between (inclusive)",
+      "placeholder-between-hour": "e.g. 9,17 (9am to 5pm)",
+      "placeholder-between-numeric": "e.g. 10,50",
+      "placeholder-hour": "e.g. 18 (0-23)",
+      "placeholder-message-count": "e.g. 10",
+      "placeholder-numeric": "e.g. 4000",
+      "placeholder-contains": "e.g. code, python, rust",
+      "placeholder-matches": "e.g. /\\bpython\\b/i",
+      "placeholder-default": "e.g. code",
+      "help-contains":
+        "Comma-separated list — matches if the prompt contains any of the values (case-insensitive).",
+      "help-matches":
+        "Regex pattern. Use /pattern/flags for case sensitivity (defaults to case-insensitive).",
+      "bool-true": "True",
+      "bool-false": "False",
+    },
+    "provider-picker": {
+      "select-provider": "Select provider",
+      "setup-required": "(setup required)",
+      "loading-models": "Loading models...",
+      "select-model": "Select model",
+      "enter-model": "Enter model name",
+      "select-provider-first": "Select a provider first",
+      "configure-to-continue": "Configure {{name}} to continue",
+      "configure-provider": "Configure {{name}}",
+      "setup-credentials":
+        "Enter the required credentials to use {{name}} as a routing target.",
+      cancel: "Cancel",
+      "save-settings": "Save settings",
+      "toast-save-failed": "Failed to save settings: {{error}}",
+    },
+    "router-selection": {
+      "loading-routers": "Loading custom routers...",
+      "no-routers-prefix-settings": "No model routers configured yet.",
+      "no-routers-prefix-workspace": "No model routers configured.",
+      "no-routers-link": "Create one in Model Router settings",
+      "model-router-label": "Model Router",
+      "select-router": "Select a router",
+      "select-description": "Select which router to use for this workspace.",
+      "no-routers-chat":
+        "No routers configured. Create one in Settings > AI Providers > Model Router.",
+      "rule-count": "({{count}} rules)",
+    },
+    metrics: {
+      "model-router-default": "Model Router",
+    },
+    chat: {
+      "select-router-error": "Select a router",
+      "invalid-model": "Invalid model selection",
+      "routed-to": "Routed to <route>{{model}}</route>",
+      "routed-to-rule":
+        "Routed to <route>{{model}}</route> via <rule>{{ruleTitle}}</rule>",
+    },
+  },
   transcription: {
     title: "Transcription Model Preference",
     description:
@@ -619,7 +1115,6 @@ const TRANSLATIONS = {
     "warn-end":
       "The built-in model will automatically download on the first use.",
   },
-
   embedding: {
     title: "Embedding Preference",
     "desc-start":
@@ -630,7 +1125,6 @@ const TRANSLATIONS = {
       title: "Embedding Provider",
     },
   },
-
   text: {
     title: "Text splitting & Chunking Preferences",
     "desc-start":
@@ -643,15 +1137,12 @@ const TRANSLATIONS = {
         "This is the maximum length of characters that can be present in a single vector.",
       recommend: "Embed model maximum length is",
     },
-
     overlap: {
       title: "Text Chunk Overlap",
       description:
         "This is the maximum overlap of characters that occurs during chunking between two adjacent text chunks.",
     },
   },
-
-  // Vector Database
   vector: {
     title: "Vector Database",
     description:
@@ -661,8 +1152,6 @@ const TRANSLATIONS = {
       description: "There is no configuration needed for LanceDB.",
     },
   },
-
-  // Embeddable Chat Widgets
   embeddable: {
     title: "Embeddable Chat Widgets",
     description:
@@ -675,7 +1164,6 @@ const TRANSLATIONS = {
       created: "Created",
     },
   },
-
   "embed-chats": {
     title: "Embed Chat History",
     export: "Export",
@@ -689,7 +1177,68 @@ const TRANSLATIONS = {
       at: "Sent At",
     },
   },
-
+  telegram: {
+    title: "Telegram Bot",
+    description:
+      "Connect your AnythingLLM instance to Telegram so you can chat with your workspaces from any device.",
+    setup: {
+      step1: {
+        title: "Step 1: Create your Telegram bot",
+        description:
+          "Open @BotFather in Telegram, send <code>/newbot</code> to <code>@BotFather</code>, follow the prompts, and copy the API token.",
+        "open-botfather": "Open BotFather",
+        "instruction-1": "1. Open the link or scan the QR code",
+        "instruction-2":
+          "2. Send <code>/newbot</code> to <code>@BotFather</code>",
+        "instruction-3": "3. Choose a name and username for your bot",
+        "instruction-4": "4. Copy the API token you receive",
+      },
+      step2: {
+        title: "Step 2: Connect your bot",
+        description:
+          "Paste the API token you received from @BotFather to connect your bot.",
+        "bot-token": "Bot Token",
+        connecting: "Connecting...",
+        "connect-bot": "Connect Bot",
+      },
+      security: {
+        title: "Recommended Security Settings",
+        description:
+          "For additional security, configure these settings in @BotFather.",
+        "disable-groups": "— Prevent adding bot to groups",
+        "disable-inline": "— Prevent bot from being used in inline search",
+        "obscure-username":
+          "Use a non-obvious bot handle username to reduce discoverability",
+      },
+      "toast-enter-token": "Please enter a bot token.",
+      "toast-connect-failed": "Failed to connect bot.",
+    },
+    connected: {
+      status: "Connected",
+      "status-disconnected": "Disconnected — token may be expired or invalid",
+      "placeholder-token": "Paste new bot token...",
+      reconnect: "Reconnect",
+      workspace: "Workspace",
+      "bot-link": "Bot Link",
+      "voice-response": "Voice Response",
+      disconnecting: "Disconnecting...",
+      disconnect: "Disconnect",
+      "voice-text-only": "Text only",
+      "voice-mirror": "Mirror (reply with voice when user sends voice)",
+      "voice-always": "Always voice (send audio with every reply)",
+      "toast-disconnect-failed": "Failed to disconnect bot.",
+      "toast-reconnect-failed": "Failed to reconnect bot.",
+      "toast-voice-failed": "Failed to update voice mode.",
+      "toast-approve-failed": "Failed to approve user.",
+      "toast-deny-failed": "Failed to deny user.",
+      "toast-revoke-failed": "Failed to revoke user.",
+    },
+    users: {
+      "pending-description":
+        "Users waiting to be verified. Match the pairing code shown here with the one displayed in their Telegram chat.",
+      unknown: "Unknown",
+    },
+  },
   security: {
     title: "Security",
     multiuser: {
@@ -712,8 +1261,6 @@ const TRANSLATIONS = {
       "password-label": "Instance Password",
     },
   },
-
-  // Event Logs
   event: {
     title: "Event Logs",
     description:
@@ -725,24 +1272,16 @@ const TRANSLATIONS = {
       occurred: "Occurred At",
     },
   },
-
-  // Privacy & Data-Handling
   privacy: {
     title: "Privacy & Data-Handling",
     description:
       "This is your configuration for how connected third party providers and AnythingLLM handle your data.",
-    llm: "LLM Provider",
-    embedding: "Embedding Preference",
-    vector: "Vector Database",
     anonymous: "Anonymous Telemetry Enabled",
   },
-
   connectors: {
     "search-placeholder": "Search data connectors",
     "no-connectors": "No data connectors found.",
     obsidian: {
-      name: "Obsidian",
-      description: "Import Obsidian vault in a single click.",
       vault_location: "Vault Location",
       vault_description:
         "Select your Obsidian vault folder to import all notes and their connections.",
@@ -790,7 +1329,6 @@ const TRANSLATIONS = {
       URL_explained: "URL of the GitLab repo you wish to collect.",
       token: "GitLab Access Token",
       optional: "optional",
-      token_explained: "Access Token to prevent rate limiting.",
       token_description:
         "Select additional entities to fetch from the GitLab API.",
       token_explained_start: "Without a ",
@@ -824,10 +1362,6 @@ const TRANSLATIONS = {
       URL_explained_end: " available.",
       task_explained:
         "Once complete, the transcript will be available for embedding into workspaces in the document picker.",
-      language: "Transcript Language",
-      language_explained:
-        "Select the language of the transcript you want to collect.",
-      loading_languages: "-- loading available languages --",
     },
     "website-depth": {
       name: "Bulk Link Scraper",
@@ -873,7 +1407,6 @@ const TRANSLATIONS = {
       task_explained:
         "Once complete, the page content will be available for embedding into workspaces in the document picker.",
     },
-
     manage: {
       documents: "Documents",
       "data-connectors": "Data Connectors",
@@ -885,22 +1418,20 @@ const TRANSLATIONS = {
     directory: {
       "my-documents": "My Documents",
       "new-folder": "New Folder",
+      "total-documents_one": "{{count}} document",
+      "total-documents_other": "{{count}} documents",
       "search-document": "Search for document",
       "no-documents": "No Documents",
       "move-workspace": "Move to Workspace",
-      name: "Name",
       "delete-confirmation":
         "Are you sure you want to delete these files and folders?\nThis will remove the files from the system and remove them from any existing workspaces automatically.\nThis action is not reversible.",
       "removing-message":
         "Removing {{count}} documents and {{folderCount}} folders. Please wait.",
       "move-success": "Successfully moved {{count}} documents.",
-      date: "Date",
-      type: "Type",
       no_docs: "No Documents",
       select_all: "Select All",
       deselect_all: "Deselect All",
       remove_selected: "Remove Selected",
-      costs: "*One time cost for embeddings",
       save_embed: "Save and Embed",
     },
     upload: {
@@ -940,19 +1471,10 @@ const TRANSLATIONS = {
       accept: "Okay, got it",
     },
   },
-
   chat_window: {
-    welcome: "Welcome to your new workspace.",
-    get_started: "To get started either",
-    get_started_default: "To get started",
-    upload: "upload a document",
-    or: "or",
     attachments_processing: "Attachments are processing. Please wait...",
-    send_chat: "send a chat.",
     send_message: "Send a message",
     attach_file: "Attach a file to this chat",
-    slash: "View all available slash commands for chatting.",
-    agents: "View all available agents you can use for chatting.",
     text_size: "Change text size.",
     microphone: "Speak your prompt.",
     send: "Send prompt message to workspace",
@@ -962,21 +1484,29 @@ const TRANSLATIONS = {
     regenerate_response: "Regenerate response",
     good_response: "Good response",
     more_actions: "More actions",
-    hide_citations: "Hide citations",
-    show_citations: "Show citations",
-    pause_tts_speech_message: "Pause TTS speech of message",
+    sources: "Sources",
+    source_count_one: "{{count}} reference",
+    source_count_other: "{{count}} references",
+    document: "Document",
+    similarity_match: "match",
     fork: "Fork",
     delete: "Delete",
-    save_submit: "Save & Submit",
     cancel: "Cancel",
+    submit: "Submit",
     edit_prompt: "Edit prompt",
     edit_response: "Edit response",
-    at_agent: "@agent",
-    default_agent_description: " - the default agent for this workspace.",
-    custom_agents_coming_soon: "custom agents are coming soon!",
-    slash_reset: "/reset",
+    edit_info_user:
+      '"Submit" regenerates the AI response. "Save" updates your message only.',
+    edit_info_assistant:
+      "Your changes will be saved directly to this response.",
+    see_less: "See Less",
+    see_more: "See More",
     preset_reset_description: "Clear your chat history and begin a new chat",
     add_new_preset: " Add New Preset",
+    add_new: "Add new",
+    edit: "Edit",
+    publish: "Publish",
+    stop_generating: "Stop generating response",
     command: "Command",
     your_command: "your-command",
     placeholder_prompt:
@@ -987,18 +1517,93 @@ const TRANSLATIONS = {
     small: "Small",
     normal: "Normal",
     large: "Large",
+    tools: "Tools",
+    text_size_label: "Text Size",
+    select_model: "Select Model",
+    slash_commands: "Slash Commands",
+    agent_skills: "Agent Skills",
+    manage_agent_skills: "Manage Agent Skills",
+    app_integrations: "App Integrations",
+    custom_skills: "Custom Skills",
+    agent_flows: "Agent Flows",
+    sub_skills: "Sub-skills",
+    no_tools_found: "No matching tools found",
+    loading_mcp_servers: "Loading MCP servers...",
+    start_agent_session: "Start Agent Session",
+    agent_skills_disabled_in_session:
+      "Can't modify skills during an active agent session. Use /exit to end the session first.",
+    use_agent_session_to_use_tools:
+      "You can use tools in chat by starting an agent session with '@agent' at the beginning of your prompt.",
     workspace_llm_manager: {
-      search: "Search LLM providers",
+      search: "Search",
       loading_workspace_settings: "Loading workspace settings...",
       available_models: "Available Models for {{provider}}",
       available_models_description: "Select a model to use for this workspace.",
       save: "Use this model",
       saving: "Setting model as workspace default...",
       missing_credentials: "This provider is missing credentials!",
-      missing_credentials_description: "Click to set up credentials",
+      missing_credentials_description: "Set up now",
+    },
+    agent_invocation: {
+      model_wants_to_call: "Model wants to call",
+      approve: "Approve",
+      reject: "Reject",
+      always_allow: "Always allow {{skillName}}",
+      tool_call_was_approved: "Tool call was approved",
+      tool_call_was_rejected: "Tool call was rejected",
+      clarifying_skip: "Let agent decide",
+      clarifying_submit: "Submit",
+      clarifying_skipped: "You let the agent decide.",
+      clarifying_timeout: "No response submitted in time.",
+      clarifying_pagination: "{{current}} of {{total}}",
+      clarifying_prev_aria: "Previous question",
+      clarifying_next_aria: "Next question",
+      clarifying_close_aria: "Close and skip",
+      clarifying_other: "Other",
+      clarifying_other_placeholder: "Type your answer",
+      batch_progress: "{{answered}} of {{total}} answered",
+      batch_skip_this: "Skip",
+      batch_submit_all: "Submit all",
+      batch_next: "Next",
+      answer_skipped: "[user skipped]",
+    },
+    memories: {
+      title: "Memories",
+      empty:
+        "No memories so far. After you interact with the chatbot more memories will fill in or",
+      empty_cta: "create a new memory",
+      tab_workspace: "Workspace",
+      tab_global: "Global",
+      toggle: {
+        label: "Enable Personalization",
+        description:
+          "Allow your assistant to recall facts about you or this workspace and use them in conversations",
+      },
+      auto_extraction: {
+        label: "Automatic Memories",
+        description:
+          "Have your assistant automatically create memories in the background",
+      },
+      menu: {
+        edit: "Edit",
+        delete: "Delete",
+        move_to_global: "Move to Global",
+        move_to_workspace: "Move to Workspace",
+      },
+      modal: {
+        create_title: "Create Memory",
+        edit_title: "Edit Memory",
+        create_description:
+          'Memories should be a single, concise statement. e.g. "User prefers Python over JavaScript"',
+        edit_description: "Update the content of this memory.",
+        label: "Memory",
+        placeholder: "e.g. User's name is Joe, User works on AnythingLLM, etc.",
+        create: "Create",
+        save: "Save",
+        cancel: "Cancel",
+      },
     },
   },
-
   profile_settings: {
     edit_account: "Edit Account",
     profile_picture: "Profile Picture",
@@ -1019,7 +1624,6 @@ const TRANSLATIONS = {
     support: "Support",
     signout: "Sign out",
   },
-
   "keyboard-shortcuts": {
     title: "Keyboard Shortcuts",
     shortcuts: {
@@ -1058,15 +1662,12 @@ const TRANSLATIONS = {
         private_description: "Private system prompts are only visible to you.",
         publish_button: "Publish to Community Hub",
         submitting: "Publishing...",
-        submit: "Publish to Community Hub",
         prompt_label: "Prompt",
         prompt_description:
           "This is the actual system prompt that will be used to guide the LLM.",
         prompt_placeholder: "Enter your system prompt here...",
       },
       agent_flow: {
-        public_description: "Public agent flows are visible to everyone.",
-        private_description: "Private agent flows are only visible to you.",
         success_title: "Success!",
         success_description:
           "Your Agent Flow has been published to the Community Hub!",
@@ -1084,7 +1685,6 @@ const TRANSLATIONS = {
           "Tags are used to label your agent flow for easier searching. You can add multiple tags. Max 5 tags. Max 20 characters per tag.",
         tags_placeholder: "Type and press Enter to add tags",
         visibility_label: "Visibility",
-        publish_button: "Publish to Community Hub",
         submitting: "Publishing...",
         submit: "Publish to Community Hub",
         privacy_note:
@@ -1103,10 +1703,6 @@ const TRANSLATIONS = {
         description_label: "Description",
         description_description:
           "This is the description of your slash command. Use this to describe the purpose of your slash command.",
-        command_label: "Command",
-        command_description:
-          "This is the slash command that users will type to trigger this preset.",
-        command_placeholder: "my-command",
         tags_label: "Tags",
         tags_description:
           "Tags are used to label your slash command for easier searching. You can add multiple tags. Max 5 tags. Max 20 characters per tag.",
@@ -1128,6 +1724,164 @@ const TRANSLATIONS = {
             "You need to authenticate with the AnythingLLM Community Hub before publishing items.",
           button: "Connect to Community Hub",
         },
+      },
+    },
+  },
+  scheduledJobs: {
+    title: "Scheduled Jobs",
+    enableNotifications: "Enable browser notifications for job results",
+    description:
+      "Create recurring AI tasks that run on a schedule. Each job runs a prompt with optional tools and saves the result for review.",
+    newJob: "New Job",
+    loading: "Loading...",
+    emptyTitle: "No Scheduled Jobs yet",
+    emptySubtitle: "Create one to get started.",
+    table: {
+      name: "Name",
+      schedule: "Schedule",
+      status: "Status",
+      lastRun: "Last Run",
+      nextRun: "Next Run",
+      actions: "Actions",
+    },
+    confirmDelete: "Are you sure you want to delete this scheduled job?",
+    status: {
+      completed: "Completed",
+      failed: "Failed",
+      timed_out: "Timed out",
+      running: "Running",
+      queued: "Queued",
+    },
+    toast: {
+      deleted: "Job deleted",
+      triggered: "Job triggered successfully",
+      triggerFailed: "Failed to trigger job",
+      triggerSkipped: "A run is already in progress for this job",
+      killed: "Job stopped successfully",
+      killFailed: "Failed to stop job",
+    },
+    row: {
+      neverRun: "Never run",
+      viewRuns: "View runs",
+      runNow: "Run now",
+      enable: "Enable",
+      disable: "Disable",
+      edit: "Edit",
+      delete: "Delete",
+    },
+    modal: {
+      titleEdit: "Edit Scheduled Job",
+      titleNew: "New Scheduled Job",
+      nameLabel: "Name",
+      namePlaceholder: "e.g. Daily News Digest",
+      promptLabel: "Prompt",
+      promptPlaceholder: "The instruction to run on each execution...",
+      scheduleLabel: "Schedule",
+      modeBuilder: "Builder",
+      modeCustom: "Custom",
+      cronPlaceholder: "Cron expression (e.g. 0 9 * * *)",
+      currentSchedule: "Current schedule:",
+      toolsLabel: "Tools (Optional)",
+      toolsDescription:
+        "Select which agent tools this job can use. If none are selected, the job runs without any tools.",
+      toolsSearch: "Search",
+      toolsNoResults: "No tools match",
+      required: "Required",
+      requiredFieldsBanner:
+        "Please fill out all required fields in order to create job.",
+      cancel: "Cancel",
+      saving: "Saving...",
+      updateJob: "Update Job",
+      createJob: "Create Job",
+      jobUpdated: "Job updated",
+      jobCreated: "Job created",
+    },
+    builder: {
+      fallbackWarning:
+        "This expression can't be edited visually. Switch to Custom to keep it, or change anything below to overwrite it.",
+      run: "Run",
+      frequency: {
+        minute: "every minute",
+        hour: "hourly",
+        day: "daily",
+        week: "weekly",
+        month: "monthly",
+      },
+      every: "Every",
+      minuteOne: "1 minute",
+      minuteOther: "{{count}} minutes",
+      atMinute: "At minute",
+      pastEveryHour: "past every hour",
+      at: "At",
+      on: "On",
+      onDay: "On day",
+      ofEveryMonth: "of every month",
+      weekdays: {
+        sun: "Sun",
+        mon: "Mon",
+        tue: "Tue",
+        wed: "Wed",
+        thu: "Thu",
+        fri: "Fri",
+        sat: "Sat",
+      },
+    },
+    runHistory: {
+      back: "Back to jobs",
+      title: "Run History: {{name}}",
+      schedule: "Schedule:",
+      emptyTitle: "No runs yet for this job",
+      emptySubtitle: "Run the job now and view its results.",
+      runNow: "Run Now",
+      stopJob: "Stop job",
+      table: {
+        status: "Status",
+        started: "Started",
+        duration: "Duration",
+        error: "Error",
+      },
+    },
+    runDetail: {
+      loading: "Loading run details...",
+      notFound: "Run not found.",
+      back: "Back",
+      unknownJob: "Unknown Job",
+      runHeading: "{{name}} — Run #{{id}}",
+      duration: "Duration: {{value}}",
+      continueInThread: "Continue in Chat",
+      creating: "Creating...",
+      threadFailed: "Failed to create thread",
+      stopJob: "Stop Job",
+      killing: "Stopping...",
+      sections: {
+        prompt: "Prompt",
+        error: "Error",
+        thinking: "Thoughts ({{count}})",
+        toolCalls: "Tool Calls ({{count}})",
+        files: "Files ({{count}})",
+        response: "Response",
+        metrics: "Metrics",
+      },
+      metrics: {
+        promptTokens: "Prompt tokens:",
+        completionTokens: "Completion tokens:",
+      },
+    },
+    toolCall: {
+      arguments: "Arguments:",
+      showResult: "Show result",
+      hideResult: "Hide result",
+    },
+    file: {
+      unknown: "Unknown file",
+      download: "Download",
+      downloadFailed: "Failed to download file",
+      types: {
+        powerpoint: "PowerPoint",
+        pdf: "PDF Document",
+        word: "Word Document",
+        spreadsheet: "Spreadsheet",
+        generic: "File",
       },
     },
   },

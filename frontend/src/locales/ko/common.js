@@ -2,8 +2,8 @@
 const TRANSLATIONS = {
   onboarding: {
     home: {
-      title: "방문을 환영합니다",
       getStarted: "시작하기",
+      welcome: "환영합니다",
     },
     llm: {
       title: "LLM 기본 설정",
@@ -47,17 +47,9 @@ const TRANSLATIONS = {
       skip: "설문 건너뛰기",
       thankYou: "소중한 의견 감사합니다!",
     },
-    workspace: {
-      title: "첫 번째 워크스페이스 만들기",
-      description:
-        "첫 번째 워크스페이스를 생성하고 AnythingLLM을 시작해보세요.",
-    },
   },
   common: {
     "workspaces-name": "워크스페이스 이름",
-    error: "오류",
-    success: "성공",
-    user: "사용자",
     selection: "모델 선택",
     saving: "저장 중...",
     save: "저장",
@@ -69,10 +61,14 @@ const TRANSLATIONS = {
     search: "검색",
     username_requirements:
       "사용자 이름은 2-32자여야 하고, 소문자로 시작해야 하며, 소문자, 숫자, 밑줄, 하이픈, 마침표만 포함할 수 있습니다.",
+    on: "~에 대해",
+    none: "없음",
+    stopped: "멈춤",
+    loading: "로딩 중",
+    refresh: "새롭게",
   },
   settings: {
     title: "인스턴스 설정",
-    system: "일반 설정",
     invites: "초대",
     users: "사용자",
     workspaces: "워크스페이스",
@@ -86,7 +82,6 @@ const TRANSLATIONS = {
     "voice-speech": "음성과 말하기",
     "vector-database": "벡터 데이터베이스",
     embeds: "채팅 임베드",
-    "embed-chats": "채팅 임베드 기록",
     security: "보안",
     "event-logs": "이벤트 로그",
     privacy: "사생활 보호와 데이터",
@@ -108,6 +103,12 @@ const TRANSLATIONS = {
       "your-account": "당신의 계정",
       "import-item": "수입 품목",
     },
+    channels: "채널",
+    "available-channels": {
+      telegram: "텔레그램",
+    },
+    "scheduled-jobs": "예정된 작업",
+    "model-router": "모델 라우터",
   },
   login: {
     "multi-user": {
@@ -124,92 +125,10 @@ const TRANSLATIONS = {
       title: "비밀번호 재설정",
       description: "비밀번호를 재설정하려면 아래에 필요한 정보를 입력하세요.",
       "recovery-codes": "복구 코드",
-      "recovery-code": "복구 코드 {{index}}",
       "back-to-login": "로그인으로 돌아가기",
     },
   },
   "main-page": {
-    noWorkspaceError: "채팅을 시작하기 전에 워크스페이스를 먼저 만들어주세요.",
-    checklist: {
-      title: "시작하기",
-      tasksLeft: "남은 작업",
-      completed: "이제 곧 AnythingLLM 전문가가 되실 거예요!",
-      dismiss: "닫기",
-      tasks: {
-        create_workspace: {
-          title: "워크스페이스 만들기",
-          description: "처음으로 워크스페이스를 만들어 시작해보세요",
-          action: "만들기",
-        },
-        send_chat: {
-          title: "채팅 보내기",
-          description: "AI 어시스턴트와 대화를 시작해보세요",
-          action: "채팅",
-        },
-        embed_document: {
-          title: "문서 임베드하기",
-          description: "워크스페이스에 첫 번째 문서를 추가해보세요",
-          action: "임베드",
-        },
-        setup_system_prompt: {
-          title: "시스템 프롬프트 설정",
-          description: "AI 어시스턴트의 동작 방식을 설정하세요",
-          action: "설정",
-        },
-        define_slash_command: {
-          title: "슬래시 명령어 정의",
-          description: "어시스턴트용 맞춤 명령어를 만들어보세요",
-          action: "정의",
-        },
-        visit_community: {
-          title: "커뮤니티 허브 방문",
-          description: "커뮤니티 자료와 템플릿을 둘러보세요",
-          action: "둘러보기",
-        },
-      },
-    },
-    quickLinks: {
-      title: "바로가기",
-      sendChat: "채팅 보내기",
-      embedDocument: "문서 임베드",
-      createWorkspace: "워크스페이스 만들기",
-    },
-    exploreMore: {
-      title: "더 많은 기능 살펴보기",
-      features: {
-        customAgents: {
-          title: "맞춤형 AI 에이전트",
-          description: "코딩 없이 강력한 AI 에이전트와 자동화를 구축하세요.",
-          primaryAction: "@agent로 채팅하기",
-          secondaryAction: "에이전트 플로우 만들기",
-        },
-        slashCommands: {
-          title: "슬래시 명령어",
-          description:
-            "맞춤 슬래시 명령어로 시간을 절약하고 프롬프트를 빠르게 입력하세요.",
-          primaryAction: "슬래시 명령어 만들기",
-          secondaryAction: "허브에서 둘러보기",
-        },
-        systemPrompts: {
-          title: "시스템 프롬프트",
-          description:
-            "시스템 프롬프트를 수정해 워크스페이스의 AI 답변을 원하는 대로 맞춤 설정하세요.",
-          primaryAction: "시스템 프롬프트 수정",
-          secondaryAction: "프롬프트 변수 관리",
-        },
-      },
-    },
-    announcements: {
-      title: "업데이트 및 공지사항",
-    },
-    resources: {
-      title: "자료실",
-      links: {
-        docs: "문서 보기",
-        star: "Github에 스타 누르기",
-      },
-      keyboardShortcuts: "단축키 안내",
-    },
     quickActions: {
       createAgent: "에이전트 생성",
       editWorkspace: "워크스페이스 편집",
@@ -244,12 +163,6 @@ const TRANSLATIONS = {
       heading: "저에게 설명해주세요",
       body: "AnythingLLM의 장점",
     },
-    pfp: {
-      title: "어시스턴트 프로필 이미지",
-      description: "이 워크스페이스의 어시스턴트 프로필 이미지를 수정합니다.",
-      image: "워크스페이스 이미지",
-      remove: "워크스페이스 이미지 제거",
-    },
     delete: {
       title: "워크스페이스 삭제",
       description:
@@ -272,21 +185,23 @@ const TRANSLATIONS = {
       title: "워크스페이스 채팅 모델",
       description:
         "이 워크스페이스에서 사용할 특정 채팅 모델입니다. 비어 있으면 시스템 LLM 기본 설정을 사용합니다.",
-      wait: "-- 모델 기다리는 중 --",
     },
     mode: {
       title: "채팅 모드",
       chat: {
         title: "채팅",
-        "desc-start": "문서 내용을 찾습니다.",
-        and: "그리고",
-        "desc-end": "LLM의 일반 지식을 같이 사용하여 답변을 제공합니다",
+        description:
+          "LLM의 일반적인 지식과 문서 컨텍스트를 활용하여 답변을 제공합니다. 도구를 사용하려면 @agent 명령을 사용해야 합니다.",
       },
       query: {
         title: "쿼리",
-        "desc-start": "문서 컨텍스트를 찾을 ",
-        only: "때만",
-        "desc-end": "답변을 제공합니다.",
+        description:
+          "문서의 맥락이 발견되면 답변만 제공합니다.<b>필요한 경우, @agent 명령어를 사용하여 도구를 사용해야 합니다.</b>",
+      },
+      automatic: {
+        description:
+          "모델과 제공업체가 네이티브 도구 호출을 지원하는 경우, 자동으로 도구를 사용합니다. <br />네이티브 도구 호출이 지원되지 않는 경우, 도구를 사용하려면 @agent 명령을 사용해야 합니다.",
+        title: "에이전트",
       },
     },
     history: {
@@ -376,9 +291,6 @@ const TRANSLATIONS = {
       wait: "-- 모델 기다리는 중 --",
     },
     skill: {
-      title: "기본 에이전트 스킬",
-      description:
-        "기본 에이전트의 능력을 사전 정의된 스킬을 사용하여 향상시킵니다. 이 설정은 모든 워크스페이스에 적용됩니다.",
       rag: {
         title: "RAG와 장기 메모리",
         description:
@@ -399,11 +311,6 @@ const TRANSLATIONS = {
         description:
           "기본 에이전트가 채팅에서 제공된 데이터를 이용하여 다양한 유형의 차트를 생성할 수 있도록 합니다.",
       },
-      save: {
-        title: "브라우저에서 파일 생성과 저장",
-        description:
-          "기본 에이전트가 브라우저에서 파일을 생성하고 다운로드할 수 있도록 합니다.",
-      },
       web: {
         title: "실시간 웹 검색 및 탐색",
         description:
@@ -416,6 +323,432 @@ const TRANSLATIONS = {
       },
       default_skill:
         "기본적으로 이 기능은 활성화되어 있지만, 에이전트에게 이 기능을 사용하지 않도록 설정할 수도 있습니다.",
+      filesystem: {
+        title: "파일 시스템 접근",
+        description:
+          "제 에이전트가 지정된 디렉토리 내에서 파일을 읽고, 쓰고, 검색하고, 관리할 수 있도록 합니다. 파일 편집, 디렉토리 탐색, 콘텐츠 검색을 지원합니다.",
+        learnMore: "이 기술을 사용하는 방법에 대해 자세히 알아보세요.",
+        configuration: "구성",
+        readActions: "실행 내용 보기",
+        writeActions: "실행 내용",
+        warning:
+          "파일 시스템 접근은 위험할 수 있습니다. 왜냐하면 파일 내용을 변경하거나 삭제할 수 있기 때문입니다. 사용하기 전에 반드시 <a>문서</a>를 참조하십시오.",
+        skills: {
+          "read-text-file": {
+            title: "파일 읽기",
+            description:
+              "파일(텍스트, 코드, PDF, 이미지 등)의 내용을 읽습니다.",
+          },
+          "read-multiple-files": {
+            title: "여러 파일을 읽기",
+            description: "여러 파일을 한 번에 읽기",
+          },
+          "list-directory": {
+            title: "디렉토리 목록",
+            description: "폴더 내의 파일 및 디렉터리 목록 보기",
+          },
+          "search-files": {
+            title: "파일 검색",
+            description: "이름 또는 내용으로 파일을 검색",
+          },
+          "get-file-info": {
+            title: "파일 정보 확인",
+            description: "파일에 대한 자세한 메타데이터를 얻으세요.",
+          },
+          "edit-file": {
+            title: "파일 편집",
+            description: "텍스트 파일에 줄 단위로 편집",
+          },
+          "create-directory": {
+            title: "디렉토리 생성",
+            description: "새로운 디렉토리를 생성합니다.",
+          },
+          "move-file": {
+            title: "파일 이동/이름 변경",
+            description: "파일 및 폴더를 이동하거나 이름을 변경합니다.",
+          },
+          "copy-file": {
+            title: "파일 복사",
+            description: "파일 및 디렉터리를 복사",
+          },
+          "write-text-file": {
+            title: "텍스트 파일 작성",
+            description:
+              "새로운 텍스트 파일을 생성하거나 기존 텍스트 파일을 덮어쓰기",
+          },
+        },
+      },
+      createFiles: {
+        title: "문서 생성",
+        description:
+          "에이전트가 파워포인트 프레젠테이션, 엑셀 스프레드시트, 워드 문서, PDF 등 이진 파일 형식의 문서를 생성할 수 있도록 지원합니다. 파일은 채팅 창에서 직접 다운로드할 수 있습니다.",
+        configuration: "사용 가능한 문서 유형",
+        skills: {
+          "create-text-file": {
+            title: "텍스트 파일",
+            description:
+              "원하는 내용과 확장자(.txt, .md, .json, .csv 등)를 사용하여 텍스트 파일을 생성합니다.",
+          },
+          "create-pptx": {
+            title: "파워포인트 프레젠테이션",
+            description:
+              "슬라이드, 제목, 마크다운 등을 포함하여 새로운 파워포인트 프레젠테이션을 만드세요.",
+          },
+          "create-pdf": {
+            title: "PDF 문서",
+            description:
+              "기본 스타일을 적용하여 마크다운 또는 일반 텍스트에서 PDF 문서를 생성합니다.",
+          },
+          "create-xlsx": {
+            title: "엑셀 스프레드시트",
+            description:
+              "표와 스타일을 포함한 표 형태의 데이터를 위한 엑셀 문서를 만드세요.",
+          },
+          "create-docx": {
+            title: "워드 문서",
+            description:
+              "기본적인 스타일과 서식을 사용하여 워드 문서를 만드세요.",
+          },
+        },
+      },
+      gmail: {
+        title: "GMail 연결기",
+        description:
+          "제 에이전트가 Gmail과 상호 작용할 수 있도록 설정하세요 - 이메일 검색, 스레드 읽기, 초안 작성, 이메일 전송, 그리고 받은 메일 관리 기능을 사용하세요. <a>문서를 참조하세요</a>.",
+        multiUserWarning:
+          "Gmail 통합 기능은 보안상의 이유로 다중 사용자 모드에서는 사용할 수 없습니다. 이 기능을 사용하려면 다중 사용자 모드를 비활성화해 주세요.",
+        configuration: "Gmail 설정",
+        deploymentId: "배포 ID",
+        deploymentIdHelp: "당신의 Google Apps Script 웹 앱의 배포 ID",
+        apiKey: "API 키",
+        apiKeyHelp: "당신이 Google Apps Script 배포 시 설정한 API 키",
+        configurationRequired:
+          "Gmail 기능을 사용하려면 배포 ID와 API 키를 설정해 주세요.",
+        configured: "설정됨",
+        searchSkills: "검색 기술...",
+        noSkillsFound: "검색 결과와 일치하는 기술이 없습니다.",
+        categories: {
+          search: {
+            title: "이메일 검색 및 읽기",
+            description: "Gmail 계정에서 이메일을 검색하고 읽으세요.",
+          },
+          drafts: {
+            title: "샘플 이메일",
+            description: "이메일 초안을 작성, 편집, 관리",
+          },
+          send: {
+            title: "이메일 보내기 및 답변",
+            description: "이메일을 보내고, 토론 스레드에 즉시 응답",
+          },
+          threads: {
+            title: "이메일 스레드 관리",
+            description:
+              "이메일 스레드 관리 - 읽음/미읽음 표시, 아카이브, 삭제",
+          },
+          account: {
+            title: "통합 통계",
+            description: "메일함 통계 및 계정 정보 확인",
+          },
+        },
+        skills: {
+          search: {
+            title: "이메일 검색",
+            description: "Gmail 쿼리 구문을 사용하여 이메일 검색",
+          },
+          readThread: {
+            title: "게시글 전체 읽기",
+            description: "ID를 기준으로 전체 이메일 스레드를 읽기",
+          },
+          createDraft: {
+            title: "초안 작성",
+            description: "새로운 이메일 초안 작성",
+          },
+          createDraftReply: {
+            title: "초안 답변 작성",
+            description: "기존 스레드에 대한 답변 초안 작성",
+          },
+          updateDraft: {
+            title: "초안 업데이트",
+            description: "기존 이메일 초안을 업데이트합니다.",
+          },
+          getDraft: {
+            title: "초안 보기",
+            description: "ID를 사용하여 특정 초안을 검색/불러오기",
+          },
+          listDrafts: {
+            title: "초안 목록",
+            description: "모든 초안 이메일 목록을 표시",
+          },
+          deleteDraft: {
+            title: "초안 삭제",
+            description: "초안 이메일을 삭제",
+          },
+          sendDraft: {
+            title: "초안 보내기",
+            description: "기존 이메일 초안을 보내기",
+          },
+          sendEmail: {
+            title: "이메일 보내기",
+            description: "즉시 이메일을 보내세요.",
+          },
+          replyToThread: {
+            title: "게시글에 답변",
+            description: "이메일 스레드에 즉시 답변",
+          },
+          markRead: {
+            title: "마크 리드",
+            description: '특정 게시글을 "읽음"으로 표시',
+          },
+          markUnread: {
+            title: "미리 읽기",
+            description: '특정 스레드를 "읽지 않은 상태"로 표시',
+          },
+          moveToTrash: {
+            title: "삭제",
+            description: "스레드를 쓰레기함으로 이동",
+          },
+          moveToArchive: {
+            title: "보관",
+            description: "게시글을 보관",
+          },
+          moveToInbox: {
+            title: "받은 편지함으로 이동",
+            description: "스레드를 받은 편지함으로 이동",
+          },
+          getMailboxStats: {
+            title: "메일함 통계",
+            description: "읽지 않은 이메일 수 및 메일함 통계 확인",
+          },
+          getInbox: {
+            title: "메일함 보기",
+            description: "Gmail에서 받은 이메일을 효율적으로 관리하는 방법",
+          },
+        },
+      },
+      outlook: {
+        title: "아웃룩 연결",
+        description:
+          "Microsoft Outlook와 상호 작용할 수 있도록 에이전트에게 Microsoft Graph API를 사용하도록 설정합니다. 이메일 검색, 스레드 읽기, 초안 작성, 이메일 전송, 그리고 Microsoft Graph API를 통해 이메일함을 관리할 수 있습니다. 자세한 내용은 <a>문서를 참조하세요</a>.",
+        multiUserWarning:
+          "Outlook 통합 기능은 보안상의 이유로 다중 사용자 모드에서는 사용할 수 없습니다. 이 기능을 사용하려면 다중 사용자 모드를 비활성화해 주십시오.",
+        configuration: "아웃룩 설정",
+        authType: "계정 유형",
+        authTypeHelp:
+          "인증할 수 있는 Microsoft 계정 유형을 선택합니다. '모든 계정'은 개인 및 업무/학교 계정을 모두 지원합니다. '개인 계정만'은 개인 Microsoft 계정에만 적용됩니다. '특정 Azure AD 테넌트의 계정만'은 특정 Azure AD 테넌트의 업무/학교 계정에만 적용됩니다.",
+        authTypeCommon: "모든 계정 (개인 계정 및 직장/학교 계정)",
+        authTypeConsumers: "개인 Microsoft 계정만 해당",
+        authTypeOrganization: "단순히 조직 계정만 (세입자 ID 필요)",
+        clientId: "애플리케이션 (고객) ID",
+        clientIdHelp:
+          "당신의 Azure AD 애플리케이션 등록 시 얻은 애플리케이션(클라이언트) ID",
+        tenantId: "임대인 ID",
+        tenantIdHelp:
+          "Azure AD 애플리케이션 등록 시 얻은 (임차인) ID. 조직 내 사용자만 인증하는 경우에만 필요합니다.",
+        clientSecret: "고객 비밀",
+        clientSecretHelp: "Azure AD 애플리케이션 등록 시 얻은 클라이언트 비밀",
+        configurationRequired:
+          "아웃룩 기능을 사용하려면 클라이언트 ID와 클라이언트 비밀을 설정해 주세요.",
+        authRequired:
+          "먼저 사용자 정보를 저장한 다음, Microsoft를 통해 계정을 인증하여 설정 과정을 완료하십시오.",
+        authenticateWithMicrosoft: "마이크로소프트와 인증",
+        authenticated: "Microsoft Outlook와 성공적으로 인증되었습니다.",
+        revokeAccess: "접근 권한 취소",
+        configured: "설정됨",
+        searchSkills: "검색 기술...",
+        noSkillsFound: "검색하신 조건과 일치하는 기술이 없습니다.",
+        categories: {
+          search: {
+            title: "이메일 검색 및 읽기",
+            description: "Outlook 계정의 이메일을 검색하고 읽으세요.",
+          },
+          drafts: {
+            title: "샘플 이메일",
+            description: "이메일 초안을 작성, 편집 및 관리",
+          },
+          send: {
+            title: "이메일 보내기",
+            description: "새로운 이메일을 보내거나, 즉시 메시지에 응답",
+          },
+          account: {
+            title: "통합 통계",
+            description: "메일함 통계 및 계정 정보 확인",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "메일함 보기",
+            description: "최근에 받은 이메일을 Outlook 계정에서 확인",
+          },
+          search: {
+            title: "이메일 검색",
+            description: "Microsoft 검색 구문을 사용하여 이메일 검색",
+          },
+          readThread: {
+            title: "대화 내용 읽기",
+            description: "전체 이메일 대화 내용을 읽기",
+          },
+          createDraft: {
+            title: "초안 작성",
+            description:
+              "새로운 이메일 초안을 작성하거나 기존 메시지에 대한 답변 초안을 작성합니다.",
+          },
+          updateDraft: {
+            title: "초안 업데이트",
+            description: "기존 이메일 초안을 업데이트합니다.",
+          },
+          listDrafts: {
+            title: "초안 목록",
+            description: "모든 초안 이메일 목록을 표시",
+          },
+          deleteDraft: {
+            title: "초안 삭제",
+            description: "초안 이메일을 삭제",
+          },
+          sendDraft: {
+            title: "초안 보내기",
+            description: "기존 이메일 초안을 보내기",
+          },
+          sendEmail: {
+            title: "이메일 보내기",
+            description: "새로운 이메일을 보내거나 기존 메시지에 즉시 응답",
+          },
+          getMailboxStats: {
+            title: "메일함 통계",
+            description: "폴더 수와 메일함 통계 정보를 확인합니다.",
+          },
+        },
+      },
+      googleCalendar: {
+        title: "구글 캘린더 연동",
+        description:
+          "에이전트가 Google 캘린더와 상호 작용할 수 있도록 설정하세요 - 캘린더 보기, 이벤트 확인, 이벤트 생성 및 업데이트, RSVP 관리 등을 수행할 수 있습니다. <a>문서를 참조하세요</a>.",
+        multiUserWarning:
+          "Google 캘린더 통합 기능은 보안상의 이유로 다중 사용자 모드에서는 사용할 수 없습니다. 이 기능을 사용하려면 다중 사용자 모드를 비활성화해주세요.",
+        configuration: "구글 캘린더 설정",
+        deploymentId: "배포 ID",
+        deploymentIdHelp: "당신의 구글 앱스 스크립트 웹 앱의 배포 ID",
+        apiKey: "API 키",
+        apiKeyHelp: "Google Apps Script 배포 시 설정한 API 키",
+        configurationRequired:
+          "구글 캘린더 기능을 사용하려면 배포 ID와 API 키를 설정해 주세요.",
+        configured: "설정됨",
+        searchSkills: "검색 기술...",
+        noSkillsFound: "검색하신 조건과 일치하는 기술이 없습니다.",
+        categories: {
+          calendars: {
+            title: "달력",
+            description: "Google 캘린더를 확인하고 관리하세요.",
+          },
+          readEvents: {
+            title: "이벤트 목록 보기",
+            description: "일정 뷰 및 검색",
+          },
+          writeEvents: {
+            title: "이벤트 생성 및 업데이트",
+            description: "새로운 이벤트를 생성하고 기존 이벤트를 수정",
+          },
+          rsvp: {
+            title: "참석 확인 관리",
+            description: "이벤트에 대한 응답 상태를 관리하세요.",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "달력 목록",
+            description:
+              "자신이 소유하거나 구독하고 있는 모든 캘린더 목록을 작성하세요.",
+          },
+          getCalendar: {
+            title: "달력 세부 정보 보기",
+            description: "특정 캘린더에 대한 자세한 정보를 얻으세요.",
+          },
+          getEvent: {
+            title: "이벤트 정보 보기",
+            description: "특정 이벤트에 대한 자세한 정보를 얻으세요.",
+          },
+          getEventsForDay: {
+            title: "오늘의 행사 정보 보기",
+            description: "특정 날짜에 예정된 모든 행사 목록을 확인",
+          },
+          getEvents: {
+            title: "이벤트 검색 (날짜 범위)",
+            description: "사용자 지정 날짜 범위 내의 이벤트 가져오기",
+          },
+          getUpcomingEvents: {
+            title: "다가오는 행사 보기",
+            description:
+              "오늘, 이번 주 또는 이번 달의 이벤트를 간단한 키워드를 사용하여 검색",
+          },
+          quickAdd: {
+            title: "빠르게 이벤트 추가",
+            description:
+              '자연어 (예: "내일 오후 3시에 회의")를 사용하여 이벤트를 생성합니다.',
+          },
+          createEvent: {
+            title: "이벤트 생성",
+            description:
+              "모든 속성에 대한 완전한 제어 기능을 갖춘 새로운 이벤트를 생성합니다.",
+          },
+          updateEvent: {
+            title: "이벤트 업데이트",
+            description: "기존 캘린더 이벤트 업데이트",
+          },
+          setMyStatus: {
+            title: "RSVP 상태 설정",
+            description: "행사 참여 여부를 수락, 거절, 또는 잠정적으로 수락",
+          },
+        },
+      },
+    },
+    mcp: {
+      title: "MCP 서버",
+      "loading-from-config": "구성 파일에서 MCP 서버 로드",
+      "learn-more": "MCP 서버에 대해 더 자세히 알아보세요.",
+      "no-servers-found": "MCP 서버를 찾을 수 없습니다.",
+      "tool-warning":
+        "최상의 성능을 위해, 불필요한 도구를 비활성화하여 컨텍스트를 보존하는 것을 고려해 보세요.",
+      "stop-server": "MCP 서버 중단",
+      "start-server": "MCP 서버 시작",
+      "delete-server": "MCP 서버 삭제",
+      "tool-count-warning":
+        "이 MCP 서버에는 <b>에 설정된 {{count}} 도구가 있으며, 이는 모든 채팅에서 컨텍스트를 소비합니다. </b> 불필요한 도구를 비활성화하여 컨텍스트를 절약하는 것을 고려해 보세요.",
+      "startup-command": "시작 명령어",
+      command: "명령",
+      arguments: "논쟁",
+      "not-running-warning":
+        "이 MCP 서버는 현재 실행 상태가 아닙니다. 중단되었거나, 시작 시 오류가 발생했을 수 있습니다.",
+      "tool-call-arguments": "툴 호출 인자",
+      "tools-enabled": "도구 사용 기능 활성화",
+    },
+    settings: {
+      title: "에이전트 스킬 설정",
+      "max-tool-calls": {
+        title: "응답당 최대 툴 호출 횟수",
+        description:
+          "에이전트가 단일 응답을 생성하기 위해 사용할 수 있는 최대 툴의 개수입니다. 이를 통해 불필요한 툴 호출과 무한 루프를 방지합니다.",
+      },
+      "intelligent-skill-selection": {
+        title: "지능형 기술 선택",
+        "beta-badge": "베타",
+        description:
+          "쿼리당 무제한의 도구 사용 및 컷 토큰 사용량을 최대 80%까지 줄일 수 있습니다 – AnythingLLM은 모든 프롬프트에 적합한 기술을 자동으로 선택합니다.",
+        "max-tools": {
+          title: "맥스 툴스",
+          description:
+            "각 쿼리에 사용할 수 있는 최대 도구 수입니다. 큰 컨텍스트 모델의 경우, 이 값을 더 높은 값으로 설정하는 것을 권장합니다.",
+        },
+      },
+      "clarifying-questions": {
+        title: "대리인에게 추가 질문을 할 수 있도록 허용",
+        "beta-badge": "베타",
+        description:
+          "활성화되면, 에이전트는 요청이 모호할 경우 간단한 확인 질문을 할 수 있습니다.",
+        "max-per-turn": {
+          title: "각 턴당 질문 횟수 제한",
+          description:
+            "담당자가 단일 설문 조사에서 질문할 수 있는 질문의 수는 몇 개입니까?",
+        },
+      },
     },
   },
   recorded: {
@@ -478,10 +811,6 @@ const TRANSLATIONS = {
         description:
           "로그인 페이지에 모든 사용자에게 표시될 애플리케이션 이름을 설정하세요.",
       },
-      "chat-message-alignment": {
-        title: "채팅 메시지 정렬",
-        description: "채팅 인터페이스에서 메시지 정렬 방식을 선택하세요.",
-      },
       "display-language": {
         title: "표시 언어",
         description:
@@ -494,18 +823,6 @@ const TRANSLATIONS = {
         recommended: "권장 크기: 800 x 200",
         remove: "제거",
         replace: "교체",
-      },
-      "welcome-messages": {
-        title: "환영 메시지",
-        description:
-          "사용자에게 표시될 환영 메시지를 맞춤 설정하세요. 관리자 권한이 없는 사용자만 이 메시지를 볼 수 있습니다.",
-        new: "새 메시지",
-        system: "시스템",
-        user: "사용자",
-        message: "메시지",
-        assistant: "AnythingLLM 채팅 어시스턴트",
-        "double-click": "더블 클릭하여 편집...",
-        save: "메시지 저장",
       },
       "browser-appearance": {
         title: "브라우저 표시 설정",
@@ -540,7 +857,34 @@ const TRANSLATIONS = {
       "API 키는 소유자가 프로그래밍 방식으로 이 AnythingLLM 인스턴스에 액세스하고 관리할 수 있도록 합니다.",
     link: "API 문서 읽기",
     generate: "새 API 키 생성",
+    empty: "API 키를 찾을 수 없습니다",
+    actions: "작업",
+    messages: {
+      error: "오류: {{error}}",
+    },
+    modal: {
+      title: "새 API 키 만들기",
+      cancel: "취소",
+      close: "닫기",
+      create: "API 키 만들기",
+      helper:
+        "생성된 API 키는 이 AnythingLLM 인스턴스에 프로그래밍 방식으로 접근하고 구성하는 데 사용할 수 있습니다.",
+      name: {
+        label: "이름",
+        placeholder: "프로덕션 통합",
+        helper:
+          "선택 사항입니다. 나중에 쉽게 식별할 수 있도록 알아보기 쉬운 이름을 사용하세요.",
+      },
+    },
+    row: {
+      copy: "API 키 복사",
+      copied: "복사됨",
+      unnamed: "--",
+      deleteConfirm:
+        "이 API 키를 비활성화하시겠습니까?\n비활성화하면 더 이상 사용할 수 없습니다.\n\n이 작업은 되돌릴 수 없습니다.",
+    },
     table: {
+      name: "이름",
       key: "API 키",
       by: "생성한 사람",
       created: "생성일",
@@ -650,17 +994,12 @@ const TRANSLATIONS = {
     title: "개인정보와 데이터 처리",
     description:
       "연결된 타사 제공자와 AnythingLLM이 데이터를 처리하는 방식을 구성합니다.",
-    llm: "LLM 선택",
-    embedding: "임베딩 기본 설정",
-    vector: "벡터 데이터베이스",
     anonymous: "익명 원격 분석 활성화",
   },
   connectors: {
     "search-placeholder": "데이터 커넥터 검색",
     "no-connectors": "데이터 커넥터를 찾을 수 없습니다.",
     obsidian: {
-      name: "Obsidian",
-      description: "Obsidian 볼트를 한 번에 가져옵니다.",
       vault_location: "볼트 위치",
       vault_description:
         "모든 노트와 연결을 가져오려면 Obsidian 볼트 폴더를 선택하세요.",
@@ -707,7 +1046,6 @@ const TRANSLATIONS = {
       URL_explained: "가져오려는 GitLab 저장소의 URL을 입력하세요.",
       token: "GitLab 액세스 토큰",
       optional: "선택 사항",
-      token_explained: "요청 제한을 방지하기 위한 액세스 토큰입니다.",
       token_description: "GitLab API에서 추가로 가져올 엔터티를 선택하세요.",
       token_explained_start: "무엇보다 중요한 것은,",
       token_explained_link1: "개인 액세스 토큰",
@@ -739,9 +1077,6 @@ const TRANSLATIONS = {
       URL_explained_end: " 이 활성화되어 있어야 합니다.",
       task_explained:
         "가져오기가 완료되면 자막이 문서 선택기에서 워크스페이스에 임베딩할 수 있도록 제공됩니다.",
-      language: "자막 언어",
-      language_explained: "가져오려는 자막의 언어를 선택하세요.",
-      loading_languages: "-- 사용 가능한 언어 불러오는 중 --",
     },
     "website-depth": {
       name: "웹사이트 대량 링크 수집",
@@ -802,20 +1137,18 @@ const TRANSLATIONS = {
       "search-document": "문서 검색",
       "no-documents": "문서 없음",
       "move-workspace": "워크스페이스로 이동",
-      name: "이름",
       "delete-confirmation":
         "이 파일과 폴더를 삭제하시겠습니까?\n삭제 시 시스템에서 완전히 제거되며, 기존 워크스페이스에서도 자동으로 삭제됩니다.\n이 작업은 되돌릴 수 없습니다.",
       "removing-message":
         "{{count}}개의 문서와 {{folderCount}}개의 폴더를 삭제하는 중입니다. 잠시만 기다려 주세요.",
       "move-success": "{{count}}개의 문서를 성공적으로 이동했습니다.",
-      date: "날짜",
-      type: "유형",
       no_docs: "문서 없음",
       select_all: "전체 선택",
       deselect_all: "전체 선택 해제",
       remove_selected: "선택 항목 삭제",
-      costs: "*임베딩 1회 비용",
       save_embed: "저장 및 임베딩",
+      "total-documents_one": "{{count}} 문서",
+      "total-documents_other": "{{count}} 관련 문서",
     },
     upload: {
       "processor-offline": "문서 처리기가 오프라인 상태입니다",
@@ -854,18 +1187,10 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
-    welcome: "새 워크스페이스에 오신 것을 환영합니다.",
-    get_started: "시작하려면",
-    get_started_default: "시작하려면",
-    upload: "문서 업로드",
-    or: "또는",
     attachments_processing:
       "첨부 파일을 처리 중입니다. 잠시만 기다려 주세요...",
-    send_chat: "채팅을 보내세요.",
     send_message: "메시지 보내기",
     attach_file: "이 채팅에 파일 첨부",
-    slash: "채팅에서 사용할 수 있는 모든 슬래시 명령어 보기",
-    agents: "채팅에 사용할 수 있는 모든 에이전트 보기",
     text_size: "텍스트 크기 변경",
     microphone: "프롬프트를 음성으로 입력",
     send: "프롬프트 메시지를 워크스페이스로 전송",
@@ -875,19 +1200,11 @@ const TRANSLATIONS = {
     regenerate_response: "응답 다시 생성",
     good_response: "좋은 답변",
     more_actions: "더 많은 작업",
-    hide_citations: "인용 숨기기",
-    show_citations: "인용 보기",
-    pause_tts_speech_message: "TTS 음성 읽기 일시정지",
     fork: "포크",
     delete: "삭제",
-    save_submit: "저장 및 제출",
     cancel: "취소",
     edit_prompt: "프롬프트 수정",
     edit_response: "응답 수정",
-    at_agent: "@agent",
-    default_agent_description: " - 이 워크스페이스의 기본 에이전트입니다.",
-    custom_agents_coming_soon: "커스텀 에이전트 기능이 곧 제공됩니다!",
-    slash_reset: "/reset",
     preset_reset_description: "채팅 기록을 초기화하고 새 채팅을 시작합니다",
     add_new_preset: "새 프리셋 추가",
     command: "명령어",
@@ -909,6 +1226,97 @@ const TRANSLATIONS = {
       saving: "모델을 워크스페이스 기본값으로 설정 중...",
       missing_credentials: "이 제공자의 인증 정보가 없습니다!",
       missing_credentials_description: "클릭하여 인증 정보를 설정하세요",
+    },
+    submit: "제출",
+    edit_info_user:
+      '"제출"은 AI 응답을 다시 생성합니다. "저장"은 사용자 메시지만 업데이트합니다.',
+    edit_info_assistant: "당신이 변경한 내용은 바로 이 답변에 저장됩니다.",
+    see_less: "더 보기",
+    see_more: "더 보기",
+    tools: "도구",
+    text_size_label: "글자 크기",
+    select_model: "모델 선택",
+    sources: "출처",
+    document: "문서",
+    similarity_match: "경쟁",
+    source_count_one: "{{count}} 참조",
+    source_count_other: "{{count}} 관련 참고 자료",
+    add_new: "새로운 항목 추가",
+    edit: "수정",
+    publish: "출판",
+    stop_generating: "응답 생성 중단",
+    slash_commands: "슬래시 명령어",
+    agent_skills: "에이전트의 역량",
+    manage_agent_skills: "에이전트 역량 관리",
+    agent_skills_disabled_in_session:
+      "활성 에이전트 세션 중에 기술을 변경할 수 없습니다. 먼저 /exit 명령을 사용하여 세션을 종료하십시오.",
+    start_agent_session: "에이전트 세션 시작",
+    use_agent_session_to_use_tools:
+      "채팅에서 도구를 사용하려면, 프롬프트의 시작 부분에 '@agent'을 사용하여 에이전트 세션을 시작할 수 있습니다.",
+    agent_invocation: {
+      model_wants_to_call: "모델이 통화하고 싶어",
+      approve: "승인",
+      reject: "거부",
+      always_allow: "항상 {{skillName}}을 허용",
+      tool_call_was_approved: "도구 사용 승인",
+      tool_call_was_rejected: "도구 호출이 거부되었습니다.",
+      clarifying_skip: "에이전트에게 결정하도록 맡기세요",
+      clarifying_submit: "제출",
+      clarifying_skipped: "당신은 에이전트에게 결정권을 넘겨주세요.",
+      clarifying_timeout: "제한 시간 내에 답변이 제출되지 않았습니다.",
+      clarifying_pagination: "{{current}}의 {{total}}",
+      clarifying_prev_aria: "이전 질문",
+      clarifying_next_aria: "다음 질문",
+      clarifying_close_aria: "닫고 건너뛰기",
+      clarifying_other: "그 외",
+      clarifying_other_placeholder: "본인의 답변을 입력하세요",
+      batch_progress: "{{answered}}가 {{total}}에 답변",
+      batch_skip_this: "넘어가",
+      batch_submit_all: "모든 항목 제출",
+      batch_next: "다음",
+      answer_skipped: "[사용자가 건너뛰었습니다]",
+    },
+    custom_skills: "맞춤형 기술",
+    agent_flows: "에이전트 흐름",
+    no_tools_found: "일치하는 도구가 없습니다.",
+    loading_mcp_servers: "MCP 서버 로딩 중...",
+    app_integrations: "앱 통합",
+    sub_skills: "세부 기술",
+    memories: {
+      title: "추억",
+      empty:
+        "현재까지 기억은 없습니다. 하지만 챗봇과 상호 작용하면 점차 기억이 채워질 것입니다.",
+      empty_cta: "새로운 기억을 만들다",
+      tab_workspace: "업무 공간",
+      tab_global: "글로벌",
+      toggle: {
+        label: "개인 맞춤 설정 활성화",
+        description:
+          "조수에게 당신이나 이 업무 공간에 대한 정보를 기억하도록 하고, 대화에서 활용하도록 하세요.",
+      },
+      auto_extraction: {
+        label: "자동으로 기록된 기억",
+        description: "비서에게 자동으로 추억을 저장하도록 설정하세요.",
+      },
+      menu: {
+        edit: "편집",
+        delete: "삭제",
+        move_to_global: "글로벌로 확장",
+        move_to_workspace: "워크스페이스로 이동",
+      },
+      modal: {
+        create_title: "기억 만들기",
+        edit_title: "메모리 편집",
+        create_description:
+          '기억은 간결하고 명확한 문장으로 표현해야 합니다. 예: "사용자는 JavaScript보다 Python을 선호합니다"',
+        edit_description: "이 메모의 내용을 업데이트하세요.",
+        label: "기억",
+        placeholder:
+          "예: 사용자의 이름은 조, 사용자는 AnythingLLM에서 근무, 등",
+        create: "만들다",
+        save: "저장",
+        cancel: "취소",
+      },
     },
   },
   profile_settings: {
@@ -969,16 +1377,12 @@ const TRANSLATIONS = {
         private_description: "비공개 시스템 프롬프트는 본인만 볼 수 있습니다.",
         publish_button: "커뮤니티 허브에 게시",
         submitting: "게시 중...",
-        submit: "커뮤니티 허브에 게시",
         prompt_label: "프롬프트",
         prompt_description:
           "실제로 LLM을 안내하는 데 사용될 시스템 프롬프트를 입력하세요.",
         prompt_placeholder: "여기에 시스템 프롬프트를 입력하세요...",
       },
       agent_flow: {
-        public_description:
-          "공개 에이전트 플로우는 모든 사용자에게 표시됩니다.",
-        private_description: "비공개 에이전트 플로우는 본인만 볼 수 있습니다.",
         success_title: "성공!",
         success_description:
           "에이전트 플로우가 커뮤니티 허브에 성공적으로 게시되었습니다!",
@@ -996,7 +1400,6 @@ const TRANSLATIONS = {
           "태그를 추가하면 에이전트 플로우를 더 쉽게 검색할 수 있습니다. 여러 개의 태그를 추가할 수 있습니다. 최대 5개, 태그당 20자 이내로 입력해 주세요.",
         tags_placeholder: "태그 입력 후 Enter를 눌러 추가",
         visibility_label: "공개 범위",
-        publish_button: "커뮤니티 허브에 게시",
         submitting: "게시 중...",
         submit: "커뮤니티 허브에 게시",
         privacy_note:
@@ -1015,10 +1418,6 @@ const TRANSLATIONS = {
         description_label: "설명",
         description_description:
           "슬래시 커맨드의 목적이나 용도를 설명해 주세요.",
-        command_label: "커맨드",
-        command_description:
-          "사용자가 이 프리셋을 실행할 때 입력할 슬래시 커맨드입니다.",
-        command_placeholder: "my-command",
         tags_label: "태그",
         tags_description:
           "태그를 추가하면 슬래시 커맨드를 더 쉽게 검색할 수 있습니다. 여러 개의 태그를 추가할 수 있습니다. 최대 5개, 태그당 20자 이내로 입력해 주세요.",
@@ -1070,6 +1469,400 @@ const TRANSLATIONS = {
     notAssigned:
       "현재 워크스페이스에 할당되지 않았습니다.\n워크스페이스에 대한 접근을 요청하려면 관리자에게 문의하세요.",
     goToWorkspace: '워크스페이스로 이동 "{{workspace}}"',
+  },
+  telegram: {
+    title: "텔레그램 봇",
+    description:
+      "AnyLLM 인스턴스를 Telegram과 연결하여, 어떤 기기에서든 워크스페이스와 채팅할 수 있도록 합니다.",
+    setup: {
+      step1: {
+        title: "1단계: 텔레그램 봇을 만드세요",
+        description:
+          "텔레그램에서 @BotFather를 열고, <code>/newbot</code>를 <code>@BotFather</code>에게 보내고, 안내에 따라 진행하여 API 토큰을 복사합니다.",
+        "open-botfather": "BotFather 시작",
+        "instruction-1": "1. 링크를 열거나 QR 코드를 스캔",
+        "instruction-2":
+          "2. <code>/newbot</code>를 <code>@BotFather</code>에게 전송",
+        "instruction-3": "3. 봇의 이름과 사용자 이름을 선택하세요.",
+        "instruction-4": "4. 받은 API 토큰을 복사합니다.",
+      },
+      step2: {
+        title: "2단계: 봇을 연결합니다.",
+        description:
+          "@BotFather로부터 받은 API 토큰을 복사하여, 봇이 채팅할 기본 워크스페이스를 선택하세요.",
+        "bot-token": "봇 토큰",
+        connecting: "연결 중...",
+        "connect-bot": "연결 봇",
+      },
+      security: {
+        title: "권장 보안 설정",
+        description:
+          "추가적인 보안을 위해, @BotFather에서 다음 설정을 구성해 주세요.",
+        "disable-groups": "— 그룹에 봇 추가 방지",
+        "disable-inline": "— 인라인 검색에서 봇 사용을 방지",
+        "obscure-username":
+          "자명한 봇 사용자 이름을 피하고, 발견 가능성을 줄이기 위해",
+      },
+      "toast-enter-token": "봇 토큰을 입력해 주세요.",
+      "toast-connect-failed": "봇 연결에 실패했습니다.",
+    },
+    connected: {
+      status: "연결된",
+      "status-disconnected":
+        "연결되지 않음 – 토큰이 만료되었거나 유효하지 않을 수 있습니다",
+      "placeholder-token": "새로운 봇 토큰을 붙여넣으세요...",
+      reconnect: "재 연결",
+      workspace: "업무 공간",
+      "bot-link": "봇 링크",
+      "voice-response": "음성 응답",
+      disconnecting: "연결 해제 중...",
+      disconnect: "연결 해제",
+      "voice-text-only": "텍스트만",
+      "voice-mirror": "(사용자가 음성으로 응답하면, 음성으로 답변)",
+      "voice-always": "항상 음성 메시지 (답변과 함께 오디오 전송)",
+      "toast-disconnect-failed": "봇과의 연결을 해제하는 데 실패했습니다.",
+      "toast-reconnect-failed": "봇과의 연결에 실패했습니다.",
+      "toast-voice-failed": "음성 모드 업데이트에 실패했습니다.",
+      "toast-approve-failed": "사용자 승인에 실패했습니다.",
+      "toast-deny-failed": "사용자에게 거부 권한을 부여하지 못함.",
+      "toast-revoke-failed": "사용자 계정 삭제에 실패했습니다.",
+    },
+    users: {
+      "pending-description":
+        "승인 대기 중인 사용자. 여기 표시된 매칭 코드를 자신의 Telegram 채팅에서 표시된 코드로 일치시켜 주세요.",
+      unknown: "알 수 없음",
+    },
+  },
+  scheduledJobs: {
+    title: "예정된 작업",
+    enableNotifications: "채용 결과에 대한 브라우저 알림 활성화",
+    description:
+      "정기적으로 실행되는 AI 작업을 생성하고, 일정을 설정합니다. 각 작업은 선택적으로 도구를 사용하여 프롬프트를 실행하고, 결과를 저장하여 검토합니다.",
+    newJob: "새로운 직업",
+    loading: "로딩 중...",
+    emptyTitle: "현재 예약된 작업은 없습니다.",
+    emptySubtitle: "시작하기 위해 하나를 만들어 보세요.",
+    table: {
+      name: "이름",
+      schedule: "일정",
+      status: "상태",
+      lastRun: "마지막 기록",
+      nextRun: "다음 경주",
+      actions: "행동",
+    },
+    confirmDelete: "정말로 이 예약된 작업을 삭제하시겠습니까?",
+    toast: {
+      deleted: "직책 삭제",
+      triggered: "직업이 성공적으로 시작되었습니다.",
+      triggerFailed: "작업 실행에 실패",
+      triggerSkipped: "이 프로젝트는 이미 진행 중입니다.",
+      killed: "직업이 성공적으로 종료되었습니다.",
+      killFailed: "일자리를 유지하지 못함",
+    },
+    row: {
+      neverRun: "절대 질주하지 마세요",
+      viewRuns: "실행 횟수",
+      runNow: "지금 실행하세요",
+      enable: "활성화",
+      disable: "비활성화",
+      edit: "편집",
+      delete: "삭제",
+    },
+    modal: {
+      titleEdit: "예정된 작업 수정",
+      titleNew: "새로 예약된 작업",
+      nameLabel: "이름",
+      namePlaceholder: "예: 매일 뉴스 요약",
+      promptLabel: "요청",
+      promptPlaceholder: "각 실행 시 실행 지시",
+      scheduleLabel: "일정",
+      modeBuilder: "건축업자",
+      modeCustom: "맞춤형",
+      cronPlaceholder: "Cron 표현 (예: 0 9 * * *)",
+      currentSchedule: "현재 일정:",
+      toolsLabel: "(선택 사항) 도구",
+      toolsDescription:
+        "이 작업에서 사용할 수 있는 에이전트 도구를 선택합니다. 선택 사항이 없으면 작업은 어떤 도구 없이 실행됩니다.",
+      toolsSearch: "검색",
+      toolsNoResults: "어떤 도구도 해당되지 않습니다",
+      required: "필수",
+      requiredFieldsBanner:
+        "직업을 생성하려면 모든 필수 항목을 정확하게 작성해 주세요.",
+      cancel: "취소",
+      saving: "저축 중...",
+      updateJob: "업데이트",
+      createJob: "일 만들기",
+      jobUpdated: "직책 변경",
+      jobCreated: "새로운 직책 생성",
+    },
+    builder: {
+      fallbackWarning:
+        '이 표현은 시각적으로 수정할 수 없습니다. 원본을 유지하려면 "사용자 지정" 모드로 변경하거나, 아래의 내용을 변경하여 덮어쓰십시오.',
+      run: "달리기",
+      frequency: {
+        minute: "매 분마다",
+        hour: "시간당",
+        day: "매일",
+        week: "매주",
+        month: "매월",
+      },
+      every: "모든",
+      minuteOne: "1분",
+      minuteOther: "{{count}} 분",
+      atMinute: "분",
+      pastEveryHour: "과거, 매 시간",
+      at: "~에서",
+      on: "~에 대해",
+      onDay: "특정 날",
+      ofEveryMonth: "매달",
+      weekdays: {
+        sun: "태양",
+        mon: "월요일",
+        tue: "화요일",
+        wed: "수요일",
+        thu: "목요일",
+        fri: "금요일",
+        sat: "토",
+      },
+    },
+    runHistory: {
+      back: "이전으로",
+      title: "실행 기록: {{name}}",
+      schedule: "일정:",
+      emptyTitle: "이 업무에 아직 성과가 없습니다.",
+      emptySubtitle: "현재 작업을 실행하고 결과를 확인하세요.",
+      runNow: "지금 실행",
+      table: {
+        status: "상태",
+        started: "시작",
+        duration: "기간",
+        error: "오류",
+      },
+      stopJob: "직업 중단",
+    },
+    runDetail: {
+      loading: "로딩 중: 실행 세부 정보...",
+      notFound: "실행 명령을 찾을 수 없습니다.",
+      back: "뒤",
+      unknownJob: "알 수 없는 직업",
+      runHeading: "{{name}} — 실행: #{{id}}",
+      duration: "기간: {{value}}",
+      creating: "만들기...",
+      threadFailed: "스레드를 생성하는 데 실패했습니다.",
+      sections: {
+        prompt: "요청",
+        error: "오류",
+        thinking: "생각 ({{count}})",
+        toolCalls: "도구 호출 ({{count}})",
+        files: "파일 ({{count}})",
+        response: "응답",
+        metrics: "지표",
+      },
+      metrics: {
+        promptTokens: "프롬프트 토큰:",
+        completionTokens: "완료 토큰:",
+      },
+      stopJob: "직업 중단",
+      killing: "멈추다...",
+      continueInThread: "채팅 계속",
+    },
+    toolCall: {
+      arguments: "논거",
+      showResult: "결과 표시",
+      hideResult: "결과 숨기기",
+    },
+    file: {
+      unknown: "알 수 없는 파일",
+      download: "다운로드",
+      downloadFailed: "파일 다운로드 실패",
+      types: {
+        powerpoint: "파워포인트",
+        pdf: "PDF 문서",
+        word: "워드 문서",
+        spreadsheet: "스프레드시트",
+        generic: "파일",
+      },
+    },
+    status: {
+      completed: "완료",
+      failed: "실패",
+      timed_out: "시간 초과",
+      running: "달리기",
+      queued: "대기 중",
+    },
+  },
+  "model-router": {
+    title: "모델 라우터",
+    description:
+      "모델 라우터는 특정 조건에 따라 채팅 메시지를 자동으로 다른 LLM 제공업체 및 모델로 전달하는 규칙을 정의할 수 있도록 합니다.",
+    table: {
+      name: "이름",
+      fallback: "대체",
+      rules: "규칙",
+      workspaces: "업무 공간",
+    },
+    "no-routers": "현재 모델형 라우터는 없습니다.",
+    "empty-description":
+      "아직 라우터 모델은 설정되지 않았습니다. 시작하려면 하나를 설정하십시오.",
+    "new-router-button": "새로운 라우터",
+    "delete-confirm":
+      '라우터 "{{name}}"을 삭제하시겠습니까?\n이 작업은 모든 규칙을 삭제하고 해당 라우터를 사용하는 모든 워크스페이스를 분리합니다.\n\n이 작업은 되돌릴 수 없습니다.',
+    "toast-deleted": "라우터 삭제",
+    "toast-delete-failed": "라우터 삭제에 실패했습니다: {{error}}",
+    "new-router": {
+      title: "새로운 모델 라우터 생성",
+      name: "이름",
+      "name-placeholder": "예: 비용 최적화",
+      description: "설명",
+      "description-placeholder": "선택 사항 설명",
+      "fallback-label": "주요 공급업체 및 모델",
+      "fallback-description":
+        "다음과 같은 경우에 사용됩니다. 특정 경로 규칙과 일치하는 규칙이 없을 때, LLM(대규모 언어 모델)에 의해 분류된 규칙을 평가하는 데에도 사용됩니다.",
+      "cooldown-label": "캐시 쿨다운 (초)",
+      "cooldown-help":
+        "라우팅 결정이 규칙 재평가 전에 얼마나 오래 캐싱되는지 설정합니다. 0으로 설정하면 캐싱을 비활성화합니다.",
+      "name-required": "이름이 필요합니다.",
+      "fallback-required": "주요 공급업체 및 모델 정보가 필요합니다.",
+      cancel: "취소",
+      create: "라우터 생성",
+    },
+    "edit-router": {
+      "back-to-routers": "모델 라우터로 돌아가기",
+      title: "라우터 편집: {{name}}",
+      save: "변경 사항 저장",
+      "toast-update-failed": "라우터 업데이트에 실패했습니다.",
+    },
+    rules: {
+      title: "라우팅 규칙",
+      "title-with-name": "라우터 규칙: {{name}}",
+      description:
+        "특정 제공업체 및 모델로 메시지가 전송되는 시기와 방법을 결정하는 규칙을 정의합니다.",
+      "add-rule": "규칙 추가",
+      "delete-confirm": '규칙 "{{title}}" 삭제하시겠습니까?',
+      "toast-delete-failed": "규칙 삭제에 실패했습니다.",
+      "toast-reorder-failed": "재정렬 규칙 적용 실패",
+      "no-rules": "규정이 아직 정해지지 않았습니다.",
+      "empty-description":
+        "특정 제공업체 및 모델로 채팅 메시지를 라우팅하는 규칙을 추가합니다.",
+      "new-rule-button": "새로운 규칙",
+      "calculated-section-label": "계산된 규칙 – 우선 순위에 따라 평가",
+      "llm-section-label":
+        "LLM 규칙 — 계산된 규칙이 일치하는 경우 일괄적으로 평가",
+      "llm-rule-body":
+        '다음 단계는 <desc>"{{description}}"</desc>을 매칭한 후, <route>{{route}}</route>로 경로를 지정하는 것입니다.',
+      "calculated-no-conditions": "특정 조건 없음 – <route> 경로로 이동",
+      "calculated-single-condition":
+        '만약 <prop> {{property}} </prop> {{comparator}} <val> "{{value}}" </val> 이면, <route> {{route}} </route>로 이동합니다.',
+      "calculated-multi-condition":
+        "만약 {{quantifier}} (태그 0)가 {{conditions}} (태그 1)인 경우, <route> (태그 2)로 이동합니다.",
+      "comparator-contains": "포함",
+      "comparator-matches": "경쟁",
+      "comparator-between": "사이",
+      "badge-llm": "대규모 언어 모델 (LLM)",
+      "badge-calculated": "계산된",
+      "aria-drag-to-reorder": "드래그하여 순서를 변경",
+      "aria-edit-rule": "편집 규칙",
+      "aria-delete-rule": "규칙 삭제",
+      "quantifier-any": "어떤",
+      "quantifier-all": "모든",
+    },
+    "rule-form": {
+      "title-label": "제목",
+      "rule-type": "규칙 유형",
+      "property-label": "부동산",
+      "property-select": "선택",
+      "comparator-label": "비교",
+      "comparator-select": "선택",
+      "value-label": "가치",
+      "add-condition": "조건 추가",
+      "remove-condition": "조건 제거",
+      "conditions-incomplete":
+        "조건 {{index}}이 불완전합니다. 속성, 비교 연산자, 값을 채워주세요.",
+      "match-description-label": "경기 설명",
+      "match-description-placeholder":
+        "예를 들어, 사용자가 법률, 계약, 또는 규정 준수에 대해 질문하는 경우",
+      "match-description-help":
+        "이 규칙이 적용되어야 하는 상황을 설명해주세요. LLM은 이를 평가하여 실제로 적용할지 여부를 결정합니다.",
+      "route-to-label": "제공업체 및 모델 경로",
+      "route-to-description":
+        "이 규칙과 일치하는 경우, 이 제공업체/모델을 사용하십시오.",
+      cancel: "취소",
+      saving: "저축 중...",
+      "update-rule": "업데이트 규칙",
+      "create-rule": "규칙 생성",
+      "title-required": "제목이 필요합니다",
+      "toast-save-failed": "규칙 저장에 실패했습니다.",
+      "type-calculated-label": "계산된",
+      "type-calculated-description":
+        "콘텐츠, 토큰 수, 또는 시간 등의 메시지 속성을 기준으로 매칭합니다.",
+      "type-llm-label": "LLM 분류",
+      "type-llm-description":
+        "제공해 주신 설명에 따라 LLM을 사용하여 메시지를 분류합니다.",
+      "prop-prompt-content": "요청 내용",
+      "prop-token-count": "대화 토큰 수",
+      "prop-message-count": "대화 메시지 수",
+      "prop-current-hour": "현재 시간 (0-23)",
+      "prop-has-image": "이미지 첨부 파일이 있는지",
+      "cmp-contains": "포함",
+      "cmp-matches-regex": "정규 표현 일치",
+      "cmp-equals": "동등한",
+      "cmp-not-equals": "같지 않음",
+      "cmp-greater-than": "보다 큼",
+      "cmp-greater-than-or-equal": "보다 크거나 같음",
+      "cmp-less-than": "보다 적은",
+      "cmp-less-than-or-equal": "보다 작거나 같음",
+      "cmp-between": "(포함)",
+      "placeholder-between-hour": "예: 오전 9시부터 오후 5시 (총 8시간)",
+      "placeholder-between-numeric": "예: 10, 50",
+      "placeholder-hour": "예: 18 (0-23)",
+      "placeholder-message-count": "예: 10",
+      "placeholder-numeric": "예: 4000",
+      "placeholder-contains": "예: 코드, 파이썬, 러스트",
+      "placeholder-matches": "예: /\\bpython\\b/i",
+      "placeholder-default": "예: 코드",
+      "help-contains":
+        "쉼표로 구분된 목록 – 프롬프트에 지정된 값 중 하나라도 포함되면 일치합니다 (대소문자를 구분하지 않음).",
+      "help-matches":
+        "정규 표현 패턴. 대소문자를 구분하는 옵션(`/pattern/`)을 사용하거나 (기본값은 대소문자를 구분하지 않음) 구분하지 않도록 설정할 수 있습니다.",
+      "bool-true": "진실",
+      "bool-false": "거짓",
+    },
+    "provider-picker": {
+      "select-provider": "제공업체 선택",
+      "setup-required": "(설치가 필요)",
+      "loading-models": "모델 로딩 중...",
+      "select-model": "모델 선택",
+      "enter-model": "모델 이름을 입력하세요",
+      "select-provider-first": "먼저 제공 업체를 선택하세요.",
+      "configure-to-continue": "{{name}} 설정을 통해 계속 진행",
+      "configure-provider": "{{name}} 설정",
+      "setup-credentials":
+        "{{name}}를 라우팅 대상으로 사용하기 위한 필요한 자격 증명을 입력하세요.",
+      cancel: "취소",
+      "save-settings": "설정을 저장",
+      "toast-save-failed": "설정 저장 실패: {{error}}",
+    },
+    "router-selection": {
+      "loading-routers": "사용자 정의 라우터 로딩 중...",
+      "no-routers-prefix-settings": "아직 라우터 모델은 설정되지 않았습니다.",
+      "no-routers-prefix-workspace": "라우터 설정이 구성되지 않았습니다.",
+      "no-routers-link": "모델 라우터 설정에서 하나를 만듭니다.",
+      "model-router-label": "모델 라우터",
+      "select-router": "라우터를 선택하세요",
+      "select-description": "이 작업 공간에 사용할 라우터를 선택하세요.",
+      "no-routers-chat":
+        "라우터가 구성되지 않았습니다. 설정 > AI 제공업체 > 모델 라우터에서 새 라우터를 만드세요.",
+      "rule-count": "({{count}} 규칙)",
+    },
+    metrics: {
+      "model-router-default": "모델 라우터",
+    },
+    chat: {
+      "select-router-error": "라우터를 선택하세요",
+      "invalid-model": "유효하지 않은 모델 선택",
+      "routed-to": "<route> 정보가 {{model}}에 전달되었습니다.",
+      "routed-to-rule": "<route>에서 {{model}}를 통해 </route>로 연결",
+    },
   },
 };
 

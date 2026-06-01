@@ -67,6 +67,12 @@ export const LEMONADE_COMMON_URLS = [
   "http://127.0.0.1:8000/live",
   "http://host.docker.internal:8000/live",
   "http://172.17.0.1:8000/live",
+
+  // In Lemonade 10.1.0 the base port is 13305
+  "http://localhost:13305/live",
+  "http://127.0.0.1:13305/live",
+  "http://host.docker.internal:13305/live",
+  "http://172.17.0.1:13305/live",
 ];
 
 export function fullApiUrl() {

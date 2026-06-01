@@ -44,9 +44,7 @@ class LocalAiProvider extends InheritMultiple([Provider, UnTooled]) {
    */
   supportsNativeToolCalling() {
     if (this._supportsToolCalling !== null) return this._supportsToolCalling;
-    const supportsToolCalling =
-      process.env.PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING?.includes("localai");
-
+    const supportsToolCalling = this.supportsNativeToolCallingViaEnv("localai");
     if (supportsToolCalling)
       this.providerLog(
         "LocalAI supports native tool calling is ENABLED via ENV."
@@ -115,7 +113,8 @@ class LocalAiProvider extends InheritMultiple([Provider, UnTooled]) {
         this.model,
         messages,
         functions,
-        eventHandler
+        eventHandler,
+        { provider: this }
       );
     } catch (error) {
       console.error(error.message, error);
@@ -154,7 +153,8 @@ class LocalAiProvider extends InheritMultiple([Provider, UnTooled]) {
         this.model,
         messages,
         functions,
-        this.getCost.bind(this)
+        this.getCost.bind(this),
+        { provider: this }
       );
 
       if (result.retryWithError) {

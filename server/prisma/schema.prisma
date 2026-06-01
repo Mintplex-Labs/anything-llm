@@ -17,6 +17,7 @@ datasource db {
 
 model api_keys {
   id            Int      @id @default(autoincrement())
+  name          String?
   secret        String?  @unique
   createdBy     Int?
   createdAt     DateTime @default(now())
@@ -85,6 +86,7 @@ model users {
   prompt_history               prompt_history[]
   desktop_mobile_devices       desktop_mobile_devices[]
   workspace_parsed_files       workspace_parsed_files[]
+  memories                     memories[]
 }
 
 model recovery_codes {
@@ -116,14 +118,6 @@ model document_vectors {
   lastUpdatedAt DateTime @default(now())
 }
 
-model welcome_messages {
-  id         Int      @id @default(autoincrement())
-  user       String
-  response   String
-  orderIndex Int?
-  createdAt  DateTime @default(now())
-}
-
 model workspaces {
   id                           Int                            @id @default(autoincrement())
   name                         String
@@ -145,6 +139,7 @@ model workspaces {
   agentModel                   String?
   queryRefusalResponse         String?
   vectorSearchMode             String?                        @default("default")
+  router_id                    Int? // No relation to prevent whole table migration (SQLite limitation)
   workspace_users              workspace_users[]
   documents                    workspace_documents[]
   workspace_suggested_messages workspace_suggested_messages[]
@@ -153,6 +148,7 @@ model workspaces {
   workspace_agent_invocations  workspace_agent_invocations[]
   prompt_history               prompt_history[]
   workspace_parsed_files       workspace_parsed_files[]
+  memories                     memories[]
 }
 
 model workspace_threads {
@@ -194,8 +190,9 @@ model workspace_chats {
   api_session_id String? // String identifier for only the dev API to partition chats in any mode.
   createdAt      DateTime @default(now())
   lastUpdatedAt  DateTime @default(now())
-  feedbackScore  Boolean?
-  users          users?   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  feedbackScore   Boolean?
+  memoryProcessed Boolean? @map("memory_processed")
+  users           users?   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model workspace_agent_invocations {
@@ -392,4 +389,100 @@ model workspace_parsed_files {
 
   @@index([workspaceId])
   @@index([userId])
+}
+
+model external_communication_connectors {
+  id            Int      @id @default(autoincrement())
+  type          String   @unique
+  config        String   @default("{}")
+  active        Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  lastUpdatedAt DateTime @default(now())
+}
+
+model scheduled_jobs {
+  id        Int                  @id @default(autoincrement())
+  name      String
+  prompt    String
+  tools     String? // JSON array of tool identifiers (null = use all enabled agent skills)
+  schedule  String // Cron expression
+  enabled   Boolean              @default(true)
+  lastRunAt DateTime?
+  nextRunAt DateTime?
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @default(now())
+  runs      scheduled_job_runs[]
+}
+
+model scheduled_job_runs {
+  id          Int            @id @default(autoincrement())
+  jobId       Int
+  status      String         @default("queued") // queued | running | completed | failed | timed_out — model always sets explicitly
+  result      String? // JSON execution trace
+  error       String?
+  startedAt   DateTime       @default(now())
+  completedAt DateTime?
+  readAt      DateTime? // null = unread
+  job         scheduled_jobs @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId])
+}
+
+model memories {
+  id          Int       @id @default(autoincrement())
+  userId      Int?      @map("user_id")
+  workspaceId Int?      @map("workspace_id")
+  scope       String    @default("workspace")
+  content     String
+  lastUsedAt  DateTime? @map("last_used_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @default(now()) @map("updated_at")
+
+  user      users?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace workspaces? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([userId, workspaceId])
+  @@index([userId, scope])
+}
+
+model model_routers {
+  id                Int                  @id @default(autoincrement())
+  name              String               @unique
+  description       String?
+  fallback_provider String
+  fallback_model    String
+  cooldown_seconds  Int                  @default(30)
+  created_by        Int?
+  createdAt         DateTime             @default(now())
+  lastUpdatedAt     DateTime             @default(now())
+  rules             model_router_rules[]
+}
+
+model model_router_rules {
+  id               Int           @id @default(autoincrement())
+  router_id        Int
+  enabled          Boolean       @default(true)
+  priority         Int
+  type             String        @default("calculated")
+  title            String
+  description      String?
+  // For `calculated` rules: the boolean operator joining `conditions` — "AND"
+  // (all must match) or "OR" (any must match). Null for `llm` rules.
+  condition_logic  String?
+  // For `calculated` rules: JSON-stringified array of condition objects, each
+  // shaped as { property: string, comparator: string, value: string } where
+  // `property` ∈ VALID_PROPERTIES and `comparator` ∈ VALID_COMPARATORS (see
+  // server/models/modelRouterRule.js). `value` is always stored as a string;
+  // numeric comparators parse it at evaluation time. Null for `llm` rules.
+  conditions       String?
+  route_provider   String
+  route_model      String
+  created_by       Int?
+  createdAt        DateTime      @default(now())
+  lastUpdatedAt    DateTime      @default(now())
+  router           model_routers @relation(fields: [router_id], references: [id], onDelete: Cascade)
+
+  @@unique([router_id, title])
+  @@index([router_id])
+  @@index([router_id, enabled, priority])
 }

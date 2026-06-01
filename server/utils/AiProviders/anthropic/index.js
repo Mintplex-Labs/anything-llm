@@ -9,6 +9,7 @@ const { MODEL_MAP } = require("../modelMap");
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
+const { getAnythingLLMUserAgent } = require("../../../endpoints/utils");
 
 class AnthropicLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -20,6 +21,9 @@ class AnthropicLLM {
     const AnthropicAI = require("@anthropic-ai/sdk");
     const anthropic = new AnthropicAI({
       apiKey: process.env.ANTHROPIC_API_KEY,
+      defaultHeaders: {
+        "User-Agent": getAnythingLLMUserAgent(),
+      },
     });
     this.anthropic = anthropic;
     this.model =
@@ -32,11 +36,17 @@ class AnthropicLLM {
       user: this.promptWindowLimit() * 0.7,
     };
 
+    this.maxTokens = null;
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
     this.log(
       `Initialized with ${this.model}. Cache ${this.cacheControl ? `enabled (${this.cacheControl.ttl})` : "disabled"}`
     );
+
+    AnthropicLLM.fetchModelMaxTokens(this.model).then((maxTokens) => {
+      this.maxTokens = maxTokens;
+      this.log(`Model ${this.model} max tokens: ${this.maxTokens}`);
+    });
   }
 
   log(text, ...args) {
@@ -57,6 +67,35 @@ class AnthropicLLM {
 
   isValidChatCompletionModel(_modelName = "") {
     return true;
+  }
+
+  async assertModelMaxTokens() {
+    if (this.maxTokens) return this.maxTokens;
+    this.maxTokens = await AnthropicLLM.fetchModelMaxTokens(this.model);
+    return this.maxTokens;
+  }
+
+  /**
+   * Fetches the maximum number of tokens the model should generate in its response.
+   * This varies per model but will fallback to 4096 if the model is not found.
+   * @param {string} modelName - The name of the model to fetch the max tokens for
+   * @returns {Promise<number>} The maximum output tokens limit for API calls.
+   */
+  static async fetchModelMaxTokens(
+    modelName = process.env.ANTHROPIC_MODEL_PREF
+  ) {
+    try {
+      const AnthropicAI = require("@anthropic-ai/sdk");
+      /** @type {import("@anthropic-ai/sdk").Anthropic} */
+      const anthropic = new AnthropicAI({
+        apiKey: process.env.ANTHROPIC_API_KEY,
+      });
+      const model = await anthropic.models.retrieve(modelName);
+      return Number(model.max_tokens ?? 4096);
+    } catch (error) {
+      console.error(`Error fetching model max tokens for ${modelName}:`, error);
+      return 4096;
+    }
   }
 
   /**
@@ -148,12 +187,13 @@ class AnthropicLLM {
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
+    await this.assertModelMaxTokens();
     try {
       const systemContent = messages[0].content;
       const result = await LLMPerformanceMonitor.measureAsyncFunction(
         this.anthropic.messages.create({
           model: this.model,
-          max_tokens: 4096,
+          max_tokens: this.maxTokens,
           system: this.#buildSystemPrompt(systemContent),
           messages: messages.slice(1), // Pop off the system message
           temperature: Number(temperature ?? this.defaultTemp),
@@ -183,11 +223,12 @@ class AnthropicLLM {
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+    await this.assertModelMaxTokens();
     const systemContent = messages[0].content;
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.anthropic.messages.stream({
         model: this.model,
-        max_tokens: 4096,
+        max_tokens: this.maxTokens,
         system: this.#buildSystemPrompt(systemContent),
         messages: messages.slice(1), // Pop off the system message
         temperature: Number(temperature ?? this.defaultTemp),
