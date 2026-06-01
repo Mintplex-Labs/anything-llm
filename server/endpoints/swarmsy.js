@@ -9,9 +9,11 @@ const {
 const {
   ingestSwarmsyRequiredDocs,
 } = require("../utils/swarmsy/ingestRequiredDocs");
+const { detectLocalOllama } = require("../utils/swarmsy/localUserOllama");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const {
   flexUserRoleValid,
+  isSingleUserMode,
   ROLES,
 } = require("../utils/middleware/multiUserProtected");
 
@@ -184,6 +186,22 @@ async function swarmsyOnboardingIngestRequiredDocs(request, response) {
   }
 }
 
+async function swarmsyLocalUserOllamaStatus(_request, response) {
+  try {
+    return response.status(200).json(await detectLocalOllama());
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({
+      success: false,
+      mode: "local_user",
+      provider: "ollama",
+      status: "error",
+      models: [],
+      message: "Failed to detect local Ollama.",
+    });
+  }
+}
+
 function __resetSwarmsyHiveCreationLocksForTests() {
   swarmsyHiveCreationLocks.clear();
 }
@@ -208,10 +226,17 @@ function swarmsyEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.all])],
     swarmsyOnboardingIngestRequiredDocs
   );
+
+  app.get(
+    "/swarmsy/local-user/ollama/status",
+    [validatedRequest, isSingleUserMode],
+    swarmsyLocalUserOllamaStatus
+  );
 }
 
 module.exports = {
   __resetSwarmsyHiveCreationLocksForTests,
+  swarmsyLocalUserOllamaStatus,
   swarmsyEndpoints,
   swarmsyOnboardingCreateHive,
   swarmsyOnboardingIngestRequiredDocs,

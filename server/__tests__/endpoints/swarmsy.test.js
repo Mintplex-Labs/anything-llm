@@ -14,6 +14,9 @@ jest.mock("../../utils/swarmsy/applyWorkspacePreset", () => ({
 jest.mock("../../utils/swarmsy/ingestRequiredDocs", () => ({
   ingestSwarmsyRequiredDocs: jest.fn(),
 }));
+jest.mock("../../utils/swarmsy/localUserOllama", () => ({
+  detectLocalOllama: jest.fn(),
+}));
 
 jest.mock("../../utils/middleware/validatedRequest", () => ({
   validatedRequest: jest.fn(),
@@ -24,6 +27,7 @@ jest.mock("../../utils/middleware/multiUserProtected", () => ({
     all: "<all>",
   },
   flexUserRoleValid: jest.fn(() => mockRoleMiddleware),
+  isSingleUserMode: jest.fn(),
 }));
 
 const { userFromSession } = require("../../utils/http");
@@ -38,14 +42,19 @@ const {
   ingestSwarmsyRequiredDocs,
 } = require("../../utils/swarmsy/ingestRequiredDocs");
 const {
+  detectLocalOllama,
+} = require("../../utils/swarmsy/localUserOllama");
+const {
   validatedRequest,
 } = require("../../utils/middleware/validatedRequest");
 const {
   ROLES,
   flexUserRoleValid,
+  isSingleUserMode,
 } = require("../../utils/middleware/multiUserProtected");
 const {
   swarmsyEndpoints,
+  swarmsyLocalUserOllamaStatus,
   swarmsyOnboardingCreateHive,
   swarmsyOnboardingIngestRequiredDocs,
   swarmsyOnboardingStatus,
@@ -91,6 +100,11 @@ describe("swarmsy endpoints", () => {
       [validatedRequest, mockRoleMiddleware],
       swarmsyOnboardingIngestRequiredDocs
     );
+    expect(app.get).toHaveBeenCalledWith(
+      "/swarmsy/local-user/ollama/status",
+      [validatedRequest, isSingleUserMode],
+      swarmsyLocalUserOllamaStatus
+    );
   });
 
   it("keeps create-hive protected by existing auth middleware", () => {
@@ -132,6 +146,27 @@ describe("swarmsy endpoints", () => {
     expect(getSwarmsyOnboardingStatus).toHaveBeenCalledWith({ user });
     expect(response.status).toHaveBeenCalledWith(200);
     expect(response.json).toHaveBeenCalledWith(status);
+  });
+
+  it("returns local-user Ollama detection status from the dedicated single-user route", async () => {
+    const response = responseMock();
+    const detectionStatus = {
+      success: true,
+      mode: "local_user",
+      provider: "ollama",
+      status: "reachable",
+      reachable: true,
+      models: [{ id: "llama3.1:8b", name: "llama3.1:8b" }],
+      message: "Local Ollama is reachable and installed models were detected.",
+    };
+
+    detectLocalOllama.mockResolvedValue(detectionStatus);
+
+    await swarmsyLocalUserOllamaStatus({}, response);
+
+    expect(detectLocalOllama).toHaveBeenCalledTimes(1);
+    expect(response.status).toHaveBeenCalledWith(200);
+    expect(response.json).toHaveBeenCalledWith(detectionStatus);
   });
 
   it("returns existing SWARMSY HIVE without creating a duplicate", async () => {

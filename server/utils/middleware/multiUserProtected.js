@@ -14,7 +14,8 @@ const DEFAULT_ROLES = [ROLES.admin, ROLES.admin];
  * @returns {function}
  */
 async function isSingleUserMode(_request, response, next) {
-  const multiUserMode = await SystemSettings.isMultiUserMode();
+  const multiUserMode =
+    response.locals?.multiUserMode ?? (await SystemSettings.isMultiUserMode());
   if (multiUserMode) return response.sendStatus(401).end();
   next();
   return;
