@@ -2,7 +2,7 @@ const fs = require("fs/promises");
 const path = require("path");
 const { v4 } = require("uuid");
 const { CollectorApi } = require("../collectorApi");
-const { hotdirPath } = require("../files");
+const { hotdirPath, isWithin } = require("../files");
 
 /**
  * Convert an audio buffer to a 16kHz mono WAV buffer via the collector's
@@ -13,9 +13,11 @@ const { hotdirPath } = require("../files");
  * @returns {Promise<Buffer>} The converted WAV buffer.
  */
 async function convertAudioBufferToWav(audioBuffer, extension) {
+  let wavPath = null;
   const sourceFilename = `stt-${v4()}${extension}`;
   const sourcePath = path.resolve(hotdirPath, sourceFilename);
-  let wavPath = null;
+  if (!isWithin(hotdirPath, sourcePath))
+    throw new Error("Source path is outside the hotdir.");
 
   try {
     await fs.writeFile(sourcePath, audioBuffer);
