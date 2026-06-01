@@ -1243,6 +1243,10 @@ const TRANSLATIONS = {
         cancel: "إلغاء",
       },
     },
+    stt_unsupported: "لا يتم دعم الوصول إلى الميكروفون في هذا المتصفح.",
+    stt_mic_denied:
+      "لم يتمكن من الوصول إلى الميكروفون. يرجى منح الإذن ومحاولة مرة أخرى.",
+    stt_transcription_failed: "فشلت عملية النسخ: {{error}}",
   },
   profile_settings: {
     edit_account: "تحرير الحساب",
