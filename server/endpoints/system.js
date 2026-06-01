@@ -54,6 +54,7 @@ const {
 const { SlashCommandPresets } = require("../models/slashCommandsPresets");
 const { EncryptionManager } = require("../utils/EncryptionManager");
 const { BrowserExtensionApiKey } = require("../models/browserExtensionApiKey");
+const { MobileDevice } = require("../models/mobileDevice");
 const {
   chatHistoryViewable,
 } = require("../utils/middleware/chatHistoryViewable");
@@ -65,6 +66,7 @@ const { TemporaryAuthToken } = require("../models/temporaryAuthToken");
 const { SystemPromptVariables } = require("../models/systemPromptVariables");
 const { VALID_COMMANDS } = require("../utils/chats");
 const { AgentSkillWhitelist } = require("../models/agentSkillWhitelist");
+const { Memory } = require("../models/memory");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -624,6 +626,10 @@ function systemEndpoints(app) {
           multi_user_mode: true,
         });
         await BrowserExtensionApiKey.migrateApiKeysToMultiUser(user.id);
+        await Memory.migrateToMultiUser(user.id);
+        await WorkspaceChats.migrateToMultiUser(user.id);
+        await MobileDevice.migrateDevicesToMultiUser(user.id);
+        await SlashCommandPresets.migrateToMultiUser(user.id);
         await AgentSkillWhitelist.clearSingleUserWhitelist();
         await updateENV(
           {
@@ -1494,7 +1500,7 @@ function systemEndpoints(app) {
         console.error("STT transcription error:", error);
         return response.status(500).json({
           success: false,
-          error: `Transcription failed: ${error.message}`,
+          error: error.message || "Transcription failed",
         });
       }
     }

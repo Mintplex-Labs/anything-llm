@@ -57,10 +57,14 @@ const SystemSettings = {
     "disabled_outlook_skills",
     "outlook_agent_config",
     "imported_agent_skills",
+    "agent_clarifying_questions_enabled",
+    "agent_clarifying_questions_max_per_turn",
     "custom_app_name",
     "feature_flags",
     "meta_page_title",
     "meta_page_favicon",
+    "memory_enabled",
+    "memory_auto_extraction",
   ],
   supportedFields: [
     "logo_filename",
@@ -82,6 +86,8 @@ const SystemSettings = {
     "disabled_outlook_skills",
     "outlook_agent_config",
     "agent_sql_connections",
+    "agent_clarifying_questions_enabled",
+    "agent_clarifying_questions_max_per_turn",
     "custom_app_name",
     "default_system_prompt",
 
@@ -94,6 +100,10 @@ const SystemSettings = {
 
     // Hub settings
     "hub_api_key",
+
+    // Memory/Personalization
+    "memory_enabled",
+    "memory_auto_extraction",
   ],
   validations: {
     footer_data: (updates) => {
@@ -173,6 +183,45 @@ const SystemSettings = {
       } catch {
         console.error(`Could not validate agent skills.`);
         return JSON.stringify([]);
+      }
+    },
+    memory_enabled: async (update) => {
+      try {
+        const enabled = String(update) === "true";
+        const {
+          BackgroundService,
+        } = require("../utils/BackgroundWorkers/index.js");
+        const bgService = new BackgroundService();
+        const autoSetting = await SystemSettings.get({
+          label: "memory_auto_extraction",
+        });
+        const autoOn = !autoSetting || autoSetting.value === "true";
+        await bgService.syncMemoryJob(enabled && autoOn);
+        return String(enabled);
+      } catch (e) {
+        console.error(
+          `Failed to run validation function on memory_enabled`,
+          e.message
+        );
+        return String(update);
+      }
+    },
+    memory_auto_extraction: async (update) => {
+      try {
+        const enabled = String(update) === "true";
+        const {
+          BackgroundService,
+        } = require("../utils/BackgroundWorkers/index.js");
+        const bgService = new BackgroundService();
+        const memoriesOn = await SystemSettings.memoriesEnabled();
+        await bgService.syncMemoryJob(memoriesOn && enabled);
+        return String(enabled);
+      } catch (e) {
+        console.error(
+          `Failed to run validation function on memory_auto_extraction`,
+          e.message
+        );
+        return String(update);
       }
     },
     disabled_agent_skills: (updates) => {
@@ -350,6 +399,15 @@ const SystemSettings = {
         return JSON.stringify(existingConnections ?? []);
       }
     },
+    agent_clarifying_questions_enabled: (update) => {
+      if (typeof update === "boolean") return update ? "true" : "false";
+      return String(update) === "true" ? "true" : "false";
+    },
+    agent_clarifying_questions_max_per_turn: (update) => {
+      const n = Number(update);
+      if (!Number.isFinite(n) || n < 1) return 3;
+      return Math.min(Math.floor(n), 10);
+    },
     experimental_live_file_sync: (update) => {
       if (typeof update === "boolean")
         return update === true ? "enabled" : "disabled";
@@ -407,6 +465,8 @@ const SystemSettings = {
       JWTSecret: !!process.env.JWT_SECRET,
       StorageDir: process.env.STORAGE_DIR,
       MultiUserMode: await this.isMultiUserMode(),
+      MemoryEnabled: await this.memoriesEnabled(),
+      MemoryAutoExtraction: await this.memoryAutoExtractionSetting(),
       DisableTelemetry: process.env.DISABLE_TELEMETRY || "false",
 
       // --------------------------------------------------------
@@ -443,6 +503,7 @@ const SystemSettings = {
       // --------------------------------------------------------
       LLMProvider: llmProvider,
       LLMModel: getBaseLLMProviderModel({ provider: llmProvider }) || null,
+      ModelRouterId: process.env.MODEL_ROUTER_ID || null,
       ...this.llmPreferenceKeys(),
 
       // --------------------------------------------------------
@@ -484,6 +545,10 @@ const SystemSettings = {
       STTLemonadeBasePath: process.env.STT_LEMONADE_BASE_PATH,
       STTLemonadeModelPref: process.env.STT_LEMONADE_MODEL_PREF,
 
+      // STT Deepgram
+      STTDeepgramApiKey: !!process.env.STT_DEEPGRAM_API_KEY,
+      STTDeepgramModel: process.env.STT_DEEPGRAM_MODEL,
+
       // --------------------------------------------------------
       // Agent Settings & Configs
       // --------------------------------------------------------
@@ -506,6 +571,8 @@ const SystemSettings = {
       // Disable View Chat History for the whole instance.
       DisableViewChatHistory:
         "DISABLE_VIEW_CHAT_HISTORY" in process.env || false,
+      WorkspaceDeletionProtection:
+        "WORKSPACE_DELETION_PROTECTION" in process.env || false,
 
       // --------------------------------------------------------
       // Simple SSO Settings
@@ -520,6 +587,17 @@ const SystemSettings = {
       AgentSkillMaxToolCalls: AIbitat.defaultMaxToolCalls(),
       AgentSkillRerankerEnabled: ToolReranker.isEnabled(),
       AgentSkillRerankerTopN: ToolReranker.getTopN(),
+      AgentClarifyingQuestionsEnabled:
+        (await this.getValueOrFallback(
+          { label: "agent_clarifying_questions_enabled" },
+          "false"
+        )) === "true",
+      AgentClarifyingQuestionsMaxPerTurn: Number(
+        (await this.getValueOrFallback(
+          { label: "agent_clarifying_questions_max_per_turn" },
+          "3"
+        )) || 3
+      ),
     };
   },
 
@@ -630,6 +708,37 @@ const SystemSettings = {
     } catch (error) {
       console.error(error.message);
       return false;
+    }
+  },
+
+  memoriesEnabled: async function () {
+    try {
+      const setting = await this.get({ label: "memory_enabled" });
+      return setting?.value === "true";
+    } catch (error) {
+      console.error(error.message);
+      return false;
+    }
+  },
+
+  autoMemoriesEnabled: async function () {
+    try {
+      if (!(await this.memoriesEnabled())) return false;
+      const setting = await this.get({ label: "memory_auto_extraction" });
+      return !setting || setting.value === "true";
+    } catch (error) {
+      console.error(error.message);
+      return false;
+    }
+  },
+
+  memoryAutoExtractionSetting: async function () {
+    try {
+      const setting = await this.get({ label: "memory_auto_extraction" });
+      return !setting || setting.value === "true";
+    } catch (error) {
+      console.error(error.message);
+      return true;
     }
   },
 
@@ -914,6 +1023,14 @@ const SystemSettings = {
       LemonadeLLMModelPref: process.env.LEMONADE_LLM_MODEL_PREF,
       LemonadeLLMModelTokenLimit:
         process.env.LEMONADE_LLM_MODEL_TOKEN_LIMIT || 8192,
+
+      // Minimax Keys
+      MinimaxApiKey: !!process.env.MINIMAX_API_KEY,
+      MinimaxModelPref: process.env.MINIMAX_MODEL_PREF,
+
+      // Cerebras Keys
+      CerebrasApiKey: !!process.env.CEREBRAS_API_KEY,
+      CerebrasModelPref: process.env.CEREBRAS_MODEL_PREF,
     };
   },
 

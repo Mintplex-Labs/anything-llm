@@ -34,6 +34,7 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
 
   return new Promise(async (resolve) => {
     let fullText = "";
+    let reasoningText = "";
 
     // Establish listener to early-abort a streaming response
     // in case things go sideways or the user does not like the response.
@@ -51,6 +52,11 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
         const message = chunk?.choices?.[0];
         const token = message?.delta?.content;
 
+        // Reasoning token can be in different properties depending on the provider.
+        // eg: Cerebras uses `reasoning` instead of `reasoning_content` like OpenAI.
+        const reasoningToken =
+          message?.delta?.reasoning_content || message?.delta?.reasoning;
+
         // If we see usage metrics in the chunk, we can use them directly
         // instead of estimating them, but we only want to assign values if
         // the response object is the exact same key:value pair we expect.
@@ -67,6 +73,55 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
             hasUsageMetrics = true; // to stop estimating counter
             usage.completion_tokens = Number(chunk.usage.completion_tokens);
           }
+
+          // Some providers, like Cerebras, return the completion time in the usage metrics.
+          // This is used to report the real-time duration of the completion.
+          if (chunk.usage.hasOwnProperty("time_info")) {
+            usage.duration = chunk.usage.time_info.completion_time;
+          }
+        }
+
+        // Reasoning models will always return the reasoning text before the token text.
+        if (reasoningToken) {
+          // If the reasoning text is empty (''), we need to initialize it
+          // and send the first chunk of reasoning text.
+          if (reasoningText.length === 0) {
+            writeResponseChunk(response, {
+              uuid,
+              sources: [],
+              type: "textResponseChunk",
+              textResponse: `<think>${reasoningToken}`,
+              close: false,
+              error: false,
+            });
+            reasoningText += `<think>${reasoningToken}`;
+            continue;
+          } else {
+            writeResponseChunk(response, {
+              uuid,
+              sources: [],
+              type: "textResponseChunk",
+              textResponse: reasoningToken,
+              close: false,
+              error: false,
+            });
+            reasoningText += reasoningToken;
+          }
+        }
+
+        // If the reasoning text is not empty, but the reasoning token is empty
+        // and the token text is not empty we need to close the reasoning text and begin sending the token text.
+        if (!!reasoningText && !reasoningToken && token) {
+          writeResponseChunk(response, {
+            uuid,
+            sources: [],
+            type: "textResponseChunk",
+            textResponse: `</think>`,
+            close: false,
+            error: false,
+          });
+          fullText += `${reasoningText}</think>`;
+          reasoningText = "";
         }
 
         if (token) {
@@ -158,11 +213,47 @@ function convertToChatHistory(history = []) {
         feedbackScore,
         metrics: data?.metrics || {},
         ...(data?.outputs?.length > 0 ? { outputs: data.outputs } : {}),
+        ...(data?.clarifyingQuestions?.length > 0
+          ? { clarifyingQuestions: data.clarifyingQuestions }
+          : {}),
       },
     ]);
   }
 
   return formattedHistory.flat();
+}
+
+/**
+ * Render a single saved survey as a tagged Q/A transcript for LLM history.
+ * Mirrors the answer-casing rules in formatAnswersForAgent (request-user-input.js)
+ * so the model sees the same wording it saw mid-turn when the tool resolved.
+ */
+function formatClarifyingSurveyForPrompt(survey) {
+  const questions = Array.isArray(survey?.questions) ? survey.questions : [];
+  const result = survey?.result || {};
+  if (!questions.length) return "";
+
+  let body;
+  if (result.timedOut) {
+    body = "[no response within the time limit]";
+  } else if (result.skipped) {
+    body = "[user let the agent decide]";
+  } else {
+    const answers = Array.isArray(result.answers) ? result.answers : [];
+    body = questions
+      .map((q, i) => {
+        const a = answers[i] || { skipped: true };
+        let answerText;
+        if (a.skipped) answerText = "[user skipped]";
+        else if (Array.isArray(a.answer)) answerText = a.answer.join(", ");
+        else if (a.answer === null || a.answer === undefined || a.answer === "")
+          answerText = "[no answer]";
+        else answerText = String(a.answer);
+        return `Q: ${q.question}\nA: ${answerText}`;
+      })
+      .join("\n");
+  }
+  return `<clarifying_questions>\n${body}\n</clarifying_questions>`;
 }
 
 /**
@@ -190,6 +281,19 @@ function convertToPromptHistory(history = []) {
       continue;
     }
 
+    // If the agent saved one or more clarifying-question surveys on this
+    // record, append them to the assistant content so future LLM turns
+    // (agent or normal chat) can recall what the user answered.
+    let assistantContent = data.text;
+    if (data?.clarifyingQuestions?.length > 0) {
+      const surveyBlocks = data.clarifyingQuestions
+        .map(formatClarifyingSurveyForPrompt)
+        .filter(Boolean)
+        .join("\n\n");
+      if (surveyBlocks)
+        assistantContent = `${assistantContent}\n\n${surveyBlocks}`;
+    }
+
     formattedHistory.push([
       {
         role: "user",
@@ -201,7 +305,7 @@ function convertToPromptHistory(history = []) {
       },
       {
         role: "assistant",
-        content: data.text,
+        content: assistantContent,
       },
     ]);
   }

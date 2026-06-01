@@ -7,6 +7,9 @@ function getSTTProvider() {
     case "lemonade":
       const { LemonadeSTT } = require("./lemonade");
       return new LemonadeSTT();
+    case "deepgram":
+      const { DeepgramSTT } = require("./deepgram");
+      return new DeepgramSTT();
     default:
       throw new Error(
         `STT_PROVIDER "${provider}" is not a server-side provider.`

@@ -50,12 +50,17 @@ const SUPPORT_CUSTOM_MODELS = [
   "privatemode",
   "sambanova",
   "lemonade",
-  "lemonade-stt",
+  "minimax",
+  "cerebras",
+  "generic-openai",
   // Embedding Engines
   "native-embedder",
   "cohere-embedder",
   "openrouter-embedder",
   "lemonade-embedder",
+  // STT Engines
+  "deepgram-stt",
+  "lemonade-stt",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -139,6 +144,14 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getLemonadeSTTModels(basePath);
     case "lemonade-embedder":
       return await getLemonadeModels(basePath, "embedding");
+    case "minimax":
+      return await getMinimaxModels(apiKey);
+    case "cerebras":
+      return await getCerebrasModels();
+    case "generic-openai":
+      return await getGenericOpenAiModels(basePath, apiKey);
+    case "deepgram-stt":
+      return await getDeepgramSTTModels(apiKey);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -635,6 +648,72 @@ async function getElevenLabsModels(apiKey = null) {
   return { models, error: null };
 }
 
+async function getMinimaxModels(_apiKey = null) {
+  const { OpenAI: OpenAIApi } = require("openai");
+  const apiKey =
+    _apiKey === true
+      ? process.env.MINIMAX_API_KEY
+      : _apiKey || process.env.MINIMAX_API_KEY || null;
+  const openai = new OpenAIApi({
+    baseURL: "https://api.minimax.io/v1",
+    apiKey,
+  });
+  const models = await openai.models
+    .list()
+    .then((results) => results.data)
+    .then((models) =>
+      models.map((model) => ({
+        id: model.id,
+        name: model.id,
+        organization: model.owned_by || "minimax",
+      }))
+    )
+    .catch((e) => {
+      console.error(`Minimax:listModels`, e.message);
+      return [
+        {
+          id: "MiniMax-M2.7",
+          name: "MiniMax-M2.7",
+          organization: "minimax",
+        },
+        {
+          id: "MiniMax-M2.7-highspeed",
+          name: "MiniMax-M2.7-highspeed",
+          organization: "minimax",
+        },
+        {
+          id: "MiniMax-M2.5",
+          name: "MiniMax-M2.5",
+          organization: "minimax",
+        },
+        {
+          id: "MiniMax-M2.5-highspeed",
+          name: "MiniMax-M2.5-highspeed",
+          organization: "minimax",
+        },
+        {
+          id: "MiniMax-M2.1",
+          name: "MiniMax-M2.1",
+          organization: "minimax",
+        },
+        {
+          id: "MiniMax-M2.1-highspeed",
+          name: "MiniMax-M2.1-highspeed",
+          organization: "minimax",
+        },
+        {
+          id: "MiniMax-M2",
+          name: "MiniMax-M2",
+          organization: "minimax",
+        },
+      ];
+    });
+
+  // Api Key was successful so lets save it for future uses
+  if (models.length > 0 && !!apiKey) process.env.MINIMAX_API_KEY = apiKey;
+  return { models, error: null };
+}
+
 async function getDeepSeekModels(apiKey = null) {
   const { OpenAI: OpenAIApi } = require("openai");
   const openai = new OpenAIApi({
@@ -970,6 +1049,50 @@ async function getLemonadeSTTModels(basePath = null) {
 }
 
 /**
+ * Get Deepgram STT models from the Management API.
+ * https://api.deepgram.com/v1/models returns { stt: [...], tts: [...] }.
+ * @param {string} _apiKey - Deepgram API key. Falls back to STT_DEEPGRAM_API_KEY.
+ * @returns {Promise<{models: Array<{id: string, name: string, organization: string}>, error: string | null}>}
+ */
+async function getDeepgramSTTModels(_apiKey = null) {
+  const apiKey =
+    _apiKey === true
+      ? process.env.STT_DEEPGRAM_API_KEY
+      : _apiKey || process.env.STT_DEEPGRAM_API_KEY || null;
+  if (!apiKey)
+    return { models: [], error: "No Deepgram API key was provided." };
+
+  try {
+    const response = await fetch("https://api.deepgram.com/v1/models", {
+      method: "GET",
+      headers: { Authorization: `Token ${apiKey}` },
+    });
+    if (!response.ok) throw new Error(`Deepgram returned ${response.status}`);
+
+    let models = new Map();
+    const data = await response.json();
+    (data?.stt ?? [])
+      .filter((m) => m.batch !== false)
+      .forEach((m) => {
+        if (models.has(m.canonical_name)) return;
+        models.set(m.canonical_name, {
+          id: m.canonical_name,
+          name: m.canonical_name,
+          organization: "Deepgram",
+        });
+      });
+
+    models = Array.from(models.values());
+    // Api Key was successful so lets save it for future uses
+    if (models.length > 0 && _apiKey) process.env.STT_DEEPGRAM_API_KEY = apiKey;
+    return { models, error: null };
+  } catch (e) {
+    console.error(`Deepgram:getDeepgramSTTModels`, e.message);
+    return { models: [], error: "Could not fetch Deepgram STT models" };
+  }
+}
+
+/**
  * Get Privatemode models
  * @param {string} basePath - The base path of the Privatemode endpoint.
  * @param {'any' | 'generate' | 'embed' | 'transcribe'} task - The task to fetch the models for.
@@ -1061,6 +1184,63 @@ async function getSambaNovaModels(_apiKey = null) {
   } catch (e) {
     console.error(`SambaNova:getSambaNovaModels`, e.message);
     return { models: [], error: "Could not fetch SambaNova Models" };
+  }
+}
+
+/**
+ * Use the Cerebras PUBLIC API to fetch the public models
+ * @returns {Promise<{models: Array<{id: string, organization: string, name: string}>, error: string | null}>}
+ */
+async function getCerebrasModels() {
+  try {
+    const models = await fetch("https://api.cerebras.ai/public/v1/models")
+      .then((response) => response.json())
+      .then(({ data = [] }) => {
+        return data.map((model) => ({
+          id: model.id,
+          name: model.name,
+          organization: model.owned_by ?? "Cerebras",
+        }));
+      })
+      .catch((error) => {
+        console.error(`Cerebras:listModels`, error.message);
+        return [];
+      });
+    return { models, error: null };
+  } catch (e) {
+    console.error(`Cerebras:getCerebrasModels`, e.message);
+    return { models: [], error: "Could not fetch Cerebras Models" };
+  }
+}
+
+async function getGenericOpenAiModels(basePath = null, apiKey = null) {
+  try {
+    const { OpenAI: OpenAIApi } = require("openai");
+    const openai = new OpenAIApi({
+      baseURL: basePath || process.env.GENERIC_OPEN_AI_BASE_PATH,
+      apiKey: apiKey || process.env.GENERIC_OPEN_AI_API_KEY || null,
+    });
+    const models = await openai.models
+      .list()
+      .then((results) => results.data)
+      .then((models) =>
+        models.map((model) => ({
+          id: model.id,
+          name: model.id,
+          organization: model.owned_by ?? "generic-openai",
+        }))
+      )
+      .catch((e) => {
+        console.error(`GenericOpenAI:listModels`, e.message);
+        return [];
+      });
+
+    if (models.length > 0 && !!apiKey)
+      process.env.GENERIC_OPEN_AI_API_KEY = apiKey;
+    return { models, error: null };
+  } catch (e) {
+    console.error(`GenericOpenAI:getGenericOpenAiModels`, e.message);
+    return { models: [], error: "Could not fetch Generic OpenAI Models" };
   }
 }
 
