@@ -264,16 +264,24 @@ async function findDocumentInDocuments(documentName = null) {
 }
 
 /**
- * Checks if a given path is within another path.
- * @param {string} outer - The outer path (should be resolved).
- * @param {string} inner - The inner path (should be resolved).
- * @returns {boolean} - Returns true if the inner path is within the outer path, false otherwise.
+ * Checks if a given path is strictly within another path. Used to prevent
+ * path-traversal attacks (CWE-22). Both arguments are resolved to absolute
+ * paths internally so callers do not need to pre-resolve.
+ *
+ * NOTE: This function does NOT follow or detect symlinks. A symlink inside
+ * `outer` that points outside it will not be caught here — validate symlinks
+ * separately at read/write time if your threat model requires it (wontfix).
+ *
+ * @param {string} outer - The containing directory path.
+ * @param {string} inner - The path to test.
+ * @returns {boolean} True if `inner` is strictly inside `outer`, false otherwise.
  */
 function isWithin(outer, inner) {
-  if (outer === inner) return false;
-  const rel = path.relative(outer, inner);
-  // Reject parent traversal and absolute paths
-  // path.relative() returns an absolute path when paths are on different drives on Windows
+  const resolvedOuter = path.resolve(outer);
+  const resolvedInner = path.resolve(inner);
+  const rel = path.relative(resolvedOuter, resolvedInner);
+
+  if (rel === "") return false;
   return (
     !rel.startsWith(`..${path.sep}`) && rel !== ".." && !path.isAbsolute(rel)
   );
