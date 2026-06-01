@@ -25,3 +25,10 @@ This folder is not runtime wiring yet. It defines the future app mode that later
 
 - [`SWARMSY_DEFAULT_WORKSPACE_PRESET.md`](./SWARMSY_DEFAULT_WORKSPACE_PRESET.md) — Default workspace preset for SWARMSY HIVE (name, purpose, sections, suggested messages, behaviour, acceptance criteria).
 - [`SPARKY_SYSTEM_PROMPT_PRESET.md`](./SPARKY_SYSTEM_PROMPT_PRESET.md) — Copy-paste system prompt preset for the SPARKY operator role.
+
+## Production launch docs
+
+- [`../release/SWARMSY_PRODUCTION_LAUNCH_GUIDE.md`](../release/SWARMSY_PRODUCTION_LAUNCH_GUIDE.md)
+- [`../release/SWARMSY_USER_ACCESS_MODEL.md`](../release/SWARMSY_USER_ACCESS_MODEL.md)
+- [`../release/SWARMSY_HOSTED_APP_DEPLOYMENT_CHECKLIST.md`](../release/SWARMSY_HOSTED_APP_DEPLOYMENT_CHECKLIST.md)
+- [`../release/SWARMSY_DEV_VS_PRODUCTION_MODE.md`](../release/SWARMSY_DEV_VS_PRODUCTION_MODE.md)
