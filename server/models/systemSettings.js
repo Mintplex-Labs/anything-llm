@@ -536,6 +536,24 @@ const SystemSettings = {
         process.env.TTS_OPEN_AI_COMPATIBLE_VOICE_MODEL,
       TTSOpenAICompatibleEndpoint: process.env.TTS_OPEN_AI_COMPATIBLE_ENDPOINT,
 
+      // STT Selection
+      SpeechToTextProvider: process.env.STT_PROVIDER || "native",
+      // STT OpenAI
+      STTOpenAIModel: process.env.STT_OPEN_AI_MODEL,
+
+      // STT Lemonade
+      STTLemonadeBasePath: process.env.STT_LEMONADE_BASE_PATH,
+      STTLemonadeModelPref: process.env.STT_LEMONADE_MODEL_PREF,
+
+      // STT Deepgram
+      STTDeepgramApiKey: !!process.env.STT_DEEPGRAM_API_KEY,
+      STTDeepgramModel: process.env.STT_DEEPGRAM_MODEL,
+
+      // STT Generic OpenAI
+      STTOpenAICompatibleKey: !!process.env.STT_OPEN_AI_COMPATIBLE_KEY,
+      STTOpenAICompatibleModel: process.env.STT_OPEN_AI_COMPATIBLE_MODEL,
+      STTOpenAICompatibleEndpoint: process.env.STT_OPEN_AI_COMPATIBLE_ENDPOINT,
+
       // --------------------------------------------------------
       // Agent Settings & Configs
       // --------------------------------------------------------

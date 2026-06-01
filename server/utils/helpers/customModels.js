@@ -18,6 +18,7 @@ const { getAllLemonadeModels } = require("../AiProviders/lemonade");
 
 const SUPPORT_CUSTOM_MODELS = [
   "openai",
+  "openai-stt",
   "anthropic",
   "localai",
   "ollama",
@@ -57,6 +58,9 @@ const SUPPORT_CUSTOM_MODELS = [
   "cohere-embedder",
   "openrouter-embedder",
   "lemonade-embedder",
+  // STT Engines
+  "deepgram-stt",
+  "lemonade-stt",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -66,6 +70,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
   switch (provider) {
     case "openai":
       return await openAiModels(apiKey);
+    case "openai-stt":
+      return await openAiSttModels(apiKey);
     case "anthropic":
       return await anthropicModels(apiKey);
     case "localai":
@@ -134,6 +140,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getSambaNovaModels(apiKey);
     case "lemonade":
       return await getLemonadeModels(basePath);
+    case "lemonade-stt":
+      return await getLemonadeSTTModels(basePath);
     case "lemonade-embedder":
       return await getLemonadeModels(basePath, "embedding");
     case "minimax":
@@ -142,6 +150,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getCerebrasModels();
     case "generic-openai":
       return await getGenericOpenAiModels(basePath, apiKey);
+    case "deepgram-stt":
+      return await getDeepgramSTTModels(apiKey);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -250,6 +260,50 @@ async function openAiModels(apiKey = null) {
   if ((gpts.length > 0 || customModels.length > 0) && !!apiKey)
     process.env.OPEN_AI_KEY = apiKey;
   return { models: [...gpts, ...customModels], error: null };
+}
+
+async function openAiSttModels(apiKey = null) {
+  const fallback = [
+    { id: "whisper-1", name: "whisper-1", organization: "OpenAi" },
+    {
+      id: "gpt-4o-transcribe",
+      name: "gpt-4o-transcribe",
+      organization: "OpenAi",
+    },
+    {
+      id: "gpt-4o-mini-transcribe",
+      name: "gpt-4o-mini-transcribe",
+      organization: "OpenAi",
+    },
+  ];
+
+  const { OpenAI: OpenAIApi } = require("openai");
+  const openai = new OpenAIApi({
+    apiKey: apiKey || process.env.OPEN_AI_KEY,
+  });
+
+  const allModels = await openai.models
+    .list()
+    .then((results) => results.data)
+    .catch((e) => {
+      console.error(`OpenAI:listModels (stt)`, e.message);
+      return null;
+    });
+
+  if (!allModels) return { models: fallback, error: null };
+
+  // The /v1/models response has no category/type field, so we filter by id.
+  // Realtime variants use a separate WebSocket API and are not compatible
+  // with the audio.transcriptions.create endpoint we use server-side.
+  const models = allModels
+    .filter(
+      (m) =>
+        (m.id.includes("whisper") || m.id.includes("transcribe")) &&
+        !m.id.includes("realtime")
+    )
+    .map((m) => ({ ...m, name: m.id, organization: "OpenAi" }));
+
+  return { models: models.length ? models : fallback, error: null };
 }
 
 async function anthropicModels(_apiKey = null) {
@@ -981,6 +1035,60 @@ async function getLemonadeModels(basePath = null, task = "chat") {
   } catch (e) {
     console.error(`Lemonade:getLemonadeModels`, e.message);
     return { models: [], error: "Could not fetch Lemonade Models" };
+  }
+}
+
+async function getLemonadeSTTModels(basePath = null) {
+  try {
+    const models = await getAllLemonadeModels(basePath, "transcription");
+    return { models, error: null };
+  } catch (e) {
+    console.error(`Lemonade:getLemonadeSTTModels`, e.message);
+    return { models: [], error: "Could not fetch Lemonade STT Models" };
+  }
+}
+
+/**
+ * Get Deepgram STT models from the Management API.
+ * https://api.deepgram.com/v1/models returns { stt: [...], tts: [...] }.
+ * @param {string} _apiKey - Deepgram API key. Falls back to STT_DEEPGRAM_API_KEY.
+ * @returns {Promise<{models: Array<{id: string, name: string, organization: string}>, error: string | null}>}
+ */
+async function getDeepgramSTTModels(_apiKey = null) {
+  const apiKey =
+    _apiKey === true
+      ? process.env.STT_DEEPGRAM_API_KEY
+      : _apiKey || process.env.STT_DEEPGRAM_API_KEY || null;
+  if (!apiKey)
+    return { models: [], error: "No Deepgram API key was provided." };
+
+  try {
+    const response = await fetch("https://api.deepgram.com/v1/models", {
+      method: "GET",
+      headers: { Authorization: `Token ${apiKey}` },
+    });
+    if (!response.ok) throw new Error(`Deepgram returned ${response.status}`);
+
+    let models = new Map();
+    const data = await response.json();
+    (data?.stt ?? [])
+      .filter((m) => m.batch !== false)
+      .forEach((m) => {
+        if (models.has(m.canonical_name)) return;
+        models.set(m.canonical_name, {
+          id: m.canonical_name,
+          name: m.canonical_name,
+          organization: "Deepgram",
+        });
+      });
+
+    models = Array.from(models.values());
+    // Api Key was successful so lets save it for future uses
+    if (models.length > 0 && _apiKey) process.env.STT_DEEPGRAM_API_KEY = apiKey;
+    return { models, error: null };
+  } catch (e) {
+    console.error(`Deepgram:getDeepgramSTTModels`, e.message);
+    return { models: [], error: "Could not fetch Deepgram STT models" };
   }
 }
 

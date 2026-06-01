@@ -1175,6 +1175,9 @@ const TRANSLATIONS = {
         cancel: "取消",
       },
     },
+    stt_unsupported: "本瀏覽器不支援麥克風功能。",
+    stt_mic_denied: "無法存取麥克風。請先授權，然後再嘗試。",
+    stt_transcription_failed: "轉錄失敗：{{error}}",
   },
   profile_settings: {
     edit_account: "編輯帳戶",
