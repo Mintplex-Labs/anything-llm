@@ -796,6 +796,7 @@ class AgentHandler {
             id: Number(this.invocation.workspace.ollamaConnectionId),
           })
         : null;
+
     this.aibitat = new AIbitat({
       provider: this.provider ?? "openai",
       model: this.model ?? "gpt-4o",

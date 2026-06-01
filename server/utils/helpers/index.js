@@ -130,7 +130,11 @@ function getVectorDbClass(getExactly = null) {
  * Returns the LLMProvider with its embedder attached via system or via defined provider.
  * @notice Use resolveProviderConnector instead as this function DOES NOT handle the anythingllm-router provider.
  * You should only use this function if you are absolutely sure you are not using the anythingllm-router provider ever in your code.
- * @param {{provider: string | null, model: string | null, connection?: Object | null} | null} params - Initialize params for LLMs provider.
+ * @param {{
+ *   provider: string | null,
+ *   model: string | null,
+ *   connection?: import("@prisma/client").ollama_connections | null
+ * } | null} params - Initialize params for LLMs provider.
  *  `connection` is an optional provider-specific connection record (currently only honored by the Ollama provider).
  * @returns {BaseLLMProvider}
  */

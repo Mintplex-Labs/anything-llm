@@ -61,6 +61,10 @@ const OllamaConnection = {
     return sanitized;
   },
 
+  /**
+   * @param {Object} data Writable fields from `OllamaConnection.writable`.
+   * @returns {Promise<{connection: import("@prisma/client").ollama_connections|null, error: string|null}>}
+   */
   create: async function (data = {}) {
     const payload = this._sanitize(data);
     if (!payload.name) return { connection: null, error: "Name is required." };
@@ -86,6 +90,11 @@ const OllamaConnection = {
     }
   },
 
+  /**
+   * @param {number} id The id of the connection to update.
+   * @param {Object} data Writable fields from `OllamaConnection.writable`.
+   * @returns {Promise<{connection: import("@prisma/client").ollama_connections|{id:number}|null, error: string|null}>}
+   */
   update: async function (id = null, data = {}) {
     if (!id) throw new Error("No ollama connection id provided for update");
     const payload = this._sanitize(data);
@@ -116,6 +125,11 @@ const OllamaConnection = {
     }
   },
 
+  /**
+   * Fetch a single connection by an arbitrary `where` clause.
+   * @param {import("@prisma/client").Prisma.ollama_connectionsWhereInput} clause
+   * @returns {Promise<import("@prisma/client").ollama_connections|null>}
+   */
   get: async function (clause = {}) {
     try {
       return (
@@ -127,6 +141,12 @@ const OllamaConnection = {
     }
   },
 
+  /**
+   * List connections matching `clause`, ordered by name.
+   * @param {import("@prisma/client").Prisma.ollama_connectionsWhereInput} clause
+   * @param {number|null} limit Optional `take` value forwarded to Prisma.
+   * @returns {Promise<import("@prisma/client").ollama_connections[]>}
+   */
   where: async function (clause = {}, limit = null) {
     try {
       return await prisma.ollama_connections.findMany({
@@ -140,6 +160,11 @@ const OllamaConnection = {
     }
   },
 
+  /**
+   * Delete a connection and null out the FK on any workspace that referenced it.
+   * @param {number} id
+   * @returns {Promise<boolean>} Whether the delete succeeded.
+   */
   delete: async function (id = null) {
     if (!id) return false;
     try {
@@ -156,6 +181,11 @@ const OllamaConnection = {
     }
   },
 
+  /**
+   * Count workspaces currently pointing at the given connection.
+   * @param {number} connectionId
+   * @returns {Promise<number>}
+   */
   workspaceCount: async function (connectionId) {
     try {
       return await prisma.workspaces.count({
