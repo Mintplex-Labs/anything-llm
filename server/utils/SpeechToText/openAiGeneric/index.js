@@ -1,3 +1,6 @@
+const { convertAudioBufferToWav } = require("../helpers");
+const path = require("path");
+
 class GenericOpenAiSTT {
   constructor() {
     if (!process.env.STT_OPEN_AI_COMPATIBLE_ENDPOINT)
@@ -12,6 +15,12 @@ class GenericOpenAiSTT {
       this.#log(
         "No OpenAI compatible STT model was set. We will use the default model 'whisper-1'. This may not exist or be valid for your selected endpoint."
       );
+
+    console.log({
+      key: process.env.STT_OPEN_AI_COMPATIBLE_KEY,
+      model: process.env.STT_OPEN_AI_COMPATIBLE_MODEL,
+      endpoint: process.env.STT_OPEN_AI_COMPATIBLE_ENDPOINT,
+    });
 
     const { OpenAI: OpenAIApi } = require("openai");
     this.openai = new OpenAIApi({
@@ -36,7 +45,14 @@ class GenericOpenAiSTT {
    */
   async transcribe(audioBuffer, filename = "audio.webm") {
     const { toFile } = require("openai");
-    const file = await toFile(audioBuffer, filename);
+    const extension = path.extname(filename).toLowerCase() || ".webm";
+    let payloadBuffer = audioBuffer;
+    let payloadFilename = filename;
+    if (extension !== ".wav") {
+      payloadBuffer = await convertAudioBufferToWav(audioBuffer, extension);
+      payloadFilename = "audio.wav";
+    }
+    const file = await toFile(payloadBuffer, payloadFilename);
     const result = await this.openai.audio.transcriptions.create({
       file,
       model: this.model,
