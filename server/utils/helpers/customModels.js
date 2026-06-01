@@ -1040,7 +1040,7 @@ async function getLemonadeModels(basePath = null, task = "chat") {
 
 async function getLemonadeSTTModels(basePath = null) {
   try {
-    const models = await getAllLemonadeModels(basePath, "all");
+    const models = await getAllLemonadeModels(basePath, "transcription");
     return { models, error: null };
   } catch (e) {
     console.error(`Lemonade:getLemonadeSTTModels`, e.message);
