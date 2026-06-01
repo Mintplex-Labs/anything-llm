@@ -53,9 +53,7 @@ class OllamaAILLM {
     // connection-level default lets workspaces inherit a sensible model when
     // they don't override it themselves.
     this.model =
-      modelPreference ||
-      connection?.modelPref ||
-      process.env.OLLAMA_MODEL_PREF;
+      modelPreference || connection?.modelPref || process.env.OLLAMA_MODEL_PREF;
     this.keepAlive = keepAlive;
     this.tokenLimit = tokenLimit;
 
@@ -211,8 +209,7 @@ class OllamaAILLM {
 
   static promptWindowLimit(modelName, basePath = null, overrideLimit = null) {
     const resolvedBasePath = basePath || process.env.OLLAMA_BASE_PATH;
-    const bucket =
-      OllamaAILLM.modelContextWindows[resolvedBasePath] || {};
+    const bucket = OllamaAILLM.modelContextWindows[resolvedBasePath] || {};
     if (Object.keys(bucket).length === 0) {
       this.#slog(
         "No context windows cached - Context window may be inaccurately reported."
@@ -260,8 +257,7 @@ class OllamaAILLM {
 
   static maxContextWindow(modelName = null, basePath = null) {
     const resolvedBasePath = basePath || process.env.OLLAMA_BASE_PATH;
-    const bucket =
-      OllamaAILLM.modelContextWindows[resolvedBasePath] || {};
+    const bucket = OllamaAILLM.modelContextWindows[resolvedBasePath] || {};
     if (!modelName || Object.keys(bucket).length === 0) return 4096;
     return Number(bucket[modelName]) || 16384;
   }

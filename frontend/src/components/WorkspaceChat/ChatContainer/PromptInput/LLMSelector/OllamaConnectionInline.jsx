@@ -32,7 +32,6 @@ export default function OllamaConnectionInline({
       }
     });
     // We only want this to run once on mount.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleChange = (e) => {

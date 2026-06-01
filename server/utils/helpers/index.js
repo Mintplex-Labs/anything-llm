@@ -134,7 +134,11 @@ function getVectorDbClass(getExactly = null) {
  *  `connection` is an optional provider-specific connection record (currently only honored by the Ollama provider).
  * @returns {BaseLLMProvider}
  */
-function getLLMProvider({ provider = null, model = null, connection = null } = {}) {
+function getLLMProvider({
+  provider = null,
+  model = null,
+  connection = null,
+} = {}) {
   const LLMSelection = provider ?? process.env.LLM_PROVIDER ?? "openai";
   const embedder = getEmbeddingEngineSelection();
 

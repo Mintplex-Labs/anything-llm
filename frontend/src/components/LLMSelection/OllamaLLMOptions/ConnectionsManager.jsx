@@ -149,8 +149,7 @@ function ConnectionModal({ isOpen, closeModal, onSuccess, connection }) {
   // When the auth-token input still shows the asterisk mask, prefer the real
   // saved token for the live model fetch so the dropdown can actually reach
   // a protected Ollama server during edit.
-  const isMaskedAuth =
-    !!connection?.authToken && /^\*+$/.test(authTokenField);
+  const isMaskedAuth = !!connection?.authToken && /^\*+$/.test(authTokenField);
   const effectiveAuthToken = isMaskedAuth
     ? connection.authToken
     : authTokenField || null;
@@ -289,9 +288,7 @@ function Field({
         name={name}
         type={type}
         required={required}
-        {...(controlled
-          ? { value, onChange }
-          : { defaultValue, onChange })}
+        {...(controlled ? { value, onChange } : { defaultValue, onChange })}
         placeholder={placeholder}
         min={min}
         autoComplete={autoComplete}
@@ -371,8 +368,8 @@ function OllamaModelField({ basePath, authToken, value, onChange }) {
       </select>
       <span className="text-xs text-zinc-500">
         Optional. Workspaces using this connection without their own model
-        selection will fall back to this one. Leave blank to defer to the
-        global <code>OLLAMA_MODEL_PREF</code>.
+        selection will fall back to this one. Leave blank to defer to the global{" "}
+        <code>OLLAMA_MODEL_PREF</code>.
       </span>
       {error && <span className="text-xs text-red-400">{error}</span>}
     </label>
