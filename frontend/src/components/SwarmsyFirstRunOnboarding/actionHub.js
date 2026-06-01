@@ -22,6 +22,10 @@ export const INTAKE_UNDERLOADED_MESSAGE =
   "Load required doctrine docs before starting intake.";
 export const INTAKE_DOCTRINE_UNAVAILABLE_MESSAGE =
   "Doctrine readiness cannot be confirmed. Check HIVE readiness before starting intake.";
+export const INTAKE_LOCAL_USER_MODEL_REQUIRED_MESSAGE =
+  "Select an installed Ollama model before starting intake.";
+export const INTAKE_LOCAL_USER_MODEL_UNVERIFIED_MESSAGE =
+  "Check Local User Mode Ollama status and select an installed model before starting intake.";
 export const ACTION_HUB_GROUPS = [
   {
     id: "build",
@@ -59,7 +63,16 @@ export function isActionHubReady(status) {
   );
 }
 
-export function getIntakeDisabledMessage(status, selectedMode) {
+export function getIntakeDisabledMessage(
+  status,
+  selectedMode,
+  {
+    runtimeMode = "hosted_admin",
+    localOllamaStatus = "checking",
+    selectedLocalOllamaModel = "",
+    localOllamaModels = [],
+  } = {}
+) {
   if (!status?.workspace?.exists) {
     return INTAKE_HIVE_MISSING_MESSAGE;
   }
@@ -91,6 +104,29 @@ export function getIntakeDisabledMessage(status, selectedMode) {
     return INTAKE_MODE_REQUIRED_MESSAGE;
   }
 
+  if (runtimeMode === "local_user") {
+    const hasVerifiedLocalOllamaModels =
+      localOllamaStatus === "reachable" || localOllamaStatus === "no_models";
+    if (!hasVerifiedLocalOllamaModels) {
+      return INTAKE_LOCAL_USER_MODEL_UNVERIFIED_MESSAGE;
+    }
+
+    const selectedModel = String(selectedLocalOllamaModel || "").trim();
+    if (!selectedModel) {
+      return INTAKE_LOCAL_USER_MODEL_REQUIRED_MESSAGE;
+    }
+
+    const installedModelIds = (
+      Array.isArray(localOllamaModels) ? localOllamaModels : []
+    )
+      .map((model) => String(model?.id || "").trim())
+      .filter(Boolean);
+
+    if (!installedModelIds.includes(selectedModel)) {
+      return INTAKE_LOCAL_USER_MODEL_REQUIRED_MESSAGE;
+    }
+  }
+
   return null;
 }
 
@@ -99,9 +135,22 @@ function getBusyReasonForAction(actionId, busyAction) {
   return ACTION_BUSY_MESSAGE;
 }
 
-export function getActionHubActionState({ status, selectedMode, busyAction }) {
+export function getActionHubActionState({
+  status,
+  selectedMode,
+  busyAction,
+  runtimeMode = "hosted_admin",
+  localOllamaStatus = "checking",
+  selectedLocalOllamaModel = "",
+  localOllamaModels = [],
+}) {
   const globallyBusy = Boolean(busyAction);
-  const intakeDisabledMessage = getIntakeDisabledMessage(status, selectedMode);
+  const intakeDisabledMessage = getIntakeDisabledMessage(status, selectedMode, {
+    runtimeMode,
+    localOllamaStatus,
+    selectedLocalOllamaModel,
+    localOllamaModels,
+  });
   const memoryLockBlockedMessage = canContinueFromMemoryLock(status)
     ? null
     : MEMORY_LOCK_BLOCKED_MESSAGE;

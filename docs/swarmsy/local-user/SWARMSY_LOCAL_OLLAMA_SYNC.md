@@ -53,4 +53,6 @@ If `http://localhost:11434/api/tags` is unreachable, SWARMSY should:
 - Installed Ollama models are listed when the local runtime is reachable.
 - Local User Mode onboarding UI now calls the route and shows explicit status states: `checking`, `reachable`, `unreachable`, `no_models`, and `error`.
 - The Local User Mode panel now includes a retry/check-again action, setup guidance when Ollama is unreachable, installed-model listing, and a model-selection shell.
-- The selected local Ollama model is currently UI-state only; persistent local settings storage is a follow-up phase.
+- The selected local Ollama model is persisted in Local User Mode browser storage and restored after reload only if the saved model still exists in the latest installed-model list.
+- If a saved model disappears, SWARMSY clears the stale selection and shows explicit guidance to reselect (or auto-selects only when exactly one model remains, with explicit copy).
+- Intake handoff now carries a runtime selection contract under `runtime` with shape `{ provider: "ollama", mode: "local_user", model: "<model-id>" }` when a valid Local User selection exists.

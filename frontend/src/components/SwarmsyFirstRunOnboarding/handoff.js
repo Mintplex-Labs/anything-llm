@@ -13,6 +13,20 @@ export function getIntakeStarterMessage(mode) {
   return INTAKE_STARTERS[mode] || null;
 }
 
+export function getLocalUserOllamaRuntimeSelection({
+  mode = "hosted_admin",
+  model = "",
+} = {}) {
+  if (mode !== "local_user") return null;
+  const selectedModel = String(model || "").trim();
+  if (!selectedModel) return null;
+  return {
+    provider: "ollama",
+    mode: "local_user",
+    model: selectedModel,
+  };
+}
+
 export function canStartSwarmsyIntake(status, selectedMode) {
   if (selectedMode === "memory-lock") return false;
 

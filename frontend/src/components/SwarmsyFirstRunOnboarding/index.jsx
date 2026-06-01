@@ -13,10 +13,15 @@ import { PENDING_HOME_MESSAGE } from "@/utils/constants";
 import {
   ACTION_HUB_GROUPS,
   ACTION_HUB_HELPER_COPY,
+  INTAKE_LOCAL_USER_MODEL_REQUIRED_MESSAGE,
+  INTAKE_LOCAL_USER_MODEL_UNVERIFIED_MESSAGE,
   ACTION_HUB_TITLE,
   getActionHubActionState,
 } from "./actionHub";
-import { getIntakeStarterMessage } from "./handoff";
+import {
+  getIntakeStarterMessage,
+  getLocalUserOllamaRuntimeSelection,
+} from "./handoff";
 import {
   buildCampaignDayStarterMessage,
   canUseCampaignCalendar,
@@ -36,6 +41,12 @@ import {
   PROOF_TRACKER_HIVE_MISSING_MESSAGE,
   PROOF_TRACKER_UNDERLOADED_MESSAGE,
 } from "./proofTracker";
+import {
+  clearLocalUserOllamaModelSelection,
+  persistLocalUserOllamaModelSelection,
+  readLocalUserOllamaModelSelection,
+  resolveLocalUserOllamaModelSelection,
+} from "./localUserOllamaSelection";
 
 const IDENTITY_MODES = [
   {
@@ -266,6 +277,8 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
     message: null,
   });
   const [selectedLocalOllamaModel, setSelectedLocalOllamaModel] = useState("");
+  const [localOllamaSelectionMessage, setLocalOllamaSelectionMessage] =
+    useState(null);
   const localOllamaRefreshControllerRef = useRef(null);
   const hasConfirmedLocalUserModeRef = useRef(false);
   const activeStatus = status || createFallbackStatus();
@@ -415,18 +428,71 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
   }, []);
 
   useEffect(() => {
-    const nextModelId = localOllamaStatus.models[0]?.id || "";
-    if (!nextModelId) {
-      setSelectedLocalOllamaModel("");
+    const hasVerifiedLocalOllamaModels =
+      localOllamaStatus.status === "reachable" ||
+      localOllamaStatus.status === "no_models";
+    if (!hasVerifiedLocalOllamaModels) {
+      setLocalOllamaSelectionMessage(null);
       return;
     }
-    const hasSelectedModel = localOllamaStatus.models.some(
+
+    const selectedModel = localOllamaStatus.models.find(
       (model) => model.id === selectedLocalOllamaModel
     );
-    if (!hasSelectedModel) {
-      setSelectedLocalOllamaModel(nextModelId);
+    const resolved = resolveLocalUserOllamaModelSelection({
+      models: localOllamaStatus.models,
+      selectedModelId: selectedLocalOllamaModel,
+      storedModelId: readLocalUserOllamaModelSelection(),
+    });
+
+    if (resolved.staleStoredModelId) {
+      clearLocalUserOllamaModelSelection();
     }
-  }, [localOllamaStatus.models, selectedLocalOllamaModel]);
+
+    if (resolved.modelId) {
+      persistLocalUserOllamaModelSelection(resolved.modelId);
+    }
+
+    if (resolved.modelId !== selectedLocalOllamaModel) {
+      setSelectedLocalOllamaModel(resolved.modelId);
+    }
+
+    if (resolved.source === "stale_missing") {
+      setLocalOllamaSelectionMessage(
+        "Your saved Ollama model is no longer installed. Select a model to continue."
+      );
+      return;
+    }
+
+    if (resolved.source === "single_available_after_stale") {
+      const selectedName =
+        localOllamaStatus.models.find((model) => model.id === resolved.modelId)
+          ?.name || resolved.modelId;
+      setLocalOllamaSelectionMessage(
+        `Your saved Ollama model is no longer installed, so SWARMSY selected the only available model: ${selectedName}.`
+      );
+      return;
+    }
+
+    if (
+      resolved.source === "single_available" &&
+      !selectedModel &&
+      localOllamaStatus.models.length === 1
+    ) {
+      const selectedName =
+        localOllamaStatus.models[0]?.name || resolved.modelId;
+      setLocalOllamaSelectionMessage(
+        `Only one installed Ollama model was found, so it was selected automatically: ${selectedName}.`
+      );
+      return;
+    }
+
+    setLocalOllamaSelectionMessage(null);
+  }, [
+    localOllamaStatus.models,
+    localOllamaStatus.status,
+    selectedLocalOllamaModel,
+  ]);
 
   const copy = statusCopy(activeStatus);
   const intakeStarter = getIntakeStarterMessage(selectedMode);
@@ -435,6 +501,10 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
     status: activeStatus,
     selectedMode,
     busyAction,
+    runtimeMode: isLocalUserMode ? "local_user" : "hosted_admin",
+    localOllamaStatus: localOllamaStatus.status,
+    selectedLocalOllamaModel,
+    localOllamaModels: localOllamaStatus.models,
   });
   const selectedIdentityMode = IDENTITY_MODES.find(
     (mode) => mode.id === selectedMode && mode.id !== "memory-lock"
@@ -447,6 +517,14 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
   const verifyGroup = ACTION_HUB_GROUPS.find((group) => group.id === "verify");
   const localOllamaTone = localOllamaStatusTone(localOllamaStatus.status);
   const localOllamaTitle = localOllamaStatusTitle(localOllamaStatus.status);
+  const hasVerifiedLocalOllamaModels =
+    localOllamaStatus.status === "reachable" ||
+    localOllamaStatus.status === "no_models";
+  const selectedLocalOllamaModelIsInstalled =
+    selectedLocalOllamaModel &&
+    localOllamaStatus.models.some(
+      (model) => model.id === selectedLocalOllamaModel
+    );
 
   async function refreshReadiness() {
     setBusyAction("refresh");
@@ -523,12 +601,35 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
       showToast(disabledReason, "warning");
       return;
     }
-    setBusyAction("start-intake");
+    if (isLocalUserMode) {
+      if (!hasVerifiedLocalOllamaModels) {
+        showToast(INTAKE_LOCAL_USER_MODEL_UNVERIFIED_MESSAGE, "warning");
+        return;
+      }
+      if (!selectedLocalOllamaModel || !selectedLocalOllamaModelIsInstalled) {
+        showToast(INTAKE_LOCAL_USER_MODEL_REQUIRED_MESSAGE, "warning");
+        return;
+      }
+    }
 
+    const runtimeSelection = getLocalUserOllamaRuntimeSelection({
+      mode: isLocalUserMode ? "local_user" : "hosted_admin",
+      model: selectedLocalOllamaModel,
+    });
+
+    const handoffPayload = {
+      message: intakeStarter,
+      attachments: [],
+    };
+    if (runtimeSelection) {
+      handoffPayload.runtime = runtimeSelection;
+    }
+
+    setBusyAction("start-intake");
     try {
       sessionStorage.setItem(
         PENDING_HOME_MESSAGE,
-        JSON.stringify({ message: intakeStarter, attachments: [] })
+        JSON.stringify(handoffPayload)
       );
     } catch {
       showToast(
@@ -875,11 +976,17 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
                   <select
                     id="local-user-ollama-model"
                     value={selectedLocalOllamaModel}
-                    onChange={(event) =>
-                      setSelectedLocalOllamaModel(event.target.value)
-                    }
+                    onChange={(event) => {
+                      const nextModelId = event.target.value;
+                      setSelectedLocalOllamaModel(nextModelId);
+                      persistLocalUserOllamaModelSelection(nextModelId);
+                      setLocalOllamaSelectionMessage(null);
+                    }}
                     className="w-full rounded-lg border border-theme-sidebar-border bg-theme-bg-secondary px-3 py-2 text-sm text-theme-text-primary outline-none focus:border-teal"
                   >
+                    {localOllamaStatus.models.length > 1 && (
+                      <option value="">Select an installed model</option>
+                    )}
                     {localOllamaStatus.models.map((model) => (
                       <option key={model.id} value={model.id}>
                         {model.name}
@@ -887,9 +994,14 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
                     ))}
                   </select>
                   <p className="text-xs opacity-80">
-                    Model selection is currently stored in Local User Mode UI
-                    state only.
+                    Model selection is stored in Local User Mode browser storage
+                    and restored only when that model is still installed.
                   </p>
+                  {localOllamaSelectionMessage && (
+                    <p className="text-xs font-medium text-amber-200 light:text-amber-800">
+                      {localOllamaSelectionMessage}
+                    </p>
+                  )}
                 </div>
               </div>
             )}
