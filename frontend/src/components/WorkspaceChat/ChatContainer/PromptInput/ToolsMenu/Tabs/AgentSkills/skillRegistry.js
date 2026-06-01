@@ -35,14 +35,17 @@ export const SUB_SKILL_REGISTRY = {
   "gmail-agent": {
     preferenceKey: "disabled_gmail_skills",
     getSubSkills: (t) => flattenCategorySkills(getGmailSkills(t)),
+    isMultiUserSupported: false,
   },
   "google-calendar-agent": {
     preferenceKey: "disabled_google_calendar_skills",
     getSubSkills: (t) => flattenCategorySkills(getGoogleCalendarSkills(t)),
+    isMultiUserSupported: false,
   },
   "outlook-agent": {
     preferenceKey: "disabled_outlook_skills",
     getSubSkills: (t) => flattenCategorySkills(getOutlookSkills(t)),
+    isMultiUserSupported: false,
   },
 };
 
@@ -78,4 +81,12 @@ export function getPreferenceKeyForSkill(skillKey) {
  */
 export function hasSubSkills(skillKey) {
   return skillKey in SUB_SKILL_REGISTRY;
+}
+
+/**
+ * Check if a skill is supported in multi-user mode.
+ * Skills without an explicit flag default to supported.
+ */
+export function isSkillMultiUserSupported(skillKey) {
+  return SUB_SKILL_REGISTRY[skillKey]?.isMultiUserSupported !== false;
 }

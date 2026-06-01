@@ -281,6 +281,10 @@ class AgentHandler {
         if (!process.env.MINIMAX_API_KEY)
           throw new Error("Minimax API key must be provided to use agents.");
         break;
+      case "cerebras":
+        if (!process.env.CEREBRAS_API_KEY)
+          throw new Error("Cerebras API key must be provided to use agents.");
+        break;
       default:
         throw new Error(
           "No workspace agent provider set. Please set your agent provider in the workspace's settings"
@@ -373,6 +377,8 @@ class AgentHandler {
         return process.env.LEMONADE_LLM_MODEL_PREF ?? null;
       case "minimax":
         return process.env.MINIMAX_MODEL_PREF ?? "MiniMax-M2.7";
+      case "cerebras":
+        return process.env.CEREBRAS_MODEL_PREF ?? "gpt-oss-120b";
       default:
         return null;
     }
@@ -489,15 +495,29 @@ class AgentHandler {
     }
 
     const router = new AnythingLLMModelRouter(routerWorkspace);
+    const { ModelRouterService } = require("../router");
+    const workspace = this.invocation.workspace;
+    const user = this.invocation.user_id
+      ? { id: this.invocation.user_id }
+      : null;
+    const effectivePrompt = prompt || this.invocation.prompt;
+    const ctx = await ModelRouterService.gatherRoutingContext({
+      workspace,
+      user,
+      thread: this.invocation.thread_id
+        ? { id: this.invocation.thread_id }
+        : null,
+      message: effectivePrompt,
+    });
+
     await router.resolve(
       {
-        prompt: prompt || this.invocation.prompt,
+        prompt: effectivePrompt,
+        conversationTokenCount: ctx.conversationTokenCount,
+        conversationMessageCount: ctx.conversationMessageCount,
         attachments: this.attachments || [],
       },
-      {
-        user: this.invocation.user_id ? { id: this.invocation.user_id } : null,
-        thread,
-      }
+      { user, thread }
     );
 
     this.provider = router.resolvedRoute.provider;

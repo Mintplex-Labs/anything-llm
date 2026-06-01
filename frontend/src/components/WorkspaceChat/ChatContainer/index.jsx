@@ -52,6 +52,29 @@ export default function ChatContainer({
   const { chatHistoryRef } = useChatContainerQuickScroll();
   const pendingMessageChecked = useRef(false);
   const pendingResetRef = useRef(false);
+  const activeThreadSlug = threadSlug;
+
+  const isEmpty =
+    chatHistory.length === 0 && !sessionStorage.getItem(PENDING_HOME_MESSAGE);
+
+  /**
+   * Keep chat history bottom-padding in sync with the prompt input's
+   * actual rendered height so expanding input never covers messages.
+   */
+  useEffect(() => {
+    if (isEmpty) return;
+    const wrapper = document.getElementById("prompt-input-wrapper");
+    const chatEl = document.getElementById("chat-history");
+    if (!wrapper || !chatEl) return;
+
+    const observer = new ResizeObserver(([entry]) => {
+      const inputHeight =
+        entry.borderBoxSize?.[0]?.blockSize ?? entry.target.offsetHeight;
+      chatEl.style.paddingBottom = `${inputHeight}px`;
+    });
+    observer.observe(wrapper);
+    return () => observer.disconnect();
+  }, [isEmpty]);
 
   const { listening, resetTranscript } = useSpeechRecognition({
     clearTranscriptOnListen: true,
@@ -79,7 +102,24 @@ export default function ChatContainer({
 
     // Clear the localStorage draft for this thread/workspace so that if the
     // PromptInput remounts (empty→chat transition), it won't restore stale text
-    clearPromptInputDraft(threadSlug ?? workspace.slug);
+    clearPromptInputDraft(activeThreadSlug ?? workspace.slug);
+
+    // If we're on a bare workspace route (no thread) and no chats exist yet,
+    // create a new thread and navigate to it — mimicking Home page behavior.
+    if (!activeThreadSlug && chatHistory.length === 0) {
+      const { thread } = await Workspace.threads.new(workspace.slug);
+      if (thread) {
+        sessionStorage.setItem(
+          PENDING_HOME_MESSAGE,
+          JSON.stringify({
+            message: currentMessage,
+            attachments: parseAttachments(),
+          })
+        );
+        navigate(paths.workspace.thread(workspace.slug, thread.slug));
+        return;
+      }
+    }
 
     const prevChatHistory = [
       ...chatHistory,
@@ -98,7 +138,6 @@ export default function ChatContainer({
     ];
 
     if (listening) {
-      // Stop the mic if the send button is clicked
       endSTTSession();
     }
     setChatHistory(prevChatHistory);
@@ -167,10 +206,24 @@ export default function ChatContainer({
 
     if (!text || text === "") return false;
 
+    // If on a bare workspace route with no thread and no chat yet, create a
+    // virtual thread and navigate — same as handleSubmit does.
+    if (!activeThreadSlug && chatHistory.length === 0 && history.length === 0) {
+      const { thread } = await Workspace.threads.new(workspace.slug);
+      if (thread) {
+        sessionStorage.setItem(
+          PENDING_HOME_MESSAGE,
+          JSON.stringify({ message: text, attachments })
+        );
+        navigate(paths.workspace.thread(workspace.slug, thread.slug));
+        return;
+      }
+    }
+
     // Clear the localStorage draft so that if the PromptInput remounts
     // (e.g. /reset causing empty→chat or chat→empty transitions),
     // it won't restore stale text.
-    clearPromptInputDraft(threadSlug ?? workspace.slug);
+    clearPromptInputDraft(activeThreadSlug ?? workspace.slug);
 
     // If we are auto-submitting
     // Then we can replace the current text since this is not accumulating.
@@ -266,7 +319,7 @@ export default function ChatContainer({
 
       await Workspace.multiplexStream({
         workspaceSlug: workspace.slug,
-        threadSlug,
+        threadSlug: activeThreadSlug,
         prompt: promptMessage.userMessage,
         chatHandler: (chatResult) =>
           handleChat(
@@ -376,9 +429,6 @@ export default function ChatContainer({
       }
     };
   }, [socketId]);
-
-  const isEmpty =
-    chatHistory.length === 0 && !sessionStorage.getItem(PENDING_HOME_MESSAGE);
 
   if (isEmpty) {
     return (

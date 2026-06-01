@@ -636,6 +636,10 @@ const TRANSLATIONS = {
         cancel: "Anula",
       },
     },
+    stt_unsupported: "Accesul la microfon nu este suportat în acest browser.",
+    stt_mic_denied:
+      "Nu am putut accesa microfonul. Vă rugăm să acordați permisiunea și să încercați din nou.",
+    stt_transcription_failed: "Transcriere eșuată: {{error}}",
   },
   profile_settings: {
     edit_account: "Editează contul",

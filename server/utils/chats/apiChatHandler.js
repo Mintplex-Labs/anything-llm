@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require("uuid");
 const { DocumentManager } = require("../DocumentManager");
 const { WorkspaceChats } = require("../../models/workspaceChats");
-const { getVectorDbClass, getLLMProvider } = require("../helpers");
+const { getVectorDbClass, resolveProviderConnector } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const {
   chatPrompt,
@@ -189,7 +189,7 @@ async function chatSync({
     // After this, we conclude the call as we normally do.
     return await eventListener
       .waitForClose()
-      .then(async ({ thoughts, textResponse, outputs }) => {
+      .then(async ({ thoughts, textResponse, outputs, metrics }) => {
         // Merge outputs from packMessages with outputs from aibitat (contains file download metadata with proper types)
         // These are needed for the download endpoint to authorize file access
         const allOutputs = [...outputs, ...agentHandler.getPendingOutputs()];
@@ -204,6 +204,7 @@ async function chatSync({
             type: chatMode,
             thoughts,
             outputs: allOutputs,
+            metrics,
           },
           include: false,
           apiSessionId: sessionId,
@@ -217,14 +218,20 @@ async function chatSync({
           textResponse,
           thoughts,
           outputs,
+          metrics,
         };
       });
   }
 
-  const LLMConnector = getLLMProvider({
-    provider: workspace?.chatProvider,
-    model: workspace?.chatModel,
+  const { connector: LLMConnector } = await resolveProviderConnector({
+    workspace,
+    prompt: message,
+    user,
+    thread,
+    attachments,
+    apiSessionId: sessionId,
   });
+
   const VectorDb = getVectorDbClass();
   const messageLimit = workspace?.openAiHistory || 20;
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
@@ -548,7 +555,7 @@ async function streamChat({
     // and stream back any results we get from agents as they come in.
     return eventListener
       .streamAgentEvents(response, uuid)
-      .then(async ({ thoughts, textResponse, outputs }) => {
+      .then(async ({ thoughts, textResponse, outputs, metrics }) => {
         // Merge outputs from packMessages with outputs from aibitat (contains file download metadata with proper types)
         // These are needed for the download endpoint to authorize file access
         const allOutputs = [...outputs, ...agentHandler.getPendingOutputs()];
@@ -563,6 +570,7 @@ async function streamChat({
             type: chatMode,
             thoughts,
             outputs: allOutputs,
+            metrics,
           },
           include: true,
           threadId: thread?.id || null,
@@ -576,13 +584,18 @@ async function streamChat({
           outputs,
           close: true,
           error: false,
+          metrics,
         });
       });
   }
 
-  const LLMConnector = getLLMProvider({
-    provider: workspace?.chatProvider,
-    model: workspace?.chatModel,
+  const { connector: LLMConnector } = await resolveProviderConnector({
+    workspace,
+    prompt: message,
+    user,
+    thread,
+    attachments,
+    apiSessionId: sessionId,
   });
 
   const VectorDb = getVectorDbClass();

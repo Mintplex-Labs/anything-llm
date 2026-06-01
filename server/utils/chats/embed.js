@@ -1,5 +1,5 @@
 const { v4: uuidv4 } = require("uuid");
-const { getVectorDbClass, getLLMProvider } = require("../helpers");
+const { getVectorDbClass, resolveProviderConnector } = require("../helpers");
 const { chatPrompt, sourceIdentifier } = require("./index");
 const { EmbedChats } = require("../../models/embedChats");
 const {
@@ -31,13 +31,16 @@ async function streamChatWithForEmbed(
     embed.workspace.openAiTemp = parseFloat(temperatureOverride);
 
   const uuid = uuidv4();
-  const { connector: LLMConnector, error: routerError } =
-    await resolveLLMConnectorForEmbed({
-      embed,
-      chatModel,
-      message,
-      sessionId,
-    });
+  const {
+    connector: LLMConnector,
+    prefetchedContext,
+    error: routerError,
+  } = await resolveLLMConnectorForEmbed({
+    embed,
+    chatModel,
+    message,
+    sessionId,
+  });
 
   if (routerError) {
     return writeResponseChunk(response, {
@@ -76,31 +79,29 @@ async function streamChatWithForEmbed(
   let contextTexts = [];
   let sources = [];
   let pinnedDocIdentifiers = [];
-  const { rawHistory, chatHistory } = await recentEmbedChatHistory(
-    sessionId,
-    embed,
-    messageLimit
-  );
+  const {
+    rawHistory,
+    chatHistory,
+    pinnedDocs: prefetchedPinnedDocs,
+  } = prefetchedContext ??
+  (await recentEmbedChatHistory(sessionId, embed, messageLimit));
 
-  // See stream.js comment for more information on this implementation.
-  await new DocumentManager({
-    workspace: embed.workspace,
-    maxTokens: LLMConnector.promptWindowLimit(),
-  })
-    .pinnedDocs()
-    .then((pinnedDocs) => {
-      pinnedDocs.forEach((doc) => {
-        const { pageContent, ...metadata } = doc;
-        pinnedDocIdentifiers.push(sourceIdentifier(doc));
-        contextTexts.push(doc.pageContent);
-        sources.push({
-          text:
-            pageContent.slice(0, 1_000) +
-            "...continued on in source document...",
-          ...metadata,
-        });
-      });
+  const pinnedDocs =
+    prefetchedPinnedDocs ??
+    (await new DocumentManager({
+      workspace: embed.workspace,
+      maxTokens: LLMConnector.promptWindowLimit(),
+    }).pinnedDocs());
+  pinnedDocs.forEach((doc) => {
+    const { pageContent, ...metadata } = doc;
+    pinnedDocIdentifiers.push(sourceIdentifier(doc));
+    contextTexts.push(doc.pageContent);
+    sources.push({
+      text:
+        pageContent.slice(0, 1_000) + "...continued on in source document...",
+      ...metadata,
     });
+  });
 
   const vectorSearchResults =
     embeddingsCount !== 0
@@ -249,58 +250,47 @@ async function resolveLLMConnectorForEmbed({
   message,
   sessionId,
 }) {
-  const workspace = embed?.workspace;
-  const effectiveProvider = workspace?.chatProvider || process.env.LLM_PROVIDER;
-  const isRouterProvider = effectiveProvider === "anythingllm-router";
-
-  if (!isRouterProvider) {
-    return {
-      connector: getLLMProvider({
-        provider: workspace?.chatProvider,
-        model: chatModel ?? workspace?.chatModel,
-      }),
-      error: null,
-    };
-  }
-
+  // If a chat model is provided, use it to override the workspace chat model
+  // otherwise use the workspace chat model as we do everywhere else.
+  const workspace = chatModel
+    ? { ...embed?.workspace, chatModel }
+    : embed?.workspace;
   try {
-    const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
-    const { TokenManager } = require("../helpers/tiktoken");
-
-    const routerWorkspace = workspace?.router_id
-      ? workspace
-      : {
-          ...workspace,
-          router_id: process.env.MODEL_ROUTER_ID
-            ? Number(process.env.MODEL_ROUTER_ID)
-            : null,
-        };
-
-    const router = new AnythingLLMModelRouter(routerWorkspace);
-    const tokenManager = new TokenManager();
-    const conversationTokenCount = tokenManager.countFromString(message);
-    const conversationMessageCount = await EmbedChats.count({
+    const messageLimit = workspace?.openAiHistory || 20;
+    const embedHistory = await recentEmbedChatHistory(
+      sessionId,
+      embed,
+      messageLimit
+    );
+    const embedMessageCount = await EmbedChats.count({
       embed_id: embed.id,
       session_id: sessionId,
+      include: true,
     });
 
-    await router.resolve(
-      {
-        prompt: message,
-        conversationTokenCount,
-        conversationMessageCount,
-        attachments: [],
-      },
-      { user: null, thread: null }
-    );
+    const { connector, prefetchedContext } = await resolveProviderConnector({
+      workspace,
+      prompt: message,
+      chatHistoryOverride: embedHistory,
+      // +1 to include the current in-flight message to ensure routing rules are evaluated against the real total.
+      messageCountOverride: embedMessageCount + 1,
+    });
 
     return {
-      connector: router.delegateProvider,
+      connector,
+      prefetchedContext: prefetchedContext
+        ? {
+            rawHistory: embedHistory.rawHistory,
+            chatHistory: embedHistory.chatHistory,
+            pinnedDocs: prefetchedContext.pinnedDocs,
+          }
+        : null,
       error: null,
     };
   } catch (routerError) {
     return {
       connector: null,
+      prefetchedContext: null,
       error: `Model router error: ${routerError.message}`,
     };
   }

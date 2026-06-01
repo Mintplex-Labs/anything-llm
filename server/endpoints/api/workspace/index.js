@@ -4,7 +4,10 @@ const { Telemetry } = require("../../../models/telemetry");
 const { DocumentVectors } = require("../../../models/vectors");
 const { Workspace } = require("../../../models/workspace");
 const { WorkspaceChats } = require("../../../models/workspaceChats");
-const { getVectorDbClass, getLLMProvider } = require("../../../utils/helpers");
+const {
+  getVectorDbClass,
+  resolveProviderConnector,
+} = require("../../../utils/helpers");
 const { multiUserMode, reqBody } = require("../../../utils/http");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
 const { VALID_CHAT_MODE } = require("../../../utils/chats/stream");
@@ -984,10 +987,15 @@ function apiWorkspaceEndpoints(app) {
           return input;
         };
 
+        const { connector: LLMConnector } = await resolveProviderConnector({
+          workspace,
+          prompt: String(query),
+        });
+
         const results = await VectorDb.performSimilaritySearch({
           namespace: workspace.slug,
           input: String(query),
-          LLMConnector: getLLMProvider(),
+          LLMConnector,
           similarityThreshold: parseSimilarityThreshold(),
           topN: parseTopN(),
           rerank: workspace?.vectorSearchMode === "rerank",
