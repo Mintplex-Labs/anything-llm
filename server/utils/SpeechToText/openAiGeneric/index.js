@@ -16,12 +16,6 @@ class GenericOpenAiSTT {
         "No OpenAI compatible STT model was set. We will use the default model 'whisper-1'. This may not exist or be valid for your selected endpoint."
       );
 
-    console.log({
-      key: process.env.STT_OPEN_AI_COMPATIBLE_KEY,
-      model: process.env.STT_OPEN_AI_COMPATIBLE_MODEL,
-      endpoint: process.env.STT_OPEN_AI_COMPATIBLE_ENDPOINT,
-    });
-
     const { OpenAI: OpenAIApi } = require("openai");
     this.openai = new OpenAIApi({
       apiKey: process.env.STT_OPEN_AI_COMPATIBLE_KEY || null,
