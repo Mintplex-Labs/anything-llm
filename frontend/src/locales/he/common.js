@@ -1305,6 +1305,9 @@ const TRANSLATIONS = {
         cancel: "בטל",
       },
     },
+    stt_unsupported: "אין תמיכה בגישה למイクרופון בדפדפן זה.",
+    stt_mic_denied: "לא ניתן לגשת למכשיר המיקרופון. אנא אפשרו גישה ונסו שוב.",
+    stt_transcription_failed: "לא הצליח הטרנסקריפציה: {{error}}",
   },
   profile_settings: {
     edit_account: "ערוך חשבון",

@@ -1361,6 +1361,10 @@ const TRANSLATIONS = {
         cancel: "Atcelt",
       },
     },
+    stt_unsupported: "Mikrofona lietošana šajā pārlūkprogrammā nav atbalstīta.",
+    stt_mic_denied:
+      "Neizdevās piekļūt mikrofonam. Lūdzu, atļaujiet piekļaušanu un mēģiniet vēlreiz.",
+    stt_transcription_failed: "Transkripcija neizdevās: {{error}}",
   },
   profile_settings: {
     edit_account: "Rediģēt kontu",

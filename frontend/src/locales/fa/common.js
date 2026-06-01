@@ -1250,6 +1250,10 @@ const TRANSLATIONS = {
         cancel: "لغو کردن",
       },
     },
+    stt_unsupported: "دسترسی به میکروفون در این مرورگر پشتیبانی نمی‌شود.",
+    stt_mic_denied:
+      "امکان دسترسی به میکروفون وجود نداشت. لطفاً اجازه دسترسی را بدهید و دوباره امتحان کنید.",
+    stt_transcription_failed: "ترجمه ناموفق: {{error}}",
   },
   profile_settings: {
     edit_account: "ویرایش حساب",
