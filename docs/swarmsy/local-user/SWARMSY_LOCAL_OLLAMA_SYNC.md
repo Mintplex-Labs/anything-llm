@@ -51,3 +51,6 @@ If `http://localhost:11434/api/tags` is unreachable, SWARMSY should:
 - Detection performs a single safe `GET` against the resolved tags endpoint. It defaults to `http://localhost:11434/api/tags` and can be overridden by `SWARMSY_LOCAL_OLLAMA_TAGS_URL` or `OLLAMA_BASE_PATH`.
 - Returned states are `reachable`, `unreachable`, `no_models`, and `error`.
 - Installed Ollama models are listed when the local runtime is reachable.
+- Local User Mode onboarding UI now calls the route and shows explicit status states: `checking`, `reachable`, `unreachable`, `no_models`, and `error`.
+- The Local User Mode panel now includes a retry/check-again action, setup guidance when Ollama is unreachable, installed-model listing, and a model-selection shell.
+- The selected local Ollama model is currently UI-state only; persistent local settings storage is a follow-up phase.

@@ -10,7 +10,8 @@ Local Ollama detection endpoint and UI.
 
 - Foundation shipped: single-user/local-user Ollama detection route at `GET /api/swarmsy/local-user/ollama/status`.
 - Current implementation covers safe endpoint resolution, with localhost as the default, plus installed-model listing.
-- Remaining work in this phase is local-user UI wiring and model-selection UX.
+- Local User Mode onboarding now includes the first user-facing Ollama setup/status panel with explicit states, setup guidance, installed-model listing, retry/check-again, and a model-selection shell.
+- Remaining work in this phase is persistent local settings storage for selected model and chat/runtime integration of that selected local model.
 
 ## Phase 3
 

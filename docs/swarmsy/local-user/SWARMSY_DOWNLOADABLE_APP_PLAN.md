@@ -61,3 +61,9 @@ Phase the downloadable app as a local-user wrapper around the existing SWARMSY p
 ## Expected Outcome
 
 This plan creates the product split and implementation path for a downloadable SWARMSY app without breaking the current hosted experience.
+
+## Current Status Note
+
+- Backend Local User Mode Ollama detection exists at `GET /api/swarmsy/local-user/ollama/status`.
+- The first Local User Mode UI status/model-selection shell now exists in onboarding and remains clearly separate from Hosted/Admin Mode flows.
+- Persistent local model settings storage and desktop packaging remain future phases.

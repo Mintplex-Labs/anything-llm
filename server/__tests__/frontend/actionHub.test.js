@@ -185,6 +185,7 @@ describe("SWARMSY HIVE action hub", () => {
     expect(source).toContain("/swarmsy/onboarding/status");
     expect(source).toContain("/swarmsy/onboarding/create-hive");
     expect(source).toContain("/swarmsy/onboarding/ingest-required-docs");
+    expect(source).toContain("/swarmsy/local-user/ollama/status");
     expect(source).not.toContain("/admin/");
   });
 
@@ -199,5 +200,164 @@ describe("SWARMSY HIVE action hub", () => {
 
     expect(source).toContain("ACTION_HUB_TITLE");
     expect(source).toContain("Choose the next command for SPARKY.");
+    expect(source).toContain("Local User Mode · Ollama");
+    expect(source).toContain("Model selection shell");
+    expect(source).toContain("Check again");
+    expect(source).toContain("Ollama was not detected.");
+  });
+
+  it("wires abort-safe local-user Ollama sync in onboarding mount effect", () => {
+    const source = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        "../../../frontend/src/components/SwarmsyFirstRunOnboarding/index.jsx"
+      ),
+      "utf8"
+    );
+
+    expect(source).toContain("const controller = beginLocalUserOllamaRequest();");
+    expect(source).toContain(
+      "syncLocalUserOllamaStatus({ signal: controller.signal });"
+    );
+    expect(source).toContain("releaseLocalUserOllamaRequest(controller);");
+    expect(source).toContain("if (signal?.aborted || !isLatestLocalUserOllamaRequest(signal))");
+    expect(source).toContain("return null;");
+  });
+
+  it("uses abort-safe manual refresh with shared ref in checkLocalUserOllama", () => {
+    const source = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        "../../../frontend/src/components/SwarmsyFirstRunOnboarding/index.jsx"
+      ),
+      "utf8"
+    );
+
+    expect(source).toContain("localOllamaRefreshControllerRef");
+    expect(source).toContain(
+      "const controller = beginLocalUserOllamaRequest();"
+    );
+    expect(source).toContain("} finally {");
+    expect(source).toContain(
+      "releaseLocalUserOllamaRequest(controller)"
+    );
+    expect(source).toContain("!controller.signal.aborted");
+  });
+
+  it("guards Local Ollama updates so only the latest request may set state", () => {
+    const source = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        "../../../frontend/src/components/SwarmsyFirstRunOnboarding/index.jsx"
+      ),
+      "utf8"
+    );
+
+    expect(source).toContain("isLatestLocalUserOllamaRequest");
+    expect(source).toContain(
+      "localOllamaRefreshControllerRef.current?.signal === signal"
+    );
+    expect(source).toContain("releaseLocalUserOllamaRequest");
+  });
+
+  it("clears stale fields when transitioning to checking state", () => {
+    const source = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        "../../../frontend/src/components/SwarmsyFirstRunOnboarding/index.jsx"
+      ),
+      "utf8"
+    );
+
+    expect(source).toContain('status: "checking"');
+    expect(source).toContain("models: [],");
+    expect(source).toContain("endpoint: null,");
+    expect(source).toContain("message: null,");
+  });
+
+  it("trims model.id before falling back to name in normalizeLocalUserModel", () => {
+    const source = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        "../../../frontend/src/components/SwarmsyFirstRunOnboarding/index.jsx"
+      ),
+      "utf8"
+    );
+
+    expect(source).toContain('const rawId = String(model?.id ?? "").trim();');
+    expect(source).toContain("id: rawId || name ||");
+  });
+
+  it("normalizeLocalUserOllamaStatus rejects fallback/unknown mode responses", () => {
+    const source = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        "../../../frontend/src/components/SwarmsyFirstRunOnboarding/index.jsx"
+      ),
+      "utf8"
+    );
+
+    expect(source).toContain('response?.mode !== "local_user"');
+    expect(source).toContain('response?.source === "fallback"');
+  });
+
+  it("network failure fallback uses mode unknown with source fallback, not local_user", () => {
+    const source = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        "../../../frontend/src/models/swarmsyOnboarding.js"
+      ),
+      "utf8"
+    );
+
+    expect(source).toContain('mode: "unknown"');
+    expect(source).toContain('source: "fallback"');
+    expect(source).not.toMatch(/catch[\s\S]*?mode:\s*"local_user"/);
+  });
+
+  it("tracks confirmed local-user mode via hasConfirmedLocalUserModeRef", () => {
+    const source = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        "../../../frontend/src/components/SwarmsyFirstRunOnboarding/index.jsx"
+      ),
+      "utf8"
+    );
+
+    expect(source).toContain("hasConfirmedLocalUserModeRef");
+    expect(source).toContain("hasConfirmedLocalUserModeRef.current = true");
+    expect(source).toContain("hasConfirmedLocalUserModeRef.current");
+  });
+
+  it("fallback before local-user mode confirmed hides the panel; fallback after confirmed keeps panel with error state", () => {
+    const source = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        "../../../frontend/src/components/SwarmsyFirstRunOnboarding/index.jsx"
+      ),
+      "utf8"
+    );
+
+    expect(source).toContain('response?.source === "fallback"');
+    expect(source).toContain("hasConfirmedLocalUserModeRef.current");
+    expect(source).toContain('status: "error"');
+  });
+
+  it("setup guidance for unreachable only, not for error state", () => {
+    const source = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        "../../../frontend/src/components/SwarmsyFirstRunOnboarding/index.jsx"
+      ),
+      "utf8"
+    );
+
+    expect(source).toContain('localOllamaStatus.status === "unreachable"');
+    expect(source).not.toMatch(
+      /localOllamaStatus\.status === "unreachable"[\s\S]*?localOllamaStatus\.status === "error"[\s\S]*?LOCAL_OLLAMA_SETUP_GUIDANCE/
+    );
+    expect(source).not.toMatch(
+      /\(localOllamaStatus\.status === "unreachable" \|\|\s*localOllamaStatus\.status === "error"\)/
+    );
   });
 });
