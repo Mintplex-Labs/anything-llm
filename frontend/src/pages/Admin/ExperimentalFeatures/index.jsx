@@ -5,7 +5,7 @@ import Admin from "@/models/admin";
 import { FullScreenLoader } from "@/components/Preloader";
 import { CaretRight, Flask } from "@phosphor-icons/react";
 import { configurableFeatures } from "./features";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 
@@ -199,7 +199,7 @@ function FeatureVerification({ children }) {
 
     return (
       <>
-        <ModalWrapper isOpen={true}>
+        <Modal isOpen={true}>
           <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
             <div className="relative p-6 border-b rounded-t border-theme-modal-border">
               <div className="flex items-center gap-2">
@@ -292,7 +292,7 @@ function FeatureVerification({ children }) {
               </div>
             </form>
           </div>
-        </ModalWrapper>
+        </Modal>
         {children}
       </>
     );

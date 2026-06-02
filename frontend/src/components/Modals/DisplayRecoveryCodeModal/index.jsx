@@ -2,7 +2,7 @@ import showToast from "@/utils/toast";
 import { DownloadSimple, Key } from "@phosphor-icons/react";
 import { saveAs } from "file-saver";
 import { useState } from "react";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 
 export default function RecoveryCodeModal({
   recoveryCodes,
@@ -33,7 +33,7 @@ export default function RecoveryCodeModal({
   };
 
   return (
-    <ModalWrapper isOpen={true}>
+    <Modal isOpen={true} onClose={handleClose}>
       <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
         <div className="relative p-6 border-b rounded-t border-theme-modal-border">
           <div className="w-full flex gap-x-2 items-center">
@@ -86,6 +86,6 @@ export default function RecoveryCodeModal({
           </div>
         </div>
       </div>
-    </ModalWrapper>
+    </Modal>
   );
 }

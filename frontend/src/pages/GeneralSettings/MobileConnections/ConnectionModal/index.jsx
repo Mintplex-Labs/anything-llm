@@ -1,5 +1,5 @@
 import { X } from "@phosphor-icons/react";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 import BG from "./bg.png";
 import { QRCodeSVG } from "qrcode.react";
 import { Link } from "react-router-dom";
@@ -12,7 +12,7 @@ import GetOnGooglePlay from "./gplay-badge.svg";
 
 export default function MobileConnectModal({ isOpen, onClose }) {
   return (
-    <ModalWrapper isOpen={isOpen}>
+    <Modal isOpen={isOpen} onClose={onClose}>
       <div
         className="relative w-full rounded-lg shadow"
         style={{
@@ -76,7 +76,7 @@ export default function MobileConnectModal({ isOpen, onClose }) {
           </div>
         </div>
       </div>
-    </ModalWrapper>
+    </Modal>
   );
 }
 

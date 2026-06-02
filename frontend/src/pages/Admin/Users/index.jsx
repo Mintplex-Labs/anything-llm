@@ -9,7 +9,7 @@ import UserRow from "./UserRow";
 import useUser from "@/hooks/useUser";
 import NewUserModal from "./NewUserModal";
 import { useModal } from "@/hooks/useModal";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 import CTAButton from "@/components/lib/CTAButton";
 import Toggle from "@/components/lib/Toggle";
 
@@ -48,9 +48,9 @@ export default function AdminUsers() {
             <UsersContainer />
           </div>
         </div>
-        <ModalWrapper isOpen={isOpen}>
+        <Modal isOpen={isOpen} onClose={closeModal}>
           <NewUserModal closeModal={closeModal} />
-        </ModalWrapper>
+        </Modal>
       </div>
     </div>
   );

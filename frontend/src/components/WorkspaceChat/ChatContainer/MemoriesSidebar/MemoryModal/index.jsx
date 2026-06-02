@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { X } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 
 /**
  * @param {Object} props
@@ -48,7 +48,7 @@ export default function MemoryModal({
   }
 
   return (
-    <ModalWrapper isOpen={isOpen}>
+    <Modal isOpen={isOpen} onClose={onClose}>
       <div className="bg-zinc-900 light:bg-white border border-zinc-800 light:border-slate-300 rounded-lg p-6 w-[400px] flex flex-col gap-5">
         <div className="flex flex-col gap-1">
           <div className="flex items-start justify-between">
@@ -102,6 +102,6 @@ export default function MemoryModal({
           </button>
         </div>
       </div>
-    </ModalWrapper>
+    </Modal>
   );
 }

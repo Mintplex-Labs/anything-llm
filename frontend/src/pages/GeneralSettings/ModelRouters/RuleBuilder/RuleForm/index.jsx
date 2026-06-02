@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CircleNotch, X } from "@phosphor-icons/react";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 import ModelRouterAPI from "@/models/modelRouter";
 import showToast from "@/utils/toast";
 import LLMProviderModelPicker from "../../LLMProviderModelPicker";
@@ -121,7 +121,7 @@ export default function RuleForm({
   };
 
   return (
-    <ModalWrapper isOpen={isOpen}>
+    <Modal isOpen={isOpen} onClose={closeModal}>
       <div className="relative w-full max-w-3xl bg-zinc-900 light:bg-white rounded-[8px] shadow border border-zinc-700 light:border-slate-300">
         <form onSubmit={handleSubmit} className="flex flex-col gap-y-5 p-6">
           <div className="flex flex-col gap-y-1">
@@ -226,6 +226,6 @@ export default function RuleForm({
           </div>
         </form>
       </div>
-    </ModalWrapper>
+    </Modal>
   );
 }

@@ -2,14 +2,14 @@ import { X } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 import paths from "@/utils/paths";
 import { Link } from "react-router-dom";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 
 export default function UnauthenticatedHubModal({ show, onClose }) {
   const { t } = useTranslation();
   if (!show) return null;
 
   return (
-    <ModalWrapper isOpen={show}>
+    <Modal isOpen={show} onClose={onClose}>
       <div className="relative w-[400px] max-w-full bg-theme-bg-primary rounded-lg shadow border border-theme-modal-border">
         <div className="p-6">
           <button
@@ -35,6 +35,6 @@ export default function UnauthenticatedHubModal({ show, onClose }) {
           </div>
         </div>
       </div>
-    </ModalWrapper>
+    </Modal>
   );
 }

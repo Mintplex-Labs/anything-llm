@@ -8,7 +8,7 @@ import BrowserExtensionApiKey from "@/models/browserExtensionApiKey";
 import BrowserExtensionApiKeyRow from "./BrowserExtensionApiKeyRow";
 import CTAButton from "@/components/lib/CTAButton";
 import NewBrowserExtensionApiKeyModal from "./NewBrowserExtensionApiKeyModal";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 import { useModal } from "@/hooks/useModal";
 import { fullApiUrl } from "@/utils/constants";
 import { Tooltip } from "react-tooltip";
@@ -127,13 +127,13 @@ export default function BrowserExtensionApiKeys() {
           </div>
         </div>
       </div>
-      <ModalWrapper isOpen={isOpen}>
+      <Modal isOpen={isOpen} onClose={closeModal}>
         <NewBrowserExtensionApiKeyModal
           closeModal={closeModal}
           onSuccess={fetchExistingKeys}
           isMultiUser={isMultiUser}
         />
-      </ModalWrapper>
+      </Modal>
       <Tooltip
         id="auto-connection"
         place="bottom"

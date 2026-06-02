@@ -8,7 +8,7 @@ import { isMobileOnly } from "react-device-detect";
 import useUser from "../../../hooks/useUser";
 import DocumentSettings from "./Documents";
 import DataConnectors from "./DataConnectors";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 import { EmbeddingProgressProvider } from "@/EmbeddingProgressContext";
 
 const noop = () => {};
@@ -40,7 +40,7 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
 
   if (isMobileOnly) {
     return (
-      <ModalWrapper isOpen={true}>
+      <Modal isOpen={true} onClose={hideModal}>
         <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
           <div className="relative p-6 border-b rounded-t border-theme-modal-border">
             <div className="w-full flex gap-x-2 items-center">
@@ -76,7 +76,7 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
             </button>
           </div>
         </div>
-      </ModalWrapper>
+      </Modal>
     );
   }
 

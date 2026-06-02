@@ -1,5 +1,5 @@
 import { useModal } from "@/hooks/useModal";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 import { SlidersHorizontal, X } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 import MaxToolCallStack from "./MaxToolCallStack";
@@ -27,7 +27,7 @@ function AgentSkillSettingsModal({ isOpen, closeModal }) {
   if (!isOpen) return null;
 
   return (
-    <ModalWrapper isOpen={isOpen}>
+    <Modal isOpen={isOpen} onClose={closeModal}>
       <div className="w-[500px] bg-theme-bg-sidebar px-6 py-4 rounded-lg flex flex-col items-center justify-between relative shadow-lg border border-white/10">
         <div className="w-full flex items-center justify-between">
           <div className="text-white text-left font-medium text-lg">
@@ -51,6 +51,6 @@ function AgentSkillSettingsModal({ isOpen, closeModal }) {
           </div>
         </div>
       </div>
-    </ModalWrapper>
+    </Modal>
   );
 }

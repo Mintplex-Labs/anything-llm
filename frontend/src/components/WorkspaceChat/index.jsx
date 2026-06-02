@@ -3,7 +3,7 @@ import Workspace from "@/models/workspace";
 import LoadingChat from "./LoadingChat";
 import ChatContainer from "./ChatContainer";
 import paths from "@/utils/paths";
-import ModalWrapper from "../ModalWrapper";
+import Modal from "@/components/lib/Modal";
 import { useParams } from "react-router-dom";
 import { DnDFileUploaderProvider } from "./ChatContainer/DnDWrapper";
 import { WarningCircle } from "@phosphor-icons/react";
@@ -56,7 +56,7 @@ export default function WorkspaceChat({ loading, workspace }) {
     return (
       <>
         {loading === false && !workspace && (
-          <ModalWrapper isOpen={true}>
+          <Modal isOpen={true}>
             <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
               <div className="relative p-6 border-b rounded-t border-theme-modal-border">
                 <div className="w-full flex gap-x-2 items-center">
@@ -84,7 +84,7 @@ export default function WorkspaceChat({ loading, workspace }) {
                 </a>
               </div>
             </div>
-          </ModalWrapper>
+          </Modal>
         )}
         <LoadingChat />
       </>

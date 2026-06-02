@@ -1,5 +1,5 @@
 import { CircleNotch } from "@phosphor-icons/react";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 import pluralize from "pluralize";
 import { numberWithCommas } from "@/utils/numbers";
 import useUser from "@/hooks/useUser";
@@ -24,7 +24,7 @@ export default function FileUploadWarningModal({
 
   if (isEmbedding) {
     return (
-      <ModalWrapper isOpen={show}>
+      <Modal isOpen={show} onClose={onClose}>
         <div className="relative max-w-[600px] bg-theme-bg-primary rounded-lg shadow border border-theme-modal-border">
           <div className="p-6 flex flex-col items-center justify-center">
             <p className="text-white text-lg font-semibold mb-4">
@@ -37,12 +37,12 @@ export default function FileUploadWarningModal({
             </p>
           </div>
         </div>
-      </ModalWrapper>
+      </Modal>
     );
   }
 
   return (
-    <ModalWrapper isOpen={show}>
+    <Modal isOpen={show} onClose={onClose}>
       <div className="relative max-w-[600px] bg-theme-bg-primary rounded-lg shadow border border-theme-modal-border">
         <div className="relative p-6 border-b border-theme-modal-border">
           <div className="w-full flex gap-x-2 items-center">
@@ -101,6 +101,6 @@ export default function FileUploadWarningModal({
           </div>
         </div>
       </div>
-    </ModalWrapper>
+    </Modal>
   );
 }

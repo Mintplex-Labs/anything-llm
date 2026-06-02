@@ -8,7 +8,7 @@ import Admin from "@/models/admin";
 import InviteRow from "./InviteRow";
 import NewInviteModal from "./NewInviteModal";
 import { useModal } from "@/hooks/useModal";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 import CTAButton from "@/components/lib/CTAButton";
 
 export default function AdminInvites() {
@@ -103,9 +103,9 @@ export default function AdminInvites() {
             )}
           </div>
         </div>
-        <ModalWrapper isOpen={isOpen}>
+        <Modal isOpen={isOpen} onClose={closeModal}>
           <NewInviteModal closeModal={closeModal} onSuccess={fetchInvites} />
-        </ModalWrapper>
+        </Modal>
       </div>
     </div>
   );

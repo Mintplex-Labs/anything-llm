@@ -1,4 +1,4 @@
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 import { useModal } from "@/hooks/useModal";
 import Admin from "@/models/admin";
 import { useEffect, useState } from "react";
@@ -79,13 +79,13 @@ export default function Members({ workspace }) {
         </tbody>
       </table>
       <CTAButton onClick={openModal}>Manage Users</CTAButton>
-      <ModalWrapper isOpen={isOpen}>
+      <Modal isOpen={isOpen} onClose={closeModal}>
         <AddMemberModal
           closeModal={closeModal}
           users={users}
           workspace={adminWorkspace}
         />
-      </ModalWrapper>
+      </Modal>
     </div>
   );
 }

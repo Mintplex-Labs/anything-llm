@@ -9,7 +9,7 @@ import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 import PreLoader from "@/components/Preloader";
 import ChangeWarningModal from "@/components/ChangeWarning";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 import VectorDBItem from "@/components/VectorDBSelection/VectorDBItem";
 
 import LanceDbLogo from "@/media/vectordbs/lancedb.png";
@@ -329,13 +329,13 @@ export default function GeneralVectorDatabase() {
           </form>
         </div>
       )}
-      <ModalWrapper isOpen={isOpen}>
+      <Modal isOpen={isOpen} onClose={closeModal}>
         <ChangeWarningModal
           warningText="Switching the vector database will reset all previously embedded documents in all workspaces.\n\nConfirming will clear all embeddings from your vector database and remove all documents from your workspaces. Your uploaded documents will not be deleted, they will be available for re-embedding."
           onClose={closeModal}
           onConfirm={handleSaveSettings}
         />
-      </ModalWrapper>
+      </Modal>
     </div>
   );
 }

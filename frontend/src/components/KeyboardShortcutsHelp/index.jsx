@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { X } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
+import Modal from "@/components/lib/Modal";
 import {
   SHORTCUTS,
   isMac,
@@ -22,9 +23,8 @@ export default function KeyboardShortcutsHelp() {
     };
   }, []);
 
-  if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex items-center justify-center">
+    <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
       <div className="relative bg-theme-bg-secondary rounded-lg p-6 max-w-2xl w-full mx-4">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold text-white">
@@ -55,6 +55,6 @@ export default function KeyboardShortcutsHelp() {
           ))}
         </div>
       </div>
-    </div>
+    </Modal>
   );
 }

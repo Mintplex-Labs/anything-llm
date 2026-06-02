@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { X } from "@phosphor-icons/react";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 import { CMD_REGEX } from "./constants";
 import { useTranslation } from "react-i18next";
 
@@ -26,7 +26,7 @@ export default function AddPresetModal({ isOpen, onClose, onSave }) {
   };
 
   return (
-    <ModalWrapper isOpen={isOpen}>
+    <Modal isOpen={isOpen} onClose={onClose}>
       <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
         <div className="relative p-6 border-b rounded-t border-theme-modal-border">
           <div className="w-full flex gap-x-2 items-center">
@@ -126,6 +126,6 @@ export default function AddPresetModal({ isOpen, onClose, onSave }) {
           </form>
         </div>
       </div>
-    </ModalWrapper>
+    </Modal>
   );
 }

@@ -1,7 +1,7 @@
 import { Fragment, useState, useEffect } from "react";
 import { decode as HTMLDecode } from "he";
 import truncate from "truncate";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 import {
   FileText,
   Info,
@@ -200,7 +200,7 @@ export function CitationDetailModal({ source, onClose }) {
   const { t } = useTranslation();
 
   return (
-    <ModalWrapper isOpen={!!source}>
+    <Modal isOpen={!!source} onClose={onClose}>
       <div className="w-full max-w-2xl bg-zinc-900 light:bg-white rounded-lg shadow border-2 border-zinc-700 light:border-slate-300 overflow-hidden">
         <div className="relative p-6 border-b rounded-t border-zinc-700 light:border-slate-300">
           <div className="w-full flex gap-x-2 items-center">
@@ -280,7 +280,7 @@ export function CitationDetailModal({ source, onClose }) {
           </div>
         </div>
       </div>
-    </ModalWrapper>
+    </Modal>
   );
 }
 

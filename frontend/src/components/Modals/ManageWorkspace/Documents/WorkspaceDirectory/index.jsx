@@ -1,7 +1,7 @@
 import PreLoader from "@/components/Preloader";
 import WorkspaceFileRow from "./WorkspaceFileRow";
 import { memo, useEffect, useState } from "react";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 import {
   Eye,
   PushPin,
@@ -323,7 +323,7 @@ const PinAlert = memo(() => {
   }, []);
 
   return (
-    <ModalWrapper isOpen={showAlert} noPortal={true}>
+    <Modal isOpen={showAlert} noPortal={true} onClose={dismissAlert}>
       <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
         <div className="relative p-6 border-b rounded-t border-theme-modal-border">
           <div className="flex items-center gap-2">
@@ -364,7 +364,7 @@ const PinAlert = memo(() => {
           </button>
         </div>
       </div>
-    </ModalWrapper>
+    </Modal>
   );
 });
 
@@ -388,7 +388,7 @@ const DocumentWatchAlert = memo(() => {
   }, []);
 
   return (
-    <ModalWrapper isOpen={showAlert} noPortal={true}>
+    <Modal isOpen={showAlert} noPortal={true} onClose={dismissAlert}>
       <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
         <div className="relative p-6 border-b rounded-t border-theme-modal-border">
           <div className="flex items-center gap-2">
@@ -432,7 +432,7 @@ const DocumentWatchAlert = memo(() => {
           </button>
         </div>
       </div>
-    </ModalWrapper>
+    </Modal>
   );
 });
 

@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { CircleNotch, X } from "@phosphor-icons/react";
 import ModelRouter from "@/models/modelRouter";
 import System from "@/models/system";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 import LLMProviderModelPicker from "../LLMProviderModelPicker";
 
 export default function NewRouterModal({
@@ -67,7 +67,7 @@ export default function NewRouterModal({
   };
 
   return (
-    <ModalWrapper isOpen={isOpen}>
+    <Modal isOpen={isOpen} onClose={closeModal}>
       <div className="relative w-full max-w-2xl bg-zinc-900 light:bg-white rounded-[8px] shadow border border-zinc-700 light:border-slate-300">
         <form onSubmit={handleSubmit} className="flex flex-col gap-y-5 p-6">
           <div className="flex flex-col gap-y-1">
@@ -179,6 +179,6 @@ export default function NewRouterModal({
           </div>
         </form>
       </div>
-    </ModalWrapper>
+    </Modal>
   );
 }

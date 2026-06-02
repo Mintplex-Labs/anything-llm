@@ -8,7 +8,7 @@ import showToast from "@/utils/toast";
 import { numberWithCommas } from "@/utils/numbers";
 import { useTranslation } from "react-i18next";
 import { useModal } from "@/hooks/useModal";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 import ChangeWarningModal from "@/components/ChangeWarning";
 
 function isNullOrNaN(value) {
@@ -193,13 +193,13 @@ export default function EmbeddingTextSplitterPreference() {
         </div>
       )}
 
-      <ModalWrapper isOpen={isOpen}>
+      <Modal isOpen={isOpen} onClose={closeModal}>
         <ChangeWarningModal
           warningText="Changing text splitter settings will clear any previously cached documents.\n\nThese new settings will be applied to all documents when embedding them into a workspace."
           onClose={closeModal}
           onConfirm={handleSaveSettings}
         />
-      </ModalWrapper>
+      </Modal>
     </div>
   );
 }

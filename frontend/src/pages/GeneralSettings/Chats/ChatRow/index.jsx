@@ -1,7 +1,7 @@
 import truncate from "truncate";
 import { X, Trash } from "@phosphor-icons/react";
 import System from "@/models/system";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 import { useModal } from "@/hooks/useModal";
 import MarkdownRenderer from "../MarkdownRenderer";
 import { safeJsonParse } from "@/utils/request";
@@ -61,10 +61,10 @@ export default function ChatRow({ chat, onDelete }) {
           </button>
         </td>
       </tr>
-      <ModalWrapper isOpen={isPromptOpen}>
+      <Modal isOpen={isPromptOpen} onClose={closePromptModal}>
         <TextPreview text={chat.prompt} closeModal={closePromptModal} />
-      </ModalWrapper>
-      <ModalWrapper isOpen={isResponseOpen}>
+      </Modal>
+      <Modal isOpen={isResponseOpen} onClose={closeResponseModal}>
         <TextPreview
           text={
             <MarkdownRenderer
@@ -73,7 +73,7 @@ export default function ChatRow({ chat, onDelete }) {
           }
           closeModal={closeResponseModal}
         />
-      </ModalWrapper>
+      </Modal>
     </>
   );
 }

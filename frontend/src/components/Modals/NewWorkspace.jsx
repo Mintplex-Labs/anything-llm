@@ -3,7 +3,7 @@ import { X } from "@phosphor-icons/react";
 import Workspace from "@/models/workspace";
 import paths from "@/utils/paths";
 import { useTranslation } from "react-i18next";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 
 const noop = () => false;
 export default function NewWorkspaceModal({ hideModal = noop }) {
@@ -24,7 +24,7 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
   };
 
   return (
-    <ModalWrapper isOpen={true}>
+    <Modal isOpen={true} onClose={hideModal}>
       <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
         <div className="relative p-6 border-b rounded-t border-theme-modal-border">
           <div className="w-full flex gap-x-2 items-center">
@@ -81,7 +81,7 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
           </form>
         </div>
       </div>
-    </ModalWrapper>
+    </Modal>
   );
 }
 

@@ -7,36 +7,34 @@ import "@/utils/chat/themes/github.css";
 
 export default function CodeSnippetModal({ embed, closeModal }) {
   return (
-    <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex items-center justify-center">
-      <div className="relative w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border">
-        <div className="relative p-6 border-b rounded-t border-theme-modal-border">
-          <div className="w-full flex gap-x-2 items-center">
-            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
-              Copy your embed code
-            </h3>
-          </div>
+    <div className="relative w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border">
+      <div className="relative p-6 border-b rounded-t border-theme-modal-border">
+        <div className="w-full flex gap-x-2 items-center">
+          <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
+            Copy your embed code
+          </h3>
+        </div>
+        <button
+          onClick={closeModal}
+          type="button"
+          className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+        >
+          <X size={24} weight="bold" className="text-white" />
+        </button>
+      </div>
+      <div className="px-7 py-6">
+        <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2">
+          <ScriptTag embed={embed} />
+        </div>
+        <div className="flex justify-between items-center mt-6 pt-6 border-t border-theme-modal-border">
           <button
             onClick={closeModal}
             type="button"
-            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+            className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm"
           >
-            <X size={24} weight="bold" className="text-white" />
+            Close
           </button>
-        </div>
-        <div className="px-7 py-6">
-          <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2">
-            <ScriptTag embed={embed} />
-          </div>
-          <div className="flex justify-between items-center mt-6 pt-6 border-t border-theme-modal-border">
-            <button
-              onClick={closeModal}
-              type="button"
-              className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm"
-            >
-              Close
-            </button>
-            <div hidden={true} />
-          </div>
+          <div hidden={true} />
         </div>
       </div>
     </div>

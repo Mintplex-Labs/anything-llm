@@ -2,7 +2,7 @@ import { X } from "@phosphor-icons/react";
 import { useCommunityHubAuth } from "@/hooks/useCommunityHubAuth";
 import UnauthenticatedHubModal from "@/components/CommunityHub/UnauthenticatedHubModal";
 import SystemPrompts from "./SystemPrompts";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 import AgentFlows from "./AgentFlows";
 import SlashCommands from "./SlashCommands";
 
@@ -31,7 +31,7 @@ export default function PublishEntityModal({
   };
 
   return (
-    <ModalWrapper isOpen={show}>
+    <Modal isOpen={show} onClose={onClose}>
       <div className="relative max-w-[900px] bg-theme-bg-primary rounded-lg shadow border border-theme-modal-border">
         <div className="relative p-6">
           <button
@@ -44,6 +44,6 @@ export default function PublishEntityModal({
         </div>
         {renderEntityForm()}
       </div>
-    </ModalWrapper>
+    </Modal>
   );
 }
