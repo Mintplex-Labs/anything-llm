@@ -12,7 +12,6 @@ class ZAIProvider extends InheritMultiple([Provider, UnTooled]) {
     const client = new OpenAI({
       baseURL: "https://api.z.ai/api/paas/v4",
       apiKey: process.env.ZAI_API_KEY,
-      maxRetries: 3,
     });
 
     this._client = client;

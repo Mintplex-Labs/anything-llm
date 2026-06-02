@@ -1469,6 +1469,10 @@ const TRANSLATIONS = {
         cancel: "Cancel·lar",
       },
     },
+    stt_unsupported: "L'accés al mic no està suportat en aquest navegador.",
+    stt_mic_denied:
+      "No s'ha pogut accedir al mic. Si us plau, concedeix l'autorització i prova de nou.",
+    stt_transcription_failed: "No s'ha pogut transmetre: {{error}}",
   },
   profile_settings: {
     edit_account: "Edita el compte",

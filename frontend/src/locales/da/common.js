@@ -1258,6 +1258,10 @@ const TRANSLATIONS = {
         cancel: "Annullér",
       },
     },
+    stt_unsupported: "Mikrofonadgang understøttes ikke i denne browser.",
+    stt_mic_denied:
+      "Kunne ikke få adgang til mikrofonen. Vær venligst opmærksom på, at du skal give tilladelse, og prøv igen.",
+    stt_transcription_failed: "Transkribering mislykkedes: {{error}}",
   },
   profile_settings: {
     edit_account: "Rediger konto",

@@ -20,7 +20,6 @@ class CerebrasProvider extends InheritMultiple([Provider, UnTooled]) {
     const client = new OpenAI({
       baseURL: "https://api.cerebras.ai/v1",
       apiKey: process.env.CEREBRAS_API_KEY,
-      maxRetries: 1,
     });
 
     this._client = client;

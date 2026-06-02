@@ -12,7 +12,6 @@ class SambaNovaProvider extends InheritMultiple([Provider, UnTooled]) {
     const client = new OpenAI({
       baseURL: "https://api.sambanova.ai/v1",
       apiKey: process.env.SAMBANOVA_LLM_API_KEY,
-      maxRetries: 3,
     });
 
     this._client = client;

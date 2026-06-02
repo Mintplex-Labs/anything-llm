@@ -15,7 +15,6 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
     const client = new OpenAI({
       baseURL: "https://api.deepseek.com/v1",
       apiKey: process.env.DEEPSEEK_API_KEY ?? null,
-      maxRetries: 3,
     });
 
     this._client = client;

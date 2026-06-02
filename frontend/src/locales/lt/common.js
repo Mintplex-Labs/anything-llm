@@ -1382,6 +1382,10 @@ const TRANSLATIONS = {
         cancel: "Atšaukti",
       },
     },
+    stt_unsupported: "Mikrofonas negali būti naudojamas šioje naršyklėje.",
+    stt_mic_denied:
+      "Nepavyko prisijungti prie mikrofoną. Prašome suteikti leidimą ir pabandyti dar kartą.",
+    stt_transcription_failed: "Transkripcija nepavyko: {{error}}",
   },
   profile_settings: {
     edit_account: "Redaguoti paskyrą",

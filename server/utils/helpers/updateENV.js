@@ -666,6 +666,66 @@ const KEY_MAPPING = {
     checks: [isValidURL],
   },
 
+  // Kokoro TTS (self-hosted kokoro-fastapi)
+  TTSKokoroEndpoint: {
+    envKey: "TTS_KOKORO_ENDPOINT",
+    checks: [isValidURL],
+  },
+  TTSKokoroKey: {
+    envKey: "TTS_KOKORO_KEY",
+    checks: [],
+  },
+  TTSKokoroVoiceModel: {
+    envKey: "TTS_KOKORO_VOICE_MODEL",
+    checks: [isNotEmpty],
+  },
+
+  // STT Selection
+  SpeechToTextProvider: {
+    envKey: "STT_PROVIDER",
+    checks: [supportedSTTProvider],
+  },
+
+  // STT OpenAI
+  STTOpenAIModel: {
+    envKey: "STT_OPEN_AI_MODEL",
+    checks: [],
+  },
+
+  // STT Lemonade
+  STTLemonadeBasePath: {
+    envKey: "STT_LEMONADE_BASE_PATH",
+    checks: [isValidURL],
+  },
+  STTLemonadeModelPref: {
+    envKey: "STT_LEMONADE_MODEL_PREF",
+    checks: [],
+  },
+
+  // STT Deepgram
+  STTDeepgramApiKey: {
+    envKey: "STT_DEEPGRAM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  STTDeepgramModel: {
+    envKey: "STT_DEEPGRAM_MODEL",
+    checks: [isNotEmpty],
+  },
+
+  // STT OpenAI Generic
+  STTOpenAICompatibleKey: {
+    envKey: "STT_OPEN_AI_COMPATIBLE_KEY",
+    checks: [],
+  },
+  STTOpenAICompatibleModel: {
+    envKey: "STT_OPEN_AI_COMPATIBLE_MODEL",
+    checks: [],
+  },
+  STTOpenAICompatibleEndpoint: {
+    envKey: "STT_OPEN_AI_COMPATIBLE_ENDPOINT",
+    checks: [isValidURL],
+  },
+
   // DeepSeek Options
   DeepSeekApiKey: {
     envKey: "DEEPSEEK_API_KEY",
@@ -949,8 +1009,20 @@ function supportedTTSProvider(input = "") {
     "elevenlabs",
     "piper_local",
     "generic-openai",
+    "kokoro",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid TTS provider.`;
+}
+
+function supportedSTTProvider(input = "") {
+  const validSelection = [
+    "native",
+    "openai",
+    "lemonade",
+    "deepgram",
+    "generic-openai",
+  ].includes(input);
+  return validSelection ? null : `${input} is not a valid STT provider.`;
 }
 
 function validLocalWhisper(input = "") {
@@ -1377,6 +1449,10 @@ function dumpENV() {
 
     // Allow auto-approval of skills
     "AGENT_AUTO_APPROVED_SKILLS",
+
+    // Allow setting a custom fetch timeouts for providers
+    "ANYTHINGLLM_FETCH_TIMEOUT",
+    "ANYTHINGLLM_MAX_RETRIES",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.
