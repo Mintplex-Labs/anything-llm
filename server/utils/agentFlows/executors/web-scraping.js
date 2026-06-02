@@ -68,7 +68,6 @@ async function executeWebScraping(config, context) {
     model: aibitat.defaultProvider.model,
     content,
     aibitat,
-    skillName: "web-scraping",
   });
 
   introspect(`Successfully summarized content`);

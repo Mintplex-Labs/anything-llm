@@ -146,7 +146,6 @@ const webScraping = {
               controllerSignal: this.controller.signal,
               content,
               aibitat: this.super,
-              skillName: this.name,
             });
           },
         });

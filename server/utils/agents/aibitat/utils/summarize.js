@@ -2,16 +2,30 @@ const pluralize = require("pluralize");
 const { getLLMProvider } = require("../../../helpers");
 const { TokenManager } = require("../../../helpers/tiktoken");
 
-// Each chunk we send to the LLM is sized to a fraction of the model context
-// window so the chunk + the prior key points + the prompt always fit in a
-// single request. This is what keeps small/local models from looping forever.
+/**
+ * Fraction of the model's context window used for each text chunk.
+ * Sized so that the chunk + running key-points + prompt always fit in a
+ * single request, preventing small/local models from looping forever.
+ * @type {number}
+ */
 const CHUNK_CONTEXT_RATIO = 0.45;
-// The key points from earlier sections are fed back into each chunk for
-// continuity, but capped to a small slice of the window so they never crowd
-// out the section we are actually trying to summarize.
+
+/**
+ * Fraction of the model's context window reserved for the running
+ * key-points carried forward between chunks. Kept small so prior
+ * summaries never crowd out the section being summarized.
+ * @type {number}
+ */
 const RUNNING_SUMMARY_RATIO = 0.05;
-// How many sections to summarize before checking in with the user. Anything
-// longer than this would otherwise tie up the chat with no way to bail out.
+
+/**
+ * Number of sections to summarize before pausing to check in with the
+ * user. Prevents long documents from tying up the chat with no way to
+ * bail out.
+ *
+ * This number is zero-index based.
+ * @type {number}
+ */
 const CHUNKS_BEFORE_APPROVAL = 3;
 
 /**
@@ -20,8 +34,8 @@ const CHUNKS_BEFORE_APPROVAL = 3;
  * @property {string} model The LLM Model to use for summarization (inherited)
  * @property {AbortController['signal']} controllerSignal Abort signal checked between sections to stop summarization early
  * @property {string} content The text content of the text to summarize
- * @property {import("../index")|null} [aibitat] The aibitat instance used to report progress and request approval to continue
- * @property {string|null} [skillName] The skill requesting summarization, used for the tool approval request
+ * @property {import("../index")|null} [aibitat] The aibitat instance used to report progress and request approval to continue (optional)
+ * @property {string|null} [skillName] The skill requesting summarization, used for the tool approval request (optional)
  */
 
 /**
@@ -55,18 +69,28 @@ function truncateToTokenLimit(text, tokenManager, maxTokens) {
   return tokenManager.bytesFromTokens(tokens.slice(tokens.length - maxTokens));
 }
 
-/** Count the key points/concepts captured so far (non-empty lines). */
+/**
+ * Count the key points/concepts captured so far (non-empty lines).
+ * @param {string} text - The text to count the key points of
+ * @returns {number} The number of key points/concepts captured
+ */
 function countKeyPoints(text) {
   return text.split("\n").filter((line) => line.trim().length > 0).length;
 }
 
+/**
+ * Generate the prompt for summarizing a section of text.
+ * @param {string} section - The section of text to summarize
+ * @param {string} priorPoints - Key points from earlier sections for context only
+ * @returns {string}
+ */
 function summaryPrompt(section, priorPoints) {
-  return `You are extracting the key points from a long document that was split into sections. Read the section below and list its key points, facts, and concepts as concise bullet points. Output ONLY the bullet points for THIS section - do not repeat earlier points and do not add commentary.
-
-${priorPoints ? `Key points from earlier sections (for context only, do not repeat):\n${priorPoints}\n\n` : ""}Section:
-"""
-${section}
-"""`;
+  let prompt =
+    "You are extracting the key points from a long document that was split into sections. Read the section below and list its key points, facts, and concepts as concise bullet points. Output ONLY the bullet points for THIS section - do not repeat earlier points and do not add commentary.";
+  if (priorPoints)
+    prompt += `Key points from earlier sections (for context only, do not repeat):\n${priorPoints}\n`;
+  prompt += `\nSection: \n${section}\n`;
+  return prompt;
 }
 
 /**
@@ -83,7 +107,6 @@ async function summarizeContent({
   controllerSignal,
   content,
   aibitat = null,
-  skillName = null,
 }) {
   const introspect = (message) => aibitat?.introspect?.(message);
 
@@ -108,7 +131,7 @@ async function summarizeContent({
     if (i === CHUNKS_BEFORE_APPROVAL && aibitat?.requestToolApproval) {
       const remaining = chunks.length - i;
       const approval = await aibitat.requestToolApproval({
-        skillName,
+        skillName: "content-summarization",
         description: `There ${pluralize("is", remaining)} ${pluralize(
           "section",
           remaining,
@@ -116,12 +139,14 @@ async function summarizeContent({
         )} of content left to summarize. Continue?`,
       });
       if (!approval.approved) {
-        introspect(`User rejected the ${skillName} request.`);
+        introspect(`User stopped continuing with summarization.`);
         break;
       }
     }
 
-    introspect(`Summarizing section ${i + 1} of ${chunks.length}...`);
+    introspect(
+      `Summarizing section ${i + 1} of ${chunks.length} (~${tokenManager.countFromString(chunks[i])} tokens)...`
+    );
     const priorPoints = truncateToTokenLimit(
       keyPoints,
       tokenManager,
@@ -131,6 +156,7 @@ async function summarizeContent({
       [{ role: "user", content: summaryPrompt(chunks[i], priorPoints) }],
       { temperature: 0 }
     );
+
     const sectionPoints = (textResponse || "").trim();
     keyPoints = keyPoints ? `${keyPoints}\n${sectionPoints}` : sectionPoints;
     introspect(`Captured ${countKeyPoints(keyPoints)} key points so far.`);
