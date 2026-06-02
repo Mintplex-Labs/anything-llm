@@ -26,16 +26,15 @@ export function autoScrollToSelectedLLMProvider(
 export function validatedModelSelection(model) {
   try {
     // If the entire select element is not found, return the model as is and cross our fingers
-    const el = document.getElementById(`workspace-llm-model-select`);
-    if (!el) return model;
-
-    // Free form input mode is a special case where the user can enter any model name they want
-    if (el.tagName === "INPUT") return String(el.value ?? model ?? "").trim();
+    const selectOption = document.getElementById(`workspace-llm-model-select`);
+    if (!selectOption) return model;
 
     // If the model is not in the dropdown, return the first model in the dropdown
     // to prevent invalid provider<>model selection issues
-    const selectedOption = el.querySelector(`option[value="${model}"]`);
-    if (!selectedOption) return el.querySelector(`option`)?.value ?? null;
+    const selectedOption = selectOption.querySelector(
+      `option[value="${model}"]`
+    );
+    if (!selectedOption) return selectOption.querySelector(`option`).value;
 
     // If the model is in the dropdown, return the model as is
     return model;
