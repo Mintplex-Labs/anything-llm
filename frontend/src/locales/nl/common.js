@@ -1267,6 +1267,11 @@ const TRANSLATIONS = {
         cancel: "Annuleren",
       },
     },
+    stt_unsupported:
+      "Toegang tot een microfoon wordt in deze browser niet ondersteund.",
+    stt_mic_denied:
+      "Het was niet mogelijk om de microfoon te gebruiken. Gelieve toestemming te verlenen en opnieuw te proberen.",
+    stt_transcription_failed: "Transcriptie mislukt: {{error}}",
   },
   profile_settings: {
     edit_account: "Account bewerken",

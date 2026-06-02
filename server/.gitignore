@@ -25,6 +25,7 @@ logs/server.log
 *.db-journal
 storage/lancedb
 public/
+__tests__/**/models
 
 # For legacy copies of repo
 documents

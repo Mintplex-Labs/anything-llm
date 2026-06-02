@@ -1378,6 +1378,10 @@ const TRANSLATIONS = {
         cancel: "Zrušit",
       },
     },
+    stt_unsupported: "Přístup k mikrofonu není v tomto prohlížeči podporován.",
+    stt_mic_denied:
+      "Není možné přístup k mikrofonu. Prosím, udělejte potřebná oprávnění a zkuste to znovu.",
+    stt_transcription_failed: "Přepis selhal: {{error}}",
   },
   profile_settings: {
     edit_account: "Upravit účet",
