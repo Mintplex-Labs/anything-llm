@@ -7,6 +7,30 @@ import { THREAD_RENAME_EVENT } from "@/components/Sidebar/ActiveWorkspaces/Threa
 
 export const AGENT_SESSION_START = "agentSessionStart";
 export const AGENT_SESSION_END = "agentSessionEnd";
+export const AGENT_THINKING_START = "agentThinkingStart";
+export const AGENT_THINKING_STOP = "agentThinkingStop";
+
+// Stream event types that mean the agent is actively doing internal work (a
+// thought or a tool call) - the head should pulse. Anything that produces the
+// final answer or signals the turn is over settles it. usageMetrics/chatId are
+// emitted by the agent backend at the end of every turn (even when the answer is
+// empty), so they reliably stop the pulse instead of us trying to guess from the
+// last message - which can be a leftover reasoning bubble that never settles.
+const AGENT_THINKING_EVENTS = ["statusResponse", "toolCallInvocation"];
+const AGENT_SETTLED_EVENTS = [
+  "fullTextResponse",
+  "textResponseChunk",
+  "usageMetrics",
+  "chatId",
+];
+
+function reportAgentThinking(streamEventType) {
+  if (AGENT_THINKING_EVENTS.includes(streamEventType))
+    window.dispatchEvent(new CustomEvent(AGENT_THINKING_START));
+  else if (AGENT_SETTLED_EVENTS.includes(streamEventType))
+    window.dispatchEvent(new CustomEvent(AGENT_THINKING_STOP));
+}
+
 const handledEvents = [
   "statusResponse",
   "fileDownloadCard",
@@ -77,6 +101,11 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
     // trigger TTS auto-play
     if (data.content?.type === "chatId" && data.content?.chatId)
       emitAssistantMessageCompleteEvent(data.content.chatId);
+
+    // Drive the agent head animation off the live event stream rather than the
+    // last rendered message - a thought/tool call pulses it, the answer or the
+    // end-of-turn markers settle it.
+    reportAgentThinking(data.content?.type);
 
     return setChatHistory((prev) => {
       if (data.content.type === "removeStatusResponse")
@@ -337,4 +366,26 @@ export function useIsAgentSessionActive() {
   }, []);
 
   return activeSession;
+}
+
+export function useIsAgentThinking() {
+  const [thinking, setThinking] = useState(false);
+  useEffect(() => {
+    if (!window) return;
+    const start = () => setThinking(true);
+    const stop = () => setThinking(false);
+    window.addEventListener(AGENT_THINKING_START, start);
+    window.addEventListener(AGENT_THINKING_STOP, stop);
+    // A session boundary always settles the head - the previous turn is done.
+    window.addEventListener(AGENT_SESSION_START, stop);
+    window.addEventListener(AGENT_SESSION_END, stop);
+    return () => {
+      window.removeEventListener(AGENT_THINKING_START, start);
+      window.removeEventListener(AGENT_THINKING_STOP, stop);
+      window.removeEventListener(AGENT_SESSION_START, stop);
+      window.removeEventListener(AGENT_SESSION_END, stop);
+    };
+  }, []);
+
+  return thinking;
 }

@@ -190,12 +190,15 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
     if (history[history.length - 1].role !== "user") return null;
 
     const msgUUID = v4();
+    // Reasoning streams under its own uuid so it stays a separate status bubble
+    // that survives after the turn. The tentative tool-call/answer text streams
+    // under `msgUUID` and is removed once we know what it was - so it must not
+    // share a uuid with the reasoning, or removing it would take the thoughts
+    // with it (matches the tooled.js / second-stream behavior below).
+    const reasoningUUID = `${msgUUID}:reasoning`;
     // `textResponse` stays content-only so safeJsonParse below can still
     // match a tool-call JSON payload, and is returned as the text response
-    // when no tool call is parsed. Reasoning is ephemeral and never persisted;
-    // it is surfaced live in the status bubble with human-readable framing
-    // ("Thinking:" / "Done thinking.") because the StatusResponse component
-    // renders text literally.
+    // when no tool call is parsed.
     let textResponse = "";
     let reasoningText = "";
     const historyMessages = this.buildToolCallMessages(history, functions);
@@ -220,24 +223,20 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
         reasoningText += reasoningToken;
         eventHandler?.("reportStreamEvent", {
           type: "statusResponse",
-          uuid: msgUUID,
+          uuid: reasoningUUID,
           content: liveChunk,
         });
       }
 
       if (choice.delta?.content) {
-        const closingReasoning = reasoningText.length > 0;
-        const liveChunk = closingReasoning
-          ? `\n\nDone thinking.\n\n${choice.delta.content}`
-          : choice.delta.content;
-        if (closingReasoning) {
-          reasoningText = "";
-        }
+        // Leaving the reasoning stretch - reset so a later stretch starts a
+        // fresh "Thinking:" bubble.
+        if (reasoningText.length > 0) reasoningText = "";
         textResponse += choice.delta.content;
         eventHandler?.("reportStreamEvent", {
           type: "statusResponse",
           uuid: msgUUID,
-          content: liveChunk,
+          content: choice.delta.content,
         });
       }
     }

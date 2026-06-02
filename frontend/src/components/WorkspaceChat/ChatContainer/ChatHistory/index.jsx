@@ -24,7 +24,7 @@ import useTextSize from "@/hooks/useTextSize";
 import useChatHistoryScrollHandle from "@/hooks/useChatHistoryScrollHandle";
 import { ThoughtExpansionProvider } from "./ThoughtContainer";
 import { MessageActionsProvider } from "./MessageActionsContext";
-import { useIsAgentSessionActive } from "@/utils/chat/agent";
+import { useIsAgentThinking } from "@/utils/chat/agent";
 
 export default forwardRef(function (
   {
@@ -195,8 +195,10 @@ export default forwardRef(function (
       websocket,
     ]
   );
-  const lastMessageInfo = useMemo(() => getLastMessageInfo(history), [history]);
-  const isAgentSessionActive = useIsAgentSessionActive();
+  // Whether the agent is actively thinking or running a tool right now. Driven
+  // by the live stream events (see useIsAgentThinking), not the last rendered
+  // message - the final answer streaming and the end-of-turn both settle it.
+  const isAgentThinking = useIsAgentThinking();
 
   // Index of the last status group (array entry) in the compiled history. The
   // agent head pulses on this group only - a tool call or the streaming answer
@@ -208,26 +210,17 @@ export default forwardRef(function (
     return -1;
   }, [compiledHistory]);
 
-  // The agent is "working" - and the head should pulse - whenever it is mid-run
-  // and the live tail of the chat is internal activity (reasoning or a tool
-  // call), i.e. status content is still streaming. Once the final answer streams
-  // (a textResponse tail) or the session ends ("Agent session complete."), this
-  // goes false and the head settles to static.
-  const agentIsWorking =
-    isAgentSessionActive &&
-    (lastMessageInfo.isStatusResponse || lastMessageInfo.isToolCallInvocation);
-
   const renderStatusResponse = useCallback(
     (item, index) => {
       return (
         <StatusResponse
           key={`status-group-${index}`}
           messages={item}
-          isThinking={index === lastStatusGroupIndex && agentIsWorking}
+          isThinking={index === lastStatusGroupIndex && isAgentThinking}
         />
       );
     },
-    [lastStatusGroupIndex, agentIsWorking]
+    [lastStatusGroupIndex, isAgentThinking]
   );
 
   return (
@@ -270,15 +263,6 @@ export default forwardRef(function (
     </MessageActionsProvider>
   );
 });
-
-const getLastMessageInfo = (history) => {
-  const lastMessage = history?.[history.length - 1] || {};
-  return {
-    isAnimating: lastMessage?.animate,
-    isStatusResponse: lastMessage?.type === "statusResponse",
-    isToolCallInvocation: lastMessage?.type === "toolCallInvocation",
-  };
-};
 
 /**
  * Builds the history of messages for the chat.
