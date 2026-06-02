@@ -270,8 +270,9 @@ Basically, if telemetry is disabled we don't collect anything. However, dependin
 
 ## 🔗 More Products
 
-- **[VectorAdmin][vector-admin]:** An all-in-one GUI & tool-suite for managing vector databases.
-- **[OpenAI Assistant Swarm][assistant-swarm]:** Turn your entire library of OpenAI assistants into one single army commanded from a single agent.
+- **[AnythingLLM Mobile (MIT Licensed)][anythingllm-mobile]:** A mobile application that allows you to use AnythingLLM on your mobile device.
+- **[AnythingLLM Browser Extension][anythingllm-extension]:** A browser extension that allows you to use AnythingLLM in your browser.
+- **[AnythingLLM Embed][anythingllm-embed]:** A widget that allows you to embed AnythingLLM in your website.
 
 <div align="right">
 
@@ -288,8 +289,9 @@ This project is [MIT](./LICENSE) licensed.
 
 [back-to-top]: https://img.shields.io/badge/-BACK_TO_TOP-222628?style=flat-square
 [profile-link]: https://github.com/mintplex-labs
-[vector-admin]: https://github.com/mintplex-labs/vector-admin
-[assistant-swarm]: https://github.com/Mintplex-Labs/openai-assistant-swarm
+[anythingllm-mobile]: https://github.com/Mintplex-Labs/anythingllm-mobile
+[anythingllm-extension]: https://github.com/Mintplex-Labs/anythingllm-extension
+[anythingllm-embed]: https://github.com/Mintplex-Labs/anythingllm-embed
 [docker-btn]: ./images/deployBtns/docker.png
 [docker-deploy]: ./docker/HOW_TO_USE_DOCKER.md
 [aws-btn]: ./images/deployBtns/aws.png
