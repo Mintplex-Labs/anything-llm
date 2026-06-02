@@ -1316,6 +1316,10 @@ const TRANSLATIONS = {
         cancel: "Katkuda\nTühista",
       },
     },
+    stt_unsupported: "Mikrofoni kasutamine selles brauseris ei toeta.",
+    stt_mic_denied:
+      "Ei suudet mikrofoni kasutada. Palun andke lubadus ja proovige uuesti.",
+    stt_transcription_failed: "Transkribeerimine ebaõnnestunud: {{error}}",
   },
   profile_settings: {
     edit_account: "Muuda kontot",

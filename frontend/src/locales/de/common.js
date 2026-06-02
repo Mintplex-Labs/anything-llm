@@ -1375,6 +1375,11 @@ const TRANSLATIONS = {
         cancel: "Abbrechen",
       },
     },
+    stt_unsupported:
+      "Die Verwendung eines Mikrofons ist in diesem Browser nicht möglich.",
+    stt_mic_denied:
+      "Es konnte nicht auf das Mikrofon zugegriffen werden. Bitte erteilen Sie die erforderlichen Berechtigungen und versuchen Sie es erneut.",
+    stt_transcription_failed: "Transkription fehlgeschlagen: {{error}}",
   },
   profile_settings: {
     edit_account: "Account bearbeiten",

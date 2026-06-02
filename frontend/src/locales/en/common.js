@@ -1477,6 +1477,10 @@ const TRANSLATIONS = {
     attach_file: "Attach a file to this chat",
     text_size: "Change text size.",
     microphone: "Speak your prompt.",
+    stt_unsupported: "Microphone access is not supported in this browser.",
+    stt_mic_denied:
+      "Could not access the microphone. Please grant permission and try again.",
+    stt_transcription_failed: "Transcription failed: {{error}}",
     send: "Send prompt message to workspace",
     tts_speak_message: "TTS Speak message",
     copy: "Copy",

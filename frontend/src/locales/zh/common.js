@@ -1263,6 +1263,9 @@ const TRANSLATIONS = {
         cancel: "取消",
       },
     },
+    stt_unsupported: "此浏览器不支持麦克风访问。",
+    stt_mic_denied: "无法访问麦克风。请您先授予权限，然后重新尝试。",
+    stt_transcription_failed: "转录失败：{{error}}",
   },
   profile_settings: {
     edit_account: "编辑帐户",

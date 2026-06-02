@@ -1271,6 +1271,10 @@ const TRANSLATIONS = {
         cancel: "İptal et",
       },
     },
+    stt_unsupported: "Bu tarayıcıda mikrofon erişimi desteklenmemektedir.",
+    stt_mic_denied:
+      "Mikrofonu kullanılamadı. Lütfen izin verin ve tekrar deneyin.",
+    stt_transcription_failed: "Transkripsiyon başarısız: {{error}}",
   },
   profile_settings: {
     edit_account: "Hesabı Düzenle",

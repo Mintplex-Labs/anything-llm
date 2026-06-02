@@ -19,7 +19,6 @@ class LiteLLMProvider extends InheritMultiple([Provider, UnTooled]) {
     const client = new OpenAI({
       baseURL: process.env.LITE_LLM_BASE_PATH,
       apiKey: process.env.LITE_LLM_API_KEY ?? null,
-      maxRetries: 3,
     });
 
     this._client = client;

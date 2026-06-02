@@ -1368,6 +1368,11 @@ const TRANSLATIONS = {
         cancel: "Anuluj",
       },
     },
+    stt_unsupported:
+      "Dostęp do mikrofonu nie jest obsługiwany w tym przeglądarce.",
+    stt_mic_denied:
+      "Nie udało się uzyskać dostępu do mikrofonu. Prosimy o przyznanie uprawnień i ponowne próby.",
+    stt_transcription_failed: "Błąd transkrypcji: {{error}}",
   },
   profile_settings: {
     edit_account: "Edytuj konto",

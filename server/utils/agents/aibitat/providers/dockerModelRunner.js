@@ -28,7 +28,6 @@ class DockerModelRunnerProvider extends InheritMultiple([Provider, UnTooled]) {
         process.env.DOCKER_MODEL_RUNNER_BASE_PATH
       ),
       apiKey: null,
-      maxRetries: 3,
     });
 
     this._client = client;
