@@ -28,6 +28,10 @@ Local data directory plus backup export/import.
 
 Desktop wrapper and downloadable package.
 
+- Foundation shipped: desktop shell scaffold entrypoint + preload + Local User storage-contract bridge under `desktop/`.
+- Foundation scripts: `yarn desktop:dev` (opt-in wrapper launch) and `yarn desktop:smoke` (scaffold presence check).
+- Current scope is Windows-first/local development prep only; signed installer, auto-update, and production packaging remain out of scope.
+
 ## Phase 5
 
 Signed release builds.

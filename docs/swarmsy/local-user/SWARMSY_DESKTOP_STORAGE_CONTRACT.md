@@ -5,6 +5,7 @@
 This document defines the first version of the downloadable-app local storage manifest and validation boundary for SWARMSY Local User mode.
 
 This is a spec + helper foundation only. It does not package desktop runtime yet.
+Desktop wrapper foundation now consumes this contract via `desktop/foundation/storageContractBridge.cjs` and keeps browser `localStorage` as the active state until migration work.
 
 ## Manifest schema (v1)
 
@@ -80,7 +81,8 @@ Tests cover:
 
 ## Non-goals (this PR)
 
-- no Electron/Tauri packaging
+- no signed production Electron/Tauri installer packaging
+- no auto-update pipeline
 - no real production data migration
 - no hosted data migration
 - no Docker/VPS path changes

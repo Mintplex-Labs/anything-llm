@@ -90,10 +90,11 @@ function getLocalUserDataRoot({
   platform = sanitizePlatform(platform);
   const pathModule = getPathModule(platform);
   const trimmedHomeDir = typeof homeDir === "string" ? homeDir.trim() : "";
-  const safeHomeDir = isStrictAbsolutePath(trimmedHomeDir, platform)
-    ? trimmedHomeDir
+  const safeHomeDir = trimmedHomeDir || os.homedir();
+  const absoluteHomeDir = isStrictAbsolutePath(safeHomeDir, platform)
+    ? safeHomeDir
     : os.homedir();
-  const normalizedHome = normalizeRoot(safeHomeDir, platform);
+  const normalizedHome = normalizeRoot(absoluteHomeDir, platform);
 
   if (platform === "win32") {
     const appData = String(env?.APPDATA || "").trim();
@@ -314,11 +315,11 @@ function validateLocalUserStorageManifest(manifest, { layout } = {}) {
     errors.push("paths must be a plain object.");
   } else {
     const contractLayout = layout || getLocalUserStorageLayout();
-    const trimmedRoot =
+    const contractRoot =
       typeof contractLayout?.root === "string"
         ? contractLayout.root.trim()
         : "";
-    if (!trimmedRoot) {
+    if (!contractRoot) {
       errors.push("Storage layout root must be a non-empty string.");
       return { valid: false, errors };
     }

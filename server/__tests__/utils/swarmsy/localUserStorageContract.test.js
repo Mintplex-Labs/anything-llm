@@ -233,6 +233,26 @@ describe("SWARMSY local user storage contract", () => {
       );
     });
 
+    it("trims leading/trailing whitespace from homeDir before validation (POSIX)", () => {
+      const root = getLocalUserDataRoot({
+        platform: "linux",
+        env: {},
+        homeDir: " /home/alice ",
+      });
+      expect(root).toBe(path.posix.join("/home/alice", ".config", "swarmsy"));
+    });
+
+    it("trims leading/trailing whitespace from homeDir before validation (win32)", () => {
+      const root = getLocalUserDataRoot({
+        platform: "win32",
+        env: {},
+        homeDir: " C:\\Users\\Alice ",
+      });
+      expect(root).toBe(
+        path.win32.join("C:\\Users\\Alice", "AppData", "Roaming", "SWARMSY")
+      );
+    });
+
     it("rejects win32 drive-relative homeDir (\\foo) and falls back to os.homedir", () => {
       const homedirSpy = jest.spyOn(os, "homedir").mockReturnValue("C:\\Users\\fallback");
       try {
@@ -450,6 +470,12 @@ describe("SWARMSY local user storage contract", () => {
 
     it("rejects whitespace-only storage paths before any cwd-based fallback", () => {
       const result = validateLocalUserStoragePath("   ", { layout });
+      expect(result.valid).toBe(false);
+      expect(result.reason).toBe("Storage path must be a non-empty string.");
+    });
+
+    it("rejects empty storage paths before any cwd-based fallback", () => {
+      const result = validateLocalUserStoragePath("", { layout });
       expect(result.valid).toBe(false);
       expect(result.reason).toBe("Storage path must be a non-empty string.");
     });

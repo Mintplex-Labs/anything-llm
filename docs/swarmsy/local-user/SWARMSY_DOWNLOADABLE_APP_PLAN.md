@@ -10,6 +10,8 @@ Create a downloadable SWARMSY user app while keeping the current hosted SWARMSY 
 - Do not remove hosted mode.
 - Do not change the current VPS/server app setup in this docs-first PR.
 - Do not remove Docker deployment.
+- Do not bundle Ollama or model weights in foundation work.
+- Do not ship signed installer/auto-update in foundation work.
 
 ## Target User Flow
 
@@ -68,4 +70,6 @@ This plan creates the product split and implementation path for a downloadable S
 - The first Local User Mode UI status/model-selection shell now exists in onboarding and remains clearly separate from Hosted/Admin Mode flows.
 - Browser-side Local User backup/export/import is live in the Local User Settings Hub.
 - Desktop local directory + storage manifest contract docs and helper foundation now exist, without desktop packaging/runtime wiring in this PR.
-- Persistent local model settings file storage and desktop packaging remain future phases.
+- First desktop wrapper scaffold foundation now exists under `desktop/` with opt-in scripts (`desktop:dev`, `desktop:smoke`) and no hosted/admin runtime changes.
+- Browser `localStorage` remains the active Local User state until a later migration phase.
+- Persistent local model settings file storage, signed installers, and auto-update remain future phases.

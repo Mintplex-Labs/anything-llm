@@ -38,6 +38,8 @@ Local User Mode is a separate downloadable SWARMSY path for normal users who wan
 - In hosted/admin mode, Local User Settings Hub must show boundary copy such as: `Local User Mode is not active in this hosted/admin environment`.
 - Hosted/admin surfaces must not imply Local User-only actions will run locally, and must not trigger Local User runtime attachment when local mode is inactive.
 - Existing AnythingLLM hosted DB paths remain unchanged and are out of scope for Local User desktop storage contract.
+- Desktop wrapper scripts are opt-in development scaffolding and do not alter hosted routing/auth/deployment assumptions.
+- Desktop foundation must not auto-install Ollama, auto-pull models, or bundle model weights.
 
 ## Product Positioning
 
