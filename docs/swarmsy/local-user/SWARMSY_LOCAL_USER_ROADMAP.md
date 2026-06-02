@@ -20,6 +20,10 @@ Local Ollama detection endpoint and UI.
 
 Local data directory plus backup export/import.
 
+- Foundation now defined via local directory + desktop manifest contract docs.
+- Pure helper/tests now cover platform root resolution, required folder layout, and manifest safety validation.
+- Current behavior remains browser-side backup/export/import in Local User Settings Hub until desktop packaging/runtime wiring phase.
+
 ## Phase 4
 
 Desktop wrapper and downloadable package.

@@ -7,6 +7,12 @@ user-controlled backup/export/import contract for browser-stored SWARMSY
 state that operates entirely on the client side and never exposes credentials
 or hosted-admin data.
 
+This is the browser-side foundation, not the final desktop filesystem storage contract.
+Desktop-local directory + manifest contracts are defined in:
+
+- `docs/swarmsy/local-user/SWARMSY_LOCAL_DATA_DIRECTORY_CONTRACT.md`
+- `docs/swarmsy/local-user/SWARMSY_DESKTOP_STORAGE_CONTRACT.md`
+
 ---
 
 ## Storage Key Audit
@@ -160,6 +166,8 @@ server-side, or multi-user keys are present.
 
 The backup file is generated and consumed entirely in the browser. Nothing is
 sent to the server.
+
+Hosted/Admin mode still stores hosted data server-side and does not use this browser backup as a server data export path.
 
 ---
 

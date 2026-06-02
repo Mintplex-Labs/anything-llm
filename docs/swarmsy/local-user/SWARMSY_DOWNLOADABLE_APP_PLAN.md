@@ -66,4 +66,6 @@ This plan creates the product split and implementation path for a downloadable S
 
 - Backend Local User Mode Ollama detection exists at `GET /api/swarmsy/local-user/ollama/status`.
 - The first Local User Mode UI status/model-selection shell now exists in onboarding and remains clearly separate from Hosted/Admin Mode flows.
-- Persistent local model settings storage and desktop packaging remain future phases.
+- Browser-side Local User backup/export/import is live in the Local User Settings Hub.
+- Desktop local directory + storage manifest contract docs and helper foundation now exist, without desktop packaging/runtime wiring in this PR.
+- Persistent local model settings file storage and desktop packaging remain future phases.

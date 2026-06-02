@@ -8,6 +8,11 @@ Define what Local User Mode stores on the user's machine and how that differs fr
 
 In Local User Mode, SWARMSY user data is stored on the user's machine by default.
 
+The concrete desktop/local contract is defined in:
+
+- `docs/swarmsy/local-user/SWARMSY_LOCAL_DATA_DIRECTORY_CONTRACT.md`
+- `docs/swarmsy/local-user/SWARMSY_DESKTOP_STORAGE_CONTRACT.md`
+
 ## Local Data Scope
 
 Local user data should include:
@@ -23,6 +28,19 @@ Local user data should include:
 - settings
 - selected AI provider and model
 
+Desktop-local folder contract:
+
+- `profile/`
+- `settings/`
+- `hives/`
+- `chats/`
+- `uploads/`
+- `memory-locks/`
+- `backups/`
+- `logs/`
+- `runtime/` (non-portable)
+- `temp/` (disposable)
+
 ## Backup Requirements
 
 - User can export a backup of local SWARMSY data.
@@ -30,6 +48,8 @@ Local user data should include:
 - Backup behavior should preserve ownership of local project state.
 - Backup/export/import controls are managed from the Local User Settings Hub.
 - The hub copy must remain explicit: browser-side Local User settings backup is not a full desktop filesystem backup.
+- Current backup/export/import remains browser-side Local User state only.
+- Future downloadable app backup uses the real local data directory and `backups/` folder contract.
 - Hosted/admin server data, secrets, API keys, auth/session tokens, and ephemeral runtime/pending handoff storage are excluded from backup/export/import.
 
 ## Privacy Rules
@@ -47,3 +67,9 @@ Local user data should include:
 ## Future Storage Work
 
 Implementation should define a stable local app data directory, a backup format, and restore behavior that preserves HIVE state, uploaded materials, and provider settings.
+
+This repository now includes a pure helper foundation for that contract at:
+
+- `server/utils/swarmsy/localUserStorageContract.js`
+
+The helper defines platform path resolution, required folder layout shape, and manifest validation, but is not wired into hosted/admin runtime behavior.
