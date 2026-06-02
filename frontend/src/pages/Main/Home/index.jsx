@@ -19,6 +19,7 @@ import {
 import Workspace from "@/models/workspace";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
+import { buildPendingHomeMessage } from "@/utils/pendingHomeMessage";
 import { safeJsonParse } from "@/utils/request";
 import QuickActions from "@/components/lib/QuickActions";
 import SuggestedMessages from "@/components/lib/SuggestedMessages";
@@ -227,7 +228,14 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
 
       sessionStorage.setItem(
         PENDING_HOME_MESSAGE,
-        JSON.stringify({ message, attachments })
+        JSON.stringify(
+          buildPendingHomeMessage({
+            message,
+            attachments,
+            workspaceSlug: targetWorkspace.slug,
+            threadSlug: targetThread || null,
+          })
+        )
       );
 
       if (targetThread) {

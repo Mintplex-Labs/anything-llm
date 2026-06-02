@@ -18,13 +18,38 @@ export function getLocalUserOllamaRuntimeSelection({
   model = "",
 } = {}) {
   if (mode !== "local_user") return null;
-  const selectedModel = String(model || "").trim();
-  if (!selectedModel) return null;
-  return {
+  return normalizeLocalUserOllamaRuntimeSelection({
     provider: "ollama",
     mode: "local_user",
-    model: selectedModel,
+    model,
+  });
+}
+
+export function normalizeLocalUserOllamaRuntimeSelection(runtime = null) {
+  const provider = String(runtime?.provider || "").trim();
+  const mode = String(runtime?.mode || "").trim();
+  const model = String(runtime?.model || "").trim();
+
+  if (provider !== "ollama" || mode !== "local_user" || !model) return null;
+
+  return {
+    provider,
+    mode,
+    model,
   };
+}
+
+/**
+ * Returns true if the runtime payload has the Local User Ollama provider/mode
+ * regardless of whether the model is present or valid. Used to detect that a
+ * session was *intended* to be a Local User session even when the validated
+ * runtime (from normalizeLocalUserOllamaRuntimeSelection) returns null.
+ */
+export function isLocalUserOllamaIntent(runtime = null) {
+  return (
+    String(runtime?.provider || "").trim() === "ollama" &&
+    String(runtime?.mode || "").trim() === "local_user"
+  );
 }
 
 export function canStartSwarmsyIntake(status, selectedMode) {

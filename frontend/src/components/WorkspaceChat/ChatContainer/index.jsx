@@ -24,7 +24,10 @@ import SpeechRecognition, {
 import { ChatTooltips } from "./ChatTooltips";
 import { MetricsProvider } from "./ChatHistory/HistoricalMessage/Actions/RenderMetrics";
 import useChatContainerQuickScroll from "@/hooks/useChatContainerQuickScroll";
-import { PENDING_HOME_MESSAGE } from "@/utils/constants";
+import {
+  PENDING_HOME_MESSAGE,
+  SWARMSY_LOCAL_USER_ACTIVE_RUNTIME,
+} from "@/utils/constants";
 import { clearPromptInputDraft } from "@/hooks/usePromptInputStorage";
 import { safeJsonParse } from "@/utils/request";
 import { useTranslation } from "react-i18next";
@@ -36,6 +39,37 @@ import WorkspaceModelPicker from "./WorkspaceModelPicker";
 import { ChatSidebarProvider } from "./ChatSidebar";
 import SourcesSidebar from "./SourcesSidebar";
 import MemoriesSidebar from "./MemoriesSidebar";
+import {
+  normalizeLocalUserOllamaRuntimeSelection,
+  isLocalUserOllamaIntent,
+} from "@/components/SwarmsyFirstRunOnboarding/handoff";
+import { getPendingHomeMessageForDestination } from "@/utils/pendingHomeMessage";
+
+function getStoredLocalUserRuntimeForWorkspace(workspaceSlug = "") {
+  const storedRuntime = safeJsonParse(
+    sessionStorage.getItem(SWARMSY_LOCAL_USER_ACTIVE_RUNTIME)
+  );
+  const storedRuntimeWorkspaceSlug = String(
+    storedRuntime?.workspaceSlug || ""
+  ).trim();
+  const normalizedWorkspaceSlug = String(workspaceSlug || "").trim();
+
+  if (
+    !normalizedWorkspaceSlug ||
+    !storedRuntime ||
+    storedRuntimeWorkspaceSlug !== normalizedWorkspaceSlug
+  ) {
+    return {
+      runtime: null,
+      isLocalUserSession: false,
+    };
+  }
+
+  return {
+    runtime: normalizeLocalUserOllamaRuntimeSelection(storedRuntime),
+    isLocalUserSession: isLocalUserOllamaIntent(storedRuntime),
+  };
+}
 
 export default function ChatContainer({
   workspace,
@@ -52,9 +86,19 @@ export default function ChatContainer({
   const { chatHistoryRef } = useChatContainerQuickScroll();
   const pendingMessageChecked = useRef(false);
   const pendingResetRef = useRef(false);
+  const initialStoredLocalRuntime = getStoredLocalUserRuntimeForWorkspace(
+    workspace?.slug
+  );
+  const activeLocalUserRuntimeRef = useRef(initialStoredLocalRuntime.runtime);
+  const isLocalUserSessionRef = useRef(
+    initialStoredLocalRuntime.isLocalUserSession
+  );
 
-  const isEmpty =
-    chatHistory.length === 0 && !sessionStorage.getItem(PENDING_HOME_MESSAGE);
+  const { pending: pendingHomeMessage } = getPendingHomeMessageForDestination({
+    workspaceSlug: workspace?.slug,
+    threadSlug,
+  });
+  const isEmpty = chatHistory.length === 0 && !pendingHomeMessage;
 
   /**
    * Keep chat history bottom-padding in sync with the prompt input's
@@ -99,6 +143,24 @@ export default function ChatContainer({
       document.getElementById(PROMPT_INPUT_ID)?.value || "";
     if (!currentMessage) return false;
 
+    const activeRuntime = isLocalUserSessionRef.current
+      ? activeLocalUserRuntimeRef.current
+      : null;
+
+    // Block Local User chat if this is a local user session but the runtime is
+    // missing or invalid (e.g. model cleared). activeLocalUserRuntimeRef is
+    // always either a valid normalized object or null — never {model: ""} — so
+    // checking the session flag separately is the only reliable way to catch the
+    // "in a local user session but no valid runtime" state.
+    if (isLocalUserSessionRef.current && !activeRuntime) {
+      window.toastr?.error(
+        "Selected local Ollama model is no longer available. Recheck Ollama models and choose another.",
+        "Local model unavailable",
+        { timeOut: 8000 }
+      );
+      return false;
+    }
+
     // Clear the localStorage draft for this thread/workspace so that if the
     // PromptInput remounts (empty→chat transition), it won't restore stale text
     clearPromptInputDraft(threadSlug ?? workspace.slug);
@@ -109,12 +171,14 @@ export default function ChatContainer({
         content: currentMessage,
         role: "user",
         attachments: parseAttachments(),
+        runtime: activeRuntime,
       },
       {
         content: "",
         role: "assistant",
         pending: true,
         userMessage: currentMessage,
+        runtime: activeRuntime,
         animate: true,
       },
     ];
@@ -145,6 +209,7 @@ export default function ChatContainer({
           autoSubmit: true,
           history: filteredHistory,
           attachments: lastUserMessage?.attachments,
+          runtime: lastUserMessage?.runtime,
         })
       )
       .catch((e) => console.error(e));
@@ -156,21 +221,45 @@ export default function ChatContainer({
    * @param {string} options.text - The text to send to the LLM
    * @param {boolean} options.autoSubmit - Determines if the text should be sent immediately or if it should be added to the message state (default: false)
    * @param {Object[]} options.history - The history of the chat prior to this message for overriding the current chat history
-   * @param {Object[import("./DnDWrapper").Attachment]} options.attachments - The attachments to send to the LLM for this message
+   * @param {import("./DnDWrapper").Attachment[]} options.attachments - The attachments to send to the LLM for this message
+   * @param {Object|null} options.runtime - Optional runtime override for this message
    * @param {'replace' | 'append' | 'prepend'} options.writeMode - Replace current text or append to existing text (default: replace)
-   * @returns {void}
+   * @returns {Promise<boolean>} Resolves to false if sending was blocked/no-op; otherwise true once send progression begins.
    */
   const sendCommand = async ({
     text = "",
     autoSubmit = false,
     history = [],
     attachments = [],
+    runtime = null,
     writeMode = "replace",
   } = {}) => {
     // If we are not auto-submitting, we can just emit the text to the prompt input.
     if (!autoSubmit) {
       setMessageEmit(text, writeMode);
-      return;
+      return false;
+    }
+
+    // When auto-submitting without an explicit runtime override, inherit the
+    // active Local User runtime so follow-up messages (suggested messages,
+    // regenerate, quick actions) also use the selected Ollama model.
+    const effectiveRuntime =
+      runtime ??
+      (isLocalUserSessionRef.current
+        ? activeLocalUserRuntimeRef.current
+        : null);
+
+    // Block Local User chat if this is a local user session but the runtime is
+    // missing or invalid. Same guard as handleSubmit — auto-submitted commands
+    // (suggested messages, regenerate, quick actions) must not silently fall back
+    // to the workspace/default provider when a local user session is expected.
+    if (isLocalUserSessionRef.current && !effectiveRuntime) {
+      window.toastr?.error(
+        "Selected local Ollama model is no longer available. Recheck Ollama models and choose another.",
+        "Local model unavailable",
+        { timeOut: 8000 }
+      );
+      return false;
     }
 
     if (writeMode === "prepend") {
@@ -207,6 +296,7 @@ export default function ChatContainer({
           pending: true,
           userMessage: text,
           attachments,
+          runtime: effectiveRuntime,
           animate: true,
         },
       ];
@@ -217,6 +307,7 @@ export default function ChatContainer({
           content: text,
           role: "user",
           attachments,
+          runtime: effectiveRuntime,
         },
         {
           content: "",
@@ -224,6 +315,7 @@ export default function ChatContainer({
           pending: true,
           userMessage: text,
           attachments,
+          runtime: effectiveRuntime,
           animate: true,
         },
       ];
@@ -232,24 +324,102 @@ export default function ChatContainer({
     setChatHistory(prevChatHistory);
     setMessageEmit("");
     setLoadingResponse(true);
+    return true;
   };
+
+  useEffect(() => {
+    const scopedStoredRuntime = getStoredLocalUserRuntimeForWorkspace(
+      workspace?.slug
+    );
+    activeLocalUserRuntimeRef.current = scopedStoredRuntime.runtime;
+    isLocalUserSessionRef.current = scopedStoredRuntime.isLocalUserSession;
+    pendingMessageChecked.current = false;
+  }, [workspace?.slug, threadSlug]);
 
   useEffect(() => {
     if (pendingMessageChecked.current || !workspace?.slug) return;
     pendingMessageChecked.current = true;
 
-    const pending = safeJsonParse(sessionStorage.getItem(PENDING_HOME_MESSAGE));
+    const { pending, shouldClearLegacy } = getPendingHomeMessageForDestination({
+      workspaceSlug: workspace?.slug,
+      threadSlug,
+    });
+    if (shouldClearLegacy) {
+      sessionStorage.removeItem(PENDING_HOME_MESSAGE);
+      return;
+    }
+
     if (pending?.message) {
-      setTimeout(() => {
-        sessionStorage.removeItem(PENDING_HOME_MESSAGE);
-        sendCommand({
-          text: pending.message,
-          attachments: pending.attachments || [],
+      // Mark this as a Local User session if the pending message carries a local
+      // user Ollama intent (regardless of whether the model is valid), so the
+      // missing-model guard can fire on follow-up messages if validation fails.
+      const hasLocalUserIntent = isLocalUserOllamaIntent(pending?.runtime);
+      if (hasLocalUserIntent) {
+        isLocalUserSessionRef.current = true;
+      } else {
+        isLocalUserSessionRef.current = false;
+        activeLocalUserRuntimeRef.current = null;
+        sessionStorage.removeItem(SWARMSY_LOCAL_USER_ACTIVE_RUNTIME);
+      }
+      const runtime = normalizeLocalUserOllamaRuntimeSelection(
+        pending?.runtime
+      );
+      // Persist the validated Local User runtime for the entire chat/session
+      // so follow-up messages continue using the selected Ollama model.
+      if (runtime) {
+        activeLocalUserRuntimeRef.current = runtime;
+        sessionStorage.setItem(
+          SWARMSY_LOCAL_USER_ACTIVE_RUNTIME,
+          JSON.stringify({
+            ...runtime,
+            workspaceSlug: workspace.slug,
+          })
+        );
+      } else if (hasLocalUserIntent) {
+        activeLocalUserRuntimeRef.current = null;
+        sessionStorage.removeItem(SWARMSY_LOCAL_USER_ACTIVE_RUNTIME);
+      }
+      const timeoutId = setTimeout(async () => {
+        const { pending: latestPending } = getPendingHomeMessageForDestination({
+          workspaceSlug: workspace?.slug,
+          threadSlug,
+        });
+        if (!latestPending?.message) return;
+
+        const latestRuntime = normalizeLocalUserOllamaRuntimeSelection(
+          latestPending?.runtime
+        );
+        const result = await sendCommand({
+          text: latestPending.message,
+          attachments: latestPending.attachments || [],
+          runtime: latestRuntime,
           autoSubmit: true,
         });
+
+        if (result !== false) {
+          const { pending: currentPending } =
+            getPendingHomeMessageForDestination({
+              workspaceSlug: workspace?.slug,
+              threadSlug,
+            });
+
+          if (
+            currentPending?.workspaceSlug === latestPending.workspaceSlug &&
+            currentPending?.threadSlug === latestPending.threadSlug &&
+            currentPending?.message === latestPending.message &&
+            JSON.stringify(currentPending?.attachments || []) ===
+              JSON.stringify(latestPending?.attachments || []) &&
+            JSON.stringify(currentPending?.runtime || null) ===
+              JSON.stringify(latestPending?.runtime || null)
+          ) {
+            sessionStorage.removeItem(PENDING_HOME_MESSAGE);
+          }
+        }
       }, 100);
+
+      return () => clearTimeout(timeoutId);
     }
-  }, [workspace?.slug]);
+  }, [workspace?.slug, threadSlug]);
 
   useEffect(() => {
     async function fetchReply() {
@@ -290,6 +460,7 @@ export default function ChatContainer({
         workspaceSlug: workspace.slug,
         threadSlug,
         prompt: promptMessage.userMessage,
+        runtime: promptMessage?.runtime,
         chatHandler: (chatResult) =>
           handleChat(
             chatResult,

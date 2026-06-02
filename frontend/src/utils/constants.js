@@ -10,6 +10,8 @@ export const SEEN_WATCH_ALERT = "anythingllm_watched_document_alert";
 export const LAST_VISITED_WORKSPACE = "anythingllm_last_visited_workspace";
 export const USER_PROMPT_INPUT_MAP = "anythingllm_user_prompt_input_map";
 export const PENDING_HOME_MESSAGE = "anythingllm_pending_home_message";
+export const SWARMSY_LOCAL_USER_ACTIVE_RUNTIME =
+  "anythingllm_swarmsy_local_user_active_runtime";
 
 export const APPEARANCE_SETTINGS = "anythingllm_appearance_settings";
 

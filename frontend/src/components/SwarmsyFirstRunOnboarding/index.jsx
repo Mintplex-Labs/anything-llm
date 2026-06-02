@@ -10,6 +10,7 @@ import SwarmsyOnboarding from "@/models/swarmsyOnboarding";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 import { PENDING_HOME_MESSAGE } from "@/utils/constants";
+import { buildPendingHomeMessage } from "@/utils/pendingHomeMessage";
 import {
   ACTION_HUB_GROUPS,
   ACTION_HUB_HELPER_COPY,
@@ -629,7 +630,13 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
     try {
       sessionStorage.setItem(
         PENDING_HOME_MESSAGE,
-        JSON.stringify(handoffPayload)
+        JSON.stringify(
+          buildPendingHomeMessage({
+            ...handoffPayload,
+            workspaceSlug: activeStatus.workspace.slug,
+            threadSlug: null,
+          })
+        )
       );
     } catch {
       showToast(
@@ -680,7 +687,14 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
     try {
       sessionStorage.setItem(
         PENDING_HOME_MESSAGE,
-        JSON.stringify({ message: starterMessage, attachments: [] })
+        JSON.stringify(
+          buildPendingHomeMessage({
+            message: starterMessage,
+            attachments: [],
+            workspaceSlug: activeStatus.workspace.slug,
+            threadSlug: null,
+          })
+        )
       );
     } catch {
       setMemoryLockError(
@@ -721,7 +735,14 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
     try {
       sessionStorage.setItem(
         PENDING_HOME_MESSAGE,
-        JSON.stringify({ message: starterMessage, attachments: [] })
+        JSON.stringify(
+          buildPendingHomeMessage({
+            message: starterMessage,
+            attachments: [],
+            workspaceSlug: activeStatus.workspace.slug,
+            threadSlug: null,
+          })
+        )
       );
     } catch {
       showToast(
@@ -789,7 +810,14 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
     try {
       sessionStorage.setItem(
         PENDING_HOME_MESSAGE,
-        JSON.stringify({ message: starterMessage, attachments: [] })
+        JSON.stringify(
+          buildPendingHomeMessage({
+            message: starterMessage,
+            attachments: [],
+            workspaceSlug: activeStatus.workspace.slug,
+            threadSlug: null,
+          })
+        )
       );
     } catch {
       setProofReviewError(

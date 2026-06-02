@@ -16,6 +16,9 @@ const { writeResponseChunk } = require("../utils/helpers/chat/responses");
 const { WorkspaceThread } = require("../models/workspaceThread");
 const { User } = require("../models/user");
 const { getModelTag } = require("./utils");
+const {
+  applyRuntimeSelectionToWorkspace,
+} = require("../utils/swarmsy/runtimeSelection");
 
 function chatEndpoints(app) {
   if (!app) return;
@@ -26,8 +29,11 @@ function chatEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        const { message, attachments = [] } = reqBody(request);
+        const { message, attachments = [], runtime = null } = reqBody(request);
         const workspace = response.locals.workspace;
+        const runtimeWorkspace = multiUserMode(response)
+          ? workspace
+          : applyRuntimeSelectionToWorkspace(workspace, runtime).workspace;
 
         if (typeof message !== "string" || message.trim().length === 0) {
           response.status(400).json({
@@ -61,28 +67,31 @@ function chatEndpoints(app) {
 
         await streamChatWithWorkspace(
           response,
-          workspace,
+          runtimeWorkspace,
           message,
-          workspace?.chatMode,
+          runtimeWorkspace?.chatMode,
           user,
           null,
           attachments
         );
         await Telemetry.sendTelemetry("sent_chat", {
           multiUserMode: multiUserMode(response),
-          LLMSelection: process.env.LLM_PROVIDER || "openai",
+          LLMSelection:
+            runtimeWorkspace?.chatProvider ||
+            process.env.LLM_PROVIDER ||
+            "openai",
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
           VectorDbSelection: process.env.VECTOR_DB || "lancedb",
           multiModal: Array.isArray(attachments) && attachments?.length !== 0,
           TTSSelection: process.env.TTS_PROVIDER || "native",
-          LLMModel: getModelTag(),
+          LLMModel: runtimeWorkspace?.chatModel || getModelTag(),
         });
 
         await EventLogs.logEvent(
           "sent_chat",
           {
             workspaceName: workspace?.name,
-            chatModel: workspace?.chatModel || "System Default",
+            chatModel: runtimeWorkspace?.chatModel || "System Default",
           },
           user?.id
         );
@@ -112,9 +121,12 @@ function chatEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        const { message, attachments = [] } = reqBody(request);
+        const { message, attachments = [], runtime = null } = reqBody(request);
         const workspace = response.locals.workspace;
         const thread = response.locals.thread;
+        const runtimeWorkspace = multiUserMode(response)
+          ? workspace
+          : applyRuntimeSelectionToWorkspace(workspace, runtime).workspace;
 
         if (typeof message !== "string" || message.trim().length === 0) {
           response.status(400).json({
@@ -148,9 +160,9 @@ function chatEndpoints(app) {
 
         await streamChatWithWorkspace(
           response,
-          workspace,
+          runtimeWorkspace,
           message,
-          workspace?.chatMode,
+          runtimeWorkspace?.chatMode,
           user,
           thread,
           attachments
@@ -175,20 +187,23 @@ function chatEndpoints(app) {
 
         await Telemetry.sendTelemetry("sent_chat", {
           multiUserMode: multiUserMode(response),
-          LLMSelection: process.env.LLM_PROVIDER || "openai",
+          LLMSelection:
+            runtimeWorkspace?.chatProvider ||
+            process.env.LLM_PROVIDER ||
+            "openai",
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
           VectorDbSelection: process.env.VECTOR_DB || "lancedb",
           multiModal: Array.isArray(attachments) && attachments?.length !== 0,
           TTSSelection: process.env.TTS_PROVIDER || "native",
-          LLMModel: getModelTag(),
+          LLMModel: runtimeWorkspace?.chatModel || getModelTag(),
         });
 
         await EventLogs.logEvent(
           "sent_chat",
           {
-            workspaceName: workspace.name,
+            workspaceName: workspace?.name,
             thread: thread.name,
-            chatModel: workspace?.chatModel || "System Default",
+            chatModel: runtimeWorkspace?.chatModel || "System Default",
           },
           user?.id
         );
