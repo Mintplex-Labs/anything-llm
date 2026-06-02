@@ -14,7 +14,6 @@ class MinimaxProvider extends InheritMultiple([Provider, UnTooled]) {
     const client = new OpenAI({
       baseURL: "https://api.minimax.io/v1",
       apiKey: process.env.MINIMAX_API_KEY ?? null,
-      maxRetries: 3,
     });
 
     this._client = client;

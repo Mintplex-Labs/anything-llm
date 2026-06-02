@@ -1449,6 +1449,10 @@ function dumpENV() {
 
     // Allow auto-approval of skills
     "AGENT_AUTO_APPROVED_SKILLS",
+
+    // Allow setting a custom fetch timeouts for providers
+    "ANYTHINGLLM_FETCH_TIMEOUT",
+    "ANYTHINGLLM_MAX_RETRIES",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.

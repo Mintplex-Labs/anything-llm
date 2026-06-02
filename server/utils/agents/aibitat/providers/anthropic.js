@@ -18,7 +18,6 @@ class AnthropicProvider extends Provider {
     const {
       options = {
         apiKey: process.env.ANTHROPIC_API_KEY,
-        maxRetries: 3,
         defaultHeaders: {
           "User-Agent": getAnythingLLMUserAgent(),
         },

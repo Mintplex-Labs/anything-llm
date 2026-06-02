@@ -15,7 +15,6 @@ class PerplexityProvider extends InheritMultiple([Provider, UnTooled]) {
     const client = new OpenAI({
       baseURL: "https://api.perplexity.ai",
       apiKey: process.env.PERPLEXITY_API_KEY ?? null,
-      maxRetries: 3,
     });
 
     this._client = client;
