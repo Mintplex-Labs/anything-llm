@@ -22,6 +22,8 @@ const {
   parseDockerModelRunnerEndpoint,
 } = require("../../../AiProviders/dockerModelRunner");
 const { parseFoundryBasePath } = require("../../../AiProviders/foundry");
+const { AzureOpenAiLLM } = require("../../../AiProviders/azureOpenAi");
+const { DellProAiStudioLLM } = require("../../../AiProviders/dellProAiStudio");
 const {
   SystemPromptVariables,
 } = require("../../../../models/systemPromptVariables");
@@ -226,6 +228,16 @@ class Provider {
         });
       case "bedrock":
         return createBedrockChatClient(config);
+      case "azure":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: AzureOpenAiLLM.formatBaseUrl(
+              process.env.AZURE_OPENAI_ENDPOINT
+            ),
+          },
+          apiKey: process.env.AZURE_OPENAI_KEY,
+          ...config,
+        });
       case "fireworksai":
         return new ChatOpenAI({
           apiKey: process.env.FIREWORKS_AI_LLM_API_KEY,
@@ -431,6 +443,14 @@ class Provider {
             baseURL: process.env.LEMONADE_LLM_BASE_PATH,
           },
           apiKey: process.env.LEMONADE_LLM_API_KEY || null,
+          ...config,
+        });
+      case "dpais":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: DellProAiStudioLLM.parseBasePath(),
+          },
+          apiKey: null,
           ...config,
         });
       default:

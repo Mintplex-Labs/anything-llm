@@ -14,7 +14,6 @@ class OpenAIProvider extends Provider {
     const {
       options = {
         apiKey: process.env.OPEN_AI_KEY,
-        maxRetries: 3,
       },
       model = "gpt-4o",
     } = config;
