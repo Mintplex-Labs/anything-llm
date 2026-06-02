@@ -1,9 +1,11 @@
 const { contextBridge, ipcRenderer } = require("electron");
 
-const STORAGE_CONTRACT_CHANNEL = "swarmsy:get-storage-contract";
+// Trusted-origin helpers are inlined here to avoid loading local CJS modules
+// (http/https/path/fs/os) from a sandboxed preload where require is a limited
+// Electron polyfill that cannot safely resolve arbitrary CommonJS helpers.
 const TRUSTED_DESKTOP_HOSTS = new Set(["127.0.0.1", "localhost", "::1"]);
 
-function normalizeTrustedHost(hostname = "") {
+function normalizeTrustedHost(hostname) {
   return String(hostname || "")
     .trim()
     .replace(/^\[/, "")
@@ -12,16 +14,19 @@ function normalizeTrustedHost(hostname = "") {
 }
 
 function isTrustedDesktopOrigin(targetUrl) {
+  const trimmed = String(targetUrl || "").trim();
+  if (!trimmed) return false;
+  let parsed;
   try {
-    const parsed = new URL(String(targetUrl || "").trim());
-    return (
-      (parsed.protocol === "http:" || parsed.protocol === "https:") &&
-      TRUSTED_DESKTOP_HOSTS.has(normalizeTrustedHost(parsed.hostname))
-    );
+    parsed = new URL(trimmed);
   } catch {
     return false;
   }
+  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return false;
+  return TRUSTED_DESKTOP_HOSTS.has(normalizeTrustedHost(parsed.hostname));
 }
+
+const STORAGE_CONTRACT_CHANNEL = "swarmsy:get-storage-contract";
 
 function createDesktopBridge({ ipcRendererApi = ipcRenderer } = {}) {
   return {

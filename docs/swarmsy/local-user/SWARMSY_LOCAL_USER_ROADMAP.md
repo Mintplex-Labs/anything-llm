@@ -29,8 +29,9 @@ Local data directory plus backup export/import.
 Desktop wrapper and downloadable package.
 
 - Foundation shipped: desktop shell scaffold entrypoint + preload + Local User storage-contract bridge under `desktop/`.
+- Foundation shipped: trusted-local runtime healthcheck and local-runtime failure-page path before desktop app readiness.
 - Foundation scripts: `yarn desktop:dev` (opt-in wrapper launch) and `yarn desktop:smoke` (scaffold presence check).
-- Current scope is Windows-first/local development prep only; signed installer, auto-update, and production packaging remain out of scope.
+- Current scope is Windows-first/local development prep only; signed installer, auto-update, bundled Ollama/models, and production packaging remain out of scope.
 
 ## Phase 5
 

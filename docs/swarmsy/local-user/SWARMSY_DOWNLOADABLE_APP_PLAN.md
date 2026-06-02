@@ -70,6 +70,7 @@ This plan creates the product split and implementation path for a downloadable S
 - The first Local User Mode UI status/model-selection shell now exists in onboarding and remains clearly separate from Hosted/Admin Mode flows.
 - Browser-side Local User backup/export/import is live in the Local User Settings Hub.
 - Desktop local directory + storage manifest contract docs and helper foundation now exist, without desktop packaging/runtime wiring in this PR.
-- First desktop wrapper scaffold foundation now exists under `desktop/` with opt-in scripts (`desktop:dev`, `desktop:smoke`) and no hosted/admin runtime changes.
+- Desktop wrapper foundation now includes trusted-local runtime healthcheck + actionable failure-page behavior under `desktop/`, with opt-in scripts (`desktop:dev`, `desktop:smoke`) and no hosted/admin runtime changes.
 - Browser `localStorage` remains the active Local User state until a later migration phase.
 - Persistent local model settings file storage, signed installers, and auto-update remain future phases.
+- Desktop runtime foundation still does not bundle Ollama, bundle models, or auto-start/auto-install a full backend process manager.

@@ -3,63 +3,50 @@ const { app, BrowserWindow, ipcMain, shell } = require("electron");
 const {
   getDesktopStorageContract,
 } = require("../foundation/storageContractBridge.cjs");
+const {
+  TRUSTED_DESKTOP_HOSTS,
+  normalizeTrustedHost,
+  isTrustedDesktopOrigin,
+  runDesktopRuntimeHealthcheck,
+} = require("../foundation/runtimeHealthcheck.cjs");
 
 const STORAGE_CONTRACT_CHANNEL = "swarmsy:get-storage-contract";
-const TRUSTED_DESKTOP_HOSTS = new Set(["127.0.0.1", "localhost", "::1"]);
-
-function normalizeTrustedHost(hostname = "") {
-  return String(hostname || "")
-    .trim()
-    .replace(/^\[/, "")
-    .replace(/\]$/, "")
-    .toLowerCase();
-}
-
-function isTrustedDesktopOrigin(targetUrl) {
-  try {
-    const parsed = new URL(String(targetUrl || "").trim());
-    return (
-      (parsed.protocol === "http:" || parsed.protocol === "https:") &&
-      TRUSTED_DESKTOP_HOSTS.has(normalizeTrustedHost(parsed.hostname))
-    );
-  } catch {
-    return false;
-  }
-}
 
 function resolveStartUrl() {
   const configured = String(process.env.SWARMSY_DESKTOP_START_URL || "").trim();
-  if (!configured) return "http://127.0.0.1:3000";
-
-  try {
-    const parsed = new URL(configured);
-    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
-      throw new Error(`Unsupported protocol "${parsed.protocol}"`);
-    }
-    return parsed.toString();
-  } catch (error) {
-    throw new Error(
-      `SWARMSY_DESKTOP_START_URL must be a valid http(s) URL. Received "${configured}". ${error.message}`
-    );
-  }
+  return configured || "http://127.0.0.1:3000";
 }
 
-function renderFailurePage(error) {
-  const message = String(error?.message || error || "Unknown desktop launch error");
-  const escaped = message.replace(/[&<>"]/g, (char) => {
-    if (char === "&") return "&amp;";
-    if (char === "<") return "&lt;";
-    if (char === ">") return "&gt;";
-    return "&quot;";
-  });
+function renderFailurePage(failure) {
+  const escapeHtml = (value) =>
+    String(value || "").replace(/[&<>"]/g, (char) => {
+      if (char === "&") return "&amp;";
+      if (char === "<") return "&lt;";
+      if (char === ">") return "&gt;";
+      return "&quot;";
+    });
+  const message = String(
+    failure?.message || failure || "Unknown desktop launch error"
+  );
+  const expectedUrl =
+    failure?.reason === "runtime_unreachable"
+      ? String(
+          failure?.startUrl ||
+            process.env.SWARMSY_DESKTOP_START_URL ||
+            "http://127.0.0.1:3000"
+        )
+      : "http://127.0.0.1:3000";
+  const escaped = escapeHtml(message);
+  const escapedExpectedUrl = escapeHtml(expectedUrl);
 
   return `data:text/html;charset=utf-8,${encodeURIComponent(`
     <html>
       <body style="font-family: Arial, sans-serif; padding: 20px; background: #111827; color: #f9fafb;">
-        <h2>SWARMSY Desktop Foundation Launch Failed</h2>
+        <h2>SWARMSY Desktop could not reach the local runtime</h2>
         <p>${escaped}</p>
-        <p>Start URL defaults to <code>http://127.0.0.1:3000</code>.</p>
-        <p>You can override with <code>SWARMSY_DESKTOP_START_URL</code> to target local dev or hosted environments.</p>
+        <p>Expected local runtime URL: <code>${escapedExpectedUrl}</code>.</p>
+        <p>Start the local runtime first (for example: <code>yarn dev:all</code>) and relaunch with <code>yarn desktop:dev</code>.</p>
+        <p>Hosted/Admin deployment is unchanged by this desktop local runtime foundation.</p>
       </body>
     </html>
   `)}`;
@@ -137,6 +124,7 @@ async function createWindow({
   BrowserWindowCtor = BrowserWindow,
   startUrl = null,
   shellApi = shell,
+  runtimeHealthcheck = runDesktopRuntimeHealthcheck,
 } = {}) {
   const window = new BrowserWindowCtor({
     width: 1366,
@@ -154,10 +142,20 @@ async function createWindow({
   try {
     const resolvedStartUrl =
       startUrl !== null && startUrl !== undefined ? startUrl : resolveStartUrl();
-    configureWindowSecurity(window, resolvedStartUrl, { shellApi });
-    await window.loadURL(resolvedStartUrl);
+    const health = await runtimeHealthcheck({ startUrl: resolvedStartUrl });
+    if (!health?.ok) {
+      await window.loadURL(renderFailurePage(health));
+      return window;
+    }
+    configureWindowSecurity(window, health.startUrl, { shellApi });
+    await window.loadURL(health.startUrl);
   } catch (error) {
-    await window.loadURL(renderFailurePage(error));
+    await window.loadURL(
+      renderFailurePage({
+        reason: "desktop_launch_failed",
+        message: String(error?.message || error || "Unknown desktop launch error"),
+      })
+    );
   }
 
   return window;
