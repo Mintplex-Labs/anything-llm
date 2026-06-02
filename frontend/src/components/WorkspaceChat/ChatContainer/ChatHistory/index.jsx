@@ -24,6 +24,7 @@ import useTextSize from "@/hooks/useTextSize";
 import useChatHistoryScrollHandle from "@/hooks/useChatHistoryScrollHandle";
 import { ThoughtExpansionProvider } from "./ThoughtContainer";
 import { MessageActionsProvider } from "./MessageActionsContext";
+import { useIsAgentSessionActive } from "@/utils/chat/agent";
 
 export default forwardRef(function (
   {
@@ -195,18 +196,38 @@ export default forwardRef(function (
     ]
   );
   const lastMessageInfo = useMemo(() => getLastMessageInfo(history), [history]);
+  const isAgentSessionActive = useIsAgentSessionActive();
+
+  // Index of the last status group (array entry) in the compiled history. The
+  // agent head pulses on this group only - a tool call or the streaming answer
+  // can render below it, so we can't rely on it being the final entry.
+  const lastStatusGroupIndex = useMemo(() => {
+    for (let i = compiledHistory.length - 1; i >= 0; i--) {
+      if (Array.isArray(compiledHistory[i])) return i;
+    }
+    return -1;
+  }, [compiledHistory]);
+
+  // The agent is "working" - and the head should pulse - whenever it is mid-run
+  // and the live tail of the chat is internal activity (reasoning or a tool
+  // call), i.e. status content is still streaming. Once the final answer streams
+  // (a textResponse tail) or the session ends ("Agent session complete."), this
+  // goes false and the head settles to static.
+  const agentIsWorking =
+    isAgentSessionActive &&
+    (lastMessageInfo.isStatusResponse || lastMessageInfo.isToolCallInvocation);
+
   const renderStatusResponse = useCallback(
     (item, index) => {
-      const hasSubsequentMessages = index < compiledHistory.length - 1;
       return (
         <StatusResponse
           key={`status-group-${index}`}
           messages={item}
-          isThinking={!hasSubsequentMessages && lastMessageInfo.isAnimating}
+          isThinking={index === lastStatusGroupIndex && agentIsWorking}
         />
       );
     },
-    [compiledHistory.length, lastMessageInfo]
+    [lastStatusGroupIndex, agentIsWorking]
   );
 
   return (
@@ -255,6 +276,7 @@ const getLastMessageInfo = (history) => {
   return {
     isAnimating: lastMessage?.animate,
     isStatusResponse: lastMessage?.type === "statusResponse",
+    isToolCallInvocation: lastMessage?.type === "toolCallInvocation",
   };
 };
 
