@@ -33,6 +33,8 @@ Local User Mode is a separate downloadable SWARMSY path for normal users who wan
 - Local User Mode does not replace Hosted/Admin Mode.
 - The current browser-based hosted app should not be described as a fully local app.
 - Private project data should stay local by default in Local User Mode unless the user explicitly enables a future sync feature.
+- In hosted/admin mode, Local User Settings Hub must show boundary copy such as: `Local User Mode is not active in this hosted/admin environment`.
+- Hosted/admin surfaces must not imply Local User-only actions will run locally, and must not trigger Local User runtime attachment when local mode is inactive.
 
 ## Product Positioning
 

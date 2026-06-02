@@ -83,7 +83,7 @@ the set is skipped even if somehow present in the backup object).
 3. Returns a versioned backup object with `schema`, `version`, `exportedAt`,
    and `state`.
 
-The UI handler `exportBackupToFile()` in `SwarmsyFirstRunOnboarding/index.jsx`:
+The UI handler `exportBackupToFile()` (used by the Local User Settings Hub in onboarding and chat settings):
 
 1. Calls `exportLocalUserBackup()`.
 2. Serialises the result with `JSON.stringify(backup, null, 2)`.
@@ -123,7 +123,7 @@ Any single failure produces a descriptive error string and sets `valid: false`.
 5. **Writes** the value via `storage.setItem` otherwise.
 6. Returns `{ success: true, restored: [...], skipped: [...], errors: [] }`.
 
-The UI handler `handleImportBackupFile(event)` in `SwarmsyFirstRunOnboarding`:
+The Local User Settings Hub import handler (`importBackupFromText` + file picker wrapper):
 
 1. Reads the selected `.json` file via `FileReader`.
 2. `JSON.parse`s the content.
@@ -151,8 +151,9 @@ after a backup passes validation.
 
 ## Hosted/Admin boundary
 
-The backup/restore UI card is rendered only when `isLocalUserMode === true` in
-`SwarmsyFirstRunOnboarding`. Hosted and Admin Mode users never see the card.
+The Local User Settings Hub can render in hosted/admin surfaces, but local-only
+controls are hidden behind explicit boundary state messaging:
+`Local User Mode is not active in this hosted/admin environment`.
 
 `BACKUP_STATE_FIELDS` contains only Local User client-side keys. No admin-only,
 server-side, or multi-user keys are present.
@@ -167,5 +168,8 @@ sent to the server.
 | File | Purpose |
 |---|---|
 | `frontend/src/utils/localUserBackup.js` | Schema constants, export, validate, import |
-| `frontend/src/components/SwarmsyFirstRunOnboarding/index.jsx` | Backup card UI (export button, import file input) |
+| `frontend/src/components/SwarmsyLocalUserSettingsHub/index.jsx` | Local User Settings Hub UI (status, model, export/import actions) |
+| `frontend/src/components/SwarmsyLocalUserSettingsHub/useLocalUserSettingsHub.js` | Shared Local User Settings Hub state + sync logic |
+| `frontend/src/components/SwarmsyFirstRunOnboarding/index.jsx` | Onboarding integration of the Local User Settings Hub |
+| `frontend/src/components/WorkspaceChat/ChatContainer/ChatSettingsMenu/LocalUserSettingsHubRow.jsx` | Chat settings entrypoint modal for Local User Settings Hub |
 | `server/__tests__/frontend/localUserBackup.test.js` | Full flow test suite (35 tests) |

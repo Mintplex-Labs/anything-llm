@@ -1,0 +1,249 @@
+import { useRef } from "react";
+import { ArrowClockwise, SpinnerGap } from "@phosphor-icons/react";
+
+const LOCAL_OLLAMA_SETUP_GUIDANCE = [
+  "Ollama was not detected.",
+  "Start Ollama or configure a compatible endpoint.",
+  "SWARMSY does not auto-install Ollama or auto-download models.",
+];
+
+function toneClasses(tone = "neutral") {
+  if (tone === "success") {
+    return "border-emerald-500/30 bg-emerald-500/10 text-emerald-100 light:text-emerald-800";
+  }
+
+  if (tone === "warning") {
+    return "border-amber-500/30 bg-amber-500/10 text-amber-100 light:text-amber-800";
+  }
+
+  return "border-theme-sidebar-border bg-theme-bg-secondary text-theme-text-primary";
+}
+
+export default function SwarmsyLocalUserSettingsHub({
+  controller,
+  className = "",
+}) {
+  const backupImportInputRef = useRef(null);
+
+  if (!controller) return null;
+
+  const {
+    isLoginModePending,
+    isHostedAdminMode,
+    isLocalUserMode,
+    isCheckingLocalOllama,
+    localOllamaStatus,
+    localOllamaStatusTone,
+    localOllamaStatusTitle,
+    hasVerifiedLocalOllamaModels,
+    selectedLocalOllamaModel,
+    savedLocalOllamaModel,
+    currentModelLabel,
+    localOllamaSelectionMessage,
+    checkLocalUserOllama,
+    onSelectLocalOllamaModel,
+    exportBackupToFile,
+    importBackupFromText,
+  } = controller;
+
+  const isHostedBoundary = isHostedAdminMode && !isLocalUserMode;
+  const showNeutralPendingState = isLoginModePending && !isHostedBoundary;
+  const title = showNeutralPendingState
+    ? "Checking environment..."
+    : localOllamaStatusTitle;
+
+  function handleImportBackupFile(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      await importBackupFromText(String(e?.target?.result || ""));
+    };
+    reader.readAsText(file);
+    event.target.value = "";
+  }
+
+  return (
+    <div
+      className={`rounded-2xl border p-5 ${
+        isHostedAdminMode || isLocalUserMode
+          ? toneClasses(localOllamaStatusTone)
+          : toneClasses("neutral")
+      } ${className}`}
+    >
+      <div className="space-y-2">
+        <p className="text-sm font-semibold uppercase tracking-[0.2em]">
+          Local User Settings Hub
+        </p>
+        <h2 className="text-lg font-semibold">{title}</h2>
+        <p className="text-sm leading-6">
+          Manage Local User Mode status, Ollama model selection, and
+          browser-side backup/import in one place.
+        </p>
+        <p className="text-xs opacity-80">
+          Local User data belongs to this browser profile. Hosted/admin server
+          data is outside this scope.
+        </p>
+      </div>
+
+      {isHostedBoundary ? (
+        <div className="mt-4 rounded-lg border border-theme-sidebar-border bg-theme-bg-secondary p-3 text-sm">
+          Local User Mode is not active in this hosted/admin environment.
+        </div>
+      ) : showNeutralPendingState ? (
+        <div className="mt-4 rounded-lg border border-theme-sidebar-border bg-theme-bg-secondary p-3 text-sm">
+          Checking environment before Local User actions are available.
+        </div>
+      ) : (
+        <>
+          <div className="mt-4 flex items-start justify-between gap-4">
+            <div className="space-y-2">
+              {localOllamaStatus.message && (
+                <p className="text-sm leading-6">{localOllamaStatus.message}</p>
+              )}
+              {localOllamaStatus.endpoint && (
+                <p className="text-xs opacity-80">
+                  Endpoint: {localOllamaStatus.endpoint}
+                </p>
+              )}
+              {savedLocalOllamaModel && !hasVerifiedLocalOllamaModels && (
+                <p className="text-xs font-medium">
+                  Saved model (unverified): {savedLocalOllamaModel}
+                </p>
+              )}
+              {currentModelLabel && (
+                <p className="text-xs opacity-80">
+                  Current model: {currentModelLabel}
+                </p>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={checkLocalUserOllama}
+              disabled={isCheckingLocalOllama}
+              className="flex items-center justify-center gap-x-2 rounded-lg border border-theme-sidebar-border bg-theme-bg-secondary px-4 py-2 text-sm font-medium text-theme-text-primary transition hover:bg-theme-bg-menu disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isCheckingLocalOllama ? (
+                <SpinnerGap className="animate-spin" size={18} />
+              ) : (
+                <ArrowClockwise size={18} />
+              )}
+              Check again
+            </button>
+          </div>
+
+          {localOllamaStatus.status === "unreachable" && (
+            <ul className="mt-4 list-disc space-y-1 pl-5 text-sm leading-6">
+              {LOCAL_OLLAMA_SETUP_GUIDANCE.map((step) => (
+                <li key={step}>{step}</li>
+              ))}
+            </ul>
+          )}
+
+          {localOllamaStatus.status === "no_models" && (
+            <p className="mt-4 text-sm leading-6">
+              Ollama is connected, but no installed models were reported yet.
+            </p>
+          )}
+
+          {localOllamaStatus.models.length > 0 && (
+            <div className="mt-4 space-y-4">
+              <div className="space-y-2">
+                <h3 className="text-sm font-semibold uppercase tracking-[0.2em]">
+                  Installed Ollama models
+                </h3>
+                <ul className="grid gap-2 md:grid-cols-2">
+                  {localOllamaStatus.models.map((model) => (
+                    <li
+                      key={model.id}
+                      className="rounded-lg border border-theme-sidebar-border bg-theme-bg-secondary px-3 py-2 text-sm font-medium text-theme-text-primary"
+                    >
+                      {model.name}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="space-y-2">
+                <label
+                  htmlFor="local-user-ollama-model"
+                  className="text-sm font-semibold uppercase tracking-[0.2em]"
+                >
+                  Selected Ollama model
+                </label>
+                <select
+                  id="local-user-ollama-model"
+                  value={selectedLocalOllamaModel}
+                  onChange={(event) =>
+                    onSelectLocalOllamaModel(event.target.value)
+                  }
+                  className="w-full rounded-lg border border-theme-sidebar-border bg-theme-bg-secondary px-3 py-2 text-sm text-theme-text-primary outline-none focus:border-teal"
+                >
+                  {(localOllamaStatus.models.length > 1 ||
+                    !selectedLocalOllamaModel) && (
+                    <option value="">Select an installed model</option>
+                  )}
+                  {localOllamaStatus.models.map((model) => (
+                    <option key={model.id} value={model.id}>
+                      {model.name}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-xs opacity-80">
+                  Model selection is stored in Local User browser storage and
+                  restored only when the model is still installed.
+                </p>
+                {localOllamaSelectionMessage && (
+                  <p className="text-xs font-medium text-amber-200 light:text-amber-800">
+                    {localOllamaSelectionMessage}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          <div className="mt-6 rounded-lg border border-theme-sidebar-border bg-theme-bg-secondary p-4">
+            <div className="space-y-2">
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-theme-text-secondary">
+                Local User Data
+              </p>
+              <h3 className="text-base font-semibold text-theme-text-primary">
+                Backup, Export, and Import
+              </h3>
+              <p className="text-sm text-theme-text-secondary">
+                This backup covers browser-side SWARMSY Local User settings
+                only. It does not export hosted server data, secrets, API keys,
+                or auth tokens.
+              </p>
+            </div>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={exportBackupToFile}
+                className="rounded-lg border border-theme-sidebar-border bg-theme-bg-secondary px-4 py-2 text-sm font-medium text-theme-text-primary transition hover:bg-theme-bg-menu"
+              >
+                Export Backup
+              </button>
+              <button
+                type="button"
+                onClick={() => backupImportInputRef.current?.click()}
+                className="rounded-lg border border-theme-sidebar-border bg-theme-bg-secondary px-4 py-2 text-sm font-medium text-theme-text-primary transition hover:bg-theme-bg-menu"
+              >
+                Import Backup
+              </button>
+              <input
+                ref={backupImportInputRef}
+                type="file"
+                accept=".json,application/json"
+                className="hidden"
+                onChange={handleImportBackupFile}
+                aria-hidden="true"
+              />
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}

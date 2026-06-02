@@ -254,13 +254,7 @@ describe("SWARMSY HIVE action hub", () => {
 
     expect(source).toContain("ACTION_HUB_TITLE");
     expect(source).toContain("Choose the next command for SPARKY.");
-    expect(source).toContain("Local User Mode · Ollama");
-    expect(source).toContain("Model selection shell");
-    expect(source).toContain("Check again");
-    expect(source).toContain("Ollama was not detected.");
-    expect(source).toContain(
-      "Model selection is stored in Local User Mode browser storage"
-    );
+    expect(source).toContain("SwarmsyLocalUserSettingsHub");
   });
 
   it("wires abort-safe local-user Ollama sync in onboarding mount effect", () => {
@@ -461,7 +455,9 @@ describe("SWARMSY HIVE action hub", () => {
       "utf8"
     );
 
-    expect(source).toMatch(/isLocalUserMode && \([\s\S]*Backup &amp; Restore/);
+    expect(source).toMatch(
+      /isLocalUserMode && \([\s\S]*SwarmsyLocalUserSettingsHub/
+    );
   });
 
   it("adds runtime handoff contract payload for local-user ollama selection", () => {
@@ -514,7 +510,7 @@ describe("SWARMSY HIVE action hub", () => {
     const source = fs.readFileSync(
       path.resolve(
         __dirname,
-        "../../../frontend/src/components/SwarmsyFirstRunOnboarding/index.jsx"
+        "../../../frontend/src/components/SwarmsyLocalUserSettingsHub/index.jsx"
       ),
       "utf8"
     );
@@ -525,6 +521,143 @@ describe("SWARMSY HIVE action hub", () => {
     );
     expect(source).not.toMatch(
       /\(localOllamaStatus\.status === "unreachable" \|\|\s*localOllamaStatus\.status === "error"\)/
+    );
+  });
+
+  it("exposes Local User Settings Hub in chat settings menu", () => {
+    const source = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        "../../../frontend/src/components/WorkspaceChat/ChatContainer/ChatSettingsMenu/index.jsx"
+      ),
+      "utf8"
+    );
+    expect(source).toContain("LocalUserSettingsHubRow");
+    expect(source).toContain("const [showLocalUserSettingsHub, setShowLocalUserSettingsHub]");
+    expect(source).toContain("setShowMenu(false);");
+    expect(source).toContain("setShowLocalUserSettingsHub(true);");
+    expect(source).toContain("<LocalUserSettingsHubModal");
+    expect(source).toContain("if (!isOpen) return null;");
+    expect(source).toContain("const localUserSettingsHubController = useLocalUserSettingsHub();");
+  });
+
+  it("mounts Local User controller only while chat settings modal is open", () => {
+    const source = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        "../../../frontend/src/components/WorkspaceChat/ChatContainer/ChatSettingsMenu/index.jsx"
+      ),
+      "utf8"
+    );
+    const lazyMountGateIndex = source.indexOf("if (!isOpen) return null;");
+    const hookMountIndex = source.indexOf(
+      "const localUserSettingsHubController = useLocalUserSettingsHub();"
+    );
+    expect(lazyMountGateIndex).toBeGreaterThan(-1);
+    expect(hookMountIndex).toBeGreaterThan(lazyMountGateIndex);
+  });
+
+  it("keeps Local User Settings Hub row as an entrypoint only (no row-local modal state)", () => {
+    const source = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        "../../../frontend/src/components/WorkspaceChat/ChatContainer/ChatSettingsMenu/LocalUserSettingsHubRow.jsx"
+      ),
+      "utf8"
+    );
+    expect(source).toContain("onOpen?.()");
+    expect(source).toContain("<button");
+    expect(source).toContain('type="button"');
+    expect(source).not.toContain("useState(");
+    expect(source).not.toContain("ModalWrapper");
+  });
+
+  it("resets chat-settings menu and Local User modal state on route navigation", () => {
+    const source = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        "../../../frontend/src/components/WorkspaceChat/ChatContainer/ChatSettingsMenu/index.jsx"
+      ),
+      "utf8"
+    );
+    expect(source).toContain("useLocation");
+    expect(source).toContain("setShowLocalUserSettingsHub(false);");
+    expect(source).toContain("}, [location.pathname]);");
+  });
+
+  it("shows hosted/admin boundary copy in Local User Settings Hub", () => {
+    const source = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        "../../../frontend/src/components/SwarmsyLocalUserSettingsHub/index.jsx"
+      ),
+      "utf8"
+    );
+    expect(source).toContain(
+      "Local User Mode is not active in this hosted/admin environment."
+    );
+    expect(source).toMatch(
+      /browser-side SWARMSY Local User settings[\s\S]*only/
+    );
+  });
+
+  it("renders model placeholder when selection is empty even with one installed model", () => {
+    const source = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        "../../../frontend/src/components/SwarmsyLocalUserSettingsHub/index.jsx"
+      ),
+      "utf8"
+    );
+    expect(source).toMatch(
+      /\(localOllamaStatus\.models\.length > 1 \|\|\s*!selectedLocalOllamaModel\) &&/
+    );
+    expect(source).not.toContain("localOllamaStatus.models.length > 1 && (");
+  });
+
+  it("avoids Local User status fetches in hosted/admin mode", () => {
+    const source = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        "../../../frontend/src/components/SwarmsyLocalUserSettingsHub/useLocalUserSettingsHub.js"
+      ),
+      "utf8"
+    );
+    expect(source).toContain("const isLoginModePending = loginMode === null");
+    expect(source).toContain('const isHostedAdminMode = loginMode === "multi"');
+    expect(source).toContain("if (isLoginModePending || isHostedAdminMode) return;");
+    expect(source).toContain("if (isLoginModePending) {");
+    expect(source).toContain("if (isHostedAdminMode) {");
+  });
+
+  it("keeps onboarding and settings hub synchronized via shared local-user settings sync event", () => {
+    const source = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        "../../../frontend/src/components/SwarmsyLocalUserSettingsHub/useLocalUserSettingsHub.js"
+      ),
+      "utf8"
+    );
+    expect(source).toContain("dispatchLocalUserSettingsSync({");
+    expect(source).toContain('reason: "model_selection"');
+    expect(source).toContain('reason: "backup_import"');
+    expect(source).toContain("window.addEventListener(LOCAL_USER_SETTINGS_SYNC_EVENT");
+    expect(source).toContain("window.removeEventListener(");
+  });
+
+  it("uses declared onboarding dependencies for local-user sync event effect", () => {
+    const source = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        "../../../frontend/src/components/SwarmsyFirstRunOnboarding/index.jsx"
+      ),
+      "utf8"
+    );
+    expect(source).toContain(
+      "}, [localOllamaStatus.status, localOllamaStatus.models]);"
+    );
+    expect(source).not.toContain(
+      "}, [hasVerifiedLocalOllamaModels, localOllamaStatus.models]);"
     );
   });
 });

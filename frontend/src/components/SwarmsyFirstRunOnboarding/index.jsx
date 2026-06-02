@@ -51,6 +51,8 @@ import {
   exportLocalUserBackup,
   importLocalUserBackup,
 } from "@/utils/localUserBackup";
+import SwarmsyLocalUserSettingsHub from "@/components/SwarmsyLocalUserSettingsHub";
+import { LOCAL_USER_SETTINGS_SYNC_EVENT } from "@/components/SwarmsyLocalUserSettingsHub/useLocalUserSettingsHub";
 
 const IDENTITY_MODES = [
   {
@@ -123,12 +125,6 @@ const LOCAL_OLLAMA_UI_STATES = new Set([
   "no_models",
   "error",
 ]);
-
-const LOCAL_OLLAMA_SETUP_GUIDANCE = [
-  "Ollama was not detected.",
-  "Start Ollama or configure a compatible endpoint.",
-  "SWARMSY does not auto-install Ollama or auto-download models.",
-];
 
 function normalizeLocalUserModel(model = null, index = 0) {
   const name = String(model?.name || model?.id || "").trim();
@@ -289,7 +285,6 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
     useState(null);
   const localOllamaRefreshControllerRef = useRef(null);
   const hasConfirmedLocalUserModeRef = useRef(false);
-  const backupImportInputRef = useRef(null);
   const activeStatus = status || createFallbackStatus();
   const canLoadMemoryLock = canContinueFromMemoryLock(activeStatus);
   const canUseProofTracker = canReviewProof(activeStatus);
@@ -489,6 +484,49 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
     selectedLocalOllamaModel,
   ]);
 
+  useEffect(() => {
+    function syncFromSettingsHub() {
+      const restoredModelId = readLocalUserOllamaModelSelection();
+      if (!restoredModelId) {
+        setSelectedLocalOllamaModel("");
+        setLocalOllamaSelectionMessage(null);
+        return;
+      }
+
+      if (!hasVerifiedLocalOllamaModels) {
+        setSelectedLocalOllamaModel("");
+        setLocalOllamaSelectionMessage(
+          IMPORTED_LOCAL_OLLAMA_MODEL_PENDING_MESSAGE
+        );
+        return;
+      }
+
+      const importedModelIsInstalled = localOllamaStatus.models.some(
+        (model) => model.id === restoredModelId
+      );
+
+      if (importedModelIsInstalled) {
+        setSelectedLocalOllamaModel(restoredModelId);
+        setLocalOllamaSelectionMessage(null);
+      } else {
+        setSelectedLocalOllamaModel("");
+        setLocalOllamaSelectionMessage(
+          IMPORTED_LOCAL_OLLAMA_MODEL_MISSING_MESSAGE
+        );
+      }
+    }
+
+    window.addEventListener(
+      LOCAL_USER_SETTINGS_SYNC_EVENT,
+      syncFromSettingsHub
+    );
+    return () =>
+      window.removeEventListener(
+        LOCAL_USER_SETTINGS_SYNC_EVENT,
+        syncFromSettingsHub
+      );
+  }, [localOllamaStatus.status, localOllamaStatus.models]);
+
   const copy = statusCopy(activeStatus);
   const intakeStarter = getIntakeStarterMessage(selectedMode);
   const canCreateCampaignDay = canUseCalendar && Boolean(campaignDate?.trim());
@@ -568,70 +606,73 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
     showToast("Local User backup exported.", "success");
   }
 
-  function handleImportBackupFile(event) {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  async function importBackupFromText(rawText = "") {
+    try {
+      const data = JSON.parse(rawText);
+      const result = importLocalUserBackup(data);
+      if (!result.success) {
+        showToast(`Import failed: ${result.errors.join(" ")}`, "error");
+        return false;
+      }
 
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      try {
-        const data = JSON.parse(e.target.result);
-        const result = importLocalUserBackup(data);
-        if (!result.success) {
-          showToast(`Import failed: ${result.errors.join(" ")}`, "error");
-          return;
-        }
+      const restoredModelId = readLocalUserOllamaModelSelection();
+      if (!restoredModelId) {
+        setSelectedLocalOllamaModel("");
+        setLocalOllamaSelectionMessage(null);
+      } else if (hasVerifiedLocalOllamaModels) {
+        const importedModelIsInstalled = localOllamaStatus.models.some(
+          (model) => model.id === restoredModelId
+        );
 
-        const restoredModelId = readLocalUserOllamaModelSelection();
-        if (!restoredModelId) {
-          setSelectedLocalOllamaModel("");
+        if (importedModelIsInstalled) {
+          setSelectedLocalOllamaModel(restoredModelId);
           setLocalOllamaSelectionMessage(null);
-        } else if (hasVerifiedLocalOllamaModels) {
-          const importedModelIsInstalled = localOllamaStatus.models.some(
-            (model) => model.id === restoredModelId
-          );
-
-          if (importedModelIsInstalled) {
-            setSelectedLocalOllamaModel(restoredModelId);
-            setLocalOllamaSelectionMessage(null);
-          } else {
-            setSelectedLocalOllamaModel("");
-            setLocalOllamaSelectionMessage(
-              IMPORTED_LOCAL_OLLAMA_MODEL_MISSING_MESSAGE
-            );
-          }
         } else {
           setSelectedLocalOllamaModel("");
           setLocalOllamaSelectionMessage(
-            IMPORTED_LOCAL_OLLAMA_MODEL_PENDING_MESSAGE
+            IMPORTED_LOCAL_OLLAMA_MODEL_MISSING_MESSAGE
           );
-
-          const controller = beginLocalUserOllamaRequest();
-          try {
-            await syncLocalUserOllamaStatus({ signal: controller.signal });
-          } catch {
-            showToast(
-              "Backup imported, but SWARMSY could not refresh Local User Mode Ollama status.",
-              "warning"
-            );
-          } finally {
-            releaseLocalUserOllamaRequest(controller);
-          }
         }
+      } else {
+        setSelectedLocalOllamaModel("");
+        setLocalOllamaSelectionMessage(
+          IMPORTED_LOCAL_OLLAMA_MODEL_PENDING_MESSAGE
+        );
 
-        showToast(
-          `Backup imported. ${result.restored.length} setting(s) restored.`,
-          "success"
-        );
-      } catch {
-        showToast(
-          "Could not read backup file. The file must be valid JSON.",
-          "error"
-        );
+        const controller = beginLocalUserOllamaRequest();
+        try {
+          await syncLocalUserOllamaStatus({ signal: controller.signal });
+        } catch {
+          showToast(
+            "Backup imported, but SWARMSY could not refresh Local User Mode Ollama status.",
+            "warning"
+          );
+        } finally {
+          releaseLocalUserOllamaRequest(controller);
+        }
       }
-    };
-    reader.readAsText(file);
-    event.target.value = "";
+
+      window.dispatchEvent(
+        new CustomEvent(LOCAL_USER_SETTINGS_SYNC_EVENT, {
+          detail: {
+            reason: "backup_import",
+            model: restoredModelId || "",
+          },
+        })
+      );
+
+      showToast(
+        `Backup imported. ${result.restored.length} setting(s) restored.`,
+        "success"
+      );
+      return true;
+    } catch {
+      showToast(
+        "Could not read backup file. The file must be valid JSON.",
+        "error"
+      );
+      return false;
+    }
   }
 
   async function createHive() {
@@ -1003,153 +1044,42 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
         </div>
 
         {isLocalUserMode && (
-          <div
-            className={`rounded-2xl border p-5 ${toneClasses(localOllamaTone)}`}
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div className="space-y-2">
-                <p className="text-sm font-semibold uppercase tracking-[0.2em]">
-                  Local User Mode · Ollama
-                </p>
-                <h2 className="text-lg font-semibold">{localOllamaTitle}</h2>
-                {localOllamaStatus.message && (
-                  <p className="text-sm leading-6">
-                    {localOllamaStatus.message}
-                  </p>
-                )}
-                {localOllamaStatus.endpoint && (
-                  <p className="text-xs opacity-80">
-                    Endpoint: {localOllamaStatus.endpoint}
-                  </p>
-                )}
-              </div>
-              <ActionButton
-                icon={ArrowClockwise}
-                busy={busyAction === "local-ollama-refresh"}
-                disabled={
-                  Boolean(busyAction) && busyAction !== "local-ollama-refresh"
-                }
-                onClick={checkLocalUserOllama}
-              >
-                Check again
-              </ActionButton>
-            </div>
-
-            {localOllamaStatus.status === "unreachable" && (
-              <ul className="mt-4 list-disc space-y-1 pl-5 text-sm leading-6">
-                {LOCAL_OLLAMA_SETUP_GUIDANCE.map((step) => (
-                  <li key={step}>{step}</li>
-                ))}
-              </ul>
-            )}
-
-            {localOllamaStatus.status === "no_models" && (
-              <p className="mt-4 text-sm leading-6">
-                Ollama is connected, but no installed models were reported yet.
-              </p>
-            )}
-
-            {localOllamaStatus.models.length > 0 && (
-              <div className="mt-4 space-y-4">
-                <div className="space-y-2">
-                  <h3 className="text-sm font-semibold uppercase tracking-[0.2em]">
-                    Installed Ollama models
-                  </h3>
-                  <ul className="grid gap-2 md:grid-cols-2">
-                    {localOllamaStatus.models.map((model) => (
-                      <li
-                        key={model.id}
-                        className="rounded-lg border border-theme-sidebar-border bg-theme-bg-secondary px-3 py-2 text-sm font-medium text-theme-text-primary"
-                      >
-                        {model.name}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="space-y-2">
-                  <label
-                    htmlFor="local-user-ollama-model"
-                    className="text-sm font-semibold uppercase tracking-[0.2em]"
-                  >
-                    Model selection shell
-                  </label>
-                  <select
-                    id="local-user-ollama-model"
-                    value={selectedLocalOllamaModel}
-                    onChange={(event) => {
-                      const nextModelId = event.target.value;
-                      setSelectedLocalOllamaModel(nextModelId);
-                      persistLocalUserOllamaModelSelection(nextModelId);
-                      setLocalOllamaSelectionMessage(null);
-                    }}
-                    className="w-full rounded-lg border border-theme-sidebar-border bg-theme-bg-secondary px-3 py-2 text-sm text-theme-text-primary outline-none focus:border-teal"
-                  >
-                    {localOllamaStatus.models.length > 1 && (
-                      <option value="">Select an installed model</option>
-                    )}
-                    {localOllamaStatus.models.map((model) => (
-                      <option key={model.id} value={model.id}>
-                        {model.name}
-                      </option>
-                    ))}
-                  </select>
-                  <p className="text-xs opacity-80">
-                    Model selection is stored in Local User Mode browser storage
-                    and restored only when that model is still installed.
-                  </p>
-                  {localOllamaSelectionMessage && (
-                    <p className="text-xs font-medium text-amber-200 light:text-amber-800">
-                      {localOllamaSelectionMessage}
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {isLocalUserMode && (
-          <div className="rounded-2xl border border-theme-sidebar-border bg-theme-bg-secondary p-5">
-            <div className="space-y-2">
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-theme-text-secondary">
-                Local User Data
-              </p>
-              <h2 className="text-lg font-semibold text-theme-text-primary">
-                Backup &amp; Restore
-              </h2>
-              <p className="text-sm text-theme-text-secondary">
-                Export a backup of your Local User Mode settings and restore
-                them on any device running SWARMSY.
-              </p>
-            </div>
-            <div className="mt-4 flex flex-wrap gap-3">
-              <button
-                type="button"
-                disabled={Boolean(busyAction)}
-                onClick={exportBackupToFile}
-                className="rounded-lg border border-theme-sidebar-border bg-theme-bg-secondary px-4 py-2 text-sm font-medium text-theme-text-primary transition hover:bg-theme-bg-menu disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                Export Backup
-              </button>
-              <button
-                type="button"
-                disabled={Boolean(busyAction)}
-                onClick={() => backupImportInputRef.current?.click()}
-                className="rounded-lg border border-theme-sidebar-border bg-theme-bg-secondary px-4 py-2 text-sm font-medium text-theme-text-primary transition hover:bg-theme-bg-menu disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                Import Backup
-              </button>
-              <input
-                ref={backupImportInputRef}
-                type="file"
-                accept=".json,application/json"
-                className="hidden"
-                onChange={handleImportBackupFile}
-                aria-hidden="true"
-              />
-            </div>
-          </div>
+          <SwarmsyLocalUserSettingsHub
+            controller={{
+              isHostedAdminMode: false,
+              isLocalUserMode,
+              isCheckingLocalOllama: busyAction === "local-ollama-refresh",
+              localOllamaStatus,
+              localOllamaStatusTone: localOllamaTone,
+              localOllamaStatusTitle: localOllamaTitle,
+              hasVerifiedLocalOllamaModels,
+              selectedLocalOllamaModel,
+              savedLocalOllamaModel: readLocalUserOllamaModelSelection(),
+              currentModelLabel:
+                localOllamaStatus.models.find(
+                  (model) => model.id === selectedLocalOllamaModel
+                )?.name ||
+                selectedLocalOllamaModel ||
+                readLocalUserOllamaModelSelection(),
+              localOllamaSelectionMessage,
+              checkLocalUserOllama,
+              onSelectLocalOllamaModel: (nextModelId) => {
+                setSelectedLocalOllamaModel(nextModelId);
+                persistLocalUserOllamaModelSelection(nextModelId);
+                setLocalOllamaSelectionMessage(null);
+                window.dispatchEvent(
+                  new CustomEvent(LOCAL_USER_SETTINGS_SYNC_EVENT, {
+                    detail: {
+                      reason: "model_selection",
+                      model: String(nextModelId || "").trim(),
+                    },
+                  })
+                );
+              },
+              exportBackupToFile,
+              importBackupFromText,
+            }}
+          />
         )}
 
         <div className="flex flex-wrap gap-3">

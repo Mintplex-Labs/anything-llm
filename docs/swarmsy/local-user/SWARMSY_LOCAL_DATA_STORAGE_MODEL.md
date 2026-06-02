@@ -28,6 +28,9 @@ Local user data should include:
 - User can export a backup of local SWARMSY data.
 - User can import a backup of local SWARMSY data.
 - Backup behavior should preserve ownership of local project state.
+- Backup/export/import controls are managed from the Local User Settings Hub.
+- The hub copy must remain explicit: browser-side Local User settings backup is not a full desktop filesystem backup.
+- Hosted/admin server data, secrets, API keys, auth/session tokens, and ephemeral runtime/pending handoff storage are excluded from backup/export/import.
 
 ## Privacy Rules
 
