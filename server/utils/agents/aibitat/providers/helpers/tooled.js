@@ -186,6 +186,10 @@ async function tooledStream(
   }
 
   const msgUUID = v4();
+  // Reasoning streams under its own uuid so it stays a separate status bubble.
+  // Reusing `msgUUID` would let the answer's `textResponseChunk` merge into the
+  // reasoning message on the frontend and render the thoughts as visible text.
+  const reasoningUUID = `${msgUUID}:reasoning`;
   const formattedMessages = formatMessagesForTools(messages, formatOptions);
   const tools = formatFunctionsToTools(functions);
 
@@ -207,17 +211,12 @@ async function tooledStream(
   let usage = null;
   let reasoningText = "";
 
-  // Emit a `</think>` chunk and reset reasoning state. Used whenever we
-  // transition out of a reasoning stretch (into visible text, into a tool
-  // call, or at end of stream) so the frontend regex stays balanced.
+  // `reasoningText` tracks whether we're mid-thought; it gates the "Thinking:"
+  // header that prefixes the first reasoning token (see below). Clear it
+  // whenever we leave a reasoning stretch - into visible text, a tool call, or
+  // end of stream - so a later stretch starts a fresh status bubble.
   const closeReasoningIfOpen = () => {
     if (reasoningText.length === 0) return;
-    result.textResponse += "</think>";
-    eventHandler?.("reportStreamEvent", {
-      type: "textResponseChunk",
-      uuid: msgUUID,
-      content: "</think>",
-    });
     reasoningText = "";
   };
 
@@ -231,20 +230,22 @@ async function tooledStream(
     const choice = chunk.choices[0];
 
     // Reasoning models (LM Studio, Lemonade, DeepSeek, etc.) emit thinking
-    // tokens via `delta.reasoning_content`. Wrap them in <think>...</think>
-    // so the frontend's ThoughtContainer collapses them into a pane.
+    // tokens via `delta.reasoning_content`. Reasoning is ephemeral debug
+    // output, so surface it live as a `statusResponse` (collapsing into the
+    // same status group as tool activity) and never persist it to the message.
     const reasoningToken = choice.delta?.reasoning_content;
     if (reasoningToken) {
-      const wrappedChunk =
+      const liveChunk =
         reasoningText.length === 0
-          ? `<think>${reasoningToken}`
+          ? `Thinking:\n\n${reasoningToken}`
           : reasoningToken;
+
       reasoningText += reasoningToken;
-      result.textResponse += wrappedChunk;
+
       eventHandler?.("reportStreamEvent", {
-        type: "textResponseChunk",
-        uuid: msgUUID,
-        content: wrappedChunk,
+        type: "statusResponse",
+        uuid: reasoningUUID,
+        content: liveChunk,
       });
     }
 
@@ -410,13 +411,9 @@ async function tooledComplete(
     };
   }
 
-  // Wrap any reasoning content in <think>...</think> so the frontend can
-  // collapse it into a thought pane, matching the streaming path.
-  const reasoning = completion.reasoning_content;
-  const textResponse =
-    reasoning && reasoning.trim().length > 0
-      ? `<think>${reasoning}</think>${completion.content ?? ""}`
-      : completion.content;
+  // Non-streaming path: reasoning_content is neither surfaced nor persisted
+  // (only the streaming path shows reasoning live). Return the visible answer.
+  const textResponse = completion.content;
 
   return {
     textResponse,

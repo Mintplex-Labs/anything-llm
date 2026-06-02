@@ -191,14 +191,12 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
 
     const msgUUID = v4();
     // `textResponse` stays content-only so safeJsonParse below can still
-    // match a tool-call JSON payload. `displayedResponse` mirrors what was
-    // shown to the user — reasoning wrapped in <think>...</think> followed
-    // by content — and is returned as the text response when no tool call
-    // is parsed. The live status bubble uses human-readable framing
-    // ("Thinking:" / "Done thinking.") instead of raw tags because the
-    // StatusResponse component renders text literally.
+    // match a tool-call JSON payload, and is returned as the text response
+    // when no tool call is parsed. Reasoning is ephemeral and never persisted;
+    // it is surfaced live in the status bubble with human-readable framing
+    // ("Thinking:" / "Done thinking.") because the StatusResponse component
+    // renders text literally.
     let textResponse = "";
-    let displayedResponse = "";
     let reasoningText = "";
     const historyMessages = this.buildToolCallMessages(history, functions);
     const stream = await chatCb({ messages: historyMessages });
@@ -219,10 +217,6 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
           reasoningText.length === 0
             ? `Thinking:\n\n${reasoningToken}`
             : reasoningToken;
-        displayedResponse +=
-          reasoningText.length === 0
-            ? `<think>${reasoningToken}`
-            : reasoningToken;
         reasoningText += reasoningToken;
         eventHandler?.("reportStreamEvent", {
           type: "statusResponse",
@@ -237,11 +231,9 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
           ? `\n\nDone thinking.\n\n${choice.delta.content}`
           : choice.delta.content;
         if (closingReasoning) {
-          displayedResponse += `</think>`;
           reasoningText = "";
         }
         textResponse += choice.delta.content;
-        displayedResponse += choice.delta.content;
         eventHandler?.("reportStreamEvent", {
           type: "statusResponse",
           uuid: msgUUID,
@@ -250,17 +242,9 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
       }
     }
 
-    // Stream ended while still inside a reasoning block (e.g. model
-    // produced only reasoning then stopped). Close the tag in the
-    // returned text so the frontend regex stays balanced.
-    if (reasoningText.length > 0) {
-      displayedResponse += `</think>`;
-      reasoningText = "";
-    }
-
     const call = safeJsonParse(textResponse, null);
     if (call === null)
-      return { toolCall: null, text: displayedResponse, uuid: msgUUID }; // failed to parse, so must be regular text response.
+      return { toolCall: null, text: textResponse, uuid: msgUUID }; // failed to parse, so must be regular text response.
 
     const { valid, reason } = this.validFuncCall(call, functions);
     if (!valid) {
@@ -378,6 +362,10 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
           "Will assume chat completion without tool call inputs."
         );
         const msgUUID = v4();
+        // Reasoning streams under its own uuid so it stays a separate status
+        // bubble. Reusing `msgUUID` would let the answer's `textResponseChunk`
+        // merge into the reasoning message and render the thoughts as text.
+        const reasoningUUID = `${msgUUID}:reasoning`;
         completion = { content: "" };
         let reasoningText = "";
         const stream = await chatCallback({
@@ -386,12 +374,6 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
 
         const closeReasoningIfOpen = () => {
           if (reasoningText.length === 0) return;
-          completion.content += "</think>";
-          eventHandler?.("reportStreamEvent", {
-            type: "textResponseChunk",
-            uuid: msgUUID,
-            content: "</think>",
-          });
           reasoningText = "";
         };
 
@@ -399,18 +381,19 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
           if (!chunk?.choices?.[0]) continue; // Skip if no choices
           const choice = chunk.choices[0];
 
+          // Reasoning is ephemeral debug output - surface it live as a
+          // `statusResponse` and never persist it to the message.
           const reasoningToken = choice.delta?.reasoning_content;
           if (reasoningToken) {
-            const wrappedChunk =
+            const liveChunk =
               reasoningText.length === 0
-                ? `<think>${reasoningToken}`
+                ? `Thinking:\n\n${reasoningToken}`
                 : reasoningToken;
             reasoningText += reasoningToken;
-            completion.content += wrappedChunk;
             eventHandler?.("reportStreamEvent", {
-              type: "textResponseChunk",
-              uuid: msgUUID,
-              content: wrappedChunk,
+              type: "statusResponse",
+              uuid: reasoningUUID,
+              content: liveChunk,
             });
           }
 
@@ -493,13 +476,9 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
           completion = { content: response };
         } else {
           const message = response.choices?.[0]?.message ?? {};
-          const reasoning = message.reasoning_content;
-          completion = {
-            content:
-              reasoning && reasoning.trim().length > 0
-                ? `<think>${reasoning}</think>${message.content ?? ""}`
-                : message.content,
-          };
+          // Non-streaming path: reasoning_content is neither surfaced nor
+          // persisted; keep only the visible answer.
+          completion = { content: message.content };
         }
       }
 
