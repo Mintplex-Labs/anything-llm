@@ -398,8 +398,70 @@ describe("SWARMSY HIVE action hub", () => {
     expect(source).toContain("readLocalUserOllamaModelSelection");
     expect(source).toContain("resolveLocalUserOllamaModelSelection");
     expect(source).toContain("persistLocalUserOllamaModelSelection");
-    expect(source).toContain("clearLocalUserOllamaModelSelection");
     expect(source).toContain("stale_missing");
+  });
+
+  it("restores create-hive busy state before awaiting the request", () => {
+    const source = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        "../../../frontend/src/components/SwarmsyFirstRunOnboarding/index.jsx"
+      ),
+      "utf8"
+    );
+
+    expect(source).toMatch(
+      /async function createHive\(\) \{\s*setBusyAction\("create-hive"\);\s*setLastActionResult\(null\);\s*const result = await SwarmsyOnboarding\.createHive\(\);[\s\S]*setBusyAction\(null\);/m
+    );
+  });
+
+  it("applies imported backups to live local-user model state immediately when already verified", () => {
+    const source = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        "../../../frontend/src/components/SwarmsyFirstRunOnboarding/index.jsx"
+      ),
+      "utf8"
+    );
+
+    expect(source).toContain(
+      "const restoredModelId = readLocalUserOllamaModelSelection();"
+    );
+    expect(source).toContain("} else if (hasVerifiedLocalOllamaModels) {");
+    expect(source).toContain("const importedModelIsInstalled = localOllamaStatus.models.some(");
+    expect(source).toContain("setSelectedLocalOllamaModel(restoredModelId);");
+    expect(source).toContain("IMPORTED_LOCAL_OLLAMA_MODEL_MISSING_MESSAGE");
+  });
+
+  it("preserves imported model storage until verification finishes and then refreshes status", () => {
+    const source = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        "../../../frontend/src/components/SwarmsyFirstRunOnboarding/index.jsx"
+      ),
+      "utf8"
+    );
+
+    expect(source).toContain("IMPORTED_LOCAL_OLLAMA_MODEL_PENDING_MESSAGE");
+    expect(source).toContain(
+      "const controller = beginLocalUserOllamaRequest();"
+    );
+    expect(source).toContain(
+      "await syncLocalUserOllamaStatus({ signal: controller.signal });"
+    );
+    expect(source).toContain("releaseLocalUserOllamaRequest(controller);");
+  });
+
+  it("shows backup controls only in local-user mode", () => {
+    const source = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        "../../../frontend/src/components/SwarmsyFirstRunOnboarding/index.jsx"
+      ),
+      "utf8"
+    );
+
+    expect(source).toMatch(/isLocalUserMode && \([\s\S]*Backup &amp; Restore/);
   });
 
   it("adds runtime handoff contract payload for local-user ollama selection", () => {

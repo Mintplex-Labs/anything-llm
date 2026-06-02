@@ -43,11 +43,14 @@ import {
   PROOF_TRACKER_UNDERLOADED_MESSAGE,
 } from "./proofTracker";
 import {
-  clearLocalUserOllamaModelSelection,
   persistLocalUserOllamaModelSelection,
   readLocalUserOllamaModelSelection,
   resolveLocalUserOllamaModelSelection,
 } from "./localUserOllamaSelection";
+import {
+  exportLocalUserBackup,
+  importLocalUserBackup,
+} from "@/utils/localUserBackup";
 
 const IDENTITY_MODES = [
   {
@@ -74,6 +77,10 @@ const IDENTITY_MODES = [
 const MEMORY_LOCK_ERROR_ID = "swarmsy-memory-lock-error";
 const PROOF_TRACKER_ERROR_ID = "swarmsy-proof-tracker-error";
 const CAMPAIGN_DATE_EMPTY_ERROR = "Pick a date to create a campaign day.";
+const IMPORTED_LOCAL_OLLAMA_MODEL_PENDING_MESSAGE =
+  "Imported Ollama model saved. SWARMSY will restore it after Ollama status is verified.";
+const IMPORTED_LOCAL_OLLAMA_MODEL_MISSING_MESSAGE =
+  "Imported Ollama model is not currently installed. Select a model to continue.";
 
 function getDefaultCampaignDate() {
   const now = new Date();
@@ -282,6 +289,7 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
     useState(null);
   const localOllamaRefreshControllerRef = useRef(null);
   const hasConfirmedLocalUserModeRef = useRef(false);
+  const backupImportInputRef = useRef(null);
   const activeStatus = status || createFallbackStatus();
   const canLoadMemoryLock = canContinueFromMemoryLock(activeStatus);
   const canUseProofTracker = canReviewProof(activeStatus);
@@ -446,10 +454,6 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
       storedModelId: readLocalUserOllamaModelSelection(),
     });
 
-    if (resolved.staleStoredModelId) {
-      clearLocalUserOllamaModelSelection();
-    }
-
     if (resolved.modelId) {
       persistLocalUserOllamaModelSelection(resolved.modelId);
     }
@@ -460,17 +464,7 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
 
     if (resolved.source === "stale_missing") {
       setLocalOllamaSelectionMessage(
-        "Your saved Ollama model is no longer installed. Select a model to continue."
-      );
-      return;
-    }
-
-    if (resolved.source === "single_available_after_stale") {
-      const selectedName =
-        localOllamaStatus.models.find((model) => model.id === resolved.modelId)
-          ?.name || resolved.modelId;
-      setLocalOllamaSelectionMessage(
-        `Your saved Ollama model is no longer installed, so SWARMSY selected the only available model: ${selectedName}.`
+        "Your saved Ollama model is not currently installed. Select a model to continue."
       );
       return;
     }
@@ -559,6 +553,85 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
         setBusyAction(null);
       }
     }
+  }
+
+  function exportBackupToFile() {
+    const backup = exportLocalUserBackup();
+    const json = JSON.stringify(backup, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `swarmsy-local-user-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast("Local User backup exported.", "success");
+  }
+
+  function handleImportBackupFile(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const data = JSON.parse(e.target.result);
+        const result = importLocalUserBackup(data);
+        if (!result.success) {
+          showToast(`Import failed: ${result.errors.join(" ")}`, "error");
+          return;
+        }
+
+        const restoredModelId = readLocalUserOllamaModelSelection();
+        if (!restoredModelId) {
+          setSelectedLocalOllamaModel("");
+          setLocalOllamaSelectionMessage(null);
+        } else if (hasVerifiedLocalOllamaModels) {
+          const importedModelIsInstalled = localOllamaStatus.models.some(
+            (model) => model.id === restoredModelId
+          );
+
+          if (importedModelIsInstalled) {
+            setSelectedLocalOllamaModel(restoredModelId);
+            setLocalOllamaSelectionMessage(null);
+          } else {
+            setSelectedLocalOllamaModel("");
+            setLocalOllamaSelectionMessage(
+              IMPORTED_LOCAL_OLLAMA_MODEL_MISSING_MESSAGE
+            );
+          }
+        } else {
+          setSelectedLocalOllamaModel("");
+          setLocalOllamaSelectionMessage(
+            IMPORTED_LOCAL_OLLAMA_MODEL_PENDING_MESSAGE
+          );
+
+          const controller = beginLocalUserOllamaRequest();
+          try {
+            await syncLocalUserOllamaStatus({ signal: controller.signal });
+          } catch {
+            showToast(
+              "Backup imported, but SWARMSY could not refresh Local User Mode Ollama status.",
+              "warning"
+            );
+          } finally {
+            releaseLocalUserOllamaRequest(controller);
+          }
+        }
+
+        showToast(
+          `Backup imported. ${result.restored.length} setting(s) restored.`,
+          "success"
+        );
+      } catch {
+        showToast(
+          "Could not read backup file. The file must be valid JSON.",
+          "error"
+        );
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = "";
   }
 
   async function createHive() {
@@ -1033,6 +1106,49 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {isLocalUserMode && (
+          <div className="rounded-2xl border border-theme-sidebar-border bg-theme-bg-secondary p-5">
+            <div className="space-y-2">
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-theme-text-secondary">
+                Local User Data
+              </p>
+              <h2 className="text-lg font-semibold text-theme-text-primary">
+                Backup &amp; Restore
+              </h2>
+              <p className="text-sm text-theme-text-secondary">
+                Export a backup of your Local User Mode settings and restore
+                them on any device running SWARMSY.
+              </p>
+            </div>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <button
+                type="button"
+                disabled={Boolean(busyAction)}
+                onClick={exportBackupToFile}
+                className="rounded-lg border border-theme-sidebar-border bg-theme-bg-secondary px-4 py-2 text-sm font-medium text-theme-text-primary transition hover:bg-theme-bg-menu disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                Export Backup
+              </button>
+              <button
+                type="button"
+                disabled={Boolean(busyAction)}
+                onClick={() => backupImportInputRef.current?.click()}
+                className="rounded-lg border border-theme-sidebar-border bg-theme-bg-secondary px-4 py-2 text-sm font-medium text-theme-text-primary transition hover:bg-theme-bg-menu disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                Import Backup
+              </button>
+              <input
+                ref={backupImportInputRef}
+                type="file"
+                accept=".json,application/json"
+                className="hidden"
+                onChange={handleImportBackupFile}
+                aria-hidden="true"
+              />
+            </div>
           </div>
         )}
 

@@ -78,7 +78,7 @@ describe("Local User Ollama model selection storage helper", () => {
     expect(storage.removeItem).toHaveBeenCalled();
   });
 
-  it("allows explicit single-model auto-selection when only one installed model remains", () => {
+  it("keeps stale stored ids inactive until the exact model is available again", () => {
     const module = loadSelectionModule();
 
     const resolved = module.resolveLocalUserOllamaModelSelection({
@@ -88,8 +88,8 @@ describe("Local User Ollama model selection storage helper", () => {
     });
 
     expect(resolved).toEqual({
-      modelId: "phi3:mini",
-      source: "single_available_after_stale",
+      modelId: "",
+      source: "stale_missing",
       staleStoredModelId: "missing:model",
     });
   });

@@ -83,14 +83,6 @@ export function resolveLocalUserOllamaModelSelection({
   }
 
   if (savedModelId && !hasModelId(savedModelId)) {
-    if (modelIds.length === 1) {
-      return {
-        modelId: modelIds[0],
-        source: "single_available_after_stale",
-        staleStoredModelId: savedModelId,
-      };
-    }
-
     return {
       modelId: "",
       source: "stale_missing",
