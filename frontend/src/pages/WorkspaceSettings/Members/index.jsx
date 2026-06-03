@@ -79,7 +79,7 @@ export default function Members({ workspace }) {
         </tbody>
       </table>
       <CTAButton onClick={openModal}>Manage Users</CTAButton>
-      <Modal isOpen={isOpen} onClose={closeModal}>
+      <Modal isOpen={isOpen} onClose={closeModal} size="lg">
         <AddMemberModal
           closeModal={closeModal}
           users={users}

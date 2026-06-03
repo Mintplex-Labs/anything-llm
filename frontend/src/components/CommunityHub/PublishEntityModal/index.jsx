@@ -31,15 +31,16 @@ export default function PublishEntityModal({
   };
 
   return (
-    <Modal isOpen={show} onClose={onClose}>
-      <div className="relative max-w-[900px] bg-theme-bg-primary rounded-lg shadow border border-theme-modal-border">
+    <Modal isOpen={show} onClose={onClose} variant="bare">
+      <div className="relative w-full max-w-[900px] mx-4 max-h-[90vh] overflow-y-auto bg-zinc-900 light:bg-white rounded-lg shadow-xs border border-zinc-800 light:border-slate-300">
         <div className="relative p-6">
           <button
             onClick={onClose}
             type="button"
-            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+            aria-label="Close"
+            className="absolute top-4 right-4 transition-colors duration-200 bg-transparent rounded-lg p-1 inline-flex items-center text-slate-50 light:text-slate-900 hover:bg-zinc-800 light:hover:bg-slate-100 border-none"
           >
-            <X size={18} weight="bold" className="text-white" />
+            <X size={16} weight="bold" />
           </button>
         </div>
         {renderEntityForm()}

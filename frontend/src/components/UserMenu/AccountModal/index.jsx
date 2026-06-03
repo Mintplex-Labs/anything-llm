@@ -4,8 +4,17 @@ import System from "@/models/system";
 import Appearance from "@/models/appearance";
 import { AUTH_USER } from "@/utils/constants";
 import showToast from "@/utils/toast";
-import { Info, Plus, X } from "@phosphor-icons/react";
-import Modal from "@/components/lib/Modal";
+import { Info, Plus } from "@phosphor-icons/react";
+import Modal, {
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalInput,
+  ModalTextarea,
+  ModalLabel,
+  ModalPrimaryButton,
+  ModalSecondaryButton,
+} from "@/components/lib/Modal";
 import { useTheme } from "@/hooks/useTheme";
 import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
@@ -76,151 +85,100 @@ export default function AccountModal({ user, hideModal }) {
     }
   };
   return (
-    <Modal isOpen={true} onClose={hideModal}>
-      <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
-        <div className="relative p-6 border-b rounded-t border-theme-modal-border">
-          <div className="w-full flex gap-x-2 items-center">
-            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
-              {t("profile_settings.edit_account")}
-            </h3>
-          </div>
-          <button
-            onClick={hideModal}
-            type="button"
-            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
-          >
-            <X size={24} weight="bold" className="text-white" />
-          </button>
-        </div>
-        <div
-          className="h-full w-full overflow-y-auto"
-          style={{ maxHeight: "calc(100vh - 200px)" }}
-        >
-          <form onSubmit={handleUpdate} className="space-y-6">
-            <div className="flex flex-col md:flex-row items-center justify-center gap-8">
-              <div className="flex flex-col items-center">
-                <label className="group w-48 h-48 flex flex-col items-center justify-center bg-theme-bg-primary hover:bg-theme-bg-secondary transition-colors duration-300 rounded-full mt-8 border-2 border-dashed border-white light:border-[#686C6F] light:bg-[#E0F2FE] light:hover:bg-transparent cursor-pointer hover:opacity-60">
-                  <input
-                    id="logo-upload"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleFileUpload}
+    <Modal isOpen={true} onClose={hideModal} size="lg">
+      <form onSubmit={handleUpdate} className="flex flex-col gap-y-5">
+        <ModalHeader
+          title={t("profile_settings.edit_account")}
+          onClose={hideModal}
+        />
+        <ModalBody className="max-h-[calc(100vh-220px)] overflow-y-auto">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-8">
+            <div className="flex flex-col items-center">
+              <label className="group w-48 h-48 flex flex-col items-center justify-center bg-zinc-800 hover:bg-zinc-700 light:bg-sky-100 light:hover:bg-transparent transition-colors duration-300 rounded-full border-2 border-dashed border-white light:border-slate-400 cursor-pointer hover:opacity-60">
+                <input
+                  id="logo-upload"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleFileUpload}
+                />
+                {pfp ? (
+                  <img
+                    src={pfp}
+                    alt="User profile picture"
+                    className="w-48 h-48 rounded-full object-cover bg-white"
                   />
-                  {pfp ? (
-                    <img
-                      src={pfp}
-                      alt="User profile picture"
-                      className="w-48 h-48 rounded-full object-cover bg-white"
-                    />
-                  ) : (
-                    <div className="flex flex-col items-center justify-center p-3">
-                      <Plus className="w-8 h-8 text-theme-text-secondary m-2" />
-                      <span className="text-theme-text-secondary text-opacity-80 text-sm font-semibold">
-                        {t("profile_settings.profile_picture")}
-                      </span>
-                      <span className="text-theme-text-secondary text-opacity-60 text-xs">
-                        800 x 800
-                      </span>
-                    </div>
-                  )}
-                </label>
-                {pfp && (
-                  <button
-                    type="button"
-                    onClick={handleRemovePfp}
-                    className="mt-3 text-theme-text-secondary text-opacity-60 text-sm font-medium hover:underline"
-                  >
-                    {t("profile_settings.remove_profile_picture")}
-                  </button>
+                ) : (
+                  <div className="flex flex-col items-center justify-center p-3">
+                    <Plus className="w-8 h-8 text-zinc-400 light:text-slate-500 m-2" />
+                    <span className="text-zinc-400 light:text-slate-500 text-sm font-semibold">
+                      {t("profile_settings.profile_picture")}
+                    </span>
+                    <span className="text-zinc-400 light:text-slate-500 text-xs">
+                      800 x 800
+                    </span>
+                  </div>
                 )}
-              </div>
-            </div>
-            <div className="flex flex-col gap-y-4 px-6">
-              <div>
-                <label
-                  htmlFor="username"
-                  className="block mb-2 text-sm font-medium text-theme-text-primary"
+              </label>
+              {pfp && (
+                <button
+                  type="button"
+                  onClick={handleRemovePfp}
+                  className="border-none bg-transparent mt-3 text-zinc-400 light:text-slate-500 text-sm font-medium hover:underline"
                 >
-                  {t("profile_settings.username")}
-                </label>
-                <input
-                  name="username"
-                  type="text"
-                  className="border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-                  placeholder="User's username"
-                  minLength={USERNAME_MIN_LENGTH}
-                  maxLength={USERNAME_MAX_LENGTH}
-                  pattern={USERNAME_PATTERN}
-                  defaultValue={user.username}
-                  required
-                  autoComplete="off"
-                />
-                <p className="mt-2 text-xs text-white/60">
-                  {t("common.username_requirements")}
-                </p>
-              </div>
-              <div>
-                <label
-                  htmlFor="password"
-                  className="block mb-2 text-sm font-medium text-white"
-                >
-                  {t("profile_settings.new_password")}
-                </label>
-                <input
-                  name="password"
-                  type="text"
-                  className="border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-                  placeholder={`${user.username}'s new password`}
-                  minLength={8}
-                />
-                <p className="mt-2 text-xs text-white/60">
-                  {t("profile_settings.password_description")}
-                </p>
-              </div>
-              <div>
-                <label
-                  htmlFor="bio"
-                  className="block mb-2 text-sm font-medium text-white"
-                >
-                  Bio
-                </label>
-                <textarea
-                  name="bio"
-                  className="border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 min-h-[100px] resize-y"
-                  placeholder="Tell us about yourself..."
-                  defaultValue={user.bio}
-                />
-              </div>
-              <div className="flex gap-x-16">
-                <div className="flex flex-col gap-y-6">
-                  <ThemePreference />
-                  <LanguagePreference />
-                </div>
-                <div className="flex flex-col gap-y-6">
-                  <AutoSubmitPreference />
-                  <AutoSpeakPreference />
-                </div>
-              </div>
+                  {t("profile_settings.remove_profile_picture")}
+                </button>
+              )}
             </div>
-            <div className="flex justify-between items-center border-t border-theme-modal-border pt-4 p-6">
-              <button
-                onClick={hideModal}
-                type="button"
-                className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm"
-              >
-                {t("profile_settings.cancel")}
-              </button>
-              <button
-                type="submit"
-                className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
-              >
-                {t("profile_settings.update_account")}
-              </button>
+          </div>
+          <ModalInput
+            label={t("profile_settings.username")}
+            name="username"
+            type="text"
+            placeholder="User's username"
+            minLength={USERNAME_MIN_LENGTH}
+            maxLength={USERNAME_MAX_LENGTH}
+            pattern={USERNAME_PATTERN}
+            defaultValue={user.username}
+            required
+            autoComplete="off"
+            hint={t("common.username_requirements")}
+          />
+          <ModalInput
+            label={t("profile_settings.new_password")}
+            name="password"
+            type="text"
+            placeholder={`${user.username}'s new password`}
+            minLength={8}
+            hint={t("profile_settings.password_description")}
+          />
+          <ModalTextarea
+            label="Bio"
+            name="bio"
+            placeholder="Tell us about yourself..."
+            defaultValue={user.bio}
+            rows={4}
+          />
+          <div className="flex gap-x-16">
+            <div className="flex flex-col gap-y-6">
+              <ThemePreference />
+              <LanguagePreference />
             </div>
-          </form>
-        </div>
-      </div>
+            <div className="flex flex-col gap-y-6">
+              <AutoSubmitPreference />
+              <AutoSpeakPreference />
+            </div>
+          </div>
+        </ModalBody>
+        <ModalFooter>
+          <ModalSecondaryButton type="button" onClick={hideModal}>
+            {t("profile_settings.cancel")}
+          </ModalSecondaryButton>
+          <ModalPrimaryButton type="submit">
+            {t("profile_settings.update_account")}
+          </ModalPrimaryButton>
+        </ModalFooter>
+      </form>
     </Modal>
   );
 }
@@ -235,15 +193,12 @@ function LanguagePreference() {
   const { t } = useTranslation();
   return (
     <div>
-      <label
-        htmlFor="userLang"
-        className="block mb-2 text-sm font-medium text-white"
-      >
+      <ModalLabel htmlFor="userLang" className="block mb-2">
         {t("profile_settings.language")}
-      </label>
+      </ModalLabel>
       <select
         name="userLang"
-        className="border-none bg-theme-settings-input-bg w-fit mt-2 px-4 focus:outline-primary-button active:outline-primary-button outline-none text-white text-sm rounded-lg block py-2"
+        className="bg-zinc-800 border border-zinc-800 light:bg-white light:border-slate-300 w-fit mt-2 px-4 outline-none focus:border-sky-500 text-zinc-100 light:text-slate-900 text-sm rounded-lg block py-2"
         defaultValue={currentLanguage || "en"}
         onChange={(e) => changeLanguage(e.target.value)}
       >
@@ -264,17 +219,14 @@ function ThemePreference() {
   const { t } = useTranslation();
   return (
     <div>
-      <label
-        htmlFor="theme"
-        className="block mb-2 text-sm font-medium text-white"
-      >
+      <ModalLabel htmlFor="theme" className="block mb-2">
         {t("profile_settings.theme")}
-      </label>
+      </ModalLabel>
       <select
         name="theme"
         value={theme}
         onChange={(e) => setTheme(e.target.value)}
-        className="border-none bg-theme-settings-input-bg w-fit px-4 focus:outline-primary-button active:outline-primary-button outline-none text-white text-sm rounded-lg block py-2"
+        className="bg-zinc-800 border border-zinc-800 light:bg-white light:border-slate-300 w-fit px-4 outline-none focus:border-sky-500 text-zinc-100 light:text-slate-900 text-sm rounded-lg block py-2"
       >
         {Object.entries(availableThemes).map(([key, value]) => (
           <option key={key} value={key}>

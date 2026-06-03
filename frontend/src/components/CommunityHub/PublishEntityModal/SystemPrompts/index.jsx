@@ -5,6 +5,14 @@ import showToast from "@/utils/toast";
 import paths from "@/utils/paths";
 import { X } from "@phosphor-icons/react";
 import { Link } from "react-router-dom";
+import {
+  ModalHeader,
+  ModalPrimaryButton,
+  ModalLabel,
+  ModalHint,
+  ModalInput,
+  ModalTextarea,
+} from "@/components/lib/Modal";
 
 export default function SystemPrompts({ entity }) {
   const { t } = useTranslation();
@@ -65,20 +73,20 @@ export default function SystemPrompts({ entity }) {
     return (
       <div className="p-6 -mt-12 w-[400px]">
         <div className="flex flex-col items-center justify-center gap-y-2">
-          <h3 className="text-lg font-semibold text-theme-text-primary">
+          <h3 className="text-lg font-semibold text-slate-50 light:text-slate-900">
             {t("community_hub.publish.system_prompt.success_title")}
           </h3>
-          <p className="text-lg text-theme-text-primary text-center max-w-2xl">
+          <p className="text-lg text-slate-50 light:text-slate-900 text-center max-w-2xl">
             {t("community_hub.publish.system_prompt.success_description")}
           </p>
-          <p className="text-theme-text-secondary text-center text-sm">
+          <p className="text-zinc-400 light:text-slate-600 text-center text-sm">
             {t("community_hub.publish.system_prompt.success_thank_you")}
           </p>
           <Link
             to={paths.communityHub.viewItem("system-prompt", itemId)}
             target="_blank"
             rel="noreferrer"
-            className="w-[265px] bg-theme-bg-secondary hover:bg-theme-sidebar-item-hover text-theme-text-primary py-2 px-4 rounded-lg transition-colors mt-4 text-sm font-semibold text-center"
+            className="w-[265px] bg-zinc-800 light:bg-slate-100 hover:bg-zinc-700 light:hover:bg-slate-200 text-slate-50 light:text-slate-900 py-2 px-4 rounded-lg transition-colors mt-4 text-sm font-semibold text-center"
           >
             {t("community_hub.publish.system_prompt.view_on_hub")}
           </Link>
@@ -89,69 +97,58 @@ export default function SystemPrompts({ entity }) {
 
   return (
     <>
-      <div className="w-full flex gap-x-2 items-center mb-3 -mt-8">
-        <h3 className="text-xl font-semibold text-theme-text-primary px-6 py-3">
-          {t(`community_hub.publish.system_prompt.modal_title`)}
-        </h3>
+      <div className="w-full flex gap-x-2 items-center mb-3 -mt-8 px-6 py-3">
+        <ModalHeader
+          title={t(`community_hub.publish.system_prompt.modal_title`)}
+        />
       </div>
       <form ref={formRef} className="flex" onSubmit={handleSubmit}>
         <div className="w-1/2 p-6 pt-0 space-y-4">
-          <div>
-            <label className="block text-sm font-semibold text-theme-text-primary mb-1">
-              {t("community_hub.publish.system_prompt.name_label")}
-            </label>
-            <div className="text-xs text-theme-text-secondary mb-2">
-              {t("community_hub.publish.system_prompt.name_description")}
-            </div>
-            <input
-              type="text"
-              name="name"
-              required
-              minLength={3}
-              maxLength={300}
-              placeholder={t(
-                "community_hub.publish.system_prompt.name_placeholder"
-              )}
-              className="border-none w-full bg-theme-bg-secondary rounded-lg p-2 text-theme-text-primary text-sm focus:outline-primary-button active:outline-primary-button outline-none placeholder:text-theme-text-placeholder"
-            />
-          </div>
+          <ModalInput
+            label={t("community_hub.publish.system_prompt.name_label")}
+            hint={t("community_hub.publish.system_prompt.name_description")}
+            type="text"
+            name="name"
+            required
+            minLength={3}
+            maxLength={300}
+            placeholder={t(
+              "community_hub.publish.system_prompt.name_placeholder"
+            )}
+          />
 
+          <ModalTextarea
+            label={t("community_hub.publish.system_prompt.description_label")}
+            hint={t(
+              "community_hub.publish.system_prompt.description_description"
+            )}
+            name="description"
+            required
+            minLength={10}
+            maxLength={1000}
+            placeholder={t(
+              "community_hub.publish.system_prompt.description_description"
+            )}
+            className="min-h-[80px]"
+          />
           <div>
-            <label className="block text-sm font-semibold text-theme-text-primary mb-1">
-              {t("community_hub.publish.system_prompt.description_label")}
-            </label>
-            <div className="text-xs text-white/60 mb-2">
-              {t("community_hub.publish.system_prompt.description_description")}
-            </div>
-            <textarea
-              name="description"
-              required
-              minLength={10}
-              maxLength={1000}
-              placeholder={t(
-                "community_hub.publish.system_prompt.description_description"
-              )}
-              className="border-none w-full bg-theme-bg-secondary rounded-lg p-2 text-white text-sm focus:outline-primary-button active:outline-primary-button outline-none min-h-[80px] placeholder:text-theme-text-placeholder"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-semibold text-white mb-1">
+            <ModalLabel>
               {t("community_hub.publish.system_prompt.tags_label")}
-            </label>
-            <div className="text-xs text-white/60 mb-2">
+            </ModalLabel>
+            <ModalHint className="mb-2">
               {t("community_hub.publish.system_prompt.tags_description")}
-            </div>
-            <div className="flex flex-wrap gap-2 p-2 bg-theme-bg-secondary rounded-lg min-h-[42px]">
+            </ModalHint>
+            <div className="flex flex-wrap gap-2 p-2 bg-zinc-800 light:bg-white border border-zinc-800 light:border-slate-300 rounded-lg min-h-[42px]">
               {tags.map((tag, index) => (
                 <span
                   key={index}
-                  className="flex items-center gap-1 px-2 py-1 text-sm text-theme-text-primary bg-white/10 light:bg-black/10 rounded-md"
+                  className="flex items-center gap-1 px-2 py-1 text-sm text-slate-50 light:text-slate-900 bg-white/10 light:bg-black/10 rounded-md"
                 >
                   {tag}
                   <button
                     type="button"
                     onClick={() => removeTag(tag)}
-                    className="border-none text-theme-text-primary hover:text-theme-text-secondary cursor-pointer"
+                    className="border-none bg-transparent text-slate-50 light:text-slate-900 hover:text-zinc-400 light:hover:text-slate-600 cursor-pointer"
                   >
                     <X size={14} />
                   </button>
@@ -165,21 +162,21 @@ export default function SystemPrompts({ entity }) {
                 placeholder={t(
                   "community_hub.publish.system_prompt.tags_placeholder"
                 )}
-                className="flex-1 min-w-[200px] border-none text-sm bg-transparent text-theme-text-primary placeholder:text-theme-text-placeholder p-0 h-[24px] focus:outline-none"
+                className="flex-1 min-w-[200px] border-none text-sm bg-transparent text-slate-50 light:text-slate-900 placeholder:text-zinc-400 light:placeholder:text-slate-400 p-0 h-[24px] focus:outline-none"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-white mb-1">
+            <ModalLabel>
               {t("community_hub.publish.system_prompt.visibility_label")}
-            </label>
-            <div className="text-xs text-white/60 mb-2">
+            </ModalLabel>
+            <ModalHint className="mb-2">
               {visibility === "public"
                 ? t("community_hub.publish.system_prompt.public_description")
                 : t("community_hub.publish.system_prompt.private_description")}
-            </div>
-            <div className="w-fit h-[42px] bg-theme-bg-secondary rounded-lg p-0.5">
+            </ModalHint>
+            <div className="w-fit h-[42px] bg-zinc-800 light:bg-white border border-zinc-800 light:border-slate-300 rounded-lg p-0.5">
               <div className="flex items-center" role="group">
                 <input
                   type="radio"
@@ -200,13 +197,13 @@ export default function SystemPrompts({ entity }) {
                 />
                 <label
                   htmlFor="public"
-                  className="h-[36px] px-4 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer text-theme-text-primary hover:text-theme-text-secondary peer-checked/public:bg-theme-sidebar-item-hover peer-checked/public:text-theme-primary-button flex items-center justify-center"
+                  className="h-[36px] px-4 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer text-slate-50 light:text-slate-900 hover:text-zinc-400 light:hover:text-slate-600 peer-checked/public:bg-zinc-700 light:peer-checked/public:bg-slate-200 flex items-center justify-center"
                 >
                   Public
                 </label>
                 <label
                   htmlFor="private"
-                  className="h-[36px] px-4 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer text-theme-text-primary hover:text-theme-text-secondary peer-checked/private:bg-theme-sidebar-item-hover peer-checked/private:text-theme-primary-button flex items-center justify-center"
+                  className="h-[36px] px-4 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer text-slate-50 light:text-slate-900 hover:text-zinc-400 light:hover:text-slate-600 peer-checked/private:bg-zinc-700 light:peer-checked/private:bg-slate-200 flex items-center justify-center"
                 >
                   Private
                 </label>
@@ -216,34 +213,28 @@ export default function SystemPrompts({ entity }) {
         </div>
 
         <div className="w-1/2 p-6 pt-0 space-y-4">
-          <div>
-            <label className="block text-sm font-semibold text-white mb-1">
-              {t("community_hub.publish.system_prompt.prompt_label")}
-            </label>
-            <div className="text-xs text-white/60 mb-2">
-              {t("community_hub.publish.system_prompt.prompt_description")}
-            </div>
-            <textarea
-              name="prompt"
-              required
-              minLength={10}
-              defaultValue={entity}
-              placeholder={t(
-                "community_hub.publish.system_prompt.prompt_placeholder"
-              )}
-              className="border-none w-full bg-theme-bg-secondary rounded-lg p-2 text-white text-sm focus:outline-primary-button active:outline-primary-button outline-none min-h-[300px] placeholder:text-theme-text-placeholder"
-            />
-          </div>
+          <ModalTextarea
+            label={t("community_hub.publish.system_prompt.prompt_label")}
+            hint={t("community_hub.publish.system_prompt.prompt_description")}
+            name="prompt"
+            required
+            minLength={10}
+            defaultValue={entity}
+            placeholder={t(
+              "community_hub.publish.system_prompt.prompt_placeholder"
+            )}
+            className="min-h-[300px]"
+          />
 
-          <button
+          <ModalPrimaryButton
             type="submit"
             disabled={isSubmitting}
-            className="border-none w-full bg-cta-button hover:opacity-80 text-theme-text-primary font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full"
           >
             {isSubmitting
               ? t("community_hub.publish.system_prompt.submitting")
               : t("community_hub.publish.system_prompt.publish_button")}
-          </button>
+          </ModalPrimaryButton>
         </div>
       </form>
     </>

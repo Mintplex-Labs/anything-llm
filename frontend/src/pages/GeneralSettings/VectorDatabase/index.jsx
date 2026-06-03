@@ -329,7 +329,7 @@ export default function GeneralVectorDatabase() {
           </form>
         </div>
       )}
-      <Modal isOpen={isOpen} onClose={closeModal}>
+      <Modal isOpen={isOpen} onClose={closeModal} size="lg">
         <ChangeWarningModal
           warningText="Switching the vector database will reset all previously embedded documents in all workspaces.\n\nConfirming will clear all embeddings from your vector database and remove all documents from your workspaces. Your uploaded documents will not be deleted, they will be available for re-embedding."
           onClose={closeModal}

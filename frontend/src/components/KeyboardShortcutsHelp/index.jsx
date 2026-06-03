@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { X } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
-import Modal from "@/components/lib/Modal";
+import Modal, { ModalHeader, ModalBody } from "@/components/lib/Modal";
 import {
   SHORTCUTS,
   isMac,
@@ -24,37 +23,28 @@ export default function KeyboardShortcutsHelp() {
   }, []);
 
   return (
-    <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-      <div className="relative bg-theme-bg-secondary rounded-lg p-6 max-w-2xl w-full mx-4">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold text-white">
-            {t("keyboard-shortcuts.title")}
-          </h2>
-          <button
-            onClick={() => setIsOpen(false)}
-            className="text-white hover:text-gray-300"
-            aria-label="Close"
-          >
-            <X size={24} />
-          </button>
-        </div>
-
+    <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} size="lg">
+      <ModalHeader
+        title={t("keyboard-shortcuts.title")}
+        onClose={() => setIsOpen(false)}
+      />
+      <ModalBody>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {Object.entries(SHORTCUTS).map(([key, shortcut]) => (
             <div
               key={key}
-              className="flex items-center justify-between p-3 bg-theme-bg-hover rounded-lg"
+              className="flex items-center justify-between p-3 rounded-lg bg-zinc-800 light:bg-slate-100"
             >
-              <span className="text-white">
+              <span className="text-zinc-100 light:text-slate-900">
                 {t(`keyboard-shortcuts.shortcuts.${shortcut.translationKey}`)}
               </span>
-              <kbd className="px-2 py-1 bg-theme-bg-secondary text-white rounded border border-gray-600">
+              <kbd className="px-2 py-1 rounded text-zinc-100 light:text-slate-900 bg-zinc-900 light:bg-white border border-zinc-700 light:border-slate-300">
                 {isMac ? key : key.replace("⌘", "Ctrl")}
               </kbd>
             </div>
           ))}
         </div>
-      </div>
+      </ModalBody>
     </Modal>
   );
 }

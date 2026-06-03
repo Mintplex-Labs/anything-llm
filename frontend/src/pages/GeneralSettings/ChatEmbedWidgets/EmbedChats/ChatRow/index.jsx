@@ -1,6 +1,5 @@
 import truncate from "truncate";
-import { X } from "@phosphor-icons/react";
-import Modal from "@/components/lib/Modal";
+import Modal, { ModalHeader, ModalBody } from "@/components/lib/Modal";
 import { useModal } from "@/hooks/useModal";
 import paths from "@/utils/paths";
 import Embed from "@/models/embed";
@@ -114,25 +113,14 @@ export default function ChatRow({ chat, onDelete }) {
 
 const TextPreview = ({ text, closeModal }) => {
   return (
-    <div className="relative w-full md:max-w-2xl max-h-full">
-      <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
-        <div className="flex items-center justify-between p-6 border-b rounded-t border-theme-modal-border">
-          <h3 className="text-xl font-semibold text-white">Viewing Text</h3>
-          <button
-            onClick={closeModal}
-            type="button"
-            className="bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
-          >
-            <X className="text-white text-lg" />
-          </button>
+    <form className="flex flex-col gap-y-5">
+      <ModalHeader title="Viewing Text" onClose={closeModal} />
+      <ModalBody>
+        <div className="w-full h-[60vh] py-2 px-4 whitespace-pre-line overflow-auto rounded-lg bg-zinc-800 light:bg-white border border-zinc-800 light:border-slate-300 text-zinc-100 light:text-slate-900 text-sm">
+          {text}
         </div>
-        <div className="w-full p-6">
-          <div className="w-full h-[60vh] py-2 px-4 whitespace-pre-line overflow-auto rounded-lg bg-zinc-900 light:bg-theme-bg-secondary border border-gray-500 text-white text-sm">
-            {text}
-          </div>
-        </div>
-      </div>
-    </div>
+      </ModalBody>
+    </form>
   );
 };
 
@@ -147,21 +135,21 @@ const ConnectionDetails = ({
   if (verbose) {
     return (
       <>
-        <p className="text-xs text-theme-text-secondary">
+        <p className="text-xs text-zinc-400 light:text-slate-500">
           sessionID: {sessionId}
         </p>
         {details.username && (
-          <p className="text-xs text-theme-text-secondary">
+          <p className="text-xs text-zinc-400 light:text-slate-500">
             username: {details.username}
           </p>
         )}
         {details.ip && (
-          <p className="text-xs text-theme-text-secondary">
+          <p className="text-xs text-zinc-400 light:text-slate-500">
             client ip address: {details.ip}
           </p>
         )}
         {details.host && (
-          <p className="text-xs text-theme-text-secondary">
+          <p className="text-xs text-zinc-400 light:text-slate-500">
             client host URL: {details.host}
           </p>
         )}
@@ -172,13 +160,19 @@ const ConnectionDetails = ({
   return (
     <>
       {details.username && (
-        <p className="text-xs text-theme-text-secondary">{details.username}</p>
+        <p className="text-xs text-zinc-400 light:text-slate-500">
+          {details.username}
+        </p>
       )}
       {details.ip && (
-        <p className="text-xs text-theme-text-secondary">{details.ip}</p>
+        <p className="text-xs text-zinc-400 light:text-slate-500">
+          {details.ip}
+        </p>
       )}
       {details.host && (
-        <p className="text-xs text-theme-text-secondary">{details.host}</p>
+        <p className="text-xs text-zinc-400 light:text-slate-500">
+          {details.host}
+        </p>
       )}
     </>
   );

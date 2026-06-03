@@ -141,7 +141,7 @@ export default function ScheduledJobsPage() {
         )}
       </div>
 
-      <Modal isOpen={isOpen} onClose={closeModal}>
+      <Modal isOpen={isOpen} onClose={closeModal} size="md">
         <JobFormModal
           job={editingJob}
           onClose={closeModal}

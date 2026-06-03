@@ -1,7 +1,16 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { CircleNotch, X } from "@phosphor-icons/react";
-import Modal from "@/components/lib/Modal";
+import { CircleNotch } from "@phosphor-icons/react";
+import Modal, {
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalPrimaryButton,
+  ModalSecondaryButton,
+  ModalInput,
+  ModalLabel,
+  ModalHint,
+} from "@/components/lib/Modal";
 import ModelRouterAPI from "@/models/modelRouter";
 import showToast from "@/utils/toast";
 import LLMProviderModelPicker from "../../LLMProviderModelPicker";
@@ -121,111 +130,83 @@ export default function RuleForm({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={closeModal}>
-      <div className="relative w-full max-w-3xl bg-zinc-900 light:bg-white rounded-[8px] shadow border border-zinc-700 light:border-slate-300">
-        <form onSubmit={handleSubmit} className="flex flex-col gap-y-5 p-6">
-          <div className="flex flex-col gap-y-1">
-            <div className="flex items-start justify-between">
-              <h3 className="text-base font-semibold leading-6 text-white light:text-slate-950">
-                {t("model-router.rules.title")}
-              </h3>
-              <button
-                onClick={closeModal}
-                type="button"
-                className="border-none text-zinc-400 light:text-slate-500 hover:text-white light:hover:text-slate-900 transition-colors"
-              >
-                <X size={16} weight="bold" />
-              </button>
-            </div>
-            <p className="text-xs leading-4 text-zinc-400 light:text-slate-600">
-              {t("model-router.rules.description")}
-            </p>
-          </div>
-
-          <div className="flex flex-col gap-y-5 max-h-[60vh] overflow-y-auto">
-            <div className="flex gap-x-5 items-start">
-              <div className="flex flex-col gap-y-1.5 w-[500px]">
-                <label className="text-sm font-medium leading-5 text-white light:text-slate-950">
-                  {t("model-router.rule-form.title-label")}
-                </label>
-                <input
-                  type="text"
-                  name="title"
-                  defaultValue={existingRule?.title || ""}
-                  placeholder="e.g. route_code_to_claude"
-                  className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-700 placeholder:text-zinc-400 light:placeholder:text-slate-400 text-sm rounded-[8px] outline-none block w-full h-8 px-3.5 font-mono"
-                  required
-                />
-              </div>
-              <div className="flex flex-col gap-y-1.5 w-[300px]">
-                <label className="text-sm font-medium leading-5 text-white light:text-slate-950">
-                  {t("model-router.rule-form.rule-type")}
-                </label>
-                <select
-                  value={ruleType}
-                  onChange={(e) => setRuleType(e.target.value)}
-                  className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-700 text-sm rounded-[8px] outline-none block w-full h-8 px-3.5"
-                >
-                  {ruleTypes.map((rt) => (
-                    <option key={rt.value} value={rt.value}>
-                      {rt.label}
-                    </option>
-                  ))}
-                </select>
-                <p className="text-xs leading-4 text-zinc-400 light:text-slate-600">
-                  {ruleTypes.find((rt) => rt.value === ruleType)?.description}
-                </p>
-              </div>
-            </div>
-
-            {ruleType === "calculated" ? (
-              <CalculatedFields
-                conditionLogic={conditionLogic}
-                setConditionLogic={setConditionLogic}
-                conditions={conditions}
-                setConditions={setConditions}
+    <Modal isOpen={isOpen} onClose={closeModal} size="lg">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-y-5">
+        <ModalHeader
+          title={t("model-router.rules.title")}
+          subtitle={t("model-router.rules.description")}
+          onClose={closeModal}
+        />
+        <ModalBody className="max-h-[60vh] overflow-y-auto">
+          <div className="flex gap-x-5 items-start">
+            <div className="w-[500px]">
+              <ModalInput
+                label={t("model-router.rule-form.title-label")}
+                type="text"
+                name="title"
+                defaultValue={existingRule?.title || ""}
+                placeholder="e.g. route_code_to_claude"
+                className="font-mono"
+                required
               />
-            ) : (
-              <LLMDescriptionField existingRule={existingRule} />
-            )}
+            </div>
+            <div className="flex flex-col gap-y-1.5 w-[300px]">
+              <ModalLabel>{t("model-router.rule-form.rule-type")}</ModalLabel>
+              <select
+                value={ruleType}
+                onChange={(e) => setRuleType(e.target.value)}
+                className="bg-zinc-800 light:bg-white border border-zinc-800 light:border-slate-300 text-zinc-100 light:text-slate-900 text-sm rounded-lg outline-none block w-full h-[34px] px-3.5 focus:border-sky-500"
+              >
+                {ruleTypes.map((rt) => (
+                  <option key={rt.value} value={rt.value}>
+                    {rt.label}
+                  </option>
+                ))}
+              </select>
+              <ModalHint>
+                {ruleTypes.find((rt) => rt.value === ruleType)?.description}
+              </ModalHint>
+            </div>
+          </div>
 
-            <LLMProviderModelPicker
-              providerFieldName="route_provider"
-              modelFieldName="route_model"
-              label={t("model-router.rule-form.route-to-label")}
-              description={t("model-router.rule-form.route-to-description")}
-              defaultProvider={existingRule?.route_provider || ""}
-              defaultModel={existingRule?.route_model || ""}
+          {ruleType === "calculated" ? (
+            <CalculatedFields
+              conditionLogic={conditionLogic}
+              setConditionLogic={setConditionLogic}
+              conditions={conditions}
+              setConditions={setConditions}
             />
-          </div>
+          ) : (
+            <LLMDescriptionField existingRule={existingRule} />
+          )}
 
-          <div className="flex items-center justify-between">
-            <button
-              type="button"
-              onClick={closeModal}
-              className="border border-zinc-600 light:border-slate-600 text-white light:text-slate-900 text-sm font-medium leading-5 rounded-[8px] h-[34px] px-3.5 hover:opacity-90 transition-opacity"
-            >
-              {t("model-router.rule-form.cancel")}
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="border-none flex items-center gap-x-1.5 text-sm font-medium leading-5 bg-zinc-50 light:bg-slate-900 text-zinc-900 light:text-white rounded-[8px] h-[34px] px-3.5 hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? (
-                <>
-                  <CircleNotch className="h-4 w-4 animate-spin" />
-                  {t("model-router.rule-form.saving")}
-                </>
-              ) : isEditing ? (
-                t("model-router.rule-form.update-rule")
-              ) : (
-                t("model-router.rule-form.create-rule")
-              )}
-            </button>
-          </div>
-        </form>
-      </div>
+          <LLMProviderModelPicker
+            providerFieldName="route_provider"
+            modelFieldName="route_model"
+            label={t("model-router.rule-form.route-to-label")}
+            description={t("model-router.rule-form.route-to-description")}
+            defaultProvider={existingRule?.route_provider || ""}
+            defaultModel={existingRule?.route_model || ""}
+          />
+        </ModalBody>
+        <ModalFooter>
+          <ModalSecondaryButton type="button" onClick={closeModal}>
+            {t("model-router.rule-form.cancel")}
+          </ModalSecondaryButton>
+          <ModalPrimaryButton type="submit" disabled={loading}>
+            {loading ? (
+              <>
+                <CircleNotch className="h-4 w-4 animate-spin" />
+                {t("model-router.rule-form.saving")}
+              </>
+            ) : isEditing ? (
+              t("model-router.rule-form.update-rule")
+            ) : (
+              t("model-router.rule-form.create-rule")
+            )}
+          </ModalPrimaryButton>
+        </ModalFooter>
+      </form>
     </Modal>
   );
 }

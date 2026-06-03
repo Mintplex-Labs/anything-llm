@@ -2,9 +2,14 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AVAILABLE_LLM_PROVIDERS } from "@/pages/GeneralSettings/LLMPreference";
 import System from "@/models/system";
-import Modal from "@/components/lib/Modal";
+import Modal, {
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalPrimaryButton,
+  ModalSecondaryButton,
+} from "@/components/lib/Modal";
 import { useModal } from "@/hooks/useModal";
-import { X } from "@phosphor-icons/react";
 import showToast from "@/utils/toast";
 
 // Providers that can't be routing targets
@@ -212,58 +217,46 @@ function ProviderSetupModal({ isOpen, provider, settings, onSave, onClose }) {
   if (!isOpen || !provider) return null;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="w-full max-w-2xl bg-zinc-900 light:bg-white rounded-[8px] shadow-lg border border-zinc-700 light:border-slate-300">
-        <div className="flex items-center justify-between p-6 border-b border-zinc-700 light:border-slate-300">
-          <div className="flex items-center gap-x-3">
-            {provider.logo && (
-              <img
-                src={provider.logo}
-                alt={`${provider.name} logo`}
-                className="w-8 h-8 rounded-md"
-              />
-            )}
-            <h3 className="text-base font-semibold leading-6 text-white light:text-slate-950">
-              {t("model-router.provider-picker.configure-provider", {
-                name: provider.name,
-              })}
-            </h3>
-          </div>
-          <button
-            onClick={onClose}
-            type="button"
-            className="border-none p-1 rounded-lg text-zinc-400 light:text-slate-500 hover:text-white light:hover:text-slate-900 hover:bg-zinc-800 light:hover:bg-slate-100 transition-colors"
-          >
-            <X size={16} weight="bold" />
-          </button>
-        </div>
-        <form id="provider-setup-form" onSubmit={onSave}>
-          <div className="px-6 py-5">
-            <p className="text-xs leading-4 text-zinc-400 light:text-slate-600 mb-4">
-              {t("model-router.provider-picker.setup-credentials", {
-                name: provider.name,
-              })}
-            </p>
-            <div className="space-y-4">{provider.options(settings ?? {})}</div>
-          </div>
-          <div className="flex justify-between gap-x-3 px-6 py-4 border-t border-zinc-700 light:border-slate-300">
-            <button
-              type="button"
-              onClick={onClose}
-              className="border border-zinc-600 light:border-slate-600 text-white light:text-slate-900 text-sm font-medium leading-5 rounded-[8px] h-[34px] px-3.5 hover:opacity-90 transition-opacity"
-            >
-              {t("model-router.provider-picker.cancel")}
-            </button>
-            <button
-              type="submit"
-              form="provider-setup-form"
-              className="border-none text-sm font-medium leading-5 bg-zinc-50 light:bg-slate-900 text-zinc-900 light:text-white rounded-[8px] h-[34px] px-3.5 hover:opacity-90 transition-opacity"
-            >
-              {t("model-router.provider-picker.save-settings")}
-            </button>
-          </div>
-        </form>
-      </div>
+    <Modal isOpen={isOpen} onClose={onClose} size="lg">
+      <form
+        id="provider-setup-form"
+        onSubmit={onSave}
+        className="flex flex-col gap-y-5"
+      >
+        <ModalHeader
+          title={
+            <div className="flex items-center gap-x-3">
+              {provider.logo && (
+                <img
+                  src={provider.logo}
+                  alt={`${provider.name} logo`}
+                  className="w-8 h-8 rounded-md"
+                />
+              )}
+              <span>
+                {t("model-router.provider-picker.configure-provider", {
+                  name: provider.name,
+                })}
+              </span>
+            </div>
+          }
+          subtitle={t("model-router.provider-picker.setup-credentials", {
+            name: provider.name,
+          })}
+          onClose={onClose}
+        />
+        <ModalBody>
+          <div className="space-y-4">{provider.options(settings ?? {})}</div>
+        </ModalBody>
+        <ModalFooter>
+          <ModalSecondaryButton type="button" onClick={onClose}>
+            {t("model-router.provider-picker.cancel")}
+          </ModalSecondaryButton>
+          <ModalPrimaryButton type="submit" form="provider-setup-form">
+            {t("model-router.provider-picker.save-settings")}
+          </ModalPrimaryButton>
+        </ModalFooter>
+      </form>
     </Modal>
   );
 }

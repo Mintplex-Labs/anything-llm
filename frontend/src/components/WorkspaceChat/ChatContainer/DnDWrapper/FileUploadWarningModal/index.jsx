@@ -1,5 +1,11 @@
 import { CircleNotch } from "@phosphor-icons/react";
-import Modal from "@/components/lib/Modal";
+import Modal, {
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalPrimaryButton,
+  ModalSecondaryButton,
+} from "@/components/lib/Modal";
 import pluralize from "pluralize";
 import { numberWithCommas } from "@/utils/numbers";
 import useUser from "@/hooks/useUser";
@@ -24,83 +30,65 @@ export default function FileUploadWarningModal({
 
   if (isEmbedding) {
     return (
-      <Modal isOpen={show} onClose={onClose}>
-        <div className="relative max-w-[600px] bg-theme-bg-primary rounded-lg shadow border border-theme-modal-border">
-          <div className="p-6 flex flex-col items-center justify-center">
-            <p className="text-white text-lg font-semibold mb-4">
-              Embedding {embedProgress + 1} of {fileCount}{" "}
-              {pluralize("file", fileCount)}
-            </p>
-            <CircleNotch size={32} className="animate-spin text-white" />
-            <p className="text-white/60 text-sm mt-2">
-              Please wait while we embed your files...
-            </p>
-          </div>
+      <Modal isOpen={show} onClose={onClose} size="lg">
+        <div className="flex flex-col items-center justify-center">
+          <p className="text-slate-50 light:text-slate-900 text-lg font-semibold mb-4">
+            Embedding {embedProgress + 1} of {fileCount}{" "}
+            {pluralize("file", fileCount)}
+          </p>
+          <CircleNotch
+            size={32}
+            className="animate-spin text-slate-50 light:text-slate-900"
+          />
+          <p className="text-zinc-400 light:text-slate-600 text-sm mt-2">
+            Please wait while we embed your files...
+          </p>
         </div>
       </Modal>
     );
   }
 
   return (
-    <Modal isOpen={show} onClose={onClose}>
-      <div className="relative max-w-[600px] bg-theme-bg-primary rounded-lg shadow border border-theme-modal-border">
-        <div className="relative p-6 border-b border-theme-modal-border">
-          <div className="w-full flex gap-x-2 items-center">
-            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
-              Context Window Warning
-            </h3>
-          </div>
-        </div>
-
-        <div className="py-7 px-9 space-y-4">
-          <p className="text-theme-text-primary text-sm">
-            Your workspace is using {numberWithCommas(tokenCount)} of{" "}
-            {numberWithCommas(maxTokens)} available tokens. We recommend keeping
-            usage below {(Workspace.maxContextWindowLimit * 100).toFixed(0)}% to
-            ensure the best chat experience. Adding {fileCount} more{" "}
-            {pluralize("file", fileCount)} would exceed this limit.{" "}
-            <Link
-              target="_blank"
-              to={Paths.documentation.contextWindows()}
-              className="text-theme-text-secondary text-sm underline"
-            >
-              Learn more about context windows &rarr;
-            </Link>
-          </p>
-          <p className="text-theme-text-primary text-sm">
-            Choose how you would like to proceed with these uploads.
-          </p>
-        </div>
-
-        <div className="flex w-full justify-between items-center p-6 space-x-2 border-t border-theme-modal-border rounded-b">
-          <button
-            onClick={onClose}
-            type="button"
-            className="border-none transition-all duration-300 bg-theme-modal-border text-white hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+    <Modal isOpen={show} onClose={onClose} size="lg">
+      <ModalHeader title="Context Window Warning" onClose={onClose} />
+      <ModalBody>
+        <p className="text-zinc-300 light:text-slate-700 text-sm">
+          Your workspace is using {numberWithCommas(tokenCount)} of{" "}
+          {numberWithCommas(maxTokens)} available tokens. We recommend keeping
+          usage below {(Workspace.maxContextWindowLimit * 100).toFixed(0)}% to
+          ensure the best chat experience. Adding {fileCount} more{" "}
+          {pluralize("file", fileCount)} would exceed this limit.{" "}
+          <Link
+            target="_blank"
+            to={Paths.documentation.contextWindows()}
+            className="text-zinc-400 light:text-slate-500 text-sm underline"
           >
-            Cancel
-          </button>
-          <div className="flex w-full justify-end items-center space-x-2">
-            <button
-              onClick={onContinue}
+            Learn more about context windows &rarr;
+          </Link>
+        </p>
+        <p className="text-zinc-300 light:text-slate-700 text-sm">
+          Choose how you would like to proceed with these uploads.
+        </p>
+      </ModalBody>
+      <ModalFooter>
+        <ModalSecondaryButton onClick={onClose} type="button">
+          Cancel
+        </ModalSecondaryButton>
+        <div className="flex items-center gap-x-2">
+          <ModalSecondaryButton onClick={onContinue} type="button">
+            Continue Anyway
+          </ModalSecondaryButton>
+          {canEmbed && (
+            <ModalPrimaryButton
+              onClick={onEmbed}
+              disabled={isEmbedding || !canEmbed}
               type="button"
-              className="border-none transition-all duration-300 bg-theme-modal-border text-white hover:opacity-60 px-4 py-2 rounded-lg text-sm"
             >
-              Continue Anyway
-            </button>
-            {canEmbed && (
-              <button
-                onClick={onEmbed}
-                disabled={isEmbedding || !canEmbed}
-                type="button"
-                className="border-none transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
-              >
-                Embed {pluralize("File", fileCount)}
-              </button>
-            )}
-          </div>
+              Embed {pluralize("File", fileCount)}
+            </ModalPrimaryButton>
+          )}
         </div>
-      </div>
+      </ModalFooter>
     </Modal>
   );
 }

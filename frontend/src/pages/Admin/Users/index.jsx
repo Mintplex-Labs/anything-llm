@@ -163,7 +163,7 @@ export function MessageLimitInput({ enabled, limit, updateState, role }) {
       />
       {enabled && (
         <div className="mt-4">
-          <label className="text-white text-sm font-semibold block mb-4">
+          <label className="text-zinc-50 light:text-slate-700 text-sm font-semibold block mb-4">
             Message limit per day
           </label>
           <div className="relative mt-2">
@@ -178,7 +178,7 @@ export function MessageLimitInput({ enabled, limit, updateState, role }) {
               }}
               value={limit}
               min={1}
-              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              className="w-full h-[34px] px-3.5 text-sm rounded-lg outline-none bg-zinc-800 border border-zinc-800 text-zinc-100 placeholder:text-zinc-400 light:bg-white light:border-slate-300 light:text-slate-900 light:placeholder:text-slate-400 focus:border-sky-500"
             />
           </div>
         </div>

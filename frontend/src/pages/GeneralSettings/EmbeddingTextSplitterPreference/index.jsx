@@ -193,7 +193,7 @@ export default function EmbeddingTextSplitterPreference() {
         </div>
       )}
 
-      <Modal isOpen={isOpen} onClose={closeModal}>
+      <Modal isOpen={isOpen} onClose={closeModal} size="lg">
         <ChangeWarningModal
           warningText="Changing text splitter settings will clear any previously cached documents.\n\nThese new settings will be applied to all documents when embedding them into a workspace."
           onClose={closeModal}

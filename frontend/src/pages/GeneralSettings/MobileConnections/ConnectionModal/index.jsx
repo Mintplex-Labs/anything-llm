@@ -12,7 +12,7 @@ import GetOnGooglePlay from "./gplay-badge.svg";
 
 export default function MobileConnectModal({ isOpen, onClose }) {
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} variant="bare">
       <div
         className="relative w-full rounded-lg shadow"
         style={{
@@ -26,9 +26,9 @@ export default function MobileConnectModal({ isOpen, onClose }) {
         <button
           onClick={onClose}
           type="button"
-          className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+          className="border-none absolute top-4 right-4 transition-all duration-200 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-zinc-800 light:hover:bg-slate-100"
         >
-          <X size={24} weight="bold" className="text-[#FFF]" />
+          <X size={24} weight="bold" className="text-white" />
         </button>
 
         <div className="flex w-full h-full justify-between p-[35px]">

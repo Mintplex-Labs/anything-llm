@@ -1,42 +1,30 @@
 import React, { useState } from "react";
-import { CheckCircle, CopySimple, X } from "@phosphor-icons/react";
+import { CheckCircle, CopySimple } from "@phosphor-icons/react";
 import showToast from "@/utils/toast";
 import hljs from "highlight.js";
 import "@/utils/chat/themes/github-dark.css";
 import "@/utils/chat/themes/github.css";
+import {
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalSecondaryButton,
+  ModalLabel,
+  ModalHint,
+} from "@/components/lib/Modal";
 
 export default function CodeSnippetModal({ embed, closeModal }) {
   return (
-    <div className="relative w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border">
-      <div className="relative p-6 border-b rounded-t border-theme-modal-border">
-        <div className="w-full flex gap-x-2 items-center">
-          <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
-            Copy your embed code
-          </h3>
-        </div>
-        <button
-          onClick={closeModal}
-          type="button"
-          className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
-        >
-          <X size={24} weight="bold" className="text-white" />
-        </button>
-      </div>
-      <div className="px-7 py-6">
-        <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2">
-          <ScriptTag embed={embed} />
-        </div>
-        <div className="flex justify-between items-center mt-6 pt-6 border-t border-theme-modal-border">
-          <button
-            onClick={closeModal}
-            type="button"
-            className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm"
-          >
-            Close
-          </button>
-          <div hidden={true} />
-        </div>
-      </div>
+    <div className="flex flex-col gap-y-5">
+      <ModalHeader title="Copy your embed code" onClose={closeModal} />
+      <ModalBody className="max-h-[60vh] overflow-y-auto">
+        <ScriptTag embed={embed} />
+      </ModalBody>
+      <ModalFooter className="justify-end">
+        <ModalSecondaryButton onClick={closeModal} type="button">
+          Close
+        </ModalSecondaryButton>
+      </ModalFooter>
     </div>
   );
 }
@@ -80,13 +68,11 @@ const ScriptTag = ({ embed }) => {
   return (
     <div>
       <div className="flex flex-col mb-2">
-        <label className="block text-sm font-medium text-white">
-          HTML Script Tag Embed Code
-        </label>
-        <p className="text-theme-text-secondary text-xs">
+        <ModalLabel>HTML Script Tag Embed Code</ModalLabel>
+        <ModalHint>
           Have your workspace chat embed function like a help desk chat bottom
           in the corner of your website.
-        </p>
+        </ModalHint>
         <a
           href="https://github.com/Mintplex-Labs/anythingllm-embed/blob/main/README.md"
           target="_blank"
@@ -99,7 +85,7 @@ const ScriptTag = ({ embed }) => {
       <button
         disabled={copied}
         onClick={handleClick}
-        className={`disabled:border disabled:border-green-300 disabled:light:border-green-600 border border-transparent relative w-full font-mono flex hljs ${theme} light:border light:border-gray-700 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none p-2.5 m-1`}
+        className={`border-none disabled:border disabled:border-green-300 disabled:light:border-green-600 border border-transparent relative w-full font-mono flex hljs ${theme} light:border light:border-gray-700 text-white placeholder:text-zinc-400 text-sm rounded-lg focus:border-sky-500 outline-none p-2.5 m-1`}
       >
         <div
           className="flex w-full text-left flex-col gap-y-1 pr-6 pl-4 whitespace-pre-line"
