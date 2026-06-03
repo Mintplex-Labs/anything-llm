@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import { ArrowClockwise, SpinnerGap } from "@phosphor-icons/react";
+import SwarmsyDesktopDiagnosticsPanel from "@/components/SwarmsyDesktopDiagnosticsPanel";
 
 const LOCAL_OLLAMA_SETUP_GUIDANCE = [
   "Ollama was not detected.",
@@ -40,6 +41,7 @@ export default function SwarmsyLocalUserSettingsHub({
     savedLocalOllamaModel,
     currentModelLabel,
     localOllamaSelectionMessage,
+    desktopDiagnostics,
     checkLocalUserOllama,
     onSelectLocalOllamaModel,
     exportBackupToFile,
@@ -249,6 +251,11 @@ export default function SwarmsyLocalUserSettingsHub({
               />
             </div>
           </div>
+
+          <SwarmsyDesktopDiagnosticsPanel
+            diagnostics={desktopDiagnostics}
+            className="mt-6"
+          />
         </>
       )}
     </div>

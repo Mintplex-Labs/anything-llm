@@ -24,9 +24,19 @@ Local data directory plus backup export/import.
 - Pure helper/tests now cover platform root resolution, required folder layout, and manifest safety validation.
 - Current behavior remains browser-side backup/export/import in Local User Settings Hub until desktop packaging/runtime wiring phase.
 
-## Phase 4
+## Phase 4 — Desktop Diagnostics & Failure Visibility
 
-Desktop wrapper and downloadable package.
+A dedicated diagnostics layer for Local User desktop mode so users can understand why something is not working without reading logs or opening DevTools.
+
+- Centralized diagnostic catalog at `server/utils/swarmsy/desktopDiagnostics.js` (CJS) and mirrored as an ES module at `frontend/src/utils/desktopDiagnostics.js`.
+- 24 reason codes across Runtime, Desktop, Ollama, and Chat categories — each with `code`, `severity`, `title`, `description`, and `action`.
+- Severity levels: `error`, `warning`, `info` — sorted errors first.
+- Diagnostics wired into: runtime launcher/healthcheck failures, backup export/import failures, storage-contract/symlink/parse/schema failures, Ollama reachability/model-state checks, and model-restore failures.
+- `SwarmsyDesktopDiagnosticsPanel` renders all active diagnostics in the Local User Settings Hub.
+- No secrets, auth tokens, API keys, session values, server DB paths, or Hosted/Admin data are exposed via diagnostics.
+- Full doc: `docs/swarmsy/local-user/SWARMSY_DESKTOP_DIAGNOSTICS.md`
+
+## Phase 5 — Desktop wrapper and downloadable package.
 
 - Foundation shipped: desktop shell scaffold entrypoint + preload + Local User storage-contract bridge under `desktop/`.
 - Foundation shipped: trusted-local runtime healthcheck and local-runtime failure-page path before desktop app readiness.
@@ -37,11 +47,11 @@ Desktop wrapper and downloadable package.
 - No auth/API/session secret persistence, no server DB export, and no Hosted/Admin behavior changes.
 - Current scope is Windows-first/local development prep only; signed installer, auto-update, bundled Ollama/models, and production packaging remain out of scope.
 
-## Phase 5
+## Phase 6
 
 Signed release builds.
 
-## Phase 6
+## Phase 7
 
 Optional cloud sync only if the user explicitly enables it.
 

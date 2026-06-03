@@ -87,3 +87,12 @@ This foundation does **not**:
 The desktop wrapper foundation now exposes a narrow trusted-origin-only backup bridge on `window.swarmsyDesktop.foundation` for Local User backup/export/import. The renderer can request `exportLocalUserBackup()` or `importLocalUserBackup(payload)`, but it cannot provide filesystem paths. The main process controls the backup location under the Local User `backups/` directory and restores only allowlisted desktop local settings.
 
 Hosted/Admin separation is unchanged. This foundation does not export a server DB, auth/session/API keys, runtime/pending state, Hosted/Admin data, or arbitrary files. It also does not add an installer, signing, auto-update, bundled Ollama, bundled models, or auto-pulled models.
+
+
+## Desktop Diagnostics layer
+
+A dedicated diagnostics layer is now wired into the desktop wrapper foundation to surface failure reasons directly in the Local User Settings Hub UI. When runtime launch, healthcheck, backup, storage-contract, symlink, Ollama reachability, or model-state operations fail, a structured diagnostic entry is generated with a reason code, human-readable title, description, and suggested action.
+
+The canonical diagnostic catalog lives at `server/utils/swarmsy/desktopDiagnostics.js` (CJS) with a mirrored ES module at `frontend/src/utils/desktopDiagnostics.js`. No diagnostic entry exposes secrets, auth tokens, API keys, session values, server DB paths, or Hosted/Admin data.
+
+See `docs/swarmsy/local-user/SWARMSY_DESKTOP_DIAGNOSTICS.md` for the full catalog, integration points, and security guarantees.

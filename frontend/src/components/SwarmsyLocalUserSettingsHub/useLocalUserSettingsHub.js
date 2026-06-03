@@ -21,6 +21,10 @@ import {
   resolveLocalUserBackupImportModelState,
   isDesktopLocalUserBackup,
 } from "@/utils/localUserBackup";
+import {
+  diagnosticFromResult,
+  getDiagnosticForCode,
+} from "@/utils/desktopDiagnostics";
 
 export const LOCAL_USER_SETTINGS_SYNC_EVENT =
   "anythingllm_swarmsy_local_user_settings_sync";
@@ -104,6 +108,7 @@ export function useLocalUserSettingsHub() {
   const isHostedAdminMode = loginMode === "multi";
   const [isLocalUserMode, setIsLocalUserMode] = useState(false);
   const [isCheckingLocalOllama, setIsCheckingLocalOllama] = useState(false);
+  const [desktopDiagnostics, setDesktopDiagnostics] = useState([]);
   const [localOllamaStatus, setLocalOllamaStatus] = useState({
     status: "checking",
     models: [],
@@ -119,6 +124,24 @@ export function useLocalUserSettingsHub() {
 
   const localOllamaRefreshControllerRef = useRef(null);
   const hasConfirmedLocalUserModeRef = useRef(false);
+
+  const addDiagnostic = useCallback((code) => {
+    const entry = getDiagnosticForCode(code);
+    if (!entry) return;
+    setDesktopDiagnostics((prev) => {
+      if (prev.some((d) => d.code === entry.code)) return prev;
+      return [...prev, entry];
+    });
+  }, []);
+
+  const removeDiagnosticsByCode = useCallback((codes) => {
+    const codeSet = new Set(Array.isArray(codes) ? codes : [codes]);
+    setDesktopDiagnostics((prev) => prev.filter((d) => !codeSet.has(d.code)));
+  }, []);
+
+  const clearDiagnostics = useCallback(() => {
+    setDesktopDiagnostics([]);
+  }, []);
 
   const beginLocalUserOllamaRequest = useCallback(() => {
     localOllamaRefreshControllerRef.current?.abort();
@@ -200,6 +223,12 @@ export function useLocalUserSettingsHub() {
         endpoint: null,
         message: null,
       }));
+      removeDiagnosticsByCode([
+        "ollama_unreachable",
+        "ollama_not_installed",
+        "no_models_installed",
+        "local_provider_unavailable",
+      ]);
 
       try {
         const response = await SwarmsyOnboarding.localUserOllamaStatus({
@@ -218,6 +247,7 @@ export function useLocalUserSettingsHub() {
                 response?.message ||
                 "Failed to resolve SWARMSY local-user Ollama status.",
             });
+            addDiagnostic("local_provider_unavailable");
             setIsLocalUserMode(true);
           } else {
             setIsLocalUserMode(false);
@@ -234,6 +264,13 @@ export function useLocalUserSettingsHub() {
         hasConfirmedLocalUserModeRef.current = true;
         setIsLocalUserMode(true);
         setLocalOllamaStatus(normalizedStatus);
+
+        if (normalizedStatus.status === "unreachable") {
+          addDiagnostic("ollama_unreachable");
+        } else if (normalizedStatus.status === "no_models") {
+          addDiagnostic("no_models_installed");
+        }
+
         return normalizedStatus;
       } catch (error) {
         if (
@@ -250,7 +287,7 @@ export function useLocalUserSettingsHub() {
         }
       }
     },
-    [isLatestLocalUserOllamaRequest]
+    [addDiagnostic, isLatestLocalUserOllamaRequest, removeDiagnosticsByCode]
   );
 
   const checkLocalUserOllama = useCallback(async () => {
@@ -328,9 +365,12 @@ export function useLocalUserSettingsHub() {
     const storedModelId = readLocalUserOllamaModelSelection();
     setSavedLocalOllamaModel(storedModelId);
 
+    removeDiagnosticsByCode(["selected_model_missing", "selected_model_stale"]);
+
     if (!hasVerifiedLocalOllamaModels) {
       if (storedModelId) {
         setLocalOllamaSelectionMessage(SAVED_MODEL_UNVERIFIED_MESSAGE);
+        addDiagnostic("selected_model_stale");
       } else {
         setLocalOllamaSelectionMessage(null);
       }
@@ -354,6 +394,7 @@ export function useLocalUserSettingsHub() {
 
     if (resolved.source === "stale_missing") {
       setLocalOllamaSelectionMessage(SAVED_MODEL_MISSING_MESSAGE);
+      addDiagnostic("selected_model_missing");
       return;
     }
 
@@ -371,8 +412,10 @@ export function useLocalUserSettingsHub() {
 
     setLocalOllamaSelectionMessage(null);
   }, [
+    addDiagnostic,
     hasVerifiedLocalOllamaModels,
     localOllamaStatus.models,
+    removeDiagnosticsByCode,
     selectedLocalOllamaModel,
   ]);
 
@@ -421,6 +464,7 @@ export function useLocalUserSettingsHub() {
   );
 
   const exportBackupToFile = useCallback(async () => {
+    removeDiagnosticsByCode(["backup_export_failed"]);
     if (
       typeof window !== "undefined" &&
       isLocalUserMode &&
@@ -434,6 +478,11 @@ export function useLocalUserSettingsHub() {
         showToast("Desktop Local User backup exported.", "success");
         return;
       }
+      const desktopDiag = diagnosticFromResult(
+        desktopResult,
+        "backup_export_failed"
+      );
+      if (desktopDiag) addDiagnostic(desktopDiag.code);
     }
 
     const backup = await exportLocalUserBackupV2({
@@ -451,10 +500,16 @@ export function useLocalUserSettingsHub() {
     a.click?.();
     URL.revokeObjectURL(url);
     showToast("Local User backup exported.", "success");
-  }, [isHostedAdminMode, isLocalUserMode]);
+  }, [
+    addDiagnostic,
+    isHostedAdminMode,
+    isLocalUserMode,
+    removeDiagnosticsByCode,
+  ]);
 
   const importBackupFromText = useCallback(
     async (rawText = "") => {
+      removeDiagnosticsByCode(["backup_import_failed", "model_restore_failed"]);
       try {
         const data = JSON.parse(rawText);
         let result;
@@ -476,6 +531,11 @@ export function useLocalUserSettingsHub() {
             const errors =
               desktopImport?.errors?.join(" ") || desktopImport?.reason;
             showToast(`Import failed: ${errors}`, "error");
+            const desktopDiag = diagnosticFromResult(
+              desktopImport,
+              "backup_import_failed"
+            );
+            if (desktopDiag) addDiagnostic(desktopDiag.code);
             return false;
           }
           restoredModelId = String(
@@ -499,6 +559,7 @@ export function useLocalUserSettingsHub() {
           });
           if (!result.success) {
             showToast(`Import failed: ${result.errors.join(" ")}`, "error");
+            addDiagnostic("backup_import_failed");
             return false;
           }
 
@@ -541,6 +602,7 @@ export function useLocalUserSettingsHub() {
             setLocalOllamaSelectionMessage(
               IMPORTED_LOCAL_OLLAMA_MODEL_MISSING_MESSAGE
             );
+            addDiagnostic("model_restore_failed");
           }
         } else {
           setSelectedLocalOllamaModel("");
@@ -572,16 +634,19 @@ export function useLocalUserSettingsHub() {
           "Could not read backup file. The file must be valid JSON.",
           "error"
         );
+        addDiagnostic("backup_import_failed");
         return false;
       }
     },
     [
+      addDiagnostic,
       checkLocalUserOllama,
       hasVerifiedLocalOllamaModels,
       isHostedAdminMode,
       isLocalUserMode,
       localOllamaStatus.models,
       mirrorModelSelectionToDesktopSettings,
+      removeDiagnosticsByCode,
     ]
   );
 
@@ -609,6 +674,8 @@ export function useLocalUserSettingsHub() {
     currentModelLabel,
     localOllamaSelectionMessage,
     mirrorsDesktopLocalSettings: true,
+    desktopDiagnostics,
+    clearDiagnostics,
     checkLocalUserOllama,
     onSelectLocalOllamaModel,
     exportBackupToFile,
