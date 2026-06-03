@@ -1,0 +1,101 @@
+name: Windows Desktop Artifact Build
+
+concurrency:
+  group: desktop-artifact-build-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+jobs:
+  build-windows-desktop-artifact:
+    name: Build Windows desktop artifact
+    runs-on: windows-latest
+    timeout-minutes: 45
+
+    env:
+      ELECTRON_VERSION: 33.4.11
+      PUPPETEER_SKIP_DOWNLOAD: "true"
+      SHARP_IGNORE_GLOBAL_LIBVIPS: "true"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
+      - name: Install root dependencies
+        shell: pwsh
+        run: |
+          npm ci
+          git diff -- package-lock.json
+          git status --short
+          git diff --name-only
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: yarn install --frozen-lockfile
+
+      - name: Install server dependencies
+        working-directory: server
+        run: yarn install --frozen-lockfile
+
+      - name: Install collector dependencies
+        working-directory: collector
+        run: yarn install --frozen-lockfile
+
+      - name: Validate yarn lockfiles
+        shell: pwsh
+        run: |
+          $required = @(
+            "frontend/yarn.lock",
+            "server/yarn.lock",
+            "collector/yarn.lock"
+          )
+          foreach ($lockfile in $required) {
+            if (!(Test-Path $lockfile)) {
+              throw "Missing required lockfile: $lockfile"
+            }
+          }
+          git diff --quiet -- frontend/yarn.lock server/yarn.lock collector/yarn.lock
+
+      - name: Build frontend
+        working-directory: frontend
+        run: yarn build
+
+      - name: Build desktop shell
+        run: npm run desktop:smoke
+
+      - name: Download Electron runtime
+        shell: pwsh
+        run: |
+          $zipPath = Join-Path $env:RUNNER_TEMP "electron-v$env:ELECTRON_VERSION-win32-x64.zip"
+          $extractPath = Join-Path $env:RUNNER_TEMP "electron-win32-x64"
+          $downloadUrl = "https://github.com/electron/electron/releases/download/v$env:ELECTRON_VERSION/electron-v$env:ELECTRON_VERSION-win32-x64.zip"
+          Invoke-WebRequest -Uri $downloadUrl -OutFile $zipPath
+          if (Test-Path $extractPath) { Remove-Item -Recurse -Force $extractPath }
+          Expand-Archive -Path $zipPath -DestinationPath $extractPath
+          "ELECTRON_DIST_PATH=$extractPath" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Package desktop app
+        run: npm run desktop:artifact:package:win
+
+      - name: Upload Windows desktop artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: swarmsy-desktop-win32-x64
+          path: |
+            desktop/artifacts/swarmsy-desktop-win32-x64
+            desktop/artifacts/swarmsy-desktop-win32-x64.zip
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Smoke validation
+        run: npm run desktop:artifact:smoke
