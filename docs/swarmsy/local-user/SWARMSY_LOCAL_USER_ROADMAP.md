@@ -30,7 +30,8 @@ Desktop wrapper and downloadable package.
 
 - Foundation shipped: desktop shell scaffold entrypoint + preload + Local User storage-contract bridge under `desktop/`.
 - Foundation shipped: trusted-local runtime healthcheck and local-runtime failure-page path before desktop app readiness.
-- Foundation scripts: `yarn desktop:dev` (opt-in wrapper launch) and `yarn desktop:smoke` (scaffold presence check).
+- Foundation shipped: desktop local runtime launcher orchestration for dev/local mode only (`runtimeLauncher.cjs`) with explicit opt-in via `SWARMSY_DESKTOP_AUTO_START_RUNTIME=true`.
+- Foundation scripts: `yarn desktop:dev` (opt-in wrapper launch), `yarn desktop:smoke` (scaffold presence check), and `yarn desktop:runtime:dev` (explicit local runtime command).
 - Current scope is Windows-first/local development prep only; signed installer, auto-update, bundled Ollama/models, and production packaging remain out of scope.
 
 ## Phase 5

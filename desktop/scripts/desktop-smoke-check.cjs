@@ -7,6 +7,7 @@ const requiredFiles = [
   "desktop/electron/main.cjs",
   "desktop/electron/preload.cjs",
   "desktop/foundation/runtimeHealthcheck.cjs",
+  "desktop/foundation/runtimeLauncher.cjs",
   "desktop/foundation/storageContractBridge.cjs",
   "desktop/scripts/run-desktop-dev.cjs",
 ];

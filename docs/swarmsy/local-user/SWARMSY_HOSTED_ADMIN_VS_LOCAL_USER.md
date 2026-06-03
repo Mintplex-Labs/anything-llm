@@ -41,6 +41,7 @@ Local User Mode is a separate downloadable SWARMSY path for normal users who wan
 - Desktop wrapper scripts are opt-in development scaffolding and do not alter hosted routing/auth/deployment assumptions.
 - Desktop foundation must not auto-install Ollama, auto-pull models, or bundle model weights.
 - Desktop runtime healthcheck trust is local-only (`localhost`, `127.0.0.1`, `::1`); arbitrary remote origins must not receive desktop bridge access.
+- Desktop local runtime launcher is dev/local foundation only, defaults to disabled auto-start, and only executes allowlisted local script names.
 
 ## Product Positioning
 
