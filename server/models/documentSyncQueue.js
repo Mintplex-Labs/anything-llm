@@ -18,7 +18,23 @@ const DocumentSyncQueue = {
     "gitlab",
     "drupalwiki",
   ],
-  defaultStaleAfter: 604800000,
+  /**
+   * The default time (in milliseconds) a watched document waits before it is
+   * considered "stale" and re-synced by the background worker.
+   *
+   * Defaults to 7 days but can be overridden via the
+   * `DOCUMENT_SYNC_STALE_AFTER_MS` environment variable. A minimum of 1 hour is
+   * enforced to avoid overloading embedders by re-syncing documents too
+   * frequently. Invalid or non-positive values fall back to the default.
+   * @returns {number} - the stale-after time in milliseconds
+   */
+  get defaultStaleAfter() {
+    const DEFAULT_STALE_AFTER = 604800000; // 7 days in MS
+    const MIN_STALE_AFTER = 3600000; // 1 hour in MS
+    const envValue = Number(process.env.DOCUMENT_SYNC_STALE_AFTER_MS);
+    if (isNaN(envValue) || envValue <= 0) return DEFAULT_STALE_AFTER;
+    return Math.max(envValue, MIN_STALE_AFTER);
+  },
   maxRepeatFailures: 5, // How many times a run can fail in a row before pruning.
   writable: [],
 
@@ -90,6 +106,7 @@ const DocumentSyncQueue = {
       const queue = await prisma.document_sync_queues.create({
         data: {
           workspaceDocId: document.id,
+          staleAfterMs: this.defaultStaleAfter,
           nextSyncAt: new Date(Number(new Date()) + this.defaultStaleAfter),
         },
       });
