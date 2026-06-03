@@ -219,8 +219,9 @@ export default function SwarmsyLocalUserSettingsHub({
               </h3>
               <p className="text-sm text-theme-text-secondary">
                 This backup covers browser-side SWARMSY Local User settings
-                only. It does not export hosted server data, secrets, API keys,
-                or auth tokens.
+                only, plus trusted desktop local settings file state when the
+                desktop bridge is available. It does not export hosted server
+                data, secrets, API keys, or auth tokens.
               </p>
             </div>
             <div className="mt-4 flex flex-wrap gap-3">

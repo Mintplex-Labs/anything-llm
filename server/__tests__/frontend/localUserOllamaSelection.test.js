@@ -24,7 +24,9 @@ module.exports = {
   resolveLocalUserOllamaModelSelection,
   hasDesktopLocalSettingsBridge,
   readDesktopLocalUserOllamaModelSelection,
-  mirrorDesktopLocalUserOllamaModelSelection
+  mirrorDesktopLocalUserOllamaModelSelection,
+  readDesktopLocalUserSettingsForBackup,
+  restoreDesktopLocalUserSettingsFromBackup
 };`
   );
 
@@ -145,6 +147,77 @@ describe("Local User Ollama model selection storage helper", () => {
     expect(setLocalUserSettings).toHaveBeenCalledWith({
       ollamaModel: "phi3:mini",
       provider: "ollama",
+    });
+  });
+
+  it("reads desktop local settings for backup only when trusted local storage contract is valid", async () => {
+    const module = loadSelectionModule();
+    const getStorageContract = jest.fn().mockResolvedValue({
+      layout: { mode: "local_user", root: "/tmp/.config/swarmsy" },
+    });
+    const getLocalUserSettings = jest.fn().mockResolvedValue({
+      ok: true,
+      settings: {
+        schema: "swarmsy_desktop_local_user_settings",
+        version: 1,
+        updatedAt: new Date().toISOString(),
+        state: { ollamaModel: "llama3.1:8b", provider: "ollama" },
+      },
+    });
+    const result = await module.readDesktopLocalUserSettingsForBackup({
+      targetWindow: {
+        swarmsyDesktop: {
+          foundation: { getStorageContract, getLocalUserSettings },
+        },
+      },
+    });
+    expect(result.ok).toBe(true);
+    expect(result.settings.state.ollamaModel).toBe("llama3.1:8b");
+  });
+
+  it("restores desktop local settings from backup through trusted bridge", async () => {
+    const module = loadSelectionModule();
+    const getStorageContract = jest.fn().mockResolvedValue({
+      layout: { mode: "local_user", root: "/tmp/.config/swarmsy" },
+    });
+    const setLocalUserSettings = jest.fn().mockResolvedValue({ ok: true });
+    const result = await module.restoreDesktopLocalUserSettingsFromBackup(
+      { ollamaModel: "phi3:mini", provider: "ollama" },
+      {
+        targetWindow: {
+          swarmsyDesktop: {
+            foundation: { getStorageContract, setLocalUserSettings },
+          },
+        },
+      }
+    );
+    expect(result.ok).toBe(true);
+    expect(setLocalUserSettings).toHaveBeenCalledWith({
+      ollamaModel: "phi3:mini",
+      provider: "ollama",
+    });
+  });
+
+  it("normalizes desktop restore payload values before bridge write", async () => {
+    const module = loadSelectionModule();
+    const getStorageContract = jest.fn().mockResolvedValue({
+      layout: { mode: "local_user", root: "/tmp/.config/swarmsy" },
+    });
+    const setLocalUserSettings = jest.fn().mockResolvedValue({ ok: true });
+    const result = await module.restoreDesktopLocalUserSettingsFromBackup(
+      { ollamaModel: "   ", provider: 12345 },
+      {
+        targetWindow: {
+          swarmsyDesktop: {
+            foundation: { getStorageContract, setLocalUserSettings },
+          },
+        },
+      }
+    );
+    expect(result.ok).toBe(true);
+    expect(setLocalUserSettings).toHaveBeenCalledWith({
+      ollamaModel: null,
+      provider: null,
     });
   });
 });

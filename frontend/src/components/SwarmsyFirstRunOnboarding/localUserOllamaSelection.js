@@ -135,6 +135,103 @@ export async function mirrorDesktopLocalUserOllamaModelSelection(
   }
 }
 
+export async function readDesktopLocalUserSettingsForBackup({
+  targetWindow,
+} = {}) {
+  const bridge = resolveDesktopBridge(targetWindow);
+  if (
+    !bridge ||
+    typeof bridge.getStorageContract !== "function" ||
+    typeof bridge.getLocalUserSettings !== "function"
+  ) {
+    return { ok: false, reason: "bridge_unavailable" };
+  }
+
+  try {
+    const contract = await bridge.getStorageContract();
+    if (
+      !contract ||
+      contract?.layout?.mode !== "local_user" ||
+      typeof contract?.layout?.root !== "string" ||
+      !contract.layout.root.trim()
+    ) {
+      return { ok: false, reason: "invalid_storage_contract" };
+    }
+
+    const response = await bridge.getLocalUserSettings();
+    const settings = response?.settings;
+    const isSchemaMatch =
+      settings?.schema === DESKTOP_LOCAL_SETTINGS_SCHEMA &&
+      settings?.state &&
+      typeof settings.state === "object" &&
+      !Array.isArray(settings.state);
+    if (!response?.ok || !isSchemaMatch) {
+      return {
+        ok: false,
+        reason: response?.reason || "invalid_desktop_settings",
+      };
+    }
+    return { ok: true, settings };
+  } catch (error) {
+    return {
+      ok: false,
+      reason: "bridge_read_failed",
+      message: String(
+        error?.message || error || "Failed to read desktop settings."
+      ),
+    };
+  }
+}
+
+export async function restoreDesktopLocalUserSettingsFromBackup(
+  state = {},
+  { targetWindow } = {}
+) {
+  const bridge = resolveDesktopBridge(targetWindow);
+  if (
+    !bridge ||
+    typeof bridge.getStorageContract !== "function" ||
+    typeof bridge.setLocalUserSettings !== "function"
+  ) {
+    return { ok: false, reason: "bridge_unavailable" };
+  }
+
+  try {
+    const contract = await bridge.getStorageContract();
+    if (
+      !contract ||
+      contract?.layout?.mode !== "local_user" ||
+      typeof contract?.layout?.root !== "string" ||
+      !contract.layout.root.trim()
+    ) {
+      return { ok: false, reason: "invalid_storage_contract" };
+    }
+
+    const normalizedOllamaModel = normalizeLocalUserOllamaModelId(
+      state?.ollamaModel
+    );
+    const normalizedProvider =
+      typeof state?.provider === "string" ? state.provider.trim() : "";
+    const payload = {
+      ollamaModel: normalizedOllamaModel || null,
+      provider: normalizedProvider || null,
+    };
+    const response = await bridge.setLocalUserSettings(payload);
+    if (!response?.ok) {
+      return { ok: false, reason: response?.reason || "bridge_write_failed" };
+    }
+    return { ok: true };
+  } catch (error) {
+    return {
+      ok: false,
+      reason: "bridge_write_failed",
+      message: String(
+        error?.message || error || "Failed to write desktop settings."
+      ),
+    };
+  }
+}
+
 function normalizeModelIds(models = []) {
   return (Array.isArray(models) ? models : [])
     .map((model) => normalizeLocalUserOllamaModelId(model?.id))

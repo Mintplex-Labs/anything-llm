@@ -14,7 +14,34 @@
  */
 
 export const BACKUP_SCHEMA_NAME = "swarmsy_local_user_backup";
-export const BACKUP_SCHEMA_VERSION = 1;
+export const BACKUP_SCHEMA_VERSION = 2;
+export const DESKTOP_LOCAL_SETTINGS_SCHEMA =
+  "swarmsy_desktop_local_user_settings";
+export const DESKTOP_LOCAL_SETTINGS_VERSION = 1;
+export const DESKTOP_LOCAL_SETTINGS_ALLOWED_STATE_KEYS = new Set([
+  "ollamaModel",
+  "provider",
+]);
+const BACKUP_ALLOWED_TOP_LEVEL_KEYS = new Set([
+  "schema",
+  "version",
+  "exportedAt",
+  "state",
+  "desktop",
+]);
+const BACKUP_V1_ALLOWED_TOP_LEVEL_KEYS = new Set([
+  "schema",
+  "version",
+  "exportedAt",
+  "state",
+]);
+const DESKTOP_BACKUP_ALLOWED_KEYS = new Set(["localSettings"]);
+const DESKTOP_LOCAL_SETTINGS_ALLOWED_KEYS = new Set([
+  "schema",
+  "version",
+  "updatedAt",
+  "state",
+]);
 
 /**
  * Map of logical field name → localStorage key.
@@ -44,8 +71,11 @@ export const NEVER_BACKUP_STORAGE_KEYS = new Set([
   "anythingllm_user",
   "anythingllm_authToken",
   "anythingllm_authTimestamp",
+  "anythingllm_apiKey",
+  "anythingllm_apiKeys",
   "anythingllm_pending_home_message",
   "anythingllm_swarmsy_local_user_active_runtime",
+  "anythingllm_server_db_path",
 ]);
 
 function resolveStorage(storage) {
@@ -54,14 +84,96 @@ function resolveStorage(storage) {
   return window.localStorage || null;
 }
 
+function isPlainObject(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function isIsoDateString(value) {
+  return typeof value === "string" && !Number.isNaN(Date.parse(value));
+}
+
+function normalizeDesktopLocalSettingsForBackup(input) {
+  if (!isPlainObject(input)) return null;
+  if (input.schema !== DESKTOP_LOCAL_SETTINGS_SCHEMA) return null;
+  if (input.version !== DESKTOP_LOCAL_SETTINGS_VERSION) return null;
+  if (!isIsoDateString(input.updatedAt)) return null;
+  if (!isPlainObject(input.state)) return null;
+
+  const state = {};
+  for (const key of Object.keys(input.state)) {
+    if (!DESKTOP_LOCAL_SETTINGS_ALLOWED_STATE_KEYS.has(key)) {
+      return null;
+    }
+
+    const value = input.state[key];
+    if (value === null || value === undefined) {
+      state[key] = null;
+      continue;
+    }
+
+    if (typeof value !== "string") return null;
+    const normalizedValue = value.trim();
+    state[key] = normalizedValue || null;
+  }
+
+  return {
+    schema: DESKTOP_LOCAL_SETTINGS_SCHEMA,
+    version: DESKTOP_LOCAL_SETTINGS_VERSION,
+    updatedAt: input.updatedAt,
+    state,
+  };
+}
+
+function normalizeDesktopLocalSettingsStateForRestore(state) {
+  const normalizedState = {};
+  for (const key of DESKTOP_LOCAL_SETTINGS_ALLOWED_STATE_KEYS) {
+    const value = state?.[key];
+    if (typeof value !== "string") {
+      normalizedState[key] = null;
+      continue;
+    }
+    const trimmedValue = value.trim();
+    normalizedState[key] = trimmedValue || null;
+  }
+  return normalizedState;
+}
+
+export function resolveLocalUserBackupImportModelState({
+  browserModelWasRestored = false,
+  browserRestoredModelId = "",
+  desktopRestoredModelId = "",
+} = {}) {
+  const normalizedBrowserModelId = String(browserRestoredModelId || "").trim();
+  const normalizedDesktopModelId = String(desktopRestoredModelId || "").trim();
+
+  return {
+    restoredModelId: normalizedBrowserModelId || normalizedDesktopModelId,
+    shouldMirrorBrowserModel:
+      browserModelWasRestored &&
+      (!!normalizedBrowserModelId || !normalizedDesktopModelId),
+    mirrorModelId: normalizedBrowserModelId,
+  };
+}
+
 /**
  * Read all allowed backup fields from storage and return a versioned
  * Local User backup object ready to serialize.
  *
- * @param {{ storage?: Storage }} [options]
- * @returns {{ schema: string, version: number, exportedAt: string, state: Record<string,string|null> }}
+ * @param {{ storage?: Storage, desktopLocalSettings?: unknown }} [options]
+ * @returns {{
+ *   schema: string,
+ *   version: number,
+ *   exportedAt: string,
+ *   state: Record<string,string|null>,
+ *   desktop: { localSettings: {
+ *     schema: string,
+ *     version: number,
+ *     updatedAt: string,
+ *     state: Record<string, string|null>
+ *   } | null }
+ * }}
  */
-export function exportLocalUserBackup({ storage } = {}) {
+export function exportLocalUserBackup({ storage, desktopLocalSettings } = {}) {
   const store = resolveStorage(storage);
   const state = {};
 
@@ -79,6 +191,10 @@ export function exportLocalUserBackup({ storage } = {}) {
     version: BACKUP_SCHEMA_VERSION,
     exportedAt: new Date().toISOString(),
     state,
+    desktop: {
+      localSettings:
+        normalizeDesktopLocalSettingsForBackup(desktopLocalSettings) || null,
+    },
   };
 }
 
@@ -99,6 +215,17 @@ export function validateLocalUserBackup(data) {
     return { valid: false, errors };
   }
 
+  const allowedTopLevelKeys =
+    data.version === 1
+      ? BACKUP_V1_ALLOWED_TOP_LEVEL_KEYS
+      : BACKUP_ALLOWED_TOP_LEVEL_KEYS;
+
+  for (const topLevelKey of Object.keys(data)) {
+    if (!allowedTopLevelKeys.has(topLevelKey)) {
+      errors.push(`Unknown top-level field "${topLevelKey}".`);
+    }
+  }
+
   if (data.schema !== BACKUP_SCHEMA_NAME) {
     errors.push(
       `Invalid schema "${data.schema}". Expected "${BACKUP_SCHEMA_NAME}".`
@@ -112,7 +239,7 @@ export function validateLocalUserBackup(data) {
     data.version > BACKUP_SCHEMA_VERSION
   ) {
     errors.push(
-      `Unsupported backup version. Expected 1\u2013${BACKUP_SCHEMA_VERSION}, got ${data.version}.`
+      `Unsupported backup version. Expected 1-${BACKUP_SCHEMA_VERSION}, got ${data.version}.`
     );
   }
 
@@ -136,6 +263,85 @@ export function validateLocalUserBackup(data) {
   for (const field of Object.keys(data.state)) {
     if (!allowedFieldNames.has(field)) {
       errors.push(`Unknown state field "${field}".`);
+    }
+
+    const stateValue = data.state[field];
+    if (
+      stateValue !== null &&
+      stateValue !== undefined &&
+      typeof stateValue !== "string"
+    ) {
+      errors.push(`State field "${field}" must be a string or null.`);
+    }
+  }
+
+  if (
+    data.version >= 2 &&
+    data.desktop !== undefined &&
+    data.desktop !== null
+  ) {
+    if (!isPlainObject(data.desktop)) {
+      errors.push("desktop must be a plain object.");
+    } else {
+      for (const desktopKey of Object.keys(data.desktop)) {
+        if (!DESKTOP_BACKUP_ALLOWED_KEYS.has(desktopKey)) {
+          errors.push(`Unknown desktop field "${desktopKey}".`);
+        }
+      }
+
+      if (
+        data.desktop.localSettings !== null &&
+        data.desktop.localSettings !== undefined
+      ) {
+        const localSettings = data.desktop.localSettings;
+        if (!isPlainObject(localSettings)) {
+          errors.push("desktop.localSettings must be a plain object or null.");
+        } else {
+          for (const key of Object.keys(localSettings)) {
+            if (!DESKTOP_LOCAL_SETTINGS_ALLOWED_KEYS.has(key)) {
+              errors.push(`Unknown desktop.localSettings field "${key}".`);
+            }
+          }
+
+          if (localSettings.schema !== DESKTOP_LOCAL_SETTINGS_SCHEMA) {
+            errors.push(
+              `Invalid desktop.localSettings schema "${localSettings.schema}".`
+            );
+          }
+          if (localSettings.version !== DESKTOP_LOCAL_SETTINGS_VERSION) {
+            errors.push(
+              `Unsupported desktop.localSettings version "${localSettings.version}".`
+            );
+          }
+          if (!isIsoDateString(localSettings.updatedAt)) {
+            errors.push(
+              "desktop.localSettings.updatedAt must be a valid ISO date string."
+            );
+          }
+          if (!isPlainObject(localSettings.state)) {
+            errors.push("desktop.localSettings.state must be a plain object.");
+          } else {
+            for (const stateKey of Object.keys(localSettings.state)) {
+              if (!DESKTOP_LOCAL_SETTINGS_ALLOWED_STATE_KEYS.has(stateKey)) {
+                errors.push(
+                  `Unknown desktop.localSettings.state field "${stateKey}".`
+                );
+                continue;
+              }
+              const value = localSettings.state[stateKey];
+              if (
+                value !== null &&
+                value !== undefined &&
+                typeof value !== "string"
+              ) {
+                errors.push(
+                  `desktop.localSettings.state.${stateKey} must be a string or null.`
+                );
+              }
+            }
+          }
+        }
+      }
     }
   }
 
@@ -198,4 +404,78 @@ export function importLocalUserBackup(data, { storage } = {}) {
   }
 
   return { success: true, restored, skipped, errors: [] };
+}
+
+export async function exportLocalUserBackupV2({
+  storage,
+  readDesktopLocalSettings,
+} = {}) {
+  let desktopLocalSettings = null;
+
+  if (typeof readDesktopLocalSettings === "function") {
+    try {
+      const desktopResult = await readDesktopLocalSettings();
+      desktopLocalSettings = desktopResult?.ok ? desktopResult.settings : null;
+    } catch {
+      desktopLocalSettings = null;
+    }
+  }
+
+  return exportLocalUserBackup({ storage, desktopLocalSettings });
+}
+
+export async function importLocalUserBackupV2(
+  data,
+  { storage, applyDesktopLocalSettings } = {}
+) {
+  const result = importLocalUserBackup(data, { storage });
+  if (!result.success) return result;
+
+  let restoredDesktopState = null;
+  const desktopRestore = {
+    attempted: false,
+    success: false,
+    reason: "desktop_restore_not_attempted",
+  };
+
+  if (data?.version < 2) {
+    desktopRestore.reason = "desktop_restore_skipped_backup_version";
+  } else if (typeof applyDesktopLocalSettings !== "function") {
+    desktopRestore.reason = "desktop_restore_skipped_no_callback";
+  } else if (
+    !isPlainObject(data?.desktop) ||
+    !isPlainObject(data?.desktop?.localSettings) ||
+    !isPlainObject(data.desktop.localSettings.state)
+  ) {
+    desktopRestore.reason = "desktop_restore_skipped_no_desktop_state";
+  } else {
+    desktopRestore.attempted = true;
+    try {
+      const normalizedDesktopState =
+        normalizeDesktopLocalSettingsStateForRestore(
+          data.desktop.localSettings.state
+        );
+      const desktopResult = await applyDesktopLocalSettings(
+        normalizedDesktopState
+      );
+      if (desktopResult?.ok) {
+        restoredDesktopState = normalizedDesktopState;
+        desktopRestore.success = true;
+        desktopRestore.reason = null;
+      } else {
+        desktopRestore.reason =
+          desktopResult?.reason || "desktop_restore_failed";
+      }
+    } catch {
+      restoredDesktopState = null;
+      desktopRestore.reason = "desktop_restore_threw";
+      // Browser fallback import remains successful.
+    }
+  }
+
+  return {
+    ...result,
+    restoredDesktopState,
+    desktopRestore,
+  };
 }
