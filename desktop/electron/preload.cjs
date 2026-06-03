@@ -27,11 +27,20 @@ function isTrustedDesktopOrigin(targetUrl) {
 }
 
 const STORAGE_CONTRACT_CHANNEL = "swarmsy:get-storage-contract";
+const GET_LOCAL_USER_SETTINGS_CHANNEL = "swarmsy:get-local-user-settings";
+const SET_LOCAL_USER_SETTINGS_CHANNEL = "swarmsy:set-local-user-settings";
+const CLEAR_LOCAL_USER_SETTINGS_CHANNEL = "swarmsy:clear-local-user-settings";
 
 function createDesktopBridge({ ipcRendererApi = ipcRenderer } = {}) {
   return {
     foundation: {
       getStorageContract: () => ipcRendererApi.invoke(STORAGE_CONTRACT_CHANNEL),
+      getLocalUserSettings: () =>
+        ipcRendererApi.invoke(GET_LOCAL_USER_SETTINGS_CHANNEL),
+      setLocalUserSettings: (payload = {}) =>
+        ipcRendererApi.invoke(SET_LOCAL_USER_SETTINGS_CHANNEL, payload),
+      clearLocalUserSettings: () =>
+        ipcRendererApi.invoke(CLEAR_LOCAL_USER_SETTINGS_CHANNEL),
       mode: "foundation_only",
     },
   };
@@ -57,6 +66,9 @@ exposeDesktopBridge();
 
 module.exports = {
   STORAGE_CONTRACT_CHANNEL,
+  GET_LOCAL_USER_SETTINGS_CHANNEL,
+  SET_LOCAL_USER_SETTINGS_CHANNEL,
+  CLEAR_LOCAL_USER_SETTINGS_CHANNEL,
   TRUSTED_DESKTOP_HOSTS,
   normalizeTrustedHost,
   isTrustedDesktopOrigin,

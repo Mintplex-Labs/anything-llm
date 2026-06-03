@@ -88,3 +88,11 @@ Tests cover:
 - no Docker/VPS path changes
 - no server DB export
 - no auto-install/pull for Ollama
+
+## Desktop local settings foundation (current)
+
+- Trusted desktop/local mode now has a narrow filesystem settings bridge for `settings/local-user-settings.json`.
+- File schema is `swarmsy_desktop_local_user_settings` v1 and currently stores only safe Local User settings fields (`ollamaModel`, `provider`).
+- No auth tokens, API keys, session keys, pending home messages, or server DB paths are stored.
+- Browser `localStorage` remains the current compatibility fallback; full migration is not part of this phase.
+- Hosted/Admin behavior remains separate and unchanged.

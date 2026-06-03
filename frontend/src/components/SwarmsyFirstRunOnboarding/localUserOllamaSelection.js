@@ -1,10 +1,17 @@
 const LOCAL_USER_OLLAMA_MODEL_STORAGE_KEY =
   "anythingllm_swarmsy_local_user_ollama_model";
+const DESKTOP_LOCAL_SETTINGS_SCHEMA = "swarmsy_desktop_local_user_settings";
 
 function resolveStorage(storage) {
   if (storage) return storage;
   if (typeof window === "undefined") return null;
   return window.localStorage || null;
+}
+
+function resolveDesktopBridge(targetWindow) {
+  const scopedWindow =
+    targetWindow || (typeof window !== "undefined" ? window : null);
+  return scopedWindow?.swarmsyDesktop?.foundation || null;
 }
 
 export function normalizeLocalUserOllamaModelId(modelId = "") {
@@ -48,6 +55,84 @@ export function persistLocalUserOllamaModelSelection(
 
 export function clearLocalUserOllamaModelSelection({ storage } = {}) {
   return persistLocalUserOllamaModelSelection("", { storage });
+}
+
+export function hasDesktopLocalSettingsBridge({ targetWindow } = {}) {
+  const bridge = resolveDesktopBridge(targetWindow);
+  return (
+    !!bridge &&
+    typeof bridge.getLocalUserSettings === "function" &&
+    typeof bridge.setLocalUserSettings === "function"
+  );
+}
+
+export async function readDesktopLocalUserOllamaModelSelection({
+  targetWindow,
+} = {}) {
+  const bridge = resolveDesktopBridge(targetWindow);
+  if (!bridge || typeof bridge.getLocalUserSettings !== "function") {
+    return { ok: false, reason: "bridge_unavailable", modelId: "" };
+  }
+
+  try {
+    const response = await bridge.getLocalUserSettings();
+    const modelId = normalizeLocalUserOllamaModelId(
+      response?.settings?.state?.ollamaModel
+    );
+    const isSchemaMatch =
+      !response?.settings?.schema ||
+      response?.settings?.schema === DESKTOP_LOCAL_SETTINGS_SCHEMA;
+    if (!response?.ok || !isSchemaMatch) {
+      return {
+        ok: false,
+        reason: response?.reason || "invalid_desktop_settings",
+        modelId: "",
+      };
+    }
+    return { ok: true, modelId };
+  } catch (error) {
+    return {
+      ok: false,
+      reason: "bridge_read_failed",
+      message: String(
+        error?.message || error || "Failed to read desktop settings."
+      ),
+      modelId: "",
+    };
+  }
+}
+
+export async function mirrorDesktopLocalUserOllamaModelSelection(
+  modelId,
+  { targetWindow } = {}
+) {
+  const bridge = resolveDesktopBridge(targetWindow);
+  if (!bridge || typeof bridge.setLocalUserSettings !== "function") {
+    return { ok: false, reason: "bridge_unavailable" };
+  }
+
+  const normalizedModelId = normalizeLocalUserOllamaModelId(modelId);
+  try {
+    const payload = normalizedModelId
+      ? { ollamaModel: normalizedModelId, provider: "ollama" }
+      : { ollamaModel: null, provider: "ollama" };
+    const response = await bridge.setLocalUserSettings(payload);
+    if (!response?.ok) {
+      return {
+        ok: false,
+        reason: response?.reason || "desktop_settings_write_failed",
+      };
+    }
+    return { ok: true };
+  } catch (error) {
+    return {
+      ok: false,
+      reason: "bridge_write_failed",
+      message: String(
+        error?.message || error || "Failed to write desktop settings."
+      ),
+    };
+  }
 }
 
 function normalizeModelIds(models = []) {

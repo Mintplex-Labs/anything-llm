@@ -73,3 +73,5 @@ This repository now includes a pure helper foundation for that contract at:
 - `server/utils/swarmsy/localUserStorageContract.js`
 
 The helper defines platform path resolution, required folder layout shape, and manifest validation, but is not wired into hosted/admin runtime behavior.
+
+Current desktop foundation adds a limited Local User settings file path (`settings/local-user-settings.json`) for trusted desktop/local mode only, while browser `localStorage` stays the fallback/current compatibility layer. This phase does not migrate all browser data, does not export server DB data, and does not store auth/API/session secrets.

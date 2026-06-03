@@ -32,6 +32,9 @@ Desktop wrapper and downloadable package.
 - Foundation shipped: trusted-local runtime healthcheck and local-runtime failure-page path before desktop app readiness.
 - Foundation shipped: desktop local runtime launcher orchestration for dev/local mode only (`runtimeLauncher.cjs`) with explicit opt-in via `SWARMSY_DESKTOP_AUTO_START_RUNTIME=true`.
 - Foundation scripts: `yarn desktop:dev` (opt-in wrapper launch), `yarn desktop:smoke` (scaffold presence check), and `yarn desktop:runtime:dev` (explicit local runtime command).
+- Foundation shipped: trusted desktop-only Local User filesystem settings bridge (`settings/local-user-settings.json`) with schema validation and no renderer-provided path control.
+- Browser `localStorage` remains the fallback/current compatibility layer; full data migration is deferred.
+- No auth/API/session secret persistence, no server DB export, and no Hosted/Admin behavior changes.
 - Current scope is Windows-first/local development prep only; signed installer, auto-update, bundled Ollama/models, and production packaging remain out of scope.
 
 ## Phase 5

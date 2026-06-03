@@ -46,8 +46,10 @@ Desktop launch now gates app readiness behind a trusted-local runtime healthchec
 
 - Desktop foundation references the Local User data root + manifest contract from `server/utils/swarmsy/localUserStorageContract.js`.
 - Browser `localStorage` remains the active Local User state for now.
+- In trusted desktop/local mode, model selection may also mirror to a small filesystem settings file under the Local User `settings/` directory.
 - No migration of existing hosted/server DB data is performed in this PR.
 - No writes outside the Local User data root are introduced by this foundation.
+- Renderer code cannot provide arbitrary file paths; Electron main controls the settings file path.
 
 ## Ollama/model boundary
 

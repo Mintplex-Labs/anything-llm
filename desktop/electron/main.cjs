@@ -4,6 +4,11 @@ const {
   getDesktopStorageContract,
 } = require("../foundation/storageContractBridge.cjs");
 const {
+  getLocalUserSettings,
+  setLocalUserSettings,
+  clearLocalUserSettings,
+} = require("../foundation/localSettingsStore.cjs");
+const {
   TRUSTED_DESKTOP_HOSTS,
   normalizeTrustedHost,
   isTrustedDesktopOrigin,
@@ -18,6 +23,9 @@ const {
 } = require("../foundation/runtimeLauncher.cjs");
 
 const STORAGE_CONTRACT_CHANNEL = "swarmsy:get-storage-contract";
+const GET_LOCAL_USER_SETTINGS_CHANNEL = "swarmsy:get-local-user-settings";
+const SET_LOCAL_USER_SETTINGS_CHANNEL = "swarmsy:set-local-user-settings";
+const CLEAR_LOCAL_USER_SETTINGS_CHANNEL = "swarmsy:clear-local-user-settings";
 const repoRoot = path.resolve(__dirname, "../..");
 let managedRuntimeChild = null;
 let managedRuntimeStopPromise = null;
@@ -132,6 +140,9 @@ function configureWindowSecurity(window, startUrl, { shellApi = shell } = {}) {
 
 function registerDesktopIpc({ ipcMainApi = ipcMain } = {}) {
   ipcMainApi.removeHandler?.(STORAGE_CONTRACT_CHANNEL);
+  ipcMainApi.removeHandler?.(GET_LOCAL_USER_SETTINGS_CHANNEL);
+  ipcMainApi.removeHandler?.(SET_LOCAL_USER_SETTINGS_CHANNEL);
+  ipcMainApi.removeHandler?.(CLEAR_LOCAL_USER_SETTINGS_CHANNEL);
   ipcMainApi.handle(STORAGE_CONTRACT_CHANNEL, (event) => {
     const senderUrl =
       event?.senderFrame?.url || event?.sender?.getURL?.() || "";
@@ -141,6 +152,33 @@ function registerDesktopIpc({ ipcMainApi = ipcMain } = {}) {
     }
 
     return getDesktopStorageContract();
+  });
+
+  ipcMainApi.handle(GET_LOCAL_USER_SETTINGS_CHANNEL, async (event) => {
+    const senderUrl =
+      event?.senderFrame?.url || event?.sender?.getURL?.() || "";
+    if (!isTrustedDesktopOrigin(senderUrl)) {
+      return { ok: false, reason: "untrusted_origin" };
+    }
+    return getLocalUserSettings();
+  });
+
+  ipcMainApi.handle(SET_LOCAL_USER_SETTINGS_CHANNEL, async (event, payload) => {
+    const senderUrl =
+      event?.senderFrame?.url || event?.sender?.getURL?.() || "";
+    if (!isTrustedDesktopOrigin(senderUrl)) {
+      return { ok: false, reason: "untrusted_origin" };
+    }
+    return setLocalUserSettings(payload || {});
+  });
+
+  ipcMainApi.handle(CLEAR_LOCAL_USER_SETTINGS_CHANNEL, async (event) => {
+    const senderUrl =
+      event?.senderFrame?.url || event?.sender?.getURL?.() || "";
+    if (!isTrustedDesktopOrigin(senderUrl)) {
+      return { ok: false, reason: "untrusted_origin" };
+    }
+    return clearLocalUserSettings();
   });
 }
 
@@ -348,6 +386,9 @@ if (require.main === module) {
 
 module.exports = {
   STORAGE_CONTRACT_CHANNEL,
+  GET_LOCAL_USER_SETTINGS_CHANNEL,
+  SET_LOCAL_USER_SETTINGS_CHANNEL,
+  CLEAR_LOCAL_USER_SETTINGS_CHANNEL,
   TRUSTED_DESKTOP_HOSTS,
   normalizeTrustedHost,
   resolveStartUrl,

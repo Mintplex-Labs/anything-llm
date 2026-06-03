@@ -12,6 +12,7 @@ function loadSelectionModule() {
       "utf8"
     )
     .replace(/export const /g, "const ")
+    .replace(/export async function /g, "async function ")
     .replace(/export function /g, "function ");
 
   const script = new vm.Script(
@@ -20,7 +21,10 @@ module.exports = {
   readLocalUserOllamaModelSelection,
   persistLocalUserOllamaModelSelection,
   clearLocalUserOllamaModelSelection,
-  resolveLocalUserOllamaModelSelection
+  resolveLocalUserOllamaModelSelection,
+  hasDesktopLocalSettingsBridge,
+  readDesktopLocalUserOllamaModelSelection,
+  mirrorDesktopLocalUserOllamaModelSelection
 };`
   );
 
@@ -91,6 +95,56 @@ describe("Local User Ollama model selection storage helper", () => {
       modelId: "",
       source: "stale_missing",
       staleStoredModelId: "missing:model",
+    });
+  });
+
+  it("does not require desktop bridge in browser mode", () => {
+    const module = loadSelectionModule();
+    expect(module.hasDesktopLocalSettingsBridge({ targetWindow: {} })).toBe(false);
+  });
+
+  it("reads ollama model from desktop settings bridge when available", async () => {
+    const module = loadSelectionModule();
+    const targetWindow = {
+      swarmsyDesktop: {
+        foundation: {
+          getLocalUserSettings: jest.fn().mockResolvedValue({
+            ok: true,
+            settings: {
+              schema: "swarmsy_desktop_local_user_settings",
+              state: { ollamaModel: "llama3.1:8b" },
+            },
+          }),
+        },
+      },
+    };
+
+    const result = await module.readDesktopLocalUserOllamaModelSelection({
+      targetWindow,
+    });
+    expect(result).toEqual({ ok: true, modelId: "llama3.1:8b" });
+  });
+
+  it("mirrors selected model to desktop settings bridge payload", async () => {
+    const module = loadSelectionModule();
+    const setLocalUserSettings = jest.fn().mockResolvedValue({ ok: true });
+    const targetWindow = {
+      swarmsyDesktop: {
+        foundation: {
+          getLocalUserSettings: jest.fn(),
+          setLocalUserSettings,
+        },
+      },
+    };
+
+    const result = await module.mirrorDesktopLocalUserOllamaModelSelection(
+      "phi3:mini",
+      { targetWindow }
+    );
+    expect(result.ok).toBe(true);
+    expect(setLocalUserSettings).toHaveBeenCalledWith({
+      ollamaModel: "phi3:mini",
+      provider: "ollama",
     });
   });
 });

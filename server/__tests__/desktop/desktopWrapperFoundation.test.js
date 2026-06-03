@@ -255,9 +255,17 @@ describe("SWARMSY desktop wrapper foundation", () => {
       removeHandler: jest.fn(),
     };
     main.registerDesktopIpc({ ipcMainApi });
-    const ipcHandler = ipcMainApi.handle.mock.calls[0][1];
+    const storageContractHandler = ipcMainApi.handle.mock.calls.find(
+      ([channel]) => channel === "swarmsy:get-storage-contract"
+    )[1];
+    const getLocalUserSettingsHandler = ipcMainApi.handle.mock.calls.find(
+      ([channel]) => channel === "swarmsy:get-local-user-settings"
+    )[1];
+    const setLocalUserSettingsHandler = ipcMainApi.handle.mock.calls.find(
+      ([channel]) => channel === "swarmsy:set-local-user-settings"
+    )[1];
 
-    const trustedContract = ipcHandler({
+    const trustedContract = storageContractHandler({
       senderFrame: { url: "http://localhost:3000" },
     });
     expect(trustedContract).toEqual(
@@ -273,10 +281,26 @@ describe("SWARMSY desktop wrapper foundation", () => {
     ).toBe(true);
 
     expect(
-      ipcHandler({
+      storageContractHandler({
         senderFrame: { url: "https://hosted.example.com" },
       })
     ).toBeNull();
+
+    expect(
+      await getLocalUserSettingsHandler({
+        senderFrame: { url: "https://hosted.example.com" },
+      })
+    ).toEqual(expect.objectContaining({ ok: false, reason: "untrusted_origin" }));
+
+    const settingsWriteResult = await setLocalUserSettingsHandler(
+      { senderFrame: { url: "http://localhost:3000" } },
+      {
+        ollamaModel: "llama3.1:8b",
+        path: "/tmp/escape-me",
+      }
+    );
+    expect(settingsWriteResult.ok).toBe(false);
+    expect(settingsWriteResult.reason).toBe("settings_validation_error");
   });
 
   it("only exposes the preload bridge on trusted local origins", async () => {
@@ -321,6 +345,9 @@ describe("SWARMSY desktop wrapper foundation", () => {
         foundation: expect.objectContaining({
           mode: "foundation_only",
           getStorageContract: expect.any(Function),
+          getLocalUserSettings: expect.any(Function),
+          setLocalUserSettings: expect.any(Function),
+          clearLocalUserSettings: expect.any(Function),
         }),
       })
     );
@@ -328,8 +355,23 @@ describe("SWARMSY desktop wrapper foundation", () => {
     const bridge =
       trustedContextBridge.exposeInMainWorld.mock.calls[0][1].foundation;
     expect(await bridge.getStorageContract()).toEqual({ ok: true });
+    expect(await bridge.getLocalUserSettings()).toEqual({ ok: true });
+    expect(await bridge.setLocalUserSettings({ ollamaModel: "llama3.1:8b" })).toEqual({
+      ok: true,
+    });
+    expect(await bridge.clearLocalUserSettings()).toEqual({ ok: true });
     expect(trustedIpcRenderer.invoke).toHaveBeenCalledWith(
       "swarmsy:get-storage-contract"
+    );
+    expect(trustedIpcRenderer.invoke).toHaveBeenCalledWith(
+      "swarmsy:get-local-user-settings"
+    );
+    expect(trustedIpcRenderer.invoke).toHaveBeenCalledWith(
+      "swarmsy:set-local-user-settings",
+      { ollamaModel: "llama3.1:8b" }
+    );
+    expect(trustedIpcRenderer.invoke).toHaveBeenCalledWith(
+      "swarmsy:clear-local-user-settings"
     );
     expect(preload.isTrustedDesktopOrigin("https://hosted.example.com")).toBe(
       false

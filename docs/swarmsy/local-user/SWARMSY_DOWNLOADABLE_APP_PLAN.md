@@ -73,5 +73,8 @@ This plan creates the product split and implementation path for a downloadable S
 - Desktop wrapper foundation now includes trusted-local runtime healthcheck + actionable failure-page behavior under `desktop/`, with opt-in scripts (`desktop:dev`, `desktop:smoke`) and no hosted/admin runtime changes.
 - Desktop wrapper foundation now also includes dev/local runtime launcher orchestration (`desktop/foundation/runtimeLauncher.cjs`) gated behind explicit `SWARMSY_DESKTOP_AUTO_START_RUNTIME=true` with allowlisted script policy.
 - Browser `localStorage` remains the active Local User state until a later migration phase.
-- Persistent local model settings file storage, signed installers, and auto-update remain future phases.
+- Trusted desktop/local mode now includes a first safe filesystem settings-file foundation under Local User `settings/`, while keeping browser `localStorage` fallback.
+- The settings-file scope is intentionally narrow (model/provider mirror only), excludes auth/API/session secrets, and does not export hosted/server DB data.
+- Hosted/Admin behavior remains unchanged and separate from this desktop-local settings flow.
+- Signed installers and auto-update remain future phases.
 - Desktop runtime foundation still does not install dependencies, install Ollama, pull models, bundle Ollama/models, or ship a production installer.
