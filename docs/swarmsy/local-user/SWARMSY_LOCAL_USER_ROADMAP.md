@@ -52,3 +52,9 @@ Optional cloud sync only if the user explicitly enables it.
 - Do not force model downloads.
 - Keep private project data local by default.
 - Treat cloud sync as optional and opt-in only.
+
+## Current backup foundation status
+
+The Local User roadmap now includes a true desktop filesystem-backed backup/export/import foundation. Trusted desktop mode can export/import the first allowlisted desktop local settings layer from the Local User backups directory while the browser backup remains fallback/compatibility.
+
+Still out of scope: Hosted/Admin behavior changes, Docker/VPS/nginx deployment, server DB export, auth/session/API-key export, bundled Ollama or models, model auto-pull, installer/signing, and auto-update.

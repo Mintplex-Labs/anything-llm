@@ -5,10 +5,7 @@ const vm = require("vm");
 function loadBackupModule() {
   const source = fs
     .readFileSync(
-      path.resolve(
-        __dirname,
-        "../../../frontend/src/utils/localUserBackup.js"
-      ),
+      path.resolve(__dirname, "../../../frontend/src/utils/localUserBackup.js"),
       "utf8"
     )
     // Strip ES module export keywords so vm.Script can run the source.
@@ -23,6 +20,10 @@ module.exports = {
   BACKUP_SCHEMA_VERSION,
   DESKTOP_LOCAL_SETTINGS_SCHEMA,
   DESKTOP_LOCAL_SETTINGS_VERSION,
+  DESKTOP_LOCAL_USER_BACKUP_SCHEMA,
+  DESKTOP_LOCAL_USER_BACKUP_VERSION,
+  DESKTOP_LOCAL_USER_BACKUP_APP,
+  DESKTOP_LOCAL_USER_BACKUP_MODE,
   DESKTOP_LOCAL_SETTINGS_ALLOWED_STATE_KEYS,
   BACKUP_STATE_FIELDS,
   NEVER_BACKUP_STORAGE_KEYS,
@@ -31,6 +32,7 @@ module.exports = {
   validateLocalUserBackup,
   importLocalUserBackup,
   importLocalUserBackupV2,
+  isDesktopLocalUserBackup,
 };`
   );
 
@@ -425,9 +427,9 @@ describe("importLocalUserBackup", () => {
     );
     expect(result.success).toBe(true);
     expect(result.restored).toContain("ollamaModel");
-    expect(
-      storage._store["anythingllm_swarmsy_local_user_ollama_model"]
-    ).toBe("llama3.1:8b");
+    expect(storage._store["anythingllm_swarmsy_local_user_ollama_model"]).toBe(
+      "llama3.1:8b"
+    );
   });
 
   it("calls removeItem when a state field value is null", () => {
@@ -435,10 +437,9 @@ describe("importLocalUserBackup", () => {
     const storage = createStorage({
       anythingllm_swarmsy_local_user_ollama_model: "phi3:mini",
     });
-    importLocalUserBackup(
-      validBackup({ state: { ollamaModel: null } }),
-      { storage }
-    );
+    importLocalUserBackup(validBackup({ state: { ollamaModel: null } }), {
+      storage,
+    });
     expect(storage.removeItem).toHaveBeenCalledWith(
       "anythingllm_swarmsy_local_user_ollama_model"
     );
@@ -447,10 +448,9 @@ describe("importLocalUserBackup", () => {
   it("skips fields absent from the backup state", () => {
     const { importLocalUserBackup } = loadBackupModule();
     const storage = createStorage();
-    const result = importLocalUserBackup(
-      validBackup({ state: {} }),
-      { storage }
-    );
+    const result = importLocalUserBackup(validBackup({ state: {} }), {
+      storage,
+    });
     expect(result.success).toBe(true);
     expect(result.restored).toHaveLength(0);
     expect(result.skipped.length).toBeGreaterThan(0);
@@ -541,7 +541,10 @@ describe("full round-trip: export then import", () => {
     importLocalUserBackup(backup, { storage: importStorage });
 
     expect(
-      Object.prototype.hasOwnProperty.call(importStorage._store, "anythingllm_user")
+      Object.prototype.hasOwnProperty.call(
+        importStorage._store,
+        "anythingllm_user"
+      )
     ).toBe(false);
     expect(
       Object.prototype.hasOwnProperty.call(
@@ -608,7 +611,9 @@ describe("desktop-aware v2 helpers", () => {
 
   it("importLocalUserBackupV2 does not report desktop state when callback returns ok false", async () => {
     const { importLocalUserBackupV2 } = loadBackupModule();
-    const applyDesktopLocalSettings = jest.fn().mockResolvedValue({ ok: false });
+    const applyDesktopLocalSettings = jest
+      .fn()
+      .mockResolvedValue({ ok: false });
     const result = await importLocalUserBackupV2(validBackup(), {
       storage: createStorage(),
       applyDesktopLocalSettings,
@@ -764,5 +769,42 @@ describe("hosted/admin boundary", () => {
         "anythingllm_swarmsy_local_user_active_runtime"
       )
     ).toBe(true);
+  });
+});
+
+describe("desktop filesystem backup detection", () => {
+  it("detects only strict desktop Local User backup schema objects", () => {
+    const module = loadBackupModule();
+    expect(
+      module.isDesktopLocalUserBackup({
+        schema: module.DESKTOP_LOCAL_USER_BACKUP_SCHEMA,
+        version: module.DESKTOP_LOCAL_USER_BACKUP_VERSION,
+        exportedAt: "2026-06-03T00:00:00.000Z",
+        app: module.DESKTOP_LOCAL_USER_BACKUP_APP,
+        mode: module.DESKTOP_LOCAL_USER_BACKUP_MODE,
+        state: { settings: { ollamaModel: "llama3.1:8b" } },
+      })
+    ).toBe(true);
+    expect(module.isDesktopLocalUserBackup(validBackup())).toBe(false);
+    expect(
+      module.isDesktopLocalUserBackup({
+        schema: module.DESKTOP_LOCAL_USER_BACKUP_SCHEMA,
+        version: module.DESKTOP_LOCAL_USER_BACKUP_VERSION,
+        app: module.DESKTOP_LOCAL_USER_BACKUP_APP,
+        mode: module.DESKTOP_LOCAL_USER_BACKUP_MODE,
+        exportedAt: "2026-06-03T00:00:00.000Z",
+        state: {},
+      })
+    ).toBe(false);
+    expect(
+      module.isDesktopLocalUserBackup({
+        schema: module.DESKTOP_LOCAL_USER_BACKUP_SCHEMA,
+        version: module.DESKTOP_LOCAL_USER_BACKUP_VERSION,
+        app: module.DESKTOP_LOCAL_USER_BACKUP_APP,
+        mode: module.DESKTOP_LOCAL_USER_BACKUP_MODE,
+        exportedAt: "2026-02-30T00:00:00.000Z",
+        state: { settings: {} },
+      })
+    ).toBe(false);
   });
 });

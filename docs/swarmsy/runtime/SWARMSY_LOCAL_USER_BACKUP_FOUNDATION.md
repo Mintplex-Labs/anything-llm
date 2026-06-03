@@ -20,22 +20,22 @@ Desktop-local directory + manifest contracts are defined in:
 The following table maps every SWARMSY browser-storage key found in the
 codebase as of PRs #33–#36 to its storage type and backup eligibility.
 
-| Logical name | Storage key | Storage type | Backup? |
-|---|---|---|---|
-| ollamaModel | `anythingllm_swarmsy_local_user_ollama_model` | localStorage | ✅ |
-| appearanceSettings | `anythingllm_appearance_settings` | localStorage | ✅ |
-| promptDrafts | `anythingllm_user_prompt_input_map` | localStorage | ✅ |
-| lastVisitedWorkspace | `anythingllm_last_visited_workspace` | localStorage | ✅ |
-| completedQuestionnaire | `anythingllm_completed_questionnaire` | localStorage | ✅ |
-| seenDocPinAlert | `anythingllm_pinned_document_alert` | localStorage | ✅ |
-| seenWatchAlert | `anythingllm_watched_document_alert` | localStorage | ✅ |
-| sidebarToggle | `anythingllm_sidebar_toggle` | localStorage | ✅ |
-| showChatMetrics | `anythingllm_show_chat_metrics` | localStorage | ✅ |
-| — | `anythingllm_user` | localStorage | ❌ credentials |
-| — | `anythingllm_authToken` | localStorage | ❌ credentials |
-| — | `anythingllm_authTimestamp` | localStorage | ❌ credentials |
-| — | `anythingllm_pending_home_message` | **sessionStorage** | ❌ ephemeral |
-| — | `anythingllm_swarmsy_local_user_active_runtime` | **sessionStorage** | ❌ ephemeral |
+| Logical name           | Storage key                                     | Storage type       | Backup?        |
+| ---------------------- | ----------------------------------------------- | ------------------ | -------------- |
+| ollamaModel            | `anythingllm_swarmsy_local_user_ollama_model`   | localStorage       | ✅             |
+| appearanceSettings     | `anythingllm_appearance_settings`               | localStorage       | ✅             |
+| promptDrafts           | `anythingllm_user_prompt_input_map`             | localStorage       | ✅             |
+| lastVisitedWorkspace   | `anythingllm_last_visited_workspace`            | localStorage       | ✅             |
+| completedQuestionnaire | `anythingllm_completed_questionnaire`           | localStorage       | ✅             |
+| seenDocPinAlert        | `anythingllm_pinned_document_alert`             | localStorage       | ✅             |
+| seenWatchAlert         | `anythingllm_watched_document_alert`            | localStorage       | ✅             |
+| sidebarToggle          | `anythingllm_sidebar_toggle`                    | localStorage       | ✅             |
+| showChatMetrics        | `anythingllm_show_chat_metrics`                 | localStorage       | ✅             |
+| —                      | `anythingllm_user`                              | localStorage       | ❌ credentials |
+| —                      | `anythingllm_authToken`                         | localStorage       | ❌ credentials |
+| —                      | `anythingllm_authTimestamp`                     | localStorage       | ❌ credentials |
+| —                      | `anythingllm_pending_home_message`              | **sessionStorage** | ❌ ephemeral   |
+| —                      | `anythingllm_swarmsy_local_user_active_runtime` | **sessionStorage** | ❌ ephemeral   |
 
 ### Never-backup boundary
 
@@ -104,6 +104,7 @@ The UI handler `exportBackupToFile()` (used by the Local User Settings Hub in on
 `validateLocalUserBackup(data)` returns `{ valid: boolean, errors: string[] }`.
 
 Checks performed:
+
 - `data` is a non-null, non-array plain object.
 - `data.schema` matches `BACKUP_SCHEMA_NAME`.
 - `data.version` is an integer in `[1, BACKUP_SCHEMA_VERSION]`.
@@ -173,11 +174,17 @@ Hosted/Admin mode still stores hosted data server-side and does not use this bro
 
 ## Source files
 
-| File | Purpose |
-|---|---|
-| `frontend/src/utils/localUserBackup.js` | Schema constants, export, validate, import |
-| `frontend/src/components/SwarmsyLocalUserSettingsHub/index.jsx` | Local User Settings Hub UI (status, model, export/import actions) |
-| `frontend/src/components/SwarmsyLocalUserSettingsHub/useLocalUserSettingsHub.js` | Shared Local User Settings Hub state + sync logic |
-| `frontend/src/components/SwarmsyFirstRunOnboarding/index.jsx` | Onboarding integration of the Local User Settings Hub |
-| `frontend/src/components/WorkspaceChat/ChatContainer/ChatSettingsMenu/LocalUserSettingsHubRow.jsx` | Chat settings entrypoint modal for Local User Settings Hub |
-| `server/__tests__/frontend/localUserBackup.test.js` | Full flow test suite (35 tests) |
+| File                                                                                               | Purpose                                                           |
+| -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| `frontend/src/utils/localUserBackup.js`                                                            | Schema constants, export, validate, import                        |
+| `frontend/src/components/SwarmsyLocalUserSettingsHub/index.jsx`                                    | Local User Settings Hub UI (status, model, export/import actions) |
+| `frontend/src/components/SwarmsyLocalUserSettingsHub/useLocalUserSettingsHub.js`                   | Shared Local User Settings Hub state + sync logic                 |
+| `frontend/src/components/SwarmsyFirstRunOnboarding/index.jsx`                                      | Onboarding integration of the Local User Settings Hub             |
+| `frontend/src/components/WorkspaceChat/ChatContainer/ChatSettingsMenu/LocalUserSettingsHubRow.jsx` | Chat settings entrypoint modal for Local User Settings Hub        |
+| `server/__tests__/frontend/localUserBackup.test.js`                                                | Full flow test suite (35 tests)                                   |
+
+## Desktop filesystem-backed backup (desktop schema v1)
+
+In trusted desktop Local User mode, the Local User Settings Hub now prefers the desktop filesystem-backed backup bridge when available. The Electron main process resolves the storage contract, writes backup JSON only inside `layout.paths.backups`, rejects backup directory/file symlinks, and validates all paths against the Local User root. Import accepts a parsed object or serialized JSON, rejects malformed JSON with a parse-specific reason, rejects unknown/forbidden fields, and restores only allowlisted desktop local settings through the desktop local settings store.
+
+The browser backup v2 shape remains fallback and compatibility. No secrets, auth/session/API keys, runtime/pending state, server DB paths/data, or Hosted/Admin data are exported. Hosted/Admin separation is unchanged, and this backup foundation does not add an installer, signing, auto-update, bundled Ollama/models, or model auto-pull.

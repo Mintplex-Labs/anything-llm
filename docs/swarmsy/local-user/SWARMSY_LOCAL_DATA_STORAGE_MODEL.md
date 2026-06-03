@@ -75,3 +75,9 @@ This repository now includes a pure helper foundation for that contract at:
 The helper defines platform path resolution, required folder layout shape, and manifest validation, but is not wired into hosted/admin runtime behavior.
 
 Current desktop foundation adds a limited Local User settings file path (`settings/local-user-settings.json`) for trusted desktop/local mode only, while browser `localStorage` stays the fallback/current compatibility layer. This phase does not migrate all browser data, does not export server DB data, and does not store auth/API/session secrets.
+
+## Desktop Local User backups
+
+Desktop Local User backup/export/import now uses the Local User data directory contract. Backups are created by the Electron main process under `layout.paths.backups`; browser/renderer code does not choose filesystem paths. The desktop backup schema is intentionally small and future-safe: it currently includes only allowlisted desktop local settings needed to preserve the selected Ollama model/provider.
+
+Browser Local User backup remains available as fallback and compatibility for browser-only state. Desktop backups do not contain secrets, auth/session/API keys, runtime/pending state, server DB data, or Hosted/Admin data.

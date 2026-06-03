@@ -9,6 +9,10 @@ const {
   clearLocalUserSettings,
 } = require("../foundation/localSettingsStore.cjs");
 const {
+  exportLocalUserBackup,
+  importLocalUserBackup,
+} = require("../foundation/localBackupStore.cjs");
+const {
   TRUSTED_DESKTOP_HOSTS,
   normalizeTrustedHost,
   isTrustedDesktopOrigin,
@@ -26,6 +30,8 @@ const STORAGE_CONTRACT_CHANNEL = "swarmsy:get-storage-contract";
 const GET_LOCAL_USER_SETTINGS_CHANNEL = "swarmsy:get-local-user-settings";
 const SET_LOCAL_USER_SETTINGS_CHANNEL = "swarmsy:set-local-user-settings";
 const CLEAR_LOCAL_USER_SETTINGS_CHANNEL = "swarmsy:clear-local-user-settings";
+const EXPORT_LOCAL_USER_BACKUP_CHANNEL = "swarmsy:export-local-user-backup";
+const IMPORT_LOCAL_USER_BACKUP_CHANNEL = "swarmsy:import-local-user-backup";
 const repoRoot = path.resolve(__dirname, "../..");
 let managedRuntimeChild = null;
 let managedRuntimeStopPromise = null;
@@ -143,6 +149,8 @@ function registerDesktopIpc({ ipcMainApi = ipcMain } = {}) {
   ipcMainApi.removeHandler?.(GET_LOCAL_USER_SETTINGS_CHANNEL);
   ipcMainApi.removeHandler?.(SET_LOCAL_USER_SETTINGS_CHANNEL);
   ipcMainApi.removeHandler?.(CLEAR_LOCAL_USER_SETTINGS_CHANNEL);
+  ipcMainApi.removeHandler?.(EXPORT_LOCAL_USER_BACKUP_CHANNEL);
+  ipcMainApi.removeHandler?.(IMPORT_LOCAL_USER_BACKUP_CHANNEL);
   ipcMainApi.handle(STORAGE_CONTRACT_CHANNEL, (event) => {
     const senderUrl =
       event?.senderFrame?.url || event?.sender?.getURL?.() || "";
@@ -179,6 +187,24 @@ function registerDesktopIpc({ ipcMainApi = ipcMain } = {}) {
       return { ok: false, reason: "untrusted_origin" };
     }
     return clearLocalUserSettings();
+  });
+
+  ipcMainApi.handle(EXPORT_LOCAL_USER_BACKUP_CHANNEL, async (event) => {
+    const senderUrl =
+      event?.senderFrame?.url || event?.sender?.getURL?.() || "";
+    if (!isTrustedDesktopOrigin(senderUrl)) {
+      return { ok: false, reason: "untrusted_origin" };
+    }
+    return exportLocalUserBackup();
+  });
+
+  ipcMainApi.handle(IMPORT_LOCAL_USER_BACKUP_CHANNEL, async (event, payload) => {
+    const senderUrl =
+      event?.senderFrame?.url || event?.sender?.getURL?.() || "";
+    if (!isTrustedDesktopOrigin(senderUrl)) {
+      return { ok: false, reason: "untrusted_origin" };
+    }
+    return importLocalUserBackup(payload);
   });
 }
 
@@ -389,6 +415,8 @@ module.exports = {
   GET_LOCAL_USER_SETTINGS_CHANNEL,
   SET_LOCAL_USER_SETTINGS_CHANNEL,
   CLEAR_LOCAL_USER_SETTINGS_CHANNEL,
+  EXPORT_LOCAL_USER_BACKUP_CHANNEL,
+  IMPORT_LOCAL_USER_BACKUP_CHANNEL,
   TRUSTED_DESKTOP_HOSTS,
   normalizeTrustedHost,
   resolveStartUrl,

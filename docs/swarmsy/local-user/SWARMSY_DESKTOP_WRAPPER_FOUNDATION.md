@@ -81,3 +81,9 @@ This foundation does **not**:
 - pull AI models
 - ship a production installer
 - change hosted/admin deployment behavior
+
+## Trusted Local User backup bridge
+
+The desktop wrapper foundation now exposes a narrow trusted-origin-only backup bridge on `window.swarmsyDesktop.foundation` for Local User backup/export/import. The renderer can request `exportLocalUserBackup()` or `importLocalUserBackup(payload)`, but it cannot provide filesystem paths. The main process controls the backup location under the Local User `backups/` directory and restores only allowlisted desktop local settings.
+
+Hosted/Admin separation is unchanged. This foundation does not export a server DB, auth/session/API keys, runtime/pending state, Hosted/Admin data, or arbitrary files. It also does not add an installer, signing, auto-update, bundled Ollama, bundled models, or auto-pulled models.

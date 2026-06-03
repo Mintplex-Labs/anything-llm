@@ -11,11 +11,15 @@ import {
   mirrorDesktopLocalUserOllamaModelSelection,
   readDesktopLocalUserSettingsForBackup,
   restoreDesktopLocalUserSettingsFromBackup,
+  hasDesktopLocalBackupBridge,
+  exportDesktopLocalUserBackup,
+  importDesktopLocalUserBackup,
 } from "@/components/SwarmsyFirstRunOnboarding/localUserOllamaSelection";
 import {
   exportLocalUserBackupV2,
   importLocalUserBackupV2,
   resolveLocalUserBackupImportModelState,
+  isDesktopLocalUserBackup,
 } from "@/utils/localUserBackup";
 
 export const LOCAL_USER_SETTINGS_SYNC_EVENT =
@@ -417,6 +421,21 @@ export function useLocalUserSettingsHub() {
   );
 
   const exportBackupToFile = useCallback(async () => {
+    if (
+      typeof window !== "undefined" &&
+      isLocalUserMode &&
+      !isHostedAdminMode &&
+      hasDesktopLocalBackupBridge({ targetWindow: window })
+    ) {
+      const desktopResult = await exportDesktopLocalUserBackup({
+        targetWindow: window,
+      });
+      if (desktopResult?.ok) {
+        showToast("Desktop Local User backup exported.", "success");
+        return;
+      }
+    }
+
     const backup = await exportLocalUserBackupV2({
       readDesktopLocalSettings: async () => {
         if (typeof window === "undefined") return { ok: false };
@@ -432,45 +451,78 @@ export function useLocalUserSettingsHub() {
     a.click?.();
     URL.revokeObjectURL(url);
     showToast("Local User backup exported.", "success");
-  }, []);
+  }, [isHostedAdminMode, isLocalUserMode]);
 
   const importBackupFromText = useCallback(
     async (rawText = "") => {
       try {
         const data = JSON.parse(rawText);
-        const result = await importLocalUserBackupV2(data, {
-          applyDesktopLocalSettings: async (state) => {
-            if (typeof window === "undefined") return { ok: false };
-            return restoreDesktopLocalUserSettingsFromBackup(state, {
-              targetWindow: window,
-            });
-          },
-        });
-        if (!result.success) {
-          showToast(`Import failed: ${result.errors.join(" ")}`, "error");
-          return false;
+        let result;
+        let restoredModelId = "";
+        let shouldMirrorBrowserModel = false;
+        let mirrorModelId = "";
+
+        if (
+          isDesktopLocalUserBackup(data) &&
+          typeof window !== "undefined" &&
+          isLocalUserMode &&
+          !isHostedAdminMode &&
+          hasDesktopLocalBackupBridge({ targetWindow: window })
+        ) {
+          const desktopImport = await importDesktopLocalUserBackup(rawText, {
+            targetWindow: window,
+          });
+          if (!desktopImport?.ok) {
+            const errors =
+              desktopImport?.errors?.join(" ") || desktopImport?.reason;
+            showToast(`Import failed: ${errors}`, "error");
+            return false;
+          }
+          restoredModelId = String(
+            desktopImport?.restoredState?.ollamaModel ||
+              desktopImport?.settings?.state?.ollamaModel ||
+              ""
+          ).trim();
+          persistLocalUserOllamaModelSelection(restoredModelId);
+          result = {
+            success: true,
+            restored: restoredModelId ? ["ollamaModel"] : [],
+          };
+        } else {
+          result = await importLocalUserBackupV2(data, {
+            applyDesktopLocalSettings: async (state) => {
+              if (typeof window === "undefined") return { ok: false };
+              return restoreDesktopLocalUserSettingsFromBackup(state, {
+                targetWindow: window,
+              });
+            },
+          });
+          if (!result.success) {
+            showToast(`Import failed: ${result.errors.join(" ")}`, "error");
+            return false;
+          }
+
+          const browserModelWasRestored =
+            result?.restored?.includes("ollamaModel");
+          const browserRestoredModelId = browserModelWasRestored
+            ? readLocalUserOllamaModelSelection()
+            : "";
+          const desktopRestoredModelId = String(
+            result?.restoredDesktopState?.ollamaModel || ""
+          ).trim();
+          const importModelState = resolveLocalUserBackupImportModelState({
+            browserModelWasRestored,
+            browserRestoredModelId,
+            desktopRestoredModelId,
+          });
+          restoredModelId = importModelState.restoredModelId;
+          shouldMirrorBrowserModel = importModelState.shouldMirrorBrowserModel;
+          mirrorModelId = importModelState.mirrorModelId;
         }
 
-        const browserModelWasRestored =
-          result?.restored?.includes("ollamaModel");
-        const browserRestoredModelId = browserModelWasRestored
-          ? readLocalUserOllamaModelSelection()
-          : "";
-        const desktopRestoredModelId = String(
-          result?.restoredDesktopState?.ollamaModel || ""
-        ).trim();
-        const importModelState = resolveLocalUserBackupImportModelState({
-          browserModelWasRestored,
-          browserRestoredModelId,
-          desktopRestoredModelId,
-        });
-        const restoredModelId = importModelState.restoredModelId;
-
         setSavedLocalOllamaModel(restoredModelId);
-        if (importModelState.shouldMirrorBrowserModel) {
-          void mirrorModelSelectionToDesktopSettings(
-            importModelState.mirrorModelId
-          );
+        if (shouldMirrorBrowserModel) {
+          void mirrorModelSelectionToDesktopSettings(mirrorModelId);
         }
 
         if (!restoredModelId) {
@@ -526,6 +578,8 @@ export function useLocalUserSettingsHub() {
     [
       checkLocalUserOllama,
       hasVerifiedLocalOllamaModels,
+      isHostedAdminMode,
+      isLocalUserMode,
       localOllamaStatus.models,
       mirrorModelSelectionToDesktopSettings,
     ]

@@ -135,6 +135,50 @@ export async function mirrorDesktopLocalUserOllamaModelSelection(
   }
 }
 
+export function hasDesktopLocalBackupBridge({ targetWindow } = {}) {
+  const bridge = resolveDesktopBridge(targetWindow);
+  return (
+    !!bridge &&
+    typeof bridge.exportLocalUserBackup === "function" &&
+    typeof bridge.importLocalUserBackup === "function"
+  );
+}
+
+export async function exportDesktopLocalUserBackup({ targetWindow } = {}) {
+  const bridge = resolveDesktopBridge(targetWindow);
+  if (!bridge || typeof bridge.exportLocalUserBackup !== "function") {
+    return { ok: false, reason: "bridge_unavailable" };
+  }
+  try {
+    return await bridge.exportLocalUserBackup();
+  } catch (error) {
+    return {
+      ok: false,
+      reason: "bridge_export_failed",
+      message: String(error?.message || error || "Failed to export backup."),
+    };
+  }
+}
+
+export async function importDesktopLocalUserBackup(
+  payload,
+  { targetWindow } = {}
+) {
+  const bridge = resolveDesktopBridge(targetWindow);
+  if (!bridge || typeof bridge.importLocalUserBackup !== "function") {
+    return { ok: false, reason: "bridge_unavailable" };
+  }
+  try {
+    return await bridge.importLocalUserBackup(payload);
+  } catch (error) {
+    return {
+      ok: false,
+      reason: "bridge_import_failed",
+      message: String(error?.message || error || "Failed to import backup."),
+    };
+  }
+}
+
 export async function readDesktopLocalUserSettingsForBackup({
   targetWindow,
 } = {}) {

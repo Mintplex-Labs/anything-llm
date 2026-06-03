@@ -96,3 +96,9 @@ Tests cover:
 - No auth tokens, API keys, session keys, pending home messages, or server DB paths are stored.
 - Browser `localStorage` remains the current compatibility fallback; full migration is not part of this phase.
 - Hosted/Admin behavior remains separate and unchanged.
+
+## Desktop filesystem backup/export/import foundation
+
+Trusted desktop Local User mode now has a filesystem-backed backup/export/import foundation. The Electron main process resolves the Local User data root from the storage contract and writes backup JSON only under `layout.paths.backups`; renderer code never supplies output or input filesystem paths. Backup directory and backup file symlinks are rejected, and path containment is enforced against the Local User root.
+
+The first desktop backup layer exports only allowlisted desktop Local User settings (`ollamaModel`, `provider`) in the `swarmsy_desktop_local_user_backup` schema. It does not export secrets, auth/session/API keys, runtime/pending state, server DB paths/data, or Hosted/Admin data. Browser backup remains a fallback/compatibility path when the desktop bridge is unavailable.

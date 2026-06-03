@@ -1,4 +1,5 @@
 const fs = require("fs");
+const os = require("os");
 const path = require("path");
 const {
   validateLocalUserStorageManifest,
@@ -12,8 +13,12 @@ describe("SWARMSY desktop wrapper foundation", () => {
       path.resolve(repoRoot, "desktop/electron/preload.cjs"),
       "utf8"
     );
-    expect(preloadSource).not.toMatch(/require\s*\(\s*["']\.\.\/foundation\/runtimeHealthcheck/);
-    expect(preloadSource).not.toMatch(/require\s*\(\s*["']\.\.\/foundation\/storageContractBridge/);
+    expect(preloadSource).not.toMatch(
+      /require\s*\(\s*["']\.\.\/foundation\/runtimeHealthcheck/
+    );
+    expect(preloadSource).not.toMatch(
+      /require\s*\(\s*["']\.\.\/foundation\/storageContractBridge/
+    );
     expect(preloadSource).not.toMatch(/require\s*\(\s*["']http[s"']/);
     expect(preloadSource).not.toMatch(/require\s*\(\s*["']path["']/);
     expect(preloadSource).not.toMatch(/require\s*\(\s*["']fs["']/);
@@ -35,12 +40,9 @@ describe("SWARMSY desktop wrapper foundation", () => {
   });
 
   it("builds desktop storage contract data from the Local User manifest contract", () => {
-    const {
-      getDesktopStorageContract,
-    } = require(path.resolve(
-      repoRoot,
-      "desktop/foundation/storageContractBridge.cjs"
-    ));
+    const { getDesktopStorageContract } = require(
+      path.resolve(repoRoot, "desktop/foundation/storageContractBridge.cjs")
+    );
 
     const contract = getDesktopStorageContract({
       platform: "linux",
@@ -58,13 +60,13 @@ describe("SWARMSY desktop wrapper foundation", () => {
   });
 
   it("resolves the Electron shim path across supported platforms", () => {
-    const {
-      resolveElectronBinary,
-    } = require(path.resolve(repoRoot, "desktop/scripts/run-desktop-dev.cjs"));
+    const { resolveElectronBinary } = require(
+      path.resolve(repoRoot, "desktop/scripts/run-desktop-dev.cjs")
+    );
 
-    expect(
-      resolveElectronBinary({ platform: "linux", rootDir: "/repo" })
-    ).toBe(path.posix.join("/repo", "node_modules", ".bin", "electron"));
+    expect(resolveElectronBinary({ platform: "linux", rootDir: "/repo" })).toBe(
+      path.posix.join("/repo", "node_modules", ".bin", "electron")
+    );
     expect(
       resolveElectronBinary({ platform: "darwin", rootDir: "/repo" })
     ).toBe(path.posix.join("/repo", "node_modules", ".bin", "electron"));
@@ -79,10 +81,9 @@ describe("SWARMSY desktop wrapper foundation", () => {
     const existsSyncSpy = jest.spyOn(fs, "existsSync").mockReturnValue(true);
 
     try {
-      const { runDesktopDev } = require(path.resolve(
-        repoRoot,
-        "desktop/scripts/run-desktop-dev.cjs"
-      ));
+      const { runDesktopDev } = require(
+        path.resolve(repoRoot, "desktop/scripts/run-desktop-dev.cjs")
+      );
 
       const spawnImpl = jest.fn(() => ({ on: jest.fn() }));
 
@@ -90,7 +91,10 @@ describe("SWARMSY desktop wrapper foundation", () => {
         spawnImpl,
         platform: "win32",
         rootDir: path.resolve(repoRoot),
-        env: { ...process.env, SWARMSY_DESKTOP_START_URL: "http://localhost:3001" },
+        env: {
+          ...process.env,
+          SWARMSY_DESKTOP_START_URL: "http://localhost:3001",
+        },
       });
 
       expect(spawnImpl).toHaveBeenCalledWith(
@@ -109,10 +113,9 @@ describe("SWARMSY desktop wrapper foundation", () => {
     const existsSyncSpy = jest.spyOn(fs, "existsSync").mockReturnValue(true);
 
     try {
-      const { runDesktopDev } = require(path.resolve(
-        repoRoot,
-        "desktop/scripts/run-desktop-dev.cjs"
-      ));
+      const { runDesktopDev } = require(
+        path.resolve(repoRoot, "desktop/scripts/run-desktop-dev.cjs")
+      );
 
       for (const platform of ["linux", "darwin"]) {
         const spawnImpl = jest.fn(() => ({ on: jest.fn() }));
@@ -121,7 +124,10 @@ describe("SWARMSY desktop wrapper foundation", () => {
           spawnImpl,
           platform,
           rootDir: path.resolve(repoRoot),
-          env: { ...process.env, SWARMSY_DESKTOP_START_URL: "http://localhost:3001" },
+          env: {
+            ...process.env,
+            SWARMSY_DESKTOP_START_URL: "http://localhost:3001",
+          },
         });
 
         expect(spawnImpl).toHaveBeenCalledWith(
@@ -157,150 +163,203 @@ describe("SWARMSY desktop wrapper foundation", () => {
       { virtual: true }
     );
 
-    const main = require(path.resolve(repoRoot, "desktop/electron/main.cjs"));
-    const shellApi = { openExternal: jest.fn().mockResolvedValue(undefined) };
-    const webContents = {
-      setWindowOpenHandler: jest.fn(),
-      on: jest.fn(),
-    };
-    const loadURL = jest.fn().mockResolvedValue(undefined);
-    const BrowserWindowCtor = jest.fn(() => ({
-      webContents,
-      loadURL,
-    }));
+    const previousXdgConfigHome = process.env.XDG_CONFIG_HOME;
+    const desktopIpcTmpRoot = fs.mkdtempSync(
+      path.join(os.tmpdir(), "swarmsy-desktop-ipc-")
+    );
+    process.env.XDG_CONFIG_HOME = desktopIpcTmpRoot;
 
-    await main.createWindow({
-      BrowserWindowCtor,
-      startUrl: "http://127.0.0.1:3000",
-      shellApi,
-      runtimeHealthcheck: jest.fn().mockResolvedValue({
-        ok: true,
+    try {
+      const main = require(path.resolve(repoRoot, "desktop/electron/main.cjs"));
+      const shellApi = { openExternal: jest.fn().mockResolvedValue(undefined) };
+      const webContents = {
+        setWindowOpenHandler: jest.fn(),
+        on: jest.fn(),
+      };
+      const loadURL = jest.fn().mockResolvedValue(undefined);
+      const BrowserWindowCtor = jest.fn(() => ({
+        webContents,
+        loadURL,
+      }));
+
+      await main.createWindow({
+        BrowserWindowCtor,
         startUrl: "http://127.0.0.1:3000",
-        origin: "http://127.0.0.1:3000",
-        mode: "desktop_local_runtime",
-      }),
-    });
-
-    expect(BrowserWindowCtor).toHaveBeenCalledWith(
-      expect.objectContaining({
-        webPreferences: expect.objectContaining({
-          contextIsolation: true,
-          nodeIntegration: false,
-          sandbox: true,
-          preload: path.resolve(repoRoot, "desktop/electron/preload.cjs"),
+        shellApi,
+        runtimeHealthcheck: jest.fn().mockResolvedValue({
+          ok: true,
+          startUrl: "http://127.0.0.1:3000",
+          origin: "http://127.0.0.1:3000",
+          mode: "desktop_local_runtime",
         }),
-      })
-    );
-    expect(loadURL).toHaveBeenCalledWith("http://127.0.0.1:3000");
+      });
 
-    const windowOpenHandler = webContents.setWindowOpenHandler.mock.calls[0][0];
-    expect(windowOpenHandler({ url: "https://example.com/docs" })).toEqual({
-      action: "deny",
-    });
-    expect(shellApi.openExternal).toHaveBeenCalledWith(
-      "https://example.com/docs"
-    );
-    expect(windowOpenHandler({ url: "http://example.com/docs" })).toEqual({
-      action: "deny",
-    });
-    expect(shellApi.openExternal).toHaveBeenCalledWith(
-      "http://example.com/docs"
-    );
+      expect(BrowserWindowCtor).toHaveBeenCalledWith(
+        expect.objectContaining({
+          webPreferences: expect.objectContaining({
+            contextIsolation: true,
+            nodeIntegration: false,
+            sandbox: true,
+            preload: path.resolve(repoRoot, "desktop/electron/preload.cjs"),
+          }),
+        })
+      );
+      expect(loadURL).toHaveBeenCalledWith("http://127.0.0.1:3000");
 
-    shellApi.openExternal.mockClear();
-    for (const blockedUrl of [
-      "file:///tmp/swarmsy.txt",
-      "javascript:alert(1)",
-      "data:text/html,hello",
-      "custom-protocol://open-me",
-    ]) {
-      expect(windowOpenHandler({ url: blockedUrl })).toEqual({
+      const windowOpenHandler =
+        webContents.setWindowOpenHandler.mock.calls[0][0];
+      expect(windowOpenHandler({ url: "https://example.com/docs" })).toEqual({
         action: "deny",
       });
-    }
-    expect(shellApi.openExternal).not.toHaveBeenCalled();
+      expect(shellApi.openExternal).toHaveBeenCalledWith(
+        "https://example.com/docs"
+      );
+      expect(windowOpenHandler({ url: "http://example.com/docs" })).toEqual({
+        action: "deny",
+      });
+      expect(shellApi.openExternal).toHaveBeenCalledWith(
+        "http://example.com/docs"
+      );
 
-    const willNavigateHandler = webContents.on.mock.calls.find(
-      ([eventName]) => eventName === "will-navigate"
-    )[1];
-    const externalEvent = { preventDefault: jest.fn() };
-    willNavigateHandler(externalEvent, "https://example.com");
-    expect(externalEvent.preventDefault).toHaveBeenCalled();
-    expect(shellApi.openExternal).toHaveBeenCalledWith("https://example.com");
-
-    const externalHttpEvent = { preventDefault: jest.fn() };
-    willNavigateHandler(externalHttpEvent, "http://example.com");
-    expect(externalHttpEvent.preventDefault).toHaveBeenCalled();
-    expect(shellApi.openExternal).toHaveBeenCalledWith("http://example.com");
-
-    shellApi.openExternal.mockClear();
-    for (const blockedUrl of [
-      "file:///tmp/swarmsy.txt",
-      "javascript:alert(1)",
-      "data:text/html,hello",
-      "custom-protocol://open-me",
-    ]) {
-      const blockedEvent = { preventDefault: jest.fn() };
-      willNavigateHandler(blockedEvent, blockedUrl);
-      expect(blockedEvent.preventDefault).toHaveBeenCalled();
-    }
-    expect(shellApi.openExternal).not.toHaveBeenCalled();
-
-    const internalEvent = { preventDefault: jest.fn() };
-    willNavigateHandler(internalEvent, "http://127.0.0.1:3000/settings");
-    expect(internalEvent.preventDefault).not.toHaveBeenCalled();
-
-    const ipcMainApi = {
-      handle: jest.fn(),
-      removeHandler: jest.fn(),
-    };
-    main.registerDesktopIpc({ ipcMainApi });
-    const storageContractHandler = ipcMainApi.handle.mock.calls.find(
-      ([channel]) => channel === "swarmsy:get-storage-contract"
-    )[1];
-    const getLocalUserSettingsHandler = ipcMainApi.handle.mock.calls.find(
-      ([channel]) => channel === "swarmsy:get-local-user-settings"
-    )[1];
-    const setLocalUserSettingsHandler = ipcMainApi.handle.mock.calls.find(
-      ([channel]) => channel === "swarmsy:set-local-user-settings"
-    )[1];
-
-    const trustedContract = storageContractHandler({
-      senderFrame: { url: "http://localhost:3000" },
-    });
-    expect(trustedContract).toEqual(
-      expect.objectContaining({
-        layout: expect.objectContaining({ mode: "local_user" }),
-        manifest: expect.any(Object),
-      })
-    );
-    expect(
-      validateLocalUserStorageManifest(trustedContract.manifest, {
-        layout: trustedContract.layout,
-      }).valid
-    ).toBe(true);
-
-    expect(
-      storageContractHandler({
-        senderFrame: { url: "https://hosted.example.com" },
-      })
-    ).toBeNull();
-
-    expect(
-      await getLocalUserSettingsHandler({
-        senderFrame: { url: "https://hosted.example.com" },
-      })
-    ).toEqual(expect.objectContaining({ ok: false, reason: "untrusted_origin" }));
-
-    const settingsWriteResult = await setLocalUserSettingsHandler(
-      { senderFrame: { url: "http://localhost:3000" } },
-      {
-        ollamaModel: "llama3.1:8b",
-        path: "/tmp/escape-me",
+      shellApi.openExternal.mockClear();
+      for (const blockedUrl of [
+        "file:///tmp/swarmsy.txt",
+        "javascript:alert(1)",
+        "data:text/html,hello",
+        "custom-protocol://open-me",
+      ]) {
+        expect(windowOpenHandler({ url: blockedUrl })).toEqual({
+          action: "deny",
+        });
       }
-    );
-    expect(settingsWriteResult.ok).toBe(false);
-    expect(settingsWriteResult.reason).toBe("settings_validation_error");
+      expect(shellApi.openExternal).not.toHaveBeenCalled();
+
+      const willNavigateHandler = webContents.on.mock.calls.find(
+        ([eventName]) => eventName === "will-navigate"
+      )[1];
+      const externalEvent = { preventDefault: jest.fn() };
+      willNavigateHandler(externalEvent, "https://example.com");
+      expect(externalEvent.preventDefault).toHaveBeenCalled();
+      expect(shellApi.openExternal).toHaveBeenCalledWith("https://example.com");
+
+      const externalHttpEvent = { preventDefault: jest.fn() };
+      willNavigateHandler(externalHttpEvent, "http://example.com");
+      expect(externalHttpEvent.preventDefault).toHaveBeenCalled();
+      expect(shellApi.openExternal).toHaveBeenCalledWith("http://example.com");
+
+      shellApi.openExternal.mockClear();
+      for (const blockedUrl of [
+        "file:///tmp/swarmsy.txt",
+        "javascript:alert(1)",
+        "data:text/html,hello",
+        "custom-protocol://open-me",
+      ]) {
+        const blockedEvent = { preventDefault: jest.fn() };
+        willNavigateHandler(blockedEvent, blockedUrl);
+        expect(blockedEvent.preventDefault).toHaveBeenCalled();
+      }
+      expect(shellApi.openExternal).not.toHaveBeenCalled();
+
+      const internalEvent = { preventDefault: jest.fn() };
+      willNavigateHandler(internalEvent, "http://127.0.0.1:3000/settings");
+      expect(internalEvent.preventDefault).not.toHaveBeenCalled();
+
+      const ipcMainApi = {
+        handle: jest.fn(),
+        removeHandler: jest.fn(),
+      };
+      main.registerDesktopIpc({ ipcMainApi });
+      const storageContractHandler = ipcMainApi.handle.mock.calls.find(
+        ([channel]) => channel === "swarmsy:get-storage-contract"
+      )[1];
+      const getLocalUserSettingsHandler = ipcMainApi.handle.mock.calls.find(
+        ([channel]) => channel === "swarmsy:get-local-user-settings"
+      )[1];
+      const setLocalUserSettingsHandler = ipcMainApi.handle.mock.calls.find(
+        ([channel]) => channel === "swarmsy:set-local-user-settings"
+      )[1];
+      const exportLocalUserBackupHandler = ipcMainApi.handle.mock.calls.find(
+        ([channel]) => channel === "swarmsy:export-local-user-backup"
+      )[1];
+      const importLocalUserBackupHandler = ipcMainApi.handle.mock.calls.find(
+        ([channel]) => channel === "swarmsy:import-local-user-backup"
+      )[1];
+
+      const trustedContract = storageContractHandler({
+        senderFrame: { url: "http://localhost:3000" },
+      });
+      expect(trustedContract).toEqual(
+        expect.objectContaining({
+          layout: expect.objectContaining({ mode: "local_user" }),
+          manifest: expect.any(Object),
+        })
+      );
+      expect(
+        validateLocalUserStorageManifest(trustedContract.manifest, {
+          layout: trustedContract.layout,
+        }).valid
+      ).toBe(true);
+
+      expect(
+        storageContractHandler({
+          senderFrame: { url: "https://hosted.example.com" },
+        })
+      ).toBeNull();
+
+      expect(
+        await getLocalUserSettingsHandler({
+          senderFrame: { url: "https://hosted.example.com" },
+        })
+      ).toEqual(
+        expect.objectContaining({ ok: false, reason: "untrusted_origin" })
+      );
+
+      const settingsWriteResult = await setLocalUserSettingsHandler(
+        { senderFrame: { url: "http://localhost:3000" } },
+        {
+          ollamaModel: "llama3.1:8b",
+          path: "/tmp/escape-me",
+        }
+      );
+      expect(settingsWriteResult.ok).toBe(false);
+      expect(settingsWriteResult.reason).toBe("settings_validation_error");
+
+      expect(
+        await exportLocalUserBackupHandler({
+          senderFrame: { url: "https://hosted.example.com" },
+        })
+      ).toEqual(
+        expect.objectContaining({ ok: false, reason: "untrusted_origin" })
+      );
+
+      const trustedExport = await exportLocalUserBackupHandler({
+        senderFrame: { url: "http://localhost:3000" },
+      });
+      expect(trustedExport.ok).toBe(true);
+      expect(trustedExport.path).toContain("backups");
+
+      const arbitraryPathImport = await importLocalUserBackupHandler(
+        { senderFrame: { url: "http://localhost:3000" } },
+        {
+          schema: "swarmsy_desktop_local_user_backup",
+          version: 1,
+          exportedAt: new Date().toISOString(),
+          app: "SWARMSY",
+          mode: "local_user_desktop",
+          path: "/tmp/evil",
+          state: { settings: { ollamaModel: "llama3.1:8b" } },
+        }
+      );
+      expect(arbitraryPathImport.ok).toBe(false);
+      expect(arbitraryPathImport.reason).toBe("backup_validation_failed");
+    } finally {
+      if (previousXdgConfigHome === undefined) {
+        delete process.env.XDG_CONFIG_HOME;
+      } else {
+        process.env.XDG_CONFIG_HOME = previousXdgConfigHome;
+      }
+      fs.rmSync(desktopIpcTmpRoot, { recursive: true, force: true });
+    }
   });
 
   it("only exposes the preload bridge on trusted local origins", async () => {
@@ -331,7 +390,9 @@ describe("SWARMSY desktop wrapper foundation", () => {
     expect(exposeInMainWorld).not.toHaveBeenCalled();
 
     const trustedContextBridge = { exposeInMainWorld: jest.fn() };
-    const trustedIpcRenderer = { invoke: jest.fn().mockResolvedValue({ ok: true }) };
+    const trustedIpcRenderer = {
+      invoke: jest.fn().mockResolvedValue({ ok: true }),
+    };
     const didExpose = preload.exposeDesktopBridge({
       contextBridgeApi: trustedContextBridge,
       ipcRendererApi: trustedIpcRenderer,
@@ -348,6 +409,8 @@ describe("SWARMSY desktop wrapper foundation", () => {
           getLocalUserSettings: expect.any(Function),
           setLocalUserSettings: expect.any(Function),
           clearLocalUserSettings: expect.any(Function),
+          exportLocalUserBackup: expect.any(Function),
+          importLocalUserBackup: expect.any(Function),
         }),
       })
     );
@@ -356,10 +419,16 @@ describe("SWARMSY desktop wrapper foundation", () => {
       trustedContextBridge.exposeInMainWorld.mock.calls[0][1].foundation;
     expect(await bridge.getStorageContract()).toEqual({ ok: true });
     expect(await bridge.getLocalUserSettings()).toEqual({ ok: true });
-    expect(await bridge.setLocalUserSettings({ ollamaModel: "llama3.1:8b" })).toEqual({
+    expect(
+      await bridge.setLocalUserSettings({ ollamaModel: "llama3.1:8b" })
+    ).toEqual({
       ok: true,
     });
     expect(await bridge.clearLocalUserSettings()).toEqual({ ok: true });
+    expect(await bridge.exportLocalUserBackup()).toEqual({ ok: true });
+    expect(await bridge.importLocalUserBackup({ path: "/tmp/evil" })).toEqual({
+      ok: true,
+    });
     expect(trustedIpcRenderer.invoke).toHaveBeenCalledWith(
       "swarmsy:get-storage-contract"
     );
@@ -372,6 +441,13 @@ describe("SWARMSY desktop wrapper foundation", () => {
     );
     expect(trustedIpcRenderer.invoke).toHaveBeenCalledWith(
       "swarmsy:clear-local-user-settings"
+    );
+    expect(trustedIpcRenderer.invoke).toHaveBeenCalledWith(
+      "swarmsy:export-local-user-backup"
+    );
+    expect(trustedIpcRenderer.invoke).toHaveBeenCalledWith(
+      "swarmsy:import-local-user-backup",
+      { path: "/tmp/evil" }
     );
     expect(preload.isTrustedDesktopOrigin("https://hosted.example.com")).toBe(
       false
@@ -427,13 +503,12 @@ describe("SWARMSY desktop wrapper foundation", () => {
       .mockImplementation(() => {});
 
     try {
-      main.configureWindowSecurity(
-        { webContents },
-        "http://127.0.0.1:3000",
-        { shellApi }
-      );
+      main.configureWindowSecurity({ webContents }, "http://127.0.0.1:3000", {
+        shellApi,
+      });
 
-      const windowOpenHandler = webContents.setWindowOpenHandler.mock.calls[0][0];
+      const windowOpenHandler =
+        webContents.setWindowOpenHandler.mock.calls[0][0];
       windowOpenHandler({ url: "https://example.com/docs" });
 
       const willNavigateHandler = webContents.on.mock.calls.find(
@@ -456,58 +531,67 @@ describe("SWARMSY desktop wrapper foundation", () => {
   it.each([
     ["malformed start URL", "not a valid url"],
     ["unsupported protocol", "file:///tmp/swarmsy.txt"],
-  ])("renders the launch failure page for %s", async (_label, configuredUrl) => {
-    jest.resetModules();
-    jest.doMock(
-      "electron",
-      () => ({
-        app: {},
-        BrowserWindow: jest.fn(),
-        ipcMain: { handle: jest.fn(), removeHandler: jest.fn() },
-        shell: { openExternal: jest.fn() },
-      }),
-      { virtual: true }
-    );
-
-    const previousStartUrl = process.env.SWARMSY_DESKTOP_START_URL;
-    process.env.SWARMSY_DESKTOP_START_URL = configuredUrl;
-
-    try {
-      const main = require(path.resolve(repoRoot, "desktop/electron/main.cjs"));
-      const webContents = {
-        setWindowOpenHandler: jest.fn(),
-        on: jest.fn(),
-      };
-      const loadURL = jest.fn().mockResolvedValue(undefined);
-      const BrowserWindowCtor = jest.fn(() => ({
-        webContents,
-        loadURL,
-      }));
-
-      await main.createWindow({ BrowserWindowCtor });
-
-      expect(loadURL).toHaveBeenCalledTimes(1);
-      expect(loadURL).toHaveBeenCalledWith(
-        expect.stringMatching(/^data:text\/html;charset=utf-8,/)
+  ])(
+    "renders the launch failure page for %s",
+    async (_label, configuredUrl) => {
+      jest.resetModules();
+      jest.doMock(
+        "electron",
+        () => ({
+          app: {},
+          BrowserWindow: jest.fn(),
+          ipcMain: { handle: jest.fn(), removeHandler: jest.fn() },
+          shell: { openExternal: jest.fn() },
+        }),
+        { virtual: true }
       );
 
-      const failureMarkup = decodeURIComponent(loadURL.mock.calls[0][0].split(",")[1]);
-      expect(failureMarkup).toContain(
-        "SWARMSY Desktop could not reach the local runtime"
-      );
-      expect(failureMarkup).toContain("Expected local runtime URL");
-      expect(failureMarkup).toContain("yarn desktop:dev");
-      expect(failureMarkup).toContain("http://127.0.0.1:3000");
-      expect(failureMarkup).toMatch(/Expected local runtime URL:.*<code>http:\/\/127\.0\.0\.1:3000<\/code>/s);
-      expect(webContents.setWindowOpenHandler).not.toHaveBeenCalled();
-    } finally {
-      if (previousStartUrl === undefined) {
-        delete process.env.SWARMSY_DESKTOP_START_URL;
-      } else {
-        process.env.SWARMSY_DESKTOP_START_URL = previousStartUrl;
+      const previousStartUrl = process.env.SWARMSY_DESKTOP_START_URL;
+      process.env.SWARMSY_DESKTOP_START_URL = configuredUrl;
+
+      try {
+        const main = require(
+          path.resolve(repoRoot, "desktop/electron/main.cjs")
+        );
+        const webContents = {
+          setWindowOpenHandler: jest.fn(),
+          on: jest.fn(),
+        };
+        const loadURL = jest.fn().mockResolvedValue(undefined);
+        const BrowserWindowCtor = jest.fn(() => ({
+          webContents,
+          loadURL,
+        }));
+
+        await main.createWindow({ BrowserWindowCtor });
+
+        expect(loadURL).toHaveBeenCalledTimes(1);
+        expect(loadURL).toHaveBeenCalledWith(
+          expect.stringMatching(/^data:text\/html;charset=utf-8,/)
+        );
+
+        const failureMarkup = decodeURIComponent(
+          loadURL.mock.calls[0][0].split(",")[1]
+        );
+        expect(failureMarkup).toContain(
+          "SWARMSY Desktop could not reach the local runtime"
+        );
+        expect(failureMarkup).toContain("Expected local runtime URL");
+        expect(failureMarkup).toContain("yarn desktop:dev");
+        expect(failureMarkup).toContain("http://127.0.0.1:3000");
+        expect(failureMarkup).toMatch(
+          /Expected local runtime URL:.*<code>http:\/\/127\.0\.0\.1:3000<\/code>/s
+        );
+        expect(webContents.setWindowOpenHandler).not.toHaveBeenCalled();
+      } finally {
+        if (previousStartUrl === undefined) {
+          delete process.env.SWARMSY_DESKTOP_START_URL;
+        } else {
+          process.env.SWARMSY_DESKTOP_START_URL = previousStartUrl;
+        }
       }
     }
-  });
+  );
 
   it.each([
     ["malformed URL", "not a valid url"],
@@ -569,13 +653,16 @@ describe("SWARMSY desktop wrapper foundation", () => {
       runtimeHealthcheck: jest.fn().mockResolvedValue({
         ok: false,
         reason: "runtime_unreachable",
-        message: "SWARMSY local runtime is not reachable at http://localhost:3001.",
+        message:
+          "SWARMSY local runtime is not reachable at http://localhost:3001.",
         startUrl: "http://localhost:3001",
       }),
     });
 
     expect(loadURL).toHaveBeenCalledTimes(1);
-    const failureMarkup = decodeURIComponent(loadURL.mock.calls[0][0].split(",")[1]);
+    const failureMarkup = decodeURIComponent(
+      loadURL.mock.calls[0][0].split(",")[1]
+    );
     expect(failureMarkup).toContain("http://localhost:3001");
   });
 
@@ -605,18 +692,19 @@ describe("SWARMSY desktop wrapper foundation", () => {
       runtimeHealthcheck: jest.fn().mockResolvedValue({
         ok: false,
         reason: "untrusted_host",
-        message: "SWARMSY Desktop only connects to trusted local runtime hosts.",
+        message:
+          "SWARMSY Desktop only connects to trusted local runtime hosts.",
         startUrl: "https://evil.example.com",
       }),
     });
 
     expect(loadURL).toHaveBeenCalledTimes(1);
-    const failureMarkup = decodeURIComponent(loadURL.mock.calls[0][0].split(",")[1]);
+    const failureMarkup = decodeURIComponent(
+      loadURL.mock.calls[0][0].split(",")[1]
+    );
     expect(failureMarkup).toContain("http://127.0.0.1:3000");
     expect(failureMarkup).not.toContain("evil.example.com");
   });
-
-
 
   it("bootstrapDesktopApp renders the launch failure page without unhandled rejection", async () => {
     jest.resetModules();
