@@ -420,8 +420,15 @@ export function useLocalUserSettingsHub() {
   ]);
 
   useEffect(() => {
-    function syncFromBroadcast() {
-      const storedModelId = readLocalUserOllamaModelSelection();
+    function syncFromBroadcast(event) {
+      const eventDetail = event?.detail || {};
+      const hasEventModel = Object.prototype.hasOwnProperty.call(
+        eventDetail,
+        "model"
+      );
+      const storedModelId = hasEventModel
+        ? String(eventDetail.model || "").trim()
+        : readLocalUserOllamaModelSelection();
       setSavedLocalOllamaModel(storedModelId);
       if (!hasVerifiedLocalOllamaModels) return;
 
@@ -516,6 +523,8 @@ export function useLocalUserSettingsHub() {
         let restoredModelId = "";
         let shouldMirrorBrowserModel = false;
         let mirrorModelId = "";
+        let shouldPersistBrowserModel = false;
+        let browserModelIdToPersist = "";
 
         if (
           isDesktopLocalUserBackup(data) &&
@@ -579,6 +588,13 @@ export function useLocalUserSettingsHub() {
           restoredModelId = importModelState.restoredModelId;
           shouldMirrorBrowserModel = importModelState.shouldMirrorBrowserModel;
           mirrorModelId = importModelState.mirrorModelId;
+          shouldPersistBrowserModel =
+            importModelState.shouldPersistBrowserModel;
+          browserModelIdToPersist = importModelState.browserModelIdToPersist;
+        }
+
+        if (shouldPersistBrowserModel) {
+          persistLocalUserOllamaModelSelection(browserModelIdToPersist);
         }
 
         setSavedLocalOllamaModel(restoredModelId);

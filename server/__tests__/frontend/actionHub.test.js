@@ -431,6 +431,12 @@ describe("SWARMSY HIVE action hub", () => {
       "const restoredModelId = importModelState.restoredModelId;"
     );
     expect(source).toContain(
+      "if (importModelState.shouldPersistBrowserModel) {"
+    );
+    expect(source).toContain(
+      "importModelState.browserModelIdToPersist"
+    );
+    expect(source).toContain(
       "if (importModelState.shouldMirrorBrowserModel) {"
     );
     expect(source).toContain("} else if (hasVerifiedLocalOllamaModels) {");
@@ -667,6 +673,8 @@ describe("SWARMSY HIVE action hub", () => {
     expect(source).toContain("dispatchLocalUserSettingsSync({");
     expect(source).toContain('reason: "model_selection"');
     expect(source).toContain('reason: "backup_import"');
+    expect(source).toContain("function syncFromBroadcast(event) {");
+    expect(source).toContain('const hasEventModel = Object.prototype.hasOwnProperty.call(');
     expect(source).toContain("window.addEventListener(LOCAL_USER_SETTINGS_SYNC_EVENT");
     expect(source).toContain("window.removeEventListener(");
   });

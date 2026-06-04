@@ -490,8 +490,15 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
   ]);
 
   useEffect(() => {
-    function syncFromSettingsHub() {
-      const restoredModelId = readLocalUserOllamaModelSelection();
+    function syncFromSettingsHub(event) {
+      const eventDetail = event?.detail || {};
+      const hasEventModel = Object.prototype.hasOwnProperty.call(
+        eventDetail,
+        "model"
+      );
+      const restoredModelId = hasEventModel
+        ? String(eventDetail.model || "").trim()
+        : readLocalUserOllamaModelSelection();
       if (!restoredModelId) {
         setSelectedLocalOllamaModel("");
         setLocalOllamaSelectionMessage(null);
@@ -645,6 +652,11 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
         desktopRestoredModelId,
       });
       const restoredModelId = importModelState.restoredModelId;
+      if (importModelState.shouldPersistBrowserModel) {
+        persistLocalUserOllamaModelSelection(
+          importModelState.browserModelIdToPersist
+        );
+      }
       if (importModelState.shouldMirrorBrowserModel) {
         if (
           typeof window !== "undefined" &&
