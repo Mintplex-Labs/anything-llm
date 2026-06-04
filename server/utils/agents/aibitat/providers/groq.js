@@ -36,22 +36,21 @@ class GroqProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   /**
-   * Whether this provider supports native OpenAI-compatible tool calling.
-   * - Since Groq models vary in tool calling support, we check the ENV.
-   * - If the ENV is not set, we default to false.
+   * Whether this provider supports native tool calling.
+   * - Native tool calling is enabled by default.
+   * - Set the `PROVIDER_DISABLE_NATIVE_TOOL_CALLING` ENV flag to include "groq"
+   *   to force this provider to use UnTooled instead.
    * @returns {boolean}
    */
   supportsNativeToolCalling() {
     if (this._supportsToolCalling !== null) return this._supportsToolCalling;
-    const supportsToolCalling = this.supportsNativeToolCallingViaEnv("groq");
-    if (supportsToolCalling)
-      this.providerLog("Groq supports native tool calling is ENABLED via ENV.");
-    else
+    const optedOut = this.optsOutOfNativeToolCallingViaEnv("groq");
+    if (optedOut)
       this.providerLog(
-        "Groq supports native tool calling is DISABLED via ENV. Will use UnTooled instead."
+        "Groq native tool calling is DISABLED via ENV. Will use UnTooled instead."
       );
-    this._supportsToolCalling = supportsToolCalling;
-    return supportsToolCalling;
+    this._supportsToolCalling = !optedOut;
+    return this._supportsToolCalling;
   }
 
   async #handleFunctionCallChat({ messages = [] }) {

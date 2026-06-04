@@ -129,17 +129,16 @@ class Provider {
   }
 
   /**
-   * Whether this provider supports native tool calling via the ENV flag.
+   * Whether this provider opts out of native tool calling via the ENV flag.
    * @param {string} providerTag - The tag of the provider to check (e.g. "bedrock", "openrouter", "groq", etc.).
    * @returns {boolean}
    */
-  supportsNativeToolCallingViaEnv(providerTag = "") {
-    if (!("PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING" in process.env)) return false;
+  optsOutOfNativeToolCallingViaEnv(providerTag = "") {
+    if (!("PROVIDER_DISABLE_NATIVE_TOOL_CALLING" in process.env)) return false;
     if (!providerTag) return false;
     return (
-      process.env.PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING?.includes(
-        providerTag
-      ) || false
+      process.env.PROVIDER_DISABLE_NATIVE_TOOL_CALLING?.includes(providerTag) ||
+      false
     );
   }
 

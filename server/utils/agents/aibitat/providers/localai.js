@@ -36,24 +36,21 @@ class LocalAiProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   /**
-   * Whether this provider supports native OpenAI-compatible tool calling.
-   * Since LocalAI does not expose model capabilities via API, we check
-   * the PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING ENV flag for "localai".
+   * Whether this provider supports native tool calling.
+   * - Native tool calling is enabled by default.
+   * - Set the `PROVIDER_DISABLE_NATIVE_TOOL_CALLING` ENV flag to include "localai"
+   *   to force this provider to use UnTooled instead.
    * @returns {boolean}
    */
   supportsNativeToolCalling() {
     if (this._supportsToolCalling !== null) return this._supportsToolCalling;
-    const supportsToolCalling = this.supportsNativeToolCallingViaEnv("localai");
-    if (supportsToolCalling)
+    const optedOut = this.optsOutOfNativeToolCallingViaEnv("localai");
+    if (optedOut)
       this.providerLog(
-        "LocalAI supports native tool calling is ENABLED via ENV."
+        "LocalAI native tool calling is DISABLED via ENV. Will use UnTooled instead."
       );
-    else
-      this.providerLog(
-        "LocalAI supports native tool calling is DISABLED via ENV. Will use UnTooled instead."
-      );
-    this._supportsToolCalling = supportsToolCalling;
-    return supportsToolCalling;
+    this._supportsToolCalling = !optedOut;
+    return this._supportsToolCalling;
   }
 
   // ---- UnTooled callbacks (used when native tool calling is not supported) ----

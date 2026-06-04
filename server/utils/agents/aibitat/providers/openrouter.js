@@ -42,25 +42,21 @@ class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   /**
-   * Whether this provider supports native OpenAI-compatible tool calling.
-   * - Since OpenRouter models vary in tool calling support, we check the ENV.
-   * - If the ENV is not set, we default to false.
+   * Whether this provider supports native tool calling.
+   * - Native tool calling is enabled by default.
+   * - Set the `PROVIDER_DISABLE_NATIVE_TOOL_CALLING` ENV flag to include "openrouter"
+   *   to force this provider to use UnTooled instead.
    * @returns {boolean}
    */
   supportsNativeToolCalling() {
     if (this._supportsToolCalling !== null) return this._supportsToolCalling;
-    const supportsToolCalling =
-      this.supportsNativeToolCallingViaEnv("openrouter");
-    if (supportsToolCalling)
+    const optedOut = this.optsOutOfNativeToolCallingViaEnv("openrouter");
+    if (optedOut)
       this.providerLog(
-        "OpenRouter supports native tool calling is ENABLED via ENV."
+        "OpenRouter native tool calling is DISABLED via ENV. Will use UnTooled instead."
       );
-    else
-      this.providerLog(
-        "OpenRouter supports native tool calling is DISABLED via ENV. Will use UnTooled instead."
-      );
-    this._supportsToolCalling = supportsToolCalling;
-    return supportsToolCalling;
+    this._supportsToolCalling = !optedOut;
+    return this._supportsToolCalling;
   }
 
   async #handleFunctionCallChat({ messages = [] }) {

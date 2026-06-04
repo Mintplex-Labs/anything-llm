@@ -422,15 +422,14 @@ class GenericOpenAiLLM {
   }
 
   /**
-   * Whether this provider supports native OpenAI-compatible tool calling.
-   * - This can be any OpenAI compatible provider that supports tool calling
-   * - We check the ENV to see if the provider supports tool calling.
+   * Whether this provider opts in to a given capability via the ENV flag.
+   * - We check the matching `PROVIDER_SUPPORTS_*` ENV to see if "generic-openai"
+   *   is included.
    * - If the ENV is not set, we default to false.
    * @returns {boolean}
    */
   #supportsCapabilityFromENV(capability = "") {
     const CapabilityEnvMap = {
-      tools: "PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING",
       reasoning: "PROVIDER_SUPPORTS_REASONING",
       imageGeneration: "PROVIDER_SUPPORTS_IMAGE_GENERATION",
       vision: "PROVIDER_SUPPORTS_VISION",
@@ -443,13 +442,29 @@ class GenericOpenAiLLM {
   }
 
   /**
+   * Whether native tool calling has been force-disabled for this provider via ENV.
+   * - Native tool calling is enabled by default.
+   * - Set the `PROVIDER_DISABLE_NATIVE_TOOL_CALLING` ENV flag to include
+   *   "generic-openai" to force this provider to use UnTooled instead.
+   * @returns {boolean}
+   */
+  #optsOutOfNativeToolCallingViaEnv() {
+    if (!("PROVIDER_DISABLE_NATIVE_TOOL_CALLING" in process.env)) return false;
+    return (
+      process.env.PROVIDER_DISABLE_NATIVE_TOOL_CALLING?.includes(
+        "generic-openai"
+      ) || false
+    );
+  }
+
+  /**
    * Returns the capabilities of the model.
    * @returns {{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}}
    */
   getModelCapabilities() {
     try {
       return {
-        tools: this.#supportsCapabilityFromENV("tools"),
+        tools: !this.#optsOutOfNativeToolCallingViaEnv(),
         reasoning: this.#supportsCapabilityFromENV("reasoning"),
         imageGeneration: this.#supportsCapabilityFromENV("imageGeneration"),
         vision: this.#supportsCapabilityFromENV("vision"),

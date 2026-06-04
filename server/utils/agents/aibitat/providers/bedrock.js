@@ -51,21 +51,20 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
 
   /**
    * Whether this provider supports native tool calling via the Bedrock Converse API.
-   * Checks the ENV to see if the provider supports tool calling.
-   * If the ENV is not set, we default to false.
+   * - Native tool calling is enabled by default.
+   * - Set the `PROVIDER_DISABLE_NATIVE_TOOL_CALLING` ENV flag to include "bedrock"
+   *   to force this provider to use UnTooled instead.
    * @returns {boolean}
    */
   supportsNativeToolCalling() {
     if (this._supportsToolCalling !== null) return this._supportsToolCalling;
-    const supportsToolCalling = this.supportsNativeToolCallingViaEnv("bedrock");
-    if (supportsToolCalling)
-      this.providerLog("AWS Bedrock native tool calling is ENABLED via ENV.");
-    else
+    const optedOut = this.optsOutOfNativeToolCallingViaEnv("bedrock");
+    if (optedOut)
       this.providerLog(
         "AWS Bedrock native tool calling is DISABLED via ENV. Will use UnTooled instead."
       );
-    this._supportsToolCalling = supportsToolCalling;
-    return supportsToolCalling;
+    this._supportsToolCalling = !optedOut;
+    return this._supportsToolCalling;
   }
 
   /**

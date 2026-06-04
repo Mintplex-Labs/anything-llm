@@ -52,30 +52,20 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   /**
-   * Whether this provider supports native OpenAI-compatible tool calling.
-   * - Since Lemonade models vary in tool calling support, we check the ENV.
-   * - If the ENV is not set and the capabilities are not set, we default to false.
-   * - To enable tool calling for a model, set the ENV flag for `PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING` to include `lemonade`.
-   * - or update the label in the Lemonade server to include `tool-calling`.
-   * @returns {boolean|Promise<boolean>}
+   * Whether this provider supports native tool calling.
+   * - Native tool calling is enabled by default.
+   * - Set the `PROVIDER_DISABLE_NATIVE_TOOL_CALLING` ENV flag to include "lemonade"
+   *   to force this provider to use UnTooled instead.
+   * @returns {boolean}
    */
-  async supportsNativeToolCalling() {
+  supportsNativeToolCalling() {
     if (this._supportsToolCalling !== null) return this._supportsToolCalling;
-    const lemonade = new LemonadeLLM(null, this.model);
-
-    // Labels can be missing for tool calling models, so we also check if ENV flag is set
-    const supportsToolCallingFlag =
-      this.supportsNativeToolCallingViaEnv("lemonade");
-    if (supportsToolCallingFlag) {
+    const optedOut = this.optsOutOfNativeToolCallingViaEnv("lemonade");
+    if (optedOut)
       this.providerLog(
-        "Lemonade supports native tool calling is ENABLED via ENV."
+        "Lemonade native tool calling is DISABLED via ENV. Will use UnTooled instead."
       );
-      this._supportsToolCalling = true;
-      return this._supportsToolCalling;
-    }
-
-    const capabilities = await lemonade.getModelCapabilities();
-    this._supportsToolCalling = capabilities.tools === true;
+    this._supportsToolCalling = !optedOut;
     return this._supportsToolCalling;
   }
 
