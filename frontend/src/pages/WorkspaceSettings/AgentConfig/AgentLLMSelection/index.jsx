@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import AgentLLMItem from "./AgentLLMItem";
-import { AVAILABLE_LLM_PROVIDERS } from "@/pages/GeneralSettings/LLMPreference";
+import { ALL_LLM_PROVIDERS } from "@/pages/GeneralSettings/LLMPreference";
 import { CaretUpDown, Gauge, MagnifyingGlass, X } from "@phosphor-icons/react";
 import AgentModelSelection from "../AgentModelSelection";
 import { useTranslation } from "react-i18next";
@@ -67,9 +67,7 @@ const LLM_DEFAULT = {
 
 const LLMS = [
   LLM_DEFAULT,
-  ...AVAILABLE_LLM_PROVIDERS.filter((llm) =>
-    ENABLED_PROVIDERS.includes(llm.value)
-  ),
+  ...ALL_LLM_PROVIDERS.filter((llm) => ENABLED_PROVIDERS.includes(llm.value)),
 ];
 
 export default function AgentLLMSelection({

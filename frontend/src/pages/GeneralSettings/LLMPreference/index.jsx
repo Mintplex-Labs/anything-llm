@@ -89,16 +89,21 @@ import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
 
+export const MODEL_ROUTER_PROVIDER = {
+  name: "Model Router",
+  value: "anythingllm-router",
+  logo: AnythingLLMIcon,
+  options: (settings) => <ModelRouterOptions settings={settings} />,
+  description:
+    "Route messages to different LLM providers based on rules you define.",
+  requiredConfig: [],
+};
+
+/**
+ * All LLM providers that are available to the user.
+ * This **never** includes the model router provider.
+ */
 export const AVAILABLE_LLM_PROVIDERS = [
-  {
-    name: "Model Router",
-    value: "anythingllm-router",
-    logo: AnythingLLMIcon,
-    options: (settings) => <ModelRouterOptions settings={settings} />,
-    description:
-      "Route messages to different LLM providers based on rules you define.",
-    requiredConfig: [],
-  },
   {
     name: "OpenAI",
     value: "openai",
@@ -441,6 +446,15 @@ export const AVAILABLE_LLM_PROVIDERS = [
     requiredConfig: ["GenericOpenAiBasePath", "GenericOpenAiModelPref"],
     connectionConfig: ["GenericOpenAiBasePath"],
   },
+];
+
+/**
+ * All LLM providers that are available to the user.
+ * This **always** includes the model router provider.
+ */
+export const ALL_LLM_PROVIDERS = [
+  MODEL_ROUTER_PROVIDER,
+  ...AVAILABLE_LLM_PROVIDERS,
 ];
 
 export const LLM_PREFERENCE_CHANGED_EVENT = "llm-preference-changed";
