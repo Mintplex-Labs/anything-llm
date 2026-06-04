@@ -147,7 +147,7 @@ export function RoleHintDisplay({ role }) {
 export function MessageLimitInput({ enabled, limit, updateState, role }) {
   if (role === "admin") return null;
   return (
-    <div className="mt-4 mb-8">
+    <div>
       <Toggle
         size="md"
         variant="horizontal"
@@ -178,7 +178,7 @@ export function MessageLimitInput({ enabled, limit, updateState, role }) {
               }}
               value={limit}
               min={1}
-              className="w-full h-[34px] px-3.5 text-sm rounded-lg outline-none bg-zinc-800 border border-zinc-800 text-zinc-100 placeholder:text-zinc-400 light:bg-white light:border-slate-300 light:text-slate-900 light:placeholder:text-slate-400 focus:border-sky-500"
+              className="w-full h-[34px] px-3.5 text-sm rounded-lg outline-none bg-zinc-800 border border-zinc-800 text-zinc-100 placeholder:text-zinc-400 light:bg-white light:border-slate-300 light:text-slate-900 light:placeholder:text-slate-400 focus:border-sky-500 light:focus:border-sky-500"
             />
           </div>
         </div>

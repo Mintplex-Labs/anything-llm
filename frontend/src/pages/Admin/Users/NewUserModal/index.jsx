@@ -83,7 +83,7 @@ export default function NewUserModal({ closeModal }) {
             required={true}
             defaultValue={"default"}
             onChange={(e) => setRole(e.target.value)}
-            className="w-full h-[34px] px-3.5 text-sm rounded-lg outline-none bg-zinc-800 border border-zinc-800 text-zinc-100 light:bg-white light:border-slate-300 light:text-slate-900 focus:border-sky-500"
+            className="w-full h-[34px] px-3.5 text-sm rounded-lg outline-none bg-zinc-800 border border-zinc-800 text-zinc-100 light:bg-white light:border-slate-300 light:text-slate-900 focus:border-sky-500 light:focus:border-sky-500"
           >
             <option value="default">Default</option>
             <option value="manager">Manager</option>

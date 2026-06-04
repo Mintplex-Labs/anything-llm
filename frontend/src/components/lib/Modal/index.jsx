@@ -26,6 +26,7 @@ const SIZE_CLASSES = {
  * @param {() => void} [props.onClose] - Called when the modal requests to close (e.g. Escape key)
  * @param {"sm"|"md"|"lg"|"xl"} [props.size="md"] - Card max-width preset (400/500/640/868px)
  * @param {"default"|"bare"} [props.variant="default"] - `default` renders the uniform card; `bare` centers raw children
+ * @param {string} [props.className] - Extra classes appended to the backdrop container (e.g. a higher `z-` to clear a page's fixed top bar)
  * @param {boolean} [props.closeOnEsc=true] - Whether pressing Escape calls `onClose`. Some modals require a forced choice and should opt out.
  * @param {boolean} [props.noPortal=false] - Render inline instead of portaling to #root. Used for sub-DOM modals that must render as a child element.
  *   Note: this can impact the backdrop presentation due to conflicting DOM positions, so double check it renders as desired.
@@ -36,6 +37,7 @@ export default function Modal({
   onClose,
   size = "md",
   variant = "default",
+  className = "",
   closeOnEsc = true,
   noPortal = false,
 }) {
@@ -51,7 +53,7 @@ export default function Modal({
   if (!isOpen) return null;
 
   const backdrop =
-    "bg-black/60 backdrop-blur-sm fixed top-0 left-0 outline-none w-screen h-screen flex items-center justify-center z-99";
+    `bg-black/60 backdrop-blur-sm fixed top-0 left-0 outline-none w-screen h-screen flex items-center justify-center z-99 ${className}`.trim();
 
   if (variant === "bare") {
     const bare = <div className={backdrop}>{children}</div>;
@@ -143,7 +145,7 @@ export function ModalFooter({ children, className = "" }) {
 }
 
 const FIELD_BASE =
-  "w-full text-sm rounded-lg outline-none bg-zinc-800 border border-zinc-800 text-zinc-100 placeholder:text-zinc-400 light:bg-white light:border-slate-300 light:text-slate-900 light:placeholder:text-slate-400 focus:border-sky-500 disabled:opacity-50 disabled:cursor-not-allowed";
+  "w-full text-sm rounded-lg outline-none bg-zinc-800 border border-zinc-800 text-zinc-100 placeholder:text-zinc-400 light:bg-white light:border-slate-300 light:text-slate-900 light:placeholder:text-slate-400 focus:border-sky-500 light:focus:border-sky-500 disabled:opacity-50 disabled:cursor-not-allowed";
 
 /**
  * Field label matching the Figma input label (Medium 14).

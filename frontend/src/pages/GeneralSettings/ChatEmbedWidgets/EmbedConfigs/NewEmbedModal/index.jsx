@@ -295,7 +295,7 @@ export const NumberInput = ({ name, title, hint, defaultValue = 0 }) => {
       <input
         type="number"
         name={name}
-        className="border border-zinc-800 light:border-slate-300 bg-zinc-800 light:bg-white text-zinc-100 light:text-slate-900 placeholder:text-zinc-400 light:placeholder:text-slate-400 text-sm rounded-lg focus:border-sky-500 outline-none block w-[15rem] p-2.5"
+        className="border border-zinc-800 light:border-slate-300 bg-zinc-800 light:bg-white text-zinc-100 light:text-slate-900 placeholder:text-zinc-400 light:placeholder:text-slate-400 text-sm rounded-lg focus:border-sky-500 light:focus:border-sky-500 outline-none block w-[15rem] p-2.5"
         min={0}
         defaultValue={defaultValue}
         onScroll={(e) => e.target.blur()}

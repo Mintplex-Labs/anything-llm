@@ -91,7 +91,7 @@ export default function AccountModal({ user, hideModal }) {
           title={t("profile_settings.edit_account")}
           onClose={hideModal}
         />
-        <ModalBody className="max-h-[calc(100vh-220px)] overflow-y-auto">
+        <ModalBody>
           <div className="flex flex-col md:flex-row items-center justify-center gap-8">
             <div className="flex flex-col items-center">
               <label className="group w-48 h-48 flex flex-col items-center justify-center bg-zinc-800 hover:bg-zinc-700 light:bg-sky-100 light:hover:bg-transparent transition-colors duration-300 rounded-full border-2 border-dashed border-white light:border-slate-400 cursor-pointer hover:opacity-60">
@@ -198,7 +198,7 @@ function LanguagePreference() {
       </ModalLabel>
       <select
         name="userLang"
-        className="bg-zinc-800 border border-zinc-800 light:bg-white light:border-slate-300 w-fit mt-2 px-4 outline-none focus:border-sky-500 text-zinc-100 light:text-slate-900 text-sm rounded-lg block py-2"
+        className="bg-zinc-800 border border-zinc-800 light:bg-white light:border-slate-300 w-fit mt-2 px-4 outline-none focus:border-sky-500 light:focus:border-sky-500 text-zinc-100 light:text-slate-900 text-sm rounded-lg block py-2"
         defaultValue={currentLanguage || "en"}
         onChange={(e) => changeLanguage(e.target.value)}
       >
@@ -226,7 +226,7 @@ function ThemePreference() {
         name="theme"
         value={theme}
         onChange={(e) => setTheme(e.target.value)}
-        className="bg-zinc-800 border border-zinc-800 light:bg-white light:border-slate-300 w-fit px-4 outline-none focus:border-sky-500 text-zinc-100 light:text-slate-900 text-sm rounded-lg block py-2"
+        className="bg-zinc-800 border border-zinc-800 light:bg-white light:border-slate-300 w-fit px-4 outline-none focus:border-sky-500 light:focus:border-sky-500 text-zinc-100 light:text-slate-900 text-sm rounded-lg block py-2"
       >
         {Object.entries(availableThemes).map(([key, value]) => (
           <option key={key} value={key}>

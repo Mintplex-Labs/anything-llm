@@ -155,7 +155,7 @@ export default function RuleForm({
               <select
                 value={ruleType}
                 onChange={(e) => setRuleType(e.target.value)}
-                className="bg-zinc-800 light:bg-white border border-zinc-800 light:border-slate-300 text-zinc-100 light:text-slate-900 text-sm rounded-lg outline-none block w-full h-[34px] px-3.5 focus:border-sky-500"
+                className="bg-zinc-800 light:bg-white border border-zinc-800 light:border-slate-300 text-zinc-100 light:text-slate-900 text-sm rounded-lg outline-none block w-full h-[34px] px-3.5 focus:border-sky-500 light:focus:border-sky-500"
               >
                 {ruleTypes.map((rt) => (
                   <option key={rt.value} value={rt.value}>

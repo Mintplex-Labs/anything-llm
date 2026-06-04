@@ -264,7 +264,13 @@ export default function SQLConnectionModal({
   // Cannot do nested forms, it will cause all sorts of issues, so we portal this out
   // to the parent container form so we don't have nested forms.
   return createPortal(
-    <Modal isOpen={isOpen} onClose={handleClose} size="lg" noPortal>
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      size="lg"
+      noPortal
+      className="!z-[1000]"
+    >
       <ModalHeader
         title={isEditMode ? "Edit SQL Connection" : "New SQL Connection"}
         onClose={handleClose}

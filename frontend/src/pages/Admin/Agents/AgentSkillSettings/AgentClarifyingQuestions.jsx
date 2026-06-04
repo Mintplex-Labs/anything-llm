@@ -47,21 +47,21 @@ export default function AgentClarifyingQuestions() {
   return (
     <div className="flex flex-col gap-y-4">
       <div className="flex items-center gap-x-1">
-        <label className="block text-md font-medium text-white flex items-center gap-x-1">
+        <label className="block text-md font-medium text-zinc-50 light:text-slate-900 flex items-center gap-x-1">
           {t("agent.settings.clarifying-questions.title")}{" "}
-          <i className="ml-1 text-xs text-white pl-2 bg-blue-500/40 rounded-md px-2 py-0.5">
+          <i className="ml-1 text-xs text-white light:text-sky-700 pl-2 bg-blue-500/40 light:bg-sky-100 rounded-md px-2 py-0.5">
             {t("agent.settings.clarifying-questions.beta-badge")}
           </i>
         </label>
       </div>
       <div className="flex items-center gap-x-4">
-        <p className="text-xs text-white/60">
+        <p className="text-xs text-zinc-400 light:text-slate-600">
           {t("agent.settings.clarifying-questions.description")}
         </p>
         {loading ? (
           <CircleNotch
             size={16}
-            className="shrink-0 animate-spin text-theme-text-primary"
+            className="shrink-0 animate-spin text-zinc-400 light:text-slate-600"
           />
         ) : (
           <Toggle
@@ -76,10 +76,10 @@ export default function AgentClarifyingQuestions() {
         <>
           <div className="flex items-center gap-x-4">
             <div className="flex flex-col gap-y-1 flex-1">
-              <label className="block text-md font-medium text-white">
+              <label className="block text-md font-medium text-zinc-50 light:text-slate-900">
                 {t("agent.settings.clarifying-questions.max-per-turn.title")}
               </label>
-              <p className="text-xs text-white/60">
+              <p className="text-xs text-zinc-400 light:text-slate-600">
                 {t(
                   "agent.settings.clarifying-questions.max-per-turn.description"
                 )}
@@ -96,7 +96,7 @@ export default function AgentClarifyingQuestions() {
                 setMaxPerTurn(parseInt(e.target.value));
               }}
               onWheel={(e) => e.target.blur()}
-              className="border border-white/10 bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-[80px] p-2.5 text-center"
+              className="bg-zinc-800 border border-zinc-800 text-zinc-100 placeholder:text-zinc-400 light:bg-white light:border-slate-300 light:text-slate-900 light:placeholder:text-slate-400 text-sm rounded-lg outline-none focus:border-sky-500 light:focus:border-sky-500 block w-[80px] h-[34px] px-3 text-center"
               placeholder="3"
               autoComplete="off"
             />

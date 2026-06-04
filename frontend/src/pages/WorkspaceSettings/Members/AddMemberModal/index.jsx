@@ -71,7 +71,7 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
         <div className="relative mt-2 w-full">
           <input
             onChange={handleSearch}
-            className="w-full h-[34px] bg-zinc-800 light:bg-white border border-zinc-800 light:border-slate-300 rounded-[100px] text-zinc-100 light:text-slate-900 placeholder:text-zinc-400 light:placeholder:text-slate-400 text-sm px-10 pl-10 outline-none focus:border-sky-500"
+            className="w-full h-[34px] bg-zinc-800 light:bg-white border border-zinc-800 light:border-slate-300 rounded-[100px] text-zinc-100 light:text-slate-900 placeholder:text-zinc-400 light:placeholder:text-slate-400 text-sm px-10 pl-10 outline-none focus:border-sky-500 light:focus:border-sky-500"
             placeholder="Search for a user"
           />
           <MagnifyingGlass
