@@ -201,6 +201,10 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
     // when no tool call is parsed.
     let textResponse = "";
     let reasoningText = "";
+    // Tracks whether this turn has streamed any reasoning. We use it to hold
+    // back the live content preview only while a model is actively reasoning -
+    // see the content block below for why.
+    let sawReasoning = false;
     const historyMessages = this.buildToolCallMessages(history, functions);
     const stream = await chatCb({ messages: historyMessages });
 
@@ -214,13 +218,17 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
       if (!chunk?.choices?.[0]) continue; // Skip if no choices
       const choice = chunk.choices[0];
 
-      const reasoningToken = choice.delta?.reasoning_content;
+      // Reasoning field varies by provider: DeepSeek/LMStudio/Lemonade use
+      // `reasoning_content`, OpenRouter uses `reasoning`. Accept either.
+      const reasoningToken =
+        choice.delta?.reasoning_content ?? choice.delta?.reasoning;
       if (reasoningToken) {
         const liveChunk =
           reasoningText.length === 0
             ? `Thinking:\n\n${reasoningToken}`
             : reasoningToken;
         reasoningText += reasoningToken;
+        sawReasoning = true;
         eventHandler?.("reportStreamEvent", {
           type: "statusResponse",
           uuid: reasoningUUID,
@@ -233,11 +241,20 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
         // fresh "Thinking:" bubble.
         if (reasoningText.length > 0) reasoningText = "";
         textResponse += choice.delta.content;
-        eventHandler?.("reportStreamEvent", {
-          type: "statusResponse",
-          uuid: msgUUID,
-          content: choice.delta.content,
-        });
+
+        // Stream the content preview live so the user sees progress - EXCEPT
+        // when the model has reasoned this turn. The preview shares the
+        // reasoning's status group, and the collapsed bubble only shows its
+        // last entry, so a streaming preview would overtake the thoughts and
+        // make them appear to vanish. When there's no reasoning, there are no
+        // thoughts to bury, so we keep the live preview.
+        if (!sawReasoning) {
+          eventHandler?.("reportStreamEvent", {
+            type: "statusResponse",
+            uuid: msgUUID,
+            content: choice.delta.content,
+          });
+        }
       }
     }
 
@@ -381,8 +398,10 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
           const choice = chunk.choices[0];
 
           // Reasoning is ephemeral debug output - surface it live as a
-          // `statusResponse` and never persist it to the message.
-          const reasoningToken = choice.delta?.reasoning_content;
+          // `statusResponse` and never persist it to the message. Field name
+          // varies by provider (`reasoning_content` vs OpenRouter's `reasoning`).
+          const reasoningToken =
+            choice.delta?.reasoning_content ?? choice.delta?.reasoning;
           if (reasoningToken) {
             const liveChunk =
               reasoningText.length === 0
