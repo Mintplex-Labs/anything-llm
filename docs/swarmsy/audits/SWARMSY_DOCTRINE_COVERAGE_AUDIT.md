@@ -10,17 +10,17 @@ Source: `server/config/swarmsy/SWARMSY_REQUIRED_DOCS_MANIFEST.json` + filesystem
 | Doctrine Group | Folder Exists | Manifest Group Exists | Required? | Files Expected (manifest) | Files Found (filesystem) | Missing Files | Status |
 |---|---|---|---|---|---|---|---|
 | `living-icon-engine` | ✓ | ✓ | yes | 13 | 13 | none | ✅ complete |
-| `sparky-persona` | ✓ (sub-path of living-icon-engine) | ✓ | yes | 1 | 1 | none | ✅ complete |
+| `sparky-persona` | ✓ (sub-path of living-icon-engine + core operator rule) | ✓ | yes | 2 | 2 | none | ✅ complete |
 | `operating-layer` | ✓ | ✓ | yes | 10 | 10 | none | ✅ complete |
 | `disruption-engine` | ✓ | ✓ | yes | 9 | 9 | none | ✅ complete |
 | `app-mode` | ✓ | ✓ | yes | 11 | 11 | none | ✅ complete |
 | `spark-library` | ✓ | ✓ | no (optional) | 8 | 8 | none | ✅ complete (optional) |
 | `sparky-operator` | ✓ | ✓ | no (optional) | 9 | 9 | none | ✅ complete (optional) |
 
-**Total required files:** 44 (13 + 1 + 10 + 9 + 11)
+**Total required files:** 45 (13 + 2 + 10 + 9 + 11)
 **Total optional files:** 17 (8 + 9)
-**Total manifest-registered files:** 61
-**Total files found:** 61
+**Total manifest-registered files:** 62
+**Total files found:** 62
 **Missing files:** 0
 
 ---
@@ -45,10 +45,11 @@ docs/swarmsy/living-icon-engine/prompts/09_SWARMSY_DAY_1_PR_CAMPAIGN_BUILDER.md 
 docs/swarmsy/living-icon-engine/prompts/10_SWARMSY_FINAL_AI_PROJECT_MANAGER_MEMORY_LOCK.md ✓
 ```
 
-### `sparky-persona` — 1 path, required
+### `sparky-persona` — 2 paths, required
 
 ```
 docs/swarmsy/living-icon-engine/personas/11_SWARMSY_SPARKY_PERSONA_SYSTEM_PROMPT.md  ✓
+docs/swarmsy/sparky-operator/SPARKY_OUTPUT_OVER_INSTRUCTIONS_RULES.md                ✓
 ```
 
 ### `operating-layer` — 10 paths, required
@@ -135,15 +136,15 @@ docs/swarmsy/sparky-operator/SPARKY_PROJECT_COMMAND_EXAMPLES.md      ✓
 
 ✅ Confirmed. Manifest: `"required": false`. The `requiredDocs.js` helper treats this group as optional. It does not count against `requiredMissing` in the summary.
 
-### SPARKY Operator is optional, not required
+### Remaining SPARKY Operator playbooks are optional, not required
 
-✅ Confirmed. Manifest: `"required": false`. Same treatment as Spark Library.
+✅ Confirmed. Manifest group `sparky-operator`: `"required": false`. Same treatment as Spark Library. Core `SPARKY_OUTPUT_OVER_INSTRUCTIONS_RULES.md` is intentionally registered in the required `sparky-persona` group instead.
 
 ### No optional advanced doctrine blocks first-run setup
 
 ✅ Confirmed. Both optional groups have `required: false`.
 
-The status helper can surface optional advanced doctrine groups such as Spark Library and SPARKY Operator Playbooks, but the current required-docs ingestion route only ingests required groups.
+The status helper can surface optional advanced doctrine groups such as Spark Library and remaining SPARKY Operator Playbooks, but the current required-docs ingestion route only ingests required groups.
 
 Optional doctrine does not block first-run setup.
 
@@ -152,11 +153,11 @@ Current runtime truth:
 - Required doctrine groups are included in first-run readiness and required-docs ingestion.
 - Optional doctrine groups are discoverable in status/manifest output.
 - Optional doctrine ingestion is not currently implemented by `/ingest-required-docs`.
-- A future optional-doctrine ingestion route or advanced-docs selector would be needed to attach Spark Library / SPARKY Operator docs automatically.
+- A future optional-doctrine ingestion route or advanced-docs selector would be needed to attach Spark Library / remaining SPARKY Operator docs automatically.
 
 ### All manifest paths point to real files
 
-✅ Confirmed. Zero missing files across all 61 manifest-registered paths.
+✅ Confirmed. Zero missing files across all 62 manifest-registered paths.
 
 ### No manifest path uses wrong filename
 
@@ -170,7 +171,7 @@ Current runtime truth:
 
 ## Doctrine Coverage Verdict
 
-**Required doctrine:** ✅ 100% present — 44 files, 5 groups, zero missing.
+**Required doctrine:** ✅ 100% present — 45 files, 5 groups, zero missing.
 
 **Optional doctrine:** ✅ 100% present — 17 files, 2 groups, zero missing.
 

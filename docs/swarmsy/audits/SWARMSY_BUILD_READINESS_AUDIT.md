@@ -12,7 +12,7 @@ Branch: post-PRs-1–10 checkpoint
 | Area | Status |
 |---|---|
 | Living Icon Engine docs (prompts 00–10) | docs/spec complete, manifest registered |
-| SPARKY Persona system prompt | docs/spec complete, manifest registered |
+| SPARKY Persona system prompt and output rules | docs/spec complete, manifest registered |
 | Operating Layer docs | docs/spec complete, manifest registered |
 | Disruption Engine docs | docs/spec complete, manifest registered |
 | App Mode docs | docs/spec complete, manifest registered |
@@ -48,7 +48,7 @@ Branch: post-PRs-1–10 checkpoint
 ### Optional advanced doctrine
 
 - Spark Library (`required: false` in manifest) — 8 docs, folder present.
-- SPARKY Operator Playbooks (`required: false` in manifest) — 9 docs, folder present.
+- SPARKY Operator Playbooks (`required: false` in manifest) — 9 optional docs; 10 files present including the required output-over-instructions rule registered with `sparky-persona`.
 
 ### Not built yet
 
@@ -72,12 +72,13 @@ Branch: post-PRs-1–10 checkpoint
 | Manifest group `living-icon-engine` | runtime/config helper — all 13 paths verified present |
 | Tests for ingestion | missing |
 
-### SPARKY persona
+### SPARKY persona and core output rules
 
 | Item | Status |
 |---|---|
 | `docs/swarmsy/living-icon-engine/personas/11_SWARMSY_SPARKY_PERSONA_SYSTEM_PROMPT.md` | docs/spec complete |
-| Manifest group `sparky-persona` | runtime/config helper — 1 path verified present |
+| `docs/swarmsy/sparky-operator/SPARKY_OUTPUT_OVER_INSTRUCTIONS_RULES.md` | required output-over-instructions doctrine |
+| Manifest group `sparky-persona` | runtime/config helper — 2 paths verified present |
 | SPARKY prompt wired into workspace preset | working runtime (`applyWorkspacePreset.js`) |
 | SPARKY prompt persistence after `Workspace.new()` | working runtime (`Workspace.update` + `Workspace.get` refresh) |
 | SPARKY persona surfaced in UI settings | planned only |
@@ -166,8 +167,9 @@ Branch: post-PRs-1–10 checkpoint
 
 | Item | Status |
 |---|---|
-| `docs/swarmsy/sparky-operator/` (9 files) | docs/spec complete |
-| Manifest group `sparky-operator` (`required: false`) | optional doctrine |
+| `docs/swarmsy/sparky-operator/` (10 files) | docs/spec complete |
+| `SPARKY_OUTPUT_OVER_INSTRUCTIONS_RULES.md` | required through `sparky-persona` |
+| Manifest group `sparky-operator` (`required: false`) | optional remaining operator doctrine |
 | Blocks first-run? | no — optional flag confirmed |
 
 ### Optional advanced doctrine registration

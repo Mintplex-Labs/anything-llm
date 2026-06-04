@@ -1,5 +1,8 @@
 const fs = require("fs");
 const path = require("path");
+const {
+  getSwarmsyRequiredDocsStatus,
+} = require("../../utils/swarmsy/requiredDocs");
 
 function readDoc(relativePath) {
   return fs.readFileSync(
@@ -21,6 +24,58 @@ describe("SPARKY image output doctrine docs", () => {
     expect(doctrine).toContain("Do not default to Canva.");
     expect(toolSpec).toContain("Output beats instructions.");
     expect(toolSpec).toContain("Do not default to Canva.");
+  });
+
+  it("registers output-over-instructions rules as required doctrine", () => {
+    const outputRulesPath =
+      "docs/swarmsy/sparky-operator/SPARKY_OUTPUT_OVER_INSTRUCTIONS_RULES.md";
+    const manifest = JSON.parse(
+      readDoc("server/config/swarmsy/SWARMSY_REQUIRED_DOCS_MANIFEST.json")
+    );
+
+    const sparkyPersonaGroup = manifest.groups.find(
+      (group) => group.id === "sparky-persona"
+    );
+    const sparkLibraryGroup = manifest.groups.find(
+      (group) => group.id === "spark-library"
+    );
+    const sparkyOperatorGroup = manifest.groups.find(
+      (group) => group.id === "sparky-operator"
+    );
+
+    expect(sparkyPersonaGroup).toMatchObject({ required: true });
+    expect(sparkyPersonaGroup.paths).toContain(outputRulesPath);
+    expect(sparkLibraryGroup).toMatchObject({ required: false });
+    expect(sparkyOperatorGroup).toMatchObject({ required: false });
+    expect(sparkyOperatorGroup.paths).not.toContain(outputRulesPath);
+    expect(() => readDoc(outputRulesPath)).not.toThrow();
+
+    const originalDocsRoot = process.env.SWARMSY_DOCTRINE_DOCS_ROOT;
+    process.env.SWARMSY_DOCTRINE_DOCS_ROOT = path.resolve(__dirname, "../../..");
+
+    try {
+      const status = getSwarmsyRequiredDocsStatus();
+      const statusGroup = status.groups.find(
+        (group) => group.id === "sparky-persona"
+      );
+      const statusFile = statusGroup.files.find(
+        (file) => file.path === outputRulesPath
+      );
+
+      expect(statusGroup.required).toBe(true);
+      expect(statusFile).toMatchObject({
+        present: true,
+        loadable: true,
+        required: true,
+        optional: false,
+      });
+    } finally {
+      if (typeof originalDocsRoot === "undefined") {
+        delete process.env.SWARMSY_DOCTRINE_DOCS_ROOT;
+      } else {
+        process.env.SWARMSY_DOCTRINE_DOCS_ROOT = originalDocsRoot;
+      }
+    }
   });
 
   it("documents readiness-only scope for ComfyUI", () => {

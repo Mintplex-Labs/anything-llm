@@ -134,7 +134,7 @@ Audit date: 2026-05-31
 | 7 groups total | ✓ |
 | 5 required groups | ✓ |
 | 2 optional groups | ✓ |
-| 61 total paths | ✓ |
+| 62 total paths | ✓ |
 | All paths valid (no broken refs) | ✓ |
 | No duplicate groups | ✓ |
 | No absolute paths | ✓ |

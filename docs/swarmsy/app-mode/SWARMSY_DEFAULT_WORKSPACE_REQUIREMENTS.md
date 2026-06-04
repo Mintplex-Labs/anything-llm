@@ -16,9 +16,11 @@ All files under:
 
 `docs/swarmsy/living-icon-engine/prompts/`
 
-### Persona
+### Persona and Core SPARKY Output Rules
 
 `docs/swarmsy/living-icon-engine/personas/11_SWARMSY_SPARKY_PERSONA_SYSTEM_PROMPT.md`
+
+`docs/swarmsy/sparky-operator/SPARKY_OUTPUT_OVER_INSTRUCTIONS_RULES.md`
 
 ### Operating Layer
 
@@ -69,8 +71,8 @@ A SWARMSY workspace must not behave like a blank document folder. It should beha
 ## Optional Advanced Document Group
 
 - Spark Library docs (`docs/swarmsy/spark-library/`)
-- SPARKY Operator docs (`docs/swarmsy/sparky-operator/`)
+- Remaining SPARKY Operator docs (`docs/swarmsy/sparky-operator/`)
 
 Spark Library docs are optional but recommended when users want to expand an identity into music, games, bots, websites, digital idols, worlds, lore media, or multi-industry products.
 
-SPARKY Operator docs teach the assistant how to guide users through AnythingLLM capabilities, wrong-click recovery, provider setup, document loading, intent routing, and project-command workflows.
+The required SPARKY output-over-instructions rules teach hosted/admin HIVE that SPARKY should produce usable art direction and image prompts by default instead of acting like a passive chatbot or sending users to Canva/manual tools. Remaining SPARKY Operator docs teach the assistant how to guide users through AnythingLLM capabilities, wrong-click recovery, provider setup, document loading, intent routing, and project-command workflows.

@@ -26,7 +26,8 @@
       "label": "SPARKY Persona",
       "required": true,
       "paths": [
-        "docs/swarmsy/living-icon-engine/personas/11_SWARMSY_SPARKY_PERSONA_SYSTEM_PROMPT.md"
+        "docs/swarmsy/living-icon-engine/personas/11_SWARMSY_SPARKY_PERSONA_SYSTEM_PROMPT.md",
+        "docs/swarmsy/sparky-operator/SPARKY_OUTPUT_OVER_INSTRUCTIONS_RULES.md"
       ]
     },
     {

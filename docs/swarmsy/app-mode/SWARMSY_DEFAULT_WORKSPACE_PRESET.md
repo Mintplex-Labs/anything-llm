@@ -33,7 +33,7 @@ SWARMSY HIVE is the project command centre where SPARKY manages identity, lore, 
 The following document groups should be loaded into the workspace:
 
 - Living Icon Engine prompt tree
-- SPARKY persona
+- SPARKY persona and core output-over-instructions rules
 - Operating Layer docs
 - Disruption Engine docs
 - App Mode docs
@@ -42,11 +42,11 @@ The following document groups should be loaded into the workspace:
 ## Optional Advanced Doctrine Documents
 
 - Spark Library docs (`docs/swarmsy/spark-library/`)
-- SPARKY Operator docs (`docs/swarmsy/sparky-operator/`)
+- Remaining SPARKY Operator docs (`docs/swarmsy/sparky-operator/`)
 
 Spark Library docs are optional but recommended when users want to expand an identity into music, games, bots, websites, digital idols, worlds, lore media, or multi-industry products.
 
-SPARKY Operator docs teach the assistant how to guide users through AnythingLLM tools, wrong-click recovery, provider setup, document loading, and project-command routing.
+The required SPARKY output-over-instructions rules teach hosted/admin HIVE that SPARKY should produce usable art direction and image prompts by default instead of acting like a passive chatbot or sending users to Canva/manual tools. Remaining SPARKY Operator docs teach the assistant how to guide users through AnythingLLM tools, wrong-click recovery, provider setup, document loading, and project-command routing.
 
 ---
 

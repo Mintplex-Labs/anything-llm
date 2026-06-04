@@ -13,14 +13,14 @@ Provide a truthful status view for SWARMSY doctrine docs so runtime checks can v
 - Path: `server/config/swarmsy/SWARMSY_REQUIRED_DOCS_MANIFEST.json`
 - Scope: lists required SWARMSY doctrine docs grouped as:
   - Living Icon Engine Prompt Tree
-  - SPARKY Persona
+  - SPARKY Persona (including core SPARKY output-over-instructions rules)
   - Operating Layer
   - Disruption Engine
   - App Mode
 
 Manifest paths include the `docs/` prefix.
 
-Optional advanced doctrine groups, such as Spark Library and SPARKY Operator Playbooks, may appear in the manifest with `required: false`. They are useful after the core SWARMSY HIVE setup, but they must not block first-run readiness.
+Optional advanced doctrine groups, such as Spark Library and remaining SPARKY Operator Playbooks, may appear in the manifest with `required: false`. They are useful after the core SWARMSY HIVE setup, but they must not block first-run readiness. Core SPARKY output-over-instructions rules are required doctrine and are loaded with the SPARKY Persona group.
 
 ## Helper Functions
 
