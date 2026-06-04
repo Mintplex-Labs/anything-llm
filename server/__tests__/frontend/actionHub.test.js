@@ -619,6 +619,63 @@ describe("SWARMSY HIVE action hub", () => {
     );
   });
 
+  it("surfaces read-only Local Image Engine status in Local User Settings Hub", () => {
+    const source = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        "../../../frontend/src/components/SwarmsyLocalUserSettingsHub/index.jsx"
+      ),
+      "utf8"
+    );
+    const hookSource = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        "../../../frontend/src/components/SwarmsyLocalUserSettingsHub/useLocalUserSettingsHub.js"
+      ),
+      "utf8"
+    );
+
+    expect(source).toContain("Local Image Engine");
+    expect(source).toContain("Connected");
+    expect(source).toContain("Not connected");
+    expect(source).toContain("Engine: {safeLocalImageEngineStatus.engine");
+    expect(source).toContain("safeLocalImageEngineStatus.url");
+    expect(source).toContain("Check image engine");
+    expect(hookSource).toContain("SwarmsyOnboarding.localUserImageEngineStatus");
+    expect(hookSource).toContain('url: "http://localhost:8188"');
+  });
+
+  it("wires first-run Local Image Engine checks instead of exposing a no-op action", () => {
+    const source = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        "../../../frontend/src/components/SwarmsyLocalUserSettingsHub/index.jsx"
+      ),
+      "utf8"
+    );
+    const onboardingSource = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        "../../../frontend/src/components/SwarmsyFirstRunOnboarding/index.jsx"
+      ),
+      "utf8"
+    );
+
+    expect(source).toContain("const safeLocalImageEngineStatus =");
+    expect(source).toContain("Local image engine status has not been checked yet.");
+    expect(source).toContain("const safeCheckLocalImageEngine =");
+    expect(source).toContain('typeof checkLocalImageEngine === "function"');
+    expect(source).toContain("onClick={safeCheckLocalImageEngine}");
+    expect(source).not.toContain("localImageEngineStatus.available");
+    expect(onboardingSource).toContain(
+      "SwarmsyOnboarding.localUserImageEngineStatus"
+    );
+    expect(onboardingSource).toContain("isCheckingLocalImageEngine,");
+    expect(onboardingSource).toContain("localImageEngineStatus,");
+    expect(onboardingSource).toContain("checkLocalImageEngine,");
+    expect(onboardingSource).not.toContain("checkLocalImageEngine: () => {}");
+  });
+
   it("shows the desktop first-run wizard button only when the desktop bridge exists", () => {
     const source = fs.readFileSync(
       path.resolve(

@@ -10,6 +10,10 @@ const {
   ingestSwarmsyRequiredDocs,
 } = require("../utils/swarmsy/ingestRequiredDocs");
 const { detectLocalOllama } = require("../utils/swarmsy/localUserOllama");
+const {
+  detectLocalImageEngine,
+  resolveLocalImageEngineUrl,
+} = require("../utils/swarmsy/localImageEngine");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const {
   flexUserRoleValid,
@@ -202,6 +206,22 @@ async function swarmsyLocalUserOllamaStatus(_request, response) {
   }
 }
 
+async function swarmsyLocalUserImageEngineStatus(_request, response) {
+  try {
+    return response.status(200).json(await detectLocalImageEngine());
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({
+      success: false,
+      mode: "local_user",
+      available: false,
+      engine: "comfyui",
+      url: resolveLocalImageEngineUrl(),
+      message: "Failed to detect local image engine.",
+    });
+  }
+}
+
 function __resetSwarmsyHiveCreationLocksForTests() {
   swarmsyHiveCreationLocks.clear();
 }
@@ -232,10 +252,17 @@ function swarmsyEndpoints(app) {
     [validatedRequest, isSingleUserMode],
     swarmsyLocalUserOllamaStatus
   );
+
+  app.get(
+    "/swarmsy/local-user/image-engine/status",
+    [validatedRequest, isSingleUserMode],
+    swarmsyLocalUserImageEngineStatus
+  );
 }
 
 module.exports = {
   __resetSwarmsyHiveCreationLocksForTests,
+  swarmsyLocalUserImageEngineStatus,
   swarmsyLocalUserOllamaStatus,
   swarmsyEndpoints,
   swarmsyOnboardingCreateHive,

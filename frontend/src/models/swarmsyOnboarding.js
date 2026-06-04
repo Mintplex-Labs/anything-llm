@@ -78,6 +78,30 @@ const SwarmsyOnboarding = {
         };
       });
   },
+  localUserImageEngineStatus: async function ({ signal } = {}) {
+    return await fetch(`${API_BASE}/swarmsy/local-user/image-engine/status`, {
+      headers: baseHeaders(),
+      signal,
+    })
+      .then((response) =>
+        parseResponse(
+          response,
+          "Failed to resolve SWARMSY local image engine status."
+        )
+      )
+      .catch((error) => {
+        if (error?.name === "AbortError") throw error;
+        return {
+          success: false,
+          mode: "unknown",
+          available: false,
+          engine: "comfyui",
+          url: "http://localhost:8188",
+          source: "fallback",
+          message: "Failed to resolve SWARMSY local image engine status.",
+        };
+      });
+  },
 };
 
 export default SwarmsyOnboarding;

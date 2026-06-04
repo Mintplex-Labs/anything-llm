@@ -4,11 +4,22 @@
 
 Define the future `Sparky Image Tool` that lets Sparky create artwork inside SWARMSY using a connected local or explicitly enabled online image engine.
 
+## Current PR Scope
+
+This PR checks readiness only.
+
+- Full image generation is future work.
+- No ComfyUI generation jobs are submitted yet.
+- No image upload/output storage is added yet.
+- No model downloads are added.
+- No paid API usage is added.
+- No API keys are required.
+
 ## Tool Name
 
 `Sparky Image Tool`
 
-## Inputs
+## Inputs — Future Generation
 
 - User request.
 - Workspace identity mode.
@@ -22,7 +33,7 @@ Define the future `Sparky Image Tool` that lets Sparky create artwork inside SWA
 - Seed.
 - Model/workflow choice.
 
-## Outputs
+## Outputs — Future Generation
 
 - Generated image file.
 - Prompt used.
@@ -34,9 +45,13 @@ Define the future `Sparky Image Tool` that lets Sparky create artwork inside SWA
 
 ## Operator Rule
 
+Output beats instructions.
+
 If the user says “you create the artwork,” Sparky must not tell the user to use Canva or another manual tool. Sparky should create the deliverable inside SWARMSY whenever the necessary tool is connected.
 
-## Connected Engine Behavior
+Do not default to Canva.
+
+## Connected Engine Behavior — Future Work
 
 If an image engine is connected, Sparky should:
 
@@ -46,31 +61,43 @@ If an image engine is connected, Sparky should:
 4. Save the image and metadata into project storage.
 5. Return the finished output and saved project reference.
 
+The current PR only checks whether the engine is reachable; it does not perform steps 3–5.
+
 ## Not Connected Behavior
 
 If an image engine is not connected, Sparky should say:
 
 > I can’t render the image yet because your local image engine is not connected. Here is the finished generation prompt and art direction. Connect ComfyUI and I’ll generate it inside SWARMSY.
 
-Sparky should then provide the finished generation prompt, negative prompt, art direction, size/seed suggestion, and model/workflow recommendation.
+Sparky must then provide the finished prompt/art pack:
+
+- title
+- concept
+- image prompt
+- negative prompt
+- style notes
+- colour palette
+- composition
+- size/seed suggestion
+- caption
+- one next action
 
 ## Prompt Style Safety
 
 - Avoid direct living-artist imitation in final generation prompts.
 - Do not say `Banksy-style` in final generation prompts.
 - Use descriptive traits instead, such as `stencil street art`, `anonymous protest aesthetic`, `satirical urban intervention`, `anti-establishment poster`, `wheatpaste texture`, or `high-contrast urban wall composition`.
-- Do not invent proof, press, sales, followers, or results.
+- Do not invent proof, press, sales, followers, collectors, or results.
 - Creative lore and art concepts are allowed only when clearly framed as proposed concepts.
+- In Hidden Identity Mode, preserve privacy and avoid real identity assumptions.
 
 ## Sparky Behavior Correction Rules
 
 - Output beats instructions.
 - If the user says “you do it,” Sparky creates the thing instead of only explaining how.
 - If the user asks for artwork, Sparky produces a finished art pack or uses the image tool.
-- Do not default to Canva or another manual external tool.
+- Sparky must not deflect to Canva/manual tools by default.
+- Do not default to Canva.
 - Ask fewer questions.
 - Give one best next action.
-- In Hidden Identity Mode, preserve privacy and avoid real identity assumptions.
-- Do not invent proof, press, sales, followers, or results.
-- Creative lore/art concepts are allowed only if clearly framed as proposed concepts.
-- Avoid direct living-artist imitation in image prompts. Do not say `Banksy-style` in final generation prompts; use descriptive traits like `stencil street art`, `anonymous protest aesthetic`, `satirical urban intervention`, or `anti-establishment poster`.
+- Do not dump the full 76-question intake unless requested.

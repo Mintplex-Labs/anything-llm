@@ -17,6 +17,10 @@ jest.mock("../../utils/swarmsy/ingestRequiredDocs", () => ({
 jest.mock("../../utils/swarmsy/localUserOllama", () => ({
   detectLocalOllama: jest.fn(),
 }));
+jest.mock("../../utils/swarmsy/localImageEngine", () => ({
+  detectLocalImageEngine: jest.fn(),
+  resolveLocalImageEngineUrl: jest.fn(),
+}));
 
 jest.mock("../../utils/middleware/validatedRequest", () => ({
   validatedRequest: jest.fn(),
@@ -45,6 +49,10 @@ const {
   detectLocalOllama,
 } = require("../../utils/swarmsy/localUserOllama");
 const {
+  detectLocalImageEngine,
+  resolveLocalImageEngineUrl,
+} = require("../../utils/swarmsy/localImageEngine");
+const {
   validatedRequest,
 } = require("../../utils/middleware/validatedRequest");
 const {
@@ -54,6 +62,7 @@ const {
 } = require("../../utils/middleware/multiUserProtected");
 const {
   swarmsyEndpoints,
+  swarmsyLocalUserImageEngineStatus,
   swarmsyLocalUserOllamaStatus,
   swarmsyOnboardingCreateHive,
   swarmsyOnboardingIngestRequiredDocs,
@@ -71,6 +80,7 @@ function responseMock() {
 describe("swarmsy endpoints", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    resolveLocalImageEngineUrl.mockReturnValue("http://localhost:8188");
     __resetSwarmsyHiveCreationLocksForTests();
   });
 
@@ -104,6 +114,11 @@ describe("swarmsy endpoints", () => {
       "/swarmsy/local-user/ollama/status",
       [validatedRequest, isSingleUserMode],
       swarmsyLocalUserOllamaStatus
+    );
+    expect(app.get).toHaveBeenCalledWith(
+      "/swarmsy/local-user/image-engine/status",
+      [validatedRequest, isSingleUserMode],
+      swarmsyLocalUserImageEngineStatus
     );
   });
 
@@ -167,6 +182,49 @@ describe("swarmsy endpoints", () => {
     expect(detectLocalOllama).toHaveBeenCalledTimes(1);
     expect(response.status).toHaveBeenCalledWith(200);
     expect(response.json).toHaveBeenCalledWith(detectionStatus);
+  });
+
+  it("returns local-user image engine detection status from the dedicated single-user route", async () => {
+    const response = responseMock();
+    const detectionStatus = {
+      success: true,
+      mode: "local_user",
+      available: false,
+      engine: "comfyui",
+      url: "http://localhost:8188",
+      message:
+        "ComfyUI is not reachable. Start ComfyUI locally before image generation.",
+    };
+
+    detectLocalImageEngine.mockResolvedValue(detectionStatus);
+
+    await swarmsyLocalUserImageEngineStatus({}, response);
+
+    expect(detectLocalImageEngine).toHaveBeenCalledTimes(1);
+    expect(response.status).toHaveBeenCalledWith(200);
+    expect(response.json).toHaveBeenCalledWith(detectionStatus);
+  });
+
+  it("uses the configured image engine URL in endpoint fallback errors", async () => {
+    const response = responseMock();
+    const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+    detectLocalImageEngine.mockRejectedValue(new Error("boom"));
+    resolveLocalImageEngineUrl.mockReturnValue("http://comfy.local:8188");
+
+    await swarmsyLocalUserImageEngineStatus({}, response);
+
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+    consoleErrorSpy.mockRestore();
+    expect(resolveLocalImageEngineUrl).toHaveBeenCalledTimes(1);
+    expect(response.status).toHaveBeenCalledWith(500);
+    expect(response.json).toHaveBeenCalledWith({
+      success: false,
+      mode: "local_user",
+      available: false,
+      engine: "comfyui",
+      url: "http://comfy.local:8188",
+      message: "Failed to detect local image engine.",
+    });
   });
 
   it("returns existing SWARMSY HIVE without creating a duplicate", async () => {

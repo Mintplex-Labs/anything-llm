@@ -89,6 +89,21 @@ function localOllamaStatusTitle(status = "checking") {
   return "Ollama status could not be confirmed.";
 }
 
+function normalizeLocalImageEngineStatus(response = null) {
+  if (response?.mode !== "local_user" || response?.source === "fallback") {
+    return null;
+  }
+
+  return {
+    available: response?.available === true,
+    engine: response?.engine || "comfyui",
+    url: response?.url || "http://localhost:8188",
+    message:
+      response?.message ||
+      "ComfyUI is not reachable. Start ComfyUI locally before image generation.",
+  };
+}
+
 function getSavedModelName(modelId, models = []) {
   if (!modelId) return "";
   const hit = models.find((model) => model.id === modelId);
@@ -108,12 +123,20 @@ export function useLocalUserSettingsHub() {
   const isHostedAdminMode = loginMode === "multi";
   const [isLocalUserMode, setIsLocalUserMode] = useState(false);
   const [isCheckingLocalOllama, setIsCheckingLocalOllama] = useState(false);
+  const [isCheckingLocalImageEngine, setIsCheckingLocalImageEngine] =
+    useState(false);
   const [desktopDiagnostics, setDesktopDiagnostics] = useState([]);
   const [localOllamaStatus, setLocalOllamaStatus] = useState({
     status: "checking",
     models: [],
     endpoint: null,
     message: null,
+  });
+  const [localImageEngineStatus, setLocalImageEngineStatus] = useState({
+    available: false,
+    engine: "comfyui",
+    url: "http://localhost:8188",
+    message: "Checking local image engine status...",
   });
   const [selectedLocalOllamaModel, setSelectedLocalOllamaModel] = useState("");
   const [localOllamaSelectionMessage, setLocalOllamaSelectionMessage] =
@@ -123,6 +146,7 @@ export function useLocalUserSettingsHub() {
   );
 
   const localOllamaRefreshControllerRef = useRef(null);
+  const localImageEngineRefreshControllerRef = useRef(null);
   const hasConfirmedLocalUserModeRef = useRef(false);
 
   const addDiagnostic = useCallback((code) => {
@@ -210,6 +234,91 @@ export function useLocalUserSettingsHub() {
     localOllamaRefreshControllerRef.current = null;
     return true;
   }, []);
+
+  const beginLocalImageEngineRequest = useCallback(() => {
+    localImageEngineRefreshControllerRef.current?.abort();
+    const controller = new AbortController();
+    localImageEngineRefreshControllerRef.current = controller;
+    return controller;
+  }, []);
+
+  const isLatestLocalImageEngineRequest = useCallback((signal) => {
+    if (!signal) return true;
+    return localImageEngineRefreshControllerRef.current?.signal === signal;
+  }, []);
+
+  const releaseLocalImageEngineRequest = useCallback((controller) => {
+    if (localImageEngineRefreshControllerRef.current !== controller)
+      return false;
+    localImageEngineRefreshControllerRef.current = null;
+    return true;
+  }, []);
+
+  const syncLocalImageEngineStatus = useCallback(
+    async ({ signal } = {}) => {
+      if (signal?.aborted || !isLatestLocalImageEngineRequest(signal))
+        return null;
+      setIsCheckingLocalImageEngine(true);
+      setLocalImageEngineStatus((current) => ({
+        ...current,
+        message: "Checking local image engine status...",
+      }));
+
+      try {
+        const response = await SwarmsyOnboarding.localUserImageEngineStatus({
+          signal,
+        });
+        if (signal?.aborted || !isLatestLocalImageEngineRequest(signal))
+          return null;
+
+        const normalizedStatus = normalizeLocalImageEngineStatus(response);
+        if (!normalizedStatus) {
+          setLocalImageEngineStatus({
+            available: false,
+            engine: "comfyui",
+            url: "http://localhost:8188",
+            message:
+              response?.message ||
+              "ComfyUI is not reachable. Start ComfyUI locally before image generation.",
+          });
+          return null;
+        }
+
+        setLocalImageEngineStatus(normalizedStatus);
+        return normalizedStatus;
+      } catch (error) {
+        if (
+          signal?.aborted ||
+          error?.name === "AbortError" ||
+          !isLatestLocalImageEngineRequest(signal)
+        ) {
+          return null;
+        }
+        throw error;
+      } finally {
+        if (!signal?.aborted && isLatestLocalImageEngineRequest(signal)) {
+          setIsCheckingLocalImageEngine(false);
+        }
+      }
+    },
+    [isLatestLocalImageEngineRequest]
+  );
+
+  const checkLocalImageEngine = useCallback(async () => {
+    if (isLoginModePending || isHostedAdminMode) return;
+    const controller = beginLocalImageEngineRequest();
+    try {
+      await syncLocalImageEngineStatus({ signal: controller.signal });
+    } finally {
+      releaseLocalImageEngineRequest(controller);
+    }
+  }, [
+    beginLocalImageEngineRequest,
+    isHostedAdminMode,
+    isLoginModePending,
+    releaseLocalImageEngineRequest,
+    syncLocalImageEngineStatus,
+  ]);
 
   const syncLocalUserOllamaStatus = useCallback(
     async ({ signal } = {}) => {
@@ -310,11 +419,18 @@ export function useLocalUserSettingsHub() {
     if (isLoginModePending) {
       setIsLocalUserMode(false);
       setIsCheckingLocalOllama(false);
+      setIsCheckingLocalImageEngine(false);
       setLocalOllamaStatus({
         status: "checking",
         models: [],
         endpoint: null,
         message: null,
+      });
+      setLocalImageEngineStatus({
+        available: false,
+        engine: "comfyui",
+        url: "http://localhost:8188",
+        message: "Checking local image engine status...",
       });
       return;
     }
@@ -322,10 +438,17 @@ export function useLocalUserSettingsHub() {
     if (isHostedAdminMode) {
       setIsLocalUserMode(false);
       setIsCheckingLocalOllama(false);
+      setIsCheckingLocalImageEngine(false);
       setLocalOllamaStatus({
         status: "error",
         models: [],
         endpoint: null,
+        message: null,
+      });
+      setLocalImageEngineStatus({
+        available: false,
+        engine: "comfyui",
+        url: "http://localhost:8188",
         message: null,
       });
       return;
@@ -335,11 +458,21 @@ export function useLocalUserSettingsHub() {
     syncLocalUserOllamaStatus({ signal: controller.signal }).finally(() => {
       releaseLocalUserOllamaRequest(controller);
     });
+
+    const imageController = beginLocalImageEngineRequest();
+    syncLocalImageEngineStatus({
+      signal: imageController.signal,
+    }).finally(() => {
+      releaseLocalImageEngineRequest(imageController);
+    });
   }, [
+    beginLocalImageEngineRequest,
     beginLocalUserOllamaRequest,
     isLoginModePending,
     isHostedAdminMode,
+    releaseLocalImageEngineRequest,
     releaseLocalUserOllamaRequest,
+    syncLocalImageEngineStatus,
     syncLocalUserOllamaStatus,
   ]);
 
@@ -354,7 +487,10 @@ export function useLocalUserSettingsHub() {
   ]);
 
   useEffect(() => {
-    return () => localOllamaRefreshControllerRef.current?.abort();
+    return () => {
+      localOllamaRefreshControllerRef.current?.abort();
+      localImageEngineRefreshControllerRef.current?.abort();
+    };
   }, []);
 
   const hasVerifiedLocalOllamaModels =
@@ -680,7 +816,9 @@ export function useLocalUserSettingsHub() {
     isHostedAdminMode,
     isLocalUserMode,
     isCheckingLocalOllama,
+    isCheckingLocalImageEngine,
     localOllamaStatus,
+    localImageEngineStatus,
     localOllamaStatusTone: localOllamaStatusTone(localOllamaStatus.status),
     localOllamaStatusTitle: localOllamaStatusTitle(localOllamaStatus.status),
     hasVerifiedLocalOllamaModels,
@@ -693,6 +831,7 @@ export function useLocalUserSettingsHub() {
     desktopDiagnostics,
     clearDiagnostics,
     checkLocalUserOllama,
+    checkLocalImageEngine,
     onSelectLocalOllamaModel,
     exportBackupToFile,
     importBackupFromText,

@@ -35,7 +35,9 @@ export default function SwarmsyLocalUserSettingsHub({
     isHostedAdminMode,
     isLocalUserMode,
     isCheckingLocalOllama,
+    isCheckingLocalImageEngine,
     localOllamaStatus,
+    localImageEngineStatus,
     localOllamaStatusTone,
     localOllamaStatusTitle,
     hasVerifiedLocalOllamaModels,
@@ -45,11 +47,24 @@ export default function SwarmsyLocalUserSettingsHub({
     localOllamaSelectionMessage,
     desktopDiagnostics,
     checkLocalUserOllama,
+    checkLocalImageEngine,
     onSelectLocalOllamaModel,
     exportBackupToFile,
     importBackupFromText,
   } = controller;
 
+  const safeLocalImageEngineStatus = localImageEngineStatus || {
+    success: false,
+    mode: "local_user",
+    available: false,
+    engine: "comfyui",
+    url: "http://localhost:8188",
+    message: "Local image engine status has not been checked yet.",
+  };
+  const safeCheckLocalImageEngine =
+    typeof checkLocalImageEngine === "function"
+      ? checkLocalImageEngine
+      : () => {};
   const isHostedBoundary = isHostedAdminMode && !isLocalUserMode;
   const showNeutralPendingState = isLoginModePending && !isHostedBoundary;
   const title = showNeutralPendingState
@@ -230,6 +245,46 @@ export default function SwarmsyLocalUserSettingsHub({
               </div>
             </div>
           )}
+
+          <div className="mt-6 rounded-lg border border-theme-sidebar-border bg-theme-bg-secondary p-4">
+            <div className="flex items-start justify-between gap-4">
+              <div className="space-y-2">
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-theme-text-secondary">
+                  Local Image Engine
+                </p>
+                <h3 className="text-base font-semibold text-theme-text-primary">
+                  {safeLocalImageEngineStatus.available
+                    ? "Connected"
+                    : "Not connected"}
+                </h3>
+                <p className="text-sm text-theme-text-secondary">
+                  Engine: {safeLocalImageEngineStatus.engine || "comfyui"}
+                </p>
+                <p className="text-xs opacity-80">
+                  URL:{" "}
+                  {safeLocalImageEngineStatus.url || "http://localhost:8188"}
+                </p>
+                {safeLocalImageEngineStatus.message && (
+                  <p className="text-sm leading-6">
+                    {safeLocalImageEngineStatus.message}
+                  </p>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={safeCheckLocalImageEngine}
+                disabled={isCheckingLocalImageEngine}
+                className="flex items-center justify-center gap-x-2 rounded-lg border border-theme-sidebar-border bg-theme-bg-secondary px-4 py-2 text-sm font-medium text-theme-text-primary transition hover:bg-theme-bg-menu disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isCheckingLocalImageEngine ? (
+                  <SpinnerGap className="animate-spin" size={18} />
+                ) : (
+                  <ArrowClockwise size={18} />
+                )}
+                Check image engine
+              </button>
+            </div>
+          </div>
 
           <div className="mt-6 rounded-lg border border-theme-sidebar-border bg-theme-bg-secondary p-4">
             <div className="space-y-2">

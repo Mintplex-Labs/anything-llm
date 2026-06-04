@@ -88,6 +88,10 @@ const IMPORTED_LOCAL_OLLAMA_MODEL_PENDING_MESSAGE =
   "Imported Ollama model saved. SWARMSY will restore it after Ollama status is verified.";
 const IMPORTED_LOCAL_OLLAMA_MODEL_MISSING_MESSAGE =
   "Imported Ollama model is not currently installed. Select a model to continue.";
+const LOCAL_IMAGE_ENGINE_STATUS_PENDING_MESSAGE =
+  "Local image engine status has not been checked yet.";
+const LOCAL_IMAGE_ENGINE_UNREACHABLE_MESSAGE =
+  "ComfyUI is not reachable. Start ComfyUI locally before image generation.";
 
 function getDefaultCampaignDate() {
   const now = new Date();
@@ -156,6 +160,21 @@ function normalizeLocalUserOllamaStatus(response = null) {
     models,
     endpoint: response?.endpoint || null,
     message: response?.message || null,
+  };
+}
+
+function normalizeLocalImageEngineStatus(response = null) {
+  if (response?.mode !== "local_user" || response?.source === "fallback") {
+    return null;
+  }
+
+  return {
+    success: response?.success === true,
+    mode: "local_user",
+    available: response?.available === true,
+    engine: response?.engine || "comfyui",
+    url: response?.url || "http://localhost:8188",
+    message: response?.message || LOCAL_IMAGE_ENGINE_UNREACHABLE_MESSAGE,
   };
 }
 
@@ -285,10 +304,21 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
     endpoint: null,
     message: null,
   });
+  const [isCheckingLocalImageEngine, setIsCheckingLocalImageEngine] =
+    useState(false);
+  const [localImageEngineStatus, setLocalImageEngineStatus] = useState({
+    success: false,
+    mode: "local_user",
+    available: false,
+    engine: "comfyui",
+    url: "http://localhost:8188",
+    message: LOCAL_IMAGE_ENGINE_STATUS_PENDING_MESSAGE,
+  });
   const [selectedLocalOllamaModel, setSelectedLocalOllamaModel] = useState("");
   const [localOllamaSelectionMessage, setLocalOllamaSelectionMessage] =
     useState(null);
   const localOllamaRefreshControllerRef = useRef(null);
+  const localImageEngineRefreshControllerRef = useRef(null);
   const hasConfirmedLocalUserModeRef = useRef(false);
   const activeStatus = status || createFallbackStatus();
   const canLoadMemoryLock = canContinueFromMemoryLock(activeStatus);
@@ -314,6 +344,25 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
   const releaseLocalUserOllamaRequest = useCallback((controller) => {
     if (localOllamaRefreshControllerRef.current !== controller) return false;
     localOllamaRefreshControllerRef.current = null;
+    return true;
+  }, []);
+
+  const beginLocalImageEngineRequest = useCallback(() => {
+    localImageEngineRefreshControllerRef.current?.abort();
+    const controller = new AbortController();
+    localImageEngineRefreshControllerRef.current = controller;
+    return controller;
+  }, []);
+
+  const isLatestLocalImageEngineRequest = useCallback((signal) => {
+    if (!signal) return true;
+    return localImageEngineRefreshControllerRef.current?.signal === signal;
+  }, []);
+
+  const releaseLocalImageEngineRequest = useCallback((controller) => {
+    if (localImageEngineRefreshControllerRef.current !== controller)
+      return false;
+    localImageEngineRefreshControllerRef.current = null;
     return true;
   }, []);
 
@@ -388,6 +437,57 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
     [isLatestLocalUserOllamaRequest]
   );
 
+  const syncLocalImageEngineStatus = useCallback(
+    async ({ signal } = {}) => {
+      if (signal?.aborted || !isLatestLocalImageEngineRequest(signal))
+        return null;
+      setIsCheckingLocalImageEngine(true);
+      setLocalImageEngineStatus((current) => ({
+        ...current,
+        message: "Checking local image engine status...",
+      }));
+
+      try {
+        const response = await SwarmsyOnboarding.localUserImageEngineStatus({
+          signal,
+        });
+        if (signal?.aborted || !isLatestLocalImageEngineRequest(signal))
+          return null;
+
+        const normalizedStatus = normalizeLocalImageEngineStatus(response);
+        if (!normalizedStatus) {
+          setLocalImageEngineStatus({
+            success: false,
+            mode: "local_user",
+            available: false,
+            engine: "comfyui",
+            url: response?.url || "http://localhost:8188",
+            message:
+              response?.message || LOCAL_IMAGE_ENGINE_UNREACHABLE_MESSAGE,
+          });
+          return null;
+        }
+
+        setLocalImageEngineStatus(normalizedStatus);
+        return normalizedStatus;
+      } catch (error) {
+        if (
+          signal?.aborted ||
+          error?.name === "AbortError" ||
+          !isLatestLocalImageEngineRequest(signal)
+        ) {
+          return null;
+        }
+        throw error;
+      } finally {
+        if (!signal?.aborted && isLatestLocalImageEngineRequest(signal)) {
+          setIsCheckingLocalImageEngine(false);
+        }
+      }
+    },
+    [isLatestLocalImageEngineRequest]
+  );
+
   useEffect(() => {
     let canceled = false;
 
@@ -433,7 +533,21 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
   ]);
 
   useEffect(() => {
-    return () => localOllamaRefreshControllerRef.current?.abort();
+    const controller = beginLocalImageEngineRequest();
+    syncLocalImageEngineStatus({ signal: controller.signal }).finally(() => {
+      releaseLocalImageEngineRequest(controller);
+    });
+  }, [
+    beginLocalImageEngineRequest,
+    releaseLocalImageEngineRequest,
+    syncLocalImageEngineStatus,
+  ]);
+
+  useEffect(() => {
+    return () => {
+      localOllamaRefreshControllerRef.current?.abort();
+      localImageEngineRefreshControllerRef.current?.abort();
+    };
   }, []);
 
   useEffect(() => {
@@ -598,6 +712,25 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
     } finally {
       if (
         releaseLocalUserOllamaRequest(controller) &&
+        !controller.signal.aborted
+      ) {
+        setBusyAction(null);
+      }
+    }
+  }
+
+  async function checkLocalImageEngine() {
+    if (busyAction) return;
+
+    setBusyAction("local-image-engine-refresh");
+
+    const controller = beginLocalImageEngineRequest();
+
+    try {
+      await syncLocalImageEngineStatus({ signal: controller.signal });
+    } finally {
+      if (
+        releaseLocalImageEngineRequest(controller) &&
         !controller.signal.aborted
       ) {
         setBusyAction(null);
@@ -1101,7 +1234,9 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
               isHostedAdminMode: false,
               isLocalUserMode,
               isCheckingLocalOllama: busyAction === "local-ollama-refresh",
+              isCheckingLocalImageEngine,
               localOllamaStatus,
+              localImageEngineStatus,
               localOllamaStatusTone: localOllamaTone,
               localOllamaStatusTitle: localOllamaTitle,
               hasVerifiedLocalOllamaModels,
@@ -1115,6 +1250,7 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
                 readLocalUserOllamaModelSelection(),
               localOllamaSelectionMessage,
               checkLocalUserOllama,
+              checkLocalImageEngine,
               onSelectLocalOllamaModel: (nextModelId) => {
                 const normalizedModelId = String(nextModelId || "").trim();
                 setSelectedLocalOllamaModel(normalizedModelId);

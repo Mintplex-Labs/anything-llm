@@ -50,6 +50,27 @@ describe("Swarmsy onboarding model", () => {
     expect(response.source).toBe("fallback");
   });
 
+  it("returns an image engine fallback shape on network failure without API keys", async () => {
+    const fetchImpl = jest.fn().mockRejectedValue(new Error("network down"));
+    const onboardingModel = loadSwarmsyOnboardingModule(fetchImpl);
+
+    const response = await onboardingModel.localUserImageEngineStatus();
+
+    expect(response).toEqual({
+      success: false,
+      mode: "unknown",
+      available: false,
+      engine: "comfyui",
+      url: "http://localhost:8188",
+      source: "fallback",
+      message: "Failed to resolve SWARMSY local image engine status.",
+    });
+    expect(fetchImpl).toHaveBeenCalledWith(
+      "http://localhost/api/swarmsy/local-user/image-engine/status",
+      expect.objectContaining({ headers: {} })
+    );
+  });
+
   it("rethrows abort errors so callers can bail out safely", async () => {
     const abortError = Object.assign(new Error("aborted"), {
       name: "AbortError",
