@@ -32,6 +32,7 @@ const SET_LOCAL_USER_SETTINGS_CHANNEL = "swarmsy:set-local-user-settings";
 const CLEAR_LOCAL_USER_SETTINGS_CHANNEL = "swarmsy:clear-local-user-settings";
 const EXPORT_LOCAL_USER_BACKUP_CHANNEL = "swarmsy:export-local-user-backup";
 const IMPORT_LOCAL_USER_BACKUP_CHANNEL = "swarmsy:import-local-user-backup";
+const GET_RUNTIME_STATUS_CHANNEL = "swarmsy:get-runtime-status";
 const repoRoot = path.resolve(__dirname, "../..");
 let managedRuntimeChild = null;
 let managedRuntimeStopPromise = null;
@@ -144,13 +145,64 @@ function configureWindowSecurity(window, startUrl, { shellApi = shell } = {}) {
   });
 }
 
-function registerDesktopIpc({ ipcMainApi = ipcMain } = {}) {
+function registerDesktopIpc({
+  ipcMainApi = ipcMain,
+  runtimeHealthcheck = runDesktopRuntimeHealthcheck,
+} = {}) {
   ipcMainApi.removeHandler?.(STORAGE_CONTRACT_CHANNEL);
+  ipcMainApi.removeHandler?.(GET_RUNTIME_STATUS_CHANNEL);
   ipcMainApi.removeHandler?.(GET_LOCAL_USER_SETTINGS_CHANNEL);
   ipcMainApi.removeHandler?.(SET_LOCAL_USER_SETTINGS_CHANNEL);
   ipcMainApi.removeHandler?.(CLEAR_LOCAL_USER_SETTINGS_CHANNEL);
   ipcMainApi.removeHandler?.(EXPORT_LOCAL_USER_BACKUP_CHANNEL);
   ipcMainApi.removeHandler?.(IMPORT_LOCAL_USER_BACKUP_CHANNEL);
+  ipcMainApi.handle(GET_RUNTIME_STATUS_CHANNEL, async (event) => {
+    const senderUrl =
+      event?.senderFrame?.url || event?.sender?.getURL?.() || "";
+    const startUrl = resolveStartUrl();
+    const managed = !!managedRuntimeChild;
+    if (!isTrustedDesktopOrigin(senderUrl)) {
+      return {
+        ok: false,
+        responding: false,
+        reason: "untrusted_origin",
+        startUrl,
+        managed,
+      };
+    }
+
+    try {
+      const health = await runtimeHealthcheck({ startUrl });
+      if (health?.ok) {
+        return {
+          ok: true,
+          responding: true,
+          mode: health?.mode || "desktop_local_runtime",
+          startUrl: health?.startUrl || startUrl,
+          managed,
+        };
+      }
+
+      return {
+        ok: false,
+        responding: false,
+        reason: health?.reason || "runtime_healthcheck_failed",
+        mode: health?.mode || "desktop_local_runtime",
+        startUrl: health?.startUrl || startUrl,
+        managed,
+      };
+    } catch {
+      return {
+        ok: false,
+        responding: false,
+        reason: "runtime_healthcheck_failed",
+        mode: "desktop_local_runtime",
+        startUrl,
+        managed,
+      };
+    }
+  });
+
   ipcMainApi.handle(STORAGE_CONTRACT_CHANNEL, (event) => {
     const senderUrl =
       event?.senderFrame?.url || event?.sender?.getURL?.() || "";
@@ -417,6 +469,7 @@ module.exports = {
   CLEAR_LOCAL_USER_SETTINGS_CHANNEL,
   EXPORT_LOCAL_USER_BACKUP_CHANNEL,
   IMPORT_LOCAL_USER_BACKUP_CHANNEL,
+  GET_RUNTIME_STATUS_CHANNEL,
   TRUSTED_DESKTOP_HOSTS,
   normalizeTrustedHost,
   resolveStartUrl,

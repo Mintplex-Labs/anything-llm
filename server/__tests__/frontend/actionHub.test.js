@@ -613,6 +613,20 @@ describe("SWARMSY HIVE action hub", () => {
     );
   });
 
+  it("shows the desktop first-run wizard button only when the desktop bridge exists", () => {
+    const source = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        "../../../frontend/src/components/SwarmsyLocalUserSettingsHub/index.jsx"
+      ),
+      "utf8"
+    );
+    expect(source).toContain("hasDesktopLocalSettingsBridge");
+    expect(source).toContain("const hasTrustedDesktopBridge =");
+    expect(source).toContain("{hasTrustedDesktopBridge && (");
+    expect(source).toContain("First-run wizard");
+  });
+
   it("renders model placeholder when selection is empty even with one installed model", () => {
     const source = fs.readFileSync(
       path.resolve(

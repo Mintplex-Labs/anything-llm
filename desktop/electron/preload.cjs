@@ -32,11 +32,13 @@ const SET_LOCAL_USER_SETTINGS_CHANNEL = "swarmsy:set-local-user-settings";
 const CLEAR_LOCAL_USER_SETTINGS_CHANNEL = "swarmsy:clear-local-user-settings";
 const EXPORT_LOCAL_USER_BACKUP_CHANNEL = "swarmsy:export-local-user-backup";
 const IMPORT_LOCAL_USER_BACKUP_CHANNEL = "swarmsy:import-local-user-backup";
+const GET_RUNTIME_STATUS_CHANNEL = "swarmsy:get-runtime-status";
 
 function createDesktopBridge({ ipcRendererApi = ipcRenderer } = {}) {
   return {
     foundation: {
       getStorageContract: () => ipcRendererApi.invoke(STORAGE_CONTRACT_CHANNEL),
+      getRuntimeStatus: () => ipcRendererApi.invoke(GET_RUNTIME_STATUS_CHANNEL),
       getLocalUserSettings: () =>
         ipcRendererApi.invoke(GET_LOCAL_USER_SETTINGS_CHANNEL),
       setLocalUserSettings: (payload = {}) =>
@@ -77,6 +79,7 @@ module.exports = {
   CLEAR_LOCAL_USER_SETTINGS_CHANNEL,
   EXPORT_LOCAL_USER_BACKUP_CHANNEL,
   IMPORT_LOCAL_USER_BACKUP_CHANNEL,
+  GET_RUNTIME_STATUS_CHANNEL,
   TRUSTED_DESKTOP_HOSTS,
   normalizeTrustedHost,
   isTrustedDesktopOrigin,

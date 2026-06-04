@@ -1,6 +1,8 @@
 const LOCAL_USER_OLLAMA_MODEL_STORAGE_KEY =
   "anythingllm_swarmsy_local_user_ollama_model";
 const DESKTOP_LOCAL_SETTINGS_SCHEMA = "swarmsy_desktop_local_user_settings";
+const DESKTOP_FIRST_RUN_STORAGE_KEY =
+  "anythingllm_swarmsy_desktop_first_run_completed";
 
 function resolveStorage(storage) {
   if (storage) return storage;
@@ -117,6 +119,97 @@ export async function mirrorDesktopLocalUserOllamaModelSelection(
       ? { ollamaModel: normalizedModelId, provider: "ollama" }
       : { ollamaModel: null, provider: "ollama" };
     const response = await bridge.setLocalUserSettings(payload);
+    if (!response?.ok) {
+      return {
+        ok: false,
+        reason: response?.reason || "desktop_settings_write_failed",
+      };
+    }
+    return { ok: true };
+  } catch (error) {
+    return {
+      ok: false,
+      reason: "bridge_write_failed",
+      message: String(
+        error?.message || error || "Failed to write desktop settings."
+      ),
+    };
+  }
+}
+
+export function readDesktopFirstRunCompleted({ storage } = {}) {
+  const localStorage = resolveStorage(storage);
+  if (!localStorage) return false;
+  try {
+    return localStorage.getItem(DESKTOP_FIRST_RUN_STORAGE_KEY) === "true";
+  } catch {
+    return false;
+  }
+}
+
+export function persistDesktopFirstRunCompleted(completed, { storage } = {}) {
+  const localStorage = resolveStorage(storage);
+  if (!localStorage) return false;
+  try {
+    localStorage.setItem(
+      DESKTOP_FIRST_RUN_STORAGE_KEY,
+      completed ? "true" : "false"
+    );
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export async function readDesktopLocalUserFirstRunCompleted({
+  targetWindow,
+} = {}) {
+  const bridge = resolveDesktopBridge(targetWindow);
+  if (!bridge || typeof bridge.getLocalUserSettings !== "function") {
+    return { ok: false, reason: "bridge_unavailable", completed: false };
+  }
+
+  try {
+    const response = await bridge.getLocalUserSettings();
+    const isSchemaMatch =
+      !response?.settings?.schema ||
+      response?.settings?.schema === DESKTOP_LOCAL_SETTINGS_SCHEMA;
+    if (!response?.ok || !isSchemaMatch) {
+      return {
+        ok: false,
+        reason: response?.reason || "invalid_desktop_settings",
+        completed: false,
+      };
+    }
+    return {
+      ok: true,
+      completed: response?.settings?.state?.desktopFirstRunCompleted === true,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      reason: "bridge_read_failed",
+      message: String(
+        error?.message || error || "Failed to read desktop settings."
+      ),
+      completed: false,
+    };
+  }
+}
+
+export async function mirrorDesktopLocalUserFirstRunCompleted(
+  completed,
+  { targetWindow } = {}
+) {
+  const bridge = resolveDesktopBridge(targetWindow);
+  if (!bridge || typeof bridge.setLocalUserSettings !== "function") {
+    return { ok: false, reason: "bridge_unavailable" };
+  }
+
+  try {
+    const response = await bridge.setLocalUserSettings({
+      desktopFirstRunCompleted: completed === true,
+    });
     if (!response?.ok) {
       return {
         ok: false,

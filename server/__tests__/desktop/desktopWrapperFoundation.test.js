@@ -362,6 +362,105 @@ describe("SWARMSY desktop wrapper foundation", () => {
     }
   });
 
+  it("probes runtime status over trusted desktop IPC only", async () => {
+    jest.resetModules();
+    jest.doMock(
+      "electron",
+      () => ({
+        app: {},
+        BrowserWindow: jest.fn(),
+        ipcMain: { handle: jest.fn(), removeHandler: jest.fn() },
+        shell: { openExternal: jest.fn() },
+      }),
+      { virtual: true }
+    );
+    const main = require(path.resolve(repoRoot, "desktop/electron/main.cjs"));
+    const previousStartUrl = process.env.SWARMSY_DESKTOP_START_URL;
+    process.env.SWARMSY_DESKTOP_START_URL = "http://127.0.0.1:3210";
+
+    const ipcMainApi = {
+      handle: jest.fn(),
+      removeHandler: jest.fn(),
+    };
+    const runtimeHealthcheck = jest
+      .fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        mode: "desktop_local_runtime",
+        startUrl: "http://127.0.0.1:3210",
+      })
+      .mockResolvedValueOnce({
+        ok: false,
+        mode: "desktop_local_runtime",
+        reason: "runtime_unreachable",
+        startUrl: "http://127.0.0.1:3210",
+      })
+      .mockRejectedValueOnce(new Error("boom /tmp/secret"));
+
+    try {
+      main.registerDesktopIpc({ ipcMainApi, runtimeHealthcheck });
+      const runtimeStatusHandler = ipcMainApi.handle.mock.calls.find(
+        ([channel]) => channel === "swarmsy:get-runtime-status"
+      )[1];
+
+      await expect(
+        runtimeStatusHandler({
+          senderFrame: { url: "https://hosted.example.com" },
+        })
+      ).resolves.toEqual({
+        ok: false,
+        responding: false,
+        reason: "untrusted_origin",
+        startUrl: "http://127.0.0.1:3210",
+        managed: false,
+      });
+      expect(runtimeHealthcheck).not.toHaveBeenCalled();
+
+      await expect(
+        runtimeStatusHandler({ senderFrame: { url: "http://localhost:3000" } })
+      ).resolves.toEqual({
+        ok: true,
+        responding: true,
+        mode: "desktop_local_runtime",
+        startUrl: "http://127.0.0.1:3210",
+        managed: false,
+      });
+      expect(runtimeHealthcheck).toHaveBeenCalledWith({
+        startUrl: "http://127.0.0.1:3210",
+      });
+
+      await expect(
+        runtimeStatusHandler({
+          senderFrame: { url: "http://127.0.0.1:3000" },
+        })
+      ).resolves.toEqual({
+        ok: false,
+        responding: false,
+        reason: "runtime_unreachable",
+        mode: "desktop_local_runtime",
+        startUrl: "http://127.0.0.1:3210",
+        managed: false,
+      });
+
+      await expect(
+        runtimeStatusHandler({ senderFrame: { url: "http://localhost:3000" } })
+      ).resolves.toEqual({
+        ok: false,
+        responding: false,
+        reason: "runtime_healthcheck_failed",
+        mode: "desktop_local_runtime",
+        startUrl: "http://127.0.0.1:3210",
+        managed: false,
+      });
+    } finally {
+      if (previousStartUrl === undefined) {
+        delete process.env.SWARMSY_DESKTOP_START_URL;
+      } else {
+        process.env.SWARMSY_DESKTOP_START_URL = previousStartUrl;
+      }
+    }
+  });
+
   it("only exposes the preload bridge on trusted local origins", async () => {
     jest.resetModules();
     const exposeInMainWorld = jest.fn();
@@ -406,6 +505,7 @@ describe("SWARMSY desktop wrapper foundation", () => {
         foundation: expect.objectContaining({
           mode: "foundation_only",
           getStorageContract: expect.any(Function),
+          getRuntimeStatus: expect.any(Function),
           getLocalUserSettings: expect.any(Function),
           setLocalUserSettings: expect.any(Function),
           clearLocalUserSettings: expect.any(Function),
@@ -418,6 +518,7 @@ describe("SWARMSY desktop wrapper foundation", () => {
     const bridge =
       trustedContextBridge.exposeInMainWorld.mock.calls[0][1].foundation;
     expect(await bridge.getStorageContract()).toEqual({ ok: true });
+    expect(await bridge.getRuntimeStatus()).toEqual({ ok: true });
     expect(await bridge.getLocalUserSettings()).toEqual({ ok: true });
     expect(
       await bridge.setLocalUserSettings({ ollamaModel: "llama3.1:8b" })
@@ -431,6 +532,9 @@ describe("SWARMSY desktop wrapper foundation", () => {
     });
     expect(trustedIpcRenderer.invoke).toHaveBeenCalledWith(
       "swarmsy:get-storage-contract"
+    );
+    expect(trustedIpcRenderer.invoke).toHaveBeenCalledWith(
+      "swarmsy:get-runtime-status"
     );
     expect(trustedIpcRenderer.invoke).toHaveBeenCalledWith(
       "swarmsy:get-local-user-settings"

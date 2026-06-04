@@ -25,6 +25,10 @@ module.exports = {
   hasDesktopLocalSettingsBridge,
   readDesktopLocalUserOllamaModelSelection,
   mirrorDesktopLocalUserOllamaModelSelection,
+  readDesktopFirstRunCompleted,
+  persistDesktopFirstRunCompleted,
+  readDesktopLocalUserFirstRunCompleted,
+  mirrorDesktopLocalUserFirstRunCompleted,
   readDesktopLocalUserSettingsForBackup,
   restoreDesktopLocalUserSettingsFromBackup
 };`
@@ -148,6 +152,56 @@ describe("Local User Ollama model selection storage helper", () => {
       ollamaModel: "phi3:mini",
       provider: "ollama",
     });
+  });
+
+  it("stores desktop first-run completion in Local User settings", async () => {
+    const module = loadSelectionModule();
+    const setLocalUserSettings = jest.fn().mockResolvedValue({ ok: true });
+    const targetWindow = {
+      swarmsyDesktop: {
+        foundation: {
+          getLocalUserSettings: jest.fn(),
+          setLocalUserSettings,
+        },
+      },
+    };
+
+    const result = await module.mirrorDesktopLocalUserFirstRunCompleted(true, {
+      targetWindow,
+    });
+    expect(result.ok).toBe(true);
+    expect(setLocalUserSettings).toHaveBeenCalledWith({
+      desktopFirstRunCompleted: true,
+    });
+  });
+
+  it("restores desktop first-run completion from Local User settings", async () => {
+    const module = loadSelectionModule();
+    const targetWindow = {
+      swarmsyDesktop: {
+        foundation: {
+          getLocalUserSettings: jest.fn().mockResolvedValue({
+            ok: true,
+            settings: {
+              schema: "swarmsy_desktop_local_user_settings",
+              state: { desktopFirstRunCompleted: true },
+            },
+          }),
+        },
+      },
+    };
+
+    await expect(
+      module.readDesktopLocalUserFirstRunCompleted({ targetWindow })
+    ).resolves.toEqual({ ok: true, completed: true });
+  });
+
+  it("persists browser fallback first-run completion state", () => {
+    const module = loadSelectionModule();
+    const storage = createStorage();
+
+    expect(module.persistDesktopFirstRunCompleted(true, { storage })).toBe(true);
+    expect(module.readDesktopFirstRunCompleted({ storage })).toBe(true);
   });
 
   it("reads desktop local settings for backup only when trusted local storage contract is valid", async () => {

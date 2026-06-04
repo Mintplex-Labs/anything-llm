@@ -27,6 +27,9 @@ export const DESKTOP_LOCAL_SETTINGS_ALLOWED_STATE_KEYS = new Set([
   "ollamaModel",
   "provider",
 ]);
+const DESKTOP_LOCAL_SETTINGS_IGNORED_STATE_KEYS = new Set([
+  "desktopFirstRunCompleted",
+]);
 const BACKUP_ALLOWED_TOP_LEVEL_KEYS = new Set([
   "schema",
   "version",
@@ -112,6 +115,7 @@ function normalizeDesktopLocalSettingsForBackup(input) {
   const state = {};
   for (const key of Object.keys(input.state)) {
     if (!DESKTOP_LOCAL_SETTINGS_ALLOWED_STATE_KEYS.has(key)) {
+      if (DESKTOP_LOCAL_SETTINGS_IGNORED_STATE_KEYS.has(key)) continue;
       return null;
     }
 

@@ -15,7 +15,11 @@ const ALLOWED_TOP_LEVEL_KEYS = new Set([
   "updatedAt",
   "state",
 ]);
-const ALLOWED_STATE_KEYS = new Set(["ollamaModel", "provider"]);
+const ALLOWED_STATE_KEYS = new Set([
+  "ollamaModel",
+  "provider",
+  "desktopFirstRunCompleted",
+]);
 const FORBIDDEN_STATE_KEYS = new Set([
   "authToken",
   "anythingllm_user",
@@ -62,6 +66,22 @@ function sanitizeSettingsStateInput(input = {}) {
     const value = input[key];
     if (value === null || value === undefined) {
       clearKeys.add(key);
+      continue;
+    }
+
+    if (key === "desktopFirstRunCompleted") {
+      if (typeof value === "boolean") {
+        normalizedState[key] = value;
+        continue;
+      }
+      if (typeof value === "string") {
+        const normalizedBoolean = value.trim().toLowerCase();
+        if (normalizedBoolean === "true" || normalizedBoolean === "false") {
+          normalizedState[key] = normalizedBoolean === "true";
+          continue;
+        }
+      }
+      errors.push(`State field "${key}" must be a boolean when provided.`);
       continue;
     }
 

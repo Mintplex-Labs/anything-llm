@@ -79,6 +79,34 @@ describe("desktop local settings store", () => {
     });
   });
 
+  it("persists desktopFirstRunCompleted in Local User settings", async () => {
+    await setLocalUserSettings(
+      { desktopFirstRunCompleted: true },
+      { contractOptions: createContractOptions(tmpRoot) }
+    );
+
+    const result = await getLocalUserSettings({
+      contractOptions: createContractOptions(tmpRoot),
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.settings.state.desktopFirstRunCompleted).toBe(true);
+  });
+
+  it("restores string desktopFirstRunCompleted values as booleans", async () => {
+    await setLocalUserSettings(
+      { desktopFirstRunCompleted: "true" },
+      { contractOptions: createContractOptions(tmpRoot) }
+    );
+
+    const result = await getLocalUserSettings({
+      contractOptions: createContractOptions(tmpRoot),
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.settings.state.desktopFirstRunCompleted).toBe(true);
+  });
+
   it("rejects malformed JSON safely", async () => {
     const context = await resolveSettingsFileContext({
       contractOptions: createContractOptions(tmpRoot),
