@@ -24,6 +24,7 @@ import useTextSize from "@/hooks/useTextSize";
 import useChatHistoryScrollHandle from "@/hooks/useChatHistoryScrollHandle";
 import { ThoughtExpansionProvider } from "./ThoughtContainer";
 import { MessageActionsProvider } from "./MessageActionsContext";
+import { useIsAgentThinking } from "@/utils/chat/agent";
 
 export default forwardRef(function (
   {
@@ -194,19 +195,32 @@ export default forwardRef(function (
       websocket,
     ]
   );
-  const lastMessageInfo = useMemo(() => getLastMessageInfo(history), [history]);
+  // Whether the agent is actively thinking or running a tool right now. Driven
+  // by the live stream events (see useIsAgentThinking), not the last rendered
+  // message - the final answer streaming and the end-of-turn both settle it.
+  const isAgentThinking = useIsAgentThinking();
+
+  // Index of the last status group (array entry) in the compiled history. The
+  // agent head pulses on this group only - a tool call or the streaming answer
+  // can render below it, so we can't rely on it being the final entry.
+  const lastStatusGroupIndex = useMemo(() => {
+    for (let i = compiledHistory.length - 1; i >= 0; i--) {
+      if (Array.isArray(compiledHistory[i])) return i;
+    }
+    return -1;
+  }, [compiledHistory]);
+
   const renderStatusResponse = useCallback(
     (item, index) => {
-      const hasSubsequentMessages = index < compiledHistory.length - 1;
       return (
         <StatusResponse
           key={`status-group-${index}`}
           messages={item}
-          isThinking={!hasSubsequentMessages && lastMessageInfo.isAnimating}
+          isThinking={index === lastStatusGroupIndex && isAgentThinking}
         />
       );
     },
-    [compiledHistory.length, lastMessageInfo]
+    [lastStatusGroupIndex, isAgentThinking]
   );
 
   return (
@@ -249,14 +263,6 @@ export default forwardRef(function (
     </MessageActionsProvider>
   );
 });
-
-const getLastMessageInfo = (history) => {
-  const lastMessage = history?.[history.length - 1] || {};
-  return {
-    isAnimating: lastMessage?.animate,
-    isStatusResponse: lastMessage?.type === "statusResponse",
-  };
-};
 
 /**
  * Builds the history of messages for the chat.

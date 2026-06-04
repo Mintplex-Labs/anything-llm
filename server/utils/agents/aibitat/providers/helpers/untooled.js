@@ -190,7 +190,21 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
     if (history[history.length - 1].role !== "user") return null;
 
     const msgUUID = v4();
+    // Reasoning streams under its own uuid so it stays a separate status bubble
+    // that survives after the turn. The tentative tool-call/answer text streams
+    // under `msgUUID` and is removed once we know what it was - so it must not
+    // share a uuid with the reasoning, or removing it would take the thoughts
+    // with it (matches the tooled.js / second-stream behavior below).
+    const reasoningUUID = `${msgUUID}:reasoning`;
+    // `textResponse` stays content-only so safeJsonParse below can still
+    // match a tool-call JSON payload, and is returned as the text response
+    // when no tool call is parsed.
     let textResponse = "";
+    let reasoningText = "";
+    // Tracks whether this turn has streamed any reasoning. We use it to hold
+    // back the live content preview only while a model is actively reasoning -
+    // see the content block below for why.
+    let sawReasoning = false;
     const historyMessages = this.buildToolCallMessages(history, functions);
     const stream = await chatCb({ messages: historyMessages });
 
@@ -204,13 +218,43 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
       if (!chunk?.choices?.[0]) continue; // Skip if no choices
       const choice = chunk.choices[0];
 
-      if (choice.delta?.content) {
-        textResponse += choice.delta.content;
+      // Reasoning field varies by provider: DeepSeek/LMStudio/Lemonade use
+      // `reasoning_content`, OpenRouter uses `reasoning`. Accept either.
+      const reasoningToken =
+        choice.delta?.reasoning_content ?? choice.delta?.reasoning;
+      if (reasoningToken) {
+        const liveChunk =
+          reasoningText.length === 0
+            ? `Thinking:\n\n${reasoningToken}`
+            : reasoningToken;
+        reasoningText += reasoningToken;
+        sawReasoning = true;
         eventHandler?.("reportStreamEvent", {
           type: "statusResponse",
-          uuid: msgUUID,
-          content: choice.delta.content,
+          uuid: reasoningUUID,
+          content: liveChunk,
         });
+      }
+
+      if (choice.delta?.content) {
+        // Leaving the reasoning stretch - reset so a later stretch starts a
+        // fresh "Thinking:" bubble.
+        if (reasoningText.length > 0) reasoningText = "";
+        textResponse += choice.delta.content;
+
+        // Stream the content preview live so the user sees progress - EXCEPT
+        // when the model has reasoned this turn. The preview shares the
+        // reasoning's status group, and the collapsed bubble only shows its
+        // last entry, so a streaming preview would overtake the thoughts and
+        // make them appear to vanish. When there's no reasoning, there are no
+        // thoughts to bury, so we keep the live preview.
+        if (!sawReasoning) {
+          eventHandler?.("reportStreamEvent", {
+            type: "statusResponse",
+            uuid: msgUUID,
+            content: choice.delta.content,
+          });
+        }
       }
     }
 
@@ -334,15 +378,45 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
           "Will assume chat completion without tool call inputs."
         );
         const msgUUID = v4();
+        // Reasoning streams under its own uuid so it stays a separate status
+        // bubble. Reusing `msgUUID` would let the answer's `textResponseChunk`
+        // merge into the reasoning message and render the thoughts as text.
+        const reasoningUUID = `${msgUUID}:reasoning`;
         completion = { content: "" };
+        let reasoningText = "";
         const stream = await chatCallback({
           messages: this.cleanMsgs(messages),
         });
 
+        const closeReasoningIfOpen = () => {
+          if (reasoningText.length === 0) return;
+          reasoningText = "";
+        };
+
         for await (const chunk of stream) {
           if (!chunk?.choices?.[0]) continue; // Skip if no choices
           const choice = chunk.choices[0];
+
+          // Reasoning is ephemeral debug output - surface it live as a
+          // `statusResponse` and never persist it to the message. Field name
+          // varies by provider (`reasoning_content` vs OpenRouter's `reasoning`).
+          const reasoningToken =
+            choice.delta?.reasoning_content ?? choice.delta?.reasoning;
+          if (reasoningToken) {
+            const liveChunk =
+              reasoningText.length === 0
+                ? `Thinking:\n\n${reasoningToken}`
+                : reasoningToken;
+            reasoningText += reasoningToken;
+            eventHandler?.("reportStreamEvent", {
+              type: "statusResponse",
+              uuid: reasoningUUID,
+              content: liveChunk,
+            });
+          }
+
           if (choice.delta?.content) {
+            closeReasoningIfOpen();
             completion.content += choice.delta.content;
             eventHandler?.("reportStreamEvent", {
               type: "textResponseChunk",
@@ -351,6 +425,8 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
             });
           }
         }
+
+        closeReasoningIfOpen();
       }
 
       // The UnTooled class inherited Deduplicator is mostly useful to prevent the agent
@@ -414,10 +490,14 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
         // If the response from the callback is the raw OpenAI Spec response object, we can use that directly.
         // Otherwise, we will assume the response is just the string output we wanted (see: `#handleFunctionCallChat` which returns the content only)
         // This handles both streaming and non-streaming completions.
-        completion =
-          typeof response === "string"
-            ? { content: response }
-            : response.choices?.[0]?.message;
+        if (typeof response === "string") {
+          completion = { content: response };
+        } else {
+          const message = response.choices?.[0]?.message ?? {};
+          // Non-streaming path: reasoning_content is neither surfaced nor
+          // persisted; keep only the visible answer.
+          completion = { content: message.content };
+        }
       }
 
       // The UnTooled class inherited Deduplicator is mostly useful to prevent the agent

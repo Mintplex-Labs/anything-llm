@@ -186,6 +186,10 @@ async function tooledStream(
   }
 
   const msgUUID = v4();
+  // Reasoning streams under its own uuid so it stays a separate status bubble.
+  // Reusing `msgUUID` would let the answer's `textResponseChunk` merge into the
+  // reasoning message on the frontend and render the thoughts as visible text.
+  const reasoningUUID = `${msgUUID}:reasoning`;
   const formattedMessages = formatMessagesForTools(messages, formatOptions);
   const tools = formatFunctionsToTools(functions);
 
@@ -205,6 +209,16 @@ async function tooledStream(
 
   const toolCallsByIndex = {};
   let usage = null;
+  let reasoningText = "";
+
+  // `reasoningText` tracks whether we're mid-thought; it gates the "Thinking:"
+  // header that prefixes the first reasoning token (see below). Clear it
+  // whenever we leave a reasoning stretch - into visible text, a tool call, or
+  // end of stream - so a later stretch starts a fresh status bubble.
+  const closeReasoningIfOpen = () => {
+    if (reasoningText.length === 0) return;
+    reasoningText = "";
+  };
 
   for await (const chunk of stream) {
     // Capture usage from final chunk (some providers send usage after finish_reason)
@@ -215,7 +229,28 @@ async function tooledStream(
     if (!chunk?.choices?.[0]) continue;
     const choice = chunk.choices[0];
 
+    // Reasoning models (LM Studio, Lemonade, DeepSeek, etc.) emit thinking
+    // tokens via `delta.reasoning_content`. Reasoning is ephemeral debug
+    // output, so surface it live as a `statusResponse` (collapsing into the
+    // same status group as tool activity) and never persist it to the message.
+    const reasoningToken = choice.delta?.reasoning_content;
+    if (reasoningToken) {
+      const liveChunk =
+        reasoningText.length === 0
+          ? `Thinking:\n\n${reasoningToken}`
+          : reasoningToken;
+
+      reasoningText += reasoningToken;
+
+      eventHandler?.("reportStreamEvent", {
+        type: "statusResponse",
+        uuid: reasoningUUID,
+        content: liveChunk,
+      });
+    }
+
     if (choice.delta?.content) {
+      closeReasoningIfOpen();
       result.textResponse += choice.delta.content;
       eventHandler?.("reportStreamEvent", {
         type: "textResponseChunk",
@@ -225,6 +260,7 @@ async function tooledStream(
     }
 
     if (choice.delta?.tool_calls) {
+      closeReasoningIfOpen();
       for (const toolCall of choice.delta.tool_calls) {
         const idx = toolCall.index ?? 0;
 
@@ -259,6 +295,10 @@ async function tooledStream(
       }
     }
   }
+
+  // Defensive close in case the stream ended mid-reasoning (e.g. abort, or a
+  // provider that emits reasoning but no follow-up content/tool_call).
+  closeReasoningIfOpen();
 
   // Auto-record usage if provider is passed and usage is available
   if (provider?.recordUsage && usage) {
@@ -371,8 +411,12 @@ async function tooledComplete(
     };
   }
 
+  // Non-streaming path: reasoning_content is neither surfaced nor persisted
+  // (only the streaming path shows reasoning live). Return the visible answer.
+  const textResponse = completion.content;
+
   return {
-    textResponse: completion.content,
+    textResponse,
     cost,
     usage,
   };

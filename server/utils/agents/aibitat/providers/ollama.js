@@ -318,6 +318,10 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
       this.resetUsage();
       await OllamaAILLM.cacheContextWindows();
       const msgUUID = v4();
+      // Reasoning streams under its own uuid so it stays a separate status
+      // bubble. Reusing `msgUUID` would let the answer's `textResponseChunk`
+      // merge into the reasoning message and render the thoughts as text.
+      const reasoningUUID = `${msgUUID}:reasoning`;
       const formattedMessages = this.#formatMessagesForOllamaTools(messages);
       const tools = formatFunctionsToTools(functions);
 
@@ -331,6 +335,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
       });
 
       let textResponse = "";
+      let reasoningText = "";
       let toolCalls = null;
 
       for await (const chunk of stream) {
@@ -344,7 +349,23 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
 
         if (!chunk?.message) continue;
 
+        // Reasoning is ephemeral debug output - surface it live as a
+        // `statusResponse` and never persist it to the message.
+        if (chunk.message.thinking) {
+          const liveChunk =
+            reasoningText.length === 0
+              ? `Thinking:\n\n${chunk.message.thinking}`
+              : chunk.message.thinking;
+          reasoningText += chunk.message.thinking;
+          eventHandler?.("reportStreamEvent", {
+            type: "statusResponse",
+            uuid: reasoningUUID,
+            content: liveChunk,
+          });
+        }
+
         if (chunk.message.content) {
+          reasoningText = "";
           textResponse += chunk.message.content;
           eventHandler?.("reportStreamEvent", {
             type: "textResponseChunk",
@@ -354,6 +375,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
         }
 
         if (chunk.message.tool_calls?.length > 0) {
+          reasoningText = "";
           toolCalls = chunk.message.tool_calls;
           eventHandler?.("reportStreamEvent", {
             uuid: `${msgUUID}:tool_call_invocation`,
@@ -452,9 +474,12 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
           "Will assume chat completion without tool call inputs."
         );
         const msgUUID = v4();
+        // Reasoning streams under its own uuid so it stays a separate status
+        // bubble. Reusing `msgUUID` would let the answer's `textResponseChunk`
+        // merge into the reasoning message and render the thoughts as text.
+        const reasoningUUID = `${msgUUID}:reasoning`;
         completion = { content: "" };
         let reasoningText = "";
-        let token = "";
         const stream = await this.#handleFunctionCallStream({
           messages: this.cleanMsgs(messages),
         });
@@ -462,31 +487,32 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
         for await (const chunk of stream) {
           if (!chunk.hasOwnProperty("message")) continue;
 
-          const content = chunk.message?.content;
+          // Reasoning is ephemeral debug output - surface it live as a
+          // `statusResponse` and never persist it to the message.
           const reasoningToken = chunk.message?.thinking;
           if (reasoningToken) {
-            if (reasoningText.length === 0) {
-              reasoningText = `<think>${reasoningToken}`;
-              token = `<think>${reasoningToken}`;
-            } else {
-              reasoningText += reasoningToken;
-              token = reasoningToken;
-            }
-          } else if (content.length > 0) {
-            if (reasoningText.length > 0) {
-              token = `</think>${content}`;
-              reasoningText = "";
-            } else {
-              token = content;
-            }
+            const liveChunk =
+              reasoningText.length === 0
+                ? `Thinking:\n\n${reasoningToken}`
+                : reasoningToken;
+            reasoningText += reasoningToken;
+            eventHandler?.("reportStreamEvent", {
+              type: "statusResponse",
+              uuid: reasoningUUID,
+              content: liveChunk,
+            });
           }
 
-          completion.content += token;
-          eventHandler?.("reportStreamEvent", {
-            type: "textResponseChunk",
-            uuid: msgUUID,
-            content: token,
-          });
+          const content = chunk.message?.content;
+          if (content) {
+            reasoningText = "";
+            completion.content += content;
+            eventHandler?.("reportStreamEvent", {
+              type: "textResponseChunk",
+              uuid: msgUUID,
+              content,
+            });
+          }
         }
       }
 
