@@ -107,6 +107,9 @@ jobs:
       - name: Run desktop installer packaging tests
         run: npx --yes jest@29.7.0 server/__tests__/desktop/desktopInstallerPackaging.test.js --runInBand
 
+      - name: Run desktop signing and release integrity tests
+        run: npx --yes jest@29.7.0 server/__tests__/desktop/desktopSigningFoundation.test.js server/__tests__/desktop/desktopReleaseIntegrity.test.js --runInBand
+
       - name: Download Electron runtime
         shell: pwsh
         run: |
@@ -131,6 +134,12 @@ jobs:
       - name: Build Windows installer
         run: npm run desktop:installer:package:win
 
+      - name: Generate release integrity manifest
+        run: npm run desktop:release:manifest
+
+      - name: Validate release integrity manifest
+        run: npm run desktop:release:validate
+
       - name: Smoke validate Windows installer
         run: npm run desktop:installer:smoke
 
@@ -141,5 +150,7 @@ jobs:
           path: |
             desktop/artifacts/SWARMSY-Desktop-Setup.exe
             desktop/artifacts/SWARMSY-Desktop-Setup.manifest.json
+            desktop/artifacts/SWARMSY-Desktop-Release.json
+            desktop/artifacts/swarmsy-desktop-win32-x64.zip
           if-no-files-found: error
           retention-days: 14

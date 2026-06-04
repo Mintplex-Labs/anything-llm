@@ -46,7 +46,10 @@
     "desktop:artifact:package:win": "node desktop/scripts/package-windows-artifact.cjs",
     "desktop:artifact:smoke": "node desktop/scripts/desktop-artifact-smoke-check.cjs",
     "desktop:installer:package:win": "node desktop/scripts/build-windows-installer.cjs",
-    "desktop:installer:smoke": "node desktop/scripts/desktop-installer-smoke-check.cjs"
+    "desktop:installer:smoke": "node desktop/scripts/desktop-installer-smoke-check.cjs",
+    "desktop:signing:check": "node desktop/scripts/check-signing-readiness.cjs",
+    "desktop:release:manifest": "node desktop/scripts/generate-release-manifest.cjs",
+    "desktop:release:validate": "node desktop/scripts/validate-release-integrity.cjs"
   },
   "private": false,
   "devDependencies": {

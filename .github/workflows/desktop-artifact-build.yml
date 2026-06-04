@@ -87,6 +87,9 @@ jobs:
       - name: Package desktop app
         run: npm run desktop:artifact:package:win
 
+      - name: Assess signing readiness
+        run: npm run desktop:signing:check
+
       - name: Upload Windows desktop artifact
         uses: actions/upload-artifact@v4
         with:
