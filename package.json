@@ -44,7 +44,9 @@
     "translations:prune": "cd frontend/src/locales && node findUnusedTranslations.mjs --delete && cd ../../../ && yarn translations:normalize",
     "translations:create": "cd extras/translator && node index.mjs --all && cd ../../frontend && yarn lint && cd ../..",
     "desktop:artifact:package:win": "node desktop/scripts/package-windows-artifact.cjs",
-    "desktop:artifact:smoke": "node desktop/scripts/desktop-artifact-smoke-check.cjs"
+    "desktop:artifact:smoke": "node desktop/scripts/desktop-artifact-smoke-check.cjs",
+    "desktop:installer:package:win": "node desktop/scripts/build-windows-installer.cjs",
+    "desktop:installer:smoke": "node desktop/scripts/desktop-installer-smoke-check.cjs"
   },
   "private": false,
   "devDependencies": {

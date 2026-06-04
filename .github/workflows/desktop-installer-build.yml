@@ -1,0 +1,145 @@
+name: Windows Desktop Installer Build
+
+concurrency:
+  group: desktop-installer-build-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+      - "desktop-v*"
+
+jobs:
+  build-windows-desktop-installer:
+    name: Build Windows desktop installer
+    runs-on: windows-latest
+    timeout-minutes: 60
+
+    env:
+      ELECTRON_VERSION: 33.4.11
+      PUPPETEER_SKIP_DOWNLOAD: "true"
+      SHARP_IGNORE_GLOBAL_LIBVIPS: "true"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: Install root dependencies when lockfile exists
+        shell: pwsh
+        run: |
+          if (Test-Path package-lock.json) {
+            npm ci
+            git diff --quiet -- package-lock.json
+            if ($LASTEXITCODE -ne 0) {
+              git diff -- package-lock.json
+              throw "package-lock.json changed during npm ci. Please commit lockfile updates."
+            }
+          } elseif (Test-Path npm-shrinkwrap.json) {
+            npm ci
+            git diff --quiet -- npm-shrinkwrap.json
+            if ($LASTEXITCODE -ne 0) {
+              git diff -- npm-shrinkwrap.json
+              throw "npm-shrinkwrap.json changed during npm ci. Please commit lockfile updates."
+            }
+          } else {
+            Write-Host "No root npm lockfile found; skipping root npm ci. Desktop packaging scripts use Node built-ins."
+          }
+          git status --short
+          git diff --name-only
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: yarn install --frozen-lockfile
+
+      - name: Install server dependencies
+        working-directory: server
+        run: yarn install --frozen-lockfile
+
+      - name: Install collector dependencies
+        working-directory: collector
+        run: yarn install --frozen-lockfile
+
+      - name: Validate yarn lockfiles
+        shell: pwsh
+        run: |
+          $required = @(
+            "frontend/yarn.lock",
+            "server/yarn.lock",
+            "collector/yarn.lock"
+          )
+          foreach ($lockfile in $required) {
+            if (!(Test-Path $lockfile)) {
+              throw "Missing required lockfile: $lockfile"
+            }
+          }
+          git diff --quiet -- frontend/yarn.lock server/yarn.lock collector/yarn.lock
+          if ($LASTEXITCODE -ne 0) {
+            git diff -- frontend/yarn.lock server/yarn.lock collector/yarn.lock
+            throw "yarn.lock files changed during install/build steps. Please commit lockfile updates."
+          }
+
+      - name: Build frontend
+        working-directory: frontend
+        run: yarn build
+
+      - name: Validate desktop foundation
+        run: npm run desktop:smoke
+
+      - name: Run desktop wrapper tests
+        run: npx --yes jest@29.7.0 server/__tests__/desktop/desktopWrapperFoundation.test.js --runInBand
+
+      - name: Run desktop runtime launcher tests
+        run: npx --yes jest@29.7.0 server/__tests__/desktop/runtimeLauncher.test.js server/__tests__/desktop/runtimeHealthcheck.test.js --runInBand
+
+      - name: Run desktop backup tests
+        run: npx --yes jest@29.7.0 server/__tests__/desktop/localBackupStore.test.js --runInBand
+
+      - name: Run desktop diagnostics tests
+        run: npx --yes jest@29.7.0 server/__tests__/desktop/desktopDiagnosticsIntegration.test.js --runInBand
+
+      - name: Run desktop installer packaging tests
+        run: npx --yes jest@29.7.0 server/__tests__/desktop/desktopInstallerPackaging.test.js --runInBand
+
+      - name: Download Electron runtime
+        shell: pwsh
+        run: |
+          $zipPath = Join-Path $env:RUNNER_TEMP "electron-v$env:ELECTRON_VERSION-win32-x64.zip"
+          $extractPath = Join-Path $env:RUNNER_TEMP "electron-win32-x64"
+          $downloadUrl = "https://github.com/electron/electron/releases/download/v$env:ELECTRON_VERSION/electron-v$env:ELECTRON_VERSION-win32-x64.zip"
+          Invoke-WebRequest -Uri $downloadUrl -OutFile $zipPath
+          if (Test-Path $extractPath) { Remove-Item -Recurse -Force $extractPath }
+          Expand-Archive -Path $zipPath -DestinationPath $extractPath
+          "ELECTRON_DIST_PATH=$extractPath" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Package desktop app artifact
+        run: npm run desktop:artifact:package:win
+
+      - name: Smoke validate desktop app artifact
+        run: npm run desktop:artifact:smoke
+
+      - name: Install NSIS
+        shell: pwsh
+        run: choco install nsis -y --no-progress
+
+      - name: Build Windows installer
+        run: npm run desktop:installer:package:win
+
+      - name: Smoke validate Windows installer
+        run: npm run desktop:installer:smoke
+
+      - name: Upload Windows desktop installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: SWARMSY-Desktop-Setup
+          path: |
+            desktop/artifacts/SWARMSY-Desktop-Setup.exe
+            desktop/artifacts/SWARMSY-Desktop-Setup.manifest.json
+          if-no-files-found: error
+          retention-days: 14
