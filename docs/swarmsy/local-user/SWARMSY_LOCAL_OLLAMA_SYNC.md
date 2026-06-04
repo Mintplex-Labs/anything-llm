@@ -2,59 +2,46 @@
 
 ## Purpose
 
-Define how Local User Mode connects to a user's local Ollama runtime.
+Define how Local User Mode detects and uses a user's existing local Ollama installation for text AI.
 
-## Default Connection Contract
+## Current Text AI Truth
 
-- Default check URL: `http://localhost:11434`
-- Model list endpoint: `/api/tags`
-- SWARMSY checks `http://localhost:11434/api/tags`
-- If reachable, SWARMSY lists installed models
-- If unreachable, SWARMSY shows setup guidance
+- Hosted/Admin Mode uses Ollama/qwen through the hosted server.
+- Local User Mode should use the user's own local Ollama first when available.
+- Local User Mode should work without paid API keys.
 
-## Required Behavior
+## Default Connection
 
-- SWARMSY should check whether local Ollama is installed and running.
-- SWARMSY should treat a reachable `http://localhost:11434/api/tags` response as availability confirmation.
-- SWARMSY should list installed models returned by Ollama.
-- SWARMSY should let the user choose which installed model to use.
-- Chat generation should be handled through the Ollama API after the user selects a model.
+- Default Ollama URL: `http://localhost:11434`.
+- Model list endpoint: `/api/tags`.
+- Full default model-list URL: `http://localhost:11434/api/tags`.
 
-## Consent Rules
+## Detection Flow
 
-- Do not auto-install Ollama without user consent.
-- Do not auto-pull large models without user consent.
-- Do not silently change the user's selected provider.
-- Recommend compatible local models, but do not require one specific model.
+1. SWARMSY checks whether Ollama is reachable at the configured local URL.
+2. If reachable, SWARMSY calls `/api/tags`.
+3. SWARMSY lists installed local models returned by Ollama.
+4. User selects an installed model.
+5. SWARMSY saves the selected model to local project/user settings.
+6. Sparky should use that selected local model for local-only chat and planning tasks.
 
-## Unavailable Ollama Behavior
+## Unreachable Flow
 
-If `http://localhost:11434/api/tags` is unreachable, SWARMSY should:
+If Ollama is unreachable, SWARMSY should show setup guidance:
 
-1. Show that local Ollama was not detected.
-2. Explain that the user must install or start Ollama first.
-3. Offer the choice to retry detection.
-4. Offer the choice to configure a different provider or API key.
+- Explain that Ollama is not currently reachable at `http://localhost:11434`.
+- Tell the user they must install and start Ollama first, or use a future guided installer only with consent.
+- Offer a retry/check-again action.
+- Do not pull models automatically.
+- Do not switch to paid APIs unless the user explicitly enables API use.
 
-## UX Expectations
+## Model Download Consent
 
-- Status should be explicit, not hidden.
-- Provider setup should be user-controlled.
-- Errors should explain whether the issue is install, runtime, or model availability.
-- No claim should imply that SWARMSY bundled or installed Ollama automatically in this phase.
+- SWARMSY may recommend compatible models.
+- SWARMSY must not run `ollama pull` without explicit user consent.
+- SWARMSY must not auto-download huge models.
+- SWARMSY must clearly explain disk size and time/network implications before any future guided model pull.
 
-## Implementation Status
+## Local-Only Requirement
 
-- Detection foundation now lives in `server/utils/swarmsy/localUserOllama.js`.
-- The local-user-only runtime route is `GET /api/swarmsy/local-user/ollama/status`.
-- The route is limited to single-user/local-user flow so Hosted/Admin Mode behavior stays unchanged.
-- Detection performs a single safe `GET` against the resolved tags endpoint. It defaults to `http://localhost:11434/api/tags` and can be overridden by `SWARMSY_LOCAL_OLLAMA_TAGS_URL` or `OLLAMA_BASE_PATH`.
-- Returned states are `reachable`, `unreachable`, `no_models`, and `error`.
-- Installed Ollama models are listed when the local runtime is reachable.
-- Local User Mode onboarding UI now calls the route and shows explicit status states: `checking`, `reachable`, `unreachable`, `no_models`, and `error`.
-- The Local User Mode panel now includes a retry/check-again action, setup guidance when Ollama is unreachable, installed-model listing, and a model-selection shell.
-- The selected local Ollama model is persisted in Local User Mode browser storage and restored after reload only if the saved model still exists in the latest installed-model list.
-- If a saved model disappears, SWARMSY clears the stale selection and shows explicit guidance to reselect (or auto-selects only when exactly one model remains, with explicit copy).
-- Intake handoff now carries a runtime selection contract under `runtime` with shape `{ provider: "ollama", mode: "local_user", model: "<model-id>" }` when a valid Local User selection exists.
-- Local User model management now lives in the Local User Settings Hub. The hub shows `checking`, `reachable`, `unreachable`, `no_models`, and `error` states, exposes retry/check-again, and keeps saved-but-unverified model state when Ollama is temporarily unavailable.
-- Importing a backup from the hub updates browser storage and live selected-model UI immediately. If the imported model is missing from installed models, SWARMSY shows a stale/missing warning and keeps intake/chat blocked until a valid installed model is chosen.
+When the chat `Use API` toggle is off, Sparky should use local Ollama/tools only. If the local model is unavailable, Sparky should ask permission before using any online API.

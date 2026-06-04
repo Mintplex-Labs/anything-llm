@@ -2,79 +2,52 @@
 
 ## Goal
 
-Create a downloadable SWARMSY user app while keeping the current hosted SWARMSY server deployment unchanged.
+Create the downloadable SWARMSY Local User app while keeping the existing hosted SWARMSY deployment unchanged.
 
-## Current Constraint
+## Non-Negotiable Preservation Rules
 
-- Keep hosted mode live.
-- Do not remove hosted mode.
-- Do not change the current VPS/server app setup in this docs-first PR.
-- Do not remove Docker deployment.
-- Do not bundle Ollama or model weights in foundation work.
-- Do not ship signed installer/auto-update in foundation work.
+- Keep the hosted app at `swarmsy.cryptomoonboys.com` available for website, admin, testing, and demo use.
+- Do not delete Hosted/Admin Mode.
+- Do not change the current VPS/server app setup in this docs/spec phase.
+- Do not change Docker or deployment files for this plan.
+- Do not change package, build, or dependency files for this plan.
+- Do not remove the current server Ollama/qwen setup.
+- Do not claim the hosted app stores everything locally.
 
-## Target User Flow
+## Downloadable App Target Flow
 
 1. User downloads SWARMSY.
-2. User installs or launches SWARMSY on their machine.
-3. SWARMSY checks whether Ollama is running locally.
-4. If Ollama is available, SWARMSY lists installed models.
-5. User selects a model.
-6. SWARMSY creates a local `SWARMSY HIVE`.
-7. User data stays local on the machine by default.
-8. User can export a backup.
-9. User can import a backup.
+2. User installs/runs SWARMSY on their own machine.
+3. SWARMSY starts in Local User Mode unless the user intentionally connects to Hosted/Admin workflows.
+4. SWARMSY checks local Ollama at `http://localhost:11434`.
+5. SWARMSY calls Ollama `/api/tags` to list installed models when Ollama is reachable.
+6. SWARMSY checks a configured local image engine, starting with ComfyUI at `http://localhost:8188`.
+7. User selects an installed text model and optional image workflow/model.
+8. User creates a local `SWARMSY HIVE`.
+9. User data stays local by default.
+10. User can export/import backups.
+11. User can optionally add online API keys.
+12. User decides per message whether to use local-only routing or online API routing.
 
-## First Implementation Path
+## Packaging Direction
 
-Phase the downloadable app as a local-user wrapper around the existing SWARMSY product concepts instead of replacing the hosted stack.
+Candidate packaging paths remain future implementation decisions:
 
-1. Define Local User Mode docs and product boundaries.
-2. Add a lightweight local provider detection layer for Ollama reachability and installed-model listing.
-3. Add a local storage directory contract for user profile, HIVE data, chats, tasks, uploads, proof notes, and settings.
-4. Add backup export/import flows for the local data directory.
-5. Package the app for end users after the local runtime contract is stable.
+- Electron desktop wrapper.
+- Tauri desktop wrapper.
+- Bundled local web server with desktop shell.
+- Windows-first downloadable build, then macOS/Linux.
+- Signed installers and auto-update after the local data and provider contracts are stable.
 
-## Packaging Options
+## Provider Setup Policy
 
-- Electron desktop wrapper
-- Tauri desktop wrapper
-- Bundled local web server with desktop shell
-- Windows-first packaging
-- macOS and Linux packaging later
+- The user installs Ollama first, or a future SWARMSY installer guides them only with explicit consent.
+- SWARMSY may detect local providers and show setup guidance.
+- SWARMSY must not silently install Ollama, ComfyUI, Stable Diffusion WebUI, Forge, image models, or text models.
+- SWARMSY must not silently pull models.
+- SWARMSY must not require paid API keys for basic Local User Mode.
+- Optional API keys are user-owned and opt-in.
 
-## Provider Rules
+## Docs-First Scope
 
-- User installs Ollama first, or chooses their own AI provider/API key.
-- SWARMSY must not silently install Ollama.
-- SWARMSY must not silently pull AI models.
-- SWARMSY should recommend compatible local models without requiring a forced download.
-- SWARMSY should not default normal users into paid API paths.
-
-## Non-Goals For This PR
-
-- No removal of hosted/admin mode
-- No change to hosted onboarding behavior
-- No Docker removal
-- No silent Ollama install
-- No forced model downloads
-- No broad runtime packaging work unless clean existing scaffolding already exists
-
-## Expected Outcome
-
-This plan creates the product split and implementation path for a downloadable SWARMSY app without breaking the current hosted experience.
-
-## Current Status Note
-
-- Backend Local User Mode Ollama detection exists at `GET /api/swarmsy/local-user/ollama/status`.
-- The first Local User Mode UI status/model-selection shell now exists in onboarding and remains clearly separate from Hosted/Admin Mode flows.
-- Browser-side Local User backup/export/import is live in the Local User Settings Hub.
-- Desktop local directory + storage manifest contract docs and helper foundation now exist, without desktop packaging/runtime wiring in this PR.
-- Desktop wrapper foundation now includes trusted-local runtime healthcheck + actionable failure-page behavior under `desktop/`, with opt-in scripts (`desktop:dev`, `desktop:smoke`) and no hosted/admin runtime changes.
-- Desktop wrapper foundation now also includes dev/local runtime launcher orchestration (`desktop/foundation/runtimeLauncher.cjs`) gated behind explicit `SWARMSY_DESKTOP_AUTO_START_RUNTIME=true` with allowlisted script policy.
-- Browser `localStorage` remains the active Local User state until a later migration phase.
-- Trusted desktop/local mode now includes a first safe filesystem settings-file foundation under Local User `settings/`, while keeping browser `localStorage` fallback.
-- The settings-file scope is intentionally narrow (model/provider mirror only), excludes auth/API/session secrets, and does not export hosted/server DB data.
-- Hosted/Admin behavior remains unchanged and separate from this desktop-local settings flow.
-- Signed installers and auto-update remain future phases.
-- Desktop runtime foundation still does not install dependencies, install Ollama, pull models, bundle Ollama/models, or ship a production installer.
+This PR defines product boundaries, local AI routing, local image generation, API-key rules, and Sparky behavior. Runtime implementation, deployment changes, Docker changes, dependency changes, and build/package changes are intentionally out of scope.
