@@ -26,6 +26,40 @@ describe("CreateFilesManager.stripInvalidXmlChars", () => {
     expect(createFilesLib.stripInvalidXmlChars(content)).toBe(content);
   });
 
+  test("preserves typical markdown document content", () => {
+    const content = [
+      "# Quarterly Report\n",
+      "## Summary\n",
+      "Revenue grew **15%** year-over-year.\n",
+      "- Item 1: $1,200\n- Item 2: $3,400\n",
+      "| Column A | Column B |\n|----------|----------|\n| value    | value    |",
+    ].join("\n");
+    expect(createFilesLib.stripInvalidXmlChars(content)).toBe(content);
+  });
+
+  test("preserves unicode, accented characters, and emoji", () => {
+    const content = "Ñoño résumé naïve — «quotes» 日本語 🎉👍";
+    expect(createFilesLib.stripInvalidXmlChars(content)).toBe(content);
+  });
+
+  test("preserves HTML tags that appear in rich content", () => {
+    const content =
+      '<h1>Title</h1>\n<p style="color:red">Hello &amp; goodbye</p>';
+    expect(createFilesLib.stripInvalidXmlChars(content)).toBe(content);
+  });
+
+  test("preserves code blocks and special syntax", () => {
+    const content =
+      "```javascript\nconst x = () => { return 42; };\n```\n\n$E = mc^2$";
+    expect(createFilesLib.stripInvalidXmlChars(content)).toBe(content);
+  });
+
+  test("preserves backslash sequences that are NOT control characters", () => {
+    const content =
+      "Use \\textbf{bold} and \\newline and C:\\Users\\file.txt";
+    expect(createFilesLib.stripInvalidXmlChars(content)).toBe(content);
+  });
+
   test("recursively cleans arrays and nested objects", () => {
     const sheets = [
       {
