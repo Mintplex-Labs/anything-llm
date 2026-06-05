@@ -4,38 +4,53 @@
 
 Define routing rules for local-only, API-enabled, and hybrid SWARMSY operation.
 
-## Local Only
+## Current runtime foundation
+
+Chat requests now carry explicit per-message API intent:
+
+- `useApi: false` means local/default flow only for local/self-hosted providers.
+- Missing/undefined `useApi` behaves as `false`.
+- If `useApi` is false/missing and the effective provider is online, the backend returns `local_only` / `blocked_online_provider` instead of calling that provider.
+- `useApi: true` means the user explicitly requested online provider mode for that message.
+- When `useApi: true` is requested without a connected provider/key, the backend returns `needs_user_action` with: `No API key is connected yet. Add one in settings or continue with local AI.`
+- If a key exists but execution is not wired, the backend must return a clear not-wired/planned status instead of silently routing.
+
+## Local only
 
 When `Use API` is off and no opt-in API workflow is active:
 
-- Text routes to local Ollama.
+- Text routes to the existing local/default chat flow when that flow is local/self-hosted.
+- Local User text can route to local Ollama.
 - Images route to local ComfyUI or another connected local image engine.
 - Project data stays in local project storage.
+- Online workspace/system providers are blocked until the user turns `Use API` on for that message.
 - No paid API calls occur.
+- No web/current-data API calls occur.
 - If a local tool is missing, Sparky explains the missing local dependency and asks permission before using online services.
 
-## API Enabled
+## API enabled
 
 When `Use API` is on for a message:
 
-- Sparky may use the selected online LLM provider.
-- Sparky may use an online image provider if configured.
-- Sparky may use web/current-data capabilities if the selected provider/tool supports them.
-- Output still saves back into SWARMSY project context.
-- Sparky must state which provider/tool it used.
+- Sparky may use a selected online LLM provider only if a safe provider route is connected and implemented.
+- Sparky must state which provider/tool it used when API mode is actually used.
+- Output still saves back into SWARMSY project context where appropriate.
 - API use may cost money and must never be silent.
+- A missing key/provider returns `Needs user action`.
 
 ## Hybrid
 
 Hybrid routing is allowed only when the user explicitly enables the needed API path:
 
-- Ollama for text plus API for images when the message requires image generation and the user enables API.
-- Ollama for text plus API/web for current data when the user enables API.
-- Local ComfyUI for images plus API LLM for text when the user enables API for that message.
+- Ollama for text plus API for images only after a future explicit image API toggle/path exists.
+- Ollama for text plus API/web for current data only when the user enables API.
+- Local ComfyUI for images plus API LLM for text only when the user enables API for that message.
 
-## Routing Guardrails
+## Routing guardrails
 
 - Do not silently fallback from local-only to paid API.
 - Do not silently upload local project data to hosted/cloud systems.
 - Do not silently store API keys on the hosted server in Local User Mode.
+- Do not log or return API key values.
+- Do not include API keys in normal backups.
 - Hosted/Admin Mode remains separate and continues to use hosted/server storage and server-side AI setup.

@@ -2,7 +2,18 @@
 
 ## Purpose
 
-Define the visible per-message chat control that lets the user decide whether Sparky can use an online API for a specific message.
+Define the visible per-message chat control that lets the user decide whether Sparky can use an online provider/API for a specific message.
+
+## Runtime status
+
+Runtime foundation is wired for chat intent only:
+
+- The main Sparky chat composer shows a keyboard-accessible `Use API` checkbox.
+- The default state is OFF every time the composer mounts and after a successful send.
+- Chat requests include an explicit `useApi` boolean metadata flag.
+- Backend chat routes treat missing/undefined `useApi` as `false`.
+- Backend chat routes return a clear `needs_user_action` status when `useApi: true` is requested and no online provider key/config is connected.
+- Online provider execution is not integrated by this foundation PR.
 
 ## Control
 
@@ -10,41 +21,50 @@ Label:
 
 `Use API`
 
-Helper text:
+Helper / accessible text:
 
-`Use your connected online provider for this message.`
+`Use your connected online provider for this message. API usage may cost money.`
 
-## Default State
+When enabled, the helper also reminds the user that if no key is connected they can continue with local AI.
 
-The `Use API` toggle must default to OFF.
+## Default state
 
-## OFF Behavior
+`Use API` must default to OFF.
+
+Local-only is the default chat mode. No online, paid, or web/current-data API should be requested when the toggle is OFF or when the metadata flag is missing.
+
+## OFF behavior
 
 When unticked:
 
-- Sparky uses local AI/tools only.
-- Text routes to local Ollama when available.
-- Image generation routes to a connected local image engine such as ComfyUI when available.
-- Project data stays in local project storage.
-- If local AI/tools fail, Sparky asks permission before using any online API.
+- Sparky uses the existing local/default chat flow only when the effective provider is local/self-hosted.
+- Local User text can route to local Ollama when selected.
+- Local image work remains separate and routes to local ComfyUI/local tools only.
+- If the effective provider is online (for example OpenAI/OpenRouter/Anthropic/etc.), chat is blocked with `local_only` / `blocked_online_provider` instead of streaming.
+- No paid provider call is allowed.
+- No web/current-data API call is allowed.
+- Missing/undefined `useApi` behaves exactly like `useApi: false`.
 
-## ON Behavior
+## ON behavior
 
-When ticked:
+When ticked for a message:
 
-- Sparky can use the selected online provider/API for that message.
-- Sparky must state which provider/tool it used.
-- API, web, and image outputs should save back into SWARMSY project context.
-- API use may cost money and should never be silent.
+- The request includes explicit user intent, currently `useApi: true`.
+- Sparky may use a connected online provider only after the backend verifies a safe provider path is wired.
+- If provider execution is not wired, the backend must return a planned/not-wired status instead of pretending API mode worked.
+- If API mode is actually used in a future provider integration, Sparky must disclose the provider used.
+- API usage may cost money and must never be silent.
 
-## No Connected Key State
+## No connected key state
 
-If no API key is connected and the user ticks `Use API`, SWARMSY should show:
+If no API key/provider is connected and the user sends with `Use API` on, SWARMSY returns and displays:
 
 > No API key is connected yet. Add one in settings or continue with local AI.
 
-## Failure Handling
+The backend status is `needs_user_action`, mode is `api_requested`, and `success` is `false`.
 
-- If local fails and `Use API` is off, ask permission before using API.
-- If API fails and local is available, offer local fallback.
-- If both fail, provide a clear error and the best next local setup action.
+## Security and backup rules
+
+- API keys must not be logged, returned, written to chat history, exported in Local User backups, or included in normal backups.
+- This PR does not add new API key storage.
+- Local Ollama and local ComfyUI are separate from API mode.

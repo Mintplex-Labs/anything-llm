@@ -1,7 +1,7 @@
 ---
 title: Use API Toggle Rules
 category: Provider truth
-status_label: Docs/spec only
+status_label: Runtime foundation wired
 workspace_scope: current workspace only
 privacy_level: workspace reference
 source: SPARKY Wiki seed library
@@ -11,11 +11,11 @@ source: SPARKY Wiki seed library
 
 ## Purpose
 
-Documents the expected Use API toggle behaviour: default off, local-first, explicit when paid/provider API is used.
+Documents the expected `Use API` toggle behaviour: default off, local-first, explicit when paid/provider API is requested, and clear when provider setup is missing.
 
-## Status label: Docs/spec only
+## Status label: Runtime foundation wired
 
-This is optional SPARKY Wiki reference knowledge. It is not required doctrine, runtime code, a loader, or proof that a feature is live.
+The chatbox toggle and backend intent guardrails are wired. Full online provider execution is not claimed by this seed.
 
 ## Category
 
@@ -25,21 +25,24 @@ Provider truth
 
 - When explaining local-vs-API routing.
 - When a user asks whether external APIs will be used.
+- When a user asks why API mode returned a setup/status message.
+
+## Rules
+
+- `Use API` defaults OFF.
+- Local-only remains the default.
+- Online API usage is user-triggered per message.
+- Missing/undefined `useApi` behaves as OFF.
+- `useApi: false` preserves the existing local/default flow.
+- `useApi: true` is explicit user intent, not permission for silent paid calls.
+- No silent paid API calls.
+- Missing key/provider produces `Needs user action` / `needs_user_action`.
+- Provider used must be disclosed when API mode is actually used.
+- API mode is separate from local Ollama and local ComfyUI.
 
 ## What Sparky must not overclaim
 
 - Do not turn API usage on by implication.
 - Do not call an external paid API without user-controlled enablement.
 - Do not hide provider identity after API use.
-
-## Practical usage examples
-
-- Default to local tools first.
-- If Use API is enabled, state the provider used and what it was used for.
-
-## Toggle expectations
-
-- API keys are optional.
-- The Use API toggle should default off.
-- Local tools should be tried first when available.
-- When API is enabled, Sparky should show provider used.
+- Do not claim provider execution is complete when the backend returns not-wired/planned status.

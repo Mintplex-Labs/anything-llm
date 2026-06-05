@@ -15,27 +15,40 @@ describe("SWARMSY runtime chat flow wiring", () => {
     expect(source).toContain("getPendingHomeMessageForDestination");
     expect(source).toContain("runtime: lastUserMessage?.runtime");
     expect(source).toContain("runtime: promptMessage?.runtime");
-    expect(source).toContain("const runtime = normalizeLocalUserOllamaRuntimeSelection");
+    expect(source).toContain(
+      "const runtime = normalizeLocalUserOllamaRuntimeSelection"
+    );
     expect(source).toContain("isLocalUserSessionRef.current");
     expect(source).toContain("activeLocalUserRuntimeRef.current");
     expect(source).toContain("isLocalUserSessionRef.current = false");
-    expect(source).toContain("sessionStorage.removeItem(SWARMSY_LOCAL_USER_ACTIVE_RUNTIME)");
+    expect(source).toContain(
+      "sessionStorage.removeItem(SWARMSY_LOCAL_USER_ACTIVE_RUNTIME)"
+    );
     expect(source).toContain("storedRuntime?.workspaceSlug");
-    expect(source).toContain("storedRuntimeWorkspaceSlug !== normalizedWorkspaceSlug");
+    expect(source).toContain(
+      "storedRuntimeWorkspaceSlug !== normalizedWorkspaceSlug"
+    );
     expect(source).toContain("workspaceSlug: workspace.slug");
     expect(source).toContain("const result = await sendCommand");
     expect(source).toContain("if (result !== false)");
     expect(source).toContain("const timeoutId = setTimeout");
     expect(source).toContain("return () => clearTimeout(timeoutId)");
-    expect(source).toContain("const { pending: latestPending } = getPendingHomeMessageForDestination");
-    expect(source).toContain("const { pending: pendingHomeMessage } = getPendingHomeMessageForDestination");
+    expect(source).toContain(
+      "const { pending: latestPending } = getPendingHomeMessageForDestination"
+    );
+    expect(source).toContain(
+      "const { pending: pendingHomeMessage } = getPendingHomeMessageForDestination"
+    );
     expect(source).toContain("if (shouldClearLegacy)");
     expect(source).toContain("sessionStorage.removeItem(PENDING_HOME_MESSAGE)");
   });
 
   it("scopes pending handoff payloads to the destination workspace and thread", () => {
     const homeSource = fs.readFileSync(
-      path.resolve(__dirname, "../../../frontend/src/pages/Main/Home/index.jsx"),
+      path.resolve(
+        __dirname,
+        "../../../frontend/src/pages/Main/Home/index.jsx"
+      ),
       "utf8"
     );
     const onboardingSource = fs.readFileSync(
@@ -46,7 +59,10 @@ describe("SWARMSY runtime chat flow wiring", () => {
       "utf8"
     );
     const pendingSource = fs.readFileSync(
-      path.resolve(__dirname, "../../../frontend/src/utils/pendingHomeMessage.js"),
+      path.resolve(
+        __dirname,
+        "../../../frontend/src/utils/pendingHomeMessage.js"
+      ),
       "utf8"
     );
 
@@ -54,7 +70,9 @@ describe("SWARMSY runtime chat flow wiring", () => {
     expect(homeSource).toContain("workspaceSlug: targetWorkspace.slug");
     expect(homeSource).toContain("threadSlug: targetThread || null");
     expect(onboardingSource).toContain("buildPendingHomeMessage");
-    expect(onboardingSource).toContain("workspaceSlug: activeStatus.workspace.slug");
+    expect(onboardingSource).toContain(
+      "workspaceSlug: activeStatus.workspace.slug"
+    );
     expect(onboardingSource).toContain("threadSlug: null");
     expect(pendingSource).toContain(
       'Object.prototype.hasOwnProperty.call(pending, "workspaceSlug")'
@@ -62,7 +80,9 @@ describe("SWARMSY runtime chat flow wiring", () => {
     expect(pendingSource).toContain(
       'Object.prototype.hasOwnProperty.call(pending, "threadSlug")'
     );
-    expect(pendingSource).toContain("pendingThreadSlug !== normalizedThreadSlug");
+    expect(pendingSource).toContain(
+      "pendingThreadSlug !== normalizedThreadSlug"
+    );
   });
 
   it("sends runtime overrides in workspace and thread chat requests", () => {
@@ -71,12 +91,25 @@ describe("SWARMSY runtime chat flow wiring", () => {
       "utf8"
     );
     const threadSource = fs.readFileSync(
-      path.resolve(__dirname, "../../../frontend/src/models/workspaceThread.js"),
+      path.resolve(
+        __dirname,
+        "../../../frontend/src/models/workspaceThread.js"
+      ),
       "utf8"
     );
 
-    expect(workspaceSource).toContain("body: JSON.stringify({ message, attachments, runtime })");
-    expect(threadSource).toContain("body: JSON.stringify({ message, attachments, runtime })");
+    expect(workspaceSource).toContain(`body: JSON.stringify({
+        message,
+        attachments,
+        runtime,
+        useApi: useApi === true,
+      })`);
+    expect(threadSource).toContain(`body: JSON.stringify({
+          message,
+          attachments,
+          runtime,
+          useApi: useApi === true,
+        })`);
   });
 
   it("applies runtime overrides before server chat execution", () => {
@@ -88,6 +121,6 @@ describe("SWARMSY runtime chat flow wiring", () => {
     expect(source).toContain("applyRuntimeSelectionToWorkspace");
     expect(source).toContain("const runtimeWorkspace =");
     expect(source).toContain("workspaceName: workspace?.name");
-    expect(source).toContain("runtimeWorkspace?.chatModel || \"System Default\"");
+    expect(source).toContain('runtimeWorkspace?.chatModel || "System Default"');
   });
 });

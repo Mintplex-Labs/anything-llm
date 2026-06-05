@@ -137,11 +137,13 @@ export default function ChatContainer({
     );
   }
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event, metadata = {}) => {
     event.preventDefault();
     const currentMessage =
       document.getElementById(PROMPT_INPUT_ID)?.value || "";
     if (!currentMessage) return false;
+
+    const useApi = metadata?.useApi === true;
 
     const activeRuntime = isLocalUserSessionRef.current
       ? activeLocalUserRuntimeRef.current
@@ -172,6 +174,7 @@ export default function ChatContainer({
         role: "user",
         attachments: parseAttachments(),
         runtime: activeRuntime,
+        useApi,
       },
       {
         content: "",
@@ -179,6 +182,7 @@ export default function ChatContainer({
         pending: true,
         userMessage: currentMessage,
         runtime: activeRuntime,
+        useApi,
         animate: true,
       },
     ];
@@ -210,6 +214,7 @@ export default function ChatContainer({
           history: filteredHistory,
           attachments: lastUserMessage?.attachments,
           runtime: lastUserMessage?.runtime,
+          useApi: lastUserMessage?.useApi === true,
         })
       )
       .catch((e) => console.error(e));
@@ -223,6 +228,7 @@ export default function ChatContainer({
    * @param {Object[]} options.history - The history of the chat prior to this message for overriding the current chat history
    * @param {import("./DnDWrapper").Attachment[]} options.attachments - The attachments to send to the LLM for this message
    * @param {Object|null} options.runtime - Optional runtime override for this message
+   * @param {boolean} options.useApi - Explicit per-message online provider intent
    * @param {'replace' | 'append' | 'prepend'} options.writeMode - Replace current text or append to existing text (default: replace)
    * @returns {Promise<boolean>} Resolves to false if sending was blocked/no-op; otherwise true once send progression begins.
    */
@@ -232,6 +238,7 @@ export default function ChatContainer({
     history = [],
     attachments = [],
     runtime = null,
+    useApi = false,
     writeMode = "replace",
   } = {}) => {
     // If we are not auto-submitting, we can just emit the text to the prompt input.
@@ -297,6 +304,7 @@ export default function ChatContainer({
           userMessage: text,
           attachments,
           runtime: effectiveRuntime,
+          useApi: useApi === true,
           animate: true,
         },
       ];
@@ -308,6 +316,7 @@ export default function ChatContainer({
           role: "user",
           attachments,
           runtime: effectiveRuntime,
+          useApi: useApi === true,
         },
         {
           content: "",
@@ -316,6 +325,7 @@ export default function ChatContainer({
           userMessage: text,
           attachments,
           runtime: effectiveRuntime,
+          useApi: useApi === true,
           animate: true,
         },
       ];
@@ -461,6 +471,7 @@ export default function ChatContainer({
         threadSlug,
         prompt: promptMessage.userMessage,
         runtime: promptMessage?.runtime,
+        useApi: promptMessage?.useApi === true,
         chatHandler: (chatResult) =>
           handleChat(
             chatResult,

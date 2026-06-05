@@ -119,6 +119,31 @@ describe("SWARMSY Local User backup schema constants", () => {
     );
   });
 
+  it("NEVER_BACKUP_STORAGE_KEYS covers normal API key storage names", () => {
+    const { NEVER_BACKUP_STORAGE_KEYS } = loadBackupModule();
+    expect(NEVER_BACKUP_STORAGE_KEYS.has("anythingllm_apiKey")).toBe(true);
+    expect(NEVER_BACKUP_STORAGE_KEYS.has("anythingllm_apiKeys")).toBe(true);
+  });
+
+  it("normal backups do not include API key values", () => {
+    const { exportLocalUserBackup } = loadBackupModule();
+    const storage = createStorage({
+      anythingllm_apiKey: "sk-test-secret-do-not-export",
+      anythingllm_apiKeys: "another-secret-do-not-export",
+      anythingllm_swarmsy_local_user_ollama_model: "llama3.1:8b",
+    });
+
+    const backup = exportLocalUserBackup({ storage });
+
+    expect(JSON.stringify(backup)).not.toContain(
+      "sk-test-secret-do-not-export"
+    );
+    expect(JSON.stringify(backup)).not.toContain(
+      "another-secret-do-not-export"
+    );
+    expect(backup.state.ollamaModel).toBe("llama3.1:8b");
+  });
+
   it("NEVER_BACKUP_STORAGE_KEYS covers ephemeral session/runtime keys", () => {
     const { NEVER_BACKUP_STORAGE_KEYS } = loadBackupModule();
     expect(

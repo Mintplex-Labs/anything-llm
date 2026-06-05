@@ -61,6 +61,7 @@ jest.mock("../../endpoints/utils", () => ({
 
 const { chatEndpoints } = require("../../endpoints/chat");
 const { Telemetry } = require("../../models/telemetry");
+const { User } = require("../../models/user");
 
 function buildResponse({ isMultiUser = false, workspace = null } = {}) {
   const res = {
@@ -89,12 +90,16 @@ describe("chat endpoint runtime gating", () => {
       const workspace = {
         id: 1,
         slug: "test-hive",
-        chatProvider: "openai",
-        chatModel: "gpt-4o-mini",
+        chatProvider: "ollama",
+        chatModel: "llama3.1:8b",
         chatMode: "chat",
       };
       const response = buildResponse({ isMultiUser: true, workspace });
-      const runtime = { provider: "ollama", mode: "local_user", model: "llama3.1:8b" };
+      const runtime = {
+        provider: "ollama",
+        mode: "local_user",
+        model: "llama3.1:8b",
+      };
 
       mockMultiUserMode.mockReturnValue(true);
       mockUserFromSession.mockResolvedValue({ id: 42 });
@@ -139,6 +144,256 @@ describe("chat endpoint runtime gating", () => {
       );
     });
 
+    it("treats missing useApi as local/default flow", async () => {
+      const workspace = {
+        id: 1,
+        slug: "test-hive",
+        chatProvider: "ollama",
+        chatModel: "llama3.1:8b",
+        chatMode: "chat",
+      };
+      const response = buildResponse({ isMultiUser: false, workspace });
+
+      mockMultiUserMode.mockReturnValue(false);
+      mockUserFromSession.mockResolvedValue({ id: 42 });
+      mockReqBody.mockReturnValue({ message: "hello", attachments: [] });
+      mockApplyRuntimeSelectionToWorkspace.mockReturnValue({
+        workspace,
+        runtimeSelection: null,
+      });
+
+      const routeHandlers = {};
+      const app = {
+        post: jest.fn((path, _mw, handler) => {
+          routeHandlers[path] = handler;
+        }),
+      };
+      chatEndpoints(app);
+
+      await routeHandlers["/workspace/:slug/stream-chat"](
+        buildRequest(),
+        response
+      );
+
+      expect(mockStreamChatWithWorkspace).toHaveBeenCalledWith(
+        response,
+        workspace,
+        "hello",
+        workspace.chatMode,
+        { id: 42 },
+        null,
+        []
+      );
+      expect(mockWriteResponseChunk).not.toHaveBeenCalledWith(
+        response,
+        expect.objectContaining({ mode: "api_requested" })
+      );
+    });
+
+    it("returns a clear missing-key status for explicit Use API intent", async () => {
+      const workspace = {
+        id: 1,
+        slug: "test-hive",
+        chatProvider: "ollama",
+        chatModel: "llama3.1:8b",
+        chatMode: "chat",
+      };
+      const response = buildResponse({ isMultiUser: false, workspace });
+
+      mockMultiUserMode.mockReturnValue(false);
+      mockUserFromSession.mockResolvedValue({ id: 42 });
+      mockReqBody.mockReturnValue({
+        message: "hello",
+        attachments: [],
+        useApi: true,
+      });
+      mockApplyRuntimeSelectionToWorkspace.mockReturnValue({
+        workspace,
+        runtimeSelection: null,
+      });
+
+      const routeHandlers = {};
+      const app = {
+        post: jest.fn((path, _mw, handler) => {
+          routeHandlers[path] = handler;
+        }),
+      };
+      chatEndpoints(app);
+
+      const oldEnv = process.env;
+      process.env = {};
+      try {
+        await routeHandlers["/workspace/:slug/stream-chat"](
+          buildRequest(),
+          response
+        );
+      } finally {
+        process.env = oldEnv;
+      }
+
+      expect(mockStreamChatWithWorkspace).not.toHaveBeenCalled();
+      expect(mockWriteResponseChunk).toHaveBeenCalledWith(
+        response,
+        expect.objectContaining({
+          type: "statusResponse",
+          success: false,
+          mode: "api_requested",
+          status: "needs_user_action",
+          textResponse:
+            "No API key is connected yet. Add one in settings or continue with local AI.",
+        })
+      );
+      expect(response.end).toHaveBeenCalled();
+    });
+
+    it("blocks missing useApi when the system default provider is online", async () => {
+      const workspace = {
+        id: 1,
+        slug: "test-hive",
+        chatProvider: null,
+        chatModel: null,
+        chatMode: "chat",
+      };
+      const response = buildResponse({ isMultiUser: false, workspace });
+
+      mockMultiUserMode.mockReturnValue(false);
+      mockUserFromSession.mockResolvedValue({ id: 42 });
+      mockReqBody.mockReturnValue({ message: "hello", attachments: [] });
+      mockApplyRuntimeSelectionToWorkspace.mockReturnValue({
+        workspace,
+        runtimeSelection: null,
+      });
+
+      const routeHandlers = {};
+      const app = {
+        post: jest.fn((path, _mw, handler) => {
+          routeHandlers[path] = handler;
+        }),
+      };
+      chatEndpoints(app);
+
+      const oldEnv = process.env;
+      process.env = { LLM_PROVIDER: "openai" };
+      try {
+        await routeHandlers["/workspace/:slug/stream-chat"](
+          buildRequest(),
+          response
+        );
+      } finally {
+        process.env = oldEnv;
+      }
+
+      expect(mockStreamChatWithWorkspace).not.toHaveBeenCalled();
+      expect(mockWriteResponseChunk).toHaveBeenCalledWith(
+        response,
+        expect.objectContaining({
+          type: "statusResponse",
+          mode: "local_only",
+          status: "blocked_online_provider",
+          textResponse:
+            "Use API is off, but this workspace is configured for an online provider. Turn on Use API for this message or switch the workspace to local AI.",
+        })
+      );
+    });
+
+    it("blocks useApi false when the workspace provider is online", async () => {
+      const workspace = {
+        id: 1,
+        slug: "test-hive",
+        chatProvider: "openai",
+        chatModel: "gpt-4o-mini",
+        chatMode: "chat",
+      };
+      const response = buildResponse({ isMultiUser: false, workspace });
+
+      mockMultiUserMode.mockReturnValue(false);
+      mockUserFromSession.mockResolvedValue({ id: 42 });
+      mockReqBody.mockReturnValue({
+        message: "hello",
+        attachments: [],
+        useApi: false,
+      });
+      mockApplyRuntimeSelectionToWorkspace.mockReturnValue({
+        workspace,
+        runtimeSelection: null,
+      });
+
+      const routeHandlers = {};
+      const app = {
+        post: jest.fn((path, _mw, handler) => {
+          routeHandlers[path] = handler;
+        }),
+      };
+      chatEndpoints(app);
+
+      await routeHandlers["/workspace/:slug/stream-chat"](
+        buildRequest(),
+        response
+      );
+
+      expect(mockStreamChatWithWorkspace).not.toHaveBeenCalled();
+      expect(mockWriteResponseChunk).toHaveBeenCalledWith(
+        response,
+        expect.objectContaining({
+          mode: "local_only",
+          status: "blocked_online_provider",
+        })
+      );
+    });
+
+    it("quota gates explicit Use API before provider status on workspace chat", async () => {
+      const workspace = {
+        id: 1,
+        slug: "test-hive",
+        chatProvider: "openai",
+        chatModel: "gpt-4o-mini",
+        chatMode: "chat",
+      };
+      const response = buildResponse({ isMultiUser: true, workspace });
+      const limitedUser = { id: 42, dailyMessageLimit: 3 };
+
+      mockMultiUserMode.mockReturnValue(true);
+      mockUserFromSession.mockResolvedValue(limitedUser);
+      User.canSendChat.mockResolvedValueOnce(false);
+      mockReqBody.mockReturnValue({
+        message: "hello",
+        attachments: [],
+        useApi: true,
+      });
+
+      const routeHandlers = {};
+      const app = {
+        post: jest.fn((path, _mw, handler) => {
+          routeHandlers[path] = handler;
+        }),
+      };
+      chatEndpoints(app);
+
+      await routeHandlers["/workspace/:slug/stream-chat"](
+        buildRequest(),
+        response
+      );
+
+      expect(mockStreamChatWithWorkspace).not.toHaveBeenCalled();
+      expect(mockWriteResponseChunk).toHaveBeenCalledWith(
+        response,
+        expect.objectContaining({
+          type: "abort",
+          textResponse: null,
+          error:
+            "You have met your maximum 24 hour chat quota of 3 chats. Try again later.",
+        })
+      );
+      expect(mockWriteResponseChunk).not.toHaveBeenCalledWith(
+        response,
+        expect.objectContaining({ mode: "api_requested" })
+      );
+      expect(mockWriteResponseChunk).not.toHaveBeenCalledWith(
+        response,
+        expect.objectContaining({ status: "needs_user_action" })
+      );
+    });
+
     it("applies runtime override in single-user mode", async () => {
       const workspace = {
         id: 1,
@@ -153,7 +408,11 @@ describe("chat endpoint runtime gating", () => {
         chatModel: "llama3.1:8b",
       };
       const response = buildResponse({ isMultiUser: false, workspace });
-      const runtime = { provider: "ollama", mode: "local_user", model: "llama3.1:8b" };
+      const runtime = {
+        provider: "ollama",
+        mode: "local_user",
+        model: "llama3.1:8b",
+      };
 
       mockMultiUserMode.mockReturnValue(false);
       mockUserFromSession.mockResolvedValue({ id: 42 });
@@ -164,7 +423,11 @@ describe("chat endpoint runtime gating", () => {
       });
       mockApplyRuntimeSelectionToWorkspace.mockReturnValue({
         workspace: runtimeWorkspace,
-        runtimeSelection: { provider: "ollama", mode: "local_user", model: "llama3.1:8b" },
+        runtimeSelection: {
+          provider: "ollama",
+          mode: "local_user",
+          model: "llama3.1:8b",
+        },
       });
 
       const routeHandlers = {};
@@ -208,14 +471,18 @@ describe("chat endpoint runtime gating", () => {
       const workspace = {
         id: 1,
         slug: "test-hive",
-        chatProvider: "openai",
-        chatModel: "gpt-4o-mini",
+        chatProvider: "ollama",
+        chatModel: "llama3.1:8b",
         chatMode: "chat",
       };
       const thread = { id: 10, name: "thread-1" };
       const response = buildResponse({ isMultiUser: true, workspace });
       response.locals.thread = thread;
-      const runtime = { provider: "ollama", mode: "local_user", model: "llama3.1:8b" };
+      const runtime = {
+        provider: "ollama",
+        mode: "local_user",
+        model: "llama3.1:8b",
+      };
 
       mockMultiUserMode.mockReturnValue(true);
       mockUserFromSession.mockResolvedValue({ id: 42 });
@@ -258,6 +525,159 @@ describe("chat endpoint runtime gating", () => {
       );
     });
 
+    it("blocks useApi false when the thread workspace provider is online", async () => {
+      const workspace = {
+        id: 1,
+        slug: "test-hive",
+        chatProvider: "openai",
+        chatModel: "gpt-4o-mini",
+        chatMode: "chat",
+      };
+      const thread = { id: 10, name: "thread-1" };
+      const response = buildResponse({ isMultiUser: false, workspace });
+      response.locals.thread = thread;
+
+      mockMultiUserMode.mockReturnValue(false);
+      mockUserFromSession.mockResolvedValue({ id: 42 });
+      mockReqBody.mockReturnValue({
+        message: "hello",
+        attachments: [],
+        useApi: false,
+      });
+      mockApplyRuntimeSelectionToWorkspace.mockReturnValue({
+        workspace,
+        runtimeSelection: null,
+      });
+
+      const routeHandlers = {};
+      const app = {
+        post: jest.fn((path, _mw, handler) => {
+          routeHandlers[path] = handler;
+        }),
+      };
+      chatEndpoints(app);
+
+      await routeHandlers["/workspace/:slug/thread/:threadSlug/stream-chat"](
+        buildRequest(),
+        response
+      );
+
+      expect(mockStreamChatWithWorkspace).not.toHaveBeenCalled();
+      expect(mockWriteResponseChunk).toHaveBeenCalledWith(
+        response,
+        expect.objectContaining({
+          mode: "local_only",
+          status: "blocked_online_provider",
+        })
+      );
+    });
+
+    it("returns explicit Use API status on thread chat after quota passes", async () => {
+      const workspace = {
+        id: 1,
+        slug: "test-hive",
+        chatProvider: "ollama",
+        chatModel: "llama3.1:8b",
+        chatMode: "chat",
+      };
+      const thread = { id: 10, name: "thread-1" };
+      const response = buildResponse({ isMultiUser: true, workspace });
+      response.locals.thread = thread;
+
+      mockMultiUserMode.mockReturnValue(true);
+      mockUserFromSession.mockResolvedValue({ id: 42 });
+      User.canSendChat.mockResolvedValueOnce(true);
+      mockReqBody.mockReturnValue({
+        message: "hello",
+        attachments: [],
+        useApi: true,
+      });
+
+      const routeHandlers = {};
+      const app = {
+        post: jest.fn((path, _mw, handler) => {
+          routeHandlers[path] = handler;
+        }),
+      };
+      chatEndpoints(app);
+
+      const oldEnv = process.env;
+      process.env = {};
+      try {
+        await routeHandlers["/workspace/:slug/thread/:threadSlug/stream-chat"](
+          buildRequest(),
+          response
+        );
+      } finally {
+        process.env = oldEnv;
+      }
+
+      expect(mockStreamChatWithWorkspace).not.toHaveBeenCalled();
+      expect(mockWriteResponseChunk).toHaveBeenCalledWith(
+        response,
+        expect.objectContaining({
+          type: "statusResponse",
+          mode: "api_requested",
+          status: "needs_user_action",
+        })
+      );
+    });
+
+    it("quota gates explicit Use API before provider status on thread chat", async () => {
+      const workspace = {
+        id: 1,
+        slug: "test-hive",
+        chatProvider: "openai",
+        chatModel: "gpt-4o-mini",
+        chatMode: "chat",
+      };
+      const thread = { id: 10, name: "thread-1" };
+      const response = buildResponse({ isMultiUser: true, workspace });
+      response.locals.thread = thread;
+      const limitedUser = { id: 42, dailyMessageLimit: 3 };
+
+      mockMultiUserMode.mockReturnValue(true);
+      mockUserFromSession.mockResolvedValue(limitedUser);
+      User.canSendChat.mockResolvedValueOnce(false);
+      mockReqBody.mockReturnValue({
+        message: "hello",
+        attachments: [],
+        useApi: true,
+      });
+
+      const routeHandlers = {};
+      const app = {
+        post: jest.fn((path, _mw, handler) => {
+          routeHandlers[path] = handler;
+        }),
+      };
+      chatEndpoints(app);
+
+      await routeHandlers["/workspace/:slug/thread/:threadSlug/stream-chat"](
+        buildRequest(),
+        response
+      );
+
+      expect(mockStreamChatWithWorkspace).not.toHaveBeenCalled();
+      expect(mockWriteResponseChunk).toHaveBeenCalledWith(
+        response,
+        expect.objectContaining({
+          type: "abort",
+          textResponse: null,
+          error:
+            "You have met your maximum 24 hour chat quota of 3 chats. Try again later.",
+        })
+      );
+      expect(mockWriteResponseChunk).not.toHaveBeenCalledWith(
+        response,
+        expect.objectContaining({ mode: "api_requested" })
+      );
+      expect(mockWriteResponseChunk).not.toHaveBeenCalledWith(
+        response,
+        expect.objectContaining({ status: "needs_user_action" })
+      );
+    });
+
     it("applies runtime override in single-user mode", async () => {
       const workspace = {
         id: 1,
@@ -274,7 +694,11 @@ describe("chat endpoint runtime gating", () => {
       const thread = { id: 10, name: "thread-1" };
       const response = buildResponse({ isMultiUser: false, workspace });
       response.locals.thread = thread;
-      const runtime = { provider: "ollama", mode: "local_user", model: "llama3.1:8b" };
+      const runtime = {
+        provider: "ollama",
+        mode: "local_user",
+        model: "llama3.1:8b",
+      };
 
       mockMultiUserMode.mockReturnValue(false);
       mockUserFromSession.mockResolvedValue({ id: 42 });
@@ -285,7 +709,11 @@ describe("chat endpoint runtime gating", () => {
       });
       mockApplyRuntimeSelectionToWorkspace.mockReturnValue({
         workspace: runtimeWorkspace,
-        runtimeSelection: { provider: "ollama", mode: "local_user", model: "llama3.1:8b" },
+        runtimeSelection: {
+          provider: "ollama",
+          mode: "local_user",
+          model: "llama3.1:8b",
+        },
       });
 
       const routeHandlers = {};

@@ -49,6 +49,7 @@ export default function PromptInput({
   const agentSessionActive = useIsAgentSessionActive();
   const [promptInput, setPromptInput] = useState("");
   const [showTools, setShowTools] = useState(false);
+  const [useApi, setUseApi] = useState(false);
   const autoOpenedToolsRef = useRef(false);
   const toolsHighlightRef = useRef(-1);
   const formRef = useRef(null);
@@ -118,12 +119,18 @@ export default function PromptInput({
   }
   const debouncedSaveState = debounce(saveCurrentState, 250);
 
-  function handleSubmit(e) {
-    // Ignore submits from portaled modals (slash command preset forms)
-    if (e.target !== e.currentTarget) return;
+  async function submitPrompt(e) {
     setFocused(false);
     setShowTools(false);
-    submit(e);
+    const result = await submit(e, { useApi });
+    if (result !== false) setUseApi(false);
+    return result;
+  }
+
+  async function handleSubmit(e) {
+    // Ignore submits from portaled modals (slash command preset forms)
+    if (e.target !== e.currentTarget) return;
+    return submitPrompt(e);
   }
 
   function resetTextAreaHeight() {
@@ -188,7 +195,7 @@ export default function PromptInput({
       event.preventDefault();
       if (isStreaming || isDisabled) return; // Prevent submission if streaming or disabled
       setShowTools(false);
-      return submit(event);
+      return submitPrompt(event);
     }
 
     // Is undo with Ctrl+Z or Cmd+Z + Shift key = Redo
@@ -387,6 +394,7 @@ export default function PromptInput({
                   />
                 </div>
                 <div className="flex gap-x-2 items-center">
+                  <UseApiToggle useApi={useApi} setUseApi={setUseApi} />
                   <SpeechToText sendCommand={sendCommand} />
                   {isStreaming ? (
                     <StopGenerationButton />
@@ -483,6 +491,40 @@ function ToolsButton({
         {t("chat_window.tools")}
       </span>
     </button>
+  );
+}
+
+function UseApiToggle({ useApi, setUseApi }) {
+  const helperText = useApi
+    ? "Use your connected online provider for this message. API usage may cost money. If no API key is connected, continue with local AI."
+    : "Use your connected online provider for this message. API usage may cost money.";
+
+  return (
+    <label
+      className={`flex items-center gap-x-1.5 rounded-full px-2 py-1 text-xs font-medium cursor-pointer border ${
+        useApi
+          ? "border-amber-400/70 bg-amber-500/15 text-amber-200 light:text-amber-700 light:bg-amber-50"
+          : "border-zinc-700 text-zinc-300 hover:bg-zinc-700 light:border-slate-300 light:text-slate-600 light:hover:bg-slate-100"
+      }`}
+      title={helperText}
+    >
+      <input
+        type="checkbox"
+        name="useApi"
+        checked={useApi}
+        onChange={(event) => setUseApi(event.target.checked)}
+        aria-label="Use API: Use your connected online provider for this message. API usage may cost money."
+        aria-describedby="use-api-chat-toggle-helper"
+        className="h-3.5 w-3.5 cursor-pointer accent-amber-500"
+      />
+      <span>Use API</span>
+      <span className="hidden sm:inline text-[10px] opacity-80">
+        may cost money
+      </span>
+      <span id="use-api-chat-toggle-helper" className="sr-only">
+        {helperText}
+      </span>
+    </label>
   );
 }
 

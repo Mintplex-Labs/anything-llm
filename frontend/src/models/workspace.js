@@ -126,6 +126,7 @@ const Workspace = {
     runtime = null,
     chatHandler,
     attachments = [],
+    useApi = false,
   }) {
     if (!!threadSlug)
       return this.threads.streamChat(
@@ -133,14 +134,16 @@ const Workspace = {
         prompt,
         chatHandler,
         attachments,
-        runtime
+        runtime,
+        useApi
       );
     return this.streamChat(
       { slug: workspaceSlug },
       prompt,
       chatHandler,
       attachments,
-      runtime
+      runtime,
+      useApi
     );
   },
   streamChat: async function (
@@ -148,7 +151,8 @@ const Workspace = {
     message,
     handleChat,
     attachments = [],
-    runtime = null
+    runtime = null,
+    useApi = false
   ) {
     const ctrl = new AbortController();
 
@@ -163,7 +167,12 @@ const Workspace = {
 
     await fetchEventSource(`${API_BASE}/workspace/${slug}/stream-chat`, {
       method: "POST",
-      body: JSON.stringify({ message, attachments, runtime }),
+      body: JSON.stringify({
+        message,
+        attachments,
+        runtime,
+        useApi: useApi === true,
+      }),
       headers: baseHeaders(),
       signal: ctrl.signal,
       openWhenHidden: true,
