@@ -65,10 +65,6 @@ module.exports.CreatePdfFile = {
             try {
               this.super.handlerProps.log(`Using the create-pdf-file tool.`);
 
-              // Strip XML 1.0 illegal control characters before the markdown is
-              // rendered to HTML/PDF (e.g. the form feed a LaTeX `\frac` decodes to).
-              content = createFilesLib.stripInvalidXmlChars(content);
-
               const hasExtension = /\.pdf$/i.test(filename);
               if (!hasExtension) filename = `${filename}.pdf`;
 
