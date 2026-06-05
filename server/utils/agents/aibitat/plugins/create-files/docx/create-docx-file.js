@@ -122,6 +122,13 @@ module.exports.CreateDocxFile = {
             try {
               this.super.handlerProps.log(`Using the create-docx-file tool.`);
 
+              // Strip XML 1.0 illegal control characters (e.g. the form feed a
+              // LaTeX `\frac` decodes to) so Word can open the generated file.
+              content = createFilesLib.stripInvalidXmlChars(content);
+              title = createFilesLib.stripInvalidXmlChars(title);
+              subtitle = createFilesLib.stripInvalidXmlChars(subtitle);
+              author = createFilesLib.stripInvalidXmlChars(author);
+
               const hasExtension = /\.docx$/i.test(filename);
               if (!hasExtension) filename = `${filename}.docx`;
               const displayFilename = filename.split("/").pop();
