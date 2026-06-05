@@ -6,18 +6,25 @@ Define optional online provider support for users who choose to connect their ow
 
 ## Runtime status
 
-This foundation does not add insecure key storage or provider execution. It only adds the per-message API intent flag and guardrails so the app can safely reject API mode when no key/provider is connected.
+Configured online LLM provider execution is wired for explicit per-message `Use API` chat requests. SWARMSY uses the existing AnythingLLM AI Provider settings and provider infrastructure instead of creating a separate key store.
 
 ## Supported provider targets
 
-Future user-connected provider targets may include:
+User-connected provider targets include the existing AnythingLLM chat providers such as:
 
 - OpenAI.
 - Grok / xAI.
 - Anthropic.
 - Gemini.
 - OpenRouter.
-- Other providers later.
+- Groq.
+- Mistral.
+- Perplexity.
+- Together AI.
+- Cohere.
+- Fireworks AI.
+- Novita.
+- Other existing AnythingLLM online providers as configured by the app.
 
 ## Core rules
 
@@ -30,16 +37,21 @@ Future user-connected provider targets may include:
 - Missing keys must produce a clear `Needs user action` / `needs_user_action` status.
 - Provider execution must disclose the provider used when API mode is actually used.
 - Local Ollama and local ComfyUI are separate from API mode.
+- This does not add image API routing and does not affect local ComfyUI image generation.
+
+## Where keys are added
+
+Add keys in the existing AnythingLLM AI Provider settings unless a future SWARMSY-specific settings surface is introduced. For normal local Sparky chat, keep the workspace/default provider on local Ollama and tick `Use API` only for messages that should use an online provider.
 
 ## Local User Mode storage
 
-Local User Mode should store API keys only through the safest available platform mechanism when implemented. Keys should not be synced, exported, copied to hosted/cloud systems, or included in normal Local User backups.
+Local User Mode should store API keys only through the safest available platform mechanism. Keys should not be synced, exported, copied to hosted/cloud systems, or included in normal Local User backups.
 
-This PR does not add API key storage. The existing backup allowlist remains the only normal Local User backup surface, and API-key-like storage keys are explicitly excluded by the never-backup boundary.
+The normal Local User backup surface excludes API-key-like storage keys. Provider key values must not appear in responses, logs, chat history, telemetry payloads, or backup exports.
 
 ## Hosted/Admin Mode warning
 
-Hosted/Admin Mode must warn users that API keys may be stored on hosted infrastructure depending on the final provider implementation. Hosted/admin behavior must not be changed without clear status labels.
+Hosted/Admin Mode must warn users that API keys may be stored on hosted infrastructure depending on the provider implementation. Hosted/admin behavior must not be changed without clear status labels.
 
 ## Removal and rotation
 
