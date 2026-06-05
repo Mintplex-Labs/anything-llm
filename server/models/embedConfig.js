@@ -64,6 +64,12 @@ const EmbedConfig = {
           },
         },
       });
+
+      if (!embed.allowlist_domains) {
+        console.warn(
+          `[EmbedConfig] Embed ${embed.uuid} was created with no allowed-domains allowlist; it will accept requests from ANY origin. Set EMBED_REQUIRE_ALLOWLIST="true" to require an allowlist before an embed will respond.`
+        );
+      }
       return { embed, message: null };
     } catch (error) {
       console.error(error.message);

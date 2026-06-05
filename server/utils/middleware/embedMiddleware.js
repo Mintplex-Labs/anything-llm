@@ -65,6 +65,27 @@ async function canRespond(request, response, next) {
     // Check if requester hostname is in the valid allowlist of domains.
     const host = request.headers.origin ?? "";
     const allowedHosts = EmbedConfig.parseAllowedHosts(embed);
+
+    // Optional hardening (opt-in, back-compatible): an embed with no allowlist
+    // configured answers requests from ANY origin (parseAllowedHosts returns
+    // null). When EMBED_REQUIRE_ALLOWLIST is enabled, treat "no allowlist" as
+    // deny-all instead of allow-all, so an embed cannot be queried cross-origin
+    // until its owner explicitly sets the allowed domains.
+    if (
+      allowedHosts === null &&
+      process.env.EMBED_REQUIRE_ALLOWLIST === "true"
+    ) {
+      response.status(401).json({
+        id: uuidv4(),
+        type: "abort",
+        textResponse: null,
+        sources: [],
+        close: true,
+        error: "Invalid request.",
+      });
+      return;
+    }
+
     if (allowedHosts !== null && !allowedHosts.includes(host)) {
       response.status(401).json({
         id: uuidv4(),
