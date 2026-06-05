@@ -258,7 +258,8 @@ module.exports.CreatePptxPresentation = {
               // Sub-agent output can carry XML 1.0 illegal control characters
               // (e.g. a form feed from a LaTeX `\frac`); strip them recursively
               // from every slide so PowerPoint can open the generated deck.
-              const cleanSlides = createFilesLib.stripInvalidXmlChars(allSlides);
+              const cleanSlides =
+                createFilesLib.stripInvalidXmlChars(allSlides);
 
               // Title slide
               const titleSlide = pptx.addSlide();
