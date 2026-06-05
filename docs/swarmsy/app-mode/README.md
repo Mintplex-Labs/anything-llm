@@ -33,6 +33,10 @@ This folder is not runtime wiring yet. It defines the future app mode that later
 - [`../release/SWARMSY_HOSTED_APP_DEPLOYMENT_CHECKLIST.md`](../release/SWARMSY_HOSTED_APP_DEPLOYMENT_CHECKLIST.md)
 - [`../release/SWARMSY_DEV_VS_PRODUCTION_MODE.md`](../release/SWARMSY_DEV_VS_PRODUCTION_MODE.md)
 
+## SPARKY Wiki docs
+
+- [`../sparky-wiki/`](../sparky-wiki/) — Local Knowledge Library specs for searchable workspace knowledge, local-user notes, hosted/admin wiki boundaries, and legacy-salvage seed planning.
+
 ## Legacy salvage docs
 
 - [`../legacy-salvage/`](../legacy-salvage/)

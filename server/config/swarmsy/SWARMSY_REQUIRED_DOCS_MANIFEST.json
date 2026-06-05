@@ -97,6 +97,18 @@
       ]
     },
     {
+      "id": "sparky-wiki-foundation",
+      "label": "SPARKY Wiki Local Knowledge Library",
+      "required": false,
+      "paths": [
+        "docs/swarmsy/sparky-wiki/SPARKY_WIKI_LOCAL_KNOWLEDGE_LIBRARY.md",
+        "docs/swarmsy/sparky-wiki/SPARKY_WIKI_DATA_MODEL.md",
+        "docs/swarmsy/sparky-wiki/SPARKY_WIKI_RETRIEVAL_RULES.md",
+        "docs/swarmsy/sparky-wiki/SPARKY_WIKI_HOSTED_VS_LOCAL.md",
+        "docs/swarmsy/sparky-wiki/SPARKY_WIKI_LEGACY_SWARMSY_SEED_PLAN.md"
+      ]
+    },
+    {
       "id": "sparky-operator",
       "label": "SPARKY AnythingLLM Operator Playbooks",
       "required": false,
