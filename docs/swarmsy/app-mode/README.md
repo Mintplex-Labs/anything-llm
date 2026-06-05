@@ -32,3 +32,9 @@ This folder is not runtime wiring yet. It defines the future app mode that later
 - [`../release/SWARMSY_USER_ACCESS_MODEL.md`](../release/SWARMSY_USER_ACCESS_MODEL.md)
 - [`../release/SWARMSY_HOSTED_APP_DEPLOYMENT_CHECKLIST.md`](../release/SWARMSY_HOSTED_APP_DEPLOYMENT_CHECKLIST.md)
 - [`../release/SWARMSY_DEV_VS_PRODUCTION_MODE.md`](../release/SWARMSY_DEV_VS_PRODUCTION_MODE.md)
+
+## Legacy salvage docs
+
+- [`../legacy-salvage/`](../legacy-salvage/)
+- [`../legacy-salvage/OLD_SWARMSY_REPO_SALVAGE_AUDIT.md`](../legacy-salvage/OLD_SWARMSY_REPO_SALVAGE_AUDIT.md)
+- [`../legacy-salvage/OLD_SWARMSY_SOURCE_MAP.md`](../legacy-salvage/OLD_SWARMSY_SOURCE_MAP.md)
