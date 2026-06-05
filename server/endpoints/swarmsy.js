@@ -10,6 +10,7 @@ const {
   ingestSwarmsyRequiredDocs,
 } = require("../utils/swarmsy/ingestRequiredDocs");
 const { detectLocalOllama } = require("../utils/swarmsy/localUserOllama");
+const { generateComfyUiImage } = require("../utils/swarmsy/comfyUiGeneration");
 const {
   detectLocalImageEngine,
   resolveLocalImageEngineUrl,
@@ -206,6 +207,25 @@ async function swarmsyLocalUserOllamaStatus(_request, response) {
   }
 }
 
+async function swarmsyLocalUserImageEngineGenerate(request, response) {
+  try {
+    const result = await generateComfyUiImage(request.body || {});
+    const statusCode = ["invalid_request", "blocked"].includes(result.status)
+      ? 400
+      : 200;
+    return response.status(statusCode).json(result);
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({
+      success: false,
+      mode: "local_user",
+      engine: "comfyui",
+      status: "failed",
+      message: "Failed to generate image with local ComfyUI.",
+    });
+  }
+}
+
 async function swarmsyLocalUserImageEngineStatus(_request, response) {
   try {
     return response.status(200).json(await detectLocalImageEngine());
@@ -258,10 +278,17 @@ function swarmsyEndpoints(app) {
     [validatedRequest, isSingleUserMode],
     swarmsyLocalUserImageEngineStatus
   );
+
+  app.post(
+    "/swarmsy/local-user/image-engine/generate",
+    [validatedRequest, isSingleUserMode],
+    swarmsyLocalUserImageEngineGenerate
+  );
 }
 
 module.exports = {
   __resetSwarmsyHiveCreationLocksForTests,
+  swarmsyLocalUserImageEngineGenerate,
   swarmsyLocalUserImageEngineStatus,
   swarmsyLocalUserOllamaStatus,
   swarmsyEndpoints,

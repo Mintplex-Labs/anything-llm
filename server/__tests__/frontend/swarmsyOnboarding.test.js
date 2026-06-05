@@ -71,6 +71,87 @@ describe("Swarmsy onboarding model", () => {
     );
   });
 
+  it("posts local ComfyUI generation requests without API keys", async () => {
+    const payload = {
+      prompt: "street art poster",
+      negativePrompt: "blurry",
+      workflowJson: { "1": {} },
+    };
+    const fetchImpl = jest.fn().mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockResolvedValue({
+        success: true,
+        mode: "local_user",
+        engine: "comfyui",
+        status: "completed",
+      }),
+    });
+    const onboardingModel = loadSwarmsyOnboardingModule(fetchImpl);
+
+    const response = await onboardingModel.localUserImageEngineGenerate(payload);
+
+    expect(response.status).toBe("completed");
+    expect(fetchImpl).toHaveBeenCalledWith(
+      "http://localhost/api/swarmsy/local-user/image-engine/generate",
+      {
+        method: "POST",
+        headers: {},
+        body: JSON.stringify(payload),
+        signal: undefined,
+      }
+    );
+  });
+
+  it("returns the clear local ComfyUI missing-engine message on generation network failure", async () => {
+    const fetchImpl = jest.fn().mockRejectedValue(new Error("network down"));
+    const onboardingModel = loadSwarmsyOnboardingModule(fetchImpl);
+
+    const response = await onboardingModel.localUserImageEngineGenerate({
+      prompt: "poster",
+    });
+
+    expect(response).toEqual({
+      success: false,
+      mode: "unknown",
+      engine: "comfyui",
+      status: "unavailable",
+      source: "fallback",
+      message:
+        "ComfyUI is not connected. Start your local image engine before image generation.",
+    });
+  });
+
+  it("passes local ComfyUI generation abort signals to fetch", async () => {
+    const fetchImpl = jest.fn().mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockResolvedValue({ success: true }),
+    });
+    const onboardingModel = loadSwarmsyOnboardingModule(fetchImpl);
+    const signal = { aborted: false };
+
+    await onboardingModel.localUserImageEngineGenerate(
+      { prompt: "poster" },
+      { signal }
+    );
+
+    expect(fetchImpl).toHaveBeenCalledWith(
+      "http://localhost/api/swarmsy/local-user/image-engine/generate",
+      expect.objectContaining({ signal })
+    );
+  });
+
+  it("rethrows local ComfyUI generation abort errors", async () => {
+    const abortError = Object.assign(new Error("aborted"), {
+      name: "AbortError",
+    });
+    const fetchImpl = jest.fn().mockRejectedValue(abortError);
+    const onboardingModel = loadSwarmsyOnboardingModule(fetchImpl);
+
+    await expect(
+      onboardingModel.localUserImageEngineGenerate({ prompt: "poster" })
+    ).rejects.toBe(abortError);
+  });
+
   it("rethrows abort errors so callers can bail out safely", async () => {
     const abortError = Object.assign(new Error("aborted"), {
       name: "AbortError",

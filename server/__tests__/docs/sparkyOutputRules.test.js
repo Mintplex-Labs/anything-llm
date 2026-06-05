@@ -78,7 +78,7 @@ describe("SPARKY image output doctrine docs", () => {
     }
   });
 
-  it("documents readiness-only scope for ComfyUI", () => {
+  it("documents local-only ComfyUI generation MVP scope", () => {
     const bridgePlan = readDoc(
       "docs/swarmsy/local-user/COMFYUI_BRIDGE_PLAN.md"
     );
@@ -86,9 +86,15 @@ describe("SPARKY image output doctrine docs", () => {
       "docs/swarmsy/local-user/SWARMSY_LOCAL_IMAGE_GENERATION.md"
     );
 
-    expect(bridgePlan).toContain("This PR checks readiness only.");
-    expect(bridgePlan).toContain("Full image generation is future work.");
-    expect(localImagePlan).toContain("This PR checks readiness only.");
-    expect(localImagePlan).toContain("Full image generation is future work.");
+    expect(bridgePlan).toContain("This MVP is local ComfyUI only.");
+    expect(bridgePlan).toContain("No online image API is added.");
+    expect(bridgePlan).toContain(
+      "Default generation requires a configured/user-provided ComfyUI workflow JSON object."
+    );
+    expect(localImagePlan).toContain("This MVP is local ComfyUI only.");
+    expect(localImagePlan).toContain("No model downloads are implemented.");
+    expect(localImagePlan).toContain(
+      "The readiness check must not submit image-generation jobs."
+    );
   });
 });

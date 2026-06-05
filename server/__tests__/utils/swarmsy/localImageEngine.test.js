@@ -27,6 +27,7 @@ describe("local image engine detection", () => {
 
     expect(fetchImpl).toHaveBeenCalledWith(DEFAULT_LOCAL_IMAGE_ENGINE_URL, {
       method: "GET",
+      redirect: "manual",
       signal: expect.any(AbortSignal),
     });
     expect(status).toEqual({
@@ -92,6 +93,7 @@ describe("local image engine detection", () => {
 
     expect(fetchImpl).toHaveBeenCalledWith(DEFAULT_LOCAL_IMAGE_ENGINE_URL, {
       method: "GET",
+      redirect: "manual",
       signal: expect.any(AbortSignal),
     });
     expect(fetchImpl).not.toHaveBeenCalledWith(

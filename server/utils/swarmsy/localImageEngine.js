@@ -62,6 +62,7 @@ async function fetchWithTimeout(fetchImpl, url, timeoutMs) {
   try {
     return await fetchImpl(url, {
       method: "GET",
+      redirect: "manual",
       signal: controller.signal,
     });
   } finally {

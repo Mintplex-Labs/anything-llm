@@ -2,24 +2,26 @@
 
 ## Purpose
 
-Define the future `Sparky Image Tool` that lets Sparky create artwork inside SWARMSY using a connected local or explicitly enabled online image engine.
+Define the `Sparky Image Tool` path that lets Sparky create artwork inside SWARMSY using a connected local image engine.
 
-## Current PR Scope
+## Current MVP Scope
 
-This PR checks readiness only.
+This MVP is local ComfyUI only.
 
-- Full image generation is future work.
-- No ComfyUI generation jobs are submitted yet.
-- No image upload/output storage is added yet.
-- No model downloads are added.
+- Sparky creates the art pack/prompt first.
+- If local ComfyUI is connected and the user supplies/configures a ComfyUI workflow JSON, SWARMSY can submit the generation job.
+- SWARMSY polls ComfyUI history and retrieves the generated image before reporting completion.
+- No online image API is added.
 - No paid API usage is added.
-- No API keys are required.
+- No API key is required.
+- No model downloads or silent ComfyUI installs are added.
+- Full asset-library storage is future work.
 
 ## Tool Name
 
 `Sparky Image Tool`
 
-## Inputs — Future Generation
+## Inputs
 
 - User request.
 - Workspace identity mode.
@@ -31,45 +33,46 @@ This PR checks readiness only.
 - Negative prompt.
 - Size.
 - Seed.
-- Model/workflow choice.
+- User-provided ComfyUI workflow JSON.
 
-## Outputs — Future Generation
+## Outputs
 
-- Generated image file.
+- ComfyUI image reference after retrieval succeeds.
 - Prompt used.
 - Negative prompt.
 - Seed.
-- Model/workflow.
+- Workflow label.
 - Timestamp.
-- Saved project reference.
+- Clear error/status if the local engine is unavailable or the workflow fails.
 
 ## Operator Rule
 
 Output beats instructions.
 
-If the user says “you create the artwork,” Sparky must not tell the user to use Canva or another manual tool. Sparky should create the deliverable inside SWARMSY whenever the necessary tool is connected.
+If the user says “you create the artwork,” Sparky must not tell the user to use Canva or another manual tool by default. Sparky should create the deliverable inside SWARMSY whenever the necessary local tool is connected.
 
 Do not default to Canva.
 
-## Connected Engine Behavior — Future Work
+## Connected Engine Behavior
 
-If an image engine is connected, Sparky should:
+If local ComfyUI is connected, Sparky should:
 
 1. Convert the user request into a generation-ready prompt pack.
 2. Apply workspace identity mode, memory lock, lore, visual style, and proof/safety constraints.
-3. Submit the image job through the connected image engine.
-4. Save the image and metadata into project storage.
-5. Return the finished output and saved project reference.
+3. Submit the image job through the local ComfyUI generation flow when a valid workflow JSON is available.
+4. Poll status/history.
+5. Retrieve the image from ComfyUI.
+6. Return the image reference and metadata.
 
-The current PR only checks whether the engine is reachable; it does not perform steps 3–5.
+Sparky must not claim image-generation success until image retrieval succeeds.
 
 ## Not Connected Behavior
 
 If an image engine is not connected, Sparky should say:
 
-> I can’t render the image yet because your local image engine is not connected. Here is the finished generation prompt and art direction. Connect ComfyUI and I’ll generate it inside SWARMSY.
+> ComfyUI is not connected. Start your local image engine before image generation.
 
-Sparky must then provide the finished prompt/art pack:
+Sparky must still provide the finished prompt/art pack:
 
 - title
 - concept
@@ -95,9 +98,8 @@ Sparky must then provide the finished prompt/art pack:
 
 - Output beats instructions.
 - If the user says “you do it,” Sparky creates the thing instead of only explaining how.
-- If the user asks for artwork, Sparky produces a finished art pack or uses the image tool.
+- If the user asks for artwork, Sparky produces a finished art pack or uses the local image tool when connected.
 - Sparky must not deflect to Canva/manual tools by default.
-- Do not default to Canva.
 - Ask fewer questions.
 - Give one best next action.
 - Do not dump the full 76-question intake unless requested.

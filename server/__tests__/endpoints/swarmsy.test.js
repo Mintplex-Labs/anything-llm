@@ -22,6 +22,10 @@ jest.mock("../../utils/swarmsy/localImageEngine", () => ({
   resolveLocalImageEngineUrl: jest.fn(),
 }));
 
+jest.mock("../../utils/swarmsy/comfyUiGeneration", () => ({
+  generateComfyUiImage: jest.fn(),
+}));
+
 jest.mock("../../utils/middleware/validatedRequest", () => ({
   validatedRequest: jest.fn(),
 }));
@@ -56,12 +60,16 @@ const {
   validatedRequest,
 } = require("../../utils/middleware/validatedRequest");
 const {
+  generateComfyUiImage,
+} = require("../../utils/swarmsy/comfyUiGeneration");
+const {
   ROLES,
   flexUserRoleValid,
   isSingleUserMode,
 } = require("../../utils/middleware/multiUserProtected");
 const {
   swarmsyEndpoints,
+  swarmsyLocalUserImageEngineGenerate,
   swarmsyLocalUserImageEngineStatus,
   swarmsyLocalUserOllamaStatus,
   swarmsyOnboardingCreateHive,
@@ -119,6 +127,11 @@ describe("swarmsy endpoints", () => {
       "/swarmsy/local-user/image-engine/status",
       [validatedRequest, isSingleUserMode],
       swarmsyLocalUserImageEngineStatus
+    );
+    expect(app.post).toHaveBeenCalledWith(
+      "/swarmsy/local-user/image-engine/generate",
+      [validatedRequest, isSingleUserMode],
+      swarmsyLocalUserImageEngineGenerate
     );
   });
 
@@ -225,6 +238,76 @@ describe("swarmsy endpoints", () => {
       url: "http://comfy.local:8188",
       message: "Failed to detect local image engine.",
     });
+  });
+
+  it("rejects local image generation requests missing a prompt", async () => {
+    const request = { body: { negativePrompt: "blurry" } };
+    const response = responseMock();
+    const result = {
+      success: false,
+      mode: "local_user",
+      engine: "comfyui",
+      status: "invalid_request",
+      message: "Prompt is required for local ComfyUI image generation.",
+    };
+
+    generateComfyUiImage.mockResolvedValue(result);
+
+    await swarmsyLocalUserImageEngineGenerate(request, response);
+
+    expect(generateComfyUiImage).toHaveBeenCalledWith(request.body);
+    expect(response.status).toHaveBeenCalledWith(400);
+    expect(response.json).toHaveBeenCalledWith(result);
+  });
+
+  it("returns HTTP 400 when local image generation blocks a non-local URL", async () => {
+    const request = { body: { prompt: "poster", url: "https://example.com" } };
+    const response = responseMock();
+    const result = {
+      success: false,
+      mode: "local_user",
+      engine: "comfyui",
+      status: "blocked",
+      message: "ComfyUI generation is local-only. Configure a local ComfyUI URL.",
+    };
+
+    generateComfyUiImage.mockResolvedValue(result);
+
+    await swarmsyLocalUserImageEngineGenerate(request, response);
+
+    expect(response.status).toHaveBeenCalledWith(400);
+    expect(response.json).toHaveBeenCalledWith(result);
+  });
+
+  it("returns unavailable when local ComfyUI generation cannot connect", async () => {
+    const request = { body: { prompt: "stencil ape", workflowJson: { 1: {} } } };
+    const response = responseMock();
+    const result = {
+      success: false,
+      mode: "local_user",
+      engine: "comfyui",
+      status: "unavailable",
+      message:
+        "ComfyUI is not connected. Start your local image engine before image generation.",
+    };
+
+    generateComfyUiImage.mockResolvedValue(result);
+
+    await swarmsyLocalUserImageEngineGenerate(request, response);
+
+    expect(response.status).toHaveBeenCalledWith(200);
+    expect(response.json).toHaveBeenCalledWith(result);
+  });
+
+  it("keeps local image generation behind existing local-user mode guard", () => {
+    const app = { get: jest.fn(), post: jest.fn() };
+
+    swarmsyEndpoints(app);
+
+    const generateRoute = app.post.mock.calls.find(
+      ([route]) => route === "/swarmsy/local-user/image-engine/generate"
+    );
+    expect(generateRoute[1]).toEqual([validatedRequest, isSingleUserMode]);
   });
 
   it("returns existing SWARMSY HIVE without creating a duplicate", async () => {

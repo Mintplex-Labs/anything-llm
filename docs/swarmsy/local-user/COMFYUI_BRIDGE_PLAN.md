@@ -2,33 +2,34 @@
 
 ## Purpose
 
-Define the first local image-generation bridge for SWARMSY Local User Mode.
+Define the first safe local image-generation bridge for SWARMSY Local User Mode.
 
-## Current PR Scope
+## Current MVP Scope
 
-This PR checks readiness only.
+This MVP is local ComfyUI only.
 
 - SWARMSY can check whether ComfyUI is reachable.
-- Full image generation is future work.
-- No generation jobs are submitted in this PR.
-- No image upload/output storage is added in this PR.
-- No image model downloads are added in this PR.
+- SWARMSY can submit a user-provided ComfyUI workflow JSON to a connected local ComfyUI engine.
+- SWARMSY can poll ComfyUI history for completion.
+- SWARMSY can retrieve the generated image through ComfyUI `/view` before claiming success.
+- SWARMSY returns normalized image reference and metadata.
+- No online image API is added.
+- No paid API usage is added.
+- No API key routing is added or required.
+- No model/checkpoint/LoRA/VAE/workflow downloads are added.
 - SWARMSY must not silently install ComfyUI.
-- SWARMSY must not add paid API image generation or require API keys for this readiness check.
-- Hosted/admin mode remains unchanged; this is a Local User readiness surface.
-
-## Recommended Default
-
-ComfyUI is the first recommended local image engine because it supports local workflows, model selection, queue-based generation, and image retrieval through a local service.
+- Hosted/admin mode remains unchanged; this is a Local User route.
 
 ## Default Connection
 
 - Default ComfyUI URL: `http://localhost:8188`.
-- ComfyUI must be installed and started by the user before SWARMSY can connect.
-- SWARMSY must not silently install ComfyUI or download image models/workflows.
-- Future hosted/admin server-side testing may use a configured URL where the existing settings/env pattern supports it.
+- The same configured/default URL resolver used by readiness checks is used for generation.
+- ComfyUI must be installed, configured, and started by the user before SWARMSY can connect.
+- Generation is blocked for non-local/non-private image-engine URLs.
 
-## Readiness Status Contract
+## Readiness Contract
+
+Readiness checks only perform GET/readiness checks. They must never submit a `/prompt` generation job.
 
 Reachable response:
 
@@ -56,50 +57,83 @@ Unreachable response:
 }
 ```
 
-## Future Bridge Capabilities
+## Generation Endpoint
 
-The future ComfyUI bridge should support:
+```text
+POST /swarmsy/local-user/image-engine/generate
+```
 
-1. Health check.
-2. Workflow/model list discovery where supported.
-3. Prompt/workflow submission.
-4. Job/status polling.
-5. Generated image retrieval.
-6. Local project save of image files and metadata.
+Request shape:
 
-## Health Check
+```json
+{
+  "prompt": "high contrast stencil street art...",
+  "negativePrompt": "blurry, low quality...",
+  "size": "1024x1024",
+  "seed": 123456,
+  "workflowJson": {
+    "1": {
+      "inputs": {
+        "text": "{{prompt}}"
+      }
+    }
+  }
+}
+```
 
-SWARMSY should check whether ComfyUI is reachable at `http://localhost:8188` or the user-configured local URL. If unreachable, SWARMSY should show setup guidance and a retry action instead of silently switching to an online image provider.
+`workflowJson` must be an object-shaped ComfyUI API workflow. The MVP may hydrate simple placeholders such as `{{prompt}}`, `{{negativePrompt}}`, `{{seed}}`, `{{width}}`, and `{{height}}`, but it does not choose a checkpoint or invent a universal workflow.
 
-## Submission Contract — Future Work
+Unavailable response:
 
-A future ComfyUI generation request should include:
+```json
+{
+  "success": false,
+  "mode": "local_user",
+  "engine": "comfyui",
+  "status": "unavailable",
+  "message": "ComfyUI is not connected. Start your local image engine before image generation."
+}
+```
 
-- Prompt.
-- Negative prompt.
-- Seed.
-- Size.
-- Workflow choice.
-- Model/checkpoint choice when available.
-- Safety/proof constraints from the project context.
-- Source project/chat/task reference.
+Success response:
 
-## Retrieval and Save Contract — Future Work
+```json
+{
+  "success": true,
+  "mode": "local_user",
+  "engine": "comfyui",
+  "status": "completed",
+  "image": {
+    "filename": "...",
+    "url": "http://localhost:8188/view?...",
+    "mimeType": "image/png"
+  },
+  "metadata": {
+    "prompt": "...",
+    "negativePrompt": "...",
+    "seed": 123456,
+    "workflow": "user_supplied",
+    "createdAt": "..."
+  }
+}
+```
 
-After generation, SWARMSY should retrieve the image and save:
+## Workflow Policy
 
-- Generated image file.
-- Prompt used.
-- Negative prompt.
-- Seed.
-- Model/workflow.
-- Size.
-- Timestamp.
-- Local project reference.
+This PR intentionally uses the safest MVP workflow policy:
+
+- Default generation requires a configured/user-provided ComfyUI workflow JSON object.
+- No model/checkpoint is auto-selected.
+- No model is downloaded.
+- No workflow asset is downloaded.
+- The user controls their local ComfyUI setup.
+
+## Storage Policy
+
+This MVP does not build a project asset library. SWARMSY returns the ComfyUI image reference and normalized metadata after retrieval succeeds. Persisting generated files into a local-user project asset path is future work.
 
 ## Fallbacks
 
 - Sparky must not deflect to Canva/manual tools by default.
-- If ComfyUI is unavailable, Sparky gives a finished prompt/art pack.
-- If ComfyUI is unavailable and the chat `Use API` toggle is off, ask permission before using any online image provider in future work.
-- Stable Diffusion WebUI / Forge can be added as alternative local bridges later.
+- If ComfyUI is unavailable, Sparky gives a finished prompt/art pack and the clear missing-engine message.
+- Stable Diffusion WebUI / Forge can be added as alternative local bridges later, but are out of scope here.
