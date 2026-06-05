@@ -42,3 +42,9 @@ This folder is not runtime wiring yet. It defines the future app mode that later
 - [`../legacy-salvage/`](../legacy-salvage/)
 - [`../legacy-salvage/OLD_SWARMSY_REPO_SALVAGE_AUDIT.md`](../legacy-salvage/OLD_SWARMSY_REPO_SALVAGE_AUDIT.md)
 - [`../legacy-salvage/OLD_SWARMSY_SOURCE_MAP.md`](../legacy-salvage/OLD_SWARMSY_SOURCE_MAP.md)
+
+## SPARKY Wiki seed-library files
+
+The SPARKY Wiki starter seed library lives at [`../sparky-wiki/seed-library/`](../sparky-wiki/seed-library/). These files are optional preloaded/reference knowledge packs for workspaces.
+
+They are not required doctrine and do not add runtime wiring. Users/admins can add seed-library files to a workspace like uploaded docs when they want Sparky to use that context. Future Local User builds can bundle the same files as local data for opt-in workspace import without changing hosted/admin mode.

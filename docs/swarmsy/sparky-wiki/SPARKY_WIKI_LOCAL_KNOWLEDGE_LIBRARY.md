@@ -59,3 +59,17 @@ The intended salvage pattern is:
 This document does not define a full wiki UI, runtime ingestion route, package dependency, Docker change, or deployment change. It defines the knowledge-library model that future implementation PRs can wire in safely.
 
 SPARKY Wiki must not make the entire `docs/swarmsy/legacy-salvage/` folder required doctrine. Legacy salvage is optional reference knowledge unless a later Current Truth decision promotes a specific small rule into required doctrine.
+
+## Seed-library reference files
+
+The starter SPARKY Wiki seed library is stored at:
+
+```text
+docs/swarmsy/sparky-wiki/seed-library/
+```
+
+Seed-library files are preloaded/reference files. Users/admins can add them to a workspace, upload them, import them, or select them for a future local bundle the same way they would use other workspace documents.
+
+Seed-library files are not required doctrine. They do not require a special loader, ingestion route, UI, Docker/deployment change, package/build change, dependency, or runtime change. Sparky should treat them as workspace reference documents when they are present in the current workspace or future Local User local data bundle.
+
+Future Local User builds can bundle the seed-library as local data so users can opt into useful knowledge packs without sending that data to hosted/admin workspaces or making it globally mandatory.

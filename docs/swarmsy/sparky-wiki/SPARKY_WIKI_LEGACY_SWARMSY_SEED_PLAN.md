@@ -60,3 +60,17 @@ If a current workspace note conflicts with a legacy-salvage note, Sparky should 
 ## Future user additions
 
 After the seed layer exists, users should be able to add their own local notes and docs into the same SPARKY Wiki layer. User-added local notes should keep their own workspace scope, privacy labels, source labels, and status labels so they do not get confused with old SWARMSY seed material.
+
+## Starter seed-library files
+
+The starter SPARKY Wiki seed files live in:
+
+```text
+docs/swarmsy/sparky-wiki/seed-library/
+```
+
+These files are preloaded/reference files for users/admins to add to workspaces like uploaded docs. They are not required doctrine, runtime code, ingestion routes, UI, or a special loader.
+
+The seed-library files can sit beside legacy-salvage references as optional SPARKY Wiki knowledge. A user/admin can load only the packs needed for the current workspace, and future Local User builds can bundle the files as local data for easy import without making them mandatory.
+
+This plan still must not promote the whole seed library or the whole legacy-salvage folder into required doctrine. The seed-library is a documented source of optional workspace knowledge, not a replacement for Current Truth or live runtime facts.
