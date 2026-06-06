@@ -10,6 +10,13 @@ const {
   ingestSwarmsyRequiredDocs,
 } = require("../utils/swarmsy/ingestRequiredDocs");
 const { detectLocalOllama } = require("../utils/swarmsy/localUserOllama");
+const { Workspace } = require("../models/workspace");
+const { reqBody } = require("../utils/http");
+const {
+  getSparkyWikiSeedPack,
+  importSparkyWikiSeedPack,
+  listSparkyWikiSeedPacks,
+} = require("../utils/swarmsy/sparkyWikiSeedPacks");
 const { generateComfyUiImage } = require("../utils/swarmsy/comfyUiGeneration");
 const {
   detectLocalImageEngine,
@@ -191,6 +198,79 @@ async function swarmsyOnboardingIngestRequiredDocs(request, response) {
   }
 }
 
+async function resolveSeedPackWorkspace(request, response) {
+  const user = await userFromSession(request, response);
+  const { workspaceSlug = null } = reqBody(request);
+  if (workspaceSlug) {
+    const slug = String(workspaceSlug).trim();
+    const isPrivileged =
+      !user || [ROLES.admin, ROLES.manager].includes(user?.role);
+    const workspace = isPrivileged
+      ? await Workspace.get({ slug })
+      : await Workspace.getWithUser(user, { slug });
+    return { user, workspace };
+  }
+  const workspace = await findUserSwarmsyHiveWorkspace(user);
+  return { user, workspace };
+}
+
+async function swarmsySparkyWikiSeedPacksList(_request, response) {
+  return response.status(200).json({
+    success: true,
+    packs: listSparkyWikiSeedPacks(),
+    message:
+      "SPARKY uses local wiki packs automatically when they fit your task. You can open the Wiki to read the deeper playbooks.",
+  });
+}
+
+async function swarmsySparkyWikiSeedPackShow(request, response) {
+  const pack = getSparkyWikiSeedPack(request.params?.packId);
+  if (!pack) {
+    return response.status(404).json({
+      success: false,
+      errorCode: "UNKNOWN_PACK",
+      message: "Unknown SPARKY Wiki seed pack.",
+    });
+  }
+
+  return response.status(200).json({ success: true, pack });
+}
+
+async function swarmsySparkyWikiSeedPackImport(request, response) {
+  try {
+    const { user, workspace } = await resolveSeedPackWorkspace(
+      request,
+      response
+    );
+    if (!workspace) {
+      return response.status(404).json({
+        success: false,
+        workspace: { exists: false },
+        message:
+          "No current workspace exists for SPARKY Wiki seed pack import.",
+      });
+    }
+
+    const result = await importSparkyWikiSeedPack({
+      workspace,
+      packId: request.params?.packId,
+      userId: user?.id || null,
+    });
+    const statusCode = result.success
+      ? 200
+      : result.errorCode === "COLLECTOR_OFFLINE"
+        ? 503
+        : 400;
+    return response.status(statusCode).json(result);
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({
+      success: false,
+      message: "Failed to import SPARKY Wiki seed pack.",
+    });
+  }
+}
+
 async function swarmsyLocalUserOllamaStatus(_request, response) {
   try {
     return response.status(200).json(await detectLocalOllama());
@@ -268,6 +348,24 @@ function swarmsyEndpoints(app) {
   );
 
   app.get(
+    "/swarmsy/sparky-wiki/seed-packs",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    swarmsySparkyWikiSeedPacksList
+  );
+
+  app.get(
+    "/swarmsy/sparky-wiki/seed-packs/:packId",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    swarmsySparkyWikiSeedPackShow
+  );
+
+  app.post(
+    "/swarmsy/sparky-wiki/seed-packs/:packId/import",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    swarmsySparkyWikiSeedPackImport
+  );
+
+  app.get(
     "/swarmsy/local-user/ollama/status",
     [validatedRequest, isSingleUserMode],
     swarmsyLocalUserOllamaStatus
@@ -291,6 +389,9 @@ module.exports = {
   swarmsyLocalUserImageEngineGenerate,
   swarmsyLocalUserImageEngineStatus,
   swarmsyLocalUserOllamaStatus,
+  swarmsySparkyWikiSeedPackImport,
+  swarmsySparkyWikiSeedPackShow,
+  swarmsySparkyWikiSeedPacksList,
   swarmsyEndpoints,
   swarmsyOnboardingCreateHive,
   swarmsyOnboardingIngestRequiredDocs,

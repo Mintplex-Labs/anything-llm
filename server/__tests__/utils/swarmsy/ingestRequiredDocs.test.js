@@ -9,8 +9,22 @@ jest.mock("../../../utils/collectorApi", () => ({
   CollectorApi: jest.fn(),
 }));
 
+jest.mock("../../../utils/http", () => ({
+  safeJsonParse: jest.fn((value, fallback = null) => {
+    try {
+      return JSON.parse(value);
+    } catch {
+      return fallback;
+    }
+  }),
+}));
+
 jest.mock("../../../utils/swarmsy/requiredDocs", () => ({
   getSwarmsyRequiredDocsStatus: jest.fn(),
+}));
+
+jest.mock("../../../utils/swarmsy/sparkyWikiSeedPacks", () => ({
+  importSparkyWikiSeedPack: jest.fn(),
 }));
 
 const { Document } = require("../../../models/documents");
@@ -18,6 +32,9 @@ const { CollectorApi } = require("../../../utils/collectorApi");
 const {
   getSwarmsyRequiredDocsStatus,
 } = require("../../../utils/swarmsy/requiredDocs");
+const {
+  importSparkyWikiSeedPack,
+} = require("../../../utils/swarmsy/sparkyWikiSeedPacks");
 const {
   getRequiredLoadableDocs,
   ingestSwarmsyRequiredDocs,
@@ -29,6 +46,19 @@ describe("swarmsy required docs ingestion helper", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     Document.forWorkspace.mockResolvedValue([]);
+    importSparkyWikiSeedPack.mockResolvedValue({
+      success: true,
+      status: "added",
+      imported: [
+        {
+          path: "docs/swarmsy/sparky-wiki/seed-library/packs/identity-empire/README.md",
+        },
+      ],
+      skipped: [],
+      failed: [],
+      partial: false,
+      message: "SPARKY Identity Empire knowledge added to this workspace.",
+    });
 
     collector = {
       online: jest.fn(),
@@ -176,6 +206,10 @@ describe("swarmsy required docs ingestion helper", () => {
       ],
       failed: [],
       partial: false,
+      seedPackImport: expect.objectContaining({
+        success: true,
+        status: "added",
+      }),
       message: "SWARMSY required docs ingested successfully.",
     });
   });
@@ -243,7 +277,12 @@ describe("swarmsy required docs ingestion helper", () => {
         },
       ],
       partial: true,
-      message: "SWARMSY required docs ingestion completed with partial failures.",
+      seedPackImport: expect.objectContaining({
+        success: true,
+        status: "added",
+      }),
+      message:
+        "SWARMSY required docs ingestion completed with partial failures.",
     });
   });
 
@@ -264,15 +303,13 @@ describe("swarmsy required docs ingestion helper", () => {
       releaseFirstCollect = resolve;
     });
 
-    Document.forWorkspace
-      .mockResolvedValueOnce([])
-      .mockResolvedValueOnce([
-        {
-          metadata: JSON.stringify({
-            chunkSource: "swarmsy-required://docs/swarmsy/required-a.md",
-          }),
-        },
-      ]);
+    Document.forWorkspace.mockResolvedValueOnce([]).mockResolvedValueOnce([
+      {
+        metadata: JSON.stringify({
+          chunkSource: "swarmsy-required://docs/swarmsy/required-a.md",
+        }),
+      },
+    ]);
 
     collector.forwardExtensionRequest
       .mockImplementationOnce(() => firstCollect)

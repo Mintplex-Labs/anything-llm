@@ -25,6 +25,7 @@ Do not restart the identity.
 Do not rebuild the lore unless I explicitly ask.
 New thread does not mean a new project.
 Memory lock wins over fresh intake.
+Combine memory lock + workspace docs + relevant SPARKY Wiki seed pack sections when they fit the task; seed packs add context only and do not replace the memory lock.
 Do not invent missing memory.
 If the memory lock is unclear, ask for clarification before changing project state.
 First summarize the locked project state, then show:

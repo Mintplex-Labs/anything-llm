@@ -2,6 +2,7 @@ const mockRoleMiddleware = jest.fn();
 
 jest.mock("../../utils/http", () => ({
   userFromSession: jest.fn(),
+  reqBody: jest.fn((request) => request.body || {}),
 }));
 
 jest.mock("../../utils/swarmsy/onboardingStatus", () => ({
@@ -16,6 +17,19 @@ jest.mock("../../utils/swarmsy/ingestRequiredDocs", () => ({
 }));
 jest.mock("../../utils/swarmsy/localUserOllama", () => ({
   detectLocalOllama: jest.fn(),
+}));
+
+jest.mock("../../models/workspace", () => ({
+  Workspace: {
+    get: jest.fn(),
+    getWithUser: jest.fn(),
+  },
+}));
+
+jest.mock("../../utils/swarmsy/sparkyWikiSeedPacks", () => ({
+  getSparkyWikiSeedPack: jest.fn(),
+  importSparkyWikiSeedPack: jest.fn(),
+  listSparkyWikiSeedPacks: jest.fn(),
 }));
 jest.mock("../../utils/swarmsy/localImageEngine", () => ({
   detectLocalImageEngine: jest.fn(),
@@ -33,12 +47,15 @@ jest.mock("../../utils/middleware/validatedRequest", () => ({
 jest.mock("../../utils/middleware/multiUserProtected", () => ({
   ROLES: {
     all: "<all>",
+    admin: "admin",
+    manager: "manager",
   },
   flexUserRoleValid: jest.fn(() => mockRoleMiddleware),
   isSingleUserMode: jest.fn(),
 }));
 
 const { userFromSession } = require("../../utils/http");
+const { Workspace } = require("../../models/workspace");
 const {
   findUserSwarmsyHiveWorkspace,
   getSwarmsyOnboardingStatus,
@@ -49,16 +66,17 @@ const {
 const {
   ingestSwarmsyRequiredDocs,
 } = require("../../utils/swarmsy/ingestRequiredDocs");
+const { detectLocalOllama } = require("../../utils/swarmsy/localUserOllama");
 const {
-  detectLocalOllama,
-} = require("../../utils/swarmsy/localUserOllama");
+  getSparkyWikiSeedPack,
+  importSparkyWikiSeedPack,
+  listSparkyWikiSeedPacks,
+} = require("../../utils/swarmsy/sparkyWikiSeedPacks");
 const {
   detectLocalImageEngine,
   resolveLocalImageEngineUrl,
 } = require("../../utils/swarmsy/localImageEngine");
-const {
-  validatedRequest,
-} = require("../../utils/middleware/validatedRequest");
+const { validatedRequest } = require("../../utils/middleware/validatedRequest");
 const {
   generateComfyUiImage,
 } = require("../../utils/swarmsy/comfyUiGeneration");
@@ -75,6 +93,9 @@ const {
   swarmsyOnboardingCreateHive,
   swarmsyOnboardingIngestRequiredDocs,
   swarmsyOnboardingStatus,
+  swarmsySparkyWikiSeedPackImport,
+  swarmsySparkyWikiSeedPackShow,
+  swarmsySparkyWikiSeedPacksList,
   __resetSwarmsyHiveCreationLocksForTests,
 } = require("../../endpoints/swarmsy");
 
@@ -117,6 +138,21 @@ describe("swarmsy endpoints", () => {
       "/swarmsy/onboarding/ingest-required-docs",
       [validatedRequest, mockRoleMiddleware],
       swarmsyOnboardingIngestRequiredDocs
+    );
+    expect(app.get).toHaveBeenCalledWith(
+      "/swarmsy/sparky-wiki/seed-packs",
+      [validatedRequest, mockRoleMiddleware],
+      swarmsySparkyWikiSeedPacksList
+    );
+    expect(app.get).toHaveBeenCalledWith(
+      "/swarmsy/sparky-wiki/seed-packs/:packId",
+      [validatedRequest, mockRoleMiddleware],
+      swarmsySparkyWikiSeedPackShow
+    );
+    expect(app.post).toHaveBeenCalledWith(
+      "/swarmsy/sparky-wiki/seed-packs/:packId/import",
+      [validatedRequest, mockRoleMiddleware],
+      swarmsySparkyWikiSeedPackImport
     );
     expect(app.get).toHaveBeenCalledWith(
       "/swarmsy/local-user/ollama/status",
@@ -220,7 +256,9 @@ describe("swarmsy endpoints", () => {
 
   it("uses the configured image engine URL in endpoint fallback errors", async () => {
     const response = responseMock();
-    const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+    const consoleErrorSpy = jest
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
     detectLocalImageEngine.mockRejectedValue(new Error("boom"));
     resolveLocalImageEngineUrl.mockReturnValue("http://comfy.local:8188");
 
@@ -268,7 +306,8 @@ describe("swarmsy endpoints", () => {
       mode: "local_user",
       engine: "comfyui",
       status: "blocked",
-      message: "ComfyUI generation is local-only. Configure a local ComfyUI URL.",
+      message:
+        "ComfyUI generation is local-only. Configure a local ComfyUI URL.",
     };
 
     generateComfyUiImage.mockResolvedValue(result);
@@ -280,7 +319,9 @@ describe("swarmsy endpoints", () => {
   });
 
   it("returns unavailable when local ComfyUI generation cannot connect", async () => {
-    const request = { body: { prompt: "stencil ape", workflowJson: { 1: {} } } };
+    const request = {
+      body: { prompt: "stencil ape", workflowJson: { 1: {} } },
+    };
     const response = responseMock();
     const result = {
       success: false,
@@ -649,6 +690,154 @@ describe("swarmsy endpoints", () => {
       success: false,
       errorCode: "COLLECTOR_OFFLINE",
       message: "Document processing API is not online.",
+    });
+  });
+
+  it("lists SPARKY Wiki seed packs", async () => {
+    const response = responseMock();
+    const packs = [{ id: "identity-empire", title: "SPARKY Identity Empire" }];
+    listSparkyWikiSeedPacks.mockReturnValue(packs);
+
+    await swarmsySparkyWikiSeedPacksList({}, response);
+
+    expect(response.status).toHaveBeenCalledWith(200);
+    expect(response.json).toHaveBeenCalledWith({
+      success: true,
+      packs,
+      message:
+        "SPARKY uses local wiki packs automatically when they fit your task. You can open the Wiki to read the deeper playbooks.",
+    });
+  });
+
+  it("shows SPARKY Wiki seed pack metadata and rejects unknown ids", async () => {
+    const response = responseMock();
+    const pack = { id: "identity-empire", title: "SPARKY Identity Empire" };
+    getSparkyWikiSeedPack.mockReturnValueOnce(pack).mockReturnValueOnce(null);
+
+    await swarmsySparkyWikiSeedPackShow(
+      { params: { packId: "identity-empire" } },
+      response
+    );
+    expect(response.status).toHaveBeenCalledWith(200);
+    expect(response.json).toHaveBeenCalledWith({ success: true, pack });
+
+    const missingResponse = responseMock();
+    await swarmsySparkyWikiSeedPackShow(
+      { params: { packId: "../identity-empire" } },
+      missingResponse
+    );
+    expect(missingResponse.status).toHaveBeenCalledWith(404);
+    expect(missingResponse.json).toHaveBeenCalledWith({
+      success: false,
+      errorCode: "UNKNOWN_PACK",
+      message: "Unknown SPARKY Wiki seed pack.",
+    });
+  });
+
+  it("imports a seed pack into the requested current workspace for non-admin users", async () => {
+    const request = {
+      headers: {},
+      params: { packId: "identity-empire" },
+      body: { workspaceSlug: "current-hive" },
+    };
+    const response = responseMock();
+    const user = { id: 12, role: "default" };
+    const workspace = { id: 9, slug: "current-hive", name: "Current HIVE" };
+    const result = {
+      success: true,
+      status: "added",
+      workspace: { exists: true, id: 9, slug: "current-hive" },
+      message: "SPARKY Identity Empire knowledge added to this workspace.",
+    };
+
+    userFromSession.mockResolvedValue(user);
+    Workspace.getWithUser.mockResolvedValue(workspace);
+    importSparkyWikiSeedPack.mockResolvedValue(result);
+
+    await swarmsySparkyWikiSeedPackImport(request, response);
+
+    expect(Workspace.getWithUser).toHaveBeenCalledWith(user, {
+      slug: "current-hive",
+    });
+    expect(Workspace.get).not.toHaveBeenCalled();
+    expect(importSparkyWikiSeedPack).toHaveBeenCalledWith({
+      workspace,
+      packId: "identity-empire",
+      userId: 12,
+    });
+    expect(response.status).toHaveBeenCalledWith(200);
+    expect(response.json).toHaveBeenCalledWith(result);
+  });
+
+  it("rejects non-admin import when workspace slug is not user-accessible", async () => {
+    const request = {
+      headers: {},
+      params: { packId: "identity-empire" },
+      body: { workspaceSlug: "other-users-hive" },
+    };
+    const response = responseMock();
+    const user = { id: 12, role: "default" };
+
+    userFromSession.mockResolvedValue(user);
+    Workspace.getWithUser.mockResolvedValue(null);
+
+    await swarmsySparkyWikiSeedPackImport(request, response);
+
+    expect(Workspace.getWithUser).toHaveBeenCalledWith(user, {
+      slug: "other-users-hive",
+    });
+    expect(importSparkyWikiSeedPack).not.toHaveBeenCalled();
+    expect(response.status).toHaveBeenCalledWith(404);
+    expect(response.json).toHaveBeenCalledWith({
+      success: false,
+      workspace: { exists: false },
+      message: "No current workspace exists for SPARKY Wiki seed pack import.",
+    });
+  });
+
+  it("allows privileged users to resolve workspace slug directly", async () => {
+    const request = {
+      headers: {},
+      params: { packId: "identity-empire" },
+      body: { workspaceSlug: "target-hive" },
+    };
+    const response = responseMock();
+    const user = { id: 2, role: "manager" };
+    const workspace = { id: 3, slug: "target-hive" };
+    const result = { success: true, status: "already_added" };
+
+    userFromSession.mockResolvedValue(user);
+    Workspace.get.mockResolvedValue(workspace);
+    importSparkyWikiSeedPack.mockResolvedValue(result);
+
+    await swarmsySparkyWikiSeedPackImport(request, response);
+
+    expect(Workspace.get).toHaveBeenCalledWith({ slug: "target-hive" });
+    expect(Workspace.getWithUser).not.toHaveBeenCalled();
+    expect(response.status).toHaveBeenCalledWith(200);
+  });
+
+  it("fails safely when requested workspace slug does not exist for privileged users", async () => {
+    const request = {
+      headers: {},
+      params: { packId: "identity-empire" },
+      body: { workspaceSlug: "unknown-hive" },
+    };
+    const response = responseMock();
+    const user = { id: 1, role: "admin" };
+
+    userFromSession.mockResolvedValue(user);
+    Workspace.get.mockResolvedValue(null);
+
+    await swarmsySparkyWikiSeedPackImport(request, response);
+
+    expect(Workspace.get).toHaveBeenCalledWith({ slug: "unknown-hive" });
+    expect(importSparkyWikiSeedPack).not.toHaveBeenCalled();
+    expect(response.status).toHaveBeenCalledWith(404);
+    expect(response.json).toHaveBeenCalledWith({
+      success: false,
+      workspace: { exists: false },
+      message: "No current workspace exists for SPARKY Wiki seed pack import.",
     });
   });
 });

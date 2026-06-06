@@ -1,11 +1,13 @@
 export const INTAKE_PROMPT_PATH =
   "docs/swarmsy/living-icon-engine/prompts/01_SWARMSY_USER_INTAKE_76_QUESTIONS.md";
 
+export const SEED_PACK_CONTEXT_NOTE =
+  "Use existing SWARMSY intake templates as the workflow. Search workspace docs and SPARKY Wiki seed pack sections automatically when they fit my task; seed packs add context only and do not replace the intake.";
+
 export const INTAKE_STARTERS = {
-  face: `Start my SWARMSY intake in Face Identity Mode. Load and follow ${INTAKE_PROMPT_PATH}. Do not invent or shorten the intake unless I ask.`,
-  hidden: `Start my SWARMSY intake in Hidden Identity Mode. Load and follow ${INTAKE_PROMPT_PATH}. Prioritise privacy boundaries, alias/persona structure, proof-safe lore, and hidden identity consistency. Do not invent or shorten the intake unless I ask.`,
-  "existing-project":
-    "Help me import an existing project into SWARMSY HIVE. First ask what project notes, links, proof, assets, products, social channels, and existing lore I already have. Then prepare an intake handoff before rebuilding anything.",
+  face: `Start my SWARMSY intake in Face Identity Mode. Load and follow ${INTAKE_PROMPT_PATH}. ${SEED_PACK_CONTEXT_NOTE} Prioritise public-facing founder, story, and brand sections when relevant. Do not invent or shorten the intake unless I ask.`,
+  hidden: `Start my SWARMSY intake in Hidden Identity Mode. Load and follow ${INTAKE_PROMPT_PATH}. ${SEED_PACK_CONTEXT_NOTE} Prioritise privacy boundaries, alias/persona structure, proof-safe lore, pseudonym-safe sections, and hidden identity consistency. Do not invent or shorten the intake unless I ask.`,
+  "existing-project": `Help me import an existing project into SWARMSY HIVE. ${SEED_PACK_CONTEXT_NOTE} First ask what project notes, links, proof, assets, products, social channels, and existing lore I already have. Then use audit, rebuild, and relaunch sections when relevant before rebuilding anything.`,
 };
 
 export function getIntakeStarterMessage(mode) {

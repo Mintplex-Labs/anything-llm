@@ -51,6 +51,10 @@ export default function SwarmsyLocalUserSettingsHub({
     onSelectLocalOllamaModel,
     exportBackupToFile,
     importBackupFromText,
+    sparkyWikiPackStatus = "not_added",
+    sparkyWikiPackMessage = "SPARKY uses local wiki packs automatically when they fit your task. You can open the Wiki to read the deeper playbooks.",
+    importIdentityEmpireSeedPack,
+    isImportingSparkyWikiPack = false,
   } = controller;
 
   const safeLocalImageEngineStatus = localImageEngineStatus || {
@@ -82,6 +86,11 @@ export default function SwarmsyLocalUserSettingsHub({
   function relaunchDesktopFirstRunWizard() {
     window.dispatchEvent(new CustomEvent(DESKTOP_FIRST_RUN_RELAUNCH_EVENT));
   }
+
+  const safeImportIdentityEmpireSeedPack =
+    typeof importIdentityEmpireSeedPack === "function"
+      ? importIdentityEmpireSeedPack
+      : () => {};
 
   function handleImportBackupFile(event) {
     const file = event.target.files?.[0];
@@ -245,6 +254,49 @@ export default function SwarmsyLocalUserSettingsHub({
               </div>
             </div>
           )}
+
+          <div className="mt-6 rounded-lg border border-theme-sidebar-border bg-theme-bg-secondary p-4">
+            <div className="flex items-start justify-between gap-4">
+              <div className="space-y-2">
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-theme-text-secondary">
+                  SPARKY Wiki
+                </p>
+                <h3 className="text-base font-semibold text-theme-text-primary">
+                  Identity Empire seed pack
+                </h3>
+                <p className="text-sm leading-6 text-theme-text-secondary">
+                  SPARKY uses local wiki packs automatically when they fit your
+                  task. You can open the Wiki to read the deeper playbooks.
+                </p>
+                <p className="text-sm leading-6 text-theme-text-secondary">
+                  Identity Empire is local-first reference knowledge for Sparky:
+                  identity, story, brand, offers, campaigns, PR, slogans, social
+                  systems, lawful physical visibility, digital walls, swarm
+                  coordination, launch planning, measurement, and next actions.
+                  It is not autonomous runtime automation, not a new intake
+                  system, and it never requires Use API unless you explicitly
+                  want live research.
+                </p>
+                <p className="text-xs font-medium uppercase tracking-[0.2em] text-theme-text-secondary">
+                  Status: {sparkyWikiPackStatus.replace(/_/g, " ")}
+                </p>
+                {sparkyWikiPackMessage && (
+                  <p className="text-xs opacity-80">{sparkyWikiPackMessage}</p>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={safeImportIdentityEmpireSeedPack}
+                disabled={isImportingSparkyWikiPack}
+                className="flex items-center justify-center gap-x-2 rounded-lg border border-theme-sidebar-border bg-theme-bg-secondary px-4 py-2 text-sm font-medium text-theme-text-primary transition hover:bg-theme-bg-menu disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isImportingSparkyWikiPack ? (
+                  <SpinnerGap className="animate-spin" size={18} />
+                ) : null}
+                Add Identity Empire knowledge
+              </button>
+            </div>
+          </div>
 
           <div className="mt-6 rounded-lg border border-theme-sidebar-border bg-theme-bg-secondary p-4">
             <div className="flex items-start justify-between gap-4">

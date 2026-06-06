@@ -53,6 +53,39 @@ const SwarmsyOnboarding = {
         message: "Failed to ingest SWARMSY required doctrine docs.",
       }));
   },
+
+  sparkyWikiSeedPacks: async function () {
+    return await fetch(`${API_BASE}/swarmsy/sparky-wiki/seed-packs`, {
+      headers: baseHeaders(),
+    })
+      .then((response) =>
+        parseResponse(response, "Failed to list SPARKY Wiki seed packs.")
+      )
+      .catch(() => ({
+        success: false,
+        packs: [],
+        message: "Failed to list SPARKY Wiki seed packs.",
+      }));
+  },
+  importSparkyWikiSeedPack: async function (packId, workspaceSlug = null) {
+    return await fetch(
+      `${API_BASE}/swarmsy/sparky-wiki/seed-packs/${encodeURIComponent(
+        packId
+      )}/import`,
+      {
+        method: "POST",
+        headers: baseHeaders(),
+        body: JSON.stringify({ workspaceSlug }),
+      }
+    )
+      .then((response) =>
+        parseResponse(response, "Failed to import SPARKY Wiki seed pack.")
+      )
+      .catch(() => ({
+        success: false,
+        message: "Failed to import SPARKY Wiki seed pack.",
+      }));
+  },
   localUserOllamaStatus: async function ({ signal } = {}) {
     return await fetch(`${API_BASE}/swarmsy/local-user/ollama/status`, {
       headers: baseHeaders(),

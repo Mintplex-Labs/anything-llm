@@ -3,6 +3,7 @@ const { Document } = require("../../models/documents");
 const { CollectorApi } = require("../collectorApi");
 const { safeJsonParse } = require("../http");
 const { getSwarmsyRequiredDocsStatus } = require("./requiredDocs");
+const { importSparkyWikiSeedPack } = require("./sparkyWikiSeedPacks");
 
 const workspaceIngestionLocks = new Map();
 
@@ -119,6 +120,7 @@ async function ingestSwarmsyRequiredDocs({ workspace, userId = null } = {}) {
     const ingested = [];
     const skipped = [...unavailablePaths];
     const failed = [];
+    let seedPackImport = null;
     const docsRoot = path.resolve(status.docsRoot);
 
     for (const docPath of loadablePaths) {
@@ -189,6 +191,12 @@ async function ingestSwarmsyRequiredDocs({ workspace, userId = null } = {}) {
       existingChunkSources.add(chunkSource);
     }
 
+    seedPackImport = await importSparkyWikiSeedPack({
+      workspace,
+      packId: "identity-empire",
+      userId,
+    });
+
     const alreadyAttachedCount = skipped.filter(
       (item) => item.reason === "already_attached"
     ).length;
@@ -213,6 +221,7 @@ async function ingestSwarmsyRequiredDocs({ workspace, userId = null } = {}) {
       skipped,
       failed,
       partial,
+      seedPackImport,
       message,
     };
   });
