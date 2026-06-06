@@ -30,6 +30,8 @@ Future Local User builds can bundle these files as local data for easy import wi
 - [`campaigns/`](./campaigns/) — Shock-safe campaign signal, proof-safe messaging, and hidden-identity rules.
 - [`workspace-operations/`](./workspace-operations/) — Current workspace scoping, anti-leakage, next action, and non-technical user mode.
 
+- [`packs/identity-empire/`](./packs/identity-empire/) — Local-first SPARKY Identity Empire pack for brand, story, offer, campaign, PR, lawful physical visibility, digital wall distribution, swarm coordination, and launch planning.
+
 ## Non-goals
 
 This folder does not add runtime code, an optional doctrine loader, ingestion routes, UI, Docker/deployment changes, dependencies, package/build changes, hosted/admin mode changes, or required doctrine bloat.

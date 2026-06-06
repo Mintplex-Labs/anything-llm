@@ -73,3 +73,9 @@ Seed-library files are preloaded/reference files. Users/admins can add them to a
 Seed-library files are not required doctrine. They do not require a special loader, ingestion route, UI, Docker/deployment change, package/build change, dependency, or runtime change. Sparky should treat them as workspace reference documents when they are present in the current workspace or future Local User local data bundle.
 
 Future Local User builds can bundle the seed-library as local data so users can opt into useful knowledge packs without sending that data to hosted/admin workspaces or making it globally mandatory.
+
+## Identity Empire seed pack (seed-library)
+
+The seed library now includes `packs/identity-empire/`, a local-first SPARKY knowledge pack for building identity, story, brand, offer ladders, launch plans, PR angles, campaign systems, content calendars, lawful physical visibility, digital wall distribution, swarm coordination, and next actions before any web/API lookup.
+
+This pack is still **Docs/spec only** reference knowledge. It does not add runtime automation, autonomous agents, package changes, hosted/admin changes, desktop packaging changes, Ollama/ComfyUI/API routing changes, or a separate deterministic offline brain. Sparky should use it with local Ollama first when available in the workspace or future Local User bundle. API/web lookup remains optional and only for live/current research such as trends, competitor checks, press contacts, platform rules, legal/regulatory facts, or current market research when the user turns Use API on.

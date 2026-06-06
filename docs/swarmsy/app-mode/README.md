@@ -48,3 +48,7 @@ This folder is not runtime wiring yet. It defines the future app mode that later
 The SPARKY Wiki starter seed library lives at [`../sparky-wiki/seed-library/`](../sparky-wiki/seed-library/). These files are optional preloaded/reference knowledge packs for workspaces.
 
 They are not required doctrine and do not add runtime wiring. Users/admins can add seed-library files to a workspace like uploaded docs when they want Sparky to use that context. Future Local User builds can bundle the same files as local data for opt-in workspace import without changing hosted/admin mode.
+
+### Identity Empire pack
+
+The SPARKY Wiki seed library includes the [`identity-empire`](../sparky-wiki/seed-library/packs/identity-empire/) pack for local-first brand, story, offer, campaign, PR, lawful physical visibility, digital wall distribution, swarm coordination, and 30-day launch planning. It is docs/seed knowledge only: no runtime actions, autonomous agents, package changes, desktop packaging changes, hosted/admin changes, or Ollama/ComfyUI/API routing changes are introduced by the pack.

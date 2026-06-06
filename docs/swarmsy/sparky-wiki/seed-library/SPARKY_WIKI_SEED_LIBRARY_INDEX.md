@@ -14,6 +14,29 @@ This index lists the starter SPARKY Wiki seed files. They are optional reference
 
 ## Packs and files
 
+### Identity Empire pack
+
+- `packs/identity-empire/README.md`
+- `packs/identity-empire/IDENTITY_EMPIRE_INDEX.md`
+- `packs/identity-empire/01_identity_operating_system.md`
+- `packs/identity-empire/02_no_idea_user_intake.md`
+- `packs/identity-empire/03_brand_foundation_builder.md`
+- `packs/identity-empire/04_story_myth_and_manifesto.md`
+- `packs/identity-empire/05_offer_and_product_ladder.md`
+- `packs/identity-empire/06_campaign_builder.md`
+- `packs/identity-empire/07_pr_and_press_machine.md`
+- `packs/identity-empire/08_social_content_engine.md`
+- `packs/identity-empire/09_physical_visibility_safe_playbook.md`
+- `packs/identity-empire/10_digital_wall_distribution.md`
+- `packs/identity-empire/11_swarm_coordination_model.md`
+- `packs/identity-empire/12_agent_department_model.md`
+- `packs/identity-empire/13_30_day_identity_empire_launch.md`
+- `packs/identity-empire/14_local_business_visibility_system.md`
+- `packs/identity-empire/15_artist_creator_visibility_system.md`
+- `packs/identity-empire/16_measurement_signal_and_next_moves.md`
+- `packs/identity-empire/17_sparky_prompt_recipes.md`
+- `packs/identity-empire/18_identity_empire_templates.md`
+
 ### Core doctrine reference
 
 - `core-doctrine/SWARMSY_IDENTITY_OPERATING_SYSTEM.md`
