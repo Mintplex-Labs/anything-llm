@@ -25,7 +25,7 @@
     "i18next": "^23.11.3",
     "i18next-browser-languagedetector": "^7.2.1",
     "js-levenshtein": "^1.1.6",
-    "katex": "^0.6.0",
+    "katex": "^0.16.11",
     "lodash.debounce": "^4.0.8",
     "markdown-it": "^13.0.1",
     "moment": "^2.30.1",
