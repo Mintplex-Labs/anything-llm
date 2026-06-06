@@ -14,8 +14,12 @@ const requiredInstallerContents = [
   "desktop executable",
   "desktop/electron",
   "desktop/foundation",
+  "desktop/runtime",
   "frontend/dist",
-  "server/utils/swarmsy/localUserStorageContract.js",
+  "server runtime",
+  "server/node_modules runtime dependencies",
+  "server/prisma migrations",
+  "server/public frontend bundle",
 ];
 const prohibitedInstallerContents = [
   "code signing",

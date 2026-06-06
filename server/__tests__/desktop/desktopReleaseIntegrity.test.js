@@ -88,6 +88,22 @@ describe("desktop release integrity manifest", () => {
     );
     expect(path.isAbsolute(manifest.artifact)).toBe(false);
     expect(path.isAbsolute(manifest.installer)).toBe(false);
+    expect(manifest.runtime).toEqual(
+      expect.objectContaining({
+        packaging: "managed_local_node_runtime",
+        localDataPreservedOutsideInstallDir: true,
+        requiredFiles: expect.arrayContaining([
+          "resources/app/desktop/runtime/start-local-runtime.cjs",
+          "resources/app/server/index.js",
+          "resources/app/server/public/_index.html",
+        ]),
+        prismaShimCandidates: expect.arrayContaining([
+          "resources/app/server/node_modules/.bin/prisma.cmd",
+          "resources/app/server/node_modules/.bin/prisma.ps1",
+          "resources/app/server/node_modules/.bin/prisma",
+        ]),
+      })
+    );
     expect(manifest.artifacts.desktopZip.sha256).toBe(manifest.artifactSHA256);
     expect(manifest.artifacts.installerExe.sha256).toBe(manifest.installerSHA256);
   });

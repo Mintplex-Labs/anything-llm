@@ -41,6 +41,30 @@ function validateReleaseIntegrity({ manifestPath = releaseManifest } = {}) {
   if (!manifest.version) fail("Release manifest version is missing.");
   if (!manifest.buildDate) fail("Release manifest buildDate is missing.");
   if (!manifest.commitSha) fail("Release manifest commitSha is missing.");
+  if (manifest.runtime?.packaging !== "managed_local_node_runtime") {
+    fail("Release manifest runtime packaging metadata is missing or invalid.");
+  }
+  if (!Array.isArray(manifest.runtime?.requiredFiles) || manifest.runtime.requiredFiles.length === 0) {
+    fail("Release manifest runtime requiredFiles must list packaged runtime files.");
+  }
+  if (manifest.runtime.requiredFiles.some((file) => path.isAbsolute(file) || file.includes(".."))) {
+    fail("Release manifest runtime requiredFiles must be portable relative paths.");
+  }
+  if (
+    !Array.isArray(manifest.runtime?.prismaShimCandidates) ||
+    manifest.runtime.prismaShimCandidates.length === 0
+  ) {
+    fail("Release manifest runtime prismaShimCandidates must list Prisma shims.");
+  }
+  if (
+    manifest.runtime.prismaShimCandidates.some(
+      (file) => path.isAbsolute(file) || file.includes("..")
+    )
+  ) {
+    fail(
+      "Release manifest runtime prismaShimCandidates must be portable relative paths."
+    );
+  }
 
   const allowedStatuses = Object.values(SIGNING_STATUSES);
   if (!allowedStatuses.includes(manifest.signingStatus)) {

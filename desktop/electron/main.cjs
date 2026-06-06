@@ -19,7 +19,7 @@ const {
   runDesktopRuntimeHealthcheck,
 } = require("../foundation/runtimeHealthcheck.cjs");
 const {
-  isDesktopRuntimeAutoStartEnabled,
+  shouldAutoStartDesktopRuntime,
   getManualRuntimeStartCommand,
   launchDesktopLocalRuntime,
   waitForRuntimeHealthcheck,
@@ -34,6 +34,10 @@ const EXPORT_LOCAL_USER_BACKUP_CHANNEL = "swarmsy:export-local-user-backup";
 const IMPORT_LOCAL_USER_BACKUP_CHANNEL = "swarmsy:import-local-user-backup";
 const GET_RUNTIME_STATUS_CHANNEL = "swarmsy:get-runtime-status";
 const repoRoot = path.resolve(__dirname, "../..");
+
+function isPublicPackagedRuntimeLaunch({ appInstance = app } = {}) {
+  return !!appInstance?.isPackaged;
+}
 let managedRuntimeChild = null;
 let managedRuntimeStopPromise = null;
 let isQuittingAfterManagedRuntimeStop = false;
@@ -57,9 +61,15 @@ function renderFailurePage(failure) {
   const manualStartCommand = String(
     failure?.manualStartCommand || "yarn desktop:runtime:dev"
   );
+  const configuredRetryTarget =
+    process.env.SWARMSY_DESKTOP_START_URL || "http://127.0.0.1:3000";
+  const safeRetryTarget = isTrustedDesktopOrigin(configuredRetryTarget)
+    ? configuredRetryTarget
+    : "http://127.0.0.1:3000";
+  const retryUrl = escapeHtml(safeRetryTarget);
   const autoStartHint =
     failure?.reason === "runtime_auto_start_disabled"
-      ? `<p>Auto-start is disabled by default. Set <code>SWARMSY_DESKTOP_AUTO_START_RUNTIME=true</code> to let desktop dev mode launch the local runtime.</p>`
+      ? `<p>Desktop dev mode did not auto-start the local runtime because <code>SWARMSY_DESKTOP_AUTO_START_RUNTIME=true</code> was not set.</p>`
       : "";
   const expectedUrl =
     failure?.reason === "runtime_unreachable"
@@ -82,9 +92,10 @@ function renderFailurePage(failure) {
         <p>${escaped}</p>
         <p>Expected local runtime URL: <code>${escapedExpectedUrl}</code>.</p>
         ${autoStartHint}
-        <p>Start the local runtime first (for example: <code>${escapeHtml(
+        <p>Use the button below to retry after restarting SWARMSY Desktop. If this is a development checkout, you can still start the runtime with <code>${escapeHtml(
           manualStartCommand
-        )}</code>) and relaunch with <code>yarn desktop:dev</code>.</p>
+        )}</code> and relaunch with <code>yarn desktop:dev</code>.</p>
+        <p><a href="${retryUrl}" style="display:inline-block;background:#38bdf8;color:#0f172a;padding:10px 14px;border-radius:8px;text-decoration:none;font-weight:bold;">Retry local runtime</a></p>
         <p>Hosted/Admin deployment is unchanged by this desktop local runtime foundation.</p>
       </body>
     </html>
@@ -268,6 +279,8 @@ async function ensureDesktopRuntimeReady({
   runtimeLauncher = launchDesktopLocalRuntime,
   runtimeHealthWaiter = waitForRuntimeHealthcheck,
   runtimeStopper = stopDesktopLaunchedRuntime,
+  packagedRuntime = false,
+  appInstance = app,
 } = {}) {
   const health = await runtimeHealthcheck({ startUrl });
   if (health?.ok) {
@@ -284,7 +297,12 @@ async function ensureDesktopRuntimeReady({
     };
   }
 
-  if (!isDesktopRuntimeAutoStartEnabled({ env })) {
+  const shouldAutoStart = shouldAutoStartDesktopRuntime({
+    env,
+    packagedRuntime,
+  });
+
+  if (!shouldAutoStart) {
     return {
       ok: false,
       failure: {
@@ -297,9 +315,17 @@ async function ensureDesktopRuntimeReady({
     };
   }
 
+  const launchEnv = {
+    ...env,
+    SWARMSY_DESKTOP_USER_DATA_DIR:
+      env.SWARMSY_DESKTOP_USER_DATA_DIR ||
+      appInstance?.getPath?.("userData") ||
+      "",
+  };
   const launchResult = await runtimeLauncher({
     rootDir,
-    env,
+    env: launchEnv,
+    packagedRuntime,
   });
 
   if (!launchResult?.ok) {
@@ -374,6 +400,7 @@ async function createWindow({
   shellApi = shell,
   runtimeOrchestrator = ensureDesktopRuntimeReady,
   runtimeHealthcheck = runDesktopRuntimeHealthcheck,
+  appInstance = app,
 } = {}) {
   const window = new BrowserWindowCtor({
     width: 1366,
@@ -401,6 +428,8 @@ async function createWindow({
             });
     const runtime = await runOrchestrator({
       startUrl: resolvedStartUrl,
+      packagedRuntime: isPublicPackagedRuntimeLaunch({ appInstance }),
+      appInstance,
     });
     if (!runtime?.ok) {
       await window.loadURL(renderFailurePage(runtime?.failure));
@@ -430,12 +459,14 @@ function bootstrapDesktopApp({
   registerDesktopIpc({ ipcMainApi });
 
   appInstance.whenReady().then(() => {
-    createWindow({ BrowserWindowCtor, shellApi }).catch((error) => {
-      console.error("[desktop] Failed to create window:", error);
-    });
+    createWindow({ BrowserWindowCtor, shellApi, appInstance }).catch(
+      (error) => {
+        console.error("[desktop] Failed to create window:", error);
+      }
+    );
     appInstance.on("activate", () => {
       if (BrowserWindowCtor.getAllWindows().length === 0) {
-        createWindow({ BrowserWindowCtor, shellApi }).catch((error) => {
+        createWindow({ BrowserWindowCtor, shellApi, appInstance }).catch((error) => {
           console.error("[desktop] Failed to re-create window:", error);
         });
       }
@@ -482,5 +513,6 @@ module.exports = {
   ensureDesktopRuntimeReady,
   stopManagedRuntime,
   createWindow,
+  isPublicPackagedRuntimeLaunch,
   bootstrapDesktopApp,
 };

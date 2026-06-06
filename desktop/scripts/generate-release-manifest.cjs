@@ -12,6 +12,21 @@ const artifactsRoot = path.join(repoRoot, "desktop", "artifacts");
 const artifactZip = path.join(artifactsRoot, "swarmsy-desktop-win32-x64.zip");
 const installerExe = path.join(artifactsRoot, "SWARMSY-Desktop-Setup.exe");
 const releaseManifest = path.join(artifactsRoot, "SWARMSY-Desktop-Release.json");
+const runtimePrismaShimCandidates = [
+  "resources/app/server/node_modules/.bin/prisma.cmd",
+  "resources/app/server/node_modules/.bin/prisma.ps1",
+  "resources/app/server/node_modules/.bin/prisma",
+];
+
+const runtimeRequiredFiles = [
+  "resources/app/desktop/runtime/start-local-runtime.cjs",
+  "resources/app/server/index.js",
+  "resources/app/server/package.json",
+  "resources/app/server/prisma/schema.prisma",
+  "resources/app/server/prisma/migrations/migration_lock.toml",
+  "resources/app/server/node_modules/@prisma/client/package.json",
+  "resources/app/server/public/_index.html",
+];
 
 function ensureExists(targetPath, label = targetPath) {
   if (!fs.existsSync(targetPath)) throw new Error(`${label} is missing: ${targetPath}`);
@@ -79,6 +94,12 @@ function createReleaseManifest({
       certificatePathConfigured: signing.certificatePathConfigured,
       signToolConfigured: signing.signToolConfigured,
     },
+    runtime: {
+      packaging: "managed_local_node_runtime",
+      requiredFiles: runtimeRequiredFiles,
+      prismaShimCandidates: runtimePrismaShimCandidates,
+      localDataPreservedOutsideInstallDir: true,
+    },
     artifacts: {
       desktopZip: {
         path: relativeManifestArtifact(outputPath, artifactPath),
@@ -111,6 +132,8 @@ if (require.main === module) main();
 
 module.exports = {
   artifactZip,
+  runtimePrismaShimCandidates,
+  runtimeRequiredFiles,
   createReleaseManifest,
   installerExe,
   releaseManifest,

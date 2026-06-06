@@ -15,29 +15,47 @@ const requiredPaths = [
   "resources/app/desktop/electron/preload.cjs",
   "resources/app/desktop/foundation/runtimeHealthcheck.cjs",
   "resources/app/desktop/foundation/runtimeLauncher.cjs",
+  "resources/app/desktop/runtime/start-local-runtime.cjs",
   "resources/app/desktop/foundation/storageContractBridge.cjs",
+  "resources/app/server/index.js",
+  "resources/app/server/package.json",
+  "resources/app/server/prisma/schema.prisma",
+  "resources/app/server/prisma/migrations/migration_lock.toml",
+  "resources/app/server/node_modules/@prisma/client/package.json",
   "resources/app/server/utils/swarmsy/localUserStorageContract.js",
   "resources/app/desktop/foundation/localBackupStore.cjs",
   "resources/app/desktop/foundation/localSettingsStore.cjs",
   "resources/app/frontend/dist/_index.html",
+  "resources/app/server/public/_index.html",
 ];
 
-const forbiddenPathSegments = new Set([
+const requiredAnyPaths = [
+  [
+    "resources/app/server/node_modules/.bin/prisma.cmd",
+    "resources/app/server/node_modules/.bin/prisma.ps1",
+    "resources/app/server/node_modules/.bin/prisma",
+  ],
+];
+
+const forbiddenPathFragments = [
+  "server/storage",
+  "server/documents",
+  "server/vector-cache",
+  "collector/hotdir",
   ".anythingllm-desktop",
-  "storage",
-  "documents",
-  "vector-cache",
-  "hotdir",
-  "models",
-  "ollama",
   "local-user-data",
   "session-store",
-]);
+  "ollama/models",
+  "comfyui/models",
+];
 
-const forbiddenBasenamePatterns = [
-  /^\.env(?:\..*)?$/i,
-  /\.local$/i,
+const forbiddenEnvBasenamePatterns = [/^\.env(?:\..*)?$/i, /\.local$/i];
+const forbiddenSecretBasenamePatterns = [
   /(?:^|[-_.])(secret|credential|api[-_]?key|access[-_]?token|refresh[-_]?token)(?:[-_.]|$)/i,
+];
+const forbiddenBasenamePatterns = [
+  ...forbiddenEnvBasenamePatterns,
+  ...forbiddenSecretBasenamePatterns,
 ];
 
 const textExtensions = new Set([
@@ -48,6 +66,8 @@ const textExtensions = new Set([
   ".css",
   ".txt",
   ".md",
+  ".markdown",
+  ".rst",
 ]);
 
 const hardcodedSecretValuePatterns = [
@@ -56,7 +76,7 @@ const hardcodedSecretValuePatterns = [
   /\bAuthorization\b\s*[:=]\s*["']?Bearer\s+[A-Za-z0-9._~+/-]{32,}={0,2}["']?/i,
   /\bAWS_ACCESS_KEY_ID\b\s*[:=]\s*["']?AKIA[0-9A-Z]{16}["']?/,
   /\bAWS_SECRET_ACCESS_KEY\b\s*[:=]\s*["']?[A-Za-z0-9/+=]{40}["']?/,
-  /\b(?:OPENAI|ANTHROPIC|GEMINI|GROQ|AZURE|PINECONE|QDRANT|MILVUS|WEAVIATE|POSTHOG)[A-Z0-9_]*(?:API[_-]?KEY|TOKEN|SECRET|CREDENTIAL)[A-Z0-9_]*\b\s*[:=]\s*["']?(?:sk-(?!my|123|example|xxxx|cp-\.\.\.)(?:proj-)?[A-Za-z0-9_-]{12,}|[A-Za-z0-9._~+/-]{32,}={0,2})["']?/i,
+  /\b(?:OPENAI|ANTHROPIC|GEMINI|GROQ|AZURE|PINECONE|QDRANT|MILVUS|WEAVIATE|POSTHOG)[A-Z0-9_]*(?:API[_-]?KEY|TOKEN|SECRET|CREDENTIAL)[A-Z0-9_]*\b\s*[:=]\s*(?:["']?sk-(?!my|123|example|xxxx|cp-\.\.\.)(?:proj-)?[A-Za-z0-9_-]{12,}["']?|["'][A-Za-z0-9._~+/-]{32,}={0,2}["'])/i,
   /\b(?:apiKey|api[_-]?key|authToken|auth[_-]?token|accessToken|access[_-]?token|refreshToken|refresh[_-]?token|sessionToken|session[_-]?token|token|secret|credential)\b\s*[:=]\s*["'](?:sk-(?!my|123|example|xxxx|cp-\.\.\.)(?:proj-)?[A-Za-z0-9_-]{12,}|gh[pousr]_[A-Za-z0-9_]{20,}|[A-Za-z0-9._~+/-]{40,}={0,2})["']/i,
 ];
 
@@ -75,6 +95,20 @@ function assertExists(packageRoot, relativePath) {
   }
 }
 
+function assertAnyExists(packageRoot, relativePaths) {
+  if (
+    !relativePaths.some((relativePath) =>
+      fs.existsSync(path.join(packageRoot, relativePath))
+    )
+  ) {
+    fail(
+      `Missing one of expected desktop artifact paths: ${relativePaths.join(
+        ", "
+      )}`
+    );
+  }
+}
+
 function walk(directory, files = []) {
   for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
     const absolute = path.join(directory, entry.name);
@@ -87,11 +121,39 @@ function walk(directory, files = []) {
   return files;
 }
 
+function isNodeModulesSourceFile(relativePortable) {
+  if (!relativePortable.includes("/node_modules/")) return false;
+  return /\.(?:c|m)?(?:d\.)?ts$|\.(?:c|m)?js$|\.map$/i.test(
+    relativePortable
+  );
+}
+
+function hasForbiddenBasename(file, packageRoot) {
+  const basename = path.basename(file);
+  const relativePortable = path
+    .relative(packageRoot, file)
+    .replace(/\\/g, "/")
+    .toLowerCase();
+
+  if (forbiddenEnvBasenamePatterns.some((pattern) => pattern.test(basename))) {
+    return true;
+  }
+
+  if (isNodeModulesSourceFile(relativePortable)) return false;
+
+  return forbiddenSecretBasenamePatterns.some((pattern) =>
+    pattern.test(basename)
+  );
+}
+
 function assertNoForbiddenPaths(files, packageRoot) {
   for (const file of files) {
-    const relativeSegments = path.relative(packageRoot, file).split(path.sep);
-    for (const segment of relativeSegments) {
-      if (forbiddenPathSegments.has(segment.toLowerCase())) {
+    const relativePortable = path
+      .relative(packageRoot, file)
+      .replace(/\\/g, "/")
+      .toLowerCase();
+    for (const fragment of forbiddenPathFragments) {
+      if (relativePortable.includes(fragment)) {
         fail(
           `Forbidden local/runtime path included in artifact: ${displayPath(
             packageRoot,
@@ -101,8 +163,7 @@ function assertNoForbiddenPaths(files, packageRoot) {
       }
     }
 
-    const basename = path.basename(file);
-    if (forbiddenBasenamePatterns.some((pattern) => pattern.test(basename))) {
+    if (hasForbiddenBasename(file, packageRoot)) {
       fail(
         `Forbidden secret/local-data-like file included: ${displayPath(
           packageRoot,
@@ -113,8 +174,17 @@ function assertNoForbiddenPaths(files, packageRoot) {
   }
 }
 
+function isNodeModulesFile(relativePortable) {
+  return relativePortable.includes("/node_modules/");
+}
+
 function assertNoSecretValues(files, packageRoot) {
   for (const file of files) {
+    const relativePortable = path
+      .relative(packageRoot, file)
+      .replace(/\\/g, "/")
+      .toLowerCase();
+    if (isNodeModulesFile(relativePortable)) continue;
     if (!textExtensions.has(path.extname(file).toLowerCase())) continue;
     const stat = fs.statSync(file);
     if (stat.size > 2 * 1024 * 1024) continue;
@@ -145,6 +215,9 @@ function validateArtifact({
     fail(`Artifact archive is missing: ${archivePath}`);
   }
   for (const relativePath of requiredPaths) assertExists(packageRoot, relativePath);
+  for (const relativePaths of requiredAnyPaths) {
+    assertAnyExists(packageRoot, relativePaths);
+  }
 
   const files = walk(packageRoot);
   if (
@@ -175,7 +248,13 @@ if (require.main === module) main();
 module.exports = {
   hardcodedSecretValuePatterns,
   forbiddenBasenamePatterns,
-  forbiddenPathSegments,
+  forbiddenEnvBasenamePatterns,
+  forbiddenPathFragments,
+  forbiddenSecretBasenamePatterns,
+  hasForbiddenBasename,
+  isNodeModulesFile,
+  isNodeModulesSourceFile,
+  requiredAnyPaths,
   requiredPaths,
   validateArtifact,
 };

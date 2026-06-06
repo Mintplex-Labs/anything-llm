@@ -16,6 +16,10 @@ const artifactSmokePath = path.join(
   repoRoot,
   "desktop/scripts/desktop-artifact-smoke-check.cjs"
 );
+const artifactPackagerPath = path.join(
+  repoRoot,
+  "desktop/scripts/package-windows-artifact.cjs"
+);
 const installerWorkflowPath = path.join(
   repoRoot,
   ".github/workflows/desktop-installer-build.yml"
@@ -38,8 +42,12 @@ describe("desktop Windows installer packaging foundation", () => {
         "desktop executable",
         "desktop/electron",
         "desktop/foundation",
+        "desktop/runtime",
         "frontend/dist",
-        "server/utils/swarmsy/localUserStorageContract.js",
+        "server runtime",
+        "server/node_modules runtime dependencies",
+        "server/prisma migrations",
+        "server/public frontend bundle",
       ])
     );
     expect(smoke.prohibitedInstallerContents).toEqual(
@@ -125,6 +133,93 @@ describe("desktop Windows installer packaging foundation", () => {
     expect(() => builder.nsisDefineValue("C:\\bad\npath")).toThrow(
       "NSIS define values cannot contain quotes or newlines"
     );
+  });
+
+  it("preserves dependency internals while excluding app-owned runtime data during artifact copy", () => {
+    const artifactPackager = require(artifactPackagerPath);
+    const sourceRoot = fs.mkdtempSync(
+      path.join(os.tmpdir(), "swarmsy-artifact-copy-source-")
+    );
+    const targetRoot = fs.mkdtempSync(
+      path.join(os.tmpdir(), "swarmsy-artifact-copy-target-")
+    );
+
+    try {
+      fs.mkdirSync(path.join(sourceRoot, "server/storage"), { recursive: true });
+      fs.mkdirSync(path.join(sourceRoot, "server/documents"), { recursive: true });
+      fs.mkdirSync(path.join(sourceRoot, "server/vector-cache"), {
+        recursive: true,
+      });
+      fs.mkdirSync(
+        path.join(sourceRoot, "server/node_modules/multer/storage"),
+        { recursive: true }
+      );
+      fs.mkdirSync(
+        path.join(sourceRoot, "server/node_modules/somepkg/documents"),
+        { recursive: true }
+      );
+      fs.writeFileSync(
+        path.join(sourceRoot, "server/index.js"),
+        "module.exports = {};\n"
+      );
+      fs.writeFileSync(
+        path.join(sourceRoot, "server/storage/anythingllm.db"),
+        "db"
+      );
+      fs.writeFileSync(
+        path.join(sourceRoot, "server/documents/private.txt"),
+        "doc"
+      );
+      fs.writeFileSync(
+        path.join(sourceRoot, "server/vector-cache/cache.json"),
+        "cache"
+      );
+      fs.writeFileSync(
+        path.join(sourceRoot, "server/node_modules/multer/storage/disk.js"),
+        "module.exports = {};\n"
+      );
+      fs.writeFileSync(
+        path.join(sourceRoot, "server/node_modules/somepkg/documents/index.js"),
+        "module.exports = {};\n"
+      );
+      fs.writeFileSync(path.join(sourceRoot, "server/.env"), "SECRET=1");
+
+      expect(
+        artifactPackager.shouldExcludeRuntimeCopy(
+          path.join(sourceRoot, "session-store", "session.json")
+        )
+      ).toBe(true);
+
+      artifactPackager.copyDirectory(
+        path.join(sourceRoot, "server"),
+        path.join(targetRoot, "server")
+      );
+
+      expect(fs.existsSync(path.join(targetRoot, "server/index.js"))).toBe(true);
+      expect(
+        fs.existsSync(path.join(targetRoot, "server/storage/anythingllm.db"))
+      ).toBe(false);
+      expect(
+        fs.existsSync(path.join(targetRoot, "server/documents/private.txt"))
+      ).toBe(false);
+      expect(
+        fs.existsSync(path.join(targetRoot, "server/vector-cache/cache.json"))
+      ).toBe(false);
+      expect(fs.existsSync(path.join(targetRoot, "server/.env"))).toBe(false);
+      expect(
+        fs.existsSync(
+          path.join(targetRoot, "server/node_modules/multer/storage/disk.js")
+        )
+      ).toBe(true);
+      expect(
+        fs.existsSync(
+          path.join(targetRoot, "server/node_modules/somepkg/documents/index.js")
+        )
+      ).toBe(true);
+    } finally {
+      fs.rmSync(sourceRoot, { recursive: true, force: true });
+      fs.rmSync(targetRoot, { recursive: true, force: true });
+    }
   });
 
   it("removes the full installed app tree without touching Local User paths", () => {
@@ -223,6 +318,21 @@ describe("desktop Windows installer packaging foundation", () => {
         "module.exports = {};"
       );
     }
+    fs.mkdirSync(path.join(packageRoot, "resources/app/desktop/runtime"), { recursive: true });
+    fs.mkdirSync(path.join(packageRoot, "resources/app/server/prisma/migrations"), { recursive: true });
+    fs.mkdirSync(path.join(packageRoot, "resources/app/server/node_modules/.bin"), { recursive: true });
+    fs.mkdirSync(path.join(packageRoot, "resources/app/server/node_modules/@prisma/client"), { recursive: true });
+    fs.mkdirSync(path.join(packageRoot, "resources/app/server/public"), { recursive: true });
+    fs.writeFileSync(
+      path.join(packageRoot, "resources/app/desktop/runtime/start-local-runtime.cjs"),
+      "module.exports = {};"
+    );
+    fs.writeFileSync(path.join(packageRoot, "resources/app/server/index.js"), "module.exports = {};");
+    fs.writeFileSync(path.join(packageRoot, "resources/app/server/package.json"), "{}");
+    fs.writeFileSync(path.join(packageRoot, "resources/app/server/prisma/schema.prisma"), "datasource db {}");
+    fs.writeFileSync(path.join(packageRoot, "resources/app/server/prisma/migrations/migration_lock.toml"), "");
+    fs.writeFileSync(path.join(packageRoot, "resources/app/server/node_modules/.bin/prisma"), "");
+    fs.writeFileSync(path.join(packageRoot, "resources/app/server/node_modules/@prisma/client/package.json"), "{}");
     fs.writeFileSync(
       path.join(
         packageRoot,
@@ -232,6 +342,10 @@ describe("desktop Windows installer packaging foundation", () => {
     );
     fs.writeFileSync(
       path.join(packageRoot, "resources/app/frontend/dist/_index.html"),
+      "<html></html>"
+    );
+    fs.writeFileSync(
+      path.join(packageRoot, "resources/app/server/public/_index.html"),
       "<html></html>"
     );
     fs.writeFileSync(
@@ -275,8 +389,8 @@ describe("desktop Windows installer packaging foundation", () => {
   it("keeps installer smoke validation aligned with artifact safety checks", () => {
     const artifactSmoke = require(artifactSmokePath);
 
-    expect(Array.from(artifactSmoke.forbiddenPathSegments)).toEqual(
-      expect.arrayContaining(["models", "ollama", "local-user-data"])
+    expect(Array.from(artifactSmoke.forbiddenPathFragments)).toEqual(
+      expect.arrayContaining(["server/storage", "ollama/models", "local-user-data"])
     );
     expect(
       artifactSmoke.forbiddenBasenamePatterns.some((pattern) =>

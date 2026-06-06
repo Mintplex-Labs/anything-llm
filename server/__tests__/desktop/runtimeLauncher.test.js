@@ -171,6 +171,346 @@ describe("desktop runtime launcher foundation", () => {
     );
   });
 
+
+
+
+  it("rejects unsafe managed runtime delete paths", () => {
+    const { assertSafeManagedRuntimePath } = require(launcherPath);
+    const fsRoot = path.parse(process.cwd()).root;
+
+    expect(() => assertSafeManagedRuntimePath("", path.join("", "app"))).toThrow(
+      /Refusing to clear managed runtime root/
+    );
+    expect(() =>
+      assertSafeManagedRuntimePath(fsRoot, path.join(fsRoot, "app"))
+    ).toThrow(/Refusing to clear managed runtime root/);
+    expect(() =>
+      assertSafeManagedRuntimePath("/tmp/swarmsy-safe", "/tmp/swarmsy-safe-code")
+    ).toThrow(/Refusing to clear unexpected managed app root/);
+    expect(
+      assertSafeManagedRuntimePath(
+        "/tmp/swarmsy-safe",
+        "/tmp/swarmsy-safe/app"
+      )
+    ).toEqual({
+      managedRoot: "/tmp/swarmsy-safe",
+      managedAppRoot: "/tmp/swarmsy-safe/app",
+    });
+  });
+
+  it("only excludes app-owned runtime data paths and keeps vendored internals", () => {
+    const { shouldExcludeRuntimeCopy } = require(launcherPath);
+
+    expect(
+      shouldExcludeRuntimeCopy(path.join(repoRoot, "server", "storage"))
+    ).toBe(true);
+    expect(
+      shouldExcludeRuntimeCopy(path.join(repoRoot, "server", "documents"))
+    ).toBe(true);
+    expect(
+      shouldExcludeRuntimeCopy(path.join(repoRoot, "server", "vector-cache"))
+    ).toBe(true);
+    expect(
+      shouldExcludeRuntimeCopy(path.join(repoRoot, "collector", "hotdir"))
+    ).toBe(true);
+    expect(
+      shouldExcludeRuntimeCopy(
+        path.join(
+          repoRoot,
+          "server",
+          "node_modules",
+          "multer",
+          "storage",
+          "disk.js"
+        )
+      )
+    ).toBe(false);
+    expect(
+      shouldExcludeRuntimeCopy(
+        path.join(
+          repoRoot,
+          "server",
+          "node_modules",
+          "somepkg",
+          "documents",
+          "index.js"
+        )
+      )
+    ).toBe(false);
+    expect(
+      shouldExcludeRuntimeCopy(
+        path.join(repoRoot, "server", "node_modules", "pkg", ".env")
+      )
+    ).toBe(true);
+    expect(
+      shouldExcludeRuntimeCopy(
+        path.join(repoRoot, "server", "node_modules", "pkg", "config.local")
+      )
+    ).toBe(true);
+  });
+
+  it("replaces managed app code on version changes while preserving runtime data", () => {
+    const fs = require("fs");
+    const os = require("os");
+    const { preparePackagedRuntimeRoot } = require(launcherPath);
+    const sourceRoot = fs.mkdtempSync(
+      path.join(os.tmpdir(), "swarmsy-runtime-upgrade-source-")
+    );
+    const userData = fs.mkdtempSync(
+      path.join(os.tmpdir(), "swarmsy-runtime-upgrade-user-")
+    );
+    const runtimeDataRoot = path.join(userData, "local-user-data", "runtime");
+    fs.mkdirSync(path.join(sourceRoot, "desktop/runtime"), { recursive: true });
+    fs.mkdirSync(path.join(sourceRoot, "server"), { recursive: true });
+    fs.mkdirSync(path.join(runtimeDataRoot, "documents"), { recursive: true });
+    fs.mkdirSync(path.join(runtimeDataRoot, "assets"), { recursive: true });
+    fs.writeFileSync(path.join(runtimeDataRoot, "anythingllm.db"), "db-v1");
+    fs.writeFileSync(path.join(runtimeDataRoot, "local-runtime.jwt"), "jwt-v1");
+    fs.writeFileSync(path.join(runtimeDataRoot, "documents", "doc.txt"), "doc");
+    fs.writeFileSync(path.join(runtimeDataRoot, "assets", "asset.txt"), "asset");
+    fs.writeFileSync(
+      path.join(sourceRoot, "desktop/runtime/start-local-runtime.cjs"),
+      "module.exports = {};\n"
+    );
+    fs.writeFileSync(path.join(sourceRoot, "server/index.js"), "v1");
+    fs.writeFileSync(
+      path.join(sourceRoot, "package.json"),
+      JSON.stringify({ version: "1.0.0" })
+    );
+
+    preparePackagedRuntimeRoot({
+      rootDir: sourceRoot,
+      env: { SWARMSY_DESKTOP_USER_DATA_DIR: userData },
+    });
+
+    fs.writeFileSync(path.join(sourceRoot, "server/index.js"), "v2");
+    fs.writeFileSync(
+      path.join(sourceRoot, "package.json"),
+      JSON.stringify({ version: "2.0.0" })
+    );
+    preparePackagedRuntimeRoot({
+      rootDir: sourceRoot,
+      env: { SWARMSY_DESKTOP_USER_DATA_DIR: userData },
+    });
+
+    expect(
+      fs.readFileSync(
+        path.join(userData, "managed-local-runtime", "app", "server", "index.js"),
+        "utf8"
+      )
+    ).toBe("v2");
+    expect(fs.readFileSync(path.join(runtimeDataRoot, "anythingllm.db"), "utf8")).toBe(
+      "db-v1"
+    );
+    expect(fs.readFileSync(path.join(runtimeDataRoot, "local-runtime.jwt"), "utf8")).toBe(
+      "jwt-v1"
+    );
+    expect(fs.existsSync(path.join(runtimeDataRoot, "documents", "doc.txt"))).toBe(
+      true
+    );
+    expect(fs.existsSync(path.join(runtimeDataRoot, "assets", "asset.txt"))).toBe(true);
+  });
+
+  it("returns packaged_runtime_missing without falling back to Yarn dev scripts", async () => {
+    const fs = require("fs");
+    const os = require("os");
+    const { launchDesktopLocalRuntime } = require(launcherPath);
+    const sourceRoot = fs.mkdtempSync(
+      path.join(os.tmpdir(), "swarmsy-runtime-missing-")
+    );
+    fs.writeFileSync(
+      path.join(sourceRoot, "package.json"),
+      JSON.stringify({ version: "1.0.0" })
+    );
+    const spawnImpl = jest.fn();
+
+    const result = await launchDesktopLocalRuntime({
+      rootDir: sourceRoot,
+      env: { SWARMSY_DESKTOP_USER_DATA_DIR: os.tmpdir() },
+      spawnImpl,
+      packagedRuntime: true,
+      packageScripts: { "desktop:runtime:dev": "yarn dev:all" },
+    });
+
+    expect(result).toEqual(
+      expect.objectContaining({
+        ok: false,
+        reason: "packaged_runtime_missing",
+      })
+    );
+    expect(spawnImpl).not.toHaveBeenCalled();
+  });
+
+  it("prepares packaged runtime in Local User data without copying app-owned runtime data", () => {
+    const fs = require("fs");
+    const os = require("os");
+    const {
+      preparePackagedRuntimeRoot,
+      PACKAGED_RUNTIME_ENTRY,
+    } = require(launcherPath);
+    const sourceRoot = fs.mkdtempSync(
+      path.join(os.tmpdir(), "swarmsy-runtime-source-")
+    );
+    const userData = fs.mkdtempSync(
+      path.join(os.tmpdir(), "swarmsy-runtime-user-")
+    );
+    fs.mkdirSync(path.join(sourceRoot, "desktop/runtime"), { recursive: true });
+    fs.mkdirSync(path.join(sourceRoot, "server/storage"), { recursive: true });
+    fs.mkdirSync(path.join(sourceRoot, "server/documents"), { recursive: true });
+    fs.mkdirSync(path.join(sourceRoot, "server/vector-cache"), {
+      recursive: true,
+    });
+    fs.mkdirSync(path.join(sourceRoot, "server/prisma/migrations"), {
+      recursive: true,
+    });
+    fs.mkdirSync(
+      path.join(sourceRoot, "server/node_modules/multer/storage"),
+      { recursive: true }
+    );
+    fs.mkdirSync(
+      path.join(sourceRoot, "server/node_modules/somepkg/documents"),
+      { recursive: true }
+    );
+    fs.writeFileSync(
+      path.join(sourceRoot, "package.json"),
+      JSON.stringify({ version: "9.9.9" })
+    );
+    fs.writeFileSync(
+      path.join(sourceRoot, "desktop/runtime/start-local-runtime.cjs"),
+      "module.exports = {};\n"
+    );
+    fs.writeFileSync(
+      path.join(sourceRoot, "server/index.js"),
+      "module.exports = {};\n"
+    );
+    fs.writeFileSync(path.join(sourceRoot, "server/storage/anythingllm.db"), "hosted-db");
+    fs.writeFileSync(path.join(sourceRoot, "server/documents/private.txt"), "doc");
+    fs.writeFileSync(path.join(sourceRoot, "server/vector-cache/cache.json"), "cache");
+    fs.writeFileSync(
+      path.join(sourceRoot, "server/node_modules/multer/storage/disk.js"),
+      "module.exports = {};\n"
+    );
+    fs.writeFileSync(
+      path.join(sourceRoot, "server/node_modules/somepkg/documents/index.js"),
+      "module.exports = {};\n"
+    );
+    fs.writeFileSync(path.join(sourceRoot, "server/.env"), "SECRET=1");
+
+    const entry = preparePackagedRuntimeRoot({
+      rootDir: sourceRoot,
+      env: { SWARMSY_DESKTOP_USER_DATA_DIR: userData },
+    });
+
+    expect(entry).toBe(
+      path.join(userData, "managed-local-runtime", "app", PACKAGED_RUNTIME_ENTRY)
+    );
+    expect(fs.existsSync(entry)).toBe(true);
+    expect(
+      fs.existsSync(path.join(userData, "managed-local-runtime/app/server/index.js"))
+    ).toBe(true);
+    expect(
+      fs.existsSync(
+        path.join(userData, "managed-local-runtime/app/server/storage/anythingllm.db")
+      )
+    ).toBe(false);
+    expect(
+      fs.existsSync(
+        path.join(userData, "managed-local-runtime/app/server/documents/private.txt")
+      )
+    ).toBe(false);
+    expect(
+      fs.existsSync(
+        path.join(
+          userData,
+          "managed-local-runtime/app/server/vector-cache/cache.json"
+        )
+      )
+    ).toBe(false);
+    expect(
+      fs.existsSync(path.join(userData, "managed-local-runtime/app/server/.env"))
+    ).toBe(false);
+    expect(
+      fs.existsSync(
+        path.join(
+          userData,
+          "managed-local-runtime/app/server/node_modules/multer/storage/disk.js"
+        )
+      )
+    ).toBe(true);
+    expect(
+      fs.existsSync(
+        path.join(
+          userData,
+          "managed-local-runtime/app/server/node_modules/somepkg/documents/index.js"
+        )
+      )
+    ).toBe(true);
+  });
+
+  it("launcher starts packaged runtime without requiring the dev auto-start env flag", async () => {
+    const fs = require("fs");
+    const os = require("os");
+    const { launchDesktopLocalRuntime } = require(launcherPath);
+    const sourceRoot = fs.mkdtempSync(
+      path.join(os.tmpdir(), "swarmsy-runtime-launch-")
+    );
+    const userData = fs.mkdtempSync(
+      path.join(os.tmpdir(), "swarmsy-runtime-launch-user-")
+    );
+    fs.mkdirSync(path.join(sourceRoot, "desktop/runtime"), { recursive: true });
+    fs.mkdirSync(path.join(sourceRoot, "server"), { recursive: true });
+    fs.writeFileSync(
+      path.join(sourceRoot, "package.json"),
+      JSON.stringify({ version: "1.2.3" })
+    );
+    fs.writeFileSync(
+      path.join(sourceRoot, "desktop/runtime/start-local-runtime.cjs"),
+      "module.exports = {};\n"
+    );
+    fs.writeFileSync(
+      path.join(sourceRoot, "server/index.js"),
+      "module.exports = {};\n"
+    );
+
+    const child = createMockChild({ pid: 7777 });
+    const spawnImpl = jest.fn(() => {
+      setImmediate(() => child.emit("spawn"));
+      return child;
+    });
+
+    const result = await launchDesktopLocalRuntime({
+      rootDir: sourceRoot,
+      env: { SWARMSY_DESKTOP_USER_DATA_DIR: userData },
+      spawnImpl,
+      platform: "win32",
+      packagedRuntime: true,
+      execPath: "C:\\Program Files\\SWARMSY Desktop\\SWARMSY Desktop.exe",
+    });
+
+    expect(result).toEqual(
+      expect.objectContaining({
+        ok: true,
+        pid: 7777,
+        scriptName: "desktop:runtime:packaged",
+      })
+    );
+    expect(spawnImpl).toHaveBeenCalledWith(
+      "C:\\Program Files\\SWARMSY Desktop\\SWARMSY Desktop.exe",
+      [
+        path.join(
+          userData,
+          "managed-local-runtime",
+          "app",
+          "desktop/runtime/start-local-runtime.cjs"
+        ),
+      ],
+      expect.objectContaining({
+        shell: false,
+        env: expect.objectContaining({ ELECTRON_RUN_AS_NODE: "1" }),
+      })
+    );
+  });
+
   it("launcher returns structured failure on spawn error", async () => {
     const { launchDesktopLocalRuntime } = require(launcherPath);
     const child = createMockChild({ pid: 6789 });

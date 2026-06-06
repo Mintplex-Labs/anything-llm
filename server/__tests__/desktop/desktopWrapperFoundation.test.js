@@ -731,6 +731,48 @@ describe("SWARMSY desktop wrapper foundation", () => {
     }
   });
 
+
+
+  it("failure page retry link falls back to localhost for untrusted start URLs", () => {
+    jest.resetModules();
+    jest.doMock(
+      "electron",
+      () => ({
+        app: {},
+        BrowserWindow: jest.fn(),
+        ipcMain: { handle: jest.fn(), removeHandler: jest.fn() },
+        shell: { openExternal: jest.fn() },
+      }),
+      { virtual: true }
+    );
+
+    const previousStartUrl = process.env.SWARMSY_DESKTOP_START_URL;
+    process.env.SWARMSY_DESKTOP_START_URL = "https://evil.example.com/retry";
+
+    try {
+      const main = require(path.resolve(repoRoot, "desktop/electron/main.cjs"));
+      const failurePage = main.renderFailurePage({
+        reason: "runtime_unreachable",
+        message: "runtime unavailable",
+        startUrl: "https://evil.example.com/retry",
+      });
+      const failureMarkup = decodeURIComponent(failurePage.split(",")[1]);
+
+      expect(failureMarkup).toContain(
+        'href="http://127.0.0.1:3000"'
+      );
+      expect(failureMarkup).not.toContain(
+        'href="https://evil.example.com/retry"'
+      );
+    } finally {
+      if (previousStartUrl === undefined) {
+        delete process.env.SWARMSY_DESKTOP_START_URL;
+      } else {
+        process.env.SWARMSY_DESKTOP_START_URL = previousStartUrl;
+      }
+    }
+  });
+
   it("failure page for runtime_unreachable shows the attempted local URL", async () => {
     jest.resetModules();
     jest.doMock(

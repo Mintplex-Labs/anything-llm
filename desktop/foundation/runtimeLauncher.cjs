@@ -7,6 +7,7 @@ const {
 
 const DESKTOP_RUNTIME_LAUNCH_MODE = "desktop_local_runtime_launcher";
 const DEFAULT_RUNTIME_SCRIPT = "desktop:runtime:dev";
+const PACKAGED_RUNTIME_ENTRY = "desktop/runtime/start-local-runtime.cjs";
 const LEGACY_RUNTIME_SCRIPT = "dev:all";
 const AUTO_START_RUNTIME_ENV_FLAG = "SWARMSY_DESKTOP_AUTO_START_RUNTIME";
 const RUNTIME_SCRIPT_ENV_FLAG = "SWARMSY_DESKTOP_RUNTIME_SCRIPT";
@@ -22,6 +23,166 @@ function isDesktopRuntimeAutoStartEnabled({ env = process.env } = {}) {
       .trim()
       .toLowerCase() === "true"
   );
+}
+
+function resolvePackagedRuntimeEntry({ rootDir = repoRoot } = {}) {
+  const entry = path.resolve(rootDir, PACKAGED_RUNTIME_ENTRY);
+  return fs.existsSync(entry) ? entry : "";
+}
+
+function shouldAutoStartDesktopRuntime({
+  env = process.env,
+  packagedRuntime = false,
+} = {}) {
+  return packagedRuntime || isDesktopRuntimeAutoStartEnabled({ env });
+}
+
+function resolveManagedRuntimeRoot({ env = process.env } = {}) {
+  const configured = String(
+    env?.SWARMSY_DESKTOP_MANAGED_RUNTIME_DIR || ""
+  ).trim();
+  if (configured) return path.resolve(configured);
+  const userDataDir = String(
+    env?.SWARMSY_DESKTOP_USER_DATA_DIR || ""
+  ).trim();
+  if (userDataDir) return path.join(userDataDir, "managed-local-runtime");
+  const localAppData = String(
+    env?.LOCALAPPDATA || env?.APPDATA || ""
+  ).trim();
+  if (localAppData) {
+    return path.join(localAppData, "SWARMSY Desktop", "managed-local-runtime");
+  }
+  return path.join(repoRoot, ".swarmsy-desktop", "managed-local-runtime");
+}
+
+function assertSafeManagedRuntimePath(managedRoot, managedAppRoot) {
+  const resolvedManagedRoot = path.resolve(String(managedRoot || "").trim());
+  const resolvedManagedAppRoot = path.resolve(
+    String(managedAppRoot || "").trim()
+  );
+  const managedRootFsRoot = path.parse(resolvedManagedRoot).root;
+
+  if (
+    !String(managedRoot || "").trim() ||
+    resolvedManagedRoot === managedRootFsRoot ||
+    resolvedManagedRoot.length < managedRootFsRoot.length + 8
+  ) {
+    throw new Error(`Refusing to clear managed runtime root: ${managedRoot}`);
+  }
+
+  if (resolvedManagedAppRoot !== path.join(resolvedManagedRoot, "app")) {
+    throw new Error(
+      `Refusing to clear unexpected managed app root: ${managedAppRoot}`
+    );
+  }
+
+  if (resolvedManagedAppRoot === resolvedManagedRoot) {
+    throw new Error(
+      `Refusing to clear managed app root equal to managed root: ${managedAppRoot}`
+    );
+  }
+
+  return {
+    managedRoot: resolvedManagedRoot,
+    managedAppRoot: resolvedManagedAppRoot,
+  };
+}
+
+function readPackageVersion({ rootDir = repoRoot } = {}) {
+  try {
+    const pkg = JSON.parse(
+      fs.readFileSync(path.join(rootDir, "package.json"), "utf8")
+    );
+    return String(pkg.version || "0.0.0");
+  } catch {
+    return "0.0.0";
+  }
+}
+
+function toPortableLower(filePath) {
+  return String(filePath || "").replace(/\\/g, "/").toLowerCase();
+}
+
+function portablePathIncludes(portablePath, fragment) {
+  return (
+    portablePath.includes(`${fragment}/`) || portablePath.endsWith(fragment)
+  );
+}
+
+function isUnderNodeModules(source) {
+  return portablePathIncludes(toPortableLower(source), "/node_modules");
+}
+
+function shouldExcludeRuntimeCopy(source) {
+  const base = path.basename(source).toLowerCase();
+  const portable = toPortableLower(source);
+  if (base.startsWith(".env") || base.endsWith(".local")) return true;
+  if (
+    portablePathIncludes(portable, "/.yarn") ||
+    portablePathIncludes(portable, "/.yarnrc.yml") ||
+    portablePathIncludes(portable, "/__tests__")
+  ) {
+    return true;
+  }
+  if (isUnderNodeModules(source)) return false;
+  return [
+    "/server/storage",
+    "/server/documents",
+    "/server/vector-cache",
+    "/collector/hotdir",
+    "/session-store",
+  ].some((fragment) => portablePathIncludes(portable, fragment));
+}
+
+function copyRuntimeTree(from, to) {
+  fs.mkdirSync(path.dirname(to), { recursive: true });
+  fs.cpSync(from, to, {
+    recursive: true,
+    filter: (source) => !shouldExcludeRuntimeCopy(source),
+  });
+}
+
+function preparePackagedRuntimeRoot({
+  rootDir = repoRoot,
+  env = process.env,
+} = {}) {
+  const sourceEntry = resolvePackagedRuntimeEntry({ rootDir });
+  if (!sourceEntry) return "";
+
+  const version = readPackageVersion({ rootDir });
+  const managedRoot = resolveManagedRuntimeRoot({ env });
+  const managedAppRoot = path.join(managedRoot, "app");
+  assertSafeManagedRuntimePath(managedRoot, managedAppRoot);
+  const manifestPath = path.join(managedRoot, "runtime-manifest.json");
+  let currentManifest = null;
+  try {
+    currentManifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+  } catch {}
+
+  const entry = path.join(managedAppRoot, PACKAGED_RUNTIME_ENTRY);
+  const serverIndex = path.join(managedAppRoot, "server", "index.js");
+  if (
+    currentManifest?.version !== version ||
+    !fs.existsSync(entry) ||
+    !fs.existsSync(serverIndex)
+  ) {
+    fs.rmSync(managedAppRoot, { recursive: true, force: true });
+    fs.mkdirSync(managedAppRoot, { recursive: true });
+    copyRuntimeTree(
+      path.join(rootDir, "server"),
+      path.join(managedAppRoot, "server")
+    );
+    copyRuntimeTree(
+      path.join(rootDir, "desktop", "runtime"),
+      path.join(managedAppRoot, "desktop", "runtime")
+    );
+    fs.mkdirSync(managedRoot, { recursive: true });
+    fs.writeFileSync(
+      manifestPath,
+      `${JSON.stringify({ version, updatedAt: new Date().toISOString() }, null, 2)}\n`
+    );
+  }
+  return entry;
 }
 
 function getAllowlistedRuntimeScripts() {
@@ -94,6 +255,10 @@ function resolveYarnBinary({ platform = process.platform } = {}) {
   return platform === "win32" ? "yarn.cmd" : "yarn";
 }
 
+function resolveNodeRuntimeBinary({ execPath = process.execPath } = {}) {
+  return execPath;
+}
+
 function getManualRuntimeStartCommand({ env = process.env } = {}) {
   const result = resolveRuntimeLaunchScript({
     env,
@@ -123,8 +288,10 @@ async function launchDesktopLocalRuntime({
   spawnImpl = spawn,
   logger = console,
   packageScripts = readRootPackageScripts({ rootDir }),
+  packagedRuntime = false,
+  execPath = process.execPath,
 } = {}) {
-  if (!isDesktopRuntimeAutoStartEnabled({ env })) {
+  if (!shouldAutoStartDesktopRuntime({ env, packagedRuntime })) {
     return {
       ok: false,
       reason: "runtime_auto_start_disabled",
@@ -133,22 +300,51 @@ async function launchDesktopLocalRuntime({
     };
   }
 
-  const scriptResult = resolveRuntimeLaunchScript({
-    env,
-    packageScripts,
-  });
+  const packagedRuntimeEntry = packagedRuntime
+    ? preparePackagedRuntimeRoot({ rootDir, env })
+    : "";
+
+  if (packagedRuntime && !packagedRuntimeEntry) {
+    return {
+      ok: false,
+      reason: "packaged_runtime_missing",
+      message:
+        "Packaged SWARMSY runtime entrypoint is missing from the desktop artifact.",
+    };
+  }
+
+  const scriptResult = packagedRuntimeEntry
+    ? { ok: true, scriptName: "desktop:runtime:packaged" }
+    : resolveRuntimeLaunchScript({
+        env,
+        packageScripts,
+      });
   if (!scriptResult.ok) {
     return scriptResult;
   }
 
-  const command = resolveYarnBinary({ platform });
-  const args = ["run", scriptResult.scriptName];
+  const command = packagedRuntimeEntry
+    ? resolveNodeRuntimeBinary({ execPath })
+    : resolveYarnBinary({ platform });
+  const args = packagedRuntimeEntry
+    ? [packagedRuntimeEntry]
+    : ["run", scriptResult.scriptName];
+  const isPackagedRuntimeLaunch = Boolean(packagedRuntimeEntry);
+  const spawnEnv = isPackagedRuntimeLaunch
+    ? {
+        ...env,
+        ELECTRON_RUN_AS_NODE: "1",
+        SWARMSY_DESKTOP_MANAGED_RUNTIME_DIR:
+          env.SWARMSY_DESKTOP_MANAGED_RUNTIME_DIR ||
+          resolveManagedRuntimeRoot({ env }),
+      }
+    : env;
   let child;
   try {
     child = spawnImpl(command, args, {
       cwd: rootDir,
-      env,
-      shell: platform === "win32",
+      env: spawnEnv,
+      shell: isPackagedRuntimeLaunch ? false : platform === "win32",
       detached: platform !== "win32",
       stdio: ["ignore", "pipe", "pipe"],
       windowsHide: true,
@@ -193,6 +389,7 @@ async function launchDesktopLocalRuntime({
         pid: child.pid,
         mode: DESKTOP_RUNTIME_LAUNCH_MODE,
         scriptName: scriptResult.scriptName,
+        runtimeEntry: packagedRuntimeEntry || null,
         child,
       });
     };
@@ -402,6 +599,7 @@ async function stopDesktopLaunchedRuntime({
 module.exports = {
   DESKTOP_RUNTIME_LAUNCH_MODE,
   DEFAULT_RUNTIME_SCRIPT,
+  PACKAGED_RUNTIME_ENTRY,
   LEGACY_RUNTIME_SCRIPT,
   AUTO_START_RUNTIME_ENV_FLAG,
   RUNTIME_SCRIPT_ENV_FLAG,
@@ -409,6 +607,15 @@ module.exports = {
   DEFAULT_HEALTHCHECK_RETRY_INTERVAL_MS,
   DEFAULT_LAUNCH_SPAWN_TIMEOUT_MS,
   isDesktopRuntimeAutoStartEnabled,
+  resolvePackagedRuntimeEntry,
+  resolveManagedRuntimeRoot,
+  assertSafeManagedRuntimePath,
+  preparePackagedRuntimeRoot,
+  shouldExcludeRuntimeCopy,
+  toPortableLower,
+  isUnderNodeModules,
+  shouldAutoStartDesktopRuntime,
+  resolveNodeRuntimeBinary,
   getAllowlistedRuntimeScripts,
   readRootPackageScripts,
   resolveRuntimeLaunchScript,
