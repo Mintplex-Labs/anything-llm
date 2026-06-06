@@ -169,6 +169,11 @@ module.exports.CreatePptxPresentation = {
                 `Using the create-pptx-presentation tool.`
               );
 
+              // Strip XML 1.0 illegal control characters so PowerPoint can open
+              // the generated deck (slide content is sanitized after assembly).
+              title = createFilesLib.stripInvalidXmlChars(title);
+              author = createFilesLib.stripInvalidXmlChars(author);
+
               if (!filename.toLowerCase().endsWith(".pptx"))
                 filename += ".pptx";
 
@@ -250,12 +255,18 @@ module.exports.CreatePptxPresentation = {
 
               const totalSlideCount = allSlides.length;
 
+              // Sub-agent output can carry XML 1.0 illegal control characters
+              // (e.g. a form feed from a LaTeX `\frac`); strip them recursively
+              // from every slide so PowerPoint can open the generated deck.
+              const cleanSlides =
+                createFilesLib.stripInvalidXmlChars(allSlides);
+
               // Title slide
               const titleSlide = pptx.addSlide();
               renderTitleSlide(titleSlide, pptx, { title, author }, theme);
 
               // Render every slide produced by the section agents
-              allSlides.forEach((slideData, index) => {
+              cleanSlides.forEach((slideData, index) => {
                 const slide = pptx.addSlide();
                 const slideNumber = index + 1;
                 const layout = slideData.layout || "content";
