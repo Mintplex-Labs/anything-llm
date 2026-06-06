@@ -24,6 +24,7 @@ class GenericOpenAiLLM {
     this.openai = new OpenAIApi({
       baseURL: this.basePath,
       apiKey: process.env.GENERIC_OPEN_AI_API_KEY ?? null,
+      fetch: GenericOpenAiLLM.compactJsonFetch,
       defaultHeaders: {
         "User-Agent": getAnythingLLMUserAgent(),
         ...GenericOpenAiLLM.parseCustomHeaders(),
@@ -74,6 +75,25 @@ class GenericOpenAiLLM {
     }
 
     return headers;
+  }
+
+  /**
+   * A `fetch` that minifies JSON request bodies before sending. The OpenAI SDK
+   * pretty-prints bodies (`JSON.stringify(body, null, 2)`), but compact JSON is a
+   * lossless round-trip and the more universally compatible form across backends.
+   * Only string JSON bodies are touched; multipart/binary and unparseable bodies pass through as-is.
+   * @param {string|URL} url - the request url
+   * @param {Object} [init] - the fetch init options
+   * @returns {Promise<Response>}
+   */
+  static compactJsonFetch(url, init = {}) {
+    const { fetch: openAiFetch } = require("openai/_shims/index.js");
+    if (init && typeof init.body === "string") {
+      try {
+        init.body = JSON.stringify(JSON.parse(init.body));
+      } catch {}
+    }
+    return openAiFetch(url, init);
   }
 
   #appendContext(contextTexts = []) {
