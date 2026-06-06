@@ -1453,6 +1453,9 @@ function dumpENV() {
     // Allow setting a custom fetch timeouts for providers
     "ANYTHINGLLM_FETCH_TIMEOUT",
     "ANYTHINGLLM_MAX_RETRIES",
+
+    // Deny-by-default for embed widgets that have no allowlist configured
+    "EMBED_REQUIRE_ALLOWLIST",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.

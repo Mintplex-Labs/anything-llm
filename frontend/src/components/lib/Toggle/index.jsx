@@ -37,6 +37,9 @@ const LABEL_STYLES = {
  * @param {"default" | "horizontal"} [props.variant="default"] - Layout variant
  * @param {string} [props.hint] - Tooltip ID for info icon hint next to label
  * @param {string} [props.value] - Input value for form submission
+ * @param {string} [props.labelClassName] - Additional CSS classes for label
+ * @param {string} [props.descriptionClassName] - Additional CSS classes for description
+ * @param {string} [props.gapClassName] - Additional CSS classes for gap
  */
 export default function Toggle({
   className,
@@ -50,6 +53,9 @@ export default function Toggle({
   variant = "default",
   hint,
   value,
+  labelClassName,
+  descriptionClassName,
+  gapClassName,
 }) {
   const inputProps =
     enabled !== undefined
@@ -68,6 +74,9 @@ export default function Toggle({
           description={description}
           labelStyles={labelStyles}
           hint={hint}
+          labelClassName={labelClassName}
+          descriptionClassName={descriptionClassName}
+          gapClassName={gapClassName}
         />
         <div className="shrink-0 ml-4">
           <ToggleSwitch
@@ -100,6 +109,9 @@ export default function Toggle({
             description={description}
             labelStyles={labelStyles}
             hint={hint}
+            labelClassName={labelClassName}
+            descriptionClassName={descriptionClassName}
+            gapClassName={gapClassName}
           />
         </div>
       )}
@@ -133,13 +145,21 @@ function ToggleSwitch({ name, disabled, size, inputProps, value }) {
   );
 }
 
-function TextContent({ label, description, labelStyles = {}, hint }) {
+function TextContent({
+  label,
+  description,
+  labelStyles = {},
+  hint,
+  labelClassName,
+  descriptionClassName,
+  gapClassName,
+}) {
   if (!label && !description) return null;
   return (
-    <div className={`flex flex-col ${labelStyles.gap}`}>
+    <div className={`flex flex-col ${gapClassName ?? labelStyles.gap}`}>
       {label && (
         <span
-          className={`flex items-center gap-x-1 text-white light:text-slate-950 ${labelStyles.label}`}
+          className={`flex items-center gap-x-1 text-white light:text-slate-950 ${labelClassName ?? labelStyles.label}`}
         >
           {label}
           {hint && (
@@ -153,7 +173,7 @@ function TextContent({ label, description, labelStyles = {}, hint }) {
       )}
       {description && (
         <span
-          className={`text-zinc-400 light:text-zinc-600 ${labelStyles.description}`}
+          className={`text-zinc-400 light:text-zinc-600 ${descriptionClassName ?? labelStyles.description}`}
         >
           {description}
         </span>
