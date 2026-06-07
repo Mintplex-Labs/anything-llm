@@ -12,6 +12,7 @@ const artifactsRoot = path.join(repoRoot, "desktop", "artifacts");
 const artifactZip = path.join(artifactsRoot, "swarmsy-desktop-win32-x64.zip");
 const installerExe = path.join(artifactsRoot, "SWARMSY-Desktop-Setup.exe");
 const releaseManifest = path.join(artifactsRoot, "SWARMSY-Desktop-Release.json");
+const checksumsFile = path.join(artifactsRoot, "SHA256SUMS.txt");
 const runtimePrismaShimCandidates = [
   "resources/app/server/node_modules/.bin/prisma.cmd",
   "resources/app/server/node_modules/.bin/prisma.ps1",
@@ -63,6 +64,7 @@ function createReleaseManifest({
   artifactPath = artifactZip,
   installerPath = installerExe,
   outputPath = releaseManifest,
+  checksumsPath = checksumsFile,
   env = process.env,
   buildDate = new Date().toISOString(),
   commitSha = resolveCommitSha(),
@@ -74,6 +76,9 @@ function createReleaseManifest({
   const artifactSha256 = sha256File(artifactPath);
   const installerSha256 = sha256File(installerPath);
   const signing = resolveSigningStatus({ env });
+
+  const checksumsArtifact = relativeManifestArtifact(checksumsPath, artifactPath);
+  const checksumsInstaller = relativeManifestArtifact(checksumsPath, installerPath);
 
   const manifest = {
     schemaVersion: 1,
@@ -100,6 +105,7 @@ function createReleaseManifest({
       prismaShimCandidates: runtimePrismaShimCandidates,
       localDataPreservedOutsideInstallDir: true,
     },
+    checksums: relativeManifestArtifact(outputPath, checksumsPath),
     artifacts: {
       desktopZip: {
         path: relativeManifestArtifact(outputPath, artifactPath),
@@ -113,7 +119,12 @@ function createReleaseManifest({
   };
 
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+  fs.mkdirSync(path.dirname(checksumsPath), { recursive: true });
   fs.writeFileSync(outputPath, `${JSON.stringify(manifest, null, 2)}\n`);
+  fs.writeFileSync(
+    checksumsPath,
+    `${artifactSha256}  ${checksumsArtifact}\n${installerSha256}  ${checksumsInstaller}\n`
+  );
   return manifest;
 }
 
@@ -121,6 +132,7 @@ function main() {
   try {
     const manifest = createReleaseManifest();
     console.log(`[desktop:release] Created ${releaseManifest}`);
+    console.log(`[desktop:release] Created ${checksumsFile}`);
     console.log(`[desktop:release] signingStatus=${manifest.signingStatus}`);
   } catch (error) {
     console.error(`[desktop:release] ${error.message}`);
@@ -132,6 +144,7 @@ if (require.main === module) main();
 
 module.exports = {
   artifactZip,
+  checksumsFile,
   runtimePrismaShimCandidates,
   runtimeRequiredFiles,
   createReleaseManifest,

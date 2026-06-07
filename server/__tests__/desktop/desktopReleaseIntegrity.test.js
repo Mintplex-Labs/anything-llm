@@ -16,6 +16,10 @@ const installerWorkflowPath = path.join(
   repoRoot,
   ".github/workflows/desktop-installer-build.yml"
 );
+const releaseWorkflowPath = path.join(
+  repoRoot,
+  ".github/workflows/desktop-release.yml"
+);
 
 const { createReleaseManifest, sha256File } = require(manifestScriptPath);
 const { validateReleaseIntegrity } = require(validationScriptPath);
@@ -24,6 +28,7 @@ let tmpRoot;
 let artifactPath;
 let installerPath;
 let manifestPath;
+let checksumsPath;
 
 function writeFixtureFile(targetPath, contents) {
   fs.mkdirSync(path.dirname(targetPath), { recursive: true });
@@ -35,6 +40,7 @@ function createFixtureManifest(options = {}) {
     artifactPath,
     installerPath,
     outputPath: manifestPath,
+    checksumsPath,
     buildDate: "2026-06-04T00:00:00.000Z",
     commitSha: "abc123",
     version: "9.9.9",
@@ -60,6 +66,7 @@ describe("desktop release integrity manifest", () => {
     artifactPath = path.join(tmpRoot, "swarmsy-desktop-win32-x64.zip");
     installerPath = path.join(tmpRoot, "SWARMSY-Desktop-Setup.exe");
     manifestPath = path.join(tmpRoot, "SWARMSY-Desktop-Release.json");
+    checksumsPath = path.join(tmpRoot, "SHA256SUMS.txt");
     writeFixtureFile(artifactPath, "artifact zip bytes");
     writeFixtureFile(installerPath, "installer exe bytes");
   });
@@ -84,10 +91,18 @@ describe("desktop release integrity manifest", () => {
         artifact: "swarmsy-desktop-win32-x64.zip",
         installer: "SWARMSY-Desktop-Setup.exe",
         signingStatus: "signing_unavailable",
+        checksums: "SHA256SUMS.txt",
       })
     );
     expect(path.isAbsolute(manifest.artifact)).toBe(false);
     expect(path.isAbsolute(manifest.installer)).toBe(false);
+    expect(fs.existsSync(checksumsPath)).toBe(true);
+    expect(fs.readFileSync(checksumsPath, "utf8")).toContain(
+      `${sha256File(artifactPath)}  swarmsy-desktop-win32-x64.zip`
+    );
+    expect(fs.readFileSync(checksumsPath, "utf8")).toContain(
+      `${sha256File(installerPath)}  SWARMSY-Desktop-Setup.exe`
+    );
     expect(manifest.runtime).toEqual(
       expect.objectContaining({
         packaging: "managed_local_node_runtime",
@@ -157,7 +172,7 @@ describe("desktop release integrity manifest", () => {
     const downloadedManifest = path.join(downloadRoot, "SWARMSY-Desktop-Release.json");
 
     try {
-      for (const sourcePath of [artifactPath, installerPath, manifestPath]) {
+      for (const sourcePath of [artifactPath, installerPath, manifestPath, checksumsPath]) {
         fs.copyFileSync(sourcePath, path.join(downloadRoot, path.basename(sourcePath)));
       }
 
@@ -180,11 +195,141 @@ describe("desktop release integrity manifest", () => {
         "SWARMSY-Desktop-Setup.exe",
         "SWARMSY-Desktop-Setup.manifest.json",
         "SWARMSY-Desktop-Release.json",
+        "SHA256SUMS.txt",
         "swarmsy-desktop-win32-x64.zip",
       ])
     );
     expect(uploadedBasenames.has(path.basename(manifest.artifact))).toBe(true);
     expect(uploadedBasenames.has(path.basename(manifest.installer))).toBe(true);
+  });
+
+  it("fails validation when SHA256SUMS.txt is missing", () => {
+    createFixtureManifest();
+    fs.rmSync(checksumsPath, { force: true });
+
+    expect(() => validateReleaseIntegrity({ manifestPath })).toThrow(
+      "SHA256SUMS.txt is missing"
+    );
+  });
+
+  it("fails validation when SHA256SUMS.txt does not match the manifest", () => {
+    createFixtureManifest();
+    fs.writeFileSync(
+      checksumsPath,
+      `${"0".repeat(64)}  swarmsy-desktop-win32-x64.zip\n${sha256File(installerPath)}  SWARMSY-Desktop-Setup.exe\n`
+    );
+
+    expect(() => validateReleaseIntegrity({ manifestPath })).toThrow(
+      "Desktop artifact zip SHA256 is missing from SHA256SUMS.txt or does not match release manifest."
+    );
+  });
+
+  it("rejects checksums manifest paths that escape the release bundle", () => {
+    createFixtureManifest();
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+    manifest.checksums = "../SHA256SUMS.txt";
+    fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+
+    expect(() => validateReleaseIntegrity({ manifestPath })).toThrow(
+      "Release manifest checksums path must be a portable relative path."
+    );
+  });
+
+  it("rejects absolute checksums manifest paths", () => {
+    createFixtureManifest();
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+    manifest.checksums = path.join(tmpRoot, "SHA256SUMS.txt");
+    fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+
+    expect(() => validateReleaseIntegrity({ manifestPath })).toThrow(
+      "Release manifest checksums path must be a portable relative path."
+    );
+  });
+
+  it("rejects backslash checksums manifest paths", () => {
+    createFixtureManifest();
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+    manifest.checksums = "checksums\\SHA256SUMS.txt";
+    fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+
+    expect(() => validateReleaseIntegrity({ manifestPath })).toThrow(
+      "Release manifest checksums path must be a portable relative path."
+    );
+  });
+
+  it("publishes desktop downloads and checksums to permanent GitHub Releases", () => {
+    const releaseWorkflow = fs.readFileSync(releaseWorkflowPath, "utf8");
+
+    expect(releaseWorkflow).toContain("name: Publish SWARMSY Desktop Release");
+    expect(releaseWorkflow).toContain("workflow_dispatch:");
+    expect(releaseWorkflow).toContain("permissions:\n  contents: write");
+    expect(releaseWorkflow).toContain("Package desktop app artifact");
+    expect(releaseWorkflow).toContain("Smoke validate desktop app artifact");
+    expect(releaseWorkflow).toContain("Build Windows installer");
+    expect(releaseWorkflow).toContain("Smoke validate Windows installer");
+    expect(releaseWorkflow).toContain("Generate SHA256 checksums and release integrity manifest");
+    expect(releaseWorkflow).toContain("Validate release integrity manifest and checksums");
+    expect(releaseWorkflow).toContain("Upload permanent GitHub Release assets");
+    expect(releaseWorkflow).toContain("gh release create");
+    expect(releaseWorkflow).toContain("gh release upload");
+    expect(releaseWorkflow).toContain("desktop/artifacts/SWARMSY-Desktop-Setup.exe");
+    expect(releaseWorkflow).toContain("desktop/artifacts/swarmsy-desktop-win32-x64.zip");
+    expect(releaseWorkflow).toContain("desktop/artifacts/SHA256SUMS.txt");
+    expect(releaseWorkflow).toContain("desktop/artifacts/SWARMSY-Desktop-Release.json");
+    expect(releaseWorkflow).toContain("desktop/artifacts/RELEASE_NOTES.md");
+  });
+
+  it("uses explicit release state booleans when editing existing releases", () => {
+    const releaseWorkflow = fs.readFileSync(releaseWorkflowPath, "utf8");
+
+    expect(releaseWorkflow).toContain("RELEASE_DRAFT: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.draft == 'true' && 'true' || 'false' }}");
+    expect(releaseWorkflow).toContain("RELEASE_PRERELEASE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.prerelease == 'true' && 'true' || 'false' }}");
+    expect(releaseWorkflow).toContain('"--draft=$env:RELEASE_DRAFT"');
+    expect(releaseWorkflow).toContain('"--prerelease=$env:RELEASE_PRERELEASE"');
+    expect(releaseWorkflow).toContain("gh release edit @editReleaseArgs");
+  });
+
+  it("defaults tag-pushed releases to non-draft non-prerelease", () => {
+    const releaseWorkflow = fs.readFileSync(releaseWorkflowPath, "utf8");
+
+    expect(releaseWorkflow).toContain('tags:\n      - "desktop-v*"');
+    expect(releaseWorkflow).toContain("github.event_name == 'workflow_dispatch'");
+    expect(releaseWorkflow).toContain("github.event.inputs.draft == 'true' && 'true' || 'false'");
+    expect(releaseWorkflow).toContain("github.event.inputs.prerelease == 'true' && 'true' || 'false'");
+    expect(releaseWorkflow).not.toContain("github.event.inputs.prerelease || 'true'");
+  });
+
+  it("verifies the downloaded Electron runtime against published SHASUMS", () => {
+    const releaseWorkflow = fs.readFileSync(releaseWorkflowPath, "utf8");
+
+    expect(releaseWorkflow).toContain("Download and verify Electron runtime");
+    expect(releaseWorkflow).toContain("SHASUMS256.txt");
+    expect(releaseWorkflow).toContain("Electron SHASUMS256.txt does not contain $zipName");
+    expect(releaseWorkflow).toContain("Get-FileHash -Algorithm SHA256 $zipPath");
+    expect(releaseWorkflow).toContain("Electron runtime SHA256 mismatch");
+    expect(releaseWorkflow.indexOf("Expand-Archive -Path $zipPath")).toBeGreaterThan(
+      releaseWorkflow.indexOf("Electron runtime SHA256 mismatch")
+    );
+  });
+
+  it("writes user-ready release notes without developer setup instructions", () => {
+    const releaseWorkflow = fs.readFileSync(releaseWorkflowPath, "utf8");
+    const releaseNotesBlock = releaseWorkflow.slice(
+      releaseWorkflow.indexOf('@"'),
+      releaseWorkflow.indexOf('"@ | Set-Content')
+    );
+
+    expect(releaseNotesBlock).toContain("Download `SWARMSY-Desktop-Setup.exe`");
+    expect(releaseNotesBlock).toContain("double-click the installer");
+    expect(releaseNotesBlock).toContain("open SWARMSY Desktop");
+    expect(releaseNotesBlock).toContain("Ollama is required for local AI");
+    expect(releaseNotesBlock).toContain("Ollama and models are not bundled");
+    expect(releaseNotesBlock).toContain("https://swarmsy.cryptomoonboys.com");
+    expect(releaseNotesBlock).toContain("Windows SmartScreen may warn");
+    expect(releaseNotesBlock).toContain("does not wipe user data");
+    expect(releaseNotesBlock).not.toContain("yarn prod:frontend");
+    expect(releaseNotesBlock).not.toContain("desktop:artifact:package:win");
+    expect(releaseNotesBlock).not.toContain("ELECTRON_DIST_PATH");
   });
 
   it("keeps release integrity scripts isolated from Hosted/Admin, backup, and diagnostics behavior", () => {
