@@ -43,3 +43,15 @@ Future Local User builds can bundle these files as local data for easy import wi
 ## Non-goals
 
 This folder does not add runtime code, an optional doctrine loader, ingestion routes, UI, Docker/deployment changes, dependencies, package/build changes, hosted/admin mode changes, or required doctrine bloat.
+
+## Old SWARMSY import packs
+
+The old SWARMSY import audit and manifest live at `docs/swarmsy/audits/OLD_SWARMSY_WIKI_IMPORT_AUDIT.md` and `docs/swarmsy/sparky-wiki/seed-library/OLD_SWARMSY_IMPORT_MANIFEST.json`. Added packs are docs/spec-only, workspace-scoped, local-first references and do not port old runtime/app code.
+
+- [`packs/swarmsy-core-truth-archive/`](./packs/swarmsy-core-truth-archive/) — Historical truth/manifest/persona archive; draft-importable only, never current app truth.
+- [`packs/identity-forge-and-campaign-os/`](./packs/identity-forge-and-campaign-os/) — Identity Forge, campaign OS, movement, product manifesto, and lawful visibility doctrine.
+- [`packs/community-and-open-build-governance/`](./packs/community-and-open-build-governance/) — Community editing, contribution, provenance, review, safety, and archive governance.
+- [`packs/source-card-and-subject-governance/`](./packs/source-card-and-subject-governance/) — Source-card, source-refresh, claim quality, citation, and subject-governance references.
+- [`packs/local-user-support-and-troubleshooting-archive/`](./packs/local-user-support-and-troubleshooting-archive/) — Draft support archive for local/Ollama/user setup context, requiring current-behavior verification.
+- [`packs/product-planning-archive/`](./packs/product-planning-archive/) — Future/draft product, roadmap, design, and planning archive; not live feature claims.
+- [`packs/swarmsy-app-brain-reference-archive/`](./packs/swarmsy-app-brain-reference-archive/) — Old app-brain reference roles for broad operator/campaign/research/safety context.

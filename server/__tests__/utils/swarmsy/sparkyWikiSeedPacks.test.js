@@ -16,6 +16,13 @@ const {
   CAMPAIGN_CASE_STUDIES_FILES,
   CULTURAL_PROTOCOLS_FILES,
   IDENTITY_EMPIRE_FILES,
+  SWARMSY_CORE_TRUTH_ARCHIVE_FILES,
+  IDENTITY_FORGE_AND_CAMPAIGN_OS_FILES,
+  COMMUNITY_AND_OPEN_BUILD_GOVERNANCE_FILES,
+  SOURCE_CARD_AND_SUBJECT_GOVERNANCE_FILES,
+  LOCAL_USER_SUPPORT_AND_TROUBLESHOOTING_ARCHIVE_FILES,
+  PRODUCT_PLANNING_ARCHIVE_FILES,
+  SWARMSY_APP_BRAIN_REFERENCE_ARCHIVE_FILES,
   OFFLINE_WIKI_LEDGER_STANDARDS_FILES,
   OPEN_CULTURAL_INTELLIGENCE_FILES,
   SWARMSY_PRODUCT_OPERATOR_DOCTRINE_FILES,
@@ -72,6 +79,13 @@ describe("SPARKY Wiki seed pack registry", () => {
       "open-cultural-intelligence",
       "swarmsy-product-operator-doctrine",
       "swarmsy-support-and-provider-help",
+      "swarmsy-core-truth-archive",
+      "identity-forge-and-campaign-os",
+      "community-and-open-build-governance",
+      "source-card-and-subject-governance",
+      "local-user-support-and-troubleshooting-archive",
+      "product-planning-archive",
+      "swarmsy-app-brain-reference-archive",
     ]);
     expect(packs[0]).toMatchObject({
       id: "identity-empire",
@@ -107,6 +121,33 @@ describe("SPARKY Wiki seed pack registry", () => {
     ]);
     expect(packs[8].includedFiles).toEqual([
       ...SWARMSY_SUPPORT_AND_PROVIDER_HELP_FILES,
+    ]);
+    expect(packs[9]).toMatchObject({
+      id: "swarmsy-core-truth-archive",
+      category: "swarmsy core truth archive",
+      draftImportable: true,
+      importable: true,
+    });
+    expect(packs[9].includedFiles).toEqual([
+      ...SWARMSY_CORE_TRUTH_ARCHIVE_FILES,
+    ]);
+    expect(packs[10].includedFiles).toEqual([
+      ...IDENTITY_FORGE_AND_CAMPAIGN_OS_FILES,
+    ]);
+    expect(packs[11].includedFiles).toEqual([
+      ...COMMUNITY_AND_OPEN_BUILD_GOVERNANCE_FILES,
+    ]);
+    expect(packs[12].includedFiles).toEqual([
+      ...SOURCE_CARD_AND_SUBJECT_GOVERNANCE_FILES,
+    ]);
+    expect(packs[13].includedFiles).toEqual([
+      ...LOCAL_USER_SUPPORT_AND_TROUBLESHOOTING_ARCHIVE_FILES,
+    ]);
+    expect(packs[14].includedFiles).toEqual([
+      ...PRODUCT_PLANNING_ARCHIVE_FILES,
+    ]);
+    expect(packs[15].includedFiles).toEqual([
+      ...SWARMSY_APP_BRAIN_REFERENCE_ARCHIVE_FILES,
     ]);
     expect(
       packs.every((pack) =>
@@ -148,6 +189,41 @@ describe("SPARKY Wiki seed pack registry", () => {
       "swarmsy-support-and-provider-help",
       SWARMSY_SUPPORT_AND_PROVIDER_HELP_FILES,
       "swarmsy support and provider help",
+    ],
+    [
+      "swarmsy-core-truth-archive",
+      SWARMSY_CORE_TRUTH_ARCHIVE_FILES,
+      "swarmsy core truth archive",
+    ],
+    [
+      "identity-forge-and-campaign-os",
+      IDENTITY_FORGE_AND_CAMPAIGN_OS_FILES,
+      "identity forge and campaign os",
+    ],
+    [
+      "community-and-open-build-governance",
+      COMMUNITY_AND_OPEN_BUILD_GOVERNANCE_FILES,
+      "community and open build governance",
+    ],
+    [
+      "source-card-and-subject-governance",
+      SOURCE_CARD_AND_SUBJECT_GOVERNANCE_FILES,
+      "source card and subject governance",
+    ],
+    [
+      "local-user-support-and-troubleshooting-archive",
+      LOCAL_USER_SUPPORT_AND_TROUBLESHOOTING_ARCHIVE_FILES,
+      "local user support and troubleshooting archive",
+    ],
+    [
+      "product-planning-archive",
+      PRODUCT_PLANNING_ARCHIVE_FILES,
+      "product planning archive",
+    ],
+    [
+      "swarmsy-app-brain-reference-archive",
+      SWARMSY_APP_BRAIN_REFERENCE_ARCHIVE_FILES,
+      "swarmsy app brain reference archive",
     ],
   ])(
     "validates every expected %s file and metadata without crawling the repo",
@@ -362,6 +438,77 @@ describe("SPARKY Wiki seed pack registry", () => {
         }
         if (pack.id === "swarmsy-support-and-provider-help") {
           expect(raw).toMatch(/Use API|local-first|provider|current app/i);
+        }
+      }
+    }
+  });
+
+  it("records the old SWARMSY import audit and manifest without direct enhanced-copy imports", () => {
+    const fs = require("fs");
+    const path = require("path");
+    const repoRoot = path.resolve(__dirname, "../../../..");
+    const auditPath = path.join(
+      repoRoot,
+      "docs/swarmsy/audits/OLD_SWARMSY_WIKI_IMPORT_AUDIT.md"
+    );
+    const manifestPath = path.join(
+      repoRoot,
+      "docs/swarmsy/sparky-wiki/seed-library/OLD_SWARMSY_IMPORT_MANIFEST.json"
+    );
+    const audit = fs.readFileSync(auditPath, "utf8");
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+
+    expect(audit).toMatch(
+      /\|\s*old_path\s*\|\s*decision\s*\|\s*new_path\s*\|\s*reason\s*\|\s*risk_label\s*\|\s*notes\s*\|/
+    );
+    expect(manifest.source_repo).toBe("HODLKONG64/SWARMSY");
+    expect(manifest.imported_files.length).toBeGreaterThan(150);
+    expect(manifest.skipped_files.length).toBeGreaterThan(400);
+    expect(manifest.manual_review_files.length).toBeGreaterThan(0);
+    expect(manifest.packs_added.map((pack) => pack.id)).toEqual([
+      "swarmsy-core-truth-archive",
+      "identity-forge-and-campaign-os",
+      "community-and-open-build-governance",
+      "source-card-and-subject-governance",
+      "local-user-support-and-troubleshooting-archive",
+      "product-planning-archive",
+      "swarmsy-app-brain-reference-archive",
+    ]);
+    expect(
+      manifest.imported_files.some((file) =>
+        file.old_path.includes("repo_enhanced_copies")
+      )
+    ).toBe(false);
+  });
+
+  it("keeps all registered seed pack paths local, current-workspace scoped, and free of forbidden local paths", () => {
+    const fs = require("fs");
+    const forbiddenPathPattern =
+      /C:\\Users|Users\\GOD|swarmsy-APP|OPENAI_API_KEY\s*=\s*[^\s]+|ANTHROPIC_API_KEY\s*=\s*[^\s]+|GITHUB_TOKEN\s*=\s*[^\s]+/i;
+    const staleCurrentGuidancePattern =
+      /npm install|npm run|npm test|npm run start|npm run web|npm run android|npm run ios|npm run typecheck|npm run check:current-truth|npm run check:brand-canon|npm run stress:sandbox|npm test -- --watch=false|scripts\/system-sync-stress-sandbox\.mjs|desktop:build:web|desktop:build:win|Graffiti Kings app|GRAFFITI-KINGS-APP|HODLKONG64\/current DIZ\/SWARMSY workspace/i;
+    const brokenDemoGuideLinkPattern =
+      /\[[^\]]*docs\/DEMO_DATA_GUIDE\.md[^\]]*\]\((?:\.\/)?DEMO_DATA_GUIDE\.md\)/i;
+
+    for (const pack of listSparkyWikiSeedPacks()) {
+      expect(pack.sourcePath).not.toMatch(/repo_enhanced_copies|\.\./);
+      if (pack.id.includes("archive") || pack.id.includes("governance")) {
+        expect(pack.draftImportable).toBe(true);
+      }
+      const validation = validateSeedPackFiles(pack.id);
+      expect(validation.valid).toBe(true);
+      for (const file of validation.files) {
+        expect(
+          file.frontmatter.workspace_scope || "current workspace only"
+        ).toBe("current workspace only");
+        expect(file.frontmatter.runtime_override || "never").toBe("never");
+        expect(file.path).not.toMatch(/repo_enhanced_copies|\.\./);
+        const raw = fs.readFileSync(file.absolutePath, "utf8");
+        expect(raw).not.toMatch(forbiddenPathPattern);
+        expect(raw).not.toMatch(staleCurrentGuidancePattern);
+        expect(raw).not.toMatch(brokenDemoGuideLinkPattern);
+        if (pack.id !== "identity-empire") {
+          expect(raw).toMatch(/does not override|runtime_override/i);
         }
       }
     }

@@ -1,0 +1,171 @@
+---
+title: Manifest
+category: swarmsy app brain reference archive
+status_label: Reference knowledge
+workspace_scope: current workspace only
+privacy_level: workspace reference
+source: old SWARMSY repo adapted reference
+source_repo: HODLKONG64/SWARMSY
+source_path: docs/brain/MANIFEST.md
+optional_reference_knowledge: true
+runtime_override: never
+docs_spec_only: true
+---
+
+
+## Seed-library adaptation boundary
+
+This file is optional workspace reference knowledge imported from the old `HODLKONG64/SWARMSY` repository. It is preserved for SPARKY Wiki continuity as **reference knowledge** and does not override current DIZ-A-REMIX app truth, Sparky identity, provider routing, privacy boundaries, or runtime behavior.
+
+Safety boundary: use only lawful, permission-based, local-first planning. This pack does not create runtime actions, autonomous agents, web/API calls, mobile builds, Electron builds, release claims, or cross-workspace memory.
+
+## Old SWARMSY source material
+
+# Sandbox Manifest
+
+- 00-source-refresh-protocol.md
+- 01-ceo-operator-brain.md
+- 02-brand-identity-forge-brain.md
+- 03-campaign-os-brain.md
+- 04-search-visibility-brain.md
+- 05-copywriting-sales-brain.md
+- 06-content-brain.md
+- 07-local-business-brain.md
+- 08-public-promotion-safety-brain.md
+- 09-uk-advertising-compliance-brain.md
+- 10-business-finance-brain.md
+- 11-privacy-security-data-brain.md
+- 12-ux-accessibility-design-brain.md
+- 13-github-devops-brain.md
+- 14-telegram-rewards-sync-brain.md
+- 15-momentum-task-loop-brain.md
+- 16-brand-doctor-brain.md
+- 17-creative-direction-visual-dna-brain.md
+- 18-offline-operator-playbooks.md
+- 19-ecommerce-merch-brain.md
+- 20-trades-services-brain.md
+- 21-events-hospitality-brain.md
+- 22-music-creator-rights-brain.md
+- 23-community-email-brain.md
+- 24-analytics-measurement-brain.md
+- 25-health-wellbeing-boundary-brain.md
+- 26-legal-risk-escalation-brain.md
+- 27-ai-agent-orchestration-brain.md
+- 28-local-custom-build-mode-brain.md
+- 29-research-source-triage-brain.md
+- 30-pricing-monetization-brain.md
+- 31-paid-ads-media-buying-brain.md
+- 32-pr-publicity-press-brain.md
+- 33-community-swarm-ops-brain.md
+- 34-product-management-brain.md
+- 35-knowledge-import-quality-brain.md
+- 36-release-readiness-brain.md
+- 37-sector-adaptation-brain.md
+- 38-competitive-positioning-brain.md
+- 39-partnerships-sponsorships-brain.md
+- 40-training-agent-handover-brain.md
+- 41-deterministic-reasoning-architecture-brain.md
+- 41-open-llm-model-routing-brain.md
+- 41-ugc-testimonials-reviews-brain.md
+- 42-funnel-landing-page-brain.md
+- 42-hermes-local-brain-profile.md
+- 42-structured-output-schemas-brain.md
+- 43-local-first-sync-architecture-brain.md
+- 43-offer-ladder-brain.md
+- 43-open-source-agent-frameworks-brain.md
+- 44-customer-support-reputation-brain.md
+- 44-local-llm-runtime-brain.md
+- 44-mobile-desktop-storage-brain.md
+- 45-b2b-outreach-brain.md
+- 45-structured-output-contracts-brain.md
+- 45-web-wiki-arcade-sync-brain.md
+- 46-cloudflare-worker-d1-brain.md
+- 46-grants-funding-investor-brain.md
+- 46-rag-retrieval-eval-brain.md
+- 47-free-open-model-watchlist.md
+- 47-github-public-repo-ingestion-brain.md
+- 47-ip-naming-trademark-brain.md
+- 48-crisis-comms-brain.md
+- 48-deterministic-retrieval-reranking-brain.md
+- 48-edgy-but-safe-persona-brain.md
+- 49-adversarial-influence-red-team-brain.md
+- 49-agent-evals-and-regression-brain.md
+- 49-physical-asset-production-brain.md
+- 50-ai-visibility-entities-schema-brain.md
+- 50-mobile-pc-web-product-architecture-brain.md
+- 50-underground-history-lore-brain.md
+- 51-app-brain-source-governance-brain.md
+- 51-fantasy-simulation-disclaimer-brain.md
+- 51-influencer-creator-collab-brain.md
+- 52-social-proof-ethics-brain.md
+- 52-tool-permission-model-brain.md
+- 52-workflow-automation-zapier-nocode-brain.md
+- 53-activism-community-campaign-brain.md
+- 53-knowledge-graph-entity-brain.md
+- 53-training-course-education-brain.md
+- 54-charity-community-impact-brain.md
+- 54-deterministic-campaign-compiler-brain.md
+- 54-stock-trader-risk-brain.md
+- 55-ai-safety-boundary-router.md
+- 55-app-brain-import-taxonomy.md
+- 55-offline-first-reward-event-queue-brain.md
+- 56-sparky-tone-style-brain.md
+- 57-street-swarm-product-doctrine-brain.md
+- 58-brain-pack-qa-checklist.md
+- 59-swarm-npc-lore-agents-brain.md
+- 60-fake-engagement-red-flags-brain.md
+- 61-campaign-compiler-brain.md
+- 62-rabbit-hole-knowledge-graph-brain.md
+- 63-citation-source-card-schema-brain.md
+- 64-pattern-transformer-policy-brain.md
+- 65-risk-trader-thinking-brain.md
+- 66-activist-community-campaign-brain.md
+- 67-legal-guerrilla-marketing-brain.md
+- 68-fan-community-gameplay-brain.md
+- 69-persona-asset-system-brain.md
+- 70-sparky-edge-tone-brain.md
+- 71-historical-case-study-schema-brain.md
+- 72-deception-red-flags-brain.md
+- 73-public-wiki-source-card-brain.md
+- 74-mobile-pc-web-sync-brain.md
+- 75-model-routing-current-tech-brain.md
+- 76-brain-pack-ingestion-plan.md
+- MANIFEST.md
+- README_SANDBOX.md
+- repo_md_enhanced_copies/MEGATRUTH.md.enhanced-copy.md
+- repo_md_enhanced_copies/README.md.enhanced-copy.md
+- repo_md_enhanced_copies/README_MEGA_STREET_SWARM.md.enhanced-copy.md
+- repo_md_enhanced_copies/STREET_SWARM_FINAL_MEGA_BUILD_TRUTH.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs__ANDROID_APK_QA_RESULTS.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs__ANDROID_PREVIEW_BUILD_RESULT.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs__BUILD_RELEASE.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs__DESKTOP_RELEASE_QA.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs__DESKTOP_USER_DOWNLOAD.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs__EAS_OWNER_SETUP.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs__LOCAL_DEV_CHECKLIST.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs__NEXT_PHASE_ROADMAP.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs__PC_DOWNLOAD_BUILD.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs__PC_LOCAL_BRAIN_USAGE.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs__POST_PR125_SANITY_AUDIT.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs__PRE_RELEASE_AUDIT.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs__PR_REVIEW_SMOKE.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs__SANDBOX_MILESTONE_PR74.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs__SCREENSHOT_QA_RESULTS.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs__STORE_LISTING_DRAFT.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs__STREET_SWARM_CORE_LITE_ARCHITECTURE.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs__STREET_SWARM_CURRENT_TRUTH.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs__SYNC_QUEUE_FOUNDATION.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs__V1_HANDOFF.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs__audits__PR92_SWARMSY_GLOBAL_SHELL_AUDIT.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs__audits__PR92_SWARMSY_SHELL_INVENTORY.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs__audits__PR92_SWARMSY_TACTICAL_SHELL_MIGRATION_PLAN.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs__product__STREET_SWARM_SWARMSY_PRODUCT_CANON.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs__product__SWARMSY_DESIGN_CANON.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs__product__SWARMSY_DESKTOP_CORE_CANON.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs__product__SWARMSY_FULL_MANIFESTO.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs__product__SWARMSY_VISIBILITY_DOCTRINE.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs__product__THE_UNWRITTEN_WALL_MANIFESTO.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs__sandbox__PR100_SWARMSY_LIVING_COMMAND_CENTRE.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs__sandbox__PR104_SWARMSY_DESKTOP_CORE_OG_CONTROL_PANEL.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs__sandbox__PR89_SWARMSY_DIAGNOSTICS_SCREEN_SHELL.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs__sandbox__PR91_SWARMSY_CLEAN_TACTICAL_DIAGNOSTICS_RESTYLE.md.enhanced-copy.md
