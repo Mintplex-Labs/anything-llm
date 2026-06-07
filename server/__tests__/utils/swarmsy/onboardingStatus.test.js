@@ -1,8 +1,10 @@
 const {
   __resetRequiredDocsStatusCacheForTests,
   buildDoctrineState,
+  buildSparkyWikiState,
   getNextAction,
   getSwarmsyOnboardingStatus,
+  getWorkspaceIdentityEmpireFiles,
   getWorkspaceState,
 } = require("../../../utils/swarmsy/onboardingStatus");
 const { Workspace } = require("../../../models/workspace");
@@ -162,6 +164,53 @@ describe("swarmsy onboarding status helper", () => {
     expect(status.doctrine.ingestionRequired).toBe(false);
     expect(status.doctrine.requiredNonLoadable).toBe(0);
     expect(status.nextAction.type).toBe("open_hive");
+  });
+
+  it("surfaces Identity Empire wiki availability from the current workspace only", async () => {
+    const workspaceA = {
+      id: 101,
+      slug: "workspace-a",
+      name: "SWARMSY HIVE",
+      documents: [
+        {
+          metadata: JSON.stringify({
+            chunkSource:
+              "sparky-wiki-seed-pack://identity-empire/03_brand_foundation_builder.md",
+          }),
+        },
+        {
+          metadata: JSON.stringify({
+            sparkyWikiSeedPack: "identity-empire",
+            sparkyWikiSeedPackFile: "04_story_myth_and_manifesto.md",
+          }),
+        },
+      ],
+    };
+    const workspaceB = {
+      id: 202,
+      slug: "workspace-b",
+      name: "SWARMSY HIVE",
+      documents: [],
+    };
+
+    expect(getWorkspaceIdentityEmpireFiles(workspaceA)).toEqual(
+      new Set([
+        "03_brand_foundation_builder.md",
+        "04_story_myth_and_manifesto.md",
+      ])
+    );
+    expect(buildSparkyWikiState(workspaceA).identityEmpire).toMatchObject({
+      available: true,
+      status: "added",
+      label: "Identity Empire knowledge available",
+      filesAttached: 2,
+    });
+    expect(buildSparkyWikiState(workspaceB).identityEmpire).toMatchObject({
+      available: false,
+      status: "not_added",
+      label: "No Identity Empire knowledge added yet",
+      filesAttached: 0,
+    });
   });
 
   it("surfaces unavailable doctrine docs truthfully for an existing workspace", () => {

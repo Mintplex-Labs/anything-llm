@@ -3,6 +3,8 @@ const { safeJsonParse } = require("../http");
 const { PRESET_NAME } = require("./applyWorkspacePreset");
 const { getSwarmsyRequiredDocsStatus } = require("./requiredDocs");
 
+const IDENTITY_EMPIRE_PACK_ID = "identity-empire";
+const IDENTITY_EMPIRE_CHUNK_SOURCE_PREFIX = `sparky-wiki-seed-pack://${IDENTITY_EMPIRE_PACK_ID}/`;
 const REQUIRED_DOCS_STATUS_TTL_MS = 15_000;
 let cachedRequiredDocsStatus = null;
 let cachedRequiredDocsStatusAt = 0;
@@ -63,6 +65,53 @@ function getWorkspaceChunkSources(workspace = null) {
   }
 
   return chunkSources;
+}
+
+function getWorkspaceIdentityEmpireFiles(workspace = null) {
+  const files = new Set();
+
+  for (const document of workspace?.documents || []) {
+    const metadata = safeJsonParse(document.metadata, null);
+    const chunkSource = String(metadata?.chunkSource || "");
+    if (
+      metadata?.sparkyWikiSeedPack !== IDENTITY_EMPIRE_PACK_ID &&
+      !chunkSource.startsWith(IDENTITY_EMPIRE_CHUNK_SOURCE_PREFIX)
+    ) {
+      continue;
+    }
+
+    if (metadata?.sparkyWikiSeedPackFile) {
+      files.add(String(metadata.sparkyWikiSeedPackFile));
+      continue;
+    }
+
+    if (chunkSource.startsWith(IDENTITY_EMPIRE_CHUNK_SOURCE_PREFIX)) {
+      const file = chunkSource.slice(
+        IDENTITY_EMPIRE_CHUNK_SOURCE_PREFIX.length
+      );
+      if (file) files.add(file);
+    }
+  }
+
+  return files;
+}
+
+function buildSparkyWikiState(workspace = null) {
+  const identityEmpireFiles = getWorkspaceIdentityEmpireFiles(workspace);
+  const available = identityEmpireFiles.size > 0;
+  return {
+    identityEmpire: {
+      available,
+      status: available ? "added" : "not_added",
+      label: available
+        ? "Identity Empire knowledge available"
+        : "No Identity Empire knowledge added yet",
+      message: available
+        ? "Using local wiki knowledge when it fits existing Sparky intake modes."
+        : "No Identity Empire knowledge added yet.",
+      filesAttached: identityEmpireFiles.size,
+    },
+  };
 }
 
 function getRequiredDoctrineFiles(doctrineStatus = {}) {
@@ -247,6 +296,7 @@ async function getSwarmsyOnboardingStatus({
     mode: "swarmsy_onboarding",
     workspace: workspaceSummary,
     doctrine,
+    sparkyWiki: buildSparkyWikiState(workspace),
     nextAction: getNextAction(workspace, doctrine),
   };
 }
@@ -255,7 +305,9 @@ module.exports = {
   __resetRequiredDocsStatusCacheForTests: resetRequiredDocsStatusCache,
   buildDoctrineState,
   findUserSwarmsyHiveWorkspace,
+  buildSparkyWikiState,
   getNextAction,
   getSwarmsyOnboardingStatus,
+  getWorkspaceIdentityEmpireFiles,
   getWorkspaceState,
 };

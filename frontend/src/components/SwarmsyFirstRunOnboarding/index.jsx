@@ -22,6 +22,7 @@ import {
 import {
   getIntakeStarterMessage,
   getLocalUserOllamaRuntimeSelection,
+  hasIdentityEmpireKnowledge,
 } from "./handoff";
 import {
   buildCampaignDayStarterMessage,
@@ -374,6 +375,16 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
     const response = await SwarmsyOnboarding.status();
     if (response?.success || response?.mode === "swarmsy_onboarding") {
       setStatus(response);
+      const identityEmpireStatus = response?.sparkyWiki?.identityEmpire?.status;
+      if (identityEmpireStatus) {
+        setSparkyWikiPackStatus(identityEmpireStatus);
+        setSparkyWikiPackMessage(
+          response?.sparkyWiki?.identityEmpire?.message ||
+            (hasIdentityEmpireKnowledge(identityEmpireStatus)
+              ? "Identity Empire knowledge available. Using local wiki knowledge when it fits existing modes."
+              : "No Identity Empire knowledge added yet.")
+        );
+      }
       return response;
     }
 
@@ -658,7 +669,12 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
   }, [localOllamaStatus.status, localOllamaStatus.models]);
 
   const copy = statusCopy(activeStatus);
-  const intakeStarter = getIntakeStarterMessage(selectedMode);
+  const identityEmpireAvailable = hasIdentityEmpireKnowledge(
+    activeStatus?.sparkyWiki?.identityEmpire?.status || sparkyWikiPackStatus
+  );
+  const intakeStarter = getIntakeStarterMessage(selectedMode, {
+    identityEmpireAvailable,
+  });
   const canCreateCampaignDay = canUseCalendar && Boolean(campaignDate?.trim());
   const actionHubState = getActionHubActionState({
     status: activeStatus,
@@ -1053,7 +1069,9 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
       return;
     }
 
-    const starterMessage = buildMemoryLockStarterMessage(memoryLockInput);
+    const starterMessage = buildMemoryLockStarterMessage(memoryLockInput, {
+      identityEmpireAvailable,
+    });
     if (!starterMessage) {
       setMemoryLockError(MEMORY_LOCK_EMPTY_ERROR);
       setBusyAction(null);
@@ -1496,6 +1514,11 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
                     {selectedIdentityMode
                       ? `${selectedIdentityMode.label} selected. ${selectedIdentityMode.description}`
                       : "Choose Face Identity Mode, Hidden Identity Mode, or Existing Project before starting intake."}
+                  </p>
+                  <p className="mt-2 text-xs font-medium text-theme-text-secondary">
+                    {identityEmpireAvailable
+                      ? "Using local wiki knowledge when it fits this existing mode."
+                      : "No Identity Empire knowledge added yet."}
                   </p>
                   {actionHubState.actions.startIntake.disabledReason && (
                     <p className="mt-3 text-sm text-theme-text-secondary">

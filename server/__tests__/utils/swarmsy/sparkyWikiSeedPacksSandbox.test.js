@@ -12,6 +12,7 @@ jest.mock("../../../utils/collectorApi", () => ({
 
 const fs = require("fs");
 const path = require("path");
+const vm = require("vm");
 const { Document } = require("../../../models/documents");
 const { CollectorApi } = require("../../../utils/collectorApi");
 const {
@@ -25,6 +26,44 @@ const {
 const {
   buildIdentityEmpireRetrievalPlan,
 } = require("../../../utils/swarmsy/identityEmpireRetrieval");
+
+function loadFrontendHandoffModule() {
+  const source = fs
+    .readFileSync(
+      path.resolve(
+        __dirname,
+        "../../../../frontend/src/components/SwarmsyFirstRunOnboarding/handoff.js"
+      ),
+      "utf8"
+    )
+    .replace(/export const /g, "const ")
+    .replace(/export function /g, "function ");
+  const script = new vm.Script(`${source}
+module.exports = { getIntakeStarterMessage };`);
+  const sandbox = { module: { exports: {} }, exports: {} };
+  vm.createContext(sandbox);
+  script.runInContext(sandbox);
+  return sandbox.module.exports;
+}
+
+function loadFrontendMemoryLockModule() {
+  const source = fs
+    .readFileSync(
+      path.resolve(
+        __dirname,
+        "../../../../frontend/src/components/SwarmsyFirstRunOnboarding/memoryLock.js"
+      ),
+      "utf8"
+    )
+    .replace(/export const /g, "const ")
+    .replace(/export function /g, "function ");
+  const script = new vm.Script(`${source}
+module.exports = { buildMemoryLockStarterMessage };`);
+  const sandbox = { module: { exports: {} }, exports: {} };
+  vm.createContext(sandbox);
+  script.runInContext(sandbox);
+  return sandbox.module.exports;
+}
 
 describe("SPARKY Wiki seed pack sandbox stress test", () => {
   let collector;
@@ -179,6 +218,64 @@ describe("SPARKY Wiki seed pack sandbox stress test", () => {
       null,
       null,
       { metadata: true }
+    );
+
+    const { getIntakeStarterMessage } = loadFrontendHandoffModule();
+    const { buildMemoryLockStarterMessage } = loadFrontendMemoryLockModule();
+
+    const scenarioAHiddenPrompt = getIntakeStarterMessage("hidden", {
+      identityEmpireAvailable: true,
+    });
+    const scenarioARetrievalPlan = await buildIdentityEmpireRetrievalPlan({
+      workspace: workspaceA,
+      prompt: scenarioAHiddenPrompt,
+    });
+    expect(scenarioAHiddenPrompt).toContain("Hidden Identity Mode");
+    expect(scenarioAHiddenPrompt).toContain("hidden-identity safety");
+    expect(scenarioAHiddenPrompt).toContain("supporting local context only");
+    expect(scenarioAHiddenPrompt).toContain(
+      "Do not use web/API unless Use API is explicitly enabled"
+    );
+    expect(scenarioAHiddenPrompt).toContain("Use Ollama/local-first");
+    expect(scenarioARetrievalPlan.status).toBe("Using local wiki knowledge");
+    expect(scenarioARetrievalPlan.retrievalInput).toContain(
+      "Hidden Identity Mode"
+    );
+    expect(scenarioARetrievalPlan.retrievalInput).toContain("alias, pseudonym");
+
+    const scenarioBFacePrompt = getIntakeStarterMessage("face", {
+      identityEmpireAvailable: false,
+    });
+    const scenarioBRetrievalPlan = await buildIdentityEmpireRetrievalPlan({
+      workspace: emptyWorkspaceB,
+      prompt: scenarioBFacePrompt,
+    });
+    expect(scenarioBFacePrompt).toContain("Face Identity Mode");
+    expect(scenarioBFacePrompt).toContain(
+      "No Identity Empire knowledge added yet"
+    );
+    expect(scenarioBFacePrompt).toContain("without blocking on a pack picker");
+    expect(scenarioBRetrievalPlan.status).toBe(
+      "No Identity Empire knowledge added yet"
+    );
+    expect(scenarioBRetrievalPlan.retrievalInput).toBe(scenarioBFacePrompt);
+
+    const scenarioCMemoryPrompt = buildMemoryLockStarterMessage("MEMORY LOCK", {
+      identityEmpireAvailable: true,
+    });
+    const scenarioCRetrievalPlan = await buildIdentityEmpireRetrievalPlan({
+      workspace: workspaceA,
+      prompt: scenarioCMemoryPrompt,
+    });
+    expect(scenarioCMemoryPrompt).toContain(
+      "combine memory lock + current workspace memory + workspace docs"
+    );
+    expect(scenarioCMemoryPrompt).toContain(
+      "Do not overwrite Memory Lock or existing identity/template structure unless I explicitly confirm"
+    );
+    expect(scenarioCRetrievalPlan.retrievalInput).toContain("Load Memory Lock");
+    expect(scenarioCRetrievalPlan.retrievalInput).toContain(
+      "without overwriting existing user identity unless confirmed"
     );
 
     const sections = discoverRelevantIdentityEmpireSections({

@@ -53,6 +53,13 @@ async function getWorkspaceIdentityEmpireFiles(workspace) {
 function resolveSparkyMode({ prompt = "", mode = "" } = {}) {
   const text = `${mode} ${prompt}`.toLowerCase();
   if (
+    /load memory lock|memory lock wins over fresh intake|continue this swarmsy project from the memory lock|continue this project from memory lock|locked project/.test(
+      text
+    )
+  ) {
+    return "Load Memory Lock";
+  }
+  if (
     /hidden identity mode|hidden identity|alias|pseudonym|private boundary/.test(
       text
     )
@@ -73,26 +80,19 @@ function resolveSparkyMode({ prompt = "", mode = "" } = {}) {
   ) {
     return "Existing Project";
   }
-  if (
-    /load memory lock|memory lock|locked project|continue this swarmsy project/.test(
-      text
-    )
-  ) {
-    return "Load Memory Lock";
-  }
   return mode || "";
 }
 
 function modeRetrievalFocus(mode = "") {
   switch (mode) {
     case "Face Identity Mode":
-      return "public identity, founder story, real-name or brand-name positioning, public PR, proof, local reputation";
+      return "public identity, founder story, proof, offer, campaign, PR, local reputation, and public-facing brand sections";
     case "Hidden Identity Mode":
-      return "alias, pseudonym safety, hidden identity boundaries, character/persona, indirect proof, public/private boundary, optional reveal strategy";
+      return "alias, pseudonym safety, hidden-identity safety, persona, public/private boundary, indirect proof, and reveal strategy sections";
     case "Existing Project":
-      return "existing project audit, weak positioning, rebuilt offer, relaunch campaign, content/distribution refresh";
+      return "audit, weak positioning, relaunch, offer rebuild, campaign refresh, content distribution, and measurement sections";
     case "Load Memory Lock":
-      return "combine memory lock with current workspace docs and relevant Identity Empire sections without overwriting existing user identity";
+      return "combine memory lock with current workspace memory, workspace docs, and relevant Identity Empire sections without overwriting existing user identity unless confirmed";
     default:
       return "identity, brand, campaign, PR, launch, slogans, lawful visibility, digital walls, measurement";
   }
@@ -153,7 +153,8 @@ async function buildIdentityEmpireRetrievalPlan({
     "",
     "SPARKY Wiki Identity Empire local retrieval focus:",
     `Mode: ${resolvedMode || "Direct chat"}`,
-    `Use as supporting knowledge only; keep the existing Sparky intake/memory flow primary.`,
+    `Use as supporting knowledge only; keep the existing Sparky intake/memory flow primary, preserve current workspace memory, and keep the existing user identity/template structure.`,
+    `Do not overwrite Memory Lock or existing identity unless the user confirms. Do not use web/API unless Use API is explicitly enabled; use Ollama/local-first and never require online lookup.`,
     `Focus: ${modeRetrievalFocus(resolvedMode)}`,
     `Relevant local Identity Empire sections: ${discoveredSections
       .map((section) => section.file)

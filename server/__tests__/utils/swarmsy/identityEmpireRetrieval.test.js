@@ -1,4 +1,7 @@
 process.env.STORAGE_DIR = "test-storage";
+const fs = require("fs");
+const path = require("path");
+const vm = require("vm");
 jest.mock("../../../models/documents", () => ({
   Document: {
     where: jest.fn(),
@@ -47,6 +50,27 @@ const {
   isIdentityEmpirePrompt,
   resolveSparkyMode,
 } = require("../../../utils/swarmsy/identityEmpireRetrieval");
+
+function loadFrontendHandoffModule() {
+  const source = fs
+    .readFileSync(
+      path.resolve(
+        __dirname,
+        "../../../../frontend/src/components/SwarmsyFirstRunOnboarding/handoff.js"
+      ),
+      "utf8"
+    )
+    .replace(/export const /g, "const ")
+    .replace(/export function /g, "function ");
+  const script = new vm.Script(
+    `${source}
+module.exports = { getIntakeStarterMessage };`
+  );
+  const sandbox = { module: { exports: {} }, exports: {} };
+  vm.createContext(sandbox);
+  script.runInContext(sandbox);
+  return sandbox.module.exports;
+}
 
 function identityEmpireDoc(workspaceId, file) {
   return {
@@ -102,6 +126,45 @@ describe("Identity Empire retrieval planning", () => {
   });
 
   it.each([
+    ["face", "Face Identity Mode"],
+    ["hidden", "Hidden Identity Mode"],
+    ["existing-project", "Existing Project"],
+  ])(
+    "keeps %s starter prompts in their explicit mode despite Memory Lock safety text",
+    (mode, expectedMode) => {
+      const { getIntakeStarterMessage } = loadFrontendHandoffModule();
+      const prompt = getIntakeStarterMessage(mode, {
+        identityEmpireAvailable: true,
+      });
+
+      expect(prompt).toContain("Do not overwrite Memory Lock");
+      expect(resolveSparkyMode({ prompt })).toBe(expectedMode);
+    }
+  );
+
+  it.each([
+    "Load Memory Lock",
+    "Continue this SWARMSY project from the memory lock below.",
+    "Memory lock wins over fresh intake.",
+    "Continue this project from memory lock before next actions.",
+    "Resume this locked project and show next best action.",
+  ])(
+    "resolves explicit memory-lock intent as Load Memory Lock: %s",
+    (prompt) => {
+      expect(resolveSparkyMode({ prompt })).toBe("Load Memory Lock");
+    }
+  );
+
+  it("does not treat generic Memory Lock overwrite safety text as Load Memory Lock", () => {
+    expect(
+      resolveSparkyMode({
+        prompt:
+          "Start my SWARMSY intake in Face Identity Mode. Do not overwrite Memory Lock or existing identity unless I confirm.",
+      })
+    ).toBe("Face Identity Mode");
+  });
+
+  it.each([
     [
       "Face Identity Mode",
       "Start my SWARMSY intake in Face Identity Mode. Build my public founder story and PR angle.",
@@ -130,13 +193,13 @@ describe("Identity Empire retrieval planning", () => {
         "06_campaign_builder.md",
         "13_30_day_identity_empire_launch.md",
       ],
-      "existing project audit",
+      "audit, weak positioning",
     ],
     [
       "Load Memory Lock",
       "Continue this SWARMSY project from the memory lock and create my 30-day launch plan.",
       ["13_30_day_identity_empire_launch.md"],
-      "without overwriting existing user identity",
+      "without overwriting existing user identity unless confirmed",
     ],
   ])(
     "builds a %s retrieval query with mode-aware Identity Empire sections",
@@ -161,7 +224,13 @@ describe("Identity Empire retrieval planning", () => {
       expect(plan.status).toBe("Using local wiki knowledge");
       expect(plan.mode).toBe(resolveSparkyMode({ prompt }));
       expect(plan.retrievalInput).toContain(
-        "Use as supporting knowledge only; keep the existing Sparky intake/memory flow primary."
+        "Use as supporting knowledge only; keep the existing Sparky intake/memory flow primary"
+      );
+      expect(plan.retrievalInput).toContain(
+        "Do not overwrite Memory Lock or existing identity unless the user confirms."
+      );
+      expect(plan.retrievalInput).toContain(
+        "Do not use web/API unless Use API is explicitly enabled; use Ollama/local-first"
       );
       expect(plan.retrievalInput).toContain(expectedFocus);
       expectedFiles.forEach((file) => {

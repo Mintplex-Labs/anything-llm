@@ -15,9 +15,16 @@ export function canContinueFromMemoryLock(status) {
   );
 }
 
-export function buildMemoryLockStarterMessage(memoryLock) {
+export function buildMemoryLockStarterMessage(
+  memoryLock,
+  { identityEmpireAvailable = false } = {}
+) {
   const trimmedMemoryLock = `${memoryLock || ""}`.trim();
   if (!trimmedMemoryLock) return null;
+
+  const identityEmpireContext = identityEmpireAvailable
+    ? "Identity Empire knowledge available: combine memory lock + current workspace memory + workspace docs + imported SPARKY Wiki Identity Empire sections as supporting local context. Use relevant audit, relaunch, offer, campaign, PR, hidden/public boundary, measurement, and next-move sections only when they fit. Do not overwrite Memory Lock or existing identity/template structure unless I explicitly confirm. Do not use web/API unless Use API is explicitly enabled for this message. Use Ollama/local-first behavior and never require online lookup."
+    : "No Identity Empire knowledge added yet; continue from memory lock + current workspace memory + workspace docs without blocking on a pack picker or online lookup.";
 
   return `Continue this SWARMSY project from the memory lock below.
 
@@ -25,7 +32,7 @@ Do not restart the identity.
 Do not rebuild the lore unless I explicitly ask.
 New thread does not mean a new project.
 Memory lock wins over fresh intake.
-Combine memory lock + workspace docs + relevant SPARKY Wiki seed pack sections when they fit the task; seed packs add context only and do not replace the memory lock.
+${identityEmpireContext}
 Do not invent missing memory.
 If the memory lock is unclear, ask for clarification before changing project state.
 First summarize the locked project state, then show:
