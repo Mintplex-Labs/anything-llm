@@ -6,6 +6,10 @@ const { getVectorDbClass, resolveProviderConnector } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const { grepAgents } = require("./agents");
 const {
+  buildIdentityEmpireRetrievalPlan,
+} = require("../swarmsy/identityEmpireRetrieval");
+
+const {
   grepCommand,
   VALID_COMMANDS,
   chatPrompt,
@@ -174,11 +178,21 @@ async function streamChatWithWorkspace(
     });
   });
 
+  let vectorSearchInput = updatedMessage;
+  if (embeddingsCount > 0) {
+    const identityEmpireRetrievalPlan = await buildIdentityEmpireRetrievalPlan({
+      workspace,
+      prompt: updatedMessage,
+    });
+    vectorSearchInput =
+      identityEmpireRetrievalPlan.retrievalInput || updatedMessage;
+  }
+
   const vectorSearchResults =
-    embeddingsCount !== 0
+    embeddingsCount > 0
       ? await VectorDb.performSimilaritySearch({
           namespace: workspace.slug,
-          input: updatedMessage,
+          input: vectorSearchInput,
           LLMConnector,
           similarityThreshold: workspace?.similarityThreshold,
           topN: workspace?.topN,

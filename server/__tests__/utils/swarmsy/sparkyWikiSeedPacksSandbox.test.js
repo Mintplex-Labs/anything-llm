@@ -2,6 +2,7 @@ jest.mock("../../../models/documents", () => ({
   Document: {
     addDocuments: jest.fn(),
     forWorkspace: jest.fn(),
+    where: jest.fn(),
   },
 }));
 
@@ -21,6 +22,9 @@ const {
   validateSeedPackFiles,
   __resetSeedPackImportLocksForTests,
 } = require("../../../utils/swarmsy/sparkyWikiSeedPacks");
+const {
+  buildIdentityEmpireRetrievalPlan,
+} = require("../../../utils/swarmsy/identityEmpireRetrieval");
 
 describe("SPARKY Wiki seed pack sandbox stress test", () => {
   let collector;
@@ -50,6 +54,10 @@ describe("SPARKY Wiki seed pack sandbox stress test", () => {
     Document.forWorkspace.mockImplementation(
       async (workspaceId) => workspaceDocs.get(workspaceId) || []
     );
+    Document.where.mockImplementation(async (clause) => {
+      const docs = workspaceDocs.get(clause.workspaceId) || [];
+      return docs.map(({ metadata }) => ({ metadata }));
+    });
     Document.addDocuments.mockImplementation(async (workspace, locations) => {
       const docs = workspaceDocs.get(workspace.id) || [];
       for (const location of locations) {
@@ -133,6 +141,45 @@ describe("SPARKY Wiki seed pack sandbox stress test", () => {
       )
     ).toBe(true);
     expect(global.fetch).not.toHaveBeenCalled();
+
+    const workspaceARetrievalPlan = await buildIdentityEmpireRetrievalPlan({
+      workspace: workspaceA,
+      prompt:
+        "Build my identity empire from nothing. Create my 30-day launch plan and PR angle.",
+    });
+    expect(workspaceARetrievalPlan.status).toBe("Using local wiki knowledge");
+    expect(workspaceARetrievalPlan.retrievalInput).toContain(
+      "IDENTITY_EMPIRE_INDEX.md"
+    );
+    expect(workspaceARetrievalPlan.retrievalInput).toContain(
+      "13_30_day_identity_empire_launch.md"
+    );
+    expect(workspaceARetrievalPlan.retrievalInput).toContain(
+      "07_pr_and_press_machine.md"
+    );
+
+    const emptyWorkspaceB = {
+      id: 303,
+      slug: "workspace-b-empty",
+      name: "Workspace B Empty",
+    };
+    const workspaceBRetrievalPlan = await buildIdentityEmpireRetrievalPlan({
+      workspace: emptyWorkspaceB,
+      prompt: "Build my identity empire from nothing.",
+    });
+    expect(workspaceBRetrievalPlan.status).toBe(
+      "No Identity Empire knowledge added yet"
+    );
+    expect(workspaceBRetrievalPlan.retrievalInput).toBe(
+      "Build my identity empire from nothing."
+    );
+    expect(Document.where).toHaveBeenCalledWith(
+      { workspaceId: workspaceA.id },
+      null,
+      null,
+      null,
+      { metadata: true }
+    );
 
     const sections = discoverRelevantIdentityEmpireSections({
       prompt:

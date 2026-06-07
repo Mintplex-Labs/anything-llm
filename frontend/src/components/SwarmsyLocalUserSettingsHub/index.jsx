@@ -69,6 +69,16 @@ export default function SwarmsyLocalUserSettingsHub({
     typeof checkLocalImageEngine === "function"
       ? checkLocalImageEngine
       : () => {};
+
+  const sparkyWikiStatusLabel =
+    {
+      added: "Identity Empire knowledge available",
+      already_added: "Identity Empire knowledge available",
+      partial: "Using local wiki knowledge",
+      importing: "Adding Identity Empire knowledge",
+      failed: "No Identity Empire knowledge added yet",
+      not_added: "No Identity Empire knowledge added yet",
+    }[sparkyWikiPackStatus] || sparkyWikiPackStatus.replace(/_/g, " ");
   const isHostedBoundary = isHostedAdminMode && !isLocalUserMode;
   const showNeutralPendingState = isLoginModePending && !isHostedBoundary;
   const title = showNeutralPendingState
@@ -278,7 +288,7 @@ export default function SwarmsyLocalUserSettingsHub({
                   want live research.
                 </p>
                 <p className="text-xs font-medium uppercase tracking-[0.2em] text-theme-text-secondary">
-                  Status: {sparkyWikiPackStatus.replace(/_/g, " ")}
+                  Status: {sparkyWikiStatusLabel}
                 </p>
                 {sparkyWikiPackMessage && (
                   <p className="text-xs opacity-80">{sparkyWikiPackMessage}</p>

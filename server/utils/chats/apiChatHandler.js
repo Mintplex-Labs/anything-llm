@@ -4,6 +4,9 @@ const { WorkspaceChats } = require("../../models/workspaceChats");
 const { getVectorDbClass, resolveProviderConnector } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const {
+  buildIdentityEmpireRetrievalPlan,
+} = require("../swarmsy/identityEmpireRetrieval");
+const {
   chatPrompt,
   sourceIdentifier,
   recentChatHistory,
@@ -317,11 +320,20 @@ async function chatSync({
     }
   });
 
+  let vectorSearchInput = message;
+  if (embeddingsCount > 0) {
+    const identityEmpireRetrievalPlan = await buildIdentityEmpireRetrievalPlan({
+      workspace,
+      prompt: message,
+    });
+    vectorSearchInput = identityEmpireRetrievalPlan.retrievalInput || message;
+  }
+
   const vectorSearchResults =
-    embeddingsCount !== 0
+    embeddingsCount > 0
       ? await VectorDb.performSimilaritySearch({
           namespace: workspace.slug,
-          input: message,
+          input: vectorSearchInput,
           LLMConnector,
           similarityThreshold: workspace?.similarityThreshold,
           topN: workspace?.topN,
@@ -693,11 +705,20 @@ async function streamChat({
     }
   });
 
+  let vectorSearchInput = message;
+  if (embeddingsCount > 0) {
+    const identityEmpireRetrievalPlan = await buildIdentityEmpireRetrievalPlan({
+      workspace,
+      prompt: message,
+    });
+    vectorSearchInput = identityEmpireRetrievalPlan.retrievalInput || message;
+  }
+
   const vectorSearchResults =
-    embeddingsCount !== 0
+    embeddingsCount > 0
       ? await VectorDb.performSimilaritySearch({
           namespace: workspace.slug,
-          input: message,
+          input: vectorSearchInput,
           LLMConnector,
           similarityThreshold: workspace?.similarityThreshold,
           topN: workspace?.topN,
