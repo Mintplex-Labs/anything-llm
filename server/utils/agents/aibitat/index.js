@@ -13,7 +13,11 @@ const { ToolReranker } = require("./utils/toolReranker.js");
  * Guiding the chat through a graph of agents.
  */
 class AIbitat {
-  emitter = new EventEmitter();
+  emitter = (() => {
+    const _e = new EventEmitter();
+    _e.setMaxListeners(0); // Prevent MaxListenersExceededWarning when many plugins/tools attach listeners (e.g., bulk URL scraping)
+    return _e;
+  })();
 
   /**
    * Temporary flag to skip the handleExecution function
