@@ -60,6 +60,14 @@ function readInstallerUploadPaths() {
     .filter((line) => line.startsWith("desktop/artifacts/"));
 }
 
+function workflowStepIndex(workflow, stepName) {
+  return workflow.indexOf(`- name: ${stepName}`);
+}
+
+function readReleaseUploadBlock(workflow) {
+  return workflow.slice(workflowStepIndex(workflow, "Upload permanent GitHub Release assets"));
+}
+
 describe("desktop release integrity manifest", () => {
   beforeEach(() => {
     tmpRoot = fs.mkdtempSync(path.join(repoRoot, "desktop/artifacts-test-"));
@@ -277,6 +285,66 @@ describe("desktop release integrity manifest", () => {
     expect(releaseWorkflow).toContain("desktop/artifacts/SHA256SUMS.txt");
     expect(releaseWorkflow).toContain("desktop/artifacts/SWARMSY-Desktop-Release.json");
     expect(releaseWorkflow).toContain("desktop/artifacts/RELEASE_NOTES.md");
+  });
+
+  it("resolves the release tag before checking out release source", () => {
+    const releaseWorkflow = fs.readFileSync(releaseWorkflowPath, "utf8");
+    const resolveTagIndex = workflowStepIndex(releaseWorkflow, "Resolve release tag");
+    const resolveCheckoutIndex = workflowStepIndex(releaseWorkflow, "Resolve checkout ref");
+    const checkoutIndex = workflowStepIndex(releaseWorkflow, "Checkout release source");
+
+    expect(resolveTagIndex).toBeGreaterThan(-1);
+    expect(resolveCheckoutIndex).toBeGreaterThan(resolveTagIndex);
+    expect(checkoutIndex).toBeGreaterThan(resolveCheckoutIndex);
+    expect(releaseWorkflow).not.toContain("- name: Checkout repository");
+  });
+
+  it("checks out the resolved tag ref or workflow SHA for new manual releases", () => {
+    const releaseWorkflow = fs.readFileSync(releaseWorkflowPath, "utf8");
+
+    expect(releaseWorkflow).toContain("- name: Resolve checkout ref");
+    expect(releaseWorkflow).toContain("id: checkout_ref");
+    expect(releaseWorkflow).toContain("$checkoutRef = $tag");
+    expect(releaseWorkflow).toContain(
+      'if ("${{ github.event_name }}" -eq "workflow_dispatch") {'
+    );
+    expect(releaseWorkflow).toContain(
+      'git ls-remote --exit-code --tags "https://github.com/${{ github.repository }}.git" "refs/tags/$tag"'
+    );
+    expect(releaseWorkflow).toContain('$checkoutRef = "${{ github.sha }}"');
+    expect(releaseWorkflow).toContain("ref: ${{ steps.checkout_ref.outputs.ref }}");
+  });
+
+  it("resolves the release target commit after checkout and uses it for create/edit", () => {
+    const releaseWorkflow = fs.readFileSync(releaseWorkflowPath, "utf8");
+    const checkoutIndex = workflowStepIndex(releaseWorkflow, "Checkout release source");
+    const resolveTargetIndex = workflowStepIndex(releaseWorkflow, "Resolve release target commit");
+    const uploadIndex = workflowStepIndex(releaseWorkflow, "Upload permanent GitHub Release assets");
+    const uploadBlock = readReleaseUploadBlock(releaseWorkflow);
+
+    expect(resolveTargetIndex).toBeGreaterThan(checkoutIndex);
+    expect(uploadIndex).toBeGreaterThan(resolveTargetIndex);
+    expect(releaseWorkflow).toContain("id: release_target");
+    expect(releaseWorkflow).toContain("git rev-parse HEAD");
+    expect(uploadBlock).toContain('"--target", "${{ steps.release_target.outputs.sha }}"');
+    expect(uploadBlock).toContain("gh release edit @editReleaseArgs");
+    expect(uploadBlock).toContain("gh release create @createReleaseArgs");
+    expect(uploadBlock).not.toContain('"--target", "${{ github.sha }}"');
+  });
+
+  it("does not build from an arbitrary dispatch ref when updating an existing release tag", () => {
+    const releaseWorkflow = fs.readFileSync(releaseWorkflowPath, "utf8");
+    const resolveCheckoutIndex = workflowStepIndex(releaseWorkflow, "Resolve checkout ref");
+    const checkoutIndex = workflowStepIndex(releaseWorkflow, "Checkout release source");
+    const buildIndex = workflowStepIndex(releaseWorkflow, "Package desktop app artifact");
+    const resolverBlock = releaseWorkflow.slice(resolveCheckoutIndex, checkoutIndex);
+
+    expect(resolverBlock).toContain("$checkoutRef = $tag");
+    expect(resolverBlock).toContain("git ls-remote --exit-code --tags");
+    expect(resolverBlock.indexOf('$checkoutRef = "${{ github.sha }}"')).toBeGreaterThan(
+      resolverBlock.indexOf("git ls-remote --exit-code --tags")
+    );
+    expect(buildIndex).toBeGreaterThan(checkoutIndex);
   });
 
   it("uses explicit release state booleans when editing existing releases", () => {

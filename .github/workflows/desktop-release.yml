@@ -40,11 +40,6 @@ jobs:
       SHARP_IGNORE_GLOBAL_LIBVIPS: "true"
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
       - name: Resolve release tag
         id: release_tag
         shell: pwsh
@@ -57,6 +52,36 @@ jobs:
             throw "Release tag could not be resolved. Use workflow_dispatch with tag_name or push a desktop-v* tag."
           }
           "tag=$tag" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+      - name: Resolve checkout ref
+        id: checkout_ref
+        shell: pwsh
+        run: |
+          $tag = "${{ steps.release_tag.outputs.tag }}"
+          $checkoutRef = $tag
+          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+            git ls-remote --exit-code --tags "https://github.com/${{ github.repository }}.git" "refs/tags/$tag" *> $null
+            if ($LASTEXITCODE -ne 0) {
+              $checkoutRef = "${{ github.sha }}"
+            }
+          }
+          "ref=$checkoutRef" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+      - name: Checkout release source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ steps.checkout_ref.outputs.ref }}
+
+      - name: Resolve release target commit
+        id: release_target
+        shell: pwsh
+        run: |
+          $sha = (git rev-parse HEAD).Trim()
+          if ([string]::IsNullOrWhiteSpace($sha)) {
+            throw "Release target commit could not be resolved from the checked-out source."
+          }
+          "sha=$sha" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -238,7 +263,7 @@ jobs:
             $env:RELEASE_TAG,
             "--title", $env:RELEASE_TITLE,
             "--notes-file", "desktop/artifacts/RELEASE_NOTES.md",
-            "--target", "${{ github.sha }}"
+            "--target", "${{ steps.release_target.outputs.sha }}"
           )
           $editReleaseArgs = $releaseArgs + @(
             "--draft=$env:RELEASE_DRAFT",
