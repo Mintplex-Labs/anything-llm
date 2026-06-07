@@ -16,6 +16,8 @@ const vm = require("vm");
 const { Document } = require("../../../models/documents");
 const { CollectorApi } = require("../../../utils/collectorApi");
 const {
+  CAMPAIGN_CASE_STUDIES_FILES,
+  CULTURAL_PROTOCOLS_FILES,
   IDENTITY_EMPIRE_FILES,
   discoverRelevantIdentityEmpireSections,
   importSparkyWikiSeedPack,
@@ -101,11 +103,16 @@ describe("SPARKY Wiki seed pack sandbox stress test", () => {
       const docs = workspaceDocs.get(workspace.id) || [];
       for (const location of locations) {
         const file = path.basename(location, ".json");
+        const packId = path.basename(path.dirname(location));
         docs.push({
           workspaceId: workspace.id,
           docpath: location,
           metadata: JSON.stringify({
-            chunkSource: `sparky-wiki-seed-pack://identity-empire/${file}`,
+            chunkSource: `sparky-wiki-seed-pack://${packId}/${file}`,
+            sparkyWikiSeedPack: packId,
+            sparkyWikiSeedPackFile: file,
+            localFirst: true,
+            optionalReferenceKnowledge: true,
           }),
         });
       }
@@ -121,7 +128,17 @@ describe("SPARKY Wiki seed pack sandbox stress test", () => {
 
   it("exercises the full local registry/import flow without workspace bleed or hosted mutation", async () => {
     const packs = listSparkyWikiSeedPacks();
-    expect(packs.map((pack) => pack.id)).toEqual(["identity-empire"]);
+    expect(packs.map((pack) => pack.id)).toEqual([
+      "identity-empire",
+      "offline-wiki-ledger-standards",
+      "cultural-protocols",
+      "campaign-case-studies",
+      "wiki-depth-and-provenance",
+      "banksy-depth-tree",
+      "open-cultural-intelligence",
+      "swarmsy-product-operator-doctrine",
+      "swarmsy-support-and-provider-help",
+    ]);
 
     const validation = validateSeedPackFiles("identity-empire");
     expect(validation.valid).toBe(true);
@@ -151,8 +168,26 @@ describe("SPARKY Wiki seed pack sandbox stress test", () => {
       packId: "identity-empire",
       userId: null,
     });
+    const protocolImportA = await importSparkyWikiSeedPack({
+      workspace: workspaceA,
+      packId: "cultural-protocols",
+      userId: null,
+    });
+    const caseStudyImportA = await importSparkyWikiSeedPack({
+      workspace: workspaceA,
+      packId: "campaign-case-studies",
+      userId: null,
+    });
     expect(importA.success).toBe(true);
+    expect(protocolImportA.success).toBe(true);
+    expect(caseStudyImportA.success).toBe(true);
     expect(importA.imported).toHaveLength(IDENTITY_EMPIRE_FILES.length);
+    expect(protocolImportA.imported).toHaveLength(
+      CULTURAL_PROTOCOLS_FILES.length
+    );
+    expect(caseStudyImportA.imported).toHaveLength(
+      CAMPAIGN_CASE_STUDIES_FILES.length
+    );
     expect(importA.workspace).toMatchObject({ id: 101, slug: "workspace-a" });
 
     const repeatA = await importSparkyWikiSeedPack({
@@ -162,7 +197,11 @@ describe("SPARKY Wiki seed pack sandbox stress test", () => {
     });
     expect(repeatA.status).toBe("already_added");
     expect(repeatA.imported).toEqual([]);
-    expect(workspaceDocs.get(101)).toHaveLength(IDENTITY_EMPIRE_FILES.length);
+    expect(workspaceDocs.get(101)).toHaveLength(
+      IDENTITY_EMPIRE_FILES.length +
+        CULTURAL_PROTOCOLS_FILES.length +
+        CAMPAIGN_CASE_STUDIES_FILES.length
+    );
     expect(workspaceDocs.get(202)).toBeUndefined();
 
     const importB = await importSparkyWikiSeedPack({
@@ -171,7 +210,11 @@ describe("SPARKY Wiki seed pack sandbox stress test", () => {
       userId: null,
     });
     expect(importB.success).toBe(true);
-    expect(workspaceDocs.get(101)).toHaveLength(IDENTITY_EMPIRE_FILES.length);
+    expect(workspaceDocs.get(101)).toHaveLength(
+      IDENTITY_EMPIRE_FILES.length +
+        CULTURAL_PROTOCOLS_FILES.length +
+        CAMPAIGN_CASE_STUDIES_FILES.length
+    );
     expect(workspaceDocs.get(202)).toHaveLength(IDENTITY_EMPIRE_FILES.length);
 
     expect(
@@ -184,7 +227,7 @@ describe("SPARKY Wiki seed pack sandbox stress test", () => {
     const workspaceARetrievalPlan = await buildIdentityEmpireRetrievalPlan({
       workspace: workspaceA,
       prompt:
-        "Build my identity empire from nothing. Create my 30-day launch plan and PR angle.",
+        "Build my identity empire from nothing. Create a 30-day lawful public signal campaign strategy with scarcity drop mechanics, Nike-style identity compression, and a PR angle.",
     });
     expect(workspaceARetrievalPlan.status).toBe("Using local wiki knowledge");
     expect(workspaceARetrievalPlan.retrievalInput).toContain(
@@ -195,6 +238,31 @@ describe("SPARKY Wiki seed pack sandbox stress test", () => {
     );
     expect(workspaceARetrievalPlan.retrievalInput).toContain(
       "07_pr_and_press_machine.md"
+    );
+    expect(workspaceARetrievalPlan.supportingSections).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          packId: "cultural-protocols",
+          file: "BANKSY_STYLE_PUBLIC_SIGNAL_PROTOCOL.md",
+        }),
+        expect.objectContaining({
+          packId: "cultural-protocols",
+          file: "SUPREME_DROP_SCARCITY_PROTOCOL.md",
+        }),
+        expect.objectContaining({
+          packId: "campaign-case-studies",
+          file: "NIKE_JUST_DO_IT.md",
+        }),
+      ])
+    );
+    expect(workspaceARetrievalPlan.retrievalInput).toContain(
+      "Optional campaign/protocol supporting context"
+    );
+    expect(workspaceARetrievalPlan.retrievalInput).toContain(
+      "cultural-protocols/BANKSY_STYLE_PUBLIC_SIGNAL_PROTOCOL.md"
+    );
+    expect(workspaceARetrievalPlan.retrievalInput).toContain(
+      "campaign-case-studies/NIKE_JUST_DO_IT.md"
     );
 
     const emptyWorkspaceB = {
@@ -212,6 +280,7 @@ describe("SPARKY Wiki seed pack sandbox stress test", () => {
     expect(workspaceBRetrievalPlan.retrievalInput).toBe(
       "Build my identity empire from nothing."
     );
+    expect(workspaceBRetrievalPlan.supportingSections).toBeUndefined();
     expect(Document.where).toHaveBeenCalledWith(
       { workspaceId: workspaceA.id },
       null,
@@ -319,6 +388,14 @@ describe("SPARKY Wiki seed pack sandbox stress test", () => {
     expect(hubSource).not.toMatch(
       /illegal fly-posting|vandalism instructions|trespass guidance|evasion tactics|police\/council avoidance/i
     );
+    for (const docs of workspaceDocs.values()) {
+      for (const doc of docs) {
+        expect(doc.metadata).toContain('"optionalReferenceKnowledge":true');
+        expect(doc.metadata).not.toMatch(
+          /autonomousRuntimeAgents":true|webCrawler":true|apiRequired":true/i
+        );
+      }
+    }
     expect(JSON.stringify(Document.addDocuments.mock.calls)).not.toMatch(
       /backup|hosted|admin|global/i
     );

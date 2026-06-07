@@ -1,0 +1,91 @@
+{
+  "metadata": {
+    "title": "Source Card Schema",
+    "category": "offline wiki ledger standards",
+    "classification": "Docs/spec-only source",
+    "pack": "offline-wiki-ledger-standards",
+    "optional_reference_knowledge": true,
+    "docs_spec_only": true,
+    "local_first": true,
+    "import_scope": "workspace-only",
+    "runtime_override": "never",
+    "safety_boundary": "Does not override Sparky identity, current app truth, provider routing, runtime action rules, workspace state, or safety boundaries. No autonomous agents, web crawler, API requirement, or old runtime code.",
+    "source_repo": "HODLKONG64/SWARMSY",
+    "source_path": "docs/brain/knowledge-packs/SOURCE_CARD_SCHEMA.json"
+  },
+  "adaptation_note": "Optional SPARKY Wiki workspace reference schema for local source-card governance and lawful reuse.",
+  "schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Street Swarm Knowledge Pack Source Card",
+    "type": "object",
+    "required": [
+      "id",
+      "title",
+      "url",
+      "source_type",
+      "publisher",
+      "source_date",
+      "accessed",
+      "credibility",
+      "supports_claims",
+      "freshness_risk",
+      "notes"
+    ],
+    "properties": {
+      "id": {
+        "type": "string",
+        "pattern": "^[a-z0-9-]+$"
+      },
+      "title": {
+        "type": "string"
+      },
+      "url": {
+        "type": "string"
+      },
+      "source_type": {
+        "type": "string",
+        "enum": [
+          "primary",
+          "official",
+          "archive",
+          "news",
+          "book",
+          "academic",
+          "encyclopedia",
+          "industry-analysis",
+          "legal",
+          "auction",
+          "interview",
+          "documentary",
+          "other"
+        ]
+      },
+      "publisher": {
+        "type": "string"
+      },
+      "source_date": {
+        "type": "string"
+      },
+      "accessed": {
+        "type": "string"
+      },
+      "credibility": {
+        "type": "string",
+        "enum": ["high", "medium", "low", "mixed"]
+      },
+      "supports_claims": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "freshness_risk": {
+        "type": "string",
+        "enum": ["low", "medium", "high"]
+      },
+      "notes": {
+        "type": "string"
+      }
+    }
+  }
+}

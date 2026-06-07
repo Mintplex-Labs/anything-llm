@@ -9,6 +9,13 @@ jest.mock("../../../models/documents", () => ({
 }));
 
 jest.mock("../../../utils/swarmsy/sparkyWikiSeedPacks", () => ({
+  discoverRelevantOptionalSeedPackSections: jest.fn(() => []),
+  getWorkspaceSeedPackFiles: jest.fn(() => new Map()),
+  optionalCampaignPackPromptMatches: jest.fn((prompt = "") =>
+    /campaign|launch|brand|public signal|public relations|earned media|advertising|copy|positioning|propaganda|persuasion|media|stunt|spectacle|scarcity|drop|limited|queue|hype|meme|\barg\b|viral|culture|press|\bpr\b|case stud|nike|just do it|slogan|identity compression|banksy|street art|mystery|archive|supreme|red bull|stratos|event|world record|apple 1984|apple|1984|category|enemy|disrupt|bernays|berneys|public opinion|ogilvy/i.test(
+      String(prompt || "")
+    )
+  ),
   discoverRelevantIdentityEmpireSections: jest.fn(
     ({ prompt = "", mode = "" }) => {
       const text = `${prompt} ${mode}`.toLowerCase();
@@ -49,7 +56,12 @@ const {
   getWorkspaceIdentityEmpireFiles,
   isIdentityEmpirePrompt,
   resolveSparkyMode,
+  shouldCheckOptionalCampaignPacks,
 } = require("../../../utils/swarmsy/identityEmpireRetrieval");
+const {
+  discoverRelevantOptionalSeedPackSections,
+  getWorkspaceSeedPackFiles,
+} = require("../../../utils/swarmsy/sparkyWikiSeedPacks");
 
 function loadFrontendHandoffModule() {
   const source = fs
@@ -242,12 +254,35 @@ describe("Identity Empire retrieval planning", () => {
   );
 
   it.each([
+    ["advertising copy", true],
+    ["public relations ethics", true],
+    ["positioning strategy", true],
+    ["propaganda analysis", true],
+    ["build a PR angle for my campaign", true],
+    ["make an ARG mystery trail campaign", true],
+    ["What should Bernays teach this launch?", true],
+    ["Use Ogilvy research for this offer", true],
+    ["private hidden identity project", false],
+    ["what is the target audience?", false],
+    ["privacy boundary for hidden identity", false],
+    ["How do I measure privacy risk in this project?", false],
+    ["How do I measure voltage from this document?", false],
+  ])(
+    "checks optional campaign pack keyword gate for %s",
+    (prompt, expected) => {
+      expect(shouldCheckOptionalCampaignPacks(prompt)).toBe(expected);
+    }
+  );
+
+  it.each([
     ["Build my identity empire from nothing.", true],
     ["Create my 30-day launch plan.", true],
     ["Act as SIGNAL and tell me what to measure for this campaign.", true],
     ["How do I measure voltage from this document?", false],
     ["How do I measure latency from this doc?", false],
     ["What does this signal value mean in the dataset?", false],
+    ["How do I measure privacy risk in this project?", false],
+    ["What PR metrics should I measure?", true],
     ["What brand metrics should I measure?", true],
     ["What campaign signals should I track?", true],
   ])(
@@ -276,6 +311,11 @@ describe("Identity Empire retrieval planning", () => {
       "What does this signal value mean in the dataset?",
       "Identity Empire knowledge available",
     ],
+    [
+      "How do I measure privacy risk in this project?",
+      "Identity Empire knowledge available",
+    ],
+    ["What PR metrics should I measure?", "Using local wiki knowledge"],
     ["What brand metrics should I measure?", "Using local wiki knowledge"],
     ["What campaign signals should I track?", "Using local wiki knowledge"],
   ])(
@@ -302,6 +342,105 @@ describe("Identity Empire retrieval planning", () => {
       } else {
         expect(plan.retrievalInput).toBe(prompt);
       }
+    }
+  );
+
+  it("does not query optional campaign packs for ordinary Identity Empire prompts", async () => {
+    Document.where.mockResolvedValue([
+      identityEmpireDoc(101, "IDENTITY_EMPIRE_INDEX.md"),
+      identityEmpireDoc(101, "01_identity_operating_system.md"),
+    ]);
+
+    const plan = await buildIdentityEmpireRetrievalPlan({
+      workspace: { id: 101, slug: "workspace-a" },
+      prompt: "Build my identity empire from nothing.",
+    });
+
+    expect(plan.status).toBe("Using local wiki knowledge");
+    expect(plan.retrievalInput).toContain(
+      "SPARKY Wiki Identity Empire local retrieval focus:"
+    );
+    expect(plan.supportingSections).toEqual([]);
+    expect(getWorkspaceSeedPackFiles).not.toHaveBeenCalled();
+    expect(discoverRelevantOptionalSeedPackSections).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    "build a PR angle for my campaign",
+    "make an ARG mystery trail campaign",
+    "What should Bernays teach this campaign launch?",
+    "Use Ogilvy research for this brand offer",
+  ])(
+    "queries optional campaign packs for relevant prompt: %s",
+    async (prompt) => {
+      const optionalPackFiles = new Map([
+        [
+          "cultural-protocols",
+          new Set(["BANKSY_STYLE_PUBLIC_SIGNAL_PROTOCOL.md"]),
+        ],
+        ["campaign-case-studies", new Set(["MASTER_MARKETERS_OVERVIEW.md"])],
+      ]);
+      const supportingSections = [
+        {
+          packId: "cultural-protocols",
+          file: "BANKSY_STYLE_PUBLIC_SIGNAL_PROTOCOL.md",
+        },
+      ];
+      Document.where.mockResolvedValue([
+        identityEmpireDoc(101, "IDENTITY_EMPIRE_INDEX.md"),
+        identityEmpireDoc(101, "06_campaign_builder.md"),
+      ]);
+      getWorkspaceSeedPackFiles.mockResolvedValue(optionalPackFiles);
+      discoverRelevantOptionalSeedPackSections.mockReturnValue(
+        supportingSections
+      );
+
+      const plan = await buildIdentityEmpireRetrievalPlan({
+        workspace: { id: 101, slug: "workspace-a" },
+        prompt,
+      });
+
+      expect(getWorkspaceSeedPackFiles).toHaveBeenCalledWith(
+        { id: 101, slug: "workspace-a" },
+        ["cultural-protocols", "campaign-case-studies"]
+      );
+      expect(discoverRelevantOptionalSeedPackSections).toHaveBeenCalledWith({
+        prompt,
+        packFiles: optionalPackFiles,
+      });
+      expect(plan.supportingSections).toEqual(supportingSections);
+    }
+  );
+
+  it.each([
+    "private hidden identity project",
+    "what is the target audience?",
+    "privacy boundary for hidden identity",
+    "How do I measure privacy risk in this project?",
+    "How do I measure voltage from this document?",
+    "Summarize public relations ethics from this textbook.",
+    "Compare advertising copy examples in this document.",
+    "Summarize launch notes from this technical changelog.",
+  ])(
+    "does not query optional campaign packs for unrelated prompt: %s",
+    async (prompt) => {
+      Document.where.mockResolvedValue([
+        identityEmpireDoc(101, "IDENTITY_EMPIRE_INDEX.md"),
+        identityEmpireDoc(101, "02_no_idea_user_intake.md"),
+      ]);
+
+      const plan = await buildIdentityEmpireRetrievalPlan({
+        workspace: { id: 101, slug: "workspace-a" },
+        prompt,
+      });
+
+      expect(plan.available).toBe(true);
+      if (!isIdentityEmpirePrompt(prompt)) {
+        expect(plan.retrievalInput).toBe(prompt);
+      }
+      expect(plan.supportingSections).toEqual([]);
+      expect(getWorkspaceSeedPackFiles).not.toHaveBeenCalled();
+      expect(discoverRelevantOptionalSeedPackSections).not.toHaveBeenCalled();
     }
   );
 

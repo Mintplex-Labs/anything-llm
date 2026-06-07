@@ -1,0 +1,26 @@
+{
+  "metadata": {
+    "title": "Sothebys Love Bin 2021",
+    "category": "banksy depth tree",
+    "classification": "Reference knowledge",
+    "pack": "banksy-depth-tree",
+    "optional_reference_knowledge": true,
+    "docs_spec_only": true,
+    "local_first": true,
+    "import_scope": "workspace-only",
+    "runtime_override": "never",
+    "safety_boundary": "Does not override Sparky identity, current app truth, provider routing, runtime action rules, workspace state, or safety boundaries. No autonomous agents, web crawler, API requirement, old runtime code, vandalism instructions, trespass guidance, evasion tactics, platform abuse, or source-editing runtime ability.",
+    "source_repo": "HODLKONG64/SWARMSY",
+    "source_path": "docs/wiki/subjects/banksy/source-cards/sothebys-love-bin-2021.json"
+  },
+  "adaptation_note": "Optional SPARKY Wiki workspace reference data. Use for provenance-aware, lawful, non-runtime reasoning only.",
+  "data": {
+    "id": "sothebys-love-bin-2021",
+    "title": "Sotheby's Love is in the Bin 2021 reference",
+    "tier": "secondary",
+    "publisher": "Sotheby's",
+    "url": "https://www.sothebys.com/",
+    "used_for": ["auction record", "market value and event analysis"],
+    "freshness_risk": "high"
+  }
+}

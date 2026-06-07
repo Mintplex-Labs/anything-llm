@@ -1,0 +1,178 @@
+{
+  "metadata": {
+    "title": "Branches",
+    "category": "banksy depth tree",
+    "classification": "Reference knowledge",
+    "pack": "banksy-depth-tree",
+    "optional_reference_knowledge": true,
+    "docs_spec_only": true,
+    "local_first": true,
+    "import_scope": "workspace-only",
+    "runtime_override": "never",
+    "safety_boundary": "Does not override Sparky identity, current app truth, provider routing, runtime action rules, workspace state, or safety boundaries. No autonomous agents, web crawler, API requirement, old runtime code, vandalism instructions, trespass guidance, evasion tactics, platform abuse, or source-editing runtime ability.",
+    "source_repo": "HODLKONG64/SWARMSY",
+    "source_path": "docs/wiki/subjects/banksy/branches.json"
+  },
+  "adaptation_note": "Optional SPARKY Wiki workspace reference data. Use for provenance-aware, lawful, non-runtime reasoning only.",
+  "data": {
+    "subject_id": "graffiti.banksy",
+    "root": "docs/wiki/subjects/banksy/index.md",
+    "required_branch_fields": [
+      "title",
+      "subject_id",
+      "parent_page",
+      "summary",
+      "confidence_level",
+      "required_citations",
+      "related_branches",
+      "related_protocols",
+      "related_packs",
+      "freshness_risk",
+      "sparky_usage_notes"
+    ],
+    "branches": [
+      {
+        "id": "banksy.timeline",
+        "title": "Timeline",
+        "subject_id": "graffiti.banksy",
+        "parent_page": "docs/wiki/subjects/banksy/index.md",
+        "path": "docs/wiki/subjects/banksy/timeline.md",
+        "summary": "Chronological branch for dates, places, works, exhibitions, public statements, legal events, and market moments.",
+        "confidence_level": "cited_claim",
+        "required_citations": [
+          "dates",
+          "places",
+          "artworks",
+          "exhibitions",
+          "legal events"
+        ],
+        "related_branches": [
+          "banksy.auctions-market",
+          "banksy.legal-controversies"
+        ],
+        "related_protocols": ["banksy_style_public_signal"],
+        "related_packs": ["graffiti.banksy"],
+        "freshness_risk": [
+          "new works",
+          "legal disputes",
+          "authentication updates"
+        ],
+        "sparky_usage_notes": "Use for what happened, when, and where. Cite high-impact claims."
+      },
+      {
+        "id": "banksy.auctions-market",
+        "title": "Auctions And Market",
+        "subject_id": "graffiti.banksy",
+        "parent_page": "docs/wiki/subjects/banksy/index.md",
+        "path": "docs/wiki/subjects/banksy/auctions-market.md",
+        "summary": "Market branch for auction dates, prices, authentication, scarcity, provenance, hype, and value signaling.",
+        "confidence_level": "cited_claim",
+        "required_citations": [
+          "auctions",
+          "prices",
+          "authentication",
+          "provenance",
+          "market claims"
+        ],
+        "related_branches": [
+          "banksy.manufactured-authenticity",
+          "banksy.myths-theories-disputed"
+        ],
+        "related_protocols": [
+          "synthetic_momentum_manufactured_authenticity",
+          "banksy_style_public_signal"
+        ],
+        "related_packs": ["graffiti.banksy", "marketing.supreme_drop_culture"],
+        "freshness_risk": [
+          "current prices",
+          "new sales",
+          "market manipulation claims"
+        ],
+        "sparky_usage_notes": "Use source-backed confidence for sale prices and authentication. Recommend live lookup for current prices."
+      },
+      {
+        "id": "banksy.councils-regeneration",
+        "title": "Councils And Regeneration",
+        "subject_id": "graffiti.banksy",
+        "parent_page": "docs/wiki/subjects/banksy/index.md",
+        "path": "docs/wiki/subjects/banksy/councils-regeneration.md",
+        "summary": "Council/public authority response, street-art adoption, cleanup economics, controlled rebellion, tourism, and regeneration.",
+        "confidence_level": "interpretation",
+        "required_citations": [
+          "council involvement",
+          "documented removals",
+          "public authority statements",
+          "regeneration claims"
+        ],
+        "related_branches": [
+          "banksy.gentrification-economics",
+          "banksy.public-space-politics"
+        ],
+        "related_protocols": ["controlled_rebellion_regeneration"],
+        "related_packs": ["graffiti.banksy"],
+        "freshness_risk": [
+          "current council policy",
+          "active regeneration schemes"
+        ],
+        "sparky_usage_notes": "Use for enforcement asymmetry and public authority analysis. Do not invent local policy."
+      },
+      {
+        "id": "banksy.manufactured-authenticity",
+        "title": "Manufactured Authenticity",
+        "subject_id": "graffiti.banksy",
+        "parent_page": "docs/wiki/subjects/banksy/index.md",
+        "path": "docs/wiki/subjects/banksy/manufactured-authenticity.md",
+        "summary": "Authenticity, hype, synthetic momentum, identity layering, market signaling, and myths around organic culture.",
+        "confidence_level": "inference",
+        "required_citations": [
+          "brand involvement",
+          "auction dynamics",
+          "public statements",
+          "market interpretation claims"
+        ],
+        "related_branches": [
+          "banksy.auctions-market",
+          "banksy.anonymity-media"
+        ],
+        "related_protocols": ["synthetic_momentum_manufactured_authenticity"],
+        "related_packs": ["graffiti.banksy"],
+        "freshness_risk": [
+          "fresh social metrics",
+          "current market claims",
+          "new authenticity disputes"
+        ],
+        "sparky_usage_notes": "Label interpretation vs evidence. Analyze systems, not unsourced accusations."
+      },
+      {
+        "id": "banksy.myths-theories-disputed",
+        "title": "Myths Theories And Disputed Claims",
+        "subject_id": "graffiti.banksy",
+        "parent_page": "docs/wiki/subjects/banksy/index.md",
+        "path": "docs/wiki/subjects/banksy/myths-theories-disputed.md",
+        "summary": "Repeated theories, disputed claims, cultural myth, lore, and speculation around Banksy.",
+        "confidence_level": "disputed",
+        "required_citations": [
+          "identity claims",
+          "direct influence claims",
+          "collaboration claims",
+          "legal/ethical interpretation"
+        ],
+        "related_branches": [
+          "banksy.anonymity-media",
+          "banksy.collaborators-influences"
+        ],
+        "related_protocols": [
+          "banksy_style_public_signal",
+          "synthetic_momentum_manufactured_authenticity"
+        ],
+        "related_packs": ["graffiti.banksy"],
+        "freshness_risk": [
+          "identity claims",
+          "authentication claims",
+          "new public allegations"
+        ],
+        "sparky_usage_notes": "Say local wiki marks disputed claims as disputed/needs-source. Do not invent certainty."
+      }
+    ]
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "title": "Banksy Slave Labour Guardian 2013",
+    "category": "banksy depth tree",
+    "classification": "Reference knowledge",
+    "pack": "banksy-depth-tree",
+    "optional_reference_knowledge": true,
+    "docs_spec_only": true,
+    "local_first": true,
+    "import_scope": "workspace-only",
+    "runtime_override": "never",
+    "safety_boundary": "Does not override Sparky identity, current app truth, provider routing, runtime action rules, workspace state, or safety boundaries. No autonomous agents, web crawler, API requirement, old runtime code, vandalism instructions, trespass guidance, evasion tactics, platform abuse, or source-editing runtime ability.",
+    "source_repo": "HODLKONG64/SWARMSY",
+    "source_path": "docs/wiki/subjects/banksy/source-cards/banksy-slave-labour-guardian-2013.json"
+  },
+  "adaptation_note": "Optional SPARKY Wiki workspace reference data. Use for provenance-aware, lawful, non-runtime reasoning only.",
+  "data": {
+    "id": "banksy-slave-labour-guardian-2013",
+    "title": "Guardian report on halted Slave Labour mural auction",
+    "tier": "secondary",
+    "publisher": "The Guardian",
+    "url": "https://www.theguardian.com/artanddesign/2013/feb/23/banksy-missing-mural-auction-stopped",
+    "used_for": [
+      "Slave Labour removal controversy",
+      "public wall versus private auction conflict",
+      "source-conflict and property/value analysis"
+    ],
+    "freshness_risk": "low"
+  }
+}

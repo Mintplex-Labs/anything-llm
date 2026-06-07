@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "title": "Banksy Dismaland Economy Time 2015",
+    "category": "banksy depth tree",
+    "classification": "Reference knowledge",
+    "pack": "banksy-depth-tree",
+    "optional_reference_knowledge": true,
+    "docs_spec_only": true,
+    "local_first": true,
+    "import_scope": "workspace-only",
+    "runtime_override": "never",
+    "safety_boundary": "Does not override Sparky identity, current app truth, provider routing, runtime action rules, workspace state, or safety boundaries. No autonomous agents, web crawler, API requirement, old runtime code, vandalism instructions, trespass guidance, evasion tactics, platform abuse, or source-editing runtime ability.",
+    "source_repo": "HODLKONG64/SWARMSY",
+    "source_path": "docs/wiki/subjects/banksy/source-cards/banksy-dismaland-economy-time-2015.json"
+  },
+  "adaptation_note": "Optional SPARKY Wiki workspace reference data. Use for provenance-aware, lawful, non-runtime reasoning only.",
+  "data": {
+    "id": "banksy-dismaland-economy-time-2015",
+    "title": "TIME coverage of Dismaland's town/regeneration effect",
+    "tier": "secondary",
+    "publisher": "TIME",
+    "url": "https://time.com/4006579/dismaland-banksy/",
+    "used_for": [
+      "Dismaland regeneration discussion",
+      "Bristol exhibition visitor/economic comparison",
+      "local authority and resident response"
+    ],
+    "freshness_risk": "medium"
+  }
+}

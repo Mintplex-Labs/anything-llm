@@ -1,6 +1,9 @@
 const { Document } = require("../../models/documents");
 const {
   discoverRelevantIdentityEmpireSections,
+  discoverRelevantOptionalSeedPackSections,
+  getWorkspaceSeedPackFiles,
+  optionalCampaignPackPromptMatches,
 } = require("./sparkyWikiSeedPacks");
 
 const IDENTITY_EMPIRE_PACK_ID = "identity-empire";
@@ -98,6 +101,10 @@ function modeRetrievalFocus(mode = "") {
   }
 }
 
+function shouldCheckOptionalCampaignPacks(prompt = "") {
+  return optionalCampaignPackPromptMatches(prompt);
+}
+
 function isIdentityEmpirePrompt(prompt = "") {
   const text = String(prompt || "").toLowerCase();
   const strongIdentityEmpireTerms =
@@ -105,7 +112,7 @@ function isIdentityEmpirePrompt(prompt = "") {
   if (strongIdentityEmpireTerms.test(text)) return true;
 
   const hasIdentityContext =
-    /identity|brand|campaign|launch|pr|press|slogan|audience|offer|creator|artist|business|visibility|swarm|story/.test(
+    /identity|brand|campaign|launch|\bpr\b|press|slogan|audience|offer|creator|artist|business|visibility|swarm|story/.test(
       text
     );
   const hasAmbiguousSignalTerm =
@@ -136,13 +143,29 @@ async function buildIdentityEmpireRetrievalPlan({
     prompt,
     mode: resolvedMode,
   }).filter((section) => workspaceFiles.has(section.file));
+  const isRelevantIdentityEmpirePrompt = isIdentityEmpirePrompt(prompt);
+  let supportingSections = [];
+  if (
+    isRelevantIdentityEmpirePrompt &&
+    shouldCheckOptionalCampaignPacks(prompt)
+  ) {
+    const optionalPackFiles = await getWorkspaceSeedPackFiles(workspace, [
+      "cultural-protocols",
+      "campaign-case-studies",
+    ]);
+    supportingSections = discoverRelevantOptionalSeedPackSections({
+      prompt,
+      packFiles: optionalPackFiles,
+    });
+  }
 
-  if (!isIdentityEmpirePrompt(prompt)) {
+  if (!isRelevantIdentityEmpirePrompt) {
     return {
       available: true,
       status: "Identity Empire knowledge available",
       mode: resolvedMode,
       sections: discoveredSections,
+      supportingSections,
       filesInWorkspace: [...workspaceFiles],
       retrievalInput: prompt,
     };
@@ -159,6 +182,11 @@ async function buildIdentityEmpireRetrievalPlan({
     `Relevant local Identity Empire sections: ${discoveredSections
       .map((section) => section.file)
       .join(", ")}`,
+    supportingSections.length
+      ? `Optional campaign/protocol supporting context: ${supportingSections
+          .map((section) => `${section.packId}/${section.file}`)
+          .join(", ")}`
+      : "Optional campaign/protocol supporting context: none imported for this workspace",
   ].join("\n");
 
   return {
@@ -166,6 +194,7 @@ async function buildIdentityEmpireRetrievalPlan({
     status: "Using local wiki knowledge",
     mode: resolvedMode,
     sections: discoveredSections,
+    supportingSections,
     filesInWorkspace: [...workspaceFiles],
     retrievalInput,
   };
@@ -180,4 +209,5 @@ module.exports = {
   isIdentityEmpirePrompt,
   modeRetrievalFocus,
   resolveSparkyMode,
+  shouldCheckOptionalCampaignPacks,
 };
