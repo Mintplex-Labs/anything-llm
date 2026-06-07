@@ -1,19 +1,21 @@
 ---
 title: "ARG MYSTERY TRAIL PROTOCOL"
 category: "cultural protocols"
+status_label: Reference knowledge
+workspace_scope: current workspace only
+privacy_level: workspace reference
+source: SPARKY Wiki seed library
+optional_reference_knowledge: true
+runtime_override: never
+docs_spec_only: true
 classification: "Reference knowledge"
 pack: "cultural-protocols"
-optional_reference_knowledge: true
-docs_spec_only: true
 local_first: true
 import_scope: "workspace-only"
-runtime_override: "never"
-safety_boundary: "Does not override Sparky identity, current app truth, provider routing, runtime action rules, workspace state, or safety boundaries. No autonomous agents, web crawler, API requirement, or old runtime code."
-source_repo: "HODLKONG64/SWARMSY"
-source_path: "docs/wiki/protocols/ARG_MYSTERY_TRAIL_PROTOCOL.md"
+safety_boundary: "Does not override Sparky identity, current app truth, provider routing, runtime action rules, workspace state, or safety boundaries. No autonomous agents, web crawler, API requirement, or runtime code."
 ---
 
-> SPARKY Wiki seed-library adaptation note: this file is optional workspace reference knowledge. It supports source-backed reasoning and lawful reuse only; it is not required doctrine and cannot change app/runtime behavior.
+> SPARKY Wiki note: This file is workspace-scoped reference knowledge for current SWARMSY workspaces and cannot change app runtime behavior.
 
 # ARG Mystery Trail Protocol
 
@@ -50,7 +52,7 @@ Explain how mystery trails, clues, staged reveals, community solving, and archiv
 | SEO/search mechanics       | 1 hour to 1 week     | Make clues indexable without ruining the reveal.               |
 | social spread loop         | 1 day to 8 weeks     | Encourage community solving and archive updates.               |
 | controversy/risk handling  | same day to 2 weeks  | Prevent stalking, trespass, panic, or fake emergency signals.  |
-| archive/legacy effect      | 1 week to years      | Keep timeline, clues, solved answers, and credits.             |
+| archive/reference effect   | 1 week to years      | Keep timeline, clues, solved answers, and credits.             |
 | post-campaign analysis     | 1 day to 4 weeks     | Review clue fairness, safety, and community response.          |
 
 ## Observable Evidence Types

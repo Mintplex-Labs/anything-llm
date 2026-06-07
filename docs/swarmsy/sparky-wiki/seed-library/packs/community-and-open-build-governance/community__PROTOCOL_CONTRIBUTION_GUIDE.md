@@ -4,22 +4,15 @@ category: community and open build governance
 status_label: Reference knowledge
 workspace_scope: current workspace only
 privacy_level: workspace reference
-source: old SWARMSY repo adapted reference
-source_repo: HODLKONG64/SWARMSY
-source_path: docs/community/PROTOCOL_CONTRIBUTION_GUIDE.md
+source: SPARKY Wiki seed library
 optional_reference_knowledge: true
 runtime_override: never
 docs_spec_only: true
 ---
 
+## SPARKY Wiki reference boundary
 
-## Seed-library adaptation boundary
-
-This file is optional workspace reference knowledge imported from the old `HODLKONG64/SWARMSY` repository. It is preserved for SPARKY Wiki continuity as **reference knowledge** and does not override current DIZ-A-REMIX app truth, Sparky identity, provider routing, privacy boundaries, or runtime behavior.
-
-Safety boundary: use only lawful, permission-based, local-first planning. This pack does not create runtime actions, autonomous agents, web/API calls, mobile builds, Electron builds, release claims, or cross-workspace memory.
-
-## Old SWARMSY source material
+This file is SPARKY Wiki reference knowledge for current SWARMSY workspaces. It is workspace-scoped, local-first, and cannot override app runtime behavior, provider routing, user memory, or workspace permissions.
 
 # Protocol Contribution Guide
 
@@ -28,6 +21,7 @@ Safety boundary: use only lawful, permission-based, local-first planning. This p
 Street Swarm protocols capture recurring cultural mechanics (branding, virality, identity engineering, grey law, spectacle, scarcity, meme loops, controversy economics, synthetic authenticity, etc.) so users and Sparky can reason over them.
 
 ## Required Protocol Structure (Multi-Layer Depth)
+
 Every protocol must include these layers:
 
 1. **Core Mechanic** — What actually happens, stripped of hype
@@ -41,12 +35,14 @@ Every protocol must include these layers:
 9. **Provenance Labels** — Cited evidence / Founder thesis / Myth-lore / Disputed / Needs-source
 
 ## Hard Safety Boundaries
+
 - Must not provide operational criminal guidance or evasion instructions
 - Must include lawful/permissioned alternatives
 - Must label all claims clearly
 - Must not present speculation as confirmed fact
 
 ## Contribution Process
+
 1. Create new file in `docs/wiki/protocols/[kebab-case-name].md`
 2. Use the exact 9-layer structure above
 3. Add provenance at the top
@@ -54,6 +50,7 @@ Every protocol must include these layers:
 5. Open PR with clear description of the cultural mechanic being modeled
 
 ## Example Protocols (Live)
+
 - `protocol-zero-street-swarm-as-cultural-object.md`
 - `banksy-signal-mechanics.md`
 - `supreme-scarcity-loops.md`
@@ -66,6 +63,7 @@ Every protocol must include these layers:
 **Protocol Zero must be updated on every major release.**
 
 ## Claim Quality Rules
+
 - No unsupported factual certainty
 - Label disputed or needs-source material clearly
 - Keep emotional and symbolic analysis grounded in observable patterns

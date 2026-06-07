@@ -4,22 +4,15 @@ category: swarmsy app brain reference archive
 status_label: Reference knowledge
 workspace_scope: current workspace only
 privacy_level: workspace reference
-source: old SWARMSY repo adapted reference
-source_repo: HODLKONG64/SWARMSY
-source_path: docs/brain/MANIFEST.md
+source: SPARKY Wiki seed library
 optional_reference_knowledge: true
 runtime_override: never
 docs_spec_only: true
 ---
 
+## SPARKY Wiki reference boundary
 
-## Seed-library adaptation boundary
-
-This file is optional workspace reference knowledge imported from the old `HODLKONG64/SWARMSY` repository. It is preserved for SPARKY Wiki continuity as **reference knowledge** and does not override current DIZ-A-REMIX app truth, Sparky identity, provider routing, privacy boundaries, or runtime behavior.
-
-Safety boundary: use only lawful, permission-based, local-first planning. This pack does not create runtime actions, autonomous agents, web/API calls, mobile builds, Electron builds, release claims, or cross-workspace memory.
-
-## Old SWARMSY source material
+This file is SPARKY Wiki reference knowledge for current SWARMSY workspaces. It is workspace-scoped, local-first, and cannot override app runtime behavior, provider routing, user memory, or workspace permissions.
 
 # Sandbox Manifest
 
@@ -136,36 +129,36 @@ Safety boundary: use only lawful, permission-based, local-first planning. This p
 - repo_md_enhanced_copies/README.md.enhanced-copy.md
 - repo_md_enhanced_copies/README_MEGA_STREET_SWARM.md.enhanced-copy.md
 - repo_md_enhanced_copies/STREET_SWARM_FINAL_MEGA_BUILD_TRUTH.md.enhanced-copy.md
-- repo_md_enhanced_copies/docs__ANDROID_APK_QA_RESULTS.md.enhanced-copy.md
-- repo_md_enhanced_copies/docs__ANDROID_PREVIEW_BUILD_RESULT.md.enhanced-copy.md
-- repo_md_enhanced_copies/docs__BUILD_RELEASE.md.enhanced-copy.md
-- repo_md_enhanced_copies/docs__DESKTOP_RELEASE_QA.md.enhanced-copy.md
-- repo_md_enhanced_copies/docs__DESKTOP_USER_DOWNLOAD.md.enhanced-copy.md
-- repo_md_enhanced_copies/docs__EAS_OWNER_SETUP.md.enhanced-copy.md
-- repo_md_enhanced_copies/docs__LOCAL_DEV_CHECKLIST.md.enhanced-copy.md
-- repo_md_enhanced_copies/docs__NEXT_PHASE_ROADMAP.md.enhanced-copy.md
-- repo_md_enhanced_copies/docs__PC_DOWNLOAD_BUILD.md.enhanced-copy.md
-- repo_md_enhanced_copies/docs__PC_LOCAL_BRAIN_USAGE.md.enhanced-copy.md
-- repo_md_enhanced_copies/docs__POST_PR125_SANITY_AUDIT.md.enhanced-copy.md
-- repo_md_enhanced_copies/docs__PRE_RELEASE_AUDIT.md.enhanced-copy.md
-- repo_md_enhanced_copies/docs__PR_REVIEW_SMOKE.md.enhanced-copy.md
-- repo_md_enhanced_copies/docs__SANDBOX_MILESTONE_PR74.md.enhanced-copy.md
-- repo_md_enhanced_copies/docs__SCREENSHOT_QA_RESULTS.md.enhanced-copy.md
-- repo_md_enhanced_copies/docs__STORE_LISTING_DRAFT.md.enhanced-copy.md
-- repo_md_enhanced_copies/docs__STREET_SWARM_CORE_LITE_ARCHITECTURE.md.enhanced-copy.md
-- repo_md_enhanced_copies/docs__STREET_SWARM_CURRENT_TRUTH.md.enhanced-copy.md
-- repo_md_enhanced_copies/docs__SYNC_QUEUE_FOUNDATION.md.enhanced-copy.md
-- repo_md_enhanced_copies/docs__V1_HANDOFF.md.enhanced-copy.md
-- repo_md_enhanced_copies/docs__audits__PR92_SWARMSY_GLOBAL_SHELL_AUDIT.md.enhanced-copy.md
-- repo_md_enhanced_copies/docs__audits__PR92_SWARMSY_SHELL_INVENTORY.md.enhanced-copy.md
-- repo_md_enhanced_copies/docs__audits__PR92_SWARMSY_TACTICAL_SHELL_MIGRATION_PLAN.md.enhanced-copy.md
-- repo_md_enhanced_copies/docs__product__STREET_SWARM_SWARMSY_PRODUCT_CANON.md.enhanced-copy.md
-- repo_md_enhanced_copies/docs__product__SWARMSY_DESIGN_CANON.md.enhanced-copy.md
-- repo_md_enhanced_copies/docs__product__SWARMSY_DESKTOP_CORE_CANON.md.enhanced-copy.md
-- repo_md_enhanced_copies/docs__product__SWARMSY_FULL_MANIFESTO.md.enhanced-copy.md
-- repo_md_enhanced_copies/docs__product__SWARMSY_VISIBILITY_DOCTRINE.md.enhanced-copy.md
-- repo_md_enhanced_copies/docs__product__THE_UNWRITTEN_WALL_MANIFESTO.md.enhanced-copy.md
-- repo_md_enhanced_copies/docs__sandbox__PR100_SWARMSY_LIVING_COMMAND_CENTRE.md.enhanced-copy.md
-- repo_md_enhanced_copies/docs__sandbox__PR104_SWARMSY_DESKTOP_CORE_OG_CONTROL_PANEL.md.enhanced-copy.md
-- repo_md_enhanced_copies/docs__sandbox__PR89_SWARMSY_DIAGNOSTICS_SCREEN_SHELL.md.enhanced-copy.md
-- repo_md_enhanced_copies/docs__sandbox__PR91_SWARMSY_CLEAN_TACTICAL_DIAGNOSTICS_RESTYLE.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs\_\_ANDROID_APK_QA_RESULTS.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs\_\_ANDROID_PREVIEW_BUILD_RESULT.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs\_\_BUILD_RELEASE.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs\_\_DESKTOP_RELEASE_QA.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs\_\_DESKTOP_USER_DOWNLOAD.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs\_\_EAS_OWNER_SETUP.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs\_\_LOCAL_DEV_CHECKLIST.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs\_\_NEXT_PHASE_ROADMAP.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs\_\_PC_DOWNLOAD_BUILD.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs\_\_PC_LOCAL_BRAIN_USAGE.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs\_\_POST_PR125_SANITY_AUDIT.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs\_\_PRE_RELEASE_AUDIT.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs\_\_PR_REVIEW_SMOKE.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs\_\_SANDBOX_MILESTONE_PR74.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs\_\_SCREENSHOT_QA_RESULTS.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs\_\_STORE_LISTING_DRAFT.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs\_\_STREET_SWARM_CORE_LITE_ARCHITECTURE.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs\_\_STREET_SWARM_CURRENT_TRUTH.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs\_\_SYNC_QUEUE_FOUNDATION.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs\_\_V1_HANDOFF.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs**audits**PR92_SWARMSY_GLOBAL_SHELL_AUDIT.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs**audits**PR92_SWARMSY_SHELL_INVENTORY.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs**audits**PR92_SWARMSY_TACTICAL_SHELL_PLAN.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs**product**STREET_SWARM_SWARMSY_PRODUCT_CANON.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs**product**SWARMSY_DESIGN_CANON.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs**product**SWARMSY_DESKTOP_CORE_CANON.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs**product**SWARMSY_FULL_MANIFESTO.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs**product**SWARMSY_VISIBILITY_DOCTRINE.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs**product**THE_UNWRITTEN_WALL_MANIFESTO.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs**sandbox**PR100_SWARMSY_LIVING_COMMAND_CENTRE.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs**sandbox**PR104_SWARMSY_DESKTOP_CORE_OG_CONTROL_PANEL.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs**sandbox**PR89_SWARMSY_DIAGNOSTICS_SCREEN_SHELL.md.enhanced-copy.md
+- repo_md_enhanced_copies/docs**sandbox**PR91_SWARMSY_CLEAN_TACTICAL_DIAGNOSTICS_RESTYLE.md.enhanced-copy.md

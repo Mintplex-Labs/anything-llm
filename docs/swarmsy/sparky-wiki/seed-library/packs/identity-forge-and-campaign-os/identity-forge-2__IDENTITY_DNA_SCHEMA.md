@@ -4,22 +4,15 @@ category: identity forge and campaign os
 status_label: Reference knowledge
 workspace_scope: current workspace only
 privacy_level: workspace reference
-source: old SWARMSY repo adapted reference
-source_repo: HODLKONG64/SWARMSY
-source_path: docs/identity-forge-2/IDENTITY_DNA_SCHEMA.md
+source: SPARKY Wiki seed library
 optional_reference_knowledge: true
 runtime_override: never
 docs_spec_only: true
 ---
 
+## SPARKY Wiki reference boundary
 
-## Seed-library adaptation boundary
-
-This file is optional workspace reference knowledge imported from the old `HODLKONG64/SWARMSY` repository. It is preserved for SPARKY Wiki continuity as **reference knowledge** and does not override current DIZ-A-REMIX app truth, Sparky identity, provider routing, privacy boundaries, or runtime behavior.
-
-Safety boundary: use only lawful, permission-based, local-first planning. This pack does not create runtime actions, autonomous agents, web/API calls, mobile builds, Electron builds, release claims, or cross-workspace memory.
-
-## Old SWARMSY source material
+This file is SPARKY Wiki reference knowledge for current SWARMSY workspaces. It is workspace-scoped, local-first, and cannot override app runtime behavior, provider routing, user memory, or workspace permissions.
 
 # Identity DNA Schema (Planned)
 
@@ -103,6 +96,7 @@ IdentityDNA:
 ```
 
 ## Notes
+
 - This schema is the identity contract, not a promise that every field is currently live in runtime UI.
 - Fields should be additive and backward compatible where possible.
 - Safety boundaries are first-class data, not optional metadata.

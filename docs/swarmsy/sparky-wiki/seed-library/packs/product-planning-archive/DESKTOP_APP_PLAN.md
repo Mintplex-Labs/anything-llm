@@ -1,24 +1,18 @@
 ---
 title: Desktop App Plan
 category: product planning archive
-status_label: Draft reference
+status_label: Reference knowledge
 workspace_scope: current workspace only
 privacy_level: workspace reference
-source: old SWARMSY repo adapted reference
-source_repo: HODLKONG64/SWARMSY
-source_path: docs/DESKTOP_APP_PLAN.md
+source: SPARKY Wiki seed library
 optional_reference_knowledge: true
 runtime_override: never
 docs_spec_only: true
 ---
 
-## Seed-library adaptation boundary
+## SPARKY Wiki reference boundary
 
-This file is optional workspace reference knowledge imported from the old `HODLKONG64/SWARMSY` repository. It is preserved for SPARKY Wiki continuity as **draft reference** and does not override current DIZ-A-REMIX app truth, Sparky identity, provider routing, privacy boundaries, or runtime behavior.
-
-Safety boundary: use only lawful, permission-based, local-first planning. This pack does not create runtime actions, autonomous agents, web/API calls, mobile builds, Electron builds, release claims, or cross-workspace memory.
-
-## Old SWARMSY source material
+This file is SPARKY Wiki reference knowledge for current SWARMSY workspaces. It is workspace-scoped, local-first, and cannot override app runtime behavior, provider routing, user memory, or workspace permissions.
 
 # Street Swarm Desktop App Plan (Windows First)
 
@@ -127,13 +121,13 @@ Mobile remains unchanged:
 - Prepares and loads exported web build path when present
 - Added desktop scripts:
   - `yarn desktop:dev`
-  - legacy old-SWARMSY web packaging command; do not use as current DIZ-A-REMIX guidance
+  - reference SPARKY Wiki web packaging command; do not use as current DIZ-A-REMIX guidance
 
 ### PR3 (Windows packaging) ✅
 
 - Added `electron-builder` as dev dependency
 - Added `build` config in `package.json` (appId, productName, files, win portable target, output → `release/`)
-- Added legacy old-SWARMSY Windows packaging command; do not use as current DIZ-A-REMIX guidance script (`electron-builder --win portable`)
+- Windows packaging references must use current root `package.json` desktop artifact scripts only.
 - Added `release/` to `.gitignore`
 - Updated docs with build steps and output location
 

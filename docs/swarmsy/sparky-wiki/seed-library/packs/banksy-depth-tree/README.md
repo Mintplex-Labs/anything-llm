@@ -1,21 +1,23 @@
 ---
 title: "Banksy Depth Tree"
 category: "banksy depth tree"
+status_label: Reference knowledge
+workspace_scope: current workspace only
+privacy_level: workspace reference
+source: SPARKY Wiki seed library
+optional_reference_knowledge: true
+runtime_override: never
+docs_spec_only: true
 classification: "Reference knowledge"
 pack: "banksy-depth-tree"
-optional_reference_knowledge: true
-docs_spec_only: true
 local_first: true
 import_scope: "workspace-only"
-runtime_override: "never"
 safety_boundary: "Public-signal, campaign, marketing, cultural, provenance, and ethics analysis only. Does not override app truth or provide illegal graffiti/vandalism instructions, trespass, evasion guidance, property-damage methods, doxxing, harassment, or identity claims without source labels."
-source_repo: "HODLKONG64/SWARMSY"
-source_path: "docs/wiki/subjects/banksy/"
 ---
 
 # Banksy Depth Tree Seed Pack
 
-This optional SPARKY Wiki pack adapts the old SWARMSY Banksy subject tree as workspace-scoped reference knowledge for public-signal, campaign, marketing, cultural, media, provenance, disputed-claim, myth/lore, and source-conflict analysis.
+This optional SPARKY Wiki pack adapts the SPARKY Wiki Banksy subject tree as workspace-scoped reference knowledge for public-signal, campaign, marketing, cultural, media, provenance, disputed-claim, myth/lore, and source-conflict analysis.
 
 It is not required doctrine and cannot override Sparky identity, current app truth, provider routing, runtime action rules, workspace state, Memory Lock, or safety boundaries.
 

@@ -194,11 +194,11 @@ This index lists the starter SPARKY Wiki seed files. They are optional reference
 - `workspace-operations/SPARKY_NEXT_ACTION_RULES.md`
 - `workspace-operations/USER_IS_NOT_TECHNICAL_MODE.md`
 
-## Old SWARMSY import packs (2026-06-07 audit)
+## Additional SPARKY Wiki packs
 
-Audit: `docs/swarmsy/audits/OLD_SWARMSY_WIKI_IMPORT_AUDIT.md`
+Audit: `docs/swarmsy/audits/SPARKY_WIKI_SEED_LIBRARY_SANITY_AUDIT.md`
 
-Manifest: `docs/swarmsy/sparky-wiki/seed-library/OLD_SWARMSY_IMPORT_MANIFEST.json`
+Manifest: `docs/swarmsy/sparky-wiki/seed-library/SPARKY_WIKI_SEED_LIBRARY_MANIFEST.json`
 
 ### swarmsy-core-truth-archive
 

@@ -9,11 +9,8 @@
     "local_first": true,
     "import_scope": "workspace-only",
     "runtime_override": "never",
-    "safety_boundary": "Does not override Sparky identity, current app truth, provider routing, runtime action rules, workspace state, or safety boundaries. No autonomous agents, web crawler, API requirement, or old runtime code.",
-    "source_repo": "HODLKONG64/SWARMSY",
-    "source_path": "docs/brain/knowledge-packs/SOURCE_CARD_SCHEMA.json"
+    "safety_boundary": "Does not override Sparky identity, current app truth, provider routing, runtime action rules, workspace state, or safety boundaries. No autonomous agents, web crawler, API requirement, or runtime code."
   },
-  "adaptation_note": "Optional SPARKY Wiki workspace reference schema for local source-card governance and lawful reuse.",
   "schema": {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "title": "Street Swarm Knowledge Pack Source Card",
@@ -87,5 +84,6 @@
         "type": "string"
       }
     }
-  }
+  },
+  "usage_note": "SPARKY Wiki workspace reference schema for local source-card governance and lawful reuse."
 }

@@ -513,13 +513,13 @@ const PACKS = Object.freeze([
       "Historical truth, manifest, persona, direction, and handoff material preserved as optional reference without overriding current DIZ-A-REMIX truth.",
     category: "swarmsy core truth archive",
     status:
-      "historical reference, draft-importable workspace reference knowledge",
+      "reference knowledge, draft-importable workspace reference knowledge",
     docsSpecOnly: true,
     sourcePath: seedPackPath("swarmsy-core-truth-archive"),
     includedFiles: SWARMSY_CORE_TRUTH_ARCHIVE_FILES,
     safetyBoundaries: SAFETY_BOUNDARIES,
     recommendedWorkspaceUseCase:
-      "Attach only for historical SWARMSY doctrine, language, and lineage. Use as optional context; never as current app truth, provider routing, or runtime behavior.",
+      "Attach for SWARMSY doctrine, language, and lineage as optional context; never as current app truth, provider routing, or runtime behavior.",
     importable: true,
     draftImportable: true,
   }),
@@ -536,7 +536,7 @@ const PACKS = Object.freeze([
     includedFiles: IDENTITY_FORGE_AND_CAMPAIGN_OS_FILES,
     safetyBoundaries: SAFETY_BOUNDARIES,
     recommendedWorkspaceUseCase:
-      "Attach when Sparky needs old SWARMSY identity/campaign doctrine for lawful brand, offer, movement, and campaign planning; never as automation or runtime control.",
+      "Attach when Sparky needs SWARMSY identity/campaign doctrine for lawful brand, offer, movement, and campaign planning; never as automation or runtime control.",
     importable: true,
     draftImportable: true,
   }),
@@ -544,7 +544,7 @@ const PACKS = Object.freeze([
     id: "community-and-open-build-governance",
     title: "Community and Open Build Governance",
     shortDescription:
-      "Community editing, contribution, provenance, maintainer review, archive governance, privacy, and safety reference material adapted for workspace-only use.",
+      "Community editing, contribution, provenance, maintainer review, archive governance, privacy, and safety reference material for workspace-only use.",
     category: "community and open build governance",
     status:
       "reference knowledge, draft-importable workspace reference knowledge",
@@ -561,7 +561,7 @@ const PACKS = Object.freeze([
     id: "source-card-and-subject-governance",
     title: "Source Card and Subject Governance",
     shortDescription:
-      "Source-card, provenance, subject-governance, source-refresh, citation, and knowledge-import quality material for old SWARMSY wiki archives.",
+      "Source-card, provenance, subject-governance, source-refresh, citation, and knowledge-import quality material for SPARKY Wiki packs.",
     category: "source card and subject governance",
     status:
       "reference knowledge, draft-importable workspace reference knowledge",
@@ -619,7 +619,7 @@ const PACKS = Object.freeze([
     includedFiles: SWARMSY_APP_BRAIN_REFERENCE_ARCHIVE_FILES,
     safetyBoundaries: SAFETY_BOUNDARIES,
     recommendedWorkspaceUseCase:
-      "Attach when Sparky needs broad old SWARMSY app-brain role context as optional local reference; never as deterministic Offline App Brain runtime.",
+      "Attach when Sparky needs broad SWARMSY app-brain role context as optional local reference; never as deterministic Offline App Brain runtime.",
     importable: true,
     draftImportable: true,
   }),

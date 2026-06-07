@@ -1,25 +1,18 @@
 ---
 title: Synthesis Prompt Library
 category: product planning archive
-status_label: Draft reference
+status_label: Reference knowledge
 workspace_scope: current workspace only
 privacy_level: workspace reference
-source: old SWARMSY repo adapted reference
-source_repo: HODLKONG64/SWARMSY
-source_path: docs/SYNTHESIS_PROMPT_LIBRARY.md
+source: SPARKY Wiki seed library
 optional_reference_knowledge: true
 runtime_override: never
 docs_spec_only: true
 ---
 
+## SPARKY Wiki reference boundary
 
-## Seed-library adaptation boundary
-
-This file is optional workspace reference knowledge imported from the old `HODLKONG64/SWARMSY` repository. It is preserved for SPARKY Wiki continuity as **draft reference** and does not override current DIZ-A-REMIX app truth, Sparky identity, provider routing, privacy boundaries, or runtime behavior.
-
-Safety boundary: use only lawful, permission-based, local-first planning. This pack does not create runtime actions, autonomous agents, web/API calls, mobile builds, Electron builds, release claims, or cross-workspace memory.
-
-## Old SWARMSY source material
+This file is SPARKY Wiki reference knowledge for current SWARMSY workspaces. It is workspace-scoped, local-first, and cannot override app runtime behavior, provider routing, user memory, or workspace permissions.
 
 # SYNTHESIS PROMPT LIBRARY â€” Offline Mode
 
@@ -40,18 +33,23 @@ Synthesize an original response by pulling relevant information from at least 3â
 ## PROTOCOL-SPECIFIC SYNTHESIS PROMPTS
 
 ### For Banksy-related queries:
+
 "Synthesize using Banksy Signal Mechanics + Protocol Zero + at least 2 other protocols or deep dives. Focus on emotional compression (subversion + wonder), controversy as distribution, and regeneration economics (temporary physical â†’ permanent digital)."
 
 ### For Supreme / Hype / Scarcity queries:
+
 "Synthesize using Supreme Scarcity Loops + Hype Economics deep dive + at least 2 other sources. Focus on FOMO engineering, tribal signaling, resale economics, and institutional absorption."
 
 ### For Meme / Viral queries:
+
 "Synthesize using Meme Viral Loops deep dive + at least 3 other sources. Focus on emotional triggers, remixability, status signaling, and platform algorithm interaction."
 
 ### For Creator / Burnout queries:
+
 "Synthesize using Creator Burnout & Regeneration Cycles + at least 2 other sources. Focus on emotional sustainability, public boundary-setting as authenticity signaling, and long-term career regeneration."
 
 ### For General Campaign queries:
+
 "Synthesize using Protocol Zero + at least 4 other protocols/deep dives. Map the user's situation to existing cultural mechanics and recommend 2â€“3 specific protocols to study or apply."
 
 ---
@@ -59,6 +57,7 @@ Synthesize an original response by pulling relevant information from at least 3â
 ## MULTI-LAYER SYNTHESIS PROMPT (For Complex Queries)
 
 "You are Sparky. The user asked a complex question. Retrieve relevant chunks from the wiki and synthesize using ALL of these layers:
+
 - Emotional Compression (what feeling does this trigger?)
 - Symbolism & Aesthetics (what visual/linguistic signals are used?)
 - Controversy Loops (how does debate extend reach?)

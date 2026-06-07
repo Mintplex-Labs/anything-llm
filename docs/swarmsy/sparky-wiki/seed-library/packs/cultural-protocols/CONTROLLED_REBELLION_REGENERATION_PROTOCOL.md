@@ -1,19 +1,21 @@
 ---
 title: "CONTROLLED REBELLION REGENERATION PROTOCOL"
 category: "cultural protocols"
+status_label: Reference knowledge
+workspace_scope: current workspace only
+privacy_level: workspace reference
+source: SPARKY Wiki seed library
+optional_reference_knowledge: true
+runtime_override: never
+docs_spec_only: true
 classification: "Reference knowledge"
 pack: "cultural-protocols"
-optional_reference_knowledge: true
-docs_spec_only: true
 local_first: true
 import_scope: "workspace-only"
-runtime_override: "never"
-safety_boundary: "Does not override Sparky identity, current app truth, provider routing, runtime action rules, workspace state, or safety boundaries. No autonomous agents, web crawler, API requirement, or old runtime code."
-source_repo: "HODLKONG64/SWARMSY"
-source_path: "docs/wiki/protocols/CONTROLLED_REBELLION_REGENERATION_PROTOCOL.md"
+safety_boundary: "Does not override Sparky identity, current app truth, provider routing, runtime action rules, workspace state, or safety boundaries. No autonomous agents, web crawler, API requirement, or runtime code."
 ---
 
-> SPARKY Wiki seed-library adaptation note: this file is optional workspace reference knowledge. It supports source-backed reasoning and lawful reuse only; it is not required doctrine and cannot change app/runtime behavior.
+> SPARKY Wiki note: This file is workspace-scoped reference knowledge for current SWARMSY workspaces and cannot change app runtime behavior.
 
 # Controlled Rebellion Regeneration Protocol
 
@@ -49,7 +51,7 @@ Explain how graffiti and street-art aesthetics move from criminalized expression
 | SEO/search mechanics       | 1 week to 3 months   | City art trail pages, mural maps, tourism keywords, local press archives, image search.     |
 | social spread loop         | 1 week to 1 year     | Selfie walls, walking routes, artist tags, local guides, before/after district posts.       |
 | controversy/risk handling  | same day to 6 months | Cleanup politics, resident displacement, selective enforcement, authenticity criticism.     |
-| archive/legacy effect      | months to years      | Public-art archive, regeneration case study, city identity, property-market signal.         |
+| archive/reference effect   | months to years      | Public-art archive, regeneration case study, city identity, property-market signal.         |
 | post-campaign analysis     | 2 weeks to 1 year    | Who paid, who benefited, who was displaced, what was removed, what was preserved.           |
 
 ## Estimated Time Ranges For Each Stage

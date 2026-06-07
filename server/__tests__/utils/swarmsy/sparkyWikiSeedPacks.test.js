@@ -411,7 +411,7 @@ describe("SPARKY Wiki seed pack registry", () => {
           );
           expect(raw).toMatch(/does not override|runtime_override/i);
         } else {
-          expect(file.frontmatter.status_label).toBe("Docs/spec only");
+          expect(file.frontmatter.status_label).toBe("Reference knowledge");
         }
         if (pack.id !== "identity-empire") {
           expect(raw).toMatch(
@@ -443,42 +443,65 @@ describe("SPARKY Wiki seed pack registry", () => {
     }
   });
 
-  it("records the old SWARMSY import audit and manifest without direct enhanced-copy imports", () => {
+  it("records the native SPARKY Wiki seed library audit and manifest", () => {
     const fs = require("fs");
     const path = require("path");
     const repoRoot = path.resolve(__dirname, "../../../..");
     const auditPath = path.join(
       repoRoot,
-      "docs/swarmsy/audits/OLD_SWARMSY_WIKI_IMPORT_AUDIT.md"
+      "docs/swarmsy/audits/SPARKY_WIKI_SEED_LIBRARY_SANITY_AUDIT.md"
     );
     const manifestPath = path.join(
       repoRoot,
-      "docs/swarmsy/sparky-wiki/seed-library/OLD_SWARMSY_IMPORT_MANIFEST.json"
+      "docs/swarmsy/sparky-wiki/seed-library/SPARKY_WIKI_SEED_LIBRARY_MANIFEST.json"
     );
     const audit = fs.readFileSync(auditPath, "utf8");
     const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
 
-    expect(audit).toMatch(
-      /\|\s*old_path\s*\|\s*decision\s*\|\s*new_path\s*\|\s*reason\s*\|\s*risk_label\s*\|\s*notes\s*\|/
-    );
-    expect(manifest.source_repo).toBe("HODLKONG64/SWARMSY");
-    expect(manifest.imported_files.length).toBeGreaterThan(150);
-    expect(manifest.skipped_files.length).toBeGreaterThan(400);
-    expect(manifest.manual_review_files.length).toBeGreaterThan(0);
-    expect(manifest.packs_added.map((pack) => pack.id)).toEqual([
-      "swarmsy-core-truth-archive",
-      "identity-forge-and-campaign-os",
-      "community-and-open-build-governance",
-      "source-card-and-subject-governance",
-      "local-user-support-and-troubleshooting-archive",
-      "product-planning-archive",
-      "swarmsy-app-brain-reference-archive",
-    ]);
-    expect(
-      manifest.imported_files.some((file) =>
-        file.old_path.includes("repo_enhanced_copies")
+    expect(audit).toMatch(/SPARKY Wiki Seed Library Sanity Audit/);
+    expect(audit).toMatch(/current SPARKY Wiki seed library/i);
+    expect(audit).not.toMatch(
+      new RegExp(
+        [
+          "old\\s+SWARMSY",
+          "HODLKONG64\\/SWARMSY",
+          "old[_-]path",
+          "new[_-]path",
+          "skipped\\s+files",
+          "manual\\s+review",
+        ].join("|"),
+        "i"
       )
-    ).toBe(false);
+    );
+    expect(manifest.library).toBe("SPARKY Wiki seed library");
+    expect(manifest.pack_count).toBe(listSparkyWikiSeedPacks().length);
+    expect(manifest.file_count).toBe(
+      listSparkyWikiSeedPacks().reduce(
+        (sum, pack) => sum + pack.includedFiles.length,
+        0
+      )
+    );
+    expect(manifest.validation).toMatchObject({
+      registry: "passed",
+      metadata_validation: "passed",
+      json_validation: "passed",
+      link_validation: "passed",
+      stale_command_validation: "passed",
+      runtime_override_validation: "blocked",
+    });
+    expect(JSON.stringify(manifest)).not.toMatch(
+      new RegExp(
+        [
+          "source[_-]repo",
+          "source[_-]path",
+          "old[_-]path",
+          "new[_-]path",
+          "skipped[_-]files",
+          "manual[_-]review",
+        ].join("|"),
+        "i"
+      )
+    );
   });
 
   it("keeps all registered seed pack paths local, current-workspace scoped, and free of forbidden local paths", () => {

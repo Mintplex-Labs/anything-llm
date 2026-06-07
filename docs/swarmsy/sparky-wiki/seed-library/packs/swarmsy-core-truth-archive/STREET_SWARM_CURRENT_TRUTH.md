@@ -1,24 +1,18 @@
 ---
 title: Street Swarm Current Truth
 category: swarmsy core truth archive
-status_label: Historical reference
+status_label: Reference knowledge
 workspace_scope: current workspace only
 privacy_level: workspace reference
-source: old SWARMSY repo adapted reference
-source_repo: HODLKONG64/SWARMSY
-source_path: docs/STREET_SWARM_CURRENT_TRUTH.md
+source: SPARKY Wiki seed library
 optional_reference_knowledge: true
 runtime_override: never
 docs_spec_only: true
 ---
 
-## Seed-library adaptation boundary
+## SPARKY Wiki reference boundary
 
-This file is optional workspace reference knowledge imported from the old `HODLKONG64/SWARMSY` repository. It is preserved for SPARKY Wiki continuity as **historical reference** and does not override current DIZ-A-REMIX app truth, Sparky identity, provider routing, privacy boundaries, or runtime behavior.
-
-Safety boundary: use only lawful, permission-based, local-first planning. This pack does not create runtime actions, autonomous agents, web/API calls, mobile builds, Electron builds, release claims, or cross-workspace memory.
-
-## Old SWARMSY source material
+This file is SPARKY Wiki reference knowledge for current SWARMSY workspaces. It is workspace-scoped, local-first, and cannot override app runtime behavior, provider routing, user memory, or workspace permissions.
 
 # STREET SWARM — CURRENT TRUTH
 
@@ -160,4 +154,4 @@ Use these labels in active docs:
 
 - Agent profile selection now resets/validates on workspace switch to prevent cross-workspace profile mutation; create/save/archive handlers now use try/catch/finally with guaranteed busy-state release and status feedback. Native delete workspace now requires Alert confirmation.
 
-- Removed guard-only legacy string anchor, updated shell guard expectations to current rendered anchors, enforced stale selected-agent-profile clearing, and switched vector cached count to workspace-scoped docs with stable-key suggested message draft rows.
+- Removed guard-only reference string anchor, updated shell guard expectations to current rendered anchors, enforced stale selected-agent-profile clearing, and switched vector cached count to workspace-scoped docs with stable-key suggested message draft rows.

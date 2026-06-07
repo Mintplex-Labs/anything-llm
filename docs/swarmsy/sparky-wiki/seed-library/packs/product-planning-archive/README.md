@@ -1,12 +1,10 @@
 ---
 title: Product Planning Archive
 category: product planning archive
-status_label: Draft reference
+status_label: Reference knowledge
 workspace_scope: current workspace only
 privacy_level: workspace reference
-source: old SWARMSY repo adapted reference
-source_repo: HODLKONG64/SWARMSY
-source_path: generated pack readme
+source: SPARKY Wiki seed library
 optional_reference_knowledge: true
 runtime_override: never
 docs_spec_only: true
@@ -14,7 +12,7 @@ docs_spec_only: true
 
 # Product Planning Archive
 
-Optional workspace reference knowledge adapted from old SWARMSY docs. This pack is local-first, docs/spec only, and does not override current app truth, Sparky identity, provider routing, or runtime behavior.
+Optional workspace reference knowledge from SPARKY Wiki docs. This pack is local-first, docs/spec only, and does not override current app truth, Sparky identity, provider routing, or runtime behavior.
 
 Safety boundary: lawful, permission-based planning only; no autonomous agents, no runtime actions, no web/API requirement, and no cross-workspace memory.
 

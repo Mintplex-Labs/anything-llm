@@ -1,19 +1,21 @@
 ---
 title: "APP BRAIN KNOWLEDGE INDEX"
 category: "wiki depth and provenance"
+status_label: Reference knowledge
+workspace_scope: current workspace only
+privacy_level: workspace reference
+source: SPARKY Wiki seed library
+optional_reference_knowledge: true
+runtime_override: never
+docs_spec_only: true
 classification: "Docs/spec-only source"
 pack: "wiki-depth-and-provenance"
-optional_reference_knowledge: true
-docs_spec_only: true
 local_first: true
 import_scope: "workspace-only"
-runtime_override: "never"
-safety_boundary: "Does not override Sparky identity, current app truth, provider routing, runtime action rules, workspace state, or safety boundaries. No autonomous agents, web crawler, API requirement, or old runtime code."
-source_repo: "HODLKONG64/SWARMSY"
-source_path: "docs/APP_BRAIN_KNOWLEDGE_INDEX.md"
+safety_boundary: "Does not override Sparky identity, current app truth, provider routing, runtime action rules, workspace state, or safety boundaries. No autonomous agents, web crawler, API requirement, or runtime code."
 ---
 
-> SPARKY Wiki seed-library adaptation note: this file is optional workspace reference knowledge. It supports source-backed reasoning and lawful reuse only; it is not required doctrine and cannot change app/runtime behavior.
+> SPARKY Wiki note: This file is workspace-scoped reference knowledge for current SWARMSY workspaces and cannot change app runtime behavior.
 
 # App Brain Knowledge Index
 
@@ -175,7 +177,7 @@ Expected subject-pack answer style: "I can answer from the local Banksy wiki pac
 - `docs/wiki/protocols/CONTROLLED_REBELLION_REGENERATION_PROTOCOL.md`
 - `docs/wiki/protocols/SYNTHETIC_MOMENTUM_AND_MANUFACTURED_AUTHENTICITY_PROTOCOL.md`
 
-Protocols are an Offline Wiki Ledger companion tier. They convert public evidence and compressed graph lessons into lawful start-to-finish mechanics: idea trigger, cultural tension, audience emotion, symbol/message compression, format choice, placement/channel logic, timing window, press/media hook, SEO/search mechanics, social spread loop, controversy/risk handling, archive/legacy effect, and post-campaign analysis.
+Protocols are an Offline Wiki Ledger companion tier. They convert public evidence and compressed graph lessons into lawful start-to-finish mechanics: idea trigger, cultural tension, audience emotion, symbol/message compression, format choice, placement/channel logic, timing window, press/media hook, SEO/search mechanics, social spread loop, controversy/risk handling, archive/reference effect, and post-campaign analysis.
 
 Protocols must never override Sparky identity, current app truth, provider routing, runtime action rules, or user workspace state. They may analyze vandalism, illegal placement, trespass, enforcement pressure, cleanup economics, controlled rebellion, fake authenticity, hidden sponsorship, synthetic social proof, coordinated amplification, and auction/value signaling as observable mechanics. They must not operationalize illegal execution, evasion, property-damage methods, botnets, platform abuse, fraud, scams, doxxing, harassment, or harm.
 

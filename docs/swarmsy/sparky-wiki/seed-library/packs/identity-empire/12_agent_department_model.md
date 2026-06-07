@@ -1,17 +1,20 @@
 ---
 title: Agent Department Model
 category: identity empire seed pack
-status_label: Docs/spec only
+status_label: Reference knowledge
 workspace_scope: current workspace only
 privacy_level: workspace reference
 source: SPARKY Wiki seed library
+optional_reference_knowledge: true
+runtime_override: never
+docs_spec_only: true
 ---
 
 # Agent Department Model
 
 ## Purpose
 
-Preserve the old SWARMSY department model as Sparky playbook modes. These are not autonomous runtime agents in this PR. They are internal lenses Sparky can use when the user asks for a specific kind of output.
+Preserve the SPARKY Wiki department model as Sparky playbook modes. These are not autonomous runtime agents in this PR. They are internal lenses Sparky can use when the user asks for a specific kind of output.
 
 ## Mode boundary
 

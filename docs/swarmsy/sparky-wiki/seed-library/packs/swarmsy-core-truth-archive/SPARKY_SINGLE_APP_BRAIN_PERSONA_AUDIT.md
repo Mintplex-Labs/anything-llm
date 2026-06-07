@@ -1,25 +1,18 @@
 ---
 title: Sparky Single App Brain Persona Audit
 category: swarmsy core truth archive
-status_label: Historical reference
+status_label: Reference knowledge
 workspace_scope: current workspace only
 privacy_level: workspace reference
-source: old SWARMSY repo adapted reference
-source_repo: HODLKONG64/SWARMSY
-source_path: docs/SPARKY_SINGLE_APP_BRAIN_PERSONA_AUDIT.md
+source: SPARKY Wiki seed library
 optional_reference_knowledge: true
 runtime_override: never
 docs_spec_only: true
 ---
 
+## SPARKY Wiki reference boundary
 
-## Seed-library adaptation boundary
-
-This file is optional workspace reference knowledge imported from the old `HODLKONG64/SWARMSY` repository. It is preserved for SPARKY Wiki continuity as **historical reference** and does not override current DIZ-A-REMIX app truth, Sparky identity, provider routing, privacy boundaries, or runtime behavior.
-
-Safety boundary: use only lawful, permission-based, local-first planning. This pack does not create runtime actions, autonomous agents, web/API calls, mobile builds, Electron builds, release claims, or cross-workspace memory.
-
-## Old SWARMSY source material
+This file is SPARKY Wiki reference knowledge for current SWARMSY workspaces. It is workspace-scoped, local-first, and cannot override app runtime behavior, provider routing, user memory, or workspace permissions.
 
 # Sparky Single App Brain Persona Audit
 
@@ -65,7 +58,7 @@ Supporting docs:
 - `docs/PROVIDER_FAILURE_PLAYBOOK.md` - provider failure routing into local Sparky mode.
 - `docs/BROWSER_FIRST_TROUBLESHOOTING.md` - browser-first support guidance.
 - `docs/AI_WYSIWYG_AUTOPILOT_BUILDER.md` - future builder doctrine; Sparky/Offline App Brain must remain safety layer.
-- `docs/brain/personas/SPARKY_OPERATOR_PERSONA_NOTES.md` - legacy short persona note.
+- `docs/brain/personas/SPARKY_OPERATOR_PERSONA_NOTES.md` - reference short persona note.
 - `docs/brain/56-sparky-tone-style-brain.md` - supporting tone/style brain.
 - `docs/brain/70-sparky-edge-tone-brain.md` - supporting edge-tone notes.
 - `docs/brain/48-edgy-but-safe-persona-brain.md` - supporting safety/persona tone doc.
@@ -76,7 +69,7 @@ Supporting docs:
 - `docs/brain/playbooks/SPARKY_SOURCE_ROUTING_PLAYBOOK.md` - source routing playbook.
 - `docs/brain/BRAIN_INDEX.md` and `docs/brain/MANIFEST.md` - brain-pack indexes.
 
-Legacy/reference/generated copies:
+reference/reference/generated copies:
 
 - `docs/brain/repo_enhanced_copies/*` - generated enhanced copies; reference only.
 - `street_swarm_brain_sandbox_FULL_FIXED.zip` - archive artifact; not a live persona source.

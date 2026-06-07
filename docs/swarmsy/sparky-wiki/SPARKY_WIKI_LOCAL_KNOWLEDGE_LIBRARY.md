@@ -2,7 +2,7 @@
 
 ## Purpose
 
-SPARKY Wiki is the future local-first knowledge vault for SWARMSY. It is the searchable reference layer that stores useful project knowledge, old SWARMSY salvage notes, proof material, campaign planning, artwork direction, local AI setup notes, and user-added reference material.
+SPARKY Wiki is the future local-first knowledge vault for SWARMSY. It is the searchable reference layer that stores useful project knowledge, proof material, campaign planning, artwork direction, local AI setup notes, and user-added reference material.
 
 SPARKY Wiki is larger than required doctrine. It is not a replacement for system rules, required prompts, Current Truth labels, or behaviour constraints. It gives Sparky more context when answering, creating, proving, reviewing, or planning.
 
@@ -22,7 +22,7 @@ Examples of required doctrine include:
 - No fake provider output or false runtime claims.
 - Core SWARMSY HIVE behaviour.
 
-Required doctrine is the behavioural spine. It should not absorb every useful project note, old document, draft plan, or reference file.
+Required doctrine is the behavioural spine. It should not absorb every useful project note, draft plan, or reference file.
 
 ### SPARKY Wiki
 
@@ -30,7 +30,7 @@ SPARKY Wiki should become the larger local and searchable knowledge base. It can
 
 Examples of SPARKY Wiki knowledge include:
 
-- Old SWARMSY legacy-salvage docs.
+- SPARKY Wiki seed-library docs.
 - Command-centre ideas and future HIVE plans.
 - Doctor, sandbox, and repair notes.
 - Local user notes and project references.
@@ -42,13 +42,13 @@ Examples of SPARKY Wiki knowledge include:
 - API/provider setup notes for local and hosted use.
 - User-added docs that belong to a specific workspace.
 
-## Old SWARMSY wiki continuity
+## SPARKY Wiki seed-library continuity
 
-The old SWARMSY repo used a wiki-style knowledge model. In DIZ-A-REMIX, that idea should live on as useful local data inside SPARKY Wiki, not as old runtime code copied into the new AnythingLLM-based build.
+SPARKY Wiki stores useful local data inside the current DIZ-A-REMIX / SWARMSY app without changing runtime code or required doctrine.
 
-The intended salvage pattern is:
+The intended seed-library pattern is:
 
-1. Preserve old wiki and doctrine ideas as source-mapped reference knowledge.
+1. Maintain wiki and doctrine ideas as workspace-scoped reference knowledge.
 2. Classify the material by category, source, status, workspace scope, and privacy level.
 3. Retrieve the material only when it is relevant to the user's current task.
 4. Keep current required doctrine small and behaviour-focused.
@@ -58,7 +58,7 @@ The intended salvage pattern is:
 
 This document does not define a full wiki UI, runtime ingestion route, package dependency, Docker change, or deployment change. It defines the knowledge-library model that future implementation PRs can wire in safely.
 
-SPARKY Wiki must not make the entire `docs/swarmsy/legacy-salvage/` folder required doctrine. Legacy salvage is optional reference knowledge unless a later Current Truth decision promotes a specific small rule into required doctrine.
+SPARKY Wiki must not make the entire `docs/swarmsy/seed-library/` folder required doctrine. Seed-library reference is optional reference knowledge unless a later Current Truth decision promotes a specific small rule into required doctrine.
 
 ## Seed-library reference files
 
@@ -80,6 +80,6 @@ The seed library now includes `packs/identity-empire/`, a local-first SPARKY kno
 
 This pack is still **Docs/spec only** reference knowledge. It does not add runtime automation, autonomous agents, package changes, hosted/admin changes, desktop packaging changes, Ollama/ComfyUI/API routing changes, or a separate deterministic offline brain. Sparky should use it with local Ollama first when available in the workspace or future Local User bundle. API/web lookup remains optional and only for live/current research such as trends, competitor checks, press contacts, platform rules, legal/regulatory facts, or current market research when the user turns Use API on.
 
-## Old SWARMSY import audit pack set
+## SPARKY Wiki seed pack set
 
-The 2026-06-07 old SWARMSY import adds seven optional SPARKY Wiki packs under `docs/swarmsy/sparky-wiki/seed-library/packs/` plus an audit and manifest. These files preserve useful old wiki/reference material while explicitly avoiding old runtime/app code, old Expo/mobile screens, old Electron code, build scripts, old test suites, deterministic Offline App Brain TypeScript, and direct `repo_enhanced_copies` imports. Historical/draft packs are draft-importable only and must not override current app truth, Sparky identity, provider routing, privacy boundaries, or workspace scoping.
+The seed library provides optional SPARKY Wiki packs under `docs/swarmsy/sparky-wiki/seed-library/packs/` plus a native sanity audit and manifest. These files are current-app reference knowledge and do not add runtime code, mobile screens, desktop packaging code, build scripts, test-suite changes, deterministic Offline App Brain runtime, or global doctrine. Draft packs are draft-importable only and must not override current app truth, Sparky identity, provider routing, privacy boundaries, user memory, or workspace scoping.

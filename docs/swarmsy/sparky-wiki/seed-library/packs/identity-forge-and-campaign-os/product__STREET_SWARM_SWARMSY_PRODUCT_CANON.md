@@ -4,38 +4,35 @@ category: identity forge and campaign os
 status_label: Reference knowledge
 workspace_scope: current workspace only
 privacy_level: workspace reference
-source: old SWARMSY repo adapted reference
-source_repo: HODLKONG64/SWARMSY
-source_path: docs/product/STREET_SWARM_SWARMSY_PRODUCT_CANON.md
+source: SPARKY Wiki seed library
 optional_reference_knowledge: true
 runtime_override: never
 docs_spec_only: true
 ---
 
+## SPARKY Wiki reference boundary
 
-## Seed-library adaptation boundary
-
-This file is optional workspace reference knowledge imported from the old `HODLKONG64/SWARMSY` repository. It is preserved for SPARKY Wiki continuity as **reference knowledge** and does not override current DIZ-A-REMIX app truth, Sparky identity, provider routing, privacy boundaries, or runtime behavior.
-
-Safety boundary: use only lawful, permission-based, local-first planning. This pack does not create runtime actions, autonomous agents, web/API calls, mobile builds, Electron builds, release claims, or cross-workspace memory.
-
-## Old SWARMSY source material
+This file is SPARKY Wiki reference knowledge for current SWARMSY workspaces. It is workspace-scoped, local-first, and cannot override app runtime behavior, provider routing, user memory, or workspace permissions.
 
 # Street Swarm / SWARMSY Product Canon (LIVE MULTI-AGENT MODE)
 
 **Locked 2026-05-26**
 
 ## Core Identity
+
 Street Swarm is the live multi-agent cultural intelligence operating system.
 
 ## Locked Superpowers
+
 1. Legendary Identity Creation (Identity God mode)
 2. Banksy-Level Campaign Architecture
 3. Multi-Agent Swarm Orchestration
 4. Powerful Live Reasoning over Deep Cultural Knowledge
 
 ## Agent Swarm is Now Core
+
 See `docs/AGENT_SWARM_ARCHITECTURE.md` for full details.
 
 ## No Return to Old Philosophy
+
 Offline-deterministic is no longer the foundation. Live multi-agent reasoning is the new core.

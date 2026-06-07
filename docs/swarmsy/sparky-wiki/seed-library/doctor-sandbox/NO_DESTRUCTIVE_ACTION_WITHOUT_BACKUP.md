@@ -23,7 +23,7 @@ Doctor/sandbox
 
 ## When Sparky should use this file
 
-- When deletion, overwrite, migration, reset, cleanup, or irreversible edits are proposed.
+- When deletion, overwrite, reset, cleanup, or irreversible edits are proposed.
 - When a repair could remove user data or workspace knowledge.
 
 ## What Sparky must not overclaim

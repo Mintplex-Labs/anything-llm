@@ -1,0 +1,22 @@
+{
+  "audit_id": "sparky_wiki_post_import_sanity_audit_2026_06_07",
+  "source_repo": "HODLKONG64/DIZ-A-REMIX",
+  "audit_report": "docs/swarmsy/audits/SPARKY_WIKI_POST_IMPORT_SANITY_AUDIT.md",
+  "pack_count": 16,
+  "file_count": 299,
+  "registered_markdown_file_count": 282,
+  "registered_json_file_count": 17,
+  "unsafe_patterns_scanned": [
+    "C:\\\\Users",
+    "Users\\\\GOD",
+    "swarmsy-APP",
+    "markdown link targets to `.env`",
+    "BEGIN PRIVATE KEY",
+    "GitHub ghp_ tokens",
+    "Slack xox tokens",
+    "OpenAI sk- tokens",
+    "stale mobile/setup/runtime commands"
+  ],
+  "final_merge_recommendation": "merge_recommended_after_focused_tests_and_diff_checks_pass"
+}
+

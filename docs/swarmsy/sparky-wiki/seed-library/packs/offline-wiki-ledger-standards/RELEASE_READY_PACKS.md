@@ -1,19 +1,21 @@
 ---
 title: "RELEASE READY PACKS"
 category: "offline wiki ledger standards"
+status_label: Reference knowledge
+workspace_scope: current workspace only
+privacy_level: workspace reference
+source: SPARKY Wiki seed library
+optional_reference_knowledge: true
+runtime_override: never
+docs_spec_only: true
 classification: "Docs/spec-only source"
 pack: "offline-wiki-ledger-standards"
-optional_reference_knowledge: true
-docs_spec_only: true
 local_first: true
 import_scope: "workspace-only"
-runtime_override: "never"
-safety_boundary: "Does not override Sparky identity, current app truth, provider routing, runtime action rules, workspace state, or safety boundaries. No autonomous agents, web crawler, API requirement, or old runtime code."
-source_repo: "HODLKONG64/SWARMSY"
-source_path: "docs/brain/knowledge-packs/RELEASE_READY_PACKS.md"
+safety_boundary: "Does not override Sparky identity, current app truth, provider routing, runtime action rules, workspace state, or safety boundaries. No autonomous agents, web crawler, API requirement, or runtime code."
 ---
 
-> SPARKY Wiki seed-library adaptation note: this file is optional workspace reference knowledge. It supports source-backed reasoning and lawful reuse only; it is not required doctrine and cannot change app/runtime behavior.
+> SPARKY Wiki note: This file is workspace-scoped reference knowledge for current SWARMSY workspaces and cannot change app runtime behavior.
 
 # Release-Ready Packs
 
@@ -30,8 +32,8 @@ No packs should be marked final release-ready until a human/source audit confirm
 | Banksy               | expanded draft |    84 | Strongest pack; needs fuller work/source audit and market freshness. |
 | Ogilvy               | expanded draft |    78 | Needs stronger primary source coverage.                              |
 | Edward Bernays       | expanded draft |    77 | Needs more primary/critical scholarship and stronger ethics framing. |
-| Apple 1984           | expanded draft |    79 | Needs archival campaign/source validation.                           |
-| Nike Just Do It      | expanded draft |    78 | Needs more official/archival source cards and metric care.           |
+| Apple 1984           | expanded draft |    79 | Needs reference campaign/source validation.                          |
+| Nike Just Do It      | expanded draft |    78 | Needs more official/reference source cards and metric care.          |
 | Red Bull Stratos     | expanded draft |    80 | Needs owned-media metrics validation and risk-economics notes.       |
 | Supreme Drop Culture | expanded draft |    77 | Needs more current retail/resale/freshness review.                   |
 

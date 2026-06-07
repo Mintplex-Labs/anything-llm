@@ -9,11 +9,8 @@
     "local_first": true,
     "import_scope": "workspace-only",
     "runtime_override": "never",
-    "safety_boundary": "Does not override Sparky identity, current app truth, provider routing, runtime action rules, workspace state, or safety boundaries. No autonomous agents, web crawler, API requirement, old runtime code, vandalism instructions, trespass guidance, evasion tactics, platform abuse, or source-editing runtime ability.",
-    "source_repo": "HODLKONG64/SWARMSY",
-    "source_path": "docs/wiki/subjects/banksy/source-cards/pest-control-auth.json"
+    "safety_boundary": "Does not override Sparky identity, current app truth, provider routing, runtime action rules, workspace state, or safety boundaries. No autonomous agents, web crawler, API requirement, runtime code, vandalism instructions, trespass guidance, evasion tactics, platform abuse, or source-editing runtime ability."
   },
-  "adaptation_note": "Optional SPARKY Wiki workspace reference data. Use for provenance-aware, lawful, non-runtime reasoning only.",
   "data": {
     "id": "pest-control-auth",
     "title": "Pest Control authentication reference",
@@ -25,5 +22,6 @@
       "identity uncertainty boundaries"
     ],
     "freshness_risk": "high"
-  }
+  },
+  "usage_note": "SPARKY Wiki workspace reference data. Use for provenance-aware, lawful, non-runtime reasoning only."
 }

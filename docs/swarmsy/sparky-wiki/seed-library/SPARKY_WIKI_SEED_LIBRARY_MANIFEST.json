@@ -1,0 +1,307 @@
+{
+  "library": "SPARKY Wiki seed library",
+  "pack_count": 16,
+  "registered_packs": [
+    {
+      "id": "identity-empire",
+      "title": "SPARKY Identity Empire",
+      "category": "identity empire seed pack",
+      "docs_spec_only": true,
+      "importable": true,
+      "draft_importable": false,
+      "pack_path": "docs/swarmsy/sparky-wiki/seed-library/packs/identity-empire",
+      "file_count": 20,
+      "recommended_workspace_use_case": "Attach to the current SWARMSY workspace so Sparky can automatically retrieve deep local playbooks during Face Identity Mode, Hidden Identity Mode, Existing Project rebuilds, Memory Lock continuations, and direct identity-building prompts.",
+      "safety_boundaries": [
+        "Local-first reference knowledge only; not required doctrine.",
+        "No autonomous runtime agents are created by importing this pack.",
+        "Use lawful, permission-based physical visibility only.",
+        "No vandalism, trespass, evasion, harassment, threats, or fake claims.",
+        "API/web lookup stays optional and only for explicitly requested live research."
+      ]
+    },
+    {
+      "id": "offline-wiki-ledger-standards",
+      "title": "Offline Wiki Ledger Standards",
+      "category": "offline wiki ledger standards",
+      "docs_spec_only": true,
+      "importable": true,
+      "draft_importable": true,
+      "pack_path": "docs/swarmsy/sparky-wiki/seed-library/packs/offline-wiki-ledger-standards",
+      "file_count": 13,
+      "recommended_workspace_use_case": "Attach when designing or auditing future local wiki packs. Use as optional source-governance reference only; never as current app truth or runtime policy.",
+      "safety_boundaries": [
+        "Local-first reference knowledge only; not required doctrine.",
+        "No autonomous runtime agents are created by importing this pack.",
+        "Use lawful, permission-based physical visibility only.",
+        "No vandalism, trespass, evasion, harassment, threats, or fake claims.",
+        "API/web lookup stays optional and only for explicitly requested live research."
+      ]
+    },
+    {
+      "id": "cultural-protocols",
+      "title": "Cultural Protocols",
+      "category": "cultural protocols",
+      "docs_spec_only": true,
+      "importable": true,
+      "draft_importable": false,
+      "pack_path": "docs/swarmsy/sparky-wiki/seed-library/packs/cultural-protocols",
+      "file_count": 10,
+      "recommended_workspace_use_case": "Attach when Sparky needs public-evidence cultural mechanics for lawful campaign strategy, ethics, consequence mapping, and post-campaign analysis.",
+      "safety_boundaries": [
+        "Local-first reference knowledge only; not required doctrine.",
+        "No autonomous runtime agents are created by importing this pack.",
+        "Use lawful, permission-based physical visibility only.",
+        "No vandalism, trespass, evasion, harassment, threats, or fake claims.",
+        "API/web lookup stays optional and only for explicitly requested live research."
+      ]
+    },
+    {
+      "id": "campaign-case-studies",
+      "title": "Campaign Case Studies",
+      "category": "campaign case studies",
+      "docs_spec_only": true,
+      "importable": true,
+      "draft_importable": false,
+      "pack_path": "docs/swarmsy/sparky-wiki/seed-library/packs/campaign-case-studies",
+      "file_count": 8,
+      "recommended_workspace_use_case": "Attach when Sparky should ground campaign advice in named case studies instead of generic brand advice.",
+      "safety_boundaries": [
+        "Local-first reference knowledge only; not required doctrine.",
+        "No autonomous runtime agents are created by importing this pack.",
+        "Use lawful, permission-based physical visibility only.",
+        "No vandalism, trespass, evasion, harassment, threats, or fake claims.",
+        "API/web lookup stays optional and only for explicitly requested live research."
+      ]
+    },
+    {
+      "id": "wiki-depth-and-provenance",
+      "title": "Wiki Depth and Provenance",
+      "category": "wiki depth and provenance",
+      "docs_spec_only": true,
+      "importable": true,
+      "draft_importable": true,
+      "pack_path": "docs/swarmsy/sparky-wiki/seed-library/packs/wiki-depth-and-provenance",
+      "file_count": 5,
+      "recommended_workspace_use_case": "Attach when auditing provenance, disputed claims, citation trees, or retrieval priority for local SPARKY Wiki reference packs.",
+      "safety_boundaries": [
+        "Local-first reference knowledge only; not required doctrine.",
+        "No autonomous runtime agents are created by importing this pack.",
+        "Use lawful, permission-based physical visibility only.",
+        "No vandalism, trespass, evasion, harassment, threats, or fake claims.",
+        "API/web lookup stays optional and only for explicitly requested live research."
+      ]
+    },
+    {
+      "id": "banksy-depth-tree",
+      "title": "Banksy Depth Tree",
+      "category": "banksy depth tree",
+      "docs_spec_only": true,
+      "importable": true,
+      "draft_importable": true,
+      "pack_path": "docs/swarmsy/sparky-wiki/seed-library/packs/banksy-depth-tree",
+      "file_count": 43,
+      "recommended_workspace_use_case": "Attach when Sparky needs deep Banksy/public-signal analysis with source cards, claim maps, disputed labels, myth/lore separation, and lawful adaptation boundaries.",
+      "safety_boundaries": [
+        "Local-first reference knowledge only; not required doctrine.",
+        "No autonomous runtime agents are created by importing this pack.",
+        "Use lawful, permission-based physical visibility only.",
+        "No vandalism, trespass, evasion, harassment, threats, or fake claims.",
+        "API/web lookup stays optional and only for explicitly requested live research."
+      ]
+    },
+    {
+      "id": "open-cultural-intelligence",
+      "title": "Open Cultural Intelligence",
+      "category": "open cultural intelligence",
+      "docs_spec_only": true,
+      "importable": true,
+      "draft_importable": true,
+      "pack_path": "docs/swarmsy/sparky-wiki/seed-library/packs/open-cultural-intelligence",
+      "file_count": 5,
+      "recommended_workspace_use_case": "Attach when discussing provenance-aware cultural intelligence, future wiki/website/knowledge-graph direction, and local-first reasoning boundaries.",
+      "safety_boundaries": [
+        "Local-first reference knowledge only; not required doctrine.",
+        "No autonomous runtime agents are created by importing this pack.",
+        "Use lawful, permission-based physical visibility only.",
+        "No vandalism, trespass, evasion, harassment, threats, or fake claims.",
+        "API/web lookup stays optional and only for explicitly requested live research."
+      ]
+    },
+    {
+      "id": "swarmsy-product-operator-doctrine",
+      "title": "SWARMSY Product Operator Doctrine",
+      "category": "swarmsy product operator doctrine",
+      "docs_spec_only": true,
+      "importable": true,
+      "draft_importable": true,
+      "pack_path": "docs/swarmsy/sparky-wiki/seed-library/packs/swarmsy-product-operator-doctrine",
+      "file_count": 9,
+      "recommended_workspace_use_case": "Attach only for future product/operator planning. Treat as docs/spec reference, not runtime actions, autonomous agents, widgets, source-editing ability, or current app truth.",
+      "safety_boundaries": [
+        "Local-first reference knowledge only; not required doctrine.",
+        "No autonomous runtime agents are created by importing this pack.",
+        "Use lawful, permission-based physical visibility only.",
+        "No vandalism, trespass, evasion, harassment, threats, or fake claims.",
+        "API/web lookup stays optional and only for explicitly requested live research."
+      ]
+    },
+    {
+      "id": "swarmsy-support-and-provider-help",
+      "title": "SWARMSY Support and Provider Help",
+      "category": "swarmsy support and provider help",
+      "docs_spec_only": true,
+      "importable": true,
+      "draft_importable": true,
+      "pack_path": "docs/swarmsy/sparky-wiki/seed-library/packs/swarmsy-support-and-provider-help",
+      "file_count": 7,
+      "recommended_workspace_use_case": "Attach when Sparky should answer setup/provider/troubleshooting questions locally while preserving current DIZ/SWARMSY behavior and explicit Use API boundaries.",
+      "safety_boundaries": [
+        "Local-first reference knowledge only; not required doctrine.",
+        "No autonomous runtime agents are created by importing this pack.",
+        "Use lawful, permission-based physical visibility only.",
+        "No vandalism, trespass, evasion, harassment, threats, or fake claims.",
+        "API/web lookup stays optional and only for explicitly requested live research."
+      ]
+    },
+    {
+      "id": "swarmsy-core-truth-archive",
+      "title": "SWARMSY Core Truth Archive",
+      "category": "swarmsy core truth archive",
+      "docs_spec_only": true,
+      "importable": true,
+      "draft_importable": true,
+      "pack_path": "docs/swarmsy/sparky-wiki/seed-library/packs/swarmsy-core-truth-archive",
+      "file_count": 11,
+      "recommended_workspace_use_case": "Attach for SWARMSY doctrine, language, and lineage as optional context; never as current app truth, provider routing, or runtime behavior.",
+      "safety_boundaries": [
+        "Local-first reference knowledge only; not required doctrine.",
+        "No autonomous runtime agents are created by importing this pack.",
+        "Use lawful, permission-based physical visibility only.",
+        "No vandalism, trespass, evasion, harassment, threats, or fake claims.",
+        "API/web lookup stays optional and only for explicitly requested live research."
+      ]
+    },
+    {
+      "id": "identity-forge-and-campaign-os",
+      "title": "Identity Forge and Campaign OS",
+      "category": "identity forge and campaign os",
+      "docs_spec_only": true,
+      "importable": true,
+      "draft_importable": true,
+      "pack_path": "docs/swarmsy/sparky-wiki/seed-library/packs/identity-forge-and-campaign-os",
+      "file_count": 19,
+      "recommended_workspace_use_case": "Attach when Sparky needs SWARMSY identity/campaign doctrine for lawful brand, offer, movement, and campaign planning; never as automation or runtime control.",
+      "safety_boundaries": [
+        "Local-first reference knowledge only; not required doctrine.",
+        "No autonomous runtime agents are created by importing this pack.",
+        "Use lawful, permission-based physical visibility only.",
+        "No vandalism, trespass, evasion, harassment, threats, or fake claims.",
+        "API/web lookup stays optional and only for explicitly requested live research."
+      ]
+    },
+    {
+      "id": "community-and-open-build-governance",
+      "title": "Community and Open Build Governance",
+      "category": "community and open build governance",
+      "docs_spec_only": true,
+      "importable": true,
+      "draft_importable": true,
+      "pack_path": "docs/swarmsy/sparky-wiki/seed-library/packs/community-and-open-build-governance",
+      "file_count": 16,
+      "recommended_workspace_use_case": "Attach when discussing community contribution, source review, archive stewardship, provenance workflow, or open-build etiquette.",
+      "safety_boundaries": [
+        "Local-first reference knowledge only; not required doctrine.",
+        "No autonomous runtime agents are created by importing this pack.",
+        "Use lawful, permission-based physical visibility only.",
+        "No vandalism, trespass, evasion, harassment, threats, or fake claims.",
+        "API/web lookup stays optional and only for explicitly requested live research."
+      ]
+    },
+    {
+      "id": "source-card-and-subject-governance",
+      "title": "Source Card and Subject Governance",
+      "category": "source card and subject governance",
+      "docs_spec_only": true,
+      "importable": true,
+      "draft_importable": true,
+      "pack_path": "docs/swarmsy/sparky-wiki/seed-library/packs/source-card-and-subject-governance",
+      "file_count": 8,
+      "recommended_workspace_use_case": "Attach when evaluating claims, source cards, citation quality, subject boundaries, disputed labels, or source-refresh work.",
+      "safety_boundaries": [
+        "Local-first reference knowledge only; not required doctrine.",
+        "No autonomous runtime agents are created by importing this pack.",
+        "Use lawful, permission-based physical visibility only.",
+        "No vandalism, trespass, evasion, harassment, threats, or fake claims.",
+        "API/web lookup stays optional and only for explicitly requested live research."
+      ]
+    },
+    {
+      "id": "local-user-support-and-troubleshooting-archive",
+      "title": "Local User Support and Troubleshooting Archive",
+      "category": "local user support and troubleshooting archive",
+      "docs_spec_only": true,
+      "importable": true,
+      "draft_importable": true,
+      "pack_path": "docs/swarmsy/sparky-wiki/seed-library/packs/local-user-support-and-troubleshooting-archive",
+      "file_count": 7,
+      "recommended_workspace_use_case": "Attach only for local user support archaeology and troubleshooting context; verify current behavior before giving setup instructions.",
+      "safety_boundaries": [
+        "Local-first reference knowledge only; not required doctrine.",
+        "No autonomous runtime agents are created by importing this pack.",
+        "Use lawful, permission-based physical visibility only.",
+        "No vandalism, trespass, evasion, harassment, threats, or fake claims.",
+        "API/web lookup stays optional and only for explicitly requested live research."
+      ]
+    },
+    {
+      "id": "product-planning-archive",
+      "title": "Product Planning Archive",
+      "category": "product planning archive",
+      "docs_spec_only": true,
+      "importable": true,
+      "draft_importable": true,
+      "pack_path": "docs/swarmsy/sparky-wiki/seed-library/packs/product-planning-archive",
+      "file_count": 9,
+      "recommended_workspace_use_case": "Attach for product planning archaeology, roadmap comparison, and future feature ideation; never present as live runtime capability.",
+      "safety_boundaries": [
+        "Local-first reference knowledge only; not required doctrine.",
+        "No autonomous runtime agents are created by importing this pack.",
+        "Use lawful, permission-based physical visibility only.",
+        "No vandalism, trespass, evasion, harassment, threats, or fake claims.",
+        "API/web lookup stays optional and only for explicitly requested live research."
+      ]
+    },
+    {
+      "id": "swarmsy-app-brain-reference-archive",
+      "title": "SWARMSY App Brain Reference Archive",
+      "category": "swarmsy app brain reference archive",
+      "docs_spec_only": true,
+      "importable": true,
+      "draft_importable": true,
+      "pack_path": "docs/swarmsy/sparky-wiki/seed-library/packs/swarmsy-app-brain-reference-archive",
+      "file_count": 109,
+      "recommended_workspace_use_case": "Attach when Sparky needs broad SWARMSY app-brain role context as optional local reference; never as deterministic Offline App Brain runtime.",
+      "safety_boundaries": [
+        "Local-first reference knowledge only; not required doctrine.",
+        "No autonomous runtime agents are created by importing this pack.",
+        "Use lawful, permission-based physical visibility only.",
+        "No vandalism, trespass, evasion, harassment, threats, or fake claims.",
+        "API/web lookup stays optional and only for explicitly requested live research."
+      ]
+    }
+  ],
+  "file_count": 299,
+  "validation": {
+    "registry": "passed",
+    "metadata_validation": "passed",
+    "json_validation": "passed",
+    "link_validation": "passed",
+    "stale_command_validation": "passed",
+    "unsafe_path_validation": "passed",
+    "unsafe_secret_material": "passed",
+    "workspace_scope": "passed",
+    "runtime_override_validation": "blocked",
+    "docs_spec_only": "passed"
+  }
+}

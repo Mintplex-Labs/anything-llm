@@ -3,6 +3,7 @@ const os = require("os");
 const path = require("path");
 const {
   getSwarmsyRequiredDocsStatus,
+  loadSwarmsyRequiredDocsManifest,
 } = require("../../../utils/swarmsy/requiredDocs");
 
 function createTempRoot(prefix = "swarmsy-required-docs") {
@@ -215,7 +216,11 @@ describe("swarmsy required docs status helper", () => {
     const tmpRoot = createTempRoot();
     process.env.SWARMSY_DOCTRINE_DOCS_ROOT = tmpRoot;
 
-    const targetPath = writeDoc(tmpRoot, "docs/swarmsy/target.md", "real content");
+    const targetPath = writeDoc(
+      tmpRoot,
+      "docs/swarmsy/target.md",
+      "real content"
+    );
     const symlinkPath = path.join(tmpRoot, "docs/swarmsy/symlink.md");
     fs.symlinkSync(targetPath, symlinkPath);
     const readSpy = jest.spyOn(fs, "readFileSync");
@@ -250,7 +255,11 @@ describe("swarmsy required docs status helper", () => {
 
     const externalDir = path.join(externalRoot, "docs", "swarmsy");
     fs.mkdirSync(externalDir, { recursive: true });
-    fs.writeFileSync(path.join(externalDir, "secret.md"), "external content", "utf8");
+    fs.writeFileSync(
+      path.join(externalDir, "secret.md"),
+      "external content",
+      "utf8"
+    );
 
     const symlinkDirParent = path.join(tmpRoot, "docs");
     fs.mkdirSync(symlinkDirParent, { recursive: true });
@@ -456,5 +465,41 @@ describe("swarmsy required docs status helper", () => {
       present: true,
       loadable: true,
     });
+  });
+
+  it("keeps the shipped required-docs manifest paths present (including sparky-wiki-foundation)", () => {
+    const repoRoot = path.resolve(__dirname, "..", "..", "..", "..");
+    process.env.SWARMSY_DOCTRINE_DOCS_ROOT = repoRoot;
+
+    const manifest = loadSwarmsyRequiredDocsManifest();
+    const status = getSwarmsyRequiredDocsStatus({ manifest });
+
+    const missingDocs = [];
+    for (const group of status.groups) {
+      for (const file of group.files) {
+        if (!file.present) {
+          missingDocs.push({
+            groupId: group.id,
+            path: file.path,
+            error: file.error,
+          });
+        }
+      }
+    }
+
+    expect(missingDocs).toEqual([]);
+
+    const sparkyWikiFoundation = status.groups.find(
+      (group) => group.id === "sparky-wiki-foundation"
+    );
+    expect(sparkyWikiFoundation).toBeTruthy();
+    expect(sparkyWikiFoundation.missing).toBe(0);
+
+    const allManifestPaths = status.groups.flatMap((group) =>
+      group.files.map((file) => file.path)
+    );
+    expect(allManifestPaths).not.toContain(
+      "docs/swarmsy/sparky-wiki/SPARKY_WIKI_LEGACY_SWARMSY_SEED_PLAN.md"
+    );
   });
 });

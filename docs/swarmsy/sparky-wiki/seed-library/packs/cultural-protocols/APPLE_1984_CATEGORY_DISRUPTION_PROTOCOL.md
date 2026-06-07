@@ -1,19 +1,21 @@
 ---
 title: "APPLE 1984 CATEGORY DISRUPTION PROTOCOL"
 category: "cultural protocols"
+status_label: Reference knowledge
+workspace_scope: current workspace only
+privacy_level: workspace reference
+source: SPARKY Wiki seed library
+optional_reference_knowledge: true
+runtime_override: never
+docs_spec_only: true
 classification: "Reference knowledge"
 pack: "cultural-protocols"
-optional_reference_knowledge: true
-docs_spec_only: true
 local_first: true
 import_scope: "workspace-only"
-runtime_override: "never"
-safety_boundary: "Does not override Sparky identity, current app truth, provider routing, runtime action rules, workspace state, or safety boundaries. No autonomous agents, web crawler, API requirement, or old runtime code."
-source_repo: "HODLKONG64/SWARMSY"
-source_path: "docs/wiki/protocols/APPLE_1984_CATEGORY_DISRUPTION_PROTOCOL.md"
+safety_boundary: "Does not override Sparky identity, current app truth, provider routing, runtime action rules, workspace state, or safety boundaries. No autonomous agents, web crawler, API requirement, or runtime code."
 ---
 
-> SPARKY Wiki seed-library adaptation note: this file is optional workspace reference knowledge. It supports source-backed reasoning and lawful reuse only; it is not required doctrine and cannot change app/runtime behavior.
+> SPARKY Wiki note: This file is workspace-scoped reference knowledge for current SWARMSY workspaces and cannot change app runtime behavior.
 
 # Apple 1984 Category Disruption Protocol
 
@@ -50,7 +52,7 @@ Explain how category contrast, enemy positioning, and launch mythology can make 
 | SEO/search mechanics       | 1 hour to 1 week     | Own category problem terms and contrast phrases.            |
 | social spread loop         | 1 day to 8 weeks     | Let users repeat the enemy/new-world contrast.              |
 | controversy/risk handling  | same day to 2 weeks  | Avoid false claims, harassment, or misleading comparisons.  |
-| archive/legacy effect      | 1 week to years      | Preserve launch artifact, claims, and product proof.        |
+| archive/reference effect   | 1 week to years      | Preserve launch artifact, claims, and product proof.        |
 | post-campaign analysis     | 1 day to 4 weeks     | Check if audience understood the category shift.            |
 
 ## Observable Evidence Types

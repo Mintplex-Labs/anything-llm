@@ -23,7 +23,7 @@ Current Truth
 
 ## When Sparky should use this file
 
-- When interpreting roadmap docs, seed files, readiness checks, or legacy notes.
+- When interpreting roadmap docs, seed files, readiness checks, or reference notes.
 - When a user asks whether a capability exists now.
 
 ## What Sparky must not overclaim

@@ -1,24 +1,18 @@
 ---
 title: Readme
 category: swarmsy core truth archive
-status_label: Historical reference
+status_label: Reference knowledge
 workspace_scope: current workspace only
 privacy_level: workspace reference
-source: old SWARMSY repo adapted reference
-source_repo: HODLKONG64/SWARMSY
-source_path: README.md
+source: SPARKY Wiki seed library
 optional_reference_knowledge: true
 runtime_override: never
 docs_spec_only: true
 ---
 
-## Seed-library adaptation boundary
+## SPARKY Wiki reference boundary
 
-This file is optional workspace reference knowledge imported from the old `HODLKONG64/SWARMSY` repository. It is preserved for SPARKY Wiki continuity as **historical reference** and does not override current DIZ-A-REMIX app truth, Sparky identity, provider routing, privacy boundaries, or runtime behavior.
-
-Safety boundary: use only lawful, permission-based, local-first planning. This pack does not create runtime actions, autonomous agents, web/API calls, mobile builds, Electron builds, release claims, or cross-workspace memory.
-
-## Old SWARMSY source material
+This file is SPARKY Wiki reference knowledge for current SWARMSY workspaces. It is workspace-scoped, local-first, and cannot override app runtime behavior, provider routing, user memory, or workspace permissions.
 
 # SWARMSY
 
@@ -90,13 +84,13 @@ Key line: **Friction creates soul.**
 
 ## Open-Source Community Editing
 
-- [CONTRIBUTING.md](./CONTRIBUTING.md)
-- [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)
-- [docs/ROADMAP.md](./docs/ROADMAP.md)
-- [docs/AGENT_GUARDRAILS.md](./docs/AGENT_GUARDRAILS.md)
-- [docs/SANDBOX_STRESS_TEST_PLAN.md](./docs/SANDBOX_STRESS_TEST_PLAN.md)
-- [docs/community/ARCHIVE_EDITING_RULES.md](./docs/community/ARCHIVE_EDITING_RULES.md)
-- [docs/COMMUNITY_BUILD_GUIDE.md](./docs/COMMUNITY_BUILD_GUIDE.md)
+- `CONTRIBUTING.md` (historical SPARKY Wiki link; not imported in this archive pack)
+- `docs/ARCHITECTURE.md` (historical SPARKY Wiki link; not imported in this archive pack)
+- `docs/ROADMAP.md` (historical SPARKY Wiki link; not imported in this archive pack)
+- `docs/AGENT_GUARDRAILS.md` (historical SPARKY Wiki link; not imported in this archive pack)
+- `docs/SANDBOX_STRESS_TEST_PLAN.md` (historical SPARKY Wiki link; not imported in this archive pack)
+- `docs/community/ARCHIVE_EDITING_RULES.md` (historical SPARKY Wiki link; not imported in this archive pack)
+- `docs/COMMUNITY_BUILD_GUIDE.md` (historical SPARKY Wiki link; not imported in this archive pack)
 - Run current DIZ-A-REMIX quality checks: `yarn lint`, `yarn test`, and focused tests relevant to the change.
 
 ## Experimental Agent Baseline
