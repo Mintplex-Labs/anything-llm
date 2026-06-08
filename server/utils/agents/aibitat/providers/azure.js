@@ -17,6 +17,7 @@ class AzureOpenAiProvider extends Provider {
       baseURL: AzureOpenAiLLM.formatBaseUrl(process.env.AZURE_OPENAI_ENDPOINT),
     });
     super(client);
+    this.providerTag = "azure";
     this.model =
       config.model ||
       process.env.AZURE_OPENAI_MODEL_PREF ||
@@ -25,15 +26,6 @@ class AzureOpenAiProvider extends Provider {
   }
 
   get supportsAgentStreaming() {
-    return true;
-  }
-
-  /**
-   * Whether this provider supports native OpenAI-compatible tool calling.
-   * - Azure OpenAI always supports tool calling.
-   * @returns {boolean}
-   */
-  supportsNativeToolCalling() {
     return true;
   }
 

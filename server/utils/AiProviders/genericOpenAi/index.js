@@ -442,24 +442,32 @@ class GenericOpenAiLLM {
   }
 
   /**
-   * Whether this provider supports native OpenAI-compatible tool calling.
-   * - This can be any OpenAI compatible provider that supports tool calling
-   * - We check the ENV to see if the provider supports tool calling.
-   * - If the ENV is not set, we default to false.
+   * Check if a capability is supported via ENV configuration.
+   * `tools` is opt-out (enabled unless explicitly disabled), all others are opt-in.
+   * @param {'tools' | 'reasoning' | 'imageGeneration' | 'vision'} capability
    * @returns {boolean}
    */
   #supportsCapabilityFromENV(capability = "") {
-    const CapabilityEnvMap = {
-      tools: "PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING",
-      reasoning: "PROVIDER_SUPPORTS_REASONING",
-      imageGeneration: "PROVIDER_SUPPORTS_IMAGE_GENERATION",
-      vision: "PROVIDER_SUPPORTS_VISION",
-    };
-
-    const envKey = CapabilityEnvMap[capability];
-    if (!envKey) return false;
-    if (!(envKey in process.env)) return false;
-    return process.env[envKey]?.includes("generic-openai") || false;
+    switch (capability) {
+      case "tools":
+        return !process.env.PROVIDER_DISABLE_NATIVE_TOOL_CALLING?.includes(
+          "generic-openai"
+        );
+      case "reasoning":
+        return !!process.env.PROVIDER_SUPPORTS_REASONING?.includes(
+          "generic-openai"
+        );
+      case "imageGeneration":
+        return !!process.env.PROVIDER_SUPPORTS_IMAGE_GENERATION?.includes(
+          "generic-openai"
+        );
+      case "vision":
+        return !!process.env.PROVIDER_SUPPORTS_VISION?.includes(
+          "generic-openai"
+        );
+      default:
+        return false;
+    }
   }
 
   /**

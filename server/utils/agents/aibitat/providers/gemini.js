@@ -14,6 +14,7 @@ class GeminiProvider extends Provider {
   constructor(config = {}) {
     const { model = "gemini-2.0-flash-lite" } = config;
     super();
+    this.providerTag = "gemini";
     this.className = "GeminiProvider";
     const client = new OpenAI({
       baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
@@ -75,6 +76,7 @@ class GeminiProvider extends Provider {
    * @returns {boolean}
    */
   supportsNativeToolCalling() {
+    if (this.optsOutOfNativeToolCallingViaEnv(this.providerTag)) return false;
     return this.supportsToolCalling;
   }
 

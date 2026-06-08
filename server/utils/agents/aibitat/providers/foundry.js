@@ -17,6 +17,7 @@ class FoundryProvider extends InheritMultiple([Provider, UnTooled]) {
   constructor(config = {}) {
     const { model = process.env.FOUNDRY_MODEL_PREF } = config;
     super();
+    this.providerTag = "foundry";
     const client = new OpenAI({
       baseURL: parseFoundryBasePath(process.env.FOUNDRY_BASE_PATH),
       apiKey: null,
@@ -41,10 +42,11 @@ class FoundryProvider extends InheritMultiple([Provider, UnTooled]) {
 
   /**
    * Whether this provider supports native OpenAI-compatible tool calling.
-   * Override in subclass and return true to use native tool calling instead of UnTooled.
-   * @returns {boolean|Promise<boolean>}
+   * - Foundry needs more explict testing to determine if it supports tool calling.
+   * For now, we'll return false until we can get definitive results.
+   * @returns {boolean}
    */
-  supportsNativeToolCalling() {
+  async supportsNativeToolCalling() {
     return false;
   }
 

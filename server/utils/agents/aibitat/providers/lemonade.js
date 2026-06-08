@@ -21,6 +21,7 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
    */
   constructor(config = {}) {
     super();
+    this.providerTag = "lemonade";
     const model = config?.model || process.env.LEMONADE_LLM_MODEL_PREF || null;
     const client = new OpenAI({
       baseURL: parseLemonadeServerEndpoint(
@@ -49,34 +50,6 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
     if (this.preloaded) return;
     await LemonadeLLM.loadModel(this.model);
     this.preloaded = true;
-  }
-
-  /**
-   * Whether this provider supports native OpenAI-compatible tool calling.
-   * - Since Lemonade models vary in tool calling support, we check the ENV.
-   * - If the ENV is not set and the capabilities are not set, we default to false.
-   * - To enable tool calling for a model, set the ENV flag for `PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING` to include `lemonade`.
-   * - or update the label in the Lemonade server to include `tool-calling`.
-   * @returns {boolean|Promise<boolean>}
-   */
-  async supportsNativeToolCalling() {
-    if (this._supportsToolCalling !== null) return this._supportsToolCalling;
-    const lemonade = new LemonadeLLM(null, this.model);
-
-    // Labels can be missing for tool calling models, so we also check if ENV flag is set
-    const supportsToolCallingFlag =
-      this.supportsNativeToolCallingViaEnv("lemonade");
-    if (supportsToolCallingFlag) {
-      this.providerLog(
-        "Lemonade supports native tool calling is ENABLED via ENV."
-      );
-      this._supportsToolCalling = true;
-      return this._supportsToolCalling;
-    }
-
-    const capabilities = await lemonade.getModelCapabilities();
-    this._supportsToolCalling = capabilities.tools === true;
-    return this._supportsToolCalling;
   }
 
   async #handleFunctionCallChat({ messages = [] }) {

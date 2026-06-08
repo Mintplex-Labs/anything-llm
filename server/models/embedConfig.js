@@ -64,6 +64,19 @@ const EmbedConfig = {
           },
         },
       });
+
+      // If the embed was created with no allowed-domains allowlist
+      // and the EMBED_REQUIRE_ALLOWLIST environment variable is not set, warn the user
+      // since this would mean the embed will accept requests from ANY origin.
+      // If the ENV is set, then it would just mean the embed wont respond to requests from ANY origin.
+      if (
+        !embed.allowlist_domains &&
+        !("EMBED_REQUIRE_ALLOWLIST" in process.env)
+      ) {
+        console.warn(
+          `[EmbedConfig] Embed ${embed.uuid} was created with no allowed-domains allowlist; it will accept requests from ANY origin. Set EMBED_REQUIRE_ALLOWLIST="true" to require an allowlist before an embed will respond.`
+        );
+      }
       return { embed, message: null };
     } catch (error) {
       console.error(error.message);
