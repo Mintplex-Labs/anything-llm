@@ -230,6 +230,49 @@ describe("SWARMSY HIVE action hub", () => {
     );
   });
 
+  it("only offers SPARKY prompt repair when the preset prompt is available", () => {
+    const source = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        "../../../frontend/src/components/SwarmsyFirstRunOnboarding/index.jsx"
+      ),
+      "utf8"
+    );
+
+    expect(source).toContain("Apply/Repair SPARKY prompt");
+    expect(source).toContain("sparkyPromptStatus?.available &&");
+    expect(source).toContain("SwarmsyOnboarding.applySparkyPrompt(");
+    expect(source).toContain(`workspaceSlug,
+      true`);
+  });
+
+  it("keeps the Windows desktop artifact workflow relaxed and path-gated", () => {
+    const workflow = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        "../../../.github/workflows/desktop-artifact-build.yml"
+      ),
+      "utf8"
+    );
+    const pathsBlock = workflow.slice(
+      workflow.indexOf("    paths:"),
+      workflow.indexOf("  workflow_dispatch:")
+    );
+
+    expect(workflow).toContain("workflow_dispatch:");
+    expect(pathsBlock).toContain('"desktop/**"');
+    expect(pathsBlock).toContain('"frontend/**"');
+    expect(pathsBlock).toContain('"server/**"');
+    expect(pathsBlock).toContain('"collector/**"');
+    expect(pathsBlock).not.toContain(".nvmrc");
+    expect(workflow).toContain(
+      "path: desktop/artifacts/swarmsy-desktop-win32-x64.zip"
+    );
+    expect(workflow).toContain("compression-level: 0");
+    expect(workflow).not.toContain(`path: |
+            desktop/artifacts/swarmsy-desktop-win32-x64`);
+  });
+
   it("keeps the onboarding model on user-safe routes only", () => {
     const source = fs.readFileSync(
       path.resolve(__dirname, "../../../frontend/src/models/swarmsyOnboarding.js"),

@@ -7,6 +7,14 @@ concurrency:
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+    paths:
+      - ".github/workflows/desktop-artifact-build.yml"
+      - "desktop/**"
+      - "frontend/**"
+      - "server/**"
+      - "collector/**"
+      - "package.json"
+      - "package-lock.json"
   workflow_dispatch:
 
 jobs:
@@ -94,9 +102,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: swarmsy-desktop-win32-x64
-          path: |
-            desktop/artifacts/swarmsy-desktop-win32-x64
-            desktop/artifacts/swarmsy-desktop-win32-x64.zip
+          path: desktop/artifacts/swarmsy-desktop-win32-x64.zip
+          compression-level: 0
           if-no-files-found: error
           retention-days: 14
 

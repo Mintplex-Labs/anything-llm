@@ -694,6 +694,7 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
   );
   const launchGroup = ACTION_HUB_GROUPS.find((group) => group.id === "launch");
   const verifyGroup = ACTION_HUB_GROUPS.find((group) => group.id === "verify");
+  const sparkyPromptStatus = activeStatus?.sparkyPrompt || null;
   const localOllamaTone = localOllamaStatusTone(localOllamaStatus.status);
   const localOllamaTitle = localOllamaStatusTitle(localOllamaStatus.status);
   const hasVerifiedLocalOllamaModels =
@@ -939,6 +940,44 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
       await loadStatus();
     } else {
       showToast(result?.message || "Failed to create SWARMSY HIVE.", "error");
+    }
+    setBusyAction(null);
+  }
+
+  async function applySparkyPrompt() {
+    const workspaceSlug = activeStatus?.workspace?.slug;
+    if (!workspaceSlug || busyAction) return;
+
+    const hasCustomPrompt = sparkyPromptStatus?.status === "custom_prompt";
+    if (
+      hasCustomPrompt &&
+      typeof window !== "undefined" &&
+      !window.confirm(
+        "This workspace has a custom system prompt. Replace it with the SWARMSY HIVE SPARKY prompt?"
+      )
+    ) {
+      showToast(
+        "SPARKY prompt repair cancelled. Workspace prompt unchanged.",
+        "info"
+      );
+      return;
+    }
+
+    setBusyAction("sparky-prompt");
+    setLastActionResult(null);
+    const result = await SwarmsyOnboarding.applySparkyPrompt(
+      workspaceSlug,
+      true
+    );
+    setLastActionResult({ kind: "sparky-prompt", ...result });
+    if (result?.success) {
+      showToast(
+        result?.message || "SPARKY system prompt applied to this workspace.",
+        result?.applied ? "success" : "info"
+      );
+      await loadStatus();
+    } else {
+      showToast(result?.message || "Failed to apply SPARKY prompt.", "error");
     }
     setBusyAction(null);
   }
@@ -1312,6 +1351,24 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
                 </p>
               </div>
               <div>
+                <p className="text-theme-text-secondary">System prompt</p>
+                <p
+                  className={`font-medium ${
+                    sparkyPromptStatus?.applied
+                      ? "text-green-300 light:text-green-700"
+                      : "text-amber-200 light:text-amber-800"
+                  }`}
+                >
+                  {sparkyPromptStatus?.label || "SPARKY prompt missing"}
+                </p>
+                {sparkyPromptStatus?.missing && (
+                  <p className="mt-1 text-xs leading-5 text-theme-text-secondary">
+                    SPARKY prompt not applied. System Prompt Variables are
+                    placeholders, not the workspace system prompt.
+                  </p>
+                )}
+              </div>
+              <div>
                 <p className="text-theme-text-secondary">Doctrine docs</p>
                 <p className="font-medium">
                   {activeStatus?.doctrine?.statusAvailable
@@ -1399,6 +1456,19 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
               Create SWARMSY HIVE
             </ActionButton>
           )}
+
+          {activeStatus?.workspace?.exists &&
+            sparkyPromptStatus?.missing &&
+            sparkyPromptStatus?.available && (
+              <ActionButton
+                icon={CheckCircle}
+                busy={busyAction === "sparky-prompt"}
+                disabled={Boolean(busyAction) && busyAction !== "sparky-prompt"}
+                onClick={applySparkyPrompt}
+              >
+                Apply/Repair SPARKY prompt
+              </ActionButton>
+            )}
 
           {activeStatus?.workspace?.exists &&
             !activeStatus?.workspace?.ready &&

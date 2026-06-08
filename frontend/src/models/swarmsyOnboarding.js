@@ -37,6 +37,26 @@ const SwarmsyOnboarding = {
         message: "Failed to create SWARMSY HIVE.",
       }));
   },
+  applySparkyPrompt: async function (workspaceSlug, confirmApply = false) {
+    return await fetch(
+      `${API_BASE}/swarmsy/workspaces/${encodeURIComponent(
+        workspaceSlug
+      )}/sparky-prompt/apply`,
+      {
+        method: "POST",
+        headers: baseHeaders(),
+        body: JSON.stringify({ confirmApply }),
+      }
+    )
+      .then((response) =>
+        parseResponse(response, "Failed to apply SPARKY system prompt.")
+      )
+      .catch(() => ({
+        success: false,
+        message: "Failed to apply SPARKY system prompt.",
+      }));
+  },
+
   ingestRequiredDocs: async function () {
     return await fetch(`${API_BASE}/swarmsy/onboarding/ingest-required-docs`, {
       method: "POST",

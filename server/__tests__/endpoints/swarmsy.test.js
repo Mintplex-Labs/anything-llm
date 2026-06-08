@@ -10,6 +10,8 @@ jest.mock("../../utils/swarmsy/onboardingStatus", () => ({
   getSwarmsyOnboardingStatus: jest.fn(),
 }));
 jest.mock("../../utils/swarmsy/applyWorkspacePreset", () => ({
+  applySparkyPromptToWorkspace: jest.fn(),
+  getSparkyPromptStatus: jest.fn(),
   createSwarmsyHiveWorkspace: jest.fn(),
 }));
 jest.mock("../../utils/swarmsy/ingestRequiredDocs", () => ({
@@ -61,6 +63,8 @@ const {
   getSwarmsyOnboardingStatus,
 } = require("../../utils/swarmsy/onboardingStatus");
 const {
+  applySparkyPromptToWorkspace,
+  getSparkyPromptStatus,
   createSwarmsyHiveWorkspace,
 } = require("../../utils/swarmsy/applyWorkspacePreset");
 const {
@@ -94,6 +98,8 @@ const {
   swarmsyOnboardingIngestRequiredDocs,
   swarmsyOnboardingStatus,
   swarmsySparkyWikiSeedPackImport,
+  swarmsyWorkspaceSparkyPromptApply,
+  swarmsyWorkspaceSparkyPromptStatus,
   swarmsySparkyWikiSeedPackShow,
   swarmsySparkyWikiSeedPacksList,
   __resetSwarmsyHiveCreationLocksForTests,
@@ -210,6 +216,126 @@ describe("swarmsy endpoints", () => {
     expect(getSwarmsyOnboardingStatus).toHaveBeenCalledWith({ user });
     expect(response.status).toHaveBeenCalledWith(200);
     expect(response.json).toHaveBeenCalledWith(status);
+  });
+
+  it("returns SPARKY prompt status for a selected owned workspace", async () => {
+    const request = { params: { slug: "swarmsy-hive" }, headers: {} };
+    const response = responseMock();
+    const user = { id: 12, role: "default" };
+    const workspace = {
+      id: 1,
+      slug: "swarmsy-hive",
+      name: "SWARMSY HIVE",
+      openAiPrompt: "Generic",
+    };
+    const promptStatus = {
+      applied: false,
+      missing: true,
+      status: "generic_default",
+    };
+
+    userFromSession.mockResolvedValue(user);
+    Workspace.getWithUser.mockResolvedValue(workspace);
+    getSparkyPromptStatus.mockReturnValue(promptStatus);
+
+    await swarmsyWorkspaceSparkyPromptStatus(request, response);
+
+    expect(Workspace.getWithUser).toHaveBeenCalledWith(user, {
+      slug: "swarmsy-hive",
+    });
+    expect(response.status).toHaveBeenCalledWith(200);
+    expect(response.json).toHaveBeenCalledWith({
+      success: true,
+      workspace: {
+        exists: true,
+        id: 1,
+        slug: "swarmsy-hive",
+        name: "SWARMSY HIVE",
+      },
+      sparkyPrompt: promptStatus,
+    });
+  });
+
+  it("does not apply SPARKY prompt until the user confirms the selected workspace action", async () => {
+    const request = {
+      params: { slug: "swarmsy-hive" },
+      body: { confirmApply: false },
+      headers: {},
+    };
+    const response = responseMock();
+    const user = { id: 12, role: "default" };
+    const workspace = {
+      id: 1,
+      slug: "swarmsy-hive",
+      name: "SWARMSY HIVE",
+      openAiPrompt: "Custom",
+    };
+    const before = {
+      applied: false,
+      missing: true,
+      status: "custom_prompt",
+    };
+
+    userFromSession.mockResolvedValue(user);
+    Workspace.getWithUser.mockResolvedValue(workspace);
+    getSparkyPromptStatus.mockReturnValue(before);
+
+    await swarmsyWorkspaceSparkyPromptApply(request, response);
+
+    expect(applySparkyPromptToWorkspace).not.toHaveBeenCalled();
+    expect(response.status).toHaveBeenCalledWith(200);
+    expect(response.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: true,
+        applied: false,
+        before,
+        after: before,
+        requiresConfirmation: true,
+      })
+    );
+  });
+
+  it("repairs an existing SWARMSY HIVE generic prompt after explicit action", async () => {
+    const request = {
+      params: { slug: "swarmsy-hive" },
+      body: { confirmApply: true },
+      headers: {},
+    };
+    const response = responseMock();
+    const user = { id: 12, role: "default" };
+    const workspace = {
+      id: 1,
+      slug: "swarmsy-hive",
+      name: "SWARMSY HIVE",
+      openAiPrompt: "Generic",
+    };
+    const result = {
+      success: true,
+      applied: true,
+      before: { status: "generic_default" },
+      after: { status: "applied" },
+      workspace: { ...workspace, openAiPrompt: "SPARKY" },
+      message: "SPARKY system prompt applied to this workspace.",
+    };
+
+    userFromSession.mockResolvedValue(user);
+    Workspace.getWithUser.mockResolvedValue(workspace);
+    getSparkyPromptStatus.mockReturnValue({ status: "generic_default" });
+    applySparkyPromptToWorkspace.mockResolvedValue(result);
+
+    await swarmsyWorkspaceSparkyPromptApply(request, response);
+
+    expect(applySparkyPromptToWorkspace).toHaveBeenCalledWith(workspace, user);
+    expect(response.status).toHaveBeenCalledWith(200);
+    expect(response.json).toHaveBeenCalledWith({
+      ...result,
+      workspace: {
+        exists: true,
+        id: 1,
+        slug: "swarmsy-hive",
+        name: "SWARMSY HIVE",
+      },
+    });
   });
 
   it("returns local-user Ollama detection status from the dedicated single-user route", async () => {

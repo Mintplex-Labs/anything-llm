@@ -121,6 +121,43 @@ describe("Swarmsy onboarding model", () => {
     });
   });
 
+  it("defaults SPARKY prompt apply calls to confirmation=false", async () => {
+    const fetchImpl = jest.fn().mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockResolvedValue({ success: true }),
+    });
+    const onboardingModel = loadSwarmsyOnboardingModule(fetchImpl);
+
+    await onboardingModel.applySparkyPrompt("swarmsy-hive");
+
+    expect(fetchImpl).toHaveBeenCalledWith(
+      "http://localhost/api/swarmsy/workspaces/swarmsy-hive/sparky-prompt/apply",
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({ confirmApply: false }),
+      })
+    );
+  });
+
+  it("allows explicit SPARKY prompt confirmation when callers opt in", async () => {
+    const fetchImpl = jest.fn().mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockResolvedValue({ success: true }),
+    });
+    const onboardingModel = loadSwarmsyOnboardingModule(fetchImpl);
+
+    await onboardingModel.applySparkyPrompt("swarmsy-hive", true);
+
+    expect(fetchImpl).toHaveBeenCalledWith(
+      expect.stringContaining(
+        "/swarmsy/workspaces/swarmsy-hive/sparky-prompt/apply"
+      ),
+      expect.objectContaining({
+        body: JSON.stringify({ confirmApply: true }),
+      })
+    );
+  });
+
   it("passes local ComfyUI generation abort signals to fetch", async () => {
     const fetchImpl = jest.fn().mockResolvedValue({
       ok: true,

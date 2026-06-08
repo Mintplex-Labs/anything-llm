@@ -1,6 +1,9 @@
 const { Workspace } = require("../../models/workspace");
 const { safeJsonParse } = require("../http");
-const { PRESET_NAME } = require("./applyWorkspacePreset");
+const {
+  PRESET_NAME,
+  getSparkyPromptStatus,
+} = require("./applyWorkspacePreset");
 const { getSwarmsyRequiredDocsStatus } = require("./requiredDocs");
 
 const IDENTITY_EMPIRE_PACK_ID = "identity-empire";
@@ -263,6 +266,7 @@ async function findUserSwarmsyHiveWorkspace(user = null) {
       id: true,
       slug: true,
       name: true,
+      openAiPrompt: true,
       documents: {
         select: {
           metadata: true,
@@ -296,6 +300,7 @@ async function getSwarmsyOnboardingStatus({
     mode: "swarmsy_onboarding",
     workspace: workspaceSummary,
     doctrine,
+    sparkyPrompt: getSparkyPromptStatus(workspace),
     sparkyWiki: buildSparkyWikiState(workspace),
     nextAction: getNextAction(workspace, doctrine),
   };

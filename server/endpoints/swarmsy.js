@@ -4,6 +4,8 @@ const {
   getSwarmsyOnboardingStatus,
 } = require("../utils/swarmsy/onboardingStatus");
 const {
+  applySparkyPromptToWorkspace,
+  getSparkyPromptStatus,
   createSwarmsyHiveWorkspace,
 } = require("../utils/swarmsy/applyWorkspacePreset");
 const {
@@ -39,6 +41,27 @@ function swarmsyHiveWorkspaceSummary(workspace = null) {
     slug: workspace.slug,
     name: workspace.name,
   };
+}
+
+function swarmsySparkyPromptWorkspaceSummary(workspace = null) {
+  if (!workspace) return { exists: false };
+  return {
+    exists: true,
+    id: workspace.id,
+    slug: workspace.slug,
+    name: workspace.name,
+  };
+}
+
+async function resolveSelectedWorkspace(request, response, user) {
+  const slug = String(request.params?.slug || "").trim();
+  if (!slug) return null;
+
+  const isPrivileged =
+    !user || [ROLES.admin, ROLES.manager].includes(user?.role);
+  return isPrivileged
+    ? await Workspace.get({ slug })
+    : await Workspace.getWithUser(user, { slug });
 }
 
 function swarmsyCreateHiveFailure(message) {
@@ -176,9 +199,10 @@ async function swarmsyOnboardingIngestRequiredDocs(request, response) {
       return response.status(404).json(swarmsyMissingHiveForDocsIngestion());
     }
 
+    const fallbackUserId = response.locals?.user?.id ?? null;
     const result = await ingestSwarmsyRequiredDocs({
       workspace,
-      userId: user?.id ? Number(user.id) : response.locals?.user?.id ?? null,
+      userId: user?.id ? Number(user.id) : fallbackUserId,
     });
 
     if (result.errorCode === "COLLECTOR_OFFLINE") {
@@ -271,6 +295,79 @@ async function swarmsySparkyWikiSeedPackImport(request, response) {
   }
 }
 
+async function swarmsyWorkspaceSparkyPromptStatus(request, response) {
+  try {
+    const user = await userFromSession(request, response);
+    const workspace = await resolveSelectedWorkspace(request, response, user);
+    if (!workspace) {
+      return response.status(404).json({
+        success: false,
+        workspace: { exists: false },
+        message:
+          "Selected workspace was not found or is not available to this user.",
+      });
+    }
+
+    return response.status(200).json({
+      success: true,
+      workspace: swarmsySparkyPromptWorkspaceSummary(workspace),
+      sparkyPrompt: getSparkyPromptStatus(workspace),
+    });
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({
+      success: false,
+      message: "Failed to resolve SPARKY prompt status.",
+    });
+  }
+}
+
+async function swarmsyWorkspaceSparkyPromptApply(request, response) {
+  try {
+    const user = await userFromSession(request, response);
+    const workspace = await resolveSelectedWorkspace(request, response, user);
+    if (!workspace) {
+      return response.status(404).json({
+        success: false,
+        workspace: { exists: false },
+        message:
+          "Selected workspace was not found or is not available to this user.",
+      });
+    }
+
+    const { confirmApply = false } = reqBody(request);
+    const before = getSparkyPromptStatus(workspace);
+    if (!confirmApply) {
+      return response.status(200).json({
+        success: true,
+        applied: false,
+        workspace: swarmsySparkyPromptWorkspaceSummary(workspace),
+        before,
+        after: before,
+        requiresConfirmation: true,
+        message:
+          before.status === "custom_prompt"
+            ? "This workspace has a custom system prompt. Confirm before replacing it with SPARKY."
+            : "Confirm before applying the SPARKY system prompt to this workspace.",
+      });
+    }
+
+    const result = await applySparkyPromptToWorkspace(workspace, user);
+    return response.status(result.success ? 200 : 400).json({
+      ...result,
+      workspace: swarmsySparkyPromptWorkspaceSummary(
+        result.workspace || workspace
+      ),
+    });
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({
+      success: false,
+      message: "Failed to apply SPARKY system prompt.",
+    });
+  }
+}
+
 async function swarmsyLocalUserOllamaStatus(_request, response) {
   try {
     return response.status(200).json(await detectLocalOllama());
@@ -348,6 +445,18 @@ function swarmsyEndpoints(app) {
   );
 
   app.get(
+    "/swarmsy/workspaces/:slug/sparky-prompt",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    swarmsyWorkspaceSparkyPromptStatus
+  );
+
+  app.post(
+    "/swarmsy/workspaces/:slug/sparky-prompt/apply",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    swarmsyWorkspaceSparkyPromptApply
+  );
+
+  app.get(
     "/swarmsy/sparky-wiki/seed-packs",
     [validatedRequest, flexUserRoleValid([ROLES.all])],
     swarmsySparkyWikiSeedPacksList
@@ -390,6 +499,8 @@ module.exports = {
   swarmsyLocalUserImageEngineStatus,
   swarmsyLocalUserOllamaStatus,
   swarmsySparkyWikiSeedPackImport,
+  swarmsyWorkspaceSparkyPromptApply,
+  swarmsyWorkspaceSparkyPromptStatus,
   swarmsySparkyWikiSeedPackShow,
   swarmsySparkyWikiSeedPacksList,
   swarmsyEndpoints,
