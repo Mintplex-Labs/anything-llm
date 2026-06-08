@@ -57,8 +57,17 @@ function submittedWorkflow(fetchImpl) {
 }
 
 describe("ComfyUI local generation", () => {
+  const originalEnv = process.env;
+
   beforeEach(() => {
     jest.clearAllMocks();
+    process.env = { ...originalEnv };
+    delete process.env.SWARMSY_LOCAL_COMFYUI_URL;
+    delete process.env.COMFYUI_BASE_URL;
+  });
+
+  afterAll(() => {
+    process.env = originalEnv;
   });
 
   it("rejects missing prompt before calling ComfyUI", async () => {
@@ -125,7 +134,6 @@ describe("ComfyUI local generation", () => {
     });
   });
 
-
   it("uses the generic unavailable message when no fetch/readiness detail exists", async () => {
     const result = await generateComfyUiImage({
       prompt: "poster art",
@@ -186,7 +194,8 @@ describe("ComfyUI local generation", () => {
 
     const result = resolveWorkflowPayload({
       workflowJson,
-      prompt: 'a sign reading "HIVE" with \\slashes\nnew line and literal {{seed}} graffiti',
+      prompt:
+        'a sign reading "HIVE" with \\slashes\nnew line and literal {{seed}} graffiti',
       negativePrompt: 'bad "letters"\nlow quality',
       seed: 123456,
       size: "768x512",
@@ -446,7 +455,9 @@ describe("ComfyUI local generation", () => {
       .mockResolvedValueOnce(
         jsonResponse({ body: { prompt_id: "abc-123", number: 1 } })
       )
-      .mockResolvedValue(jsonResponse({ body: { "abc-123": { outputs: {} } } }));
+      .mockResolvedValue(
+        jsonResponse({ body: { "abc-123": { outputs: {} } } })
+      );
 
     const result = await generateComfyUiImage({
       prompt: "street poster",
@@ -530,8 +541,25 @@ describe("ComfyUI local generation", () => {
     expect(result).toMatchObject({
       success: false,
       status: "blocked",
-      message: "ComfyUI generation is local-only. Configure a local ComfyUI URL.",
+      message:
+        "ComfyUI generation is local-only. Configure a local ComfyUI URL.",
     });
+  });
+
+  it("uses COMFYUI_BASE_URL service URLs for hosted generation without allowing public URLs", async () => {
+    process.env.COMFYUI_BASE_URL = "http://comfyui:8188/";
+    const fetchImpl = mockSuccessfulComfyUiFetch();
+
+    const result = await generateComfyUiImage({
+      prompt: "hosted server poster",
+      workflowJson: { "1": { inputs: { text: "{{prompt}}" } } },
+      fetchImpl,
+      pollIntervalMs: 0,
+    });
+
+    expect(result.success).toBe(true);
+    expect(fetchImpl.mock.calls[0][0]).toBe("http://comfyui:8188");
+    expect(fetchImpl.mock.calls[1][0]).toBe("http://comfyui:8188/prompt");
   });
 
   it("allows only local/private ComfyUI URLs", () => {
@@ -543,6 +571,7 @@ describe("ComfyUI local generation", () => {
     expect(isLocalComfyUiUrl("http://172.31.255.255:8188")).toBe(true);
     expect(isLocalComfyUiUrl("http://[::1]:8188")).toBe(true);
     expect(isLocalComfyUiUrl("http://host.docker.internal:8188")).toBe(true);
+    expect(isLocalComfyUiUrl("http://comfyui:8188")).toBe(true);
     expect(isLocalComfyUiUrl("http://comfy.local:8188")).toBe(false);
     expect(isLocalComfyUiUrl("http://0.0.0.0:8188")).toBe(false);
     expect(isLocalComfyUiUrl("http://127.0.0.2:8188")).toBe(false);

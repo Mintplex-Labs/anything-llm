@@ -21,7 +21,9 @@ const {
 } = require("../utils/swarmsy/sparkyWikiSeedPacks");
 const { generateComfyUiImage } = require("../utils/swarmsy/comfyUiGeneration");
 const {
+  COMFYUI_HOSTED_EXPLANATION,
   detectLocalImageEngine,
+  resolveLocalImageEngineConfig,
   resolveLocalImageEngineUrl,
 } = require("../utils/swarmsy/localImageEngine");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
@@ -419,6 +421,29 @@ async function swarmsyLocalUserImageEngineStatus(_request, response) {
   }
 }
 
+async function swarmsyHostedImageEngineStatus(_request, response) {
+  try {
+    return response
+      .status(200)
+      .json(await detectLocalImageEngine({ mode: "hosted_server" }));
+  } catch (error) {
+    console.error(error);
+    const config = resolveLocalImageEngineConfig(undefined, {
+      mode: "hosted_server",
+    });
+    return response.status(500).json({
+      success: false,
+      mode: config.mode,
+      available: false,
+      engine: "comfyui",
+      url: config.url,
+      configuredBy: config.configuredBy,
+      explanation: config.explanation || COMFYUI_HOSTED_EXPLANATION,
+      message: "Failed to detect hosted image engine.",
+    });
+  }
+}
+
 function __resetSwarmsyHiveCreationLocksForTests() {
   swarmsyHiveCreationLocks.clear();
 }
@@ -481,6 +506,12 @@ function swarmsyEndpoints(app) {
   );
 
   app.get(
+    "/swarmsy/hosted/image-engine/status",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    swarmsyHostedImageEngineStatus
+  );
+
+  app.get(
     "/swarmsy/local-user/image-engine/status",
     [validatedRequest, isSingleUserMode],
     swarmsyLocalUserImageEngineStatus
@@ -495,6 +526,7 @@ function swarmsyEndpoints(app) {
 
 module.exports = {
   __resetSwarmsyHiveCreationLocksForTests,
+  swarmsyHostedImageEngineStatus,
   swarmsyLocalUserImageEngineGenerate,
   swarmsyLocalUserImageEngineStatus,
   swarmsyLocalUserOllamaStatus,

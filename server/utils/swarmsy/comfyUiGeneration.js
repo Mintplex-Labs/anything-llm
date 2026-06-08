@@ -134,7 +134,12 @@ function isLocalComfyUiUrl(url) {
 
     if (host === "localhost" || host === "host.docker.internal") return true;
     if (host === "::1") return true;
-    return isPrivateIpv4Literal(host);
+    if (isPrivateIpv4Literal(host)) return true;
+
+    // Docker Compose/service-discovery names are private to the server network
+    // and are required for hosted SWARMSY deployments such as http://comfyui:8188.
+    // Do not allow dotted public hostnames here.
+    return /^[a-z0-9-]+$/.test(host);
   } catch {
     return false;
   }

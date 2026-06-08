@@ -275,7 +275,10 @@ describe("SWARMSY HIVE action hub", () => {
 
   it("keeps the onboarding model on user-safe routes only", () => {
     const source = fs.readFileSync(
-      path.resolve(__dirname, "../../../frontend/src/models/swarmsyOnboarding.js"),
+      path.resolve(
+        __dirname,
+        "../../../frontend/src/models/swarmsyOnboarding.js"
+      ),
       "utf8"
     );
 
@@ -309,12 +312,16 @@ describe("SWARMSY HIVE action hub", () => {
       "utf8"
     );
 
-    expect(source).toContain("const controller = beginLocalUserOllamaRequest();");
+    expect(source).toContain(
+      "const controller = beginLocalUserOllamaRequest();"
+    );
     expect(source).toContain(
       "syncLocalUserOllamaStatus({ signal: controller.signal });"
     );
     expect(source).toContain("releaseLocalUserOllamaRequest(controller);");
-    expect(source).toContain("if (signal?.aborted || !isLatestLocalUserOllamaRequest(signal))");
+    expect(source).toContain(
+      "if (signal?.aborted || !isLatestLocalUserOllamaRequest(signal))"
+    );
     expect(source).toContain("return null;");
   });
 
@@ -332,9 +339,7 @@ describe("SWARMSY HIVE action hub", () => {
       "const controller = beginLocalUserOllamaRequest();"
     );
     expect(source).toContain("} finally {");
-    expect(source).toContain(
-      "releaseLocalUserOllamaRequest(controller)"
-    );
+    expect(source).toContain("releaseLocalUserOllamaRequest(controller)");
     expect(source).toContain("!controller.signal.aborted");
   });
 
@@ -476,14 +481,14 @@ describe("SWARMSY HIVE action hub", () => {
     expect(source).toContain(
       "if (importModelState.shouldPersistBrowserModel) {"
     );
-    expect(source).toContain(
-      "importModelState.browserModelIdToPersist"
-    );
+    expect(source).toContain("importModelState.browserModelIdToPersist");
     expect(source).toContain(
       "if (importModelState.shouldMirrorBrowserModel) {"
     );
     expect(source).toContain("} else if (hasVerifiedLocalOllamaModels) {");
-    expect(source).toContain("const importedModelIsInstalled = localOllamaStatus.models.some(");
+    expect(source).toContain(
+      "const importedModelIsInstalled = localOllamaStatus.models.some("
+    );
     expect(source).toContain("setSelectedLocalOllamaModel(restoredModelId);");
     expect(source).toContain("IMPORTED_LOCAL_OLLAMA_MODEL_MISSING_MESSAGE");
   });
@@ -533,7 +538,9 @@ describe("SWARMSY HIVE action hub", () => {
     expect(source).toContain("getLocalUserOllamaRuntimeSelection");
     expect(source).toContain("if (runtimeSelection)");
     expect(source).toContain("handoffPayload.runtime = runtimeSelection");
-    expect(source).toContain('mode: isLocalUserMode ? "local_user" : "hosted_admin"');
+    expect(source).toContain(
+      'mode: isLocalUserMode ? "local_user" : "hosted_admin"'
+    );
   });
 
   it("preserves saved local-user model selection through unverified status states", () => {
@@ -594,12 +601,16 @@ describe("SWARMSY HIVE action hub", () => {
       "utf8"
     );
     expect(source).toContain("LocalUserSettingsHubRow");
-    expect(source).toContain("const [showLocalUserSettingsHub, setShowLocalUserSettingsHub]");
+    expect(source).toContain(
+      "const [showLocalUserSettingsHub, setShowLocalUserSettingsHub]"
+    );
     expect(source).toContain("setShowMenu(false);");
     expect(source).toContain("setShowLocalUserSettingsHub(true);");
     expect(source).toContain("<LocalUserSettingsHubModal");
     expect(source).toContain("if (!isOpen) return null;");
-    expect(source).toContain("const localUserSettingsHubController = useLocalUserSettingsHub();");
+    expect(source).toContain(
+      "const localUserSettingsHubController = useLocalUserSettingsHub();"
+    );
   });
 
   it("mounts Local User controller only while chat settings modal is open", () => {
@@ -682,9 +693,18 @@ describe("SWARMSY HIVE action hub", () => {
     expect(source).toContain("Connected");
     expect(source).toContain("Not connected");
     expect(source).toContain("Engine: {safeLocalImageEngineStatus.engine");
-    expect(source).toContain("safeLocalImageEngineStatus.url");
+    expect(source).toContain("Current ComfyUI URL:");
+    expect(source).toContain("Configured by:");
+    expect(source).toContain(
+      "This hosted app cannot see ComfyUI running on your home PC."
+    );
+    expect(source).toContain("Start ComfyUI locally at http://localhost:8188.");
     expect(source).toContain("Check image engine");
-    expect(hookSource).toContain("SwarmsyOnboarding.localUserImageEngineStatus");
+    expect(hookSource).toContain("SwarmsyOnboarding.hostedImageEngineStatus");
+    expect(hookSource).toContain(
+      "SwarmsyOnboarding.localUserImageEngineStatus"
+    );
+    expect(hookSource).toContain("isHostedAdminMode");
     expect(hookSource).toContain('url: "http://localhost:8188"');
   });
 
@@ -705,7 +725,9 @@ describe("SWARMSY HIVE action hub", () => {
     );
 
     expect(source).toContain("const safeLocalImageEngineStatus =");
-    expect(source).toContain("Local image engine status has not been checked yet.");
+    expect(source).toContain(
+      "Local image engine status has not been checked yet."
+    );
     expect(source).toContain("const safeCheckLocalImageEngine =");
     expect(source).toContain('typeof checkLocalImageEngine === "function"');
     expect(source).toContain("onClick={safeCheckLocalImageEngine}");
@@ -757,7 +779,9 @@ describe("SWARMSY HIVE action hub", () => {
     );
     expect(source).toContain("const isLoginModePending = loginMode === null");
     expect(source).toContain('const isHostedAdminMode = loginMode === "multi"');
-    expect(source).toContain("if (isLoginModePending || isHostedAdminMode) return;");
+    expect(source).toContain(
+      "if (isLoginModePending || isHostedAdminMode) return;"
+    );
     expect(source).toContain("if (isLoginModePending) {");
     expect(source).toContain("if (isHostedAdminMode) {");
   });
@@ -774,8 +798,12 @@ describe("SWARMSY HIVE action hub", () => {
     expect(source).toContain('reason: "model_selection"');
     expect(source).toContain('reason: "backup_import"');
     expect(source).toContain("function syncFromBroadcast(event) {");
-    expect(source).toContain('const hasEventModel = Object.prototype.hasOwnProperty.call(');
-    expect(source).toContain("window.addEventListener(LOCAL_USER_SETTINGS_SYNC_EVENT");
+    expect(source).toContain(
+      "const hasEventModel = Object.prototype.hasOwnProperty.call("
+    );
+    expect(source).toContain(
+      "window.addEventListener(LOCAL_USER_SETTINGS_SYNC_EVENT"
+    );
     expect(source).toContain("window.removeEventListener(");
   });
 

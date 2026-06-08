@@ -34,7 +34,10 @@ jest.mock("../../utils/swarmsy/sparkyWikiSeedPacks", () => ({
   listSparkyWikiSeedPacks: jest.fn(),
 }));
 jest.mock("../../utils/swarmsy/localImageEngine", () => ({
+  COMFYUI_HOSTED_EXPLANATION:
+    "Hosted/server mode checks the configured server-side ComfyUI URL. localhost inside Docker is not the user's PC.",
   detectLocalImageEngine: jest.fn(),
+  resolveLocalImageEngineConfig: jest.fn(),
   resolveLocalImageEngineUrl: jest.fn(),
 }));
 
@@ -78,6 +81,7 @@ const {
 } = require("../../utils/swarmsy/sparkyWikiSeedPacks");
 const {
   detectLocalImageEngine,
+  resolveLocalImageEngineConfig,
   resolveLocalImageEngineUrl,
 } = require("../../utils/swarmsy/localImageEngine");
 const { validatedRequest } = require("../../utils/middleware/validatedRequest");
@@ -91,6 +95,7 @@ const {
 } = require("../../utils/middleware/multiUserProtected");
 const {
   swarmsyEndpoints,
+  swarmsyHostedImageEngineStatus,
   swarmsyLocalUserImageEngineGenerate,
   swarmsyLocalUserImageEngineStatus,
   swarmsyLocalUserOllamaStatus,
@@ -116,6 +121,13 @@ describe("swarmsy endpoints", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     resolveLocalImageEngineUrl.mockReturnValue("http://localhost:8188");
+    resolveLocalImageEngineConfig.mockReturnValue({
+      url: "http://localhost:8188",
+      mode: "hosted_server",
+      configuredBy: "default",
+      explanation:
+        "Hosted/server mode checks the configured server-side ComfyUI URL. localhost inside Docker is not the user's PC.",
+    });
     __resetSwarmsyHiveCreationLocksForTests();
   });
 
@@ -130,6 +142,10 @@ describe("swarmsy endpoints", () => {
     expect(flexUserRoleValid).toHaveBeenNthCalledWith(1, [ROLES.all]);
     expect(flexUserRoleValid).toHaveBeenNthCalledWith(2, [ROLES.all]);
     expect(flexUserRoleValid).toHaveBeenNthCalledWith(3, [ROLES.all]);
+    expect(flexUserRoleValid).toHaveBeenCalledWith([
+      ROLES.admin,
+      ROLES.manager,
+    ]);
     expect(app.get).toHaveBeenCalledWith(
       "/swarmsy/onboarding/status",
       [validatedRequest, mockRoleMiddleware],
@@ -166,6 +182,11 @@ describe("swarmsy endpoints", () => {
       swarmsyLocalUserOllamaStatus
     );
     expect(app.get).toHaveBeenCalledWith(
+      "/swarmsy/hosted/image-engine/status",
+      [validatedRequest, mockRoleMiddleware],
+      swarmsyHostedImageEngineStatus
+    );
+    expect(app.get).toHaveBeenCalledWith(
       "/swarmsy/local-user/image-engine/status",
       [validatedRequest, isSingleUserMode],
       swarmsyLocalUserImageEngineStatus
@@ -175,6 +196,63 @@ describe("swarmsy endpoints", () => {
       [validatedRequest, isSingleUserMode],
       swarmsyLocalUserImageEngineGenerate
     );
+  });
+
+  it("keeps hosted image engine status protected by auth and admin/manager role middleware", () => {
+    const app = {
+      get: jest.fn(),
+      post: jest.fn(),
+    };
+
+    swarmsyEndpoints(app);
+
+    const hostedRoute = app.get.mock.calls.find(
+      ([route]) => route === "/swarmsy/hosted/image-engine/status"
+    );
+    expect(hostedRoute).toBeTruthy();
+    expect(hostedRoute[1]).toEqual([validatedRequest, mockRoleMiddleware]);
+    expect(flexUserRoleValid).toHaveBeenCalledWith([
+      ROLES.admin,
+      ROLES.manager,
+    ]);
+  });
+
+  it("hosted image engine status rejects unauthenticated access through validatedRequest", () => {
+    const app = {
+      get: jest.fn(),
+      post: jest.fn(),
+    };
+    const request = {};
+    const response = responseMock();
+
+    swarmsyEndpoints(app);
+    validatedRequest.mockImplementationOnce((_request, res) =>
+      res.status(401).json({ error: "Unauthorized" })
+    );
+
+    const hostedRoute = app.get.mock.calls.find(
+      ([route]) => route === "/swarmsy/hosted/image-engine/status"
+    );
+    hostedRoute[1][0](request, response, jest.fn());
+
+    expect(response.status).toHaveBeenCalledWith(401);
+    expect(response.json).toHaveBeenCalledWith({ error: "Unauthorized" });
+    expect(detectLocalImageEngine).not.toHaveBeenCalled();
+  });
+
+  it("keeps local-user image engine status single-user/local only", () => {
+    const app = {
+      get: jest.fn(),
+      post: jest.fn(),
+    };
+
+    swarmsyEndpoints(app);
+
+    const localRoute = app.get.mock.calls.find(
+      ([route]) => route === "/swarmsy/local-user/image-engine/status"
+    );
+    expect(localRoute).toBeTruthy();
+    expect(localRoute[1]).toEqual([validatedRequest, isSingleUserMode]);
   });
 
   it("keeps create-hive protected by existing auth middleware", () => {
@@ -357,6 +435,61 @@ describe("swarmsy endpoints", () => {
     expect(detectLocalOllama).toHaveBeenCalledTimes(1);
     expect(response.status).toHaveBeenCalledWith(200);
     expect(response.json).toHaveBeenCalledWith(detectionStatus);
+  });
+
+  it("returns hosted image engine detection status from the authenticated hosted route", async () => {
+    const response = responseMock();
+    const detectionStatus = {
+      success: true,
+      mode: "hosted_server",
+      available: false,
+      engine: "comfyui",
+      url: "http://comfyui:8188",
+      configuredBy: "SWARMSY_LOCAL_COMFYUI_URL",
+      explanation:
+        "Hosted/server mode checks the configured server-side ComfyUI URL. localhost inside Docker is not the user's PC.",
+      message:
+        "ComfyUI is not reachable. Start ComfyUI locally before image generation.",
+    };
+
+    detectLocalImageEngine.mockResolvedValue(detectionStatus);
+
+    await swarmsyHostedImageEngineStatus({}, response);
+
+    expect(detectLocalImageEngine).toHaveBeenCalledWith({
+      mode: "hosted_server",
+    });
+    expect(response.status).toHaveBeenCalledWith(200);
+    expect(response.json).toHaveBeenCalledWith(detectionStatus);
+  });
+
+  it("returns hosted default localhost warning metadata when no hosted ComfyUI env is configured", async () => {
+    const response = responseMock();
+    const detectionStatus = {
+      success: true,
+      mode: "hosted_server",
+      available: false,
+      engine: "comfyui",
+      url: "http://localhost:8188",
+      configuredBy: "default",
+      explanation:
+        "Hosted/server mode checks the configured server-side ComfyUI URL. localhost inside Docker is not the user's PC.",
+      message:
+        "ComfyUI is not reachable. Start ComfyUI locally before image generation.",
+    };
+
+    detectLocalImageEngine.mockResolvedValue(detectionStatus);
+
+    await swarmsyHostedImageEngineStatus({}, response);
+
+    expect(response.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        mode: "hosted_server",
+        url: "http://localhost:8188",
+        configuredBy: "default",
+        explanation: expect.stringContaining("localhost inside Docker"),
+      })
+    );
   });
 
   it("returns local-user image engine detection status from the dedicated single-user route", async () => {

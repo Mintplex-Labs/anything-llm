@@ -1,6 +1,8 @@
 const {
   COMFYUI_REACHABLE_MESSAGE,
   COMFYUI_UNREACHABLE_MESSAGE,
+  COMFYUI_HOSTED_EXPLANATION,
+  COMFYUI_LOCAL_EXPLANATION,
   DEFAULT_LOCAL_IMAGE_ENGINE_URL,
   detectLocalImageEngine,
   resolveLocalImageEngineUrl,
@@ -36,6 +38,8 @@ describe("local image engine detection", () => {
       available: false,
       engine: "comfyui",
       url: DEFAULT_LOCAL_IMAGE_ENGINE_URL,
+      configuredBy: "default",
+      explanation: COMFYUI_LOCAL_EXPLANATION,
       message: COMFYUI_UNREACHABLE_MESSAGE,
     });
   });
@@ -52,6 +56,8 @@ describe("local image engine detection", () => {
       available: true,
       engine: "comfyui",
       url: DEFAULT_LOCAL_IMAGE_ENGINE_URL,
+      configuredBy: "default",
+      explanation: COMFYUI_LOCAL_EXPLANATION,
       message: COMFYUI_REACHABLE_MESSAGE,
     });
   });
@@ -67,6 +73,8 @@ describe("local image engine detection", () => {
       available: false,
       engine: "comfyui",
       url: DEFAULT_LOCAL_IMAGE_ENGINE_URL,
+      configuredBy: "default",
+      explanation: COMFYUI_LOCAL_EXPLANATION,
       message:
         "ComfyUI returned HTTP 404. Check the configured image engine URL.",
     });
@@ -110,6 +118,61 @@ describe("local image engine detection", () => {
 
     expect(status.url).toBe("http://127.0.0.1:8188");
     expect(fetchImpl.mock.calls[0][1]).not.toHaveProperty("headers");
+  });
+
+  it("reports hosted_server mode with Docker localhost explanation when hosted detection uses defaults", async () => {
+    const fetchImpl = jest.fn().mockRejectedValue(new Error("ECONNREFUSED"));
+
+    const status = await detectLocalImageEngine({
+      fetchImpl,
+      mode: "hosted_server",
+    });
+
+    expect(status).toMatchObject({
+      success: true,
+      mode: "hosted_server",
+      available: false,
+      engine: "comfyui",
+      url: DEFAULT_LOCAL_IMAGE_ENGINE_URL,
+      configuredBy: "default",
+      explanation: COMFYUI_HOSTED_EXPLANATION,
+      message: COMFYUI_UNREACHABLE_MESSAGE,
+    });
+  });
+
+  it("reports SWARMSY_LOCAL_COMFYUI_URL as hosted server configuration", async () => {
+    process.env.SWARMSY_LOCAL_COMFYUI_URL = "http://comfyui:8188/";
+    const fetchImpl = jest.fn().mockRejectedValue(new Error("ECONNREFUSED"));
+
+    const status = await detectLocalImageEngine({ fetchImpl });
+
+    expect(status).toMatchObject({
+      success: true,
+      mode: "hosted_server",
+      available: false,
+      engine: "comfyui",
+      url: "http://comfyui:8188",
+      configuredBy: "SWARMSY_LOCAL_COMFYUI_URL",
+      explanation: COMFYUI_HOSTED_EXPLANATION,
+    });
+    expect(status.explanation).toContain(
+      "localhost inside Docker is not the user's PC"
+    );
+  });
+
+  it("reports COMFYUI_BASE_URL as hosted server configuration", async () => {
+    process.env.COMFYUI_BASE_URL = "http://comfyui:8188/";
+    const fetchImpl = jest.fn().mockResolvedValue({ ok: true, status: 200 });
+
+    const status = await detectLocalImageEngine({ fetchImpl });
+
+    expect(status).toMatchObject({
+      mode: "hosted_server",
+      available: true,
+      url: "http://comfyui:8188",
+      configuredBy: "COMFYUI_BASE_URL",
+      explanation: COMFYUI_HOSTED_EXPLANATION,
+    });
   });
 
   it("resolves default and configured image engine URLs", () => {

@@ -3,42 +3,104 @@ const DEFAULT_TIMEOUT_MS = 2_500;
 const COMFYUI_REACHABLE_MESSAGE = "ComfyUI is reachable.";
 const COMFYUI_UNREACHABLE_MESSAGE =
   "ComfyUI is not reachable. Start ComfyUI locally before image generation.";
+const COMFYUI_LOCAL_EXPLANATION =
+  "Desktop/local mode checks ComfyUI on this computer.";
+const COMFYUI_HOSTED_EXPLANATION =
+  "Hosted/server mode checks the configured server-side ComfyUI URL. localhost inside Docker is not the user's PC.";
 
-function resolveLocalImageEngineUrl(url) {
-  const explicitUrl = String(url || "").trim();
-  if (explicitUrl) return explicitUrl.replace(/\/+$/, "");
-
-  const configuredUrl = String(
-    process.env.SWARMSY_LOCAL_COMFYUI_URL || process.env.COMFYUI_BASE_URL || ""
-  ).trim();
-  if (configuredUrl) return configuredUrl.replace(/\/+$/, "");
-
-  return DEFAULT_LOCAL_IMAGE_ENGINE_URL;
+function normalizeComfyUiBaseUrl(value) {
+  return String(value || "")
+    .trim()
+    .replace(/\/+$/, "");
 }
 
-function unavailableResult(url, message = COMFYUI_UNREACHABLE_MESSAGE) {
+function explanationForMode(mode) {
+  return mode === "hosted_server"
+    ? COMFYUI_HOSTED_EXPLANATION
+    : COMFYUI_LOCAL_EXPLANATION;
+}
+
+function resolveLocalImageEngineConfig(url, { mode = null } = {}) {
+  const resolvedMode =
+    mode === "hosted_server" ? "hosted_server" : "local_user";
+  const explicitUrl = normalizeComfyUiBaseUrl(url);
+  if (explicitUrl) {
+    return {
+      url: explicitUrl,
+      mode: resolvedMode,
+      configuredBy: "default",
+      explanation: explanationForMode(resolvedMode),
+    };
+  }
+
+  const swarmsyUrl = normalizeComfyUiBaseUrl(
+    process.env.SWARMSY_LOCAL_COMFYUI_URL
+  );
+  if (swarmsyUrl) {
+    return {
+      url: swarmsyUrl,
+      mode: "hosted_server",
+      configuredBy: "SWARMSY_LOCAL_COMFYUI_URL",
+      explanation: COMFYUI_HOSTED_EXPLANATION,
+    };
+  }
+
+  const comfyBaseUrl = normalizeComfyUiBaseUrl(process.env.COMFYUI_BASE_URL);
+  if (comfyBaseUrl) {
+    return {
+      url: comfyBaseUrl,
+      mode: "hosted_server",
+      configuredBy: "COMFYUI_BASE_URL",
+      explanation: COMFYUI_HOSTED_EXPLANATION,
+    };
+  }
+
+  return {
+    url: DEFAULT_LOCAL_IMAGE_ENGINE_URL,
+    mode: resolvedMode,
+    configuredBy: "default",
+    explanation: explanationForMode(resolvedMode),
+  };
+}
+
+function resolveLocalImageEngineUrl(url, options = {}) {
+  return resolveLocalImageEngineConfig(url, options).url;
+}
+
+function withComfyUiStatusMetadata(result, config) {
+  return {
+    ...result,
+    mode: config.mode,
+    configuredBy: config.configuredBy,
+    explanation: config.explanation,
+  };
+}
+
+function unavailableResult(config, message = COMFYUI_UNREACHABLE_MESSAGE) {
   return {
     success: true,
-    mode: "local_user",
+    mode: config.mode,
     available: false,
     engine: "comfyui",
-    url,
+    url: config.url,
+    configuredBy: config.configuredBy,
+    explanation: config.explanation,
     message,
   };
 }
 
-function nonOkResult(url, status) {
+function nonOkResult(config, status) {
   return unavailableResult(
-    url,
+    config,
     `ComfyUI returned HTTP ${status ?? "unknown"}. Check the configured image engine URL.`
   );
 }
 
-function unexpectedErrorResult(url, error = null) {
+function unexpectedErrorResult(config, error = null) {
   const message = String(
     error?.message || "Unexpected ComfyUI detection error."
   ).trim();
-  return unavailableResult(url, `Failed to detect ComfyUI: ${message}`);
+  return unavailableResult(config, `Failed to detect ComfyUI: ${message}`);
 }
 
 function isUnreachableError(error = null) {
@@ -74,37 +136,44 @@ async function detectLocalImageEngine({
   url,
   fetchImpl = global.fetch,
   timeoutMs = DEFAULT_TIMEOUT_MS,
+  mode = null,
 } = {}) {
-  const resolvedUrl = resolveLocalImageEngineUrl(url);
+  const config = resolveLocalImageEngineConfig(url, { mode });
+  const resolvedUrl = config.url;
   if (typeof fetchImpl !== "function") {
     return unavailableResult(
-      resolvedUrl,
+      config,
       "Fetch is unavailable for ComfyUI detection."
     );
   }
 
   try {
     const response = await fetchWithTimeout(fetchImpl, resolvedUrl, timeoutMs);
-    if (!response?.ok) return nonOkResult(resolvedUrl, response?.status);
+    if (!response?.ok) return nonOkResult(config, response?.status);
 
-    return {
-      success: true,
-      mode: "local_user",
-      available: true,
-      engine: "comfyui",
-      url: resolvedUrl,
-      message: COMFYUI_REACHABLE_MESSAGE,
-    };
+    return withComfyUiStatusMetadata(
+      {
+        success: true,
+        available: true,
+        engine: "comfyui",
+        url: resolvedUrl,
+        message: COMFYUI_REACHABLE_MESSAGE,
+      },
+      config
+    );
   } catch (error) {
-    if (isUnreachableError(error)) return unavailableResult(resolvedUrl);
-    return unexpectedErrorResult(resolvedUrl, error);
+    if (isUnreachableError(error)) return unavailableResult(config);
+    return unexpectedErrorResult(config, error);
   }
 }
 
 module.exports = {
   COMFYUI_REACHABLE_MESSAGE,
   COMFYUI_UNREACHABLE_MESSAGE,
+  COMFYUI_HOSTED_EXPLANATION,
+  COMFYUI_LOCAL_EXPLANATION,
   DEFAULT_LOCAL_IMAGE_ENGINE_URL,
   detectLocalImageEngine,
+  resolveLocalImageEngineConfig,
   resolveLocalImageEngineUrl,
 };

@@ -63,6 +63,8 @@ export default function SwarmsyLocalUserSettingsHub({
     available: false,
     engine: "comfyui",
     url: "http://localhost:8188",
+    configuredBy: "default",
+    explanation: "Desktop/local mode checks ComfyUI on this computer.",
     message: "Local image engine status has not been checked yet.",
   };
   const safeCheckLocalImageEngine =
@@ -87,6 +89,71 @@ export default function SwarmsyLocalUserSettingsHub({
   const hasTrustedDesktopBridge =
     typeof window !== "undefined" &&
     hasDesktopLocalSettingsBridge({ targetWindow: window });
+
+  const imageEngineMode = safeLocalImageEngineStatus.mode || "local_user";
+  const isHostedImageEngine =
+    imageEngineMode === "hosted_server" || isHostedAdminMode;
+  const configuredByLabel =
+    safeLocalImageEngineStatus.configuredBy === "SWARMSY_LOCAL_COMFYUI_URL"
+      ? "SWARMSY_LOCAL_COMFYUI_URL"
+      : safeLocalImageEngineStatus.configuredBy === "COMFYUI_BASE_URL"
+        ? "COMFYUI_BASE_URL"
+        : "default";
+  const imageEngineGuidance = isHostedImageEngine
+    ? "This hosted app cannot see ComfyUI running on your home PC. Use desktop mode for local PC ComfyUI, or configure server-side ComfyUI."
+    : "Start ComfyUI locally at http://localhost:8188.";
+  const imageEnginePanel = (
+    <div className="mt-6 rounded-lg border border-theme-sidebar-border bg-theme-bg-secondary p-4">
+      <div className="flex items-start justify-between gap-4">
+        <div className="space-y-2">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-theme-text-secondary">
+            Local Image Engine
+          </p>
+          <h3 className="text-base font-semibold text-theme-text-primary">
+            {safeLocalImageEngineStatus.available
+              ? "Connected"
+              : "Not connected"}
+          </h3>
+          <p className="text-sm text-theme-text-secondary">
+            Engine: {safeLocalImageEngineStatus.engine || "comfyui"}
+          </p>
+          <p className="text-xs opacity-80">
+            Current ComfyUI URL:{" "}
+            {safeLocalImageEngineStatus.url || "http://localhost:8188"}
+          </p>
+          <p className="text-xs opacity-80">
+            Configured by: {configuredByLabel}
+          </p>
+          {safeLocalImageEngineStatus.explanation && (
+            <p className="text-xs leading-5 opacity-80">
+              {safeLocalImageEngineStatus.explanation}
+            </p>
+          )}
+          <p className="text-sm leading-6">{imageEngineGuidance}</p>
+          {safeLocalImageEngineStatus.message && (
+            <p className="text-sm leading-6">
+              {safeLocalImageEngineStatus.message}
+            </p>
+          )}
+        </div>
+        {!isHostedAdminMode && (
+          <button
+            type="button"
+            onClick={safeCheckLocalImageEngine}
+            disabled={isCheckingLocalImageEngine}
+            className="flex items-center justify-center gap-x-2 rounded-lg border border-theme-sidebar-border bg-theme-bg-secondary px-4 py-2 text-sm font-medium text-theme-text-primary transition hover:bg-theme-bg-menu disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isCheckingLocalImageEngine ? (
+              <SpinnerGap className="animate-spin" size={18} />
+            ) : (
+              <ArrowClockwise size={18} />
+            )}
+            Check image engine
+          </button>
+        )}
+      </div>
+    </div>
+  );
 
   function handleSelectLocalOllamaModel(nextModelId) {
     const normalizedModelId = String(nextModelId || "").trim();
@@ -138,9 +205,12 @@ export default function SwarmsyLocalUserSettingsHub({
       </div>
 
       {isHostedBoundary ? (
-        <div className="mt-4 rounded-lg border border-theme-sidebar-border bg-theme-bg-secondary p-3 text-sm">
-          Local User Mode is not active in this hosted/admin environment.
-        </div>
+        <>
+          <div className="mt-4 rounded-lg border border-theme-sidebar-border bg-theme-bg-secondary p-3 text-sm">
+            Local User Mode is not active in this hosted/admin environment.
+          </div>
+          {imageEnginePanel}
+        </>
       ) : showNeutralPendingState ? (
         <div className="mt-4 rounded-lg border border-theme-sidebar-border bg-theme-bg-secondary p-3 text-sm">
           Checking environment before Local User actions are available.
@@ -308,45 +378,7 @@ export default function SwarmsyLocalUserSettingsHub({
             </div>
           </div>
 
-          <div className="mt-6 rounded-lg border border-theme-sidebar-border bg-theme-bg-secondary p-4">
-            <div className="flex items-start justify-between gap-4">
-              <div className="space-y-2">
-                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-theme-text-secondary">
-                  Local Image Engine
-                </p>
-                <h3 className="text-base font-semibold text-theme-text-primary">
-                  {safeLocalImageEngineStatus.available
-                    ? "Connected"
-                    : "Not connected"}
-                </h3>
-                <p className="text-sm text-theme-text-secondary">
-                  Engine: {safeLocalImageEngineStatus.engine || "comfyui"}
-                </p>
-                <p className="text-xs opacity-80">
-                  URL:{" "}
-                  {safeLocalImageEngineStatus.url || "http://localhost:8188"}
-                </p>
-                {safeLocalImageEngineStatus.message && (
-                  <p className="text-sm leading-6">
-                    {safeLocalImageEngineStatus.message}
-                  </p>
-                )}
-              </div>
-              <button
-                type="button"
-                onClick={safeCheckLocalImageEngine}
-                disabled={isCheckingLocalImageEngine}
-                className="flex items-center justify-center gap-x-2 rounded-lg border border-theme-sidebar-border bg-theme-bg-secondary px-4 py-2 text-sm font-medium text-theme-text-primary transition hover:bg-theme-bg-menu disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {isCheckingLocalImageEngine ? (
-                  <SpinnerGap className="animate-spin" size={18} />
-                ) : (
-                  <ArrowClockwise size={18} />
-                )}
-                Check image engine
-              </button>
-            </div>
-          </div>
+          {imageEnginePanel}
 
           <div className="mt-6 rounded-lg border border-theme-sidebar-border bg-theme-bg-secondary p-4">
             <div className="space-y-2">

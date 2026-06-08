@@ -165,16 +165,21 @@ function normalizeLocalUserOllamaStatus(response = null) {
 }
 
 function normalizeLocalImageEngineStatus(response = null) {
-  if (response?.mode !== "local_user" || response?.source === "fallback") {
+  if (
+    !["local_user", "hosted_server"].includes(response?.mode) ||
+    response?.source === "fallback"
+  ) {
     return null;
   }
 
   return {
     success: response?.success === true,
-    mode: "local_user",
+    mode: response?.mode || "local_user",
     available: response?.available === true,
     engine: response?.engine || "comfyui",
     url: response?.url || "http://localhost:8188",
+    configuredBy: response?.configuredBy || "default",
+    explanation: response?.explanation || null,
     message: response?.message || LOCAL_IMAGE_ENGINE_UNREACHABLE_MESSAGE,
   };
 }
@@ -313,6 +318,8 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
     available: false,
     engine: "comfyui",
     url: "http://localhost:8188",
+    configuredBy: "default",
+    explanation: "Desktop/local mode checks ComfyUI on this computer.",
     message: LOCAL_IMAGE_ENGINE_STATUS_PENDING_MESSAGE,
   });
   const [selectedLocalOllamaModel, setSelectedLocalOllamaModel] = useState("");
@@ -477,6 +484,10 @@ export default function SwarmsyFirstRunOnboarding({ children = null }) {
             available: false,
             engine: "comfyui",
             url: response?.url || "http://localhost:8188",
+            configuredBy: response?.configuredBy || "default",
+            explanation:
+              response?.explanation ||
+              "Desktop/local mode checks ComfyUI on this computer.",
             message:
               response?.message || LOCAL_IMAGE_ENGINE_UNREACHABLE_MESSAGE,
           });

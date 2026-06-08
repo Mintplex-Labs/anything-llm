@@ -177,8 +177,37 @@ const SwarmsyOnboarding = {
           available: false,
           engine: "comfyui",
           url: "http://localhost:8188",
+          configuredBy: "default",
+          explanation: "Desktop/local mode checks ComfyUI on this computer.",
           source: "fallback",
           message: "Failed to resolve SWARMSY local image engine status.",
+        };
+      });
+  },
+  hostedImageEngineStatus: async function ({ signal } = {}) {
+    return await fetch(`${API_BASE}/swarmsy/hosted/image-engine/status`, {
+      headers: baseHeaders(),
+      signal,
+    })
+      .then((response) =>
+        parseResponse(
+          response,
+          "Failed to resolve SWARMSY hosted image engine status."
+        )
+      )
+      .catch((error) => {
+        if (error?.name === "AbortError") throw error;
+        return {
+          success: false,
+          mode: "unknown",
+          available: false,
+          engine: "comfyui",
+          url: "http://localhost:8188",
+          configuredBy: "default",
+          explanation:
+            "Hosted/server mode checks the configured server-side ComfyUI URL. localhost inside Docker is not the user's PC.",
+          source: "fallback",
+          message: "Failed to resolve SWARMSY hosted image engine status.",
         };
       });
   },

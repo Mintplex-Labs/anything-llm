@@ -5,7 +5,10 @@ const vm = require("vm");
 function loadSwarmsyOnboardingModule(fetchImpl) {
   const source = fs
     .readFileSync(
-      path.resolve(__dirname, "../../../frontend/src/models/swarmsyOnboarding.js"),
+      path.resolve(
+        __dirname,
+        "../../../frontend/src/models/swarmsyOnboarding.js"
+      ),
       "utf8"
     )
     .replace(/import\s*{[\s\S]*?}\s*from\s*".*?";\r?\n/g, "")
@@ -62,11 +65,41 @@ describe("Swarmsy onboarding model", () => {
       available: false,
       engine: "comfyui",
       url: "http://localhost:8188",
+      configuredBy: "default",
+      explanation: "Desktop/local mode checks ComfyUI on this computer.",
       source: "fallback",
       message: "Failed to resolve SWARMSY local image engine status.",
     });
     expect(fetchImpl).toHaveBeenCalledWith(
       "http://localhost/api/swarmsy/local-user/image-engine/status",
+      expect.objectContaining({ headers: {} })
+    );
+  });
+
+  it("calls the hosted ComfyUI status endpoint without API keys", async () => {
+    const fetchImpl = jest.fn().mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockResolvedValue({
+        success: true,
+        mode: "hosted_server",
+        available: false,
+        engine: "comfyui",
+        url: "http://comfyui:8188",
+        configuredBy: "SWARMSY_LOCAL_COMFYUI_URL",
+        explanation:
+          "Hosted/server mode checks the configured server-side ComfyUI URL.",
+      }),
+    });
+    const onboardingModel = loadSwarmsyOnboardingModule(fetchImpl);
+
+    const response = await onboardingModel.hostedImageEngineStatus();
+
+    expect(response).toMatchObject({
+      mode: "hosted_server",
+      configuredBy: "SWARMSY_LOCAL_COMFYUI_URL",
+    });
+    expect(fetchImpl).toHaveBeenCalledWith(
+      "http://localhost/api/swarmsy/hosted/image-engine/status",
       expect.objectContaining({ headers: {} })
     );
   });
@@ -88,7 +121,8 @@ describe("Swarmsy onboarding model", () => {
     });
     const onboardingModel = loadSwarmsyOnboardingModule(fetchImpl);
 
-    const response = await onboardingModel.localUserImageEngineGenerate(payload);
+    const response =
+      await onboardingModel.localUserImageEngineGenerate(payload);
 
     expect(response.status).toBe("completed");
     expect(fetchImpl).toHaveBeenCalledWith(
