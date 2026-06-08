@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import WorkspaceLLMItem from "./WorkspaceLLMItem";
-import { AVAILABLE_LLM_PROVIDERS } from "@/pages/GeneralSettings/LLMPreference";
+import { ALL_LLM_PROVIDERS } from "@/pages/GeneralSettings/LLMPreference";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import ChatModelSelection from "./ChatModelSelection";
 import RouterSelection from "./RouterSelection";
@@ -30,7 +30,7 @@ const LLM_DEFAULT = {
   requiredConfig: [],
 };
 
-const LLMS = [LLM_DEFAULT, ...AVAILABLE_LLM_PROVIDERS].filter(
+const LLMS = [LLM_DEFAULT, ...ALL_LLM_PROVIDERS].filter(
   (llm) => !DISABLED_PROVIDERS.includes(llm.value)
 );
 
