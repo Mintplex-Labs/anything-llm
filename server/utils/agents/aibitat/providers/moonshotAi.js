@@ -2,6 +2,8 @@ const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
+const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
+const { RetryError } = require("../error.js");
 
 class MoonshotAiProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
@@ -9,6 +11,7 @@ class MoonshotAiProvider extends InheritMultiple([Provider, UnTooled]) {
   constructor(config = {}) {
     const { model = "moonshot-v1-32k" } = config;
     super();
+    this.providerTag = "moonshotai";
     const client = new OpenAI({
       baseURL: "https://api.moonshot.ai/v1",
       apiKey: process.env.MOONSHOT_AI_API_KEY,
@@ -19,28 +22,12 @@ class MoonshotAiProvider extends InheritMultiple([Provider, UnTooled]) {
     this.verbose = true;
   }
 
-  /**
-   * Create a completion based on the received messages.
-   *
-   * @param messages A list of messages to send to the API.
-   * @param functions
-   * @returns The completion.
-   */
   get client() {
     return this._client;
   }
 
   get supportsAgentStreaming() {
     return true;
-  }
-
-  /**
-   * Whether this provider supports native OpenAI-compatible tool calling.
-   * Override in subclass and return true to use native tool calling instead of UnTooled.
-   * @returns {boolean|Promise<boolean>}
-   */
-  supportsNativeToolCalling() {
-    return false;
   }
 
   async #handleFunctionCallChat({ messages = [] }) {
@@ -70,22 +57,83 @@ class MoonshotAiProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   async stream(messages, functions = [], eventHandler = null) {
-    return await UnTooled.prototype.stream.call(
-      this,
-      messages,
-      functions,
-      this.#handleFunctionCallStream.bind(this),
-      eventHandler
+    const useNative = functions.length > 0 && this.supportsNativeToolCalling();
+
+    if (!useNative) {
+      return await UnTooled.prototype.stream.call(
+        this,
+        messages,
+        functions,
+        this.#handleFunctionCallStream.bind(this),
+        eventHandler
+      );
+    }
+
+    this.providerLog(
+      "Provider.stream (tooled) - will process this chat completion."
     );
+
+    try {
+      return await tooledStream(
+        this.client,
+        this.model,
+        messages,
+        functions,
+        eventHandler,
+        { provider: this }
+      );
+    } catch (error) {
+      console.error(error.message, error);
+      if (error instanceof OpenAI.AuthenticationError) throw error;
+      if (
+        error instanceof OpenAI.RateLimitError ||
+        error instanceof OpenAI.InternalServerError ||
+        error instanceof OpenAI.APIError
+      ) {
+        throw new RetryError(error.message);
+      }
+      throw error;
+    }
   }
 
   async complete(messages, functions = []) {
-    return await UnTooled.prototype.complete.call(
-      this,
-      messages,
-      functions,
-      this.#handleFunctionCallChat.bind(this)
-    );
+    const useNative = functions.length > 0 && this.supportsNativeToolCalling();
+
+    if (!useNative) {
+      return await UnTooled.prototype.complete.call(
+        this,
+        messages,
+        functions,
+        this.#handleFunctionCallChat.bind(this)
+      );
+    }
+
+    try {
+      const result = await tooledComplete(
+        this.client,
+        this.model,
+        messages,
+        functions,
+        this.getCost.bind(this),
+        { provider: this }
+      );
+
+      if (result.retryWithError) {
+        return this.complete([...messages, result.retryWithError], functions);
+      }
+
+      return result;
+    } catch (error) {
+      if (error instanceof OpenAI.AuthenticationError) throw error;
+      if (
+        error instanceof OpenAI.RateLimitError ||
+        error instanceof OpenAI.InternalServerError ||
+        error instanceof OpenAI.APIError
+      ) {
+        throw new RetryError(error.message);
+      }
+      throw error;
+    }
   }
 
   getCost(_usage) {

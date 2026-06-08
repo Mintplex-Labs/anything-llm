@@ -14,6 +14,7 @@ class NvidiaNimProvider extends InheritMultiple([Provider, UnTooled]) {
   constructor(config = {}) {
     const { model } = config;
     super();
+    this.providerTag = "nvidia-nim";
     const client = new OpenAI({
       baseURL: parseNvidiaNimBasePath(process.env.NVIDIA_NIM_LLM_BASE_PATH),
       apiKey: null,
@@ -34,10 +35,10 @@ class NvidiaNimProvider extends InheritMultiple([Provider, UnTooled]) {
 
   /**
    * Whether this provider supports native OpenAI-compatible tool calling.
-   * Override in subclass and return true to use native tool calling instead of UnTooled.
-   * @returns {boolean|Promise<boolean>}
+   * - Nvidia NIM has been deprecated and is no longer supported - returning false.
+   * @returns {boolean}
    */
-  supportsNativeToolCalling() {
+  async supportsNativeToolCalling() {
     return false;
   }
 
