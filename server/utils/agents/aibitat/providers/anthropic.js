@@ -28,6 +28,7 @@ class AnthropicProvider extends Provider {
     const client = new Anthropic(options);
 
     super(client);
+    this.providerTag = "anthropic";
     this.model = model;
   }
 

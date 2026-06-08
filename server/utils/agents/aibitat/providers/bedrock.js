@@ -32,6 +32,7 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
       model
     );
 
+    this.providerTag = "bedrock";
     this._client = client;
     this.model = model;
     this.verbose = true;
@@ -47,25 +48,6 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
   get supportsAgentStreaming() {
     if (!!process.env.AWS_BEDROCK_STREAMING_DISABLED) return false;
     return true;
-  }
-
-  /**
-   * Whether this provider supports native tool calling via the Bedrock Converse API.
-   * Checks the ENV to see if the provider supports tool calling.
-   * If the ENV is not set, we default to false.
-   * @returns {boolean}
-   */
-  supportsNativeToolCalling() {
-    if (this._supportsToolCalling !== null) return this._supportsToolCalling;
-    const supportsToolCalling = this.supportsNativeToolCallingViaEnv("bedrock");
-    if (supportsToolCalling)
-      this.providerLog("AWS Bedrock native tool calling is ENABLED via ENV.");
-    else
-      this.providerLog(
-        "AWS Bedrock native tool calling is DISABLED via ENV. Will use UnTooled instead."
-      );
-    this._supportsToolCalling = supportsToolCalling;
-    return supportsToolCalling;
   }
 
   /**

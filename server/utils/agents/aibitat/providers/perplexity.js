@@ -17,6 +17,7 @@ class PerplexityProvider extends InheritMultiple([Provider, UnTooled]) {
       apiKey: process.env.PERPLEXITY_API_KEY ?? null,
     });
 
+    this.providerTag = "perplexity";
     this._client = client;
     this.model = model;
     this.verbose = true;
@@ -32,10 +33,12 @@ class PerplexityProvider extends InheritMultiple([Provider, UnTooled]) {
 
   /**
    * Whether this provider supports native OpenAI-compatible tool calling.
-   * Override in subclass and return true to use native tool calling instead of UnTooled.
-   * @returns {boolean|Promise<boolean>}
+   * - Perplexity does not support tool calling at all and does not have API support for it.
+   * so until that changes we will use Untooled to get at least a general agentic experience with
+   * our tools.
+   * @returns {boolean}
    */
-  supportsNativeToolCalling() {
+  async supportsNativeToolCalling() {
     return false;
   }
 

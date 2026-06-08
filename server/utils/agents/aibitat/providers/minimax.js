@@ -10,6 +10,7 @@ class MinimaxProvider extends InheritMultiple([Provider, UnTooled]) {
 
   constructor(config = {}) {
     super();
+    this.providerTag = "minimax";
     const { model = "MiniMax-M2.7" } = config;
     const client = new OpenAI({
       baseURL: "https://api.minimax.io/v1",
@@ -26,14 +27,6 @@ class MinimaxProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   get supportsAgentStreaming() {
-    return true;
-  }
-
-  /**
-   * Minimax models support native OpenAI-compatible tool calling.
-   * @returns {boolean}
-   */
-  supportsNativeToolCalling() {
     return true;
   }
 
