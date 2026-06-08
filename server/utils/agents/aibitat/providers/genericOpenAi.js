@@ -49,11 +49,11 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   /**
-   * Whether this provider supports native OpenAI-compatible tool calling.
-   * - This can be any OpenAI compatible provider that supports tool calling
-   * - We check the ENV to see if the provider supports tool calling.
-   * - If the ENV is not set, we default to false.
-   * @returns {boolean|Promise<boolean>}
+   * Whether this provider supports native tool calling.
+   * - Native tool calling is enabled by default.
+   * - Set the `PROVIDER_DISABLE_NATIVE_TOOL_CALLING` ENV flag to include "generic-openai"
+   *   to force this provider to use UnTooled instead.
+   * @returns {boolean}
    */
   supportsNativeToolCalling() {
     if (this._supportsToolCalling !== null) return this._supportsToolCalling;
