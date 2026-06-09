@@ -43,8 +43,6 @@ const ENABLED_PROVIDERS = [
   "lemonade",
   "minimax",
   "cerebras",
-  // TODO: More agent support.
-  // "huggingface"     // Can be done but already has issues with no-chat templated. Needs to be tested.
 ];
 const WARN_PERFORMANCE = [
   "lmstudio",

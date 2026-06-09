@@ -153,20 +153,6 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
-  // Hugging Face LLM Inference Settings
-  HuggingFaceLLMEndpoint: {
-    envKey: "HUGGING_FACE_LLM_ENDPOINT",
-    checks: [isNotEmpty, isValidURL, validHuggingFaceEndpoint],
-  },
-  HuggingFaceLLMAccessToken: {
-    envKey: "HUGGING_FACE_LLM_API_KEY",
-    checks: [isNotEmpty],
-  },
-  HuggingFaceLLMTokenLimit: {
-    envKey: "HUGGING_FACE_LLM_TOKEN_LIMIT",
-    checks: [nonZero],
-  },
-
   // KoboldCPP Settings
   KoboldCPPBasePath: {
     envKey: "KOBOLD_CPP_BASE_PATH",
@@ -1047,7 +1033,6 @@ function supportedLLM(input = "") {
     "togetherai",
     "fireworksai",
     "mistral",
-    "huggingface",
     "perplexity",
     "openrouter",
     "novita",
@@ -1178,12 +1163,6 @@ async function validDockerizedUrl(input = "") {
   }
 
   return null;
-}
-
-function validHuggingFaceEndpoint(input = "") {
-  return input.slice(-6) !== ".cloud"
-    ? `Your HF Endpoint should end in ".cloud"`
-    : null;
 }
 
 function noRestrictedChars(input = "") {

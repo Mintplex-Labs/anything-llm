@@ -11,7 +11,6 @@ import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
 import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
 import MistralLogo from "@/media/llmprovider/mistral.jpeg";
-import HuggingFaceLogo from "@/media/llmprovider/huggingface.png";
 import PerplexityLogo from "@/media/llmprovider/perplexity.png";
 import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
 import NovitaLogo from "@/media/llmprovider/novita.png";
@@ -111,11 +110,6 @@ const LLM_PROVIDER_PRIVACY_MAP = {
     name: "Mistral",
     policyUrl: "https://legal.mistral.ai/terms/privacy-policy",
     logo: MistralLogo,
-  },
-  huggingface: {
-    name: "HuggingFace",
-    policyUrl: "https://huggingface.co/privacy",
-    logo: HuggingFaceLogo,
   },
   perplexity: {
     name: "Perplexity AI",

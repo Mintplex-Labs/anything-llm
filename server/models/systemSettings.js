@@ -914,11 +914,6 @@ const SystemSettings = {
       GroqApiKey: !!process.env.GROQ_API_KEY,
       GroqModelPref: process.env.GROQ_MODEL_PREF,
 
-      // HuggingFace Dedicated Inference
-      HuggingFaceLLMEndpoint: process.env.HUGGING_FACE_LLM_ENDPOINT,
-      HuggingFaceLLMAccessToken: !!process.env.HUGGING_FACE_LLM_API_KEY,
-      HuggingFaceLLMTokenLimit: process.env.HUGGING_FACE_LLM_TOKEN_LIMIT,
-
       // KoboldCPP Keys
       KoboldCPPModelPref: process.env.KOBOLD_CPP_MODEL_PREF,
       KoboldCPPBasePath: process.env.KOBOLD_CPP_BASE_PATH,

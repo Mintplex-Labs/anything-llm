@@ -17,7 +17,6 @@ import LocalAiLogo from "@/media/llmprovider/localai.png";
 import TogetherAILogo from "@/media/llmprovider/togetherai.png";
 import FireworksAILogo from "@/media/llmprovider/fireworksai.jpeg";
 import MistralLogo from "@/media/llmprovider/mistral.jpeg";
-import HuggingFaceLogo from "@/media/llmprovider/huggingface.png";
 import PerplexityLogo from "@/media/llmprovider/perplexity.png";
 import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
 import GroqLogo from "@/media/llmprovider/groq.png";
@@ -59,7 +58,6 @@ import CometApiLLMOptions from "@/components/LLMSelection/CometApiLLMOptions";
 import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
 import FireworksAiOptions from "@/components/LLMSelection/FireworksAiOptions";
 import MistralOptions from "@/components/LLMSelection/MistralOptions";
-import HuggingFaceOptions from "@/components/LLMSelection/HuggingFaceOptions";
 import PerplexityOptions from "@/components/LLMSelection/PerplexityOptions";
 import OpenRouterOptions from "@/components/LLMSelection/OpenRouterOptions";
 import GroqAiOptions from "@/components/LLMSelection/GroqAiOptions";
@@ -144,19 +142,6 @@ export const AVAILABLE_LLM_PROVIDERS = [
     description:
       "Run full parameter LLMs directly on your NVIDIA RTX GPU using NVIDIA NIM.",
     requiredConfig: ["NvidiaNimLLMBasePath"],
-  },
-  {
-    name: "HuggingFace",
-    value: "huggingface",
-    logo: HuggingFaceLogo,
-    options: (settings) => <HuggingFaceOptions settings={settings} />,
-    description:
-      "Access 150,000+ open-source LLMs and the world's AI community",
-    requiredConfig: [
-      "HuggingFaceLLMEndpoint",
-      "HuggingFaceLLMAccessToken",
-      "HuggingFaceLLMTokenLimit",
-    ],
   },
   {
     name: "Ollama",

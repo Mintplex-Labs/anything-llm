@@ -174,9 +174,6 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "mistral":
       const { MistralLLM } = require("../AiProviders/mistral");
       return new MistralLLM(embedder, model);
-    case "huggingface":
-      const { HuggingFaceLLM } = require("../AiProviders/huggingface");
-      return new HuggingFaceLLM(embedder, model);
     case "groq":
       const { GroqLLM } = require("../AiProviders/groq");
       return new GroqLLM(embedder, model);
@@ -368,9 +365,6 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "mistral":
       const { MistralLLM } = require("../AiProviders/mistral");
       return MistralLLM;
-    case "huggingface":
-      const { HuggingFaceLLM } = require("../AiProviders/huggingface");
-      return HuggingFaceLLM;
     case "groq":
       const { GroqLLM } = require("../AiProviders/groq");
       return GroqLLM;
@@ -487,8 +481,6 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.OPENROUTER_MODEL_PREF;
     case "mistral":
       return process.env.MISTRAL_MODEL_PREF;
-    case "huggingface":
-      return null;
     case "groq":
       return process.env.GROQ_MODEL_PREF;
     case "koboldcpp":
