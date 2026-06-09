@@ -73,7 +73,16 @@ function workspaceThreadEndpoints(app) {
           workspace_id: workspace.id,
           user_id: user?.id || null,
         });
-        response.status(200).json({ threads });
+
+        const defaultThreadChatCount = await WorkspaceChats.count({
+          workspaceId: workspace.id,
+          user_id: user?.id || null,
+          thread_id: null,
+          api_session_id: null,
+          include: true,
+        });
+
+        response.status(200).json({ threads, defaultThreadChatCount });
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();

@@ -167,6 +167,11 @@ module.exports.CreateExcelFile = {
             try {
               this.super.handlerProps.log(`Using the create-excel-file tool.`);
 
+              // Strip XML 1.0 illegal control characters from all cell content
+              // and sheet names so Excel can open the generated workbook.
+              csvData = createFilesLib.stripInvalidXmlChars(csvData);
+              sheets = createFilesLib.stripInvalidXmlChars(sheets);
+
               const hasExtension = /\.xlsx$/i.test(filename);
               if (!hasExtension) filename = `${filename}.xlsx`;
 

@@ -15,6 +15,7 @@ export default function TTSMessage({ slug, chatId, message }) {
     case "openai":
     case "generic-openai":
     case "elevenlabs":
+    case "kokoro":
       return (
         <WrapTTS>
           <AsyncTTSMessage chatId={chatId} slug={slug} />

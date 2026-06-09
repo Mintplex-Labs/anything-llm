@@ -535,6 +535,28 @@ const SystemSettings = {
       TTSOpenAICompatibleVoiceModel:
         process.env.TTS_OPEN_AI_COMPATIBLE_VOICE_MODEL,
       TTSOpenAICompatibleEndpoint: process.env.TTS_OPEN_AI_COMPATIBLE_ENDPOINT,
+      // Kokoro TTS
+      TTSKokoroEndpoint: process.env.TTS_KOKORO_ENDPOINT,
+      TTSKokoroKey: !!process.env.TTS_KOKORO_KEY,
+      TTSKokoroVoiceModel: process.env.TTS_KOKORO_VOICE_MODEL,
+
+      // STT Selection
+      SpeechToTextProvider: process.env.STT_PROVIDER || "native",
+      // STT OpenAI
+      STTOpenAIModel: process.env.STT_OPEN_AI_MODEL,
+
+      // STT Lemonade
+      STTLemonadeBasePath: process.env.STT_LEMONADE_BASE_PATH,
+      STTLemonadeModelPref: process.env.STT_LEMONADE_MODEL_PREF,
+
+      // STT Deepgram
+      STTDeepgramApiKey: !!process.env.STT_DEEPGRAM_API_KEY,
+      STTDeepgramModel: process.env.STT_DEEPGRAM_MODEL,
+
+      // STT Generic OpenAI
+      STTOpenAICompatibleKey: !!process.env.STT_OPEN_AI_COMPATIBLE_KEY,
+      STTOpenAICompatibleModel: process.env.STT_OPEN_AI_COMPATIBLE_MODEL,
+      STTOpenAICompatibleEndpoint: process.env.STT_OPEN_AI_COMPATIBLE_ENDPOINT,
 
       // --------------------------------------------------------
       // Agent Settings & Configs
@@ -1014,6 +1036,10 @@ const SystemSettings = {
       // Minimax Keys
       MinimaxApiKey: !!process.env.MINIMAX_API_KEY,
       MinimaxModelPref: process.env.MINIMAX_MODEL_PREF,
+
+      // Cerebras Keys
+      CerebrasApiKey: !!process.env.CEREBRAS_API_KEY,
+      CerebrasModelPref: process.env.CEREBRAS_MODEL_PREF,
     };
   },
 

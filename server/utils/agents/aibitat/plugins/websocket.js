@@ -104,6 +104,11 @@ const websocket = {
           description = null,
         }) {
           if (skillIsAutoApproved({ skillName })) {
+            console.log(
+              chalk.green(
+                `Skill ${skillName} is auto-approved by AGENT_AUTO_APPROVED_SKILLS`
+              )
+            );
             return {
               approved: true,
               message: "Skill is auto-approved.",

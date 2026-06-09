@@ -126,6 +126,13 @@ const LEGACY_MODEL_MAP = {
     "MiniMax-M2.1-highspeed": 196000,
     "MiniMax-M2": 196000,
   },
+  cerebras: {
+    "llama-3.3-70b": 128000,
+    "llama3.1-8b": 128000,
+    "gpt-oss-120b": 131072,
+    "qwen-3-32b": 128000,
+    "zai-glm-4.6": 128000,
+  },
   xai: {
     "grok-beta": 131072,
   },

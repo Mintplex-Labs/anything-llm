@@ -13,6 +13,7 @@ export default function ThreadContainer({
 }) {
   const { threadSlug = null } = useParams();
   const [threads, setThreads] = useState([]);
+  const [defaultThreadHasChats, setDefaultThreadHasChats] = useState(false);
   const [loading, setLoading] = useState(true);
   const [ctrlPressed, setCtrlPressed] = useState(false);
 
@@ -39,12 +40,15 @@ export default function ThreadContainer({
   useEffect(() => {
     async function fetchThreads() {
       if (!workspace.slug) return;
-      const { threads } = await Workspace.threads.all(workspace.slug);
+      const { threads, defaultThreadChatCount } = await Workspace.threads.all(
+        workspace.slug
+      );
       setLoading(false);
       setThreads(threads);
+      setDefaultThreadHasChats(defaultThreadChatCount > 0);
     }
     fetchThreads();
-  }, [workspace.slug]);
+  }, [workspace.slug, threadSlug]);
 
   // Enable toggling of bulk-deletion by holding meta-key (ctrl on win and cmd/fn on others)
   useEffect(() => {
@@ -113,9 +117,15 @@ export default function ThreadContainer({
   }
 
   function getActiveThreadIdx() {
-    if (isVirtualThread) return threads.length + 1;
+    if (isVirtualThread)
+      return threads.length + (defaultThreadHasChats ? 1 : 0);
+    // On a bare workspace route with no default chats, show virtual thread as active
+    if (!threadSlug && !defaultThreadHasChats)
+      return threads.length + (defaultThreadHasChats ? 1 : 0);
     const idx = threads.findIndex((t) => t?.slug === threadSlug);
-    return idx >= 0 ? idx + 1 : 0;
+    if (idx >= 0) return idx + (defaultThreadHasChats ? 1 : 0);
+    if (!threadSlug && defaultThreadHasChats) return 0;
+    return -1;
   }
 
   if (loading) {
@@ -128,31 +138,38 @@ export default function ThreadContainer({
 
   const activeThreadIdx = getActiveThreadIdx();
 
+  // Show a virtual thread when on a bare workspace route (no threadSlug) and
+  // the default thread has no chats — mimics the Home page virtual thread behavior.
+  const showVirtualThread =
+    isVirtualThread || (!threadSlug && !defaultThreadHasChats);
+
   return (
     <div className="flex flex-col" role="list" aria-label="Threads">
-      <ThreadItem
-        idx={0}
-        activeIdx={activeThreadIdx}
-        isActive={activeThreadIdx === 0}
-        workspace={workspace}
-        thread={{ slug: null, name: "default" }}
-        hasNext={threads.length > 0 || isVirtualThread}
-      />
+      {defaultThreadHasChats && (
+        <ThreadItem
+          idx={0}
+          activeIdx={activeThreadIdx}
+          isActive={activeThreadIdx === 0}
+          workspace={workspace}
+          thread={{ slug: null, name: "default" }}
+          hasNext={threads.length > 0 || showVirtualThread}
+        />
+      )}
       {threads.map((thread, i) => (
         <ThreadItem
           key={thread.slug}
-          idx={i + 1}
+          idx={i + (defaultThreadHasChats ? 1 : 0)}
           ctrlPressed={ctrlPressed}
           toggleMarkForDeletion={toggleForDeletion}
           activeIdx={activeThreadIdx}
-          isActive={activeThreadIdx === i + 1}
+          isActive={activeThreadIdx === i + (defaultThreadHasChats ? 1 : 0)}
           workspace={workspace}
           onRemove={removeThread}
           thread={thread}
-          hasNext={i !== threads.length - 1 || isVirtualThread}
+          hasNext={i !== threads.length - 1 || showVirtualThread}
         />
       ))}
-      {isVirtualThread && (
+      {showVirtualThread && (
         <ThreadItem
           idx={activeThreadIdx}
           activeIdx={activeThreadIdx}
