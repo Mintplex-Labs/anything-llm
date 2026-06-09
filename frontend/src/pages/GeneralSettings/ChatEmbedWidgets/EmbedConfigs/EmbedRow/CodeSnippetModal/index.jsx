@@ -67,7 +67,7 @@ const ScriptTag = ({ embed }) => {
 
   return (
     <div>
-      <div className="flex flex-col mb-2">
+      <div className="flex flex-col gap-y-1 mb-3">
         <ModalLabel>HTML Script Tag Embed Code</ModalLabel>
         <ModalHint>
           Have your workspace chat embed function like a help desk chat bottom
@@ -85,10 +85,10 @@ const ScriptTag = ({ embed }) => {
       <button
         disabled={copied}
         onClick={handleClick}
-        className={`border-none disabled:border disabled:border-green-300 disabled:light:border-green-600 border border-transparent relative w-full font-mono flex hljs ${theme} light:border light:border-gray-700 text-white placeholder:text-zinc-400 text-sm rounded-lg focus:border-sky-500 light:focus:border-sky-500 outline-none p-2.5 m-1`}
+        className={`border-none disabled:border disabled:border-green-300 disabled:light:border-green-600 border border-transparent relative w-full font-mono flex hljs ${theme} light:border light:border-gray-700 text-white placeholder:text-zinc-400 text-sm rounded-lg focus:border-sky-500 light:focus:border-sky-500 outline-none p-3`}
       >
         <div
-          className="flex w-full text-left flex-col gap-y-1 pr-6 pl-4 whitespace-pre-line"
+          className="flex w-full text-left flex-col gap-y-1 pr-6 whitespace-pre-line"
           dangerouslySetInnerHTML={{
             __html: hljs.highlight(snippet, {
               language: "html",
