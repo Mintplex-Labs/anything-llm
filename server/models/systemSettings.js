@@ -986,12 +986,6 @@ const SystemSettings = {
       PPIOApiKey: !!process.env.PPIO_API_KEY,
       PPIOModelPref: process.env.PPIO_MODEL_PREF,
 
-      // Dell Pro AI Studio Keys
-      DellProAiStudioBasePath: process.env.DPAIS_LLM_BASE_PATH,
-      DellProAiStudioModelPref: process.env.DPAIS_LLM_MODEL_PREF,
-      DellProAiStudioTokenLimit:
-        process.env.DPAIS_LLM_MODEL_TOKEN_LIMIT ?? 4096,
-
       // CometAPI LLM Keys
       CometApiLLMApiKey: !!process.env.COMETAPI_LLM_API_KEY,
       CometApiLLMModelPref: process.env.COMETAPI_LLM_MODEL_PREF,
