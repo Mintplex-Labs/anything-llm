@@ -29,6 +29,11 @@ async function eagerLoadContextWindows() {
       await FoundryLLM.cacheContextWindows(true);
       log("Foundry");
       break;
+    case "cerebras":
+      const { CerebrasLLM } = require("../AiProviders/cerebras");
+      await CerebrasLLM.cacheContextWindows(true);
+      log("Cerebras");
+      break;
   }
 }
 

@@ -99,7 +99,7 @@ const chatHistory = {
         { prompt, response, attachments = [] } = {}
       ) {
         const invocation = aibitat.handlerProps.invocation;
-        const metrics = aibitat.provider?.getUsage?.() ?? {};
+        const metrics = aibitat.providerInstance?.getUsage?.() ?? {};
         const citations = aibitat._pendingCitations ?? [];
         const outputs = aibitat._pendingOutputs ?? [];
         const clarifyingQuestions =
@@ -134,7 +134,7 @@ const chatHistory = {
         { prompt, response, attachments = [], options = {} } = {}
       ) {
         const invocation = aibitat.handlerProps.invocation;
-        const metrics = aibitat.provider?.getUsage?.() ?? {};
+        const metrics = aibitat.providerInstance?.getUsage?.() ?? {};
         const citations = aibitat._pendingCitations ?? [];
         const outputs = aibitat._pendingOutputs ?? [];
         const clarifyingQuestions =

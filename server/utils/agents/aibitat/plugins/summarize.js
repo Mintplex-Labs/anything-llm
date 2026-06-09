@@ -170,6 +170,7 @@ const docSummarizer = {
                 model: this.super.model,
                 controllerSignal: this.controller.signal,
                 content: document.content,
+                aibitat: this.super,
               });
             } catch (error) {
               this.super.handlerProps.log(

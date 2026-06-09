@@ -14,6 +14,7 @@ const {
   loadYouTubeTranscript,
 } = require("../../utils/extensions/YoutubeTranscript");
 const RuntimeSettings = require("../../utils/runtimeSettings");
+const { htmlToMarkdown } = require("../helpers/htmlToMarkdown");
 
 /**
  * Scrape a generic URL and return the content in the specified format
@@ -168,13 +169,12 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
         waitUntil: "networkidle2",
       },
       async evaluate(page, browser) {
-        const result = await page.evaluate((captureAs) => {
-          if (captureAs === "text") return document.body.innerText;
-          if (captureAs === "html") return document.documentElement.innerHTML;
-          return document.body.innerText;
-        }, captureAs);
+        const innerHTML = await page.evaluate(
+          () => document.documentElement.innerHTML
+        );
         await browser.close();
-        return result;
+        if (captureAs === "html") return innerHTML;
+        return htmlToMarkdown(innerHTML, link);
       },
     });
 
@@ -227,7 +227,7 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
         ...validatedHeaders(headers),
       },
     }).then((res) => res.text());
-    return pageText;
+    return htmlToMarkdown(pageText, link);
   } catch (error) {
     console.error("getPageContent failed to be fetched by any method.", error);
   }

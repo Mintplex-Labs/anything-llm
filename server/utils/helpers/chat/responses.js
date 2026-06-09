@@ -51,7 +51,11 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
       for await (const chunk of stream) {
         const message = chunk?.choices?.[0];
         const token = message?.delta?.content;
-        const reasoningToken = message?.delta?.reasoning_content;
+
+        // Reasoning token can be in different properties depending on the provider.
+        // eg: Cerebras uses `reasoning` instead of `reasoning_content` like OpenAI.
+        const reasoningToken =
+          message?.delta?.reasoning_content || message?.delta?.reasoning;
 
         // If we see usage metrics in the chunk, we can use them directly
         // instead of estimating them, but we only want to assign values if
@@ -68,6 +72,12 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
           if (chunk.usage.hasOwnProperty("completion_tokens")) {
             hasUsageMetrics = true; // to stop estimating counter
             usage.completion_tokens = Number(chunk.usage.completion_tokens);
+          }
+
+          // Some providers, like Cerebras, return the completion time in the usage metrics.
+          // This is used to report the real-time duration of the completion.
+          if (chunk.usage.hasOwnProperty("time_info")) {
+            usage.duration = chunk.usage.time_info.completion_time;
           }
         }
 

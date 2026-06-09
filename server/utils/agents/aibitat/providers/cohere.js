@@ -19,6 +19,7 @@ class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
     const client = new CohereClientV2({
       token: process.env.COHERE_API_KEY,
     });
+    this.providerTag = "cohere";
     this._client = client;
     this.model = model;
     this.verbose = true;
@@ -34,8 +35,12 @@ class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
 
   /**
    * Whether this provider supports native OpenAI-compatible tool calling.
-   * Override in subclass and return true to use native tool calling instead of UnTooled.
-   * @returns {boolean|Promise<boolean>}
+   * - Cohere does not support tool calling in our codebase yet.
+   * - We should migrate cohere totally to Tooled with Untools failover
+   * and use this OAI compatible tool calling approach (https://docs.cohere.com/docs/compatibility-api)
+   *
+   * Until then, we disable tool calling for cohere models across the board with no config.
+   * @returns {boolean}
    */
   supportsNativeToolCalling() {
     return false;

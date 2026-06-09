@@ -22,6 +22,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     } = config;
 
     super();
+    this.providerTag = "ollama";
     const authToken = process.env.OLLAMA_AUTH_TOKEN;
     const basePath = process.env.OLLAMA_BASE_PATH;
     const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
@@ -49,6 +50,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
    * @returns {boolean|Promise<boolean>}
    */
   async supportsNativeToolCalling() {
+    if (this.optsOutOfNativeToolCallingViaEnv(this.providerTag)) return false;
     if (this._supportsToolCalling !== null) return this._supportsToolCalling;
     const ollama = new OllamaAILLM(null, this.model);
     const capabilities = await ollama.getModelCapabilities();

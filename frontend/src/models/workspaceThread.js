@@ -6,7 +6,7 @@ import { v4 } from "uuid";
 
 const WorkspaceThread = {
   all: async function (workspaceSlug) {
-    const { threads } = await fetch(
+    const { threads, defaultThreadChatCount } = await fetch(
       `${API_BASE}/workspace/${workspaceSlug}/threads`,
       {
         method: "GET",
@@ -15,10 +15,10 @@ const WorkspaceThread = {
     )
       .then((res) => res.json())
       .catch(() => {
-        return { threads: [] };
+        return { threads: [], defaultThreadChatCount: 0 };
       });
 
-    return { threads };
+    return { threads, defaultThreadChatCount };
   },
   new: async function (workspaceSlug) {
     const { thread, error } = await fetch(

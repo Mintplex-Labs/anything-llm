@@ -810,7 +810,7 @@ const webBrowsing = {
 
             try {
               searchURL = new URL(process.env.AGENT_SEARXNG_API_URL);
-              searchURL.searchParams.append("q", encodeURIComponent(query));
+              searchURL.searchParams.append("q", query);
               searchURL.searchParams.append("format", "json");
             } catch (e) {
               this.super.handlerProps.log(`SearXNG Search: ${e.message}`);

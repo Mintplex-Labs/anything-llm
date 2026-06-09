@@ -42,6 +42,7 @@ import PrivateModeLogo from "@/media/llmprovider/privatemode.png";
 import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
 import LemonadeLogo from "@/media/llmprovider/lemonade.png";
 import MinimaxLogo from "@/media/llmprovider/minimax.png";
+import CerebrasLogo from "@/media/llmprovider/cerebras.png";
 
 import PreLoader from "@/components/Preloader";
 import ModelRouterOptions from "@/components/LLMSelection/ModelRouterOptions";
@@ -82,11 +83,26 @@ import PrivateModeOptions from "@/components/LLMSelection/PrivateModeOptions";
 import SambaNovaOptions from "@/components/LLMSelection/SambaNovaOptions";
 import LemonadeOptions from "@/components/LLMSelection/LemonadeOptions";
 import MinimaxOptions from "@/components/LLMSelection/MinimaxOptions";
+import CerebrasLLMOptions from "@/components/LLMSelection/CerebrasLLMOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
 
+export const MODEL_ROUTER_PROVIDER = {
+  name: "Model Router",
+  value: "anythingllm-router",
+  logo: AnythingLLMIcon,
+  options: (settings) => <ModelRouterOptions settings={settings} />,
+  description:
+    "Route messages to different LLM providers based on rules you define.",
+  requiredConfig: [],
+};
+
+/**
+ * All LLM providers that are available to the user.
+ * This **never** includes the model router provider.
+ */
 export const AVAILABLE_LLM_PROVIDERS = [
   {
     name: "Model Router",
@@ -422,20 +438,32 @@ export const AVAILABLE_LLM_PROVIDERS = [
     requiredConfig: ["MinimaxApiKey"],
   },
   {
+    name: "Cerebras",
+    value: "cerebras",
+    logo: CerebrasLogo,
+    options: (settings) => <CerebrasLLMOptions settings={settings} />,
+    description: "Run models at instant speed on Cerebras inference.",
+    requiredConfig: ["CerebrasApiKey"],
+  },
+  {
     name: "Generic OpenAI",
     value: "generic-openai",
     logo: GenericOpenAiLogo,
     options: (settings) => <GenericOpenAiOptions settings={settings} />,
     description:
       "Connect to any OpenAi-compatible service via a custom configuration",
-    requiredConfig: [
-      "GenericOpenAiBasePath",
-      "GenericOpenAiModelPref",
-      "GenericOpenAiTokenLimit",
-      "GenericOpenAiKey",
-    ],
+    requiredConfig: ["GenericOpenAiBasePath", "GenericOpenAiModelPref"],
     connectionConfig: ["GenericOpenAiBasePath"],
   },
+];
+
+/**
+ * All LLM providers that are available to the user.
+ * This **always** includes the model router provider.
+ */
+export const ALL_LLM_PROVIDERS = [
+  MODEL_ROUTER_PROVIDER,
+  ...AVAILABLE_LLM_PROVIDERS,
 ];
 
 export const LLM_PREFERENCE_CHANGED_EVENT = "llm-preference-changed";
