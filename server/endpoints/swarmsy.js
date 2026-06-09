@@ -13,6 +13,14 @@ const {
 } = require("../utils/swarmsy/ingestRequiredDocs");
 const { detectLocalOllama } = require("../utils/swarmsy/localUserOllama");
 const { Workspace } = require("../models/workspace");
+const {
+  adminStatus: websiteNpcAdminStatus,
+  allowedNpcIds: websiteNpcAllowedIds,
+  originAllowed: websiteNpcOriginAllowed,
+  publicNpcChat,
+  repairDefaultWorkspaces: repairWebsiteNpcWorkspaces,
+  saveNpc: saveWebsiteNpc,
+} = require("../utils/swarmsy/websiteNpcControl");
 const { reqBody } = require("../utils/http");
 const {
   getSparkyWikiSeedPack,
@@ -444,6 +452,198 @@ async function swarmsyHostedImageEngineStatus(_request, response) {
   }
 }
 
+async function swarmsyWebsiteNpcAdminStatus(_request, response) {
+  try {
+    return response.status(200).json(await websiteNpcAdminStatus());
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({
+      success: false,
+      message: "Failed to load SWARMSY website NPC status.",
+    });
+  }
+}
+
+async function swarmsyWebsiteNpcSave(request, response) {
+  try {
+    const result = await saveWebsiteNpc(reqBody(request));
+    return response.status(result.success ? 200 : 400).json(result);
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({
+      success: false,
+      error: "Failed to save SWARMSY website NPC.",
+    });
+  }
+}
+
+async function swarmsyWebsiteNpcRepairWorkspaces(_request, response) {
+  try {
+    return response.status(200).json(await repairWebsiteNpcWorkspaces());
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({
+      success: false,
+      error: "Failed to repair default SWARMSY website NPC workspaces.",
+    });
+  }
+}
+
+function bridgeTokenConfigured() {
+  return (
+    typeof process.env.SWARMSY_BRIDGE_TOKEN === "string" &&
+    process.env.SWARMSY_BRIDGE_TOKEN.length > 0
+  );
+}
+
+function requestBridgeToken(request) {
+  return (
+    request.header("X-SWARMSY-BRIDGE-TOKEN") ||
+    request.header("x-swarmsy-bridge-token") ||
+    ""
+  );
+}
+
+async function swarmsyPublicNpcChat(request, response) {
+  if (
+    !bridgeTokenConfigured() ||
+    requestBridgeToken(request) !== process.env.SWARMSY_BRIDGE_TOKEN
+  ) {
+    return response.status(401).json({
+      success: false,
+      npcId: null,
+      displayName: null,
+      workspaceSlug: null,
+      reply: "Unauthorized bridge request.",
+      sourceSummary: null,
+      error: "unauthorized_bridge",
+    });
+  }
+
+  const body = reqBody(request);
+  const requestMeta =
+    body.requestMeta && typeof body.requestMeta === "object"
+      ? body.requestMeta
+      : {};
+  const result = await publicNpcChat({
+    npcId: body.npcId,
+    message: body.message,
+    pagePath: body.pagePath,
+    origin: body.origin || request.header("origin") || "",
+    requestMeta: {
+      ...requestMeta,
+      bridge: requestMeta.bridge || "private-swarmsy-endpoint",
+      ip: request.ip,
+    },
+  });
+  return response.status(result.status).json(result.body);
+}
+
+const publicNpcBridgeBuckets = new Map();
+
+function publicNpcBridgeBucketCap() {
+  const cap = Number(process.env.SWARMSY_PUBLIC_RATE_BUCKET_CAP);
+  return Number.isFinite(cap) && cap > 0 ? cap : 1_000;
+}
+
+function cleanupPublicNpcBridgeBuckets(now = Date.now()) {
+  for (const [key, bucket] of publicNpcBridgeBuckets.entries()) {
+    if (!bucket || now > bucket.resetAt) publicNpcBridgeBuckets.delete(key);
+  }
+
+  const cap = publicNpcBridgeBucketCap();
+  while (publicNpcBridgeBuckets.size > cap) {
+    const oldestKey = publicNpcBridgeBuckets.keys().next().value;
+    if (!oldestKey) break;
+    publicNpcBridgeBuckets.delete(oldestKey);
+  }
+}
+
+function rateLimitPublicNpcBridge(request) {
+  const key = request.ip || "unknown";
+  const now = Date.now();
+  cleanupPublicNpcBridgeBuckets(now);
+
+  const windowMs = Number(process.env.SWARMSY_PUBLIC_RATE_WINDOW_MS) || 60_000;
+  const max = Number(process.env.SWARMSY_PUBLIC_RATE_LIMIT) || 20;
+  const bucket = publicNpcBridgeBuckets.get(key) || {
+    count: 0,
+    resetAt: now + windowMs,
+  };
+  bucket.count += 1;
+  publicNpcBridgeBuckets.set(key, bucket);
+  cleanupPublicNpcBridgeBuckets(now);
+  return bucket.count <= max;
+}
+
+function __resetPublicNpcBridgeBucketsForTests() {
+  publicNpcBridgeBuckets.clear();
+}
+
+function __publicNpcBridgeBucketCountForTests() {
+  return publicNpcBridgeBuckets.size;
+}
+
+async function swarmsyPublicNpcBridge(request, response) {
+  const origin = request.header("origin") || "";
+  if (!origin || !websiteNpcOriginAllowed(origin)) {
+    return response
+      .status(403)
+      .json({ success: false, error: "Origin is not allowed." });
+  }
+  if (!rateLimitPublicNpcBridge(request)) {
+    return response
+      .status(429)
+      .json({ success: false, error: "Rate limit exceeded." });
+  }
+
+  const body = reqBody(request);
+  const allowedNpcIds = websiteNpcAllowedIds();
+  if (!allowedNpcIds.includes(String(body.npcId || "").toLowerCase())) {
+    return response
+      .status(404)
+      .json({ success: false, error: "Unknown NPC id." });
+  }
+
+  if (!bridgeTokenConfigured()) {
+    return response.status(503).json({
+      success: false,
+      error: "SWARMSY bridge token is not configured.",
+    });
+  }
+
+  const bridgeRequest = {
+    body: {
+      ...body,
+      origin,
+      requestMeta: {
+        bridge: "public-api",
+        ip: request.ip,
+      },
+    },
+    ip: request.ip,
+    header: (name) => {
+      const header = String(name || "").toLowerCase();
+      if (header === "x-swarmsy-bridge-token")
+        return process.env.SWARMSY_BRIDGE_TOKEN;
+      if (header === "origin") return origin;
+      return null;
+    },
+  };
+  const bridgeResponse = {
+    statusCode: 200,
+    status(code) {
+      this.statusCode = code;
+      return this;
+    },
+    json(payload) {
+      return response.status(this.statusCode).json(payload);
+    },
+  };
+
+  return swarmsyPublicNpcChat(bridgeRequest, bridgeResponse);
+}
+
 function __resetSwarmsyHiveCreationLocksForTests() {
   swarmsyHiveCreationLocks.clear();
 }
@@ -500,6 +700,28 @@ function swarmsyEndpoints(app) {
   );
 
   app.get(
+    "/swarmsy/website-npcs/status",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    swarmsyWebsiteNpcAdminStatus
+  );
+
+  app.post(
+    "/swarmsy/website-npcs",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    swarmsyWebsiteNpcSave
+  );
+
+  app.post(
+    "/swarmsy/website-npcs/repair-workspaces",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    swarmsyWebsiteNpcRepairWorkspaces
+  );
+
+  app.post("/swarmsy/public/npc-chat", swarmsyPublicNpcChat);
+
+  app.post("/public/npc-chat", swarmsyPublicNpcBridge);
+
+  app.get(
     "/swarmsy/local-user/ollama/status",
     [validatedRequest, isSingleUserMode],
     swarmsyLocalUserOllamaStatus
@@ -525,6 +747,8 @@ function swarmsyEndpoints(app) {
 }
 
 module.exports = {
+  __publicNpcBridgeBucketCountForTests,
+  __resetPublicNpcBridgeBucketsForTests,
   __resetSwarmsyHiveCreationLocksForTests,
   swarmsyHostedImageEngineStatus,
   swarmsyLocalUserImageEngineGenerate,
@@ -536,6 +760,11 @@ module.exports = {
   swarmsySparkyWikiSeedPackShow,
   swarmsySparkyWikiSeedPacksList,
   swarmsyEndpoints,
+  swarmsyPublicNpcBridge,
+  swarmsyPublicNpcChat,
+  swarmsyWebsiteNpcAdminStatus,
+  swarmsyWebsiteNpcRepairWorkspaces,
+  swarmsyWebsiteNpcSave,
   swarmsyOnboardingCreateHive,
   swarmsyOnboardingIngestRequiredDocs,
   swarmsyOnboardingStatus,

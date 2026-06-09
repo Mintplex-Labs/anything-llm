@@ -293,6 +293,12 @@ const SidebarOptions = ({ user = null, t }) => (
               roles: ["admin", "manager"],
             },
             {
+              btnText: "Website NPCs",
+              href: paths.settings.websiteNpcs(),
+              flex: true,
+              roles: ["admin", "manager"],
+            },
+            {
               btnText: "Default System Prompt",
               href: paths.settings.defaultSystemPrompt(),
               flex: true,

@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crypto Moonboys AI Guides</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #070b18;
+        color: #eef4ff;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        background:
+          radial-gradient(circle at top left, rgba(44, 182, 255, 0.22), transparent 34rem),
+          radial-gradient(circle at bottom right, rgba(255, 204, 76, 0.18), transparent 30rem),
+          #070b18;
+      }
+      main {
+        width: min(980px, 100%);
+        display: grid;
+        gap: 18px;
+      }
+      .panel {
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(10, 16, 34, 0.86);
+        box-shadow: 0 24px 90px rgba(0, 0, 0, 0.35);
+        border-radius: 24px;
+        overflow: hidden;
+      }
+      header {
+        padding: 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      h1 { margin: 0 0 8px; font-size: clamp(28px, 4vw, 46px); }
+      p { color: #b8c7e8; line-height: 1.55; }
+      .npc-tabs {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        padding: 18px 24px 0;
+      }
+      .npc-tab {
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.06);
+        color: #eef4ff;
+        border-radius: 999px;
+        padding: 12px 16px;
+        cursor: pointer;
+      }
+      .npc-tab.active {
+        background: linear-gradient(135deg, #ffd86f, #55d5ff);
+        color: #06101f;
+        font-weight: 800;
+      }
+      #messages {
+        height: min(58vh, 560px);
+        overflow-y: auto;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .message {
+        max-width: 82%;
+        padding: 14px 16px;
+        border-radius: 18px;
+        white-space: pre-wrap;
+      }
+      .message.bot {
+        align-self: flex-start;
+        background: rgba(85, 213, 255, 0.12);
+        border: 1px solid rgba(85, 213, 255, 0.24);
+      }
+      .message.user {
+        align-self: flex-end;
+        background: rgba(255, 216, 111, 0.14);
+        border: 1px solid rgba(255, 216, 111, 0.24);
+      }
+      form {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 12px;
+        padding: 18px 24px 24px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      textarea {
+        min-height: 54px;
+        max-height: 160px;
+        resize: vertical;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.06);
+        color: #fff;
+        padding: 14px 16px;
+        font: inherit;
+      }
+      button[type="submit"] {
+        border: 0;
+        border-radius: 16px;
+        padding: 0 22px;
+        background: #55d5ff;
+        color: #06101f;
+        font-weight: 900;
+        cursor: pointer;
+      }
+      .notice {
+        font-size: 13px;
+        color: #91a3cb;
+        margin: 0;
+        padding: 0 24px 18px;
+      }
+      @media (max-width: 640px) {
+        form { grid-template-columns: 1fr; }
+        .message { max-width: 100%; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="panel" aria-label="Crypto Moonboys AI chat">
+        <header>
+          <h1>Crypto Moonboys AI Guides</h1>
+          <p>
+            Chat with Paperclip or Sparky. Messages go through a public-safe bridge to the private SWARMSY live AI workspace backend.
+          </p>
+        </header>
+        <div class="npc-tabs" role="tablist" aria-label="Choose an NPC">
+          <button class="npc-tab active" type="button" data-npc="paperclip" role="tab" aria-selected="true">Paperclip</button>
+          <button class="npc-tab" type="button" data-npc="sparky" role="tab" aria-selected="false">Sparky</button>
+        </div>
+        <div id="messages" aria-live="polite"></div>
+        <form id="chat-form">
+          <textarea id="message" autocomplete="off" placeholder="Ask about Crypto Moonboys…" required></textarea>
+          <button type="submit">Send</button>
+        </form>
+        <p class="notice">No private prompts, secrets, admin URLs, workspace keys, or bridge tokens are embedded in this page.</p>
+      </section>
+    </main>
+    <script>
+      (() => {
+        const npcProfiles = {
+          paperclip: {
+            displayName: "Paperclip",
+            greeting: "Hey, I’m Paperclip. Ask me about Crypto Moonboys, lore, games, factions, or the site.",
+            placeholder: "Ask Paperclip about Crypto Moonboys…",
+          },
+          sparky: {
+            displayName: "Sparky",
+            greeting: "I’m Sparky. I can help with project docs, onboarding, creator/testing questions, and site support.",
+            placeholder: "Ask Sparky about project help…",
+          },
+        };
+
+        const messages = document.getElementById("messages");
+        const form = document.getElementById("chat-form");
+        const input = document.getElementById("message");
+        const tabs = [...document.querySelectorAll(".npc-tab")];
+        let selectedNpc = "paperclip";
+
+        function addMessage(text, sender = "bot") {
+          const node = document.createElement("div");
+          node.className = `message ${sender}`;
+          node.textContent = text;
+          messages.appendChild(node);
+          messages.scrollTop = messages.scrollHeight;
+          return node;
+        }
+
+        function switchNpc(npcId) {
+          selectedNpc = npcId;
+          tabs.forEach((tab) => {
+            const active = tab.dataset.npc === npcId;
+            tab.classList.toggle("active", active);
+            tab.setAttribute("aria-selected", active ? "true" : "false");
+          });
+          input.placeholder = npcProfiles[npcId].placeholder;
+          addMessage(npcProfiles[npcId].greeting, "bot");
+        }
+
+        tabs.forEach((tab) => tab.addEventListener("click", () => switchNpc(tab.dataset.npc)));
+        addMessage(npcProfiles.paperclip.greeting, "bot");
+
+        form.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const message = input.value.trim();
+          if (!message) return;
+          input.value = "";
+          addMessage(message, "user");
+          const pending = addMessage(`${npcProfiles[selectedNpc].displayName} is checking SWARMSY…`, "bot");
+
+          try {
+            const response = await fetch("/api/public/npc-chat", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                npcId: selectedNpc,
+                message,
+                pagePath: window.location.pathname,
+              }),
+            });
+            const data = await response.json();
+            pending.textContent = data.reply || data.error || "The live AI bridge did not return a reply.";
+          } catch (error) {
+            pending.textContent = "The public AI bridge is unavailable. Please try again shortly.";
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

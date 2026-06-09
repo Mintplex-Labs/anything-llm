@@ -25,6 +25,7 @@ jest.mock("../../models/workspace", () => ({
   Workspace: {
     get: jest.fn(),
     getWithUser: jest.fn(),
+    upsert: jest.fn(),
   },
 }));
 
@@ -102,7 +103,12 @@ const {
   swarmsyOnboardingCreateHive,
   swarmsyOnboardingIngestRequiredDocs,
   swarmsyOnboardingStatus,
+  swarmsyPublicNpcBridge,
+  swarmsyPublicNpcChat,
   swarmsySparkyWikiSeedPackImport,
+  swarmsyWebsiteNpcRepairWorkspaces,
+  __publicNpcBridgeBucketCountForTests,
+  __resetPublicNpcBridgeBucketsForTests,
   swarmsyWorkspaceSparkyPromptApply,
   swarmsyWorkspaceSparkyPromptStatus,
   swarmsySparkyWikiSeedPackShow,
@@ -129,6 +135,7 @@ describe("swarmsy endpoints", () => {
         "Hosted/server mode checks the configured server-side ComfyUI URL. localhost inside Docker is not the user's PC.",
     });
     __resetSwarmsyHiveCreationLocksForTests();
+    __resetPublicNpcBridgeBucketsForTests();
   });
 
   it("registers the onboarding status route for authenticated all-role access", () => {
@@ -1098,5 +1105,381 @@ describe("swarmsy endpoints", () => {
       workspace: { exists: false },
       message: "No current workspace exists for SPARKY Wiki seed pack import.",
     });
+  });
+});
+
+describe("SWARMSY website NPC public bridge", () => {
+  const previousBridgeToken = process.env.SWARMSY_BRIDGE_TOKEN;
+  const previousOrigins = process.env.SWARMSY_PUBLIC_ALLOWED_ORIGINS;
+  const previousRateBucketCap = process.env.SWARMSY_PUBLIC_RATE_BUCKET_CAP;
+  const {
+    __resetWebsiteNpcConfigForTests,
+    __setNpcChatRunnerForTests,
+    createSyntheticSseResponse,
+    saveNpc,
+  } = require("../../utils/swarmsy/websiteNpcControl");
+  const {
+    handleDefaultStreamResponseV2,
+  } = require("../../utils/helpers/chat/responses");
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    process.env.SWARMSY_BRIDGE_TOKEN = "test-bridge-token";
+    process.env.SWARMSY_PUBLIC_ALLOWED_ORIGINS = "https://cryptomoonboys.com";
+    __resetPublicNpcBridgeBucketsForTests();
+    __resetWebsiteNpcConfigForTests();
+    __setNpcChatRunnerForTests(async ({ workspace }) => ({
+      reply: `live reply from ${workspace.slug}`,
+      sourceSummary: "mocked live workspace grounding",
+    }));
+  });
+
+  afterAll(() => {
+    if (previousBridgeToken === undefined)
+      delete process.env.SWARMSY_BRIDGE_TOKEN;
+    else process.env.SWARMSY_BRIDGE_TOKEN = previousBridgeToken;
+    if (previousOrigins === undefined)
+      delete process.env.SWARMSY_PUBLIC_ALLOWED_ORIGINS;
+    else process.env.SWARMSY_PUBLIC_ALLOWED_ORIGINS = previousOrigins;
+    if (previousRateBucketCap === undefined)
+      delete process.env.SWARMSY_PUBLIC_RATE_BUCKET_CAP;
+    else process.env.SWARMSY_PUBLIC_RATE_BUCKET_CAP = previousRateBucketCap;
+  });
+
+  function request(
+    body = {},
+    token = "test-bridge-token",
+    origin = "https://cryptomoonboys.com",
+    ip = "127.0.0.1"
+  ) {
+    return {
+      body,
+      ip,
+      header: jest.fn((name) => {
+        if (name.toLowerCase() === "x-swarmsy-bridge-token") return token;
+        if (name.toLowerCase() === "origin") return origin;
+        return null;
+      }),
+    };
+  }
+
+  it("supports streaming providers that register and remove close listeners", async () => {
+    const written = [];
+    const response = createSyntheticSseResponse({
+      onChunk: (chunk) => written.push(String(chunk)),
+    });
+    const stream = {
+      endMeasurement: jest.fn(),
+      async *[Symbol.asyncIterator]() {
+        yield {
+          choices: [{ delta: { content: "Hello" }, finish_reason: null }],
+        };
+        yield {
+          choices: [{ delta: { content: " moon" }, finish_reason: null }],
+        };
+        yield { choices: [{ delta: {}, finish_reason: "stop" }] };
+      },
+    };
+    const unusedCloseListener = jest.fn();
+
+    response.on("close", unusedCloseListener);
+    response.removeListener("close", unusedCloseListener);
+    const fullText = await handleDefaultStreamResponseV2(response, stream, {
+      uuid: "stream-test",
+      sources: [],
+    });
+
+    expect(fullText).toBe("Hello moon");
+    expect(stream.endMeasurement).toHaveBeenCalledTimes(1);
+    expect(response.listenerCount("close")).toBe(0);
+    expect(written.join("")).toContain("Hello");
+    expect(written.join("")).toContain("moon");
+  });
+
+  it("reports workspace repair failures from Workspace.upsert", async () => {
+    Workspace.get.mockResolvedValue(null);
+    Workspace.upsert.mockResolvedValue({
+      workspace: null,
+      error: "database unavailable",
+    });
+    const response = responseMock();
+
+    await swarmsyWebsiteNpcRepairWorkspaces({}, response);
+
+    expect(response.status).toHaveBeenCalledWith(200);
+    const payload = response.json.mock.calls[0][0];
+    expect(payload.success).toBe(false);
+    expect(payload.results).toHaveLength(3);
+    expect(payload.results[0]).toEqual(
+      expect.objectContaining({
+        slug: "website-paperclip",
+        success: false,
+        created: false,
+        exists: false,
+        error: "database unavailable",
+        workspace: null,
+      })
+    );
+  });
+
+  it("rejects public bridge requests missing an Origin header", async () => {
+    const response = responseMock();
+
+    await swarmsyPublicNpcBridge(
+      request({ npcId: "paperclip", message: "hello" }, null, ""),
+      response
+    );
+
+    expect(response.status).toHaveBeenCalledWith(403);
+    expect(response.json).toHaveBeenCalledWith({
+      success: false,
+      error: "Origin is not allowed.",
+    });
+  });
+
+  it("rejects public bridge requests from disallowed origins", async () => {
+    const response = responseMock();
+
+    await swarmsyPublicNpcBridge(
+      request(
+        { npcId: "paperclip", message: "hello" },
+        null,
+        "https://evil.example"
+      ),
+      response
+    );
+
+    expect(response.status).toHaveBeenCalledWith(403);
+    expect(response.json).toHaveBeenCalledWith({
+      success: false,
+      error: "Origin is not allowed.",
+    });
+  });
+
+  it("cleans up public bridge rate limit buckets so stale entries are bounded", async () => {
+    process.env.SWARMSY_PUBLIC_RATE_BUCKET_CAP = "2";
+    Workspace.get.mockResolvedValue({
+      id: 1,
+      slug: "website-paperclip",
+      name: "Website Paperclip Workspace",
+      chatMode: "automatic",
+    });
+
+    for (let i = 0; i < 5; i++) {
+      await swarmsyPublicNpcBridge(
+        request(
+          {
+            npcId: "paperclip",
+            message: `hello ${i}`,
+            pagePath: "/paperclip.html",
+          },
+          null,
+          "https://cryptomoonboys.com",
+          `127.0.0.${i}`
+        ),
+        responseMock()
+      );
+    }
+
+    expect(__publicNpcBridgeBucketCountForTests()).toBeLessThanOrEqual(2);
+  });
+
+  it('treats allowedPublicPagePaths ["/"] as allowing nested public paths', async () => {
+    await saveNpc({
+      npcId: "paperclip",
+      displayName: "Paperclip",
+      enabled: true,
+      workspaceSlug: "website-paperclip",
+      allowedPublicPagePaths: ["/"],
+    });
+    Workspace.get.mockResolvedValue({
+      id: 1,
+      slug: "website-paperclip",
+      name: "Website Paperclip Workspace",
+      chatMode: "automatic",
+    });
+    const response = responseMock();
+
+    await swarmsyPublicNpcChat(
+      request({ npcId: "paperclip", message: "hello", pagePath: "/deep/page" }),
+      response
+    );
+
+    expect(response.status).toHaveBeenCalledWith(200);
+    expect(response.json).toHaveBeenCalledWith(
+      expect.objectContaining({ workspaceSlug: "website-paperclip" })
+    );
+  });
+
+  it("rejects missing bridge token", async () => {
+    const response = responseMock();
+    await swarmsyPublicNpcChat(
+      request({ npcId: "paperclip", message: "hello" }, ""),
+      response
+    );
+
+    expect(response.status).toHaveBeenCalledWith(401);
+    expect(response.json).toHaveBeenCalledWith(
+      expect.objectContaining({ error: "unauthorized_bridge" })
+    );
+  });
+
+  it("rejects invalid bridge token", async () => {
+    const response = responseMock();
+    await swarmsyPublicNpcChat(
+      request({ npcId: "paperclip", message: "hello" }, "wrong"),
+      response
+    );
+
+    expect(response.status).toHaveBeenCalledWith(401);
+    expect(response.json).toHaveBeenCalledWith(
+      expect.objectContaining({ error: "unauthorized_bridge" })
+    );
+  });
+
+  it("rejects unknown NPC id", async () => {
+    const response = responseMock();
+    await swarmsyPublicNpcChat(
+      request({ npcId: "unknown", message: "hello" }),
+      response
+    );
+
+    expect(response.status).toHaveBeenCalledWith(404);
+    expect(response.json).toHaveBeenCalledWith(
+      expect.objectContaining({ success: false, error: "Unknown NPC id." })
+    );
+  });
+
+  it("rejects disabled NPCs", async () => {
+    await saveNpc({
+      npcId: "paperclip",
+      displayName: "Paperclip",
+      enabled: false,
+      workspaceSlug: "website-paperclip",
+    });
+    const response = responseMock();
+
+    await swarmsyPublicNpcChat(
+      request({ npcId: "paperclip", message: "hello" }),
+      response
+    );
+
+    expect(response.status).toHaveBeenCalledWith(403);
+    expect(response.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: false,
+        error: "This NPC is currently disabled.",
+      })
+    );
+  });
+
+  it("routes Paperclip to the Paperclip workspace", async () => {
+    Workspace.get.mockResolvedValue({
+      id: 1,
+      slug: "website-paperclip",
+      name: "Website Paperclip Workspace",
+      chatMode: "automatic",
+    });
+    const response = responseMock();
+
+    await swarmsyPublicNpcChat(
+      request({
+        npcId: "paperclip",
+        message: "what is this?",
+        pagePath: "/paperclip.html",
+      }),
+      response
+    );
+
+    expect(Workspace.get).toHaveBeenCalledWith({ slug: "website-paperclip" });
+    expect(response.status).toHaveBeenCalledWith(200);
+    expect(response.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: true,
+        npcId: "paperclip",
+        workspaceSlug: "website-paperclip",
+        reply: "live reply from website-paperclip",
+      })
+    );
+  });
+
+  it("routes Sparky to the Sparky workspace", async () => {
+    Workspace.get.mockResolvedValue({
+      id: 2,
+      slug: "website-sparky",
+      name: "Website Sparky Workspace",
+      chatMode: "automatic",
+    });
+    const response = responseMock();
+
+    await swarmsyPublicNpcChat(
+      request({
+        npcId: "sparky",
+        message: "help me",
+        pagePath: "/paperclip.html",
+      }),
+      response
+    );
+
+    expect(Workspace.get).toHaveBeenCalledWith({ slug: "website-sparky" });
+    expect(response.status).toHaveBeenCalledWith(200);
+    expect(response.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: true,
+        npcId: "sparky",
+        workspaceSlug: "website-sparky",
+        reply: "live reply from website-sparky",
+      })
+    );
+  });
+
+  it("returns a safe setup-needed error for missing workspaces", async () => {
+    Workspace.get.mockResolvedValue(null);
+    const response = responseMock();
+
+    await swarmsyPublicNpcChat(
+      request({
+        npcId: "paperclip",
+        message: "hello",
+        pagePath: "/paperclip.html",
+      }),
+      response
+    );
+
+    expect(response.status).toHaveBeenCalledWith(424);
+    expect(response.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: false,
+        error: "missing_workspace",
+        reply: expect.stringContaining("workspace"),
+      })
+    );
+  });
+
+  it("allows the public bridge to send a mocked website message without exposing the bridge token", async () => {
+    Workspace.get.mockResolvedValue({
+      id: 1,
+      slug: "website-paperclip",
+      name: "Website Paperclip Workspace",
+      chatMode: "automatic",
+    });
+    const response = responseMock();
+
+    await swarmsyPublicNpcBridge(
+      request(
+        { npcId: "paperclip", message: "hello", pagePath: "/paperclip.html" },
+        null
+      ),
+      response
+    );
+
+    expect(response.status).toHaveBeenCalledWith(200);
+    expect(response.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: true,
+        workspaceSlug: "website-paperclip",
+      })
+    );
+    expect(response.json.mock.calls[0][0]).not.toHaveProperty("bridgeToken");
   });
 });

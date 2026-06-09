@@ -150,6 +150,9 @@ export default {
     agentSkills: () => {
       return "/settings/agents";
     },
+    websiteNpcs: () => {
+      return "/settings/website-npcs";
+    },
     chat: () => {
       return "/settings/chat";
     },

@@ -134,6 +134,15 @@ const router = createBrowserRouter([
         },
       },
       {
+        path: "/settings/website-npcs",
+        lazy: async () => {
+          const { default: WebsiteNpcsAdmin } = await import(
+            "@/pages/Admin/WebsiteNpcs"
+          );
+          return { element: <ManagerRoute Component={WebsiteNpcsAdmin} /> };
+        },
+      },
+      {
         path: "/settings/agents/builder",
         lazy: async () => {
           const { default: AgentBuilder } = await import(
