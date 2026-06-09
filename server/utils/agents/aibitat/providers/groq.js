@@ -19,9 +19,9 @@ class GroqProvider extends InheritMultiple([Provider, UnTooled]) {
     const client = new OpenAI({
       baseURL: "https://api.groq.com/openai/v1",
       apiKey: process.env.GROQ_API_KEY,
-      maxRetries: 3,
     });
 
+    this.providerTag = "groq";
     this._client = client;
     this.model = model;
     this.verbose = true;

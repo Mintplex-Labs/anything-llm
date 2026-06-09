@@ -145,6 +145,7 @@ const webScraping = {
               model: this.super.model,
               controllerSignal: this.controller.signal,
               content,
+              aibitat: this.super,
             });
           },
         });

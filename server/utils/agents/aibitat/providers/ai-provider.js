@@ -22,6 +22,8 @@ const {
   parseDockerModelRunnerEndpoint,
 } = require("../../../AiProviders/dockerModelRunner");
 const { parseFoundryBasePath } = require("../../../AiProviders/foundry");
+const { AzureOpenAiLLM } = require("../../../AiProviders/azureOpenAi");
+const { DellProAiStudioLLM } = require("../../../AiProviders/dellProAiStudio");
 const {
   SystemPromptVariables,
 } = require("../../../../models/systemPromptVariables");
@@ -40,8 +42,20 @@ const DEFAULT_WORKSPACE_PROMPT =
  * @property {number} total_tokens - Total tokens used
  * @property {number} duration - Duration in seconds
  * @property {number} outputTps - Output tokens per second
- * @property {string} model - Model name
- * @property {Date} timestamp - Timestamp of the completion
+ * @property {string|null} model - Model name
+ * @property {string|null} provider - Provider class name
+ * @property {Date|null} timestamp - Timestamp of the completion
+ */
+
+/**
+ * @typedef {Object} AgentProviderInstance
+ * @property {string} model - The model identifier string.
+ * @property {boolean} [verbose] - Whether to log verbose introspection messages.
+ * @property {boolean} supportsAgentStreaming - Whether the provider supports streaming tool-call execution.
+ * @property {(handlerProps: Object) => void} attachHandlerProps - Attach invocation/handler context to the provider.
+ * @property {(messages: Array, functions?: Array, eventHandler?: Function) => Promise<{functionCall: any, textResponse: string}>} stream - Stream a chat completion with tool calling.
+ * @property {(messages: Array, functions?: Array) => Promise<{functionCall: any, textResponse: string, result?: string}>} complete - Non-streaming chat completion with tool calling.
+ * @property {() => ProviderUsageMetrics} getUsage - Get usage metrics from the last completion.
  */
 
 class Provider {
@@ -83,6 +97,13 @@ class Provider {
    */
   _requestStartTime = 0;
 
+  /**
+   * Tag identifying this provider for ENV-based opt-out of tool calling.
+   * Subclasses should set this in their constructor.
+   * @type {string|null}
+   */
+  providerTag = null;
+
   constructor(client) {
     if (this.constructor == Provider) {
       return;
@@ -115,26 +136,27 @@ class Provider {
   }
 
   /**
-   * Whether this provider supports native tool calling via the ENV flag.
-   * @param {string} providerTag - The tag of the provider to check (e.g. "bedrock", "openrouter", "groq", etc.).
+   * Checks if the provider is disabled via the PROVIDER_DISABLE_NATIVE_TOOL_CALLING env.
+   * @param {string} providerTag - The tag of the provider to check.
    * @returns {boolean}
    */
-  supportsNativeToolCallingViaEnv(providerTag = "") {
-    if (!("PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING" in process.env)) return false;
+  optsOutOfNativeToolCallingViaEnv(providerTag = null) {
     if (!providerTag) return false;
-    return (
-      process.env.PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING?.includes(
-        providerTag
-      ) || false
-    );
+    if (!("PROVIDER_DISABLE_NATIVE_TOOL_CALLING" in process.env)) return false;
+    const disabledProviders =
+      process.env.PROVIDER_DISABLE_NATIVE_TOOL_CALLING.split(",");
+    return disabledProviders.includes(providerTag);
   }
 
   /**
    * Whether this provider supports native OpenAI-compatible tool calling.
+   * Defaults to true (opt-out via PROVIDER_DISABLE_NATIVE_TOOL_CALLING env).
+   * Override in subclass and return false only if the provider genuinely cannot support tools.
    * @returns {boolean|Promise<boolean>}
    */
   supportsNativeToolCalling() {
-    return false;
+    if (!this.providerTag) return true;
+    return !this.optsOutOfNativeToolCallingViaEnv(this.providerTag);
   }
 
   /**
@@ -214,6 +236,16 @@ class Provider {
         });
       case "bedrock":
         return createBedrockChatClient(config);
+      case "azure":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: AzureOpenAiLLM.formatBaseUrl(
+              process.env.AZURE_OPENAI_ENDPOINT
+            ),
+          },
+          apiKey: process.env.AZURE_OPENAI_KEY,
+          ...config,
+        });
       case "fireworksai":
         return new ChatOpenAI({
           apiKey: process.env.FIREWORKS_AI_LLM_API_KEY,
@@ -320,6 +352,22 @@ class Provider {
           apiKey: process.env.SAMBANOVA_LLM_API_KEY ?? null,
           ...config,
         });
+      case "minimax":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.minimax.io/v1",
+          },
+          apiKey: process.env.MINIMAX_API_KEY || null,
+          ...config,
+        });
+      case "cerebras":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.cerebras.ai/v1",
+          },
+          apiKey: process.env.CEREBRAS_API_KEY || null,
+          ...config,
+        });
       // OSS Model Runners
       // case "anythingllm_ollama":
       //   return new ChatOllama({
@@ -405,12 +453,12 @@ class Provider {
           apiKey: process.env.LEMONADE_LLM_API_KEY || null,
           ...config,
         });
-      case "minimax":
+      case "dpais":
         return new ChatOpenAI({
           configuration: {
-            baseURL: "https://api.minimax.io/v1",
+            baseURL: DellProAiStudioLLM.parseBasePath(),
           },
-          apiKey: process.env.MINIMAX_API_KEY || null,
+          apiKey: null,
           ...config,
         });
       default:
@@ -427,8 +475,21 @@ class Provider {
    * @returns {number}
    */
   static contextLimit(provider = "openai", modelName) {
+    if (typeof provider !== "string") {
+      console.log(
+        `\x1b[43m\x1b[30m[.contextLimit warning] A non-string provider for .contextLimit was given — Returning fallback context limit of 8000.\x1b[0m\n\x1b[43m\x1b[30mThis is a bug and should be reported so that context windows are properly managed by AnythingLLM.\x1b[0m`
+      );
+      console.trace();
+      return 8_000;
+    }
+
     const llm = getLLMProviderClass({ provider });
-    if (!llm || !llm.hasOwnProperty("promptWindowLimit")) return 8_000;
+    if (!llm || !llm.hasOwnProperty("promptWindowLimit")) {
+      console.warn(
+        `\x1b[33m[.contextLimit warning]\x1b[0m Could not determine .promptWindowLimit for provider ${provider}. This could lead to incorrect context window management by AnythingLLM since we cannot determine the context window limit for this provider/model combination.`
+      );
+      return 8_000;
+    }
     return llm.promptWindowLimit(modelName);
   }
 

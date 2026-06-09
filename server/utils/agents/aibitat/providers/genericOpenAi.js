@@ -19,11 +19,11 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
 
   constructor(config = {}) {
     super();
+    this.providerTag = "generic-openai";
     const { model = "gpt-3.5-turbo" } = config;
     const client = new OpenAI({
       baseURL: process.env.GENERIC_OPEN_AI_BASE_PATH,
       apiKey: process.env.GENERIC_OPEN_AI_API_KEY ?? null,
-      maxRetries: 3,
       defaultHeaders: {
         "User-Agent": getAnythingLLMUserAgent(),
         ...GenericOpenAiLLM.parseCustomHeaders(),

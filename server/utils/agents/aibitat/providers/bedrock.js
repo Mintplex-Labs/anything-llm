@@ -32,6 +32,7 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
       model
     );
 
+    this.providerTag = "bedrock";
     this._client = client;
     this.model = model;
     this.verbose = true;

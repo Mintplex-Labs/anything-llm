@@ -1318,6 +1318,10 @@ const TRANSLATIONS = {
         cancel: "취소",
       },
     },
+    stt_unsupported: "이 브라우저에서는 마이크 접근이 지원되지 않습니다.",
+    stt_mic_denied:
+      "마이크에 접근할 수 없습니다. 권한을 부여하고 다시 시도해 주십시오.",
+    stt_transcription_failed: "전사 오류: {{error}}",
   },
   profile_settings: {
     edit_account: "계정 정보 수정",
