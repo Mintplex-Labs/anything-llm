@@ -111,6 +111,7 @@ AnythingLLM همچنین از چندین کاربر پشتیبانی می‌کن
 - [SambaNova Cloud (chat models)](https://cloud.sambanova.ai/)
 - [Lemonade by AMD](https://lemonade-server.ai)
 - [Minimax](https://platform.minimax.io)
+- [Cerebras (chat models)](https://www.cerebras.ai/)
 
 <div dir="rtl">
 

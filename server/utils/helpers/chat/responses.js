@@ -51,7 +51,11 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
       for await (const chunk of stream) {
         const message = chunk?.choices?.[0];
         const token = message?.delta?.content;
-        const reasoningToken = message?.delta?.reasoning_content;
+
+        // Reasoning token can be in different properties depending on the provider.
+        // eg: Cerebras uses `reasoning` instead of `reasoning_content` like OpenAI.
+        const reasoningToken =
+          message?.delta?.reasoning_content || message?.delta?.reasoning;
 
         // If we see usage metrics in the chunk, we can use them directly
         // instead of estimating them, but we only want to assign values if
@@ -69,6 +73,55 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
             hasUsageMetrics = true; // to stop estimating counter
             usage.completion_tokens = Number(chunk.usage.completion_tokens);
           }
+
+          // Some providers, like Cerebras, return the completion time in the usage metrics.
+          // This is used to report the real-time duration of the completion.
+          if (chunk.usage.hasOwnProperty("time_info")) {
+            usage.duration = chunk.usage.time_info.completion_time;
+          }
+        }
+
+        // Reasoning models will always return the reasoning text before the token text.
+        if (reasoningToken) {
+          // If the reasoning text is empty (''), we need to initialize it
+          // and send the first chunk of reasoning text.
+          if (reasoningText.length === 0) {
+            writeResponseChunk(response, {
+              uuid,
+              sources: [],
+              type: "textResponseChunk",
+              textResponse: `<think>${reasoningToken}`,
+              close: false,
+              error: false,
+            });
+            reasoningText += `<think>${reasoningToken}`;
+            continue;
+          } else {
+            writeResponseChunk(response, {
+              uuid,
+              sources: [],
+              type: "textResponseChunk",
+              textResponse: reasoningToken,
+              close: false,
+              error: false,
+            });
+            reasoningText += reasoningToken;
+          }
+        }
+
+        // If the reasoning text is not empty, but the reasoning token is empty
+        // and the token text is not empty we need to close the reasoning text and begin sending the token text.
+        if (!!reasoningText && !reasoningToken && token) {
+          writeResponseChunk(response, {
+            uuid,
+            sources: [],
+            type: "textResponseChunk",
+            textResponse: `</think>`,
+            close: false,
+            error: false,
+          });
+          fullText += `${reasoningText}</think>`;
+          reasoningText = "";
         }
 
         // Reasoning models will always return the reasoning text before the token text.

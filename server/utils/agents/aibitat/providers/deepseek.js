@@ -15,9 +15,9 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
     const client = new OpenAI({
       baseURL: "https://api.deepseek.com/v1",
       apiKey: process.env.DEEPSEEK_API_KEY ?? null,
-      maxRetries: 3,
     });
 
+    this.providerTag = "deepseek";
     this._client = client;
     this.model = model;
     this.verbose = true;
@@ -31,15 +31,6 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   get supportsAgentStreaming() {
-    return true;
-  }
-
-  /**
-   * All current DeepSeek models (deepseek-chat and deepseek-reasoner)
-   * support native OpenAI-compatible tool calling.
-   * @returns {boolean}
-   */
-  supportsNativeToolCalling() {
     return true;
   }
 

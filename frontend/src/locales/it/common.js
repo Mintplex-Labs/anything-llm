@@ -1288,6 +1288,11 @@ const TRANSLATIONS = {
         cancel: "Annulla",
       },
     },
+    stt_unsupported:
+      "L'accesso al microfono non è supportato in questo browser.",
+    stt_mic_denied:
+      "Impossibile accedere al microfono. Si prega di concedere i permessi e riprovare.",
+    stt_transcription_failed: "Errore di trascrizione: {{error}}",
   },
   profile_settings: {
     edit_account: "Modifica account",

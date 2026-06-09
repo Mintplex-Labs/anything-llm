@@ -179,9 +179,35 @@ function handlePfpUpload(request, response, next) {
   });
 }
 
+/**
+ * Handle in-memory audio upload for STT transcription. Audio buffers are
+ * passed straight to the STT provider so we never persist them to disk.
+ */
+function handleAudioUpload(request, response, next) {
+  const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 25 * 1024 * 1024 }, // 25MB matches OpenAI Whisper limit
+    fileFilter: (_req, file, cb) => {
+      if (!file.mimetype?.startsWith("audio/"))
+        return cb(new Error("Only audio uploads are allowed."));
+      cb(null, true);
+    },
+  }).single("audio");
+  upload(request, response, function (err) {
+    if (err) {
+      return response.status(500).json({
+        success: false,
+        error: `Invalid audio upload. ${err.message}`,
+      });
+    }
+    next();
+  });
+}
+
 module.exports = {
   handleFileUpload,
   handleAPIFileUpload,
   handleAssetUpload,
   handlePfpUpload,
+  handleAudioUpload,
 };
