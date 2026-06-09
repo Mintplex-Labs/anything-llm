@@ -21,6 +21,7 @@ class DockerModelRunnerProvider extends InheritMultiple([Provider, UnTooled]) {
    */
   constructor(config = {}) {
     super();
+    this.providerTag = "docker-model-runner";
     const model =
       config?.model || process.env.DOCKER_MODEL_RUNNER_LLM_MODEL_PREF || null;
     const client = new OpenAI({
@@ -50,6 +51,7 @@ class DockerModelRunnerProvider extends InheritMultiple([Provider, UnTooled]) {
    * @returns {boolean|Promise<boolean>}
    */
   async supportsNativeToolCalling() {
+    if (this.optsOutOfNativeToolCallingViaEnv(this.providerTag)) return false;
     if (this._supportsToolCalling !== null) return this._supportsToolCalling;
     const dmr = new DockerModelRunnerLLM(null, this.model);
     const capabilities = await dmr.getModelCapabilities();

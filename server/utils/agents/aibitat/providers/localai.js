@@ -21,6 +21,7 @@ class LocalAiProvider extends InheritMultiple([Provider, UnTooled]) {
       apiKey: process.env.LOCAL_AI_API_KEY ?? null,
     });
 
+    this.providerTag = "localai";
     this._client = client;
     this.model = model;
     this.verbose = true;
@@ -33,27 +34,6 @@ class LocalAiProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get supportsAgentStreaming() {
     return true;
-  }
-
-  /**
-   * Whether this provider supports native OpenAI-compatible tool calling.
-   * Since LocalAI does not expose model capabilities via API, we check
-   * the PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING ENV flag for "localai".
-   * @returns {boolean}
-   */
-  supportsNativeToolCalling() {
-    if (this._supportsToolCalling !== null) return this._supportsToolCalling;
-    const supportsToolCalling = this.supportsNativeToolCallingViaEnv("localai");
-    if (supportsToolCalling)
-      this.providerLog(
-        "LocalAI supports native tool calling is ENABLED via ENV."
-      );
-    else
-      this.providerLog(
-        "LocalAI supports native tool calling is DISABLED via ENV. Will use UnTooled instead."
-      );
-    this._supportsToolCalling = supportsToolCalling;
-    return supportsToolCalling;
   }
 
   // ---- UnTooled callbacks (used when native tool calling is not supported) ----

@@ -18,6 +18,7 @@ class DellProAiStudioProvider extends InheritMultiple([Provider, UnTooled]) {
    */
   constructor(config = {}) {
     super();
+    this.providerTag = "dpais";
     const model = config?.model || process.env.DPAIS_LLM_MODEL_PREF;
     const client = new OpenAI({
       baseURL: DellProAiStudioLLM.parseBasePath(), // Will use process.env.DPAIS_LLM_BASE_PATH if not provided
@@ -39,7 +40,8 @@ class DellProAiStudioProvider extends InheritMultiple([Provider, UnTooled]) {
 
   /**
    * Whether this provider supports native OpenAI-compatible tool calling.
-   * Override in subclass and return true to use native tool calling instead of UnTooled.
+   * It is unknown if Dell Pro AI Studio supports tool calling since we dont have a great way to test it
+   * as the service seems mostly deprecated at this point. Just going to keep it as-is for now.
    * @returns {boolean|Promise<boolean>}
    */
   supportsNativeToolCalling() {

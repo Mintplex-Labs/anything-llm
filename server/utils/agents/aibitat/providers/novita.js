@@ -17,6 +17,7 @@ class NovitaProvider extends InheritMultiple([Provider, UnTooled]) {
   constructor(config = {}) {
     const { model = "deepseek/deepseek-r1" } = config;
     super();
+    this.providerTag = "novita";
     const client = new OpenAI({
       baseURL: "https://api.novita.ai/v3/openai",
       apiKey: process.env.NOVITA_LLM_API_KEY,
@@ -50,6 +51,7 @@ class NovitaProvider extends InheritMultiple([Provider, UnTooled]) {
    * @returns {Promise<boolean>}
    */
   async supportsNativeToolCalling() {
+    if (this.optsOutOfNativeToolCallingViaEnv(this.providerTag)) return false;
     if (this._supportsToolCalling !== null) return this._supportsToolCalling;
     const novita = new NovitaLLM(null, this.model);
     const capabilities = await novita.getModelCapabilities();
