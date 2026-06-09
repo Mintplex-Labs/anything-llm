@@ -158,12 +158,18 @@ const docSummarizer = {
                 `${this.caller}: Summarizing ${filename ?? ""}...`
               );
 
-              this.super.onAbort(() => {
+              // Use a named listener so we can remove it after summarization completes,
+              // preventing listener accumulation when summarizing many documents.
+              const abortListener = () => {
                 this.super.handlerProps.log(
                   "Abort was triggered, exiting summarization early."
                 );
                 this.controller.abort();
-              });
+              };
+              this.super.emitter.on("abort", abortListener);
+              const cleanup = () => {
+                this.super.emitter.removeListener("abort", abortListener);
+              };
 
               return await summarizeContent({
                 provider: this.super.provider,
@@ -171,7 +177,7 @@ const docSummarizer = {
                 controllerSignal: this.controller.signal,
                 content: document.content,
                 aibitat: this.super,
-              });
+              }).finally(cleanup);
             } catch (error) {
               this.super.handlerProps.log(
                 `document-summarizer.summarizeDoc raised an error. ${error.message}`
