@@ -211,7 +211,7 @@ RUN chown -R anythingllm:0 /app && \
 # Setup the environment
 ENV NODE_ENV=production
 ENV ANYTHING_LLM_RUNTIME=docker
-ENV DEPLOYMENT_VERSION=1.13.0
+ENV DEPLOYMENT_VERSION=1.14.0
 ENV HOME=/app
 
 # Setup the healthcheck
