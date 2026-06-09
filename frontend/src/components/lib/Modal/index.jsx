@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { Children, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { X } from "@phosphor-icons/react";
 
@@ -127,18 +127,19 @@ export function ModalBody({ children, className = "" }) {
 }
 
 /**
- * Modal footer: the action row. Defaults to `justify-between` (Cancel left,
- * primary right) to match the design; override with `className` when needed.
+ * Modal footer: the action row. With multiple actions it defaults to
+ * `justify-between` (Cancel left, primary right) to match the design; with a
+ * single action it right-aligns. Override with `className` when needed.
  *
  * @param {Object} props - Component props
  * @param {import("react").ReactNode} props.children - Footer actions
  * @param {string} [props.className] - Extra classes appended to the footer container
  */
 export function ModalFooter({ children, className = "" }) {
+  const align =
+    Children.count(children) > 1 ? "justify-between" : "justify-end";
   return (
-    <div
-      className={`flex items-center justify-between gap-x-2 w-full ${className}`}
-    >
+    <div className={`flex items-center ${align} gap-x-2 w-full ${className}`}>
       {children}
     </div>
   );
