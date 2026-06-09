@@ -23,7 +23,6 @@ const {
 } = require("../../../AiProviders/dockerModelRunner");
 const { parseFoundryBasePath } = require("../../../AiProviders/foundry");
 const { AzureOpenAiLLM } = require("../../../AiProviders/azureOpenAi");
-const { DellProAiStudioLLM } = require("../../../AiProviders/dellProAiStudio");
 const {
   SystemPromptVariables,
 } = require("../../../../models/systemPromptVariables");
@@ -451,14 +450,6 @@ class Provider {
             baseURL: process.env.LEMONADE_LLM_BASE_PATH,
           },
           apiKey: process.env.LEMONADE_LLM_API_KEY || null,
-          ...config,
-        });
-      case "dpais":
-        return new ChatOpenAI({
-          configuration: {
-            baseURL: DellProAiStudioLLM.parseBasePath(),
-          },
-          apiKey: null,
           ...config,
         });
       default:
