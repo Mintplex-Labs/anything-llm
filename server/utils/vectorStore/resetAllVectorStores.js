@@ -31,12 +31,13 @@ async function resetAllVectorStores({ vectorDbKey }) {
     );
     const VectorDb = getVectorDbClass(vectorDbKey);
 
-    if (vectorDbKey === "pgvector") {
+    if (vectorDbKey === "pgvector" || vectorDbKey === "oceanbase") {
       /*
       pgvector has a reset method that drops the entire embedding table
       which is required since if this function is called we will need to
       reset the embedding column VECTOR dimension value and you cannot change
       the dimension value of an existing vector column.
+      oceanbase drops all VTB_* vector tables for a clean dimension/layout reset.
       */
       await VectorDb.reset();
     } else {
