@@ -52,7 +52,7 @@ export default function NewEmbedModal({ closeModal }) {
         title="Create new embed for workspace"
         onClose={closeModal}
       />
-      <ModalBody className="max-h-[60vh] overflow-y-auto">
+      <ModalBody>
         <WorkspaceSelection />
         <ChatModeSelection />
         <PermittedDomains />
@@ -314,6 +314,7 @@ export const BooleanInput = ({ name, title, hint, defaultValue = null }) => {
       variant="horizontal"
       label={title}
       description={hint}
+      value="on"
       enabled={status}
       onChange={(checked) => setStatus(checked)}
     />

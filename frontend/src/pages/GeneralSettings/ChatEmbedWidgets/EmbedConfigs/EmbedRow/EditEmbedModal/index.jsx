@@ -39,7 +39,7 @@ export default function EditEmbedModal({ embed, closeModal }) {
   return (
     <form onSubmit={handleUpdate} className="flex flex-col gap-y-5">
       <ModalHeader title={`Update embed #${embed.id}`} onClose={closeModal} />
-      <ModalBody className="max-h-[60vh] overflow-y-auto">
+      <ModalBody>
         <WorkspaceSelection defaultValue={embed.workspace.id} />
         <ChatModeSelection defaultValue={embed.chat_mode} />
         <PermittedDomains
