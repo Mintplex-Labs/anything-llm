@@ -63,14 +63,13 @@ export default function ApiCallNode({
           URL
         </label>
         <div className="flex gap-2">
-          <div className="flex-1">
-            <VariableInput
-              ref={urlInputRef}
-              placeholder="https://api.example.com/endpoint"
-              value={config.url}
-              onChange={(e) => onConfigChange({ url: e.target.value })}
-            />
-          </div>
+          <VariableInput
+            ref={urlInputRef}
+            className="flex-1"
+            placeholder="https://api.example.com/endpoint"
+            value={config.url}
+            onChange={(e) => onConfigChange({ url: e.target.value })}
+          />
           <div className="relative">
             <button
               ref={varButtonRef}
@@ -143,15 +142,14 @@ export default function ApiCallNode({
                 autoComplete="off"
                 spellCheck={false}
               />
-              <div className="flex-1">
-                <VariableInput
-                  placeholder="Value"
-                  value={header.value}
-                  onChange={(e) =>
-                    handleHeaderChange(index, "value", e.target.value)
-                  }
-                />
-              </div>
+              <VariableInput
+                className="flex-1"
+                placeholder="Value"
+                value={header.value}
+                onChange={(e) =>
+                  handleHeaderChange(index, "value", e.target.value)
+                }
+              />
               <button
                 onClick={() => removeHeader(index)}
                 className="p-2.5 rounded-lg border-none bg-theme-settings-input-bg text-theme-text-primary hover:text-red-500 hover:border-red-500/20 hover:bg-red-500/10 transition-colors duration-300"
@@ -220,20 +218,16 @@ export default function ApiCallNode({
                       autoComplete="off"
                       spellCheck={false}
                     />
-                    <div className="flex-1">
-                      <VariableInput
-                        placeholder="Value"
-                        value={item.value}
-                        onChange={(e) => {
-                          const newFormData = [...(config.formData || [])];
-                          newFormData[index] = {
-                            ...item,
-                            value: e.target.value,
-                          };
-                          onConfigChange({ formData: newFormData });
-                        }}
-                      />
-                    </div>
+                    <VariableInput
+                      className="flex-1"
+                      placeholder="Value"
+                      value={item.value}
+                      onChange={(e) => {
+                        const newFormData = [...(config.formData || [])];
+                        newFormData[index] = { ...item, value: e.target.value };
+                        onConfigChange({ formData: newFormData });
+                      }}
+                    />
                     <button
                       onClick={() => {
                         const newFormData = [...(config.formData || [])].filter(

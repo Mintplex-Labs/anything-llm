@@ -28,7 +28,14 @@ const FIELD_TEXT = "block w-full p-2.5 text-sm";
  * API Call block's "insert variable" button) can read/set the cursor position.
  */
 const VariableInput = forwardRef(function VariableInput(
-  { value = "", onChange, multiline = false, mono = false, ...props },
+  {
+    value = "",
+    onChange,
+    multiline = false,
+    mono = false,
+    className = "",
+    ...props
+  },
   ref
 ) {
   const backdropRef = useRef(null);
@@ -46,8 +53,14 @@ const VariableInput = forwardRef(function VariableInput(
     ? "whitespace-pre-wrap break-words"
     : "whitespace-pre";
 
+  // input and textarea behave identically here except for the tag, the resize
+  // handle, and the text type, so render whichever one through a single path.
+  const Field = multiline ? "textarea" : "input";
+
   return (
-    <div className="relative w-full rounded-lg bg-theme-settings-input-bg">
+    <div
+      className={`relative w-full rounded-lg bg-theme-settings-input-bg ${className}`}
+    >
       <div
         ref={backdropRef}
         aria-hidden="true"
@@ -56,30 +69,19 @@ const VariableInput = forwardRef(function VariableInput(
         {renderHighlightedParts(value)}
       </div>
 
-      {multiline ? (
-        <textarea
-          ref={ref}
-          value={value}
-          onChange={onChange}
-          onScroll={handleScroll}
-          autoComplete="off"
-          spellCheck={false}
-          className={`relative resize-y bg-transparent text-theme-text-primary placeholder:text-theme-settings-input-placeholder rounded-lg outline-none focus:outline-primary-button active:outline-primary-button ${FIELD_TEXT} ${fontClass}`}
-          {...props}
-        />
-      ) : (
-        <input
-          ref={ref}
-          type="text"
-          value={value}
-          onChange={onChange}
-          onScroll={handleScroll}
-          autoComplete="off"
-          spellCheck={false}
-          className={`relative bg-transparent text-theme-text-primary placeholder:text-theme-settings-input-placeholder rounded-lg outline-none focus:outline-primary-button active:outline-primary-button ${FIELD_TEXT} ${fontClass}`}
-          {...props}
-        />
-      )}
+      <Field
+        ref={ref}
+        type={multiline ? undefined : "text"}
+        value={value}
+        onChange={onChange}
+        onScroll={handleScroll}
+        autoComplete="off"
+        spellCheck={false}
+        className={`relative bg-transparent text-theme-text-primary placeholder:text-theme-settings-input-placeholder rounded-lg outline-none focus:outline-primary-button active:outline-primary-button ${
+          multiline ? "resize-y" : ""
+        } ${FIELD_TEXT} ${fontClass}`}
+        {...props}
+      />
     </div>
   );
 });
