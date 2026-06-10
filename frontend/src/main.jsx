@@ -10,10 +10,14 @@ import PrivateRoute, {
 import Login from "@/pages/Login";
 import SimpleSSOPassthrough from "@/pages/Login/SSO/simple";
 import OnboardingFlow from "@/pages/OnboardingFlow";
+
 import "@/index.css";
 
 const isDev = import.meta.env.DEV;
 const REACTWRAP = isDev ? React.Fragment : React.StrictMode;
+
+const includeSwarmsyAdminNpcRoutes =
+  import.meta.env.VITE_SWARMSY_PUBLIC_DOWNLOAD_BUILD !== "true";
 
 const router = createBrowserRouter([
   {
@@ -133,15 +137,19 @@ const router = createBrowserRouter([
           return { element: <AdminRoute Component={AdminAgents} /> };
         },
       },
-      {
-        path: "/settings/website-npcs",
-        lazy: async () => {
-          const { default: WebsiteNpcsAdmin } = await import(
-            "@/pages/Admin/WebsiteNpcs"
-          );
-          return { element: <ManagerRoute Component={WebsiteNpcsAdmin} /> };
-        },
-      },
+      ...(includeSwarmsyAdminNpcRoutes
+        ? [
+            {
+              path: "/settings/website-npcs",
+              lazy: async () => {
+                const { default: WebsiteNpcsAdmin } = await import(
+                  "@/pages/Admin/WebsiteNpcs"
+                );
+                return { element: <AdminRoute Component={WebsiteNpcsAdmin} /> };
+              },
+            },
+          ]
+        : []),
       {
         path: "/settings/agents/builder",
         lazy: async () => {

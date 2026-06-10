@@ -49,7 +49,7 @@ function TextArea(props) {
 
 export default function WebsiteNpcsAdmin() {
   const [status, setStatus] = useState(null);
-  const [selectedNpcId, setSelectedNpcId] = useState("paperclip");
+  const [selectedNpcId, setSelectedNpcId] = useState("sparky");
   const [draft, setDraft] = useState(null);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState(null);
@@ -60,7 +60,7 @@ export default function WebsiteNpcsAdmin() {
     setStatus(data);
     const selected =
       data?.npcs?.find((npc) => npc.npcId === selectedNpcId) || data?.npcs?.[0];
-    setSelectedNpcId(selected?.npcId || "paperclip");
+    setSelectedNpcId(selected?.npcId || "sparky");
     setDraft(selected || null);
     setLoading(false);
   }
@@ -90,7 +90,7 @@ export default function WebsiteNpcsAdmin() {
     const result = await WebsiteNpcs.repairWorkspaces();
     setMessage(
       result.success
-        ? "Default website NPC workspaces were checked and missing ones were created."
+        ? "Default Sparky website workspaces were checked and missing ones were created."
         : result.message || result.error
     );
     await refresh();
@@ -109,9 +109,10 @@ export default function WebsiteNpcsAdmin() {
               SWARMSY Website NPC Control Panel
             </p>
             <p className="text-xs leading-[18px] font-base text-theme-text-secondary max-w-4xl">
-              Private admin controls for public Crypto Moonboys NPCs. The
-              website only talks to the public bridge; live answers are routed
-              to SWARMSY workspaces and this page never reveals bridge tokens.
+              Private admin controls for the public Crypto Moonboys Sparky NPC.
+              The website only talks to the public bridge; live answers are
+              routed to the Website Sparky workspace and this page never reveals
+              bridge tokens.
             </p>
           </div>
 
@@ -126,7 +127,7 @@ export default function WebsiteNpcsAdmin() {
                       Bridge endpoint status
                     </h2>
                     <CTAButton onClick={repairWorkspaces}>
-                      Create / repair missing defaults
+                      Create / repair Sparky defaults
                     </CTAButton>
                   </div>
                   <div className="grid md:grid-cols-2 gap-3 text-sm">
@@ -146,7 +147,8 @@ export default function WebsiteNpcsAdmin() {
                       </Pill>
                     </div>
                     <div className="text-theme-text-secondary">
-                      Allowed NPCs: {status.bridge?.allowedNpcIds?.join(", ")}
+                      Allowed public NPCs:{" "}
+                      {status.bridge?.allowedNpcIds?.join(", ")}
                     </div>
                   </div>
                   <p className="mt-3 text-xs text-theme-text-secondary">
@@ -211,7 +213,7 @@ export default function WebsiteNpcsAdmin() {
               <div className="grid lg:grid-cols-3 gap-4">
                 <div className="rounded-xl border border-white/10 bg-theme-bg-container p-4">
                   <h2 className="text-theme-text-primary font-bold mb-3">
-                    NPCs
+                    Public NPC
                   </h2>
                   <div className="flex flex-col gap-2">
                     {status.npcs?.map((npc) => {
@@ -250,7 +252,7 @@ export default function WebsiteNpcsAdmin() {
                 <div className="rounded-xl border border-white/10 bg-theme-bg-container p-4 lg:col-span-2">
                   <div className="flex justify-between items-center mb-4 gap-3">
                     <h2 className="text-theme-text-primary font-bold">
-                      Edit NPC routing and persona
+                      Edit Sparky routing and persona
                     </h2>
                     <CTAButton onClick={saveDraft} disabled={!draft}>
                       Save NPC

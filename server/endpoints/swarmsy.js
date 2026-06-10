@@ -18,6 +18,7 @@ const {
   allowedNpcIds: websiteNpcAllowedIds,
   originAllowed: websiteNpcOriginAllowed,
   publicNpcChat,
+  resolvePublicNpcId: websiteNpcResolvePublicNpcId,
   repairDefaultWorkspaces: repairWebsiteNpcWorkspaces,
   saveNpc: saveWebsiteNpc,
 } = require("../utils/swarmsy/websiteNpcControl");
@@ -599,7 +600,8 @@ async function swarmsyPublicNpcBridge(request, response) {
 
   const body = reqBody(request);
   const allowedNpcIds = websiteNpcAllowedIds();
-  if (!allowedNpcIds.includes(String(body.npcId || "").toLowerCase())) {
+  const resolvedNpcId = websiteNpcResolvePublicNpcId(body.npcId || "");
+  if (!allowedNpcIds.includes(resolvedNpcId)) {
     return response
       .status(404)
       .json({ success: false, error: "Unknown NPC id." });
@@ -701,19 +703,19 @@ function swarmsyEndpoints(app) {
 
   app.get(
     "/swarmsy/website-npcs/status",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
     swarmsyWebsiteNpcAdminStatus
   );
 
   app.post(
     "/swarmsy/website-npcs",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
     swarmsyWebsiteNpcSave
   );
 
   app.post(
     "/swarmsy/website-npcs/repair-workspaces",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
     swarmsyWebsiteNpcRepairWorkspaces
   );
 

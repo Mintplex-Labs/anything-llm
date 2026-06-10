@@ -151,7 +151,9 @@ export default {
       return "/settings/agents";
     },
     websiteNpcs: () => {
-      return "/settings/website-npcs";
+      return import.meta.env.VITE_SWARMSY_PUBLIC_DOWNLOAD_BUILD === "true"
+        ? "/"
+        : "/settings/website-npcs";
     },
     chat: () => {
       return "/settings/chat";

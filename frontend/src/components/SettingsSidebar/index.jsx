@@ -24,6 +24,7 @@ import System from "@/models/system";
 import Option from "./MenuOption";
 import { CanViewChatHistoryProvider } from "../CanViewChatHistory";
 import useAppVersion from "@/hooks/useAppVersion";
+import { IS_SWARMSY_PUBLIC_DOWNLOAD_BUILD } from "@/utils/swarmsyBuildMode";
 
 export default function SettingsSidebar() {
   const { t } = useTranslation();
@@ -292,12 +293,16 @@ const SidebarOptions = ({ user = null, t }) => (
               href: paths.settings.invites(),
               roles: ["admin", "manager"],
             },
-            {
-              btnText: "Website NPCs",
-              href: paths.settings.websiteNpcs(),
-              flex: true,
-              roles: ["admin", "manager"],
-            },
+            ...(IS_SWARMSY_PUBLIC_DOWNLOAD_BUILD
+              ? []
+              : [
+                  {
+                    btnText: "Website NPCs",
+                    href: paths.settings.websiteNpcs(),
+                    flex: true,
+                    roles: ["admin"],
+                  },
+                ]),
             {
               btnText: "Default System Prompt",
               href: paths.settings.defaultSystemPrompt(),
