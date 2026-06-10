@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/refs */
 import React, { useRef, useState } from "react";
 import { Plus, X, CaretDown } from "@phosphor-icons/react";
+import VariableInput from "../../VariableInput";
 
 export default function ApiCallNode({
   config,
@@ -62,16 +63,14 @@ export default function ApiCallNode({
           URL
         </label>
         <div className="flex gap-2">
-          <input
-            ref={urlInputRef}
-            type="text"
-            placeholder="https://api.example.com/endpoint"
-            value={config.url}
-            onChange={(e) => onConfigChange({ url: e.target.value })}
-            className="flex-1 border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none p-2.5"
-            autoComplete="off"
-            spellCheck={false}
-          />
+          <div className="flex-1">
+            <VariableInput
+              ref={urlInputRef}
+              placeholder="https://api.example.com/endpoint"
+              value={config.url}
+              onChange={(e) => onConfigChange({ url: e.target.value })}
+            />
+          </div>
           <div className="relative">
             <button
               ref={varButtonRef}
@@ -144,17 +143,15 @@ export default function ApiCallNode({
                 autoComplete="off"
                 spellCheck={false}
               />
-              <input
-                type="text"
-                placeholder="Value"
-                value={header.value}
-                onChange={(e) =>
-                  handleHeaderChange(index, "value", e.target.value)
-                }
-                className="flex-1 border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none p-2.5"
-                autoComplete="off"
-                spellCheck={false}
-              />
+              <div className="flex-1">
+                <VariableInput
+                  placeholder="Value"
+                  value={header.value}
+                  onChange={(e) =>
+                    handleHeaderChange(index, "value", e.target.value)
+                  }
+                />
+              </div>
               <button
                 onClick={() => removeHeader(index)}
                 className="p-2.5 rounded-lg border-none bg-theme-settings-input-bg text-theme-text-primary hover:text-red-500 hover:border-red-500/20 hover:bg-red-500/10 transition-colors duration-300"
@@ -198,14 +195,13 @@ export default function ApiCallNode({
               </option>
             </select>
             {config.bodyType === "json" ? (
-              <textarea
+              <VariableInput
+                multiline
+                mono
+                rows={4}
                 placeholder='{"key": "value"}'
                 value={config.body}
                 onChange={(e) => onConfigChange({ body: e.target.value })}
-                className="w-full p-2.5 text-sm rounded-lg bg-theme-bg-primary border border-white/5 text-theme-text-primary placeholder:text-theme-text-secondary/20 focus:border-primary-button focus:ring-1 focus:ring-primary-button outline-none light:bg-theme-settings-input-bg light:border-black/10 font-mono"
-                rows={4}
-                autoComplete="off"
-                spellCheck={false}
               />
             ) : config.bodyType === "form" ? (
               <div className="space-y-2">
@@ -224,19 +220,20 @@ export default function ApiCallNode({
                       autoComplete="off"
                       spellCheck={false}
                     />
-                    <input
-                      type="text"
-                      placeholder="Value"
-                      value={item.value}
-                      onChange={(e) => {
-                        const newFormData = [...(config.formData || [])];
-                        newFormData[index] = { ...item, value: e.target.value };
-                        onConfigChange({ formData: newFormData });
-                      }}
-                      className="flex-1 p-2.5 text-sm rounded-lg bg-theme-bg-primary border border-white/5 text-theme-text-primary placeholder:text-theme-text-secondary/20 focus:border-primary-button focus:ring-1 focus:ring-primary-button outline-none light:bg-theme-settings-input-bg light:border-black/10"
-                      autoComplete="off"
-                      spellCheck={false}
-                    />
+                    <div className="flex-1">
+                      <VariableInput
+                        placeholder="Value"
+                        value={item.value}
+                        onChange={(e) => {
+                          const newFormData = [...(config.formData || [])];
+                          newFormData[index] = {
+                            ...item,
+                            value: e.target.value,
+                          };
+                          onConfigChange({ formData: newFormData });
+                        }}
+                      />
+                    </div>
                     <button
                       onClick={() => {
                         const newFormData = [...(config.formData || [])].filter(
@@ -265,14 +262,12 @@ export default function ApiCallNode({
                 </button>
               </div>
             ) : (
-              <textarea
+              <VariableInput
+                multiline
+                rows={4}
                 placeholder="Raw request body..."
                 value={config.body}
                 onChange={(e) => onConfigChange({ body: e.target.value })}
-                className="w-full border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none p-2.5"
-                rows={4}
-                autoComplete="off"
-                spellCheck={false}
               />
             )}
           </div>

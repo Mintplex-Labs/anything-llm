@@ -1,5 +1,6 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { Plus, X } from "@phosphor-icons/react";
+import { VARIABLE_HIGHLIGHT_CLASS } from "../../VariableInput";
 
 export default function StartNode({
   config,
@@ -13,9 +14,40 @@ export default function StartNode({
     onConfigChange({ variables: newVars });
   };
 
+  const definedVariables = config.variables.filter((v) => v.name);
+
   return (
     <div className="space-y-4">
-      <h3 className="text-sm font-medium text-theme-text-primary">Variables</h3>
+      <div className="space-y-1">
+        <h3 className="text-sm font-medium text-theme-text-primary">
+          Variables
+        </h3>
+        <p className="text-xs text-theme-text-secondary">
+          Define values here, then reference them in any block below by wrapping
+          the name in{" "}
+          <span
+            className={`${VARIABLE_HIGHLIGHT_CLASS} px-1 py-0.5 text-theme-text-primary`}
+          >
+            {"${variableName}"}
+          </span>
+          . References are highlighted as you type.
+        </p>
+        {definedVariables.length > 0 && (
+          <p className="text-xs text-theme-text-secondary">
+            For example:{" "}
+            {definedVariables.slice(0, 3).map((variable, index) => (
+              <Fragment key={variable.name}>
+                <span
+                  className={`${VARIABLE_HIGHLIGHT_CLASS} px-1 py-0.5 text-theme-text-primary`}
+                >
+                  {`\${${variable.name}}`}
+                </span>
+                {index < Math.min(definedVariables.length, 3) - 1 && ", "}
+              </Fragment>
+            ))}
+          </p>
+        )}
+      </div>
       {config.variables.map((variable, index) => (
         <div key={index} className="flex gap-2">
           <input
