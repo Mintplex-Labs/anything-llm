@@ -15,6 +15,7 @@ export default function StartNode({
   };
 
   const definedVariables = config.variables.filter((v) => v.name);
+  const exampleVariables = definedVariables.slice(0, 3);
 
   return (
     <div className="space-y-4">
@@ -32,17 +33,17 @@ export default function StartNode({
           </span>
           . References are highlighted as you type.
         </p>
-        {definedVariables.length > 0 && (
+        {exampleVariables.length > 0 && (
           <p className="text-xs text-theme-text-secondary">
             For example:{" "}
-            {definedVariables.slice(0, 3).map((variable, index) => (
+            {exampleVariables.map((variable, index) => (
               <Fragment key={variable.name}>
                 <span
                   className={`${VARIABLE_HIGHLIGHT_CLASS} px-1 py-0.5 text-theme-text-primary`}
                 >
                   {`\${${variable.name}}`}
                 </span>
-                {index < Math.min(definedVariables.length, 3) - 1 && ", "}
+                {index < exampleVariables.length - 1 && ", "}
               </Fragment>
             ))}
           </p>
