@@ -1,278 +1,245 @@
 import katex from "katex";
 import "katex/dist/katex.min.css";
 
-// Test if potential opening or closing delimieter
-// Assumes that there is a "$" at state.src[pos]
-function isValidDelim(state, pos) {
-  var prevChar,
-    nextChar,
-    max = state.posMax,
-    can_open = true,
-    can_close = true;
+// Validate whether a $ at `pos` can open/close inline math.
+// This preserves common markdown behavior and avoids parsing currency badly.
+function isValidDollarDelim(state, pos) {
+  const max = state.posMax;
+  const prevChar = pos > 0 ? state.src.charCodeAt(pos - 1) : -1;
+  const nextChar = pos + 1 <= max ? state.src.charCodeAt(pos + 1) : -1;
 
-  prevChar = pos > 0 ? state.src.charCodeAt(pos - 1) : -1;
-  nextChar = pos + 1 <= max ? state.src.charCodeAt(pos + 1) : -1;
+  let canOpen = true;
+  let canClose = true;
 
-  // Only apply whitespace rules if we're dealing with $ delimiter
-  if (state.src[pos] === "$") {
-    if (
-      prevChar === 0x20 /* " " */ ||
-      prevChar === 0x09 /* \t */ ||
-      (nextChar >= 0x30 /* "0" */ && nextChar <= 0x39) /* "9" */
-    ) {
-      can_close = false;
-    }
-    if (nextChar === 0x20 /* " " */ || nextChar === 0x09 /* \t */) {
-      can_open = false;
-    }
+  // Same basic heuristics as many markdown-it math plugins:
+  // - "$ " should not open
+  // - " $" should not close
+  // - "$5" should usually not be treated as opening math
+  if (
+    prevChar === 0x20 || // space
+    prevChar === 0x09 || // tab
+    (nextChar >= 0x30 && nextChar <= 0x39) // digit
+  ) {
+    canClose = false;
   }
 
-  return {
-    can_open: can_open,
-    can_close: can_close,
-  };
+  if (
+    nextChar === 0x20 || // space
+    nextChar === 0x09 // tab
+  ) {
+    canOpen = false;
+  }
+
+  return { canOpen, canClose };
+}
+
+function findClosingDollar(src, start) {
+  let match = start;
+
+  while ((match = src.indexOf("$", match)) !== -1) {
+    let pos = match - 1;
+    while (pos >= 0 && src[pos] === "\\") pos--;
+
+    // odd number of backslashes before $ => unescaped delimiter
+    if ((match - pos) % 2 === 1) {
+      return match;
+    }
+
+    match += 1;
+  }
+
+  return -1;
+}
+
+function findClosingParen(src, start) {
+  let match = start;
+
+  while ((match = src.indexOf("\\)", match)) !== -1) {
+    let pos = match - 1;
+    while (pos >= 0 && src[pos] === "\\") pos--;
+
+    // odd number of backslashes before the "\" in "\)" => real closing delimiter
+    if ((match - pos) % 2 === 1) {
+      return match;
+    }
+
+    match += 2;
+  }
+
+  return -1;
 }
 
 function math_inline(state, silent) {
-  var start, match, token, res, pos;
+  const src = state.src;
+  const pos = state.pos;
 
-  // Only process $ and \( delimiters for inline math
-  if (
-    state.src[state.pos] !== "$" &&
-    (state.src[state.pos] !== "\\" || state.src[state.pos + 1] !== "(")
-  ) {
-    return false;
-  }
-
-  // Handle \( ... \) case separately
-  if (state.src[state.pos] === "\\" && state.src[state.pos + 1] === "(") {
-    start = state.pos + 2;
-    match = start;
-    while ((match = state.src.indexOf("\\)", match)) !== -1) {
-      pos = match - 1;
-      while (state.src[pos] === "\\") {
-        pos -= 1;
-      }
-      if ((match - pos) % 2 == 1) {
-        break;
-      }
-      match += 1;
-    }
+  // Case 1: \( ... \)
+  if (src[pos] === "\\" && src[pos + 1] === "(") {
+    const start = pos + 2;
+    const match = findClosingParen(src, start);
 
     if (match === -1) {
-      if (!silent) {
-        state.pending += "\\(";
-      }
-      state.pos = start;
-      return true;
+      return false; // let markdown handle it normally
     }
 
     if (!silent) {
-      token = state.push("math_inline", "math", 0);
+      const token = state.push("math_inline", "math", 0);
       token.markup = "\\(";
-      token.content = state.src.slice(start, match);
+      token.content = src.slice(start, match);
     }
 
     state.pos = match + 2;
     return true;
   }
 
-  res = isValidDelim(state, state.pos);
-  if (!res.can_open) {
-    if (!silent) {
-      state.pending += "$";
-    }
-    state.pos += 1;
-    return true;
+  // Case 2: $ ... $
+  if (src[pos] !== "$") {
+    return false;
   }
 
-  // First check for and bypass all properly escaped delimieters
-  // This loop will assume that the first leading backtick can not
-  // be the first character in state.src, which is known since
-  // we have found an opening delimieter already.
-  start = state.pos + 1;
-  match = start;
-  while ((match = state.src.indexOf("$", match)) !== -1) {
-    // Found potential $, look for escapes, pos will point to
-    // first non escape when complete
-    pos = match - 1;
-    while (state.src[pos] === "\\") {
-      pos -= 1;
-    }
-
-    // Even number of escapes, potential closing delimiter found
-    if ((match - pos) % 2 == 1) {
-      break;
-    }
-    match += 1;
+  const open = isValidDollarDelim(state, pos);
+  if (!open.canOpen) {
+    return false;
   }
 
-  // No closing delimiter found.  Consume $ and continue.
+  // Don't treat $$ as inline math here; leave it for block parsing.
+  if (src[pos + 1] === "$") {
+    return false;
+  }
+
+  const start = pos + 1;
+  const match = findClosingDollar(src, start);
+
   if (match === -1) {
-    if (!silent) {
-      state.pending += "$";
-    }
-    state.pos = start;
-    return true;
+    return false; // let literal $ pass through as markdown text
   }
 
-  // Check if we have empty content, ie: $$.  Do not parse.
-  if (match - start === 0) {
-    if (!silent) {
-      state.pending += "$$";
-    }
-    state.pos = start + 1;
-    return true;
+  if (match === start) {
+    return false; // empty content: "$$" or "$$..." edge case, not inline math
   }
 
-  // Check for valid closing delimiter
-  res = isValidDelim(state, match);
-  if (!res.can_close) {
-    if (!silent) {
-      state.pending += "$";
-    }
-    state.pos = start;
-    return true;
+  const close = isValidDollarDelim(state, match);
+  if (!close.canClose) {
+    return false;
   }
 
   if (!silent) {
-    token = state.push("math_inline", "math", 0);
+    const token = state.push("math_inline", "math", 0);
     token.markup = "$";
-    token.content = state.src.slice(start, match);
+    token.content = src.slice(start, match);
   }
 
   state.pos = match + 1;
   return true;
 }
 
-function math_block(state, start, end, silent) {
-  var firstLine,
-    lastLine,
-    next,
-    lastPos,
-    found = false,
-    token,
-    pos = state.bMarks[start] + state.tShift[start],
-    max = state.eMarks[start];
+function math_block(state, startLine, endLine, silent) {
+  let pos = state.bMarks[startLine] + state.tShift[startLine];
+  let max = state.eMarks[startLine];
 
-  // Check for $$, \[, or standalone [ as opening delimiters
-  if (pos + 1 > max) {
+  if (pos + 1 >= max) return false;
+
+  const firstTwo = state.src.slice(pos, pos + 2);
+
+  let openDelim = null;
+  let closeDelim = null;
+
+  if (firstTwo === "$$") {
+    openDelim = "$$";
+    closeDelim = "$$";
+  } else if (firstTwo === "\\[") {
+    openDelim = "\\[";
+    closeDelim = "\\]";
+  } else {
     return false;
   }
 
-  let openDelim = state.src.slice(pos, pos + 2);
-  let isDoubleDollar = openDelim === "$$";
-  let isLatexBracket = openDelim === "\\[";
+  if (silent) return true;
 
-  if (!isDoubleDollar && !isLatexBracket) {
-    return false;
-  }
+  let firstLine = state.src.slice(pos + 2, max);
+  let nextLine = startLine;
+  let found = false;
+  let lastLine = "";
 
-  // Determine the closing delimiter and position adjustment
-  let delimiter, posAdjust;
-  if (isDoubleDollar) {
-    delimiter = "$$";
-    posAdjust = 2;
-  } else if (isLatexBracket) {
-    delimiter = "\\]";
-    posAdjust = 2;
-  }
-
-  pos += posAdjust;
-  firstLine = state.src.slice(pos, max);
-
-  if (silent) {
-    return true;
-  }
-  if (firstLine.trim().slice(-delimiter.length) === delimiter) {
-    // Single line expression
-    firstLine = firstLine.trim().slice(0, -delimiter.length);
+  // Single-line block
+  const trimmedFirst = firstLine.trim();
+  if (trimmedFirst.endsWith(closeDelim)) {
+    firstLine = trimmedFirst.slice(0, -closeDelim.length);
     found = true;
   }
 
-  for (next = start; !found; ) {
-    next++;
+  while (!found) {
+    nextLine++;
+    if (nextLine >= endLine) break;
 
-    if (next >= end) {
+    pos = state.bMarks[nextLine] + state.tShift[nextLine];
+    max = state.eMarks[nextLine];
+
+    // stop on negative indentation like markdown-it block rules typically do
+    if (pos < max && state.tShift[nextLine] < state.blkIndent) {
       break;
     }
 
-    pos = state.bMarks[next] + state.tShift[next];
-    max = state.eMarks[next];
+    const lineText = state.src.slice(pos, max);
+    const trimmed = lineText.trim();
 
-    if (pos < max && state.tShift[next] < state.blkIndent) {
-      // non-empty line with negative indent should stop the list:
-      break;
-    }
-
-    if (
-      state.src.slice(pos, max).trim().slice(-delimiter.length) === delimiter
-    ) {
-      lastPos = state.src.slice(0, max).lastIndexOf(delimiter);
-      lastLine = state.src.slice(pos, lastPos);
+    if (trimmed.endsWith(closeDelim)) {
+      const endIndex = lineText.lastIndexOf(closeDelim);
+      lastLine = lineText.slice(0, endIndex);
       found = true;
     }
   }
 
-  state.line = next + 1;
+  if (!found) {
+    return false;
+  }
 
-  token = state.push("math_block", "math", 0);
+  state.line = nextLine + 1;
+
+  const token = state.push("math_block", "math", 0);
   token.block = true;
+  token.markup = openDelim;
+  token.map = [startLine, state.line];
   token.content =
-    (firstLine && firstLine.trim() ? firstLine + "\n" : "") +
-    state.getLines(start + 1, next, state.tShift[start], true) +
-    (lastLine && lastLine.trim() ? lastLine : "");
-  token.map = [start, state.line];
-  token.markup = delimiter;
+    (firstLine ? firstLine : "") +
+    (nextLine > startLine ? "\n" : "") +
+    state.getLines(startLine + 1, nextLine, state.tShift[startLine], true) +
+    (lastLine ? lastLine : "");
+
   return true;
 }
 
-export default function math_plugin(md, options) {
-  // Default options
-  options = options || {};
-
-  var katexInline = function (latex) {
-    options.displayMode = false;
+export default function math_plugin(md, options = {}) {
+  function renderMath(latex, displayMode) {
     try {
-      latex = latex
-        .replace(/^\[(.*)\]$/, "$1")
-        .replace(/^\\\((.*)\\\)$/, "$1")
-        .replace(/^\\\[(.*)\\\]$/, "$1");
-      return katex.renderToString(latex, options);
+      return katex.renderToString(latex, {
+        ...options,
+        displayMode,
+      });
     } catch (error) {
       if (options.throwOnError) {
-        console.log(error);
+        console.error(error);
       }
-      return latex;
+
+      // Escape minimally so raw latex shows safely if rendering fails
+      const escaped = md.utils.escapeHtml(latex);
+      return displayMode
+        ? `<pre class="katex-error">${escaped}</pre>`
+        : `<code class="katex-error">${escaped}</code>`;
     }
-  };
+  }
 
-  var inlineRenderer = function (tokens, idx) {
-    return katexInline(tokens[idx].content);
-  };
+  md.inline.ruler.before("escape", "math_inline", math_inline);
 
-  var katexBlock = function (latex) {
-    options.displayMode = true;
-    try {
-      // Remove surrounding delimiters if present
-      latex = latex.replace(/^\[(.*)\]$/, "$1").replace(/^\\\[(.*)\\\]$/, "$1");
-      return "<p>" + katex.renderToString(latex, options) + "</p>";
-    } catch (error) {
-      if (options.throwOnError) {
-        console.log(error);
-      }
-      return latex;
-    }
-  };
-
-  var blockRenderer = function (tokens, idx) {
-    return katexBlock(tokens[idx].content) + "\n";
-  };
-
-  md.inline.ruler.after("escape", "math_inline", math_inline);
   md.block.ruler.after("blockquote", "math_block", math_block, {
     alt: ["paragraph", "reference", "blockquote", "list"],
   });
-  md.renderer.rules.math_inline = inlineRenderer;
-  md.renderer.rules.math_block = blockRenderer;
+
+  md.renderer.rules.math_inline = function (tokens, idx) {
+    return renderMath(tokens[idx].content, false);
+  };
+
+  md.renderer.rules.math_block = function (tokens, idx) {
+    return renderMath(tokens[idx].content, true) + "\n";
+  };
 }

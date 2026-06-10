@@ -22,6 +22,7 @@ const {
   parseDockerModelRunnerEndpoint,
 } = require("../../../AiProviders/dockerModelRunner");
 const { parseFoundryBasePath } = require("../../../AiProviders/foundry");
+const { AzureOpenAiLLM } = require("../../../AiProviders/azureOpenAi");
 const {
   SystemPromptVariables,
 } = require("../../../../models/systemPromptVariables");
@@ -95,6 +96,13 @@ class Provider {
    */
   _requestStartTime = 0;
 
+  /**
+   * Tag identifying this provider for ENV-based opt-out of tool calling.
+   * Subclasses should set this in their constructor.
+   * @type {string|null}
+   */
+  providerTag = null;
+
   constructor(client) {
     if (this.constructor == Provider) {
       return;
@@ -127,26 +135,27 @@ class Provider {
   }
 
   /**
-   * Whether this provider supports native tool calling via the ENV flag.
-   * @param {string} providerTag - The tag of the provider to check (e.g. "bedrock", "openrouter", "groq", etc.).
+   * Checks if the provider is disabled via the PROVIDER_DISABLE_NATIVE_TOOL_CALLING env.
+   * @param {string} providerTag - The tag of the provider to check.
    * @returns {boolean}
    */
-  supportsNativeToolCallingViaEnv(providerTag = "") {
-    if (!("PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING" in process.env)) return false;
+  optsOutOfNativeToolCallingViaEnv(providerTag = null) {
     if (!providerTag) return false;
-    return (
-      process.env.PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING?.includes(
-        providerTag
-      ) || false
-    );
+    if (!("PROVIDER_DISABLE_NATIVE_TOOL_CALLING" in process.env)) return false;
+    const disabledProviders =
+      process.env.PROVIDER_DISABLE_NATIVE_TOOL_CALLING.split(",");
+    return disabledProviders.includes(providerTag);
   }
 
   /**
    * Whether this provider supports native OpenAI-compatible tool calling.
+   * Defaults to true (opt-out via PROVIDER_DISABLE_NATIVE_TOOL_CALLING env).
+   * Override in subclass and return false only if the provider genuinely cannot support tools.
    * @returns {boolean|Promise<boolean>}
    */
   supportsNativeToolCalling() {
-    return false;
+    if (!this.providerTag) return true;
+    return !this.optsOutOfNativeToolCallingViaEnv(this.providerTag);
   }
 
   /**
@@ -226,6 +235,16 @@ class Provider {
         });
       case "bedrock":
         return createBedrockChatClient(config);
+      case "azure":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: AzureOpenAiLLM.formatBaseUrl(
+              process.env.AZURE_OPENAI_ENDPOINT
+            ),
+          },
+          apiKey: process.env.AZURE_OPENAI_KEY,
+          ...config,
+        });
       case "fireworksai":
         return new ChatOpenAI({
           apiKey: process.env.FIREWORKS_AI_LLM_API_KEY,

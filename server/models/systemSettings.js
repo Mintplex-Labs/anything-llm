@@ -535,6 +535,10 @@ const SystemSettings = {
       TTSOpenAICompatibleVoiceModel:
         process.env.TTS_OPEN_AI_COMPATIBLE_VOICE_MODEL,
       TTSOpenAICompatibleEndpoint: process.env.TTS_OPEN_AI_COMPATIBLE_ENDPOINT,
+      // Kokoro TTS
+      TTSKokoroEndpoint: process.env.TTS_KOKORO_ENDPOINT,
+      TTSKokoroKey: !!process.env.TTS_KOKORO_KEY,
+      TTSKokoroVoiceModel: process.env.TTS_KOKORO_VOICE_MODEL,
 
       // STT Selection
       SpeechToTextProvider: process.env.STT_PROVIDER || "native",
@@ -910,11 +914,6 @@ const SystemSettings = {
       GroqApiKey: !!process.env.GROQ_API_KEY,
       GroqModelPref: process.env.GROQ_MODEL_PREF,
 
-      // HuggingFace Dedicated Inference
-      HuggingFaceLLMEndpoint: process.env.HUGGING_FACE_LLM_ENDPOINT,
-      HuggingFaceLLMAccessToken: !!process.env.HUGGING_FACE_LLM_API_KEY,
-      HuggingFaceLLMTokenLimit: process.env.HUGGING_FACE_LLM_TOKEN_LIMIT,
-
       // KoboldCPP Keys
       KoboldCPPModelPref: process.env.KOBOLD_CPP_MODEL_PREF,
       KoboldCPPBasePath: process.env.KOBOLD_CPP_BASE_PATH,
@@ -986,12 +985,6 @@ const SystemSettings = {
       // PPIO API keys
       PPIOApiKey: !!process.env.PPIO_API_KEY,
       PPIOModelPref: process.env.PPIO_MODEL_PREF,
-
-      // Dell Pro AI Studio Keys
-      DellProAiStudioBasePath: process.env.DPAIS_LLM_BASE_PATH,
-      DellProAiStudioModelPref: process.env.DPAIS_LLM_MODEL_PREF,
-      DellProAiStudioTokenLimit:
-        process.env.DPAIS_LLM_MODEL_TOKEN_LIMIT ?? 4096,
 
       // CometAPI LLM Keys
       CometApiLLMApiKey: !!process.env.COMETAPI_LLM_API_KEY,

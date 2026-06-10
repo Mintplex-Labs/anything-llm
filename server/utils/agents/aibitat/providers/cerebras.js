@@ -17,10 +17,10 @@ class CerebrasProvider extends InheritMultiple([Provider, UnTooled]) {
   constructor(config = {}) {
     const { model = "gpt-oss-120b" } = config;
     super();
+    this.providerTag = "cerebras";
     const client = new OpenAI({
       baseURL: "https://api.cerebras.ai/v1",
       apiKey: process.env.CEREBRAS_API_KEY,
-      maxRetries: 1,
     });
 
     this._client = client;
@@ -42,6 +42,7 @@ class CerebrasProvider extends InheritMultiple([Provider, UnTooled]) {
    * @returns {boolean}
    */
   async supportsNativeToolCalling() {
+    if (this.optsOutOfNativeToolCallingViaEnv(this.providerTag)) return false;
     if (this._supportsToolCalling !== null) return this._supportsToolCalling;
     const cerebras = new CerebrasLLM(null, this.model);
     const capabilities = await cerebras.getModelCapabilities();

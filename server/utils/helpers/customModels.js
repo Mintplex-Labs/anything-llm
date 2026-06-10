@@ -18,7 +18,6 @@ const { getAllLemonadeModels } = require("../AiProviders/lemonade");
 
 const SUPPORT_CUSTOM_MODELS = [
   "openai",
-  "openai-stt",
   "anthropic",
   "localai",
   "ollama",
@@ -40,7 +39,6 @@ const SUPPORT_CUSTOM_MODELS = [
   "xai",
   "gemini",
   "ppio",
-  "dpais",
   "moonshotai",
   "foundry",
   "cohere",
@@ -59,8 +57,11 @@ const SUPPORT_CUSTOM_MODELS = [
   "openrouter-embedder",
   "lemonade-embedder",
   // STT Engines
+  "openai-stt",
   "deepgram-stt",
   "lemonade-stt",
+  // TTS Engines
+  "kokoro-tts",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -114,8 +115,6 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getGeminiModels(apiKey);
     case "ppio":
       return await getPPIOModels(apiKey);
-    case "dpais":
-      return await getDellProAiStudioModels(basePath);
     case "moonshotai":
       return await getMoonshotAiModels(apiKey);
     case "foundry":
@@ -152,6 +151,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getGenericOpenAiModels(basePath, apiKey);
     case "deepgram-stt":
       return await getDeepgramSTTModels(apiKey);
+    case "kokoro-tts":
+      return await kokoroTtsVoices(basePath, apiKey);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -849,45 +850,6 @@ async function getPPIOModels() {
   return { models, error: null };
 }
 
-async function getDellProAiStudioModels(basePath = null) {
-  const { OpenAI: OpenAIApi } = require("openai");
-  try {
-    const { origin } = new URL(
-      basePath || process.env.DELL_PRO_AI_STUDIO_BASE_PATH
-    );
-    const openai = new OpenAIApi({
-      baseURL: `${origin}/v1/openai`,
-      apiKey: null,
-    });
-    const models = await openai.models
-      .list()
-      .then((results) => results.data)
-      .then((models) => {
-        return models
-          .filter(
-            (model) => model?.capability?.includes("TextToText") // Only include text-to-text models for this handler
-          )
-          .map((model) => {
-            return {
-              id: model.id,
-              name: model.name,
-              organization: model.owned_by,
-            };
-          });
-      })
-      .catch((e) => {
-        throw new Error(e.message);
-      });
-    return { models, error: null };
-  } catch (e) {
-    console.error(`getDellProAiStudioModels`, e.message);
-    return {
-      models: [],
-      error: "Could not reach Dell Pro Ai Studio from the provided base path",
-    };
-  }
-}
-
 function getNativeEmbedderModels() {
   const { NativeEmbedder } = require("../EmbeddingEngines/native");
   return { models: NativeEmbedder.availableModels(), error: null };
@@ -1242,6 +1204,46 @@ async function getGenericOpenAiModels(basePath = null, apiKey = null) {
     console.error(`GenericOpenAI:getGenericOpenAiModels`, e.message);
     return { models: [], error: "Could not fetch Generic OpenAI Models" };
   }
+}
+
+/**
+ * Pulls the live voice list from a self-hosted kokoro-fastapi server's
+ * /audio/voices endpoint. basePath is the OpenAI-compatible base URL the
+ * user pointed at their kokoro instance (e.g. http://localhost:8880/v1).
+ * @param {string} basePath - The base path to the Kokoro instance.
+ * @param {string} apiKey - The API key to use.
+ * @returns {Promise<{models: Array<{id: string, organization: string, name: string}>, error: string | null}>}
+ */
+async function kokoroTtsVoices(basePath = null, apiKey = null) {
+  let endpoint = basePath || process.env.TTS_KOKORO_ENDPOINT;
+  if (!endpoint)
+    return { models: [], error: "No Kokoro endpoint was provided." };
+
+  endpoint = new URL(endpoint);
+  endpoint.pathname = "/v1/audio/voices";
+  const headers = { "Content-Type": "application/json" };
+  const key = typeof apiKey === "boolean" ? null : apiKey;
+  if (key) headers.Authorization = `Bearer ${key}`;
+
+  const voices = await fetch(endpoint.toString(), { method: "GET", headers })
+    .then((res) => {
+      if (!res.ok) throw new Error(res.statusText || "Failed to load voices");
+      return res.json();
+    })
+    .then((data) => (Array.isArray(data?.voices) ? data.voices : []))
+    .catch((e) => {
+      console.error(`Kokoro:listVoices`, e.message);
+      return null;
+    });
+
+  if (!voices || !Array.isArray(voices))
+    return { models: [], error: "Could not fetch Kokoro voices." };
+  const models = voices.map((voice) => ({
+    id: voice.id,
+    name: voice.name,
+    organization: "Kokoro",
+  }));
+  return { models, error: null };
 }
 
 module.exports = {

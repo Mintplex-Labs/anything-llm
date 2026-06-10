@@ -18,10 +18,10 @@ class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
   constructor(config = {}) {
     const { model = "openrouter/auto" } = config;
     super();
+    this.providerTag = "openrouter";
     const client = new OpenAI({
       baseURL: "https://openrouter.ai/api/v1",
       apiKey: process.env.OPENROUTER_API_KEY,
-      maxRetries: 3,
       defaultHeaders: {
         "HTTP-Referer": "https://anythingllm.com",
         "X-Title": "AnythingLLM",
@@ -40,28 +40,6 @@ class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get supportsAgentStreaming() {
     return true;
-  }
-
-  /**
-   * Whether this provider supports native OpenAI-compatible tool calling.
-   * - Since OpenRouter models vary in tool calling support, we check the ENV.
-   * - If the ENV is not set, we default to false.
-   * @returns {boolean}
-   */
-  supportsNativeToolCalling() {
-    if (this._supportsToolCalling !== null) return this._supportsToolCalling;
-    const supportsToolCalling =
-      this.supportsNativeToolCallingViaEnv("openrouter");
-    if (supportsToolCalling)
-      this.providerLog(
-        "OpenRouter supports native tool calling is ENABLED via ENV."
-      );
-    else
-      this.providerLog(
-        "OpenRouter supports native tool calling is DISABLED via ENV. Will use UnTooled instead."
-      );
-    this._supportsToolCalling = supportsToolCalling;
-    return supportsToolCalling;
   }
 
   async #handleFunctionCallChat({ messages = [] }) {
