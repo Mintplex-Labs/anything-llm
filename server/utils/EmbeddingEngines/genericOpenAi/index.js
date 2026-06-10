@@ -18,6 +18,10 @@ class GenericOpenAiEmbedder {
       apiKey: process.env.GENERIC_OPEN_AI_EMBEDDING_API_KEY ?? null,
     });
     this.model = process.env.EMBEDDING_MODEL_PREF ?? null;
+
+    this.queryPrefix = process.env.GENERIC_EMBEDDING_QUERY_PREFIX ?? null;
+    this.passagePrefix = process.env.GENERIC_EMBEDDING_PASSAGE_PREFIX ?? null;
+
     this.embeddingMaxChunkLength = maximumChunkLength();
 
     // this.maxConcurrentChunks is delegated to the getter below.
@@ -79,22 +83,24 @@ class GenericOpenAiEmbedder {
 
   async embedTextInput(textInput) {
     const result = await this.embedChunks(
-      Array.isArray(textInput) ? textInput : [textInput]
+      Array.isArray(textInput) ? textInput : [textInput],
+      this.queryPrefix
     );
     return result?.[0] || [];
   }
 
-  async embedChunks(textChunks = []) {
+  async embedChunks(textChunks = [], prefix = null) {
     // Because there is a hard POST limit on how many chunks can be sent at once to OpenAI (~8mb)
     // we sequentially execute each max batch of text chunks possible.
     // Refer to constructor maxConcurrentChunks for more info.
     const allResults = [];
-    for (const chunk of toChunks(textChunks, this.maxConcurrentChunks)) {
+    const chunks = prefix ? this._applyPrefix(textChunks, prefix) : textChunks;
+    for (const batch of toChunks(chunks, this.maxConcurrentChunks)) {
       const { data = [], error = null } = await new Promise((resolve) => {
         this.openai.embeddings
           .create({
             model: this.model,
-            input: chunk,
+            input: batch,
           })
           .then((result) => resolve({ data: result?.data, error: null }))
           .catch((e) => {
@@ -120,6 +126,17 @@ class GenericOpenAiEmbedder {
       allResults.every((embd) => embd.hasOwnProperty("embedding"))
       ? allResults.map((embd) => embd.embedding)
       : null;
+  }
+
+  /**
+   * Apply a prefix string to each text chunk if prefix is set.
+   * @param {string[]} chunks
+   * @param {string|null} prefix
+   * @returns {string[]}
+   */
+  _applyPrefix(chunks, prefix) {
+    if (!prefix) return chunks;
+    return chunks.map((chunk) => `${prefix}${chunk}`);
   }
 }
 
