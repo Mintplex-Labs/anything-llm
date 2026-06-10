@@ -1,6 +1,169 @@
 const prisma = require("../utils/prisma");
 const moment = require("moment");
 
+// MCP variable substitution. All values in ms. Tuned for chat-loop usage:
+//   - success: long enough to absorb burst messages, short enough to feel live.
+//   - failure: shorter so a recovered server resumes quickly, non-zero so a
+//              permanently-broken variable doesn't spam logs every turn.
+//   - schema:  long because tool schemas only change on server restart.
+//   - timeout: short enough not to stall a chat turn, long enough for a healthy roundtrip.
+const MCP_TTL = {
+  success: 30_000,
+  failure: 10_000,
+  schema: 5 * 60_000,
+  timeout: 3_000,
+};
+
+const _mcpCache = new Map(); // cacheKey -> { value, expiresAt }
+const _mcpSchemas = new Map(); // "server:tool" -> { value: inputSchema, expiresAt }
+
+const _cacheHit = (map, key) => {
+  const entry = map.get(key);
+  return entry && entry.expiresAt > Date.now() ? entry : null;
+};
+const _cacheSet = (map, key, value, ttl) =>
+  map.set(key, { value, expiresAt: Date.now() + ttl });
+
+// Race a promise against a hard timeout; the loser timer is always cleared
+// so successful resolutions don't leak setTimeouts into the event loop.
+async function _withTimeout(fn, ms, message) {
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error(message)), ms);
+  });
+  try {
+    return await Promise.race([fn(), timeout]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+// Resolve a single MCP arg: either a literal string or the key of another
+// prompt variable. mcp.* keys are passed through as literals (no recursion).
+async function _resolveArg(arg, allVariables, userId, workspaceId) {
+  if (arg.startsWith("mcp.")) return arg;
+  const v = allVariables.find((x) => x.key === arg);
+  if (!v) return arg;
+  if (typeof v.value !== "function") return String(v.value ?? "");
+  const ctx = arg.startsWith("workspace.")
+    ? workspaceId
+    : arg.startsWith("user.")
+      ? userId
+      : undefined;
+  try {
+    return String((await v.value(ctx)) ?? "");
+  } catch {
+    return "";
+  }
+}
+
+// Map positional arg values to the tool's required (or first declared)
+// parameter names. Schemas cached per server+tool at MCP_TTL.schema.
+async function _mapArgs(mcp, server, tool, args) {
+  if (!args.length) return {};
+  const key = `${server}:${tool}`;
+  let entry = _cacheHit(_mcpSchemas, key);
+  if (!entry) {
+    const { tools } = await mcp.listTools();
+    const schema = tools.find((t) => t.name === tool)?.inputSchema ?? {};
+    _cacheSet(_mcpSchemas, key, schema, MCP_TTL.schema);
+    entry = { value: schema };
+  }
+  const names = entry.value.required?.length
+    ? entry.value.required
+    : Object.keys(entry.value.properties ?? {});
+  return Object.fromEntries(
+    args.map((v, i) => [names[i], v]).filter(([n]) => n)
+  );
+}
+
+// Extract a readable string from an MCP callTool result.
+function _extractMcpText(result) {
+  if (!result) return "";
+  if (typeof result === "string") return result;
+  const text = Array.isArray(result.content)
+    ? result.content
+        .filter((c) => c?.type === "text" && typeof c.text === "string")
+        .map((c) => c.text)
+        .join("\n")
+    : "";
+  if (text) return text;
+  try {
+    return JSON.stringify(result);
+  } catch {
+    return "";
+  }
+}
+
+/**
+ * Resolve {mcp.<server>.<tool>[:<arg1>,<arg2>,...]}.
+ * Each arg is a literal or another variable key (resolved before the call).
+ * Returns "" on any failure so a broken MCP variable can never block a chat.
+ */
+async function _resolveMcpVariable(key, context = {}) {
+  const { userId = null, workspaceId = null, allVariables = [] } = context;
+
+  const sub = key.substring(4); // strip "mcp."
+  const colon = sub.indexOf(":");
+  const path = colon === -1 ? sub : sub.substring(0, colon);
+  const rawArgs = colon === -1 ? "" : sub.substring(colon + 1);
+
+  const dot = path.indexOf(".");
+  if (dot === -1) return "";
+  const server = path.substring(0, dot);
+  const tool = path.substring(dot + 1);
+  if (!server || !tool) return "";
+
+  const args = rawArgs
+    ? rawArgs
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean)
+    : [];
+  const resolved = args.length
+    ? await Promise.all(
+        args.map((a) => _resolveArg(a, allVariables, userId, workspaceId))
+      )
+    : [];
+
+  // Cache key folds in user/workspace context only when args are present;
+  // zero-arg calls have no context dependency.
+  const cacheKey = resolved.length
+    ? `${path}:${resolved.join(",")}:u=${userId ?? ""}:w=${workspaceId ?? ""}`
+    : path;
+  const hit = _cacheHit(_mcpCache, cacheKey);
+  if (hit) return hit.value;
+
+  try {
+    // Lazy-required to avoid a circular dependency at module load.
+    const MCPCompatibilityLayer = require("../utils/MCP");
+    const mcpLayer = new MCPCompatibilityLayer();
+    await mcpLayer.bootMCPServers(); // idempotent; needed for cold start
+    const mcp = mcpLayer.mcps[server];
+    if (!mcp) {
+      console.warn(`[MCP Variable] Server "${server}" not running`);
+      _cacheSet(_mcpCache, cacheKey, "", MCP_TTL.failure);
+      return "";
+    }
+    const result = await _withTimeout(
+      async () =>
+        mcp.callTool({
+          name: tool,
+          arguments: await _mapArgs(mcp, server, tool, resolved),
+        }),
+      MCP_TTL.timeout,
+      "MCP variable resolver timed out"
+    );
+    const value = _extractMcpText(result);
+    _cacheSet(_mcpCache, cacheKey, value, MCP_TTL.success);
+    return value;
+  } catch (error) {
+    console.warn(`[MCP Variable] Failed to resolve {${key}}:`, error.message);
+    _cacheSet(_mcpCache, cacheKey, "", MCP_TTL.failure);
+    return "";
+  }
+}
+
 /**
  * @typedef {Object} SystemPromptVariable
  * @property {number} id
@@ -259,6 +422,17 @@ const SystemPromptVariables = {
         const isWorkspaceOrUserVariable = ["workspace.", "user."].some(
           (prefix) => key.startsWith(prefix)
         );
+
+        // Handle MCP server variables: {mcp.<serverName>.<toolName>[:<arg1>,<arg2>,...]}
+        if (key.startsWith("mcp.")) {
+          const value = await _resolveMcpVariable(key, {
+            userId,
+            workspaceId,
+            allVariables,
+          });
+          result = result.replace(match, value);
+          continue;
+        }
 
         // Handle class-based variables with current workspace's or user's data
         if (isWorkspaceOrUserVariable) {
