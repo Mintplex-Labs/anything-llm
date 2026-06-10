@@ -2,9 +2,7 @@ import { useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import CommunityHub from "@/models/communityHub";
 import showToast from "@/utils/toast";
-import paths from "@/utils/paths";
 import { X } from "@phosphor-icons/react";
-import { Link } from "react-router-dom";
 import {
   ModalHeader,
   ModalPrimaryButton,
@@ -14,15 +12,13 @@ import {
   ModalTextarea,
 } from "@/components/lib/Modal";
 
-export default function SystemPrompts({ entity }) {
+export default function SystemPrompts({ entity, onSuccess }) {
   const { t } = useTranslation();
   const formRef = useRef(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState("");
   const [visibility, setVisibility] = useState("public");
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [itemId, setItemId] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,8 +37,7 @@ export default function SystemPrompts({ entity }) {
       const { success, error, itemId } =
         await CommunityHub.createSystemPrompt(data);
       if (!success) throw new Error(error);
-      setItemId(itemId);
-      setIsSuccess(true);
+      onSuccess(itemId);
     } catch (error) {
       console.error("Failed to publish prompt:", error);
       showToast(`Failed to publish prompt: ${error.message}`, "error", {
@@ -68,32 +63,6 @@ export default function SystemPrompts({ entity }) {
   const removeTag = (tagToRemove) => {
     setTags(tags.filter((tag) => tag !== tagToRemove));
   };
-
-  if (isSuccess) {
-    return (
-      <div className="p-6 -mt-12 w-[400px]">
-        <div className="flex flex-col items-center justify-center gap-y-2">
-          <h3 className="text-lg font-semibold text-slate-50 light:text-slate-900">
-            {t("community_hub.publish.system_prompt.success_title")}
-          </h3>
-          <p className="text-lg text-slate-50 light:text-slate-900 text-center max-w-2xl">
-            {t("community_hub.publish.system_prompt.success_description")}
-          </p>
-          <p className="text-zinc-400 light:text-slate-600 text-center text-sm">
-            {t("community_hub.publish.system_prompt.success_thank_you")}
-          </p>
-          <Link
-            to={paths.communityHub.viewItem("system-prompt", itemId)}
-            target="_blank"
-            rel="noreferrer"
-            className="w-[265px] bg-zinc-800 light:bg-slate-100 hover:bg-zinc-700 light:hover:bg-slate-200 text-slate-50 light:text-slate-900 py-2 px-4 rounded-lg transition-colors mt-4 text-sm font-semibold text-center"
-          >
-            {t("community_hub.publish.system_prompt.view_on_hub")}
-          </Link>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <>
