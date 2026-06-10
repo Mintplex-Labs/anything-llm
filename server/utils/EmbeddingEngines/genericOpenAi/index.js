@@ -77,19 +77,44 @@ class GenericOpenAiEmbedder {
     return Number(process.env.GENERIC_OPEN_AI_EMBEDDING_MAX_CONCURRENT_CHUNKS);
   }
 
+  /**
+   * Optional prefix prepended to each query before embedding. Empty by default
+   * for backwards compatibility. Required by asymmetric models like
+   * Qwen3-Embedding, which expect queries wrapped as
+   * `Instruct: <task>\nQuery:<query>` while passages are sent raw.
+   * @returns {string}
+   */
+  get queryPrefix() {
+    return process.env.EMBEDDING_QUERY_PREFIX ?? "";
+  }
+
+  /**
+   * Optional prefix prepended to each passage before embedding. Empty by
+   * default. Most asymmetric models (Qwen3-Embedding included) leave passages
+   * unwrapped, but some BGE/E5 variants expect a `passage: ` prefix.
+   * @returns {string}
+   */
+  get passagePrefix() {
+    return process.env.EMBEDDING_PASSAGE_PREFIX ?? "";
+  }
+
   async embedTextInput(textInput) {
-    const result = await this.embedChunks(
-      Array.isArray(textInput) ? textInput : [textInput]
+    const prefix = this.queryPrefix;
+    const inputs = (Array.isArray(textInput) ? textInput : [textInput]).map(
+      (t) => prefix + t
     );
+    const result = await this.embedChunks(inputs, { isPassage: false });
     return result?.[0] || [];
   }
 
-  async embedChunks(textChunks = []) {
+  async embedChunks(textChunks = [], { isPassage = true } = {}) {
     // Because there is a hard POST limit on how many chunks can be sent at once to OpenAI (~8mb)
     // we sequentially execute each max batch of text chunks possible.
     // Refer to constructor maxConcurrentChunks for more info.
+    const prefix = isPassage ? this.passagePrefix : "";
+    const inputs = prefix ? textChunks.map((t) => prefix + t) : textChunks;
     const allResults = [];
-    for (const chunk of toChunks(textChunks, this.maxConcurrentChunks)) {
+    for (const chunk of toChunks(inputs, this.maxConcurrentChunks)) {
       const { data = [], error = null } = await new Promise((resolve) => {
         this.openai.embeddings
           .create({
