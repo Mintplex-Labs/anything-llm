@@ -35,6 +35,7 @@ async function validWorkspaceAndThreadSlug(request, response, next) {
   const thread = await WorkspaceThread.get({
     slug: threadSlug,
     user_id: user?.id || null,
+    workspace_id: workspace.id,
   });
   if (!thread) {
     response.status(404).send("Workspace thread does not exist.");
