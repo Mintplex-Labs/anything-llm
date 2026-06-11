@@ -178,6 +178,7 @@ class ImportedPlugin {
       name: this.name,
       config: this.config,
       setup(aibitat) {
+        const skillName = this.name; // hubId the skill is registered + whitelisted under.
         aibitat.function({
           super: aibitat,
           name: this.name,
@@ -196,6 +197,39 @@ class ImportedPlugin {
             additionalProperties: false,
           },
           ...customFunctions,
+          /**
+           * Pause the agent and ask the user to approve a potentially
+           * destructive action before the skill performs it. Shows the same
+           * Approve/Reject card the built-in tools use (e.g. gmail send/reply).
+           *
+           * `skillName` is supplied automatically (the skill's hubId) so a skill
+           * cannot spoof another tool's name to bypass its own approval - the
+           * author only provides the payload and description.
+           *
+           * Defined after `...customFunctions` so a skill's handler.js cannot
+           * override it. When no approval channel exists (e.g. scheduled jobs)
+           * it resolves approved so the skill still runs, matching how built-in
+           * tools fall through their approval guard.
+           *
+           * @param {{payload?: object, description?: string}} options
+           * @returns {Promise<{approved: boolean, message: string}>}
+           */
+          requestToolApproval: async ({
+            payload = {},
+            description = null,
+          } = {}) => {
+            if (typeof aibitat.requestToolApproval !== "function") {
+              return {
+                approved: true,
+                message: "Approval not required in this context.",
+              };
+            }
+            return aibitat.requestToolApproval({
+              skillName,
+              payload,
+              description,
+            });
+          },
         });
       },
     };
