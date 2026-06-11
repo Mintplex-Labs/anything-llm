@@ -189,6 +189,14 @@ function apiSystemEndpoints(app) {
     */
       try {
         const { type = "jsonl" } = request.query;
+        const validTypes = ["json", "csv", "jsonl", "jsonAlpaca"];
+        if (!validTypes.includes(type)) {
+          response.status(400).json({
+            message: `Invalid export type: ${type}. Must be one of ${validTypes.join(", ")}`,
+          });
+          return;
+        }
+
         const { contentType, data } = await exportChatsAsType(
           type,
           "workspace"
