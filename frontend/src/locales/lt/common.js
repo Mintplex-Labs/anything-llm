@@ -1386,6 +1386,8 @@ const TRANSLATIONS = {
     stt_mic_denied:
       "Nepavyko prisijungti prie mikrofoną. Prašome suteikti leidimą ir pabandyti dar kartą.",
     stt_transcription_failed: "Transkripcija nepavyko: {{error}}",
+    export: "Eksporterinė pokalbio funkcija",
+    exporting: "Eksporteriama...",
   },
   profile_settings: {
     edit_account: "Redaguoti paskyrą",

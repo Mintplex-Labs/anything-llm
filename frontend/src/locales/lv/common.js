@@ -1365,6 +1365,8 @@ const TRANSLATIONS = {
     stt_mic_denied:
       "Neizdevās piekļūt mikrofonam. Lūdzu, atļaujiet piekļaušanu un mēģiniet vēlreiz.",
     stt_transcription_failed: "Transkripcija neizdevās: {{error}}",
+    export: "Eksportera čats",
+    exporting: "Eksporteris...",
   },
   profile_settings: {
     edit_account: "Rediģēt kontu",

@@ -1354,6 +1354,8 @@ const TRANSLATIONS = {
     stt_mic_denied:
       "Não foi possível acessar o microfone. Por favor, conceda permissão e tente novamente.",
     stt_transcription_failed: "Falha na transcrição: {{error}}",
+    export: "Exportar chat",
+    exporting: "Exportando...",
   },
   profile_settings: {
     edit_account: "Editar conta",

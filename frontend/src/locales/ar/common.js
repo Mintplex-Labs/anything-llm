@@ -1247,6 +1247,8 @@ const TRANSLATIONS = {
     stt_mic_denied:
       "لم يتمكن من الوصول إلى الميكروفون. يرجى منح الإذن ومحاولة مرة أخرى.",
     stt_transcription_failed: "فشلت عملية النسخ: {{error}}",
+    export: "تصدير الدردشة",
+    exporting: "التصدير...",
   },
   profile_settings: {
     edit_account: "تحرير الحساب",

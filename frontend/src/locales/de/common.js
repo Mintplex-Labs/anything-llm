@@ -1380,6 +1380,8 @@ const TRANSLATIONS = {
     stt_mic_denied:
       "Es konnte nicht auf das Mikrofon zugegriffen werden. Bitte erteilen Sie die erforderlichen Berechtigungen und versuchen Sie es erneut.",
     stt_transcription_failed: "Transkription fehlgeschlagen: {{error}}",
+    export: "Exportieren von Chat-Nachrichten",
+    exporting: "Exportieren...",
   },
   profile_settings: {
     edit_account: "Account bearbeiten",
