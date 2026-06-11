@@ -1576,6 +1576,7 @@ const TRANSLATIONS = {
       days: "Tage",
       "cycle-duration": "Zyklusdauer",
       "current-cycle": "Aktueller Zyklus",
+      "api-adjustments": "Manuelle Abzüge/Gutschriften (API)",
       "no-usage-data": "Keine Verbrauchsdaten verfügbar",
       "messages-limit": "Nachrichtenlimit",
       "messages-limit-description":

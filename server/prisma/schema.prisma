@@ -157,6 +157,21 @@ model workspaces {
   workspace_agent_invocations  workspace_agent_invocations[]
   prompt_history               prompt_history[]
   workspace_parsed_files       workspace_parsed_files[]
+  message_adjustments          workspace_message_adjustments[]
+}
+
+// Enterprise Billing: manual quota bookings against the message contingent.
+// amount > 0 consumes quota (deduction), amount < 0 credits quota back.
+// Rows age out of the billing window via createdAt — they reset with the next cycle.
+model workspace_message_adjustments {
+  id          Int        @id @default(autoincrement())
+  workspaceId Int
+  amount      Int
+  reason      String?
+  createdAt   DateTime   @default(now())
+  workspace   workspaces @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
 }
 
 model workspace_threads {

@@ -89,11 +89,13 @@ function getCycleInfo(workspace, simulateDate = null) {
  */
 async function getCycleInfoWithMessageCount(workspace, simulateDate = null) {
   const cycleInfo = getCycleInfo(workspace, simulateDate);
-  const messageCount = await countMessagesForCurrentCycle(workspace, simulateDate);
+  const countBreakdown = await countMessagesForCurrentCycle(workspace, simulateDate);
+  const messageCount = countBreakdown.total;
 
   return {
     ...cycleInfo,
     messageCount,
+    adjustmentsTotal: countBreakdown.adjustmentsTotal,
     messagesRemaining: workspace.messagesLimit
       ? Math.max(0, workspace.messagesLimit - messageCount)
       : null,
@@ -103,10 +105,11 @@ async function getCycleInfoWithMessageCount(workspace, simulateDate = null) {
 
 /**
  * Counts messages in the current cycle (replaces countMessagesForCurrentMonth for cycle-enabled workspaces).
+ * Includes manual quota adjustments (see countMessagesInDateRange).
  *
  * @param {Object} workspace - Workspace object
  * @param {Date|null} simulateDate - Optional: Simulated date for testing
- * @returns {Promise<number>} - Message count
+ * @returns {Promise<import("./index").MessageCountBreakdown>} - Message count breakdown
  */
 async function countMessagesForCurrentCycle(workspace, simulateDate = null) {
   // Fallback to monthly if no cycle fields set
@@ -134,8 +137,8 @@ async function isCycleLimitReached(workspace, simulateDate = null) {
     return false; // No limit set
   }
 
-  const messageCount = await countMessagesForCurrentCycle(workspace, simulateDate);
-  return messageCount >= workspace.messagesLimit;
+  const { total } = await countMessagesForCurrentCycle(workspace, simulateDate);
+  return total >= workspace.messagesLimit;
 }
 
 /**

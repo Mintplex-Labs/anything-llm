@@ -1130,6 +1130,7 @@ function workspaceEndpoints(app) {
           messageCount: usageInfo.messageCount,
           messagesLimit: usageInfo.messagesLimit,
           contingent: usageInfo.contingent,
+          adjustmentsTotal: usageInfo.adjustmentsTotal,
           cycleInfo: usageInfo.cycleInfo
             ? {
                 cycleNumber: usageInfo.cycleInfo.cycleNumber,

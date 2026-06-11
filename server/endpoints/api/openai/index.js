@@ -14,7 +14,84 @@ const {
   OpenAICompatibleChat,
 } = require("../../../utils/chats/openaiCompatible");
 const { getModelTag } = require("../../utils");
-const { extractTextContent, extractAttachments } = require("./helpers");
+const {
+  extractTextContent,
+  extractAttachments,
+  validateAdjustmentRequest,
+} = require("./helpers");
+const {
+  WorkspaceMessageAdjustments,
+} = require("../../../models/workspaceMessageAdjustments");
+
+/**
+ * Builds the standardized quota/limit payload for a workspace.
+ * Shared by GET /limits and the quota adjustment endpoints so callers always
+ * see the same shape (mirrors the billing tab + chat/completions injection).
+ * @param {Object} workspace - The workspace object
+ * @returns {Promise<Object>} - Limits payload
+ */
+async function buildWorkspaceLimitsPayload(workspace) {
+  const { getMessageLimitInfo } = require("../../../utils/helpers");
+  const {
+    messageCount,
+    messagesLimit,
+    contingent,
+    adjustmentsTotal,
+    cycleInfo,
+  } = await getMessageLimitInfo(workspace);
+
+  const messagesRemaining =
+    messagesLimit !== null && messagesLimit !== undefined
+      ? Math.max(0, messagesLimit - messageCount)
+      : null;
+  const unlimited = messagesLimit === null || messagesLimit === undefined;
+
+  return {
+    workspace_slug: workspace.slug,
+    workspace_name: workspace.name,
+    messageCount,
+    messagesLimit,
+    messagesRemaining,
+    contingent,
+    adjustmentsTotal,
+    messages_limit: messagesLimit,
+    unlimited,
+    limitReached: !unlimited && messageCount >= messagesLimit,
+    cycleInfo: cycleInfo
+      ? {
+          cycleNumber: cycleInfo.cycleNumber,
+          cycleDurationMonths: cycleInfo.cycleDurationMonths,
+          currentCycleStart: cycleInfo.currentCycleStart,
+          currentCycleEnd: cycleInfo.currentCycleEnd,
+          nextReset: cycleInfo.nextReset,
+          daysRemaining: cycleInfo.daysRemaining,
+        }
+      : null,
+  };
+}
+
+/**
+ * Resolves the current billing window for a workspace — the active cycle when
+ * cycle fields are set, otherwise the current calendar month. End date is
+ * clamped to end-of-day, mirroring countMessagesInDateRange.
+ * @param {Object} workspace - The workspace object
+ * @returns {{startDate: Date, endDate: Date}}
+ */
+function getCurrentBillingWindow(workspace) {
+  const now = new Date();
+  let startDate, endDate;
+  if (workspace.cycleStartDate) {
+    const { getCycleInfo } = require("../../../utils/helpers/cycleHelpers");
+    const cycleInfo = getCycleInfo(workspace);
+    startDate = new Date(cycleInfo.currentCycleStart);
+    endDate = new Date(cycleInfo.currentCycleEnd);
+  } else {
+    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  }
+  endDate.setHours(23, 59, 59, 999);
+  return { startDate, endDate };
+}
 
 function apiOpenAICompatibleEndpoints(app) {
   if (!app) return;
@@ -465,36 +542,238 @@ function apiOpenAICompatibleEndpoints(app) {
           return response.status(404).json({ error: "Workspace not found." });
         }
 
-        const { getMessageLimitInfo } = require("../../../utils/helpers");
-        const { messageCount, messagesLimit, contingent, cycleInfo } =
-          await getMessageLimitInfo(workspace);
+        return response
+          .status(200)
+          .json(await buildWorkspaceLimitsPayload(workspace));
+      } catch (e) {
+        console.error(e.message, e);
+        response.status(500).end();
+      }
+    }
+  );
 
-        const messagesRemaining =
-          messagesLimit !== null && messagesLimit !== undefined
-            ? Math.max(0, messagesLimit - messageCount)
-            : null;
-        const unlimited = messagesLimit === null || messagesLimit === undefined;
+  app.post(
+    "/v1/openai/workspace/:slug/limits/adjustments",
+    [validApiKey],
+    async (request, response) => {
+      /*
+      #swagger.tags = ['OpenAI Compatible Endpoints']
+      #swagger.description = 'Books a manual quota adjustment against the workspace message contingent. Sign convention: amount > 0 DEDUCTS messages from the contingent (consumed quota increases, messagesRemaining decreases) — use this when an external system consumes messages from the same package. amount < 0 credits messages back (e.g. refunds). Adjustments are counted inside the current billing window exactly like real chat messages and therefore expire automatically with the next cycle reset. Note: bookings are not idempotent — retrying a request books twice. createdAt is always now (no backdating). Overdrawing is allowed; limitReached then becomes true and chats are blocked.'
+      #swagger.parameters['slug'] = {
+        in: 'path',
+        description: 'Workspace slug',
+        required: true,
+        type: 'string'
+      }
+      #swagger.requestBody = {
+        description: 'amount: non-zero integer (positive = deduct, negative = credit), max ±1000000. reason: optional audit note, max 500 characters.',
+        required: true,
+        content: {
+          "application/json": {
+            example: {
+              "amount": 250,
+              "reason": "Telefon-KI Verbrauch Mai"
+            }
+          }
+        }
+      }
+      #swagger.responses[200] = {
+        content: {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "example": {
+                "adjustment": {
+                  "id": 1,
+                  "amount": 250,
+                  "reason": "Telefon-KI Verbrauch Mai",
+                  "createdAt": "2026-06-11T08:00:00.000Z"
+                },
+                "workspace_slug": "kufersql",
+                "workspace_name": "KuferSQL",
+                "messageCount": 262,
+                "messagesLimit": 600,
+                "messagesRemaining": 338,
+                "contingent": "262/600",
+                "adjustmentsTotal": 250,
+                "messages_limit": 600,
+                "unlimited": false,
+                "limitReached": false,
+                "cycleInfo": {
+                  "cycleNumber": 1,
+                  "cycleDurationMonths": 1,
+                  "currentCycleStart": "2026-06-01T00:00:00.000Z",
+                  "currentCycleEnd": "2026-06-30T23:59:59.999Z",
+                  "nextReset": "2026-07-01T00:00:00.000Z",
+                  "daysRemaining": 19
+                }
+              }
+            }
+          }
+        }
+      }
+      #swagger.responses[400] = {
+        description: 'Invalid amount or reason.'
+      }
+      #swagger.responses[403] = {
+        schema: {
+          "$ref": "#/definitions/InvalidAPIKey"
+        }
+      }
+      #swagger.responses[404] = {
+        description: 'Workspace not found.'
+      }
+      */
+      try {
+        const { slug } = request.params;
+        const workspace = await Workspace.get({ slug: String(slug) });
+        if (!workspace) {
+          return response.status(404).json({ error: "Workspace not found." });
+        }
+
+        const validation = validateAdjustmentRequest(reqBody(request), {
+          maxAbsAmount: WorkspaceMessageAdjustments.MAX_ABS_AMOUNT,
+          maxReasonLength: WorkspaceMessageAdjustments.MAX_REASON_LENGTH,
+        });
+        if (!validation.valid) {
+          return response.status(400).json({ error: validation.error });
+        }
+
+        const { adjustment, message } = await WorkspaceMessageAdjustments.new({
+          workspaceId: workspace.id,
+          amount: validation.amount,
+          reason: validation.reason,
+        });
+        if (!adjustment) {
+          return response
+            .status(500)
+            .json({ error: message ?? "Failed to create adjustment." });
+        }
+
+        await EventLogs.logEvent("api_message_quota_adjustment", {
+          workspaceSlug: workspace.slug,
+          workspaceName: workspace.name,
+          adjustmentId: adjustment.id,
+          amount: adjustment.amount,
+          reason: adjustment.reason,
+        });
+
+        return response.status(200).json({
+          adjustment: {
+            id: adjustment.id,
+            amount: adjustment.amount,
+            reason: adjustment.reason,
+            createdAt: adjustment.createdAt,
+          },
+          ...(await buildWorkspaceLimitsPayload(workspace)),
+        });
+      } catch (e) {
+        console.error(e.message, e);
+        response.status(500).end();
+      }
+    }
+  );
+
+  app.get(
+    "/v1/openai/workspace/:slug/limits/adjustments",
+    [validApiKey],
+    async (request, response) => {
+      /*
+      #swagger.tags = ['OpenAI Compatible Endpoints']
+      #swagger.description = 'Lists manual quota adjustments for a workspace (audit trail), newest first. amount > 0 = deduction, amount < 0 = credit.'
+      #swagger.parameters['slug'] = {
+        in: 'path',
+        description: 'Workspace slug',
+        required: true,
+        type: 'string'
+      }
+      #swagger.parameters['currentCycle'] = {
+        in: 'query',
+        description: 'When true, only returns adjustments inside the current billing window (active cycle, or current calendar month when no cycle is configured). Default: all adjustments.',
+        required: false,
+        type: 'boolean'
+      }
+      #swagger.parameters['limit'] = {
+        in: 'query',
+        description: 'Maximum number of adjustments to return (default 100, max 1000).',
+        required: false,
+        type: 'integer'
+      }
+      #swagger.parameters['offset'] = {
+        in: 'query',
+        description: 'Number of adjustments to skip for pagination (default 0).',
+        required: false,
+        type: 'integer'
+      }
+      #swagger.responses[200] = {
+        content: {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "example": {
+                "workspace_slug": "kufersql",
+                "adjustments": [
+                  {
+                    "id": 1,
+                    "workspaceId": 5,
+                    "amount": 250,
+                    "reason": "Telefon-KI Verbrauch Mai",
+                    "createdAt": "2026-06-11T08:00:00.000Z"
+                  }
+                ],
+                "totalCount": 1,
+                "adjustmentsTotal": 250,
+                "limit": 100,
+                "offset": 0,
+                "currentCycle": false
+              }
+            }
+          }
+        }
+      }
+      #swagger.responses[403] = {
+        schema: {
+          "$ref": "#/definitions/InvalidAPIKey"
+        }
+      }
+      #swagger.responses[404] = {
+        description: 'Workspace not found.'
+      }
+      */
+      try {
+        const { slug } = request.params;
+        const workspace = await Workspace.get({ slug: String(slug) });
+        if (!workspace) {
+          return response.status(404).json({ error: "Workspace not found." });
+        }
+
+        const limit = Math.min(
+          Math.max(Number(request.query?.limit ?? 100) || 100, 1),
+          1000
+        );
+        const offset = Math.max(Number(request.query?.offset ?? 0) || 0, 0);
+        const currentCycle = String(request.query?.currentCycle) === "true";
+
+        const clause = { workspaceId: workspace.id };
+        if (currentCycle) {
+          const { startDate, endDate } = getCurrentBillingWindow(workspace);
+          clause.createdAt = { gte: startDate, lte: endDate };
+        }
+
+        const [adjustments, totalCount, adjustmentsTotal] = await Promise.all([
+          WorkspaceMessageAdjustments.where(clause, limit, offset),
+          WorkspaceMessageAdjustments.count(clause),
+          WorkspaceMessageAdjustments.sumAmount(clause),
+        ]);
 
         return response.status(200).json({
           workspace_slug: workspace.slug,
-          workspace_name: workspace.name,
-          messageCount,
-          messagesLimit,
-          messagesRemaining,
-          contingent,
-          messages_limit: messagesLimit,
-          unlimited,
-          limitReached: !unlimited && messageCount >= messagesLimit,
-          cycleInfo: cycleInfo
-            ? {
-                cycleNumber: cycleInfo.cycleNumber,
-                cycleDurationMonths: cycleInfo.cycleDurationMonths,
-                currentCycleStart: cycleInfo.currentCycleStart,
-                currentCycleEnd: cycleInfo.currentCycleEnd,
-                nextReset: cycleInfo.nextReset,
-                daysRemaining: cycleInfo.daysRemaining,
-              }
-            : null,
+          adjustments,
+          totalCount,
+          adjustmentsTotal,
+          limit,
+          offset,
+          currentCycle,
         });
       } catch (e) {
         console.error(e.message, e);

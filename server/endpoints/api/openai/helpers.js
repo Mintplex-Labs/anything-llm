@@ -44,7 +44,54 @@ function extractAttachments(content) {
     }));
 }
 
+/**
+ * Validates the request body for a message-quota adjustment booking.
+ * Sign convention: amount > 0 deducts from the contingent (consumes quota),
+ * amount < 0 credits quota back.
+ * @param {Object} body - Parsed request body
+ * @param {Object} [limits]
+ * @param {number} [limits.maxAbsAmount] - Maximum absolute amount allowed
+ * @param {number} [limits.maxReasonLength] - Maximum reason string length
+ * @returns {{valid: boolean, error: string|null, amount: number|null, reason: string|null}}
+ */
+function validateAdjustmentRequest(
+  body,
+  { maxAbsAmount = 1_000_000, maxReasonLength = 500 } = {}
+) {
+  const invalid = (error) => ({
+    valid: false,
+    error,
+    amount: null,
+    reason: null,
+  });
+
+  if (!body || typeof body !== "object" || Array.isArray(body))
+    return invalid("Request body must be a JSON object.");
+
+  const { amount, reason = null } = body;
+  if (amount === undefined || amount === null)
+    return invalid("amount is required.");
+  if (typeof amount !== "number" || !Number.isInteger(amount))
+    return invalid("amount must be an integer.");
+  if (amount === 0)
+    return invalid(
+      "amount must not be 0. Use a positive amount to deduct messages or a negative amount to credit them back."
+    );
+  if (Math.abs(amount) > maxAbsAmount)
+    return invalid(
+      `amount must be between -${maxAbsAmount} and ${maxAbsAmount}.`
+    );
+
+  if (reason !== null && typeof reason !== "string")
+    return invalid("reason must be a string.");
+  if (reason && reason.length > maxReasonLength)
+    return invalid(`reason must be at most ${maxReasonLength} characters.`);
+
+  return { valid: true, error: null, amount, reason: reason || null };
+}
+
 module.exports = {
   extractTextContent,
   extractAttachments,
+  validateAdjustmentRequest,
 };

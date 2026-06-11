@@ -1556,6 +1556,7 @@ const TRANSLATIONS = {
       days: "days",
       "cycle-duration": "Cycle Duration",
       "current-cycle": "Current Cycle",
+      "api-adjustments": "Manual deductions/credits (API)",
       "no-usage-data": "No usage data available",
       "messages-limit": "Message Limit",
       "messages-limit-description":

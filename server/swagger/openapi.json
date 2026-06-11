@@ -3867,6 +3867,193 @@
         }
       }
     },
+    "/v1/openai/workspace/{slug}/limits/adjustments": {
+      "post": {
+        "tags": [
+          "OpenAI Compatible Endpoints"
+        ],
+        "description": "Books a manual quota adjustment against the workspace message contingent. Sign convention: amount > 0 DEDUCTS messages from the contingent (consumed quota increases, messagesRemaining decreases) — use this when an external system consumes messages from the same package. amount < 0 credits messages back (e.g. refunds). Adjustments are counted inside the current billing window exactly like real chat messages and therefore expire automatically with the next cycle reset. Note: bookings are not idempotent — retrying a request books twice. createdAt is always now (no backdating). Overdrawing is allowed; limitReached then becomes true and chats are blocked.",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Workspace slug"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "adjustment": {
+                      "id": 1,
+                      "amount": 250,
+                      "reason": "Telefon-KI Verbrauch Mai",
+                      "createdAt": "2026-06-11T08:00:00.000Z"
+                    },
+                    "workspace_slug": "kufersql",
+                    "workspace_name": "KuferSQL",
+                    "messageCount": 262,
+                    "messagesLimit": 600,
+                    "messagesRemaining": 338,
+                    "contingent": "262/600",
+                    "adjustmentsTotal": 250,
+                    "messages_limit": 600,
+                    "unlimited": false,
+                    "limitReached": false,
+                    "cycleInfo": {
+                      "cycleNumber": 1,
+                      "cycleDurationMonths": 1,
+                      "currentCycleStart": "2026-06-01T00:00:00.000Z",
+                      "currentCycleEnd": "2026-06-30T23:59:59.999Z",
+                      "nextReset": "2026-07-01T00:00:00.000Z",
+                      "daysRemaining": 19
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid amount or reason."
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Workspace not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "amount: non-zero integer (positive = deduct, negative = credit), max ±1000000. reason: optional audit note, max 500 characters.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "amount": 250,
+                "reason": "Telefon-KI Verbrauch Mai"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "OpenAI Compatible Endpoints"
+        ],
+        "description": "Lists manual quota adjustments for a workspace (audit trail), newest first. amount > 0 = deduction, amount < 0 = credit.",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Workspace slug"
+          },
+          {
+            "name": "currentCycle",
+            "in": "query",
+            "description": "When true, only returns adjustments inside the current billing window (active cycle, or current calendar month when no cycle is configured). Default: all adjustments.",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of adjustments to return (default 100, max 1000).",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of adjustments to skip for pagination (default 0).",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "workspace_slug": "kufersql",
+                    "adjustments": [
+                      {
+                        "id": 1,
+                        "workspaceId": 5,
+                        "amount": 250,
+                        "reason": "Telefon-KI Verbrauch Mai",
+                        "createdAt": "2026-06-11T08:00:00.000Z"
+                      }
+                    ],
+                    "totalCount": 1,
+                    "adjustmentsTotal": 250,
+                    "limit": 100,
+                    "offset": 0,
+                    "currentCycle": false
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Workspace not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/v1/embed": {
       "get": {
         "tags": [

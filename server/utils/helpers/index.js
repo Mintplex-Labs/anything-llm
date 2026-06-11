@@ -524,42 +524,67 @@ function toChunks(arr, size) {
 }
 
 /**
- * Counts messages for a workspace within the given time range
+ * @typedef {Object} MessageCountBreakdown
+ * @property {number} total - Billable message count (chats + embed chats + adjustments, clamped at 0)
+ * @property {number} workspaceChatCount
+ * @property {number} embedChatCount
+ * @property {number} adjustmentsTotal - Sum of manual quota adjustments in the range (>0 deduct, <0 credit)
+ */
+
+/**
+ * Counts billable messages for a workspace within the given time range.
+ * Includes manual quota adjustments (workspace_message_adjustments) so API-side
+ * deductions consume the contingent exactly like real chat messages.
  * @param {Object} workspace - The workspace object
  * @param {Date} startDate - The start date (inclusive)
  * @param {Date} endDate - The end date (inclusive)
- * @returns {Promise<number>} - The count of messages within the date range
+ * @returns {Promise<MessageCountBreakdown>} - Breakdown of messages within the date range
  */
 async function countMessagesInDateRange(workspace, startDate, endDate) {
   const { WorkspaceChats } = require("../../models/workspaceChats");
   const { EmbedChats } = require("../../models/embedChats");
+  const {
+    WorkspaceMessageAdjustments,
+  } = require("../../models/workspaceMessageAdjustments");
 
   // Set the end date to the end of the day
   const adjustedEndDate = new Date(endDate);
   adjustedEndDate.setHours(23, 59, 59, 999);
 
-  const [workspaceChatCount, embedChatCount] = await Promise.all([
-    WorkspaceChats.count({
-      workspaceId: workspace.id,
-      createdAt: {
-        gte: startDate,
-        lte: adjustedEndDate,
-      },
-    }),
-    EmbedChats.countForWorkspaceInDateRange(
-      workspace.id,
-      startDate,
-      adjustedEndDate
-    ),
-  ]);
+  const [workspaceChatCount, embedChatCount, adjustmentsTotal] =
+    await Promise.all([
+      WorkspaceChats.count({
+        workspaceId: workspace.id,
+        createdAt: {
+          gte: startDate,
+          lte: adjustedEndDate,
+        },
+      }),
+      EmbedChats.countForWorkspaceInDateRange(
+        workspace.id,
+        startDate,
+        adjustedEndDate
+      ),
+      WorkspaceMessageAdjustments.sumForWorkspaceInDateRange(
+        workspace.id,
+        startDate,
+        adjustedEndDate
+      ),
+    ]);
 
-  return workspaceChatCount + embedChatCount;
+  return {
+    // Credits cannot push the billable count below zero
+    total: Math.max(0, workspaceChatCount + embedChatCount + adjustmentsTotal),
+    workspaceChatCount,
+    embedChatCount,
+    adjustmentsTotal,
+  };
 }
 
 /**
  * Counts messages for a workspace for the current month only
  * @param {Object} workspace - The workspace object
- * @returns {Promise<number>} - The count of messages for the current month
+ * @returns {Promise<MessageCountBreakdown>} - Breakdown of messages for the current month
  */
 async function countMessagesForCurrentMonth(workspace) {
   const now = new Date();
@@ -573,11 +598,11 @@ async function countMessagesForCurrentMonth(workspace) {
  * Gets standardized message limit info for consistent response formatting.
  * Uses cycle-aware counting when cycle fields are set, otherwise falls back to monthly.
  * @param {Object} workspace - The workspace object
- * @returns {Promise<{messageCount: number, messagesLimit: number|null, contingent: string, cycleInfo: Object|null}>}
+ * @returns {Promise<{messageCount: number, messagesLimit: number|null, contingent: string, adjustmentsTotal: number, cycleInfo: Object|null}>}
  */
 async function getMessageLimitInfo(workspace) {
   const messagesLimit = workspace.messagesLimit; // Can be null
-  let messageCount;
+  let countBreakdown;
   let cycleInfo = null;
 
   // Use cycle-aware counting if cycle fields are set
@@ -586,17 +611,19 @@ async function getMessageLimitInfo(workspace) {
       countMessagesForCurrentCycle,
       getCycleInfo
     } = require("./cycleHelpers");
-    messageCount = await countMessagesForCurrentCycle(workspace);
+    countBreakdown = await countMessagesForCurrentCycle(workspace);
     cycleInfo = getCycleInfo(workspace);
   } else {
     // Fallback to monthly counting
-    messageCount = await countMessagesForCurrentMonth(workspace);
+    countBreakdown = await countMessagesForCurrentMonth(workspace);
   }
 
+  const messageCount = countBreakdown.total;
   return {
     messageCount,
     messagesLimit,
     contingent: `${messageCount}/${messagesLimit ?? 'Unlimited'}`,
+    adjustmentsTotal: countBreakdown.adjustmentsTotal,
     cycleInfo
   };
 }

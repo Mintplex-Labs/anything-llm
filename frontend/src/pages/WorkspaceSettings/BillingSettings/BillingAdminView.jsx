@@ -205,6 +205,19 @@ export default function BillingAdminView({ workspace }) {
                 </div>
               )}
 
+              {/* Manual API adjustments (deductions/credits) in current window */}
+              {!!usageData.adjustmentsTotal && (
+                <div className="text-sm">
+                  <span className="text-white/60">
+                    {t("billing.admin.api-adjustments")}:{" "}
+                  </span>
+                  <span className="text-white font-medium">
+                    {usageData.adjustmentsTotal > 0 ? "+" : ""}
+                    {usageData.adjustmentsTotal.toLocaleString("de-DE")}
+                  </span>
+                </div>
+              )}
+
               {/* Cycle Info */}
               {usageData.cycleInfo && (
                 <div className="flex gap-x-8 pt-2">
