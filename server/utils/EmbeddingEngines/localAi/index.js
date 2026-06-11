@@ -58,11 +58,15 @@ class LocalAiEmbedder {
     for (const chunk of toChunks(textChunks, this.maxConcurrentChunks)) {
       embeddingRequests.push(
         new Promise((resolve) => {
+          // NB: LocalAI versions < v2.29 ignored encoding_format and always returned float arrays,
+          // causing the OpenAI SDK's default base64 decode to silently produce dims/4 zero vectors.
+          // Fixed in LocalAI PR #9135 (Mar 2026). Pinning "float" here for safety with older versions.
           this.openai.embeddings
             .create({
               model: this.model,
               input: chunk,
               dimensions: this.outputDimensions,
+              encoding_format: "float",
             })
             .then((result) => {
               chunksProcessed += chunk.length;
