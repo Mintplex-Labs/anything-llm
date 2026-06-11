@@ -72,7 +72,7 @@ function apiWorkspaceThreadEndpoints(app) {
       try {
         const wslug = request.params.slug;
         let { userId = null, name = null, slug = null } = reqBody(request);
-        const workspace = await Workspace.get({ slug: wslug });
+        const workspace = await Workspace.get({ slug: String(wslug) });
 
         if (!workspace) {
           response.sendStatus(400).end();
@@ -166,14 +166,18 @@ function apiWorkspaceThreadEndpoints(app) {
       try {
         const { slug, threadSlug } = request.params;
         const { name } = reqBody(request);
-        const workspace = await Workspace.get({ slug });
+        const workspace = await Workspace.get({ slug: String(slug) });
+        if (!workspace) {
+          response.status(404).json({ message: "Workspace not found" });
+          return;
+        }
+
         const thread = await WorkspaceThread.get({
-          slug: threadSlug,
+          slug: String(threadSlug),
           workspace_id: workspace.id,
         });
-
-        if (!workspace || !thread) {
-          response.sendStatus(400).end();
+        if (!thread) {
+          response.status(404).json({ message: "Thread not found" });
           return;
         }
 
@@ -219,7 +223,7 @@ function apiWorkspaceThreadEndpoints(app) {
     */
       try {
         const { slug, threadSlug } = request.params;
-        const workspace = await Workspace.get({ slug });
+        const workspace = await Workspace.get({ slug: String(slug) });
 
         if (!workspace) {
           response.sendStatus(400).end();
@@ -227,7 +231,7 @@ function apiWorkspaceThreadEndpoints(app) {
         }
 
         await WorkspaceThread.delete({
-          slug: threadSlug,
+          slug: String(threadSlug),
           workspace_id: workspace.id,
         });
         response.sendStatus(200).end();
@@ -288,14 +292,18 @@ function apiWorkspaceThreadEndpoints(app) {
       */
       try {
         const { slug, threadSlug } = request.params;
-        const workspace = await Workspace.get({ slug });
+        const workspace = await Workspace.get({ slug: String(slug) });
+        if (!workspace) {
+          response.status(404).json({ message: "Workspace not found" });
+          return;
+        }
+
         const thread = await WorkspaceThread.get({
-          slug: threadSlug,
+          slug: String(threadSlug),
           workspace_id: workspace.id,
         });
-
-        if (!workspace || !thread) {
-          response.sendStatus(400).end();
+        if (!thread) {
+          response.status(404).json({ message: "Thread not found" });
           return;
         }
 
@@ -390,20 +398,31 @@ function apiWorkspaceThreadEndpoints(app) {
           attachments = [],
           reset = false,
         } = reqBody(request);
-        const workspace = await Workspace.get({ slug });
-        const thread = await WorkspaceThread.get({
-          slug: threadSlug,
-          workspace_id: workspace.id,
-        });
-
-        if (!workspace || !thread) {
-          response.status(400).json({
+        const workspace = await Workspace.get({ slug: String(slug) });
+        if (!workspace) {
+          response.status(404).json({
             id: uuidv4(),
             type: "abort",
             textResponse: null,
             sources: [],
             close: true,
-            error: `Workspace ${slug} or thread ${threadSlug} is not valid.`,
+            error: `Workspace ${slug} not found.`,
+          });
+          return;
+        }
+
+        const thread = await WorkspaceThread.get({
+          slug: String(threadSlug),
+          workspace_id: workspace.id,
+        });
+        if (!thread) {
+          response.status(404).json({
+            id: uuidv4(),
+            type: "abort",
+            textResponse: null,
+            sources: [],
+            close: true,
+            error: `Thread ${threadSlug} not found.`,
           });
           return;
         }
@@ -562,9 +581,9 @@ function apiWorkspaceThreadEndpoints(app) {
           attachments = [],
           reset = false,
         } = reqBody(request);
-        const workspace = await Workspace.get({ slug });
+        const workspace = await Workspace.get({ slug: String(slug) });
         const thread = await WorkspaceThread.get({
-          slug: threadSlug,
+          slug: String(threadSlug),
           workspace_id: workspace.id,
         });
 
