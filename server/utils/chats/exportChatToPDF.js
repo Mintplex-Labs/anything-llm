@@ -2,6 +2,7 @@ const moment = require("moment");
 const {
   applyBranding,
 } = require("../agents/aibitat/plugins/create-files/pdf/utils.js");
+const { convertToChatHistory } = require("../helpers/chat/responses");
 
 const THOUGHT_TAGS = "thinking|think|thought|thought_chain";
 
@@ -74,4 +75,17 @@ async function chatHistoryToPDF(history = [], meta = {}) {
   return Buffer.from(await pdfDoc.save());
 }
 
-module.exports = { chatHistoryToPDF };
+/**
+ * Generate the chat-history PDF and write it as the response body. The frontend
+ * reads it as a blob and names the download itself.
+ * @param {import("express").Response} response
+ * @param {Object[]} chats - Raw workspace_chats records
+ * @param {{workspaceName: string, threadName?: string|null}} meta
+ */
+async function sendChatHistoryPDF(response, chats, meta) {
+  const buffer = await chatHistoryToPDF(convertToChatHistory(chats), meta);
+  response.setHeader("Content-Type", "application/pdf");
+  return response.send(buffer);
+}
+
+module.exports = { sendChatHistoryPDF };

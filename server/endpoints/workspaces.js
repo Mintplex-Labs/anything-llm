@@ -25,7 +25,7 @@ const {
 } = require("../models/workspacesSuggestedMessages");
 const { validWorkspaceSlug } = require("../utils/middleware/validWorkspace");
 const { convertToChatHistory } = require("../utils/helpers/chat/responses");
-const { chatHistoryToPDF } = require("../utils/chats/exportChatToPDF");
+const { sendChatHistoryPDF } = require("../utils/chats/exportChatToPDF");
 const { CollectorApi } = require("../utils/collectorApi");
 const {
   determineWorkspacePfpFilepath,
@@ -431,20 +431,13 @@ function workspaceEndpoints(app) {
       try {
         const user = await userFromSession(request, response);
         const workspace = response.locals.workspace;
-        const history = multiUserMode(response)
+        const chats = multiUserMode(response)
           ? await WorkspaceChats.forWorkspaceByUser(workspace.id, user.id)
           : await WorkspaceChats.forWorkspace(workspace.id);
-
-        const buffer = await chatHistoryToPDF(convertToChatHistory(history), {
+        return sendChatHistoryPDF(response, chats, {
           workspaceName: workspace.name,
           threadName: null,
         });
-        response.setHeader("Content-Type", "application/pdf");
-        response.setHeader(
-          "Content-Disposition",
-          `attachment; filename="AnythingLLM Export.pdf"`
-        );
-        return response.send(buffer);
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();

@@ -18,7 +18,7 @@ const {
 } = require("../utils/middleware/validWorkspace");
 const { WorkspaceChats } = require("../models/workspaceChats");
 const { convertToChatHistory } = require("../utils/helpers/chat/responses");
-const { chatHistoryToPDF } = require("../utils/chats/exportChatToPDF");
+const { sendChatHistoryPDF } = require("../utils/chats/exportChatToPDF");
 const { getModelTag } = require("./utils");
 
 function workspaceThreadEndpoints(app) {
@@ -177,7 +177,7 @@ function workspaceThreadEndpoints(app) {
         const user = await userFromSession(request, response);
         const workspace = response.locals.workspace;
         const thread = response.locals.thread;
-        const history = await WorkspaceChats.where(
+        const chats = await WorkspaceChats.where(
           {
             workspaceId: workspace.id,
             user_id: user?.id || null,
@@ -188,17 +188,10 @@ function workspaceThreadEndpoints(app) {
           null,
           { id: "asc" }
         );
-
-        const buffer = await chatHistoryToPDF(convertToChatHistory(history), {
+        return sendChatHistoryPDF(response, chats, {
           workspaceName: workspace.name,
           threadName: thread.name,
         });
-        response.setHeader("Content-Type", "application/pdf");
-        response.setHeader(
-          "Content-Disposition",
-          `attachment; filename="AnythingLLM Export.pdf"`
-        );
-        return response.send(buffer);
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();
