@@ -203,12 +203,17 @@ export default function printChatThread({
     .toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
     .replace(/:/g, ".")}`;
 
+  const docTitle = buildDocTitle({
+    workspaceName,
+    threadName,
+    date: fileStamp,
+  });
   const html = buildDocument({
     messages,
     workspaceName: workspaceName || "Workspace",
     threadName,
     date: now.toLocaleString(),
-    docTitle: buildDocTitle({ workspaceName, threadName, date: fileStamp }),
+    docTitle,
   });
 
   const iframe = document.createElement("iframe");
@@ -234,9 +239,18 @@ export default function printChatThread({
           })
       )
     ).then(() => {
+      // The browser names the PDF after the top document's title and ignores
+      // the iframe's, so lend it our export title while the dialog is open and
+      // restore it afterward. Register afterprint before print() so cleanup
+      // runs whether or not print() blocks until the dialog closes.
+      const previousTitle = document.title;
+      frameWindow.onafterprint = () => {
+        document.title = previousTitle;
+        iframe.remove();
+      };
+      document.title = docTitle;
       frameWindow.focus();
       frameWindow.print();
-      frameWindow.onafterprint = () => iframe.remove();
     });
   };
 
