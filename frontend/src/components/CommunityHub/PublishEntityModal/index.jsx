@@ -68,19 +68,52 @@ export default function PublishEntityModal({
   );
 }
 
+function successCopy(entityType, t) {
+  switch (entityType) {
+    case "system-prompt":
+      return {
+        title: t("community_hub.publish.system_prompt.success_title"),
+        description: t(
+          "community_hub.publish.system_prompt.success_description"
+        ),
+        thankYou: t("community_hub.publish.system_prompt.success_thank_you"),
+        viewOnHub: t("community_hub.publish.system_prompt.view_on_hub"),
+      };
+    case "agent-flow":
+      return {
+        title: t("community_hub.publish.agent_flow.success_title"),
+        description: t("community_hub.publish.agent_flow.success_description"),
+        thankYou: t("community_hub.publish.agent_flow.success_thank_you"),
+        viewOnHub: t("community_hub.publish.agent_flow.view_on_hub"),
+      };
+    case "slash-command":
+      return {
+        title: t("community_hub.publish.slash_command.success_title"),
+        description: t(
+          "community_hub.publish.slash_command.success_description"
+        ),
+        thankYou: t("community_hub.publish.slash_command.success_thank_you"),
+        viewOnHub: t("community_hub.publish.slash_command.view_on_hub"),
+      };
+    default:
+      return null;
+  }
+}
+
 function PublishSuccess({ entityType, itemId }) {
   const { t } = useTranslation();
-  const key = entityType.replace("-", "_");
+  const copy = successCopy(entityType, t);
+  if (!copy) return null;
   return (
     <div className="px-6 pb-8 flex flex-col items-center justify-center text-center gap-y-2">
       <h3 className="text-lg font-semibold text-slate-50 light:text-slate-900">
-        {t(`community_hub.publish.${key}.success_title`)}
+        {copy.title}
       </h3>
       <p className="text-lg text-slate-50 light:text-slate-900">
-        {t(`community_hub.publish.${key}.success_description`)}
+        {copy.description}
       </p>
       <p className="text-zinc-400 light:text-slate-600 text-sm">
-        {t(`community_hub.publish.${key}.success_thank_you`)}
+        {copy.thankYou}
       </p>
       <Link
         to={paths.communityHub.viewItem(entityType, itemId)}
@@ -88,7 +121,7 @@ function PublishSuccess({ entityType, itemId }) {
         rel="noreferrer"
         className="w-full bg-zinc-800 light:bg-slate-100 hover:bg-zinc-700 light:hover:bg-slate-200 text-slate-50 light:text-slate-900 py-2 px-4 rounded-lg transition-colors mt-4 text-sm font-semibold text-center"
       >
-        {t(`community_hub.publish.${key}.view_on_hub`)}
+        {copy.viewOnHub}
       </Link>
     </div>
   );
