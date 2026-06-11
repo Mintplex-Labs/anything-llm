@@ -2,7 +2,7 @@ const { EventLogs } = require("../../../models/eventLogs");
 const { SystemSettings } = require("../../../models/systemSettings");
 const { purgeDocument } = require("../../../utils/files/purgeDocument");
 const { getVectorDbClass } = require("../../../utils/helpers");
-const { exportChatsAsType } = require("../../../utils/helpers/chat/convertTo");
+const { exportChatsAsType, validExportTypes } = require("../../../utils/helpers/chat/convertTo");
 const { dumpENV, updateENV } = require("../../../utils/helpers/updateENV");
 const { reqBody } = require("../../../utils/http");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
@@ -189,10 +189,9 @@ function apiSystemEndpoints(app) {
     */
       try {
         const { type = "jsonl" } = request.query;
-        const validTypes = ["json", "csv", "jsonl", "jsonAlpaca"];
-        if (!validTypes.includes(type)) {
+        if (!validExportTypes.includes(type)) {
           response.status(400).json({
-            message: `Invalid export type: ${type}. Must be one of ${validTypes.join(", ")}`,
+            message: `Invalid export type: ${type}. Must be one of ${validExportTypes.join(", ")}`,
           });
           return;
         }
