@@ -1254,6 +1254,8 @@ const TRANSLATIONS = {
     stt_mic_denied:
       "امکان دسترسی به میکروفون وجود نداشت. لطفاً اجازه دسترسی را بدهید و دوباره امتحان کنید.",
     stt_transcription_failed: "ترجمه ناموفق: {{error}}",
+    export: "ارسال پیام",
+    exporting: "صدور به خارج",
   },
   profile_settings: {
     edit_account: "ویرایش حساب",

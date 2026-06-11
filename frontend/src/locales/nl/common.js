@@ -1272,6 +1272,8 @@ const TRANSLATIONS = {
     stt_mic_denied:
       "Het was niet mogelijk om de microfoon te gebruiken. Gelieve toestemming te verlenen en opnieuw te proberen.",
     stt_transcription_failed: "Transcriptie mislukt: {{error}}",
+    export: "Exporteer chat",
+    exporting: "Exporteren...",
   },
   profile_settings: {
     edit_account: "Account bewerken",

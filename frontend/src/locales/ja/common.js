@@ -1244,6 +1244,8 @@ const TRANSLATIONS = {
     stt_mic_denied:
       "マイクへのアクセスができません。「許可を付与して、再度お試しください。」",
     stt_transcription_failed: "文字起こしに失敗しました: {{error}}",
+    export: "チャットの輸出",
+    exporting: "輸出...",
   },
   profile_settings: {
     edit_account: "アカウントを編集",

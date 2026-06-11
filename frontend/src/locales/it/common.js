@@ -1293,6 +1293,8 @@ const TRANSLATIONS = {
     stt_mic_denied:
       "Impossibile accedere al microfono. Si prega di concedere i permessi e riprovare.",
     stt_transcription_failed: "Errore di trascrizione: {{error}}",
+    export: "Esportazione della chat",
+    exporting: "Esportazione...",
   },
   profile_settings: {
     edit_account: "Modifica account",
