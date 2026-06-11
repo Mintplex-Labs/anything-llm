@@ -18,6 +18,7 @@ const {
 } = require("../utils/middleware/validWorkspace");
 const { WorkspaceChats } = require("../models/workspaceChats");
 const { convertToChatHistory } = require("../utils/helpers/chat/responses");
+const { chatHistoryToPDF } = require("../utils/chats/exportChatToPDF");
 const { getModelTag } = require("./utils");
 
 function workspaceThreadEndpoints(app) {
@@ -157,6 +158,47 @@ function workspaceThreadEndpoints(app) {
         );
 
         response.status(200).json({ history: convertToChatHistory(history) });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.get(
+    "/workspace/:slug/thread/:threadSlug/export/pdf",
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.all]),
+      validWorkspaceAndThreadSlug,
+    ],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        const workspace = response.locals.workspace;
+        const thread = response.locals.thread;
+        const history = await WorkspaceChats.where(
+          {
+            workspaceId: workspace.id,
+            user_id: user?.id || null,
+            thread_id: thread.id,
+            api_session_id: null, // Do not include API session chats.
+            include: true,
+          },
+          null,
+          { id: "asc" }
+        );
+
+        const buffer = await chatHistoryToPDF(convertToChatHistory(history), {
+          workspaceName: workspace.name,
+          threadName: thread.name,
+        });
+        response.setHeader("Content-Type", "application/pdf");
+        response.setHeader(
+          "Content-Disposition",
+          `attachment; filename="AnythingLLM Export.pdf"`
+        );
+        return response.send(buffer);
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();

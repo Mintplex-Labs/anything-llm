@@ -1477,6 +1477,7 @@ const TRANSLATIONS = {
     attach_file: "Attach a file to this chat",
     text_size: "Change text size.",
     export: "Export chat",
+    exporting: "Exporting...",
     microphone: "Speak your prompt.",
     stt_unsupported: "Microphone access is not supported in this browser.",
     stt_mic_denied:

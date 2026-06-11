@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import WorkspaceThread from "@/models/workspaceThread";
-import printChatThread from "@/utils/chat/printThread";
+import { saveAs } from "file-saver";
+import Workspace from "@/models/workspace";
+import showToast from "@/utils/toast";
 
 export default function ExportRow({
   history = [],
@@ -9,14 +11,20 @@ export default function ExportRow({
   onClose,
 }) {
   const { t } = useTranslation();
+  const [exporting, setExporting] = useState(false);
 
   async function handleClick() {
-    let threadName = "";
-    if (threadSlug && workspace?.slug) {
-      const { threads = [] } = await WorkspaceThread.all(workspace.slug);
-      threadName = threads.find((t) => t.slug === threadSlug)?.name ?? "";
-    }
-    printChatThread({ history, workspaceName: workspace?.name, threadName });
+    if (exporting || !workspace?.slug) return;
+    setExporting(true);
+    const blob = await Workspace.exportChatsToPDF(workspace.slug, threadSlug);
+    if (blob) {
+      const stamp = new Date()
+        .toLocaleString()
+        .replace(", ", " ")
+        .replace(/[/:]/g, "-");
+      saveAs(blob, `AnythingLLM Export - ${stamp}.pdf`);
+    } else showToast("Failed to export chat.", "error");
+    setExporting(false);
     onClose();
   }
 
@@ -28,7 +36,7 @@ export default function ExportRow({
       className="flex items-center px-2 py-1 rounded cursor-pointer hover:bg-zinc-700 light:hover:bg-slate-200"
     >
       <span className="text-sm font-normal text-white light:text-slate-800">
-        {t("chat_window.export")}
+        {exporting ? t("chat_window.exporting") : t("chat_window.export")}
       </span>
     </div>
   );
