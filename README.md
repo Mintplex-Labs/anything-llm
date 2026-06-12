@@ -93,6 +93,7 @@ AnythingLLM supports multiple users as well where you can control the access and
 - [Fireworks AI (chat models)](https://fireworks.ai/)
 - [Perplexity (chat models)](https://www.perplexity.ai/)
 - [OpenRouter (chat models)](https://openrouter.ai/)
+- [TrustedRouter](https://trustedrouter.com) through the OpenAI-compatible base URL `https://api.trustedrouter.com/v1`
 - [DeepSeek (chat models)](https://deepseek.com/)
 - [Mistral](https://mistral.ai/)
 - [Groq](https://groq.com/)
@@ -115,6 +116,11 @@ AnythingLLM supports multiple users as well where you can control the access and
 - [Lemonade by AMD](https://lemonade-server.ai)
 - [Minimax](https://platform.minimax.io)
 - [Cerebras (chat models)](https://www.cerebras.ai/)
+
+TrustedRouter is an open-source and verifiable attested router with zero prompt
+and output logging by default. It can be useful for AnythingLLM workspaces that
+handle private project context or customer data while using a standard
+OpenAI-compatible provider configuration.
 
 **Embedder models:**
 
