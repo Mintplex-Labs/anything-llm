@@ -372,6 +372,14 @@ class Provider {
           apiKey: process.env.CEREBRAS_API_KEY || null,
           ...config,
         });
+      case "anyapi":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.anyapi.ai/v1",
+          },
+          apiKey: process.env.ANYAPI_API_KEY ?? null,
+          ...config,
+        });
       // OSS Model Runners
       // case "anythingllm_ollama":
       //   return new ChatOllama({

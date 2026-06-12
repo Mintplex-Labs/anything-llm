@@ -248,6 +248,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "cerebras":
       const { CerebrasLLM } = require("../AiProviders/cerebras");
       return new CerebrasLLM(embedder, model);
+    case "anyapi":
+      const { AnyApiLLM } = require("../AiProviders/anyapi");
+      return new AnyApiLLM(embedder, model);
     case "anythingllm-router":
       // Model router is handled separately in stream.js via AnythingLLMModelRouter.
       // This case should not be hit directly - if it is, throw a descriptive error.
@@ -436,6 +439,9 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "cerebras":
       const { CerebrasLLM } = require("../AiProviders/cerebras");
       return CerebrasLLM;
+    case "anyapi":
+      const { AnyApiLLM } = require("../AiProviders/anyapi");
+      return AnyApiLLM;
     case "anythingllm-router":
       const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
       return AnythingLLMModelRouter;
@@ -523,6 +529,8 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.MINIMAX_MODEL_PREF;
     case "cerebras":
       return process.env.CEREBRAS_MODEL_PREF;
+    case "anyapi":
+      return process.env.ANYAPI_MODEL_PREF;
     default:
       return null;
   }

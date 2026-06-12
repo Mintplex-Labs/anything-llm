@@ -34,6 +34,7 @@ const SambaNovaProvider = require("./sambanova.js");
 const LemonadeProvider = require("./lemonade.js");
 const MinimaxProvider = require("./minimax.js");
 const CerebrasProvider = require("./cerebras.js");
+const AnyApiProvider = require("./anyapi.js");
 
 module.exports = {
   OpenAIProvider,
@@ -72,4 +73,5 @@ module.exports = {
   LemonadeProvider,
   MinimaxProvider,
   CerebrasProvider,
+  AnyApiProvider,
 };
