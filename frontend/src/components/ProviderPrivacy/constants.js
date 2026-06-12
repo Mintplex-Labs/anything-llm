@@ -45,6 +45,7 @@ import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
 import LemonadeLogo from "@/media/llmprovider/lemonade.png";
 import MinimaxLogo from "@/media/llmprovider/minimax.png";
 import CerebrasLogo from "@/media/llmprovider/cerebras.png";
+import AnyApiLogo from "@/media/llmprovider/anyapi.png";
 
 const LLM_PROVIDER_PRIVACY_MAP = {
   openai: {
@@ -249,6 +250,11 @@ const LLM_PROVIDER_PRIVACY_MAP = {
     name: "Cerebras",
     policyUrl: "https://www.cerebras.ai/privacy-policy",
     logo: CerebrasLogo,
+  },
+  anyapi: {
+    name: "AnyApi",
+    policyUrl: "https://anyapi.ai/privacy",
+    logo: AnyApiLogo,
   },
 };
 

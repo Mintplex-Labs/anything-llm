@@ -181,6 +181,9 @@ function getModelTag() {
     case "cerebras":
       model = process.env.CEREBRAS_MODEL_PREF;
       break;
+    case "anyapi":
+      model = process.env.ANYAPI_MODEL_PREF;
+      break;
     default:
       model = "--";
       break;

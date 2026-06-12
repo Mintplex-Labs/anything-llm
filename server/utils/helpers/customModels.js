@@ -15,6 +15,7 @@ const { fetchCometApiModels } = require("../AiProviders/cometapi");
 const { parseFoundryBasePath } = require("../AiProviders/foundry");
 const { getDockerModels } = require("../AiProviders/dockerModelRunner");
 const { getAllLemonadeModels } = require("../AiProviders/lemonade");
+const { fetchAnyApiModels } = require("../AiProviders/anyapi");
 
 const SUPPORT_CUSTOM_MODELS = [
   "openai",
@@ -50,6 +51,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "lemonade",
   "minimax",
   "cerebras",
+  "anyapi",
   "generic-openai",
   // Embedding Engines
   "native-embedder",
@@ -147,6 +149,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getMinimaxModels(apiKey);
     case "cerebras":
       return await getCerebrasModels();
+    case "anyapi":
+      return await getAnyApiModels(apiKey);
     case "generic-openai":
       return await getGenericOpenAiModels(basePath, apiKey);
     case "deepgram-stt":
@@ -1244,6 +1248,14 @@ async function kokoroTtsVoices(basePath = null, apiKey = null) {
     organization: "Kokoro",
   }));
   return { models, error: null };
+}
+
+async function getAnyApiModels(apiKey = null) {
+  const models = await fetchAnyApiModels(apiKey);
+  return {
+    models: Object.values(models),
+    error: null,
+  };
 }
 
 module.exports = {
