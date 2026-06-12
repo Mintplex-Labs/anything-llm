@@ -1,6 +1,7 @@
-import { Children, useEffect } from "react";
+import { Children } from "react";
 import { createPortal } from "react-dom";
 import { X } from "@phosphor-icons/react";
+import { useModalEscape } from "@/hooks/useModalEscape";
 
 /** @type {Record<string, string>} max-width per size, matched to the Figma modal frames */
 const SIZE_CLASSES = {
@@ -41,14 +42,7 @@ export default function Modal({
   closeOnEsc = true,
   noPortal = false,
 }) {
-  useEffect(() => {
-    if (!isOpen || !closeOnEsc || !onClose) return;
-    function handleKeyDown(event) {
-      if (event.key === "Escape") onClose();
-    }
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, closeOnEsc, onClose]);
+  useModalEscape(isOpen && closeOnEsc, onClose);
 
   if (!isOpen) return null;
 

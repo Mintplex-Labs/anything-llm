@@ -15,6 +15,7 @@ import Modal, {
   ModalPrimaryButton,
 } from "@/components/lib/Modal";
 import { EmbeddingProgressProvider } from "@/EmbeddingProgressContext";
+import { useModalEscape } from "@/hooks/useModalEscape";
 
 const noop = () => {};
 const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
@@ -145,17 +146,7 @@ export function useManageWorkspaceModal() {
     setShowing(false);
   }
 
-  useEffect(() => {
-    function onEscape(event) {
-      if (!showing || event.key !== "Escape") return;
-      setShowing(false);
-    }
-
-    document.addEventListener("keydown", onEscape);
-    return () => {
-      document.removeEventListener("keydown", onEscape);
-    };
-  }, [showing]);
+  useModalEscape(showing, hideModal);
 
   return { showing, showModal, hideModal };
 }
