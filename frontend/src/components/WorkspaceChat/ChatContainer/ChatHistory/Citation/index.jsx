@@ -1,13 +1,12 @@
 import { Fragment, useState, useEffect } from "react";
 import { decode as HTMLDecode } from "he";
 import truncate from "truncate";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal, { ModalHeader, ModalBody } from "@/components/lib/Modal";
 import {
   FileText,
   Info,
   ArrowSquareOut,
   GithubLogo,
-  X,
   YoutubeLogo,
   LinkSimple,
   GitlabLogo,
@@ -200,87 +199,61 @@ export function CitationDetailModal({ source, onClose }) {
   const { t } = useTranslation();
 
   return (
-    <ModalWrapper isOpen={!!source}>
-      <div className="w-full max-w-2xl bg-zinc-900 light:bg-white rounded-lg shadow border-2 border-zinc-700 light:border-slate-300 overflow-hidden">
-        <div className="relative p-6 border-b rounded-t border-zinc-700 light:border-slate-300">
-          <div className="w-full flex gap-x-2 items-center">
-            {isUrl ? (
-              <a
-                href={linkTo}
-                target="_blank"
-                rel="noreferrer"
-                className="text-xl w-[90%] font-semibold text-white light:text-slate-900 whitespace-nowrap hover:underline hover:text-blue-300 light:hover:text-blue-600 flex items-center gap-x-1"
-              >
-                <div className="flex items-center gap-x-1 max-w-full overflow-hidden">
-                  <h3 className="truncate text-ellipsis whitespace-nowrap overflow-hidden w-full">
-                    {webpageUrl}
-                  </h3>
-                  <ArrowSquareOut className="flex-shrink-0" />
-                </div>
-              </a>
-            ) : (
-              <h3 className="text-xl font-semibold text-white light:text-slate-900 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                {truncate(title, 45)}
-              </h3>
-            )}
-          </div>
-          {references > 1 && (
-            <p className="text-xs text-zinc-400 light:text-slate-500 mt-2">
-              Referenced {references} times.
-            </p>
-          )}
-          <button
-            onClick={onClose}
-            type="button"
-            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-zinc-700 light:hover:bg-slate-200 border-transparent border"
-          >
-            <X
-              size={24}
-              weight="bold"
-              className="text-white light:text-slate-900"
-            />
-          </button>
-        </div>
-        <div
-          className="h-full w-full overflow-y-auto"
-          style={{ maxHeight: "calc(100vh - 200px)" }}
-        >
-          <div className="py-7 px-9 space-y-2 flex-col">
-            {chunks.map(({ text, score }, idx) => (
-              <Fragment key={idx}>
-                <div className="pt-6 text-white light:text-slate-900">
-                  <div className="flex flex-col w-full justify-start pb-6 gap-y-1">
-                    <p className="text-white light:text-slate-900 whitespace-pre-line">
-                      {HTMLDecode(omitChunkHeader(text))}
-                    </p>
+    <Modal isOpen={!!source} onClose={onClose} size="lg">
+      <ModalHeader
+        title={
+          isUrl ? (
+            <a
+              href={linkTo}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-x-1 max-w-full overflow-hidden hover:underline hover:text-blue-300 light:hover:text-blue-600"
+            >
+              <span className="truncate">{webpageUrl}</span>
+              <ArrowSquareOut className="flex-shrink-0" />
+            </a>
+          ) : (
+            truncate(title, 45)
+          )
+        }
+        subtitle={
+          references > 1 ? `Referenced ${references} times.` : undefined
+        }
+        onClose={onClose}
+      />
+      <ModalBody>
+        {chunks.map(({ text, score }, idx) => (
+          <Fragment key={idx}>
+            <div className="text-zinc-100 light:text-slate-900">
+              <div className="flex flex-col w-full justify-start gap-y-1">
+                <p className="text-zinc-100 light:text-slate-900 whitespace-pre-line">
+                  {HTMLDecode(omitChunkHeader(text))}
+                </p>
 
-                    {!!score && (
-                      <div className="w-full flex items-center text-xs text-white/60 light:text-slate-500 gap-x-2 cursor-default">
-                        <div
-                          data-tooltip-id="similarity-score"
-                          data-tooltip-content={`This is the semantic similarity score of this chunk of text compared to your query calculated by the vector database.`}
-                          className="flex items-center gap-x-1"
-                        >
-                          <Info size={14} />
-                          <p>
-                            {toPercentString(score)}{" "}
-                            {t("chat_window.similarity_match")}
-                          </p>
-                        </div>
-                      </div>
-                    )}
+                {!!score && (
+                  <div className="w-full flex items-center text-xs text-zinc-400 light:text-slate-500 gap-x-2 cursor-default">
+                    <div
+                      data-tooltip-id="similarity-score"
+                      data-tooltip-content={`This is the semantic similarity score of this chunk of text compared to your query calculated by the vector database.`}
+                      className="flex items-center gap-x-1"
+                    >
+                      <Info size={14} />
+                      <p>
+                        {toPercentString(score)}{" "}
+                        {t("chat_window.similarity_match")}
+                      </p>
+                    </div>
                   </div>
-                </div>
-                {idx !== chunks.length - 1 && (
-                  <hr className="border-zinc-700 light:border-slate-300" />
                 )}
-              </Fragment>
-            ))}
-            <div className="mb-6"></div>
-          </div>
-        </div>
-      </div>
-    </ModalWrapper>
+              </div>
+            </div>
+            {idx !== chunks.length - 1 && (
+              <hr className="border-zinc-800 light:border-slate-200" />
+            )}
+          </Fragment>
+        ))}
+      </ModalBody>
+    </Modal>
   );
 }
 

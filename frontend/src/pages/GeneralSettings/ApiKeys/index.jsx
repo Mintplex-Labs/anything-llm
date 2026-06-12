@@ -10,7 +10,7 @@ import NewApiKeyModal from "./NewApiKeyModal";
 import paths from "@/utils/paths";
 import { userFromStorage } from "@/utils/request";
 import System from "@/models/system";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 import { useModal } from "@/hooks/useModal";
 import CTAButton from "@/components/lib/CTAButton";
 import { useTranslation } from "react-i18next";
@@ -125,12 +125,12 @@ export default function AdminApiKeys() {
             )}
           </div>
         </div>
-        <ModalWrapper isOpen={isOpen}>
+        <Modal isOpen={isOpen} onClose={closeModal}>
           <NewApiKeyModal
             closeModal={closeModal}
             onSuccess={fetchExistingKeys}
           />
-        </ModalWrapper>
+        </Modal>
       </div>
     </div>
   );

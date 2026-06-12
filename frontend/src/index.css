@@ -1081,7 +1081,15 @@ does not extend the close button beyond the viewport. */
 }
 
 .rti--container {
-  @apply !bg-theme-settings-input-bg !text-white !placeholder-white !placeholder-opacity-60 !text-sm !rounded-lg !p-2.5;
+  @apply !bg-zinc-800 !border !border-zinc-800 !text-zinc-100 !text-sm !rounded-lg !p-2 !gap-1.5;
+}
+
+.light .rti--container {
+  @apply !bg-white !border-slate-300 !text-slate-900;
+}
+
+.rti--container:focus-within {
+  @apply !border-sky-500 !shadow-none;
 }
 
 @keyframes fadeUpIn {

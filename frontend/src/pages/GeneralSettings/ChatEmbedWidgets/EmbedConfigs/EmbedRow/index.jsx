@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { DotsThreeOutline } from "@phosphor-icons/react";
 import showToast from "@/utils/toast";
 import { useModal } from "@/hooks/useModal";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 import Embed from "@/models/embed";
 import paths from "@/utils/paths";
 import { nFormatter } from "@/utils/numbers";
@@ -130,12 +130,12 @@ export default function EmbedRow({ embed }) {
           </button>
         </td>
       </tr>
-      <ModalWrapper isOpen={isSettingsOpen}>
+      <Modal isOpen={isSettingsOpen} onClose={closeSettingsModal}>
         <EditEmbedModal embed={embed} closeModal={closeSettingsModal} />
-      </ModalWrapper>
-      <ModalWrapper isOpen={isSnippetOpen}>
+      </Modal>
+      <Modal isOpen={isSnippetOpen} onClose={closeSnippetModal}>
         <CodeSnippetModal embed={embed} closeModal={closeSnippetModal} />
-      </ModalWrapper>
+      </Modal>
     </>
   );
 }
