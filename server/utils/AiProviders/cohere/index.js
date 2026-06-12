@@ -1,24 +1,26 @@
-const { v4 } = require("uuid");
-const { writeResponseChunk } = require("../../helpers/chat/responses");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const { MODEL_MAP } = require("../modelMap");
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
+const {
+  handleDefaultStreamResponseV2,
+} = require("../../helpers/chat/responses");
 
 class CohereLLM {
-  constructor(embedder = null) {
-    this.className = "CohereLLM";
-    const { CohereClient } = require("cohere-ai");
+  constructor(embedder = null, modelPreference = null) {
+    const { OpenAI: OpenAIApi } = require("openai");
     if (!process.env.COHERE_API_KEY)
       throw new Error("No Cohere API key was set.");
+    this.className = "CohereLLM";
 
-    const cohere = new CohereClient({
-      token: process.env.COHERE_API_KEY,
+    // Cohere exposes an OpenAI-compatible API which lets us reuse the OpenAI SDK
+    // across the app instead of the cohere-ai package. https://docs.cohere.com/docs/compatibility-api
+    this.openai = new OpenAIApi({
+      baseURL: "https://api.cohere.ai/compatibility/v1",
+      apiKey: process.env.COHERE_API_KEY,
     });
-
-    this.cohere = cohere;
-    this.model = process.env.COHERE_MODEL_PREF;
+    this.model = modelPreference || process.env.COHERE_MODEL_PREF;
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -26,6 +28,7 @@ class CohereLLM {
     };
 
     this.embedder = embedder ?? new NativeEmbedder();
+    this.defaultTemp = 0.7;
     this.#log(
       `Initialized with model ${this.model}. ctx: ${this.promptWindowLimit()}`
     );
@@ -45,25 +48,6 @@ class CohereLLM {
         })
         .join("")
     );
-  }
-
-  #convertChatHistoryCohere(chatHistory = []) {
-    let cohereHistory = [];
-    chatHistory.forEach((message) => {
-      switch (message.role) {
-        case "system":
-          cohereHistory.push({ role: "SYSTEM", message: message.content });
-          break;
-        case "user":
-          cohereHistory.push({ role: "USER", message: message.content });
-          break;
-        case "assistant":
-          cohereHistory.push({ role: "CHATBOT", message: message.content });
-          break;
-      }
-    });
-
-    return cohereHistory;
   }
 
   streamingEnabled() {
@@ -96,28 +80,28 @@ class CohereLLM {
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
-    const message = messages[messages.length - 1].content; // Get the last message
-    const cohereHistory = this.#convertChatHistoryCohere(messages.slice(0, -1)); // Remove the last message and convert to Cohere
-
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
-      this.cohere.chat({
-        model: this.model,
-        message: message,
-        chatHistory: cohereHistory,
-        temperature,
-      })
+      this.openai.chat.completions
+        .create({
+          model: this.model,
+          messages,
+          temperature,
+        })
+        .catch((e) => {
+          throw new Error(e.message);
+        })
     );
 
     if (
-      !result.output.hasOwnProperty("text") ||
-      result.output.text.length === 0
+      !result.output.hasOwnProperty("choices") ||
+      result.output.choices.length === 0
     )
       return null;
 
-    const promptTokens = result.output.meta?.tokens?.inputTokens || 0;
-    const completionTokens = result.output.meta?.tokens?.outputTokens || 0;
+    const promptTokens = result.output.usage?.prompt_tokens || 0;
+    const completionTokens = result.output.usage?.completion_tokens || 0;
     return {
-      textResponse: result.output.text,
+      textResponse: result.output.choices[0].message.content,
       metrics: {
         prompt_tokens: promptTokens,
         completion_tokens: completionTokens,
@@ -132,13 +116,12 @@ class CohereLLM {
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
-    const message = messages[messages.length - 1].content; // Get the last message
-    const cohereHistory = this.#convertChatHistoryCohere(messages.slice(0, -1)); // Remove the last message and convert to Cohere
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
-      func: this.cohere.chatStream({
+      func: this.openai.chat.completions.create({
         model: this.model,
-        message: message,
-        chatHistory: cohereHistory,
+        stream: true,
+        stream_options: { include_usage: true },
+        messages,
         temperature,
       }),
       messages,
@@ -150,85 +133,8 @@ class CohereLLM {
     return measuredStreamRequest;
   }
 
-  /**
-   * Handles the stream response from the Cohere API.
-   * @param {Object} response - the response object
-   * @param {import('../../helpers/chat/LLMPerformanceMonitor').MonitoredStream} stream - the stream response from the Cohere API w/tracking
-   * @param {Object} responseProps - the response properties
-   * @returns {Promise<string>}
-   */
-  async handleStream(response, stream, responseProps) {
-    return new Promise(async (resolve) => {
-      const { uuid = v4(), sources = [] } = responseProps;
-      let fullText = "";
-      let usage = {
-        prompt_tokens: 0,
-        completion_tokens: 0,
-      };
-
-      const handleAbort = () => {
-        writeResponseChunk(response, {
-          uuid,
-          sources,
-          type: "abort",
-          textResponse: fullText,
-          close: true,
-          error: false,
-        });
-        response.removeListener("close", handleAbort);
-        stream.endMeasurement(usage);
-        resolve(fullText);
-      };
-      response.on("close", handleAbort);
-
-      try {
-        for await (const chat of stream) {
-          if (chat.eventType === "stream-end") {
-            const usageMetrics = chat?.response?.meta?.tokens || {};
-            usage.prompt_tokens = usageMetrics.inputTokens || 0;
-            usage.completion_tokens = usageMetrics.outputTokens || 0;
-          }
-
-          if (chat.eventType === "text-generation") {
-            const text = chat.text;
-            fullText += text;
-
-            writeResponseChunk(response, {
-              uuid,
-              sources: [],
-              type: "textResponseChunk",
-              textResponse: text,
-              close: false,
-              error: false,
-            });
-          }
-        }
-
-        writeResponseChunk(response, {
-          uuid,
-          sources,
-          type: "textResponseChunk",
-          textResponse: "",
-          close: true,
-          error: false,
-        });
-        response.removeListener("close", handleAbort);
-        stream.endMeasurement(usage);
-        resolve(fullText);
-      } catch (error) {
-        writeResponseChunk(response, {
-          uuid,
-          sources,
-          type: "abort",
-          textResponse: null,
-          close: true,
-          error: error.message,
-        });
-        response.removeListener("close", handleAbort);
-        stream.endMeasurement(usage);
-        resolve(fullText);
-      }
-    });
+  handleStream(response, stream, responseProps) {
+    return handleDefaultStreamResponseV2(response, stream, responseProps);
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations
