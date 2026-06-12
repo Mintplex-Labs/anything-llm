@@ -41,6 +41,7 @@ import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
 import LemonadeLogo from "@/media/llmprovider/lemonade.png";
 import MinimaxLogo from "@/media/llmprovider/minimax.png";
 import CerebrasLogo from "@/media/llmprovider/cerebras.png";
+import AnyApiLogo from "@/media/llmprovider/anyapi.png";
 
 import PreLoader from "@/components/Preloader";
 import ModelRouterOptions from "@/components/LLMSelection/ModelRouterOptions";
@@ -80,6 +81,7 @@ import SambaNovaOptions from "@/components/LLMSelection/SambaNovaOptions";
 import LemonadeOptions from "@/components/LLMSelection/LemonadeOptions";
 import MinimaxOptions from "@/components/LLMSelection/MinimaxOptions";
 import CerebrasLLMOptions from "@/components/LLMSelection/CerebrasLLMOptions";
+import AnyApiOptions from "@/components/LLMSelection/AnyApiOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -405,6 +407,14 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <CerebrasLLMOptions settings={settings} />,
     description: "Run models at instant speed on Cerebras inference.",
     requiredConfig: ["CerebrasApiKey"],
+  },
+  {
+    name: "AnyApi",
+    value: "anyapi",
+    logo: AnyApiLogo,
+    options: (settings) => <AnyApiOptions settings={settings} />,
+    description: "Access 400+ AI models through AnyApi.",
+    requiredConfig: ["AnyApiApiKey"],
   },
   {
     name: "Generic OpenAI",
