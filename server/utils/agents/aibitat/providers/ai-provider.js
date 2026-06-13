@@ -322,6 +322,14 @@ class Provider {
           apiKey: process.env.COMETAPI_LLM_API_KEY ?? null,
           ...config,
         });
+      case "empiriolabs":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.empiriolabs.ai/v1",
+          },
+          apiKey: process.env.EMPIRIOLABS_API_KEY ?? null,
+          ...config,
+        });
       case "giteeai":
         return new ChatOpenAI({
           configuration: {

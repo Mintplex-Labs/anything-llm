@@ -12,6 +12,7 @@ const { parseNvidiaNimBasePath } = require("../AiProviders/nvidiaNim");
 const { fetchPPIOModels } = require("../AiProviders/ppio");
 const { GeminiLLM } = require("../AiProviders/gemini");
 const { fetchCometApiModels } = require("../AiProviders/cometapi");
+const { fetchEmpirioLabsModels } = require("../AiProviders/empiriolabs");
 const { parseFoundryBasePath } = require("../AiProviders/foundry");
 const { getDockerModels } = require("../AiProviders/dockerModelRunner");
 const { getAllLemonadeModels } = require("../AiProviders/lemonade");
@@ -36,6 +37,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "apipie",
   "novita",
   "cometapi",
+  "empiriolabs",
   "xai",
   "gemini",
   "ppio",
@@ -107,6 +109,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getNovitaModels();
     case "cometapi":
       return await getCometApiModels();
+    case "empiriolabs":
+      return await getEmpirioLabsModels();
     case "xai":
       return await getXAIModels(apiKey);
     case "nvidia-nim":
@@ -569,6 +573,19 @@ async function getCometApiModels() {
   const knownModels = await fetchCometApiModels();
   if (!Object.keys(knownModels).length === 0)
     return { models: [], error: null };
+  const models = Object.values(knownModels).map((model) => {
+    return {
+      id: model.id,
+      organization: model.organization,
+      name: model.name,
+    };
+  });
+  return { models, error: null };
+}
+
+async function getEmpirioLabsModels() {
+  const knownModels = await fetchEmpirioLabsModels();
+  if (Object.keys(knownModels).length === 0) return { models: [], error: null };
   const models = Object.values(knownModels).map((model) => {
     return {
       id: model.id,

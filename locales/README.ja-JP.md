@@ -93,6 +93,7 @@ AnythingLLMは複数ユーザーもサポートしており、インスタンス
 - [Z.AI (チャットモデル)](https://z.ai/model-api)
 - [PPIO](https://ppinfra.com?utm_source=github_anything-llm)
 - [CometAPI (チャットモデル)](https://api.cometapi.com/)
+- [EmpirioLabs (チャットモデル)](https://empiriolabs.ai/)
 - [Docker Model Runner](https://docs.docker.com/ai/model-runner/)
 - [PrivateModeAI (chat models)](https://privatemode.ai/)
 - [SambaNova Cloud (chat models)](https://cloud.sambanova.ai/)

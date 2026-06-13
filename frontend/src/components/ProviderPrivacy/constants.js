@@ -37,6 +37,7 @@ import PPIOLogo from "@/media/llmprovider/ppio.png";
 import PGVectorLogo from "@/media/vectordbs/pgvector.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
+import EmpirioLabsLogo from "@/media/llmprovider/empiriolabs.png";
 import FoundryLogo from "@/media/llmprovider/foundry-local.png";
 import GiteeAILogo from "@/media/llmprovider/giteeai.png";
 import DockerModelRunnerLogo from "@/media/llmprovider/docker-model-runner.png";
@@ -203,6 +204,11 @@ const LLM_PROVIDER_PRIVACY_MAP = {
     name: "CometAPI",
     policyUrl: "https://apidoc.cometapi.com/privacy-policy-873819m0",
     logo: CometApiLogo,
+  },
+  empiriolabs: {
+    name: "EmpirioLabs",
+    policyUrl: "https://empiriolabs.ai/policy/privacy-policy",
+    logo: EmpirioLabsLogo,
   },
   foundry: {
     name: "Microsoft Foundry Local",
