@@ -7,7 +7,9 @@ class CohereEmbedder {
     this.className = "CohereEmbedder";
 
     // Cohere exposes an OpenAI-compatible API which lets us reuse the OpenAI SDK
-    // across the app instead of the cohere-ai package. https://docs.cohere.com/docs/compatibility-api
+    // across the app instead of the cohere-ai package. The compatibility endpoint
+    // manages the embedding `input_type` internally so we do not set it ourselves.
+    // https://docs.cohere.com/docs/compatibility-api
     const { OpenAI: OpenAIApi } = require("openai");
     this.openai = new OpenAIApi({
       baseURL: "https://api.cohere.ai/compatibility/v1",
@@ -15,7 +17,6 @@ class CohereEmbedder {
     });
 
     this.model = process.env.EMBEDDING_MODEL_PREF || "embed-english-v3.0";
-    this.inputType = "search_document";
 
     // Limit of how many strings we can process in a single pass to stay with resource or network limits
     this.maxConcurrentChunks = 96; // Cohere's limit per request is 96
@@ -27,7 +28,6 @@ class CohereEmbedder {
   }
 
   async embedTextInput(textInput) {
-    this.inputType = "search_query";
     const result = await this.embedChunks(
       Array.isArray(textInput) ? textInput : [textInput]
     );
@@ -36,7 +36,6 @@ class CohereEmbedder {
 
   async embedChunks(textChunks = []) {
     const embeddingRequests = [];
-    this.inputType = "search_document";
     let chunksProcessed = 0;
 
     for (const chunk of toChunks(textChunks, this.maxConcurrentChunks)) {
@@ -46,7 +45,6 @@ class CohereEmbedder {
             .create({
               model: this.model,
               input: chunk,
-              input_type: this.inputType,
             })
             .then((result) => {
               chunksProcessed += chunk.length;
