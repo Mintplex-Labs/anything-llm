@@ -827,6 +827,20 @@ const KEY_MAPPING = {
     checks: [],
   },
 
+  // EmpirioLabs Options
+  EmpirioLabsApiKey: {
+    envKey: "EMPIRIOLABS_API_KEY",
+    checks: [isNotEmpty],
+  },
+  EmpirioLabsModelPref: {
+    envKey: "EMPIRIOLABS_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  EmpirioLabsLLMTimeout: {
+    envKey: "EMPIRIOLABS_LLM_TIMEOUT_MS",
+    checks: [],
+  },
+
   // Z.AI Options
   ZAiApiKey: {
     envKey: "ZAI_API_KEY",
@@ -1036,6 +1050,7 @@ function supportedLLM(input = "") {
     "ppio",
     "moonshotai",
     "cometapi",
+    "empiriolabs",
     "foundry",
     "zai",
     "giteeai",

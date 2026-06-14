@@ -991,6 +991,11 @@ const SystemSettings = {
       CometApiLLMModelPref: process.env.COMETAPI_LLM_MODEL_PREF,
       CometApiLLMTimeout: process.env.COMETAPI_LLM_TIMEOUT_MS,
 
+      // EmpirioLabs LLM Keys
+      EmpirioLabsApiKey: !!process.env.EMPIRIOLABS_API_KEY,
+      EmpirioLabsModelPref: process.env.EMPIRIOLABS_MODEL_PREF,
+      EmpirioLabsLLMTimeout: process.env.EMPIRIOLABS_LLM_TIMEOUT_MS,
+
       // Z.AI Keys
       ZAiApiKey: !!process.env.ZAI_API_KEY,
       ZAiModelPref: process.env.ZAI_MODEL_PREF,

@@ -28,6 +28,7 @@ import CohereLogo from "@/media/llmprovider/cohere.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
+import EmpirioLabsLogo from "@/media/llmprovider/empiriolabs.png";
 import GiteeAILogo from "@/media/llmprovider/giteeai.png";
 import DockerModelRunnerLogo from "@/media/llmprovider/docker-model-runner.png";
 import PrivateModeLogo from "@/media/llmprovider/privatemode.png";
@@ -64,6 +65,7 @@ import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
 import PPIOLLMOptions from "@/components/LLMSelection/PPIOLLMOptions";
 import MoonshotAiOptions from "@/components/LLMSelection/MoonshotAiOptions";
 import CometApiLLMOptions from "@/components/LLMSelection/CometApiLLMOptions";
+import EmpirioLabsOptions from "@/components/LLMSelection/EmpirioLabsOptions";
 import GiteeAiOptions from "@/components/LLMSelection/GiteeAIOptions";
 import DockerModelRunnerOptions from "@/components/LLMSelection/DockerModelRunnerOptions";
 import PrivateModeOptions from "@/components/LLMSelection/PrivateModeOptions";
@@ -312,6 +314,14 @@ const LLMS = [
     logo: CometApiLogo,
     options: (settings) => <CometApiLLMOptions settings={settings} />,
     description: "500+ AI Models all in one API.",
+  },
+  {
+    name: "EmpirioLabs",
+    value: "empiriolabs",
+    logo: EmpirioLabsLogo,
+    options: (settings) => <EmpirioLabsOptions settings={settings} />,
+    description:
+      "Frontier and open models (Qwen, DeepSeek, GLM, Kimi, MiniMax, and more) through one OpenAI-compatible API.",
   },
   {
     name: "GiteeAI",
