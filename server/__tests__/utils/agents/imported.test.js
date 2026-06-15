@@ -13,11 +13,13 @@ const ImportedPlugin = require("../../../utils/agents/imported");
  */
 function makePlugin({
   hubId = "acme/my-skill",
+  name = "My Skill",
   handlerRuntime = { handler: async () => "ok" },
 } = {}) {
   const instance = Object.create(ImportedPlugin.prototype);
   instance.config = {
     hubId,
+    name,
     description: "Test skill",
     entrypoint: { params: {} },
   };
@@ -53,9 +55,9 @@ describe("ImportedPlugin custom skill - requestToolApproval helper", () => {
     expect(typeof fn.requestToolApproval).toBe("function");
   });
 
-  it("forces skillName to the skill's hubId and passes payload/description through", async () => {
+  it("forces skillName to the skill's display name and passes payload/description through", async () => {
     const spy = jest.fn().mockResolvedValue({ approved: true, message: "ok" });
-    const { fn } = registerAndGetFn(makePlugin({ hubId: "acme/cleaner" }), {
+    const { fn } = registerAndGetFn(makePlugin({ hubId: "acme/cleaner", name: "Acme Cleaner" }), {
       requestToolApproval: spy,
     });
 
@@ -66,7 +68,7 @@ describe("ImportedPlugin custom skill - requestToolApproval helper", () => {
     });
 
     expect(spy).toHaveBeenCalledWith({
-      skillName: "acme/cleaner",
+      skillName: "Acme Cleaner",
       payload: { recordId: 42 },
       description: "Delete record 42?",
     });
@@ -75,14 +77,14 @@ describe("ImportedPlugin custom skill - requestToolApproval helper", () => {
 
   it("defaults payload to {} and description to null when called with no args", async () => {
     const spy = jest.fn().mockResolvedValue({ approved: true, message: "ok" });
-    const { fn } = registerAndGetFn(makePlugin({ hubId: "acme/thing" }), {
+    const { fn } = registerAndGetFn(makePlugin({ hubId: "acme/thing", name: "Acme Thing" }), {
       requestToolApproval: spy,
     });
 
     await fn.requestToolApproval();
 
     expect(spy).toHaveBeenCalledWith({
-      skillName: "acme/thing",
+      skillName: "Acme Thing",
       payload: {},
       description: null,
     });
