@@ -40,8 +40,7 @@ class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
 
   /**
    * Whether the loaded model supports native OpenAI-compatible tool calling.
-   * Not all Cohere models support tools (e.g. the c4ai-aya models), so we check
-   * the model's capabilities up front instead of failing over on a 400 error.
+   * Checks the Cohere models endpoint to see if the model supports tools.
    * @returns {Promise<boolean>}
    */
   async supportsNativeToolCalling() {
