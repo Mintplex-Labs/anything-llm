@@ -57,7 +57,7 @@ const VariableInput = forwardRef(function VariableInput(
     backdropRef.current.scrollLeft = e.target.scrollLeft;
   };
 
-  const fontClass = mono ? "font-mono" : "";
+  const fontClass = mono ? "!font-mono" : "";
   const wrapClass = multiline
     ? "whitespace-pre-wrap break-words"
     : "whitespace-pre";
