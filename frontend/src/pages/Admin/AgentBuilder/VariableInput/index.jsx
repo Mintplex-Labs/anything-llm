@@ -1,17 +1,26 @@
 import React, { forwardRef, useRef } from "react";
 
-// Matches a ${variableName} reference, e.g. ${userId} or ${data.user.name}.
+/**
+ * Matches a ${variableName} reference, e.g. ${userId} or ${data.user.name}.
+ * @type {string}
+ */
 const VARIABLE_PATTERN = "\\$\\{[^}]+\\}";
 
-// The highlight box drawn around a ${variable}. A 30% tint (composited over
-// whatever is behind it) instead of a solid fill, so the text stays readable
-// against both the light and dark themes. sky-300 matches the cta blue but,
-// being a standard palette color, supports the /30 opacity modifier (the
-// var-based theme colors don't). Shared with the "Variables" hint chips so the
-// two always look the same.
+/**
+ * The highlight box drawn around a ${variableName}. A 30% tint (composited over
+ * whatever is behind it) instead of a solid fill, so the text stays readable
+ * against both the light and dark themes. sky-300 matches the cta blue but,
+ * being a standard palette color, supports the /30 opacity modifier (the
+ * var-based theme colors don't). Shared with the "Variables" hint chips so the
+ * two always look the same.
+ * @type {string}
+ */
 export const VARIABLE_HIGHLIGHT_CLASS = "rounded-[3px] bg-sky-300/30";
 
-// Shared text metrics so the backdrop and the real field line up exactly.
+/**
+ * Shared text metrics so the backdrop and the real field line up exactly.
+ * @type {string}
+ */
 const FIELD_TEXT = "block w-full p-2.5 text-sm";
 
 /**
@@ -77,7 +86,7 @@ const VariableInput = forwardRef(function VariableInput(
         onScroll={handleScroll}
         autoComplete="off"
         spellCheck={false}
-        className={`relative bg-transparent text-theme-text-primary placeholder:text-theme-settings-input-placeholder rounded-lg outline-none focus:outline-primary-button active:outline-primary-button ${
+        className={`relative border-none bg-transparent text-theme-text-primary placeholder:text-theme-settings-input-placeholder rounded-lg outline-none focus:outline-primary-button active:outline-primary-button ${
           multiline ? "resize-y" : ""
         } ${FIELD_TEXT} ${fontClass}`}
         {...props}
@@ -86,9 +95,13 @@ const VariableInput = forwardRef(function VariableInput(
   );
 });
 
-// Split the value into plain text and ${...} tokens, wrapping each token in a
-// highlight box. The token text itself stays transparent (inherited from the
-// backdrop) so only the colored box shows through behind the real field text.
+/**
+ * Split the value into plain text and ${...} tokens, wrapping each token in a
+ * highlight box. The token text itself stays transparent (inherited from the
+ * backdrop) so only the colored box shows through behind the real field text.
+ * @param {string} value
+ * @returns {React.ReactNode[]}
+ */
 function renderHighlightedParts(value) {
   if (!value) return null;
 
