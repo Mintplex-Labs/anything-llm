@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext, useRef } from "react";
+import { useState, useEffect, useContext, useRef, useCallback } from "react";
 import ChatHistory from "./ChatHistory";
 import { CLEAR_ATTACHMENTS_EVENT, DndUploaderContext } from "./DnDWrapper";
 import PromptInput, {
@@ -150,22 +150,7 @@ export default function ChatContainer({
     resetTranscript();
   }
 
-  const regenerateAssistantMessage = (chatId) => {
-    const filteredHistory = chatHistory.slice(0, -1);
-    const lastUserMessage = filteredHistory.findLast(
-      (msg) => msg.role === "user"
-    );
-    Workspace.deleteChats(workspace.slug, [chatId])
-      .then(() =>
-        sendCommand({
-          text: lastUserMessage.content,
-          autoSubmit: true,
-          history: filteredHistory,
-          attachments: lastUserMessage?.attachments,
-        })
-      )
-      .catch((e) => console.error(e));
-  };
+  const sendCommandRef = useRef(null);
 
   /**
    * Send a command to the LLM prompt input.
@@ -264,6 +249,27 @@ export default function ChatContainer({
     setMessageEmit("");
     setLoadingResponse(true);
   };
+
+  sendCommandRef.current = sendCommand;
+  const regenerateAssistantMessage = useCallback(
+    (chatId) => {
+      const filteredHistory = chatHistory.slice(0, -1);
+      const lastUserMessage = filteredHistory.findLast(
+        (msg) => msg.role === "user"
+      );
+      Workspace.deleteChats(workspace.slug, [chatId])
+        .then(() =>
+          sendCommandRef.current({
+            text: lastUserMessage.content,
+            autoSubmit: true,
+            history: filteredHistory,
+            attachments: lastUserMessage?.attachments,
+          })
+        )
+        .catch((e) => console.error(e));
+    },
+    [chatHistory, workspace.slug]
+  );
 
   useEffect(() => {
     if (pendingMessageChecked.current || !workspace?.slug) return;
