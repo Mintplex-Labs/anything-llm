@@ -25,6 +25,11 @@ const Invite = {
 
   deactivate: async function (inviteId = null) {
     try {
+      const invite = await prisma.invites.findUnique({
+        where: { id: Number(inviteId) },
+      });
+      if (!invite) return { success: false, error: "Invite not found" };
+
       await prisma.invites.update({
         where: { id: Number(inviteId) },
         data: { status: "disabled" },
@@ -32,7 +37,7 @@ const Invite = {
       return { success: true, error: null };
     } catch (error) {
       console.error(error.message);
-      return { success: false, error: error.message };
+      return { success: false, error: "Failed to deactivate invite" };
     }
   },
 
