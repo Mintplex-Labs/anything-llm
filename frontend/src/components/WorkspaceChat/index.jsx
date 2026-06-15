@@ -135,7 +135,10 @@ function copyCodeSnippet(uuid) {
 }
 
 // Listens and hunts for all data-code-snippet clicks.
+let _codeSnippetDelegatorRegistered = false;
 export function setEventDelegatorForCodeSnippets() {
+  if (_codeSnippetDelegatorRegistered) return;
+  _codeSnippetDelegatorRegistered = true;
   document?.addEventListener("click", function (e) {
     const target = e.target.closest("[data-code-snippet]");
     const uuidCode = target?.dataset?.code;

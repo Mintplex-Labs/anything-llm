@@ -15,7 +15,6 @@ import FileDownloadCard from "./FileDownloadCard";
 import { useManageWorkspaceModal } from "../../../Modals/ManageWorkspace";
 import ManageWorkspace from "../../../Modals/ManageWorkspace";
 import { ArrowDown } from "@phosphor-icons/react";
-import debounce from "lodash.debounce";
 import Chartable from "./Chartable";
 import ModelRouteNotification from "./ModelRouteNotification";
 import Workspace from "@/models/workspace";
@@ -54,28 +53,16 @@ export default forwardRef(function (
     }
   }, [history, isAtBottom, isStreaming, isUserScrolling]);
 
-  const handleScroll = (e) => {
+  const handleScroll = useCallback((e) => {
     const { scrollTop, scrollHeight, clientHeight } = e.target;
     const isBottom = scrollHeight - scrollTop - clientHeight < 2;
 
-    // Detect if this is a user-initiated scroll
     if (Math.abs(scrollTop - lastScrollTopRef.current) > 10) {
       setIsUserScrolling(!isBottom);
     }
 
     setIsAtBottom(isBottom);
     lastScrollTopRef.current = scrollTop;
-  };
-
-  const debouncedScroll = debounce(handleScroll, 100);
-
-  useEffect(() => {
-    const chatHistoryElement = chatHistoryRef.current;
-    if (chatHistoryElement) {
-      chatHistoryElement.addEventListener("scroll", debouncedScroll);
-      return () =>
-        chatHistoryElement.removeEventListener("scroll", debouncedScroll);
-    }
   }, []);
 
   const scrollToBottom = (smooth = false) => {
@@ -97,85 +84,82 @@ export default forwardRef(function (
     scrollToBottom,
   });
 
-  const saveEditedMessage = async ({
-    editedMessage,
-    chatId,
-    role,
-    attachments = [],
-    saveOnly = false,
-  }) => {
-    if (!editedMessage) return; // Don't save empty edits.
+  const saveEditedMessage = useCallback(
+    async ({
+      editedMessage,
+      chatId,
+      role,
+      attachments = [],
+      saveOnly = false,
+    }) => {
+      if (!editedMessage) return;
 
-    // "Save" on a user message: update the prompt text without regenerating
-    if (role === "user" && saveOnly) {
-      const updatedHistory = [...history];
-      const targetIdx = history.findIndex((msg) => msg.chatId === chatId);
-      if (targetIdx < 0) return;
-      updatedHistory[targetIdx].content = editedMessage;
-      updateHistory(updatedHistory);
-      await Workspace.updateChat(
+      if (role === "user" && saveOnly) {
+        const updatedHistory = [...history];
+        const targetIdx = history.findIndex((msg) => msg.chatId === chatId);
+        if (targetIdx < 0) return;
+        updatedHistory[targetIdx].content = editedMessage;
+        updateHistory(updatedHistory);
+        await Workspace.updateChat(
+          workspace.slug,
+          threadSlug,
+          chatId,
+          editedMessage,
+          "user"
+        );
+        return;
+      }
+
+      if (role === "user") {
+        const updatedHistory = history.slice(
+          0,
+          history.findIndex((msg) => msg.chatId === chatId) + 1
+        );
+        updatedHistory[updatedHistory.length - 1].content = editedMessage;
+        await Workspace.deleteEditedChats(workspace.slug, threadSlug, chatId);
+        sendCommand({
+          text: editedMessage,
+          autoSubmit: true,
+          history: updatedHistory,
+          attachments,
+        });
+        return;
+      }
+
+      if (role === "assistant") {
+        const updatedHistory = [...history];
+        const targetIdx = history.findIndex(
+          (msg) => msg.chatId === chatId && msg.role === role
+        );
+        if (targetIdx < 0) return;
+        updatedHistory[targetIdx].content = editedMessage;
+        updateHistory(updatedHistory);
+        await Workspace.updateChat(
+          workspace.slug,
+          threadSlug,
+          chatId,
+          editedMessage
+        );
+        return;
+      }
+    },
+    [history, workspace.slug, threadSlug, updateHistory, sendCommand]
+  );
+
+  const forkThread = useCallback(
+    async (chatId) => {
+      const newThreadSlug = await Workspace.forkThread(
         workspace.slug,
         threadSlug,
-        chatId,
-        editedMessage,
-        "user"
+        chatId
       );
-      return;
-    }
-
-    // "Submit" on a user message: auto-regenerate the response and delete all
-    // messages post modified message
-    if (role === "user") {
-      // remove all messages after the edited message
-      // technically there are two chatIds per-message pair, this will split the first.
-      const updatedHistory = history.slice(
-        0,
-        history.findIndex((msg) => msg.chatId === chatId) + 1
-      );
-
-      // update last message in history to edited message
-      updatedHistory[updatedHistory.length - 1].content = editedMessage;
-      // remove all edited messages after the edited message in backend
-      await Workspace.deleteEditedChats(workspace.slug, threadSlug, chatId);
-      sendCommand({
-        text: editedMessage,
-        autoSubmit: true,
-        history: updatedHistory,
-        attachments,
-      });
-      return;
-    }
-
-    // If role is an assistant we simply want to update the comment and save on the backend as an edit.
-    if (role === "assistant") {
-      const updatedHistory = [...history];
-      const targetIdx = history.findIndex(
-        (msg) => msg.chatId === chatId && msg.role === role
-      );
-      if (targetIdx < 0) return;
-      updatedHistory[targetIdx].content = editedMessage;
-      updateHistory(updatedHistory);
-      await Workspace.updateChat(
+      window.location.href = paths.workspace.thread(
         workspace.slug,
-        threadSlug,
-        chatId,
-        editedMessage
+        newThreadSlug
       );
-      return;
-    }
-  };
-
-  const forkThread = async (chatId) => {
-    const newThreadSlug = await Workspace.forkThread(
-      workspace.slug,
-      threadSlug,
-      chatId
-    );
-    window.location.href = paths.workspace.thread(
-      workspace.slug,
-      newThreadSlug
-    );
-  };
+    },
+    [workspace.slug, threadSlug]
+  );
 
   const compiledHistory = useMemo(
     () =>
