@@ -154,6 +154,43 @@ class ImportedPlugin {
     return this.isValidLocation(handlerLocation);
   }
 
+  /**
+   * Creates a requestToolApproval function bound to a specific aibitat
+   * instance and skill name via closure — no `this` binding required.
+   *
+   * The returned function pauses the agent and asks the user to approve a
+   * potentially destructive action before the skill performs it.
+   *
+   * `skillName` is captured from the skill's hubId so a skill cannot spoof
+   * another tool's name to bypass its own approval.
+   *
+   * When no approval channel exists (e.g. scheduled jobs) it resolves
+   * approved so the skill still runs, matching how built-in tools fall
+   * through their approval guard.
+   *
+   * @param {object} aibitat - The aibitat instance.
+   * @param {string} skillName - The skill's hubId.
+   * @returns {function({payload?: object, description?: string}): Promise<{approved: boolean, message: string}>}
+   */
+  static createToolApprovalFn(aibitat, skillName) {
+    return async function requestToolApproval({
+      payload = {},
+      description = null,
+    } = {}) {
+      if (typeof aibitat?.requestToolApproval !== "function") {
+        return {
+          approved: true,
+          message: "Approval not required in this context.",
+        };
+      }
+      return aibitat.requestToolApproval({
+        skillName,
+        payload,
+        description,
+      });
+    };
+  }
+
   parseCallOptions() {
     const callOpts = {};
     if (!this.config.setup_args || typeof this.config.setup_args !== "object") {
@@ -178,15 +215,14 @@ class ImportedPlugin {
       name: this.name,
       config: this.config,
       setup(aibitat) {
-        const skillName = this.name; // hubId the skill is registered + whitelisted under.
         aibitat.function({
           super: aibitat,
           name: this.name,
           config: this.config,
           runtimeArgs: this.runtimeArgs,
           description: this.config.description,
-          logger: aibitat?.handlerProps?.log || console.log, // Allows plugin to log to the console.
-          introspect: aibitat?.introspect || console.log, // Allows plugin to display a "thought" the chat window UI.
+          logger: aibitat?.handlerProps?.log || console.log,
+          introspect: aibitat?.introspect || console.log,
           runtime: "docker",
           webScraper: sharedWebScraper,
           examples: this.config.examples ?? [],
@@ -197,39 +233,14 @@ class ImportedPlugin {
             additionalProperties: false,
           },
           ...customFunctions,
-          /**
-           * Pause the agent and ask the user to approve a potentially
-           * destructive action before the skill performs it. Shows the same
-           * Approve/Reject card the built-in tools use (e.g. gmail send/reply).
-           *
-           * `skillName` is supplied automatically (the skill's hubId) so a skill
-           * cannot spoof another tool's name to bypass its own approval - the
-           * author only provides the payload and description.
-           *
-           * Defined after `...customFunctions` so a skill's handler.js cannot
-           * override it. When no approval channel exists (e.g. scheduled jobs)
-           * it resolves approved so the skill still runs, matching how built-in
-           * tools fall through their approval guard.
-           *
-           * @param {{payload?: object, description?: string}} options
-           * @returns {Promise<{approved: boolean, message: string}>}
-           */
-          requestToolApproval: async ({
-            payload = {},
-            description = null,
-          } = {}) => {
-            if (typeof aibitat.requestToolApproval !== "function") {
-              return {
-                approved: true,
-                message: "Approval not required in this context.",
-              };
-            }
-            return aibitat.requestToolApproval({
-              skillName,
-              payload,
-              description,
-            });
-          },
+
+          // Add the requestToolApproval function to the plugin
+          // but do not allow the skill's own handler.js exports to override it.
+          // because it requires an explict shape to return elements to the UI.
+          requestToolApproval: ImportedPlugin.createToolApprovalFn(
+            aibitat,
+            this.config.name
+          ),
         });
       },
     };
