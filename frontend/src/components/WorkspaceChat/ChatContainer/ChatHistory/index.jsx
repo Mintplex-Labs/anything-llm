@@ -6,6 +6,7 @@ import {
   useCallback,
   forwardRef,
 } from "react";
+import debounce from "lodash.debounce";
 import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
 import StatusResponse from "./StatusResponse";
@@ -39,6 +40,7 @@ export default forwardRef(function (
 ) {
   const lastScrollTopRef = useRef(0);
   const chatHistoryRef = useRef(null);
+  const isProgrammaticScroll = useRef(false);
   const { threadSlug = null } = useParams();
   const { showing, hideModal } = useManageWorkspaceModal();
   const [isAtBottom, setIsAtBottom] = useState(true);
@@ -49,7 +51,7 @@ export default forwardRef(function (
 
   useEffect(() => {
     if (!isUserScrolling && (isAtBottom || isStreaming)) {
-      scrollToBottom(false); // Use instant scroll for auto-scrolling
+      scrollToBottom(false);
     }
   }, [history, isAtBottom, isStreaming, isUserScrolling]);
 
@@ -57,7 +59,9 @@ export default forwardRef(function (
     const { scrollTop, scrollHeight, clientHeight } = e.target;
     const isBottom = scrollHeight - scrollTop - clientHeight < 2;
 
-    if (Math.abs(scrollTop - lastScrollTopRef.current) > 10) {
+    if (isProgrammaticScroll.current) {
+      isProgrammaticScroll.current = false;
+    } else if (Math.abs(scrollTop - lastScrollTopRef.current) > 10) {
       setIsUserScrolling(!isBottom);
     }
 
@@ -65,14 +69,20 @@ export default forwardRef(function (
     lastScrollTopRef.current = scrollTop;
   }, []);
 
+  const debouncedScroll = useMemo(
+    () => debounce(handleScroll, 50),
+    [handleScroll]
+  );
+
+  useEffect(() => {
+    return () => debouncedScroll.cancel();
+  }, [debouncedScroll]);
+
   const scrollToBottom = (smooth = false) => {
     if (chatHistoryRef.current) {
+      isProgrammaticScroll.current = true;
       chatHistoryRef.current.scrollTo({
         top: chatHistoryRef.current.scrollHeight,
-
-        // Smooth is on when user clicks the button but disabled during auto scroll
-        // We must disable this during auto scroll because it causes issues with
-        // detecting when we are at the bottom of the chat.
         ...(smooth ? { behavior: "smooth" } : {}),
       });
     }
@@ -84,6 +94,11 @@ export default forwardRef(function (
     scrollToBottom,
   });
 
+  const historyRef = useRef(history);
+  historyRef.current = history;
+  const sendCommandRef = useRef(sendCommand);
+  sendCommandRef.current = sendCommand;
+
   const saveEditedMessage = useCallback(
     async ({
       editedMessage,
@@ -93,10 +108,13 @@ export default forwardRef(function (
       saveOnly = false,
     }) => {
       if (!editedMessage) return;
+      const currentHistory = historyRef.current;
 
       if (role === "user" && saveOnly) {
-        const updatedHistory = [...history];
-        const targetIdx = history.findIndex((msg) => msg.chatId === chatId);
+        const updatedHistory = [...currentHistory];
+        const targetIdx = currentHistory.findIndex(
+          (msg) => msg.chatId === chatId
+        );
         if (targetIdx < 0) return;
         updatedHistory[targetIdx].content = editedMessage;
         updateHistory(updatedHistory);
@@ -111,13 +129,13 @@ export default forwardRef(function (
       }
 
       if (role === "user") {
-        const updatedHistory = history.slice(
+        const updatedHistory = currentHistory.slice(
           0,
-          history.findIndex((msg) => msg.chatId === chatId) + 1
+          currentHistory.findIndex((msg) => msg.chatId === chatId) + 1
         );
         updatedHistory[updatedHistory.length - 1].content = editedMessage;
         await Workspace.deleteEditedChats(workspace.slug, threadSlug, chatId);
-        sendCommand({
+        sendCommandRef.current({
           text: editedMessage,
           autoSubmit: true,
           history: updatedHistory,
@@ -127,8 +145,8 @@ export default forwardRef(function (
       }
 
       if (role === "assistant") {
-        const updatedHistory = [...history];
-        const targetIdx = history.findIndex(
+        const updatedHistory = [...currentHistory];
+        const targetIdx = currentHistory.findIndex(
           (msg) => msg.chatId === chatId && msg.role === role
         );
         if (targetIdx < 0) return;
@@ -143,7 +161,7 @@ export default forwardRef(function (
         return;
       }
     },
-    [history, workspace.slug, threadSlug, updateHistory, sendCommand]
+    [workspace.slug, threadSlug, updateHistory]
   );
 
   const forkThread = useCallback(
@@ -202,7 +220,7 @@ export default forwardRef(function (
           className={`markdown text-white/80 light:text-theme-text-primary font-light ${textSizeClass} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col items-center justify-start ${showScrollbar ? "show-scrollbar" : "no-scroll"}`}
           id="chat-history"
           ref={chatHistoryRef}
-          onScroll={handleScroll}
+          onScroll={debouncedScroll}
         >
           <div className="w-full max-w-[750px]">
             {compiledHistory.map((item, index) =>
