@@ -11,6 +11,7 @@ import TavilySearchIcon from "./icons/tavily.svg";
 import DuckDuckGoIcon from "./icons/duckduckgo.png";
 import ExaIcon from "./icons/exa.png";
 import PerplexitySearchIcon from "./icons/perplexity.png";
+import CrwSearchIcon from "./icons/crw.svg";
 import {
   CaretUpDown,
   MagnifyingGlass,
@@ -32,6 +33,7 @@ import {
   DuckDuckGoOptions,
   ExaSearchOptions,
   PerplexitySearchOptions,
+  CrwSearchOptions,
 } from "./SearchProviderOptions";
 
 const SEARCH_PROVIDERS = [
@@ -119,6 +121,14 @@ const SEARCH_PROVIDERS = [
     logo: PerplexitySearchIcon,
     options: (settings) => <PerplexitySearchOptions settings={settings} />,
     description: "AI-powered web search using the Perplexity Search API.",
+  },
+  {
+    name: "fastCRW Search",
+    value: "crw-search",
+    logo: CrwSearchIcon,
+    options: (settings) => <CrwSearchOptions settings={settings} />,
+    description:
+      "Firecrawl-compatible web search via fastCRW. Self-host the single-binary engine or use the managed cloud.",
   },
 ];
 
