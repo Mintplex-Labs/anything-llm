@@ -1393,6 +1393,8 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
         return new Providers.ZAIProvider({ model: config.model });
       case "novita":
         return new Providers.NovitaProvider({ model: config.model });
+      case "tokenmix":
+        return new Providers.TokenMixProvider({ model: config.model });
       case "ppio":
         return new Providers.PPIOProvider({ model: config.model });
       case "gemini":

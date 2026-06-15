@@ -45,6 +45,7 @@ const groupedProviders = [
   "fireworksai",
   "openai",
   "novita",
+  "tokenmix",
   "openrouter",
   "ppio",
   "docker-model-runner",

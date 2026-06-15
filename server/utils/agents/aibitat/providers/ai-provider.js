@@ -290,6 +290,14 @@ class Provider {
           apiKey: process.env.NOVITA_LLM_API_KEY ?? null,
           ...config,
         });
+      case "tokenmix":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.tokenmix.ai/v1",
+          },
+          apiKey: process.env.TOKENMIX_API_KEY ?? null,
+          ...config,
+        });
       case "ppio":
         return new ChatOpenAI({
           configuration: {

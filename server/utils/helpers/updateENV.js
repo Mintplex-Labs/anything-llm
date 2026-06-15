@@ -481,6 +481,20 @@ const KEY_MAPPING = {
     checks: [],
   },
 
+  // TokenMix Options
+  TokenMixApiKey: {
+    envKey: "TOKENMIX_API_KEY",
+    checks: [isNotEmpty],
+  },
+  TokenMixModelPref: {
+    envKey: "TOKENMIX_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  TokenMixTimeout: {
+    envKey: "TOKENMIX_TIMEOUT_MS",
+    checks: [],
+  },
+
   // Groq Options
   GroqApiKey: {
     envKey: "GROQ_API_KEY",
@@ -1022,6 +1036,7 @@ function supportedLLM(input = "") {
     "perplexity",
     "openrouter",
     "novita",
+    "tokenmix",
     "groq",
     "koboldcpp",
     "textgenwebui",

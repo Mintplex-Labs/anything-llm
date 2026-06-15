@@ -12,6 +12,7 @@ import AnthropicLogo from "@/media/llmprovider/anthropic.png";
 import GeminiLogo from "@/media/llmprovider/gemini.png";
 import OllamaLogo from "@/media/llmprovider/ollama.png";
 import NovitaLogo from "@/media/llmprovider/novita.png";
+import TokenMixLogo from "@/media/llmprovider/tokenmix.png";
 import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
 import TogetherAILogo from "@/media/llmprovider/togetherai.png";
@@ -53,6 +54,7 @@ import LocalAiOptions from "@/components/LLMSelection/LocalAiOptions";
 import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
 import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
 import NovitaLLMOptions from "@/components/LLMSelection/NovitaLLMOptions";
+import TokenMixLLMOptions from "@/components/LLMSelection/TokenMixLLMOptions";
 import CometApiLLMOptions from "@/components/LLMSelection/CometApiLLMOptions";
 import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
 import FireworksAiOptions from "@/components/LLMSelection/FireworksAiOptions";
@@ -345,6 +347,15 @@ export const AVAILABLE_LLM_PROVIDERS = [
     description:
       "Reliable, Scalable, and Cost-Effective for LLMs from Novita AI",
     requiredConfig: ["NovitaLLMApiKey"],
+  },
+  {
+    name: "TokenMix",
+    value: "tokenmix",
+    logo: TokenMixLogo,
+    options: (settings) => <TokenMixLLMOptions settings={settings} />,
+    description:
+      "One OpenAI-compatible API for DeepSeek, Qwen, Kimi, GLM, MiniMax and more.",
+    requiredConfig: ["TokenMixApiKey"],
   },
   {
     name: "CometAPI",

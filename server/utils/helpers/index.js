@@ -204,6 +204,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "novita":
       const { NovitaLLM } = require("../AiProviders/novita");
       return new NovitaLLM(embedder, model);
+    case "tokenmix":
+      const { TokenMixLLM } = require("../AiProviders/tokenmix");
+      return new TokenMixLLM(embedder, model);
     case "xai":
       const { XAiLLM } = require("../AiProviders/xai");
       return new XAiLLM(embedder, model);
@@ -392,6 +395,9 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "novita":
       const { NovitaLLM } = require("../AiProviders/novita");
       return NovitaLLM;
+    case "tokenmix":
+      const { TokenMixLLM } = require("../AiProviders/tokenmix");
+      return TokenMixLLM;
     case "xai":
       const { XAiLLM } = require("../AiProviders/xai");
       return XAiLLM;
@@ -495,6 +501,8 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.APIPIE_LLM_MODEL_PREF;
     case "novita":
       return process.env.NOVITA_LLM_MODEL_PREF;
+    case "tokenmix":
+      return process.env.TOKENMIX_MODEL_PREF;
     case "xai":
       return process.env.XAI_LLM_MODEL_PREF;
     case "nvidia-nim":

@@ -142,6 +142,9 @@ function getModelTag() {
     case "novita":
       model = process.env.NOVITA_LLM_MODEL_PREF;
       break;
+    case "tokenmix":
+      model = process.env.TOKENMIX_MODEL_PREF;
+      break;
     case "nvidia-nim":
       model = process.env.NVIDIA_NIM_LLM_MODEL_PREF;
       break;

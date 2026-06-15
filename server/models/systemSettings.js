@@ -889,6 +889,11 @@ const SystemSettings = {
       NovitaLLMModelPref: process.env.NOVITA_LLM_MODEL_PREF,
       NovitaLLMTimeout: process.env.NOVITA_LLM_TIMEOUT_MS,
 
+      // TokenMix LLM Keys
+      TokenMixApiKey: !!process.env.TOKENMIX_API_KEY,
+      TokenMixModelPref: process.env.TOKENMIX_MODEL_PREF,
+      TokenMixTimeout: process.env.TOKENMIX_TIMEOUT_MS,
+
       // TogetherAI Keys
       TogetherAiApiKey: !!process.env.TOGETHER_AI_API_KEY,
       TogetherAiModelPref: process.env.TOGETHER_AI_MODEL_PREF,

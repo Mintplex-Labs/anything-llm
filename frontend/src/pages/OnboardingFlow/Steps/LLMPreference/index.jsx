@@ -21,6 +21,7 @@ import AWSBedrockLogo from "@/media/llmprovider/bedrock.png";
 import DeepSeekLogo from "@/media/llmprovider/deepseek.png";
 import APIPieLogo from "@/media/llmprovider/apipie.png";
 import NovitaLogo from "@/media/llmprovider/novita.png";
+import TokenMixLogo from "@/media/llmprovider/tokenmix.png";
 import XAILogo from "@/media/llmprovider/xai.png";
 import ZAiLogo from "@/media/llmprovider/zai.png";
 import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
@@ -58,6 +59,7 @@ import AWSBedrockLLMOptions from "@/components/LLMSelection/AwsBedrockLLMOptions
 import DeepSeekOptions from "@/components/LLMSelection/DeepSeekOptions";
 import ApiPieLLMOptions from "@/components/LLMSelection/ApiPieOptions";
 import NovitaLLMOptions from "@/components/LLMSelection/NovitaLLMOptions";
+import TokenMixLLMOptions from "@/components/LLMSelection/TokenMixLLMOptions";
 import XAILLMOptions from "@/components/LLMSelection/XAiLLMOptions";
 import ZAiLLMOptions from "@/components/LLMSelection/ZAiLLMOptions";
 import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
@@ -167,6 +169,14 @@ const LLMS = [
     options: (settings) => <NovitaLLMOptions settings={settings} />,
     description:
       "Reliable, Scalable, and Cost-Effective for LLMs from Novita AI",
+  },
+  {
+    name: "TokenMix",
+    value: "tokenmix",
+    logo: TokenMixLogo,
+    options: (settings) => <TokenMixLLMOptions settings={settings} />,
+    description:
+      "One OpenAI-compatible API for DeepSeek, Qwen, Kimi, GLM, MiniMax and more.",
   },
   {
     name: "KoboldCPP",

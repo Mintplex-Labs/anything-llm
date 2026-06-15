@@ -18,6 +18,7 @@ const ENABLED_PROVIDERS = [
   "togetherai",
   "openrouter",
   "novita",
+  "tokenmix",
   "mistral",
   "perplexity",
   "textgenwebui",

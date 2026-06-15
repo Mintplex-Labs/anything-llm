@@ -213,6 +213,10 @@ class AgentHandler {
         if (!process.env.NOVITA_LLM_API_KEY)
           throw new Error("Novita API Key must be provided to use agents.");
         break;
+      case "tokenmix":
+        if (!process.env.TOKENMIX_API_KEY)
+          throw new Error("TokenMix API Key must be provided to use agents.");
+        break;
       case "nvidia-nim":
         if (!process.env.NVIDIA_NIM_LLM_BASE_PATH)
           throw new Error(
@@ -341,6 +345,8 @@ class AgentHandler {
         return process.env.ZAI_MODEL_PREF ?? "glm-4.5";
       case "novita":
         return process.env.NOVITA_LLM_MODEL_PREF ?? "deepseek/deepseek-r1";
+      case "tokenmix":
+        return process.env.TOKENMIX_MODEL_PREF ?? "deepseek/deepseek-v4-flash";
       case "nvidia-nim":
         return process.env.NVIDIA_NIM_LLM_MODEL_PREF ?? null;
       case "ppio":

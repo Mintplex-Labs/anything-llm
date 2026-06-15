@@ -14,6 +14,7 @@ import MistralLogo from "@/media/llmprovider/mistral.jpeg";
 import PerplexityLogo from "@/media/llmprovider/perplexity.png";
 import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
 import NovitaLogo from "@/media/llmprovider/novita.png";
+import TokenMixLogo from "@/media/llmprovider/tokenmix.png";
 import GroqLogo from "@/media/llmprovider/groq.png";
 import KoboldCPPLogo from "@/media/llmprovider/koboldcpp.png";
 import TextGenWebUILogo from "@/media/llmprovider/text-generation-webui.png";
@@ -124,6 +125,11 @@ const LLM_PROVIDER_PRIVACY_MAP = {
     name: "Novita AI",
     policyUrl: "https://novita.ai/legal/privacy-policy",
     logo: NovitaLogo,
+  },
+  tokenmix: {
+    name: "TokenMix",
+    policyUrl: "https://tokenmix.ai/privacy",
+    logo: TokenMixLogo,
   },
   groq: {
     name: "Groq",

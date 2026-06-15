@@ -7,6 +7,7 @@ const { perplexityModels } = require("../AiProviders/perplexity");
 const { fireworksAiModels } = require("../AiProviders/fireworksAi");
 const { ElevenLabsTTS } = require("../TextToSpeech/elevenLabs");
 const { fetchNovitaModels } = require("../AiProviders/novita");
+const { fetchTokenMixModels } = require("../AiProviders/tokenmix");
 const { parseLMStudioBasePath } = require("../AiProviders/lmStudio");
 const { parseNvidiaNimBasePath } = require("../AiProviders/nvidiaNim");
 const { fetchPPIOModels } = require("../AiProviders/ppio");
@@ -35,6 +36,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "deepseek",
   "apipie",
   "novita",
+  "tokenmix",
   "cometapi",
   "xai",
   "gemini",
@@ -105,6 +107,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getAPIPieModels(apiKey);
     case "novita":
       return await getNovitaModels();
+    case "tokenmix":
+      return await getTokenMixModels(apiKey);
     case "cometapi":
       return await getCometApiModels();
     case "xai":
@@ -553,6 +557,20 @@ async function getOpenRouterModels() {
 
 async function getNovitaModels() {
   const knownModels = await fetchNovitaModels();
+  if (!Object.keys(knownModels).length === 0)
+    return { models: [], error: null };
+  const models = Object.values(knownModels).map((model) => {
+    return {
+      id: model.id,
+      organization: model.organization,
+      name: model.name,
+    };
+  });
+  return { models, error: null };
+}
+
+async function getTokenMixModels(apiKey = null) {
+  const knownModels = await fetchTokenMixModels(apiKey);
   if (!Object.keys(knownModels).length === 0)
     return { models: [], error: null };
   const models = Object.values(knownModels).map((model) => {
