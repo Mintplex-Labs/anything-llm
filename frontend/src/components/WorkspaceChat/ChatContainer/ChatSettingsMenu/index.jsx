@@ -3,6 +3,7 @@ import { SlidersHorizontal } from "@phosphor-icons/react";
 import useLoginMode from "@/hooks/useLoginMode";
 import TextSizeRow from "./TextSize";
 import MemoriesRow from "./Memories";
+import CopyLinkToChatRow from "./CopyLinkToChat";
 
 export default function ChatSettingsMenu() {
   const mode = useLoginMode();
@@ -59,6 +60,7 @@ export default function ChatSettingsMenu() {
         >
           <TextSizeRow />
           <MemoriesRow onClose={() => setShowMenu(false)} />
+          <CopyLinkToChatRow />
         </div>
       )}
     </div>

@@ -41,6 +41,7 @@ class AWSBedrockLLM {
    */
   noTemperatureModels = [
     "anthropic.claude-opus-4-7",
+    "anthropic.claude-opus-4-8",
     // Add other models here if identified
   ];
 

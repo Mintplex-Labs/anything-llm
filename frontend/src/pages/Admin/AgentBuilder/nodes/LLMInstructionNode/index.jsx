@@ -1,4 +1,5 @@
 import React from "react";
+import VariableInput from "../../VariableInput";
 
 export default function LLMInstructionNode({
   config,
@@ -11,7 +12,9 @@ export default function LLMInstructionNode({
         <label className="block text-sm font-medium text-theme-text-primary mb-2">
           Instruction
         </label>
-        <textarea
+        <VariableInput
+          multiline
+          rows={3}
           value={config?.instruction || ""}
           onChange={(e) =>
             onConfigChange({
@@ -19,8 +22,6 @@ export default function LLMInstructionNode({
               instruction: e.target.value,
             })
           }
-          className="w-full border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none p-2.5"
-          rows={3}
           placeholder="Enter instructions for the LLM..."
         />
       </div>
