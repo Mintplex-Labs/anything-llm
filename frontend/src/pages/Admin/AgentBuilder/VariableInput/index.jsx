@@ -1,4 +1,5 @@
 import React, { forwardRef, useRef } from "react";
+import { useAvailableVariables } from "../useAvailableVariables";
 
 /**
  * Matches a ${variableName} reference, e.g. ${userId} or ${data.user.name}.
@@ -15,7 +16,15 @@ const VARIABLE_PATTERN = "\\$\\{[^}]+\\}";
  * two always look the same.
  * @type {string}
  */
-export const VARIABLE_HIGHLIGHT_CLASS = "rounded-[3px] bg-sky-300/30";
+export const VARIABLE_HIGHLIGHT_CLASS =
+  "rounded-[3px] bg-sky-300/30 light:bg-sky-500/30";
+
+/**
+ * Highlight class for ${...} tokens that don't match any defined variable.
+ * @type {string}
+ */
+export const VARIABLE_INVALID_CLASS =
+  "rounded-[3px] bg-red-500/30 light:bg-red-500/30";
 
 /**
  * Shared text metrics so the backdrop and the real field line up exactly.
@@ -48,6 +57,8 @@ const VariableInput = forwardRef(function VariableInput(
   ref
 ) {
   const backdropRef = useRef(null);
+  const availableVariables = useAvailableVariables();
+  const validNames = new Set(availableVariables.map((v) => v.name));
 
   // Keep the highlight backdrop scrolled in lockstep with the field so the
   // boxes stay aligned once the text overflows the visible area.
@@ -75,7 +86,7 @@ const VariableInput = forwardRef(function VariableInput(
         aria-hidden="true"
         className={`pointer-events-none absolute inset-0 overflow-hidden rounded-lg text-transparent ${wrapClass} ${FIELD_TEXT} ${fontClass}`}
       >
-        {renderHighlightedParts(value)}
+        {renderHighlightedParts(value, validNames)}
       </div>
 
       <Field
@@ -97,23 +108,29 @@ const VariableInput = forwardRef(function VariableInput(
 
 /**
  * Split the value into plain text and ${...} tokens, wrapping each token in a
- * highlight box. The token text itself stays transparent (inherited from the
- * backdrop) so only the colored box shows through behind the real field text.
+ * highlight box. Valid variables (defined in the start block) get a blue
+ * highlight; unrecognized ones get a red highlight so the user knows they
+ * won't resolve at runtime.
  * @param {string} value
+ * @param {Set<string>} validNames
  * @returns {React.ReactNode[]}
  */
-function renderHighlightedParts(value) {
+function renderHighlightedParts(value, validNames) {
   if (!value) return null;
 
-  // The capturing group keeps the matched ${...} tokens in the split result.
   const parts = value.split(new RegExp(`(${VARIABLE_PATTERN})`, "g"));
   const isVariable = new RegExp(`^${VARIABLE_PATTERN}$`);
   return parts.map((part, index) => {
     if (!isVariable.test(part))
       return <React.Fragment key={index}>{part}</React.Fragment>;
 
+    const name = part.slice(2, -1);
+    const highlight = validNames.has(name)
+      ? VARIABLE_HIGHLIGHT_CLASS
+      : VARIABLE_INVALID_CLASS;
+
     return (
-      <span key={index} className={VARIABLE_HIGHLIGHT_CLASS}>
+      <span key={index} className={highlight}>
         {part}
       </span>
     );
