@@ -137,6 +137,37 @@ class CohereLLM {
     return handleDefaultStreamResponseV2(response, stream, responseProps);
   }
 
+  /**
+   * Returns the capabilities of the model by querying Cohere's models endpoint.
+   * A model supports tool calling when its `features` array includes `tools` or `tool_choice`.
+   * The OpenAI-compatible route does not expose this, so we hit the native REST API.
+   * @returns {Promise<{tools: boolean}>}
+   */
+  async getModelCapabilities() {
+    try {
+      const features = await fetch(
+        `https://api.cohere.com/v1/models/${this.model}`,
+        {
+          method: "GET",
+          headers: { Authorization: `Bearer ${process.env.COHERE_API_KEY}` },
+        }
+      )
+        .then((res) => {
+          if (!res.ok)
+            throw new Error(`Cohere:getModelCapabilities - ${res.statusText}`);
+          return res.json();
+        })
+        .then((data) => data?.features || []);
+
+      return {
+        tools: features.includes("tools") || features.includes("tool_choice"),
+      };
+    } catch (error) {
+      console.error("Cohere:getModelCapabilities", error.message);
+      return { tools: false };
+    }
+  }
+
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations
   async embedTextInput(textInput) {
     return await this.embedder.embedTextInput(textInput);

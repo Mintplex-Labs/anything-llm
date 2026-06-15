@@ -4,6 +4,7 @@ const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
+const { CohereLLM } = require("../../../AiProviders/cohere/index.js");
 
 /**
  * The agent provider for the Cohere AI provider.
@@ -26,6 +27,7 @@ class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
     this._client = client;
     this.model = model;
     this.verbose = true;
+    this._supportsToolCalling = null;
   }
 
   get client() {
@@ -37,14 +39,18 @@ class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   /**
-   * Not all Cohere models support native tool calling (e.g. the aya-expanse models).
-   * Those models return a 400 "tool use is not supported" error - in that case we
-   * fall back to the prompt-based UnTooled approach instead of failing the request.
-   * @param {Error} error
-   * @returns {boolean}
+   * Whether the loaded model supports native OpenAI-compatible tool calling.
+   * Not all Cohere models support tools (e.g. the c4ai-aya models), so we check
+   * the model's capabilities up front instead of failing over on a 400 error.
+   * @returns {Promise<boolean>}
    */
-  #isToolUnsupportedError(error) {
-    return error instanceof OpenAI.BadRequestError || error?.status === 400;
+  async supportsNativeToolCalling() {
+    if (this.optsOutOfNativeToolCallingViaEnv(this.providerTag)) return false;
+    if (this._supportsToolCalling !== null) return this._supportsToolCalling;
+    const cohere = new CohereLLM(null, this.model);
+    const capabilities = await cohere.getModelCapabilities();
+    this._supportsToolCalling = capabilities.tools === true;
+    return this._supportsToolCalling;
   }
 
   async #handleFunctionCallChat({ messages = [] }) {
@@ -75,7 +81,8 @@ class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   async stream(messages, functions = [], eventHandler = null) {
-    const useNative = functions.length > 0 && this.supportsNativeToolCalling();
+    const useNative =
+      functions.length > 0 && (await this.supportsNativeToolCalling());
 
     if (!useNative) {
       return await UnTooled.prototype.stream.call(
@@ -101,18 +108,6 @@ class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
         { provider: this }
       );
     } catch (error) {
-      if (this.#isToolUnsupportedError(error)) {
-        this.providerLog(
-          `Model ${this.model} does not support native tool calling - falling back to UnTooled.`
-        );
-        return await UnTooled.prototype.stream.call(
-          this,
-          messages,
-          functions,
-          this.#handleFunctionCallStream.bind(this),
-          eventHandler
-        );
-      }
       console.error(error.message, error);
       if (error instanceof OpenAI.AuthenticationError) throw error;
       if (
@@ -127,7 +122,8 @@ class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   async complete(messages, functions = []) {
-    const useNative = functions.length > 0 && this.supportsNativeToolCalling();
+    const useNative =
+      functions.length > 0 && (await this.supportsNativeToolCalling());
 
     if (!useNative) {
       return await UnTooled.prototype.complete.call(
@@ -154,17 +150,6 @@ class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
 
       return result;
     } catch (error) {
-      if (this.#isToolUnsupportedError(error)) {
-        this.providerLog(
-          `Model ${this.model} does not support native tool calling - falling back to UnTooled.`
-        );
-        return await UnTooled.prototype.complete.call(
-          this,
-          messages,
-          functions,
-          this.#handleFunctionCallChat.bind(this)
-        );
-      }
       if (error instanceof OpenAI.AuthenticationError) throw error;
       if (
         error instanceof OpenAI.RateLimitError ||
