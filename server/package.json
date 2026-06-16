@@ -1,6 +1,6 @@
 {
   "name": "anything-llm-server",
-  "version": "1.14.0",
+  "version": "1.14.1",
   "description": "Server endpoints to process or create content for chatting",
   "main": "index.js",
   "author": "Timothy Carambat (Mintplex Labs)",
@@ -26,7 +26,6 @@
     "@ladjs/graceful": "^3.2.2",
     "@lancedb/lancedb": "0.15.0",
     "@langchain/anthropic": "0.1.16",
-    "@langchain/aws": "^0.0.5",
     "@langchain/community": "0.0.53",
     "@langchain/core": "0.1.61",
     "@langchain/openai": "0.0.28",
