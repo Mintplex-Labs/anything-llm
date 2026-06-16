@@ -251,9 +251,12 @@ export default function ChatContainer({
   };
 
   sendCommandRef.current = sendCommand;
+  const chatHistoryRef2 = useRef(chatHistory);
+  chatHistoryRef2.current = chatHistory;
+
   const regenerateAssistantMessage = useCallback(
     (chatId) => {
-      const filteredHistory = chatHistory.slice(0, -1);
+      const filteredHistory = chatHistoryRef2.current.slice(0, -1);
       const lastUserMessage = filteredHistory.findLast(
         (msg) => msg.role === "user"
       );
@@ -268,7 +271,7 @@ export default function ChatContainer({
         )
         .catch((e) => console.error(e));
     },
-    [chatHistory, workspace.slug]
+    [workspace.slug]
   );
 
   useEffect(() => {
