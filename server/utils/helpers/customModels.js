@@ -918,13 +918,17 @@ async function getCohereModels(_apiKey = null, type = "chat") {
       ? process.env.COHERE_API_KEY
       : _apiKey || process.env.COHERE_API_KEY || null;
 
-  const { CohereClient } = require("cohere-ai");
-  const cohere = new CohereClient({
-    token: apiKey,
-  });
-  const models = await cohere.models
-    .list({ pageSize: 1000, endpoint: type })
-    .then((results) => results.models)
+  // Cohere's models endpoint is queried directly so we can keep filtering by
+  // endpoint (chat/embed) which the OpenAI-compatible /models route does not support.
+  const models = await fetch(
+    `https://api.cohere.com/v1/models?page_size=1000&endpoint=${type}`,
+    {
+      method: "GET",
+      headers: { Authorization: `Bearer ${apiKey}` },
+    }
+  )
+    .then((res) => res.json())
+    .then((data) => data?.models || [])
     .then((models) =>
       models.map((model) => ({
         id: model.name,
