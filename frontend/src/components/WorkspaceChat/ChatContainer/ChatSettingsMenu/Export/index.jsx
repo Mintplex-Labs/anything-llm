@@ -9,6 +9,9 @@ import moment from "moment";
 const EXPORT_FORMATS = [
   { key: "pdf", label: "PDF", ext: "pdf" },
   { key: "markdown", label: "Markdown", ext: "md" },
+  { key: "plaintext", label: "Plain Text", ext: "txt" },
+  { key: "json", label: "JSON", ext: "json" },
+  { key: "html", label: "HTML", ext: "html" },
 ];
 
 export default function ExportRow({
@@ -72,7 +75,7 @@ export default function ExportRow({
 function ExportSubmenu({ onSelect, exporting }) {
   return (
     <div className="absolute right-full top-0 -mr-2 pr-2 pt-0">
-      <div className="bg-zinc-800 light:bg-slate-50 border border-zinc-700 light:border-slate-300 rounded-lg p-3.5 w-[120px] flex flex-col gap-1.5 shadow-lg">
+      <div className="bg-zinc-800 light:bg-slate-50 border border-zinc-700 light:border-slate-300 rounded-lg p-3.5 w-[130px] flex flex-col gap-1.5 shadow-lg">
         {EXPORT_FORMATS.map((format) => (
           <div
             key={format.key}
