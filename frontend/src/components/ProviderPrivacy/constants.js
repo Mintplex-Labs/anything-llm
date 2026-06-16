@@ -11,7 +11,6 @@ import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
 import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
 import MistralLogo from "@/media/llmprovider/mistral.jpeg";
-import HuggingFaceLogo from "@/media/llmprovider/huggingface.png";
 import PerplexityLogo from "@/media/llmprovider/perplexity.png";
 import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
 import NovitaLogo from "@/media/llmprovider/novita.png";
@@ -36,7 +35,6 @@ import MilvusLogo from "@/media/vectordbs/milvus.png";
 import VoyageAiLogo from "@/media/embeddingprovider/voyageai.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
 import PGVectorLogo from "@/media/vectordbs/pgvector.png";
-import DPAISLogo from "@/media/llmprovider/dpais.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
 import FoundryLogo from "@/media/llmprovider/foundry-local.png";
@@ -111,11 +109,6 @@ const LLM_PROVIDER_PRIVACY_MAP = {
     name: "Mistral",
     policyUrl: "https://legal.mistral.ai/terms/privacy-policy",
     logo: MistralLogo,
-  },
-  huggingface: {
-    name: "HuggingFace",
-    policyUrl: "https://huggingface.co/privacy",
-    logo: HuggingFaceLogo,
   },
   perplexity: {
     name: "Perplexity AI",
@@ -200,13 +193,6 @@ const LLM_PROVIDER_PRIVACY_MAP = {
     name: "PPIO",
     policyUrl: "https://www.pipio.ai/privacy-policy",
     logo: PPIOLogo,
-  },
-  dpais: {
-    name: "Dell Pro AI Studio",
-    description: [
-      "Your model and chat contents are only accessible on the computer running Dell Pro AI Studio.",
-    ],
-    logo: DPAISLogo,
   },
   moonshotai: {
     name: "Moonshot AI",

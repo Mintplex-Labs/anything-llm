@@ -1262,6 +1262,8 @@ const TRANSLATIONS = {
     stt_mic_denied:
       "Kunne ikke få adgang til mikrofonen. Vær venligst opmærksom på, at du skal give tilladelse, og prøv igen.",
     stt_transcription_failed: "Transkribering mislykkedes: {{error}}",
+    export: "Eksportér chat som...",
+    exporting: "Eksportér...",
   },
   profile_settings: {
     edit_account: "Rediger konto",

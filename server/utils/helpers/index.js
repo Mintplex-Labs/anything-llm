@@ -176,9 +176,6 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "mistral":
       const { MistralLLM } = require("../AiProviders/mistral");
       return new MistralLLM(embedder, model);
-    case "huggingface":
-      const { HuggingFaceLLM } = require("../AiProviders/huggingface");
-      return new HuggingFaceLLM(embedder, model);
     case "groq":
       const { GroqLLM } = require("../AiProviders/groq");
       return new GroqLLM(embedder, model);
@@ -221,9 +218,6 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "moonshotai":
       const { MoonshotAiLLM } = require("../AiProviders/moonshotAi");
       return new MoonshotAiLLM(embedder, model);
-    case "dpais":
-      const { DellProAiStudioLLM } = require("../AiProviders/dellProAiStudio");
-      return new DellProAiStudioLLM(embedder, model);
     case "cometapi":
       const { CometApiLLM } = require("../AiProviders/cometapi");
       return new CometApiLLM(embedder, model);
@@ -370,9 +364,6 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "mistral":
       const { MistralLLM } = require("../AiProviders/mistral");
       return MistralLLM;
-    case "huggingface":
-      const { HuggingFaceLLM } = require("../AiProviders/huggingface");
-      return HuggingFaceLLM;
     case "groq":
       const { GroqLLM } = require("../AiProviders/groq");
       return GroqLLM;
@@ -412,9 +403,6 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "ppio":
       const { PPIOLLM } = require("../AiProviders/ppio");
       return PPIOLLM;
-    case "dpais":
-      const { DellProAiStudioLLM } = require("../AiProviders/dellProAiStudio");
-      return DellProAiStudioLLM;
     case "moonshotai":
       const { MoonshotAiLLM } = require("../AiProviders/moonshotAi");
       return MoonshotAiLLM;
@@ -489,8 +477,6 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.OPENROUTER_MODEL_PREF;
     case "mistral":
       return process.env.MISTRAL_MODEL_PREF;
-    case "huggingface":
-      return null;
     case "groq":
       return process.env.GROQ_MODEL_PREF;
     case "koboldcpp":
@@ -517,8 +503,6 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.NVIDIA_NIM_LLM_MODEL_PREF;
     case "ppio":
       return process.env.PPIO_MODEL_PREF;
-    case "dpais":
-      return process.env.DPAIS_LLM_MODEL_PREF;
     case "moonshotai":
       return process.env.MOONSHOT_AI_MODEL_PREF;
     case "cometapi":
@@ -704,6 +688,25 @@ async function resolveProviderConnector({
   };
 }
 
+/**
+ * Strips thought/thinking tags from text (e.g., <thinking>...</thinking>)
+ * Useful for cleaning LLM responses before sending notifications.
+ * @param {string} text - The text to strip thoughts from.
+ * @returns {string} - The text with thought tags and their content removed.
+ */
+const THOUGHT_KEYWORDS = ["thought", "thinking", "think", "thought_chain"];
+const THOUGHT_REGEX_COMPLETE = new RegExp(
+  THOUGHT_KEYWORDS.map(
+    (keyword) =>
+      `<${keyword}\\s*(?:[^>]*?)?\\s*>[\\s\\S]*?<\\/${keyword}\\s*(?:[^>]*?)?>`
+  ).join("|"),
+  "gi"
+);
+
+function stripThinkingFromText(text = "") {
+  return text.replace(THOUGHT_REGEX_COMPLETE, "").trim();
+}
+
 module.exports = {
   getEmbeddingEngineSelection,
   maximumChunkLength,
@@ -715,4 +718,5 @@ module.exports = {
   toChunks,
   humanFileSize,
   reportEmbeddingProgress,
+  stripThinkingFromText,
 };

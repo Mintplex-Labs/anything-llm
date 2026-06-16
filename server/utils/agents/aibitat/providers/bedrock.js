@@ -216,6 +216,24 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   /**
+   * Recursively strip JSON Schema fields that are not supported by the
+   * Bedrock Converse API (e.g. $schema, format, x-* extensions).
+   */
+  #sanitizeSchema(obj) {
+    if (!obj || typeof obj !== "object") return obj;
+    if (Array.isArray(obj))
+      return obj.map((item) => this.#sanitizeSchema(item));
+
+    const UNSUPPORTED_KEYS = ["$schema", "format", "x-nullable"];
+    const cleaned = {};
+    for (const [key, value] of Object.entries(obj)) {
+      if (UNSUPPORTED_KEYS.includes(key)) continue;
+      cleaned[key] = this.#sanitizeSchema(value);
+    }
+    return cleaned;
+  }
+
+  /**
    * Convert aibitat function definitions to the format expected by
    * Langchain's ChatBedrockConverse.bindTools().
    * @param {Array<{name: string, description: string, parameters: object}>} functions
@@ -228,7 +246,7 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
       function: {
         name: func.name,
         description: func.description,
-        parameters: func.parameters,
+        parameters: this.#sanitizeSchema(func.parameters),
       },
     }));
   }

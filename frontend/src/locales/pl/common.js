@@ -1373,6 +1373,8 @@ const TRANSLATIONS = {
     stt_mic_denied:
       "Nie udało się uzyskać dostępu do mikrofonu. Prosimy o przyznanie uprawnień i ponowne próby.",
     stt_transcription_failed: "Błąd transkrypcji: {{error}}",
+    export: "Eksportuj czat jako…",
+    exporting: "Eksportowanie...",
   },
   profile_settings: {
     edit_account: "Edytuj konto",
