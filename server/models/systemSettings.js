@@ -558,6 +558,10 @@ const SystemSettings = {
       STTOpenAICompatibleModel: process.env.STT_OPEN_AI_COMPATIBLE_MODEL,
       STTOpenAICompatibleEndpoint: process.env.STT_OPEN_AI_COMPATIBLE_ENDPOINT,
 
+      // STT Groq
+      STTGroqApiKey: !!process.env.STT_GROQ_API_KEY,
+      STTGroqModel: process.env.STT_GROQ_MODEL,
+
       // --------------------------------------------------------
       // Agent Settings & Configs
       // --------------------------------------------------------

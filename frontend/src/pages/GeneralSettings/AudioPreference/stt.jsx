@@ -9,12 +9,14 @@ import DeepgramLogo from "@/media/ttsproviders/deepgram.png";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import LemonadeLogo from "@/media/llmprovider/lemonade.png";
 import GenericOpenAiLogo from "@/media/llmprovider/generic-openai.png";
+import GroqLogo from "@/media/llmprovider/groq.png";
 
 import BrowserNative from "@/components/SpeechToText/BrowserNative";
 import OpenAiSTTOptions from "@/components/SpeechToText/OpenAiOptions";
 import DeepgramSTTOptions from "@/components/SpeechToText/DeepgramOptions";
 import LemonadeSTTOptions from "@/components/SpeechToText/LemonadeOptions";
 import GenericOpenAiSTTOptions from "@/components/SpeechToText/GenericOpenAiOptions";
+import GroqSTTOptions from "@/components/SpeechToText/GroqOptions";
 
 const PROVIDERS = [
   {
@@ -44,6 +46,13 @@ const PROVIDERS = [
     logo: DeepgramLogo,
     options: (settings) => <DeepgramSTTOptions settings={settings} />,
     description: "Transcribe speech using Deepgram's hosted Nova models.",
+  },
+  {
+    name: "Groq",
+    value: "groq",
+    logo: GroqLogo,
+    options: (settings) => <GroqSTTOptions settings={settings} />,
+    description: "Transcribe speech using Groq's hosted models.",
   },
   {
     name: "Generic OpenAI",
