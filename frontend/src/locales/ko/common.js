@@ -1322,6 +1322,8 @@ const TRANSLATIONS = {
     stt_mic_denied:
       "마이크에 접근할 수 없습니다. 권한을 부여하고 다시 시도해 주십시오.",
     stt_transcription_failed: "전사 오류: {{error}}",
+    export: "채팅 내용을 다음 형식으로 내보내기:",
+    exporting: "수출 중…",
   },
   profile_settings: {
     edit_account: "계정 정보 수정",
