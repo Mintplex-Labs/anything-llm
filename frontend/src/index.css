@@ -1150,6 +1150,12 @@ does not extend the close button beyond the viewport. */
   contain-intrinsic-size: auto 150px;
 }
 
+/* Disable paint containment when an action menu is open so the
+   absolutely-positioned dropdown isn't clipped. */
+#chat-history > div > *:has([data-action-menu-open]) {
+  content-visibility: visible;
+}
+
 /* Form control font fallback for non-Latin scripts */
 button,
 input,
