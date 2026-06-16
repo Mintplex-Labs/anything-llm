@@ -80,11 +80,12 @@ const Workspace = {
    * @param {string|null} threadSlug - Thread slug, or null for the default workspace chat
    * @returns {Promise<Blob|null>} The PDF blob, or null on failure
    */
-  exportChatsToPDF: async function (slug, threadSlug = null) {
-    const path = threadSlug
-      ? `/workspace/${slug}/thread/${threadSlug}/export/pdf`
-      : `/workspace/${slug}/export/pdf`;
-    return await fetch(`${API_BASE}${path}`, { headers: baseHeaders() })
+  exportChatsToType: async function (slug, threadSlug = null, type = "pdf") {
+    return await fetch(`${API_BASE}/export-chat/${type}`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ workspaceSlug: slug, threadSlug }),
+    })
       .then((res) => {
         if (!res.ok) throw new Error("Failed to export chat.");
         return res.blob();

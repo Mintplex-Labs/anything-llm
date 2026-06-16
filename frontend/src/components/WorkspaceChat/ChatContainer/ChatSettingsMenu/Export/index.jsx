@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { saveAs } from "file-saver";
 import Workspace from "@/models/workspace";
 import showToast from "@/utils/toast";
+import moment from "moment";
 
 export default function ExportRow({
   history = [],
@@ -16,12 +17,13 @@ export default function ExportRow({
   async function handleClick() {
     if (exporting || !workspace?.slug) return;
     setExporting(true);
-    const blob = await Workspace.exportChatsToPDF(workspace.slug, threadSlug);
+    const blob = await Workspace.exportChatsToType(
+      workspace.slug,
+      threadSlug,
+      "pdf"
+    );
     if (blob) {
-      const stamp = new Date()
-        .toLocaleString()
-        .replace(", ", " ")
-        .replace(/[/:]/g, "-");
+      const stamp = moment().format("YYYY-MM-DD HH:mm:ss");
       saveAs(blob, `AnythingLLM Export - ${stamp}.pdf`);
     } else showToast("Failed to export chat.", "error");
     setExporting(false);
@@ -29,7 +31,6 @@ export default function ExportRow({
   }
 
   if (history.length === 0) return null;
-
   return (
     <div
       onClick={handleClick}

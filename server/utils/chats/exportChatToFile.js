@@ -2,9 +2,10 @@ const moment = require("moment");
 const {
   applyBranding,
 } = require("../agents/aibitat/plugins/create-files/pdf/utils.js");
-const { convertToChatHistory } = require("../helpers/chat/responses");
+const { convertToChatHistory } = require("../helpers/chat/responses.js");
 
 const THOUGHT_TAGS = "thinking|think|thought|thought_chain";
+const validExportTypes = ["pdf"];
 
 // Strip the assistant's thought chain so the export only contains the response.
 function stripThoughtChain(text = "") {
@@ -82,10 +83,16 @@ async function chatHistoryToPDF(history = [], meta = {}) {
  * @param {Object[]} chats - Raw workspace_chats records
  * @param {{workspaceName: string, threadName?: string|null}} meta
  */
-async function sendChatHistoryPDF(response, chats, meta) {
-  const buffer = await chatHistoryToPDF(convertToChatHistory(chats), meta);
-  response.setHeader("Content-Type", "application/pdf");
-  return response.send(buffer);
+async function sendChatHistoryFile(response, chats, meta, type = "pdf") {
+  switch (type) {
+    case "pdf": {
+      const buffer = await chatHistoryToPDF(convertToChatHistory(chats), meta);
+      response.setHeader("Content-Type", "application/pdf");
+      return response.send(buffer);
+    }
+    default:
+      throw new Error(`Unsupported export type: ${type}`);
+  }
 }
 
-module.exports = { sendChatHistoryPDF };
+module.exports = { sendChatHistoryFile, validExportTypes };
