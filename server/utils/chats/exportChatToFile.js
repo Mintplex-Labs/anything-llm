@@ -5,7 +5,7 @@ const {
 const { convertToChatHistory } = require("../helpers/chat/responses.js");
 
 const THOUGHT_TAGS = "thinking|think|thought|thought_chain";
-const validExportTypes = ["pdf"];
+const validExportTypes = ["pdf", "markdown"];
 
 // Strip the assistant's thought chain so the export only contains the response.
 function stripThoughtChain(text = "") {
@@ -89,6 +89,11 @@ async function sendChatHistoryFile(response, chats, meta, type = "pdf") {
       const buffer = await chatHistoryToPDF(convertToChatHistory(chats), meta);
       response.setHeader("Content-Type", "application/pdf");
       return response.send(buffer);
+    }
+    case "markdown": {
+      const md = chatHistoryToMarkdown(convertToChatHistory(chats), meta);
+      response.setHeader("Content-Type", "text/markdown");
+      return response.send(Buffer.from(md, "utf-8"));
     }
     default:
       throw new Error(`Unsupported export type: ${type}`);
