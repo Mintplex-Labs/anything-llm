@@ -104,7 +104,8 @@
   },
   "resolutions": {
     "**/graphql-request/form-data": "3.0.4",
-    "form-data": "4.0.4"
+    "form-data": "4.0.4",
+    "langsmith": "0.1.68"
   },
   "devDependencies": {
     "@eslint/js": "9",
