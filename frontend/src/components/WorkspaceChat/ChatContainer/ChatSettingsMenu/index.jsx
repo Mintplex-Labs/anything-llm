@@ -3,6 +3,7 @@ import { SlidersHorizontal } from "@phosphor-icons/react";
 import useLoginMode from "@/hooks/useLoginMode";
 import TextSizeRow from "./TextSize";
 import MemoriesRow from "./Memories";
+import CopyLinkToChatRow from "./CopyLinkToChat";
 import ExportRow from "./Export";
 
 export default function ChatSettingsMenu({
@@ -70,6 +71,7 @@ export default function ChatSettingsMenu({
             threadSlug={threadSlug}
             onClose={() => setShowMenu(false)}
           />
+          <CopyLinkToChatRow />
         </div>
       )}
     </div>
