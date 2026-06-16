@@ -1382,6 +1382,8 @@ const TRANSLATIONS = {
     stt_mic_denied:
       "Není možné přístup k mikrofonu. Prosím, udělejte potřebná oprávnění a zkuste to znovu.",
     stt_transcription_failed: "Přepis selhal: {{error}}",
+    export: "Exportujte konverzaci jako…",
+    exporting: "Exportování...",
   },
   profile_settings: {
     edit_account: "Upravit účet",
