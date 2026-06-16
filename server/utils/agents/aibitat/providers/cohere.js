@@ -1,28 +1,33 @@
-const { CohereClientV2 } = require("cohere-ai");
-const Provider = require("./ai-provider");
-const InheritMultiple = require("./helpers/classes");
-const UnTooled = require("./helpers/untooled");
-const { v4 } = require("uuid");
-const { safeJsonParse } = require("../../../http");
+const OpenAI = require("openai");
+const Provider = require("./ai-provider.js");
+const InheritMultiple = require("./helpers/classes.js");
+const UnTooled = require("./helpers/untooled.js");
+const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
+const { RetryError } = require("../error.js");
+const { CohereLLM } = require("../../../AiProviders/cohere/index.js");
 
 /**
  * The agent provider for the Cohere AI provider.
- * Uses the v2 API which supports OpenAI-compatible message format and vision.
+ * Uses Cohere's OpenAI-compatible API (https://docs.cohere.com/docs/compatibility-api)
+ * which supports native tool calling and vision.
  */
 class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
 
   constructor(config = {}) {
+    super();
     const { model = process.env.COHERE_MODEL_PREF || "command-r-08-2024" } =
       config;
-    super();
-    const client = new CohereClientV2({
-      token: process.env.COHERE_API_KEY,
+    const client = new OpenAI({
+      baseURL: "https://api.cohere.ai/compatibility/v1",
+      apiKey: process.env.COHERE_API_KEY ?? null,
     });
+
     this.providerTag = "cohere";
     this._client = client;
     this.model = model;
     this.verbose = true;
+    this._supportsToolCalling = null;
   }
 
   get client() {
@@ -34,16 +39,36 @@ class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   /**
-   * Whether this provider supports native OpenAI-compatible tool calling.
-   * - Cohere does not support tool calling in our codebase yet.
-   * - We should migrate cohere totally to Tooled with Untools failover
-   * and use this OAI compatible tool calling approach (https://docs.cohere.com/docs/compatibility-api)
-   *
-   * Until then, we disable tool calling for cohere models across the board with no config.
-   * @returns {boolean}
+   * Whether the loaded model supports native OpenAI-compatible tool calling.
+   * Checks the Cohere models endpoint to see if the model supports tools.
+   * @returns {Promise<boolean>}
    */
-  supportsNativeToolCalling() {
-    return false;
+  async supportsNativeToolCalling() {
+    if (this.optsOutOfNativeToolCallingViaEnv(this.providerTag)) return false;
+    if (this._supportsToolCalling !== null) return this._supportsToolCalling;
+    const cohere = new CohereLLM(null, this.model);
+    const capabilities = await cohere.getModelCapabilities();
+    this._supportsToolCalling = capabilities.tools === true;
+    return this._supportsToolCalling;
+  }
+
+  async #handleFunctionCallChat({ messages = [] }) {
+    return await this.client.chat.completions
+      .create({
+        model: this.model,
+        temperature: 0,
+        messages,
+      })
+      .then((result) => {
+        if (!result.hasOwnProperty("choices"))
+          throw new Error("Cohere chat: No results!");
+        if (result.choices.length === 0)
+          throw new Error("Cohere chat: No results length!");
+        return result.choices[0].message.content;
+      })
+      .catch((_) => {
+        return null;
+      });
   }
 
   /**
@@ -82,186 +107,91 @@ class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
    * @returns {AsyncIterable} Stream of events from Cohere
    */
   async #handleFunctionCallStream({ messages = [] }) {
-    return await this.client.chatStream({
+    return await this.client.chat.completions.create({
       model: this.model,
-      messages: messages,
+      stream: true,
+      messages,
     });
   }
 
-  async streamingFunctionCall(
-    messages,
-    functions,
-    chatCb = null,
-    eventHandler = null
-  ) {
-    const history = [...messages].filter((msg) =>
-      ["user", "assistant"].includes(msg.role)
-    );
-    if (history[history.length - 1]?.role !== "user") return null;
-
-    const msgUUID = v4();
-    let textResponse = "";
-    const historyMessages = this.buildToolCallMessages(history, functions);
-    const stream = await chatCb({ messages: historyMessages });
-
-    eventHandler?.("reportStreamEvent", {
-      type: "statusResponse",
-      uuid: v4(),
-      content: "Agent is thinking...",
-    });
-
-    for await (const event of stream) {
-      if (event.type !== "content-delta") continue;
-      const text = event.delta?.message?.content?.text || "";
-      if (!text) continue;
-      textResponse += text;
-      eventHandler?.("reportStreamEvent", {
-        type: "statusResponse",
-        uuid: msgUUID,
-        content: text,
-      });
-    }
-
-    const call = safeJsonParse(textResponse, null);
-    if (call === null)
-      return { toolCall: null, text: textResponse, uuid: msgUUID };
-
-    const { valid, reason } = this.validFuncCall(call, functions);
-    if (!valid) {
-      this.providerLog(`Invalid function tool call: ${reason}.`);
-      eventHandler?.("reportStreamEvent", {
-        type: "removeStatusResponse",
-        uuid: msgUUID,
-        content:
-          "The model attempted to make an invalid function call - it was ignored.",
-      });
-      return { toolCall: null, text: null, uuid: msgUUID };
-    }
-
-    const { isDuplicate, reason: duplicateReason } =
-      this.deduplicator.isDuplicate(call.name, call.arguments);
-    if (isDuplicate) {
-      this.providerLog(
-        `Cannot call ${call.name} again because ${duplicateReason}.`
-      );
-      eventHandler?.("reportStreamEvent", {
-        type: "removeStatusResponse",
-        uuid: msgUUID,
-        content:
-          "The model tried to call a function with the same arguments as a previous call - it was ignored.",
-      });
-      return { toolCall: null, text: null, uuid: msgUUID };
-    }
-
-    eventHandler?.("reportStreamEvent", {
-      uuid: `${msgUUID}:tool_call_invocation`,
-      type: "toolCallInvocation",
-      content: `Parsed Tool Call: ${call.name}(${JSON.stringify(call.arguments)})`,
-    });
-    return { toolCall: call, text: null, uuid: msgUUID };
-  }
-
-  /**
-   * Stream a chat completion from the LLM with tool calling
-   * Override the inherited `stream` method since Cohere uses a different API format.
-   *
-   * @param {any[]} messages - The messages to send to the LLM.
-   * @param {any[]} functions - The functions to use in the LLM.
-   * @param {function} eventHandler - The event handler to use to report stream events.
-   * @returns {Promise<{ functionCall: any, textResponse: string }>} - The result of the chat completion.
-   */
   async stream(messages, functions = [], eventHandler = null) {
+    const useNative =
+      functions.length > 0 && (await this.supportsNativeToolCalling());
+
+    if (!useNative) {
+      return await UnTooled.prototype.stream.call(
+        this,
+        messages,
+        functions,
+        this.#handleFunctionCallStream.bind(this),
+        eventHandler
+      );
+    }
+
     this.providerLog(
-      "CohereProvider.stream - will process this chat completion."
+      "Provider.stream (tooled) - will process this chat completion."
     );
-    // eslint-disable-next-line
+
     try {
-      let completion = { content: "" };
-      if (functions.length > 0) {
-        const {
-          toolCall,
-          text,
-          uuid: msgUUID,
-        } = await this.streamingFunctionCall(
-          messages,
-          functions,
-          this.#handleFunctionCallStream.bind(this),
-          eventHandler
-        );
-
-        if (toolCall !== null) {
-          this.providerLog(`Valid tool call found - running ${toolCall.name}.`);
-          this.deduplicator.trackRun(toolCall.name, toolCall.arguments, {
-            cooldown: this.isMCPTool(toolCall, functions),
-          });
-          return {
-            result: null,
-            functionCall: {
-              name: toolCall.name,
-              arguments: toolCall.arguments,
-            },
-            cost: 0,
-          };
-        }
-
-        if (text) {
-          this.providerLog(
-            `No tool call found in the response - will send as a full text response.`
-          );
-          completion.content = text;
-          eventHandler?.("reportStreamEvent", {
-            type: "removeStatusResponse",
-            uuid: msgUUID,
-            content: "No tool call found in the response",
-          });
-          eventHandler?.("reportStreamEvent", {
-            type: "statusResponse",
-            uuid: v4(),
-            content: "Done thinking.",
-          });
-          eventHandler?.("reportStreamEvent", {
-            type: "fullTextResponse",
-            uuid: v4(),
-            content: text,
-          });
-        }
-      }
-
-      if (!completion?.content) {
-        eventHandler?.("reportStreamEvent", {
-          type: "statusResponse",
-          uuid: v4(),
-          content: "Done thinking.",
-        });
-
-        this.providerLog(
-          "Will assume chat completion without tool call inputs."
-        );
-        const msgUUID = v4();
-        completion = { content: "" };
-        const stream = await this.#handleFunctionCallStream({
-          messages: this.cleanMsgs(messages),
-        });
-
-        for await (const chunk of stream) {
-          if (chunk.type !== "content-delta") continue;
-          const text = chunk.delta?.message?.content?.text || "";
-          if (!text) continue;
-          completion.content += text;
-          eventHandler?.("reportStreamEvent", {
-            type: "textResponseChunk",
-            uuid: msgUUID,
-            content: text,
-          });
-        }
-      }
-
-      this.deduplicator.reset("runs");
-      return {
-        textResponse: completion.content,
-        cost: 0,
-      };
+      return await tooledStream(
+        this.client,
+        this.model,
+        messages,
+        functions,
+        eventHandler,
+        { provider: this }
+      );
     } catch (error) {
+      console.error(error.message, error);
+      if (error instanceof OpenAI.AuthenticationError) throw error;
+      if (
+        error instanceof OpenAI.RateLimitError ||
+        error instanceof OpenAI.InternalServerError ||
+        error instanceof OpenAI.APIError
+      ) {
+        throw new RetryError(error.message);
+      }
+      throw error;
+    }
+  }
+
+  async complete(messages, functions = []) {
+    const useNative =
+      functions.length > 0 && (await this.supportsNativeToolCalling());
+
+    if (!useNative) {
+      return await UnTooled.prototype.complete.call(
+        this,
+        messages,
+        functions,
+        this.#handleFunctionCallChat.bind(this)
+      );
+    }
+
+    try {
+      const result = await tooledComplete(
+        this.client,
+        this.model,
+        messages,
+        functions,
+        this.getCost.bind(this),
+        { provider: this }
+      );
+
+      if (result.retryWithError) {
+        return this.complete([...messages, result.retryWithError], functions);
+      }
+
+      return result;
+    } catch (error) {
+      if (error instanceof OpenAI.AuthenticationError) throw error;
+      if (
+        error instanceof OpenAI.RateLimitError ||
+        error instanceof OpenAI.InternalServerError ||
+        error instanceof OpenAI.APIError
+      ) {
+        throw new RetryError(error.message);
+      }
       throw error;
     }
   }

@@ -23,6 +23,7 @@ class MistralEmbedder {
       const response = await this.openai.embeddings.create({
         model: this.model,
         input: textChunks,
+        encoding_format: "float",
       });
       const embeddings = response?.data?.map((emb) => emb.embedding) || [];
       if (embeddings.length === 0)

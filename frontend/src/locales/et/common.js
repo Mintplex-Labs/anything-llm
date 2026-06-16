@@ -1320,6 +1320,8 @@ const TRANSLATIONS = {
     stt_mic_denied:
       "Ei suudet mikrofoni kasutada. Palun andke lubadus ja proovige uuesti.",
     stt_transcription_failed: "Transkribeerimine ebaõnnestunud: {{error}}",
+    export: "Экспорти руй чат kui...",
+    exporting: "Экспорт",
   },
   profile_settings: {
     edit_account: "Muuda kontot",

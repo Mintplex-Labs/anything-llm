@@ -1258,6 +1258,8 @@ const TRANSLATIONS = {
       "Chức năng truy cập micro không được hỗ trợ trong trình duyệt này.",
     stt_mic_denied: "Không thể truy cập micro. Vui lòng cấp quyền và thử lại.",
     stt_transcription_failed: "Không thể chuyển đổi: {{error}}",
+    export: "Xuất trò chuyện dưới dạng...",
+    exporting: "Xuất khẩu...",
   },
   profile_settings: {
     edit_account: "Chỉnh sửa Tài khoản",

@@ -157,8 +157,11 @@ const WorkspaceParsedFiles = {
       console.error("Failed to move and embed file:", error);
       return { success: false, error: error.message, document: null };
     } finally {
-      // Always delete the file after processing
-      await this.delete({ id: parseInt(fileId) });
+      await this.delete({
+        id: parseInt(fileId),
+        ...(user ? { userId: user.id } : {}),
+        workspaceId: workspace.id,
+      });
     }
   },
 

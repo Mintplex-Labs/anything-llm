@@ -77,7 +77,6 @@ AnythingLLMは複数ユーザーもサポートしており、インスタンス
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [Anthropic](https://www.anthropic.com/)
 - [Google Gemini Pro](https://ai.google.dev/)
-- [Hugging Face (チャットモデル)](https://huggingface.co/)
 - [Ollama (チャットモデル)](https://ollama.ai/)
 - [LM Studio (すべてのモデル)](https://lmstudio.ai)
 - [LocalAi (すべてのモデル)](https://localai.io/)
