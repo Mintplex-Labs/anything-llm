@@ -6,6 +6,7 @@ import System from "@/models/system";
 export default function AwsBedrockLLMOptions({ settings }) {
   const [inputValue, setInputValue] = useState(settings?.AwsBedrockLLMApiKey);
   const [apiKey, setApiKey] = useState(settings?.AwsBedrockLLMApiKey);
+  const [region, setRegion] = useState(settings?.AwsBedrockLLMRegion);
 
   return (
     <div className="w-full flex flex-col">
@@ -54,9 +55,11 @@ export default function AwsBedrockLLMOptions({ settings }) {
           </label>
           <select
             name="AwsBedrockLLMRegion"
-            defaultValue={settings?.AwsBedrockLLMRegion || "us-east-1"}
+            value={region}
             required={true}
             className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            onChange={(e) => setRegion(e.target.value)}
+            onBlur={() => setRegion(region)}
           >
             {AWS_REGIONS.map((region) => {
               return (
@@ -72,7 +75,11 @@ export default function AwsBedrockLLMOptions({ settings }) {
       <div className="w-full flex items-center gap-[36px] my-1.5">
         {!settings?.credentialsOnly && (
           <>
-            <BedrockModelSelection settings={settings} apiKey={apiKey} />
+            <BedrockModelSelection
+              settings={settings}
+              apiKey={apiKey}
+              region={region}
+            />
             <div className="flex flex-col w-60">
               <label className="text-white text-sm font-semibold block mb-3">
                 Model context window
@@ -96,14 +103,20 @@ export default function AwsBedrockLLMOptions({ settings }) {
   );
 }
 
-function BedrockModelSelection({ settings, apiKey }) {
+function BedrockModelSelection({ settings, apiKey, region }) {
   const [groupedModels, setGroupedModels] = useState({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function findCustomModels() {
       setLoading(true);
-      const { models } = await System.customModels("bedrock", apiKey);
+      const { models } = await System.customModels(
+        "bedrock",
+        apiKey,
+        null,
+        null,
+        { region }
+      );
       if (models?.length > 0) {
         const modelsByOrganization = models.reduce((acc, model) => {
           const org = model.organization || "AWS Bedrock";
@@ -116,7 +129,7 @@ function BedrockModelSelection({ settings, apiKey }) {
       setLoading(false);
     }
     findCustomModels();
-  }, [apiKey]);
+  }, [apiKey, region]);
 
   if (loading || Object.keys(groupedModels).length === 0) {
     return (

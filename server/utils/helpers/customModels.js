@@ -65,7 +65,12 @@ const SUPPORT_CUSTOM_MODELS = [
   "kokoro-tts",
 ];
 
-async function getCustomModels(provider = "", apiKey = null, basePath = null) {
+async function getCustomModels(
+  provider = "",
+  apiKey = null,
+  basePath = null,
+  options = {}
+) {
   if (!SUPPORT_CUSTOM_MODELS.includes(provider))
     return { models: [], error: "Invalid provider for custom models" };
 
@@ -149,7 +154,7 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
     case "cerebras":
       return await getCerebrasModels();
     case "bedrock":
-      return await getBedrockModels(apiKey, basePath);
+      return await getBedrockModels(apiKey, options);
     case "generic-openai":
       return await getGenericOpenAiModels(basePath, apiKey);
     case "deepgram-stt":
@@ -1253,14 +1258,21 @@ async function kokoroTtsVoices(basePath = null, apiKey = null) {
   return { models, error: null };
 }
 
-async function getBedrockModels(_apiKey = null, _basePath = null) {
+/**
+ * Get AWS Bedrock models
+ * @param {string} _apiKey - The API key to use
+ * @param {Object} options - The options to use
+ * @param {string} [options.region] - The region to use
+ * @returns {Promise<{models: Array<{id: string, organization: string, name: string}>, error: string | null}>}
+ */
+async function getBedrockModels(_apiKey = null, options = {}) {
   try {
     const apiKey =
       _apiKey === true
         ? process.env.AWS_BEDROCK_LLM_API_KEY
         : _apiKey || process.env.AWS_BEDROCK_LLM_API_KEY || null;
     const region =
-      _basePath || process.env.AWS_BEDROCK_LLM_REGION || "us-west-2";
+      options?.region || process.env.AWS_BEDROCK_LLM_REGION || "us-west-2";
 
     const { OpenAI: OpenAIApi } = require("openai");
     const openai = new OpenAIApi({

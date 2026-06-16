@@ -241,6 +241,7 @@ class AWSBedrockLLM {
       modelTag: this.model,
       provider: this.className,
       // AWS OpenAI SDK does not return usage - even with include_usage set to true
+      // when streaming, so we need to calculate it manually (it will be wrong but its better than nothing)
       runPromptTokenCalculation: true,
     });
     return measuredStreamRequest;
