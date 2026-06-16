@@ -1275,6 +1275,8 @@ const TRANSLATIONS = {
     stt_mic_denied:
       "Mikrofonu kullanılamadı. Lütfen izin verin ve tekrar deneyin.",
     stt_transcription_failed: "Transkripsiyon başarısız: {{error}}",
+    export: "Çat sohbetini şu şekilde dışa aktar:",
+    exporting: "Dışarıya satışı yapma...",
   },
   profile_settings: {
     edit_account: "Hesabı Düzenle",

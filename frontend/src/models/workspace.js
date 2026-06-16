@@ -74,6 +74,24 @@ const Workspace = {
       .catch(() => []);
     return history;
   },
+  /**
+   * Export a workspace or thread's chat as a server-generated branded PDF.
+   * @param {string} slug - Workspace slug
+   * @param {string|null} threadSlug - Thread slug, or null for the default workspace chat
+   * @returns {Promise<Blob|null>} The PDF blob, or null on failure
+   */
+  exportChatsToType: async function (slug, threadSlug = null, type = "pdf") {
+    return await fetch(`${API_BASE}/export-chat/${type}`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ workspaceSlug: slug, threadSlug }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to export chat.");
+        return res.blob();
+      })
+      .catch(() => null);
+  },
   updateChatFeedback: async function (chatId, slug, feedback) {
     const result = await fetch(
       `${API_BASE}/workspace/${slug}/chat-feedback/${chatId}`,

@@ -640,6 +640,8 @@ const TRANSLATIONS = {
     stt_mic_denied:
       "Nu am putut accesa microfonul. Vă rugăm să acordați permisiunea și să încercați din nou.",
     stt_transcription_failed: "Transcriere eșuată: {{error}}",
+    export: "Exportați conversația sub forma de...",
+    exporting: "Exportare...",
   },
   profile_settings: {
     edit_account: "Editează contul",
