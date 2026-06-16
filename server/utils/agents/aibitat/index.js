@@ -1397,8 +1397,6 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
         return new Providers.PPIOProvider({ model: config.model });
       case "gemini":
         return new Providers.GeminiProvider({ model: config.model });
-      case "dpais":
-        return new Providers.DellProAiStudioProvider({ model: config.model });
       case "cometapi":
         return new Providers.CometApiProvider({ model: config.model });
       case "foundry":

@@ -16,7 +16,7 @@ const FREE_FORM_LLM_SELECTION = ["bedrock", "azure"];
 
 // Some providers do not support model selection via /models
 // and only have a fixed single-model they can use.
-const NO_MODEL_SELECTION = ["default", "huggingface", "anythingllm-router"];
+const NO_MODEL_SELECTION = ["default", "anythingllm-router"];
 
 // Some providers we just fully disable for ease of use.
 const DISABLED_PROVIDERS = [];

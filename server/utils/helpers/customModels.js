@@ -39,7 +39,6 @@ const SUPPORT_CUSTOM_MODELS = [
   "xai",
   "gemini",
   "ppio",
-  "dpais",
   "moonshotai",
   "foundry",
   "cohere",
@@ -116,8 +115,6 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getGeminiModels(apiKey);
     case "ppio":
       return await getPPIOModels(apiKey);
-    case "dpais":
-      return await getDellProAiStudioModels(basePath);
     case "moonshotai":
       return await getMoonshotAiModels(apiKey);
     case "foundry":
@@ -853,45 +850,6 @@ async function getPPIOModels() {
   return { models, error: null };
 }
 
-async function getDellProAiStudioModels(basePath = null) {
-  const { OpenAI: OpenAIApi } = require("openai");
-  try {
-    const { origin } = new URL(
-      basePath || process.env.DELL_PRO_AI_STUDIO_BASE_PATH
-    );
-    const openai = new OpenAIApi({
-      baseURL: `${origin}/v1/openai`,
-      apiKey: null,
-    });
-    const models = await openai.models
-      .list()
-      .then((results) => results.data)
-      .then((models) => {
-        return models
-          .filter(
-            (model) => model?.capability?.includes("TextToText") // Only include text-to-text models for this handler
-          )
-          .map((model) => {
-            return {
-              id: model.id,
-              name: model.name,
-              organization: model.owned_by,
-            };
-          });
-      })
-      .catch((e) => {
-        throw new Error(e.message);
-      });
-    return { models, error: null };
-  } catch (e) {
-    console.error(`getDellProAiStudioModels`, e.message);
-    return {
-      models: [],
-      error: "Could not reach Dell Pro Ai Studio from the provided base path",
-    };
-  }
-}
-
 function getNativeEmbedderModels() {
   const { NativeEmbedder } = require("../EmbeddingEngines/native");
   return { models: NativeEmbedder.availableModels(), error: null };
@@ -960,13 +918,17 @@ async function getCohereModels(_apiKey = null, type = "chat") {
       ? process.env.COHERE_API_KEY
       : _apiKey || process.env.COHERE_API_KEY || null;
 
-  const { CohereClient } = require("cohere-ai");
-  const cohere = new CohereClient({
-    token: apiKey,
-  });
-  const models = await cohere.models
-    .list({ pageSize: 1000, endpoint: type })
-    .then((results) => results.models)
+  // Cohere's models endpoint is queried directly so we can keep filtering by
+  // endpoint (chat/embed) which the OpenAI-compatible /models route does not support.
+  const models = await fetch(
+    `https://api.cohere.com/v1/models?page_size=1000&endpoint=${type}`,
+    {
+      method: "GET",
+      headers: { Authorization: `Bearer ${apiKey}` },
+    }
+  )
+    .then((res) => res.json())
+    .then((data) => data?.models || [])
     .then((models) =>
       models.map((model) => ({
         id: model.name,

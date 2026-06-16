@@ -153,20 +153,6 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
-  // Hugging Face LLM Inference Settings
-  HuggingFaceLLMEndpoint: {
-    envKey: "HUGGING_FACE_LLM_ENDPOINT",
-    checks: [isNotEmpty, isValidURL, validHuggingFaceEndpoint],
-  },
-  HuggingFaceLLMAccessToken: {
-    envKey: "HUGGING_FACE_LLM_API_KEY",
-    checks: [isNotEmpty],
-  },
-  HuggingFaceLLMTokenLimit: {
-    envKey: "HUGGING_FACE_LLM_TOKEN_LIMIT",
-    checks: [nonZero],
-  },
-
   // KoboldCPP Settings
   KoboldCPPBasePath: {
     envKey: "KOBOLD_CPP_BASE_PATH",
@@ -277,20 +263,6 @@ const KEY_MAPPING = {
   },
   AwsBedrockLLMMaxOutputTokens: {
     envKey: "AWS_BEDROCK_LLM_MAX_OUTPUT_TOKENS",
-    checks: [nonZero],
-  },
-
-  // Dell Pro AI Studio Settings
-  DellProAiStudioBasePath: {
-    envKey: "DPAIS_LLM_BASE_PATH",
-    checks: [isNotEmpty, validDockerizedUrl],
-  },
-  DellProAiStudioModelPref: {
-    envKey: "DPAIS_LLM_MODEL_PREF",
-    checks: [isNotEmpty],
-  },
-  DellProAiStudioTokenLimit: {
-    envKey: "DPAIS_LLM_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
   },
 
@@ -1047,7 +1019,6 @@ function supportedLLM(input = "") {
     "togetherai",
     "fireworksai",
     "mistral",
-    "huggingface",
     "perplexity",
     "openrouter",
     "novita",
@@ -1063,7 +1034,6 @@ function supportedLLM(input = "") {
     "xai",
     "nvidia-nim",
     "ppio",
-    "dpais",
     "moonshotai",
     "cometapi",
     "foundry",
@@ -1178,12 +1148,6 @@ async function validDockerizedUrl(input = "") {
   }
 
   return null;
-}
-
-function validHuggingFaceEndpoint(input = "") {
-  return input.slice(-6) !== ".cloud"
-    ? `Your HF Endpoint should end in ".cloud"`
-    : null;
 }
 
 function noRestrictedChars(input = "") {

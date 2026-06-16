@@ -40,13 +40,6 @@ export const LOCALAI_COMMON_URLS = [
   "http://172.17.0.1:8080/v1",
 ];
 
-export const DPAIS_COMMON_URLS = [
-  "http://127.0.0.1:8553/v1/openai",
-  "http://0.0.0.0:8553/v1/openai",
-  "http://localhost:8553/v1/openai",
-  "http://host.docker.internal:8553/v1/openai",
-];
-
 export const NVIDIA_NIM_COMMON_URLS = [
   "http://127.0.0.1:8000/v1/version",
   "http://localhost:8000/v1/version",

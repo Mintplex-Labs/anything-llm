@@ -1137,6 +1137,25 @@ does not extend the close button beyond the viewport. */
   animation: fadein 0.3s linear forwards;
 }
 
+/*
+ * Performance: skip rendering for off-screen messages in long conversations.
+ * `content-visibility: auto` lets the browser lazily render only visible
+ * messages; `contain-intrinsic-size` provides a placeholder height estimate
+ * so the scrollbar stays stable.
+ * Exclude :last-child because the pending reply uses a box-shadow positioning
+ * trick (left: -9999px) for its dot-falling animation that containment clips.
+ */
+#chat-history > div > *:not(:last-child) {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 150px;
+}
+
+/* Disable paint containment when an action menu is open so the
+   absolutely-positioned dropdown isn't clipped. */
+#chat-history > div > *:has([data-action-menu-open]) {
+  content-visibility: visible;
+}
+
 /* Form control font fallback for non-Latin scripts */
 button,
 input,
