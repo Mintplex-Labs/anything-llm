@@ -396,7 +396,6 @@ async function getGroqAiModels(_apiKey = null) {
 
 async function getGroqSTTModels(_apiKey = null) {
   const { OpenAI: OpenAIApi } = require("openai");
-  console.log("getGroqSTTModels", _apiKey, process.env.STT_GROQ_API_KEY);
   const apiKey =
     _apiKey === true
       ? process.env.STT_GROQ_API_KEY
