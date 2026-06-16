@@ -50,6 +50,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "lemonade",
   "minimax",
   "cerebras",
+  "bedrock",
   "generic-openai",
   // Embedding Engines
   "native-embedder",
@@ -64,7 +65,12 @@ const SUPPORT_CUSTOM_MODELS = [
   "kokoro-tts",
 ];
 
-async function getCustomModels(provider = "", apiKey = null, basePath = null) {
+async function getCustomModels(
+  provider = "",
+  apiKey = null,
+  basePath = null,
+  options = {}
+) {
   if (!SUPPORT_CUSTOM_MODELS.includes(provider))
     return { models: [], error: "Invalid provider for custom models" };
 
@@ -147,6 +153,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getMinimaxModels(apiKey);
     case "cerebras":
       return await getCerebrasModels();
+    case "bedrock":
+      return await getBedrockModels(apiKey, options);
     case "generic-openai":
       return await getGenericOpenAiModels(basePath, apiKey);
     case "deepgram-stt":
@@ -918,13 +926,17 @@ async function getCohereModels(_apiKey = null, type = "chat") {
       ? process.env.COHERE_API_KEY
       : _apiKey || process.env.COHERE_API_KEY || null;
 
-  const { CohereClient } = require("cohere-ai");
-  const cohere = new CohereClient({
-    token: apiKey,
-  });
-  const models = await cohere.models
-    .list({ pageSize: 1000, endpoint: type })
-    .then((results) => results.models)
+  // Cohere's models endpoint is queried directly so we can keep filtering by
+  // endpoint (chat/embed) which the OpenAI-compatible /models route does not support.
+  const models = await fetch(
+    `https://api.cohere.com/v1/models?page_size=1000&endpoint=${type}`,
+    {
+      method: "GET",
+      headers: { Authorization: `Bearer ${apiKey}` },
+    }
+  )
+    .then((res) => res.json())
+    .then((data) => data?.models || [])
     .then((models) =>
       models.map((model) => ({
         id: model.name,
@@ -1244,6 +1256,51 @@ async function kokoroTtsVoices(basePath = null, apiKey = null) {
     organization: "Kokoro",
   }));
   return { models, error: null };
+}
+
+/**
+ * Get AWS Bedrock models
+ * @param {string} _apiKey - The API key to use
+ * @param {Object} options - The options to use
+ * @param {string} [options.region] - The region to use
+ * @returns {Promise<{models: Array<{id: string, organization: string, name: string}>, error: string | null}>}
+ */
+async function getBedrockModels(_apiKey = null, options = {}) {
+  try {
+    const apiKey =
+      _apiKey === true
+        ? process.env.AWS_BEDROCK_LLM_API_KEY
+        : _apiKey || process.env.AWS_BEDROCK_LLM_API_KEY || null;
+    const region =
+      options?.region || process.env.AWS_BEDROCK_LLM_REGION || "us-west-2";
+
+    const { OpenAI: OpenAIApi } = require("openai");
+    const openai = new OpenAIApi({
+      apiKey,
+      baseURL: `https://bedrock-mantle.${region}.api.aws/v1`,
+    });
+    const models = await openai.models
+      .list()
+      .then((results) => results.data)
+      .then((models) =>
+        models.map((model) => ({
+          id: model.id,
+          name: model.id,
+          organization: model.owned_by ?? "AWS Bedrock",
+        }))
+      )
+      .catch((e) => {
+        console.error(`AWSBedrock:listModels`, e.message);
+        return [];
+      });
+
+    if (models.length > 0 && !!apiKey)
+      process.env.AWS_BEDROCK_LLM_API_KEY = apiKey;
+    return { models, error: null };
+  } catch (e) {
+    console.error(`AWSBedrock:getBedrockModels`, e.message);
+    return { models: [], error: "Could not fetch AWS Bedrock Models" };
+  }
 }
 
 module.exports = {

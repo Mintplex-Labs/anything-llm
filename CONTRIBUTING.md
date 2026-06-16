@@ -58,7 +58,7 @@ This will install the dependencies, set up the proper and expected ENV files for
 Next, run:
 
 ```bash
-yarn dev:all
+yarn dev
 ```
 This will start the server, frontend, and collector in development mode. Changes to the code will be hot reloaded.
 

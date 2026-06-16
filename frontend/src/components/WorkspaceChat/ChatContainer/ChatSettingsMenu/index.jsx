@@ -4,8 +4,13 @@ import useLoginMode from "@/hooks/useLoginMode";
 import TextSizeRow from "./TextSize";
 import MemoriesRow from "./Memories";
 import CopyLinkToChatRow from "./CopyLinkToChat";
+import ExportRow from "./Export";
 
-export default function ChatSettingsMenu() {
+export default function ChatSettingsMenu({
+  history = [],
+  workspace = null,
+  threadSlug = null,
+}) {
   const mode = useLoginMode();
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef(null);
@@ -60,6 +65,12 @@ export default function ChatSettingsMenu() {
         >
           <TextSizeRow />
           <MemoriesRow onClose={() => setShowMenu(false)} />
+          <ExportRow
+            history={history}
+            workspace={workspace}
+            threadSlug={threadSlug}
+            onClose={() => setShowMenu(false)}
+          />
           <CopyLinkToChatRow />
         </div>
       )}
