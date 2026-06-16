@@ -61,6 +61,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "openai-stt",
   "deepgram-stt",
   "lemonade-stt",
+  "groq-stt",
   // TTS Engines
   "kokoro-tts",
 ];
@@ -159,6 +160,8 @@ async function getCustomModels(
       return await getGenericOpenAiModels(basePath, apiKey);
     case "deepgram-stt":
       return await getDeepgramSTTModels(apiKey);
+    case "groq-stt":
+      return await getGroqSTTModels(apiKey);
     case "kokoro-tts":
       return await kokoroTtsVoices(basePath, apiKey);
     default:
@@ -388,6 +391,33 @@ async function getGroqAiModels(_apiKey = null) {
 
   // Api Key was successful so lets save it for future uses
   if (models.length > 0 && !!apiKey) process.env.GROQ_API_KEY = apiKey;
+  return { models, error: null };
+}
+
+async function getGroqSTTModels(_apiKey = null) {
+  const { OpenAI: OpenAIApi } = require("openai");
+  console.log("getGroqSTTModels", _apiKey, process.env.STT_GROQ_API_KEY);
+  const apiKey =
+    _apiKey === true
+      ? process.env.STT_GROQ_API_KEY
+      : _apiKey || process.env.STT_GROQ_API_KEY || null;
+
+  const openai = new OpenAIApi({
+    baseURL: "https://api.groq.com/openai/v1",
+    apiKey,
+  });
+  const models = (
+    await openai.models
+      .list()
+      .then((results) => results.data)
+      .catch((e) => {
+        console.error(`GroqSTT:listModels`, e.message);
+        return [];
+      })
+  ).filter((model) => model.id.includes("whisper"));
+
+  // Api Key was successful so lets save it for future uses
+  if (models.length > 0 && !!apiKey) process.env.GROQ_STT_API_KEY = apiKey;
   return { models, error: null };
 }
 

@@ -672,6 +672,16 @@ const KEY_MAPPING = {
     checks: [isValidURL],
   },
 
+  // STT Groq
+  STTGroqApiKey: {
+    envKey: "STT_GROQ_API_KEY",
+    checks: [isNotEmpty],
+  },
+  STTGroqModel: {
+    envKey: "STT_GROQ_MODEL",
+    checks: [isNotEmpty],
+  },
+
   // DeepSeek Options
   DeepSeekApiKey: {
     envKey: "DEEPSEEK_API_KEY",
@@ -966,6 +976,7 @@ function supportedSTTProvider(input = "") {
     "openai",
     "lemonade",
     "deepgram",
+    "groq",
     "generic-openai",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid STT provider.`;
