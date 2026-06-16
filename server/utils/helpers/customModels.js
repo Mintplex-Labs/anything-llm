@@ -50,6 +50,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "lemonade",
   "minimax",
   "cerebras",
+  "bedrock",
   "generic-openai",
   // Embedding Engines
   "native-embedder",
@@ -147,6 +148,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getMinimaxModels(apiKey);
     case "cerebras":
       return await getCerebrasModels();
+    case "bedrock":
+      return await getBedrockModels(apiKey, basePath);
     case "generic-openai":
       return await getGenericOpenAiModels(basePath, apiKey);
     case "deepgram-stt":
@@ -1248,6 +1251,44 @@ async function kokoroTtsVoices(basePath = null, apiKey = null) {
     organization: "Kokoro",
   }));
   return { models, error: null };
+}
+
+async function getBedrockModels(_apiKey = null, _basePath = null) {
+  try {
+    const apiKey =
+      _apiKey === true
+        ? process.env.AWS_BEDROCK_LLM_API_KEY
+        : _apiKey || process.env.AWS_BEDROCK_LLM_API_KEY || null;
+    const region =
+      _basePath || process.env.AWS_BEDROCK_LLM_REGION || "us-west-2";
+
+    const { OpenAI: OpenAIApi } = require("openai");
+    const openai = new OpenAIApi({
+      apiKey,
+      baseURL: `https://bedrock-mantle.${region}.api.aws/v1`,
+    });
+    const models = await openai.models
+      .list()
+      .then((results) => results.data)
+      .then((models) =>
+        models.map((model) => ({
+          id: model.id,
+          name: model.id,
+          organization: model.owned_by ?? "AWS Bedrock",
+        }))
+      )
+      .catch((e) => {
+        console.error(`AWSBedrock:listModels`, e.message);
+        return [];
+      });
+
+    if (models.length > 0 && !!apiKey)
+      process.env.AWS_BEDROCK_LLM_API_KEY = apiKey;
+    return { models, error: null };
+  } catch (e) {
+    console.error(`AWSBedrock:getBedrockModels`, e.message);
+    return { models: [], error: "Could not fetch AWS Bedrock Models" };
+  }
 }
 
 module.exports = {

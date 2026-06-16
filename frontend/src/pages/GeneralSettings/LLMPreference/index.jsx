@@ -307,8 +307,7 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <AWSBedrockLLMOptions settings={settings} />,
     description: "Run powerful foundation models privately with AWS Bedrock.",
     requiredConfig: [
-      "AwsBedrockLLMAccessKeyId",
-      "AwsBedrockLLMAccessKey",
+      "AwsBedrockLLMApiKey",
       "AwsBedrockLLMRegion",
       "AwsBedrockLLMModel",
     ],
