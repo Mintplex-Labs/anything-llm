@@ -552,7 +552,8 @@ const System = {
     provider,
     apiKey = null,
     basePath = null,
-    timeout = null
+    timeout = null,
+    options = {}
   ) {
     const controller = new AbortController();
     if (!!timeout) {
@@ -569,6 +570,7 @@ const System = {
         provider,
         apiKey,
         basePath,
+        options: options || {},
       }),
     })
       .then((res) => {
