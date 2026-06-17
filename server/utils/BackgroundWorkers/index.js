@@ -36,6 +36,10 @@ class BackgroundService {
       timeout: "5m",
       interval: "8hr",
     },
+    {
+      name: "util__migrate_user_to_lance_fts",
+      timeout: 0,
+    },
   ];
 
   #memoryJobs = [

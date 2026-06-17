@@ -389,6 +389,7 @@ export default function LLMPreference({
     // Default to AnythingLLM embedder and LanceDB
     data.EmbeddingEngine = "native";
     data.VectorDB = "lancedb";
+    data.EmbeddingModelPref = "Xenova/nomic-embed-text-v1";
     for (var [key, value] of formData.entries()) data[key] = value;
 
     const { error } = await System.updateSystem(data);

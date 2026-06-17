@@ -5,7 +5,7 @@ const { v4 } = require("uuid");
 const { SUPPORTED_NATIVE_EMBEDDING_MODELS } = require("./constants");
 
 class NativeEmbedder {
-  static defaultModel = "Xenova/all-MiniLM-L6-v2";
+  static defaultModel = "Xenova/nomic-embed-text-v1";
 
   // ONNX sessions cannot be freed on onnxruntime-node 1.14 (dispose() is a
   // no-op), so we must only ever create one pipeline per model.

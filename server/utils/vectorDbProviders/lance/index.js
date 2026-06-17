@@ -78,29 +78,32 @@ class LanceDb extends VectorDatabase {
   }
 
   /**
-   * Performs a SimilaritySearch + Reranking on a namespace.
-   * @param {Object} params - The parameters for the rerankedSimilarityResponse.
-   * @param {Object} params.client - The vectorDB client.
-   * @param {string} params.namespace - The namespace to search in.
-   * @param {string} params.query - The query to search for (plain text).
-   * @param {number[]} params.queryVector - The vector of the query.
-   * @param {number} params.similarityThreshold - The threshold for similarity.
-   * @param {number} params.topN - the number of results to return from this process.
-   * @param {string[]} params.filterIdentifiers - The identifiers of the documents to filter out.
+   * Performs a hybrid search (vector + full-text with RRF reranking) on a LanceDB namespace.
+   * Falls back to vector-only search if hybrid search fails.
+   * When `rerank` is true, fetches a larger candidate set and applies a second-pass
+   * NativeEmbeddingReranker to improve relevance ordering.
+   * @param {Object} params
+   * @param {LanceClient} params.client
+   * @param {string} params.namespace
+   * @param {string} params.query - The plain text query for full-text search.
+   * @param {number[]} params.queryVector
+   * @param {number} params.similarityThreshold
+   * @param {number} params.topN
+   * @param {string[]} params.filterIdentifiers
+   * @param {boolean} params.rerank - Whether to apply a second-pass embedding reranker.
    * @returns
    */
-  async rerankedSimilarityResponse({
+  async similarityResponse({
     client,
     namespace,
     query,
     queryVector,
-    topN = 4,
     similarityThreshold = 0.25,
+    topN = 4,
     filterIdentifiers = [],
+    rerank = false,
   }) {
-    const reranker = new NativeEmbeddingReranker();
     const collection = await client.openTable(namespace);
-    const totalEmbeddings = await this.namespaceCount(namespace);
     const result = {
       contextTexts: [],
       sourceDocuments: [],
@@ -109,94 +112,76 @@ class LanceDb extends VectorDatabase {
 
     /**
      * For reranking, we want to work with a larger number of results than the topN.
-     * This is because the reranker can only rerank the results it it given and we dont auto-expand the results.
+     * This is because the reranker can only rerank the results it is given and we don't auto-expand the results.
      * We want to give the reranker a larger number of results to work with.
      *
      * However, we cannot make this boundless as reranking is expensive and time consuming.
      * So we limit the number of results to a maximum of 50 and a minimum of 10.
      * This is a good balance between the number of results to rerank and the cost of reranking
      * and ensures workspaces with 10K embeddings will still rerank within a reasonable timeframe on base level hardware.
-     *
-     * Benchmarks:
-     * On Intel Mac: 2.6 GHz 6-Core Intel Core i7 - 20 docs reranked in ~5.2 sec
      */
-    const searchLimit = Math.max(
-      10,
-      Math.min(50, Math.ceil(totalEmbeddings * 0.1))
-    );
-    const vectorSearchResults = await collection
-      .vectorSearch(queryVector)
-      .distanceType("cosine")
-      .limit(searchLimit)
-      .toArray();
+    let searchLimit = topN;
+    if (rerank) {
+      const totalEmbeddings = await this.namespaceCount(namespace);
+      searchLimit = Math.max(
+        10,
+        Math.min(50, Math.ceil(totalEmbeddings * 0.1))
+      );
+    }
 
-    await reranker
-      .rerank(query, vectorSearchResults, { topK: topN })
-      .then((rerankResults) => {
-        rerankResults.forEach((item) => {
-          if (this.distanceToSimilarity(item._distance) < similarityThreshold)
-            return;
-          const { vector: _, ...rest } = item;
-          if (filterIdentifiers.includes(sourceIdentifier(rest))) {
-            this.logger(
-              "A source was filtered from context as it's parent document is pinned."
-            );
-            return;
-          }
-          const score =
-            item?.rerank_score || this.distanceToSimilarity(item._distance);
+    let response;
+    let usedHybrid = false;
+    try {
+      const rrfReranker = await lancedb.rerankers.RRFReranker.create();
+      this.logger("Performing hybrid search with RRF reranker...");
+      response = await collection
+        .query()
+        .fullTextSearch(query, { columns: ["text"] })
+        .nearestTo(queryVector)
+        .distanceType("cosine")
+        .rerank(rrfReranker)
+        .limit(searchLimit)
+        .toArray();
+      usedHybrid = true;
+    } catch (e) {
+      this.logger(
+        `Hybrid search failed, falling back to vector-only: ${e.message}`
+      );
+      response = await collection
+        .vectorSearch(queryVector)
+        .distanceType("cosine")
+        .limit(searchLimit)
+        .toArray();
+    }
 
-          result.contextTexts.push(rest.text);
-          result.sourceDocuments.push({
-            ...rest,
-            score,
-          });
-          result.scores.push(score);
+    if (rerank) {
+      const embeddingReranker = new NativeEmbeddingReranker();
+      try {
+        response = await embeddingReranker.rerank(query, response, {
+          topK: topN,
         });
-      })
-      .catch((e) => {
-        this.logger(e);
-        this.logger("rerankedSimilarityResponse", e.message);
-      });
-
-    return result;
-  }
-
-  /**
-   * Performs a SimilaritySearch on a give LanceDB namespace.
-   * @param {Object} params
-   * @param {LanceClient} params.client
-   * @param {string} params.namespace
-   * @param {number[]} params.queryVector
-   * @param {number} params.similarityThreshold
-   * @param {number} params.topN
-   * @param {string[]} params.filterIdentifiers
-   * @returns
-   */
-  async similarityResponse({
-    client,
-    namespace,
-    queryVector,
-    similarityThreshold = 0.25,
-    topN = 4,
-    filterIdentifiers = [],
-  }) {
-    const collection = await client.openTable(namespace);
-    const result = {
-      contextTexts: [],
-      sourceDocuments: [],
-      scores: [],
-    };
-
-    const response = await collection
-      .vectorSearch(queryVector)
-      .distanceType("cosine")
-      .limit(topN)
-      .toArray();
+      } catch (e) {
+        this.logger(
+          "Embedding reranker failed - falling back to top results",
+          e.message
+        );
+        response = response.slice(0, topN);
+      }
+    }
 
     response.forEach((item) => {
-      if (this.distanceToSimilarity(item._distance) < similarityThreshold)
-        return;
+      const distanceScore = this.distanceToSimilarity(item._distance);
+      const score = rerank
+        ? item?.rerank_score || distanceScore
+        : usedHybrid
+          ? Math.max(
+              item._relevance_score ?? 0,
+              item._score ?? 0,
+              distanceScore
+            )
+          : distanceScore;
+      if (score < similarityThreshold) return;
+
       const { vector: _, ...rest } = item;
       if (filterIdentifiers.includes(sourceIdentifier(rest))) {
         this.logger(
@@ -206,11 +191,8 @@ class LanceDb extends VectorDatabase {
       }
 
       result.contextTexts.push(rest.text);
-      result.sourceDocuments.push({
-        ...rest,
-        score: this.distanceToSimilarity(item._distance),
-      });
-      result.scores.push(this.distanceToSimilarity(item._distance));
+      result.sourceDocuments.push({ ...rest, score });
+      result.scores.push(score);
     });
 
     return result;
@@ -247,7 +229,16 @@ class LanceDb extends VectorDatabase {
       return true;
     }
 
-    await client.createTable(namespace, data);
+    const newTable = await client.createTable(namespace, data);
+    try {
+      await newTable.createIndex("text", {
+        config: lancedb.Index.fts(),
+      });
+    } catch (e) {
+      this.logger(
+        `Failed to create FTS index for new table ${namespace}: ${e.message}`
+      );
+    }
     return true;
   }
 
@@ -429,24 +420,16 @@ class LanceDb extends VectorDatabase {
     }
 
     const queryVector = await LLMConnector.embedTextInput(input);
-    const result = rerank
-      ? await this.rerankedSimilarityResponse({
-          client,
-          namespace,
-          query: input,
-          queryVector,
-          similarityThreshold,
-          topN,
-          filterIdentifiers,
-        })
-      : await this.similarityResponse({
-          client,
-          namespace,
-          queryVector,
-          similarityThreshold,
-          topN,
-          filterIdentifiers,
-        });
+    const result = await this.similarityResponse({
+      client,
+      namespace,
+      query: input,
+      queryVector,
+      similarityThreshold,
+      topN,
+      filterIdentifiers,
+      rerank,
+    });
 
     const { contextTexts, sourceDocuments } = result;
     const sources = sourceDocuments.map((metadata, i) => {
