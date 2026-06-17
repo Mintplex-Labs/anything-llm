@@ -118,35 +118,18 @@ export default function WorkspaceChat({ loading, workspace }) {
 
   setEventDelegatorForCodeSnippets();
 
-  if (!loaded.threadSlug) {
-    return (
-      <TTSProvider>
-        <DndUploaderContext.Provider
-          value={{
-            files: [],
-            ready: true,
-            dragging,
-            setDragging,
-            onDrop: handleDropWithoutThread,
-            parseAttachments: () => [],
-          }}
-        >
-          <ChatContainer
-            key={loaded.key}
-            workspace={loaded.workspace}
-            threadSlug={loaded.threadSlug}
-            knownHistory={loaded.history}
-          />
-        </DndUploaderContext.Provider>
-      </TTSProvider>
-    );
-  }
-
   return (
     <TTSProvider>
-      <DnDFileUploaderProvider
-        workspace={loaded.workspace}
-        threadSlug={loaded.threadSlug}
+      <DnDWrapper
+        loaded={loaded}
+        opts={{
+          files: [],
+          ready: true,
+          dragging,
+          setDragging,
+          onDrop: handleDropWithoutThread,
+          parseAttachments: () => [],
+        }}
       >
         <ChatContainer
           key={loaded.key}
@@ -154,8 +137,26 @@ export default function WorkspaceChat({ loading, workspace }) {
           threadSlug={loaded.threadSlug}
           knownHistory={loaded.history}
         />
-      </DnDFileUploaderProvider>
+      </DnDWrapper>
     </TTSProvider>
+  );
+}
+
+function DnDWrapper({ children, loaded, opts }) {
+  if (!loaded?.threadSlug) {
+    return (
+      <DndUploaderContext.Provider value={opts}>
+        {children}
+      </DndUploaderContext.Provider>
+    );
+  }
+  return (
+    <DnDFileUploaderProvider
+      workspace={loaded.workspace}
+      threadSlug={loaded.threadSlug}
+    >
+      {children}
+    </DnDFileUploaderProvider>
   );
 }
 
