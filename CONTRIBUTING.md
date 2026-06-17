@@ -88,7 +88,7 @@ The core library is written in Node.js. There are additional sub-repositories fo
 
 * `server`: Node.js server source code
 * `frontend`: React frontend source code
-* `collector`: Python collector source code
+* `collector`: Node.js collector source code
 
 ## Release process
 
