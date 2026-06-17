@@ -197,8 +197,15 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
 
         if (type === "chatId") {
           if (!data.content.chatId) return prev;
-          return prev.map((msg) =>
-            msg.uuid === uuid ? { ...msg, chatId: data.content.chatId } : msg
+          const assistantIdx = prev.findIndex((msg) => msg.uuid === uuid);
+          if (assistantIdx === -1) return prev;
+          const userIdx = prev.findLastIndex(
+            (msg, i) => i < assistantIdx && msg.role === "user"
+          );
+          return prev.map((msg, i) =>
+            i === assistantIdx || i === userIdx
+              ? { ...msg, chatId: data.content.chatId }
+              : msg
           );
         }
 
