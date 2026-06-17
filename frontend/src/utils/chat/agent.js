@@ -7,6 +7,18 @@ import { THREAD_RENAME_EVENT } from "@/components/Sidebar/ActiveWorkspaces/Threa
 
 export const AGENT_SESSION_START = "agentSessionStart";
 export const AGENT_SESSION_END = "agentSessionEnd";
+
+// Citations arrive as a terminal websocket event that must match an existing message by
+// uuid. On a thread's first message the empty->chat transition remounts the chat and
+// replays the send, so the citations event can land before its message exists in history.
+// Buffer by uuid (module scope survives the remount) and attach when the message appears.
+const bufferedCitations = new Map();
+function takeBufferedCitations(uuid) {
+  if (!uuid || !bufferedCitations.has(uuid)) return [];
+  const citations = bufferedCitations.get(uuid);
+  bufferedCitations.delete(uuid);
+  return citations;
+}
 const handledEvents = [
   "statusResponse",
   "fileDownloadCard",
@@ -100,6 +112,21 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
         ];
       }
 
+      // Handle citations independently of message creation order. If the target message
+      // exists, attach now or buffer until it is created.
+      if (data.content.type === "citations") {
+        const { uuid, citations } = data.content;
+        if (!citations) return prev;
+        let attached = false;
+        const next = prev.map((msg) => {
+          if (msg.uuid !== uuid) return msg;
+          attached = true;
+          return { ...msg, sources: [...(msg.sources || []), ...citations] };
+        });
+        if (!attached) bufferedCitations.set(uuid, citations);
+        return next;
+      }
+
       const knownMessage = data.content.uuid
         ? prev.find((msg) => msg.uuid === data.content.uuid)
         : null;
@@ -112,7 +139,7 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
               type: "textResponse",
               content: data.content.content,
               role: "assistant",
-              sources: [],
+              sources: takeBufferedCitations(data.content.uuid),
               closed: true,
               error: null,
               animate: false,
@@ -137,7 +164,7 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
               type: "textResponse",
               content: data.content.content,
               role: "assistant",
-              sources: [],
+              sources: takeBufferedCitations(data.content.uuid),
               closed: true,
               error: null,
               animate: false,
@@ -180,18 +207,6 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
           if (!data.content.metrics) return prev;
           return prev.map((msg) =>
             msg.uuid === uuid ? { ...msg, metrics: data.content.metrics } : msg
-          );
-        }
-
-        if (type === "citations") {
-          if (!data.content.citations) return prev;
-          return prev.map((msg) =>
-            msg.uuid === uuid
-              ? {
-                  ...msg,
-                  sources: [...(msg.sources || []), ...data.content.citations],
-                }
-              : msg
           );
         }
 
