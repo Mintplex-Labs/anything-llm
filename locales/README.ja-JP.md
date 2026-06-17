@@ -36,6 +36,17 @@
 👉 デスクトップ用AnythingLLM（Mac、Windows、Linux対応）！<a href="https://anythingllm.com/download" target="_blank">今すぐダウンロード</a>
 </p>
 
+<!-- atlas-cloud-start -->
+<p align="center">
+  <a href="https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=anything-llm">
+    <img src="../images/atlas-cloud-logo.png" alt="Atlas Cloud" width="200">
+  </a>
+</p>
+
+> 🎁 **[Atlas Cloud](https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=anything-llm)** は、OpenAI 互換のフルモーダル AI 推論プラットフォームです。AnythingLLM にドロップイン LLM プロバイダーとして接続するだけで、単一の API から DeepSeek、Qwen、GLM、Kimi、MiniMax などのモデルを利用でき、複数ベンダーの個別設定は不要です。お得なプラン：[coding plan](https://www.atlascloud.ai/console/coding-plan)。
+
+<!-- atlas-cloud-end -->
+
 これは、任意のドキュメント、リソース、またはコンテンツの断片を、チャット中にLLMが参照として使用できるコンテキストに変換できるフルスタックアプリケーションです。このアプリケーションを使用すると、使用するLLMまたはベクトルデータベースを選択し、マルチユーザー管理と権限をサポートできます。
 
 ![Chatting](https://github.com/Mintplex-Labs/anything-llm/releases/download/v1.11.2/AnythingLLM720p.gif)

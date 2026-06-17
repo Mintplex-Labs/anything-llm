@@ -33,6 +33,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "elevenlabs-tts",
   "groq",
   "deepseek",
+  "atlascloud",
   "apipie",
   "novita",
   "cometapi",
@@ -108,6 +109,8 @@ async function getCustomModels(
       return await getGroqAiModels(apiKey);
     case "deepseek":
       return await getDeepSeekModels(apiKey);
+    case "atlascloud":
+      return await getAtlasCloudModels();
     case "apipie":
       return await getAPIPieModels(apiKey);
     case "novita":
@@ -785,6 +788,14 @@ async function getDeepSeekModels(apiKey = null) {
     });
 
   if (models.length > 0 && !!apiKey) process.env.DEEPSEEK_API_KEY = apiKey;
+  return { models, error: null };
+}
+
+async function getAtlasCloudModels() {
+  // Atlas Cloud ships a curated static catalog rather than a dynamic /v1/models
+  // listing, so model selection works before a key is set and stays stable.
+  const { atlasCloudModels } = require("../AiProviders/atlasCloud/models");
+  const models = atlasCloudModels();
   return { models, error: null };
 }
 

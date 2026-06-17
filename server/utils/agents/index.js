@@ -191,6 +191,12 @@ class AgentHandler {
         if (!process.env.DEEPSEEK_API_KEY)
           throw new Error("DeepSeek API Key must be provided to use agents.");
         break;
+      case "atlascloud":
+        if (!process.env.ATLAS_CLOUD_API_KEY)
+          throw new Error(
+            "Atlas Cloud API Key must be provided to use agents."
+          );
+        break;
       case "litellm":
         if (!process.env.LITE_LLM_BASE_PATH)
           throw new Error(
@@ -329,6 +335,10 @@ class AgentHandler {
         return process.env.FIREWORKS_AI_LLM_MODEL_PREF ?? null;
       case "deepseek":
         return process.env.DEEPSEEK_MODEL_PREF ?? "deepseek-chat";
+      case "atlascloud":
+        return (
+          process.env.ATLAS_CLOUD_MODEL_PREF ?? "deepseek-ai/deepseek-v4-pro"
+        );
       case "litellm":
         return process.env.LITE_LLM_MODEL_PREF ?? null;
       case "moonshotai":

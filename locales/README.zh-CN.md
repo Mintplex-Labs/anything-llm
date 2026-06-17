@@ -36,6 +36,17 @@
 👉 适用于桌面（Mac、Windows和Linux）的AnythingLLM！<a href="https://anythingllm.com/download" target="_blank">立即下载</a>
 </p>
 
+<!-- atlas-cloud-start -->
+<p align="center">
+  <a href="https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=anything-llm">
+    <img src="../images/atlas-cloud-logo.png" alt="Atlas Cloud" width="200">
+  </a>
+</p>
+
+> 🎁 **[Atlas Cloud](https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=anything-llm)** 是一个全模态、兼容 OpenAI 接口的 AI 推理平台 —— 作为即插即用的 LLM provider 接入 AnythingLLM，即可通过单一 API 调用 DeepSeek、Qwen、GLM、Kimi、MiniMax 等模型，无需逐个对接多家厂商。高性价比套餐：[coding plan](https://www.atlascloud.ai/console/coding-plan)。
+
+<!-- atlas-cloud-end -->
+
 这是一个全栈应用程序，可以将任何文档、资源（如网址链接、音频、视频）或内容片段转换为上下文，以便任何大语言模型（LLM）在聊天期间作为参考使用。此应用程序允许您选择使用哪个LLM或向量数据库，同时支持多用户管理并设置不同权限。
 
 ![Chatting](https://github.com/Mintplex-Labs/anything-llm/releases/download/v1.11.2/AnythingLLM720p.gif)
@@ -90,6 +101,7 @@ AnythingLLM还支持多用户，您可以控制每个用户的访问权限和体
 - [Perplexity (聊天模型)](https://www.perplexity.ai/)
 - [OpenRouter (聊天模型)](https://openrouter.ai/)
 - [DeepSeek (聊天模型)](https://deepseek.com/)
+- [Atlas Cloud (聊天模型)](https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=anything-llm)
 - [Mistral](https://mistral.ai/)
 - [Groq](https://groq.com/)
 - [Cohere](https://cohere.com/)

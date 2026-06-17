@@ -36,6 +36,17 @@
 👉 AnythingLLM for desktop (Mac, Windows, & Linux)! <a href="https://anythingllm.com/download" target="_blank"> Download Now</a>
 </p>
 
+<!-- atlas-cloud-start -->
+<p align="center">
+  <a href="https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=anything-llm">
+    <img src="./images/atlas-cloud-logo.png" alt="Atlas Cloud" width="200">
+  </a>
+</p>
+
+> 🎁 **[Atlas Cloud](https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=anything-llm)** is a full-modal, OpenAI-compatible AI inference platform — plug it into AnythingLLM as a drop-in LLM provider to reach DeepSeek, Qwen, GLM, Kimi, MiniMax and more through a single API, no multi-vendor setup needed. Budget-friendly plans: [coding plan](https://www.atlascloud.ai/console/coding-plan).
+
+<!-- atlas-cloud-end -->
+
 Chat with your docs. Automate complex workflows with AI Agents. Hyper-configurable, multi-user ready, battle-tested—and runs locally by default with zero setup friction.
 
 ![Chatting](https://github.com/Mintplex-Labs/anything-llm/releases/download/v1.11.2/AnythingLLM720p.gif)
@@ -94,6 +105,7 @@ AnythingLLM supports multiple users as well where you can control the access and
 - [Perplexity (chat models)](https://www.perplexity.ai/)
 - [OpenRouter (chat models)](https://openrouter.ai/)
 - [DeepSeek (chat models)](https://deepseek.com/)
+- [Atlas Cloud (chat models)](https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=anything-llm)
 - [Mistral](https://mistral.ai/)
 - [Groq](https://groq.com/)
 - [Cohere](https://cohere.com/)

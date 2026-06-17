@@ -26,6 +26,7 @@ import CohereLogo from "@/media/llmprovider/cohere.png";
 import LiteLLMLogo from "@/media/llmprovider/litellm.png";
 import AWSBedrockLogo from "@/media/llmprovider/bedrock.png";
 import DeepSeekLogo from "@/media/llmprovider/deepseek.png";
+import AtlasCloudLogo from "@/media/llmprovider/atlascloud.png";
 import APIPieLogo from "@/media/llmprovider/apipie.png";
 import XAILogo from "@/media/llmprovider/xai.png";
 import ZAiLogo from "@/media/llmprovider/zai.png";
@@ -66,6 +67,7 @@ import TextGenWebUIOptions from "@/components/LLMSelection/TextGenWebUIOptions";
 import LiteLLMOptions from "@/components/LLMSelection/LiteLLMOptions";
 import AWSBedrockLLMOptions from "@/components/LLMSelection/AwsBedrockLLMOptions";
 import DeepSeekOptions from "@/components/LLMSelection/DeepSeekOptions";
+import AtlasCloudOptions from "@/components/LLMSelection/AtlasCloudOptions";
 import ApiPieLLMOptions from "@/components/LLMSelection/ApiPieOptions";
 import XAILLMOptions from "@/components/LLMSelection/XAiLLMOptions";
 import ZAiLLMOptions from "@/components/LLMSelection/ZAiLLMOptions";
@@ -290,6 +292,15 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <DeepSeekOptions settings={settings} />,
     description: "Run DeepSeek's powerful LLMs.",
     requiredConfig: ["DeepSeekApiKey"],
+  },
+  {
+    name: "Atlas Cloud",
+    value: "atlascloud",
+    logo: AtlasCloudLogo,
+    options: (settings) => <AtlasCloudOptions settings={settings} />,
+    description:
+      "One OpenAI-compatible API for DeepSeek, Qwen, GLM, Kimi, MiniMax & more.",
+    requiredConfig: ["AtlasCloudApiKey"],
   },
   {
     name: "PPIO",

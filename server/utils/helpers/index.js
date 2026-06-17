@@ -198,6 +198,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "deepseek":
       const { DeepSeekLLM } = require("../AiProviders/deepseek");
       return new DeepSeekLLM(embedder, model);
+    case "atlascloud":
+      const { AtlasCloudLLM } = require("../AiProviders/atlasCloud");
+      return new AtlasCloudLLM(embedder, model);
     case "apipie":
       const { ApiPieLLM } = require("../AiProviders/apipie");
       return new ApiPieLLM(embedder, model);
@@ -386,6 +389,9 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "deepseek":
       const { DeepSeekLLM } = require("../AiProviders/deepseek");
       return DeepSeekLLM;
+    case "atlascloud":
+      const { AtlasCloudLLM } = require("../AiProviders/atlasCloud");
+      return AtlasCloudLLM;
     case "apipie":
       const { ApiPieLLM } = require("../AiProviders/apipie");
       return ApiPieLLM;
@@ -491,6 +497,8 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE;
     case "deepseek":
       return process.env.DEEPSEEK_MODEL_PREF;
+    case "atlascloud":
+      return process.env.ATLAS_CLOUD_MODEL_PREF;
     case "apipie":
       return process.env.APIPIE_LLM_MODEL_PREF;
     case "novita":

@@ -692,6 +692,24 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // Atlas Cloud Options
+  AtlasCloudApiKey: {
+    envKey: "ATLAS_CLOUD_API_KEY",
+    checks: [isNotEmpty],
+  },
+  AtlasCloudModelPref: {
+    envKey: "ATLAS_CLOUD_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  AtlasCloudTokenLimit: {
+    envKey: "ATLAS_CLOUD_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+  AtlasCloudMaxTokens: {
+    envKey: "ATLAS_CLOUD_MAX_TOKENS",
+    checks: [nonZero],
+  },
+
   // Minimax Options
   MinimaxApiKey: {
     envKey: "MINIMAX_API_KEY",
@@ -1015,6 +1033,7 @@ function supportedLLM(input = "") {
     "generic-openai",
     "bedrock",
     "deepseek",
+    "atlascloud",
     "apipie",
     "xai",
     "nvidia-nim",

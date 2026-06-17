@@ -268,6 +268,14 @@ class Provider {
           apiKey: process.env.DEEPSEEK_API_KEY ?? null,
           ...config,
         });
+      case "atlascloud":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.atlascloud.ai/v1",
+          },
+          apiKey: process.env.ATLAS_CLOUD_API_KEY ?? null,
+          ...config,
+        });
       case "xai":
         return new ChatOpenAI({
           configuration: {

@@ -966,6 +966,12 @@ const SystemSettings = {
       DeepSeekApiKey: !!process.env.DEEPSEEK_API_KEY,
       DeepSeekModelPref: process.env.DEEPSEEK_MODEL_PREF,
 
+      // Atlas Cloud API Keys
+      AtlasCloudApiKey: !!process.env.ATLAS_CLOUD_API_KEY,
+      AtlasCloudModelPref: process.env.ATLAS_CLOUD_MODEL_PREF,
+      AtlasCloudTokenLimit: process.env.ATLAS_CLOUD_MODEL_TOKEN_LIMIT,
+      AtlasCloudMaxTokens: process.env.ATLAS_CLOUD_MAX_TOKENS,
+
       // APIPie LLM API Keys
       ApipieLLMApiKey: !!process.env.APIPIE_LLM_API_KEY,
       ApipieLLMModelPref: process.env.APIPIE_LLM_MODEL_PREF,
