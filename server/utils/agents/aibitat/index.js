@@ -839,7 +839,8 @@ ${this.getHistory({ to: route.to })
 
     // Fetch fresh parsed file context and inject into the last user message
     if (this.fetchParsedFileContext) {
-      const parsedContext = await this.fetchParsedFileContext();
+      const { context: parsedContext = "", sources: parsedSources = [] } =
+        (await this.fetchParsedFileContext()) || {};
       if (parsedContext) {
         // Find the last user message and append context to it
         for (let i = chatHistory.length - 1; i >= 0; i--) {
@@ -851,6 +852,21 @@ ${this.getHistory({ to: route.to })
             break;
           }
         }
+      }
+
+      // Surface the injected documents (drag-and-dropped/parsed files and
+      // pinned docs) as citations so they appear under the agent reply, the
+      // same way non-agent chat reports them. Dedupe against already-pending
+      // citations so reply() running multiple times within a single response
+      // (e.g. tool calls) does not cite the same document repeatedly.
+      if (parsedSources.length) {
+        const existingCitationIds = new Set(
+          this._pendingCitations.map((citation) => citation.id)
+        );
+        const newSources = parsedSources.filter(
+          (source) => !existingCitationIds.has(source.id)
+        );
+        if (newSources.length) this.addCitation(newSources);
       }
     }
 

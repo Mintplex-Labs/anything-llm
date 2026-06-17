@@ -14,6 +14,9 @@ const { AgentFlows } = require("../agentFlows");
 const MCPCompatibilityLayer = require("../MCP");
 const { getAndClearInvocationAttachments } = require("../chats/agents");
 const { DocumentManager } = require("../DocumentManager");
+const {
+  documentToCitationSource,
+} = require("./aibitat/utils/parsedFileSources");
 
 class AgentHandler {
   #invocationUUID;
@@ -712,7 +715,8 @@ class AgentHandler {
   /**
    * Fetch fresh parsed files and pinned documents, format them for injection into user messages.
    * Called on every chat turn to ensure context is always up-to-date.
-   * @returns {Promise<string>} Formatted context string to append to user message
+   * @returns {Promise<{context: string, sources: Array<{id: string, title: string, text: string, chunkSource: string, score: null}>}>}
+   * Formatted context string to append to the user message and the citation sources for the injected documents.
    */
   async #fetchParsedFileContext() {
     const user = this.invocation.user_id
@@ -738,14 +742,16 @@ class AgentHandler {
           ...(parsedFiles || []).map((doc) => ({
             name: doc.title || "Uploaded Document",
             content: doc.pageContent,
+            source: documentToCitationSource(doc, "Uploaded Document"),
           })),
           ...(pinnedDocs || []).map((doc) => ({
             name: doc.title || doc.metadata?.title || "Pinned Document",
             content: doc.pageContent,
+            source: documentToCitationSource(doc, "Pinned Document"),
           })),
         ];
 
-        if (allDocuments.length === 0) return "";
+        if (allDocuments.length === 0) return { context: "", sources: [] };
         if (parsedFiles?.length > 0)
           this.log(
             `Injecting ${parsedFiles.length} parsed file(s) into user message`
@@ -755,7 +761,7 @@ class AgentHandler {
             `Injecting ${pinnedDocs.length} pinned document(s) into user message`
           );
 
-        return (
+        const context =
           "\n\n<attached_documents>\n" +
           allDocuments
             .map((doc, i) => {
@@ -763,12 +769,13 @@ class AgentHandler {
               return `<document name="${filename}">\n${doc.content}\n</document>`;
             })
             .join("\n") +
-          "\n</attached_documents>"
-        );
+          "\n</attached_documents>";
+
+        return { context, sources: allDocuments.map((doc) => doc.source) };
       })
       .catch((e) => {
         this.log("Error fetching parsed file context", e.message);
-        return "";
+        return { context: "", sources: [] };
       });
   }
 

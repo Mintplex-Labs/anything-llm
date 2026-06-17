@@ -9,6 +9,9 @@ const { Workspace } = require("../../models/workspace");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { WorkspaceParsedFiles } = require("../../models/workspaceParsedFiles");
 const { DocumentManager } = require("../DocumentManager");
+const {
+  documentToCitationSource,
+} = require("./aibitat/utils/parsedFileSources");
 const { safeJsonParse } = require("../http");
 const {
   USER_AGENT,
@@ -425,10 +428,11 @@ class EphemeralAgentHandler extends AgentHandler {
   /**
    * Fetch fresh parsed files and pinned documents, format them for injection into user messages.
    * Called on every chat turn to ensure context is always up-to-date.
-   * @returns {Promise<string>} Formatted context string to append to user message
+   * @returns {Promise<{context: string, sources: Array<{id: string, title: string, text: string, chunkSource: string, score: null}>}>}
+   * Formatted context string to append to the user message and the citation sources for the injected documents.
    */
   async #fetchParsedFileContext() {
-    if (!this.#workspace) return "";
+    if (!this.#workspace) return { context: "", sources: [] };
 
     const user = this.#userId ? { id: this.#userId } : null;
     const thread = this.#threadId ? { id: this.#threadId } : null;
@@ -445,14 +449,16 @@ class EphemeralAgentHandler extends AgentHandler {
           ...(parsedFiles || []).map((doc) => ({
             name: doc.title || "Uploaded Document",
             content: doc.pageContent,
+            source: documentToCitationSource(doc, "Uploaded Document"),
           })),
           ...(pinnedDocs || []).map((doc) => ({
             name: doc.title || doc.metadata?.title || "Pinned Document",
             content: doc.pageContent,
+            source: documentToCitationSource(doc, "Pinned Document"),
           })),
         ];
 
-        if (allDocuments.length === 0) return "";
+        if (allDocuments.length === 0) return { context: "", sources: [] };
 
         if (parsedFiles?.length > 0)
           this.log(
@@ -463,7 +469,7 @@ class EphemeralAgentHandler extends AgentHandler {
             `Injecting ${pinnedDocs.length} pinned document(s) into user message`
           );
 
-        return (
+        const context =
           "\n\n<attached_documents>\n" +
           allDocuments
             .map((doc, i) => {
@@ -471,12 +477,13 @@ class EphemeralAgentHandler extends AgentHandler {
               return `<document name="${filename}">\n${doc.content}\n</document>`;
             })
             .join("\n") +
-          "\n</attached_documents>"
-        );
+          "\n</attached_documents>";
+
+        return { context, sources: allDocuments.map((doc) => doc.source) };
       })
       .catch((e) => {
         this.log("Error fetching parsed file context", e.message);
-        return "";
+        return { context: "", sources: [] };
       });
   }
 
