@@ -561,6 +561,10 @@ const KEY_MAPPING = {
     envKey: "AGENT_PERPLEXITY_API_KEY",
     checks: [],
   },
+  AgentBraveApiKey: {
+    envKey: "AGENT_BRAVE_API_KEY",
+    checks: [],
+  },
 
   // TTS/STT Integration ENVS
   TextToSpeechProvider: {
