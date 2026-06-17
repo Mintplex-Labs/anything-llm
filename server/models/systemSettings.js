@@ -164,6 +164,7 @@ const SystemSettings = {
             "duckduckgo-engine",
             "exa-search",
             "perplexity-search",
+            "brave-search",
           ].includes(update)
         )
           throw new Error("Invalid SERP provider.");
@@ -577,6 +578,7 @@ const SystemSettings = {
       AgentTavilyApiKey: !!process.env.AGENT_TAVILY_API_KEY || null,
       AgentExaApiKey: !!process.env.AGENT_EXA_API_KEY || null,
       AgentPerplexityApiKey: !!process.env.AGENT_PERPLEXITY_API_KEY || null,
+      AgentBraveApiKey: !!process.env.AGENT_BRAVE_API_KEY || null,
 
       // --------------------------------------------------------
       // Compliance Settings
