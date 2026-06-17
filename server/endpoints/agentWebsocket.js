@@ -6,10 +6,14 @@ const { AgentHandler } = require("../utils/agents");
 const {
   WEBSOCKET_BAIL_COMMANDS,
 } = require("../utils/agents/aibitat/plugins/websocket");
+const { skillFunctionNames } = require("../utils/agents/defaults");
 const { safeJsonParse } = require("../utils/http");
 
 // Setup listener for incoming messages to relay to socket so it can be handled by agent plugin.
 function relayToSocket(message) {
+  // Tool toggles can arrive while the agent is paused awaiting feedback/approval,
+  // so handle them first. The handler ignores (returns false for) any other message.
+  if (this.handleToolToggle?.(message)) return;
   if (this.handleFeedback) return this?.handleFeedback?.(message);
   if (this.handleToolApproval) return this?.handleToolApproval?.(message);
   if (this.handleClarificationResponse)
@@ -37,6 +41,26 @@ function agentWebsocket(app) {
         WorkspaceAgentInvocation.close(String(request.params.uuid));
         return;
       });
+
+      // Toggle a tool/skill on or off for the running agent mid-session.
+      // Resolves the UI identifier to its registered function name(s) and
+      // adds/removes them so the change applies on the agent's next turn.
+      socket.handleToolToggle = (data) => {
+        const payload = safeJsonParse(data, {});
+        if (payload?.type !== "agentToolToggle") return false;
+        if (!agentHandler.aibitat) return true;
+
+        const names = skillFunctionNames(payload.skill);
+        for (const name of names)
+          payload.enabled
+            ? agentHandler.aibitat.addFunction(name)
+            : agentHandler.aibitat.removeFunction(name);
+
+        agentHandler.log(
+          `${payload.enabled ? "Enabled" : "Disabled"} tool(s) [${names.join(", ")}] mid-session.`
+        );
+        return true;
+      };
 
       socket.checkBailCommand = (data) => {
         const content = safeJsonParse(data)?.feedback;

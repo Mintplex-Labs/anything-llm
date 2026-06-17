@@ -26,7 +26,6 @@ export default function SkillRow({
       type="button"
       className={classNames}
       onClick={() => !disabled && onToggle()}
-      data-tooltip-id={disabled ? "agent-skill-disabled-tooltip" : undefined}
     >
       <span className="text-xs text-white light:text-slate-900">{name}</span>
       <div className="pointer-events-none" aria-hidden="true">

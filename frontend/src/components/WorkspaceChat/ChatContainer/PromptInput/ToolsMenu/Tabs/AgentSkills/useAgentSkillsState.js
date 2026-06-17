@@ -6,6 +6,7 @@ import AgentFlows from "@/models/agentFlows";
 import MCPServers from "@/models/mcpServers";
 import { getSubSkillPreferenceKeys } from "./skillRegistry";
 import useSubSkillPreferences from "./useSubSkillPreferences";
+import { toggleAgentSessionTool } from "@/utils/chat/agent";
 
 /**
  * Core hook for managing all agent skill state.
@@ -91,6 +92,7 @@ export default function useAgentSkillsState(defaultSkills) {
     async (key) => {
       const toggleItem = (arr, item) =>
         arr.includes(item) ? arr.filter((s) => s !== item) : [...arr, item];
+      const newEnabled = !isSkillEnabled(key);
 
       if (key in defaultSkills) {
         const updated = toggleItem(disabledDefaults, key);
@@ -99,6 +101,7 @@ export default function useAgentSkillsState(defaultSkills) {
           disabled_agent_skills: updated.join(","),
           default_agent_skills: enabledConfigurable.join(","),
         });
+        toggleAgentSessionTool(key, newEnabled);
         return;
       }
 
@@ -108,8 +111,9 @@ export default function useAgentSkillsState(defaultSkills) {
         disabled_agent_skills: disabledDefaults.join(","),
         default_agent_skills: updated.join(","),
       });
+      toggleAgentSessionTool(key, newEnabled);
     },
-    [defaultSkills, disabledDefaults, enabledConfigurable]
+    [defaultSkills, disabledDefaults, enabledConfigurable, isSkillEnabled]
   );
 
   const toggleImportedSkill = useCallback(async (skill) => {
@@ -120,6 +124,7 @@ export default function useAgentSkillsState(defaultSkills) {
       )
     );
     await AgentPlugins.toggleFeature(skill.hubId, newActive);
+    toggleAgentSessionTool(skill.hubId, newActive);
   }, []);
 
   const toggleFlow = useCallback(async (flow) => {
@@ -128,6 +133,7 @@ export default function useAgentSkillsState(defaultSkills) {
       prev.map((f) => (f.uuid === flow.uuid ? { ...f, active: newActive } : f))
     );
     await AgentFlows.toggleFlow(flow.uuid, newActive);
+    toggleAgentSessionTool(`@@flow_${flow.uuid}`, newActive);
   }, []);
 
   const toggleMcpTool = useCallback(
@@ -154,6 +160,7 @@ export default function useAgentSkillsState(defaultSkills) {
         });
       });
       await MCPServers.toggleTool(serverName, toolName, newEnabled);
+      toggleAgentSessionTool(`${serverName}-${toolName}`, newEnabled);
     },
     []
   );

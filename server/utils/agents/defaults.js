@@ -189,8 +189,33 @@ async function agentSkillsFromSystemSettings() {
   return systemFunctions;
 }
 
+/**
+ * Resolve a UI skill/tool identifier to the aibitat function name(s) it registers.
+ * Multi-stage plugins (e.g. sql-agent) expand to each child function name; flows
+ * resolve by uuid; everything else (single skills, MCP `<server>-<tool>`, imported
+ * hubIds, sub-skill child names) maps to itself. Used to toggle tools on/off for a
+ * live agent session over the websocket.
+ * @param {string} skill - Skill key, `@@flow_<uuid>`, MCP tool name, hubId, or sub-skill name.
+ * @returns {string[]} The registered function names to add/remove.
+ */
+function skillFunctionNames(skill = "") {
+  if (skill.startsWith("@@flow_")) {
+    const uuid = skill.replace("@@flow_", "");
+    const flow = AgentFlows.loadFlow(uuid);
+    if (!flow) return [];
+    return [AgentFlows.sanitizeToolName(flow.name) || `flow_${uuid}`];
+  }
+
+  const plugin = AgentPlugins[skill];
+  if (!plugin) return [skill];
+  if (Array.isArray(plugin.plugin))
+    return plugin.plugin.map((child) => child.name);
+  return [plugin.name];
+}
+
 module.exports = {
   USER_AGENT,
   WORKSPACE_AGENT,
   agentSkillsFromSystemSettings,
+  skillFunctionNames,
 };
