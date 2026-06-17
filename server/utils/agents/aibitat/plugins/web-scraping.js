@@ -99,6 +99,22 @@ const webScraping = {
             this.super.introspect(
               `${this.caller}: Scraping the content of ${url}`
             );
+
+            // The URL here comes from model output (a tool call) and can be
+            // steered by prompt injection, so unlike user-submitted document
+            // collector URLs it must not be allowed to reach internal hosts by
+            // default. Operators can opt back in with COLLECTOR_ALLOW_ANY_IP=true.
+            const { assertSafeAgentUrl } = require("../utils/ssrf");
+            const safety = await assertSafeAgentUrl(url);
+            if (!safety.ok) {
+              this.super.introspect(
+                `${this.caller}: refused to scrape ${url} - ${safety.reason}`
+              );
+              throw new Error(
+                `URL could not be scraped: ${safety.reason} If this is an internal service you intended to reach, set COLLECTOR_ALLOW_ANY_IP=true.`
+              );
+            }
+
             const { success, content } =
               await new CollectorApi().getLinkContent(url);
 
