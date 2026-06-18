@@ -565,6 +565,14 @@ const KEY_MAPPING = {
     envKey: "AGENT_BRAVE_API_KEY",
     checks: [],
   },
+  AgentCrwApiKey: {
+    envKey: "AGENT_CRW_API_KEY",
+    checks: [],
+  },
+  AgentCrwApiUrl: {
+    envKey: "AGENT_CRW_API_URL",
+    checks: [],
+  },
 
   // TTS/STT Integration ENVS
   TextToSpeechProvider: {
