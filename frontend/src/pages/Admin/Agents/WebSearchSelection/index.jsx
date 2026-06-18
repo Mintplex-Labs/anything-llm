@@ -11,6 +11,7 @@ import TavilySearchIcon from "./icons/tavily.svg";
 import DuckDuckGoIcon from "./icons/duckduckgo.png";
 import ExaIcon from "./icons/exa.png";
 import PerplexitySearchIcon from "./icons/perplexity.png";
+import BraveSearchIcon from "./icons/brave.png";
 import {
   CaretUpDown,
   MagnifyingGlass,
@@ -32,6 +33,7 @@ import {
   DuckDuckGoOptions,
   ExaSearchOptions,
   PerplexitySearchOptions,
+  BraveSearchOptions,
 } from "./SearchProviderOptions";
 
 const SEARCH_PROVIDERS = [
@@ -41,6 +43,13 @@ const SEARCH_PROVIDERS = [
     logo: DuckDuckGoIcon,
     options: () => <DuckDuckGoOptions />,
     description: "Free and privacy-focused web search using DuckDuckGo.",
+  },
+  {
+    name: "Brave Search",
+    value: "brave-search",
+    logo: BraveSearchIcon,
+    options: (settings) => <BraveSearchOptions settings={settings} />,
+    description: "Web search powered by the Brave Search API.",
   },
   {
     name: "SerpApi",

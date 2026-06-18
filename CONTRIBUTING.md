@@ -88,7 +88,7 @@ The core library is written in Node.js. There are additional sub-repositories fo
 
 * `server`: Node.js server source code
 * `frontend`: React frontend source code
-* `collector`: Python collector source code
+* `collector`: Node.js collector source code
 
 ## Release process
 
@@ -99,6 +99,47 @@ When a new version is released, the following steps are taken a new image is bui
 ### Desktop propagation
 
 Changes to the desktop app are downstream of the core AnythingLLM project. Releases of the desktop app are published at the same time as the core AnythingLLM project. Code from the core AnythingLLM project is copied into the desktop app into an Electron wrapper. The Electron wrapper that wraps around the core AnythingLLM project is **not** part of the core AnythingLLM project, but is maintained by the AnythingLLM team.
+
+## 🔌 Criteria for New LLM Providers
+
+To ensure the long-term maintainability of AnythingLLM and prevent repository bloat, we enforce a vetting process for adding new third-party LLM provider integrations. 
+
+With thousands of new wrapper API services launching daily, we do not accept dedicated integrations for services that lack an established user base or offer no unique technical utility over our existing generic connectors which should be sufficient for most use cases.
+
+While we understand everyone has to start somewhere, we cannot maintain a repository with thousands of **bespoke** LLM integrations that functionally are no different from one another. We want to keep the repository as clean and maintainable as possible since 99% of contributors for this specific integration do their integration PR and never contribute again.
+
+> 🤝 **Strategic Partnership Exception:** 
+> These guidelines apply strictly to unsolicited community or third-party startup contributions. If you are an ecosystem, silicon, or cloud hardware partner engaging directly with the Mintplex Labs core team on a co-developed integration, proof-of-concept, or native optimization project, this vetting process is not applicable.
+
+Before opening an unsolicited issue or submitting a Pull Request for a new provider, it **must** meet both the Technical and Market Viability thresholds below.
+
+### 1. Technical Threshold
+We do not accept dedicated integration code for providers whose API architecture mimics existing standards.
+
+* **The OpenAI-Compatibility Rule:** If your service utilizes the OpenAI SDK, standard OpenAI API schema (eg: `/v1/chat/completions`, `/models`) without requiring unique orchestration logic, **it will be rejected.** Users must connect to your service using our generic **OpenAI Compatible** or **Generic API** connectors.
+* **To qualify for a dedicated integration, the PR must prove:**
+  * **Custom Authentication:** Requires a complex, multi-step auth flow or custom request signing (e.g., AWS SigV4) that standard bearer tokens/headers cannot support.
+  * **Proprietary SDK/Payloads:** Relies on a distinct, widely adopted native SDK with a JSON schema that cannot be cleanly mapped to our generic layers.
+  * **Unique Architectural Features:** Exposes critical, native platform capabilities (e.g., custom server-side routing nodes or proprietary hyper-parameters) that are completely lost when forced through a generic wrapper.
+
+### 2. Market Viability Threshold
+We cannot act as a discovery or marketing engine for early-stage startups. To qualify for codebase inclusion, a provider must demonstrate an active, existing user base who would benefit from AnythingLLM's functionality. Any of the following criteria are acceptable:
+
+* **Community Demand:** An integration issue request must accumulate a minimum of **20 organic upvotes (`+1` reactions)** from unique GitHub users before a PR will be reviewed. 
+* **Footprint Metrics:** The provider or core underlying model organization must possess a verifiable footprint (e.g., `50,000` aggregate downloads on Hugging Face, or `1,000` stars on its core open-source repository).
+* **Operational Longevity:** The provider's production API must be publicly accessible and stable for a minimum of **90 days**. We do not accept integrations for services that launched less than 90 days ago.
+
+## 🤖 AI Use in Contributions
+
+We are an AI company — we obviously use AI tools and expect contributors do too. However, we believe in **AI-augmented engineers**, not AI-replaced engineers. There is a difference between using an LLM to help you write code and having an LLM write code for you.
+
+### What will get your PR closed immediately
+
+1. **LLM-generated tests that don't test your code.** If your tests are clearly auto-generated boilerplate that blindly asserts unrelated functionality (e.g., testing the Node.js `fs` module instead of the feature you changed), your PR will be closed. Tests should demonstrate that you understand the code you wrote and that it works. It is not our job to understand the code your LLM generated, but it becomes our responsibility to maintain it forever.
+
+2. **`Claude Code` or similar agent signatures in your commit history.** In our view, a commit history full of autonomous agent commits signals low-effort work and a lack of craft or care in the functionality being contributed. We take pride in what we ship and expect the same from contributors. Use an LLM to help you think, draft, and iterate — but the work should be yours, reviewed by you, and committed by you.
+
+We are not anti-AI. We are anti-low-effort. If it looks like you prompted an agent, accepted the output without scrutiny, and opened a PR — we will close it to preserve our time and resources.
 
 ## License
 
