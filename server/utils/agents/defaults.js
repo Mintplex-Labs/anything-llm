@@ -190,32 +190,72 @@ async function agentSkillsFromSystemSettings() {
 }
 
 /**
- * Resolve a UI skill/tool identifier to the aibitat function name(s) it registers.
- * Multi-stage plugins (e.g. sql-agent) expand to each child function name; flows
- * resolve by uuid; everything else (single skills, MCP `<server>-<tool>`, imported
- * hubIds, sub-skill child names) maps to itself. Used to toggle tools on/off for a
- * live agent session over the websocket.
- * @param {string} skill - Skill key, `@@flow_<uuid>`, MCP tool name, hubId, or sub-skill name.
- * @returns {string[]} The registered function names to add/remove.
+ * Resolve a UI skill/tool identifier into the names needed to toggle it on a live
+ * agent session. `loadable` are the funcsToLoad-style identifiers handed to the
+ * plugin loader to (re)register the tool via `aibitat.use()`; `registered` are the
+ * resulting `aibitat.functions` Map keys to delete when disabling.
+ *
+ * Handles flows (`@@flow_<uuid>`), multi-stage parents (e.g. sql-agent -> each
+ * child), imported hubIds, MCP server tools, single built-ins, and sub-skill
+ * child names.
+ * @param {string} skill - Skill key, `@@flow_<uuid>`, MCP `<server>-<tool>`, hubId, or sub-skill name.
+ * @param {object} [opts]
+ * @param {string|null} [opts.serverName] - MCP server name; required to enable an MCP tool.
+ * @returns {{ loadable: string[], registered: string[] }}
  */
-function skillFunctionNames(skill = "") {
+function resolveAgentSkill(skill = "", { serverName = null } = {}) {
+  // Flow tool: loaded by `@@flow_<uuid>`, registered under its sanitized tool name.
   if (skill.startsWith("@@flow_")) {
     const uuid = skill.replace("@@flow_", "");
     const flow = AgentFlows.loadFlow(uuid);
-    if (!flow) return [];
-    return [AgentFlows.sanitizeToolName(flow.name) || `flow_${uuid}`];
+    if (!flow) return { loadable: [], registered: [] };
+    return {
+      loadable: [skill],
+      registered: [AgentFlows.sanitizeToolName(flow.name) || `flow_${uuid}`],
+    };
   }
 
+  // MCP server tool (`<server>-<tool>`): the Map key matches the UI id exactly.
+  // Enabling reloads the server so the current suppression state is respected.
+  if (serverName)
+    return { loadable: [`@@mcp_${serverName}`], registered: [skill] };
+
+  // Top-level built-in skill.
   const plugin = AgentPlugins[skill];
-  if (!plugin) return [skill];
-  if (Array.isArray(plugin.plugin))
-    return plugin.plugin.map((child) => child.name);
-  return [plugin.name];
+  if (plugin) {
+    // Multi-stage plugin (e.g. sql-agent) registers one function per child.
+    if (Array.isArray(plugin.plugin))
+      return {
+        loadable: plugin.plugin.map((c) => `${plugin.name}#${c.name}`),
+        registered: plugin.plugin.map((c) => c.name),
+      };
+    return { loadable: [plugin.name], registered: [plugin.name] };
+  }
+
+  // Imported plugin referenced by hubId (registered under the hubId itself).
+  if (ImportedPlugin.validateImportedPluginHandler(skill))
+    return { loadable: [`@@${skill}`], registered: [skill] };
+
+  // Sub-skill child name (e.g. a filesystem-agent child): find its parent so the
+  // loader can attach just that child via the `parent#child` convention.
+  for (const key of Object.keys(AgentPlugins)) {
+    const parent = AgentPlugins[key];
+    if (!Array.isArray(parent?.plugin)) continue;
+    const child = parent.plugin.find((c) => c.name === skill);
+    if (child)
+      return {
+        loadable: [`${parent.name}#${child.name}`],
+        registered: [child.name],
+      };
+  }
+
+  // Fallback: treat the id as both the loadable entry and the registered name.
+  return { loadable: [skill], registered: [skill] };
 }
 
 module.exports = {
   USER_AGENT,
   WORKSPACE_AGENT,
   agentSkillsFromSystemSettings,
-  skillFunctionNames,
+  resolveAgentSkill,
 };

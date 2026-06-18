@@ -160,7 +160,11 @@ export default function useAgentSkillsState(defaultSkills) {
         });
       });
       await MCPServers.toggleTool(serverName, toolName, newEnabled);
-      toggleAgentSessionTool(`${serverName}-${toolName}`, newEnabled);
+      toggleAgentSessionTool(
+        `${serverName}-${toolName}`,
+        newEnabled,
+        serverName
+      );
     },
     []
   );

@@ -87,6 +87,20 @@ const websocket = {
           },
         };
 
+        // Toggle a tool/skill on or off for the running agent mid-session. The
+        // change applies on the agent's next turn. Returns true once handled so
+        // the socket message router stops further dispatch.
+        socket.handleToolToggle = (message) => {
+          const data = safeJsonParse(message, {});
+          if (data?.type !== "agentToolToggle") return false;
+          aibitat.toggleAgentTool?.({
+            skill: data.skill,
+            enabled: data.enabled,
+            serverName: data.serverName || null,
+          });
+          return true;
+        };
+
         /**
          * Request user approval before executing a tool/skill.
          * This sends a request to the frontend and blocks until the user responds.

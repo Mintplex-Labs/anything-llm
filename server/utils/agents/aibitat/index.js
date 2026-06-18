@@ -42,10 +42,6 @@ class AIbitat {
   channels = new Map();
   functions = new Map();
 
-  // Functions removed mid-session via removeFunction(), retained so they can be
-  // restored by addFunction() when a tool is toggled back on during a live session.
-  _removedFunctions = new Map();
-
   /**
    * Buffer for citations collected during tool execution.
    * Citations are flushed to the frontend when the response is finalized.
@@ -1439,28 +1435,13 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
   }
 
   /**
-   * Remove a registered function so agents can no longer call it. The definition
-   * is retained so it can be restored via addFunction(). Used to disable a tool
-   * mid-session over the websocket; takes effect on the agent's next turn.
+   * Remove a registered function so the agent can no longer call it on its next
+   * turn. Used to disable a tool mid-session; restore it by re-running its plugin
+   * via aibitat.use().
    * @param {string} functionName - The registered name of the function to remove.
    */
   removeFunction(functionName) {
-    if (!this.functions.has(functionName)) return this;
-    this._removedFunctions.set(functionName, this.functions.get(functionName));
     this.functions.delete(functionName);
-    return this;
-  }
-
-  /**
-   * Restore a function previously removed via removeFunction() so agents can call
-   * it again. No-op if it was never removed (e.g. disabled before the session
-   * started and never loaded). Takes effect on the agent's next turn.
-   * @param {string} functionName - The registered name of the function to restore.
-   */
-  addFunction(functionName) {
-    if (!this._removedFunctions.has(functionName)) return this;
-    this.functions.set(functionName, this._removedFunctions.get(functionName));
-    this._removedFunctions.delete(functionName);
     return this;
   }
 }

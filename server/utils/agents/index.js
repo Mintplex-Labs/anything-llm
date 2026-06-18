@@ -8,7 +8,11 @@ const { User } = require("../../models/user");
 const { Workspace } = require("../../models/workspace");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { safeJsonParse } = require("../http");
-const { USER_AGENT, WORKSPACE_AGENT } = require("./defaults");
+const {
+  USER_AGENT,
+  WORKSPACE_AGENT,
+  resolveAgentSkill,
+} = require("./defaults");
 const ImportedPlugin = require("./imported");
 const { AgentFlows } = require("../agentFlows");
 const MCPCompatibilityLayer = require("../MCP");
@@ -18,6 +22,9 @@ const { DocumentManager } = require("../DocumentManager");
 class AgentHandler {
   #invocationUUID;
   #funcsToLoad = [];
+  // Startup args (socket, etc.) retained so tools toggled on mid-session can be
+  // loaded with the same options used at session start.
+  #args = null;
   invocation = null;
   aibitat = null;
   channel = null;
@@ -543,138 +550,176 @@ class AgentHandler {
   }
 
   async #attachPlugins(args) {
-    for (const name of this.#funcsToLoad) {
-      // Load child plugin
-      if (name.includes("#")) {
-        const [parent, childPluginName] = name.split("#");
-        if (!Object.prototype.hasOwnProperty.call(AgentPlugins, parent)) {
-          this.log(
-            `${parent} is not a valid plugin. Skipping inclusion to agent cluster.`
-          );
-          continue;
-        }
+    for (const name of this.#funcsToLoad)
+      await this.#attachPluginByName(name, args);
+  }
 
-        const childPlugin = AgentPlugins[parent].plugin.find(
-          (child) => child.name === childPluginName
-        );
-        if (!childPlugin) {
-          this.log(
-            `${parent} does not have child plugin named ${childPluginName}. Skipping inclusion to agent cluster.`
-          );
-          continue;
-        }
-
-        const callOpts = this.parseCallOptions(
-          args,
-          childPlugin?.startupConfig?.params,
-          name
-        );
-        this.aibitat.use(childPlugin.plugin(callOpts));
+  /**
+   * Load a single plugin (by its funcsToLoad-style identifier) onto the live
+   * aibitat instance. Used both at session start by #attachPlugins and when a
+   * tool is toggled on mid-session.
+   * @param {string} name - The plugin identifier (plain, `parent#child`, `@@flow_<uuid>`, `@@mcp_<server>`, or `@@<hubId>`).
+   * @param {object} args - Startup args (socket, etc.) used to resolve call options.
+   */
+  async #attachPluginByName(name, args) {
+    // Load child plugin
+    if (name.includes("#")) {
+      const [parent, childPluginName] = name.split("#");
+      if (!Object.prototype.hasOwnProperty.call(AgentPlugins, parent)) {
         this.log(
-          `Attached ${parent}:${childPluginName} plugin to Agent cluster`
+          `${parent} is not a valid plugin. Skipping inclusion to agent cluster.`
         );
-        continue;
+        return;
       }
 
-      // Load flow plugin. This is marked by `@@flow_` in the array of functions to load.
-      // Replace the @@flow_ placeholder in the agent's function list with the actual
-      // tool name so the function lookup in reply() can find it.
-      if (name.startsWith("@@flow_")) {
-        const uuid = name.replace("@@flow_", "");
-        const plugin = AgentFlows.loadFlowPlugin(uuid, this.aibitat);
-        if (!plugin) {
-          this.log(
-            `Flow ${uuid} not found in flows directory. Skipping inclusion to agent cluster.`
-          );
-          continue;
-        }
-
-        this.aibitat.agents.get("@agent").functions = this.aibitat.agents
-          .get("@agent")
-          .functions.filter((f) => f !== name);
-        this.aibitat.agents.get("@agent").functions.push(plugin.name);
-
-        this.aibitat.use(plugin.plugin());
+      const childPlugin = AgentPlugins[parent].plugin.find(
+        (child) => child.name === childPluginName
+      );
+      if (!childPlugin) {
         this.log(
-          `Attached flow ${plugin.name} (${plugin.flowName}) plugin to Agent cluster`
+          `${parent} does not have child plugin named ${childPluginName}. Skipping inclusion to agent cluster.`
         );
-        continue;
-      }
-
-      // Load MCP plugin. This is marked by `@@mcp_` in the array of functions to load.
-      // All sub-tools are loaded here and are denoted by `pluginName:toolName` as their identifier.
-      // This will replace the parent MCP server plugin with the sub-tools as child plugins so they
-      // can be called directly by the agent when invoked.
-      // Since to get to this point, the `activeMCPServers` method has already been called, we can
-      // safely assume that the MCP server is running and the tools are available/loaded.
-      if (name.startsWith("@@mcp_")) {
-        const mcpPluginName = name.replace("@@mcp_", "");
-        const plugins =
-          await new MCPCompatibilityLayer().convertServerToolsToPlugins(
-            mcpPluginName,
-            this.aibitat
-          );
-        if (!plugins) {
-          this.log(
-            `MCP ${mcpPluginName} not found in MCP server config. Skipping inclusion to agent cluster.`
-          );
-          continue;
-        }
-
-        // Remove the old function from the agent functions directly
-        // and push the new ones onto the end of the array so that they are loaded properly.
-        this.aibitat.agents.get("@agent").functions = this.aibitat.agents
-          .get("@agent")
-          .functions.filter((f) => f.name !== name);
-        for (const plugin of plugins)
-          this.aibitat.agents.get("@agent").functions.push(plugin.name);
-
-        plugins.forEach((plugin) => {
-          this.aibitat.use(plugin.plugin());
-          this.log(
-            `Attached MCP::${plugin.toolName} MCP tool to Agent cluster`
-          );
-        });
-        continue;
-      }
-
-      // Load imported plugin. This is marked by `@@` in the array of functions to load.
-      // and is the @@hubID of the plugin.
-      if (name.startsWith("@@")) {
-        const hubId = name.replace("@@", "");
-        const valid = ImportedPlugin.validateImportedPluginHandler(hubId);
-        if (!valid) {
-          this.log(
-            `Imported plugin by hubId ${hubId} not found in plugin directory. Skipping inclusion to agent cluster.`
-          );
-          continue;
-        }
-
-        const plugin = ImportedPlugin.loadPluginByHubId(hubId);
-        const callOpts = plugin.parseCallOptions();
-        this.aibitat.use(plugin.plugin(callOpts));
-        this.log(
-          `Attached ${plugin.name} (${hubId}) imported plugin to Agent cluster`
-        );
-        continue;
-      }
-
-      // Load single-stage plugin.
-      if (!Object.prototype.hasOwnProperty.call(AgentPlugins, name)) {
-        this.log(
-          `${name} is not a valid plugin. Skipping inclusion to agent cluster.`
-        );
-        continue;
+        return;
       }
 
       const callOpts = this.parseCallOptions(
         args,
-        AgentPlugins[name].startupConfig.params
+        childPlugin?.startupConfig?.params,
+        name
       );
-      const AIbitatPlugin = AgentPlugins[name];
-      this.aibitat.use(AIbitatPlugin.plugin(callOpts));
-      this.log(`Attached ${name} plugin to Agent cluster`);
+      this.aibitat.use(childPlugin.plugin(callOpts));
+      this.log(`Attached ${parent}:${childPluginName} plugin to Agent cluster`);
+      return;
     }
+
+    // Load flow plugin. This is marked by `@@flow_` in the array of functions to load.
+    // Replace the @@flow_ placeholder in the agent's function list with the actual
+    // tool name so the function lookup in reply() can find it.
+    if (name.startsWith("@@flow_")) {
+      const uuid = name.replace("@@flow_", "");
+      const plugin = AgentFlows.loadFlowPlugin(uuid, this.aibitat);
+      if (!plugin) {
+        this.log(
+          `Flow ${uuid} not found in flows directory. Skipping inclusion to agent cluster.`
+        );
+        return;
+      }
+
+      this.aibitat.agents.get("@agent").functions = this.aibitat.agents
+        .get("@agent")
+        .functions.filter((f) => f !== name);
+      this.aibitat.agents.get("@agent").functions.push(plugin.name);
+
+      this.aibitat.use(plugin.plugin());
+      this.log(
+        `Attached flow ${plugin.name} (${plugin.flowName}) plugin to Agent cluster`
+      );
+      return;
+    }
+
+    // Load MCP plugin. This is marked by `@@mcp_` in the array of functions to load.
+    // All sub-tools are loaded here and are denoted by `pluginName:toolName` as their identifier.
+    // This will replace the parent MCP server plugin with the sub-tools as child plugins so they
+    // can be called directly by the agent when invoked.
+    // Since to get to this point, the `activeMCPServers` method has already been called, we can
+    // safely assume that the MCP server is running and the tools are available/loaded.
+    if (name.startsWith("@@mcp_")) {
+      const mcpPluginName = name.replace("@@mcp_", "");
+      const plugins =
+        await new MCPCompatibilityLayer().convertServerToolsToPlugins(
+          mcpPluginName,
+          this.aibitat
+        );
+      if (!plugins) {
+        this.log(
+          `MCP ${mcpPluginName} not found in MCP server config. Skipping inclusion to agent cluster.`
+        );
+        return;
+      }
+
+      // Remove the old function from the agent functions directly
+      // and push the new ones onto the end of the array so that they are loaded properly.
+      this.aibitat.agents.get("@agent").functions = this.aibitat.agents
+        .get("@agent")
+        .functions.filter((f) => f.name !== name);
+      for (const plugin of plugins)
+        this.aibitat.agents.get("@agent").functions.push(plugin.name);
+
+      plugins.forEach((plugin) => {
+        this.aibitat.use(plugin.plugin());
+        this.log(`Attached MCP::${plugin.toolName} MCP tool to Agent cluster`);
+      });
+      return;
+    }
+
+    // Load imported plugin. This is marked by `@@` in the array of functions to load.
+    // and is the @@hubID of the plugin.
+    if (name.startsWith("@@")) {
+      const hubId = name.replace("@@", "");
+      const valid = ImportedPlugin.validateImportedPluginHandler(hubId);
+      if (!valid) {
+        this.log(
+          `Imported plugin by hubId ${hubId} not found in plugin directory. Skipping inclusion to agent cluster.`
+        );
+        return;
+      }
+
+      const plugin = ImportedPlugin.loadPluginByHubId(hubId);
+      const callOpts = plugin.parseCallOptions();
+      this.aibitat.use(plugin.plugin(callOpts));
+      this.log(
+        `Attached ${plugin.name} (${hubId}) imported plugin to Agent cluster`
+      );
+      return;
+    }
+
+    // Load single-stage plugin.
+    if (!Object.prototype.hasOwnProperty.call(AgentPlugins, name)) {
+      this.log(
+        `${name} is not a valid plugin. Skipping inclusion to agent cluster.`
+      );
+      return;
+    }
+
+    const callOpts = this.parseCallOptions(
+      args,
+      AgentPlugins[name].startupConfig.params
+    );
+    const AIbitatPlugin = AgentPlugins[name];
+    this.aibitat.use(AIbitatPlugin.plugin(callOpts));
+    this.log(`Attached ${name} plugin to Agent cluster`);
+  }
+
+  /**
+   * Toggle a tool/skill on or off for the running agent mid-session. Enabling
+   * loads the plugin(s) via aibitat.use() and ensures the agent can reference
+   * them; disabling pops the registered function(s) off the aibitat functions
+   * Map. Changes apply on the agent's next turn. Registered on the aibitat
+   * instance as `toggleAgentTool` so the websocket plugin can call it.
+   * @param {object} params
+   * @param {string} params.skill - Skill key, `@@flow_<uuid>`, MCP `<server>-<tool>`, hubId, or sub-skill name.
+   * @param {boolean} [params.enabled=true] - Whether the tool should be enabled.
+   * @param {string|null} [params.serverName=null] - MCP server name; required to enable an MCP tool.
+   */
+  async #toggleAgentTool({ skill, enabled = true, serverName = null }) {
+    if (!skill || !this.aibitat?.agents.has(WORKSPACE_AGENT.name)) return;
+    const { loadable, registered } = resolveAgentSkill(skill, { serverName });
+    const agent = () => this.aibitat.agents.get(WORKSPACE_AGENT.name);
+
+    if (enabled) {
+      for (const entry of loadable) {
+        if (!agent().functions.includes(entry)) agent().functions.push(entry);
+        await this.#attachPluginByName(entry, this.#args);
+      }
+      // Dedupe in case re-enabling a flow/MCP tool re-pushed a name already
+      // resolved into the agent's function list at session start.
+      agent().functions = [...new Set(agent().functions)];
+      this.log(`Enabled tool(s) [${registered.join(", ")}] mid-session.`);
+      return;
+    }
+
+    for (const name of registered) this.aibitat.removeFunction(name);
+    this.log(`Disabled tool(s) [${registered.join(", ")}] mid-session.`);
   }
 
   async #loadAgents() {
@@ -777,6 +822,7 @@ class AgentHandler {
       socket: null,
     }
   ) {
+    this.#args = args;
     this.aibitat = new AIbitat({
       provider: this.provider ?? "openai",
       model: this.model ?? "gpt-4o",
@@ -791,6 +837,10 @@ class AgentHandler {
     // Register callback to fetch fresh parsed file context on each chat turn
     // This injects parsed files into user messages instead of system prompt
     this.aibitat.fetchParsedFileContext = () => this.#fetchParsedFileContext();
+
+    // Register callback so the websocket plugin can toggle tools on/off for the
+    // running agent mid-session.
+    this.aibitat.toggleAgentTool = (payload) => this.#toggleAgentTool(payload);
 
     // If the workspace uses the model router, attach a resolver so routing
     // is re-evaluated on every agent turn instead of only at initialization.

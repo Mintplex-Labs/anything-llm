@@ -376,11 +376,12 @@ export function setAgentSessionSocket(socket) {
  * No-op when there is no open agent session.
  * @param {string} skill - Skill key, `@@flow_<uuid>`, MCP `<server>-<tool>`, hubId, or sub-skill name.
  * @param {boolean} enabled - Whether the tool should be enabled.
+ * @param {string|null} [serverName] - MCP server name; required to enable an MCP tool mid-session.
  */
-export function toggleAgentSessionTool(skill, enabled) {
+export function toggleAgentSessionTool(skill, enabled, serverName = null) {
   if (_agentSessionSocket?.readyState !== WebSocket.OPEN) return;
   _agentSessionSocket.send(
-    JSON.stringify({ type: "agentToolToggle", skill, enabled })
+    JSON.stringify({ type: "agentToolToggle", skill, enabled, serverName })
   );
 }
 
