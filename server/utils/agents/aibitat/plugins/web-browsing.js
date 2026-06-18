@@ -1253,14 +1253,7 @@ const webBrowsing = {
             );
             return result;
           },
-          /**
-           * Use fastCRW Search
-           * fastCRW is a Firecrawl-compatible web data engine in a single Rust binary.
-           * Self-host (free) or use the managed cloud at https://fastcrw.com.
-           * The cloud base URL defaults to https://fastcrw.com/api; set
-           * AGENT_CRW_API_URL to point at a self-hosted server instead.
-           * https://fastcrw.com/
-           */
+
           _crwSearch: async function (query) {
             if (!process.env.AGENT_CRW_API_KEY) {
               this.super.introspect(
@@ -1275,19 +1268,26 @@ const webBrowsing = {
               }"`
             );
 
-            const baseUrl = (
-              process.env.AGENT_CRW_API_URL || "https://fastcrw.com/api"
-            ).replace(/\/+$/, "");
-            const url = `${baseUrl}/v1/search`;
-            const { response, error } = await fetch(url, {
+            let baseUrl = "https://fastcrw.com/api";
+            if ("AGENT_CRW_API_URL" in process.env) {
+              try {
+                baseUrl = new URL(process.env.AGENT_CRW_API_URL);
+                baseUrl.pathname = ""; // remove the trailing slash or any other path
+                baseUrl = baseUrl.toString();
+              } catch (e) {
+                this.super.handlerProps.log(
+                  `invalid fastCRW Search URL: ${e.message}`
+                );
+              }
+            }
+
+            const { response, error } = await fetch(`${baseUrl}/v1/search`, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${process.env.AGENT_CRW_API_KEY}`,
               },
-              body: JSON.stringify({
-                query: query,
-              }),
+              body: JSON.stringify({ query }),
             })
               .then((res) => {
                 if (res.ok) return res.json();

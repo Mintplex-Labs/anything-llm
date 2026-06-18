@@ -390,6 +390,15 @@ export function CrwSearchOptions({ settings }) {
         >
           from fastCRW.
         </a>
+        You can also{" "}
+        <a
+          href="https://github.com/us/crw"
+          target="_blank"
+          rel="noreferrer"
+          className="text-blue-300 underline"
+        >
+          self-host.
+        </a>
       </p>
       <div className="flex gap-x-4">
         <div className="flex flex-col w-60">
