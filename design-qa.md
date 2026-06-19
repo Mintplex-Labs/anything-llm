@@ -86,6 +86,34 @@ Interaction verification:
 
 No actionable P0, P1, or P2 mismatch remains in the account-menu scope.
 
+## Documents-only modal evidence
+
+- Source visual truth: `/var/folders/73/27tr2bhn36q0dfv81b_968sw0000gn/T/codex-clipboard-5dad6f02-9328-406d-b346-896d4a448439.png`
+- Implementation screenshot: `/var/folders/73/27tr2bhn36q0dfv81b_968sw0000gn/T/projectm-documents-only-modal.png`
+- Normalized comparison: `/var/folders/73/27tr2bhn36q0dfv81b_968sw0000gn/T/projectm-documents-modal-comparison.png`
+- Viewport and state: 1227 × 1066 desktop, dark theme, workspace document-management modal open.
+
+The normalized comparison places the supplied modal-top reference and the same implementation region in one image. Removing the tab strip allows the existing Documents content to become the modal's immediate first section while preserving the modal frame, close control, typography, spacing, search field, New Folder action, document list, upload dropzone, link fetch control, and workspace assignment panel.
+
+Focused evidence was required because the requested change is confined to the modal header and first content row. The comparison confirms that `Data Connectors` and the full tab container are absent rather than visually hidden. `My Documents` now establishes the top hierarchy directly beneath the modal edge without introducing an empty spacer.
+
+Required fidelity surfaces:
+
+- Fonts and typography: the existing Plus Jakarta Sans hierarchy, weights, and control labels are unchanged.
+- Spacing and layout rhythm: the Documents row retains its internal alignment; only the connector tab strip and its reserved margin are removed.
+- Colors and visual tokens: existing modal background, border, input, and action tokens are preserved.
+- Image quality and asset fidelity: no new assets were introduced; the existing upload icon and app chrome remain unchanged.
+- Copy and content: `Data Connectors` count is zero; `My Documents`, `Search for document`, and `New Folder` remain unchanged.
+
+Interaction verification:
+
+- RED: before implementation, the `Data Connectors` button count was one.
+- GREEN: after implementation, Data Connectors button and exact-text counts are both zero.
+- Retained controls: one My Documents heading, one document searchbox, one New Folder button, and one close button.
+- Close/reopen: closing removes the modal content, and reopening restores the Documents-only state.
+
+No actionable P0, P1, or P2 mismatch remains in the Documents-only modal scope.
+
 ## Follow-up polish
 
 None required for the approved scope.

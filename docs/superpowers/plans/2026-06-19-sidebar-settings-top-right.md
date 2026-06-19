@@ -154,22 +154,22 @@ Stage the two components, design QA report, spec, and plan; commit with `feat: m
 
 Open the workspace document-management modal and assert that a button named `Data Connectors` has count zero. Expected: FAIL with count one while the legacy tab remains visible.
 
-- [ ] **Step 2: Remove connector-only composition**
+- [x] **Step 2: Remove connector-only composition**
 
 Delete the `System` and `DataConnectors` imports, `settings` and `selectedTab` state, the `System.keys()` effect, the privileged-user tab-switcher block, the ternary connector view, and the complete `ModalTabSwitcher` component. Keep `useUser` because `useManageWorkspaceModal` still uses it.
 
-- [ ] **Step 3: Render Documents directly**
+- [x] **Step 3: Render Documents directly**
 
 Wrap the existing `DocumentSettings` component in `EmbeddingProgressProvider` directly inside the desktop modal. Preserve `workspace`, `hideModal`, mobile handling, workspace fetch, and all document UI descendants unchanged.
 
-- [ ] **Step 4: Verify the browser assertion passes**
+- [x] **Step 4: Verify the browser assertion passes**
 
 After hot reload, reopen the modal and assert zero `Data Connectors` controls, one `My Documents` heading, one document searchbox, one `New Folder` button, and one close button. Expected: all counts match and the modal remains interactive.
 
-- [ ] **Step 5: Run static and visual verification**
+- [x] **Step 5: Run static and visual verification**
 
 Run focused ESLint for `ManageWorkspace`, then run `yarn build`. Capture the 1227 × 1066 modal state, compare it with the supplied reference in one normalized image, and update `design-qa.md` with `final result: passed` only when no P0/P1/P2 issue remains.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 Stage `ManageWorkspace`, the QA report, spec, and plan; commit with `feat: remove data connectors from document modal`.

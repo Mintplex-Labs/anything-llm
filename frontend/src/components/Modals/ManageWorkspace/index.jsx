@@ -3,11 +3,9 @@ import { X } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import Workspace from "../../../models/workspace";
-import System from "../../../models/system";
 import { isMobileOnly } from "react-device-detect";
 import useUser from "../../../hooks/useUser";
 import DocumentSettings from "./Documents";
-import DataConnectors from "./DataConnectors";
 import ModalWrapper from "@/components/ModalWrapper";
 import { EmbeddingProgressProvider } from "@/EmbeddingProgressContext";
 
@@ -15,18 +13,7 @@ const noop = () => {};
 const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
   const { t } = useTranslation();
   const { slug } = useParams();
-  const { user } = useUser();
   const [workspace, setWorkspace] = useState(null);
-  const [settings, setSettings] = useState({});
-  const [selectedTab, setSelectedTab] = useState("documents");
-
-  useEffect(() => {
-    async function getSettings() {
-      const _settings = await System.keys();
-      setSettings(_settings ?? {});
-    }
-    getSettings();
-  }, []);
 
   useEffect(() => {
     async function fetchWorkspace() {
@@ -95,20 +82,9 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
             </button>
           </div>
 
-          {user?.role !== "default" && (
-            <ModalTabSwitcher
-              selectedTab={selectedTab}
-              setSelectedTab={setSelectedTab}
-            />
-          )}
-
-          {selectedTab === "documents" ? (
-            <EmbeddingProgressProvider>
-              <DocumentSettings workspace={workspace} />
-            </EmbeddingProgressProvider>
-          ) : (
-            <DataConnectors workspace={workspace} systemSettings={settings} />
-          )}
+          <EmbeddingProgressProvider>
+            <DocumentSettings workspace={workspace} />
+          </EmbeddingProgressProvider>
         </div>
       </div>
     </div>
@@ -116,36 +92,6 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
 };
 
 export default memo(ManageWorkspace);
-
-const ModalTabSwitcher = ({ selectedTab, setSelectedTab }) => {
-  const { t } = useTranslation();
-  return (
-    <div className="w-full flex justify-center z-10 relative">
-      <div className="gap-x-2 flex justify-center -mt-[68px] mb-10 bg-theme-bg-secondary p-1 rounded-xl shadow border-2 border-theme-modal-border w-fit">
-        <button
-          onClick={() => setSelectedTab("documents")}
-          className={`border-none px-4 py-2 rounded-[8px] font-semibold hover:bg-theme-modal-border hover:bg-opacity-60 ${
-            selectedTab === "documents"
-              ? "bg-theme-modal-border font-bold text-white light:bg-[#E0F2FE] light:text-[#026AA2]"
-              : "text-white/20 font-medium hover:text-white light:bg-white light:text-[#535862] light:hover:bg-[#E0F2FE]"
-          }`}
-        >
-          {t("connectors.manage.documents")}
-        </button>
-        <button
-          onClick={() => setSelectedTab("dataConnectors")}
-          className={`border-none px-4 py-2 rounded-[8px] font-semibold hover:bg-theme-modal-border hover:bg-opacity-60 ${
-            selectedTab === "dataConnectors"
-              ? "bg-theme-modal-border font-bold text-white light:bg-[#E0F2FE] light:text-[#026AA2]"
-              : "text-white/20 font-medium hover:text-white light:bg-white light:text-[#535862] light:hover:bg-[#E0F2FE]"
-          }`}
-        >
-          {t("connectors.manage.data-connectors")}
-        </button>
-      </div>
-    </div>
-  );
-};
 
 export function useManageWorkspaceModal() {
   const { user } = useUser();
