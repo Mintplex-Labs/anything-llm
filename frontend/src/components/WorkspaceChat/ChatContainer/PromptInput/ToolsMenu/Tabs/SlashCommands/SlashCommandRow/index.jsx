@@ -8,7 +8,6 @@ export default function SlashCommandRow({
   description,
   onClick,
   onEdit,
-  onPublish,
   showMenu = false,
   highlighted = false,
 }) {
@@ -97,17 +96,6 @@ export default function SlashCommandRow({
                   }}
                 >
                   {t("chat_window.edit")}
-                </button>
-                <button
-                  type="button"
-                  className="border-none px-3 py-1.5 text-xs text-white light:text-slate-900 hover:bg-zinc-700 light:hover:bg-slate-100 cursor-pointer text-left"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setMenuOpen(false);
-                    onPublish?.();
-                  }}
-                >
-                  {t("chat_window.publish")}
                 </button>
               </div>,
               document.body

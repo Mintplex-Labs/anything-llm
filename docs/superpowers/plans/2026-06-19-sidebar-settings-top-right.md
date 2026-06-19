@@ -211,30 +211,30 @@ Stage `SettingsSidebar`, the QA report, spec, and plan; commit with `feat: remov
 - Modify: `frontend/src/components/WorkspaceChat/ChatContainer/PromptInput/ToolsMenu/Tabs/SlashCommands/index.jsx`
 - Modify: `design-qa.md`
 
-- [ ] **Step 1: Verify the requested behavior fails before implementation**
+- [x] **Step 1: Verify the requested behavior fails before implementation**
 
 Run a source contract requiring zero `chat_window.publish`, `PublishEntityModal`, `handlePublishPreset`, `onPublish`, and `presetToPublish` references below the Slash Commands tab. Expected: FAIL and print the current publish button and modal wiring.
 
-- [ ] **Step 2: Remove Publish from the overflow menu**
+- [x] **Step 2: Remove Publish from the overflow menu**
 
 Delete the `onPublish` prop and the Publish button from `SlashCommandRow`. Preserve the popover positioning, outside-click handling, three-dot trigger, and Edit button unchanged.
 
-- [ ] **Step 3: Remove tab-local publish composition**
+- [x] **Step 3: Remove tab-local publish composition**
 
 Delete the `PublishEntityModal` import, publish-modal `useModal` state, `presetToPublish` state, `handlePublishPreset`, row callback, and modal render from `SlashCommands`. Keep both Add and Edit modal flows intact.
 
-- [ ] **Step 4: Verify the source contract passes**
+- [x] **Step 4: Verify the source contract passes**
 
 Rerun the Step 1 contract. Expected: exit zero with no publish-specific references under the Slash Commands tab.
 
-- [ ] **Step 5: Verify the live Slash Commands menu**
+- [x] **Step 5: Verify the live Slash Commands menu**
 
 Open Tools, select Slash Commands, and open a preset overflow menu. Assert one exact `Edit` action, zero exact `Publish` actions, and retained `/reset`, user preset, and `Add new` controls. Click Edit and confirm the existing preset editor opens.
 
-- [ ] **Step 6: Run static and visual verification**
+- [x] **Step 6: Run static and visual verification**
 
 Run focused ESLint for both Slash Commands files, then run `yarn build`. Capture the menu state, compare it with the supplied reference, and update `design-qa.md` with `final result: passed` only when no P0/P1/P2 issue remains.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 Stage both Slash Commands files, the QA report, spec, and plan; commit with `feat: remove slash command publish action`.

@@ -5,7 +5,6 @@ import System from "@/models/system";
 import { useModal } from "@/hooks/useModal";
 import AddPresetModal from "./SlashPresets/AddPresetModal";
 import EditPresetModal from "./SlashPresets/EditPresetModal";
-import PublishEntityModal from "@/components/CommunityHub/PublishEntityModal";
 import showToast from "@/utils/toast";
 import { PROMPT_INPUT_EVENT } from "@/components/WorkspaceChat/ChatContainer/PromptInput";
 import useToolsMenuItems from "../../useToolsMenuItems";
@@ -29,14 +28,8 @@ export default function SlashCommandsTab({
     openModal: openEditModal,
     closeModal: closeEditModal,
   } = useModal();
-  const {
-    isOpen: isPublishModalOpen,
-    openModal: openPublishModal,
-    closeModal: closePublishModal,
-  } = useModal();
   const [presets, setPresets] = useState([]);
   const [selectedPreset, setSelectedPreset] = useState(null);
-  const [presetToPublish, setPresetToPublish] = useState(null);
 
   useEffect(() => {
     fetchPresets();
@@ -147,16 +140,6 @@ export default function SlashCommandsTab({
     setSelectedPreset(null);
   };
 
-  const handlePublishPreset = (preset) => {
-    setPresetToPublish({
-      name: preset.command.slice(1),
-      description: preset.description,
-      command: preset.command,
-      prompt: preset.prompt,
-    });
-    openPublishModal();
-  };
-
   return (
     <>
       {items.map((item, index) => (
@@ -171,9 +154,6 @@ export default function SlashCommandsTab({
             )
           }
           onEdit={item.preset ? () => handleEditPreset(item.preset) : undefined}
-          onPublish={
-            item.preset ? () => handlePublishPreset(item.preset) : undefined
-          }
           showMenu={!!item.preset}
           highlighted={highlightedIndex === index}
         />
@@ -212,12 +192,6 @@ export default function SlashCommandsTab({
           preset={selectedPreset}
         />
       )}
-      <PublishEntityModal
-        show={isPublishModalOpen}
-        onClose={closePublishModal}
-        entityType="slash-command"
-        entity={presetToPublish}
-      />
     </>
   );
 }

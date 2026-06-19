@@ -141,6 +141,32 @@ Verification:
 
 No actionable P0, P1, or P2 mismatch remains in the Tools-menu scope.
 
+## Slash Command Publish cleanup evidence
+
+- Source visual truth: `/var/folders/73/27tr2bhn36q0dfv81b_968sw0000gn/T/codex-clipboard-f691f552-11d2-422b-b5ff-527ec4502084.png`
+- Implementation screenshot: `/var/folders/73/27tr2bhn36q0dfv81b_968sw0000gn/T/projectm-slash-command-menu-cleanup.png`
+- Normalized comparison: `/var/folders/73/27tr2bhn36q0dfv81b_968sw0000gn/T/projectm-slash-command-menu-comparison.png`
+- Viewport and state: 1280 × 720 desktop, dark theme, workspace Tools menu open on Slash Commands with the `/wow` overflow menu expanded.
+
+The normalized comparison places the supplied two-action menu beside the focused implementation crop. The Slash Commands and Agent Skills tabs, `/reset`, `/wow`, descriptions, Add new row, three-dot trigger, dark tokens, rounded border, and preset-menu anchoring remain intact. The overflow menu now contains only `Edit`; its width and row styling continue to use the existing component tokens, and the removed `Publish` row leaves no empty interactive element.
+
+Required fidelity surfaces:
+
+- Fonts and typography: existing Plus Jakarta Sans sizing, weights, and italic descriptions remain unchanged.
+- Spacing and layout rhythm: the preset list and Add new row retain their original positions; the overflow menu contracts naturally to one row.
+- Colors and visual tokens: the existing tools panel, border, hover, and popover colors are unchanged.
+- Image quality and asset fidelity: the Phosphor three-dot and plus icons remain source components; no new assets were introduced.
+- Copy and content: `Publish` is absent; `Edit`, `/reset`, `/wow`, and `Add new` remain exact.
+
+Interaction verification:
+
+- RED source contract printed the Publish button, callback, modal import, modal state, handler, and entity wiring before implementation.
+- GREEN source contract finds none of the publish-specific references below the Slash Commands tab.
+- Live DOM: one exact Edit button, zero exact Publish buttons, and one each of `/reset`, `/wow`, and Add new.
+- Edit regression: clicking Edit opens the existing `Edit Preset` modal with Command, Prompt, Description, Delete Preset, Cancel, and Save controls.
+
+No actionable P0, P1, or P2 mismatch remains in the Slash Command menu scope.
+
 ## Follow-up polish
 
 None required for the approved scope.
