@@ -58,6 +58,34 @@ DOM and interaction checks:
 
 No new P0, P1, or P2 visual or interaction issues were found in the requested settings-sidebar scope.
 
+## Account menu settings placement evidence
+
+- Source visual truth: `/var/folders/73/27tr2bhn36q0dfv81b_968sw0000gn/T/codex-clipboard-35315b6d-47ac-4d6d-b026-f2ef3efa531a.png`
+- Implementation screenshot: `/var/folders/73/27tr2bhn36q0dfv81b_968sw0000gn/T/projectm-account-menu-settings.png`
+- Normalized comparison: `/var/folders/73/27tr2bhn36q0dfv81b_968sw0000gn/T/projectm-account-menu-comparison.png`
+- Viewport and state: 1227 × 1066 desktop, dark theme, `/`, account popover open.
+
+The normalized comparison places the supplied top-of-workspace reference and the matching implementation crop in one image. The workspace composition, logo, sidebar-collapse control, profile button, menu width, typography, dark tokens, rounded corners, and vertical item rhythm remain consistent. The requested content changes are exact: the standalone wrench is absent, `Settings` replaces `Support`, and the final order is `Account`, `Settings`, `Sign out`.
+
+Focused evidence was required because the changed controls occupy a small header region. The account popover measures 112.34 × 140px at `x=1074.66, y=84`; the Settings link uses the same 36px row height and neighboring menu-item classes. DOM checks found zero Support entries, zero `/settings/interface` links outside the popover, and one retained sidebar-collapse button.
+
+Required fidelity surfaces:
+
+- Fonts and typography: unchanged Plus Jakarta Sans stack, size, weight, line height, and antialiasing inherited from the existing menu items.
+- Spacing and layout rhythm: existing 8px menu padding and vertical gap are preserved; the added Settings row aligns with Account and Sign out.
+- Colors and visual tokens: existing action-menu background and hover tokens are reused without new colors.
+- Image quality and asset fidelity: the product logo and profile control are unchanged; the removed wrench was an existing Phosphor icon and no replacement asset was needed.
+- Copy and content: exact visible order is `Account`, `Settings`, `Sign out`; `Support` is absent.
+
+Interaction verification:
+
+- RED: before implementation, the account menu had no Settings link, one Support link, and one settings link outside the menu.
+- GREEN: after implementation, the menu has one Settings link, zero Support links, and zero settings links outside the menu.
+- Settings navigation: clicking the menu link reached `http://localhost:3000/settings/interface`.
+- Existing controls: Account and Sign out remain buttons; the sidebar-collapse button remains present.
+
+No actionable P0, P1, or P2 mismatch remains in the account-menu scope.
+
 ## Follow-up polish
 
 None required for the approved scope.

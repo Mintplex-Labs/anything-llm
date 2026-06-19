@@ -41,11 +41,6 @@ export default function Sidebar() {
             setShowSidebar={setShowSidebar}
           />
         )}
-        {canToggleSidebar && showSidebar && (
-          <div className="hidden md:block absolute top-[12px] left-[200px] z-10">
-            <SettingsButton />
-          </div>
-        )}
         <div className="overflow-hidden h-full">
           <div className="flex shrink-0 w-full justify-center my-[18px]">
             <div className="flex w-[250px] min-w-[250px]">

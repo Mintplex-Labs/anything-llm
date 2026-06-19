@@ -124,22 +124,22 @@ Append the settings-screen evidence to `design-qa.md`, ensure the final verdict 
 
 With the existing account menu open, run a browser DOM assertion requiring one `/settings/interface` link inside the account-menu stack, zero support links in that stack, and zero settings links outside it. Expected: FAIL because the wrench is outside the menu, Support exists, and Settings is missing from the menu.
 
-- [ ] **Step 2: Remove the desktop workspace settings control**
+- [x] **Step 2: Remove the desktop workspace settings control**
 
 Delete the `canToggleSidebar && showSidebar` desktop mount from `Sidebar`. Retain the `SettingsButton` import because `SidebarMobileHeader` still uses the component in the mobile drawer.
 
-- [ ] **Step 3: Replace Support with Settings in the account popover**
+- [x] **Step 3: Replace Support with Settings in the account popover**
 
 Remove `System`, the support-email state, and its fetch effect from `UserButton`. Add a `Link` to `paths.settings.interface()` immediately below Account, gated by `!user || user.role !== "default"`, and style it with the neighboring menu-item classes. Render the exact label `Settings`.
 
-- [ ] **Step 4: Verify the browser assertion passes**
+- [x] **Step 4: Verify the browser assertion passes**
 
 Reopen the account menu after hot reload and rerun the Step 1 assertion. Expected: one Settings link inside the menu, zero Support links, and zero settings links outside the menu. Click Settings and confirm the URL becomes `/settings/interface`.
 
-- [ ] **Step 5: Run static and visual verification**
+- [x] **Step 5: Run static and visual verification**
 
 Run focused ESLint for both modified components and `yarn build`. Capture the 1227 × 1066 workspace with the account menu open, compare it with the supplied reference, update `design-qa.md`, and require `final result: passed`.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 Stage the two components, design QA report, spec, and plan; commit with `feat: move settings into account menu`.
