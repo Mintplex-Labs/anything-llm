@@ -15,11 +15,11 @@
 **Files:**
 - Modify: `frontend/src/components/Sidebar/index.jsx`
 
-- [ ] **Step 1: Remove the workspace footer dependency and mounts**
+- [x] **Step 1: Remove the workspace footer dependency and mounts**
 
 Delete the `Footer` import and both `<Footer />` containers from the desktop and mobile workspace sidebars. Do not edit the shared `Footer` component or `SettingsSidebar`.
 
-- [ ] **Step 2: Add the desktop top-right settings control**
+- [x] **Step 2: Add the desktop top-right settings control**
 
 Render the existing button only while the desktop sidebar and its toggle are visible:
 
@@ -33,11 +33,11 @@ Render the existing button only while the desktop sidebar and its toggle are vis
 
 This places the 36px settings button immediately left of the existing collapse control at `left-[248px]`, with both controls vertically centered at 30px.
 
-- [ ] **Step 3: Release footer layout space**
+- [x] **Step 3: Release footer layout space**
 
 Change the desktop scroll region from `h-[calc(100%-60px)]` to `h-full`. Remove the mobile workspace list's `pb-[60px]` because there is no longer a bottom overlay.
 
-- [ ] **Step 4: Run static verification**
+- [x] **Step 4: Run static verification**
 
 Run:
 
@@ -55,19 +55,19 @@ Expected: Vite exits with code 0 and generates the frontend bundle.
 **Files:**
 - Create: `design-qa.md`
 
-- [ ] **Step 1: Inspect the live desktop workspace**
+- [x] **Step 1: Inspect the live desktop workspace**
 
 Open the existing workspace route at `http://localhost:3000/workspace/...`. Confirm the sidebar header contains one `Settings` link and one `Hide Sidebar` button, and that no GitHub, Docs, or Discord footer links remain in the workspace sidebar.
 
-- [ ] **Step 2: Verify interactions**
+- [x] **Step 2: Verify interactions**
 
 Click the collapse control, confirm the sidebar closes, reopen it, and confirm the settings control returns. Verify the settings link still targets `/settings/interface` without submitting data.
 
-- [ ] **Step 3: Run design QA**
+- [x] **Step 3: Run design QA**
 
 Capture the same desktop viewport and state as the annotation. Compare control placement, icon sizing, vertical alignment, spacing, and the empty lower sidebar area against the supplied reference. Record the result in `design-qa.md`, fixing P0/P1/P2 issues until it contains `final result: passed`.
 
-- [ ] **Step 4: Final verification**
+- [x] **Step 4: Final verification**
 
 Run:
 
@@ -80,7 +80,7 @@ curl --max-time 10 -fsS http://localhost:3000 >/dev/null
 
 Expected: no whitespace errors, only intentional files changed, API prints `OK`, and the frontend responds successfully.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add frontend/src/components/Sidebar/index.jsx design-qa.md docs/superpowers/plans/2026-06-19-sidebar-settings-top-right.md

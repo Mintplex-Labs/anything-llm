@@ -6,7 +6,6 @@ import NewWorkspaceModal, {
 import ActiveWorkspaces from "./ActiveWorkspaces";
 import useLogo from "@/hooks/useLogo";
 import useUser from "@/hooks/useUser";
-import Footer from "../Footer";
 import SettingsButton from "../SettingsButton";
 import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
@@ -42,6 +41,11 @@ export default function Sidebar() {
             setShowSidebar={setShowSidebar}
           />
         )}
+        {canToggleSidebar && showSidebar && (
+          <div className="hidden md:block absolute top-[12px] left-[200px] z-10">
+            <SettingsButton />
+          </div>
+        )}
         <div className="overflow-hidden h-full">
           <div className="flex shrink-0 w-full justify-center my-[18px]">
             <div className="flex w-[250px] min-w-[250px]">
@@ -60,14 +64,11 @@ export default function Sidebar() {
           >
             <div className="flex flex-col h-full overflow-hidden">
               <div className="flex-grow flex flex-col min-w-[235px] min-h-0">
-                <div className="relative h-[calc(100%-60px)] flex flex-col w-full justify-between pt-[10px] overflow-y-scroll no-scroll">
+                <div className="relative h-full flex flex-col w-full justify-between pt-[10px] overflow-y-scroll no-scroll">
                   <div className="flex flex-col gap-y-[14px]">
                     <SearchBox user={user} showNewWsModal={showNewWsModal} />
                     <ActiveWorkspaces />
                   </div>
-                </div>
-                <div className="absolute bottom-0 left-0 right-0 pb-3 rounded-b-[16px] bg-theme-bg-sidebar light:bg-slate-200 bg-opacity-80 backdrop-filter backdrop-blur-md z-10">
-                  <Footer />
                 </div>
               </div>
             </div>
@@ -168,16 +169,13 @@ export function SidebarMobileHeader() {
             {/* Primary Body */}
             <div className="h-full flex flex-col w-full justify-between pt-4 ">
               <div className="h-auto md:sidebar-items">
-                <div className=" flex flex-col gap-y-4 overflow-y-scroll no-scroll pb-[60px]">
+                <div className="flex flex-col gap-y-4 overflow-y-scroll no-scroll">
                   <NewWorkspaceButton
                     user={user}
                     showNewWsModal={showNewWsModal}
                   />
                   <ActiveWorkspaces />
                 </div>
-              </div>
-              <div className="z-99 absolute bottom-0 left-0 right-0 pt-2 pb-6 rounded-br-[26px] bg-theme-bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md">
-                <Footer />
               </div>
             </div>
           </div>
