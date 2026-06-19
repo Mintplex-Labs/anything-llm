@@ -1,10 +1,10 @@
-# Sidebar Settings Button Top-Right Implementation Plan
+# Settings Navigation Placement Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Remove the workspace sidebar footer icons and place the existing settings wrench beside the desktop sidebar-collapse control.
+**Goal:** Keep prior sidebar cleanup and move workspace settings access from the desktop header wrench into the account popover.
 
-**Architecture:** Keep the shared `Footer` and `SettingsButton` components unchanged. Compose the existing `SettingsButton` directly in the main workspace `Sidebar`, remove the workspace-only footer mounts, and release the layout space previously reserved for those footers.
+**Architecture:** Keep the shared settings route and mobile drawer control intact. Remove only the desktop `SettingsButton` composition from `Sidebar`, then add a role-gated text link to the existing `UserButton` popover while deleting its unused Support data flow.
 
 **Tech Stack:** React 18, React Router, Phosphor Icons, Tailwind CSS, Vite.
 
@@ -112,3 +112,34 @@ Run focused ESLint and the production build. In the live browser, confirm the re
 - [x] **Step 5: Record design QA and commit**
 
 Append the settings-screen evidence to `design-qa.md`, ensure the final verdict remains `passed`, run final health checks, and commit the intentional files.
+
+### Task 4: Move settings into the account popover
+
+**Files:**
+- Modify: `frontend/src/components/Sidebar/index.jsx`
+- Modify: `frontend/src/components/UserMenu/UserButton/index.jsx`
+- Modify: `design-qa.md`
+
+- [x] **Step 1: Verify the requested behavior fails before implementation**
+
+With the existing account menu open, run a browser DOM assertion requiring one `/settings/interface` link inside the account-menu stack, zero support links in that stack, and zero settings links outside it. Expected: FAIL because the wrench is outside the menu, Support exists, and Settings is missing from the menu.
+
+- [ ] **Step 2: Remove the desktop workspace settings control**
+
+Delete the `canToggleSidebar && showSidebar` desktop mount from `Sidebar`. Retain the `SettingsButton` import because `SidebarMobileHeader` still uses the component in the mobile drawer.
+
+- [ ] **Step 3: Replace Support with Settings in the account popover**
+
+Remove `System`, the support-email state, and its fetch effect from `UserButton`. Add a `Link` to `paths.settings.interface()` immediately below Account, gated by `!user || user.role !== "default"`, and style it with the neighboring menu-item classes. Render the exact label `Settings`.
+
+- [ ] **Step 4: Verify the browser assertion passes**
+
+Reopen the account menu after hot reload and rerun the Step 1 assertion. Expected: one Settings link inside the menu, zero Support links, and zero settings links outside the menu. Click Settings and confirm the URL becomes `/settings/interface`.
+
+- [ ] **Step 5: Run static and visual verification**
+
+Run focused ESLint for both modified components and `yarn build`. Capture the 1227 × 1066 workspace with the account menu open, compare it with the supplied reference, update `design-qa.md`, and require `final result: passed`.
+
+- [ ] **Step 6: Commit**
+
+Stage the two components, design QA report, spec, and plan; commit with `feat: move settings into account menu`.

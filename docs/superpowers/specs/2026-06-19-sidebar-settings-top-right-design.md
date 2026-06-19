@@ -1,22 +1,25 @@
-# Sidebar Settings Button Placement Design
+# Settings Navigation Placement Design
 
 ## Goal
 
-On workspace screens, remove the bottom row of GitHub, documentation, Discord, and settings icons. Keep the existing settings action fully functional and move its wrench button to the upper-right sidebar header, immediately to the left of the sidebar-collapse button.
+Keep settings reachable without a standalone workspace-header wrench. On workspace screens, place a text `Settings` link directly below `Account` in the user menu and remove the unused `Support` entry.
 
 ## Visual Source
 
 - The annotated workspace sidebar at `http://localhost:3000/workspace/...`.
 - The supplied compact top-right control reference, where adjacent circular controls sit in one horizontal group.
+- The supplied account-menu screenshot at `http://localhost:3000/`, showing the current `Account`, `Support`, and `Sign out` stack and the workspace-header wrench to remove.
 
 ## Scope
 
-- Update the main workspace `Sidebar` only.
-- Desktop: render `SettingsButton` in the top header beside `ToggleSidebarButton` while the sidebar is open.
+- Update the main workspace `Sidebar` and the existing `UserButton` account popover.
+- Desktop: remove the standalone `SettingsButton` from the workspace header, leaving the sidebar-collapse control and product logo unchanged.
 - Desktop: remove the footer mount so no icons remain at the bottom.
 - Mobile: keep the existing functional settings button in the drawer header and remove the drawer footer icons.
-- Preserve role-based visibility in `SettingsButton`.
-- Preserve the settings route, tooltip, sidebar-collapse behavior, theme styling, workspace list, and all other layout/content.
+- Account popover: add `Settings` immediately below `Account` and before `Sign out`.
+- Account popover: remove `Support` and its support-email fetch because no support link remains in this surface.
+- Preserve the former settings-button role rule: default-role users do not see the new Settings entry; single-user mode and privileged multi-user roles do.
+- Preserve the settings route, sidebar-collapse behavior, theme styling, workspace list, and all other layout/content.
 - Keep the shared `Footer` component unchanged.
 - Settings screen: remove the desktop and mobile settings-sidebar footer mounts so GitHub, documentation, and Discord icons are absent.
 - Settings screen: remove the complete Community Hub menu group and its children.
@@ -25,16 +28,16 @@ On workspace screens, remove the bottom row of GitHub, documentation, Discord, a
 
 ## Approaches Considered
 
-1. **Relocate at the workspace sidebar composition layer — selected.** Remove `Footer` from `Sidebar` and place the existing `SettingsButton` beside the collapse control. This is the smallest scoped change and does not alter other screens.
-2. Change the shared `Footer` to render only settings. Rejected because it would unexpectedly change settings and other sidebar surfaces.
-3. Hide the three external links with CSS. Rejected because hidden controls would remain in the DOM and the settings button would still require a separate relocation.
+1. **Move navigation into the existing account popover — selected.** Remove the desktop workspace `SettingsButton` mount and add a normal React Router link in `UserButton`. This matches the supplied hierarchy and keeps navigation in an established menu.
+2. Keep the wrench and duplicate Settings in the account menu. Rejected because it leaves two competing entry points after the user explicitly asked to remove the wrench.
+3. Reuse the shared `Footer` inside the account menu. Rejected because its icon layout and external links do not match the text-menu pattern.
 
 ## Interaction And Layout
 
-- The wrench remains a real link to interface settings.
-- The top-right wrench uses the existing circular icon styling.
-- Its vertical center aligns with the sidebar-collapse icon.
-- Closing the sidebar hides the wrench with the rest of the sidebar controls; reopening restores it.
+- `Settings` is a real React Router link to `/settings/interface` and uses the same padding, typography, hover token, width, and rounded corners as the neighboring menu items.
+- The order is `Account`, `Settings`, `Sign out` when Account is available. In single-user mode the order is `Settings`, `Sign out`.
+- Opening Settings closes naturally through route navigation; Account modal and Sign out behavior remain unchanged.
+- No `Support` link or support-email request remains in `UserButton`.
 - No empty footer container remains at the bottom.
 - On desktop settings screens, the back button remains a real link to the workspace home route and is the left-most header control.
 - The product logo follows the back button in the same 60px-tall header footprint, so the settings navigation card retains its existing vertical placement.
@@ -42,9 +45,10 @@ On workspace screens, remove the bottom row of GitHub, documentation, Discord, a
 
 ## Verification
 
-- Confirm the desktop workspace sidebar shows only the wrench and collapse controls in the upper-right header.
+- Confirm the desktop workspace header has no Settings wrench and still shows the sidebar-collapse control.
 - Confirm GitHub, documentation, and Discord footer links are absent from the workspace sidebar.
-- Confirm the wrench opens settings and the collapse control still works.
+- Confirm the account popover shows `Account`, `Settings`, and `Sign out` in that order, with no `Support` entry.
+- Confirm `Settings` opens `/settings/interface`, then return to the workspace and confirm the account popover and collapse control still work.
 - Confirm the mobile drawer has no bottom footer icons and retains its existing header settings control.
 - Confirm settings pages have no sidebar footer icons or Community Hub menu entries.
 - Confirm the settings back button appears at the desktop upper-left, targets `/`, and the logo sits immediately to its right.
