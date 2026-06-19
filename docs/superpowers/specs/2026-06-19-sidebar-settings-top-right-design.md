@@ -11,6 +11,7 @@ Keep the customized workspace surface focused on the features this product uses:
 - The supplied account-menu screenshot at `http://localhost:3000/`, showing the current `Account`, `Support`, and `Sign out` stack and the workspace-header wrench to remove.
 - The supplied document-modal screenshot showing `Documents` and `Data Connectors`, with Data Connectors marked as unused and to be removed.
 - The supplied Tools-menu screenshot marking `Chat Embed`, `Browser Extension`, and `AnythingLLM Mobile` for removal.
+- The supplied Slash Commands screenshot marking the preset overflow-menu `Publish` action for removal.
 
 ## Scope
 
@@ -32,6 +33,8 @@ Keep the customized workspace surface focused on the features this product uses:
 - Keep connector implementation files and backend APIs untouched because this request removes the product entry point rather than unrelated internal infrastructure.
 - Settings Tools group: remove Chat Embed, Browser Extension, and AnythingLLM Mobile menu entries for all roles.
 - Settings Tools group: preserve Event Logs, Developer API, System Prompt Variables, role filtering, group expansion, and direct routes/components for non-menu consumers.
+- Slash Commands: remove the `Publish` action from each preset overflow menu and remove the publish-modal wiring used only by that action.
+- Slash Commands: preserve `Edit`, `Add new`, preset execution, preset CRUD, and Community Hub publishing infrastructure outside this tab.
 
 ## Approaches Considered
 
@@ -43,6 +46,9 @@ Keep the customized workspace surface focused on the features this product uses:
 6. Delete every connector component, model, locale, and backend endpoint. Rejected because those modules may have other internal consumers and deleting infrastructure is broader than the requested modal cleanup.
 7. **Remove the three child-option objects from `SettingsSidebar` — selected for Tools.** This removes the entries from navigation without changing the retained Tools hierarchy or direct-route behavior.
 8. Hide the three entries with role or CSS conditions. Rejected because the unused menu configuration remains active and obscures product intent.
+9. **Remove the Publish action and its tab-local composition wiring — selected for Slash Commands.** This leaves one clear preset action while removing state, callbacks, and a modal that can no longer be opened here.
+10. Hide Publish with CSS. Rejected because the inaccessible button and dead publish flow would remain mounted.
+11. Delete Community Hub publishing globally. Rejected because the request targets this Slash Commands entry point, not unrelated publishing surfaces.
 
 ## Interaction And Layout
 
@@ -56,6 +62,7 @@ Keep the customized workspace surface focused on the features this product uses:
 - On desktop settings screens, the back button remains a real link to the workspace home route and is the left-most header control.
 - The product logo follows the back button in the same 60px-tall header footprint, so the settings navigation card retains its existing vertical placement.
 - Removing Community Hub closes the gap naturally; Customization follows Agent Skills.
+- A slash-command preset overflow menu contains only `Edit`; opening Edit continues to show the existing preset editor.
 
 ## Verification
 
@@ -69,6 +76,8 @@ Keep the customized workspace surface focused on the features this product uses:
 - Confirm opening the workspace document modal renders `My Documents` and zero `Data Connectors` controls or text.
 - Confirm document search, New Folder, close control, upload area, and workspace document panel remain rendered.
 - Confirm Tools shows zero Chat Embed, Browser Extension, and AnythingLLM Mobile entries while retaining Event Logs, Developer API, and System Prompt Variables.
+- Confirm a slash-command preset overflow menu shows one `Edit` action and zero `Publish` actions.
+- Confirm slash-command presets, `Add new`, and the Edit modal remain available after the cleanup.
 - Confirm Vite builds successfully and the working tree contains only the intentional change.
 
 The frontend currently has no component-test harness. For this small placement-only change, verification will use the running Vite app and browser interaction rather than adding a new test framework solely for this edit.

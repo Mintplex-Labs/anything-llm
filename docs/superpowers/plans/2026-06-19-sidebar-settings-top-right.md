@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Keep prior UI cleanup and remove unused Data Connectors, Chat Embed, Browser Extension, and AnythingLLM Mobile navigation entry points.
+**Goal:** Keep prior UI cleanup and remove unused Data Connectors, distribution/embed navigation, and Slash Command publishing entry points.
 
-**Architecture:** Keep direct routes and feature implementation modules intact while removing their unused product-navigation composition. `ManageWorkspace` renders Documents directly, and `SettingsSidebar` exposes only the retained Tools children.
+**Architecture:** Keep direct routes and feature implementation modules intact while removing their unused product-navigation composition. `ManageWorkspace` renders Documents directly, `SettingsSidebar` exposes only the retained Tools children, and Slash Commands keeps editing while dropping its tab-local publish flow.
 
 **Tech Stack:** React 18, React Router, Phosphor Icons, Tailwind CSS, Vite.
 
@@ -203,3 +203,38 @@ Run focused ESLint for `SettingsSidebar`, then run `yarn build`. Capture the 122
 - [x] **Step 6: Commit**
 
 Stage `SettingsSidebar`, the QA report, spec, and plan; commit with `feat: remove unused tools navigation`.
+
+### Task 7: Remove the Slash Command Publish action
+
+**Files:**
+- Modify: `frontend/src/components/WorkspaceChat/ChatContainer/PromptInput/ToolsMenu/Tabs/SlashCommands/SlashCommandRow/index.jsx`
+- Modify: `frontend/src/components/WorkspaceChat/ChatContainer/PromptInput/ToolsMenu/Tabs/SlashCommands/index.jsx`
+- Modify: `design-qa.md`
+
+- [ ] **Step 1: Verify the requested behavior fails before implementation**
+
+Run a source contract requiring zero `chat_window.publish`, `PublishEntityModal`, `handlePublishPreset`, `onPublish`, and `presetToPublish` references below the Slash Commands tab. Expected: FAIL and print the current publish button and modal wiring.
+
+- [ ] **Step 2: Remove Publish from the overflow menu**
+
+Delete the `onPublish` prop and the Publish button from `SlashCommandRow`. Preserve the popover positioning, outside-click handling, three-dot trigger, and Edit button unchanged.
+
+- [ ] **Step 3: Remove tab-local publish composition**
+
+Delete the `PublishEntityModal` import, publish-modal `useModal` state, `presetToPublish` state, `handlePublishPreset`, row callback, and modal render from `SlashCommands`. Keep both Add and Edit modal flows intact.
+
+- [ ] **Step 4: Verify the source contract passes**
+
+Rerun the Step 1 contract. Expected: exit zero with no publish-specific references under the Slash Commands tab.
+
+- [ ] **Step 5: Verify the live Slash Commands menu**
+
+Open Tools, select Slash Commands, and open a preset overflow menu. Assert one exact `Edit` action, zero exact `Publish` actions, and retained `/reset`, user preset, and `Add new` controls. Click Edit and confirm the existing preset editor opens.
+
+- [ ] **Step 6: Run static and visual verification**
+
+Run focused ESLint for both Slash Commands files, then run `yarn build`. Capture the menu state, compare it with the supplied reference, and update `design-qa.md` with `final result: passed` only when no P0/P1/P2 issue remains.
+
+- [ ] **Step 7: Commit**
+
+Stage both Slash Commands files, the QA report, spec, and plan; commit with `feat: remove slash command publish action`.
