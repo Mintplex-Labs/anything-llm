@@ -86,3 +86,29 @@ Expected: no whitespace errors, only intentional files changed, API prints `OK`,
 git add frontend/src/components/Sidebar/index.jsx design-qa.md docs/superpowers/plans/2026-06-19-sidebar-settings-top-right.md
 git commit -m "feat: move sidebar settings control to header"
 ```
+
+### Task 3: Simplify the settings sidebar
+
+**Files:**
+- Modify: `frontend/src/components/SettingsSidebar/index.jsx`
+- Modify: `design-qa.md`
+
+- [x] **Step 1: Remove settings-only footer mounts**
+
+Remove the desktop and mobile `<Footer />` containers from `SettingsSidebar`, remove their reserved scroll padding, and leave the shared `Footer` component unchanged.
+
+- [x] **Step 2: Remove Community Hub navigation**
+
+Remove the Community Hub parent option, all three child entries, and the now-unused illustration import. Preserve the underlying routes for any non-sidebar consumers.
+
+- [x] **Step 3: Move the desktop back button to the upper-left**
+
+Reuse `SettingsButton` in its settings-route state before the product logo. Keep the existing home target, tooltip, icon styling, and role behavior.
+
+- [x] **Step 4: Verify static quality and the live interface**
+
+Run focused ESLint and the production build. In the live browser, confirm the removed links are absent, the back control targets `/`, its rectangle is the left-most header control, and the remaining settings navigation still renders.
+
+- [x] **Step 5: Record design QA and commit**
+
+Append the settings-screen evidence to `design-qa.md`, ensure the final verdict remains `passed`, run final health checks, and commit the intentional files.

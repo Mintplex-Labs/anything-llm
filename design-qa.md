@@ -39,6 +39,25 @@ No actionable P0, P1, or P2 mismatches remain. The reference includes a differen
 - Placed the existing desktop `SettingsButton` immediately left of the collapse control.
 - Released desktop and mobile layout space previously reserved for the footer.
 
+## Settings sidebar cleanup evidence
+
+- Source visual truth: the three annotated `/settings/interface` captures supplied in the browser comments.
+- Implementation screenshot: `/var/folders/73/27tr2bhn36q0dfv81b_968sw0000gn/T/projectm-settings-sidebar-cleanup.png`
+- Viewport and state: 1227 × 1066 desktop, dark theme, `/settings/interface`.
+- Comparison input: the annotated reference captures and the full implementation capture were reviewed together for the top header, navigation order, lower sidebar, and content-panel alignment.
+
+The implementation preserves the settings card at its original top offset while moving the existing 36px back control to `x=20.5, y=12`. The product-logo link follows at `x=68.5`, giving a consistent 12px gap and making the back control the left-most element. Community Hub and its child links are absent, so Customization follows Agent Skills directly. The GitHub, Docs, and Discord footer controls are absent and no footer overlay obscures the now-scrollable settings menu.
+
+DOM and interaction checks:
+
+- Back control: count 1, target `/`, measured 36 × 36px, and click navigated to `http://localhost:3000/`.
+- Product logo: begins at `x=68.5`, immediately right of the back control.
+- Community Hub: count 0.
+- Footer GitHub / Docs / Discord controls: counts 0 / 0 / 0.
+- Retained navigation: AI Providers and Customization remain rendered; UI Preferences remains selected on the requested route.
+
+No new P0, P1, or P2 visual or interaction issues were found in the requested settings-sidebar scope.
+
 ## Follow-up polish
 
 None required for the approved scope.

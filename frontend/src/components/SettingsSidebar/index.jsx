@@ -13,10 +13,9 @@ import {
   Plugs,
 } from "@phosphor-icons/react";
 import AgentIcon from "@/media/animations/agent-static.png";
-import CommunityHubIcon from "@/media/illustrations/community-hub.png";
 import useUser from "@/hooks/useUser";
 import { isMobile } from "react-device-detect";
-import Footer from "../Footer";
+import SettingsButton from "../SettingsButton";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import showToast from "@/utils/toast";
@@ -108,7 +107,7 @@ export default function SettingsSidebar() {
               {/* Primary Body */}
               <div className="h-full flex flex-col w-full justify-between pt-4 overflow-y-scroll no-scroll">
                 <div className="h-auto md:sidebar-items">
-                  <div className="flex flex-col gap-y-4 pb-[60px] overflow-y-scroll no-scroll">
+                  <div className="flex flex-col gap-y-4 overflow-y-scroll no-scroll">
                     <SidebarOptions user={user} t={t} />
                     <div className="h-[1.5px] bg-[#3D4147] mx-3 mt-[14px]" />
                     <SupportEmail />
@@ -125,9 +124,6 @@ export default function SettingsSidebar() {
                   </div>
                 </div>
               </div>
-              <div className="absolute bottom-2 left-0 right-0 pt-2 bg-theme-bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md">
-                <Footer />
-              </div>
             </div>
           </div>
         </div>
@@ -138,17 +134,20 @@ export default function SettingsSidebar() {
   return (
     <>
       <div>
-        <Link
-          to={paths.home()}
-          className="flex shrink-0 max-w-[55%] items-center justify-start mx-[20.5px] my-[18px]"
-        >
-          <img
-            src={logo}
-            alt="Logo"
-            className="rounded max-h-[24px]"
-            style={{ objectFit: "contain" }}
-          />
-        </Link>
+        <div className="flex items-center gap-x-3 mx-[20.5px] my-[12px]">
+          <SettingsButton />
+          <Link
+            to={paths.home()}
+            className="flex shrink-0 max-w-[55%] items-center justify-start"
+          >
+            <img
+              src={logo}
+              alt="Logo"
+              className="rounded max-h-[24px]"
+              style={{ objectFit: "contain" }}
+            />
+          </Link>
+        </div>
         <div
           ref={sidebarRef}
           className="transition-all duration-500 relative m-[16px] rounded-[16px] bg-theme-bg-sidebar border-[2px] border-theme-sidebar-border light:border-none min-w-[250px] p-[10px] h-[calc(100%-76px)]"
@@ -157,9 +156,9 @@ export default function SettingsSidebar() {
             <div className="text-theme-text-secondary text-sm font-medium uppercase mt-[4px] mb-0 ml-2">
               {t("settings.title")}
             </div>
-            <div className="relative h-[calc(100%-60px)] flex flex-col w-full justify-between pt-[10px] overflow-y-scroll no-scroll">
+            <div className="relative h-full flex flex-col w-full justify-between pt-[10px] overflow-y-scroll no-scroll">
               <div className="h-auto sidebar-items">
-                <div className="flex flex-col gap-y-2 pb-[60px] overflow-y-scroll no-scroll">
+                <div className="flex flex-col gap-y-2 overflow-y-scroll no-scroll">
                   <SidebarOptions user={user} t={t} />
                   <div className="h-[1.5px] bg-[#3D4147] mx-3 mt-[14px]" />
                   <SupportEmail />
@@ -175,9 +174,6 @@ export default function SettingsSidebar() {
                   <AppVersion />
                 </div>
               </div>
-            </div>
-            <div className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-theme-bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-10">
-              <Footer />
             </div>
           </div>
         </div>
@@ -313,37 +309,6 @@ const SidebarOptions = ({ user = null, t }) => (
           user={user}
           flex={true}
           roles={["admin"]}
-        />
-        <Option
-          btnText={t("settings.community-hub.title")}
-          icon={
-            <img
-              src={CommunityHubIcon}
-              alt="Community Hub"
-              className="h-5 w-5 flex-shrink-0 light:invert"
-            />
-          }
-          user={user}
-          childOptions={[
-            {
-              btnText: t("settings.community-hub.trending"),
-              href: paths.communityHub.trending(),
-              flex: true,
-              roles: ["admin"],
-            },
-            {
-              btnText: t("settings.community-hub.your-account"),
-              href: paths.communityHub.authentication(),
-              flex: true,
-              roles: ["admin"],
-            },
-            {
-              btnText: t("settings.community-hub.import-item"),
-              href: paths.communityHub.importItem(),
-              flex: true,
-              roles: ["admin"],
-            },
-          ]}
         />
         <Option
           btnText={t("settings.customization")}

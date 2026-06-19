@@ -17,7 +17,11 @@ On workspace screens, remove the bottom row of GitHub, documentation, Discord, a
 - Mobile: keep the existing functional settings button in the drawer header and remove the drawer footer icons.
 - Preserve role-based visibility in `SettingsButton`.
 - Preserve the settings route, tooltip, sidebar-collapse behavior, theme styling, workspace list, and all other layout/content.
-- Do not change the separate `SettingsSidebar` or the shared `Footer` component because the browser annotation is scoped to the workspace sidebar.
+- Keep the shared `Footer` component unchanged.
+- Settings screen: remove the desktop and mobile settings-sidebar footer mounts so GitHub, documentation, and Discord icons are absent.
+- Settings screen: remove the complete Community Hub menu group and its children.
+- Settings screen desktop: render the existing settings-aware back button at the upper-left, immediately before the product logo.
+- Preserve every other settings menu, route, role check, logo, support link, version label, and content panel.
 
 ## Approaches Considered
 
@@ -32,6 +36,9 @@ On workspace screens, remove the bottom row of GitHub, documentation, Discord, a
 - Its vertical center aligns with the sidebar-collapse icon.
 - Closing the sidebar hides the wrench with the rest of the sidebar controls; reopening restores it.
 - No empty footer container remains at the bottom.
+- On desktop settings screens, the back button remains a real link to the workspace home route and is the left-most header control.
+- The product logo follows the back button in the same 60px-tall header footprint, so the settings navigation card retains its existing vertical placement.
+- Removing Community Hub closes the gap naturally; Customization follows Agent Skills.
 
 ## Verification
 
@@ -39,6 +46,8 @@ On workspace screens, remove the bottom row of GitHub, documentation, Discord, a
 - Confirm GitHub, documentation, and Discord footer links are absent from the workspace sidebar.
 - Confirm the wrench opens settings and the collapse control still works.
 - Confirm the mobile drawer has no bottom footer icons and retains its existing header settings control.
+- Confirm settings pages have no sidebar footer icons or Community Hub menu entries.
+- Confirm the settings back button appears at the desktop upper-left, targets `/`, and the logo sits immediately to its right.
 - Confirm Vite builds successfully and the working tree contains only the intentional change.
 
 The frontend currently has no component-test harness. For this small placement-only change, verification will use the running Vite app and browser interaction rather than adding a new test framework solely for this edit.
