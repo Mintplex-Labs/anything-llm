@@ -2,7 +2,7 @@
 
 ## Goal
 
-Keep the customized workspace surface focused on the features this product uses: settings live in the account menu, unused support navigation is absent, and the document-management modal exposes Documents only with no Data Connectors entry point.
+Keep the customized workspace surface focused on the features this product uses: settings live in the account menu, unused support navigation is absent, document management exposes Documents only, and the settings Tools group omits unused distribution/embed products.
 
 ## Visual Source
 
@@ -10,6 +10,7 @@ Keep the customized workspace surface focused on the features this product uses:
 - The supplied compact top-right control reference, where adjacent circular controls sit in one horizontal group.
 - The supplied account-menu screenshot at `http://localhost:3000/`, showing the current `Account`, `Support`, and `Sign out` stack and the workspace-header wrench to remove.
 - The supplied document-modal screenshot showing `Documents` and `Data Connectors`, with Data Connectors marked as unused and to be removed.
+- The supplied Tools-menu screenshot marking `Chat Embed`, `Browser Extension`, and `AnythingLLM Mobile` for removal.
 
 ## Scope
 
@@ -29,6 +30,8 @@ Keep the customized workspace surface focused on the features this product uses:
 - Document-management modal: remove the Data Connectors tab, connector view, tab-switching state, and settings fetch used only by connectors.
 - Document-management modal: render the existing Documents view directly for privileged desktop users, preserving document search, folders, uploads, workspace assignment, close behavior, progress context, and the existing mobile-only message.
 - Keep connector implementation files and backend APIs untouched because this request removes the product entry point rather than unrelated internal infrastructure.
+- Settings Tools group: remove Chat Embed, Browser Extension, and AnythingLLM Mobile menu entries for all roles.
+- Settings Tools group: preserve Event Logs, Developer API, System Prompt Variables, role filtering, group expansion, and direct routes/components for non-menu consumers.
 
 ## Approaches Considered
 
@@ -38,6 +41,8 @@ Keep the customized workspace surface focused on the features this product uses:
 4. **Render Documents directly in `ManageWorkspace` — selected for the document modal.** Remove the switcher and dead connector-only state/imports from the composition layer. This fully removes the visible entry point with the smallest regression surface.
 5. Hide Data Connectors with CSS. Rejected because the inactive feature and state remain mounted in the product.
 6. Delete every connector component, model, locale, and backend endpoint. Rejected because those modules may have other internal consumers and deleting infrastructure is broader than the requested modal cleanup.
+7. **Remove the three child-option objects from `SettingsSidebar` — selected for Tools.** This removes the entries from navigation without changing the retained Tools hierarchy or direct-route behavior.
+8. Hide the three entries with role or CSS conditions. Rejected because the unused menu configuration remains active and obscures product intent.
 
 ## Interaction And Layout
 
@@ -46,6 +51,7 @@ Keep the customized workspace surface focused on the features this product uses:
 - Opening Settings closes naturally through route navigation; Account modal and Sign out behavior remain unchanged.
 - No `Support` link or support-email request remains in `UserButton`.
 - The document modal opens directly on `My Documents`; there is no tab strip and no alternate connector state.
+- The expanded Tools group contains Event Logs, Developer API, and System Prompt Variables, with the three unused entries absent.
 - No empty footer container remains at the bottom.
 - On desktop settings screens, the back button remains a real link to the workspace home route and is the left-most header control.
 - The product logo follows the back button in the same 60px-tall header footprint, so the settings navigation card retains its existing vertical placement.
@@ -62,6 +68,7 @@ Keep the customized workspace surface focused on the features this product uses:
 - Confirm the settings back button appears at the desktop upper-left, targets `/`, and the logo sits immediately to its right.
 - Confirm opening the workspace document modal renders `My Documents` and zero `Data Connectors` controls or text.
 - Confirm document search, New Folder, close control, upload area, and workspace document panel remain rendered.
+- Confirm Tools shows zero Chat Embed, Browser Extension, and AnythingLLM Mobile entries while retaining Event Logs, Developer API, and System Prompt Variables.
 - Confirm Vite builds successfully and the working tree contains only the intentional change.
 
 The frontend currently has no component-test harness. For this small placement-only change, verification will use the running Vite app and browser interaction rather than adding a new test framework solely for this edit.

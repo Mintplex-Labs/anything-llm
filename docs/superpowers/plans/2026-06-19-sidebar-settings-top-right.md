@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Keep prior sidebar cleanup, move workspace settings access into the account popover, and remove the unused Data Connectors entry point from document management.
+**Goal:** Keep prior UI cleanup and remove unused Data Connectors, Chat Embed, Browser Extension, and AnythingLLM Mobile navigation entry points.
 
-**Architecture:** Keep the shared settings route and mobile drawer control intact. Compose workspace settings in `UserButton`, and simplify `ManageWorkspace` so its existing Documents surface renders directly without connector-only state, settings fetches, or a tab switcher.
+**Architecture:** Keep direct routes and feature implementation modules intact while removing their unused product-navigation composition. `ManageWorkspace` renders Documents directly, and `SettingsSidebar` exposes only the retained Tools children.
 
 **Tech Stack:** React 18, React Router, Phosphor Icons, Tailwind CSS, Vite.
 
@@ -173,3 +173,33 @@ Run focused ESLint for `ManageWorkspace`, then run `yarn build`. Capture the 122
 - [x] **Step 6: Commit**
 
 Stage `ManageWorkspace`, the QA report, spec, and plan; commit with `feat: remove data connectors from document modal`.
+
+### Task 6: Remove unused Tools navigation entries
+
+**Files:**
+- Modify: `frontend/src/components/SettingsSidebar/index.jsx`
+- Modify: `design-qa.md`
+
+- [x] **Step 1: Verify the requested behavior fails before implementation**
+
+Run a source contract requiring zero `settings.embeds`, `settings.browser-extension`, and `settings.mobile-app` entries in `SettingsSidebar`. Expected: FAIL and print all three existing child options.
+
+- [ ] **Step 2: Remove the three child options**
+
+Delete the Chat Embed option targeting `paths.settings.embedChatWidgets()`, the Browser Extension option targeting `paths.settings.browserExtension()`, and the AnythingLLM Mobile option targeting `paths.settings.mobile()`. Do not change route definitions, page components, locale strings, or retained Tools options.
+
+- [ ] **Step 3: Verify the source contract passes**
+
+Rerun the Step 1 contract. Expected: exit zero with no matching unused menu keys in `SettingsSidebar`.
+
+- [ ] **Step 4: Verify the live Tools group**
+
+Open a settings route with Tools expanded and assert zero exact entries for Chat Embed, Browser Extension, and AnythingLLM Mobile; assert one each for Event Logs, Developer API, and System Prompt Variables.
+
+- [ ] **Step 5: Run static and visual verification**
+
+Run focused ESLint for `SettingsSidebar`, then run `yarn build`. Capture the 1227 × 1066 settings sidebar with Tools expanded, compare it with the supplied reference in one normalized image, and update `design-qa.md` with `final result: passed` only when no P0/P1/P2 issue remains.
+
+- [ ] **Step 6: Commit**
+
+Stage `SettingsSidebar`, the QA report, spec, and plan; commit with `feat: remove unused tools navigation`.
