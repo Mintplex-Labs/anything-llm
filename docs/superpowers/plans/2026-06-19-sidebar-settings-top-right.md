@@ -238,3 +238,33 @@ Run focused ESLint for both Slash Commands files, then run `yarn build`. Capture
 - [x] **Step 7: Commit**
 
 Stage both Slash Commands files, the QA report, spec, and plan; commit with `feat: remove slash command publish action`.
+
+### Task 8: Remove Experimental Features from settings navigation
+
+**Files:**
+- Modify: `frontend/src/components/SettingsSidebar/index.jsx`
+- Modify: `design-qa.md`
+
+- [ ] **Step 1: Verify the requested behavior fails before implementation**
+
+Run a source contract requiring zero `settings.experimental-features`, `HoldToReveal`, `Flask`, and `showToast` references in `SettingsSidebar`. Expected: FAIL and print the visible menu option plus its sidebar-only unlock implementation.
+
+- [ ] **Step 2: Remove the menu option and dead reveal behavior**
+
+Delete the `HoldToReveal` block that renders the Experimental Features `Option`, delete the complete `HoldToReveal` helper, and remove the now-unused `Flask` and `showToast` imports. Keep `useEffect` and `useState` because the responsive settings sidebar and support footer still use them.
+
+- [ ] **Step 3: Verify the source contract passes**
+
+Rerun the Step 1 contract. Expected: exit zero with no Experimental Features navigation or reveal-only references in `SettingsSidebar`.
+
+- [ ] **Step 4: Verify the live settings sidebar and direct route**
+
+Reload `/settings/beta-features`. Assert zero exact `Experimental Features` sidebar links while the page heading remains one, and confirm the retained `Tools`, `System Prompt Variables`, and `Privacy & Data` navigation remain rendered. The route must stay `/settings/beta-features` and the existing Live Document Sync content must remain visible.
+
+- [ ] **Step 5: Run static and visual verification**
+
+Run focused ESLint for `SettingsSidebar`, then run `yarn build`. Capture the same 340 × 720 sidebar region as the reference, combine reference and implementation into one comparison image, and update `design-qa.md` with `final result: passed` only when no P0/P1/P2 issue remains.
+
+- [ ] **Step 6: Commit**
+
+Stage `SettingsSidebar`, the QA report, and the implementation plan; commit with `feat: remove experimental features navigation`.
