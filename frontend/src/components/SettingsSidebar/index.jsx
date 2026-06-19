@@ -354,13 +354,6 @@ const SidebarOptions = ({ user = null, t }) => (
           user={user}
           childOptions={[
             {
-              hidden: !canViewChatHistory,
-              btnText: t("settings.embeds"),
-              href: paths.settings.embedChatWidgets(),
-              flex: true,
-              roles: ["admin"],
-            },
-            {
               btnText: t("settings.event-logs"),
               href: paths.settings.logs(),
               flex: true,
@@ -381,18 +374,6 @@ const SidebarOptions = ({ user = null, t }) => (
             {
               btnText: t("settings.system-prompt-variables"),
               href: paths.settings.systemPromptVariables(),
-              flex: true,
-              roles: ["admin"],
-            },
-            {
-              btnText: t("settings.browser-extension"),
-              href: paths.settings.browserExtension(),
-              flex: true,
-              roles: ["admin", "manager"],
-            },
-            {
-              btnText: t("settings.mobile-app"),
-              href: paths.settings.mobile(),
               flex: true,
               roles: ["admin"],
             },

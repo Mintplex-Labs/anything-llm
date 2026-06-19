@@ -184,22 +184,22 @@ Stage `ManageWorkspace`, the QA report, spec, and plan; commit with `feat: remov
 
 Run a source contract requiring zero `settings.embeds`, `settings.browser-extension`, and `settings.mobile-app` entries in `SettingsSidebar`. Expected: FAIL and print all three existing child options.
 
-- [ ] **Step 2: Remove the three child options**
+- [x] **Step 2: Remove the three child options**
 
 Delete the Chat Embed option targeting `paths.settings.embedChatWidgets()`, the Browser Extension option targeting `paths.settings.browserExtension()`, and the AnythingLLM Mobile option targeting `paths.settings.mobile()`. Do not change route definitions, page components, locale strings, or retained Tools options.
 
-- [ ] **Step 3: Verify the source contract passes**
+- [x] **Step 3: Verify the source contract passes**
 
 Rerun the Step 1 contract. Expected: exit zero with no matching unused menu keys in `SettingsSidebar`.
 
-- [ ] **Step 4: Verify the live Tools group**
+- [x] **Step 4: Verify the live Tools group**
 
 Open a settings route with Tools expanded and assert zero exact entries for Chat Embed, Browser Extension, and AnythingLLM Mobile; assert one each for Event Logs, Developer API, and System Prompt Variables.
 
-- [ ] **Step 5: Run static and visual verification**
+- [x] **Step 5: Run static and visual verification**
 
 Run focused ESLint for `SettingsSidebar`, then run `yarn build`. Capture the 1227 × 1066 settings sidebar with Tools expanded, compare it with the supplied reference in one normalized image, and update `design-qa.md` with `final result: passed` only when no P0/P1/P2 issue remains.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 Stage `SettingsSidebar`, the QA report, spec, and plan; commit with `feat: remove unused tools navigation`.

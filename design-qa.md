@@ -114,6 +114,33 @@ Interaction verification:
 
 No actionable P0, P1, or P2 mismatch remains in the Documents-only modal scope.
 
+## Tools menu cleanup evidence
+
+- Source visual truth: `/var/folders/73/27tr2bhn36q0dfv81b_968sw0000gn/T/codex-clipboard-fafbecd8-d2fc-4619-95a2-17da65c075a8.png`
+- Implementation screenshot: `/var/folders/73/27tr2bhn36q0dfv81b_968sw0000gn/T/projectm-tools-menu-cleanup.png`
+- Normalized comparison: `/var/folders/73/27tr2bhn36q0dfv81b_968sw0000gn/T/projectm-tools-menu-comparison.png`
+- Viewport and state: 1227 × 1066 desktop with a 300 × 1000 sidebar crop, dark theme, `/settings/system-prompt-variables`, Tools expanded.
+
+The normalized comparison places the supplied Tools reference and the focused implementation region in one image. The Tools header, toolbox icon, chevron, indentation, text size, row spacing, active-row styling, and surrounding settings navigation remain consistent. The implementation removes Chat Embed, Browser Extension, and AnythingLLM Mobile without leaving gaps; Event Logs, Developer API, and System Prompt Variables form the complete retained group.
+
+Focused evidence is sufficient because this change affects only a single expanded navigation group. The full sidebar capture confirms the compacted Tools group flows naturally into Experimental Features and the footer links without clipping or an empty reserved area.
+
+Required fidelity surfaces:
+
+- Fonts and typography: existing Plus Jakarta Sans labels, weights, and active-row hierarchy are unchanged.
+- Spacing and layout rhythm: child indentation and vertical gaps are preserved; removing three rows compacts the group naturally.
+- Colors and visual tokens: existing sidebar, hover, text, and selected-item tokens remain unchanged.
+- Image quality and asset fidelity: the Phosphor toolbox and flask icons remain source components; no new assets were introduced.
+- Copy and content: Chat Embed, Browser Extension, and AnythingLLM Mobile are absent; Event Logs, Developer API, and System Prompt Variables remain.
+
+Verification:
+
+- RED source contract printed all three unused option keys before implementation.
+- GREEN source contract finds none of those option keys in `SettingsSidebar`.
+- Live DOM: the three removed labels and route links have count zero; all three retained Tools labels and links remain available.
+
+No actionable P0, P1, or P2 mismatch remains in the Tools-menu scope.
+
 ## Follow-up polish
 
 None required for the approved scope.
