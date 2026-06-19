@@ -2,13 +2,14 @@
 
 ## Goal
 
-Keep settings reachable without a standalone workspace-header wrench. On workspace screens, place a text `Settings` link directly below `Account` in the user menu and remove the unused `Support` entry.
+Keep the customized workspace surface focused on the features this product uses: settings live in the account menu, unused support navigation is absent, and the document-management modal exposes Documents only with no Data Connectors entry point.
 
 ## Visual Source
 
 - The annotated workspace sidebar at `http://localhost:3000/workspace/...`.
 - The supplied compact top-right control reference, where adjacent circular controls sit in one horizontal group.
 - The supplied account-menu screenshot at `http://localhost:3000/`, showing the current `Account`, `Support`, and `Sign out` stack and the workspace-header wrench to remove.
+- The supplied document-modal screenshot showing `Documents` and `Data Connectors`, with Data Connectors marked as unused and to be removed.
 
 ## Scope
 
@@ -25,12 +26,18 @@ Keep settings reachable without a standalone workspace-header wrench. On workspa
 - Settings screen: remove the complete Community Hub menu group and its children.
 - Settings screen desktop: render the existing settings-aware back button at the upper-left, immediately before the product logo.
 - Preserve every other settings menu, route, role check, logo, support link, version label, and content panel.
+- Document-management modal: remove the Data Connectors tab, connector view, tab-switching state, and settings fetch used only by connectors.
+- Document-management modal: render the existing Documents view directly for privileged desktop users, preserving document search, folders, uploads, workspace assignment, close behavior, progress context, and the existing mobile-only message.
+- Keep connector implementation files and backend APIs untouched because this request removes the product entry point rather than unrelated internal infrastructure.
 
 ## Approaches Considered
 
 1. **Move navigation into the existing account popover — selected.** Remove the desktop workspace `SettingsButton` mount and add a normal React Router link in `UserButton`. This matches the supplied hierarchy and keeps navigation in an established menu.
 2. Keep the wrench and duplicate Settings in the account menu. Rejected because it leaves two competing entry points after the user explicitly asked to remove the wrench.
 3. Reuse the shared `Footer` inside the account menu. Rejected because its icon layout and external links do not match the text-menu pattern.
+4. **Render Documents directly in `ManageWorkspace` — selected for the document modal.** Remove the switcher and dead connector-only state/imports from the composition layer. This fully removes the visible entry point with the smallest regression surface.
+5. Hide Data Connectors with CSS. Rejected because the inactive feature and state remain mounted in the product.
+6. Delete every connector component, model, locale, and backend endpoint. Rejected because those modules may have other internal consumers and deleting infrastructure is broader than the requested modal cleanup.
 
 ## Interaction And Layout
 
@@ -38,6 +45,7 @@ Keep settings reachable without a standalone workspace-header wrench. On workspa
 - The order is `Account`, `Settings`, `Sign out` when Account is available. In single-user mode the order is `Settings`, `Sign out`.
 - Opening Settings closes naturally through route navigation; Account modal and Sign out behavior remain unchanged.
 - No `Support` link or support-email request remains in `UserButton`.
+- The document modal opens directly on `My Documents`; there is no tab strip and no alternate connector state.
 - No empty footer container remains at the bottom.
 - On desktop settings screens, the back button remains a real link to the workspace home route and is the left-most header control.
 - The product logo follows the back button in the same 60px-tall header footprint, so the settings navigation card retains its existing vertical placement.
@@ -52,6 +60,8 @@ Keep settings reachable without a standalone workspace-header wrench. On workspa
 - Confirm the mobile drawer has no bottom footer icons and retains its existing header settings control.
 - Confirm settings pages have no sidebar footer icons or Community Hub menu entries.
 - Confirm the settings back button appears at the desktop upper-left, targets `/`, and the logo sits immediately to its right.
+- Confirm opening the workspace document modal renders `My Documents` and zero `Data Connectors` controls or text.
+- Confirm document search, New Folder, close control, upload area, and workspace document panel remain rendered.
 - Confirm Vite builds successfully and the working tree contains only the intentional change.
 
 The frontend currently has no component-test harness. For this small placement-only change, verification will use the running Vite app and browser interaction rather than adding a new test framework solely for this edit.

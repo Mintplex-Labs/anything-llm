@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Keep prior sidebar cleanup and move workspace settings access from the desktop header wrench into the account popover.
+**Goal:** Keep prior sidebar cleanup, move workspace settings access into the account popover, and remove the unused Data Connectors entry point from document management.
 
-**Architecture:** Keep the shared settings route and mobile drawer control intact. Remove only the desktop `SettingsButton` composition from `Sidebar`, then add a role-gated text link to the existing `UserButton` popover while deleting its unused Support data flow.
+**Architecture:** Keep the shared settings route and mobile drawer control intact. Compose workspace settings in `UserButton`, and simplify `ManageWorkspace` so its existing Documents surface renders directly without connector-only state, settings fetches, or a tab switcher.
 
 **Tech Stack:** React 18, React Router, Phosphor Icons, Tailwind CSS, Vite.
 
@@ -143,3 +143,33 @@ Run focused ESLint for both modified components and `yarn build`. Capture the 12
 - [x] **Step 6: Commit**
 
 Stage the two components, design QA report, spec, and plan; commit with `feat: move settings into account menu`.
+
+### Task 5: Remove Data Connectors from document management
+
+**Files:**
+- Modify: `frontend/src/components/Modals/ManageWorkspace/index.jsx`
+- Modify: `design-qa.md`
+
+- [x] **Step 1: Verify the requested behavior fails before implementation**
+
+Open the workspace document-management modal and assert that a button named `Data Connectors` has count zero. Expected: FAIL with count one while the legacy tab remains visible.
+
+- [ ] **Step 2: Remove connector-only composition**
+
+Delete the `System` and `DataConnectors` imports, `settings` and `selectedTab` state, the `System.keys()` effect, the privileged-user tab-switcher block, the ternary connector view, and the complete `ModalTabSwitcher` component. Keep `useUser` because `useManageWorkspaceModal` still uses it.
+
+- [ ] **Step 3: Render Documents directly**
+
+Wrap the existing `DocumentSettings` component in `EmbeddingProgressProvider` directly inside the desktop modal. Preserve `workspace`, `hideModal`, mobile handling, workspace fetch, and all document UI descendants unchanged.
+
+- [ ] **Step 4: Verify the browser assertion passes**
+
+After hot reload, reopen the modal and assert zero `Data Connectors` controls, one `My Documents` heading, one document searchbox, one `New Folder` button, and one close button. Expected: all counts match and the modal remains interactive.
+
+- [ ] **Step 5: Run static and visual verification**
+
+Run focused ESLint for `ManageWorkspace`, then run `yarn build`. Capture the 1227 × 1066 modal state, compare it with the supplied reference in one normalized image, and update `design-qa.md` with `final result: passed` only when no P0/P1/P2 issue remains.
+
+- [ ] **Step 6: Commit**
+
+Stage `ManageWorkspace`, the QA report, spec, and plan; commit with `feat: remove data connectors from document modal`.
