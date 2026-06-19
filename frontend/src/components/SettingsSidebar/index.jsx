@@ -4,7 +4,6 @@ import useLogo from "@/hooks/useLogo";
 import {
   House,
   List,
-  Flask,
   Gear,
   UserCircleGear,
   PencilSimpleLine,
@@ -18,7 +17,6 @@ import { isMobile } from "react-device-detect";
 import SettingsButton from "../SettingsButton";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import showToast from "@/utils/toast";
 import System from "@/models/system";
 import Option from "./MenuOption";
 import { CanViewChatHistoryProvider } from "../CanViewChatHistory";
@@ -388,69 +386,10 @@ const SidebarOptions = ({ user = null, t }) => (
           roles={["admin", "manager"]}
           hidden={user?.role}
         />
-        <HoldToReveal key="exp_features">
-          <Option
-            btnText={t("settings.experimental-features")}
-            icon={<Flask className="h-5 w-5 flex-shrink-0" />}
-            href={paths.settings.experimental()}
-            user={user}
-            flex={true}
-            roles={["admin"]}
-          />
-        </HoldToReveal>
       </>
     )}
   </CanViewChatHistoryProvider>
 );
-
-function HoldToReveal({ children, holdForMs = 3_000 }) {
-  let timeout = null;
-  const [showing, setShowing] = useState(
-    window.localStorage.getItem(
-      "anythingllm_experimental_feature_preview_unlocked"
-    )
-  );
-
-  useEffect(() => {
-    const onPress = (e) => {
-      if (!["Control", "Meta"].includes(e.key) || timeout !== null) return;
-      timeout = setTimeout(() => {
-        setShowing(true);
-        // Setting toastId prevents hook spam from holding control too many times or the event not detaching
-        showToast("Experimental feature previews unlocked!");
-        window.localStorage.setItem(
-          "anythingllm_experimental_feature_preview_unlocked",
-          "enabled"
-        );
-        window.removeEventListener("keypress", onPress);
-        window.removeEventListener("keyup", onRelease);
-        clearTimeout(timeout);
-      }, holdForMs);
-    };
-    const onRelease = (e) => {
-      if (!["Control", "Meta"].includes(e.key)) return;
-      if (showing) {
-        window.removeEventListener("keypress", onPress);
-        window.removeEventListener("keyup", onRelease);
-        clearTimeout(timeout);
-        return;
-      }
-      clearTimeout(timeout);
-    };
-
-    if (!showing) {
-      window.addEventListener("keydown", onPress);
-      window.addEventListener("keyup", onRelease);
-    }
-    return () => {
-      window.removeEventListener("keydown", onPress);
-      window.removeEventListener("keyup", onRelease);
-    };
-  }, []);
-
-  if (!showing) return null;
-  return children;
-}
 
 function AppVersion() {
   const { version, isLoading } = useAppVersion();

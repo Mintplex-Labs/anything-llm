@@ -167,6 +167,32 @@ Interaction verification:
 
 No actionable P0, P1, or P2 mismatch remains in the Slash Command menu scope.
 
+## Experimental Features navigation cleanup evidence
+
+- Source visual truth: `/var/folders/73/27tr2bhn36q0dfv81b_968sw0000gn/T/projectm-experimental-features-menu-before.png`
+- Implementation screenshot: `/var/folders/73/27tr2bhn36q0dfv81b_968sw0000gn/T/projectm-experimental-features-menu-cleanup.png`
+- Normalized comparison: `/var/folders/73/27tr2bhn36q0dfv81b_968sw0000gn/T/projectm-experimental-features-menu-comparison.png`
+- State: desktop dark theme on `/settings/beta-features`, settings sidebar groups matching the captured reference.
+
+The side-by-side comparison shows the same retained settings hierarchy, typography, indentation, icons, dark tokens, group chevrons, and card border before and after the cleanup. The Experimental Features row is absent in the implementation, and the retained navigation closes the space naturally without an empty interactive or layout placeholder.
+
+Required fidelity surfaces:
+
+- Fonts and typography: the existing Plus Jakarta Sans labels, weights, and hierarchy remain unchanged.
+- Spacing and layout rhythm: retained parent and child rows keep their existing indentation and vertical gaps.
+- Colors and visual tokens: the settings card, text, icons, active states, and separators are unchanged.
+- Image quality and asset fidelity: existing Phosphor icons remain source components; only the now-unused Flask import was removed.
+- Copy and content: the sidebar has no Experimental Features link; the direct page still displays its Experimental Features label and Live Document Sync content.
+
+Verification:
+
+- RED source contract printed the Experimental Features option, HoldToReveal wrapper, Flask icon, and reveal toast before implementation.
+- GREEN source contract finds none of those navigation-only references in `SettingsSidebar`.
+- Live DOM: zero exact Experimental Features links and one retained page label on `/settings/beta-features`.
+- Retained surfaces: one each of Tools, System Prompt Variables, Privacy & Data, and Live Document Sync.
+
+No actionable P0, P1, or P2 mismatch remains in the Experimental Features navigation scope.
+
 ## Follow-up polish
 
 None required for the approved scope.
