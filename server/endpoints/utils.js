@@ -1,4 +1,14 @@
 const { SystemSettings } = require("../models/systemSettings");
+const {
+  flexUserRoleValid,
+  ROLES,
+} = require("../utils/middleware/multiUserProtected");
+const { validatedRequest } = require("../utils/middleware/validatedRequest");
+const {
+  validExportTypes,
+  sendChatHistoryFile,
+} = require("../utils/chats/exportChatToFile");
+const { multiUserMode, reqBody, userFromSession } = require("../utils/http");
 
 function utilEndpoints(app) {
   if (!app) return;
@@ -21,6 +31,55 @@ function utilEndpoints(app) {
       response.sendStatus(500).end();
     }
   });
+
+  app.post(
+    "/export-chat/:type",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const { type } = request.params;
+        if (!validExportTypes.includes(type))
+          return response.sendStatus(400).end();
+
+        const { workspaceSlug, threadSlug } = reqBody(request);
+        const { Workspace } = require("../models/workspace");
+        const { WorkspaceThread } = require("../models/workspaceThread");
+        const { WorkspaceChats } = require("../models/workspaceChats");
+
+        const user = await userFromSession(request, response);
+        const workspace = multiUserMode(response)
+          ? await Workspace.getWithUser(user, { slug: String(workspaceSlug) })
+          : await Workspace.get({ slug: String(workspaceSlug) });
+        if (!workspace) return response.sendStatus(404).end();
+
+        let thread;
+        if (threadSlug) {
+          thread = await WorkspaceThread.get({
+            slug: String(threadSlug),
+            user_id: user?.id || null,
+          });
+          if (!thread) return response.sendStatus(404).end();
+        }
+
+        const chats = await WorkspaceChats.where({
+          workspaceId: workspace.id,
+          user_id: user?.id || null,
+          thread_id: thread?.id || null,
+        });
+        if (chats.length === 0) return response.sendStatus(400).end();
+
+        const meta = {
+          workspaceName: workspace.name,
+          threadName: thread?.name || null,
+        };
+
+        return sendChatHistoryFile(response, chats, meta, type);
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
 
   const {
     dockerModelRunnerUtilsEndpoints,
@@ -174,6 +233,12 @@ function getModelTag() {
       break;
     case "lemonade":
       model = process.env.LEMONADE_LLM_MODEL_PREF;
+      break;
+    case "minimax":
+      model = process.env.MINIMAX_MODEL_PREF;
+      break;
+    case "cerebras":
+      model = process.env.CEREBRAS_MODEL_PREF;
       break;
     default:
       model = "--";

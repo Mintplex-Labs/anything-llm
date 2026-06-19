@@ -77,7 +77,6 @@ AnythingLLMは複数ユーザーもサポートしており、インスタンス
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [Anthropic](https://www.anthropic.com/)
 - [Google Gemini Pro](https://ai.google.dev/)
-- [Hugging Face (チャットモデル)](https://huggingface.co/)
 - [Ollama (チャットモデル)](https://ollama.ai/)
 - [LM Studio (すべてのモデル)](https://lmstudio.ai)
 - [LocalAi (すべてのモデル)](https://localai.io/)
@@ -98,6 +97,8 @@ AnythingLLMは複数ユーザーもサポートしており、インスタンス
 - [PrivateModeAI (chat models)](https://privatemode.ai/)
 - [SambaNova Cloud (chat models)](https://cloud.sambanova.ai/)
 - [Lemonade by AMD](https://lemonade-server.ai)
+- [Minimax](https://platform.minimax.io)
+- [Cerebras (chat models)](https://www.cerebras.ai/)
 
 **埋め込みモデル：**
 

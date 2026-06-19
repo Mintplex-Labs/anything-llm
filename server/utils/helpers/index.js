@@ -33,12 +33,15 @@
 
 /**
  * @typedef {Object} BaseLLMProvider - A basic llm provider object
+ * @property {string} className - Provider identifier used in logs and response metrics.
+ * @property {string} model - The active model name for this provider instance.
+ * @property {number} defaultTemp - Default sampling temperature (typically 0.7).
  * @property {Function} streamingEnabled - Checks if streaming is enabled for chat completions.
  * @property {Function} promptWindowLimit - Returns the token limit for the current model.
  * @property {Function} isValidChatCompletionModel - Validates if the provided model is suitable for chat completion.
  * @property {Function} constructPrompt - Constructs a formatted prompt for the chat completion request.
- * @property {getChatCompletionFunction} getChatCompletion - Gets a chat completion response from OpenAI.
- * @property {streamGetChatCompletionFunction} streamGetChatCompletion - Streams a chat completion response from OpenAI.
+ * @property {getChatCompletionFunction} getChatCompletion - Gets a chat completion response.
+ * @property {streamGetChatCompletionFunction} streamGetChatCompletion - Streams a chat completion response.
  * @property {Function} handleStream - Handles the streaming response.
  * @property {Function} embedTextInput - Embeds the provided text input using the specified embedder.
  * @property {Function} embedChunks - Embeds multiple chunks of text using the specified embedder.
@@ -125,6 +128,8 @@ function getVectorDbClass(getExactly = null) {
 
 /**
  * Returns the LLMProvider with its embedder attached via system or via defined provider.
+ * @notice Use resolveProviderConnector instead as this function DOES NOT handle the anythingllm-router provider.
+ * You should only use this function if you are absolutely sure you are not using the anythingllm-router provider ever in your code.
  * @param {{provider: string | null, model: string | null} | null} params - Initialize params for LLMs provider
  * @returns {BaseLLMProvider}
  */
@@ -169,9 +174,6 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "mistral":
       const { MistralLLM } = require("../AiProviders/mistral");
       return new MistralLLM(embedder, model);
-    case "huggingface":
-      const { HuggingFaceLLM } = require("../AiProviders/huggingface");
-      return new HuggingFaceLLM(embedder, model);
     case "groq":
       const { GroqLLM } = require("../AiProviders/groq");
       return new GroqLLM(embedder, model);
@@ -214,9 +216,6 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "moonshotai":
       const { MoonshotAiLLM } = require("../AiProviders/moonshotAi");
       return new MoonshotAiLLM(embedder, model);
-    case "dpais":
-      const { DellProAiStudioLLM } = require("../AiProviders/dellProAiStudio");
-      return new DellProAiStudioLLM(embedder, model);
     case "cometapi":
       const { CometApiLLM } = require("../AiProviders/cometapi");
       return new CometApiLLM(embedder, model);
@@ -243,6 +242,18 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "lemonade":
       const { LemonadeLLM } = require("../AiProviders/lemonade");
       return new LemonadeLLM(embedder, model);
+    case "minimax":
+      const { MinimaxLLM } = require("../AiProviders/minimax");
+      return new MinimaxLLM(embedder, model);
+    case "cerebras":
+      const { CerebrasLLM } = require("../AiProviders/cerebras");
+      return new CerebrasLLM(embedder, model);
+    case "anythingllm-router":
+      // Model router is handled separately in stream.js via AnythingLLMModelRouter.
+      // This case should not be hit directly - if it is, throw a descriptive error.
+      throw new Error(
+        "anythingllm-router provider must be resolved via AnythingLLMModelRouter class, not getLLMProvider directly."
+      );
     default:
       throw new Error(
         `ENV: No valid LLM_PROVIDER value found in environment! Using ${process.env.LLM_PROVIDER}`
@@ -351,9 +362,6 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "mistral":
       const { MistralLLM } = require("../AiProviders/mistral");
       return MistralLLM;
-    case "huggingface":
-      const { HuggingFaceLLM } = require("../AiProviders/huggingface");
-      return HuggingFaceLLM;
     case "groq":
       const { GroqLLM } = require("../AiProviders/groq");
       return GroqLLM;
@@ -393,9 +401,6 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "ppio":
       const { PPIOLLM } = require("../AiProviders/ppio");
       return PPIOLLM;
-    case "dpais":
-      const { DellProAiStudioLLM } = require("../AiProviders/dellProAiStudio");
-      return DellProAiStudioLLM;
     case "moonshotai":
       const { MoonshotAiLLM } = require("../AiProviders/moonshotAi");
       return MoonshotAiLLM;
@@ -425,6 +430,15 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "lemonade":
       const { LemonadeLLM } = require("../AiProviders/lemonade");
       return LemonadeLLM;
+    case "minimax":
+      const { MinimaxLLM } = require("../AiProviders/minimax");
+      return MinimaxLLM;
+    case "cerebras":
+      const { CerebrasLLM } = require("../AiProviders/cerebras");
+      return CerebrasLLM;
+    case "anythingllm-router":
+      const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
+      return AnythingLLMModelRouter;
     default:
       return null;
   }
@@ -461,8 +475,6 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.OPENROUTER_MODEL_PREF;
     case "mistral":
       return process.env.MISTRAL_MODEL_PREF;
-    case "huggingface":
-      return null;
     case "groq":
       return process.env.GROQ_MODEL_PREF;
     case "koboldcpp":
@@ -489,8 +501,6 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.NVIDIA_NIM_LLM_MODEL_PREF;
     case "ppio":
       return process.env.PPIO_MODEL_PREF;
-    case "dpais":
-      return process.env.DPAIS_LLM_MODEL_PREF;
     case "moonshotai":
       return process.env.MOONSHOT_AI_MODEL_PREF;
     case "cometapi":
@@ -509,6 +519,10 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.SAMBANOVA_LLM_MODEL_PREF;
     case "lemonade":
       return process.env.LEMONADE_LLM_MODEL_PREF;
+    case "minimax":
+      return process.env.MINIMAX_MODEL_PREF;
+    case "cerebras":
+      return process.env.CEREBRAS_MODEL_PREF;
     default:
       return null;
   }
@@ -593,6 +607,104 @@ function humanFileSize(bytes, si = false, dp = 1) {
   return bytes.toFixed(dp) + " " + units[u];
 }
 
+/**
+ * Async wrapper that resolves the correct LLM connector for a workspace,
+ * handling the anythingllm-router provider transparently. Callers get back
+ * a ready-to-use connector without needing to know about routing internals.
+ *
+ * @param {Object} opts
+ * @param {Object} opts.workspace - The workspace record (required)
+ * @param {string} [opts.prompt] - The current user prompt
+ * @param {Object|null} [opts.user] - The user object
+ * @param {Object|null} [opts.thread] - The thread object
+ * @param {Object[]} [opts.attachments] - Attachments array
+ * @param {Object|null} [opts.chatHistoryOverride] - Pre-fetched chat history
+ * @param {number|null} [opts.messageCountOverride] - Override for message count
+ * @param {string|null} [opts.apiSessionId] - API session scope
+ * @returns {Promise<{connector: BaseLLMProvider, routingMetadata: Object|null, prefetchedContext: Object|null}>}
+ */
+async function resolveProviderConnector({
+  workspace,
+  prompt = "",
+  user = null,
+  thread = null,
+  attachments = [],
+  chatHistoryOverride = null,
+  messageCountOverride = null,
+  apiSessionId = null,
+}) {
+  const effectiveProvider = workspace?.chatProvider || process.env.LLM_PROVIDER;
+
+  if (effectiveProvider !== "anythingllm-router") {
+    return {
+      connector: getLLMProvider({
+        provider: workspace?.chatProvider,
+        model: workspace?.chatModel,
+      }),
+      routingMetadata: null,
+      prefetchedContext: null,
+    };
+  }
+
+  const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
+  const { ModelRouterService } = require("../router");
+
+  const routerWorkspace = workspace?.router_id
+    ? workspace
+    : {
+        ...workspace,
+        router_id: process.env.MODEL_ROUTER_ID
+          ? Number(process.env.MODEL_ROUTER_ID)
+          : null,
+      };
+
+  const router = new AnythingLLMModelRouter(routerWorkspace);
+  const ctx = await ModelRouterService.gatherRoutingContext({
+    workspace,
+    user,
+    thread,
+    message: prompt,
+    chatHistoryOverride,
+    messageCountOverride,
+    apiSessionId,
+  });
+
+  await router.resolve(
+    {
+      prompt,
+      conversationTokenCount: ctx.conversationTokenCount,
+      conversationMessageCount: ctx.conversationMessageCount,
+      attachments,
+    },
+    { user, thread }
+  );
+
+  return {
+    connector: router.delegateProvider,
+    routingMetadata: router.routingMetadata,
+    prefetchedContext: ctx,
+  };
+}
+
+/**
+ * Strips thought/thinking tags from text (e.g., <thinking>...</thinking>)
+ * Useful for cleaning LLM responses before sending notifications.
+ * @param {string} text - The text to strip thoughts from.
+ * @returns {string} - The text with thought tags and their content removed.
+ */
+const THOUGHT_KEYWORDS = ["thought", "thinking", "think", "thought_chain"];
+const THOUGHT_REGEX_COMPLETE = new RegExp(
+  THOUGHT_KEYWORDS.map(
+    (keyword) =>
+      `<${keyword}\\s*(?:[^>]*?)?\\s*>[\\s\\S]*?<\\/${keyword}\\s*(?:[^>]*?)?>`
+  ).join("|"),
+  "gi"
+);
+
+function stripThinkingFromText(text = "") {
+  return text.replace(THOUGHT_REGEX_COMPLETE, "").trim();
+}
+
 module.exports = {
   getEmbeddingEngineSelection,
   maximumChunkLength,
@@ -600,7 +712,9 @@ module.exports = {
   getLLMProviderClass,
   getBaseLLMProviderModel,
   getLLMProvider,
+  resolveProviderConnector,
   toChunks,
   humanFileSize,
   reportEmbeddingProgress,
+  stripThinkingFromText,
 };

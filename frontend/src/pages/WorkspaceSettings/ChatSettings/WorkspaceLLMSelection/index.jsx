@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import WorkspaceLLMItem from "./WorkspaceLLMItem";
-import { AVAILABLE_LLM_PROVIDERS } from "@/pages/GeneralSettings/LLMPreference";
+import { ALL_LLM_PROVIDERS } from "@/pages/GeneralSettings/LLMPreference";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import ChatModelSelection from "./ChatModelSelection";
+import RouterSelection from "./RouterSelection";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
@@ -11,11 +12,11 @@ import paths from "@/utils/paths";
 // Some providers do not support model selection via /models.
 // In that case we allow the user to enter the model name manually and hope they
 // type it correctly.
-const FREE_FORM_LLM_SELECTION = ["bedrock", "azure", "generic-openai"];
+const FREE_FORM_LLM_SELECTION = ["azure"];
 
 // Some providers do not support model selection via /models
 // and only have a fixed single-model they can use.
-const NO_MODEL_SELECTION = ["default", "huggingface"];
+const NO_MODEL_SELECTION = ["default", "anythingllm-router"];
 
 // Some providers we just fully disable for ease of use.
 const DISABLED_PROVIDERS = [];
@@ -29,7 +30,7 @@ const LLM_DEFAULT = {
   requiredConfig: [],
 };
 
-const LLMS = [LLM_DEFAULT, ...AVAILABLE_LLM_PROVIDERS].filter(
+const LLMS = [LLM_DEFAULT, ...ALL_LLM_PROVIDERS].filter(
   (llm) => !DISABLED_PROVIDERS.includes(llm.value)
 );
 
@@ -169,6 +170,12 @@ export default function WorkspaceLLMSelection({
 
 // TODO: Add this to agent selector as well as make generic component.
 function ModelSelector({ selectedLLM, workspace, setHasChanges }) {
+  if (selectedLLM === "anythingllm-router") {
+    return (
+      <RouterSelection workspace={workspace} setHasChanges={setHasChanges} />
+    );
+  }
+
   if (NO_MODEL_SELECTION.includes(selectedLLM)) {
     if (selectedLLM !== "default") {
       return (

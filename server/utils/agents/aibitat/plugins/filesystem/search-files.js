@@ -280,7 +280,9 @@ function searchFilesWithRipgrepGlob({
   for (const pattern of patterns) args.push("--glob", pattern);
   for (const exclude of excludePatterns) args.push("--glob", `!${exclude}`);
 
-  args.push(searchPath);
+  // The "--" prevents searchPath from being parsed as an option if it starts with "-"
+  // (defense against argument injection attacks)
+  args.push("--", searchPath);
   const result = spawnSync(rgPath, args, {
     encoding: "utf-8",
     maxBuffer: 10 * 1024 * 1024,
@@ -337,8 +339,14 @@ function searchWithRipgrep({
   if (filePattern) args.push("--glob", filePattern);
   for (const exclude of excludePatterns) args.push("--glob", `!${exclude}`);
 
-  // Pattern and path come last
-  args.push(pattern, searchPath);
+  // Security: prevent argument injection attacks where a malicious pattern like
+  // "--pre=/bin/sh" could cause ripgrep to execute arbitrary commands.
+  // The "--" separator tells ripgrep to treat everything after it as positional
+  // arguments, not options. The startsWith("-") check is defense-in-depth.
+  if (typeof pattern === "string" && pattern.startsWith("-")) {
+    throw new Error("search pattern must not start with '-'");
+  }
+  args.push("--", pattern, searchPath);
   const result = spawnSync(rgPath, args, {
     encoding: "utf-8",
     maxBuffer: 10 * 1024 * 1024, // 10MB

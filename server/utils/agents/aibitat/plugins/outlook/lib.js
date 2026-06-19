@@ -600,7 +600,6 @@ class OutlookBridge {
       redirect_uri: redirectUri,
       response_mode: "query",
       scope: SCOPES,
-      prompt: "consent",
     });
 
     const url = `${MICROSOFT_AUTH_URL}/${authority}/oauth2/v2.0/authorize?${params.toString()}`;

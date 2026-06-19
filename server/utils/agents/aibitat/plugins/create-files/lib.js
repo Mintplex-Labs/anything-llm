@@ -269,6 +269,39 @@ class CreateFilesManager {
   }
 
   /**
+   * Removes characters that are illegal in XML 1.0 from a string, or - when
+   * given an array/object - recursively from every string it contains.
+   *
+   * OOXML documents (.docx/.xlsx/.pptx) embed their text directly into internal
+   * XML parts (e.g. word/document.xml). XML 1.0 §2.2 forbids every C0 control
+   * character except tab (U+0009), line feed (U+000A) and carriage return
+   * (U+000D). When one of the forbidden characters reaches the content the file
+   * is still a valid ZIP, but Office refuses to open it ("Word experienced an
+   * error trying to open the file."). The most common offender is a form feed
+   * (U+000C): an LLM that emits LaTeX such as `\frac` produces a `\f` JSON
+   * escape that decodes to U+000C before it ever reaches the generator.
+   *
+   * Stripping these characters yields a readable document instead of a corrupt
+   * one. Non-string scalars are returned untouched.
+   * @param {*} value - A string, or an array/object that may contain strings.
+   * @returns {*} The value with all invalid XML characters removed.
+   */
+  stripInvalidXmlChars(value) {
+    if (typeof value === "string")
+      // eslint-disable-next-line no-control-regex
+      return value.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, "");
+    if (Array.isArray(value))
+      return value.map((item) => this.stripInvalidXmlChars(item));
+    if (value && typeof value === "object") {
+      const cleaned = {};
+      for (const [key, val] of Object.entries(value))
+        cleaned[key] = this.stripInvalidXmlChars(val);
+      return cleaned;
+    }
+    return value;
+  }
+
+  /**
    * Gets the AnythingLLM logo for branding.
    * @param {Object} options
    * @param {boolean} [options.forDarkBackground=false] - True to get light logo (for dark backgrounds), false for dark logo (for light backgrounds)
@@ -276,7 +309,9 @@ class CreateFilesManager {
    * @returns {Buffer|string|null} Logo as Buffer, data URI string, or null if file not found
    */
   getLogo({ forDarkBackground = false, format = "buffer" } = {}) {
-    const assetsPath = path.join(__dirname, "../../../../../storage/assets");
+    // On Docker this is pre-packed images local to this lib.
+    // Does not honor Whitelabeling changes/preferences right now.
+    const assetsPath = path.join(__dirname, "assets");
     const filename = forDarkBackground
       ? "anything-llm.png"
       : "anything-llm-invert.png";

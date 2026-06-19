@@ -23,6 +23,13 @@ const SystemPromptVariables = {
       multiUserRequired: false,
     },
     {
+      key: "time_24",
+      value: () => moment().format("HH:mm:ss"),
+      description: "Current time (24-hour format)",
+      type: "system",
+      multiUserRequired: false,
+    },
+    {
       key: "date",
       value: () => moment().format("LL"),
       description: "Current date",
@@ -33,6 +40,13 @@ const SystemPromptVariables = {
       key: "datetime",
       value: () => moment().format("LLLL"),
       description: "Current date and time",
+      type: "system",
+      multiUserRequired: false,
+    },
+    {
+      key: "datetime_24",
+      value: () => moment().format("YYYY-MM-DD HH:mm:ss"),
+      description: "Current date and time (24-hour format)",
       type: "system",
       multiUserRequired: false,
     },

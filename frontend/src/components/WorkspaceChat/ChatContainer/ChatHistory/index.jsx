@@ -6,16 +6,18 @@ import {
   useCallback,
   forwardRef,
 } from "react";
+import debounce from "lodash.debounce";
 import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
 import StatusResponse from "./StatusResponse";
 import ToolApprovalRequest from "./ToolApprovalRequest";
+import ClarifyingQuestionCard from "./ClarifyingQuestion";
 import FileDownloadCard from "./FileDownloadCard";
 import { useManageWorkspaceModal } from "../../../Modals/ManageWorkspace";
 import ManageWorkspace from "../../../Modals/ManageWorkspace";
 import { ArrowDown } from "@phosphor-icons/react";
-import debounce from "lodash.debounce";
 import Chartable from "./Chartable";
+import ModelRouteNotification from "./ModelRouteNotification";
 import Workspace from "@/models/workspace";
 import { useParams } from "react-router-dom";
 import paths from "@/utils/paths";
@@ -38,6 +40,7 @@ export default forwardRef(function (
 ) {
   const lastScrollTopRef = useRef(0);
   const chatHistoryRef = useRef(null);
+  const isProgrammaticScroll = useRef(false);
   const { threadSlug = null } = useParams();
   const { showing, hideModal } = useManageWorkspaceModal();
   const [isAtBottom, setIsAtBottom] = useState(true);
@@ -48,42 +51,38 @@ export default forwardRef(function (
 
   useEffect(() => {
     if (!isUserScrolling && (isAtBottom || isStreaming)) {
-      scrollToBottom(false); // Use instant scroll for auto-scrolling
+      scrollToBottom(false);
     }
   }, [history, isAtBottom, isStreaming, isUserScrolling]);
 
-  const handleScroll = (e) => {
+  const handleScroll = useCallback((e) => {
     const { scrollTop, scrollHeight, clientHeight } = e.target;
     const isBottom = scrollHeight - scrollTop - clientHeight < 2;
 
-    // Detect if this is a user-initiated scroll
-    if (Math.abs(scrollTop - lastScrollTopRef.current) > 10) {
+    if (isProgrammaticScroll.current) {
+      isProgrammaticScroll.current = false;
+    } else if (Math.abs(scrollTop - lastScrollTopRef.current) > 10) {
       setIsUserScrolling(!isBottom);
     }
 
     setIsAtBottom(isBottom);
     lastScrollTopRef.current = scrollTop;
-  };
+  }, []);
 
-  const debouncedScroll = debounce(handleScroll, 100);
+  const debouncedScroll = useMemo(
+    () => debounce(handleScroll, 50),
+    [handleScroll]
+  );
 
   useEffect(() => {
-    const chatHistoryElement = chatHistoryRef.current;
-    if (chatHistoryElement) {
-      chatHistoryElement.addEventListener("scroll", debouncedScroll);
-      return () =>
-        chatHistoryElement.removeEventListener("scroll", debouncedScroll);
-    }
-  }, []);
+    return () => debouncedScroll.cancel();
+  }, [debouncedScroll]);
 
   const scrollToBottom = (smooth = false) => {
     if (chatHistoryRef.current) {
+      isProgrammaticScroll.current = true;
       chatHistoryRef.current.scrollTo({
         top: chatHistoryRef.current.scrollHeight,
-
-        // Smooth is on when user clicks the button but disabled during auto scroll
-        // We must disable this during auto scroll because it causes issues with
-        // detecting when we are at the bottom of the chat.
         ...(smooth ? { behavior: "smooth" } : {}),
       });
     }
@@ -95,85 +94,90 @@ export default forwardRef(function (
     scrollToBottom,
   });
 
-  const saveEditedMessage = async ({
-    editedMessage,
-    chatId,
-    role,
-    attachments = [],
-    saveOnly = false,
-  }) => {
-    if (!editedMessage) return; // Don't save empty edits.
+  const historyRef = useRef(history);
+  historyRef.current = history;
+  const sendCommandRef = useRef(sendCommand);
+  sendCommandRef.current = sendCommand;
 
-    // "Save" on a user message: update the prompt text without regenerating
-    if (role === "user" && saveOnly) {
-      const updatedHistory = [...history];
-      const targetIdx = history.findIndex((msg) => msg.chatId === chatId);
-      if (targetIdx < 0) return;
-      updatedHistory[targetIdx].content = editedMessage;
-      updateHistory(updatedHistory);
-      await Workspace.updateChat(
+  const saveEditedMessage = useCallback(
+    async ({
+      editedMessage,
+      chatId,
+      role,
+      attachments = [],
+      saveOnly = false,
+    }) => {
+      if (!editedMessage) return;
+      const currentHistory = historyRef.current;
+
+      if (role === "user" && saveOnly) {
+        const updatedHistory = [...currentHistory];
+        const targetIdx = currentHistory.findIndex(
+          (msg) => msg.chatId === chatId
+        );
+        if (targetIdx < 0) return;
+        updatedHistory[targetIdx].content = editedMessage;
+        updateHistory(updatedHistory);
+        await Workspace.updateChat(
+          workspace.slug,
+          threadSlug,
+          chatId,
+          editedMessage,
+          "user"
+        );
+        return;
+      }
+
+      if (role === "user") {
+        const updatedHistory = currentHistory.slice(
+          0,
+          currentHistory.findIndex((msg) => msg.chatId === chatId) + 1
+        );
+        updatedHistory[updatedHistory.length - 1].content = editedMessage;
+        await Workspace.deleteEditedChats(workspace.slug, threadSlug, chatId);
+        sendCommandRef.current({
+          text: editedMessage,
+          autoSubmit: true,
+          history: updatedHistory,
+          attachments,
+        });
+        return;
+      }
+
+      if (role === "assistant") {
+        const updatedHistory = [...currentHistory];
+        const targetIdx = currentHistory.findIndex(
+          (msg) => msg.chatId === chatId && msg.role === role
+        );
+        if (targetIdx < 0) return;
+        updatedHistory[targetIdx].content = editedMessage;
+        updateHistory(updatedHistory);
+        await Workspace.updateChat(
+          workspace.slug,
+          threadSlug,
+          chatId,
+          editedMessage
+        );
+        return;
+      }
+    },
+    [workspace.slug, threadSlug, updateHistory]
+  );
+
+  const forkThread = useCallback(
+    async (chatId) => {
+      const newThreadSlug = await Workspace.forkThread(
         workspace.slug,
         threadSlug,
-        chatId,
-        editedMessage,
-        "user"
+        chatId
       );
-      return;
-    }
-
-    // "Submit" on a user message: auto-regenerate the response and delete all
-    // messages post modified message
-    if (role === "user") {
-      // remove all messages after the edited message
-      // technically there are two chatIds per-message pair, this will split the first.
-      const updatedHistory = history.slice(
-        0,
-        history.findIndex((msg) => msg.chatId === chatId) + 1
-      );
-
-      // update last message in history to edited message
-      updatedHistory[updatedHistory.length - 1].content = editedMessage;
-      // remove all edited messages after the edited message in backend
-      await Workspace.deleteEditedChats(workspace.slug, threadSlug, chatId);
-      sendCommand({
-        text: editedMessage,
-        autoSubmit: true,
-        history: updatedHistory,
-        attachments,
-      });
-      return;
-    }
-
-    // If role is an assistant we simply want to update the comment and save on the backend as an edit.
-    if (role === "assistant") {
-      const updatedHistory = [...history];
-      const targetIdx = history.findIndex(
-        (msg) => msg.chatId === chatId && msg.role === role
-      );
-      if (targetIdx < 0) return;
-      updatedHistory[targetIdx].content = editedMessage;
-      updateHistory(updatedHistory);
-      await Workspace.updateChat(
+      window.location.href = paths.workspace.thread(
         workspace.slug,
-        threadSlug,
-        chatId,
-        editedMessage
+        newThreadSlug
       );
-      return;
-    }
-  };
-
-  const forkThread = async (chatId) => {
-    const newThreadSlug = await Workspace.forkThread(
-      workspace.slug,
-      threadSlug,
-      chatId
-    );
-    window.location.href = paths.workspace.thread(
-      workspace.slug,
-      newThreadSlug
-    );
-  };
+    },
+    [workspace.slug, threadSlug]
+  );
 
   const compiledHistory = useMemo(
     () =>
@@ -216,7 +220,7 @@ export default forwardRef(function (
           className={`markdown text-white/80 light:text-theme-text-primary font-light ${textSizeClass} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col items-center justify-start ${showScrollbar ? "show-scrollbar" : "no-scroll"}`}
           id="chat-history"
           ref={chatHistoryRef}
-          onScroll={handleScroll}
+          onScroll={debouncedScroll}
         >
           <div className="w-full max-w-[750px]">
             {compiledHistory.map((item, index) =>
@@ -294,6 +298,25 @@ function buildMessages({
       return acc;
     }
 
+    if (props.type === "modelRouteNotification") {
+      const lastMsg = history[history.length - 1];
+      const isLast =
+        index === history.length - 1 ||
+        (index === history.length - 2 &&
+          (lastMsg?.animate || lastMsg?.pending));
+      const isStreaming =
+        isLast &&
+        (index === history.length - 1 || lastMsg?.animate || lastMsg?.pending);
+      acc.push(
+        <ModelRouteNotification
+          key={`route-${props.uuid}`}
+          routedTo={props.routedTo}
+          isStreaming={isStreaming}
+        />
+      );
+      return acc;
+    }
+
     if (props.type === "toolApprovalRequest") {
       acc.push(
         <ToolApprovalRequest
@@ -302,6 +325,20 @@ function buildMessages({
           skillName={props.skillName}
           payload={props.payload}
           description={props.description}
+          timeoutMs={props.timeoutMs}
+          websocket={websocket}
+        />
+      );
+      return acc;
+    }
+
+    if (props.type === "clarifyingQuestion") {
+      acc.push(
+        <ClarifyingQuestionCard
+          key={`clarify-${props.requestId}`}
+          requestId={props.requestId}
+          questions={props.questions}
+          allowSkip={props.allowSkip}
           timeoutMs={props.timeoutMs}
           websocket={websocket}
         />
@@ -344,6 +381,7 @@ function buildMessages({
           forkThread={forkThread}
           metrics={props.metrics}
           outputs={props.outputs}
+          clarifyingQuestions={props.clarifyingQuestions}
         />
       );
     }

@@ -110,6 +110,7 @@ const TRANSLATIONS = {
       telegram: "Telegram",
     },
     "scheduled-jobs": "Sarcini programate",
+    "model-router": "Model de router",
   },
   login: {
     "multi-user": {
@@ -556,7 +557,6 @@ const TRANSLATIONS = {
     similarity_match: "meci",
     source_count_one: "{{count}} – referință",
     source_count_other: "Referințe către {{count}}",
-    preset_exit_description: "Întrerupeți sesiunea actuală a agentului",
     add_new: "Adaugă",
     edit: "Editează",
     publish: "Publica",
@@ -577,6 +577,21 @@ const TRANSLATIONS = {
       tool_call_was_approved: "Cererea de achiziție a fost aprobată.",
       tool_call_was_rejected:
         "Cererea de utilizare a instrumentului a fost respinsă.",
+      clarifying_skip: "Lasă-l pe agent să ia decizia.",
+      clarifying_submit: "Trimite",
+      clarifying_skipped: "Lasă-l pe agent să ia decizia.",
+      clarifying_timeout: "Nu a fost depusă răspunsul în termenul stabilit.",
+      clarifying_pagination: "{{current}} din {{total}}",
+      clarifying_prev_aria: "Întrebarea anterioară",
+      clarifying_next_aria: "Următoarea întrebare",
+      clarifying_close_aria: "Închide și sări",
+      clarifying_other: "Altele",
+      clarifying_other_placeholder: "Introduceți răspunsul",
+      batch_progress: "{{answered}} de la {{total}} a răspuns",
+      batch_skip_this: "Sări peste",
+      batch_submit_all: "Trimiteți toate",
+      batch_next: "Următorul",
+      answer_skipped: "[utilizatorul a sărit peste]",
     },
     custom_skills: "Abilități personalizate",
     agent_flows: "Fluxuri de agenți",
@@ -584,6 +599,49 @@ const TRANSLATIONS = {
     loading_mcp_servers: "Încărcare servere MCP...",
     app_integrations: "Integrarea aplicațiilor",
     sub_skills: "Abilități specifice",
+    memories: {
+      title: "Amintiri",
+      empty:
+        "Până acum, nu există nicio amintire. După ce interacționați mai mult cu chatbot-ul, veți începe să aveți mai multe amintiri.",
+      empty_cta: "crează o nouă amintire",
+      tab_workspace: "Spațiu de lucru",
+      tab_global: "Global",
+      toggle: {
+        label: "Activează personalizarea",
+        description:
+          "Permite-i asistentului tău să reamintească informații despre tine sau despre acest spațiu de lucru și să le folosească în conversații.",
+      },
+      auto_extraction: {
+        label: "Amintiri automate",
+        description:
+          "Permite-i asistentului să creeze automat amintiri în fundal.",
+      },
+      menu: {
+        edit: "Editează",
+        delete: "Șterge",
+        move_to_global: "Migrarea către nivel global",
+        move_to_workspace: "Mutare către spațiul de lucru",
+      },
+      modal: {
+        create_title: "Creați amintiri",
+        edit_title: "Modifică memoria",
+        create_description:
+          "Amintirile ar trebui să fie formulate într-un singur enunț, clar și concis. De exemplu: „Utilizatorul preferă Python față de JavaScript”.",
+        edit_description: "Actualizați conținutul acestui memorie.",
+        label: "Memorie",
+        placeholder:
+          "De exemplu, numele utilizatorului este Joe, utilizatorul lucrează cu AnythingLLM, etc.",
+        create: "Creați",
+        save: "Salvați",
+        cancel: "Anula",
+      },
+    },
+    stt_unsupported: "Accesul la microfon nu este suportat în acest browser.",
+    stt_mic_denied:
+      "Nu am putut accesa microfonul. Vă rugăm să acordați permisiunea și să încercați din nou.",
+    stt_transcription_failed: "Transcriere eșuată: {{error}}",
+    export: "Exportați conversația sub forma de...",
+    exporting: "Exportare...",
   },
   profile_settings: {
     edit_account: "Editează contul",
@@ -1230,6 +1288,18 @@ const TRANSLATIONS = {
             "Numărul maxim de instrumente care pot fi selectate pentru fiecare interogare. Recomandăm stabilirea acestui parametru la valori mai mari pentru modelele cu un context mai amplu.",
         },
       },
+      "clarifying-questions": {
+        title:
+          "Permite agentului să pună întrebări suplimentare pentru a clarifica anumite aspecte.",
+        "beta-badge": "Versiune de test",
+        description:
+          "Când este activată, agenții pot întrerupe discuția pentru a pune întrebări scurte și clare, dacă solicitarea dumneavoastră este ambiguă.",
+        "max-per-turn": {
+          title: "Numărul maxim de întrebări per tur",
+          description:
+            "Câte întrebări suplimentare poate adresa agentul în cadrul unui singur sondaj.",
+        },
+      },
     },
   },
   recorded: {
@@ -1690,6 +1760,186 @@ const TRANSLATIONS = {
       timed_out: "Timpul a expirat",
       running: "Cursa",
       queued: "În așteptare",
+    },
+  },
+  "model-router": {
+    title: "Modele de routere",
+    description:
+      "Router-ele de model vă permit să definiți reguli pentru a direcționa automat mesajele de chat către diferiți furnizori și modele de LLM, în funcție de anumite condiții.",
+    table: {
+      name: "Nume",
+      fallback: "Opțiune de rezervă",
+      rules: "Reguli",
+      workspaces: "Spații de lucru",
+    },
+    "no-routers": "Nu există încă modele de routere disponibile.",
+    "empty-description":
+      "Momentan, nu există routere configurate. Creați unul pentru a începe.",
+    "new-router-button": "Router nou",
+    "delete-confirm":
+      'Sunteți sigur că doriți să ștergeți routerul "{{name}}"?\nAceasta va elimina toate regulile sale și va deconecta orice spațiu de lucru care îl utilizează.\n\nAceastă acțiune este ireversibilă.',
+    "toast-deleted": "Router-ul a fost șters",
+    "toast-delete-failed": "Nu a reușit să ștergă routerul: {{error}}",
+    "new-router": {
+      title: "Creați un nou router",
+      name: "Nume",
+      "name-placeholder": "de exemplu, Optimizatorul de Costuri",
+      description: "Descriere",
+      "description-placeholder": "Descriere opțională",
+      "fallback-label": "Furnizor principal și model",
+      "fallback-description":
+        "Utilizat atunci când nu există nicio regulă de rutare care să se potrivească. De asemenea, este folosit pentru a evalua regulile clasificate de modelele lingvistice mari (LLM).",
+      "cooldown-label": "Perioada de răcire a cache-ului (secunde)",
+      "cooldown-help":
+        "Cât timp este stocată în memorie decizia de rutare înainte de a fi reevaluată? Setarea la 0 dezactivează stocarea în memorie.",
+      "name-required": "Numele este obligatoriu.",
+      "fallback-required":
+        "Este necesară identificarea furnizorului principal și a modelului specific.",
+      cancel: "Anula",
+      create: "Creați un router",
+    },
+    "edit-router": {
+      "back-to-routers": "Înapoi la router-ele de model",
+      title: "Modifică routerul: {{name}}",
+      save: "Salvați modificările",
+      "toast-update-failed": "Nu a reușit să actualizeze router-ul.",
+    },
+    rules: {
+      title: "Reguli de rutare",
+      "title-with-name": "Reguli pentru router: {{name}}",
+      description:
+        "Stabiliți regulile care determină momentul și modul în care mesajele din chat sunt trimise către furnizori și modele specifici.",
+      "add-rule": "Adaugă regulă",
+      "delete-confirm": 'Șterge regula "{{title}}"?',
+      "toast-delete-failed": "Nu a reușit să șterga regulă",
+      "toast-reorder-failed": "Nu s-a reușit reconfigurarea regulilor.",
+      "no-rules": "Nu există reguli încă",
+      "empty-description":
+        "Adăugați o regulă pentru a direcționa mesajele de chat către furnizori și modele specifice.",
+      "new-rule-button": "Nouă regulă",
+      "calculated-section-label":
+        "Reguli calculate – evaluatează-le în ordine de prioritate",
+      "llm-section-label":
+        "Regulile LLM – evaluatează rezultatul ca un lot, dacă nicio regulă calculată nu se potrivește",
+      "llm-rule-body":
+        'Executați operațiunea <desc>"{{description}}"</desc> și apoi direcționați rezultatul către <route>{{route}}</route>',
+      "calculated-no-conditions":
+        "Fără condiții – traseu către <route> {{route}} </route>",
+      "calculated-single-condition":
+        'Dacă <prop>{{property}}</prop> {{comparator}} <val>"{{value}}"</val> atunci, direcționează către <route>{{route}}</route>',
+      "calculated-multi-condition":
+        "Dacă {{quantifier}} din <cond>{{conditions}}</cond> este adevărat, atunci traseul este către <route>{{route}}</route>",
+      "comparator-contains": "conține",
+      "comparator-matches": "meciuri",
+      "comparator-between": "între",
+      "badge-llm": "Model lingvistic mare",
+      "badge-calculated": "Calculat",
+      "aria-drag-to-reorder": "Vă rugăm să reordonați",
+      "aria-edit-rule": "Regula de editare",
+      "aria-delete-rule": "Șterge regula",
+      "quantifier-any": "ORICE",
+      "quantifier-all": "TOATE",
+    },
+    "rule-form": {
+      "title-label": "Titlu",
+      "rule-type": "Tip de regulă",
+      "property-label": "Proprietate",
+      "property-select": "Alege",
+      "comparator-label": "Comparator",
+      "comparator-select": "Alege",
+      "value-label": "Valoare",
+      "add-condition": "Adaugă o condiție",
+      "remove-condition": "Elimină condiția",
+      "conditions-incomplete":
+        "Condiția {{index}} este necompletă — completați proprietatea, comparatorul și valoarea.",
+      "match-description-label": "Descrierea meciului",
+      "match-description-placeholder":
+        "De exemplu, utilizatorul solicită informații despre aspecte juridice, contracte sau conformitate.",
+      "match-description-help":
+        "Descrieți situația în care doriți ca această regulă să se aplice. Aceasta este evaluată de modelul dumneavoastră lingvistic pentru a determina dacă ar trebui utilizată.",
+      "route-to-label": "Calea către furnizor și modelul de funcționare",
+      "route-to-description":
+        "Când această regulă se potrivește, utilizați acest furnizor/model.",
+      cancel: "Anula",
+      saving: "Economisire...",
+      "update-rule": "Regula de actualizare",
+      "create-rule": "Creați regulă",
+      "title-required": "Este obligatoriu să specificați un titlu.",
+      "toast-save-failed": "Nu a reușit să salveze regula.",
+      "type-calculated-label": "Calculat",
+      "type-calculated-description":
+        "Potriviți în funcție de proprietățile mesajelor, cum ar fi conținutul, numărul de token-uri sau ora din zi.",
+      "type-llm-label": "Clasificare LLM",
+      "type-llm-description":
+        "Utilizați un model de limbaj pentru a clasifica mesajul, pe baza unei descrieri pe care o furnizați.",
+      "prop-prompt-content": "Conținut solicitat",
+      "prop-token-count": "Numărul de token-uri în conversație",
+      "prop-message-count": "Numărul de mesaje în conversație",
+      "prop-current-hour": "Ora curentă (0-23)",
+      "prop-has-image": "Are atașat un fișier imagine",
+      "cmp-contains": "conține",
+      "cmp-matches-regex": "potriviri (expresii regulate)",
+      "cmp-equals": "echivalează cu",
+      "cmp-not-equals": "nu este egal",
+      "cmp-greater-than": "mai mare decât",
+      "cmp-greater-than-or-equal": "mai mare sau egal",
+      "cmp-less-than": "mai puțin de",
+      "cmp-less-than-or-equal": "mai mic sau egal",
+      "cmp-between": "între (inclusiv)",
+      "placeholder-between-hour":
+        "de exemplu, 9:17 (de la 9 dimineața până la 17:00)",
+      "placeholder-between-numeric": "de exemplu, 10,50",
+      "placeholder-hour": "de exemplu, 18 (0-23)",
+      "placeholder-message-count": "de exemplu, 10",
+      "placeholder-numeric": "de exemplu, 4000",
+      "placeholder-contains": "de exemplu, cod, Python, Rust",
+      "placeholder-matches": "de exemplu, /\\bpython\\b/i",
+      "placeholder-default": "de exemplu, cod",
+      "help-contains":
+        "Listă separată prin virgulă — se potrivește dacă solicitarea conține oricare dintre valorile specificate (fără a ține cont de majuscule).",
+      "help-matches":
+        "Model de expresie regulată. Utilizați `/pattern/cu flag-uri pentru a specifica dacă trebuie sau nu să se țină cont de majuscule și minuscule (implicit, nu se ține cont de majuscule și minuscule).",
+      "bool-true": "Corect",
+      "bool-false": "Fals",
+    },
+    "provider-picker": {
+      "select-provider": "Selectați furnizorul",
+      "setup-required": "(necesită configurare)",
+      "loading-models": "Încărcare modele...",
+      "select-model": "Selectați modelul",
+      "enter-model": "Introduceți numele modelului",
+      "select-provider-first": "Alege mai întâi un furnizor.",
+      "configure-to-continue": "Configurați {{name}} pentru a continua",
+      "configure-provider": "Configurați {{name}}",
+      "setup-credentials":
+        "Introduceți datele de autentificare necesare pentru a utiliza {{name}} ca destinație de rutare.",
+      cancel: "Anula",
+      "save-settings": "Salvați setările",
+      "toast-save-failed":
+        "Nu a fost posibil să se salveze setările: {{error}}",
+    },
+    "router-selection": {
+      "loading-routers": "Încărcare rutere personalizate...",
+      "no-routers-prefix-settings": "Nu există routere configurate în prezent.",
+      "no-routers-prefix-workspace": "Nu există routere configurate.",
+      "no-routers-link": "Creați unul în setările routerului (Model Router).",
+      "model-router-label": "Model de router",
+      "select-router": "Alege un router",
+      "select-description":
+        "Alege router-ul pe care dorești să-l folosești pentru acest spațiu de lucru.",
+      "no-routers-chat":
+        "Nu există routere configurate. Creați unul în secțiunea Setări > Furnizori de AI > Router de model.",
+      "rule-count": "(__REGULI__)",
+    },
+    metrics: {
+      "model-router-default": "Model de router",
+    },
+    chat: {
+      "select-router-error": "Alege un router",
+      "invalid-model": "Selectarea incorectă a modelului",
+      "routed-to": "Trimis către <route>{{model}}</route>",
+      "routed-to-rule":
+        "Trasează spre <route>{{model}}</route> prin intermediul <rule>{{ruleTitle}}</rule>",
     },
   },
 };

@@ -145,6 +145,12 @@ class EphemeralAgentHandler extends AgentHandler {
    * @returns {object|null} - An object with provider and model keys.
    */
   #getFallbackProvider() {
+    // If workspace chat uses the model router, fall back to it.
+    // Model is null here since the router determines it at resolve time.
+    if (this.#workspace?.chatProvider === "anythingllm-router") {
+      return { provider: "anythingllm-router", model: null };
+    }
+
     // First, fallback to the workspace chat provider and model if they exist
     if (this.#workspace?.chatProvider && this.#workspace?.chatModel) {
       return {
@@ -156,6 +162,10 @@ class EphemeralAgentHandler extends AgentHandler {
     // If workspace does not have chat provider and model fallback
     // to system provider and try to load provider default model
     const systemProvider = process.env.LLM_PROVIDER;
+    if (systemProvider === "anythingllm-router") {
+      return { provider: "anythingllm-router", model: null };
+    }
+
     const systemModel = this.providerDefault(systemProvider);
     if (systemProvider && systemModel) {
       return {
@@ -192,14 +202,58 @@ class EphemeralAgentHandler extends AgentHandler {
     return this.providerDefault();
   }
 
-  #providerSetupAndCheck() {
+  async #providerSetupAndCheck() {
     this.provider = this.#workspace?.agentProvider ?? null;
     this.model = this.#fetchModel();
+
+    // If provider resolved to model router, resolve the actual provider/model
+    if (this.provider === "anythingllm-router") {
+      await this.#resolveRouterProvider();
+    }
 
     if (!this.provider)
       throw new Error("No valid provider found for the agent.");
     this.log(`Start ${this.#invocationUUID}::${this.provider}:${this.model}`);
     this.checkSetup();
+  }
+
+  async #resolveRouterProvider(prompt = null) {
+    const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
+    const routerWorkspace = this.#workspace?.router_id
+      ? this.#workspace
+      : {
+          ...this.#workspace,
+          router_id: process.env.MODEL_ROUTER_ID
+            ? Number(process.env.MODEL_ROUTER_ID)
+            : null,
+        };
+
+    const router = new AnythingLLMModelRouter(routerWorkspace);
+    const { ModelRouterService } = require("../router");
+    const workspace = this.#workspace;
+    const user = this.#userId ? { id: this.#userId } : null;
+    const effectivePrompt = prompt || this.#prompt;
+    const ctx = await ModelRouterService.gatherRoutingContext({
+      workspace,
+      user,
+      thread: this.#threadId ? { id: this.#threadId } : null,
+      message: effectivePrompt,
+      apiSessionId: this.#sessionId,
+    });
+
+    await router.resolve(
+      {
+        prompt: effectivePrompt,
+        conversationTokenCount: ctx.conversationTokenCount,
+        conversationMessageCount: ctx.conversationMessageCount,
+        attachments: this.#attachments || [],
+      },
+      { user, thread: this.#threadId ? { id: this.#threadId } : null }
+    );
+
+    this.provider = router.resolvedRoute.provider;
+    this.model = router.resolvedRoute.model;
+    this.routingMetadata = router.routingMetadata;
   }
 
   async #attachPlugins(args) {
@@ -347,7 +401,12 @@ class EphemeralAgentHandler extends AgentHandler {
 
     this.aibitat.agent(
       WORKSPACE_AGENT.name,
-      await WORKSPACE_AGENT.getDefinition(this.provider, this.#workspace, user)
+      await WORKSPACE_AGENT.getDefinition(
+        this.provider,
+        this.#workspace,
+        user,
+        this.#prompt
+      )
     );
 
     this.#funcsToLoad = [
@@ -359,7 +418,7 @@ class EphemeralAgentHandler extends AgentHandler {
   }
 
   async init() {
-    this.#providerSetupAndCheck();
+    await this.#providerSetupAndCheck();
     return this;
   }
 
@@ -386,10 +445,12 @@ class EphemeralAgentHandler extends AgentHandler {
           ...(parsedFiles || []).map((doc) => ({
             name: doc.title || "Uploaded Document",
             content: doc.pageContent,
+            metadata: doc,
           })),
           ...(pinnedDocs || []).map((doc) => ({
             name: doc.title || doc.metadata?.title || "Pinned Document",
             content: doc.pageContent,
+            metadata: doc.metadata || doc,
           })),
         ];
 
@@ -403,6 +464,8 @@ class EphemeralAgentHandler extends AgentHandler {
           this.log(
             `Injecting ${pinnedDocs.length} pinned document(s) into user message`
           );
+
+        this.aibitat?.addDocumentCitations(allDocuments);
 
         return (
           "\n\n<attached_documents>\n" +
@@ -454,12 +517,32 @@ class EphemeralAgentHandler extends AgentHandler {
           workspace_id: this.#workspace?.id ?? null,
         },
         log: this.log,
+        routingMetadata: this.routingMetadata || null,
       },
     });
 
     // Register callback to fetch fresh parsed file context on each chat turn
     // This injects parsed files into user messages instead of system prompt
     this.aibitat.fetchParsedFileContext = () => this.#fetchParsedFileContext();
+
+    // If the workspace uses the model router, attach a resolver so routing
+    // is re-evaluated on every agent turn instead of only at initialization.
+    if (this.routingMetadata) {
+      this.aibitat.resolveRoute = async (prompt) => {
+        try {
+          await this.#resolveRouterProvider(prompt);
+          this.aibitat.handlerProps.routingMetadata =
+            this.routingMetadata || null;
+          return { provider: this.provider, model: this.model };
+        } catch (e) {
+          this.log(
+            "Router re-resolution failed, keeping current route",
+            e.message
+          );
+          return null;
+        }
+      };
+    }
 
     // Attach HTTP response object if defined for chunk streaming.
     // When telegramChatId is provided, tool approval via Telegram is enabled.
@@ -566,19 +649,38 @@ class EphemeralEventListener extends EventEmitter {
 
   /**
    * Compacts all messages in class and returns them in a condensed format.
-   * @returns {{thoughts: string[], textResponse: string}}
+   * @returns {{thoughts: string[], textResponse: string, outputs: object[], metrics: object}}
    */
   packMessages() {
     const thoughts = [];
+    const outputs = [];
     let textResponse = null;
+    let metrics = {};
     for (let msg of this.messages) {
-      if (msg.type !== "statusResponse") {
-        textResponse = msg.content;
-      } else {
+      if (msg.type === "statusResponse") {
         thoughts.push(msg.content);
+        continue;
       }
+
+      if (msg.type === "fileDownloadCard") {
+        outputs.push(msg.content);
+        continue;
+      }
+
+      if (msg.type === "reportStreamEvent") {
+        const inner = msg.content;
+        if (inner?.type === "textResponseChunk" && inner?.content)
+          textResponse = (textResponse || "") + inner.content;
+        if (inner?.type === "fullTextResponse" && inner?.content)
+          textResponse = inner.content;
+        if (inner?.type === "usageMetrics" && inner?.metrics)
+          metrics = inner.metrics;
+        continue;
+      }
+
+      textResponse = msg.content;
     }
-    return { thoughts, textResponse };
+    return { thoughts, textResponse, outputs, metrics };
   }
 
   /**
@@ -615,6 +717,57 @@ class EphemeralEventListener extends EventEmitter {
           error: null,
           animate: true,
         });
+      }
+
+      if (data.type === "fileDownloadCard") {
+        return writeResponseChunk(response, {
+          id: uuid,
+          type: "fileDownload",
+          fileDownload: data.content,
+          close: false,
+          error: null,
+        });
+      }
+
+      if (data.type === "reportStreamEvent") {
+        const inner = data.content;
+        if (!inner?.type) return;
+
+        if (inner.type === "textResponseChunk") {
+          return writeResponseChunk(response, {
+            id: uuid,
+            type: "textResponseChunk",
+            textResponse: inner.content,
+            sources: [],
+            close: false,
+            error: null,
+          });
+        }
+
+        if (inner.type === "fullTextResponse") {
+          return writeResponseChunk(response, {
+            id: uuid,
+            type: "textResponse",
+            textResponse: inner.content,
+            sources: [],
+            attachments: [],
+            close: true,
+            error: null,
+            animate: false,
+          });
+        }
+
+        if (inner.type === "usageMetrics" && inner.metrics) {
+          return writeResponseChunk(response, {
+            id: uuid,
+            type: "usageMetrics",
+            metrics: inner.metrics,
+            close: false,
+            error: null,
+          });
+        }
+
+        return;
       }
 
       return writeResponseChunk(response, {

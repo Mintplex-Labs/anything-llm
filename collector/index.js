@@ -8,16 +8,18 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const path = require("path");
 const { ACCEPTED_MIMES } = require("./utils/constants");
-const { reqBody } = require("./utils/http");
+const { reqBody, getCollectorPort } = require("./utils/http");
 const { processSingleFile } = require("./processSingleFile");
 const { processLink, getLinkText } = require("./processLink");
 const { wipeCollectorStorage } = require("./utils/files");
 const extensions = require("./extensions");
 const { processRawText } = require("./processRawText");
+const { convertAudioToWav } = require("./convertAudioToWav");
 const { verifyPayloadIntegrity } = require("./middleware/verifyIntegrity");
 const { httpLogger } = require("./middleware/httpLogger");
 const app = express();
 const FILE_LIMIT = "3GB";
+const COLLECTOR_PORT = getCollectorPort();
 
 // Only log HTTP requests in development mode and if the ENABLE_HTTP_LOGGER environment variable is set to true
 if (
@@ -150,6 +152,31 @@ app.post(
 );
 
 app.post(
+  "/util/convert-audio-to-wav",
+  [verifyPayloadIntegrity],
+  async function (request, response) {
+    const { filename } = reqBody(request);
+    try {
+      const {
+        success,
+        reason,
+        wavFilename = null,
+      } = await convertAudioToWav(filename);
+      response.status(200).json({ filename, success, reason, wavFilename });
+    } catch (e) {
+      console.error(e);
+      response.status(200).json({
+        filename,
+        success: false,
+        reason: "An audio conversion error occurred.",
+        wavFilename: null,
+      });
+    }
+    return;
+  }
+);
+
+app.post(
   "/process-raw-text",
   [verifyPayloadIntegrity],
   async function (request, response) {
@@ -187,9 +214,9 @@ app.all("*", function (_, response) {
 });
 
 app
-  .listen(8888, async () => {
+  .listen(COLLECTOR_PORT, async () => {
     await wipeCollectorStorage();
-    console.log(`Document processor app listening on port 8888`);
+    console.log(`Document processor app listening on port ${COLLECTOR_PORT}`);
   })
   .on("error", function (_) {
     process.once("SIGUSR2", function () {

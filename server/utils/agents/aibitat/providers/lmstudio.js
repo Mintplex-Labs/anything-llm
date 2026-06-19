@@ -22,6 +22,7 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
    */
   constructor(config = {}) {
     super();
+    this.providerTag = "lmstudio";
     const model = config?.model || process.env.LMSTUDIO_MODEL_PREF;
     if (!model) throw new Error("LMStudio must have a valid model set.");
 
@@ -29,7 +30,6 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
     const client = new OpenAI({
       baseURL: parseLMStudioBasePath(process.env.LMSTUDIO_BASE_PATH),
       apiKey,
-      maxRetries: 3,
     });
 
     this._client = client;
@@ -52,6 +52,7 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
    * @returns {Promise<boolean>}
    */
   async supportsNativeToolCalling() {
+    if (this.optsOutOfNativeToolCallingViaEnv(this.providerTag)) return false;
     if (this._supportsToolCalling !== null) return this._supportsToolCalling;
     const lmstudio = new LMStudioLLM(null, this.model);
     const capabilities = await lmstudio.getModelCapabilities();

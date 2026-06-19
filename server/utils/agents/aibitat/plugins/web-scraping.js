@@ -133,19 +133,26 @@ const webScraping = {
             this.super.introspect(
               `${this.caller}: This page's content exceeds the model's context limit. Summarizing it right now.`
             );
-            this.super.onAbort(() => {
+            // Use a named listener so we can remove it after summarization completes,
+            // preventing listener accumulation when scraping many URLs in sequence.
+            const abortListener = () => {
               this.super.handlerProps.log(
                 "Abort was triggered, exiting summarization early."
               );
               this.controller.abort();
-            });
+            };
+            this.super.emitter.on("abort", abortListener);
+            const cleanup = () => {
+              this.super.emitter.removeListener("abort", abortListener);
+            };
 
             return summarizeContent({
               provider: this.super.provider,
               model: this.super.model,
               controllerSignal: this.controller.signal,
               content,
-            });
+              aibitat: this.super,
+            }).finally(cleanup);
           },
         });
       },

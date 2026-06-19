@@ -1,5 +1,5 @@
 const { WorkspaceChats } = require("../../../models/workspaceChats");
-const { getLLMProvider, getVectorDbClass } = require("../../helpers");
+const { getVectorDbClass, resolveProviderConnector } = require("../../helpers");
 const { DocumentManager } = require("../../DocumentManager");
 const {
   sourceIdentifier,
@@ -97,9 +97,11 @@ async function streamResponse({
     ctx.bot.sendChatAction(chatId, "typing").catch(() => {});
   }, 4000);
 
-  const LLMConnector = getLLMProvider({
-    provider: workspace?.chatProvider,
-    model: workspace?.chatModel,
+  const { connector: LLMConnector } = await resolveProviderConnector({
+    workspace,
+    prompt: message,
+    thread,
+    attachments,
   });
   const VectorDb = getVectorDbClass();
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);

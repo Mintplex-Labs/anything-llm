@@ -1,5 +1,8 @@
 const { v4 } = require("uuid");
-const { getVectorDbClass, getLLMProvider } = require("../../../helpers");
+const {
+  getVectorDbClass,
+  resolveProviderConnector,
+} = require("../../../helpers");
 const { Deduplicator } = require("../utils/dedupe");
 
 const memory = {
@@ -81,12 +84,13 @@ const memory = {
           search: async function (query = "") {
             try {
               const workspace = this.super.handlerProps.invocation.workspace;
-              const LLMConnector = getLLMProvider({
-                provider: workspace?.chatProvider,
-                model: workspace?.chatModel,
-              });
+              const { connector: LLMConnector } =
+                await resolveProviderConnector({
+                  workspace,
+                  prompt: query,
+                });
               const vectorDB = getVectorDbClass();
-              const { contextTexts = [] } =
+              const { contextTexts = [], sources = [] } =
                 await vectorDB.performSimilaritySearch({
                   namespace: workspace.slug,
                   input: query,
@@ -105,6 +109,8 @@ const memory = {
               this.super.introspect(
                 `${this.caller}: Found ${contextTexts.length} additional piece of context to help answer this question.`
               );
+
+              this.super.addCitation?.(sources);
 
               let combinedText = "Additional context for query:\n";
               for (const text of contextTexts) combinedText += text + "\n\n";

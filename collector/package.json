@@ -1,6 +1,6 @@
 {
   "name": "anything-llm-document-collector",
-  "version": "1.12.1",
+  "version": "1.14.1",
   "description": "Document collector server endpoints",
   "main": "index.js",
   "author": "Timothy Carambat (Mintplex Labs)",
@@ -42,6 +42,7 @@
     "slugify": "^1.6.6",
     "strip-ansi": "^7.1.2",
     "tesseract.js": "^6.0.0",
+    "turndown": "7.2.4",
     "url-pattern": "^1.0.3",
     "uuid": "^9.0.0",
     "wavefile": "^11.0.0",

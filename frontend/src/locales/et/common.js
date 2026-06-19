@@ -109,6 +109,7 @@ const TRANSLATIONS = {
       telegram: "Telegram",
     },
     "scheduled-jobs": "Planeeritud tööd",
+    "model-router": "Mudel: reiting",
   },
   login: {
     "multi-user": {
@@ -746,6 +747,17 @@ const TRANSLATIONS = {
             "Maksimaalne arv tööriistu, mida saab valida igale küsimusele. Soovitame seada see väärtus suuremate kontekstmudelite jaoks suuremaks.",
         },
       },
+      "clarifying-questions": {
+        title: "Luba vahendajal esitada selgitavaid küsimusi",
+        "beta-badge": "BEETA",
+        description:
+          "Kui funktsioon on lubatud, võivad agentid peatuda ja esitada lühikesi selgitavaid küsimusi, kui teie palumine on ebaselge.",
+        "max-per-turn": {
+          title: "Maximaalne küsimuste arv ühes voorus",
+          description:
+            "Kuivõrd küsimusi vahendaja võib ühe uuringu käigus esitada.",
+        },
+      },
     },
   },
   recorded: {
@@ -1227,7 +1239,6 @@ const TRANSLATIONS = {
     similarity_match: "mäng",
     source_count_one: "{{count}} viidatud",
     source_count_other: "Viidatud allikad",
-    preset_exit_description: "Lõpeta hetkeseisuga",
     add_new: "Lisada uus",
     edit: "Redigeerimine",
     publish: "Avaldada",
@@ -1247,6 +1258,21 @@ const TRANSLATIONS = {
       always_allow: "Aeg-ajalt lubage {{skillName}}",
       tool_call_was_approved: "Vahendite tellimuse kinnitati.",
       tool_call_was_rejected: "Vahendite taotlus jäeti rahuldamata.",
+      clarifying_skip: "Las agent otsusta",
+      clarifying_submit: "Saada",
+      clarifying_skipped: "Te jätate otsustusõiguse agentile.",
+      clarifying_timeout: "Vastus ei olnud aega ahendatud.",
+      clarifying_pagination: "{{current}} kohta {{total}}",
+      clarifying_prev_aria: "Eelmine küsimus",
+      clarifying_next_aria: "Järgmine küsimus",
+      clarifying_close_aria: "Sulge ja jäta üle",
+      clarifying_other: "Teised",
+      clarifying_other_placeholder: "Sisestage oma vastus",
+      batch_progress: "{{answered}} vastas {{total}}-le",
+      batch_skip_this: "Üle",
+      batch_submit_all: "Saada kõik",
+      batch_next: "Järgmine",
+      answer_skipped: "[kasutaja jäi vahele]",
     },
     custom_skills: "Kohandatud oskused",
     agent_flows: "Agentide liiklus",
@@ -1254,6 +1280,48 @@ const TRANSLATIONS = {
     loading_mcp_servers: "MCP-serverite laadimine...",
     app_integrations: "Rakenduste integreerimine",
     sub_skills: "Alamspetsid",
+    memories: {
+      title: "Mälestused",
+      empty:
+        "Hetkel pole veel mälestusi. Kui sa chatbotiga rohkem interakteerud, siis mälestused hakkavad täituma.",
+      empty_cta: "loo uus mälestus",
+      tab_workspace: "Tööruum",
+      tab_global: "Globaalne",
+      toggle: {
+        label: "Aktiveeri isikupärastamine",
+        description:
+          "Lase oma assistendil meeles pidada fakte sinust või sellest tööruumist ning kasutada neid vestluses.",
+      },
+      auto_extraction: {
+        label: "Automaatne mälestuste salvestamine",
+        description: "Las teie abistaja automaatselt loob mälestusi taustal.",
+      },
+      menu: {
+        edit: "Redigeerimine",
+        delete: "Hüvida",
+        move_to_global: "Liigu ülemaailmsele tasandile",
+        move_to_workspace: "Siirus, tööruumi kasutamine",
+      },
+      modal: {
+        create_title: "Loo mälestus",
+        edit_title: "Muuda mälestust",
+        create_description:
+          'Mõtted peaksid olema lühikesed ja selged. Näiteks: "Kasutaja eelistab Pythoni JavaScripti ees".',
+        edit_description: "Päivitage selle andmealade sisu.",
+        label: "Mälestus",
+        placeholder:
+          "Näiteks kasutaja nimi on Joe, kasutaja töötab ettevõttes AnythingLLM jne.",
+        create: "Loo",
+        save: "Salvesta",
+        cancel: "Katkuda\nTühista",
+      },
+    },
+    stt_unsupported: "Mikrofoni kasutamine selles brauseris ei toeta.",
+    stt_mic_denied:
+      "Ei suudet mikrofoni kasutada. Palun andke lubadus ja proovige uuesti.",
+    stt_transcription_failed: "Transkribeerimine ebaõnnestunud: {{error}}",
+    export: "Экспорти руй чат kui...",
+    exporting: "Экспорт",
   },
   profile_settings: {
     edit_account: "Muuda kontot",
@@ -1623,6 +1691,185 @@ const TRANSLATIONS = {
       timed_out: "Aja täitunud",
       running: "Jooksmine",
       queued: "Ootel",
+    },
+  },
+  "model-router": {
+    title: "Mudelid",
+    description:
+      "Mudelrouterid võimaldavad teil määrata reegleid, et automaatselt suunata vestlusvihtlemise teated erinevatele suurte keelemudelitele (LLM) ja mudelitele, lähtudes konkreetsetest tingimustest.",
+    table: {
+      name: "Nimi",
+      fallback: "Varajane alternatiiv",
+      rules: "Reeglid",
+      workspaces: "Tööruumid",
+    },
+    "no-routers": "Hetkel pole saadaval mitte ükski mudel ruteerid.",
+    "empty-description":
+      "Hetkel pole mõeldud ruuterid konfigureeritud. Loomistage üks, et alustada.",
+    "new-router-button": "Uus ruuter",
+    "delete-confirm":
+      "Kas olete kindel, et soovite seadme {{name}} kustutada?\nSee kustutab kõik selle reeglid ja lõhub ära kõik selle abil kasutatavad tööruumid.\n\nSee tegevus on pööratav.",
+    "toast-deleted": "Router on kustutatud",
+    "toast-delete-failed": "Ei õnnestunud režiinide kustutamine: {{error}}",
+    "new-router": {
+      title: "Loo uus reiteerimise mudel",
+      name: "Nimi",
+      "name-placeholder": "nt. Kulusid optimeeriv süsteem",
+      description: "Kirjeldus",
+      "description-placeholder": "Vaikne kirjeldus",
+      "fallback-label": "Peamine teenusepakkaja ja mudel",
+      "fallback-description":
+        "Kasutatakse, kui pole leitud sobivat reeglit. Samuti kasutatakse suurte keelemudelite (LLM) klassifitseerimisreeglite hindamiseks.",
+      "cooldown-label": "Vaikumise aeg (sekundites)",
+      "cooldown-help":
+        "Kuida kaua marsruuti valiku andmed säiliks pärast reeglite uuesti hindamist. Seadke väärtusele 0, et kustutada säilitamine.",
+      "name-required": "Nimi on vajalik.",
+      "fallback-required":
+        "Peamine pakkujaga ja mudeliga peab olema kokkulepe.",
+      cancel: "Katkuda\nTühista",
+      create: "Loo reiting",
+    },
+    "edit-router": {
+      "back-to-routers": "Tagasi mudelide reiteid juurde",
+      title: "Seadista ruuter: {{name}}",
+      save: "Salvesta muutused",
+      "toast-update-failed": "Ei õnnestunud režiiniprogrammi uuendada",
+    },
+    rules: {
+      title: "Juurutamissõnad",
+      "title-with-name": "Routeri reeglid: {{name}}",
+      description:
+        "Määrake reeglid, mis määravad, millised suhtluse teated lähevad konkreetsetele teenustele ja mudelitele ning millisel viisil.",
+      "add-rule": "Lisada reegel",
+      "delete-confirm": 'Kas soovite kustutada reegli "{{title}}"?',
+      "toast-delete-failed": "Reegli kustutamine ebaõnnestus",
+      "toast-reorder-failed": "Suutmata taasta reegleid",
+      "no-rules": "Välja pole seatud reegleid",
+      "empty-description":
+        "Lisage reegel, mis määrab, et vestlemisvihtide saadetakse konkreetsetele teenustele ja mudelitele.",
+      "new-rule-button": "Uus reegel",
+      "calculated-section-label":
+        "Arvutatud reeglid – hindatakse esmalt, prioriteedi järgi",
+      "llm-section-label":
+        "LLM reeglid – hinnatakse eraldi, kui ükski arvutatud reegel ei sobi",
+      "llm-rule-body":
+        'Vormista <desc>"{{description}}"</desc> ning seejärel suunata selle <route>{{route}}</route> poole',
+      "calculated-no-conditions":
+        "Ei ole tingimusi – marsruut <route>{{route}}</route>",
+      "calculated-single-condition":
+        'Kui <prop> on {{property}} ja </prop> on {{comparator}}, siis suunata <val> "{{value}}" ning </val> ​​suunata ​​<route> ​​ja ​​{{route}} ​​suunata ​​</route>',
+      "calculated-multi-condition":
+        "Kui {{quantifier}} on <cond> ja {{conditions}} on </cond>, siis reisi suunaga <route> ja {{route}} on </route>",
+      "comparator-contains": "sisaldab",
+      "comparator-matches": "matšid",
+      "comparator-between": "vahel",
+      "badge-llm": "Suur keelemudel",
+      "badge-calculated": "Arvutatud",
+      "aria-drag-to-reorder": "Siirake, et järjestada",
+      "aria-edit-rule": "Reegli muutmise toiming",
+      "aria-delete-rule": "Vabastada reeglist",
+      "quantifier-any": "MISTÜ",
+      "quantifier-all": "KÕIK",
+    },
+    "rule-form": {
+      "title-label": "Pealkiri",
+      "rule-type": "Reegli tüüp",
+      "property-label": "Omand",
+      "property-select": "Vali",
+      "comparator-label": "Võrdleja",
+      "comparator-select": "Vali",
+      "value-label": "Väärtus",
+      "add-condition": "Lisada tingimus",
+      "remove-condition": "Eemalda tingimus",
+      "conditions-incomplete":
+        "Võtte {{index}} on mittekohane — täitke omand, võrdleja ja väärtus.",
+      "match-description-label": "Mängu kirjeldus",
+      "match-description-placeholder":
+        "Näiteks kasutaja küsib seaduslikest küsimustest, lepingutest või nõuetele vastamisest.",
+      "match-description-help":
+        "Kirjelda olukorda, millal see reegel peaks rakenduma. See hinnatakse teie suurmõistega, et kindlaks teha, kas seda tuleks kasutada.",
+      "route-to-label": "Teenusepakkaja ja mudeli leevastus",
+      "route-to-description":
+        "Kui see reegel on kehtiv, kasutage seda teenusepakkaja/mudelit.",
+      cancel: "Katkuda\nTühista",
+      saving: "Säästmine...",
+      "update-rule": "Uuenduse reegel",
+      "create-rule": "Vormista reegel",
+      "title-required": "Pealkirja on vajalik",
+      "toast-save-failed": "Reegli salvestamine ebaõnnestus",
+      "type-calculated-label": "Arvutatud",
+      "type-calculated-description":
+        "Võrdleme sõnemeid nende atribuutide järgi, nagu sisu, tokenite arv või päeva kellaaeg.",
+      "type-llm-label": "LLM – klassifitseeritud",
+      "type-llm-description":
+        "Kasutage suurte keelemudelite (LLM) abil, et klassifitseerida sõnum, kasutades selleks teavet, mida te pakute.",
+      "prop-prompt-content": "Algne sisu",
+      "prop-token-count": "Vestluse tokenite arv",
+      "prop-message-count": "Vestluse teated",
+      "prop-current-hour": "Praegune tund (0–23)",
+      "prop-has-image": "Kas pildil on lisatud",
+      "cmp-contains": "sisaldab",
+      "cmp-matches-regex": "soovitud muster (regulärväljend)",
+      "cmp-equals": "on võrdne",
+      "cmp-not-equals": "ei ole sama",
+      "cmp-greater-than": "suurem",
+      "cmp-greater-than-or-equal": "suur või võrdne",
+      "cmp-less-than": "vähem kui",
+      "cmp-less-than-or-equal": "vähem kui või sama",
+      "cmp-between": "(kaasa arvatud)",
+      "placeholder-between-hour": "Näiteks: 9:17 (kuni 17:00)",
+      "placeholder-between-numeric": "nt 10,50",
+      "placeholder-hour": "nt 18 (0-23)",
+      "placeholder-message-count": "nt. 10",
+      "placeholder-numeric": "nt 4000",
+      "placeholder-contains": "nt, kood, Python, Rust",
+      "placeholder-matches": "nt. `/\\bpython\\b/i`",
+      "placeholder-default": "nt, kood",
+      "help-contains":
+        "Komatähistega loend – vastab, kui küsimuses on olemas ükski neist väärtustest (suure- või väikestekirjadest olenemata).",
+      "help-matches":
+        "Regex-i muster. Kasutage `/muster/flagid`, et määrata kirjastuse tundlikkus (väärtus vaikimisi on kirjastuse tundlikkus).",
+      "bool-true": "Väga tõsi",
+      "bool-false": "Vale",
+    },
+    "provider-picker": {
+      "select-provider": "Vali teenusepakkaja",
+      "setup-required": "(vajalik on ettevalmistus)",
+      "loading-models": "Mudelite laadimine...",
+      "select-model": "Valige mudel",
+      "enter-model": "Sisestage mudeli nimi",
+      "select-provider-first": "Valige kõigepealt teenusepakkaja.",
+      "configure-to-continue": "Konfigureerige {{name}} jätkamiseks",
+      "configure-provider": "Konfigureerige {{name}}",
+      "setup-credentials":
+        "Sisestage vajalikud andmed, et kasutada {{name}} kui reitingu sihte.",
+      cancel: "Katkuda\nTühista",
+      "save-settings": "Salvesta seaded",
+      "toast-save-failed": "Suutnud seadeid salvestada: {{error}}",
+    },
+    "router-selection": {
+      "loading-routers": "Kohandatud ruuterite laadimine...",
+      "no-routers-prefix-settings":
+        "Hetkel pole veel konfigureeritud ühtegi režiisi.",
+      "no-routers-prefix-workspace":
+        "Ei ole konfigureeritud mitte ühtegi režiisi.",
+      "no-routers-link": "Loo see Model Routeri seadistustes",
+      "model-router-label": "Mudel: Router",
+      "select-router": "Valige ruuter",
+      "select-description": "Valige, millist ruuterit selle töökojas kasutada.",
+      "no-routers-chat":
+        "Ei ole konfigureeritud mitte ühtegi ruutrit. Loomitage uus ruuter seadetes > AI pakettide seadistustes > Mudeli ruuter.",
+      "rule-count": "({{count}} reeglid)",
+    },
+    metrics: {
+      "model-router-default": "Mudel: Router",
+    },
+    chat: {
+      "select-router-error": "Valige ruuter",
+      "invalid-model": "Väärtuslik mudeli valik",
+      "routed-to": "Saadetakse <route>{{model}}</route>",
+      "routed-to-rule":
+        "Saadetakse <route>{{model}}</route> kaudu <rule>{{ruleTitle}}</rule>",
     },
   },
 };

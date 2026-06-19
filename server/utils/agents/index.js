@@ -227,16 +227,6 @@ class AgentHandler {
         if (!process.env.GEMINI_API_KEY)
           throw new Error("Gemini API key must be provided to use agents.");
         break;
-      case "dpais":
-        if (!process.env.DPAIS_LLM_BASE_PATH)
-          throw new Error(
-            "Dell Pro AI Studio base path must be provided to use agents."
-          );
-        if (!process.env.DPAIS_LLM_MODEL_PREF)
-          throw new Error(
-            "Dell Pro AI Studio model must be set to use agents."
-          );
-        break;
       case "moonshotai":
         if (!process.env.MOONSHOT_AI_MODEL_PREF)
           throw new Error("Moonshot AI model must be set to use agents.");
@@ -276,6 +266,14 @@ class AgentHandler {
       case "lemonade":
         if (!process.env.LEMONADE_LLM_BASE_PATH)
           throw new Error("Lemonade base path must be provided to use agents.");
+        break;
+      case "minimax":
+        if (!process.env.MINIMAX_API_KEY)
+          throw new Error("Minimax API key must be provided to use agents.");
+        break;
+      case "cerebras":
+        if (!process.env.CEREBRAS_API_KEY)
+          throw new Error("Cerebras API key must be provided to use agents.");
         break;
       default:
         throw new Error(
@@ -349,8 +347,6 @@ class AgentHandler {
         return process.env.PPIO_MODEL_PREF ?? "qwen/qwen2.5-32b-instruct";
       case "gemini":
         return process.env.GEMINI_LLM_MODEL_PREF ?? "gemini-2.0-flash-lite";
-      case "dpais":
-        return process.env.DPAIS_LLM_MODEL_PREF;
       case "cometapi":
         return process.env.COMETAPI_LLM_MODEL_PREF ?? "gpt-5-mini";
       case "foundry":
@@ -367,6 +363,10 @@ class AgentHandler {
         return process.env.SAMBANOVA_LLM_MODEL_PREF ?? null;
       case "lemonade":
         return process.env.LEMONADE_LLM_MODEL_PREF ?? null;
+      case "minimax":
+        return process.env.MINIMAX_MODEL_PREF ?? "MiniMax-M2.7";
+      case "cerebras":
+        return process.env.CEREBRAS_MODEL_PREF ?? "gpt-oss-120b";
       default:
         return null;
     }
@@ -381,6 +381,12 @@ class AgentHandler {
    * @returns {object|null} - An object with provider and model keys.
    */
   #getFallbackProvider() {
+    // If workspace chat uses the model router, fall back to it.
+    // Model is null here since the router determines it at resolve time.
+    if (this.invocation.workspace.chatProvider === "anythingllm-router") {
+      return { provider: "anythingllm-router", model: null };
+    }
+
     // First, fallback to the workspace chat provider and model if they exist
     if (
       this.invocation.workspace.chatProvider &&
@@ -395,6 +401,10 @@ class AgentHandler {
     // If workspace does not have chat provider and model fallback
     // to system provider and try to load provider default model
     const systemProvider = process.env.LLM_PROVIDER;
+    if (systemProvider === "anythingllm-router") {
+      return { provider: "anythingllm-router", model: null };
+    }
+
     const systemModel = this.providerDefault(systemProvider);
     if (systemProvider && systemModel) {
       return {
@@ -432,14 +442,75 @@ class AgentHandler {
     return this.providerDefault();
   }
 
-  #providerSetupAndCheck() {
+  async #providerSetupAndCheck() {
     this.provider = this.invocation.workspace.agentProvider ?? null; // set provider to workspace agent provider if it exists
     this.model = this.#fetchModel();
+
+    // If provider resolved to model router, resolve the actual provider/model
+    if (this.provider === "anythingllm-router") {
+      await this.#resolveRouterProvider();
+    }
 
     if (!this.provider)
       throw new Error("No valid provider found for the agent.");
     this.log(`Start ${this.#invocationUUID}::${this.provider}:${this.model}`);
     this.checkSetup();
+  }
+
+  async #resolveRouterProvider(prompt = null) {
+    const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
+    const routerWorkspace = this.invocation.workspace.router_id
+      ? this.invocation.workspace
+      : {
+          ...this.invocation.workspace,
+          router_id: process.env.MODEL_ROUTER_ID
+            ? Number(process.env.MODEL_ROUTER_ID)
+            : null,
+        };
+
+    // Resolve the thread slug from the numeric thread_id so the route cache key
+    // matches the key used everywhere else.
+    let thread = null;
+    if (this.invocation.thread_id) {
+      if (!this._threadSlug) {
+        const { WorkspaceThread } = require("../../models/workspaceThread");
+        const threadRecord = await WorkspaceThread.get({
+          id: this.invocation.thread_id,
+        });
+        this._threadSlug = threadRecord?.slug || null;
+      }
+      thread = this._threadSlug ? { slug: this._threadSlug } : null;
+    }
+
+    const router = new AnythingLLMModelRouter(routerWorkspace);
+    const { ModelRouterService } = require("../router");
+    const workspace = this.invocation.workspace;
+    const user = this.invocation.user_id
+      ? { id: this.invocation.user_id }
+      : null;
+    const effectivePrompt = prompt || this.invocation.prompt;
+    const ctx = await ModelRouterService.gatherRoutingContext({
+      workspace,
+      user,
+      thread: this.invocation.thread_id
+        ? { id: this.invocation.thread_id }
+        : null,
+      message: effectivePrompt,
+    });
+
+    await router.resolve(
+      {
+        prompt: effectivePrompt,
+        conversationTokenCount: ctx.conversationTokenCount,
+        conversationMessageCount: ctx.conversationMessageCount,
+        attachments: this.attachments || [],
+      },
+      { user, thread }
+    );
+
+    this.provider = router.resolvedRoute.provider;
+    this.model = router.resolvedRoute.model;
+    this.routingMetadata = router.routingMetadata;
   }
 
   async #validInvocation() {
@@ -616,7 +687,8 @@ class AgentHandler {
     const workspaceAgentDef = await WORKSPACE_AGENT.getDefinition(
       this.provider,
       this.invocation.workspace,
-      user
+      user,
+      this.invocation.prompt
     );
 
     this.aibitat.agent(USER_AGENT.name, userAgentDef);
@@ -629,7 +701,7 @@ class AgentHandler {
 
   async init() {
     await this.#validInvocation();
-    this.#providerSetupAndCheck();
+    await this.#providerSetupAndCheck();
 
     // Retrieve cached attachments (images, etc.) from the HTTP request
     this.attachments = getAndClearInvocationAttachments(this.#invocationUUID);
@@ -666,10 +738,12 @@ class AgentHandler {
           ...(parsedFiles || []).map((doc) => ({
             name: doc.title || "Uploaded Document",
             content: doc.pageContent,
+            metadata: doc,
           })),
           ...(pinnedDocs || []).map((doc) => ({
             name: doc.title || doc.metadata?.title || "Pinned Document",
             content: doc.pageContent,
+            metadata: doc.metadata || doc,
           })),
         ];
 
@@ -682,6 +756,8 @@ class AgentHandler {
           this.log(
             `Injecting ${pinnedDocs.length} pinned document(s) into user message`
           );
+
+        this.aibitat?.addDocumentCitations(allDocuments);
 
         return (
           "\n\n<attached_documents>\n" +
@@ -712,12 +788,39 @@ class AgentHandler {
       handlerProps: {
         invocation: this.invocation,
         log: this.log,
+        routingMetadata: this.routingMetadata || null,
       },
     });
 
     // Register callback to fetch fresh parsed file context on each chat turn
     // This injects parsed files into user messages instead of system prompt
     this.aibitat.fetchParsedFileContext = () => this.#fetchParsedFileContext();
+
+    // If the workspace uses the model router, attach a resolver so routing
+    // is re-evaluated on every agent turn instead of only at initialization.
+    // Skip the first invocation since routing was already resolved during init()
+    // and re-resolving would cause shouldNotify to return false (route already recorded).
+    if (this.routingMetadata) {
+      let isFirstCall = true;
+      this.aibitat.resolveRoute = async (prompt) => {
+        if (isFirstCall) {
+          isFirstCall = false;
+          return { provider: this.provider, model: this.model };
+        }
+        try {
+          await this.#resolveRouterProvider(prompt);
+          this.aibitat.handlerProps.routingMetadata =
+            this.routingMetadata || null;
+          return { provider: this.provider, model: this.model };
+        } catch (e) {
+          this.log(
+            "Router re-resolution failed, keeping current route",
+            e.message
+          );
+          return null;
+        }
+      };
+    }
 
     // Attach standard websocket plugin for frontend communication.
     this.log(`Attached ${AgentPlugins.websocket.name} plugin to Agent cluster`);

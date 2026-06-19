@@ -14,11 +14,30 @@ class GeminiProvider extends Provider {
   constructor(config = {}) {
     const { model = "gemini-2.0-flash-lite" } = config;
     super();
+    this.providerTag = "gemini";
     this.className = "GeminiProvider";
     const client = new OpenAI({
       baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
       apiKey: process.env.GEMINI_API_KEY,
-      maxRetries: 0,
+      fetch: async (url, init) => {
+        const res = await globalThis.fetch(url, init);
+        if (!res.ok) {
+          const cloned = res.clone();
+          const text = await cloned.text().catch(() => "(unreadable)");
+          this.providerLog(
+            `[Gemini.fetch] ${res.status} from ${typeof url === "string" ? url : url?.toString()}\n` +
+              `  Response body: ${text}`
+          );
+          try {
+            const json = safeJsonParse(text, {});
+            const errorObj = Array.isArray(json) ? json[0] : json;
+            this._lastErrorMessage = errorObj?.error?.message || null;
+          } catch {
+            this._lastErrorMessage = text?.slice(0, 200) || null;
+          }
+        }
+        return res;
+      },
     });
 
     this._client = client;
@@ -57,6 +76,7 @@ class GeminiProvider extends Provider {
    * @returns {boolean}
    */
   supportsNativeToolCalling() {
+    if (this.optsOutOfNativeToolCallingViaEnv(this.providerTag)) return false;
     return this.supportsToolCalling;
   }
 
@@ -181,6 +201,37 @@ class GeminiProvider extends Provider {
     return formattedMessages;
   }
 
+  #logAPIError(error) {
+    const allProps = {};
+    for (const key of Object.getOwnPropertyNames(error)) {
+      try {
+        const val = error[key];
+        if (typeof val === "function") continue;
+        allProps[key] = val;
+      } catch {
+        // ignore
+      }
+    }
+    for (const key of [
+      "status",
+      "code",
+      "type",
+      "error",
+      "body",
+      "param",
+      "headers",
+      "cause",
+      "response",
+      "request_id",
+    ]) {
+      try {
+        if (error[key] !== undefined) allProps[key] = error[key];
+      } catch {
+        // ignore
+      }
+    }
+  }
+
   #formatFunctions(functions) {
     return functions.map((func) => ({
       type: "function",
@@ -207,7 +258,13 @@ class GeminiProvider extends Provider {
         stream: true,
         stream_options: { include_usage: true },
         ...(Array.isArray(functions) && functions?.length > 0
-          ? { tools: this.#formatFunctions(functions), tool_choice: "auto" }
+          ? {
+              tools: this.#formatFunctions(functions),
+              tool_choice: "auto",
+              // AIbitat runs one tool per turn; parallel calls cause a 400
+              // on the next request due to a tool call/result count mismatch.
+              parallel_tool_calls: false,
+            }
           : {}),
       });
 
@@ -236,6 +293,14 @@ class GeminiProvider extends Provider {
 
         if (tool_calls) {
           const toolCall = tool_calls[0];
+          // Defensive fallback if Gemini ignores parallel_tool_calls: false.
+          // Keep the first call only; extra calls would cause a 400 next request.
+          if (completion.functionCall) {
+            this.providerLog(
+              `Discarding parallel tool call (only one tool per turn is supported): ${toolCall?.function?.name}`
+            );
+            continue;
+          }
           completion.functionCall = {
             name: this.prefixToolCall(toolCall.function.name, "strip"),
             call_id: toolCall.id,
@@ -276,13 +341,18 @@ class GeminiProvider extends Provider {
         uuid: msgUUID,
       };
     } catch (error) {
+      this.#logAPIError(error);
+      const errorMsg = this._lastErrorMessage
+        ? `Gemini error: ${this._lastErrorMessage}`
+        : error.message;
+      this._lastErrorMessage = null;
       if (error instanceof OpenAI.AuthenticationError) throw error;
       if (
         error instanceof OpenAI.RateLimitError ||
         error instanceof OpenAI.InternalServerError ||
         error instanceof OpenAI.APIError // Also will catch AuthenticationError!!!
       ) {
-        throw new RetryError(error.message);
+        throw new RetryError(errorMsg);
       }
 
       throw error;
@@ -308,7 +378,13 @@ class GeminiProvider extends Provider {
         stream: false,
         messages: this.#formatMessages(messages),
         ...(Array.isArray(functions) && functions?.length > 0
-          ? { tools: this.#formatFunctions(functions), tool_choice: "auto" }
+          ? {
+              tools: this.#formatFunctions(functions),
+              tool_choice: "auto",
+              // AIbitat runs one tool per turn; parallel calls cause a 400
+              // on the next request due to a tool call/result count mismatch.
+              parallel_tool_calls: false,
+            }
           : {}),
       });
 
@@ -340,6 +416,11 @@ class GeminiProvider extends Provider {
         usage: this.getUsage(),
       };
     } catch (error) {
+      this.#logAPIError(error);
+      const errorMsg = this._lastErrorMessage
+        ? `Gemini error: ${this._lastErrorMessage}`
+        : error.message;
+      this._lastErrorMessage = null;
       // If invalid Auth error we need to abort because no amount of waiting
       // will make auth better.
       if (error instanceof OpenAI.AuthenticationError) throw error;
@@ -349,7 +430,7 @@ class GeminiProvider extends Provider {
         error instanceof OpenAI.InternalServerError ||
         error instanceof OpenAI.APIError // Also will catch AuthenticationError!!!
       ) {
-        throw new RetryError(error.message);
+        throw new RetryError(errorMsg);
       }
 
       throw error;

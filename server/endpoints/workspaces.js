@@ -11,7 +11,7 @@ const { Workspace } = require("../models/workspace");
 const { Document } = require("../models/documents");
 const { DocumentVectors } = require("../models/vectors");
 const { WorkspaceChats } = require("../models/workspaceChats");
-const { getVectorDbClass } = require("../utils/helpers");
+const { getVectorDbClass, stripThinkingFromText } = require("../utils/helpers");
 const { handleFileUpload, handlePfpUpload } = require("../utils/files/multer");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { Telemetry } = require("../models/telemetry");
@@ -38,6 +38,9 @@ const { purgeDocument } = require("../utils/files/purgeDocument");
 const { getModelTag } = require("./utils");
 const { searchWorkspaceAndThreads } = require("../utils/helpers/search");
 const { workspaceParsedFilesEndpoints } = require("./workspacesParsedFiles");
+const {
+  workspaceDeletionProtection,
+} = require("../utils/middleware/workspaceDeletionProtection");
 
 function workspaceEndpoints(app) {
   if (!app) return;
@@ -270,7 +273,11 @@ function workspaceEndpoints(app) {
 
   app.delete(
     "/workspace/:slug",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      workspaceDeletionProtection,
+    ],
     async (request, response) => {
       try {
         const { slug = "" } = request.params;
@@ -835,7 +842,8 @@ function workspaceEndpoints(app) {
         let lastMessageText = "";
         const chatsData = chatsToFork.map((chat) => {
           const chatResponse = safeJsonParse(chat.response, {});
-          if (chatResponse?.text) lastMessageText = chatResponse.text;
+          if (chatResponse?.text)
+            lastMessageText = stripThinkingFromText(chatResponse.text);
 
           return {
             workspaceId: workspace.id,

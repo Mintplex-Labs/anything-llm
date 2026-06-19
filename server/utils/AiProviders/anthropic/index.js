@@ -12,6 +12,17 @@ const {
 const { getAnythingLLMUserAgent } = require("../../../endpoints/utils");
 
 class AnthropicLLM {
+  /**
+   * List of Anthropic models that do not support the `temperature` inference parameter.
+   * These models reject `temperature`/`top_p`/`top_k` with a 400 error.
+   * @type {string[]}
+   */
+  noTemperatureModels = [
+    "claude-opus-4-7",
+    "claude-opus-4-8",
+    // Add other models here if identified
+  ];
+
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.ANTHROPIC_API_KEY)
       throw new Error("No Anthropic API key was set.");
@@ -73,6 +84,18 @@ class AnthropicLLM {
     if (this.maxTokens) return this.maxTokens;
     this.maxTokens = await AnthropicLLM.fetchModelMaxTokens(this.model);
     return this.maxTokens;
+  }
+
+  /**
+   * Gets the temperature configuration for the Anthropic LLM.
+   * @param {number} temperature - The temperature to use.
+   * @returns {number|undefined} The temperature value or undefined if not supported.
+   */
+  temperatureParam(temperature = this.defaultTemp) {
+    if (typeof temperature !== "number") return undefined;
+    if (this.noTemperatureModels.some((model) => this.model.includes(model)))
+      return undefined;
+    return parseFloat(temperature);
   }
 
   /**
@@ -196,7 +219,7 @@ class AnthropicLLM {
           max_tokens: this.maxTokens,
           system: this.#buildSystemPrompt(systemContent),
           messages: messages.slice(1), // Pop off the system message
-          temperature: Number(temperature ?? this.defaultTemp),
+          temperature: this.temperatureParam(temperature),
         })
       );
 
@@ -231,7 +254,7 @@ class AnthropicLLM {
         max_tokens: this.maxTokens,
         system: this.#buildSystemPrompt(systemContent),
         messages: messages.slice(1), // Pop off the system message
-        temperature: Number(temperature ?? this.defaultTemp),
+        temperature: this.temperatureParam(temperature),
       }),
       messages,
       runPromptTokenCalculation: false,

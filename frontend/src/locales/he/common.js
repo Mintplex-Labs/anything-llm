@@ -107,6 +107,7 @@ const TRANSLATIONS = {
       telegram: "טלגרם",
     },
     "scheduled-jobs": "משימות מתוכננות",
+    "model-router": "מודל של נתב",
   },
   login: {
     "multi-user": {
@@ -734,6 +735,16 @@ const TRANSLATIONS = {
             "מספר המינימום של כלי העבודה שניתן לבחור עבור כל שאילתה. אנו ממליצים להגדיר ערך גבוה יותר עבור מודלים עם הקשר רחב יותר.",
         },
       },
+      "clarifying-questions": {
+        title: "אפשר לסוכן לשאול שאלות הבהרה.",
+        "beta-badge": "בטא",
+        description:
+          "כאשר הפונקציה מופעלת, ניתן לבקש מהנציגים לעצור ולשאול שאלות קצרות להבהרה, במקרה שההנחיה שלך אינה ברורה.",
+        "max-per-turn": {
+          title: "מספר שאלות מקסימלי לסיבוב",
+          description: "כמה שאלות הבהרה יכול סוכן לשאול במהלך סקר אחד?",
+        },
+      },
     },
   },
   recorded: {
@@ -1216,7 +1227,6 @@ const TRANSLATIONS = {
     similarity_match: "משחק",
     source_count_one: "{{count}} - הפניה",
     source_count_other: "{{count}} – מקורות",
-    preset_exit_description: "עצירת הפעולה הנוכחית של המשתמש",
     add_new: "הוסף חדש",
     edit: "עריכה",
     publish: "להוציא לאור",
@@ -1236,6 +1246,21 @@ const TRANSLATIONS = {
       always_allow: "יש תמיד להקצות {{skillName}}",
       tool_call_was_approved: "הבקשה לקבלת הכלי אושרה.",
       tool_call_was_rejected: "בקשת השימוש בכלי נדחתה.",
+      clarifying_skip: "השליח יחליט",
+      clarifying_submit: "הגש",
+      clarifying_skipped: "אתם מאפשרים לסוכן לקבל את ההחלטה.",
+      clarifying_timeout: "לא התקבל מענה בזמן.",
+      clarifying_pagination: "{{current}} של {{total}}",
+      clarifying_prev_aria: "השאלה הקודמת",
+      clarifying_next_aria: "השאלה הבאה",
+      clarifying_close_aria: "סגור ודלג",
+      clarifying_other: "שאר",
+      clarifying_other_placeholder: "הקלידו את התשובה",
+      batch_progress: "{{answered}} מ-{{total}} השיב",
+      batch_skip_this: "למעלה",
+      batch_submit_all: "יש לשלוח את כל",
+      batch_next: "הבא",
+      answer_skipped: "[המשתמש עבר לשלב הבא]",
     },
     custom_skills: "כישורים מותאמים אישית",
     agent_flows: "זרימת סוכנים",
@@ -1243,6 +1268,48 @@ const TRANSLATIONS = {
     loading_mcp_servers: "טעינת שרתי ה-MCP...",
     app_integrations: "אינטגרציות עם אפליקציות",
     sub_skills: "כישורים ספציפיים",
+    memories: {
+      title: "זיכרונות",
+      empty:
+        "עד כה, אין זיכרונות. לאחר שתתקשרו עם הצ'אטבוט, זיכרונות נוספים יתמלאו.",
+      empty_cta: "ליצור זיכרון חדש",
+      tab_workspace: "חלל עבודה",
+      tab_global: "גלובלי",
+      toggle: {
+        label: "אפשרות להתאים אישית",
+        description:
+          "אפשר לאשתף את העוזר שלך במידע עלייך או על סביבת העבודה, ובכך להשתמש בו בשיחות.",
+      },
+      auto_extraction: {
+        label: "זיכרונות אוטומטיים",
+        description:
+          "אפשר להגדיר את העוזר שלך ליצור תזכורות באופן אוטומטי ברקע.",
+      },
+      menu: {
+        edit: "עריכה",
+        delete: "מחיקה",
+        move_to_global: "התפשטות גלובלית",
+        move_to_workspace: "מעבר למרחב העבודה",
+      },
+      modal: {
+        create_title: "צור זיכרון",
+        edit_title: "עריכת זיכרון",
+        create_description:
+          'הזיכרונות צריכים להיות הצהרה אחת, תמציתית. לדוגמה: "המשתמש מעדיף את Python על פני JavaScript".',
+        edit_description: "עדכן את התוכן של הזיכרון הזה.",
+        label: "זיכרון",
+        placeholder:
+          "לדוגמה, שם המשתמש הוא ג'ואי, המשתמש עובד על פלטפורמת AnythingLLM, וכן הלאה.",
+        create: "צור",
+        save: "שמור",
+        cancel: "בטל",
+      },
+    },
+    stt_unsupported: "אין תמיכה בגישה למイクרופון בדפדפן זה.",
+    stt_mic_denied: "לא ניתן לגשת למכשיר המיקרופון. אנא אפשרו גישה ונסו שוב.",
+    stt_transcription_failed: "לא הצליח הטרנסקריפציה: {{error}}",
+    export: "ייצוא צ'אט כ...",
+    exporting: "ייצוא...",
   },
   profile_settings: {
     edit_account: "ערוך חשבון",
@@ -1608,6 +1675,181 @@ const TRANSLATIONS = {
       timed_out: "הזמן פג",
       running: "ריצה",
       queued: "באי תור",
+    },
+  },
+  "model-router": {
+    title: "מודלים של ראוטרים",
+    description:
+      "נתב מודל מאפשר לך להגדיר כללים כך שהודעות צ'אט יועברו באופן אוטומטי לספקי ומודלים שונים של מודלים של שפה, בהתאם לתנאים.",
+    table: {
+      name: "שם",
+      fallback: "תוכנית מגירה",
+      rules: "כללים",
+      workspaces: "חללי עבודה",
+    },
+    "no-routers": "עדיין אין מודלים של נתבים",
+    "empty-description":
+      "אין מכשירי רשת מוגדרים עדיין. יש להגדיר אחד כדי להתחיל.",
+    "new-router-button": "ראוטר חדש",
+    "delete-confirm":
+      'האם אתה בטוח שאתה רוצה למחוק את הראוטר "{{name}}"?\nפעולה זו תסיר את כל הכללים שלה ותנתק כל סביבת עבודה המשתמשת בה.\n\nפעולה זו אינה ניתנת לבטל.',
+    "toast-deleted": "נת המס שלך הוסרו",
+    "toast-delete-failed": "לא הצלחתי למחוק את הראוטר: {{error}}",
+    "new-router": {
+      title: "יצירת מכשיר מודם חדש",
+      name: "שם",
+      "name-placeholder": "למשל, כלי אופטימיזציה של עלויות",
+      description: "תיאור",
+      "description-placeholder": "תיאור אופציונלי",
+      "fallback-label": "ספק ראשי ומודל",
+      "fallback-description":
+        "משמש כאשר אין כלל ניתוב התואם. משמש גם להערכת כללים שסווגו על ידי מודל שפה גדול (LLM).",
+      "cooldown-label": "זמן קירור (שניות)",
+      "cooldown-help":
+        "כמה זמן החלטת המסלול נשמרת לפני הערכת החוקים מחדש. הגדרות ל-0 כדי לבטל את השמירה.",
+      "name-required": "יש לציין שם.",
+      "fallback-required": "יש לציין את ספק השירות העיקרי ואת המודל הרלוונטי.",
+      cancel: "בטל",
+      create: "יצירת נתב",
+    },
+    "edit-router": {
+      "back-to-routers": "חזרה למודלים של ראוטרים",
+      title: "עריכת נתב: {{name}}",
+      save: "שמור שינויים",
+      "toast-update-failed": "לא הצלחתי לעדכן את הנתב.",
+    },
+    rules: {
+      title: "כללי ניתוב",
+      "title-with-name": "כללי ניתוב: {{name}}",
+      description:
+        "הגדירו את הכללים שקובעים מתי וכיצד הודעות צ'אט מועברות לספקים ודגמים ספציפיים.",
+      "add-rule": "הוסף כלל",
+      "delete-confirm": 'מחיקת הכלל "{{title}}"?',
+      "toast-delete-failed": "לא הצליח למחוק את הכלל.",
+      "toast-reorder-failed": "לא הצליח ליישם את הכללים",
+      "no-rules": "עדיין אין כללים.",
+      "empty-description":
+        "הוסף כלל שיגרום לניתוב הודעות צ'אט לספקים ומודלים ספציפיים.",
+      "new-rule-button": "חוק חדש",
+      "calculated-section-label": "כללים שנקבעו – נבדקו תחילה, בסדר עדיפויות.",
+      "llm-section-label":
+        "כללי LLM – נבדקים כקבוצה, אם אף אחד מהכללים שחושבו לא התאים.",
+      "llm-rule-body":
+        'בצע את הפעולה "<desc>"{{description}}" "</desc>" ואז פנה ל-<route>{{route}}</route>',
+      "calculated-no-conditions":
+        "ללא תנאים – מסל הגעה ל<route>{{route}}</route>",
+      "calculated-single-condition":
+        "אם <prop> נמצא במיקום {{property}} וגם </prop> נמצא במיקום {{comparator}} וגם <val> נמצא במיקום {{value}} אז, יש להעביר את המסלול ל-<route> במיקום {{route}}",
+      "calculated-multi-condition":
+        "אם {{quantifier}} של <cond> נמצא ב{{conditions}} של </cond>, אז יש לכוון את המסלול ל<route> של {{route}} של </route>",
+      "comparator-contains": "כולל",
+      "comparator-matches": "משחקים",
+      "comparator-between": "בין",
+      "badge-llm": "מודל שפה גדול (LLM)",
+      "badge-calculated": "חישב",
+      "aria-drag-to-reorder": "גרור כדי לסדר מחדש",
+      "aria-edit-rule": "כלל עריכה",
+      "aria-delete-rule": "מחיקת חוק",
+      "quantifier-any": "כל",
+      "quantifier-all": "כל",
+    },
+    "rule-form": {
+      "title-label": "כותרת",
+      "rule-type": "סוג כלל",
+      "property-label": "רכוש",
+      "property-select": "בחר",
+      "comparator-label": "מַשְׁבֵּח",
+      "comparator-select": "בחר",
+      "value-label": "ערך",
+      "add-condition": "הוסף תנאי",
+      "remove-condition": "להסיר את התנאי",
+      "conditions-incomplete":
+        "התנאי {{index}} אינו שלם – יש למלא את השדה עבור המיקום, המשוואה והערך.",
+      "match-description-label": "תיאור המשחק",
+      "match-description-placeholder":
+        "למשל, המשתמש שואל על נושאים משפטיים, חוזים או נושאים הקשורים לציות לחוק.",
+      "match-description-help":
+        "תארו את המצב שבו אתם רוצים שהכלל הזה יחול. ה-LLM שלכם ישמש כדי לקבוע אם יש להשתמש בו.",
+      "route-to-label": "מסלול להגעה לספק והמודל",
+      "route-to-description": "כאשר כלל זה מתאים, יש להשתמש בספק/מודל הזה.",
+      cancel: "בטל",
+      saving: "חיסכון...",
+      "update-rule": "כלל עדכון",
+      "create-rule": "יצירת כלל",
+      "title-required": "יש לציין כותרת.",
+      "toast-save-failed": "לא הצליח לשמור את הכלל",
+      "type-calculated-label": "חישב",
+      "type-calculated-description":
+        "התאמה על סמך תכונות של ההודעה, כגון תוכן, מספר הטוקנים או שעת היום.",
+      "type-llm-label": "קטגוריית LLM",
+      "type-llm-description":
+        "השתמש במודל שפה גדול (LLM) כדי לסווג את ההודעה על סמך תיאור שאתה מספק.",
+      "prop-prompt-content": "תוכן מומלץ",
+      "prop-token-count": "ספירת טוקנים בשיחה",
+      "prop-message-count": "מספר הודעות שיחה",
+      "prop-current-hour": "שעה הנוכחית (0-23)",
+      "prop-has-image": "האם יש תמונה מצורפת?",
+      "cmp-contains": "כולל",
+      "cmp-matches-regex": "ביטויים (רגולרי)",
+      "cmp-equals": "שווה ל",
+      "cmp-not-equals": "אינו שווה",
+      "cmp-greater-than": "גדול יותר",
+      "cmp-greater-than-or-equal": "גדול או שווה",
+      "cmp-less-than": "פחות מ",
+      "cmp-less-than-or-equal": "פחות או שווה ל",
+      "cmp-between": "בין (כולל)",
+      "placeholder-between-hour": "למשל, 9:17 (מ-9 בבוקר עד 17:00)",
+      "placeholder-between-numeric": "למשל, 10,50",
+      "placeholder-hour": "למשל, 18 (0-23)",
+      "placeholder-message-count": "למשל, 10",
+      "placeholder-numeric": "למשל, 4000",
+      "placeholder-contains": "למשל, שפת תכנות, פייתון, רוסט",
+      "placeholder-matches": "לדוגמה: /\\bpython\\b/i",
+      "placeholder-default": "לדוגמה, קוד",
+      "help-contains":
+        "רשימה המופרדת בפסיקים – תואמת אם השאילתה מכילה אחד מהערכים (ללא התחשבות בגודל האותיות).",
+      "help-matches":
+        "תבנית רגולרי. יש להשתמש ב-/pattern/ עם דגלים כדי להגדיר רגישות לאותיות (ברירת המחדל היא אי רגישות לאותיות).",
+      "bool-true": "נכון",
+      "bool-false": "לא נכון",
+    },
+    "provider-picker": {
+      "select-provider": "בחר ספק",
+      "setup-required": "(נדרש התקנה)",
+      "loading-models": "טעינת מודלים...",
+      "select-model": "בחר מודל",
+      "enter-model": "הזן שם המודל",
+      "select-provider-first": "בחרו ספק תחילה",
+      "configure-to-continue": "הגדר את {{name}} כדי להמשיך",
+      "configure-provider": "הגדר {{name}}",
+      "setup-credentials":
+        "הזן את הפרטים הנדרשים כדי להשתמש ב-{{name}} כמיקוד.",
+      cancel: "בטל",
+      "save-settings": "שמירת הגדרות",
+      "toast-save-failed": "לא הצליח לשמור הגדרות: {{error}}",
+    },
+    "router-selection": {
+      "loading-routers": "טעינת מכשירי רשת מותאמים אישית...",
+      "no-routers-prefix-settings": "עדיין לא הגדרתי נתב מסוג מסוים.",
+      "no-routers-prefix-workspace": "אין מכשירי רשת מוגדרים.",
+      "no-routers-link": "צור אחת בהגדרות של רשת הווירטואלית.",
+      "model-router-label": "מודם לדוגמה",
+      "select-router": "בחר נתב",
+      "select-description":
+        "בחר את הראוטר שתרצה להשתמש בו עבור אזור העבודה הזה.",
+      "no-routers-chat":
+        'אין מכשירי רשת מוגדרים. צרו אחד בתפריט "הגדרות" > "ספקי בינה מלאכותית" > "מכשיר רשת".',
+      "rule-count": "({{count}} כללים)",
+    },
+    metrics: {
+      "model-router-default": "מודל של רשת אלחוטית",
+    },
+    chat: {
+      "select-router-error": "בחר/י נתב",
+      "invalid-model": "בחירת מודל לא תקינה",
+      "routed-to": "מופנה ל-{{model}} בתוך <route>",
+      "routed-to-rule":
+        "נשלח דרך <route>{{model}}</route> באמצעות <rule>{{ruleTitle}}</rule>",
     },
   },
 };

@@ -14,7 +14,6 @@ class OpenAIProvider extends Provider {
     const {
       options = {
         apiKey: process.env.OPEN_AI_KEY,
-        maxRetries: 3,
       },
       model = "gpt-4o",
     } = config;
@@ -23,6 +22,7 @@ class OpenAIProvider extends Provider {
 
     super(client);
 
+    this.providerTag = "openai";
     this.model = model;
   }
 
@@ -33,7 +33,7 @@ class OpenAIProvider extends Provider {
   /**
    * Whether this provider supports native OpenAI-compatible tool calling.
    * - OpenAI always supports tool calling.
-   * @returns {Promise<boolean>}
+   * @returns {boolean}
    */
   supportsNativeToolCalling() {
     return true;

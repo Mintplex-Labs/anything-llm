@@ -17,7 +17,6 @@ import LocalAiLogo from "@/media/llmprovider/localai.png";
 import TogetherAILogo from "@/media/llmprovider/togetherai.png";
 import FireworksAILogo from "@/media/llmprovider/fireworksai.jpeg";
 import MistralLogo from "@/media/llmprovider/mistral.jpeg";
-import HuggingFaceLogo from "@/media/llmprovider/huggingface.png";
 import PerplexityLogo from "@/media/llmprovider/perplexity.png";
 import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
 import GroqLogo from "@/media/llmprovider/groq.png";
@@ -32,7 +31,6 @@ import XAILogo from "@/media/llmprovider/xai.png";
 import ZAiLogo from "@/media/llmprovider/zai.png";
 import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
-import DellProAiStudioLogo from "@/media/llmprovider/dpais.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
 import FoundryLogo from "@/media/llmprovider/foundry-local.png";
@@ -41,8 +39,11 @@ import DockerModelRunnerLogo from "@/media/llmprovider/docker-model-runner.png";
 import PrivateModeLogo from "@/media/llmprovider/privatemode.png";
 import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
 import LemonadeLogo from "@/media/llmprovider/lemonade.png";
+import MinimaxLogo from "@/media/llmprovider/minimax.png";
+import CerebrasLogo from "@/media/llmprovider/cerebras.png";
 
 import PreLoader from "@/components/Preloader";
+import ModelRouterOptions from "@/components/LLMSelection/ModelRouterOptions";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
 import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
@@ -56,7 +57,6 @@ import CometApiLLMOptions from "@/components/LLMSelection/CometApiLLMOptions";
 import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
 import FireworksAiOptions from "@/components/LLMSelection/FireworksAiOptions";
 import MistralOptions from "@/components/LLMSelection/MistralOptions";
-import HuggingFaceOptions from "@/components/LLMSelection/HuggingFaceOptions";
 import PerplexityOptions from "@/components/LLMSelection/PerplexityOptions";
 import OpenRouterOptions from "@/components/LLMSelection/OpenRouterOptions";
 import GroqAiOptions from "@/components/LLMSelection/GroqAiOptions";
@@ -71,7 +71,6 @@ import XAILLMOptions from "@/components/LLMSelection/XAiLLMOptions";
 import ZAiLLMOptions from "@/components/LLMSelection/ZAiLLMOptions";
 import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
 import PPIOLLMOptions from "@/components/LLMSelection/PPIOLLMOptions";
-import DellProAiStudioOptions from "@/components/LLMSelection/DPAISOptions";
 import MoonshotAiOptions from "@/components/LLMSelection/MoonshotAiOptions";
 import FoundryOptions from "@/components/LLMSelection/FoundryOptions";
 import GiteeAIOptions from "@/components/LLMSelection/GiteeAIOptions/index.jsx";
@@ -79,11 +78,27 @@ import DockerModelRunnerOptions from "@/components/LLMSelection/DockerModelRunne
 import PrivateModeOptions from "@/components/LLMSelection/PrivateModeOptions";
 import SambaNovaOptions from "@/components/LLMSelection/SambaNovaOptions";
 import LemonadeOptions from "@/components/LLMSelection/LemonadeOptions";
+import MinimaxOptions from "@/components/LLMSelection/MinimaxOptions";
+import CerebrasLLMOptions from "@/components/LLMSelection/CerebrasLLMOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
 
+export const MODEL_ROUTER_PROVIDER = {
+  name: "Model Router",
+  value: "anythingllm-router",
+  logo: AnythingLLMIcon,
+  options: (settings) => <ModelRouterOptions settings={settings} />,
+  description:
+    "Route messages to different LLM providers based on rules you define.",
+  requiredConfig: [],
+};
+
+/**
+ * All LLM providers that are available to the user.
+ * This **never** includes the model router provider.
+ */
 export const AVAILABLE_LLM_PROVIDERS = [
   {
     name: "OpenAI",
@@ -127,38 +142,12 @@ export const AVAILABLE_LLM_PROVIDERS = [
     requiredConfig: ["NvidiaNimLLMBasePath"],
   },
   {
-    name: "HuggingFace",
-    value: "huggingface",
-    logo: HuggingFaceLogo,
-    options: (settings) => <HuggingFaceOptions settings={settings} />,
-    description:
-      "Access 150,000+ open-source LLMs and the world's AI community",
-    requiredConfig: [
-      "HuggingFaceLLMEndpoint",
-      "HuggingFaceLLMAccessToken",
-      "HuggingFaceLLMTokenLimit",
-    ],
-  },
-  {
     name: "Ollama",
     value: "ollama",
     logo: OllamaLogo,
     options: (settings) => <OllamaLLMOptions settings={settings} />,
     description: "Run LLMs locally on your own machine.",
     requiredConfig: ["OllamaLLMBasePath"],
-  },
-  {
-    name: "Dell Pro AI Studio",
-    value: "dpais",
-    logo: DellProAiStudioLogo,
-    options: (settings) => <DellProAiStudioOptions settings={settings} />,
-    description:
-      "Run powerful LLMs quickly on NPU powered by Dell Pro AI Studio.",
-    requiredConfig: [
-      "DellProAiStudioBasePath",
-      "DellProAiStudioModelPref",
-      "DellProAiStudioTokenLimit",
-    ],
   },
   {
     name: "LM Studio",
@@ -318,8 +307,7 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <AWSBedrockLLMOptions settings={settings} />,
     description: "Run powerful foundation models privately with AWS Bedrock.",
     requiredConfig: [
-      "AwsBedrockLLMAccessKeyId",
-      "AwsBedrockLLMAccessKey",
+      "AwsBedrockLLMApiKey",
       "AwsBedrockLLMRegion",
       "AwsBedrockLLMModel",
     ],
@@ -402,19 +390,40 @@ export const AVAILABLE_LLM_PROVIDERS = [
     requiredConfig: ["GiteeAIApiKey"],
   },
   {
+    name: "Minimax",
+    value: "minimax",
+    logo: MinimaxLogo,
+    options: (settings) => <MinimaxOptions settings={settings} />,
+    description: "Run Minimax's powerful M2 LLMs.",
+    requiredConfig: ["MinimaxApiKey"],
+  },
+  {
+    name: "Cerebras",
+    value: "cerebras",
+    logo: CerebrasLogo,
+    options: (settings) => <CerebrasLLMOptions settings={settings} />,
+    description: "Run models at instant speed on Cerebras inference.",
+    requiredConfig: ["CerebrasApiKey"],
+  },
+  {
     name: "Generic OpenAI",
     value: "generic-openai",
     logo: GenericOpenAiLogo,
     options: (settings) => <GenericOpenAiOptions settings={settings} />,
     description:
       "Connect to any OpenAi-compatible service via a custom configuration",
-    requiredConfig: [
-      "GenericOpenAiBasePath",
-      "GenericOpenAiModelPref",
-      "GenericOpenAiTokenLimit",
-      "GenericOpenAiKey",
-    ],
+    requiredConfig: ["GenericOpenAiBasePath", "GenericOpenAiModelPref"],
+    connectionConfig: ["GenericOpenAiBasePath"],
   },
+];
+
+/**
+ * All LLM providers that are available to the user.
+ * This **always** includes the model router provider.
+ */
+export const ALL_LLM_PROVIDERS = [
+  MODEL_ROUTER_PROVIDER,
+  ...AVAILABLE_LLM_PROVIDERS,
 ];
 
 export const LLM_PREFERENCE_CHANGED_EVENT = "llm-preference-changed";
