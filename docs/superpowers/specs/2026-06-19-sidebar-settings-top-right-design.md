@@ -12,6 +12,7 @@ Keep the customized workspace surface focused on the features this product uses:
 - The supplied document-modal screenshot showing `Documents` and `Data Connectors`, with Data Connectors marked as unused and to be removed.
 - The supplied Tools-menu screenshot marking `Chat Embed`, `Browser Extension`, and `AnythingLLM Mobile` for removal.
 - The supplied Slash Commands screenshot marking the preset overflow-menu `Publish` action for removal.
+- The live `/settings/beta-features` sidebar capture showing the `Experimental Features` entry to remove.
 
 ## Scope
 
@@ -35,6 +36,8 @@ Keep the customized workspace surface focused on the features this product uses:
 - Settings Tools group: preserve Event Logs, Developer API, System Prompt Variables, role filtering, group expansion, and direct routes/components for non-menu consumers.
 - Slash Commands: remove the `Publish` action from each preset overflow menu and remove the publish-modal wiring used only by that action.
 - Slash Commands: preserve `Edit`, `Add new`, preset execution, preset CRUD, and Community Hub publishing infrastructure outside this tab.
+- Settings screen: remove the `Experimental Features` menu entry and its sidebar-only hold-to-reveal listener state.
+- Preserve the `/settings/beta-features` routes, page components, feature state, and direct-link behavior for non-sidebar consumers.
 
 ## Approaches Considered
 
@@ -49,6 +52,9 @@ Keep the customized workspace surface focused on the features this product uses:
 9. **Remove the Publish action and its tab-local composition wiring — selected for Slash Commands.** This leaves one clear preset action while removing state, callbacks, and a modal that can no longer be opened here.
 10. Hide Publish with CSS. Rejected because the inaccessible button and dead publish flow would remain mounted.
 11. Delete Community Hub publishing globally. Rejected because the request targets this Slash Commands entry point, not unrelated publishing surfaces.
+12. **Remove the Experimental Features option and its sidebar-only unlock wrapper — selected.** This removes the product entry point and the keyboard listeners that exist only to reveal it while preserving the feature implementation.
+13. Hide Experimental Features with CSS. Rejected because the hidden link and hold-to-reveal listeners would remain active.
+14. Delete the experimental feature routes and pages. Rejected because the request targets the menu, and direct routes may still be useful internally.
 
 ## Interaction And Layout
 
@@ -63,6 +69,7 @@ Keep the customized workspace surface focused on the features this product uses:
 - The product logo follows the back button in the same 60px-tall header footprint, so the settings navigation card retains its existing vertical placement.
 - Removing Community Hub closes the gap naturally; Customization follows Agent Skills.
 - A slash-command preset overflow menu contains only `Edit`; opening Edit continues to show the existing preset editor.
+- The settings sidebar ends after the last applicable retained option, with no Experimental Features row or reserved gap.
 
 ## Verification
 
@@ -78,6 +85,8 @@ Keep the customized workspace surface focused on the features this product uses:
 - Confirm Tools shows zero Chat Embed, Browser Extension, and AnythingLLM Mobile entries while retaining Event Logs, Developer API, and System Prompt Variables.
 - Confirm a slash-command preset overflow menu shows one `Edit` action and zero `Publish` actions.
 - Confirm slash-command presets, `Add new`, and the Edit modal remain available after the cleanup.
+- Confirm the settings sidebar contains zero `Experimental Features` links while retained settings groups still render normally.
+- Confirm direct navigation to `/settings/beta-features` still renders the existing Experimental Features page.
 - Confirm Vite builds successfully and the working tree contains only the intentional change.
 
 The frontend currently has no component-test harness. For this small placement-only change, verification will use the running Vite app and browser interaction rather than adding a new test framework solely for this edit.
