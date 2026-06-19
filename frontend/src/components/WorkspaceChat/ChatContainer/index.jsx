@@ -4,6 +4,7 @@ import { CLEAR_ATTACHMENTS_EVENT, DndUploaderContext } from "./DnDWrapper";
 import PromptInput, {
   PROMPT_INPUT_EVENT,
   PROMPT_INPUT_ID,
+  suppressThinkingKey,
 } from "./PromptInput";
 import Workspace from "@/models/workspace";
 import handleChat, { ABORT_STREAM_EVENT } from "@/utils/chat";
@@ -326,6 +327,12 @@ export default function ChatContainer({
       const attachments = promptMessage?.attachments ?? parseAttachments();
       window.dispatchEvent(new CustomEvent(CLEAR_ATTACHMENTS_EVENT));
 
+      // Read the per-workspace "suppress thinking" toggle (set in PromptInput).
+      // Read at send-time from localStorage to stay decoupled & closure-safe.
+      const suppressThinking =
+        window.localStorage.getItem(suppressThinkingKey(workspace.slug)) ===
+        "true";
+
       await Workspace.multiplexStream({
         workspaceSlug: workspace.slug,
         threadSlug: activeThreadSlug,
@@ -340,6 +347,7 @@ export default function ChatContainer({
             setSocketId
           ),
         attachments,
+        suppressThinking,
       });
       return;
     }

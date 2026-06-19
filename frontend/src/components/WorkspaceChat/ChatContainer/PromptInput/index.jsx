@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import debounce from "lodash.debounce";
-import { ArrowUp, At } from "@phosphor-icons/react";
+import { ArrowUp, At, Brain } from "@phosphor-icons/react";
 import StopGenerationButton from "./StopGenerationButton";
 import SpeechToText from "./SpeechToText";
 import { Tooltip } from "react-tooltip";
@@ -22,6 +22,12 @@ import { useIsAgentSessionActive } from "@/utils/chat/agent";
 export const PROMPT_INPUT_ID = "primary-prompt-input";
 export const PROMPT_INPUT_EVENT = "set_prompt_input";
 const MAX_EDIT_STACK_SIZE = 100;
+
+// Per-workspace localStorage key for the "suppress thinking" toggle.
+// When set to "true", the server prefills an empty <think></think> block so
+// reasoning models answer directly. Read at send-time in ChatContainer.
+export const suppressThinkingKey = (slug = "") =>
+  `anythingllm_suppress_thinking_${slug}`;
 
 /**
  * @param {Workspace} props.workspace - workspace object
@@ -49,6 +55,25 @@ export default function PromptInput({
   const agentSessionActive = useIsAgentSessionActive();
   const [promptInput, setPromptInput] = useState("");
   const [showTools, setShowTools] = useState(false);
+
+  // "Thinking" toggle: ON by default (reasoning enabled). When turned OFF the
+  // server prefills an empty <think></think> so reasoning models answer directly.
+  // Persisted per-workspace in localStorage; read at send-time in ChatContainer.
+  const thinkingSlug = workspace?.slug || workspaceSlug || "";
+  const [suppressThinking, setSuppressThinking] = useState(
+    () =>
+      window.localStorage.getItem(suppressThinkingKey(thinkingSlug)) === "true"
+  );
+  const toggleThinking = () => {
+    setSuppressThinking((prev) => {
+      const next = !prev;
+      window.localStorage.setItem(
+        suppressThinkingKey(thinkingSlug),
+        String(next)
+      );
+      return next;
+    });
+  };
   const autoOpenedToolsRef = useRef(false);
   const toolsHighlightRef = useRef(-1);
   const formRef = useRef(null);
@@ -385,6 +410,10 @@ export default function PromptInput({
                     textareaRef={textareaRef}
                     autoOpenedToolsRef={autoOpenedToolsRef}
                   />
+                  <ThinkingButton
+                    suppressThinking={suppressThinking}
+                    toggleThinking={toggleThinking}
+                  />
                 </div>
                 <div className="flex gap-x-2 items-center">
                   <SpeechToText sendCommand={sendCommand} />
@@ -481,6 +510,46 @@ function ToolsButton({
         }`}
       >
         {t("chat_window.tools")}
+      </span>
+    </button>
+  );
+}
+
+function ThinkingButton({ suppressThinking, toggleThinking }) {
+  const thinkingOn = !suppressThinking;
+  return (
+    <button
+      id="thinking-btn"
+      type="button"
+      onClick={toggleThinking}
+      title={
+        thinkingOn
+          ? "Thinking ON — model reasons before answering. Click to answer directly (faster)."
+          : "Thinking OFF — model answers directly. Click to re-enable reasoning."
+      }
+      className={`group border-none cursor-pointer flex items-center gap-x-1 h-6 px-2 rounded-full ${
+        thinkingOn
+          ? "bg-zinc-700 light:bg-slate-200"
+          : "hover:bg-zinc-700 light:hover:bg-slate-200"
+      }`}
+    >
+      <Brain
+        size={16}
+        weight={thinkingOn ? "fill" : "regular"}
+        className={
+          thinkingOn
+            ? "text-white light:text-slate-800"
+            : "text-zinc-300 light:text-slate-600 group-hover:text-white light:group-hover:text-slate-800"
+        }
+      />
+      <span
+        className={`text-sm font-medium ${
+          thinkingOn
+            ? "text-white light:text-slate-800"
+            : "text-zinc-300 light:text-slate-600 group-hover:text-white light:group-hover:text-slate-800"
+        }`}
+      >
+        Think
       </span>
     </button>
   );

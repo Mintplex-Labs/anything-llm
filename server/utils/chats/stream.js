@@ -15,6 +15,11 @@ const {
 
 const VALID_CHAT_MODE = ["automatic", "chat", "query"];
 
+// Empty assistant reasoning block. Prefilled when the user disables "thinking"
+// so reasoning-capable models (Qwen3, DeepSeek-R1, QwQ, etc. — all use <think>)
+// treat reasoning as already complete and answer directly.
+const REASONING_SUPPRESSION_PREFILL = "<think>\n\n</think>\n\n";
+
 async function streamChatWithWorkspace(
   response,
   workspace,
@@ -22,7 +27,8 @@ async function streamChatWithWorkspace(
   chatMode = "automatic",
   user = null,
   thread = null,
-  attachments = []
+  attachments = [],
+  suppressThinking = false
 ) {
   const uuid = uuidv4();
   const updatedMessage = await grepCommand(message, user);
@@ -272,6 +278,17 @@ async function streamChatWithWorkspace(
     },
     rawHistory
   );
+
+  // Reasoning suppression (decoupled, additive): when the user toggles thinking OFF,
+  // prefill an empty assistant <think></think> block so reasoning-capable models
+  // (Qwen3, DeepSeek-R1, etc.) treat reasoning as already done and answer directly.
+  // No-op for non-reasoning models. Default false => zero behavior change.
+  if (suppressThinking) {
+    messages.push({
+      role: "assistant",
+      content: REASONING_SUPPRESSION_PREFILL,
+    });
+  }
 
   // If streaming is not explicitly enabled for connector
   // we do regular waiting of a response and send a single chunk.
