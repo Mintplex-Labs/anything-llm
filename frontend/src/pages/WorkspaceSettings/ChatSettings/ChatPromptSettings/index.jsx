@@ -132,7 +132,7 @@ export default function ChatPromptSettings({
           <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
             {t("chat.prompt.description")}
           </p>
-          <p className="text-white text-opacity-60 text-xs font-medium mb-2">
+          <p className="text-white text-opacity-60 text-xs font-medium mb-1">
             You can insert{" "}
             <Link
               to={paths.settings.systemPromptVariables()}
@@ -157,6 +157,21 @@ export default function ChatPromptSettings({
                 +{availableVariables.length - 3} more...
               </Link>
             )}
+          </p>
+          <p className="text-white text-opacity-60 text-xs font-medium mb-2">
+            Call any running MCP server tool with{" "}
+            <span className="bg-theme-settings-input-bg px-1 py-0.5 rounded font-mono">
+              {"{mcp.<server>.<tool>}"}
+            </span>
+            {" "}or pass arguments with{" "}
+            <span className="bg-theme-settings-input-bg px-1 py-0.5 rounded font-mono">
+              {"{mcp.<server>.<tool>:arg1,arg2}"}
+            </span>
+            {" "}— args can be literals or other variable keys like{" "}
+            <span className="bg-theme-settings-input-bg px-1 py-0.5 rounded font-mono">
+              {"workspace.name"}
+            </span>
+            . Results are cached for 30 seconds.
           </p>
         </div>
 
