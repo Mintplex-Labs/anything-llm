@@ -25,7 +25,10 @@ import { ChatTooltips } from "./ChatTooltips";
 import { MetricsProvider } from "./ChatHistory/HistoricalMessage/Actions/RenderMetrics";
 import useChatContainerQuickScroll from "@/hooks/useChatContainerQuickScroll";
 import { PENDING_HOME_MESSAGE } from "@/utils/constants";
-import { clearPromptInputDraft } from "@/hooks/usePromptInputStorage";
+import {
+  clearPromptInputDraft,
+  savePromptInputDraft,
+} from "@/hooks/usePromptInputStorage";
 import { safeJsonParse } from "@/utils/request";
 import { useTranslation } from "react-i18next";
 import paths from "@/utils/paths";
@@ -326,11 +329,16 @@ export default function ChatContainer({
       const attachments = promptMessage?.attachments ?? parseAttachments();
       window.dispatchEvent(new CustomEvent(CLEAR_ATTACHMENTS_EVENT));
 
+      // Track whether the stream ended with an error so we can restore the
+      // user's message. clearPromptInputDraft() already fired in handleSubmit
+      // before the API call, so on abort we must save the draft back manually.
+      let responseHadError = false;
       await Workspace.multiplexStream({
         workspaceSlug: workspace.slug,
         threadSlug: activeThreadSlug,
         prompt: promptMessage.userMessage,
-        chatHandler: (chatResult) =>
+        chatHandler: (chatResult) => {
+          if (chatResult.type === "abort") responseHadError = true;
           handleChat(
             chatResult,
             setLoadingResponse,
@@ -338,9 +346,18 @@ export default function ChatContainer({
             remHistory,
             _chatHistory,
             setSocketId
-          ),
+          );
+        },
         attachments,
       });
+
+      // Restore the user's typed message into the textarea and draft storage
+      // so they can retry without re-typing after a provider error.
+      if (responseHadError) {
+        const storageKey = threadSlug ?? workspace.slug;
+        setMessageEmit(promptMessage.userMessage);
+        savePromptInputDraft(storageKey, promptMessage.userMessage);
+      }
       return;
     }
     loadingResponse === true && fetchReply();
