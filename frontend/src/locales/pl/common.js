@@ -212,8 +212,6 @@ const TRANSLATIONS = {
       "desc-start":
         "Liczba poprzednich wiadomości, które zostaną uwzględnione w pamięci krótkotrwałej",
       recommend: "Zalecane: 20.",
-      "desc-end":
-        "Więcej niż 45 może prowadzić do problemów z działaniem czatu.",
     },
     prompt: {
       title: "Instrukcja systemowa",
@@ -244,11 +242,8 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "Temperatura modelu",
-      "desc-start":
-        'To ustawienie kontroluje, jak "kreatywne" będą odpowiedzi modelu językowego.',
       "desc-end":
         "Im wyższa liczba, tym większa kreatywność. W przypadku niektórych modeli może to prowadzić do niespójnych odpowiedzi przy zbyt wysokich ustawieniach.",
-      hint: "Większość modeli językowych ma różne dopuszczalne zakresy wartości. Informacje na ten temat można uzyskać u dostawcy modelu językowego.",
     },
   },
   "vector-workspace": {
@@ -1373,6 +1368,8 @@ const TRANSLATIONS = {
     stt_mic_denied:
       "Nie udało się uzyskać dostępu do mikrofonu. Prosimy o przyznanie uprawnień i ponowne próby.",
     stt_transcription_failed: "Błąd transkrypcji: {{error}}",
+    export: "Eksportuj czat jako…",
+    exporting: "Eksportowanie...",
   },
   profile_settings: {
     edit_account: "Edytuj konto",

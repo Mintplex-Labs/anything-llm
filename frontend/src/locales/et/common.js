@@ -209,7 +209,6 @@ const TRANSLATIONS = {
       title: "Vestlusajalugu",
       "desc-start": "Eelmiste sõnumite arv, mis kaasatakse vastuse lühimällu.",
       recommend: "Soovitatav 20. ",
-      "desc-end": "Üle 45 võib sõltuvalt sõnumi suurusest põhjustada tõrkeid.",
     },
     prompt: {
       title: "Süsteemprompt",
@@ -240,10 +239,8 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "LLM-i temperatuur",
-      "desc-start": 'Määrab, kui "loovad" vastused on.',
       "desc-end":
         "Kõrgem väärtus = loovam, ent liiga kõrge võib tekitada ebaühtlasi vastuseid.",
-      hint: "Kontrolli pakkujalt lubatud vahemikke.",
     },
   },
   "vector-workspace": {
@@ -1320,6 +1317,8 @@ const TRANSLATIONS = {
     stt_mic_denied:
       "Ei suudet mikrofoni kasutada. Palun andke lubadus ja proovige uuesti.",
     stt_transcription_failed: "Transkribeerimine ebaõnnestunud: {{error}}",
+    export: "Экспорти руй чат kui...",
+    exporting: "Экспорт",
   },
   profile_settings: {
     edit_account: "Muuda kontot",

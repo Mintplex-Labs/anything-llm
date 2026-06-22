@@ -2,7 +2,7 @@ import System from "@/models/system";
 import { useEffect, useState } from "react";
 
 // Providers which cannot use this feature for workspace<>model selection
-export const DISABLED_PROVIDERS = ["azure", "textgenwebui", "bedrock"];
+export const DISABLED_PROVIDERS = ["azure", "textgenwebui"];
 const PROVIDER_DEFAULT_MODELS = {
   openai: [],
   gemini: [],

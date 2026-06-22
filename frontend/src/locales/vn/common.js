@@ -205,8 +205,6 @@ const TRANSLATIONS = {
       "desc-start":
         "Số lượng cuộc trò chuyện trước đó sẽ được bao gồm trong bộ nhớ ngắn hạn của phản hồi.",
       recommend: "Khuyến nghị 20. ",
-      "desc-end":
-        "Bất kỳ số nào lớn hơn 45 có thể dẫn đến lỗi trò chuyện liên tục tùy thuộc vào kích thước tin nhắn.",
     },
     prompt: {
       title: "Prompt",
@@ -237,10 +235,8 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "Nhiệt độ LLM",
-      "desc-start": 'Cài đặt này kiểm soát mức độ "sáng tạo" của phản hồi LLM.',
       "desc-end":
         "Số càng cao thì càng sáng tạo. Đối với một số mô hình, điều này có thể dẫn đến phản hồi không mạch lạc khi đặt quá cao.",
-      hint: "Hầu hết các LLM có các phạm vi giá trị hợp lệ khác nhau. Tham khảo nhà cung cấp LLM của bạn để biết thông tin đó.",
     },
   },
   "vector-workspace": {
@@ -1258,6 +1254,8 @@ const TRANSLATIONS = {
       "Chức năng truy cập micro không được hỗ trợ trong trình duyệt này.",
     stt_mic_denied: "Không thể truy cập micro. Vui lòng cấp quyền và thử lại.",
     stt_transcription_failed: "Không thể chuyển đổi: {{error}}",
+    export: "Xuất trò chuyện dưới dạng...",
+    exporting: "Xuất khẩu...",
   },
   profile_settings: {
     edit_account: "Chỉnh sửa Tài khoản",

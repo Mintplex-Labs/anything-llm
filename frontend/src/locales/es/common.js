@@ -214,8 +214,6 @@ const TRANSLATIONS = {
       "desc-start":
         "El número de chats anteriores que se incluirán en la memoria a corto plazo de la respuesta.",
       recommend: "Recomendado 20.",
-      "desc-end":
-        "Cualquier valor superior a 45 es probable que provoque fallos continuos en el chat dependiendo del tamaño del mensaje.",
     },
     prompt: {
       title: "Prompt del sistema",
@@ -247,11 +245,8 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "Temperatura del LLM",
-      "desc-start":
-        'Esta configuración controla cuán "creativas" serán tus respuestas del LLM.',
       "desc-end":
         "Cuanto mayor sea el número, más creativo. Para algunos modelos, esto puede llevar a respuestas incoherentes si se establece un valor demasiado alto.",
-      hint: "La mayoría de los LLM tienen varios rangos aceptables de valores válidos. Consulta a tu proveedor de LLM para obtener esa información.",
     },
   },
   "vector-workspace": {
@@ -1395,6 +1390,8 @@ const TRANSLATIONS = {
     stt_mic_denied:
       "No se pudo acceder al micrófono. Por favor, conceda los permisos y vuelva a intentarlo.",
     stt_transcription_failed: "No se pudo realizar la transcripción: {{error}}",
+    export: "Exportar la conversación como...",
+    exporting: "Exportando...",
   },
   profile_settings: {
     edit_account: "Editar cuenta",

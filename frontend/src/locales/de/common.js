@@ -213,8 +213,6 @@ const TRANSLATIONS = {
       "desc-start":
         "Die Anzahl der vorherigen Chats, die in das Kurzzeitgedächtnis der Antwort einbezogen werden.",
       recommend: "Empfohlen 20. ",
-      "desc-end":
-        "Alles über 45 führt wahrscheinlich zu kontinuierlichen Chat-Ausfällen, abhängig von der Nachrichtengröße.",
     },
     prompt: {
       title: "Prompt",
@@ -245,11 +243,8 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "LLM-Temperatur",
-      "desc-start":
-        'Diese Einstellung steuert, wie "kreativ" Ihre LLM-Antworten sein werden.',
       "desc-end":
         "Je höher die Zahl, desto kreativer. Bei einigen Modellen kann dies zu unverständlichen Antworten führen, wenn sie zu hoch eingestellt ist.",
-      hint: "Die meisten LLMs haben verschiedene akzeptable Bereiche gültiger Werte. Konsultieren Sie Ihren LLM-Anbieter für diese Informationen.",
     },
   },
   "vector-workspace": {
@@ -1380,6 +1375,8 @@ const TRANSLATIONS = {
     stt_mic_denied:
       "Es konnte nicht auf das Mikrofon zugegriffen werden. Bitte erteilen Sie die erforderlichen Berechtigungen und versuchen Sie es erneut.",
     stt_transcription_failed: "Transkription fehlgeschlagen: {{error}}",
+    export: "Chat-Export als...",
+    exporting: "Exportieren...",
   },
   profile_settings: {
     edit_account: "Account bearbeiten",

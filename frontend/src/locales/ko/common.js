@@ -208,8 +208,6 @@ const TRANSLATIONS = {
       title: "채팅 기록",
       "desc-start": "응답의 단기 메모리에 포함될 이전 채팅의 수입니다.",
       recommend: "추천 20개 ",
-      "desc-end":
-        " 45개 이상은 메시지 크기에 따라 채팅 실패가 발생할 수 있습니다.",
     },
     prompt: {
       title: "시스템 프롬프트",
@@ -239,10 +237,8 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "LLM 온도",
-      "desc-start": '이 설정은 LLM 응답이 얼마나 "창의적"일지를 제어합니다.',
       "desc-end":
         "숫자가 높을수록 창의적입니다. 일부 모델에서는 너무 높게 설정하면 일관성 없는 응답이 나올 수 있습니다.",
-      hint: "대부분의 LLM은 유효한 값의 다양한 허용 범위를 가지고 있습니다. 해당 정보는 LLM 제공자에게 문의하세요.",
     },
   },
   "vector-workspace": {
@@ -1322,6 +1318,8 @@ const TRANSLATIONS = {
     stt_mic_denied:
       "마이크에 접근할 수 없습니다. 권한을 부여하고 다시 시도해 주십시오.",
     stt_transcription_failed: "전사 오류: {{error}}",
+    export: "채팅 내용을 다음 형식으로 내보내기:",
+    exporting: "수출 중…",
   },
   profile_settings: {
     edit_account: "계정 정보 수정",

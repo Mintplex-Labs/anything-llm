@@ -1,6 +1,6 @@
 {
   "name": "anything-llm",
-  "version": "1.14.0",
+  "version": "1.14.1",
   "description": "The best solution for turning private documents into a chat bot using off-the-shelf tools and commercially viable AI technologies.",
   "main": "index.js",
   "type": "module",
@@ -26,7 +26,7 @@
     "dev:server": "cd server && yarn dev",
     "dev:collector": "cd collector && yarn dev",
     "dev:frontend": "cd frontend && yarn dev",
-    "dev:all": "npx concurrently \"yarn dev:server\" \"yarn dev:frontend\" \"yarn dev:collector\"",
+    "dev": "npx concurrently \"yarn dev:server\" \"yarn dev:frontend\" \"yarn dev:collector\"",
     "prisma:generate": "cd server && npx prisma generate",
     "prisma:migrate": "cd server && npx prisma migrate dev --name init",
     "prisma:seed": "cd server && npx prisma db seed",

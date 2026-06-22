@@ -205,8 +205,6 @@ const TRANSLATIONS = {
       "desc-start":
         "Yanıta dahil edilecek önceki sohbetlerin sayısı (kısa süreli hafıza).",
       recommend: "20 önerilir. ",
-      "desc-end":
-        "45'ten fazlası, mesaj boyutuna göre sürekli sohbet hatalarına yol açabilir.",
     },
     prompt: {
       title: "Komut (Prompt)",
@@ -237,11 +235,8 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "LLM Sıcaklığı",
-      "desc-start":
-        'Bu ayar, LLM yanıtlarının ne kadar "yaratıcı" olacağını kontrol eder.',
       "desc-end":
         "Sayı yükseldikçe yaratıcı yanıtlar artar. Bazı modeller için bu değer çok yüksek ayarlandığında anlamsız yanıtlar ortaya çıkabilir.",
-      hint: "Çoğu LLM'in farklı kabul edilebilir değer aralıkları vardır. Ayrıntılar için LLM sağlayıcınıza danışın.",
     },
   },
   "vector-workspace": {
@@ -1275,6 +1270,8 @@ const TRANSLATIONS = {
     stt_mic_denied:
       "Mikrofonu kullanılamadı. Lütfen izin verin ve tekrar deneyin.",
     stt_transcription_failed: "Transkripsiyon başarısız: {{error}}",
+    export: "Çat sohbetini şu şekilde dışa aktar:",
+    exporting: "Dışarıya satışı yapma...",
   },
   profile_settings: {
     edit_account: "Hesabı Düzenle",

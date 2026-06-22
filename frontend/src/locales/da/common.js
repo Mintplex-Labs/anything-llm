@@ -206,8 +206,6 @@ const TRANSLATIONS = {
       "desc-start":
         "Antallet af tidligere chats, der vil blive inkluderet i svarens korttidshukommelse.",
       recommend: "Anbefal 20. ",
-      "desc-end":
-        "Alt over 45 kan sandsynligvis føre til gentagne chat-fejl afhængigt af beskedstørrelsen.",
     },
     prompt: {
       title: "Prompt",
@@ -240,11 +238,8 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "LLM-temperatur",
-      "desc-start":
-        'Denne indstilling styrer, hvor "kreative" dine LLM-svar vil være.',
       "desc-end":
         "Jo højere tallet er, desto mere kreative bliver svarene. For nogle modeller kan for høje værdier føre til usammenhængende svar.",
-      hint: "De fleste LLM'er har forskellige acceptable intervaller for gyldige værdier. Konsulter din LLM-udbyder for den information.",
     },
   },
   "vector-workspace": {
@@ -1262,6 +1257,8 @@ const TRANSLATIONS = {
     stt_mic_denied:
       "Kunne ikke få adgang til mikrofonen. Vær venligst opmærksom på, at du skal give tilladelse, og prøv igen.",
     stt_transcription_failed: "Transkribering mislykkedes: {{error}}",
+    export: "Eksportér chat som...",
+    exporting: "Eksportér...",
   },
   profile_settings: {
     edit_account: "Rediger konto",
