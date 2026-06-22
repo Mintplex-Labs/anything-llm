@@ -203,8 +203,6 @@ const TRANSLATIONS = {
       title: "チャット履歴",
       "desc-start": "応答の短期記憶に含まれる過去のチャット数。",
       recommend: "推奨値: 20",
-      "desc-end":
-        "45以上にすると、メッセージサイズによっては継続的なチャット失敗が発生する可能性があります。",
     },
     prompt: {
       title: "プロンプト",
@@ -235,10 +233,8 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "LLM温度",
-      "desc-start": "この設定はLLMの応答の創造性を制御します。",
       "desc-end":
         "数値が高いほど創造的になりますが、高すぎると一部のモデルでは一貫性のない応答になる場合があります。",
-      hint: "多くのLLMには有効な値の範囲があります。詳細はLLMプロバイダーの情報を参照してください。",
     },
   },
   "vector-workspace": {
