@@ -82,7 +82,7 @@ export default function WorkspaceLLMSelection({
         </p>
       </div>
 
-      <div className="relative">
+      <div className="relative mt-2">
         <input type="hidden" name="chatProvider" value={selectedLLM} />
         {searchMenuOpen && (
           <div
