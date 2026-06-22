@@ -44,11 +44,11 @@ export default function GeneralInfo({ slug, deletionProtected = false }) {
 
   if (!workspace || loading) return null;
   return (
-    <div className="w-full relative">
+    <div className="w-full relative flex flex-col gap-y-[32px]">
       <form
         ref={formEl}
         onSubmit={handleUpdate}
-        className="w-1/2 flex flex-col gap-y-6"
+        className="w-1/2 flex flex-col"
       >
         {hasChanges && (
           <div className="absolute top-0 right-0">
