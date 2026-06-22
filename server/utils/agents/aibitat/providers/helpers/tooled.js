@@ -272,7 +272,13 @@ async function tooledStream(
     result.functionCall = {
       id: firstToolCall.id,
       name: firstToolCall.name,
-      arguments: safeJsonParse(firstToolCall.arguments, {}),
+      arguments: safeJsonParse(
+        firstToolCall.arguments,
+        {},
+        {
+          repairLLMEscapes: true,
+        }
+      ),
     };
   }
 
@@ -337,7 +343,9 @@ async function tooledComplete(
 
   if (completion.tool_calls && completion.tool_calls.length > 0) {
     const toolCall = completion.tool_calls[0];
-    const functionArgs = safeJsonParse(toolCall.function.arguments, null);
+    const functionArgs = safeJsonParse(toolCall.function.arguments, null, {
+      repairLLMEscapes: true,
+    });
 
     if (functionArgs === null) {
       return {

@@ -75,8 +75,107 @@ function parseAuthHeader(headerValue = null, apiKey = null) {
   return { [headerValue]: apiKey };
 }
 
-function safeJsonParse(jsonString, fallback = null) {
+/**
+ * Repairs improperly-escaped backslash sequences in a raw JSON string emitted
+ * by an LLM tool call, BEFORE it is parsed.
+ *
+ * LLMs routinely write LaTeX (and Windows paths) inside JSON string values
+ * without escaping the backslash — e.g. `"$\frac{1}{2}$"` instead of the valid
+ * `"$\\frac{1}{2}$"`. Standard JSON.parse then either:
+ *   - silently decodes the escape into a control character — `\f` -> U+000C
+ *     (form feed), `\b` -> U+0008 — which both consumes the following letter
+ *     (so `\frac` becomes `rac`) and embeds a character that is illegal in
+ *     XML 1.0, making the generated .docx/.xlsx/.pptx unopenable; or
+ *   - throws on an invalid escape (`\a` in `\alpha`, `\g` in `\gamma`, ...),
+ *     causing safeJsonParse to fall back and the whole tool call to be dropped.
+ *
+ * This walks the string and, only inside JSON string literals, rewrites any
+ * backslash that is NOT a safe/intended escape into a literal backslash (`\\`)
+ * so the original text survives the parse. Intentional escapes are preserved
+ * untouched: `\" \\ \/ \n \r \t` and a well-formed `\uXXXX`. `\f` and `\b` are
+ * treated as literal because a model that emits them almost always means LaTeX
+ * (`\frac`, `\beta`), not a control character.
+ *
+ * Note: `\n`, `\r`, `\t` are kept as whitespace because models overwhelmingly
+ * use them for real markdown newlines/tabs; the rare LaTeX collision (`\nu`,
+ * `\tau`, `\rho`) is an accepted trade-off and, unlike `\f`/`\b`, decodes to a
+ * character that is legal in XML so it never corrupts a generated document.
+ * @param {string} input - Raw JSON string from an LLM tool call.
+ * @returns {string} The same JSON with unsafe backslash escapes made literal.
+ */
+function repairJsonEscapes(input) {
+  if (typeof input !== "string" || !input.includes("\\")) return input;
+
+  let out = "";
+  let inString = false;
+  for (let i = 0; i < input.length; i++) {
+    const ch = input[i];
+
+    if (ch !== "\\") {
+      if (ch === '"') inString = !inString;
+      out += ch;
+      continue;
+    }
+
+    // A backslash outside a string literal cannot start an escape in JSON —
+    // leave it for the parser/jsonrepair to handle.
+    if (!inString) {
+      out += ch;
+      continue;
+    }
+
+    const next = input[i + 1];
+
+    // Preserve intended escapes verbatim. Consuming `next` here also means an
+    // escaped quote (`\"`) does not flip the in-string state below.
+    if (
+      next === '"' ||
+      next === "\\" ||
+      next === "/" ||
+      next === "n" ||
+      next === "r" ||
+      next === "t"
+    ) {
+      out += ch + next;
+      i++;
+      continue;
+    }
+
+    // `\uXXXX` is only a valid escape with four hex digits; otherwise the
+    // backslash is literal (e.g. LaTeX `\underline`, `\unit`).
+    if (next === "u" && /^[0-9a-fA-F]{4}$/.test(input.slice(i + 2, i + 6))) {
+      out += input.slice(i, i + 6);
+      i += 5;
+      continue;
+    }
+
+    // Everything else (`\f` `\b` `\v` `\a` `\g` `\u`-non-hex, a trailing
+    // backslash, ...) is a literal backslash the model meant to keep.
+    out += "\\\\";
+    if (next !== undefined) {
+      out += next;
+      i++;
+    }
+  }
+
+  return out;
+}
+
+/**
+ * @param {string|null} jsonString - The JSON string to parse.
+ * @param {*} fallback - Returned if the string cannot be parsed.
+ * @param {{repairLLMEscapes?: boolean}} [options] - When `repairLLMEscapes` is
+ * true the raw string is first run through {@link repairJsonEscapes} to recover
+ * unescaped LaTeX/path backslashes emitted by LLM tool calls. Off by default so
+ * behavior is unchanged for all existing (non tool-call) callers.
+ */
+function safeJsonParse(
+  jsonString,
+  fallback = null,
+  { repairLLMEscapes = false } = {}
+) {
   if (jsonString === null) return fallback;
+  if (repairLLMEscapes) jsonString = repairJsonEscapes(jsonString);
 
   try {
     return JSON.parse(jsonString);
@@ -135,6 +234,7 @@ module.exports = {
   userFromSession,
   parseAuthHeader,
   safeJsonParse,
+  repairJsonEscapes,
   isValidUrl,
   toValidNumber,
   decodeHtmlEntities,

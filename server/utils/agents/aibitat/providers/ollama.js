@@ -245,7 +245,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
       });
     }
 
-    const call = safeJsonParse(textResponse, null);
+    const call = safeJsonParse(textResponse, null, { repairLLMEscapes: true });
     if (call === null)
       return { toolCall: null, text: textResponse, uuid: msgUUID }; // failed to parse, so must be regular text response.
 
@@ -353,7 +353,13 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
         const toolCall = toolCalls[0];
         const args =
           typeof toolCall.function.arguments === "string"
-            ? safeJsonParse(toolCall.function.arguments, {})
+            ? safeJsonParse(
+                toolCall.function.arguments,
+                {},
+                {
+                  repairLLMEscapes: true,
+                }
+              )
             : toolCall.function.arguments || {};
 
         return {
@@ -521,7 +527,13 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
         const toolCall = response.message.tool_calls[0];
         const args =
           typeof toolCall.function.arguments === "string"
-            ? safeJsonParse(toolCall.function.arguments, {})
+            ? safeJsonParse(
+                toolCall.function.arguments,
+                {},
+                {
+                  repairLLMEscapes: true,
+                }
+              )
             : toolCall.function.arguments || {};
 
         return {

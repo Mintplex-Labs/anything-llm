@@ -332,7 +332,8 @@ class AnthropicProvider extends Provider {
       if (result.functionCall) {
         result.functionCall.arguments = safeJsonParse(
           result.functionCall.arguments,
-          {}
+          {},
+          { repairLLMEscapes: true }
         );
         messages.push({
           role: "assistant",

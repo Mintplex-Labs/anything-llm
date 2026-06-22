@@ -319,7 +319,8 @@ class GeminiProvider extends Provider {
       if (completion.functionCall) {
         completion.functionCall.arguments = safeJsonParse(
           completion.functionCall.arguments,
-          {}
+          {},
+          { repairLLMEscapes: true }
         );
         return {
           textResponse: completion.content,
@@ -395,7 +396,13 @@ class GeminiProvider extends Provider {
       const cost = this.getCost(response.usage);
       if (completion?.tool_calls?.length > 0) {
         const toolCall = completion.tool_calls[0];
-        let functionArgs = safeJsonParse(toolCall.function.arguments, {});
+        let functionArgs = safeJsonParse(
+          toolCall.function.arguments,
+          {},
+          {
+            repairLLMEscapes: true,
+          }
+        );
         return {
           textResponse: null,
           functionCall: {

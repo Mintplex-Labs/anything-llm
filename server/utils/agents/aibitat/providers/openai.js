@@ -215,7 +215,8 @@ class OpenAIProvider extends Provider {
       if (completion.functionCall) {
         completion.functionCall.arguments = safeJsonParse(
           completion.functionCall.arguments,
-          {}
+          {},
+          { repairLLMEscapes: true }
         );
         return {
           textResponse: completion.content,
@@ -299,7 +300,8 @@ class OpenAIProvider extends Provider {
       if (completion.functionCall) {
         completion.functionCall.arguments = safeJsonParse(
           completion.functionCall.arguments,
-          {}
+          {},
+          { repairLLMEscapes: true }
         );
         return {
           textResponse: completion.content,

@@ -157,7 +157,7 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
     const historyMessages = this.buildToolCallMessages(history, functions);
     const response = await chatCb({ messages: historyMessages });
 
-    const call = safeJsonParse(response, null);
+    const call = safeJsonParse(response, null, { repairLLMEscapes: true });
     if (call === null) return { toolCall: null, text: response }; // failed to parse, so must be text.
 
     const { valid, reason } = this.validFuncCall(call, functions);
@@ -214,7 +214,7 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
       }
     }
 
-    const call = safeJsonParse(textResponse, null);
+    const call = safeJsonParse(textResponse, null, { repairLLMEscapes: true });
     if (call === null)
       return { toolCall: null, text: textResponse, uuid: msgUUID }; // failed to parse, so must be regular text response.
 

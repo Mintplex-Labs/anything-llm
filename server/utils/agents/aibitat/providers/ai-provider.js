@@ -693,7 +693,8 @@ class Provider {
     if (!!result.functionCall?.arguments)
       result.functionCall.arguments = safeJsonParse(
         result.functionCall.arguments,
-        {}
+        {},
+        { repairLLMEscapes: true }
       );
 
     return {
