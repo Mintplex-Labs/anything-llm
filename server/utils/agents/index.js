@@ -738,10 +738,12 @@ class AgentHandler {
           ...(parsedFiles || []).map((doc) => ({
             name: doc.title || "Uploaded Document",
             content: doc.pageContent,
+            metadata: doc,
           })),
           ...(pinnedDocs || []).map((doc) => ({
             name: doc.title || doc.metadata?.title || "Pinned Document",
             content: doc.pageContent,
+            metadata: doc.metadata || doc,
           })),
         ];
 
@@ -754,6 +756,8 @@ class AgentHandler {
           this.log(
             `Injecting ${pinnedDocs.length} pinned document(s) into user message`
           );
+
+        this.aibitat?.addDocumentCitations(allDocuments);
 
         return (
           "\n\n<attached_documents>\n" +

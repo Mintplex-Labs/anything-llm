@@ -220,8 +220,6 @@ const TRANSLATIONS = {
       "desc-start":
         "Počet předchozích chatů, které budou zahrnuty do krátkodobé paměti odpovědi.",
       recommend: "Doporučeno 20. ",
-      "desc-end":
-        "Více než 45 pravděpodobně povede k trvalým selháním chatu v závislosti na velikosti zprávy.",
     },
     prompt: {
       title: "Systémová výzva",
@@ -252,11 +250,8 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "Teplota LLM",
-      "desc-start":
-        'Toto nastavení řídí, jak "kreativní" budou odpovědi vašeho LLM.',
       "desc-end":
         "Vyšší číslo znamená kreativnější. U některých modelů to může vést k nesourodým odpovědím při nastavení příliš vysoko.",
-      hint: "Většina LLM má různé přijatelné rozsahy platných hodnot. Poradťe se se svým poskytovatelem LLM pro tyto informace.",
     },
   },
   "vector-workspace": {

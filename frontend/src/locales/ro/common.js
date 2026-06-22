@@ -214,8 +214,6 @@ const TRANSLATIONS = {
       "desc-start":
         "Numărul conversațiilor anterioare care vor fi incluse în memoria pe termen scurt a răspunsului.",
       recommend: "Recomandat: 20.",
-      "desc-end":
-        "Mai mult de 45 poate duce la erori în conversații în funcție de mărimea mesajelor.",
     },
     prompt: {
       title: "System Prompt",
@@ -245,11 +243,8 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "Temperatura LLM",
-      "desc-start":
-        'Această setare controlează cât de "creativ" va fi răspunsul LLM-ului.',
       "desc-end":
         "Cu cât numărul e mai mare, cu atât mai creativ. Pentru unele modele poate duce la răspunsuri incoerente la valori mari.",
-      hint: "Majoritatea LLM-urilor au un interval valid specific. Consultă furnizorul tău LLM pentru detalii.",
     },
   },
   vector: {

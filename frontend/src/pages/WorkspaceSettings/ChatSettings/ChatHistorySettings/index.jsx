@@ -2,15 +2,14 @@ import { useTranslation } from "react-i18next";
 export default function ChatHistorySettings({ workspace, setHasChanges }) {
   const { t } = useTranslation();
   return (
-    <div>
-      <div className="flex flex-col gap-y-1 mb-4">
-        <label htmlFor="name" className="block mb-2 input-label">
+    <div className="flex flex-col gap-y-[8px]">
+      <div className="flex flex-col gap-y-[8px]">
+        <label htmlFor="name" className="block input-label">
           {t("chat.history.title")}
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium">
           {t("chat.history.desc-start")}
           <i> {t("chat.history.recommend")} </i>
-          {t("chat.history.desc-end")}
         </p>
       </div>
       <input
