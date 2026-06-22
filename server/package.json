@@ -37,6 +37,7 @@
     "@pinecone-database/pinecone": "^2.0.1",
     "@prisma/client": "5.3.1",
     "@qdrant/js-client-rest": "^1.9.0",
+    "@valkey/valkey-glide": "2.4.1",
     "@vscode/ripgrep": "1.17.1",
     "@xenova/transformers": "^2.14.0",
     "@zilliz/milvus2-sdk-node": "2.3.5",

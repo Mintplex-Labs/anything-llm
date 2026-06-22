@@ -397,6 +397,36 @@ const KEY_MAPPING = {
     preUpdate: [validatePGVectorTableName],
   },
 
+  // Valkey Vector DB Options (valkey-search module)
+  ValkeyVectorDBEndpoint: {
+    envKey: "VALKEY_VECTOR_DB_ENDPOINT",
+    checks: [],
+  },
+  ValkeyVectorDBHost: {
+    envKey: "VALKEY_VECTOR_DB_HOST",
+    checks: [],
+  },
+  ValkeyVectorDBPort: {
+    envKey: "VALKEY_VECTOR_DB_PORT",
+    checks: [],
+  },
+  ValkeyVectorDBUsername: {
+    envKey: "VALKEY_VECTOR_DB_USERNAME",
+    checks: [],
+  },
+  ValkeyVectorDBPassword: {
+    envKey: "VALKEY_VECTOR_DB_PASSWORD",
+    checks: [],
+  },
+  ValkeyVectorDBUseTLS: {
+    envKey: "VALKEY_VECTOR_DB_USE_TLS",
+    checks: [],
+  },
+  ValkeyVectorDBRequestTimeout: {
+    envKey: "VALKEY_VECTOR_DB_REQUEST_TIMEOUT",
+    checks: [],
+  },
+
   // Together Ai Options
   TogetherAiApiKey: {
     envKey: "TOGETHER_AI_API_KEY",
@@ -1100,6 +1130,7 @@ function supportedVectorDB(input = "") {
     "zilliz",
     "astra",
     "pgvector",
+    "valkey",
   ];
   return supported.includes(input)
     ? null
