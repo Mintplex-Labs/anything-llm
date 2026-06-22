@@ -204,6 +204,27 @@ class AIbitat {
   }
 
   /**
+   * Register attached documents (parsed/pinned files) as citations so they surface as
+   * sources, mirroring normal chat. Dedupes by id since this runs on every reply turn.
+   * @param {Array<{name: string, content: string, metadata?: object}>} documents
+   */
+  addDocumentCitations(documents = []) {
+    const existingIds = new Set(this._pendingCitations.map((c) => c.id));
+    for (const { name, content, metadata = {} } of documents) {
+      const id = metadata.id || metadata.location || name;
+      if (existingIds.has(id)) continue;
+      existingIds.add(id);
+      this.addCitation({
+        id,
+        title: name,
+        text: content.slice(0, 1_000) + "...continued on in source document...",
+        chunkSource: metadata.chunkSource || null,
+        score: null,
+      });
+    }
+  }
+
+  /**
    * Flush all pending citations to the frontend with the given message UUID.
    * Called automatically when the agent response is finalized.
    * Note: Does not clear citations - they are cleared by chat-history plugin after persisting.

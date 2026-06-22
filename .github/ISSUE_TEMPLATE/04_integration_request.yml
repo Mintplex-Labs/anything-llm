@@ -1,0 +1,61 @@
+name: 🔌 New Integration Proposal
+description: Propose a new LLM, Embedding, or Vector DB provider.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please review our Vetting Criteria in CONTRIBUTING.md before submitting. 
+        Low-effort requests or providers without an established user base or unique technical utility will be closed immediately.
+  - type: input
+    id: provider_name
+    attributes:
+      label: Provider Name
+    validations:
+      required: true
+  - type: input
+    id: provider_website
+    attributes:
+      label: Official Website URL
+      placeholder: "https://example.com"
+    validations:
+      required: true
+  - type: input
+    id: provider_docs
+    attributes:
+      label: API Documentation URL
+      placeholder: "https://docs.example.com"
+    validations:
+      required: true
+  - type: input
+    id: provider_privacy
+    attributes:
+      label: Privacy Policy URL
+      placeholder: "https://example.com/privacy"
+    validations:
+      required: true
+  - type: input
+    id: userbase_proof
+    attributes:
+      label: Proof of Active User Base & Demand
+      description: Provide clear evidence of active community traction (e.g., Hugging Face download metrics, GitHub repo stats, or organic community discussions).
+    validations:
+      required: true
+  - type: dropdown
+    id: models_endpoint
+    attributes:
+      label: Native Models Discovery
+      description: Does your API expose a standard GET `/v1/models` (or native equivalent) endpoint for dynamic model listing?
+      options:
+        - "Yes, it fully supports a model enumeration endpoint."
+        - "No, users must manually type in the model strings."
+    validations:
+      required: true
+  - type: dropdown
+    id: technical_delta
+    attributes:
+      label: Technical Compatibility Layer
+      options:
+        - "This provider is NOT OpenAI-compatible and requires custom SDK/orchestration logic."
+        - "This provider IS OpenAI-compatible (Stop here, use the Generic OpenAI Connector)."
+    validations:
+      required: true

@@ -5,6 +5,7 @@ import { Plus, CircleNotch, Trash } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import ThreadItem from "./ThreadItem";
 import { useParams } from "react-router-dom";
+import useHoverMetaKey from "./hooks";
 export const THREAD_RENAME_EVENT = "renameThread";
 
 export default function ThreadContainer({
@@ -15,7 +16,7 @@ export default function ThreadContainer({
   const [threads, setThreads] = useState([]);
   const [defaultThreadHasChats, setDefaultThreadHasChats] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [ctrlPressed, setCtrlPressed] = useState(false);
+  const { containerRef, ctrlPressed } = useHoverMetaKey(setThreads, !loading);
 
   useEffect(() => {
     const chatHandler = (event) => {
@@ -49,37 +50,6 @@ export default function ThreadContainer({
     }
     fetchThreads();
   }, [workspace.slug, threadSlug]);
-
-  // Enable toggling of bulk-deletion by holding meta-key (ctrl on win and cmd/fn on others)
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (["Control", "Meta"].includes(event.key)) {
-        setCtrlPressed(true);
-      }
-    };
-
-    const handleKeyUp = (event) => {
-      if (["Control", "Meta"].includes(event.key)) {
-        setCtrlPressed(false);
-        // when toggling, unset bulk progress so
-        // previously marked threads that were never deleted
-        // come back to life.
-        setThreads((prev) =>
-          prev.map((t) => {
-            return { ...t, deleted: false };
-          })
-        );
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
-    };
-  }, []);
 
   const toggleForDeletion = (id) => {
     setThreads((prev) =>
@@ -144,7 +114,12 @@ export default function ThreadContainer({
     isVirtualThread || (!threadSlug && !defaultThreadHasChats);
 
   return (
-    <div className="flex flex-col" role="list" aria-label="Threads">
+    <div
+      ref={containerRef}
+      className="flex flex-col"
+      role="list"
+      aria-label="Threads"
+    >
       {defaultThreadHasChats && (
         <ThreadItem
           idx={0}
