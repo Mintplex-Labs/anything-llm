@@ -15,12 +15,12 @@ export default function ChatModelSelection({
 
   if (loading) {
     return (
-      <div>
-        <div className="flex flex-col mt-6">
+      <div className="flex flex-col gap-y-[8px]">
+        <div className="flex flex-col gap-y-[8px]">
           <label htmlFor="name" className="block input-label">
             {t("chat.model.title")}
           </label>
-          <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+          <p className="text-white text-opacity-60 text-xs font-medium">
             {t("chat.model.description")}
           </p>
         </div>
@@ -39,12 +39,12 @@ export default function ChatModelSelection({
   }
 
   return (
-    <div>
-      <div className="flex flex-col mt-6">
+    <div className="flex flex-col gap-y-[8px]">
+      <div className="flex flex-col gap-y-[8px]">
         <label htmlFor="name" className="block input-label">
           {t("chat.model.title")}
         </label>
-        <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+        <p className="text-white text-opacity-60 text-xs font-medium">
           {t("chat.model.description")}
         </p>
       </div>

@@ -13,6 +13,9 @@ function getSTTProvider() {
     case "generic-openai":
       const { GenericOpenAiSTT } = require("./openAiGeneric");
       return new GenericOpenAiSTT();
+    case "groq":
+      const { GroqSTT } = require("./groq");
+      return new GroqSTT();
     default:
       throw new Error(
         `STT_PROVIDER "${provider}" is not a server-side provider.`

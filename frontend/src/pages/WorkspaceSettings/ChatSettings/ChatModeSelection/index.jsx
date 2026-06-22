@@ -6,14 +6,14 @@ export default function ChatModeSelection({ workspace, setHasChanges }) {
   const [chatMode, setChatMode] = useState(workspace?.chatMode || "chat");
 
   return (
-    <div>
-      <div className="flex flex-col">
+    <div className="flex flex-col gap-y-[8px]">
+      <div className="flex flex-col gap-y-[8px]">
         <label htmlFor="chatMode" className="block input-label">
           {t("chat.mode.title")}
         </label>
       </div>
 
-      <div className="flex flex-col gap-y-1 mt-2">
+      <div className="flex flex-col gap-y-[8px]">
         <div className="w-fit flex gap-x-1 items-center p-1 rounded-lg bg-theme-settings-input-bg ">
           <input type="hidden" name="chatMode" value={chatMode} />
           <button

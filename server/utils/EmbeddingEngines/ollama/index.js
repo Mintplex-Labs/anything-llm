@@ -43,7 +43,11 @@ class OllamaEmbedder {
    * @returns {Promise<boolean>} - A promise that resolves to true if the service is alive, false otherwise.
    */
   async #isAlive() {
-    return await fetch(this.basePath)
+    const headers = this.authToken
+      ? { Authorization: `Bearer ${this.authToken}` }
+      : {};
+
+    return await fetch(this.basePath, { headers })
       .then((res) => res.ok)
       .catch((e) => {
         this.log(e.message);

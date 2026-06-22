@@ -1,7 +1,4 @@
 const { Telemetry } = require("../../models/telemetry");
-const {
-  SUPPORTED_CONNECTION_METHODS,
-} = require("../AiProviders/bedrock/utils");
 const { resetAllVectorStores } = require("../vectorStore/resetAllVectorStores");
 
 const KEY_MAPPING = {
@@ -225,29 +222,10 @@ const KEY_MAPPING = {
     checks: [nonZero],
   },
 
-  // AWS Bedrock LLM InferenceSettings
-  AwsBedrockLLMConnectionMethod: {
-    envKey: "AWS_BEDROCK_LLM_CONNECTION_METHOD",
-    checks: [
-      (input) =>
-        SUPPORTED_CONNECTION_METHODS.includes(input) ? null : "invalid Value",
-    ],
-  },
-  AwsBedrockLLMAccessKeyId: {
-    envKey: "AWS_BEDROCK_LLM_ACCESS_KEY_ID",
-    checks: [],
-  },
-  AwsBedrockLLMAccessKey: {
-    envKey: "AWS_BEDROCK_LLM_ACCESS_KEY",
-    checks: [],
-  },
-  AwsBedrockLLMSessionToken: {
-    envKey: "AWS_BEDROCK_LLM_SESSION_TOKEN",
-    checks: [],
-  },
-  AwsBedrockLLMAPIKey: {
+  // AWS Bedrock LLM Settings
+  AwsBedrockLLMApiKey: {
     envKey: "AWS_BEDROCK_LLM_API_KEY",
-    checks: [],
+    checks: [isNotEmpty],
   },
   AwsBedrockLLMRegion: {
     envKey: "AWS_BEDROCK_LLM_REGION",
@@ -259,10 +237,6 @@ const KEY_MAPPING = {
   },
   AwsBedrockLLMTokenLimit: {
     envKey: "AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT",
-    checks: [nonZero],
-  },
-  AwsBedrockLLMMaxOutputTokens: {
-    envKey: "AWS_BEDROCK_LLM_MAX_OUTPUT_TOKENS",
     checks: [nonZero],
   },
 
@@ -587,6 +561,18 @@ const KEY_MAPPING = {
     envKey: "AGENT_PERPLEXITY_API_KEY",
     checks: [],
   },
+  AgentBraveApiKey: {
+    envKey: "AGENT_BRAVE_API_KEY",
+    checks: [],
+  },
+  AgentCrwApiKey: {
+    envKey: "AGENT_CRW_API_KEY",
+    checks: [],
+  },
+  AgentCrwApiUrl: {
+    envKey: "AGENT_CRW_API_URL",
+    checks: [],
+  },
 
   // TTS/STT Integration ENVS
   TextToSpeechProvider: {
@@ -696,6 +682,16 @@ const KEY_MAPPING = {
   STTOpenAICompatibleEndpoint: {
     envKey: "STT_OPEN_AI_COMPATIBLE_ENDPOINT",
     checks: [isValidURL],
+  },
+
+  // STT Groq
+  STTGroqApiKey: {
+    envKey: "STT_GROQ_API_KEY",
+    checks: [isNotEmpty],
+  },
+  STTGroqModel: {
+    envKey: "STT_GROQ_MODEL",
+    checks: [isNotEmpty],
   },
 
   // DeepSeek Options
@@ -992,6 +988,7 @@ function supportedSTTProvider(input = "") {
     "openai",
     "lemonade",
     "deepgram",
+    "groq",
     "generic-openai",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid STT provider.`;

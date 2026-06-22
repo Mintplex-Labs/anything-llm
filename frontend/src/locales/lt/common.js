@@ -219,8 +219,6 @@ const TRANSLATIONS = {
       "desc-start":
         "Ankstesnių pokalbių skaičius, kuris bus įtrauktas į atsakymo trumpalaikę atmintį.",
       recommend: "Rekomenduojama 20. ",
-      "desc-end":
-        "Daugiau nei 45 pokalbiai gali lemti nuolatines klaidas priklausomai nuo žinutės dydžio.",
     },
     prompt: {
       title: "Sistemos instrukcija",
@@ -251,11 +249,8 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "LLM temperatūra",
-      "desc-start":
-        "Šis nustatymas kontroliuoja, koks „kūrybiškas“ bus jūsų LLM atsakymas.",
       "desc-end":
         "Kuo didesnis skaičius, tuo atsakymai kūrybiškesni. Kai kuriems modeliams nustačius per didelę reikšmę atsakymai gali tapti nerišlūs.",
-      hint: "Dauguma LLM turi įvairius priimtinų reikšmių rėžius. Pasitarkite su savo LLM tiekėju.",
     },
   },
   "vector-workspace": {
