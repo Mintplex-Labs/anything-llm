@@ -205,8 +205,6 @@ const TRANSLATIONS = {
       "desc-start":
         "Het aantal vorige chats dat in het kortetermijngeheugen van de reactie wordt opgenomen.",
       recommend: "Aanbevolen 20. ",
-      "desc-end":
-        "Alles meer dan 45 leidt waarschijnlijk tot continue chatfouten, afhankelijk van de berichtgrootte.",
     },
     prompt: {
       title: "Prompt",
@@ -238,11 +236,8 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "LLM Temperatuur",
-      "desc-start":
-        'Deze instelling bepaalt hoe "creatief" je LLM-antwoorden zullen zijn.',
       "desc-end":
         "Hoe hoger het getal, hoe creatiever. Voor sommige modellen kan dit leiden tot onsamenhangende antwoorden als het te hoog wordt ingesteld.",
-      hint: "De meeste LLM's hebben verschillende acceptabele reeksen van geldige waarden. Raadpleeg je LLM-provider voor die informatie.",
     },
   },
   "vector-workspace": {
