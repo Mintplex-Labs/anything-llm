@@ -72,12 +72,12 @@ export default function WorkspaceLLMSelection({
   const selectedLLMObject = LLMS.find((llm) => llm.value === selectedLLM);
 
   return (
-    <div className="border-b border-white/40 pb-8">
-      <div className="flex flex-col">
+    <div className="flex flex-col gap-y-[8px]">
+      <div className="flex flex-col gap-y-[8px]">
         <label htmlFor="name" className="block input-label">
           {t("chat.llm.title")}
         </label>
-        <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+        <p className="text-white text-opacity-60 text-xs font-medium">
           {t("chat.llm.description")}
         </p>
       </div>
@@ -150,7 +150,7 @@ export default function WorkspaceLLMSelection({
                 <div className="text-sm font-semibold text-white">
                   {selectedLLMObject.name}
                 </div>
-                <div className="mt-1 text-xs text-description">
+                <div className="text-xs text-description">
                   {selectedLLMObject.description}
                 </div>
               </div>
@@ -179,7 +179,7 @@ function ModelSelector({ selectedLLM, workspace, setHasChanges }) {
   if (NO_MODEL_SELECTION.includes(selectedLLM)) {
     if (selectedLLM !== "default") {
       return (
-        <div className="w-full h-10 justify-center items-center flex mt-4">
+        <div className="w-full h-10 justify-center items-center flex">
           <p className="text-sm font-base text-white text-opacity-60 text-center">
             Multi-model support is not supported for this provider yet.
             <br />
@@ -212,9 +212,9 @@ function ModelSelector({ selectedLLM, workspace, setHasChanges }) {
 function FreeFormLLMInput({ workspace, setHasChanges }) {
   const { t } = useTranslation();
   return (
-    <div className="mt-4 flex flex-col gap-y-1">
+    <div className="flex flex-col gap-y-[8px]">
       <label className="block input-label">{t("chat.model.title")}</label>
-      <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+      <p className="text-white text-opacity-60 text-xs font-medium">
         {t("chat.model.description")}
       </p>
       <input

@@ -106,9 +106,9 @@ export default function AgentLLMSelection({
 
   const selectedLLMObject = LLMS.find((llm) => llm.value === selectedLLM);
   return (
-    <div className="border-b border-white/40 pb-8">
+    <div className="flex flex-col gap-y-[8px]">
       {WARN_PERFORMANCE.includes(selectedLLM) && (
-        <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-white mb-4 bg-blue-800/30 w-fit rounded-lg px-4 py-2">
+        <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-white bg-blue-800/30 w-fit rounded-lg px-4 py-2">
           <div className="gap-x-2 flex items-center">
             <Gauge className="shrink-0" size={25} />
             <p className="text-sm">{t("agent.performance-warning")}</p>
@@ -116,11 +116,11 @@ export default function AgentLLMSelection({
         </div>
       )}
 
-      <div className="flex flex-col">
+      <div className="flex flex-col gap-y-[8px]">
         <label htmlFor="name" className="block input-label">
           {t("agent.provider.title")}
         </label>
-        <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+        <p className="text-white text-opacity-60 text-xs font-medium">
           {t("agent.provider.description")}
         </p>
       </div>
@@ -203,7 +203,7 @@ export default function AgentLLMSelection({
         )}
       </div>
       {selectedLLM !== "none" && (
-        <div className="mt-4 flex flex-col gap-y-1">
+        <div className="flex flex-col gap-y-1">
           <AgentModelSelection
             provider={selectedLLM}
             workspace={workspace}

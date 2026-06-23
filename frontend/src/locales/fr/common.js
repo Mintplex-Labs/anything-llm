@@ -206,8 +206,6 @@ const TRANSLATIONS = {
       "desc-start":
         "Le nombre de chats précédents qui seront inclus dans la mémoire à court terme de la réponse.",
       recommend: "Recommandé: 20.",
-      "desc-end":
-        "Tout nombre supérieur à 45 risque de provoquer des échecs de chat continus en fonction de la taille du message.",
     },
     prompt: {
       title: "Invite",
@@ -237,11 +235,8 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "Température LLM",
-      "desc-start":
-        "Ce paramètre contrôle le niveau de créativité des réponses de votre LLM.",
       "desc-end":
         "Plus le nombre est élevé, plus la réponse sera créative. Pour certains modèles, cela peut entraîner des réponses incohérentes si la valeur est trop élevée.",
-      hint: "La plupart des LLM ont diverses plages acceptables de valeurs valides. Consultez votre fournisseur LLM pour cette information.",
     },
   },
   "vector-workspace": {

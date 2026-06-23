@@ -4,11 +4,11 @@ export default function ChatQueryRefusalResponse({ workspace, setHasChanges }) {
   const { t } = useTranslation();
   return (
     <div>
-      <div className="flex flex-col">
+      <div className="flex flex-col gap-y-[8px]">
         <label htmlFor="name" className="block input-label">
           {t("chat.refusal.title")}
         </label>
-        <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+        <p className="text-white text-opacity-60 text-xs font-medium">
           {t("chat.refusal.desc-start")}{" "}
           <code className="border-none bg-theme-settings-input-bg p-0.5 rounded-sm">
             {t("chat.refusal.query")}

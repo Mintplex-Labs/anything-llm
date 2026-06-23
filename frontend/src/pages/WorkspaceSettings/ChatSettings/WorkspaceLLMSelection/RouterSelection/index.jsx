@@ -20,7 +20,7 @@ export default function RouterSelection({ workspace, setHasChanges }) {
 
   if (loading) {
     return (
-      <div className="mt-4">
+      <div className="flex flex-col gap-y-[8px]">
         <p className="text-sm text-white text-opacity-60">
           {t("model-router.router-selection.loading-routers")}
         </p>
@@ -30,7 +30,7 @@ export default function RouterSelection({ workspace, setHasChanges }) {
 
   if (routers.length === 0) {
     return (
-      <div className="mt-4">
+      <div className="flex flex-col gap-y-[8px]">
         <p className="text-sm text-white text-opacity-60">
           {t("model-router.router-selection.no-routers-prefix-workspace")}{" "}
           <Link
@@ -46,11 +46,11 @@ export default function RouterSelection({ workspace, setHasChanges }) {
   }
 
   return (
-    <div className="mt-4 flex flex-col gap-y-1">
+    <div className="flex flex-col gap-y-[8px]">
       <label className="block input-label">
         {t("model-router.router-selection.model-router-label")}
       </label>
-      <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+      <p className="text-white text-opacity-60 text-xs font-medium">
         {t("model-router.router-selection.select-description")}
       </p>
       <select
