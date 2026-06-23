@@ -31,7 +31,6 @@ class ToolReranker {
    * @returns {boolean}
    */
   static isEnabled() {
-    // We now default to being enabled
     if (!("AGENT_SKILL_RERANKER_ENABLED" in process.env)) return true;
     if (process.env.AGENT_SKILL_RERANKER_ENABLED === "false") return false;
     return true;
