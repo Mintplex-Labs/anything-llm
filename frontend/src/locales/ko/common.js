@@ -729,7 +729,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "지능형 기술 선택",
-        "beta-badge": "베타",
         description:
           "쿼리당 무제한의 도구 사용 및 컷 토큰 사용량을 최대 80%까지 줄일 수 있습니다 – AnythingLLM은 모든 프롬프트에 적합한 기술을 자동으로 선택합니다.",
         "max-tools": {

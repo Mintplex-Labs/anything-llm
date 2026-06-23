@@ -760,7 +760,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "Inteligentní výběr dovedností",
-        "beta-badge": "Beta",
         description:
           "Umožněte použití libovolného počtu nástrojů a snížit využití tokenů až o 80 % pro každou dotaz — AnythingLLM automaticky vybírá vhodné dovednosti pro každou žádost.",
         "max-tools": {

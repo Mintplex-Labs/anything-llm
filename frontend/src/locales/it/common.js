@@ -765,7 +765,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "Selezione intelligente delle competenze",
-        "beta-badge": "Versione beta",
         description:
           "Abilita l'uso illimitato degli strumenti e riduci l'utilizzo dei token fino all'80% per ogni query — AnythingLLM seleziona automaticamente le competenze più appropriate per ogni richiesta.",
         "max-tools": {

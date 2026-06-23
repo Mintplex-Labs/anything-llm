@@ -775,7 +775,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "Selecció intel·ligent d'habilitats",
-        "beta-badge": "Beta",
         description:
           "Activa eines il·limitades i redueix l'ús de tokens fins a un 80% per consulta: AnythingLLM selecciona automàticament les habilitats adequades per a cada missatge.",
         "max-tools": {

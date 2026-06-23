@@ -726,7 +726,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "בחירת מיומנויות בהתאם ליכולות",
-        "beta-badge": "בטא",
         description:
           "אפשרו שימוש בלתי מוגבל בכלים וצמצום השימוש בטוקנים עד 80% לכל שאילתה – ה-AnythingLLM בוחר באופן אוטומטי את הכישורים המתאימים ביותר לכל בקשה.",
         "max-tools": {

@@ -760,7 +760,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "Išmanusis įgūdžių pasirinkimas",
-        "beta-badge": "Beta",
         description:
           "Įjunkite neribotą kiekį įrankių ir sumažinkite žetonų (tokens) naudojimą iki 80 % vienai užklausai — AnythingLLM automatiškai parinks tinkamus įgūdžiai kiekvienai užklausai.",
         "max-tools": {

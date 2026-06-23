@@ -747,7 +747,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "Intelligent Skill Selection",
-        "beta-badge": "Beta",
         description:
           "Enable unlimited tools and cut token usage by up to 80% per query — AnythingLLM automatically selects the right skills for every prompt.",
         "max-tools": {

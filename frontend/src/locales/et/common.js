@@ -738,7 +738,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "Nutikad oskuste valiku meetodid",
-        "beta-badge": "Beeta",
         description:
           "Lubage piiramatu hulga tööriistade kasutamist ning vähendage küsimuse kohta kasutatavate tokenide arv kuni 80% – AnythingLLM valib automaatselt iga küsimuse jaoks sobivad oskused.",
         "max-tools": {

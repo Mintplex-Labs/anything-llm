@@ -739,7 +739,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "اختيار المهارات الذكية",
-        "beta-badge": "بيتا",
         description:
           "تمكين استخدام أدوات غير محدودة وتقليل استخدام رموز القطع بنسبة تصل إلى 80٪ لكل استعلام - يقوم AnythingLLM تلقائيًا باختيار المهارات المناسبة لكل طلب.",
         "max-tools": {

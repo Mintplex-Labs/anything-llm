@@ -767,7 +767,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "Sélection de compétences basée sur l'intelligence",
-        "beta-badge": "Bêta",
         description:
           "Permettez l'utilisation illimitée d'outils et réduisez la consommation de jetons jusqu'à 80 % par requête – AnythingLLM sélectionne automatiquement les compétences appropriées pour chaque requête.",
         "max-tools": {

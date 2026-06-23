@@ -705,7 +705,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "智能技能选择",
-        "beta-badge": "β 版本",
         description:
           "实现无限工具和按查询减少高达 80% 的 Token 使用量——AnythingLLM 能够自动选择最合适的技能，以应对每个提示。",
         "max-tools": {

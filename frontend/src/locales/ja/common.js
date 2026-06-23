@@ -730,7 +730,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "知的なスキル選択",
-        "beta-badge": "ベータ版",
         description:
           "クエリごとに、無制限のツールを使用し、トークン使用量を最大80%削減できます。AnythingLLMは、各プロンプトに対して最適なスキルを自動的に選択します。",
         "max-tools": {

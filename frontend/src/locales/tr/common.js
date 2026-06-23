@@ -758,7 +758,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "Akıllı Becerilerin Seçimi",
-        "beta-badge": "Beta",
         description:
           'Her sorgu için sınırsız araç kullanımı ve "cut token" kullanımını %80\'e kadar azaltma imkanı sunar — AnythingLLM, her talep için doğru becerileri otomatik olarak seçer.',
         "max-tools": {
