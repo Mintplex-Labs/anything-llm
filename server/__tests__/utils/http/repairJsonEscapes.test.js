@@ -56,6 +56,34 @@ describe("repairJsonEscapes", () => {
     expect(parse(raw).content).toBe("# Title\n\nBody line\twith tab\r\n");
   });
 
+  // --- Documented, intentional trade-offs (pinned so they aren't "fixed" by
+  //     accident) -----------------------------------------------------------
+
+  // LaTeX Greek that collides with a whitespace escape (\nu, \tau, \rho) still
+  // decodes to a newline/tab/CR, because models overwhelmingly use \n/\r/\t for
+  // real markdown. This mangles the text but, unlike \f/\b, stays XML-legal so
+  // it never corrupts a generated document. See repairJsonEscapes JSDoc.
+  test("treats LaTeX \\nu/\\tau/\\rho as their whitespace escape (XML-legal)", () => {
+    expect(parse(String.raw`{"content":"$\nu$"}`).content).toBe("$\nu$");
+    expect(parse(String.raw`{"content":"$\tau$"}`).content).toBe("$\tau$");
+    expect(parse(String.raw`{"content":"$\rho$"}`).content).toBe("$\rho$");
+    // The whole point of the trade-off: no XML-illegal control char is emitted.
+    expect(parse(String.raw`{"content":"$\nu$"}`).content).not.toMatch(
+      ILLEGAL_XML_CONTROL
+    );
+  });
+
+  // A *well-formed* \uXXXX is a valid JSON escape, so repair preserves it even
+  // when it decodes to an XML-illegal control char (e.g. a \\u000c -> form feed).
+  // Removing those is the job of the downstream stripInvalidXmlChars guard
+  // (issue #5760), not this repair pass — they are defense-in-depth.
+  test("preserves a well-formed \\u00XX control escape (downstream strips it)", () => {
+    const raw = '{"content":"a\\u000cb"}';
+    const out = parse(raw).content;
+    expect(out.charCodeAt(1)).toBe(0x0c); // the form feed survives the parse
+    expect(out).toMatch(ILLEGAL_XML_CONTROL); // repair does NOT sanitize XML
+  });
+
   test("leaves already-escaped backslashes untouched", () => {
     const raw = String.raw`{"path":"C:\\Users\\me\\file.txt"}`;
     expect(parse(raw).path).toBe("C:\\Users\\me\\file.txt");
