@@ -3658,6 +3658,53 @@
         }
       }
     },
+    "/v1/openai/images/generations": {
+      "post": {
+        "tags": [
+          "OpenAI Compatible Endpoints"
+        ],
+        "description": "Generate an image from a text prompt using the system-configured image generation provider. Returns the image as a base64 PNG.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "The prompt to generate an image from.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "prompt": "A red fox in the snow",
+                "size": "512x512"
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/openai/embeddings": {
       "post": {
         "tags": [

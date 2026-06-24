@@ -495,6 +495,12 @@ const SystemSettings = {
       GeminiEmbeddingApiKey: !!process.env.GEMINI_EMBEDDING_API_KEY,
 
       // --------------------------------------------------------
+      // Image Generation Provider Selection Settings & Configs
+      // --------------------------------------------------------
+      ImageGenerationProvider: process.env.IMAGE_GENERATION_PROVIDER || null,
+      ImageGenerationModelPref: process.env.IMAGE_GENERATION_MODEL_PREF || null,
+
+      // --------------------------------------------------------
       // VectorDB Provider Selection Settings & Configs
       // --------------------------------------------------------
       VectorDB: vectorDB,

@@ -283,6 +283,16 @@ const KEY_MAPPING = {
     checks: [nonZero],
   },
 
+  // Image Generation Settings
+  ImageGenerationProvider: {
+    envKey: "IMAGE_GENERATION_PROVIDER",
+    checks: [isNotEmpty, supportedImageGenerationProvider],
+  },
+  ImageGenerationModelPref: {
+    envKey: "IMAGE_GENERATION_MODEL_PREF",
+    checks: [],
+  },
+
   // Vector Database Selection Settings
   VectorDB: {
     envKey: "VECTOR_DB",
@@ -1104,6 +1114,13 @@ function supportedVectorDB(input = "") {
   return supported.includes(input)
     ? null
     : `Invalid VectorDB type. Must be one of ${supported.join(", ")}.`;
+}
+
+function supportedImageGenerationProvider(input = "") {
+  const supported = ["openai", "ollama", "lemonade", "openrouter"];
+  return supported.includes(input)
+    ? null
+    : `Invalid image generation provider. Must be one of ${supported.join(", ")}.`;
 }
 
 function validChromaURL(input = "") {

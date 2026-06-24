@@ -23,6 +23,7 @@ export default function handleChat(
     action = null,
     metrics = {},
     routedTo = null,
+    outputs = null,
   } = chatResult;
 
   if (type === "modelRouteNotification") {
@@ -80,6 +81,7 @@ export default function handleChat(
         pending: false,
         chatId,
         metrics,
+        ...(outputs ? { outputs } : {}),
       },
     ]);
     _chatHistory.push({
@@ -93,6 +95,7 @@ export default function handleChat(
       pending: false,
       chatId,
       metrics,
+      ...(outputs ? { outputs } : {}),
     });
     emitAssistantMessageCompleteEvent(chatId);
   } else if (

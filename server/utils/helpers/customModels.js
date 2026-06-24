@@ -52,6 +52,9 @@ const SUPPORT_CUSTOM_MODELS = [
   "cerebras",
   "bedrock",
   "generic-openai",
+  // Image Generation Engines
+  "openai-image",
+  "openrouter-image",
   // Embedding Engines
   "native-embedder",
   "cohere-embedder",
@@ -130,6 +133,10 @@ async function getCustomModels(
       return await getCohereModels(apiKey, "chat");
     case "zai":
       return await getZAiModels(apiKey);
+    case "openai-image":
+      return await getOpenAiImageModels(apiKey);
+    case "openrouter-image":
+      return await getOpenRouterImageModels();
     case "native-embedder":
       return await getNativeEmbedderModels();
     case "cohere-embedder":
@@ -1330,6 +1337,59 @@ async function getBedrockModels(_apiKey = null, options = {}) {
     console.error(`AWSBedrock:getBedrockModels`, e.message);
     return { models: [], error: "Could not fetch AWS Bedrock Models" };
   }
+}
+
+/**
+ * Lists the OpenAI image-capable models (dall-e-*, gpt-image-*). Falls back to
+ * the known image models if the list call fails.
+ * @param {string|null} apiKey - OpenAI API key; defaults to OPEN_AI_KEY when null
+ * @returns {Promise<{models: {id: string, name: string}[], error: string|null}>}
+ */
+async function getOpenAiImageModels(apiKey = null) {
+  const { OpenAI: OpenAIApi } = require("openai");
+  const openai = new OpenAIApi({ apiKey: apiKey || process.env.OPEN_AI_KEY });
+  const models = await openai.models
+    .list()
+    .then((results) => results.data)
+    .then((all) =>
+      all
+        .filter((model) => /dall-e|gpt-image/i.test(model.id))
+        .map((model) => ({ id: model.id, name: model.id }))
+    )
+    .catch((e) => {
+      console.error(`OpenAI:listImageModels`, e.message);
+      return [
+        { id: "dall-e-2", name: "dall-e-2" },
+        { id: "dall-e-3", name: "dall-e-3" },
+        { id: "gpt-image-1", name: "gpt-image-1" },
+      ];
+    });
+  return { models, error: null };
+}
+
+/**
+ * Lists OpenRouter models that can output images (image output modality).
+ * @returns {Promise<{models: {id: string, name: string, organization: string}[], error: string|null}>}
+ */
+async function getOpenRouterImageModels() {
+  const models = await fetch("https://openrouter.ai/api/v1/models")
+    .then((res) => res.json())
+    .then(({ data = [] }) =>
+      data
+        .filter((model) =>
+          model?.architecture?.output_modalities?.includes("image")
+        )
+        .map((model) => ({
+          id: model.id,
+          name: model.name,
+          organization: model.id.split("/")[0],
+        }))
+    )
+    .catch((e) => {
+      console.error(`OpenRouter:listImageModels`, e.message);
+      return [];
+    });
+  return { models, error: null };
 }
 
 module.exports = {

@@ -190,6 +190,54 @@ function apiOpenAICompatibleEndpoints(app) {
   );
 
   app.post(
+    "/v1/openai/images/generations",
+    [validApiKey],
+    async (request, response) => {
+      /*
+      #swagger.tags = ['OpenAI Compatible Endpoints']
+      #swagger.description = 'Generate an image from a text prompt using the system-configured image generation provider. Returns the image as a base64 PNG.'
+      #swagger.requestBody = {
+          description: 'The prompt to generate an image from.',
+          required: true,
+          content: {
+            "application/json": {
+              example: {
+                prompt: "A red fox in the snow",
+                size: "512x512"
+              }
+            }
+          }
+        }
+      #swagger.responses[403] = {
+        schema: {
+          "$ref": "#/definitions/InvalidAPIKey"
+        }
+      }
+      */
+      try {
+        const { prompt, size = "512x512" } = reqBody(request);
+        if (!prompt || !String(prompt).trim().length)
+          return response.status(400).json({ error: "A prompt is required." });
+
+        const {
+          generateImageForWorkspace,
+        } = require("../../../utils/ImageGenerators");
+        const { buffer } = await generateImageForWorkspace({
+          prompt: String(prompt),
+          size: String(size),
+        });
+
+        return response.status(200).json({
+          data: [{ b64_json: buffer.toString("base64") }],
+        });
+      } catch (e) {
+        console.error(e.message, e);
+        return response.status(500).json({ error: e.message });
+      }
+    }
+  );
+
+  app.post(
     "/v1/openai/embeddings",
     [validApiKey],
     async (request, response) => {

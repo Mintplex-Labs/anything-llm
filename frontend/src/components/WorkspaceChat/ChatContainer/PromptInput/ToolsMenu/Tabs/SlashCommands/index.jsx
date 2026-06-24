@@ -57,6 +57,11 @@ export default function SlashCommandsTab({
         description: t("chat_window.preset_reset_description"),
         autoSubmit: true,
       },
+      {
+        command: "/img",
+        description: t("chat_window.preset_img_description"),
+        autoSubmit: false,
+      },
       ...presets.map((preset) => ({
         command: preset.command,
         description: preset.description,
@@ -104,7 +109,7 @@ export default function SlashCommandsTab({
     items,
     highlightedIndex,
     onSelect: (item) => {
-      const text = item.preset ? `${item.command} ` : item.command;
+      const text = item.autoSubmit ? item.command : `${item.command} `;
       handleUseCommand(text, item.autoSubmit);
     },
     registerItemCount,
@@ -166,7 +171,7 @@ export default function SlashCommandsTab({
           description={item.description}
           onClick={() =>
             handleUseCommand(
-              item.preset ? `${item.command} ` : item.command,
+              item.autoSubmit ? item.command : `${item.command} `,
               item.autoSubmit
             )
           }
