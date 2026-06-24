@@ -209,7 +209,6 @@ const TRANSLATIONS = {
       title: "Vestlusajalugu",
       "desc-start": "Eelmiste sõnumite arv, mis kaasatakse vastuse lühimällu.",
       recommend: "Soovitatav 20. ",
-      "desc-end": "Üle 45 võib sõltuvalt sõnumi suurusest põhjustada tõrkeid.",
     },
     prompt: {
       title: "Süsteemprompt",
@@ -240,10 +239,8 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "LLM-i temperatuur",
-      "desc-start": 'Määrab, kui "loovad" vastused on.',
       "desc-end":
         "Kõrgem väärtus = loovam, ent liiga kõrge võib tekitada ebaühtlasi vastuseid.",
-      hint: "Kontrolli pakkujalt lubatud vahemikke.",
     },
   },
   "vector-workspace": {

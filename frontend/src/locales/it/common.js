@@ -207,8 +207,6 @@ const TRANSLATIONS = {
       "desc-start":
         "Numero di chat precedenti che verranno incluse nella memoria a breve termine della risposta.",
       recommend: "Recommend 20. ",
-      "desc-end":
-        "Un numero superiore a 45 potrebbe causare continui errori nella chat, a seconda delle dimensioni del messaggio.",
     },
     prompt: {
       title: "Prompt",
@@ -240,11 +238,8 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "Temperatura LLM",
-      "desc-start":
-        'Questa impostazione controlla il livello di "creatività" delle risposte dell\'LLM.',
       "desc-end":
         "Più alto è il numero, più è creativo. Per alcuni modelli questo può portare a risposte incoerenti se troppo elevato.",
-      hint: "La maggior parte degli LLM ha vari intervalli accettabili di valori validi. Consulta il tuo fornitore LLM per queste informazioni.",
     },
   },
   "vector-workspace": {

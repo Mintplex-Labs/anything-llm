@@ -222,8 +222,6 @@ const TRANSLATIONS = {
       "desc-start":
         "El nombre de xats anteriors que s'inclouran a la memòria a curt termini de la resposta.",
       recommend: "Es recomanen 20. ",
-      "desc-end":
-        "Més de 45 pot provocar errors continus al xat depenent de la mida dels missatges.",
     },
     prompt: {
       title: "Missatge del sistema",
@@ -255,11 +253,8 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "Temperatura del LLM",
-      "desc-start":
-        'Aquesta configuració controla com de "creatiu" serà el teu LLM en les respostes.',
       "desc-end":
         "Com més alt sigui el número, més creatiu serà. Per a alguns models, això pot provocar respostes incoherents si és massa alt.",
-      hint: "La majoria dels LLM tenen diversos rangs acceptables de valors vàlids. Consulta el teu proveïdor de LLM per obtenir aquesta informació.",
     },
   },
   "vector-workspace": {

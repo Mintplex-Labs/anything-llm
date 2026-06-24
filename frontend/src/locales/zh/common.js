@@ -205,8 +205,6 @@ const TRANSLATIONS = {
       title: "聊天历史记录",
       "desc-start": "将包含在响应的短期记忆中的先前聊天的数量。",
       recommend: "推荐 20。",
-      "desc-end":
-        "任何超过 45 的值都可能导致连续聊天失败，具体取决于消息大小。",
     },
     prompt: {
       title: "系统提示词",
@@ -235,10 +233,8 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "LLM 温度",
-      "desc-start": "此设置控制你的 LLM 回答的“创意”程度",
       "desc-end":
         "数字越高越有创意。对于某些模型，如果设置得太高，可能会导致响应不一致。",
-      hint: "大多数 LLM 都有各种可接受的有效值范围。请咨询你的LLM提供商以获取该信息。",
     },
   },
   "vector-workspace": {

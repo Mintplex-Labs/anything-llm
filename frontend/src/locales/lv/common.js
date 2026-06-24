@@ -212,8 +212,6 @@ const TRANSLATIONS = {
       "desc-start":
         "Iepriekšējo sarunu skaits, kas tiks iekļauts atbildes īslaicīgajā atmiņā.",
       recommend: "Ieteicams 20. ",
-      "desc-end":
-        "Vairāk nekā 45 var novest pie nepārtrauktām sarunu kļūmēm atkarībā no ziņojuma izmēra.",
     },
     prompt: {
       title: "Sistēmas uzvedne",
@@ -244,11 +242,8 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "LLM Temperatūra",
-      "desc-start":
-        'Šis iestatījums kontrolē, cik "radošas" būs jūsu LLM atbildes.',
       "desc-end":
         "Jo lielāks skaitlis, jo radošākas atbildes. Dažiem modeļiem tas var novest pie nesaprotamām atbildēm, ja iestatīts pārāk augsts.",
-      hint: "Lielākajai daļai LLM ir dažādi pieņemami derīgo vērtību diapazoni. Konsultējieties ar savu LLM pakalpojumu sniedzēju par šo informāciju.",
     },
   },
   "vector-workspace": {
