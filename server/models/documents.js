@@ -120,7 +120,7 @@ const Document = {
       const { pageContent: _pageContent, ...metadata } = data;
       const newDoc = {
         docId,
-        filename: path.split("/")[1],
+        filename: path.split(/[/\\]/).pop(),
         docpath: path,
         workspaceId: workspace.id,
         metadata: JSON.stringify(metadata),

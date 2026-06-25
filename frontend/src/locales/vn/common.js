@@ -740,7 +740,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "Lựa chọn kỹ năng thông minh",
-        "beta-badge": "Phiên bản thử nghiệm",
         description:
           "Cho phép sử dụng không giới hạn các công cụ và giảm mức sử dụng token lên đến 80% cho mỗi truy vấn – AnythingLLM tự động chọn các kỹ năng phù hợp nhất cho mỗi yêu cầu.",
         "max-tools": {

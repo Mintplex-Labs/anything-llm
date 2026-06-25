@@ -47,10 +47,7 @@ export default function AgentSkillReranker() {
     <div className="flex flex-col gap-y-4">
       <div className="flex items-center gap-x-1">
         <label className="block text-md font-medium text-zinc-50 light:text-slate-900 flex items-center gap-x-1">
-          {t("agent.settings.intelligent-skill-selection.title")}{" "}
-          <i className="ml-1 text-xs text-white light:text-sky-700 pl-2 bg-blue-500/40 light:bg-sky-100 rounded-md px-2 py-0.5">
-            {t("agent.settings.intelligent-skill-selection.beta-badge")}
-          </i>
+          {t("agent.settings.intelligent-skill-selection.title")}
         </label>
       </div>
       <div className="flex items-center gap-x-4">
