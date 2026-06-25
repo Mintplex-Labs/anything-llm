@@ -1,48 +1,47 @@
+const fs = require("fs");
+const path = require("path");
 const { log, conclude } = require("./helpers/index.js");
 const { WorkspaceChats } = require("../models/workspaceChats.js");
 const { generatedImagesPath } = require("../utils/files/index.js");
 const { safeJsonParse } = require("../utils/http/index.js");
 
+// Generated images are always stored as `img-<uuid>.png`.
+const IMAGE_FILENAME_PATTERN = /^img-[a-f0-9-]{36}\.png$/i;
+
+// Ignore images younger than this so a freshly generated file isn't deleted in
+// the window between writing it to disk and persisting its chat reference.
+const MIN_AGE_MS = 60 * 60 * 1000;
+
 (async () => {
   try {
-    const fs = require("fs");
-    const path = require("path");
     if (!fs.existsSync(generatedImagesPath)) return;
 
-    const files = fs.readdirSync(generatedImagesPath);
-    if (files.length === 0) return;
+    const now = Date.now();
+    const candidates = fs
+      .readdirSync(generatedImagesPath)
+      .filter((name) => IMAGE_FILENAME_PATTERN.test(name))
+      .filter(
+        (name) =>
+          now - fs.statSync(path.join(generatedImagesPath, name)).mtimeMs >
+          MIN_AGE_MS
+      );
+    if (candidates.length === 0) return;
 
-    // Get all image filenames referenced in active (include: true) chats.
-    const activeImageRefs = await getActiveImageFilenames();
-    const filesToDelete = [];
-    for (const filename of files) {
-      // Skip files that don't match our `img-<uuid>.png` naming pattern and
-      // remove anything not referenced by an active chat.
-      if (
-        !/^img-[a-f0-9-]{36}\.png$/i.test(filename) ||
-        !activeImageRefs.has(filename)
-      )
-        filesToDelete.push(path.join(generatedImagesPath, filename));
-    }
+    const referenced = await referencedImageFilenames();
+    const orphans = candidates.filter((name) => !referenced.has(name));
+    if (orphans.length === 0) return;
 
-    if (filesToDelete.length === 0) return;
-
-    log(`Found ${filesToDelete.length} orphaned images to delete.`);
-    let deletedCount = 0;
-    let failedCount = 0;
-    for (const itemPath of filesToDelete) {
+    log(`Found ${orphans.length} orphaned images to delete.`);
+    let deleted = 0;
+    for (const name of orphans) {
       try {
-        fs.unlinkSync(itemPath);
-        deletedCount++;
+        fs.unlinkSync(path.join(generatedImagesPath, name));
+        deleted++;
       } catch (error) {
-        failedCount++;
-        log(`Failed to delete ${itemPath}: ${error.message}`);
+        log(`Failed to delete ${name}: ${error.message}`);
       }
     }
-
-    log(
-      `Cleanup complete: deleted ${deletedCount} images, ${failedCount} failures.`
-    );
+    log(`Cleanup complete: deleted ${deleted}/${orphans.length} images.`);
   } catch (error) {
     console.error(error);
     log(`Error during cleanup: ${error.message}`);
@@ -52,48 +51,42 @@ const { safeJsonParse } = require("../utils/http/index.js");
 })();
 
 /**
- * Retrieves all image storage filenames referenced in active (include: true)
- * workspace chats. Uses pagination to avoid loading all chats into memory.
- * @param {number} batchSize - Number of chats to process per batch (default: 50)
+ * Collects every generated-image filename referenced by an active
+ * (include: true) chat across all workspaces and users.
  * @returns {Promise<Set<string>>}
  */
-async function getActiveImageFilenames(batchSize = 50) {
-  const storageFilenames = new Set();
-  try {
-    let offset = 0;
-    let hasMore = true;
-
-    while (hasMore) {
-      const chats = await WorkspaceChats.where(
-        { include: true },
-        batchSize,
-        { id: "asc" },
-        offset
-      );
-
-      if (chats.length === 0) {
-        hasMore = false;
-        break;
-      }
-
-      for (const chat of chats) {
-        try {
-          const response = safeJsonParse(chat.response, { outputs: [] });
-          for (const output of response.outputs) {
-            if (!output?.payload?.storageFilename) continue;
-            storageFilenames.add(output.payload.storageFilename);
-          }
-        } catch {
-          continue;
-        }
-      }
-
-      offset += chats.length;
-      hasMore = chats.length === batchSize;
+async function referencedImageFilenames() {
+  const filenames = new Set();
+  for await (const chat of activeImageChats()) {
+    const { outputs } = safeJsonParse(chat.response, { outputs: [] });
+    for (const output of outputs || []) {
+      const storageFilename = output?.payload?.storageFilename;
+      if (IMAGE_FILENAME_PATTERN.test(storageFilename))
+        filenames.add(storageFilename);
     }
-  } catch (error) {
-    console.error("[getActiveImageFilenames] Error:", error.message);
   }
+  return filenames;
+}
 
-  return storageFilenames;
+/**
+ * Yields active chats that reference a generated image, one batch at a time, so
+ * the full chat table is never held in memory. The `img-` filter narrows the
+ * scan to chats that can actually hold an image reference.
+ * @param {number} batchSize - chats fetched per query
+ * @returns {AsyncGenerator<object>}
+ */
+async function* activeImageChats(batchSize = 50) {
+  let offset = 0;
+  while (true) {
+    const chats = await WorkspaceChats.where(
+      { include: true, response: { contains: "img-" } },
+      batchSize,
+      { id: "asc" },
+      offset
+    );
+    if (chats.length === 0) return;
+    yield* chats;
+    if (chats.length < batchSize) return;
+    offset += chats.length;
+  }
 }
