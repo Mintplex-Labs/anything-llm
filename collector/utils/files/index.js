@@ -157,6 +157,8 @@ function writeToServerDocuments({
 async function wipeCollectorStorage() {
   const cleanHotDir = new Promise((resolve) => {
     const directory = path.resolve(__dirname, "../../hotdir");
+
+    if (!fs.existsSync(directory)) resolve();
     fs.readdir(directory, (err, files) => {
       if (err) resolve();
 
