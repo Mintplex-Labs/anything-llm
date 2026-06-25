@@ -234,9 +234,8 @@ class NativeEmbedder {
   #applyQueryPrefix(textInput) {
     if (!this.queryPrefix) return textInput;
     if (Array.isArray(textInput))
-      textInput = textInput.map((text) => `${this.queryPrefix}${text}`);
-    else textInput = `${this.queryPrefix}${textInput}`;
-    return textInput;
+      return textInput.map((text) => `${this.queryPrefix}${text}`);
+    return `${this.queryPrefix}${textInput}`;
   }
 
   /**
