@@ -62,7 +62,7 @@ const TRANSLATIONS = {
     no: "Nie",
     search: "Wyszukaj",
     username_requirements:
-      "Nazwa użytkownika musi mieć od 2 do 32 znaków, zaczynać się małą literą i zawierać tylko małe litery, cyfry, podkreślenia, myślniki i kropki.",
+      "Nazwa użytkownika musi mieć od 2 do 64 znaków, zaczynać się małą literą i zawierać tylko małe litery, cyfry, podkreślenia, myślniki i kropki.",
     on: "Na",
     none: "Brak",
     stopped: "Zatrzymano",

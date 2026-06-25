@@ -63,7 +63,7 @@ const TRANSLATIONS = {
     stopped: "Stopped",
     search: "Search",
     username_requirements:
-      "Username must be 2-32 characters, start with a lowercase letter, and only contain lowercase letters, numbers, underscores, hyphens, and periods.",
+      "Username must be 2-64 characters, start with a lowercase letter, and only contain lowercase letters, numbers, underscores, hyphens, and periods.",
     loading: "Loading",
     refresh: "Refresh",
   },

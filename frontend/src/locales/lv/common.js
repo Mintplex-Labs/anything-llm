@@ -61,7 +61,7 @@ const TRANSLATIONS = {
     no: "Nē",
     search: "Meklēšana",
     username_requirements:
-      "Lietotājvārdam jābūt 2–32 rakstzīmju garam, jāsākas ar mazo burtu un jāsatur tikai mazie burti, cipari, apakšsvītras, domuzīmes un punkti.",
+      "Lietotājvārdam jābūt 2–64 rakstzīmju garam, jāsākas ar mazo burtu un jāsatur tikai mazie burti, cipari, apakšsvītras, domuzīmes un punkti.",
     on: "Par",
     none: "Nav",
     stopped: "Apstājās",
