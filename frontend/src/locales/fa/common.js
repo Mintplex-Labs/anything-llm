@@ -733,7 +733,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "انتخاب مهارت‌های هوشمند",
-        "beta-badge": "بتا",
         description:
           "امکان استفاده از ابزارهای نامحدود و کاهش مصرف توکن تا 80 درصد برای هر پرس و جو را فراهم کنید - AnythingLLM به طور خودکار بهترین مهارت‌ها را برای هر پرس و جو انتخاب می‌کند.",
         "max-tools": {

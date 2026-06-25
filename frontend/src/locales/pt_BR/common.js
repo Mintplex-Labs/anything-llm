@@ -759,7 +759,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "Seleção Inteligente de Habilidades",
-        "beta-badge": "Beta",
         description:
           "Permita o uso ilimitado de ferramentas e reduza o consumo de tokens em até 80% por consulta — O AnythingLLM seleciona automaticamente as habilidades mais adequadas para cada solicitação.",
         "max-tools": {
