@@ -61,6 +61,9 @@ class Valkey extends VectorDatabase {
     let password =
       overrides.password ?? process.env.VALKEY_VECTOR_DB_PASSWORD ?? null;
 
+    // A `rediss://` endpoint scheme implies TLS; capture it so it can be OR'd
+    // into the final useTLS even when VALKEY_VECTOR_DB_USE_TLS is left unset.
+    let useTLSFromUrl = false;
     if (endpoint) {
       try {
         const url = new URL(endpoint);
@@ -68,14 +71,16 @@ class Valkey extends VectorDatabase {
         if (url.port) port = Number(url.port);
         if (url.username) username = decodeURIComponent(url.username);
         if (url.password) password = decodeURIComponent(url.password);
+        if (url.protocol === "rediss:") useTLSFromUrl = true;
       } catch {
         // Malformed endpoint - fall back to discrete host/port values.
       }
     }
 
     const useTLS =
-      overrides.useTLS ??
-      String(process.env.VALKEY_VECTOR_DB_USE_TLS ?? "false") === "true";
+      (overrides.useTLS ??
+        String(process.env.VALKEY_VECTOR_DB_USE_TLS ?? "false") === "true") ||
+      useTLSFromUrl;
     const requestTimeout = Number(
       overrides.requestTimeout ??
         process.env.VALKEY_VECTOR_DB_REQUEST_TIMEOUT ??
@@ -89,10 +94,13 @@ class Valkey extends VectorDatabase {
       requestTimeout,
       protocol: ProtocolVersion.RESP2,
     };
-    if (password)
+    // Attach credentials when either a username or password is configured.
+    // Username-only ACL users are valid, so gating solely on `password` would
+    // silently connect as the unauthenticated default user (NOAUTH/NOPERM).
+    if (username || password)
       config.credentials = {
         username: username || undefined,
-        password,
+        password: password || undefined,
       };
     return config;
   }
@@ -111,10 +119,12 @@ class Valkey extends VectorDatabase {
     return `allm_idx_${this.normalize(namespace)}`;
   }
 
-  // The HASH key prefix for all chunks in a namespace. Uses the raw namespace so
-  // the FT.CREATE PREFIX and the stored keys always line up exactly.
+  // The HASH key prefix for all chunks in a namespace. Uses the SAME normalized
+  // token as indexName() so the FT.CREATE PREFIX and the stored keys can never
+  // diverge - two namespaces that normalize to the same index also share one
+  // prefix instead of writing chunks the index never watches.
   keyPrefix(namespace = "") {
-    return `allm:${namespace}:`;
+    return `allm:${this.normalize(namespace)}:`;
   }
 
   /**
@@ -160,6 +170,54 @@ class Valkey extends VectorDatabase {
       !Buffer.isBuffer(entry) &&
       "key" in entry
     );
+  }
+
+  // True when a thrown error means the target index simply does not exist (the
+  // namespace has no vectors yet) rather than a real failure (connection
+  // refused, auth error, missing valkey-search module). The exact wording and
+  // capitalization of this error is inconsistent across valkey-search/RediSearch
+  // versions (see RediSearch#896), so match loosely and case-insensitively.
+  _isUnknownIndexError(error) {
+    const msg = `${error?.message ?? error ?? ""}`.toLowerCase();
+    if (!msg) return false;
+    return (
+      msg.includes("unknown index") ||
+      msg.includes("no such index") ||
+      (msg.includes("index") &&
+        (msg.includes("not found") || msg.includes("does not exist")))
+    );
+  }
+
+  // Best-effort extraction of a vector field's configured dimension from an
+  // FT.INFO reply. valkey-search nests this inside the per-field attribute list
+  // and the exact shape varies by version/protocol, so flatten the whole reply
+  // into a token stream and find the value following a `dim` key. Returns null
+  // when it cannot be determined (callers then skip the dimension guard).
+  _indexDimension(info) {
+    const tokens = [];
+    const flatten = (node) => {
+      if (Array.isArray(node)) {
+        for (const item of node) flatten(item);
+      } else if (this._isRecord(node)) {
+        tokens.push(this._toStr(node.key));
+        flatten(node.value);
+      } else if (node && typeof node === "object" && !Buffer.isBuffer(node)) {
+        for (const [k, v] of Object.entries(node)) {
+          tokens.push(this._toStr(k));
+          flatten(v);
+        }
+      } else {
+        tokens.push(this._toStr(node));
+      }
+    };
+    flatten(info);
+    for (let i = 0; i < tokens.length - 1; i += 1) {
+      if (tokens[i].toLowerCase() === "dim") {
+        const dim = Number(tokens[i + 1]);
+        if (Number.isFinite(dim) && dim > 0) return dim;
+      }
+    }
+    return null;
   }
 
   // Read a single field value out of an FT.INFO reply. GLIDE decodes the map
@@ -288,7 +346,7 @@ class Valkey extends VectorDatabase {
   // we never leak a dead client object.
   async disconnect() {
     try {
-      if (Valkey.#client) Valkey.#client.close();
+      if (Valkey.#client) await Valkey.#client.close();
     } catch (e) {
       this.logger("disconnect", e.message);
     } finally {
@@ -327,7 +385,30 @@ class Valkey extends VectorDatabase {
    * @param {number|null} dimensions
    */
   async getOrCreateIndex(client, namespace, dimensions = null) {
-    if (await this.namespaceExists(client, namespace)) return;
+    // One FT.INFO tells us both whether the index exists and (best-effort) its
+    // configured dimension. An unknown-index error means we should create it;
+    // any other error is a real failure that must propagate.
+    let info = null;
+    try {
+      info = await client.customCommand(["FT.INFO", this.indexName(namespace)]);
+    } catch (e) {
+      if (!this._isUnknownIndexError(e)) throw e;
+      info = null;
+    }
+
+    if (info) {
+      // Index already exists. Guard against an embedding-model change (e.g.
+      // 384 -> 1536): valkey-search silently refuses to index wrong-length
+      // FLOAT32 buffers, so without this check addDocumentToNamespace would
+      // report success while the chunks never become searchable (data loss).
+      const existingDim = this._indexDimension(info);
+      if (dimensions && existingDim && existingDim !== Number(dimensions))
+        throw new Error(
+          `${this.name}::getOrCreateIndex dimension mismatch for namespace "${namespace}": the existing index is ${existingDim}-dim but the incoming vectors are ${dimensions}-dim. Reset the vector store after changing the embedding model.`
+        );
+      return;
+    }
+
     if (!dimensions)
       throw new Error(
         `${this.name}::getOrCreateIndex Unable to infer vector dimension from input. Open an issue on GitHub for support.`
@@ -380,16 +461,32 @@ class Valkey extends VectorDatabase {
     return total;
   }
 
-  async _namespaceCount(client, namespace = null) {
+  // Single FT.INFO round-trip returning BOTH existence and the document count
+  // for an index, so callers don't issue a separate namespaceExists + count
+  // probe for the same namespace. An unknown-index error is the "namespace does
+  // not exist" case; any other error is a real outage and is re-thrown.
+  async _namespaceInfo(client, namespace = null) {
+    if (!namespace) throw new Error("No namespace value provided.");
     try {
       const info = await client.customCommand([
         "FT.INFO",
         this.indexName(namespace),
       ]);
-      return Number(this._infoValue(info, "num_docs") ?? 0) || 0;
-    } catch {
-      return 0;
+      return {
+        exists: true,
+        vectorCount: Number(this._infoValue(info, "num_docs") ?? 0) || 0,
+      };
+    } catch (e) {
+      if (this._isUnknownIndexError(e))
+        return { exists: false, vectorCount: 0 };
+      this.logger("_namespaceInfo", e.message);
+      throw e;
     }
+  }
+
+  async _namespaceCount(client, namespace = null) {
+    const { vectorCount } = await this._namespaceInfo(client, namespace);
+    return vectorCount;
   }
 
   async namespaceCount(_namespace = null) {
@@ -399,8 +496,11 @@ class Valkey extends VectorDatabase {
 
   async namespace(client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
-    if (!(await this.namespaceExists(client, namespace))) return null;
-    const vectorCount = await this._namespaceCount(client, namespace);
+    const { exists, vectorCount } = await this._namespaceInfo(
+      client,
+      namespace
+    );
+    if (!exists) return null;
     return { name: namespace, vectorCount };
   }
 
@@ -412,13 +512,13 @@ class Valkey extends VectorDatabase {
 
   async namespaceExists(client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
-    try {
-      await client.customCommand(["FT.INFO", this.indexName(namespace)]);
-      return true;
-    } catch (e) {
-      this.logger("namespaceExists", e.message);
-      return false;
-    }
+    // Only an "index does not exist" error means the namespace is absent. Any
+    // other error (connection refused, auth failure, missing valkey-search
+    // module) is a real outage that must propagate instead of masquerading as
+    // an empty namespace - otherwise searches return benign "no documents"
+    // messages and deletes silently no-op while the database is actually down.
+    const { exists } = await this._namespaceInfo(client, namespace);
+    return exists;
   }
 
   async deleteVectorsInNamespace(client, namespace = null) {
@@ -617,8 +717,19 @@ class Valkey extends VectorDatabase {
     ]);
 
     const matches = this._parseSearchReply(reply);
-    for (const match of matches) {
-      const similarity = this.distanceToSimilarity(Number(match.score));
+
+    // valkey-search does not guarantee KNN matches come back ascending by
+    // distance, and it rejects `SORTBY` on a KNN query, so sort in code:
+    // highest similarity (lowest COSINE distance) first, before filtering, so
+    // the most relevant chunk is always first in the context handed to the LLM.
+    const scored = matches
+      .map((match) => ({
+        match,
+        similarity: this.distanceToSimilarity(Number(match.score)),
+      }))
+      .sort((a, b) => b.similarity - a.similarity);
+
+    for (const { match, similarity } of scored) {
       if (similarity < similarityThreshold) continue;
 
       let metadata = {};
@@ -655,23 +766,31 @@ class Valkey extends VectorDatabase {
       throw new Error("Invalid request to performSimilaritySearch.");
 
     const { client } = await this.connect();
-    if (!(await this.namespaceExists(client, namespace))) {
+    const queryVector = await LLMConnector.embedTextInput(input);
+
+    // No FT.INFO existence pre-check on the hot RAG path: FT.SEARCH against a
+    // missing index already errors, so we run the search directly and treat an
+    // unknown-index error as the empty-namespace case. Any other error is real
+    // and propagates.
+    let contextTexts = [];
+    let sourceDocuments = [];
+    try {
+      ({ contextTexts, sourceDocuments } = await this.similarityResponse({
+        client,
+        namespace,
+        queryVector,
+        similarityThreshold,
+        topN,
+        filterIdentifiers,
+      }));
+    } catch (e) {
+      if (!this._isUnknownIndexError(e)) throw e;
       return {
         contextTexts: [],
         sources: [],
         message: "Invalid query - no documents found for workspace!",
       };
     }
-
-    const queryVector = await LLMConnector.embedTextInput(input);
-    const { contextTexts, sourceDocuments } = await this.similarityResponse({
-      client,
-      namespace,
-      queryVector,
-      similarityThreshold,
-      topN,
-      filterIdentifiers,
-    });
 
     const sources = sourceDocuments.map((metadata, i) => {
       return { metadata: { ...metadata, text: contextTexts[i] } };
@@ -687,21 +806,19 @@ class Valkey extends VectorDatabase {
     const { namespace = null } = reqBody;
     if (!namespace) throw new Error("namespace required");
     const { client } = await this.connect();
-    if (!(await this.namespaceExists(client, namespace)))
-      throw new Error("Namespace by that name does not exist.");
+    // namespace() already returns null when the index is absent (single
+    // FT.INFO) - no separate existence probe needed.
     const stats = await this.namespace(client, namespace);
-    return stats
-      ? stats
-      : { message: "No stats were able to be fetched from DB for namespace" };
+    if (!stats) throw new Error("Namespace by that name does not exist.");
+    return stats;
   }
 
   async "delete-namespace"(reqBody = {}) {
     const { namespace = null } = reqBody;
     const { client } = await this.connect();
-    if (!(await this.namespaceExists(client, namespace)))
-      throw new Error("Namespace by that name does not exist.");
-
     const details = await this.namespace(client, namespace);
+    if (!details) throw new Error("Namespace by that name does not exist.");
+
     await this.deleteVectorsInNamespace(client, namespace);
     return {
       message: `Namespace ${namespace} was deleted along with ${details?.vectorCount} vectors.`,
@@ -764,14 +881,14 @@ class Valkey extends VectorDatabase {
     try {
       client = await GlideClient.createClient(Valkey.connection(overrides));
       await client.ping();
-      client.close();
+      await client.close();
       client = null;
       return { error: null, success: true };
     } catch (e) {
       instance.logger("validateConnection", e.message);
       if (client) {
         try {
-          client.close();
+          await client.close();
         } catch {
           // ignore close failures during cleanup
         }

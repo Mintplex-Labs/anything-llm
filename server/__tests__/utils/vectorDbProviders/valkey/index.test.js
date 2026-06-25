@@ -155,7 +155,9 @@ describe("Valkey provider - metadata + helpers", () => {
     expect(provider.normalize("my-work space!")).toBe("my_work_space_");
     expect(provider.normalize("123abc")).toBe("allm_123abc");
     expect(provider.indexName("my-ws")).toBe("allm_idx_my_ws");
-    expect(provider.keyPrefix("my-ws")).toBe("allm:my-ws:");
+    // keyPrefix is derived from the SAME normalized token as indexName so the
+    // two can never diverge (raw "my-ws" would have produced "allm:my-ws:").
+    expect(provider.keyPrefix("my-ws")).toBe("allm:my_ws:");
   });
 
   it("floatToBuffer yields a 4*dims byte Buffer that round-trips", () => {
@@ -352,7 +354,7 @@ describe("Valkey provider - document ingestion", () => {
   });
 
   it("embed path splits, embeds, HSETs and stores when skipCache=true", async () => {
-    mockClient = routeClient({ "FT.INFO": new Error("absent") });
+    mockClient = routeClient({ "FT.INFO": new Error("Unknown index name") });
     const provider = new ValkeyClass();
     const result = await provider.addDocumentToNamespace(
       "ws",
@@ -382,7 +384,7 @@ describe("Valkey provider - document ingestion", () => {
 
   it("surfaces a partial batch failure as {vectorized:false,error}", async () => {
     mockClient = routeClient(
-      { "FT.INFO": new Error("absent") },
+      { "FT.INFO": new Error("Unknown index name") },
       {
         hset: jest.fn(async () => {
           throw new Error("HSET rejected");
@@ -463,7 +465,9 @@ describe("Valkey provider - similarity search", () => {
   });
 
   it("performSimilaritySearch returns the empty message for a missing namespace", async () => {
-    mockClient = routeClient({ "FT.INFO": new Error("absent") });
+    // No FT.INFO pre-check anymore: FT.SEARCH against a missing index errors
+    // with an unknown-index message, which is treated as the empty case.
+    mockClient = routeClient({ "FT.SEARCH": new Error("Unknown index name") });
     const provider = new ValkeyClass();
     const result = await provider.performSimilaritySearch({
       namespace: "ws",
