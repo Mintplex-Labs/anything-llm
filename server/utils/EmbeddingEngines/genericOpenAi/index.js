@@ -78,43 +78,61 @@ class GenericOpenAiEmbedder {
   }
 
   /**
-   * Optional prefix prepended to each query before embedding. Empty by default
+   * Optional prefix prepended to each text passage before embedding. Empty by default
    * for backwards compatibility. Required by asymmetric models like
-   * Qwen3-Embedding, which expect queries wrapped as
-   * `Instruct: <task>\nQuery:<query>` while passages are sent raw.
+   * Qwen3-Embedding, which expect passage chunks wrapped as
+   * `Instruct: <task>`
    * @returns {string}
    */
-  get queryPrefix() {
-    return process.env.EMBEDDING_QUERY_PREFIX ?? "";
+  get embeddingPrefix() {
+    if (!("GENERIC_OPEN_AI_EMBEDDING_PASSAGE_PREFIX" in process.env)) return "";
+    this.log(
+      `Embedding prefix: \x1b[43m\x1b[30m${process.env.GENERIC_OPEN_AI_EMBEDDING_PASSAGE_PREFIX}\x1b[0m`
+    );
+    return process.env.GENERIC_OPEN_AI_EMBEDDING_PASSAGE_PREFIX;
   }
 
   /**
-   * Optional prefix prepended to each passage before embedding. Empty by
-   * default. Most asymmetric models (Qwen3-Embedding included) leave passages
-   * unwrapped, but some BGE/E5 variants expect a `passage: ` prefix.
+   * Optional prefix prepended to each query before embedding. Empty by
+   * default. Most asymmetric models (Qwen3-Embedding included) leave queries
+   * unwrapped, but some BGE/E5 variants expect a `query: ` prefix.
    * @returns {string}
    */
-  get passagePrefix() {
-    return process.env.EMBEDDING_PASSAGE_PREFIX ?? "";
+  get queryPrefix() {
+    if (!("GENERIC_OPEN_AI_EMBEDDING_QUERY_PREFIX" in process.env)) return "";
+    this.log(
+      `Query prefix: \x1b[43m\x1b[30m${process.env.GENERIC_OPEN_AI_EMBEDDING_QUERY_PREFIX}\x1b[0m`
+    );
+    return process.env.GENERIC_OPEN_AI_EMBEDDING_QUERY_PREFIX;
+  }
+
+  /**
+   * Apply the query prefix to the text input if it is required by the model.
+   * eg: nomic-embed-text-v1 requires a query prefix for embedding/searching.
+   * @param {string|string[]} textInput - The text to embed.
+   * @returns {string|string[]} The text with the prefix applied.
+   */
+  #applyQueryPrefix(textInput) {
+    if (!this.queryPrefix) return textInput;
+    if (Array.isArray(textInput))
+      return textInput.map((text) => `${this.queryPrefix}${text}`);
+    return `${this.queryPrefix}${textInput}`;
   }
 
   async embedTextInput(textInput) {
-    const prefix = this.queryPrefix;
-    const inputs = (Array.isArray(textInput) ? textInput : [textInput]).map(
-      (t) => prefix + t
+    textInput = this.#applyQueryPrefix(textInput);
+    const result = await this.embedChunks(
+      Array.isArray(textInput) ? textInput : [textInput]
     );
-    const result = await this.embedChunks(inputs, { isPassage: false });
     return result?.[0] || [];
   }
 
-  async embedChunks(textChunks = [], { isPassage = true } = {}) {
+  async embedChunks(textChunks = []) {
     // Because there is a hard POST limit on how many chunks can be sent at once to OpenAI (~8mb)
     // we sequentially execute each max batch of text chunks possible.
     // Refer to constructor maxConcurrentChunks for more info.
-    const prefix = isPassage ? this.passagePrefix : "";
-    const inputs = prefix ? textChunks.map((t) => prefix + t) : textChunks;
     const allResults = [];
-    for (const chunk of toChunks(inputs, this.maxConcurrentChunks)) {
+    for (const chunk of toChunks(textChunks, this.maxConcurrentChunks)) {
       const { data = [], error = null } = await new Promise((resolve) => {
         this.openai.embeddings
           .create({
