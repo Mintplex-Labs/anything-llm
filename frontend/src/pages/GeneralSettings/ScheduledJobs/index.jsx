@@ -13,6 +13,7 @@ import showToast from "@/utils/toast";
 import JobRow from "./components/JobRow";
 import { Bell } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function ScheduledJobsPage() {
   const { t } = useTranslation();
@@ -21,6 +22,9 @@ export default function ScheduledJobsPage() {
   const [loading, setLoading] = useState(true);
   const [jobs, setJobs] = useState([]);
   const [editingJob, setEditingJob] = useState(null);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const navigationState = location.state;
 
   const fetchJobs = async () => {
     const { jobs: foundJobs } = await ScheduledJobs.list();
@@ -34,6 +38,22 @@ export default function ScheduledJobsPage() {
 
   // Poll every 5s while tab is visible so status badges and run timestamps stay in sync.
   usePolling(fetchJobs, 5000);
+
+  // When navigated here from the "job created" chat card with edit intent, open
+  // the edit modal for that job once its data has loaded, then clear the
+  // navigation state so polling re-renders / refreshes don't reopen it.
+  useEffect(() => {
+    if (loading) return;
+    if (!navigationState?.openEditJobModal || !navigationState?.jobId) return;
+
+    const job = jobs.find((j) => j.id === navigationState.jobId);
+    if (!job) return; // jobs not loaded yet; retry after the next fetch
+
+    handleEdit(job);
+
+    // Clear the nav intent so polling/refresh don't reopen the modal.
+    navigate(location.pathname, { replace: true, state: null });
+  }, [jobs, loading, navigationState, navigate, location.pathname]);
 
   const handleDelete = async (id) => {
     if (!window.confirm(t("scheduledJobs.confirmDelete"))) return;
