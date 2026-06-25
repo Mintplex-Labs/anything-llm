@@ -6,33 +6,44 @@ const { writeResponseChunk } = require("../helpers/chat/responses");
 const { Workspace } = require("../../models/workspace");
 
 /**
- * In-memory cache for attachments associated with agent invocations.
- * Attachments are stored here when grepAgents creates an invocation,
- * then retrieved by AgentHandler when the websocket connects.
- * @type {Map<string, Array>}
+ * In-memory cache for per-invocation context that the browser sends over HTTP
+ * (the /stream-chat request) but which is only needed later when the agent
+ * websocket connects. Keyed by the invocation UUID. Currently carries the
+ * uploaded attachments and the user's IANA timezone (used by tools like
+ * create-scheduled-job to convert local time to UTC). Entries are stored when
+ * grepAgents creates the invocation and cleared when AgentHandler retrieves
+ * them.
+ * @type {Map<string, { attachments: Array, timezone: string|null }>}
  */
-const invocationAttachmentsCache = new Map();
+const invocationContextCache = new Map();
 
 /**
- * Store attachments for an invocation UUID
+ * Store context for an invocation UUID.
  * @param {string} uuid - The invocation UUID
- * @param {Array} attachments - The attachments array
+ * @param {{ attachments?: Array, timezone?: string|null }} context
  */
-function cacheInvocationAttachments(uuid, attachments = []) {
-  if (attachments.length > 0) {
-    invocationAttachmentsCache.set(uuid, attachments);
+function cacheInvocationContext(
+  uuid,
+  { attachments = [], timezone = null } = {}
+) {
+  // Only cache when there is something worth carrying across the handover.
+  if (attachments.length > 0 || timezone) {
+    invocationContextCache.set(uuid, { attachments, timezone });
   }
 }
 
 /**
- * Retrieve and remove attachments for an invocation UUID
+ * Retrieve and remove the context for an invocation UUID.
  * @param {string} uuid - The invocation UUID
- * @returns {Array} The attachments array (empty if none cached)
+ * @returns {{ attachments: Array, timezone: string|null }} Defaults when none cached.
  */
-function getAndClearInvocationAttachments(uuid) {
-  const attachments = invocationAttachmentsCache.get(uuid) || [];
-  invocationAttachmentsCache.delete(uuid);
-  return attachments;
+function getAndClearInvocationContext(uuid) {
+  const context = invocationContextCache.get(uuid) || {
+    attachments: [],
+    timezone: null,
+  };
+  invocationContextCache.delete(uuid);
+  return context;
 }
 
 async function grepAgents({
@@ -43,6 +54,7 @@ async function grepAgents({
   user = null,
   thread = null,
   attachments = [],
+  timezone = null,
 }) {
   let nativeToolingEnabled = false;
 
@@ -78,8 +90,9 @@ async function grepAgents({
       return;
     }
 
-    // Cache attachments for the websocket handler to retrieve later
-    cacheInvocationAttachments(newInvocation.uuid, attachments);
+    // Cache context (attachments + timezone) for the websocket handler to
+    // retrieve later when the agent session connects.
+    cacheInvocationContext(newInvocation.uuid, { attachments, timezone });
 
     writeResponseChunk(response, {
       id: uuid,
@@ -108,4 +121,4 @@ async function grepAgents({
   return false;
 }
 
-module.exports = { grepAgents, getAndClearInvocationAttachments };
+module.exports = { grepAgents, getAndClearInvocationContext };

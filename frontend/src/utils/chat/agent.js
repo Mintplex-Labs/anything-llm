@@ -22,6 +22,7 @@ function takeBufferedCitations(uuid) {
 const handledEvents = [
   "statusResponse",
   "fileDownloadCard",
+  "scheduledJobCreated",
   "awaitingFeedback",
   "wssFailure",
   "rechartVisualize",
@@ -256,6 +257,26 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
         ...prev.filter((msg) => !!msg.content),
         {
           type: "fileDownloadCard",
+          uuid: v4(),
+          content: data.content,
+          role: "assistant",
+          sources: [],
+          closed: true,
+          error: null,
+          animate: false,
+          pending: false,
+          metrics: data.metrics || {},
+        },
+      ];
+    });
+  }
+
+  if (data.type === "scheduledJobCreated") {
+    return setChatHistory((prev) => {
+      return [
+        ...prev.filter((msg) => !!msg.content),
+        {
+          type: "scheduledJobCreated",
           uuid: v4(),
           content: data.content,
           role: "assistant",

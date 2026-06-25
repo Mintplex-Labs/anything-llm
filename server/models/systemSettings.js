@@ -59,6 +59,7 @@ const SystemSettings = {
     "imported_agent_skills",
     "agent_clarifying_questions_enabled",
     "agent_clarifying_questions_max_per_turn",
+    "agent_create_scheduled_job_enabled",
     "custom_app_name",
     "feature_flags",
     "meta_page_title",
@@ -88,6 +89,7 @@ const SystemSettings = {
     "agent_sql_connections",
     "agent_clarifying_questions_enabled",
     "agent_clarifying_questions_max_per_turn",
+    "agent_create_scheduled_job_enabled",
     "custom_app_name",
     "default_system_prompt",
 
@@ -410,6 +412,10 @@ const SystemSettings = {
       if (!Number.isFinite(n) || n < 1) return 3;
       return Math.min(Math.floor(n), 10);
     },
+    agent_create_scheduled_job_enabled: (update) => {
+      if (typeof update === "boolean") return update ? "true" : "false";
+      return String(update) === "true" ? "true" : "false";
+    },
     experimental_live_file_sync: (update) => {
       if (typeof update === "boolean")
         return update === true ? "enabled" : "disabled";
@@ -616,6 +622,11 @@ const SystemSettings = {
           "3"
         )) || 3
       ),
+      AgentCreateScheduledJobEnabled:
+        (await this.getValueOrFallback(
+          { label: "agent_create_scheduled_job_enabled" },
+          "false"
+        )) === "true",
     };
   },
 

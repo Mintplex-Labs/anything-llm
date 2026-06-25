@@ -14,11 +14,13 @@ const {
   USER_AGENT,
   WORKSPACE_AGENT,
   agentSkillsFromSystemSettings,
+  SINGLE_USER_ONLY_SKILLS,
 } = require("./defaults");
 const { AgentHandler } = require(".");
 const {
   WorkspaceAgentInvocation,
 } = require("../../models/workspaceAgentInvocation");
+const { SystemSettings } = require("../../models/systemSettings");
 
 /**
  * This is an instance and functional Agent handler, but it does not utilize
@@ -561,9 +563,14 @@ class EphemeralAgentHandler extends AgentHandler {
 
     // Override tools if specified (e.g., for scheduled jobs with per-job tool selection)
     if (args.toolOverrides) {
-      this.#funcsToLoad = args.toolOverrides;
+      let overrides = args.toolOverrides;
+      // Defense-in-depth: single-user-only skills (e.g. create-scheduled-job)
+      // must never load in multi-user mode, even if a stored job lists them.
+      if (await SystemSettings.isMultiUserMode())
+        overrides = overrides.filter((fn) => !SINGLE_USER_ONLY_SKILLS.has(fn));
+      this.#funcsToLoad = overrides;
       const agentDef = this.aibitat.agents.get("@agent");
-      if (agentDef) agentDef.functions = args.toolOverrides;
+      if (agentDef) agentDef.functions = overrides;
     }
 
     // Attach all required plugins for functions to operate.

@@ -13,6 +13,11 @@ const DEFAULT_SKILLS = [
   AgentPlugins.webScraping.name,
 ];
 
+// Skills that must NEVER be exposed to the agent when the instance is in
+// multi-user mode (e.g. Scheduled Jobs is a single-user-mode-only feature, so
+// the create-scheduled-job tool must not be loaded for any agent in MUM).
+const SINGLE_USER_ONLY_SKILLS = new Set([AgentPlugins.createScheduledJob.name]);
+
 /**
  * Configuration for agent skills that require availability checks and disabled sub-skill lists.
  * Each entry maps a skill name to its availability checker and disabled skills list key.
@@ -123,6 +128,9 @@ async function clarifyingQuestionsSkillIfEnabled() {
 async function agentSkillsFromSystemSettings() {
   const systemFunctions = [];
 
+  // Single-user-only skills must be excluded entirely when in multi-user mode.
+  const multiUserMode = await SystemSettings.isMultiUserMode();
+
   // Load non-imported built-in skills that are configurable, but are default enabled.
   const _disabledDefaultSkills = safeJsonParse(
     await SystemSettings.getValueOrFallback(
@@ -132,6 +140,7 @@ async function agentSkillsFromSystemSettings() {
     []
   );
   DEFAULT_SKILLS.forEach((skill) => {
+    if (multiUserMode && SINGLE_USER_ONLY_SKILLS.has(skill)) return;
     if (!_disabledDefaultSkills.includes(skill))
       systemFunctions.push(AgentPlugins[skill].name);
   });
@@ -164,6 +173,7 @@ async function agentSkillsFromSystemSettings() {
 
   for (const skillName of _setting) {
     if (!AgentPlugins.hasOwnProperty(skillName)) continue;
+    if (multiUserMode && SINGLE_USER_ONLY_SKILLS.has(skillName)) continue;
 
     // This is a plugin module with many sub-children plugins who
     // need to be named via `${parent}#${child}` naming convention
@@ -186,6 +196,17 @@ async function agentSkillsFromSystemSettings() {
     // This is normal single-stage plugin
     systemFunctions.push(AgentPlugins[skillName].name);
   }
+
+  // create-scheduled-job is toggled via its own setting (in the Agent Skill
+  // Settings modal), not default_agent_skills, and is single-user-mode only.
+  const createScheduledJobEnabled =
+    (await SystemSettings.getValueOrFallback(
+      { label: "agent_create_scheduled_job_enabled" },
+      "false"
+    )) === "true";
+  if (createScheduledJobEnabled && !multiUserMode)
+    systemFunctions.push(AgentPlugins.createScheduledJob.name);
+
   return systemFunctions;
 }
 
@@ -193,4 +214,5 @@ module.exports = {
   USER_AGENT,
   WORKSPACE_AGENT,
   agentSkillsFromSystemSettings,
+  SINGLE_USER_ONLY_SKILLS,
 };

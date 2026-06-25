@@ -762,6 +762,11 @@ const TRANSLATIONS = {
             "How many clarifying questions the agent may ask in a single survey.",
         },
       },
+      "scheduled-jobs": {
+        title: "Allow agent to create scheduled jobs",
+        description:
+          'When enabled, the agent can create recurring Scheduled Jobs from chat (e.g. "every weekday at 9am summarize my inbox and email me"). Single-user mode only.',
+      },
     },
   },
   recorded: {
