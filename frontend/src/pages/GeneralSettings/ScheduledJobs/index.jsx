@@ -47,11 +47,12 @@ export default function ScheduledJobsPage() {
     const job = jobs.find((j) => j.id === jobId);
     if (!job) return; // jobs not loaded yet; retry after the next fetch
 
-    handleEdit(job);
+    setEditingJob(job);
+    openModal();
 
     // Clear the params so polling/refresh don't reopen the modal.
     setSearchParams({}, { replace: true });
-  }, [jobs, loading, searchParams, setSearchParams]);
+  }, [jobs, loading, searchParams, setSearchParams, openModal]);
 
   const handleDelete = async (id) => {
     if (!window.confirm(t("scheduledJobs.confirmDelete"))) return;

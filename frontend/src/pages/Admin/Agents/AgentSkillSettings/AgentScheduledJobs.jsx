@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { CircleNotch } from "@phosphor-icons/react";
 import Toggle from "@/components/lib/Toggle";
 import System from "@/models/system";
 import Admin from "@/models/admin";
@@ -26,7 +25,6 @@ export default function AgentScheduledJobs() {
   }, []);
 
   async function toggleEnabled(next) {
-    console.log(next);
     setEnabled(next);
     await Admin.updateSystemPreferences({
       agent_create_scheduled_job_enabled: String(next),
@@ -50,19 +48,12 @@ export default function AgentScheduledJobs() {
           <p className="text-xs text-white/60">
             {t("agent.settings.scheduled-jobs.description")}
           </p>
-          {loading ? (
-            <CircleNotch
-              size={16}
-              className="shrink-0 animate-spin text-theme-text-primary"
-            />
-          ) : (
-            <Toggle
-              size="lg"
-              name="agentCreateScheduledJobEnabled"
-              enabled={enabled}
-              onChange={toggleEnabled}
-            />
-          )}
+          <Toggle
+            size="lg"
+            name="agentCreateScheduledJobEnabled"
+            enabled={enabled}
+            onChange={toggleEnabled}
+          />
         </div>
       </div>
     </>
