@@ -746,7 +746,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "Intelligente selectie van vaardigheden",
-        "beta-badge": "Betaling",
         description:
           'Maak gebruik van een onbeperkt aantal tools en verminder het gebruik van "cut tokens" met tot wel 80% per query – AnythingLLM selecteert automatisch de juiste vaardigheden voor elke vraag.',
         "max-tools": {

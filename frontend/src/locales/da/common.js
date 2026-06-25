@@ -737,7 +737,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "Intelligent valg af færdigheder",
-        "beta-badge": "Beta",
         description:
           "Aktiver ubegrænsede værktøjer og reducer brugen af cut-tokens med op til 80 % pr. forespørgsel – AnythingLLM vælger automatisk de relevante færdigheder til hver forespørgsel.",
         "max-tools": {

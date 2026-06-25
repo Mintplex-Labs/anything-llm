@@ -753,7 +753,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "Izglītības un prasmu izvēle, kas balstota uz spējām",
-        "beta-badge": "Beta",
         description:
           'Ievērojiet neierobežotu rīku un "cut token" izmantošanas samazinājumu līdz 80% uz katru pieprasījumu – AnythingLLM automātiski izvēlas piemērotākās prasmes katram pieprasījumam.',
         "max-tools": {
