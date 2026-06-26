@@ -37,14 +37,21 @@ export default function SlashCommandsTab({
   const [presets, setPresets] = useState([]);
   const [selectedPreset, setSelectedPreset] = useState(null);
   const [presetToPublish, setPresetToPublish] = useState(null);
+  const [imageGenEnabled, setImageGenEnabled] = useState(false);
 
   useEffect(() => {
     fetchPresets();
+    fetchImageGenStatus();
   }, []);
 
   const fetchPresets = async () => {
     const presets = await System.getSlashCommandPresets();
     setPresets(presets);
+  };
+
+  const fetchImageGenStatus = async () => {
+    const settings = await System.keys();
+    setImageGenEnabled(!!settings?.ImageGenerationProvider);
   };
 
   // Build the list of selectable items for keyboard navigation and rendering.
@@ -57,11 +64,15 @@ export default function SlashCommandsTab({
         description: t("chat_window.preset_reset_description"),
         autoSubmit: true,
       },
-      {
-        command: "/img",
-        description: t("chat_window.preset_img_description"),
-        autoSubmit: false,
-      },
+      ...(imageGenEnabled
+        ? [
+            {
+              command: "/img",
+              description: t("chat_window.preset_img_description"),
+              autoSubmit: false,
+            },
+          ]
+        : []),
       ...presets.map((preset) => ({
         command: preset.command,
         description: preset.description,
@@ -69,7 +80,7 @@ export default function SlashCommandsTab({
         preset,
       })),
     ],
-    [presets, t]
+    [presets, imageGenEnabled, t]
   );
 
   const handleUseCommand = useCallback(

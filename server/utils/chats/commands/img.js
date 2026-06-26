@@ -35,6 +35,24 @@ async function generateImage(
     };
   }
 
+  // Show friendly "not set up" message instead of generic provider error
+  const { getImageGeneratorProvider } = require("../../helpers");
+  try {
+    getImageGeneratorProvider();
+  } catch {
+    const canConfigure = !user || user.role === "admin";
+    return {
+      uuid: msgUUID,
+      type: "textResponse",
+      textResponse: canConfigure
+        ? "Image generation isn't set up yet. Choose a provider in Settings → Image Generation."
+        : "Image generation isn't set up yet. Contact an admin to configure it.",
+      sources: [],
+      close: true,
+      error: false,
+    };
+  }
+
   try {
     const { storageFilename, filename, fileSize } =
       await generateImageForWorkspace({ prompt });

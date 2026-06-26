@@ -3,6 +3,7 @@ import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
+import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import OpenAiLogo from "@/media/llmprovider/openai.png";
 import OllamaLogo from "@/media/llmprovider/ollama.png";
 import LemonadeLogo from "@/media/llmprovider/lemonade.png";
@@ -101,7 +102,7 @@ export default function ImageGenerationPreference() {
     async function fetchKeys() {
       const _settings = await System.keys();
       setSettings(_settings);
-      setSelectedProvider(_settings?.ImageGenerationProvider || "openai");
+      setSelectedProvider(_settings?.ImageGenerationProvider || null);
       setLoading(false);
     }
     fetchKeys();
@@ -220,16 +221,17 @@ export default function ImageGenerationPreference() {
                   >
                     <div className="flex gap-x-4 items-center">
                       <img
-                        src={selectedProviderObject.logo}
-                        alt={`${selectedProviderObject.name} logo`}
+                        src={selectedProviderObject?.logo || AnythingLLMIcon}
+                        alt={`${selectedProviderObject?.name} logo`}
                         className="w-10 h-10 rounded-md"
                       />
                       <div className="flex flex-col text-left">
                         <div className="text-sm font-semibold text-white">
-                          {selectedProviderObject.name}
+                          {selectedProviderObject?.name || "None selected"}
                         </div>
                         <div className="mt-1 text-xs text-description">
-                          {selectedProviderObject.description}
+                          {selectedProviderObject?.description ||
+                            "You need to select an image generation provider"}
                         </div>
                       </div>
                     </div>
