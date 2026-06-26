@@ -62,7 +62,7 @@ const TRANSLATIONS = {
     no: "No",
     search: "Buscar",
     username_requirements:
-      "El nombre de usuario debe tener entre 2 y 32 caracteres, comenzar con una letra minúscula y solo contener letras minúsculas, números, guiones bajos, guiones y puntos.",
+      "El nombre de usuario debe tener entre 2 y 64 caracteres, comenzar con una letra minúscula y solo contener letras minúsculas, números, guiones bajos, guiones y puntos.",
     on: "Sobre",
     none: "Ninguno",
     stopped: "Parado",

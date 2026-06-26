@@ -62,7 +62,7 @@ const TRANSLATIONS = {
     no: "Nein",
     search: "Suchen",
     username_requirements:
-      "Der Benutzername muss 2-32 Zeichen lang sein, mit einem Kleinbuchstaben beginnen und darf nur Kleinbuchstaben, Zahlen, Unterstriche, Bindestriche und Punkte enthalten.",
+      "Der Benutzername muss 2-64 Zeichen lang sein, mit einem Kleinbuchstaben beginnen und darf nur Kleinbuchstaben, Zahlen, Unterstriche, Bindestriche und Punkte enthalten.",
     on: "Über",
     none: "Keine",
     stopped: "Gestoppt",
