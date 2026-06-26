@@ -542,6 +542,34 @@ async function saveGeneratedImage({ buffer, prompt = "" }) {
   };
 }
 
+/**
+ * Reads any `/img` generated images referenced in a chat response's `outputs`
+ * off disk and returns them as chat attachments, so they can be re-injected into
+ * chat history as vision context just like user-uploaded images. Images that are
+ * missing on disk (e.g. cleaned up) are skipped.
+ * @param {object[]} outputs - the `outputs` array from a parsed chat response
+ * @returns {import("../helpers").Attachment[]}
+ */
+function generatedImageAttachments(outputs = []) {
+  const attachments = [];
+  for (const output of outputs || []) {
+    if (output?.type !== "imageGenerationCard") continue;
+    const { storageFilename, filename } = output.payload || {};
+    if (!storageFilename) continue;
+
+    const imagePath = path.resolve(generatedImagesPath, storageFilename);
+    if (!fs.existsSync(imagePath)) continue;
+
+    const contentString = `data:image/png;base64,${fs.readFileSync(imagePath).toString("base64")}`;
+    attachments.push({
+      name: filename || storageFilename,
+      mime: "image/png",
+      contentString,
+    });
+  }
+  return attachments;
+}
+
 module.exports = {
   findDocumentInDocuments,
   cachedVectorInformation,
@@ -561,4 +589,5 @@ module.exports = {
   sanitizeFileName,
   generatedImagesPath,
   saveGeneratedImage,
+  generatedImageAttachments,
 };
