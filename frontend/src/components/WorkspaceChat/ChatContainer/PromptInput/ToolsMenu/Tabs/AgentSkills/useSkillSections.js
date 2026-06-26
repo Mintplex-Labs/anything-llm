@@ -1,6 +1,10 @@
 import { useMemo } from "react";
 import { titleCase } from "text-case";
-import { getSubSkillsForSkill, hasSubSkills } from "./skillRegistry";
+import {
+  getSubSkillsForSkill,
+  hasSubSkills,
+  isSkillMultiUserSupported,
+} from "./skillRegistry";
 
 /**
  * Builds a skill item with optional sub-skills.
@@ -47,6 +51,7 @@ export default function useSkillSections({
   importedSkills,
   flows,
   mcpServers,
+  isMultiUser,
   isSkillEnabled,
   toggleSkill,
   isSubSkillEnabled,
@@ -59,12 +64,13 @@ export default function useSkillSections({
   return useMemo(() => {
     const sectionList = [];
 
-    // Agent Skills (default + configurable)
+    // Agent Skills (default + configurable) — skip single-user-only skills in MUM.
     const skillItems = [];
-    for (const [key, { title }] of Object.entries({
+    for (const [key, { title, mode }] of Object.entries({
       ...defaultSkills,
       ...configurableSkills,
     })) {
+      if (isMultiUser && mode?.includes("singleUserOnly")) continue;
       skillItems.push(
         buildSkillItem({
           key,
@@ -86,9 +92,10 @@ export default function useSkillSections({
       });
     }
 
-    // App Integrations — mode filtering is handled by getAppIntegrationSkills.
+    // App Integrations — skip skills unsupported in multi-user mode
     const appIntegrationItems = [];
     for (const [key, { title }] of Object.entries(appIntegrationSkills)) {
+      if (isMultiUser && !isSkillMultiUserSupported(key)) continue;
       appIntegrationItems.push(
         buildSkillItem({
           key,
@@ -175,6 +182,7 @@ export default function useSkillSections({
     importedSkills,
     flows,
     mcpServers,
+    isMultiUser,
     isSkillEnabled,
     toggleSkill,
     isSubSkillEnabled,

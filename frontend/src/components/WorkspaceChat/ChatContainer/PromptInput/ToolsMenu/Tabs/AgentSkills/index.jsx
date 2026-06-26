@@ -28,6 +28,7 @@ export default function AgentSkillsTab({
 
   // Get skill definitions
   const defaultSkills = getDefaultSkills(t);
+  const appIntegrationSkills = getAppIntegrationSkills(t);
 
   // All skill state management
   const {
@@ -50,10 +51,6 @@ export default function AgentSkillsTab({
 
   const configurableSkills = getConfigurableSkills(t, {
     fileSystemAgentAvailable,
-    isMultiUserMode: isMultiUser,
-  });
-  const appIntegrationSkills = getAppIntegrationSkills(t, {
-    isMultiUserMode: isMultiUser,
   });
 
   // UI state
@@ -72,6 +69,7 @@ export default function AgentSkillsTab({
     importedSkills,
     flows,
     mcpServers,
+    isMultiUser,
     isSkillEnabled,
     toggleSkill,
     isSubSkillEnabled,
