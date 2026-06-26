@@ -329,6 +329,11 @@ const TRANSLATIONS = {
         description:
           "Enable your agent to be able to leverage SQL to answer you questions by connecting to various SQL database providers.",
       },
+      scheduledJob: {
+        title: "Create scheduled jobs",
+        description:
+          'Allow the agent to create recurring Scheduled Jobs from chat (e.g. "every weekday at 9am summarize my inbox and email me"). Available in single-user mode only.',
+      },
       filesystem: {
         title: "File System Access",
         description:
@@ -761,11 +766,6 @@ const TRANSLATIONS = {
           description:
             "How many clarifying questions the agent may ask in a single survey.",
         },
-      },
-      "scheduled-jobs": {
-        title: "Allow agent to create scheduled jobs",
-        description:
-          'When enabled, the agent can create recurring Scheduled Jobs from chat (e.g. "every weekday at 9am summarize my inbox and email me"). Single-user mode only.',
       },
     },
   },

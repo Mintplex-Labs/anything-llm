@@ -51,6 +51,7 @@ export default function AgentSkillsTab({
 
   const configurableSkills = getConfigurableSkills(t, {
     fileSystemAgentAvailable,
+    isMultiUserMode: isMultiUser,
   });
 
   // UI state

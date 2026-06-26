@@ -197,16 +197,6 @@ async function agentSkillsFromSystemSettings() {
     systemFunctions.push(AgentPlugins[skillName].name);
   }
 
-  // create-scheduled-job is toggled via its own setting (in the Agent Skill
-  // Settings modal), not default_agent_skills, and is single-user-mode only.
-  const createScheduledJobEnabled =
-    (await SystemSettings.getValueOrFallback(
-      { label: "agent_create_scheduled_job_enabled" },
-      "false"
-    )) === "true";
-  if (createScheduledJobEnabled && !multiUserMode)
-    systemFunctions.push(AgentPlugins.createScheduledJob.name);
-
   return systemFunctions;
 }
 

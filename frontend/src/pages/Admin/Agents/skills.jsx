@@ -14,6 +14,7 @@ import {
   ChartBar,
   FolderOpen,
   FilePlus,
+  CalendarCheck,
 } from "@phosphor-icons/react";
 import RAGImage from "@/media/agents/rag-memory.png";
 import SummarizeImage from "@/media/agents/view-summarize.png";
@@ -54,84 +55,124 @@ export const getDefaultSkills = (t) => ({
 
 export const getConfigurableSkills = (
   t,
-  { fileSystemAgentAvailable = true, createFilesAgentAvailable = true } = {}
-) => ({
-  ...(fileSystemAgentAvailable && {
-    "filesystem-agent": {
-      title: t("agent.skill.filesystem.title"),
-      description: t("agent.skill.filesystem.description"),
-      component: FileSystemSkillPanel,
-      skill: "filesystem-agent",
-      icon: FolderOpen,
-      image: FileSystemImage,
+  {
+    fileSystemAgentAvailable = true,
+    createFilesAgentAvailable = true,
+    isMultiUserMode = false,
+  } = {}
+) =>
+  filterSkillsByMode(
+    {
+      ...(fileSystemAgentAvailable && {
+        "filesystem-agent": {
+          title: t("agent.skill.filesystem.title"),
+          description: t("agent.skill.filesystem.description"),
+          component: FileSystemSkillPanel,
+          skill: "filesystem-agent",
+          icon: FolderOpen,
+          image: FileSystemImage,
+        },
+      }),
+      ...(createFilesAgentAvailable && {
+        "create-files-agent": {
+          title: t("agent.skill.createFiles.title"),
+          description: t("agent.skill.createFiles.description"),
+          component: CreateFileSkillPanel,
+          skill: "create-files-agent",
+          icon: FilePlus,
+          image: GenerateSaveImages,
+        },
+      }),
+      "create-chart": {
+        title: t("agent.skill.generate.title"),
+        description: t("agent.skill.generate.description"),
+        component: GenericSkillPanel,
+        skill: "create-chart",
+        icon: ChartBar,
+        image: GenerateChartsImage,
+      },
+      "web-browsing": {
+        title: t("agent.skill.web.title"),
+        description: t("agent.skill.web.description"),
+        component: AgentWebSearchSelection,
+        skill: "web-browsing",
+      },
+      "sql-agent": {
+        title: t("agent.skill.sql.title"),
+        description: t("agent.skill.sql.description"),
+        component: AgentSQLConnectorSelection,
+        skill: "sql-agent",
+      },
+      "create-scheduled-job": {
+        title: t("agent.skill.scheduledJob.title"),
+        description: t("agent.skill.scheduledJob.description"),
+        component: GenericSkillPanel,
+        skill: "create-scheduled-job",
+        icon: CalendarCheck,
+        // Scheduled Jobs is single-user-mode only, so hide this skill in MUM.
+        mode: ["singleUserOnly"],
+      },
     },
-  }),
-  ...(createFilesAgentAvailable && {
-    "create-files-agent": {
-      title: t("agent.skill.createFiles.title"),
-      description: t("agent.skill.createFiles.description"),
-      component: CreateFileSkillPanel,
-      skill: "create-files-agent",
-      icon: FilePlus,
-      image: GenerateSaveImages,
-    },
-  }),
-  "create-chart": {
-    title: t("agent.skill.generate.title"),
-    description: t("agent.skill.generate.description"),
-    component: GenericSkillPanel,
-    skill: "create-chart",
-    icon: ChartBar,
-    image: GenerateChartsImage,
-  },
-  "web-browsing": {
-    title: t("agent.skill.web.title"),
-    description: t("agent.skill.web.description"),
-    component: AgentWebSearchSelection,
-    skill: "web-browsing",
-  },
-  "sql-agent": {
-    title: t("agent.skill.sql.title"),
-    description: t("agent.skill.sql.description"),
-    component: AgentSQLConnectorSelection,
-    skill: "sql-agent",
-  },
-});
+    isMultiUserMode
+  );
 
-export const getAppIntegrationSkills = (t) => ({
-  "gmail-agent": {
-    title: t("agent.skill.gmail.title"),
-    description: t("agent.skill.gmail.description"),
-    component: GMailSkillPanel,
-    skill: "gmail-agent",
-    Icon: ({ size }) => (
-      <img src={GMailIcon} alt="GMail" width={size} height={size} />
-    ),
-    mode: ["singleUserOnly"],
-  },
-  "google-calendar-agent": {
-    title: t("agent.skill.googleCalendar.title"),
-    description: t("agent.skill.googleCalendar.description"),
-    component: GoogleCalendarSkillPanel,
-    skill: "google-calendar-agent",
-    Icon: ({ size }) => (
-      <img
-        src={GoogleCalendarIcon}
-        alt="Google Calendar"
-        width={size}
-        height={size}
-      />
-    ),
-    mode: ["singleUserOnly"],
-  },
-  "outlook-agent": {
-    title: t("agent.skill.outlook.title"),
-    description: t("agent.skill.outlook.description"),
-    component: OutlookSkillPanel,
-    skill: "outlook-agent",
-    Icon: ({ size }) => (
-      <img src={OutlookIcon} alt="Outlook" width={size} height={size} />
-    ),
-    mode: ["singleUserOnly"],
-  },
-});
+export const getAppIntegrationSkills = (t, { isMultiUserMode = false } = {}) =>
+  filterSkillsByMode(
+    {
+      "gmail-agent": {
+        title: t("agent.skill.gmail.title"),
+        description: t("agent.skill.gmail.description"),
+        component: GMailSkillPanel,
+        skill: "gmail-agent",
+        Icon: ({ size }) => (
+          <img src={GMailIcon} alt="GMail" width={size} height={size} />
+        ),
+        mode: ["singleUserOnly"],
+      },
+      "google-calendar-agent": {
+        title: t("agent.skill.googleCalendar.title"),
+        description: t("agent.skill.googleCalendar.description"),
+        component: GoogleCalendarSkillPanel,
+        skill: "google-calendar-agent",
+        Icon: ({ size }) => (
+          <img
+            src={GoogleCalendarIcon}
+            alt="Google Calendar"
+            width={size}
+            height={size}
+          />
+        ),
+        mode: ["singleUserOnly"],
+      },
+      "outlook-agent": {
+        title: t("agent.skill.outlook.title"),
+        description: t("agent.skill.outlook.description"),
+        component: OutlookSkillPanel,
+        skill: "outlook-agent",
+        Icon: ({ size }) => (
+          <img src={OutlookIcon} alt="Outlook" width={size} height={size} />
+        ),
+        mode: ["singleUserOnly"],
+      },
+    },
+    isMultiUserMode
+  );
+
+/**
+ * Filter a skills map by deployment mode. A skill's `mode` may include
+ * "singleUserOnly" (hidden in multi-user mode) or "multiUserOnly" (hidden
+ * otherwise). Skills without a `mode` are always shown.
+ * @param {Object} skills - Map of skillKey -> skill config.
+ * @param {boolean} isMultiUserMode
+ * @returns {Object} Filtered skills map.
+ */
+function filterSkillsByMode(skills, isMultiUserMode) {
+  return Object.fromEntries(
+    Object.entries(skills).filter(([, cfg]) => {
+      if (!cfg.mode) return true;
+      if (cfg.mode.includes("singleUserOnly") && isMultiUserMode) return false;
+      if (cfg.mode.includes("multiUserOnly") && !isMultiUserMode) return false;
+      return true;
+    })
+  );
+}
