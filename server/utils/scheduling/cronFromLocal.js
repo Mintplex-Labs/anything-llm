@@ -131,8 +131,6 @@ function normalizeWeekdays(weekdays) {
 }
 
 module.exports = {
-  tzOffsetMinutes,
-  localToUtcHM,
   buildUtcCronFromSchedule,
   normalizeWeekdays,
 };
