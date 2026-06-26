@@ -1193,6 +1193,7 @@ function mergeConnections(existingConnections = [], updates = []) {
       }
 
       default: {
+        if (!action) continue;
         throw new Error("SQL connection update contains an invalid action.");
       }
     }
