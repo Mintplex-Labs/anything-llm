@@ -493,6 +493,10 @@ const SystemSettings = {
       GenericOpenAiEmbeddingMaxConcurrentChunks:
         process.env.GENERIC_OPEN_AI_EMBEDDING_MAX_CONCURRENT_CHUNKS || 500,
       GeminiEmbeddingApiKey: !!process.env.GEMINI_EMBEDDING_API_KEY,
+      GenericOpenAiEmbeddingPassagePrefix:
+        process.env.GENERIC_OPEN_AI_EMBEDDING_PASSAGE_PREFIX || "",
+      GenericOpenAiEmbeddingQueryPrefix:
+        process.env.GENERIC_OPEN_AI_EMBEDDING_QUERY_PREFIX || "",
 
       // --------------------------------------------------------
       // Image Generation Provider Selection Settings & Configs

@@ -761,7 +761,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "Inteligentny wybór umiejętności",
-        "beta-badge": "Wersja beta",
         description:
           "Umożliwia korzystanie z nieograniczonej liczby narzędzi oraz redukcję zużycia tokenów o do 80% na każde zapytanie – EverythingLLM automatycznie wybiera odpowiednie umiejętności dla każdego zapytania.",
         "max-tools": {

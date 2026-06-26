@@ -693,7 +693,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "智能技能選擇",
-        "beta-badge": "β 版本",
         description:
           "啟用無限多個工具，並將每個查詢的 token 使用量最多降低 80% — AnythingLLM 能夠自動選擇最適合的技能，以處理每一個提示。",
         "max-tools": {

@@ -282,6 +282,14 @@ const KEY_MAPPING = {
     envKey: "GENERIC_OPEN_AI_EMBEDDING_MAX_CONCURRENT_CHUNKS",
     checks: [nonZero],
   },
+  GenericOpenAiEmbeddingPassagePrefix: {
+    envKey: "GENERIC_OPEN_AI_EMBEDDING_PASSAGE_PREFIX",
+    checks: [],
+  },
+  GenericOpenAiEmbeddingQueryPrefix: {
+    envKey: "GENERIC_OPEN_AI_EMBEDDING_QUERY_PREFIX",
+    checks: [],
+  },
 
   // Image Generation Settings
   ImageGenerationProvider: {
