@@ -104,10 +104,7 @@ function buildUtcCronFromSchedule(s = {}) {
       const utc = localToUtcHM(s.hour, minute, s.timezone);
       // NOTE: weekday list is intentionally NOT shifted when the hour crosses
       // midnight in UTC - this matches the frontend builder behavior exactly.
-      const days = [...new Set(s.weekdays?.length ? s.weekdays : [1])]
-        .map((d) => ((d % 7) + 7) % 7)
-        .sort((a, b) => a - b)
-        .join(",");
+      const days = normalizeWeekdays(s.weekdays).join(",");
       return `${utc.minute} ${utc.hour} * * ${days}`;
     }
     case "month": {
@@ -119,4 +116,23 @@ function buildUtcCronFromSchedule(s = {}) {
   }
 }
 
-module.exports = { tzOffsetMinutes, localToUtcHM, buildUtcCronFromSchedule };
+/**
+ * Normalize a list of weekdays into deduped, ascending 0-6 (Sun-Sat) values.
+ * Out-of-range values wrap modulo 7 and an empty/missing list defaults to [1]
+ * (Monday), matching the frontend builder. Callers format the result (e.g.
+ * `.join(",")` for cron, or map through WEEKDAY_NAMES for display).
+ * @param {number[]} [weekdays] - Weekday numbers (0=Sun..6=Sat); may repeat or exceed range.
+ * @returns {number[]} Sorted, deduped weekday numbers in the range 0-6.
+ */
+function normalizeWeekdays(weekdays) {
+  return [...new Set(weekdays?.length ? weekdays : [1])]
+    .map((d) => ((d % 7) + 7) % 7)
+    .sort((a, b) => a - b);
+}
+
+module.exports = {
+  tzOffsetMinutes,
+  localToUtcHM,
+  buildUtcCronFromSchedule,
+  normalizeWeekdays,
+};

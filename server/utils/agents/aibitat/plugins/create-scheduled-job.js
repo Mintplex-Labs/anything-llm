@@ -2,6 +2,7 @@ const { ScheduledJob } = require("../../../../models/scheduledJob");
 const { BackgroundService } = require("../../../BackgroundWorkers");
 const {
   buildUtcCronFromSchedule,
+  normalizeWeekdays,
 } = require("../../../scheduling/cronFromLocal");
 
 const WEEKDAY_NAMES = [
@@ -117,9 +118,7 @@ function describeSchedule(args, timezone) {
     case "day":
       return `daily at ${hhmm(args.hour, minute)} ${timezone}`;
     case "week": {
-      const days = [...new Set(args.weekdays?.length ? args.weekdays : [1])]
-        .map((d) => ((d % 7) + 7) % 7)
-        .sort((a, b) => a - b)
+      const days = normalizeWeekdays(args.weekdays)
         .map((d) => WEEKDAY_NAMES[d])
         .join(", ");
       return `weekly on ${days} at ${hhmm(args.hour, minute)} ${timezone}`;
