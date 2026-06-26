@@ -61,7 +61,7 @@ const TRANSLATIONS = {
     no: "Não",
     search: "Pesquisar",
     username_requirements:
-      "O nome de usuário deve ter de 2 a 32 caracteres, começar com uma letra minúscula e conter apenas letras minúsculas, números, sublinhados, hífens e pontos.",
+      "O nome de usuário deve ter de 2 a 64 caracteres, começar com uma letra minúscula e conter apenas letras minúsculas, números, sublinhados, hífens e pontos.",
     on: "Sobre",
     none: "Nenhum",
     stopped: "Parado",

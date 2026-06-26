@@ -62,7 +62,7 @@ const TRANSLATIONS = {
     no: "Nej",
     search: "Søg",
     username_requirements:
-      "Brugernavnet skal bestå af 2-32 tegn, starte med et lille bogstav, og kun indeholde små bogstaver, tal, understregninger, bindestreger og punktummer.",
+      "Brugernavnet skal bestå af 2-64 tegn, starte med et lille bogstav, og kun indeholde små bogstaver, tal, understregninger, bindestreger og punktummer.",
     on: "Om",
     none: "Ingen",
     stopped: "Stoppet",

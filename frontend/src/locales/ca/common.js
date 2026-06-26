@@ -65,7 +65,7 @@ const TRANSLATIONS = {
     stopped: "Aturat",
     search: "Cerca",
     username_requirements:
-      "El nom d'usuari ha de tenir entre 2 i 32 caràcters, començar amb una lletra minúscula i només pot contenir lletres minúscules, números, guions baixos, guions i punts.",
+      "El nom d'usuari ha de tenir entre 2 i 64 caràcters, començar amb una lletra minúscula i només pot contenir lletres minúscules, números, guions baixos, guions i punts.",
     loading: "Carregant",
     refresh: "Actualitza",
   },

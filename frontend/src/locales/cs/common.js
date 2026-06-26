@@ -62,7 +62,7 @@ const TRANSLATIONS = {
     no: "Ne",
     search: "Hledat",
     username_requirements:
-      "Uživatelské jméno musí mít 2–32 znaků, začínat malým písmenem a obsahovat pouze malá písmena, číslice, podtržítka, pomlčky a tečky.",
+      "Uživatelské jméno musí mít 2–64 znaků, začínat malým písmenem a obsahovat pouze malá písmena, číslice, podtržítka, pomlčky a tečky.",
     on: "Na",
     none: "Žádné",
     stopped: "Zastaveno",
