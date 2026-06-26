@@ -72,8 +72,14 @@ class Valkey extends VectorDatabase {
         if (url.username) username = decodeURIComponent(url.username);
         if (url.password) password = decodeURIComponent(url.password);
         if (url.protocol === "rediss:") useTLSFromUrl = true;
-      } catch {
-        // Malformed endpoint - fall back to discrete host/port values.
+      } catch (e) {
+        // Malformed endpoint - fall back to discrete host/port values, but
+        // surface the parse failure so a typo'd URL isn't silently ignored.
+        new Valkey().logger(
+          "connection - ignoring malformed VALKEY_VECTOR_DB_ENDPOINT (%s): %s",
+          endpoint,
+          e.message
+        );
       }
     }
 
@@ -454,7 +460,15 @@ class Valkey extends VectorDatabase {
       try {
         const info = await client.customCommand(["FT.INFO", index]);
         total += Number(this._infoValue(info, "num_docs") ?? 0) || 0;
-      } catch {
+      } catch (e) {
+        // A single index failing here (e.g. transient outage) shouldn't abort
+        // the whole count, but log it so a partial total isn't mistaken for an
+        // accurate zero.
+        this.logger(
+          "totalVectors - FT.INFO failed for %s: %s",
+          index,
+          e.message
+        );
         continue;
       }
     }
@@ -735,7 +749,13 @@ class Valkey extends VectorDatabase {
       let metadata = {};
       try {
         metadata = match.metadata ? JSON.parse(match.metadata) : {};
-      } catch {
+      } catch (e) {
+        // Degraded result - keep going with empty metadata, but log so a
+        // corrupt stored chunk is debuggable rather than silently blanked.
+        this.logger(
+          "performSimilaritySearch - failed to parse metadata JSON: %s",
+          e.message
+        );
         metadata = {};
       }
 
