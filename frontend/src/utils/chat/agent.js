@@ -22,6 +22,7 @@ function takeBufferedCitations(uuid) {
 const handledEvents = [
   "statusResponse",
   "fileDownloadCard",
+  "imageGenerationCard",
   "awaitingFeedback",
   "wssFailure",
   "rechartVisualize",
@@ -265,6 +266,28 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
           animate: false,
           pending: false,
           metrics: data.metrics || {},
+        },
+      ];
+    });
+  }
+
+  if (data.type === "imageGenerationCard") {
+    return setChatHistory((prev) => {
+      return [
+        ...prev.filter((msg) => !!msg.content),
+        {
+          uuid: v4(),
+          type: "textResponse",
+          content: data.content,
+          outputs: data.outputs || [],
+          chatId: data.chatId || null,
+          role: "assistant",
+          sources: [],
+          closed: true,
+          error: null,
+          animate: false,
+          pending: false,
+          metrics: {},
         },
       ];
     });
