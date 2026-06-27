@@ -113,7 +113,12 @@ class BaseImageGenerator {
       n: 1,
     });
 
-    const image = result?.data?.[0];
+    // Some OpenAI-compatible providers (e.g. Ollama) return the body with a
+    // non-JSON content-type (`application/x-ndjson`), so the SDK hands back the
+    // raw string unparsed. Normalize to an object before reading the image.
+    const { safeJsonParse } = require("../http");
+    const payload = typeof result === "string" ? safeJsonParse(result) : result;
+    const image = payload?.data?.[0];
     if (image?.b64_json)
       return { buffer: Buffer.from(image.b64_json, "base64") };
     if (image?.url) {
