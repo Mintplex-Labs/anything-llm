@@ -313,7 +313,7 @@ const TRANSLATIONS = {
       view: {
         title: "Visualitza i resumeix documents",
         description:
-          "Permet que l'agent llistegi i resumeixi el contingut dels fitxers de l'espai de treball incrustats actualment.",
+          "Permet que l'agent llisti i resumeixi el contingut dels fitxers de l'espai de treball incrustats actualment.",
       },
       scrape: {
         title: "Extreu llocs web",
@@ -1769,7 +1769,7 @@ const TRANSLATIONS = {
     },
     "no-routers": "Encara no hi ha models de rúters disponibles.",
     "empty-description":
-      "No hi ha enquest rúters configurats encara. Cree un per començar.",
+      "No hi ha rúters configurats encara. Cree un per començar.",
     "new-router-button": "Nou rúter",
     "delete-confirm":
       'Estàs segur que vols eliminar el rúter "{{name}}"?\nAixò eliminarà totes les seves regles i desconnectarà qualsevol espai de treball que l\'utilitzi.\n\nAquesta acció és irreversible.',
@@ -1789,8 +1789,8 @@ const TRANSLATIONS = {
         "Durant quant temps es guarda la decisió de ruteig abans de reavaluar les regles. Per desactivar la memòria, configureu-lo a 0.",
       "name-required": "És obligatori indicar el nom.",
       "fallback-required": "Es requereix el proveïdor principal i el model.",
-      cancel: "Cancelar",
-      create: "Configurar enrutador",
+      cancel: "Cancel·la",
+      create: "Configura rúter",
     },
     "edit-router": {
       "back-to-routers": "Cap al model de rúters",
@@ -1802,14 +1802,14 @@ const TRANSLATIONS = {
       title: "Regles de ruteig",
       "title-with-name": "Regles del rúter: {{name}}",
       description:
-        "Estableix les regles que determinen quan i com s'envien els missatges de chat a determinats proveïdors i models.",
+        "Estableix les regles que determinen quan i com s'envien els missatges de xat a determinats proveïdors i models.",
       "add-rule": "Afegir regla",
       "delete-confirm": 'Eliminar la regla "{{title}}"?',
       "toast-delete-failed": "No s'ha pogut eliminar la regla.",
       "toast-reorder-failed": "No s'ha pogut reimplementar les regles.",
       "no-rules": "Aquesta situació encara no té cap regla.",
       "empty-description":
-        "Afegiu una regla per enviar els missatges de chat a proveïdors i models específics.",
+        "Afegiu una regla per enviar els missatges de xat a proveïdors i models específics.",
       "new-rule-button": "Nova norma",
       "calculated-section-label":
         "Regles calculades – avaluades primer, en ordre de prioritat",
@@ -1913,9 +1913,9 @@ const TRANSLATIONS = {
         "No s'ha pogut guardar les configuracions: {{error}}",
     },
     "router-selection": {
-      "loading-routers": "Carregant dels rúters personalitzats...",
+      "loading-routers": "Carregant els rúters personalitzats...",
       "no-routers-prefix-settings":
-        "No s'han configurat encara cap rúter.",
+        "No s'ha configurat encara cap rúter.",
       "no-routers-prefix-workspace":
         "No s'han configurat els enllaços de xarxa.",
       "no-routers-link":
@@ -1932,7 +1932,7 @@ const TRANSLATIONS = {
       "model-router-default": "Rúter de model",
     },
     chat: {
-      "select-router-error": "Seleccioneu un enrutador",
+      "select-router-error": "Seleccioneu un rúter",
       "invalid-model": "Selecció de model incorrecta",
       "routed-to": "Enviat a <route>{{model}}</route>",
       "routed-to-rule":
