@@ -1463,7 +1463,8 @@ const TRANSLATIONS = {
         cancel: "Cancel·lar",
       },
     },
-    stt_unsupported: "L'accés al micròfon no està suportat en aquest navegador.",
+    stt_unsupported:
+      "L'accés al micròfon no està suportat en aquest navegador.",
     stt_mic_denied:
       "No s'ha pogut accedir al micròfon. Si us plau, concedeix l'autorització i prova de nou.",
     stt_transcription_failed: "No s'ha pogut transmetre: {{error}}",
@@ -1663,7 +1664,7 @@ const TRANSLATIONS = {
     },
     builder: {
       fallbackWarning:
-        'Aquesta expressió no es pot modificar visualment. Per mantenir-la, utilitzeu l\'opció "Personalitzat". Si voleu, podeu modificar qualsevol element de sota per sobreescriure\'l.',
+        "Aquesta expressió no es pot modificar visualment. Per mantenir-la, utilitzeu l'opció \"Personalitzat\". Si voleu, podeu modificar qualsevol element de sota per sobreescriure'l.",
       run: "Corre",
       frequency: {
         minute: "cada minut",
@@ -1769,7 +1770,7 @@ const TRANSLATIONS = {
     },
     "no-routers": "Encara no hi ha models de rúters disponibles.",
     "empty-description":
-      "No hi ha rúters configurats encara. Cree un per començar.",
+      "No hi ha rúters configurats encara. Creeu-ne un per començar.",
     "new-router-button": "Nou rúter",
     "delete-confirm":
       'Estàs segur que vols eliminar el rúter "{{name}}"?\nAixò eliminarà totes les seves regles i desconnectarà qualsevol espai de treball que l\'utilitzi.\n\nAquesta acció és irreversible.',
@@ -1838,12 +1839,12 @@ const TRANSLATIONS = {
       "title-label": "Títol",
       "rule-type": "Tipus de regla",
       "property-label": "Propietat",
-      "property-select": "Seleccionar",
+      "property-select": "Selecciona",
       "comparator-label": "Comparador",
-      "comparator-select": "Seleccionar",
+      "comparator-select": "Selecciona",
       "value-label": "Valor",
-      "add-condition": "Afegir condició",
-      "remove-condition": "Eliminar la condició",
+      "add-condition": "Afegeix condició",
+      "remove-condition": "Elimina la condició",
       "conditions-incomplete":
         "L'estat {{index}} és incomplet - ompliu les propietats, el comparador i el valor.",
       "match-description-label": "Descripció del partit",
@@ -1854,7 +1855,7 @@ const TRANSLATIONS = {
       "route-to-label": "Ruta cap al proveïdor i model",
       "route-to-description":
         "Quan aquesta regla es compleixi, utilitzeu aquest proveïdor/model.",
-      cancel: "Cancel·lar",
+      cancel: "Cancel·la",
       saving: "Guardant...",
       "update-rule": "Regla d'actualització",
       "create-rule": "Crear regla",
@@ -1897,14 +1898,14 @@ const TRANSLATIONS = {
       "bool-false": "Fals",
     },
     "provider-picker": {
-      "select-provider": "Seleccionar proveïdor",
+      "select-provider": "Selecciona proveïdor",
       "setup-required": "(requereix una configuració)",
       "loading-models": "Carregant models...",
-      "select-model": "Seleccionar model",
+      "select-model": "Selecciona model",
       "enter-model": "Introduïu el nom del model",
       "select-provider-first": "Seleccioneu un proveïdor primer.",
-      "configure-to-continue": "Configure {{name}} per continuar",
-      "configure-provider": "Configurar {{name}}",
+      "configure-to-continue": "Configureu {{name}} per continuar",
+      "configure-provider": "Configureu {{name}}",
       "setup-credentials":
         "Introduïu les credencials necessàries per utilitzar {{name}} com a destinació de la ruta.",
       cancel: "Cancel·lar",
@@ -1914,12 +1915,10 @@ const TRANSLATIONS = {
     },
     "router-selection": {
       "loading-routers": "Carregant els rúters personalitzats...",
-      "no-routers-prefix-settings":
-        "No s'ha configurat encara cap rúter.",
+      "no-routers-prefix-settings": "No s'ha configurat encara cap rúter.",
       "no-routers-prefix-workspace":
         "No s'han configurat els enllaços de xarxa.",
-      "no-routers-link":
-        "Creeu-ne un a les configuracions del rúter de model.",
+      "no-routers-link": "Creeu-ne un a les configuracions del rúter de model.",
       "model-router-label": "Rúter de model",
       "select-router": "Seleccioneu un rúter",
       "select-description":
