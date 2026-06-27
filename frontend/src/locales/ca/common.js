@@ -73,8 +73,8 @@ const TRANSLATIONS = {
     welcome: "Benvingut",
     chooseWorkspace: "Tria un espai de treball per començar a xatejar!",
     notAssigned:
-      "Actualment no estàs assignat a cap espai de treball.\nPosa't en contacte amb el teu administrador per sol·licitar accés a un espai de treball.",
-    goToWorkspace: 'Vés a "{{workspace}}"',
+      "Actualment, no estàs assignat a cap espai de treball.\nPosa't en contacte amb el teu administrador per sol·licitar accés a un espai de treball.",
+    goToWorkspace: 'Ves a "{{workspace}}"',
   },
   settings: {
     title: "Configuració de la instància",
@@ -170,7 +170,7 @@ const TRANSLATIONS = {
     message: {
       title: "Missatges de xat suggerits",
       description:
-        "Personalitza els missatges que es suggeriràn als usuaris del teu espai de treball.",
+        "Personalitza els missatges que se suggeriran als usuaris del teu espai de treball.",
       add: "Afegeix un missatge nou",
       save: "Desa els missatges",
       heading: "Explica'm",
@@ -221,7 +221,7 @@ const TRANSLATIONS = {
       title: "Historial de xat",
       "desc-start":
         "El nombre de xats anteriors que s'inclouran a la memòria a curt termini de la resposta.",
-      recommend: "Es recomanen 20. ",
+      recommend: "Se'n recomanen 20. ",
     },
     prompt: {
       title: "Missatge del sistema",
@@ -548,7 +548,7 @@ const TRANSLATIONS = {
       outlook: {
         title: "Connector per a Outlook",
         description:
-          "Permite que el teu agent interactui amb Microsoft Outlook: cerca correus electrònics, llegeix converses, redacta drafts, envia correus electrònics i gestiona la teva caixa de correu electrònic a través de l'API de Microsoft Graph. <a>Consulteu la documentació</a>.",
+          "Permet que el teu agent interactuï amb Microsoft Outlook: cerca correus electrònics, llegeix converses, redacta esborranys, envia correus electrònics i gestiona la teva caixa de correu electrònic a través de l'API de Microsoft Graph. <a>Consulteu la documentació</a>.",
         multiUserWarning:
           "La integració d'Outlook no està disponible en mode multiusuari per raons de seguretat. Per utilitzar aquesta funció, feu que el mode multiusuari estigui desactivat.",
         configuration: "Configuració d'Outlook",
@@ -586,8 +586,9 @@ const TRANSLATIONS = {
               "Cerca i llegeix correus electrònics des de la teva pestanya de correus d'Outlook.",
           },
           drafts: {
-            title: "Proposals de correu electrònic",
-            description: "Crea, edita i gestiona els esborralls d'e-mail.",
+            title: "Esborranys de correu electrònic",
+            description:
+              "Crea, edita i gestiona els esborranys de correu electrònic.",
           },
           send: {
             title: "Enviar correus electrònics",
@@ -617,22 +618,23 @@ const TRANSLATIONS = {
               "Llegeix la totalitat d'una conversa per correu electrònic.",
           },
           createDraft: {
-            title: "Crear un esborr",
+            title: "Crea un esborrany",
             description:
-              "Crea un nou correu electrònic o una resposta a un missatge existent.",
+              "Crea un nou esborrany de correu electrònic o una resposta a un missatge existent.",
           },
           updateDraft: {
-            title: "Versió actualitzada",
+            title: "Actualitza un esborrany",
             description:
-              "Actualitza un correu electrònic existent que ja està redactat",
+              "Actualitza un esborrany de correu electrònic existent.",
           },
           listDrafts: {
-            title: "Proposta de llistats",
-            description: "Mostra totes les correus electrònics en projecte.",
+            title: "Llista d'esborranys",
+            description:
+              "Mostra tots els esborranys de correu electrònic.",
           },
           deleteDraft: {
-            title: "Eliminar esbor",
-            description: "Eliminar un correu electrònic en projecte",
+            title: "Elimina un esborrany",
+            description: "Elimina un esborrany de correu electrònic.",
           },
           sendDraft: {
             title: "Enviar esborrany",
@@ -653,7 +655,7 @@ const TRANSLATIONS = {
       googleCalendar: {
         title: "Connector per a Google Calendar",
         description:
-          "Permite que el teu agent interactui amb Google Calendar: visualitza calendaris, obté esdeveniments, crea i actualitza esdeveniments, i gestiona les confirmacions de participació. <a>Consulteu la documentació</a>.",
+          "Permet que el teu agent interactuï amb Google Calendar: visualitza calendaris, obté esdeveniments, crea i actualitza esdeveniments, i gestiona les confirmacions de participació. <a>Consulteu la documentació</a>.",
         multiUserWarning:
           "La integració amb Google Calendar no està disponible en el mode multiusuari per raons de seguretat. Per utilitzar aquesta funció, feu que el mode multiusuari estigui desactivat.",
         configuration: "Configuració de Google Calendar",
@@ -664,7 +666,7 @@ const TRANSLATIONS = {
         apiKeyHelp:
           "La clau API que has configurat en la implementació del teu Google Apps Script",
         configurationRequired:
-          "Si us plau, configureu l'ID de l'implementació i la clau API per activar les funcionalitats de Google Calendar.",
+          "Si us plau, configureu l'ID del desplegament i la clau API per activar les funcionalitats de Google Calendar.",
         configured: "Configurat",
         searchSkills: "Habilitats de cerca...",
         noSkillsFound:
@@ -784,9 +786,9 @@ const TRANSLATIONS = {
         description:
           "Quan estiguin activades, els agents poden fer una pausa per fer preguntes breus i clares si la vostra petició és ambigua.",
         "max-per-turn": {
-          title: "Número màxim de preguntes per ronda",
+          title: "Nombre màxim de preguntes per ronda",
           description:
-            "Quant preguntes de aclariment pot fer l'agent en una sola enquesta.",
+            "Quantes preguntes d'aclariment pot fer l'agent en una sola ronda.",
         },
       },
     },
@@ -894,7 +896,7 @@ const TRANSLATIONS = {
       "render-html": {
         title: "Renderitza HTML al xat",
         description:
-          "Renderitza respostes HTML a les respostes de l'assistent.\nAixò pot resultar en una qualitat de resposta molt més alta, però també pot comportar riscos potencials de seguretat.",
+          "Renderitza l'HTML a les respostes de l'assistent.\nAixò pot donar com a resultat una qualitat de resposta molt més alta, però també pot comportar riscos potencials de seguretat.",
       },
     },
   },
@@ -971,7 +973,7 @@ const TRANSLATIONS = {
   embedding: {
     title: "Preferència d'embedding",
     "desc-start":
-      "Quan s'usa un LLM que no admet de manera nativa un motor d'embedding, pot ser que hagis d'especificar adicionalment les credencials per a l'embedding de text.",
+      "Quan s'usa un LLM que no admet de manera nativa un motor d'embedding, pot ser que hagis d'especificar addicionalment les credencials per a l'embedding de text.",
     "desc-end":
       "L'embedding és el procés de convertir text en vectors. Aquestes credencials són necessàries per convertir els teus fitxers i missatges en un format que AnythingLLM pugui processar.",
     provider: {
@@ -991,9 +993,9 @@ const TRANSLATIONS = {
       recommend: "La longitud màxima del model d'embedding és",
     },
     overlap: {
-      title: "Solapament del fragment de text",
+      title: "Superposició del fragment de text",
       description:
-        "Aquest és el solapament màxim de caràcters que es produeix durant la segmentació entre dos fragments de text adjacents.",
+        "Aquesta és la superposició màxima de caràcters que es produeix durant la segmentació entre dos fragments de text adjacents.",
     },
   },
   vector: {
@@ -1369,7 +1371,7 @@ const TRANSLATIONS = {
     placeholder_prompt:
       "Aquest és el contingut que s'injectarà davant del teu missatge.",
     description: "Descripció",
-    placeholder_description: "Respon amb un poema sobre LLMs.",
+    placeholder_description: "Respon amb un poema sobre els LLM.",
     save: "Desa",
     small: "Petit",
     normal: "Normal",
@@ -1446,7 +1448,7 @@ const TRANSLATIONS = {
       menu: {
         edit: "Editar",
         delete: "Eliminar",
-        move_to_global: "Passar a nivell global",
+        move_to_global: "Mou a l'àmbit global",
         move_to_workspace: "Canviar a l'espai de treball",
       },
       modal: {
@@ -1649,7 +1651,7 @@ const TRANSLATIONS = {
       currentSchedule: "Horari actual:",
       toolsLabel: "Eines (opcional)",
       toolsDescription:
-        "Seleccioneu quins eines d'agent pot utilitzar aquest treball. Si cap, seleccioneu, el treball es realitzarà sense cap eina.",
+        "Seleccioneu quines eines d'agent pot utilitzar aquesta tasca. Si no en seleccioneu cap, la tasca s'executarà sense cap eina.",
       toolsSearch: "Cerca",
       toolsNoResults: "No hi ha cap eina que coincideixi.",
       required: "Obligatori",
@@ -1683,10 +1685,10 @@ const TRANSLATIONS = {
       onDay: "En un dia",
       ofEveryMonth: "de cada mes",
       weekdays: {
-        sun: "Sol",
-        mon: "Mon",
+        sun: "Diumenge",
+        mon: "Dilluns",
         tue: "Dimarts",
-        wed: "Dijous",
+        wed: "Dimecres",
         thu: "Dijous",
         fri: "Divendres",
         sat: "Dissabte",
@@ -1746,7 +1748,7 @@ const TRANSLATIONS = {
         powerpoint: "PowerPoint",
         pdf: "Document en format PDF",
         word: "Document de text",
-        spreadsheet: "Fulla de càlcul",
+        spreadsheet: "Full de càlcul",
         generic: "Fitxer",
       },
     },
@@ -1807,7 +1809,7 @@ const TRANSLATIONS = {
       "add-rule": "Afegir regla",
       "delete-confirm": 'Eliminar la regla "{{title}}"?',
       "toast-delete-failed": "No s'ha pogut eliminar la regla.",
-      "toast-reorder-failed": "No s'ha pogut reimplementar les regles.",
+      "toast-reorder-failed": "No s'ha pogut reordenar les regles.",
       "no-rules": "Aquesta situació encara no té cap regla.",
       "empty-description":
         "Afegiu una regla per enviar els missatges de xat a proveïdors i models específics.",
@@ -1817,22 +1819,22 @@ const TRANSLATIONS = {
       "llm-section-label":
         "Regles LLM — s'han d'analitzar en lots si cap regla calculada no coincideix",
       "llm-rule-body":
-        'Primer, esdevenir <desc>"{{description}}"</desc>, i després, dirigir-se a <route>{{route}}</route>',
+        'Si coincideix <desc>"{{description}}"</desc>, dirigeix a <route>{{route}}</route>',
       "calculated-no-conditions":
-        "Sense condicions — ruta a <route>{{route}}</route>",
+        "Sense condicions — dirigeix a <route>{{route}}</route>",
       "calculated-single-condition":
-        'Si <prop>{{property}}</prop> {{comparator}} <val>"{{value}}"</val>, llavors dirigir-se a <route>{{route}}</route>',
+        'Si <prop>{{property}}</prop> {{comparator}} <val>"{{value}}"</val>, dirigeix a <route>{{route}}</route>',
       "calculated-multi-condition":
-        "Si {{quantifier}} de <cond> és {{conditions}}, de </cond>, llavors, dirigeix-te a <route> {{route}} </route>",
+        "Si {{quantifier}} de <cond>{{conditions}}</cond>, dirigeix a <route>{{route}}</route>",
       "comparator-contains": "conté",
-      "comparator-matches": "partits",
+      "comparator-matches": "coincideix",
       "comparator-between": "entre",
-      "badge-llm": "Model de llarga recorrència (LLM)",
+      "badge-llm": "LLM",
       "badge-calculated": "Calculat",
       "aria-drag-to-reorder": "Arrossega per reordenar",
       "aria-edit-rule": "Regla d'edició",
       "aria-delete-rule": "Eliminar regla",
-      "quantifier-any": "QUALSESO",
+      "quantifier-any": "QUALSEVOL",
       "quantifier-all": "TOT",
     },
     "rule-form": {
@@ -1847,11 +1849,11 @@ const TRANSLATIONS = {
       "remove-condition": "Elimina la condició",
       "conditions-incomplete":
         "L'estat {{index}} és incomplet - ompliu les propietats, el comparador i el valor.",
-      "match-description-label": "Descripció del partit",
+      "match-description-label": "Descripció de la coincidència",
       "match-description-placeholder":
         "Per exemple, l'usuari està preguntant sobre temes legals, contractes o sobre el compliment de les normatives.",
       "match-description-help":
-        "Descriu la situació en què vols que aquesta regla s'apliqui. El teu model de llenguatge (LLM) la avaluarà per determinar si cal utilitzar-la.",
+        "Descriu la situació en què vols que aquesta regla s'apliqui. El teu model de llenguatge (LLM) l'avaluarà per determinar si cal utilitzar-la.",
       "route-to-label": "Ruta cap al proveïdor i model",
       "route-to-description":
         "Quan aquesta regla es compleixi, utilitzeu aquest proveïdor/model.",
@@ -1864,7 +1866,7 @@ const TRANSLATIONS = {
       "type-calculated-label": "Calculat",
       "type-calculated-description":
         "Comparar segons propietats del missatge, com el contingut, el nombre de tokens o l'hora del dia.",
-      "type-llm-label": "Clasificació de LLM",
+      "type-llm-label": "Classificació de LLM",
       "type-llm-description":
         "Utilitzeu un model de llenguatge per classificar el missatge en funció de la descripció que proporcioneu.",
       "prop-prompt-content": "Contingut de la petició",
@@ -1880,9 +1882,8 @@ const TRANSLATIONS = {
       "cmp-greater-than-or-equal": "major o igual",
       "cmp-less-than": "menys de",
       "cmp-less-than-or-equal": "menys o igual",
-      "cmp-between": "entre (incloent-ho)",
-      "placeholder-between-hour":
-        "Per exemple, de 9:17 del matí a les 17:00 (5 de la tarda)",
+      "cmp-between": "entre (inclosos)",
+      "placeholder-between-hour": "p. ex., 9:17 (de 9 del matí a 5 de la tarda)",
       "placeholder-between-numeric": "per exemple, 10,50",
       "placeholder-hour": "Per exemple, 18 (0-23)",
       "placeholder-message-count": "p. ex. 10",
