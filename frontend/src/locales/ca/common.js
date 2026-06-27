@@ -116,7 +116,7 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
-    "scheduled-jobs": "Feines programades",
+    "scheduled-jobs": "Tasques programades",
     "model-router": "Rúter de model",
   },
   login: {
@@ -1602,12 +1602,12 @@ const TRANSLATIONS = {
     },
   },
   scheduledJobs: {
-    title: "Feines programades",
+    title: "Tasques programades",
     enableNotifications:
-      "Activa les notificacions del navegador per als resultats de la cerca de feina.",
+      "Activa les notificacions del navegador per als resultats de les tasques.",
     description:
       "Crea tasques d'IA recurrents que s'executen segons un horari. Cada tasca executa una consulta amb eines opcionals i guarda el resultat per a la seva revisió.",
-    newJob: "Nou lloc de treball",
+    newJob: "Nova tasca",
     loading: "Carregant...",
     emptyTitle: "No hi ha tasques programades.",
     emptySubtitle: "Creeu un per començar.",
@@ -1624,9 +1624,9 @@ const TRANSLATIONS = {
       deleted: "Tasca eliminada",
       triggered: "La tasca s'ha completat amb èxit.",
       triggerFailed: "No s'ha pogut iniciar la tasca.",
-      triggerSkipped: "Ja s'ha iniciat la feina per a aquest projecte.",
-      killed: "La feina s'ha completat amb èxit.",
-      killFailed: "No va poder evitar que es fes la feina.",
+      triggerSkipped: "Ja hi ha una execució en curs per a aquesta tasca.",
+      killed: "Tasca aturada amb èxit.",
+      killFailed: "No s'ha pogut aturar la tasca.",
     },
     row: {
       neverRun: "Mai no corres",
@@ -1656,13 +1656,13 @@ const TRANSLATIONS = {
       toolsNoResults: "No hi ha cap eina que coincideixi.",
       required: "Obligatori",
       requiredFieldsBanner:
-        "Si us plau, compliu tots els camps obligatoris per crear l'oferta de treball.",
+        "Si us plau, ompliu tots els camps obligatoris per crear la tasca.",
       cancel: "Cancel·la",
       saving: "Guardant...",
-      updateJob: "Actualitza lloc de treball",
-      createJob: "Crea un lloc de treball",
-      jobUpdated: "Pàgina actualitzada",
-      jobCreated: "Creació d'un lloc de treball",
+      updateJob: "Actualitza la tasca",
+      createJob: "Crea una tasca",
+      jobUpdated: "Tasca actualitzada",
+      jobCreated: "Tasca creada",
     },
     builder: {
       fallbackWarning:
@@ -1695,11 +1695,11 @@ const TRANSLATIONS = {
       },
     },
     runHistory: {
-      back: "Torna a les feines",
+      back: "Torna a les tasques",
       title: "Històric de curses: {{name}}",
       schedule: "Horari:",
-      emptyTitle: "Encara no hi ha candidats per a aquesta posició.",
-      emptySubtitle: "Inicia la tasca ara i consulta els resultats.",
+      emptyTitle: "Encara no hi ha execucions per a aquesta tasca.",
+      emptySubtitle: "Executa la tasca ara i consulta els resultats.",
       runNow: "Comença ara",
       table: {
         status: "Estat",
@@ -1707,13 +1707,13 @@ const TRANSLATIONS = {
         duration: "Durada",
         error: "Error",
       },
-      stopJob: "Aturar la feina",
+      stopJob: "Atura la tasca",
     },
     runDetail: {
       loading: "Càrrec detalls de la sessió...",
       notFound: "No s'ha trobat la sortida.",
       back: "Cap endavant",
-      unknownJob: "Posició sense especificar",
+      unknownJob: "Tasca desconeguda",
       runHeading: "{{name}} — Executar la tasca {{id}}",
       duration: "Durada: {{value}}",
       creating: "Creant...",
@@ -1731,7 +1731,7 @@ const TRANSLATIONS = {
         promptTokens: "Tokens de desencadenament:",
         completionTokens: "Tokens de finalització:",
       },
-      stopJob: "Finalitzar feina",
+      stopJob: "Atura la tasca",
       killing: "Aturar...",
       continueInThread: "Continua la conversa",
     },
