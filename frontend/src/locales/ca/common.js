@@ -629,8 +629,7 @@ const TRANSLATIONS = {
           },
           listDrafts: {
             title: "Llista d'esborranys",
-            description:
-              "Mostra tots els esborranys de correu electrònic.",
+            description: "Mostra tots els esborranys de correu electrònic.",
           },
           deleteDraft: {
             title: "Elimina un esborrany",
@@ -1883,7 +1882,8 @@ const TRANSLATIONS = {
       "cmp-less-than": "menys de",
       "cmp-less-than-or-equal": "menys o igual",
       "cmp-between": "entre (inclosos)",
-      "placeholder-between-hour": "p. ex., 9:17 (de 9 del matí a 5 de la tarda)",
+      "placeholder-between-hour":
+        "p. ex., 9:17 (de 9 del matí a 5 de la tarda)",
       "placeholder-between-numeric": "per exemple, 10,50",
       "placeholder-hour": "Per exemple, 18 (0-23)",
       "placeholder-message-count": "p. ex. 10",
