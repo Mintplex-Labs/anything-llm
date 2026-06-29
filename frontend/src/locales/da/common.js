@@ -707,6 +707,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Opret planlagte opgaver",
+        description:
+          'Lad agenten oprette gentagne planlagte opgaver fra chat (f.eks. "hver mandag kl. 9:00, opsummér min indbakke og send mig en e-mail"). Kun tilgængeligt i enkeltbruger-tilstand.',
+      },
     },
     mcp: {
       title: "MCP-servere",

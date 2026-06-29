@@ -728,6 +728,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Criar tarefas agendadas",
+        description:
+          'Permita que o agente crie tarefas recorrentes agendadas a partir do chat (por exemplo, "todos os dias úteis às 9h, resuma minha caixa de entrada e envie um e-mail"). Disponível apenas no modo para um único usuário.',
+      },
     },
     mcp: {
       title: "Servidores MCP",

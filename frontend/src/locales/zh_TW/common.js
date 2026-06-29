@@ -664,6 +664,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "建立排程工作",
+        description:
+          "允許經理根據聊天內容，設定重複執行的工作（例如：「每天早上9點，請自動整理我的收件匣並將摘要發送至我的電子郵件」）。僅適用於單一使用者模式。",
+      },
     },
     mcp: {
       title: "MCP 伺服器",

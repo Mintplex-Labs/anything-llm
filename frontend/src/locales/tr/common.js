@@ -723,6 +723,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Planlı işleri oluşturun",
+        description:
+          'Temsilcinin, sohbetten otomatik olarak tekrarlayan görevler oluşturmasına izin verin (örneğin, "her hafta içi her gün saat 09:00\'da e-posta kutlumu özetleyip bana gönder"). Sadece tek kullanıcı modunda kullanılabilir.',
+      },
     },
     mcp: {
       title: "MCP Sunucuları",

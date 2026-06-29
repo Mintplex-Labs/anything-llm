@@ -723,6 +723,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Ierīkojiet periodiskas darbības",
+        description:
+          'Ļauj aģentam izveidot atkārtotus plānotus darbus no čata (piemēram, "katru darba dienu plkst. 9:00 nosūtīt man savu e-pasta kopsavilkumu un nosūtīt ziņu"). Pieejams tikai vienam lietotājam.',
+      },
     },
     mcp: {
       title: "MCP serveri",
