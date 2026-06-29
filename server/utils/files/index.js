@@ -1,6 +1,9 @@
 const fs = require("fs");
 const path = require("path");
 const { v5: uuidv5 } = require("uuid");
+const readline = require("readline");
+const { Readable } = require("stream");
+const { pipeline } = require("stream/promises");
 const { Document } = require("../../models/documents");
 const { DocumentSyncQueue } = require("../../models/documentSyncQueue");
 const documentsPath =
@@ -162,6 +165,69 @@ async function getDocumentsByFolder(folderName = "") {
   return { folder: folderName, documents, code: 200, error: null };
 }
 
+// Written as the first line of every vector-cache file so reads can tell the
+// streamed JSON-lines format apart from the legacy single JSON-array format.
+const VECTOR_CACHE_HEADER = {
+  __cacheType: "vector-cache",
+  format: "jsonl",
+  version: 1,
+};
+
+function isVectorCacheHeader(value) {
+  return (
+    !!value &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    value.__cacheType === "vector-cache"
+  );
+}
+
+/**
+ * Reads a vector-cache file back into an array of cached chunks.
+ *
+ * Files are stored as JSON-lines (a {@link VECTOR_CACHE_HEADER} line followed by
+ * one JSON value per line) so arbitrarily large caches can be streamed off disk
+ * without ever materializing the whole payload as a single string - doing so
+ * throws "RangeError: Invalid string length" once the data exceeds V8's max
+ * string size. Cache files written by previous versions stored the data as a
+ * single JSON array, so those are still read for backwards compatibility.
+ * @param {string} file - absolute path to the cache file
+ * @returns {Promise<any[]>} - the cached chunks
+ */
+async function readVectorCacheFile(file) {
+  const input = fs.createReadStream(file, { encoding: "utf8" });
+  const rl = readline.createInterface({ input, crlfDelay: Infinity });
+
+  const chunks = [];
+  let format = null; // "jsonl" | "legacy"
+  try {
+    for await (const line of rl) {
+      const trimmed = line.trim();
+      if (!trimmed) continue;
+
+      const value = JSON.parse(trimmed);
+      if (format === null) {
+        // The first non-empty line determines the on-disk format.
+        if (isVectorCacheHeader(value)) {
+          format = "jsonl";
+          continue; // header is metadata, not a cached chunk
+        }
+        // Legacy caches serialize the entire payload as a single JSON array, so
+        // the first line already contains every cached chunk.
+        return Array.isArray(value) ? value : [value];
+      }
+      chunks.push(value);
+    }
+  } finally {
+    // Always release the file handle - returning early (legacy format) leaves
+    // the underlying read stream open since closing the interface alone does
+    // not destroy it.
+    rl.close();
+    input.destroy();
+  }
+  return chunks;
+}
+
 /**
  * Searches the vector-cache folder for existing information so we dont have to re-embed a
  * document and can instead push directly to vector db.
@@ -182,8 +248,7 @@ async function cachedVectorInformation(filename = null, checkOnly = false) {
   console.log(
     `Cached vectorized results of ${filename} found! Using cached data to save on embed costs.`
   );
-  const rawData = fs.readFileSync(file, "utf8");
-  return { exists: true, chunks: JSON.parse(rawData) };
+  return { exists: true, chunks: await readVectorCacheFile(file) };
 }
 
 // vectorData: pre-chunked vectorized data for a given file that includes the proper metadata and chunk-size limit so it can be iterated and dumped into Pinecone, etc
@@ -197,7 +262,21 @@ async function storeVectorResult(vectorData = [], filename = null) {
 
   const digest = uuidv5(filename, uuidv5.URL);
   const writeTo = path.resolve(vectorCachePath, `${digest}.json`);
-  fs.writeFileSync(writeTo, JSON.stringify(vectorData), "utf8");
+
+  // Stream the cache to disk as JSON-lines (a header line followed by one JSON
+  // value per line) instead of `JSON.stringify(vectorData)`. Serializing the
+  // entire array at once throws "RangeError: Invalid string length" once the
+  // result exceeds V8's max string size, which broke caching - and therefore
+  // re-embedding avoidance - for very large documents. See issue #5063.
+  function* cacheLines() {
+    yield `${JSON.stringify(VECTOR_CACHE_HEADER)}\n`;
+    for (const chunk of vectorData) yield `${JSON.stringify(chunk)}\n`;
+  }
+
+  await pipeline(
+    Readable.from(cacheLines()),
+    fs.createWriteStream(writeTo, { encoding: "utf8" })
+  );
   return;
 }
 
