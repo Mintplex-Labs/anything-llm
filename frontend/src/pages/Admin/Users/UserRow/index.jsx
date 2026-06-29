@@ -4,7 +4,7 @@ import Admin from "@/models/admin";
 import EditUserModal from "./EditUserModal";
 import showToast from "@/utils/toast";
 import { useModal } from "@/hooks/useModal";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 
 const ModMap = {
   admin: ["admin", "manager", "default"],
@@ -91,13 +91,13 @@ export default function UserRow({ currUser, user }) {
           )}
         </td>
       </tr>
-      <ModalWrapper isOpen={isOpen}>
+      <Modal isOpen={isOpen} onClose={closeModal}>
         <EditUserModal
           currentUser={currUser}
           user={user}
           closeModal={closeModal}
         />
-      </ModalWrapper>
+      </Modal>
     </>
   );
 }

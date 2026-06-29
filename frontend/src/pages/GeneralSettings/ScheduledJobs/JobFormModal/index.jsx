@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { X, WarningCircle } from "@phosphor-icons/react";
+import { WarningCircle } from "@phosphor-icons/react";
 import ScheduledJobs from "@/models/scheduledJobs";
 import showToast from "@/utils/toast";
 import { safeJsonParse } from "@/utils/request";
 import { useTranslation } from "react-i18next";
+import { ModalHeader, ModalBody } from "@/components/lib/Modal";
 import JobDescription from "./JobDescription";
 import JobSchedule from "./JobSchedule";
 import ToolsSelector from "./ToolsSelector";
@@ -102,62 +103,48 @@ export default function JobFormModal({ job = null, onClose, onSaved }) {
   };
 
   return (
-    <div className="relative w-full max-w-2xl max-h-full">
-      <div className="relative bg-theme-bg-secondary rounded-lg shadow border border-theme-modal-border">
-        <div className="flex flex-col gap-1 p-4 border-b rounded-t border-theme-modal-border">
-          <div className="flex items-start justify-between">
-            <h3 className="text-xl font-semibold text-theme-text-primary">
-              {isEditing
-                ? t("scheduledJobs.modal.titleEdit")
-                : t("scheduledJobs.modal.titleNew")}
-            </h3>
-            <button
-              onClick={onClose}
-              type="button"
-              className="border-none transition-all duration-300 text-gray-400 bg-transparent hover:border-white/60 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
-            >
-              <X className="text-gray-300 text-lg" />
-            </button>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-y-5">
+      <ModalHeader
+        title={
+          isEditing
+            ? t("scheduledJobs.modal.titleEdit")
+            : t("scheduledJobs.modal.titleNew")
+        }
+        onClose={onClose}
+      >
+        {hasErrors() && (
+          <div className="flex gap-1 items-center mt-1">
+            <WarningCircle size={16} className="text-red-400 shrink-0" />
+            <p className="text-sm text-red-400">
+              {t(
+                "scheduledJobs.modal.requiredFieldsBanner",
+                "Please fill out all required fields in order to create job."
+              )}
+            </p>
           </div>
-          {hasErrors() && (
-            <div className="flex gap-1 items-center">
-              <WarningCircle size={16} className="text-red-400 shrink-0" />
-              <p className="text-sm text-red-400">
-                {t(
-                  "scheduledJobs.modal.requiredFieldsBanner",
-                  "Please fill out all required fields in order to create job."
-                )}
-              </p>
-            </div>
-          )}
-        </div>
+        )}
+      </ModalHeader>
+      <ModalBody>
+        <JobDescription form={form} errors={errors} onChange={handleChange} />
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          <JobDescription form={form} errors={errors} onChange={handleChange} />
+        <JobSchedule
+          schedule={form.schedule}
+          scheduleMode={form.scheduleMode}
+          error={errors.schedule}
+          onScheduleChange={handleScheduleChange}
+          onModeChange={handleModeChange}
+        />
 
-          <JobSchedule
-            schedule={form.schedule}
-            scheduleMode={form.scheduleMode}
-            error={errors.schedule}
-            onScheduleChange={handleScheduleChange}
-            onModeChange={handleModeChange}
+        {availableTools.length > 0 && (
+          <ToolsSelector
+            availableTools={availableTools}
+            selectedTools={form.selectedTools}
+            onChange={setSelectedTools}
           />
+        )}
 
-          {availableTools.length > 0 && (
-            <ToolsSelector
-              availableTools={availableTools}
-              selectedTools={form.selectedTools}
-              onChange={setSelectedTools}
-            />
-          )}
-
-          <FormActions
-            isEditing={isEditing}
-            saving={saving}
-            onClose={onClose}
-          />
-        </form>
-      </div>
-    </div>
+        <FormActions isEditing={isEditing} saving={saving} onClose={onClose} />
+      </ModalBody>
+    </form>
   );
 }

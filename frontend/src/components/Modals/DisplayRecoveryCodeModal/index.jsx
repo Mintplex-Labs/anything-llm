@@ -2,7 +2,12 @@ import showToast from "@/utils/toast";
 import { DownloadSimple, Key } from "@phosphor-icons/react";
 import { saveAs } from "file-saver";
 import { useState } from "react";
-import ModalWrapper from "@/components/ModalWrapper";
+import {
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalPrimaryButton,
+} from "@/components/lib/Modal";
 
 export default function RecoveryCodeModal({
   recoveryCodes,
@@ -33,59 +38,50 @@ export default function RecoveryCodeModal({
   };
 
   return (
-    <ModalWrapper isOpen={true}>
-      <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
-        <div className="relative p-6 border-b rounded-t border-theme-modal-border">
-          <div className="w-full flex gap-x-2 items-center">
-            <Key size={24} className="text-white" weight="bold" />
-            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
-              Recovery Codes
-            </h3>
-          </div>
-        </div>
+    <div className="flex flex-col gap-y-5">
+      <ModalHeader
+        title={
+          <span className="flex items-center gap-x-2">
+            <Key size={20} weight="bold" />
+            Recovery Codes
+          </span>
+        }
+      />
+      <ModalBody>
+        <p className="text-sm text-zinc-300 light:text-slate-700 flex flex-col">
+          In order to reset your password in the future, you will need these
+          recovery codes. Download or copy your recovery codes to save them.{" "}
+          <br />
+          <b className="mt-4">These recovery codes are only shown once!</b>
+        </p>
         <div
-          className="h-full w-full overflow-y-auto"
-          style={{ maxHeight: "calc(100vh - 200px)" }}
+          className="border-none bg-zinc-800 light:bg-white text-zinc-100 light:text-slate-900 hover:opacity-80 flex items-center justify-center rounded-lg cursor-pointer"
+          onClick={handleCopyToClipboard}
         >
-          <div className="py-7 px-9 space-y-2 flex-col">
-            <p className="text-sm text-white flex flex-col">
-              In order to reset your password in the future, you will need these
-              recovery codes. Download or copy your recovery codes to save them.{" "}
-              <br />
-              <b className="mt-4">These recovery codes are only shown once!</b>
-            </p>
-            <div
-              className="border-none bg-theme-settings-input-bg text-white hover:text-primary-button
-                   flex items-center justify-center rounded-md mt-6 cursor-pointer"
-              onClick={handleCopyToClipboard}
-            >
-              <ul className="space-y-2 md:p-6 p-4">
-                {recoveryCodes.map((code, index) => (
-                  <li key={index} className="md:text-sm text-xs">
-                    {code}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-          <div className="flex w-full justify-end items-center p-6 space-x-2 border-t border-theme-modal-border rounded-b">
-            <button
-              type="button"
-              className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm flex items-center gap-x-2"
-              onClick={downloadClicked ? handleClose : downloadRecoveryCodes}
-            >
-              {downloadClicked ? (
-                "Close"
-              ) : (
-                <>
-                  <DownloadSimple weight="bold" size={18} />
-                  <p>Download</p>
-                </>
-              )}
-            </button>
-          </div>
+          <ul className="space-y-2 md:p-6 p-4">
+            {recoveryCodes.map((code, index) => (
+              <li key={index} className="md:text-sm text-xs">
+                {code}
+              </li>
+            ))}
+          </ul>
         </div>
-      </div>
-    </ModalWrapper>
+      </ModalBody>
+      <ModalFooter className="justify-end">
+        <ModalPrimaryButton
+          type="button"
+          onClick={downloadClicked ? handleClose : downloadRecoveryCodes}
+        >
+          {downloadClicked ? (
+            "Close"
+          ) : (
+            <span className="flex items-center gap-x-2">
+              <DownloadSimple weight="bold" size={18} />
+              Download
+            </span>
+          )}
+        </ModalPrimaryButton>
+      </ModalFooter>
+    </div>
   );
 }
