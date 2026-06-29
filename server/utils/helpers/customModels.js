@@ -1279,11 +1279,23 @@ async function kokoroTtsVoices(basePath = null, apiKey = null) {
 
   if (!voices || !Array.isArray(voices))
     return { models: [], error: "Could not fetch Kokoro voices." };
-  const models = voices.map((voice) => ({
-    id: voice.id,
-    name: voice.name,
-    organization: "Kokoro",
-  }));
+
+  // kokoro-fastapi < 0.3.x returns voices as plain id strings while >= 0.3.x
+  // returns { id, name } objects. Normalize both shapes to { id, name } so the
+  // voice list renders regardless of the kokoro-fastapi version being used.
+  const models = voices
+    .map((voice) => {
+      if (typeof voice === "string")
+        return { id: voice, name: voice, organization: "Kokoro" };
+      if (voice && typeof voice === "object" && voice.id)
+        return {
+          id: voice.id,
+          name: voice.name || voice.id,
+          organization: "Kokoro",
+        };
+      return null;
+    })
+    .filter(Boolean);
   return { models, error: null };
 }
 
