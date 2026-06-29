@@ -1055,6 +1055,27 @@ const TRANSLATIONS = {
       bypass_ssl_explained:
         "Kendinden imzalı sertifikaya sahip kendi sunucunuzda barındırılan confluence örnekleri için SSL sertifika doğrulamasını atlamak için bu seçeneği etkinleştirin",
     },
+    twelvelabs: {
+      name: "TwelveLabs Video",
+      description:
+        "Analyze a video with TwelveLabs Pegasus to import its transcript, summary, and on-screen context.",
+      URL: "Video URL",
+      URL_explained:
+        "A publicly accessible, direct URL to a video file (e.g. an .mp4 link). Hosting platform and cloud-storage share links are not supported.",
+      optional: "optional",
+      api_key: "TwelveLabs API Key",
+      api_key_explained:
+        "Your TwelveLabs API key. If left blank, the server's TWELVELABS_API_KEY environment variable is used. Get a free key at twelvelabs.io.",
+      index_name: "Index Name",
+      index_name_explained:
+        "The TwelveLabs index to upload into. It is reused if it exists, or created with Pegasus enabled. Defaults to anythingllm-pegasus.",
+      prompt: "Analysis Prompt",
+      prompt_explained:
+        "The instruction sent to Pegasus. Leave blank to get a summary, full transcript, and scene breakdown.",
+      prompt_placeholder: "Summarize this video and provide a full transcript.",
+      task_explained:
+        "Uploading and indexing the video can take a few minutes. Once complete, the analysis will be available for embedding into workspaces in the document picker.",
+    },
     manage: {
       documents: "Belgeler",
       "data-connectors": "Veri Bağlayıcıları",

@@ -113,6 +113,24 @@ const DataConnector = {
         });
     },
   },
+  twelvelabs: {
+    collect: async ({ url, apiKey, indexName, prompt }) => {
+      return await fetch(`${API_BASE}/ext/twelvelabs/video`, {
+        method: "POST",
+        headers: baseHeaders(),
+        body: JSON.stringify({ url, apiKey, indexName, prompt }),
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          if (!res.success) throw new Error(res.reason);
+          return { data: res.data, error: null };
+        })
+        .catch((e) => {
+          console.error(e);
+          return { data: null, error: e.message };
+        });
+    },
+  },
   websiteDepth: {
     scrape: async ({ url, depth, maxLinks }) => {
       return await fetch(`${API_BASE}/ext/website-depth`, {
