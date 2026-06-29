@@ -154,6 +154,7 @@ AnythingLLM supports multiple users as well where you can control the access and
 
 - [LanceDB](https://github.com/lancedb/lancedb) (default)
 - [PGVector](https://github.com/pgvector/pgvector)
+- [Valkey](https://valkey.io/) (with the [valkey-search](https://github.com/valkey-io/valkey-search) module)
 - [Astra DB](https://www.datastax.com/products/datastax-astra)
 - [Pinecone](https://pinecone.io)
 - [Chroma & ChromaCloud](https://trychroma.com)
