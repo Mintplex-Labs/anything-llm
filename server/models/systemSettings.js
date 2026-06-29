@@ -166,6 +166,7 @@ const SystemSettings = {
             "perplexity-search",
             "brave-search",
             "crw-search",
+            "keenable-search",
           ].includes(update)
         )
           throw new Error("Invalid SERP provider.");
@@ -586,6 +587,8 @@ const SystemSettings = {
       AgentBraveApiKey: !!process.env.AGENT_BRAVE_API_KEY || null,
       AgentCrwApiKey: !!process.env.AGENT_CRW_API_KEY || null,
       AgentCrwApiUrl: process.env.AGENT_CRW_API_URL || null,
+      AgentKeenableApiKey: !!process.env.AGENT_KEENABLE_API_KEY || null,
+      AgentKeenableApiUrl: process.env.AGENT_KEENABLE_API_URL || null,
 
       // --------------------------------------------------------
       // Compliance Settings

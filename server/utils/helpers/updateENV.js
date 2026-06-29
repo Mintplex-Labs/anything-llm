@@ -581,6 +581,14 @@ const KEY_MAPPING = {
     envKey: "AGENT_CRW_API_URL",
     checks: [],
   },
+  AgentKeenableApiKey: {
+    envKey: "AGENT_KEENABLE_API_KEY",
+    checks: [],
+  },
+  AgentKeenableApiUrl: {
+    envKey: "AGENT_KEENABLE_API_URL",
+    checks: [],
+  },
 
   // TTS/STT Integration ENVS
   TextToSpeechProvider: {

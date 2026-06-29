@@ -13,6 +13,7 @@ import ExaIcon from "./icons/exa.png";
 import PerplexitySearchIcon from "./icons/perplexity.png";
 import BraveSearchIcon from "./icons/brave.png";
 import CrwSearchIcon from "./icons/crw.png";
+import KeenableSearchIcon from "./icons/keenable.svg";
 import {
   CaretUpDown,
   MagnifyingGlass,
@@ -36,6 +37,7 @@ import {
   PerplexitySearchOptions,
   BraveSearchOptions,
   CrwSearchOptions,
+  KeenableSearchOptions,
 } from "./SearchProviderOptions";
 
 const SEARCH_PROVIDERS = [
@@ -45,6 +47,14 @@ const SEARCH_PROVIDERS = [
     logo: DuckDuckGoIcon,
     options: () => <DuckDuckGoOptions />,
     description: "Free and privacy-focused web search using DuckDuckGo.",
+  },
+  {
+    name: "Keenable",
+    value: "keenable-search",
+    logo: KeenableSearchIcon,
+    options: (settings) => <KeenableSearchOptions settings={settings} />,
+    description:
+      "Web search built for AI agents. Works without an API key (keyless free tier); add a key to lift rate limits.",
   },
   {
     name: "Brave Search",
