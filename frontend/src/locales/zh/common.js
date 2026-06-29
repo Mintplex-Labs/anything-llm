@@ -672,6 +672,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "创建计划任务",
+        description:
+          "允许代理人根据聊天内容创建重复的计划任务（例如，“每天工作日的早上9点，总结我的收件箱并发送邮件给我”）。仅适用于单用户模式。",
+      },
     },
     mcp: {
       title: "MCP 服务器",
