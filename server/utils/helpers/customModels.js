@@ -1339,9 +1339,25 @@ async function getBedrockModels(_apiKey = null, options = {}) {
   }
 }
 
+// OpenAI image models follow predictable family names, so we filter the
+// account's live model list by family rather than maintaining an exhaustive
+// list - new variants (e.g. gpt-image-2) are picked up automatically.
+const OPENAI_IMAGE_MODEL_FAMILIES = /dall-e|gpt-image/i;
+// Offline/failure fallback when the account's model list can't be fetched.
+// Dated snapshots (e.g. gpt-image-2-2026-04-21) are intentionally omitted since
+// they go stale; the live list above surfaces them when available.
+const FALLBACK_OPENAI_IMAGE_MODELS = [
+  { id: "gpt-image-1", name: "gpt-image-1" },
+  { id: "gpt-image-1-mini", name: "gpt-image-1-mini" },
+  { id: "gpt-image-1.5", name: "gpt-image-1.5" },
+  { id: "gpt-image-2", name: "gpt-image-2" },
+  { id: "chatgpt-image-latest", name: "chatgpt-image-latest" },
+];
+
 /**
- * Lists the OpenAI image-capable models (dall-e-*, gpt-image-*). Falls back to
- * the known image models if the list call fails.
+ * Lists the OpenAI image-capable models the account can access by filtering its
+ * live model list to the known image model families. Falls back to a static
+ * list if the list call fails (e.g. offline or bad key).
  * @param {string|null} apiKey - OpenAI API key; defaults to IMAGE_GEN_OPENAI_KEY when null
  * @returns {Promise<{models: {id: string, name: string}[], error: string|null}>}
  */
@@ -1355,18 +1371,17 @@ async function getOpenAiImageModels(apiKey = null) {
     .then((results) => results.data)
     .then((all) =>
       all
-        .filter((model) => /dall-e|gpt-image/i.test(model.id))
+        .filter((model) => OPENAI_IMAGE_MODEL_FAMILIES.test(model.id))
         .map((model) => ({ id: model.id, name: model.id }))
     )
     .catch((e) => {
       console.error(`OpenAI:listImageModels`, e.message);
-      return [
-        { id: "dall-e-2", name: "dall-e-2" },
-        { id: "dall-e-3", name: "dall-e-3" },
-        { id: "gpt-image-1", name: "gpt-image-1" },
-      ];
+      return FALLBACK_OPENAI_IMAGE_MODELS;
     });
-  return { models, error: null };
+  return {
+    models: models.length ? models : FALLBACK_OPENAI_IMAGE_MODELS,
+    error: null,
+  };
 }
 
 /**
