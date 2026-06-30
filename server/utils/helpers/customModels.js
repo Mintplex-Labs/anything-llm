@@ -1342,12 +1342,14 @@ async function getBedrockModels(_apiKey = null, options = {}) {
 /**
  * Lists the OpenAI image-capable models (dall-e-*, gpt-image-*). Falls back to
  * the known image models if the list call fails.
- * @param {string|null} apiKey - OpenAI API key; defaults to OPEN_AI_KEY when null
+ * @param {string|null} apiKey - OpenAI API key; defaults to IMAGE_GEN_OPENAI_KEY when null
  * @returns {Promise<{models: {id: string, name: string}[], error: string|null}>}
  */
 async function getOpenAiImageModels(apiKey = null) {
   const { OpenAI: OpenAIApi } = require("openai");
-  const openai = new OpenAIApi({ apiKey: apiKey || process.env.OPEN_AI_KEY });
+  const openai = new OpenAIApi({
+    apiKey: apiKey || process.env.IMAGE_GEN_OPENAI_KEY,
+  });
   const models = await openai.models
     .list()
     .then((results) => results.data)

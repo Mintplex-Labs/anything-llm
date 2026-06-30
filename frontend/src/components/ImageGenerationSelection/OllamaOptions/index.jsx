@@ -2,7 +2,9 @@ import { useState } from "react";
 import ImageModelSelection from "../ImageModelSelection";
 
 export default function OllamaImageOptions({ settings }) {
-  const [basePath, setBasePath] = useState(settings?.OllamaLLMBasePath);
+  const [basePath, setBasePath] = useState(
+    settings?.ImageGenerationOllamaBasePath
+  );
   return (
     <div className="w-full flex flex-col gap-y-4">
       <div className="w-full flex items-center gap-[36px] mt-1.5">
@@ -12,10 +14,10 @@ export default function OllamaImageOptions({ settings }) {
           </label>
           <input
             type="url"
-            name="OllamaLLMBasePath"
+            name="ImageGenerationOllamaBasePath"
             className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="http://127.0.0.1:11434"
-            defaultValue={settings?.OllamaLLMBasePath || ""}
+            defaultValue={settings?.ImageGenerationOllamaBasePath || ""}
             required={true}
             autoComplete="off"
             spellCheck={false}

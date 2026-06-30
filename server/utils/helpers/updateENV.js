@@ -293,11 +293,31 @@ const KEY_MAPPING = {
 
   // Image Generation Settings
   ImageGenerationProvider: {
-    envKey: "IMAGE_GENERATION_PROVIDER",
+    envKey: "IMAGE_GEN_PROVIDER",
     checks: [isNotEmpty, supportedImageGenerationProvider],
   },
   ImageGenerationModelPref: {
-    envKey: "IMAGE_GENERATION_MODEL_PREF",
+    envKey: "IMAGE_GEN_MODEL_PREF",
+    checks: [],
+  },
+  ImageGenerationOpenAiKey: {
+    envKey: "IMAGE_GEN_OPENAI_KEY",
+    checks: [isNotEmpty, validOpenAIKey],
+  },
+  ImageGenerationOpenRouterApiKey: {
+    envKey: "IMAGE_GEN_OPENROUTER_API_KEY",
+    checks: [isNotEmpty],
+  },
+  ImageGenerationOllamaBasePath: {
+    envKey: "IMAGE_GEN_OLLAMA_BASE_PATH",
+    checks: [isNotEmpty, validOllamaLLMBasePath, validDockerizedUrl],
+  },
+  ImageGenerationLemonadeBasePath: {
+    envKey: "IMAGE_GEN_LEMONADE_BASE_PATH",
+    checks: [isValidURL],
+  },
+  ImageGenerationLemonadeApiKey: {
+    envKey: "IMAGE_GEN_LEMONADE_API_KEY",
     checks: [],
   },
 

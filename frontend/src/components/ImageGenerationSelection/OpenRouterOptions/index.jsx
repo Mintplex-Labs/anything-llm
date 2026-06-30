@@ -10,10 +10,12 @@ export default function OpenRouterImageOptions({ settings }) {
           </label>
           <input
             type="password"
-            name="OpenRouterApiKey"
+            name="ImageGenerationOpenRouterApiKey"
             className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="OpenRouter API Key"
-            defaultValue={settings?.OpenRouterApiKey ? "*".repeat(20) : ""}
+            defaultValue={
+              settings?.ImageGenerationOpenRouterApiKey ? "*".repeat(20) : ""
+            }
             required={true}
             autoComplete="off"
             spellCheck={false}

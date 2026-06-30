@@ -2,7 +2,9 @@ import { useState } from "react";
 import ImageModelSelection from "../ImageModelSelection";
 
 export default function LemonadeImageOptions({ settings }) {
-  const [basePath, setBasePath] = useState(settings?.LemonadeLLMBasePath);
+  const [basePath, setBasePath] = useState(
+    settings?.ImageGenerationLemonadeBasePath
+  );
   return (
     <div className="w-full flex flex-col gap-y-4">
       <div className="w-full flex items-center gap-[36px] mt-1.5">
@@ -12,10 +14,10 @@ export default function LemonadeImageOptions({ settings }) {
           </label>
           <input
             type="url"
-            name="LemonadeLLMBasePath"
+            name="ImageGenerationLemonadeBasePath"
             className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="http://127.0.0.1:8000"
-            defaultValue={settings?.LemonadeLLMBasePath || ""}
+            defaultValue={settings?.ImageGenerationLemonadeBasePath || ""}
             required={true}
             autoComplete="off"
             spellCheck={false}
@@ -34,10 +36,12 @@ export default function LemonadeImageOptions({ settings }) {
         </label>
         <input
           type="password"
-          name="LemonadeLLMApiKey"
+          name="ImageGenerationLemonadeApiKey"
           className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
           placeholder="Lemonade API Key"
-          defaultValue={settings?.LemonadeLLMApiKey ? "*".repeat(20) : ""}
+          defaultValue={
+            settings?.ImageGenerationLemonadeApiKey ? "*".repeat(20) : ""
+          }
           autoComplete="off"
           spellCheck={false}
         />

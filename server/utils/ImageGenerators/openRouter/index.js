@@ -2,21 +2,21 @@ const { BaseImageGenerator } = require("../base");
 
 class OpenRouterImageGenerator extends BaseImageGenerator {
   constructor() {
-    if (!process.env.OPENROUTER_API_KEY)
-      throw new Error("No OpenRouter API key was set.");
-    if (!process.env.IMAGE_GENERATION_MODEL_PREF)
+    if (!process.env.IMAGE_GEN_OPENROUTER_API_KEY)
+      throw new Error("No OpenRouter image generation API key was set.");
+    if (!process.env.IMAGE_GEN_MODEL_PREF)
       throw new Error("No OpenRouter image generation model was set.");
     const { OpenAI: OpenAIApi } = require("openai");
     super({
       client: new OpenAIApi({
         baseURL: "https://openrouter.ai/api/v1",
-        apiKey: process.env.OPENROUTER_API_KEY,
+        apiKey: process.env.IMAGE_GEN_OPENROUTER_API_KEY,
         defaultHeaders: {
           "HTTP-Referer": "https://anythingllm.com",
           "X-Title": "AnythingLLM",
         },
       }),
-      model: process.env.IMAGE_GENERATION_MODEL_PREF,
+      model: process.env.IMAGE_GEN_MODEL_PREF,
       className: "OpenRouterImageGenerator",
     });
   }

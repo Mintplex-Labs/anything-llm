@@ -321,12 +321,12 @@ function getEmbeddingEngineSelection() {
 
 /**
  * Returns the configured image generation provider instance.
- * Selected system-wide via the IMAGE_GENERATION_PROVIDER env, mirroring the
+ * Selected system-wide via the IMAGE_GEN_PROVIDER env, mirroring the
  * embedder/vector-db subsystem selection.
  * @returns {import("../ImageGenerators/base").BaseImageGenerator}
  */
 function getImageGeneratorProvider() {
-  const provider = process.env.IMAGE_GENERATION_PROVIDER;
+  const provider = process.env.IMAGE_GEN_PROVIDER;
   switch (provider) {
     case "openai":
       const { OpenAiImageGenerator } = require("../ImageGenerators/openAi");
