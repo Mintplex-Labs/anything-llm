@@ -2,6 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Low RAM mode intentionally removes most transition/animation work.
+   This lowers CPU/GPU wakeups, compositor memory, and short-lived style objects
+   on 4GB/8GB systems while preserving all functionality. */
+.low-ram-mode *,
+.low-ram-mode *::before,
+.low-ram-mode *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  scroll-behavior: auto !important;
+  transition-duration: 0.001ms !important;
+  transition-delay: 0ms !important;
+}
+
+.low-ram-mode .animate-spin,
+.low-ram-mode .animate-pulse,
+.low-ram-mode .animate-bounce,
+.low-ram-mode .animate-fadeUpIn {
+  animation: none !important;
+}
+
 * {
   -webkit-font-smoothing: antialiased;
 }
