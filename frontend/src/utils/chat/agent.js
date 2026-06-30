@@ -387,6 +387,26 @@ export function getAgentSessionActive() {
   return _agentSessionActive;
 }
 
+// Live agent-session websocket, used to toggle tools available to the agent mid-session.
+let _agentSessionSocket = null;
+export function setAgentSessionSocket(socket) {
+  _agentSessionSocket = socket;
+}
+
+/**
+ * Toggle a tool/skill on or off for the active agent session over the websocket.
+ * No-op when there is no open agent session.
+ * @param {string} skill - Skill key, `@@flow_<uuid>`, MCP `<server>-<tool>`, hubId, or sub-skill name.
+ * @param {boolean} enabled - Whether the tool should be enabled.
+ * @param {string|null} [serverName] - MCP server name; required to enable an MCP tool mid-session.
+ */
+export function toggleAgentSessionTool(skill, enabled, serverName = null) {
+  if (_agentSessionSocket?.readyState !== WebSocket.OPEN) return;
+  _agentSessionSocket.send(
+    JSON.stringify({ type: "agentToolToggle", skill, enabled, serverName })
+  );
+}
+
 export function useIsAgentSessionActive() {
   const [activeSession, setActiveSession] = useState(
     () => !!getAgentSessionActive()

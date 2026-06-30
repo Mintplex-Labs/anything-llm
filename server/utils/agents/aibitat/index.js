@@ -1454,6 +1454,17 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     this.functions.set(functionConfig.name, functionConfig);
     return this;
   }
+
+  /**
+   * Remove a registered function so the agent can no longer call it on its next
+   * turn. Used to disable a tool mid-session; restore it by re-running its plugin
+   * via aibitat.use().
+   * @param {string} functionName - The registered name of the function to remove.
+   */
+  removeFunction(functionName) {
+    this.functions.delete(functionName);
+    return this;
+  }
 }
 
 module.exports = AIbitat;

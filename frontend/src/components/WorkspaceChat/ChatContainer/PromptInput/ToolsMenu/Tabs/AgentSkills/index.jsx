@@ -170,7 +170,7 @@ export default function AgentSkillsTab({
     highlightedIndex,
     onSelect: (item) => {
       if (item.type === "header") return item.onToggle();
-      if (!agentSessionActive) item.onToggle();
+      item.onToggle();
     },
     registerItemCount,
   });
@@ -209,7 +209,6 @@ export default function AgentSkillsTab({
                 enabled={item.enabled}
                 onToggle={item.onToggle}
                 highlighted={highlightedIndex === flatIndexMap[item.id]}
-                disabled={agentSessionActive}
               />
               {item.hasSubSkills && item.subSkills && item.enabled && (
                 <SkillSection
@@ -232,7 +231,7 @@ export default function AgentSkillsTab({
                       highlighted={
                         highlightedIndex === flatIndexMap[subItem.id]
                       }
-                      disabled={agentSessionActive || !subItem.parentEnabled}
+                      disabled={!subItem.parentEnabled}
                     />
                   ))}
                 </SkillSection>
