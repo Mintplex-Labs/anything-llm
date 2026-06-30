@@ -213,14 +213,24 @@ class AnthropicLLM {
     await this.assertModelMaxTokens();
     try {
       const systemContent = messages[0].content;
+      // We assemble the response from the streaming endpoint rather than the
+      // non-streaming `messages.create`. The Anthropic SDK throws
+      // (`_calculateNonstreamingTimeout`) for non-streaming requests whose
+      // `max_tokens` is large enough that the worst-case latency could exceed
+      // 10 minutes - which is the case for recent Claude models with large max
+      // output tokens. Streaming and resolving the final message avoids that
+      // guard while still returning a single, complete response so the REST API
+      // chat path stays at parity with the UI. See issue #5925.
       const result = await LLMPerformanceMonitor.measureAsyncFunction(
-        this.anthropic.messages.create({
-          model: this.model,
-          max_tokens: this.maxTokens,
-          system: this.#buildSystemPrompt(systemContent),
-          messages: messages.slice(1), // Pop off the system message
-          temperature: this.temperatureParam(temperature),
-        })
+        this.anthropic.messages
+          .stream({
+            model: this.model,
+            max_tokens: this.maxTokens,
+            system: this.#buildSystemPrompt(systemContent),
+            messages: messages.slice(1), // Pop off the system message
+            temperature: this.temperatureParam(temperature),
+          })
+          .finalMessage()
       );
 
       const promptTokens = result.output.usage.input_tokens;
@@ -240,8 +250,10 @@ class AnthropicLLM {
         },
       };
     } catch (error) {
-      console.log(error);
-      return { textResponse: error, metrics: {} };
+      console.error(error);
+      throw new Error(
+        `AnthropicLLM::getChatCompletion failed to communicate with Anthropic. ${error.message}`
+      );
     }
   }
 
