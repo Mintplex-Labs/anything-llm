@@ -117,14 +117,17 @@ function agentFileServerEndpoints(app) {
             .json({ error: "Image not found or access denied" });
 
         const imagePath = path.resolve(generatedImagesPath, filename);
-        if (!fs.existsSync(imagePath))
+        let imageBuffer;
+        try {
+          imageBuffer = await fs.promises.readFile(imagePath);
+        } catch {
           return response
             .status(404)
             .json({ error: "Image not found in storage" });
+        }
 
         response.setHeader("Content-Type", "image/png");
-        response.send(fs.readFileSync(imagePath));
-        return;
+        return response.send(imageBuffer);
       } catch (error) {
         console.error("[agentFileServer] Image serve error:", error.message);
         return response.status(500).json({ error: "Failed to serve image" });
