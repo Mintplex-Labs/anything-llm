@@ -87,6 +87,7 @@ AnythingLLM supports multiple users as well where you can control the access and
 - [NVIDIA NIM (chat models)](https://build.nvidia.com/explore/discover)
 - [Google Gemini Pro](https://ai.google.dev/)
 - [Ollama (chat models)](https://ollama.ai/)
+- [Atomic Chat](https://atomic.chat/) (OpenAI-compatible local API — see [server/storage/ATOMIC_CHAT.md](server/storage/ATOMIC_CHAT.md))
 - [LM Studio (all models)](https://lmstudio.ai)
 - [LocalAI (all models)](https://localai.io/)
 - [Together AI (chat models)](https://www.together.ai/)
