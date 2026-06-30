@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import App from "@/App.jsx";
+import Appearance from "@/models/appearance";
 import PrivateRoute, {
   AdminRoute,
   ManagerRoute,
@@ -11,6 +12,9 @@ import Login from "@/pages/Login";
 import SimpleSSOPassthrough from "@/pages/Login/SSO/simple";
 import OnboardingFlow from "@/pages/OnboardingFlow";
 import "@/index.css";
+
+// Apply before route chunks load so low-end machines skip animation/compositor work during startup.
+Appearance.applyLowRamMode(Appearance.lowRamModeEnabled());
 
 const isDev = import.meta.env.DEV;
 const REACTWRAP = isDev ? React.Fragment : React.StrictMode;
