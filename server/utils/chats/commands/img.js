@@ -44,12 +44,12 @@ async function generateImage(
     return {
       uuid: msgUUID,
       type: "textResponse",
-      textResponse: canConfigure
-        ? "Image generation isn't set up yet. Choose a provider in Settings → Image Generation."
-        : "Image generation isn't set up yet. Contact an admin to configure it.",
+      textResponse: "",
       sources: [],
       close: true,
-      error: false,
+      error: canConfigure
+        ? "Image generation isn't set up yet. Choose a provider in Settings → Image Generation."
+        : "Image generation isn't set up yet. Contact an admin to configure it.",
     };
   }
 
@@ -93,10 +93,10 @@ async function generateImage(
     return {
       uuid: msgUUID,
       type: "textResponse",
-      textResponse: `Image generation failed: ${e.message}`,
+      textResponse: "",
       sources: [],
       close: true,
-      error: false,
+      error: `Image generation failed: ${e.message}`,
     };
   }
 }
