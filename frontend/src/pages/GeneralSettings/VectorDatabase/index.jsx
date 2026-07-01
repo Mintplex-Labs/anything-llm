@@ -21,6 +21,7 @@ import MilvusLogo from "@/media/vectordbs/milvus.png";
 import ZillizLogo from "@/media/vectordbs/zilliz.png";
 import AstraDBLogo from "@/media/vectordbs/astraDB.png";
 import PGVectorLogo from "@/media/vectordbs/pgvector.png";
+import ValkeyLogo from "@/media/vectordbs/valkey.png";
 
 import LanceDBOptions from "@/components/VectorDBSelection/LanceDBOptions";
 import ChromaDBOptions from "@/components/VectorDBSelection/ChromaDBOptions";
@@ -32,6 +33,7 @@ import MilvusDBOptions from "@/components/VectorDBSelection/MilvusDBOptions";
 import ZillizCloudOptions from "@/components/VectorDBSelection/ZillizCloudOptions";
 import AstraDBOptions from "@/components/VectorDBSelection/AstraDBOptions";
 import PGVectorOptions from "@/components/VectorDBSelection/PGVectorOptions";
+import ValkeyDBOptions from "@/components/VectorDBSelection/ValkeyDBOptions";
 
 const VECTOR_DBS = [
   {
@@ -108,6 +110,13 @@ const VECTOR_DBS = [
     logo: AstraDBLogo,
     options: (settings) => <AstraDBOptions settings={settings} />,
     description: "Vector Search for Real-world GenAI.",
+  },
+  {
+    name: "Valkey",
+    value: "valkey",
+    logo: ValkeyLogo,
+    options: (settings) => <ValkeyDBOptions settings={settings} />,
+    description: "In-memory vector search via Valkey + valkey-search.",
   },
 ];
 

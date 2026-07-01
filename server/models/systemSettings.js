@@ -847,6 +847,14 @@ const SystemSettings = {
       // PGVector Keys
       PGVectorConnectionString: !!PGVector.connectionString() || false,
       PGVectorTableName: PGVector.tableName(),
+
+      // Valkey Vector DB Keys
+      ValkeyVectorDBEndpoint: process.env.VALKEY_VECTOR_DB_ENDPOINT,
+      ValkeyVectorDBHost: process.env.VALKEY_VECTOR_DB_HOST,
+      ValkeyVectorDBPort: process.env.VALKEY_VECTOR_DB_PORT,
+      ValkeyVectorDBUsername: process.env.VALKEY_VECTOR_DB_USERNAME,
+      ValkeyVectorDBPassword: !!process.env.VALKEY_VECTOR_DB_PASSWORD,
+      ValkeyVectorDBUseTLS: process.env.VALKEY_VECTOR_DB_USE_TLS,
     };
   },
 

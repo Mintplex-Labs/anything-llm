@@ -405,6 +405,49 @@ const KEY_MAPPING = {
     preUpdate: [validatePGVectorTableName],
   },
 
+  // Valkey Vector DB Options (valkey-search module)
+  ValkeyVectorDBEndpoint: {
+    envKey: "VALKEY_VECTOR_DB_ENDPOINT",
+    checks: [],
+    preUpdate: [validateValkeyConnection],
+    postUpdate: [handleValkeyConnectionReset],
+  },
+  ValkeyVectorDBHost: {
+    envKey: "VALKEY_VECTOR_DB_HOST",
+    checks: [],
+    preUpdate: [validateValkeyConnection],
+    postUpdate: [handleValkeyConnectionReset],
+  },
+  ValkeyVectorDBPort: {
+    envKey: "VALKEY_VECTOR_DB_PORT",
+    checks: [],
+    preUpdate: [validateValkeyConnection],
+    postUpdate: [handleValkeyConnectionReset],
+  },
+  ValkeyVectorDBUsername: {
+    envKey: "VALKEY_VECTOR_DB_USERNAME",
+    checks: [],
+    preUpdate: [validateValkeyConnection],
+    postUpdate: [handleValkeyConnectionReset],
+  },
+  ValkeyVectorDBPassword: {
+    envKey: "VALKEY_VECTOR_DB_PASSWORD",
+    checks: [],
+    preUpdate: [validateValkeyConnection],
+    postUpdate: [handleValkeyConnectionReset],
+  },
+  ValkeyVectorDBUseTLS: {
+    envKey: "VALKEY_VECTOR_DB_USE_TLS",
+    checks: [],
+    preUpdate: [validateValkeyConnection],
+    postUpdate: [handleValkeyConnectionReset],
+  },
+  ValkeyVectorDBRequestTimeout: {
+    envKey: "VALKEY_VECTOR_DB_REQUEST_TIMEOUT",
+    checks: [],
+    postUpdate: [handleValkeyConnectionReset],
+  },
+
   // Together Ai Options
   TogetherAiApiKey: {
     envKey: "TOGETHER_AI_API_KEY",
@@ -1108,6 +1151,7 @@ function supportedVectorDB(input = "") {
     "zilliz",
     "astra",
     "pgvector",
+    "valkey",
   ];
   return supported.includes(input)
     ? null
@@ -1258,6 +1302,65 @@ async function validatePGVectorTableName(key, prevValue, nextValue) {
   if (!success) return error;
 
   return null;
+}
+
+// Maps each Valkey ENV key to the override field name understood by
+// Valkey.connection(), so a pending (pre-save) value can be validated on top of
+// the currently-persisted env for the other fields.
+const VALKEY_ENVKEY_TO_OVERRIDE = {
+  VALKEY_VECTOR_DB_ENDPOINT: "endpoint",
+  VALKEY_VECTOR_DB_HOST: "host",
+  VALKEY_VECTOR_DB_PORT: "port",
+  VALKEY_VECTOR_DB_USERNAME: "username",
+  VALKEY_VECTOR_DB_PASSWORD: "password",
+  VALKEY_VECTOR_DB_USE_TLS: "useTLS",
+};
+
+/**
+ * Validates a pending Valkey connection setting before it is persisted, so an
+ * unreachable host / wrong credentials surface in the UI at save time instead
+ * of as opaque errors at embed/search time. Mirrors validatePGVectorConnectionString.
+ * @param {string} key - The ENV key we are validating.
+ * @param {string} prevValue - The previous value of the key.
+ * @param {string} nextValue - The next value of the key.
+ * @returns {Promise<string|undefined>} - An error message if the connection is invalid, otherwise null/undefined.
+ */
+async function validateValkeyConnection(key, prevValue, nextValue) {
+  const envKey = KEY_MAPPING[key].envKey;
+
+  if (prevValue === nextValue) return; // unchanged - nothing to validate.
+  if (nextValue === process.env[envKey]) return; // already the live value.
+  // Only test when Valkey is the active provider, otherwise editing these
+  // fields for a not-yet-selected provider would trigger spurious connects.
+  if (process.env.VECTOR_DB !== "valkey") return;
+
+  const { Valkey } = require("../vectorDbProviders/valkey");
+  const overrides = {};
+  const field = VALKEY_ENVKEY_TO_OVERRIDE[envKey];
+  if (field === "useTLS") overrides.useTLS = String(nextValue) === "true";
+  else if (field) overrides[field] = nextValue;
+
+  const { error, success } = await Valkey.validateConnection(overrides);
+  if (!success) return error;
+  return null;
+}
+
+/**
+ * Rebuilds the cached Valkey client after a connection setting changes. The
+ * provider caches a single static GLIDE client, so without this an admin
+ * changing host/credentials/TLS would keep hitting the old endpoint until a
+ * full process restart. disconnect() drops the cache; the next connect()
+ * rebuilds it from the now-updated process.env.
+ * @returns {Promise<void>}
+ */
+async function handleValkeyConnectionReset() {
+  if (process.env.VECTOR_DB !== "valkey") return;
+  try {
+    const { Valkey } = require("../vectorDbProviders/valkey");
+    await new Valkey().disconnect();
+  } catch (e) {
+    console.error("handleValkeyConnectionReset", e.message);
+  }
 }
 
 // This will force update .env variables which for any which reason were not able to be parsed or
