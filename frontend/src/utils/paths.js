@@ -187,8 +187,9 @@ export default {
     telegram: () => {
       return `/settings/external-connections/telegram`;
     },
-    scheduledJobs: () => {
-      return `/settings/scheduled-jobs`;
+    scheduledJobs: (editJobId = null) => {
+      const base = `/settings/scheduled-jobs`;
+      return editJobId ? `${base}?action=edit-job&jobId=${editJobId}` : base;
     },
     scheduledJobRuns: (jobId) => {
       return `/settings/scheduled-jobs/${jobId}/runs`;

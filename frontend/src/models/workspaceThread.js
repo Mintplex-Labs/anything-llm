@@ -108,7 +108,13 @@ const WorkspaceThread = {
       `${API_BASE}/workspace/${workspaceSlug}/thread/${threadSlug}/stream-chat`,
       {
         method: "POST",
-        body: JSON.stringify({ message, attachments }),
+        body: JSON.stringify({
+          message,
+          attachments,
+          // The browser's IANA timezone, carried to the agent so server-side
+          // tools (e.g. create-scheduled-job) convert local time to UTC correctly.
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        }),
         headers: baseHeaders(),
         signal: ctrl.signal,
         openWhenHidden: true,

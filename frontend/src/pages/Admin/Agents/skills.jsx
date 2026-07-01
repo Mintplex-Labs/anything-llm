@@ -14,6 +14,7 @@ import {
   ChartBar,
   FolderOpen,
   FilePlus,
+  CalendarCheck,
 } from "@phosphor-icons/react";
 import RAGImage from "@/media/agents/rag-memory.png";
 import SummarizeImage from "@/media/agents/view-summarize.png";
@@ -95,6 +96,15 @@ export const getConfigurableSkills = (
     description: t("agent.skill.sql.description"),
     component: AgentSQLConnectorSelection,
     skill: "sql-agent",
+  },
+  "create-scheduled-job": {
+    title: t("agent.skill.scheduledJob.title"),
+    description: t("agent.skill.scheduledJob.description"),
+    component: GenericSkillPanel,
+    skill: "create-scheduled-job",
+    icon: CalendarCheck,
+    // Scheduled Jobs is single-user-mode only, so hide this skill in MUM.
+    mode: ["singleUserOnly"],
   },
 });
 
