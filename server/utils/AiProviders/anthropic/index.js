@@ -20,6 +20,7 @@ class AnthropicLLM {
   noTemperatureModels = [
     "claude-opus-4-7",
     "claude-opus-4-8",
+    "claude-sonnet-5",
     // Add other models here if identified
   ];
 
