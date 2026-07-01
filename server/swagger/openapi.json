@@ -3698,7 +3698,7 @@
             "application/json": {
               "example": {
                 "prompt": "A red fox in the snow",
-                "size": "512x512"
+                "size": "1024x1024"
               }
             }
           }
