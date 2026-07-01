@@ -240,8 +240,10 @@ class AnthropicLLM {
         },
       };
     } catch (error) {
-      console.log(error);
-      return { textResponse: error, metrics: {} };
+      console.error(error);
+      throw new Error(
+        `AnthropicLLM::getChatCompletion failed to communicate with Anthropic. ${error.message}`
+      );
     }
   }
 
