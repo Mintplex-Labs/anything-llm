@@ -203,7 +203,7 @@ function apiOpenAICompatibleEndpoints(app) {
             "application/json": {
               example: {
                 prompt: "A red fox in the snow",
-                size: "512x512"
+                size: "1024x1024"
               }
             }
           }
@@ -215,7 +215,7 @@ function apiOpenAICompatibleEndpoints(app) {
       }
       */
       try {
-        const { prompt, size = "512x512" } = reqBody(request);
+        const { prompt, size } = reqBody(request);
         if (!prompt || !String(prompt).trim().length)
           return response.status(400).json({ error: "A prompt is required." });
 
@@ -224,7 +224,7 @@ function apiOpenAICompatibleEndpoints(app) {
         } = require("../../../utils/ImageGenerators");
         const { buffer } = await generateImageForWorkspace({
           prompt: String(prompt),
-          size: String(size),
+          size: size ? String(size) : undefined,
         });
 
         return response.status(200).json({
