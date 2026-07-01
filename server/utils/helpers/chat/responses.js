@@ -294,14 +294,21 @@ function convertToPromptHistory(history = []) {
         assistantContent = `${assistantContent}\n\n${surveyBlocks}`;
     }
 
+    // Images produced by the `/img` command live on disk and are referenced in
+    // the assistant `outputs`, so re-read them as attachments to flow into chat
+    // history as vision context just like an uploaded image.
+    const { generatedImageAttachments } = require("../../files");
+    const attachments = [
+      ...(data?.attachments || []),
+      ...generatedImageAttachments(data?.outputs),
+    ];
+
     formattedHistory.push([
       {
         role: "user",
         content: prompt,
         // if there are attachments, add them as a property to the user message so we can reuse them in chat history later if supported by the llm.
-        ...(data?.attachments?.length > 0
-          ? { attachments: data?.attachments }
-          : {}),
+        ...(attachments.length > 0 ? { attachments } : {}),
       },
       {
         role: "assistant",

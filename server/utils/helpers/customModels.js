@@ -52,6 +52,9 @@ const SUPPORT_CUSTOM_MODELS = [
   "cerebras",
   "bedrock",
   "generic-openai",
+  // Image Generation Engines
+  "openai-image",
+  "openrouter-image",
   // Embedding Engines
   "native-embedder",
   "cohere-embedder",
@@ -130,6 +133,10 @@ async function getCustomModels(
       return await getCohereModels(apiKey, "chat");
     case "zai":
       return await getZAiModels(apiKey);
+    case "openai-image":
+      return await getOpenAiImageModels(apiKey);
+    case "openrouter-image":
+      return await getOpenRouterImageModels();
     case "native-embedder":
       return await getNativeEmbedderModels();
     case "cohere-embedder":
@@ -1330,6 +1337,76 @@ async function getBedrockModels(_apiKey = null, options = {}) {
     console.error(`AWSBedrock:getBedrockModels`, e.message);
     return { models: [], error: "Could not fetch AWS Bedrock Models" };
   }
+}
+
+// OpenAI image models follow predictable family names, so we filter the
+// account's live model list by family rather than maintaining an exhaustive
+// list - new variants (e.g. gpt-image-2) are picked up automatically.
+const OPENAI_IMAGE_MODEL_FAMILIES = /dall-e|gpt-image/i;
+// Offline/failure fallback when the account's model list can't be fetched.
+// Dated snapshots (e.g. gpt-image-2-2026-04-21) are intentionally omitted since
+// they go stale; the live list above surfaces them when available.
+const FALLBACK_OPENAI_IMAGE_MODELS = [
+  { id: "gpt-image-1", name: "gpt-image-1" },
+  { id: "gpt-image-1-mini", name: "gpt-image-1-mini" },
+  { id: "gpt-image-1.5", name: "gpt-image-1.5" },
+  { id: "gpt-image-2", name: "gpt-image-2" },
+  { id: "chatgpt-image-latest", name: "chatgpt-image-latest" },
+];
+
+/**
+ * Lists the OpenAI image-capable models the account can access by filtering its
+ * live model list to the known image model families. Falls back to a static
+ * list if the list call fails (e.g. offline or bad key).
+ * @param {string|null} apiKey - OpenAI API key; defaults to IMAGE_GEN_OPENAI_KEY when null
+ * @returns {Promise<{models: {id: string, name: string}[], error: string|null}>}
+ */
+async function getOpenAiImageModels(apiKey = null) {
+  const { OpenAI: OpenAIApi } = require("openai");
+  const openai = new OpenAIApi({
+    apiKey: apiKey || process.env.IMAGE_GEN_OPENAI_KEY,
+  });
+  const models = await openai.models
+    .list()
+    .then((results) => results.data)
+    .then((all) =>
+      all
+        .filter((model) => OPENAI_IMAGE_MODEL_FAMILIES.test(model.id))
+        .map((model) => ({ id: model.id, name: model.id }))
+    )
+    .catch((e) => {
+      console.error(`OpenAI:listImageModels`, e.message);
+      return FALLBACK_OPENAI_IMAGE_MODELS;
+    });
+  return {
+    models: models.length ? models : FALLBACK_OPENAI_IMAGE_MODELS,
+    error: null,
+  };
+}
+
+/**
+ * Lists OpenRouter models that can output images (image output modality).
+ * @returns {Promise<{models: {id: string, name: string, organization: string}[], error: string|null}>}
+ */
+async function getOpenRouterImageModels() {
+  const models = await fetch("https://openrouter.ai/api/v1/models")
+    .then((res) => res.json())
+    .then(({ data = [] }) =>
+      data
+        .filter((model) =>
+          model?.architecture?.output_modalities?.includes("image")
+        )
+        .map((model) => ({
+          id: model.id,
+          name: model.name,
+          organization: model.id.split("/")[0],
+        }))
+    )
+    .catch((e) => {
+      console.error(`OpenRouter:listImageModels`, e.message);
+      return [];
+    });
+  return { models, error: null };
 }
 
 module.exports = {

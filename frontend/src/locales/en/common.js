@@ -89,6 +89,7 @@ const TRANSLATIONS = {
     transcription: "Transcription",
     embedder: "Embedder",
     "text-splitting": "Text Splitter & Chunking",
+    "image-generation": "Image Generation",
     "voice-speech": "Voice & Speech",
     "vector-database": "Vector Database",
     embeds: "Chat Embed",
@@ -1119,6 +1120,12 @@ const TRANSLATIONS = {
       title: "Embedding Provider",
     },
   },
+  imageGeneration: {
+    title: "Image Generation Preference",
+    description:
+      "Configure the provider used to generate images from the /img chat command. Images are generated at 512x512.",
+    provider: "Image Generation Provider",
+  },
   text: {
     title: "Text splitting & Chunking Preferences",
     "desc-start":
@@ -1502,6 +1509,7 @@ const TRANSLATIONS = {
     see_less: "See Less",
     see_more: "See More",
     preset_reset_description: "Clear your chat history and begin a new chat",
+    preset_img_description: "Generate an image from a text prompt",
     add_new_preset: " Add New Preset",
     add_new: "Add new",
     edit: "Edit",

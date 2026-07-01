@@ -36,6 +36,11 @@ class BackgroundService {
       timeout: "5m",
       interval: "8hr",
     },
+    {
+      name: "cleanup-generated-images",
+      timeout: "5m",
+      interval: "8hr",
+    },
   ];
 
   #memoryJobs = [

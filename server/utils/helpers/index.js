@@ -320,6 +320,36 @@ function getEmbeddingEngineSelection() {
 }
 
 /**
+ * Returns the configured image generation provider instance.
+ * Selected system-wide via the IMAGE_GEN_PROVIDER env, mirroring the
+ * embedder/vector-db subsystem selection.
+ * @returns {import("../ImageGenerators/base").BaseImageGenerator}
+ */
+function getImageGeneratorProvider() {
+  const provider = process.env.IMAGE_GEN_PROVIDER;
+  switch (provider) {
+    case "openai":
+      const { OpenAiImageGenerator } = require("../ImageGenerators/openAi");
+      return new OpenAiImageGenerator();
+    case "ollama":
+      const { OllamaImageGenerator } = require("../ImageGenerators/ollama");
+      return new OllamaImageGenerator();
+    case "lemonade":
+      const { LemonadeImageGenerator } = require("../ImageGenerators/lemonade");
+      return new LemonadeImageGenerator();
+    case "openrouter":
+      const {
+        OpenRouterImageGenerator,
+      } = require("../ImageGenerators/openRouter");
+      return new OpenRouterImageGenerator();
+    default:
+      throw new Error(
+        `No valid image generation provider was set. Got: ${provider}`
+      );
+  }
+}
+
+/**
  * Returns the LLMProviderClass - this is a helper method to access static methods on a class
  * @param {{provider: string | null} | null} params - Initialize params for LLMs provider
  * @returns {BaseLLMProviderClass}
@@ -707,6 +737,7 @@ function stripThinkingFromText(text = "") {
 
 module.exports = {
   getEmbeddingEngineSelection,
+  getImageGeneratorProvider,
   maximumChunkLength,
   getVectorDbClass,
   getLLMProviderClass,

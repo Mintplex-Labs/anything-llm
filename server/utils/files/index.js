@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const { v5: uuidv5 } = require("uuid");
+const { v5: uuidv5, v4: uuidv4 } = require("uuid");
 const { Document } = require("../../models/documents");
 const { DocumentSyncQueue } = require("../../models/documentSyncQueue");
 const documentsPath =
@@ -19,6 +19,10 @@ const hotdirPath =
   process.env.NODE_ENV === "development"
     ? path.resolve(__dirname, `../../../collector/hotdir`)
     : path.resolve(process.env.STORAGE_DIR, `../../collector/hotdir`);
+const generatedImagesPath =
+  process.env.NODE_ENV === "development"
+    ? path.resolve(__dirname, `../../storage/generated-images`)
+    : path.resolve(process.env.STORAGE_DIR, `generated-images`);
 
 // Should take in a folder that is a subfolder of documents
 // eg: youtube-subject/video-123.json
@@ -511,6 +515,61 @@ function hasRequiredMetadata(metadata = {}) {
   );
 }
 
+/**
+ * Persists a generated image to `storage/generated-images` as a PNG.
+ * The storage name uses the `img-<uuid>.png` convention so the serve and
+ * cleanup paths can validate it. The display filename is derived from the prompt.
+ * @param {{buffer: Buffer, prompt?: string}} params
+ * @returns {Promise<{storageFilename: string, filename: string, fileSize: number}>}
+ */
+async function saveGeneratedImage({ buffer, prompt = "" }) {
+  if (!fs.existsSync(generatedImagesPath))
+    fs.mkdirSync(generatedImagesPath, { recursive: true });
+
+  const storageFilename = `img-${uuidv4()}.png`;
+  fs.writeFileSync(path.resolve(generatedImagesPath, storageFilename), buffer);
+
+  const slug =
+    prompt
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 50) || "image";
+  return {
+    storageFilename,
+    filename: `${slug}.png`,
+    fileSize: buffer.length,
+  };
+}
+
+/**
+ * Reads any `/img` generated images referenced in a chat response's `outputs`
+ * off disk and returns them as chat attachments, so they can be re-injected into
+ * chat history as vision context just like user-uploaded images. Images that are
+ * missing on disk (e.g. cleaned up) are skipped.
+ * @param {object[]} outputs - the `outputs` array from a parsed chat response
+ * @returns {import("../helpers").Attachment[]}
+ */
+function generatedImageAttachments(outputs = []) {
+  const attachments = [];
+  for (const output of outputs || []) {
+    if (output?.type !== "imageGenerationCard") continue;
+    const { storageFilename, filename } = output.payload || {};
+    if (!storageFilename) continue;
+
+    const imagePath = path.resolve(generatedImagesPath, storageFilename);
+    if (!fs.existsSync(imagePath)) continue;
+
+    const contentString = `data:image/png;base64,${fs.readFileSync(imagePath).toString("base64")}`;
+    attachments.push({
+      name: filename || storageFilename,
+      mime: "image/png",
+      contentString,
+    });
+  }
+  return attachments;
+}
+
 module.exports = {
   findDocumentInDocuments,
   cachedVectorInformation,
@@ -528,4 +587,7 @@ module.exports = {
   getDocumentsByFolder,
   hotdirPath,
   sanitizeFileName,
+  generatedImagesPath,
+  saveGeneratedImage,
+  generatedImageAttachments,
 };

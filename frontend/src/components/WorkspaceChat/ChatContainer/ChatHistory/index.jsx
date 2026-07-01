@@ -13,6 +13,7 @@ import StatusResponse from "./StatusResponse";
 import ToolApprovalRequest from "./ToolApprovalRequest";
 import ClarifyingQuestionCard from "./ClarifyingQuestion";
 import FileDownloadCard from "./FileDownloadCard";
+import ImageGenerationPending from "./ImageGenerationPending";
 import { useManageWorkspaceModal } from "../../../Modals/ManageWorkspace";
 import ManageWorkspace from "../../../Modals/ManageWorkspace";
 import { ArrowDown } from "@phosphor-icons/react";
@@ -350,6 +351,14 @@ function buildMessages({
       acc.push(<Chartable key={props.uuid} props={props} />);
     } else if (props.type === "fileDownloadCard" && !!props.content) {
       acc.push(<FileDownloadCard key={props.uuid} props={props} />);
+    } else if (
+      isLastBotReply &&
+      props.pending &&
+      props.userMessage?.trim()?.toLowerCase()?.startsWith("/img")
+    ) {
+      acc.push(
+        <ImageGenerationPending key={`img-pending-${props.uuid || index}`} />
+      );
     } else if (isLastBotReply && props.animate) {
       acc.push(
         <PromptReply

@@ -291,6 +291,36 @@ const KEY_MAPPING = {
     checks: [],
   },
 
+  // Image Generation Settings
+  ImageGenerationProvider: {
+    envKey: "IMAGE_GEN_PROVIDER",
+    checks: [isNotEmpty, supportedImageGenerationProvider],
+  },
+  ImageGenerationModelPref: {
+    envKey: "IMAGE_GEN_MODEL_PREF",
+    checks: [],
+  },
+  ImageGenerationOpenAiKey: {
+    envKey: "IMAGE_GEN_OPENAI_KEY",
+    checks: [isNotEmpty, validOpenAIKey],
+  },
+  ImageGenerationOpenRouterApiKey: {
+    envKey: "IMAGE_GEN_OPENROUTER_API_KEY",
+    checks: [isNotEmpty],
+  },
+  ImageGenerationOllamaBasePath: {
+    envKey: "IMAGE_GEN_OLLAMA_BASE_PATH",
+    checks: [isNotEmpty, validOllamaLLMBasePath, validDockerizedUrl],
+  },
+  ImageGenerationLemonadeBasePath: {
+    envKey: "IMAGE_GEN_LEMONADE_BASE_PATH",
+    checks: [isValidURL],
+  },
+  ImageGenerationLemonadeApiKey: {
+    envKey: "IMAGE_GEN_LEMONADE_API_KEY",
+    checks: [],
+  },
+
   // Vector Database Selection Settings
   VectorDB: {
     envKey: "VECTOR_DB",
@@ -1112,6 +1142,13 @@ function supportedVectorDB(input = "") {
   return supported.includes(input)
     ? null
     : `Invalid VectorDB type. Must be one of ${supported.join(", ")}.`;
+}
+
+function supportedImageGenerationProvider(input = "") {
+  const supported = ["openai", "ollama", "lemonade", "openrouter"];
+  return supported.includes(input)
+    ? null
+    : `Invalid image generation provider. Must be one of ${supported.join(", ")}.`;
 }
 
 function validChromaURL(input = "") {
