@@ -223,7 +223,7 @@ function FreeFormLLMInput({ workspace, setHasChanges }) {
         defaultValue={workspace?.chatModel || ""}
         onChange={() => setHasChanges(true)}
         className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-        placeholder="Enter model name exactly as referenced in the API (e.g., gpt-3.5-turbo)"
+        placeholder="Enter model name exactly as referenced in the API (e.g., gpt-4.1-nano)"
       />
     </div>
   );
