@@ -73,8 +73,8 @@ const TRANSLATIONS = {
     welcome: "Benvingut",
     chooseWorkspace: "Tria un espai de treball per començar a xatejar!",
     notAssigned:
-      "Actualment no estàs assignat a cap espai de treball.\nPosa't en contacte amb el teu administrador per sol·licitar accés a un espai de treball.",
-    goToWorkspace: 'Vés a "{{workspace}}"',
+      "Actualment, no estàs assignat a cap espai de treball.\nPosa't en contacte amb el teu administrador per sol·licitar accés a un espai de treball.",
+    goToWorkspace: 'Ves a "{{workspace}}"',
   },
   settings: {
     title: "Configuració de la instància",
@@ -116,8 +116,8 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
-    "scheduled-jobs": "Feines programades",
-    "model-router": "Router de model",
+    "scheduled-jobs": "Tasques programades",
+    "model-router": "Rúter de model",
   },
   login: {
     "multi-user": {
@@ -170,7 +170,7 @@ const TRANSLATIONS = {
     message: {
       title: "Missatges de xat suggerits",
       description:
-        "Personalitza els missatges que es suggeriràn als usuaris del teu espai de treball.",
+        "Personalitza els missatges que se suggeriran als usuaris del teu espai de treball.",
       add: "Afegeix un missatge nou",
       save: "Desa els missatges",
       heading: "Explica'm",
@@ -221,7 +221,7 @@ const TRANSLATIONS = {
       title: "Historial de xat",
       "desc-start":
         "El nombre de xats anteriors que s'inclouran a la memòria a curt termini de la resposta.",
-      recommend: "Es recomanen 20. ",
+      recommend: "Se'n recomanen 20. ",
     },
     prompt: {
       title: "Missatge del sistema",
@@ -313,7 +313,7 @@ const TRANSLATIONS = {
       view: {
         title: "Visualitza i resumeix documents",
         description:
-          "Permet que l'agent llistegi i resumeixi el contingut dels fitxers de l'espai de treball incrustats actualment.",
+          "Permet que l'agent llisti i resumeixi el contingut dels fitxers de l'espai de treball incrustats actualment.",
       },
       scrape: {
         title: "Extreu llocs web",
@@ -548,7 +548,7 @@ const TRANSLATIONS = {
       outlook: {
         title: "Connector per a Outlook",
         description:
-          "Permite que el teu agent interactui amb Microsoft Outlook: cerca correus electrònics, llegeix converses, redacta drafts, envia correus electrònics i gestiona la teva caixa de correu electrònic a través de l'API de Microsoft Graph. <a>Consulteu la documentació</a>.",
+          "Permet que el teu agent interactuï amb Microsoft Outlook: cerca correus electrònics, llegeix converses, redacta esborranys, envia correus electrònics i gestiona la teva caixa de correu electrònic a través de l'API de Microsoft Graph. <a>Consulteu la documentació</a>.",
         multiUserWarning:
           "La integració d'Outlook no està disponible en mode multiusuari per raons de seguretat. Per utilitzar aquesta funció, feu que el mode multiusuari estigui desactivat.",
         configuration: "Configuració d'Outlook",
@@ -586,8 +586,9 @@ const TRANSLATIONS = {
               "Cerca i llegeix correus electrònics des de la teva pestanya de correus d'Outlook.",
           },
           drafts: {
-            title: "Proposals de correu electrònic",
-            description: "Crea, edita i gestiona els esborralls d'e-mail.",
+            title: "Esborranys de correu electrònic",
+            description:
+              "Crea, edita i gestiona els esborranys de correu electrònic.",
           },
           send: {
             title: "Enviar correus electrònics",
@@ -617,22 +618,22 @@ const TRANSLATIONS = {
               "Llegeix la totalitat d'una conversa per correu electrònic.",
           },
           createDraft: {
-            title: "Crear un esborr",
+            title: "Crea un esborrany",
             description:
-              "Crea un nou correu electrònic o una resposta a un missatge existent.",
+              "Crea un nou esborrany de correu electrònic o una resposta a un missatge existent.",
           },
           updateDraft: {
-            title: "Versió actualitzada",
+            title: "Actualitza un esborrany",
             description:
-              "Actualitza un correu electrònic existent que ja està redactat",
+              "Actualitza un esborrany de correu electrònic existent.",
           },
           listDrafts: {
-            title: "Proposta de llistats",
-            description: "Mostra totes les correus electrònics en projecte.",
+            title: "Llista d'esborranys",
+            description: "Mostra tots els esborranys de correu electrònic.",
           },
           deleteDraft: {
-            title: "Eliminar esbor",
-            description: "Eliminar un correu electrònic en projecte",
+            title: "Elimina un esborrany",
+            description: "Elimina un esborrany de correu electrònic.",
           },
           sendDraft: {
             title: "Enviar esborrany",
@@ -653,7 +654,7 @@ const TRANSLATIONS = {
       googleCalendar: {
         title: "Connector per a Google Calendar",
         description:
-          "Permite que el teu agent interactui amb Google Calendar: visualitza calendaris, obté esdeveniments, crea i actualitza esdeveniments, i gestiona les confirmacions de participació. <a>Consulteu la documentació</a>.",
+          "Permet que el teu agent interactuï amb Google Calendar: visualitza calendaris, obté esdeveniments, crea i actualitza esdeveniments, i gestiona les confirmacions de participació. <a>Consulteu la documentació</a>.",
         multiUserWarning:
           "La integració amb Google Calendar no està disponible en el mode multiusuari per raons de seguretat. Per utilitzar aquesta funció, feu que el mode multiusuari estigui desactivat.",
         configuration: "Configuració de Google Calendar",
@@ -664,7 +665,7 @@ const TRANSLATIONS = {
         apiKeyHelp:
           "La clau API que has configurat en la implementació del teu Google Apps Script",
         configurationRequired:
-          "Si us plau, configureu l'ID de l'implementació i la clau API per activar les funcionalitats de Google Calendar.",
+          "Si us plau, configureu l'ID del desplegament i la clau API per activar les funcionalitats de Google Calendar.",
         configured: "Configurat",
         searchSkills: "Habilitats de cerca...",
         noSkillsFound:
@@ -784,9 +785,9 @@ const TRANSLATIONS = {
         description:
           "Quan estiguin activades, els agents poden fer una pausa per fer preguntes breus i clares si la vostra petició és ambigua.",
         "max-per-turn": {
-          title: "Número màxim de preguntes per ronda",
+          title: "Nombre màxim de preguntes per ronda",
           description:
-            "Quant preguntes de aclariment pot fer l'agent en una sola enquesta.",
+            "Quantes preguntes d'aclariment pot fer l'agent en una sola ronda.",
         },
       },
     },
@@ -894,7 +895,7 @@ const TRANSLATIONS = {
       "render-html": {
         title: "Renderitza HTML al xat",
         description:
-          "Renderitza respostes HTML a les respostes de l'assistent.\nAixò pot resultar en una qualitat de resposta molt més alta, però també pot comportar riscos potencials de seguretat.",
+          "Renderitza l'HTML a les respostes de l'assistent.\nAixò pot donar com a resultat una qualitat de resposta molt més alta, però també pot comportar riscos potencials de seguretat.",
       },
     },
   },
@@ -971,7 +972,7 @@ const TRANSLATIONS = {
   embedding: {
     title: "Preferència d'embedding",
     "desc-start":
-      "Quan s'usa un LLM que no admet de manera nativa un motor d'embedding, pot ser que hagis d'especificar adicionalment les credencials per a l'embedding de text.",
+      "Quan s'usa un LLM que no admet de manera nativa un motor d'embedding, pot ser que hagis d'especificar addicionalment les credencials per a l'embedding de text.",
     "desc-end":
       "L'embedding és el procés de convertir text en vectors. Aquestes credencials són necessàries per convertir els teus fitxers i missatges en un format que AnythingLLM pugui processar.",
     provider: {
@@ -991,9 +992,9 @@ const TRANSLATIONS = {
       recommend: "La longitud màxima del model d'embedding és",
     },
     overlap: {
-      title: "Solapament del fragment de text",
+      title: "Superposició del fragment de text",
       description:
-        "Aquest és el solapament màxim de caràcters que es produeix durant la segmentació entre dos fragments de text adjacents.",
+        "Aquesta és la superposició màxima de caràcters que es produeix durant la segmentació entre dos fragments de text adjacents.",
     },
   },
   vector: {
@@ -1279,13 +1280,13 @@ const TRANSLATIONS = {
       "no-documents": "Sense documents",
       "move-workspace": "Mou a l'espai de treball",
       "delete-confirmation":
-        "Estàs segur que vols eliminar aquests fitxers i carpetes?\nAixò eliminarà els fitxers del sistema i els treurà automàticament de qualsevol espai de treball existent.\nAquesta acció no és reversible.",
+        "Estàs segur que vols eliminar aquests fitxers i carpetes?\nAixò eliminarà els fitxers del sistema i els traurà automàticament de qualsevol espai de treball existent.\nAquesta acció no és reversible.",
       "removing-message":
         "Eliminant {{count}} documents i {{folderCount}} carpetes. Si us plau, espera.",
       "move-success": "S'han mogut correctament {{count}} documents.",
       no_docs: "Sense documents",
       select_all: "Selecciona-ho tot",
-      deselect_all: "Deselecciona-ho tot",
+      deselect_all: "Desselecciona-ho tot",
       remove_selected: "Elimina la selecció",
       save_embed: "Desa i incrusta",
     },
@@ -1369,7 +1370,7 @@ const TRANSLATIONS = {
     placeholder_prompt:
       "Aquest és el contingut que s'injectarà davant del teu missatge.",
     description: "Descripció",
-    placeholder_description: "Respon amb un poema sobre LLMs.",
+    placeholder_description: "Respon amb un poema sobre els LLM.",
     save: "Desa",
     small: "Petit",
     normal: "Normal",
@@ -1406,7 +1407,7 @@ const TRANSLATIONS = {
       tool_call_was_rejected: "La crida a l'eina ha estat rebutjada",
       clarifying_skip: "Deixeu que l'agent decideixi.",
       clarifying_submit: "Enviar",
-      clarifying_skipped: "Deixeu que l'agent prengi la decisió.",
+      clarifying_skipped: "Deixeu que l'agent prengui la decisió.",
       clarifying_timeout: "No s'ha entregat la resposta a temps.",
       clarifying_pagination: "{{current}} de {{total}}",
       clarifying_prev_aria: "Pregunta anterior",
@@ -1427,7 +1428,7 @@ const TRANSLATIONS = {
     app_integrations: "Integracions d'aplicacions",
     sub_skills: "Habilitats específiques",
     memories: {
-      title: "Recordos",
+      title: "Records",
       empty:
         "Aquesta és la primera interacció. Amb més interaccions amb el bot, es podran afegir més records.",
       empty_cta: "crear un nou record",
@@ -1436,7 +1437,7 @@ const TRANSLATIONS = {
       toggle: {
         label: "Activar la personalització",
         description:
-          "Permiteu que el vostre assistent recordi fets sobre vosaltres o sobre aquest espai de treball i els utilitzi en les converses.",
+          "Permeteu que el vostre assistent recordi fets sobre vosaltres o sobre aquest espai de treball i els utilitzi en les converses.",
       },
       auto_extraction: {
         label: "Memòries automàtiques",
@@ -1446,7 +1447,7 @@ const TRANSLATIONS = {
       menu: {
         edit: "Editar",
         delete: "Eliminar",
-        move_to_global: "Passar a nivell global",
+        move_to_global: "Mou a l'àmbit global",
         move_to_workspace: "Canviar a l'espai de treball",
       },
       modal: {
@@ -1457,15 +1458,16 @@ const TRANSLATIONS = {
         edit_description: "Actualitza el contingut d'aquesta memòria.",
         label: "Memòria",
         placeholder:
-          "Per exemple, el nom de l'usuari és Joe, l'usuari treballa a AnythLLM, etc.",
+          "Per exemple, el nom de l'usuari és Jordi, l'usuari treballa a AnythingLLM, etc.",
         create: "Crear",
         save: "Guarda",
         cancel: "Cancel·lar",
       },
     },
-    stt_unsupported: "L'accés al mic no està suportat en aquest navegador.",
+    stt_unsupported:
+      "L'accés al micròfon no està suportat en aquest navegador.",
     stt_mic_denied:
-      "No s'ha pogut accedir al mic. Si us plau, concedeix l'autorització i prova de nou.",
+      "No s'ha pogut accedir al micròfon. Si us plau, concedeix l'autorització i prova de nou.",
     stt_transcription_failed: "No s'ha pogut transmetre: {{error}}",
     export: "Exporta la conversa com a...",
     exporting: "Exportant…",
@@ -1495,7 +1497,7 @@ const TRANSLATIONS = {
     shortcuts: {
       settings: "Obre la configuració",
       workspaceSettings: "Obre la configuració de l'espai de treball actual",
-      home: "Vés a l'inici",
+      home: "Ves a l'inici",
       workspaces: "Gestiona els espais de treball",
       apiKeys: "Configuració de les claus API",
       llmPreferences: "Preferències de LLM",
@@ -1599,13 +1601,13 @@ const TRANSLATIONS = {
     },
   },
   scheduledJobs: {
-    title: "Feines programades",
+    title: "Tasques programades",
     enableNotifications:
-      "Activa les notificacions del navegador per als resultats de la cerca de feina.",
+      "Activa les notificacions del navegador per als resultats de les tasques.",
     description:
       "Crea tasques d'IA recurrents que s'executen segons un horari. Cada tasca executa una consulta amb eines opcionals i guarda el resultat per a la seva revisió.",
-    newJob: "Nou lloc de treball",
-    loading: "Cargant...",
+    newJob: "Nova tasca",
+    loading: "Carregant...",
     emptyTitle: "No hi ha tasques programades.",
     emptySubtitle: "Creeu un per començar.",
     table: {
@@ -1618,21 +1620,21 @@ const TRANSLATIONS = {
     },
     confirmDelete: "Estàs segur que vols eliminar aquesta tasca programada?",
     toast: {
-      deleted: "Emple o eliminat",
+      deleted: "Tasca eliminada",
       triggered: "La tasca s'ha completat amb èxit.",
       triggerFailed: "No s'ha pogut iniciar la tasca.",
-      triggerSkipped: "Ja s'ha iniciat la feina per a aquest projecte.",
-      killed: "La feina s'ha completat amb èxit.",
-      killFailed: "No va poder evitar que es fes la feina.",
+      triggerSkipped: "Ja hi ha una execució en curs per a aquesta tasca.",
+      killed: "Tasca aturada amb èxit.",
+      killFailed: "No s'ha pogut aturar la tasca.",
     },
     row: {
       neverRun: "Mai no corres",
       viewRuns: "Horaris de funcionament",
       runNow: "Corre ara",
-      enable: "Activar",
-      disable: "Desactivar",
-      edit: "Editar",
-      delete: "Eliminar",
+      enable: "Activa",
+      disable: "Desactiva",
+      edit: "Edita",
+      delete: "Elimina",
     },
     modal: {
       titleEdit: "Modificar tasca programada",
@@ -1640,7 +1642,7 @@ const TRANSLATIONS = {
       nameLabel: "Nom",
       namePlaceholder: 'Per exemple, "Resum diari de notícies"',
       promptLabel: "Indicació",
-      promptPlaceholder: "L'instrucció per executar-se en cada execució...",
+      promptPlaceholder: "La instrucció per executar-se en cada execució...",
       scheduleLabel: "Horari",
       modeBuilder: "Constructor",
       modeCustom: "Personalitzat",
@@ -1648,29 +1650,29 @@ const TRANSLATIONS = {
       currentSchedule: "Horari actual:",
       toolsLabel: "Eines (opcional)",
       toolsDescription:
-        "Seleccioneu quins eines d'agent pot utilitzar aquest treball. Si cap, seleccioneu, el treball es realitzarà sense cap eina.",
+        "Seleccioneu quines eines d'agent pot utilitzar aquesta tasca. Si no en seleccioneu cap, la tasca s'executarà sense cap eina.",
       toolsSearch: "Cerca",
       toolsNoResults: "No hi ha cap eina que coincideixi.",
       required: "Obligatori",
       requiredFieldsBanner:
-        "Si us plau, compliu tots els camps obligatoris per crear l'oferta de treball.",
-      cancel: "Cancel·lar",
+        "Si us plau, ompliu tots els camps obligatoris per crear la tasca.",
+      cancel: "Cancel·la",
       saving: "Guardant...",
-      updateJob: "Actualitzar lloc de treball",
-      createJob: "Crear un lloc de treball",
-      jobUpdated: "Pàgina actualitzada",
-      jobCreated: "Creació d'un lloc de treball",
+      updateJob: "Actualitza la tasca",
+      createJob: "Crea una tasca",
+      jobUpdated: "Tasca actualitzada",
+      jobCreated: "Tasca creada",
     },
     builder: {
       fallbackWarning:
-        'Aquesta expressió no es pot modificar visualment. Per mantenir-la, utilitzeu l\'opció "Personalitzat". Si voleu, podeu modificar qualsevol element de sota per sobrescribir-la.',
+        "Aquesta expressió no es pot modificar visualment. Per mantenir-la, utilitzeu l'opció \"Personalitzat\". Si voleu, podeu modificar qualsevol element de sota per sobreescriure'l.",
       run: "Corre",
       frequency: {
         minute: "cada minut",
         hour: "per hora",
         day: "diari",
         week: "setmanal",
-        month: "mensal",
+        month: "mensual",
       },
       every: "Cada",
       minuteOne: "1 minut",
@@ -1682,35 +1684,35 @@ const TRANSLATIONS = {
       onDay: "En un dia",
       ofEveryMonth: "de cada mes",
       weekdays: {
-        sun: "Sol",
-        mon: "Mon",
+        sun: "Diumenge",
+        mon: "Dilluns",
         tue: "Dimarts",
-        wed: "Dijous",
+        wed: "Dimecres",
         thu: "Dijous",
         fri: "Divendres",
         sat: "Dissabte",
       },
     },
     runHistory: {
-      back: "Torna a les feines",
+      back: "Torna a les tasques",
       title: "Històric de curses: {{name}}",
       schedule: "Horari:",
-      emptyTitle: "Aún no hi ha candidats per a aquesta posició.",
-      emptySubtitle: "Inicia la tasca ara i consulta els resultats.",
+      emptyTitle: "Encara no hi ha execucions per a aquesta tasca.",
+      emptySubtitle: "Executa la tasca ara i consulta els resultats.",
       runNow: "Comença ara",
       table: {
         status: "Estat",
-        started: "Comencat",
+        started: "Començat",
         duration: "Durada",
         error: "Error",
       },
-      stopJob: "Aturar la feina",
+      stopJob: "Atura la tasca",
     },
     runDetail: {
       loading: "Càrrec detalls de la sessió...",
       notFound: "No s'ha trobat la sortida.",
       back: "Cap endavant",
-      unknownJob: "Posició sense especificar",
+      unknownJob: "Tasca desconeguda",
       runHeading: "{{name}} — Executar la tasca {{id}}",
       duration: "Durada: {{value}}",
       creating: "Creant...",
@@ -1728,7 +1730,7 @@ const TRANSLATIONS = {
         promptTokens: "Tokens de desencadenament:",
         completionTokens: "Tokens de finalització:",
       },
-      stopJob: "Finalitzar feina",
+      stopJob: "Atura la tasca",
       killing: "Aturar...",
       continueInThread: "Continua la conversa",
     },
@@ -1745,7 +1747,7 @@ const TRANSLATIONS = {
         powerpoint: "PowerPoint",
         pdf: "Document en format PDF",
         word: "Document de text",
-        spreadsheet: "Fulla de càlcul",
+        spreadsheet: "Full de càlcul",
         generic: "Fitxer",
       },
     },
@@ -1758,25 +1760,25 @@ const TRANSLATIONS = {
     },
   },
   "model-router": {
-    title: "Router de model",
+    title: "Rúter de model",
     description:
-      "Els enrutadors de model et permeten definir regles per enviar automàticament missatges de chat a diferents proveïdors i models d'LLM, segons determinades condicions.",
+      "Els rúters de model et permeten definir regles per enviar automàticament missatges de xat a diferents proveïdors i models d'LLM, segons determinades condicions.",
     table: {
       name: "Nom",
       fallback: "Solució alternativa",
       rules: "Regles",
       workspaces: "Espais de treball",
     },
-    "no-routers": "Aún no hi ha models de routers disponibles.",
+    "no-routers": "Encara no hi ha models de rúters disponibles.",
     "empty-description":
-      "No hi ha enquest routers configurats encara. Cree un per començar.",
-    "new-router-button": "Nou router",
+      "No hi ha rúters configurats encara. Creeu-ne un per començar.",
+    "new-router-button": "Nou rúter",
     "delete-confirm":
-      'Estàs segur que vols eliminar el router "{{name}}"?\nAixò eliminarà totes les seves regles i desconnectarà qualsevol espai de treball que l\'utilitzi.\n\nAquesta acció és irreversible.',
-    "toast-deleted": "Router eliminat",
-    "toast-delete-failed": "No s'ha pogut eliminar el router: {{error}}",
+      'Estàs segur que vols eliminar el rúter "{{name}}"?\nAixò eliminarà totes les seves regles i desconnectarà qualsevol espai de treball que l\'utilitzi.\n\nAquesta acció és irreversible.',
+    "toast-deleted": "Rúter eliminat",
+    "toast-delete-failed": "No s'ha pogut eliminar el rúter: {{error}}",
     "new-router": {
-      title: "Crear un nou router",
+      title: "Crear un nou rúter",
       name: "Nom",
       "name-placeholder": "p. ex., Optimitzador de costos",
       description: "Descripció",
@@ -1789,72 +1791,72 @@ const TRANSLATIONS = {
         "Durant quant temps es guarda la decisió de ruteig abans de reavaluar les regles. Per desactivar la memòria, configureu-lo a 0.",
       "name-required": "És obligatori indicar el nom.",
       "fallback-required": "Es requereix el proveïdor principal i el model.",
-      cancel: "Cancelar",
-      create: "Configurar enrutador",
+      cancel: "Cancel·la",
+      create: "Configura rúter",
     },
     "edit-router": {
-      "back-to-routers": "Cap al model de routers",
-      title: "Editar en el router: {{name}}",
+      "back-to-routers": "Cap al model de rúters",
+      title: "Editar en el rúter: {{name}}",
       save: "Desar",
-      "toast-update-failed": "No s'ha pogut actualitzar el router.",
+      "toast-update-failed": "No s'ha pogut actualitzar el rúter.",
     },
     rules: {
       title: "Regles de ruteig",
-      "title-with-name": "Regles del router: {{name}}",
+      "title-with-name": "Regles del rúter: {{name}}",
       description:
-        "Estableix les regles que determinen quan i com s'envien els missatges de chat a determinats proveïdors i models.",
+        "Estableix les regles que determinen quan i com s'envien els missatges de xat a determinats proveïdors i models.",
       "add-rule": "Afegir regla",
       "delete-confirm": 'Eliminar la regla "{{title}}"?',
       "toast-delete-failed": "No s'ha pogut eliminar la regla.",
-      "toast-reorder-failed": "No s'ha pogut reimplementar les regles.",
+      "toast-reorder-failed": "No s'ha pogut reordenar les regles.",
       "no-rules": "Aquesta situació encara no té cap regla.",
       "empty-description":
-        "Afegiu una regla per enviar els missatges de chat a proveïdors i models específics.",
+        "Afegiu una regla per enviar els missatges de xat a proveïdors i models específics.",
       "new-rule-button": "Nova norma",
       "calculated-section-label":
         "Regles calculades – avaluades primer, en ordre de prioritat",
       "llm-section-label":
         "Regles LLM — s'han d'analitzar en lots si cap regla calculada no coincideix",
       "llm-rule-body":
-        'Primer, esdevenir <desc>"{{description}}"</desc>, i després, dirigir-se a <route>{{route}}</route>',
+        'Si coincideix <desc>"{{description}}"</desc>, dirigeix a <route>{{route}}</route>',
       "calculated-no-conditions":
-        "Sense condicions — ruta a <route>{{route}}</route>",
+        "Sense condicions — dirigeix a <route>{{route}}</route>",
       "calculated-single-condition":
-        'Si <prop>{{property}}</prop> {{comparator}} <val>"{{value}}"</val>, llavors dirigir-se a <route>{{route}}</route>',
+        'Si <prop>{{property}}</prop> {{comparator}} <val>"{{value}}"</val>, dirigeix a <route>{{route}}</route>',
       "calculated-multi-condition":
-        "Si {{quantifier}} de <cond> és {{conditions}}, de </cond>, llavors, dirigeix-te a <route> {{route}} </route>",
+        "Si {{quantifier}} de <cond>{{conditions}}</cond>, dirigeix a <route>{{route}}</route>",
       "comparator-contains": "conté",
-      "comparator-matches": "partits",
+      "comparator-matches": "coincideix",
       "comparator-between": "entre",
-      "badge-llm": "Model de llarga recorrència (LLM)",
+      "badge-llm": "LLM",
       "badge-calculated": "Calculat",
       "aria-drag-to-reorder": "Arrossega per reordenar",
       "aria-edit-rule": "Regla d'edició",
       "aria-delete-rule": "Eliminar regla",
-      "quantifier-any": "QUALSESO",
+      "quantifier-any": "QUALSEVOL",
       "quantifier-all": "TOT",
     },
     "rule-form": {
       "title-label": "Títol",
       "rule-type": "Tipus de regla",
-      "property-label": "Proprietat",
-      "property-select": "Seleccionar",
+      "property-label": "Propietat",
+      "property-select": "Selecciona",
       "comparator-label": "Comparador",
-      "comparator-select": "Seleccionar",
+      "comparator-select": "Selecciona",
       "value-label": "Valor",
-      "add-condition": "Afegir condició",
-      "remove-condition": "Eliminar la condició",
+      "add-condition": "Afegeix condició",
+      "remove-condition": "Elimina la condició",
       "conditions-incomplete":
-        "L'estat {{index}} és incomple - ompliu les propietats, el comparador i el valor.",
-      "match-description-label": "Descripció del partit",
+        "L'estat {{index}} és incomplet - ompliu les propietats, el comparador i el valor.",
+      "match-description-label": "Descripció de la coincidència",
       "match-description-placeholder":
         "Per exemple, l'usuari està preguntant sobre temes legals, contractes o sobre el compliment de les normatives.",
       "match-description-help":
-        "Descriu la situació en què vols que aquesta regla s'apliqui. El teu model de llenguatge (LLM) la avaluarà per determinar si cal utilitzar-la.",
+        "Descriu la situació en què vols que aquesta regla s'apliqui. El teu model de llenguatge (LLM) l'avaluarà per determinar si cal utilitzar-la.",
       "route-to-label": "Ruta cap al proveïdor i model",
       "route-to-description":
         "Quan aquesta regla es compleixi, utilitzeu aquest proveïdor/model.",
-      cancel: "Cancel·lar",
+      cancel: "Cancel·la",
       saving: "Guardant...",
       "update-rule": "Regla d'actualització",
       "create-rule": "Crear regla",
@@ -1863,7 +1865,7 @@ const TRANSLATIONS = {
       "type-calculated-label": "Calculat",
       "type-calculated-description":
         "Comparar segons propietats del missatge, com el contingut, el nombre de tokens o l'hora del dia.",
-      "type-llm-label": "Clasificació de LLM",
+      "type-llm-label": "Classificació de LLM",
       "type-llm-description":
         "Utilitzeu un model de llenguatge per classificar el missatge en funció de la descripció que proporcioneu.",
       "prop-prompt-content": "Contingut de la petició",
@@ -1879,9 +1881,9 @@ const TRANSLATIONS = {
       "cmp-greater-than-or-equal": "major o igual",
       "cmp-less-than": "menys de",
       "cmp-less-than-or-equal": "menys o igual",
-      "cmp-between": "entre (incloent-ho)",
+      "cmp-between": "entre (inclosos)",
       "placeholder-between-hour":
-        "Per exemple, de 9:17 del matí a les 17:00 (5 de la tarda)",
+        "p. ex., 9:17 (de 9 del matí a 5 de la tarda)",
       "placeholder-between-numeric": "per exemple, 10,50",
       "placeholder-hour": "Per exemple, 18 (0-23)",
       "placeholder-message-count": "p. ex. 10",
@@ -1897,14 +1899,14 @@ const TRANSLATIONS = {
       "bool-false": "Fals",
     },
     "provider-picker": {
-      "select-provider": "Seleccionar proveïdor",
+      "select-provider": "Selecciona proveïdor",
       "setup-required": "(requereix una configuració)",
       "loading-models": "Carregant models...",
-      "select-model": "Seleccionar model",
+      "select-model": "Selecciona model",
       "enter-model": "Introduïu el nom del model",
       "select-provider-first": "Seleccioneu un proveïdor primer.",
-      "configure-to-continue": "Configure {{name}} per continuar",
-      "configure-provider": "Configurar {{name}}",
+      "configure-to-continue": "Configureu {{name}} per continuar",
+      "configure-provider": "Configureu {{name}}",
       "setup-credentials":
         "Introduïu les credencials necessàries per utilitzar {{name}} com a destinació de la ruta.",
       cancel: "Cancel·lar",
@@ -1913,26 +1915,24 @@ const TRANSLATIONS = {
         "No s'ha pogut guardar les configuracions: {{error}}",
     },
     "router-selection": {
-      "loading-routers": "Càrrec dels enrils personalitzats...",
-      "no-routers-prefix-settings":
-        "No s'han configurat encara cap dels enllaços de ràdia.",
+      "loading-routers": "Carregant els rúters personalitzats...",
+      "no-routers-prefix-settings": "No s'ha configurat encara cap rúter.",
       "no-routers-prefix-workspace":
         "No s'han configurat els enllaços de xarxa.",
-      "no-routers-link":
-        "Creeu-ne un a les configuracions del router de model.",
-      "model-router-label": "Router de model",
-      "select-router": "Seleccioneu un enrutador",
+      "no-routers-link": "Creeu-ne un a les configuracions del rúter de model.",
+      "model-router-label": "Rúter de model",
+      "select-router": "Seleccioneu un rúter",
       "select-description":
-        "Seleccioneu el router que vulgueu utilitzar per a aquesta zona de treball.",
+        "Seleccioneu el rúter que vulgueu utilitzar per a aquesta zona de treball.",
       "no-routers-chat":
-        "No s'han configurat cap enllaç. Creeu un nou enllaç a les opcions > Proveïdors d'IA > Router de model.",
+        "No s'han configurat cap enllaç. Creeu un nou enllaç a les opcions > Proveïdors d'IA > Rúter de model.",
       "rule-count": "({{count}} normes)",
     },
     metrics: {
-      "model-router-default": "Router de model",
+      "model-router-default": "Rúter de model",
     },
     chat: {
-      "select-router-error": "Seleccioneu un enrutador",
+      "select-router-error": "Seleccioneu un rúter",
       "invalid-model": "Selecció de model incorrecta",
       "routed-to": "Enviat a <route>{{model}}</route>",
       "routed-to-rule":
