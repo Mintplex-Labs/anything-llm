@@ -385,6 +385,11 @@ export default function PromptInput({
                     textareaRef={textareaRef}
                     autoOpenedToolsRef={autoOpenedToolsRef}
                   />
+                  {promptInput.length > 0 && (
+                    <span className="text-xs text-zinc-500 light:text-slate-400 ml-2 select-none hidden sm:block">
+                      ~{Math.ceil(promptInput.length / 4)} tokens
+                    </span>
+                  )}
                 </div>
                 <div className="flex gap-x-2 items-center">
                   <SpeechToText sendCommand={sendCommand} />
