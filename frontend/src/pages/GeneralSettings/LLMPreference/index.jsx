@@ -381,6 +381,14 @@ export const AVAILABLE_LLM_PROVIDERS = [
     description: "Run Z.AI's powerful GLM models.",
     requiredConfig: ["ZAiApiKey"],
   },
+    {
+    name: "Z.AICode",
+    value: "zaiCode",
+    logo: ZAiLogo,
+    options: (settings) => <ZAiLLMOptions settings={settings} />,
+    description: "Run Z.AI's powerful GLM models.",
+    requiredConfig: ["ZAiApiKey"],
+  },
   {
     name: "GiteeAI",
     value: "giteeai",

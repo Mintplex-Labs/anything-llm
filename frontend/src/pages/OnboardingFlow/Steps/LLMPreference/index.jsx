@@ -299,6 +299,13 @@ const LLMS = [
     options: (settings) => <ZAiLLMOptions settings={settings} />,
     description: "Run Z.AI's powerful GLM models.",
   },
+ {
+    name: "Z.AICode",
+    value: "zaiCode",
+    logo: ZAiLogo,
+    options: (settings) => <ZAiLLMOptions settings={settings} />,
+    description: "Run Z.AI's powerful GLM models.",
+  },
   {
     name: "Moonshot AI",
     value: "moonshotai",
