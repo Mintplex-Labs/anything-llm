@@ -1043,6 +1043,7 @@ function supportedLLM(input = "") {
     "cometapi",
     "foundry",
     "zai",
+    "zaiCode",
     "giteeai",
     "docker-model-runner",
     "privatemode",

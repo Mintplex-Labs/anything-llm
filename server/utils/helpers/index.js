@@ -225,6 +225,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "zai":
       const { ZAiLLM } = require("../AiProviders/zai");
       return new ZAiLLM(embedder, model);
+    case "zaiCode":
+      const { ZAiCodeLLM } = require("../AiProviders/zaiCode");
+      return new ZAiCodeLLM(embedder, model);
     case "giteeai":
       const { GiteeAILLM } = require("../AiProviders/giteeai");
       return new GiteeAILLM(embedder, model);
@@ -413,6 +416,9 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "zai":
       const { ZAiLLM } = require("../AiProviders/zai");
       return ZAiLLM;
+    case "zaiCode":
+      const { ZAiCodeLLM } = require("../AiProviders/zaiCode");
+      return ZAiCodeLLM;
     case "giteeai":
       const { GiteeAILLM } = require("../AiProviders/giteeai");
       return GiteeAILLM;
@@ -508,6 +514,8 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
     case "foundry":
       return process.env.FOUNDRY_MODEL_PREF;
     case "zai":
+      return process.env.ZAI_MODEL_PREF;
+    case "zaiCode":
       return process.env.ZAI_MODEL_PREF;
     case "giteeai":
       return process.env.GITEE_AI_MODEL_PREF;
