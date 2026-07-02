@@ -500,6 +500,21 @@ const KEY_MAPPING = {
     checks: [validLocalWhisper],
     postUpdate: [],
   },
+  WhisperGenericOpenAiBaseUrl: {
+    envKey: "WHISPER_GENERIC_OPEN_AI_BASE_URL",
+    checks: [isValidURL],
+    postUpdate: [],
+  },
+  WhisperGenericOpenAiApiKey: {
+    envKey: "WHISPER_GENERIC_OPEN_AI_API_KEY",
+    checks: [],
+    postUpdate: [],
+  },
+  WhisperGenericOpenAiModel: {
+    envKey: "WHISPER_GENERIC_OPEN_AI_MODEL",
+    checks: [isNotEmpty],
+    postUpdate: [],
+  },
 
   // System Settings
   AuthToken: {
@@ -1056,7 +1071,7 @@ function supportedLLM(input = "") {
 }
 
 function supportedTranscriptionProvider(input = "") {
-  const validSelection = ["openai", "local"].includes(input);
+  const validSelection = ["openai", "generic-openai", "local"].includes(input);
   return validSelection
     ? null
     : `${input} is not a valid transcription model provider.`;

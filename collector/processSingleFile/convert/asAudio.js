@@ -8,9 +8,13 @@ const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
 const { LocalWhisper } = require("../../utils/WhisperProviders/localWhisper");
 const { OpenAiWhisper } = require("../../utils/WhisperProviders/OpenAiWhisper");
+const {
+  GenericOpenAiWhisper,
+} = require("../../utils/WhisperProviders/GenericOpenAiWhisper");
 
 const WHISPER_PROVIDERS = {
   openai: OpenAiWhisper,
+  "generic-openai": GenericOpenAiWhisper,
   local: LocalWhisper,
 };
 
