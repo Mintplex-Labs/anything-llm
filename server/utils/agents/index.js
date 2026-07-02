@@ -209,6 +209,10 @@ class AgentHandler {
         if (!process.env.ZAI_API_KEY)
           throw new Error("Z.AI API Key must be provided to use agents.");
         break;
+      case "zaiCode":
+        if (!process.env.ZAI_API_KEY)
+          throw new Error("Z.AI API Key must be provided to use agents.");
+        break;
       case "novita":
         if (!process.env.NOVITA_LLM_API_KEY)
           throw new Error("Novita API Key must be provided to use agents.");
@@ -338,6 +342,8 @@ class AgentHandler {
       case "xai":
         return process.env.XAI_LLM_MODEL_PREF ?? "grok-beta";
       case "zai":
+        return process.env.ZAI_MODEL_PREF ?? "glm-4.5";
+      case "zaiCode":
         return process.env.ZAI_MODEL_PREF ?? "glm-4.5";
       case "novita":
         return process.env.NOVITA_LLM_MODEL_PREF ?? "deepseek/deepseek-r1";
