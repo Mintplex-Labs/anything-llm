@@ -1412,6 +1412,8 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
         return new Providers.XAIProvider({ model: config.model });
       case "zai":
         return new Providers.ZAIProvider({ model: config.model });
+      case "zaiCode":
+        return new Providers.ZAICodeProvider({ model: config.model });
       case "novita":
         return new Providers.NovitaProvider({ model: config.model });
       case "ppio":

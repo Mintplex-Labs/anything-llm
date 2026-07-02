@@ -19,6 +19,7 @@ const LiteLLMProvider = require("./litellm.js");
 const ApiPieProvider = require("./apipie.js");
 const XAIProvider = require("./xai.js");
 const ZAIProvider = require("./zai.js");
+const ZAICodeProvider = require("./zaiCode.js");
 const NovitaProvider = require("./novita.js");
 const NvidiaNimProvider = require("./nvidiaNim.js");
 const PPIOProvider = require("./ppio.js");
@@ -57,6 +58,7 @@ module.exports = {
   ApiPieProvider,
   XAIProvider,
   ZAIProvider,
+  ZAICodeProvider,
   NovitaProvider,
   CometApiProvider,
   NvidiaNimProvider,
