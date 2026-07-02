@@ -1123,7 +1123,7 @@ const TRANSLATIONS = {
   imageGeneration: {
     title: "Image Generation Preference",
     description:
-      "Configure the provider used to generate images from the /img chat command. Images are generated at 512x512.",
+      "Configure the provider used to generate images from the /img chat command. Images are generated at 1024x1024 by default.",
     provider: "Image Generation Provider",
   },
   text: {
