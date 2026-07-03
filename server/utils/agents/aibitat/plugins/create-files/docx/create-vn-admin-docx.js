@@ -27,14 +27,13 @@ module.exports.CreateVnAdminDocx = {
           super: aibitat,
           name: this.name,
           description:
-            "Tạo văn bản hành chính Việt Nam (.docx) theo đúng thể thức Nghị định 30/2020/NĐ-CP. " +
-            "Tool sẽ tự động tra cứu internet để tìm căn cứ pháp lý và tham mưu nội dung. " +
+            "Tạo văn bản hành chính Việt Nam (.docx) theo đúng văn phong, thể thức trình bày văn bản hành chính (Nghị định 30/2020/NĐ-CP của Bộ Nội vụ). " +
+            "SỬ DỤNG TOOL NÀY NGAY LẬP TỨC nếu user nhắc đến 'Nghị định 30', 'văn bản hành chính', 'công văn', 'quyết định', hoặc yêu cầu 'thể thức Bộ Nội vụ'. " +
+            "Tool sẽ tự động tạo file Word chuẩn chỉ với đầy đủ Quốc hiệu, Tiêu ngữ, số ký hiệu, nơi nhận... " +
+            "Tool cũng sẽ tự động tra cứu internet để tìm căn cứ pháp lý và tham mưu nội dung. " +
             "Hỗ trợ tất cả 29 loại văn bản hành chính: Công văn, Quyết định, Tờ trình, Báo cáo, Kế hoạch, Thông báo, v.v. " +
-            "BẮT BUỘC: Nội dung tạo ra phải đầy đủ, chi tiết, tuỳ theo thể loại văn bản. Không được viết ngắn gọn. " +
-            "Tuyệt đối KHÔNG đưa Tiêu đề chính (Tên loại văn bản, Trích yếu) vào phần content vì hệ thống đã tự động tạo. Chỉ bắt đầu content từ phần 'Kính gửi' hoặc 'Điều 1...' trở đi. " +
-            "Create a Vietnamese administrative document (.docx) following official government formatting standards. " +
-            "Automatically searches the internet for relevant legal references and provides advisory on content. " +
-            "Note: For general-purpose, non-Vietnamese-admin Word documents, use 'create-docx-file' instead.",
+            "BẮT BUỘC: Nội dung tạo ra (tham số content) phải đầy đủ, chi tiết, tuỳ theo thể loại văn bản. Không được viết ngắn gọn. " +
+            "Tuyệt đối KHÔNG đưa Tiêu đề chính (Tên loại văn bản, Trích yếu, Số ký hiệu, Quốc hiệu, Tiêu ngữ) vào phần content vì hệ thống đã tự động xử lý. Chỉ bắt đầu content từ phần 'Kính gửi' hoặc 'Điều 1...' trở đi.",
           examples: [
             {
               prompt:

@@ -23,7 +23,7 @@ module.exports.CreateDocxFile = {
           super: aibitat,
           name: this.name,
           description:
-            "Create a Microsoft Word document (.docx) from markdown or plain text content. Supports professional styling with color themes, title pages, and running headers/footers. Note: For official Vietnamese administrative documents following Decree 30/2020/NĐ-CP, use the 'create-vn-admin-docx' tool instead.",
+            "Create a Microsoft Word document (.docx) from markdown or plain text content. Supports professional styling with color themes, title pages, and running headers/footers. DO NOT use this tool for Vietnamese administrative documents (văn bản hành chính, nghị định 30 của bộ nội vụ). For those, you MUST use the 'create-vn-admin-docx' tool instead.",
           examples: [
             {
               prompt: "Create a Word document with meeting notes",
