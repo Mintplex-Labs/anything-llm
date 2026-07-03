@@ -292,23 +292,6 @@ export default function ChatContainer({
   }, [workspace?.slug]);
 
   useEffect(() => {
-    if (pendingMessageChecked.current || !workspace?.slug) return;
-    pendingMessageChecked.current = true;
-
-    const pending = safeJsonParse(sessionStorage.getItem(PENDING_HOME_MESSAGE));
-    if (pending?.message) {
-      setTimeout(() => {
-        sessionStorage.removeItem(PENDING_HOME_MESSAGE);
-        sendCommand({
-          text: pending.message,
-          attachments: pending.attachments || [],
-          autoSubmit: true,
-        });
-      }, 100);
-    }
-  }, [workspace?.slug]);
-
-  useEffect(() => {
     async function fetchReply() {
       const promptMessage =
         chatHistory.length > 0 ? chatHistory[chatHistory.length - 1] : null;

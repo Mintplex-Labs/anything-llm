@@ -57,7 +57,7 @@ class PGVector extends VectorDatabase {
    * @returns {string | null}
    */
   static connectionString() {
-    return process.env.PGVECTOR_CONNECTION_STRING;
+    return process.env.DATABASE_URL || process.env.PGVECTOR_CONNECTION_STRING;
   }
 
   createTableSql(dimensions) {

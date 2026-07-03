@@ -49,31 +49,6 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
     return true;
   }
 
-  /**
-   * Whether this provider supports native OpenAI-compatible tool calling.
-   * - This can be any OpenAI compatible provider that supports tool calling
-   * - We check the ENV to see if the provider supports tool calling.
-   * - If the ENV is not set, we default to false.
-   * @returns {boolean|Promise<boolean>}
-   */
-  supportsNativeToolCalling() {
-    if (this._supportsToolCalling !== null) return this._supportsToolCalling;
-    const genericOpenAi = new GenericOpenAiLLM(null, this.model);
-    const capabilities = genericOpenAi.getModelCapabilities();
-    this._supportsToolCalling = capabilities.tools === true;
-
-    if (this._supportsToolCalling)
-      this.providerLog(
-        "Generic OpenAI supports native tool calling is ENABLED."
-      );
-    else
-      this.providerLog(
-        "Generic OpenAI supports native tool calling is DISABLED. Will use UnTooled instead."
-      );
-
-    return this._supportsToolCalling;
-  }
-
   async #handleFunctionCallChat({ messages = [] }) {
     return await this.client.chat.completions
       .create({
