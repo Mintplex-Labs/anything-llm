@@ -148,6 +148,12 @@ async function fetchImage(src, log) {
     let imageBuffer;
     let imageType = "png";
 
+    // Re-route public QuickChart calls to the local self-hosted container if configured
+    if (typeof src === "string" && src.includes("quickchart.io") && process.env.QUICKCHART_ENDPOINT) {
+      const localEndpoint = process.env.QUICKCHART_ENDPOINT.replace(/\/$/, "");
+      src = src.replace(/https?:\/\/quickchart\.io/, localEndpoint);
+    }
+
     if (src.startsWith("data:")) {
       const match = src.match(/^data:image\/(\w+);base64,(.+)$/);
       if (match) {

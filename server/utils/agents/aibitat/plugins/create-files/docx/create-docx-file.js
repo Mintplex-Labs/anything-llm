@@ -23,14 +23,16 @@ module.exports.CreateDocxFile = {
           super: aibitat,
           name: this.name,
           description:
-            "Create a Microsoft Word document (.docx) from markdown or plain text content. Supports professional styling with color themes, title pages, and running headers/footers. DO NOT use this tool for Vietnamese administrative documents (văn bản hành chính, nghị định 30 của bộ nội vụ). For those, you MUST use the 'create-vn-admin-docx' tool instead.",
+            "Create a Microsoft Word document (.docx) from markdown or plain text content. Supports professional styling with color themes, title pages, and running headers/footers. " +
+            "If you need to include visual charts/graphs (e.g. sales, budgets, progress), you MUST generate a QuickChart image URL using Chart.js format (e.g. https://quickchart.io/chart?c={...}&w=500&h=300) and insert it as a standard markdown image: ![Chart Title](https://quickchart.io/chart?c={...}). It will be automatically fetched and embedded. " +
+            "DO NOT use this tool for Vietnamese administrative documents (văn bản hành chính, nghị định 30 của bộ nội vụ). For those, you MUST use the 'create-vn-admin-docx' tool instead.",
           examples: [
             {
-              prompt: "Create a Word document with meeting notes",
+              prompt: "Create a Word document with meeting notes and a chart",
               call: JSON.stringify({
                 filename: "meeting-notes.docx",
                 content:
-                  "# Meeting Notes - Q1 Planning\n\n## Attendees\n- John Smith\n- Sarah Johnson\n- Mike Chen\n\n## Agenda\n1. Review Q4 results\n2. Set Q1 goals\n3. Assign tasks\n\n## Action Items\n| Person | Task | Due Date |\n|--------|------|----------|\n| John | Prepare budget report | Jan 15 |\n| Sarah | Draft marketing plan | Jan 20 |\n| Mike | Schedule follow-up | Jan 10 |",
+                  "# Meeting Notes - Q1 Planning\n\n## Sales Performance\nHere is the sales performance of Q1:\n\n![Sales Chart](https://quickchart.io/chart?c={type:'bar',data:{labels:['Jan','Feb','Mar'],datasets:[{label:'Sales',data:[120,150,180]}]}}&w=500&h=300)\n\n## Action Items\n- Mike: Follow up on leads",
               }),
             },
             {
@@ -44,18 +46,7 @@ module.exports.CreateDocxFile = {
                 theme: "blue",
                 includeTitlePage: true,
                 content:
-                  "## Executive Summary\nThis proposal outlines the development of **Project Alpha**, a next-generation platform.\n\n## Objectives\n- Increase efficiency by 40%\n- Reduce costs by $50,000 annually\n- Improve user satisfaction\n\n## Timeline\n| Phase | Duration | Deliverables |\n|-------|----------|-------------|\n| Phase 1 | 4 weeks | Requirements |\n| Phase 2 | 8 weeks | Development |\n| Phase 3 | 2 weeks | Testing |\n\n## Budget\nTotal estimated budget: **$150,000**",
-              }),
-            },
-            {
-              prompt: "Create technical documentation with warm theme",
-              call: JSON.stringify({
-                filename: "api-documentation.docx",
-                title: "API Documentation",
-                theme: "warm",
-                margins: "narrow",
-                content:
-                  "# API Documentation\n\n## Authentication\nAll API requests require a Bearer token in the Authorization header.\n\n```javascript\nconst headers = {\n  'Authorization': 'Bearer YOUR_TOKEN',\n  'Content-Type': 'application/json'\n};\n```\n\n## Endpoints\n\n### GET /users\nReturns a list of all users.\n\n### POST /users\nCreates a new user.\n\n> **Note:** Rate limiting applies to all endpoints.",
+                  "## Executive Summary\nThis proposal outlines the development of **Project Alpha**.\n\n## Projected Growth\n![Growth](https://quickchart.io/chart?c={type:'line',data:{labels:['Y1','Y2','Y3'],datasets:[{label:'Growth',data:[50,120,280]}]}}&w=500&h=300)\n\nTotal estimated budget: **$150,000**",
               }),
             },
           ],
@@ -86,7 +77,8 @@ module.exports.CreateDocxFile = {
               content: {
                 type: "string",
                 description:
-                  "The content to convert to a Word document. Fully supports markdown formatting.",
+                  "The content to convert to a Word document. Fully supports markdown formatting. " +
+                  "To include charts, use markdown image tags with QuickChart URLs, e.g., ![Revenue Chart](https://quickchart.io/chart?c={type:'bar',data:{labels:['Q1','Q2'],datasets:[{label:'Revenue',data:[100,150]}]}}&w=500&h=300)",
               },
               theme: {
                 type: "string",
