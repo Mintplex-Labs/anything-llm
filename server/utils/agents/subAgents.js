@@ -142,7 +142,8 @@ class SubAgent {
                 items: {
                   type: "string"
                 },
-                description: "Optional array of image URLs or base64 data to analyze",
+                maxItems: 2,
+                description: "Optional array of up to 2 image URLs or base64 data to analyze or edit",
               }
             },
             additionalProperties: true,
@@ -260,7 +261,10 @@ class SubAgent {
       if (typeof client.images?.generate === 'function') {
         try {
           // Extract the task from the messages array for the prompt
-          const userMessage = [...messages].reverse().find(m => m.role === 'user')?.content || "";
+          const userMessageObj = [...messages].reverse().find(m => m.role === 'user')?.content;
+          const userMessage = Array.isArray(userMessageObj) 
+            ? userMessageObj.find(c => c.type === 'text')?.text || ""
+            : userMessageObj || "";
           const systemMessage = messages.find(m => m.role === 'system')?.content || "";
           const prompt = `${systemMessage}\n\nTask: ${userMessage}`.trim();
           
