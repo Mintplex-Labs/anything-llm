@@ -111,6 +111,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Công việc theo lịch trình",
     "model-router": "Router mẫu",
+    "image-generation": "Tạo hình",
   },
   login: {
     "multi-user": {
@@ -1255,6 +1256,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Không thể chuyển đổi: {{error}}",
     export: "Xuất trò chuyện dưới dạng...",
     exporting: "Xuất khẩu...",
+    preset_img_description: "Tạo ra một hình ảnh từ một dòng lệnh văn bản",
   },
   profile_settings: {
     edit_account: "Chỉnh sửa Tài khoản",
@@ -1909,6 +1911,12 @@ const TRANSLATIONS = {
       "routed-to-rule":
         "Được chuyển đến <route>{{model}}</route> thông qua <rule>{{ruleTitle}}</rule>",
     },
+  },
+  imageGeneration: {
+    title: "Ưu tiên về tạo hình",
+    description:
+      "Cấu hình nhà cung cấp được sử dụng để tạo ảnh từ lệnh `/img`. Ảnh sẽ được tạo ra với kích thước mặc định là 1024x1024.",
+    provider: "Nhà cung cấp dịch vụ tạo hình ảnh",
   },
 };
 

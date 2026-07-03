@@ -112,6 +112,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Planlagte opgaver",
     "model-router": "Model-router",
+    "image-generation": "Billedgenerering",
   },
   login: {
     "multi-user": {
@@ -1258,6 +1259,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Transkribering mislykkedes: {{error}}",
     export: "Eksportér chat som...",
     exporting: "Eksportér...",
+    preset_img_description: "Generer et billede ud fra en tekstbeskrivelse",
   },
   profile_settings: {
     edit_account: "Rediger konto",
@@ -1910,6 +1912,12 @@ const TRANSLATIONS = {
       "routed-to-rule":
         "Rute via <route>{{model}}</route> gennem <rule>{{ruleTitle}}</rule>",
     },
+  },
+  imageGeneration: {
+    title: "Præference for generering af billeder",
+    description:
+      "Konfigurer leverandøren, der bruges til at generere billeder fra kommandoen `/img`. Billeder genereres som standard i 1024x1024 opløsning.",
+    provider: "Leverandør af billedgenerering",
   },
 };
 

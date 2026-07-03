@@ -117,6 +117,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Planuojami darbai",
     "model-router": "Modelio maršrutizatorius",
+    "image-generation": "Vaizdų kūrimas",
   },
   login: {
     "multi-user": {
@@ -1382,6 +1383,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Transkripcija nepavyko: {{error}}",
     export: "Eksporteri pokalbį kaip…",
     exporting: "Eksporteris...",
+    preset_img_description: "Sukurti vaizdą iš teksto instrukcijos",
   },
   profile_settings: {
     edit_account: "Redaguoti paskyrą",
@@ -1915,6 +1917,12 @@ const TRANSLATIONS = {
       "routed-to-rule":
         "Peradresuota per <route>{{model}}</route> pagal <rule>{{ruleTitle}}</rule>",
     },
+  },
+  imageGeneration: {
+    title: "Vaizdo generavimo pasirinkimas",
+    description:
+      'Nustatyti, kokį paslaugą naudoti, kad būtų sukurti vaizdai iš "/img" komandos. Vaizdai pagal numatytuosius nustatymus bus sukuriami 1024x1024 dydžiu.',
+    provider: "Vaizdų kūrimo paslaugų teikėjas",
   },
 };
 

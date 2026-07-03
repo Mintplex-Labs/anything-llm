@@ -110,6 +110,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "計画された作業",
     "model-router": "モデルルーター",
+    "image-generation": "画像生成",
   },
   login: {
     "multi-user": {
@@ -1241,6 +1242,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "文字起こしに失敗しました: {{error}}",
     export: "チャットを以下のような形式でエクスポートする：",
     exporting: "輸出…",
+    preset_img_description: "テキストプロンプトから画像を生成する",
   },
   profile_settings: {
     edit_account: "アカウントを編集",
@@ -1898,6 +1900,12 @@ const TRANSLATIONS = {
       "routed-to-rule":
         "<route>～</route>を経由して、<rule>～</rule>へルーティング",
     },
+  },
+  imageGeneration: {
+    title: "画像生成の好みの指定",
+    description:
+      "`/img` コマンドを使用して画像を生成する際に使用するプロバイダーを設定します。デフォルトでは、画像は 1024x1024 ピクセルで生成されます。",
+    provider: "画像生成サービスプロバイダー",
   },
 };
 

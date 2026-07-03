@@ -112,6 +112,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "وظایف برنامه‌ریزی شده",
     "model-router": "روتر نمونه",
+    "image-generation": "تولید تصویر",
   },
   login: {
     "multi-user": {
@@ -1250,6 +1251,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "ترجمه ناموفق: {{error}}",
     export: "صدور چت به صورت...",
     exporting: "صدور به خارج",
+    preset_img_description: "ایجاد یک تصویر بر اساس یک دستور متنی",
   },
   profile_settings: {
     edit_account: "ویرایش حساب",
@@ -1899,6 +1901,12 @@ const TRANSLATIONS = {
       "routed-to-rule":
         "به <route>{{model}}</route> از طریق <rule>{{ruleTitle}}</rule> ارسال شد.",
     },
+  },
+  imageGeneration: {
+    title: "ترجیح در تولید تصاویر",
+    description:
+      "تنظیم پروایدر مورد استفاده برای تولید تصاویر از دستور `/img` انجام شود. تصاویر به طور پیش‌فرض با ابعاد 1024x1024 تولید می‌شوند.",
+    provider: "ارائه دهنده خدمات تولید تصاویر",
   },
 };
 

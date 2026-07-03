@@ -111,6 +111,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Planlanan İşler",
     "model-router": "Model Router",
+    "image-generation": "Görsel Oluşturma",
   },
   login: {
     "multi-user": {
@@ -1271,6 +1272,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Transkripsiyon başarısız: {{error}}",
     export: "Çat sohbetini şu şekilde dışa aktar:",
     exporting: "Dışarıya satışı yapma...",
+    preset_img_description: "Bir metin isteminden bir görüntü oluşturun",
   },
   profile_settings: {
     edit_account: "Hesabı Düzenle",
@@ -1921,6 +1923,12 @@ const TRANSLATIONS = {
       "routed-to-rule":
         "Yönlendirildi: <route> aracılığıyla {{model}} üzerinden </route>, <rule> aracılığıyla {{ruleTitle}} üzerinden </rule>",
     },
+  },
+  imageGeneration: {
+    title: "Görüntü Oluşturma Tercihi",
+    description:
+      "`/img` komutu ile oluşturulan resimler için kullanılacak sağlayıcıyı yapılandırın. Resimler varsayılan olarak 1024x1024 çözünürlükte oluşturulur.",
+    provider: "Görsel Oluşturma Sağlayıcısı",
   },
 };
 

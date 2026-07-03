@@ -118,6 +118,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Tasques programades",
     "model-router": "Rúter de model",
+    "image-generation": "Generació d'imatges",
   },
   login: {
     "multi-user": {
@@ -1471,6 +1472,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "No s'ha pogut transmetre: {{error}}",
     export: "Exporta la conversa com a...",
     exporting: "Exportant…",
+    preset_img_description: "Generar una imatge a partir d'un text",
   },
   profile_settings: {
     edit_account: "Edita el compte",
@@ -1938,6 +1940,12 @@ const TRANSLATIONS = {
       "routed-to-rule":
         "Enviat a través de <route>{{model}}</route> a través de <rule>{{ruleTitle}}</rule>",
     },
+  },
+  imageGeneration: {
+    title: "Preferència per la generació d'imatges",
+    description:
+      "Configureu el proveïdor que s'utilitza per generar imatges a partir del comandament `/img`. Per defecte, les imatges es generen en un format de 1024x1024.",
+    provider: "Proveïdor de generació d'imatges",
   },
 };
 

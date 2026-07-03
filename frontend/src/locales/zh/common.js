@@ -107,6 +107,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "计划好的任务",
     "model-router": "型号路由器",
+    "image-generation": "图像生成",
   },
   login: {
     "multi-user": {
@@ -1263,6 +1264,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "转录失败：{{error}}",
     export: "导出聊天记录为…",
     exporting: "出口…",
+    preset_img_description: "根据文本提示生成图像",
   },
   profile_settings: {
     edit_account: "编辑帐户",
@@ -1797,6 +1799,12 @@ const TRANSLATIONS = {
       "routed-to-rule":
         "通过<route>、{{model}}、</route>，到达<rule>、{{ruleTitle}}、</rule>",
     },
+  },
+  imageGeneration: {
+    title: "图像生成偏好",
+    description:
+      "配置用于生成图像的提供者，该提供者由`/img`命令使用。 默认情况下，图像生成为1024x1024像素。",
+    provider: "图像生成服务提供商",
   },
 };
 

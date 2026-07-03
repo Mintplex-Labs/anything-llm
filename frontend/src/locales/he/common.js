@@ -108,6 +108,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "משימות מתוכננות",
     "model-router": "מודל של נתב",
+    "image-generation": "יצירת תמונות",
   },
   login: {
     "multi-user": {
@@ -1305,6 +1306,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "לא הצליח הטרנסקריפציה: {{error}}",
     export: "ייצוא צ'אט כ...",
     exporting: "ייצוא...",
+    preset_img_description: "צור תמונה על סמך הנחיה טקסטואלית",
   },
   profile_settings: {
     edit_account: "ערוך חשבון",
@@ -1846,6 +1848,12 @@ const TRANSLATIONS = {
       "routed-to-rule":
         "נשלח דרך <route>{{model}}</route> באמצעות <rule>{{ruleTitle}}</rule>",
     },
+  },
+  imageGeneration: {
+    title: "העדפה ליצירת תמונות",
+    description:
+      "הגדירו את הספק שמשמש ליצירת תמונות באמצעות הפקודה `/img`. התמונות נוצרות כברירת מחדל בגודל 1024x1024.",
+    provider: "ספק שירותי יצירת תמונות",
   },
 };
 

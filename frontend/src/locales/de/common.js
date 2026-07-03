@@ -111,6 +111,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Geplante Aufgaben",
     "model-router": "Modell-Router",
+    "image-generation": "Bildgenerierung",
   },
   login: {
     "multi-user": {
@@ -1376,6 +1377,8 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Transkription fehlgeschlagen: {{error}}",
     export: "Chat-Export als...",
     exporting: "Exportieren...",
+    preset_img_description:
+      "Erstelle ein Bild basierend auf einer Textanfrage.",
   },
   profile_settings: {
     edit_account: "Account bearbeiten",
@@ -1949,6 +1952,12 @@ const TRANSLATIONS = {
       "routed-to-rule":
         "Weitergeleitet über <route>{{model}}</route> nach <rule>{{ruleTitle}}</rule>",
     },
+  },
+  imageGeneration: {
+    title: "Bevorzugte Methode zur Bildgenerierung",
+    description:
+      "Konfigurieren Sie den Anbieter, der für die Generierung von Bildern über den Befehl `/img` verwendet wird. Standardmäßig werden die Bilder in der Größe 1024x1024 Pixel erzeugt.",
+    provider: "Anbieter von Bildgenerierung",
   },
 };
 

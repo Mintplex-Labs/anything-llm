@@ -110,6 +110,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Planeeritud tööd",
     "model-router": "Mudel: reiting",
+    "image-generation": "Pildi genereerimine",
   },
   login: {
     "multi-user": {
@@ -1318,6 +1319,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Transkribeerimine ebaõnnestunud: {{error}}",
     export: "Экспорти руй чат kui...",
     exporting: "Экспорт",
+    preset_img_description: "Loo pilt tekstist",
   },
   profile_settings: {
     edit_account: "Muuda kontot",
@@ -1867,6 +1869,12 @@ const TRANSLATIONS = {
       "routed-to-rule":
         "Saadetakse <route>{{model}}</route> kaudu <rule>{{ruleTitle}}</rule>",
     },
+  },
+  imageGeneration: {
+    title: "Pildi genereerimise eelistused",
+    description:
+      "Konfigureerige andmet, mida kasutatakse piltide genereerimiseks `/img` käsu kaudu. Pildid genereeritakse vaikimisel 1024x1024 pikselite suuruses.",
+    provider: "Pildi genereerimise teenuse pakkuj",
   },
 };
 

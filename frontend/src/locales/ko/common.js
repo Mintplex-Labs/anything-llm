@@ -109,6 +109,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "예정된 작업",
     "model-router": "모델 라우터",
+    "image-generation": "이미지 생성",
   },
   login: {
     "multi-user": {
@@ -1319,6 +1320,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "전사 오류: {{error}}",
     export: "채팅 내용을 다음 형식으로 내보내기:",
     exporting: "수출 중…",
+    preset_img_description: "텍스트 프롬프트에서 이미지를 생성합니다.",
   },
   profile_settings: {
     edit_account: "계정 정보 수정",
@@ -1864,6 +1866,12 @@ const TRANSLATIONS = {
       "routed-to": "<route> 정보가 {{model}}에 전달되었습니다.",
       "routed-to-rule": "<route>에서 {{model}}를 통해 </route>로 연결",
     },
+  },
+  imageGeneration: {
+    title: "이미지 생성 선호도",
+    description:
+      "`/img` 명령어를 사용하여 이미지를 생성하는 데 사용될 제공업체를 구성합니다. 기본적으로 이미지는 1024x1024 해상도로 생성됩니다.",
+    provider: "이미지 생성 제공업체",
   },
 };
 

@@ -111,6 +111,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Geplande taken",
     "model-router": "Modelrouter",
+    "image-generation": "Afbeelding genereren",
   },
   login: {
     "multi-user": {
@@ -1268,6 +1269,8 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Transcriptie mislukt: {{error}}",
     export: "Exporteer de chat als…",
     exporting: "Exporteren...",
+    preset_img_description:
+      "Genereer een afbeelding op basis van een tekstuele instructie.",
   },
   profile_settings: {
     edit_account: "Account bewerken",
@@ -1931,6 +1934,12 @@ const TRANSLATIONS = {
       "routed-to-rule":
         "Verzonden via <route>{{model}}</route> via <rule>{{ruleTitle}}</rule>",
     },
+  },
+  imageGeneration: {
+    title: "Voorkeur voor het genereren van afbeeldingen",
+    description:
+      "Configureer de provider die gebruikt wordt om afbeeldingen te genereren via het `/img`-commando. Standaard worden afbeeldingen gegenereerd met een resolutie van 1024x1024.",
+    provider: "Aanbieder van beeldgeneratie",
   },
 };
 

@@ -118,6 +118,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Naplánované úlohy",
     "model-router": "Modelový router",
+    "image-generation": "Generování obrázků",
   },
   login: {
     "multi-user": {
@@ -1378,6 +1379,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Přepis selhal: {{error}}",
     export: "Exportujte konverzaci jako…",
     exporting: "Exportování...",
+    preset_img_description: "Vytvořte obrázek na základě textového pokynu.",
   },
   profile_settings: {
     edit_account: "Upravit účet",
@@ -1909,6 +1911,12 @@ const TRANSLATIONS = {
       "routed-to-rule":
         "Přesměrováno na <route>{{model}}</route> prostřednictvím <rule>{{ruleTitle}}</rule>",
     },
+  },
+  imageGeneration: {
+    title: "Preference pro generování obrázků",
+    description:
+      "Nastavte poskytovatele, který se používá k generování obrázků z příkazu `/img`. Obrázky se standardně generují ve velikosti 1024x1024.",
+    provider: "Poskytovatel služeb pro generování obrázků",
   },
 };
 

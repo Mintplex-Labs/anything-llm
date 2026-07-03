@@ -111,6 +111,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Sarcini programate",
     "model-router": "Model de router",
+    "image-generation": "Generarea de imagini",
   },
   login: {
     "multi-user": {
@@ -637,6 +638,8 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Transcriere eșuată: {{error}}",
     export: "Exportați conversația sub forma de...",
     exporting: "Exportare...",
+    preset_img_description:
+      "Generați o imagine pe baza unei descrieri textuale.",
   },
   profile_settings: {
     edit_account: "Editează contul",
@@ -1935,6 +1938,12 @@ const TRANSLATIONS = {
       "routed-to-rule":
         "Trasează spre <route>{{model}}</route> prin intermediul <rule>{{ruleTitle}}</rule>",
     },
+  },
+  imageGeneration: {
+    title: "Preferințe privind generarea de imagini",
+    description:
+      "Configurați furnizorul utilizat pentru a genera imagini din comanda `/img`. Imaginii sunt generate în mod implicit în format 1024x1024.",
+    provider: "Furnizor de servicii de generare de imagini",
   },
 };
 

@@ -110,6 +110,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Plānotas darba uzdevumi",
     "model-router": "Modeļa routers",
+    "image-generation": "Attēlu ģenerēšana",
   },
   login: {
     "multi-user": {
@@ -1361,6 +1362,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Transkripcija neizdevās: {{error}}",
     export: "Eksportēt čatu kā...",
     exporting: "Eksporteris…",
+    preset_img_description: "Izveidot attēlu no teksta norādījuma",
   },
   profile_settings: {
     edit_account: "Rediģēt kontu",
@@ -1922,6 +1924,12 @@ const TRANSLATIONS = {
       "routed-to-rule":
         "Aizvedēts pa <route>{{model}}</route> ceļu, izmantojot <rule>{{ruleTitle}}</rule>",
     },
+  },
+  imageGeneration: {
+    title: "Attēla ģenerēšanas preferences",
+    description:
+      "Konfigurējiet pakalpojumu, ko izmantojat, lai ģenerētu attēlus, izmantojot `/img` komandu. Attēli tiek ģenerēti ar izmēru 1024x1024 noklātā.",
+    provider: "Attēlu ģenerēšanas pakalpojumu sniedzējs",
   },
 };
 

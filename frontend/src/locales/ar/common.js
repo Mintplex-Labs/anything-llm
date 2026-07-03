@@ -109,6 +109,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "المهام المجدولة",
     "model-router": "نموذج جهاز التوجيه",
+    "image-generation": "إنشاء الصور",
   },
   login: {
     "multi-user": {
@@ -1243,6 +1244,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "فشلت عملية النسخ: {{error}}",
     export: "تصدير المحادثة كـ...",
     exporting: "التصدير...",
+    preset_img_description: "إنشاء صورة بناءً على نص معين.",
   },
   profile_settings: {
     edit_account: "تحرير الحساب",
@@ -1883,6 +1885,12 @@ const TRANSLATIONS = {
       "routed-to-rule":
         "تم توجيهه إلى <route>{{model}}</route> عبر <rule>{{ruleTitle}}</rule>",
     },
+  },
+  imageGeneration: {
+    title: "تفضيلات إنشاء الصور",
+    description:
+      "قم بتكوين المزود المستخدم لإنشاء الصور من أمر `/img`. يتم إنشاء الصور افتراضيًا بحجم 1024 × 1024 بكسل.",
+    provider: "مزود خدمات إنشاء الصور",
   },
 };
 

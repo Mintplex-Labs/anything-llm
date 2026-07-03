@@ -111,6 +111,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Zaplanowane zadania",
     "model-router": "Przykładowy router",
+    "image-generation": "Generowanie obrazów",
   },
   login: {
     "multi-user": {
@@ -1369,6 +1370,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Błąd transkrypcji: {{error}}",
     export: "Eksportuj czat jako…",
     exporting: "Eksportowanie...",
+    preset_img_description: "Wygeneruj obraz na podstawie tekstu",
   },
   profile_settings: {
     edit_account: "Edytuj konto",
@@ -1930,6 +1932,12 @@ const TRANSLATIONS = {
       "routed-to": "Przekazane do <route>{{model}}</route>",
       "routed-to-rule": "Przekazane do <route> przez <rule>",
     },
+  },
+  imageGeneration: {
+    title: "Preferowane metody generowania obrazów",
+    description:
+      "Skonfiguruj dostawcę, którego używasz do generowania obrazów z polecenia `/img`. Obrazy są domyślnie generowane w rozdzielczości 1024x1024.",
+    provider: "Dostawca usług generowania obrazów",
   },
 };
 

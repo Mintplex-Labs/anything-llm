@@ -112,6 +112,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Lavori pianificati",
     "model-router": "Router di esempio",
+    "image-generation": "Generazione di immagini",
   },
   login: {
     "multi-user": {
@@ -1289,6 +1290,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Errore di trascrizione: {{error}}",
     export: "Esporta la conversazione come...",
     exporting: "Esportazione...",
+    preset_img_description: "Genera un'immagine a partire da un testo.",
   },
   profile_settings: {
     edit_account: "Modifica account",
@@ -1959,6 +1961,12 @@ const TRANSLATIONS = {
       "routed-to-rule":
         "Instradato tramite <route>{{model}}</route> seguendo il percorso <rule>{{ruleTitle}}</rule>",
     },
+  },
+  imageGeneration: {
+    title: "Preferenze per la generazione di immagini",
+    description:
+      "Configurare il provider utilizzato per generare le immagini tramite il comando `/img`. Le immagini vengono generate in formato 1024x1024 per impostazione predefinita.",
+    provider: "Fornitore di servizi di generazione di immagini",
   },
 };
 

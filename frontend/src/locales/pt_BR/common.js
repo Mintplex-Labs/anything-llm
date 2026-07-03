@@ -110,6 +110,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Tarefas Agendadas",
     "model-router": "Roteador de modelo",
+    "image-generation": "Geração de Imagens",
   },
   login: {
     "multi-user": {
@@ -1351,6 +1352,8 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Falha na transcrição: {{error}}",
     export: "Exporte a conversa como...",
     exporting: "Exportando...",
+    preset_img_description:
+      "Gerar uma imagem a partir de uma descrição textual.",
   },
   profile_settings: {
     edit_account: "Editar conta",
@@ -1904,6 +1907,12 @@ const TRANSLATIONS = {
       "routed-to-rule":
         "Direcionado para <route>{{model}}</route> através de <rule>{{ruleTitle}}</rule>",
     },
+  },
+  imageGeneration: {
+    title: "Preferência na geração de imagens",
+    description:
+      "Configure o provedor utilizado para gerar imagens a partir do comando `/img`. As imagens são geradas por padrão em 1024x1024.",
+    provider: "Fornecedor de Geração de Imagens",
   },
 };
 
