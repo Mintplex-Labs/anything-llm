@@ -202,13 +202,15 @@ const Workspace = {
       slug = this.slugify(`${name}-${slugSeed}`, { lower: true });
     }
 
-    // Get the default system prompt
-    const defaultSystemPrompt = await SystemSettings.get({
-      label: "default_system_prompt",
-    });
-    if (!!defaultSystemPrompt?.value)
-      additionalFields.openAiPrompt = defaultSystemPrompt.value;
-    else additionalFields.openAiPrompt = this.defaultPrompt;
+    if (additionalFields?.openAiPrompt === undefined) {
+      // Get the default system prompt
+      const defaultSystemPrompt = await SystemSettings.get({
+        label: "default_system_prompt",
+      });
+      if (!!defaultSystemPrompt?.value)
+        additionalFields.openAiPrompt = defaultSystemPrompt.value;
+      else additionalFields.openAiPrompt = this.defaultPrompt;
+    }
 
     try {
       const workspace = await prisma.workspaces.create({
