@@ -408,7 +408,7 @@ module.exports.CreateVnAdminDocx = {
               parts.push(`- ✓ Tên cơ quan ban hành + cơ quan chủ quản`);
               parts.push(`- ✓ Số, ký hiệu văn bản`);
               parts.push(`- ✓ Địa danh, ngày tháng năm`);
-              parts.push(`- ✓ ${documentTypeInfo.template === "named" ? "Tên loại văn bản + Trích yếu" : "Trích yếu (V/v)"}`); 
+              parts.push(`- ✓ ${docTypeInfo.template === "named" ? "Tên loại văn bản + Trích yếu" : "Trích yếu (V/v)"}`); 
               parts.push(`- ✓ Nội dung chính (Times New Roman, 14pt, canh đều)`);
               parts.push(`- ✓ Chữ ký + Họ tên người ký`);
               parts.push(`- ✓ Nơi nhận`);
