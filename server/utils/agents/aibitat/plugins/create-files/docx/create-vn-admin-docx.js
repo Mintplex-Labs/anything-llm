@@ -32,7 +32,14 @@ module.exports.CreateVnAdminDocx = {
             "Tool sẽ tự động tạo file Word chuẩn chỉ với đầy đủ Quốc hiệu, Tiêu ngữ, số ký hiệu, nơi nhận... " +
             "Tool cũng sẽ tự động tra cứu internet để tìm căn cứ pháp lý và tham mưu nội dung. " +
             "Hỗ trợ tất cả 29 loại văn bản hành chính: Công văn, Quyết định, Tờ trình, Báo cáo, Kế hoạch, Thông báo, v.v. " +
-            "BẮT BUỘC: Nội dung tạo ra (tham số content) phải đầy đủ, chi tiết, tuỳ theo thể loại văn bản. Không được viết ngắn gọn. " +
+            "BẮT BUỘC: Nội dung tạo ra (tham số content) phải ĐẦY ĐỦ, CHI TIẾT, CHUYÊN NGHIỆP. Không được viết ngắn gọn sơ sài. " +
+            "HƯỚNG DẪN VIẾT CONTENT THEO LOẠI VĂN BẢN: " +
+            "- Công văn: Bắt đầu bằng 'Kính gửi:', sau đó trình bày nội dung theo đề mục ## 1, ## 2... " +
+            "- Quyết định: Bắt đầu bằng các Điều: '**Điều 1.** Nội dung...', '**Điều 2.** ...' " +
+            "- Báo cáo/Kế hoạch/Tờ trình: Bắt đầu bằng phần mở đầu, rồi các đề mục ## I, ## II... " +
+            "- Biên bản: Ghi rõ thời gian, địa điểm, thành phần tham dự, nội dung, kết luận " +
+            "TRÌNH BÀY ĐỀ MỤC: Dùng ## cho mục lớn (I, II, III), ### cho tiểu mục (1, 2, 3), #### cho điểm (a, b, c). " +
+            "SỐ LIỆU: Sử dụng bảng markdown khi có danh sách, phân loại, hoặc so sánh số liệu. " +
             "Tuyệt đối KHÔNG đưa Tiêu đề chính (Tên loại văn bản, Trích yếu, Số ký hiệu, Quốc hiệu, Tiêu ngữ) vào phần content vì hệ thống đã tự động xử lý. Chỉ bắt đầu content từ phần 'Kính gửi' hoặc 'Điều 1...' trở đi.",
           examples: [
             {
@@ -378,26 +385,58 @@ module.exports.CreateVnAdminDocx = {
                 `${this.caller}: ✅ Đã tạo thành công ${docTypeInfo.name} "${displayFilename}"`
               );
 
-              // Build response summary
+              // Build rich response summary
               const parts = [
-                `Đã tạo thành công ${docTypeInfo.name} "${displayFilename}" (${bufferSizeKB}KB).`,
-                `Thể thức: Nghị định 30/2020/NĐ-CP.`,
+                `✅ **Đã tạo thành công ${docTypeInfo.name}** "${displayFilename}" (${bufferSizeKB}KB)`,
+                "",
+                `📋 **Thông tin văn bản:**`,
+                `- **Loại văn bản:** ${docTypeInfo.name}`,
               ];
 
+              if (issuingAgency) parts.push(`- **Cơ quan ban hành:** ${issuingAgency}`);
+              if (parentAgency) parts.push(`- **Cơ quan chủ quản:** ${parentAgency}`);
+              if (title) parts.push(`- **Trích yếu:** ${title}`);
+              if (location) parts.push(`- **Địa danh:** ${location}`);
+              if (finalSigners.length > 0) {
+                const signerNames = finalSigners.map(s => `${s.title || ""} ${s.name || ""}`).join(", ");
+                parts.push(`- **Người ký:** ${signerNames}`);
+              }
+
+              parts.push("");
+              parts.push(`📐 **Thể thức đã áp dụng (NĐ 30/2020/NĐ-CP):**`);
+              parts.push(`- ✓ Quốc hiệu + Tiêu ngữ (CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM)`);
+              parts.push(`- ✓ Tên cơ quan ban hành + cơ quan chủ quản`);
+              parts.push(`- ✓ Số, ký hiệu văn bản`);
+              parts.push(`- ✓ Địa danh, ngày tháng năm`);
+              parts.push(`- ✓ ${documentTypeInfo.template === "named" ? "Tên loại văn bản + Trích yếu" : "Trích yếu (V/v)"}`); 
+              parts.push(`- ✓ Nội dung chính (Times New Roman, 14pt, canh đều)`);
+              parts.push(`- ✓ Chữ ký + Họ tên người ký`);
+              parts.push(`- ✓ Nơi nhận`);
+              parts.push(`- ✓ A4, lề: trái 3cm, phải 2cm, trên/dưới 2cm`);
+              parts.push(`- ✓ Số trang (từ trang 2 trở đi)`);
+
               if (finalLegalBasis.length > 0) {
-                parts.push(
-                  `Căn cứ pháp lý: ${finalLegalBasis.length} mục.`
-                );
+                parts.push("");
+                parts.push(`⚖️ **Căn cứ pháp lý (${finalLegalBasis.length} mục):**`);
+                finalLegalBasis.forEach((basis, i) => {
+                  parts.push(`${i + 1}. ${basis}`);
+                });
               }
 
               if (advisoryNotes) {
-                parts.push(`\n📋 Tham mưu pháp lý:\n${advisoryNotes}`);
+                parts.push("");
+                parts.push(`💡 **Tham mưu pháp lý:**`);
+                parts.push(advisoryNotes);
               }
 
               if (citations.length > 0) {
-                parts.push(
-                  `\n🔗 Nguồn tham khảo: ${citations.length} nguồn từ internet.`
-                );
+                parts.push("");
+                parts.push(`🔗 **Nguồn tham khảo (${citations.length} nguồn):**`);
+                citations.forEach((c, i) => {
+                  const title = c.title || c.url || `Nguồn ${i + 1}`;
+                  const url = c.url || "";
+                  parts.push(`${i + 1}. ${url ? `[${title}](${url})` : title}`);
+                });
               }
 
               return parts.join("\n");

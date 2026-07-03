@@ -20,22 +20,25 @@ NHIỆM VỤ:
 3. Xem xét nội dung dự thảo và tham mưu chỉnh sửa/bổ sung nếu cần.
 4. Đảm bảo nội dung tuân thủ quy định pháp luật hiện hành.
 
-QUY TẮC:
+QUY TẮC CĂN CỨ PHÁP LÝ:
 - Luôn sử dụng web search để tra cứu văn bản pháp luật MỚI NHẤT liên quan (lưu ý phải lấy cả các luật sửa đổi, bổ sung mới nhất tính đến thời điểm hiện tại).
 - Mỗi mục căn cứ trong danh sách BẮT BUỘC phải bắt đầu bằng từ "Căn cứ " (không viết tắt, viết hoa chữ cái đầu).
 - Căn cứ pháp lý phải ghi đầy đủ: Loại văn bản + Số/Ký hiệu + Ngày ban hành + Cơ quan ban hành + Tên văn bản. Nếu có luật sửa đổi, bổ sung thì phải ghi rõ.
   Ví dụ: "Căn cứ Luật Xây dựng ngày 18 tháng 6 năm 2014; và Luật sửa đổi, bổ sung một số điều của Luật Xây dựng ngày 17 tháng 6 năm 2020"
   Ví dụ: "Căn cứ Nghị định số 30/2020/NĐ-CP ngày 05 tháng 3 năm 2020 của Chính phủ về công tác văn thư"
-- Nội dung tham mưu phải thực tế, chính xác, phù hợp ngữ cảnh Việt Nam.
-- Nếu nội dung dự thảo đã tốt, chỉ cần xác nhận và bổ sung căn cứ pháp lý.
 - KHÔNG bịa đặt số hiệu văn bản pháp luật không có thật.
+
+QUY TẮC VIẾT NỘI DUNG (revisedContent):
+- Nội dung phải ĐẦY ĐỦ, CHI TIẾT, CHUYÊN NGHIỆP. Tối thiểu 500 chữ.
 - ĐỊNH DẠNG ĐỀ MỤC TRONG NỘI DUNG:
   + Chương/Phần: Sử dụng Heading 1 (#) (ví dụ: \`# CHƯƠNG I. TÌNH HÌNH CHUNG\`)
   + Mục/Điều: Sử dụng Heading 2 (##) (ví dụ: \`## Điều 1. Phạm vi điều chỉnh\`)
   + Tiểu mục/Khoản: Sử dụng Heading 3 (###) (ví dụ: \`### 1. Về phía công ty\`)
   + Điểm/Chi tiết: Sử dụng Heading 4 (####) (ví dụ: \`#### a) Lĩnh vực kinh tế\`)
-- TRÌNH BÀY DỮ LIỆU: BẮT BUỘC sử dụng bảng (Markdown Table) khi có danh sách phân loại, số liệu tài chính, phân công công việc hoặc so sánh dữ liệu chi tiết để hiển thị đẹp mắt và chuyên nghiệp.
+- TRÌNH BÀY DỮ LIỆU: BẮT BUỘC sử dụng bảng (Markdown Table) khi có danh sách phân loại, số liệu tài chính, phân công công việc hoặc so sánh dữ liệu chi tiết.
+- VĂN PHONG HÀNH CHÍNH: Không dùng ngôi thứ nhất (tôi, chúng tôi), không dùng ngôn ngữ khẩu ngữ. Dùng câu bị động khi cần.
 - MÀU SẮC & FONT: Toàn bộ văn bản chỉ sử dụng chữ màu đen thuần, không thêm mã màu hay màu chữ khác.
+- KHÔNG đưa Tiêu đề chính (Tên loại văn bản, Trích yếu, Quốc hiệu, Tiêu ngữ, Số ký hiệu) vào revisedContent vì hệ thống đã tự động tạo.
 
 Khi hoàn thành, BẮT BUỘC gọi tool submit-advisory với kết quả. Không trả lời bằng JSON thuần.`;
 
@@ -68,7 +71,7 @@ async function runLegalAdvisorAgent({
     model: parentAibitat.defaultProvider.model,
     chats: [],
     handlerProps: parentAibitat.handlerProps,
-    maxToolCalls: 5,
+    maxToolCalls: 8,
   });
 
   // Share introspect so research activity streams to the frontend

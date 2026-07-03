@@ -327,22 +327,36 @@ function freezePanes(worksheet, rows = 1, columns = 0) {
  * - Autofilter for data
  * - Borders for all cells
  * - Modern fonts and vertical alignment
+ * - Auto-detect total/summary rows and bold them
  * @param {import('exceljs').Worksheet} worksheet - The worksheet to modify
+ * @param {number} [dataStartRow=1] - The row where data headers begin (1 if no title row)
  */
-function applyPremiumFormatting(worksheet) {
+function applyPremiumFormatting(worksheet, dataStartRow = 1) {
   // Add auto filter to the data range
   if (worksheet.rowCount > 0 && worksheet.columnCount > 0) {
     worksheet.autoFilter = {
-      from: { row: 1, column: 1 },
+      from: { row: dataStartRow, column: 1 },
       to: { row: worksheet.rowCount, column: worksheet.columnCount },
     };
   }
 
+  // Detect total/summary rows (last row with keywords)
+  const totalKeywords = [
+    "tổng", "total", "sum", "cộng", "tổng cộng", "tổng kết",
+    "grand total", "subtotal", "trung bình", "average", "avg",
+  ];
+
   // Set default row height, borders, and fonts
   worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
-    if (rowNumber > 1 && !row.height) {
+    if (rowNumber <= dataStartRow) return; // Skip title rows
+
+    if (rowNumber > dataStartRow && !row.height) {
       row.height = 20;
     }
+
+    // Check if this is a total/summary row
+    const firstCellValue = String(row.getCell(1).value || "").trim().toLowerCase();
+    const isTotalRow = totalKeywords.some((kw) => firstCellValue.startsWith(kw));
 
     row.eachCell((cell) => {
       // Apply clean subtle borders
@@ -354,7 +368,7 @@ function applyPremiumFormatting(worksheet) {
       };
 
       // Ensure proper alignment
-      if (rowNumber > 1) {
+      if (rowNumber > dataStartRow) {
         if (!cell.alignment) {
           cell.alignment = { vertical: "middle", wrapText: false };
         } else {
@@ -362,18 +376,174 @@ function applyPremiumFormatting(worksheet) {
         }
 
         // Upgrade font
-        if (!cell.font || !cell.font.name) {
-          const currentFont = cell.font || {};
-          cell.font = {
-            ...currentFont,
-            name: "Segoe UI",
-            size: 10,
-            color: currentFont.color || { argb: "FF334155" }, // slate-700
+        const currentFont = cell.font || {};
+        cell.font = {
+          ...currentFont,
+          name: currentFont.name || "Segoe UI",
+          size: currentFont.size || 10,
+          color: currentFont.color || { argb: "FF334155" }, // slate-700
+          bold: isTotalRow ? true : currentFont.bold || false,
+        };
+
+        // Total row gets special background
+        if (isTotalRow) {
+          cell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FFEEF2FF" }, // indigo-50
+          };
+          cell.border = {
+            top: { style: "medium", color: { argb: "FF6366F1" } }, // indigo-500
+            left: { style: "thin", color: { argb: "FFE2E8F0" } },
+            bottom: { style: "medium", color: { argb: "FF6366F1" } },
+            right: { style: "thin", color: { argb: "FFE2E8F0" } },
           };
         }
       }
     });
   });
+}
+
+/**
+ * Inserts a title row at the top of a worksheet.
+ * The title is merged across all columns with large bold font and colored background.
+ * Shifts existing data down by 1 row.
+ *
+ * @param {import('exceljs').Worksheet} worksheet - The worksheet to modify
+ * @param {string} title - The title text to display
+ * @returns {number} The new data start row (2, since title takes row 1)
+ */
+function applyTitleRow(worksheet, title) {
+  if (!title || typeof title !== "string" || !title.trim()) return 1;
+
+  // Insert a new row at position 1 (pushes everything else down)
+  worksheet.insertRow(1, []);
+  const titleRow = worksheet.getRow(1);
+  titleRow.getCell(1).value = title.trim();
+
+  // Merge across all columns
+  const colCount = worksheet.columnCount || 1;
+  if (colCount > 1) {
+    worksheet.mergeCells(1, 1, 1, colCount);
+  }
+
+  // Style the title cell
+  const titleCell = titleRow.getCell(1);
+  titleCell.font = {
+    name: "Segoe UI",
+    size: 14,
+    bold: true,
+    color: { argb: "FF1E293B" }, // slate-800
+  };
+  titleCell.fill = {
+    type: "pattern",
+    pattern: "solid",
+    fgColor: { argb: "FFF1F5F9" }, // slate-100
+  };
+  titleCell.alignment = {
+    vertical: "middle",
+    horizontal: "center",
+  };
+  titleCell.border = {
+    bottom: { style: "medium", color: { argb: "FF3B82F6" } }, // blue-500
+  };
+  titleRow.height = 35;
+
+  return 2; // Data now starts at row 2
+}
+
+/**
+ * Applies smart number formatting to data columns.
+ * Auto-detects columns that contain numbers and applies appropriate formatting:
+ * - Large numbers get thousand separators (#,##0)
+ * - Decimal numbers get #,##0.00
+ * - Percentage columns get 0.00%
+ * - Currency columns get symbol + #,##0.00
+ *
+ * @param {import('exceljs').Worksheet} worksheet - The worksheet to modify
+ * @param {number} [headerRow=1] - The header row number
+ */
+function applySmartNumberFormatting(worksheet, headerRow = 1) {
+  const colCount = worksheet.columnCount || 0;
+
+  for (let col = 1; col <= colCount; col++) {
+    // Analyze the column data to determine the dominant type
+    let numCount = 0;
+    let pctCount = 0;
+    let currencyCount = 0;
+    let hasDecimals = false;
+    let totalDataRows = 0;
+    let currencySymbol = "";
+
+    worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
+      if (rowNumber <= headerRow) return;
+      totalDataRows++;
+      const cell = row.getCell(col);
+      const val = cell.value;
+
+      if (typeof val === "number") {
+        numCount++;
+        if (!Number.isInteger(val)) hasDecimals = true;
+        // Check if original text had currency
+        if (cell.numFmt && /[$€£¥₹]/.test(cell.numFmt)) {
+          currencyCount++;
+          const match = cell.numFmt.match(/["']?([$€£¥₹])/);
+          if (match) currencySymbol = match[1];
+        }
+        if (cell.numFmt && cell.numFmt.includes("%")) {
+          pctCount++;
+        }
+      }
+    });
+
+    if (totalDataRows === 0 || numCount < totalDataRows * 0.5) continue;
+
+    // Determine format
+    let fmt = null;
+    if (pctCount > numCount * 0.3) {
+      fmt = "0.00%";
+    } else if (currencyCount > 0 && currencySymbol) {
+      fmt = `"${currencySymbol}"#,##0.00`;
+    } else if (hasDecimals) {
+      fmt = "#,##0.00";
+    } else if (numCount > 0) {
+      // Only apply thousand separator if numbers are large enough
+      let hasLargeNumbers = false;
+      worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
+        if (rowNumber <= headerRow) return;
+        const val = row.getCell(col).value;
+        if (typeof val === "number" && Math.abs(val) >= 1000) {
+          hasLargeNumbers = true;
+        }
+      });
+      if (hasLargeNumbers) {
+        fmt = "#,##0";
+      }
+    }
+
+    if (fmt) {
+      worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
+        if (rowNumber <= headerRow) return;
+        const cell = row.getCell(col);
+        if (typeof cell.value === "number" && !cell.numFmt) {
+          cell.numFmt = fmt;
+        }
+      });
+    }
+
+    // Right-align numeric columns
+    worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
+      if (rowNumber <= headerRow) return;
+      const cell = row.getCell(col);
+      if (typeof cell.value === "number") {
+        cell.alignment = {
+          ...(cell.alignment || {}),
+          horizontal: "right",
+          vertical: "middle",
+        };
+      }
+    });
+  }
 }
 
 module.exports = {
@@ -387,4 +557,7 @@ module.exports = {
   applyZebraStriping,
   freezePanes,
   applyPremiumFormatting,
+  applyTitleRow,
+  applySmartNumberFormatting,
 };
+

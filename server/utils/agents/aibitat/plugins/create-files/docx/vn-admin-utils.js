@@ -207,14 +207,14 @@ function buildHeaderSection(docx, {
       ],
     })
   );
-  // Gạch ngang dưới tên cơ quan ban hành
+  // Gạch ngang dưới tên cơ quan ban hành (NĐ30: 1/3-1/4 chiều rộng cột)
   leftChildren.push(
     new Paragraph({
       alignment: AlignmentType.CENTER,
       spacing: { after: 0 },
       children: [
         new TextRun({
-          text: "───────",
+          text: "────",
           font: S.font,
           size: S.sizes.coQuan,
         }),
@@ -925,7 +925,7 @@ async function buildBodyContent(docx, libs, content, log) {
  * Creates the signature block (Khối chữ ký).
  * Right-aligned: Title line → [space for signature] → Full name
  */
-function buildFooterBlock(docx, { recipients = [], signers = [] }) {
+function buildFooterBlock(docx, { recipients = [], signers = [], documentTypeInfo = null }) {
   const { Paragraph, TextRun, AlignmentType,
     Table, TableRow, TableCell, WidthType } = docx;
   const S = VN_ADMIN_STYLES;
@@ -1001,15 +1001,20 @@ function buildFooterBlock(docx, { recipients = [], signers = [] }) {
 
   finalSigners.forEach(signer => {
     const signerChildren = [];
-    const titles = (signer.title || "[CHỨC VỤ NGƯỜI KÝ]").split(/\n|<br>/i);
-    titles.forEach(t => {
+    let signerTitleText = signer.title || "[CHỨC VỤ NGƯỜI KÝ]";
+
+    // Handle TM. (Thay mặt) and KT. (Ký thay) prefixes per NĐ30
+    const tmMatch = signerTitleText.match(/^(TM\.|Thay mặt)\s*(.+)/i);
+    const ktMatch = signerTitleText.match(/^(KT\.|Ký thay)\s*(.+)/i);
+
+    if (tmMatch) {
       signerChildren.push(
         new Paragraph({
           alignment: AlignmentType.CENTER,
           spacing: { after: 0 },
           children: [
             new TextRun({
-              text: t.toUpperCase(),
+              text: "TM. " + tmMatch[2].toUpperCase(),
               font: S.font,
               size: S.sizes.chucVuKy,
               bold: true,
@@ -1017,7 +1022,40 @@ function buildFooterBlock(docx, { recipients = [], signers = [] }) {
           ],
         })
       );
-    });
+    } else if (ktMatch) {
+      signerChildren.push(
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          spacing: { after: 0 },
+          children: [
+            new TextRun({
+              text: "KT. " + ktMatch[2].toUpperCase(),
+              font: S.font,
+              size: S.sizes.chucVuKy,
+              bold: true,
+            }),
+          ],
+        })
+      );
+    } else {
+      const titles = signerTitleText.split(/\n|<br>/i);
+      titles.forEach(t => {
+        signerChildren.push(
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { after: 0 },
+            children: [
+              new TextRun({
+                text: t.toUpperCase(),
+                font: S.font,
+                size: S.sizes.chucVuKy,
+                bold: true,
+              }),
+            ],
+          })
+        );
+      });
+    }
 
     for (let i = 0; i < 4; i++) {
       signerChildren.push(
@@ -1145,6 +1183,7 @@ async function buildVnAdminDocx(docx, params, libs, log) {
     ...buildFooterBlock(docx, {
       recipients: params.recipients,
       signers: params.signers,
+      documentTypeInfo,
     })
   );
 
