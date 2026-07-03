@@ -62,7 +62,7 @@ const TRANSLATIONS = {
     no: "Không",
     search: "Tìm kiếm",
     username_requirements:
-      "Tên người dùng phải có 2-32 ký tự, bắt đầu bằng chữ cái thường và chỉ chứa chữ cái thường, số, dấu gạch dưới, dấu gạch ngang và dấu chấm.",
+      "Tên người dùng phải có 2-64 ký tự, bắt đầu bằng chữ cái thường và chỉ chứa chữ cái thường, số, dấu gạch dưới, dấu gạch ngang và dấu chấm.",
     on: "Về",
     none: "Không",
     stopped: "Dừng",

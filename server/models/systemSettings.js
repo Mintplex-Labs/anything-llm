@@ -854,7 +854,7 @@ const SystemSettings = {
     return {
       // OpenAI Keys
       OpenAiKey: !!process.env.OPEN_AI_KEY,
-      OpenAiModelPref: process.env.OPEN_MODEL_PREF || "gpt-4o",
+      OpenAiModelPref: process.env.OPEN_MODEL_PREF || "gpt-4.1-nano",
 
       // Azure + OpenAI Keys
       AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,

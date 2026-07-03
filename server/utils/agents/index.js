@@ -291,9 +291,9 @@ class AgentHandler {
   providerDefault(provider = this.provider) {
     switch (provider) {
       case "openai":
-        return process.env.OPEN_MODEL_PREF ?? "gpt-4o";
+        return process.env.OPEN_MODEL_PREF ?? "gpt-4.1-nano";
       case "anthropic":
-        return process.env.ANTHROPIC_MODEL_PREF ?? "claude-3-sonnet-20240229";
+        return process.env.ANTHROPIC_MODEL_PREF ?? "claude-sonnet-4-6";
       case "lmstudio":
         return process.env.LMSTUDIO_MODEL_PREF ?? null;
       case "ollama":
@@ -783,7 +783,7 @@ class AgentHandler {
   ) {
     this.aibitat = new AIbitat({
       provider: this.provider ?? "openai",
-      model: this.model ?? "gpt-4o",
+      model: this.model ?? "gpt-4.1-nano",
       chats: await this.#chatHistory(20),
       handlerProps: {
         invocation: this.invocation,

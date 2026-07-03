@@ -20,6 +20,7 @@ class AnthropicLLM {
   noTemperatureModels = [
     "claude-opus-4-7",
     "claude-opus-4-8",
+    "claude-sonnet-5",
     // Add other models here if identified
   ];
 
@@ -40,7 +41,7 @@ class AnthropicLLM {
     this.model =
       modelPreference ||
       process.env.ANTHROPIC_MODEL_PREF ||
-      "claude-3-5-sonnet-20241022";
+      "claude-sonnet-4-6";
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,

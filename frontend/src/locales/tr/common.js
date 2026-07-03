@@ -62,7 +62,7 @@ const TRANSLATIONS = {
     no: "Hayır",
     search: "Ara",
     username_requirements:
-      "Kullanıcı adı 2-32 karakter uzunluğunda olmalı, küçük harfle başlamalı ve yalnızca küçük harfler, rakamlar, alt çizgiler, tireler ve noktalar içermelidir.",
+      "Kullanıcı adı 2-64 karakter uzunluğunda olmalı, küçük harfle başlamalı ve yalnızca küçük harfler, rakamlar, alt çizgiler, tireler ve noktalar içermelidir.",
     on: "On",
     none: "Yok",
     stopped: "Durdu",
