@@ -74,7 +74,11 @@ module.exports.CreateExcelFile = {
             "ALL styling is AUTOMATIC — you only need to provide the CSV data and filename. " +
             "The tool automatically applies: header styling, column auto-fit, zebra striping, frozen panes, " +
             "smart number formatting, total row detection, and autofilter. " +
-            "You can also embed charts (bar, line, pie...) next to or below your tables by providing the 'charts' specification. " +
+            "If the spreadsheet contains numeric data suitable for comparison or trends (e.g. sales, budgets, growth, metrics over time/regions), " +
+            "you MUST generate corresponding charts in the 'charts' array to visualize the data. " +
+            "BẮT BUỘC: Nếu dữ liệu có chứa số liệu so sánh hoặc xu hướng theo thời gian/danh mục (doanh thu, chi phí, ngân sách...), " +
+            "bạn phải định nghĩa đối tượng biểu đồ tương ứng trong tham số 'charts' (ví dụ biểu đồ cột 'bar' hoặc đường 'line') để trực quan hóa dữ liệu trực tiếp trong file Excel. " +
+            "Đảm bảo các nhãn (labels) và bộ dữ liệu (datasets) trong đối tượng chart khớp chính xác với dữ liệu bảng CSV của bạn. " +
             "IMPORTANT for CSV data quality: " +
             "- Include ALL columns from the source data, do not omit any fields " +
             "- Use clear Vietnamese or English column headers " +

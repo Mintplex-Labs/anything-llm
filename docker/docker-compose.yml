@@ -32,7 +32,7 @@ services:
 
   quickchart:
     container_name: quickchart
-    image: ianw/quickchart:3
+    image: ianw/quickchart:latest
     restart: always
     ports:
       - "3400:3400"
