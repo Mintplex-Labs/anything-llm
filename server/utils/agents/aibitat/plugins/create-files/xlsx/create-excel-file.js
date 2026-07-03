@@ -135,17 +135,18 @@ module.exports.CreateExcelFile = {
               csvData: {
                 type: "string",
                 description:
-                  "CSV data for a single-sheet workbook. MUST include a header row as the first line.",
+                  "CSV data for a single-sheet workbook. MUST include a header row as the first line. " +
+                  "Supports dynamic spreadsheet formulas! You can write formulas directly in cells by starting with '=' (e.g. '=B2-C2', '=SUM(B2:B10)', '=AVERAGE(C2:C5)'). These formulas will be dynamically calculated by Excel.",
               },
               charts: {
                 type: "array",
-                description: "Optional list of charts to embed directly into the workbook.",
+                description: "Optional list of charts to embed directly into the workbook. Each dataset will link natively to its corresponding row/column cells in the Table sheet.",
                 items: chartSchemaItem,
               },
               sheets: {
                 type: "array",
                 description:
-                  "Array of sheet definitions for multi-sheet workbooks.",
+                  "Array of sheet definitions for multi-sheet workbooks. Each sheet can also contain formulas (cells starting with '=').",
                 items: {
                   type: "object",
                   properties: {
@@ -155,7 +156,7 @@ module.exports.CreateExcelFile = {
                     },
                     csvData: {
                       type: "string",
-                      description: "The CSV data for this sheet.",
+                      description: "The CSV data for this sheet (can include formulas starting with '=').",
                     },
                     title: {
                       type: "string",

@@ -141,6 +141,7 @@ function detectDelimiter(csvString) {
  * Attempts to convert a string value to an appropriate type (number, date, boolean, or string).
  * @param {string} value - The string value to convert
  * @returns {string|number|Date|boolean} The converted value
+ * @returns {string|number|Date|boolean|{formula: string}} The converted value
  */
 function inferCellType(value) {
   if (value === "" || value === null || value === undefined) {
@@ -149,6 +150,10 @@ function inferCellType(value) {
 
   const trimmed = value.trim();
   const lowerTrimmed = trimmed.toLowerCase();
+
+  if (trimmed.startsWith("=")) {
+    return { formula: trimmed.substring(1) };
+  }
 
   if (lowerTrimmed === "true") return true;
   if (lowerTrimmed === "false") return false;
