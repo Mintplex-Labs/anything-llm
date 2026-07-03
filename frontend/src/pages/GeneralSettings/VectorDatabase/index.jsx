@@ -36,7 +36,7 @@ import PGVectorOptions from "@/components/VectorDBSelection/PGVectorOptions";
 const VECTOR_DBS = [
   {
     name: "LanceDB",
-    value: "pgvector",
+    value: "lancedb",
     logo: LanceDbLogo,
     options: (_) => <LanceDBOptions />,
     description:
