@@ -52,10 +52,12 @@ class PGVector extends VectorDatabase {
   /**
    * Get the connection string for the PGVector database.
    * - Requires a connection string to be present in the environment variables.
+   * - On the PG docker image - assumes DATABASE_URL to be used here since
+   * the user likely wants to store everything in the same database.
    * @returns {string | null}
    */
   static connectionString() {
-    return process.env.PGVECTOR_CONNECTION_STRING;
+    return process.env.DATABASE_URL || process.env.PGVECTOR_CONNECTION_STRING;
   }
 
   createTableSql(dimensions) {
