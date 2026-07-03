@@ -71,41 +71,6 @@ class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
       });
   }
 
-  /**
-   * Format a message with attachments for Cohere's v2 API.
-   * Cohere SDK uses camelCase (imageUrl) instead of snake_case (image_url).
-   * @param {Object} message - Message with potential attachments
-   * @returns {Object} Formatted message for Cohere SDK
-   */
-  formatMessageWithAttachments(message) {
-    if (!message.attachments || message.attachments.length === 0) {
-      return message;
-    }
-
-    const content = [{ type: "text", text: message.content }];
-    for (const attachment of message.attachments) {
-      content.push({
-        type: "image_url",
-        imageUrl: {
-          url: attachment.contentString,
-        },
-      });
-    }
-
-    const { attachments: _, ...rest } = message;
-    return {
-      ...rest,
-      content,
-    };
-  }
-
-  /**
-   * Stream a chat completion using the Cohere v2 API.
-   * The v2 API accepts OpenAI-compatible message format directly,
-   * including multimodal content arrays for vision support.
-   * @param {Object} options - Options containing messages array
-   * @returns {AsyncIterable} Stream of events from Cohere
-   */
   async #handleFunctionCallStream({ messages = [] }) {
     return await this.client.chat.completions.create({
       model: this.model,

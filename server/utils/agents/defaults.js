@@ -136,24 +136,6 @@ async function agentSkillsFromSystemSettings() {
       systemFunctions.push(AgentPlugins[skill].name);
   });
 
-  // Load disabled filesystem sub-skills
-  const _disabledFilesystemSkills = safeJsonParse(
-    await SystemSettings.getValueOrFallback(
-      { label: "disabled_filesystem_skills" },
-      "[]"
-    ),
-    []
-  );
-
-  // Load disabled create-files sub-skills
-  const _disabledCreateFilesSkills = safeJsonParse(
-    await SystemSettings.getValueOrFallback(
-      { label: "disabled_create_files_skills" },
-      "[]"
-    ),
-    []
-  );
-
   // Load non-imported built-in skills that are configurable.
   const _setting = safeJsonParse(
     await SystemSettings.getValueOrFallback(
