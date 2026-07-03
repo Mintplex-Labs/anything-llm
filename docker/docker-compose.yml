@@ -29,3 +29,12 @@ services:
       - anything-llm
     extra_hosts:
       - "host.docker.internal:host-gateway"
+
+  quickchart:
+    container_name: quickchart
+    image: ianw/quickchart:3
+    restart: always
+    ports:
+      - "3400:3400"
+    networks:
+      - anything-llm

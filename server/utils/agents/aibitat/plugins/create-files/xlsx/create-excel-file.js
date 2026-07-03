@@ -12,7 +12,53 @@ const {
   applyPremiumFormatting,
   applyTitleRow,
   applySmartNumberFormatting,
+  embedChartInWorksheet,
 } = require("./utils.js");
+
+const chartSchemaItem = {
+  type: "object",
+  properties: {
+    title: {
+      type: "string",
+      description: "Title of the chart. Do not leave blank.",
+    },
+    type: {
+      type: "string",
+      enum: ["bar", "line", "pie", "doughnut", "radar"],
+      description: "The chart visualization style.",
+    },
+    labels: {
+      type: "array",
+      items: { type: "string" },
+      description: "The category labels for the X-axis (e.g. ['Q1', 'Q2', 'Q3', 'Q4'] or ['Hà Nội', 'HCM']).",
+    },
+    datasets: {
+      type: "array",
+      description: "One or more datasets/series of values to plot.",
+      items: {
+        type: "object",
+        properties: {
+          label: {
+            type: "string",
+            description: "The name of this metric series (e.g. 'Doanh thu', 'Chi phí').",
+          },
+          data: {
+            type: "array",
+            items: { type: "number" },
+            description: "The numeric data points corresponding to labels.",
+          },
+        },
+        required: ["label", "data"],
+      },
+    },
+    position: {
+      type: "string",
+      enum: ["side", "below"],
+      description: "Chart placement: 'side' (to the right of the table, default) or 'below' (underneath the table).",
+    },
+  },
+  required: ["title", "type", "labels", "datasets"],
+};
 
 module.exports.CreateExcelFile = {
   name: "create-excel-file",
@@ -24,12 +70,11 @@ module.exports.CreateExcelFile = {
           super: aibitat,
           name: this.name,
           description:
-            "Create a professional Excel spreadsheet (.xlsx) from CSV data. " +
+            "Create a professional Excel spreadsheet (.xlsx) from CSV data with optional embedded charts. " +
             "ALL styling is AUTOMATIC — you only need to provide the CSV data and filename. " +
             "The tool automatically applies: header styling, column auto-fit, zebra striping, frozen panes, " +
-            "smart number formatting (thousand separators, decimals), total row detection, and autofilter. " +
-            "Supports multiple sheets, automatic type detection (numbers, dates, booleans, currency, percentages). " +
-            "Provide data in CSV format with comma, semicolon, tab, or pipe delimiters. " +
+            "smart number formatting, total row detection, and autofilter. " +
+            "You can also embed charts (bar, line, pie...) next to or below your tables by providing the 'charts' specification. " +
             "IMPORTANT for CSV data quality: " +
             "- Include ALL columns from the source data, do not omit any fields " +
             "- Use clear Vietnamese or English column headers " +
@@ -38,54 +83,36 @@ module.exports.CreateExcelFile = {
             "- If you have a summary/total row, start it with 'Tổng' or 'Total' — it will be auto-styled",
           examples: [
             {
-              prompt: "Xuất danh sách văn bản hành chính ra Excel",
+              prompt: "Tạo file Excel báo cáo doanh số 4 quý năm 2025 của 3 chi nhánh và vẽ đồ thị cột so sánh doanh số giữa các chi nhánh",
               call: JSON.stringify({
-                filename: "danh-sach-van-ban.xlsx",
-                title: "DANH SÁCH VĂN BẢN HÀNH CHÍNH NĂM 2026",
+                filename: "doanh-so-2025.xlsx",
+                title: "BÁO CÁO DOANH SỐ CÁC CHI NHÁNH NĂM 2025",
                 csvData:
-                  "STT,Ký hiệu văn bản,Trích yếu nội dung,Ngày văn bản,Cơ quan ban hành,Trạng thái\n" +
-                  "1,5775/STC-QLDN,Về việc rà soát cơ chế chính sách hỗ trợ doanh nghiệp,18/06/2026,Sở Tài chính,Đã xử lý\n" +
-                  "2,702/CV-UBND,CV góp ý dự thảo triển khai Cổng DVC quốc gia,18/06/2026,UBND Tỉnh,Đang xử lý\n" +
-                  "3,299/BC-UBND,Báo cáo tình hình triển khai NQ 57-NQ/TW,18/06/2026,UBND Phường,Hoàn thành",
-              }),
-            },
-            {
-              prompt: "Create an Excel file with sales data",
-              call: JSON.stringify({
-                filename: "sales-report.xlsx",
-                title: "Q1 Sales Report 2026",
-                csvData:
-                  "Product,Region,Sales,Growth %\n" +
-                  "Widget A,North,1250500,15.2%\n" +
-                  "Widget B,South,980000,8.5%\n" +
-                  "Widget C,East,1100250,12.1%\n" +
-                  "Total,,3330750,11.9%",
-              }),
-            },
-            {
-              prompt: "Tạo báo cáo tài chính chi tiết",
-              call: JSON.stringify({
-                filename: "bao-cao-tai-chinh.xlsx",
-                sheets: [
+                  "Chi nhánh,Quý 1,Quý 2,Quý 3,Quý 4,Tổng cộng\n" +
+                  "Chi nhánh Hà Nội,450000000,520000000,480000000,610000000,2060000000\n" +
+                  "Chi nhánh TP.HCM,600000000,580000000,650000000,720000000,2550000000\n" +
+                  "Chi nhánh Đà Nẵng,250000000,280000000,310000000,340000000,1180000000\n" +
+                  "Tổng cộng,,1300000000,1380000000,1440000000,1670000000,5790000000",
+                charts: [
                   {
-                    name: "Thu chi",
-                    title: "BÁO CÁO THU CHI QUÝ I/2026",
-                    csvData:
-                      "STT,Khoản mục,Kế hoạch (VNĐ),Thực hiện (VNĐ),Tỷ lệ %,Ghi chú\n" +
-                      "1,Doanh thu bán hàng,5000000000,4850000000,97%,Đạt kế hoạch\n" +
-                      "2,Doanh thu dịch vụ,2000000000,2150000000,107.5%,Vượt kế hoạch\n" +
-                      "3,Chi phí nguyên vật liệu,3000000000,2800000000,93.3%,Tiết kiệm\n" +
-                      "4,Chi phí nhân sự,1500000000,1520000000,101.3%,Tăng nhẹ\n" +
-                      "Tổng cộng,,11500000000,11320000000,98.4%,",
-                  },
-                  {
-                    name: "Nhân sự",
-                    title: "DANH SÁCH NHÂN SỰ",
-                    csvData:
-                      "STT,Họ tên,Phòng ban,Chức vụ,Lương (VNĐ)\n" +
-                      "1,Nguyễn Văn A,Kỹ thuật,Trưởng phòng,25000000\n" +
-                      "2,Trần Thị B,Kinh doanh,Nhân viên,15000000\n" +
-                      "3,Lê Văn C,Hành chính,Phó phòng,20000000",
+                    title: "So sánh Doanh số Quý giữa các Chi nhánh",
+                    type: "bar",
+                    labels: ["Quý 1", "Quý 2", "Quý 3", "Quý 4"],
+                    datasets: [
+                      {
+                        label: "Hà Nội",
+                        data: [450000000, 520000000, 480000000, 610000000],
+                      },
+                      {
+                        label: "TP.HCM",
+                        data: [600000000, 580000000, 650000000, 720000000],
+                      },
+                      {
+                        label: "Đà Nẵng",
+                        data: [250000000, 280000000, 310000000, 340000000],
+                      },
+                    ],
+                    position: "side",
                   },
                 ],
               }),
@@ -104,27 +131,28 @@ module.exports.CreateExcelFile = {
                 type: "string",
                 description:
                   "Optional title displayed as a large merged header row at the top of the sheet. " +
-                  "Use for report titles like 'DANH SÁCH VĂN BẢN NĂM 2026' or 'Sales Report Q1'. " +
-                  "Only applies when using single-sheet mode (csvData). For multi-sheet, set title per sheet.",
+                  "Use for report titles like 'DANH SÁCH VĂN BẢN NĂM 2026'.",
               },
               csvData: {
                 type: "string",
                 description:
-                  "CSV data for a single-sheet workbook. Use comma, semicolon, tab, or pipe as delimiter. " +
-                  "MUST include a header row as the first line. " +
-                  "For multiple sheets, use the 'sheets' parameter instead.",
+                  "CSV data for a single-sheet workbook. MUST include a header row as the first line.",
+              },
+              charts: {
+                type: "array",
+                description: "Optional list of charts to embed directly into the single sheet.",
+                items: chartSchemaItem,
               },
               sheets: {
                 type: "array",
                 description:
-                  "Array of sheet definitions for multi-sheet workbooks. Each sheet has a name, csvData, and optional title.",
+                  "Array of sheet definitions for multi-sheet workbooks.",
                 items: {
                   type: "object",
                   properties: {
                     name: {
                       type: "string",
-                      description:
-                        "The name of the worksheet (max 31 characters).",
+                      description: "The name of the worksheet (max 31 characters).",
                     },
                     csvData: {
                       type: "string",
@@ -132,8 +160,12 @@ module.exports.CreateExcelFile = {
                     },
                     title: {
                       type: "string",
-                      description:
-                        "Optional title row for this sheet (large merged header at top).",
+                      description: "Optional title row for this sheet.",
+                    },
+                    charts: {
+                      type: "array",
+                      description: "Optional list of charts to embed directly into this specific sheet.",
+                      items: chartSchemaItem,
                     },
                   },
                   required: ["name", "csvData"],
@@ -147,13 +179,13 @@ module.exports.CreateExcelFile = {
             filename = "spreadsheet.xlsx",
             title = null,
             csvData = null,
+            charts = null,
             sheets = null,
           }) {
             try {
               this.super.handlerProps.log(`Using the create-excel-file tool.`);
 
-              // Strip XML 1.0 illegal control characters from all cell content
-              // and sheet names so Excel can open the generated workbook.
+              // Strip XML 1.0 illegal control characters from inputs
               csvData = createFilesLib.stripInvalidXmlChars(csvData);
               sheets = createFilesLib.stripInvalidXmlChars(sheets);
               title = createFilesLib.stripInvalidXmlChars(title);
@@ -162,7 +194,6 @@ module.exports.CreateExcelFile = {
               if (!hasExtension) filename = `${filename}.xlsx`;
 
               if (sheets && typeof sheets === "string") {
-                // LLM hallucinated sheets as a string (the CSV data)
                 if (!csvData) csvData = sheets;
                 sheets = null;
               }
@@ -178,6 +209,7 @@ module.exports.CreateExcelFile = {
                       name: "Sheet1",
                       csvData,
                       title: title || null,
+                      charts: charts || null,
                     },
                   ];
 
@@ -191,7 +223,7 @@ module.exports.CreateExcelFile = {
                 if (!actualCsvData || typeof actualCsvData !== "string" || actualCsvData.trim() === "") {
                   return `Error: Sheet "${sheet.name || `Sheet${i+1}`}" has no CSV data.`;
                 }
-                sheet.csvData = actualCsvData; // Normalize
+                sheet.csvData = actualCsvData;
               }
 
               const sheetCount = sheetDefinitions.length;
@@ -245,7 +277,7 @@ module.exports.CreateExcelFile = {
                 }
 
                 const worksheet = workbook.addWorksheet(sheetName);
-                const dataRowCount = parsedData.length - 1; // Minus header
+                const dataRowCount = parsedData.length - 1;
                 const colCount = parsedData[0]?.length || 0;
 
                 // Populate cells
@@ -298,42 +330,46 @@ module.exports.CreateExcelFile = {
 
                 // --- Auto-apply ALL professional styling ---
                 autoFitColumns(worksheet);
-                applyHeaderStyle(worksheet, {
-                  bold: true,
-                  fill: "FF0F172A",
-                  fontColor: "FFFFFFFF",
-                });
-
-                // Adjust header style row if title exists
-                if (dataStartRow > 1) {
-                  // Re-apply header style to the actual header row (row 2)
-                  const headerRow = worksheet.getRow(dataStartRow);
-                  if (headerRow && headerRow.cellCount > 0) {
-                    headerRow.eachCell((cell) => {
-                      cell.font = {
-                        bold: true,
-                        color: { argb: "FFFFFFFF" },
-                        name: "Segoe UI",
-                        size: 11,
-                      };
-                      cell.fill = {
-                        type: "pattern",
-                        pattern: "solid",
-                        fgColor: { argb: "FF0F172A" },
-                      };
-                      cell.alignment = {
-                        vertical: "middle",
-                        horizontal: "center",
-                      };
-                    });
-                    headerRow.height = 25;
-                  }
-                }
+                applyHeaderStyle(
+                  worksheet,
+                  {
+                    bold: true,
+                    fill: "FF0F172A",
+                    fontColor: "FFFFFFFF",
+                  },
+                  dataStartRow
+                );
 
                 applyZebraStriping(worksheet, "FFF8FAFC", dataStartRow + 1);
                 applySmartNumberFormatting(worksheet, dataStartRow);
                 applyPremiumFormatting(worksheet, dataStartRow);
                 freezePanes(worksheet, dataStartRow, 0);
+
+                // --- Embed charts if provided ---
+                const embeddedCharts = [];
+                if (Array.isArray(sheetDef.charts) && sheetDef.charts.length > 0) {
+                  for (const chart of sheetDef.charts) {
+                    const embedResult = await embedChartInWorksheet(
+                      workbook,
+                      worksheet,
+                      chart,
+                      dataStartRow,
+                      colCount,
+                      parsedData.length + (dataStartRow - 1)
+                    );
+                    if (embedResult.success) {
+                      embeddedCharts.push({
+                        title: chart.title,
+                        type: chart.type,
+                        range: embedResult.range,
+                      });
+                    } else {
+                      allWarnings.push(
+                        `Không thể vẽ đồ thị "${chart.title}" trên sheet "${sheetName}": ${embedResult.error}`
+                      );
+                    }
+                  }
+                }
 
                 // Collect summary info
                 const headers = parsedData[0] || [];
@@ -342,8 +378,9 @@ module.exports.CreateExcelFile = {
                   title: sheetTitle,
                   rows: dataRowCount,
                   columns: colCount,
-                  headers: headers.slice(0, 10), // First 10 columns
+                  headers: headers.slice(0, 10),
                   hasMore: headers.length > 10,
+                  embeddedCharts,
                 });
               }
 
@@ -392,12 +429,18 @@ module.exports.CreateExcelFile = {
                 if (summary.headers.length > 0) {
                   parts.push(`- Các cột: ${summary.headers.join(", ")}${summary.hasMore ? "..." : ""}`);
                 }
+                if (summary.embeddedCharts.length > 0) {
+                  parts.push(`📈 **Đồ thị đã vẽ:**`);
+                  summary.embeddedCharts.forEach((c) => {
+                    parts.push(`  - ✓ **${c.title}** (${c.type}) đặt tại ô ${c.range}`);
+                  });
+                }
                 parts.push("");
               }
 
               parts.push("🎨 **Định dạng tự động đã áp dụng:**");
               parts.push("- ✓ Header row (đậm, nền tối, chữ trắng)");
-              parts.push("- ✓ Auto-fit column widths");
+              parts.push("- ✓ Auto-fit column widths (bảo toàn cấu trúc cột, không mất cột)");
               parts.push("- ✓ Zebra striping (dòng xen kẽ màu)");
               parts.push("- ✓ Frozen header row");
               parts.push("- ✓ Auto-filter");
@@ -410,7 +453,7 @@ module.exports.CreateExcelFile = {
 
               if (allWarnings.length > 0) {
                 parts.push("");
-                parts.push(`⚠️ **Warnings:**`);
+                parts.push(`⚠️ **Lưu ý:**`);
                 allWarnings.forEach((w) => parts.push(`- ${w}`));
               }
 

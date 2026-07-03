@@ -52,7 +52,23 @@ function parseCSV(csvString, delimiter = ",") {
     rows.push(currentRow);
   }
 
-  return rows.filter((row) => row.some((cell) => cell !== ""));
+  const parsedRows = rows.filter((row) => row.some((cell) => cell !== ""));
+  
+  // Pad shorter rows to match the header length so columns are never lost
+  const headerLength = parsedRows[0]?.length || 0;
+  if (headerLength > 0) {
+    for (let i = 0; i < parsedRows.length; i++) {
+      while (parsedRows[i].length < headerLength) {
+        parsedRows[i].push("");
+      }
+      // Truncate if somehow a row exceeds header (though rare in basic CSV)
+      if (parsedRows[i].length > headerLength) {
+        parsedRows[i] = parsedRows[i].slice(0, headerLength);
+      }
+    }
+  }
+
+  return parsedRows;
 }
 
 /**
@@ -264,12 +280,15 @@ function autoFitColumns(worksheet, minWidth = 8, maxWidth = 50) {
  */
 function applyHeaderStyle(
   worksheet,
-  { bold = true, fill = "FF0F172A", fontColor = "FFFFFFFF" } = {} // Slate 900
+  { bold = true, fill = "FF0F172A", fontColor = "FFFFFFFF" } = {}, // Slate 900
+  headerRowNumber = 1
 ) {
-  const headerRow = worksheet.getRow(1);
-  if (!headerRow || headerRow.cellCount === 0) return;
+  const headerRow = worksheet.getRow(headerRowNumber);
+  if (!headerRow) return;
 
-  headerRow.eachCell((cell) => {
+  const colCount = worksheet.columnCount || 1;
+  for (let col = 1; col <= colCount; col++) {
+    const cell = headerRow.getCell(col);
     cell.font = {
       bold,
       color: { argb: fontColor },
@@ -284,8 +303,9 @@ function applyHeaderStyle(
     cell.alignment = {
       vertical: "middle",
       horizontal: "center",
+      wrapText: true,
     };
-  });
+  }
 
   headerRow.height = 25;
 }
@@ -297,9 +317,11 @@ function applyHeaderStyle(
  * @param {number} [startRow=2] - Row to start alternating from (skips header)
  */
 function applyZebraStriping(worksheet, evenColor = "FFF8FAFC", startRow = 2) {
+  const colCount = worksheet.columnCount || 1;
   worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
     if (rowNumber >= startRow && rowNumber % 2 === 0) {
-      row.eachCell((cell) => {
+      for (let col = 1; col <= colCount; col++) {
+        const cell = row.getCell(col);
         if (!cell.fill || cell.fill.type !== "pattern") {
           cell.fill = {
             type: "pattern",
@@ -307,7 +329,7 @@ function applyZebraStriping(worksheet, evenColor = "FFF8FAFC", startRow = 2) {
             fgColor: { argb: evenColor },
           };
         }
-      });
+      }
     }
   });
 }
@@ -325,7 +347,7 @@ function freezePanes(worksheet, rows = 1, columns = 0) {
 /**
  * Applies premium formatting to the entire worksheet:
  * - Autofilter for data
- * - Borders for all cells
+ * - Borders for all cells (including blank cells)
  * - Modern fonts and vertical alignment
  * - Auto-detect total/summary rows and bold them
  * @param {import('exceljs').Worksheet} worksheet - The worksheet to modify
@@ -346,6 +368,8 @@ function applyPremiumFormatting(worksheet, dataStartRow = 1) {
     "grand total", "subtotal", "trung bình", "average", "avg",
   ];
 
+  const colCount = worksheet.columnCount || 1;
+
   // Set default row height, borders, and fonts
   worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
     if (rowNumber <= dataStartRow) return; // Skip title rows
@@ -358,7 +382,8 @@ function applyPremiumFormatting(worksheet, dataStartRow = 1) {
     const firstCellValue = String(row.getCell(1).value || "").trim().toLowerCase();
     const isTotalRow = totalKeywords.some((kw) => firstCellValue.startsWith(kw));
 
-    row.eachCell((cell) => {
+    for (let col = 1; col <= colCount; col++) {
+      const cell = row.getCell(col);
       // Apply clean subtle borders
       cell.border = {
         top: { style: "thin", color: { argb: "FFE2E8F0" } }, // slate-200
@@ -400,7 +425,7 @@ function applyPremiumFormatting(worksheet, dataStartRow = 1) {
           };
         }
       }
-    });
+    }
   });
 }
 
@@ -546,6 +571,148 @@ function applySmartNumberFormatting(worksheet, headerRow = 1) {
   }
 }
 
+/**
+ * Generates a chart image from QuickChart and embeds it into the worksheet.
+ *
+ * @param {import('exceljs').Workbook} workbook - The workbook object
+ * @param {import('exceljs').Worksheet} worksheet - The worksheet to embed the chart in
+ * @param {Object} chartDef - Chart definition
+ * @param {string} chartDef.title - Title of the chart
+ * @param {string} chartDef.type - Type of the chart ('bar', 'line', 'pie', 'doughnut', etc.)
+ * @param {string[]} chartDef.labels - X-axis labels
+ * @param {Array<{label: string, data: number[]}>} chartDef.datasets - Datasets containing labels and numeric data
+ * @param {'side'|'below'} [chartDef.position='side'] - Placement relative to data table
+ * @param {number} [dataStartRow=1] - The start row of data headers
+ * @param {number} [maxCol=1] - Maximum columns in table
+ * @param {number} [maxRow=1] - Maximum rows in table
+ */
+async function embedChartInWorksheet(
+  workbook,
+  worksheet,
+  chartDef,
+  dataStartRow = 1,
+  maxCol = 1,
+  maxRow = 1
+) {
+  try {
+    const type = chartDef.type || "bar";
+    const title = chartDef.title || "Biểu đồ";
+    const labels = chartDef.labels || [];
+    const datasets = chartDef.datasets || [];
+
+    // Nice clean colors for charts
+    const chartColors = [
+      { border: "#4F46E5", background: "rgba(79, 70, 229, 0.2)" }, // indigo
+      { border: "#0D9488", background: "rgba(13, 148, 136, 0.2)" }, // teal
+      { border: "#E11D48", background: "rgba(225, 29, 72, 0.2)" }, // rose
+      { border: "#D97706", background: "rgba(217, 119, 6, 0.2)" }, // amber
+      { border: "#059669", background: "rgba(5, 150, 105, 0.2)" }, // emerald
+    ];
+
+    const formattedDatasets = datasets.map((ds, index) => {
+      const color = chartColors[index % chartColors.length];
+      return {
+        label: ds.label || `Dataset ${index + 1}`,
+        data: ds.data || [],
+        borderColor: color.border,
+        backgroundColor: type === "line" ? "transparent" : color.background,
+        borderWidth: 2,
+        fill: type !== "line",
+      };
+    });
+
+    const chartConfig = {
+      type: type,
+      data: {
+        labels: labels,
+        datasets: formattedDatasets,
+      },
+      options: {
+        title: {
+          display: true,
+          text: title,
+          fontSize: 16,
+          fontColor: "#1E293B",
+          fontFamily: "Segoe UI",
+        },
+        legend: {
+          position: "bottom",
+          labels: {
+            boxWidth: 12,
+            fontSize: 11,
+            fontFamily: "Segoe UI",
+          },
+        },
+        scales: type !== "pie" && type !== "doughnut" && type !== "polarArea" ? {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true,
+              fontFamily: "Segoe UI",
+            }
+          }],
+          xAxes: [{
+            ticks: {
+              fontFamily: "Segoe UI",
+            }
+          }]
+        } : undefined,
+      },
+    };
+
+    const width = 550;
+    const height = 320;
+    const quickchartEndpoint = (process.env.QUICKCHART_ENDPOINT || "https://quickchart.io").replace(/\/$/, "");
+    const url = `${quickchartEndpoint}/chart?c=${encodeURIComponent(
+      JSON.stringify(chartConfig)
+    )}&w=${width}&h=${height}&bkg=white`;
+
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch chart from QuickChart: ${response.statusText}`);
+    }
+
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    const imageId = workbook.addImage({
+      buffer: buffer,
+      extension: "png",
+    });
+
+    // Calculate chart grid coordinates
+    let fromCol = maxCol + 2;
+    let fromRow = dataStartRow > 1 ? dataStartRow : 2;
+
+    if (chartDef.position === "below") {
+      fromCol = 2;
+      fromRow = maxRow + 3;
+    }
+
+    // Width: ~8 columns, Height: ~16 rows
+    const toCol = fromCol + 8;
+    const toRow = fromRow + 16;
+
+    // Helper to get column letter (e.g. 1 -> A, 27 -> AA)
+    const getColLetter = (col) => {
+      let temp, letter = "";
+      while (col > 0) {
+        temp = (col - 1) % 26;
+        letter = String.fromCharCode(temp + 65) + letter;
+        col = (col - temp - 1) / 26;
+      }
+      return letter;
+    };
+
+    const range = `${getColLetter(fromCol)}${fromRow}:${getColLetter(toCol)}${toRow}`;
+    worksheet.addImage(imageId, range);
+
+    return { success: true, range };
+  } catch (err) {
+    console.error("[Excel-Chart-Embed] Error:", err.message);
+    return { success: false, error: err.message };
+  }
+}
+
 module.exports = {
   parseCSV,
   validateCSVData,
@@ -559,5 +726,6 @@ module.exports = {
   applyPremiumFormatting,
   applyTitleRow,
   applySmartNumberFormatting,
+  embedChartInWorksheet,
 };
 
