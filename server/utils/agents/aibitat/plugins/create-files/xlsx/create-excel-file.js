@@ -140,7 +140,7 @@ module.exports.CreateExcelFile = {
               },
               charts: {
                 type: "array",
-                description: "Optional list of charts to embed directly into the workbook. Each dataset will link natively to its corresponding row/column cells in the Table sheet.",
+                description: "CRITICAL BẮT BUỘC: Nếu dữ liệu mang tính chất thống kê, báo cáo doanh thu, số lượng, hoặc so sánh, bạn PHẢI MẶC ĐỊNH cung cấp mảng 'charts' này để vẽ biểu đồ Native Excel. Tuyệt đối không được bỏ qua nếu người dùng yêu cầu vẽ biểu đồ.",
                 items: chartSchemaItem,
               },
               sheets: {
@@ -278,7 +278,10 @@ module.exports.CreateExcelFile = {
                   {
                     name: "Table",
                     csvData: sheetDef.csvData,
-                    title: sheetDef.title
+                    // FORCE title to null if we have a native chart! 
+                    // xlsx-chart hardcodes formula references to start at row 1.
+                    // If we add a title row, the data shifts to row 2 and the chart reads text instead of numbers, resulting in a blank chart.
+                    title: null
                   }
                 ];
               }

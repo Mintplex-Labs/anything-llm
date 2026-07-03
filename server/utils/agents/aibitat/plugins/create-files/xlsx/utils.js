@@ -285,7 +285,7 @@ function autoFitColumns(worksheet, minWidth = 8, maxWidth = 50) {
  */
 function applyHeaderStyle(
   worksheet,
-  { bold = true, fill = "FF0F172A", fontColor = "FFFFFFFF" } = {}, // Slate 900
+  { bold = true, fill = "FF1E293B", fontColor = "FFFFFFFF" } = {}, // Slate 800
   headerRowNumber = 1
 ) {
   const headerRow = worksheet.getRow(headerRowNumber);
@@ -310,9 +310,13 @@ function applyHeaderStyle(
       horizontal: "center",
       wrapText: true,
     };
+    // Add a solid bottom border for the header
+    cell.border = {
+      bottom: { style: "medium", color: { argb: "FF0F172A" } },
+    };
   }
 
-  headerRow.height = 25;
+  headerRow.height = 32;
 }
 
 /**
@@ -380,7 +384,7 @@ function applyPremiumFormatting(worksheet, dataStartRow = 1) {
     if (rowNumber <= dataStartRow) return; // Skip title rows
 
     if (rowNumber > dataStartRow && !row.height) {
-      row.height = 20;
+      row.height = 28; // Increased row height for better breathability
     }
 
     // Check if this is a total/summary row
@@ -389,12 +393,9 @@ function applyPremiumFormatting(worksheet, dataStartRow = 1) {
 
     for (let col = 1; col <= colCount; col++) {
       const cell = row.getCell(col);
-      // Apply clean subtle borders
+      // Modern web-table style: Only subtle horizontal borders, NO vertical gridlines
       cell.border = {
-        top: { style: "thin", color: { argb: "FFE2E8F0" } }, // slate-200
-        left: { style: "thin", color: { argb: "FFE2E8F0" } },
-        bottom: { style: "thin", color: { argb: "FFE2E8F0" } },
-        right: { style: "thin", color: { argb: "FFE2E8F0" } },
+        bottom: { style: "thin", color: { argb: "FFE2E8F0" } }, // slate-200
       };
 
       // Ensure proper alignment
@@ -410,23 +411,21 @@ function applyPremiumFormatting(worksheet, dataStartRow = 1) {
         cell.font = {
           ...currentFont,
           name: currentFont.name || "Segoe UI",
-          size: currentFont.size || 10,
+          size: currentFont.size || 11, // Increased font size slightly
           color: currentFont.color || { argb: "FF334155" }, // slate-700
           bold: isTotalRow ? true : currentFont.bold || false,
         };
 
-        // Total row gets special background
+        // Total row gets special background and distinct borders
         if (isTotalRow) {
           cell.fill = {
             type: "pattern",
             pattern: "solid",
-            fgColor: { argb: "FFEEF2FF" }, // indigo-50
+            fgColor: { argb: "FFF0F9FF" }, // sky-50
           };
           cell.border = {
-            top: { style: "medium", color: { argb: "FF6366F1" } }, // indigo-500
-            left: { style: "thin", color: { argb: "FFE2E8F0" } },
-            bottom: { style: "medium", color: { argb: "FF6366F1" } },
-            right: { style: "thin", color: { argb: "FFE2E8F0" } },
+            top: { style: "double", color: { argb: "FF0284C7" } }, // sky-600
+            bottom: { style: "medium", color: { argb: "FF0284C7" } },
           };
         }
       }
@@ -461,23 +460,23 @@ function applyTitleRow(worksheet, title) {
   const titleCell = titleRow.getCell(1);
   titleCell.font = {
     name: "Segoe UI",
-    size: 14,
+    size: 16, // Larger font
     bold: true,
-    color: { argb: "FF1E293B" }, // slate-800
+    color: { argb: "FF0F172A" }, // slate-900
   };
   titleCell.fill = {
     type: "pattern",
     pattern: "solid",
-    fgColor: { argb: "FFF1F5F9" }, // slate-100
+    fgColor: { argb: "FFFFFFFF" }, // pure white background for clean look
   };
   titleCell.alignment = {
     vertical: "middle",
     horizontal: "center",
   };
   titleCell.border = {
-    bottom: { style: "medium", color: { argb: "FF3B82F6" } }, // blue-500
+    bottom: { style: "thick", color: { argb: "FF0EA5E9" } }, // sky-500 thick border
   };
-  titleRow.height = 35;
+  titleRow.height = 45; // Taller title row
 
   return 2; // Data now starts at row 2
 }
