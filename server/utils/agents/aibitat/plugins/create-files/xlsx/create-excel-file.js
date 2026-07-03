@@ -12,8 +12,9 @@ const {
   applyPremiumFormatting,
   applyTitleRow,
   applySmartNumberFormatting,
-  embedChartInWorksheet,
+  mergeNativeChart,
 } = require("./utils.js");
+const XlsxChart = require("xlsx-chart");
 
 const chartSchemaItem = {
   type: "object",
@@ -51,11 +52,6 @@ const chartSchemaItem = {
         required: ["label", "data"],
       },
     },
-    position: {
-      type: "string",
-      enum: ["side", "below"],
-      description: "Chart placement: 'side' (to the right of the table, default) or 'below' (underneath the table).",
-    },
   },
   required: ["title", "type", "labels", "datasets"],
 };
@@ -70,7 +66,7 @@ module.exports.CreateExcelFile = {
           super: aibitat,
           name: this.name,
           description:
-            "Create a professional Excel spreadsheet (.xlsx) from CSV data with optional embedded charts. " +
+            "Create a professional Excel spreadsheet (.xlsx) from CSV data with optional embedded native Excel charts. " +
             "ALL styling is AUTOMATIC — you only need to provide the CSV data and filename. " +
             "The tool automatically applies: header styling, column auto-fit, zebra striping, frozen panes, " +
             "smart number formatting, total row detection, and autofilter. " +
@@ -116,7 +112,6 @@ module.exports.CreateExcelFile = {
                         data: [250000000, 280000000, 310000000, 340000000],
                       },
                     ],
-                    position: "side",
                   },
                 ],
               }),
@@ -144,7 +139,7 @@ module.exports.CreateExcelFile = {
               },
               charts: {
                 type: "array",
-                description: "Optional list of charts to embed directly into the single sheet.",
+                description: "Optional list of charts to embed directly into the workbook.",
                 items: chartSchemaItem,
               },
               sheets: {
@@ -165,11 +160,6 @@ module.exports.CreateExcelFile = {
                     title: {
                       type: "string",
                       description: "Optional title row for this sheet.",
-                    },
-                    charts: {
-                      type: "array",
-                      description: "Optional list of charts to embed directly into this specific sheet.",
-                      items: chartSchemaItem,
                     },
                   },
                   required: ["name", "csvData"],
@@ -206,7 +196,11 @@ module.exports.CreateExcelFile = {
                 return "Error: You must provide either 'csvData' (string) for a single sheet or 'sheets' (array of objects) for multiple sheets.";
               }
 
-              const sheetDefinitions = (sheets && Array.isArray(sheets))
+              let hasNativeChart = false;
+              let xlsxChartOpts = null;
+              let originalCharts = charts;
+
+              let sheetDefinitions = (sheets && Array.isArray(sheets))
                 ? sheets
                 : [
                     {
@@ -216,6 +210,77 @@ module.exports.CreateExcelFile = {
                       charts: charts || null,
                     },
                   ];
+
+              // Transform single-sheet with charts to a native Excel Chart/Table double-sheet structure
+              if (sheetDefinitions.length === 1 && sheetDefinitions[0].charts && sheetDefinitions[0].charts.length > 0) {
+                hasNativeChart = true;
+                const sheetDef = sheetDefinitions[0];
+                const chartsList = sheetDef.charts;
+                originalCharts = chartsList;
+
+                // Build options for xlsx-chart
+                const convertChartType = (t) => {
+                  const map = {
+                    bar: "bar",
+                    line: "line",
+                    pie: "pie",
+                    doughnut: "pie",
+                    radar: "radar",
+                    area: "area"
+                  };
+                  return map[String(t).toLowerCase()] || "column";
+                };
+
+                if (chartsList.length === 1) {
+                  const chart = chartsList[0];
+                  xlsxChartOpts = {
+                    chart: convertChartType(chart.type),
+                    titles: chart.datasets.map(d => d.label),
+                    fields: chart.labels,
+                    data: {},
+                    chartTitle: chart.title
+                  };
+                  chart.datasets.forEach(ds => {
+                    xlsxChartOpts.data[ds.label] = {};
+                    chart.labels.forEach((label, idx) => {
+                      xlsxChartOpts.data[ds.label][label] = ds.data[idx] || 0;
+                    });
+                  });
+                } else {
+                  xlsxChartOpts = {
+                    charts: chartsList.map(chart => {
+                      const singleOpt = {
+                        chart: convertChartType(chart.type),
+                        titles: chart.datasets.map(d => d.label),
+                        fields: chart.labels,
+                        data: {},
+                        chartTitle: chart.title
+                      };
+                      chart.datasets.forEach(ds => {
+                        singleOpt.data[ds.label] = {};
+                        chart.labels.forEach((label, idx) => {
+                          singleOpt.data[ds.label][label] = ds.data[idx] || 0;
+                        });
+                      });
+                      return singleOpt;
+                    })
+                  };
+                }
+
+                // Transform to 2 sheets: Chart (placeholder) and Table (styled data)
+                sheetDefinitions = [
+                  {
+                    name: "Chart",
+                    csvData: "Placeholder,Chart\n1,1", // dummy CSV
+                    title: null
+                  },
+                  {
+                    name: "Table",
+                    csvData: sheetDef.csvData,
+                    title: sheetDef.title
+                  }
+                ];
+              }
 
               for (let i = 0; i < sheetDefinitions.length; i++) {
                 let sheet = sheetDefinitions[i];
@@ -349,32 +414,6 @@ module.exports.CreateExcelFile = {
                 applyPremiumFormatting(worksheet, dataStartRow);
                 freezePanes(worksheet, dataStartRow, 0);
 
-                // --- Embed charts if provided ---
-                const embeddedCharts = [];
-                if (Array.isArray(sheetDef.charts) && sheetDef.charts.length > 0) {
-                  for (const chart of sheetDef.charts) {
-                    const embedResult = await embedChartInWorksheet(
-                      workbook,
-                      worksheet,
-                      chart,
-                      dataStartRow,
-                      colCount,
-                      parsedData.length + (dataStartRow - 1)
-                    );
-                    if (embedResult.success) {
-                      embeddedCharts.push({
-                        title: chart.title,
-                        type: chart.type,
-                        range: embedResult.range,
-                      });
-                    } else {
-                      allWarnings.push(
-                        `Không thể vẽ đồ thị "${chart.title}" trên sheet "${sheetName}": ${embedResult.error}`
-                      );
-                    }
-                  }
-                }
-
                 // Collect summary info
                 const headers = parsedData[0] || [];
                 sheetSummaries.push({
@@ -384,16 +423,59 @@ module.exports.CreateExcelFile = {
                   columns: colCount,
                   headers: headers.slice(0, 10),
                   hasMore: headers.length > 10,
-                  embeddedCharts,
+                  embeddedCharts: [],
                 });
               }
 
-              const buffer = await workbook.xlsx.writeBuffer();
+              let buffer = await workbook.xlsx.writeBuffer();
+
+              // --- Process and Merge Native Excel Chart ---
+              if (hasNativeChart && xlsxChartOpts) {
+                try {
+                  const xlsxChart = new XlsxChart();
+                  const xlsxChartBuffer = await new Promise((resolve, reject) => {
+                    xlsxChart.generate(xlsxChartOpts, (err, data) => {
+                      if (err) return reject(err);
+                      resolve(Buffer.from(data, "base64"));
+                    });
+                  });
+
+                  // Merge native chart XMLs into exceljs styled workbook
+                  buffer = await mergeNativeChart(buffer, xlsxChartBuffer);
+
+                  // Update summaries for native chart rendering
+                  sheetSummaries.length = 0;
+                  sheetSummaries.push({
+                    name: "Chart",
+                    title: "Biểu đồ trực quan hóa dữ liệu gốc",
+                    rows: 0,
+                    columns: 0,
+                    headers: [],
+                    hasMore: false,
+                    embeddedCharts: originalCharts.map(c => ({ title: c.title, type: c.type, range: "Sheet: Chart (Native Excel Chart)" }))
+                  });
+
+                  const tableParsedData = parseCSV(sheetDefinitions[1].csvData, detectDelimiter(sheetDefinitions[1].csvData));
+                  sheetSummaries.push({
+                    name: "Table",
+                    title: title || "Bảng số liệu chi tiết",
+                    rows: tableParsedData.length - 1,
+                    columns: tableParsedData[0]?.length || 0,
+                    headers: tableParsedData[0] || [],
+                    hasMore: tableParsedData[0]?.length > 10,
+                    embeddedCharts: []
+                  });
+
+                } catch (chartErr) {
+                  allWarnings.push(`Không thể vẽ biểu đồ native: ${chartErr.message}. Fallback về bảng dữ liệu thường.`);
+                }
+              }
+
               const bufferSizeKB = (buffer.length / 1024).toFixed(2);
               const displayFilename = filename.split("/").pop();
 
               this.super.handlerProps.log(
-                `create-excel-file: Generated buffer - size: ${bufferSizeKB}KB, sheets: ${sheetDefinitions.length}`
+                `create-excel-file: Generated buffer - size: ${bufferSizeKB}KB, sheets: ${sheetSummaries.length}`
               );
 
               const savedFile = await createFilesLib.saveGeneratedFile({
@@ -428,16 +510,20 @@ module.exports.CreateExcelFile = {
 
               for (const summary of sheetSummaries) {
                 parts.push(`📊 **Sheet "${summary.name}"**${summary.title ? ` — ${summary.title}` : ""}`);
-                parts.push(`- Số dòng dữ liệu: ${summary.rows}`);
-                parts.push(`- Số cột: ${summary.columns}`);
-                if (summary.headers.length > 0) {
-                  parts.push(`- Các cột: ${summary.headers.join(", ")}${summary.hasMore ? "..." : ""}`);
-                }
-                if (summary.embeddedCharts.length > 0) {
-                  parts.push(`📈 **Đồ thị đã vẽ:**`);
-                  summary.embeddedCharts.forEach((c) => {
-                    parts.push(`  - ✓ **${c.title}** (${c.type}) đặt tại ô ${c.range}`);
-                  });
+                if (summary.name === "Chart") {
+                  parts.push(`- Loại sheet: Sheet biểu đồ gốc (Native Excel Chart Sheet)`);
+                  if (summary.embeddedCharts.length > 0) {
+                    parts.push(`📈 **Biểu đồ có sẵn:**`);
+                    summary.embeddedCharts.forEach((c) => {
+                      parts.push(`  - ✓ **${c.title}** (Định dạng: Excel-native ${c.type}) liên kết trực tiếp tới các ô dữ liệu.`);
+                    });
+                  }
+                } else {
+                  parts.push(`- Số dòng dữ liệu: ${summary.rows}`);
+                  parts.push(`- Số cột: ${summary.columns}`);
+                  if (summary.headers.length > 0) {
+                    parts.push(`- Các cột: ${summary.headers.join(", ")}${summary.hasMore ? "..." : ""}`);
+                  }
                 }
                 parts.push("");
               }
@@ -451,8 +537,12 @@ module.exports.CreateExcelFile = {
               parts.push("- ✓ Smart number formatting (dấu phân cách hàng nghìn)");
               parts.push("- ✓ Total row detection (tự động highlight dòng tổng)");
 
-              if (sheetSummaries.some((s) => s.title)) {
+              if (sheetSummaries.some((s) => s.name === "Table" && s.title)) {
                 parts.push("- ✓ Title row (tiêu đề lớn merge cells)");
+              }
+
+              if (hasNativeChart) {
+                parts.push("- ✓ **Biểu đồ Native Excel**: Biểu đồ gốc hoàn toàn có thể chỉnh sửa trực tiếp dữ liệu.");
               }
 
               if (allWarnings.length > 0) {

@@ -98,7 +98,8 @@
     "uuid-apikey": "^1.5.3",
     "weaviate-ts-client": "^1.4.0",
     "web-push": "^3.6.7",
-    "winston": "^3.13.0"
+    "winston": "^3.13.0",
+    "xlsx-chart": "^0.4.3"
   },
   "resolutions": {
     "**/graphql-request/form-data": "3.0.4",

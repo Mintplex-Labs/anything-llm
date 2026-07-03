@@ -120,18 +120,89 @@ const rechart = {
                 charts: parsedCharts
               });
 
+              // Generate QuickChart fallback images for markdown rendering
+              const markdownImages = [];
+              const quickchartEndpoint = (process.env.QUICKCHART_ENDPOINT || "https://quickchart.io").replace(/\/$/, "");
+
+              for (const chart of parsedCharts) {
+                try {
+                  const dataset = chart.dataset;
+                  if (Array.isArray(dataset) && dataset.length > 0) {
+                    const keys = Object.keys(dataset[0]);
+                    const labelKey = keys.includes("name") ? "name" : (keys.includes("label") ? "label" : keys[0]);
+                    const labels = dataset.map(item => String(item[labelKey] || ""));
+                    
+                    const valueKeys = keys.filter(k => k !== labelKey && k !== "value");
+                    if (keys.includes("value") && valueKeys.length === 0) {
+                      valueKeys.push("value");
+                    }
+                    if (valueKeys.length === 0) valueKeys.push("value");
+
+                    const chartColors = [
+                      { border: "#4F46E5", background: "rgba(79, 70, 229, 0.2)" }, // indigo
+                      { border: "#0D9488", background: "rgba(13, 148, 136, 0.2)" }, // teal
+                      { border: "#E11D48", background: "rgba(225, 29, 72, 0.2)" }, // rose
+                      { border: "#D97706", background: "rgba(217, 119, 6, 0.2)" }, // amber
+                      { border: "#059669", background: "rgba(5, 150, 105, 0.2)" }, // emerald
+                    ];
+
+                    const datasets = valueKeys.map((key, index) => {
+                      const color = chartColors[index % chartColors.length];
+                      const isLine = chart.type === "line" || chart.type === "area";
+                      return {
+                        label: key,
+                        data: dataset.map(item => Number(item[key]) || 0),
+                        borderColor: color.border,
+                        backgroundColor: chart.type === "line" ? "transparent" : color.background,
+                        borderWidth: 2,
+                        fill: chart.type === "area" || chart.type !== "line",
+                      };
+                    });
+
+                    const chartConfig = {
+                      type: chart.type === "area" ? "line" : (chart.type === "composed" ? "bar" : chart.type),
+                      data: {
+                        labels: labels,
+                        datasets: datasets,
+                      },
+                      options: {
+                        title: {
+                          display: true,
+                          text: chart.title,
+                          fontSize: 16,
+                          fontColor: "#1E293B",
+                          fontFamily: "Segoe UI",
+                        },
+                        legend: {
+                          position: "bottom",
+                        }
+                      }
+                    };
+
+                    const url = `${quickchartEndpoint}/chart?c=${encodeURIComponent(JSON.stringify(chartConfig))}&w=550&h=320&bkg=white`;
+                    markdownImages.push(`![${chart.title}](${url})`);
+                  }
+                } catch (e) {
+                  this.super.handlerProps.log(`Failed to generate QuickChart URL for "${chart.title}": ${e.message}`);
+                }
+              }
+
+              const imageSection = markdownImages.length > 0 
+                ? `\n\n### 📈 Ảnh đồ thị (có thể lưu về):\n${markdownImages.join("\n")}` 
+                : "";
+
               this.super._replySpecialAttributes = {
                 saveAsType: "rechartVisualize",
                 storedResponse: (additionalText = "") =>
                   JSON.stringify({
                     charts: parsedCharts,
-                    caption: additionalText,
+                    caption: `${additionalText}${imageSection}`,
                   }),
                 postSave: () => this.tracker.removeUniqueConstraint(this.name),
               };
 
               this.tracker.markUnique(this.name);
-              return `Successfully generated ${parsedCharts.length} chart(s) and returned to the user. Do not call this tool again.`;
+              return `Successfully generated ${parsedCharts.length} chart(s) and returned to the user.${imageSection} Do not call this tool again.`;
             } catch (error) {
               this.super.handlerProps.log(
                 `create-chart raised an error. ${error.message}`
