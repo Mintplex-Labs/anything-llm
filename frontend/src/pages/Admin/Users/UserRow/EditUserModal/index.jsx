@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { X } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
 import { MessageLimitInput, RoleHintDisplay } from "../..";
+import { ROLE_LABELS } from "../../constants";
 import { AUTH_USER } from "@/utils/constants";
 import { useTranslation } from "react-i18next";
 import {
@@ -55,7 +56,7 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
         <div className="relative p-6 border-b rounded-t border-theme-modal-border">
           <div className="w-full flex gap-x-2 items-center">
             <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
-              Edit {user.username}
+              Sửa {user.username}
             </h3>
           </div>
           <button
@@ -74,13 +75,13 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
                   htmlFor="username"
                   className="block mb-2 text-sm font-medium text-white"
                 >
-                  Username
+                  Tên đăng nhập
                 </label>
                 <input
                   name="username"
                   type="text"
                   className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-                  placeholder="User's username"
+                  placeholder="Tên đăng nhập của người dùng"
                   defaultValue={user.username}
                   minLength={USERNAME_MIN_LENGTH}
                   maxLength={USERNAME_MAX_LENGTH}
@@ -97,18 +98,18 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
                   htmlFor="password"
                   className="block mb-2 text-sm font-medium text-white"
                 >
-                  New Password
+                  Mật khẩu mới
                 </label>
                 <input
                   name="password"
                   type="text"
                   className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-                  placeholder={`${user.username}'s new password`}
+                  placeholder={`Mật khẩu mới của ${user.username}`}
                   autoComplete="off"
                   minLength={8}
                 />
                 <p className="mt-2 text-xs text-white/60">
-                  Password must be at least 8 characters long
+                  Mật khẩu phải có ít nhất 8 ký tự
                 </p>
               </div>
               <div>
@@ -116,12 +117,12 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
                   htmlFor="bio"
                   className="block mb-2 text-sm font-medium text-white"
                 >
-                  Bio
+                  Tiểu sử
                 </label>
                 <textarea
                   name="bio"
                   className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-                  placeholder="User's bio"
+                  placeholder="Tiểu sử của người dùng"
                   defaultValue={user.bio}
                   autoComplete="off"
                   rows={3}
@@ -132,7 +133,7 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
                   htmlFor="role"
                   className="block mb-2 text-sm font-medium text-white"
                 >
-                  Role
+                  Vai trò
                 </label>
                 <select
                   name="role"
@@ -141,10 +142,10 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
                   onChange={(e) => setRole(e.target.value)}
                   className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                 >
-                  <option value="default">Default</option>
-                  <option value="manager">Manager</option>
+                  <option value="default">{ROLE_LABELS.default}</option>
+                  <option value="manager">{ROLE_LABELS.manager}</option>
                   {currentUser?.role === "admin" && (
-                    <option value="admin">Administrator</option>
+                    <option value="admin">{ROLE_LABELS.admin}</option>
                   )}
                 </select>
                 <RoleHintDisplay role={role} />
@@ -155,7 +156,7 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
                 limit={messageLimit.limit}
                 updateState={setMessageLimit}
               />
-              {error && <p className="text-red-400 text-sm">Error: {error}</p>}
+              {error && <p className="text-red-400 text-sm">Lỗi: {error}</p>}
             </div>
             <div className="flex justify-between items-center mt-6 pt-6 border-t border-theme-modal-border">
               <button
@@ -163,13 +164,13 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
                 type="button"
                 className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm"
               >
-                Cancel
+                Hủy
               </button>
               <button
                 type="submit"
                 className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
               >
-                Update user
+                Cập nhật người dùng
               </button>
             </div>
           </form>
