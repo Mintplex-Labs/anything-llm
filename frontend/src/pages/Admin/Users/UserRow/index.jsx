@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
-import { titleCase } from "text-case";
 import Admin from "@/models/admin";
+import { ROLE_LABELS } from "../constants";
 import EditUserModal from "./EditUserModal";
 import showToast from "@/utils/toast";
 import { useModal } from "@/hooks/useModal";
@@ -20,7 +20,7 @@ export default function UserRow({ currUser, user }) {
   const handleSuspend = async () => {
     if (
       !window.confirm(
-        `Are you sure you want to suspend ${user.username}?\nAfter you do this they will be logged out and unable to log back into this instance of AnythingLLM until unsuspended by an admin.`
+        `Bạn có chắc muốn tạm khóa ${user.username}?\nSau khi thực hiện, họ sẽ bị đăng xuất và không thể đăng nhập lại vào phiên bản GOV AI VN168 cho đến khi được quản trị viên bỏ khóa.`
       )
     )
       return false;
@@ -31,7 +31,7 @@ export default function UserRow({ currUser, user }) {
     if (!success) showToast(error, "error", { clear: true });
     if (success) {
       showToast(
-        `User ${!suspended ? "has been suspended" : "is no longer suspended"}.`,
+        `Người dùng ${!suspended ? "đã bị tạm khóa" : "đã được bỏ khóa"}.`,
         "success",
         { clear: true }
       );
@@ -41,7 +41,7 @@ export default function UserRow({ currUser, user }) {
   const handleDelete = async () => {
     if (
       !window.confirm(
-        `Are you sure you want to delete ${user.username}?\nAfter you do this they will be logged out and unable to use this instance of AnythingLLM.\n\nThis action is irreversible.`
+        `Bạn có chắc muốn xóa ${user.username}?\nSau khi thực hiện, họ sẽ bị đăng xuất và không thể sử dụng phiên bản GOV AI VN168 này.\n\nHành động này không thể hoàn tác.`
       )
     )
       return false;
@@ -49,7 +49,7 @@ export default function UserRow({ currUser, user }) {
     if (!success) showToast(error, "error", { clear: true });
     if (success) {
       rowRef?.current?.remove();
-      showToast("User deleted from system.", "success", { clear: true });
+      showToast("Đã xóa người dùng khỏi hệ thống.", "success", { clear: true });
     }
   };
 
@@ -62,7 +62,7 @@ export default function UserRow({ currUser, user }) {
         <th scope="row" className="px-6 whitespace-nowrap">
           {user.username}
         </th>
-        <td className="px-6">{titleCase(user.role)}</td>
+        <td className="px-6">{ROLE_LABELS[user.role] ?? user.role}</td>
         <td className="px-6">{user.createdAt}</td>
         <td className="px-6 flex items-center gap-x-6 h-full mt-2">
           {canModify && (
@@ -70,7 +70,7 @@ export default function UserRow({ currUser, user }) {
               onClick={openModal}
               className="text-xs font-medium text-white/80 light:text-black/80 rounded-lg hover:text-white hover:light:text-gray-500 px-2 py-1 hover:bg-white hover:bg-opacity-10"
             >
-              Edit
+              Sửa
             </button>
           )}
           {currUser?.id !== user.id && canModify && (
@@ -79,13 +79,13 @@ export default function UserRow({ currUser, user }) {
                 onClick={handleSuspend}
                 className="text-xs font-medium text-white/80 light:text-black/80 hover:light:text-orange-500 hover:text-orange-300 rounded-lg px-2 py-1 hover:bg-white hover:light:bg-orange-50 hover:bg-opacity-10"
               >
-                {suspended ? "Unsuspend" : "Suspend"}
+                {suspended ? "Bỏ khóa" : "Tạm khóa"}
               </button>
               <button
                 onClick={handleDelete}
                 className="text-xs font-medium text-white/80 light:text-black/80 hover:light:text-red-500 hover:text-red-300 rounded-lg px-2 py-1 hover:bg-white hover:light:bg-red-50 hover:bg-opacity-10"
               >
-                Delete
+                Xóa
               </button>
             </>
           )}

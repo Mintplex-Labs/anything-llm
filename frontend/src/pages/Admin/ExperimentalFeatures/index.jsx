@@ -48,42 +48,44 @@ export default function ExperimentalFeatures() {
 
   return (
     <FeatureLayout>
-      <div className="flex-1 flex gap-x-6 p-4 mt-10">
+      <div className="flex-1 flex gap-x-6 p-4 mt-10 min-h-0 overflow-hidden">
         {/* Feature settings nav */}
-        <div className="flex flex-col gap-y-[18px]">
-          <div className="text-white flex items-center gap-x-2">
+        <div className="flex flex-col min-w-[360px] h-[calc(100vh-90px)]">
+          <div className="flex-none text-white flex items-center gap-x-2 mb-4">
             <Flask size={24} />
-            <p className="text-lg font-medium">Experimental Features</p>
+            <p className="text-lg font-medium">Tính năng thử nghiệm</p>
           </div>
           {/* Feature list */}
-          <div className="bg-theme-bg-secondary text-white rounded-xl min-w-[360px] w-fit">
-            {Object.values(configurableFeatures).map((feature, index) => {
-              const isFirst = index === 0;
-              const isLast =
-                index === Object.values(configurableFeatures).length - 1;
-              return (
-                <FeatureItem
-                  key={feature.key}
-                  feature={feature}
-                  isSelected={selectedFeature === feature.key}
-                  isActive={featureFlags[feature.key]}
-                  handleClick={setSelectedFeature}
-                  borderClass={[
-                    ...(isFirst ? ["rounded-t-xl"] : []),
-                    ...(isLast
-                      ? ["rounded-b-xl"]
-                      : ["border-b border-white/10"]),
-                  ].join(" ")}
-                />
-              );
-            })}
+          <div className="flex-1 overflow-y-auto pr-2 pb-4">
+            <div className="bg-theme-bg-secondary text-white rounded-xl min-w-[360px] w-fit">
+              {Object.values(configurableFeatures).map((feature, index) => {
+                const isFirst = index === 0;
+                const isLast =
+                  index === Object.values(configurableFeatures).length - 1;
+                return (
+                  <FeatureItem
+                    key={feature.key}
+                    feature={feature}
+                    isSelected={selectedFeature === feature.key}
+                    isActive={featureFlags[feature.key]}
+                    handleClick={setSelectedFeature}
+                    borderClass={[
+                      ...(isFirst ? ["rounded-t-xl"] : []),
+                      ...(isLast
+                        ? ["rounded-b-xl"]
+                        : ["border-b border-white/10"]),
+                    ].join(" ")}
+                  />
+                );
+              })}
+            </div>
           </div>
         </div>
 
         {/* Selected feature setting panel */}
         <FeatureVerification>
-          <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
-            <div className="bg-theme-bg-secondary text-white rounded-xl flex-1 p-4">
+          <div className="flex-[2] flex flex-col gap-y-[18px] mt-10 min-h-0 h-[calc(100vh-90px)]">
+            <div className="bg-theme-bg-secondary text-white rounded-xl flex-1 p-4 overflow-y-auto overflow-x-visible no-scroll min-h-0">
               {selectedFeature ? (
                 <SelectedFeatureComponent
                   feature={configurableFeatures[selectedFeature]}
@@ -93,7 +95,7 @@ export default function ExperimentalFeatures() {
               ) : (
                 <div className="flex flex-col items-center justify-center h-full text-white/60">
                   <Flask size={40} />
-                  <p className="font-medium">Select an experimental feature</p>
+                  <p className="font-medium">Chọn một tính năng thử nghiệm</p>
                 </div>
               )}
             </div>
@@ -144,14 +146,14 @@ function FeatureItem({
         {feature.autoEnabled ? (
           <>
             <div className="text-sm text-theme-text-secondary font-medium">
-              On
+              Bật
             </div>
             <div className="w-[14px]" />
           </>
         ) : (
           <>
             <div className="text-sm text-theme-text-secondary font-medium">
-              {isActive ? "On" : "Off"}
+              {isActive ? "Bật" : "Tắt"}
             </div>
             <CaretRight
               size={14}
@@ -188,7 +190,7 @@ function FeatureVerification({ children }) {
         "accepted"
       );
       showToast(
-        "Experimental Feature set enabled. Reloading the page.",
+        "Đã bật bộ tính năng thử nghiệm. Đang tải lại trang.",
         "success"
       );
       setTimeout(() => {
@@ -205,7 +207,7 @@ function FeatureVerification({ children }) {
               <div className="flex items-center gap-2">
                 <Flask size={24} className="text-theme-text-primary" />
                 <h3 className="text-xl font-semibold text-white">
-                  Terms of use for experimental features
+                  Điều khoản sử dụng tính năng thử nghiệm
                 </h3>
               </div>
             </div>
@@ -213,52 +215,61 @@ function FeatureVerification({ children }) {
               <div className="py-7 px-9 space-y-4 flex-col">
                 <div className="w-full text-white text-md flex flex-col gap-y-4">
                   <p>
-                    Experimental features of GOV AI VN168 are features that we
-                    are piloting and are <b>opt-in</b>. We proactively will
-                    condition or warn you on any potential concerns should any
-                    exist prior to approval of any feature.
+                    Các tính năng thử nghiệm của GOV AI VN168 là những tính năng
+                    chúng tôi đang thử nghiệm và yêu cầu <b>tự nguyện bật</b>.
+                    Chúng tôi sẽ chủ động thông báo hoặc cảnh báo về mọi rủi ro
+                    tiềm ẩn (nếu có) trước khi bạn chấp thuận sử dụng bất kỳ
+                    tính năng nào.
                   </p>
 
                   <div>
                     <p>
-                      Use of any feature on this page can result in, but not
-                      limited to, the following possibilities.
+                      Việc sử dụng bất kỳ tính năng nào trên trang này có thể
+                      dẫn đến, nhưng không giới hạn ở, các khả năng sau.
                     </p>
                     <ul className="list-disc ml-6 text-sm font-mono mt-2">
-                      <li>Loss of data.</li>
-                      <li>Change in quality of results.</li>
-                      <li>Increased storage.</li>
-                      <li>Increased resource consumption.</li>
+                      <li>Mất dữ liệu.</li>
+                      <li>Thay đổi chất lượng kết quả.</li>
+                      <li>Tăng dung lượng lưu trữ.</li>
+                      <li>Tăng mức tiêu thụ tài nguyên.</li>
                       <li>
-                        Increased cost or use of any connected LLM or embedding
-                        provider.
+                        Tăng chi phí hoặc mức sử dụng nhà cung cấp LLM hoặc
+                        embedding được kết nối.
                       </li>
-                      <li>Potential bugs or issues using GOV AI VN168.</li>
+                      <li>
+                        Lỗi hoặc sự cố tiềm ẩn khi sử dụng GOV AI VN168.
+                      </li>
                     </ul>
                   </div>
 
                   <div>
                     <p>
-                      Use of an experimental feature also comes with the
-                      following list of non-exhaustive conditions.
+                      Việc sử dụng tính năng thử nghiệm cũng đi kèm với các
+                      điều kiện không đầy đủ sau.
                     </p>
                     <ul className="list-disc ml-6 text-sm font-mono mt-2">
-                      <li>Feature may not exist in future updates.</li>
-                      <li>The feature being used is not currently stable.</li>
                       <li>
-                        The feature may not be available in future versions,
-                        configurations, or subscriptions of GOV AI VN168.
+                        Tính năng có thể không còn tồn tại trong các bản cập
+                        nhật tương lai.
+                      </li>
+                      <li>Tính năng đang sử dụng hiện chưa ổn định.</li>
+                      <li>
+                        Tính năng có thể không khả dụng trong các phiên bản,
+                        cấu hình hoặc gói đăng ký tương lai của GOV AI VN168.
                       </li>
                       <li>
-                        Your privacy settings <b>will be honored</b> with use of
-                        any beta feature.
+                        Cài đặt quyền riêng tư của bạn <b>sẽ được tôn trọng</b>{" "}
+                        khi sử dụng bất kỳ tính năng beta nào.
                       </li>
-                      <li>These conditions may change in future updates.</li>
+                      <li>
+                        Các điều kiện này có thể thay đổi trong các bản cập nhật
+                        tương lai.
+                      </li>
                     </ul>
                   </div>
 
                   <p>
-                    Access to any features requires approval of this modal.
+                    Truy cập các tính năng yêu cầu bạn chấp thuận hộp thoại này.
                   </p>
                 </div>
               </div>
@@ -267,13 +278,13 @@ function FeatureVerification({ children }) {
                   href={paths.home()}
                   className="transition-all duration-300 bg-transparent text-white hover:bg-red-500/50 light:hover:bg-red-300/50 px-4 py-2 rounded-lg text-sm border border-theme-modal-border"
                 >
-                  Reject & close
+                  Từ chối & đóng
                 </a>
                 <button
                   type="submit"
                   className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm border border-theme-modal-border"
                 >
-                  I understand
+                  Tôi đã hiểu
                 </button>
               </div>
             </form>

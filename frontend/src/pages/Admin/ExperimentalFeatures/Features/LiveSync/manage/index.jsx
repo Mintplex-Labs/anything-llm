@@ -18,13 +18,12 @@ export default function LiveDocumentSyncManager() {
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white/10 border-b-2">
             <div className="items-center flex gap-x-4">
               <p className="text-lg leading-6 font-bold text-theme-text-primary">
-                Watched documents
+                Tài liệu được theo dõi
               </p>
             </div>
             <p className="text-xs leading-[18px] font-base text-theme-text-secondary">
-              These are all the documents that are currently being watched in
-              your instance. The content of these documents will be periodically
-              synced.
+              Đây là tất cả các tài liệu đang được theo dõi trong phiên bản của
+              bạn. Nội dung của các tài liệu này sẽ được đồng bộ định kỳ.
             </p>
           </div>
           <div className="overflow-x-auto">
@@ -68,16 +67,16 @@ function WatchedDocumentsContainer() {
       <thead className="text-theme-text-secondary text-xs leading-[18px] font-bold uppercase border-white/10 border-b">
         <tr>
           <th scope="col" className="px-6 py-3 rounded-tl-lg">
-            Document Name
+            Tên tài liệu
           </th>
           <th scope="col" className="px-6 py-3">
-            Last Synced
+            Lần đồng bộ cuối
           </th>
           <th scope="col" className="px-6 py-3">
-            Time until next refresh
+            Thời gian đến lần làm mới tiếp theo
           </th>
           <th scope="col" className="px-6 py-3">
-            Created On
+            Ngày tạo
           </th>
           <th scope="col" className="px-6 py-3 rounded-tr-lg">
             {" "}

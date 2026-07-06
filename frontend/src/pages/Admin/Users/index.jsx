@@ -27,13 +27,12 @@ export default function AdminUsers() {
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white/10 border-b-2">
             <div className="items-center flex gap-x-4">
               <p className="text-lg leading-6 font-bold text-theme-text-primary">
-                Users
+                Người dùng
               </p>
             </div>
             <p className="text-xs leading-[18px] font-base text-theme-text-secondary">
-              These are all the accounts which have an account on this instance.
-              Removing an account will instantly remove their access to this
-              instance.
+              Đây là tất cả các tài khoản có quyền truy cập vào phiên bản này.
+              Xóa tài khoản sẽ lập tức thu hồi quyền truy cập của họ.
             </p>
           </div>
           <div className="w-full justify-end flex">
@@ -41,7 +40,7 @@ export default function AdminUsers() {
               onClick={openModal}
               className="mt-3 mr-0 mb-4 md:-mb-6 z-10"
             >
-              <UserPlus className="h-4 w-4" weight="bold" /> Add user
+              <UserPlus className="h-4 w-4" weight="bold" /> Thêm người dùng
             </CTAButton>
           </div>
           <div className="overflow-x-auto">
@@ -89,13 +88,13 @@ function UsersContainer() {
       <thead className="text-theme-text-secondary text-xs leading-[18px] font-bold uppercase border-white/10 border-b">
         <tr>
           <th scope="col" className="px-6 py-3 rounded-tl-lg">
-            Username
+            Tên đăng nhập
           </th>
           <th scope="col" className="px-6 py-3">
-            Role
+            Vai trò
           </th>
           <th scope="col" className="px-6 py-3">
-            Date Added
+            Ngày thêm
           </th>
           <th scope="col" className="px-6 py-3 rounded-tr-lg">
             {" "}
@@ -113,24 +112,24 @@ function UsersContainer() {
 
 const ROLE_HINT = {
   default: [
-    "Can only send chats with workspaces they are added to by admin or managers.",
-    "Cannot modify any settings at all.",
+    "Chỉ có thể trò chuyện trong các không gian làm việc được quản trị viên hoặc quản lý thêm vào.",
+    "Không thể thay đổi bất kỳ cài đặt nào.",
   ],
   manager: [
-    "Can view, create, and delete any workspaces and modify workspace-specific settings.",
-    "Can create, update and invite new users to the instance.",
-    "Cannot modify LLM, vectorDB, embedding, or other connections.",
+    "Có thể xem, tạo và xóa mọi không gian làm việc, đồng thời chỉnh sửa cài đặt của từng không gian.",
+    "Có thể tạo, cập nhật và mời người dùng mới vào phiên bản.",
+    "Không thể thay đổi LLM, vectorDB, embedding hoặc các kết nối khác.",
   ],
   admin: [
-    "Highest user level privilege.",
-    "Can see and do everything across the system.",
+    "Quyền cao nhất trong hệ thống.",
+    "Có thể xem và thực hiện mọi thao tác trên toàn hệ thống.",
   ],
 };
 
 export function RoleHintDisplay({ role }) {
   return (
     <div className="flex flex-col gap-y-1 py-1 pb-4">
-      <p className="text-sm font-medium text-theme-text-primary">Permissions</p>
+      <p className="text-sm font-medium text-theme-text-primary">Quyền hạn</p>
       <ul className="flex flex-col gap-y-1 list-disc px-4">
         {ROLE_HINT[role ?? "default"].map((hints, i) => {
           return (
@@ -151,8 +150,8 @@ export function MessageLimitInput({ enabled, limit, updateState, role }) {
       <Toggle
         size="md"
         variant="horizontal"
-        label="Limit messages per day"
-        description="Restrict this user to a number of successful queries or chats within a 24 hour window."
+        label="Giới hạn tin nhắn mỗi ngày"
+        description="Giới hạn số lượng truy vấn hoặc cuộc trò chuyện thành công của người dùng này trong vòng 24 giờ."
         enabled={enabled}
         onChange={(checked) => {
           updateState((prev) => ({
@@ -164,7 +163,7 @@ export function MessageLimitInput({ enabled, limit, updateState, role }) {
       {enabled && (
         <div className="mt-4">
           <label className="text-white text-sm font-semibold block mb-4">
-            Message limit per day
+            Giới hạn tin nhắn mỗi ngày
           </label>
           <div className="relative mt-2">
             <input
