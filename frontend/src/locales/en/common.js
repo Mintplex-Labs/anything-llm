@@ -726,6 +726,11 @@ const TRANSLATIONS = {
       },
       default_skill:
         "By default, this skill is enabled, but you can disable it if you don't want it to be available to the agent.",
+      imported: {
+        noSkillsFound: "No imported skills found",
+        on: "On",
+        off: "Off",
+      },
     },
     mcp: {
       title: "MCP Servers",
@@ -776,6 +781,22 @@ const TRANSLATIONS = {
             "How many clarifying questions the agent may ask in a single survey.",
         },
       },
+    },
+    admin: {
+      agentSkills: "Agent Skills",
+      appIntegrations: "App Integrations",
+      customSkills: "Custom Skills",
+      agentFlows: "Agent Flows",
+      selectPrompt: "Select an Agent Skill, Agent Flow, or MCP Server",
+      createFlow: "Create Flow",
+      openBuilder: "Open Builder",
+      saveSuccess: "Agent preferences saved successfully.",
+      saveError: "Agent preferences failed to save.",
+      toggleToolError: "Failed to toggle tool.",
+      back: "Back",
+      on: "On",
+      off: "Off",
+      noFlowsFound: "No agent flows found",
     },
   },
   recorded: {
@@ -953,7 +974,177 @@ const TRANSLATIONS = {
     description:
       "These are the credentials and settings for your preferred LLM chat & embedding provider. It is important that these keys are current and correct, or else GOV AI VN168 will not function properly.",
     provider: "LLM Provider",
+    searchPlaceholder: "Search all LLM providers",
+    logoAlt: "{{name}} logo",
+    noneSelected: "None selected",
+    needSelect: "You need to select an LLM",
+    messages: {
+      saveSuccess: "LLM preferences saved successfully.",
+      saveError: "Failed to save LLM settings: {{error}}",
+    },
     providers: {
+      "anythingllm-router": {
+        name: "Model Router",
+        description:
+          "Route messages to different LLM providers based on rules you define.",
+      },
+      openai: {
+        name: "OpenAI",
+        description: "The standard option for most non-commercial use.",
+      },
+      azure: {
+        name: "Azure OpenAI",
+        description:
+          "The enterprise option of OpenAI hosted on Azure services.",
+      },
+      anthropic: {
+        name: "Anthropic",
+        description: "A friendly AI Assistant hosted by Anthropic.",
+      },
+      gemini: {
+        name: "Gemini",
+        description: "Google's largest and most capable AI model",
+      },
+      "nvidia-nim": {
+        name: "NVIDIA NIM",
+        description:
+          "Run full parameter LLMs directly on your NVIDIA RTX GPU using NVIDIA NIM.",
+      },
+      ollama: {
+        name: "Ollama",
+        description: "Run LLMs locally on your own machine.",
+      },
+      lmstudio: {
+        name: "LM Studio",
+        description:
+          "Discover, download, and run thousands of cutting edge LLMs in a few clicks.",
+      },
+      "docker-model-runner": {
+        name: "Docker Model Runner",
+        description: "Run LLMs using Docker Model Runner.",
+      },
+      lemonade: {
+        name: "Lemonade",
+        description:
+          "Run local LLMs, ASR, TTS, and more in a single unified AI runtime.",
+      },
+      sambanova: {
+        name: "SambaNova",
+        description: "Run open source models from SambaNova.",
+      },
+      localai: {
+        name: "Local AI",
+        description: "Run LLMs locally on your own machine.",
+      },
+      togetherai: {
+        name: "Together AI",
+        description: "Run open source models from Together AI.",
+      },
+      fireworksai: {
+        name: "Fireworks AI",
+        description:
+          "The fastest and most efficient inference engine to build production-ready, compound AI systems.",
+      },
+      mistral: {
+        name: "Mistral",
+        description: "Run open source models from Mistral AI.",
+      },
+      perplexity: {
+        name: "Perplexity AI",
+        description:
+          "Run powerful and internet-connected models hosted by Perplexity AI.",
+      },
+      openrouter: {
+        name: "OpenRouter",
+        description: "A unified interface for LLMs.",
+      },
+      groq: {
+        name: "Groq",
+        description:
+          "The fastest LLM inferencing available for real-time AI applications.",
+      },
+      koboldcpp: {
+        name: "KoboldCPP",
+        description: "Run local LLMs using koboldcpp.",
+      },
+      textgenwebui: {
+        name: "Oobabooga Web UI",
+        description:
+          "Run local LLMs using Oobabooga's Text Generation Web UI.",
+      },
+      cohere: {
+        name: "Cohere",
+        description: "Run Cohere's powerful Command models.",
+      },
+      litellm: {
+        name: "LiteLLM",
+        description:
+          "Run LiteLLM's OpenAI compatible proxy for various LLMs.",
+      },
+      deepseek: {
+        name: "DeepSeek",
+        description: "Run DeepSeek's powerful LLMs.",
+      },
+      ppio: {
+        name: "PPIO",
+        description:
+          "Run stable and cost-efficient open-source LLM APIs, such as DeepSeek, Llama, Qwen etc.",
+      },
+      bedrock: {
+        name: "AWS Bedrock",
+        description:
+          "Run powerful foundation models privately with AWS Bedrock.",
+      },
+      apipie: {
+        name: "APIpie",
+        description: "A unified API of AI services from leading providers",
+      },
+      moonshotai: {
+        name: "Moonshot AI",
+        description: "Run Moonshot AI's powerful LLMs.",
+      },
+      privatemode: {
+        name: "Privatemode",
+        description: "Run LLMs with end-to-end encryption.",
+      },
+      novita: {
+        name: "Novita AI",
+        description:
+          "Reliable, Scalable, and Cost-Effective for LLMs from Novita AI",
+      },
+      cometapi: {
+        name: "CometAPI",
+        description: "500+ AI Models all in one API.",
+      },
+      foundry: {
+        name: "Microsoft Foundry Local",
+        description: "Run Microsoft's Foundry models locally.",
+      },
+      xai: {
+        name: "xAI",
+        description: "Run xAI's powerful LLMs like Grok-2 and more.",
+      },
+      zai: {
+        name: "Z.AI",
+        description: "Run Z.AI's powerful GLM models.",
+      },
+      giteeai: {
+        name: "GiteeAI",
+        description: "Run GiteeAI's powerful LLMs.",
+      },
+      minimax: {
+        name: "Minimax",
+        description: "Run Minimax's powerful M2 LLMs.",
+      },
+      cerebras: {
+        name: "Cerebras",
+        description: "Run models at instant speed on Cerebras inference.",
+      },
+      "generic-openai": {
+        name: "Generic OpenAI",
+        description:
+          "Connect to any OpenAi-compatible service via a custom configuration",
+      },
       azure_openai: {
         azure_service_endpoint: "Azure Service Endpoint",
         api_key: "API Key",
@@ -1379,6 +1570,77 @@ const TRANSLATIONS = {
     provider: {
       title: "Embedding Provider",
     },
+    searchPlaceholder: "Search all embedding providers",
+    logoAlt: "{{name}} logo",
+    switchWarning:
+      "Switching the embedding model will reset all previously embedded documents in all workspaces.\n\nConfirming will clear all embeddings from your vector database and remove all documents from your workspaces. Your uploaded documents will not be deleted, they will be available for re-embedding.",
+    messages: {
+      saveSuccess: "Embedding preferences saved successfully.",
+      saveError: "Failed to save embedding settings: {{error}}",
+    },
+    providers: {
+      native: {
+        name: "AnythingLLM Embedder",
+        description:
+          "Use the built-in embedding provider for AnythingLLM. Zero setup!",
+      },
+      openai: {
+        name: "OpenAI",
+        description: "The standard option for most non-commercial use.",
+      },
+      azure: {
+        name: "Azure OpenAI",
+        description:
+          "The enterprise option of OpenAI hosted on Azure services.",
+      },
+      gemini: {
+        name: "Gemini",
+        description: "Run powerful embedding models from Google AI.",
+      },
+      localai: {
+        name: "Local AI",
+        description: "Run embedding models locally on your own machine.",
+      },
+      ollama: {
+        name: "Ollama",
+        description: "Run embedding models locally on your own machine.",
+      },
+      lmstudio: {
+        name: "LM Studio",
+        description:
+          "Discover, download, and run thousands of cutting edge LLMs in a few clicks.",
+      },
+      lemonade: {
+        name: "Lemonade",
+        description:
+          "Run embedding models locally on your own machine using Lemonade.",
+      },
+      openrouter: {
+        name: "OpenRouter",
+        description: "Run embedding models from OpenRouter.",
+      },
+      litellm: {
+        name: "LiteLLM",
+        description: "Run powerful embedding models from LiteLLM.",
+      },
+      cohere: {
+        name: "Cohere",
+        description: "Run powerful embedding models from Cohere.",
+      },
+      voyageai: {
+        name: "Voyage AI",
+        description: "Run powerful embedding models from Voyage AI.",
+      },
+      mistral: {
+        name: "Mistral AI",
+        description: "Run powerful embedding models from Mistral AI.",
+      },
+      "generic-openai": {
+        name: "Generic OpenAI",
+        description:
+          "Run embedding models from any OpenAI compatible API service.",
+      },
+    },
   },
   text: {
     title: "Text splitting & Chunking Preferences",
@@ -1406,9 +1668,70 @@ const TRANSLATIONS = {
       title: "Vector Database Provider",
       description: "There is no configuration needed for LanceDB.",
     },
+    searchPlaceholder: "Search all vector database providers",
+    logoAlt: "{{name}} logo",
+    switchWarning:
+      "Switching the vector database will reset all previously embedded documents in all workspaces.\n\nConfirming will clear all embeddings from your vector database and remove all documents from your workspaces. Your uploaded documents will not be deleted, they will be available for re-embedding.",
+    messages: {
+      saveSuccess: "Vector database preferences saved successfully.",
+      saveError: "Failed to save vector database settings: {{error}}",
+    },
+    providers: {
+      lancedb: {
+        name: "LanceDB",
+        description:
+          "100% local vector DB that runs on the same instance as AnythingLLM.",
+      },
+      pgvector: {
+        name: "PGVector",
+        description: "Vector search powered by PostgreSQL.",
+      },
+      chroma: {
+        name: "Chroma",
+        description:
+          "Open source vector database you can host yourself or on the cloud.",
+      },
+      chromacloud: {
+        name: "Chroma Cloud",
+        description:
+          "Fully managed Chroma cloud service with enterprise features and support.",
+      },
+      pinecone: {
+        name: "Pinecone",
+        description:
+          "100% cloud-based vector database for enterprise use cases.",
+      },
+      zilliz: {
+        name: "Zilliz Cloud",
+        description:
+          "Cloud hosted vector database built for enterprise with SOC 2 compliance.",
+      },
+      qdrant: {
+        name: "QDrant",
+        description:
+          "Open source local and distributed cloud vector database.",
+      },
+      weaviate: {
+        name: "Weaviate",
+        description:
+          "Open source local and cloud hosted multi-modal vector database.",
+      },
+      milvus: {
+        name: "Milvus",
+        description: "Open-source, highly scalable, and blazing fast.",
+      },
+      astra: {
+        name: "AstraDB",
+        description: "Vector Search for Real-world GenAI.",
+      },
+    },
   },
   embeddable: {
     title: "Embeddable Chat Widgets",
+    pageTitle: "Chat Embed",
+    widgets: "Widgets",
+    history: "History",
+    back: "Back",
     description:
       "Embeddable chat widgets are public facing chat interfaces that are tied to a single workspace. These allow you to build workspaces that then you can publish to the world.",
     create: "Create embed",
@@ -1870,8 +2193,13 @@ const TRANSLATIONS = {
     profile_picture: "Profile Picture",
     remove_profile_picture: "Remove Profile Picture",
     username: "Username",
+    username_placeholder: "User's username",
     new_password: "New Password",
+    password_placeholder: "{{username}}'s new password",
     password_description: "Password must be at least 8 characters long",
+    bio: "Bio",
+    bio_placeholder: "Tell us about yourself...",
+    profile_picture_alt: "User profile picture",
     cancel: "Cancel",
     update_account: "Update Account",
     theme: "Theme Preference",

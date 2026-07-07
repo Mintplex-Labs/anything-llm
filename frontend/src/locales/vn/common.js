@@ -291,6 +291,11 @@ const TRANSLATIONS = {
         "description": "Cho phép đại lý của bạn sử dụng SQL để trả lời các câu hỏi của bạn bằng cách kết nối với nhiều nhà cung cấp cơ sở dữ liệu SQL khác nhau."
       },
       "default_skill": "Theo mặc định, kỹ năng này được kích hoạt, nhưng bạn có thể tắt nó nếu không muốn nó được sử dụng bởi người đại diện.",
+      "imported": {
+        "noSkillsFound": "Không tìm thấy kỹ năng tùy chỉnh nào",
+        "on": "Bật",
+        "off": "Tắt"
+      },
       "filesystem": {
         "title": "Quyền truy cập hệ thống tệp",
         "description": "Cho phép đại lý của bạn đọc, ghi, tìm kiếm và quản lý các tệp tin trong một thư mục được chỉ định. Hỗ trợ chỉnh sửa tệp, điều hướng thư mục và tìm kiếm nội dung.",
@@ -680,6 +685,22 @@ const TRANSLATIONS = {
           "description": "Người đại diện có thể đặt bao nhiêu câu hỏi để làm rõ trong một cuộc khảo sát duy nhất?"
         }
       }
+    },
+    "admin": {
+      "agentSkills": "Kỹ năng Agent",
+      "appIntegrations": "Tích hợp ứng dụng",
+      "customSkills": "Kỹ năng tùy chỉnh",
+      "agentFlows": "Luồng Agent",
+      "selectPrompt": "Chọn Kỹ năng Agent, Luồng Agent hoặc Máy chủ MCP",
+      "createFlow": "Tạo luồng",
+      "openBuilder": "Mở trình tạo",
+      "saveSuccess": "Đã lưu cài đặt Agent thành công.",
+      "saveError": "Lưu cài đặt Agent thất bại.",
+      "toggleToolError": "Không thể bật/tắt công cụ.",
+      "back": "Quay lại",
+      "on": "Bật",
+      "off": "Tắt",
+      "noFlowsFound": "Không tìm thấy luồng agent nào"
     }
   },
   "recorded": {
@@ -760,7 +781,163 @@ const TRANSLATIONS = {
     "title": "Tùy chọn LLM",
     "description": "Đây là thông tin đăng nhập và cài đặt cho nhà cung cấp LLM trò chuyện & nhúng ưa thích của bạn. Điều quan trọng là các khóa này phải chính xác, nếu không GOV AI VN168 sẽ không hoạt động đúng.",
     "provider": "Nhà cung cấp LLM",
+    "searchPlaceholder": "Tìm kiếm tất cả nhà cung cấp LLM",
+    "logoAlt": "Logo {{name}}",
+    "noneSelected": "Chưa chọn",
+    "needSelect": "Bạn cần chọn một LLM",
+    "messages": {
+      "saveSuccess": "Đã lưu tùy chọn LLM thành công.",
+      "saveError": "Không thể lưu cài đặt LLM: {{error}}"
+    },
     "providers": {
+      "anythingllm-router": {
+        "name": "Bộ định tuyến mô hình",
+        "description": "Định tuyến tin nhắn đến các nhà cung cấp LLM khác nhau dựa trên quy tắc bạn định nghĩa."
+      },
+      "openai": {
+        "name": "OpenAI",
+        "description": "Lựa chọn tiêu chuẩn cho hầu hết mục đích phi thương mại."
+      },
+      "azure": {
+        "name": "Azure OpenAI",
+        "description": "Phiên bản doanh nghiệp của OpenAI được lưu trữ trên dịch vụ Azure."
+      },
+      "anthropic": {
+        "name": "Anthropic",
+        "description": "Trợ lý AI thân thiện được lưu trữ bởi Anthropic."
+      },
+      "gemini": {
+        "name": "Gemini",
+        "description": "Mô hình AI lớn nhất và mạnh mẽ nhất của Google"
+      },
+      "nvidia-nim": {
+        "name": "NVIDIA NIM",
+        "description": "Chạy LLM full parameter trực tiếp trên GPU NVIDIA RTX bằng NVIDIA NIM."
+      },
+      "ollama": {
+        "name": "Ollama",
+        "description": "Chạy LLM cục bộ trên máy của bạn."
+      },
+      "lmstudio": {
+        "name": "LM Studio",
+        "description": "Khám phá, tải xuống và chạy hàng nghìn LLM tiên tiến chỉ với vài cú nhấp chuột."
+      },
+      "docker-model-runner": {
+        "name": "Docker Model Runner",
+        "description": "Chạy LLM bằng Docker Model Runner."
+      },
+      "lemonade": {
+        "name": "Lemonade",
+        "description": "Chạy LLM cục bộ, ASR, TTS và hơn thế nữa trong một runtime AI thống nhất."
+      },
+      "sambanova": {
+        "name": "SambaNova",
+        "description": "Chạy các mô hình mã nguồn mở từ SambaNova."
+      },
+      "localai": {
+        "name": "Local AI",
+        "description": "Chạy LLM cục bộ trên máy của bạn."
+      },
+      "togetherai": {
+        "name": "Together AI",
+        "description": "Chạy các mô hình mã nguồn mở từ Together AI."
+      },
+      "fireworksai": {
+        "name": "Fireworks AI",
+        "description": "Công cụ suy luận nhanh nhất và hiệu quả nhất để xây dựng hệ thống AI sản xuất."
+      },
+      "mistral": {
+        "name": "Mistral",
+        "description": "Chạy các mô hình mã nguồn mở từ Mistral AI."
+      },
+      "perplexity": {
+        "name": "Perplexity AI",
+        "description": "Chạy các mô hình mạnh mẽ và kết nối internet được lưu trữ bởi Perplexity AI."
+      },
+      "openrouter": {
+        "name": "OpenRouter",
+        "description": "Giao diện thống nhất cho các LLM."
+      },
+      "groq": {
+        "name": "Groq",
+        "description": "Suy luận LLM nhanh nhất cho ứng dụng AI thời gian thực."
+      },
+      "koboldcpp": {
+        "name": "KoboldCPP",
+        "description": "Chạy LLM cục bộ bằng koboldcpp."
+      },
+      "textgenwebui": {
+        "name": "Oobabooga Web UI",
+        "description": "Chạy LLM cục bộ bằng Text Generation Web UI của Oobabooga."
+      },
+      "cohere": {
+        "name": "Cohere",
+        "description": "Chạy các mô hình Command mạnh mẽ của Cohere."
+      },
+      "litellm": {
+        "name": "LiteLLM",
+        "description": "Chạy proxy tương thích OpenAI của LiteLLM cho nhiều LLM."
+      },
+      "deepseek": {
+        "name": "DeepSeek",
+        "description": "Chạy các LLM mạnh mẽ của DeepSeek."
+      },
+      "ppio": {
+        "name": "PPIO",
+        "description": "Chạy API LLM mã nguồn mở ổn định và tiết kiệm chi phí như DeepSeek, Llama, Qwen..."
+      },
+      "bedrock": {
+        "name": "AWS Bedrock",
+        "description": "Chạy các mô hình nền tảng mạnh mẽ riêng tư với AWS Bedrock."
+      },
+      "apipie": {
+        "name": "APIpie",
+        "description": "API thống nhất các dịch vụ AI từ các nhà cung cấp hàng đầu"
+      },
+      "moonshotai": {
+        "name": "Moonshot AI",
+        "description": "Chạy các LLM mạnh mẽ của Moonshot AI."
+      },
+      "privatemode": {
+        "name": "Privatemode",
+        "description": "Chạy LLM với mã hóa đầu cuối."
+      },
+      "novita": {
+        "name": "Novita AI",
+        "description": "Đáng tin cậy, mở rộng và tiết kiệm chi phí cho LLM từ Novita AI"
+      },
+      "cometapi": {
+        "name": "CometAPI",
+        "description": "Hơn 500 mô hình AI trong một API."
+      },
+      "foundry": {
+        "name": "Microsoft Foundry Local",
+        "description": "Chạy các mô hình Foundry của Microsoft cục bộ."
+      },
+      "xai": {
+        "name": "xAI",
+        "description": "Chạy các LLM mạnh mẽ của xAI như Grok-2 và hơn thế nữa."
+      },
+      "zai": {
+        "name": "Z.AI",
+        "description": "Chạy các mô hình GLM mạnh mẽ của Z.AI."
+      },
+      "giteeai": {
+        "name": "GiteeAI",
+        "description": "Chạy các LLM mạnh mẽ của GiteeAI."
+      },
+      "minimax": {
+        "name": "Minimax",
+        "description": "Chạy các LLM M2 mạnh mẽ của Minimax."
+      },
+      "cerebras": {
+        "name": "Cerebras",
+        "description": "Chạy mô hình với tốc độ tức thì trên Cerebras inference."
+      },
+      "generic-openai": {
+        "name": "Generic OpenAI",
+        "description": "Kết nối dịch vụ tương thích OpenAI qua cấu hình tùy chỉnh"
+      },
       "azure_openai": {
         "azure_service_endpoint": "Điểm cuối Dịch vụ Azure",
         "api_key": "Khóa API",
@@ -981,6 +1158,71 @@ const TRANSLATIONS = {
     "desc-end": "Nhúng là quá trình chuyển đổi văn bản thành vector. Thông tin đăng nhập này cần thiết để chuyển đổi tệp và prompt của bạn thành định dạng mà GOV AI VN168 có thể sử dụng để xử lý.",
     "provider": {
       "title": "Nhà cung cấp Nhúng"
+    },
+    "searchPlaceholder": "Tìm kiếm tất cả nhà cung cấp nhúng",
+    "logoAlt": "Logo {{name}}",
+    "switchWarning": "Thay đổi mô hình nhúng sẽ đặt lại tất cả tài liệu đã nhúng trước đó trong mọi không gian làm việc.\n\nXác nhận sẽ xóa tất cả embedding khỏi cơ sở dữ liệu vector và gỡ tất cả tài liệu khỏi không gian làm việc. Các tài liệu đã tải lên sẽ không bị xóa, chúng có thể được nhúng lại.",
+    "messages": {
+      "saveSuccess": "Đã lưu tùy chọn nhúng thành công.",
+      "saveError": "Không thể lưu cài đặt nhúng: {{error}}"
+    },
+    "providers": {
+      "native": {
+        "name": "Bộ nhúng AnythingLLM",
+        "description": "Sử dụng nhà cung cấp nhúng tích hợp sẵn của AnythingLLM. Không cần cài đặt!"
+      },
+      "openai": {
+        "name": "OpenAI",
+        "description": "Lựa chọn tiêu chuẩn cho hầu hết mục đích phi thương mại."
+      },
+      "azure": {
+        "name": "Azure OpenAI",
+        "description": "Phiên bản doanh nghiệp của OpenAI được lưu trữ trên dịch vụ Azure."
+      },
+      "gemini": {
+        "name": "Gemini",
+        "description": "Chạy các mô hình nhúng mạnh mẽ từ Google AI."
+      },
+      "localai": {
+        "name": "Local AI",
+        "description": "Chạy mô hình nhúng cục bộ trên máy của bạn."
+      },
+      "ollama": {
+        "name": "Ollama",
+        "description": "Chạy mô hình nhúng cục bộ trên máy của bạn."
+      },
+      "lmstudio": {
+        "name": "LM Studio",
+        "description": "Khám phá, tải xuống và chạy hàng nghìn LLM tiên tiến chỉ với vài cú nhấp chuột."
+      },
+      "lemonade": {
+        "name": "Lemonade",
+        "description": "Chạy mô hình nhúng cục bộ trên máy của bạn bằng Lemonade."
+      },
+      "openrouter": {
+        "name": "OpenRouter",
+        "description": "Chạy mô hình nhúng từ OpenRouter."
+      },
+      "litellm": {
+        "name": "LiteLLM",
+        "description": "Chạy các mô hình nhúng mạnh mẽ từ LiteLLM."
+      },
+      "cohere": {
+        "name": "Cohere",
+        "description": "Chạy các mô hình nhúng mạnh mẽ từ Cohere."
+      },
+      "voyageai": {
+        "name": "Voyage AI",
+        "description": "Chạy các mô hình nhúng mạnh mẽ từ Voyage AI."
+      },
+      "mistral": {
+        "name": "Mistral AI",
+        "description": "Chạy các mô hình nhúng mạnh mẽ từ Mistral AI."
+      },
+      "generic-openai": {
+        "name": "Generic OpenAI",
+        "description": "Chạy mô hình nhúng từ bất kỳ dịch vụ API tương thích OpenAI nào."
+      }
     }
   },
   "text": {
@@ -1003,10 +1245,63 @@ const TRANSLATIONS = {
     "provider": {
       "title": "Nhà cung cấp Cơ sở dữ liệu Vector",
       "description": "Không cần cấu hình cho LanceDB."
+    },
+    "searchPlaceholder": "Tìm kiếm tất cả nhà cung cấp cơ sở dữ liệu vector",
+    "logoAlt": "Logo {{name}}",
+    "switchWarning": "Thay đổi cơ sở dữ liệu vector sẽ đặt lại tất cả tài liệu đã nhúng trước đó trong mọi không gian làm việc.\n\nXác nhận sẽ xóa tất cả embedding khỏi cơ sở dữ liệu vector và gỡ tất cả tài liệu khỏi không gian làm việc. Các tài liệu đã tải lên sẽ không bị xóa, chúng có thể được nhúng lại.",
+    "messages": {
+      "saveSuccess": "Đã lưu tùy chọn cơ sở dữ liệu vector thành công.",
+      "saveError": "Không thể lưu cài đặt cơ sở dữ liệu vector: {{error}}"
+    },
+    "providers": {
+      "lancedb": {
+        "name": "LanceDB",
+        "description": "Cơ sở dữ liệu vector 100% cục bộ, chạy trên cùng instance với AnythingLLM."
+      },
+      "pgvector": {
+        "name": "PGVector",
+        "description": "Tìm kiếm vector dựa trên PostgreSQL."
+      },
+      "chroma": {
+        "name": "Chroma",
+        "description": "Cơ sở dữ liệu vector mã nguồn mở, có thể tự lưu trữ hoặc dùng trên cloud."
+      },
+      "chromacloud": {
+        "name": "Chroma Cloud",
+        "description": "Dịch vụ Chroma cloud được quản lý hoàn toàn với tính năng và hỗ trợ doanh nghiệp."
+      },
+      "pinecone": {
+        "name": "Pinecone",
+        "description": "Cơ sở dữ liệu vector 100% trên cloud cho mục đích doanh nghiệp."
+      },
+      "zilliz": {
+        "name": "Zilliz Cloud",
+        "description": "Cơ sở dữ liệu vector trên cloud dành cho doanh nghiệp, tuân thủ SOC 2."
+      },
+      "qdrant": {
+        "name": "QDrant",
+        "description": "Cơ sở dữ liệu vector mã nguồn mở, cục bộ và phân tán trên cloud."
+      },
+      "weaviate": {
+        "name": "Weaviate",
+        "description": "Cơ sở dữ liệu vector đa phương thức mã nguồn mở, cục bộ và trên cloud."
+      },
+      "milvus": {
+        "name": "Milvus",
+        "description": "Mã nguồn mở, mở rộng cao và cực nhanh."
+      },
+      "astra": {
+        "name": "AstraDB",
+        "description": "Tìm kiếm vector cho GenAI thực tế."
+      }
     }
   },
   "embeddable": {
     "title": "Tiện ích hội thoại nhúng",
+    "pageTitle": "Nhúng hội thoại",
+    "widgets": "Tiện ích",
+    "history": "Lịch sử",
+    "back": "Quay lại",
     "description": "Tiện ích trò chuyện nhúng là giao diện trò chuyện công khai được liên kết với một không gian làm việc duy nhất. Điều này cho phép bạn xây dựng không gian làm việc mà sau đó bạn có thể xuất bản ra thế giới.",
     "create": "Tạo nhúng",
     "table": {
@@ -1254,8 +1549,8 @@ const TRANSLATIONS = {
     "publish": "Đăng tải",
     "stop_generating": "Dừng tạo ra phản hồi",
     "slash_commands": "Lệnh tắt/bật",
-    "agent_skills": "Kỹ năng của đại lý",
-    "manage_agent_skills": "Quản lý kỹ năng của đại lý",
+    "agent_skills": "Kỹ năng Agent",
+    "manage_agent_skills": "Quản lý kỹ năng Agent",
     "agent_skills_disabled_in_session": "Không thể thay đổi kỹ năng trong khi đang tham gia phiên làm việc. Trước tiên, hãy sử dụng lệnh /exit để kết thúc phiên làm việc.",
     "start_agent_session": "Bắt đầu phiên làm việc với đại lý",
     "use_agent_session_to_use_tools": "Bạn có thể sử dụng các công cụ trong cuộc trò chuyện bằng cách bắt đầu một phiên với trợ lý bằng cách sử dụng '@agent' ở đầu yêu cầu của bạn.",
@@ -1283,7 +1578,7 @@ const TRANSLATIONS = {
       "answer_skipped": "[người dùng bỏ qua]"
     },
     "custom_skills": "Kỹ năng tùy chỉnh",
-    "agent_flows": "Dòng chảy của đại lý",
+    "agent_flows": "Luồng Agent",
     "no_tools_found": "Không tìm thấy công cụ tương ứng.",
     "loading_mcp_servers": "Đang tải các máy chủ MCP...",
     "app_integrations": "Tích hợp ứng dụng",
@@ -1329,8 +1624,13 @@ const TRANSLATIONS = {
     "profile_picture": "Ảnh Hồ sơ",
     "remove_profile_picture": "Xóa Ảnh Hồ sơ",
     "username": "Tên người dùng",
+    "username_placeholder": "Tên người dùng",
     "new_password": "Mật khẩu Mới",
+    "password_placeholder": "Mật khẩu mới của {{username}}",
     "password_description": "Mật khẩu phải có ít nhất 8 ký tự",
+    "bio": "Tiểu sử",
+    "bio_placeholder": "Giới thiệu về bản thân...",
+    "profile_picture_alt": "Ảnh đại diện người dùng",
     "cancel": "Hủy",
     "update_account": "Cập nhật Tài khoản",
     "theme": "Tùy chọn Giao diện",

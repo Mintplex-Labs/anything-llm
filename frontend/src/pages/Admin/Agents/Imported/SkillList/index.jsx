@@ -1,4 +1,5 @@
 import { CaretRight } from "@phosphor-icons/react";
+import { useTranslation } from "react-i18next";
 import { sentenceCase } from "text-case";
 
 export default function ImportedSkillList({
@@ -6,10 +7,12 @@ export default function ImportedSkillList({
   selectedSkill = null,
   handleClick = null,
 }) {
+  const { t } = useTranslation();
+
   if (skills.length === 0)
     return (
       <div className="text-theme-text-secondary text-center text-xs flex flex-col gap-y-2">
-        <p>No imported skills found</p>
+        <p>{t("agent.skill.imported.noSkillsFound")}</p>
       </div>
     );
 
@@ -34,7 +37,9 @@ export default function ImportedSkillList({
           <div className="text-sm font-light">{sentenceCase(config.name)}</div>
           <div className="flex items-center gap-x-2">
             <div className="text-sm text-theme-text-secondary font-medium">
-              {config.active ? "On" : "Off"}
+              {config.active
+                ? t("agent.skill.imported.on")
+                : t("agent.skill.imported.off")}
             </div>
             <CaretRight
               size={14}
