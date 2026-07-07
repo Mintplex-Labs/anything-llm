@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
 import LLMItem from "@/components/LLMSelection/LLMItem";
@@ -10,6 +10,7 @@ import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import LemonadeLogo from "@/media/llmprovider/lemonade.png";
 import GenericOpenAiLogo from "@/media/llmprovider/generic-openai.png";
 import GroqLogo from "@/media/llmprovider/groq.png";
+import { useTranslation } from "react-i18next";
 
 import BrowserNative from "@/components/SpeechToText/BrowserNative";
 import OpenAiSTTOptions from "@/components/SpeechToText/OpenAiOptions";
@@ -18,53 +19,41 @@ import LemonadeSTTOptions from "@/components/SpeechToText/LemonadeOptions";
 import GenericOpenAiSTTOptions from "@/components/SpeechToText/GenericOpenAiOptions";
 import GroqSTTOptions from "@/components/SpeechToText/GroqOptions";
 
-const PROVIDERS = [
+const PROVIDER_CONFIG = [
   {
-    name: "System native",
     value: "native",
     logo: AnythingLLMIcon,
     options: (settings) => <BrowserNative settings={settings} />,
-    description: "Uses your browser's built in STT service if supported.",
   },
   {
-    name: "OpenAI",
     value: "openai",
     logo: OpenAiLogo,
     options: (settings) => <OpenAiSTTOptions settings={settings} />,
-    description: "Use OpenAI's Whisper API to transcribe speech to text.",
   },
   {
-    name: "Lemonade",
     value: "lemonade",
     logo: LemonadeLogo,
     options: (settings) => <LemonadeSTTOptions settings={settings} />,
-    description: "Transcribe speech via your local Lemonade server.",
   },
   {
-    name: "Deepgram",
     value: "deepgram",
     logo: DeepgramLogo,
     options: (settings) => <DeepgramSTTOptions settings={settings} />,
-    description: "Transcribe speech using Deepgram's hosted Nova models.",
   },
   {
-    name: "Groq",
     value: "groq",
     logo: GroqLogo,
     options: (settings) => <GroqSTTOptions settings={settings} />,
-    description: "Transcribe speech using Groq's hosted models.",
   },
   {
-    name: "Generic OpenAI",
     value: "generic-openai",
     logo: GenericOpenAiLogo,
     options: (settings) => <GenericOpenAiSTTOptions settings={settings} />,
-    description:
-      "Connect to any OpenAI-compatible STT service via a custom configuration.",
   },
 ];
 
 export default function SpeechToTextProvider({ settings }) {
+  const { t } = useTranslation();
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -74,6 +63,18 @@ export default function SpeechToTextProvider({ settings }) {
   );
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
+
+  const providers = useMemo(
+    () =>
+      PROVIDER_CONFIG.map((provider) => ({
+        ...provider,
+        name: t(`audioPreference.stt.providers.${provider.value}.name`),
+        description: t(
+          `audioPreference.stt.providers.${provider.value}.description`
+        ),
+      })),
+    [t]
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -86,9 +87,9 @@ export default function SpeechToTextProvider({ settings }) {
     setSaving(true);
 
     if (error) {
-      showToast(`Failed to save preferences: ${error}`, "error");
+      showToast(t("audioPreference.stt.messages.saveError", { error }), "error");
     } else {
-      showToast("Speech-to-text preferences saved successfully.", "success");
+      showToast(t("audioPreference.stt.messages.saveSuccess"), "success");
     }
     setSaving(false);
     setHasChanges(!!error);
@@ -111,13 +112,13 @@ export default function SpeechToTextProvider({ settings }) {
   };
 
   useEffect(() => {
-    const filtered = PROVIDERS.filter((provider) =>
+    const filtered = providers.filter((provider) =>
       provider.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredProviders(filtered);
-  }, [searchQuery, selectedProvider]);
+  }, [searchQuery, selectedProvider, providers]);
 
-  const selectedProviderObject = PROVIDERS.find(
+  const selectedProviderObject = providers.find(
     (provider) => provider.value === selectedProvider
   );
 
@@ -127,14 +128,11 @@ export default function SpeechToTextProvider({ settings }) {
         <div className="w-full flex flex-col gap-y-1 pb-6 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10">
           <div className="flex gap-x-4 items-center">
             <p className="text-lg leading-6 font-bold text-white">
-              Speech-to-text Preference
+              {t("audioPreference.stt.title")}
             </p>
           </div>
           <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-            Here you can specify what kind of text-to-speech and speech-to-text
-            providers you would want to use in your AnythingLLM experience. By
-            default, we use the browser's built in support for these services,
-            but you may want to use others.
+            {t("audioPreference.stt.description")}
           </p>
         </div>
         <div className="w-full justify-end flex">
@@ -143,11 +141,13 @@ export default function SpeechToTextProvider({ settings }) {
               onClick={() => handleSubmit()}
               className="mt-3 mr-0 -mb-14 z-10"
             >
-              {saving ? "Saving..." : "Save changes"}
+              {saving ? t("common.saving") : t("common.save")}
             </CTAButton>
           )}
         </div>
-        <div className="text-base font-bold text-white mt-6 mb-4">Provider</div>
+        <div className="text-base font-bold text-white mt-6 mb-4">
+          {t("audioPreference.stt.provider")}
+        </div>
         <div className="relative">
           {searchMenuOpen && (
             <div
@@ -168,7 +168,7 @@ export default function SpeechToTextProvider({ settings }) {
                     type="text"
                     name="stt-provider-search"
                     autoComplete="off"
-                    placeholder="Search speech to text providers"
+                    placeholder={t("audioPreference.stt.searchPlaceholder")}
                     className="border-none -ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none text-theme-text-primary placeholder:text-theme-text-primary placeholder:font-medium"
                     onChange={(e) => setSearchQuery(e.target.value)}
                     ref={searchInputRef}
@@ -186,7 +186,7 @@ export default function SpeechToTextProvider({ settings }) {
                 <div className="flex-1 pl-4 pr-2 flex flex-col gap-y-1 overflow-y-auto white-scrollbar pb-4 max-h-[245px]">
                   {filteredProviders.map((provider) => (
                     <LLMItem
-                      key={provider.name}
+                      key={provider.value}
                       name={provider.name}
                       value={provider.value}
                       image={provider.logo}
@@ -228,9 +228,8 @@ export default function SpeechToTextProvider({ settings }) {
           className="mt-4 flex flex-col gap-y-1"
         >
           {selectedProvider &&
-            PROVIDERS.find(
-              (provider) => provider.value === selectedProvider
-            )?.options(settings)}
+            providers.find((provider) => provider.value === selectedProvider)
+              ?.options(settings)}
         </div>
       </div>
     </form>

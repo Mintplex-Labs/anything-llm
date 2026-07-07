@@ -32,7 +32,7 @@ export default function NewInviteModal({ closeModal, onSuccess }) {
       `${window.location.origin}/accept-invite/${invite.code}`
     );
     setCopied(true);
-    showToast("Invite link copied to clipboard", "success", {
+    showToast("Đã sao chép liên kết mời vào clipboard", "success", {
       clear: true,
     });
   };
@@ -71,7 +71,7 @@ export default function NewInviteModal({ closeModal, onSuccess }) {
         <div className="relative p-6 border-b rounded-t border-theme-modal-border">
           <div className="w-full flex gap-x-2 items-center">
             <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
-              Create new invite
+              Tạo lời mời mới
             </h3>
           </div>
           <button
@@ -85,7 +85,7 @@ export default function NewInviteModal({ closeModal, onSuccess }) {
         <div className="p-6">
           <form onSubmit={handleCreate}>
             <div className="space-y-4">
-              {error && <p className="text-red-400 text-sm">Error: {error}</p>}
+              {error && <p className="text-red-400 text-sm">Lỗi: {error}</p>}
               {invite && (
                 <div className="relative">
                   <input
@@ -113,10 +113,10 @@ export default function NewInviteModal({ closeModal, onSuccess }) {
                 </div>
               )}
               <p className="text-white text-opacity-60 text-xs md:text-sm">
-                After creation you will be able to copy the invite and send it
-                to a new user where they can create an account as the{" "}
-                <b>default</b> role and automatically be added to workspaces
-                selected.
+                Sau khi tạo, bạn có thể sao chép liên kết mời và gửi cho người
+                dùng mới để họ tạo tài khoản với vai trò{" "}
+                <b>mặc định</b> và tự động được thêm vào các không gian làm
+                việc đã chọn.
               </p>
             </div>
 
@@ -128,13 +128,14 @@ export default function NewInviteModal({ closeModal, onSuccess }) {
                       htmlFor="workspaces"
                       className="block text-sm font-medium text-white"
                     >
-                      Auto-add invitee to workspaces
+                      Tự động thêm người được mời vào không gian làm việc
                     </label>
                     <p className="text-white text-opacity-60 text-xs">
-                      You can optionally automatically assign the user to the
-                      workspaces below by selecting them. By default, the user
-                      will not have any workspaces visible. You can assign
-                      workspaces later post-invite acceptance.
+                      Bạn có thể tùy chọn tự động gán người dùng vào các không
+                      gian làm việc bên dưới bằng cách chọn chúng. Theo mặc
+                      định, người dùng sẽ không thấy không gian làm việc nào.
+                      Bạn có thể gán không gian làm việc sau khi họ chấp nhận
+                      lời mời.
                     </p>
                   </div>
 
@@ -160,13 +161,13 @@ export default function NewInviteModal({ closeModal, onSuccess }) {
                     type="button"
                     className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm mr-2"
                   >
-                    Cancel
+                    Hủy
                   </button>
                   <button
                     type="submit"
                     className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
                   >
-                    Create Invite
+                    Tạo lời mời
                   </button>
                 </>
               ) : (
@@ -175,7 +176,7 @@ export default function NewInviteModal({ closeModal, onSuccess }) {
                   type="button"
                   className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm"
                 >
-                  Close
+                  Đóng
                 </button>
               )}
             </div>

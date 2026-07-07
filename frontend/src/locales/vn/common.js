@@ -127,7 +127,12 @@ const TRANSLATIONS = {
   },
   "new-workspace": {
     "title": "Không gian làm việc mới",
-    "placeholder": "Không gian làm việc của tôi"
+    "placeholder": "Không gian làm việc của tôi",
+    "createTitle": "Tạo không gian làm việc mới",
+    "createButton": "Tạo không gian làm việc",
+    "cancel": "Hủy",
+    "description": "Sau khi tạo, chỉ quản trị viên mới có thể thấy không gian làm việc này. Bạn có thể thêm người dùng sau khi đã tạo.",
+    "error": "Lỗi: {{error}}"
   },
   "workspaces—settings": {
     "general": "Cài đặt chung",
@@ -725,6 +730,32 @@ const TRANSLATIONS = {
       "created": "Ngày tạo"
     }
   },
+  "browserExtensionApi": {
+    "title": "Khóa API tiện ích trình duyệt",
+    "description": "Quản lý khóa API cho các tiện ích trình duyệt kết nối với phiên bản GOV AI VN168 của bạn.",
+    "generate": "Tạo Khóa API Mới",
+    "empty": "Không tìm thấy khóa API nào",
+    "actions": "Thao tác",
+    "messages": {
+      "error": "Lỗi: {{error}}",
+      "fetchError": "Không thể tải khóa API"
+    },
+    "table": {
+      "connectionString": "Chuỗi kết nối tiện ích",
+      "by": "Tạo bởi",
+      "created": "Ngày tạo"
+    },
+    "modal": {
+      "title": "Khóa API tiện ích trình duyệt mới",
+      "cancel": "Hủy",
+      "create": "Tạo khóa API",
+      "copy": "Sao chép khóa API",
+      "copied": "Đã sao chép khóa API!",
+      "multiUserWarning": "Cảnh báo: Bạn đang ở chế độ đa người dùng, khóa API này sẽ cho phép truy cập tất cả không gian làm việc liên kết với tài khoản của bạn. Vui lòng chia sẻ một cách thận trọng.",
+      "autoConnectHint": "Sau khi nhấn \"Tạo khóa API\", GOV AI VN168 sẽ tự động thử kết nối với tiện ích trình duyệt của bạn.",
+      "connectionHint": "Nếu bạn thấy \"Connected to GOV AI VN168\" trong tiện ích, kết nối đã thành công. Nếu không, vui lòng sao chép chuỗi kết nối và dán vào tiện ích thủ công."
+    }
+  },
   "llm": {
     "title": "Tùy chọn LLM",
     "description": "Đây là thông tin đăng nhập và cài đặt cho nhà cung cấp LLM trò chuyện & nhúng ưa thích của bạn. Điều quan trọng là các khóa này phải chính xác, nếu không GOV AI VN168 sẽ không hoạt động đúng.",
@@ -746,9 +777,203 @@ const TRANSLATIONS = {
     "title": "Tùy chọn Mô hình Chuyển đổi giọng nói",
     "description": "Đây là thông tin đăng nhập và cài đặt cho nhà cung cấp mô hình chuyển đổi giọng nói ưa thích của bạn. Điều quan trọng là các khóa này phải chính xác, nếu không tệp media và âm thanh sẽ không được chuyển đổi.",
     "provider": "Nhà cung cấp Chuyển đổi giọng nói",
+    "searchPlaceholder": "Tìm kiếm nhà cung cấp chuyển đổi giọng nói",
+    "messages": {
+      "saveError": "Không thể lưu tùy chọn: {{error}}",
+      "saveSuccess": "Đã lưu tùy chọn chuyển đổi giọng nói thành công."
+    },
+    "providers": {
+      "openai": {
+        "name": "OpenAI",
+        "description": "Sử dụng mô hình OpenAI Whisper-large bằng khóa API của bạn."
+      },
+      "local": {
+        "name": "GOV AI VN168 tích hợp",
+        "description": "Chạy mô hình whisper tích hợp trên phiên bản này một cách riêng tư."
+      }
+    },
     "warn-start": "Sử dụng mô hình whisper cục bộ trên máy có RAM hoặc CPU hạn chế có thể làm GOV AI VN168 bị treo khi xử lý tệp media.",
     "warn-recommend": "Chúng tôi khuyến nghị ít nhất 2GB RAM và tải lên tệp <10Mb.",
     "warn-end": "Mô hình tích hợp sẽ tự động tải xuống khi sử dụng lần đầu."
+  },
+  "audioPreference": {
+    "stt": {
+      "title": "Tùy chọn chuyển giọng nói thành văn bản",
+      "description": "Tại đây bạn có thể chỉ định loại nhà cung cấp chuyển văn bản thành giọng nói và chuyển giọng nói thành văn bản mà bạn muốn sử dụng trong GOV AI VN168. Theo mặc định, chúng tôi sử dụng hỗ trợ tích hợp sẵn của trình duyệt cho các dịch vụ này, nhưng bạn có thể muốn dùng nhà cung cấp khác.",
+      "provider": "Nhà cung cấp",
+      "searchPlaceholder": "Tìm kiếm nhà cung cấp chuyển giọng nói thành văn bản",
+      "messages": {
+        "saveError": "Không thể lưu tùy chọn: {{error}}",
+        "saveSuccess": "Đã lưu tùy chọn chuyển giọng nói thành văn bản thành công."
+      },
+      "providers": {
+        "native": {
+          "name": "Hệ thống tích hợp",
+          "description": "Sử dụng dịch vụ STT tích hợp sẵn của trình duyệt nếu được hỗ trợ."
+        },
+        "openai": {
+          "name": "OpenAI",
+          "description": "Sử dụng API Whisper của OpenAI để chuyển giọng nói thành văn bản."
+        },
+        "lemonade": {
+          "name": "Lemonade",
+          "description": "Chuyển giọng nói thành văn bản qua máy chủ Lemonade cục bộ của bạn."
+        },
+        "deepgram": {
+          "name": "Deepgram",
+          "description": "Chuyển giọng nói thành văn bản bằng các mô hình Nova hosted của Deepgram."
+        },
+        "groq": {
+          "name": "Groq",
+          "description": "Chuyển giọng nói thành văn bản bằng các mô hình hosted của Groq."
+        },
+        "generic-openai": {
+          "name": "OpenAI tương thích",
+          "description": "Kết nối với bất kỳ dịch vụ STT tương thích OpenAI nào qua cấu hình tùy chỉnh."
+        }
+      }
+    },
+    "tts": {
+      "title": "Tùy chọn chuyển văn bản thành giọng nói",
+      "description": "Tại đây bạn có thể chỉ định loại nhà cung cấp chuyển văn bản thành giọng nói mà bạn muốn sử dụng trong GOV AI VN168. Theo mặc định, chúng tôi sử dụng hỗ trợ tích hợp sẵn của trình duyệt cho các dịch vụ này, nhưng bạn có thể muốn dùng nhà cung cấp khác.",
+      "provider": "Nhà cung cấp",
+      "searchPlaceholder": "Tìm kiếm nhà cung cấp chuyển văn bản thành giọng nói",
+      "messages": {
+        "saveError": "Không thể lưu tùy chọn: {{error}}",
+        "saveSuccess": "Đã lưu tùy chọn chuyển văn bản thành giọng nói thành công."
+      },
+      "providers": {
+        "native": {
+          "name": "Hệ thống tích hợp",
+          "description": "Sử dụng dịch vụ TTS tích hợp sẵn của trình duyệt nếu được hỗ trợ."
+        },
+        "openai": {
+          "name": "OpenAI",
+          "description": "Sử dụng giọng nói chuyển văn bản thành giọng nói của OpenAI."
+        },
+        "elevenlabs": {
+          "name": "ElevenLabs",
+          "description": "Sử dụng giọng nói và công nghệ chuyển văn bản thành giọng nói của ElevenLabs."
+        },
+        "piper_local": {
+          "name": "PiperTTS",
+          "description": "Chạy mô hình TTS cục bộ trong trình duyệt một cách riêng tư."
+        },
+        "kokoro": {
+          "name": "Kokoro",
+          "description": "Kết nối với máy chủ kokoro-fastapi tự host để có giọng nói mã nguồn mở chất lượng cao."
+        },
+        "generic-openai": {
+          "name": "OpenAI tương thích",
+          "description": "Kết nối với dịch vụ TTS tương thích OpenAI chạy cục bộ hoặc từ xa."
+        }
+      }
+    },
+    "noConfig": "Không cần cấu hình cho nhà cung cấp này."
+  },
+  "subAgents": {
+    "title": "Điều phối đa Agent",
+    "description": "Cấu hình các Sub-Agent chuyên biệt mà Manager Agent (`@agent`) có thể ủy quyền nhiệm vụ một cách linh hoạt.",
+    "addButton": "Thêm Sub-Agent",
+    "empty": {
+      "title": "Chưa có Sub-Agent nào",
+      "description": "Tạo sub-agent cho các tác vụ chuyên biệt như tạo hình ảnh, tổng hợp giọng nói hoặc phân tích chuyên sâu.",
+      "getStarted": "Bắt đầu"
+    },
+    "card": {
+      "noDescription": "Chưa có mô tả.",
+      "input": "Đầu vào",
+      "output": "Đầu ra",
+      "modelPreference": "Mô hình ưu tiên:",
+      "edit": "Chỉnh sửa Agent",
+      "delete": "Xóa Agent"
+    },
+    "messages": {
+      "deleteConfirm": "Bạn có chắc muốn xóa sub-agent này không?",
+      "deleted": "Đã xóa sub-agent thành công",
+      "deleteError": "Lỗi khi xóa sub-agent: {{error}}",
+      "fillRequired": "Vui lòng điền Tên và chọn Mô hình",
+      "updated": "Đã cập nhật sub-agent thành công",
+      "updateError": "Lỗi khi cập nhật sub-agent: {{error}}",
+      "created": "Đã tạo sub-agent thành công",
+      "createError": "Lỗi khi tạo sub-agent: {{error}}"
+    },
+    "modal": {
+      "createTitle": "Tạo Sub-Agent mới",
+      "editTitle": "Chỉnh sửa Sub-Agent: {{name}}",
+      "agentName": "Tên Agent",
+      "agentNamePlaceholder": "vd. ImageGenerator",
+      "description": "Mô tả (Cách/khi nào Manager nên dùng agent này)",
+      "descriptionPlaceholder": "vd. Tạo hình ảnh chất lượng cao. Dùng agent này khi người dùng yêu cầu vẽ hoặc hình dung điều gì đó.",
+      "inputType": "Loại đầu vào",
+      "outputType": "Loại đầu ra",
+      "modelProvider": "Nhà cung cấp mô hình",
+      "model": "Mô hình",
+      "selectModel": "Chọn mô hình",
+      "noMatchingModels": "Không tìm thấy mô hình OpenRouter phù hợp với tổ hợp loại đầu vào/đầu ra này.",
+      "systemPrompt": "System Prompt (Hướng dẫn cho agent này)",
+      "systemPromptPlaceholder": "vd. Bạn là một họa sĩ chuyên nghiệp. Khi nhận yêu cầu, hãy viết prompt Stable Diffusion chi tiết và súc tích để tạo hình ảnh đó. CHỈ trả lời bằng prompt Stable Diffusion đã tạo, không thêm gì khác.",
+      "cancel": "Hủy",
+      "save": "Lưu Agent"
+    },
+    "inputTypes": {
+      "text": "Chỉ văn bản",
+      "text+image": "Văn bản + Hình ảnh (Không Vision)",
+      "text+audio": "Văn bản + Âm thanh",
+      "video": "Video"
+    },
+    "outputTypes": {
+      "text": "Văn bản/Phân tích",
+      "image": "Hình ảnh được tạo",
+      "audio": "Âm thanh tổng hợp",
+      "video": "Video được tạo"
+    },
+    "providers": {
+      "ollama": "Ollama (Cục bộ)"
+    }
+  },
+  "systemPromptVariables": {
+    "title": "Biến System Prompt",
+    "description": "Biến system prompt dùng để lưu các giá trị cấu hình có thể được tham chiếu trong system prompt để tạo nội dung động trong prompt của bạn.",
+    "addButton": "Thêm biến",
+    "empty": "Không tìm thấy biến nào",
+    "messages": {
+      "fetchError": "Không tìm thấy biến nào"
+    },
+    "table": {
+      "key": "Khóa",
+      "value": "Giá trị",
+      "description": "Mô tả",
+      "type": "Loại"
+    },
+    "modal": {
+      "add": {
+        "title": "Thêm biến mới",
+        "create": "Tạo biến"
+      },
+      "cancel": "Hủy",
+      "keyPlaceholder": "vd. company_name",
+      "keyHelper": "Khóa phải là duy nhất và sẽ được dùng trong prompt dưới dạng '{key}'. Chỉ cho phép chữ cái, số và dấu gạch dưới.",
+      "valuePlaceholder": "vd. Acme Corp",
+      "descriptionPlaceholder": "Mô tả tùy chọn",
+      "error": "Lỗi: {{error}}",
+      "messages": {
+        "required": "Khóa và giá trị là bắt buộc",
+        "created": "Đã tạo biến thành công",
+        "createError": "Không thể tạo biến"
+      }
+    }
+  },
+  "agentBuilder": {
+    "flowInfo": {
+      "flowName": "Tên luồng",
+      "flowNameHint": "Điều quan trọng là đặt tên luồng mà LLM có thể dễ dàng hiểu được.",
+      "flowNameExamples": "\"SendMessageToDiscord\", \"CheckStockPrice\", \"CheckWeather\"",
+      "flowNamePlaceholder": "Nhập tên luồng",
+      "description": "Mô tả",
+      "descriptionHint": "Cũng quan trọng không kém là cung cấp mô tả mà LLM có thể dễ dàng hiểu. Hãy nêu rõ mục đích của luồng, ngữ cảnh sử dụng và mọi thông tin liên quan khác.",
+      "descriptionPlaceholder": "Nhập mô tả luồng"
+    }
   },
   "embedding": {
     "title": "Tùy chọn nhúng",

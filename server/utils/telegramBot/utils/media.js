@@ -7,7 +7,7 @@
 async function downloadTelegramFile(bot, fileId) {
   const fileLink = await bot.getFileLink(fileId);
   const response = await fetch(fileLink);
-  if (!response.ok) throw new Error("Failed to download file from Telegram");
+  if (!response.ok) throw new Error("Không thể tải tệp từ Telegram.");
   return Buffer.from(await response.arrayBuffer());
 }
 
@@ -56,7 +56,7 @@ async function transcribeAudio(audioBuffer, mimeType = "audio/ogg") {
   const collector = new CollectorApi();
   const result = await collector.parseDocument(filename);
   if (!result?.success || !result.documents?.length) {
-    throw new Error(result?.reason || "Failed to transcribe audio.");
+    throw new Error(result?.reason || "Không thể chuyển đổi âm thanh thành văn bản.");
   }
   return result.documents[0].pageContent;
 }
@@ -84,14 +84,14 @@ async function documentToText(documentBuffer, originalFilename) {
   const collector = new CollectorApi();
   if (!(await collector.online())) {
     throw new Error(
-      "Document processing is unavailable. The collector service is offline."
+      "Không thể xử lý tài liệu. Dịch vụ collector đang ngoại tuyến."
     );
   }
 
   const result = await collector.parseDocument(filename);
   if (!result?.success || !result.documents?.length) {
     throw new Error(
-      result?.reason || `Failed to parse document: ${originalFilename}`
+      result?.reason || `Không thể phân tích tài liệu: ${originalFilename}`
     );
   }
 
@@ -147,7 +147,7 @@ async function sendVoiceResponse(bot, chatId, text) {
     await bot
       .sendMessage(
         chatId,
-        "Voice responses require a text-to-speech provider. Set one up in Settings > Voice & Speech > Text-to-Speech Preference."
+        "Phản hồi bằng giọng nói cần nhà cung cấp chuyển văn bản thành giọng nói. Hãy cấu hình tại Cài đặt > Giọng nói & Âm thanh > Tùy chọn chuyển văn bản thành giọng nói."
       )
       .catch(() => {});
     return false;
