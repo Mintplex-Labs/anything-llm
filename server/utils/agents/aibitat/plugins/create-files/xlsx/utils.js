@@ -53,17 +53,17 @@ function parseCSV(csvString, delimiter = ",") {
   }
 
   const parsedRows = rows.filter((row) => row.some((cell) => cell !== ""));
-  
-  // Pad shorter rows to match the header length so columns are never lost
-  const headerLength = parsedRows[0]?.length || 0;
-  if (headerLength > 0) {
-    for (let i = 0; i < parsedRows.length; i++) {
-      while (parsedRows[i].length < headerLength) {
+
+  // Normalize all rows to the widest row so no cell is ever lost.
+  // If a data row is wider than the header, extend the header with generic names.
+  const maxLength = parsedRows.reduce((max, row) => Math.max(max, row.length), 0);
+  if (maxLength > 0) {
+    while (parsedRows[0].length < maxLength) {
+      parsedRows[0].push(`Cột ${parsedRows[0].length + 1}`);
+    }
+    for (let i = 1; i < parsedRows.length; i++) {
+      while (parsedRows[i].length < maxLength) {
         parsedRows[i].push("");
-      }
-      // Truncate if somehow a row exceeds header (though rare in basic CSV)
-      if (parsedRows[i].length > headerLength) {
-        parsedRows[i] = parsedRows[i].slice(0, headerLength);
       }
     }
   }
@@ -151,7 +151,9 @@ function inferCellType(value) {
   const trimmed = value.trim();
   const lowerTrimmed = trimmed.toLowerCase();
 
-  if (trimmed.startsWith("=")) {
+  // Real Excel formula. A leading "'=" escapes it to a literal string.
+  if (trimmed.startsWith("'=")) return trimmed.substring(1);
+  if (trimmed.startsWith("=") && trimmed.length > 1) {
     return { formula: trimmed.substring(1) };
   }
 
@@ -187,20 +189,20 @@ function inferCellType(value) {
     }
   }
 
-  const datePatterns = [
-    /^\d{4}-\d{2}-\d{2}$/,
-    /^\d{2}\/\d{2}\/\d{4}$/,
-    /^\d{2}-\d{2}-\d{4}$/,
-    /^\d{4}\/\d{2}\/\d{2}$/,
-  ];
+  // ISO-style dates: yyyy-mm-dd or yyyy/mm/dd
+  const isoMatch = trimmed.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})$/);
+  if (isoMatch) {
+    const [, y, m, d] = isoMatch.map(Number);
+    if (m >= 1 && m <= 12 && d >= 1 && d <= 31)
+      return new Date(Date.UTC(y, m - 1, d));
+  }
 
-  for (const pattern of datePatterns) {
-    if (pattern.test(trimmed)) {
-      const date = new Date(trimmed);
-      if (!isNaN(date.getTime())) {
-        return date;
-      }
-    }
+  // Day-first dates (Vietnamese convention): dd/mm/yyyy or dd-mm-yyyy
+  const dmyMatch = trimmed.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})$/);
+  if (dmyMatch) {
+    const [, d, m, y] = dmyMatch.map(Number);
+    if (m >= 1 && m <= 12 && d >= 1 && d <= 31)
+      return new Date(Date.UTC(y, m - 1, d));
   }
 
   return value;
@@ -258,6 +260,13 @@ function autoFitColumns(worksheet, minWidth = 8, maxWidth = 50) {
           cellLength = 12;
         } else if (typeof cellValue === "number") {
           cellLength = cellValue.toString().length;
+        } else if (
+          typeof cellValue === "object" &&
+          typeof cellValue.formula === "string"
+        ) {
+          // Formula display width is unknown until Excel computes it
+          cellLength =
+            cellValue.result != null ? String(cellValue.result).length : 12;
         } else if (typeof cellValue === "object" && cellValue.richText) {
           cellLength = cellValue.richText.reduce(
             (acc, rt) => acc + (rt.text?.length || 0),
@@ -285,20 +294,26 @@ function autoFitColumns(worksheet, minWidth = 8, maxWidth = 50) {
  */
 function applyHeaderStyle(
   worksheet,
-  { bold = true, fill = "FF1E293B", fontColor = "FFFFFFFF" } = {}, // Slate 800
+  {
+    bold = true,
+    fill = "FF1F4E78",
+    fontColor = "FFFFFFFF",
+    fontName = "Times New Roman",
+  } = {},
   headerRowNumber = 1
 ) {
   const headerRow = worksheet.getRow(headerRowNumber);
   if (!headerRow) return;
 
+  const thin = { style: "thin", color: { argb: "FF94A3B8" } };
   const colCount = worksheet.columnCount || 1;
   for (let col = 1; col <= colCount; col++) {
     const cell = headerRow.getCell(col);
     cell.font = {
       bold,
       color: { argb: fontColor },
-      name: "Segoe UI",
-      size: 11,
+      name: fontName,
+      size: 12,
     };
     cell.fill = {
       type: "pattern",
@@ -310,8 +325,11 @@ function applyHeaderStyle(
       horizontal: "center",
       wrapText: true,
     };
-    // Add a solid bottom border for the header
+    // Full borders (required for printable administrative tables)
     cell.border = {
+      top: thin,
+      left: thin,
+      right: thin,
       bottom: { style: "medium", color: { argb: "FF0F172A" } },
     };
   }
@@ -361,15 +379,20 @@ function freezePanes(worksheet, rows = 1, columns = 0) {
  * - Auto-detect total/summary rows and bold them
  * @param {import('exceljs').Worksheet} worksheet - The worksheet to modify
  * @param {number} [dataStartRow=1] - The row where data headers begin (1 if no title row)
+ * @param {{totalFill?: string, totalBorder?: string}} [colors] - ARGB colors for total row styling
+ * @param {number} [lastDataRow=null] - Last row of the data table (rows below are ignored)
  */
-function applyPremiumFormatting(worksheet, dataStartRow = 1) {
-  // Add auto filter to the data range
-  if (worksheet.rowCount > 0 && worksheet.columnCount > 0) {
-    worksheet.autoFilter = {
-      from: { row: dataStartRow, column: 1 },
-      to: { row: worksheet.rowCount, column: worksheet.columnCount },
-    };
-  }
+function applyPremiumFormatting(
+  worksheet,
+  dataStartRow = 1,
+  {
+    totalFill = "FFD9E5F1",
+    totalBorder = "FF1F4E78",
+    fontName = "Times New Roman",
+  } = {},
+  lastDataRow = null
+) {
+  const endRow = lastDataRow || worksheet.rowCount;
 
   // Detect total/summary rows (last row with keywords)
   const totalKeywords = [
@@ -378,25 +401,31 @@ function applyPremiumFormatting(worksheet, dataStartRow = 1) {
   ];
 
   const colCount = worksheet.columnCount || 1;
+  const thin = { style: "thin", color: { argb: "FF94A3B8" } };
 
   // Set default row height, borders, and fonts
   worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
     if (rowNumber <= dataStartRow) return; // Skip title rows
+    if (rowNumber > endRow) return; // Skip anything after the table (e.g. signature block)
 
     if (rowNumber > dataStartRow && !row.height) {
-      row.height = 28; // Increased row height for better breathability
+      row.height = 22;
     }
 
-    // Check if this is a total/summary row
-    const firstCellValue = String(row.getCell(1).value || "").trim().toLowerCase();
+    // Check if this is a total/summary row (formula objects are never labels)
+    const firstVal = row.getCell(1).value;
+    const firstCellValue =
+      firstVal !== null &&
+      typeof firstVal === "object" &&
+      !(firstVal instanceof Date)
+        ? ""
+        : String(firstVal ?? "").trim().toLowerCase();
     const isTotalRow = totalKeywords.some((kw) => firstCellValue.startsWith(kw));
 
     for (let col = 1; col <= colCount; col++) {
       const cell = row.getCell(col);
-      // Modern web-table style: Only subtle horizontal borders, NO vertical gridlines
-      cell.border = {
-        bottom: { style: "thin", color: { argb: "FFE2E8F0" } }, // slate-200
-      };
+      // Full thin borders on every cell so printed tables read as a grid
+      cell.border = { top: thin, left: thin, right: thin, bottom: thin };
 
       // Ensure proper alignment
       if (rowNumber > dataStartRow) {
@@ -410,9 +439,9 @@ function applyPremiumFormatting(worksheet, dataStartRow = 1) {
         const currentFont = cell.font || {};
         cell.font = {
           ...currentFont,
-          name: currentFont.name || "Segoe UI",
-          size: currentFont.size || 11, // Increased font size slightly
-          color: currentFont.color || { argb: "FF334155" }, // slate-700
+          name: currentFont.name || fontName,
+          size: currentFont.size || 11,
+          color: currentFont.color || { argb: "FF1E293B" }, // slate-800
           bold: isTotalRow ? true : currentFont.bold || false,
         };
 
@@ -421,11 +450,13 @@ function applyPremiumFormatting(worksheet, dataStartRow = 1) {
           cell.fill = {
             type: "pattern",
             pattern: "solid",
-            fgColor: { argb: "FFF0F9FF" }, // sky-50
+            fgColor: { argb: totalFill },
           };
           cell.border = {
-            top: { style: "double", color: { argb: "FF0284C7" } }, // sky-600
-            bottom: { style: "medium", color: { argb: "FF0284C7" } },
+            top: { style: "double", color: { argb: totalBorder } },
+            bottom: { style: "medium", color: { argb: totalBorder } },
+            left: { style: "thin", color: { argb: totalBorder } },
+            right: { style: "thin", color: { argb: totalBorder } },
           };
         }
       }
@@ -434,51 +465,167 @@ function applyPremiumFormatting(worksheet, dataStartRow = 1) {
 }
 
 /**
- * Inserts a title row at the top of a worksheet.
- * The title is merged across all columns with large bold font and colored background.
+ * Inserts a title row at the given position of a worksheet.
+ * The title is merged across all columns with large bold font.
  * Shifts existing data down by 1 row.
  *
  * @param {import('exceljs').Worksheet} worksheet - The worksheet to modify
  * @param {string} title - The title text to display
- * @returns {number} The new data start row (2, since title takes row 1)
+ * @param {number} [atRow=1] - The row position to insert the title at
+ * @param {{accent?: string}} [opts] - Styling options (ARGB accent color)
+ * @returns {number} The number of rows inserted (0 or 1)
  */
-function applyTitleRow(worksheet, title) {
-  if (!title || typeof title !== "string" || !title.trim()) return 1;
+function applyTitleRow(
+  worksheet,
+  title,
+  atRow = 1,
+  { accent = "FF0EA5E9", fontName = "Times New Roman", size = 15 } = {}
+) {
+  if (!title || typeof title !== "string" || !title.trim()) return 0;
 
-  // Insert a new row at position 1 (pushes everything else down)
-  worksheet.insertRow(1, []);
-  const titleRow = worksheet.getRow(1);
+  worksheet.insertRow(atRow, []);
+  const titleRow = worksheet.getRow(atRow);
   titleRow.getCell(1).value = title.trim();
 
   // Merge across all columns
   const colCount = worksheet.columnCount || 1;
   if (colCount > 1) {
-    worksheet.mergeCells(1, 1, 1, colCount);
+    worksheet.mergeCells(atRow, 1, atRow, colCount);
   }
 
   // Style the title cell
   const titleCell = titleRow.getCell(1);
   titleCell.font = {
-    name: "Segoe UI",
-    size: 16, // Larger font
+    name: fontName,
+    size,
     bold: true,
     color: { argb: "FF0F172A" }, // slate-900
   };
   titleCell.fill = {
     type: "pattern",
     pattern: "solid",
-    fgColor: { argb: "FFFFFFFF" }, // pure white background for clean look
+    fgColor: { argb: "FFFFFFFF" },
   };
   titleCell.alignment = {
     vertical: "middle",
     horizontal: "center",
+    wrapText: true,
   };
   titleCell.border = {
-    bottom: { style: "thick", color: { argb: "FF0EA5E9" } }, // sky-500 thick border
+    bottom: { style: "thick", color: { argb: accent } },
   };
-  titleRow.height = 45; // Taller title row
+  titleRow.height = 45;
 
-  return 2; // Data now starts at row 2
+  return 1;
+}
+
+/**
+ * Inserts the standard Vietnamese administrative document header block at the
+ * top of a worksheet (Quốc hiệu / Tiêu ngữ on the right, agency names on the
+ * left, date line below) per Nghị định 30/2020/NĐ-CP layout conventions.
+ * Shifts existing data down.
+ *
+ * @param {import('exceljs').Worksheet} worksheet - The worksheet to modify
+ * @param {Object} [opts]
+ * @param {string} [opts.parentOrganization] - Upper-level agency name (line 1, left)
+ * @param {string} [opts.organization] - Issuing agency/unit name (line 2, left)
+ * @param {string} [opts.place] - Locality name for the date line (e.g. "Hà Nội")
+ * @returns {number} The number of rows inserted
+ */
+function applyGovernmentHeader(
+  worksheet,
+  { parentOrganization = "", organization = "", place = "" } = {}
+) {
+  const colCount = Math.max(worksheet.columnCount || 1, 2);
+  const rowsInserted = 4;
+  worksheet.insertRows(1, Array.from({ length: rowsInserted }, () => []));
+
+  // Left block spans roughly the first half, right block the rest
+  const leftEnd = Math.max(1, Math.ceil(colCount / 2) - (colCount >= 5 ? 1 : 0));
+  const rightStart = leftEnd + 1;
+
+  const setBlockCell = (row, startCol, endCol, value, font) => {
+    if (endCol > startCol) worksheet.mergeCells(row, startCol, row, endCol);
+    const cell = worksheet.getRow(row).getCell(startCol);
+    cell.value = value;
+    cell.font = { name: "Times New Roman", size: 12, ...font };
+    cell.alignment = { horizontal: "center", vertical: "middle", wrapText: true };
+    return cell;
+  };
+
+  // Row 1: parent agency (left) | national motto (right)
+  setBlockCell(
+    1,
+    1,
+    leftEnd,
+    (parentOrganization || "").toUpperCase(),
+    { size: 11 }
+  );
+  setBlockCell(1, rightStart, colCount, "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM", {
+    bold: true,
+    size: 12,
+  });
+
+  // Row 2: agency name (left, bold) | motto line (right, bold + underline rule)
+  setBlockCell(2, 1, leftEnd, (organization || "").toUpperCase(), {
+    bold: true,
+    size: 11,
+  });
+  const motto = setBlockCell(
+    2,
+    rightStart,
+    colCount,
+    "Độc lập - Tự do - Hạnh phúc",
+    { bold: true, size: 12 }
+  );
+  motto.border = { bottom: { style: "thin", color: { argb: "FF000000" } } };
+
+  // Row 3: date line (right, italic)
+  const now = new Date();
+  const dateLine = `${place || "………"}, ngày ${String(now.getDate()).padStart(2, "0")} tháng ${now.getMonth() + 1} năm ${now.getFullYear()}`;
+  const dateCell = setBlockCell(3, rightStart, colCount, dateLine, {
+    italic: true,
+    size: 12,
+  });
+  dateCell.alignment = { horizontal: "center", vertical: "middle" };
+  worksheet.getRow(3).height = 22;
+
+  // Row 4 stays blank as a spacer before the title/table
+  return rowsInserted;
+}
+
+/**
+ * Appends the Vietnamese administrative signature block after the data table:
+ * signer title (right-aligned, uppercase bold), "(Ký, ghi rõ họ tên)" note and
+ * empty rows for a handwritten signature.
+ *
+ * @param {import('exceljs').Worksheet} worksheet - The worksheet to modify
+ * @param {Object} [opts]
+ * @param {string} [opts.signerTitle="NGƯỜI LẬP BIỂU"] - Signer title/role
+ * @param {string} [opts.signerName] - Optional pre-filled signer name
+ */
+function applySignatureBlock(
+  worksheet,
+  { signerTitle = "NGƯỜI LẬP BIỂU", signerName = "" } = {}
+) {
+  const colCount = Math.max(worksheet.columnCount || 1, 2);
+  const startCol = Math.max(1, Math.ceil(colCount / 2) + 1);
+  let row = (worksheet.rowCount || 1) + 2;
+
+  const writeLine = (value, font, height = 18) => {
+    if (colCount > startCol) worksheet.mergeCells(row, startCol, row, colCount);
+    const cell = worksheet.getRow(row).getCell(startCol);
+    cell.value = value;
+    cell.font = { name: "Times New Roman", size: 12, ...font };
+    cell.alignment = { horizontal: "center", vertical: "middle" };
+    worksheet.getRow(row).height = height;
+    row++;
+  };
+
+  writeLine((signerTitle || "NGƯỜI LẬP BIỂU").toUpperCase(), { bold: true });
+  writeLine("(Ký, ghi rõ họ tên)", { italic: true, size: 11 });
+  row += 3; // space for the handwritten signature
+  if (signerName) writeLine(signerName, { bold: true });
 }
 
 /**
@@ -495,9 +642,23 @@ function applyTitleRow(worksheet, title) {
 function applySmartNumberFormatting(worksheet, headerRow = 1) {
   const colCount = worksheet.columnCount || 0;
 
+  // Formula cells count as numeric unless the formula clearly builds text
+  const getFormula = (val) =>
+    val !== null &&
+    typeof val === "object" &&
+    !(val instanceof Date) &&
+    typeof val.formula === "string"
+      ? val.formula
+      : null;
+  const isNumericFormula = (f) =>
+    !/&|\b(TEXT|CONCAT|CONCATENATE|TEXTJOIN|LEFT|RIGHT|MID|UPPER|LOWER|PROPER|TRIM|SUBSTITUTE|REPT|CHAR)\s*\(/i.test(
+      f
+    );
+
   for (let col = 1; col <= colCount; col++) {
     // Analyze the column data to determine the dominant type
     let numCount = 0;
+    let formulaCount = 0;
     let pctCount = 0;
     let currencyCount = 0;
     let hasDecimals = false;
@@ -522,6 +683,13 @@ function applySmartNumberFormatting(worksheet, headerRow = 1) {
         if (cell.numFmt && cell.numFmt.includes("%")) {
           pctCount++;
         }
+      } else {
+        const f = getFormula(val);
+        if (f && isNumericFormula(f)) {
+          numCount++;
+          formulaCount++;
+          if (/AVERAGE|\//i.test(f)) hasDecimals = true;
+        }
       }
     });
 
@@ -545,34 +713,128 @@ function applySmartNumberFormatting(worksheet, headerRow = 1) {
           hasLargeNumbers = true;
         }
       });
-      if (hasLargeNumbers) {
+      if (hasLargeNumbers || formulaCount > 0) {
+        // "#,##0" renders small integers unchanged, so it is safe for
+        // formula columns whose magnitude is unknown until Excel computes
         fmt = "#,##0";
       }
     }
 
-    if (fmt) {
-      worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
-        if (rowNumber <= headerRow) return;
-        const cell = row.getCell(col);
-        if (typeof cell.value === "number" && !cell.numFmt) {
-          cell.numFmt = fmt;
-        }
-      });
-    }
-
-    // Right-align numeric columns
     worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
       if (rowNumber <= headerRow) return;
       const cell = row.getCell(col);
-      if (typeof cell.value === "number") {
-        cell.alignment = {
-          ...(cell.alignment || {}),
-          horizontal: "right",
-          vertical: "middle",
-        };
-      }
+      const f = getFormula(cell.value);
+      const isNumeric =
+        typeof cell.value === "number" || (f && isNumericFormula(f));
+      if (!isNumeric) return;
+
+      if (fmt && !cell.numFmt) cell.numFmt = fmt;
+      // Right-align numeric cells
+      cell.alignment = {
+        ...(cell.alignment || {}),
+        horizontal: "right",
+        vertical: "middle",
+      };
     });
   }
+}
+
+/**
+ * Applies A4 print setup so the sheet prints cleanly for reports:
+ * fit-to-width scaling, landscape for wide tables, centered horizontally
+ * and the table header row repeated on every printed page.
+ *
+ * @param {import('exceljs').Worksheet} worksheet - The worksheet to modify
+ * @param {Object} [opts]
+ * @param {number} [opts.headerRow=1] - Row number of the table header
+ * @param {number} [opts.columnCount=1] - Number of table columns
+ */
+function applyPrintSetup(worksheet, { headerRow = 1, columnCount = 1 } = {}) {
+  worksheet.pageSetup = {
+    paperSize: 9, // A4
+    orientation: columnCount >= 8 ? "landscape" : "portrait",
+    fitToPage: true,
+    fitToWidth: 1,
+    fitToHeight: 0,
+    horizontalCentered: true,
+    margins: {
+      left: 0.4,
+      right: 0.4,
+      top: 0.6,
+      bottom: 0.6,
+      header: 0.3,
+      footer: 0.3,
+    },
+    printTitlesRow: `${headerRow}:${headerRow}`,
+  };
+}
+
+/**
+ * Checks every sheet reference inside a formula against the workbook's
+ * actual sheet names so broken #REF! links are caught before file creation.
+ *
+ * @param {string} formula - Raw formula text (with or without leading "=")
+ * @param {Set<string>} validSheetNames - Lowercased valid sheet names
+ * @returns {string|null} The first unknown sheet name, or null if all valid
+ */
+function validateFormulaSheetRefs(formula, validSheetNames) {
+  // Mask string literals so text like "abc!" is never mistaken for a ref
+  const body = formula.replace(/^=/, "").replace(/"(?:[^"]|"")*"/g, '""');
+  const refs = [];
+  for (const m of body.matchAll(/'((?:[^']|'')+)'!/g))
+    refs.push(m[1].replace(/''/g, "'"));
+  const stripped = body.replace(/'(?:[^']|'')+'!/g, "!");
+  for (const m of stripped.matchAll(
+    /([A-Za-z_À-ỹ][\w.À-ỹ]*)!/g
+  ))
+    refs.push(m[1]);
+  for (const ref of refs) {
+    if (!validSheetNames.has(ref.toLowerCase())) return ref;
+  }
+  return null;
+}
+
+/**
+ * Shifts the row numbers of every A1-style cell reference in a formula.
+ * Formulas from the LLM are written against the raw CSV grid (header = row 1),
+ * but government headers and title rows push the table down - each sheet's
+ * offset moves its references to the final positions.
+ *
+ * @param {string} formula - Formula text without the leading "="
+ * @param {number} ownOffset - Row offset of the sheet the formula lives on
+ * @param {Map<string, number>} offsetBySheet - Lowercased sheet name -> offset
+ * @returns {string} The adjusted formula
+ */
+function adjustFormulaRows(formula, ownOffset, offsetBySheet) {
+  const anyOffset =
+    ownOffset > 0 ||
+    (offsetBySheet && [...offsetBySheet.values()].some((v) => v > 0));
+  if (!anyOffset) return formula;
+
+  const refPattern =
+    /(('((?:[^']|'')+)'|([A-Za-z_À-ỹ][\w.À-ỹ]*))!)?(\$?[A-Za-z]{1,3}\$?)(\d{1,7})(?![\w(])/g;
+
+  // Split out double-quoted string literals; only rewrite code segments
+  return formula
+    .split(/("(?:[^"]|"")*")/)
+    .map((segment, i) => {
+      if (i % 2 === 1) return segment;
+      return segment.replace(
+        refPattern,
+        (match, prefix, _inner, quotedName, bareName, col, row) => {
+          let offset = ownOffset;
+          if (prefix) {
+            const sheet = (
+              quotedName ? quotedName.replace(/''/g, "'") : bareName
+            ).toLowerCase();
+            offset = offsetBySheet.get(sheet) ?? 0;
+          }
+          if (!offset) return match;
+          return `${prefix || ""}${col}${Number(row) + offset}`;
+        }
+      );
+    })
+    .join("");
 }
 
 /**
@@ -717,65 +979,290 @@ async function embedChartInWorksheet(
   }
 }
 
+const OOXML_NS = {
+  xdr: "http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing",
+  a: "http://schemas.openxmlformats.org/drawingml/2006/main",
+  c: "http://schemas.openxmlformats.org/drawingml/2006/chart",
+  r: "http://schemas.openxmlformats.org/officeDocument/2006/relationships",
+  pkgRels: "http://schemas.openxmlformats.org/package/2006/relationships",
+};
+
+// Fixed chart box size when anchored on a data sheet (EMU): ~17.3cm x 9cm.
+// A oneCellAnchor keeps the size independent of the auto-fitted column widths.
+// The width leaves room for a right-hand legend beside the plot (see overlay=0).
+const CHART_EMU_CX = 6240000;
+const CHART_EMU_CY = 3240000;
+// Vertical pitch between stacked charts, in default-height rows (~9.9cm)
+const CHART_ROW_PITCH = 19;
+
+function escapeXml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function unescapeXml(value) {
+  return String(value)
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&amp;/g, "&");
+}
+
 /**
- * Merges a native Excel chart sheet from xlsx-chart output into an exceljs generated file.
+ * Builds one floating chart anchor for a worksheet drawing part.
+ * @param {{fromRow: number, chartRelId: number, shapeId: number, name: string}} opts
+ * @returns {string} oneCellAnchor XML fragment
+ */
+function buildChartAnchorXml({ fromRow, chartRelId, shapeId, name }) {
+  return (
+    `<xdr:oneCellAnchor>` +
+    `<xdr:from><xdr:col>0</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>${fromRow}</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:from>` +
+    `<xdr:ext cx="${CHART_EMU_CX}" cy="${CHART_EMU_CY}"/>` +
+    `<xdr:graphicFrame macro="">` +
+    `<xdr:nvGraphicFramePr><xdr:cNvPr id="${shapeId}" name="${escapeXml(name)}"/><xdr:cNvGraphicFramePr/></xdr:nvGraphicFramePr>` +
+    `<xdr:xfrm><a:off x="0" y="0"/><a:ext cx="${CHART_EMU_CX}" cy="${CHART_EMU_CY}"/></xdr:xfrm>` +
+    `<a:graphic><a:graphicData uri="${OOXML_NS.c}">` +
+    `<c:chart xmlns:c="${OOXML_NS.c}" xmlns:r="${OOXML_NS.r}" r:id="rId${chartRelId}"/>` +
+    `</a:graphicData></a:graphic>` +
+    `</xdr:graphicFrame>` +
+    `<xdr:clientData/>` +
+    `</xdr:oneCellAnchor>`
+  );
+}
+
+/**
+ * Merges native Excel charts (each generated separately by xlsx-chart in
+ * single-chart mode) into an exceljs-generated workbook.
  *
- * @param {Buffer} exceljsBuffer - Buffer of the styled Excel workbook generated by exceljs.
- * @param {Buffer} xlsxChartBuffer - Buffer of the Excel file containing the chart generated by xlsx-chart.
+ * Each chart job is either:
+ *  - anchored on an existing data sheet (`targetSheetName` + `anchorFromRow`):
+ *    a drawing part with floating chart frames is attached to that sheet, or
+ *  - hosted on its own placeholder sheet (`placeholderName`): the k-th
+ *    placeholder sheet's XML is replaced by xlsx-chart's chart-hosting sheet.
+ *
+ * Expected workbook layout (by exceljs sheet order):
+ *   sheets 1..P        - placeholder sheets, in job order (only untargeted jobs)
+ *   sheets P+1..       - styled data sheets
+ *   hidden ChartData{k} sheets - one per job k, holding the chart's data in
+ *                        the exact layout xlsx-chart references (labels in
+ *                        column A from row 2, series names in row 1 from B1)
+ *
+ * xlsx-chart hardcodes its formula references to a sheet named "Table"; those
+ * references are rewritten to point at the matching ChartData{k} sheet so the
+ * charts stay live/editable instead of relying on cached values.
+ *
+ * @param {Buffer} exceljsBuffer - Buffer of the styled workbook from exceljs.
+ * @param {Array<{buffer: Buffer, targetSheetName?: string|null, anchorFromRow?: number, placeholderName?: string|null, def?: {title?: string}}>} chartJobs
  * @returns {Promise<Buffer>} Merged Excel file buffer.
  */
-async function mergeNativeChart(exceljsBuffer, xlsxChartBuffer) {
+async function mergeNativeCharts(exceljsBuffer, chartJobs) {
   try {
     const JSZip = require("jszip");
-    const zipExceljs = await JSZip.loadAsync(exceljsBuffer);
-    const zipXlsxChart = await JSZip.loadAsync(xlsxChartBuffer);
-
-    // 1. Copy xl/charts/ and xl/drawings/ files
-    const chartFiles = Object.keys(zipXlsxChart.files).filter(
-      (name) => name.startsWith("xl/charts/") || name.startsWith("xl/drawings/")
-    );
-
-    for (const file of chartFiles) {
-      const content = await zipXlsxChart.file(file).async("nodebuffer");
-      zipExceljs.file(file, content);
-    }
-
-    // 2. Overwrite sheet1.xml (the Chart sheet placeholder) and its relationships
-    const sheetFiles = [
-      "xl/worksheets/sheet1.xml",
-      "xl/worksheets/_rels/sheet1.xml.rels"
-    ];
-
-    for (const file of sheetFiles) {
-      if (zipXlsxChart.file(file)) {
-        const content = await zipXlsxChart.file(file).async("nodebuffer");
-        zipExceljs.file(file, content);
-      }
-    }
-
-    // 3. Merge [Content_Types].xml overrides
-    const contentTypesXml = await zipExceljs.file("[Content_Types].xml").async("text");
-    const contentTypesXmlChart = await zipXlsxChart.file("[Content_Types].xml").async("text");
-
-    // Extract all Override tags matching charts and drawings
-    const overrideRegex = /<Override\s+PartName="\/xl\/(drawings|charts)\/[^"]+"\s+ContentType="[^"]+"\s*\/>/g;
-    const chartOverrides = contentTypesXmlChart.match(overrideRegex) || [];
-
-    let updatedContentTypes = contentTypesXml;
-    for (const override of chartOverrides) {
-      const partNameMatch = override.match(/PartName="([^"]+)"/);
-      if (partNameMatch && !contentTypesXml.includes(partNameMatch[1])) {
-        // Insert overrides right before closing Types tag
-        updatedContentTypes = updatedContentTypes.replace(
+    const zipOut = await JSZip.loadAsync(exceljsBuffer);
+    let contentTypes = await zipOut.file("[Content_Types].xml").async("text");
+    const addContentTypeOverride = (part, type) => {
+      if (!contentTypes.includes(`PartName="${part}"`)) {
+        contentTypes = contentTypes.replace(
           "</Types>",
-          `  ${override}\n</Types>`
+          `<Override PartName="${part}" ContentType="${type}"/></Types>`
         );
       }
+    };
+
+    // Map worksheet names to their xl/worksheets/sheetN.xml paths
+    const workbookXml = await zipOut.file("xl/workbook.xml").async("text");
+    const workbookRels = await zipOut
+      .file("xl/_rels/workbook.xml.rels")
+      .async("text");
+    const relTargets = {};
+    for (const m of workbookRels.matchAll(/<Relationship\b[^>]*>/g)) {
+      const id = (m[0].match(/ Id="([^"]+)"/) || [])[1];
+      const target = (m[0].match(/ Target="([^"]+)"/) || [])[1];
+      if (id && target) relTargets[id] = target;
+    }
+    const sheetPathByName = {};
+    for (const m of workbookXml.matchAll(/<sheet\b[^>]*>/g)) {
+      const name = (m[0].match(/ name="([^"]+)"/) || [])[1];
+      const rid = (m[0].match(/ r:id="([^"]+)"/) || [])[1];
+      const target = rid && relTargets[rid];
+      if (name && target) {
+        sheetPathByName[unescapeXml(name)] =
+          "xl/" + target.replace(/^\//, "").replace(/^xl\//, "");
+      }
     }
 
-    zipExceljs.file("[Content_Types].xml", updatedContentTypes);
+    let drawingCounter = 0;
+    let placeholderCounter = 0;
+    const targetGroups = new Map(); // sheetName -> jobs on that sheet
 
-    return await zipExceljs.generateAsync({ type: "nodebuffer" });
+    for (let k = 1; k <= chartJobs.length; k++) {
+      const job = chartJobs[k - 1];
+      job.chartIndex = k;
+      const zipChart = await JSZip.loadAsync(job.buffer);
+
+      // Chart XML: retarget data references from "Table" to this chart's hidden data sheet
+      let chartXml = await zipChart.file("xl/charts/chart1.xml").async("text");
+      chartXml = chartXml.replace(/Table!/g, `ChartData${k}!`);
+      // xlsx-chart emits a right-side legend without <c:overlay>, so renderers
+      // draw it on top of the bars/slices. Force overlay off (scoped to the
+      // <c:legend> block, placed after <c:layout/> per the CT_Legend schema) so
+      // the plot area shrinks and the legend gets its own space on the side.
+      chartXml = chartXml.replace(
+        /(<c:legend>[\s\S]*?)(<\/c:legend>)/,
+        (whole, inner, close) =>
+          inner.includes("<c:overlay")
+            ? whole
+            : `${inner}<c:overlay val="0"/>${close}`
+      );
+      // Pie charts on reports must show percentage data labels
+      if (/<c:pieChart[ >]/.test(chartXml) && !chartXml.includes("<c:dLbls>")) {
+        const dLbls =
+          `<c:dLbls><c:showLegendKey val="0"/><c:showVal val="0"/>` +
+          `<c:showCatName val="0"/><c:showSerName val="0"/>` +
+          `<c:showPercent val="1"/><c:showBubbleSize val="0"/></c:dLbls>`;
+        chartXml = chartXml.includes("<c:firstSliceAng")
+          ? chartXml.replace("<c:firstSliceAng", `${dLbls}<c:firstSliceAng`)
+          : chartXml.replace("</c:pieChart>", `${dLbls}</c:pieChart>`);
+      }
+      zipOut.file(`xl/charts/chart${k}.xml`, chartXml);
+      addContentTypeOverride(
+        `/xl/charts/chart${k}.xml`,
+        "application/vnd.openxmlformats-officedocument.drawingml.chart+xml"
+      );
+
+      if (job.targetSheetName) {
+        // Anchored on a data sheet - grouped below, one drawing part per sheet
+        if (!targetGroups.has(job.targetSheetName))
+          targetGroups.set(job.targetSheetName, []);
+        targetGroups.get(job.targetSheetName).push(job);
+        continue;
+      }
+
+      // Placeholder-sheet chart: reuse xlsx-chart's own sheet + drawing parts.
+      // Placeholders were added first, in job order, so the p-th untargeted
+      // job owns xl/worksheets/sheet{p}.xml.
+      placeholderCounter++;
+      drawingCounter++;
+      const p = placeholderCounter;
+      const d = drawingCounter;
+
+      let drawingXml = await zipChart
+        .file("xl/drawings/drawing1.xml")
+        .async("text");
+      drawingXml = drawingXml.replace(
+        /name="[^"]*"\/><xdr:cNvGraphicFramePr/,
+        `name="Biểu đồ ${k}"/><xdr:cNvGraphicFramePr`
+      );
+      zipOut.file(`xl/drawings/drawing${d}.xml`, drawingXml);
+      addContentTypeOverride(
+        `/xl/drawings/drawing${d}.xml`,
+        "application/vnd.openxmlformats-officedocument.drawing+xml"
+      );
+
+      let drawingRels = await zipChart
+        .file("xl/drawings/_rels/drawing1.xml.rels")
+        .async("text");
+      drawingRels = drawingRels.replace(
+        "../charts/chart1.xml",
+        `../charts/chart${k}.xml`
+      );
+      zipOut.file(`xl/drawings/_rels/drawing${d}.xml.rels`, drawingRels);
+
+      // Replace the placeholder sheet with the chart-hosting sheet XML.
+      // Strip tabSelected so multiple sheets never open as a grouped selection.
+      let sheetXml = await zipChart
+        .file("xl/worksheets/sheet1.xml")
+        .async("text");
+      sheetXml = sheetXml.replace(/ tabSelected="1"/g, "");
+      zipOut.file(`xl/worksheets/sheet${p}.xml`, sheetXml);
+
+      let sheetRels = await zipChart
+        .file("xl/worksheets/_rels/sheet1.xml.rels")
+        .async("text");
+      sheetRels = sheetRels.replace(
+        "../drawings/drawing1.xml",
+        `../drawings/drawing${d}.xml`
+      );
+      zipOut.file(`xl/worksheets/_rels/sheet${p}.xml.rels`, sheetRels);
+    }
+
+    // Charts anchored on data sheets: one drawing part per sheet with all
+    // of that sheet's chart frames stacked vertically below the table.
+    for (const [sheetName, jobs] of targetGroups) {
+      const sheetPath = sheetPathByName[sheetName];
+      if (!sheetPath || !zipOut.file(sheetPath))
+        throw new Error(`Không tìm thấy sheet "${sheetName}" để gắn biểu đồ`);
+
+      drawingCounter++;
+      const d = drawingCounter;
+
+      const anchors = jobs
+        .map((job, i) =>
+          buildChartAnchorXml({
+            fromRow: job.anchorFromRow || 0,
+            chartRelId: i + 1,
+            shapeId: i + 2,
+            name: (job.def && job.def.title) || `Biểu đồ ${job.chartIndex}`,
+          })
+        )
+        .join("");
+      zipOut.file(
+        `xl/drawings/drawing${d}.xml`,
+        `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>` +
+          `<xdr:wsDr xmlns:xdr="${OOXML_NS.xdr}" xmlns:a="${OOXML_NS.a}">${anchors}</xdr:wsDr>`
+      );
+      addContentTypeOverride(
+        `/xl/drawings/drawing${d}.xml`,
+        "application/vnd.openxmlformats-officedocument.drawing+xml"
+      );
+
+      const chartRels = jobs
+        .map(
+          (job, i) =>
+            `<Relationship Id="rId${i + 1}" Type="${OOXML_NS.r}/chart" Target="../charts/chart${job.chartIndex}.xml"/>`
+        )
+        .join("");
+      zipOut.file(
+        `xl/drawings/_rels/drawing${d}.xml.rels`,
+        `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>` +
+          `<Relationships xmlns="${OOXML_NS.pkgRels}">${chartRels}</Relationships>`
+      );
+
+      // Wire the drawing into the target sheet's rels + XML
+      const sheetRelsPath = sheetPath.replace(
+        /worksheets\/(sheet\d+\.xml)$/,
+        "worksheets/_rels/$1.rels"
+      );
+      const existingRels = zipOut.file(sheetRelsPath);
+      let sheetRels = existingRels
+        ? await existingRels.async("text")
+        : `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>` +
+          `<Relationships xmlns="${OOXML_NS.pkgRels}"></Relationships>`;
+      let maxRid = 0;
+      for (const m of sheetRels.matchAll(/ Id="rId(\d+)"/g))
+        maxRid = Math.max(maxRid, Number(m[1]));
+      const drawingRid = `rId${maxRid + 1}`;
+      sheetRels = sheetRels.replace(
+        "</Relationships>",
+        `<Relationship Id="${drawingRid}" Type="${OOXML_NS.r}/drawing" Target="../drawings/drawing${d}.xml"/></Relationships>`
+      );
+      zipOut.file(sheetRelsPath, sheetRels);
+
+      let sheetXml = await zipOut.file(sheetPath).async("text");
+      const rootTag = (sheetXml.match(/<worksheet\b[^>]*>/) || [""])[0];
+      const drawingTag = / xmlns:r=/.test(rootTag)
+        ? `<drawing r:id="${drawingRid}"/>`
+        : `<drawing xmlns:r="${OOXML_NS.r}" r:id="${drawingRid}"/>`;
+      sheetXml = sheetXml.replace("</worksheet>", `${drawingTag}</worksheet>`);
+      zipOut.file(sheetPath, sheetXml);
+    }
+
+    zipOut.file("[Content_Types].xml", contentTypes);
+    return await zipOut.generateAsync({ type: "nodebuffer" });
   } catch (err) {
     console.error("[Excel-Chart-Merge] Error:", err.message);
     throw err;
@@ -794,8 +1281,14 @@ module.exports = {
   freezePanes,
   applyPremiumFormatting,
   applyTitleRow,
+  applyGovernmentHeader,
+  applySignatureBlock,
   applySmartNumberFormatting,
+  applyPrintSetup,
+  validateFormulaSheetRefs,
+  adjustFormulaRows,
   embedChartInWorksheet,
-  mergeNativeChart,
+  mergeNativeCharts,
+  CHART_ROW_PITCH,
 };
 

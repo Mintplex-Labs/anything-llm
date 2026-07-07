@@ -65,11 +65,22 @@ class OCRLoader {
   /**
    * Loads a PDF file and returns an array of documents.
    * This function is reserved to parsing for SCANNED documents - digital documents are not supported in this function
+   * @param {string} filePath - The path to the PDF file.
+   * @param {Object} options - The options for the OCR.
+   * @param {number} options.maxExecutionTime - The maximum execution time of the OCR in milliseconds.
+   * @param {number} options.batchSize - The number of pages OCRed per batch.
+   * @param {number|null} options.maxWorkers - The number of concurrent OCR workers.
+   * @param {number[]|null} options.pageNumbers - Specific 1-indexed pages to OCR. When null, every page is OCRed.
    * @returns {Promise<{pageContent: string, metadata: object}[]>} An array of documents with page content and metadata.
    */
   async ocrPDF(
     filePath,
-    { maxExecutionTime = 300_000, batchSize = 10, maxWorkers = null } = {}
+    {
+      maxExecutionTime = 300_000,
+      batchSize = 10,
+      maxWorkers = null,
+      pageNumbers = null,
+    } = {}
   ) {
     if (
       !filePath ||
@@ -82,10 +93,18 @@ class OCRLoader {
 
     const documentTitle = path.basename(filePath);
     this.log(`Starting OCR of ${documentTitle}`);
-    const pdfjs = await import("pdf-parse/lib/pdf.js/v2.0.550/build/pdf.js");
-    let buffer = fs.readFileSync(filePath);
 
-    const pdfDocument = await pdfjs.getDocument({ data: buffer });
+    let pdfDocument, pdfjs, buffer;
+    try {
+      pdfjs = await import("pdf-parse/lib/pdf.js/v2.0.550/build/pdf.js");
+      buffer = fs.readFileSync(filePath);
+      pdfDocument = await pdfjs.getDocument({ data: buffer }).promise;
+    } catch (e) {
+      this.log(
+        `Failed to open ${documentTitle} for OCR - file may be corrupt, password-protected, or not a valid PDF. ${e.message}`
+      );
+      return [];
+    }
 
     const documents = [];
     const meta = await pdfDocument.getMetadata().catch(() => null);
@@ -99,29 +118,44 @@ class OCRLoader {
       },
     };
 
-    const pdfSharp = new PDFSharp({
-      validOps: [
-        pdfjs.OPS.paintJpegXObject,
-        pdfjs.OPS.paintImageXObject,
-        pdfjs.OPS.paintInlineImageXObject,
-      ],
-    });
-    await pdfSharp.init();
-
-    const { createWorker, OEM } = require("tesseract.js");
     const BATCH_SIZE = batchSize;
     const MAX_EXECUTION_TIME = maxExecutionTime;
     const NUM_WORKERS = maxWorkers ?? Math.min(os.cpus().length, 4);
     const totalPages = pdfDocument.numPages;
-    const workerPool = await Promise.all(
-      Array(NUM_WORKERS)
-        .fill(0)
-        .map(() =>
-          createWorker(this.language, OEM.LSTM_ONLY, {
-            cachePath: this.cacheDir,
-          })
-        )
-    );
+    const targetPages =
+      Array.isArray(pageNumbers) && pageNumbers.length > 0
+        ? [...new Set(pageNumbers)]
+            .filter(
+              (num) => Number.isInteger(num) && num >= 1 && num <= totalPages
+            )
+            .sort((a, b) => a - b)
+        : Array.from({ length: totalPages }, (_, i) => i + 1);
+
+    let pdfSharp, workerPool;
+    try {
+      pdfSharp = new PDFSharp({
+        validOps: [
+          pdfjs.OPS.paintJpegXObject,
+          pdfjs.OPS.paintImageXObject,
+          pdfjs.OPS.paintInlineImageXObject,
+        ],
+      });
+      await pdfSharp.init();
+
+      const { createWorker, OEM } = require("tesseract.js");
+      workerPool = await Promise.all(
+        Array(NUM_WORKERS)
+          .fill(0)
+          .map(() =>
+            createWorker(this.language, OEM.LSTM_ONLY, {
+              cachePath: this.cacheDir,
+            })
+          )
+      );
+    } catch (e) {
+      this.log(`Failed to bootstrap OCR workers for ${documentTitle}. ${e.message}`);
+      return [];
+    }
 
     const startTime = Date.now();
     try {
@@ -130,6 +164,7 @@ class OCRLoader {
         BATCH_SIZE,
         MAX_CONCURRENT_WORKERS: NUM_WORKERS,
         TOTAL_PAGES: totalPages,
+        PAGES_TO_OCR: targetPages.length,
       });
       const timeoutPromise = new Promise((_, reject) => {
         setTimeout(() => {
@@ -145,18 +180,21 @@ class OCRLoader {
 
       const processPages = async () => {
         for (
-          let startPage = 1;
-          startPage <= totalPages;
-          startPage += BATCH_SIZE
+          let batchStart = 0;
+          batchStart < targetPages.length;
+          batchStart += BATCH_SIZE
         ) {
-          const endPage = Math.min(startPage + BATCH_SIZE - 1, totalPages);
-          const pageNumbers = Array.from(
-            { length: endPage - startPage + 1 },
-            (_, i) => startPage + i
+          const batchPages = targetPages.slice(
+            batchStart,
+            batchStart + BATCH_SIZE
           );
-          this.log(`Working on pages ${startPage} - ${endPage}`);
+          this.log(
+            `Working on pages ${batchPages[0]} - ${
+              batchPages[batchPages.length - 1]
+            }`
+          );
 
-          const pageQueue = [...pageNumbers];
+          const pageQueue = [...batchPages];
           const results = [];
           const workerPromises = workerPool.map(async (worker, workerIndex) => {
             while (pageQueue.length > 0) {
@@ -295,6 +333,27 @@ class PDFSharp {
   }
 
   /**
+   * Unpacks a bit-packed 1-bit-per-pixel (bitonal) image buffer into a
+   * standard 1-byte-per-pixel grayscale buffer (0 = black, 255 = white).
+   * @param {Uint8Array} data - The bit-packed image data.
+   * @param {number} width - The image width in pixels.
+   * @param {number} height - The image height in pixels.
+   * @param {number} rowBytes - The number of bytes per row (width bits, padded to a byte boundary).
+   * @returns {Uint8Array} The unpacked grayscale buffer.
+   */
+  unpackBitonal(data, width, height, rowBytes) {
+    const out = new Uint8Array(width * height);
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const byte = data[y * rowBytes + (x >> 3)];
+        const bit = (byte >> (7 - (x & 7))) & 1;
+        out[y * width + x] = bit ? 255 : 0;
+      }
+    }
+    return out;
+  }
+
+  /**
    * Converts a PDF page to a buffer.
    * @param {Object} options - The options for the Sharp PDF page object.
    * @param {Object} options.page - The PDFJS page proxy object.
@@ -315,12 +374,32 @@ class PDFSharp {
           const img = await page.objs.get(name);
           const { width, height } = img;
           const size = img.data.length;
-          const channels = size / width / height;
+          let channels = size / width / height;
+          let pixelData = img.data;
+
+          // Some scanned/faxed documents (common for signed government PDFs)
+          // embed images as bitonal (1-bit-per-pixel, bit-packed) data rather than
+          // one byte per pixel per channel. `channels` won't be a whole number in
+          // that case and sharp will reject the raw buffer outright, so unpack the
+          // bits into a standard 1-byte-per-pixel grayscale buffer first.
+          if (!Number.isInteger(channels) || channels < 1 || channels > 4) {
+            const rowBytes = Math.ceil(width / 8);
+            if (size === rowBytes * height) {
+              pixelData = this.unpackBitonal(img.data, width, height, rowBytes);
+              channels = 1;
+            } else {
+              this.log(
+                `Skipping unsupported image on page ${page.pageNumber} (size=${size}, width=${width}, height=${height})`
+              );
+              continue;
+            }
+          }
+
           const targetDPI = 70;
           const targetWidth = Math.floor(width * (targetDPI / 72));
           const targetHeight = Math.floor(height * (targetDPI / 72));
 
-          const image = this.sharp(img.data, {
+          const image = this.sharp(pixelData, {
             raw: { width, height, channels },
             density: targetDPI,
           })

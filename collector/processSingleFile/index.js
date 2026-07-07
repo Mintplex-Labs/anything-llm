@@ -52,6 +52,23 @@ async function processSingleFile(targetFilename, options = {}, metadata = {}) {
       documents: [],
     };
 
+  // Reject files that are too large to be reasonably processed before any
+  // parsing work begins. Override with MAX_FILE_SIZE_MB (set 0 to disable).
+  const maxFileSizeMB = Number(process.env.MAX_FILE_SIZE_MB ?? 512);
+  if (maxFileSizeMB > 0) {
+    try {
+      const fileSizeMB = fs.statSync(fullFilePath).size / (1024 * 1024);
+      if (fileSizeMB > maxFileSizeMB) {
+        if (!options.absolutePath) trashFile(fullFilePath);
+        return {
+          success: false,
+          reason: `File is ${fileSizeMB.toFixed(1)}MB which exceeds the ${maxFileSizeMB}MB processing limit (MAX_FILE_SIZE_MB).`,
+          documents: [],
+        };
+      }
+    } catch {}
+  }
+
   const fileExtension = path.extname(fullFilePath).toLowerCase();
   if (fullFilePath.includes(".") && !fileExtension) {
     return {
@@ -82,12 +99,25 @@ async function processSingleFile(targetFilename, options = {}, metadata = {}) {
   const FileTypeProcessor = require(SUPPORTED_FILETYPE_CONVERTERS[
     processFileAs
   ]);
-  return await FileTypeProcessor({
-    fullFilePath,
-    filename: targetFilename,
-    options,
-    metadata,
-  });
+  try {
+    return await FileTypeProcessor({
+      fullFilePath,
+      filename: targetFilename,
+      options,
+      metadata,
+    });
+  } catch (e) {
+    console.error(
+      `\x1b[31m[Collector]\x1b[0m Failed to process ${targetFilename}`,
+      e
+    );
+    if (!options.absolutePath) trashFile(fullFilePath);
+    return {
+      success: false,
+      reason: `File could not be processed - it may be corrupt, malformed, or an unsupported variant of ${processFileAs} (${e.message}).`,
+      documents: [],
+    };
+  }
 }
 
 module.exports = {
