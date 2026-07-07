@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import System from "@/models/system";
@@ -33,83 +33,80 @@ import ZillizCloudOptions from "@/components/VectorDBSelection/ZillizCloudOption
 import AstraDBOptions from "@/components/VectorDBSelection/AstraDBOptions";
 import PGVectorOptions from "@/components/VectorDBSelection/PGVectorOptions";
 
-const VECTOR_DBS = [
-  {
-    name: "LanceDB",
-    value: "lancedb",
-    logo: LanceDbLogo,
-    options: (_) => <LanceDBOptions />,
-    description:
-      "100% local vector DB that runs on the same instance as AnythingLLM.",
-  },
-  {
-    name: "PGVector",
-    value: "pgvector",
-    logo: PGVectorLogo,
-    options: (settings) => <PGVectorOptions settings={settings} />,
-    description: "Vector search powered by PostgreSQL.",
-  },
-  {
-    name: "Chroma",
-    value: "chroma",
-    logo: ChromaLogo,
-    options: (settings) => <ChromaDBOptions settings={settings} />,
-    description:
-      "Open source vector database you can host yourself or on the cloud.",
-  },
-  {
-    name: "Chroma Cloud",
-    value: "chromacloud",
-    logo: ChromaLogo,
-    options: (settings) => <ChromaCloudOptions settings={settings} />,
-    description:
-      "Fully managed Chroma cloud service with enterprise features and support.",
-  },
-  {
-    name: "Pinecone",
-    value: "pinecone",
-    logo: PineconeLogo,
-    options: (settings) => <PineconeDBOptions settings={settings} />,
-    description: "100% cloud-based vector database for enterprise use cases.",
-  },
-  {
-    name: "Zilliz Cloud",
-    value: "zilliz",
-    logo: ZillizLogo,
-    options: (settings) => <ZillizCloudOptions settings={settings} />,
-    description:
-      "Cloud hosted vector database built for enterprise with SOC 2 compliance.",
-  },
-  {
-    name: "QDrant",
-    value: "qdrant",
-    logo: QDrantLogo,
-    options: (settings) => <QDrantDBOptions settings={settings} />,
-    description: "Open source local and distributed cloud vector database.",
-  },
-  {
-    name: "Weaviate",
-    value: "weaviate",
-    logo: WeaviateLogo,
-    options: (settings) => <WeaviateDBOptions settings={settings} />,
-    description:
-      "Open source local and cloud hosted multi-modal vector database.",
-  },
-  {
-    name: "Milvus",
-    value: "milvus",
-    logo: MilvusLogo,
-    options: (settings) => <MilvusDBOptions settings={settings} />,
-    description: "Open-source, highly scalable, and blazing fast.",
-  },
-  {
-    name: "AstraDB",
-    value: "astra",
-    logo: AstraDBLogo,
-    options: (settings) => <AstraDBOptions settings={settings} />,
-    description: "Vector Search for Real-world GenAI.",
-  },
-];
+function getVectorDBs(t) {
+  return [
+    {
+      name: t("vector.providers.lancedb.name"),
+      value: "lancedb",
+      logo: LanceDbLogo,
+      options: (_) => <LanceDBOptions />,
+      description: t("vector.providers.lancedb.description"),
+    },
+    {
+      name: t("vector.providers.pgvector.name"),
+      value: "pgvector",
+      logo: PGVectorLogo,
+      options: (settings) => <PGVectorOptions settings={settings} />,
+      description: t("vector.providers.pgvector.description"),
+    },
+    {
+      name: t("vector.providers.chroma.name"),
+      value: "chroma",
+      logo: ChromaLogo,
+      options: (settings) => <ChromaDBOptions settings={settings} />,
+      description: t("vector.providers.chroma.description"),
+    },
+    {
+      name: t("vector.providers.chromacloud.name"),
+      value: "chromacloud",
+      logo: ChromaLogo,
+      options: (settings) => <ChromaCloudOptions settings={settings} />,
+      description: t("vector.providers.chromacloud.description"),
+    },
+    {
+      name: t("vector.providers.pinecone.name"),
+      value: "pinecone",
+      logo: PineconeLogo,
+      options: (settings) => <PineconeDBOptions settings={settings} />,
+      description: t("vector.providers.pinecone.description"),
+    },
+    {
+      name: t("vector.providers.zilliz.name"),
+      value: "zilliz",
+      logo: ZillizLogo,
+      options: (settings) => <ZillizCloudOptions settings={settings} />,
+      description: t("vector.providers.zilliz.description"),
+    },
+    {
+      name: t("vector.providers.qdrant.name"),
+      value: "qdrant",
+      logo: QDrantLogo,
+      options: (settings) => <QDrantDBOptions settings={settings} />,
+      description: t("vector.providers.qdrant.description"),
+    },
+    {
+      name: t("vector.providers.weaviate.name"),
+      value: "weaviate",
+      logo: WeaviateLogo,
+      options: (settings) => <WeaviateDBOptions settings={settings} />,
+      description: t("vector.providers.weaviate.description"),
+    },
+    {
+      name: t("vector.providers.milvus.name"),
+      value: "milvus",
+      logo: MilvusLogo,
+      options: (settings) => <MilvusDBOptions settings={settings} />,
+      description: t("vector.providers.milvus.description"),
+    },
+    {
+      name: t("vector.providers.astra.name"),
+      value: "astra",
+      logo: AstraDBLogo,
+      options: (settings) => <AstraDBOptions settings={settings} />,
+      description: t("vector.providers.astra.description"),
+    },
+  ];
+}
 
 export default function GeneralVectorDatabase() {
   const [saving, setSaving] = useState(false);
@@ -124,6 +121,7 @@ export default function GeneralVectorDatabase() {
   const searchInputRef = useRef(null);
   const { isOpen, openModal, closeModal } = useModal();
   const { t } = useTranslation();
+  const vectorDBs = useMemo(() => getVectorDBs(t), [t]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -144,10 +142,10 @@ export default function GeneralVectorDatabase() {
 
     const { error } = await System.updateSystem(settingsData);
     if (error) {
-      showToast(`Failed to save vector database settings: ${error}`, "error");
+      showToast(t("vector.messages.saveError", { error }), "error");
       setHasChanges(true);
     } else {
-      showToast("Vector database preferences saved successfully.", "success");
+      showToast(t("vector.messages.saveSuccess"), "success");
       setHasChanges(false);
     }
     setSaving(false);
@@ -182,14 +180,14 @@ export default function GeneralVectorDatabase() {
   }, []);
 
   useEffect(() => {
-    const filtered = VECTOR_DBS.filter((vdb) =>
+    const filtered = vectorDBs.filter((vdb) =>
       vdb.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredVDBs(filtered);
-  }, [searchQuery, selectedVDB]);
+  }, [searchQuery, selectedVDB, vectorDBs]);
 
   const selectedVDBObject =
-    VECTOR_DBS.find((vdb) => vdb.value === selectedVDB) ?? VECTOR_DBS[0];
+    vectorDBs.find((vdb) => vdb.value === selectedVDB) ?? vectorDBs[0];
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
@@ -257,7 +255,7 @@ export default function GeneralVectorDatabase() {
                           type="text"
                           name="vdb-search"
                           autoComplete="off"
-                          placeholder="Search all vector database providers"
+                          placeholder={t("vector.searchPlaceholder")}
                           className="border-none -ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none text-theme-text-primary placeholder:text-theme-text-primary placeholder:font-medium"
                           onChange={(e) => setSearchQuery(e.target.value)}
                           ref={searchInputRef}
@@ -296,7 +294,9 @@ export default function GeneralVectorDatabase() {
                     <div className="flex gap-x-4 items-center">
                       <img
                         src={selectedVDBObject.logo}
-                        alt={`${selectedVDBObject.name} logo`}
+                        alt={t("vector.logoAlt", {
+                          name: selectedVDBObject.name,
+                        })}
                         className="w-10 h-10 rounded-md"
                       />
                       <div className="flex flex-col text-left">
@@ -321,7 +321,7 @@ export default function GeneralVectorDatabase() {
                 className="mt-4 flex flex-col gap-y-1"
               >
                 {selectedVDB &&
-                  VECTOR_DBS.find((vdb) => vdb.value === selectedVDB)?.options(
+                  vectorDBs.find((vdb) => vdb.value === selectedVDB)?.options(
                     settings
                   )}
               </div>
@@ -331,7 +331,7 @@ export default function GeneralVectorDatabase() {
       )}
       <ModalWrapper isOpen={isOpen}>
         <ChangeWarningModal
-          warningText="Switching the vector database will reset all previously embedded documents in all workspaces.\n\nConfirming will clear all embeddings from your vector database and remove all documents from your workspaces. Your uploaded documents will not be deleted, they will be available for re-embedding."
+          warningText={t("vector.switchWarning")}
           onClose={closeModal}
           onConfirm={handleSaveSettings}
         />

@@ -1,5 +1,6 @@
 import React from "react";
 import { CaretRight } from "@phosphor-icons/react";
+import { useTranslation } from "react-i18next";
 
 export default function AgentFlowsList({
   flows = [],
@@ -7,10 +8,12 @@ export default function AgentFlowsList({
   handleClick,
   activeFlowIds = [],
 }) {
+  const { t } = useTranslation();
+
   if (flows.length === 0) {
     return (
       <div className="text-theme-text-secondary text-center text-xs flex flex-col gap-y-2">
-        <p>No agent flows found</p>
+        <p>{t("agent.admin.noFlowsFound")}</p>
       </div>
     );
   }
@@ -36,7 +39,9 @@ export default function AgentFlowsList({
           <div className="text-sm font-light">{flow.name}</div>
           <div className="flex items-center gap-x-2">
             <div className="text-sm text-theme-text-secondary font-medium">
-              {activeFlowIds.includes(flow.uuid) ? "On" : "Off"}
+              {activeFlowIds.includes(flow.uuid)
+                ? t("agent.admin.on")
+                : t("agent.admin.off")}
             </div>
             <CaretRight
               size={14}

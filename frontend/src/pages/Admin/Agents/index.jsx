@@ -225,11 +225,11 @@ export default function AdminAgents() {
         _preferences.settings?.disabled_agent_skills ?? []
       );
       setImportedSkills(_preferences.settings?.imported_agent_skills ?? []);
-      showToast(`Agent preferences saved successfully.`, "success", {
+      showToast(t("agent.admin.saveSuccess"), "success", {
         clear: true,
       });
     } else {
-      showToast(`Agent preferences failed to save.`, "error", { clear: true });
+      showToast(t("agent.admin.saveError"), "error", { clear: true });
     }
 
     setHasChanges(false);
@@ -300,7 +300,9 @@ export default function AdminAgents() {
     );
 
     if (!success) {
-      showToast(error || "Failed to toggle tool.", "error", { clear: true });
+      showToast(error || t("agent.admin.toggleToolError"), "error", {
+        clear: true,
+      });
       return;
     }
 
@@ -377,7 +379,7 @@ export default function AdminAgents() {
           >
             <div className="text-theme-text-primary flex items-center gap-x-2">
               <Robot size={24} />
-              <p className="text-lg font-medium">Agent Skills</p>
+              <p className="text-lg font-medium">{t("agent.admin.agentSkills")}</p>
             </div>
             {/* Default skills */}
             <SkillList
@@ -398,7 +400,7 @@ export default function AdminAgents() {
 
             <div className="text-theme-text-primary flex items-center gap-x-2 mt-6">
               <Package size={24} />
-              <p className="text-lg font-medium">App Integrations</p>
+              <p className="text-lg font-medium">{t("agent.admin.appIntegrations")}</p>
             </div>
             <SkillList
               skills={appIntegrationSkills}
@@ -409,7 +411,7 @@ export default function AdminAgents() {
 
             <div className="text-theme-text-primary flex items-center gap-x-2">
               <Plug size={24} />
-              <p className="text-lg font-medium">Custom Skills</p>
+              <p className="text-lg font-medium">{t("agent.admin.customSkills")}</p>
             </div>
             <ImportedSkillList
               skills={importedSkills}
@@ -419,7 +421,7 @@ export default function AdminAgents() {
 
             <div className="text-theme-text-primary flex items-center gap-x-2 mt-6">
               <FlowArrow size={24} />
-              <p className="text-lg font-medium">Agent Flows</p>
+              <p className="text-lg font-medium">{t("agent.admin.agentFlows")}</p>
             </div>
             <AgentFlowsList
               flows={agentFlows}
@@ -465,7 +467,7 @@ export default function AdminAgents() {
                   >
                     <div className="flex items-center text-sky-400">
                       <CaretLeft size={24} />
-                      <div>Back</div>
+                      <div>{t("agent.admin.back")}</div>
                     </div>
                   </button>
                 </div>
@@ -545,7 +547,7 @@ export default function AdminAgents() {
                       <div className="flex flex-col items-center justify-center h-full text-theme-text-secondary">
                         <Robot size={40} />
                         <p className="font-medium">
-                          Select an Agent Skill, Agent Flow, or MCP Server
+                          {t("agent.admin.selectPrompt")}
                         </p>
                       </div>
                     )}
@@ -596,7 +598,7 @@ export default function AdminAgents() {
           <div className="flex-none flex justify-between items-center mb-4">
             <div className="text-theme-text-primary flex items-center gap-x-2">
               <Robot size={24} />
-              <p className="text-lg font-medium">Agent Skills</p>
+              <p className="text-lg font-medium">{t("agent.admin.agentSkills")}</p>
             </div>
             <AgentSkillSettings />
           </div>
@@ -622,7 +624,7 @@ export default function AdminAgents() {
 
               <div className="text-theme-text-primary flex items-center gap-x-2 mt-6">
                 <Package size={24} />
-                <p className="text-lg font-medium">App Integrations</p>
+                <p className="text-lg font-medium">{t("agent.admin.appIntegrations")}</p>
               </div>
               <SkillList
                 skills={appIntegrationSkills}
@@ -633,7 +635,7 @@ export default function AdminAgents() {
 
               <div className="text-theme-text-primary flex items-center gap-x-2 mt-4">
                 <Plug size={24} />
-                <p className="text-lg font-medium">Custom Skills</p>
+                <p className="text-lg font-medium">{t("agent.admin.customSkills")}</p>
               </div>
               <ImportedSkillList
                 skills={importedSkills}
@@ -644,7 +646,7 @@ export default function AdminAgents() {
               <div className="text-theme-text-primary flex items-center justify-between gap-x-2 mt-4">
                 <div className="flex items-center gap-x-2">
                   <FlowArrow size={24} />
-                  <p className="text-lg font-medium">Agent Flows</p>
+                  <p className="text-lg font-medium">{t("agent.admin.agentFlows")}</p>
                 </div>
                 {agentFlows.length === 0 ? (
                   <Link
@@ -652,7 +654,7 @@ export default function AdminAgents() {
                     className="text-cta-button flex items-center gap-x-1 hover:underline"
                   >
                     <Hammer size={16} />
-                    <p className="text-sm">Create Flow</p>
+                    <p className="text-sm">{t("agent.admin.createFlow")}</p>
                   </Link>
                 ) : (
                   <Link
@@ -660,7 +662,7 @@ export default function AdminAgents() {
                     className="text-theme-text-secondary hover:text-cta-button flex items-center gap-x-1"
                   >
                     <Hammer size={16} />
-                    <p className="text-sm">Open Builder</p>
+                    <p className="text-sm">{t("agent.admin.openBuilder")}</p>
                   </Link>
                 )}
               </div>
@@ -765,7 +767,7 @@ export default function AdminAgents() {
               <div className="flex flex-col items-center justify-center h-full text-theme-text-secondary">
                 <Robot size={40} />
                 <p className="font-medium">
-                  Select an Agent Skill, Agent Flow, or MCP Server
+                  {t("agent.admin.selectPrompt")}
                 </p>
               </div>
             )}
@@ -806,6 +808,8 @@ function SkillList({
   activeSkills = [],
   Icon = null,
 }) {
+  const { t } = useTranslation();
+
   if (skills.length === 0) return null;
 
   return (
@@ -844,7 +848,9 @@ function SkillList({
                 <DefaultBadge title={skill} />
               ) : (
                 <div className="text-sm text-theme-text-secondary font-medium">
-                  {activeSkills.includes(skill) ? "On" : "Off"}
+                  {activeSkills.includes(skill)
+                    ? t("agent.admin.on")
+                    : t("agent.admin.off")}
                 </div>
               )}
               <CaretRight
