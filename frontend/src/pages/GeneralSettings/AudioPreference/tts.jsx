@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
 import LLMItem from "@/components/LLMSelection/LLMItem";
@@ -10,6 +10,7 @@ import ElevenLabsIcon from "@/media/ttsproviders/elevenlabs.png";
 import PiperTTSIcon from "@/media/ttsproviders/piper.png";
 import GenericOpenAiLogo from "@/media/ttsproviders/generic-openai.png";
 import KokoroIcon from "@/media/ttsproviders/kokoro.png";
+import { useTranslation } from "react-i18next";
 
 import BrowserNative from "@/components/TextToSpeech/BrowserNative";
 import OpenAiTTSOptions from "@/components/TextToSpeech/OpenAiOptions";
@@ -18,54 +19,41 @@ import PiperTTSOptions from "@/components/TextToSpeech/PiperTTSOptions";
 import OpenAiGenericTTSOptions from "@/components/TextToSpeech/OpenAiGenericOptions";
 import KokoroTTSOptions from "@/components/TextToSpeech/KokoroOptions";
 
-const PROVIDERS = [
+const PROVIDER_CONFIG = [
   {
-    name: "System native",
     value: "native",
     logo: AnythingLLMIcon,
     options: (settings) => <BrowserNative settings={settings} />,
-    description: "Uses your browser's built in TTS service if supported.",
   },
   {
-    name: "OpenAI",
     value: "openai",
     logo: OpenAiLogo,
     options: (settings) => <OpenAiTTSOptions settings={settings} />,
-    description: "Use OpenAI's text to speech voices.",
   },
   {
-    name: "ElevenLabs",
     value: "elevenlabs",
     logo: ElevenLabsIcon,
     options: (settings) => <ElevenLabsTTSOptions settings={settings} />,
-    description: "Use ElevenLabs's text to speech voices and technology.",
   },
   {
-    name: "PiperTTS",
     value: "piper_local",
     logo: PiperTTSIcon,
     options: (settings) => <PiperTTSOptions settings={settings} />,
-    description: "Run TTS models locally in your browser privately.",
   },
   {
-    name: "Kokoro",
     value: "kokoro",
     logo: KokoroIcon,
     options: (settings) => <KokoroTTSOptions settings={settings} />,
-    description:
-      "Connect to a self-hosted kokoro-fastapi server for high-quality open-source voices.",
   },
   {
-    name: "OpenAI Compatible",
     value: "generic-openai",
     logo: GenericOpenAiLogo,
     options: (settings) => <OpenAiGenericTTSOptions settings={settings} />,
-    description:
-      "Connect to an OpenAI compatible TTS service running locally or remotely.",
   },
 ];
 
 export default function TextToSpeechProvider({ settings }) {
+  const { t } = useTranslation();
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -75,6 +63,18 @@ export default function TextToSpeechProvider({ settings }) {
   );
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
+
+  const providers = useMemo(
+    () =>
+      PROVIDER_CONFIG.map((provider) => ({
+        ...provider,
+        name: t(`audioPreference.tts.providers.${provider.value}.name`),
+        description: t(
+          `audioPreference.tts.providers.${provider.value}.description`
+        ),
+      })),
+    [t]
+  );
 
   const handleSubmit = async (e) => {
     e?.preventDefault();
@@ -87,9 +87,9 @@ export default function TextToSpeechProvider({ settings }) {
     setSaving(true);
 
     if (error) {
-      showToast(`Failed to save preferences: ${error}`, "error");
+      showToast(t("audioPreference.tts.messages.saveError", { error }), "error");
     } else {
-      showToast("Text-to-speech preferences saved successfully.", "success");
+      showToast(t("audioPreference.tts.messages.saveSuccess"), "success");
     }
     setSaving(false);
     setHasChanges(!!error);
@@ -112,13 +112,13 @@ export default function TextToSpeechProvider({ settings }) {
   };
 
   useEffect(() => {
-    const filtered = PROVIDERS.filter((provider) =>
+    const filtered = providers.filter((provider) =>
       provider.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredProviders(filtered);
-  }, [searchQuery, selectedProvider]);
+  }, [searchQuery, selectedProvider, providers]);
 
-  const selectedProviderObject = PROVIDERS.find(
+  const selectedProviderObject = providers.find(
     (provider) => provider.value === selectedProvider
   );
 
@@ -128,24 +128,26 @@ export default function TextToSpeechProvider({ settings }) {
         <div className="w-full flex flex-col gap-y-1 pb-6 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10">
           <div className="flex gap-x-4 items-center">
             <p className="text-lg leading-6 font-bold text-white">
-              Text-to-speech Preference
+              {t("audioPreference.tts.title")}
             </p>
           </div>
           <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-            Here you can specify what kind of text-to-speech providers you would
-            want to use in your AnythingLLM experience. By default, we use the
-            browser's built in support for these services, but you may want to
-            use others.
+            {t("audioPreference.tts.description")}
           </p>
         </div>
         <div className="w-full justify-end flex">
           {hasChanges && (
-            <CTAButton className="mt-3 mr-0 -mb-14 z-10">
-              {saving ? "Saving..." : "Save changes"}
+            <CTAButton
+              onClick={() => handleSubmit()}
+              className="mt-3 mr-0 -mb-14 z-10"
+            >
+              {saving ? t("common.saving") : t("common.save")}
             </CTAButton>
           )}
         </div>
-        <div className="text-base font-bold text-white mt-6 mb-4">Provider</div>
+        <div className="text-base font-bold text-white mt-6 mb-4">
+          {t("audioPreference.tts.provider")}
+        </div>
         <div className="relative">
           {searchMenuOpen && (
             <div
@@ -166,7 +168,7 @@ export default function TextToSpeechProvider({ settings }) {
                     type="text"
                     name="tts-provider-search"
                     autoComplete="off"
-                    placeholder="Search text to speech providers"
+                    placeholder={t("audioPreference.tts.searchPlaceholder")}
                     className="border-none -ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none text-theme-text-primary placeholder:text-theme-text-primary placeholder:font-medium"
                     onChange={(e) => setSearchQuery(e.target.value)}
                     ref={searchInputRef}
@@ -184,7 +186,7 @@ export default function TextToSpeechProvider({ settings }) {
                 <div className="flex-1 pl-4 pr-2 flex flex-col gap-y-1 overflow-y-auto white-scrollbar pb-4 max-h-[245px]">
                   {filteredProviders.map((provider) => (
                     <LLMItem
-                      key={provider.name}
+                      key={provider.value}
                       name={provider.name}
                       value={provider.value}
                       image={provider.logo}
@@ -226,9 +228,8 @@ export default function TextToSpeechProvider({ settings }) {
           className="mt-4 flex flex-col gap-y-1"
         >
           {selectedProvider &&
-            PROVIDERS.find(
-              (provider) => provider.value === selectedProvider
-            )?.options(settings)}
+            providers.find((provider) => provider.value === selectedProvider)
+              ?.options(settings)}
         </div>
       </div>
     </form>

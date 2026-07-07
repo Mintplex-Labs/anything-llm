@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import { isMobile } from "react-device-detect";
 import Sidebar from "@/components/SettingsSidebar";
 import System from "@/models/system";
@@ -13,24 +13,21 @@ import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
 import { useTranslation } from "react-i18next";
 
-const PROVIDERS = [
+const PROVIDER_CONFIG = [
   {
-    name: "OpenAI",
     value: "openai",
     logo: OpenAiLogo,
     options: (settings) => <OpenAiWhisperOptions settings={settings} />,
-    description: "Leverage the OpenAI Whisper-large model using your API key.",
   },
   {
-    name: "AnythingLLM Built-In",
     value: "local",
     logo: AnythingLLMIcon,
     options: (settings) => <NativeTranscriptionOptions settings={settings} />,
-    description: "Run a built-in whisper model on this instance privately.",
   },
 ];
 
 export default function TranscriptionModelPreference() {
+  const { t } = useTranslation();
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [settings, setSettings] = useState(null);
@@ -40,7 +37,18 @@ export default function TranscriptionModelPreference() {
   const [selectedProvider, setSelectedProvider] = useState(null);
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
-  const { t } = useTranslation();
+
+  const providers = useMemo(
+    () =>
+      PROVIDER_CONFIG.map((provider) => ({
+        ...provider,
+        name: t(`transcription.providers.${provider.value}.name`),
+        description: t(
+          `transcription.providers.${provider.value}.description`
+        ),
+      })),
+    [t]
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -53,9 +61,9 @@ export default function TranscriptionModelPreference() {
     setSaving(true);
 
     if (error) {
-      showToast(`Failed to save preferences: ${error}`, "error");
+      showToast(t("transcription.messages.saveError", { error }), "error");
     } else {
-      showToast("Transcription preferences saved successfully.", "success");
+      showToast(t("transcription.messages.saveSuccess"), "success");
     }
     setSaving(false);
     setHasChanges(!!error);
@@ -88,13 +96,13 @@ export default function TranscriptionModelPreference() {
   }, []);
 
   useEffect(() => {
-    const filtered = PROVIDERS.filter((provider) =>
+    const filtered = providers.filter((provider) =>
       provider.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredProviders(filtered);
-  }, [searchQuery, selectedProvider]);
+  }, [searchQuery, selectedProvider, providers]);
 
-  const selectedProviderObject = PROVIDERS.find(
+  const selectedProviderObject = providers.find(
     (provider) => provider.value === selectedProvider
   );
 
@@ -133,7 +141,7 @@ export default function TranscriptionModelPreference() {
                     onClick={() => handleSubmit()}
                     className="mt-3 mr-0 -mb-14 z-10"
                   >
-                    {saving ? "Saving..." : "Save changes"}
+                    {saving ? t("common.saving") : t("common.save")}
                   </CTAButton>
                 )}
               </div>
@@ -160,7 +168,7 @@ export default function TranscriptionModelPreference() {
                           type="text"
                           name="provider-search"
                           autoComplete="off"
-                          placeholder="Search audio transcription providers"
+                          placeholder={t("transcription.searchPlaceholder")}
                           className="border-none -ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none focus:outline-primary-button active:outline-primary-button outline-none text-theme-text-primary placeholder:text-theme-text-primary placeholder:font-medium"
                           onChange={(e) => setSearchQuery(e.target.value)}
                           ref={searchInputRef}
@@ -178,7 +186,7 @@ export default function TranscriptionModelPreference() {
                       <div className="flex-1 pl-4 pr-2 flex flex-col gap-y-1 overflow-y-auto white-scrollbar pb-4 max-h-[245px]">
                         {filteredProviders.map((provider) => (
                           <LLMItem
-                            key={provider.name}
+                            key={provider.value}
                             name={provider.name}
                             value={provider.value}
                             image={provider.logo}
@@ -224,7 +232,7 @@ export default function TranscriptionModelPreference() {
                 className="mt-4 flex flex-col gap-y-1"
               >
                 {selectedProvider &&
-                  PROVIDERS.find(
+                  providers.find(
                     (provider) => provider.value === selectedProvider
                   )?.options(settings)}
               </div>

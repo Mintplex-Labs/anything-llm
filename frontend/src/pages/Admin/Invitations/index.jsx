@@ -37,12 +37,13 @@ export default function AdminInvites() {
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white/10 border-b-2">
             <div className="items-center flex gap-x-4">
               <p className="text-lg leading-6 font-bold text-theme-text-primary">
-                Invitations
+                Lời mời
               </p>
             </div>
             <p className="text-xs leading-[18px] font-base text-theme-text-secondary mt-2">
-              Create invitation links for people in your organization to accept
-              and sign up with. Invitations can only be used by a single user.
+              Tạo liên kết mời cho người trong tổ chức của bạn để họ chấp nhận
+              và đăng ký. Mỗi lời mời chỉ có thể được sử dụng bởi một người
+              dùng.
             </p>
           </div>
           <div className="w-full justify-end flex">
@@ -50,8 +51,8 @@ export default function AdminInvites() {
               onClick={openModal}
               className="mt-3 mr-0 mb-4 md:-mb-12 z-10"
             >
-              <EnvelopeSimple className="h-4 w-4" weight="bold" /> Create Invite
-              Link
+              <EnvelopeSimple className="h-4 w-4" weight="bold" /> Tạo liên kết
+              mời
             </CTAButton>
           </div>
           <div className="overflow-x-auto mt-6">
@@ -70,16 +71,16 @@ export default function AdminInvites() {
                 <thead className="text-theme-text-secondary text-xs leading-[18px] font-bold uppercase border-white/10 border-b">
                   <tr>
                     <th scope="col" className="px-6 py-3 rounded-tl-lg">
-                      Status
+                      Trạng thái
                     </th>
                     <th scope="col" className="px-6 py-3">
-                      Accepted By
+                      Được chấp nhận bởi
                     </th>
                     <th scope="col" className="px-6 py-3">
-                      Created By
+                      Tạo bởi
                     </th>
                     <th scope="col" className="px-6 py-3">
-                      Created
+                      Ngày tạo
                     </th>
                     <th scope="col" className="px-6 py-3 rounded-tr-lg">
                       {" "}
@@ -90,7 +91,7 @@ export default function AdminInvites() {
                   {invites.length === 0 ? (
                     <tr className="bg-transparent text-theme-text-secondary text-sm font-medium">
                       <td colSpan="5" className="px-6 py-4 text-center">
-                        No invitations found
+                        Không tìm thấy lời mời nào
                       </td>
                     </tr>
                   ) : (

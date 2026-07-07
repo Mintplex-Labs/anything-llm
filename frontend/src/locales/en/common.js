@@ -151,6 +151,12 @@ const TRANSLATIONS = {
   "new-workspace": {
     title: "New Workspace",
     placeholder: "My Workspace",
+    createTitle: "Create new workspace",
+    createButton: "Create workspace",
+    cancel: "Cancel",
+    description:
+      "After creating this workspace only admins will be able to see it. You can add users after it has been created.",
+    error: "Error: {{error}}",
   },
   "workspaces—settings": {
     general: "General Settings",
@@ -912,6 +918,36 @@ const TRANSLATIONS = {
       created: "Created",
     },
   },
+  browserExtensionApi: {
+    title: "Browser Extension API Keys",
+    description:
+      "Manage API keys for browser extensions connecting to your GOV AI VN168 instance.",
+    generate: "Generate New API Key",
+    empty: "No API keys found",
+    actions: "Actions",
+    messages: {
+      error: "Error: {{error}}",
+      fetchError: "Failed to fetch API keys",
+    },
+    table: {
+      connectionString: "Extension Connection String",
+      by: "Created By",
+      created: "Created At",
+    },
+    modal: {
+      title: "New Browser Extension API Key",
+      cancel: "Cancel",
+      create: "Create API Key",
+      copy: "Copy API Key",
+      copied: "API Key Copied!",
+      multiUserWarning:
+        "Warning: You are in multi-user mode, this API key will allow access to all workspaces associated with your account. Please share it cautiously.",
+      autoConnectHint:
+        'After clicking "Create API Key", GOV AI VN168 will attempt to connect to your browser extension automatically.',
+      connectionHint:
+        'If you see "Connected to GOV AI VN168" in the extension, the connection was successful. If not, please copy the connection string and paste it into the extension manually.',
+    },
+  },
   llm: {
     title: "LLM Preference",
     description:
@@ -1111,12 +1147,228 @@ const TRANSLATIONS = {
     description:
       "These are the credentials and settings for your preferred transcription model provider. Its important these keys are current and correct or else media files and audio will not transcribe.",
     provider: "Transcription Provider",
+    searchPlaceholder: "Search audio transcription providers",
+    messages: {
+      saveError: "Failed to save preferences: {{error}}",
+      saveSuccess: "Transcription preferences saved successfully.",
+    },
+    providers: {
+      openai: {
+        name: "OpenAI",
+        description:
+          "Leverage the OpenAI Whisper-large model using your API key.",
+      },
+      local: {
+        name: "GOV AI VN168 Built-In",
+        description: "Run a built-in whisper model on this instance privately.",
+      },
+    },
     "warn-start":
       "Using the local whisper model on machines with limited RAM or CPU can stall GOV AI VN168 when processing media files.",
     "warn-recommend":
       "We recommend at least 2GB of RAM and upload files <10Mb.",
     "warn-end":
       "The built-in model will automatically download on the first use.",
+  },
+  audioPreference: {
+    stt: {
+      title: "Speech-to-text Preference",
+      description:
+        "Here you can specify what kind of text-to-speech and speech-to-text providers you would want to use in your GOV AI VN168 experience. By default, we use the browser's built in support for these services, but you may want to use others.",
+      provider: "Provider",
+      searchPlaceholder: "Search speech to text providers",
+      messages: {
+        saveError: "Failed to save preferences: {{error}}",
+        saveSuccess: "Speech-to-text preferences saved successfully.",
+      },
+      providers: {
+        native: {
+          name: "System native",
+          description:
+            "Uses your browser's built in STT service if supported.",
+        },
+        openai: {
+          name: "OpenAI",
+          description:
+            "Use OpenAI's Whisper API to transcribe speech to text.",
+        },
+        lemonade: {
+          name: "Lemonade",
+          description: "Transcribe speech via your local Lemonade server.",
+        },
+        deepgram: {
+          name: "Deepgram",
+          description:
+            "Transcribe speech using Deepgram's hosted Nova models.",
+        },
+        groq: {
+          name: "Groq",
+          description: "Transcribe speech using Groq's hosted models.",
+        },
+        "generic-openai": {
+          name: "Generic OpenAI",
+          description:
+            "Connect to any OpenAI-compatible STT service via a custom configuration.",
+        },
+      },
+    },
+    tts: {
+      title: "Text-to-speech Preference",
+      description:
+        "Here you can specify what kind of text-to-speech providers you would want to use in your GOV AI VN168 experience. By default, we use the browser's built in support for these services, but you may want to use others.",
+      provider: "Provider",
+      searchPlaceholder: "Search text to speech providers",
+      messages: {
+        saveError: "Failed to save preferences: {{error}}",
+        saveSuccess: "Text-to-speech preferences saved successfully.",
+      },
+      providers: {
+        native: {
+          name: "System native",
+          description:
+            "Uses your browser's built in TTS service if supported.",
+        },
+        openai: {
+          name: "OpenAI",
+          description: "Use OpenAI's text to speech voices.",
+        },
+        elevenlabs: {
+          name: "ElevenLabs",
+          description:
+            "Use ElevenLabs's text to speech voices and technology.",
+        },
+        piper_local: {
+          name: "PiperTTS",
+          description: "Run TTS models locally in your browser privately.",
+        },
+        kokoro: {
+          name: "Kokoro",
+          description:
+            "Connect to a self-hosted kokoro-fastapi server for high-quality open-source voices.",
+        },
+        "generic-openai": {
+          name: "OpenAI Compatible",
+          description:
+            "Connect to an OpenAI compatible TTS service running locally or remotely.",
+        },
+      },
+    },
+    noConfig: "There is no configuration needed for this provider.",
+  },
+  subAgents: {
+    title: "Multi-Agent Orchestration",
+    description:
+      "Configure specialized Sub-Agents that the Manager Agent (`@agent`) can delegate tasks to dynamically.",
+    addButton: "Add Sub-Agent",
+    empty: {
+      title: "No Sub-Agents Defined",
+      description:
+        "Create sub-agents for specialized tasks like creating images, synthesising voice, or deep analysis.",
+      getStarted: "Get Started",
+    },
+    card: {
+      noDescription: "No description provided.",
+      input: "Input",
+      output: "Output",
+      modelPreference: "Model Preference:",
+      edit: "Edit Agent",
+      delete: "Delete Agent",
+    },
+    messages: {
+      deleteConfirm: "Are you sure you want to delete this sub-agent?",
+      deleted: "Sub-agent deleted successfully",
+      deleteError: "Error deleting sub-agent: {{error}}",
+      fillRequired: "Please fill in the Name and select a Model",
+      updated: "Sub-agent updated successfully",
+      updateError: "Error updating sub-agent: {{error}}",
+      created: "Sub-agent created successfully",
+      createError: "Error creating sub-agent: {{error}}",
+    },
+    modal: {
+      createTitle: "Create New Sub-Agent",
+      editTitle: "Edit Sub-Agent: {{name}}",
+      agentName: "Agent Name",
+      agentNamePlaceholder: "e.g. ImageGenerator",
+      description:
+        "Description (How/when the Manager should use this agent)",
+      descriptionPlaceholder:
+        "e.g. Generates high-quality images. Use this agent when the user asks to draw or visualize things.",
+      inputType: "Input Type",
+      outputType: "Output Type",
+      modelProvider: "Model Provider",
+      model: "Model",
+      selectModel: "Select a Model",
+      noMatchingModels:
+        "No matching OpenRouter models found for this input/output type combination.",
+      systemPrompt: "System Prompt (Instructions for this agent)",
+      systemPromptPlaceholder:
+        "e.g. You are a professional painter. When given a request, write a detailed and concise Stable Diffusion prompt to generate that visual. ONLY reply with the generated Stable Diffusion prompt, nothing else.",
+      cancel: "Cancel",
+      save: "Save Agent",
+    },
+    inputTypes: {
+      text: "Text Only",
+      "text+image": "Text + Image (No Vision)",
+      "text+audio": "Text + Audio",
+      video: "Video",
+    },
+    outputTypes: {
+      text: "Text/Analysis",
+      image: "Generated Image",
+      audio: "Synthesized Audio",
+      video: "Generated Video",
+    },
+    providers: {
+      ollama: "Ollama (Local)",
+    },
+  },
+  systemPromptVariables: {
+    title: "System Prompt Variables",
+    description:
+      "System prompt variables are used to store configuration values that can be referenced in your system prompt to enable dynamic content in your prompts.",
+    addButton: "Add Variable",
+    empty: "No variables found",
+    messages: {
+      fetchError: "No variables found",
+    },
+    table: {
+      key: "Key",
+      value: "Value",
+      description: "Description",
+      type: "Type",
+    },
+    modal: {
+      add: {
+        title: "Add New Variable",
+        create: "Create variable",
+      },
+      cancel: "Cancel",
+      keyPlaceholder: "e.g., company_name",
+      keyHelper:
+        "Key must be unique and will be used in prompts as '{key}'. Only letters, numbers and underscores are allowed.",
+      valuePlaceholder: "e.g., Acme Corp",
+      descriptionPlaceholder: "Optional description",
+      error: "Error: {{error}}",
+      messages: {
+        required: "Key and value are required",
+        created: "Variable created successfully",
+        createError: "Failed to create variable",
+      },
+    },
+  },
+  agentBuilder: {
+    flowInfo: {
+      flowName: "Flow Name",
+      flowNameHint:
+        "It is important to give your flow a name that an LLM can easily understand.",
+      flowNameExamples:
+        '"SendMessageToDiscord", "CheckStockPrice", "CheckWeather"',
+      flowNamePlaceholder: "Enter flow name",
+      description: "Description",
+      descriptionHint:
+        "It is equally important to give your flow a description that an LLM can easily understand. Be sure to include the purpose of the flow, the context it will be used in, and any other relevant information.",
+      descriptionPlaceholder: "Enter flow description",
+    },
   },
   embedding: {
     title: "Embedding Preference",

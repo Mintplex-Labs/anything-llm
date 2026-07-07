@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { X } from "@phosphor-icons/react";
 import BrowserExtensionApiKey from "@/models/browserExtensionApiKey";
 import { fullApiUrl, POPUP_BROWSER_EXTENSION_EVENT } from "@/utils/constants";
+import { useTranslation } from "react-i18next";
 
 export default function NewBrowserExtensionApiKeyModal({
   closeModal,
   onSuccess,
   isMultiUser,
 }) {
+  const { t } = useTranslation();
   const [apiKey, setApiKey] = useState(null);
   const [error, setError] = useState(null);
   const [copied, setCopied] = useState(false);
@@ -53,7 +55,7 @@ export default function NewBrowserExtensionApiKeyModal({
         <div className="relative p-6 border-b rounded-t border-theme-modal-border">
           <div className="w-full flex gap-x-2 items-center">
             <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
-              New Browser Extension API Key
+              {t("browserExtensionApi.modal.title")}
             </h3>
           </div>
           <button
@@ -67,7 +69,11 @@ export default function NewBrowserExtensionApiKeyModal({
         <div className="px-7 py-6">
           <form onSubmit={handleCreate}>
             <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2">
-              {error && <p className="text-red-400 text-sm">Error: {error}</p>}
+              {error && (
+                <p className="text-red-400 text-sm">
+                  {t("browserExtensionApi.messages.error", { error })}
+                </p>
+              )}
               {apiKey && (
                 <input
                   type="text"
@@ -78,19 +84,14 @@ export default function NewBrowserExtensionApiKeyModal({
               )}
               {isMultiUser && (
                 <p className="text-yellow-300 light:text-orange-500 text-xs md:text-sm font-semibold">
-                  Warning: You are in multi-user mode, this API key will allow
-                  access to all workspaces associated with your account. Please
-                  share it cautiously.
+                  {t("browserExtensionApi.modal.multiUserWarning")}
                 </p>
               )}
               <p className="text-white text-opacity-60 text-xs md:text-sm">
-                After clicking "Create API Key", AnythingLLM will attempt to
-                connect to your browser extension automatically.
+                {t("browserExtensionApi.modal.autoConnectHint")}
               </p>
               <p className="text-white text-opacity-60 text-xs md:text-sm">
-                If you see "Connected to AnythingLLM" in the extension, the
-                connection was successful. If not, please copy the connection
-                string and paste it into the extension manually.
+                {t("browserExtensionApi.modal.connectionHint")}
               </p>
             </div>
             <div className="flex justify-between items-center mt-6 pt-6 border-t border-theme-modal-border">
@@ -101,13 +102,13 @@ export default function NewBrowserExtensionApiKeyModal({
                     type="button"
                     className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm"
                   >
-                    Cancel
+                    {t("browserExtensionApi.modal.cancel")}
                   </button>
                   <button
                     type="submit"
                     className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
                   >
-                    Create API Key
+                    {t("browserExtensionApi.modal.create")}
                   </button>
                 </>
               ) : (
@@ -117,7 +118,9 @@ export default function NewBrowserExtensionApiKeyModal({
                   disabled={copied}
                   className="w-full transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm cursor-pointer"
                 >
-                  {copied ? "API Key Copied!" : "Copy API Key"}
+                  {copied
+                    ? t("browserExtensionApi.modal.copied")
+                    : t("browserExtensionApi.modal.copy")}
                 </button>
               )}
             </div>

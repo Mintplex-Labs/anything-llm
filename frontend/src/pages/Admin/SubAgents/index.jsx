@@ -144,46 +144,52 @@ export default function SubAgents() {
   };
 
   const handleDelete = async (agentUuid) => {
-    if (!window.confirm("Are you sure you want to delete this sub-agent?")) return;
+    if (!window.confirm(t("subAgents.messages.deleteConfirm"))) return;
     const { success, error } = await SubAgentsModel.delete(agentUuid);
-    
+
     if (success) {
       setSubAgents((prev) => prev.filter((a) => a.uuid !== agentUuid));
-      showToast("Sub-agent deleted successfully", "success");
+      showToast(t("subAgents.messages.deleted"), "success");
     } else {
-      showToast(`Error deleting sub-agent: ${error}`, "error");
+      showToast(t("subAgents.messages.deleteError", { error }), "error");
     }
   };
 
   const handleSave = async (e) => {
     e.preventDefault();
     if (!formData.name.trim() || !formData.model) {
-      showToast("Please fill in the Name and select a Model", "error");
+      showToast(t("subAgents.messages.fillRequired"), "error");
       return;
     }
 
     if (editingAgent) {
-      // Update
-      const { success, subAgent, error } = await SubAgentsModel.update(editingAgent.uuid, formData);
+      const { success, subAgent, error } = await SubAgentsModel.update(
+        editingAgent.uuid,
+        formData
+      );
       if (success) {
-        setSubAgents((prev) => prev.map((a) => (a.uuid === editingAgent.uuid ? subAgent : a)));
-        showToast("Sub-agent updated successfully", "success");
+        setSubAgents((prev) =>
+          prev.map((a) => (a.uuid === editingAgent.uuid ? subAgent : a))
+        );
+        showToast(t("subAgents.messages.updated"), "success");
         setOpenModal(false);
       } else {
-        showToast(`Error updating sub-agent: ${error}`, "error");
+        showToast(t("subAgents.messages.updateError", { error }), "error");
       }
     } else {
-      // Add
       const { success, subAgent, error } = await SubAgentsModel.create(formData);
       if (success) {
         setSubAgents((prev) => [subAgent, ...prev]);
-        showToast("Sub-agent created successfully", "success");
+        showToast(t("subAgents.messages.created"), "success");
         setOpenModal(false);
       } else {
-        showToast(`Error creating sub-agent: ${error}`, "error");
+        showToast(t("subAgents.messages.createError", { error }), "error");
       }
     }
   };
+
+  const getTypeLabel = (type, kind) =>
+    t(`subAgents.${kind === "input" ? "inputTypes" : "outputTypes"}.${type}`, type);
 
   const getTypeIcon = (type) => {
     switch (type) {
@@ -208,10 +214,10 @@ export default function SubAgents() {
           <div>
             <h1 className="text-2xl font-bold text-white flex items-center gap-2">
               <Robot className="w-8 h-8 text-sky-400" />
-              Multi-Agent Orchestration
+              {t("subAgents.title")}
             </h1>
             <p className="text-sm text-theme-text-secondary mt-1">
-              Configure specialized Sub-Agents that the Manager Agent (`@agent`) can delegate tasks to dynamically.
+              {t("subAgents.description")}
             </p>
           </div>
           <button
@@ -219,7 +225,7 @@ export default function SubAgents() {
             className="flex items-center gap-2 px-4 py-2 bg-sky-600 hover:bg-sky-500 rounded-lg text-white font-medium transition-all shadow-md active:scale-95"
           >
             <Plus className="w-5 h-5" />
-            Add Sub-Agent
+            {t("subAgents.addButton")}
           </button>
         </div>
 
@@ -230,15 +236,17 @@ export default function SubAgents() {
         ) : subAgents.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center p-8 bg-theme-bg-sidebar border border-theme-sidebar-border rounded-2xl max-w-xl mx-auto w-full shadow-inner mt-10">
             <Brain className="w-16 h-16 text-sky-400/50 mb-4 animate-pulse" />
-            <h3 className="text-lg font-semibold mb-2">No Sub-Agents Defined</h3>
+            <h3 className="text-lg font-semibold mb-2">
+              {t("subAgents.empty.title")}
+            </h3>
             <p className="text-sm text-theme-text-secondary text-center mb-6">
-              Create sub-agents for specialized tasks like creating images, synthesising voice, or deep analysis.
+              {t("subAgents.empty.description")}
             </p>
             <button
               onClick={handleOpenAdd}
               className="px-6 py-2.5 bg-sky-600 hover:bg-sky-500 rounded-lg font-semibold transition-all active:scale-95"
             >
-              Get Started
+              {t("subAgents.empty.getStarted")}
             </button>
           </div>
         ) : (
@@ -258,14 +266,14 @@ export default function SubAgents() {
                       <button
                         onClick={() => handleOpenEdit(agent)}
                         className="p-1.5 hover:bg-theme-bg-secondary rounded-lg transition-colors"
-                        title="Edit Agent"
+                        title={t("subAgents.card.edit")}
                       >
                         <PencilSimple className="w-5 h-5 text-theme-text-secondary hover:text-white" />
                       </button>
                       <button
                         onClick={() => handleDelete(agent.uuid)}
                         className="p-1.5 hover:bg-red-950/30 rounded-lg transition-colors"
-                        title="Delete Agent"
+                        title={t("subAgents.card.delete")}
                       >
                         <Trash className="w-5 h-5 text-red-500 hover:text-red-400" />
                       </button>
@@ -273,20 +281,24 @@ export default function SubAgents() {
                   </div>
 
                   <p className="text-sm text-theme-text-secondary line-clamp-2 mb-4">
-                    {agent.description || "No description provided."}
+                    {agent.description || t("subAgents.card.noDescription")}
                   </p>
 
                   <div className="flex flex-wrap gap-2 text-xs mb-3">
                     <span className="flex items-center gap-1 px-2.5 py-1 bg-theme-bg-secondary rounded-full border border-theme-sidebar-border">
-                      Input: {getTypeIcon(agent.input_type)} {agent.input_type.toUpperCase()}
+                      {t("subAgents.card.input")}: {getTypeIcon(agent.input_type)}{" "}
+                      {getTypeLabel(agent.input_type, "input")}
                     </span>
                     <span className="flex items-center gap-1 px-2.5 py-1 bg-theme-bg-secondary rounded-full border border-theme-sidebar-border">
-                      Output: {getTypeIcon(agent.output_type)} {agent.output_type.toUpperCase()}
+                      {t("subAgents.card.output")}: {getTypeIcon(agent.output_type)}{" "}
+                      {getTypeLabel(agent.output_type, "output")}
                     </span>
                   </div>
 
                   <div className="text-xs text-theme-text-secondary bg-theme-bg-secondary/40 p-2.5 rounded-lg border border-theme-sidebar-border/30">
-                    <div className="font-semibold text-white/60 mb-0.5">Model Preference:</div>
+                    <div className="font-semibold text-white/60 mb-0.5">
+                      {t("subAgents.card.modelPreference")}
+                    </div>
                     <div className="truncate font-mono text-sky-400/80">{agent.model}</div>
                   </div>
                 </div>
@@ -302,7 +314,9 @@ export default function SubAgents() {
               <div className="p-6 border-b border-theme-sidebar-border flex justify-between items-center bg-theme-bg-sidebar/90">
                 <h2 className="text-xl font-bold flex items-center gap-2">
                   <Robot className="w-6 h-6 text-sky-400" />
-                  {editingAgent ? `Edit Sub-Agent: ${editingAgent.name}` : "Create New Sub-Agent"}
+                  {editingAgent
+                    ? t("subAgents.modal.editTitle", { name: editingAgent.name })
+                    : t("subAgents.modal.createTitle")}
                 </h2>
                 <button
                   onClick={() => setOpenModal(false)}
@@ -314,11 +328,13 @@ export default function SubAgents() {
 
               <form onSubmit={handleSave} className="flex-1 overflow-y-auto p-6 space-y-4">
                 <div>
-                  <label className="block text-sm font-semibold text-theme-text-primary mb-1">Agent Name</label>
+                  <label className="block text-sm font-semibold text-theme-text-primary mb-1">
+                    {t("subAgents.modal.agentName")}
+                  </label>
                   <input
                     type="text"
                     required
-                    placeholder="e.g. ImageGenerator"
+                    placeholder={t("subAgents.modal.agentNamePlaceholder")}
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="w-full bg-theme-bg-secondary border border-theme-sidebar-border rounded-lg px-3.5 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-sky-500"
@@ -326,10 +342,12 @@ export default function SubAgents() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-theme-text-primary mb-1">Description (How/when the Manager should use this agent)</label>
+                  <label className="block text-sm font-semibold text-theme-text-primary mb-1">
+                    {t("subAgents.modal.description")}
+                  </label>
                   <textarea
                     required
-                    placeholder="e.g. Generates high-quality images. Use this agent when the user asks to draw or visualize things."
+                    placeholder={t("subAgents.modal.descriptionPlaceholder")}
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     rows={2}
@@ -339,37 +357,47 @@ export default function SubAgents() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-semibold text-theme-text-primary mb-1">Input Type</label>
+                    <label className="block text-sm font-semibold text-theme-text-primary mb-1">
+                      {t("subAgents.modal.inputType")}
+                    </label>
                     <select
                       value={formData.input_type}
                       onChange={(e) => setFormData({ ...formData, input_type: e.target.value })}
                       className="w-full bg-theme-bg-secondary border border-theme-sidebar-border rounded-lg px-3.5 py-2.5 text-white focus:outline-none focus:border-sky-500"
                     >
-                      <option value="text">Text Only</option>
-                      <option value="text+image">Text + Image (No Vision)</option>
-                      <option value="text+audio">Text + Audio</option>
-                      <option value="video">Video</option>
+                      <option value="text">{t("subAgents.inputTypes.text")}</option>
+                      <option value="text+image">
+                        {t("subAgents.inputTypes.text+image")}
+                      </option>
+                      <option value="text+audio">
+                        {t("subAgents.inputTypes.text+audio")}
+                      </option>
+                      <option value="video">{t("subAgents.inputTypes.video")}</option>
                     </select>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-theme-text-primary mb-1">Output Type</label>
+                    <label className="block text-sm font-semibold text-theme-text-primary mb-1">
+                      {t("subAgents.modal.outputType")}
+                    </label>
                     <select
                       value={formData.output_type}
                       onChange={(e) => setFormData({ ...formData, output_type: e.target.value })}
                       className="w-full bg-theme-bg-secondary border border-theme-sidebar-border rounded-lg px-3.5 py-2.5 text-white focus:outline-none focus:border-sky-500"
                     >
-                      <option value="text">Text/Analysis</option>
-                      <option value="image">Generated Image</option>
-                      <option value="audio">Synthesized Audio</option>
-                      <option value="video">Generated Video</option>
+                      <option value="text">{t("subAgents.outputTypes.text")}</option>
+                      <option value="image">{t("subAgents.outputTypes.image")}</option>
+                      <option value="audio">{t("subAgents.outputTypes.audio")}</option>
+                      <option value="video">{t("subAgents.outputTypes.video")}</option>
                     </select>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-semibold text-theme-text-primary mb-1">Model Provider</label>
+                    <label className="block text-sm font-semibold text-theme-text-primary mb-1">
+                      {t("subAgents.modal.modelProvider")}
+                    </label>
                     <select
                       value={formData.provider}
                       onChange={(e) => setFormData({ ...formData, provider: e.target.value, model: "" })}
@@ -380,13 +408,13 @@ export default function SubAgents() {
                       <option value="anthropic">Anthropic</option>
                       <option value="gemini">Google Gemini</option>
                       <option value="groq">Groq</option>
-                      <option value="ollama">Ollama (Local)</option>
+                      <option value="ollama">{t("subAgents.providers.ollama")}</option>
                     </select>
                   </div>
 
                   <div>
                     <label className="block text-sm font-semibold text-theme-text-primary mb-1 flex items-center gap-1.5">
-                      Model
+                      {t("subAgents.modal.model")}
                       {fetchingModels && <div className="w-3.5 h-3.5 border-2 border-sky-500 border-t-transparent rounded-full animate-spin"></div>}
                     </label>
                     <select
@@ -396,7 +424,7 @@ export default function SubAgents() {
                       disabled={fetchingModels}
                       className="w-full bg-theme-bg-secondary border border-theme-sidebar-border rounded-lg px-3.5 py-2.5 text-white focus:outline-none focus:border-sky-500 disabled:opacity-55"
                     >
-                      <option value="">Select a Model</option>
+                      <option value="">{t("subAgents.modal.selectModel")}</option>
                       {filteredModels.map((m) => (
                         <option key={m.id} value={m.id}>
                           {m.name || m.id}
@@ -405,17 +433,19 @@ export default function SubAgents() {
                     </select>
                     {formData.provider === "openrouter" && filteredModels.length === 0 && !fetchingModels && (
                       <p className="text-xs text-amber-400 mt-1">
-                        ⚠️ No matching OpenRouter models found for this input/output type combination.
+                        ⚠️ {t("subAgents.modal.noMatchingModels")}
                       </p>
                     )}
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-theme-text-primary mb-1">System Prompt (Instructions for this agent)</label>
+                  <label className="block text-sm font-semibold text-theme-text-primary mb-1">
+                    {t("subAgents.modal.systemPrompt")}
+                  </label>
                   <textarea
                     required
-                    placeholder="e.g. You are a professional painter. When given a request, write a detailed and concise Stable Diffusion prompt to generate that visual. ONLY reply with the generated Stable Diffusion prompt, nothing else."
+                    placeholder={t("subAgents.modal.systemPromptPlaceholder")}
                     value={formData.system_prompt}
                     onChange={(e) => setFormData({ ...formData, system_prompt: e.target.value })}
                     rows={4}
@@ -429,13 +459,13 @@ export default function SubAgents() {
                     onClick={() => setOpenModal(false)}
                     className="px-5 py-2 bg-theme-bg-secondary hover:bg-theme-bg-secondary/80 rounded-lg text-theme-text-primary transition-colors"
                   >
-                    Cancel
+                    {t("subAgents.modal.cancel")}
                   </button>
                   <button
                     type="submit"
                     className="px-6 py-2 bg-sky-600 hover:bg-sky-500 rounded-lg text-white font-semibold transition-all shadow-md active:scale-95"
                   >
-                    Save Agent
+                    {t("subAgents.modal.save")}
                   </button>
                 </div>
               </form>

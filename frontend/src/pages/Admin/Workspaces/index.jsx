@@ -26,12 +26,13 @@ export default function AdminWorkspaces() {
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white/10 border-b-2">
             <div className="items-center flex gap-x-4">
               <p className="text-lg leading-6 font-bold text-theme-text-primary">
-                Instance Workspaces
+                Không gian làm việc
               </p>
             </div>
             <p className="text-xs leading-[18px] font-base text-theme-text-secondary">
-              These are all the workspaces that exist on this instance. Removing
-              a workspace will delete all of its associated chats and settings.
+              Đây là tất cả các không gian làm việc tồn tại trên phiên bản này.
+              Xóa không gian làm việc sẽ xóa tất cả hội thoại và cài đặt liên
+              quan.
             </p>
           </div>
           <div className="w-full justify-end flex">
@@ -39,7 +40,8 @@ export default function AdminWorkspaces() {
               onClick={openModal}
               className="mt-3 mr-0 mb-4 md:-mb-14 z-10"
             >
-              <BookOpen className="h-4 w-4" weight="bold" /> New Workspace
+              <BookOpen className="h-4 w-4" weight="bold" /> Không gian làm việc
+              mới
             </CTAButton>
           </div>
           <div className="overflow-x-auto">
@@ -94,16 +96,16 @@ function WorkspacesContainer() {
       <thead className="text-theme-text-secondary text-xs leading-[18px] font-bold uppercase border-white/10 border-b">
         <tr>
           <th scope="col" className="px-6 py-3 rounded-tl-lg">
-            Name
+            Tên
           </th>
           <th scope="col" className="px-6 py-3">
-            Link
+            Liên kết
           </th>
           <th scope="col" className="px-6 py-3">
-            Users
+            Người dùng
           </th>
           <th scope="col" className="px-6 py-3">
-            Created On
+            Ngày tạo
           </th>
           <th scope="col" className="px-6 py-3 rounded-tr-lg">
             {" "}
