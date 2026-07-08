@@ -36,7 +36,7 @@ If you would like to use a local Llama compatible LLM model for chatting you can
 ### Where do I put my GGUF model?
 > [!IMPORTANT]
 > If running in Docker you should be running the container to a mounted storage location on the host machine so you
-> can update the storage files directly without having to re-download or re-build your docker container. [See suggested Docker config](../../../README.md#recommended-usage-with-docker-easy)
+> can update the storage files directly without having to re-download or re-build your docker container. [See suggested Docker config](../../../docker/HOW_TO_USE_DOCKER.md)
 
 > [!NOTE]
 > `/server/storage/models/downloaded` is the default location that your model files should be at. 

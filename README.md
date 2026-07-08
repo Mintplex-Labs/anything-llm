@@ -201,7 +201,7 @@ Mintplex Labs & the community maintain a number of deployment methods, scripts, 
 - `yarn dev:frontend` To boot the frontend locally (from root of repo).
 - `yarn dev:collector` To then run the document collector (from root of repo).
 
-[Learn about documents](./server/storage/documents/DOCUMENTS.md)
+[Learn about documents](./server/storage/documents/DOCUMENTS.md) · [Workspace memories](./server/storage/MEMORY.md) · [Ollama troubleshooting](./server/utils/AiProviders/ollama/README.md)
 
 ## Telemetry & Privacy
 

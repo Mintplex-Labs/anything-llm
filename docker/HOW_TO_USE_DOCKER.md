@@ -106,11 +106,11 @@ services:
       - STORAGE_DIR=/app/server/storage
       - JWT_SECRET="make this a large list of random numbers and letters 20+"
       - LLM_PROVIDER=ollama
-      - OLLAMA_BASE_PATH=http://127.0.0.1:11434
+      - OLLAMA_BASE_PATH=http://host.docker.internal:11434
       - OLLAMA_MODEL_PREF=llama2
       - OLLAMA_MODEL_TOKEN_LIMIT=4096
       - EMBEDDING_ENGINE=ollama
-      - EMBEDDING_BASE_PATH=http://127.0.0.1:11434
+      - EMBEDDING_BASE_PATH=http://host.docker.internal:11434
       - EMBEDDING_MODEL_PREF=nomic-embed-text:latest
       - EMBEDDING_MODEL_MAX_CHUNK_LENGTH=8192
       - VECTOR_DB=lancedb

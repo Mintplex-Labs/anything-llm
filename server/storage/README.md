@@ -2,14 +2,33 @@
 
 This folder is for the local or disk storage of ready-to-embed documents, vector-cached embeddings, and the disk-storage of LanceDB and the local SQLite database.
 
-This folder should contain the following folders.
-`documents`
-`lancedb` (if using lancedb)
-`vector-cache`
-and a file named exactly `anythingllm.db`
+Set `STORAGE_DIR` in `server/.env` to an absolute path pointing here. In Docker, mount this directory as a volume so data persists across container updates. See [Docker guide](../../docker/HOW_TO_USE_DOCKER.md).
 
+## Expected layout
 
-### Common issues
+This folder should contain the following:
+
+| Path | Purpose |
+|------|---------|
+| `documents/` | Parsed document JSON produced by the collector |
+| `lancedb/` | LanceDB vector store (default vector DB) |
+| `vector-cache/` | Cached embedding vectors to speed up re-processing |
+| `models/` | Native ONNX models, GGUF files, downloaded weights — see [models README](./models/README.md) |
+| `anythingllm.db` | SQLite database (workspaces, users, memories, metadata) |
+
+User memories are stored in `anythingllm.db`, not as separate files. See [MEMORY.md](./MEMORY.md).
+
+For document formats, RAG tuning, and embedding troubleshooting, see [DOCUMENTS.md](./documents/DOCUMENTS.md).
+
+## Permissions (Docker)
+
+The default container user is UID/GID `1000`. If files on the mounted volume are owned by a different user, you may see write errors. Match `UID`/`GID` in `docker/.env` to your host user, or fix ownership:
+
+```bash
+sudo chown -R 1000:1000 /path/to/storage
+```
+
+## Common issues
 **SQLITE_FILE_CANNOT_BE_OPENED** in the server log = The DB file does not exist probably because the node instance does not have the correct permissions to write a file to the disk. To solve this..
 
 - Local dev
