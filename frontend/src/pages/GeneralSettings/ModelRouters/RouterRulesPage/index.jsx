@@ -19,7 +19,7 @@ export default function RouterRulesPage() {
   const fetchRouter = async () => {
     const { router: found, error } = await ModelRouter.get(id);
     if (!found) {
-      showToast(error || "Router not found", "error");
+      showToast(error || t("model-router.router-not-found"), "error");
       navigate(paths.settings.modelRouters());
       return;
     }
