@@ -1176,6 +1176,7 @@ const TRANSLATIONS = {
       'Are you sure you want to delete the router "{{name}}"?\nThis will remove all its rules and unlink any workspaces using it.\n\nThis action is irreversible.',
     "toast-deleted": "Router deleted",
     "toast-delete-failed": "Failed to delete router: {{error}}",
+    "router-not-found": "Router not found",
     "new-router": {
       title: "Create New Model Router",
       name: "Name",

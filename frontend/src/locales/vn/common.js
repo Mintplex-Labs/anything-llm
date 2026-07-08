@@ -19,8 +19,8 @@ const TRANSLATIONS = {
       "welcome": "Chào mừng"
     },
     "llm": {
-      "title": "Tùy chọn LLM",
-      "description": "GOV AI VN168 có thể hoạt động với nhiều nhà cung cấp LLM. Đây sẽ là dịch vụ xử lý trò chuyện."
+      "title": "Tùy chọn AI",
+      "description": "GOV AI VN168 có thể hoạt động với nhiều nhà cung cấp AI. Đây sẽ là dịch vụ xử lý trò chuyện."
     },
     "userSetup": {
       "title": "Thiết lập Người dùng",
@@ -71,12 +71,12 @@ const TRANSLATIONS = {
     "workspace-chats": "Hội thoại không gian làm việc",
     "customization": "Tùy chỉnh",
     "api-keys": "API nhà phát triển",
-    "llm": "LLM",
+    "llm": "AI",
     "transcription": "Chuyển đổi giọng nói",
     "embedder": "Nhúng dữ liệu",
     "text-splitting": "Chia nhỏ & Tách văn bản",
     "voice-speech": "Giọng nói & Phát âm",
-    "vector-database": "Cơ sở dữ liệu Vector",
+    "vector-database": "Cơ sở dữ liệu nhúng",
     "embeds": "Nhúng hội thoại",
     "security": "Bảo mật",
     "event-logs": "Nhật ký sự kiện",
@@ -88,8 +88,8 @@ const TRANSLATIONS = {
     "experimental-features": "Tính năng thử nghiệm",
     "contact": "Liên hệ hỗ trợ",
     "browser-extension": "Tiện ích trình duyệt",
-    "system-prompt-variables": "Biến System Prompt",
-    "default-system-prompt": "System Prompt mặc định",
+    "system-prompt-variables": "Biến Hướng dẫn hệ thống",
+    "default-system-prompt": "Hướng dẫn hệ thống mặc định",
     "interface": "Tùy chọn Giao diện",
     "branding": "Thương hiệu & Nhãn trắng",
     "chat": "Trò chuyện",
@@ -105,7 +105,7 @@ const TRANSLATIONS = {
       "telegram": "Telegram"
     },
     "scheduled-jobs": "Công việc theo lịch trình",
-    "model-router": "Router mẫu"
+    "model-router": "Bộ định tuyến mẫu"
   },
   "login": {
     "multi-user": {
@@ -137,14 +137,14 @@ const TRANSLATIONS = {
   "workspaces—settings": {
     "general": "Cài đặt chung",
     "chat": "Cài đặt Trò chuyện",
-    "vector": "Cơ sở dữ liệu Vector",
+    "vector": "Cơ sở dữ liệu nhúng",
     "members": "Thành viên",
     "agent": "Cấu hình Agent"
   },
   "general": {
     "vector": {
       "title": "Số lượng Vector",
-      "description": "Tổng số vector trong cơ sở dữ liệu vector của bạn."
+      "description": "Tổng số vector trong cơ sở dữ liệu nhúng của bạn."
     },
     "names": {
       "description": "Điều này chỉ thay đổi tên hiển thị của không gian làm việc."
@@ -163,24 +163,24 @@ const TRANSLATIONS = {
       "delete": "Xóa không gian làm việc",
       "deleting": "Đang xóa Không gian làm việc...",
       "confirm-start": "Bạn sắp xóa toàn bộ",
-      "confirm-end": "không gian làm việc. Điều này sẽ xóa tất cả vector embedding trong cơ sở dữ liệu vector của bạn.\n\nCác tệp nguồn gốc sẽ không bị ảnh hưởng. Hành động này không thể hoàn tác."
+      "confirm-end": "không gian làm việc. Điều này sẽ xóa tất cả vector embedding trong cơ sở dữ liệu nhúng của bạn.\n\nCác tệp nguồn gốc sẽ không bị ảnh hưởng. Hành động này không thể hoàn tác."
     }
   },
   "chat": {
     "llm": {
-      "title": "Nhà cung cấp LLM Không gian làm việc",
-      "description": "Nhà cung cấp LLM và mô hình cụ thể sẽ được sử dụng cho không gian làm việc này. Theo mặc định, nó sử dụng nhà cung cấp LLM hệ thống và cài đặt.",
-      "search": "Tìm kiếm tất cả nhà cung cấp LLM"
+      "title": "Nhà cung cấp AI Không gian làm việc",
+      "description": "Nhà cung cấp AI và mô hình cụ thể sẽ được sử dụng cho không gian làm việc này. Theo mặc định, nó sử dụng nhà cung cấp AI hệ thống và cài đặt.",
+      "search": "Tìm kiếm tất cả nhà cung cấp AI"
     },
     "model": {
       "title": "Mô hình Trò chuyện Không gian làm việc",
-      "description": "Mô hình trò chuyện cụ thể sẽ được sử dụng cho không gian làm việc này. Nếu để trống, sẽ sử dụng tùy chọn LLM hệ thống."
+      "description": "Mô hình trò chuyện cụ thể sẽ được sử dụng cho không gian làm việc này. Nếu để trống, sẽ sử dụng tùy chọn AI hệ thống."
     },
     "mode": {
       "title": "Chế độ trò chuyện",
       "chat": {
         "title": "Trò chuyện",
-        "description": "sẽ cung cấp câu trả lời dựa trên kiến thức chung của LLM và ngữ cảnh tài liệu được cung cấp.<br />Bạn sẽ cần sử dụng lệnh @agent để sử dụng các công cụ."
+        "description": "sẽ cung cấp câu trả lời dựa trên kiến thức chung của AI và ngữ cảnh tài liệu được cung cấp.<br />Bạn sẽ cần sử dụng lệnh @agent để sử dụng các công cụ."
       },
       "query": {
         "title": "Truy vấn",
@@ -198,12 +198,12 @@ const TRANSLATIONS = {
       "desc-end": "Bất kỳ số nào lớn hơn 45 có thể dẫn đến lỗi trò chuyện liên tục tùy thuộc vào kích thước tin nhắn."
     },
     "prompt": {
-      "title": "Prompt",
-      "description": "Nhập vào đây prompt cho không gian làm việc này. Định nghĩa ngữ cảnh và hướng dẫn cho AI để tạo ra một phản hồi liên quan và chính xác.",
+      "title": "Hướng dẫn hệ thống",
+      "description": "Nhập hướng dẫn hệ thống cho không gian làm việc này. Định nghĩa ngữ cảnh và hướng dẫn cho AI để tạo ra phản hồi liên quan và chính xác.",
       "history": {
-        "title": "Lịch sử System Prompt",
+        "title": "Lịch sử Hướng dẫn hệ thống",
         "clearAll": "Xóa Tất cả",
-        "noHistory": "Không có lịch sử system prompt",
+        "noHistory": "Không có lịch sử hướng dẫn hệ thống",
         "restore": "Khôi phục",
         "delete": "Xóa",
         "deleteConfirm": "Bạn có chắc chắn muốn xóa mục lịch sử này?",
@@ -221,17 +221,17 @@ const TRANSLATIONS = {
       "tooltip-description": "Bạn đang ở chế độ truy vấn, chỉ sử dụng thông tin từ tài liệu của bạn. Chuyển sang chế độ trò chuyện để có cuộc trò chuyện linh hoạt hơn, hoặc nhấp vào đây để truy cập tài liệu của chúng tôi để tìm hiểu thêm về các chế độ trò chuyện."
     },
     "temperature": {
-      "title": "Nhiệt độ LLM",
-      "desc-start": "Cài đặt này kiểm soát mức độ \"sáng tạo\" của phản hồi LLM.",
+      "title": "Nhiệt độ AI",
+      "desc-start": "Cài đặt này kiểm soát mức độ \"sáng tạo\" của phản hồi AI.",
       "desc-end": "Số càng cao thì càng sáng tạo. Đối với một số mô hình, điều này có thể dẫn đến phản hồi không mạch lạc khi đặt quá cao.",
-      "hint": "Hầu hết các LLM có các phạm vi giá trị hợp lệ khác nhau. Tham khảo nhà cung cấp LLM của bạn để biết thông tin đó."
+      "hint": "Hầu hết các AI có các phạm vi giá trị hợp lệ khác nhau. Tham khảo nhà cung cấp AI của bạn để biết thông tin đó."
     }
   },
   "vector-workspace": {
-    "identifier": "Định danh cơ sở dữ liệu vector",
+    "identifier": "Định danh cơ sở dữ liệu nhúng",
     "snippets": {
       "title": "Đoạn Ngữ cảnh Tối đa",
-      "description": "Cài đặt này kiểm soát số lượng đoạn ngữ cảnh tối đa sẽ được gửi đến LLM cho mỗi cuộc trò chuyện hoặc truy vấn.",
+      "description": "Cài đặt này kiểm soát số lượng đoạn ngữ cảnh tối đa sẽ được gửi đến AI cho mỗi cuộc trò chuyện hoặc truy vấn.",
       "recommend": "Khuyến nghị: 4"
     },
     "doc": {
@@ -243,18 +243,18 @@ const TRANSLATIONS = {
       "high": "Cao (điểm tương đồng ≥ .75)"
     },
     "reset": {
-      "reset": "Đặt lại Cơ sở dữ liệu Vector",
+      "reset": "Đặt lại Cơ sở dữ liệu nhúng",
       "resetting": "Đang xóa vectors...",
-      "confirm": "Bạn sắp đặt lại cơ sở dữ liệu vector của không gian làm việc này. Điều này sẽ xóa tất cả vector embedding hiện đang được nhúng.\n\nCác tệp nguồn gốc sẽ không bị ảnh hưởng. Hành động này không thể hoàn tác.",
-      "error": "Không thể đặt lại cơ sở dữ liệu vector của không gian làm việc!",
-      "success": "Cơ sở dữ liệu vector của không gian làm việc đã được đặt lại!"
+      "confirm": "Bạn sắp đặt lại cơ sở dữ liệu nhúng của không gian làm việc này. Điều này sẽ xóa tất cả vector embedding hiện đang được nhúng.\n\nCác tệp nguồn gốc sẽ không bị ảnh hưởng. Hành động này không thể hoàn tác.",
+      "error": "Không thể đặt lại cơ sở dữ liệu nhúng của không gian làm việc!",
+      "success": "Cơ sở dữ liệu nhúng của không gian làm việc đã được đặt lại!"
     }
   },
   "agent": {
-    "performance-warning": "Hiệu suất của các LLM không hỗ trợ rõ ràng việc gọi công cụ phụ thuộc rất nhiều vào khả năng và độ chính xác của mô hình. Một số khả năng có thể bị hạn chế hoặc không hoạt động.",
+    "performance-warning": "Hiệu suất của các AI không hỗ trợ rõ ràng việc gọi công cụ phụ thuộc rất nhiều vào khả năng và độ chính xác của mô hình. Một số khả năng có thể bị hạn chế hoặc không hoạt động.",
     "provider": {
-      "title": "Nhà cung cấp LLM cho Agent Không gian làm việc",
-      "description": "Nhà cung cấp LLM & mô hình cụ thể sẽ được sử dụng cho @agent agent của không gian làm việc này."
+      "title": "Nhà cung cấp AI cho Agent Không gian làm việc",
+      "description": "Nhà cung cấp AI & mô hình cụ thể sẽ được sử dụng cho @agent agent của không gian làm việc này."
     },
     "mode": {
       "chat": {
@@ -262,7 +262,7 @@ const TRANSLATIONS = {
         "description": "Mô hình trò chuyện cụ thể sẽ được sử dụng cho @agent agent của không gian làm việc này."
       },
       "title": "Mô hình Agent Không gian làm việc",
-      "description": "Mô hình LLM cụ thể sẽ được sử dụng cho @agent agent của không gian làm việc này.",
+      "description": "Mô hình AI cụ thể sẽ được sử dụng cho @agent agent của không gian làm việc này.",
       "wait": "-- đang chờ mô hình --"
     },
     "skill": {
@@ -778,21 +778,21 @@ const TRANSLATIONS = {
     }
   },
   "llm": {
-    "title": "Tùy chọn LLM",
-    "description": "Đây là thông tin đăng nhập và cài đặt cho nhà cung cấp LLM trò chuyện & nhúng ưa thích của bạn. Điều quan trọng là các khóa này phải chính xác, nếu không GOV AI VN168 sẽ không hoạt động đúng.",
-    "provider": "Nhà cung cấp LLM",
-    "searchPlaceholder": "Tìm kiếm tất cả nhà cung cấp LLM",
+    "title": "Tùy chọn AI",
+    "description": "Đây là thông tin đăng nhập và cài đặt cho nhà cung cấp AI trò chuyện & nhúng ưa thích của bạn. Điều quan trọng là các khóa này phải chính xác, nếu không GOV AI VN168 sẽ không hoạt động đúng.",
+    "provider": "Nhà cung cấp AI",
+    "searchPlaceholder": "Tìm kiếm tất cả nhà cung cấp AI",
     "logoAlt": "Logo {{name}}",
     "noneSelected": "Chưa chọn",
-    "needSelect": "Bạn cần chọn một LLM",
+    "needSelect": "Bạn cần chọn một AI",
     "messages": {
-      "saveSuccess": "Đã lưu tùy chọn LLM thành công.",
-      "saveError": "Không thể lưu cài đặt LLM: {{error}}"
+      "saveSuccess": "Đã lưu tùy chọn AI thành công.",
+      "saveError": "Không thể lưu cài đặt AI: {{error}}"
     },
     "providers": {
       "anythingllm-router": {
-        "name": "Bộ định tuyến mô hình",
-        "description": "Định tuyến tin nhắn đến các nhà cung cấp LLM khác nhau dựa trên quy tắc bạn định nghĩa."
+        "name": "Bộ định tuyến mẫu",
+        "description": "Định tuyến tin nhắn đến các nhà cung cấp AI khác nhau dựa trên quy tắc bạn định nghĩa."
       },
       "openai": {
         "name": "OpenAI",
@@ -812,23 +812,23 @@ const TRANSLATIONS = {
       },
       "nvidia-nim": {
         "name": "NVIDIA NIM",
-        "description": "Chạy LLM full parameter trực tiếp trên GPU NVIDIA RTX bằng NVIDIA NIM."
+        "description": "Chạy AI full parameter trực tiếp trên GPU NVIDIA RTX bằng NVIDIA NIM."
       },
       "ollama": {
         "name": "Ollama",
-        "description": "Chạy LLM cục bộ trên máy của bạn."
+        "description": "Chạy AI cục bộ trên máy của bạn."
       },
       "lmstudio": {
         "name": "LM Studio",
-        "description": "Khám phá, tải xuống và chạy hàng nghìn LLM tiên tiến chỉ với vài cú nhấp chuột."
+        "description": "Khám phá, tải xuống và chạy hàng nghìn AI tiên tiến chỉ với vài cú nhấp chuột."
       },
       "docker-model-runner": {
         "name": "Docker Model Runner",
-        "description": "Chạy LLM bằng Docker Model Runner."
+        "description": "Chạy AI bằng Docker Model Runner."
       },
       "lemonade": {
         "name": "Lemonade",
-        "description": "Chạy LLM cục bộ, ASR, TTS và hơn thế nữa trong một runtime AI thống nhất."
+        "description": "Chạy AI cục bộ, ASR, TTS và hơn thế nữa trong một runtime AI thống nhất."
       },
       "sambanova": {
         "name": "SambaNova",
@@ -836,7 +836,7 @@ const TRANSLATIONS = {
       },
       "localai": {
         "name": "Local AI",
-        "description": "Chạy LLM cục bộ trên máy của bạn."
+        "description": "Chạy AI cục bộ trên máy của bạn."
       },
       "togetherai": {
         "name": "Together AI",
@@ -856,19 +856,19 @@ const TRANSLATIONS = {
       },
       "openrouter": {
         "name": "OpenRouter",
-        "description": "Giao diện thống nhất cho các LLM."
+        "description": "Giao diện thống nhất cho các AI."
       },
       "groq": {
         "name": "Groq",
-        "description": "Suy luận LLM nhanh nhất cho ứng dụng AI thời gian thực."
+        "description": "Suy luận AI nhanh nhất cho ứng dụng AI thời gian thực."
       },
       "koboldcpp": {
         "name": "KoboldCPP",
-        "description": "Chạy LLM cục bộ bằng koboldcpp."
+        "description": "Chạy AI cục bộ bằng koboldcpp."
       },
       "textgenwebui": {
         "name": "Oobabooga Web UI",
-        "description": "Chạy LLM cục bộ bằng Text Generation Web UI của Oobabooga."
+        "description": "Chạy AI cục bộ bằng Text Generation Web UI của Oobabooga."
       },
       "cohere": {
         "name": "Cohere",
@@ -876,15 +876,15 @@ const TRANSLATIONS = {
       },
       "litellm": {
         "name": "LiteLLM",
-        "description": "Chạy proxy tương thích OpenAI của LiteLLM cho nhiều LLM."
+        "description": "Chạy proxy tương thích OpenAI của LiteLLM cho nhiều AI."
       },
       "deepseek": {
         "name": "DeepSeek",
-        "description": "Chạy các LLM mạnh mẽ của DeepSeek."
+        "description": "Chạy các AI mạnh mẽ của DeepSeek."
       },
       "ppio": {
         "name": "PPIO",
-        "description": "Chạy API LLM mã nguồn mở ổn định và tiết kiệm chi phí như DeepSeek, Llama, Qwen..."
+        "description": "Chạy API AI mã nguồn mở ổn định và tiết kiệm chi phí như DeepSeek, Llama, Qwen..."
       },
       "bedrock": {
         "name": "AWS Bedrock",
@@ -896,15 +896,15 @@ const TRANSLATIONS = {
       },
       "moonshotai": {
         "name": "Moonshot AI",
-        "description": "Chạy các LLM mạnh mẽ của Moonshot AI."
+        "description": "Chạy các AI mạnh mẽ của Moonshot AI."
       },
       "privatemode": {
         "name": "Privatemode",
-        "description": "Chạy LLM với mã hóa đầu cuối."
+        "description": "Chạy AI với mã hóa đầu cuối."
       },
       "novita": {
         "name": "Novita AI",
-        "description": "Đáng tin cậy, mở rộng và tiết kiệm chi phí cho LLM từ Novita AI"
+        "description": "Đáng tin cậy, mở rộng và tiết kiệm chi phí cho AI từ Novita AI"
       },
       "cometapi": {
         "name": "CometAPI",
@@ -916,7 +916,7 @@ const TRANSLATIONS = {
       },
       "xai": {
         "name": "xAI",
-        "description": "Chạy các LLM mạnh mẽ của xAI như Grok-2 và hơn thế nữa."
+        "description": "Chạy các AI mạnh mẽ của xAI như Grok-2 và hơn thế nữa."
       },
       "zai": {
         "name": "Z.AI",
@@ -924,11 +924,11 @@ const TRANSLATIONS = {
       },
       "giteeai": {
         "name": "GiteeAI",
-        "description": "Chạy các LLM mạnh mẽ của GiteeAI."
+        "description": "Chạy các AI mạnh mẽ của GiteeAI."
       },
       "minimax": {
         "name": "Minimax",
-        "description": "Chạy các LLM M2 mạnh mẽ của Minimax."
+        "description": "Chạy các AI M2 mạnh mẽ của Minimax."
       },
       "cerebras": {
         "name": "Cerebras",
@@ -1088,7 +1088,7 @@ const TRANSLATIONS = {
       "model": "Mô hình",
       "selectModel": "Chọn mô hình",
       "noMatchingModels": "Không tìm thấy mô hình OpenRouter phù hợp với tổ hợp loại đầu vào/đầu ra này.",
-      "systemPrompt": "System Prompt (Hướng dẫn cho agent này)",
+      "systemPrompt": "Hướng dẫn hệ thống (cho agent này)",
       "systemPromptPlaceholder": "vd. Bạn là một họa sĩ chuyên nghiệp. Khi nhận yêu cầu, hãy viết prompt Stable Diffusion chi tiết và súc tích để tạo hình ảnh đó. CHỈ trả lời bằng prompt Stable Diffusion đã tạo, không thêm gì khác.",
       "cancel": "Hủy",
       "save": "Lưu Agent"
@@ -1110,8 +1110,8 @@ const TRANSLATIONS = {
     }
   },
   "systemPromptVariables": {
-    "title": "Biến System Prompt",
-    "description": "Biến system prompt dùng để lưu các giá trị cấu hình có thể được tham chiếu trong system prompt để tạo nội dung động trong prompt của bạn.",
+    "title": "Biến Hướng dẫn hệ thống",
+    "description": "Biến hướng dẫn hệ thống dùng để lưu các giá trị cấu hình có thể được tham chiếu trong hướng dẫn hệ thống để tạo nội dung động trong hướng dẫn của bạn.",
     "addButton": "Thêm biến",
     "empty": "Không tìm thấy biến nào",
     "messages": {
@@ -1144,24 +1144,24 @@ const TRANSLATIONS = {
   "agentBuilder": {
     "flowInfo": {
       "flowName": "Tên luồng",
-      "flowNameHint": "Điều quan trọng là đặt tên luồng mà LLM có thể dễ dàng hiểu được.",
+      "flowNameHint": "Điều quan trọng là đặt tên luồng mà AI có thể dễ dàng hiểu được.",
       "flowNameExamples": "\"SendMessageToDiscord\", \"CheckStockPrice\", \"CheckWeather\"",
       "flowNamePlaceholder": "Nhập tên luồng",
       "description": "Mô tả",
-      "descriptionHint": "Cũng quan trọng không kém là cung cấp mô tả mà LLM có thể dễ dàng hiểu. Hãy nêu rõ mục đích của luồng, ngữ cảnh sử dụng và mọi thông tin liên quan khác.",
+      "descriptionHint": "Cũng quan trọng không kém là cung cấp mô tả mà AI có thể dễ dàng hiểu. Hãy nêu rõ mục đích của luồng, ngữ cảnh sử dụng và mọi thông tin liên quan khác.",
       "descriptionPlaceholder": "Nhập mô tả luồng"
     }
   },
   "embedding": {
     "title": "Tùy chọn nhúng",
-    "desc-start": "Khi sử dụng LLM không hỗ trợ bộ máy nhúng nguyên bản - bạn có thể cần chỉ định thêm thông tin đăng nhập để nhúng văn bản.",
+    "desc-start": "Khi sử dụng AI không hỗ trợ bộ máy nhúng nguyên bản - bạn có thể cần chỉ định thêm thông tin đăng nhập để nhúng văn bản.",
     "desc-end": "Nhúng là quá trình chuyển đổi văn bản thành vector. Thông tin đăng nhập này cần thiết để chuyển đổi tệp và prompt của bạn thành định dạng mà GOV AI VN168 có thể sử dụng để xử lý.",
     "provider": {
       "title": "Nhà cung cấp Nhúng"
     },
     "searchPlaceholder": "Tìm kiếm tất cả nhà cung cấp nhúng",
     "logoAlt": "Logo {{name}}",
-    "switchWarning": "Thay đổi mô hình nhúng sẽ đặt lại tất cả tài liệu đã nhúng trước đó trong mọi không gian làm việc.\n\nXác nhận sẽ xóa tất cả embedding khỏi cơ sở dữ liệu vector và gỡ tất cả tài liệu khỏi không gian làm việc. Các tài liệu đã tải lên sẽ không bị xóa, chúng có thể được nhúng lại.",
+    "switchWarning": "Thay đổi mô hình nhúng sẽ đặt lại tất cả tài liệu đã nhúng trước đó trong mọi không gian làm việc.\n\nXác nhận sẽ xóa tất cả embedding khỏi cơ sở dữ liệu nhúng và gỡ tất cả tài liệu khỏi không gian làm việc. Các tài liệu đã tải lên sẽ không bị xóa, chúng có thể được nhúng lại.",
     "messages": {
       "saveSuccess": "Đã lưu tùy chọn nhúng thành công.",
       "saveError": "Không thể lưu cài đặt nhúng: {{error}}"
@@ -1193,7 +1193,7 @@ const TRANSLATIONS = {
       },
       "lmstudio": {
         "name": "LM Studio",
-        "description": "Khám phá, tải xuống và chạy hàng nghìn LLM tiên tiến chỉ với vài cú nhấp chuột."
+        "description": "Khám phá, tải xuống và chạy hàng nghìn AI tiên tiến chỉ với vài cú nhấp chuột."
       },
       "lemonade": {
         "name": "Lemonade",
@@ -1227,7 +1227,7 @@ const TRANSLATIONS = {
   },
   "text": {
     "title": "Tùy chọn chia nhỏ và tách văn bản",
-    "desc-start": "Đôi khi, bạn có thể muốn thay đổi cách mặc định mà các tài liệu mới được chia nhỏ và tách trước khi được chèn vào cơ sở dữ liệu vector của bạn.",
+    "desc-start": "Đôi khi, bạn có thể muốn thay đổi cách mặc định mà các tài liệu mới được chia nhỏ và tách trước khi được chèn vào cơ sở dữ liệu nhúng của bạn.",
     "desc-end": "Bạn chỉ nên sửa đổi cài đặt này nếu bạn hiểu cách chia văn bản hoạt động và các tác động phụ của nó.",
     "size": {
       "title": "Kích thước Đoạn Văn bản",
@@ -1240,23 +1240,23 @@ const TRANSLATIONS = {
     }
   },
   "vector": {
-    "title": "Cơ sở dữ liệu Vector",
+    "title": "Cơ sở dữ liệu nhúng",
     "description": "Đây là thông tin đăng nhập và cài đặt cho cách phiên bản GOV AI VN168 của bạn sẽ hoạt động. Điều quan trọng là các khóa này phải chính xác.",
     "provider": {
-      "title": "Nhà cung cấp Cơ sở dữ liệu Vector",
+      "title": "Nhà cung cấp Cơ sở dữ liệu nhúng",
       "description": "Không cần cấu hình cho LanceDB."
     },
-    "searchPlaceholder": "Tìm kiếm tất cả nhà cung cấp cơ sở dữ liệu vector",
+    "searchPlaceholder": "Tìm kiếm tất cả nhà cung cấp cơ sở dữ liệu nhúng",
     "logoAlt": "Logo {{name}}",
-    "switchWarning": "Thay đổi cơ sở dữ liệu vector sẽ đặt lại tất cả tài liệu đã nhúng trước đó trong mọi không gian làm việc.\n\nXác nhận sẽ xóa tất cả embedding khỏi cơ sở dữ liệu vector và gỡ tất cả tài liệu khỏi không gian làm việc. Các tài liệu đã tải lên sẽ không bị xóa, chúng có thể được nhúng lại.",
+    "switchWarning": "Thay đổi cơ sở dữ liệu nhúng sẽ đặt lại tất cả tài liệu đã nhúng trước đó trong mọi không gian làm việc.\n\nXác nhận sẽ xóa tất cả embedding khỏi cơ sở dữ liệu nhúng và gỡ tất cả tài liệu khỏi không gian làm việc. Các tài liệu đã tải lên sẽ không bị xóa, chúng có thể được nhúng lại.",
     "messages": {
-      "saveSuccess": "Đã lưu tùy chọn cơ sở dữ liệu vector thành công.",
-      "saveError": "Không thể lưu cài đặt cơ sở dữ liệu vector: {{error}}"
+      "saveSuccess": "Đã lưu tùy chọn cơ sở dữ liệu nhúng thành công.",
+      "saveError": "Không thể lưu cài đặt cơ sở dữ liệu nhúng: {{error}}"
     },
     "providers": {
       "lancedb": {
         "name": "LanceDB",
-        "description": "Cơ sở dữ liệu vector 100% cục bộ, chạy trên cùng instance với AnythingLLM."
+        "description": "Cơ sở dữ liệu nhúng 100% cục bộ, chạy trên cùng instance với AnythingLLM."
       },
       "pgvector": {
         "name": "PGVector",
@@ -1264,7 +1264,7 @@ const TRANSLATIONS = {
       },
       "chroma": {
         "name": "Chroma",
-        "description": "Cơ sở dữ liệu vector mã nguồn mở, có thể tự lưu trữ hoặc dùng trên cloud."
+        "description": "Cơ sở dữ liệu nhúng mã nguồn mở, có thể tự lưu trữ hoặc dùng trên cloud."
       },
       "chromacloud": {
         "name": "Chroma Cloud",
@@ -1272,19 +1272,19 @@ const TRANSLATIONS = {
       },
       "pinecone": {
         "name": "Pinecone",
-        "description": "Cơ sở dữ liệu vector 100% trên cloud cho mục đích doanh nghiệp."
+        "description": "Cơ sở dữ liệu nhúng 100% trên cloud cho mục đích doanh nghiệp."
       },
       "zilliz": {
         "name": "Zilliz Cloud",
-        "description": "Cơ sở dữ liệu vector trên cloud dành cho doanh nghiệp, tuân thủ SOC 2."
+        "description": "Cơ sở dữ liệu nhúng trên cloud dành cho doanh nghiệp, tuân thủ SOC 2."
       },
       "qdrant": {
         "name": "QDrant",
-        "description": "Cơ sở dữ liệu vector mã nguồn mở, cục bộ và phân tán trên cloud."
+        "description": "Cơ sở dữ liệu nhúng mã nguồn mở, cục bộ và phân tán trên cloud."
       },
       "weaviate": {
         "name": "Weaviate",
-        "description": "Cơ sở dữ liệu vector đa phương thức mã nguồn mở, cục bộ và trên cloud."
+        "description": "Cơ sở dữ liệu nhúng đa phương thức mã nguồn mở, cục bộ và trên cloud."
       },
       "milvus": {
         "name": "Milvus",
@@ -1470,7 +1470,7 @@ const TRANSLATIONS = {
     },
     "pinning": {
       "what_pinning": "Ghim tài liệu là gì?",
-      "pin_explained_block1": "Khi bạn <b>ghim</b> một tài liệu trong GOV AI VN168, chúng tôi sẽ đưa toàn bộ nội dung của tài liệu vào cửa sổ prompt của bạn để LLM hiểu đầy đủ.",
+      "pin_explained_block1": "Khi bạn <b>ghim</b> một tài liệu trong GOV AI VN168, chúng tôi sẽ đưa toàn bộ nội dung của tài liệu vào cửa sổ prompt của bạn để AI hiểu đầy đủ.",
       "pin_explained_block2": "Điều này hoạt động tốt nhất với <b>mô hình ngữ cảnh lớn</b> hoặc các tệp nhỏ quan trọng với cơ sở kiến thức của nó.",
       "pin_explained_block3": "Nếu bạn không nhận được câu trả lời mong muốn từ GOV AI VN168 theo mặc định, ghim là một cách tuyệt vời để có được câu trả lời chất lượng cao hơn chỉ với một cú nhấp chuột.",
       "accept": "Ok, tôi hiểu rồi"
@@ -1518,13 +1518,13 @@ const TRANSLATIONS = {
     "your_command": "lệnh-của-bạn",
     "placeholder_prompt": "Đây là nội dung sẽ được đưa vào trước prompt của bạn.",
     "description": "Mô tả",
-    "placeholder_description": "Phản hồi bằng một bài thơ về LLM.",
+    "placeholder_description": "Phản hồi bằng một bài thơ về AI.",
     "save": "Lưu",
     "small": "Nhỏ",
     "normal": "Bình thường",
     "large": "Lớn",
     "workspace_llm_manager": {
-      "search": "Tìm kiếm nhà cung cấp LLM",
+      "search": "Tìm kiếm nhà cung cấp AI",
       "loading_workspace_settings": "Đang tải cài đặt không gian làm việc...",
       "available_models": "Mô hình Có sẵn cho {{provider}}",
       "available_models_description": "Chọn một mô hình để sử dụng cho không gian làm việc này.",
@@ -1740,36 +1740,36 @@ const TRANSLATIONS = {
       "home": "Đi đến Trang chủ",
       "workspaces": "Quản lý Không gian làm việc",
       "apiKeys": "Cài đặt Khóa API",
-      "llmPreferences": "Tùy chọn LLM",
+      "llmPreferences": "Tùy chọn AI",
       "chatSettings": "Cài đặt Trò chuyện",
       "help": "Hiện trợ giúp phím tắt",
-      "showLLMSelector": "Hiện Bộ chọn LLM không gian làm việc"
+      "showLLMSelector": "Hiện Bộ chọn AI không gian làm việc"
     }
   },
   "community_hub": {
     "publish": {
       "system_prompt": {
         "success_title": "Thành công!",
-        "success_description": "System Prompt của bạn đã được đăng lên Community Hub!",
+        "success_description": "Hướng dẫn hệ thống của bạn đã được đăng lên Community Hub!",
         "success_thank_you": "Cảm ơn bạn đã chia sẻ với Cộng đồng!",
         "view_on_hub": "Xem trên Community Hub",
-        "modal_title": "Đăng System Prompt",
+        "modal_title": "Đăng Hướng dẫn hệ thống",
         "name_label": "Tên",
-        "name_description": "Đây là tên hiển thị của system prompt của bạn.",
-        "name_placeholder": "System Prompt của tôi",
+        "name_description": "Đây là tên hiển thị của hướng dẫn hệ thống của bạn.",
+        "name_placeholder": "Hướng dẫn hệ thống của tôi",
         "description_label": "Mô tả",
-        "description_description": "Đây là mô tả của system prompt của bạn. Sử dụng điều này để mô tả mục đích của system prompt của bạn.",
+        "description_description": "Đây là mô tả của hướng dẫn hệ thống của bạn. Sử dụng điều này để mô tả mục đích của hướng dẫn hệ thống của bạn.",
         "tags_label": "Thẻ",
-        "tags_description": "Thẻ được sử dụng để gắn nhãn system prompt của bạn để dễ tìm kiếm hơn. Bạn có thể thêm nhiều thẻ. Tối đa 5 thẻ. Tối đa 20 ký tự mỗi thẻ.",
+        "tags_description": "Thẻ được sử dụng để gắn nhãn hướng dẫn hệ thống của bạn để dễ tìm kiếm hơn. Bạn có thể thêm nhiều thẻ. Tối đa 5 thẻ. Tối đa 20 ký tự mỗi thẻ.",
         "tags_placeholder": "Nhập và nhấn Enter để thêm thẻ",
         "visibility_label": "Hiển thị",
-        "public_description": "System prompt công khai hiển thị cho tất cả mọi người.",
-        "private_description": "System prompt riêng tư chỉ hiển thị cho bạn.",
+        "public_description": "Hướng dẫn hệ thống công khai hiển thị cho tất cả mọi người.",
+        "private_description": "Hướng dẫn hệ thống riêng tư chỉ hiển thị cho bạn.",
         "publish_button": "Đăng lên Community Hub",
         "submitting": "Đang đăng...",
         "prompt_label": "Prompt",
-        "prompt_description": "Đây là system prompt thực tế sẽ được sử dụng để hướng dẫn LLM.",
-        "prompt_placeholder": "Nhập system prompt của bạn ở đây..."
+        "prompt_description": "Đây là hướng dẫn hệ thống thực tế sẽ được sử dụng để hướng dẫn AI.",
+        "prompt_placeholder": "Nhập hướng dẫn hệ thống của bạn ở đây..."
       },
       "agent_flow": {
         "success_title": "Thành công!",
@@ -2057,155 +2057,156 @@ const TRANSLATIONS = {
     }
   },
   "model-router": {
-    "title": "Máy định tuyến mẫu",
-    "description": "Các router mẫu cho phép bạn định nghĩa các quy tắc để tự động định tuyến tin nhắn trò chuyện đến các nhà cung cấp và mô hình LLM khác nhau dựa trên các điều kiện cụ thể.",
+    "title": "Bộ định tuyến mẫu",
+    "description": "Bộ định tuyến mẫu cho phép bạn định nghĩa các quy tắc để tự động định tuyến tin nhắn trò chuyện đến các nhà cung cấp và mô hình AI khác nhau dựa trên điều kiện.",
     "table": {
       "name": "Tên",
-      "fallback": "Phương án dự phòng",
+      "fallback": "Dự phòng",
       "rules": "Quy tắc",
       "workspaces": "Không gian làm việc"
     },
-    "no-routers": "Hiện tại chưa có mẫu router nào.",
-    "empty-description": "Hiện tại chưa có bất kỳ bộ định tuyến nào được cấu hình. Hãy tạo một để bắt đầu.",
-    "new-router-button": "Router mới",
-    "delete-confirm": "Bạn có chắc chắn muốn xóa thiết bị định tuyến \"{{name}}\"?\nHành động này sẽ xóa tất cả các cài đặt và ngắt kết nối mọi không gian làm việc đang sử dụng nó.\n\nHành động này là không thể hoàn tác.",
-    "toast-deleted": "Thiết bị định tuyến đã bị xóa",
-    "toast-delete-failed": "Không thể xóa thiết bị định tuyến: {{error}}",
+    "no-routers": "Chưa có bộ định tuyến mẫu nào",
+    "empty-description": "Chưa có bộ định tuyến mẫu nào được cấu hình. Hãy tạo một bộ để bắt đầu.",
+    "new-router-button": "Bộ định tuyến mới",
+    "delete-confirm": "Bạn có chắc chắn muốn xóa bộ định tuyến \"{{name}}\"?\nThao tác này sẽ xóa tất cả quy tắc và hủy liên kết với mọi không gian làm việc đang sử dụng.\n\nHành động này không thể hoàn tác.",
+    "toast-deleted": "Đã xóa bộ định tuyến",
+    "toast-delete-failed": "Không thể xóa bộ định tuyến: {{error}}",
+    "router-not-found": "Không tìm thấy bộ định tuyến",
     "new-router": {
-      "title": "Tạo một router mới",
+      "title": "Tạo bộ định tuyến mẫu mới",
       "name": "Tên",
-      "name-placeholder": "Ví dụ: Công cụ tối ưu hóa chi phí",
+      "name-placeholder": "Ví dụ: Tối ưu chi phí",
       "description": "Mô tả",
       "description-placeholder": "Mô tả tùy chọn",
-      "fallback-label": "Nhà cung cấp chính và mô hình",
-      "fallback-description": "Sử dụng khi không có quy tắc định tuyến nào phù hợp. Cũng được sử dụng để đánh giá các quy tắc phân loại của LLM.",
-      "cooldown-label": "Thời gian làm nguội bộ nhớ đệm (giây)",
-      "cooldown-help": "Thời gian quyết định định tuyến được lưu trong bộ nhớ trước khi đánh giá lại các quy tắc. Đặt giá trị thành 0 để tắt tính năng lưu trữ.",
+      "fallback-label": "Nhà cung cấp và mô hình chính",
+      "fallback-description": "Sử dụng khi không có quy tắc định tuyến nào khớp. Cũng được dùng để đánh giá các quy tắc phân loại bằng AI.",
+      "cooldown-label": "Thời gian làm mới bộ nhớ đệm (giây)",
+      "cooldown-help": "Thời gian quyết định định tuyến được lưu trong bộ nhớ đệm trước khi đánh giá lại quy tắc. Đặt 0 để tắt bộ nhớ đệm.",
       "name-required": "Tên là bắt buộc.",
-      "fallback-required": "Nhà cung cấp và mẫu hình chính là bắt buộc.",
+      "fallback-required": "Nhà cung cấp và mô hình chính là bắt buộc.",
       "cancel": "Hủy",
-      "create": "Tạo Router"
+      "create": "Tạo bộ định tuyến"
     },
     "edit-router": {
-      "back-to-routers": "Quay lại: Máy chủ định tuyến",
-      "title": "Chỉnh sửa Router: {{name}}",
-      "save": "Lưu",
-      "toast-update-failed": "Không thể cập nhật thiết bị định tuyến."
+      "back-to-routers": "Quay lại danh sách bộ định tuyến mẫu",
+      "title": "Chỉnh sửa bộ định tuyến: {{name}}",
+      "save": "Lưu thay đổi",
+      "toast-update-failed": "Không thể cập nhật bộ định tuyến"
     },
     "rules": {
       "title": "Quy tắc định tuyến",
-      "title-with-name": "Quy tắc định tuyến: {{name}}",
-      "description": "Xác định các quy tắc quy định việc tin nhắn trò chuyện được gửi đến các nhà cung cấp và mô hình cụ thể khi nào và như thế nào.",
+      "title-with-name": "Quy tắc bộ định tuyến: {{name}}",
+      "description": "Xác định các quy tắc quyết định khi nào và cách nào tin nhắn trò chuyện được gửi đến nhà cung cấp và mô hình cụ thể.",
       "add-rule": "Thêm quy tắc",
       "delete-confirm": "Xóa quy tắc \"{{title}}\"?",
-      "toast-delete-failed": "Không thể xóa quy tắc.",
-      "toast-reorder-failed": "Không thể áp dụng các quy tắc mới.",
-      "no-rules": "Chưa có quy định nào",
-      "empty-description": "Thêm quy tắc để định tuyến tin nhắn trò chuyện đến các nhà cung cấp và mô hình cụ thể.",
-      "new-rule-button": "Quy định mới",
-      "calculated-section-label": "Quy tắc đã được tính toán – được đánh giá theo thứ tự ưu tiên",
-      "llm-section-label": "Quy tắc LLM — được đánh giá theo lô nếu không có quy tắc nào được tính toán phù hợp",
-      "llm-rule-body": "So sánh <desc>\"{{description}}\"</desc>, sau đó chuyển hướng đến <route>{{route}}</route>",
-      "calculated-no-conditions": "Không có điều kiện – đường đi đến <route>{{route}}</route>",
-      "calculated-single-condition": "Nếu <prop> có {{property}} và </prop> thì {{comparator}} và <val> \"{{value}}\" và </val>, thì điều hướng đến <route> {{route}} và </route>",
-      "calculated-multi-condition": "Nếu {{quantifier}} thuộc loại <cond> và </cond>, thì đường đi sẽ là <route> và {{route}} </route>",
+      "toast-delete-failed": "Không thể xóa quy tắc",
+      "toast-reorder-failed": "Không thể sắp xếp lại quy tắc",
+      "no-rules": "Chưa có quy tắc nào",
+      "empty-description": "Thêm quy tắc để bắt đầu định tuyến tin nhắn trò chuyện đến nhà cung cấp và mô hình cụ thể.",
+      "new-rule-button": "Quy tắc mới",
+      "calculated-section-label": "Quy tắc tính toán — được đánh giá trước, theo thứ tự ưu tiên",
+      "llm-section-label": "Quy tắc AI — được đánh giá theo lô nếu không có quy tắc tính toán nào khớp",
+      "llm-rule-body": "Khớp <desc>\"{{description}}\"</desc> rồi định tuyến đến <route>{{route}}</route>",
+      "calculated-no-conditions": "Không có điều kiện — định tuyến đến <route>{{route}}</route>",
+      "calculated-single-condition": "Nếu <prop>{{property}}</prop> {{comparator}} <val>\"{{value}}\"</val> thì định tuyến đến <route>{{route}}</route>",
+      "calculated-multi-condition": "Nếu {{quantifier}} trong <cond>{{conditions}}</cond> thì định tuyến đến <route>{{route}}</route>",
       "comparator-contains": "chứa",
-      "comparator-matches": "trận đấu",
-      "comparator-between": "giữa",
-      "badge-llm": "Mô hình ngôn ngữ lớn",
+      "comparator-matches": "khớp",
+      "comparator-between": "nằm trong khoảng",
+      "badge-llm": "AI",
       "badge-calculated": "Tính toán",
       "aria-drag-to-reorder": "Kéo để sắp xếp lại",
-      "aria-edit-rule": "Quy tắc chỉnh sửa",
+      "aria-edit-rule": "Chỉnh sửa quy tắc",
       "aria-delete-rule": "Xóa quy tắc",
-      "quantifier-any": "BẤT KỂ",
+      "quantifier-any": "BẤT KỲ",
       "quantifier-all": "TẤT CẢ"
     },
     "rule-form": {
       "title-label": "Tiêu đề",
       "rule-type": "Loại quy tắc",
-      "property-label": "Bất động sản",
+      "property-label": "Thuộc tính",
       "property-select": "Chọn",
-      "comparator-label": "Công cụ so sánh",
+      "comparator-label": "Toán tử so sánh",
       "comparator-select": "Chọn",
       "value-label": "Giá trị",
       "add-condition": "Thêm điều kiện",
-      "remove-condition": "Loại bỏ điều kiện",
-      "conditions-incomplete": "Điều kiện {{index}} chưa đầy đủ – vui lòng điền thông tin về thuộc tính, đối sánh và giá trị.",
-      "match-description-label": "Mô tả trận đấu",
-      "match-description-placeholder": "Ví dụ: Người dùng đang hỏi về các vấn đề pháp lý, hợp đồng hoặc tuân thủ quy định",
-      "match-description-help": "Mô tả tình huống mà bạn muốn quy tắc này được áp dụng. Điều này sẽ được LLM của bạn đánh giá để xác định xem quy tắc này có nên được sử dụng hay không.",
-      "route-to-label": "Đường đi và mô hình",
-      "route-to-description": "Khi quy tắc này khớp, hãy sử dụng nhà cung cấp/mô hình này.",
+      "remove-condition": "Xóa điều kiện",
+      "conditions-incomplete": "Điều kiện {{index}} chưa đầy đủ — vui lòng điền thuộc tính, toán tử so sánh và giá trị.",
+      "match-description-label": "Mô tả điều kiện khớp",
+      "match-description-placeholder": "Ví dụ: Người dùng đang hỏi về các vấn đề pháp lý, hợp đồng hoặc tuân thủ",
+      "match-description-help": "Mô tả tình huống mà bạn muốn quy tắc này được áp dụng. AI sẽ đánh giá mô tả này để quyết định có sử dụng quy tắc hay không.",
+      "route-to-label": "Định tuyến đến nhà cung cấp và mô hình",
+      "route-to-description": "Khi quy tắc này khớp, sử dụng nhà cung cấp/mô hình này",
       "cancel": "Hủy",
-      "saving": "Tiết kiệm...",
-      "update-rule": "Quy tắc cập nhật",
+      "saving": "Đang lưu...",
+      "update-rule": "Cập nhật quy tắc",
       "create-rule": "Tạo quy tắc",
-      "title-required": "Tiêu đề là bắt buộc.",
+      "title-required": "Tiêu đề là bắt buộc",
       "toast-save-failed": "Không thể lưu quy tắc",
       "type-calculated-label": "Tính toán",
-      "type-calculated-description": "So sánh dựa trên các thuộc tính của thông điệp như nội dung, số lượng token hoặc thời điểm trong ngày.",
-      "type-llm-label": "Phân loại theo LLM",
-      "type-llm-description": "Sử dụng một mô hình ngôn ngữ lớn (LLM) để phân loại tin nhắn dựa trên mô tả mà bạn cung cấp.",
-      "prop-prompt-content": "Nội dung gợi ý",
-      "prop-token-count": "Đếm số lượng token trong cuộc trò chuyện",
-      "prop-message-count": "Số lượng tin nhắn trong cuộc trò chuyện",
-      "prop-current-hour": "Thời gian hiện tại (0-23)",
-      "prop-has-image": "Có kèm theo hình ảnh",
+      "type-calculated-description": "Khớp dựa trên thuộc tính tin nhắn như nội dung, số token hoặc giờ trong ngày.",
+      "type-llm-label": "Phân loại bằng AI",
+      "type-llm-description": "Dùng AI để phân loại tin nhắn dựa trên mô tả bạn cung cấp.",
+      "prop-prompt-content": "Nội dung prompt",
+      "prop-token-count": "Số token trong cuộc trò chuyện",
+      "prop-message-count": "Số tin nhắn trong cuộc trò chuyện",
+      "prop-current-hour": "Giờ hiện tại (0-23)",
+      "prop-has-image": "Có tệp đính kèm hình ảnh",
       "cmp-contains": "chứa",
-      "cmp-matches-regex": "so sánh (biểu thức chính quy)",
+      "cmp-matches-regex": "khớp (regex)",
       "cmp-equals": "bằng",
       "cmp-not-equals": "không bằng",
       "cmp-greater-than": "lớn hơn",
       "cmp-greater-than-or-equal": "lớn hơn hoặc bằng",
-      "cmp-less-than": "ít hơn",
-      "cmp-less-than-or-equal": "ít hơn hoặc bằng",
-      "cmp-between": "bao gồm (tính cả)",
-      "placeholder-between-hour": "Ví dụ: 9:17 (từ 9 giờ sáng đến 5 giờ chiều)",
+      "cmp-less-than": "nhỏ hơn",
+      "cmp-less-than-or-equal": "nhỏ hơn hoặc bằng",
+      "cmp-between": "nằm trong khoảng (bao gồm)",
+      "placeholder-between-hour": "Ví dụ: 9,17 (9h sáng đến 17h chiều)",
       "placeholder-between-numeric": "Ví dụ: 10,50",
       "placeholder-hour": "Ví dụ: 18 (0-23)",
-      "placeholder-message-count": "ví dụ: 10",
-      "placeholder-numeric": "ví dụ: 4000",
-      "placeholder-contains": "ví dụ: mã, Python, Rust",
-      "placeholder-matches": "ví dụ: /\\bpython\\b/i",
-      "placeholder-default": "ví dụ: mã",
-      "help-contains": "Danh sách được phân tách bằng dấu phẩy — khớp nếu câu hỏi chứa bất kỳ giá trị nào (không phân biệt chữ hoa chữ thường).",
-      "help-matches": "Mẫu biểu thức chính quy. Sử dụng `/pattern/flags` để kiểm soát sự phân biệt chữ hoa/thường (mặc định là không phân biệt).",
+      "placeholder-message-count": "Ví dụ: 10",
+      "placeholder-numeric": "Ví dụ: 4000",
+      "placeholder-contains": "Ví dụ: code, python, rust",
+      "placeholder-matches": "Ví dụ: /\\bpython\\b/i",
+      "placeholder-default": "Ví dụ: code",
+      "help-contains": "Danh sách phân tách bằng dấu phẩy — khớp nếu prompt chứa bất kỳ giá trị nào (không phân biệt hoa thường).",
+      "help-matches": "Mẫu regex. Dùng /pattern/flags để kiểm soát phân biệt hoa thường (mặc định không phân biệt).",
       "bool-true": "Đúng",
       "bool-false": "Sai"
     },
     "provider-picker": {
       "select-provider": "Chọn nhà cung cấp",
-      "setup-required": "(cần thiết phải chuẩn bị)",
+      "setup-required": "(cần cấu hình)",
       "loading-models": "Đang tải mô hình...",
-      "select-model": "Chọn mẫu",
-      "enter-model": "Nhập tên mẫu",
-      "select-provider-first": "Bước đầu tiên là chọn một nhà cung cấp dịch vụ.",
+      "select-model": "Chọn mô hình",
+      "enter-model": "Nhập tên mô hình",
+      "select-provider-first": "Chọn nhà cung cấp trước",
       "configure-to-continue": "Cấu hình {{name}} để tiếp tục",
       "configure-provider": "Cấu hình {{name}}",
-      "setup-credentials": "Nhập thông tin đăng nhập cần thiết để sử dụng {{name}} làm đích chuyển tiếp.",
+      "setup-credentials": "Nhập thông tin xác thực cần thiết để dùng {{name}} làm đích định tuyến.",
       "cancel": "Hủy",
       "save-settings": "Lưu cài đặt",
       "toast-save-failed": "Không thể lưu cài đặt: {{error}}"
     },
     "router-selection": {
-      "loading-routers": "Tải router tùy chỉnh...",
-      "no-routers-prefix-settings": "Hiện tại chưa có bất kỳ bộ định tuyến nào được cấu hình.",
-      "no-routers-prefix-workspace": "Không có bất kỳ bộ định tuyến nào được cấu hình.",
-      "no-routers-link": "Tạo một trong cài đặt của Router mẫu",
-      "model-router-label": "Máy định tuyến mẫu",
-      "select-router": "Chọn một bộ định tuyến",
-      "select-description": "Chọn router nào để sử dụng cho không gian làm việc này.",
-      "no-routers-chat": "Không có bộ định tuyến nào được cấu hình. Tạo một bộ định tuyến trong mục Cài đặt > Nhà cung cấp AI > Bộ định tuyến Mô hình.",
-      "rule-count": "(__Quy tắc {{count}})"
+      "loading-routers": "Đang tải bộ định tuyến tùy chỉnh...",
+      "no-routers-prefix-settings": "Chưa có bộ định tuyến mẫu nào được cấu hình.",
+      "no-routers-prefix-workspace": "Chưa có bộ định tuyến mẫu nào được cấu hình.",
+      "no-routers-link": "Tạo một bộ trong cài đặt Bộ định tuyến mẫu",
+      "model-router-label": "Bộ định tuyến mẫu",
+      "select-router": "Chọn bộ định tuyến",
+      "select-description": "Chọn bộ định tuyến sử dụng cho không gian làm việc này.",
+      "no-routers-chat": "Chưa có bộ định tuyến nào được cấu hình. Tạo một bộ tại Cài đặt > Nhà cung cấp AI > Bộ định tuyến mẫu.",
+      "rule-count": "({{count}} quy tắc)"
     },
     "metrics": {
-      "model-router-default": "Mẫu Router"
+      "model-router-default": "Bộ định tuyến mẫu"
     },
     "chat": {
       "select-router-error": "Chọn một bộ định tuyến",
       "invalid-model": "Lựa chọn mô hình không hợp lệ",
-      "routed-to": "Được chuyển đến <route>{{model}}</route>",
-      "routed-to-rule": "Được chuyển đến <route>{{model}}</route> thông qua <rule>{{ruleTitle}}</rule>"
+      "routed-to": "Đã định tuyến đến <route>{{model}}</route>",
+      "routed-to-rule": "Đã định tuyến đến <route>{{model}}</route> qua <rule>{{ruleTitle}}</rule>"
     }
   },
   "filePreview": {
@@ -2220,21 +2221,21 @@ const TRANSLATIONS = {
     "openNewTab": "Mở ở tab mới"
   },
   "defaultSystemPrompt": {
-    "title": "System Prompt mặc định",
-    "description": "Đây là system prompt mặc định sẽ được sử dụng cho các không gian làm việc mới.",
-    "label": "System Prompt",
-    "help1": "System prompt cung cấp các hướng dẫn định hình câu trả lời và hành vi của AI. Prompt này sẽ tự động được áp dụng cho tất cả các không gian làm việc mới được tạo. Để thay đổi system prompt của một",
+    "title": "Hướng dẫn hệ thống mặc định",
+    "description": "Đây là hướng dẫn hệ thống mặc định sẽ được sử dụng cho các không gian làm việc mới.",
+    "label": "Hướng dẫn hệ thống",
+    "help1": "Hướng dẫn hệ thống cung cấp các chỉ dẫn định hình câu trả lời và hành vi của AI. Hướng dẫn này sẽ tự động được áp dụng cho tất cả các không gian làm việc mới được tạo. Để thay đổi hướng dẫn hệ thống của một",
     "help2": "không gian làm việc cụ thể",
-    "help3": "hãy chỉnh sửa prompt trong",
+    "help3": "hãy chỉnh sửa hướng dẫn trong",
     "help4": "cài đặt không gian làm việc",
-    "help5": "Để khôi phục system prompt về mặc định ban đầu của chúng tôi, hãy để trống trường này và lưu thay đổi.",
+    "help5": "Để khôi phục hướng dẫn hệ thống về mặc định ban đầu của chúng tôi, hãy để trống trường này và lưu thay đổi.",
     "variables": "Bạn có thể chèn các",
-    "variablesLink": "biến system prompt",
+    "variablesLink": "biến hướng dẫn hệ thống",
     "variablesLike": "như:",
     "variablesMore": "còn lại...",
     "placeholder": "Bạn là một trợ lý AI có thể trả lời các câu hỏi và giúp đỡ các tác vụ.",
-    "saveSuccess": "Đã cập nhật thành công system prompt mặc định.",
-    "saveFailed": "Không thể cập nhật system prompt mặc định:"
+    "saveSuccess": "Đã cập nhật thành công hướng dẫn hệ thống mặc định.",
+    "saveFailed": "Không thể cập nhật hướng dẫn hệ thống mặc định:"
   }
 }
 
