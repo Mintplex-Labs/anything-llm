@@ -43,21 +43,48 @@ First, you need the QEMU and Debian ISO. Then you can run the following command 
 ./open-computer base install
 ```
 
-Then open your VNC viewer and connect to the VM. You will see the Debian installer GUI. Follow the prompts to install the OS fully until you get to the reboot step.
+This starts QEMU with the Debian ISO attached and opens a VNC server on `localhost:5901`. Connect with any VNC viewer to see the Debian installer:
+
+```bash
+# macOS built-in screen sharing
+open vnc://localhost:5901
+
+# Or any third-party VNC client (RealVNC, TigerVNC, …)
+```
+
+Follow the prompts to install the OS fully until you get to the reboot step.
 
 ```bash
 ./open-computer base down # shuts down the VM
 ```
 
-Then you can the following command to finalize the base image:
+Then finalize the base image:
 
 ```bash
 ./open-computer base up && ./open-computer base provision && ./open-computer base down && ./open-computer base compact
 ```
 
+> `base provision` waits automatically for SSH to become available before copying files — no need to add a manual `sleep` between `base up` and `base provision`.
+
 This will start the base image in a VM, provision it, shut it down, and compact the image to minimize space on disk.
 
 Now, you can use the `open-computer create/up agent --dev` command to start an agent in development mode. This will start the agent in a development mode where you can see the agent's UI and interact with it in real time.
+
+> **Windows only — post-install step:** Before provisioning, SSH into the base image
+> and remove passwords so that provisioning can run non-interactively:
+>
+> ```powershell
+> .\open-computer.cmd base ssh
+> ```
+>
+> Then inside the VM (enter root password when prompted by `su`):
+>
+> ```bash
+> echo "<root-password>" | su -c "passwd -d root; passwd -d agent; apt-get install -y sudo; echo 'agent ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/agent; chmod 440 /etc/sudoers.d/agent; sed -i 's/^#*PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config; sed -i 's/^#*PermitEmptyPasswords.*/PermitEmptyPasswords yes/' /etc/ssh/sshd_config; sed -i 's/^#*PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config; sed -i 's/pam_unix.so/pam_unix.so nullok/' /etc/pam.d/common-auth; sed -i 's/pam_unix.so/pam_unix.so nullok/' /etc/pam.d/sshd; systemctl restart sshd"
+> ```
+>
+> Exit the SSH session, then run `.\open-computer.cmd base provision`.
+> On macOS this step is not needed — the macOS CLI uses `expect` for password automation.
 
 ## Usage
 

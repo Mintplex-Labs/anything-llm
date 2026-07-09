@@ -31,9 +31,10 @@ export function sshRun(
   };
 }
 
-/** Open an interactive SSH shell (inherits stdio). */
+/** Open an interactive SSH shell (inherits stdio). Allocates a PTY (-t) so
+ *  remote programs that require a terminal (e.g. `su` password prompts) work. */
 export function sshInteractive(port: number, user: string, command?: string): void {
-  const args = [...SSH_OPTS, '-p', String(port), `${user}@localhost`];
+  const args = [...SSH_OPTS, '-t', '-p', String(port), `${user}@localhost`];
   if (command) args.push(command);
   const child = spawn('ssh', args, { stdio: 'inherit' });
   child.on('exit', (code) => process.exit(code ?? 0));

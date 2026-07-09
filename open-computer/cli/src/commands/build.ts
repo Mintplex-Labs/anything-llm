@@ -29,7 +29,17 @@ export function registerBuildCommand(program: Command): void {
 
       // ── 1. Bundle ──────────────────────────────────────────────────────────
       info('=== Bundling interface-service ===');
-      const buildResult = spawnSync('bash', [path.join(SERVICE_DIR, 'build.sh')], {
+      // On Windows, `bash` resolves to the WSL launcher which lacks the Windows
+      // Node toolchain; prefer Git Bash (ships with Git for Windows).
+      let bashCmd = 'bash';
+      if (process.platform === 'win32') {
+        const gitBash = [
+          'C:\\Program Files\\Git\\bin\\bash.exe',
+          'C:\\Program Files (x86)\\Git\\bin\\bash.exe',
+        ].find((p) => fs.existsSync(p));
+        if (gitBash) bashCmd = gitBash;
+      }
+      const buildResult = spawnSync(bashCmd, [path.join(SERVICE_DIR, 'build.sh')], {
         stdio: 'inherit',
         cwd: SERVICE_DIR,
       });

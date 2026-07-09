@@ -7,7 +7,7 @@ import {
   readAgentJson, writeAgentJson, nextIndex, listAgents,
   pidfilePath, monitorSockPath, efiVarsPath,
 } from '../registry.js';
-import { isRunning, readPid, killPid, qemuImgCreate } from '../vm.js';
+import { isRunning, readPid, killPid, qemuImgCreate, removeMonitorSock } from '../vm.js';
 import { isJsonMode, jsonOk, jsonErr, info } from '../output.js';
 import { execUpCommand } from './control.js';
 
@@ -82,7 +82,7 @@ export function registerAgentCommands(program: Command): void {
       if (isRunning(pf)) {
         if (!isJsonMode()) info(`Agent '${name}' is running — killing it first...`);
         killPid(pf);
-        fs.rmSync(monitorSockPath(name), { force: true });
+        removeMonitorSock(monitorSockPath(name));
       }
 
       fs.rmSync(agentDir(name), { recursive: true, force: true });

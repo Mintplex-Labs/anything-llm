@@ -6,8 +6,9 @@
     "open-computer": "./dist/open-computer"
   },
   "scripts": {
-    "build": "tsc --noEmit && esbuild src/index.ts --bundle --platform=node --target=node22 --outfile=dist/open-computer --banner:js='#!/usr/bin/env node' && chmod +x dist/open-computer",
+    "build": "tsc --noEmit && node build.mjs",
     "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test \"src/**/*.test.ts\"",
     "dev": "ts-node src/index.ts",
     "watch": "tsc --watch",
     "start": "node dist/open-computer"
@@ -19,6 +20,7 @@
     "@types/node": "^22.0.0",
     "esbuild": "^0.28.1",
     "ts-node": "^10.9.2",
+    "tsx": "^4.19.2",
     "typescript": "^5.5.0"
   }
 }

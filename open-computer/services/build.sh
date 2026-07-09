@@ -10,7 +10,7 @@ if ! command -v npx &>/dev/null; then
 fi
 
 echo "Installing interface-service dependencies..."
-npm install --prefix interface-service --silent
+(cd interface-service && npm install --silent)
 
 echo "Bundling interface-service..."
 npx --yes esbuild interface-service/index.js \
@@ -38,7 +38,7 @@ cp interface-service/utils/browser-harvest.js dist/interface-service/utils/brows
 cp interface-service/utils/html-to-markdown.js dist/interface-service/utils/html-to-markdown.js
 
 echo "Installing memory-manager dependencies..."
-npm install --prefix memory-manager --silent
+(cd memory-manager && npm install --silent)
 
 echo "Bundling memory-manager..."
 mkdir -p dist/memory-manager/public

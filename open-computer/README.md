@@ -29,13 +29,13 @@ AI agents are most capable in a Linux shell, but most people truthfully dont fee
 ## Use Case Demos
 
 <video src="https://github.com/user-attachments/assets/cd5363d9-1daf-4867-8d97-d7fd903ad1b5"></video>
-<p align="center"><em>Open Computer building a data visualization from an uploaded CSV file | LM Studio Gemma 4 13B QAT on MacBook Pro M4 Pro for inference</em></p>
+<p align="center"><em>Open Computer building a data visualization from an uploaded CSV file | LM Studio Gemma 4 12B QAT on MacBook Pro M4 Pro for inference</em></p>
 
 <video src="https://github.com/user-attachments/assets/cf8444d8-15f9-489d-8800-fb25a1769804"></video>
 <p align="center"><em>Open Computer building a data visualization from web research | OpenRouter Qwen 3.6 35B A3B</em></p>
 
 <video src="https://github.com/user-attachments/assets/79334c87-c5ae-4c2c-8384-d7ef922e4184"></video>
-<p align="center"><em>Open Computer doing deep research and analysis on a topic | LM Studio Gemma 4 13B QAT on MacBook Pro M4 Pro</em></p>
+<p align="center"><em>Open Computer doing deep research and analysis on a topic | LM Studio Gemma 4 12B QAT on MacBook Pro M4 Pro</em></p>
 
 The above demos are just a few of the many use cases that Open Computer can be used for - all while the human can see and interact with the agent in real time.
 
@@ -116,11 +116,14 @@ Download the correct arch ISO (x64 or arm64) from the [Debian OSUOSL mirror](htt
 
 Or use the provided fetch script: `scripts/fetch-debian-iso.{sh,ps1}`.
 
-## Making the Base Image
+## Getting the Base Image
 
 Building the base image requires going through a VNC-based OS install as a VM. Follow the detailed walkthrough in [DEVELOPMENT.md](./DEVELOPMENT.md).
 
-Since the base image is still evolving rapidly, we don't yet ship a pre-built one — you'll need to build it from scratch. We know. We're working on automating this.
+If you want to just grab our pre-built base image, you can use the provided fetch script: `scripts/fetch-base-image.{sh,ps1}`.
+
+We provide pre-built base images for macOS ARM64 and Windows x64 currently, but we're working on supporting more architectures.
+
 
 ## Starting an Agent
 

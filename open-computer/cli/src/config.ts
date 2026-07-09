@@ -26,8 +26,22 @@ function defaultQemuDir(): string {
     const darwinVariant = ARCH === 'x64' ? 'darwin-x64' : 'darwin-arm64';
     return path.join(OPEN_COMPUTER_DIR, 'master', 'qemu', darwinVariant);
   }
-  if (PLATFORM === 'win32' && ARCH === 'x64') return path.join(OPEN_COMPUTER_DIR, 'master', 'qemu', 'win-x64');
-  if (PLATFORM === 'win32' && ARCH === 'arm64') return path.join(OPEN_COMPUTER_DIR, 'master', 'qemu', 'win-arm64');
+  if (PLATFORM === 'win32') {
+    const variant = ARCH === 'x64' ? 'win-x64' : 'win-arm64';
+    const dir = path.join(OPEN_COMPUTER_DIR, 'master', 'qemu', variant);
+    if (!fs.existsSync(dir)) {
+      const parent = path.join(OPEN_COMPUTER_DIR, 'master', 'qemu');
+      const contents = fs.existsSync(parent) ? fs.readdirSync(parent).join(', ') : '(directory missing)';
+      throw new Error(
+        `QEMU directory not found: ${dir}\n` +
+        `Contents of ${parent}: ${contents}\n` +
+        `Make sure the QEMU archive is extracted so that the folder is named "${variant}" ` +
+        `(not "qemu-${variant}" or a nested subfolder). ` +
+        `You can also set OPEN_COMPUTER_QEMU_DIR to point to your QEMU installation.`
+      );
+    }
+    return dir;
+  }
   // Linux: assume system QEMU
   return '';
 }
@@ -54,11 +68,49 @@ const EFI_FIRMWARE_FILE =
 
 export function resolveEfiCode(): string {
   if (QEMU_DIST) {
-    const bundled = path.join(QEMU_DIST, 'share', 'qemu', EFI_FIRMWARE_FILE);
-    if (fs.existsSync(bundled)) return bundled;
+    for (const cand of [
+      path.join(QEMU_DIST, 'share', 'qemu', EFI_FIRMWARE_FILE),
+      path.join(QEMU_DIST, 'share', EFI_FIRMWARE_FILE),
+    ]) {
+      if (fs.existsSync(cand)) return cand;
+    }
   }
-  // Homebrew / system fallback
+  if (PLATFORM === 'win32') {
+    throw new Error(
+      `EFI firmware not found: ${EFI_FIRMWARE_FILE}\n` +
+      `Searched in: ${QEMU_DIST || '(no QEMU_DIST set)'}\n` +
+      `Set OPEN_COMPUTER_QEMU_DIR to your QEMU installation directory.`,
+    );
+  }
   return `/opt/homebrew/share/qemu/${EFI_FIRMWARE_FILE}`;
+}
+
+// EFI variable store template (the writable pflash). This MUST be the VARS file,
+// not the CODE firmware: copying CODE into the vars slot leaves OVMF without a
+// variable store, so it never POSTs and the display stays blank.
+export function efiVarsFileName(guestArch: 'aarch64' | 'x86_64' = GUEST_ARCH): string {
+  return guestArch === 'x86_64' ? 'edk2-i386-vars.fd' : 'edk2-arm-vars.fd';
+}
+
+export function resolveEfiVars(): string {
+  const file = efiVarsFileName();
+  if (QEMU_DIST) {
+    // The bundled Windows build ships the vars template in share/ (not share/qemu/).
+    for (const cand of [
+      path.join(QEMU_DIST, 'share', 'qemu', file),
+      path.join(QEMU_DIST, 'share', file),
+    ]) {
+      if (fs.existsSync(cand)) return cand;
+    }
+  }
+  if (PLATFORM === 'win32') {
+    throw new Error(
+      `EFI vars template not found: ${file}\n` +
+      `Searched in: ${QEMU_DIST || '(no QEMU_DIST set)'}\n` +
+      `Set OPEN_COMPUTER_QEMU_DIR to your QEMU installation directory.`,
+    );
+  }
+  return `/opt/homebrew/share/qemu/${file}`;
 }
 
 // Full path to the qemu-img binary

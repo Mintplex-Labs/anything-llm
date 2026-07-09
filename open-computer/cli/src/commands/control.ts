@@ -2,14 +2,14 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { spawnSync } from 'child_process';
 import { Command } from 'commander';
-import { PLATFORM, VM_USER, SETUP_DIR, BASE_DISK } from '../config.js';
+import { PLATFORM, GUEST_ARCH, VM_USER, SETUP_DIR, SERVICE_DIR, BASE_DISK } from '../config.js';
 import {
   agentExists, readAgentJson, agentEnvPath,
   pidfilePath, monitorSockPath, efiVarsPath,
 } from '../registry.js';
 import {
   isRunning, readPid, killPid, startVm, waitForShutdown,
-  qemuImgConvert, fileSize, formatBytes,
+  qemuImgConvert, fileSize, formatBytes, removeMonitorSock,
 } from '../vm.js';
 import { sshRun, sshInteractive, scpTo, waitForSsh } from '../ssh.js';
 import { isJsonMode, jsonOk, jsonErr, info } from '../output.js';
@@ -35,6 +35,24 @@ function restartServiceInVm(name: string): void {
   sshRun(ssh_port, VM_USER, 'sudo systemctl restart open-computer', { silent: true });
 }
 
+/**
+ * On Windows x64 the 9p virtio share is not available, so dev mode syncs
+ * the services/ directory into the VM over SCP instead.
+ */
+function syncServiceToVm(sshPort: number): void {
+  info('  Syncing services/ to VM over SCP...');
+  sshRun(sshPort, VM_USER, 'sudo mkdir -p /opt/open-computer', { silent: true });
+  scpTo(sshPort, VM_USER, SERVICE_DIR, '/tmp/open-computer-sync', { recursive: true, silent: true });
+  sshRun(sshPort, VM_USER, [
+    'sudo cp -a /tmp/open-computer-sync/* /opt/open-computer/',
+    'rm -rf /tmp/open-computer-sync',
+    "sudo find /opt/open-computer -type f -exec sed -i 's/\\r$//' {} +",
+    'sudo find /opt/open-computer -name "*.sh" -exec chmod +x {} +',
+    'sudo chown -R agent:agent /opt/open-computer',
+  ].join(' ; '), { silent: true });
+  info('  Service synced.');
+}
+
 export function execUpCommand(name: string, opts: { dev?: boolean; gui?: boolean } = {}): boolean {
   if (!agentExists(name)) { jsonErr(`Agent '${name}' not found.`); }
 
@@ -47,6 +65,16 @@ export function execUpCommand(name: string, opts: { dev?: boolean; gui?: boolean
   const gui = opts.gui ?? false;
 
   const ok = startVm({ disk, efi, sshPort: ssh_port, appPort: app_port, pidFile: pf, monitorSock: sock, vncDisplay: vnc_display, dev, gui });
+
+  if (ok && dev && PLATFORM === 'win32' && GUEST_ARCH === 'x86_64') {
+    const ready = waitForSsh(ssh_port, VM_USER, 60, 3);
+    if (ready) {
+      syncServiceToVm(ssh_port);
+      sshRun(ssh_port, VM_USER, 'sudo systemctl restart open-computer', { silent: true });
+    } else {
+      info('  Warning: SSH not reachable — could not sync services to VM.');
+    }
+  }
 
   if (fs.existsSync(agentEnvPath(name))) {
     syncAgentEnv(name);
@@ -70,7 +98,9 @@ export function registerControlCommands(program: Command): void {
       const agent = readAgentJson(name);
       const dev = opts.dev ?? false;
       const gui = opts.gui ?? false;
-      const mode = dev ? 'dev (9p mount)' : 'prod';
+      const mode = dev
+        ? (PLATFORM === 'win32' && GUEST_ARCH === 'x86_64' ? 'dev (scp sync)' : 'dev (9p mount)')
+        : 'prod';
 
       if (!isJsonMode()) {
         if (gui) {
@@ -139,7 +169,7 @@ export function registerControlCommands(program: Command): void {
       }
 
       killPid(pf);
-      fs.rmSync(sock, { force: true });
+      removeMonitorSock(sock);
 
       if (isJsonMode()) {
         jsonOk({ name, was_running: true });

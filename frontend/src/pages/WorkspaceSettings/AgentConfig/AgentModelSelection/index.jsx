@@ -39,7 +39,7 @@ export default function AgentModelSelection({
   setHasChanges,
 }) {
   const { slug } = useParams();
-  const { defaultModels, customModels, loading } =
+  const { defaultModels, customModels, loading, downloadedModels } =
     useGetProviderModels(provider);
 
   const { t } = useTranslation();
@@ -123,6 +123,19 @@ export default function AgentModelSelection({
                 </option>
               );
             })}
+          </optgroup>
+        )}
+        {downloadedModels.length > 0 && (
+          <optgroup label="Downloaded models">
+            {downloadedModels.map((model) => (
+              <option
+                key={model.id}
+                value={model.id}
+                selected={workspace?.agentModel === model.id}
+              >
+                {model.name || model.id}
+              </option>
+            ))}
           </optgroup>
         )}
         {Array.isArray(customModels) && customModels.length > 0 && (
