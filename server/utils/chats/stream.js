@@ -262,9 +262,15 @@ async function streamChatWithWorkspace(
       prompt: updatedMessage,
       rawHistory,
     }));
+    const groundingInstruction =
+    workspace?.vectorSearchMode === "rerank"
+      ? "\n\nIMPORTANT: The context above was selected by a precision-focused retrieval process that returns a small, narrow set of passages. If the provided context does not clearly and directly support an answer, explicitly say you are not certain rather than guessing or stating an answer with unwarranted confidence."
+      : "";
+
+  const finalSystemPrompt = systemPrompt + groundingInstruction;
   const messages = await LLMConnector.compressMessages(
     {
-      systemPrompt,
+      systemPrompt: finalSystemPrompt,
       userPrompt: updatedMessage,
       contextTexts,
       chatHistory,
