@@ -21,6 +21,26 @@ const StorageFiles = {
         return null;
       });
   },
+
+  /**
+   * Load an inline PDF preview of a generated file
+   * @param {string} storageFilename - The storage filename to preview
+   * @returns {Promise<Blob|null>}
+   */
+  preview: async (storageFilename) => {
+    return await fetch(
+      `${API_BASE}/agent-skills/generated-files/${storageFilename}/preview`,
+      { method: "GET", headers: baseHeaders() }
+    )
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to load preview");
+        return res.blob();
+      })
+      .catch((e) => {
+        console.error(e);
+        return null;
+      });
+  },
 };
 
 export default StorageFiles;

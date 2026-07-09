@@ -114,6 +114,24 @@ module.exports.CreateDocxFile = {
             try {
               this.super.handlerProps.log(`Using the create-docx-file tool.`);
 
+              // Guard against the agent looping on file creation: if a Word file
+              // was already produced in this same turn, return it instead of
+              // generating another near-identical duplicate.
+              const alreadyCreated = createFilesLib.findPendingOutput(
+                this.super,
+                "DocxFileDownload"
+              );
+              if (alreadyCreated) {
+                this.super.handlerProps.log(
+                  `create-docx-file: A Word file was already created this turn (${alreadyCreated.storageFilename}); skipping duplicate generation.`
+                );
+                // KẾT THÚC lượt ngay để tránh model gọi lại tool lặp vô hạn với
+                // payload lớn (làm treo provider stream → lượt không bao giờ được
+                // lưu → không xem trước/tải xuống được).
+                this.super.skipHandleExecution = true;
+                return `✅ Văn bản Word **"${alreadyCreated.filename}"** đã được tạo xong ở bước trước trong lượt này (chỉ tạo DUY NHẤT 1 file). Bạn có thể bấm **Xem trước** hoặc **Tải xuống** ngay trên thẻ file phía trên. Nếu cần chỉnh sửa, hãy nêu rõ thay đổi để tôi tạo lại trong một lượt mới.`;
+              }
+
               // Strip XML 1.0 illegal control characters (e.g. the form feed a
               // LaTeX `\frac` decodes to) so Word can open the generated file.
               content = createFilesLib.stripInvalidXmlChars(content);

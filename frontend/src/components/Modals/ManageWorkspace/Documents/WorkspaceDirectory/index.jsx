@@ -5,16 +5,19 @@ import ModalWrapper from "@/components/ModalWrapper";
 import {
   Eye,
   PushPin,
+  PushPinSlash,
   CheckCircle,
   XCircle,
   CircleNotch,
   Clock,
   X,
+  FolderNotch,
 } from "@phosphor-icons/react";
 import { SEEN_DOC_PIN_ALERT, SEEN_WATCH_ALERT } from "@/utils/constants";
 import paths from "@/utils/paths";
 import { Link } from "react-router-dom";
 import Workspace from "@/models/workspace";
+import showToast from "@/utils/toast";
 import { Tooltip } from "react-tooltip";
 import { safeJsonParse } from "@/utils/request";
 import { useTranslation } from "react-i18next";
@@ -90,6 +93,70 @@ function WorkspaceDirectory({
       setSelectedItems({});
     } catch (error) {
       console.error("Failed to remove documents:", error);
+    }
+
+    setLoadingMessage("");
+    setLoading(false);
+  };
+
+  // Resolve the selected checkbox ids back into their {item, folder} objects so
+  // we can read each doc's pin state and build its docPath for the pin API.
+  const selectedDocs = Object.keys(selectedItems)
+    .map((itemId) => {
+      const folder = files.items.find((f) =>
+        f.items.some((i) => i.id === itemId)
+      );
+      if (!folder) return null;
+      const item = folder.items.find((i) => i.id === itemId);
+      return item ? { item, folder } : null;
+    })
+    .filter(Boolean);
+
+  // When every selected doc is already pinned we offer "Unpin"; otherwise "Pin"
+  // (which pins the ones that aren't pinned yet). Mirrors the per-row toggle.
+  const allSelectedPinned =
+    selectedDocs.length > 0 &&
+    selectedDocs.every(({ item }) =>
+      item.pinnedWorkspaces?.includes(workspace.id)
+    );
+
+  const pinSelectedItems = async (pinStatus) => {
+    setLoading(true);
+    setLoadingMessage(
+      pinStatus
+        ? "Pinning selected files to workspace"
+        : "Unpinning selected files from workspace"
+    );
+
+    let changed = 0;
+    try {
+      for (const { item, folder } of selectedDocs) {
+        const isPinned = item.pinnedWorkspaces?.includes(workspace.id);
+        // Skip docs already in the desired state to avoid redundant calls.
+        if (pinStatus === isPinned) continue;
+        const success = await Workspace.setPinForDocument(
+          workspace.slug,
+          `${folder.name}/${item.name}`,
+          pinStatus
+        );
+        if (success) changed++;
+      }
+      if (pinStatus && changed > 0)
+        window.dispatchEvent(new CustomEvent("pinned_document"));
+      await fetchKeys(true);
+      setSelectedItems({});
+      showToast(
+        `${changed} document(s) ${
+          pinStatus ? "pinned to" : "unpinned from"
+        } workspace.`,
+        "success",
+        { clear: true }
+      );
+    } catch (error) {
+      console.error("Failed to update pin status:", error);
+      showToast(`Failed to update pin status. ${error.message}`, "error", {
+        clear: true,
+      });
     }
 
     setLoadingMessage("");
@@ -273,6 +340,30 @@ function WorkspaceDirectory({
                         ? t("connectors.directory.deselect_all")
                         : t("connectors.directory.select_all")}
                     </button>
+                    {Object.keys(selectedItems).length >= 2 && (
+                      <button
+                        onClick={() => pinSelectedItems(!allSelectedPinned)}
+                        className="border-none text-sm font-semibold bg-white light:bg-[#E0F2FE] h-[30px] px-2.5 rounded-lg hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white flex items-center gap-x-1"
+                      >
+                        {allSelectedPinned ? (
+                          <>
+                            <PushPinSlash size={14} weight="bold" />
+                            {t(
+                              "connectors.directory.unpin_selected",
+                              "Unpin Selected"
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            <PushPin size={14} weight="bold" />
+                            {t(
+                              "connectors.directory.pin_selected",
+                              "Pin Selected"
+                            )}
+                          </>
+                        )}
+                      </button>
+                    )}
                     <button
                       onClick={removeSelectedItems}
                       className="border-none text-sm font-semibold bg-white light:bg-[#E0F2FE] h-[30px] px-2.5 rounded-lg hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white"
@@ -452,13 +543,55 @@ function RenderFileRows({ files, movedItems, children, workspace }) {
     return 0;
   }
 
-  return files.items
-    .flatMap((folder) => folder.items)
-    .sort(sortMovedItemsAndFiles)
-    .map((item) => {
-      const folder = files.items.find((f) => f.items.includes(item));
-      return children({ item, folder });
-    });
+  // Group the workspace documents under their source folder so the user can see
+  // which original folder each moved file came from, instead of a flat list.
+  const foldersWithItems = (files.items ?? []).filter(
+    (folder) => Array.isArray(folder.items) && folder.items.length > 0
+  );
+
+  // Float folders that contain freshly moved items to the top so newly added
+  // documents stay visible.
+  const folderHasMovedItem = (folder) =>
+    folder.items.some((item) =>
+      movedItems.some((movedItem) => movedItem.id === item.id)
+    );
+  const sortedFolders = [...foldersWithItems].sort((a, b) => {
+    const aMoved = folderHasMovedItem(a);
+    const bMoved = folderHasMovedItem(b);
+    if (aMoved && !bMoved) return -1;
+    if (!aMoved && bMoved) return 1;
+    return 0;
+  });
+
+  return sortedFolders.map((folder) => {
+    const sortedItems = [...folder.items].sort(sortMovedItemsAndFiles);
+    return (
+      <div key={folder.name}>
+        <WorkspaceFolderHeader name={folder.name} count={folder.items.length} />
+        <div className="pl-2">
+          {sortedItems.map((item) => children({ item, folder }))}
+        </div>
+      </div>
+    );
+  });
+}
+
+/**
+ * Header row shown above each source folder's documents in the workspace pane
+ * so the original folder each moved file belongs to is visible.
+ */
+function WorkspaceFolderHeader({ name, count }) {
+  return (
+    <div className="text-theme-text-secondary text-xs flex items-center gap-x-1.5 py-1.5 pl-3.5 pr-8 bg-white/[0.03] border-b border-white/5">
+      <FolderNotch className="shrink-0 w-4 h-4" weight="fill" />
+      <p className="whitespace-nowrap overflow-hidden text-ellipsis font-semibold uppercase tracking-wide">
+        {middleTruncate(name, 45)}
+      </p>
+      <span className="text-[10px] font-medium shrink-0 opacity-70">
+        ({count})
+      </span>
+    </div>
+  );
 }
 
 /**

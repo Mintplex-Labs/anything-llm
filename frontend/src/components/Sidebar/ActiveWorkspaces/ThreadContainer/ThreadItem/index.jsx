@@ -6,6 +6,8 @@ import {
   ArrowCounterClockwise,
   DotsThree,
   PencilSimple,
+  PushPin,
+  PushPinSlash,
   Trash,
   X,
 } from "@phosphor-icons/react";
@@ -23,6 +25,8 @@ export default function ThreadItem({
   toggleMarkForDeletion,
   hasNext,
   ctrlPressed = false,
+  isPinned = false,
+  onTogglePin,
 }) {
   const { slug: urlSlug, threadSlug = null } = useParams();
   const workspaceSlug = workspace?.slug ?? urlSlug;
@@ -101,9 +105,16 @@ export default function ThreadItem({
             to={linkTo}
             data-tooltip-id="workspace-thread-name"
             data-tooltip-content={thread.name}
-            className="w-full pl-2 py-1 overflow-hidden"
+            className="w-full pl-2 py-1 overflow-hidden flex items-center gap-x-1"
             aria-current={isActive ? "page" : ""}
           >
+            {isPinned && (
+              <PushPin
+                weight="fill"
+                size={12}
+                className="shrink-0 text-theme-text-primary light:text-blue-900"
+              />
+            )}
             <p
               className={`text-left text-sm truncate max-w-[150px] ${
                 isActive
@@ -154,6 +165,8 @@ export default function ThreadItem({
                 onRemove={onRemove}
                 close={() => setShowOptions(false)}
                 currentThreadSlug={threadSlug}
+                isPinned={isPinned}
+                onTogglePin={onTogglePin}
               />
             )}
           </div>
@@ -170,6 +183,8 @@ function OptionsMenu({
   onRemove,
   close,
   currentThreadSlug,
+  isPinned,
+  onTogglePin,
 }) {
   const menuRef = useRef(null);
 
@@ -259,6 +274,17 @@ function OptionsMenu({
       ref={menuRef}
       className="absolute w-fit z-[20] top-[25px] right-[10px] bg-zinc-900 light:bg-theme-bg-sidebar light:border-[1px] light:border-theme-sidebar-border rounded-lg p-1"
     >
+      <button
+        onClick={() => {
+          onTogglePin?.(thread.slug);
+          close();
+        }}
+        type="button"
+        className="w-full rounded-md flex items-center p-2 gap-x-2 hover:bg-slate-500/20 text-slate-300 light:text-theme-text-primary"
+      >
+        {isPinned ? <PushPinSlash size={18} /> : <PushPin size={18} />}
+        <p className="text-sm">{isPinned ? "Unpin" : "Pin"}</p>
+      </button>
       <button
         onClick={renameThread}
         type="button"

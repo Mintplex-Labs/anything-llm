@@ -35,6 +35,27 @@ const {
  */
 
 /**
+ * Merges agent outputs from packMessages (raw fileDownloadCard payloads) with
+ * the typed pending outputs registered on the aibitat instance. Every file
+ * plugin both emits a fileDownloadCard event AND registers a pending output,
+ * so naive concatenation duplicates each generated file (and the raw payload
+ * shape renders as a broken "Unknown file" card). Pending outputs win; packed
+ * payloads are only kept when no pending output references the same file.
+ * @param {object[]} packedOutputs - raw payloads collected from fileDownloadCard events
+ * @param {{type: string, payload: object}[]} pendingOutputs - typed outputs from agent plugins
+ * @returns {{type: string, payload: object}[]}
+ */
+function mergeAgentOutputs(packedOutputs = [], pendingOutputs = []) {
+  const known = new Set(
+    pendingOutputs.map((o) => o?.payload?.storageFilename).filter(Boolean)
+  );
+  const extras = packedOutputs
+    .filter((o) => o?.storageFilename && !known.has(o.storageFilename))
+    .map((o) => ({ type: "FileDownload", payload: o }));
+  return [...pendingOutputs, ...extras];
+}
+
+/**
  * Users can pass in documents as attachments to the chat API.
  * The name of the document is the name of the attachment and must include the file extension.
  * the mime type for documents is `application/anythingllm-document` - anything else is assumed to be an image.
@@ -190,9 +211,11 @@ async function chatSync({
     return await eventListener
       .waitForClose()
       .then(async ({ thoughts, textResponse, outputs, metrics }) => {
-        // Merge outputs from packMessages with outputs from aibitat (contains file download metadata with proper types)
         // These are needed for the download endpoint to authorize file access
-        const allOutputs = [...outputs, ...agentHandler.getPendingOutputs()];
+        const allOutputs = mergeAgentOutputs(
+          outputs,
+          agentHandler.getPendingOutputs()
+        );
 
         await WorkspaceChats.new({
           workspaceId: workspace.id,
@@ -556,9 +579,11 @@ async function streamChat({
     return eventListener
       .streamAgentEvents(response, uuid)
       .then(async ({ thoughts, textResponse, outputs, metrics }) => {
-        // Merge outputs from packMessages with outputs from aibitat (contains file download metadata with proper types)
         // These are needed for the download endpoint to authorize file access
-        const allOutputs = [...outputs, ...agentHandler.getPendingOutputs()];
+        const allOutputs = mergeAgentOutputs(
+          outputs,
+          agentHandler.getPendingOutputs()
+        );
 
         await WorkspaceChats.new({
           workspaceId: workspace.id,

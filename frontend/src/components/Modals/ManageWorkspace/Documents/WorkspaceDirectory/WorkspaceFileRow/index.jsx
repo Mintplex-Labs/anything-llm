@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import {
   formatDateTimeAsMoment,
   getFileExtension,
@@ -124,6 +124,11 @@ const PinItemToWorkspace = memo(({ workspace, docPath, item }) => {
   const [pinned, setPinned] = useState(
     item?.pinnedWorkspaces?.includes(workspace.id) || false
   );
+  // Keep the row's badge in sync when the pin state changes elsewhere (e.g. the
+  // bulk Pin/Unpin action re-fetches docs with fresh pinnedWorkspaces).
+  useEffect(() => {
+    setPinned(item?.pinnedWorkspaces?.includes(workspace.id) || false);
+  }, [item?.pinnedWorkspaces, workspace.id]);
   const pinEvent = new CustomEvent("pinned_document");
 
   const updatePinStatus = async (e) => {

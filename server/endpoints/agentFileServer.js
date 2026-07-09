@@ -1,3 +1,4 @@
+const fs = require("fs");
 const {
   userFromSession,
   multiUserMode,
@@ -12,6 +13,10 @@ const { WorkspaceChats } = require("../models/workspaceChats");
 const { Workspace } = require("../models/workspace");
 const { ScheduledJobRun } = require("../models/scheduledJobRun");
 const createFilesLib = require("../utils/agents/aibitat/plugins/create-files/lib");
+const {
+  renderToPdf,
+  isPreviewable,
+} = require("../utils/files/documentPreview");
 const { Telemetry } = require("../models/telemetry");
 
 /**
@@ -83,6 +88,84 @@ function agentFileServerEndpoints(app) {
       } catch (error) {
         console.error("[agentFileServer] Download error:", error.message);
         return response.status(500).json({ error: "Failed to download file" });
+      }
+    }
+  );
+
+  /**
+   * Preview a generated file INLINE (for the in-app preview panel).
+   * Same auth + ownership checks as the download route, but:
+   *   - converts office documents (docx/xlsx/pptx/csv/txt...) to PDF,
+   *   - serves PDF as-is,
+   *   - sets Content-Disposition: inline so it renders in an <iframe>
+   *     instead of triggering a file download.
+   */
+  app.get(
+    "/agent-skills/generated-files/:filename/preview",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        const { filename } = request.params;
+        if (!filename)
+          return response.status(400).json({ error: "Filename is required" });
+
+        const parsed = createFilesLib.parseFilename(filename);
+        if (!parsed) {
+          return response
+            .status(400)
+            .json({ error: "Invalid filename format" });
+        }
+
+        if (!isPreviewable(parsed.extension)) {
+          return response
+            .status(415)
+            .json({ error: "Preview not supported for this file type" });
+        }
+
+        // Reuse the exact same ownership check as download.
+        const fileSource = await findFileSource(filename, {
+          user,
+          isMultiUser: multiUserMode(response),
+        });
+        if (!fileSource) {
+          return response
+            .status(404)
+            .json({ error: "File not found or access denied" });
+        }
+
+        const fileData = await createFilesLib.getGeneratedFile(filename);
+        if (!fileData) {
+          return response
+            .status(404)
+            .json({ error: "File not found in storage" });
+        }
+
+        // Convert to PDF (or passthrough if already PDF). Cached on disk.
+        let pdfPath;
+        try {
+          pdfPath = await renderToPdf(fileData.storagePath, filename);
+        } catch (convErr) {
+          console.error(
+            "[agentFileServer] Preview conversion error:",
+            convErr.message
+          );
+          return response
+            .status(500)
+            .json({ error: "Failed to render preview" });
+        }
+
+        response.setHeader("Content-Type", "application/pdf");
+        response.setHeader("Content-Disposition", `inline; filename="preview.pdf"`);
+        response.setHeader("Cache-Control", "private, max-age=300");
+        fs.createReadStream(pdfPath).pipe(response);
+        Telemetry.sendTelemetry("agent_generated_file_previewed", {
+          type: parsed.extension,
+        }).catch(() => {});
+        return;
+      } catch (error) {
+        console.error("[agentFileServer] Preview error:", error.message);
+        return response.status(500).json({ error: "Failed to preview file" });
       }
     }
   );

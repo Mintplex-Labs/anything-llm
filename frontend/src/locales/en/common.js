@@ -1435,6 +1435,8 @@ const TRANSLATIONS = {
       select_all: "Select All",
       deselect_all: "Deselect All",
       remove_selected: "Remove Selected",
+      pin_selected: "Pin Selected",
+      unpin_selected: "Unpin Selected",
       save_embed: "Save and Embed",
     },
     upload: {
@@ -1893,6 +1895,17 @@ const TRANSLATIONS = {
         generic: "File",
       },
     },
+  },
+  filePreview: {
+    title: "Document preview",
+    preview: "Preview",
+    clickToPreview: "Click to preview",
+    download: "Download",
+    downloading: "Downloading...",
+    close: "Close",
+    loading: "Loading preview…",
+    error: "Could not generate a preview for this file.",
+    openNewTab: "Open in new tab",
   },
   defaultSystemPrompt: {
     title: "Default System Prompt",

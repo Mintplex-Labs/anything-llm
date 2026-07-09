@@ -49,6 +49,7 @@
     "react-tooltip": "^5.25.2",
     "recharts": "^2.12.5",
     "recharts-to-png": "^2.3.1",
+    "regenerator-runtime": "*",
     "text-case": "^1.0.9",
     "truncate": "^3.0.0",
     "uuid": "^9.0.0"

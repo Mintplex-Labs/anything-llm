@@ -15,23 +15,64 @@ async function asPdf({
   options = {},
   metadata = {},
 }) {
-  const pdfLoader = new PDFLoader(fullFilePath, {
-    splitPages: true,
-  });
-
   console.log(`-- Working ${filename} --`);
-  const pageContent = [];
-  let docs = await pdfLoader.load();
 
-  if (docs.length === 0) {
-    console.log(
-      `[asPDF] No text content found for ${filename}. Will attempt OCR parse.`
+  // Prefer the digital text layer: read text from the PDF directly. A failure
+  // here (corrupt, encrypted, or malformed file) is not fatal since the
+  // document may still be readable as page images via OCR below.
+  let textDocs = [];
+  try {
+    const pdfLoader = new PDFLoader(fullFilePath, {
+      splitPages: true,
+    });
+    textDocs = await pdfLoader.load();
+  } catch (e) {
+    console.error(
+      `[asPDF] Could not read the text layer of ${filename} (${e.message}). Will attempt OCR parse.`
     );
-    docs = await new OCRLoader({
-      targetLanguages: options?.ocr?.langList,
-    }).ocrPDF(fullFilePath);
+    textDocs = [];
   }
 
+  const docs = textDocs.filter((doc) => doc.pageContent?.trim()?.length);
+  const totalPages = textDocs[0]?.metadata?.pdf?.totalPages || null;
+  const pagesWithText = new Set(
+    docs.map((doc) => doc.metadata?.loc?.pageNumber).filter(Boolean)
+  );
+
+  // Any page without a text layer is likely a scanned image (very common for
+  // signed/scanned documents) - collect those pages so only they get OCRed.
+  let pagesNeedingOCR = null; // null means every page
+  if (docs.length > 0 && totalPages) {
+    pagesNeedingOCR = [];
+    for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+      if (!pagesWithText.has(pageNum)) pagesNeedingOCR.push(pageNum);
+    }
+  }
+
+  if (docs.length === 0 || pagesNeedingOCR?.length) {
+    console.log(
+      docs.length === 0
+        ? `[asPDF] No text content found for ${filename}. Will attempt OCR parse.`
+        : `[asPDF] ${pagesNeedingOCR.length} of ${totalPages} pages in ${filename} have no text layer. Will attempt OCR parse of those pages.`
+    );
+    try {
+      const ocrDocs = await new OCRLoader({
+        targetLanguages: options?.ocr?.langList,
+      }).ocrPDF(fullFilePath, {
+        pageNumbers: docs.length === 0 ? null : pagesNeedingOCR,
+      });
+      docs.push(...ocrDocs);
+    } catch (e) {
+      console.error(`[asPDF] OCR of ${filename} failed (${e.message}).`);
+    }
+  }
+
+  docs.sort(
+    (a, b) =>
+      (a.metadata?.loc?.pageNumber || 0) - (b.metadata?.loc?.pageNumber || 0)
+  );
+
+  const pageContent = [];
   for (const doc of docs) {
     console.log(
       `-- Parsing content from pg ${
