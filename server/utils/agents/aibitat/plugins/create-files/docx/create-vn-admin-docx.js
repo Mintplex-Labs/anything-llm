@@ -217,6 +217,20 @@ module.exports.CreateVnAdminDocx = {
                 `Using the create-vn-admin-docx tool.`
               );
 
+              // Guard against the agent looping on file creation: if a Word file
+              // was already produced in this same turn, return it instead of
+              // generating another near-identical duplicate.
+              const alreadyCreated = createFilesLib.findPendingOutput(
+                this.super,
+                "DocxFileDownload"
+              );
+              if (alreadyCreated) {
+                this.super.handlerProps.log(
+                  `create-vn-admin-docx: A Word file was already created this turn (${alreadyCreated.storageFilename}); skipping duplicate generation.`
+                );
+                return `⚠️ Văn bản Word "${alreadyCreated.filename}" đã được tạo ở bước trước trong lượt này. Không tạo lại để tránh trùng lặp. Nếu cần chỉnh sửa, hãy nêu rõ thay đổi thay vì tạo file mới.`;
+              }
+
               // Sanitize inputs
               content = createFilesLib.stripInvalidXmlChars(content);
               title = createFilesLib.stripInvalidXmlChars(title);

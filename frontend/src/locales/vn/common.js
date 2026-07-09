@@ -930,7 +930,9 @@ const TRANSLATIONS = {
       "no_docs": "Không có Tài liệu",
       "select_all": "Chọn Tất cả",
       "deselect_all": "Bỏ chọn Tất cả",
-      "remove_selected": "Xóa Đã chọn",
+      "remove_selected": "Gỡ khỏi Workspace",
+      "pin_selected": "Ghim Đã chọn",
+      "unpin_selected": "Bỏ ghim Đã chọn",
       "save_embed": "Lưu và Nhúng",
       "total-documents_one": "{{count}}",
       "total-documents_other": "{{count}}"
@@ -1680,6 +1682,17 @@ const TRANSLATIONS = {
       "routed-to": "Được chuyển đến <route>{{model}}</route>",
       "routed-to-rule": "Được chuyển đến <route>{{model}}</route> thông qua <rule>{{ruleTitle}}</rule>"
     }
+  },
+  "filePreview": {
+    "title": "Xem trước tài liệu",
+    "preview": "Xem trước",
+    "clickToPreview": "Bấm để xem trước",
+    "download": "Tải xuống",
+    "downloading": "Đang tải...",
+    "close": "Đóng",
+    "loading": "Đang tải bản xem trước…",
+    "error": "Không tạo được bản xem trước cho tệp này.",
+    "openNewTab": "Mở ở tab mới"
   },
   "defaultSystemPrompt": {
     "title": "System Prompt mặc định",

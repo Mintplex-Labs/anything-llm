@@ -19,6 +19,7 @@ const {
   mergeNativeCharts,
   CHART_ROW_PITCH,
 } = require("./utils.js");
+const { dedupeDataRows, dedupeSheets, sheetHasFormula } = require("./dedupe.js");
 const XlsxChart = require("xlsx-chart");
 
 // Color palettes (ARGB) applied across header, zebra rows, title accent and total row
@@ -156,6 +157,27 @@ const chartSchemaItem = {
 };
 
 /**
+ * Nhiều mô hình yếu (ví dụ qwen flash) serialize tham số mảng/đối tượng thành
+ * một CHUỖI JSON thay vì gửi JSON thật, ví dụ sheets = "[{...}]" hoặc
+ * charts = "[{...}]". Nếu không khôi phục, cả khối JSON bị nhét vào 1 sheet làm
+ * dòng tiêu đề khổng lồ, KHÔNG có dữ liệu. Hàm này: nếu value là chuỗi trông
+ * giống JSON (bắt đầu bằng '[' hoặc '{') thì parse; ngược lại trả nguyên bản
+ * (để chuỗi CSV thật vẫn được xử lý như csvData).
+ * @param {*} value
+ * @returns {*}
+ */
+function coerceJsonMaybe(value) {
+  if (typeof value !== "string") return value;
+  const trimmed = value.trim();
+  if (!trimmed || (trimmed[0] !== "[" && trimmed[0] !== "{")) return value;
+  try {
+    return JSON.parse(trimmed);
+  } catch {
+    return value;
+  }
+}
+
+/**
  * Ensures every entry in a list of names is unique by suffixing " (n)".
  * @param {string[]} names
  * @returns {string[]}
@@ -176,7 +198,11 @@ function dedupeNames(names) {
  * @returns {{title: string, type: string, labels: string[], datasets: {label: string, data: number[]}[]}|null}
  */
 function normalizeChartDef(chart) {
+  if (typeof chart === "string") chart = coerceJsonMaybe(chart);
   if (!chart || typeof chart !== "object") return null;
+  // labels/datasets đôi khi bị model gửi dưới dạng chuỗi JSON — khôi phục trước.
+  chart.labels = coerceJsonMaybe(chart.labels);
+  chart.datasets = coerceJsonMaybe(chart.datasets);
   if (!Array.isArray(chart.labels) || chart.labels.length === 0) return null;
   if (!Array.isArray(chart.datasets) || chart.datasets.length === 0)
     return null;
@@ -185,6 +211,11 @@ function normalizeChartDef(chart) {
     chart.labels.map((l, i) => String(l ?? `Mục ${i + 1}`).trim() || `Mục ${i + 1}`)
   );
   const datasets = chart.datasets
+    .map((ds) =>
+      ds && typeof ds === "object"
+        ? { ...ds, data: coerceJsonMaybe(ds.data) }
+        : ds
+    )
     .filter((ds) => ds && Array.isArray(ds.data))
     .map((ds, i) => ({
       label: String(ds.label ?? `Chuỗi ${i + 1}`).trim() || `Chuỗi ${i + 1}`,
@@ -254,6 +285,8 @@ module.exports.CreateExcelFile = {
           super: aibitat,
           name: this.name,
           description:
+            "QUAN TRỌNG: Gom TẤT CẢ dữ liệu cần đưa vào Excel vào MỘT lần gọi tool duy nhất — nhiều bảng/nhiều nội dung thì dùng tham số 'sheets' (mỗi bảng một sheet). TUYỆT ĐỐI KHÔNG gọi tool này nhiều lần cho cùng một yêu cầu, và không lặp lại cùng nội dung ở nhiều sheet. " +
+            "KHI NGƯỜI DÙNG TẢI LÊN NHIỀU FILE và yêu cầu xuất Excel: chỉ tạo DUY NHẤT 1 file .xlsx gộp toàn bộ nội dung — MỖI file/tài liệu nguồn là 1 sheet riêng (đặt tên sheet theo tên tài liệu nguồn); nếu cần so sánh giữa các file thì thêm 1 sheet 'Tổng hợp' dùng công thức liên kết. TUYỆT ĐỐI KHÔNG xếp nhiều bảng chồng lên nhau trong CÙNG một sheet, KHÔNG tạo file thứ hai, KHÔNG lặp lại cùng một bảng ở nhiều sheet. " +
             "Create a professional multi-sheet Excel report (.xlsx) from CSV data with REAL Excel formulas and REAL native, editable charts. " +
             "ALL styling is AUTOMATIC: header row đậm chữ căn giữa (màu nền tự chọn hợp tài liệu qua 'headerColor', chữ tự đổi trắng/đen cho dễ đọc), kẻ border đầy đủ mọi ô, zebra striping, freeze dòng tiêu đề, " +
             "auto-fit độ rộng cột, số căn phải với dấu phân cách nghìn, phát hiện dòng Tổng, font Times New Roman 11 thống nhất, khổ in A4 fit ngang. " +
@@ -502,6 +535,25 @@ module.exports.CreateExcelFile = {
             try {
               this.super.handlerProps.log(`Using the create-excel-file tool.`);
 
+              // Guard against the agent looping on file creation: if an Excel file was
+              // already produced in this same turn, return it instead of generating another
+              // near-identical duplicate (mirrors create-docx-file).
+              const alreadyCreated = createFilesLib.findPendingOutput(
+                this.super,
+                "ExcelFileDownload"
+              );
+              if (alreadyCreated) {
+                this.super.handlerProps.log(
+                  `create-excel-file: An Excel file was already created this turn (${alreadyCreated.storageFilename}); skipping duplicate generation.`
+                );
+                // KẾT THÚC lượt ngay để tránh model gọi lại tool lặp vô hạn với
+                // payload lớn (làm treo provider stream → lượt không bao giờ được
+                // lưu → không xem trước/tải xuống được). Trả kết quả trực tiếp
+                // làm câu trả lời cuối cùng, không chạy thêm tool nào nữa.
+                this.super.skipHandleExecution = true;
+                return `✅ File Excel **"${alreadyCreated.filename}"** đã được tạo xong ở bước trước trong lượt này (chỉ tạo DUY NHẤT 1 file). Bạn có thể bấm **Xem trước** hoặc **Tải xuống** ngay trên thẻ file phía trên. Nếu cần bổ sung dữ liệu/sheet hoặc chỉnh sửa, hãy nêu rõ thay đổi để tôi tạo lại trong một lượt mới.`;
+              }
+
               // Strip XML 1.0 illegal control characters from inputs
               csvData = createFilesLib.stripInvalidXmlChars(csvData);
               sheets = createFilesLib.stripInvalidXmlChars(sheets);
@@ -515,6 +567,14 @@ module.exports.CreateExcelFile = {
               const hasExtension = /\.xlsx$/i.test(filename);
               if (!hasExtension) filename = `${filename}.xlsx`;
 
+              // Khôi phục tham số bị model serialize nhầm thành CHUỖI JSON
+              // (sheets/charts = "[{...}]"). Nếu không, cả khối JSON bị nhét vào
+              // 1 sheet làm dòng tiêu đề khổng lồ và MẤT TOÀN BỘ dữ liệu.
+              sheets = coerceJsonMaybe(sheets);
+              charts = coerceJsonMaybe(charts);
+
+              // Chỉ khi sheets thực sự là chuỗi CSV (không phải JSON) mới coi là
+              // dữ liệu cho một sheet đơn.
               if (sheets && typeof sheets === "string") {
                 if (!csvData) csvData = sheets;
                 sheets = null;
@@ -568,6 +628,25 @@ module.exports.CreateExcelFile = {
                   return `Error: Sheet "${sheet.name || `Sheet${i + 1}`}" has no CSV data.`;
                 }
                 sheet.csvData = actualCsvData;
+                // Biểu đồ của sheet cũng có thể bị serialize thành chuỗi JSON.
+                if (sheet.charts) sheet.charts = coerceJsonMaybe(sheet.charts);
+              }
+
+              // --- Gộp nhiều file về MỘT workbook gọn gàng ---
+              // Khi người dùng tải nhiều file, model đôi khi lặp lại cùng một
+              // bảng ở nhiều sheet ("ra 3 bảng"). Chỉ giữ 1 sheet cho mỗi nội
+              // dung trùng hệt; charts của bản sao được gộp vào sheet giữ lại
+              // và các biểu đồ trỏ theo tên sheet được ánh xạ lại qua sheetAliases.
+              let sheetAliases = new Map();
+              if (dataSheets.length > 1) {
+                const dd = dedupeSheets(dataSheets);
+                if (dd.removed > 0) {
+                  dataSheets = dd.sheets;
+                  sheetAliases = dd.aliases;
+                  allWarnings.push(
+                    `Đã gộp ${dd.removed} sheet trùng nội dung để chỉ còn 1 bảng duy nhất (tránh lặp lại cùng một bảng).`
+                  );
+                }
               }
 
               // --- Collect and validate chart definitions ---
@@ -646,9 +725,22 @@ module.exports.CreateExcelFile = {
                   allWarnings.push(
                     ...validation.warnings.map((w) => `${sheetDef.name}: ${w}`)
                   );
+
+                // Khử trùng dòng dữ liệu lặp (chỉ khi sheet không có công thức,
+                // vì công thức tham chiếu theo vị trí dòng của lưới CSV).
+                let finalParsed = parsed;
+                if (!sheetHasFormula(parsed)) {
+                  const deduped = dedupeDataRows(parsed);
+                  finalParsed = deduped.rows;
+                  if (deduped.removed > 0)
+                    allWarnings.push(
+                      `Sheet "${sheetDef.name}": đã loại ${deduped.removed} dòng trùng lặp.`
+                    );
+                }
+
                 parsedSheets.push({
                   name: uniqueSheetName(sheetDef.name),
-                  parsed,
+                  parsed: finalParsed,
                   title: sheetDef.title || null,
                   formulaCount: 0,
                 });
@@ -699,7 +791,10 @@ module.exports.CreateExcelFile = {
               for (const def of chartDefs) {
                 let target = null;
                 if (def.sheet) {
-                  target = nameByLower.get(def.sheet.toLowerCase()) || null;
+                  // Trỏ lại về sheet giữ lại nếu sheet gốc đã bị gộp vì trùng
+                  const aliased = sheetAliases.get(def.sheet.toLowerCase());
+                  const wanted = aliased || def.sheet;
+                  target = nameByLower.get(wanted.toLowerCase()) || null;
                   if (!target)
                     allWarnings.push(
                       `Biểu đồ "${def.title}": sheet "${def.sheet}" không tồn tại nên biểu đồ được đặt trên sheet riêng.`

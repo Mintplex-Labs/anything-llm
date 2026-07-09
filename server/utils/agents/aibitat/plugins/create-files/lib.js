@@ -173,6 +173,22 @@ class CreateFilesManager {
   }
 
   /**
+   * Returns the payload of an already-registered output of the given type for
+   * the current agent turn, or null if none exists yet.
+   * `_pendingOutputs` is reset per turn (see chat-history.js `_cleanup`), so this
+   * lets a file-creation tool detect that it has already produced a file in this
+   * same turn and avoid generating duplicates when the agent loops on the call.
+   * @param {object} aibitat - The aibitat instance to inspect
+   * @param {string} type - The output type to look for (e.g., "DocxFileDownload")
+   * @returns {object|null} The existing payload, or null
+   */
+  findPendingOutput(aibitat, type) {
+    if (!aibitat?._pendingOutputs?.length) return null;
+    const existing = aibitat._pendingOutputs.find((o) => o.type === type);
+    return existing?.payload ?? null;
+  }
+
+  /**
    * Generates a standardized filename for generated files.
    * Format: {fileType}-{fileUUID}.{extension}
    * @param {string} fileType - Type identifier (e.g., 'pptx', 'xlsx')

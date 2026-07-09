@@ -9,6 +9,33 @@ import { useTranslation } from "react-i18next";
 import useHoverMetaKey from "./hooks";
 export const THREAD_RENAME_EVENT = "renameThread";
 
+// Pinned threads are stored per-workspace in the browser (no backend/DB change
+// required). Each entry is a thread slug; pinned threads float to the top.
+function pinnedStorageKey(workspaceSlug) {
+  return `anythingllm-pinned-threads-${workspaceSlug}`;
+}
+
+function readPinnedSlugs(workspaceSlug) {
+  try {
+    const raw = window.localStorage.getItem(pinnedStorageKey(workspaceSlug));
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function writePinnedSlugs(workspaceSlug, slugs) {
+  try {
+    window.localStorage.setItem(
+      pinnedStorageKey(workspaceSlug),
+      JSON.stringify(slugs)
+    );
+  } catch {
+    // ignore storage failures (private mode / quota)
+  }
+}
+
 export default function ThreadContainer({
   workspace,
   isVirtualThread = false,
@@ -18,7 +45,24 @@ export default function ThreadContainer({
   const [threads, setThreads] = useState([]);
   const [defaultThreadHasChats, setDefaultThreadHasChats] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [pinnedSlugs, setPinnedSlugs] = useState([]);
   const { containerRef, ctrlPressed } = useHoverMetaKey(setThreads, !loading);
+
+  useEffect(() => {
+    if (!workspace.slug) return;
+    setPinnedSlugs(readPinnedSlugs(workspace.slug));
+  }, [workspace.slug]);
+
+  function togglePin(threadSlug) {
+    if (!threadSlug) return;
+    setPinnedSlugs((prev) => {
+      const next = prev.includes(threadSlug)
+        ? prev.filter((s) => s !== threadSlug)
+        : [threadSlug, ...prev];
+      writePinnedSlugs(workspace.slug, next);
+      return next;
+    });
+  }
 
   useEffect(() => {
     const chatHandler = (event) => {
@@ -88,18 +132,6 @@ export default function ThreadContainer({
     }, 500);
   }
 
-  function getActiveThreadIdx() {
-    if (isVirtualThread)
-      return threads.length + (defaultThreadHasChats ? 1 : 0);
-    // On a bare workspace route with no default chats, show virtual thread as active
-    if (!threadSlug && !defaultThreadHasChats)
-      return threads.length + (defaultThreadHasChats ? 1 : 0);
-    const idx = threads.findIndex((t) => t?.slug === threadSlug);
-    if (idx >= 0) return idx + (defaultThreadHasChats ? 1 : 0);
-    if (!threadSlug && defaultThreadHasChats) return 0;
-    return -1;
-  }
-
   if (loading) {
     return (
       <div className="flex flex-col bg-pulse w-full h-10 items-center justify-center">
@@ -108,12 +140,40 @@ export default function ThreadContainer({
     );
   }
 
-  const activeThreadIdx = getActiveThreadIdx();
-
   // Show a virtual thread when on a bare workspace route (no threadSlug) and
   // the default thread has no chats — mimics the Home page virtual thread behavior.
   const showVirtualThread =
     isVirtualThread || (!threadSlug && !defaultThreadHasChats);
+
+  // Newest threads first ("reverse direction"), each group newest-first.
+  const pinnedSet = new Set(pinnedSlugs);
+  const newestFirst = [...threads].reverse();
+  const pinnedThreads = newestFirst.filter((thread) =>
+    pinnedSet.has(thread.slug)
+  );
+  const unpinnedThreads = newestFirst.filter(
+    (thread) => !pinnedSet.has(thread.slug)
+  );
+
+  // Build the visible item list top-to-bottom so the connector-line indices
+  // (idx / activeIdx / hasNext) stay consistent with the ordering:
+  // pinned threads at the very top, then the default workspace chat, then the
+  // rest of the threads (newest first).
+  const visualItems = [];
+  if (showVirtualThread) visualItems.push({ kind: "virtual" });
+  pinnedThreads.forEach((thread) =>
+    visualItems.push({ kind: "thread", thread })
+  );
+  if (defaultThreadHasChats) visualItems.push({ kind: "default" });
+  unpinnedThreads.forEach((thread) =>
+    visualItems.push({ kind: "thread", thread })
+  );
+
+  const activeIdx = visualItems.findIndex((it) => {
+    if (it.kind === "virtual") return true;
+    if (it.kind === "default") return !threadSlug && !showVirtualThread;
+    return it.thread.slug === threadSlug;
+  });
 
   return (
     <div
@@ -122,46 +182,63 @@ export default function ThreadContainer({
       role="list"
       aria-label="Threads"
     >
-      {defaultThreadHasChats && (
-        <ThreadItem
-          idx={0}
-          activeIdx={activeThreadIdx}
-          isActive={activeThreadIdx === 0}
-          workspace={workspace}
-          thread={{ slug: null, name: "default" }}
-          hasNext={threads.length > 0 || showVirtualThread}
-        />
-      )}
-      {threads.map((thread, i) => (
-        <ThreadItem
-          key={thread.slug}
-          idx={i + (defaultThreadHasChats ? 1 : 0)}
-          ctrlPressed={ctrlPressed}
-          toggleMarkForDeletion={toggleForDeletion}
-          activeIdx={activeThreadIdx}
-          isActive={activeThreadIdx === i + (defaultThreadHasChats ? 1 : 0)}
-          workspace={workspace}
-          onRemove={removeThread}
-          thread={thread}
-          hasNext={i !== threads.length - 1 || showVirtualThread}
-        />
-      ))}
-      {showVirtualThread && (
-        <ThreadItem
-          idx={activeThreadIdx}
-          activeIdx={activeThreadIdx}
-          isActive={true}
-          workspace={workspace}
-          thread={{ slug: null, name: `*${t("common.new-thread")}`, virtual: true }}
-          hasNext={false}
-        />
-      )}
+      <NewThreadButton workspace={workspace} />
       <DeleteAllThreadButton
         ctrlPressed={ctrlPressed}
         threads={threads}
         onDelete={handleDeleteAll}
       />
-      <NewThreadButton workspace={workspace} />
+      {visualItems.map((it, i) => {
+        const hasNext = i < visualItems.length - 1;
+        const isActive = i === activeIdx;
+        if (it.kind === "virtual") {
+          return (
+            <ThreadItem
+              key="virtual-thread"
+              idx={i}
+              activeIdx={activeIdx}
+              isActive={isActive}
+              workspace={workspace}
+              thread={{
+                slug: null,
+                name: `*${t("common.new-thread")}`,
+                virtual: true,
+              }}
+              hasNext={hasNext}
+            />
+          );
+        }
+        if (it.kind === "default") {
+          return (
+            <ThreadItem
+              key="default-thread"
+              idx={i}
+              activeIdx={activeIdx}
+              isActive={isActive}
+              workspace={workspace}
+              thread={{ slug: null, name: "default" }}
+              hasNext={hasNext}
+            />
+          );
+        }
+        const thread = it.thread;
+        return (
+          <ThreadItem
+            key={thread.slug}
+            idx={i}
+            ctrlPressed={ctrlPressed}
+            toggleMarkForDeletion={toggleForDeletion}
+            activeIdx={activeIdx}
+            isActive={isActive}
+            workspace={workspace}
+            onRemove={removeThread}
+            thread={thread}
+            hasNext={hasNext}
+            isPinned={pinnedSet.has(thread.slug)}
+            onTogglePin={togglePin}
+          />
+        );
+      })}
     </div>
   );
 }

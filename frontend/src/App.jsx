@@ -14,6 +14,7 @@ import { ThemeProvider } from "./ThemeContext";
 import { PWAModeProvider } from "./PWAContext";
 import KeyboardShortcutsHelp from "@/components/KeyboardShortcutsHelp";
 import ImageLightbox from "@/components/ImageLightbox";
+import { PreviewProvider } from "@/components/DocumentPreview/PreviewContext";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorBoundaryFallback from "./components/ErrorBoundaryFallback";
 
@@ -33,10 +34,12 @@ export default function App() {
                 <LogoProvider>
                   <PfpProvider>
                     <I18nextProvider i18n={i18n}>
-                      <Outlet />
-                      <ToastContainer />
-                      <KeyboardShortcutsHelp />
-                      <ImageLightbox />
+                      <PreviewProvider>
+                        <Outlet />
+                        <ToastContainer />
+                        <KeyboardShortcutsHelp />
+                        <ImageLightbox />
+                      </PreviewProvider>
                     </I18nextProvider>
                   </PfpProvider>
                 </LogoProvider>
