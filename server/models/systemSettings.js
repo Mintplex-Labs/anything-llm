@@ -999,6 +999,10 @@ const SystemSettings = {
       CometApiLLMApiKey: !!process.env.COMETAPI_LLM_API_KEY,
       CometApiLLMModelPref: process.env.COMETAPI_LLM_MODEL_PREF,
       CometApiLLMTimeout: process.env.COMETAPI_LLM_TIMEOUT_MS,
+      // OrcaRouter LLM Keys
+      OrcaRouterLLMApiKey: !!process.env.ORCAROUTER_LLM_API_KEY,
+      OrcaRouterLLMModelPref: process.env.ORCAROUTER_LLM_MODEL_PREF,
+      OrcaRouterLLMTimeout: process.env.ORCAROUTER_LLM_TIMEOUT_MS,
 
       // Z.AI Keys
       ZAiApiKey: !!process.env.ZAI_API_KEY,

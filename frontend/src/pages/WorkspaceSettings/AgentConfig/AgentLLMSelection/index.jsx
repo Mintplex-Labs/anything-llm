@@ -33,6 +33,7 @@ const ENABLED_PROVIDERS = [
   "gemini",
   "moonshotai",
   "cometapi",
+  "orcarouter",
   "foundry",
   "zai",
   "giteeai",

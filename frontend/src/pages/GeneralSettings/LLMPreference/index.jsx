@@ -33,6 +33,7 @@ import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
+import OrcaRouterLogo from "@/media/llmprovider/orcarouter.png";
 import FoundryLogo from "@/media/llmprovider/foundry-local.png";
 import GiteeAILogo from "@/media/llmprovider/giteeai.png";
 import DockerModelRunnerLogo from "@/media/llmprovider/docker-model-runner.png";
@@ -54,6 +55,7 @@ import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
 import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
 import NovitaLLMOptions from "@/components/LLMSelection/NovitaLLMOptions";
 import CometApiLLMOptions from "@/components/LLMSelection/CometApiLLMOptions";
+import OrcaRouterLLMOptions from "@/components/LLMSelection/OrcaRouterLLMOptions";
 import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
 import FireworksAiOptions from "@/components/LLMSelection/FireworksAiOptions";
 import MistralOptions from "@/components/LLMSelection/MistralOptions";
@@ -352,6 +354,14 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <CometApiLLMOptions settings={settings} />,
     description: "500+ AI Models all in one API.",
     requiredConfig: ["CometApiLLMApiKey"],
+  },
+  {
+    name: "OrcaRouter",
+    value: "orcarouter",
+    logo: OrcaRouterLogo,
+    options: (settings) => <OrcaRouterLLMOptions settings={settings} />,
+    description: "OpenAI-compatible model routing gateway — one key for many models.",
+    requiredConfig: ["OrcaRouterLLMApiKey"],
   },
   {
     name: "Microsoft Foundry Local",

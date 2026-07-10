@@ -846,6 +846,20 @@ const KEY_MAPPING = {
     checks: [],
   },
 
+  // OrcaRouter Options
+  OrcaRouterLLMApiKey: {
+    envKey: "ORCAROUTER_LLM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  OrcaRouterLLMModelPref: {
+    envKey: "ORCAROUTER_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  OrcaRouterLLMTimeout: {
+    envKey: "ORCAROUTER_LLM_TIMEOUT_MS",
+    checks: [],
+  },
+
   // Z.AI Options
   ZAiApiKey: {
     envKey: "ZAI_API_KEY",
@@ -1056,6 +1070,7 @@ function supportedLLM(input = "") {
     "ppio",
     "moonshotai",
     "cometapi",
+    "orcarouter",
     "foundry",
     "zai",
     "giteeai",

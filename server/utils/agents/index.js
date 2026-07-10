@@ -235,6 +235,10 @@ class AgentHandler {
         if (!process.env.COMETAPI_LLM_API_KEY)
           throw new Error("CometAPI API Key must be provided to use agents.");
         break;
+      case "orcarouter":
+        if (!process.env.ORCAROUTER_LLM_API_KEY)
+          throw new Error("OrcaRouter API Key must be provided to use agents.");
+        break;
       case "foundry":
         if (!process.env.FOUNDRY_BASE_PATH)
           throw new Error("Foundry base path must be provided to use agents.");
@@ -349,6 +353,8 @@ class AgentHandler {
         return process.env.GEMINI_LLM_MODEL_PREF ?? "gemini-2.0-flash-lite";
       case "cometapi":
         return process.env.COMETAPI_LLM_MODEL_PREF ?? "gpt-5-mini";
+      case "orcarouter":
+        return process.env.ORCAROUTER_LLM_MODEL_PREF ?? "openai/gpt-4o-mini";
       case "foundry":
         return process.env.FOUNDRY_MODEL_PREF ?? null;
       case "giteeai":
