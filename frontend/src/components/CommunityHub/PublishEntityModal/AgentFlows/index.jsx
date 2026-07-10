@@ -1,14 +1,15 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import CommunityHub from "@/models/communityHub";
 import showToast from "@/utils/toast";
 import paths from "@/utils/paths";
 import { X, CaretRight } from "@phosphor-icons/react";
-import { BLOCK_INFO } from "@/pages/Admin/AgentBuilder/BlockList";
+import { getBlockInfo, BLOCK_INFO } from "@/pages/Admin/AgentBuilder/BlockList";
 import { Link } from "react-router-dom";
 
 export default function AgentFlows({ entity }) {
   const { t } = useTranslation();
+  const blockInfo = useMemo(() => getBlockInfo(t), [t]);
   const formRef = useRef(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tags, setTags] = useState([]);
@@ -198,7 +199,8 @@ export default function AgentFlows({ entity }) {
           <div className="flex flex-col gap-y-0.5">
             {entity.steps && entity.steps.length > 0 ? (
               entity.steps.map((step, idx) => {
-                const info = BLOCK_INFO[step.type];
+                const info =
+                  blockInfo[step.type] || BLOCK_INFO[step.type];
                 const isExpanded = expandedStep === idx;
                 const summary = info?.getSummary
                   ? info.getSummary(step.config)

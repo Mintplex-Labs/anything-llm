@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Tooltip } from "react-tooltip";
+import { useTranslation } from "react-i18next";
 
 import BlockList, { BLOCK_TYPES, BLOCK_INFO } from "./BlockList";
 import AddBlockMenu from "./AddBlockMenu";
@@ -39,6 +40,7 @@ const DEFAULT_BLOCKS = [
 ];
 
 export default function AgentBuilder() {
+  const { t } = useTranslation();
   const { flowId } = useParams();
   const { theme } = useTheme();
   const navigate = useNavigate();
@@ -78,7 +80,9 @@ export default function AgentBuilder() {
       setAvailableFlows(flows);
     } catch (error) {
       console.error(error);
-      showToast("Failed to load available flows", "error", { clear: true });
+      showToast(t("agentBuilder.messages.loadFlowsError"), "error", {
+        clear: true,
+      });
     }
   };
 
@@ -123,7 +127,9 @@ export default function AgentBuilder() {
       setBlocks(flowBlocks);
     } catch (error) {
       console.error(error);
-      showToast("Failed to load flow", "error", { clear: true });
+      showToast(t("agentBuilder.messages.loadFlowError"), "error", {
+        clear: true,
+      });
     }
   };
 
@@ -185,13 +191,9 @@ export default function AgentBuilder() {
       } else if (!description?.trim()) {
         descriptionRef.current?.focus();
       }
-      showToast(
-        "Please provide both a name and description for your flow",
-        "error",
-        {
-          clear: true,
-        }
-      );
+      showToast(t("agentBuilder.messages.nameDescriptionRequired"), "error", {
+        clear: true,
+      });
       return;
     }
 
@@ -220,13 +222,19 @@ export default function AgentBuilder() {
       if (!success) throw new Error(error);
 
       setCurrentFlowUuid(flow.uuid);
-      showToast("Agent flow saved successfully!", "success", { clear: true });
+      showToast(t("agentBuilder.messages.saveSuccess"), "success", {
+        clear: true,
+      });
       await loadAvailableFlows();
     } catch (error) {
       console.error("Save error details:", error);
-      showToast(`Failed to save agent flow. ${error.message}`, "error", {
-        clear: true,
-      });
+      showToast(
+        t("agentBuilder.messages.saveError", { error: error.message }),
+        "error",
+        {
+          clear: true,
+        }
+      );
     }
   };
 
@@ -249,7 +257,7 @@ export default function AgentBuilder() {
   const renderVariableSelect = (
     value,
     onChange,
-    placeholder = "Select variable"
+    placeholder
   ) => (
     <select
       value={value || ""}
@@ -257,7 +265,7 @@ export default function AgentBuilder() {
       className="w-full border-none bg-theme-settings-input-bg text-theme-text-primary text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none p-2.5"
     >
       <option value="" className="bg-theme-bg-primary">
-        {placeholder}
+        {placeholder || t("agentBuilder.selectVariable")}
       </option>
       {getAvailableVariables().map((v) => (
         <option key={v.name} value={v.name} className="bg-theme-bg-primary">
@@ -352,9 +360,9 @@ export default function AgentBuilder() {
           onSaveFlow={saveFlow}
           onPublishFlow={handlePublishFlow}
         />
-        <div className="flex-1 min-h-0 p-6 overflow-y-auto">
+        <div className="flex-1 min-h-0 px-3 py-4 sm:p-6 pt-[7.5rem] sm:pt-6 overflow-y-auto overflow-x-hidden">
           <div
-            className={`max-w-xl mx-auto mt-14 ${showBlockMenu ? "pb-52" : ""}`}
+            className={`w-full max-w-xl mx-auto sm:mt-14 ${showBlockMenu ? "pb-52" : "pb-8"}`}
           >
             <BlockList
               blocks={blocks}
@@ -379,15 +387,13 @@ export default function AgentBuilder() {
           id="content-summarization-tooltip"
           place="top"
           delayShow={300}
-          className="tooltip !text-xs z-99"
+          className="tooltip !text-xs z-99 max-w-[min(320px,90vw)]"
         >
           <p className="text-sm">
-            When enabled, long webpage content will be automatically summarized
-            to reduce token usage.
+            {t("agentBuilder.webScraping.summarizationTooltip")}
             <br />
             <br />
-            Note: This may affect data quality and remove specific details from
-            the original content.
+            {t("agentBuilder.webScraping.summarizationTooltipNote")}
           </p>
         </Tooltip>
       </div>

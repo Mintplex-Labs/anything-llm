@@ -1142,6 +1142,30 @@ const TRANSLATIONS = {
     }
   },
   "agentBuilder": {
+    "title": "Trình tạo",
+    "untitledFlow": "Luồng chưa đặt tên",
+    "newFlow": "Luồng mới",
+    "publish": "Xuất bản",
+    "save": "Lưu",
+    "addBlock": "Thêm khối",
+    "selectVariable": "Chọn biến",
+    "selectOrCreateVariable": "Chọn hoặc tạo biến",
+    "selectVariableToInsert": "Chọn biến để chèn",
+    "configComingSoon": "Tùy chọn cấu hình sẽ sớm có...",
+    "moveBlockUp": "Di chuyển khối lên",
+    "moveBlockDown": "Di chuyển khối xuống",
+    "deleteBlock": "Xóa khối",
+    "directOutput": {
+      "label": "Xuất trực tiếp",
+      "description": "Đầu ra của khối này sẽ được trả về trực tiếp vào chat. Điều này sẽ ngăn mọi lệnh gọi công cụ tiếp theo được thực thi."
+    },
+    "messages": {
+      "loadFlowsError": "Không thể tải danh sách luồng",
+      "loadFlowError": "Không thể tải luồng",
+      "nameDescriptionRequired": "Vui lòng cung cấp cả tên và mô tả cho luồng của bạn",
+      "saveSuccess": "Đã lưu luồng Agent thành công!",
+      "saveError": "Không thể lưu luồng Agent. {{error}}"
+    },
     "flowInfo": {
       "flowName": "Tên luồng",
       "flowNameHint": "Điều quan trọng là đặt tên luồng mà AI có thể dễ dàng hiểu được.",
@@ -1150,6 +1174,92 @@ const TRANSLATIONS = {
       "description": "Mô tả",
       "descriptionHint": "Cũng quan trọng không kém là cung cấp mô tả mà AI có thể dễ dàng hiểu. Hãy nêu rõ mục đích của luồng, ngữ cảnh sử dụng và mọi thông tin liên quan khác.",
       "descriptionPlaceholder": "Nhập mô tả luồng"
+    },
+    "blocks": {
+      "flowInfo": {
+        "label": "Thông tin luồng",
+        "description": "Thông tin cơ bản của luồng"
+      },
+      "start": {
+        "label": "Biến luồng",
+        "description": "Cấu hình biến và cài đặt agent",
+        "summary": "Đã định nghĩa {{count}} biến",
+        "summary_other": "Đã định nghĩa {{count}} biến"
+      },
+      "apiCall": {
+        "label": "Gọi API",
+        "description": "Thực hiện yêu cầu HTTP",
+        "noUrl": "(chưa có URL)"
+      },
+      "llmInstruction": {
+        "label": "Hướng dẫn LLM",
+        "description": "Xử lý dữ liệu bằng hướng dẫn LLM",
+        "noInstruction": "Chưa có hướng dẫn"
+      },
+      "webScraping": {
+        "label": "Thu thập web",
+        "description": "Thu thập nội dung từ trang web",
+        "noUrl": "Chưa chỉ định URL"
+      },
+      "finish": {
+        "label": "Hoàn tất luồng",
+        "description": "Kết thúc luồng agent",
+        "summary": "Luồng sẽ kết thúc tại đây"
+      }
+    },
+    "start": {
+      "variables": "Biến",
+      "variablesHintBefore": "Định nghĩa giá trị tại đây, rồi tham chiếu trong bất kỳ khối nào bên dưới bằng cách bọc tên trong",
+      "variablesHintAfter": ". Tham chiếu sẽ được tô sáng khi bạn nhập.",
+      "forExample": "Ví dụ:",
+      "variableName": "Tên biến",
+      "initialValue": "Giá trị ban đầu",
+      "deleteVariable": "Xóa biến",
+      "addVariable": "Thêm biến"
+    },
+    "apiCall": {
+      "url": "URL",
+      "urlPlaceholder": "https://api.example.com/endpoint",
+      "method": "Phương thức",
+      "headers": "Headers",
+      "headerName": "Tên header",
+      "value": "Giá trị",
+      "addHeader": "Thêm header",
+      "removeHeader": "Xóa header",
+      "requestBody": "Nội dung yêu cầu",
+      "rawText": "Văn bản thuần",
+      "formData": "Form Data",
+      "key": "Khóa",
+      "removeField": "Xóa trường",
+      "addFormField": "Thêm trường form",
+      "rawBodyPlaceholder": "Nội dung yêu cầu thô...",
+      "storeResponseIn": "Lưu phản hồi vào",
+      "insertVariable": "Chèn biến",
+      "streamChunks": {
+        "label": "Stream từng phần phản hồi",
+        "description": "Nếu API bên ngoài trả về luồng SSE, đọc từng phần và stream trực tiếp vào giao diện chat của người dùng."
+      }
+    },
+    "llmInstruction": {
+      "instruction": "Hướng dẫn",
+      "instructionPlaceholder": "Nhập hướng dẫn cho LLM...",
+      "resultVariable": "Biến kết quả"
+    },
+    "webScraping": {
+      "urlToScrape": "URL cần thu thập",
+      "captureAs": "Thu thập nội dung trang dưới dạng",
+      "textOnly": "Chỉ nội dung văn bản",
+      "rawHtml": "HTML thô",
+      "cssQuerySelector": "Bộ chọn CSS",
+      "querySelector": "Bộ chọn truy vấn",
+      "querySelectorHint": "Nhập bộ chọn CSS hợp lệ để thu thập nội dung trang.",
+      "contentSummarization": "Tóm tắt nội dung",
+      "resultVariable": "Biến kết quả",
+      "summarizationTooltip": "Khi bật, nội dung trang web dài sẽ được tự động tóm tắt để giảm token sử dụng.",
+      "summarizationTooltipNote": "Lưu ý: Điều này có thể ảnh hưởng đến chất lượng dữ liệu và loại bỏ một số chi tiết từ nội dung gốc."
+    },
+    "finish": {
+      "description": "Đây là điểm kết thúc luồng agent của bạn. Tất cả các bước phía trên sẽ được thực thi theo thứ tự."
     }
   },
   "embedding": {

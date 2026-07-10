@@ -1549,6 +1549,32 @@ const TRANSLATIONS = {
     },
   },
   agentBuilder: {
+    title: "Builder",
+    untitledFlow: "Untitled Flow",
+    newFlow: "New Flow",
+    publish: "Publish",
+    save: "Save",
+    addBlock: "Add Block",
+    selectVariable: "Select variable",
+    selectOrCreateVariable: "Select or create variable",
+    selectVariableToInsert: "Select variable to insert",
+    configComingSoon: "Configuration options coming soon...",
+    moveBlockUp: "Move block up",
+    moveBlockDown: "Move block down",
+    deleteBlock: "Delete block",
+    directOutput: {
+      label: "Direct Output",
+      description:
+        "The output of this block will be returned directly to the chat. This will prevent any further tool calls from being executed.",
+    },
+    messages: {
+      loadFlowsError: "Failed to load available flows",
+      loadFlowError: "Failed to load flow",
+      nameDescriptionRequired:
+        "Please provide both a name and description for your flow",
+      saveSuccess: "Agent flow saved successfully!",
+      saveError: "Failed to save agent flow. {{error}}",
+    },
     flowInfo: {
       flowName: "Flow Name",
       flowNameHint:
@@ -1560,6 +1586,98 @@ const TRANSLATIONS = {
       descriptionHint:
         "It is equally important to give your flow a description that an LLM can easily understand. Be sure to include the purpose of the flow, the context it will be used in, and any other relevant information.",
       descriptionPlaceholder: "Enter flow description",
+    },
+    blocks: {
+      flowInfo: {
+        label: "Flow Information",
+        description: "Basic flow information",
+      },
+      start: {
+        label: "Flow Variables",
+        description: "Configure agent variables and settings",
+        summary: "{{count}} variable defined",
+        summary_other: "{{count}} variables defined",
+      },
+      apiCall: {
+        label: "API Call",
+        description: "Make an HTTP request",
+        noUrl: "(no URL)",
+      },
+      llmInstruction: {
+        label: "LLM Instruction",
+        description: "Process data using LLM instructions",
+        noInstruction: "No instruction",
+      },
+      webScraping: {
+        label: "Web Scraping",
+        description: "Scrape content from a webpage",
+        noUrl: "No URL specified",
+      },
+      finish: {
+        label: "Flow Complete",
+        description: "End of agent flow",
+        summary: "Flow will end here",
+      },
+    },
+    start: {
+      variables: "Variables",
+      variablesHintBefore:
+        "Define values here, then reference them in any block below by wrapping the name in",
+      variablesHintAfter: ". References are highlighted as you type.",
+      forExample: "For example:",
+      variableName: "Variable name",
+      initialValue: "Initial value",
+      deleteVariable: "Delete variable",
+      addVariable: "Add variable",
+    },
+    apiCall: {
+      url: "URL",
+      urlPlaceholder: "https://api.example.com/endpoint",
+      method: "Method",
+      headers: "Headers",
+      headerName: "Header name",
+      value: "Value",
+      addHeader: "Add header",
+      removeHeader: "Remove header",
+      requestBody: "Request Body",
+      rawText: "Raw Text",
+      formData: "Form Data",
+      key: "Key",
+      removeField: "Remove field",
+      addFormField: "Add Form Field",
+      rawBodyPlaceholder: "Raw request body...",
+      storeResponseIn: "Store Response In",
+      insertVariable: "Insert variable",
+      streamChunks: {
+        label: "Stream Response Chunks",
+        description:
+          "If the external API returns an SSE stream, read chunks and stream them directly to the user's chat UI.",
+      },
+    },
+    llmInstruction: {
+      instruction: "Instruction",
+      instructionPlaceholder: "Enter instructions for the LLM...",
+      resultVariable: "Result Variable",
+    },
+    webScraping: {
+      urlToScrape: "URL to Scrape",
+      captureAs: "Capture Page Content As",
+      textOnly: "Text content only",
+      rawHtml: "Raw HTML",
+      cssQuerySelector: "CSS Query Selector",
+      querySelector: "Query Selector",
+      querySelectorHint:
+        "Enter a valid CSS selector to scrape the content of the page.",
+      contentSummarization: "Content Summarization",
+      resultVariable: "Result Variable",
+      summarizationTooltip:
+        "When enabled, long webpage content will be automatically summarized to reduce token usage.",
+      summarizationTooltipNote:
+        "Note: This may affect data quality and remove specific details from the original content.",
+    },
+    finish: {
+      description:
+        "This is the end of your agent flow. All steps above will be executed in sequence.",
     },
   },
   embedding: {

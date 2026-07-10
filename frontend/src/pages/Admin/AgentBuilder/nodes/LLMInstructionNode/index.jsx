@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import VariableInput from "../../VariableInput";
 
 export default function LLMInstructionNode({
@@ -6,11 +7,13 @@ export default function LLMInstructionNode({
   onConfigChange,
   renderVariableSelect,
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-4">
       <div>
         <label className="block text-sm font-medium text-theme-text-primary mb-2">
-          Instruction
+          {t("agentBuilder.llmInstruction.instruction")}
         </label>
         <VariableInput
           multiline
@@ -22,18 +25,18 @@ export default function LLMInstructionNode({
               instruction: e.target.value,
             })
           }
-          placeholder="Enter instructions for the LLM..."
+          placeholder={t("agentBuilder.llmInstruction.instructionPlaceholder")}
         />
       </div>
 
       <div>
         <label className="block text-sm font-medium text-theme-text-primary mb-2">
-          Result Variable
+          {t("agentBuilder.llmInstruction.resultVariable")}
         </label>
         {renderVariableSelect(
           config.resultVariable,
           (value) => onConfigChange({ ...config, resultVariable: value }),
-          "Select or create variable",
+          t("agentBuilder.selectOrCreateVariable"),
           true
         )}
       </div>
