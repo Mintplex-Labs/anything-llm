@@ -1,19 +1,19 @@
 {
   "name": "anything-llm",
   "version": "1.13.0",
-  "description": "The best solution for turning private documents into a chat bot using off-the-shelf tools and commercially viable AI technologies.",
+  "description": "SWARMSY is a local-first AI project manager and identity operating system built on AnythingLLM.",
   "main": "index.js",
   "type": "module",
   "author": "Timothy Carambat (Mintplex Labs)",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mintplex-labs/anything-llm.git"
+    "url": "git+https://github.com/HODLKONG64/DIZ-A-REMIX.git"
   },
   "bugs": {
-    "url": "https://github.com/mintplex-labs/anything-llm/issues"
+    "url": "https://github.com/HODLKONG64/DIZ-A-REMIX/issues"
   },
-  "homepage": "https://github.com/mintplex-labs/anything-llm#readme",
+  "homepage": "https://github.com/HODLKONG64/DIZ-A-REMIX#readme",
   "engines": {
     "node": ">=18"
   },
@@ -24,11 +24,12 @@
     "desktop:dev": "node desktop/scripts/run-desktop-dev.cjs",
     "desktop:smoke": "node desktop/scripts/desktop-smoke-check.cjs",
     "desktop:runtime:dev": "yarn dev:all",
-    "setup": "cd server && yarn && cd ../collector && yarn && cd ../frontend && yarn && cd .. && yarn setup:envs && yarn prisma:setup && echo \"Please run yarn dev:server, yarn dev:collector, and yarn dev:frontend in separate terminal tabs.\"",
+    "setup": "npm ci && cd server && yarn && cd ../collector && yarn && cd ../frontend && yarn && cd .. && yarn setup:envs && yarn prisma:setup && echo \"Setup complete. Run yarn dev to start server, frontend, and collector together.\"",
     "setup:envs": "cp -n ./frontend/.env.example ./frontend/.env; cp -n ./server/.env.example ./server/.env.development; cp -n ./collector/.env.example ./collector/.env; cp -n ./docker/.env.example ./docker/.env; echo \"All ENV files copied!\n\"",
     "dev:server": "cd server && yarn dev",
     "dev:collector": "cd collector && yarn dev",
     "dev:frontend": "cd frontend && yarn dev",
+    "dev": "yarn dev:all",
     "dev:all": "npx concurrently \"yarn dev:server\" \"yarn dev:frontend\" \"yarn dev:collector\"",
     "prisma:generate": "cd server && npx prisma generate",
     "prisma:migrate": "cd server && npx prisma migrate dev --name init",
@@ -55,5 +56,6 @@
   "devDependencies": {
     "concurrently": "^9.1.2",
     "jest": "^29.7.0"
-  }
+  },
+  "packageManager": "yarn@1.22.22"
 }
