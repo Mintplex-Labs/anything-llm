@@ -28,9 +28,16 @@ const MAX_IMAGES_PER_DECK = 8;
 /** @type {Map<string, object|null>} query -> resolved photo, per process */
 const _cache = new Map();
 
+// Shared demo key so a fresh clone/build ships with working stock photos even
+// without a configured PEXELS_API_KEY. This is an internal company demo default,
+// not a secret to protect - a per-deployment PEXELS_API_KEY still overrides it.
+// When this key hits its Pexels quota, swap the value here (or set the env var).
+const DEFAULT_API_KEY = "cBoa1QlkHhoZJlxqKDb8N5kNA2su6imIQPmD3pn8NOQ8ETOOCrD9dejg";
+
 function apiKey() {
   const key = process.env.PEXELS_API_KEY;
-  return typeof key === "string" && key.trim().length > 0 ? key.trim() : null;
+  if (typeof key === "string" && key.trim().length > 0) return key.trim();
+  return DEFAULT_API_KEY;
 }
 
 function isEnabled() {
