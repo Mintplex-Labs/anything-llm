@@ -40,10 +40,20 @@ yarn dev
 
 ## Windows desktop beta
 
+Validate the desktop foundation without installing Electron:
+
 ```bash
 yarn desktop:smoke
+```
+
+`desktop:dev` is a contributor-only shell launcher. It requires a local Electron shim, which is intentionally not installed by the normal setup path. To test the shell with the Electron version used by the artifact workflow:
+
+```bash
+npm install --no-save --package-lock=false electron@33.4.11
 yarn desktop:dev
 ```
+
+Normal Windows testers should use the packaged artifact or installer instead of the contributor launcher.
 
 Packaging and release guidance:
 
