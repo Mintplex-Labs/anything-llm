@@ -25,7 +25,9 @@ module.exports.CreateDocxFile = {
           description:
             "Create a Microsoft Word document (.docx) from markdown or plain text content. Supports professional styling with color themes, title pages, and running headers/footers. " +
             "If you need to include visual charts/graphs (e.g. sales, budgets, progress), you MUST generate a QuickChart image URL using Chart.js format (e.g. https://quickchart.io/chart?c={...}&w=500&h=300) and insert it as a standard markdown image: ![Chart Title](https://quickchart.io/chart?c={...}). It will be automatically fetched and embedded. " +
-            "DO NOT use this tool for Vietnamese administrative documents (văn bản hành chính, nghị định 30 của bộ nội vụ). For those, you MUST use the 'create-vn-admin-docx' tool instead.",
+            "Use this tool for 'tài liệu' (reports, notes, proposals, guides, technical documents). " +
+            "DO NOT use this tool for Vietnamese administrative documents (văn bản hành chính, nghị định 30 của bộ nội vụ). For those, you MUST use the 'create-vn-admin-docx' tool instead. " +
+            "ĐẶC BIỆT: nếu yêu cầu của user chứa cụm 'soạn thảo văn bản' hoặc 'soan thao van ban' (không dấu), TUYỆT ĐỐI KHÔNG dùng tool này — phải dùng 'create-vn-admin-docx'.",
           examples: [
             {
               prompt: "Create a Word document with meeting notes and a chart",

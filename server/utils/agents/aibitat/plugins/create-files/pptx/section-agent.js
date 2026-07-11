@@ -5,20 +5,60 @@ const SECTION_BUILDER_PROMPT = `You are a focused presentation section builder. 
 You have access to web search and web scraping tools, but only use them when the topic genuinely requires up-to-date information you don't already know (e.g., current statistics, recent events, specific company data). For general knowledge topics, create slides directly from your existing knowledge.
 
 RULES:
-- Create 2-5 slides for this section (no more)
-- Each content slide should have 3-6 concise bullet points
+- Create EXACTLY the number of slides the user message asks for, counting the
+  opening divider. If asked for 8 slides, submit 8 - do not consolidate several
+  points onto one slide to end up with fewer. Split the content so each slide
+  covers a distinct aspect.
 - Be specific and data-driven when possible
 - Include speaker notes with key talking points
 - Do NOT add a title slide - only section content
-- Use the "image" field for slides where visual illustration adds high value. Choose a descriptive search query for the image.
+
+VARY THE SLIDE FORM. A deck of nothing but bullet lists looks amateurish. Match the
+form to what the content actually is:
+- Numbers that compare over categories or time -> "chart" (a real, editable chart)
+- 2-4 headline figures (percentages, totals, counts) -> "stats" tiles, NOT bullets
+- 2-4 parallel ideas that each need a name AND a sentence -> "cards"
+- A set of short peer labels with no order and no measure -> "chips"
+- Two things set against each other (before/after, pros/cons, hiện trạng/đề xuất) -> "comparison"
+- A sequence of phases, steps or milestones -> "timeline"
+- One striking statement, principle or conclusion -> "quote"
+- Precise tabular data with several columns -> "table"
+- Only fall back to plain bullets when none of the above fits
+Aim for at most ONE plain bullet slide per section. Across a section, do not use
+the same content field twice in a row.
 
 When finished, you MUST call the submit-section-slides tool with your slides. Do not respond with raw JSON - always use the tool.
 
 Available slide layouts:
-- "section": Divider slide with title + optional subtitle. Can have a "background" image.
-- "content": Bullet points with title + content array + optional notes. Can have "left", "right" or "background" image.
-  - May include "table": { "headers": ["Col1", "Col2"], "rows": [["a", "b"]] }
-- "blank": Empty slide`;
+- "section": Divider slide with title + optional subtitle.
+- "content": A titled slide. Supply EXACTLY ONE of these content fields:
+  - "chart": { "type": "bar"|"line"|"pie"|"doughnut"|"area", "categories": ["Q1","Q2"], "series": [{ "name": "Doanh thu", "values": [10, 20] }] }
+    Max 5 series. Values must be plain numbers.
+  - "stats": [{ "value": "40%", "label": "Giảm số lỗi" }, ...] (2-4 items; value is short, label explains it)
+  - "cards": [{ "title": "Minh bạch", "text": "Một câu giải thích." }, ...] (2-4 items)
+  - "chips": ["Y tế", "Giáo dục", "Giao thông", ...] (3-12 short labels, 1-3 words each)
+  - "comparison": { "left": { "title": "Hiện trạng", "points": ["..."] }, "right": { "title": "Đề xuất", "points": ["..."] } }
+  - "timeline": [{ "label": "Quý I", "text": "Khảo sát" }, ...] (2-5 steps)
+  - "table": { "headers": ["Col1","Col2"], "rows": [["a","b"]] }
+  - "content": ["bullet 1", "bullet 2"] (3-6 concise points)
+  Optionally ALSO add "callout": { "label": "Trọng tâm", "text": "One sentence." }
+  to a slide that uses "cards", "chips" or "content" - it renders as a highlighted
+  closing statement. Never combine "callout" with chart/stats/comparison/timeline/table.
+- "quote": { "quote": "the statement", "attribution": "who said it" }
+- "blank": Empty slide
+
+PHOTOS. A slide may carry "imageQuery": a SHORT ENGLISH search phrase for a stock
+photo, 2-4 words naming a concrete, photographable subject (e.g. "vietnamese
+government office", "data center servers", "football stadium crowd").
+- ALWAYS set "imageQuery" on the "section" divider slide. It is not optional
+  there: the divider is built around a photo panel and looks unfinished without
+  one. Start every section with a divider slide that has an imageQuery.
+- Write the query in English even for a Vietnamese deck - the photo index is
+  matched on English keywords. An abstract query ("digital transformation",
+  "innovation") returns generic filler; name a thing you could point a camera at.
+- You MAY also set it on ONE plain-bullet "content" slide per section, where the
+  photo sets the scene. A chart, stats, cards, chips, comparison, timeline or
+  table slide is already full - never add "imageQuery" to one.`;
 
 /**
  * Spawns a focused child AIbitat agent to build slides for a single presentation section.
@@ -39,6 +79,7 @@ async function runSectionAgent({
   presentationTitle,
   conversationContext = "",
   sectionPrefix = "",
+  slideBudget,
 }) {
   const log = parentAibitat.handlerProps?.log || console.log;
 
@@ -86,7 +127,7 @@ async function runSectionAgent({
             properties: {
               layout: {
                 type: "string",
-                enum: ["section", "content", "blank"],
+                enum: ["section", "content", "quote", "blank"],
                 description: "The slide layout type",
               },
               title: {
@@ -106,21 +147,132 @@ async function runSectionAgent({
                 type: "string",
                 description: "Speaker notes for this slide",
               },
-              image: {
+              quote: {
+                type: "string",
+                description: "The statement to set large (for the 'quote' layout).",
+              },
+              attribution: {
+                type: "string",
+                description: "Who the quote belongs to (for the 'quote' layout).",
+              },
+              chart: {
                 type: "object",
-                description: "Optional image decoration configuration. Will perform a DuckDuckGo search to retrieve it.",
+                description:
+                  "A native, editable PowerPoint chart. Use whenever the slide compares numbers across categories or time.",
                 properties: {
-                  query: {
+                  type: {
                     type: "string",
-                    description: "Search query to find a relevant image (e.g. 'smart city traffic flow' or 'modern server rack'). Be descriptive.",
+                    enum: ["bar", "line", "pie", "doughnut", "area"],
+                    description:
+                      "'bar' compares categories, 'line'/'area' show trend over time, 'pie'/'doughnut' show composition of a whole.",
                   },
-                  position: {
-                    type: "string",
-                    enum: ["right", "left", "background"],
-                    description: "Position of the image. 'right' places image on the right half, 'left' on the left, 'background' uses it as full slide background with light overlay. Defaults to 'right'.",
-                  }
+                  categories: {
+                    type: "array",
+                    items: { type: "string" },
+                    description: "X-axis / slice labels, e.g. ['Q1','Q2','Q3'].",
+                  },
+                  series: {
+                    type: "array",
+                    description: "Up to 5 data series.",
+                    items: {
+                      type: "object",
+                      properties: {
+                        name: { type: "string" },
+                        values: { type: "array", items: { type: "number" } },
+                      },
+                      required: ["name", "values"],
+                    },
+                  },
                 },
-                required: ["query"]
+                required: ["type", "categories", "series"],
+              },
+              stats: {
+                type: "array",
+                description:
+                  "2-4 headline figures shown as large KPI tiles. Use instead of bullets when the point IS the number.",
+                items: {
+                  type: "object",
+                  properties: {
+                    value: {
+                      type: "string",
+                      description: "The figure itself, kept short: '40%', '2,5 tỷ', '128'.",
+                    },
+                    label: {
+                      type: "string",
+                      description: "Short caption explaining the figure.",
+                    },
+                  },
+                  required: ["value", "label"],
+                },
+              },
+              imageQuery: {
+                type: "string",
+                description:
+                  "Short ENGLISH stock-photo search phrase naming a concrete subject, e.g. 'vietnamese government office'. REQUIRED on every 'section' divider slide. Optional on at most one plain-bullet 'content' slide per section. Never on chart/stats/cards/chips/comparison/timeline/table slides.",
+              },
+              cards: {
+                type: "array",
+                description:
+                  "2-4 parallel ideas, each with a short name and one explanatory sentence. Use instead of bullets when each point has a heading.",
+                items: {
+                  type: "object",
+                  properties: {
+                    title: { type: "string", description: "Short card heading, 1-4 words." },
+                    text: { type: "string", description: "One sentence explaining the card." },
+                  },
+                  required: ["title"],
+                },
+              },
+              chips: {
+                type: "array",
+                items: { type: "string" },
+                description:
+                  "3-12 short peer labels with no order and no measure (e.g. sectors, tools, criteria). 1-3 words each.",
+              },
+              callout: {
+                type: "object",
+                description:
+                  "A highlighted closing statement beneath 'cards', 'chips' or 'content'. Never use with chart/stats/comparison/timeline/table.",
+                properties: {
+                  label: { type: "string", description: "Optional short kicker, e.g. 'Trọng tâm'." },
+                  text: { type: "string", description: "The single sentence to highlight." },
+                },
+                required: ["text"],
+              },
+              comparison: {
+                type: "object",
+                description: "Two things set side by side (before/after, pros/cons).",
+                properties: {
+                  left: {
+                    type: "object",
+                    properties: {
+                      title: { type: "string" },
+                      points: { type: "array", items: { type: "string" } },
+                    },
+                    required: ["title", "points"],
+                  },
+                  right: {
+                    type: "object",
+                    properties: {
+                      title: { type: "string" },
+                      points: { type: "array", items: { type: "string" } },
+                    },
+                    required: ["title", "points"],
+                  },
+                },
+                required: ["left", "right"],
+              },
+              timeline: {
+                type: "array",
+                description: "2-5 sequential phases, steps or milestones.",
+                items: {
+                  type: "object",
+                  properties: {
+                    label: { type: "string", description: "Short step name, e.g. 'Quý I'." },
+                    text: { type: "string", description: "One-line detail for the step." },
+                  },
+                  required: ["label"],
+                },
               },
               table: {
                 type: "object",
@@ -162,6 +314,7 @@ async function runSectionAgent({
         section,
         presentationTitle,
         conversationContext,
+        slideBudget,
       }),
     },
   ];
@@ -220,6 +373,7 @@ function buildSectionPrompt({
   section,
   presentationTitle,
   conversationContext,
+  slideBudget,
 }) {
   const parts = [
     `Build slides for this section of the presentation "${presentationTitle}":`,
@@ -240,8 +394,13 @@ function buildSectionPrompt({
     parts.push(`\nContext from the conversation:\n${conversationContext}`);
   }
 
+  const n = Number.isFinite(slideBudget)
+    ? Math.max(1, Math.min(8, Math.round(slideBudget)))
+    : null;
   parts.push(
-    `\nCreate 2-5 detailed slides and submit them using the submit-section-slides tool. Only use web search/scraping if you genuinely lack the information needed.`
+    n
+      ? `\nCreate EXACTLY ${n} slide${n > 1 ? "s" : ""} for this section, counting the opening divider slide as one of them (so ${n > 1 ? `1 divider + ${n - 1} content slide${n - 1 !== 1 ? "s" : ""}` : "1 slide"}). Split the key points across those slides - do not merge them onto fewer slides. Submit them using the submit-section-slides tool. Only use web search/scraping if you genuinely lack the information needed.`
+      : `\nCreate 2-5 detailed slides and submit them using the submit-section-slides tool. Only use web search/scraping if you genuinely lack the information needed.`
   );
 
   return parts.join("\n");
