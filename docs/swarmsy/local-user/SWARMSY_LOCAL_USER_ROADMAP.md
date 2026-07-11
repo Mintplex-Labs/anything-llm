@@ -1,93 +1,118 @@
 # SWARMSY Local User Roadmap
 
+Last updated: 2026-07-11
+
 ## Purpose
 
-Track the docs-first path toward the downloadable SWARMSY Local User product without changing or removing the hosted/admin deployment.
+Track what is actually shipped, partially shipped, and not built for the downloadable SWARMSY Local User product while preserving Hosted/Admin Mode.
 
-## Shipped Foundations Already Present
+## Status language
 
-The Local User Mode roadmap does not start from zero.
+- **Shipped** — implemented in runtime and covered by repository tests or build checks.
+- **Partial / beta** — implemented foundation that still needs external setup, persistence, signing, acceptance, or product hardening.
+- **Not built** — documentation or intended direction without an end-to-end runtime system.
 
-The repository already includes several foundations that future local-user work should preserve and build on:
+## Current truth
 
-- Ollama status/readiness plumbing used by the frontend onboarding model (`frontend/src/models/swarmsyOnboarding.js`).
-- Desktop/runtime smoke scripts in `package.json`, including `desktop:dev`, `desktop:smoke`, and `desktop:runtime:dev`.
-- Desktop foundation storage/settings/backup structures under `desktop/foundation/`, including local settings and backup store foundations.
+| Area | Status | Current reality |
+|---|---|---|
+| Hosted/Admin separation | Shipped | Hosted/Admin behavior is preserved separately from trusted desktop Local User flows. |
+| Local Ollama detection | Shipped | The app checks Ollama readiness and lists installed models. |
+| Local model selection | Shipped | Users explicitly select an installed Ollama model; selections are persisted through Local User settings. |
+| Local chat routing | Shipped | Verified Local User model selection is passed into chat execution without silently switching to paid providers. |
+| Local ComfyUI readiness | Shipped | The app reports ComfyUI URL, mode, configuration source, reachability, and setup guidance. |
+| Local ComfyUI generation | Partial / beta | A local/private ComfyUI workflow can be submitted and polled, but ComfyUI, models, and workflow JSON are user-supplied. |
+| Per-message `Use API` | Shipped | Online provider routing occurs only when explicitly enabled for that message and a supported provider key is configured. |
+| Desktop wrapper and runtime | Partial / beta | Electron wrapper, trusted bridge, runtime healthcheck/launcher, and bundled runtime packaging exist; Windows acceptance remains manual. |
+| Local settings and backup | Partial / beta | Settings and allowlisted Local User backup/import are filesystem-backed; full HIVE/project/chat/asset backup is not implemented. |
+| Desktop diagnostics | Shipped | Safe runtime, Ollama, model, bridge, settings, and backup failure reasons are surfaced. |
+| Windows artifact and installer | Partial / beta | Build, installer, integrity, and GitHub Release workflows exist; builds are unsigned and have no auto-update. |
+| Optional cloud sync | Not built | Local-first remains the default; no end-to-end opt-in sync system exists. |
 
-Future local-user work must not repeat, remove, or regress these foundations. New phases should extend these existing pieces where appropriate.
+## Phase 1 — Product split and consent guardrails
 
-## Roadmap Status Language
+**Status: Shipped**
 
-This roadmap separates shipped foundation from planned local-user work and future implementation:
+- Hosted/Admin Mode is preserved for website, administration, testing, and hosted use.
+- Local User Mode is the privacy-first downloadable path.
+- No silent Ollama installation, model pull, image-engine installation, paid API call, or cloud sync.
 
-- **Shipped foundation** means repo pieces that already exist and must be preserved.
-- **Planned local-user work** means product/spec direction that is documented here but not necessarily wired end-to-end.
-- **Future implementation** means runtime, packaging, provider, or sync work that should happen later without changing Hosted/Admin Mode.
+## Phase 2 — Local AI and image generation
 
-This roadmap does not claim the full downloadable Local User product is already complete.
+**Status: Partial / beta**
 
-## Phase 1 — Planned Local-User Product Split and Guardrails
+Shipped:
 
-- Preserve Hosted/Admin Mode at `swarmsy.cryptomoonboys.com` for website/admin/testing/demo use.
-- State that Hosted/Admin Mode stores user/admin/project data on the hosted server.
-- Define Local User Mode as the downloadable privacy-first product.
-- Define consent rules: no silent Ollama installs, model pulls, image model downloads, paid API calls, or cloud sync.
+- Ollama readiness and installed-model discovery.
+- Explicit local model selection and runtime routing.
+- ComfyUI readiness/status guidance.
+- Local/private ComfyUI generation MVP.
+- Per-message `Use API` control and configured-provider routing.
 
-## Phase 2 — Planned Local AI and Image Generation Spec
+Remaining:
 
-- Define local Ollama detection at `http://localhost:11434` using `/api/tags` for installed models.
-- Define ComfyUI-first local image generation at `http://localhost:8188`.
-- Define Stable Diffusion WebUI / Forge as alternatives.
-- Define `Sparky Image Tool` inputs, outputs, and behavior.
-- Define optional API keys and the per-message `Use API` toggle.
-- Define local-only, API-enabled, and hybrid routing.
+- User-friendly ComfyUI workflow/model selection.
+- Generated-asset library with local metadata and project attachment.
+- Broader manual Windows/GPU compatibility testing.
 
-## Phase 3 — Planned Local Data Contract
+## Phase 3 — Local data ownership
 
-- Finalize local project/HIVE storage layout.
-- Save chats, HIVE data, generated assets, image metadata, memory locks, lore, settings, and backups locally by default.
-- Add export/import backup flows.
-- Keep cloud/API sync optional and explicit.
+**Status: Partial / beta**
 
-## Phase 4 — Future Implementation: Runtime Wiring
+Shipped:
 
-Future implementation should wire the documented contracts into runtime without changing hosted/admin behavior:
+- Deterministic Local User data-directory contract.
+- Filesystem-backed desktop settings.
+- Allowlisted settings backup/export/import.
+- Symlink, path-containment, schema, and secret-exclusion protections.
 
-- Local Ollama status and model selection.
-- Local image engine status and workflow/model selection.
-- Per-message routing enforcement.
-- Local project save of generated outputs and metadata.
-- Clear failure states and setup guidance.
+Remaining:
 
-## Phase 5 — Future Implementation: Downloadable Packaging
+- Full local persistence for HIVE state, chats, generated assets, lore, project records, campaign records, proof records, and Memory Locks.
+- Full-project backup/restore and migration versioning.
 
-- Choose desktop wrapper/package strategy.
-- Package Local User Mode for normal users.
-- Add installer guidance only with explicit user consent.
-- Do not bundle huge models by default.
-- Do not silently install Ollama, ComfyUI, image engines, or model files.
+## Phase 4 — Downloadable Windows product
 
-## Phase 6 — Future Implementation: Optional Online Provider Expansion
+**Status: Partial / beta**
 
-- Add optional provider support for OpenAI, Grok/xAI, Anthropic, Gemini, OpenRouter, and later providers.
-- Keep API keys removable.
-- Keep Local User Mode functional without paid API keys.
-- Keep API usage disclosed per message.
+Shipped:
 
-## Phase 7 — Future Implementation: Optional Sync
+- Electron desktop wrapper and trusted preload bridge.
+- Runtime readiness, launcher, diagnostics, artifact packaging, installer packaging, checksums, and release workflow.
 
-- Add cloud/API sync only if explicitly enabled by the user.
-- Keep local-first storage as the default.
-- Warn before any data leaves the user's machine.
+Remaining:
 
-## Acceptance Guardrails
+- Signed Windows builds.
+- Auto-update.
+- Verified public release acceptance across clean Windows machines.
+- Installer/uninstaller acceptance proving Local User data survives uninstall.
+- User-facing download page and version/support policy.
 
-- Hosted/admin mode is preserved.
-- Local user mode is clearly defined.
-- Local Ollama detection is defined.
-- Local image generation bridge is defined.
-- ComfyUI bridge is defined.
-- Optional API keys are defined.
-- Per-message `Use API` toggle is defined.
-- Sparky remains the operator that creates art/output inside SWARMSY.
-- No runtime code is required for this roadmap phase.
+## Phase 5 — Persistent SWARMSY operating systems
+
+**Status: Not built**
+
+- Dedicated Memory Lock storage, viewer, comparison, and version history.
+- Proof Tracker database and proof-gap history.
+- Persistent Campaign Calendar and campaign-day records.
+- Returning-user project dashboard.
+- Structured intake progress and resume state.
+- Autonomous scheduling, recurring jobs, and durable agent execution.
+
+## Phase 6 — Optional sync and provider expansion
+
+**Status: Partial / beta**
+
+- Configured online provider routing exists behind explicit `Use API` intent.
+- Provider keys remain removable and excluded from normal Local User backups.
+- Optional encrypted cloud/project sync is not built.
+
+## Acceptance guardrails
+
+- Hosted/Admin Mode must not regress.
+- Local User Mode must remain usable without paid API keys.
+- No API usage without explicit per-message intent.
+- No silent model, runtime, image-engine, or cloud installation.
+- No claim that settings-only backup is a full project backup.
+- No claim that unsigned beta artifacts are production-ready signed releases.
+- No claim that Memory Lock, Proof Tracker, Campaign Calendar, dashboard, or autonomous scheduling are persistent systems until runtime proves it.
