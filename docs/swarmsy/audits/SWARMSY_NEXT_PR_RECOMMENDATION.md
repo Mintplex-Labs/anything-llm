@@ -1,113 +1,88 @@
 # SWARMSY Next PR Recommendation
 
-Audit date: 2026-05-31
-Based on: `SWARMSY_BUILD_READINESS_AUDIT.md`, `SWARMSY_DOCTRINE_COVERAGE_AUDIT.md`, `SWARMSY_RUNTIME_WIRING_AUDIT.md`
+Audit date: 2026-07-12
+Based on: `SWARMSY_MVP_KNOWN_GAPS.md`, current `server/endpoints/swarmsy.js`, and current SWARMSY endpoint tests.
 
 ---
 
-## Decision Tree
+## Current State
 
-### Step 1 — Are doctrine and manifest consistent?
+The previous 2026-05-31 recommendation targeted a first-run onboarding entrypoint and user-safe route layer. That work has now landed.
 
-**Check:** Do all required doctrine groups have 100% file coverage, and do all manifest paths point to real files?
+Current runtime evidence:
 
-**Result:** ✅ Yes.
+| Area | Current status |
+|---|---|
+| User-safe onboarding status route | Implemented: `GET /api/swarmsy/onboarding/status` |
+| User-safe HIVE creation route | Implemented: `POST /api/swarmsy/onboarding/create-hive` |
+| User-safe required-docs ingestion route | Implemented: `POST /api/swarmsy/onboarding/ingest-required-docs` |
+| Onboarding route tests | Present in `server/__tests__/endpoints/swarmsy.test.js` |
+| Required-docs ingestion utility tests | Present in `server/__tests__/utils/swarmsy/ingestRequiredDocs.test.js` |
+| Workspace preset tests | Present in `server/__tests__/utils/swarmsy/applyWorkspacePreset.test.js` |
+| Frontend onboarding tests | Present in `server/__tests__/frontend/swarmsyOnboarding.test.js` |
 
-- 5 required groups, 45 required files, 0 missing.
-- 2 optional groups, 17 optional files, 0 missing.
-- 62 manifest paths, 62 verified present.
-- No broken manifest references.
-- No duplicate groups.
-
-→ Proceed to Step 2.
-
----
-
-### Step 2 — Are required docs ingested or ingestible?
-
-**Check:** Is the ingestion route implemented, stable, and documented?
-
-**Result:** ✅ Yes.
-
-- `POST /api/admin/swarmsy/workspace-preset/hive/ingest-required-docs` is implemented.
-- Route handles: collector-offline (503), already-attached dedup, per-file partial failures.
-- Route is documented in `docs/swarmsy/runtime/SWARMSY_REQUIRED_DOCS_INGESTION_ROUTE.md`.
-- Required docs status route (`GET /api/admin/swarmsy/required-docs/status`) is also implemented and working.
-
-→ Proceed to Step 3.
-
----
-
-### Step 3 — Are SWARMSY routes documented?
-
-**Check:** Do the runtime routes have matching docs?
-
-**Result:** ✅ Yes, with one caveat.
-
-- `SWARMSY_HIVE_ADMIN_ROUTE.md` — accurate.
-- `SWARMSY_REQUIRED_DOCS_INGESTION_ROUTE.md` — accurate.
-- `SWARMSY_DEFAULT_WORKSPACE_PRESET_WIRING.md` — accurate.
-- `SWARMSY_REQUIRED_DOCS_STATUS_HELPER.md` — **partially outdated**: still says "status-only, future PR for ingestion" when ingestion route has already landed. Needs correction but does not block the next PR.
-
-→ Proceed to Step 4.
-
----
-
-### Step 4 — Does the manifest miss any required files?
-
-**Result:** ✅ No. Zero missing files.
-
-→ Proceed to recommendation.
+The old recommendation should no longer be used as the active next-PR plan because it points contributors at work that is already represented in the codebase.
 
 ---
 
 ## Recommended Next PR
 
-`Add SWARMSY first-run onboarding entrypoint with user-safe route strategy`
+`Add SWARMSY Memory Lock storage and viewer`
 
-The first-run onboarding flow must not require a normal user to call admin-only endpoints directly.
+Memory Lock continuity is the highest-priority remaining gap documented in `SWARMSY_MVP_KNOWN_GAPS.md`.
 
-The next PR should define or implement a user-safe onboarding route layer that can:
+Today, the Load Memory Lock path can hand a pasted lock to SPARKY through the normal chat flow. The lock is then only recoverable from ordinary workspace chat history. There is no dedicated storage, retrieval API, or viewer for returning users.
 
-1. Detect whether the current user already has a SWARMSY HIVE workspace.
-2. Offer to create/select that workspace through a user-safe route or an admin-only setup path.
-3. Check required docs readiness through an allowed setup/status path.
-4. Trigger docs ingestion only through a route the current user is authorized to use.
-5. Preserve strict workspace ownership/permission checks.
-6. Avoid exposing admin-only controls to normal users.
+A focused next PR should add the smallest durable Memory Lock layer that supports returning-user continuity:
 
-If user-safe route wiring is not implemented in that PR, scope the feature clearly as an admin/manager setup flow and do not present it as normal-user first-run onboarding.
-
----
-
-## Risk Note
-
-**Admin-only route dependency is a blocker for normal-user onboarding.** A user-facing onboarding wizard must either wrap the existing admin/setup actions in user-safe endpoints or remain explicitly admin/manager-only.
-
-The existing routes (`POST /api/admin/swarmsy/workspace-preset/hive`, `GET /api/admin/swarmsy/required-docs/status`, `POST /api/admin/swarmsy/workspace-preset/hive/ingest-required-docs`) are admin/manager protected. Normal users cannot rely on them directly. The next PR must resolve this before presenting first-run onboarding as a normal-user feature.
+1. Store imported Memory Locks in a dedicated persistence layer instead of relying only on chat history.
+2. Associate every stored lock with both the owning user and the owning SWARMSY HIVE workspace, matching `MEMORY_LOCK_STORAGE_SPEC.md`'s `userId` and `workspaceId` requirements.
+3. Enforce that only the owning user, or an explicitly authorized admin path, can list, view, update, archive, delete, export, or activate a lock; other users in the same workspace must not see it without explicit delegation.
+4. Add an authenticated route for listing and retrieving only the current user's stored Memory Locks for the selected workspace. If single-user mode needs a fallback owner, document and test that fallback separately from multi-user behavior.
+5. Add a minimal viewer/import surface that lets a returning user select or inspect a previous lock.
+6. Preserve existing chat handoff behavior so the current Load Memory Lock flow keeps working.
+7. Add focused tests for ownership checks, same-workspace isolation, import behavior, and retrieval behavior.
 
 ---
 
-## Secondary Actions (can follow but do not block)
+## Scope Guardrails
 
-These are not blockers for the next PR. They should be tracked for a future cleanup PR:
+Keep the PR limited to Memory Lock continuity. Do not bundle it with unrelated Phase 2 systems.
 
-| Item | Action |
+Do not include:
+
+- Proof Tracker database/viewer work.
+- Campaign calendar persistence.
+- Space Agent integration.
+- Optional advanced doctrine ingestion UI.
+- Legacy SWARMSY migration tooling.
+- Broad dashboard redesign.
+- Package or build-system changes unless directly required by the Memory Lock implementation.
+
+---
+
+## Why This Is Next
+
+Memory Lock storage is the most direct gap between a functional first-run experience and a usable returning-user experience.
+
+The current onboarding and HIVE setup path can get a user into SWARMSY mode, but returning users still need to manually recover and re-paste their lock from previous chat history. That is brittle and easy to lose. A dedicated storage/viewer path gives the app a concrete continuity primitive before larger dashboard, proof, campaign, or agent features are built.
+
+---
+
+## Secondary Actions
+
+These remain valid follow-up candidates, but they should not be mixed into the Memory Lock PR:
+
+| Item | Suggested follow-up |
 |---|---|
-| `SWARMSY_REQUIRED_DOCS_STATUS_HELPER.md` says no ingestion route | Update doc to acknowledge ingestion route has landed |
-| No tests for `applyWorkspacePreset.js` | Add unit tests (separate PR or alongside first-run PR) |
-| No tests for admin SWARMSY routes | Add integration/unit tests (separate PR or alongside first-run PR) |
+| Proof Tracker persistence | Add proof-review storage and history viewer after Memory Locks are durable |
+| SWARMSY dashboard | Surface active project state after core continuity primitives exist |
+| Campaign persistence | Store campaign-day output and show completed dates |
+| Collector setup helper | Add in-app recovery guidance for `COLLECTOR_OFFLINE` first-run failures |
+| Admin route tests | Add coverage for admin-only SWARMSY routes separately from user-safe onboarding tests |
 
 ---
 
-## What This PR Must Not Do
+## Historical Note
 
-- Do not add new doctrine folders.
-- Do not add new feature systems.
-- Do not add runtime code beyond the first-run entrypoint.
-- Do not add Spark Library expansions.
-- Do not add Space Agent.
-- Do not add old SWARMSY salvage.
-- Do not change package or build files.
-- Do not add dependencies.
-- Do not break generic AnythingLLM behavior for non-SWARMSY users.
+The previous version of this document recommended first-run onboarding and user-safe route wiring. That recommendation has been superseded by the current codebase. Use this document with `SWARMSY_MVP_KNOWN_GAPS.md` when choosing the next runtime PR.
