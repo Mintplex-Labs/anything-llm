@@ -8,6 +8,24 @@
  * Themes: default · corporate · dark · minimal · creative
  */
 
+/**
+ * The categorical hue set every theme draws its per-slide accent from. Assigned
+ * in fixed order and never cycled into generated hues. Checked with the dataviz
+ * validator against both the light (#FFFFFF) and dark (#18181B) slide surfaces:
+ * lightness band, chroma floor, adjacent-pair CVD separation and contrast all
+ * pass. A theme may reorder these so its identity hue leads, but must not
+ * substitute an unvalidated hex.
+ */
+const ACCENT_HUES = {
+  blue: "2563EB",
+  orange: "EA580C",
+  green: "059669",
+  purple: "7C3AED",
+  red: "DC2626",
+};
+
+const A = ACCENT_HUES;
+
 const THEMES = {
   default: {
     name: "Professional",
@@ -24,6 +42,7 @@ const THEMES = {
     bodyColor: "334155",
     accentColor: "2563EB",
     bulletColor: "2563EB",
+    accents: [A.blue, A.orange, A.green, A.purple, A.red],
 
     tableHeaderBg: "1E293B",
     tableHeaderColor: "FFFFFF",
@@ -52,6 +71,8 @@ const THEMES = {
     bodyColor: "2C3E50",
     accentColor: "1A5276",
     bulletColor: "1A5276",
+    // Blue and green lead: the two most conservative hues for finance decks.
+    accents: [A.blue, A.green, A.purple, A.orange, A.red],
 
     tableHeaderBg: "0C1929",
     tableHeaderColor: "FFFFFF",
@@ -80,6 +101,7 @@ const THEMES = {
     bodyColor: "D4D4D8",
     accentColor: "6366F1",
     bulletColor: "818CF8",
+    accents: [A.purple, A.blue, A.green, A.orange, A.red],
 
     tableHeaderBg: "6366F1",
     tableHeaderColor: "FFFFFF",
@@ -108,6 +130,9 @@ const THEMES = {
     bodyColor: "404040",
     accentColor: "525252",
     bulletColor: "A3A3A3",
+    // Minimal stays monochrome by design - restraint is the whole theme. Pick a
+    // different theme when the deck needs color.
+    accents: ["525252", "525252", "525252", "525252", "525252"],
 
     tableHeaderBg: "262626",
     tableHeaderColor: "FFFFFF",
@@ -136,6 +161,7 @@ const THEMES = {
     bodyColor: "374151",
     accentColor: "7C3AED",
     bulletColor: "7C3AED",
+    accents: [A.purple, A.orange, A.blue, A.red, A.green],
 
     tableHeaderBg: "5B21B6",
     tableHeaderColor: "FFFFFF",
@@ -178,4 +204,10 @@ function getThemeDescriptions() {
   }));
 }
 
-module.exports = { THEMES, getTheme, getAvailableThemes, getThemeDescriptions };
+module.exports = {
+  THEMES,
+  ACCENT_HUES,
+  getTheme,
+  getAvailableThemes,
+  getThemeDescriptions,
+};

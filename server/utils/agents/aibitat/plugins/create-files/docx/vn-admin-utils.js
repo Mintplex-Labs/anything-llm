@@ -503,10 +503,16 @@ async function htmlToVnAdminDocxElements(html, libs, log) {
 
   // Helper for processing inline text elements
   async function processVnInline(element, styles = {}) {
+    return processVnInlineNodes(element.childNodes, styles);
+  }
+
+  // Same as processVnInline but over an arbitrary list of sibling nodes, so a
+  // paragraph can be rendered one <br>-separated line at a time.
+  async function processVnInlineNodes(nodes, styles = {}) {
     const { TextRun, ExternalHyperlink, ImageRun } = docx;
     const children = [];
 
-    for (const node of element.childNodes) {
+    for (const node of nodes) {
       if (node.nodeType === 3) {
         const text = node.textContent;
         if (text && text.trim()) {
@@ -589,6 +595,52 @@ async function htmlToVnAdminDocxElements(html, libs, log) {
       }
     }
     return children;
+  }
+
+  // Splits a paragraph's child nodes at every <br> so each visual line becomes
+  // its own Paragraph. Word only exempts the LAST line of a paragraph from
+  // justification stretching - a line ending in a manual break (<w:br/>) is
+  // stretched across the full page width, which is what made short heading
+  // lines look letter-spaced.
+  function splitNodesByBr(nodes) {
+    const groups = [[]];
+    for (const node of nodes) {
+      const isBr =
+        node.nodeType === 1 && node.tagName.toLowerCase() === "br";
+      if (isBr) groups.push([]);
+      else groups[groups.length - 1].push(node);
+    }
+    return groups.filter((g) =>
+      g.some((n) => (n.textContent || "").trim() !== "" || n.nodeType === 1)
+    );
+  }
+
+  // A "đề mục" line (I., 1., a), Điều 1., or an all-bold line) is left-aligned
+  // per Decree 30 - only explanatory body text is justified.
+  function isHeadingLine(nodes) {
+    const text = nodes.map((n) => n.textContent || "").join("").trim();
+    if (!text) return false;
+
+    const meaningful = nodes.filter(
+      (n) => n.nodeType !== 3 || (n.textContent || "").trim() !== ""
+    );
+    const allBold =
+      meaningful.length > 0 &&
+      meaningful.every(
+        (n) =>
+          n.nodeType === 1 &&
+          ["strong", "b"].includes(n.tagName.toLowerCase())
+      );
+    if (allBold) return true;
+
+    // An unbolded line only counts as a heading when it is short and has no
+    // terminal punctuation - otherwise "1. Nâng cao chất lượng..." (a khoản,
+    // i.e. body text) would lose its justification.
+    if (text.length > 80 || /[.;:,]$/.test(text)) return false;
+    return (
+      /^(PHẦN|CHƯƠNG|MỤC|Điều)\s/i.test(text) ||
+      /^([IVXLC]+|\d+(\.\d+)*|[a-zA-Z])\s*[.)]\s+\S/.test(text)
+    );
   }
 
   // Helper for lists
@@ -808,12 +860,18 @@ async function htmlToVnAdminDocxElements(html, libs, log) {
           })
         );
       } else if (tagName === "p") {
-        const inlineChildren = await processVnInline(child, { size: 28 });
-        if (inlineChildren.length > 0) {
+        // One Paragraph per <br>-separated line: a justified line that ends in
+        // a manual break gets stretched full-width by Word.
+        for (const lineNodes of splitNodesByBr(child.childNodes)) {
+          const inlineChildren = await processVnInlineNodes(lineNodes, { size: 28 });
+          if (inlineChildren.length === 0) continue;
+          const heading = isHeadingLine(lineNodes);
           elements.push(
             new Paragraph({
               children: inlineChildren,
-              alignment: AlignmentType.JUSTIFIED,
+              alignment: heading
+                ? AlignmentType.LEFT
+                : AlignmentType.JUSTIFIED,
               indent: { firstLine: 720 }, // 1.27cm indent
               spacing: { after: 120, line: S.spacing.lineSpacing },
             })
