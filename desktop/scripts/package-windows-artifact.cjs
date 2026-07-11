@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const fs = require("fs");
 const path = require("path");
+const { spawnSync } = require("child_process");
 
 const repoRoot = path.resolve(__dirname, "../..");
 const artifactsRoot = path.join(repoRoot, "desktop", "artifacts");
@@ -136,24 +137,47 @@ function packageAppResources() {
   writeDesktopPackageJson();
 }
 
-function createZipArchive() {
+function buildArchiveCommand({
+  platform = process.platform,
+  packageDirectory = packageRoot,
+  archivePath = path.join(artifactsRoot, `${appName}.zip`),
+} = {}) {
+  if (platform === "win32") {
+    return {
+      command: "tar.exe",
+      args: ["-a", "-c", "-f", archivePath, "-C", packageDirectory, "."],
+    };
+  }
+
+  const escapedPackageRoot = packageDirectory.replace(/'/g, "''");
+  const escapedArchivePath = archivePath.replace(/'/g, "''");
+  return {
+    command: "pwsh",
+    args: [
+      "-NoProfile",
+      "-Command",
+      `Compress-Archive -Path '${escapedPackageRoot}/*' -DestinationPath '${escapedArchivePath}' -Force`,
+    ],
+  };
+}
+
+function createZipArchive({
+  platform = process.platform,
+  spawnSyncImpl = spawnSync,
+} = {}) {
   const archivePath = path.join(artifactsRoot, `${appName}.zip`);
   removeIfExists(archivePath);
 
-  const powershell = process.platform === "win32" ? "powershell" : "pwsh";
-  const { spawnSync } = require("child_process");
-  const result = spawnSync(
-    powershell,
-    [
-      "-NoProfile",
-      "-Command",
-      `Compress-Archive -Path '${packageRoot.replace(/'/g, "''")}\\*' -DestinationPath '${archivePath.replace(/'/g, "''")}' -Force`,
-    ],
-    { stdio: "inherit" }
-  );
+  const archiveCommand = buildArchiveCommand({ platform, archivePath });
+  const result = spawnSyncImpl(archiveCommand.command, archiveCommand.args, {
+    stdio: "inherit",
+  });
   if (result.error || result.status !== 0) {
     throw (
-      result.error || new Error(`Compress-Archive exited with ${result.status}`)
+      result.error ||
+      new Error(
+        `${archiveCommand.command} exited with ${result.status} while creating the desktop artifact archive.`
+      )
     );
   }
   ensureExists(archivePath, "Desktop artifact archive");
@@ -180,8 +204,10 @@ if (require.main === module) {
 }
 
 module.exports = {
+  buildArchiveCommand,
   copyDirectory,
   copyEntries,
+  createZipArchive,
   isUnderNodeModules,
   main,
   shouldExcludeRuntimeCopy,

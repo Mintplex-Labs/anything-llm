@@ -10,20 +10,46 @@ The workflow is intentionally build/distribution infrastructure only. It preserv
 
 The dedicated workflow lives at `.github/workflows/desktop-artifact-build.yml` and runs on:
 
-- `workflow_dispatch` for maintainer-triggered manual artifact builds.
-- `pull_request` only when desktop, package, frontend, server, collector, or this workflow file changes. Docs-only, wiki-only, prompt-only, and other non-packaging PRs do not run this slow Windows artifact build.
+- `workflow_dispatch` for maintainer-triggered full artifact builds.
+- `pull_request` when desktop, package, frontend, server, collector, or this workflow file changes.
 
-The Windows-first job performs these stages:
+Every matching pull request receives a fast Windows validation job that installs root dependencies, runs `desktop:smoke`, and syntax-checks the packaging/scope scripts. A separate scope job decides whether the full artifact is required.
 
-1. Checkout the repository.
-2. Set up Node.js.
-3. Install root, frontend, server, and collector dependencies from committed lockfiles.
-4. Validate required lockfiles and confirm lockfile validation does not mutate the root lockfile.
-5. Build the frontend with `yarn build` in `frontend/`.
-6. Build/validate the desktop shell with `npm run desktop:smoke`.
-7. Download the official Windows Electron runtime and package the desktop app resources.
-8. Upload the Windows artifact through `actions/upload-artifact`.
+Full Windows packaging runs for:
+
+- `desktop/**`, `frontend/**`, or `server/**` changes.
+- The desktop artifact workflow itself.
+- Root dependency lock changes.
+- Root package dependency/version changes or changes to desktop packaging scripts.
+- Every manual `workflow_dispatch` run.
+
+The full 500+ MB package is skipped for documentation changes, collector-only changes, and root package metadata/setup changes that do not alter dependencies or desktop packaging behavior.
+
+The full Windows job performs these stages:
+
+1. Checkout the repository and set up Node.js.
+2. Install root dependencies, frontend build dependencies, and production-only server dependencies from committed lockfiles.
+3. Validate the frontend, server, and collector lockfiles without installing unused collector packages.
+4. Build the frontend with `yarn build` in `frontend/`.
+5. Validate the desktop shell with `npm run desktop:smoke`.
+6. Download the official Windows Electron runtime.
+7. Package the desktop app and create the ZIP with Windows `tar.exe` instead of PowerShell `Compress-Archive`.
+8. Assess signing readiness and upload the already-compressed ZIP with GitHub recompression disabled.
 9. Run `npm run desktop:artifact:smoke` to verify artifact structure and safety expectations.
+
+## Performance guardrails
+
+A representative pre-optimization successful run took about 38 minutes. Dependency installation and frontend build used roughly six minutes; the prior copy plus PowerShell `Compress-Archive` step consumed about 31 minutes while producing a roughly 542 MB ZIP.
+
+The optimized workflow preserves the same extracted artifact and smoke validation while:
+
+- using a fast validation job for every matching PR,
+- conditionally skipping full packaging for non-impacting changes,
+- excluding collector installation because collector files are not copied into this artifact,
+- installing production-only server dependencies,
+- and using Windows `tar.exe` for ZIP creation.
+
+The full job remains intentionally available for real runtime/package changes and release preparation.
 
 ## Artifact contents
 

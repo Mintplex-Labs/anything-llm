@@ -18,8 +18,52 @@ on:
   workflow_dispatch:
 
 jobs:
+  artifact-scope:
+    name: Determine desktop artifact scope
+    runs-on: ubuntu-latest
+    outputs:
+      full_build: ${{ steps.scope.outputs.full_build }}
+    steps:
+      - name: Checkout repository for change detection
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine whether full Windows packaging is required
+        id: scope
+        env:
+          DESKTOP_BUILD_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          DESKTOP_BUILD_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: node desktop/scripts/desktop-artifact-change-scope.cjs
+
+  validate-desktop-inputs:
+    name: Validate desktop artifact inputs
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Validate desktop shell and packaging scripts
+        run: |
+          npm run desktop:smoke
+          node --check desktop/scripts/package-windows-artifact.cjs
+          node --check desktop/scripts/desktop-artifact-change-scope.cjs
+
   build-windows-desktop-artifact:
     name: Build Windows desktop artifact
+    needs: [artifact-scope, validate-desktop-inputs]
+    if: needs.artifact-scope.outputs.full_build == 'true'
     runs-on: windows-latest
     timeout-minutes: 45
 
@@ -47,17 +91,13 @@ jobs:
           git status --short
           git diff --name-only
 
-      - name: Install frontend dependencies
+      - name: Install frontend build dependencies
         working-directory: frontend
         run: yarn install --frozen-lockfile
 
-      - name: Install server dependencies
+      - name: Install production server dependencies
         working-directory: server
-        run: yarn install --frozen-lockfile
-
-      - name: Install collector dependencies
-        working-directory: collector
-        run: yarn install --frozen-lockfile
+        run: yarn install --frozen-lockfile --production=true
 
       - name: Validate yarn lockfiles
         shell: pwsh
@@ -92,7 +132,7 @@ jobs:
           Expand-Archive -Path $zipPath -DestinationPath $extractPath
           "ELECTRON_DIST_PATH=$extractPath" | Out-File -FilePath $env:GITHUB_ENV -Append
 
-      - name: Package desktop app
+      - name: Package desktop app with fast archive path
         run: npm run desktop:artifact:package:win
 
       - name: Assess signing readiness
