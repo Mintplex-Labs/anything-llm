@@ -24,7 +24,7 @@
     "desktop:dev": "node desktop/scripts/run-desktop-dev.cjs",
     "desktop:smoke": "node desktop/scripts/desktop-smoke-check.cjs",
     "desktop:runtime:dev": "yarn dev:all",
-    "setup": "cd server && yarn && cd ../collector && yarn && cd ../frontend && yarn && cd .. && yarn setup:envs && yarn prisma:setup && echo \"Setup complete. Run yarn dev to start server, frontend, and collector together.\"",
+    "setup": "npm ci && cd server && yarn && cd ../collector && yarn && cd ../frontend && yarn && cd .. && yarn setup:envs && yarn prisma:setup && echo \"Setup complete. Run yarn dev to start server, frontend, and collector together.\"",
     "setup:envs": "cp -n ./frontend/.env.example ./frontend/.env; cp -n ./server/.env.example ./server/.env.development; cp -n ./collector/.env.example ./collector/.env; cp -n ./docker/.env.example ./docker/.env; echo \"All ENV files copied!\n\"",
     "dev:server": "cd server && yarn dev",
     "dev:collector": "cd collector && yarn dev",
