@@ -31,6 +31,7 @@ Requirements:
 git clone https://github.com/HODLKONG64/DIZ-A-REMIX.git
 cd DIZ-A-REMIX
 corepack enable
+corepack prepare yarn@1.22.22 --activate
 yarn setup
 yarn dev
 ```
