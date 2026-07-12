@@ -133,7 +133,7 @@ Returns `400` if the resolved workspace is not `SWARMSY HIVE`.
 
 ```bash
 AUTH_TOKEN="<YOUR_ADMIN_JWT>"
-AUTH_HEADER="TOKEN"
+AUTH_HEADER="Bearer ${AUTH_TOKEN}"
 
 curl -X POST http://localhost:3001/api/admin/swarmsy/workspace-preset/hive/ingest-required-docs \
   -H "Authorization: ${AUTH_HEADER}" \
@@ -141,11 +141,11 @@ curl -X POST http://localhost:3001/api/admin/swarmsy/workspace-preset/hive/inges
   -d '{"workspaceSlug":"swarmsy-hive"}'
 ```
 
-Set `AUTH_HEADER` to your bearer token header value before running the command.
+Replace `<YOUR_ADMIN_JWT>` with your admin JWT, and redact token values in shared logs or screenshots.
 
 ```bash
 AUTH_TOKEN="<YOUR_ADMIN_JWT>"
-AUTH_HEADER="TOKEN"
+AUTH_HEADER="Bearer ${AUTH_TOKEN}"
 
 curl -X POST http://localhost:3001/api/admin/swarmsy/workspace-preset/hive/ingest-required-docs \
   -H "Authorization: ${AUTH_HEADER}" \

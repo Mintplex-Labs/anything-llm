@@ -1,12 +1,12 @@
 # What Was Added — Required Docs Status Helper
 
-This runtime addition is status-only. It reports whether required SWARMSY doctrine docs are present, readable, grouped correctly, and ready to be ingested later.
+The helper is read-only. It reports whether required SWARMSY doctrine docs are present, readable, grouped correctly, and ready for ingestion.
 
-It does not ingest documents into any workspace.
+It does not ingest or attach documents itself. Dedicated admin and user-safe onboarding routes now perform ingestion.
 
 ## Purpose
 
-Provide a truthful status view for SWARMSY doctrine docs so runtime checks can verify readiness before a future ingestion PR.
+Provide a truthful status view for SWARMSY doctrine docs so runtime checks and ingestion routes can verify readiness before processing files.
 
 ## Manifest
 
@@ -32,7 +32,7 @@ Exports:
 - `getSwarmsyRequiredDocsStatus()`
 - `getSwarmsyRequiredDocPaths()`
 
-This helper only reports status and candidate document paths for future ingestion. It does not ingest docs and does not write workspace documents.
+This helper only reports status and candidate document paths. It does not ingest docs or write workspace documents.
 
 ## Status Route
 
@@ -40,7 +40,7 @@ This helper only reports status and candidate document paths for future ingestio
 - Uses existing admin/manager auth middleware conventions
 - Returns grouped file status, summary counts, docs root availability, and `documentsToIngest` for later ingestion work
 
-`documentsToIngest` means: documents that should be ingested later.
+`documentsToIngest` lists loadable candidates for an ingestion request. It does not mean those documents have already been attached.
 
 ## Doctrine Docs Root Resolver
 
@@ -78,24 +78,28 @@ If `SWARMSY_DOCTRINE_DOCS_ROOT` is not set, the helper resolves docs from the lo
 The helper resolves paths from the server runtime filesystem (`SWARMSY_DOCTRINE_DOCS_ROOT`).
 In Docker, mount docs into the container and set the root to the mount parent (for docs at `/app/docs`, use `/app`, not `/app/docs`).
 
-## Status-Only Limitation
+## Helper Boundary and Ingestion Routes
 
-This change is status-only. It does not:
+The helper remains status-only. It does not:
 
-- add a POST ingestion route
 - call collector/document ingestion pipelines
 - attach docs to workspaces
 - auto-run ingestion on boot
 
-A future PR will add ingestion behavior.
+Runtime ingestion is implemented separately:
+
+- `POST /api/admin/swarmsy/workspace-preset/hive/ingest-required-docs` allows an admin or manager to target a SWARMSY HIVE workspace.
+- `POST /api/swarmsy/onboarding/ingest-required-docs` allows an authenticated user to ingest required docs into their own SWARMSY HIVE workspace.
+
+See [SWARMSY_REQUIRED_DOCS_INGESTION_ROUTE.md](SWARMSY_REQUIRED_DOCS_INGESTION_ROUTE.md) and [SWARMSY_USER_SAFE_REQUIRED_DOCS_INGESTION_ROUTE.md](SWARMSY_USER_SAFE_REQUIRED_DOCS_INGESTION_ROUTE.md) for authorization, response, and failure behavior. Neither route runs automatically on boot.
 
 ## Rollback Notes
 
-Rollback is safe and limited:
+Rollback of the status surface is limited:
 
 1. Remove the status route registration.
-2. Remove the helper and manifest references.
-3. Keep existing runtime behavior unchanged (no ingestion side effects to revert).
+2. Remove the helper and manifest references only after updating both ingestion routes, which consume the helper output.
+3. No database migration is required.
 
 ## Manual Check
 
