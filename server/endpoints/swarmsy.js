@@ -13,6 +13,7 @@ const {
 } = require("../utils/swarmsy/ingestRequiredDocs");
 const { detectLocalOllama } = require("../utils/swarmsy/localUserOllama");
 const { Workspace } = require("../models/workspace");
+const { SwarmsyMemoryLock } = require("../models/swarmsyMemoryLock");
 const {
   adminStatus: websiteNpcAdminStatus,
   allowedNpcIds: websiteNpcAllowedIds,
@@ -73,6 +74,31 @@ async function resolveSelectedWorkspace(request, response, user) {
   return isPrivileged
     ? await Workspace.get({ slug })
     : await Workspace.getWithUser(user, { slug });
+}
+
+async function resolveMemoryLockRequest(request, response) {
+  const user = await userFromSession(request, response);
+  const userId = Number(user?.id);
+  if (!Number.isInteger(userId) || userId <= 0) {
+    response.status(401).json({
+      success: false,
+      message: "Memory Lock storage requires an authenticated user account.",
+    });
+    return null;
+  }
+
+  const workspace = await resolveSelectedWorkspace(request, response, user);
+  if (!workspace) {
+    response.status(404).json({
+      success: false,
+      workspace: { exists: false },
+      message:
+        "Selected workspace was not found or is not available to this user.",
+    });
+    return null;
+  }
+
+  return { userId, workspace };
 }
 
 function swarmsyCreateHiveFailure(message) {
@@ -229,6 +255,113 @@ async function swarmsyOnboardingIngestRequiredDocs(request, response) {
     return response.status(500).json({
       success: false,
       message: "Failed to ingest SWARMSY required docs.",
+    });
+  }
+}
+
+async function swarmsyMemoryLocksList(request, response) {
+  try {
+    const context = await resolveMemoryLockRequest(request, response);
+    if (!context) return;
+
+    const locks = await SwarmsyMemoryLock.forUserWorkspace({
+      userId: context.userId,
+      workspaceId: context.workspace.id,
+    });
+    return response.status(200).json({
+      success: true,
+      workspace: swarmsyHiveWorkspaceSummary(context.workspace),
+      locks,
+    });
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({
+      success: false,
+      message: "Failed to list SWARMSY Memory Locks.",
+    });
+  }
+}
+
+async function swarmsyMemoryLockShow(request, response) {
+  try {
+    const context = await resolveMemoryLockRequest(request, response);
+    if (!context) return;
+
+    const lockId = Number(request.params?.lockId);
+    if (!Number.isInteger(lockId) || lockId <= 0) {
+      return response.status(404).json({
+        success: false,
+        message: "Memory Lock not found.",
+      });
+    }
+
+    const lock = await SwarmsyMemoryLock.getForUserWorkspace({
+      id: lockId,
+      userId: context.userId,
+      workspaceId: context.workspace.id,
+    });
+    if (!lock) {
+      return response.status(404).json({
+        success: false,
+        message: "Memory Lock not found.",
+      });
+    }
+
+    return response.status(200).json({
+      success: true,
+      workspace: swarmsyHiveWorkspaceSummary(context.workspace),
+      lock,
+    });
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({
+      success: false,
+      message: "Failed to retrieve SWARMSY Memory Lock.",
+    });
+  }
+}
+
+async function swarmsyMemoryLockImport(request, response) {
+  try {
+    const context = await resolveMemoryLockRequest(request, response);
+    if (!context) return;
+
+    const {
+      content,
+      source = "pasted",
+      isActive = true,
+    } = reqBody(request) || {};
+    if (typeof isActive !== "boolean") {
+      return response.status(400).json({
+        success: false,
+        message: "isActive must be a boolean.",
+      });
+    }
+
+    const { lock, message } = await SwarmsyMemoryLock.create({
+      userId: context.userId,
+      workspaceId: context.workspace.id,
+      content,
+      source,
+      isActive,
+    });
+    if (!lock) {
+      return response.status(400).json({
+        success: false,
+        message: message || "Failed to import SWARMSY Memory Lock.",
+      });
+    }
+
+    return response.status(200).json({
+      success: true,
+      workspace: swarmsyHiveWorkspaceSummary(context.workspace),
+      lock,
+    });
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({
+      success: false,
+      message: "Failed to import SWARMSY Memory Lock.",
     });
   }
 }
@@ -672,6 +805,24 @@ function swarmsyEndpoints(app) {
   );
 
   app.get(
+    "/swarmsy/workspaces/:slug/memory-locks",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    swarmsyMemoryLocksList
+  );
+
+  app.get(
+    "/swarmsy/workspaces/:slug/memory-locks/:lockId",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    swarmsyMemoryLockShow
+  );
+
+  app.post(
+    "/swarmsy/workspaces/:slug/memory-locks/import",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    swarmsyMemoryLockImport
+  );
+
+  app.get(
     "/swarmsy/workspaces/:slug/sparky-prompt",
     [validatedRequest, flexUserRoleValid([ROLES.all])],
     swarmsyWorkspaceSparkyPromptStatus
@@ -756,6 +907,9 @@ module.exports = {
   swarmsyLocalUserImageEngineGenerate,
   swarmsyLocalUserImageEngineStatus,
   swarmsyLocalUserOllamaStatus,
+  swarmsyMemoryLockImport,
+  swarmsyMemoryLockShow,
+  swarmsyMemoryLocksList,
   swarmsySparkyWikiSeedPackImport,
   swarmsyWorkspaceSparkyPromptApply,
   swarmsyWorkspaceSparkyPromptStatus,

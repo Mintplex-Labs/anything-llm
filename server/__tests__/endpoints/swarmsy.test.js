@@ -29,6 +29,14 @@ jest.mock("../../models/workspace", () => ({
   },
 }));
 
+jest.mock("../../models/swarmsyMemoryLock", () => ({
+  SwarmsyMemoryLock: {
+    forUserWorkspace: jest.fn(),
+    getForUserWorkspace: jest.fn(),
+    create: jest.fn(),
+  },
+}));
+
 jest.mock("../../utils/swarmsy/sparkyWikiSeedPacks", () => ({
   getSparkyWikiSeedPack: jest.fn(),
   importSparkyWikiSeedPack: jest.fn(),
@@ -62,6 +70,7 @@ jest.mock("../../utils/middleware/multiUserProtected", () => ({
 
 const { userFromSession } = require("../../utils/http");
 const { Workspace } = require("../../models/workspace");
+const { SwarmsyMemoryLock } = require("../../models/swarmsyMemoryLock");
 const {
   findUserSwarmsyHiveWorkspace,
   getSwarmsyOnboardingStatus,
@@ -100,6 +109,9 @@ const {
   swarmsyLocalUserImageEngineGenerate,
   swarmsyLocalUserImageEngineStatus,
   swarmsyLocalUserOllamaStatus,
+  swarmsyMemoryLockImport,
+  swarmsyMemoryLockShow,
+  swarmsyMemoryLocksList,
   swarmsyOnboardingCreateHive,
   swarmsyOnboardingIngestRequiredDocs,
   swarmsyOnboardingStatus,
@@ -167,6 +179,21 @@ describe("swarmsy endpoints", () => {
       "/swarmsy/onboarding/ingest-required-docs",
       [validatedRequest, mockRoleMiddleware],
       swarmsyOnboardingIngestRequiredDocs
+    );
+    expect(app.get).toHaveBeenCalledWith(
+      "/swarmsy/workspaces/:slug/memory-locks",
+      [validatedRequest, mockRoleMiddleware],
+      swarmsyMemoryLocksList
+    );
+    expect(app.get).toHaveBeenCalledWith(
+      "/swarmsy/workspaces/:slug/memory-locks/:lockId",
+      [validatedRequest, mockRoleMiddleware],
+      swarmsyMemoryLockShow
+    );
+    expect(app.post).toHaveBeenCalledWith(
+      "/swarmsy/workspaces/:slug/memory-locks/import",
+      [validatedRequest, mockRoleMiddleware],
+      swarmsyMemoryLockImport
     );
     expect(app.get).toHaveBeenCalledWith(
       "/swarmsy/sparky-wiki/seed-packs",
@@ -301,6 +328,121 @@ describe("swarmsy endpoints", () => {
     expect(getSwarmsyOnboardingStatus).toHaveBeenCalledWith({ user });
     expect(response.status).toHaveBeenCalledWith(200);
     expect(response.json).toHaveBeenCalledWith(status);
+  });
+
+  it("lists only the current user's Memory Locks in an accessible workspace", async () => {
+    const request = { params: { slug: "swarmsy-hive" }, headers: {} };
+    const response = responseMock();
+    const user = { id: 12, role: "default" };
+    const workspace = { id: 9, slug: "swarmsy-hive", name: "SWARMSY HIVE" };
+    const locks = [{ id: 31, userId: 12, workspaceId: 9, version: 2 }];
+
+    userFromSession.mockResolvedValue(user);
+    Workspace.getWithUser.mockResolvedValue(workspace);
+    SwarmsyMemoryLock.forUserWorkspace.mockResolvedValue(locks);
+
+    await swarmsyMemoryLocksList(request, response);
+
+    expect(Workspace.getWithUser).toHaveBeenCalledWith(user, {
+      slug: "swarmsy-hive",
+    });
+    expect(SwarmsyMemoryLock.forUserWorkspace).toHaveBeenCalledWith({
+      userId: 12,
+      workspaceId: 9,
+    });
+    expect(response.status).toHaveBeenCalledWith(200);
+    expect(response.json).toHaveBeenCalledWith({
+      success: true,
+      workspace: {
+        exists: true,
+        id: 9,
+        slug: "swarmsy-hive",
+        name: "SWARMSY HIVE",
+      },
+      locks,
+    });
+  });
+
+  it("does not reveal a Memory Lock outside the current user scope", async () => {
+    const request = {
+      params: { slug: "swarmsy-hive", lockId: "31" },
+      headers: {},
+    };
+    const response = responseMock();
+    const user = { id: 12, role: "default" };
+    const workspace = { id: 9, slug: "swarmsy-hive", name: "SWARMSY HIVE" };
+
+    userFromSession.mockResolvedValue(user);
+    Workspace.getWithUser.mockResolvedValue(workspace);
+    SwarmsyMemoryLock.getForUserWorkspace.mockResolvedValue(null);
+
+    await swarmsyMemoryLockShow(request, response);
+
+    expect(SwarmsyMemoryLock.getForUserWorkspace).toHaveBeenCalledWith({
+      id: 31,
+      userId: 12,
+      workspaceId: 9,
+    });
+    expect(response.status).toHaveBeenCalledWith(404);
+    expect(response.json).toHaveBeenCalledWith({
+      success: false,
+      message: "Memory Lock not found.",
+    });
+  });
+
+  it("imports a Memory Lock for the current user and workspace", async () => {
+    const request = {
+      params: { slug: "swarmsy-hive" },
+      headers: {},
+      body: { content: "LOCK", source: "pasted", isActive: true },
+    };
+    const response = responseMock();
+    const user = { id: 12, role: "default" };
+    const workspace = { id: 9, slug: "swarmsy-hive", name: "SWARMSY HIVE" };
+    const lock = {
+      id: 31,
+      userId: 12,
+      workspaceId: 9,
+      content: "LOCK",
+      source: "pasted",
+      isActive: true,
+    };
+
+    userFromSession.mockResolvedValue(user);
+    Workspace.getWithUser.mockResolvedValue(workspace);
+    SwarmsyMemoryLock.create.mockResolvedValue({ lock, message: null });
+
+    await swarmsyMemoryLockImport(request, response);
+
+    expect(SwarmsyMemoryLock.create).toHaveBeenCalledWith({
+      userId: 12,
+      workspaceId: 9,
+      content: "LOCK",
+      source: "pasted",
+      isActive: true,
+    });
+    expect(response.status).toHaveBeenCalledWith(200);
+    expect(response.json).toHaveBeenCalledWith(
+      expect.objectContaining({ success: true, lock })
+    );
+  });
+
+  it("rejects Memory Lock access without an authenticated user account", async () => {
+    const request = { params: { slug: "swarmsy-hive" }, headers: {} };
+    const response = responseMock();
+
+    userFromSession.mockResolvedValue(null);
+
+    await swarmsyMemoryLocksList(request, response);
+
+    expect(Workspace.get).not.toHaveBeenCalled();
+    expect(Workspace.getWithUser).not.toHaveBeenCalled();
+    expect(SwarmsyMemoryLock.forUserWorkspace).not.toHaveBeenCalled();
+    expect(response.status).toHaveBeenCalledWith(401);
+    expect(response.json).toHaveBeenCalledWith({
+      success: false,
+      message: "Memory Lock storage requires an authenticated user account.",
+    });
   });
 
   it("returns SPARKY prompt status for a selected owned workspace", async () => {
