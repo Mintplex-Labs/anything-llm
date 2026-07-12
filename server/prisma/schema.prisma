@@ -87,6 +87,7 @@ model users {
   desktop_mobile_devices       desktop_mobile_devices[]
   workspace_parsed_files       workspace_parsed_files[]
   memories                     memories[]
+  swarmsy_memory_locks         swarmsy_memory_locks[]
 }
 
 model recovery_codes {
@@ -149,6 +150,7 @@ model workspaces {
   prompt_history               prompt_history[]
   workspace_parsed_files       workspace_parsed_files[]
   memories                     memories[]
+  swarmsy_memory_locks         swarmsy_memory_locks[]
 }
 
 model workspace_threads {
@@ -443,6 +445,26 @@ model memories {
 
   @@index([userId, workspaceId])
   @@index([userId, scope])
+}
+
+model swarmsy_memory_locks {
+  id          Int       @id @default(autoincrement())
+  workspaceId Int       @map("workspace_id")
+  userId      Int       @map("user_id")
+  isActive    Boolean   @default(false) @map("is_active")
+  version     Int
+  source      String    @default("pasted")
+  content     String
+  archivedAt  DateTime? @map("archived_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @default(now()) @map("updated_at")
+
+  workspace workspaces @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      users      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId, version])
+  @@index([workspaceId, userId, archivedAt])
+  @@index([workspaceId, userId, isActive])
 }
 
 model model_routers {
