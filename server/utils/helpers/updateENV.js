@@ -717,6 +717,17 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+
+  // DaoXE Options
+  DaoXEApiKey: {
+    envKey: "DAOXE_API_KEY",
+    checks: [isNotEmpty],
+  },
+  DaoXEModelPref: {
+    envKey: "DAOXE_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
   // DeepSeek Options
   DeepSeekApiKey: {
     envKey: "DEEPSEEK_API_KEY",
@@ -1050,6 +1061,7 @@ function supportedLLM(input = "") {
     "generic-openai",
     "bedrock",
     "deepseek",
+    "daoxe",
     "apipie",
     "xai",
     "nvidia-nim",

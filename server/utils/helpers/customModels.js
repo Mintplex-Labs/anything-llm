@@ -33,6 +33,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "elevenlabs-tts",
   "groq",
   "deepseek",
+  "daoxe",
   "apipie",
   "novita",
   "cometapi",
@@ -108,6 +109,8 @@ async function getCustomModels(
       return await getGroqAiModels(apiKey);
     case "deepseek":
       return await getDeepSeekModels(apiKey);
+    case "daoxe":
+      return await getDaoXEModels(apiKey);
     case "apipie":
       return await getAPIPieModels(apiKey);
     case "novita":
@@ -749,6 +752,33 @@ async function getMinimaxModels(_apiKey = null) {
 
   // Api Key was successful so lets save it for future uses
   if (models.length > 0 && !!apiKey) process.env.MINIMAX_API_KEY = apiKey;
+  return { models, error: null };
+}
+
+
+async function getDaoXEModels(apiKey = null) {
+  const { OpenAI: OpenAIApi } = require("openai");
+  const openai = new OpenAIApi({
+    apiKey: apiKey || process.env.DAOXE_API_KEY,
+    baseURL: "https://daoxe.com/v1",
+  });
+  const models = await openai.models
+    .list()
+    .then((results) => results.data)
+    .then((models) =>
+      (models || []).map((model) => ({
+        id: model.id,
+        name: model.id,
+        organization: model.owned_by || "daoxe",
+      }))
+    )
+    .catch((e) => {
+      console.error(`DaoXE:listModels`, e.message);
+      // No hardcoded catalog fallback: account-scoped IDs only.
+      return [];
+    });
+
+  if (models.length > 0 && !!apiKey) process.env.DAOXE_API_KEY = apiKey;
   return { models, error: null };
 }
 

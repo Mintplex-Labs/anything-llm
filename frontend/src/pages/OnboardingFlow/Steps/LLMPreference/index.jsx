@@ -19,6 +19,7 @@ import TextGenWebUILogo from "@/media/llmprovider/text-generation-webui.png";
 import LiteLLMLogo from "@/media/llmprovider/litellm.png";
 import AWSBedrockLogo from "@/media/llmprovider/bedrock.png";
 import DeepSeekLogo from "@/media/llmprovider/deepseek.png";
+import DaoXELogo from "@/media/llmprovider/daoxe.png";
 import APIPieLogo from "@/media/llmprovider/apipie.png";
 import NovitaLogo from "@/media/llmprovider/novita.png";
 import XAILogo from "@/media/llmprovider/xai.png";
@@ -56,6 +57,7 @@ import TextGenWebUIOptions from "@/components/LLMSelection/TextGenWebUIOptions";
 import LiteLLMOptions from "@/components/LLMSelection/LiteLLMOptions";
 import AWSBedrockLLMOptions from "@/components/LLMSelection/AwsBedrockLLMOptions";
 import DeepSeekOptions from "@/components/LLMSelection/DeepSeekOptions";
+import DaoXEOptions from "@/components/LLMSelection/DaoXEOptions";
 import ApiPieLLMOptions from "@/components/LLMSelection/ApiPieOptions";
 import NovitaLLMOptions from "@/components/LLMSelection/NovitaLLMOptions";
 import XAILLMOptions from "@/components/LLMSelection/XAiLLMOptions";
@@ -240,6 +242,14 @@ const LLMS = [
     logo: LiteLLMLogo,
     options: (settings) => <LiteLLMOptions settings={settings} />,
     description: "Run LiteLLM's OpenAI compatible proxy for various LLMs.",
+  },
+  {
+    name: "DaoXE",
+    value: "daoxe",
+    logo: DaoXELogo,
+    options: (settings) => <DaoXEOptions settings={settings} />,
+    description:
+      "Multi-model multi-protocol API gateway (OpenAI-compatible + Anthropic Messages). Not available in mainland China.",
   },
   {
     name: "DeepSeek",
