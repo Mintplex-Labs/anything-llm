@@ -147,4 +147,14 @@ describe("AIbitat abort listener cleanup pattern", () => {
     await Promise.resolve().finally(cleanup);
     expect(instance.emitter.listenerCount("abort")).toBe(0);
   });
+
+  it("abort() should cancel the active provider request", () => {
+    const instance = createAibitat();
+    const provider = { abort: jest.fn() };
+    instance.providerInstance = provider;
+
+    instance.abort();
+
+    expect(provider.abort).toHaveBeenCalledTimes(1);
+  });
 });

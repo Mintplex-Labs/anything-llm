@@ -65,10 +65,13 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
   async #handleFunctionCallChat({ messages = [] }) {
     await LMStudioLLM.cacheContextWindows();
     return await this.client.chat.completions
-      .create({
-        model: this.model,
-        messages,
-      })
+      .create(
+        {
+          model: this.model,
+          messages,
+        },
+        this.requestOptions()
+      )
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
           throw new Error("LMStudio chat: No results!");
@@ -83,11 +86,14 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
 
   async #handleFunctionCallStream({ messages = [] }) {
     await LMStudioLLM.cacheContextWindows();
-    return await this.client.chat.completions.create({
-      model: this.model,
-      stream: true,
-      messages,
-    });
+    return await this.client.chat.completions.create(
+      {
+        model: this.model,
+        stream: true,
+        messages,
+      },
+      this.requestOptions()
+    );
   }
 
   /**

@@ -48,6 +48,7 @@ const DEFAULT_WORKSPACE_PROMPT =
  * @property {boolean} [verbose] - Whether to log verbose introspection messages.
  * @property {boolean} supportsAgentStreaming - Whether the provider supports streaming tool-call execution.
  * @property {(handlerProps: Object) => void} attachHandlerProps - Attach invocation/handler context to the provider.
+ * @property {() => void} abort - Abort the active provider request.
  * @property {(messages: Array, functions?: Array, eventHandler?: Function) => Promise<{functionCall: any, textResponse: string}>} stream - Stream a chat completion with tool calling.
  * @property {(messages: Array, functions?: Array) => Promise<{functionCall: any, textResponse: string, result?: string}>} complete - Non-streaming chat completion with tool calling.
  * @property {() => ProviderUsageMetrics} getUsage - Get usage metrics from the last completion.
@@ -55,6 +56,8 @@ const DEFAULT_WORKSPACE_PROMPT =
 
 class Provider {
   _client;
+
+  _abortController = new AbortController();
 
   /**
    * The invocation object containing the user ID and other invocation details.
@@ -128,6 +131,14 @@ class Provider {
 
   get client() {
     return this._client;
+  }
+
+  requestOptions() {
+    return { signal: this._abortController.signal };
+  }
+
+  abort() {
+    this._abortController.abort();
   }
 
   /**
@@ -648,14 +659,17 @@ class Provider {
     this.providerLog("Provider.stream - will process this chat completion.");
     const msgUUID = v4();
     const formattedMessages = this.formatMessagesWithAttachments(messages);
-    const stream = await this.client.chat.completions.create({
-      model: this.model,
-      stream: true,
-      messages: formattedMessages,
-      ...(Array.isArray(functions) && functions?.length > 0
-        ? { functions }
-        : {}),
-    });
+    const stream = await this.client.chat.completions.create(
+      {
+        model: this.model,
+        stream: true,
+        messages: formattedMessages,
+        ...(Array.isArray(functions) && functions?.length > 0
+          ? { functions }
+          : {}),
+      },
+      this.requestOptions()
+    );
 
     const result = {
       functionCall: null,

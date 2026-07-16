@@ -33,6 +33,7 @@ function agentWebsocket(app) {
 
       socket.on("message", relayToSocket);
       socket.on("close", () => {
+        agentHandler.aibitat?.abort?.();
         agentHandler.closeAlert();
         WorkspaceAgentInvocation.close(String(request.params.uuid));
         return;

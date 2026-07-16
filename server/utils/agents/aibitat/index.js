@@ -33,6 +33,8 @@ class AIbitat {
   /** @type {import("./providers/ai-provider").AgentProviderInstance|null} */
   _providerInstance = null;
 
+  _aborted = false;
+
   defaultProvider = null;
   defaultInterrupt;
   maxRounds;
@@ -408,7 +410,10 @@ class AIbitat {
    * Abort the running of any plugins that may still be pending (Langchain summarize)
    */
   abort() {
+    if (this._aborted) return;
+    this._aborted = true;
     this.emitter.emit("abort", null, this);
+    this.providerInstance?.abort?.();
   }
 
   /**

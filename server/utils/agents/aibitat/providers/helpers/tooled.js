@@ -189,13 +189,16 @@ async function tooledStream(
   const formattedMessages = formatMessagesForTools(messages, formatOptions);
   const tools = formatFunctionsToTools(functions);
 
-  const stream = await client.chat.completions.create({
-    model,
-    stream: true,
-    stream_options: { include_usage: true },
-    messages: formattedMessages,
-    ...(tools.length > 0 ? { tools } : {}),
-  });
+  const stream = await client.chat.completions.create(
+    {
+      model,
+      stream: true,
+      stream_options: { include_usage: true },
+      messages: formattedMessages,
+      ...(tools.length > 0 ? { tools } : {}),
+    },
+    provider?.requestOptions?.()
+  );
 
   const result = {
     functionCall: null,

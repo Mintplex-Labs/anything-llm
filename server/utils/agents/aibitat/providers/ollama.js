@@ -40,6 +40,11 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     return this._client;
   }
 
+  abort() {
+    this.client.abort();
+    Provider.prototype.abort.call(this);
+  }
+
   get supportsAgentStreaming() {
     return true;
   }
