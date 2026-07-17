@@ -7,6 +7,7 @@ const {
   getDocumentsByFolder,
   normalizePath,
   isWithin,
+  moveProcessedDocsToFolder,
 } = require("../../../utils/files");
 const { reqBody, safeJsonParse } = require("../../../utils/http");
 const { EventLogs } = require("../../../models/eventLogs");
@@ -268,17 +269,7 @@ function apiDocumentEndpoints(app) {
             ? safeJsonParse(_metadata, {})
             : _metadata;
 
-        let folder = request.params?.folderName || "custom-documents";
-        folder = normalizePath(folder);
-        const targetFolderPath = path.join(documentsPath, folder);
-
-        if (
-          !isWithin(path.resolve(documentsPath), path.resolve(targetFolderPath))
-        )
-          throw new Error("Invalid folder name");
-        if (!fs.existsSync(targetFolderPath))
-          fs.mkdirSync(targetFolderPath, { recursive: true });
-
+        const folderName = request.params?.folderName || "custom-documents";
         const Collector = new CollectorApi();
         const processingOnline = await Collector.online();
         if (!processingOnline) {
@@ -305,29 +296,7 @@ function apiDocumentEndpoints(app) {
 
         // For each processed document, check if it is already in the desired folder.
         // If not, move it using similar logic as in the move-files endpoint.
-        for (const doc of documents) {
-          const currentFolder = path.dirname(doc.location);
-          if (currentFolder !== folder) {
-            const sourcePath = path.join(
-              documentsPath,
-              normalizePath(doc.location)
-            );
-            const destinationPath = path.join(
-              targetFolderPath,
-              path.basename(doc.location)
-            );
-
-            if (
-              !isWithin(documentsPath, sourcePath) ||
-              !isWithin(documentsPath, destinationPath)
-            )
-              throw new Error("Invalid file location");
-
-            fs.renameSync(sourcePath, destinationPath);
-            doc.location = path.join(folder, path.basename(doc.location));
-            doc.name = path.basename(doc.location);
-          }
-        }
+        const folder = moveProcessedDocsToFolder(documents, folderName);
 
         Collector.log(
           `Document ${originalname} uploaded, processed, and moved to folder ${folder} successfully.`

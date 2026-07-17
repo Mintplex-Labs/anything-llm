@@ -6,7 +6,11 @@ const {
   userFromSession,
   safeJsonParse,
 } = require("../utils/http");
-const { normalizePath, isWithin } = require("../utils/files");
+const {
+  normalizePath,
+  isWithin,
+  moveProcessedDocsToFolder,
+} = require("../utils/files");
 const { Workspace } = require("../models/workspace");
 const { Document } = require("../models/documents");
 const { DocumentVectors } = require("../models/vectors");
@@ -123,6 +127,15 @@ function workspaceEndpoints(app) {
       try {
         const Collector = new CollectorApi();
         const { originalname } = request.file;
+
+        const { folderName = null, metadata: _metadata = "{}" } =
+          reqBody(request);
+
+        const metadata =
+          typeof _metadata === "string"
+            ? safeJsonParse(_metadata, {})
+            : _metadata;
+
         const processingOnline = await Collector.online();
 
         if (!processingOnline) {
@@ -136,12 +149,18 @@ function workspaceEndpoints(app) {
           return;
         }
 
-        const { success, reason } =
-          await Collector.processDocument(originalname);
+        const { success, reason, documents } = await Collector.processDocument(
+          originalname,
+          metadata
+        );
         if (!success) {
           response.status(500).json({ success: false, error: reason }).end();
           return;
         }
+
+        // When the upload is part of a folder upload, move the processed
+        // documents from their default location into the target folder.
+        if (!!folderName) moveProcessedDocsToFolder(documents, folderName);
 
         Collector.log(
           `Document ${originalname} uploaded processed and successfully. It is now available in documents.`
@@ -151,6 +170,7 @@ function workspaceEndpoints(app) {
           "document_uploaded",
           {
             documentName: originalname,
+            ...(folderName ? { folder: folderName } : {}),
           },
           response.locals?.user?.id
         );

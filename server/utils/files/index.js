@@ -380,6 +380,53 @@ async function getWatchedDocumentFilenames(filenames = []) {
 }
 
 /**
+ * Ensures a target folder exists under the documents storage path and moves
+ * processed collector documents into it, updating each document's `location`
+ * and `name` in-place. If the folder already exists, documents are merged
+ * into it so repeated uploads to the same folder are idempotent. Folder name
+ * handling matches the historical /v1/document/upload/:folderName behavior:
+ * normalizePath only, so existing API consumers keep their exact folders.
+ * @param {Array<{location: string, name: string}>} documents - documents returned by Collector.processDocument
+ * @param {string} folderName - target folder name (e.g. "my-notes")
+ * @param {string} basePath - base documents directory (overridable for testing)
+ * @returns {string} the normalized folder name the documents were moved into
+ */
+function moveProcessedDocsToFolder(
+  documents = [],
+  folderName = "",
+  basePath = documentsPath
+) {
+  const folder = normalizePath(folderName);
+  if (!folder) throw new Error("Invalid folder name.");
+
+  const targetFolderPath = path.join(basePath, folder);
+  if (!isWithin(path.resolve(basePath), path.resolve(targetFolderPath)))
+    throw new Error("Invalid folder name.");
+  if (!fs.existsSync(targetFolderPath))
+    fs.mkdirSync(targetFolderPath, { recursive: true });
+
+  for (const doc of documents) {
+    const currentFolder = path.dirname(doc.location);
+    if (currentFolder === folder) continue;
+
+    const sourcePath = path.join(basePath, normalizePath(doc.location));
+    const destinationPath = path.join(
+      targetFolderPath,
+      path.basename(doc.location)
+    );
+
+    if (!isWithin(basePath, sourcePath) || !isWithin(basePath, destinationPath))
+      throw new Error("Invalid file location.");
+
+    fs.renameSync(sourcePath, destinationPath);
+    doc.location = path.join(folder, path.basename(doc.location));
+    doc.name = path.basename(doc.location);
+  }
+
+  return folder;
+}
+
+/**
  * Purges the entire vector-cache folder and recreates it.
  * @returns {void}
  */
@@ -528,4 +575,5 @@ module.exports = {
   getDocumentsByFolder,
   hotdirPath,
   sanitizeFileName,
+  moveProcessedDocsToFolder,
 };

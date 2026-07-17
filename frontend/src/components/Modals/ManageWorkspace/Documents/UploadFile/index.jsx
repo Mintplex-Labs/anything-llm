@@ -8,6 +8,10 @@ import { v4 } from "uuid";
 import FileUploadProgress from "./FileUploadProgress";
 import Workspace from "../../../../../models/workspace";
 import debounce from "lodash.debounce";
+import {
+  groupDroppedFiles,
+  getFilesFromUploadEvent,
+} from "../../../../../utils/folderUpload";
 
 export default function UploadFile({
   workspace,
@@ -19,6 +23,7 @@ export default function UploadFile({
   const [ready, setReady] = useState(false);
   const [files, setFiles] = useState([]);
   const [fetchingUrl, setFetchingUrl] = useState(false);
+  const folderInputRef = useRef(null);
 
   const handleSendLink = async (e) => {
     e.preventDefault();
@@ -50,12 +55,25 @@ export default function UploadFile({
   const handleUploadError = () => debouncedFetchKeysRef.current(fetchKeys, {});
 
   const onDrop = async (acceptedFiles, rejections) => {
-    const newAccepted = acceptedFiles.map((file) => {
-      return {
-        uid: v4(),
-        file,
-      };
-    });
+    const grouped = groupDroppedFiles(acceptedFiles);
+    const newAccepted = [
+      ...grouped.looseFiles.map((file) => {
+        return {
+          uid: v4(),
+          file,
+        };
+      }),
+      ...grouped.folders.flatMap(({ folderName, files }) =>
+        files.map(({ file, relativePath }) => {
+          return {
+            uid: v4(),
+            file,
+            folderName,
+            relativePath,
+          };
+        })
+      ),
+    ];
     const newRejected = rejections.map((file) => {
       return {
         uid: v4(),
@@ -65,6 +83,13 @@ export default function UploadFile({
       };
     });
     setFiles([...newAccepted, ...newRejected]);
+  };
+
+  const handleFolderSelection = (e) => {
+    const selectedFiles = Array.from(e.target.files || []);
+    e.target.value = null;
+    if (selectedFiles.length === 0) return;
+    onDrop(selectedFiles, []);
   };
 
   useEffect(() => {
@@ -78,6 +103,7 @@ export default function UploadFile({
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     disabled: !ready,
+    getFilesFromEvent: getFilesFromUploadEvent,
   });
 
   return (
@@ -122,6 +148,8 @@ export default function UploadFile({
                 slug={workspace.slug}
                 rejected={file?.rejected}
                 reason={file?.reason}
+                folderName={file?.folderName}
+                relativePath={file?.relativePath}
                 onUploadSuccess={handleUploadSuccess}
                 onUploadError={handleUploadError}
                 setLoading={setLoading}
@@ -130,6 +158,24 @@ export default function UploadFile({
             ))}
           </div>
         )}
+      </div>
+      <div className="text-center text-white text-opacity-50 text-xs font-medium w-[560px] py-2">
+        <button
+          type="button"
+          disabled={!ready}
+          onClick={() => folderInputRef.current?.click()}
+          className="border-none bg-transparent p-0 text-white text-opacity-50 text-xs font-medium underline cursor-pointer hover:text-opacity-80 disabled:cursor-not-allowed"
+        >
+          {t("connectors.upload.select-folder")}
+        </button>
+        <input
+          ref={folderInputRef}
+          type="file"
+          hidden
+          multiple
+          webkitdirectory=""
+          onChange={handleFolderSelection}
+        />
       </div>
       <div className="text-center text-white text-opacity-50 text-xs font-medium w-[560px] py-2">
         {t("connectors.upload.or-submit-link")}

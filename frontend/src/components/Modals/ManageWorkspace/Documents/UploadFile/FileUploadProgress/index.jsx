@@ -12,6 +12,8 @@ function FileUploadProgressComponent({
   setFiles,
   rejected = false,
   reason = null,
+  folderName = null,
+  relativePath = null,
   onUploadSuccess,
   onUploadError,
   setLoading,
@@ -40,7 +42,21 @@ function FileUploadProgressComponent({
       setLoadingMessage("Uploading file...");
       const start = Number(new Date());
       const formData = new FormData();
-      formData.append("file", file, file.name);
+
+      if (!!folderName && !!relativePath) {
+        formData.append("folderName", folderName);
+        formData.append(
+          "metadata",
+          JSON.stringify({ title: relativePath, docSource: relativePath })
+        );
+        // Flatten the relative path into the upload name so files from
+        // different subfolders that share a basename cannot clobber each
+        // other in the document processor's hotdir mid-upload.
+        formData.append("file", file, relativePath.replace(/\//g, "_"));
+      } else {
+        formData.append("file", file, file.name);
+      }
+
       const timer = setInterval(() => {
         setTimerMs(Number(new Date()) - start);
       }, 100);
@@ -83,7 +99,7 @@ function FileUploadProgressComponent({
         </div>
         <div className="flex flex-col">
           <p className="text-white light:text-red-600 text-xs font-semibold">
-            {truncate(file.name, 30)}
+            {truncate(relativePath || file.name, 30)}
           </p>
           <p className="text-red-100 light:text-red-600 text-xs font-medium">
             {reason || "this file failed to upload"}
@@ -108,7 +124,7 @@ function FileUploadProgressComponent({
         </div>
         <div className="flex flex-col">
           <p className="text-white light:text-red-600 text-xs font-semibold">
-            {truncate(file.name, 30)}
+            {truncate(relativePath || file.name, 30)}
           </p>
           <p className="text-red-100 light:text-red-600 text-xs font-medium">
             {error}
@@ -138,7 +154,7 @@ function FileUploadProgressComponent({
       </div>
       <div className="flex flex-col">
         <p className="text-white light:text-theme-text-primary text-xs font-medium">
-          {truncate(file.name, 30)}
+          {truncate(relativePath || file.name, 30)}
         </p>
         <p className="text-white/80 light:text-theme-text-secondary text-xs font-medium">
           {humanFileSize(file.size)} | {milliToHms(timerMs)}
