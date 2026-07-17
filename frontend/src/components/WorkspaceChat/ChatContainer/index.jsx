@@ -17,6 +17,7 @@ import handleSocketResponse, {
   AGENT_SESSION_START,
   agentEventLoadingState,
   setAgentSessionActive,
+  setAgentSessionSocket,
 } from "@/utils/chat/agent";
 import DnDFileUploaderWrapper from "./DnDWrapper";
 import SpeechRecognition, {
@@ -361,6 +362,7 @@ export default function ChatContainer({
 
         window.addEventListener(ABORT_STREAM_EVENT, () => {
           setAgentSessionActive(false);
+          setAgentSessionSocket(null);
           window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
           socket?.close();
         });
@@ -386,6 +388,7 @@ export default function ChatContainer({
 
         socket.addEventListener("close", (_event) => {
           setAgentSessionActive(false);
+          setAgentSessionSocket(null);
           window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
           // When the close was triggered by /reset, skip the "Agent session
           // complete." status - the pending /reset flow will clear history.
@@ -413,6 +416,7 @@ export default function ChatContainer({
         });
         setWebsocket(socket);
         setAgentSessionActive(true);
+        setAgentSessionSocket(socket);
         // The agent immediately begins working on the prompt that opened
         // this session, so restore the loading state that the closing
         // "Swapping over to agent chat" statusResponse cleared.
