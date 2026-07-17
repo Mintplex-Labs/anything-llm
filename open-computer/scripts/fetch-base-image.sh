@@ -13,19 +13,13 @@ BASE_URL="${OPEN_COMPUTER_BASE_IMAGE_URL:-https://cdn.anythingllm.com/support/op
 OS="$(uname -s)"
 ARCH_RAW="$(uname -m)"
 
-case "$OS" in
-  Darwin) PLATFORM="mac" ;;
-  Linux)  PLATFORM="linux" ;;
-  *) echo "Error: unsupported OS '$OS'" >&2; exit 1 ;;
-esac
-
 case "$ARCH_RAW" in
   arm64|aarch64) ARCH="arm64" ;;
   x86_64|amd64)  ARCH="x64" ;;
   *) echo "Error: unsupported architecture '$ARCH_RAW'" >&2; exit 1 ;;
 esac
 
-TAR_NAME="${PLATFORM}-${ARCH}-base-image.tar"
+TAR_NAME="${ARCH}-base-image.tar"
 TAR_URL="${BASE_URL}/${TAR_NAME}"
 SHA_NAME="${TAR_NAME}.sha256"
 SHA_URL="${BASE_URL}/${SHA_NAME}"
@@ -42,7 +36,7 @@ done
 if [ ${#EXISTING_FILES[@]} -gt 0 ]; then
   echo "Existing base image files found: ${EXISTING_FILES[*]}"
   echo ""
-  read -r -p "Delete existing files and re-download the base image for ${PLATFORM}-${ARCH}? [y/N] " REPLY
+  read -r -p "Delete existing files and re-download the base image for ${ARCH}? [y/N] " REPLY
   echo ""
   case "$REPLY" in
     [yY][eE][sS]|[yY])
@@ -55,9 +49,9 @@ if [ ${#EXISTING_FILES[@]} -gt 0 ]; then
       ;;
   esac
 else
-  echo "No base image found for ${PLATFORM}-${ARCH}."
+  echo "No base image found for ${ARCH}."
   echo ""
-  read -r -p "Download ${TAR_NAME} (~3.2 GB)? [Y/n] " REPLY
+  read -r -p "Download ${TAR_NAME} (~2.3 GB)? [Y/n] " REPLY
   echo ""
   case "$REPLY" in
     [nN][oO]|[nN])

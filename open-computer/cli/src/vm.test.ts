@@ -45,14 +45,14 @@ test('gpuDeviceArgs: Windows uses standard VGA, other platforms use virtio-gpu',
   assert.deepEqual(gpuDeviceArgs('linux'), ['-device', 'virtio-gpu-pci']);
 });
 
-test('isoDeviceArgs: attaches a bootable CD-ROM only on Windows', () => {
+test('isoDeviceArgs: attaches a bootable USB CD-ROM only on Windows', () => {
   const win = isoDeviceArgs('/tmp/debian.iso', 'win32');
-  assert.ok(win.includes('ide-cd,bus=ide.0,drive=installcd,bootindex=0'));
+  assert.ok(win.includes('usb-storage,drive=install-cdrom'));
   assert.ok(win.some((s) => s.includes('media=cdrom')));
   assert.ok(win.some((s) => s.includes('/tmp/debian.iso')));
 });
 
-test('isoDeviceArgs: no CD-ROM on macOS/Linux (the virt machine has no ide.0 bus)', () => {
+test('isoDeviceArgs: no CD-ROM on macOS/Linux', () => {
   assert.deepEqual(isoDeviceArgs('/tmp/debian.iso', 'darwin'), []);
   assert.deepEqual(isoDeviceArgs('/tmp/debian.iso', 'linux'), []);
 });

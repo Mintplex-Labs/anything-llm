@@ -731,6 +731,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Twórz zdefiniowane harmonogramy zadań",
+        description:
+          "Umożliw agentowi tworzenie powtarzalnych zadań w harmonogramie bezpośrednio z czatu (np. „codziennie w poniedziałek o 9:00, podsumuj zawartość mojej skrzynki pocztowej i wyślij mi e-mail”). Funkcja dostępna tylko w trybie dla jednego użytkownika.",
+      },
     },
     mcp: {
       title: "Serwery MCP",

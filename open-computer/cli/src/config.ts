@@ -82,7 +82,8 @@ export function resolveEfiCode(): string {
       `Set OPEN_COMPUTER_QEMU_DIR to your QEMU installation directory.`,
     );
   }
-  return `/opt/homebrew/share/qemu/${EFI_FIRMWARE_FILE}`;
+  const shareDir = PLATFORM === 'linux' ? '/usr/share/qemu' : '/opt/homebrew/share/qemu';
+  return `${shareDir}/${EFI_FIRMWARE_FILE}`;
 }
 
 // EFI variable store template (the writable pflash). This MUST be the VARS file,
@@ -110,7 +111,8 @@ export function resolveEfiVars(): string {
       `Set OPEN_COMPUTER_QEMU_DIR to your QEMU installation directory.`,
     );
   }
-  return `/opt/homebrew/share/qemu/${file}`;
+  const shareDir = PLATFORM === 'linux' ? '/usr/share/qemu' : '/opt/homebrew/share/qemu';
+  return `${shareDir}/${file}`;
 }
 
 // Full path to the qemu-img binary

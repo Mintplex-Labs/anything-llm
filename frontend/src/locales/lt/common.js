@@ -725,6 +725,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Sukurkite nurodytus užduotis",
+        description:
+          "Leiskite agentui kurti nuolatinės užduotės iš pokalbio (pvz., „kasdien, 9 val., peržiūrėkite mano pašto dėžę ir siųskite man el. laišką“). Šis funkcijomis galima naudotis tik vieno vartotojo režimu.",
+      },
     },
     mcp: {
       title: "MCP serveriai",

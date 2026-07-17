@@ -32,6 +32,7 @@ const DockerModelRunnerProvider = require("./dockerModelRunner.js");
 const PrivatemodeProvider = require("./privatemode.js");
 const SambaNovaProvider = require("./sambanova.js");
 const LemonadeProvider = require("./lemonade.js");
+const OMLXProvider = require("./omlx.js");
 const MinimaxProvider = require("./minimax.js");
 const CerebrasProvider = require("./cerebras.js");
 
@@ -70,6 +71,7 @@ module.exports = {
   PrivatemodeProvider,
   SambaNovaProvider,
   LemonadeProvider,
+  OMLXProvider,
   MinimaxProvider,
   CerebrasProvider,
 };
