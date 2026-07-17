@@ -28,7 +28,6 @@ const AGENT_PASSIVE_STREAM_EVENTS = [
   "usageMetrics",
   "citations",
   "removeStatusResponse",
-  "modelRouteNotification",
 ];
 
 /**
