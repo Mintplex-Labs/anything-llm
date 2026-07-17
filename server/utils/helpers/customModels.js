@@ -50,6 +50,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "lemonade",
   "minimax",
   "cerebras",
+  "omlx",
   "bedrock",
   "generic-openai",
   // Embedding Engines
@@ -150,6 +151,8 @@ async function getCustomModels(
       return await getLemonadeSTTModels(basePath);
     case "lemonade-embedder":
       return await getLemonadeModels(basePath, "embedding");
+    case "omlx":
+      return await getOMLXModels(basePath, apiKey);
     case "minimax":
       return await getMinimaxModels(apiKey);
     case "cerebras":
@@ -1048,6 +1051,36 @@ async function getLemonadeSTTModels(basePath = null) {
   } catch (e) {
     console.error(`Lemonade:getLemonadeSTTModels`, e.message);
     return { models: [], error: "Could not fetch Lemonade STT Models" };
+  }
+}
+
+async function getOMLXModels(basePath = null, _apiKey = null) {
+  const { OpenAI } = require("openai");
+  const { parseOMLXBasePath } = require("../AiProviders/omlx");
+  try {
+    const apiKey =
+      _apiKey === true
+        ? process.env.OMLX_LLM_API_KEY
+        : _apiKey || process.env.OMLX_LLM_API_KEY || null;
+
+    const client = new OpenAI({
+      baseURL: parseOMLXBasePath(basePath ?? process.env.OMLX_LLM_BASE_PATH),
+      apiKey,
+    });
+
+    const models = (await client.models.list()).data.map((model) => ({
+      id: model.id,
+      name: model.id,
+      organization: model.owned_by,
+    }));
+
+    return {
+      models,
+      error: null,
+    };
+  } catch (e) {
+    console.error("OMLX:getOMLXModels", e.message);
+    return { models: [], error: "Could not fetch OMLX models" };
   }
 }
 

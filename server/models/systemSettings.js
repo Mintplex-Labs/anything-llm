@@ -1038,6 +1038,12 @@ const SystemSettings = {
       // Cerebras Keys
       CerebrasApiKey: !!process.env.CEREBRAS_API_KEY,
       CerebrasModelPref: process.env.CEREBRAS_MODEL_PREF,
+
+      // OMLX Keys
+      OMLXLLMBasePath: process.env.OMLX_LLM_BASE_PATH,
+      OMLXLLMApiKey: !!process.env.OMLX_LLM_API_KEY,
+      OMLXLLMModelPref: process.env.OMLX_LLM_MODEL_PREF,
+      OMLXLLMTokenLimit: process.env.OMLX_LLM_TOKEN_LIMIT,
     };
   },
 
