@@ -34,6 +34,11 @@ async function eagerLoadContextWindows() {
       await CerebrasLLM.cacheContextWindows(true);
       log("Cerebras");
       break;
+    case "omlx":
+      const { OMLXLLM } = require("../AiProviders/omlx");
+      await OMLXLLM.cacheContextWindows(true);
+      log("OMLX");
+      break;
   }
 }
 

@@ -122,6 +122,7 @@ AnythingLLM supports multiple users as well where you can control the access and
 - [Lemonade by AMD](https://lemonade-server.ai)
 - [Minimax](https://platform.minimax.io)
 - [Cerebras (chat models)](https://www.cerebras.ai/)
+- [oMLX](https://github.com/jundot/omlx)
 
 **Embedder models:**
 

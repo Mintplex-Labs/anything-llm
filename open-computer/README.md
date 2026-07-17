@@ -122,8 +122,7 @@ Building the base image requires going through a VNC-based OS install as a VM. F
 
 If you want to just grab our pre-built base image, you can use the provided fetch script: `scripts/fetch-base-image.{sh,ps1}`.
 
-We provide pre-built base images for macOS ARM64 and Windows x64 currently, but we're working on supporting more architectures.
-
+We provide pre-built base images for macOS ARM64 and Windows x64 currently, but we're open to supporting more architectures - just open an issue so we know it's important to you.
 
 ## Starting an Agent
 

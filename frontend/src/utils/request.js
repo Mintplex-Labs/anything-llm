@@ -12,6 +12,8 @@ export function baseHeaders(providedToken = null) {
   const token = providedToken || window.localStorage.getItem(AUTH_TOKEN);
   return {
     Authorization: token ? `Bearer ${token}` : null,
+    "X-Timezone": Intl.DateTimeFormat().resolvedOptions().timeZone,
+    "X-Language": navigator.language || "en",
   };
 }
 

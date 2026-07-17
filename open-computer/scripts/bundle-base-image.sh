@@ -7,14 +7,7 @@ BASE_IMAGE_DIR="$PROJECT_DIR/master/base_image"
 
 # ── Detect platform / arch ────────────────────────────────────────────────────
 
-OS="$(uname -s)"
 ARCH_RAW="${1:-$(uname -m)}"
-
-case "$OS" in
-  Darwin) PLATFORM="mac" ;;
-  Linux)  PLATFORM="linux" ;;
-  *) echo "Error: unsupported OS '$OS'" >&2; exit 1 ;;
-esac
 
 case "$ARCH_RAW" in
   arm64|aarch64) ARCH="arm64" ;;
@@ -22,7 +15,7 @@ case "$ARCH_RAW" in
   *) echo "Error: unsupported architecture '$ARCH_RAW' (pass arm64 or x64 as argument)" >&2; exit 1 ;;
 esac
 
-TAR_NAME="${PLATFORM}-${ARCH}-base-image.tar"
+TAR_NAME="${ARCH}-base-image.tar"
 SHA_NAME="${TAR_NAME}.sha256"
 TAR_PATH="$BASE_IMAGE_DIR/$TAR_NAME"
 SHA_PATH="$BASE_IMAGE_DIR/$SHA_NAME"

@@ -10,9 +10,7 @@ $BaseImageDir = Join-Path (Join-Path $ProjectDir 'master') 'base_image'
 $BaseImageDate = "06_08_2026"
 $BaseUrl = if ($env:OPEN_COMPUTER_BASE_IMAGE_URL) { $env:OPEN_COMPUTER_BASE_IMAGE_URL } else { "https://cdn.anythingllm.com/support/open-computer/base-images/$BaseImageDate" }
 
-# ── Detect platform / arch ────────────────────────────────────────────────────
-
-$Platform = "win"
+# ── Detect arch ───────────────────────────────────────────────────────────────
 
 $ArchRaw = $null
 try {
@@ -27,7 +25,7 @@ $Arch = switch ($ArchRaw.ToUpper()) {
     default { Write-Error "Unsupported architecture: $ArchRaw"; exit 1 }
 }
 
-$TarName = "${Platform}-${Arch}-base-image.tar"
+$TarName = "${Arch}-base-image.tar"
 $TarUrl  = "$BaseUrl/$TarName"
 $ShaName = "$TarName.sha256"
 $ShaUrl  = "$BaseUrl/$ShaName"
@@ -48,7 +46,7 @@ foreach ($f in @("base.qcow2", "efi-vars.fd")) {
 if ($ExistingFiles.Count -gt 0) {
     Write-Host "Existing base image files found: $($ExistingFiles -join ', ')"
     Write-Host ""
-    $reply = Read-Host "Delete existing files and re-download the base image for ${Platform}-${Arch}? [y/N]"
+    $reply = Read-Host "Delete existing files and re-download the base image for ${Arch}? [y/N]"
     Write-Host ""
     if ($reply -notmatch '^[yY]([eE][sS])?$') {
         Write-Host "Skipping download. Existing base image kept."
@@ -60,9 +58,9 @@ if ($ExistingFiles.Count -gt 0) {
         if (Test-Path $fp) { Remove-Item -Force $fp }
     }
 } else {
-    Write-Host "No base image found for ${Platform}-${Arch}."
+    Write-Host "No base image found for ${Arch}."
     Write-Host ""
-    $reply = Read-Host "Download ${TarName} (~3.2 GB)? [Y/n]"
+    $reply = Read-Host "Download ${TarName} (~2.3 GB)? [Y/n]"
     Write-Host ""
     if ($reply -match '^[nN]([oO])?$') {
         Write-Host "Skipping download."

@@ -27,8 +27,7 @@ if (-not $Arch) {
     }
 }
 
-$Platform = "win"
-$TarName  = "${Platform}-${Arch}-base-image.tar"
+$TarName  = "${Arch}-base-image.tar"
 $ShaName  = "$TarName.sha256"
 $TarPath  = Join-Path $BaseImageDir $TarName
 $ShaPath  = Join-Path $BaseImageDir $ShaName
