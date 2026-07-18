@@ -14,6 +14,15 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import showToast from "@/utils/toast";
 import { LAST_VISITED_WORKSPACE } from "@/utils/constants";
 import { safeJsonParse } from "@/utils/request";
+import { ShieldStar } from "@phosphor-icons/react";
+
+const SPARKY_WORKSPACE = {
+  id: "sparky-fixed",
+  name: "SPARKY",
+  slug: "sparky",
+  pfpFilename: "sparky-floating-logo.png",
+  fixedWorkspace: true,
+};
 
 export default function ActiveWorkspaces() {
   const navigate = useNavigate();
@@ -30,7 +39,12 @@ export default function ActiveWorkspaces() {
     async function getWorkspaces() {
       const workspaces = await Workspace.all();
       setLoading(false);
-      setWorkspaces(Workspace.orderWorkspaces(workspaces));
+      const ordered = Workspace.orderWorkspaces(workspaces);
+      const withSparky = [
+        SPARKY_WORKSPACE,
+        ...ordered.filter((workspace) => workspace.slug !== "sparky"),
+      ];
+      setWorkspaces(withSparky);
     }
     getWorkspaces();
   }, []);
@@ -86,6 +100,47 @@ export default function ActiveWorkspaces() {
       return lastVisited.slug;
     return workspaces[0]?.slug ?? null;
   })();
+
+  function WorkspaceIcon({ workspace, isActive }) {
+    const [iconUrl, setIconUrl] = useState(null);
+
+    useEffect(() => {
+      let cancelled = false;
+      async function loadIcon() {
+        if (!workspace?.slug) return;
+        const url = await Workspace.fetchPfp(workspace.slug);
+        if (!cancelled) setIconUrl(url);
+      }
+      loadIcon();
+      return () => {
+        cancelled = true;
+      };
+    }, [workspace?.slug, workspace?.pfpFilename]);
+
+    const fallback = workspace.name.slice(0, 1).toUpperCase();
+    return (
+      <div
+        className={`relative h-8 w-8 shrink-0 overflow-hidden rounded-md border border-white/10 bg-zinc-900/70 ${isActive ? "ring-1 ring-white/15" : ""}`}
+      >
+        {iconUrl ? (
+          <img
+            src={iconUrl}
+            alt=""
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center text-[11px] font-bold text-white/80">
+            {fallback}
+          </div>
+        )}
+        {workspace.fixedWorkspace && (
+          <div className="absolute right-0 top-0 rounded-bl bg-black/70 p-[2px]">
+            <ShieldStar size={8} weight="fill" className="text-amber-300" />
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
@@ -143,7 +198,11 @@ export default function ActiveWorkspaces() {
                               data-tooltip-content={workspace.name}
                               className="flex items-center space-x-2 overflow-hidden flex-grow"
                             >
-                              <div className="w-[130px] overflow-hidden">
+                              <WorkspaceIcon
+                                workspace={workspace}
+                                isActive={isActive}
+                              />
+                              <div className="w-[106px] overflow-hidden">
                                 <p
                                   className={`
                                   text-[14px] leading-loose whitespace-nowrap overflow-hidden

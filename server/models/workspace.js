@@ -7,6 +7,7 @@ const { v4: uuidv4 } = require("uuid");
 const { User } = require("./user");
 const { PromptHistory } = require("./promptHistory");
 const { SystemSettings } = require("./systemSettings");
+const { SPARKY, getSparkyWorkspaceTemplate } = require("../utils/sparky");
 
 function isNullOrNaN(value) {
   if (value === null) return true;
@@ -35,6 +36,8 @@ function isNullOrNaN(value) {
 const Workspace = {
   VALID_CHAT_MODES: ["chat", "query", "automatic"],
   defaultPrompt: SystemSettings.saneDefaultSystemPrompt,
+
+  sparkyWorkspaceTemplate: getSparkyWorkspaceTemplate(),
 
   // Used for generic updates so we can validate keys in request body
   // commented fields are not writable, but are available on the db object
@@ -290,6 +293,7 @@ const Workspace = {
   },
 
   getWithUser: async function (user = null, clause = {}) {
+    if (clause?.slug === SPARKY.slug) return this.sparkyWorkspaceTemplate;
     if ([ROLES.admin, ROLES.manager].includes(user.role))
       return this.get(clause);
 
@@ -362,6 +366,7 @@ const Workspace = {
   },
 
   get: async function (clause = {}) {
+    if (clause?.slug === SPARKY.slug) return this.sparkyWorkspaceTemplate;
     try {
       const workspace = await prisma.workspaces.findFirst({
         where: clause,
@@ -403,10 +408,10 @@ const Workspace = {
         ...(limit !== null ? { take: limit } : {}),
         ...(orderBy !== null ? { orderBy } : {}),
       });
-      return results;
+      return this._withSparkyWorkspace(results);
     } catch (error) {
       console.error(error.message);
-      return [];
+      return this._withSparkyWorkspace([]);
     }
   },
 
@@ -432,10 +437,10 @@ const Workspace = {
         ...(limit !== null ? { take: limit } : {}),
         ...(orderBy !== null ? { orderBy } : {}),
       });
-      return workspaces;
+      return this._withSparkyWorkspace(workspaces);
     } catch (error) {
       console.error(error.message);
-      return [];
+      return this._withSparkyWorkspace([]);
     }
   },
 
@@ -443,6 +448,10 @@ const Workspace = {
     try {
       const workspaces = await this.where(clause, limit, orderBy);
       for (const workspace of workspaces) {
+        if (!Number.isFinite(Number(workspace.id))) {
+          workspace.userIds = [];
+          continue;
+        }
         const userIds = (
           await WorkspaceUser.where({ workspace_id: Number(workspace.id) })
         ).map((rel) => rel.user_id);
@@ -453,6 +462,12 @@ const Workspace = {
       console.error(error.message);
       return [];
     }
+  },
+
+  _withSparkyWorkspace: function (workspaces = []) {
+    const list = Array.isArray(workspaces) ? [...workspaces] : [];
+    if (list.some((workspace) => workspace?.slug === SPARKY.slug)) return list;
+    return [this.sparkyWorkspaceTemplate, ...list];
   },
 
   /**

@@ -4,6 +4,7 @@ const { getType } = require("mime");
 const { User } = require("../../models/user");
 const { normalizePath, isWithin } = require(".");
 const { Workspace } = require("../../models/workspace");
+const { SPARKY } = require("../sparky");
 
 function fetchPfp(pfpPath) {
   if (!fs.existsSync(pfpPath)) {
@@ -42,6 +43,15 @@ async function determinePfpFilepath(id) {
 }
 
 async function determineWorkspacePfpFilepath(slug) {
+  if (slug === SPARKY.slug) {
+    const sparkyPath = path.join(
+      process.env.STORAGE_DIR
+        ? path.join(process.env.STORAGE_DIR, "assets/pfp")
+        : path.join(__dirname, "../../storage/assets/pfp"),
+      normalizePath(SPARKY.iconFilename)
+    );
+    if (fs.existsSync(sparkyPath)) return sparkyPath;
+  }
   const workspace = await Workspace.get({ slug });
   const pfpFilename = workspace?.pfpFilename || null;
   if (!pfpFilename) return null;

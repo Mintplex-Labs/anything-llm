@@ -1,5 +1,7 @@
 const { PrismaClient } = require("@prisma/client");
+const fs = require("fs");
 const prisma = new PrismaClient();
+const { SPARKY, getSparkyWorkspaceTemplate } = require("../utils/sparky");
 
 async function main() {
   const settings = [
@@ -18,6 +20,24 @@ async function main() {
         data: setting,
       });
     }
+  }
+
+  const sparkyTemplate = getSparkyWorkspaceTemplate();
+  const sparkyPrompt = fs.readFileSync(SPARKY.systemPromptPath, "utf8");
+  const existingSparky = await prisma.workspaces.findUnique({
+    where: { slug: SPARKY.slug },
+  });
+
+  if (!existingSparky) {
+    await prisma.workspaces.create({
+      data: {
+        name: sparkyTemplate.name,
+        slug: sparkyTemplate.slug,
+        chatMode: sparkyTemplate.chatMode,
+        openAiPrompt: sparkyPrompt,
+        pfpFilename: sparkyTemplate.pfpFilename,
+      },
+    });
   }
 }
 
