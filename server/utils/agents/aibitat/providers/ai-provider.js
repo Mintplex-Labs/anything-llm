@@ -29,7 +29,7 @@ const {
 const { OllamaAILLM } = require("../../../AiProviders/ollama");
 
 const DEFAULT_WORKSPACE_PROMPT =
-  "You are a helpful ai assistant who can assist the user and use tools available to help answer the users prompts and questions.";
+  "You are a helpful ai assistant who can assist the user and use tools available to help answer the users prompts and questions. The current date and time is {datetime}.";
 
 /**
  * @typedef {Object} ProviderUsageMetrics
@@ -525,13 +525,15 @@ class Provider {
     const { promptWithMemories } = require("../../../memories");
     const basePrompt = !workspace?.openAiPrompt
       ? Provider.defaultSystemPromptForProvider(provider)
-      : await SystemPromptVariables.expandSystemPromptVariables(
-          workspace.openAiPrompt,
-          user?.id || null,
-          workspace.id
-        );
+      : workspace.openAiPrompt;
+    const systemPrompt =
+      await SystemPromptVariables.expandSystemPromptVariables(
+        basePrompt,
+        user?.id || null,
+        workspace?.id || null
+      );
     return promptWithMemories({
-      systemPrompt: basePrompt,
+      systemPrompt,
       userId: user?.id ?? null,
       workspaceId: workspace?.id,
       prompt,

@@ -26,6 +26,10 @@ const { WORKSPACE_AGENT } = require("../../../utils/agents/defaults");
 describe("WORKSPACE_AGENT.getDefinition", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    SystemPromptVariables.expandSystemPromptVariables.mockReset();
+    SystemPromptVariables.expandSystemPromptVariables.mockImplementation(
+      async (prompt) => prompt.replace("{datetime}", "January 1, 2024 12:00 PM")
+    );
     // Mock SystemSettings to return empty arrays for agent skills
     const { SystemSettings } = require("../../../models/systemSettings");
     SystemSettings.getValueOrFallback = jest.fn().mockResolvedValue("[]");
@@ -46,7 +50,11 @@ describe("WORKSPACE_AGENT.getDefinition", () => {
       user
     );
     expect(definition.role).toBe(expectedPrompt);
-    expect(SystemPromptVariables.expandSystemPromptVariables).not.toHaveBeenCalled();
+    expect(SystemPromptVariables.expandSystemPromptVariables).toHaveBeenCalledWith(
+      Provider.defaultSystemPromptForProvider(provider),
+      user.id,
+      workspace.id
+    );
   });
 
   it("should use workspace system prompt with variable expansion when openAiPrompt exists", async () => {
@@ -128,4 +136,3 @@ describe("WORKSPACE_AGENT.getDefinition", () => {
     expect(definition.role).toContain("helpful ai assistant");
   });
 });
-
