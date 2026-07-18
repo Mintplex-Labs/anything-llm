@@ -134,6 +134,7 @@ model workspaces {
   chatModel                    String?
   topN                         Int?                           @default(4)
   chatMode                     String?                        @default("chat")
+  pfpFilename                  String?
   agentProvider                String?
   agentModel                   String?
   queryRefusalResponse         String?
