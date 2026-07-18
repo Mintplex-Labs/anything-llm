@@ -50,11 +50,24 @@ export default forwardRef(function (
   const { showScrollbar } = Appearance.getSettings();
   const { textSizeClass } = useTextSize();
 
+  const lastTouchYRef = useRef(null);
+  const prevHistoryLengthRef = useRef(history.length);
+
   useEffect(() => {
-    if (!isUserScrolling && (isAtBottom || isStreaming)) {
+    // Sending a prompt appends a pending reply - always snap to it and re-enable follow
+    const sentNewPrompt =
+      history.length > prevHistoryLengthRef.current &&
+      history[history.length - 1]?.pending;
+    prevHistoryLengthRef.current = history.length;
+
+    if (sentNewPrompt) {
+      setIsUserScrolling(false);
       scrollToBottom(false);
+      return;
     }
-  }, [history, isAtBottom, isStreaming, isUserScrolling]);
+
+    if (!isUserScrolling && isAtBottom) scrollToBottom(false);
+  }, [history, isAtBottom, isUserScrolling]);
 
   const handleScroll = useCallback((e) => {
     const { scrollTop, scrollHeight, clientHeight } = e.target;
@@ -74,6 +87,23 @@ export default forwardRef(function (
     () => debounce(handleScroll, 50),
     [handleScroll]
   );
+
+  // Wheel/touch-up immediately opts out of auto-follow - unlike scroll events,
+  // these never fire from programmatic scrolls so they can't be swallowed mid-stream
+  const handleWheel = useCallback((e) => {
+    if (e.deltaY < 0) setIsUserScrolling(true);
+  }, []);
+
+  const handleTouchStart = useCallback((e) => {
+    lastTouchYRef.current = e.touches[0].clientY;
+  }, []);
+
+  const handleTouchMove = useCallback((e) => {
+    const y = e.touches[0].clientY;
+    if (lastTouchYRef.current !== null && y > lastTouchYRef.current)
+      setIsUserScrolling(true);
+    lastTouchYRef.current = y;
+  }, []);
 
   useEffect(() => {
     return () => debouncedScroll.cancel();
@@ -222,6 +252,9 @@ export default forwardRef(function (
           id="chat-history"
           ref={chatHistoryRef}
           onScroll={debouncedScroll}
+          onWheel={handleWheel}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
         >
           <div className="w-full max-w-[750px]">
             {compiledHistory.map((item, index) =>
