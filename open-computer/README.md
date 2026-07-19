@@ -12,7 +12,7 @@
 <video src="https://github.com/user-attachments/assets/79334c87-c5ae-4c2c-8384-d7ef922e4184"></video>
 
 > [!IMPORTANT]
-> This project is a work in progress and is something we intend to bring fully into AnythingLLM — enabling custom, secure, and scalable agent compute for everyone.
+> This project is a work in progress and is something we intend to bring fully into AnythingLLM — enabling custom, secure, and scalable agent computer for everyone.
 >
 > ⭐ Star the repo to stay updated!
 
