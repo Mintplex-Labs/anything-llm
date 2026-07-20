@@ -1,12 +1,5 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-  useMemo,
-  useCallback,
-  forwardRef,
-} from "react";
-import debounce from "lodash.debounce";
+/* eslint-disable react-hooks/refs */
+import { useRef, useMemo, useCallback, forwardRef } from "react";
 import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
 import StatusResponse from "./StatusResponse";
@@ -24,7 +17,7 @@ import { useParams } from "react-router-dom";
 import paths from "@/utils/paths";
 import Appearance from "@/models/appearance";
 import useTextSize from "@/hooks/useTextSize";
-import useChatHistoryScrollHandle from "@/hooks/useChatHistoryScrollHandle";
+import useAutoScroll from "@/hooks/useAutoScroll";
 import { ThoughtExpansionProvider } from "./ThoughtContainer";
 import { MessageActionsProvider } from "./MessageActionsContext";
 
@@ -39,98 +32,18 @@ export default forwardRef(function (
   },
   ref
 ) {
-  const lastScrollTopRef = useRef(0);
-  const chatHistoryRef = useRef(null);
   const { threadSlug = null } = useParams();
   const { showing, hideModal } = useManageWorkspaceModal();
-  const [isAtBottom, setIsAtBottom] = useState(true);
   const isStreaming = history[history.length - 1]?.animate;
   const { showScrollbar } = Appearance.getSettings();
   const { textSizeClass } = useTextSize();
-
-  // Explicit follow lock: while true, the view stays pinned to the bottom.
-  // Not derived from measured scroll position - during streaming that
-  // measurement races against content growth and is never reliable.
-  const autoFollowRef = useRef(true);
-  const chatContentRef = useRef(null);
-  const lastScrollHeightRef = useRef(0);
-  const lastTouchYRef = useRef(null);
-
-  // While locked, re-pin whenever the message list changes height: on mount,
-  // new messages, every streamed token, and late layout shifts (message
-  // re-renders, images/markdown settling). ResizeObserver fires after layout
-  // for every height change, so the pin holds through all of them.
-  useEffect(() => {
-    if (!chatContentRef.current) return;
-    const observer = new ResizeObserver(() => {
-      if (autoFollowRef.current) scrollToBottom(false);
-    });
-    observer.observe(chatContentRef.current);
-    return () => observer.disconnect();
-  }, []);
-
-  const handleScroll = useCallback((e) => {
-    const { scrollTop, scrollHeight, clientHeight } = e.target;
-    const isBottom = scrollHeight - scrollTop - clientHeight < 2;
-
-    // Programmatic scrolls only ever move down, so upward movement is the
-    // user scrolling away - unlock follow (covers scrollbar drags, which
-    // fire no wheel/touch events). Reaching the bottom re-locks it. When
-    // content shrinks, the browser clamps scrollTop down too - that drop is
-    // not a user scroll, so it must not unlock.
-    const contentShrank = scrollHeight < lastScrollHeightRef.current;
-    if (scrollTop < lastScrollTopRef.current - 10 && !contentShrank) {
-      autoFollowRef.current = false;
-    } else if (isBottom) {
-      autoFollowRef.current = true;
-    }
-
-    setIsAtBottom(isBottom);
-    lastScrollTopRef.current = scrollTop;
-    lastScrollHeightRef.current = scrollHeight;
-  }, []);
-
-  const debouncedScroll = useMemo(
-    () => debounce(handleScroll, 50),
-    [handleScroll]
-  );
-
-  // Wheel/touch-up immediately unlocks follow - unlike scroll events, these
-  // never fire from programmatic scrolls and are not debounced, so the opt-out
-  // cannot be swallowed by the streaming snap race
-  const handleWheel = useCallback((e) => {
-    if (e.deltaY < 0) autoFollowRef.current = false;
-  }, []);
-
-  const handleTouchStart = useCallback((e) => {
-    lastTouchYRef.current = e.touches[0].clientY;
-  }, []);
-
-  const handleTouchMove = useCallback((e) => {
-    const y = e.touches[0].clientY;
-    if (lastTouchYRef.current !== null && y > lastTouchYRef.current)
-      autoFollowRef.current = false;
-    lastTouchYRef.current = y;
-  }, []);
-
-  useEffect(() => {
-    return () => debouncedScroll.cancel();
-  }, [debouncedScroll]);
-
-  const scrollToBottom = (smooth = false) => {
-    if (chatHistoryRef.current) {
-      chatHistoryRef.current.scrollTo({
-        top: chatHistoryRef.current.scrollHeight,
-        ...(smooth ? { behavior: "smooth" } : {}),
-      });
-    }
-  };
-
-  useChatHistoryScrollHandle(ref, chatHistoryRef, {
-    setAutoFollow: (value) => (autoFollowRef.current = value),
-    isStreaming,
+  const {
+    chatHistoryRef,
+    chatContentRef,
+    isAtBottom,
     scrollToBottom,
-  });
+    handlers: scrollHandlers,
+  } = useAutoScroll(ref, { isStreaming });
 
   const historyRef = useRef(history);
   historyRef.current = history;
@@ -258,10 +171,7 @@ export default forwardRef(function (
           className={`markdown text-white/80 light:text-theme-text-primary font-light ${textSizeClass} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col items-center justify-start ${showScrollbar ? "show-scrollbar" : "no-scroll"}`}
           id="chat-history"
           ref={chatHistoryRef}
-          onScroll={debouncedScroll}
-          onWheel={handleWheel}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
+          {...scrollHandlers}
         >
           <div className="w-full max-w-[750px]" ref={chatContentRef}>
             {compiledHistory.map((item, index) =>
@@ -280,10 +190,7 @@ export default forwardRef(function (
             <div className="flex flex-col items-center">
               <div
                 className="p-1 rounded-full border border-white/10 bg-white/10 hover:bg-white/20 hover:text-white"
-                onClick={() => {
-                  autoFollowRef.current = true;
-                  scrollToBottom(isStreaming ? false : true);
-                }}
+                onClick={scrollToBottom}
               >
                 <ArrowDown weight="bold" className="text-white/60 w-5 h-5" />
               </div>
