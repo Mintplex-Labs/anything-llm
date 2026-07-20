@@ -142,6 +142,7 @@ export default function ChatContainer({
       endSTTSession();
     }
     setChatHistory(prevChatHistory);
+    chatHistoryRef.current?.scrollToBottom();
     setMessageEmit("");
     setLoadingResponse(true);
   };
@@ -247,6 +248,7 @@ export default function ChatContainer({
     }
 
     setChatHistory(prevChatHistory);
+    chatHistoryRef.current?.scrollToBottom();
     setMessageEmit("");
     setLoadingResponse(true);
   };

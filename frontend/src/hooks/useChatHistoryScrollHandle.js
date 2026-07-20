@@ -7,21 +7,21 @@ import { useImperativeHandle } from "react";
  * @param {React.Ref} ref - The forwarded ref from the parent component
  * @param {React.RefObject} chatHistoryRef - Ref to the scrollable chat history DOM element
  * @param {Object} options - Configuration options
- * @param {Function} options.setIsUserScrolling - Setter to mark user-initiated scrolling
+ * @param {Function} options.setAutoFollow - Setter for the auto-follow lock (true = keep view pinned to the streaming tail)
  * @param {boolean} options.isStreaming - Whether chat is currently streaming a response
  * @param {Function} options.scrollToBottom - Internal scroll to bottom function
  */
 export default function useChatHistoryScrollHandle(
   ref,
   chatHistoryRef,
-  { setIsUserScrolling, isStreaming, scrollToBottom }
+  { setAutoFollow, isStreaming, scrollToBottom }
 ) {
   useImperativeHandle(
     ref,
     () => ({
       scrollToTop() {
         if (chatHistoryRef.current) {
-          setIsUserScrolling(true);
+          setAutoFollow(false);
           chatHistoryRef.current.scrollTo({
             top: 0,
             behavior: "smooth",
@@ -29,7 +29,7 @@ export default function useChatHistoryScrollHandle(
         }
       },
       scrollToBottom() {
-        setIsUserScrolling(true);
+        setAutoFollow(true);
         scrollToBottom(isStreaming ? false : true);
       },
     }),
