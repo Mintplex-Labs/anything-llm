@@ -84,16 +84,23 @@ const WORKSPACE_AGENT = {
       role +=
         "\n\nWhen you need information from the user (URLs, file paths, preferences, choices, etc.), you MUST use the request-user-input tool. Do not ask questions in your text response - the user cannot reply to text. Only the tool can collect user input.";
 
-    return {
-      role,
-      functions: [
-        ...(await agentSkillsFromSystemSettings()),
-        ...clarifyingQuestionsSkills,
-        ...ImportedPlugin.activeImportedPlugins(),
-        ...AgentFlows.activeFlowPlugins(),
-        ...(await new MCPCompatibilityLayer().activeMCPServers()),
-      ],
-    };
+    const functions = [
+      ...(await agentSkillsFromSystemSettings()),
+      ...clarifyingQuestionsSkills,
+      ...ImportedPlugin.activeImportedPlugins(),
+      ...AgentFlows.activeFlowPlugins(),
+      ...(await new MCPCompatibilityLayer().activeMCPServers()),
+    ];
+
+    // When rag-memory is enabled, add explicit tool-routing guidance so the
+    // agent does not reach for filesystem tools when the user references
+    // workspace documents - embedded documents are not on the filesystem and
+    // are only reachable via the rag-memory tool. See issue #5968.
+    if (functions.includes(AgentPlugins.memory.name))
+      role +=
+        "\n\nDocuments uploaded or embedded into this workspace live in a vector database - NOT on the filesystem. When the user references workspace documents or uploaded files, or a document they mention cannot be found on the local filesystem, use the rag-memory tool to search for it before trying any other tool.";
+
+    return { role, functions };
   },
 };
 

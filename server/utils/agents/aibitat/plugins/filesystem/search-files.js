@@ -12,8 +12,11 @@ module.exports.FilesystemSearchFiles = {
           super: aibitat,
           name: this.name,
           description:
-            "Search for files by name or content. USE THIS FIRST when you need to find a file " +
-            "but don't know its exact location. " +
+            "Search the local filesystem for files by name or content. Use this when you need to find a file " +
+            "on disk but don't know its exact location. " +
+            "NOTE: this only sees files in the local sandbox directory. Documents embedded in the workspace " +
+            "are NOT on the filesystem and can only be searched with the 'rag-memory' tool — if a document " +
+            "the user references is not found here, use 'rag-memory' instead. " +
             "Two modes: 'glob' matches file paths/names (e.g., '*.csv', 'config'), " +
             "'content' searches inside files using regex (like grep). " +
             "Set 'includeFileContents: true' to also read and return the full contents of matching files " +

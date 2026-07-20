@@ -19,13 +19,26 @@ const memory = {
           tracker: new Deduplicator(),
           name: this.name,
           description:
-            "Search your local documents and workspace files for relevant information, or store information to long-term memory. Use search to find answers in uploaded documents, embedded files, or previously stored memories. Use store only when explicitly asked to remember or save something.",
+            "Search the documents embedded in this workspace, or store information to long-term memory. " +
+            "Embedded workspace documents do NOT exist on the filesystem and cannot be found by any filesystem tool — " +
+            "this is the ONLY tool that can read them. " +
+            "Use search whenever the user references workspace documents, uploaded or embedded files, or previously stored memories, " +
+            "or when a document they mention cannot be found on the local filesystem. " +
+            "Use store only when explicitly asked to remember or save something.",
           examples: [
             {
               prompt: "Check my files for information about the project",
               call: JSON.stringify({
                 action: "search",
                 content: "<project information to search for>",
+              }),
+            },
+            {
+              prompt:
+                "Using the information stored in this workspace, summarize the quarterly report",
+              call: JSON.stringify({
+                action: "search",
+                content: "quarterly report",
               }),
             },
             {

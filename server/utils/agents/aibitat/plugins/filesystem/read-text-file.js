@@ -17,6 +17,8 @@ module.exports.FilesystemReadTextFile = {
             "IMPORTANT: Only use this tool when you know the exact file path. " +
             "If you don't know where a file is located, use 'filesystem-search-files' first " +
             "to find it (e.g., search for '*.csv' or the filename). " +
+            "Documents embedded in the workspace are NOT on the filesystem — " +
+            "use the 'rag-memory' tool to search those instead. " +
             "Use the 'head' parameter to read only the first N lines, or 'tail' for the last N lines (text files only). " +
             "Only works within allowed directories.",
           examples: [

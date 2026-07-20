@@ -45,7 +45,7 @@ describe("WORKSPACE_AGENT.getDefinition", () => {
       workspace,
       user
     );
-    expect(definition.role).toBe(expectedPrompt);
+    expect(definition.role.startsWith(expectedPrompt)).toBe(true);
     expect(SystemPromptVariables.expandSystemPromptVariables).not.toHaveBeenCalled();
   });
 
@@ -72,7 +72,7 @@ describe("WORKSPACE_AGENT.getDefinition", () => {
       user.id,
       workspace.id
     );
-    expect(definition.role).toBe(expandedPrompt);
+    expect(definition.role.startsWith(expandedPrompt)).toBe(true);
   });
 
   it("should handle workspace system prompt without user context", async () => {
@@ -97,7 +97,7 @@ describe("WORKSPACE_AGENT.getDefinition", () => {
       null,
       workspace.id
     );
-    expect(definition.role).toBe(expandedPrompt);
+    expect(definition.role.startsWith(expandedPrompt)).toBe(true);
   });
 
   it("should return functions array in definition", async () => {
@@ -124,8 +124,42 @@ describe("WORKSPACE_AGENT.getDefinition", () => {
       null
     );
 
-    expect(definition.role).toBe(await Provider.systemPrompt({ provider, workspace, user }));
+    const expectedPrompt = await Provider.systemPrompt({ provider, workspace, user });
+    expect(definition.role.startsWith(expectedPrompt)).toBe(true);
     expect(definition.role).toContain("helpful ai assistant");
+  });
+
+  it("should append rag-memory routing guidance when the skill is enabled", async () => {
+    const workspace = { id: 1, openAiPrompt: null };
+    const definition = await WORKSPACE_AGENT.getDefinition(
+      "openai",
+      workspace,
+      null
+    );
+
+    expect(definition.functions).toContain("rag-memory");
+    expect(definition.role).toContain("rag-memory");
+    expect(definition.role).toContain("vector database");
+  });
+
+  it("should not append rag-memory routing guidance when the skill is disabled", async () => {
+    const { SystemSettings } = require("../../../models/systemSettings");
+    SystemSettings.getValueOrFallback = jest
+      .fn()
+      .mockImplementation(async ({ label }, fallback) => {
+        if (label === "disabled_agent_skills") return '["rag-memory"]';
+        return fallback;
+      });
+
+    const workspace = { id: 1, openAiPrompt: null };
+    const definition = await WORKSPACE_AGENT.getDefinition(
+      "openai",
+      workspace,
+      null
+    );
+
+    expect(definition.functions).not.toContain("rag-memory");
+    expect(definition.role).not.toContain("rag-memory");
   });
 });
 
