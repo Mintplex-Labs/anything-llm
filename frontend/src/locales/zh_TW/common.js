@@ -1015,6 +1015,7 @@ const TRANSLATIONS = {
       "fetch-website": "擷取網站",
       "privacy-notice":
         "這些檔案會上傳到此 AnythingLLM 系統上的文件處理器，不會傳送給或分享給第三方。",
+      "select-folder": "或選擇一個資料夾",
     },
     pinning: {
       what_pinning: "什麼是文件釘選？",

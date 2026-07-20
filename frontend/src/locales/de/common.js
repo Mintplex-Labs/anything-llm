@@ -1216,6 +1216,7 @@ const TRANSLATIONS = {
       "fetch-website": "Website abrufen",
       "privacy-notice":
         "Diese Dateien werden zum Dokumentenprozessor hochgeladen, der auf dieser AnythingLLM-Instanz läuft. Diese Dateien werden nicht an Dritte gesendet oder geteilt.",
+      "select-folder": "oder einen Ordner auswählen",
     },
     pinning: {
       what_pinning: "Was bedeutet es Dokumente anzuheften?",

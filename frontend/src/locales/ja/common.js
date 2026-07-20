@@ -1068,6 +1068,7 @@ const TRANSLATIONS = {
       "fetch-website": "ウェブサイトを取得",
       "privacy-notice":
         "これらのファイルは、このAnythingLLMインスタンス上のドキュメント処理機能にアップロードされます。第三者に送信・共有されることはありません。",
+      "select-folder": "または、フォルダを選択してください。",
     },
     pinning: {
       what_pinning: "ドキュメントのピン留めとは？",

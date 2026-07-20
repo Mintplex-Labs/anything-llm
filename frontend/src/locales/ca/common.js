@@ -1308,6 +1308,7 @@ const TRANSLATIONS = {
       "fetch-website": "Obtén el lloc web",
       "privacy-notice":
         "Aquests fitxers es pujaran al processador de documents que s'executa en aquesta instància d'AnythingLLM. Aquests fitxers no s'envien ni es comparteixen amb tercers.",
+      "select-folder": "o seleccioneu una carpeta",
     },
     pinning: {
       what_pinning: "Què és l'ancoratge de documents?",

@@ -470,6 +470,7 @@ const TRANSLATIONS = {
       "fetch-website": "Preluare site web",
       "privacy-notice":
         "Aceste fișiere vor fi încărcate în procesorul de documente care rulează pe această instanță AnythingLLM. Aceste fișiere nu sunt trimise sau partajate cu o terță parte.",
+      "select-folder": "sau selectați o anumită fooldă",
     },
     pinning: {
       what_pinning: "Ce este fixarea documentelor?",

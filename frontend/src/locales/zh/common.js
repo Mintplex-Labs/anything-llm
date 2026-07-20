@@ -1101,6 +1101,7 @@ const TRANSLATIONS = {
       "fetch-website": "获取网站",
       "privacy-notice":
         "这些文件将被上传到此 AnythingLLM 实例上的文档处理器。这些文件不会发送或共享给第三方。",
+      "select-folder": "或者选择一个文件夹",
     },
     pinning: {
       what_pinning: "什么是文档固定？",

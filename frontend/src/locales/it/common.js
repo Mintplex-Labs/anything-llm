@@ -1108,6 +1108,7 @@ const TRANSLATIONS = {
       "fetch-website": "Recupera il sito web",
       "privacy-notice":
         "Questi file verranno caricati nel processore di documenti in esecuzione su questa istanza di AnythingLLM. Questi file non vengono inviati o condivisi con terzi.",
+      "select-folder": "oppure seleziona una cartella",
     },
     pinning: {
       what_pinning: 'Cos\'è il "pinning" di un documento?',

@@ -1199,6 +1199,7 @@ const TRANSLATIONS = {
       "fetch-website": "Iegūt vietni",
       "privacy-notice":
         "Šie faili tiks augšupielādēti dokumentu apstrādātājā, kas darbojas šajā AnythingLLM instancē. Šie faili netiek nosūtīti vai kopīgoti ar trešo pusi.",
+      "select-folder": "vai izvēlieties mapi",
     },
     pinning: {
       what_pinning: "Kas ir dokumentu piespraušana?",

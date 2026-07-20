@@ -1220,6 +1220,7 @@ const TRANSLATIONS = {
       "fetch-website": "Stáhnout webovou stránku",
       "privacy-notice":
         "Tyto soubory budou nahrány na procesor dokumentů běžící na této instanci AnythingLLM. Tyto soubory nejsou odesílány nebo sdíleny s třetí stranou.",
+      "select-folder": "nebo vyberte složku",
     },
     pinning: {
       what_pinning: "Co je připínání dokumentů?",

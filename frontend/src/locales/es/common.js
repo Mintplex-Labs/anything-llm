@@ -1226,6 +1226,7 @@ const TRANSLATIONS = {
       "fetch-website": "Obtener sitio web",
       "privacy-notice":
         "Estos archivos se subirán al procesador de documentos que se ejecuta en esta instancia de AnythingLLM. Estos archivos no se envían ni se comparten con terceros.",
+      "select-folder": "o seleccione una carpeta",
     },
     pinning: {
       what_pinning: "¿Qué es fijar documentos?",

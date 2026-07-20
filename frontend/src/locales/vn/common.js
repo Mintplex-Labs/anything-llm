@@ -1084,6 +1084,7 @@ const TRANSLATIONS = {
       "fetch-website": "Lấy website",
       "privacy-notice":
         "Các tệp này sẽ được tải lên trình xử lý tài liệu đang chạy trên phiên bản AnythingLLM này. Các tệp này không được gửi hoặc chia sẻ với bên thứ ba.",
+      "select-folder": "hoặc chọn một thư mục",
     },
     pinning: {
       what_pinning: "Ghim tài liệu là gì?",

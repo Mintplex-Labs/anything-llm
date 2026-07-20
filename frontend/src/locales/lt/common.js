@@ -1222,6 +1222,7 @@ const TRANSLATIONS = {
       "fetch-website": "Gauti svetainę",
       "privacy-notice":
         "Šie failai bus įkelti į dokumentų procesorių, veikiantį šioje AnythingLLM instancijoje. Šie failai nėra siunčiami ar bendrinami su trečiosiomis šalimis.",
+      "select-folder": "arba pasirinkite sąsikopą",
     },
     pinning: {
       what_pinning: "Kas yra dokumento prisegimas?",

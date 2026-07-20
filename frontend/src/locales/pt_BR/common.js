@@ -1190,6 +1190,7 @@ const TRANSLATIONS = {
       "fetch-website": "Buscar site",
       "privacy-notice":
         "Esses arquivos são enviados ao processador local do AnythingLLM. Não são compartilhados com terceiros.",
+      "select-folder": "ou selecione uma pasta",
     },
     pinning: {
       what_pinning: "O que é fixar documento?",

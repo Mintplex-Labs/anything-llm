@@ -1164,6 +1164,7 @@ const TRANSLATIONS = {
       "fetch-website": "Tõmba veebisait",
       "privacy-notice":
         "Failid laetakse üles selle instantsi dokumenditöötlejasse ega jagata kolmandatele osapooltele.",
+      "select-folder": "või valige kaust",
     },
     pinning: {
       what_pinning: "Mis on dokumendi kinnitamine?",

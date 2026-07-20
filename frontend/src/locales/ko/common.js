@@ -1163,6 +1163,7 @@ const TRANSLATIONS = {
       "fetch-website": "웹사이트 가져오기",
       "privacy-notice":
         "이 파일들은 이 AnythingLLM 인스턴스에서 실행 중인 문서 처리기로 업로드됩니다. 파일은 제3자에게 전송되거나 공유되지 않습니다.",
+      "select-folder": "또는 폴더를 선택하세요",
     },
     pinning: {
       what_pinning: "문서 고정이란 무엇인가요?",

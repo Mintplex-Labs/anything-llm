@@ -1094,6 +1094,7 @@ const TRANSLATIONS = {
       "fetch-website": "Website ophalen",
       "privacy-notice":
         "Deze bestanden worden geüpload naar de documentverwerker die op deze AnythingLLM-instantie draait. Deze bestanden worden niet verzonden naar of gedeeld met derden.",
+      "select-folder": "of een map selecteren",
     },
     pinning: {
       what_pinning: "Wat is het vastzetten van documenten?",

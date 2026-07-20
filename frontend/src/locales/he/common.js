@@ -1150,6 +1150,7 @@ const TRANSLATIONS = {
       "fetch-website": "אחזר אתר אינטרנט",
       "privacy-notice":
         "קבצים אלה יועלו למעבד המסמכים הפועל במופע זה של AnythingLLM. קבצים אלה אינם נשלחים או משותפים עם צד שלישי.",
+      "select-folder": "או בחרו תיקייה",
     },
     pinning: {
       what_pinning: "מהי הצמדת מסמכים?",

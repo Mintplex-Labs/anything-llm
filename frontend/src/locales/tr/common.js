@@ -1100,6 +1100,7 @@ const TRANSLATIONS = {
       "fetch-website": "Web sitesini al",
       "privacy-notice":
         "Bu dosyalar, bu AnythingLLM örneğinde çalışan belge işleyiciye yüklenecektir. Bu dosyalar üçüncü taraflarla paylaşılmaz.",
+      "select-folder": "veya bir klasör seçin",
     },
     pinning: {
       what_pinning: "Belge sabitleme nedir?",

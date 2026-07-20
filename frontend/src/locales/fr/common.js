@@ -1108,6 +1108,7 @@ const TRANSLATIONS = {
       "fetch-website": "Récupérer le site web",
       "privacy-notice":
         "Ces fichiers seront téléchargés sur cette instance AnythingLLM uniquement.",
+      "select-folder": "ou sélectionnez un dossier",
     },
     pinning: {
       what_pinning: "Qu'est-ce que l'épinglage de documents ?",

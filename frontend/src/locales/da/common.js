@@ -1083,6 +1083,7 @@ const TRANSLATIONS = {
       "fetch-website": "Hent hjemmeside",
       "privacy-notice":
         "Disse filer vil blive uploadet til dokumentbehandleren, der kører på denne AnythingLLM-instans. Filene sendes ikke eller deles med en tredjepart.",
+      "select-folder": "eller vælg en mappe",
     },
     pinning: {
       what_pinning: "Hvad er dokumentfastlåsning?",

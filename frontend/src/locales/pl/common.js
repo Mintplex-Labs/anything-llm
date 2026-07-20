@@ -1208,6 +1208,7 @@ const TRANSLATIONS = {
       "fetch-website": "Pobierz zawartość strony",
       "privacy-notice":
         "Pliki zostaną przetworzone w obrębie danej instancji AnythingLLM. Pliki te nie będą udostępniane innym podmiotom.",
+      "select-folder": "lub wybierz folder",
     },
     pinning: {
       what_pinning: "Czym jest przypinanie dokumentów?",
