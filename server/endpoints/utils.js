@@ -243,6 +243,9 @@ function getModelTag() {
     case "omlx":
       model = process.env.OMLX_LLM_MODEL_PREF;
       break;
+    case "basert":
+      model = process.env.BASERT_LLM_MODEL_PREF;
+      break;
     default:
       model = "--";
       break;

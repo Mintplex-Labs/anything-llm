@@ -245,6 +245,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "omlx":
       const { OMLXLLM } = require("../AiProviders/omlx");
       return new OMLXLLM(embedder, model);
+    case "basert":
+      const { BaseRTLLM } = require("../AiProviders/baseRT");
+      return new BaseRTLLM(embedder, model);
     case "minimax":
       const { MinimaxLLM } = require("../AiProviders/minimax");
       return new MinimaxLLM(embedder, model);
@@ -291,6 +294,9 @@ function getEmbeddingEngineSelection() {
     case "lmstudio":
       const { LMStudioEmbedder } = require("../EmbeddingEngines/lmstudio");
       return new LMStudioEmbedder();
+    case "basert":
+      const { BaseRTEmbedder } = require("../EmbeddingEngines/baseRT");
+      return new BaseRTEmbedder();
     case "cohere":
       const { CohereEmbedder } = require("../EmbeddingEngines/cohere");
       return new CohereEmbedder();
@@ -436,6 +442,9 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "omlx":
       const { OMLXLLM } = require("../AiProviders/omlx");
       return OMLXLLM;
+    case "basert":
+      const { BaseRTLLM } = require("../AiProviders/baseRT");
+      return BaseRTLLM;
     case "minimax":
       const { MinimaxLLM } = require("../AiProviders/minimax");
       return MinimaxLLM;
@@ -527,6 +536,8 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.LEMONADE_LLM_MODEL_PREF;
     case "omlx":
       return process.env.OMLX_LLM_MODEL_PREF;
+    case "basert":
+      return process.env.BASERT_LLM_MODEL_PREF;
     case "minimax":
       return process.env.MINIMAX_MODEL_PREF;
     case "cerebras":

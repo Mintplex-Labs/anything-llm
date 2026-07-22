@@ -940,6 +940,24 @@ const KEY_MAPPING = {
     checks: [],
   },
 
+  // BaseRT Options
+  BaseRTLLMBasePath: {
+    envKey: "BASERT_LLM_BASE_PATH",
+    checks: [isValidURL],
+  },
+  BaseRTLLMApiKey: {
+    envKey: "BASERT_LLM_API_KEY",
+    checks: [],
+  },
+  BaseRTLLMModelPref: {
+    envKey: "BASERT_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  BaseRTLLMTokenLimit: {
+    envKey: "BASERT_LLM_TOKEN_LIMIT",
+    checks: [],
+  },
+
   // Agent Skill Settings
   AgentSkillMaxToolCalls: {
     envKey: "AGENT_MAX_TOOL_CALLS",
@@ -1084,6 +1102,7 @@ function supportedLLM(input = "") {
     "minimax",
     "cerebras",
     "omlx",
+    "basert",
     "anythingllm-router",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
@@ -1124,6 +1143,7 @@ function supportedEmbeddingModel(input = "") {
     "mistral",
     "openrouter",
     "lemonade",
+    "basert",
   ];
   return supported.includes(input)
     ? null

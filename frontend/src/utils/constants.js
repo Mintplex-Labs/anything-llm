@@ -74,6 +74,12 @@ export const OMLX_COMMON_URLS = [
   "http://host.docker.internal:8000",
 ];
 
+export const BASERT_COMMON_URLS = [
+  "http://127.0.0.1:8080",
+  "http://localhost:8080",
+  "http://host.docker.internal:8080",
+];
+
 export function fullApiUrl() {
   if (API_BASE !== "/api") return API_BASE;
   return `${window.location.origin}/api`;

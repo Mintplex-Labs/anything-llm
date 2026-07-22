@@ -17,6 +17,7 @@ import GenericOpenAiLogo from "@/media/llmprovider/generic-openai.png";
 import MistralAiLogo from "@/media/llmprovider/mistral.jpeg";
 import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
 import LemonadeLogo from "@/media/llmprovider/lemonade.png";
+import BaseRTLogo from "@/media/llmprovider/basert.svg";
 
 import PreLoader from "@/components/Preloader";
 import ChangeWarningModal from "@/components/ChangeWarning";
@@ -34,6 +35,7 @@ import GenericOpenAiEmbeddingOptions from "@/components/EmbeddingSelection/Gener
 import OpenRouterOptions from "@/components/EmbeddingSelection/OpenRouterOptions";
 import MistralAiOptions from "@/components/EmbeddingSelection/MistralAiOptions";
 import LemonadeOptions from "@/components/EmbeddingSelection/LemonadeOptions";
+import BaseRTEmbeddingOptions from "@/components/EmbeddingSelection/BaseRTOptions";
 
 import EmbedderItem from "@/components/EmbeddingSelection/EmbedderItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -101,6 +103,14 @@ const EMBEDDERS = [
     options: (settings) => <LemonadeOptions settings={settings} />,
     description:
       "Run embedding models locally on your own machine using Lemonade.",
+  },
+  {
+    name: "BaseRT",
+    value: "basert",
+    logo: BaseRTLogo,
+    options: (settings) => <BaseRTEmbeddingOptions settings={settings} />,
+    description:
+      "Run embedding models on Apple Silicon with the BaseRT runtime.",
   },
   {
     name: "OpenRouter",

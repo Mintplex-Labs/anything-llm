@@ -1044,6 +1044,12 @@ const SystemSettings = {
       OMLXLLMApiKey: !!process.env.OMLX_LLM_API_KEY,
       OMLXLLMModelPref: process.env.OMLX_LLM_MODEL_PREF,
       OMLXLLMTokenLimit: process.env.OMLX_LLM_TOKEN_LIMIT,
+
+      // BaseRT Keys
+      BaseRTLLMBasePath: process.env.BASERT_LLM_BASE_PATH,
+      BaseRTLLMApiKey: !!process.env.BASERT_LLM_API_KEY,
+      BaseRTLLMModelPref: process.env.BASERT_LLM_MODEL_PREF,
+      BaseRTLLMTokenLimit: process.env.BASERT_LLM_TOKEN_LIMIT,
     };
   },
 

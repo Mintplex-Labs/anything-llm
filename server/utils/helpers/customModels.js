@@ -51,6 +51,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "minimax",
   "cerebras",
   "omlx",
+  "basert",
   "bedrock",
   "generic-openai",
   // Embedding Engines
@@ -153,6 +154,8 @@ async function getCustomModels(
       return await getLemonadeModels(basePath, "embedding");
     case "omlx":
       return await getOMLXModels(basePath, apiKey);
+    case "basert":
+      return await getBaseRTModels(basePath, apiKey);
     case "minimax":
       return await getMinimaxModels(apiKey);
     case "cerebras":
@@ -1081,6 +1084,38 @@ async function getOMLXModels(basePath = null, _apiKey = null) {
   } catch (e) {
     console.error("OMLX:getOMLXModels", e.message);
     return { models: [], error: "Could not fetch OMLX models" };
+  }
+}
+
+async function getBaseRTModels(basePath = null, _apiKey = null) {
+  const { OpenAI } = require("openai");
+  const { parseBaseRTBasePath } = require("../AiProviders/baseRT");
+  try {
+    const apiKey =
+      _apiKey === true
+        ? process.env.BASERT_LLM_API_KEY
+        : _apiKey || process.env.BASERT_LLM_API_KEY || null;
+
+    const client = new OpenAI({
+      baseURL: parseBaseRTBasePath(
+        basePath ?? process.env.BASERT_LLM_BASE_PATH
+      ),
+      apiKey,
+    });
+
+    const models = (await client.models.list()).data.map((model) => ({
+      id: model.id,
+      name: model.id,
+      organization: model.owned_by,
+    }));
+
+    return {
+      models,
+      error: null,
+    };
+  } catch (e) {
+    console.error("BaseRT:getBaseRTModels", e.message);
+    return { models: [], error: "Could not fetch BaseRT models" };
   }
 }
 

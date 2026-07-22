@@ -44,6 +44,7 @@ import PrivateModeLogo from "@/media/llmprovider/privatemode.png";
 import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
 import LemonadeLogo from "@/media/llmprovider/lemonade.png";
 import OMLXLogo from "@/media/llmprovider/omlx.png";
+import BaseRTLogo from "@/media/llmprovider/basert.svg";
 import MinimaxLogo from "@/media/llmprovider/minimax.png";
 import CerebrasLogo from "@/media/llmprovider/cerebras.png";
 
@@ -248,6 +249,13 @@ const LLM_PROVIDER_PRIVACY_MAP = {
     ],
     logo: OMLXLogo,
   },
+  basert: {
+    name: "BaseRT",
+    description: [
+      "Your model and chats are only accessible on the machine running the BaseRT server.",
+    ],
+    logo: BaseRTLogo,
+  },
   minimax: {
     name: "Minimax",
     policyUrl: "https://platform.minimax.io/protocol/privacy-policy",
@@ -361,6 +369,13 @@ const EMBEDDING_ENGINE_PROVIDER_PRIVACY_MAP = {
       "Your document text is embedded privately on the server running LMStudio.",
     ],
     logo: LMStudioLogo,
+  },
+  basert: {
+    name: "BaseRT",
+    description: [
+      "Your document text is embedded privately on the machine running the BaseRT server.",
+    ],
+    logo: BaseRTLogo,
   },
   openrouter: {
     name: "OpenRouter",

@@ -22,6 +22,7 @@ const {
 } = require("../../../AiProviders/dockerModelRunner");
 const { parseFoundryBasePath } = require("../../../AiProviders/foundry");
 const { parseOMLXBasePath } = require("../../../AiProviders/omlx");
+const { parseBaseRTBasePath } = require("../../../AiProviders/baseRT");
 const { AzureOpenAiLLM } = require("../../../AiProviders/azureOpenAi");
 const {
   SystemPromptVariables,
@@ -464,6 +465,14 @@ class Provider {
             baseURL: parseOMLXBasePath(process.env.OMLX_LLM_BASE_PATH),
           },
           apiKey: process.env.OMLX_LLM_API_KEY || null,
+          ...config,
+        });
+      case "basert":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: parseBaseRTBasePath(process.env.BASERT_LLM_BASE_PATH),
+          },
+          apiKey: process.env.BASERT_LLM_API_KEY || null,
           ...config,
         });
       default:

@@ -42,6 +42,7 @@ import LemonadeLogo from "@/media/llmprovider/lemonade.png";
 import MinimaxLogo from "@/media/llmprovider/minimax.png";
 import CerebrasLogo from "@/media/llmprovider/cerebras.png";
 import OMLXLogo from "@/media/llmprovider/omlx.png";
+import BaseRTLogo from "@/media/llmprovider/basert.svg";
 
 import PreLoader from "@/components/Preloader";
 import ModelRouterOptions from "@/components/LLMSelection/ModelRouterOptions";
@@ -86,6 +87,7 @@ import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
 import OMLXOptions from "@/components/LLMSelection/OMLXOptions";
+import BaseRTOptions from "@/components/LLMSelection/BaseRTOptions";
 
 export const MODEL_ROUTER_PROVIDER = {
   name: "Model Router",
@@ -414,6 +416,14 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <OMLXOptions settings={settings} />,
     description: "Run MLX models on Apple Silicon with smart caching.",
     requiredConfig: ["OMLXLLMBasePath"],
+  },
+  {
+    name: "BaseRT",
+    value: "basert",
+    logo: BaseRTLogo,
+    options: (settings) => <BaseRTOptions settings={settings} />,
+    description: "Fastest LLM inference runtime for Apple Silicon.",
+    requiredConfig: ["BaseRTLLMBasePath"],
   },
   {
     name: "Generic OpenAI",

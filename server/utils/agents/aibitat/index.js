@@ -1436,6 +1436,8 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
         return new Providers.LemonadeProvider({ model: config.model });
       case "omlx":
         return new Providers.OMLXProvider({ model: config.model });
+      case "basert":
+        return new Providers.BaseRTProvider({ model: config.model });
       case "minimax":
         return new Providers.MinimaxProvider({ model: config.model });
       case "cerebras":

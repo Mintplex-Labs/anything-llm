@@ -33,6 +33,7 @@ const PrivatemodeProvider = require("./privatemode.js");
 const SambaNovaProvider = require("./sambanova.js");
 const LemonadeProvider = require("./lemonade.js");
 const OMLXProvider = require("./omlx.js");
+const BaseRTProvider = require("./basert.js");
 const MinimaxProvider = require("./minimax.js");
 const CerebrasProvider = require("./cerebras.js");
 
@@ -72,6 +73,7 @@ module.exports = {
   SambaNovaProvider,
   LemonadeProvider,
   OMLXProvider,
+  BaseRTProvider,
   MinimaxProvider,
   CerebrasProvider,
 };

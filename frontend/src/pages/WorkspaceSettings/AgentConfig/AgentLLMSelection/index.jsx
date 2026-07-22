@@ -42,6 +42,7 @@ const ENABLED_PROVIDERS = [
   "sambanova",
   "lemonade",
   "omlx",
+  "basert",
   "minimax",
   "cerebras",
 ];
@@ -52,6 +53,7 @@ const WARN_PERFORMANCE = [
   "localai",
   "textgenwebui",
   "docker-model-runner",
+  "basert",
 ];
 
 const LLM_DEFAULT = {

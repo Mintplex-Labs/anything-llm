@@ -34,6 +34,7 @@ import PrivateModeLogo from "@/media/llmprovider/privatemode.png";
 import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
 import LemonadeLogo from "@/media/llmprovider/lemonade.png";
 import OMLXLogo from "@/media/llmprovider/omlx.png";
+import BaseRTLogo from "@/media/llmprovider/basert.svg";
 import MinimaxLogo from "@/media/llmprovider/minimax.png";
 import CerebrasLogo from "@/media/llmprovider/cerebras.png";
 
@@ -71,6 +72,7 @@ import PrivateModeOptions from "@/components/LLMSelection/PrivateModeOptions";
 import SambaNovaOptions from "@/components/LLMSelection/SambaNovaOptions";
 import LemonadeOptions from "@/components/LLMSelection/LemonadeOptions";
 import OMLXOptions from "@/components/LLMSelection/OMLXOptions";
+import BaseRTOptions from "@/components/LLMSelection/BaseRTOptions";
 import MinimaxOptions from "@/components/LLMSelection/MinimaxOptions";
 import CerebrasLLMOptions from "@/components/LLMSelection/CerebrasLLMOptions";
 
@@ -154,6 +156,13 @@ const LLMS = [
     logo: OMLXLogo,
     options: (settings) => <OMLXOptions settings={settings} />,
     description: "Run MLX models on Apple Silicon with smart caching.",
+  },
+  {
+    name: "BaseRT",
+    value: "basert",
+    logo: BaseRTLogo,
+    options: (settings) => <BaseRTOptions settings={settings} />,
+    description: "Fastest LLM inference runtime for Apple Silicon.",
   },
   {
     name: "Local AI",

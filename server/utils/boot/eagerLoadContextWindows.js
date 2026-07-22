@@ -39,6 +39,11 @@ async function eagerLoadContextWindows() {
       await OMLXLLM.cacheContextWindows(true);
       log("OMLX");
       break;
+    case "basert":
+      const { BaseRTLLM } = require("../AiProviders/baseRT");
+      await BaseRTLLM.cacheContextWindows(true);
+      log("BaseRT");
+      break;
   }
 }
 
