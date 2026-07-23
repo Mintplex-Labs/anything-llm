@@ -55,6 +55,21 @@ const memory = {
                 content: "I am a robot, the user told me that i am.",
               }),
             },
+            {
+              prompt:
+                "Save this for later: my preferred deploy target is staging.",
+              call: JSON.stringify({
+                action: "store",
+                content: "The user's preferred deploy target is staging.",
+              }),
+            },
+            {
+              prompt: "What did I tell you about my deploy preferences?",
+              call: JSON.stringify({
+                action: "search",
+                content: "user's deploy target preferences",
+              }),
+            },
           ],
           parameters: {
             $schema: "http://json-schema.org/draft-07/schema#",
