@@ -92,11 +92,18 @@ const WORKSPACE_AGENT = {
       ...(await new MCPCompatibilityLayer().activeMCPServers()),
     ];
 
-    // When rag-memory is enabled, add explicit tool-routing guidance so the
-    // agent does not reach for filesystem tools when the user references
-    // workspace documents - embedded documents are not on the filesystem and
-    // are only reachable via the rag-memory tool. See issue #5968.
-    if (functions.includes(AgentPlugins.memory.name))
+    // When both rag-memory and filesystem tools are enabled, add explicit
+    // tool-routing guidance so the agent does not reach for filesystem tools
+    // when the user references workspace documents - embedded documents are
+    // not on the filesystem and are only reachable via the rag-memory tool.
+    // Filesystem tools are opt-in, so without them there is no routing
+    // ambiguity and no need to grow the prompt. See issue #5968.
+    const hasFilesystemTools = functions.some(
+      (f) =>
+        typeof f === "string" &&
+        f.startsWith(`${AgentPlugins.filesystemAgent.name}#`)
+    );
+    if (hasFilesystemTools && functions.includes(AgentPlugins.memory.name))
       role +=
         "\n\nDocuments uploaded or embedded into this workspace live in a vector database - NOT on the filesystem. When the user references workspace documents or uploaded files, or a document they mention cannot be found on the local filesystem, use the rag-memory tool to search for it before trying any other tool.";
 

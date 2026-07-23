@@ -20,6 +20,23 @@ jest.mock("../../../utils/MCP", () => {
     activeMCPServers: jest.fn().mockResolvedValue([]),
   }));
 });
+jest.mock("../../../utils/agents/aibitat/plugins/filesystem/lib", () => ({
+  isToolAvailable: jest.fn().mockReturnValue(true),
+}));
+
+/**
+ * Mocks SystemSettings so the given labels resolve to the given values and
+ * everything else falls back to its default.
+ */
+function mockSystemSettings(overrides = {}) {
+  const { SystemSettings } = require("../../../models/systemSettings");
+  SystemSettings.getValueOrFallback = jest
+    .fn()
+    .mockImplementation(async ({ label }, fallback) => {
+      if (label in overrides) return overrides[label];
+      return fallback;
+    });
+}
 
 const { WORKSPACE_AGENT } = require("../../../utils/agents/defaults");
 
@@ -129,7 +146,11 @@ describe("WORKSPACE_AGENT.getDefinition", () => {
     expect(definition.role).toContain("helpful ai assistant");
   });
 
-  it("should append rag-memory routing guidance when the skill is enabled", async () => {
+  it("should append rag-memory routing guidance when rag-memory and filesystem tools are both enabled", async () => {
+    mockSystemSettings({
+      default_agent_skills: '["filesystem-agent"]',
+    });
+
     const workspace = { id: 1, openAiPrompt: null };
     const definition = await WORKSPACE_AGENT.getDefinition(
       "openai",
@@ -138,18 +159,33 @@ describe("WORKSPACE_AGENT.getDefinition", () => {
     );
 
     expect(definition.functions).toContain("rag-memory");
+    expect(
+      definition.functions.some((f) => f.startsWith("filesystem-agent#"))
+    ).toBe(true);
     expect(definition.role).toContain("rag-memory");
     expect(definition.role).toContain("vector database");
   });
 
-  it("should not append rag-memory routing guidance when the skill is disabled", async () => {
-    const { SystemSettings } = require("../../../models/systemSettings");
-    SystemSettings.getValueOrFallback = jest
-      .fn()
-      .mockImplementation(async ({ label }, fallback) => {
-        if (label === "disabled_agent_skills") return '["rag-memory"]';
-        return fallback;
-      });
+  it("should not append rag-memory routing guidance when filesystem tools are not enabled", async () => {
+    const workspace = { id: 1, openAiPrompt: null };
+    const definition = await WORKSPACE_AGENT.getDefinition(
+      "openai",
+      workspace,
+      null
+    );
+
+    expect(definition.functions).toContain("rag-memory");
+    expect(
+      definition.functions.some((f) => f.startsWith("filesystem-agent#"))
+    ).toBe(false);
+    expect(definition.role).not.toContain("vector database");
+  });
+
+  it("should not append rag-memory routing guidance when the rag-memory skill is disabled", async () => {
+    mockSystemSettings({
+      disabled_agent_skills: '["rag-memory"]',
+      default_agent_skills: '["filesystem-agent"]',
+    });
 
     const workspace = { id: 1, openAiPrompt: null };
     const definition = await WORKSPACE_AGENT.getDefinition(
