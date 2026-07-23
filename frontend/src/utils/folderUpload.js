@@ -53,17 +53,14 @@ async function allEntriesOf(directory) {
 }
 
 /**
- * Records a file's path relative to the drop on our own property so no
- * platform or library overwrites it.
+ * Records a file's path relative to the drop. Stored under our own key so it
+ * cannot collide with file.path, which Electron and file-selector both write.
  * @param {File} file
  * @param {string} fullPath
  * @returns {File}
  */
 function stampRelativePath(file, fullPath) {
-  Object.defineProperty(file, RELATIVE_PATH_KEY, {
-    value: fullPath,
-    writable: false,
-  });
+  file[RELATIVE_PATH_KEY] = fullPath;
   return file;
 }
 
