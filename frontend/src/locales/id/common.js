@@ -1,1414 +1,1414 @@
 const Indonesian = {
   "onboarding": {
     "home": {
-      "welcome": "Welcome",
-      "getStarted": "Get Started"
+      "welcome": "Selamat Datang",
+      "getStarted": "Mulai"
     },
     "llm": {
-      "title": "LLM Preference",
-      "description": "Deskripsi"
+      "title": "Preferensi LLM",
+      "description": "AnythingLLM dapat bekerja dengan banyak penyedia LLM. Ini akan menjadi layanan yang menangani obrolan."
     },
     "userSetup": {
-      "title": "User Setup",
-      "description": "Deskripsi",
-      "howManyUsers": "How many users will be using this instance?",
-      "justMe": "Just me",
-      "myTeam": "My team",
-      "instancePassword": "Instance Password",
-      "setPassword": "Would you like to set up a password?",
-      "passwordReq": "Passwords must be at least 8 characters.",
-      "passwordWarn": "It's important to save this password because there is no recovery method.",
-      "adminUsername": "Admin account username",
-      "adminPassword": "Admin account password",
-      "adminPasswordReq": "Passwords must be at least 8 characters.",
-      "teamHint": "By default, you will be the only admin. Once onboarding is completed you can create and invite others to be users or admins. Do not lose your password as only admins can reset passwords."
+      "title": "Pengaturan Pengguna",
+      "description": "Konfigurasikan pengaturan pengguna Anda.",
+      "howManyUsers": "Berapa banyak pengguna yang akan menggunakan instance ini?",
+      "justMe": "Hanya saya",
+      "myTeam": "Tim saya",
+      "instancePassword": "Kata Sandi Instance",
+      "setPassword": "Apakah Anda ingin mengatur kata sandi?",
+      "passwordReq": "Kata sandi harus minimal 8 karakter.",
+      "passwordWarn": "Penting untuk menyimpan kata sandi ini karena tidak ada metode pemulihan.",
+      "adminUsername": "Nama pengguna akun admin",
+      "adminPassword": "Kata sandi akun admin",
+      "adminPasswordReq": "Kata sandi harus minimal 8 karakter.",
+      "teamHint": "Secara bawaan, Anda akan menjadi satu-satunya admin. Setelah onboarding selesai, Anda dapat membuat dan mengundang orang lain sebagai pengguna atau admin. Jangan kehilangan kata sandi Anda karena hanya admin yang dapat mereset kata sandi."
     },
     "data": {
-      "title": "Data Handling & Privacy",
-      "description": "Deskripsi",
-      "settingsHint": "These settings can be reconfigured at any time in the settings."
+      "title": "Penanganan Data & Privasi",
+      "description": "Kami berkomitmen pada transparansi dan kontrol terkait data pribadi Anda.",
+      "settingsHint": "Pengaturan ini dapat dikonfigurasi ulang kapan saja di pengaturan."
     },
     "survey": {
-      "title": "Welcome to AnythingLLM",
-      "description": "Deskripsi",
-      "email": "Email",
-      "useCase": "What will you use AnythingLLM for?",
-      "useCaseWork": "For work",
-      "useCasePersonal": "For personal use",
-      "useCaseOther": "Other",
-      "comment": "How did you hear about AnythingLLM?",
-      "commentPlaceholder": "Reddit, Twitter, GitHub, YouTube, etc. - Let us know how you found us!",
-      "skip": "Skip Survey",
-      "thankYou": "Thank you for your feedback!"
+      "title": "Selamat Datang di AnythingLLM",
+      "description": "Bantu kami membuat AnythingLLM yang sesuai dengan kebutuhan Anda. Opsional.",
+      "email": "Apa email Anda?",
+      "useCase": "Untuk apa Anda akan menggunakan AnythingLLM?",
+      "useCaseWork": "Untuk pekerjaan",
+      "useCasePersonal": "Untuk penggunaan pribadi",
+      "useCaseOther": "Lainnya",
+      "comment": "Bagaimana Anda mengetahui AnythingLLM?",
+      "commentPlaceholder": "Reddit, Twitter, GitHub, YouTube, dll. - Beri tahu kami bagaimana Anda menemukan kami!",
+      "skip": "Lewati Survei",
+      "thankYou": "Terima kasih atas umpan balik Anda!"
     }
   },
   "common": {
-    "workspaces-name": "Workspace Name",
-    "selection": "Model Selection",
-    "saving": "Saving...",
-    "save": "Simpan",
-    "previous": "Previous Page",
-    "next": "Lanjut",
-    "optional": "Optional",
-    "yes": "Yes",
-    "no": "No",
-    "on": "On",
-    "none": "None",
-    "stopped": "Stopped",
+    "workspaces-name": "Nama Ruang Kerja",
+    "selection": "Pemilihan Model",
+    "saving": "Menyimpan...",
+    "save": "Simpan perubahan",
+    "previous": "Halaman Sebelumnya",
+    "next": "Halaman Berikutnya",
+    "optional": "Opsional",
+    "yes": "Ya",
+    "no": "Tidak",
+    "on": "Aktif",
+    "none": "Tidak Ada",
+    "stopped": "Dihentikan",
     "search": "Cari",
-    "username_requirements": "Username must be 2-64 characters, start with a lowercase letter, and only contain lowercase letters, numbers, underscores, hyphens, and periods.",
+    "username_requirements": "Nama pengguna harus 2-64 karakter, dimulai dengan huruf kecil, dan hanya boleh berisi huruf kecil, angka, garis bawah, tanda hubung, dan titik.",
     "loading": "Memuat...",
-    "refresh": "Refresh"
+    "refresh": "Segarkan"
   },
   "home": {
-    "welcome": "Welcome",
-    "chooseWorkspace": "Choose a workspace to start chatting!",
-    "notAssigned": "You currently aren't assigned to any workspaces.\nPlease contact your administrator to request access to a workspace.",
-    "goToWorkspace": "Go to \"{{workspace}}\""
+    "welcome": "Selamat Datang",
+    "chooseWorkspace": "Pilih ruang kerja untuk mulai mengobrol!",
+    "notAssigned": "Anda saat ini tidak ditugaskan ke ruang kerja mana pun.\nSilakan hubungi administrator Anda untuk meminta akses ke ruang kerja.",
+    "goToWorkspace": "Buka \"{{workspace}}\""
   },
   "settings": {
-    "title": "Instance Settings",
-    "invites": "Invites",
+    "title": "Pengaturan Instance",
+    "invites": "Undangan",
     "users": "Pengguna",
     "workspaces": "Ruang Kerja",
-    "workspace-chats": "Workspace Chats",
+    "workspace-chats": "Obrolan Ruang Kerja",
     "customization": "Kustomisasi",
-    "interface": "UI Preferences",
+    "interface": "Preferensi UI",
     "branding": "Branding & Whitelabeling",
     "chat": "Obrolan",
-    "api-keys": "Developer API",
+    "api-keys": "API Pengembang",
     "llm": "LLM",
-    "transcription": "Transcription",
+    "transcription": "Transkripsi",
     "embedder": "Embedder",
-    "text-splitting": "Text Splitter & Chunking",
-    "voice-speech": "Voice & Speech",
+    "text-splitting": "Pemisah Teks & Chunking",
+    "voice-speech": "Suara & Ucapan",
     "vector-database": "Basis Data Vektor",
     "embeds": "Chat Embed",
     "security": "Keamanan",
-    "event-logs": "Event Logs",
-    "scheduled-jobs": "Scheduled Jobs",
-    "privacy": "Privasi",
-    "ai-providers": "AI Providers",
-    "agent-skills": "Agent Skills",
-    "model-router": "Model Router",
+    "event-logs": "Log Peristiwa",
+    "scheduled-jobs": "Pekerjaan Terjadwal",
+    "privacy": "Privasi & Data",
+    "ai-providers": "Penyedia AI",
+    "agent-skills": "Keterampilan Agen",
+    "model-router": "Router Model",
     "community-hub": {
       "title": "Community Hub",
-      "trending": "Explore Trending",
-      "your-account": "Your Account",
-      "import-item": "Import Item"
+      "trending": "Jelajahi Tren",
+      "your-account": "Akun Anda",
+      "import-item": "Impor Item"
     },
     "admin": "Admin",
-    "tools": "Tools",
-    "system-prompt-variables": "System Prompt Variables",
-    "experimental-features": "Experimental Features",
-    "contact": "Contact Support",
-    "browser-extension": "Browser Extension",
+    "tools": "Alat",
+    "system-prompt-variables": "Variabel System Prompt",
+    "experimental-features": "Fitur Eksperimental",
+    "contact": "Hubungi Dukungan",
+    "browser-extension": "Ekstensi Browser",
     "mobile-app": "AnythingLLM Mobile",
-    "channels": "Channels",
+    "channels": "Saluran",
     "available-channels": {
       "telegram": "Telegram"
     }
   },
   "login": {
     "multi-user": {
-      "welcome": "Welcome",
-      "placeholder-username": "Username",
-      "placeholder-password": "Password",
+      "welcome": "Selamat Datang",
+      "placeholder-username": "Nama Pengguna",
+      "placeholder-password": "Kata Sandi",
       "login": "Masuk",
-      "validating": "Validating...",
-      "forgot-pass": "Forgot password",
+      "validating": "Memvalidasi...",
+      "forgot-pass": "Lupa kata sandi",
       "reset": "Reset"
     },
-    "sign-in": "Enter your username and password to access your {{appName}} instance.",
+    "sign-in": "Masukkan nama pengguna dan kata sandi Anda untuk mengakses instance {{appName}} Anda.",
     "password-reset": {
-      "title": "Password Reset",
-      "description": "Deskripsi",
-      "recovery-codes": "Recovery Codes",
-      "back-to-login": "Back to Login"
+      "title": "Reset Kata Sandi",
+      "description": "Berikan informasi yang diperlukan di bawah untuk mereset kata sandi Anda.",
+      "recovery-codes": "Kode Pemulihan",
+      "back-to-login": "Kembali ke Login"
     }
   },
   "main-page": {
-    "greeting": "How can I help you today?",
+    "greeting": "Apa yang bisa saya bantu hari ini?",
     "quickActions": {
-      "createAgent": "Create an Agent",
-      "editWorkspace": "Edit Workspace",
-      "uploadDocument": "Upload a Document"
+      "createAgent": "Buat Agen",
+      "editWorkspace": "Edit Ruang Kerja",
+      "uploadDocument": "Unggah Dokumen"
     }
   },
   "new-workspace": {
-    "title": "New Workspace",
-    "placeholder": "My Workspace"
+    "title": "Ruang Kerja Baru",
+    "placeholder": "Ruang Kerja Saya"
   },
-  "workspaces—settings": {
-    "general": "Umum",
-    "chat": "Obrolan",
-    "vector": "Vector Database",
-    "members": "Members",
-    "agent": "Agent Configuration"
+  "workspaces\u2014settings": {
+    "general": "Pengaturan Umum",
+    "chat": "Pengaturan Obrolan",
+    "vector": "Basis Data Vektor",
+    "members": "Anggota",
+    "agent": "Konfigurasi Agen"
   },
   "general": {
     "vector": {
-      "title": "Vector Count",
-      "description": "Deskripsi"
+      "title": "Jumlah Vektor",
+      "description": "Total jumlah vektor di basis data vektor Anda."
     },
     "names": {
-      "description": "Deskripsi"
+      "description": "Ini hanya akan mengubah nama tampilan ruang kerja Anda."
     },
     "message": {
-      "title": "Suggested Chat Messages",
-      "description": "Deskripsi",
-      "add": "Add new message",
-      "save": "Simpan",
-      "heading": "Explain to me",
-      "body": "the benefits of AnythingLLM"
+      "title": "Pesan Obrolan yang Disarankan",
+      "description": "Sesuaikan pesan yang akan disarankan kepada pengguna ruang kerja Anda.",
+      "add": "Tambah pesan baru",
+      "save": "Simpan Pesan",
+      "heading": "Jelaskan kepada saya",
+      "body": "manfaat AnythingLLM"
     },
     "delete": {
-      "title": "Delete Workspace",
-      "description": "Deskripsi",
-      "delete": "Hapus",
-      "deleting": "Deleting Workspace...",
-      "confirm-start": "You are about to delete your entire",
-      "confirm-end": "workspace. This will remove all vector embeddings in your vector database.\n\nThe original source files will remain untouched. This action is irreversible."
+      "title": "Hapus Ruang Kerja",
+      "description": "Hapus ruang kerja ini dan semua datanya. Ini akan menghapus ruang kerja untuk semua pengguna.",
+      "delete": "Hapus Ruang Kerja",
+      "deleting": "Menghapus Ruang Kerja...",
+      "confirm-start": "Anda akan menghapus seluruh",
+      "confirm-end": "ruang kerja. Ini akan menghapus semua embedding vektor di basis data vektor Anda.\n\nBerkas sumber asli akan tetap tidak tersentuh. Tindakan ini tidak dapat dibatalkan."
     }
   },
   "chat": {
     "llm": {
-      "title": "Workspace LLM Provider",
-      "description": "Deskripsi",
-      "search": "Cari"
+      "title": "Penyedia LLM Ruang Kerja",
+      "description": "Penyedia & model LLM spesifik yang akan digunakan untuk ruang kerja ini. Secara bawaan, menggunakan penyedia dan pengaturan LLM sistem.",
+      "search": "Cari semua penyedia LLM"
     },
     "model": {
-      "title": "Workspace Chat model",
-      "description": "Deskripsi"
+      "title": "Model Obrolan Ruang Kerja",
+      "description": "Model obrolan spesifik yang akan digunakan untuk ruang kerja ini. Jika kosong, akan menggunakan preferensi LLM sistem."
     },
     "mode": {
-      "title": "Chat mode",
+      "title": "Mode Obrolan",
       "automatic": {
-        "title": "Agent",
-        "description": "Deskripsi"
+        "title": "Agen",
+        "description": "akan secara otomatis menggunakan alat jika model dan penyedia mendukung pemanggilan alat bawaan.<br />Jika pemanggilan alat bawaan tidak didukung, Anda perlu menggunakan perintah @agent untuk menggunakan alat."
       },
       "chat": {
-        "title": "Chat",
-        "description": "Deskripsi"
+        "title": "Obrolan",
+        "description": "akan memberikan jawaban dengan pengetahuan umum LLM <b>dan</b> konteks dokumen yang ditemukan.<br />Anda perlu menggunakan perintah @agent untuk menggunakan alat."
       },
       "query": {
-        "title": "Query",
-        "description": "Deskripsi"
+        "title": "Kueri",
+        "description": "akan memberikan jawaban <b>hanya</b> jika konteks dokumen ditemukan.<br />Anda perlu menggunakan perintah @agent untuk menggunakan alat."
       }
     },
     "history": {
-      "title": "Chat History",
-      "desc-start": "The number of previous chats that will be included in the response's short-term memory.",
-      "recommend": "Recommend 20. "
+      "title": "Riwayat Obrolan",
+      "desc-start": "Jumlah obrolan sebelumnya yang akan dimasukkan dalam memori jangka pendek respons.",
+      "recommend": "Rekomendasi 20. "
     },
     "prompt": {
       "title": "System Prompt",
-      "description": "Deskripsi",
+      "description": "Prompt yang akan digunakan pada ruang kerja ini. Tentukan konteks dan instruksi bagi AI untuk menghasilkan respons. Anda harus memberikan prompt yang disusun dengan cermat agar AI dapat menghasilkan respons yang relevan dan akurat.",
       "history": {
-        "title": "System Prompt History",
-        "clearAll": "Clear All",
-        "noHistory": "No system prompt history available",
-        "restore": "Restore",
+        "title": "Riwayat System Prompt",
+        "clearAll": "Bersihkan Semua",
+        "noHistory": "Tidak ada riwayat system prompt yang tersedia",
+        "restore": "Pulihkan",
         "delete": "Hapus",
-        "publish": "Publish to Community Hub",
-        "deleteConfirm": "Are you sure you want to delete this history item?",
-        "clearAllConfirm": "Are you sure you want to clear all history? This action cannot be undone.",
-        "expand": "Expand"
+        "publish": "Publikasikan ke Community Hub",
+        "deleteConfirm": "Apakah Anda yakin ingin menghapus item riwayat ini?",
+        "clearAllConfirm": "Apakah Anda yakin ingin membersihkan semua riwayat? Tindakan ini tidak dapat dibatalkan.",
+        "expand": "Perluas"
       }
     },
     "refusal": {
-      "title": "Query mode refusal response",
-      "desc-start": "When in",
-      "query": "query",
-      "desc-end": "mode, you may want to return a custom refusal response when no context is found.",
-      "tooltip-title": "Why am I seeing this?",
-      "tooltip-description": "You are in query mode, which only uses information from your documents. Switch to chat mode for more flexible conversations, or click here to visit our documentation to learn more about chat modes."
+      "title": "Respons penolakan mode kueri",
+      "desc-start": "Saat dalam mode",
+      "query": "kueri",
+      "desc-end": ", Anda mungkin ingin mengembalikan respons penolakan kustom saat tidak ada konteks yang ditemukan.",
+      "tooltip-title": "Mengapa saya melihat ini?",
+      "tooltip-description": "Anda berada dalam mode kueri, yang hanya menggunakan informasi dari dokumen Anda. Beralihlah ke mode obrolan untuk percakapan yang lebih fleksibel, atau klik di sini untuk mengunjungi dokumentasi kami dan mempelajari lebih lanjut tentang mode obrolan."
     },
     "temperature": {
-      "title": "LLM Temperature",
-      "desc-end": "The higher the number the more creative. For some models this can lead to incoherent responses when set too high."
+      "title": "Temperature LLM",
+      "desc-end": "Semakin tinggi angkanya, semakin kreatif. Untuk beberapa model, ini dapat menyebabkan respons yang tidak koheren jika diatur terlalu tinggi."
     }
   },
   "vector-workspace": {
-    "identifier": "Vector database identifier",
+    "identifier": "Pengenal basis data vektor",
     "snippets": {
-      "title": "Max Context Snippets",
-      "description": "Deskripsi",
-      "recommend": "Recommended: 4"
+      "title": "Cuplikan Konteks Maksimal",
+      "description": "Pengaturan ini mengontrol jumlah maksimum cuplikan konteks yang akan dikirim ke LLM per obrolan atau kueri.",
+      "recommend": "Direkomendasikan: 4"
     },
     "doc": {
-      "title": "Document similarity threshold",
-      "description": "Deskripsi",
-      "zero": "No restriction",
-      "low": "Low (similarity score ≥ .25)",
-      "medium": "Medium (similarity score ≥ .50)",
-      "high": "High (similarity score ≥ .75)"
+      "title": "Ambang kesamaan dokumen",
+      "description": "Skor kesamaan minimum yang diperlukan agar sumber dianggap terkait dengan obrolan. Semakin tinggi angkanya, semakin mirip sumbernya dengan obrolan.",
+      "zero": "Tanpa batasan",
+      "low": "Rendah (skor kesamaan \u2265 .25)",
+      "medium": "Sedang (skor kesamaan \u2265 .50)",
+      "high": "Tinggi (skor kesamaan \u2265 .75)"
     },
     "reset": {
-      "reset": "Reset Vector Database",
-      "resetting": "Clearing vectors...",
-      "confirm": "Konfirmasi",
-      "error": "Workspace vector database could not be reset!",
-      "success": "Workspace vector database was reset!"
+      "reset": "Reset Basis Data Vektor",
+      "resetting": "Membersihkan vektor...",
+      "confirm": "Anda akan mereset basis data vektor ruang kerja ini. Ini akan menghapus semua embedding vektor yang saat ini tertanam.\n\nBerkas sumber asli akan tetap tidak tersentuh. Tindakan ini tidak dapat dibatalkan.",
+      "error": "Basis data vektor ruang kerja tidak dapat direset!",
+      "success": "Basis data vektor ruang kerja berhasil direset!"
     }
   },
   "agent": {
-    "performance-warning": "Performance of LLMs that do not explicitly support tool-calling is highly dependent on the model's capabilities and accuracy. Some abilities may be limited or non-functional.",
+    "performance-warning": "Kinerja LLM yang tidak secara eksplisit mendukung pemanggilan alat sangat bergantung pada kemampuan dan akurasi model. Beberapa kemampuan mungkin terbatas atau tidak berfungsi.",
     "provider": {
-      "title": "Workspace Agent LLM Provider",
-      "description": "Deskripsi"
+      "title": "Penyedia LLM Agen Ruang Kerja",
+      "description": "Penyedia & model LLM spesifik yang akan digunakan untuk agen @agent ruang kerja ini."
     },
     "mode": {
       "chat": {
-        "title": "Workspace Agent Chat model",
-        "description": "Deskripsi"
+        "title": "Model Obrolan Agen Ruang Kerja",
+        "description": "Model obrolan spesifik yang akan digunakan untuk agen @agent ruang kerja ini."
       },
-      "title": "Workspace Agent model",
-      "description": "Deskripsi",
-      "wait": "-- waiting for models --"
+      "title": "Model Agen Ruang Kerja",
+      "description": "Model LLM spesifik yang akan digunakan untuk agen @agent ruang kerja ini.",
+      "wait": "-- menunggu model --"
     },
     "skill": {
       "rag": {
-        "title": "RAG & long-term memory",
-        "description": "Deskripsi"
+        "title": "RAG & memori jangka panjang",
+        "description": "Izinkan agen memanfaatkan dokumen lokal Anda untuk menjawab kueri atau meminta agen \"mengingat\" potongan konten untuk pengambilan memori jangka panjang."
       },
       "view": {
-        "title": "View & summarize documents",
-        "description": "Deskripsi"
+        "title": "Lihat & ringkas dokumen",
+        "description": "Izinkan agen untuk mendaftar dan meringkas konten berkas ruang kerja yang saat ini tertanam."
       },
       "scrape": {
-        "title": "Scrape websites",
-        "description": "Deskripsi"
+        "title": "Scrape situs web",
+        "description": "Izinkan agen untuk mengunjungi dan men-scrape konten situs web."
       },
       "generate": {
-        "title": "Generate charts",
-        "description": "Deskripsi"
+        "title": "Hasilkan bagan",
+        "description": "Aktifkan agen bawaan untuk menghasilkan berbagai jenis bagan dari data yang diberikan atau diberikan dalam obrolan."
       },
       "web": {
-        "title": "Web Search",
-        "description": "Deskripsi"
+        "title": "Pencarian Web",
+        "description": "Aktifkan agen Anda untuk mencari di web guna menjawab pertanyaan Anda dengan menghubungkan ke penyedia pencarian web (SERP)."
       },
       "sql": {
-        "title": "SQL Connector",
-        "description": "Deskripsi"
+        "title": "Konektor SQL",
+        "description": "Aktifkan agen Anda untuk dapat memanfaatkan SQL untuk menjawab pertanyaan Anda dengan menghubungkan ke berbagai penyedia basis data SQL."
       },
       "scheduledJob": {
-        "title": "Create scheduled jobs",
-        "description": "Deskripsi"
+        "title": "Buat pekerjaan terjadwal",
+        "description": "Izinkan agen untuk membuat Pekerjaan Terjadwal berulang dari obrolan (mis. \"setiap hari kerja jam 9 pagi ringkas kotak masuk saya dan emailkan ke saya\"). Hanya tersedia dalam mode pengguna tunggal."
       },
       "filesystem": {
-        "title": "File System Access",
-        "description": "Deskripsi",
-        "learnMore": "Learn more about this how to use this skill",
-        "configuration": "Configuration",
-        "readActions": "Read Actions",
-        "writeActions": "Write Actions",
-        "warning": "Filesystem access can be dangerous as it can modify or delete files. Please consult the <a>documentation</a> before enabling.",
+        "title": "Akses Sistem Berkas",
+        "description": "Aktifkan agen Anda untuk membaca, menulis, mencari, dan mengelola berkas dalam direktori yang ditentukan. Mendukung pengeditan berkas, navigasi direktori, dan pencarian konten.",
+        "learnMore": "Pelajari lebih lanjut tentang cara menggunakan keterampilan ini",
+        "configuration": "Konfigurasi",
+        "readActions": "Tindakan Baca",
+        "writeActions": "Tindakan Tulis",
+        "warning": "Akses sistem berkas bisa berbahaya karena dapat mengubah atau menghapus berkas. Silakan lihat <a>dokumentasi</a> sebelum mengaktifkan.",
         "skills": {
           "read-text-file": {
-            "title": "Read File",
-            "description": "Deskripsi"
+            "title": "Baca Berkas",
+            "description": "Baca konten berkas (teks, kode, PDF, gambar, dll.)"
           },
           "read-multiple-files": {
-            "title": "Read Multiple Files",
-            "description": "Deskripsi"
+            "title": "Baca Beberapa Berkas",
+            "description": "Baca beberapa berkas sekaligus"
           },
           "list-directory": {
-            "title": "List Directory",
-            "description": "Deskripsi"
+            "title": "Daftar Direktori",
+            "description": "Daftar berkas dan direktori dalam folder"
           },
           "search-files": {
-            "title": "Search Files",
-            "description": "Deskripsi"
+            "title": "Cari Berkas",
+            "description": "Cari berkas berdasarkan nama atau konten"
           },
           "get-file-info": {
-            "title": "Get File Info",
-            "description": "Deskripsi"
+            "title": "Info Berkas",
+            "description": "Dapatkan metadata detail tentang berkas"
           },
           "write-text-file": {
-            "title": "Write Text File",
-            "description": "Deskripsi"
+            "title": "Tulis Berkas Teks",
+            "description": "Buat berkas teks baru atau timpa berkas teks yang ada"
           },
           "edit-file": {
-            "title": "Edit File",
-            "description": "Deskripsi"
+            "title": "Edit Berkas",
+            "description": "Lakukan pengeditan berbasis baris pada berkas teks"
           },
           "create-directory": {
-            "title": "Create Directory",
-            "description": "Deskripsi"
+            "title": "Buat Direktori",
+            "description": "Buat direktori baru"
           },
           "copy-file": {
-            "title": "Copy File",
-            "description": "Deskripsi"
+            "title": "Salin Berkas",
+            "description": "Salin berkas dan direktori"
           },
           "move-file": {
-            "title": "Move/Rename File",
-            "description": "Deskripsi"
+            "title": "Pindahkan/Ganti Nama Berkas",
+            "description": "Pindahkan atau ganti nama berkas dan direktori"
           }
         }
       },
       "createFiles": {
-        "title": "Document Creation",
-        "description": "Deskripsi",
-        "configuration": "Available Document Types",
+        "title": "Pembuatan Dokumen",
+        "description": "Aktifkan agen Anda untuk membuat format dokumen biner seperti presentasi PowerPoint, spreadsheet Excel, dokumen Word, dan PDF. Berkas dapat diunduh langsung dari jendela obrolan.",
+        "configuration": "Tipe Dokumen yang Tersedia",
         "skills": {
           "create-text-file": {
-            "title": "Text Files",
-            "description": "Deskripsi"
+            "title": "Berkas Teks",
+            "description": "Buat berkas teks dengan konten dan ekstensi apa pun (.txt, .md, .json, .csv, dll.)"
           },
           "create-pptx": {
-            "title": "PowerPoint Presentations",
-            "description": "Deskripsi"
+            "title": "Presentasi PowerPoint",
+            "description": "Buat presentasi PowerPoint baru dengan slide, judul, dan poin-poin"
           },
           "create-pdf": {
-            "title": "PDF Documents",
-            "description": "Deskripsi"
+            "title": "Dokumen PDF",
+            "description": "Buat dokumen PDF dari markdown atau teks biasa dengan gaya dasar"
           },
           "create-xlsx": {
-            "title": "Excel Spreadsheets",
-            "description": "Deskripsi"
+            "title": "Spreadsheet Excel",
+            "description": "Buat dokumen Excel untuk data tabular dengan lembar dan gaya"
           },
           "create-docx": {
-            "title": "Word Documents",
-            "description": "Deskripsi"
+            "title": "Dokumen Word",
+            "description": "Buat dokumen Word dengan gaya dan pemformatan dasar"
           }
         }
       },
       "gmail": {
         "title": "GMail",
-        "description": "Deskripsi",
-        "multiUserWarning": "Gmail integration is not available in multi-user mode for security reasons. Please disable multi-user mode to use this feature.",
-        "configuration": "Gmail Configuration",
-        "deploymentId": "Deployment ID",
-        "deploymentIdHelp": "The deployment ID from your Google Apps Script web app",
-        "apiKey": "API Key",
-        "apiKeyHelp": "The API key you configured in your Google Apps Script deployment",
-        "configurationRequired": "Please configure the Deployment ID and API Key to enable Gmail skills.",
-        "configured": "Configured",
-        "searchSkills": "Search skills...",
-        "noSkillsFound": "No skills match your search.",
+        "description": "Aktifkan agen Anda untuk berinteraksi dengan Gmail - mencari email, membaca thread, menyusun draft, mengirim email, dan mengelola kotak masuk Anda. <a>Baca dokumentasi</a>.",
+        "multiUserWarning": "Integrasi Gmail tidak tersedia dalam mode multi-pengguna karena alasan keamanan. Silakan nonaktifkan mode multi-pengguna untuk menggunakan fitur ini.",
+        "configuration": "Konfigurasi Gmail",
+        "deploymentId": "ID Deployment",
+        "deploymentIdHelp": "ID deployment dari aplikasi web Google Apps Script Anda",
+        "apiKey": "Kunci API",
+        "apiKeyHelp": "Kunci API yang Anda konfigurasikan di deployment Google Apps Script Anda",
+        "configurationRequired": "Silakan konfigurasikan ID Deployment dan Kunci API untuk mengaktifkan keterampilan Gmail.",
+        "configured": "Terkonfigurasi",
+        "searchSkills": "Cari keterampilan...",
+        "noSkillsFound": "Tidak ada keterampilan yang cocok dengan pencarian Anda.",
         "categories": {
           "search": {
-            "title": "Search & Read Emails",
-            "description": "Deskripsi"
+            "title": "Cari & Baca Email",
+            "description": "Cari dan baca email dari kotak masuk Gmail Anda"
           },
           "drafts": {
-            "title": "Draft Emails",
-            "description": "Deskripsi"
+            "title": "Draft Email",
+            "description": "Buat, edit, dan kelola draft email"
           },
           "send": {
-            "title": "Send & Reply to Emails",
-            "description": "Deskripsi"
+            "title": "Kirim & Balas Email",
+            "description": "Kirim email dan balas thread segera"
           },
           "threads": {
-            "title": "Manage Email Threads",
-            "description": "Deskripsi"
+            "title": "Kelola Thread Email",
+            "description": "Kelola thread email - tandai sudah/belum dibaca, arsipkan, buang"
           },
           "account": {
-            "title": "Integration Statistics",
-            "description": "Deskripsi"
+            "title": "Statistik Integrasi",
+            "description": "Lihat statistik kotak masuk dan informasi akun"
           }
         },
         "skills": {
           "getInbox": {
-            "title": "Get Inbox",
-            "description": "Deskripsi"
+            "title": "Dapatkan Kotak Masuk",
+            "description": "Cara efisien untuk mendapatkan email kotak masuk dari Gmail"
           },
           "search": {
-            "title": "Search Emails",
-            "description": "Deskripsi"
+            "title": "Cari Email",
+            "description": "Cari email menggunakan sintaks kueri Gmail"
           },
           "readThread": {
-            "title": "Read Thread",
-            "description": "Deskripsi"
+            "title": "Baca Thread",
+            "description": "Baca thread email lengkap berdasarkan ID"
           },
           "createDraft": {
-            "title": "Create Draft",
-            "description": "Deskripsi"
+            "title": "Buat Draft",
+            "description": "Buat draft email baru"
           },
           "createDraftReply": {
-            "title": "Create Draft Reply",
-            "description": "Deskripsi"
+            "title": "Buat Balasan Draft",
+            "description": "Buat draft balasan ke thread yang ada"
           },
           "updateDraft": {
-            "title": "Update Draft",
-            "description": "Deskripsi"
+            "title": "Perbarui Draft",
+            "description": "Perbarui draft email yang ada"
           },
           "getDraft": {
-            "title": "Get Draft",
-            "description": "Deskripsi"
+            "title": "Dapatkan Draft",
+            "description": "Ambil draft spesifik berdasarkan ID"
           },
           "listDrafts": {
-            "title": "List Drafts",
-            "description": "Deskripsi"
+            "title": "Daftar Draft",
+            "description": "Daftar semua draft email"
           },
           "deleteDraft": {
-            "title": "Delete Draft",
-            "description": "Deskripsi"
+            "title": "Hapus Draft",
+            "description": "Hapus draft email"
           },
           "sendDraft": {
-            "title": "Send Draft",
-            "description": "Deskripsi"
+            "title": "Kirim Draft",
+            "description": "Kirim draft email yang ada"
           },
           "sendEmail": {
-            "title": "Send Email",
-            "description": "Deskripsi"
+            "title": "Kirim Email",
+            "description": "Kirim email segera"
           },
           "replyToThread": {
-            "title": "Reply to Thread",
-            "description": "Deskripsi"
+            "title": "Balas Thread",
+            "description": "Balas thread email segera"
           },
           "markRead": {
-            "title": "Mark Read",
-            "description": "Deskripsi"
+            "title": "Tandai Sudah Dibaca",
+            "description": "Tandai thread sebagai sudah dibaca"
           },
           "markUnread": {
-            "title": "Mark Unread",
-            "description": "Deskripsi"
+            "title": "Tandai Belum Dibaca",
+            "description": "Tandai thread sebagai belum dibaca"
           },
           "moveToTrash": {
-            "title": "Move to Trash",
-            "description": "Deskripsi"
+            "title": "Pindahkan ke Tempat Sampah",
+            "description": "Pindahkan thread ke tempat sampah"
           },
           "moveToArchive": {
-            "title": "Archive",
-            "description": "Deskripsi"
+            "title": "Arsipkan",
+            "description": "Arsipkan thread"
           },
           "moveToInbox": {
-            "title": "Move to Inbox",
-            "description": "Deskripsi"
+            "title": "Pindahkan ke Kotak Masuk",
+            "description": "Pindahkan thread ke kotak masuk"
           },
           "getMailboxStats": {
-            "title": "Mailbox Stats",
-            "description": "Deskripsi"
+            "title": "Statistik Kotak Masuk",
+            "description": "Dapatkan jumlah belum dibaca dan statistik kotak masuk"
           }
         }
       },
       "googleCalendar": {
         "title": "Google Calendar",
-        "description": "Deskripsi",
-        "multiUserWarning": "Google Calendar integration is not available in multi-user mode for security reasons. Please disable multi-user mode to use this feature.",
-        "configuration": "Google Calendar Configuration",
-        "deploymentId": "Deployment ID",
-        "deploymentIdHelp": "The deployment ID from your Google Apps Script web app",
-        "apiKey": "API Key",
-        "apiKeyHelp": "The API key you configured in your Google Apps Script deployment",
-        "configurationRequired": "Please configure the Deployment ID and API Key to enable Google Calendar skills.",
-        "configured": "Configured",
-        "searchSkills": "Search skills...",
-        "noSkillsFound": "No skills match your search.",
+        "description": "Aktifkan agen Anda untuk berinteraksi dengan Google Calendar - melihat kalender, mendapatkan acara, membuat dan memperbarui acara, dan mengelola RSVP. <a>Baca dokumentasi</a>.",
+        "multiUserWarning": "Integrasi Google Calendar tidak tersedia dalam mode multi-pengguna karena alasan keamanan. Silakan nonaktifkan mode multi-pengguna untuk menggunakan fitur ini.",
+        "configuration": "Konfigurasi Google Calendar",
+        "deploymentId": "ID Deployment",
+        "deploymentIdHelp": "ID deployment dari aplikasi web Google Apps Script Anda",
+        "apiKey": "Kunci API",
+        "apiKeyHelp": "Kunci API yang Anda konfigurasikan di deployment Google Apps Script Anda",
+        "configurationRequired": "Silakan konfigurasikan ID Deployment dan Kunci API untuk mengaktifkan keterampilan Google Calendar.",
+        "configured": "Terkonfigurasi",
+        "searchSkills": "Cari keterampilan...",
+        "noSkillsFound": "Tidak ada keterampilan yang cocok dengan pencarian Anda.",
         "categories": {
           "calendars": {
-            "title": "Calendars",
-            "description": "Deskripsi"
+            "title": "Kalender",
+            "description": "Lihat dan kelola Google Calendar Anda"
           },
           "readEvents": {
-            "title": "Read Events",
-            "description": "Deskripsi"
+            "title": "Baca Acara",
+            "description": "Lihat dan cari acara kalender"
           },
           "writeEvents": {
-            "title": "Create & Update Events",
-            "description": "Deskripsi"
+            "title": "Buat & Perbarui Acara",
+            "description": "Buat acara baru dan ubah yang sudah ada"
           },
           "rsvp": {
-            "title": "RSVP Management",
-            "description": "Deskripsi"
+            "title": "Manajemen RSVP",
+            "description": "Kelola status respons Anda untuk acara"
           }
         },
         "skills": {
           "listCalendars": {
-            "title": "List Calendars",
-            "description": "Deskripsi"
+            "title": "Daftar Kalender",
+            "description": "Daftar semua kalender yang Anda miliki atau langgani"
           },
           "getCalendar": {
-            "title": "Get Calendar Details",
-            "description": "Deskripsi"
+            "title": "Detail Kalender",
+            "description": "Dapatkan informasi detail tentang kalender tertentu"
           },
           "getEvent": {
-            "title": "Get Event",
-            "description": "Deskripsi"
+            "title": "Dapatkan Acara",
+            "description": "Dapatkan informasi detail tentang acara tertentu"
           },
           "getEventsForDay": {
-            "title": "Get Events for Day",
-            "description": "Deskripsi"
+            "title": "Acara untuk Hari",
+            "description": "Dapatkan semua acara yang dijadwalkan untuk hari tertentu"
           },
           "getEvents": {
-            "title": "Get Events (Date Range)",
-            "description": "Deskripsi"
+            "title": "Dapatkan Acara (Rentang Tanggal)",
+            "description": "Dapatkan acara dalam rentang tanggal kustom"
           },
           "getUpcomingEvents": {
-            "title": "Get Upcoming Events",
-            "description": "Deskripsi"
+            "title": "Acara Mendatang",
+            "description": "Dapatkan acara untuk hari ini, minggu ini, atau bulan ini menggunakan kata kunci sederhana"
           },
           "quickAdd": {
-            "title": "Quick Add Event",
-            "description": "Deskripsi"
+            "title": "Tambah Cepat Acara",
+            "description": "Buat acara dari bahasa alami (mis., 'Rapat besok jam 3 sore')"
           },
           "createEvent": {
-            "title": "Create Event",
-            "description": "Deskripsi"
+            "title": "Buat Acara",
+            "description": "Buat acara baru dengan kontrol penuh atas semua properti"
           },
           "updateEvent": {
-            "title": "Update Event",
-            "description": "Deskripsi"
+            "title": "Perbarui Acara",
+            "description": "Perbarui acara kalender yang ada"
           },
           "setMyStatus": {
-            "title": "Set RSVP Status",
-            "description": "Deskripsi"
+            "title": "Atur Status RSVP",
+            "description": "Terima, tolak, atau terima sementara sebuah acara"
           }
         }
       },
       "outlook": {
         "title": "Outlook",
-        "description": "Deskripsi",
-        "multiUserWarning": "Outlook integration is not available in multi-user mode for security reasons. Please disable multi-user mode to use this feature.",
-        "configuration": "Outlook Configuration",
-        "authType": "Account Type",
-        "authTypeHelp": "Choose which types of Microsoft accounts can authenticate. 'All accounts' supports both personal and work/school accounts. 'Personal only' restricts to personal Microsoft accounts. 'Organization only' restricts to work/school accounts from a specific Azure AD tenant.",
-        "authTypeCommon": "All accounts (personal & work/school)",
-        "authTypeConsumers": "Personal Microsoft accounts only",
-        "authTypeOrganization": "Organization accounts only (requires Tenant ID)",
-        "clientId": "Application (Client) ID",
-        "clientIdHelp": "The Application (Client) ID from your Azure AD app registration",
-        "tenantId": "Directory (Tenant) ID",
-        "tenantIdHelp": "The Directory (Tenant) ID from your Azure AD app registration. Required only for organization-only authentication.",
+        "description": "Aktifkan agen Anda untuk berinteraksi dengan Microsoft Outlook - mencari email, membaca thread, menyusun draft, mengirim email, dan mengelola kotak masuk melalui Microsoft Graph API. <a>Baca dokumentasi</a>.",
+        "multiUserWarning": "Integrasi Outlook tidak tersedia dalam mode multi-pengguna karena alasan keamanan. Silakan nonaktifkan mode multi-pengguna untuk menggunakan fitur ini.",
+        "configuration": "Konfigurasi Outlook",
+        "authType": "Tipe Akun",
+        "authTypeHelp": "Pilih tipe akun Microsoft yang dapat diautentikasi. 'Semua akun' mendukung akun pribadi dan kerja/sekolah. 'Hanya pribadi' membatasi ke akun Microsoft pribadi. 'Hanya organisasi' membatasi ke akun kerja/sekolah dari tenant Azure AD tertentu.",
+        "authTypeCommon": "Semua akun (pribadi & kerja/sekolah)",
+        "authTypeConsumers": "Hanya akun Microsoft pribadi",
+        "authTypeOrganization": "Hanya akun organisasi (memerlukan Tenant ID)",
+        "clientId": "ID Aplikasi (Klien)",
+        "clientIdHelp": "ID Aplikasi (Klien) dari pendaftaran aplikasi Azure AD Anda",
+        "tenantId": "ID Direktori (Tenant)",
+        "tenantIdHelp": "ID Direktori (Tenant) dari pendaftaran aplikasi Azure AD Anda. Hanya diperlukan untuk autentikasi khusus organisasi.",
         "clientSecret": "Client Secret",
-        "clientSecretHelp": "The client secret value from your Azure AD app registration",
-        "configurationRequired": "Please configure the Client ID and Client Secret to enable Outlook skills.",
-        "authRequired": "Save your credentials first, then authenticate with Microsoft to complete the setup.",
-        "authenticateWithMicrosoft": "Authenticate with Microsoft",
-        "authenticated": "Successfully authenticated with Microsoft Outlook.",
-        "revokeAccess": "Revoke Access",
-        "configured": "Configured",
-        "searchSkills": "Search skills...",
-        "noSkillsFound": "No skills match your search.",
+        "clientSecretHelp": "Nilai client secret dari pendaftaran aplikasi Azure AD Anda",
+        "configurationRequired": "Silakan konfigurasikan Client ID dan Client Secret untuk mengaktifkan keterampilan Outlook.",
+        "authRequired": "Simpan kredensial Anda terlebih dahulu, lalu autentikasi dengan Microsoft untuk menyelesaikan pengaturan.",
+        "authenticateWithMicrosoft": "Autentikasi dengan Microsoft",
+        "authenticated": "Berhasil diautentikasi dengan Microsoft Outlook.",
+        "revokeAccess": "Cabut Akses",
+        "configured": "Terkonfigurasi",
+        "searchSkills": "Cari keterampilan...",
+        "noSkillsFound": "Tidak ada keterampilan yang cocok dengan pencarian Anda.",
         "categories": {
           "search": {
-            "title": "Search & Read Emails",
-            "description": "Deskripsi"
+            "title": "Cari & Baca Email",
+            "description": "Cari dan baca email dari kotak masuk Outlook Anda"
           },
           "drafts": {
-            "title": "Draft Emails",
-            "description": "Deskripsi"
+            "title": "Draft Email",
+            "description": "Buat, edit, dan kelola draft email"
           },
           "send": {
-            "title": "Send Emails",
-            "description": "Deskripsi"
+            "title": "Kirim Email",
+            "description": "Kirim email baru atau balas pesan segera"
           },
           "account": {
-            "title": "Integration Statistics",
-            "description": "Deskripsi"
+            "title": "Statistik Integrasi",
+            "description": "Lihat statistik kotak masuk dan informasi akun"
           }
         },
         "skills": {
           "getInbox": {
-            "title": "Get Inbox",
-            "description": "Deskripsi"
+            "title": "Dapatkan Kotak Masuk",
+            "description": "Dapatkan email terbaru dari kotak masuk Outlook Anda"
           },
           "search": {
-            "title": "Search Emails",
-            "description": "Deskripsi"
+            "title": "Cari Email",
+            "description": "Cari email menggunakan sintaks Microsoft Search"
           },
           "readThread": {
-            "title": "Read Conversation",
-            "description": "Deskripsi"
+            "title": "Baca Percakapan",
+            "description": "Baca thread percakapan email lengkap"
           },
           "createDraft": {
-            "title": "Create Draft",
-            "description": "Deskripsi"
+            "title": "Buat Draft",
+            "description": "Buat draft email baru atau draft balasan ke pesan yang ada"
           },
           "updateDraft": {
-            "title": "Update Draft",
-            "description": "Deskripsi"
+            "title": "Perbarui Draft",
+            "description": "Perbarui draft email yang ada"
           },
           "listDrafts": {
-            "title": "List Drafts",
-            "description": "Deskripsi"
+            "title": "Daftar Draft",
+            "description": "Daftar semua draft email"
           },
           "deleteDraft": {
-            "title": "Delete Draft",
-            "description": "Deskripsi"
+            "title": "Hapus Draft",
+            "description": "Hapus draft email"
           },
           "sendDraft": {
-            "title": "Send Draft",
-            "description": "Deskripsi"
+            "title": "Kirim Draft",
+            "description": "Kirim draft email yang ada"
           },
           "sendEmail": {
-            "title": "Send Email",
-            "description": "Deskripsi"
+            "title": "Kirim Email",
+            "description": "Kirim email baru atau balas pesan yang ada segera"
           },
           "getMailboxStats": {
-            "title": "Mailbox Stats",
-            "description": "Deskripsi"
+            "title": "Statistik Kotak Masuk",
+            "description": "Dapatkan jumlah folder dan statistik kotak masuk"
           }
         }
       },
-      "default_skill": "By default, this skill is enabled, but you can disable it if you don't want it to be available to the agent."
+      "default_skill": "Secara bawaan, keterampilan ini diaktifkan, tetapi Anda dapat menonaktifkannya jika tidak ingin tersedia untuk agen."
     },
     "mcp": {
-      "title": "MCP Servers",
-      "loading-from-config": "Loading MCP Servers from configuration file",
-      "learn-more": "Learn more about MCP Servers.",
-      "no-servers-found": "No MCP servers found",
-      "tool-warning": "For the best performance, consider disabling unwanted tools to conserve context.",
-      "tools-enabled": "tools enabled",
-      "stop-server": "Stop MCP Server",
-      "start-server": "Start MCP Server",
-      "delete-server": "Delete MCP Server",
-      "tool-count-warning": "This MCP server has <b>{{count}} tools enabled</b> that will consume context in every chat.<br />Consider disabling unwanted tools to conserve context.",
-      "startup-command": "Startup Command",
-      "command": "Command",
-      "arguments": "Arguments",
-      "not-running-warning": "This MCP server is not running - it may be stopped or experiencing an error on startup.",
-      "tool-call-arguments": "Tool call arguments"
+      "title": "Server MCP",
+      "loading-from-config": "Memuat Server MCP dari berkas konfigurasi",
+      "learn-more": "Pelajari lebih lanjut tentang Server MCP.",
+      "no-servers-found": "Tidak ada server MCP ditemukan",
+      "tool-warning": "Untuk kinerja terbaik, pertimbangkan untuk menonaktifkan alat yang tidak diinginkan untuk menghemat konteks.",
+      "tools-enabled": "alat diaktifkan",
+      "stop-server": "Hentikan Server MCP",
+      "start-server": "Mulai Server MCP",
+      "delete-server": "Hapus Server MCP",
+      "tool-count-warning": "Server MCP ini memiliki <b>{{count}} alat yang diaktifkan</b> yang akan mengonsumsi konteks di setiap obrolan.<br />Pertimbangkan untuk menonaktifkan alat yang tidak diinginkan untuk menghemat konteks.",
+      "startup-command": "Perintah Startup",
+      "command": "Perintah",
+      "arguments": "Argumen",
+      "not-running-warning": "Server MCP ini tidak berjalan - mungkin dihentikan atau mengalami kesalahan saat startup.",
+      "tool-call-arguments": "Argumen panggilan alat"
     },
     "settings": {
-      "title": "Agent Skill Settings",
+      "title": "Pengaturan Keterampilan Agen",
       "max-tool-calls": {
-        "title": "Max Tool Calls Per Response",
-        "description": "Deskripsi"
+        "title": "Panggilan Alat Maksimal Per Respons",
+        "description": "Jumlah maksimum alat yang dapat dirantai agen untuk menghasilkan satu respons. Ini mencegah panggilan alat yang tak terkendali dan loop tak terbatas."
       },
       "intelligent-skill-selection": {
-        "title": "Intelligent Skill Selection",
-        "description": "Deskripsi",
+        "title": "Pemilihan Keterampilan Cerdas",
+        "description": "Aktifkan alat tanpa batas dan kurangi penggunaan token hingga 80% per kueri — AnythingLLM secara otomatis memilih keterampilan yang tepat untuk setiap prompt.",
         "max-tools": {
-          "title": "Max Tools",
-          "description": "Deskripsi"
+          "title": "Alat Maksimal",
+          "description": "Jumlah maksimum alat yang dipilih untuk setiap kueri. Kami merekomendasikan pengaturan ini ke nilai yang lebih tinggi untuk model konteks besar."
         }
       },
       "clarifying-questions": {
-        "title": "Allow agent to ask clarifying questions",
+        "title": "Izinkan agen mengajukan pertanyaan klarifikasi",
         "beta-badge": "BETA",
-        "description": "Deskripsi",
+        "description": "Saat diaktifkan, agen dapat berhenti sejenak untuk mengajukan pertanyaan klarifikasi singkat jika prompt Anda ambigu.",
         "max-per-turn": {
-          "title": "Max questions per turn",
-          "description": "Deskripsi"
+          "title": "Pertanyaan maksimal per giliran",
+          "description": "Berapa banyak pertanyaan klarifikasi yang boleh diajukan agen dalam satu survei."
         }
       }
     }
   },
   "recorded": {
-    "title": "Workspace Chats",
-    "description": "Deskripsi",
-    "export": "Export",
+    "title": "Obrolan Ruang Kerja",
+    "description": "Ini adalah semua obrolan dan pesan yang direkam yang telah dikirim oleh pengguna, diurutkan berdasarkan tanggal pembuatannya.",
+    "export": "Ekspor",
     "table": {
       "id": "ID",
-      "by": "Sent By",
+      "by": "Dikirim Oleh",
       "workspace": "Ruang Kerja",
       "prompt": "Prompt",
-      "response": "Response",
-      "at": "Sent At"
+      "response": "Respons",
+      "at": "Dikirim Pada"
     }
   },
   "customization": {
     "interface": {
-      "title": "UI Preferences",
-      "description": "Deskripsi"
+      "title": "Preferensi UI",
+      "description": "Atur preferensi UI Anda untuk AnythingLLM."
     },
     "branding": {
       "title": "Branding & Whitelabeling",
-      "description": "Deskripsi"
+      "description": "White-label instance AnythingLLM Anda dengan branding kustom."
     },
     "chat": {
-      "title": "Chat",
-      "description": "Deskripsi",
+      "title": "Obrolan",
+      "description": "Atur preferensi obrolan Anda untuk AnythingLLM.",
       "auto_submit": {
-        "title": "Auto-Submit Speech Input",
-        "description": "Deskripsi"
+        "title": "Kirim Otomatis Input Suara",
+        "description": "Secara otomatis mengirim input suara setelah periode hening"
       },
       "auto_speak": {
-        "title": "Auto-Speak Responses",
-        "description": "Deskripsi"
+        "title": "Bicara Otomatis Respons",
+        "description": "Secara otomatis membacakan respons dari AI"
       },
       "spellcheck": {
-        "title": "Enable Spellcheck",
-        "description": "Deskripsi"
+        "title": "Aktifkan Pemeriksa Ejaan",
+        "description": "Aktifkan atau nonaktifkan pemeriksa ejaan di kolom input obrolan"
       }
     },
     "items": {
       "theme": {
-        "title": "Theme",
-        "description": "Deskripsi"
+        "title": "Tema",
+        "description": "Pilih tema warna pilihan Anda untuk aplikasi."
       },
       "show-scrollbar": {
-        "title": "Show Scrollbar",
-        "description": "Deskripsi"
+        "title": "Tampilkan Scrollbar",
+        "description": "Aktifkan atau nonaktifkan scrollbar di jendela obrolan."
       },
       "support-email": {
-        "title": "Support Email",
-        "description": "Deskripsi"
+        "title": "Email Dukungan",
+        "description": "Atur alamat email dukungan yang harus dapat diakses oleh pengguna saat mereka membutuhkan bantuan."
       },
       "app-name": {
-        "title": "Name",
-        "description": "Deskripsi"
+        "title": "Nama",
+        "description": "Atur nama yang ditampilkan di halaman login untuk semua pengguna."
       },
       "display-language": {
-        "title": "Display Language",
-        "description": "Deskripsi"
+        "title": "Bahasa Tampilan",
+        "description": "Pilih bahasa pilihan untuk merender UI AnythingLLM - saat terjemahan tersedia."
       },
       "logo": {
-        "title": "Brand Logo",
-        "description": "Deskripsi",
-        "add": "Add a custom logo",
-        "recommended": "Recommended size: 800 x 200",
-        "remove": "Remove",
-        "replace": "Replace"
+        "title": "Logo Merek",
+        "description": "Unggah logo kustom Anda untuk ditampilkan di semua halaman.",
+        "add": "Tambah logo kustom",
+        "recommended": "Ukuran yang direkomendasikan: 800 x 200",
+        "remove": "Hapus",
+        "replace": "Ganti"
       },
       "browser-appearance": {
-        "title": "Browser Appearance",
-        "description": "Deskripsi",
+        "title": "Tampilan Browser",
+        "description": "Sesuaikan tampilan tab browser dan judul saat aplikasi terbuka.",
         "tab": {
-          "title": "Title",
-          "description": "Deskripsi"
+          "title": "Judul",
+          "description": "Atur judul tab kustom saat aplikasi terbuka di browser."
         },
         "favicon": {
           "title": "Favicon",
-          "description": "Deskripsi"
+          "description": "Gunakan favicon kustom untuk tab browser."
         }
       },
       "sidebar-footer": {
-        "title": "Sidebar Footer Items",
-        "description": "Deskripsi",
-        "icon": "Icon",
-        "link": "Link"
+        "title": "Item Footer Sidebar",
+        "description": "Sesuaikan item footer yang ditampilkan di bagian bawah sidebar.",
+        "icon": "Ikon",
+        "link": "Tautan"
       },
       "render-html": {
-        "title": "Render HTML in chat",
-        "description": "Deskripsi"
+        "title": "Render HTML dalam obrolan",
+        "description": "Render respons HTML dalam respons asisten.\nIni dapat menghasilkan kualitas respons yang jauh lebih tinggi, tetapi juga dapat menyebabkan potensi risiko keamanan."
       }
     }
   },
   "api": {
-    "title": "API Keys",
-    "description": "Deskripsi",
-    "link": "Read the API documentation",
-    "generate": "Generate New API Key",
-    "empty": "No API keys found",
+    "title": "Kunci API",
+    "description": "Kunci API memungkinkan pemegangnya untuk mengakses dan mengelola instance AnythingLLM ini secara terprogram.",
+    "link": "Baca dokumentasi API",
+    "generate": "Hasilkan Kunci API Baru",
+    "empty": "Tidak ada kunci API ditemukan",
     "actions": "Tindakan",
     "messages": {
-      "error": "Error: {{error}}"
+      "error": "Kesalahan: {{error}}"
     },
     "modal": {
-      "title": "Create new API key",
+      "title": "Buat kunci API baru",
       "cancel": "Batal",
       "close": "Tutup",
-      "create": "Buat",
-      "helper": "Once created the API key can be used to programmatically access and configure this AnythingLLM instance.",
+      "create": "Buat Kunci API",
+      "helper": "Setelah dibuat, kunci API dapat digunakan untuk mengakses dan mengonfigurasi instance AnythingLLM ini secara terprogram.",
       "name": {
-        "label": "Name",
-        "placeholder": "Production integration",
-        "helper": "Optional. Use a friendly name so you can identify this key later."
+        "label": "Nama",
+        "placeholder": "Integrasi produksi",
+        "helper": "Opsional. Gunakan nama yang mudah dikenali sehingga Anda dapat mengidentifikasi kunci ini nanti."
       }
     },
     "row": {
-      "copy": "Salin",
+      "copy": "Salin Kunci API",
       "copied": "Tersalin!",
       "unnamed": "--",
-      "deleteConfirm": "Are you sure you want to deactivate this api key?\nAfter you do this it will not longer be useable.\n\nThis action is irreversible."
+      "deleteConfirm": "Apakah Anda yakin ingin menonaktifkan kunci api ini?\nSetelah Anda melakukannya, kunci ini tidak akan dapat digunakan lagi.\n\nTindakan ini tidak dapat dibatalkan."
     },
     "table": {
       "name": "Nama",
-      "key": "API Key",
-      "by": "Created By",
-      "created": "Created"
+      "key": "Kunci API",
+      "by": "Dibuat Oleh",
+      "created": "Dibuat"
     }
   },
   "llm": {
-    "title": "LLM Preference",
-    "description": "Deskripsi",
-    "provider": "LLM Provider",
+    "title": "Preferensi LLM",
+    "description": "Ini adalah kredensial dan pengaturan untuk penyedia obrolan & embedding LLM pilihan Anda. Penting bahwa kunci ini terkini dan benar, atau AnythingLLM tidak akan berfungsi dengan baik.",
+    "provider": "Penyedia LLM",
     "providers": {
       "azure_openai": {
         "azure_service_endpoint": "Azure Service Endpoint",
-        "api_key": "API Key",
-        "chat_deployment_name": "Chat Deployment Name",
-        "chat_model_token_limit": "Chat Model Token Limit",
-        "model_type": "Model Type",
-        "model_type_tooltip": "If your deployment uses a reasoning model (o1, o1-mini, o3-mini, etc.), set this to “Reasoning”. Otherwise, your chat requests may fail.",
+        "api_key": "Kunci API",
+        "chat_deployment_name": "Nama Deployment Obrolan",
+        "chat_model_token_limit": "Batas Token Model Obrolan",
+        "model_type": "Tipe Model",
+        "model_type_tooltip": "Jika deployment Anda menggunakan model reasoning (o1, o1-mini, o3-mini, dll.), atur ini ke \"Reasoning\". Jika tidak, permintaan obrolan Anda mungkin gagal.",
         "default": "Default",
         "reasoning": "Reasoning"
       }
     }
   },
   "model-router": {
-    "title": "Model Routers",
-    "description": "Deskripsi",
+    "title": "Router Model",
+    "description": "Router model memungkinkan Anda mendefinisikan aturan untuk secara otomatis merutekan pesan obrolan ke penyedia dan model LLM yang berbeda berdasarkan kondisi.",
     "table": {
       "name": "Nama",
       "fallback": "Fallback",
-      "rules": "Rules",
+      "rules": "Aturan",
       "workspaces": "Ruang Kerja"
     },
-    "no-routers": "No model routers yet",
-    "empty-description": "No model routers configured yet. Create one to get started.",
-    "new-router-button": "New Router",
-    "delete-confirm": "Are you sure you want to delete the router \"{{name}}\"?\nThis will remove all its rules and unlink any workspaces using it.\n\nThis action is irreversible.",
-    "toast-deleted": "Router deleted",
-    "toast-delete-failed": "Failed to delete router: {{error}}",
+    "no-routers": "Belum ada router model",
+    "empty-description": "Belum ada router model yang dikonfigurasi. Buat satu untuk memulai.",
+    "new-router-button": "Router Baru",
+    "delete-confirm": "Apakah Anda yakin ingin menghapus router \"{{name}}\"?\nIni akan menghapus semua aturannya dan melepaskan ruang kerja yang menggunakannya.\n\nTindakan ini tidak dapat dibatalkan.",
+    "toast-deleted": "Router dihapus",
+    "toast-delete-failed": "Gagal menghapus router: {{error}}",
     "new-router": {
-      "title": "Create New Model Router",
+      "title": "Buat Router Model Baru",
       "name": "Nama",
-      "name-placeholder": "e.g. Cost Optimizer",
+      "name-placeholder": "mis. Cost Optimizer",
       "description": "Deskripsi",
-      "description-placeholder": "Optional description",
-      "fallback-label": "Primary Provider & Model",
-      "fallback-description": "Used when no routing rule matches. Also used to evaluate LLM-classified rules.",
-      "cooldown-label": "Cache Cooldown (seconds)",
-      "cooldown-help": "How long a routing decision is cached before re-evaluating rules. Set to 0 to disable caching.",
-      "name-required": "Name is required.",
-      "fallback-required": "Primary provider and model are required.",
+      "description-placeholder": "Deskripsi opsional",
+      "fallback-label": "Penyedia & Model Utama",
+      "fallback-description": "Digunakan saat tidak ada aturan routing yang cocok. Juga digunakan untuk mengevaluasi aturan yang diklasifikasikan LLM.",
+      "cooldown-label": "Cache Cooldown (detik)",
+      "cooldown-help": "Berapa lama keputusan routing di-cache sebelum mengevaluasi ulang aturan. Atur ke 0 untuk menonaktifkan caching.",
+      "name-required": "Nama diperlukan.",
+      "fallback-required": "Penyedia dan model utama diperlukan.",
       "cancel": "Batal",
-      "create": "Buat"
+      "create": "Buat Router"
     },
     "edit-router": {
-      "back-to-routers": "Back to Model Routers",
+      "back-to-routers": "Kembali ke Router Model",
       "title": "Edit Router: {{name}}",
-      "save": "Simpan",
-      "toast-update-failed": "Failed to update router"
+      "save": "Simpan Perubahan",
+      "toast-update-failed": "Gagal memperbarui router"
     },
     "rules": {
-      "title": "Routing Rules",
-      "title-with-name": "Router Rules: {{name}}",
-      "description": "Deskripsi",
-      "add-rule": "Add Rule",
-      "delete-confirm": "Delete rule \"{{title}}\"?",
-      "toast-delete-failed": "Failed to delete rule",
-      "toast-reorder-failed": "Failed to reorder rules",
-      "no-rules": "No rules yet",
-      "empty-description": "Add a rule to start routing chat messages to specific providers and models.",
-      "new-rule-button": "New Rule",
-      "calculated-section-label": "Calculated rules — evaluated first, in priority order",
-      "llm-section-label": "LLM rules — evaluated as a batch if no calculated rule matched",
-      "llm-rule-body": "Match <desc>\"{{description}}\"</desc> then route to <route>{{route}}</route>",
-      "calculated-no-conditions": "No conditions — route to <route>{{route}}</route>",
-      "calculated-single-condition": "If <prop>{{property}}</prop> {{comparator}} <val>\"{{value}}\"</val> then route to <route>{{route}}</route>",
-      "calculated-multi-condition": "If {{quantifier}} of <cond>{{conditions}}</cond> then route to <route>{{route}}</route>",
-      "comparator-contains": "contains",
-      "comparator-matches": "matches",
-      "comparator-between": "between",
+      "title": "Aturan Routing",
+      "title-with-name": "Aturan Router: {{name}}",
+      "description": "Tentukan aturan yang menentukan kapan dan bagaimana pesan obrolan dikirim ke penyedia dan model tertentu.",
+      "add-rule": "Tambah Aturan",
+      "delete-confirm": "Hapus aturan \"{{title}}\"?",
+      "toast-delete-failed": "Gagal menghapus aturan",
+      "toast-reorder-failed": "Gagal mengurutkan ulang aturan",
+      "no-rules": "Belum ada aturan",
+      "empty-description": "Tambahkan aturan untuk mulai merutekan pesan obrolan ke penyedia dan model tertentu.",
+      "new-rule-button": "Aturan Baru",
+      "calculated-section-label": "Aturan kalkulasi — dievaluasi terlebih dahulu, dalam urutan prioritas",
+      "llm-section-label": "Aturan LLM — dievaluasi sebagai batch jika tidak ada aturan kalkulasi yang cocok",
+      "llm-rule-body": "Cocokkan <desc>\"{{description}}\"</desc> lalu rute ke <route>{{route}}</route>",
+      "calculated-no-conditions": "Tanpa kondisi — rute ke <route>{{route}}</route>",
+      "calculated-single-condition": "Jika <prop>{{property}}</prop> {{comparator}} <val>\"{{value}}\"</val> lalu rute ke <route>{{route}}</route>",
+      "calculated-multi-condition": "Jika {{quantifier}} dari <cond>{{conditions}}</cond> lalu rute ke <route>{{route}}</route>",
+      "comparator-contains": "mengandung",
+      "comparator-matches": "cocok",
+      "comparator-between": "antara",
       "badge-llm": "LLM",
-      "badge-calculated": "Calculated",
-      "aria-drag-to-reorder": "Drag to reorder",
-      "aria-edit-rule": "Edit rule",
-      "aria-delete-rule": "Delete rule",
+      "badge-calculated": "Kalkulasi",
+      "aria-drag-to-reorder": "Seret untuk mengurutkan ulang",
+      "aria-edit-rule": "Edit aturan",
+      "aria-delete-rule": "Hapus aturan",
       "quantifier-any": "ANY",
       "quantifier-all": "ALL"
     },
     "rule-form": {
-      "title-label": "Title",
-      "rule-type": "Rule Type",
-      "property-label": "Property",
-      "property-select": "Select",
-      "comparator-label": "Comparator",
-      "comparator-select": "Select",
-      "value-label": "Value",
-      "add-condition": "Add condition",
-      "remove-condition": "Remove condition",
-      "conditions-incomplete": "Condition {{index}} is incomplete — fill in property, comparator, and value.",
-      "match-description-label": "Match Description",
-      "match-description-placeholder": "e.g. The user is asking about legal topics, contracts, or compliance",
-      "match-description-help": "Describe the situation when you want this rule to match. This is evaluated by your LLM to determine if it should be used.",
-      "route-to-label": "Route to Provider & Model",
-      "route-to-description": "When this rule matches, use this provider/model",
+      "title-label": "Judul",
+      "rule-type": "Tipe Aturan",
+      "property-label": "Properti",
+      "property-select": "Pilih",
+      "comparator-label": "Pembanding",
+      "comparator-select": "Pilih",
+      "value-label": "Nilai",
+      "add-condition": "Tambah kondisi",
+      "remove-condition": "Hapus kondisi",
+      "conditions-incomplete": "Kondisi {{index}} tidak lengkap — isi properti, pembanding, dan nilai.",
+      "match-description-label": "Deskripsi Kecocokan",
+      "match-description-placeholder": "mis. Pengguna bertanya tentang topik hukum, kontrak, atau kepatuhan",
+      "match-description-help": "Jelaskan situasi saat Anda ingin aturan ini cocok. Ini dievaluasi oleh LLM Anda untuk menentukan apakah harus digunakan.",
+      "route-to-label": "Rute ke Penyedia & Model",
+      "route-to-description": "Saat aturan ini cocok, gunakan penyedia/model ini",
       "cancel": "Batal",
-      "saving": "Saving...",
-      "update-rule": "Update Rule",
-      "create-rule": "Create Rule",
-      "title-required": "Title is required",
-      "toast-save-failed": "Failed to save rule",
-      "type-calculated-label": "Calculated",
-      "type-calculated-description": "Match based on message properties like content, token count, or time of day.",
-      "type-llm-label": "LLM Classified",
-      "type-llm-description": "Use an LLM to classify the message based on a description you provide.",
-      "prop-prompt-content": "Prompt Content",
-      "prop-token-count": "Conversation Token Count",
-      "prop-message-count": "Conversation Message Count",
-      "prop-current-hour": "Current Hour (0-23)",
-      "prop-has-image": "Has Image Attachment",
-      "cmp-contains": "contains",
-      "cmp-matches-regex": "matches (regex)",
-      "cmp-equals": "equals",
-      "cmp-not-equals": "not equals",
-      "cmp-greater-than": "greater than",
-      "cmp-greater-than-or-equal": "greater than or equal",
-      "cmp-less-than": "less than",
-      "cmp-less-than-or-equal": "less than or equal",
-      "cmp-between": "between (inclusive)",
-      "placeholder-between-hour": "e.g. 9,17 (9am to 5pm)",
-      "placeholder-between-numeric": "e.g. 10,50",
-      "placeholder-hour": "e.g. 18 (0-23)",
-      "placeholder-message-count": "e.g. 10",
-      "placeholder-numeric": "e.g. 4000",
-      "placeholder-contains": "e.g. code, python, rust",
-      "placeholder-matches": "e.g. /\\bpython\\b/i",
-      "placeholder-default": "e.g. code",
-      "help-contains": "Comma-separated list — matches if the prompt contains any of the values (case-insensitive).",
-      "help-matches": "Regex pattern. Use /pattern/flags for case sensitivity (defaults to case-insensitive).",
+      "saving": "Menyimpan...",
+      "update-rule": "Perbarui Aturan",
+      "create-rule": "Buat Aturan",
+      "title-required": "Judul diperlukan",
+      "toast-save-failed": "Gagal menyimpan aturan",
+      "type-calculated-label": "Kalkulasi",
+      "type-calculated-description": "Cocokkan berdasarkan properti pesan seperti konten, jumlah token, atau waktu.",
+      "type-llm-label": "Klasifikasi LLM",
+      "type-llm-description": "Gunakan LLM untuk mengklasifikasikan pesan berdasarkan deskripsi yang Anda berikan.",
+      "prop-prompt-content": "Konten Prompt",
+      "prop-token-count": "Jumlah Token Percakapan",
+      "prop-message-count": "Jumlah Pesan Percakapan",
+      "prop-current-hour": "Jam Saat Ini (0-23)",
+      "prop-has-image": "Memiliki Lampiran Gambar",
+      "cmp-contains": "mengandung",
+      "cmp-matches-regex": "cocok (regex)",
+      "cmp-equals": "sama dengan",
+      "cmp-not-equals": "tidak sama dengan",
+      "cmp-greater-than": "lebih besar dari",
+      "cmp-greater-than-or-equal": "lebih besar dari atau sama dengan",
+      "cmp-less-than": "kurang dari",
+      "cmp-less-than-or-equal": "kurang dari atau sama dengan",
+      "cmp-between": "antara (inklusif)",
+      "placeholder-between-hour": "mis. 9,17 (9 pagi hingga 5 sore)",
+      "placeholder-between-numeric": "mis. 10,50",
+      "placeholder-hour": "mis. 18 (0-23)",
+      "placeholder-message-count": "mis. 10",
+      "placeholder-numeric": "mis. 4000",
+      "placeholder-contains": "mis. kode, python, rust",
+      "placeholder-matches": "mis. /\\bpython\\b/i",
+      "placeholder-default": "mis. kode",
+      "help-contains": "Daftar yang dipisahkan koma — cocok jika prompt mengandung salah satu nilai (tidak sensitif huruf besar/kecil).",
+      "help-matches": "Pola regex. Gunakan /pola/bendera untuk sensitivitas huruf (bawaan tidak sensitif huruf).",
       "bool-true": "True",
       "bool-false": "False"
     },
     "provider-picker": {
-      "select-provider": "Select provider",
-      "setup-required": "(setup required)",
-      "loading-models": "Loading models...",
-      "select-model": "Select model",
-      "enter-model": "Enter model name",
-      "select-provider-first": "Select a provider first",
-      "configure-to-continue": "Configure {{name}} to continue",
-      "configure-provider": "Configure {{name}}",
-      "setup-credentials": "Enter the required credentials to use {{name}} as a routing target.",
+      "select-provider": "Pilih penyedia",
+      "setup-required": "(diperlukan pengaturan)",
+      "loading-models": "Memuat model...",
+      "select-model": "Pilih model",
+      "enter-model": "Masukkan nama model",
+      "select-provider-first": "Pilih penyedia terlebih dahulu",
+      "configure-to-continue": "Konfigurasikan {{name}} untuk melanjutkan",
+      "configure-provider": "Konfigurasikan {{name}}",
+      "setup-credentials": "Masukkan kredensial yang diperlukan untuk menggunakan {{name}} sebagai target routing.",
       "cancel": "Batal",
-      "save-settings": "Save settings",
-      "toast-save-failed": "Failed to save settings: {{error}}"
+      "save-settings": "Simpan pengaturan",
+      "toast-save-failed": "Gagal menyimpan pengaturan: {{error}}"
     },
     "router-selection": {
-      "loading-routers": "Loading custom routers...",
-      "no-routers-prefix-settings": "No model routers configured yet.",
-      "no-routers-prefix-workspace": "No model routers configured.",
-      "no-routers-link": "Create one in Model Router settings",
-      "model-router-label": "Model Router",
-      "select-router": "Select a router",
-      "select-description": "Select which router to use for this workspace.",
-      "no-routers-chat": "No routers configured. Create one in Settings > AI Providers > Model Router.",
-      "rule-count": "({{count}} rules)"
+      "loading-routers": "Memuat router kustom...",
+      "no-routers-prefix-settings": "Belum ada router model yang dikonfigurasi.",
+      "no-routers-prefix-workspace": "Tidak ada router model yang dikonfigurasi.",
+      "no-routers-link": "Buat satu di pengaturan Router Model",
+      "model-router-label": "Router Model",
+      "select-router": "Pilih router",
+      "select-description": "Pilih router mana yang akan digunakan untuk ruang kerja ini.",
+      "no-routers-chat": "Tidak ada router yang dikonfigurasi. Buat satu di Pengaturan > Penyedia AI > Router Model.",
+      "rule-count": "({{count}} aturan)"
     },
     "metrics": {
-      "model-router-default": "Model Router"
+      "model-router-default": "Router Model"
     },
     "chat": {
-      "select-router-error": "Select a router",
-      "invalid-model": "Invalid model selection",
-      "routed-to": "Routed to <route>{{model}}</route>",
-      "routed-to-rule": "Routed to <route>{{model}}</route> via <rule>{{ruleTitle}}</rule>"
+      "select-router-error": "Pilih router",
+      "invalid-model": "Pemilihan model tidak valid",
+      "routed-to": "Dirutekan ke <route>{{model}}</route>",
+      "routed-to-rule": "Dirutekan ke <route>{{model}}</route> melalui <rule>{{ruleTitle}}</rule>"
     }
   },
   "transcription": {
-    "title": "Transcription Model Preference",
-    "description": "Deskripsi",
-    "provider": "Transcription Provider",
-    "warn-start": "Using the local whisper model on machines with limited RAM or CPU can stall AnythingLLM when processing media files.",
-    "warn-recommend": "We recommend at least 2GB of RAM and upload files <10Mb.",
-    "warn-end": "The built-in model will automatically download on the first use."
+    "title": "Preferensi Model Transkripsi",
+    "description": "Ini adalah kredensial dan pengaturan untuk penyedia model transkripsi pilihan Anda. Penting bahwa kunci ini terkini dan benar, atau berkas media dan audio tidak akan ditranskripsikan.",
+    "provider": "Penyedia Transkripsi",
+    "warn-start": "Menggunakan model whisper lokal pada mesin dengan RAM atau CPU terbatas dapat membuat AnythingLLM terhenti saat memproses berkas media.",
+    "warn-recommend": "Kami merekomendasikan setidaknya 2GB RAM dan mengunggah berkas <10Mb.",
+    "warn-end": "Model bawaan akan diunduh secara otomatis pada penggunaan pertama."
   },
   "embedding": {
-    "title": "Embedding Preference",
-    "desc-start": "When using an LLM that does not natively support an embedding engine - you may need to additionally specify credentials for embedding text.",
-    "desc-end": "Embedding is the process of turning text into vectors. These credentials are required to turn your files and prompts into a format which AnythingLLM can use to process.",
+    "title": "Preferensi Embedding",
+    "desc-start": "Saat menggunakan LLM yang tidak secara bawaan mendukung mesin embedding - Anda mungkin perlu menentukan kredensial tambahan untuk embedding teks.",
+    "desc-end": "Embedding adalah proses mengubah teks menjadi vektor. Kredensial ini diperlukan untuk mengubah berkas dan prompt Anda menjadi format yang dapat diproses oleh AnythingLLM.",
     "provider": {
-      "title": "Embedding Provider"
+      "title": "Penyedia Embedding"
     }
   },
   "text": {
-    "title": "Text splitting & Chunking Preferences",
-    "desc-start": "Sometimes, you may want to change the default way that new documents are split and chunked before being inserted into your vector database.",
-    "desc-end": "You should only modify this setting if you understand how text splitting works and it's side effects.",
+    "title": "Preferensi Pemisahan Teks & Chunking",
+    "desc-start": "Terkadang, Anda mungkin ingin mengubah cara bawaan dokumen baru dipisah dan di-chunk sebelum dimasukkan ke basis data vektor Anda.",
+    "desc-end": "Anda hanya boleh mengubah pengaturan ini jika Anda memahami cara kerja pemisahan teks dan efek sampingnya.",
     "size": {
-      "title": "Text Chunk Size",
-      "description": "Deskripsi",
-      "recommend": "Embed model maximum length is"
+      "title": "Ukuran Chunk Teks",
+      "description": "Ini adalah panjang maksimum karakter yang dapat ada dalam satu vektor.",
+      "recommend": "Panjang maksimum model embed adalah"
     },
     "overlap": {
-      "title": "Text Chunk Overlap",
-      "description": "Deskripsi"
+      "title": "Overlap Chunk Teks",
+      "description": "Ini adalah overlap maksimum karakter yang terjadi selama chunking antara dua chunk teks yang berdekatan."
     }
   },
   "vector": {
-    "title": "Vector Database",
-    "description": "Deskripsi",
+    "title": "Basis Data Vektor",
+    "description": "Ini adalah kredensial dan pengaturan untuk bagaimana instance AnythingLLM Anda akan berfungsi. Penting bahwa kunci ini terkini dan benar.",
     "provider": {
-      "title": "Vector Database Provider",
-      "description": "Deskripsi"
+      "title": "Penyedia Basis Data Vektor",
+      "description": "Tidak ada konfigurasi yang diperlukan untuk LanceDB."
     }
   },
   "embeddable": {
-    "title": "Embeddable Chat Widgets",
-    "description": "Deskripsi",
-    "create": "Buat",
+    "title": "Widget Obrolan yang Dapat Disematkan",
+    "description": "Widget obrolan yang dapat disematkan adalah antarmuka obrolan publik yang terikat pada satu ruang kerja. Ini memungkinkan Anda membangun ruang kerja yang kemudian dapat Anda publikasikan ke dunia.",
+    "create": "Buat embed",
     "table": {
       "workspace": "Ruang Kerja",
-      "chats": "Sent Chats",
-      "active": "Active Domains",
-      "created": "Created"
+      "chats": "Obrolan Terkirim",
+      "active": "Domain Aktif",
+      "created": "Dibuat"
     }
   },
   "embed-chats": {
-    "title": "Embed Chat History",
-    "export": "Export",
-    "description": "Deskripsi",
+    "title": "Riwayat Obrolan Embed",
+    "export": "Ekspor",
+    "description": "Ini adalah semua obrolan dan pesan yang direkam dari embed apa pun yang telah Anda publikasikan.",
     "table": {
       "embed": "Embed",
-      "sender": "Sender",
-      "message": "Message",
-      "response": "Response",
-      "at": "Sent At"
+      "sender": "Pengirim",
+      "message": "Pesan",
+      "response": "Respons",
+      "at": "Dikirim Pada"
     }
   },
   "telegram": {
-    "title": "Telegram Bot",
-    "description": "Deskripsi",
+    "title": "Bot Telegram",
+    "description": "Hubungkan instance AnythingLLM Anda ke Telegram sehingga Anda dapat mengobrol dengan ruang kerja Anda dari perangkat apa pun.",
     "setup": {
       "step1": {
-        "title": "Step 1: Create your Telegram bot",
-        "description": "Deskripsi",
-        "open-botfather": "Open BotFather",
-        "instruction-1": "1. Open the link or scan the QR code",
-        "instruction-2": "2. Send <code>/newbot</code> to <code>@BotFather</code>",
-        "instruction-3": "3. Choose a name and username for your bot",
-        "instruction-4": "4. Copy the API token you receive"
+        "title": "Langkah 1: Buat bot Telegram Anda",
+        "description": "Buka @BotFather di Telegram, kirim <code>/newbot</code> ke <code>@BotFather</code>, ikuti petunjuknya, dan salin token API.",
+        "open-botfather": "Buka BotFather",
+        "instruction-1": "1. Buka tautan atau pindai kode QR",
+        "instruction-2": "2. Kirim <code>/newbot</code> ke <code>@BotFather</code>",
+        "instruction-3": "3. Pilih nama dan nama pengguna untuk bot Anda",
+        "instruction-4": "4. Salin token API yang Anda terima"
       },
       "step2": {
-        "title": "Step 2: Connect your bot",
-        "description": "Deskripsi",
-        "bot-token": "Bot Token",
-        "connecting": "Connecting...",
-        "connect-bot": "Connect Bot"
+        "title": "Langkah 2: Hubungkan bot Anda",
+        "description": "Tempel token API yang Anda terima dari @BotFather untuk menghubungkan bot Anda.",
+        "bot-token": "Token Bot",
+        "connecting": "Menghubungkan...",
+        "connect-bot": "Hubungkan Bot"
       },
       "security": {
-        "title": "Recommended Security Settings",
-        "description": "Deskripsi",
-        "disable-groups": "— Prevent adding bot to groups",
-        "disable-inline": "— Prevent bot from being used in inline search",
-        "obscure-username": "Use a non-obvious bot handle username to reduce discoverability"
+        "title": "Pengaturan Keamanan yang Direkomendasikan",
+        "description": "Untuk keamanan tambahan, konfigurasikan pengaturan ini di @BotFather.",
+        "disable-groups": "— Cegah penambahan bot ke grup",
+        "disable-inline": "— Cegah bot digunakan dalam pencarian inline",
+        "obscure-username": "Gunakan nama pengguna bot yang tidak mudah ditebak untuk mengurangi kemungkinan ditemukan"
       },
-      "toast-enter-token": "Please enter a bot token.",
-      "toast-connect-failed": "Failed to connect bot."
+      "toast-enter-token": "Silakan masukkan token bot.",
+      "toast-connect-failed": "Gagal menghubungkan bot."
     },
     "connected": {
-      "status": "Status",
-      "status-disconnected": "Disconnected — token may be expired or invalid",
-      "placeholder-token": "Paste new bot token...",
-      "reconnect": "Reconnect",
+      "status": "Terhubung",
+      "status-disconnected": "Terputus — token mungkin kedaluwarsa atau tidak valid",
+      "placeholder-token": "Tempel token bot baru...",
+      "reconnect": "Hubungkan Ulang",
       "workspace": "Ruang Kerja",
-      "bot-link": "Bot Link",
-      "voice-response": "Voice Response",
-      "disconnecting": "Disconnecting...",
-      "disconnect": "Disconnect",
-      "voice-text-only": "Text only",
-      "voice-mirror": "Mirror (reply with voice when user sends voice)",
-      "voice-always": "Always voice (send audio with every reply)",
-      "toast-disconnect-failed": "Failed to disconnect bot.",
-      "toast-reconnect-failed": "Failed to reconnect bot.",
-      "toast-voice-failed": "Failed to update voice mode.",
-      "toast-approve-failed": "Failed to approve user.",
-      "toast-deny-failed": "Failed to deny user.",
-      "toast-revoke-failed": "Failed to revoke user."
+      "bot-link": "Tautan Bot",
+      "voice-response": "Respons Suara",
+      "disconnecting": "Memutuskan...",
+      "disconnect": "Putuskan",
+      "voice-text-only": "Hanya teks",
+      "voice-mirror": "Mirror (balas dengan suara saat pengguna mengirim suara)",
+      "voice-always": "Selalu suara (kirim audio dengan setiap balasan)",
+      "toast-disconnect-failed": "Gagal memutuskan bot.",
+      "toast-reconnect-failed": "Gagal menghubungkan ulang bot.",
+      "toast-voice-failed": "Gagal memperbarui mode suara.",
+      "toast-approve-failed": "Gagal menyetujui pengguna.",
+      "toast-deny-failed": "Gagal menolak pengguna.",
+      "toast-revoke-failed": "Gagal mencabut pengguna."
     },
     "users": {
-      "pending-description": "Users waiting to be verified. Match the pairing code shown here with the one displayed in their Telegram chat.",
-      "unknown": "Unknown"
+      "pending-description": "Pengguna yang menunggu untuk diverifikasi. Cocokkan kode pairing yang ditampilkan di sini dengan yang ditampilkan di obrolan Telegram mereka.",
+      "unknown": "Tidak Diketahui"
     }
   },
   "security": {
-    "title": "Security",
+    "title": "Keamanan",
     "multiuser": {
-      "title": "Multi-User Mode",
-      "description": "Deskripsi",
+      "title": "Mode Multi-Pengguna",
+      "description": "Atur instance Anda untuk mendukung tim Anda dengan mengaktifkan Mode Multi-Pengguna.",
       "enable": {
-        "is-enable": "Multi-User Mode is Enabled",
-        "enable": "Enable Multi-User Mode",
-        "description": "Deskripsi",
-        "username": "Nama Pengguna",
-        "password": "Kata Sandi"
+        "is-enable": "Mode Multi-Pengguna Diaktifkan",
+        "enable": "Aktifkan Mode Multi-Pengguna",
+        "description": "Secara bawaan, Anda akan menjadi satu-satunya admin. Sebagai admin, Anda perlu membuat akun untuk semua pengguna atau admin baru. Jangan kehilangan kata sandi Anda karena hanya pengguna Admin yang dapat mereset kata sandi.",
+        "username": "Nama pengguna akun admin",
+        "password": "Kata sandi akun admin"
       }
     },
     "password": {
-      "title": "Password Protection",
-      "description": "Deskripsi",
-      "password-label": "Instance Password"
+      "title": "Perlindungan Kata Sandi",
+      "description": "Lindungi instance AnythingLLM Anda dengan kata sandi. Jika Anda lupa, tidak ada metode pemulihan, jadi pastikan Anda menyimpan kata sandi ini.",
+      "password-label": "Kata Sandi Instance"
     }
   },
   "event": {
-    "title": "Event Logs",
-    "description": "Deskripsi",
-    "clear": "Clear Event Logs",
+    "title": "Log Peristiwa",
+    "description": "Lihat semua tindakan dan peristiwa yang terjadi di instance ini untuk pemantauan.",
+    "clear": "Bersihkan Log Peristiwa",
     "table": {
-      "type": "Event Type",
-      "user": "User",
-      "occurred": "Occurred At"
+      "type": "Tipe Peristiwa",
+      "user": "Pengguna",
+      "occurred": "Terjadi Pada"
     }
   },
   "privacy": {
-    "title": "Privacy & Data-Handling",
-    "description": "Deskripsi",
-    "anonymous": "Anonymous Telemetry Enabled"
+    "title": "Privasi & Penanganan Data",
+    "description": "Ini adalah konfigurasi Anda tentang bagaimana penyedia pihak ketiga yang terhubung dan AnythingLLM menangani data Anda.",
+    "anonymous": "Telemetri Anonim Diaktifkan"
   },
   "connectors": {
-    "search-placeholder": "Search data connectors",
-    "no-connectors": "No data connectors found.",
+    "search-placeholder": "Cari konektor data",
+    "no-connectors": "Tidak ada konektor data ditemukan.",
     "obsidian": {
-      "vault_location": "Vault Location",
-      "vault_description": "Select your Obsidian vault folder to import all notes and their connections.",
-      "selected_files": "Found {{count}} markdown files",
-      "importing": "Importing vault...",
-      "import_vault": "Import Vault",
-      "processing_time": "This may take a while depending on the size of your vault.",
-      "vault_warning": "To avoid any conflicts, make sure your Obsidian vault is not currently open."
+      "vault_location": "Lokasi Vault",
+      "vault_description": "Pilih folder vault Obsidian Anda untuk mengimpor semua catatan dan koneksinya.",
+      "selected_files": "Ditemukan {{count}} berkas markdown",
+      "importing": "Mengimpor vault...",
+      "import_vault": "Impor Vault",
+      "processing_time": "Ini mungkin memakan waktu tergantung pada ukuran vault Anda.",
+      "vault_warning": "Untuk menghindari konflik, pastikan vault Obsidian Anda tidak sedang terbuka."
     },
     "github": {
-      "name": "Nama",
-      "description": "Deskripsi",
-      "URL": "GitHub Repo URL",
-      "URL_explained": "Url of the GitHub repo you wish to collect.",
+      "name": "GitHub Repo",
+      "description": "Impor seluruh repositori GitHub publik atau privat dalam satu klik.",
+      "URL": "URL GitHub Repo",
+      "URL_explained": "URL repositori GitHub yang ingin Anda kumpulkan.",
       "token": "GitHub Access Token",
-      "optional": "optional",
-      "token_explained": "Access Token to prevent rate limiting.",
-      "token_explained_start": "Without a ",
+      "optional": "opsional",
+      "token_explained": "Access Token untuk mencegah pembatasan laju.",
+      "token_explained_start": "Tanpa ",
       "token_explained_link1": "Personal Access Token",
-      "token_explained_middle": ", the GitHub API may limit the number of files that can be collected due to rate limits. You can ",
-      "token_explained_link2": "create a temporary Access Token",
-      "token_explained_end": " to avoid this issue.",
-      "ignores": "File Ignores",
-      "git_ignore": "List in .gitignore format to ignore specific files during collection. Press enter after each entry you want to save.",
-      "task_explained": "Once complete, all files will be available for embedding into workspaces in the document picker.",
-      "branch": "Branch you wish to collect files from.",
-      "branch_loading": "-- loading available branches --",
-      "branch_explained": "Branch you wish to collect files from.",
-      "token_information": "Without filling out the <b>GitHub Access Token</b> this data connector will only be able to collect the <b>top-level</b> files of the repo due to GitHub's public API rate-limits.",
-      "token_personal": "Get a free Personal Access Token with a GitHub account here."
+      "token_explained_middle": ", API GitHub dapat membatasi jumlah berkas yang dapat dikumpulkan karena pembatasan laju. Anda dapat ",
+      "token_explained_link2": "membuat Access Token sementara",
+      "token_explained_end": " untuk menghindari masalah ini.",
+      "ignores": "Pengabaian Berkas",
+      "git_ignore": "Daftar dalam format .gitignore untuk mengabaikan berkas tertentu selama pengumpulan. Tekan enter setelah setiap entri yang ingin Anda simpan.",
+      "task_explained": "Setelah selesai, semua berkas akan tersedia untuk embedding ke ruang kerja di pemilih dokumen.",
+      "branch": "Cabang yang ingin Anda kumpulkan berkasnya.",
+      "branch_loading": "-- memuat cabang yang tersedia --",
+      "branch_explained": "Cabang yang ingin Anda kumpulkan berkasnya.",
+      "token_information": "Tanpa mengisi <b>GitHub Access Token</b>, konektor data ini hanya dapat mengumpulkan berkas <b>tingkat atas</b> dari repo karena pembatasan laju API publik GitHub.",
+      "token_personal": "Dapatkan Personal Access Token gratis dengan akun GitHub di sini."
     },
     "gitlab": {
-      "name": "Nama",
-      "description": "Deskripsi",
-      "URL": "GitLab Repo URL",
-      "URL_explained": "URL of the GitLab repo you wish to collect.",
+      "name": "GitLab Repo",
+      "description": "Impor seluruh repositori GitLab publik atau privat dalam satu klik.",
+      "URL": "URL GitLab Repo",
+      "URL_explained": "URL repositori GitLab yang ingin Anda kumpulkan.",
       "token": "GitLab Access Token",
-      "optional": "optional",
-      "token_description": "Select additional entities to fetch from the GitLab API.",
-      "token_explained_start": "Without a ",
+      "optional": "opsional",
+      "token_description": "Pilih entitas tambahan untuk diambil dari GitLab API.",
+      "token_explained_start": "Tanpa ",
       "token_explained_link1": "Personal Access Token",
-      "token_explained_middle": ", the GitLab API may limit the number of files that can be collected due to rate limits. You can ",
-      "token_explained_link2": "create a temporary Access Token",
-      "token_explained_end": " to avoid this issue.",
-      "fetch_issues": "Fetch Issues as Documents",
-      "ignores": "File Ignores",
-      "git_ignore": "List in .gitignore format to ignore specific files during collection. Press enter after each entry you want to save.",
-      "task_explained": "Once complete, all files will be available for embedding into workspaces in the document picker.",
-      "branch": "Branch you wish to collect files from",
-      "branch_loading": "-- loading available branches --",
-      "branch_explained": "Branch you wish to collect files from.",
-      "token_information": "Without filling out the <b>GitLab Access Token</b> this data connector will only be able to collect the <b>top-level</b> files of the repo due to GitLab's public API rate-limits.",
-      "token_personal": "Get a free Personal Access Token with a GitLab account here."
+      "token_explained_middle": ", API GitLab dapat membatasi jumlah berkas yang dapat dikumpulkan karena pembatasan laju. Anda dapat ",
+      "token_explained_link2": "membuat Access Token sementara",
+      "token_explained_end": " untuk menghindari masalah ini.",
+      "fetch_issues": "Ambil Issues sebagai Dokumen",
+      "ignores": "Pengabaian Berkas",
+      "git_ignore": "Daftar dalam format .gitignore untuk mengabaikan berkas tertentu selama pengumpulan. Tekan enter setelah setiap entri yang ingin Anda simpan.",
+      "task_explained": "Setelah selesai, semua berkas akan tersedia untuk embedding ke ruang kerja di pemilih dokumen.",
+      "branch": "Cabang yang ingin Anda kumpulkan berkasnya",
+      "branch_loading": "-- memuat cabang yang tersedia --",
+      "branch_explained": "Cabang yang ingin Anda kumpulkan berkasnya.",
+      "token_information": "Tanpa mengisi <b>GitLab Access Token</b>, konektor data ini hanya dapat mengumpulkan berkas <b>tingkat atas</b> dari repo karena pembatasan laju API publik GitLab.",
+      "token_personal": "Dapatkan Personal Access Token gratis dengan akun GitLab di sini."
     },
     "youtube": {
-      "name": "Nama",
-      "description": "Deskripsi",
-      "URL": "YouTube Video URL",
-      "URL_explained_start": "Enter the URL of any YouTube video to fetch its transcript. The video must have ",
+      "name": "Transkrip YouTube",
+      "description": "Impor transkripsi seluruh video YouTube dari tautan.",
+      "URL": "URL Video YouTube",
+      "URL_explained_start": "Masukkan URL video YouTube apa pun untuk mengambil transkripnya. Video harus memiliki ",
       "URL_explained_link": "closed captions",
-      "URL_explained_end": " available.",
-      "task_explained": "Once complete, the transcript will be available for embedding into workspaces in the document picker."
+      "URL_explained_end": " yang tersedia.",
+      "task_explained": "Setelah selesai, transkrip akan tersedia untuk embedding ke ruang kerja di pemilih dokumen."
     },
     "website-depth": {
-      "name": "Nama",
-      "description": "Deskripsi",
-      "URL": "Website URL",
-      "URL_explained": "URL of the website you want to scrape.",
-      "depth": "Crawl Depth",
-      "depth_explained": "This is the number of child-links that the worker should follow from the origin URL.",
-      "max_pages": "Maximum Pages",
-      "max_pages_explained": "Maximum number of links to scrape.",
-      "task_explained": "Once complete, all scraped content will be available for embedding into workspaces in the document picker."
+      "name": "Bulk Link Scraper",
+      "description": "Scrape situs web dan sub-tautannya hingga kedalaman tertentu.",
+      "URL": "URL Situs Web",
+      "URL_explained": "URL situs web yang ingin Anda scrape.",
+      "depth": "Kedalaman Crawl",
+      "depth_explained": "Ini adalah jumlah tautan anak yang harus diikuti worker dari URL asal.",
+      "max_pages": "Halaman Maksimal",
+      "max_pages_explained": "Jumlah maksimum tautan untuk di-scrape.",
+      "task_explained": "Setelah selesai, semua konten yang di-scrape akan tersedia untuk embedding ke ruang kerja di pemilih dokumen."
     },
     "confluence": {
-      "name": "Nama",
-      "description": "Deskripsi",
-      "deployment_type": "Confluence deployment type",
-      "deployment_type_explained": "Determine if your Confluence instance is hosted on Atlassian cloud or self-hosted.",
-      "base_url": "Confluence base URL",
-      "base_url_explained": "This is the base URL of your Confluence space.",
-      "space_key": "Confluence space key",
-      "space_key_explained": "This is the spaces key of your confluence instance that will be used. Usually begins with ~",
-      "username": "Nama Pengguna",
-      "username_explained": "Your Confluence username",
-      "auth_type": "Confluence Auth Type",
-      "auth_type_explained": "Select the authentication type you want to use to access your Confluence pages.",
-      "auth_type_username": "Username and Access Token",
+      "name": "Confluence",
+      "description": "Impor seluruh halaman Confluence dalam satu klik.",
+      "deployment_type": "Tipe deployment Confluence",
+      "deployment_type_explained": "Tentukan apakah instance Confluence Anda dihosting di Atlassian cloud atau self-hosted.",
+      "base_url": "URL dasar Confluence",
+      "base_url_explained": "Ini adalah URL dasar dari ruang Confluence Anda.",
+      "space_key": "Kunci ruang Confluence",
+      "space_key_explained": "Ini adalah kunci ruang dari instance Confluence Anda yang akan digunakan. Biasanya dimulai dengan ~",
+      "username": "Nama Pengguna Confluence",
+      "username_explained": "Nama pengguna Confluence Anda",
+      "auth_type": "Tipe Auth Confluence",
+      "auth_type_explained": "Pilih tipe autentikasi yang ingin Anda gunakan untuk mengakses halaman Confluence Anda.",
+      "auth_type_username": "Nama Pengguna dan Access Token",
       "auth_type_personal": "Personal Access Token",
       "token": "Confluence Access Token",
-      "token_explained_start": "You need to provide an access token for authentication. You can generate an access token",
-      "token_explained_link": "here",
-      "token_desc": "Access token for authentication",
+      "token_explained_start": "Anda perlu memberikan access token untuk autentikasi. Anda dapat membuat access token",
+      "token_explained_link": "di sini",
+      "token_desc": "Access token untuk autentikasi",
       "pat_token": "Confluence Personal Access Token",
-      "pat_token_explained": "Your Confluence personal access token.",
-      "bypass_ssl": "Bypass SSL Certificate Validation",
-      "bypass_ssl_explained": "Enable this option to bypass SSL certificate validation for self-hosted confluence instances with self-signed certificate",
-      "task_explained": "Once complete, the page content will be available for embedding into workspaces in the document picker."
+      "pat_token_explained": "Personal access token Confluence Anda.",
+      "bypass_ssl": "Abaikan Validasi Sertifikat SSL",
+      "bypass_ssl_explained": "Aktifkan opsi ini untuk mengabaikan validasi sertifikat SSL untuk instance Confluence self-hosted dengan sertifikat self-signed",
+      "task_explained": "Setelah selesai, konten halaman akan tersedia untuk embedding ke ruang kerja di pemilih dokumen."
     },
     "manage": {
       "documents": "Dokumen",
-      "data-connectors": "Data Connectors",
-      "desktop-only": "Editing these settings are only available on a desktop device. Please access this page on your desktop to continue.",
-      "dismiss": "Dismiss",
-      "editing": "Editing"
+      "data-connectors": "Konektor Data",
+      "desktop-only": "Mengedit pengaturan ini hanya tersedia di perangkat desktop. Silakan akses halaman ini di desktop Anda untuk melanjutkan.",
+      "dismiss": "Abaikan",
+      "editing": "Mengedit"
     },
     "directory": {
-      "my-documents": "My Documents",
-      "new-folder": "New Folder",
-      "total-documents_one": "{{count}} document",
-      "total-documents_other": "{{count}} documents",
-      "search-document": "Search for document",
-      "no-documents": "No Documents",
-      "move-workspace": "Move to Workspace",
-      "delete-confirmation": "Are you sure you want to delete these files and folders?\nThis will remove the files from the system and remove them from any existing workspaces automatically.\nThis action is not reversible.",
-      "removing-message": "Removing {{count}} documents and {{folderCount}} folders. Please wait.",
-      "move-success": "Successfully moved {{count}} documents.",
-      "no_docs": "No Documents",
-      "select_all": "Select All",
-      "deselect_all": "Deselect All",
-      "remove_selected": "Remove Selected",
-      "save_embed": "Save and Embed"
+      "my-documents": "Dokumen Saya",
+      "new-folder": "Folder Baru",
+      "total-documents_one": "{{count}} dokumen",
+      "total-documents_other": "{{count}} dokumen",
+      "search-document": "Cari dokumen",
+      "no-documents": "Tidak Ada Dokumen",
+      "move-workspace": "Pindahkan ke Ruang Kerja",
+      "delete-confirmation": "Apakah Anda yakin ingin menghapus berkas dan folder ini?\nIni akan menghapus berkas dari sistem dan menghapusnya dari ruang kerja yang ada secara otomatis.\nTindakan ini tidak dapat dibatalkan.",
+      "removing-message": "Menghapus {{count}} dokumen dan {{folderCount}} folder. Harap tunggu.",
+      "move-success": "Berhasil memindahkan {{count}} dokumen.",
+      "no_docs": "Tidak Ada Dokumen",
+      "select_all": "Pilih Semua",
+      "deselect_all": "Batal Pilih Semua",
+      "remove_selected": "Hapus yang Dipilih",
+      "save_embed": "Simpan dan Embed"
     },
     "upload": {
-      "processor-offline": "Document Processor Unavailable",
-      "processor-offline-desc": "We can't upload your files right now because the document processor is offline. Please try again later.",
-      "click-upload": "Click to upload or drag and drop",
-      "file-types": "supports text files, csv's, spreadsheets, audio files, and more!",
-      "or-submit-link": "or submit a link",
+      "processor-offline": "Pemroses Dokumen Tidak Tersedia",
+      "processor-offline-desc": "Kami tidak dapat mengunggah berkas Anda saat ini karena pemroses dokumen sedang offline. Silakan coba lagi nanti.",
+      "click-upload": "Klik untuk mengunggah atau seret dan lepas",
+      "file-types": "mendukung berkas teks, csv, spreadsheet, berkas audio, dan lainnya!",
+      "or-submit-link": "atau kirim tautan",
       "placeholder-link": "https://example.com",
-      "fetching": "Fetching...",
-      "fetch-website": "Fetch website",
-      "privacy-notice": "These files will be uploaded to the document processor running on this AnythingLLM instance. These files are not sent or shared with a third party."
+      "fetching": "Mengambil...",
+      "fetch-website": "Ambil situs web",
+      "privacy-notice": "Berkas ini akan diunggah ke pemroses dokumen yang berjalan di instance AnythingLLM ini. Berkas ini tidak dikirim atau dibagikan dengan pihak ketiga."
     },
     "pinning": {
-      "what_pinning": "What is document pinning?",
-      "pin_explained_block1": "When you <b>pin</b> a document in AnythingLLM we will inject the entire content of the document into your prompt window for your LLM to fully comprehend.",
-      "pin_explained_block2": "This works best with <b>large-context models</b> or small files that are critical to its knowledge-base.",
-      "pin_explained_block3": "If you are not getting the answers you desire from AnythingLLM by default then pinning is a great way to get higher quality answers in a click.",
-      "accept": "Okay, got it"
+      "what_pinning": "Apa itu pinning dokumen?",
+      "pin_explained_block1": "Saat Anda <b>pin</b> dokumen di AnythingLLM, kami akan menyuntikkan seluruh konten dokumen ke dalam jendela prompt Anda agar LLM Anda dapat memahaminya sepenuhnya.",
+      "pin_explained_block2": "Ini bekerja paling baik dengan <b>model konteks besar</b> atau berkas kecil yang penting untuk basis pengetahuannya.",
+      "pin_explained_block3": "Jika Anda tidak mendapatkan jawaban yang Anda inginkan dari AnythingLLM secara bawaan, maka pinning adalah cara yang bagus untuk mendapatkan jawaban berkualitas lebih tinggi dalam satu klik.",
+      "accept": "Oke, mengerti"
     },
     "watching": {
-      "what_watching": "What does watching a document do?",
-      "watch_explained_block1": "When you <b>watch</b> a document in AnythingLLM we will <i>automatically</i> sync your document content from it's original source on regular intervals. This will automatically update the content in every workspace where this file is managed.",
-      "watch_explained_block2": "This feature currently supports online-based content and will not be available for manually uploaded documents.",
-      "watch_explained_block3_start": "You can manage what documents are watched from the ",
-      "watch_explained_block3_link": "File manager",
-      "watch_explained_block3_end": " admin view.",
-      "accept": "Okay, got it"
+      "what_watching": "Apa fungsi memantau dokumen?",
+      "watch_explained_block1": "Saat Anda <b>memantau</b> dokumen di AnythingLLM, kami akan <i>secara otomatis</i> menyinkronkan konten dokumen Anda dari sumber aslinya secara berkala. Ini akan secara otomatis memperbarui konten di setiap ruang kerja tempat berkas ini dikelola.",
+      "watch_explained_block2": "Fitur ini saat ini mendukung konten berbasis online dan tidak akan tersedia untuk dokumen yang diunggah secara manual.",
+      "watch_explained_block3_start": "Anda dapat mengelola dokumen apa yang dipantau dari tampilan admin ",
+      "watch_explained_block3_link": "Manajer Berkas",
+      "watch_explained_block3_end": ".",
+      "accept": "Oke, mengerti"
     }
   },
   "chat_window": {
-    "attachments_processing": "Attachments are processing. Please wait...",
-    "send_message": "Send a message",
-    "attach_file": "Attach a file to this chat",
-    "text_size": "Change text size.",
-    "export": "Export chat as...",
-    "exporting": "Exporting...",
-    "microphone": "Speak your prompt.",
-    "stt_unsupported": "Microphone access is not supported in this browser.",
-    "stt_mic_denied": "Could not access the microphone. Please grant permission and try again.",
-    "stt_transcription_failed": "Transcription failed: {{error}}",
-    "send": "Send prompt message to workspace",
-    "tts_speak_message": "TTS Speak message",
+    "attachments_processing": "Lampiran sedang diproses. Harap tunggu...",
+    "send_message": "Kirim pesan",
+    "attach_file": "Lampirkan berkas ke obrolan ini",
+    "text_size": "Ubah ukuran teks.",
+    "export": "Ekspor obrolan sebagai...",
+    "exporting": "Mengekspor...",
+    "microphone": "Ucapkan prompt Anda.",
+    "stt_unsupported": "Akses mikrofon tidak didukung di browser ini.",
+    "stt_mic_denied": "Tidak dapat mengakses mikrofon. Silakan berikan izin dan coba lagi.",
+    "stt_transcription_failed": "Transkripsi gagal: {{error}}",
+    "send": "Kirim pesan prompt ke ruang kerja",
+    "tts_speak_message": "TTS Bacakan pesan",
     "copy": "Salin",
-    "regenerate": "Regenerate",
-    "regenerate_response": "Regenerate response",
-    "good_response": "Good response",
-    "more_actions": "More actions",
-    "sources": "Sources",
-    "source_count_one": "{{count}} reference",
-    "source_count_other": "{{count}} references",
-    "document": "Document",
-    "similarity_match": "match",
+    "regenerate": "Regenerasi",
+    "regenerate_response": "Regenerasi respons",
+    "good_response": "Respons bagus",
+    "more_actions": "Tindakan lainnya",
+    "sources": "Sumber",
+    "source_count_one": "{{count}} referensi",
+    "source_count_other": "{{count}} referensi",
+    "document": "Dokumen",
+    "similarity_match": "cocok",
     "fork": "Fork",
     "delete": "Hapus",
     "cancel": "Batal",
-    "submit": "Submit",
+    "submit": "Kirim",
     "edit_prompt": "Edit prompt",
-    "edit_response": "Edit response",
-    "edit_info_user": "\"Submit\" regenerates the AI response. \"Save\" updates your message only.",
-    "edit_info_assistant": "Your changes will be saved directly to this response.",
-    "see_less": "See Less",
-    "see_more": "See More",
-    "preset_reset_description": "Clear your chat history and begin a new chat",
-    "add_new_preset": " Add New Preset",
-    "add_new": "Add new",
+    "edit_response": "Edit respons",
+    "edit_info_user": "\"Kirim\" meregenerasi respons AI. \"Simpan\" hanya memperbarui pesan Anda.",
+    "edit_info_assistant": "Perubahan Anda akan disimpan langsung ke respons ini.",
+    "see_less": "Lihat Lebih Sedikit",
+    "see_more": "Lihat Lebih Banyak",
+    "preset_reset_description": "Bersihkan riwayat obrolan Anda dan mulai obrolan baru",
+    "add_new_preset": " Tambah Preset Baru",
+    "add_new": "Tambah baru",
     "edit": "Edit",
-    "publish": "Publish",
-    "stop_generating": "Stop generating response",
-    "command": "Command",
-    "your_command": "your-command",
-    "placeholder_prompt": "This is the content that will be injected in front of your prompt.",
+    "publish": "Publikasikan",
+    "stop_generating": "Hentikan menghasilkan respons",
+    "command": "Perintah",
+    "your_command": "perintah-anda",
+    "placeholder_prompt": "Ini adalah konten yang akan disuntikkan di depan prompt Anda.",
     "description": "Deskripsi",
-    "placeholder_description": "Responds with a poem about LLMs.",
+    "placeholder_description": "Merespons dengan puisi tentang LLM.",
     "save": "Simpan",
-    "small": "Small",
+    "small": "Kecil",
     "normal": "Normal",
-    "large": "Large",
-    "tools": "Tools",
-    "text_size_label": "Text Size",
-    "select_model": "Select Model",
+    "large": "Besar",
+    "tools": "Alat",
+    "text_size_label": "Ukuran Teks",
+    "select_model": "Pilih Model",
     "slash_commands": "Slash Commands",
-    "agent_skills": "Agent Skills",
-    "manage_agent_skills": "Manage Agent Skills",
-    "app_integrations": "App Integrations",
-    "custom_skills": "Custom Skills",
-    "agent_flows": "Agent Flows",
-    "sub_skills": "Sub-skills",
-    "no_tools_found": "No matching tools found",
-    "loading_mcp_servers": "Loading MCP servers...",
-    "start_agent_session": "Start Agent Session",
-    "agent_skills_disabled_in_session": "Can't modify skills during an active agent session. Use /exit to end the session first.",
-    "use_agent_session_to_use_tools": "You can use tools in chat by starting an agent session with '@agent' at the beginning of your prompt.",
+    "agent_skills": "Keterampilan Agen",
+    "manage_agent_skills": "Kelola Keterampilan Agen",
+    "app_integrations": "Integrasi Aplikasi",
+    "custom_skills": "Keterampilan Kustom",
+    "agent_flows": "Alur Agen",
+    "sub_skills": "Sub-keterampilan",
+    "no_tools_found": "Tidak ada alat yang cocok ditemukan",
+    "loading_mcp_servers": "Memuat server MCP...",
+    "start_agent_session": "Mulai Sesi Agen",
+    "agent_skills_disabled_in_session": "Tidak dapat mengubah keterampilan selama sesi agen aktif. Gunakan /exit untuk mengakhiri sesi terlebih dahulu.",
+    "use_agent_session_to_use_tools": "Anda dapat menggunakan alat dalam obrolan dengan memulai sesi agen dengan '@agent' di awal prompt Anda.",
     "workspace_llm_manager": {
       "search": "Cari",
-      "loading_workspace_settings": "Loading workspace settings...",
-      "available_models": "Available Models for {{provider}}",
-      "available_models_description": "Select a model to use for this workspace.",
-      "save": "Simpan",
-      "saving": "Setting model as workspace default...",
-      "missing_credentials": "This provider is missing credentials!",
-      "missing_credentials_description": "Set up now"
+      "loading_workspace_settings": "Memuat pengaturan ruang kerja...",
+      "available_models": "Model Tersedia untuk {{provider}}",
+      "available_models_description": "Pilih model untuk digunakan pada ruang kerja ini.",
+      "save": "Gunakan model ini",
+      "saving": "Mengatur model sebagai bawaan ruang kerja...",
+      "missing_credentials": "Penyedia ini tidak memiliki kredensial!",
+      "missing_credentials_description": "Atur sekarang"
     },
     "agent_invocation": {
-      "model_wants_to_call": "Model wants to call",
-      "approve": "Approve",
-      "reject": "Reject",
-      "always_allow": "Always allow {{skillName}}",
-      "tool_call_was_approved": "Tool call was approved",
-      "tool_call_was_rejected": "Tool call was rejected",
-      "clarifying_skip": "Let agent decide",
-      "clarifying_submit": "Submit",
-      "clarifying_skipped": "You let the agent decide.",
-      "clarifying_timeout": "No response submitted in time.",
-      "clarifying_pagination": "{{current}} of {{total}}",
-      "clarifying_prev_aria": "Previous question",
-      "clarifying_next_aria": "Next question",
-      "clarifying_close_aria": "Close and skip",
-      "clarifying_other": "Other",
-      "clarifying_other_placeholder": "Type your answer",
-      "batch_progress": "{{answered}} of {{total}} answered",
-      "batch_skip_this": "Skip",
-      "batch_submit_all": "Submit all",
-      "batch_next": "Next",
-      "answer_skipped": "[user skipped]"
+      "model_wants_to_call": "Model ingin memanggil",
+      "approve": "Setujui",
+      "reject": "Tolak",
+      "always_allow": "Selalu izinkan {{skillName}}",
+      "tool_call_was_approved": "Panggilan alat disetujui",
+      "tool_call_was_rejected": "Panggilan alat ditolak",
+      "clarifying_skip": "Biarkan agen memutuskan",
+      "clarifying_submit": "Kirim",
+      "clarifying_skipped": "Anda membiarkan agen memutuskan.",
+      "clarifying_timeout": "Tidak ada respons yang dikirim tepat waktu.",
+      "clarifying_pagination": "{{current}} dari {{total}}",
+      "clarifying_prev_aria": "Pertanyaan sebelumnya",
+      "clarifying_next_aria": "Pertanyaan berikutnya",
+      "clarifying_close_aria": "Tutup dan lewati",
+      "clarifying_other": "Lainnya",
+      "clarifying_other_placeholder": "Ketik jawaban Anda",
+      "batch_progress": "{{answered}} dari {{total}} terjawab",
+      "batch_skip_this": "Lewati",
+      "batch_submit_all": "Kirim semua",
+      "batch_next": "Berikutnya",
+      "answer_skipped": "[pengguna melewatkan]"
     },
     "memories": {
-      "title": "Memories",
-      "empty": "No memories so far. After you interact with the chatbot more memories will fill in or",
-      "empty_cta": "create a new memory",
-      "tab_workspace": "Workspace",
+      "title": "Memori",
+      "empty": "Belum ada memori. Setelah Anda berinteraksi dengan chatbot, lebih banyak memori akan terisi atau",
+      "empty_cta": "buat memori baru",
+      "tab_workspace": "Ruang Kerja",
       "tab_global": "Global",
       "toggle": {
-        "label": "Enable Personalization",
-        "description": "Deskripsi"
+        "label": "Aktifkan Personalisasi",
+        "description": "Izinkan asisten Anda mengingat fakta tentang Anda atau ruang kerja ini dan menggunakannya dalam percakapan"
       },
       "auto_extraction": {
-        "label": "Automatic Memories",
-        "description": "Deskripsi"
+        "label": "Memori Otomatis",
+        "description": "Biarkan asisten Anda secara otomatis membuat memori di latar belakang"
       },
       "menu": {
         "edit": "Edit",
         "delete": "Hapus",
-        "move_to_global": "Move to Global",
-        "move_to_workspace": "Move to Workspace"
+        "move_to_global": "Pindahkan ke Global",
+        "move_to_workspace": "Pindahkan ke Ruang Kerja"
       },
       "modal": {
-        "create_title": "Create Memory",
-        "edit_title": "Edit Memory",
-        "create_description": "Memories should be a single, concise statement. e.g. \"User prefers Python over JavaScript\"",
-        "edit_description": "Update the content of this memory.",
-        "label": "Memory",
-        "placeholder": "e.g. User's name is Joe, User works on AnythingLLM, etc.",
+        "create_title": "Buat Memori",
+        "edit_title": "Edit Memori",
+        "create_description": "Memori harus berupa pernyataan tunggal yang ringkas. mis. \"Pengguna lebih suka Python daripada JavaScript\"",
+        "edit_description": "Perbarui konten memori ini.",
+        "label": "Memori",
+        "placeholder": "mis. Nama pengguna adalah Joe, Pengguna bekerja pada AnythingLLM, dll.",
         "create": "Buat",
         "save": "Simpan",
         "cancel": "Batal"
@@ -1416,266 +1416,266 @@ const Indonesian = {
     }
   },
   "profile_settings": {
-    "edit_account": "Edit Account",
-    "profile_picture": "Profile Picture",
-    "remove_profile_picture": "Remove Profile Picture",
+    "edit_account": "Edit Akun",
+    "profile_picture": "Foto Profil",
+    "remove_profile_picture": "Hapus Foto Profil",
     "username": "Nama Pengguna",
-    "new_password": "New Password",
-    "password_description": "Password must be at least 8 characters long",
+    "new_password": "Kata Sandi Baru",
+    "password_description": "Kata sandi harus minimal 8 karakter",
     "cancel": "Batal",
-    "update_account": "Update Account",
-    "theme": "Theme Preference",
-    "language": "Preferred language",
-    "failed_upload": "Failed to upload profile picture: {{error}}",
-    "upload_success": "Profile picture uploaded.",
-    "failed_remove": "Failed to remove profile picture: {{error}}",
-    "profile_updated": "Profile updated.",
-    "failed_update_user": "Failed to update user: {{error}}",
-    "account": "Account",
-    "support": "Support",
-    "signout": "Sign out"
+    "update_account": "Perbarui Akun",
+    "theme": "Preferensi Tema",
+    "language": "Bahasa pilihan",
+    "failed_upload": "Gagal mengunggah foto profil: {{error}}",
+    "upload_success": "Foto profil berhasil diunggah.",
+    "failed_remove": "Gagal menghapus foto profil: {{error}}",
+    "profile_updated": "Profil diperbarui.",
+    "failed_update_user": "Gagal memperbarui pengguna: {{error}}",
+    "account": "Akun",
+    "support": "Dukungan",
+    "signout": "Keluar"
   },
   "keyboard-shortcuts": {
-    "title": "Keyboard Shortcuts",
+    "title": "Pintasan Keyboard",
     "shortcuts": {
-      "settings": "Pengaturan",
-      "workspaceSettings": "Open Current Workspace Settings",
-      "home": "Go to Home",
-      "workspaces": "Ruang Kerja",
-      "apiKeys": "API Keys Settings",
-      "llmPreferences": "LLM Preferences",
-      "chatSettings": "Chat Settings",
-      "help": "Show keyboard shortcuts help",
-      "showLLMSelector": "Show workspace LLM Selector"
+      "settings": "Buka Pengaturan",
+      "workspaceSettings": "Buka Pengaturan Ruang Kerja Saat Ini",
+      "home": "Buka Beranda",
+      "workspaces": "Kelola Ruang Kerja",
+      "apiKeys": "Pengaturan Kunci API",
+      "llmPreferences": "Preferensi LLM",
+      "chatSettings": "Pengaturan Obrolan",
+      "help": "Tampilkan bantuan pintasan keyboard",
+      "showLLMSelector": "Tampilkan Pemilih LLM Ruang Kerja"
     }
   },
   "community_hub": {
     "publish": {
       "system_prompt": {
-        "success_title": "Success!",
-        "success_description": "Your System Prompt has been published to the Community Hub!",
-        "success_thank_you": "Thank you for sharing to the Community!",
-        "view_on_hub": "View on Community Hub",
-        "modal_title": "Publish System Prompt",
-        "name_label": "Name",
-        "name_description": "This is the display name of your system prompt.",
-        "name_placeholder": "My System Prompt",
-        "description_label": "Description",
-        "description_description": "This is the description of your system prompt. Use this to describe the purpose of your system prompt.",
-        "tags_label": "Tags",
-        "tags_description": "Tags are used to label your system prompt for easier searching. You can add multiple tags. Max 5 tags. Max 20 characters per tag.",
-        "tags_placeholder": "Type and press Enter to add tags",
-        "visibility_label": "Visibility",
-        "public_description": "Public system prompts are visible to everyone.",
-        "private_description": "Private system prompts are only visible to you.",
-        "publish_button": "Publish to Community Hub",
-        "submitting": "Publishing...",
+        "success_title": "Berhasil!",
+        "success_description": "System Prompt Anda telah dipublikasikan ke Community Hub!",
+        "success_thank_you": "Terima kasih telah berbagi ke Komunitas!",
+        "view_on_hub": "Lihat di Community Hub",
+        "modal_title": "Publikasikan System Prompt",
+        "name_label": "Nama",
+        "name_description": "Ini adalah nama tampilan system prompt Anda.",
+        "name_placeholder": "System Prompt Saya",
+        "description_label": "Deskripsi",
+        "description_description": "Ini adalah deskripsi system prompt Anda. Gunakan ini untuk menjelaskan tujuan system prompt Anda.",
+        "tags_label": "Tag",
+        "tags_description": "Tag digunakan untuk melabeli system prompt Anda agar lebih mudah dicari. Anda dapat menambahkan beberapa tag. Maks 5 tag. Maks 20 karakter per tag.",
+        "tags_placeholder": "Ketik dan tekan Enter untuk menambahkan tag",
+        "visibility_label": "Visibilitas",
+        "public_description": "System prompt publik dapat dilihat oleh semua orang.",
+        "private_description": "System prompt privat hanya dapat dilihat oleh Anda.",
+        "publish_button": "Publikasikan ke Community Hub",
+        "submitting": "Mempublikasikan...",
         "prompt_label": "Prompt",
-        "prompt_description": "This is the actual system prompt that will be used to guide the LLM.",
-        "prompt_placeholder": "Enter your system prompt here..."
+        "prompt_description": "Ini adalah system prompt aktual yang akan digunakan untuk memandu LLM.",
+        "prompt_placeholder": "Masukkan system prompt Anda di sini..."
       },
       "agent_flow": {
-        "success_title": "Success!",
-        "success_description": "Your Agent Flow has been published to the Community Hub!",
-        "success_thank_you": "Thank you for sharing to the Community!",
-        "view_on_hub": "View on Community Hub",
-        "modal_title": "Publish Agent Flow",
-        "name_label": "Name",
-        "name_description": "This is the display name of your agent flow.",
-        "name_placeholder": "My Agent Flow",
-        "description_label": "Description",
-        "description_description": "This is the description of your agent flow. Use this to describe the purpose of your agent flow.",
-        "tags_label": "Tags",
-        "tags_description": "Tags are used to label your agent flow for easier searching. You can add multiple tags. Max 5 tags. Max 20 characters per tag.",
-        "tags_placeholder": "Type and press Enter to add tags",
-        "visibility_label": "Visibility",
-        "submitting": "Publishing...",
-        "submit": "Publish to Community Hub",
-        "privacy_note": "Agent flows are always uploaded as private to protect any sensitive data. You can change the visibility in the Community Hub after publishing. Please verify your flow does not contain any sensitive or private information before publishing."
+        "success_title": "Berhasil!",
+        "success_description": "Agent Flow Anda telah dipublikasikan ke Community Hub!",
+        "success_thank_you": "Terima kasih telah berbagi ke Komunitas!",
+        "view_on_hub": "Lihat di Community Hub",
+        "modal_title": "Publikasikan Agent Flow",
+        "name_label": "Nama",
+        "name_description": "Ini adalah nama tampilan agent flow Anda.",
+        "name_placeholder": "Agent Flow Saya",
+        "description_label": "Deskripsi",
+        "description_description": "Ini adalah deskripsi agent flow Anda. Gunakan ini untuk menjelaskan tujuan agent flow Anda.",
+        "tags_label": "Tag",
+        "tags_description": "Tag digunakan untuk melabeli agent flow Anda agar lebih mudah dicari. Anda dapat menambahkan beberapa tag. Maks 5 tag. Maks 20 karakter per tag.",
+        "tags_placeholder": "Ketik dan tekan Enter untuk menambahkan tag",
+        "visibility_label": "Visibilitas",
+        "submitting": "Mempublikasikan...",
+        "submit": "Publikasikan ke Community Hub",
+        "privacy_note": "Agent flow selalu diunggah sebagai privat untuk melindungi data sensitif. Anda dapat mengubah visibilitas di Community Hub setelah publikasi. Harap verifikasi flow Anda tidak mengandung informasi sensitif atau pribadi sebelum menerbitkan."
       },
       "slash_command": {
-        "success_title": "Success!",
-        "success_description": "Your Slash Command has been published to the Community Hub!",
-        "success_thank_you": "Thank you for sharing to the Community!",
-        "view_on_hub": "View on Community Hub",
-        "modal_title": "Publish Slash Command",
-        "name_label": "Name",
-        "name_description": "This is the display name of your slash command.",
-        "name_placeholder": "My Slash Command",
-        "description_label": "Description",
-        "description_description": "This is the description of your slash command. Use this to describe the purpose of your slash command.",
-        "tags_label": "Tags",
-        "tags_description": "Tags are used to label your slash command for easier searching. You can add multiple tags. Max 5 tags. Max 20 characters per tag.",
-        "tags_placeholder": "Type and press Enter to add tags",
-        "visibility_label": "Visibility",
-        "public_description": "Public slash commands are visible to everyone.",
-        "private_description": "Private slash commands are only visible to you.",
-        "publish_button": "Publish to Community Hub",
-        "submitting": "Publishing...",
+        "success_title": "Berhasil!",
+        "success_description": "Slash Command Anda telah dipublikasikan ke Community Hub!",
+        "success_thank_you": "Terima kasih telah berbagi ke Komunitas!",
+        "view_on_hub": "Lihat di Community Hub",
+        "modal_title": "Publikasikan Slash Command",
+        "name_label": "Nama",
+        "name_description": "Ini adalah nama tampilan slash command Anda.",
+        "name_placeholder": "Slash Command Saya",
+        "description_label": "Deskripsi",
+        "description_description": "Ini adalah deskripsi slash command Anda. Gunakan ini untuk menjelaskan tujuan slash command Anda.",
+        "tags_label": "Tag",
+        "tags_description": "Tag digunakan untuk melabeli slash command Anda agar lebih mudah dicari. Anda dapat menambahkan beberapa tag. Maks 5 tag. Maks 20 karakter per tag.",
+        "tags_placeholder": "Ketik dan tekan Enter untuk menambahkan tag",
+        "visibility_label": "Visibilitas",
+        "public_description": "Slash command publik dapat dilihat oleh semua orang.",
+        "private_description": "Slash command privat hanya dapat dilihat oleh Anda.",
+        "publish_button": "Publikasikan ke Community Hub",
+        "submitting": "Mempublikasikan...",
         "prompt_label": "Prompt",
-        "prompt_description": "This is the prompt that will be used when the slash command is triggered.",
-        "prompt_placeholder": "Enter your prompt here..."
+        "prompt_description": "Ini adalah prompt yang akan digunakan saat slash command dipicu.",
+        "prompt_placeholder": "Masukkan prompt Anda di sini..."
       },
       "generic": {
         "unauthenticated": {
-          "title": "Authentication Required",
-          "description": "Deskripsi",
-          "button": "Connect to Community Hub"
+          "title": "Autentikasi Diperlukan",
+          "description": "Anda perlu mengautentikasi dengan Community Hub AnythingLLM sebelum mempublikasikan item.",
+          "button": "Hubungkan ke Community Hub"
         }
       }
     }
   },
   "scheduledJobs": {
-    "title": "Scheduled Jobs",
-    "enableNotifications": "Enable browser notifications for job results",
-    "description": "Deskripsi",
-    "newJob": "New Job",
+    "title": "Pekerjaan Terjadwal",
+    "enableNotifications": "Aktifkan notifikasi browser untuk hasil pekerjaan",
+    "description": "Buat tugas AI berulang yang berjalan sesuai jadwal. Setiap pekerjaan menjalankan prompt dengan alat opsional dan menyimpan hasilnya untuk ditinjau.",
+    "newJob": "Pekerjaan Baru",
     "loading": "Memuat...",
-    "emptyTitle": "No Scheduled Jobs yet",
-    "emptySubtitle": "Create one to get started.",
+    "emptyTitle": "Belum ada Pekerjaan Terjadwal",
+    "emptySubtitle": "Buat satu untuk memulai.",
     "table": {
       "name": "Nama",
-      "schedule": "Schedule",
+      "schedule": "Jadwal",
       "status": "Status",
-      "lastRun": "Last Run",
-      "nextRun": "Next Run",
+      "lastRun": "Terakhir Berjalan",
+      "nextRun": "Berikutnya Berjalan",
       "actions": "Tindakan"
     },
-    "confirmDelete": "Are you sure you want to delete this scheduled job?",
+    "confirmDelete": "Apakah Anda yakin ingin menghapus pekerjaan terjadwal ini?",
     "status": {
-      "completed": "Completed",
-      "failed": "Failed",
-      "timed_out": "Timed out",
-      "running": "Running",
-      "queued": "Queued"
+      "completed": "Selesai",
+      "failed": "Gagal",
+      "timed_out": "Waktu habis",
+      "running": "Berjalan",
+      "queued": "Dalam Antrian"
     },
     "toast": {
-      "deleted": "Job deleted",
-      "triggered": "Job triggered successfully",
-      "triggerFailed": "Failed to trigger job",
-      "triggerSkipped": "A run is already in progress for this job",
-      "killed": "Job stopped successfully",
-      "killFailed": "Failed to stop job"
+      "deleted": "Pekerjaan dihapus",
+      "triggered": "Pekerjaan berhasil dipicu",
+      "triggerFailed": "Gagal memicu pekerjaan",
+      "triggerSkipped": "Proses berjalan sudah berlangsung untuk pekerjaan ini",
+      "killed": "Pekerjaan berhasil dihentikan",
+      "killFailed": "Gagal menghentikan pekerjaan"
     },
     "row": {
-      "neverRun": "Never run",
-      "viewRuns": "View runs",
-      "runNow": "Run now",
-      "enable": "Enable",
-      "disable": "Disable",
+      "neverRun": "Belum pernah berjalan",
+      "viewRuns": "Lihat proses",
+      "runNow": "Jalankan sekarang",
+      "enable": "Aktifkan",
+      "disable": "Nonaktifkan",
       "edit": "Edit",
       "delete": "Hapus"
     },
     "modal": {
-      "titleEdit": "Edit Scheduled Job",
-      "titleNew": "New Scheduled Job",
-      "nameLabel": "Name",
-      "namePlaceholder": "e.g. Daily News Digest",
+      "titleEdit": "Edit Pekerjaan Terjadwal",
+      "titleNew": "Pekerjaan Terjadwal Baru",
+      "nameLabel": "Nama",
+      "namePlaceholder": "mis. Ringkasan Berita Harian",
       "promptLabel": "Prompt",
-      "promptPlaceholder": "The instruction to run on each execution...",
-      "scheduleLabel": "Schedule",
+      "promptPlaceholder": "Instruksi yang akan dijalankan pada setiap eksekusi...",
+      "scheduleLabel": "Jadwal",
       "modeBuilder": "Builder",
-      "modeCustom": "Custom",
-      "cronPlaceholder": "Cron expression (e.g. 0 9 * * *)",
-      "currentSchedule": "Current schedule:",
-      "toolsLabel": "Tools (Optional)",
-      "toolsDescription": "Select which agent tools this job can use. If none are selected, the job runs without any tools.",
-      "toolsSearch": "Search",
-      "toolsNoResults": "No tools match",
-      "required": "Required",
-      "requiredFieldsBanner": "Please fill out all required fields in order to create job.",
+      "modeCustom": "Kustom",
+      "cronPlaceholder": "Ekspresi cron (mis. 0 9 * * *)",
+      "currentSchedule": "Jadwal saat ini:",
+      "toolsLabel": "Alat (Opsional)",
+      "toolsDescription": "Pilih alat agen yang dapat digunakan pekerjaan ini. Jika tidak ada yang dipilih, pekerjaan berjalan tanpa alat.",
+      "toolsSearch": "Cari",
+      "toolsNoResults": "Tidak ada alat yang cocok",
+      "required": "Wajib",
+      "requiredFieldsBanner": "Silakan isi semua kolom yang wajib untuk membuat pekerjaan.",
       "cancel": "Batal",
-      "saving": "Saving...",
-      "updateJob": "Update Job",
-      "createJob": "Create Job",
-      "jobUpdated": "Job updated",
-      "jobCreated": "Job created"
+      "saving": "Menyimpan...",
+      "updateJob": "Perbarui Pekerjaan",
+      "createJob": "Buat Pekerjaan",
+      "jobUpdated": "Pekerjaan diperbarui",
+      "jobCreated": "Pekerjaan dibuat"
     },
     "builder": {
-      "fallbackWarning": "This expression can't be edited visually. Switch to Custom to keep it, or change anything below to overwrite it.",
-      "run": "Run",
+      "fallbackWarning": "Ekspresi ini tidak dapat diedit secara visual. Beralih ke Kustom untuk menyimpannya, atau ubah apa pun di bawah untuk menimpanya.",
+      "run": "Jalankan",
       "frequency": {
-        "minute": "every minute",
-        "hour": "hourly",
-        "day": "daily",
-        "week": "weekly",
-        "month": "monthly"
+        "minute": "setiap menit",
+        "hour": "setiap jam",
+        "day": "setiap hari",
+        "week": "setiap minggu",
+        "month": "setiap bulan"
       },
-      "every": "Every",
-      "minuteOne": "1 minute",
-      "minuteOther": "{{count}} minutes",
-      "atMinute": "At minute",
-      "pastEveryHour": "past every hour",
-      "at": "At",
-      "on": "On",
-      "onDay": "On day",
-      "ofEveryMonth": "of every month",
+      "every": "Setiap",
+      "minuteOne": "1 menit",
+      "minuteOther": "{{count}} menit",
+      "atMinute": "Pada menit",
+      "pastEveryHour": "setelah setiap jam",
+      "at": "Pada",
+      "on": "Pada",
+      "onDay": "Pada hari",
+      "ofEveryMonth": "setiap bulan",
       "weekdays": {
-        "sun": "Sun",
-        "mon": "Mon",
-        "tue": "Tue",
-        "wed": "Wed",
-        "thu": "Thu",
-        "fri": "Fri",
-        "sat": "Sat"
+        "sun": "Min",
+        "mon": "Sen",
+        "tue": "Sel",
+        "wed": "Rab",
+        "thu": "Kam",
+        "fri": "Jum",
+        "sat": "Sab"
       }
     },
     "runHistory": {
-      "back": "Kembali",
-      "title": "Run History: {{name}}",
-      "schedule": "Schedule:",
-      "emptyTitle": "No runs yet for this job",
-      "emptySubtitle": "Run the job now and view its results.",
-      "runNow": "Run Now",
-      "stopJob": "Stop job",
+      "back": "Kembali ke pekerjaan",
+      "title": "Riwayat Proses: {{name}}",
+      "schedule": "Jadwal:",
+      "emptyTitle": "Belum ada proses untuk pekerjaan ini",
+      "emptySubtitle": "Jalankan pekerjaan sekarang dan lihat hasilnya.",
+      "runNow": "Jalankan Sekarang",
+      "stopJob": "Hentikan pekerjaan",
       "table": {
         "status": "Status",
-        "started": "Started",
-        "duration": "Duration",
-        "error": "Error"
+        "started": "Dimulai",
+        "duration": "Durasi",
+        "error": "Kesalahan"
       }
     },
     "runDetail": {
-      "loading": "Memuat...",
-      "notFound": "Run not found.",
+      "loading": "Memuat detail proses...",
+      "notFound": "Proses tidak ditemukan.",
       "back": "Kembali",
-      "unknownJob": "Unknown Job",
-      "runHeading": "{{name}} — Run #{{id}}",
-      "duration": "Duration: {{value}}",
-      "continueInThread": "Continue in Chat",
-      "creating": "Creating...",
-      "threadFailed": "Failed to create thread",
-      "stopJob": "Stop Job",
-      "killing": "Stopping...",
+      "unknownJob": "Pekerjaan Tidak Dikenal",
+      "runHeading": "{{name}} — Proses #{{id}}",
+      "duration": "Durasi: {{value}}",
+      "continueInThread": "Lanjutkan di Obrolan",
+      "creating": "Membuat...",
+      "threadFailed": "Gagal membuat thread",
+      "stopJob": "Hentikan Pekerjaan",
+      "killing": "Menghentikan...",
       "sections": {
         "prompt": "Prompt",
-        "error": "Error",
-        "thinking": "Thoughts ({{count}})",
-        "toolCalls": "Tool Calls ({{count}})",
-        "files": "Files ({{count}})",
-        "response": "Response",
-        "metrics": "Metrics"
+        "error": "Kesalahan",
+        "thinking": "Pemikiran ({{count}})",
+        "toolCalls": "Panggilan Alat ({{count}})",
+        "files": "Berkas ({{count}})",
+        "response": "Respons",
+        "metrics": "Metrik"
       },
       "metrics": {
-        "promptTokens": "Prompt tokens:",
-        "completionTokens": "Completion tokens:"
+        "promptTokens": "Token prompt:",
+        "completionTokens": "Token penyelesaian:"
       }
     },
     "toolCall": {
-      "arguments": "Arguments:",
-      "showResult": "Show result",
-      "hideResult": "Hide result"
+      "arguments": "Argumen:",
+      "showResult": "Tampilkan hasil",
+      "hideResult": "Sembunyikan hasil"
     },
     "file": {
-      "unknown": "Unknown file",
-      "download": "Download",
-      "downloadFailed": "Failed to download file",
+      "unknown": "Berkas tidak dikenal",
+      "download": "Unduh",
+      "downloadFailed": "Gagal mengunduh berkas",
       "types": {
         "powerpoint": "PowerPoint",
-        "pdf": "PDF Document",
-        "word": "Word Document",
+        "pdf": "Dokumen PDF",
+        "word": "Dokumen Word",
         "spreadsheet": "Spreadsheet",
-        "generic": "File"
+        "generic": "Berkas"
       }
     }
   }
