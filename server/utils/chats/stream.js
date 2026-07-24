@@ -309,8 +309,6 @@ async function streamChatWithWorkspace(
     metrics = stream.metrics;
   }
 
-  // Start the model router cooldown from here (inference finished) rather than
-  // rule detection, so a long response doesn't consume the cooldown window.
   modelRouter?.onInferenceComplete();
 
   if (completeText?.length > 0) {
