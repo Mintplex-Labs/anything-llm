@@ -31,12 +31,8 @@ export default forwardRef(function (
   },
   ref
 ) {
-  const {
-    chatHistoryRef,
-    isAtBottom,
-    scrollToBottomAndFollow,
-    scrollHandlers,
-  } = useAutoScroll(history, ref);
+  const { chatHistoryRef, isAtBottom, scrollToBottom, scrollHandlers } =
+    useAutoScroll(history, ref);
   const { threadSlug = null } = useParams();
   const { showing, hideModal } = useManageWorkspaceModal();
   const { showScrollbar } = Appearance.getSettings();
@@ -179,7 +175,7 @@ export default forwardRef(function (
             <div className="flex flex-col items-center">
               <div
                 className="p-1 rounded-full border border-white/10 bg-white/10 hover:bg-white/20 hover:text-white"
-                onClick={scrollToBottomAndFollow}
+                onClick={() => scrollToBottom(true)}
               >
                 <ArrowDown weight="bold" className="text-white/60 w-5 h-5" />
               </div>
