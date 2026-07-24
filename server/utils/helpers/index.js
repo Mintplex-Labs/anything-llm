@@ -629,7 +629,7 @@ function humanFileSize(bytes, si = false, dp = 1) {
  * @param {Object|null} [opts.chatHistoryOverride] - Pre-fetched chat history
  * @param {number|null} [opts.messageCountOverride] - Override for message count
  * @param {string|null} [opts.apiSessionId] - API session scope
- * @returns {Promise<{connector: BaseLLMProvider, routingMetadata: Object|null, prefetchedContext: Object|null}>}
+ * @returns {Promise<{connector: BaseLLMProvider, routingMetadata: Object|null, prefetchedContext: Object|null, router: AnythingLLMModelRouter|null}>}
  */
 async function resolveProviderConnector({
   workspace,
@@ -651,6 +651,7 @@ async function resolveProviderConnector({
       }),
       routingMetadata: null,
       prefetchedContext: null,
+      router: null,
     };
   }
 
@@ -691,6 +692,7 @@ async function resolveProviderConnector({
     connector: router.delegateProvider,
     routingMetadata: router.routingMetadata,
     prefetchedContext: ctx,
+    router,
   };
 }
 

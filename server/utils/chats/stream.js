@@ -55,6 +55,7 @@ async function streamChatWithWorkspace(
     connector: LLMConnector,
     routingMetadata,
     prefetchedContext,
+    router: modelRouter,
     error: routerError,
   } = await resolveLLMConnector({
     workspace,
@@ -307,6 +308,10 @@ async function streamChatWithWorkspace(
     });
     metrics = stream.metrics;
   }
+
+  // Start the model router cooldown from here (inference finished) rather than
+  // rule detection, so a long response doesn't consume the cooldown window.
+  modelRouter?.onInferenceComplete();
 
   if (completeText?.length > 0) {
     const { chat } = await WorkspaceChats.new({

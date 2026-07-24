@@ -18,18 +18,19 @@ async function chatSync({
   const uuid = uuidv4();
   const chatMode = workspace?.chatMode ?? "automatic";
 
-  const { connector: LLMConnector } = await resolveProviderConnector({
-    workspace,
-    prompt,
-    attachments,
-    chatHistoryOverride: {
-      rawHistory: history,
-      chatHistory: history,
-    },
-    // Do not +1 to this, since OAI message history ends in a user message
-    // and does not need to re-include an uncounted user message.
-    messageCountOverride: history.length,
-  });
+  const { connector: LLMConnector, router: modelRouter } =
+    await resolveProviderConnector({
+      workspace,
+      prompt,
+      attachments,
+      chatHistoryOverride: {
+        rawHistory: history,
+        chatHistory: history,
+      },
+      // Do not +1 to this, since OAI message history ends in a user message
+      // and does not need to re-include an uncounted user message.
+      messageCountOverride: history.length,
+    });
 
   const VectorDb = getVectorDbClass();
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
@@ -178,6 +179,7 @@ async function chatSync({
         temperature ?? workspace?.openAiTemp ?? LLMConnector.defaultTemp,
     }
   );
+  modelRouter?.onInferenceComplete();
 
   if (!textResponse) {
     return formatJSON(
@@ -231,18 +233,19 @@ async function streamChat({
   const uuid = uuidv4();
   const chatMode = workspace?.chatMode ?? "automatic";
 
-  const { connector: LLMConnector } = await resolveProviderConnector({
-    workspace,
-    prompt,
-    attachments,
-    chatHistoryOverride: {
-      rawHistory: history,
-      chatHistory: history,
-    },
-    // Do not +1 to this, since OAI message history ends in a user message
-    // and does not need to re-include an uncounted user message.
-    messageCountOverride: history.length,
-  });
+  const { connector: LLMConnector, router: modelRouter } =
+    await resolveProviderConnector({
+      workspace,
+      prompt,
+      attachments,
+      chatHistoryOverride: {
+        rawHistory: history,
+        chatHistory: history,
+      },
+      // Do not +1 to this, since OAI message history ends in a user message
+      // and does not need to re-include an uncounted user message.
+      messageCountOverride: history.length,
+    });
 
   const VectorDb = getVectorDbClass();
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
@@ -448,6 +451,7 @@ async function streamChat({
       sources,
     }
   );
+  modelRouter?.onInferenceComplete();
 
   if (completeText?.length > 0) {
     const { chat } = await WorkspaceChats.new({

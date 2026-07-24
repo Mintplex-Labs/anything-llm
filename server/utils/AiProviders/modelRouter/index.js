@@ -106,6 +106,17 @@ class AnythingLLMModelRouter {
     });
   }
 
+  /**
+   * Re-stamp the sticky route when inference stops so the cooldown window is
+   * measured from the end of the response, not from rule detection. Callers
+   * invoke this after the routed model finishes responding.
+   */
+  onInferenceComplete() {
+    if (!this._routeKey || !this.resolvedRoute || this.resolvedRoute.isFallback)
+      return;
+    this.routerService.setStickyRoute(this._routeKey, this.resolvedRoute);
+  }
+
   get routingMetadata() {
     if (!this.resolvedRoute) return null;
     return {
