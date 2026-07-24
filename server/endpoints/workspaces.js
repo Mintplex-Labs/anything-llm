@@ -24,6 +24,7 @@ const { validWorkspaceSlug } = require("../utils/middleware/validWorkspace");
 const { convertToChatHistory } = require("../utils/helpers/chat/responses");
 const { CollectorApi } = require("../utils/collectorApi");
 const { getTTSProvider } = require("../utils/TextToSpeech");
+const { getAudioFileInfo } = require("../utils/TextToSpeech/audioFormat");
 const { WorkspaceThread } = require("../models/workspaceThread");
 
 const truncate = require("truncate");
@@ -643,9 +644,10 @@ function workspaceEndpoints(app) {
         const buffer = await TTSProvider.ttsBuffer(text);
         if (buffer === null) return response.sendStatus(204).end();
 
-        responseCache.set(cacheKey, { buffer, mime: "audio/mpeg" });
+        const { mime } = getAudioFileInfo(buffer);
+        responseCache.set(cacheKey, { buffer, mime });
         response.writeHead(200, {
-          "Content-Type": "audio/mpeg",
+          "Content-Type": mime,
         });
         response.end(buffer);
         return;
