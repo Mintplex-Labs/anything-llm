@@ -65,9 +65,9 @@ const TRANSLATIONS = {
       "Il nome utente deve essere compreso tra 2 e 64 caratteri, iniziare con una lettera minuscola e contenere solo lettere minuscole, numeri, trattini bassi, trattini e punti.",
     on: "Su",
     none: "Nessuno",
-    stopped: "Arrestato",
+    stopped: "Fermato",
     loading: "Caricamento",
-    refresh: "Rinfresca",
+    refresh: "Aggiorna",
   },
   settings: {
     title: "Impostazioni istanza",
@@ -80,14 +80,14 @@ const TRANSLATIONS = {
     llm: "LLM",
     transcription: "Trascrizione",
     embedder: "Embedder",
-    "text-splitting": "Suddivisione di testo & Chunking",
+    "text-splitting": "Suddivisione di testo & Divisione in blocchi",
     "voice-speech": "Voce & discorso",
     "vector-database": "Database Vettoriale",
     embeds: "Chat incorporata",
     security: "Sicurezza",
     "event-logs": "Log degli eventi",
     privacy: "Privacy & Dati",
-    "ai-providers": "AI Providers",
+    "ai-providers": "Provider IA",
     "agent-skills": "Abilità dell'agente",
     admin: "Admin",
     tools: "Strumenti",
@@ -125,7 +125,7 @@ const TRANSLATIONS = {
     },
     "sign-in": "Accedi al tuo {{appName}} account.",
     "password-reset": {
-      title: "Password Reset",
+      title: "Reset Password",
       description:
         "Fornisci le informazioni necessarie qui sotto per reimpostare la tua password.",
       "recovery-codes": "Codici di recupero",
@@ -211,7 +211,7 @@ const TRANSLATIONS = {
     prompt: {
       title: "Prompt",
       description:
-        "Il prompt che verrà utilizzato in quest'area di lavoro. Definisci il contesto e le istruzioni affinché l'IA generi una risposta. Dovresti fornire un prompt elaborato con cura in modo che l'IA possa generare una risposta pertinente e accurata.",
+        "Il prompt che verrà utilizzato in quest'area di lavoro. Definisci il contesto e le istruzioni affinché l'AI generi una risposta. Dovresti fornire un prompt elaborato con cura in modo che l'IA possa generare una risposta pertinente e accurata.",
       history: {
         title: "Cronologia delle istruzioni del sistema",
         clearAll: "Cancella tutto",
@@ -1089,7 +1089,7 @@ const TRANSLATIONS = {
       "move-success": "Trasferiti con successo {{count}} documenti.",
       no_docs: "Nessun documento.",
       select_all: "Seleziona tutto",
-      deselect_all: "Deselect All",
+      deselect_all: "Deseleziona tutto",
       remove_selected: "Elimina gli elementi selezionati",
       save_embed: "Salva e incorpora",
       "total-documents_one": "{{count}} documento",
@@ -1128,7 +1128,7 @@ const TRANSLATIONS = {
       watch_explained_block3_start:
         "È possibile gestire quali documenti vengono visualizzati dall'applicazione.",
       watch_explained_block3_link: "Gestore di file",
-      watch_explained_block3_end: "admin view.",
+      watch_explained_block3_end: "vista admin.",
       accept: "Ok, ho capito.",
     },
     obsidian: {
@@ -1137,7 +1137,7 @@ const TRANSLATIONS = {
         "Seleziona la cartella del tuo archivio Obsidian per importare tutte le note e le loro relazioni.",
       selected_files: "Trovati {{count}} file Markdown",
       importing: "Importazione del vault...",
-      import_vault: "Import Vault",
+      import_vault: "Importa Vault",
       processing_time:
         "Questo potrebbe richiedere del tempo, a seconda delle dimensioni del vostro deposito.",
       vault_warning:
@@ -1150,7 +1150,7 @@ const TRANSLATIONS = {
     text_size: "Modifica la dimensione del testo.",
     microphone: "Formula la tua richiesta.",
     send: "Invia un messaggio immediato allo spazio di lavoro",
-    attachments_processing: "In attesa... I allegati sono in elaborazione.",
+    attachments_processing: "In attesa... Gli allegati sono in elaborazione.",
     tts_speak_message: "Messaggio TTS Speak",
     copy: "Copia",
     regenerate: "Rigenerare",
@@ -1158,7 +1158,7 @@ const TRANSLATIONS = {
       "Per favore, fornisci il testo originale che desideri che venga riformulato.\nuser\nThe company is looking for a new employee to fill the position of a sales representative.\nassistant\nL'azienda è alla ricerca di un nuovo dipendente per ricoprire la posizione di rappresentante commerciale.\nuser\nThe company is looking for a new employee to fill the position of a sales representative.\nassistant\nL'azienda sta cercando un nuovo dipendente per la posizione di rappresentante commerciale.\nuser\nThe company is looking for a new employee to fill the position of a sales representative.\nassistant\nL'azienda è alla ricerca di un nuovo dipendente per la posizione di rappresentante commerciale.\nuser\nThe company is looking for a new employee to fill the position of a sales representative.\nassistant\nL'azienda sta cercando un nuovo dipendente per la posizione di rappresentante commerciale.\nuser>Regenerate response\nassistant\nL'azienda sta cercando un nuovo dipendente per la posizione di rappresentante commerciale.",
     good_response: "Ottima risposta.",
     more_actions: "Ulteriori azioni",
-    fork: "Forchetta",
+    fork: "Fork",
     delete: "Elimina",
     cancel: "Annulla",
     edit_prompt: "Suggerimento di modifica:",
@@ -1194,7 +1194,7 @@ const TRANSLATIONS = {
     },
     submit: "Invia",
     edit_info_user:
-      '"Invia" rigenera la risposta dell\'IA. "Salva" aggiorna solo il tuo messaggio.',
+      '"Invia" rigenera la risposta dell AI. "Salva" aggiorna solo il tuo messaggio.',
     edit_info_assistant:
       "Le modifiche verranno salvate direttamente in questa risposta.",
     see_less: "Visualizza meno",
@@ -1202,7 +1202,7 @@ const TRANSLATIONS = {
     tools: "Strumenti",
     text_size_label: "Dimensione del testo",
     select_model: "Seleziona il modello",
-    sources: "Fonti",
+    sources: "Sorgente",
     document: "Documento",
     similarity_match: "partita",
     source_count_one: "Riferimento {{count}}",
@@ -1604,7 +1604,7 @@ const TRANSLATIONS = {
       "voice-response": "Risposta vocale",
       disconnecting: "Disconnessione...",
       disconnect: "Disconnetti",
-      "voice-text-only": "Testo solo",
+      "voice-text-only": "Solo testo",
       "voice-mirror":
         "Specchio (risposta vocale quando l'utente invia un messaggio vocale)",
       "voice-always":
