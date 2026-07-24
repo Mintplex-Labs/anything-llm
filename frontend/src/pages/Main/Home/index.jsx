@@ -189,11 +189,13 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
   const { files, parseAttachments } = useContext(DndUploaderContext);
 
   useEffect(() => {
-    window.dispatchEvent(
-      new CustomEvent(PROMPT_INPUT_EVENT, {
-        detail: { messageContent: "", writeMode: "replace" },
-      })
-    );
+    if (!threadSlug) {
+      window.dispatchEvent(
+        new CustomEvent(PROMPT_INPUT_EVENT, {
+          detail: { messageContent: "", writeMode: "replace" },
+        })
+      );
+    }
   }, []);
 
   async function submitMessage(message, attachments = []) {

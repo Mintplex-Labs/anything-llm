@@ -62,7 +62,7 @@ const TRANSLATIONS = {
     no: "Nej",
     search: "Søg",
     username_requirements:
-      "Brugernavnet skal bestå af 2-32 tegn, starte med et lille bogstav, og kun indeholde små bogstaver, tal, understregninger, bindestreger og punktummer.",
+      "Brugernavnet skal bestå af 2-64 tegn, starte med et lille bogstav, og kun indeholde små bogstaver, tal, understregninger, bindestreger og punktummer.",
     on: "Om",
     none: "Ingen",
     stopped: "Stoppet",
@@ -206,8 +206,6 @@ const TRANSLATIONS = {
       "desc-start":
         "Antallet af tidligere chats, der vil blive inkluderet i svarens korttidshukommelse.",
       recommend: "Anbefal 20. ",
-      "desc-end":
-        "Alt over 45 kan sandsynligvis føre til gentagne chat-fejl afhængigt af beskedstørrelsen.",
     },
     prompt: {
       title: "Prompt",
@@ -240,11 +238,8 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "LLM-temperatur",
-      "desc-start":
-        'Denne indstilling styrer, hvor "kreative" dine LLM-svar vil være.',
       "desc-end":
         "Jo højere tallet er, desto mere kreative bliver svarene. For nogle modeller kan for høje værdier føre til usammenhængende svar.",
-      hint: "De fleste LLM'er har forskellige acceptable intervaller for gyldige værdier. Konsulter din LLM-udbyder for den information.",
     },
   },
   "vector-workspace": {
@@ -712,6 +707,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Opret planlagte opgaver",
+        description:
+          'Lad agenten oprette gentagne planlagte opgaver fra chat (f.eks. "hver mandag kl. 9:00, opsummér min indbakke og send mig en e-mail"). Kun tilgængeligt i enkeltbruger-tilstand.',
+      },
     },
     mcp: {
       title: "MCP-servere",
@@ -742,7 +742,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "Intelligent valg af færdigheder",
-        "beta-badge": "Beta",
         description:
           "Aktiver ubegrænsede værktøjer og reducer brugen af cut-tokens med op til 80 % pr. forespørgsel – AnythingLLM vælger automatisk de relevante færdigheder til hver forespørgsel.",
         "max-tools": {
@@ -1262,6 +1261,8 @@ const TRANSLATIONS = {
     stt_mic_denied:
       "Kunne ikke få adgang til mikrofonen. Vær venligst opmærksom på, at du skal give tilladelse, og prøv igen.",
     stt_transcription_failed: "Transkribering mislykkedes: {{error}}",
+    export: "Eksportér chat som...",
+    exporting: "Eksportér...",
   },
   profile_settings: {
     edit_account: "Rediger konto",

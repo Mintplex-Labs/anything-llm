@@ -64,7 +64,7 @@ const TRANSLATIONS = {
     stopped: "Sustabdyta",
     search: "Paieška",
     username_requirements:
-      "Vartotojo vardą turi sudaryti 2–32 simboliai, jis turi prasidėti mažąja raide ir susidėti tik iš mažųjų raidžių, skaičių, pabraukimo brūkšnių, brūkšnelių ir taškų.",
+      "Vartotojo vardą turi sudaryti 2–64 simboliai, jis turi prasidėti mažąja raide ir susidėti tik iš mažųjų raidžių, skaičių, pabraukimo brūkšnių, brūkšnelių ir taškų.",
     loading: "Kraunama",
     refresh: "Atnaujinti",
   },
@@ -219,8 +219,6 @@ const TRANSLATIONS = {
       "desc-start":
         "Ankstesnių pokalbių skaičius, kuris bus įtrauktas į atsakymo trumpalaikę atmintį.",
       recommend: "Rekomenduojama 20. ",
-      "desc-end":
-        "Daugiau nei 45 pokalbiai gali lemti nuolatines klaidas priklausomai nuo žinutės dydžio.",
     },
     prompt: {
       title: "Sistemos instrukcija",
@@ -251,11 +249,8 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "LLM temperatūra",
-      "desc-start":
-        "Šis nustatymas kontroliuoja, koks „kūrybiškas“ bus jūsų LLM atsakymas.",
       "desc-end":
         "Kuo didesnis skaičius, tuo atsakymai kūrybiškesni. Kai kuriems modeliams nustačius per didelę reikšmę atsakymai gali tapti nerišlūs.",
-      hint: "Dauguma LLM turi įvairius priimtinų reikšmių rėžius. Pasitarkite su savo LLM tiekėju.",
     },
   },
   "vector-workspace": {
@@ -730,6 +725,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Sukurkite nurodytus užduotis",
+        description:
+          "Leiskite agentui kurti nuolatinės užduotės iš pokalbio (pvz., „kasdien, 9 val., peržiūrėkite mano pašto dėžę ir siųskite man el. laišką“). Šis funkcijomis galima naudotis tik vieno vartotojo režimu.",
+      },
     },
     mcp: {
       title: "MCP serveriai",
@@ -760,7 +760,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "Išmanusis įgūdžių pasirinkimas",
-        "beta-badge": "Beta",
         description:
           "Įjunkite neribotą kiekį įrankių ir sumažinkite žetonų (tokens) naudojimą iki 80 % vienai užklausai — AnythingLLM automatiškai parinks tinkamus įgūdžiai kiekvienai užklausai.",
         "max-tools": {
@@ -1386,6 +1385,8 @@ const TRANSLATIONS = {
     stt_mic_denied:
       "Nepavyko prisijungti prie mikrofoną. Prašome suteikti leidimą ir pabandyti dar kartą.",
     stt_transcription_failed: "Transkripcija nepavyko: {{error}}",
+    export: "Eksporteri pokalbį kaip…",
+    exporting: "Eksporteris...",
   },
   profile_settings: {
     edit_account: "Redaguoti paskyrą",

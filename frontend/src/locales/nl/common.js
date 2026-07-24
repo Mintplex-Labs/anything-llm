@@ -62,7 +62,7 @@ const TRANSLATIONS = {
     no: "Nee",
     search: "Zoeken",
     username_requirements:
-      "De gebruikersnaam moet 2-32 tekens bevatten, beginnen met een kleine letter en mag alleen kleine letters, cijfers, underscores, koppeltekens en punten bevatten.",
+      "De gebruikersnaam moet 2-64 tekens bevatten, beginnen met een kleine letter en mag alleen kleine letters, cijfers, underscores, koppeltekens en punten bevatten.",
     on: "Over",
     none: "Geen",
     stopped: "Gestopt",
@@ -205,8 +205,6 @@ const TRANSLATIONS = {
       "desc-start":
         "Het aantal vorige chats dat in het kortetermijngeheugen van de reactie wordt opgenomen.",
       recommend: "Aanbevolen 20. ",
-      "desc-end":
-        "Alles meer dan 45 leidt waarschijnlijk tot continue chatfouten, afhankelijk van de berichtgrootte.",
     },
     prompt: {
       title: "Prompt",
@@ -238,11 +236,8 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "LLM Temperatuur",
-      "desc-start":
-        'Deze instelling bepaalt hoe "creatief" je LLM-antwoorden zullen zijn.',
       "desc-end":
         "Hoe hoger het getal, hoe creatiever. Voor sommige modellen kan dit leiden tot onsamenhangende antwoorden als het te hoog wordt ingesteld.",
-      hint: "De meeste LLM's hebben verschillende acceptabele reeksen van geldige waarden. Raadpleeg je LLM-provider voor die informatie.",
     },
   },
   "vector-workspace": {
@@ -721,6 +716,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Maak geplande taken aan",
+        description:
+          'Laat de agent herhaalde geplande taken aanmaken vanuit het gesprek (bijvoorbeeld: "elke werkdag om 9 uur, vat mijn inbox samen en stuur me een e-mail"). Dit is alleen beschikbaar in single-user modus.',
+      },
     },
     mcp: {
       title: "MCP-servers",
@@ -751,7 +751,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "Intelligente selectie van vaardigheden",
-        "beta-badge": "Betaling",
         description:
           'Maak gebruik van een onbeperkt aantal tools en verminder het gebruik van "cut tokens" met tot wel 80% per query – AnythingLLM selecteert automatisch de juiste vaardigheden voor elke vraag.',
         "max-tools": {
@@ -1272,6 +1271,8 @@ const TRANSLATIONS = {
     stt_mic_denied:
       "Het was niet mogelijk om de microfoon te gebruiken. Gelieve toestemming te verlenen en opnieuw te proberen.",
     stt_transcription_failed: "Transcriptie mislukt: {{error}}",
+    export: "Exporteer de chat als…",
+    exporting: "Exporteren...",
   },
   profile_settings: {
     edit_account: "Account bewerken",

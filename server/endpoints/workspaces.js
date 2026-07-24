@@ -11,7 +11,7 @@ const { Workspace } = require("../models/workspace");
 const { Document } = require("../models/documents");
 const { DocumentVectors } = require("../models/vectors");
 const { WorkspaceChats } = require("../models/workspaceChats");
-const { getVectorDbClass } = require("../utils/helpers");
+const { getVectorDbClass, stripThinkingFromText } = require("../utils/helpers");
 const { handleFileUpload, handlePfpUpload } = require("../utils/files/multer");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { Telemetry } = require("../models/telemetry");
@@ -31,6 +31,7 @@ const {
   fetchPfp,
 } = require("../utils/files/pfp");
 const { getTTSProvider } = require("../utils/TextToSpeech");
+const { getAudioFileInfo } = require("../utils/TextToSpeech/audioFormat");
 const { WorkspaceThread } = require("../models/workspaceThread");
 
 const truncate = require("truncate");
@@ -546,7 +547,7 @@ function workspaceEndpoints(app) {
 
   app.get(
     "/workspace/:slug/suggested-messages",
-    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
     async function (request, response) {
       try {
         const { slug } = request.params;
@@ -650,9 +651,10 @@ function workspaceEndpoints(app) {
         const buffer = await TTSProvider.ttsBuffer(text);
         if (buffer === null) return response.sendStatus(204).end();
 
-        responseCache.set(cacheKey, { buffer, mime: "audio/mpeg" });
+        const { mime } = getAudioFileInfo(buffer);
+        responseCache.set(cacheKey, { buffer, mime });
         response.writeHead(200, {
-          "Content-Type": "audio/mpeg",
+          "Content-Type": mime,
         });
         response.end(buffer);
         return;
@@ -665,7 +667,7 @@ function workspaceEndpoints(app) {
 
   app.get(
     "/workspace/:slug/pfp",
-    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
     async function (request, response) {
       try {
         const { slug } = request.params;
@@ -842,7 +844,8 @@ function workspaceEndpoints(app) {
         let lastMessageText = "";
         const chatsData = chatsToFork.map((chat) => {
           const chatResponse = safeJsonParse(chat.response, {});
-          if (chatResponse?.text) lastMessageText = chatResponse.text;
+          if (chatResponse?.text)
+            lastMessageText = stripThinkingFromText(chatResponse.text);
 
           return {
             workspaceId: workspace.id,

@@ -71,7 +71,7 @@ export default function usePromptInputStorage({ promptInput, setPromptInput }) {
     debouncedWriteToStorage(promptInput, threadSlug ?? workspaceSlug);
 
     return () => {
-      debouncedWriteToStorage.cancel();
+      debouncedWriteToStorage.flush();
     };
   }, [promptInput, threadSlug, workspaceSlug, debouncedWriteToStorage]);
 }

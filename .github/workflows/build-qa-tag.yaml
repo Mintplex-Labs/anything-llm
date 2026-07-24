@@ -19,6 +19,8 @@ on:
       - "embed/**/*"
       - "browser-extension/**/*"
       - "extras/**/*"
+      - 'open-computer/**/*'
+
 
 concurrency:
   group: qa-build-pr-${{ github.event.pull_request.number }}

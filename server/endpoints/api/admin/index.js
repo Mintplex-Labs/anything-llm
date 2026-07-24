@@ -413,7 +413,23 @@ function apiAdminEndpoints(app) {
         }
 
         const { id } = request.params;
-        const { success, error } = await Invite.deactivate(id);
+        const parsedId = Number(id);
+        if (isNaN(parsedId)) {
+          response
+            .status(400)
+            .json({ success: false, error: "Invalid invite id" });
+          return;
+        }
+
+        const { success, error } = await Invite.deactivate(parsedId);
+        if (!success) {
+          response.status(404).json({
+            success: false,
+            error: "Invite not found or already disabled",
+          });
+          return;
+        }
+
         response.status(200).json({ success, error });
       } catch (e) {
         console.error(e);

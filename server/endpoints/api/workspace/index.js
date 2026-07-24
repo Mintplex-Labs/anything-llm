@@ -247,7 +247,7 @@ function apiWorkspaceEndpoints(app) {
       try {
         const { slug = "" } = request.params;
         const VectorDb = getVectorDbClass();
-        const workspace = await Workspace.get({ slug });
+        const workspace = await Workspace.get({ slug: String(slug) });
 
         if (!workspace) {
           response.sendStatus(400).end();
@@ -335,7 +335,7 @@ function apiWorkspaceEndpoints(app) {
       try {
         const { slug = null } = request.params;
         const data = reqBody(request);
-        const currWorkspace = await Workspace.get({ slug });
+        const currWorkspace = await Workspace.get({ slug: String(slug) });
 
         if (!currWorkspace) {
           response.sendStatus(400).end();
@@ -421,7 +421,7 @@ function apiWorkspaceEndpoints(app) {
           limit = 100,
           orderBy = "asc",
         } = request.query;
-        const workspace = await Workspace.get({ slug });
+        const workspace = await Workspace.get({ slug: String(slug) });
 
         if (!workspace) {
           response.sendStatus(400).end();
@@ -508,7 +508,7 @@ function apiWorkspaceEndpoints(app) {
       try {
         const { slug = null } = request.params;
         const { adds = [], deletes = [] } = reqBody(request);
-        const currWorkspace = await Workspace.get({ slug });
+        const currWorkspace = await Workspace.get({ slug: String(slug) });
 
         if (!currWorkspace) {
           response.sendStatus(400).end();
@@ -576,7 +576,7 @@ function apiWorkspaceEndpoints(app) {
       try {
         const { slug = null } = request.params;
         const { docPath, pinStatus = false } = reqBody(request);
-        const workspace = await Workspace.get({ slug });
+        const workspace = await Workspace.get({ slug: String(slug) });
 
         const document = await Document.get({
           workspaceId: workspace.id,

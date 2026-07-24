@@ -90,7 +90,7 @@ const memory = {
                   prompt: query,
                 });
               const vectorDB = getVectorDbClass();
-              const { contextTexts = [] } =
+              const { contextTexts = [], sources = [] } =
                 await vectorDB.performSimilaritySearch({
                   namespace: workspace.slug,
                   input: query,
@@ -109,6 +109,8 @@ const memory = {
               this.super.introspect(
                 `${this.caller}: Found ${contextTexts.length} additional piece of context to help answer this question.`
               );
+
+              this.super.addCitation?.(sources);
 
               let combinedText = "Additional context for query:\n";
               for (const text of contextTexts) combinedText += text + "\n\n";

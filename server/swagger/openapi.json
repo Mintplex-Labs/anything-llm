@@ -478,6 +478,9 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Instance is not in Multi-User mode. Method denied"
           },
@@ -495,6 +498,9 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Not Found"
           },
           "500": {
             "description": "Internal Server Error"
@@ -2817,6 +2823,9 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "403": {
             "description": "Forbidden",
             "content": {
@@ -3025,9 +3034,6 @@
               }
             }
           },
-          "400": {
-            "description": "Bad Request"
-          },
           "403": {
             "description": "Forbidden",
             "content": {
@@ -3042,6 +3048,9 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Not Found"
           },
           "500": {
             "description": "Internal Server Error"
@@ -3169,9 +3178,6 @@
               }
             }
           },
-          "400": {
-            "description": "Bad Request"
-          },
           "403": {
             "description": "Forbidden",
             "content": {
@@ -3186,6 +3192,9 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Not Found"
           },
           "500": {
             "description": "Internal Server Error"
@@ -3260,6 +3269,9 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Not Found"
           },
           "500": {
             "description": "Internal Server Error"

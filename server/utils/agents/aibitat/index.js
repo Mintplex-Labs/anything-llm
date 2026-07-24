@@ -204,6 +204,27 @@ class AIbitat {
   }
 
   /**
+   * Register attached documents (parsed/pinned files) as citations so they surface as
+   * sources, mirroring normal chat. Dedupes by id since this runs on every reply turn.
+   * @param {Array<{name: string, content: string, metadata?: object}>} documents
+   */
+  addDocumentCitations(documents = []) {
+    const existingIds = new Set(this._pendingCitations.map((c) => c.id));
+    for (const { name, content, metadata = {} } of documents) {
+      const id = metadata.id || metadata.location || name;
+      if (existingIds.has(id)) continue;
+      existingIds.add(id);
+      this.addCitation({
+        id,
+        title: name,
+        text: content.slice(0, 1_000) + "...continued on in source document...",
+        chunkSource: metadata.chunkSource || null,
+        score: null,
+      });
+    }
+  }
+
+  /**
    * Flush all pending citations to the frontend with the given message UUID.
    * Called automatically when the agent response is finalized.
    * Note: Does not clear citations - they are cleared by chat-history plugin after persisting.
@@ -1397,8 +1418,6 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
         return new Providers.PPIOProvider({ model: config.model });
       case "gemini":
         return new Providers.GeminiProvider({ model: config.model });
-      case "dpais":
-        return new Providers.DellProAiStudioProvider({ model: config.model });
       case "cometapi":
         return new Providers.CometApiProvider({ model: config.model });
       case "foundry":
@@ -1415,6 +1434,8 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
         return new Providers.SambaNovaProvider({ model: config.model });
       case "lemonade":
         return new Providers.LemonadeProvider({ model: config.model });
+      case "omlx":
+        return new Providers.OMLXProvider({ model: config.model });
       case "minimax":
         return new Providers.MinimaxProvider({ model: config.model });
       case "cerebras":
@@ -1433,6 +1454,17 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
    */
   function(functionConfig) {
     this.functions.set(functionConfig.name, functionConfig);
+    return this;
+  }
+
+  /**
+   * Remove a registered function so the agent can no longer call it on its next
+   * turn. Used to disable a tool mid-session; restore it by re-running its plugin
+   * via aibitat.use().
+   * @param {string} functionName - The registered name of the function to remove.
+   */
+  removeFunction(functionName) {
+    this.functions.delete(functionName);
     return this;
   }
 }

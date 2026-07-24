@@ -58,7 +58,7 @@ const TRANSLATIONS = {
     no: "否",
     search: "搜尋",
     username_requirements:
-      "使用者名稱必須為 2-32 個字元，以小寫字母開頭，且只能包含小寫字母、數字、底線、連字號和句點。",
+      "使用者名稱必須為64 個字元，以小寫字母開頭，且只能包含小寫字母、數字、底線、連字號和句點。",
     on: "關於",
     none: "沒有",
     stopped: "停止",
@@ -197,7 +197,6 @@ const TRANSLATIONS = {
       title: "對話紀錄",
       "desc-start": "會納入回應短期記憶的過往對話訊息數量。",
       recommend: "建議值為 20。",
-      "desc-end": "若超過 45，依訊息大小不同，很可能持續發生對話失敗。",
     },
     prompt: {
       title: "系統提示詞",
@@ -226,10 +225,8 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "LLM 溫度",
-      "desc-start": "這項設定會控制 LLM 回應的「創意程度」。",
       "desc-end":
         "數值越高，創意度越高。對於某些模型，設定過高可能會導致不連貫的回應。",
-      hint: "大多數 LLM 都有各自可接受的有效值範圍，請向 LLM 提供者查詢。",
     },
   },
   "vector-workspace": {
@@ -667,6 +664,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "建立排程工作",
+        description:
+          "允許經理根據聊天內容，設定重複執行的工作（例如：「每天早上9點，請自動整理我的收件匣並將摘要發送至我的電子郵件」）。僅適用於單一使用者模式。",
+      },
     },
     mcp: {
       title: "MCP 伺服器",
@@ -696,7 +698,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "智能技能選擇",
-        "beta-badge": "β 版本",
         description:
           "啟用無限多個工具，並將每個查詢的 token 使用量最多降低 80% — AnythingLLM 能夠自動選擇最適合的技能，以處理每一個提示。",
         "max-tools": {
@@ -1178,6 +1179,8 @@ const TRANSLATIONS = {
     stt_unsupported: "本瀏覽器不支援麥克風功能。",
     stt_mic_denied: "無法存取麥克風。請先授權，然後再嘗試。",
     stt_transcription_failed: "轉錄失敗：{{error}}",
+    export: "匯出對話內容為…",
+    exporting: "出口...",
   },
   profile_settings: {
     edit_account: "編輯帳戶",

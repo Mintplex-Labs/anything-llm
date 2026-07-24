@@ -62,7 +62,7 @@ const TRANSLATIONS = {
     no: "Không",
     search: "Tìm kiếm",
     username_requirements:
-      "Tên người dùng phải có 2-32 ký tự, bắt đầu bằng chữ cái thường và chỉ chứa chữ cái thường, số, dấu gạch dưới, dấu gạch ngang và dấu chấm.",
+      "Tên người dùng phải có 2-64 ký tự, bắt đầu bằng chữ cái thường và chỉ chứa chữ cái thường, số, dấu gạch dưới, dấu gạch ngang và dấu chấm.",
     on: "Về",
     none: "Không",
     stopped: "Dừng",
@@ -205,8 +205,6 @@ const TRANSLATIONS = {
       "desc-start":
         "Số lượng cuộc trò chuyện trước đó sẽ được bao gồm trong bộ nhớ ngắn hạn của phản hồi.",
       recommend: "Khuyến nghị 20. ",
-      "desc-end":
-        "Bất kỳ số nào lớn hơn 45 có thể dẫn đến lỗi trò chuyện liên tục tùy thuộc vào kích thước tin nhắn.",
     },
     prompt: {
       title: "Prompt",
@@ -237,10 +235,8 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "Nhiệt độ LLM",
-      "desc-start": 'Cài đặt này kiểm soát mức độ "sáng tạo" của phản hồi LLM.',
       "desc-end":
         "Số càng cao thì càng sáng tạo. Đối với một số mô hình, điều này có thể dẫn đến phản hồi không mạch lạc khi đặt quá cao.",
-      hint: "Hầu hết các LLM có các phạm vi giá trị hợp lệ khác nhau. Tham khảo nhà cung cấp LLM của bạn để biết thông tin đó.",
     },
   },
   "vector-workspace": {
@@ -714,6 +710,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Tạo các công việc theo lịch trình",
+        description:
+          'Cho phép đại lý tạo các công việc lặp lại theo lịch trình từ cuộc trò chuyện (ví dụ: "mỗi ngày làm việc lúc 9 giờ sáng, tóm tắt hộp thư và gửi email cho tôi"). Chỉ khả dụng trong chế độ sử dụng riêng.',
+      },
     },
     mcp: {
       title: "Máy chủ MCP",
@@ -744,7 +745,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "Lựa chọn kỹ năng thông minh",
-        "beta-badge": "Phiên bản thử nghiệm",
         description:
           "Cho phép sử dụng không giới hạn các công cụ và giảm mức sử dụng token lên đến 80% cho mỗi truy vấn – AnythingLLM tự động chọn các kỹ năng phù hợp nhất cho mỗi yêu cầu.",
         "max-tools": {
@@ -1258,6 +1258,8 @@ const TRANSLATIONS = {
       "Chức năng truy cập micro không được hỗ trợ trong trình duyệt này.",
     stt_mic_denied: "Không thể truy cập micro. Vui lòng cấp quyền và thử lại.",
     stt_transcription_failed: "Không thể chuyển đổi: {{error}}",
+    export: "Xuất trò chuyện dưới dạng...",
+    exporting: "Xuất khẩu...",
   },
   profile_settings: {
     edit_account: "Chỉnh sửa Tài khoản",

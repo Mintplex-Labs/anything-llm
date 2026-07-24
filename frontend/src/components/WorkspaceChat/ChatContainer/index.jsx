@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext, useRef } from "react";
+import { useState, useEffect, useContext, useRef, useCallback } from "react";
 import ChatHistory from "./ChatHistory";
 import { CLEAR_ATTACHMENTS_EVENT, DndUploaderContext } from "./DnDWrapper";
 import PromptInput, {
@@ -16,6 +16,7 @@ import handleSocketResponse, {
   AGENT_SESSION_END,
   AGENT_SESSION_START,
   setAgentSessionActive,
+  setAgentSessionSocket,
 } from "@/utils/chat/agent";
 import DnDFileUploaderWrapper from "./DnDWrapper";
 import SpeechRecognition, {
@@ -150,22 +151,7 @@ export default function ChatContainer({
     resetTranscript();
   }
 
-  const regenerateAssistantMessage = (chatId) => {
-    const filteredHistory = chatHistory.slice(0, -1);
-    const lastUserMessage = filteredHistory.findLast(
-      (msg) => msg.role === "user"
-    );
-    Workspace.deleteChats(workspace.slug, [chatId])
-      .then(() =>
-        sendCommand({
-          text: lastUserMessage.content,
-          autoSubmit: true,
-          history: filteredHistory,
-          attachments: lastUserMessage?.attachments,
-        })
-      )
-      .catch((e) => console.error(e));
-  };
+  const sendCommandRef = useRef(null);
 
   /**
    * Send a command to the LLM prompt input.
@@ -265,6 +251,30 @@ export default function ChatContainer({
     setLoadingResponse(true);
   };
 
+  sendCommandRef.current = sendCommand;
+  const chatHistoryRef2 = useRef(chatHistory);
+  chatHistoryRef2.current = chatHistory;
+
+  const regenerateAssistantMessage = useCallback(
+    (chatId) => {
+      const filteredHistory = chatHistoryRef2.current.slice(0, -1);
+      const lastUserMessage = filteredHistory.findLast(
+        (msg) => msg.role === "user"
+      );
+      Workspace.deleteChats(workspace.slug, [chatId])
+        .then(() =>
+          sendCommandRef.current({
+            text: lastUserMessage.content,
+            autoSubmit: true,
+            history: filteredHistory,
+            attachments: lastUserMessage?.attachments,
+          })
+        )
+        .catch((e) => console.error(e));
+    },
+    [workspace.slug]
+  );
+
   useEffect(() => {
     if (pendingMessageChecked.current || !workspace?.slug) return;
     pendingMessageChecked.current = true;
@@ -351,6 +361,7 @@ export default function ChatContainer({
 
         window.addEventListener(ABORT_STREAM_EVENT, () => {
           setAgentSessionActive(false);
+          setAgentSessionSocket(null);
           window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
           socket?.close();
         });
@@ -370,6 +381,7 @@ export default function ChatContainer({
 
         socket.addEventListener("close", (_event) => {
           setAgentSessionActive(false);
+          setAgentSessionSocket(null);
           window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
           // When the close was triggered by /reset, skip the "Agent session
           // complete." status - the pending /reset flow will clear history.
@@ -397,6 +409,7 @@ export default function ChatContainer({
         });
         setWebsocket(socket);
         setAgentSessionActive(true);
+        setAgentSessionSocket(socket);
         window.dispatchEvent(new CustomEvent(AGENT_SESSION_START));
         window.dispatchEvent(new CustomEvent(CLEAR_ATTACHMENTS_EVENT));
       } catch (e) {
@@ -437,8 +450,12 @@ export default function ChatContainer({
           style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
           className="relative flex md:ml-[2px] md:mr-[16px] md:my-[16px] w-full h-full z-[2]"
         >
-          <ChatSettingsMenu />
-          <div className="flex-1 min-w-0 transition-all duration-500 relative md:rounded-[16px] bg-zinc-900 light:bg-white w-full h-full overflow-hidden border-none light:border-solid light:border light:border-theme-modal-border">
+          <ChatSettingsMenu
+            history={chatHistory}
+            workspace={workspace}
+            threadSlug={activeThreadSlug}
+          />
+          <div className="flex-1 min-w-0 relative md:rounded-[16px] bg-zinc-900 light:bg-white w-full h-full overflow-hidden border-none light:border-solid light:border light:border-theme-modal-border">
             {isMobile && <SidebarMobileHeader />}
             <WorkspaceModelPicker workspaceSlug={workspace.slug} />
             <DnDFileUploaderWrapper>
@@ -490,8 +507,12 @@ export default function ChatContainer({
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
         className="relative flex md:ml-[2px] md:mr-[16px] md:my-[16px] w-full h-full z-[2]"
       >
-        <ChatSettingsMenu />
-        <div className="flex-1 min-w-0 transition-all duration-500 relative md:rounded-[16px] bg-zinc-900 light:bg-white text-white light:text-slate-900 h-full overflow-hidden border-none light:border-solid light:border light:border-theme-modal-border">
+        <ChatSettingsMenu
+          history={chatHistory}
+          workspace={workspace}
+          threadSlug={activeThreadSlug}
+        />
+        <div className="flex-1 min-w-0 relative md:rounded-[16px] bg-zinc-900 light:bg-white text-white light:text-slate-900 h-full overflow-hidden border-none light:border-solid light:border light:border-theme-modal-border">
           {isMobile && <SidebarMobileHeader />}
           <WorkspaceModelPicker workspaceSlug={workspace.slug} />
           <DnDFileUploaderWrapper>

@@ -1053,11 +1053,17 @@ function systemEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
-        const { provider, apiKey = null, basePath = null } = reqBody(request);
+        const {
+          provider,
+          apiKey = null,
+          basePath = null,
+          options = {},
+        } = reqBody(request);
         const { models, error } = await getCustomModels(
           provider,
           apiKey,
-          basePath
+          basePath,
+          options
         );
         return response.status(200).json({
           models,

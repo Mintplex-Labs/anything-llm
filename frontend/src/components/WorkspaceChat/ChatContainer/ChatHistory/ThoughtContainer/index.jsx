@@ -152,29 +152,28 @@ export const ThoughtChainComponent = forwardRef(
               className="relative bg-zinc-800 light:bg-slate-100 p-4"
             >
               <div className="absolute top-4 left-4 w-[18px] h-[18px]">
-                {isThinking || isComplete ? (
-                  <>
-                    <video
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                      className={`w-[18px] h-[18px] scale-[115%] transition-opacity duration-200 light:invert light:opacity-50 ${isThinking ? "opacity-100" : "opacity-0 hidden"}`}
-                      data-tooltip-id="cot-thinking"
-                      data-tooltip-content="Model is thinking..."
-                      aria-label="Model is thinking..."
-                    >
-                      <source src={ThinkingAnimation} type="video/webm" />
-                    </video>
-                    <img
-                      src={ThinkingStatic}
-                      alt="Thinking complete"
-                      className={`w-[18px] h-[18px] transition-opacity duration-200 light:invert light:opacity-50 ${!isThinking && isComplete ? "opacity-100" : "opacity-0 hidden"}`}
-                      data-tooltip-id="cot-thinking"
-                      data-tooltip-content="Model has finished thinking"
-                      aria-label="Model has finished thinking"
-                    />
-                  </>
+                {isThinking ? (
+                  <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-[18px] h-[18px] scale-[115%] light:invert light:opacity-50"
+                    data-tooltip-id="cot-thinking"
+                    data-tooltip-content="Model is thinking..."
+                    aria-label="Model is thinking..."
+                  >
+                    <source src={ThinkingAnimation} type="video/webm" />
+                  </video>
+                ) : isComplete ? (
+                  <img
+                    src={ThinkingStatic}
+                    alt="Thinking complete"
+                    className="w-[18px] h-[18px] light:invert light:opacity-50"
+                    data-tooltip-id="cot-thinking"
+                    data-tooltip-content="Model has finished thinking"
+                    aria-label="Model has finished thinking"
+                  />
                 ) : null}
               </div>
               {canExpand && (

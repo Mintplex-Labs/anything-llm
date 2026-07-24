@@ -452,9 +452,9 @@ class GenericOpenAiLLM {
 
   /**
    * Returns the capabilities of the model.
-   * @returns {{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}}
+   * @returns {Promise<{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}>}
    */
-  getModelCapabilities() {
+  async getModelCapabilities() {
     try {
       return {
         tools: this.#supportsCapabilityFromENV("tools"),

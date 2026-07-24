@@ -1,0 +1,22 @@
+/* XPM */
+static char * menu_active_xpm[] = {
+"32 16 2 1",
+"   c None",
+"A  c #000000 s active_color_1",
+"        AAAAAAAAAAAAAAAA        ",
+"        AAAAAAAAAAAAAAAA        ",
+"        AAAAAAAAAAAAAAAA        ",
+"        AAAAAAAAAAAAAAAA        ",
+"        AAAAAAAAAAAAAAAA        ",
+"        AAAAAAAAAAAAAAAA        ",
+"        AAAAAAAAAAAAAAAA        ",
+"        AAAAAAAAAAAAAAAA        ",
+"        AAAAAAAAAAAAAAAA        ",
+"        AAAAAAAAAAAAAAAA        ",
+"        AAAAAAAAAAAAAAAA        ",
+"        AAAAAAAAAAAAAAAA        ",
+"        AAAAAAAAAAAAAAAA        ",
+"        AAAAAAAAAAAAAAAA        ",
+"        AAAAAAAAAAAAAAAA        ",
+"        AAAAAAAAAAAAAAAA        "
+};

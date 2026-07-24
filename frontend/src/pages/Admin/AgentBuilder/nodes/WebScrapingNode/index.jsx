@@ -1,4 +1,5 @@
 import Toggle from "@/components/lib/Toggle";
+import VariableInput from "../../VariableInput";
 
 export default function WebScrapingNode({
   config,
@@ -11,8 +12,7 @@ export default function WebScrapingNode({
         <label className="block text-sm font-medium text-theme-text-primary mb-2">
           URL to Scrape
         </label>
-        <input
-          type="url"
+        <VariableInput
           value={config?.url || ""}
           onChange={(e) =>
             onConfigChange({
@@ -20,7 +20,6 @@ export default function WebScrapingNode({
               url: e.target.value,
             })
           }
-          className="w-full border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none p-2.5"
           placeholder="https://example.com"
         />
       </div>
@@ -60,13 +59,12 @@ export default function WebScrapingNode({
           <p className="text-xs text-theme-text-secondary mb-2">
             Enter a valid CSS selector to scrape the content of the page.
           </p>
-          <input
+          <VariableInput
             value={config.querySelector}
             onChange={(e) =>
               onConfigChange({ ...config, querySelector: e.target.value })
             }
             placeholder=".article-content, #content, .main-content, etc."
-            className="w-full border-none bg-theme-settings-input-bg text-theme-text-primary text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none p-2.5"
           />
         </div>
       )}

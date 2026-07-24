@@ -17,17 +17,12 @@ export default function ChatTemperatureSettings({
   const { t } = useTranslation();
   return (
     <div>
-      <div className="flex flex-col">
+      <div className="flex flex-col gap-y-[8px]">
         <label htmlFor="name" className="block input-label">
           {t("chat.temperature.title")}
         </label>
-        <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-          {t("chat.temperature.desc-start")}
-          <br />
+        <p className="text-white text-opacity-60 text-xs font-medium">
           {t("chat.temperature.desc-end")}
-          <br />
-          <br />
-          <i>{t("chat.temperature.hint")}</i>
         </p>
       </div>
       <input

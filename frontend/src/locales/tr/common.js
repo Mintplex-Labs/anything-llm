@@ -62,7 +62,7 @@ const TRANSLATIONS = {
     no: "Hayır",
     search: "Ara",
     username_requirements:
-      "Kullanıcı adı 2-32 karakter uzunluğunda olmalı, küçük harfle başlamalı ve yalnızca küçük harfler, rakamlar, alt çizgiler, tireler ve noktalar içermelidir.",
+      "Kullanıcı adı 2-64 karakter uzunluğunda olmalı, küçük harfle başlamalı ve yalnızca küçük harfler, rakamlar, alt çizgiler, tireler ve noktalar içermelidir.",
     on: "On",
     none: "Yok",
     stopped: "Durdu",
@@ -205,8 +205,6 @@ const TRANSLATIONS = {
       "desc-start":
         "Yanıta dahil edilecek önceki sohbetlerin sayısı (kısa süreli hafıza).",
       recommend: "20 önerilir. ",
-      "desc-end":
-        "45'ten fazlası, mesaj boyutuna göre sürekli sohbet hatalarına yol açabilir.",
     },
     prompt: {
       title: "Komut (Prompt)",
@@ -237,11 +235,8 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "LLM Sıcaklığı",
-      "desc-start":
-        'Bu ayar, LLM yanıtlarının ne kadar "yaratıcı" olacağını kontrol eder.',
       "desc-end":
         "Sayı yükseldikçe yaratıcı yanıtlar artar. Bazı modeller için bu değer çok yüksek ayarlandığında anlamsız yanıtlar ortaya çıkabilir.",
-      hint: "Çoğu LLM'in farklı kabul edilebilir değer aralıkları vardır. Ayrıntılar için LLM sağlayıcınıza danışın.",
     },
   },
   "vector-workspace": {
@@ -728,6 +723,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Planlı işleri oluşturun",
+        description:
+          'Temsilcinin, sohbetten otomatik olarak tekrarlayan görevler oluşturmasına izin verin (örneğin, "her hafta içi her gün saat 09:00\'da e-posta kutlumu özetleyip bana gönder"). Sadece tek kullanıcı modunda kullanılabilir.',
+      },
     },
     mcp: {
       title: "MCP Sunucuları",
@@ -758,7 +758,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "Akıllı Becerilerin Seçimi",
-        "beta-badge": "Beta",
         description:
           'Her sorgu için sınırsız araç kullanımı ve "cut token" kullanımını %80\'e kadar azaltma imkanı sunar — AnythingLLM, her talep için doğru becerileri otomatik olarak seçer.',
         "max-tools": {
@@ -1275,6 +1274,8 @@ const TRANSLATIONS = {
     stt_mic_denied:
       "Mikrofonu kullanılamadı. Lütfen izin verin ve tekrar deneyin.",
     stt_transcription_failed: "Transkripsiyon başarısız: {{error}}",
+    export: "Çat sohbetini şu şekilde dışa aktar:",
+    exporting: "Dışarıya satışı yapma...",
   },
   profile_settings: {
     edit_account: "Hesabı Düzenle",

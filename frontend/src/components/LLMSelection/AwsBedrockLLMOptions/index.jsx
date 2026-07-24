@@ -1,20 +1,21 @@
 import { ArrowSquareOut, Info } from "@phosphor-icons/react";
 import { AWS_REGIONS } from "./regions";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import System from "@/models/system";
 
 export default function AwsBedrockLLMOptions({ settings }) {
-  const [connectionMethod, setConnectionMethod] = useState(
-    settings?.AwsBedrockLLMConnectionMethod ?? "iam"
-  );
+  const [inputValue, setInputValue] = useState(settings?.AwsBedrockLLMApiKey);
+  const [apiKey, setApiKey] = useState(settings?.AwsBedrockLLMApiKey);
+  const [region, setRegion] = useState(settings?.AwsBedrockLLMRegion);
 
   return (
     <div className="w-full flex flex-col">
-      {!settings?.credentialsOnly && connectionMethod !== "apiKey" && (
+      {!settings?.credentialsOnly && (
         <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-white mb-4 bg-blue-800/30 w-fit rounded-lg px-4 py-2">
           <div className="gap-x-2 flex items-center">
             <Info size={40} />
             <p className="text-base">
-              You should use a properly defined IAM user for inferencing.
+              Connect to AWS Bedrock using the OpenAI-compatible Mantle API.
               <br />
               <a
                 href="https://docs.anythingllm.com/setup/llm-configuration/cloud/aws-bedrock"
@@ -30,120 +31,35 @@ export default function AwsBedrockLLMOptions({ settings }) {
         </div>
       )}
 
-      <div className="flex flex-col gap-y-2 mb-2">
-        <input
-          type="hidden"
-          name="AwsBedrockLLMConnectionMethod"
-          value={connectionMethod}
-        />
-        <div className="flex flex-col w-full">
-          <label className="text-theme-text-primary text-sm font-semibold block mb-3">
-            Authentication Method
-          </label>
-          <p className="text-theme-text-secondary text-sm">
-            Select the method to authenticate with AWS Bedrock.
-          </p>
-        </div>
-        <select
-          name="AwsBedrockLLMConnectionMethod"
-          value={connectionMethod}
-          required={true}
-          onChange={(e) => setConnectionMethod(e.target.value)}
-          className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-fit p-2.5"
-        >
-          <option value="iam">IAM (Explicit Credentials)</option>
-          <option value="sessionToken">
-            Session Token (Temporary Credentials)
-          </option>
-          <option value="iam_role">IAM Role (Implied Credentials)</option>
-          <option value="apiKey">Bedrock API Key</option>
-        </select>
-      </div>
-
       <div className="w-full flex items-center gap-[36px] my-1.5">
-        {["iam", "sessionToken"].includes(connectionMethod) && (
-          <>
-            <div className="flex flex-col w-60">
-              <label className="text-white text-sm font-semibold block mb-3">
-                AWS Bedrock IAM Access ID
-              </label>
-              <input
-                type="password"
-                name="AwsBedrockLLMAccessKeyId"
-                className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-                placeholder="AWS Bedrock IAM User Access ID"
-                defaultValue={
-                  settings?.AwsBedrockLLMAccessKeyId ? "*".repeat(20) : ""
-                }
-                required={true}
-                autoComplete="off"
-                spellCheck={false}
-              />
-            </div>
-            <div className="flex flex-col w-60">
-              <label className="text-white text-sm font-semibold block mb-3">
-                AWS Bedrock IAM Access Key
-              </label>
-              <input
-                type="password"
-                name="AwsBedrockLLMAccessKey"
-                className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-                placeholder="AWS Bedrock IAM User Access Key"
-                defaultValue={
-                  settings?.AwsBedrockLLMAccessKey ? "*".repeat(20) : ""
-                }
-                required={true}
-                autoComplete="off"
-                spellCheck={false}
-              />
-            </div>
-          </>
-        )}
-        {connectionMethod === "sessionToken" && (
-          <div className="flex flex-col w-60">
-            <label className="text-theme-text-primary text-sm font-semibold block mb-3">
-              AWS Bedrock Session Token
-            </label>
-            <input
-              type="password"
-              name="AwsBedrockLLMSessionToken"
-              className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-              placeholder="AWS Bedrock Session Token"
-              defaultValue={
-                settings?.AwsBedrockLLMSessionToken ? "*".repeat(20) : ""
-              }
-              required={true}
-              autoComplete="off"
-              spellCheck={false}
-            />
-          </div>
-        )}
-        {connectionMethod === "apiKey" && (
-          <div className="flex flex-col w-60">
-            <label className="text-theme-text-primary text-sm font-semibold block mb-3">
-              AWS Bedrock API Key
-            </label>
-            <input
-              type="password"
-              name="AwsBedrockLLMAPIKey"
-              className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-              placeholder="AWS Bedrock API Key"
-              defaultValue={settings?.AwsBedrockLLMAPIKey ? "*".repeat(20) : ""}
-              required={true}
-              autoComplete="off"
-              spellCheck={false}
-            />
-          </div>
-        )}
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
-            AWS region
+            AWS Bedrock API Key
+          </label>
+          <input
+            type="password"
+            name="AwsBedrockLLMApiKey"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            placeholder="AWS Bedrock API Key"
+            defaultValue={settings?.AwsBedrockLLMApiKey ? "*".repeat(20) : ""}
+            required={true}
+            autoComplete="off"
+            spellCheck={false}
+            onChange={(e) => setInputValue(e.target.value)}
+            onBlur={() => setApiKey(inputValue)}
+          />
+        </div>
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-3">
+            AWS Region
           </label>
           <select
             name="AwsBedrockLLMRegion"
-            defaultValue={settings?.AwsBedrockLLMRegion || "us-west-2"}
+            value={region}
             required={true}
             className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            onChange={(e) => setRegion(e.target.value)}
+            onBlur={() => setRegion(region)}
           >
             {AWS_REGIONS.map((region) => {
               return (
@@ -159,21 +75,11 @@ export default function AwsBedrockLLMOptions({ settings }) {
       <div className="w-full flex items-center gap-[36px] my-1.5">
         {!settings?.credentialsOnly && (
           <>
-            <div className="flex flex-col w-60">
-              <label className="text-white text-sm font-semibold block mb-3">
-                Model ID
-              </label>
-              <input
-                type="text"
-                name="AwsBedrockLLMModel"
-                className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-                placeholder="Model id from AWS eg: meta.llama3.1-v0.1"
-                defaultValue={settings?.AwsBedrockLLMModel}
-                required={true}
-                autoComplete="off"
-                spellCheck={false}
-              />
-            </div>
+            <BedrockModelSelection
+              settings={settings}
+              apiKey={apiKey}
+              region={region}
+            />
             <div className="flex flex-col w-60">
               <label className="text-white text-sm font-semibold block mb-3">
                 Model context window
@@ -190,25 +96,86 @@ export default function AwsBedrockLLMOptions({ settings }) {
                 autoComplete="off"
               />
             </div>
-            <div className="flex flex-col w-60">
-              <label className="text-white text-sm font-semibold block mb-3">
-                Model max output tokens
-              </label>
-              <input
-                type="number"
-                name="AwsBedrockLLMMaxOutputTokens"
-                className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-                placeholder="Max output tokens (eg: 4096)"
-                min={1}
-                onScroll={(e) => e.target.blur()}
-                defaultValue={settings?.AwsBedrockLLMMaxOutputTokens}
-                required={true}
-                autoComplete="off"
-              />
-            </div>
           </>
         )}
       </div>
+    </div>
+  );
+}
+
+function BedrockModelSelection({ settings, apiKey, region }) {
+  const [groupedModels, setGroupedModels] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function findCustomModels() {
+      setLoading(true);
+      const { models } = await System.customModels(
+        "bedrock",
+        apiKey,
+        null,
+        null,
+        { region }
+      );
+      if (models?.length > 0) {
+        const modelsByOrganization = models.reduce((acc, model) => {
+          const org = model.organization || "AWS Bedrock";
+          acc[org] = acc[org] || [];
+          acc[org].push(model);
+          return acc;
+        }, {});
+        setGroupedModels(modelsByOrganization);
+      }
+      setLoading(false);
+    }
+    findCustomModels();
+  }, [apiKey, region]);
+
+  if (loading || Object.keys(groupedModels).length === 0) {
+    return (
+      <div className="flex flex-col w-60">
+        <label className="text-white text-sm font-semibold block mb-3">
+          Chat Model Selection
+        </label>
+        <select
+          name="AwsBedrockLLMModel"
+          disabled={true}
+          className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        >
+          <option disabled={true} selected={true}>
+            -- loading available models --
+          </option>
+        </select>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col w-60">
+      <label className="text-white text-sm font-semibold block mb-3">
+        Chat Model Selection
+      </label>
+      <select
+        name="AwsBedrockLLMModel"
+        required={true}
+        className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+      >
+        {Object.keys(groupedModels)
+          .sort()
+          .map((organization) => (
+            <optgroup key={organization} label={organization}>
+              {groupedModels[organization].map((model) => (
+                <option
+                  key={model.id}
+                  value={model.id}
+                  selected={settings?.AwsBedrockLLMModel === model.id}
+                >
+                  {model.name}
+                </option>
+              ))}
+            </optgroup>
+          ))}
+      </select>
     </div>
   );
 }

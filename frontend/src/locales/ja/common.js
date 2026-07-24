@@ -61,7 +61,7 @@ const TRANSLATIONS = {
     no: "いいえ",
     search: "検索",
     username_requirements:
-      "ユーザー名は2〜32文字で、小文字で始まり、小文字、数字、アンダースコア、ハイフン、ピリオドのみを含む必要があります。",
+      "ユーザー名は2〜64文字で、小文字で始まり、小文字、数字、アンダースコア、ハイフン、ピリオドのみを含む必要があります。",
     on: "～について",
     none: "なし",
     stopped: "停止",
@@ -203,8 +203,6 @@ const TRANSLATIONS = {
       title: "チャット履歴",
       "desc-start": "応答の短期記憶に含まれる過去のチャット数。",
       recommend: "推奨値: 20",
-      "desc-end":
-        "45以上にすると、メッセージサイズによっては継続的なチャット失敗が発生する可能性があります。",
     },
     prompt: {
       title: "プロンプト",
@@ -235,10 +233,8 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "LLM温度",
-      "desc-start": "この設定はLLMの応答の創造性を制御します。",
       "desc-end":
         "数値が高いほど創造的になりますが、高すぎると一部のモデルでは一貫性のない応答になる場合があります。",
-      hint: "多くのLLMには有効な値の範囲があります。詳細はLLMプロバイダーの情報を参照してください。",
     },
   },
   "vector-workspace": {
@@ -700,6 +696,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "計画されたタスクを作成する",
+        description:
+          "エージェントがチャットから繰り返し実行されるタスク（例：「毎日午前9時に、私のインボックスとメールを要約してメールで通知する」）を作成できるようにします。この機能はシングルユーザーモードでのみ利用可能です。",
+      },
     },
     mcp: {
       title: "MCP サーバー",
@@ -730,7 +731,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "知的なスキル選択",
-        "beta-badge": "ベータ版",
         description:
           "クエリごとに、無制限のツールを使用し、トークン使用量を最大80%削減できます。AnythingLLMは、各プロンプトに対して最適なスキルを自動的に選択します。",
         "max-tools": {
@@ -1244,6 +1244,8 @@ const TRANSLATIONS = {
     stt_mic_denied:
       "マイクへのアクセスができません。「許可を付与して、再度お試しください。」",
     stt_transcription_failed: "文字起こしに失敗しました: {{error}}",
+    export: "チャットを以下のような形式でエクスポートする：",
+    exporting: "輸出…",
   },
   profile_settings: {
     edit_account: "アカウントを編集",

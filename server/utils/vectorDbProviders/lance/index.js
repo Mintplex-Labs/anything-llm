@@ -15,6 +15,9 @@ const path = require("path");
  */
 
 class LanceDb extends VectorDatabase {
+  /** @type {import('@lancedb/lancedb').Connection|null} */
+  static #connection = null;
+
   constructor() {
     super();
   }
@@ -32,8 +35,9 @@ class LanceDb extends VectorDatabase {
 
   /** @returns {Promise<{client: LanceClient}>} */
   async connect() {
-    const client = await lancedb.connect(this.uri);
-    return { client };
+    if (!LanceDb.#connection)
+      LanceDb.#connection = await lancedb.connect(this.uri);
+    return { client: LanceDb.#connection };
   }
 
   distanceToSimilarity(distance = null) {
@@ -481,6 +485,7 @@ class LanceDb extends VectorDatabase {
 
   async reset() {
     const { client } = await this.connect();
+    LanceDb.#connection = null;
     const fs = require("fs");
     fs.rm(`${client.uri}`, { recursive: true }, () => null);
     return { reset: true };

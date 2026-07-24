@@ -71,7 +71,7 @@ async function canRespond(request, response, next) {
     // null). When EMBED_REQUIRE_ALLOWLIST is enabled, treat "no allowlist" as
     // deny-all instead of allow-all, so an embed cannot be queried cross-origin
     // until its owner explicitly sets the allowed domains.
-    if (allowedHosts === null && !("EMBED_REQUIRE_ALLOWLIST" in process.env)) {
+    if (allowedHosts === null && "EMBED_REQUIRE_ALLOWLIST" in process.env) {
       response.status(401).json({
         id: uuidv4(),
         type: "abort",

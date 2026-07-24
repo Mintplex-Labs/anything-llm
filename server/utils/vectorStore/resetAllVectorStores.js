@@ -1,10 +1,3 @@
-const { Workspace } = require("../../models/workspace");
-const { Document } = require("../../models/documents");
-const { DocumentVectors } = require("../../models/vectors");
-const { EventLogs } = require("../../models/eventLogs");
-const { purgeEntireVectorCache } = require("../files");
-const { getVectorDbClass } = require("../helpers");
-
 /**
  * Resets all vector database and associated content:
  * - Purges the entire vector-cache folder.
@@ -16,6 +9,12 @@ const { getVectorDbClass } = require("../helpers");
  * @returns {Promise<boolean>} - True if successful, false otherwise.
  */
 async function resetAllVectorStores({ vectorDbKey }) {
+  const { Workspace } = require("../../models/workspace");
+  const { Document } = require("../../models/documents");
+  const { DocumentVectors } = require("../../models/vectors");
+  const { EventLogs } = require("../../models/eventLogs");
+  const { purgeEntireVectorCache } = require("../files");
+  const { getVectorDbClass } = require("../helpers");
   try {
     const workspaces = await Workspace.where();
     purgeEntireVectorCache(); // Purges the entire vector-cache folder.

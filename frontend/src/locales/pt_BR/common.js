@@ -61,7 +61,7 @@ const TRANSLATIONS = {
     no: "Não",
     search: "Pesquisar",
     username_requirements:
-      "O nome de usuário deve ter de 2 a 32 caracteres, começar com uma letra minúscula e conter apenas letras minúsculas, números, sublinhados, hífens e pontos.",
+      "O nome de usuário deve ter de 2 a 64 caracteres, começar com uma letra minúscula e conter apenas letras minúsculas, números, sublinhados, hífens e pontos.",
     on: "Sobre",
     none: "Nenhum",
     stopped: "Parado",
@@ -212,8 +212,6 @@ const TRANSLATIONS = {
       "desc-start":
         "Número de chats anteriores que serão incluídos na memória de curto prazo.",
       recommend: "Recomendado: 20. ",
-      "desc-end":
-        "Valores acima de 45 podem causar falhas dependendo do tamanho das mensagens.",
     },
     prompt: {
       title: "Prompt de Sistema",
@@ -244,10 +242,8 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "Temperatura do LLM",
-      "desc-start": 'Controla o nível de "criatividade" das respostas.',
       "desc-end":
         "Valores mais altos geram respostas mais criativas, mas para alguns modelos podem se tornar incoerentes.",
-      hint: "Cada modelo LLM tem faixas de valores válidos. Consulte seu provedor.",
     },
   },
   "vector-workspace": {
@@ -732,6 +728,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Criar tarefas agendadas",
+        description:
+          'Permita que o agente crie tarefas recorrentes agendadas a partir do chat (por exemplo, "todos os dias úteis às 9h, resuma minha caixa de entrada e envie um e-mail"). Disponível apenas no modo para um único usuário.',
+      },
     },
     mcp: {
       title: "Servidores MCP",
@@ -763,7 +764,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "Seleção Inteligente de Habilidades",
-        "beta-badge": "Beta",
         description:
           "Permita o uso ilimitado de ferramentas e reduza o consumo de tokens em até 80% por consulta — O AnythingLLM seleciona automaticamente as habilidades mais adequadas para cada solicitação.",
         "max-tools": {
@@ -1354,6 +1354,8 @@ const TRANSLATIONS = {
     stt_mic_denied:
       "Não foi possível acessar o microfone. Por favor, conceda permissão e tente novamente.",
     stt_transcription_failed: "Falha na transcrição: {{error}}",
+    export: "Exporte a conversa como...",
+    exporting: "Exportando...",
   },
   profile_settings: {
     edit_account: "Editar conta",

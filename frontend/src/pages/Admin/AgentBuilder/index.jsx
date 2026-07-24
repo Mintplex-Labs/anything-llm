@@ -10,6 +10,7 @@ import { useTheme } from "@/hooks/useTheme";
 import HeaderMenu from "./HeaderMenu";
 import paths from "@/utils/paths";
 import PublishEntityModal from "@/components/CommunityHub/PublishEntityModal";
+import { AvailableVariablesProvider } from "./useAvailableVariables";
 
 const DEFAULT_BLOCKS = [
   {
@@ -326,68 +327,70 @@ export default function AgentBuilder() {
   };
 
   return (
-    <div
-      style={{
-        backgroundImage:
-          theme === "light"
-            ? "radial-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 0)"
-            : "radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 0)",
-        backgroundSize: "15px 15px",
-        backgroundPosition: "-7.5px -7.5px",
-      }}
-      className="relative w-screen h-screen flex flex-col bg-theme-bg-primary overflow-clip"
-    >
-      <PublishEntityModal
-        show={showPublishModal}
-        onClose={() => setShowPublishModal(false)}
-        entityType="agent-flow"
-        entity={flowEntity}
-      />
-      <HeaderMenu
-        agentName={agentName}
-        availableFlows={availableFlows}
-        onNewFlow={clearFlow}
-        onSaveFlow={saveFlow}
-        onPublishFlow={handlePublishFlow}
-      />
-      <div className="flex-1 min-h-0 p-6 overflow-y-auto">
-        <div
-          className={`max-w-xl mx-auto mt-14 ${showBlockMenu ? "pb-52" : ""}`}
-        >
-          <BlockList
-            blocks={blocks}
-            updateBlockConfig={updateBlockConfig}
-            removeBlock={removeBlock}
-            toggleBlockExpansion={toggleBlockExpansion}
-            renderVariableSelect={renderVariableSelect}
-            onDeleteVariable={deleteVariable}
-            moveBlock={moveBlock}
-            refs={{ nameRef, descriptionRef }}
-          />
-
-          <AddBlockMenu
-            blocks={blocks}
-            showBlockMenu={showBlockMenu}
-            setShowBlockMenu={setShowBlockMenu}
-            addBlock={addBlock}
-          />
-        </div>
-      </div>
-      <Tooltip
-        id="content-summarization-tooltip"
-        place="top"
-        delayShow={300}
-        className="tooltip !text-xs z-99"
+    <AvailableVariablesProvider blocks={blocks}>
+      <div
+        style={{
+          backgroundImage:
+            theme === "light"
+              ? "radial-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 0)"
+              : "radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 0)",
+          backgroundSize: "15px 15px",
+          backgroundPosition: "-7.5px -7.5px",
+        }}
+        className="relative w-screen h-screen flex flex-col bg-theme-bg-primary overflow-clip"
       >
-        <p className="text-sm">
-          When enabled, long webpage content will be automatically summarized to
-          reduce token usage.
-          <br />
-          <br />
-          Note: This may affect data quality and remove specific details from
-          the original content.
-        </p>
-      </Tooltip>
-    </div>
+        <PublishEntityModal
+          show={showPublishModal}
+          onClose={() => setShowPublishModal(false)}
+          entityType="agent-flow"
+          entity={flowEntity}
+        />
+        <HeaderMenu
+          agentName={agentName}
+          availableFlows={availableFlows}
+          onNewFlow={clearFlow}
+          onSaveFlow={saveFlow}
+          onPublishFlow={handlePublishFlow}
+        />
+        <div className="flex-1 min-h-0 p-6 overflow-y-auto">
+          <div
+            className={`max-w-xl mx-auto mt-14 ${showBlockMenu ? "pb-52" : ""}`}
+          >
+            <BlockList
+              blocks={blocks}
+              updateBlockConfig={updateBlockConfig}
+              removeBlock={removeBlock}
+              toggleBlockExpansion={toggleBlockExpansion}
+              renderVariableSelect={renderVariableSelect}
+              onDeleteVariable={deleteVariable}
+              moveBlock={moveBlock}
+              refs={{ nameRef, descriptionRef }}
+            />
+
+            <AddBlockMenu
+              blocks={blocks}
+              showBlockMenu={showBlockMenu}
+              setShowBlockMenu={setShowBlockMenu}
+              addBlock={addBlock}
+            />
+          </div>
+        </div>
+        <Tooltip
+          id="content-summarization-tooltip"
+          place="top"
+          delayShow={300}
+          className="tooltip !text-xs z-99"
+        >
+          <p className="text-sm">
+            When enabled, long webpage content will be automatically summarized
+            to reduce token usage.
+            <br />
+            <br />
+            Note: This may affect data quality and remove specific details from
+            the original content.
+          </p>
+        </Tooltip>
+      </div>
+    </AvailableVariablesProvider>
   );
 }

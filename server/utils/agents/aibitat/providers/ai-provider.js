@@ -13,7 +13,6 @@
 const { v4 } = require("uuid");
 const { ChatOpenAI } = require("@langchain/openai");
 const { ChatAnthropic } = require("@langchain/anthropic");
-const { ChatCohere } = require("@langchain/cohere");
 const { ChatOllama } = require("@langchain/community/chat_models/ollama");
 const { toValidNumber, safeJsonParse } = require("../../../http");
 const { getLLMProviderClass } = require("../../../helpers");
@@ -22,14 +21,11 @@ const {
   parseDockerModelRunnerEndpoint,
 } = require("../../../AiProviders/dockerModelRunner");
 const { parseFoundryBasePath } = require("../../../AiProviders/foundry");
+const { parseOMLXBasePath } = require("../../../AiProviders/omlx");
 const { AzureOpenAiLLM } = require("../../../AiProviders/azureOpenAi");
-const { DellProAiStudioLLM } = require("../../../AiProviders/dellProAiStudio");
 const {
   SystemPromptVariables,
 } = require("../../../../models/systemPromptVariables");
-const {
-  createBedrockChatClient,
-} = require("../../../AiProviders/bedrock/utils");
 const { OllamaAILLM } = require("../../../AiProviders/ollama");
 
 const DEFAULT_WORKSPACE_PROMPT =
@@ -235,7 +231,13 @@ class Provider {
           ...config,
         });
       case "bedrock":
-        return createBedrockChatClient(config);
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: `https://bedrock-mantle.${process.env.AWS_BEDROCK_LLM_REGION}.api.aws/v1`,
+          },
+          apiKey: process.env.AWS_BEDROCK_LLM_API_KEY ?? null,
+          ...config,
+        });
       case "azure":
         return new ChatOpenAI({
           configuration: {
@@ -332,7 +334,10 @@ class Provider {
           ...config,
         });
       case "cohere":
-        return new ChatCohere({
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.cohere.ai/compatibility/v1",
+          },
           apiKey: process.env.COHERE_API_KEY ?? null,
           ...config,
         });
@@ -453,12 +458,12 @@ class Provider {
           apiKey: process.env.LEMONADE_LLM_API_KEY || null,
           ...config,
         });
-      case "dpais":
+      case "omlx":
         return new ChatOpenAI({
           configuration: {
-            baseURL: DellProAiStudioLLM.parseBasePath(),
+            baseURL: parseOMLXBasePath(process.env.OMLX_LLM_BASE_PATH),
           },
-          apiKey: null,
+          apiKey: process.env.OMLX_LLM_API_KEY || null,
           ...config,
         });
       default:

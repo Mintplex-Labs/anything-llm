@@ -17,7 +17,6 @@ import LocalAiLogo from "@/media/llmprovider/localai.png";
 import TogetherAILogo from "@/media/llmprovider/togetherai.png";
 import FireworksAILogo from "@/media/llmprovider/fireworksai.jpeg";
 import MistralLogo from "@/media/llmprovider/mistral.jpeg";
-import HuggingFaceLogo from "@/media/llmprovider/huggingface.png";
 import PerplexityLogo from "@/media/llmprovider/perplexity.png";
 import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
 import GroqLogo from "@/media/llmprovider/groq.png";
@@ -32,7 +31,6 @@ import XAILogo from "@/media/llmprovider/xai.png";
 import ZAiLogo from "@/media/llmprovider/zai.png";
 import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
-import DellProAiStudioLogo from "@/media/llmprovider/dpais.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
 import FoundryLogo from "@/media/llmprovider/foundry-local.png";
@@ -43,6 +41,7 @@ import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
 import LemonadeLogo from "@/media/llmprovider/lemonade.png";
 import MinimaxLogo from "@/media/llmprovider/minimax.png";
 import CerebrasLogo from "@/media/llmprovider/cerebras.png";
+import OMLXLogo from "@/media/llmprovider/omlx.png";
 
 import PreLoader from "@/components/Preloader";
 import ModelRouterOptions from "@/components/LLMSelection/ModelRouterOptions";
@@ -59,7 +58,6 @@ import CometApiLLMOptions from "@/components/LLMSelection/CometApiLLMOptions";
 import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
 import FireworksAiOptions from "@/components/LLMSelection/FireworksAiOptions";
 import MistralOptions from "@/components/LLMSelection/MistralOptions";
-import HuggingFaceOptions from "@/components/LLMSelection/HuggingFaceOptions";
 import PerplexityOptions from "@/components/LLMSelection/PerplexityOptions";
 import OpenRouterOptions from "@/components/LLMSelection/OpenRouterOptions";
 import GroqAiOptions from "@/components/LLMSelection/GroqAiOptions";
@@ -74,7 +72,6 @@ import XAILLMOptions from "@/components/LLMSelection/XAiLLMOptions";
 import ZAiLLMOptions from "@/components/LLMSelection/ZAiLLMOptions";
 import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
 import PPIOLLMOptions from "@/components/LLMSelection/PPIOLLMOptions";
-import DellProAiStudioOptions from "@/components/LLMSelection/DPAISOptions";
 import MoonshotAiOptions from "@/components/LLMSelection/MoonshotAiOptions";
 import FoundryOptions from "@/components/LLMSelection/FoundryOptions";
 import GiteeAIOptions from "@/components/LLMSelection/GiteeAIOptions/index.jsx";
@@ -88,6 +85,7 @@ import CerebrasLLMOptions from "@/components/LLMSelection/CerebrasLLMOptions";
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
+import OMLXOptions from "@/components/LLMSelection/OMLXOptions";
 
 export const MODEL_ROUTER_PROVIDER = {
   name: "Model Router",
@@ -146,38 +144,12 @@ export const AVAILABLE_LLM_PROVIDERS = [
     requiredConfig: ["NvidiaNimLLMBasePath"],
   },
   {
-    name: "HuggingFace",
-    value: "huggingface",
-    logo: HuggingFaceLogo,
-    options: (settings) => <HuggingFaceOptions settings={settings} />,
-    description:
-      "Access 150,000+ open-source LLMs and the world's AI community",
-    requiredConfig: [
-      "HuggingFaceLLMEndpoint",
-      "HuggingFaceLLMAccessToken",
-      "HuggingFaceLLMTokenLimit",
-    ],
-  },
-  {
     name: "Ollama",
     value: "ollama",
     logo: OllamaLogo,
     options: (settings) => <OllamaLLMOptions settings={settings} />,
     description: "Run LLMs locally on your own machine.",
     requiredConfig: ["OllamaLLMBasePath"],
-  },
-  {
-    name: "Dell Pro AI Studio",
-    value: "dpais",
-    logo: DellProAiStudioLogo,
-    options: (settings) => <DellProAiStudioOptions settings={settings} />,
-    description:
-      "Run powerful LLMs quickly on NPU powered by Dell Pro AI Studio.",
-    requiredConfig: [
-      "DellProAiStudioBasePath",
-      "DellProAiStudioModelPref",
-      "DellProAiStudioTokenLimit",
-    ],
   },
   {
     name: "LM Studio",
@@ -337,8 +309,7 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <AWSBedrockLLMOptions settings={settings} />,
     description: "Run powerful foundation models privately with AWS Bedrock.",
     requiredConfig: [
-      "AwsBedrockLLMAccessKeyId",
-      "AwsBedrockLLMAccessKey",
+      "AwsBedrockLLMApiKey",
       "AwsBedrockLLMRegion",
       "AwsBedrockLLMModel",
     ],
@@ -435,6 +406,14 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <CerebrasLLMOptions settings={settings} />,
     description: "Run models at instant speed on Cerebras inference.",
     requiredConfig: ["CerebrasApiKey"],
+  },
+  {
+    name: "oMLX",
+    value: "omlx",
+    logo: OMLXLogo,
+    options: (settings) => <OMLXOptions settings={settings} />,
+    description: "Run MLX models on Apple Silicon with smart caching.",
+    requiredConfig: ["OMLXLLMBasePath"],
   },
   {
     name: "Generic OpenAI",

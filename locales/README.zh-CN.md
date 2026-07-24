@@ -82,7 +82,6 @@ AnythingLLM还支持多用户，您可以控制每个用户的访问权限和体
 - [Anthropic](https://www.anthropic.com/)
 - [NVIDIA NIM (聊天模型)](https://build.nvidia.com/explore/discover)
 - [Google Gemini Pro](https://ai.google.dev/)
-- [Hugging Face (聊天模型)](https://huggingface.co/)
 - [Ollama (聊天模型)](https://ollama.ai/)
 - [LM Studio (所有模型)](https://lmstudio.ai)
 - [LocalAI (所有模型)](https://localai.io/)

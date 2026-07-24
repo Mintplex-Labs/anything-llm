@@ -62,7 +62,7 @@ const TRANSLATIONS = {
     no: "Nein",
     search: "Suchen",
     username_requirements:
-      "Der Benutzername muss 2-32 Zeichen lang sein, mit einem Kleinbuchstaben beginnen und darf nur Kleinbuchstaben, Zahlen, Unterstriche, Bindestriche und Punkte enthalten.",
+      "Der Benutzername muss 2-64 Zeichen lang sein, mit einem Kleinbuchstaben beginnen und darf nur Kleinbuchstaben, Zahlen, Unterstriche, Bindestriche und Punkte enthalten.",
     on: "Über",
     none: "Keine",
     stopped: "Gestoppt",
@@ -213,8 +213,6 @@ const TRANSLATIONS = {
       "desc-start":
         "Die Anzahl der vorherigen Chats, die in das Kurzzeitgedächtnis der Antwort einbezogen werden.",
       recommend: "Empfohlen 20. ",
-      "desc-end":
-        "Alles über 45 führt wahrscheinlich zu kontinuierlichen Chat-Ausfällen, abhängig von der Nachrichtengröße.",
     },
     prompt: {
       title: "Prompt",
@@ -245,11 +243,8 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "LLM-Temperatur",
-      "desc-start":
-        'Diese Einstellung steuert, wie "kreativ" Ihre LLM-Antworten sein werden.',
       "desc-end":
         "Je höher die Zahl, desto kreativer. Bei einigen Modellen kann dies zu unverständlichen Antworten führen, wenn sie zu hoch eingestellt ist.",
-      hint: "Die meisten LLMs haben verschiedene akzeptable Bereiche gültiger Werte. Konsultieren Sie Ihren LLM-Anbieter für diese Informationen.",
     },
   },
   "vector-workspace": {
@@ -737,6 +732,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Erstellen Sie geplante Aufgaben",
+        description:
+          'Ermöglichen Sie dem Agenten, wiederkehrende geplante Aufgaben direkt aus dem Chat zu erstellen (z. B. „jeden Werktag um 9 Uhr meinen Posteingang zusammenfassen und mir eine E-Mail senden"). Diese Funktion ist nur im Einzelbenutzermodus verfügbar.',
+      },
     },
     "performance-warning":
       "Die Leistung von LLMs, die keine explizite Unterstützung für das Aufrufen von Tools bieten, hängt stark von den Fähigkeiten und der Genauigkeit des Modells ab. Einige Fähigkeiten können eingeschränkt oder nicht funktionsfähig sein.",
@@ -770,7 +770,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "Intelligente Auswahl von Fähigkeiten",
-        "beta-badge": "Beta-Version",
         description:
           "Ermöglichen Sie die uneingeschränkte Nutzung von Werkzeugen und reduzieren Sie die Token-Nutzung pro Anfrage um bis zu 80 % – AnythingLLM wählt automatisch die passenden Fähigkeiten für jede Anfrage aus.",
         "max-tools": {
@@ -1380,6 +1379,8 @@ const TRANSLATIONS = {
     stt_mic_denied:
       "Es konnte nicht auf das Mikrofon zugegriffen werden. Bitte erteilen Sie die erforderlichen Berechtigungen und versuchen Sie es erneut.",
     stt_transcription_failed: "Transkription fehlgeschlagen: {{error}}",
+    export: "Chat-Export als...",
+    exporting: "Exportieren...",
   },
   profile_settings: {
     edit_account: "Account bearbeiten",

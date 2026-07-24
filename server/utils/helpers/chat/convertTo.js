@@ -250,7 +250,10 @@ function attachmentToDataUrl(attachment) {
     : `data:${attachment.mime};base64,${attachment.contentString}`;
 }
 
+const validExportTypes = ["json", "csv", "jsonl", "jsonAlpaca"];
+
 module.exports = {
   prepareChatsForExport,
   exportChatsAsType,
+  validExportTypes,
 };

@@ -63,7 +63,7 @@ const TRANSLATIONS = {
     stopped: "Stopped",
     search: "Search",
     username_requirements:
-      "Username must be 2-32 characters, start with a lowercase letter, and only contain lowercase letters, numbers, underscores, hyphens, and periods.",
+      "Username must be 2-64 characters, start with a lowercase letter, and only contain lowercase letters, numbers, underscores, hyphens, and periods.",
     loading: "Loading",
     refresh: "Refresh",
   },
@@ -219,8 +219,6 @@ const TRANSLATIONS = {
       "desc-start":
         "The number of previous chats that will be included in the response's short-term memory.",
       recommend: "Recommend 20. ",
-      "desc-end":
-        "Anything more than 45 is likely to lead to continuous chat failures depending on message size.",
     },
     prompt: {
       title: "System Prompt",
@@ -251,11 +249,8 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "LLM Temperature",
-      "desc-start":
-        'This setting controls how "creative" your LLM responses will be.',
       "desc-end":
         "The higher the number the more creative. For some models this can lead to incoherent responses when set too high.",
-      hint: "Most LLMs have various acceptable ranges of valid values. Consult your LLM provider for that information.",
     },
   },
   "vector-workspace": {
@@ -333,6 +328,11 @@ const TRANSLATIONS = {
         title: "SQL Connector",
         description:
           "Enable your agent to be able to leverage SQL to answer you questions by connecting to various SQL database providers.",
+      },
+      scheduledJob: {
+        title: "Create scheduled jobs",
+        description:
+          'Allow the agent to create recurring Scheduled Jobs from chat (e.g. "every weekday at 9am summarize my inbox and email me"). Available in single-user mode only.',
       },
       filesystem: {
         title: "File System Access",
@@ -747,7 +747,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "Intelligent Skill Selection",
-        "beta-badge": "Beta",
         description:
           "Enable unlimited tools and cut token usage by up to 80% per query — AnythingLLM automatically selects the right skills for every prompt.",
         "max-tools": {
@@ -1476,6 +1475,8 @@ const TRANSLATIONS = {
     send_message: "Send a message",
     attach_file: "Attach a file to this chat",
     text_size: "Change text size.",
+    export: "Export chat as...",
+    exporting: "Exporting...",
     microphone: "Speak your prompt.",
     stt_unsupported: "Microphone access is not supported in this browser.",
     stt_mic_denied:

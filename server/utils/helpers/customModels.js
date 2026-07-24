@@ -39,7 +39,6 @@ const SUPPORT_CUSTOM_MODELS = [
   "xai",
   "gemini",
   "ppio",
-  "dpais",
   "moonshotai",
   "foundry",
   "cohere",
@@ -51,6 +50,8 @@ const SUPPORT_CUSTOM_MODELS = [
   "lemonade",
   "minimax",
   "cerebras",
+  "omlx",
+  "bedrock",
   "generic-openai",
   // Embedding Engines
   "native-embedder",
@@ -61,11 +62,17 @@ const SUPPORT_CUSTOM_MODELS = [
   "openai-stt",
   "deepgram-stt",
   "lemonade-stt",
+  "groq-stt",
   // TTS Engines
   "kokoro-tts",
 ];
 
-async function getCustomModels(provider = "", apiKey = null, basePath = null) {
+async function getCustomModels(
+  provider = "",
+  apiKey = null,
+  basePath = null,
+  options = {}
+) {
   if (!SUPPORT_CUSTOM_MODELS.includes(provider))
     return { models: [], error: "Invalid provider for custom models" };
 
@@ -116,8 +123,6 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getGeminiModels(apiKey);
     case "ppio":
       return await getPPIOModels(apiKey);
-    case "dpais":
-      return await getDellProAiStudioModels(basePath);
     case "moonshotai":
       return await getMoonshotAiModels(apiKey);
     case "foundry":
@@ -146,14 +151,20 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getLemonadeSTTModels(basePath);
     case "lemonade-embedder":
       return await getLemonadeModels(basePath, "embedding");
+    case "omlx":
+      return await getOMLXModels(basePath, apiKey);
     case "minimax":
       return await getMinimaxModels(apiKey);
     case "cerebras":
       return await getCerebrasModels();
+    case "bedrock":
+      return await getBedrockModels(apiKey, options);
     case "generic-openai":
       return await getGenericOpenAiModels(basePath, apiKey);
     case "deepgram-stt":
       return await getDeepgramSTTModels(apiKey);
+    case "groq-stt":
+      return await getGroqSTTModels(apiKey);
     case "kokoro-tts":
       return await kokoroTtsVoices(basePath, apiKey);
     default:
@@ -383,6 +394,32 @@ async function getGroqAiModels(_apiKey = null) {
 
   // Api Key was successful so lets save it for future uses
   if (models.length > 0 && !!apiKey) process.env.GROQ_API_KEY = apiKey;
+  return { models, error: null };
+}
+
+async function getGroqSTTModels(_apiKey = null) {
+  const { OpenAI: OpenAIApi } = require("openai");
+  const apiKey =
+    _apiKey === true
+      ? process.env.STT_GROQ_API_KEY
+      : _apiKey || process.env.STT_GROQ_API_KEY || null;
+
+  const openai = new OpenAIApi({
+    baseURL: "https://api.groq.com/openai/v1",
+    apiKey,
+  });
+  const models = (
+    await openai.models
+      .list()
+      .then((results) => results.data)
+      .catch((e) => {
+        console.error(`GroqSTT:listModels`, e.message);
+        return [];
+      })
+  ).filter((model) => model.id.includes("whisper"));
+
+  // Api Key was successful so lets save it for future uses
+  if (models.length > 0 && !!apiKey) process.env.GROQ_STT_API_KEY = apiKey;
   return { models, error: null };
 }
 
@@ -853,45 +890,6 @@ async function getPPIOModels() {
   return { models, error: null };
 }
 
-async function getDellProAiStudioModels(basePath = null) {
-  const { OpenAI: OpenAIApi } = require("openai");
-  try {
-    const { origin } = new URL(
-      basePath || process.env.DELL_PRO_AI_STUDIO_BASE_PATH
-    );
-    const openai = new OpenAIApi({
-      baseURL: `${origin}/v1/openai`,
-      apiKey: null,
-    });
-    const models = await openai.models
-      .list()
-      .then((results) => results.data)
-      .then((models) => {
-        return models
-          .filter(
-            (model) => model?.capability?.includes("TextToText") // Only include text-to-text models for this handler
-          )
-          .map((model) => {
-            return {
-              id: model.id,
-              name: model.name,
-              organization: model.owned_by,
-            };
-          });
-      })
-      .catch((e) => {
-        throw new Error(e.message);
-      });
-    return { models, error: null };
-  } catch (e) {
-    console.error(`getDellProAiStudioModels`, e.message);
-    return {
-      models: [],
-      error: "Could not reach Dell Pro Ai Studio from the provided base path",
-    };
-  }
-}
-
 function getNativeEmbedderModels() {
   const { NativeEmbedder } = require("../EmbeddingEngines/native");
   return { models: NativeEmbedder.availableModels(), error: null };
@@ -960,13 +958,17 @@ async function getCohereModels(_apiKey = null, type = "chat") {
       ? process.env.COHERE_API_KEY
       : _apiKey || process.env.COHERE_API_KEY || null;
 
-  const { CohereClient } = require("cohere-ai");
-  const cohere = new CohereClient({
-    token: apiKey,
-  });
-  const models = await cohere.models
-    .list({ pageSize: 1000, endpoint: type })
-    .then((results) => results.models)
+  // Cohere's models endpoint is queried directly so we can keep filtering by
+  // endpoint (chat/embed) which the OpenAI-compatible /models route does not support.
+  const models = await fetch(
+    `https://api.cohere.com/v1/models?page_size=1000&endpoint=${type}`,
+    {
+      method: "GET",
+      headers: { Authorization: `Bearer ${apiKey}` },
+    }
+  )
+    .then((res) => res.json())
+    .then((data) => data?.models || [])
     .then((models) =>
       models.map((model) => ({
         id: model.name,
@@ -1049,6 +1051,36 @@ async function getLemonadeSTTModels(basePath = null) {
   } catch (e) {
     console.error(`Lemonade:getLemonadeSTTModels`, e.message);
     return { models: [], error: "Could not fetch Lemonade STT Models" };
+  }
+}
+
+async function getOMLXModels(basePath = null, _apiKey = null) {
+  const { OpenAI } = require("openai");
+  const { parseOMLXBasePath } = require("../AiProviders/omlx");
+  try {
+    const apiKey =
+      _apiKey === true
+        ? process.env.OMLX_LLM_API_KEY
+        : _apiKey || process.env.OMLX_LLM_API_KEY || null;
+
+    const client = new OpenAI({
+      baseURL: parseOMLXBasePath(basePath ?? process.env.OMLX_LLM_BASE_PATH),
+      apiKey,
+    });
+
+    const models = (await client.models.list()).data.map((model) => ({
+      id: model.id,
+      name: model.id,
+      organization: model.owned_by,
+    }));
+
+    return {
+      models,
+      error: null,
+    };
+  } catch (e) {
+    console.error("OMLX:getOMLXModels", e.message);
+    return { models: [], error: "Could not fetch OMLX models" };
   }
 }
 
@@ -1280,12 +1312,69 @@ async function kokoroTtsVoices(basePath = null, apiKey = null) {
 
   if (!voices || !Array.isArray(voices))
     return { models: [], error: "Could not fetch Kokoro voices." };
-  const models = voices.map((voice) => ({
-    id: voice.id,
-    name: voice.name,
-    organization: "Kokoro",
-  }));
+
+  // kokoro-fastapi < 0.3.x returns voices as plain id strings while >= 0.3.x
+  // returns { id, name } objects. Normalize both shapes to { id, name } so the
+  // voice list renders regardless of the kokoro-fastapi version being used.
+  const models = voices
+    .map((voice) => {
+      if (typeof voice === "string")
+        return { id: voice, name: voice, organization: "Kokoro" };
+      if (voice && typeof voice === "object" && voice.id)
+        return {
+          id: voice.id,
+          name: voice.name || voice.id,
+          organization: "Kokoro",
+        };
+      return null;
+    })
+    .filter(Boolean);
   return { models, error: null };
+}
+
+/**
+ * Get AWS Bedrock models
+ * @param {string} _apiKey - The API key to use
+ * @param {Object} options - The options to use
+ * @param {string} [options.region] - The region to use
+ * @returns {Promise<{models: Array<{id: string, organization: string, name: string}>, error: string | null}>}
+ */
+async function getBedrockModels(_apiKey = null, options = {}) {
+  try {
+    const apiKey =
+      _apiKey === true
+        ? process.env.AWS_BEDROCK_LLM_API_KEY
+        : _apiKey || process.env.AWS_BEDROCK_LLM_API_KEY || null;
+    const region =
+      options?.region || process.env.AWS_BEDROCK_LLM_REGION || "us-west-2";
+
+    const { OpenAI: OpenAIApi } = require("openai");
+    const openai = new OpenAIApi({
+      apiKey,
+      baseURL: `https://bedrock-mantle.${region}.api.aws/v1`,
+    });
+    const models = await openai.models
+      .list()
+      .then((results) => results.data)
+      .then((models) =>
+        models.map((model) => ({
+          id: model.id,
+          name: model.id,
+          organization: model.owned_by ?? "AWS Bedrock",
+        }))
+      )
+      .catch((e) => {
+        console.error(`AWSBedrock:listModels`, e.message);
+        return [];
+      });
+
+    if (models.length > 0 && !!apiKey)
+      process.env.AWS_BEDROCK_LLM_API_KEY = apiKey;
+    return { models, error: null };
+  } catch (e) {
+    console.error(`AWSBedrock:getBedrockModels`, e.message);
+    return { models: [], error: "Could not fetch AWS Bedrock Models" };
+  }
 }
 
 module.exports = {

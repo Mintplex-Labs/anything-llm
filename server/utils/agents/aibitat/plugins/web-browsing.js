@@ -101,6 +101,12 @@ const webBrowsing = {
               case "perplexity-search":
                 engine = "_perplexitySearch";
                 break;
+              case "brave-search":
+                engine = "_braveSearch";
+                break;
+              case "crw-search":
+                engine = "_crwSearch";
+                break;
               default:
                 engine = "_duckDuckGoEngine";
             }
@@ -1169,6 +1175,161 @@ const webBrowsing = {
               `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
             );
 
+            return result;
+          },
+
+          _braveSearch: async function (query) {
+            let searchURL;
+            if (!process.env.AGENT_BRAVE_API_KEY) {
+              this.super.introspect(
+                `${this.caller}: I can't use Brave searching because the user has not defined the required API key.\nVisit: [https://brave.com/search/api](https://brave.com/search/api) to create the API key.`
+              );
+              return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
+            }
+
+            try {
+              searchURL = new URL(
+                "https://api.search.brave.com/res/v1/web/search"
+              );
+              searchURL.searchParams.append("q", query);
+              searchURL.searchParams.append(
+                "result_filter",
+                "web,discussions,faq,news,summarizer"
+              );
+              searchURL.searchParams.append("text_decorations", false);
+            } catch (e) {
+              this.super.handlerProps.log(`Brave Search: ${e.message}`);
+              this.super.introspect(
+                `${this.caller}: I can't use Brave searching because the url provided is not a valid URL.`
+              );
+              return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
+            }
+
+            this.super.introspect(
+              `${this.caller}: Using Brave to search for "${
+                query.length > 100 ? `${query.slice(0, 100)}...` : query
+              }"`
+            );
+
+            const { response, error } = await fetch(searchURL.toString(), {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                "x-subscription-token": process.env.AGENT_BRAVE_API_KEY,
+              },
+            })
+              .then((res) => {
+                if (res.ok) return res.json();
+                throw new Error(`${res.status} - ${res.statusText}`);
+              })
+              .then((data) => {
+                return { response: data, error: null };
+              })
+              .catch((e) => {
+                this.super.handlerProps.log(`Brave Search Error: ${e.message}`);
+                return { response: null, error: e.message };
+              });
+            if (error)
+              return `There was an error searching for content. ${error}`;
+
+            const data = [];
+            const searchResults = response?.web?.results ?? [];
+            searchResults.forEach((searchResult) => {
+              const { url, title, description } = searchResult;
+              data.push({
+                title,
+                link: url,
+                snippet: description,
+              });
+            });
+
+            if (data.length === 0)
+              return `No information was found online for the search query.`;
+
+            this.reportSearchResultsCitations(data);
+            const result = JSON.stringify(data);
+            this.super.introspect(
+              `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
+            );
+            return result;
+          },
+
+          _crwSearch: async function (query) {
+            if (!process.env.AGENT_CRW_API_KEY) {
+              this.super.introspect(
+                `${this.caller}: I can't use fastCRW searching because the user has not defined the required API key.\nVisit: https://fastcrw.com/ to create the API key.`
+              );
+              return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
+            }
+
+            this.super.introspect(
+              `${this.caller}: Using fastCRW to search for "${
+                query.length > 100 ? `${query.slice(0, 100)}...` : query
+              }"`
+            );
+
+            let baseUrl = "https://fastcrw.com/api";
+            if ("AGENT_CRW_API_URL" in process.env) {
+              try {
+                baseUrl = new URL(process.env.AGENT_CRW_API_URL);
+                baseUrl.pathname = ""; // remove the trailing slash or any other path
+                baseUrl = baseUrl.toString();
+              } catch (e) {
+                this.super.handlerProps.log(
+                  `invalid fastCRW Search URL: ${e.message}`
+                );
+              }
+            }
+
+            const { response, error } = await fetch(`${baseUrl}/v1/search`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${process.env.AGENT_CRW_API_KEY}`,
+              },
+              body: JSON.stringify({ query }),
+            })
+              .then((res) => {
+                if (res.ok) return res.json();
+                throw new Error(
+                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ auth: this.middleTruncate(process.env.AGENT_CRW_API_KEY, 5), q: query })}`
+                );
+              })
+              .then((data) => {
+                if (data?.success === false)
+                  throw new Error(
+                    data?.error || "fastCRW returned an unsuccessful response."
+                  );
+                return { response: data, error: null };
+              })
+              .catch((e) => {
+                this.super.handlerProps.log(
+                  `fastCRW Search Error: ${e.message}`
+                );
+                return { response: null, error: e.message };
+              });
+
+            if (error)
+              return `There was an error searching for content. ${error}`;
+
+            const data = [];
+            response.data?.forEach((searchResult) => {
+              const { title, url, description } = searchResult;
+              data.push({
+                title,
+                link: url,
+                snippet: description,
+              });
+            });
+
+            if (data.length === 0)
+              return `No information was found online for the search query.`;
+
+            this.reportSearchResultsCitations(data);
+            const result = JSON.stringify(data);
+            this.super.introspect(
+              `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
+            );
             return result;
           },
         });

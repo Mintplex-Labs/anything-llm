@@ -6,12 +6,12 @@ export default function DocumentSimilarityThreshold({
 }) {
   const { t } = useTranslation();
   return (
-    <div>
-      <div className="flex flex-col">
+    <div className="flex flex-col">
+      <div className="flex flex-col gap-y-[8px]">
         <label htmlFor="name" className="block input-label">
           {t("vector-workspace.doc.title")}
         </label>
-        <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+        <p className="text-white text-opacity-60 text-xs font-medium">
           {t("vector-workspace.doc.description")}
         </p>
       </div>

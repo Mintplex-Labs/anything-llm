@@ -12,6 +12,9 @@ const reactRecommended = react.configs.recommended
 const jsxRuntime = react.configs["jsx-runtime"]
 
 export default [
+  {
+    ignores: ["**/node_modules/**", "**/dist/**", "**/storage/**"]
+  },
   eslintRecommended.configs.recommended,
   eslintConfigPrettier,
   {

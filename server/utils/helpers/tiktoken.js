@@ -30,6 +30,7 @@ class TokenManager {
   }
 
   log(text, ...args) {
+    if (process.env.NODE_ENV === "test") return;
     console.log(`\x1b[35m[TokenManager]\x1b[0m ${text}`, ...args);
   }
 
