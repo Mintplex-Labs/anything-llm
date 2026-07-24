@@ -35,7 +35,8 @@ const TRANSLATIONS = {
     },
     survey: {
       title: "ຍິນດີຕ້ອນຮັບສູ່ AnythingLLM",
-      description: "ຊ່ວຍພວກເຮົາປັບປຸງ AnythingLLM ໃຫ້ກົງກັບຄວາມຕ້ອງການຂອງທ່ານ. (ບໍ່ບັງຄັບ)",
+      description:
+        "ຊ່ວຍພວກເຮົາປັບປຸງ AnythingLLM ໃຫ້ກົງກັບຄວາມຕ້ອງການຂອງທ່ານ. (ບໍ່ບັງຄັບ)",
       email: "ອີເມວຂອງທ່ານແມ່ນຫຍັງ?",
       useCase: "ທ່ານຈະໃຊ້ AnythingLLM ເພື່ອຫຍັງ?",
       useCaseWork: "ສຳລັບວຽກ",
@@ -131,8 +132,7 @@ const TRANSLATIONS = {
       "ປ້ອນຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານຂອງທ່ານເພື່ອເຂົ້າໃຊ້ງານ {{appName}}.",
     "password-reset": {
       title: "ຕັ້ງລະຫັດຜ່ານໃໝ່",
-      description:
-        "ກະລຸນາໃຫ້ຂໍ້ມູນທີ່ຈຳເປັນລຸ່ມນີ້ເພື່ອຕັ້ງລະຫັດຜ່ານໃໝ່.",
+      description: "ກະລຸນາໃຫ້ຂໍ້ມູນທີ່ຈຳເປັນລຸ່ມນີ້ເພື່ອຕັ້ງລະຫັດຜ່ານໃໝ່.",
       "recovery-codes": "ລະຫັດກູ້ຄືນ",
       "back-to-login": "ກັບໄປໜ້າເຂົ້າສູ່ລະບົບ",
     },
@@ -241,8 +241,7 @@ const TRANSLATIONS = {
       title: "ຄຳຕອບເມື່ອປະຕິເສດໃນໂໝດ Query",
       "desc-start": "ເມື່ອຢູ່ໃນໂໝດ",
       query: "ສອບຖາມ (query)",
-      "desc-end":
-        "ທ່ານອາດຈະຕ້ອງການໃຫ້ມີຄຳຕອບສະເພາະເມື່ອບໍ່ພົບຂໍ້ມູນໃນເອກະສານ.",
+      "desc-end": "ທ່ານອາດຈະຕ້ອງການໃຫ້ມີຄຳຕອບສະເພາະເມື່ອບໍ່ພົບຂໍ້ມູນໃນເອກະສານ.",
       "tooltip-title": "ເປັນຫຍັງຂ້ອຍຈຶ່ງເຫັນສິ່ງນີ້?",
       "tooltip-description":
         "ທ່ານຢູ່ໃນໂໝດ Query ເຊິ່ງໃຊ້ຂໍ້ມູນຈາກເອກະສານຂອງທ່ານເທົ່ານັ້ນ. ປ່ຽນເປັນໂໝດ Chat ເພື່ອການສົນທະນາທີ່ຍືດຫຍຸ່ນກວ່າ.",
@@ -290,12 +289,10 @@ const TRANSLATIONS = {
     mode: {
       chat: {
         title: "ແບບຈຳລອງການສົນທະນາຂອງເອເຈນ",
-        description:
-          "ແບບຈຳລອງສະເພາະທີ່ຈະໃຊ້ສຳລັບ @agent ໃນພື້ນທີ່ນີ້.",
+        description: "ແບບຈຳລອງສະເພາະທີ່ຈະໃຊ້ສຳລັບ @agent ໃນພື້ນທີ່ນີ້.",
       },
       title: "ແບບຈຳລອງຂອງເອເຈນ",
-      description:
-        "ແບບຈຳລອງ LLM ສະເພາະທີ່ຈະໃຊ້ສຳລັບ @agent.",
+      description: "ແບບຈຳລອງ LLM ສະເພາະທີ່ຈະໃຊ້ສຳລັບ @agent.",
       wait: "-- ກຳລັງລໍຖ້າແບບຈຳລອງ --",
     },
     skill: {
@@ -306,23 +303,19 @@ const TRANSLATIONS = {
       },
       view: {
         title: "ເບິ່ງ & ສະຫຼຸບເອກະສານ",
-        description:
-          "ໃຫ້ເອເຈນລາຍຊື່ ແລະ ສະຫຼຸບເນື້ອຫາຂອງໄຟລ໌ໃນພື້ນທີ່ເຮັດວຽກ.",
+        description: "ໃຫ້ເອເຈນລາຍຊື່ ແລະ ສະຫຼຸບເນື້ອຫາຂອງໄຟລ໌ໃນພື້ນທີ່ເຮັດວຽກ.",
       },
       scrape: {
         title: "ດຶງຂໍ້ມູນເວັບໄຊ",
-        description:
-          "ໃຫ້ເອເຈນເຂົ້າເບິ່ງ ແລະ ດຶງເນື້ອຫາຈາກເວັບໄຊ.",
+        description: "ໃຫ້ເອເຈນເຂົ້າເບິ່ງ ແລະ ດຶງເນື້ອຫາຈາກເວັບໄຊ.",
       },
       generate: {
         title: "ສ້າງແຜນພູມ",
-        description:
-          "ເປີດໃຫ້ເອເຈນສ້າງແຜນພູມປະເພດຕ່າງໆຈາກຂໍ້ມູນທີ່ມີ.",
+        description: "ເປີດໃຫ້ເອເຈນສ້າງແຜນພູມປະເພດຕ່າງໆຈາກຂໍ້ມູນທີ່ມີ.",
       },
       web: {
         title: "ຄົ້ນຫາເວັບ",
-        description:
-          "ໃຫ້ເອເຈນຄົ້ນຫາຂໍ້ມູນຈາກອິນເຕີເນັດເພື່ອຕອບຄຳຖາມ.",
+        description: "ໃຫ້ເອເຈນຄົ້ນຫາຂໍ້ມູນຈາກອິນເຕີເນັດເພື່ອຕອບຄຳຖາມ.",
       },
       sql: {
         title: "ຕົວເຊື່ອມຕໍ່ SQL",
@@ -368,8 +361,7 @@ const TRANSLATIONS = {
           },
           "write-text-file": {
             title: "ຂຽນໄຟລ໌ຂໍ້ຄວາມ",
-            description:
-              "ສ້າງໄຟລ໌ຂໍ້ຄວາມໃໝ່ ຫຼື ຂຽນທັບໄຟລ໌ທີ່ມີຢູ່",
+            description: "ສ້າງໄຟລ໌ຂໍ້ຄວາມໃໝ່ ຫຼື ຂຽນທັບໄຟລ໌ທີ່ມີຢູ່",
           },
           "edit-file": {
             title: "ແກ້ໄຂໄຟລ໌",
@@ -397,28 +389,23 @@ const TRANSLATIONS = {
         skills: {
           "create-text-file": {
             title: "ໄຟລ໌ຂໍ້ຄວາມ",
-            description:
-              "ສ້າງໄຟລ໌ຂໍ້ຄວາມ (.txt, .md, .json, .csv, ແລະ ອື່ນໆ)",
+            description: "ສ້າງໄຟລ໌ຂໍ້ຄວາມ (.txt, .md, .json, .csv, ແລະ ອື່ນໆ)",
           },
           "create-pptx": {
             title: "PowerPoint",
-            description:
-              "ສ້າງພຣີເຊັນເທຊັນ PowerPoint ໃໝ່",
+            description: "ສ້າງພຣີເຊັນເທຊັນ PowerPoint ໃໝ່",
           },
           "create-pdf": {
             title: "PDF",
-            description:
-              "ສ້າງເອກະສານ PDF ຈາກ markdown ຫຼື ຂໍ້ຄວາມທົ່ວໄປ",
+            description: "ສ້າງເອກະສານ PDF ຈາກ markdown ຫຼື ຂໍ້ຄວາມທົ່ວໄປ",
           },
           "create-xlsx": {
             title: "Excel",
-            description:
-              "ສ້າງເອກະສານ Excel ສຳລັບຂໍ້ມູນຕາຕະລາງ",
+            description: "ສ້າງເອກະສານ Excel ສຳລັບຂໍ້ມູນຕາຕະລາງ",
           },
           "create-docx": {
             title: "Word",
-            description:
-              "ສ້າງເອກະສານ Word ພ້ອມການຈັດຮູບແບບ",
+            description: "ສ້າງເອກະສານ Word ພ້ອມການຈັດຮູບແບບ",
           },
         },
       },
@@ -433,8 +420,7 @@ const TRANSLATIONS = {
         deploymentIdHelp:
           "Deployment ID ຈາກ Google Apps Script web app ຂອງທ່ານ",
         apiKey: "API Key",
-        apiKeyHelp:
-          "API key ທີ່ທ່ານຕັ້ງຄ່າໄວ້ໃນ Google Apps Script",
+        apiKeyHelp: "API key ທີ່ທ່ານຕັ້ງຄ່າໄວ້ໃນ Google Apps Script",
         configurationRequired:
           "ກະລຸນາຕັ້ງຄ່າ Deployment ID ແລະ API Key ເພື່ອເປີດໃຊ້ງານ Gmail.",
         configured: "ຕັ້ງຄ່າແລ້ວ",
@@ -455,8 +441,7 @@ const TRANSLATIONS = {
           },
           threads: {
             title: "ຈັດການຂໍ້ຄວາມ",
-            description:
-              "ຈັດການ - ໝາຍວ່າອ່ານແລ້ວ, ເກັບເຂົ້າຄັງ, ລຶບ",
+            description: "ຈັດການ - ໝາຍວ່າອ່ານແລ້ວ, ເກັບເຂົ້າຄັງ, ລຶບ",
           },
           account: {
             title: "ສະຖິຕິການເຊື່ອມຕໍ່",
@@ -546,11 +531,9 @@ const TRANSLATIONS = {
           "ການເຊື່ອມຕໍ່ Google Calendar ບໍ່ສາມາດໃຊ້ໄດ້ໃນໂໝດຫຼາຍຜູ້ໃຊ້.",
         configuration: "ການຕັ້ງຄ່າ Google Calendar",
         deploymentId: "Deployment ID",
-        deploymentIdHelp:
-          "Deployment ID ຈາກ Google Apps Script ຂອງທ່ານ",
+        deploymentIdHelp: "Deployment ID ຈາກ Google Apps Script ຂອງທ່ານ",
         apiKey: "API Key",
-        apiKeyHelp:
-          "API key ທີ່ຕັ້ງຄ່າໄວ້",
+        apiKeyHelp: "API key ທີ່ຕັ້ງຄ່າໄວ້",
         configurationRequired:
           "ກະລຸນາຕັ້ງຄ່າ Deployment ID ແລະ API Key ເພື່ອໃຊ້ງານ.",
         configured: "ຕັ້ງຄ່າແລ້ວ",
@@ -597,8 +580,7 @@ const TRANSLATIONS = {
           },
           getUpcomingEvents: {
             title: "ເຫດການທີ່ກຳລັງຈະມາ",
-            description:
-              "ເບິ່ງເຫດການໃນມື້ນີ້, ອາທິດນີ້ ຫຼື ເດືອນນີ້",
+            description: "ເບິ່ງເຫດການໃນມື້ນີ້, ອາທິດນີ້ ຫຼື ເດືອນນີ້",
           },
           quickAdd: {
             title: "ເພີ່ມເຫດການດ່ວນ",
@@ -607,8 +589,7 @@ const TRANSLATIONS = {
           },
           createEvent: {
             title: "ສ້າງເຫດການ",
-            description:
-              "ສ້າງເຫດການໃໝ່ພ້ອມການຕັ້ງຄ່າທັງໝົດ",
+            description: "ສ້າງເຫດການໃໝ່ພ້ອມການຕັ້ງຄ່າທັງໝົດ",
           },
           updateEvent: {
             title: "ອັບເດດເຫດການ",
@@ -624,28 +605,21 @@ const TRANSLATIONS = {
         title: "Outlook",
         description:
           "ໃຫ້ເອເຈນເຮັດວຽກກັບ Microsoft Outlook - ຄົ້ນຫາອີເມວ, ອ່ານຂໍ້ຄວາມ, ສົ່ງອີເມວ ຜ່ານ Microsoft Graph API. <a>ອ່ານຄູ່ມື</a>.",
-        multiUserWarning:
-          "ການເຊື່ອມຕໍ່ Outlook ບໍ່ສາມາດໃຊ້ໄດ້ໃນໂໝດຫຼາຍຜູ້ໃຊ້.",
+        multiUserWarning: "ການເຊື່ອມຕໍ່ Outlook ບໍ່ສາມາດໃຊ້ໄດ້ໃນໂໝດຫຼາຍຜູ້ໃຊ້.",
         configuration: "ການຕັ້ງຄ່າ Outlook",
         authType: "ປະເພດບັນຊີ",
-        authTypeHelp:
-          "ເລືອກປະເພດບັນຊີ Microsoft ທີ່ຈະໃຊ້.",
+        authTypeHelp: "ເລືອກປະເພດບັນຊີ Microsoft ທີ່ຈະໃຊ້.",
         authTypeCommon: "ທຸກບັນຊີ (ສ່ວນຕົວ & ວຽກ/ໂຮງຮຽນ)",
         authTypeConsumers: "ບັນຊີສ່ວນຕົວເທົ່ານັ້ນ",
         authTypeOrganization: "ບັນຊີອົງກອນເທົ່ານັ້ນ",
         clientId: "Application (Client) ID",
-        clientIdHelp:
-          "Client ID ຈາກ Azure AD ຂອງທ່ານ",
+        clientIdHelp: "Client ID ຈາກ Azure AD ຂອງທ່ານ",
         tenantId: "Directory (Tenant) ID",
-        tenantIdHelp:
-          "Tenant ID ຈາກ Azure AD (ສຳລັບອົງກອນ)",
+        tenantIdHelp: "Tenant ID ຈາກ Azure AD (ສຳລັບອົງກອນ)",
         clientSecret: "Client Secret",
-        clientSecretHelp:
-          "Client Secret ຈາກ Azure AD",
-        configurationRequired:
-          "ກະລຸນາຕັ້ງຄ່າ Client ID ແລະ Client Secret.",
-        authRequired:
-          "ບັນທຶກຂໍ້ມູນກ່ອນ, ຈາກນັ້ນຢືນຢັນຕົວຕົນກັບ Microsoft.",
+        clientSecretHelp: "Client Secret ຈາກ Azure AD",
+        configurationRequired: "ກະລຸນາຕັ້ງຄ່າ Client ID ແລະ Client Secret.",
+        authRequired: "ບັນທຶກຂໍ້ມູນກ່ອນ, ຈາກນັ້ນຢືນຢັນຕົວຕົນກັບ Microsoft.",
         authenticateWithMicrosoft: "ຢືນຢັນຕົວຕົນກັບ Microsoft",
         authenticated: "ຢືນຢັນຕົວຕົນກັບ Microsoft Outlook ສຳເລັດແລ້ວ.",
         revokeAccess: "ຍົກເລີກການເຂົ້າເຖິງ",
@@ -685,8 +659,7 @@ const TRANSLATIONS = {
           },
           createDraft: {
             title: "ສ້າງສະບັບຮ່າງ",
-            description:
-              "ສ້າງອີເມວສະບັບຮ່າງໃໝ່",
+            description: "ສ້າງອີເມວສະບັບຮ່າງໃໝ່",
           },
           updateDraft: {
             title: "ອັບເດດສະບັບຮ່າງ",
@@ -706,8 +679,7 @@ const TRANSLATIONS = {
           },
           sendEmail: {
             title: "ສົ່ງອີເມວ",
-            description:
-              "ສົ່ງອີເມວໃໝ່ທັນທີ",
+            description: "ສົ່ງອີເມວໃໝ່ທັນທີ",
           },
           getMailboxStats: {
             title: "ສະຖິຕິຈົດໝາຍ",
@@ -751,8 +723,7 @@ const TRANSLATIONS = {
           "ເປີດໃຊ້ເຄື່ອງມືແບບບໍ່ຈຳກັດ ແລະ ຫຼຸດການໃຊ້ token ໄດ້ເຖິງ 80% — AnythingLLM ຈະເລືອກທັກສະທີ່ເໝາະສົມໃຫ້ໂດຍອັດຕະໂນມັດ.",
         "max-tools": {
           title: "ຈຳນວນເຄື່ອງມືສູງສຸດ",
-          description:
-            "ຈຳນວນເຄື່ອງມືສູງສຸດທີ່ຈະເລືອກໃນແຕ່ລະການສອບຖາມ.",
+          description: "ຈຳນວນເຄື່ອງມືສູງສຸດທີ່ຈະເລືອກໃນແຕ່ລະການສອບຖາມ.",
         },
       },
       "clarifying-questions": {
@@ -762,8 +733,7 @@ const TRANSLATIONS = {
           "ເມື່ອເປີດໃຊ້ງານ, ເອເຈນສາມາດຢຸດເພື່ອຖາມຄຳຖາມສັ້ນໆ ຖ້າຄຳສັ່ງຂອງທ່ານບໍ່ຊັດເຈນ.",
         "max-per-turn": {
           title: "ຄຳຖາມສູງສຸດຕໍ່ຮອບ",
-          description:
-            "ເອເຈນສາມາດຖາມໄດ້ຈັກຄຳຖາມໃນໜຶ່ງຮອບ.",
+          description: "ເອເຈນສາມາດຖາມໄດ້ຈັກຄຳຖາມໃນໜຶ່ງຮອບ.",
         },
       },
     },
@@ -789,16 +759,14 @@ const TRANSLATIONS = {
     },
     branding: {
       title: "ແບຣນດິງ & Whitelabeling",
-      description:
-        "ປັບແຕ່ງແບຣນຂອງທ່ານເອງໃນ AnythingLLM.",
+      description: "ປັບແຕ່ງແບຣນຂອງທ່ານເອງໃນ AnythingLLM.",
     },
     chat: {
       title: "ການສົນທະນາ",
       description: "ຕັ້ງຄ່າການສົນທະນາສຳລັບ AnythingLLM.",
       auto_submit: {
         title: "ສົ່ງສຽງອັດຕະໂນມັດ",
-        description:
-          "ສົ່ງຂໍ້ມູນສຽງໂດຍອັດຕະໂນມັດຫຼັງຈາກທີ່ມິດໄປໄລຍະໜຶ່ງ",
+        description: "ສົ່ງຂໍ້ມູນສຽງໂດຍອັດຕະໂນມັດຫຼັງຈາກທີ່ມິດໄປໄລຍະໜຶ່ງ",
       },
       auto_speak: {
         title: "ເວົ້າຄຳຕອບອັດຕະໂນມັດ",
@@ -825,8 +793,7 @@ const TRANSLATIONS = {
       },
       "app-name": {
         title: "ຊື່ແອັບ",
-        description:
-          "ຕັ້ງຊື່ທີ່ຈະສະແດງໃນໜ້າເຂົ້າສູ່ລະບົບໃຫ້ຜູ້ໃຊ້ທຸກຄົນເຫັນ.",
+        description: "ຕັ້ງຊື່ທີ່ຈະສະແດງໃນໜ້າເຂົ້າສູ່ລະບົບໃຫ້ຜູ້ໃຊ້ທຸກຄົນເຫັນ.",
       },
       "display-language": {
         title: "ພາສາທີ່ສະແດງ",
@@ -843,12 +810,10 @@ const TRANSLATIONS = {
       },
       "browser-appearance": {
         title: "ລັກສະນະໃນບຣາວເຊີ",
-        description:
-          "ປັບແຕ່ງແຖບບຣາວເຊີ ແລະ ຊື່ເມື່ອເປີດແອັບ.",
+        description: "ປັບແຕ່ງແຖບບຣາວເຊີ ແລະ ຊື່ເມື່ອເປີດແອັບ.",
         tab: {
           title: "ຊື່ແຖບ (Title)",
-          description:
-            "ຕັ້ງຊື່ແຖບເມື່ອເປີດແອັບໃນບຣາວເຊີ.",
+          description: "ຕັ້ງຊື່ແຖບເມື່ອເປີດແອັບໃນບຣາວເຊີ.",
         },
         favicon: {
           title: "Favicon",
@@ -857,8 +822,7 @@ const TRANSLATIONS = {
       },
       "sidebar-footer": {
         title: "ລາຍການທ້າຍແຖບດ້ານຂ້າງ",
-        description:
-          "ປັບແຕ່ງລາຍການທີ່ຈະສະແດງຢູ່ທາງລຸ່ມຂອງແຖບດ້ານຂ້າງ.",
+        description: "ປັບແຕ່ງລາຍການທີ່ຈະສະແດງຢູ່ທາງລຸ່ມຂອງແຖບດ້ານຂ້າງ.",
         icon: "ໄອຄອນ",
         link: "ລິ້ງ",
       },
@@ -890,8 +854,7 @@ const TRANSLATIONS = {
       name: {
         label: "ຊື່",
         placeholder: "ຕົວຢ່າງ: ການເຊື່ອມຕໍ່ລະບົບຈິງ",
-        helper:
-          "ບໍ່ບັງຄັບ. ຕັ້ງຊື່ເພື່ອໃຫ້ທ່ານຈື່ໄດ້ໃນພາຍຫຼັງ.",
+        helper: "ບໍ່ບັງຄັບ. ຕັ້ງຊື່ເພື່ອໃຫ້ທ່ານຈື່ໄດ້ໃນພາຍຫຼັງ.",
       },
     },
     row: {
@@ -952,8 +915,7 @@ const TRANSLATIONS = {
       description: "ຄຳອະທິບາຍ",
       "description-placeholder": "ຄຳອະທິບາຍ (ບໍ່ບັງຄັບ)",
       "fallback-label": "ຜູ້ໃຫ້ບໍລິການ & ແບບຈຳລອງຫຼັກ",
-      "fallback-description":
-        "ໃຊ້ເມື່ອບໍ່ມີກົດເກນໃດກົງກັບເງື່ອນໄຂ.",
+      "fallback-description": "ໃຊ້ເມື່ອບໍ່ມີກົດເກນໃດກົງກັບເງື່ອນໄຂ.",
       "cooldown-label": "ໄລຍະເວລາລໍຖ້າແຄຊ໌ (ວິນາທີ)",
       "cooldown-help":
         "ໄລຍະເວລາທີ່ຈະເກັບການຕັດສິນໃຈໄວ້ກ່ອນຈະກວດສອບກົດເກນໃໝ່. ຕັ້ງເປັນ 0 ເພື່ອປິດການແຄຊ໌.",
@@ -983,8 +945,7 @@ const TRANSLATIONS = {
       "new-rule-button": "ກົດເກນໃໝ່",
       "calculated-section-label":
         "ກົດເກນແບບຄຳນວນ — ກວດສອບກ່ອນ, ຕາມລຳດັບຄວາມສຳຄັນ",
-      "llm-section-label":
-        "ກົດເກນແບບ LLM — ກວດສອບຖ້າບໍ່ມີກົດເກນແບບຄຳນວນໃດກົງ",
+      "llm-section-label": "ກົດເກນແບບ LLM — ກວດສອບຖ້າບໍ່ມີກົດເກນແບບຄຳນວນໃດກົງ",
       "llm-rule-body":
         'ຖ້າກົງກັບ <desc>"{{description}}"</desc> ໃຫ້ສົ່ງໄປທີ່ <route>{{route}}</route>',
       "calculated-no-conditions":
@@ -1059,8 +1020,7 @@ const TRANSLATIONS = {
       "placeholder-default": "ເຊັ່ນ: code",
       "help-contains":
         "ລາຍການທີ່ຂັ້ນດ້ວຍຈ້ຳ (,) — ຈະເຮັດວຽກຖ້າ prompt ມີຄຳໃດຄຳໜຶ່ງ (ບໍ່ສົນໃຈຕົວພິມໃຫຍ່ນ້ອຍ).",
-      "help-matches":
-        "ຮູບແບບ Regex.",
+      "help-matches": "ຮູບແບບ Regex.",
       "bool-true": "ຈິງ",
       "bool-false": "ເທັດ",
     },
@@ -1073,8 +1033,7 @@ const TRANSLATIONS = {
       "select-provider-first": "ເລືອກຜູ້ໃຫ້ບໍລິການກ່ອນ",
       "configure-to-continue": "ຕັ້ງຄ່າ {{name}} ເພື່ອດຳເນີນການຕໍ່",
       "configure-provider": "ຕັ້ງຄ່າ {{name}}",
-      "setup-credentials":
-        "ປ້ອນຂໍ້ມູນທີ່ຈຳເປັນເພື່ອໃຊ້ {{name}}.",
+      "setup-credentials": "ປ້ອນຂໍ້ມູນທີ່ຈຳເປັນເພື່ອໃຊ້ {{name}}.",
       cancel: "ຍົກເລີກ",
       "save-settings": "ບັນທຶກການຕັ້ງຄ່າ",
       "toast-save-failed": "ບັນທຶກການຕັ້ງຄ່າບໍ່ສຳເລັດ: {{error}}",
@@ -1111,8 +1070,7 @@ const TRANSLATIONS = {
       "ການໃຊ້ແບບຈຳລອງ whisper ໃນເຄື່ອງທີ່ມີ RAM ຫຼື CPU ຈຳກັດ ອາດເຮັດໃຫ້ AnythingLLM ເຮັດວຽກຊ້າລົງ.",
     "warn-recommend":
       "ແນະນຳໃຫ້ມີ RAM ຢ່າງໜ້ອຍ 2GB ແລະ ອັບໂຫຼດໄຟລ໌ທີ່ມີຂະໜາດ <10Mb.",
-    "warn-end":
-      "ແບບຈຳລອງໃນຕົວຈະຖືກດາວໂຫຼດໂດຍອັດຕະໂນມັດເມື່ອໃຊ້ງານຄັ້ງທຳອິດ.",
+    "warn-end": "ແບບຈຳລອງໃນຕົວຈະຖືກດາວໂຫຼດໂດຍອັດຕະໂນມັດເມື່ອໃຊ້ງານຄັ້ງທຳອິດ.",
   },
   embedding: {
     title: "ການຕັ້ງຄ່າ Embedding",
@@ -1132,8 +1090,7 @@ const TRANSLATIONS = {
       "ທ່ານຄວນປ່ຽນການຕັ້ງຄ່ານີ້ກໍຕໍ່ເມື່ອທ່ານເຂົ້າໃຈວິທີການເຮັດວຽກ ແລະ ຜົນກະທົບຂອງມັນເທົ່ານັ້ນ.",
     size: {
       title: "ຂະໜາດຂອງ Chunk ຂໍ້ຄວາມ",
-      description:
-        "ນີ້ແມ່ນຄວາມຍາວສູງສຸດຂອງຕົວອັກສອນໃນໜຶ່ງເວກເຕີ.",
+      description: "ນີ້ແມ່ນຄວາມຍາວສູງສຸດຂອງຕົວອັກສອນໃນໜຶ່ງເວກເຕີ.",
       recommend: "ຄວາມຍາວສູງສຸດຂອງແບບຈຳລອງ embed ແມ່ນ",
     },
     overlap: {
@@ -1194,8 +1151,7 @@ const TRANSLATIONS = {
       },
       step2: {
         title: "ຂັ້ນຕອນທີ 2: ເຊື່ອມຕໍ່ bot ຂອງທ່ານ",
-        description:
-          "ວາງ API token ທີ່ໄດ້ຈາກ @BotFather ເພື່ອເຊື່ອມຕໍ່.",
+        description: "ວາງ API token ທີ່ໄດ້ຈາກ @BotFather ເພື່ອເຊື່ອມຕໍ່.",
         "bot-token": "Bot Token",
         connecting: "ກຳລັງເຊື່ອມຕໍ່...",
         "connect-bot": "ເຊື່ອມຕໍ່ Bot",
@@ -1214,7 +1170,8 @@ const TRANSLATIONS = {
     },
     connected: {
       status: "ເຊື່ອມຕໍ່ແລ້ວ",
-      "status-disconnected": "ຕັດການເຊື່ອມຕໍ່ — token ອາດໝົດອາຍຸ ຫຼື ບໍ່ຖືກຕ້ອງ",
+      "status-disconnected":
+        "ຕັດການເຊື່ອມຕໍ່ — token ອາດໝົດອາຍຸ ຫຼື ບໍ່ຖືກຕ້ອງ",
       "placeholder-token": "ວາງ bot token ໃໝ່...",
       reconnect: "ເຊື່ອມຕໍ່ຄືນໃໝ່",
       workspace: "ພື້ນທີ່ເຮັດວຽກ",
@@ -1242,8 +1199,7 @@ const TRANSLATIONS = {
     title: "ຄວາມປອດໄພ",
     multiuser: {
       title: "ໂໝດຫຼາຍຜູ້ໃຊ້ (Multi-User Mode)",
-      description:
-        "ຕັ້ງຄ່າລະບົບຂອງທ່ານໃຫ້ຮອງຮັບທີມງານໂດຍການເປີດໂໝດຫຼາຍຜູ້ໃຊ້.",
+      description: "ຕັ້ງຄ່າລະບົບຂອງທ່ານໃຫ້ຮອງຮັບທີມງານໂດຍການເປີດໂໝດຫຼາຍຜູ້ໃຊ້.",
       enable: {
         "is-enable": "ໂໝດຫຼາຍຜູ້ໃຊ້ຖືກເປີດແລ້ວ",
         enable: "ເປີດໂໝດຫຼາຍຜູ້ໃຊ້",
@@ -1287,8 +1243,7 @@ const TRANSLATIONS = {
       selected_files: "ພົບໄຟລ໌ markdown {{count}} ໄຟລ໌",
       importing: "ກຳລັງນຳເຂົ້າ vault...",
       import_vault: "ນຳເຂົ້າ Vault",
-      processing_time:
-        "ສິ່ງນີ້ອາດໃຊ້ເວລາຄາວໜຶ່ງ ຂຶ້ນກັບຂະໜາດ vault ຂອງທ່ານ.",
+      processing_time: "ສິ່ງນີ້ອາດໃຊ້ເວລາຄາວໜຶ່ງ ຂຶ້ນກັບຂະໜາດ vault ຂອງທ່ານ.",
       vault_warning:
         "ເພື່ອຫຼີກລ່ຽງຂໍ້ຜິດພາດ, ໃຫ້ແນ່ໃຈວ່າທ່ານບໍ່ໄດ້ເປີດ Obsidian vault ຢູ່.",
     },
@@ -1317,50 +1272,41 @@ const TRANSLATIONS = {
       branch_explained: "Branch ທີ່ຕ້ອງການດຶງໄຟລ໌.",
       token_information:
         "ຖ້າບໍ່ປ້ອນ <b>GitHub Access Token</b> ຈະສາມາດດຶງໄດ້ສະເພາະໄຟລ໌ໃນ <b>ຊັ້ນເທິງສຸດ</b> ເທົ່ານັ້ນ.",
-      token_personal:
-        "ສ້າງ Personal Access Token ຟຣີໄດ້ທີ່ນີ້.",
+      token_personal: "ສ້າງ Personal Access Token ຟຣີໄດ້ທີ່ນີ້.",
     },
     gitlab: {
       name: "GitLab Repo",
-      description:
-        "ນຳເຂົ້າ Repository ຈາກ GitLab ທັງໝົດໃນຄລິກດຽວ.",
+      description: "ນຳເຂົ້າ Repository ຈາກ GitLab ທັງໝົດໃນຄລິກດຽວ.",
       URL: "GitLab Repo URL",
       URL_explained: "URL ຂອງ GitLab repo.",
       token: "GitLab Access Token",
       optional: "ບໍ່ບັງຄັບ",
-      token_description:
-        "ເລືອກຂໍ້ມູນເພີ່ມເຕີມທີ່ຈະດຶງຈາກ GitLab API.",
+      token_description: "ເລືອກຂໍ້ມູນເພີ່ມເຕີມທີ່ຈະດຶງຈາກ GitLab API.",
       token_explained_start: "ຖ້າບໍ່ມີ ",
       token_explained_link1: "Personal Access Token",
-      token_explained_middle:
-        ", GitLab API ອາດຈະຈຳກັດການດຶງຂໍ້ມູນ. ທ່ານສາມາດ ",
+      token_explained_middle: ", GitLab API ອາດຈະຈຳກັດການດຶງຂໍ້ມູນ. ທ່ານສາມາດ ",
       token_explained_link2: "ສ້າງ Access Token ຊົ່ວຄາວ",
       token_explained_end: " ໄດ້.",
       fetch_issues: "ດຶງຂໍ້ມູນ Issues ມາເປັນເອກະສານ",
       ignores: "ໄຟລ໌ທີ່ໃຫ້ຂ້າມ",
-      git_ignore:
-        "ລາຍຊື່ໃນຮູບແບບ .gitignore. ກົດ Enter ຫຼັງຈາກແຕ່ລະລາຍການ.",
-      task_explained:
-        "ເມື່ອສຳເລັດ, ໄຟລ໌ຈະພ້ອມໃຫ້ໃຊ້ໃນພື້ນທີ່ເຮັດວຽກ.",
+      git_ignore: "ລາຍຊື່ໃນຮູບແບບ .gitignore. ກົດ Enter ຫຼັງຈາກແຕ່ລະລາຍການ.",
+      task_explained: "ເມື່ອສຳເລັດ, ໄຟລ໌ຈະພ້ອມໃຫ້ໃຊ້ໃນພື້ນທີ່ເຮັດວຽກ.",
       branch: "Branch ທີ່ຕ້ອງການດຶງໄຟລ໌",
       branch_loading: "-- ກຳລັງໂຫຼດ branch --",
       branch_explained: "Branch ທີ່ຕ້ອງການດຶງຂໍ້ມູນ.",
       token_information:
         "ຖ້າບໍ່ມີ <b>GitLab Access Token</b> ຈະດຶງໄດ້ສະເພາະໄຟລ໌ <b>ຊັ້ນເທິງສຸດ</b>.",
-      token_personal:
-        "ສ້າງ Personal Access Token ຟຣີໄດ້ທີ່ນີ້.",
+      token_personal: "ສ້າງ Personal Access Token ຟຣີໄດ້ທີ່ນີ້.",
     },
     youtube: {
       name: "YouTube Transcript",
-      description:
-        "ນຳເຂົ້າຄຳບັນຍາຍ (Transcript) ຈາກວິດີໂອ YouTube ດ້ວຍລິ້ງ.",
+      description: "ນຳເຂົ້າຄຳບັນຍາຍ (Transcript) ຈາກວິດີໂອ YouTube ດ້ວຍລິ້ງ.",
       URL: "ລິ້ງວິດີໂອ YouTube",
       URL_explained_start:
         "ປ້ອນ URL ວິດີໂອ YouTube ເພື່ອດຶງຄຳບັນຍາຍ. ວິດີໂອຕ້ອງມີ ",
       URL_explained_link: "Closed Captions",
       URL_explained_end: " ໃຫ້ບໍລິການ.",
-      task_explained:
-        "ເມື່ອສຳເລັດ, ຄຳບັນຍາຍຈະພ້ອມໃຫ້ໃຊ້ງານ.",
+      task_explained: "ເມື່ອສຳເລັດ, ຄຳບັນຍາຍຈະພ້ອມໃຫ້ໃຊ້ງານ.",
     },
     "website-depth": {
       name: "ດຶງຂໍ້ມູນເວັບໄຊຫຼາຍລິ້ງ (Bulk Link Scraper)",
@@ -1368,12 +1314,10 @@ const TRANSLATIONS = {
       URL: "URL ຂອງເວັບໄຊ",
       URL_explained: "URL ເວັບໄຊທີ່ຕ້ອງການດຶງຂໍ້ມູນ.",
       depth: "ຄວາມເລິກໃນການດຶງ (Crawl Depth)",
-      depth_explained:
-        "ຈຳນວນລິ້ງລູກທີ່ຈະຕິດຕາມຈາກ URL ຕົ້ນທາງ.",
+      depth_explained: "ຈຳນວນລິ້ງລູກທີ່ຈະຕິດຕາມຈາກ URL ຕົ້ນທາງ.",
       max_pages: "ຈຳນວນໜ້າສູງສຸດ",
       max_pages_explained: "ຈຳນວນລິ້ງສູງສຸດທີ່ຈະດຶງຂໍ້ມູນ.",
-      task_explained:
-        "ເມື່ອສຳເລັດ, ເນື້ອຫາທັງໝົດຈະພ້ອມໃຫ້ໃຊ້ງານ.",
+      task_explained: "ເມື່ອສຳເລັດ, ເນື້ອຫາທັງໝົດຈະພ້ອມໃຫ້ໃຊ້ງານ.",
     },
     confluence: {
       name: "Confluence",
@@ -1384,18 +1328,15 @@ const TRANSLATIONS = {
       base_url: "Confluence Base URL",
       base_url_explained: "URL ຫຼັກຂອງ Confluence ຂອງທ່ານ.",
       space_key: "Confluence Space Key",
-      space_key_explained:
-        "Space key ທີ່ຈະໃຊ້. ປົກກະຕິຈະເລີ່ມດ້ວຍ ~",
+      space_key_explained: "Space key ທີ່ຈະໃຊ້. ປົກກະຕິຈະເລີ່ມດ້ວຍ ~",
       username: "ຊື່ຜູ້ໃຊ້ Confluence",
       username_explained: "ຊື່ຜູ້ໃຊ້ຂອງທ່ານ",
       auth_type: "ປະເພດການຢືນຢັນຕົວຕົນ",
-      auth_type_explained:
-        "ເລືອກວິທີເຂົ້າເຖິງໜ້າ Confluence.",
+      auth_type_explained: "ເລືອກວິທີເຂົ້າເຖິງໜ້າ Confluence.",
       auth_type_username: "ຊື່ຜູ້ໃຊ້ ແລະ Access Token",
       auth_type_personal: "Personal Access Token",
       token: "Confluence Access Token",
-      token_explained_start:
-        "ທ່ານຕ້ອງໃຫ້ Access token. ສາມາດສ້າງໄດ້",
+      token_explained_start: "ທ່ານຕ້ອງໃຫ້ Access token. ສາມາດສ້າງໄດ້",
       token_explained_link: "ທີ່ນີ້",
       token_desc: "Access token ສຳລັບການຢືນຢັນຕົວຕົນ",
       pat_token: "Confluence Personal Access Token",
@@ -1403,8 +1344,7 @@ const TRANSLATIONS = {
       bypass_ssl: "ຂ້າມການກວດສອບ SSL Certificate",
       bypass_ssl_explained:
         "ເປີດໃຊ້ເພື່ອຂ້າມການກວດສອບ SSL ສຳລັບເຊີບເວີທີ່ຕິດຕັ້ງເອງ.",
-      task_explained:
-        "ເມື່ອສຳເລັດ, ເນື້ອຫາຈະພ້ອມໃຫ້ໃຊ້ງານ.",
+      task_explained: "ເມື່ອສຳເລັດ, ເນື້ອຫາຈະພ້ອມໃຫ້ໃຊ້ງານ.",
     },
     manage: {
       documents: "ເອກະສານ",
@@ -1438,8 +1378,7 @@ const TRANSLATIONS = {
       "processor-offline-desc":
         "ບໍ່ສາມາດອັບໂຫຼດໄຟລ໌ໄດ້ໃນຕອນນີ້ ເພາະຕົວປະມວນຜົນອອບລາຍຢູ່. ກະລຸນາລອງໃໝ່ພາຍຫຼັງ.",
       "click-upload": "ຄລິກເພື່ອອັບໂຫຼດ ຫຼື ລາກໄຟລ໌ມາທີ່ນີ້",
-      "file-types":
-        "ຮອງຮັບໄຟລ໌ຂໍ້ຄວາມ, csv, ຕາຕະລາງ, ສຽງ ແລະ ອື່ນໆ!",
+      "file-types": "ຮອງຮັບໄຟລ໌ຂໍ້ຄວາມ, csv, ຕາຕະລາງ, ສຽງ ແລະ ອື່ນໆ!",
       "or-submit-link": "ຫຼື ສົ່ງລິ້ງ",
       "placeholder-link": "https://example.com",
       fetching: "ກຳລັງດຶງຂໍ້ມູນ...",
@@ -1463,8 +1402,7 @@ const TRANSLATIONS = {
         "ເມື່ອທ່ານ <b>ຕິດຕາມ</b> ເອກະສານ ພວກເຮົາຈະ <i>ຊິ້ງ</i> ເນື້ອຫາຈາກແຫຼ່ງຕົ້ນສະບັບໂດຍອັດຕະໂນມັດຕາມໄລຍະເວລາ. ສິ່ງນີ້ຈະອັບເດດເນື້ອຫາໃນທຸກພື້ນທີ່ເຮັດວຽກທີ່ໃຊ້ໄຟລ໌ນີ້.",
       watch_explained_block2:
         "ຟີເຈີນີ້ຮອງຮັບສະເພາະເນື້ອຫາອອນລາຍ ແລະ ບໍ່ຮອງຮັບໄຟລ໌ທີ່ອັບໂຫຼດເອງ.",
-      watch_explained_block3_start:
-        "ທ່ານສາມາດຈັດການເອກະສານທີ່ຕິດຕາມໄດ້ຈາກ ",
+      watch_explained_block3_start: "ທ່ານສາມາດຈັດການເອກະສານທີ່ຕິດຕາມໄດ້ຈາກ ",
       watch_explained_block3_link: "File manager",
       watch_explained_block3_end: " ໃນໜ້າຜູ້ດູແລ.",
       accept: "ຕົກລົງ, ເຂົ້າໃຈແລ້ວ",
@@ -1479,8 +1417,7 @@ const TRANSLATIONS = {
     exporting: "ກຳລັງສົ່ງອອກ...",
     microphone: "ເວົ້າເພື່ອປ້ອນຄຳສັ່ງ.",
     stt_unsupported: "ບຣາວເຊີນີ້ບໍ່ຮອງຮັບການເຂົ້າເຖິງໄມໂຄຣໂຟນ.",
-    stt_mic_denied:
-      "ບໍ່ສາມາດເຂົ້າເຖິງໄມໂຄຣໂຟນໄດ້. ກະລຸນາອະນຸຍາດແລ້ວລອງໃໝ່.",
+    stt_mic_denied: "ບໍ່ສາມາດເຂົ້າເຖິງໄມໂຄຣໂຟນໄດ້. ກະລຸນາອະນຸຍາດແລ້ວລອງໃໝ່.",
     stt_transcription_failed: "ການຖອດຂໍ້ຄວາມຜິດພາດ: {{error}}",
     send: "ສົ່ງຄຳສັ່ງໄປຫາພື້ນທີ່ເຮັດວຽກ",
     tts_speak_message: "ໃຫ້ TTS ເວົ້າຂໍ້ຄວາມ",
@@ -1502,8 +1439,7 @@ const TRANSLATIONS = {
     edit_response: "ແກ້ໄຂຄຳຕອບ",
     edit_info_user:
       '"ສົ່ງ" ຈະສ້າງຄຳຕອບ AI ໃໝ່. "ບັນທຶກ" ຈະອັບເດດສະເພາະຂໍ້ຄວາມຂອງທ່ານ.',
-    edit_info_assistant:
-      "ການປ່ຽນແປງຂອງທ່ານຈະຖືກບັນທຶກເຂົ້າໃນຄຳຕອບນີ້ໂດຍກົງ.",
+    edit_info_assistant: "ການປ່ຽນແປງຂອງທ່ານຈະຖືກບັນທຶກເຂົ້າໃນຄຳຕອບນີ້ໂດຍກົງ.",
     see_less: "ເບິ່ງໜ້ອຍລົງ",
     see_more: "ເບິ່ງເພີ່ມເຕີມ",
     preset_reset_description: "ລ້າງປະຫວັດການແຊັດ ແລະ ເລີ່ມການສົນທະນາໃໝ່",
@@ -1514,8 +1450,7 @@ const TRANSLATIONS = {
     stop_generating: "ຢຸດສ້າງຄຳຕອບ",
     command: "ຄຳສັ່ງ",
     your_command: "ຄຳສັ່ງຂອງທ່ານ",
-    placeholder_prompt:
-      "ນີ້ແມ່ນເນື້ອຫາທີ່ຈະຖືກໃສ່ໄວ້ທາງໜ້າຄຳສັ່ງຂອງທ່ານ.",
+    placeholder_prompt: "ນີ້ແມ່ນເນື້ອຫາທີ່ຈະຖືກໃສ່ໄວ້ທາງໜ້າຄຳສັ່ງຂອງທ່ານ.",
     description: "ຄຳອະທິບາຍ",
     placeholder_description: "ຕອບກັບດ້ວຍບົດກອນກ່ຽວກັບ LLM.",
     save: "ບັນທຶກ",
@@ -1586,8 +1521,7 @@ const TRANSLATIONS = {
       },
       auto_extraction: {
         label: "ຄວາມຈຳອັດຕະໂນມັດ",
-        description:
-          "ໃຫ້ເອເຈນສ້າງຄວາມຈຳໂດຍອັດຕະໂນມັດໃນເບື້ອງຫຼັງ",
+        description: "ໃຫ້ເອເຈນສ້າງຄວາມຈຳໂດຍອັດຕະໂນມັດໃນເບື້ອງຫຼັງ",
       },
       menu: {
         edit: "ແກ້ໄຂ",
@@ -1602,7 +1536,8 @@ const TRANSLATIONS = {
           'ຄວາມຈຳຄວນເປັນຂໍ້ຄວາມສັ້ນໆ ເຊັ່ນ: "ຜູ້ໃຊ້ມັກ Python ຫຼາຍກວ່າ JavaScript"',
         edit_description: "ອັບເດດເນື້ອຫາຄວາມຈຳນີ້.",
         label: "ຄວາມຈຳ",
-        placeholder: "ເຊັ່ນ: ຜູ້ໃຊ້ຊື່ ສົມໄຊ, ຜູ້ໃຊ້ເຮັດວຽກກ່ຽວກັບ AnythingLLM, ແລະ ອື່ນໆ.",
+        placeholder:
+          "ເຊັ່ນ: ຜູ້ໃຊ້ຊື່ ສົມໄຊ, ຜູ້ໃຊ້ເຮັດວຽກກ່ຽວກັບ AnythingLLM, ແລະ ອື່ນໆ.",
         create: "ສ້າງ",
         save: "ບັນທຶກ",
         cancel: "ຍົກເລີກ",
@@ -1656,8 +1591,7 @@ const TRANSLATIONS = {
         name_description: "ຊື່ທີ່ຈະສະແດງຂອງ system prompt ຂອງທ່ານ.",
         name_placeholder: "System Prompt ຂອງຂ້ອຍ",
         description_label: "ຄຳອະທິບາຍ",
-        description_description:
-          "ອະທິບາຍຈຸດປະສົງຂອງ system prompt ນີ້.",
+        description_description: "ອະທິບາຍຈຸດປະສົງຂອງ system prompt ນີ້.",
         tags_label: "ແທັກ (Tags)",
         tags_description:
           "ໃຊ້ເພື່ອຊ່ວຍໃນການຄົ້ນຫາ. ເພີ່ມໄດ້ສູງສຸດ 5 ແທັກ. ແທັກລະບໍ່ເກີນ 20 ຕົວອັກສອນ.",
@@ -1668,14 +1602,12 @@ const TRANSLATIONS = {
         publish_button: "ເຜີຍແຜ່ໄປທີ່ Community Hub",
         submitting: "ກຳລັງເຜີຍແຜ່...",
         prompt_label: "Prompt",
-        prompt_description:
-          "ນີ້ແມ່ນ system prompt ຕົວຈິງທີ່ຈະໃຊ້ແນະນຳ LLM.",
+        prompt_description: "ນີ້ແມ່ນ system prompt ຕົວຈິງທີ່ຈະໃຊ້ແນະນຳ LLM.",
         prompt_placeholder: "ປ້ອນ system prompt ຂອງທ່ານທີ່ນີ້...",
       },
       agent_flow: {
         success_title: "ສຳເລັດ!",
-        success_description:
-          "Agent Flow ຂອງທ່ານຖືກເຜີຍແຜ່ແລ້ວ!",
+        success_description: "Agent Flow ຂອງທ່ານຖືກເຜີຍແຜ່ແລ້ວ!",
         success_thank_you: "ຂອບໃຈທີ່ແບ່ງປັນ!",
         view_on_hub: "ເບິ່ງໃນ Community Hub",
         modal_title: "ເຜີຍແຜ່ Agent Flow",
@@ -1683,11 +1615,9 @@ const TRANSLATIONS = {
         name_description: "ຊື່ທີ່ສະແດງຂອງ agent flow.",
         name_placeholder: "Agent Flow ຂອງຂ້ອຍ",
         description_label: "ຄຳອະທິບາຍ",
-        description_description:
-          "ອະທິບາຍຈຸດປະສົງຂອງ flow ນີ້.",
+        description_description: "ອະທິບາຍຈຸດປະສົງຂອງ flow ນີ້.",
         tags_label: "ແທັກ",
-        tags_description:
-          "ເພີ່ມໄດ້ສູງສຸດ 5 ແທັກ.",
+        tags_description: "ເພີ່ມໄດ້ສູງສຸດ 5 ແທັກ.",
         tags_placeholder: "ພິມແລ້ວກົດ Enter",
         visibility_label: "ຄວາມເປັນສ່ວນຕົວ",
         submitting: "ກຳລັງເຜີຍແຜ່...",
@@ -1697,8 +1627,7 @@ const TRANSLATIONS = {
       },
       slash_command: {
         success_title: "ສຳເລັດ!",
-        success_description:
-          "Slash Command ຂອງທ່ານຖືກເຜີຍແຜ່ແລ້ວ!",
+        success_description: "Slash Command ຂອງທ່ານຖືກເຜີຍແຜ່ແລ້ວ!",
         success_thank_you: "ຂອບໃຈທີ່ແບ່ງປັນ!",
         view_on_hub: "ເບິ່ງໃນ Community Hub",
         modal_title: "ເຜີຍແຜ່ Slash Command",
@@ -1706,11 +1635,9 @@ const TRANSLATIONS = {
         name_description: "ຊື່ຂອງ slash command.",
         name_placeholder: "Slash Command ຂອງຂ້ອຍ",
         description_label: "ຄຳອະທິບາຍ",
-        description_description:
-          "ອະທິບາຍຈຸດປະສົງ.",
+        description_description: "ອະທິບາຍຈຸດປະສົງ.",
         tags_label: "ແທັກ",
-        tags_description:
-          "ເພີ່ມໄດ້ສູງສຸດ 5 ແທັກ.",
+        tags_description: "ເພີ່ມໄດ້ສູງສຸດ 5 ແທັກ.",
         tags_placeholder: "ພິມແລ້ວກົດ Enter",
         visibility_label: "ຄວາມເປັນສ່ວນຕົວ",
         public_description: "ສາທາລະນະ.",
@@ -1792,8 +1719,7 @@ const TRANSLATIONS = {
       toolsSearch: "ຄົ້ນຫາ",
       toolsNoResults: "ບໍ່ພົບເຄື່ອງມື",
       required: "ຈຳເປັນ",
-      requiredFieldsBanner:
-        "ກະລຸນາປ້ອນຂໍ້ມູນໃຫ້ຄົບເພື່ອສ້າງວຽກ.",
+      requiredFieldsBanner: "ກະລຸນາປ້ອນຂໍ້ມູນໃຫ້ຄົບເພື່ອສ້າງວຽກ.",
       cancel: "ຍົກເລີກ",
       saving: "ກຳລັງບັນທຶກ...",
       updateJob: "ອັບເດດວຽກ",

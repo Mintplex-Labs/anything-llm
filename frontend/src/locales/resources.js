@@ -64,7 +64,7 @@ export const resources = {
   ko: {
     common: Korean,
   },
-    lo: {
+  lo: {
     common: Lao,
   },
   et: {
