@@ -40,14 +40,12 @@ import Czech from "./cs/common.js";
 import Lithuanian from "./lt/common.js";
 import Catalan from "./ca/common.js";
 import Indonesian from "./id/common.js";
+import Lao from "./lo/common.js";
 
 export const defaultNS = "common";
 export const resources = {
   en: {
     common: English,
-  },
-  id: {
-    common: Indonesian,
   },
   zh: {
     common: Mandarin,
@@ -66,6 +64,9 @@ export const resources = {
   },
   ko: {
     common: Korean,
+  },
+  lo: {
+    common: Lao,
   },
   et: {
     common: Estonian,
@@ -120,5 +121,8 @@ export const resources = {
   },
   ca: {
     common: Catalan,
+  },
+  id: {
+    common: Indonesian,
   },
 };
