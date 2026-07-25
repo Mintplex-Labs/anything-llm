@@ -816,6 +816,10 @@ const TRANSLATIONS = {
         description:
           "在助手回复中呈现 HTML 响应。\n这可以显著提高回复的质量，但也可能带来潜在的安全风险。",
       },
+      "disable-auto-scroll": {
+        title: "关闭自动滚动功能",
+        description: "在收到新消息时，取消自动滚动到聊天窗口底部的功能。",
+      },
     },
   },
   api: {

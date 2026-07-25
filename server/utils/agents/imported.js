@@ -14,9 +14,11 @@ class ImportedPlugin {
     this.config = config;
     this.handlerLocation = path.resolve(
       pluginsPath,
-      this.config.hubId,
+      normalizePath(this.config.hubId),
       "handler.js"
     );
+    if (!isWithin(pluginsPath, this.handlerLocation))
+      throw new Error("Plugin handler does not pass path validation.");
     delete require.cache[require.resolve(this.handlerLocation)];
     this.handler = require(this.handlerLocation);
     this.name = config.hubId;
@@ -121,7 +123,8 @@ class ImportedPlugin {
     );
     if (!currentConfig) return;
 
-    const updatedConfig = { ...currentConfig, ...config };
+    const { hubId: _drop, ...safeConfig } = config;
+    const updatedConfig = { ...currentConfig, ...safeConfig };
     fs.writeFileSync(configLocation, JSON.stringify(updatedConfig, null, 2));
     return updatedConfig;
   }

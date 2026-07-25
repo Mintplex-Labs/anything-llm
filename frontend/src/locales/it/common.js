@@ -1407,6 +1407,11 @@ const TRANSLATIONS = {
         description:
           "Generare risposte HTML nelle risposte dell'assistente.\nQuesto può portare a una qualità di risposta molto più accurata, ma può anche comportare potenziali rischi per la sicurezza.",
       },
+      "disable-auto-scroll": {
+        title: "Disattivare lo scorrimento automatico",
+        description:
+          "Disabilita lo scorrimento automatico fino alla fine della finestra di chat quando vengono ricevute nuove messaggi.",
+      },
     },
   },
   "main-page": {
