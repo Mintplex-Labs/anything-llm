@@ -277,6 +277,48 @@ Basically, if telemetry is disabled we don't collect anything. However, dependin
 
 ## 🔗 More Products
 
+
+
+## NovaNodes MCP Gateway Integration
+
+The [NovaNodes MCP Gateway](https://github.com/TheNovaNodes/nova-anythingllm-mcp) provides an MCP (Model Context Protocol) interface for AnythingLLM users who want to connect their local AI agents to private web search and enhanced vector memory.
+
+### What it adds
+
+* **Private search** — use SearXNG as your web search backend for AI agents, no third-party APIs, no tracking
+* **Enhanced memory** — hybrid vector+lexical search with RRF fusion across workspaces via the MCP protocol
+* **MCP native** — compatible with Claude Desktop, Continue, and any MCP client AnythingLLM users already configure
+* **Self-hosted** — runs alongside your existing AnythingLLM and SearXNG instances
+
+### Installation
+
+Add to your MCP client configuration (e.g. `claude_desktop_config.json` or Continue config):
+
+```json
+{
+  "mcpServers": {
+    "nova-searxng": {
+      "command": "python",
+      "args": ["-m", "searxng_gateway.server"],
+      "env": { "SEARXNG_URL": "http://127.0.0.1:8080" }
+    },
+    "nova-anythingllm-mcp": {
+      "command": "python",
+      "args": ["-m", "memory_gateway.server"],
+      "env": { "ALM_URL": "http://127.0.0.1:8091" }
+    }
+  }
+}
+```
+
+### Repositories
+
+* **nova-searxng-mcp** (MCP gateway for SearXNG privacy search): https://github.com/TheNovaNodes/nova-searxng-mcp
+* **nova-anythingllm-mcp** (MCP gateway for AnythingLLM memory): https://github.com/TheNovaNodes/nova-anythingllm-mcp
+
+Both are MIT licensed, open source, and designed for the self-hosting community.
+
+
 - **[AnythingLLM Mobile (MIT Licensed)][anythingllm-mobile]:** A mobile application that allows you to use AnythingLLM on your mobile device.
 - **[AnythingLLM Browser Extension][anythingllm-extension]:** A browser extension that allows you to use AnythingLLM in your browser.
 - **[AnythingLLM Embed][anythingllm-embed]:** A widget that allows you to embed AnythingLLM in your website.
