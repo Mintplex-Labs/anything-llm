@@ -56,6 +56,7 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
         temperature: 0,
         messages,
         max_tokens: this.maxTokens,
+        ...GenericOpenAiLLM.parseRequestParams(),
       })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
@@ -74,6 +75,8 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
       model: this.model,
       stream: true,
       messages,
+      max_tokens: this.maxTokens,
+      ...GenericOpenAiLLM.parseRequestParams(),
     });
   }
 

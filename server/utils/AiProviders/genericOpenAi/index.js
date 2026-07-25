@@ -76,6 +76,128 @@ class GenericOpenAiLLM {
     return headers;
   }
 
+  /**
+   * Parses a stop sequence from an environment variable value.
+   * Supports JSON arrays, comma-separated values, or a single string.
+   * @param {string} value
+   * @returns {string|string[]|null}
+   */
+  static #parseStopValue(value) {
+    const trimmed = value.trim();
+    if (!trimmed) return null;
+
+    if (trimmed.startsWith("[")) {
+      try {
+        const parsed = JSON.parse(trimmed);
+        if (Array.isArray(parsed)) return parsed;
+      } catch {
+        return null;
+      }
+    }
+
+    if (trimmed.includes(",")) {
+      return trimmed
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+    }
+
+    return trimmed;
+  }
+
+  /**
+   * Parses extra request parameters from a JSON object environment variable.
+   * @param {string} value
+   * @returns {Object}
+   */
+  static #parseExtraParamsValue(value) {
+    try {
+      const parsed = JSON.parse(value);
+      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+        return parsed;
+      }
+      console.warn(
+        "[GenericOpenAiLLM] GENERIC_OPEN_AI_EXTRA_PARAMS must be a JSON object. Ignoring value."
+      );
+    } catch {
+      console.warn(
+        "[GenericOpenAiLLM] Failed to parse GENERIC_OPEN_AI_EXTRA_PARAMS as JSON. Ignoring value."
+      );
+    }
+    return {};
+  }
+
+  /**
+   * Parses optional OpenAI request parameters from environment variables.
+   * Only includes parameters that are explicitly set.
+   * @returns {Object}
+   */
+  static parseRequestParams() {
+    const params = {};
+
+    if ("GENERIC_OPEN_AI_TOP_P" in process.env) {
+      const topP = Number(process.env.GENERIC_OPEN_AI_TOP_P);
+      if (!isNaN(topP)) params.top_p = topP;
+    }
+
+    if ("GENERIC_OPEN_AI_FREQUENCY_PENALTY" in process.env) {
+      const frequencyPenalty = Number(
+        process.env.GENERIC_OPEN_AI_FREQUENCY_PENALTY
+      );
+      if (!isNaN(frequencyPenalty)) params.frequency_penalty = frequencyPenalty;
+    }
+
+    if ("GENERIC_OPEN_AI_PRESENCE_PENALTY" in process.env) {
+      const presencePenalty = Number(
+        process.env.GENERIC_OPEN_AI_PRESENCE_PENALTY
+      );
+      if (!isNaN(presencePenalty)) params.presence_penalty = presencePenalty;
+    }
+
+    if ("GENERIC_OPEN_AI_SEED" in process.env) {
+      const seed = Number(process.env.GENERIC_OPEN_AI_SEED);
+      if (!isNaN(seed)) params.seed = seed;
+    }
+
+    if ("GENERIC_OPEN_AI_STOP" in process.env) {
+      const stop = GenericOpenAiLLM.#parseStopValue(
+        process.env.GENERIC_OPEN_AI_STOP
+      );
+      if (stop !== null) params.stop = stop;
+    }
+
+    if ("GENERIC_OPEN_AI_EXTRA_PARAMS" in process.env) {
+      Object.assign(
+        params,
+        GenericOpenAiLLM.#parseExtraParamsValue(
+          process.env.GENERIC_OPEN_AI_EXTRA_PARAMS
+        )
+      );
+    }
+
+    return params;
+  }
+
+  #buildCompletionParams(messages, { temperature = 0.7, stream = false } = {}) {
+    const params = {
+      model: this.model,
+      messages,
+      temperature,
+      max_tokens: this.maxTokens,
+      ...GenericOpenAiLLM.parseRequestParams(),
+    };
+
+    if (stream) {
+      Object.assign(
+        params,
+        { stream: true },
+        this.#includeStreamOptionsUsage()
+      );
+    }
+
+    return params;
+  }
+
   #appendContext(contextTexts = []) {
     if (!contextTexts || !contextTexts.length) return "";
     return (
@@ -227,12 +349,7 @@ class GenericOpenAiLLM {
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.openai.chat.completions
-        .create({
-          model: this.model,
-          messages,
-          temperature,
-          max_tokens: this.maxTokens,
-        })
+        .create(this.#buildCompletionParams(messages, { temperature }))
         .catch((e) => {
           throw new Error(e.message);
         })
@@ -266,14 +383,9 @@ class GenericOpenAiLLM {
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
-      func: this.openai.chat.completions.create({
-        model: this.model,
-        stream: true,
-        messages,
-        temperature,
-        max_tokens: this.maxTokens,
-        ...this.#includeStreamOptionsUsage(),
-      }),
+      func: this.openai.chat.completions.create(
+        this.#buildCompletionParams(messages, { temperature, stream: true })
+      ),
       messages,
       runPromptTokenCalculation: true,
       modelTag: this.model,
