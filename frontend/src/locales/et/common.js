@@ -856,6 +856,11 @@ const TRANSLATIONS = {
         description:
           "HTML-vastuste kuvamine abivasside vastustes.\nSee võib viia suurema vastuste kvaliteedi, kuid võib ka põhjustada potentsiaalseid turvaohusid.",
       },
+      "disable-auto-scroll": {
+        title: "Lülita automaatne rullimine välja",
+        description:
+          "Lülitage automaatne rullimine alla lootes välja, kui saabuvad uued sõnumid.",
+      },
     },
   },
   api: {
