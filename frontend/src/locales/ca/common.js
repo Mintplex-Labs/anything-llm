@@ -902,6 +902,11 @@ const TRANSLATIONS = {
         description:
           "Renderitza l'HTML a les respostes de l'assistent.\nAixò pot donar com a resultat una qualitat de resposta molt més alta, però també pot comportar riscos potencials de seguretat.",
       },
+      "disable-auto-scroll": {
+        title: "Desactivar el desplaçament automàtic",
+        description:
+          "Desactivar el recorregut automàtic fins al final del missatge quan s'arriben a rebre nous missatges.",
+      },
     },
   },
   api: {

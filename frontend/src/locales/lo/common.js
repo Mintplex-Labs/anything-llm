@@ -1,3 +1,4 @@
+// Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
   onboarding: {
     home: {
@@ -830,6 +831,11 @@ const TRANSLATIONS = {
         title: "ສະແດງ HTML ໃນແຊັດ",
         description:
           "ສະແດງຜົນ HTML ໃນຄຳຕອບຂອງ AI.\nສິ່ງນີ້ອາດເຮັດໃຫ້ຄຳຕອບເບິ່ງດີຂຶ້ນ ແຕ່ກໍອາດມີຄວາມສ່ຽງດ້ານຄວາມປອດໄພ.",
+      },
+      "disable-auto-scroll": {
+        title: "ປິດການເຄື່ອນໄหวอัตโนματικ",
+        description:
+          "ຖ້າໄດ້ຮັບຂໍ້ຄວາມໃໝ, ຢ່າໃຫ້ການເຄື່ອນໄหวอัตโนμάតໄປຫາທົ່ວສຸດຂອງການสนทนา។",
       },
     },
   },

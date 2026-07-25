@@ -888,6 +888,11 @@ const TRANSLATIONS = {
         description:
           "Wyświetlanie odpowiedzi w formacie HTML w odpowiedziach asystenta.\nMoże to prowadzić do znacznie wyższej jakości odpowiedzi, ale również wiąże się z potencjalnymi zagrożeniami bezpieczeństwa.",
       },
+      "disable-auto-scroll": {
+        title: "Wyłącz automatyczne przewijanie",
+        description:
+          "Wyłącz automatyczne przewijanie do końca okna czatu po otrzymaniu nowych wiadomości.",
+      },
     },
   },
   api: {
