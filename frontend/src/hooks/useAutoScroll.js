@@ -6,6 +6,7 @@ import {
   useLayoutEffect,
   useImperativeHandle,
 } from "react";
+import Appearance from "@/models/appearance";
 
 /**
  * Owns all auto-scroll behavior for the chat history container.
@@ -19,6 +20,7 @@ import {
  * @param {React.Ref} imperativeRef - Forwarded ref exposing scrollToTop/scrollToBottom
  */
 export default function useAutoScroll(history, imperativeRef) {
+  const disabled = Appearance.get("disableAutoScroll");
   const chatHistoryRef = useRef(null);
   const followRef = useRef(true);
   const lastScrollTopRef = useRef(0);
@@ -33,13 +35,49 @@ export default function useAutoScroll(history, imperativeRef) {
     });
   }, []);
 
-  // Re-engage follow when a new prompt is sent, and pin to bottom before
-  // paint so the new message never appears above the fold.
+  // Pin to the bottom for a window of frames. A single scroll on load is not
+  // enough — markdown, citations, and images below the fold keep resizing
+  // the content after our scroll, leaving the view stranded mid-message.
+  // Stops early if the user scrolls up (followRef flips false).
+  const pinFramesRef = useRef(0);
+  const pinToBottom = useCallback((frames = 30) => {
+    const alreadyPinning = pinFramesRef.current > 0;
+    pinFramesRef.current = frames;
+    if (alreadyPinning) return;
+    const tick = () => {
+      const el = chatHistoryRef.current;
+      if (!el || !followRef.current || pinFramesRef.current-- <= 0) {
+        pinFramesRef.current = 0;
+        return;
+      }
+      el.scrollTop = el.scrollHeight;
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }, []);
+
+  // On the first render with content (page load / chat switch), always land
+  // at the latest message — regardless of the autoscroll setting. After
+  // that: with autoscroll disabled, never move the user's scroll again;
+  // with it enabled, re-engage follow on send and pin before paint so the
+  // new message never appears above the fold.
+  const loadedRef = useRef(false);
   useLayoutEffect(() => {
+    if (history.length === 0) {
+      loadedRef.current = false;
+      return;
+    }
+    if (!loadedRef.current) {
+      loadedRef.current = true;
+      scrollToBottom(false);
+      pinToBottom();
+      return;
+    }
+    if (disabled) return;
     const lastMsg = history[history.length - 1];
     if (lastMsg?.pending) followRef.current = true;
     if (followRef.current) scrollToBottom(false);
-  }, [history, scrollToBottom]);
+  }, [history, scrollToBottom, pinToBottom, disabled]);
 
   // While following a stream, pin to the bottom every frame. Content below
   // the fold resizes asynchronously during streaming (markdown re-renders,
@@ -51,7 +89,7 @@ export default function useAutoScroll(history, imperativeRef) {
   const lastMsg = history[history.length - 1];
   const isStreaming = !!(lastMsg?.animate || lastMsg?.pending);
   useEffect(() => {
-    if (!isStreaming) return;
+    if (!isStreaming || disabled) return;
     let frame;
     const tick = () => {
       const el = chatHistoryRef.current;
