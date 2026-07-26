@@ -122,6 +122,7 @@ class GenericOpenAiLLM {
    * This function assumes the generic OpenAI provider is _actually_ OpenAI compatible.
    * For example, Ollama is "OpenAI compatible" but does not support images as a content array.
    * The contentString also is the base64 string WITH `data:image/xxx;base64,` prefix, which may not be the case for all providers.
+   * Attachments with an `audio/*` mime are sent as `input_audio` content blocks with the raw base64 payload and a `format` key, per the OpenAI audio schema.
    * If your provider does not work exactly this way, then attachments will not function or potentially break vision requests.
    * If you encounter this issue, you are welcome to open an issue asking for your specific provider to be supported.
    *
@@ -139,6 +140,17 @@ class GenericOpenAiLLM {
 
     const content = [{ type: "text", text: userPrompt }];
     for (let attachment of attachments) {
+      if (attachment.mime?.startsWith("audio/")) {
+        content.push({
+          type: "input_audio",
+          input_audio: {
+            data: attachment.contentString.split("base64,").pop(),
+            format: this.#audioFormat(attachment.mime),
+          },
+        });
+        continue;
+      }
+
       content.push({
         type: "image_url",
         image_url: {
@@ -148,6 +160,26 @@ class GenericOpenAiLLM {
       });
     }
     return content.flat();
+  }
+
+  /**
+   * Maps an audio mime type to the `format` value expected by the OpenAI
+   * `input_audio` content schema (e.g. `audio/mpeg` -> `mp3`).
+   * @param {string} mime
+   * @returns {string}
+   */
+  #audioFormat(mime) {
+    const subtype = mime.split("/").pop().toLowerCase();
+    switch (subtype) {
+      case "mpeg":
+      case "mp3":
+        return "mp3";
+      case "x-wav":
+      case "wave":
+        return "wav";
+      default:
+        return subtype.replace(/^x-/, "");
+    }
   }
 
   /**
