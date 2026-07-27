@@ -726,6 +726,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Vytvořte naplánované úlohy",
+        description:
+          "Umožněte zástupci vytvářet opakující se plánované úkoly přímo z chatu (například „každý pracovní den v 9:00 shrňte obsah mé schránky a zašlete mi e-mail“). Tato funkce je dostupná pouze v režimu pro jednoho uživatele.",
+      },
     },
     mcp: {
       title: "Servery společnosti MCP",
@@ -876,6 +881,11 @@ const TRANSLATIONS = {
         title: "Vykreslit HTML v chatu",
         description:
           "Vykreslit HTML odpovědi v odpovědích asistenta.\nTo může vést k mnohem vyšší věrnosti kvality odpovědi, ale může také vést k potenciálním bezpečnostním rizikům.",
+      },
+      "disable-auto-scroll": {
+        title: "Vypnout automatické posouvání",
+        description:
+          "Vypněte automatické posouvání dolů v chatu při přijetí nových zpráv.",
       },
     },
   },

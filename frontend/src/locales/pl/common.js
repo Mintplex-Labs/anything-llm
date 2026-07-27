@@ -732,6 +732,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Twórz zdefiniowane harmonogramy zadań",
+        description:
+          "Umożliw agentowi tworzenie powtarzalnych zadań w harmonogramie bezpośrednio z czatu (np. „codziennie w poniedziałek o 9:00, podsumuj zawartość mojej skrzynki pocztowej i wyślij mi e-mail”). Funkcja dostępna tylko w trybie dla jednego użytkownika.",
+      },
     },
     mcp: {
       title: "Serwery MCP",
@@ -883,6 +888,11 @@ const TRANSLATIONS = {
         title: "Renderowanie HTML w czacie",
         description:
           "Wyświetlanie odpowiedzi w formacie HTML w odpowiedziach asystenta.\nMoże to prowadzić do znacznie wyższej jakości odpowiedzi, ale również wiąże się z potencjalnymi zagrożeniami bezpieczeństwa.",
+      },
+      "disable-auto-scroll": {
+        title: "Wyłącz automatyczne przewijanie",
+        description:
+          "Wyłącz automatyczne przewijanie do końca okna czatu po otrzymaniu nowych wiadomości.",
       },
     },
   },

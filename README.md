@@ -1,5 +1,12 @@
 <a name="readme-top"></a>
 
+> [!NOTE]
+> We are also working on [Open Computer](/open-computer) which gives an entire computer environment for AI Agents to use.
+>
+> This will bring AnythingLLM's agent capabilities to a new level and a novel UX paradigm for AI Agent use.
+>
+> ⭐ Star the repo to stay updated!
+
 <p align="center">
   <a href="https://anythingllm.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="AnythingLLM logo"></a>
 </p>
@@ -115,6 +122,7 @@ AnythingLLM supports multiple users as well where you can control the access and
 - [Lemonade by AMD](https://lemonade-server.ai)
 - [Minimax](https://platform.minimax.io)
 - [Cerebras (chat models)](https://www.cerebras.ai/)
+- [oMLX](https://github.com/jundot/omlx)
 
 **Embedder models:**
 

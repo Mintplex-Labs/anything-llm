@@ -1,0 +1,16 @@
+[Desktop Entry]
+Type=Application
+Name=Memories
+GenericName=Agent Memory Manager
+Exec=chromium --app=http://localhost:8090 --window-size=520,640 \
+  --user-data-dir=/home/agent/.config/memory-manager-chromium \
+  --no-first-run \
+  --disable-sync \
+  --disable-extensions \
+  --disable-background-networking \
+  --disable-default-apps \
+  --disable-session-crashed-bubble \
+  --disable-infobars
+Icon=preferences-system
+Categories=Settings;
+StartupWMClass=chromium-browser

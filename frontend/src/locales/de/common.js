@@ -733,6 +733,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Erstellen Sie geplante Aufgaben",
+        description:
+          'Ermöglichen Sie dem Agenten, wiederkehrende geplante Aufgaben direkt aus dem Chat zu erstellen (z. B. „jeden Werktag um 9 Uhr meinen Posteingang zusammenfassen und mir eine E-Mail senden"). Diese Funktion ist nur im Einzelbenutzermodus verfügbar.',
+      },
     },
     "performance-warning":
       "Die Leistung von LLMs, die keine explizite Unterstützung für das Aufrufen von Tools bieten, hängt stark von den Fähigkeiten und der Genauigkeit des Modells ab. Einige Fähigkeiten können eingeschränkt oder nicht funktionsfähig sein.",
@@ -888,6 +893,11 @@ const TRANSLATIONS = {
         title: "HTML-Code in einem Chat anzeigen",
         description:
           "HTML-Antworten in den Antworten des Assistenten anzeigen.\nDies kann zu einer viel höheren Qualität der Antwort führen, aber auch zu potenziellen Sicherheitsrisiken führen.",
+      },
+      "disable-auto-scroll": {
+        title: "Automatische Scrollen deaktivieren",
+        description:
+          "Deaktivieren Sie das automatische Scrollen zum Ende des Chats, wenn neue Nachrichten empfangen werden.",
       },
     },
   },

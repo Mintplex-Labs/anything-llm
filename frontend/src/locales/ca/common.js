@@ -741,6 +741,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Crea tasques programades",
+        description:
+          'Permet que l\'agent creï tasques programades recurrents a partir del missatge (per exemple, "cada dia de dilluny a les 9 del matí, resumeix la meva caixa de correu i envia un correu electrònic"). Només disponible en mode per a un usuari.',
+      },
     },
     mcp: {
       title: "Servidors MCP",
@@ -897,6 +902,11 @@ const TRANSLATIONS = {
         title: "Renderitza HTML al xat",
         description:
           "Renderitza l'HTML a les respostes de l'assistent.\nAixò pot donar com a resultat una qualitat de resposta molt més alta, però també pot comportar riscos potencials de seguretat.",
+      },
+      "disable-auto-scroll": {
+        title: "Desactivar el desplaçament automàtic",
+        description:
+          "Desactivar el recorregut automàtic fins al final del missatge quan s'arriben a rebre nous missatges.",
       },
     },
   },

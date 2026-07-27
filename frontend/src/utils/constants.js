@@ -68,6 +68,12 @@ export const LEMONADE_COMMON_URLS = [
   "http://172.17.0.1:13305/live",
 ];
 
+export const OMLX_COMMON_URLS = [
+  "http://127.0.0.1:8000",
+  "http://localhost:8000",
+  "http://host.docker.internal:8000",
+];
+
 export function fullApiUrl() {
   if (API_BASE !== "/api") return API_BASE;
   return `${window.location.origin}/api`;

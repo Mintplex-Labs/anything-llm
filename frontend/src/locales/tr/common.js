@@ -724,6 +724,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Planlı işleri oluşturun",
+        description:
+          'Temsilcinin, sohbetten otomatik olarak tekrarlayan görevler oluşturmasına izin verin (örneğin, "her hafta içi her gün saat 09:00\'da e-posta kutlumu özetleyip bana gönder"). Sadece tek kullanıcı modunda kullanılabilir.',
+      },
     },
     mcp: {
       title: "MCP Sunucuları",
@@ -1380,6 +1385,11 @@ const TRANSLATIONS = {
         title: "Sohbette HTML Görüntüle",
         description:
           "Asistan yanıtlarında HTML yanıtlarını görüntüleyin.\nBu, çok daha yüksek kaliteli yanıt sağlayabilir, ancak potansiyel güvenlik risklerine de yol açabilir.",
+      },
+      "disable-auto-scroll": {
+        title: "Otomatik kaydırma özelliğini devre dışı bırak",
+        description:
+          "Yeni mesajlar aldığınızda sohbetin otomatik olarak en alttaki bölüme kaydırmasını devre dışı bırakın.",
       },
     },
   },

@@ -330,6 +330,11 @@ const TRANSLATIONS = {
         description:
           "Enable your agent to be able to leverage SQL to answer you questions by connecting to various SQL database providers.",
       },
+      scheduledJob: {
+        title: "Create scheduled jobs",
+        description:
+          'Allow the agent to create recurring Scheduled Jobs from chat (e.g. "every weekday at 9am summarize my inbox and email me"). Available in single-user mode only.',
+      },
       filesystem: {
         title: "File System Access",
         description:
@@ -813,6 +818,11 @@ const TRANSLATIONS = {
       "show-scrollbar": {
         title: "Show Scrollbar",
         description: "Enable or disable the scrollbar in the chat window.",
+      },
+      "disable-auto-scroll": {
+        title: "Disable Auto-Scroll",
+        description:
+          "Disable automatic scrolling to the bottom of the chat when new messages are received.",
       },
       "support-email": {
         title: "Support Email",
