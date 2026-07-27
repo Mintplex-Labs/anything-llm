@@ -1,0 +1,17 @@
+services/server/node_modules
+services/memory-manager/node_modules
+services/interface-service.cjs
+services/html-to-markdown.cjs
+services/memory-manager/memory-manager.cjs
+services/dist
+**/node_modules
+master/qemu-src/
+master/qemu/*
+!master/qemu/*.tar.gz
+!master/qemu/*.7zip
+!master/qemu/*.7z
+master/base_image/*
+agents/*
+master/iso/*.iso
+.DS_Store
+**/.env

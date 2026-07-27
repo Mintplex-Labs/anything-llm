@@ -62,7 +62,7 @@ const TRANSLATIONS = {
     no: "Hayır",
     search: "Ara",
     username_requirements:
-      "Kullanıcı adı 2-32 karakter uzunluğunda olmalı, küçük harfle başlamalı ve yalnızca küçük harfler, rakamlar, alt çizgiler, tireler ve noktalar içermelidir.",
+      "Kullanıcı adı 2-64 karakter uzunluğunda olmalı, küçük harfle başlamalı ve yalnızca küçük harfler, rakamlar, alt çizgiler, tireler ve noktalar içermelidir.",
     on: "On",
     none: "Yok",
     stopped: "Durdu",
@@ -723,6 +723,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Planlı işleri oluşturun",
+        description:
+          'Temsilcinin, sohbetten otomatik olarak tekrarlayan görevler oluşturmasına izin verin (örneğin, "her hafta içi her gün saat 09:00\'da e-posta kutlumu özetleyip bana gönder"). Sadece tek kullanıcı modunda kullanılabilir.',
+      },
     },
     mcp: {
       title: "MCP Sunucuları",
@@ -1378,6 +1383,11 @@ const TRANSLATIONS = {
         title: "Sohbette HTML Görüntüle",
         description:
           "Asistan yanıtlarında HTML yanıtlarını görüntüleyin.\nBu, çok daha yüksek kaliteli yanıt sağlayabilir, ancak potansiyel güvenlik risklerine de yol açabilir.",
+      },
+      "disable-auto-scroll": {
+        title: "Otomatik kaydırma özelliğini devre dışı bırak",
+        description:
+          "Yeni mesajlar aldığınızda sohbetin otomatik olarak en alttaki bölüme kaydırmasını devre dışı bırakın.",
       },
     },
   },

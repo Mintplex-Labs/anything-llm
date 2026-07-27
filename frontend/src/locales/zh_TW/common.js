@@ -58,7 +58,7 @@ const TRANSLATIONS = {
     no: "否",
     search: "搜尋",
     username_requirements:
-      "使用者名稱必須為 2-32 個字元，以小寫字母開頭，且只能包含小寫字母、數字、底線、連字號和句點。",
+      "使用者名稱必須為64 個字元，以小寫字母開頭，且只能包含小寫字母、數字、底線、連字號和句點。",
     on: "關於",
     none: "沒有",
     stopped: "停止",
@@ -663,6 +663,11 @@ const TRANSLATIONS = {
             description: "接受、拒絕或表示暫時接受活動",
           },
         },
+      },
+      scheduledJob: {
+        title: "建立排程工作",
+        description:
+          "允許經理根據聊天內容，設定重複執行的工作（例如：「每天早上9點，請自動整理我的收件匣並將摘要發送至我的電子郵件」）。僅適用於單一使用者模式。",
       },
     },
     mcp: {
@@ -1273,6 +1278,10 @@ const TRANSLATIONS = {
         title: "在對話中渲染 HTML",
         description:
           "在助理回應中渲染 HTML 內容。\n這能顯著提升呈現精細度，但也可能帶來潛在安全風險。",
+      },
+      "disable-auto-scroll": {
+        title: "停用自動捲動功能",
+        description: "當收到新訊息時，取消自動將聊天視窗滾動到底部的功能。",
       },
     },
   },

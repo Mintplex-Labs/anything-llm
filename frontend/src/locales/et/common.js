@@ -61,7 +61,7 @@ const TRANSLATIONS = {
     no: "Ei",
     search: "otsing",
     username_requirements:
-      "Kasutajanimi peab olema 2–32 tähemärki, algama väiketähega ning sisaldama ainult väiketähti, numbreid, alakriipse, sidekriipse ja punkte.",
+      "Kasutajanimi peab olema 2–64 tähemärki, algama väiketähega ning sisaldama ainult väiketähti, numbreid, alakriipse, sidekriipse ja punkte.",
     on: "On",
     none: "Ei",
     stopped: "Peatas",
@@ -705,6 +705,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Loo planeeritud ülesandeid",
+        description:
+          'Lase esindajal luua korduvad, planeeritud ülesanded vestluse kaudu (nt " iga tööpäeva kell 9 kokkuvõta minu postkasti ja saada mulle e-posti"). Saadav ainult ühe kasutaja režiimis.',
+      },
     },
     mcp: {
       title: "MCP-serverid",
@@ -850,6 +855,11 @@ const TRANSLATIONS = {
         title: "Renderi HTML-koodi veebisaidil",
         description:
           "HTML-vastuste kuvamine abivasside vastustes.\nSee võib viia suurema vastuste kvaliteedi, kuid võib ka põhjustada potentsiaalseid turvaohusid.",
+      },
+      "disable-auto-scroll": {
+        title: "Lülita automaatne rullimine välja",
+        description:
+          "Lülitage automaatne rullimine alla lootes välja, kui saabuvad uued sõnumid.",
       },
     },
   },

@@ -77,6 +77,8 @@ export default function LLMProviderModelPicker({
     fetchModels();
   }, [selectedProvider, settings]);
 
+  const downloadedModels = models.filter((model) => model?.downloaded);
+
   function handleProviderChange(e) {
     const value = e.target.value;
     setSelectedProvider(value);
@@ -176,11 +178,22 @@ export default function LLMProviderModelPicker({
               <option value="">
                 {t("model-router.provider-picker.select-model")}
               </option>
-              {models.map((model) => (
-                <option key={model.id} value={model.id}>
-                  {model.id}
-                </option>
-              ))}
+              {downloadedModels.length > 0 && (
+                <optgroup label="Downloaded models">
+                  {downloadedModels.map((model) => (
+                    <option key={model.id} value={model.id}>
+                      {model.name || model.id}
+                    </option>
+                  ))}
+                </optgroup>
+              )}
+              <optgroup label="Discovered models">
+                {models.map((model) => (
+                  <option key={model.id} value={model.id}>
+                    {model.id}
+                  </option>
+                ))}
+              </optgroup>
             </select>
           ) : (
             <input

@@ -509,7 +509,7 @@ class EphemeralAgentHandler extends AgentHandler {
   ) {
     this.aibitat = new AIbitat({
       provider: this.provider ?? "openai",
-      model: this.model ?? "gpt-4o",
+      model: this.model ?? "gpt-4.1-nano",
       chats: await this.#chatHistory(20),
       handlerProps: {
         invocation: {
@@ -654,6 +654,7 @@ class EphemeralEventListener extends EventEmitter {
   packMessages() {
     const thoughts = [];
     const outputs = [];
+    const citations = [];
     let textResponse = null;
     let metrics = {};
     for (let msg of this.messages) {
@@ -675,12 +676,14 @@ class EphemeralEventListener extends EventEmitter {
           textResponse = inner.content;
         if (inner?.type === "usageMetrics" && inner?.metrics)
           metrics = inner.metrics;
+        if (inner?.type === "citations" && Array.isArray(inner?.citations))
+          citations.push(...inner.citations);
         continue;
       }
 
       textResponse = msg.content;
     }
-    return { thoughts, textResponse, outputs, metrics };
+    return { thoughts, textResponse, outputs, metrics, citations };
   }
 
   /**

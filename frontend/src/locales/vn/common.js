@@ -62,7 +62,7 @@ const TRANSLATIONS = {
     no: "Không",
     search: "Tìm kiếm",
     username_requirements:
-      "Tên người dùng phải có 2-32 ký tự, bắt đầu bằng chữ cái thường và chỉ chứa chữ cái thường, số, dấu gạch dưới, dấu gạch ngang và dấu chấm.",
+      "Tên người dùng phải có 2-64 ký tự, bắt đầu bằng chữ cái thường và chỉ chứa chữ cái thường, số, dấu gạch dưới, dấu gạch ngang và dấu chấm.",
     on: "Về",
     none: "Không",
     stopped: "Dừng",
@@ -709,6 +709,11 @@ const TRANSLATIONS = {
               "Chấp nhận, từ chối hoặc chấp nhận một sự kiện một cách tạm thời.",
           },
         },
+      },
+      scheduledJob: {
+        title: "Tạo các công việc theo lịch trình",
+        description:
+          'Cho phép đại lý tạo các công việc lặp lại theo lịch trình từ cuộc trò chuyện (ví dụ: "mỗi ngày làm việc lúc 9 giờ sáng, tóm tắt hộp thư và gửi email cho tôi"). Chỉ khả dụng trong chế độ sử dụng riêng.',
       },
     },
     mcp: {
@@ -1361,6 +1366,11 @@ const TRANSLATIONS = {
         title: "Hiển thị HTML trong trò chuyện",
         description:
           "Hiển thị phản hồi HTML trong các phản hồi của trợ lý.\nĐiều này có thể mang lại chất lượng phản hồi cao hơn nhiều, nhưng cũng có thể dẫn đến các rủi ro bảo mật tiềm ẩn.",
+      },
+      "disable-auto-scroll": {
+        title: "Tắt tính năng cuộn tự động",
+        description:
+          "Tắt tính năng tự động cuộn xuống cuối cuộc trò chuyện khi nhận được tin nhắn mới.",
       },
     },
   },

@@ -41,6 +41,7 @@ import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
 import LemonadeLogo from "@/media/llmprovider/lemonade.png";
 import MinimaxLogo from "@/media/llmprovider/minimax.png";
 import CerebrasLogo from "@/media/llmprovider/cerebras.png";
+import OMLXLogo from "@/media/llmprovider/omlx.png";
 
 import PreLoader from "@/components/Preloader";
 import ModelRouterOptions from "@/components/LLMSelection/ModelRouterOptions";
@@ -84,6 +85,7 @@ import CerebrasLLMOptions from "@/components/LLMSelection/CerebrasLLMOptions";
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
+import OMLXOptions from "@/components/LLMSelection/OMLXOptions";
 
 export const MODEL_ROUTER_PROVIDER = {
   name: "Model Router",
@@ -404,6 +406,14 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <CerebrasLLMOptions settings={settings} />,
     description: "Run models at instant speed on Cerebras inference.",
     requiredConfig: ["CerebrasApiKey"],
+  },
+  {
+    name: "oMLX",
+    value: "omlx",
+    logo: OMLXLogo,
+    options: (settings) => <OMLXOptions settings={settings} />,
+    description: "Run MLX models on Apple Silicon with smart caching.",
+    requiredConfig: ["OMLXLLMBasePath"],
   },
   {
     name: "Generic OpenAI",

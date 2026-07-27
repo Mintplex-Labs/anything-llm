@@ -61,7 +61,7 @@ const TRANSLATIONS = {
     no: "Non",
     search: "Rechercher",
     username_requirements:
-      "Le nom d'utilisateur doit comporter entre 2 et 32 caractères, commencer par une lettre minuscule et ne contenir que des lettres minuscules, des chiffres, des tirets bas, des tirets et des points.",
+      "Le nom d'utilisateur doit comporter entre 2 et 64 caractères, commencer par une lettre minuscule et ne contenir que des lettres minuscules, des chiffres, des tirets bas, des tirets et des points.",
     on: "Sur",
     none: "Aucun",
     stopped: "Arrêté",
@@ -731,6 +731,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Créer des tâches planifiées",
+        description:
+          "Permettez à l'agent de créer des tâches planifiées récurrentes à partir des conversations (par exemple : « tous les jours ouvrables à 9h, résumez ma boîte de réception et envoyez-moi un e-mail »). Fonctionnalité disponible uniquement en mode utilisateur unique.",
+      },
     },
     mcp: {
       title: "Serveurs MCP",
@@ -1388,6 +1393,11 @@ const TRANSLATIONS = {
         title: "Rendu HTML",
         description:
           "Autorise le rendu du contenu HTML dans les réponses du chat.",
+      },
+      "disable-auto-scroll": {
+        title: "Désactiver le défilement automatique",
+        description:
+          "Désactiver le défilement automatique vers la fin de la conversation lorsqu'un nouveau message est reçu.",
       },
     },
   },

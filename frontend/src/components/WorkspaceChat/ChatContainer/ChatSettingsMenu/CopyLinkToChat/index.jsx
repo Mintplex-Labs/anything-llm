@@ -1,6 +1,5 @@
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal, { ModalHeader, ModalBody } from "@/components/lib/Modal";
 import { useModal } from "@/hooks/useModal";
-import { X } from "@phosphor-icons/react";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -53,40 +52,21 @@ export default function CopyLinkToChatRow() {
 }
 
 function CopyLinkModal({ isOpen, closeModal, url }) {
-  if (!isOpen) return null;
-
   return (
-    <ModalWrapper isOpen={isOpen}>
-      <div
-        onMouseDown={(e) => e.stopPropagation()}
-        onClick={(e) => e.stopPropagation()}
-        className="w-[500px] bg-theme-bg-sidebar px-6 py-4 rounded-lg flex flex-col items-center justify-between relative shadow-lg border border-white/10"
-      >
-        <div className="w-full flex items-center justify-between">
-          <div className="text-white text-left font-medium text-lg">
-            Chat link copied!
-          </div>
-          <button
-            onClick={closeModal}
-            className="text-white opacity-60 hover:text-white hover:opacity-100 border-none outline-none"
-          >
-            <X size={20} />
-          </button>
+    <Modal isOpen={isOpen} onClose={closeModal}>
+      <ModalHeader title="Chat link copied!" onClose={closeModal} />
+      <ModalBody>
+        <p className="text-sm text-zinc-400 light:text-slate-500">
+          The link to this chat has been copied to your clipboard.
+        </p>
+        <p className="text-sm text-zinc-400 light:text-slate-500">
+          This <strong>does not</strong> change permissions on the chat and is
+          simply a way for you to quick link to you own chats.
+        </p>
+        <div className="px-3 py-2 rounded-md bg-zinc-800 light:bg-slate-100 border border-white/10 light:border-slate-300 text-sm text-white light:text-slate-900 break-all select-all">
+          {url}
         </div>
-
-        <div className="flex flex-col w-full mt-4">
-          <p className="text-sm text-zinc-400 light:text-slate-500">
-            The link to this chat has been copied to your clipboard.
-          </p>
-          <p className="text-sm text-zinc-400 light:text-slate-500 pt-1">
-            This <strong>does not</strong> change permissions on the chat and is
-            simply a way for you to quick link to you own chats.
-          </p>
-          <div className="mt-3 px-3 py-2 rounded-md bg-theme-bg-primary border border-white/10 text-sm text-white break-all select-all">
-            {url}
-          </div>
-        </div>
-      </div>
-    </ModalWrapper>
+      </ModalBody>
+    </Modal>
   );
 }

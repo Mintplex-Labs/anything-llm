@@ -64,7 +64,7 @@ const TRANSLATIONS = {
     stopped: "Sustabdyta",
     search: "Paieška",
     username_requirements:
-      "Vartotojo vardą turi sudaryti 2–32 simboliai, jis turi prasidėti mažąja raide ir susidėti tik iš mažųjų raidžių, skaičių, pabraukimo brūkšnių, brūkšnelių ir taškų.",
+      "Vartotojo vardą turi sudaryti 2–64 simboliai, jis turi prasidėti mažąja raide ir susidėti tik iš mažųjų raidžių, skaičių, pabraukimo brūkšnių, brūkšnelių ir taškų.",
     loading: "Kraunama",
     refresh: "Atnaujinti",
   },
@@ -725,6 +725,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Sukurkite nurodytus užduotis",
+        description:
+          "Leiskite agentui kurti nuolatinės užduotės iš pokalbio (pvz., „kasdien, 9 val., peržiūrėkite mano pašto dėžę ir siųskite man el. laišką“). Šis funkcijomis galima naudotis tik vieno vartotojo režimu.",
+      },
     },
     mcp: {
       title: "MCP serveriai",
@@ -875,6 +880,11 @@ const TRANSLATIONS = {
         title: "Atvaizduoti HTML pokalbyje",
         description:
           "Atvaizduoti HTML kodą asistento atsakymuose.\nTai gali užtikrinti geresnę atsakymų vizualinę kokybę, tačiau taip pat gali kelti saugumo riziką.",
+      },
+      "disable-auto-scroll": {
+        title: "Išjunkite automatinį rolį",
+        description:
+          "Išjunkite automatinį skryptą į apačią, kai gaunamos naujos žinios.",
       },
     },
   },

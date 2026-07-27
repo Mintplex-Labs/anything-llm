@@ -474,6 +474,10 @@ a {
   -webkit-overflow-scrolling: touch !important;
 }
 
+[data-theme="light"] .show-scrollbar {
+  scrollbar-color: rgba(0, 0, 0, 0.5) rgba(28, 28, 28, 0.3) !important;
+}
+
 .show-scrollbar::-webkit-scrollbar {
   width: 8px !important;
   display: block !important;

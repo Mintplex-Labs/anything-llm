@@ -38,6 +38,7 @@ function slugify(str) {
  * @param {string} [params.port=""] - Database port
  * @param {string} [params.database=""] - Database name
  * @param {boolean} [params.encrypt=false] - Enable encryption (SQL Server only)
+ * @param {boolean} [params.ssl=false] - Connect over SSL/TLS without certificate verification
  * @returns {string|null} - The assembled connection string, error message if fields missing, or null if engine invalid
  */
 function assembleConnectionString({
@@ -48,12 +49,18 @@ function assembleConnectionString({
   port = "",
   database = "",
   encrypt = false,
+  ssl = false,
 }) {
   if ([username, password, host, database].every((i) => !!i) === false)
     return `Please fill out all the fields above.`;
+  username = encodeURIComponent(username);
+  password = encodeURIComponent(password);
+  database = encodeURIComponent(database);
+  // SSL is encrypt-without-verification to allow self-signed
+  const pgSsl = ssl ? "?sslmode=no-verify" : "";
   switch (engine) {
     case "postgresql":
-      return `postgres://${username}:${password}@${host}:${port}/${database}`;
+      return `postgres://${username}:${password}@${host}:${port}/${database}${pgSsl}`;
     case "mysql":
       return `mysql://${username}:${password}@${host}:${port}/${database}`;
     case "sql-server":
@@ -73,6 +80,7 @@ const DEFAULT_CONFIG = {
   database: null,
   schema: null,
   encrypt: false,
+  ssl: false,
 };
 
 /**
@@ -118,6 +126,7 @@ export default function SQLConnectionModal({
         database: existingConnection.database,
         schema: existingConnection.schema,
         encrypt: existingConnection?.encrypt,
+        ssl: existingConnection?.ssl,
       });
     } else {
       setEngine(DEFAULT_ENGINE);
@@ -147,6 +156,7 @@ export default function SQLConnectionModal({
       database: form.get("database").trim(),
       schema: form.get("schema")?.trim() || null,
       encrypt: form.get("encrypt") === "true",
+      ssl: form.get("ssl") === "true",
     });
   }
 
@@ -410,6 +420,16 @@ export default function SQLConnectionModal({
               size="md"
               label="Enable Encryption"
               enabled={config.encrypt}
+            />
+          )}
+
+          {engine === "postgresql" && (
+            <Toggle
+              name="ssl"
+              value="true"
+              size="md"
+              label="Use SSL"
+              enabled={config.ssl}
             />
           )}
 

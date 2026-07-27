@@ -62,7 +62,7 @@ const TRANSLATIONS = {
     no: "No",
     search: "Buscar",
     username_requirements:
-      "El nombre de usuario debe tener entre 2 y 32 caracteres, comenzar con una letra minúscula y solo contener letras minúsculas, números, guiones bajos, guiones y puntos.",
+      "El nombre de usuario debe tener entre 2 y 64 caracteres, comenzar con una letra minúscula y solo contener letras minúsculas, números, guiones bajos, guiones y puntos.",
     on: "Sobre",
     none: "Ninguno",
     stopped: "Parado",
@@ -741,6 +741,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Crear tareas programadas",
+        description:
+          'Permita que el agente cree tareas programadas recurrentes a partir de las conversaciones (por ejemplo, "todos los días laborables a las 9:00 am, resume mi bandeja de entrada y envíame un correo electrónico"). Disponible únicamente en modo para un solo usuario.',
+      },
     },
     mcp: {
       title: "Servidores MCP",
@@ -897,6 +902,11 @@ const TRANSLATIONS = {
         title: "Renderizar HTML en el chat",
         description:
           "Generar respuestas en HTML en las respuestas del asistente.\nEsto puede resultar en una mayor calidad de las respuestas, pero también puede generar posibles riesgos de seguridad.",
+      },
+      "disable-auto-scroll": {
+        title: "Desactivar el desplazamiento automático",
+        description:
+          "Desactivar la función de desplazamiento automático hacia el final del chat cuando se reciben nuevos mensajes.",
       },
     },
   },
