@@ -118,6 +118,7 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
+    "image-generation": "ການສ້າງຮູບພາບ",
   },
   login: {
     "multi-user": {
@@ -1549,6 +1550,7 @@ const TRANSLATIONS = {
         cancel: "ຍົກເລີກ",
       },
     },
+    preset_img_description: "ສ້າງຮູບຈາກຂໍ້ຄວາມ",
   },
   profile_settings: {
     edit_account: "ແກ້ໄຂບັນຊີ",
@@ -1821,6 +1823,12 @@ const TRANSLATIONS = {
         generic: "ໄຟລ໌",
       },
     },
+  },
+  imageGeneration: {
+    title: "ການພ prefer ທີ່ໃຊ້ໃນການສ້າງຮູບພາບ",
+    description:
+      "ຊອກຫາຜູ້ສະໜອງ ທີ່ຈະນຳໃຊ້ເພື່ອສ້າງຮູບຈາກຄຳສັ່ງ /img ໂດຍລວມແລ້ວ ຈະສ້າງຮູບຂະໜາດ 1024x1024",
+    provider: "ຜູ້ສະໜອງການສ້າງຮູບ",
   },
 };
 

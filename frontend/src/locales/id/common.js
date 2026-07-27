@@ -119,6 +119,7 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
+    "image-generation": "Pembuatan Gambar",
   },
   login: {
     "multi-user": {
@@ -1631,6 +1632,7 @@ const TRANSLATIONS = {
         cancel: "Batal",
       },
     },
+    preset_img_description: "Hasilkan gambar berdasarkan teks yang diberikan.",
   },
   profile_settings: {
     edit_account: "Edit Akun",
@@ -1917,6 +1919,12 @@ const TRANSLATIONS = {
         generic: "Berkas",
       },
     },
+  },
+  imageGeneration: {
+    title: "Preferensi dalam menghasilkan gambar",
+    description:
+      "Konfigurasikan penyedia yang digunakan untuk menghasilkan gambar dari perintah `/img`. Gambar dihasilkan secara default dengan ukuran 1024x1024.",
+    provider: "Penyedia Layanan Pembuatan Gambar",
   },
 };
 

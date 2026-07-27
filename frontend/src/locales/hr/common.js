@@ -118,6 +118,7 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
+    "image-generation": "Generiranje slika",
   },
   login: {
     "multi-user": {
@@ -1635,6 +1636,7 @@ const TRANSLATIONS = {
         cancel: "Odustani",
       },
     },
+    preset_img_description: "Generiraj sliku na temelju tekstualnog uputa",
   },
   profile_settings: {
     edit_account: "Uredi račun",
@@ -1916,6 +1918,12 @@ const TRANSLATIONS = {
         generic: "Datoteka",
       },
     },
+  },
+  imageGeneration: {
+    title: "Preferirani način generiranja slika",
+    description:
+      "Konfigurirajte pružatelja koji se koristi za generiranje slika iz komande `/img`. Slika se generiraju automatski u rezoluciji 1024x1024.",
+    provider: "Pružatelj usluga generiranja slika",
   },
 };
 
