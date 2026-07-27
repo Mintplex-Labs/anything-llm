@@ -7,6 +7,9 @@ const {
   writeResponseChunk,
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
+const {
+  getLLMProviderRequestParams,
+} = require("../../helpers/llmProviderConfig");
 const { v4: uuidv4 } = require("uuid");
 const { toValidNumber } = require("../../http");
 const { getAnythingLLMUserAgent } = require("../../../endpoints/utils");
@@ -77,114 +80,22 @@ class GenericOpenAiLLM {
   }
 
   /**
-   * Parses a stop sequence from an environment variable value.
-   * Supports JSON arrays, comma-separated values, or a single string.
-   * @param {string} value
-   * @returns {string|string[]|null}
-   */
-  static #parseStopValue(value) {
-    const trimmed = value.trim();
-    if (!trimmed) return null;
-
-    if (trimmed.startsWith("[")) {
-      try {
-        const parsed = JSON.parse(trimmed);
-        if (Array.isArray(parsed)) return parsed;
-      } catch {
-        return null;
-      }
-    }
-
-    if (trimmed.includes(",")) {
-      return trimmed
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean);
-    }
-
-    return trimmed;
-  }
-
-  /**
-   * Parses extra request parameters from a JSON object environment variable.
-   * @param {string} value
+   * Optional request params from `storage/config/llm/generic-openai.json`.
+   * Supports arbitrary provider-specific keys plus optional per-model overrides.
+   * @param {string|null} [model]
    * @returns {Object}
    */
-  static #parseExtraParamsValue(value) {
-    try {
-      const parsed = JSON.parse(value);
-      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
-        return parsed;
-      }
-      console.warn(
-        "[GenericOpenAiLLM] GENERIC_OPEN_AI_EXTRA_PARAMS must be a JSON object. Ignoring value."
-      );
-    } catch {
-      console.warn(
-        "[GenericOpenAiLLM] Failed to parse GENERIC_OPEN_AI_EXTRA_PARAMS as JSON. Ignoring value."
-      );
-    }
-    return {};
-  }
-
-  /**
-   * Parses optional OpenAI request parameters from environment variables.
-   * Only includes parameters that are explicitly set.
-   * @returns {Object}
-   */
-  static parseRequestParams() {
-    const params = {};
-
-    if ("GENERIC_OPEN_AI_TOP_P" in process.env) {
-      const topP = Number(process.env.GENERIC_OPEN_AI_TOP_P);
-      if (!isNaN(topP)) params.top_p = topP;
-    }
-
-    if ("GENERIC_OPEN_AI_FREQUENCY_PENALTY" in process.env) {
-      const frequencyPenalty = Number(
-        process.env.GENERIC_OPEN_AI_FREQUENCY_PENALTY
-      );
-      if (!isNaN(frequencyPenalty)) params.frequency_penalty = frequencyPenalty;
-    }
-
-    if ("GENERIC_OPEN_AI_PRESENCE_PENALTY" in process.env) {
-      const presencePenalty = Number(
-        process.env.GENERIC_OPEN_AI_PRESENCE_PENALTY
-      );
-      if (!isNaN(presencePenalty)) params.presence_penalty = presencePenalty;
-    }
-
-    if ("GENERIC_OPEN_AI_SEED" in process.env) {
-      const seed = Number(process.env.GENERIC_OPEN_AI_SEED);
-      if (!isNaN(seed)) params.seed = seed;
-    }
-
-    if ("GENERIC_OPEN_AI_STOP" in process.env) {
-      const stop = GenericOpenAiLLM.#parseStopValue(
-        process.env.GENERIC_OPEN_AI_STOP
-      );
-      if (stop !== null) params.stop = stop;
-    }
-
-    if ("GENERIC_OPEN_AI_EXTRA_PARAMS" in process.env) {
-      Object.assign(
-        params,
-        GenericOpenAiLLM.#parseExtraParamsValue(
-          process.env.GENERIC_OPEN_AI_EXTRA_PARAMS
-        )
-      );
-    }
-
-    return params;
+  static parseRequestParams(model = null) {
+    return getLLMProviderRequestParams("generic-openai", model);
   }
 
   #buildCompletionParams(messages, { temperature = 0.7, stream = false } = {}) {
     const params = {
+      ...GenericOpenAiLLM.parseRequestParams(this.model),
       model: this.model,
       messages,
       temperature,
       max_tokens: this.maxTokens,
-      ...GenericOpenAiLLM.parseRequestParams(),
     };
 
     if (stream) {

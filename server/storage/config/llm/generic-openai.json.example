@@ -1,0 +1,12 @@
+{
+  "top_p": 0.9,
+  "frequency_penalty": 0,
+  "presence_penalty": 0,
+  "repetition_penalty": 1.1,
+  "models": {
+    "gpt-4.1-nano": {
+      "top_p": 0.95,
+      "seed": 42
+    }
+  }
+}

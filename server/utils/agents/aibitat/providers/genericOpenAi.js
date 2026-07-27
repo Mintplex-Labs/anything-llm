@@ -52,11 +52,11 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
   async #handleFunctionCallChat({ messages = [] }) {
     return await this.client.chat.completions
       .create({
+        ...GenericOpenAiLLM.parseRequestParams(this.model),
         model: this.model,
         temperature: 0,
         messages,
         max_tokens: this.maxTokens,
-        ...GenericOpenAiLLM.parseRequestParams(),
       })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
@@ -72,11 +72,11 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
 
   async #handleFunctionCallStream({ messages = [] }) {
     return await this.client.chat.completions.create({
+      ...GenericOpenAiLLM.parseRequestParams(this.model),
       model: this.model,
       stream: true,
       messages,
       max_tokens: this.maxTokens,
-      ...GenericOpenAiLLM.parseRequestParams(),
     });
   }
 
