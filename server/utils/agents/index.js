@@ -524,6 +524,7 @@ class AgentHandler {
     this.provider = router.resolvedRoute.provider;
     this.model = router.resolvedRoute.model;
     this.routingMetadata = router.routingMetadata;
+    this._modelRouter = router;
   }
 
   async #validInvocation() {
@@ -918,13 +919,15 @@ class AgentHandler {
     return stripped;
   }
 
-  startAgentCluster() {
-    return this.aibitat.start({
+  async startAgentCluster() {
+    const result = await this.aibitat.start({
       from: USER_AGENT.name,
       to: this.channel ?? WORKSPACE_AGENT.name,
       content: this.#stripAgentCommand(this.invocation.prompt),
       attachments: this.attachments,
     });
+    this._modelRouter?.onInferenceComplete();
+    return result;
   }
 }
 
