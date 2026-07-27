@@ -1404,6 +1404,11 @@ const TRANSLATIONS = {
         description:
           "Afișarea răspunsurilor HTML în răspunsurile asistentului.\nAcest lucru poate duce la o calitate a răspunsurilor mult mai bună, dar poate și la riscuri potențiale de securitate.",
       },
+      "disable-auto-scroll": {
+        title: "Dezactivați derularea automată",
+        description:
+          "Dezactivați derularea automată până la sfârșitul conversației atunci când se primesc mesaje noi.",
+      },
     },
   },
   api: {

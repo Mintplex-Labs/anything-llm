@@ -1,4 +1,5 @@
-const Indonesian = {
+// Anything with "null" requires a translation. Contribute to translation via a PR!
+const TRANSLATIONS = {
   onboarding: {
     home: {
       welcome: "Selamat Datang",
@@ -151,7 +152,7 @@ const Indonesian = {
     title: "Ruang Kerja Baru",
     placeholder: "Ruang Kerja Saya",
   },
-  "workspaces\u2014settings": {
+  "workspaces—settings": {
     general: "Pengaturan Umum",
     chat: "Pengaturan Obrolan",
     vector: "Basis Data Vektor",
@@ -268,9 +269,9 @@ const Indonesian = {
       description:
         "Skor kesamaan minimum yang diperlukan agar sumber dianggap terkait dengan obrolan. Semakin tinggi angkanya, semakin mirip sumbernya dengan obrolan.",
       zero: "Tanpa batasan",
-      low: "Rendah (skor kesamaan \u2265 .25)",
-      medium: "Sedang (skor kesamaan \u2265 .50)",
-      high: "Tinggi (skor kesamaan \u2265 .75)",
+      low: "Rendah (skor kesamaan ≥ .25)",
+      medium: "Sedang (skor kesamaan ≥ .50)",
+      high: "Tinggi (skor kesamaan ≥ .75)",
     },
     reset: {
       reset: "Reset Basis Data Vektor",
@@ -874,6 +875,11 @@ const Indonesian = {
         title: "Render HTML dalam obrolan",
         description:
           "Render respons HTML dalam respons asisten.\nIni dapat menghasilkan kualitas respons yang jauh lebih tinggi, tetapi juga dapat menyebabkan potensi risiko keamanan.",
+      },
+      "disable-auto-scroll": {
+        title: "Nonaktifkan Pengguliran Otomatis",
+        description:
+          "Matikan fungsi otomatis untuk menggulir ke bagian bawah jendela obrolan saat pesan baru diterima.",
       },
     },
   },
@@ -1914,4 +1920,4 @@ const Indonesian = {
   },
 };
 
-export default Indonesian;
+export default TRANSLATIONS;

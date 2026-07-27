@@ -1279,6 +1279,10 @@ const TRANSLATIONS = {
         description:
           "在助理回應中渲染 HTML 內容。\n這能顯著提升呈現精細度，但也可能帶來潛在安全風險。",
       },
+      "disable-auto-scroll": {
+        title: "停用自動捲動功能",
+        description: "當收到新訊息時，取消自動將聊天視窗滾動到底部的功能。",
+      },
     },
   },
   "main-page": {
