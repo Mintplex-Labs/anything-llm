@@ -21,6 +21,7 @@ const {
   parseDockerModelRunnerEndpoint,
 } = require("../../../AiProviders/dockerModelRunner");
 const { parseFoundryBasePath } = require("../../../AiProviders/foundry");
+const { parseOMLXBasePath } = require("../../../AiProviders/omlx");
 const { AzureOpenAiLLM } = require("../../../AiProviders/azureOpenAi");
 const {
   SystemPromptVariables,
@@ -455,6 +456,14 @@ class Provider {
             baseURL: process.env.LEMONADE_LLM_BASE_PATH,
           },
           apiKey: process.env.LEMONADE_LLM_API_KEY || null,
+          ...config,
+        });
+      case "omlx":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: parseOMLXBasePath(process.env.OMLX_LLM_BASE_PATH),
+          },
+          apiKey: process.env.OMLX_LLM_API_KEY || null,
           ...config,
         });
       default:

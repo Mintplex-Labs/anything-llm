@@ -1,12 +1,4 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-  useMemo,
-  useCallback,
-  forwardRef,
-} from "react";
-import debounce from "lodash.debounce";
+import { useMemo, useCallback, forwardRef } from "react";
 import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
 import StatusResponse from "./StatusResponse";
@@ -14,6 +6,7 @@ import ToolApprovalRequest from "./ToolApprovalRequest";
 import ClarifyingQuestionCard from "./ClarifyingQuestion";
 import FileDownloadCard from "./FileDownloadCard";
 import ImageGenerationPending from "./ImageGenerationPending";
+import ScheduledJobCreatedCard from "./ScheduledJobCreatedCard";
 import { useManageWorkspaceModal } from "../../../Modals/ManageWorkspace";
 import ManageWorkspace from "../../../Modals/ManageWorkspace";
 import { ArrowDown } from "@phosphor-icons/react";
@@ -24,7 +17,7 @@ import { useParams } from "react-router-dom";
 import paths from "@/utils/paths";
 import Appearance from "@/models/appearance";
 import useTextSize from "@/hooks/useTextSize";
-import useChatHistoryScrollHandle from "@/hooks/useChatHistoryScrollHandle";
+import useAutoScroll from "@/hooks/useAutoScroll";
 import { ThoughtExpansionProvider } from "./ThoughtContainer";
 import { MessageActionsProvider } from "./MessageActionsContext";
 
@@ -39,66 +32,12 @@ export default forwardRef(function (
   },
   ref
 ) {
-  const lastScrollTopRef = useRef(0);
-  const chatHistoryRef = useRef(null);
-  const isProgrammaticScroll = useRef(false);
+  const { chatHistoryRef, isAtBottom, scrollToBottom, scrollHandlers } =
+    useAutoScroll(history, ref);
   const { threadSlug = null } = useParams();
   const { showing, hideModal } = useManageWorkspaceModal();
-  const [isAtBottom, setIsAtBottom] = useState(true);
-  const [isUserScrolling, setIsUserScrolling] = useState(false);
-  const isStreaming = history[history.length - 1]?.animate;
   const { showScrollbar } = Appearance.getSettings();
   const { textSizeClass } = useTextSize();
-
-  useEffect(() => {
-    if (!isUserScrolling && (isAtBottom || isStreaming)) {
-      scrollToBottom(false);
-    }
-  }, [history, isAtBottom, isStreaming, isUserScrolling]);
-
-  const handleScroll = useCallback((e) => {
-    const { scrollTop, scrollHeight, clientHeight } = e.target;
-    const isBottom = scrollHeight - scrollTop - clientHeight < 2;
-
-    if (isProgrammaticScroll.current) {
-      isProgrammaticScroll.current = false;
-    } else if (Math.abs(scrollTop - lastScrollTopRef.current) > 10) {
-      setIsUserScrolling(!isBottom);
-    }
-
-    setIsAtBottom(isBottom);
-    lastScrollTopRef.current = scrollTop;
-  }, []);
-
-  const debouncedScroll = useMemo(
-    () => debounce(handleScroll, 50),
-    [handleScroll]
-  );
-
-  useEffect(() => {
-    return () => debouncedScroll.cancel();
-  }, [debouncedScroll]);
-
-  const scrollToBottom = (smooth = false) => {
-    if (chatHistoryRef.current) {
-      isProgrammaticScroll.current = true;
-      chatHistoryRef.current.scrollTo({
-        top: chatHistoryRef.current.scrollHeight,
-        ...(smooth ? { behavior: "smooth" } : {}),
-      });
-    }
-  };
-
-  useChatHistoryScrollHandle(ref, chatHistoryRef, {
-    setIsUserScrolling,
-    isStreaming,
-    scrollToBottom,
-  });
-
-  const historyRef = useRef(history);
-  historyRef.current = history;
-  const sendCommandRef = useRef(sendCommand);
-  sendCommandRef.current = sendCommand;
 
   const saveEditedMessage = useCallback(
     async ({
@@ -109,13 +48,10 @@ export default forwardRef(function (
       saveOnly = false,
     }) => {
       if (!editedMessage) return;
-      const currentHistory = historyRef.current;
 
       if (role === "user" && saveOnly) {
-        const updatedHistory = [...currentHistory];
-        const targetIdx = currentHistory.findIndex(
-          (msg) => msg.chatId === chatId
-        );
+        const updatedHistory = [...history];
+        const targetIdx = history.findIndex((msg) => msg.chatId === chatId);
         if (targetIdx < 0) return;
         updatedHistory[targetIdx].content = editedMessage;
         updateHistory(updatedHistory);
@@ -130,13 +66,13 @@ export default forwardRef(function (
       }
 
       if (role === "user") {
-        const updatedHistory = currentHistory.slice(
+        const updatedHistory = history.slice(
           0,
-          currentHistory.findIndex((msg) => msg.chatId === chatId) + 1
+          history.findIndex((msg) => msg.chatId === chatId) + 1
         );
         updatedHistory[updatedHistory.length - 1].content = editedMessage;
         await Workspace.deleteEditedChats(workspace.slug, threadSlug, chatId);
-        sendCommandRef.current({
+        sendCommand({
           text: editedMessage,
           autoSubmit: true,
           history: updatedHistory,
@@ -146,8 +82,8 @@ export default forwardRef(function (
       }
 
       if (role === "assistant") {
-        const updatedHistory = [...currentHistory];
-        const targetIdx = currentHistory.findIndex(
+        const updatedHistory = [...history];
+        const targetIdx = history.findIndex(
           (msg) => msg.chatId === chatId && msg.role === role
         );
         if (targetIdx < 0) return;
@@ -162,7 +98,7 @@ export default forwardRef(function (
         return;
       }
     },
-    [workspace.slug, threadSlug, updateHistory]
+    [workspace.slug, threadSlug, updateHistory, history, sendCommand]
   );
 
   const forkThread = useCallback(
@@ -221,7 +157,7 @@ export default forwardRef(function (
           className={`markdown text-white/80 light:text-theme-text-primary font-light ${textSizeClass} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col items-center justify-start ${showScrollbar ? "show-scrollbar" : "no-scroll"}`}
           id="chat-history"
           ref={chatHistoryRef}
-          onScroll={debouncedScroll}
+          {...scrollHandlers}
         >
           <div className="w-full max-w-[750px]">
             {compiledHistory.map((item, index) =>
@@ -240,10 +176,7 @@ export default forwardRef(function (
             <div className="flex flex-col items-center">
               <div
                 className="p-1 rounded-full border border-white/10 bg-white/10 hover:bg-white/20 hover:text-white"
-                onClick={() => {
-                  scrollToBottom(isStreaming ? false : true);
-                  setIsUserScrolling(false);
-                }}
+                onClick={() => scrollToBottom(true)}
               >
                 <ArrowDown weight="bold" className="text-white/60 w-5 h-5" />
               </div>
@@ -351,6 +284,8 @@ function buildMessages({
       acc.push(<Chartable key={props.uuid} props={props} />);
     } else if (props.type === "fileDownloadCard" && !!props.content) {
       acc.push(<FileDownloadCard key={props.uuid} props={props} />);
+    } else if (props.type === "scheduledJobCreated" && !!props.content) {
+      acc.push(<ScheduledJobCreatedCard key={props.uuid} props={props} />);
     } else if (
       isLastBotReply &&
       props.pending &&

@@ -532,6 +532,9 @@ const SystemSettings = {
       WhisperProvider: process.env.WHISPER_PROVIDER || "local",
       WhisperModelPref:
         process.env.WHISPER_MODEL_PREF || "Xenova/whisper-small",
+      WhisperGenericOpenAiBaseUrl: process.env.WHISPER_GENERIC_OPEN_AI_BASE_URL,
+      WhisperGenericOpenAiApiKey: !!process.env.WHISPER_GENERIC_OPEN_AI_API_KEY,
+      WhisperGenericOpenAiModel: process.env.WHISPER_GENERIC_OPEN_AI_MODEL,
 
       // --------------------------------------------------------
       // TTS/STT  Selection Settings & Configs
@@ -866,7 +869,7 @@ const SystemSettings = {
     return {
       // OpenAI Keys
       OpenAiKey: !!process.env.OPEN_AI_KEY,
-      OpenAiModelPref: process.env.OPEN_MODEL_PREF || "gpt-4o",
+      OpenAiModelPref: process.env.OPEN_MODEL_PREF || "gpt-4.1-nano",
 
       // Azure + OpenAI Keys
       AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
@@ -1047,6 +1050,12 @@ const SystemSettings = {
       // Cerebras Keys
       CerebrasApiKey: !!process.env.CEREBRAS_API_KEY,
       CerebrasModelPref: process.env.CEREBRAS_MODEL_PREF,
+
+      // OMLX Keys
+      OMLXLLMBasePath: process.env.OMLX_LLM_BASE_PATH,
+      OMLXLLMApiKey: !!process.env.OMLX_LLM_API_KEY,
+      OMLXLLMModelPref: process.env.OMLX_LLM_MODEL_PREF,
+      OMLXLLMTokenLimit: process.env.OMLX_LLM_TOKEN_LIMIT,
     };
   },
 
@@ -1205,6 +1214,7 @@ function mergeConnections(existingConnections = [], updates = []) {
       }
 
       default: {
+        if (!action) continue;
         throw new Error("SQL connection update contains an invalid action.");
       }
     }

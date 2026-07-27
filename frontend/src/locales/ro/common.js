@@ -1242,6 +1242,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Creați sarcini programate",
+        description:
+          "Permite reprezentantului să creeze sarcini programate repetitive direct din aplicație (de exemplu, „în fiecare zi de lucru la ora 9:00, rezumă e-mailurile mele și trimite-mi un raport”). Funcționalitatea este disponibilă doar în modul pentru utilizator unic.",
+      },
     },
     mcp: {
       title: "Servere MCP",
@@ -1398,6 +1403,11 @@ const TRANSLATIONS = {
         title: "Redarea HTML în chat",
         description:
           "Afișarea răspunsurilor HTML în răspunsurile asistentului.\nAcest lucru poate duce la o calitate a răspunsurilor mult mai bună, dar poate și la riscuri potențiale de securitate.",
+      },
+      "disable-auto-scroll": {
+        title: "Dezactivați derularea automată",
+        description:
+          "Dezactivați derularea automată până la sfârșitul conversației atunci când se primesc mesaje noi.",
       },
     },
   },

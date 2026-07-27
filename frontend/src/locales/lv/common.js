@@ -723,6 +723,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Ierīkojiet periodiskas darbības",
+        description:
+          'Ļauj aģentam izveidot atkārtotus plānotus darbus no čata (piemēram, "katru darba dienu plkst. 9:00 nosūtīt man savu e-pasta kopsavilkumu un nosūtīt ziņu"). Pieejams tikai vienam lietotājam.',
+      },
     },
     mcp: {
       title: "MCP serveri",
@@ -872,6 +877,11 @@ const TRANSLATIONS = {
         title: "Izveidot HTML saturu, ko var izmantot čatā.",
         description:
           "Ievietojiet HTML atbildes palīdzības atbildēs.\nTas var novērst daudz augstāku atbildes kvalitātes līmeni, taču arī var radīt potenciālas drošības riskus.",
+      },
+      "disable-auto-scroll": {
+        title: "Atspējot automātisko skrološanu",
+        description:
+          "Atstāviet automātisko skrološanu uz sarunas beigām, kad saņemts jauns sūtījums.",
       },
     },
   },

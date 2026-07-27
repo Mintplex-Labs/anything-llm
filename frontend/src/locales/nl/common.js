@@ -716,6 +716,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Maak geplande taken aan",
+        description:
+          'Laat de agent herhaalde geplande taken aanmaken vanuit het gesprek (bijvoorbeeld: "elke werkdag om 9 uur, vat mijn inbox samen en stuur me een e-mail"). Dit is alleen beschikbaar in single-user modus.',
+      },
     },
     mcp: {
       title: "MCP-servers",
@@ -1375,6 +1380,11 @@ const TRANSLATIONS = {
         title: "HTML weergeven in chat",
         description:
           "HTML-reacties weergeven in assistentreacties.\nLet op: Dit kan resulteren in een veel hogere kwaliteit van de reacties, maar kan ook leiden tot potentiële beveiligingsrisico's.",
+      },
+      "disable-auto-scroll": {
+        title: "Schakel automatische scrollfunctie uit",
+        description:
+          "Schakel het automatische scrollen naar het einde van de chat uit wanneer er nieuwe berichten worden ontvangen.",
       },
     },
   },

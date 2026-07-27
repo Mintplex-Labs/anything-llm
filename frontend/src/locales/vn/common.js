@@ -710,6 +710,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Tạo các công việc theo lịch trình",
+        description:
+          'Cho phép đại lý tạo các công việc lặp lại theo lịch trình từ cuộc trò chuyện (ví dụ: "mỗi ngày làm việc lúc 9 giờ sáng, tóm tắt hộp thư và gửi email cho tôi"). Chỉ khả dụng trong chế độ sử dụng riêng.',
+      },
     },
     mcp: {
       title: "Máy chủ MCP",
@@ -1361,6 +1366,11 @@ const TRANSLATIONS = {
         title: "Hiển thị HTML trong trò chuyện",
         description:
           "Hiển thị phản hồi HTML trong các phản hồi của trợ lý.\nĐiều này có thể mang lại chất lượng phản hồi cao hơn nhiều, nhưng cũng có thể dẫn đến các rủi ro bảo mật tiềm ẩn.",
+      },
+      "disable-auto-scroll": {
+        title: "Tắt tính năng cuộn tự động",
+        description:
+          "Tắt tính năng tự động cuộn xuống cuối cuộc trò chuyện khi nhận được tin nhắn mới.",
       },
     },
   },

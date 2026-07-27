@@ -707,6 +707,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Opret planlagte opgaver",
+        description:
+          'Lad agenten oprette gentagne planlagte opgaver fra chat (f.eks. "hver mandag kl. 9:00, opsummér min indbakke og send mig en e-mail"). Kun tilgængeligt i enkeltbruger-tilstand.',
+      },
     },
     mcp: {
       title: "MCP-servere",
@@ -1365,6 +1370,11 @@ const TRANSLATIONS = {
         title: "Vis HTML i chat",
         description:
           "Generer HTML-svar i hjælperes svar.\nDette kan resultere i en meget højere kvalitet af svaret, men kan også føre til potentielle sikkerhedsrisici.",
+      },
+      "disable-auto-scroll": {
+        title: "Deaktiver automatisk rulle",
+        description:
+          "Deaktiver automatisk rulle ned til bundlinjen i chatten, når der modtages nye beskeder.",
       },
     },
   },

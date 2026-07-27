@@ -196,6 +196,8 @@ function LemonadeModelSelection({ settings, basePath = null }) {
     findCustomModels();
   }, [basePath]);
 
+  const downloadedModels = customModels.filter((model) => model?.downloaded);
+
   if (loading || customModels.length == 0) {
     return (
       <div className="flex flex-col w-60">
@@ -231,8 +233,21 @@ function LemonadeModelSelection({ settings, basePath = null }) {
         required={true}
         className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
+        {downloadedModels.length > 0 && (
+          <optgroup label="Downloaded models">
+            {downloadedModels.map((model) => (
+              <option
+                key={model.id}
+                value={model.id}
+                selected={settings.EmbeddingModelPref === model.id}
+              >
+                {model.id}
+              </option>
+            ))}
+          </optgroup>
+        )}
         {customModels.length > 0 && (
-          <optgroup label="Your loaded models">
+          <optgroup label="Discovered models">
             {customModels.map((model) => {
               return (
                 <option

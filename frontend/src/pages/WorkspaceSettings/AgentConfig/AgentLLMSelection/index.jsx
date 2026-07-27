@@ -41,6 +41,7 @@ const ENABLED_PROVIDERS = [
   "privatemode",
   "sambanova",
   "lemonade",
+  "omlx",
   "minimax",
   "cerebras",
 ];

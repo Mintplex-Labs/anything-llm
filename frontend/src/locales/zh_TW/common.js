@@ -664,6 +664,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "建立排程工作",
+        description:
+          "允許經理根據聊天內容，設定重複執行的工作（例如：「每天早上9點，請自動整理我的收件匣並將摘要發送至我的電子郵件」）。僅適用於單一使用者模式。",
+      },
     },
     mcp: {
       title: "MCP 伺服器",
@@ -1273,6 +1278,10 @@ const TRANSLATIONS = {
         title: "在對話中渲染 HTML",
         description:
           "在助理回應中渲染 HTML 內容。\n這能顯著提升呈現精細度，但也可能帶來潛在安全風險。",
+      },
+      "disable-auto-scroll": {
+        title: "停用自動捲動功能",
+        description: "當收到新訊息時，取消自動將聊天視窗滾動到底部的功能。",
       },
     },
   },
