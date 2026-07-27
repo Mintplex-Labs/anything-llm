@@ -1,5 +1,5 @@
 /* eslint-disable unused-imports/no-unused-vars */
-const { EventEmitter } = require("events");
+const { EventEmitter, setMaxListeners } = require("events");
 const { APIError } = require("./error.js");
 const Providers = require("./providers/index.js");
 const { Telemetry } = require("../../../models/telemetry.js");
@@ -32,6 +32,20 @@ class AIbitat {
 
   /** @type {import("./providers/ai-provider").AgentProviderInstance|null} */
   _providerInstance = null;
+
+  /**
+   * Whether this session was aborted (user hit stop, socket closed, or bail command).
+   * Checked at loop boundaries so no further LLM calls or turns run after abort.
+   * @type {boolean}
+   */
+  _aborted = false;
+
+  /**
+   * Session-wide AbortController. Its signal is attached to providers that
+   * support request cancellation so an abort tears down in-flight LLM requests.
+   * @type {AbortController}
+   */
+  abortController = new AbortController();
 
   defaultProvider = null;
   defaultInterrupt;
@@ -110,6 +124,10 @@ class AIbitat {
     };
     this.provider = this.defaultProvider.provider;
     this.model = this.defaultProvider.model;
+
+    // Providers register one abort listener per LLM request on the session
+    // signal - lift the EventTarget warning threshold (0 = unlimited).
+    setMaxListeners(0, this.abortController.signal);
   }
 
   /**
@@ -405,9 +423,13 @@ class AIbitat {
   }
 
   /**
-   * Abort the running of any plugins that may still be pending (Langchain summarize)
+   * Abort the session: cancels in-flight provider requests via the abort
+   * signal, stops the chat loop at the next boundary, and notifies plugins
+   * that may still be pending (Langchain summarize).
    */
   abort() {
+    this._aborted = true;
+    this.abortController.abort();
     this.emitter.emit("abort", null, this);
   }
 
@@ -580,6 +602,8 @@ class AIbitat {
    * @param keepAlive Whether to keep the chat alive.
    */
   async chat(route, keepAlive = true) {
+    if (this._aborted) return;
+
     // check if the message is for a group
     // if it is, select the next node to chat with from the group
     // and then ask them to reply.
@@ -589,6 +613,7 @@ class AIbitat {
       try {
         nextNode = await this.selectNext(route.from);
       } catch (error) {
+        if (this._aborted) return;
         if (error instanceof APIError) {
           return this.newError({ from: route.from, to: route.to }, error);
         }
@@ -633,6 +658,7 @@ class AIbitat {
     try {
       reply = await this.reply(route);
     } catch (error) {
+      if (this._aborted) return;
       if (error instanceof APIError) {
         return this.newError({ from: route.from, to: route.to }, error);
       }
@@ -722,6 +748,7 @@ class AIbitat {
       ...channelConfig,
     });
     provider.attachHandlerProps(this.handlerProps);
+    provider.attachAbortSignal?.(this.abortController.signal);
 
     const history = this.getHistory({ to: channel });
 
@@ -928,6 +955,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       ...fromConfig,
     });
     this.providerInstance.attachHandlerProps(this.handlerProps);
+    this.providerInstance.attachAbortSignal?.(this.abortController.signal);
 
     let content;
     if (this.providerInstance.supportsAgentStreaming) {
@@ -962,6 +990,8 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     try {
       return await providerCall();
     } catch (error) {
+      // User-initiated abort - rethrow as-is so the chat loop exits quietly.
+      if (this._aborted) throw error;
       console.error(`[AIbitat] Provider error: ${error.message}`, {
         hide_meta: true,
       });
@@ -985,6 +1015,8 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     byAgent = null,
     depth = 0
   ) {
+    // Bail before any (further) LLM calls when the session was aborted mid-execution.
+    if (this._aborted) return null;
     const eventHandler = (type, data) => {
       this?.socket?.send(type, data);
     };
@@ -1139,6 +1171,8 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     depth = 0,
     msgUUID = null
   ) {
+    // Bail before any (further) LLM calls when the session was aborted mid-execution.
+    if (this._aborted) return null;
     // Create a stable UUID at the start of execution for event correlation
     if (!msgUUID) msgUUID = v4();
     const eventHandler = (type, data) => {

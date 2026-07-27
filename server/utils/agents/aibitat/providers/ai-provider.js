@@ -49,6 +49,7 @@ const DEFAULT_WORKSPACE_PROMPT =
  * @property {boolean} [verbose] - Whether to log verbose introspection messages.
  * @property {boolean} supportsAgentStreaming - Whether the provider supports streaming tool-call execution.
  * @property {(handlerProps: Object) => void} attachHandlerProps - Attach invocation/handler context to the provider.
+ * @property {(signal: AbortSignal|null) => void} attachAbortSignal - Attach the session abort signal for request cancellation.
  * @property {(messages: Array, functions?: Array, eventHandler?: Function) => Promise<{functionCall: any, textResponse: string}>} stream - Stream a chat completion with tool calling.
  * @property {(messages: Array, functions?: Array) => Promise<{functionCall: any, textResponse: string, result?: string}>} complete - Non-streaming chat completion with tool calling.
  * @property {() => ProviderUsageMetrics} getUsage - Get usage metrics from the last completion.
@@ -100,6 +101,14 @@ class Provider {
    */
   providerTag = null;
 
+  /**
+   * Abort signal for the active agent session. Providers that support request
+   * cancellation pass this to their SDK calls so aborting the session tears
+   * down in-flight LLM requests.
+   * @type {AbortSignal|null}
+   */
+  abortSignal = null;
+
   constructor(client) {
     if (this.constructor == Provider) {
       return;
@@ -125,6 +134,14 @@ class Provider {
     this.executingUserId = this.invocation?.user_id
       ? `user_${this.invocation.user_id}`
       : "";
+  }
+
+  /**
+   * Attach the session abort signal so provider requests can be cancelled mid-flight.
+   * @param {AbortSignal|null} signal
+   */
+  attachAbortSignal(signal = null) {
+    this.abortSignal = signal;
   }
 
   get client() {

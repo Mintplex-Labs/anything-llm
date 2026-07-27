@@ -65,10 +65,13 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
   async #handleFunctionCallChat({ messages = [] }) {
     await LMStudioLLM.cacheContextWindows();
     return await this.client.chat.completions
-      .create({
-        model: this.model,
-        messages,
-      })
+      .create(
+        {
+          model: this.model,
+          messages,
+        },
+        this.abortSignal ? { signal: this.abortSignal } : undefined
+      )
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
           throw new Error("LMStudio chat: No results!");
@@ -83,11 +86,14 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
 
   async #handleFunctionCallStream({ messages = [] }) {
     await LMStudioLLM.cacheContextWindows();
-    return await this.client.chat.completions.create({
-      model: this.model,
-      stream: true,
-      messages,
-    });
+    return await this.client.chat.completions.create(
+      {
+        model: this.model,
+        stream: true,
+        messages,
+      },
+      this.abortSignal ? { signal: this.abortSignal } : undefined
+    );
   }
 
   /**
@@ -120,9 +126,11 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
         messages,
         functions,
         eventHandler,
-        { provider: this }
+        { provider: this, signal: this.abortSignal }
       );
     } catch (error) {
+      // Session abort - do not wrap in RetryError, let the loop exit quietly.
+      if (error instanceof OpenAI.APIUserAbortError) throw error;
       console.error(error.message, error);
       if (error instanceof OpenAI.AuthenticationError) throw error;
       if (
@@ -161,7 +169,7 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
         messages,
         functions,
         this.getCost.bind(this),
-        { provider: this }
+        { provider: this, signal: this.abortSignal }
       );
 
       if (result.retryWithError) {
@@ -170,6 +178,8 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
 
       return result;
     } catch (error) {
+      // Session abort - do not wrap in RetryError, let the loop exit quietly.
+      if (error instanceof OpenAI.APIUserAbortError) throw error;
       if (error instanceof OpenAI.AuthenticationError) throw error;
       if (
         error instanceof OpenAI.RateLimitError ||

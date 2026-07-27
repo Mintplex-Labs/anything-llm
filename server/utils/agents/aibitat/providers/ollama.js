@@ -26,10 +26,14 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     const authToken = process.env.OLLAMA_AUTH_TOKEN;
     const basePath = process.env.OLLAMA_BASE_PATH;
     const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
+    const baseFetch = OllamaAILLM.applyOllamaFetch();
     this._client = new Ollama({
       host: basePath,
       headers: headers,
-      fetch: OllamaAILLM.applyOllamaFetch(),
+      // Merge the session abort signal into every request so aborting tears
+      // down in-flight calls at any phase (header wait, streaming, non-streamed).
+      fetch: (input, init = {}) =>
+        baseFetch(input, this.#withAbortSignal(init)),
     });
     this.model = model;
     this.verbose = true;
@@ -91,6 +95,28 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
       stream: true,
       options: this.queryOptions,
     });
+  }
+
+  /**
+   * Merge the session abort signal into a fetch init. The SDK's own signal is
+   * preserved, and either one aborting cancels the request - including while
+   * still awaiting response headers (e.g. during model load).
+   * @param {RequestInit} init
+   * @returns {RequestInit}
+   */
+  #withAbortSignal(init = {}) {
+    const sessionSignal = this.abortSignal;
+    if (!sessionSignal) return init;
+    if (!init.signal) return { ...init, signal: sessionSignal };
+
+    const controller = new AbortController();
+    const abort = () => controller.abort();
+    if (sessionSignal.aborted || init.signal.aborted) abort();
+    else {
+      sessionSignal.addEventListener("abort", abort, { once: true });
+      init.signal.addEventListener("abort", abort, { once: true });
+    }
+    return { ...init, signal: controller.signal };
   }
 
   /**
