@@ -3,6 +3,7 @@ process.env.STORAGE_DIR = __dirname;
 process.env.NODE_ENV = "test";
 
 const { SystemPromptVariables } = require("../../../models/systemPromptVariables");
+const { SystemSettings } = require("../../../models/systemSettings");
 const Provider = require("../../../utils/agents/aibitat/providers/ai-provider");
 
 jest.mock("../../../models/systemPromptVariables");
@@ -26,12 +27,15 @@ const { WORKSPACE_AGENT } = require("../../../utils/agents/defaults");
 describe("WORKSPACE_AGENT.getDefinition", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    SystemPromptVariables.expandSystemPromptVariables.mockReset();
+    SystemPromptVariables.expandSystemPromptVariables.mockImplementation(
+      async (prompt) => prompt.replace("{datetime}", "January 1, 2024 12:00 PM")
+    );
     // Mock SystemSettings to return empty arrays for agent skills
-    const { SystemSettings } = require("../../../models/systemSettings");
     SystemSettings.getValueOrFallback = jest.fn().mockResolvedValue("[]");
   });
 
-  it("should use provider default system prompt when workspace has no openAiPrompt", async () => {
+  it("should use saneDefaultSystemPrompt when workspace has no openAiPrompt", async () => {
     const workspace = {
       id: 1,
       name: "Test Workspace",
@@ -39,14 +43,18 @@ describe("WORKSPACE_AGENT.getDefinition", () => {
     };
     const user = { id: 1 };
     const provider = "openai";
-    const expectedPrompt = await Provider.systemPrompt({ provider, workspace, user });
+    const expectedPrompt = await Provider.systemPrompt({ workspace, user });
     const definition = await WORKSPACE_AGENT.getDefinition(
       provider,
       workspace,
       user
     );
     expect(definition.role).toBe(expectedPrompt);
-    expect(SystemPromptVariables.expandSystemPromptVariables).not.toHaveBeenCalled();
+    expect(SystemPromptVariables.expandSystemPromptVariables).toHaveBeenCalledWith(
+      SystemSettings.saneDefaultSystemPrompt,
+      user.id,
+      workspace.id
+    );
   });
 
   it("should use workspace system prompt with variable expansion when openAiPrompt exists", async () => {
@@ -114,7 +122,7 @@ describe("WORKSPACE_AGENT.getDefinition", () => {
     expect(Array.isArray(definition.functions)).toBe(true);
   });
 
-  it("should use LMStudio specific prompt when workspace has no openAiPrompt", async () => {
+  it("should use saneDefaultSystemPrompt for all providers when workspace has no openAiPrompt", async () => {
     const workspace = { id: 1, openAiPrompt: null };
     const user = null;
     const provider = "lmstudio";
@@ -124,8 +132,11 @@ describe("WORKSPACE_AGENT.getDefinition", () => {
       null
     );
 
-    expect(definition.role).toBe(await Provider.systemPrompt({ provider, workspace, user }));
-    expect(definition.role).toContain("helpful ai assistant");
+    expect(definition.role).toBe(await Provider.systemPrompt({ workspace, user }));
+    expect(SystemPromptVariables.expandSystemPromptVariables).toHaveBeenCalledWith(
+      SystemSettings.saneDefaultSystemPrompt,
+      null,
+      workspace.id
+    );
   });
 });
-
