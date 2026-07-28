@@ -24,12 +24,10 @@ export default function CopyLinkToChatRow() {
       setTimeout(() => setCopied(false), 2000);
     });
 
-    if (!window.localStorage.getItem(SEEN_COPY_LINK_CHAT_ALERT)) openModal();
-  }
-
-  function handleCloseModal() {
-    closeModal();
-    window.localStorage.setItem(SEEN_COPY_LINK_CHAT_ALERT, "1");
+    if (!window.localStorage.getItem(SEEN_COPY_LINK_CHAT_ALERT)) {
+      window.localStorage.setItem(SEEN_COPY_LINK_CHAT_ALERT, "1");
+      openModal();
+    }
   }
 
   return (
@@ -44,7 +42,7 @@ export default function CopyLinkToChatRow() {
       </div>
       <CopyLinkModal
         isOpen={isOpen}
-        closeModal={handleCloseModal}
+        closeModal={closeModal}
         url={getChatUrl()}
       />
     </>
