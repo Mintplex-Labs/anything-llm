@@ -877,6 +877,13 @@ class AgentHandler {
           return null;
         }
       };
+
+      // Re-stamp the sticky route whenever inference completes so the cooldown
+      // timer restarts from when the agent stops responding. `interrupt` fires
+      // after each turn (agent waits on socket input); `terminate` fires when the
+      // agent loop exits. Without this only the first turn would re-stamp.
+      this.aibitat.onInterrupt(() => this._modelRouter?.onInferenceComplete());
+      this.aibitat.onTerminate(() => this._modelRouter?.onInferenceComplete());
     }
 
     // Attach standard websocket plugin for frontend communication.
@@ -919,15 +926,13 @@ class AgentHandler {
     return stripped;
   }
 
-  async startAgentCluster() {
-    const result = await this.aibitat.start({
+  startAgentCluster() {
+    return this.aibitat.start({
       from: USER_AGENT.name,
       to: this.channel ?? WORKSPACE_AGENT.name,
       content: this.#stripAgentCommand(this.invocation.prompt),
       attachments: this.attachments,
     });
-    this._modelRouter?.onInferenceComplete();
-    return result;
   }
 }
 
