@@ -53,11 +53,14 @@ class FoundryProvider extends InheritMultiple([Provider, UnTooled]) {
   async #handleFunctionCallChat({ messages = [] }) {
     await FoundryLLM.cacheContextWindows();
     return await this.client.chat.completions
-      .create({
-        model: this.model,
-        messages,
-        max_completion_tokens: FoundryLLM.promptWindowLimit(this.model),
-      })
+      .create(
+        {
+          model: this.model,
+          messages,
+          max_completion_tokens: FoundryLLM.promptWindowLimit(this.model),
+        },
+        this.abortSignal ? { signal: this.abortSignal } : undefined
+      )
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
           throw new Error("Microsoft Foundry Local chat: No results!");
@@ -72,12 +75,15 @@ class FoundryProvider extends InheritMultiple([Provider, UnTooled]) {
 
   async #handleFunctionCallStream({ messages = [] }) {
     await FoundryLLM.cacheContextWindows();
-    return await this.client.chat.completions.create({
-      model: this.model,
-      stream: true,
-      messages,
-      max_completion_tokens: FoundryLLM.promptWindowLimit(this.model),
-    });
+    return await this.client.chat.completions.create(
+      {
+        model: this.model,
+        stream: true,
+        messages,
+        max_completion_tokens: FoundryLLM.promptWindowLimit(this.model),
+      },
+      this.abortSignal ? { signal: this.abortSignal } : undefined
+    );
   }
 
   async stream(messages, functions = [], eventHandler = null) {
