@@ -109,6 +109,7 @@ class AnythingLLMModelRouter {
   get routingMetadata() {
     if (!this.resolvedRoute) return null;
     return {
+      routeKey: this._routeKey,
       routedTo: {
         provider: this.resolvedRoute.provider,
         model: this.resolvedRoute.model,

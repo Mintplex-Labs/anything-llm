@@ -961,7 +961,7 @@ const TRANSLATIONS = {
         "Used when no routing rule matches. Also used to evaluate LLM-classified rules.",
       "cooldown-label": "Cache Cooldown (seconds)",
       "cooldown-help":
-        "How long a routing decision is cached before re-evaluating rules. Set to 0 to disable caching.",
+        "How long a routing decision sticks after the model finishes responding. The timer renews when inference completes (and on follow-up hits), so long reasoning/tool runs won't expire the route mid-reply. Set to 0 to disable caching.",
       "name-required": "Name is required.",
       "fallback-required": "Primary provider and model are required.",
       cancel: "Cancel",

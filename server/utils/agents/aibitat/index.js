@@ -946,6 +946,23 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       content = await this.handleExecution(messages, functions, route.from);
     }
 
+    // Renew model-router sticky TTL after each agent turn so long tool/CoT
+    // loops don't expire the route mid-session.
+    try {
+      const routeKey = this.handlerProps?.routingMetadata?.routeKey ?? null;
+      const workspace = this.handlerProps?.invocation?.workspace ?? null;
+      if (routeKey || workspace) {
+        const { ModelRouterService } = require("../../router");
+        ModelRouterService.markInferenceComplete({
+          workspace,
+          user: this.handlerProps?.invocation?.user_id
+            ? { id: this.handlerProps.invocation.user_id }
+            : null,
+          routeKey,
+        });
+      }
+    } catch {}
+
     this.newMessage({ ...route, content });
     return content;
   }

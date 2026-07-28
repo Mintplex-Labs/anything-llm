@@ -223,14 +223,15 @@ async function chatSync({
       });
   }
 
-  const { connector: LLMConnector } = await resolveProviderConnector({
-    workspace,
-    prompt: message,
-    user,
-    thread,
-    attachments,
-    apiSessionId: sessionId,
-  });
+  const { connector: LLMConnector, routingMetadata } =
+    await resolveProviderConnector({
+      workspace,
+      prompt: message,
+      user,
+      thread,
+      attachments,
+      apiSessionId: sessionId,
+    });
 
   const VectorDb = getVectorDbClass();
   const messageLimit = workspace?.openAiHistory || 20;
@@ -423,6 +424,16 @@ async function chatSync({
       user: user,
     });
 
+  try {
+    const { ModelRouterService } = require("../router");
+    ModelRouterService.markInferenceComplete({
+      workspace,
+      user,
+      thread,
+      routeKey: routingMetadata?.routeKey ?? null,
+    });
+  } catch {}
+
   if (!textResponse) {
     return {
       id: uuid,
@@ -590,14 +601,15 @@ async function streamChat({
       });
   }
 
-  const { connector: LLMConnector } = await resolveProviderConnector({
-    workspace,
-    prompt: message,
-    user,
-    thread,
-    attachments,
-    apiSessionId: sessionId,
-  });
+  const { connector: LLMConnector, routingMetadata } =
+    await resolveProviderConnector({
+      workspace,
+      prompt: message,
+      user,
+      thread,
+      attachments,
+      apiSessionId: sessionId,
+    });
 
   const VectorDb = getVectorDbClass();
   const messageLimit = workspace?.openAiHistory || 20;
@@ -824,6 +836,16 @@ async function streamChat({
     completeText = await LLMConnector.handleStream(response, stream, { uuid });
     metrics = stream.metrics;
   }
+
+  try {
+    const { ModelRouterService } = require("../router");
+    ModelRouterService.markInferenceComplete({
+      workspace,
+      user,
+      thread,
+      routeKey: routingMetadata?.routeKey ?? null,
+    });
+  } catch {}
 
   if (completeText?.length > 0) {
     const { chat } = await WorkspaceChats.new({

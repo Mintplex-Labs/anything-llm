@@ -308,6 +308,18 @@ async function streamChatWithWorkspace(
     metrics = stream.metrics;
   }
 
+  // Renew model-router sticky TTL after inference finishes so long CoT/tool
+  // runs don't expire the cooldown before the user's next message.
+  try {
+    const { ModelRouterService } = require("../router");
+    ModelRouterService.markInferenceComplete({
+      workspace,
+      user,
+      thread,
+      routeKey: routingMetadata?.routeKey ?? null,
+    });
+  } catch {}
+
   if (completeText?.length > 0) {
     const { chat } = await WorkspaceChats.new({
       workspaceId: workspace.id,

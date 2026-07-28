@@ -157,6 +157,77 @@ class ModelRouterService {
   }
 
   /**
+   * Refresh sticky TTL without changing the routed model.
+   * Used after inference completes so long CoT/tool runs don't burn the window
+   * before the user's follow-up message can renew it.
+   * @param {string} key
+   * @returns {boolean} true if an entry was refreshed
+   */
+  touchStickyRoute(key) {
+    const entry = this.stickyRoutes.get(key);
+    if (!entry) return false;
+    entry.stickyAt = Date.now();
+    this.log(
+      `Sticky route: TOUCH → ${entry.route.provider}/${entry.route.model} (ttl reset after inference)`
+    );
+    return true;
+  }
+
+  /**
+   * Refresh LLM classification cache timestamp (match entries only).
+   * @param {string} key
+   * @returns {boolean}
+   */
+  touchCachedLLMResult(key) {
+    const entry = this.llmCache.get(key);
+    if (!entry || !entry.result) return false;
+    entry.cachedAt = Date.now();
+    this.log(
+      `LLM cache: TOUCH → "${entry.result.title}" (ttl reset after inference)`
+    );
+    return true;
+  }
+
+  /**
+   * Mark that inference finished for a workspace chat/agent turn.
+   * Refreshes sticky + LLM-match caches so the cooldown window effectively
+   * starts (or renews) after the model stops, not only at rule-match time.
+   * @param {Object} opts
+   * @param {Object} [opts.workspace]
+   * @param {Object|null} [opts.user]
+   * @param {Object|null} [opts.thread]
+   * @param {string|null} [opts.routeKey] - Prefer explicit route key when available
+   */
+  static markInferenceComplete({
+    workspace = null,
+    user = null,
+    thread = null,
+    routeKey = null,
+  } = {}) {
+    const svc = ModelRouterService.getInstance();
+    const key =
+      routeKey ||
+      (workspace?.slug
+        ? svc.routeCacheKey(
+            user?.id ?? null,
+            workspace.slug,
+            thread?.slug ?? null
+          )
+        : null);
+    if (!key) return;
+
+    const stickyTouched = svc.touchStickyRoute(key);
+    const llmTouched = svc.touchCachedLLMResult(key);
+    if (stickyTouched || llmTouched) {
+      svc.log(
+        `Inference complete → refreshed routing TTL for key "${key}"${
+          workspace?.slug ? ` (workspace: ${workspace.slug})` : ""
+        }`
+      );
+    }
+  }
+
+  /**
    * Clear a sticky route (e.g., on new conversation).
    * @param {string} key
    */
