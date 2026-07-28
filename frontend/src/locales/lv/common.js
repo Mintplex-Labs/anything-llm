@@ -878,6 +878,11 @@ const TRANSLATIONS = {
         description:
           "Ievietojiet HTML atbildes palīdzības atbildēs.\nTas var novērst daudz augstāku atbildes kvalitātes līmeni, taču arī var radīt potenciālas drošības riskus.",
       },
+      "disable-auto-scroll": {
+        title: "Atspējot automātisko skrološanu",
+        description:
+          "Atstāviet automātisko skrološanu uz sarunas beigām, kad saņemts jauns sūtījums.",
+      },
     },
   },
   api: {

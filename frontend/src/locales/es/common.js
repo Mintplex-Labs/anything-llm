@@ -903,6 +903,11 @@ const TRANSLATIONS = {
         description:
           "Generar respuestas en HTML en las respuestas del asistente.\nEsto puede resultar en una mayor calidad de las respuestas, pero también puede generar posibles riesgos de seguridad.",
       },
+      "disable-auto-scroll": {
+        title: "Desactivar el desplazamiento automático",
+        description:
+          "Desactivar la función de desplazamiento automático hacia el final del chat cuando se reciben nuevos mensajes.",
+      },
     },
   },
   api: {
