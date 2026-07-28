@@ -111,6 +111,9 @@ def read_text(node):
 def find_window_id(app_node):
     """Get X11 window ID for the app via xdotool (class name then title fallback)."""
     app_name = app_node.get_name() or ""
+    app_name = app_name.lstrip("-")  # prevent argument injection in xdotool
+    if not app_name:
+        return None
     env = _xenv()
     for strategy in [
         ["xdotool", "search", "--classname", app_name.lower()],
