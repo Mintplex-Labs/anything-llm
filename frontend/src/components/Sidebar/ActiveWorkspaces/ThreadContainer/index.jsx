@@ -72,6 +72,7 @@ export default function ThreadContainer({
   };
 
   function removeThread(threadId) {
+    const deletedThread = threads.find((t) => t.id === threadId);
     setThreads((prev) =>
       prev.map((_t) => {
         if (_t.id !== threadId) return _t;
@@ -84,6 +85,19 @@ export default function ThreadContainer({
     setTimeout(() => {
       setThreads((prev) => prev.filter((t) => !t.deleted));
     }, 500);
+
+    // If the active thread was deleted, redirect to the neighboring thread (the
+    // next one, or the previous if it was last) so the sidebar keeps a real
+    // active thread. Fall back to the workspace base chat when none remain.
+    if (deletedThread?.slug === threadSlug) {
+      const deletedIdx = threads.findIndex((t) => t.id === threadId);
+      const remaining = threads.filter((t) => t.id !== threadId);
+      const nextThread =
+        remaining[deletedIdx] ?? remaining[deletedIdx - 1] ?? null;
+      window.location.href = nextThread
+        ? paths.workspace.thread(workspace.slug, nextThread.slug)
+        : paths.workspace.chat(workspace.slug);
+    }
   }
 
   function getActiveThreadIdx() {
