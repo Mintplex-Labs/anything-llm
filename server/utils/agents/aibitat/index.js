@@ -665,6 +665,11 @@ class AIbitat {
       throw error;
     }
 
+    // An abort mid-stream resolves with a partial reply - stop here so the
+    // session doesn't fall through to interrupt/terminate handling (which
+    // would park a feedback timeout waiting on a socket that already closed).
+    if (this._aborted) return;
+
     if (
       reply === "TERMINATE" ||
       this.hasReachedMaximumRounds(route.from, route.to)
@@ -1029,6 +1034,10 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       this.providerInstance.stream(messages, functions, eventHandler)
     );
 
+    // An abort mid-stream resolves (not throws) with a partial completion,
+    // which can include a truncated tool call - never act on it.
+    if (this._aborted) return null;
+
     if (completionStream.functionCall) {
       const { name, arguments: args } = completionStream.functionCall;
       const fn = this.functions.get(name);
@@ -1186,6 +1195,10 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     const completion = await this.#safeProviderCall(() =>
       this.providerInstance.complete(messages, functions)
     );
+
+    // An abort mid-stream resolves (not throws) with a partial completion,
+    // which can include a truncated tool call - never act on it.
+    if (this._aborted) return null;
 
     if (completion.functionCall) {
       const { name, arguments: args } = completion.functionCall;
