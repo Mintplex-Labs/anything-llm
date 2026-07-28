@@ -10,6 +10,7 @@ import showToast from "@/utils/toast";
 import FolderSelectionPopup from "./FolderSelectionPopup";
 import MoveToFolderIcon from "./MoveToFolderIcon";
 import { useModal } from "@/hooks/useModal";
+import Modal from "@/components/lib/Modal";
 import NewFolderModal from "./NewFolderModal";
 import debounce from "lodash.debounce";
 import { filterFileSearchResults } from "./utils";
@@ -330,15 +331,13 @@ function Directory({
             setLoadingMessage={setLoadingMessage}
           />
         </div>
-        {isFolderModalOpen && (
-          <div className="bg-black/60 backdrop-blur-sm fixed top-0 left-0 outline-none w-screen h-screen flex items-center justify-center z-30">
-            <NewFolderModal
-              closeModal={closeFolderModal}
-              files={files}
-              setFiles={setFiles}
-            />
-          </div>
-        )}
+        <Modal isOpen={isFolderModalOpen} onClose={closeFolderModal} noPortal>
+          <NewFolderModal
+            closeModal={closeFolderModal}
+            files={files}
+            setFiles={setFiles}
+          />
+        </Modal>
         <ContextMenu
           contextMenu={contextMenu}
           closeContextMenu={closeContextMenu}
