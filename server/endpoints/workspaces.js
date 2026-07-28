@@ -4,9 +4,7 @@ const {
   userFromSession,
   safeJsonParse,
 } = require("../utils/http");
-const {
-  moveProcessedDocsToFolder,
-} = require("../utils/files");
+const { moveProcessedDocsToFolder } = require("../utils/files");
 const { Workspace } = require("../models/workspace");
 const { Document } = require("../models/documents");
 const { DocumentVectors } = require("../models/vectors");
