@@ -145,8 +145,7 @@ const SEARCH_PROVIDERS = [
     value: "you-search",
     logo: YouSearchIcon,
     options: (settings) => <YouSearchOptions settings={settings} />,
-    description:
-      "LLM-ready web search. Works keyless out of the box; optional API key for higher limits.",
+    description: "LLM-ready web search. Optional API key for higher limits.",
   },
 ];
 
