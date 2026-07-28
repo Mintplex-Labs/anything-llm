@@ -11,6 +11,11 @@ const KEY_MAPPING = {
     envKey: "MODEL_ROUTER_ID",
     checks: [],
   },
+  // Global AI request / socket timeout (ms) — covers OpenAI SDK, Anthropic SDK, undici
+  AnythingLLMFetchTimeout: {
+    envKey: "ANYTHINGLLM_FETCH_TIMEOUT",
+    checks: [nonZero],
+  },
   // OpenAI Settings
   OpenAiKey: {
     envKey: "OPEN_AI_KEY",

@@ -652,6 +652,32 @@ export default function GeneralLLMPreference() {
                     (llm) => llm.value === selectedLLM
                   )?.options?.(settings)}
               </div>
+              <div
+                onChange={() => setHasChanges(true)}
+                className="mt-6 flex flex-col gap-y-1 max-w-[640px]"
+              >
+                <label className="text-white text-sm font-semibold block mb-1">
+                  AI request timeout (ms)
+                </label>
+                <p className="text-xs text-white/60 mb-2">
+                  Global socket / request timeout for LLM providers (OpenAI SDK,
+                  Anthropic, undici). Raise this for slow local or CPU models,
+                  long RAG, or agent skills. Default is 600000 (10 minutes).
+                  Requires a server restart to fully apply. Ollama can also use{" "}
+                  <code className="text-white/80">OLLAMA_RESPONSE_TIMEOUT</code>
+                  .
+                </p>
+                <input
+                  type="number"
+                  name="env::AnythingLLMFetchTimeout"
+                  min={1000}
+                  step={1000}
+                  defaultValue={settings?.AnythingLLMFetchTimeout ?? 600_000}
+                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  placeholder="600000"
+                  onChange={() => setHasChanges(true)}
+                />
+              </div>
             </div>
           </form>
         </div>

@@ -510,6 +510,7 @@ const SystemSettings = {
       LLMProvider: llmProvider,
       LLMModel: getBaseLLMProviderModel({ provider: llmProvider }) || null,
       ModelRouterId: process.env.MODEL_ROUTER_ID || null,
+      AnythingLLMFetchTimeout: process.env.ANYTHINGLLM_FETCH_TIMEOUT || 600_000,
       ...this.llmPreferenceKeys(),
 
       // --------------------------------------------------------

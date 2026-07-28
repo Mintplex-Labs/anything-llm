@@ -128,29 +128,46 @@ class OllamaAILLM {
 
   /**
    * Apply a custom fetch function to the Ollama client.
-   * This is useful when we want to bypass the default 5m timeout for global fetch
-   * for machines which run responses very slowly.
+   * Useful when we want to raise the default request timeout for machines
+   * which run responses very slowly (CPU / large models / cold start).
+   *
+   * Uses OLLAMA_RESPONSE_TIMEOUT when set and > 5 minutes, otherwise falls
+   * back to ANYTHINGLLM_FETCH_TIMEOUT when that is also > 5 minutes.
    * @returns {Function} The custom fetch function.
    */
   static applyOllamaFetch() {
     try {
-      if (!("OLLAMA_RESPONSE_TIMEOUT" in process.env)) return fetch;
       const { Agent } = require("undici");
       const moment = require("moment");
-      let timeout = process.env.OLLAMA_RESPONSE_TIMEOUT;
+      const MIN_CUSTOM_MS = 5 * 60_000;
+      const DEFAULT_MS = 600_000;
 
-      if (!timeout || isNaN(Number(timeout)) || Number(timeout) <= 5 * 60_000) {
-        OllamaAILLM.#slog(
-          "Timeout option was not set, is not a number, or is less than 5 minutes in ms - falling back to default",
-          { timeout }
-        );
-        return fetch;
-      } else timeout = Number(timeout);
+      let timeout = null;
+      if ("OLLAMA_RESPONSE_TIMEOUT" in process.env) {
+        const parsed = Number(process.env.OLLAMA_RESPONSE_TIMEOUT);
+        if (Number.isFinite(parsed) && parsed > MIN_CUSTOM_MS) timeout = parsed;
+        else
+          OllamaAILLM.#slog(
+            "OLLAMA_RESPONSE_TIMEOUT was not a number > 5 minutes — ignoring",
+            { timeout: process.env.OLLAMA_RESPONSE_TIMEOUT }
+          );
+      }
+
+      if (timeout == null && "ANYTHINGLLM_FETCH_TIMEOUT" in process.env) {
+        const parsed = Number(process.env.ANYTHINGLLM_FETCH_TIMEOUT);
+        if (Number.isFinite(parsed) && parsed > MIN_CUSTOM_MS) timeout = parsed;
+      }
+
+      if (timeout == null) return fetch;
+      if (!Number.isFinite(timeout) || timeout <= 0) timeout = DEFAULT_MS;
 
       const noTimeoutFetch = (input, init = {}) => {
         return fetch(input, {
           ...init,
-          dispatcher: new Agent({ headersTimeout: timeout }),
+          dispatcher: new Agent({
+            headersTimeout: timeout,
+            bodyTimeout: timeout,
+          }),
         });
       };
 
