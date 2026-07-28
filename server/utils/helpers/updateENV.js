@@ -596,6 +596,10 @@ const KEY_MAPPING = {
     envKey: "AGENT_CRW_API_URL",
     checks: [],
   },
+  AgentYouApiKey: {
+    envKey: "AGENT_YOU_API_KEY",
+    checks: [],
+  },
 
   // TTS/STT Integration ENVS
   TextToSpeechProvider: {
@@ -922,6 +926,24 @@ const KEY_MAPPING = {
     checks: [nonZero],
   },
 
+  // OMLX Options
+  OMLXLLMBasePath: {
+    envKey: "OMLX_LLM_BASE_PATH",
+    checks: [isValidURL],
+  },
+  OMLXLLMApiKey: {
+    envKey: "OMLX_LLM_API_KEY",
+    checks: [],
+  },
+  OMLXLLMModelPref: {
+    envKey: "OMLX_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  OMLXLLMTokenLimit: {
+    envKey: "OMLX_LLM_TOKEN_LIMIT",
+    checks: [],
+  },
+
   // Agent Skill Settings
   AgentSkillMaxToolCalls: {
     envKey: "AGENT_MAX_TOOL_CALLS",
@@ -1065,6 +1087,7 @@ function supportedLLM(input = "") {
     "lemonade",
     "minimax",
     "cerebras",
+    "omlx",
     "anythingllm-router",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
