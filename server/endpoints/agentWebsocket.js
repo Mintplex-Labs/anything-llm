@@ -50,7 +50,9 @@ function agentWebsocket(app) {
           agentHandler.log(
             `User invoked bail command while processing. Closing session now.`
           );
-          agentHandler.aibitat.abort();
+          // aibitat may not exist yet if the bail arrives while the session
+          // is still being built - closing the socket alone is enough then.
+          agentHandler.aibitat?.abort();
           socket.close();
           return;
         }
