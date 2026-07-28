@@ -881,6 +881,11 @@ const TRANSLATIONS = {
         description:
           "Atvaizduoti HTML kodą asistento atsakymuose.\nTai gali užtikrinti geresnę atsakymų vizualinę kokybę, tačiau taip pat gali kelti saugumo riziką.",
       },
+      "disable-auto-scroll": {
+        title: "Išjunkite automatinį rolį",
+        description:
+          "Išjunkite automatinį skryptą į apačią, kai gaunamos naujos žinios.",
+      },
     },
   },
   api: {

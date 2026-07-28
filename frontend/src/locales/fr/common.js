@@ -1394,6 +1394,11 @@ const TRANSLATIONS = {
         description:
           "Autorise le rendu du contenu HTML dans les réponses du chat.",
       },
+      "disable-auto-scroll": {
+        title: "Désactiver le défilement automatique",
+        description:
+          "Désactiver le défilement automatique vers la fin de la conversation lorsqu'un nouveau message est reçu.",
+      },
     },
   },
   "main-page": {

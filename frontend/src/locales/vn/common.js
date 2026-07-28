@@ -1367,6 +1367,11 @@ const TRANSLATIONS = {
         description:
           "Hiển thị phản hồi HTML trong các phản hồi của trợ lý.\nĐiều này có thể mang lại chất lượng phản hồi cao hơn nhiều, nhưng cũng có thể dẫn đến các rủi ro bảo mật tiềm ẩn.",
       },
+      "disable-auto-scroll": {
+        title: "Tắt tính năng cuộn tự động",
+        description:
+          "Tắt tính năng tự động cuộn xuống cuối cuộc trò chuyện khi nhận được tin nhắn mới.",
+      },
     },
   },
   "main-page": {
