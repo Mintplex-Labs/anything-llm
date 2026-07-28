@@ -1371,6 +1371,11 @@ const TRANSLATIONS = {
         description:
           "Generer HTML-svar i hjælperes svar.\nDette kan resultere i en meget højere kvalitet af svaret, men kan også føre til potentielle sikkerhedsrisici.",
       },
+      "disable-auto-scroll": {
+        title: "Deaktiver automatisk rulle",
+        description:
+          "Deaktiver automatisk rulle ned til bundlinjen i chatten, når der modtages nye beskeder.",
+      },
     },
   },
   "main-page": {

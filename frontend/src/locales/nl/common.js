@@ -1381,6 +1381,11 @@ const TRANSLATIONS = {
         description:
           "HTML-reacties weergeven in assistentreacties.\nLet op: Dit kan resulteren in een veel hogere kwaliteit van de reacties, maar kan ook leiden tot potentiële beveiligingsrisico's.",
       },
+      "disable-auto-scroll": {
+        title: "Schakel automatische scrollfunctie uit",
+        description:
+          "Schakel het automatische scrollen naar het einde van de chat uit wanneer er nieuwe berichten worden ontvangen.",
+      },
     },
   },
   "main-page": {

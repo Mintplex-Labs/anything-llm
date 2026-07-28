@@ -881,6 +881,11 @@ const TRANSLATIONS = {
         description:
           "Vykreslit HTML odpovědi v odpovědích asistenta.\nTo může vést k mnohem vyšší věrnosti kvality odpovědi, ale může také vést k potenciálním bezpečnostním rizikům.",
       },
+      "disable-auto-scroll": {
+        title: "Vypnout automatické posouvání",
+        description:
+          "Vypněte automatické posouvání dolů v chatu při přijetí nových zpráv.",
+      },
     },
   },
   api: {
