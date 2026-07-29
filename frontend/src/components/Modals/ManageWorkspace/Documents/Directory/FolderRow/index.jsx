@@ -1,53 +1,86 @@
-import { useState } from "react";
 import FileRow from "../FileRow";
-import { CaretDown, FolderNotch } from "@phosphor-icons/react";
+import { CaretDown, FolderNotch, CircleNotch } from "@phosphor-icons/react";
 import { middleTruncate } from "@/utils/directories";
+import { useTranslation } from "react-i18next";
 
+/**
+ * A folder in the document picker. Purely presentational - every piece of
+ * state (which files are loaded, whether it is open, what is selected) is
+ * owned by `useDocumentPicker` so the row can never drift out of sync with
+ * the rest of the picker.
+ *
+ * @param {object} props
+ * @param {{name: string, fileCount: number}} props.item folder shell
+ * @param {Array<object>} props.files files currently fetched for this folder
+ * @param {boolean} props.expanded
+ * @param {boolean} props.loading a page request is in flight
+ * @param {boolean} props.hasMore more pages remain on the server
+ * @param {'none'|'some'|'all'} props.selectionState folder checkbox tri-state
+ * @param {(id: string) => boolean} props.isFileSelected
+ */
 export default function FolderRow({
   item,
-  totalItems = 0,
-  selected,
-  onRowClick,
-  toggleSelection,
-  isSelected,
-  autoExpanded = false,
+  files = [],
+  expanded = false,
+  loading = false,
+  hasMore = false,
+  totalCount = 0,
+  countIsExact = false,
+  selectionState = "none",
+  isFileSelected,
+  onToggleExpanded,
+  onToggleFolder,
+  onToggleFile,
+  onPrefetch,
+  onLoadMore,
 }) {
-  const [expanded, setExpanded] = useState(autoExpanded);
-
-  const handleExpandClick = (event) => {
-    event.stopPropagation();
-    setExpanded(!expanded);
-  };
+  const { t } = useTranslation();
+  const selected = selectionState === "all";
+  const partial = selectionState === "some";
+  // Before a folder is opened we only know the server's count; afterwards the
+  // fetched page is authoritative (embedded files are filtered out of it).
+  // `countIsExact` means the caller already resolved it - eg. a search result,
+  // where the badge counts matches rather than the whole folder.
+  const displayCount = countIsExact
+    ? totalCount
+    : totalCount || item.fileCount || files.length;
 
   return (
     <>
       <tr
-        onClick={onRowClick}
+        onClick={() => onToggleFolder(item)}
+        onMouseEnter={() => onPrefetch(item.name)}
         className={`text-theme-text-primary text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 hover:bg-theme-file-picker-hover cursor-pointer file-row ${
-          selected ? "selected light:text-white !text-white" : ""
+          selected || partial ? "selected light:text-white !text-white" : ""
         }`}
       >
         <div
           className={`col-span-6 flex gap-x-[4px] items-center ${
-            selected ? "!text-white" : "text-theme-text-primary"
+            selected || partial ? "!text-white" : "text-theme-text-primary"
           }`}
         >
           <div
             className={`shrink-0 w-3 h-3 rounded border-[1px] border-solid border-white ${
-              selected ? "text-white" : "text-theme-text-primary light:invert"
+              selected || partial
+                ? "text-white"
+                : "text-theme-text-primary light:invert"
             } flex justify-center items-center cursor-pointer`}
             role="checkbox"
-            aria-checked={selected}
+            aria-checked={partial ? "mixed" : selected}
             tabIndex={0}
             onClick={(event) => {
               event.stopPropagation();
-              toggleSelection(item);
+              onToggleFolder(item);
             }}
           >
             {selected && <div className="w-2 h-2 bg-white rounded-[2px]" />}
+            {partial && <div className="w-2 h-[2px] bg-white rounded-[2px]" />}
           </div>
           <div
-            onClick={handleExpandClick}
+            onClick={(event) => {
+              event.stopPropagation();
+              onToggleExpanded(item.name);
+            }}
             className={`transform transition-transform duration-200 ${
               expanded ? "rotate-360" : " rotate-270"
             }`}
@@ -61,26 +94,57 @@ export default function FolderRow({
           <p className="whitespace-nowrap overflow-show max-w-[400px]">
             {middleTruncate(item.name, 35)}
           </p>
-          {totalItems > 0 && (
+          {displayCount > 0 && (
             <span className="text-theme-text-secondary text-[10px] font-medium ml-1.5 shrink-0">
-              ({totalItems})
+              ({displayCount})
             </span>
+          )}
+          {loading && files.length > 0 && (
+            <CircleNotch
+              size={12}
+              className="animate-spin ml-1 shrink-0"
+              weight="bold"
+            />
           )}
         </div>
         <p className="col-span-2 pl-3.5" />
         <p className="col-span-2 pl-2" />
       </tr>
-      {expanded && (
-        <>
-          {item.items.map((fileItem) => (
-            <FileRow
-              key={fileItem.id}
-              item={fileItem}
-              selected={isSelected(fileItem.id)}
-              toggleSelection={toggleSelection}
-            />
-          ))}
-        </>
+      {expanded && loading && files.length === 0 && (
+        <tr className="text-theme-text-secondary text-xs py-2 pl-8 pr-8">
+          <td className="flex items-center gap-x-2 py-2 pl-8">
+            <CircleNotch size={14} className="animate-spin" weight="bold" />
+            <span>{t("common.loading")}...</span>
+          </td>
+        </tr>
+      )}
+      {expanded &&
+        files.map((file) => (
+          <FileRow
+            key={file.id}
+            item={file}
+            selected={isFileSelected(file.id)}
+            folderName={item.name}
+            toggleSelection={onToggleFile}
+          />
+        ))}
+      {expanded && hasMore && (
+        <tr className="text-theme-text-secondary text-xs py-1 pl-8 pr-8">
+          <td className="py-1 pl-8">
+            <button
+              onClick={(event) => {
+                event.stopPropagation();
+                onLoadMore(item.name);
+              }}
+              disabled={loading}
+              className="border-none bg-transparent text-xs text-theme-text-secondary hover:text-white cursor-pointer underline disabled:opacity-50 p-0"
+            >
+              {loading
+                ? `${t("common.loading")}...`
+                : `Load more (${files.length} of ${totalCount})`}
+            </button>
+          </td>
+        </tr>
       )}
     </>
   );

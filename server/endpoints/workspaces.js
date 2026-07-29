@@ -119,6 +119,9 @@ function workspaceEndpoints(app) {
         const Collector = new CollectorApi();
         const { originalname } = request.file;
 
+        // Multipart field order matters: multer only exposes text fields on
+        // request.body that were appended BEFORE the file part, so the client
+        // must append folderName/metadata first. See FileUploadProgress.
         const { folderName = null, metadata: _metadata = "{}" } =
           reqBody(request);
 

@@ -80,13 +80,26 @@ describe("moveProcessedDocsToFolder", () => {
     expect(doc.location).toBe("my-vault/readme.md-abc123.json");
   });
 
-  it("allows nested folder names, matching historical dev API behavior", () => {
+  // Document storage is exactly two segments (`folder/file.json`) and the
+  // picker, docpath and embedding pipeline all rely on that. Nested names
+  // would create documents none of them can reach, so they are rejected even
+  // though /v1/document/upload/:folderName historically tolerated them via a
+  // URL-encoded separator.
+  it("rejects nested folder names", () => {
     const doc = writeProcessedDoc("custom-documents/readme.md-abc123.json");
-    const folder = moveProcessedDocsToFolder([doc], "a/b", basePath);
 
-    expect(folder).toBe(path.join("a", "b"));
+    expect(() => moveProcessedDocsToFolder([doc], "a/b", basePath)).toThrow(
+      /path separators/
+    );
+    expect(() =>
+      moveProcessedDocsToFolder([doc], "a\\b", basePath)
+    ).toThrow(/path separators/);
+    expect(fs.existsSync(path.join(basePath, "a"))).toBe(false);
+    // The document is left exactly where it was.
     expect(
-      fs.existsSync(path.join(basePath, "a/b/readme.md-abc123.json"))
+      fs.existsSync(
+        path.join(basePath, "custom-documents/readme.md-abc123.json")
+      )
     ).toBe(true);
   });
 
@@ -103,6 +116,13 @@ describe("moveProcessedDocsToFolder", () => {
     expect(fs.existsSync(path.join(path.dirname(basePath), "evil"))).toBe(
       false
     );
+  });
+
+  it("rejects traversal that would still be nested after normalization", () => {
+    const doc = writeProcessedDoc("custom-documents/readme.md-abc123.json");
+    expect(() =>
+      moveProcessedDocsToFolder([doc], "../../etc/passwd", basePath)
+    ).toThrow(/path separators/);
   });
 
   it("throws on empty or invalid folder names", () => {

@@ -1,10 +1,15 @@
 import UploadFile from "../UploadFile";
 import PreLoader from "@/components/Preloader";
-import { memo, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import FolderRow from "./FolderRow";
 import System from "@/models/system";
-import { MagnifyingGlass, Plus, Trash } from "@phosphor-icons/react";
+import {
+  CircleNotch,
+  MagnifyingGlass,
+  Plus,
+  Trash,
+} from "@phosphor-icons/react";
 import Document from "@/models/document";
 import showToast from "@/utils/toast";
 import FolderSelectionPopup from "./FolderSelectionPopup";
@@ -12,191 +17,193 @@ import MoveToFolderIcon from "./MoveToFolderIcon";
 import { useModal } from "@/hooks/useModal";
 import NewFolderModal from "./NewFolderModal";
 import debounce from "lodash.debounce";
-import { filterFileSearchResults } from "./utils";
 import ContextMenu from "./ContextMenu";
 import { Tooltip } from "react-tooltip";
 import { safeJsonParse } from "@/utils/request";
 
-function Directory({
-  files,
-  setFiles,
-  loading,
-  setLoading,
+const NO_FILES = [];
+
+export default function Directory({
+  picker,
   workspace,
-  fetchKeys,
-  selectedItems,
-  setSelectedItems,
+  hiddenPaths,
   setHighlightWorkspace,
   moveToWorkspace,
-  setLoadingMessage,
-  loadingMessage,
 }) {
   const { t } = useTranslation();
-  const [amountSelected, setAmountSelected] = useState(0);
   const [showFolderSelection, setShowFolderSelection] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const {
-    isOpen: isFolderModalOpen,
-    openModal: openFolderModal,
-    closeModal: closeFolderModal,
-  } = useModal();
   const [contextMenu, setContextMenu] = useState({
     visible: false,
     x: 0,
     y: 0,
   });
+  const {
+    isOpen: isFolderModalOpen,
+    openModal: openFolderModal,
+    closeModal: closeFolderModal,
+  } = useModal();
 
-  useEffect(() => {
-    setAmountSelected(Object.keys(selectedItems).length);
-  }, [selectedItems]);
+  const {
+    status,
+    busyMessage,
+    folders,
+    contents,
+    expanded,
+    searchResults,
+    searching,
+    selectedCount,
+    selectedFolderNames,
+    isFileSelected,
+    folderSelectionState,
+    refresh,
+    search,
+    syncAfterUpload,
+    toggleExpanded,
+    prefetchFolder,
+    loadMore,
+    toggleFile,
+    toggleFolder,
+    selectAll,
+    clearSelection,
+    resolveSelection,
+    removeFiles,
+    addFolder,
+    setBusy,
+  } = picker;
+
+  /**
+   * One flattened view model per visible folder. Search replaces the folder
+   * list with the backend's matches (always open); otherwise rows are driven
+   * by the lazily-fetched pages held in the picker.
+   */
+  const rows = useMemo(() => {
+    const hide = (folderName, files) =>
+      hiddenPaths?.size
+        ? files.filter((f) => !hiddenPaths.has(`${folderName}/${f.name}`))
+        : files;
+
+    if (searchResults) {
+      return searchResults.map((folder) => {
+        const files = hide(folder.name, folder.items ?? []);
+        return {
+          item: folder,
+          files,
+          expanded: true,
+          loading: false,
+          hasMore: false,
+          // In search mode the badge counts matches, not the folder's size -
+          // showing "(200)" next to three visible rows reads as a bug.
+          totalCount: files.length,
+          searching: true,
+        };
+      });
+    }
+
+    return folders.map((folder) => {
+      const entry = contents[folder.name];
+      return {
+        item: folder,
+        files: entry ? hide(folder.name, entry.items) : NO_FILES,
+        expanded: expanded.has(folder.name),
+        loading: entry?.status === "loading",
+        hasMore: entry?.hasMore ?? false,
+        totalCount: entry?.totalCount ?? folder.fileCount ?? 0,
+        searching: false,
+      };
+    });
+  }, [folders, contents, expanded, searchResults, hiddenPaths]);
+
+  const totalDocCount = useMemo(
+    () => folders.reduce((acc, folder) => acc + (folder.fileCount ?? 0), 0),
+    [folders]
+  );
+
+  /* --------------------------------- search -------------------------------- */
+
+  const handleSearch = useMemo(
+    () => debounce((event) => search(event.target.value), 400),
+    [search]
+  );
+  useEffect(() => () => handleSearch.cancel(), [handleSearch]);
+
+  /* -------------------------------- mutations ------------------------------ */
 
   const deleteFiles = async (event) => {
     event.stopPropagation();
-    if (!window.confirm(t("connectors.directory.delete-confirmation"))) {
-      return false;
-    }
+    if (!window.confirm(t("connectors.directory.delete-confirmation"))) return;
 
+    const selected = await resolveSelection();
+    const toRemove = selected.map((file) => `${file.folderName}/${file.name}`);
+    const foldersToRemove = selectedFolderNames.filter(
+      (name) => name !== "custom-documents"
+    );
+
+    setBusy(
+      t("connectors.directory.removing-message", {
+        count: toRemove.length,
+        folderCount: foldersToRemove.length,
+      })
+    );
     try {
-      const toRemove = [];
-      const foldersToRemove = [];
-
-      for (const itemId of Object.keys(selectedItems)) {
-        for (const folder of files.items) {
-          const foundItem = folder.items.find((file) => file.id === itemId);
-          if (foundItem) {
-            toRemove.push(`${folder.name}/${foundItem.name}`);
-            break;
-          }
-        }
-      }
-      for (const folder of files.items) {
-        if (folder.name === "custom-documents") {
-          continue;
-        }
-
-        if (isSelected(folder.id, folder)) {
-          foldersToRemove.push(folder.name);
-        }
-      }
-
-      setLoading(true);
-      setLoadingMessage(
-        t("connectors.directory.removing-message", {
-          count: toRemove.length,
-          folderCount: foldersToRemove.length,
-        })
-      );
-      await System.deleteDocuments(toRemove);
-      for (const folderName of foldersToRemove) {
+      if (toRemove.length > 0) await System.deleteDocuments(toRemove);
+      for (const folderName of foldersToRemove)
         await System.deleteFolder(folderName);
-      }
-
-      await fetchKeys(true);
-      setSelectedItems({});
+      removeFiles(selected.map((file) => file.id));
+      clearSelection();
+      await refresh();
     } catch (error) {
       console.error("Failed to delete files and folders:", error);
+      showToast(`Failed to delete: ${error.message}`, "error");
     } finally {
-      setLoading(false);
-      setSelectedItems({});
+      setBusy(null);
     }
-  };
-
-  const toggleSelection = (item) => {
-    setSelectedItems((prevSelectedItems) => {
-      const newSelectedItems = { ...prevSelectedItems };
-      if (item.type === "folder") {
-        // select all files in the folder
-        if (newSelectedItems[item.name]) {
-          delete newSelectedItems[item.name];
-          item.items.forEach((file) => delete newSelectedItems[file.id]);
-        } else {
-          newSelectedItems[item.name] = true;
-          item.items.forEach((file) => (newSelectedItems[file.id] = true));
-        }
-      } else {
-        // single file selections
-        if (newSelectedItems[item.id]) {
-          delete newSelectedItems[item.id];
-        } else {
-          newSelectedItems[item.id] = true;
-        }
-      }
-
-      return newSelectedItems;
-    });
-  };
-
-  // check if item is selected based on selectedItems state
-  const isSelected = (id, item) => {
-    if (item && item.type === "folder") {
-      if (!selectedItems[item.name]) {
-        return false;
-      }
-      return item.items.every((file) => selectedItems[file.id]);
-    }
-
-    return !!selectedItems[id];
   };
 
   const moveToFolder = async (folder) => {
-    const toMove = [];
-    for (const itemId of Object.keys(selectedItems)) {
-      for (const currentFolder of files.items) {
-        const foundItem = currentFolder.items.find(
-          (file) => file.id === itemId
-        );
-        if (foundItem) {
-          toMove.push({ ...foundItem, folderName: currentFolder.name });
-          break;
-        }
-      }
-    }
-    setLoading(true);
-    setLoadingMessage(`Moving ${toMove.length} documents. Please wait.`);
+    setShowFolderSelection(false);
+    const toMove = await resolveSelection();
+    if (toMove.length === 0) return;
+
+    setBusy(`Moving ${toMove.length} documents. Please wait.`);
     const { success, message } = await Document.moveToFolder(
       toMove,
       folder.name
     );
     if (!success) {
       showToast(`Error moving files: ${message}`, "error");
-      setLoading(false);
+      setBusy(null);
       return;
     }
 
-    if (success && message) {
-      // show info if some files were not moved due to being embedded
-      showToast(message, "info");
-    } else {
+    // A partial success returns a message explaining which files were skipped.
+    if (message) showToast(message, "info");
+    else
       showToast(
         t("connectors.directory.move-success", { count: toMove.length }),
         "success"
       );
-    }
-    await fetchKeys(true);
-    setSelectedItems({});
-    setLoading(false);
+
+    clearSelection();
+    await refresh();
+    setBusy(null);
   };
 
-  const handleSearch = debounce((e) => {
-    const searchValue = e.target.value;
-    setSearchTerm(searchValue);
-  }, 500);
-
-  const filteredFiles = filterFileSearchResults(files, searchTerm);
+  const handleFolderCreated = useCallback(
+    (name) => {
+      addFolder(name);
+      closeFolderModal();
+    },
+    [addFolder, closeFolderModal]
+  );
 
   const handleContextMenu = (event) => {
     event.preventDefault();
     setContextMenu({ visible: true, x: event.clientX, y: event.clientY });
   };
-
-  const closeContextMenu = () => {
-    setContextMenu({ visible: false, x: 0, y: 0 });
-  };
-
-  const totalDocCount = (files?.items ?? []).reduce((acc, folder) => {
-    if (folder.type === "folder") return folder.items.length + acc;
-    return acc;
-  }, 0);
+  const closeContextMenu = useCallback(
+    () => setContextMenu({ visible: false, x: 0, y: 0 }),
+    []
+  );
 
   return (
     <>
@@ -213,11 +220,19 @@ function Directory({
                 onChange={handleSearch}
                 className="border-none search-input bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder focus:outline-primary-button active:outline-primary-button outline-none text-sm rounded-lg pl-9 pr-2.5 py-2 w-[250px] h-[32px] light:border-theme-modal-border light:border"
               />
-              <MagnifyingGlass
-                size={14}
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white"
-                weight="bold"
-              />
+              {searching ? (
+                <CircleNotch
+                  size={14}
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white animate-spin"
+                  weight="bold"
+                />
+              ) : (
+                <MagnifyingGlass
+                  size={14}
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white"
+                  weight="bold"
+                />
+              )}
             </div>
             <button
               className="border-none flex items-center gap-x-2 cursor-pointer px-[14px] py-[7px] -mr-[14px] rounded-lg hover:bg-theme-sidebar-subitem-hover z-20 relative"
@@ -247,32 +262,33 @@ function Directory({
             </div>
 
             <div className="overflow-y-auto h-full pt-8">
-              {loading ? (
+              {status === "initializing" ? (
                 <div className="w-full h-full flex items-center justify-center flex-col gap-y-5">
                   <PreLoader />
-                  <p className="text-white text-sm font-semibold animate-pulse text-center w-1/3">
-                    {loadingMessage}
-                  </p>
                 </div>
-              ) : filteredFiles.length > 0 ? (
-                filteredFiles.map(
-                  (item, index) =>
-                    item.type === "folder" && (
-                      <FolderRow
-                        key={index}
-                        item={item}
-                        totalItems={item.items?.length ?? 0}
-                        selected={isSelected(
-                          item.id,
-                          item.type === "folder" ? item : null
-                        )}
-                        onRowClick={() => toggleSelection(item)}
-                        toggleSelection={toggleSelection}
-                        isSelected={isSelected}
-                        autoExpanded={index === 0}
-                      />
-                    )
-                )
+              ) : rows.length > 0 ? (
+                rows.map((row) => (
+                  <FolderRow
+                    key={row.item.name}
+                    item={row.item}
+                    files={row.files}
+                    expanded={row.expanded}
+                    loading={row.loading}
+                    hasMore={row.hasMore}
+                    totalCount={row.totalCount}
+                    countIsExact={row.searching}
+                    selectionState={folderSelectionState(
+                      row.item.name,
+                      row.files
+                    )}
+                    isFileSelected={(id) => isFileSelected(row.item.name, id)}
+                    onToggleExpanded={toggleExpanded}
+                    onToggleFolder={(folder) => toggleFolder(folder, row.files)}
+                    onToggleFile={toggleFile}
+                    onPrefetch={prefetchFolder}
+                    onLoadMore={loadMore}
+                  />
+                ))
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
                   <p className="text-white text-opacity-40 text-sm font-medium">
@@ -281,7 +297,18 @@ function Directory({
                 </div>
               )}
             </div>
-            {amountSelected !== 0 && (
+
+            {/* Non-blocking status strip - mutations never blank the tree. */}
+            {!!busyMessage && (
+              <div className="absolute top-8 left-0 right-0 z-20 flex items-center justify-center gap-x-2 bg-theme-bg-secondary/95 border-b border-theme-modal-border py-1.5">
+                <CircleNotch size={12} className="animate-spin" weight="bold" />
+                <p className="text-theme-text-primary text-xs font-medium">
+                  {busyMessage}
+                </p>
+              </div>
+            )}
+
+            {selectedCount > 0 && (
               <div className="absolute bottom-[12px] left-0 right-0 flex justify-center pointer-events-none">
                 <div className="mx-auto bg-white/40 light:bg-white rounded-lg py-1 px-2 pointer-events-auto light:shadow-lg">
                   <div className="flex flex-row items-center gap-x-2">
@@ -304,9 +331,7 @@ function Directory({
                       </button>
                       {showFolderSelection && (
                         <FolderSelectionPopup
-                          folders={files.items.filter(
-                            (item) => item.type === "folder"
-                          )}
+                          folders={folders}
                           onSelect={moveToFolder}
                           onClose={() => setShowFolderSelection(false)}
                         />
@@ -325,26 +350,26 @@ function Directory({
           </div>
           <UploadFile
             workspace={workspace}
-            fetchKeys={fetchKeys}
-            setLoading={setLoading}
-            setLoadingMessage={setLoadingMessage}
+            onUploadComplete={syncAfterUpload}
+            onLinkScraped={syncAfterUpload}
           />
         </div>
         {isFolderModalOpen && (
           <div className="bg-black/60 backdrop-blur-sm fixed top-0 left-0 outline-none w-screen h-screen flex items-center justify-center z-30">
             <NewFolderModal
               closeModal={closeFolderModal}
-              files={files}
-              setFiles={setFiles}
+              onCreated={handleFolderCreated}
             />
           </div>
         )}
         <ContextMenu
           contextMenu={contextMenu}
           closeContextMenu={closeContextMenu}
-          files={files}
-          selectedItems={selectedItems}
-          setSelectedItems={setSelectedItems}
+          allSelected={
+            selectedCount > 0 && selectedFolderNames.length === folders.length
+          }
+          onSelectAll={selectAll}
+          onClearSelection={clearSelection}
         />
       </div>
       <DirectoryTooltips />
@@ -385,5 +410,3 @@ function DirectoryTooltips() {
     />
   );
 }
-
-export default memo(Directory);

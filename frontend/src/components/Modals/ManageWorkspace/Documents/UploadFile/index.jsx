@@ -1,5 +1,5 @@
 import { CloudArrowUp } from "@phosphor-icons/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import showToast from "../../../../../utils/toast";
 import System from "../../../../../models/system";
@@ -13,22 +13,24 @@ import {
   getFilesFromUploadEvent,
 } from "../../../../../utils/folderUpload";
 
+/**
+ * @param {object} props
+ * @param {() => Promise<void>} props.onUploadComplete called (coalesced) once a
+ * burst of file uploads settles, so the picker can hydrate in place.
+ * @param {() => Promise<void>} props.onLinkScraped called after a link scrape.
+ */
 export default function UploadFile({
   workspace,
-  fetchKeys,
-  setLoading,
-  setLoadingMessage,
+  onUploadComplete,
+  onLinkScraped,
 }) {
   const { t } = useTranslation();
   const [ready, setReady] = useState(false);
   const [files, setFiles] = useState([]);
   const [fetchingUrl, setFetchingUrl] = useState(false);
-  const folderInputRef = useRef(null);
 
   const handleSendLink = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setLoadingMessage("Scraping link...");
     setFetchingUrl(true);
     const formEl = e.target;
     const form = new FormData(formEl);
@@ -39,20 +41,20 @@ export default function UploadFile({
     if (!response.ok) {
       showToast(`Error uploading link: ${data.error}`, "error");
     } else {
-      await fetchKeys(true, { autoSelectNew: true });
+      await onLinkScraped();
       showToast("Link uploaded successfully", "success");
       formEl.reset();
     }
-    setLoading(false);
     setFetchingUrl(false);
   };
 
-  const debouncedFetchKeysRef = useRef(
-    debounce((fn, opts) => fn(true, opts), 1000)
+  // Uploads finish one at a time; coalesce their completions into a single
+  // picker sync so a 50-file folder drop does not fire 50 refreshes.
+  const syncPicker = useMemo(
+    () => debounce(() => onUploadComplete?.(), 750),
+    [onUploadComplete]
   );
-  const handleUploadSuccess = () =>
-    debouncedFetchKeysRef.current(fetchKeys, { autoSelectNew: true });
-  const handleUploadError = () => debouncedFetchKeysRef.current(fetchKeys, {});
+  useEffect(() => () => syncPicker.cancel(), [syncPicker]);
 
   const onDrop = async (acceptedFiles, rejections) => {
     const grouped = groupDroppedFiles(acceptedFiles);
@@ -83,13 +85,6 @@ export default function UploadFile({
       };
     });
     setFiles([...newAccepted, ...newRejected]);
-  };
-
-  const handleFolderSelection = (e) => {
-    const selectedFiles = Array.from(e.target.files || []);
-    e.target.value = null;
-    if (selectedFiles.length === 0) return;
-    onDrop(selectedFiles, []);
   };
 
   useEffect(() => {
@@ -150,32 +145,11 @@ export default function UploadFile({
                 reason={file?.reason}
                 folderName={file?.folderName}
                 relativePath={file?.relativePath}
-                onUploadSuccess={handleUploadSuccess}
-                onUploadError={handleUploadError}
-                setLoading={setLoading}
-                setLoadingMessage={setLoadingMessage}
+                onSettled={syncPicker}
               />
             ))}
           </div>
         )}
-      </div>
-      <div className="text-center text-white text-opacity-50 text-xs font-medium w-[560px] py-2">
-        <button
-          type="button"
-          disabled={!ready}
-          onClick={() => folderInputRef.current?.click()}
-          className="border-none bg-transparent p-0 text-white text-opacity-50 text-xs font-medium underline cursor-pointer hover:text-opacity-80 disabled:cursor-not-allowed"
-        >
-          {t("connectors.upload.select-folder")}
-        </button>
-        <input
-          ref={folderInputRef}
-          type="file"
-          hidden
-          multiple
-          webkitdirectory=""
-          onChange={handleFolderSelection}
-        />
       </div>
       <div className="text-center text-white text-opacity-50 text-xs font-medium w-[560px] py-2">
         {t("connectors.upload.or-submit-link")}

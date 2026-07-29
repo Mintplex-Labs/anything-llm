@@ -1,17 +1,13 @@
 import { fromEvent } from "file-selector";
 
 /**
- * Utilities for folder uploads via drag-and-drop or the webkitdirectory
- * folder picker.
+ * Utilities for folder uploads via drag-and-drop.
  *
- * Folder structure is recovered from two sources, both standard Chromium
- * APIs that behave identically in the browser and in the Electron-based
- * desktop app:
- * - Drag-and-drop: getFilesFromUploadEvent traverses the drop's
- *   FileSystemEntry tree and stamps each file's path relative to the drop
- *   (eg: "/rootFolder/sub/file.md") onto RELATIVE_PATH_KEY.
- * - Folder picker: webkitdirectory inputs populate file.webkitRelativePath
- *   (eg: "rootFolder/sub/file.md").
+ * Folder structure is recovered by getFilesFromUploadEvent, which traverses
+ * the drop's FileSystemEntry tree and stamps each file's path relative to the
+ * drop (eg: "/rootFolder/sub/file.md") onto RELATIVE_PATH_KEY. That is a
+ * standard Chromium API and behaves identically in the browser and in the
+ * Electron-based desktop app.
  *
  * We deliberately never read file.path. react-dropzone's default aggregator
  * carries the drop-relative path there, but Electron (<32) pre-fills that
@@ -22,7 +18,9 @@ import { fromEvent } from "file-selector";
 const RELATIVE_PATH_KEY = "_relativePath";
 
 /**
- * The most specific relative path we know for a dropped or picked file.
+ * The most specific relative path we know for a dropped file.
+ * webkitRelativePath is kept as a fallback so this stays correct if a
+ * webkitdirectory input is ever wired up again.
  * @param {File} file
  * @returns {string}
  */
@@ -149,7 +147,7 @@ function isHiddenPath(segments) {
 }
 
 /**
- * Groups a drop or folder selection into loose files and per-folder groups.
+ * Groups a drop into loose files and per-folder groups.
  * Files more than one path segment deep belong to the folder named by their
  * first segment; everything else is a loose file.
  * @param {File[]} files
@@ -171,8 +169,13 @@ export function groupDroppedFiles(files = []) {
     }
     if (isHiddenPath(segments)) continue;
 
+    // Only accept files directly inside the top-level folder (no nesting).
+    // Nested subfolders (segments > 2) are skipped — deep nesting support
+    // will be added in a future PR.
+    if (segments.length > 2) continue;
+
     const folderName = segments[0];
-    const relativePath = segments.slice(1).join("/");
+    const relativePath = segments[1];
     if (!foldersByName[folderName])
       foldersByName[folderName] = { folderName, files: [] };
     foldersByName[folderName].files.push({ file, relativePath });

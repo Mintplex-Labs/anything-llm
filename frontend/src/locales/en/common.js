@@ -1446,7 +1446,6 @@ const TRANSLATIONS = {
       "file-types":
         "supports text files, csv's, spreadsheets, audio files, and more!",
       "or-submit-link": "or submit a link",
-      "select-folder": "or select a folder",
       "placeholder-link": "https://example.com",
       fetching: "Fetching...",
       "fetch-website": "Fetch website",
