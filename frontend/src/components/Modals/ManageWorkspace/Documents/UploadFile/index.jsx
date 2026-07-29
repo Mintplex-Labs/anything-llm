@@ -9,6 +9,26 @@ import debounce from "lodash.debounce";
 import { getFilesFromUploadEvent } from "../../../../../utils/folderUpload";
 
 /**
+ * Fills in a missing protocol so the user can type "example.com/docs" instead
+ * of the full URL. Anything already carrying a scheme is left alone.
+ * @param {string} value raw input value
+ * @returns {string|null} the URL to scrape, or null if it cannot be one
+ */
+function withProtocol(value = "") {
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  const candidate = /^[a-z][a-z0-9+.-]*:\/\//i.test(trimmed)
+    ? trimmed
+    : `https://${trimmed}`;
+  try {
+    new URL(candidate);
+    return candidate;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * @param {object} props
  * @param {ReturnType<import("../hooks/useUploadQueue").default>} props.queue
  * the upload queue shared with the picker's per-folder drop targets, so both
@@ -29,13 +49,13 @@ export default function UploadFile({
 
   const handleSendLink = async (e) => {
     e.preventDefault();
-    setFetchingUrl(true);
     const formEl = e.target;
     const form = new FormData(formEl);
-    const { response, data } = await Workspace.uploadLink(
-      workspace.slug,
-      form.get("link")
-    );
+    const link = withProtocol(form.get("link"));
+    if (!link) return showToast("Please enter a valid link", "error");
+
+    setFetchingUrl(true);
+    const { response, data } = await Workspace.uploadLink(workspace.slug, link);
     if (!response.ok) {
       showToast(`Error uploading link: ${data.error}`, "error");
     } else {
@@ -117,7 +137,9 @@ export default function UploadFile({
         <input
           disabled={fetchingUrl}
           name="link"
-          type="url"
+          // Not type="url" - that would force the user to type the protocol.
+          type="text"
+          inputMode="url"
           className="border-none disabled:bg-theme-settings-input-bg disabled:text-theme-settings-input-placeholder bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-3/4 p-2.5"
           placeholder={t("connectors.upload.placeholder-link")}
           autoComplete="off"

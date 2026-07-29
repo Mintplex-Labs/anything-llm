@@ -219,7 +219,16 @@ function reducer(state, action) {
       // `items` is what the user can actually see, which in search mode is the
       // match list rather than the folder's fetched page.
       const items = action.items ?? (state.contents[name] ?? UNLOADED).items;
-      const turningOn = !state.selectedFolders.has(name);
+      // Toggle against what the checkbox is actually showing, not just
+      // `selectedFolders` - a folder every one of whose files is individually
+      // selected (how a fresh upload arrives) renders as checked, and clicking
+      // a checked box has to uncheck it. Anything short of fully checked
+      // selects the whole folder, so a partial box fills in on one click.
+      const fullySelected = state.selectedFolders.has(name)
+        ? !items.some((file) => state.deselectedFiles.has(file.id))
+        : items.length > 0 &&
+          items.every((file) => state.selectedFiles.has(file.id));
+      const turningOn = !fullySelected;
       const selectedFiles = new Set(state.selectedFiles);
       const deselectedFiles = new Set(state.deselectedFiles);
       // Individual entries are redundant once the folder itself carries the

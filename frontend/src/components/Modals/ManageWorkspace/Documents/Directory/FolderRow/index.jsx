@@ -138,7 +138,11 @@ export default function FolderRow({
             {middleTruncate(item.name, 35)}
           </p>
           {displayCount > 0 && (
-            <span className="text-theme-text-secondary text-[10px] font-medium ml-1.5 shrink-0">
+            <span
+              className={`text-theme-text-secondary text-[10px] font-medium ml-1.5 shrink-0 ${
+                selected || partial ? "light:!text-white" : ""
+              }`}
+            >
               ({displayCount})
             </span>
           )}

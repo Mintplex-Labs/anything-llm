@@ -194,19 +194,19 @@ export function groupDroppedFiles(files = []) {
 }
 
 /**
- * Re-targets a drop at one specific folder. Everything in the drop is
- * uploaded into `folderName` regardless of how it was nested, because the
- * user picked the destination explicitly by dropping onto that folder row.
+ * Re-targets a drop at one specific folder, for drops aimed at a folder row.
  *
- * relativePath keeps the drop-relative path so two files that share a
- * basename cannot collide, and so the stored title reflects where the file
- * came from.
+ * Only loose files are accepted. Storage is a flat two segments
+ * (folder/file.json), so a dropped folder has nowhere to go - keeping its
+ * structure would need nesting we do not support, and flattening it would
+ * produce files literally named "subfolder/report.pdf". Dropping a folder
+ * onto the main dropzone still works and creates a folder of its own.
  * @param {File[]} files
  * @param {string} folderName - destination folder
  * @returns {{
  *  files: Array<{file: File, relativePath: string}>,
  *  skipped: number,
- * }} skipped counts files dropped for being hidden or too deeply nested
+ * }} skipped counts files rejected for being hidden or inside a folder
  */
 export function groupFilesIntoFolder(files = [], folderName = "") {
   const accepted = [];
@@ -219,11 +219,12 @@ export function groupFilesIntoFolder(files = [], folderName = "") {
       skipped++;
       continue;
     }
-    if (segments.length > MAX_DEPTH) {
+    // More than one segment means the file came from inside a dropped folder.
+    if (segments.length > 1) {
       skipped++;
       continue;
     }
-    accepted.push({ file, relativePath: segments.join("/") });
+    accepted.push({ file, relativePath: segments[0] });
   }
 
   return { folderName, files: accepted, skipped };

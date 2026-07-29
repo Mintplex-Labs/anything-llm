@@ -222,7 +222,12 @@ export default function Directory({
       const { queued, skipped } = enqueueIntoFolder(dropped, folderName);
 
       if (queued === 0)
-        return showToast("Nothing in that drop could be uploaded.", "warning");
+        return showToast(
+          skipped > 0
+            ? `Drop files onto ${folderName}, not folders - a folder can only be dropped on the uploader below.`
+            : "Nothing in that drop could be uploaded.",
+          "warning"
+        );
 
       // The progress list lives in the uploader below the picker, which may be
       // scrolled out of view - confirm the drop landed so it does not look
@@ -230,7 +235,7 @@ export default function Directory({
       showToast(`Uploading ${queued} file(s) to ${folderName}`, "info");
       if (skipped > 0)
         showToast(
-          `${skipped} file(s) in subfolders were skipped - nested folders are not supported yet.`,
+          `${skipped} file(s) inside folders were skipped - drop a folder on the uploader below to add it as its own folder.`,
           "warning"
         );
     },
