@@ -51,7 +51,7 @@ export default function Directory({
     expanded,
     searchResults,
     searching,
-    selectedCount,
+    hasSelection,
     selectedFolderNames,
     isFileSelected,
     folderSelectionState,
@@ -91,24 +91,33 @@ export default function Directory({
           expanded: true,
           loading: false,
           hasMore: false,
-          // In search mode the badge counts matches, not the folder's size -
-          // showing "(200)" next to three visible rows reads as a bug.
           totalCount: files.length,
-          searching: true,
+          // The badge counts matches, not the folder's size - showing "(200)"
+          // next to three visible rows reads as a bug.
+          displayCount: files.length,
         };
       });
     }
 
     return folders.map((folder) => {
       const entry = contents[folder.name];
+      const files = entry ? hide(folder.name, entry.items) : NO_FILES;
+      const hasMore = entry?.hasMore ?? false;
+      // totalCount is the server's raw count and drives "Load more (x of y)".
+      const totalCount = entry?.totalCount ?? folder.fileCount ?? 0;
       return {
         item: folder,
-        files: entry ? hide(folder.name, entry.items) : NO_FILES,
+        files,
         expanded: expanded.has(folder.name),
         loading: entry?.status === "loading",
-        hasMore: entry?.hasMore ?? false,
-        totalCount: entry?.totalCount ?? folder.fileCount ?? 0,
-        searching: false,
+        hasMore,
+        totalCount,
+        // Once a folder is fully fetched we know exactly how many rows it can
+        // show - embedded files are filtered out of the page, so a folder with
+        // everything embedded must read as empty rather than still claiming
+        // its on-disk count.
+        displayCount:
+          entry?.status === "loaded" && !hasMore ? files.length : totalCount,
       };
     });
   }, [folders, contents, expanded, searchResults, hiddenPaths]);
@@ -116,6 +125,14 @@ export default function Directory({
   const totalDocCount = useMemo(
     () => folders.reduce((acc, folder) => acc + (folder.fileCount ?? 0), 0),
     [folders]
+  );
+
+  // While searching, the library-wide total is misleading next to a filtered
+  // list, so the header reports how many matches are on screen instead.
+  const searchResultCount = useMemo(
+    () =>
+      searchResults ? rows.reduce((acc, row) => acc + row.files.length, 0) : 0,
+    [searchResults, rows]
   );
 
   /* --------------------------------- search -------------------------------- */
@@ -252,12 +269,20 @@ export default function Directory({
           <div className="relative w-[560px] h-[310px] bg-theme-settings-input-bg rounded-2xl overflow-hidden border border-theme-modal-border">
             <div className="absolute top-0 left-0 right-0 z-10 rounded-t-2xl text-theme-text-primary text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 light:border-theme-modal-border bg-theme-settings-input-bg">
               <p className="col-span-6">Name</p>
-              {totalDocCount > 0 && (
+              {searchResults ? (
                 <p className="col-span-6 text-right text-theme-text-secondary">
-                  {t(`connectors.directory.total-documents`, {
-                    count: totalDocCount,
+                  {t(`connectors.directory.search-results`, {
+                    count: searchResultCount,
                   })}
                 </p>
+              ) : (
+                totalDocCount > 0 && (
+                  <p className="col-span-6 text-right text-theme-text-secondary">
+                    {t(`connectors.directory.total-documents`, {
+                      count: totalDocCount,
+                    })}
+                  </p>
+                )
               )}
             </div>
 
@@ -276,7 +301,7 @@ export default function Directory({
                     loading={row.loading}
                     hasMore={row.hasMore}
                     totalCount={row.totalCount}
-                    countIsExact={row.searching}
+                    displayCount={row.displayCount}
                     selectionState={folderSelectionState(
                       row.item.name,
                       row.files
@@ -308,7 +333,7 @@ export default function Directory({
               </div>
             )}
 
-            {selectedCount > 0 && (
+            {hasSelection && (
               <div className="absolute bottom-[12px] left-0 right-0 flex justify-center pointer-events-none">
                 <div className="mx-auto bg-white/40 light:bg-white rounded-lg py-1 px-2 pointer-events-auto light:shadow-lg">
                   <div className="flex flex-row items-center gap-x-2">
@@ -366,7 +391,7 @@ export default function Directory({
           contextMenu={contextMenu}
           closeContextMenu={closeContextMenu}
           allSelected={
-            selectedCount > 0 && selectedFolderNames.length === folders.length
+            hasSelection && selectedFolderNames.length === folders.length
           }
           onSelectAll={selectAll}
           onClearSelection={clearSelection}

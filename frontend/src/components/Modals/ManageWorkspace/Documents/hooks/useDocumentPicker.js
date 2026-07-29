@@ -66,16 +66,54 @@ function withToggled(set, value, on) {
   return next;
 }
 
+/**
+ * Buckets `folder/file.json` paths into `folder -> Set(filename)`.
+ * @param {Iterable<string>} docpaths
+ * @returns {Map<string, Set<string>>}
+ */
+function groupDocpathsByFolder(docpaths) {
+  const byFolder = new Map();
+  for (const docpath of docpaths) {
+    const slash = docpath.indexOf("/");
+    const folder = slash === -1 ? "custom-documents" : docpath.slice(0, slash);
+    const file = slash === -1 ? docpath : docpath.slice(slash + 1);
+    if (!byFolder.has(folder)) byFolder.set(folder, new Set());
+    byFolder.get(folder).add(file);
+  }
+  return byFolder;
+}
+
+function sameMembers(a, b) {
+  if (a === b) return true;
+  if (!a || !b) return (a?.size ?? 0) === (b?.size ?? 0);
+  if (a.size !== b.size) return false;
+  for (const value of a) if (!b.has(value)) return false;
+  return true;
+}
+
 function reducer(state, action) {
   switch (action.type) {
     case "hydrate": {
       // Preserve pages we already hold so a background refresh does not blank
-      // out open folders. A folder whose server-side count moved is dropped so
-      // it refetches - that is how deletes/uploads heal an expanded folder.
+      // out open folders, but drop any page that can no longer be correct so
+      // it refetches. Two things can invalidate one:
+      //   - the folder's on-disk count moved (upload, delete)
+      //   - which of its files are embedded changed (embed, un-embed). Pages
+      //     have embedded files filtered out of them, so un-embedding has to
+      //     invalidate too even though nothing on disk changed.
+      const prevEmbedded = groupDocpathsByFolder(state.workspaceDocpaths);
+      const nextEmbedded = groupDocpathsByFolder(action.workspaceDocpaths);
       const contents = {};
       for (const folder of action.folders) {
         const prev = state.contents[folder.name];
-        if (prev?.status === "loaded" && prev.totalCount === folder.fileCount)
+        if (
+          prev?.status === "loaded" &&
+          prev.totalCount === folder.fileCount &&
+          sameMembers(
+            prevEmbedded.get(folder.name),
+            nextEmbedded.get(folder.name)
+          )
+        )
           contents[folder.name] = prev;
       }
       const names = new Set(action.folders.map((f) => f.name));
@@ -442,6 +480,17 @@ export default function useDocumentPicker({ slug }) {
     return count;
   }, [state]);
 
+  /**
+   * Whether anything is selected at all.
+   *
+   * Deliberately not `selectedCount > 0`: an empty folder is a legitimate
+   * selection - it is the only way to delete one - but it contributes zero
+   * files to the count, so gating the action bar on the count would leave
+   * empty folders impossible to act on.
+   */
+  const hasSelection =
+    state.selectedFolders.size > 0 || state.selectedFiles.size > 0;
+
   const toggleFile = useCallback(
     (file, folderName) =>
       dispatch({ type: "toggle-file", id: file.id, folderName }),
@@ -622,6 +671,7 @@ export default function useDocumentPicker({ slug }) {
   return {
     ...state,
     selectedCount,
+    hasSelection,
     selectedFolderNames,
     isFileSelected,
     folderSelectionState,

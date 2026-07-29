@@ -15,6 +15,10 @@ import { useTranslation } from "react-i18next";
  * @param {boolean} props.expanded
  * @param {boolean} props.loading a page request is in flight
  * @param {boolean} props.hasMore more pages remain on the server
+ * @param {number} props.totalCount server-side count, shown in "Load more"
+ * @param {number} props.displayCount the badge next to the folder name; the
+ * caller resolves this because it differs by context (matches while searching,
+ * listable rows once fully fetched, the raw count before that)
  * @param {'none'|'some'|'all'} props.selectionState folder checkbox tri-state
  * @param {(id: string) => boolean} props.isFileSelected
  */
@@ -25,7 +29,7 @@ export default function FolderRow({
   loading = false,
   hasMore = false,
   totalCount = 0,
-  countIsExact = false,
+  displayCount = 0,
   selectionState = "none",
   isFileSelected,
   onToggleExpanded,
@@ -37,18 +41,14 @@ export default function FolderRow({
   const { t } = useTranslation();
   const selected = selectionState === "all";
   const partial = selectionState === "some";
-  // Before a folder is opened we only know the server's count; afterwards the
-  // fetched page is authoritative (embedded files are filtered out of it).
-  // `countIsExact` means the caller already resolved it - eg. a search result,
-  // where the badge counts matches rather than the whole folder.
-  const displayCount = countIsExact
-    ? totalCount
-    : totalCount || item.fileCount || files.length;
 
   return (
     <>
+      {/* Clicking the row opens the folder. Selection is the checkbox's job -
+          a whole-row click is too easy to hit by accident for something that
+          can stage hundreds of files for embedding. */}
       <tr
-        onClick={() => onToggleFolder(item)}
+        onClick={() => onToggleExpanded(item.name)}
         onMouseEnter={() => onPrefetch(item.name)}
         className={`text-theme-text-primary text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 hover:bg-theme-file-picker-hover cursor-pointer file-row ${
           selected || partial ? "selected light:text-white !text-white" : ""
@@ -76,11 +76,8 @@ export default function FolderRow({
             {selected && <div className="w-2 h-2 bg-white rounded-[2px]" />}
             {partial && <div className="w-2 h-[2px] bg-white rounded-[2px]" />}
           </div>
+          {/* No handler of its own - the row click already expands. */}
           <div
-            onClick={(event) => {
-              event.stopPropagation();
-              onToggleExpanded(item.name);
-            }}
             className={`transform transition-transform duration-200 ${
               expanded ? "rotate-360" : " rotate-270"
             }`}
