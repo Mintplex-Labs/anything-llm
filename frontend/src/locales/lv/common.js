@@ -1189,6 +1189,8 @@ const TRANSLATIONS = {
       save_embed: "Saglabāt un iegult",
       "total-documents_one": "{{count}} dokumenta",
       "total-documents_other": "{{count}} dokumenti",
+      "search-results_one": "Rezultāts {{count}}",
+      "search-results_other": "Rezultāti {{count}}",
     },
     upload: {
       "processor-offline": "Dokumentu apstrādātājs nav pieejams",

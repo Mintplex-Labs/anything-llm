@@ -1053,6 +1053,8 @@ const TRANSLATIONS = {
       save_embed: "保存して埋め込む",
       "total-documents_one": "{{count}} のドキュメント",
       "total-documents_other": "{{count}} に関する書類",
+      "search-results_one": "{{count}} の結果",
+      "search-results_other": "{{count}} の結果",
     },
     upload: {
       "processor-offline": "ドキュメント処理機能が利用できません",

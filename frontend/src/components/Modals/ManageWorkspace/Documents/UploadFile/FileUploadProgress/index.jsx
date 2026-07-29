@@ -1,4 +1,4 @@
-import React, { useState, useEffect, memo } from "react";
+import React, { useState, useEffect, useRef, memo } from "react";
 import truncate from "truncate";
 import { CheckCircle, XCircle } from "@phosphor-icons/react";
 import Workspace from "../../../../../../models/workspace";
@@ -12,58 +12,69 @@ function FileUploadProgressComponent({
   setFiles,
   rejected = false,
   reason = null,
-  onUploadSuccess,
-  onUploadError,
-  setLoading,
-  setLoadingMessage,
+  folderName = null,
+  relativePath = null,
+  onSettled,
 }) {
   const [timerMs, setTimerMs] = useState(10);
   const [status, setStatus] = useState("pending");
   const [error, setError] = useState("");
   const [isFadingOut, setIsFadingOut] = useState(false);
 
-  const fadeOut = (cb) => {
-    setIsFadingOut(true);
-    cb?.();
-  };
-
-  const beginFadeOut = () => {
-    setIsFadingOut(false);
-    setFiles((prev) => {
-      return prev.filter((item) => item.uid !== uuid);
-    });
-  };
+  // Every timer this row starts, so nothing fires after unmount.
+  const timers = useRef([]);
+  const track = (id) => (timers.current.push(id), id);
+  useEffect(() => () => timers.current.forEach((id) => clearTimeout(id)), []);
 
   useEffect(() => {
     async function uploadFile() {
-      setLoading(true);
-      setLoadingMessage("Uploading file...");
       const start = Number(new Date());
       const formData = new FormData();
-      formData.append("file", file, file.name);
+
+      // folderName/metadata MUST be appended before the file part - multer
+      // only populates request.body with text fields it saw before the file,
+      // so reordering these silently breaks folder uploads server-side.
+      if (!!folderName && !!relativePath) {
+        formData.append("folderName", folderName);
+        formData.append(
+          "metadata",
+          JSON.stringify({ title: relativePath, docSource: relativePath })
+        );
+        // Flatten the relative path into the upload name so files from
+        // different subfolders that share a basename cannot clobber each
+        // other in the document processor's hotdir mid-upload.
+        formData.append("file", file, relativePath.replace(/\//g, "_"));
+      } else {
+        formData.append("file", file, file.name);
+      }
+
       const timer = setInterval(() => {
         setTimerMs(Number(new Date()) - start);
       }, 100);
 
       // Chunk streaming not working in production so we just sit and wait
       const { response, data } = await Workspace.uploadFile(slug, formData);
+      clearInterval(timer);
       if (!response.ok) {
         setStatus("failed");
-        clearInterval(timer);
-        onUploadError(data.error);
         setError(data.error);
       } else {
-        setLoading(false);
-        setLoadingMessage("");
         setStatus("complete");
-        clearInterval(timer);
-        onUploadSuccess();
       }
+      onSettled?.();
 
-      // Begin fadeout timer to clear uploader queue.
-      setTimeout(() => {
-        fadeOut(() => setTimeout(() => beginFadeOut(), 300));
-      }, 5000);
+      // Let the result sit for a beat, fade it, then drop it from the queue.
+      track(
+        setTimeout(() => {
+          setIsFadingOut(true);
+          track(
+            setTimeout(
+              () => setFiles((prev) => prev.filter((i) => i.uid !== uuid)),
+              300
+            )
+          );
+        }, 5000)
+      );
     }
     !!file && !rejected && uploadFile();
   }, []);
@@ -83,7 +94,7 @@ function FileUploadProgressComponent({
         </div>
         <div className="flex flex-col">
           <p className="text-white light:text-red-600 text-xs font-semibold">
-            {truncate(file.name, 30)}
+            {truncate(relativePath || file.name, 30)}
           </p>
           <p className="text-red-100 light:text-red-600 text-xs font-medium">
             {reason || "this file failed to upload"}
@@ -108,7 +119,7 @@ function FileUploadProgressComponent({
         </div>
         <div className="flex flex-col">
           <p className="text-white light:text-red-600 text-xs font-semibold">
-            {truncate(file.name, 30)}
+            {truncate(relativePath || file.name, 30)}
           </p>
           <p className="text-red-100 light:text-red-600 text-xs font-medium">
             {error}
@@ -138,7 +149,7 @@ function FileUploadProgressComponent({
       </div>
       <div className="flex flex-col">
         <p className="text-white light:text-theme-text-primary text-xs font-medium">
-          {truncate(file.name, 30)}
+          {truncate(relativePath || file.name, 30)}
         </p>
         <p className="text-white/80 light:text-theme-text-secondary text-xs font-medium">
           {humanFileSize(file.size)} | {milliToHms(timerMs)}

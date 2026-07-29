@@ -1206,6 +1206,8 @@ const TRANSLATIONS = {
       save_embed: "Speichern und Einbetten",
       "total-documents_one": "{{count}} Dokument",
       "total-documents_other": "{{count}} Dokumente",
+      "search-results_one": "{{count}} Ergebnis",
+      "search-results_other": "{{count}} Ergebnisse",
     },
     upload: {
       "processor-offline": "Dokumentenprozessor nicht verfügbar",

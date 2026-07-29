@@ -1080,6 +1080,8 @@ const TRANSLATIONS = {
       save_embed: "Opslaan en embedden",
       "total-documents_one": "{{count}} document",
       "total-documents_other": "{{count}} documenten",
+      "search-results_one": "{{count}} uitkomst",
+      "search-results_other": "{{count}} resultaten",
     },
     upload: {
       "processor-offline": "Documentverwerker niet beschikbaar",

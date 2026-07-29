@@ -1155,6 +1155,8 @@ const TRANSLATIONS = {
       save_embed: "Salvesta ja põimi",
       "total-documents_one": "{{count}} dokument",
       "total-documents_other": "{{count}} dokumendid",
+      "search-results_one": "{{count}} tulemus",
+      "search-results_other": "{{count}} tulemused",
     },
     upload: {
       "processor-offline": "Dokumenditöötleja pole saadaval",

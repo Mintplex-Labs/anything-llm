@@ -1299,6 +1299,8 @@ const TRANSLATIONS = {
       deselect_all: "Desselecciona-ho tot",
       remove_selected: "Elimina la selecció",
       save_embed: "Desa i incrusta",
+      "search-results_one": "{{count}} resultat",
+      "search-results_other": "{{count}} resultats",
     },
     upload: {
       "processor-offline": "Processador de documents no disponible",

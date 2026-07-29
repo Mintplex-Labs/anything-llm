@@ -1094,6 +1094,8 @@ const TRANSLATIONS = {
       save_embed: "Salva e incorpora",
       "total-documents_one": "{{count}} documento",
       "total-documents_other": "{{count}} documenti",
+      "search-results_one": "{{count}} risultato",
+      "search-results_other": "{{count}} risultati",
     },
     upload: {
       "processor-offline": "Il processore di documenti non è disponibile.",
