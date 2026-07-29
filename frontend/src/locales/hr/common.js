@@ -1457,6 +1457,8 @@ const TRANSLATIONS = {
       deselect_all: "Poništi odabir svih",
       remove_selected: "Ukloni odabrano",
       save_embed: "Spremi i ugradi",
+      "search-results_one": "{{count}} rezultat",
+      "search-results_other": "{{count}} rezultati",
     },
     upload: {
       "processor-offline": "Procesor dokumenata nije dostupan",

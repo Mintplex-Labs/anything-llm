@@ -1086,6 +1086,8 @@ const TRANSLATIONS = {
       save_embed: "Kaydet ve Göm",
       "total-documents_one": "{{count}} belgesi",
       "total-documents_other": "{{count}} belgeleri",
+      "search-results_one": "{{count}}' sonucu",
+      "search-results_other": "{{count}} sonuçları",
     },
     upload: {
       "processor-offline": "Belge İşleyici Kullanılamıyor",

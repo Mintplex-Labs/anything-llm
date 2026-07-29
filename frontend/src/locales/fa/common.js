@@ -1064,6 +1064,8 @@ const TRANSLATIONS = {
       save_embed: "ذخیره و وارد کردن",
       "total-documents_one": "{{count}} سند",
       "total-documents_other": "{{count}} اسناد",
+      "search-results_one": "{{count}} نتیجه",
+      "search-results_other": "نتایج {{count}}",
     },
     upload: {
       "processor-offline":

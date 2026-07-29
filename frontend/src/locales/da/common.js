@@ -1069,6 +1069,8 @@ const TRANSLATIONS = {
       save_embed: "Gem og indlejr",
       "total-documents_one": "{{count}} dokument",
       "total-documents_other": "{{count}} dokumenter",
+      "search-results_one": "{{count}} resultat",
+      "search-results_other": "{{count}} resultater",
     },
     upload: {
       "processor-offline": "Dokumentbehandler utilgængelig",
