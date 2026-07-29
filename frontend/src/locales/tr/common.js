@@ -1086,6 +1086,8 @@ const TRANSLATIONS = {
       save_embed: "Kaydet ve Göm",
       "total-documents_one": "{{count}} belgesi",
       "total-documents_other": "{{count}} belgeleri",
+      "search-results_one": "{{count}}' sonucu",
+      "search-results_other": "{{count}} sonuçları",
     },
     upload: {
       "processor-offline": "Belge İşleyici Kullanılamıyor",
@@ -1383,6 +1385,11 @@ const TRANSLATIONS = {
         title: "Sohbette HTML Görüntüle",
         description:
           "Asistan yanıtlarında HTML yanıtlarını görüntüleyin.\nBu, çok daha yüksek kaliteli yanıt sağlayabilir, ancak potansiyel güvenlik risklerine de yol açabilir.",
+      },
+      "disable-auto-scroll": {
+        title: "Otomatik kaydırma özelliğini devre dışı bırak",
+        description:
+          "Yeni mesajlar aldığınızda sohbetin otomatik olarak en alttaki bölüme kaydırmasını devre dışı bırakın.",
       },
     },
   },

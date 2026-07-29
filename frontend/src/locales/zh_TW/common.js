@@ -1002,6 +1002,8 @@ const TRANSLATIONS = {
       save_embed: "儲存並嵌入",
       "total-documents_one": "{{count}} 文件",
       "total-documents_other": "{{count}} 文件",
+      "search-results_one": "{{count}} 結果",
+      "search-results_other": "{{count}} 的結果",
     },
     upload: {
       "processor-offline": "文件處理器無法使用",
@@ -1278,6 +1280,10 @@ const TRANSLATIONS = {
         title: "在對話中渲染 HTML",
         description:
           "在助理回應中渲染 HTML 內容。\n這能顯著提升呈現精細度，但也可能帶來潛在安全風險。",
+      },
+      "disable-auto-scroll": {
+        title: "停用自動捲動功能",
+        description: "當收到新訊息時，取消自動將聊天視窗滾動到底部的功能。",
       },
     },
   },

@@ -1070,6 +1070,8 @@ const TRANSLATIONS = {
       save_embed: "Lưu và Nhúng",
       "total-documents_one": "{{count}}",
       "total-documents_other": "{{count}}",
+      "search-results_one": "Kết quả {{count}}",
+      "search-results_other": "Kết quả {{count}}",
     },
     upload: {
       "processor-offline": "Trình xử lý Tài liệu Không khả dụng",
@@ -1366,6 +1368,11 @@ const TRANSLATIONS = {
         title: "Hiển thị HTML trong trò chuyện",
         description:
           "Hiển thị phản hồi HTML trong các phản hồi của trợ lý.\nĐiều này có thể mang lại chất lượng phản hồi cao hơn nhiều, nhưng cũng có thể dẫn đến các rủi ro bảo mật tiềm ẩn.",
+      },
+      "disable-auto-scroll": {
+        title: "Tắt tính năng cuộn tự động",
+        description:
+          "Tắt tính năng tự động cuộn xuống cuối cuộc trò chuyện khi nhận được tin nhắn mới.",
       },
     },
   },

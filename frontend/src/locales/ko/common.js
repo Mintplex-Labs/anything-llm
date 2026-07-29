@@ -849,6 +849,11 @@ const TRANSLATIONS = {
         description:
           "어시스턴트 응답에 HTML 응답을 표시합니다.\n이는 응답 품질의 훨씬 더 높은 수준을 달성할 수 있지만, 잠재적인 보안 위험으로 이어질 수도 있습니다.",
       },
+      "disable-auto-scroll": {
+        title: "자동 스크롤 기능 끄기",
+        description:
+          "새 메시지가 도착할 때 자동으로 채팅 내용이 맨 아래로 스크롤되는 기능을 비활성화합니다.",
+      },
     },
   },
   api: {
@@ -1149,6 +1154,8 @@ const TRANSLATIONS = {
       save_embed: "저장 및 임베딩",
       "total-documents_one": "{{count}} 문서",
       "total-documents_other": "{{count}} 관련 문서",
+      "search-results_one": "{{count}} 결과",
+      "search-results_other": "{{count}} 결과",
     },
     upload: {
       "processor-offline": "문서 처리기가 오프라인 상태입니다",

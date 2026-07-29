@@ -1063,6 +1063,8 @@ const TRANSLATIONS = {
       save_embed: "حفظ و تضمين",
       "total-documents_one": "{{count}}",
       "total-documents_other": "{{count}} المستندات",
+      "search-results_one": "النتيجة {{count}}",
+      "search-results_other": "نتائج {{count}}",
     },
     upload: {
       "processor-offline": "غير متاح",
@@ -1349,6 +1351,11 @@ const TRANSLATIONS = {
         title: "تحويل HTML إلى تنسيق نصي في الدردشة",
         description:
           "تقديم استجابات HTML في استجابات المساعد.\nيمكن أن يؤدي ذلك إلى تحسين كبير في جودة الاستجابة، ولكنه قد يؤدي أيضًا إلى مخاطر أمنية محتملة.",
+      },
+      "disable-auto-scroll": {
+        title: "تعطيل التمرير التلقائي",
+        description:
+          "تعطيل التمرير التلقائي إلى أسفل نافذة الدردشة عند استلام رسائل جديدة.",
       },
     },
   },

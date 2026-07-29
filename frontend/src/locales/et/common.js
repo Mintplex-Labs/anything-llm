@@ -856,6 +856,11 @@ const TRANSLATIONS = {
         description:
           "HTML-vastuste kuvamine abivasside vastustes.\nSee võib viia suurema vastuste kvaliteedi, kuid võib ka põhjustada potentsiaalseid turvaohusid.",
       },
+      "disable-auto-scroll": {
+        title: "Lülita automaatne rullimine välja",
+        description:
+          "Lülitage automaatne rullimine alla lootes välja, kui saabuvad uued sõnumid.",
+      },
     },
   },
   api: {
@@ -1150,6 +1155,8 @@ const TRANSLATIONS = {
       save_embed: "Salvesta ja põimi",
       "total-documents_one": "{{count}} dokument",
       "total-documents_other": "{{count}} dokumendid",
+      "search-results_one": "{{count}} tulemus",
+      "search-results_other": "{{count}} tulemused",
     },
     upload: {
       "processor-offline": "Dokumenditöötleja pole saadaval",

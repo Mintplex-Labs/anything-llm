@@ -15,6 +15,7 @@ import handleSocketResponse, {
   websocketURI,
   AGENT_SESSION_END,
   AGENT_SESSION_START,
+  agentEventLoadingState,
   setAgentSessionActive,
   setAgentSessionSocket,
 } from "@/utils/chat/agent";
@@ -367,16 +368,22 @@ export default function ChatContainer({
         });
 
         socket.addEventListener("message", (event) => {
-          setLoadingResponse(true);
           try {
+            // Keep the stop generation button visible for the entire
+            // execution loop - only swap back to the send button when the
+            // agent pauses to wait on the user. Passive bookkeeping events
+            // (null) leave the loading state as-is.
+            const data = safeJsonParse(event.data, null);
+            const loadingState = agentEventLoadingState(data);
+            if (loadingState !== null) setLoadingResponse(loadingState);
             handleSocketResponse(socket, event, setChatHistory);
           } catch {
             console.error("Failed to parse data");
             setAgentSessionActive(false);
             window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
+            setLoadingResponse(false);
             socket.close();
           }
-          setLoadingResponse(false);
         });
 
         socket.addEventListener("close", (_event) => {
@@ -410,6 +417,10 @@ export default function ChatContainer({
         setWebsocket(socket);
         setAgentSessionActive(true);
         setAgentSessionSocket(socket);
+        // The agent immediately begins working on the prompt that opened
+        // this session, so restore the loading state that the closing
+        // "Swapping over to agent chat" statusResponse cleared.
+        setLoadingResponse(true);
         window.dispatchEvent(new CustomEvent(AGENT_SESSION_START));
         window.dispatchEvent(new CustomEvent(CLEAR_ATTACHMENTS_EVENT));
       } catch (e) {

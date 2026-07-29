@@ -843,6 +843,11 @@ const TRANSLATIONS = {
         description:
           "הצגת תגובות HTML בתגובות של עוזר.\nזה יכול להוביל לאיכות תגובה גבוהה בהרבה, אך גם עלול לגרום לסיכונים פוטנציאליים של אבטחה.",
       },
+      "disable-auto-scroll": {
+        title: "השבת גלילה אוטומטית",
+        description:
+          "כבה את הקיפול האוטומטי לסוף החלון כאשר מתקבלות הודעות חדשות.",
+      },
     },
   },
   api: {
@@ -1137,6 +1142,8 @@ const TRANSLATIONS = {
       save_embed: "שמור והטמע",
       "total-documents_one": "{{count}} מסמך",
       "total-documents_other": "מסמכים {{count}}",
+      "search-results_one": "{{count}} תוצאה",
+      "search-results_other": "תוצאות {{count}}",
     },
     upload: {
       "processor-offline": "מעבד המסמכים אינו זמין",

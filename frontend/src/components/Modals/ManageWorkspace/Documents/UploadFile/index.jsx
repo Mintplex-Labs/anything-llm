@@ -1,83 +1,83 @@
 import { CloudArrowUp } from "@phosphor-icons/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import showToast from "../../../../../utils/toast";
-import System from "../../../../../models/system";
 import { useDropzone } from "react-dropzone";
-import { v4 } from "uuid";
 import FileUploadProgress from "./FileUploadProgress";
 import Workspace from "../../../../../models/workspace";
 import debounce from "lodash.debounce";
+import { getFilesFromUploadEvent } from "../../../../../utils/folderUpload";
 
+/**
+ * Fills in a missing protocol so the user can type "example.com/docs" instead
+ * of the full URL. Anything already carrying a scheme is left alone.
+ * @param {string} value raw input value
+ * @returns {string|null} the URL to scrape, or null if it cannot be one
+ */
+function withProtocol(value = "") {
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  const candidate = /^[a-z][a-z0-9+.-]*:\/\//i.test(trimmed)
+    ? trimmed
+    : `https://${trimmed}`;
+  try {
+    new URL(candidate);
+    return candidate;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * @param {object} props
+ * @param {ReturnType<import("../hooks/useUploadQueue").default>} props.queue
+ * the upload queue shared with the picker's per-folder drop targets, so both
+ * report progress in this one list.
+ * @param {() => Promise<void>} props.onUploadComplete called (coalesced) once a
+ * burst of file uploads settles, so the picker can hydrate in place.
+ * @param {() => Promise<void>} props.onLinkScraped called after a link scrape.
+ */
 export default function UploadFile({
   workspace,
-  fetchKeys,
-  setLoading,
-  setLoadingMessage,
+  queue,
+  onUploadComplete,
+  onLinkScraped,
 }) {
   const { t } = useTranslation();
-  const [ready, setReady] = useState(false);
-  const [files, setFiles] = useState([]);
+  const { ready, files, setFiles, enqueueDrop } = queue;
   const [fetchingUrl, setFetchingUrl] = useState(false);
 
   const handleSendLink = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setLoadingMessage("Scraping link...");
-    setFetchingUrl(true);
     const formEl = e.target;
     const form = new FormData(formEl);
-    const { response, data } = await Workspace.uploadLink(
-      workspace.slug,
-      form.get("link")
-    );
+    const link = withProtocol(form.get("link"));
+    if (!link) return showToast("Please enter a valid link", "error");
+
+    setFetchingUrl(true);
+    const { response, data } = await Workspace.uploadLink(workspace.slug, link);
     if (!response.ok) {
       showToast(`Error uploading link: ${data.error}`, "error");
     } else {
-      await fetchKeys(true, { autoSelectNew: true });
+      await onLinkScraped();
       showToast("Link uploaded successfully", "success");
       formEl.reset();
     }
-    setLoading(false);
     setFetchingUrl(false);
   };
 
-  const debouncedFetchKeysRef = useRef(
-    debounce((fn, opts) => fn(true, opts), 1000)
+  // Uploads finish one at a time; coalesce their completions into a single
+  // picker sync so a 50-file folder drop does not fire 50 refreshes.
+  const syncPicker = useMemo(
+    () => debounce(() => onUploadComplete?.(), 750),
+    [onUploadComplete]
   );
-  const handleUploadSuccess = () =>
-    debouncedFetchKeysRef.current(fetchKeys, { autoSelectNew: true });
-  const handleUploadError = () => debouncedFetchKeysRef.current(fetchKeys, {});
-
-  const onDrop = async (acceptedFiles, rejections) => {
-    const newAccepted = acceptedFiles.map((file) => {
-      return {
-        uid: v4(),
-        file,
-      };
-    });
-    const newRejected = rejections.map((file) => {
-      return {
-        uid: v4(),
-        file: file.file,
-        rejected: true,
-        reason: file.errors[0].code,
-      };
-    });
-    setFiles([...newAccepted, ...newRejected]);
-  };
-
-  useEffect(() => {
-    async function checkProcessorOnline() {
-      const online = await System.checkDocumentProcessorOnline();
-      setReady(online);
-    }
-    checkProcessorOnline();
-  }, []);
+  useEffect(() => () => syncPicker.cancel(), [syncPicker]);
 
   const { getRootProps, getInputProps } = useDropzone({
-    onDrop,
+    onDrop: enqueueDrop,
     disabled: !ready,
+    getFilesFromEvent: getFilesFromUploadEvent,
   });
 
   return (
@@ -122,10 +122,9 @@ export default function UploadFile({
                 slug={workspace.slug}
                 rejected={file?.rejected}
                 reason={file?.reason}
-                onUploadSuccess={handleUploadSuccess}
-                onUploadError={handleUploadError}
-                setLoading={setLoading}
-                setLoadingMessage={setLoadingMessage}
+                folderName={file?.folderName}
+                relativePath={file?.relativePath}
+                onSettled={syncPicker}
               />
             ))}
           </div>
@@ -138,7 +137,9 @@ export default function UploadFile({
         <input
           disabled={fetchingUrl}
           name="link"
-          type="url"
+          // Not type="url" - that would force the user to type the protocol.
+          type="text"
+          inputMode="url"
           className="border-none disabled:bg-theme-settings-input-bg disabled:text-theme-settings-input-placeholder bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-3/4 p-2.5"
           placeholder={t("connectors.upload.placeholder-link")}
           autoComplete="off"

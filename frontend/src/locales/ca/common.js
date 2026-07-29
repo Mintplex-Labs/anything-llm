@@ -902,6 +902,11 @@ const TRANSLATIONS = {
         description:
           "Renderitza l'HTML a les respostes de l'assistent.\nAixò pot donar com a resultat una qualitat de resposta molt més alta, però també pot comportar riscos potencials de seguretat.",
       },
+      "disable-auto-scroll": {
+        title: "Desactivar el desplaçament automàtic",
+        description:
+          "Desactivar el recorregut automàtic fins al final del missatge quan s'arriben a rebre nous missatges.",
+      },
     },
   },
   api: {
@@ -1294,6 +1299,8 @@ const TRANSLATIONS = {
       deselect_all: "Desselecciona-ho tot",
       remove_selected: "Elimina la selecció",
       save_embed: "Desa i incrusta",
+      "search-results_one": "{{count}} resultat",
+      "search-results_other": "{{count}} resultats",
     },
     upload: {
       "processor-offline": "Processador de documents no disponible",

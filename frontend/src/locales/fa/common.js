@@ -1064,6 +1064,8 @@ const TRANSLATIONS = {
       save_embed: "ذخیره و وارد کردن",
       "total-documents_one": "{{count}} سند",
       "total-documents_other": "{{count}} اسناد",
+      "search-results_one": "{{count}} نتیجه",
+      "search-results_other": "نتایج {{count}}",
     },
     upload: {
       "processor-offline":
@@ -1358,6 +1360,11 @@ const TRANSLATIONS = {
         title: "نمایش کد HTML در چت",
         description:
           "ارائه پاسخ‌های HTML در پاسخ‌های دستی.\nاین می‌تواند منجر به کیفیت پاسخ با سطح دقت بسیار بالاتر شود، اما همچنین می‌تواند خطرات امنیتی بالقوه‌ای را به همراه داشته باشد.",
+      },
+      "disable-auto-scroll": {
+        title: "غیرفعال کردن خودکار شدن اسکرول",
+        description:
+          "غیرفعال کردن خودکار شدن اسکرول به انتهای چت هنگام دریافت پیام‌های جدید.",
       },
     },
   },

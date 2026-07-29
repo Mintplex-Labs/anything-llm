@@ -818,6 +818,11 @@ const TRANSLATIONS = {
         title: "Show Scrollbar",
         description: "Enable or disable the scrollbar in the chat window.",
       },
+      "disable-auto-scroll": {
+        title: "Disable Auto-Scroll",
+        description:
+          "Disable automatic scrolling to the bottom of the chat when new messages are received.",
+      },
       "support-email": {
         title: "Support Email",
         description:
@@ -1419,6 +1424,8 @@ const TRANSLATIONS = {
       "new-folder": "New Folder",
       "total-documents_one": "{{count}} document",
       "total-documents_other": "{{count}} documents",
+      "search-results_one": "{{count}} result",
+      "search-results_other": "{{count}} results",
       "search-document": "Search for document",
       "no-documents": "No Documents",
       "move-workspace": "Move to Workspace",
