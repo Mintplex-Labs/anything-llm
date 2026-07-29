@@ -1142,6 +1142,8 @@ const TRANSLATIONS = {
       save_embed: "שמור והטמע",
       "total-documents_one": "{{count}} מסמך",
       "total-documents_other": "מסמכים {{count}}",
+      "search-results_one": "{{count}} תוצאה",
+      "search-results_other": "תוצאות {{count}}",
     },
     upload: {
       "processor-offline": "מעבד המסמכים אינו זמין",

@@ -1094,6 +1094,8 @@ const TRANSLATIONS = {
       save_embed: "Sauvegarder et intégrer",
       "total-documents_one": "{{count}}",
       "total-documents_other": "{{count}} documents",
+      "search-results_one": "{{count}} résultat",
+      "search-results_other": "{{count}} résultats",
     },
     upload: {
       "processor-offline": "Processeur de documents hors ligne",
