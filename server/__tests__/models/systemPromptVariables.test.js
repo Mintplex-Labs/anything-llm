@@ -38,6 +38,12 @@ describe("SystemPromptVariables.expandSystemPromptVariables", () => {
     expect(variables).toBe(`Hello ${mockSystemPromptVariables[0].value}`);
   });
 
+  it("should expand the datetime system prompt variable", async () => {
+    const variables = await SystemPromptVariables.expandSystemPromptVariables("Current datetime: {datetime}");
+    expect(variables).toContain("Current datetime: ");
+    expect(variables).not.toContain("{datetime}");
+  });
+
   it("should expand workspace-defined system prompt variables", async () => {
     const variables = await SystemPromptVariables.expandSystemPromptVariables("Hello {workspace.name}", null, mockWorkspace.id);
     expect(variables).toBe(`Hello ${mockWorkspace.name}`);

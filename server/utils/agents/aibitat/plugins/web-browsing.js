@@ -107,6 +107,9 @@ const webBrowsing = {
               case "crw-search":
                 engine = "_crwSearch";
                 break;
+              case "you-search":
+                engine = "_youSearch";
+                break;
               default:
                 engine = "_duckDuckGoEngine";
             }
@@ -1319,6 +1322,94 @@ const webBrowsing = {
                 title,
                 link: url,
                 snippet: description,
+              });
+            });
+
+            if (data.length === 0)
+              return `No information was found online for the search query.`;
+
+            this.reportSearchResultsCitations(data);
+            const result = JSON.stringify(data);
+            this.super.introspect(
+              `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
+            );
+            return result;
+          },
+
+          /**
+           * You.com Search — keyless free tier by default, optional API key for higher limits.
+           * Keyless: GET https://api.you.com/v1/agents/search
+           * Keyed:   GET https://ydc-index.io/v1/search with X-API-Key
+           * @param {string} query
+           * @returns {Promise<string>}
+           */
+          _youSearch: async function (query) {
+            const apiKey = process.env.AGENT_YOU_API_KEY || null;
+            const usingKey = !!apiKey;
+
+            this.super.introspect(
+              `${this.caller}: Using You.com${usingKey ? "" : " (free tier)"} to search for "${
+                query.length > 100 ? `${query.slice(0, 100)}...` : query
+              }"`
+            );
+
+            const searchURL = new URL(
+              usingKey
+                ? "https://ydc-index.io/v1/search"
+                : "https://api.you.com/v1/agents/search"
+            );
+            searchURL.searchParams.append("query", query);
+            searchURL.searchParams.append("count", "10");
+
+            const headers = {
+              Accept: "application/json",
+              // Pin identity encoding: keyless endpoint can advertise gzip with
+              // body bytes that Node's decoder rejects (same workaround as LiteLLM).
+              "Accept-Encoding": "identity",
+            };
+            if (usingKey) headers["X-API-Key"] = apiKey;
+
+            const { response, error } = await fetch(searchURL.toString(), {
+              method: "GET",
+              headers,
+            })
+              .then((res) => {
+                if (res.ok) return res.json();
+                throw new Error(
+                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({
+                    auth: usingKey ? this.middleTruncate(apiKey, 5) : "keyless",
+                    q: query,
+                  })}`
+                );
+              })
+              .then((data) => {
+                return { response: data, error: null };
+              })
+              .catch((e) => {
+                this.super.handlerProps.log(
+                  `You.com Search Error: ${e.message}`
+                );
+                return { response: null, error: e.message };
+              });
+
+            if (error)
+              return `There was an error searching for content. ${error}`;
+
+            const data = [];
+            const webResults = response?.results?.web ?? [];
+            const newsResults = response?.results?.news ?? [];
+
+            [...webResults, ...newsResults].forEach((searchResult) => {
+              const { url, title, description, snippets } = searchResult;
+              const snippet =
+                Array.isArray(snippets) && snippets.length > 0
+                  ? snippets[0]
+                  : description;
+              if (!url && !title) return;
+              data.push({
+                title: title || "",
+                link: url || "",
+                snippet: snippet || "",
               });
             });
 
