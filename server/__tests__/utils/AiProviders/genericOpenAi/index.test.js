@@ -78,3 +78,35 @@ describe("GenericOpenAiLLM attachment content", () => {
     expect(userContent(messages)).toBe("hello");
   });
 });
+
+describe("GenericOpenAiProvider (agent) attachment content", () => {
+  const GenericOpenAiProvider = require("../../../../utils/agents/aibitat/providers/genericOpenAi.js");
+
+  it("sends audio attachments as input_audio on the agent path", () => {
+    const provider = new GenericOpenAiProvider({ model: "test-model" });
+    const formatted = provider.formatMessageWithAttachments({
+      role: "user",
+      content: "transcribe this",
+      attachments: [
+        {
+          name: "clip.mp3",
+          mime: "audio/mpeg",
+          contentString: "data:audio/mpeg;base64,BBBB",
+        },
+        {
+          name: "image.png",
+          mime: "image/png",
+          contentString: "data:image/png;base64,AAAA",
+        },
+      ],
+    });
+    expect(formatted.content[1]).toEqual({
+      type: "input_audio",
+      input_audio: { data: "BBBB", format: "mp3" },
+    });
+    expect(formatted.content[2]).toEqual({
+      type: "image_url",
+      image_url: { url: "data:image/png;base64,AAAA" },
+    });
+  });
+});

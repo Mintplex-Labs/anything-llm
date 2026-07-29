@@ -43,6 +43,54 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
     return this._client;
   }
 
+  /**
+   * Generic OpenAI backends follow the OpenAI multimodal schema, so audio
+   * attachments must be sent as `input_audio` blocks rather than `image_url`.
+   * Mirrors the audio handling in the GenericOpenAi chat provider; images and
+   * all other attachments keep the inherited `image_url` behavior.
+   * @param {Object} message - The message to format
+   * @returns {Object} - Message formatted for the API
+   */
+  formatMessageWithAttachments(message) {
+    if (!message.attachments || message.attachments.length === 0)
+      return message;
+
+    const content = [{ type: "text", text: message.content }];
+    for (const attachment of message.attachments) {
+      const isAudio =
+        attachment?.mime?.startsWith("audio/") ||
+        attachment?.contentString?.startsWith("data:audio/");
+      if (isAudio) {
+        const subtype = (
+          attachment?.mime ||
+          attachment?.contentString?.match(/^data:([^;]+);/)?.[1] ||
+          ""
+        )
+          .split("/")[1]
+          ?.split(";")[0]
+          ?.toLowerCase();
+        let format = subtype?.replace(/^x-/, "") || "";
+        if (subtype === "mpeg" || subtype === "mp3") format = "mp3";
+        if (subtype === "wave" || subtype === "x-wav") format = "wav";
+        content.push({
+          type: "input_audio",
+          input_audio: {
+            data: attachment.contentString.split(",").pop(),
+            format,
+          },
+        });
+        continue;
+      }
+      content.push({
+        type: "image_url",
+        image_url: { url: attachment.contentString },
+      });
+    }
+
+    const { attachments: _, ...rest } = message;
+    return { ...rest, content };
+  }
+
   get supportsAgentStreaming() {
     // Honor streaming being disabled via ENV via user preference.
     if (process.env.GENERIC_OPENAI_STREAMING_DISABLED === "true") return false;
