@@ -456,7 +456,7 @@ const TRANSLATIONS = {
       save_embed: "Salvează și încorporează",
       "total-documents_one": "{{count}}",
       "total-documents_other": "{{count}} documente",
-      "search-results_one": "__REZULTAT_0__",
+      "search-results_one": "{{count}} rezultat",
       "search-results_other": "Rezultatele {{count}}",
     },
     upload: {

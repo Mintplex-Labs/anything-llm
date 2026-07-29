@@ -1199,7 +1199,7 @@ const TRANSLATIONS = {
       save_embed: "Zapisz",
       "total-documents_one": "{{count}} dokument",
       "total-documents_other": "{{count}} dokumenty",
-      "search-results_one": "Wynik: __PLACEHOLDER_1__",
+      "search-results_one": "{{count}} wynik",
       "search-results_other": "Wyniki {{count}}",
     },
     upload: {
