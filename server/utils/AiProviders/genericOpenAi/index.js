@@ -10,6 +10,7 @@ const {
 const { v4: uuidv4 } = require("uuid");
 const { toValidNumber } = require("../../http");
 const { getAnythingLLMUserAgent } = require("../../../endpoints/utils");
+const { attachmentToContentBlock } = require("../../helpers/attachments");
 
 class GenericOpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -139,58 +140,11 @@ class GenericOpenAiLLM {
 
     const content = [{ type: "text", text: userPrompt }];
     for (let attachment of attachments) {
-      // Audio attachments must use OpenAI's `input_audio` schema, which expects
-      // the raw base64 (no data URI prefix) plus a format field - not an image_url.
-      if (this.#isAudioAttachment(attachment)) {
-        content.push({
-          type: "input_audio",
-          input_audio: {
-            data: attachment.contentString.split(",").pop(),
-            format: this.#parseAudioFormat(attachment),
-          },
-        });
-        continue;
-      }
-
-      content.push({
-        type: "image_url",
-        image_url: {
-          url: attachment.contentString,
-          detail: "high",
-        },
-      });
+      content.push(
+        attachmentToContentBlock(attachment, { imageDetail: "high" })
+      );
     }
     return content.flat();
-  }
-
-  /**
-   * Detects whether an attachment is audio from its mime type or data URI prefix.
-   * @param {import("../../helpers").Attachment} attachment
-   * @returns {boolean}
-   */
-  #isAudioAttachment(attachment) {
-    return (
-      attachment?.mime?.startsWith("audio/") ||
-      attachment?.contentString?.startsWith("data:audio/") ||
-      false
-    );
-  }
-
-  /**
-   * Derives the OpenAI `input_audio.format` value from an audio attachment's
-   * mime type (e.g. "audio/mpeg" -> "mp3", "audio/wav" -> "wav").
-   * @param {import("../../helpers").Attachment} attachment
-   * @returns {string}
-   */
-  #parseAudioFormat(attachment) {
-    const mime =
-      attachment?.mime ||
-      attachment?.contentString?.match(/^data:([^;]+);/)?.[1] ||
-      "";
-    const subtype = mime.split("/")[1]?.split(";")[0]?.toLowerCase() || "";
-    if (subtype === "mpeg" || subtype === "mp3") return "mp3";
-    if (subtype === "wave" || subtype === "x-wav") return "wav";
-    return subtype.replace(/^x-/, "");
   }
 
   /**

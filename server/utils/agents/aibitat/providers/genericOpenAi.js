@@ -7,6 +7,7 @@ const { RetryError } = require("../error.js");
 const { toValidNumber } = require("../../../http/index.js");
 const { getAnythingLLMUserAgent } = require("../../../../endpoints/utils");
 const { GenericOpenAiLLM } = require("../../../AiProviders/genericOpenAi");
+const { attachmentToContentBlock } = require("../../../helpers/attachments");
 
 /**
  * The agent provider for the Generic OpenAI provider.
@@ -57,34 +58,7 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
 
     const content = [{ type: "text", text: message.content }];
     for (const attachment of message.attachments) {
-      const isAudio =
-        attachment?.mime?.startsWith("audio/") ||
-        attachment?.contentString?.startsWith("data:audio/");
-      if (isAudio) {
-        const subtype = (
-          attachment?.mime ||
-          attachment?.contentString?.match(/^data:([^;]+);/)?.[1] ||
-          ""
-        )
-          .split("/")[1]
-          ?.split(";")[0]
-          ?.toLowerCase();
-        let format = subtype?.replace(/^x-/, "") || "";
-        if (subtype === "mpeg" || subtype === "mp3") format = "mp3";
-        if (subtype === "wave" || subtype === "x-wav") format = "wav";
-        content.push({
-          type: "input_audio",
-          input_audio: {
-            data: attachment.contentString.split(",").pop(),
-            format,
-          },
-        });
-        continue;
-      }
-      content.push({
-        type: "image_url",
-        image_url: { url: attachment.contentString },
-      });
+      content.push(attachmentToContentBlock(attachment));
     }
 
     const { attachments: _, ...rest } = message;
