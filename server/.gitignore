@@ -20,6 +20,8 @@ storage/plugins/anythingllm_mcp_servers.json
 !storage/documents/DOCUMENTS.md
 storage/push-notifications/*
 storage/direct-uploads
+storage/config/llm/*.json
+!storage/config/llm/*.example.json
 logs/server.log
 *.db
 *.db-journal

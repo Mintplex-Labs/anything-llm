@@ -7,6 +7,9 @@ const {
   writeResponseChunk,
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
+const {
+  getLLMProviderRequestParams,
+} = require("../../helpers/llmProviderConfig");
 const { v4: uuidv4 } = require("uuid");
 const { toValidNumber } = require("../../http");
 const { getAnythingLLMUserAgent } = require("../../../endpoints/utils");
@@ -74,6 +77,36 @@ class GenericOpenAiLLM {
     }
 
     return headers;
+  }
+
+  /**
+   * Optional request params from `storage/config/llm/generic-openai.json`.
+   * Supports arbitrary provider-specific keys plus optional per-model overrides.
+   * @param {string|null} [model]
+   * @returns {Object}
+   */
+  static parseRequestParams(model = null) {
+    return getLLMProviderRequestParams("generic-openai", model);
+  }
+
+  #buildCompletionParams(messages, { temperature = 0.7, stream = false } = {}) {
+    const params = {
+      ...GenericOpenAiLLM.parseRequestParams(this.model),
+      model: this.model,
+      messages,
+      temperature,
+      max_tokens: this.maxTokens,
+    };
+
+    if (stream) {
+      Object.assign(
+        params,
+        { stream: true },
+        this.#includeStreamOptionsUsage()
+      );
+    }
+
+    return params;
   }
 
   #appendContext(contextTexts = []) {
@@ -227,12 +260,7 @@ class GenericOpenAiLLM {
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.openai.chat.completions
-        .create({
-          model: this.model,
-          messages,
-          temperature,
-          max_tokens: this.maxTokens,
-        })
+        .create(this.#buildCompletionParams(messages, { temperature }))
         .catch((e) => {
           throw new Error(e.message);
         })
@@ -266,14 +294,9 @@ class GenericOpenAiLLM {
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
-      func: this.openai.chat.completions.create({
-        model: this.model,
-        stream: true,
-        messages,
-        temperature,
-        max_tokens: this.maxTokens,
-        ...this.#includeStreamOptionsUsage(),
-      }),
+      func: this.openai.chat.completions.create(
+        this.#buildCompletionParams(messages, { temperature, stream: true })
+      ),
       messages,
       runPromptTokenCalculation: true,
       modelTag: this.model,
