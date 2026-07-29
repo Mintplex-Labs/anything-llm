@@ -147,6 +147,12 @@ function isHiddenPath(segments) {
 }
 
 /**
+ * Deepest drop we accept: a folder plus the files directly inside it. Nested
+ * subfolders are skipped until deep nesting is supported.
+ */
+const MAX_DEPTH = 2;
+
+/**
  * Groups a drop into loose files and per-folder groups.
  * Files more than one path segment deep belong to the folder named by their
  * first segment; everything else is a loose file.
@@ -170,9 +176,9 @@ export function groupDroppedFiles(files = []) {
     if (isHiddenPath(segments)) continue;
 
     // Only accept files directly inside the top-level folder (no nesting).
-    // Nested subfolders (segments > 2) are skipped — deep nesting support
-    // will be added in a future PR.
-    if (segments.length > 2) continue;
+    // Nested subfolders are skipped — deep nesting support will be added in
+    // a future PR.
+    if (segments.length > MAX_DEPTH) continue;
 
     const folderName = segments[0];
     const relativePath = segments[1];
@@ -185,4 +191,40 @@ export function groupDroppedFiles(files = []) {
     looseFiles,
     folders: Object.values(foldersByName),
   };
+}
+
+/**
+ * Re-targets a drop at one specific folder. Everything in the drop is
+ * uploaded into `folderName` regardless of how it was nested, because the
+ * user picked the destination explicitly by dropping onto that folder row.
+ *
+ * relativePath keeps the drop-relative path so two files that share a
+ * basename cannot collide, and so the stored title reflects where the file
+ * came from.
+ * @param {File[]} files
+ * @param {string} folderName - destination folder
+ * @returns {{
+ *  files: Array<{file: File, relativePath: string}>,
+ *  skipped: number,
+ * }} skipped counts files dropped for being hidden or too deeply nested
+ */
+export function groupFilesIntoFolder(files = [], folderName = "") {
+  const accepted = [];
+  let skipped = 0;
+
+  for (const file of files) {
+    const segments = pathSegmentsOf(file);
+    if (segments.length === 0) continue;
+    if (isHiddenPath(segments)) {
+      skipped++;
+      continue;
+    }
+    if (segments.length > MAX_DEPTH) {
+      skipped++;
+      continue;
+    }
+    accepted.push({ file, relativePath: segments.join("/") });
+  }
+
+  return { folderName, files: accepted, skipped };
 }

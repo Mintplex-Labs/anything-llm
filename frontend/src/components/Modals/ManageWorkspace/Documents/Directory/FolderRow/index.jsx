@@ -1,3 +1,4 @@
+import { useState } from "react";
 import FileRow from "../FileRow";
 import { CaretDown, FolderNotch, CircleNotch } from "@phosphor-icons/react";
 import { middleTruncate } from "@/utils/directories";
@@ -21,6 +22,9 @@ import { useTranslation } from "react-i18next";
  * listable rows once fully fetched, the raw count before that)
  * @param {'none'|'some'|'all'} props.selectionState folder checkbox tri-state
  * @param {(id: string) => boolean} props.isFileSelected
+ * @param {boolean} props.acceptsDrops whether files can be dropped onto this
+ * row right now (false while the document processor is offline)
+ * @param {(folderName: string, event: React.DragEvent) => void} props.onDropFiles
  */
 export default function FolderRow({
   item,
@@ -37,10 +41,45 @@ export default function FolderRow({
   onToggleFile,
   onPrefetch,
   onLoadMore,
+  acceptsDrops = false,
+  onDropFiles,
 }) {
   const { t } = useTranslation();
+  const [isDropTarget, setIsDropTarget] = useState(false);
   const selected = selectionState === "all";
   const partial = selectionState === "some";
+
+  // Only react to drags carrying files - dragging text or a link over the
+  // picker should not light every folder up.
+  const dragHasFiles = (event) =>
+    Array.from(event.dataTransfer?.types ?? []).includes("Files");
+
+  const handleDragOver = (event) => {
+    if (!acceptsDrops || !dragHasFiles(event)) return;
+    // Both required, or the browser refuses the drop and opens the file.
+    event.preventDefault();
+    event.stopPropagation();
+    event.dataTransfer.dropEffect = "copy";
+    if (!isDropTarget) setIsDropTarget(true);
+  };
+
+  const handleDragLeave = (event) => {
+    // dragleave also fires when moving onto a child element, so ignore any
+    // leave that lands somewhere still inside this row.
+    if (event.currentTarget.contains(event.relatedTarget)) return;
+    setIsDropTarget(false);
+  };
+
+  const handleDrop = (event) => {
+    setIsDropTarget(false);
+    if (!acceptsDrops || !dragHasFiles(event)) return;
+    // preventDefault stops the browser from navigating to the dropped file;
+    // stopPropagation keeps the drop from also being handled as an untargeted
+    // one by anything above this row.
+    event.preventDefault();
+    event.stopPropagation();
+    onDropFiles(item.name, event);
+  };
 
   return (
     <>
@@ -50,8 +89,15 @@ export default function FolderRow({
       <tr
         onClick={() => onToggleExpanded(item.name)}
         onMouseEnter={() => onPrefetch(item.name)}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
         className={`text-theme-text-primary text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 hover:bg-theme-file-picker-hover cursor-pointer file-row ${
           selected || partial ? "selected light:text-white !text-white" : ""
+        } ${
+          isDropTarget
+            ? "outline-dashed outline-2 -outline-offset-2 outline-sky-400 bg-sky-400/10"
+            : ""
         }`}
       >
         <div

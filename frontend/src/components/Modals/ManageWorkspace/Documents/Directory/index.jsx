@@ -20,6 +20,8 @@ import debounce from "lodash.debounce";
 import ContextMenu from "./ContextMenu";
 import { Tooltip } from "react-tooltip";
 import { safeJsonParse } from "@/utils/request";
+import useUploadQueue from "../hooks/useUploadQueue";
+import { getFilesFromUploadEvent } from "@/utils/folderUpload";
 
 const NO_FILES = [];
 
@@ -205,6 +207,36 @@ export default function Directory({
     setBusy(null);
   };
 
+  /**
+   * Dropping files onto a folder row uploads them straight into that folder,
+   * so the user does not have to upload and then move. Progress is reported
+   * in the shared uploader below the picker.
+   */
+  const uploadQueue = useUploadQueue();
+  const { enqueueIntoFolder } = uploadQueue;
+  const handleFolderDrop = useCallback(
+    async (folderName, event) => {
+      // Must be called before anything awaits: a drop's DataTransferItems are
+      // only readable while the drop event is being dispatched.
+      const dropped = await getFilesFromUploadEvent(event.nativeEvent ?? event);
+      const { queued, skipped } = enqueueIntoFolder(dropped, folderName);
+
+      if (queued === 0)
+        return showToast("Nothing in that drop could be uploaded.", "warning");
+
+      // The progress list lives in the uploader below the picker, which may be
+      // scrolled out of view - confirm the drop landed so it does not look
+      // like nothing happened.
+      showToast(`Uploading ${queued} file(s) to ${folderName}`, "info");
+      if (skipped > 0)
+        showToast(
+          `${skipped} file(s) in subfolders were skipped - nested folders are not supported yet.`,
+          "warning"
+        );
+    },
+    [enqueueIntoFolder]
+  );
+
   const handleFolderCreated = useCallback(
     (name) => {
       addFolder(name);
@@ -312,6 +344,8 @@ export default function Directory({
                     onToggleFile={toggleFile}
                     onPrefetch={prefetchFolder}
                     onLoadMore={loadMore}
+                    acceptsDrops={uploadQueue.ready}
+                    onDropFiles={handleFolderDrop}
                   />
                 ))
               ) : (
@@ -375,6 +409,7 @@ export default function Directory({
           </div>
           <UploadFile
             workspace={workspace}
+            queue={uploadQueue}
             onUploadComplete={syncAfterUpload}
             onLinkScraped={syncAfterUpload}
           />

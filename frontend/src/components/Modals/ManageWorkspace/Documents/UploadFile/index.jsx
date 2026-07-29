@@ -2,31 +2,29 @@ import { CloudArrowUp } from "@phosphor-icons/react";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import showToast from "../../../../../utils/toast";
-import System from "../../../../../models/system";
 import { useDropzone } from "react-dropzone";
-import { v4 } from "uuid";
 import FileUploadProgress from "./FileUploadProgress";
 import Workspace from "../../../../../models/workspace";
 import debounce from "lodash.debounce";
-import {
-  groupDroppedFiles,
-  getFilesFromUploadEvent,
-} from "../../../../../utils/folderUpload";
+import { getFilesFromUploadEvent } from "../../../../../utils/folderUpload";
 
 /**
  * @param {object} props
+ * @param {ReturnType<import("../hooks/useUploadQueue").default>} props.queue
+ * the upload queue shared with the picker's per-folder drop targets, so both
+ * report progress in this one list.
  * @param {() => Promise<void>} props.onUploadComplete called (coalesced) once a
  * burst of file uploads settles, so the picker can hydrate in place.
  * @param {() => Promise<void>} props.onLinkScraped called after a link scrape.
  */
 export default function UploadFile({
   workspace,
+  queue,
   onUploadComplete,
   onLinkScraped,
 }) {
   const { t } = useTranslation();
-  const [ready, setReady] = useState(false);
-  const [files, setFiles] = useState([]);
+  const { ready, files, setFiles, enqueueDrop } = queue;
   const [fetchingUrl, setFetchingUrl] = useState(false);
 
   const handleSendLink = async (e) => {
@@ -56,47 +54,8 @@ export default function UploadFile({
   );
   useEffect(() => () => syncPicker.cancel(), [syncPicker]);
 
-  const onDrop = async (acceptedFiles, rejections) => {
-    const grouped = groupDroppedFiles(acceptedFiles);
-    const newAccepted = [
-      ...grouped.looseFiles.map((file) => {
-        return {
-          uid: v4(),
-          file,
-        };
-      }),
-      ...grouped.folders.flatMap(({ folderName, files }) =>
-        files.map(({ file, relativePath }) => {
-          return {
-            uid: v4(),
-            file,
-            folderName,
-            relativePath,
-          };
-        })
-      ),
-    ];
-    const newRejected = rejections.map((file) => {
-      return {
-        uid: v4(),
-        file: file.file,
-        rejected: true,
-        reason: file.errors[0].code,
-      };
-    });
-    setFiles([...newAccepted, ...newRejected]);
-  };
-
-  useEffect(() => {
-    async function checkProcessorOnline() {
-      const online = await System.checkDocumentProcessorOnline();
-      setReady(online);
-    }
-    checkProcessorOnline();
-  }, []);
-
   const { getRootProps, getInputProps } = useDropzone({
-    onDrop,
+    onDrop: enqueueDrop,
     disabled: !ready,
     getFilesFromEvent: getFilesFromUploadEvent,
   });
