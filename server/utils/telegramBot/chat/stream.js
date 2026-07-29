@@ -97,13 +97,12 @@ async function streamResponse({
     ctx.bot.sendChatAction(chatId, "typing").catch(() => {});
   }, 4000);
 
-  const { connector: LLMConnector, router: modelRouter } =
-    await resolveProviderConnector({
-      workspace,
-      prompt: message,
-      thread,
-      attachments,
-    });
+  const { connector: LLMConnector } = await resolveProviderConnector({
+    workspace,
+    prompt: message,
+    thread,
+    attachments,
+  });
   const VectorDb = getVectorDbClass();
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
 
@@ -153,7 +152,6 @@ async function streamResponse({
       ctx,
       chatId,
     });
-    modelRouter?.onInferenceComplete();
 
     await persistAndDeliver({
       workspace,

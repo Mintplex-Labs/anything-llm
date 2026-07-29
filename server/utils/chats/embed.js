@@ -34,7 +34,6 @@ async function streamChatWithForEmbed(
   const {
     connector: LLMConnector,
     prefetchedContext,
-    router: modelRouter,
     error: routerError,
   } = await resolveLLMConnectorForEmbed({
     embed,
@@ -210,7 +209,6 @@ async function streamChatWithForEmbed(
     });
     metrics = stream.metrics;
   }
-  modelRouter?.onInferenceComplete();
 
   await EmbedChats.new({
     embedId: embed.id,
@@ -270,18 +268,16 @@ async function resolveLLMConnectorForEmbed({
       include: true,
     });
 
-    const { connector, prefetchedContext, router } =
-      await resolveProviderConnector({
-        workspace,
-        prompt: message,
-        chatHistoryOverride: embedHistory,
-        // +1 to include the current in-flight message to ensure routing rules are evaluated against the real total.
-        messageCountOverride: embedMessageCount + 1,
-      });
+    const { connector, prefetchedContext } = await resolveProviderConnector({
+      workspace,
+      prompt: message,
+      chatHistoryOverride: embedHistory,
+      // +1 to include the current in-flight message to ensure routing rules are evaluated against the real total.
+      messageCountOverride: embedMessageCount + 1,
+    });
 
     return {
       connector,
-      router,
       prefetchedContext: prefetchedContext
         ? {
             rawHistory: embedHistory.rawHistory,
@@ -294,7 +290,6 @@ async function resolveLLMConnectorForEmbed({
   } catch (routerError) {
     return {
       connector: null,
-      router: null,
       prefetchedContext: null,
       error: `Model router error: ${routerError.message}`,
     };

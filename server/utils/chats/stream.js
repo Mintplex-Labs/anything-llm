@@ -55,7 +55,6 @@ async function streamChatWithWorkspace(
     connector: LLMConnector,
     routingMetadata,
     prefetchedContext,
-    router: modelRouter,
     error: routerError,
   } = await resolveLLMConnector({
     workspace,
@@ -308,8 +307,6 @@ async function streamChatWithWorkspace(
     });
     metrics = stream.metrics;
   }
-
-  modelRouter?.onInferenceComplete();
 
   if (completeText?.length > 0) {
     const { chat } = await WorkspaceChats.new({

@@ -223,15 +223,14 @@ async function chatSync({
       });
   }
 
-  const { connector: LLMConnector, router: modelRouter } =
-    await resolveProviderConnector({
-      workspace,
-      prompt: message,
-      user,
-      thread,
-      attachments,
-      apiSessionId: sessionId,
-    });
+  const { connector: LLMConnector } = await resolveProviderConnector({
+    workspace,
+    prompt: message,
+    user,
+    thread,
+    attachments,
+    apiSessionId: sessionId,
+  });
 
   const VectorDb = getVectorDbClass();
   const messageLimit = workspace?.openAiHistory || 20;
@@ -423,7 +422,6 @@ async function chatSync({
       temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
       user: user,
     });
-  modelRouter?.onInferenceComplete();
 
   if (!textResponse) {
     return {
@@ -592,15 +590,14 @@ async function streamChat({
       });
   }
 
-  const { connector: LLMConnector, router: modelRouter } =
-    await resolveProviderConnector({
-      workspace,
-      prompt: message,
-      user,
-      thread,
-      attachments,
-      apiSessionId: sessionId,
-    });
+  const { connector: LLMConnector } = await resolveProviderConnector({
+    workspace,
+    prompt: message,
+    user,
+    thread,
+    attachments,
+    apiSessionId: sessionId,
+  });
 
   const VectorDb = getVectorDbClass();
   const messageLimit = workspace?.openAiHistory || 20;
@@ -827,7 +824,6 @@ async function streamChat({
     completeText = await LLMConnector.handleStream(response, stream, { uuid });
     metrics = stream.metrics;
   }
-  modelRouter?.onInferenceComplete();
 
   if (completeText?.length > 0) {
     const { chat } = await WorkspaceChats.new({
