@@ -1002,6 +1002,8 @@ const TRANSLATIONS = {
       save_embed: "儲存並嵌入",
       "total-documents_one": "{{count}} 文件",
       "total-documents_other": "{{count}} 文件",
+      "search-results_one": "{{count}} 結果",
+      "search-results_other": "{{count}} 的結果",
     },
     upload: {
       "processor-offline": "文件處理器無法使用",

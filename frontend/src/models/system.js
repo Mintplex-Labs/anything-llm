@@ -67,16 +67,55 @@ const System = {
       .then((res) => res.results)
       .catch(() => null);
   },
-  localFiles: async function () {
-    return await fetch(`${API_BASE}/system/local-files`, {
-      headers: baseHeaders(),
-    })
+  /**
+   * Without a folderName, returns the folder shells for the picker.
+   * With one, returns that folder's documents.
+   * @param {string|null} folderName
+   * @param {number} offset
+   * @param {number|"all"} limit - "all" opts out of paging entirely; the
+   * server otherwise clamps this to its own maximum page size.
+   */
+  localFiles: async function (folderName = null, offset = 0, limit = 100) {
+    const params = new URLSearchParams();
+    if (folderName) {
+      params.set("folder", folderName);
+      params.set("offset", String(offset));
+      params.set("limit", String(limit));
+    }
+    const qs = params.toString();
+    const url = `${API_BASE}/system/local-files${qs ? `?${qs}` : ""}`;
+    return await fetch(url, { headers: baseHeaders() })
       .then((res) => {
-        if (!res.ok) throw new Error("Could not find setup information.");
+        if (!res.ok) throw new Error("Could not fetch local files.");
         return res.json();
       })
-      .then((res) => res.localFiles)
+      .then((res) => (folderName ? res : res.localFiles))
       .catch(() => null);
+  },
+  searchLocalFiles: async function (query = "") {
+    return await fetch(
+      `${API_BASE}/system/local-files/search?q=${encodeURIComponent(query)}`,
+      { headers: baseHeaders() }
+    )
+      .then((res) => {
+        if (!res.ok) throw new Error("Search failed.");
+        return res.json();
+      })
+      .then((res) => res.results)
+      .catch(() => []);
+  },
+  getDocumentsByDocPaths: async function (docpaths = []) {
+    return await fetch(`${API_BASE}/system/local-files/by-docpaths`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ docpaths }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch documents by paths.");
+        return res.json();
+      })
+      .then((res) => res.documents)
+      .catch(() => []);
   },
   needsAuthCheck: function () {
     const lastAuthCheck = window.localStorage.getItem(AUTH_TIMESTAMP);

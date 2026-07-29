@@ -1,7 +1,14 @@
 process.env.NODE_ENV === "development"
   ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
   : require("dotenv").config();
-const { viewLocalFiles, normalizePath, isWithin } = require("../utils/files");
+const {
+  normalizePath,
+  isWithin,
+  listFolders,
+  getDocumentsByFolder,
+  searchDocuments,
+  getDocumentsByDocPaths,
+} = require("../utils/files");
 const { purgeDocument, purgeFolder } = require("../utils/files/purgeDocument");
 const { getVectorDbClass } = require("../utils/helpers");
 const { updateENV, dumpENV } = require("../utils/helpers/updateENV");
@@ -497,10 +504,48 @@ function systemEndpoints(app) {
   app.get(
     "/system/local-files",
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
-    async (_, response) => {
+    async (request, response) => {
       try {
-        const localFiles = await viewLocalFiles();
-        response.status(200).json({ localFiles });
+        const { folder, offset, limit } = queryParams(request);
+        if (folder) {
+          // Passed through as-is: getDocumentsByFolder clamps the window and
+          // understands `limit=all`.
+          const result = await getDocumentsByFolder(folder, { offset, limit });
+          response.status(result.code).json(result);
+        } else {
+          const localFiles = listFolders();
+          response.status(200).json({ localFiles });
+        }
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.get(
+    "/system/local-files/search",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const { q } = queryParams(request);
+        const results = await searchDocuments(q);
+        response.status(200).json({ results });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/system/local-files/by-docpaths",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const { docpaths = [] } = reqBody(request);
+        const documents = await getDocumentsByDocPaths(docpaths);
+        response.status(200).json({ documents });
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();

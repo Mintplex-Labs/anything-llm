@@ -2,30 +2,22 @@ import React, { useState } from "react";
 import { X } from "@phosphor-icons/react";
 import Document from "@/models/document";
 
-export default function NewFolderModal({ closeModal, files, setFiles }) {
+export default function NewFolderModal({ closeModal, onCreated }) {
   const [error, setError] = useState(null);
   const [folderName, setFolderName] = useState("");
+  const [creating, setCreating] = useState(false);
 
   const handleCreate = async (e) => {
     e.preventDefault();
     setError(null);
-    if (folderName.trim() !== "") {
-      const newFolder = {
-        name: folderName,
-        type: "folder",
-        items: [],
-      };
-      const { success } = await Document.createFolder(folderName);
-      if (success) {
-        setFiles({
-          ...files,
-          items: [...files.items, newFolder],
-        });
-        closeModal();
-      } else {
-        setError("Failed to create folder");
-      }
-    }
+    const name = folderName.trim();
+    if (!name || creating) return;
+
+    setCreating(true);
+    const { success } = await Document.createFolder(name);
+    setCreating(false);
+    if (!success) return setError("Failed to create folder");
+    onCreated(name);
   };
 
   return (
@@ -78,9 +70,10 @@ export default function NewFolderModal({ closeModal, files, setFiles }) {
               </button>
               <button
                 type="submit"
-                className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+                disabled={creating}
+                className="transition-all duration-300 bg-white text-black hover:opacity-60 disabled:opacity-40 px-4 py-2 rounded-lg text-sm"
               >
-                Create Folder
+                {creating ? "Creating..." : "Create Folder"}
               </button>
             </div>
           </form>

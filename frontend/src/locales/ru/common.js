@@ -1084,6 +1084,8 @@ const TRANSLATIONS = {
       save_embed: "Сохранить и внедрить",
       "total-documents_one": "{{count}} документ",
       "total-documents_other": "{{count}} документы",
+      "search-results_one": "{{count}} результат",
+      "search-results_other": "{{count}} – результаты",
     },
     upload: {
       "processor-offline": "Процессор документов недоступен",

@@ -1070,6 +1070,8 @@ const TRANSLATIONS = {
       save_embed: "Lưu và Nhúng",
       "total-documents_one": "{{count}}",
       "total-documents_other": "{{count}}",
+      "search-results_one": "Kết quả {{count}}",
+      "search-results_other": "Kết quả {{count}}",
     },
     upload: {
       "processor-offline": "Trình xử lý Tài liệu Không khả dụng",
