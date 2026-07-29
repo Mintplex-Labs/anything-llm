@@ -1217,6 +1217,8 @@ const TRANSLATIONS = {
       save_embed: "Guardar e incrustar",
       "total-documents_one": "{{count}} documento",
       "total-documents_other": "{{count}} documentos",
+      "search-results_one": "{{count}} resultado",
+      "search-results_other": "Resultados de {{count}}",
     },
     upload: {
       "processor-offline": "Procesador de documentos no disponible",

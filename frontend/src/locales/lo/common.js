@@ -1378,6 +1378,8 @@ const TRANSLATIONS = {
       deselect_all: "ຍົກເລີກການເລືອກ",
       remove_selected: "ລຶບລາຍການທີ່ເລືອກ",
       save_embed: "ບັນທຶກ ແລະ ຝັງ (Embed)",
+      "search-results_one": "{{count}} ລາ",
+      "search-results_other": "ຜົນໄດ້ຮັບ {{count}}",
     },
     upload: {
       "processor-offline": "ຕົວປະມວນຜົນເອກະສານບໍ່ພ້ອມໃຊ້ງານ",

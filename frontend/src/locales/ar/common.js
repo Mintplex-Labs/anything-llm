@@ -1063,6 +1063,8 @@ const TRANSLATIONS = {
       save_embed: "حفظ و تضمين",
       "total-documents_one": "{{count}}",
       "total-documents_other": "{{count}} المستندات",
+      "search-results_one": "النتيجة {{count}}",
+      "search-results_other": "نتائج {{count}}",
     },
     upload: {
       "processor-offline": "غير متاح",

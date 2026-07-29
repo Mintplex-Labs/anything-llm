@@ -1092,6 +1092,8 @@ const TRANSLATIONS = {
       save_embed: "保存并嵌入",
       "total-documents_one": "{{count}} 文件",
       "total-documents_other": "{{count}} 类型的文件",
+      "search-results_one": "{{count}} 的结果",
+      "search-results_other": "{{count}} 的结果",
     },
     upload: {
       "processor-offline": "文档处理器不可用",

@@ -1154,6 +1154,8 @@ const TRANSLATIONS = {
       save_embed: "저장 및 임베딩",
       "total-documents_one": "{{count}} 문서",
       "total-documents_other": "{{count}} 관련 문서",
+      "search-results_one": "{{count}} 결과",
+      "search-results_other": "{{count}} 결과",
     },
     upload: {
       "processor-offline": "문서 처리기가 오프라인 상태입니다",

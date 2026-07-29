@@ -1182,6 +1182,8 @@ const TRANSLATIONS = {
       save_embed: "Salvar e Inserir",
       "total-documents_one": "{{count}} documento",
       "total-documents_other": "{{count}} documentos",
+      "search-results_one": "{{count}} resultado",
+      "search-results_other": "{{count}} resultados",
     },
     upload: {
       "processor-offline": "Processador de documentos Indisponível",
