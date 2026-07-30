@@ -12,7 +12,7 @@ const { attachmentToContentBlock } = require("../../../../helpers/attachments");
  *   const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
  *
  *   async stream(messages, functions, eventHandler) {
- *     if (functions.length > 0 && await this.supportsNativeToolCalling()) {
+ *     if (await this.supportsNativeToolCalling()) {
  *       return tooledStream(this.client, this.model, messages, functions, eventHandler);
  *     }
  *     // ... fallback to UnTooled ...

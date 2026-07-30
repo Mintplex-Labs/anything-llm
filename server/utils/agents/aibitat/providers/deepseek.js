@@ -119,7 +119,7 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   async stream(messages, functions = [], eventHandler = null) {
-    const useNative = functions.length > 0 && this.supportsNativeToolCalling();
+    const useNative = this.supportsNativeToolCalling();
     const cleanedMessages = this.#stripAttachments(messages);
 
     if (!useNative) {
@@ -160,7 +160,7 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   async complete(messages, functions = []) {
-    const useNative = functions.length > 0 && this.supportsNativeToolCalling();
+    const useNative = this.supportsNativeToolCalling();
     const cleanedMessages = this.#stripAttachments(messages);
 
     if (!useNative) {
