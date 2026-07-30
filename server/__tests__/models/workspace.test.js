@@ -1,6 +1,22 @@
 const { Workspace } = require("../../models/workspace");
 
-describe("Workspace.validations.name", () => {
+describe("Workspace.validations coverage check", () => {
+  it("every validation key has a corresponding test suite", () => {
+    const validationKeys = Object.keys(Workspace.validations);
+    const missing = validationKeys.filter(
+      (key) => !testedValidationKeys.has(key)
+    );
+    expect(missing).toEqual([]);
+  });
+});
+
+const testedValidationKeys = new Set();
+function describeValidation(key, fn) {
+  testedValidationKeys.add(key);
+  describe(`Workspace.validations.${key}`, fn);
+}
+
+describeValidation("name", () => {
   it("passes a valid string through truncated to 255 chars", () => {
     expect(Workspace.validations.name("My Workspace")).toBe("My Workspace");
     const long = "a".repeat(300);
@@ -15,7 +31,7 @@ describe("Workspace.validations.name", () => {
   });
 });
 
-describe("Workspace.validations.openAiTemp", () => {
+describeValidation("openAiTemp", () => {
   it("returns null for null or undefined", () => {
     expect(Workspace.validations.openAiTemp(null)).toBeNull();
     expect(Workspace.validations.openAiTemp(undefined)).toBeNull();
@@ -36,7 +52,7 @@ describe("Workspace.validations.openAiTemp", () => {
   });
 });
 
-describe("Workspace.validations.openAiHistory", () => {
+describeValidation("openAiHistory", () => {
   it("defaults to 20 for null or undefined", () => {
     expect(Workspace.validations.openAiHistory(null)).toBe(20);
     expect(Workspace.validations.openAiHistory(undefined)).toBe(20);
@@ -56,7 +72,7 @@ describe("Workspace.validations.openAiHistory", () => {
   });
 });
 
-describe("Workspace.validations.similarityThreshold", () => {
+describeValidation("similarityThreshold", () => {
   it("defaults to 0.25 for null or undefined", () => {
     expect(Workspace.validations.similarityThreshold(null)).toBe(0.25);
     expect(Workspace.validations.similarityThreshold(undefined)).toBe(0.25);
@@ -80,7 +96,7 @@ describe("Workspace.validations.similarityThreshold", () => {
   });
 });
 
-describe("Workspace.validations.topN", () => {
+describeValidation("topN", () => {
   it("defaults to 4 for null or undefined", () => {
     expect(Workspace.validations.topN(null)).toBe(4);
     expect(Workspace.validations.topN(undefined)).toBe(4);
@@ -101,7 +117,7 @@ describe("Workspace.validations.topN", () => {
   });
 });
 
-describe("Workspace.validations.chatMode", () => {
+describeValidation("chatMode", () => {
   it("passes valid chat modes through", () => {
     expect(Workspace.validations.chatMode("chat")).toBe("chat");
     expect(Workspace.validations.chatMode("query")).toBe("query");
@@ -115,7 +131,7 @@ describe("Workspace.validations.chatMode", () => {
   });
 });
 
-describe("Workspace.validations.chatProvider", () => {
+describeValidation("chatProvider", () => {
   it("passes a valid string through", () => {
     expect(Workspace.validations.chatProvider("openai")).toBe("openai");
   });
@@ -128,7 +144,7 @@ describe("Workspace.validations.chatProvider", () => {
   });
 });
 
-describe("Workspace.validations.chatModel", () => {
+describeValidation("chatModel", () => {
   it("passes a valid string through", () => {
     expect(Workspace.validations.chatModel("gpt-4")).toBe("gpt-4");
   });
@@ -140,7 +156,7 @@ describe("Workspace.validations.chatModel", () => {
   });
 });
 
-describe("Workspace.validations.agentProvider", () => {
+describeValidation("agentProvider", () => {
   it("passes a valid string through", () => {
     expect(Workspace.validations.agentProvider("openai")).toBe("openai");
   });
@@ -153,7 +169,7 @@ describe("Workspace.validations.agentProvider", () => {
   });
 });
 
-describe("Workspace.validations.agentModel", () => {
+describeValidation("agentModel", () => {
   it("passes a valid string through", () => {
     expect(Workspace.validations.agentModel("gpt-4")).toBe("gpt-4");
   });
@@ -165,7 +181,7 @@ describe("Workspace.validations.agentModel", () => {
   });
 });
 
-describe("Workspace.validations.queryRefusalResponse", () => {
+describeValidation("queryRefusalResponse", () => {
   it("passes a valid string through", () => {
     expect(Workspace.validations.queryRefusalResponse("No answer")).toBe(
       "No answer"
@@ -179,7 +195,7 @@ describe("Workspace.validations.queryRefusalResponse", () => {
   });
 });
 
-describe("Workspace.validations.openAiPrompt", () => {
+describeValidation("openAiPrompt", () => {
   it("passes a valid string through", () => {
     expect(Workspace.validations.openAiPrompt("You are helpful")).toBe(
       "You are helpful"
@@ -193,7 +209,7 @@ describe("Workspace.validations.openAiPrompt", () => {
   });
 });
 
-describe("Workspace.validations.vectorSearchMode", () => {
+describeValidation("vectorSearchMode", () => {
   it("passes valid modes through", () => {
     expect(Workspace.validations.vectorSearchMode("default")).toBe("default");
     expect(Workspace.validations.vectorSearchMode("rerank")).toBe("rerank");
@@ -207,7 +223,7 @@ describe("Workspace.validations.vectorSearchMode", () => {
   });
 });
 
-describe("Workspace.validations.router_id", () => {
+describeValidation("router_id", () => {
   it("coerces a valid number string", () => {
     expect(Workspace.validations.router_id("5")).toBe(5);
   });
@@ -228,7 +244,7 @@ describe("Workspace.validations.router_id", () => {
   });
 });
 
-describe("Workspace.validations.lastUpdatedAt", () => {
+describeValidation("lastUpdatedAt", () => {
   it("passes a valid ISO date string through as a Date", () => {
     const result = Workspace.validations.lastUpdatedAt(
       "2023-08-17T00:45:03.000Z"
