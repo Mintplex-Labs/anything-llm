@@ -1,5 +1,233 @@
 const { Workspace } = require("../../models/workspace");
 
+describe("Workspace.validations.name", () => {
+  it("passes a valid string through truncated to 255 chars", () => {
+    expect(Workspace.validations.name("My Workspace")).toBe("My Workspace");
+    const long = "a".repeat(300);
+    expect(Workspace.validations.name(long)).toBe("a".repeat(255));
+  });
+
+  it("returns default when value is null, undefined, or non-string", () => {
+    expect(Workspace.validations.name(null)).toBe("My Workspace");
+    expect(Workspace.validations.name(undefined)).toBe("My Workspace");
+    expect(Workspace.validations.name("")).toBe("My Workspace");
+    expect(Workspace.validations.name(123)).toBe("My Workspace");
+  });
+});
+
+describe("Workspace.validations.openAiTemp", () => {
+  it("returns null for null or undefined", () => {
+    expect(Workspace.validations.openAiTemp(null)).toBeNull();
+    expect(Workspace.validations.openAiTemp(undefined)).toBeNull();
+  });
+
+  it("parses a valid float", () => {
+    expect(Workspace.validations.openAiTemp("0.7")).toBe(0.7);
+    expect(Workspace.validations.openAiTemp(1)).toBe(1);
+    expect(Workspace.validations.openAiTemp(0)).toBe(0);
+  });
+
+  it("returns null for negative values", () => {
+    expect(Workspace.validations.openAiTemp(-1)).toBeNull();
+  });
+
+  it("returns null for NaN input", () => {
+    expect(Workspace.validations.openAiTemp("not-a-number")).toBeNull();
+  });
+});
+
+describe("Workspace.validations.openAiHistory", () => {
+  it("defaults to 20 for null or undefined", () => {
+    expect(Workspace.validations.openAiHistory(null)).toBe(20);
+    expect(Workspace.validations.openAiHistory(undefined)).toBe(20);
+  });
+
+  it("parses a valid integer", () => {
+    expect(Workspace.validations.openAiHistory("10")).toBe(10);
+    expect(Workspace.validations.openAiHistory(50)).toBe(50);
+  });
+
+  it("clamps negative values to 0", () => {
+    expect(Workspace.validations.openAiHistory(-5)).toBe(0);
+  });
+
+  it("defaults to 20 for NaN input", () => {
+    expect(Workspace.validations.openAiHistory("abc")).toBe(20);
+  });
+});
+
+describe("Workspace.validations.similarityThreshold", () => {
+  it("defaults to 0.25 for null or undefined", () => {
+    expect(Workspace.validations.similarityThreshold(null)).toBe(0.25);
+    expect(Workspace.validations.similarityThreshold(undefined)).toBe(0.25);
+  });
+
+  it("parses a valid float", () => {
+    expect(Workspace.validations.similarityThreshold("0.5")).toBe(0.5);
+    expect(Workspace.validations.similarityThreshold(0.8)).toBe(0.8);
+  });
+
+  it("clamps negative values to 0", () => {
+    expect(Workspace.validations.similarityThreshold(-0.1)).toBe(0.0);
+  });
+
+  it("clamps values above 1 to 1", () => {
+    expect(Workspace.validations.similarityThreshold(1.5)).toBe(1.0);
+  });
+
+  it("defaults to 0.25 for NaN input", () => {
+    expect(Workspace.validations.similarityThreshold("abc")).toBe(0.25);
+  });
+});
+
+describe("Workspace.validations.topN", () => {
+  it("defaults to 4 for null or undefined", () => {
+    expect(Workspace.validations.topN(null)).toBe(4);
+    expect(Workspace.validations.topN(undefined)).toBe(4);
+  });
+
+  it("parses a valid integer", () => {
+    expect(Workspace.validations.topN("10")).toBe(10);
+    expect(Workspace.validations.topN(6)).toBe(6);
+  });
+
+  it("clamps values below 1 to 1", () => {
+    expect(Workspace.validations.topN(0)).toBe(1);
+    expect(Workspace.validations.topN(-3)).toBe(1);
+  });
+
+  it("defaults to 4 for NaN input", () => {
+    expect(Workspace.validations.topN("abc")).toBe(4);
+  });
+});
+
+describe("Workspace.validations.chatMode", () => {
+  it("passes valid chat modes through", () => {
+    expect(Workspace.validations.chatMode("chat")).toBe("chat");
+    expect(Workspace.validations.chatMode("query")).toBe("query");
+    expect(Workspace.validations.chatMode("automatic")).toBe("automatic");
+  });
+
+  it("falls back to automatic for invalid or missing values", () => {
+    expect(Workspace.validations.chatMode("invalid")).toBe("automatic");
+    expect(Workspace.validations.chatMode(null)).toBe("automatic");
+    expect(Workspace.validations.chatMode("")).toBe("automatic");
+  });
+});
+
+describe("Workspace.validations.chatProvider", () => {
+  it("passes a valid string through", () => {
+    expect(Workspace.validations.chatProvider("openai")).toBe("openai");
+  });
+
+  it("returns null for none, null, empty, or non-string", () => {
+    expect(Workspace.validations.chatProvider("none")).toBeNull();
+    expect(Workspace.validations.chatProvider(null)).toBeNull();
+    expect(Workspace.validations.chatProvider("")).toBeNull();
+    expect(Workspace.validations.chatProvider(123)).toBeNull();
+  });
+});
+
+describe("Workspace.validations.chatModel", () => {
+  it("passes a valid string through", () => {
+    expect(Workspace.validations.chatModel("gpt-4")).toBe("gpt-4");
+  });
+
+  it("returns null for null, empty, or non-string", () => {
+    expect(Workspace.validations.chatModel(null)).toBeNull();
+    expect(Workspace.validations.chatModel("")).toBeNull();
+    expect(Workspace.validations.chatModel(123)).toBeNull();
+  });
+});
+
+describe("Workspace.validations.agentProvider", () => {
+  it("passes a valid string through", () => {
+    expect(Workspace.validations.agentProvider("openai")).toBe("openai");
+  });
+
+  it("returns null for none, null, empty, or non-string", () => {
+    expect(Workspace.validations.agentProvider("none")).toBeNull();
+    expect(Workspace.validations.agentProvider(null)).toBeNull();
+    expect(Workspace.validations.agentProvider("")).toBeNull();
+    expect(Workspace.validations.agentProvider(123)).toBeNull();
+  });
+});
+
+describe("Workspace.validations.agentModel", () => {
+  it("passes a valid string through", () => {
+    expect(Workspace.validations.agentModel("gpt-4")).toBe("gpt-4");
+  });
+
+  it("returns null for null, empty, or non-string", () => {
+    expect(Workspace.validations.agentModel(null)).toBeNull();
+    expect(Workspace.validations.agentModel("")).toBeNull();
+    expect(Workspace.validations.agentModel(123)).toBeNull();
+  });
+});
+
+describe("Workspace.validations.queryRefusalResponse", () => {
+  it("passes a valid string through", () => {
+    expect(Workspace.validations.queryRefusalResponse("No answer")).toBe(
+      "No answer"
+    );
+  });
+
+  it("returns null for null, empty, or non-string", () => {
+    expect(Workspace.validations.queryRefusalResponse(null)).toBeNull();
+    expect(Workspace.validations.queryRefusalResponse("")).toBeNull();
+    expect(Workspace.validations.queryRefusalResponse(123)).toBeNull();
+  });
+});
+
+describe("Workspace.validations.openAiPrompt", () => {
+  it("passes a valid string through", () => {
+    expect(Workspace.validations.openAiPrompt("You are helpful")).toBe(
+      "You are helpful"
+    );
+  });
+
+  it("returns null for null, empty, or non-string", () => {
+    expect(Workspace.validations.openAiPrompt(null)).toBeNull();
+    expect(Workspace.validations.openAiPrompt("")).toBeNull();
+    expect(Workspace.validations.openAiPrompt(123)).toBeNull();
+  });
+});
+
+describe("Workspace.validations.vectorSearchMode", () => {
+  it("passes valid modes through", () => {
+    expect(Workspace.validations.vectorSearchMode("default")).toBe("default");
+    expect(Workspace.validations.vectorSearchMode("rerank")).toBe("rerank");
+  });
+
+  it("falls back to default for invalid or missing values", () => {
+    expect(Workspace.validations.vectorSearchMode("invalid")).toBe("default");
+    expect(Workspace.validations.vectorSearchMode(null)).toBe("default");
+    expect(Workspace.validations.vectorSearchMode("")).toBe("default");
+    expect(Workspace.validations.vectorSearchMode(123)).toBe("default");
+  });
+});
+
+describe("Workspace.validations.router_id", () => {
+  it("coerces a valid number string", () => {
+    expect(Workspace.validations.router_id("5")).toBe(5);
+  });
+
+  it("passes a number through", () => {
+    expect(Workspace.validations.router_id(3)).toBe(3);
+  });
+
+  it("returns null for null, undefined, empty string, or 'none'", () => {
+    expect(Workspace.validations.router_id(null)).toBeNull();
+    expect(Workspace.validations.router_id(undefined)).toBeNull();
+    expect(Workspace.validations.router_id("")).toBeNull();
+    expect(Workspace.validations.router_id("none")).toBeNull();
+  });
+
+  it("returns null for NaN input", () => {
+    expect(Workspace.validations.router_id("abc")).toBeNull();
+  });
+});
+
 describe("Workspace.validations.lastUpdatedAt", () => {
   it("passes a valid ISO date string through as a Date", () => {
     const result = Workspace.validations.lastUpdatedAt(
