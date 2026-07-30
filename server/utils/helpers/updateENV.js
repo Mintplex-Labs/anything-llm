@@ -282,6 +282,14 @@ const KEY_MAPPING = {
     envKey: "GENERIC_OPEN_AI_EMBEDDING_MAX_CONCURRENT_CHUNKS",
     checks: [nonZero],
   },
+  GenericOpenAiEmbeddingPassagePrefix: {
+    envKey: "GENERIC_OPEN_AI_EMBEDDING_PASSAGE_PREFIX",
+    checks: [],
+  },
+  GenericOpenAiEmbeddingQueryPrefix: {
+    envKey: "GENERIC_OPEN_AI_EMBEDDING_QUERY_PREFIX",
+    checks: [],
+  },
 
   // Vector Database Selection Settings
   VectorDB: {
@@ -535,6 +543,21 @@ const KEY_MAPPING = {
     checks: [validLocalWhisper],
     postUpdate: [],
   },
+  WhisperGenericOpenAiBaseUrl: {
+    envKey: "WHISPER_GENERIC_OPEN_AI_BASE_URL",
+    checks: [isValidURL],
+    postUpdate: [],
+  },
+  WhisperGenericOpenAiApiKey: {
+    envKey: "WHISPER_GENERIC_OPEN_AI_API_KEY",
+    checks: [],
+    postUpdate: [],
+  },
+  WhisperGenericOpenAiModel: {
+    envKey: "WHISPER_GENERIC_OPEN_AI_MODEL",
+    checks: [isNotEmpty],
+    postUpdate: [],
+  },
 
   // System Settings
   AuthToken: {
@@ -614,6 +637,10 @@ const KEY_MAPPING = {
   },
   AgentCrwApiUrl: {
     envKey: "AGENT_CRW_API_URL",
+    checks: [],
+  },
+  AgentYouApiKey: {
+    envKey: "AGENT_YOU_API_KEY",
     checks: [],
   },
 
@@ -942,6 +969,24 @@ const KEY_MAPPING = {
     checks: [nonZero],
   },
 
+  // OMLX Options
+  OMLXLLMBasePath: {
+    envKey: "OMLX_LLM_BASE_PATH",
+    checks: [isValidURL],
+  },
+  OMLXLLMApiKey: {
+    envKey: "OMLX_LLM_API_KEY",
+    checks: [],
+  },
+  OMLXLLMModelPref: {
+    envKey: "OMLX_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  OMLXLLMTokenLimit: {
+    envKey: "OMLX_LLM_TOKEN_LIMIT",
+    checks: [],
+  },
+
   // Agent Skill Settings
   AgentSkillMaxToolCalls: {
     envKey: "AGENT_MAX_TOOL_CALLS",
@@ -1085,13 +1130,14 @@ function supportedLLM(input = "") {
     "lemonade",
     "minimax",
     "cerebras",
+    "omlx",
     "anythingllm-router",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
 
 function supportedTranscriptionProvider(input = "") {
-  const validSelection = ["openai", "local"].includes(input);
+  const validSelection = ["openai", "generic-openai", "local"].includes(input);
   return validSelection
     ? null
     : `${input} is not a valid transcription model provider.`;

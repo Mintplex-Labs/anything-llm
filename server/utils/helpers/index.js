@@ -245,6 +245,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "lemonade":
       const { LemonadeLLM } = require("../AiProviders/lemonade");
       return new LemonadeLLM(embedder, model);
+    case "omlx":
+      const { OMLXLLM } = require("../AiProviders/omlx");
+      return new OMLXLLM(embedder, model);
     case "minimax":
       const { MinimaxLLM } = require("../AiProviders/minimax");
       return new MinimaxLLM(embedder, model);
@@ -433,6 +436,9 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "lemonade":
       const { LemonadeLLM } = require("../AiProviders/lemonade");
       return LemonadeLLM;
+    case "omlx":
+      const { OMLXLLM } = require("../AiProviders/omlx");
+      return OMLXLLM;
     case "minimax":
       const { MinimaxLLM } = require("../AiProviders/minimax");
       return MinimaxLLM;
@@ -522,6 +528,8 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.SAMBANOVA_LLM_MODEL_PREF;
     case "lemonade":
       return process.env.LEMONADE_LLM_MODEL_PREF;
+    case "omlx":
+      return process.env.OMLX_LLM_MODEL_PREF;
     case "minimax":
       return process.env.MINIMAX_MODEL_PREF;
     case "cerebras":

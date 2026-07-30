@@ -62,7 +62,7 @@ const TRANSLATIONS = {
     no: "Hayır",
     search: "Ara",
     username_requirements:
-      "Kullanıcı adı 2-32 karakter uzunluğunda olmalı, küçük harfle başlamalı ve yalnızca küçük harfler, rakamlar, alt çizgiler, tireler ve noktalar içermelidir.",
+      "Kullanıcı adı 2-64 karakter uzunluğunda olmalı, küçük harfle başlamalı ve yalnızca küçük harfler, rakamlar, alt çizgiler, tireler ve noktalar içermelidir.",
     on: "On",
     none: "Yok",
     stopped: "Durdu",
@@ -723,6 +723,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Planlı işleri oluşturun",
+        description:
+          'Temsilcinin, sohbetten otomatik olarak tekrarlayan görevler oluşturmasına izin verin (örneğin, "her hafta içi her gün saat 09:00\'da e-posta kutlumu özetleyip bana gönder"). Sadece tek kullanıcı modunda kullanılabilir.',
+      },
     },
     mcp: {
       title: "MCP Sunucuları",
@@ -753,7 +758,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "Akıllı Becerilerin Seçimi",
-        "beta-badge": "Beta",
         description:
           'Her sorgu için sınırsız araç kullanımı ve "cut token" kullanımını %80\'e kadar azaltma imkanı sunar — AnythingLLM, her talep için doğru becerileri otomatik olarak seçer.',
         "max-tools": {
@@ -1082,6 +1086,8 @@ const TRANSLATIONS = {
       save_embed: "Kaydet ve Göm",
       "total-documents_one": "{{count}} belgesi",
       "total-documents_other": "{{count}} belgeleri",
+      "search-results_one": "{{count}}' sonucu",
+      "search-results_other": "{{count}} sonuçları",
     },
     upload: {
       "processor-offline": "Belge İşleyici Kullanılamıyor",
@@ -1379,6 +1385,11 @@ const TRANSLATIONS = {
         title: "Sohbette HTML Görüntüle",
         description:
           "Asistan yanıtlarında HTML yanıtlarını görüntüleyin.\nBu, çok daha yüksek kaliteli yanıt sağlayabilir, ancak potansiyel güvenlik risklerine de yol açabilir.",
+      },
+      "disable-auto-scroll": {
+        title: "Otomatik kaydırma özelliğini devre dışı bırak",
+        description:
+          "Yeni mesajlar aldığınızda sohbetin otomatik olarak en alttaki bölüme kaydırmasını devre dışı bırakın.",
       },
     },
   },

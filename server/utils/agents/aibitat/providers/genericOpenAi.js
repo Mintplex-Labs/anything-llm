@@ -7,6 +7,7 @@ const { RetryError } = require("../error.js");
 const { toValidNumber } = require("../../../http/index.js");
 const { getAnythingLLMUserAgent } = require("../../../../endpoints/utils");
 const { GenericOpenAiLLM } = require("../../../AiProviders/genericOpenAi");
+const { attachmentToContentBlock } = require("../../../helpers/attachments");
 
 /**
  * The agent provider for the Generic OpenAI provider.
@@ -20,7 +21,7 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
   constructor(config = {}) {
     super();
     this.providerTag = "generic-openai";
-    const { model = "gpt-3.5-turbo" } = config;
+    const { model = "gpt-4.1-nano" } = config;
     const client = new OpenAI({
       baseURL: process.env.GENERIC_OPEN_AI_BASE_PATH,
       apiKey: process.env.GENERIC_OPEN_AI_API_KEY ?? null,
@@ -41,6 +42,27 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get client() {
     return this._client;
+  }
+
+  /**
+   * Generic OpenAI backends follow the OpenAI multimodal schema, so audio
+   * attachments must be sent as `input_audio` blocks rather than `image_url`.
+   * Mirrors the audio handling in the GenericOpenAi chat provider; images and
+   * all other attachments keep the inherited `image_url` behavior.
+   * @param {Object} message - The message to format
+   * @returns {Object} - Message formatted for the API
+   */
+  formatMessageWithAttachments(message) {
+    if (!message.attachments || message.attachments.length === 0)
+      return message;
+
+    const content = [{ type: "text", text: message.content }];
+    for (const attachment of message.attachments) {
+      content.push(attachmentToContentBlock(attachment));
+    }
+
+    const { attachments: _, ...rest } = message;
+    return { ...rest, content };
   }
 
   get supportsAgentStreaming() {

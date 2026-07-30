@@ -61,7 +61,7 @@ const TRANSLATIONS = {
     no: "Não",
     search: "Pesquisar",
     username_requirements:
-      "O nome de usuário deve ter de 2 a 32 caracteres, começar com uma letra minúscula e conter apenas letras minúsculas, números, sublinhados, hífens e pontos.",
+      "O nome de usuário deve ter de 2 a 64 caracteres, começar com uma letra minúscula e conter apenas letras minúsculas, números, sublinhados, hífens e pontos.",
     on: "Sobre",
     none: "Nenhum",
     stopped: "Parado",
@@ -728,6 +728,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Criar tarefas agendadas",
+        description:
+          'Permita que o agente crie tarefas recorrentes agendadas a partir do chat (por exemplo, "todos os dias úteis às 9h, resuma minha caixa de entrada e envie um e-mail"). Disponível apenas no modo para um único usuário.',
+      },
     },
     mcp: {
       title: "Servidores MCP",
@@ -759,7 +764,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "Seleção Inteligente de Habilidades",
-        "beta-badge": "Beta",
         description:
           "Permita o uso ilimitado de ferramentas e reduza o consumo de tokens em até 80% por consulta — O AnythingLLM seleciona automaticamente as habilidades mais adequadas para cada solicitação.",
         "max-tools": {
@@ -874,6 +878,11 @@ const TRANSLATIONS = {
         title: "Renderizar HTML no chat",
         description:
           "Renderizar respostas HTML nas respostas do assistente.\nIsso pode resultar em uma qualidade de resposta muito maior, mas também pode levar a riscos potenciais de segurança.",
+      },
+      "disable-auto-scroll": {
+        title: "Desativar a rolagem automática",
+        description:
+          "Desative a rolagem automática até o final da conversa quando novas mensagens forem recebidas.",
       },
     },
   },
@@ -1173,6 +1182,8 @@ const TRANSLATIONS = {
       save_embed: "Salvar e Inserir",
       "total-documents_one": "{{count}} documento",
       "total-documents_other": "{{count}} documentos",
+      "search-results_one": "{{count}} resultado",
+      "search-results_other": "{{count}} resultados",
     },
     upload: {
       "processor-offline": "Processador de documentos Indisponível",

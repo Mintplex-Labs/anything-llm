@@ -50,6 +50,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "lemonade",
   "minimax",
   "cerebras",
+  "omlx",
   "bedrock",
   "generic-openai",
   // Embedding Engines
@@ -150,6 +151,8 @@ async function getCustomModels(
       return await getLemonadeSTTModels(basePath);
     case "lemonade-embedder":
       return await getLemonadeModels(basePath, "embedding");
+    case "omlx":
+      return await getOMLXModels(basePath, apiKey);
     case "minimax":
       return await getMinimaxModels(apiKey);
     case "cerebras":
@@ -1051,6 +1054,36 @@ async function getLemonadeSTTModels(basePath = null) {
   }
 }
 
+async function getOMLXModels(basePath = null, _apiKey = null) {
+  const { OpenAI } = require("openai");
+  const { parseOMLXBasePath } = require("../AiProviders/omlx");
+  try {
+    const apiKey =
+      _apiKey === true
+        ? process.env.OMLX_LLM_API_KEY
+        : _apiKey || process.env.OMLX_LLM_API_KEY || null;
+
+    const client = new OpenAI({
+      baseURL: parseOMLXBasePath(basePath ?? process.env.OMLX_LLM_BASE_PATH),
+      apiKey,
+    });
+
+    const models = (await client.models.list()).data.map((model) => ({
+      id: model.id,
+      name: model.id,
+      organization: model.owned_by,
+    }));
+
+    return {
+      models,
+      error: null,
+    };
+  } catch (e) {
+    console.error("OMLX:getOMLXModels", e.message);
+    return { models: [], error: "Could not fetch OMLX models" };
+  }
+}
+
 /**
  * Get Deepgram STT models from the Management API.
  * https://api.deepgram.com/v1/models returns { stt: [...], tts: [...] }.
@@ -1279,11 +1312,23 @@ async function kokoroTtsVoices(basePath = null, apiKey = null) {
 
   if (!voices || !Array.isArray(voices))
     return { models: [], error: "Could not fetch Kokoro voices." };
-  const models = voices.map((voice) => ({
-    id: voice.id,
-    name: voice.name,
-    organization: "Kokoro",
-  }));
+
+  // kokoro-fastapi < 0.3.x returns voices as plain id strings while >= 0.3.x
+  // returns { id, name } objects. Normalize both shapes to { id, name } so the
+  // voice list renders regardless of the kokoro-fastapi version being used.
+  const models = voices
+    .map((voice) => {
+      if (typeof voice === "string")
+        return { id: voice, name: voice, organization: "Kokoro" };
+      if (voice && typeof voice === "object" && voice.id)
+        return {
+          id: voice.id,
+          name: voice.name || voice.id,
+          organization: "Kokoro",
+        };
+      return null;
+    })
+    .filter(Boolean);
   return { models, error: null };
 }
 

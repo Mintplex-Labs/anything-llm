@@ -77,7 +77,50 @@ class GenericOpenAiEmbedder {
     return Number(process.env.GENERIC_OPEN_AI_EMBEDDING_MAX_CONCURRENT_CHUNKS);
   }
 
+  /**
+   * Optional prefix prepended to each text passage before embedding. Empty by default
+   * for backwards compatibility. Required by asymmetric models like
+   * Qwen3-Embedding, which expect passage chunks wrapped as
+   * `Instruct: <task>`
+   * @returns {string}
+   */
+  get embeddingPrefix() {
+    if (!("GENERIC_OPEN_AI_EMBEDDING_PASSAGE_PREFIX" in process.env)) return "";
+    this.log(
+      `Embedding prefix: \x1b[43m\x1b[30m${process.env.GENERIC_OPEN_AI_EMBEDDING_PASSAGE_PREFIX}\x1b[0m`
+    );
+    return process.env.GENERIC_OPEN_AI_EMBEDDING_PASSAGE_PREFIX;
+  }
+
+  /**
+   * Optional prefix prepended to each query before embedding. Empty by
+   * default. Most asymmetric models (Qwen3-Embedding included) leave queries
+   * unwrapped, but some BGE/E5 variants expect a `query: ` prefix.
+   * @returns {string}
+   */
+  get queryPrefix() {
+    if (!("GENERIC_OPEN_AI_EMBEDDING_QUERY_PREFIX" in process.env)) return "";
+    this.log(
+      `Query prefix: \x1b[43m\x1b[30m${process.env.GENERIC_OPEN_AI_EMBEDDING_QUERY_PREFIX}\x1b[0m`
+    );
+    return process.env.GENERIC_OPEN_AI_EMBEDDING_QUERY_PREFIX;
+  }
+
+  /**
+   * Apply the query prefix to the text input if it is required by the model.
+   * eg: nomic-embed-text-v1 requires a query prefix for embedding/searching.
+   * @param {string|string[]} textInput - The text to embed.
+   * @returns {string|string[]} The text with the prefix applied.
+   */
+  #applyQueryPrefix(textInput) {
+    if (!this.queryPrefix) return textInput;
+    if (Array.isArray(textInput))
+      return textInput.map((text) => `${this.queryPrefix}${text}`);
+    return `${this.queryPrefix}${textInput}`;
+  }
+
   async embedTextInput(textInput) {
+    textInput = this.#applyQueryPrefix(textInput);
     const result = await this.embedChunks(
       Array.isArray(textInput) ? textInput : [textInput]
     );

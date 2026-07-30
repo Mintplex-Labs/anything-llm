@@ -1,0 +1,22 @@
+/* XPM */
+static char * menu_inactive_xpm[] = {
+"32 16 2 1",
+"   c None",
+"A  c #FFFFFF",
+"        AAAAAAAAAAAAAAAA        ",
+"        AAAAAAAAAAAAAAAA        ",
+"        AAAAAAAAAAAAAAAA        ",
+"        AAAAAAAAAAAAAAAA        ",
+"        AAAAAAAAAAAAAAAA        ",
+"        AAAAAAAAAAAAAAAA        ",
+"        AAAAAAAAAAAAAAAA        ",
+"        AAAAAAAAAAAAAAAA        ",
+"        AAAAAAAAAAAAAAAA        ",
+"        AAAAAAAAAAAAAAAA        ",
+"        AAAAAAAAAAAAAAAA        ",
+"        AAAAAAAAAAAAAAAA        ",
+"        AAAAAAAAAAAAAAAA        ",
+"        AAAAAAAAAAAAAAAA        ",
+"        AAAAAAAAAAAAAAAA        ",
+"        AAAAAAAAAAAAAAAA        "
+};

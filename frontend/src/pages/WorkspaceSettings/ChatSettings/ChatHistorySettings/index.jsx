@@ -16,7 +16,6 @@ export default function ChatHistorySettings({ workspace, setHasChanges }) {
         name="openAiHistory"
         type="number"
         min={1}
-        max={45}
         step={1}
         onWheel={(e) => e.target.blur()}
         defaultValue={workspace?.openAiHistory ?? 20}

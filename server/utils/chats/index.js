@@ -26,11 +26,14 @@ async function grepCommand(message, user = null) {
   // Allows multiple commands in one message
   let updatedMessage = message;
   for (const preset of userPresets) {
-    const regex = new RegExp(
-      `(?:\\b\\s|^)(${preset.command})(?:\\b\\s|$)`,
-      "g"
+    // Match the command when it starts the message or follows a space (`lead`),
+    // and is not part of a longer command (e.g. don't match /weather in /weatherman).
+    // `lead` is captured so we can keep the space when swapping in the prompt.
+    const regex = new RegExp(`(^|\\s)(${preset.command})(?![a-z0-9_-])`, "g");
+    updatedMessage = updatedMessage.replace(
+      regex,
+      (_match, lead) => `${lead}${preset.prompt}`
     );
-    updatedMessage = updatedMessage.replace(regex, preset.prompt);
   }
 
   return updatedMessage;
@@ -48,11 +51,14 @@ async function grepAllSlashCommands(message) {
   // Allows multiple commands in one message
   let updatedMessage = message;
   for (const preset of allPresets) {
-    const regex = new RegExp(
-      `(?:\\b\\s|^)(${preset.command})(?:\\b\\s|$)`,
-      "g"
+    // Match the command when it starts the message or follows a space (`lead`),
+    // and is not part of a longer command (e.g. don't match /weather in /weatherman).
+    // `lead` is captured so we can keep the space when swapping in the prompt.
+    const regex = new RegExp(`(^|\\s)(${preset.command})(?![a-z0-9_-])`, "g");
+    updatedMessage = updatedMessage.replace(
+      regex,
+      (_match, lead) => `${lead}${preset.prompt}`
     );
-    updatedMessage = updatedMessage.replace(regex, preset.prompt);
   }
 
   return updatedMessage;

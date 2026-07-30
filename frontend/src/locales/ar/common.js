@@ -704,6 +704,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "إنشاء مهام بجدول زمني",
+        description:
+          'اسمح للمتخصص بإنشاء مهام متكررة وفقًا للجدول الزمني المحدد من خلال الدردشة (مثل: "كل يوم عمل في الساعة 9 صباحًا، قم بتلخيص صندوق بريدي وإرسال رسالة لي"). متاح فقط في وضع المستخدم الواحد.',
+      },
     },
     mcp: {
       title: "خوادم نظام MCP",
@@ -734,7 +739,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "اختيار المهارات الذكية",
-        "beta-badge": "بيتا",
         description:
           "تمكين استخدام أدوات غير محدودة وتقليل استخدام رموز القطع بنسبة تصل إلى 80٪ لكل استعلام - يقوم AnythingLLM تلقائيًا باختيار المهارات المناسبة لكل طلب.",
         "max-tools": {
@@ -1059,6 +1063,8 @@ const TRANSLATIONS = {
       save_embed: "حفظ و تضمين",
       "total-documents_one": "{{count}}",
       "total-documents_other": "{{count}} المستندات",
+      "search-results_one": "النتيجة {{count}}",
+      "search-results_other": "نتائج {{count}}",
     },
     upload: {
       "processor-offline": "غير متاح",
@@ -1345,6 +1351,11 @@ const TRANSLATIONS = {
         title: "تحويل HTML إلى تنسيق نصي في الدردشة",
         description:
           "تقديم استجابات HTML في استجابات المساعد.\nيمكن أن يؤدي ذلك إلى تحسين كبير في جودة الاستجابة، ولكنه قد يؤدي أيضًا إلى مخاطر أمنية محتملة.",
+      },
+      "disable-auto-scroll": {
+        title: "تعطيل التمرير التلقائي",
+        description:
+          "تعطيل التمرير التلقائي إلى أسفل نافذة الدردشة عند استلام رسائل جديدة.",
       },
     },
   },

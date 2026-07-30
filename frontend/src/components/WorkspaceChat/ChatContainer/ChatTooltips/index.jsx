@@ -1,6 +1,5 @@
 import { Tooltip } from "react-tooltip";
 import { createPortal } from "react-dom";
-import { useTranslation } from "react-i18next";
 
 /**
  * Set the tooltips for the chat container in bulk.
@@ -17,8 +16,6 @@ import { useTranslation } from "react-i18next";
  * @returns
  */
 export function ChatTooltips() {
-  const { t } = useTranslation();
-
   return (
     <>
       <Tooltip
@@ -104,13 +101,6 @@ export function ChatTooltips() {
         place="top"
         delayShow={300}
         className="tooltip !text-xs"
-      />
-      <Tooltip
-        id="agent-skill-disabled-tooltip"
-        place="top"
-        delayShow={300}
-        className="tooltip !text-xs z-99"
-        content={t("chat_window.agent_skills_disabled_in_session")}
       />
       <DocumentLevelTooltip />
     </>

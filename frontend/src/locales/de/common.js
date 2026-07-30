@@ -62,7 +62,7 @@ const TRANSLATIONS = {
     no: "Nein",
     search: "Suchen",
     username_requirements:
-      "Der Benutzername muss 2-32 Zeichen lang sein, mit einem Kleinbuchstaben beginnen und darf nur Kleinbuchstaben, Zahlen, Unterstriche, Bindestriche und Punkte enthalten.",
+      "Der Benutzername muss 2-64 Zeichen lang sein, mit einem Kleinbuchstaben beginnen und darf nur Kleinbuchstaben, Zahlen, Unterstriche, Bindestriche und Punkte enthalten.",
     on: "Über",
     none: "Keine",
     stopped: "Gestoppt",
@@ -732,6 +732,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Erstellen Sie geplante Aufgaben",
+        description:
+          'Ermöglichen Sie dem Agenten, wiederkehrende geplante Aufgaben direkt aus dem Chat zu erstellen (z. B. „jeden Werktag um 9 Uhr meinen Posteingang zusammenfassen und mir eine E-Mail senden"). Diese Funktion ist nur im Einzelbenutzermodus verfügbar.',
+      },
     },
     "performance-warning":
       "Die Leistung von LLMs, die keine explizite Unterstützung für das Aufrufen von Tools bieten, hängt stark von den Fähigkeiten und der Genauigkeit des Modells ab. Einige Fähigkeiten können eingeschränkt oder nicht funktionsfähig sein.",
@@ -765,7 +770,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "Intelligente Auswahl von Fähigkeiten",
-        "beta-badge": "Beta-Version",
         description:
           "Ermöglichen Sie die uneingeschränkte Nutzung von Werkzeugen und reduzieren Sie die Token-Nutzung pro Anfrage um bis zu 80 % – AnythingLLM wählt automatisch die passenden Fähigkeiten für jede Anfrage aus.",
         "max-tools": {
@@ -888,6 +892,11 @@ const TRANSLATIONS = {
         title: "HTML-Code in einem Chat anzeigen",
         description:
           "HTML-Antworten in den Antworten des Assistenten anzeigen.\nDies kann zu einer viel höheren Qualität der Antwort führen, aber auch zu potenziellen Sicherheitsrisiken führen.",
+      },
+      "disable-auto-scroll": {
+        title: "Automatische Scrollen deaktivieren",
+        description:
+          "Deaktivieren Sie das automatische Scrollen zum Ende des Chats, wenn neue Nachrichten empfangen werden.",
       },
     },
   },
@@ -1197,6 +1206,8 @@ const TRANSLATIONS = {
       save_embed: "Speichern und Einbetten",
       "total-documents_one": "{{count}} Dokument",
       "total-documents_other": "{{count}} Dokumente",
+      "search-results_one": "{{count}} Ergebnis",
+      "search-results_other": "{{count}} Ergebnisse",
     },
     upload: {
       "processor-offline": "Dokumentenprozessor nicht verfügbar",

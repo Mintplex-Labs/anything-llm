@@ -61,7 +61,7 @@ const TRANSLATIONS = {
     no: "いいえ",
     search: "検索",
     username_requirements:
-      "ユーザー名は2〜32文字で、小文字で始まり、小文字、数字、アンダースコア、ハイフン、ピリオドのみを含む必要があります。",
+      "ユーザー名は2〜64文字で、小文字で始まり、小文字、数字、アンダースコア、ハイフン、ピリオドのみを含む必要があります。",
     on: "～について",
     none: "なし",
     stopped: "停止",
@@ -696,6 +696,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "計画されたタスクを作成する",
+        description:
+          "エージェントがチャットから繰り返し実行されるタスク（例：「毎日午前9時に、私のインボックスとメールを要約してメールで通知する」）を作成できるようにします。この機能はシングルユーザーモードでのみ利用可能です。",
+      },
     },
     mcp: {
       title: "MCP サーバー",
@@ -726,7 +731,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "知的なスキル選択",
-        "beta-badge": "ベータ版",
         description:
           "クエリごとに、無制限のツールを使用し、トークン使用量を最大80%削減できます。AnythingLLMは、各プロンプトに対して最適なスキルを自動的に選択します。",
         "max-tools": {
@@ -1049,6 +1053,8 @@ const TRANSLATIONS = {
       save_embed: "保存して埋め込む",
       "total-documents_one": "{{count}} のドキュメント",
       "total-documents_other": "{{count}} に関する書類",
+      "search-results_one": "{{count}} の結果",
+      "search-results_other": "{{count}} の結果",
     },
     upload: {
       "processor-offline": "ドキュメント処理機能が利用できません",
@@ -1349,6 +1355,11 @@ const TRANSLATIONS = {
         title: "チャットでHTMLをレンダリングする",
         description:
           "アシスタントの回答にHTML形式のレスポンスを生成する。\nこれにより、回答の品質を大幅に向上させることができるが、同時にセキュリティ上のリスクも生じる可能性がある。",
+      },
+      "disable-auto-scroll": {
+        title: "自動スクロール機能を無効にする",
+        description:
+          "新しいメッセージを受信した際に、チャットを自動的に最後までスクロールする機能を停止します。",
       },
     },
   },

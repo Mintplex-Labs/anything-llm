@@ -64,7 +64,7 @@ const TRANSLATIONS = {
     stopped: "Sustabdyta",
     search: "Paieška",
     username_requirements:
-      "Vartotojo vardą turi sudaryti 2–32 simboliai, jis turi prasidėti mažąja raide ir susidėti tik iš mažųjų raidžių, skaičių, pabraukimo brūkšnių, brūkšnelių ir taškų.",
+      "Vartotojo vardą turi sudaryti 2–64 simboliai, jis turi prasidėti mažąja raide ir susidėti tik iš mažųjų raidžių, skaičių, pabraukimo brūkšnių, brūkšnelių ir taškų.",
     loading: "Kraunama",
     refresh: "Atnaujinti",
   },
@@ -725,6 +725,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Sukurkite nurodytus užduotis",
+        description:
+          "Leiskite agentui kurti nuolatinės užduotės iš pokalbio (pvz., „kasdien, 9 val., peržiūrėkite mano pašto dėžę ir siųskite man el. laišką“). Šis funkcijomis galima naudotis tik vieno vartotojo režimu.",
+      },
     },
     mcp: {
       title: "MCP serveriai",
@@ -755,7 +760,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "Išmanusis įgūdžių pasirinkimas",
-        "beta-badge": "Beta",
         description:
           "Įjunkite neribotą kiekį įrankių ir sumažinkite žetonų (tokens) naudojimą iki 80 % vienai užklausai — AnythingLLM automatiškai parinks tinkamus įgūdžiai kiekvienai užklausai.",
         "max-tools": {
@@ -876,6 +880,11 @@ const TRANSLATIONS = {
         title: "Atvaizduoti HTML pokalbyje",
         description:
           "Atvaizduoti HTML kodą asistento atsakymuose.\nTai gali užtikrinti geresnę atsakymų vizualinę kokybę, tačiau taip pat gali kelti saugumo riziką.",
+      },
+      "disable-auto-scroll": {
+        title: "Išjunkite automatinį rolį",
+        description:
+          "Išjunkite automatinį skryptą į apačią, kai gaunamos naujos žinios.",
       },
     },
   },
@@ -1204,6 +1213,8 @@ const TRANSLATIONS = {
       deselect_all: "Atžymėti viską",
       remove_selected: "Šalinti pažymėtus",
       save_embed: "Išsaugoti ir kurti vektorius",
+      "search-results_one": "{{count}} rezultatas",
+      "search-results_other": "{{count}} rezultatai",
     },
     upload: {
       "processor-offline": "Dokumentų procesorius nepasiekiamas",

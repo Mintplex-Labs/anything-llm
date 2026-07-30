@@ -10,6 +10,7 @@ const {
 const { v4: uuidv4 } = require("uuid");
 const { toValidNumber } = require("../../http");
 const { getAnythingLLMUserAgent } = require("../../../endpoints/utils");
+const { attachmentToContentBlock } = require("../../helpers/attachments");
 
 class GenericOpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -139,13 +140,9 @@ class GenericOpenAiLLM {
 
     const content = [{ type: "text", text: userPrompt }];
     for (let attachment of attachments) {
-      content.push({
-        type: "image_url",
-        image_url: {
-          url: attachment.contentString,
-          detail: "high",
-        },
-      });
+      content.push(
+        attachmentToContentBlock(attachment, { imageDetail: "high" })
+      );
     }
     return content.flat();
   }
@@ -452,9 +449,9 @@ class GenericOpenAiLLM {
 
   /**
    * Returns the capabilities of the model.
-   * @returns {{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}}
+   * @returns {Promise<{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}>}
    */
-  getModelCapabilities() {
+  async getModelCapabilities() {
     try {
       return {
         tools: this.#supportsCapabilityFromENV("tools"),

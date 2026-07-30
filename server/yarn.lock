@@ -771,10 +771,10 @@
     "@langchain/core" "~0.1"
     js-tiktoken "^1.0.11"
 
-"@mintplex-labs/bree@^9.2.5":
-  version "9.2.5"
-  resolved "https://registry.npmjs.org/@mintplex-labs/bree/-/bree-9.2.5.tgz"
-  integrity sha512-AdwR1bd3O3bucazeh8Rfdmgauy0CXwqzUKURVwBx+MJkWAUqxiMc6qOaIqg7qcWEqXC4Bm0IzOlDPNLL0EFeRQ==
+"@mintplex-labs/bree@^9.2.6":
+  version "9.2.6"
+  resolved "https://registry.yarnpkg.com/@mintplex-labs/bree/-/bree-9.2.6.tgz#aef5255744284b208a166d63f62c6ac6f7f69c1f"
+  integrity sha512-ebuwNO3LTEKfAkVM03FQ/B8KmNa6NziMpLxtH8UWq617zELXefVJD+gcgbP106XXBlCyrRs/n2wbPfJUpTqXHQ==
   dependencies:
     "@breejs/later" "^4.2.0"
     boolean "^3.2.0"

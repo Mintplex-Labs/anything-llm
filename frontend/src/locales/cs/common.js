@@ -62,7 +62,7 @@ const TRANSLATIONS = {
     no: "Ne",
     search: "Hledat",
     username_requirements:
-      "Uživatelské jméno musí mít 2–32 znaků, začínat malým písmenem a obsahovat pouze malá písmena, číslice, podtržítka, pomlčky a tečky.",
+      "Uživatelské jméno musí mít 2–64 znaků, začínat malým písmenem a obsahovat pouze malá písmena, číslice, podtržítka, pomlčky a tečky.",
     on: "Na",
     none: "Žádné",
     stopped: "Zastaveno",
@@ -725,6 +725,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Vytvořte naplánované úlohy",
+        description:
+          "Umožněte zástupci vytvářet opakující se plánované úkoly přímo z chatu (například „každý pracovní den v 9:00 shrňte obsah mé schránky a zašlete mi e-mail“). Tato funkce je dostupná pouze v režimu pro jednoho uživatele.",
+      },
     },
     mcp: {
       title: "Servery společnosti MCP",
@@ -755,7 +760,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "Inteligentní výběr dovedností",
-        "beta-badge": "Beta",
         description:
           "Umožněte použití libovolného počtu nástrojů a snížit využití tokenů až o 80 % pro každou dotaz — AnythingLLM automaticky vybírá vhodné dovednosti pro každou žádost.",
         "max-tools": {
@@ -876,6 +880,11 @@ const TRANSLATIONS = {
         title: "Vykreslit HTML v chatu",
         description:
           "Vykreslit HTML odpovědi v odpovědích asistenta.\nTo může vést k mnohem vyšší věrnosti kvality odpovědi, ale může také vést k potenciálním bezpečnostním rizikům.",
+      },
+      "disable-auto-scroll": {
+        title: "Vypnout automatické posouvání",
+        description:
+          "Vypněte automatické posouvání dolů v chatu při přijetí nových zpráv.",
       },
     },
   },
@@ -1202,6 +1211,8 @@ const TRANSLATIONS = {
       save_embed: "Uložit a vložit",
       "total-documents_one": "{{count}} dokument",
       "total-documents_other": "{{count}} dokumenty",
+      "search-results_one": "{{count}} výsledek",
+      "search-results_other": "{{count}} výsledky",
     },
     upload: {
       "processor-offline": "Procesor dokumentů nedostupný",
