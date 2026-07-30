@@ -346,6 +346,15 @@ function apiWorkspaceEndpoints(app) {
           currWorkspace.id,
           data
         );
+
+        // If the update failed the workspace is null and `message` holds the
+        // underlying error. Surface that as a non-2xx status instead of a
+        // misleading 200 so API consumers can reliably detect failures.
+        if (!workspace) {
+          response.status(500).json({ workspace: null, message });
+          return;
+        }
+
         response.status(200).json({ workspace, message });
       } catch (e) {
         console.error(e.message, e);

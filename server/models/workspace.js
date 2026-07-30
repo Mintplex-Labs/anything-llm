@@ -137,6 +137,16 @@ const Workspace = {
       if (isNaN(id)) return null;
       return id;
     },
+    lastUpdatedAt: (value) => {
+      // lastUpdatedAt is a non-nullable DateTime column. Coerce whatever is
+      // provided into a valid Date so an invalid payload cannot reach Prisma
+      // and surface as a misleading error response. Fall back to the current
+      // time when the value is missing or not a parseable date.
+      if (value === null || value === undefined) return new Date();
+      const date = new Date(value);
+      if (isNaN(date.getTime())) return new Date();
+      return date;
+    },
   },
 
   /**
