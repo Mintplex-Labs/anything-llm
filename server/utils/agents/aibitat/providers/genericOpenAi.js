@@ -11,9 +11,9 @@ const { attachmentToContentBlock } = require("../../../helpers/attachments");
 
 /**
  * The agent provider for the Generic OpenAI provider.
- * Since we cannot promise the generic provider even supports tool calling
- * which is nearly 100% likely it does not, we can just wrap it in untooled
- * which often is far better anyway.
+ * Uses native OpenAI-compatible tool calling by default and falls back to
+ * the UnTooled prompt-based approach when native tool calling is disabled
+ * via PROVIDER_DISABLE_NATIVE_TOOL_CALLING.
  */
 class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
@@ -104,8 +104,7 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
    * Uses native tool calling when supported, otherwise falls back to UnTooled.
    */
   async stream(messages, functions = [], eventHandler = null) {
-    const useNative =
-      functions.length > 0 && (await this.supportsNativeToolCalling());
+    const useNative = await this.supportsNativeToolCalling();
 
     if (!useNative) {
       return await UnTooled.prototype.stream.call(
@@ -149,8 +148,7 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
    * Uses native tool calling when supported, otherwise falls back to UnTooled.
    */
   async complete(messages, functions = []) {
-    const useNative =
-      functions.length > 0 && (await this.supportsNativeToolCalling());
+    const useNative = await this.supportsNativeToolCalling();
 
     if (!useNative) {
       return await UnTooled.prototype.complete.call(
