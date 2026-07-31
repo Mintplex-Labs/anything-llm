@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef, Fragment } from "react";
-import { getWorkspaceSystemPrompt } from "@/utils/chat";
 import { useTranslation } from "react-i18next";
 import SystemPromptVariable from "@/models/systemPromptVariable";
 import Highlighter from "react-highlight-words";
@@ -19,9 +18,8 @@ export default function ChatPromptSettings({
   const [searchParams] = useSearchParams();
 
   // Prompt state
-  const initialPrompt = getWorkspaceSystemPrompt(workspace);
-  const [prompt, setPrompt] = useState(initialPrompt);
-  const [savedPrompt, setSavedPrompt] = useState(initialPrompt);
+  const [prompt, setPrompt] = useState(workspace?.openAiPrompt ?? "");
+  const [savedPrompt, setSavedPrompt] = useState(workspace?.openAiPrompt ?? "");
   const [defaultSystemPrompt, setDefaultSystemPrompt] = useState("");
 
   // UI state
@@ -43,7 +41,8 @@ export default function ChatPromptSettings({
 
   // Derived state
   const isDirty = prompt !== savedPrompt;
-  const hasBeenModified = savedPrompt?.trim() !== initialPrompt?.trim();
+  const hasBeenModified =
+    defaultSystemPrompt && savedPrompt?.trim() !== defaultSystemPrompt?.trim();
   const showPublishButton =
     !isEditing && prompt?.trim().length >= 10 && (isDirty || hasBeenModified);
 
@@ -71,9 +70,13 @@ export default function ChatPromptSettings({
   }, [isEditing]);
 
   useEffect(() => {
-    System.fetchDefaultSystemPrompt().then(({ defaultSystemPrompt }) =>
-      setDefaultSystemPrompt(defaultSystemPrompt)
-    );
+    System.fetchDefaultSystemPrompt().then(({ defaultSystemPrompt }) => {
+      setDefaultSystemPrompt(defaultSystemPrompt);
+      if (!workspace?.openAiPrompt && defaultSystemPrompt) {
+        setPrompt(defaultSystemPrompt);
+        setSavedPrompt(defaultSystemPrompt);
+      }
+    });
   }, []);
 
   // Handle click outside for history panel
@@ -122,57 +125,60 @@ export default function ChatPromptSettings({
         onPublishClick={handlePublishFromHistory}
         onClose={() => setShowPromptHistory(false)}
       />
-      <div>
-        <div className="flex flex-col">
+      <div className="flex flex-col gap-y-[8px]">
+        <div className="flex flex-col gap-y-[8px]">
           <div className="flex items-center justify-between">
             <label htmlFor="name" className="block input-label">
               {t("chat.prompt.title")}
             </label>
           </div>
-          <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+          <p className="text-white text-opacity-60 text-xs font-medium">
             {t("chat.prompt.description")}
           </p>
-          <p className="text-white text-opacity-60 text-xs font-medium mb-2">
-            You can insert{" "}
-            <Link
-              to={paths.settings.systemPromptVariables()}
-              className="text-primary-button"
-            >
-              prompt variables
-            </Link>{" "}
-            like:{" "}
-            {availableVariables.slice(0, 3).map((v, i) => (
-              <Fragment key={v.key}>
-                <span className="bg-theme-settings-input-bg px-1 py-0.5 rounded">
-                  {`{${v.key}}`}
-                </span>
-                {i < availableVariables.length - 1 && ", "}
-              </Fragment>
-            ))}
-            {availableVariables.length > 3 && (
+
+          <div className="flex items-center justify-between">
+            <p className="text-white text-opacity-60 text-xs font-medium">
+              You can insert{" "}
               <Link
                 to={paths.settings.systemPromptVariables()}
                 className="text-primary-button"
               >
-                +{availableVariables.length - 3} more...
-              </Link>
-            )}
-          </p>
+                prompt variables
+              </Link>{" "}
+              like:{" "}
+              {availableVariables.slice(0, 3).map((v, i) => (
+                <Fragment key={v.key}>
+                  <span className="bg-theme-settings-input-bg px-1 py-0.5 rounded">
+                    {`{${v.key}}`}
+                  </span>
+                  {i < availableVariables.length - 1 && ", "}
+                </Fragment>
+              ))}
+              {availableVariables.length > 3 && (
+                <Link
+                  to={paths.settings.systemPromptVariables()}
+                  className="text-primary-button"
+                >
+                  +{availableVariables.length - 3} more...
+                </Link>
+              )}
+            </p>
+            <button
+              ref={historyButtonRef}
+              type="button"
+              className="text-theme-text-secondary hover:text-white light:hover:text-black text-xs font-medium"
+              onClick={(e) => {
+                e.preventDefault();
+                setShowPromptHistory(!showPromptHistory);
+              }}
+            >
+              {showPromptHistory ? "Hide History" : "View History"}
+            </button>
+          </div>
         </div>
 
         <input type="hidden" name="openAiPrompt" value={prompt} />
         <div className="relative w-full flex flex-col items-end">
-          <button
-            ref={historyButtonRef}
-            type="button"
-            className="text-theme-text-secondary hover:text-white light:hover:text-black text-xs font-medium"
-            onClick={(e) => {
-              e.preventDefault();
-              setShowPromptHistory(!showPromptHistory);
-            }}
-          >
-            {showPromptHistory ? "Hide History" : "View History"}
-          </button>
           <div className="relative w-full">
             {isEditing ? (
               <textarea

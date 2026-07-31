@@ -13,6 +13,9 @@ const DEFAULT_SKILLS = [
   AgentPlugins.webScraping.name,
 ];
 
+// Skills that must never be injected when the instance is running in multi-user mode.
+const SINGLE_USER_ONLY_SKILLS = new Set(["create-scheduled-job"]);
+
 /**
  * Configuration for agent skills that require availability checks and disabled sub-skill lists.
  * Each entry maps a skill name to its availability checker and disabled skills list key.
@@ -54,21 +57,20 @@ const WORKSPACE_AGENT = {
   name: "@agent",
   /**
    * Get the definition for the workspace agent with its role (prompt) and functions in Aibitat format
-   * @param {string} provider
+   * @param {string} _provider - Unused, kept for call-site compatibility
    * @param {import("@prisma/client").workspaces | null} workspace
    * @param {import("@prisma/client").users | null} user
    * @param {string} [prompt] - Current user message for memory reranking
    * @returns {Promise<{ role: string, functions: object[] }>}
    */
   getDefinition: async (
-    provider = null,
+    _provider = null,
     workspace = null,
     user = null,
     prompt = ""
   ) => {
     let [role, clarifyingQuestionsSkills] = await Promise.all([
       Provider.systemPrompt({
-        provider,
         workspace,
         user,
         prompt,
@@ -122,6 +124,7 @@ async function clarifyingQuestionsSkillIfEnabled() {
  */
 async function agentSkillsFromSystemSettings() {
   const systemFunctions = [];
+  const isMultiUser = await SystemSettings.isMultiUserMode();
 
   // Load non-imported built-in skills that are configurable, but are default enabled.
   const _disabledDefaultSkills = safeJsonParse(
@@ -164,6 +167,7 @@ async function agentSkillsFromSystemSettings() {
 
   for (const skillName of _setting) {
     if (!AgentPlugins.hasOwnProperty(skillName)) continue;
+    if (isMultiUser && SINGLE_USER_ONLY_SKILLS.has(skillName)) continue;
 
     // This is a plugin module with many sub-children plugins who
     // need to be named via `${parent}#${child}` naming convention
@@ -189,8 +193,73 @@ async function agentSkillsFromSystemSettings() {
   return systemFunctions;
 }
 
+/**
+ * Resolve a UI skill/tool identifier into the names needed to toggle it on a live
+ * agent session. `loadable` are the funcsToLoad-style identifiers handed to the
+ * plugin loader to (re)register the tool via `aibitat.use()`; `registered` are the
+ * resulting `aibitat.functions` Map keys to delete when disabling.
+ *
+ * Handles flows (`@@flow_<uuid>`), multi-stage parents (e.g. sql-agent -> each
+ * child), imported hubIds, MCP server tools, single built-ins, and sub-skill
+ * child names.
+ * @param {string} skill - Skill key, `@@flow_<uuid>`, MCP `<server>-<tool>`, hubId, or sub-skill name.
+ * @param {object} [opts]
+ * @param {string|null} [opts.serverName] - MCP server name; required to enable an MCP tool.
+ * @returns {{ loadable: string[], registered: string[] }}
+ */
+function resolveAgentSkill(skill = "", { serverName = null } = {}) {
+  // Flow tool: loaded by `@@flow_<uuid>`, registered under its sanitized tool name.
+  if (skill.startsWith("@@flow_")) {
+    const uuid = skill.replace("@@flow_", "");
+    const flow = AgentFlows.loadFlow(uuid);
+    if (!flow) return { loadable: [], registered: [] };
+    return {
+      loadable: [skill],
+      registered: [AgentFlows.sanitizeToolName(flow.name) || `flow_${uuid}`],
+    };
+  }
+
+  // MCP server tool (`<server>-<tool>`): the Map key matches the UI id exactly.
+  // Enabling reloads the server so the current suppression state is respected.
+  if (serverName)
+    return { loadable: [`@@mcp_${serverName}`], registered: [skill] };
+
+  // Top-level built-in skill.
+  const plugin = AgentPlugins[skill];
+  if (plugin) {
+    // Multi-stage plugin (e.g. sql-agent) registers one function per child.
+    if (Array.isArray(plugin.plugin))
+      return {
+        loadable: plugin.plugin.map((c) => `${plugin.name}#${c.name}`),
+        registered: plugin.plugin.map((c) => c.name),
+      };
+    return { loadable: [plugin.name], registered: [plugin.name] };
+  }
+
+  // Imported plugin referenced by hubId (registered under the hubId itself).
+  if (ImportedPlugin.validateImportedPluginHandler(skill))
+    return { loadable: [`@@${skill}`], registered: [skill] };
+
+  // Sub-skill child name (e.g. a filesystem-agent child): find its parent so the
+  // loader can attach just that child via the `parent#child` convention.
+  for (const key of Object.keys(AgentPlugins)) {
+    const parent = AgentPlugins[key];
+    if (!Array.isArray(parent?.plugin)) continue;
+    const child = parent.plugin.find((c) => c.name === skill);
+    if (child)
+      return {
+        loadable: [`${parent.name}#${child.name}`],
+        registered: [child.name],
+      };
+  }
+
+  // Fallback: treat the id as both the loadable entry and the registered name.
+  return { loadable: [skill], registered: [skill] };
+}
+
 module.exports = {
   USER_AGENT,
   WORKSPACE_AGENT,
   agentSkillsFromSystemSettings,
+  resolveAgentSkill,
 };

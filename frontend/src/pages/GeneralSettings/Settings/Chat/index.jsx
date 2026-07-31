@@ -5,6 +5,7 @@ import AutoSubmit from "../components/AutoSubmit";
 import AutoSpeak from "../components/AutoSpeak";
 import SpellCheck from "../components/SpellCheck";
 import ShowScrollbar from "../components/ShowScrollbar";
+import AutoScroll from "../components/AutoScroll";
 import ChatRenderHTML from "../components/ChatRenderHTML";
 
 export default function ChatSettings() {
@@ -32,6 +33,7 @@ export default function ChatSettings() {
           <AutoSpeak />
           <SpellCheck />
           <ShowScrollbar />
+          <AutoScroll />
           <ChatRenderHTML />
         </div>
       </div>

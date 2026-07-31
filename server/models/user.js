@@ -30,13 +30,13 @@ const User = {
      * Unix-style username regex:
      * - Must start with a lowercase letter
      * - Can contain lowercase letters, digits, underscores, hyphens, @ signs, and periods
-     * - 2-32 characters long
+     * - 2-64 characters long
      */
     username: (newValue = "") => {
       try {
         const username = String(newValue);
-        if (username.length > 32)
-          throw new Error("Username cannot be longer than 32 characters");
+        if (username.length > 64)
+          throw new Error("Username cannot be longer than 64 characters");
         if (username.length < 2)
           throw new Error("Username must be at least 2 characters");
         if (!User.usernameRegex.test(username))

@@ -13,6 +13,7 @@ import ExaIcon from "./icons/exa.png";
 import PerplexitySearchIcon from "./icons/perplexity.png";
 import BraveSearchIcon from "./icons/brave.png";
 import CrwSearchIcon from "./icons/crw.png";
+import YouSearchIcon from "./icons/you.png";
 import KeenableSearchIcon from "./icons/keenable.svg";
 import {
   CaretUpDown,
@@ -37,6 +38,7 @@ import {
   PerplexitySearchOptions,
   BraveSearchOptions,
   CrwSearchOptions,
+  YouSearchOptions,
   KeenableSearchOptions,
 } from "./SearchProviderOptions";
 
@@ -147,6 +149,13 @@ const SEARCH_PROVIDERS = [
     logo: CrwSearchIcon,
     options: (settings) => <CrwSearchOptions settings={settings} />,
     description: "Open-source, self-hostable Firecrawl/Tavily alternative.",
+  },
+  {
+    name: "You.com Search",
+    value: "you-search",
+    logo: YouSearchIcon,
+    options: (settings) => <YouSearchOptions settings={settings} />,
+    description: "LLM-ready web search. Optional API key for higher limits.",
   },
 ];
 

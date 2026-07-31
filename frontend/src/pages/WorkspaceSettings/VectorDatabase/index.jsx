@@ -40,7 +40,7 @@ export default function VectorDatabase({ workspace }) {
       <form
         ref={formEl}
         onSubmit={handleUpdate}
-        className="w-1/2 flex flex-col gap-y-6"
+        className="w-1/2 flex flex-col gap-y-[32px]"
       >
         {hasChanges && (
           <div className="absolute top-0 right-0">

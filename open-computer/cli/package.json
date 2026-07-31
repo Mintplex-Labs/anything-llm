@@ -1,0 +1,26 @@
+{
+  "name": "@open-computer/cli",
+  "version": "0.1.0",
+  "description": "Cross-platform TypeScript CLI for open-computer VM management",
+  "bin": {
+    "open-computer": "./dist/open-computer"
+  },
+  "scripts": {
+    "build": "tsc --noEmit && node build.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test \"src/**/*.test.ts\"",
+    "dev": "ts-node src/index.ts",
+    "watch": "tsc --watch",
+    "start": "node dist/open-computer"
+  },
+  "dependencies": {
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "esbuild": "^0.28.1",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.5.0"
+  }
+}

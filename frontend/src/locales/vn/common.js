@@ -62,7 +62,7 @@ const TRANSLATIONS = {
     no: "Không",
     search: "Tìm kiếm",
     username_requirements:
-      "Tên người dùng phải có 2-32 ký tự, bắt đầu bằng chữ cái thường và chỉ chứa chữ cái thường, số, dấu gạch dưới, dấu gạch ngang và dấu chấm.",
+      "Tên người dùng phải có 2-64 ký tự, bắt đầu bằng chữ cái thường và chỉ chứa chữ cái thường, số, dấu gạch dưới, dấu gạch ngang và dấu chấm.",
     on: "Về",
     none: "Không",
     stopped: "Dừng",
@@ -205,8 +205,6 @@ const TRANSLATIONS = {
       "desc-start":
         "Số lượng cuộc trò chuyện trước đó sẽ được bao gồm trong bộ nhớ ngắn hạn của phản hồi.",
       recommend: "Khuyến nghị 20. ",
-      "desc-end":
-        "Bất kỳ số nào lớn hơn 45 có thể dẫn đến lỗi trò chuyện liên tục tùy thuộc vào kích thước tin nhắn.",
     },
     prompt: {
       title: "Prompt",
@@ -237,10 +235,8 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "Nhiệt độ LLM",
-      "desc-start": 'Cài đặt này kiểm soát mức độ "sáng tạo" của phản hồi LLM.',
       "desc-end":
         "Số càng cao thì càng sáng tạo. Đối với một số mô hình, điều này có thể dẫn đến phản hồi không mạch lạc khi đặt quá cao.",
-      hint: "Hầu hết các LLM có các phạm vi giá trị hợp lệ khác nhau. Tham khảo nhà cung cấp LLM của bạn để biết thông tin đó.",
     },
   },
   "vector-workspace": {
@@ -714,6 +710,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Tạo các công việc theo lịch trình",
+        description:
+          'Cho phép đại lý tạo các công việc lặp lại theo lịch trình từ cuộc trò chuyện (ví dụ: "mỗi ngày làm việc lúc 9 giờ sáng, tóm tắt hộp thư và gửi email cho tôi"). Chỉ khả dụng trong chế độ sử dụng riêng.',
+      },
     },
     mcp: {
       title: "Máy chủ MCP",
@@ -744,7 +745,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "Lựa chọn kỹ năng thông minh",
-        "beta-badge": "Phiên bản thử nghiệm",
         description:
           "Cho phép sử dụng không giới hạn các công cụ và giảm mức sử dụng token lên đến 80% cho mỗi truy vấn – AnythingLLM tự động chọn các kỹ năng phù hợp nhất cho mỗi yêu cầu.",
         "max-tools": {
@@ -1070,6 +1070,8 @@ const TRANSLATIONS = {
       save_embed: "Lưu và Nhúng",
       "total-documents_one": "{{count}}",
       "total-documents_other": "{{count}}",
+      "search-results_one": "Kết quả {{count}}",
+      "search-results_other": "Kết quả {{count}}",
     },
     upload: {
       "processor-offline": "Trình xử lý Tài liệu Không khả dụng",
@@ -1366,6 +1368,11 @@ const TRANSLATIONS = {
         title: "Hiển thị HTML trong trò chuyện",
         description:
           "Hiển thị phản hồi HTML trong các phản hồi của trợ lý.\nĐiều này có thể mang lại chất lượng phản hồi cao hơn nhiều, nhưng cũng có thể dẫn đến các rủi ro bảo mật tiềm ẩn.",
+      },
+      "disable-auto-scroll": {
+        title: "Tắt tính năng cuộn tự động",
+        description:
+          "Tắt tính năng tự động cuộn xuống cuối cuộc trò chuyện khi nhận được tin nhắn mới.",
       },
     },
   },

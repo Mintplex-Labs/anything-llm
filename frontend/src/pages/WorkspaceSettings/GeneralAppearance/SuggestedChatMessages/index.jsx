@@ -105,30 +105,31 @@ export default function SuggestedChatMessages({ slug }) {
 
   if (loading)
     return (
-      <div className="flex flex-col">
+      <div className="flex flex-col gap-y-[8px]">
         <label className="block input-label">
           {t("general.message.title")}
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
           {t("general.message.description")}
         </p>
-        <div className="text-white text-opacity-60 text-sm font-medium mt-6">
+        <div className="text-white text-opacity-60 text-sm font-medium">
           <PreLoader size="4" />
         </div>
       </div>
     );
+
   return (
-    <div className="w-full mt-6">
-      <div className="flex flex-col">
+    <div className="w-full flex flex-col gap-y-[8px]">
+      <div className="flex flex-col gap-y-[8px]">
         <label className="block input-label">
           {t("general.message.title")}
         </label>
-        <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+        <p className="text-white text-opacity-60 text-xs font-medium">
           {t("general.message.description")}
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-white/60 text-xs mt-2 w-full justify-center max-w-[600px]">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-white/60 text-xs w-full justify-center max-w-[600px]">
         {suggestedMessages.map((suggestion, index) => (
           <div key={index} className="relative w-full">
             <button
@@ -157,7 +158,7 @@ export default function SuggestedChatMessages({ slug }) {
         ))}
       </div>
       {editingIndex >= 0 && (
-        <div className="flex flex-col gap-y-4 mr-2 mt-8">
+        <div className="flex flex-col gap-y-4 mr-2">
           <div className="w-1/2">
             <label className="text-white text-sm font-semibold block mb-2">
               Message
@@ -176,7 +177,7 @@ export default function SuggestedChatMessages({ slug }) {
         <button
           type="button"
           onClick={addMessage}
-          className="flex gap-x-2 items-center justify-center mt-6 text-white text-sm hover:text-sky-400 transition-all duration-300"
+          className="flex gap-x-2 items-center justify-start text-white text-sm hover:text-sky-400 transition-all duration-300"
         >
           {t("general.message.add")}{" "}
           <Plus className="" size={24} weight="fill" />
@@ -184,7 +185,7 @@ export default function SuggestedChatMessages({ slug }) {
       )}
 
       {hasChanges && (
-        <div className="flex justify-start py-6">
+        <div className="flex justify-start">
           <button
             type="button"
             className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"

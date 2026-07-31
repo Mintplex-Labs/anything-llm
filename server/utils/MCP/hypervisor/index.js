@@ -14,7 +14,7 @@ const {
 const { patchShellEnvironmentPath } = require("../../helpers/shell");
 
 /**
- * @typedef {'stdio' | 'http' | 'sse'} MCPServerTypes
+ * @typedef {'stdio' | 'http'} MCPServerTypes
  */
 
 /**
@@ -350,7 +350,7 @@ class MCPHypervisor {
       return "http";
     if (Object.prototype.hasOwnProperty.call(server, "command")) return "stdio";
     if (Object.prototype.hasOwnProperty.call(server, "url")) return "http";
-    return "sse";
+    return null;
   }
 
   /**
@@ -362,14 +362,19 @@ class MCPHypervisor {
    * @returns {void}
    */
   #validateServerDefinitionByType(name, server, type) {
-    if (
-      server.type === "sse" ||
-      server.type === "streamable" ||
-      server.type === "http"
-    ) {
+    if (type === "http") {
+      // "type" is optional for http servers - when omitted, SSE is assumed
+      // (see createHttpTransport). An explicit unknown value is a config error.
+      if (
+        server.type !== undefined &&
+        !["sse", "streamable", "http"].includes(server.type)
+      ) {
+        throw new Error("MCP server type must have sse or streamable value.");
+      }
+
       if (!server.url) {
         throw new Error(
-          `MCP server "${name}": missing required "url" for ${server.type} transport`
+          `MCP server "${name}": missing required "url" for ${server.type || "sse"} transport`
         );
       }
 
@@ -388,12 +393,6 @@ class MCPHypervisor {
       )
         throw new Error("MCP server args must be an array");
     }
-
-    if (type === "http") {
-      if (!["sse", "streamable"].includes(server?.type))
-        throw new Error("MCP server type must have sse or streamable value.");
-    }
-    if (type === "sse") return;
     return;
   }
 

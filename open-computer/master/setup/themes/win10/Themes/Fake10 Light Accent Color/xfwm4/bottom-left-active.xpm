@@ -1,0 +1,22 @@
+/* XPM */
+static char * bottom_left_active_xpm[] = {
+"16 16 2 1",
+"   c None",
+"A  c #313131 s active_color_1",
+"A               ",
+"A               ",
+"A               ",
+"A               ",
+"A               ",
+"A               ",
+"A               ",
+"A               ",
+"A               ",
+"A               ",
+"A               ",
+"A               ",
+"A               ",
+"A               ",
+"A               ",
+"AAAAAAAAAAAAAAAA"
+};

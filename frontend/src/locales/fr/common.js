@@ -61,7 +61,7 @@ const TRANSLATIONS = {
     no: "Non",
     search: "Rechercher",
     username_requirements:
-      "Le nom d'utilisateur doit comporter entre 2 et 32 caractères, commencer par une lettre minuscule et ne contenir que des lettres minuscules, des chiffres, des tirets bas, des tirets et des points.",
+      "Le nom d'utilisateur doit comporter entre 2 et 64 caractères, commencer par une lettre minuscule et ne contenir que des lettres minuscules, des chiffres, des tirets bas, des tirets et des points.",
     on: "Sur",
     none: "Aucun",
     stopped: "Arrêté",
@@ -206,8 +206,6 @@ const TRANSLATIONS = {
       "desc-start":
         "Le nombre de chats précédents qui seront inclus dans la mémoire à court terme de la réponse.",
       recommend: "Recommandé: 20.",
-      "desc-end":
-        "Tout nombre supérieur à 45 risque de provoquer des échecs de chat continus en fonction de la taille du message.",
     },
     prompt: {
       title: "Invite",
@@ -237,11 +235,8 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "Température LLM",
-      "desc-start":
-        "Ce paramètre contrôle le niveau de créativité des réponses de votre LLM.",
       "desc-end":
         "Plus le nombre est élevé, plus la réponse sera créative. Pour certains modèles, cela peut entraîner des réponses incohérentes si la valeur est trop élevée.",
-      hint: "La plupart des LLM ont diverses plages acceptables de valeurs valides. Consultez votre fournisseur LLM pour cette information.",
     },
   },
   "vector-workspace": {
@@ -736,6 +731,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Créer des tâches planifiées",
+        description:
+          "Permettez à l'agent de créer des tâches planifiées récurrentes à partir des conversations (par exemple : « tous les jours ouvrables à 9h, résumez ma boîte de réception et envoyez-moi un e-mail »). Fonctionnalité disponible uniquement en mode utilisateur unique.",
+      },
     },
     mcp: {
       title: "Serveurs MCP",
@@ -767,7 +767,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "Sélection de compétences basée sur l'intelligence",
-        "beta-badge": "Bêta",
         description:
           "Permettez l'utilisation illimitée d'outils et réduisez la consommation de jetons jusqu'à 80 % par requête – AnythingLLM sélectionne automatiquement les compétences appropriées pour chaque requête.",
         "max-tools": {
@@ -1095,6 +1094,8 @@ const TRANSLATIONS = {
       save_embed: "Sauvegarder et intégrer",
       "total-documents_one": "{{count}}",
       "total-documents_other": "{{count}} documents",
+      "search-results_one": "{{count}} résultat",
+      "search-results_other": "{{count}} résultats",
     },
     upload: {
       "processor-offline": "Processeur de documents hors ligne",
@@ -1394,6 +1395,11 @@ const TRANSLATIONS = {
         title: "Rendu HTML",
         description:
           "Autorise le rendu du contenu HTML dans les réponses du chat.",
+      },
+      "disable-auto-scroll": {
+        title: "Désactiver le défilement automatique",
+        description:
+          "Désactiver le défilement automatique vers la fin de la conversation lorsqu'un nouveau message est reçu.",
       },
     },
   },

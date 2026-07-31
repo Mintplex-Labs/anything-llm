@@ -24,11 +24,14 @@ export default function VectorSearchMode({ workspace, setHasChanges }) {
     return null;
 
   return (
-    <div>
-      <div className="flex flex-col">
+    <div className="flex flex-col">
+      <div className="flex flex-col gap-y-[8px]">
         <label htmlFor="name" className="block input-label">
           Search Preference
         </label>
+        <p className="text-white text-opacity-60 text-xs font-medium">
+          {hint[selection]?.description}
+        </p>
       </div>
       <select
         name="vectorSearchMode"
@@ -43,9 +46,6 @@ export default function VectorSearchMode({ workspace, setHasChanges }) {
         <option value="default">Default</option>
         <option value="rerank">Accuracy Optimized</option>
       </select>
-      <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-        {hint[selection]?.description}
-      </p>
     </div>
   );
 }

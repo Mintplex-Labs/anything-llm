@@ -61,7 +61,7 @@ const TRANSLATIONS = {
     no: "Nē",
     search: "Meklēšana",
     username_requirements:
-      "Lietotājvārdam jābūt 2–32 rakstzīmju garam, jāsākas ar mazo burtu un jāsatur tikai mazie burti, cipari, apakšsvītras, domuzīmes un punkti.",
+      "Lietotājvārdam jābūt 2–64 rakstzīmju garam, jāsākas ar mazo burtu un jāsatur tikai mazie burti, cipari, apakšsvītras, domuzīmes un punkti.",
     on: "Par",
     none: "Nav",
     stopped: "Apstājās",
@@ -212,8 +212,6 @@ const TRANSLATIONS = {
       "desc-start":
         "Iepriekšējo sarunu skaits, kas tiks iekļauts atbildes īslaicīgajā atmiņā.",
       recommend: "Ieteicams 20. ",
-      "desc-end":
-        "Vairāk nekā 45 var novest pie nepārtrauktām sarunu kļūmēm atkarībā no ziņojuma izmēra.",
     },
     prompt: {
       title: "Sistēmas uzvedne",
@@ -244,11 +242,8 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "LLM Temperatūra",
-      "desc-start":
-        'Šis iestatījums kontrolē, cik "radošas" būs jūsu LLM atbildes.',
       "desc-end":
         "Jo lielāks skaitlis, jo radošākas atbildes. Dažiem modeļiem tas var novest pie nesaprotamām atbildēm, ja iestatīts pārāk augsts.",
-      hint: "Lielākajai daļai LLM ir dažādi pieņemami derīgo vērtību diapazoni. Konsultējieties ar savu LLM pakalpojumu sniedzēju par šo informāciju.",
     },
   },
   "vector-workspace": {
@@ -728,6 +723,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Ierīkojiet periodiskas darbības",
+        description:
+          'Ļauj aģentam izveidot atkārtotus plānotus darbus no čata (piemēram, "katru darba dienu plkst. 9:00 nosūtīt man savu e-pasta kopsavilkumu un nosūtīt ziņu"). Pieejams tikai vienam lietotājam.',
+      },
     },
     mcp: {
       title: "MCP serveri",
@@ -758,7 +758,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "Izglītības un prasmu izvēle, kas balstota uz spējām",
-        "beta-badge": "Beta",
         description:
           'Ievērojiet neierobežotu rīku un "cut token" izmantošanas samazinājumu līdz 80% uz katru pieprasījumu – AnythingLLM automātiski izvēlas piemērotākās prasmes katram pieprasījumam.',
         "max-tools": {
@@ -878,6 +877,11 @@ const TRANSLATIONS = {
         title: "Izveidot HTML saturu, ko var izmantot čatā.",
         description:
           "Ievietojiet HTML atbildes palīdzības atbildēs.\nTas var novērst daudz augstāku atbildes kvalitātes līmeni, taču arī var radīt potenciālas drošības riskus.",
+      },
+      "disable-auto-scroll": {
+        title: "Atspējot automātisko skrološanu",
+        description:
+          "Atstāviet automātisko skrološanu uz sarunas beigām, kad saņemts jauns sūtījums.",
       },
     },
   },
@@ -1185,6 +1189,8 @@ const TRANSLATIONS = {
       save_embed: "Saglabāt un iegult",
       "total-documents_one": "{{count}} dokumenta",
       "total-documents_other": "{{count}} dokumenti",
+      "search-results_one": "Rezultāts {{count}}",
+      "search-results_other": "Rezultāti {{count}}",
     },
     upload: {
       "processor-offline": "Dokumentu apstrādātājs nav pieejams",

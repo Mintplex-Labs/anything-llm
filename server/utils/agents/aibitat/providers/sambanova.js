@@ -54,7 +54,7 @@ class SambaNovaProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   async stream(messages, functions = [], eventHandler = null) {
-    const useNative = functions.length > 0 && this.supportsNativeToolCalling();
+    const useNative = this.supportsNativeToolCalling();
 
     if (!useNative) {
       return await UnTooled.prototype.stream.call(
@@ -94,7 +94,7 @@ class SambaNovaProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   async complete(messages, functions = []) {
-    const useNative = functions.length > 0 && this.supportsNativeToolCalling();
+    const useNative = this.supportsNativeToolCalling();
 
     if (!useNative) {
       return await UnTooled.prototype.complete.call(

@@ -3,12 +3,12 @@ import { useTranslation } from "react-i18next";
 export default function WorkspaceName({ workspace, setHasChanges }) {
   const { t } = useTranslation();
   return (
-    <div>
-      <div className="flex flex-col">
+    <div className="flex flex-col gap-y-[8px]">
+      <div className="flex flex-col gap-y-[8px]">
         <label htmlFor="name" className="block input-label">
           {t("common.workspaces-name")}
         </label>
-        <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+        <p className="text-white text-opacity-60 text-xs font-medium">
           {t("general.names.description")}
         </p>
       </div>

@@ -62,7 +62,7 @@ const TRANSLATIONS = {
     no: "Nie",
     search: "Wyszukaj",
     username_requirements:
-      "Nazwa użytkownika musi mieć od 2 do 32 znaków, zaczynać się małą literą i zawierać tylko małe litery, cyfry, podkreślenia, myślniki i kropki.",
+      "Nazwa użytkownika musi mieć od 2 do 64 znaków, zaczynać się małą literą i zawierać tylko małe litery, cyfry, podkreślenia, myślniki i kropki.",
     on: "Na",
     none: "Brak",
     stopped: "Zatrzymano",
@@ -212,8 +212,6 @@ const TRANSLATIONS = {
       "desc-start":
         "Liczba poprzednich wiadomości, które zostaną uwzględnione w pamięci krótkotrwałej",
       recommend: "Zalecane: 20.",
-      "desc-end":
-        "Więcej niż 45 może prowadzić do problemów z działaniem czatu.",
     },
     prompt: {
       title: "Instrukcja systemowa",
@@ -244,11 +242,8 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "Temperatura modelu",
-      "desc-start":
-        'To ustawienie kontroluje, jak "kreatywne" będą odpowiedzi modelu językowego.',
       "desc-end":
         "Im wyższa liczba, tym większa kreatywność. W przypadku niektórych modeli może to prowadzić do niespójnych odpowiedzi przy zbyt wysokich ustawieniach.",
-      hint: "Większość modeli językowych ma różne dopuszczalne zakresy wartości. Informacje na ten temat można uzyskać u dostawcy modelu językowego.",
     },
   },
   "vector-workspace": {
@@ -736,6 +731,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Twórz zdefiniowane harmonogramy zadań",
+        description:
+          "Umożliw agentowi tworzenie powtarzalnych zadań w harmonogramie bezpośrednio z czatu (np. „codziennie w poniedziałek o 9:00, podsumuj zawartość mojej skrzynki pocztowej i wyślij mi e-mail”). Funkcja dostępna tylko w trybie dla jednego użytkownika.",
+      },
     },
     mcp: {
       title: "Serwery MCP",
@@ -766,7 +766,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "Inteligentny wybór umiejętności",
-        "beta-badge": "Wersja beta",
         description:
           "Umożliwia korzystanie z nieograniczonej liczby narzędzi oraz redukcję zużycia tokenów o do 80% na każde zapytanie – EverythingLLM automatycznie wybiera odpowiednie umiejętności dla każdego zapytania.",
         "max-tools": {
@@ -888,6 +887,11 @@ const TRANSLATIONS = {
         title: "Renderowanie HTML w czacie",
         description:
           "Wyświetlanie odpowiedzi w formacie HTML w odpowiedziach asystenta.\nMoże to prowadzić do znacznie wyższej jakości odpowiedzi, ale również wiąże się z potencjalnymi zagrożeniami bezpieczeństwa.",
+      },
+      "disable-auto-scroll": {
+        title: "Wyłącz automatyczne przewijanie",
+        description:
+          "Wyłącz automatyczne przewijanie do końca okna czatu po otrzymaniu nowych wiadomości.",
       },
     },
   },
@@ -1195,6 +1199,8 @@ const TRANSLATIONS = {
       save_embed: "Zapisz",
       "total-documents_one": "{{count}} dokument",
       "total-documents_other": "{{count}} dokumenty",
+      "search-results_one": "{{count}} wynik",
+      "search-results_other": "Wyniki {{count}}",
     },
     upload: {
       "processor-offline": "Procesor dokumentów niedostępny",

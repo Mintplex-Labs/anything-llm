@@ -58,7 +58,7 @@ const TRANSLATIONS = {
     no: "否",
     search: "搜索",
     username_requirements:
-      "用户名必须为 2-32 个字符，以小写字母开头，只能包含小写字母、数字、下划线、连字符和句点。",
+      "用户名必须为 2-64 个字符，以小写字母开头，只能包含小写字母、数字、下划线、连字符和句点。",
     on: "关于",
     none: "没有",
     stopped: "停止",
@@ -205,8 +205,6 @@ const TRANSLATIONS = {
       title: "聊天历史记录",
       "desc-start": "将包含在响应的短期记忆中的先前聊天的数量。",
       recommend: "推荐 20。",
-      "desc-end":
-        "任何超过 45 的值都可能导致连续聊天失败，具体取决于消息大小。",
     },
     prompt: {
       title: "系统提示词",
@@ -235,10 +233,8 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "LLM 温度",
-      "desc-start": "此设置控制你的 LLM 回答的“创意”程度",
       "desc-end":
         "数字越高越有创意。对于某些模型，如果设置得太高，可能会导致响应不一致。",
-      hint: "大多数 LLM 都有各种可接受的有效值范围。请咨询你的LLM提供商以获取该信息。",
     },
   },
   "vector-workspace": {
@@ -676,6 +672,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "创建计划任务",
+        description:
+          "允许代理人根据聊天内容创建重复的计划任务（例如，“每天工作日的早上9点，总结我的收件箱并发送邮件给我”）。仅适用于单用户模式。",
+      },
     },
     mcp: {
       title: "MCP 服务器",
@@ -705,7 +706,6 @@ const TRANSLATIONS = {
       },
       "intelligent-skill-selection": {
         title: "智能技能选择",
-        "beta-badge": "β 版本",
         description:
           "实现无限工具和按查询减少高达 80% 的 Token 使用量——AnythingLLM 能够自动选择最合适的技能，以应对每个提示。",
         "max-tools": {
@@ -815,6 +815,10 @@ const TRANSLATIONS = {
         title: "在聊天中渲染 HTML",
         description:
           "在助手回复中呈现 HTML 响应。\n这可以显著提高回复的质量，但也可能带来潜在的安全风险。",
+      },
+      "disable-auto-scroll": {
+        title: "关闭自动滚动功能",
+        description: "在收到新消息时，取消自动滚动到聊天窗口底部的功能。",
       },
     },
   },
@@ -1088,6 +1092,8 @@ const TRANSLATIONS = {
       save_embed: "保存并嵌入",
       "total-documents_one": "{{count}} 文件",
       "total-documents_other": "{{count}} 类型的文件",
+      "search-results_one": "{{count}} 的结果",
+      "search-results_other": "{{count}} 的结果",
     },
     upload: {
       "processor-offline": "文档处理器不可用",
