@@ -3,6 +3,7 @@ import { isMobile } from "react-device-detect";
 import FooterCustomization from "../components/FooterCustomization";
 import SupportEmail from "../components/SupportEmail";
 import CustomLogo from "../components/CustomLogo";
+import CustomLoginLogo from "../components/CustomLoginLogo";
 import { useTranslation } from "react-i18next";
 import CustomAppName from "../components/CustomAppName";
 import CustomSiteSettings from "../components/CustomSiteSettings";
@@ -30,6 +31,7 @@ export default function BrandingSettings() {
           </div>
           <CustomAppName />
           <CustomLogo />
+          <CustomLoginLogo />
           <FooterCustomization />
           <SupportEmail />
           <CustomSiteSettings />

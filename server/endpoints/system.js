@@ -33,6 +33,7 @@ const path = require("path");
 const {
   getDefaultFilename,
   determineLogoFilepath,
+  determineLoginLogoFilepath,
   fetchLogo,
   validFilename,
   renameLogoFile,
@@ -1013,6 +1014,123 @@ function systemEndpoints(app) {
       } catch (error) {
         console.error("Error processing the logo removal:", error);
         response.status(500).json({ message: "Error removing the logo." });
+      }
+    }
+  );
+
+  app.get("/system/login-logo", async function (request, response) {
+    try {
+      const darkMode =
+        !request?.query?.theme || request?.query?.theme === "default";
+      const defaultFilename = getDefaultFilename(darkMode);
+      const logoPath = await determineLoginLogoFilepath(defaultFilename);
+      const { found, buffer, size, mime } = fetchLogo(logoPath);
+
+      if (!found) {
+        response.sendStatus(204).end();
+        return;
+      }
+
+      const loginLogoFilename = await SystemSettings.currentLoginLogoFilename();
+      const primaryLogoFilename = await SystemSettings.currentLogoFilename();
+      const isCustomLoginLogo =
+        loginLogoFilename !== null && !isDefaultFilename(loginLogoFilename);
+      const isCustomPrimaryLogo =
+        primaryLogoFilename !== null && !isDefaultFilename(primaryLogoFilename);
+
+      response.writeHead(200, {
+        "Access-Control-Expose-Headers":
+          "Content-Disposition,X-Is-Custom-Logo,Content-Type,Content-Length",
+        "Content-Type": mime || "image/png",
+        "Content-Disposition": `attachment; filename=${path.basename(
+          logoPath
+        )}`,
+        "Content-Length": size,
+        "X-Is-Custom-Logo": isCustomLoginLogo || isCustomPrimaryLogo,
+      });
+      response.end(Buffer.from(buffer, "base64"));
+      return;
+    } catch (error) {
+      console.error("Error processing the login logo request:", error);
+      response.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.post(
+    "/system/upload-login-logo",
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      handleAssetUpload,
+    ],
+    async (request, response) => {
+      if (!request?.file || !request?.file.originalname) {
+        return response.status(400).json({ message: "No logo file provided." });
+      }
+
+      if (!validFilename(request.file.originalname)) {
+        return response.status(400).json({
+          message: "Invalid file name. Please choose a different file.",
+        });
+      }
+
+      try {
+        const newFilename = await renameLogoFile(request.file.originalname);
+        const existingFilename =
+          await SystemSettings.currentLoginLogoFilename();
+        await removeCustomLogo(existingFilename);
+
+        const { success, error } = await SystemSettings._updateSettings({
+          login_logo_filename: newFilename,
+        });
+
+        return response.status(success ? 200 : 500).json({
+          message: success
+            ? "Login logo uploaded successfully."
+            : error || "Failed to update with new login logo.",
+        });
+      } catch (error) {
+        console.error("Error processing the login logo upload:", error);
+        response
+          .status(500)
+          .json({ message: "Error uploading the login logo." });
+      }
+    }
+  );
+
+  app.get("/system/is-default-login-logo", async (_, response) => {
+    try {
+      const currentFilename = await SystemSettings.currentLoginLogoFilename();
+      const isDefaultLoginLogo =
+        !currentFilename || isDefaultFilename(currentFilename);
+      response.status(200).json({ isDefaultLoginLogo });
+    } catch (error) {
+      console.error("Error processing the login logo request:", error);
+      response.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.get(
+    "/system/remove-login-logo",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (_request, response) => {
+      try {
+        const currentFilename = await SystemSettings.currentLoginLogoFilename();
+        await removeCustomLogo(currentFilename);
+        const { success, error } = await SystemSettings._updateSettings({
+          login_logo_filename: null,
+        });
+
+        return response.status(success ? 200 : 500).json({
+          message: success
+            ? "Login logo removed successfully."
+            : error || "Failed to remove login logo.",
+        });
+      } catch (error) {
+        console.error("Error processing the login logo removal:", error);
+        response
+          .status(500)
+          .json({ message: "Error removing the login logo." });
       }
     }
   );

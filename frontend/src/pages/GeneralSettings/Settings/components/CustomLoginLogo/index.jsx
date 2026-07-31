@@ -1,4 +1,3 @@
-import useLogo from "@/hooks/useLogo";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
 import { useEffect, useRef, useState } from "react";
@@ -6,21 +5,23 @@ import { Plus } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 import { REFETCH_LOGO_EVENT } from "@/LogoContext";
 
-export default function CustomLogo() {
+export default function CustomLoginLogo() {
   const { t } = useTranslation();
-  const { logo: _initLogo, setLogo: _setLogo } = useLogo();
   const [logo, setLogo] = useState("");
   const [isDefaultLogo, setIsDefaultLogo] = useState(true);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
     async function logoInit() {
-      setLogo(_initLogo || "");
-      const _isDefaultLogo = await System.isDefaultLogo();
-      setIsDefaultLogo(_isDefaultLogo);
+      const _isDefault = await System.isDefaultLoginLogo();
+      setIsDefaultLogo(_isDefault);
+      if (!_isDefault) {
+        const { logoURL } = await System.fetchLoginLogo();
+        setLogo(logoURL || "");
+      }
     }
     logoInit();
-  }, [_initLogo]);
+  }, []);
 
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
@@ -31,18 +32,17 @@ export default function CustomLogo() {
 
     const formData = new FormData();
     formData.append("logo", file);
-    const { success, error } = await System.uploadLogo(formData);
+    const { success, error } = await System.uploadLoginLogo(formData);
     if (!success) {
-      showToast(`Failed to upload logo: ${error}`, "error");
-      setLogo(_initLogo);
+      showToast(`Failed to upload login logo: ${error}`, "error");
+      setLogo("");
       return;
     }
 
-    const { logoURL } = await System.fetchLogo();
-    _setLogo(logoURL);
+    const { logoURL } = await System.fetchLoginLogo();
+    if (logoURL) setLogo(logoURL);
     window.dispatchEvent(new Event(REFETCH_LOGO_EVENT));
-
-    showToast("Image uploaded successfully.", "success");
+    showToast("Login logo uploaded successfully.", "success");
     setIsDefaultLogo(false);
   };
 
@@ -50,21 +50,18 @@ export default function CustomLogo() {
     setLogo("");
     setIsDefaultLogo(true);
 
-    const { success, error } = await System.removeCustomLogo();
+    const { success, error } = await System.removeCustomLoginLogo();
     if (!success) {
-      console.error("Failed to remove logo:", error);
-      showToast(`Failed to remove logo: ${error}`, "error");
-      const { logoURL } = await System.fetchLogo();
-      setLogo(logoURL);
+      console.error("Failed to remove login logo:", error);
+      showToast(`Failed to remove login logo: ${error}`, "error");
+      const { logoURL } = await System.fetchLoginLogo();
+      if (logoURL) setLogo(logoURL);
       setIsDefaultLogo(false);
       return;
     }
 
-    const { logoURL } = await System.fetchLogo();
-    _setLogo(logoURL);
     window.dispatchEvent(new Event(REFETCH_LOGO_EVENT));
-
-    showToast("Image successfully removed.", "success");
+    showToast("Login logo successfully removed.", "success");
   };
 
   const triggerFileInputClick = () => {
@@ -74,10 +71,10 @@ export default function CustomLogo() {
   return (
     <div className="flex flex-col gap-y-0.5 my-4">
       <p className="text-sm leading-6 font-semibold text-white">
-        {t("customization.items.logo.title")}
+        {t("customization.items.login-logo.title")}
       </p>
       <p className="text-xs text-white/60">
-        {t("customization.items.logo.description")}
+        {t("customization.items.login-logo.description")}
       </p>
       {isDefaultLogo ? (
         <div className="flex md:flex-row flex-col items-center">
@@ -87,7 +84,7 @@ export default function CustomLogo() {
               hidden={!isDefaultLogo}
             >
               <input
-                id="logo-upload"
+                id="login-logo-upload"
                 type="file"
                 accept="image/*"
                 className="hidden"
@@ -95,17 +92,17 @@ export default function CustomLogo() {
               />
               <div
                 className="w-80 py-4 bg-theme-settings-input-bg rounded-2xl border-2 border-dashed border-theme-text-secondary border-opacity-60 justify-center items-center inline-flex cursor-pointer"
-                htmlFor="logo-upload"
+                htmlFor="login-logo-upload"
               >
                 <div className="flex flex-col items-center justify-center">
                   <div className="rounded-full bg-white/40">
                     <Plus className="w-6 h-6 text-black/80 m-2" />
                   </div>
                   <div className="text-theme-text-primary text-opacity-80 text-sm font-semibold py-1">
-                    {t("customization.items.logo.add")}
+                    {t("customization.items.login-logo.add")}
                   </div>
                   <div className="text-theme-text-secondary text-opacity-60 text-xs font-medium py-1">
-                    {t("customization.items.logo.recommended")}
+                    {t("customization.items.login-logo.recommended")}
                   </div>
                 </div>
               </div>
@@ -117,7 +114,7 @@ export default function CustomLogo() {
           <div className="group w-80 h-[130px] mt-3 overflow-hidden">
             <img
               src={logo}
-              alt="Uploaded Logo"
+              alt="Uploaded Login Logo"
               className="w-full h-full object-cover border-2 border-theme-text-secondary border-opacity-60 p-1 rounded-2xl"
             />
 
@@ -126,11 +123,11 @@ export default function CustomLogo() {
                 onClick={triggerFileInputClick}
                 className="text-[#FFFFFF] text-base font-medium hover:text-opacity-60 mx-2"
               >
-                {t("customization.items.logo.replace")}
+                {t("customization.items.login-logo.replace")}
               </button>
 
               <input
-                id="logo-upload"
+                id="login-logo-upload"
                 type="file"
                 accept="image/*"
                 className="hidden"
@@ -141,7 +138,7 @@ export default function CustomLogo() {
                 onClick={handleRemoveLogo}
                 className="text-[#FFFFFF] text-base font-medium hover:text-opacity-60 mx-2"
               >
-                {t("customization.items.logo.remove")}
+                {t("customization.items.login-logo.remove")}
               </button>
             </div>
           </div>

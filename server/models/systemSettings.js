@@ -68,6 +68,7 @@ const SystemSettings = {
   ],
   supportedFields: [
     "logo_filename",
+    "login_logo_filename",
     "telemetry_id",
     "footer_data",
     "support_email",
@@ -794,6 +795,16 @@ const SystemSettings = {
   currentLogoFilename: async function () {
     try {
       const setting = await this.get({ label: "logo_filename" });
+      return setting?.value || null;
+    } catch (error) {
+      console.error(error.message);
+      return null;
+    }
+  },
+
+  currentLoginLogoFilename: async function () {
+    try {
+      const setting = await this.get({ label: "login_logo_filename" });
       return setting?.value || null;
     } catch (error) {
       console.error(error.message);

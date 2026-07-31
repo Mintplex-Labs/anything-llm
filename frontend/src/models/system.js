@@ -543,6 +543,74 @@ const System = {
         return { success: false, error: e.message };
       });
   },
+  fetchLoginLogo: async function () {
+    const url = new URL(`${fullApiUrl()}/system/login-logo`);
+    url.searchParams.append(
+      "theme",
+      localStorage.getItem("theme") || "default"
+    );
+
+    return await fetch(url, {
+      method: "GET",
+      cache: "no-cache",
+    })
+      .then(async (res) => {
+        if (res.ok && res.status !== 204) {
+          const isCustomLogo = res.headers.get("X-Is-Custom-Logo") === "true";
+          const blob = await res.blob();
+          const logoURL = URL.createObjectURL(blob);
+          return { isCustomLogo, logoURL };
+        }
+        throw new Error("Failed to fetch login logo!");
+      })
+      .catch((e) => {
+        console.log(e);
+        return { isCustomLogo: false, logoURL: null };
+      });
+  },
+  uploadLoginLogo: async function (formData) {
+    return await fetch(`${API_BASE}/system/upload-login-logo`, {
+      method: "POST",
+      body: formData,
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Error uploading login logo.");
+        return { success: true, error: null };
+      })
+      .catch((e) => {
+        console.log(e);
+        return { success: false, error: e.message };
+      });
+  },
+  isDefaultLoginLogo: async function () {
+    return await fetch(`${API_BASE}/system/is-default-login-logo`, {
+      method: "GET",
+      cache: "no-cache",
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to get is default login logo!");
+        return res.json();
+      })
+      .then((res) => res?.isDefaultLoginLogo)
+      .catch((e) => {
+        console.log(e);
+        return null;
+      });
+  },
+  removeCustomLoginLogo: async function () {
+    return await fetch(`${API_BASE}/system/remove-login-logo`, {
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (res.ok) return { success: true, error: null };
+        throw new Error("Error removing login logo!");
+      })
+      .catch((e) => {
+        console.log(e);
+        return { success: false, error: e.message };
+      });
+  },
   getApiKeys: async function () {
     return fetch(`${API_BASE}/system/api-keys`, {
       method: "GET",
