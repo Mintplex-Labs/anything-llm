@@ -9,10 +9,13 @@ export default function CustomLoginLogo() {
   const { t } = useTranslation();
   const [logo, setLogo] = useState("");
   const [isDefaultLogo, setIsDefaultLogo] = useState(true);
+  const [isMultiUser, setIsMultiUser] = useState(false);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
     async function logoInit() {
+      const multiUser = await System.isMultiUserMode();
+      setIsMultiUser(multiUser);
       const _isDefault = await System.isDefaultLoginLogo();
       setIsDefaultLogo(_isDefault);
       if (!_isDefault) {
@@ -22,6 +25,8 @@ export default function CustomLoginLogo() {
     }
     logoInit();
   }, []);
+
+  if (!isMultiUser) return null;
 
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
