@@ -434,7 +434,7 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <GithubCopilotOptions settings={settings} />,
     description:
       "Connect to GitHub Copilot via the official SDK. Requires GitHub Copilot subscription.",
-    requiredConfig: ["GithubCopilotToken"],
+    requiredConfig: ["GithubCopilotGhToken"],
   },
 ];
 

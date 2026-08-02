@@ -11,11 +11,11 @@ export default function GithubCopilotOptions({ settings }) {
           </label>
           <input
             type="password"
-            name="GithubCopilotToken"
+            name="GithubCopilotGhToken"
             className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="GitHub personal access token"
             defaultValue={
-              settings?.GithubCopilotToken ? "*".repeat(20) : ""
+              settings?.GithubCopilotGhToken ? "*".repeat(20) : ""
             }
             autoComplete="off"
             spellCheck={false}
@@ -80,7 +80,7 @@ export default function GithubCopilotOptions({ settings }) {
  */
 function GithubCopilotAuth({ settings }) {
   const [phase, setPhase] = useState(
-    settings?.GithubCopilotToken ? "done" : "idle"
+    settings?.GithubCopilotGhToken ? "done" : "idle"
   );
   const [deviceAuth, setDeviceAuth] = useState(null);
   const [error, setError] = useState("");
@@ -106,7 +106,7 @@ function GithubCopilotAuth({ settings }) {
     if (res.access_token) {
       setPhase("done");
       const input = document.querySelector(
-        'input[name="GithubCopilotToken"]'
+        'input[name="GithubCopilotGhToken"]'
       );
       if (input) {
         const nativeSetter = Object.getOwnPropertyDescriptor(
@@ -150,7 +150,7 @@ function GithubCopilotAuth({ settings }) {
               setPhase("idle");
               setDeviceAuth(null);
               const input = document.querySelector(
-                'input[name="GithubCopilotToken"]'
+                'input[name="GithubCopilotGhToken"]'
               );
               if (input) {
                 const nativeSetter = Object.getOwnPropertyDescriptor(
