@@ -223,6 +223,10 @@ const KEY_MAPPING = {
   },
 
   // GitHub Copilot InferenceSettings (uses official Copilot SDK)
+  GithubCopilotToken: {
+    envKey: "GITHUB_COPILOT_TOKEN",
+    checks: [],
+  },
   GithubCopilotModelPref: {
     envKey: "GITHUB_COPILOT_MODEL_PREF",
     checks: [],

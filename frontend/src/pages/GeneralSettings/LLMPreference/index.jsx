@@ -42,6 +42,7 @@ import LemonadeLogo from "@/media/llmprovider/lemonade.png";
 import MinimaxLogo from "@/media/llmprovider/minimax.png";
 import CerebrasLogo from "@/media/llmprovider/cerebras.png";
 import OMLXLogo from "@/media/llmprovider/omlx.png";
+import GithubCopilotLogo from "@/media/llmprovider/github-copilot.png";
 
 import PreLoader from "@/components/Preloader";
 import ModelRouterOptions from "@/components/LLMSelection/ModelRouterOptions";
@@ -86,6 +87,7 @@ import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
 import OMLXOptions from "@/components/LLMSelection/OMLXOptions";
+import GithubCopilotOptions from "@/components/LLMSelection/GithubCopilotOptions";
 
 export const MODEL_ROUTER_PROVIDER = {
   name: "Model Router",
@@ -424,6 +426,15 @@ export const AVAILABLE_LLM_PROVIDERS = [
       "Connect to any OpenAi-compatible service via a custom configuration",
     requiredConfig: ["GenericOpenAiBasePath", "GenericOpenAiModelPref"],
     connectionConfig: ["GenericOpenAiBasePath"],
+  },
+  {
+    name: "GitHub Copilot",
+    value: "github-copilot",
+    logo: GithubCopilotLogo,
+    options: (settings) => <GithubCopilotOptions settings={settings} />,
+    description:
+      "Connect to GitHub Copilot via the official SDK. Requires GitHub Copilot subscription.",
+    requiredConfig: ["GithubCopilotToken"],
   },
 ];
 

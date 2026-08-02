@@ -40,6 +40,11 @@ class GithubCopilotLLM {
     this.defaultTemp = 0.7;
     this._session = null;
 
+    // Map GITHUB_COPILOT_TOKEN to GH_TOKEN for the Copilot SDK
+    if (process.env.GITHUB_COPILOT_TOKEN && !process.env.GH_TOKEN) {
+      process.env.GH_TOKEN = process.env.GITHUB_COPILOT_TOKEN;
+    }
+
     // Lazily initialize the shared CopilotClient (singleton)
     if (!GithubCopilotLLM.clientInitPromise) {
       GithubCopilotLLM.clientInitPromise = (async () => {

@@ -587,6 +587,36 @@ const System = {
         return false;
       });
   },
+  initCopilotDeviceAuth: async function () {
+    return fetch(`${API_BASE}/system/copilot/device-auth/initiate`, {
+      method: "POST",
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (!res.ok)
+          throw new Error("Failed to initiate Copilot device auth.");
+        return res.json();
+      })
+      .catch((e) => {
+        console.error(e);
+        return { error: e.message };
+      });
+  },
+  completeCopilotDeviceAuth: async function (deviceCode) {
+    return fetch(`${API_BASE}/system/copilot/device-auth/complete`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ deviceCode }),
+    })
+      .then((res) => {
+        if (!res.ok) return res.json();
+        return res.json();
+      })
+      .catch((e) => {
+        console.error(e);
+        return { error: e.message };
+      });
+  },
   customModels: async function (
     provider,
     apiKey = null,
