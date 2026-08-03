@@ -1452,6 +1452,8 @@ const TRANSLATIONS = {
       deselect_all: "Batal Pilih Semua",
       remove_selected: "Hapus yang Dipilih",
       save_embed: "Simpan dan Embed",
+      "search-results_one": "{{count}} hasil",
+      "search-results_other": "{{count}} hasil",
     },
     upload: {
       "processor-offline": "Pemroses Dokumen Tidak Tersedia",

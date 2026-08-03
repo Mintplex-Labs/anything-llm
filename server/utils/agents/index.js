@@ -530,6 +530,10 @@ class AgentHandler {
     this.provider = router.resolvedRoute.provider;
     this.model = router.resolvedRoute.model;
     this.routingMetadata = router.routingMetadata;
+    // Held so the model-router-cooldown plugin can restart the cooldown when
+    // the agent stops responding. Routing re-resolves per turn, so this always
+    // points at the router for the current route.
+    this._modelRouter = router;
   }
 
   async #validInvocation() {
@@ -882,6 +886,15 @@ class AgentHandler {
           return null;
         }
       };
+
+      this.log(
+        `Attached ${AgentPlugins.modelRouterCooldown.name} plugin to Agent cluster`
+      );
+      this.aibitat.use(
+        AgentPlugins.modelRouterCooldown.plugin(() =>
+          this._modelRouter?.onInferenceComplete()
+        )
+      );
     }
 
     // Attach standard websocket plugin for frontend communication.

@@ -1233,7 +1233,7 @@
         "tags": [
           "Documents"
         ],
-        "description": "List of all locally-stored documents in instance",
+        "description": "List of all locally-stored documents in instance. Optionally, pass ?folder=name to fetch the contents of a single folder, paginated with offset and limit (limit=all returns every document in that folder).",
         "parameters": [],
         "responses": {
           "200": {
@@ -1288,7 +1288,7 @@
         "tags": [
           "Documents"
         ],
-        "description": "Get all documents stored in a specific folder.",
+        "description": "Get all documents stored in a specific folder. Returns every document by default; pass offset and limit to paginate.",
         "parameters": [
           {
             "name": "folderName",
@@ -1298,6 +1298,15 @@
               "type": "string"
             },
             "description": "Name of the folder to retrieve documents from"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of documents to skip. Defaults to 0.",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
           }
         ],
         "responses": {
