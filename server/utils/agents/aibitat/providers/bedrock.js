@@ -14,9 +14,10 @@ const { RetryError } = require("../error.js");
 class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
 
-  constructor(_config = {}) {
+  constructor(config = {}) {
     super();
-    const model = process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE ?? null;
+    const model =
+      config.model || process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE || null;
     const region = process.env.AWS_BEDROCK_LLM_REGION;
     const client = new OpenAI({
       baseURL: `https://bedrock-mantle.${region}.api.aws/v1`,
