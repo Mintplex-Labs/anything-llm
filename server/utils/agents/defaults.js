@@ -57,21 +57,20 @@ const WORKSPACE_AGENT = {
   name: "@agent",
   /**
    * Get the definition for the workspace agent with its role (prompt) and functions in Aibitat format
-   * @param {string} provider
+   * @param {string} _provider - Unused, kept for call-site compatibility
    * @param {import("@prisma/client").workspaces | null} workspace
    * @param {import("@prisma/client").users | null} user
    * @param {string} [prompt] - Current user message for memory reranking
    * @returns {Promise<{ role: string, functions: object[] }>}
    */
   getDefinition: async (
-    provider = null,
+    _provider = null,
     workspace = null,
     user = null,
     prompt = ""
   ) => {
     let [role, clarifyingQuestionsSkills] = await Promise.all([
       Provider.systemPrompt({
-        provider,
         workspace,
         user,
         prompt,

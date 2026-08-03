@@ -881,6 +881,11 @@ const TRANSLATIONS = {
         description:
           "Vykreslit HTML odpovědi v odpovědích asistenta.\nTo může vést k mnohem vyšší věrnosti kvality odpovědi, ale může také vést k potenciálním bezpečnostním rizikům.",
       },
+      "disable-auto-scroll": {
+        title: "Vypnout automatické posouvání",
+        description:
+          "Vypněte automatické posouvání dolů v chatu při přijetí nových zpráv.",
+      },
     },
   },
   api: {
@@ -1206,6 +1211,8 @@ const TRANSLATIONS = {
       save_embed: "Uložit a vložit",
       "total-documents_one": "{{count}} dokument",
       "total-documents_other": "{{count}} dokumenty",
+      "search-results_one": "{{count}} výsledek",
+      "search-results_other": "{{count}} výsledky",
     },
     upload: {
       "processor-offline": "Procesor dokumentů nedostupný",

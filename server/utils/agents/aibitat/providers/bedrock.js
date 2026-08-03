@@ -14,9 +14,10 @@ const { RetryError } = require("../error.js");
 class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
 
-  constructor(_config = {}) {
+  constructor(config = {}) {
     super();
-    const model = process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE ?? null;
+    const model =
+      config.model || process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE || null;
     const region = process.env.AWS_BEDROCK_LLM_REGION;
     const client = new OpenAI({
       baseURL: `https://bedrock-mantle.${region}.api.aws/v1`,
@@ -68,8 +69,7 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   async stream(messages, functions = [], eventHandler = null) {
-    const useNative =
-      functions.length > 0 && (await this.supportsNativeToolCalling());
+    const useNative = await this.supportsNativeToolCalling();
 
     if (!useNative) {
       return await UnTooled.prototype.stream.call(
@@ -109,8 +109,7 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   async complete(messages, functions = []) {
-    const useNative =
-      functions.length > 0 && (await this.supportsNativeToolCalling());
+    const useNative = await this.supportsNativeToolCalling();
 
     if (!useNative) {
       return await UnTooled.prototype.complete.call(

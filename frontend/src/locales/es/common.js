@@ -903,6 +903,11 @@ const TRANSLATIONS = {
         description:
           "Generar respuestas en HTML en las respuestas del asistente.\nEsto puede resultar en una mayor calidad de las respuestas, pero también puede generar posibles riesgos de seguridad.",
       },
+      "disable-auto-scroll": {
+        title: "Desactivar el desplazamiento automático",
+        description:
+          "Desactivar la función de desplazamiento automático hacia el final del chat cuando se reciben nuevos mensajes.",
+      },
     },
   },
   api: {
@@ -1212,6 +1217,8 @@ const TRANSLATIONS = {
       save_embed: "Guardar e incrustar",
       "total-documents_one": "{{count}} documento",
       "total-documents_other": "{{count}} documentos",
+      "search-results_one": "{{count}} resultado",
+      "search-results_other": "Resultados de {{count}}",
     },
     upload: {
       "processor-offline": "Procesador de documentos no disponible",

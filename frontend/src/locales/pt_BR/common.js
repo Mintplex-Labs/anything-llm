@@ -879,6 +879,11 @@ const TRANSLATIONS = {
         description:
           "Renderizar respostas HTML nas respostas do assistente.\nIsso pode resultar em uma qualidade de resposta muito maior, mas também pode levar a riscos potenciais de segurança.",
       },
+      "disable-auto-scroll": {
+        title: "Desativar a rolagem automática",
+        description:
+          "Desative a rolagem automática até o final da conversa quando novas mensagens forem recebidas.",
+      },
     },
   },
   api: {
@@ -1177,6 +1182,8 @@ const TRANSLATIONS = {
       save_embed: "Salvar e Inserir",
       "total-documents_one": "{{count}} documento",
       "total-documents_other": "{{count}} documentos",
+      "search-results_one": "{{count}} resultado",
+      "search-results_other": "{{count}} resultados",
     },
     upload: {
       "processor-offline": "Processador de documentos Indisponível",

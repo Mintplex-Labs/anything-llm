@@ -893,6 +893,11 @@ const TRANSLATIONS = {
         description:
           "HTML-Antworten in den Antworten des Assistenten anzeigen.\nDies kann zu einer viel höheren Qualität der Antwort führen, aber auch zu potenziellen Sicherheitsrisiken führen.",
       },
+      "disable-auto-scroll": {
+        title: "Automatische Scrollen deaktivieren",
+        description:
+          "Deaktivieren Sie das automatische Scrollen zum Ende des Chats, wenn neue Nachrichten empfangen werden.",
+      },
     },
   },
   api: {
@@ -1201,6 +1206,8 @@ const TRANSLATIONS = {
       save_embed: "Speichern und Einbetten",
       "total-documents_one": "{{count}} Dokument",
       "total-documents_other": "{{count}} Dokumente",
+      "search-results_one": "{{count}} Ergebnis",
+      "search-results_other": "{{count}} Ergebnisse",
     },
     upload: {
       "processor-offline": "Dokumentenprozessor nicht verfügbar",

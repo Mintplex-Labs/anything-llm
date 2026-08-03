@@ -1053,6 +1053,8 @@ const TRANSLATIONS = {
       save_embed: "保存して埋め込む",
       "total-documents_one": "{{count}} のドキュメント",
       "total-documents_other": "{{count}} に関する書類",
+      "search-results_one": "{{count}} の結果",
+      "search-results_other": "{{count}} の結果",
     },
     upload: {
       "processor-offline": "ドキュメント処理機能が利用できません",
@@ -1353,6 +1355,11 @@ const TRANSLATIONS = {
         title: "チャットでHTMLをレンダリングする",
         description:
           "アシスタントの回答にHTML形式のレスポンスを生成する。\nこれにより、回答の品質を大幅に向上させることができるが、同時にセキュリティ上のリスクも生じる可能性がある。",
+      },
+      "disable-auto-scroll": {
+        title: "自動スクロール機能を無効にする",
+        description:
+          "新しいメッセージを受信した際に、チャットを自動的に最後までスクロールする機能を停止します。",
       },
     },
   },

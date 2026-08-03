@@ -1442,7 +1442,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       case "textgenwebui":
         return new Providers.TextWebGenUiProvider({});
       case "bedrock":
-        return new Providers.AWSBedrockProvider({});
+        return new Providers.AWSBedrockProvider({ model: config.model });
       case "fireworksai":
         return new Providers.FireworksAIProvider({ model: config.model });
       case "nvidia-nim":

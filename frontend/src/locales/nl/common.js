@@ -1080,6 +1080,8 @@ const TRANSLATIONS = {
       save_embed: "Opslaan en embedden",
       "total-documents_one": "{{count}} document",
       "total-documents_other": "{{count}} documenten",
+      "search-results_one": "{{count}} uitkomst",
+      "search-results_other": "{{count}} resultaten",
     },
     upload: {
       "processor-offline": "Documentverwerker niet beschikbaar",
@@ -1380,6 +1382,11 @@ const TRANSLATIONS = {
         title: "HTML weergeven in chat",
         description:
           "HTML-reacties weergeven in assistentreacties.\nLet op: Dit kan resulteren in een veel hogere kwaliteit van de reacties, maar kan ook leiden tot potentiële beveiligingsrisico's.",
+      },
+      "disable-auto-scroll": {
+        title: "Schakel automatische scrollfunctie uit",
+        description:
+          "Schakel het automatische scrollen naar het einde van de chat uit wanneer er nieuwe berichten worden ontvangen.",
       },
     },
   },

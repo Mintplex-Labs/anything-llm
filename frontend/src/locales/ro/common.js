@@ -456,6 +456,8 @@ const TRANSLATIONS = {
       save_embed: "Salvează și încorporează",
       "total-documents_one": "{{count}}",
       "total-documents_other": "{{count}} documente",
+      "search-results_one": "{{count}} rezultat",
+      "search-results_other": "Rezultatele {{count}}",
     },
     upload: {
       "processor-offline": "Procesorul de documente este offline",
@@ -1403,6 +1405,11 @@ const TRANSLATIONS = {
         title: "Redarea HTML în chat",
         description:
           "Afișarea răspunsurilor HTML în răspunsurile asistentului.\nAcest lucru poate duce la o calitate a răspunsurilor mult mai bună, dar poate și la riscuri potențiale de securitate.",
+      },
+      "disable-auto-scroll": {
+        title: "Dezactivați derularea automată",
+        description:
+          "Dezactivați derularea automată până la sfârșitul conversației atunci când se primesc mesaje noi.",
       },
     },
   },

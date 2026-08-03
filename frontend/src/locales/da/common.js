@@ -1069,6 +1069,8 @@ const TRANSLATIONS = {
       save_embed: "Gem og indlejr",
       "total-documents_one": "{{count}} dokument",
       "total-documents_other": "{{count}} dokumenter",
+      "search-results_one": "{{count}} resultat",
+      "search-results_other": "{{count}} resultater",
     },
     upload: {
       "processor-offline": "Dokumentbehandler utilgængelig",
@@ -1370,6 +1372,11 @@ const TRANSLATIONS = {
         title: "Vis HTML i chat",
         description:
           "Generer HTML-svar i hjælperes svar.\nDette kan resultere i en meget højere kvalitet af svaret, men kan også føre til potentielle sikkerhedsrisici.",
+      },
+      "disable-auto-scroll": {
+        title: "Deaktiver automatisk rulle",
+        description:
+          "Deaktiver automatisk rulle ned til bundlinjen i chatten, når der modtages nye beskeder.",
       },
     },
   },

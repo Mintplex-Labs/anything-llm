@@ -28,9 +28,6 @@ const {
 } = require("../../../../models/systemPromptVariables");
 const { OllamaAILLM } = require("../../../AiProviders/ollama");
 
-const DEFAULT_WORKSPACE_PROMPT =
-  "You are a helpful ai assistant who can assist the user and use tools available to help answer the users prompts and questions.";
-
 /**
  * @typedef {Object} ProviderUsageMetrics
  * @property {number} prompt_tokens - Number of tokens in the prompt/input
@@ -515,40 +512,27 @@ class Provider {
     return llm.promptWindowLimit(modelName);
   }
 
-  static defaultSystemPromptForProvider(provider = null) {
-    switch (provider) {
-      case "lmstudio":
-        return "You are a helpful ai assistant who can assist the user and use tools available to help answer the users prompts and questions. Tools will be handled by another assistant and you will simply receive their responses to help answer the user prompt - always try to answer the user's prompt the best you can with the context available to you and your general knowledge.";
-      default:
-        return DEFAULT_WORKSPACE_PROMPT;
-    }
-  }
-
   /**
    * Get the system prompt for a provider, with memories appended (when enabled).
    * @param {object} opts
-   * @param {string} opts.provider
    * @param {import("@prisma/client").workspaces | null} opts.workspace
    * @param {import("@prisma/client").users | null} opts.user
    * @param {string} [opts.prompt] - current user message, used for reranking injected memories
    * @returns {Promise<string>}
    */
-  static async systemPrompt({
-    provider = null,
-    workspace = null,
-    user = null,
-    prompt = "",
-  }) {
+  static async systemPrompt({ workspace = null, user = null, prompt = "" }) {
+    const { SystemSettings } = require("../../../../models/systemSettings");
     const { promptWithMemories } = require("../../../memories");
-    const basePrompt = !workspace?.openAiPrompt
-      ? Provider.defaultSystemPromptForProvider(provider)
-      : await SystemPromptVariables.expandSystemPromptVariables(
-          workspace.openAiPrompt,
-          user?.id || null,
-          workspace.id
-        );
+    const basePrompt =
+      workspace?.openAiPrompt ?? SystemSettings.saneDefaultSystemPrompt;
+    const systemPrompt =
+      await SystemPromptVariables.expandSystemPromptVariables(
+        basePrompt,
+        user?.id || null,
+        workspace?.id || null
+      );
     return promptWithMemories({
-      systemPrompt: basePrompt,
+      systemPrompt,
       userId: user?.id ?? null,
       workspaceId: workspace?.id,
       prompt,

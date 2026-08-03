@@ -881,6 +881,11 @@ const TRANSLATIONS = {
         description:
           "Atvaizduoti HTML kodą asistento atsakymuose.\nTai gali užtikrinti geresnę atsakymų vizualinę kokybę, tačiau taip pat gali kelti saugumo riziką.",
       },
+      "disable-auto-scroll": {
+        title: "Išjunkite automatinį rolį",
+        description:
+          "Išjunkite automatinį skryptą į apačią, kai gaunamos naujos žinios.",
+      },
     },
   },
   api: {
@@ -1208,6 +1213,8 @@ const TRANSLATIONS = {
       deselect_all: "Atžymėti viską",
       remove_selected: "Šalinti pažymėtus",
       save_embed: "Išsaugoti ir kurti vektorius",
+      "search-results_one": "{{count}} rezultatas",
+      "search-results_other": "{{count}} rezultatai",
     },
     upload: {
       "processor-offline": "Dokumentų procesorius nepasiekiamas",

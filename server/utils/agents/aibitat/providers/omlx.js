@@ -78,8 +78,7 @@ class OMLXProvider extends InheritMultiple([Provider, UnTooled]) {
    * Uses native tool calling when supported, otherwise falls back to UnTooled.
    */
   async stream(messages, functions = [], eventHandler = null) {
-    const useNative =
-      functions.length > 0 && (await this.supportsNativeToolCalling());
+    const useNative = await this.supportsNativeToolCalling();
 
     if (!useNative) {
       return await UnTooled.prototype.stream.call(
@@ -125,8 +124,7 @@ class OMLXProvider extends InheritMultiple([Provider, UnTooled]) {
    * Uses native tool calling when supported, otherwise falls back to UnTooled.
    */
   async complete(messages, functions = []) {
-    const useNative =
-      functions.length > 0 && (await this.supportsNativeToolCalling());
+    const useNative = await this.supportsNativeToolCalling();
 
     if (!useNative) {
       return await UnTooled.prototype.complete.call(

@@ -321,8 +321,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
    * @returns The completion.
    */
   async stream(messages, functions = [], eventHandler = null) {
-    const useNative =
-      functions.length > 0 && (await this.supportsNativeToolCalling());
+    const useNative = await this.supportsNativeToolCalling();
 
     if (useNative) {
       this.providerLog(
@@ -337,7 +336,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
       const stream = await this.client.chat({
         model: this.model,
         messages: formattedMessages,
-        tools,
+        ...(tools.length > 0 ? { tools } : {}),
         stream: true,
         options: this.queryOptions,
       });
@@ -521,8 +520,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
    * @returns The completion.
    */
   async complete(messages, functions = []) {
-    const useNative =
-      functions.length > 0 && (await this.supportsNativeToolCalling());
+    const useNative = await this.supportsNativeToolCalling();
 
     if (useNative) {
       this.resetUsage();
@@ -533,7 +531,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
       const response = await this.client.chat({
         model: this.model,
         messages: formattedMessages,
-        tools,
+        ...(tools.length > 0 ? { tools } : {}),
         options: this.queryOptions,
       });
 
