@@ -1,15 +1,19 @@
 const OpenAI = require("openai");
+const Anthropic = require("@anthropic-ai/sdk");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
+const {
+  anthropicTooledStream,
+  anthropicTooledComplete,
+} = require("./helpers/anthropicTooled.js");
 const { RetryError } = require("../error.js");
 
 /**
  * The agent provider for the AWS Bedrock provider.
- * Uses the OpenAI-compatible Mantle API endpoint.
- * Supports native tool calling when enabled via ENV,
- * falling back to the UnTooled prompt-based approach otherwise.
+ * Uses the OpenAI-compatible Mantle API endpoint for non-Anthropic models,
+ * and the Anthropic Messages API with native tool calling for Anthropic models.
  */
 class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
@@ -29,6 +33,14 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
     this.model = model;
     this.verbose = true;
     this._supportsToolCalling = null;
+
+    if (this.model?.includes("anthropic")) {
+      this._anthropic = new Anthropic({
+        apiKey: process.env.AWS_BEDROCK_LLM_API_KEY,
+        baseURL: `https://bedrock-mantle.${region}.api.aws/anthropic`,
+        defaultHeaders: { "anthropic-version": "2023-06-01" },
+      });
+    }
   }
 
   get client() {
@@ -39,6 +51,12 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
     if (!!process.env.AWS_BEDROCK_STREAMING_DISABLED) return false;
     return true;
   }
+
+  get #maxTokens() {
+    return Number(process.env.AWS_BEDROCK_LLM_MAX_TOKENS) || 4096;
+  }
+
+  // --- OpenAI (non-Anthropic) handlers ---
 
   async #handleFunctionCallChat({ messages = [] }) {
     return await this.client.chat.completions
@@ -68,7 +86,21 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
     });
   }
 
+  // --- Main stream/complete entry points ---
+
   async stream(messages, functions = [], eventHandler = null) {
+    if (this._anthropic) {
+      return anthropicTooledStream(
+        this._anthropic,
+        this.model,
+        this.#maxTokens,
+        messages,
+        functions,
+        eventHandler,
+        { provider: this }
+      );
+    }
+
     const useNative = await this.supportsNativeToolCalling();
 
     if (!useNative) {
@@ -109,6 +141,17 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   async complete(messages, functions = []) {
+    if (this._anthropic) {
+      return anthropicTooledComplete(
+        this._anthropic,
+        this.model,
+        this.#maxTokens,
+        messages,
+        functions,
+        { provider: this }
+      );
+    }
+
     const useNative = await this.supportsNativeToolCalling();
 
     if (!useNative) {
