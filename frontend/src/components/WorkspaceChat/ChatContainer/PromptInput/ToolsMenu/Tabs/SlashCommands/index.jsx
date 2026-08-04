@@ -54,9 +54,6 @@ export default function SlashCommandsTab({
     setImageGenEnabled(!!settings?.ImageGenerationProvider);
   };
 
-  // Build the list of selectable items for keyboard navigation and rendering.
-  // /reset is a static English string since the backend matches it exactly.
-  // During an agent session it ends the session AND clears the chat.
   const items = useMemo(
     () => [
       {
