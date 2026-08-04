@@ -286,11 +286,7 @@ function buildMessages({
       acc.push(<FileDownloadCard key={props.uuid} props={props} />);
     } else if (props.type === "scheduledJobCreated" && !!props.content) {
       acc.push(<ScheduledJobCreatedCard key={props.uuid} props={props} />);
-    } else if (
-      isLastBotReply &&
-      props.pending &&
-      props.userMessage?.trim()?.toLowerCase()?.startsWith("/img")
-    ) {
+    } else if (props.type === "imageGenerationPending") {
       acc.push(
         <ImageGenerationPending key={`img-pending-${props.uuid || index}`} />
       );

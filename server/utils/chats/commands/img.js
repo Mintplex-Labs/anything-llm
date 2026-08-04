@@ -1,5 +1,6 @@
 const { WorkspaceChats } = require("../../../models/workspaceChats");
 const { generateImageForWorkspace } = require("../../ImageGenerators");
+const { writeResponseChunk } = require("../../helpers/chat/responses");
 
 /**
  * Handles the `/img <prompt>` slash command: generates an image, stores it, and
@@ -11,6 +12,7 @@ const { generateImageForWorkspace } = require("../../ImageGenerators");
  * @param {string} msgUUID - uuid for the streamed response chunk
  * @param {object|null} user - requesting user
  * @param {object|null} thread - thread when the chat is in one
+ * @param {object|null} response - SSE response stream for emitting progress events
  * @returns {Promise<object>} response chunk written back over the stream
  */
 async function generateImage(
@@ -18,7 +20,8 @@ async function generateImage(
   message,
   msgUUID,
   user = null,
-  thread = null
+  thread = null,
+  response = null
 ) {
   const prompt = String(message)
     .replace(/^\/img\s*/i, "")
@@ -54,6 +57,17 @@ async function generateImage(
   }
 
   try {
+    if (response) {
+      writeResponseChunk(response, {
+        uuid: msgUUID,
+        type: "imageGenerationPending",
+        textResponse: null,
+        sources: [],
+        close: false,
+        error: false,
+      });
+    }
+
     const { storageFilename, filename, fileSize } =
       await generateImageForWorkspace({ prompt });
 

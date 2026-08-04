@@ -34,7 +34,8 @@ async function streamChatWithWorkspace(
       message,
       uuid,
       user,
-      thread
+      thread,
+      response
     );
     writeResponseChunk(response, data);
     return;

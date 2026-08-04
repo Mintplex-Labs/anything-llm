@@ -38,6 +38,35 @@ export default function handleChat(
     return;
   }
 
+  if (type === "imageGenerationPending") {
+    setChatHistory([
+      ...remHistory,
+      {
+        type: "imageGenerationPending",
+        uuid,
+        content: "",
+        role: "assistant",
+        sources: [],
+        closed: false,
+        error: null,
+        animate: false,
+        pending: true,
+      },
+    ]);
+    _chatHistory.push({
+      type: "imageGenerationPending",
+      uuid,
+      content: "",
+      role: "assistant",
+      sources: [],
+      closed: false,
+      error: null,
+      animate: false,
+      pending: true,
+    });
+    return;
+  }
+
   if (type === "abort" || type === "statusResponse") {
     // Once an agent session is live, the websocket handlers in ChatContainer
     // own the loading state - the statusResponse that closes the HTTP stream
