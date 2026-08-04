@@ -44,13 +44,10 @@ class NvidiaNimProvider extends InheritMultiple([Provider, UnTooled]) {
 
   async #handleFunctionCallChat({ messages = [] }) {
     return await this.client.chat.completions
-      .create(
-        {
-          model: this.model,
-          messages,
-        },
-        this.abortSignal ? { signal: this.abortSignal } : undefined
-      )
+      .create({
+        model: this.model,
+        messages,
+      })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
           throw new Error("NVIDIA NIM chat: No results!");
@@ -64,14 +61,11 @@ class NvidiaNimProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   async #handleFunctionCallStream({ messages = [] }) {
-    return await this.client.chat.completions.create(
-      {
-        model: this.model,
-        stream: true,
-        messages,
-      },
-      this.abortSignal ? { signal: this.abortSignal } : undefined
-    );
+    return await this.client.chat.completions.create({
+      model: this.model,
+      stream: true,
+      messages,
+    });
   }
 
   async stream(messages, functions = [], eventHandler = null) {

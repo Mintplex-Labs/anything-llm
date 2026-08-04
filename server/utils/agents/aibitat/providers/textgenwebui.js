@@ -34,13 +34,10 @@ class TextWebGenUiProvider extends InheritMultiple([Provider, UnTooled]) {
 
   async #handleFunctionCallChat({ messages = [] }) {
     return await this.client.chat.completions
-      .create(
-        {
-          model: this.model,
-          messages,
-        },
-        this.abortSignal ? { signal: this.abortSignal } : undefined
-      )
+      .create({
+        model: this.model,
+        messages,
+      })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
           throw new Error("TextGenWebUI chat: No results!");
@@ -54,14 +51,11 @@ class TextWebGenUiProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   async #handleFunctionCallStream({ messages = [] }) {
-    return await this.client.chat.completions.create(
-      {
-        model: this.model,
-        stream: true,
-        messages,
-      },
-      this.abortSignal ? { signal: this.abortSignal } : undefined
-    );
+    return await this.client.chat.completions.create({
+      model: this.model,
+      stream: true,
+      messages,
+    });
   }
 
   async stream(messages, functions = [], eventHandler = null) {
@@ -88,11 +82,9 @@ class TextWebGenUiProvider extends InheritMultiple([Provider, UnTooled]) {
         messages,
         functions,
         eventHandler,
-        { provider: this, signal: this.abortSignal }
+        { provider: this }
       );
     } catch (error) {
-      // Session abort - do not wrap in RetryError, let the loop exit quietly.
-      if (error instanceof OpenAI.APIUserAbortError) throw error;
       console.error(error.message, error);
       if (error instanceof OpenAI.AuthenticationError) throw error;
       if (
@@ -125,7 +117,7 @@ class TextWebGenUiProvider extends InheritMultiple([Provider, UnTooled]) {
         messages,
         functions,
         this.getCost.bind(this),
-        { provider: this, signal: this.abortSignal }
+        { provider: this }
       );
 
       if (result.retryWithError) {
@@ -134,8 +126,6 @@ class TextWebGenUiProvider extends InheritMultiple([Provider, UnTooled]) {
 
       return result;
     } catch (error) {
-      // Session abort - do not wrap in RetryError, let the loop exit quietly.
-      if (error instanceof OpenAI.APIUserAbortError) throw error;
       if (error instanceof OpenAI.AuthenticationError) throw error;
       if (
         error instanceof OpenAI.RateLimitError ||

@@ -41,8 +41,8 @@ class AIbitat {
   _aborted = false;
 
   /**
-   * Session-wide AbortController. Its signal is attached to providers that
-   * support request cancellation so an abort tears down in-flight LLM requests.
+   * Session-wide AbortController. Its signal is bound to every provider handed out
+   * by `getProviderForConfig` so an abort tears down in-flight LLM requests.
    * @type {AbortController}
    */
   abortController = new AbortController();
@@ -125,7 +125,7 @@ class AIbitat {
     this.provider = this.defaultProvider.provider;
     this.model = this.defaultProvider.model;
 
-    // Providers register one abort listener per LLM request on the session
+    // Providers can register an abort listener per LLM request on the session
     // signal - lift the EventTarget warning threshold (0 = unlimited).
     setMaxListeners(0, this.abortController.signal);
   }
@@ -753,7 +753,6 @@ class AIbitat {
       ...channelConfig,
     });
     provider.attachHandlerProps(this.handlerProps);
-    provider.attachAbortSignal?.(this.abortController.signal);
 
     const history = this.getHistory({ to: channel });
 
@@ -960,7 +959,6 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       ...fromConfig,
     });
     this.providerInstance.attachHandlerProps(this.handlerProps);
-    this.providerInstance.attachAbortSignal?.(this.abortController.signal);
 
     let content;
     if (this.providerInstance.supportsAgentStreaming) {
@@ -1403,13 +1401,26 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
   }
 
   /**
-   * Get provider based on configurations.
-   * If the provider is a string, it will return the default provider for that string.
+   * Get provider based on configurations with the session abort signal bound to it,
+   * so aborting the session cancels whatever requests that provider has in flight.
    *
    * @param config The provider configuration.
    * @returns {Providers.OpenAIProvider} The provider instance.
    */
   getProviderForConfig(config) {
+    const provider = this.#buildProviderForConfig(config);
+    provider.attachAbortSignal?.(this.abortController.signal);
+    return provider;
+  }
+
+  /**
+   * Instantiate the provider for a configuration.
+   * If the provider is a string, it will return the default provider for that string.
+   *
+   * @param config The provider configuration.
+   * @returns {Providers.OpenAIProvider} The provider instance.
+   */
+  #buildProviderForConfig(config) {
     if (typeof config.provider === "object") return config.provider;
 
     switch (config.provider) {

@@ -3,6 +3,7 @@ const { DocumentManager } = require("../DocumentManager");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { getVectorDbClass, resolveProviderConnector } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
+const { abortConnectorOnClientDisconnect } = require("../helpers/abortSignals");
 const {
   chatPrompt,
   sourceIdentifier,
@@ -598,6 +599,10 @@ async function streamChat({
     attachments,
     apiSessionId: sessionId,
   });
+
+  // A disconnected client (aborted request, closed connection) should stop the
+  // provider generating too, not just stop us reading the response.
+  abortConnectorOnClientDisconnect(response, LLMConnector);
 
   const VectorDb = getVectorDbClass();
   const messageLimit = workspace?.openAiHistory || 20;

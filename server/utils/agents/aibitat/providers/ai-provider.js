@@ -27,6 +27,7 @@ const {
   SystemPromptVariables,
 } = require("../../../../models/systemPromptVariables");
 const { OllamaAILLM } = require("../../../AiProviders/ollama");
+const { bindAbortSignal } = require("../../../helpers/abortSignals");
 
 /**
  * @typedef {Object} ProviderUsageMetrics
@@ -46,7 +47,7 @@ const { OllamaAILLM } = require("../../../AiProviders/ollama");
  * @property {boolean} [verbose] - Whether to log verbose introspection messages.
  * @property {boolean} supportsAgentStreaming - Whether the provider supports streaming tool-call execution.
  * @property {(handlerProps: Object) => void} attachHandlerProps - Attach invocation/handler context to the provider.
- * @property {(signal: AbortSignal|null) => void} attachAbortSignal - Attach the session abort signal for request cancellation.
+ * @property {(signal: AbortSignal|null) => void} attachAbortSignal - Bind the session abort signal to the provider's SDK client(s).
  * @property {(messages: Array, functions?: Array, eventHandler?: Function) => Promise<{functionCall: any, textResponse: string}>} stream - Stream a chat completion with tool calling.
  * @property {(messages: Array, functions?: Array) => Promise<{functionCall: any, textResponse: string, result?: string}>} complete - Non-streaming chat completion with tool calling.
  * @property {() => ProviderUsageMetrics} getUsage - Get usage metrics from the last completion.
@@ -99,9 +100,9 @@ class Provider {
   providerTag = null;
 
   /**
-   * Abort signal for the active agent session. Providers that support request
-   * cancellation pass this to their SDK calls so aborting the session tears
-   * down in-flight LLM requests.
+   * Abort signal for the active agent session, attached by AIbitat. Bound to the
+   * SDK client so every request this provider makes is cancelled when the session
+   * is aborted (stop button, socket close, bail command).
    * @type {AbortSignal|null}
    */
   abortSignal = null;
@@ -134,11 +135,25 @@ class Provider {
   }
 
   /**
-   * Attach the session abort signal so provider requests can be cancelled mid-flight.
+   * Attach the session abort signal and bind it to this provider's SDK client(s)
+   * so every request they make is cancelled when the session aborts. Binding is
+   * done once per client; the wrappers read `this.abortSignal` at call time, so
+   * re-attaching a new signal needs no re-binding.
    * @param {AbortSignal|null} signal
    */
   attachAbortSignal(signal = null) {
     this.abortSignal = signal;
+    this.abortableClients().forEach((client) => bindAbortSignal(this, client));
+  }
+
+  /**
+   * The SDK clients that should honor the session abort signal. Providers holding
+   * more than one client (ex: Bedrock) override this.
+   * Must stay a method, not a getter - `InheritMultiple` flattens getters.
+   * @returns {Array<object>}
+   */
+  abortableClients() {
+    return [this._client];
   }
 
   get client() {
