@@ -4,7 +4,7 @@ import { LEMONADE_COMMON_URLS } from "@/utils/constants";
 import { CaretDown, CaretUp, Info, CircleNotch } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import useProviderEndpointAutoDiscovery from "@/hooks/useProviderEndpointAutoDiscovery";
-import { cleanBasePath } from "@/components/LLMSelection/LemonadeOptions";
+import { originOnly } from "@/utils/url";
 
 export default function LemonadeEmbeddingOptions({ settings }) {
   const {
@@ -18,7 +18,7 @@ export default function LemonadeEmbeddingOptions({ settings }) {
     provider: "lemonade",
     initialBasePath: settings?.EmbeddingBasePath,
     ENDPOINTS: LEMONADE_COMMON_URLS,
-    normalizeBasePath: cleanBasePath,
+    normalizeBasePath: originOnly,
   });
 
   const [maxChunkLength, setMaxChunkLength] = useState(

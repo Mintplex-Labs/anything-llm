@@ -8,7 +8,6 @@ import {
   ImageBroken,
 } from "@phosphor-icons/react";
 import StorageFiles from "@/models/files";
-import showToast from "@/utils/toast";
 import { openImageLightbox } from "@/components/ImageLightbox";
 
 /**
@@ -52,15 +51,13 @@ function ImageGenerationCard({ props }) {
       ]);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch {
-      showToast("Could not copy image to clipboard.", "error");
-    }
+    } catch {}
   };
 
   return (
     <div className="my-2">
       <div className="w-full max-w-[280px]">
-        <div className="relative group rounded-xl overflow-hidden bg-zinc-800 light:bg-slate-100 light:border light:border-slate-200/50 aspect-square">
+        <div className="relative group rounded-xl overflow-hidden bg-zinc-800 aspect-square">
           {status === "loading" && (
             <div className="absolute inset-0 flex items-center justify-center">
               <CircleNotch
@@ -94,7 +91,7 @@ function ImageGenerationCard({ props }) {
                 <button
                   onClick={handleCopy}
                   data-tooltip-content="Copy image"
-                  className="border-none p-2 rounded-lg bg-black/60 hover:bg-black/80 text-white"
+                  className="border-none p-2 rounded-lg bg-black/60 hover:bg-black/80 light:bg-slate-200 light:hover:bg-slate-300 text-white light:text-slate-700"
                 >
                   {copied ? (
                     <Check size={16} weight="bold" />
@@ -105,7 +102,7 @@ function ImageGenerationCard({ props }) {
                 <button
                   onClick={handleDownload}
                   data-tooltip-content="Download image"
-                  className="border-none p-2 rounded-lg bg-black/60 hover:bg-black/80 text-white"
+                  className="border-none p-2 rounded-lg bg-black/60 hover:bg-black/80 light:bg-slate-200 light:hover:bg-slate-300 text-white light:text-slate-700"
                 >
                   <DownloadSimple size={16} weight="bold" />
                 </button>

@@ -3,24 +3,8 @@ import { Tooltip } from "react-tooltip";
 import { Link } from "react-router-dom";
 import useProviderEndpointAutoDiscovery from "@/hooks/useProviderEndpointAutoDiscovery";
 import { LEMONADE_COMMON_URLS } from "@/utils/constants";
+import { originOnly } from "@/utils/url";
 import ImageModelSelection from "../ImageModelSelection";
-
-/**
- * Reduces a base path to just its origin (eg: http://localhost:13305) since the
- * auto-detected endpoints include a `/live` path. Only run on blur - running
- * this on each keystroke makes the input impossible to type into.
- * @param {string} basePath
- * @returns {string}
- */
-function cleanBasePath(basePath = "") {
-  try {
-    const url = new URL(basePath);
-    if (!["http:", "https:"].includes(url.protocol)) return basePath;
-    return url.origin;
-  } catch {
-    return basePath;
-  }
-}
 
 export default function LemonadeImageOptions({ settings }) {
   const {
@@ -39,7 +23,7 @@ export default function LemonadeImageOptions({ settings }) {
       ? "*".repeat(20)
       : "",
     ENDPOINTS: LEMONADE_COMMON_URLS,
-    normalizeBasePath: cleanBasePath,
+    normalizeBasePath: originOnly,
   });
 
   return (
