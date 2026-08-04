@@ -13,9 +13,17 @@ import ModelTableLoadingSkeleton from "@/components/lib/ModelTable/loading";
 import showToast from "@/utils/toast";
 import LemonadeUtils from "@/models/utils/lemonadeUtils";
 
+/**
+ * Reduces a base path to just its origin (eg: http://localhost:13305).
+ * Should only be run when the user is done editing the field (onBlur) - running
+ * this on each keystroke makes the input impossible to type into.
+ * @param {string} basePath
+ * @returns {string}
+ */
 export function cleanBasePath(basePath = "") {
   try {
     const url = new URL(basePath);
+    if (!["http:", "https:"].includes(url.protocol)) return basePath;
     return url.origin;
   } catch {
     return basePath;
@@ -32,6 +40,7 @@ export default function LemonadeOptions({ settings }) {
     provider: "lemonade",
     initialBasePath: settings?.LemonadeLLMBasePath,
     ENDPOINTS: LEMONADE_COMMON_URLS,
+    normalizeBasePath: cleanBasePath,
   });
   const [selectedModelId, setSelectedModelId] = useState(
     settings?.LemonadeLLMModelPref
@@ -107,7 +116,7 @@ export default function LemonadeOptions({ settings }) {
             name="LemonadeLLMBasePath"
             className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="http://localhost:13305"
-            value={cleanBasePath(basePathValue.value)}
+            value={basePathValue.value}
             required={true}
             autoComplete="off"
             spellCheck={false}
