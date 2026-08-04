@@ -110,7 +110,7 @@ const AskUser = {
         // present, so API/ephemeral runs would otherwise crash on call.
         if (typeof aibitat.requestUserClarification !== "function") return;
 
-        // A websocket session reuses one aibitat instance for every turn, so the
+        // A websocket session reuses one aibitat instance for every session, so the
         // per-turn counter has to reset when the user sends a new message or the
         // cap would apply to the whole session instead of the turn.
         aibitat.onMessage((message) => {
