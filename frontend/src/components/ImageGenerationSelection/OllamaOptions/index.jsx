@@ -3,6 +3,7 @@ import { Tooltip } from "react-tooltip";
 import useProviderEndpointAutoDiscovery from "@/hooks/useProviderEndpointAutoDiscovery";
 import { OLLAMA_COMMON_URLS } from "@/utils/constants";
 import ImageModelSelection from "../ImageModelSelection";
+import ImageDimensionSelection from "../ImageDimensionSelection";
 
 export default function OllamaImageOptions({ settings }) {
   const {
@@ -35,6 +36,7 @@ export default function OllamaImageOptions({ settings }) {
           settings={settings}
           endpointName="Ollama URL"
         />
+        <ImageDimensionSelection provider="ollama-imggen" settings={settings} />
       </div>
       <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
         Ollama image generation is experimental and only available on macOS.

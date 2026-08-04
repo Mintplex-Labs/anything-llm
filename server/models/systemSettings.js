@@ -504,6 +504,7 @@ const SystemSettings = {
       // --------------------------------------------------------
       ImageGenerationProvider: process.env.IMAGE_GEN_PROVIDER || null,
       ImageGenerationModelPref: process.env.IMAGE_GEN_MODEL_PREF || null,
+      ImageGenerationDimensions: process.env.IMAGE_GEN_SIZE_PREF || "512x512",
       ImageGenerationOpenAiKey: !!process.env.IMAGE_GEN_OPENAI_KEY,
       ImageGenerationOpenRouterApiKey:
         !!process.env.IMAGE_GEN_OPENROUTER_API_KEY,

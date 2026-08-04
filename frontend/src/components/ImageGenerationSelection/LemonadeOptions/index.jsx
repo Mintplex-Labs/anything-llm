@@ -5,6 +5,7 @@ import useProviderEndpointAutoDiscovery from "@/hooks/useProviderEndpointAutoDis
 import { LEMONADE_COMMON_URLS } from "@/utils/constants";
 import { originOnly } from "@/utils/url";
 import ImageModelSelection from "../ImageModelSelection";
+import ImageDimensionSelection from "../ImageDimensionSelection";
 
 export default function LemonadeImageOptions({ settings }) {
   const {
@@ -118,6 +119,10 @@ export default function LemonadeImageOptions({ settings }) {
           basePath={basePath.value}
           settings={settings}
           endpointName="Lemonade URL"
+        />
+        <ImageDimensionSelection
+          provider="lemonade-imggen"
+          settings={settings}
         />
       </div>
     </div>

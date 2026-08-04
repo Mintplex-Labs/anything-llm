@@ -304,6 +304,10 @@ const KEY_MAPPING = {
     envKey: "IMAGE_GEN_MODEL_PREF",
     checks: [],
   },
+  ImageGenerationDimensions: {
+    envKey: "IMAGE_GEN_SIZE_PREF",
+    checks: [],
+  },
   ImageGenerationOpenAiKey: {
     envKey: "IMAGE_GEN_OPENAI_KEY",
     checks: [isNotEmpty, validOpenAIKey],

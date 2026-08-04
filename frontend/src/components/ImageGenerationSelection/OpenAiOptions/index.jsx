@@ -1,5 +1,6 @@
 import { useState } from "react";
 import ImageModelSelection from "../ImageModelSelection";
+import ImageDimensionSelection from "../ImageDimensionSelection";
 
 export default function OpenAiImageOptions({ settings }) {
   const [inputValue, setInputValue] = useState(
@@ -34,6 +35,7 @@ export default function OpenAiImageOptions({ settings }) {
           apiKey={apiKey}
           settings={settings}
         />
+        <ImageDimensionSelection provider="openai-imggen" settings={settings} />
       </div>
     </div>
   );

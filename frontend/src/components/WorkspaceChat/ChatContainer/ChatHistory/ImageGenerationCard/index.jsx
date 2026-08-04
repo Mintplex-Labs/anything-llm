@@ -56,60 +56,62 @@ function ImageGenerationCard({ props }) {
 
   return (
     <div className="my-2">
-      <div className="w-full max-w-[280px]">
-        <div className="relative group rounded-xl overflow-hidden bg-zinc-800 aspect-square">
-          {status === "loading" && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <CircleNotch
-                size={28}
-                weight="bold"
-                className="animate-spin text-zinc-400 light:text-slate-500"
-              />
-            </div>
-          )}
-
-          {status === "failed" && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-y-2 text-zinc-400 light:text-slate-500">
-              <ImageBroken size={28} weight="bold" />
-              <span className="text-xs">Image failed to load</span>
-            </div>
-          )}
-
-          {status === "ready" && (
-            <>
-              <img
-                src={objectUrl}
-                alt={prompt || "Generated image"}
-                onClick={() =>
-                  openImageLightbox([
-                    { contentString: objectUrl, name: filename || prompt },
-                  ])
-                }
-                className="w-full h-full object-cover cursor-pointer"
-              />
-              <div className="absolute top-2 right-2 flex items-center gap-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button
-                  onClick={handleCopy}
-                  data-tooltip-content="Copy image"
-                  className="border-none p-2 rounded-lg bg-black/60 hover:bg-black/80 light:bg-slate-200 light:hover:bg-slate-300 text-white light:text-slate-700"
-                >
-                  {copied ? (
-                    <Check size={16} weight="bold" />
-                  ) : (
-                    <Copy size={16} weight="bold" />
-                  )}
-                </button>
-                <button
-                  onClick={handleDownload}
-                  data-tooltip-content="Download image"
-                  className="border-none p-2 rounded-lg bg-black/60 hover:bg-black/80 light:bg-slate-200 light:hover:bg-slate-300 text-white light:text-slate-700"
-                >
-                  <DownloadSimple size={16} weight="bold" />
-                </button>
+      <div className="inline-block">
+        {status !== "ready" && (
+          <div className="relative rounded-xl overflow-hidden bg-zinc-800 aspect-square">
+            {status === "loading" && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <CircleNotch
+                  size={28}
+                  weight="bold"
+                  className="animate-spin text-zinc-400 light:text-slate-500"
+                />
               </div>
-            </>
-          )}
-        </div>
+            )}
+
+            {status === "failed" && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-y-2 text-zinc-400 light:text-slate-500">
+                <ImageBroken size={28} weight="bold" />
+                <span className="text-xs">Image failed to load</span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {status === "ready" && (
+          <div className="relative group rounded-xl overflow-hidden bg-zinc-800 max-w-max">
+            <img
+              src={objectUrl}
+              alt={prompt || "Generated image"}
+              onClick={() =>
+                openImageLightbox([
+                  { contentString: objectUrl, name: filename || prompt },
+                ])
+              }
+              className="max-h-[280px] max-w-[500px] object-contain cursor-pointer"
+            />
+            <div className="absolute top-2 right-2 flex items-center gap-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button
+                onClick={handleCopy}
+                data-tooltip-content="Copy image"
+                className="border-none p-2 rounded-lg bg-black/60 hover:bg-black/80 light:bg-slate-200 light:hover:bg-slate-300 text-white light:text-slate-700"
+              >
+                {copied ? (
+                  <Check size={16} weight="bold" />
+                ) : (
+                  <Copy size={16} weight="bold" />
+                )}
+              </button>
+              <button
+                onClick={handleDownload}
+                data-tooltip-content="Download image"
+                className="border-none p-2 rounded-lg bg-black/60 hover:bg-black/80 light:bg-slate-200 light:hover:bg-slate-300 text-white light:text-slate-700"
+              >
+                <DownloadSimple size={16} weight="bold" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

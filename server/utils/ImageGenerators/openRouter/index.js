@@ -24,6 +24,8 @@ class OpenRouterImageGenerator extends BaseImageGenerator {
   // OpenRouter does not expose /images/generations. Its image models return
   // images through chat completions with the "image" output modality, where the
   // image comes back as a base64 data URL in `message.images`.
+  // IMAGE_GEN_SIZE_PREF is intentionally not used here — the chat completions
+  // endpoint has no size parameter; dimensions are model-determined.
   async generateImage({ prompt }) {
     this.log(`Generating image with ${this.model}.`);
     const completion = await this.client.chat.completions.create({
