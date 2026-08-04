@@ -181,17 +181,12 @@ class CerebrasProvider extends InheritMultiple([Provider, UnTooled]) {
     const completionTokens = usage.completion_tokens || 0;
     if (time_info?.completion_time) duration = time_info.completion_time;
 
-    this.lastUsage = {
+    this.applyUsage({
       prompt_tokens: promptTokens,
       completion_tokens: completionTokens,
-      total_tokens: usage.total_tokens,
-      outputTps:
-        completionTokens && duration > 0 ? completionTokens / duration : 0,
+      total_tokens: usage.total_tokens || promptTokens + completionTokens,
       duration,
-      model: this.model,
-      provider: this.constructor.name,
-      timestamp: new Date(),
-    };
+    });
   }
 
   /**

@@ -51,6 +51,8 @@ const { bindAbortSignal } = require("../../../helpers/abortSignals");
  * @property {(messages: Array, functions?: Array, eventHandler?: Function) => Promise<{functionCall: any, textResponse: string}>} stream - Stream a chat completion with tool calling.
  * @property {(messages: Array, functions?: Array) => Promise<{functionCall: any, textResponse: string, result?: string}>} complete - Non-streaming chat completion with tool calling.
  * @property {() => ProviderUsageMetrics} getUsage - Get usage metrics from the last completion.
+ * @property {() => ProviderUsageMetrics} getCumulativeUsage - Get usage metrics accumulated across all completions in the current run.
+ * @property {() => void} resetCumulativeUsage - Reset the accumulated usage metrics (call at the start of a run).
  */
 
 class Provider {
@@ -76,6 +78,24 @@ class Provider {
    * @type {ProviderUsageMetrics}
    */
   lastUsage = {
+    prompt_tokens: 0,
+    completion_tokens: 0,
+    total_tokens: 0,
+    duration: 0,
+    outputTps: 0,
+    model: null,
+    provider: null,
+    timestamp: null,
+  };
+
+  /**
+   * Stores the usage metrics accumulated across every completion call in the
+   * current run. An agent loop makes one completion per tool call plus a final
+   * one for the response - this is the sum of all of them, whereas `lastUsage`
+   * only ever reflects the most recent call.
+   * @type {ProviderUsageMetrics}
+   */
+  cumulativeUsage = {
     prompt_tokens: 0,
     completion_tokens: 0,
     total_tokens: 0,
@@ -639,16 +659,68 @@ class Provider {
     const completionTokens =
       usage.completion_tokens || usage.output_tokens || 0;
 
-    this.lastUsage = {
+    this.applyUsage({
       prompt_tokens: promptTokens,
       completion_tokens: completionTokens,
       total_tokens: usage.total_tokens || promptTokens + completionTokens,
+      duration,
+    });
+  }
+
+  /**
+   * Stores a normalized usage record for the completion that just finished and
+   * adds it to the run-level accumulated totals. Subclasses that override
+   * `recordUsage` should normalize their provider-specific usage format and
+   * call this so accumulation still happens in one place.
+   * @param {{prompt_tokens?: number, completion_tokens?: number, total_tokens?: number, duration?: number}} usage
+   */
+  applyUsage({
+    prompt_tokens = 0,
+    completion_tokens = 0,
+    total_tokens = 0,
+    duration = 0,
+  } = {}) {
+    const timestamp = new Date();
+    this.lastUsage = {
+      prompt_tokens,
+      completion_tokens,
+      total_tokens,
       outputTps:
-        completionTokens && duration > 0 ? completionTokens / duration : 0,
+        completion_tokens && duration > 0 ? completion_tokens / duration : 0,
       duration,
       model: this.model,
       provider: this.constructor.name,
-      timestamp: new Date(),
+      timestamp,
+    };
+
+    const totals = this.cumulativeUsage;
+    totals.prompt_tokens += prompt_tokens;
+    totals.completion_tokens += completion_tokens;
+    totals.total_tokens += total_tokens;
+    totals.duration += duration;
+    totals.outputTps =
+      totals.completion_tokens && totals.duration > 0
+        ? totals.completion_tokens / totals.duration
+        : 0;
+    totals.model = this.model;
+    totals.provider = this.constructor.name;
+    totals.timestamp = timestamp;
+  }
+
+  /**
+   * Resets the accumulated usage metrics. Call this at the start of an agent
+   * run so the totals only cover that run's completions.
+   */
+  resetCumulativeUsage() {
+    this.cumulativeUsage = {
+      prompt_tokens: 0,
+      completion_tokens: 0,
+      total_tokens: 0,
+      duration: 0,
+      outputTps: 0,
+      model: null,
+      provider: null,
+      timestamp: null,
     };
   }
 
@@ -658,6 +730,15 @@ class Provider {
    */
   getUsage() {
     return { ...this.lastUsage };
+  }
+
+  /**
+   * Get the usage metrics accumulated across all completions in the current
+   * run - one completion per tool call plus the final response.
+   * @returns {ProviderUsageMetrics} The accumulated usage metrics
+   */
+  getCumulativeUsage() {
+    return { ...this.cumulativeUsage };
   }
 
   /**
