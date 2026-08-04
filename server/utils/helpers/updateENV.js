@@ -316,6 +316,10 @@ const KEY_MAPPING = {
     envKey: "IMAGE_GEN_OLLAMA_BASE_PATH",
     checks: [isNotEmpty, validOllamaLLMBasePath, validDockerizedUrl],
   },
+  ImageGenerationOllamaAuthToken: {
+    envKey: "IMAGE_GEN_OLLAMA_AUTH_TOKEN",
+    checks: [],
+  },
   ImageGenerationLemonadeBasePath: {
     envKey: "IMAGE_GEN_LEMONADE_BASE_PATH",
     checks: [isValidURL],

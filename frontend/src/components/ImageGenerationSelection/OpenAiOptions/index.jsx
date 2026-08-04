@@ -2,10 +2,14 @@ import { useState } from "react";
 import ImageModelSelection from "../ImageModelSelection";
 
 export default function OpenAiImageOptions({ settings }) {
+  const [inputValue, setInputValue] = useState(
+    settings?.ImageGenerationOpenAiKey
+  );
   const [apiKey, setApiKey] = useState(settings?.ImageGenerationOpenAiKey);
+
   return (
     <div className="w-full flex flex-col gap-y-4">
-      <div className="w-full flex items-center gap-[36px] mt-1.5">
+      <div className="w-full flex items-start gap-[36px] mt-1.5">
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
             API Key
@@ -21,11 +25,12 @@ export default function OpenAiImageOptions({ settings }) {
             required={true}
             autoComplete="off"
             spellCheck={false}
-            onChange={(e) => setApiKey(e.target.value)}
+            onChange={(e) => setInputValue(e.target.value)}
+            onBlur={() => setApiKey(inputValue)}
           />
         </div>
         <ImageModelSelection
-          provider="openai-image"
+          provider="openai-imggen"
           apiKey={apiKey}
           settings={settings}
         />

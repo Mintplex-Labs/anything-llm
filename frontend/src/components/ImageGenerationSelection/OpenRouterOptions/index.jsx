@@ -1,9 +1,17 @@
+import { useState } from "react";
 import ImageModelSelection from "../ImageModelSelection";
 
 export default function OpenRouterImageOptions({ settings }) {
+  const [inputValue, setInputValue] = useState(
+    settings?.ImageGenerationOpenRouterApiKey
+  );
+  const [apiKey, setApiKey] = useState(
+    settings?.ImageGenerationOpenRouterApiKey
+  );
+
   return (
     <div className="w-full flex flex-col gap-y-4">
-      <div className="w-full flex items-center gap-[36px] mt-1.5">
+      <div className="w-full flex items-start gap-[36px] mt-1.5">
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
             API Key
@@ -19,9 +27,15 @@ export default function OpenRouterImageOptions({ settings }) {
             required={true}
             autoComplete="off"
             spellCheck={false}
+            onChange={(e) => setInputValue(e.target.value)}
+            onBlur={() => setApiKey(inputValue)}
           />
         </div>
-        <ImageModelSelection provider="openrouter-image" settings={settings} />
+        <ImageModelSelection
+          provider="openrouter-imggen"
+          apiKey={apiKey}
+          settings={settings}
+        />
       </div>
     </div>
   );

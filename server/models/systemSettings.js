@@ -508,6 +508,7 @@ const SystemSettings = {
       ImageGenerationOpenRouterApiKey:
         !!process.env.IMAGE_GEN_OPENROUTER_API_KEY,
       ImageGenerationOllamaBasePath: process.env.IMAGE_GEN_OLLAMA_BASE_PATH,
+      ImageGenerationOllamaAuthToken: !!process.env.IMAGE_GEN_OLLAMA_AUTH_TOKEN,
       ImageGenerationLemonadeBasePath: process.env.IMAGE_GEN_LEMONADE_BASE_PATH,
       ImageGenerationLemonadeApiKey: !!process.env.IMAGE_GEN_LEMONADE_API_KEY,
 
