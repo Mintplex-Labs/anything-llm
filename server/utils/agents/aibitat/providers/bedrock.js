@@ -47,6 +47,15 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
     return this._client;
   }
 
+  /**
+   * Anthropic models on Bedrock go through a second client, which must honor the
+   * session abort signal too.
+   * @returns {Array<object>}
+   */
+  abortableClients() {
+    return [this._client, this._anthropic].filter(Boolean);
+  }
+
   get supportsAgentStreaming() {
     if (!!process.env.AWS_BEDROCK_STREAMING_DISABLED) return false;
     return true;
