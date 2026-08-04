@@ -1364,11 +1364,13 @@ async function getBedrockModels(_apiKey = null, options = {}) {
       .list()
       .then((results) => results.data)
       .then((models) =>
-        models.map((model) => ({
-          id: model.id,
-          name: model.id,
-          organization: model.owned_by ?? "AWS Bedrock",
-        }))
+        models
+          .map((model) => ({
+            id: model.id,
+            name: model.id,
+            organization: model.owned_by ?? "AWS Bedrock",
+          }))
+          .sort((a, b) => a.name.localeCompare(b.name))
       )
       .catch((e) => {
         console.error(`AWSBedrock:listModels`, e.message);

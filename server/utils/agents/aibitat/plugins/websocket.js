@@ -230,6 +230,25 @@ const websocket = {
           return new Promise((resolve) => {
             let timeoutId = null;
 
+            // Resolve exactly once and tear down every waiter, whichever of the
+            // three outcomes lands first: user response, abort, or timeout.
+            const settle = (result) => {
+              delete socket.handleToolApproval;
+              clearTimeout(timeoutId);
+              aibitat.emitter.removeListener("abort", abortListener);
+              resolve(result);
+            };
+
+            // The socket is already gone once the session aborts, so no response
+            // can arrive - settle now instead of parking on the full timeout.
+            function abortListener() {
+              settle({
+                approved: false,
+                message: "Session was aborted while awaiting tool approval.",
+              });
+            }
+            aibitat.emitter.once("abort", abortListener);
+
             socket.handleToolApproval = (message) => {
               try {
                 const data = safeJsonParse(message, {});
@@ -239,17 +258,14 @@ const websocket = {
                 )
                   return;
 
-                delete socket.handleToolApproval;
-                clearTimeout(timeoutId);
-
                 if (data.approved) {
-                  return resolve({
+                  return settle({
                     approved: true,
                     message: "User approved the tool execution.",
                   });
                 }
 
-                return resolve({
+                return settle({
                   approved: false,
                   message: "Tool call was rejected by the user.",
                 });
@@ -270,13 +286,12 @@ const websocket = {
             );
 
             timeoutId = setTimeout(() => {
-              delete socket.handleToolApproval;
               console.log(
                 chalk.yellow(
                   `Tool approval request timed out after ${TOOL_APPROVAL_TIMEOUT_MS}ms`
                 )
               );
-              resolve({
+              settle({
                 approved: false,
                 message:
                   "Tool approval request timed out. User did not respond in time.",

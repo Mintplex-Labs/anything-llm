@@ -239,6 +239,10 @@ const KEY_MAPPING = {
     envKey: "AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
   },
+  AwsBedrockLLMMaxTokens: {
+    envKey: "AWS_BEDROCK_LLM_MAX_TOKENS",
+    checks: [],
+  },
 
   EmbeddingEngine: {
     envKey: "EMBEDDING_ENGINE",

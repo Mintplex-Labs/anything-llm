@@ -36,6 +36,9 @@ function agentWebsocket(app) {
 
       socket.on("message", relayToSocket);
       socket.on("close", () => {
+        // Abort the running agent loop (stop button, tab close, disconnect) so
+        // in-flight LLM requests are cancelled and no further turns run.
+        agentHandler.aibitat?.abort();
         agentHandler.closeAlert();
         WorkspaceAgentInvocation.close(String(request.params.uuid));
         return;
@@ -47,7 +50,9 @@ function agentWebsocket(app) {
           agentHandler.log(
             `User invoked bail command while processing. Closing session now.`
           );
-          agentHandler.aibitat.abort();
+          // aibitat may not exist yet if the bail arrives while the session
+          // is still being built - closing the socket alone is enough then.
+          agentHandler.aibitat?.abort();
           socket.close();
           return;
         }
@@ -55,6 +60,8 @@ function agentWebsocket(app) {
 
       await Telemetry.sendTelemetry("agent_chat_started");
       await agentHandler.createAIbitat({ socket });
+      // Socket can close while aibitat is being built - don't start a session nobody is listening to.
+      if (socket.readyState !== socket.OPEN) return;
       await agentHandler.startAgentCluster();
     } catch (e) {
       console.error(e.message, e);

@@ -983,6 +983,7 @@ const SystemSettings = {
       AwsBedrockLLMModel: process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE,
       AwsBedrockLLMTokenLimit:
         process.env.AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT || 8192,
+      AwsBedrockLLMMaxTokens: process.env.AWS_BEDROCK_LLM_MAX_TOKENS || 4096,
 
       // Cohere API Keys
       CohereApiKey: !!process.env.COHERE_API_KEY,

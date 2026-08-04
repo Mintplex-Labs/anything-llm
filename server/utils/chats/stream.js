@@ -4,6 +4,7 @@ const { WorkspaceChats } = require("../../models/workspaceChats");
 const { WorkspaceParsedFiles } = require("../../models/workspaceParsedFiles");
 const { getVectorDbClass, resolveProviderConnector } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
+const { abortConnectorOnClientDisconnect } = require("../helpers/abortSignals");
 const { grepAgents } = require("./agents");
 const {
   grepCommand,
@@ -74,6 +75,10 @@ async function streamChatWithWorkspace(
       error: routerError,
     });
   }
+
+  // Stopping the generation (or closing the tab) should stop the provider
+  // generating too, not just stop us reading the response.
+  abortConnectorOnClientDisconnect(response, LLMConnector);
 
   if (routingMetadata?.routedTo?.shouldNotify) {
     writeResponseChunk(response, {
