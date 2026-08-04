@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { log, conclude } = require("./helpers/index.js");
 const { WorkspaceChats } = require("../models/workspaceChats.js");
+const { ScheduledJobRun } = require("../models/scheduledJobRun.js");
 const { generatedImagesPath } = require("../utils/files/index.js");
 const { safeJsonParse } = require("../utils/http/index.js");
 
@@ -51,21 +52,30 @@ const MIN_AGE_MS = 60 * 60 * 1000;
 })();
 
 /**
- * Collects every generated-image filename referenced by an active
- * (include: true) chat across all workspaces and users.
+ * Collects every generated-image filename referenced by an active chat or
+ * completed scheduled job run.
  * @returns {Promise<Set<string>>}
  */
 async function referencedImageFilenames() {
   const filenames = new Set();
+
   for await (const chat of activeImageChats()) {
-    const { outputs } = safeJsonParse(chat.response, { outputs: [] });
-    for (const output of outputs || []) {
-      const storageFilename = output?.payload?.storageFilename;
-      if (IMAGE_FILENAME_PATTERN.test(storageFilename))
-        filenames.add(storageFilename);
-    }
+    extractImageFilenames(chat.response, filenames);
   }
+
+  for await (const run of completedImageRuns()) {
+    extractImageFilenames(run.result, filenames);
+  }
+
   return filenames;
+}
+
+function extractImageFilenames(jsonString, into) {
+  const { outputs } = safeJsonParse(jsonString, { outputs: [] });
+  for (const output of outputs || []) {
+    const storageFilename = output?.payload?.storageFilename;
+    if (IMAGE_FILENAME_PATTERN.test(storageFilename)) into.add(storageFilename);
+  }
 }
 
 /**
@@ -88,5 +98,27 @@ async function* activeImageChats(batchSize = 50) {
     yield* chats;
     if (chats.length < batchSize) return;
     offset += chats.length;
+  }
+}
+
+/**
+ * Yields completed scheduled job runs that reference a generated image.
+ * @param {number} batchSize
+ * @returns {AsyncGenerator<object>}
+ */
+async function* completedImageRuns(batchSize = 50) {
+  let offset = 0;
+  while (true) {
+    const runs = await ScheduledJobRun.where(
+      { status: "completed", result: { contains: "img-" } },
+      batchSize,
+      { id: "asc" },
+      {},
+      offset
+    );
+    if (runs.length === 0) return;
+    yield* runs;
+    if (runs.length < batchSize) return;
+    offset += runs.length;
   }
 }

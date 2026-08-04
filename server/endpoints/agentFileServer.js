@@ -89,11 +89,11 @@ function agentFileServerEndpoints(app) {
 
   /**
    * Serve a generated image inline (so it can be used as an <img> src).
-   * Validates that the requesting user has access to the workspace chat that
-   * references the image before serving it from storage/generated-images.
+   * Validates that the requesting user has access to a chat that references
+   * the image before serving it from storage/generated-images.
    */
   app.get(
-    "/workspace/generated-images/:filename",
+    "/image-generation/generated-images/:filename",
     [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (request, response) => {
       try {

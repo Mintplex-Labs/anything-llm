@@ -30,7 +30,7 @@ const StorageFiles = {
    */
   image: async function (storageFilename) {
     return await fetch(
-      `${API_BASE}/workspace/generated-images/${encodeURIComponent(storageFilename)}`,
+      `${API_BASE}/image-generation/generated-images/${encodeURIComponent(storageFilename)}`,
       { headers: baseHeaders() }
     )
       .then((res) => {
