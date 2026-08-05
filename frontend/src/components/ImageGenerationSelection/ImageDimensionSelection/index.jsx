@@ -1,5 +1,6 @@
 const PROVIDER_DIMENSIONS = {
   "openai-imggen": ["auto", "1024x1024", "1024x1536", "1536x1024"],
+  "lemonade-imggen": ["256x256", "512x512", "768x768", "1024x1024"],
 };
 const DEFAULT_DIMENSIONS = ["512x512", "1024x1024"];
 
