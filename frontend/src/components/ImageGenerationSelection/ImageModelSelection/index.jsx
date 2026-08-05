@@ -72,8 +72,6 @@ export default function ImageModelSelection({
     );
   }
 
-  // No models could be fetched - let the user enter a model name manually since
-  // the provider may still be able to serve a model we could not enumerate.
   if (models.length === 0) {
     return (
       <ModelSelectionWrapper hint="No image models could be found for this provider - enter the model name manually.">
@@ -136,8 +134,6 @@ function ModelSelectionWrapper({ children, hint = null }) {
 }
 
 function ModelOption({ model, settings }) {
-  // Some providers (eg: lemonade) prefix the display name with the organization
-  // - that is already the optgroup label so it is stripped here.
   const name = model.name || model.id;
   const prefix = model.organization ? `${model.organization}:` : null;
   const label =

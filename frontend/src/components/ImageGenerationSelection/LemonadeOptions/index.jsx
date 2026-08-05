@@ -18,8 +18,6 @@ export default function LemonadeImageOptions({ settings }) {
   } = useProviderEndpointAutoDiscovery({
     provider: "lemonade-imggen",
     initialBasePath: settings?.ImageGenerationLemonadeBasePath,
-    // Saved keys are only ever returned as a boolean, so the field is seeded
-    // with a mask - masked values are ignored on save and when listing models.
     initialAuthToken: settings?.ImageGenerationLemonadeApiKey
       ? "*".repeat(20)
       : "",

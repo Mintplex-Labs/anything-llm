@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { useTranslation } from "react-i18next";
 import { CircleNotch } from "@phosphor-icons/react";
 
 /**
@@ -7,6 +8,7 @@ import { CircleNotch } from "@phosphor-icons/react";
  * promising a specific time.
  */
 function ImageGenerationPending() {
+  const { t } = useTranslation();
   return (
     <div className="my-2">
       <div className="w-full max-w-[280px]">
@@ -20,11 +22,10 @@ function ImageGenerationPending() {
               className="animate-spin text-white light:text-slate-700"
             />
             <p className="text-white light:text-slate-800 text-sm font-semibold">
-              Generating your image…
+              {t("imageGeneration.pending.heading")}
             </p>
             <p className="text-white/70 light:text-slate-600 text-xs leading-relaxed">
-              This can take a little while. It'll appear here as soon as it's
-              ready.
+              {t("imageGeneration.pending.description")}
             </p>
           </div>
         </div>

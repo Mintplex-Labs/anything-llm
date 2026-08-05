@@ -1,4 +1,5 @@
 import { memo, useEffect, useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { saveAs } from "file-saver";
 import {
   DownloadSimple,
@@ -20,6 +21,7 @@ import { PROMPT_INPUT_EVENT } from "@/components/WorkspaceChat/ChatContainer/Pro
  * @param {{content: {storageFilename: string, filename?: string, prompt?: string}}} props
  */
 function ImageGenerationCard({ props }) {
+  const { t } = useTranslation();
   const { storageFilename, filename, prompt } = props.content || {};
   const [blob, setBlob] = useState(null);
   const [objectUrl, setObjectUrl] = useState(null);
@@ -117,7 +119,9 @@ function ImageGenerationCard({ props }) {
             {status === "failed" && (
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-y-2 text-zinc-400 light:text-slate-500">
                 <ImageBroken size={28} weight="bold" />
-                <span className="text-xs">Image failed to load</span>
+                <span className="text-xs">
+                  {t("imageGeneration.card.failed-to-load")}
+                </span>
               </div>
             )}
           </div>
@@ -127,7 +131,7 @@ function ImageGenerationCard({ props }) {
           <div className="relative group rounded-xl overflow-hidden bg-zinc-800 max-w-max">
             <img
               src={objectUrl}
-              alt={prompt || "Generated image"}
+              alt={prompt || t("imageGeneration.card.alt-text")}
               role="button"
               tabIndex={0}
               onClick={() =>
@@ -179,14 +183,14 @@ function ImageGenerationCard({ props }) {
                     className="w-full flex items-center gap-x-2 px-3 py-2 text-sm text-white light:text-slate-700 hover:bg-zinc-800 light:hover:bg-slate-100 border-none"
                   >
                     <PencilSimple size={14} weight="bold" />
-                    Edit
+                    {t("imageGeneration.card.edit")}
                   </button>
                   <button
                     onClick={handleDownload}
                     className="w-full flex items-center gap-x-2 px-3 py-2 text-sm text-white light:text-slate-700 hover:bg-zinc-800 light:hover:bg-slate-100 border-none"
                   >
                     <DownloadSimple size={14} weight="bold" />
-                    Download
+                    {t("imageGeneration.card.download")}
                   </button>
                 </div>
               )}

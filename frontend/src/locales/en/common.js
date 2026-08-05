@@ -1135,6 +1135,17 @@ const TRANSLATIONS = {
     description:
       "Configure the provider used to generate images from the /img chat command.",
     provider: "Image Generation Provider",
+    card: {
+      "failed-to-load": "Image failed to load",
+      "alt-text": "Generated image",
+      edit: "Edit",
+      download: "Download",
+    },
+    pending: {
+      heading: "Generating your image…",
+      description:
+        "This can take a little while. It'll appear here as soon as it's ready.",
+    },
   },
   text: {
     title: "Text splitting & Chunking Preferences",

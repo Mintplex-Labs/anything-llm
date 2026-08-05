@@ -74,7 +74,8 @@ function extractImageFilenames(jsonString, into) {
   const { outputs } = safeJsonParse(jsonString, { outputs: [] });
   for (const output of outputs || []) {
     const storageFilename = output?.payload?.storageFilename;
-    if (GENERATED_IMAGE_FILENAME_PATTERN.test(storageFilename)) into.add(storageFilename);
+    if (GENERATED_IMAGE_FILENAME_PATTERN.test(storageFilename))
+      into.add(storageFilename);
   }
 }
 

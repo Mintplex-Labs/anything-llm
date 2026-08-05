@@ -18,8 +18,6 @@ export default function OllamaImageOptions({ settings }) {
   } = useProviderEndpointAutoDiscovery({
     provider: "ollama-imggen",
     initialBasePath: settings?.ImageGenerationOllamaBasePath,
-    // Saved tokens are only ever returned as a boolean, so the field is seeded
-    // with a mask - masked values are ignored on save and when listing models.
     initialAuthToken: settings?.ImageGenerationOllamaAuthToken
       ? "*".repeat(20)
       : "",
