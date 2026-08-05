@@ -1,6 +1,11 @@
 const { BaseImageGenerator } = require("../base");
 
 class OpenRouterImageGenerator extends BaseImageGenerator {
+  _extractImageBuffer(dataUrl) {
+    if (!dataUrl) throw new Error("OpenRouter returned no image data.");
+    return Buffer.from(dataUrl.split(",").pop(), "base64");
+  }
+
   constructor() {
     if (!process.env.IMAGE_GEN_OPENROUTER_API_KEY)
       throw new Error("No OpenRouter image generation API key was set.");
@@ -36,8 +41,7 @@ class OpenRouterImageGenerator extends BaseImageGenerator {
 
     const dataUrl =
       completion?.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-    if (!dataUrl) throw new Error("OpenRouter returned no image data.");
-    return { buffer: Buffer.from(dataUrl.split(",").pop(), "base64") };
+    return { buffer: this._extractImageBuffer(dataUrl) };
   }
 
   async editImage({ prompt, images }) {
@@ -62,9 +66,7 @@ class OpenRouterImageGenerator extends BaseImageGenerator {
 
     const dataUrl =
       completion?.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-    if (!dataUrl)
-      throw new Error("OpenRouter returned no image data for edit.");
-    return { buffer: Buffer.from(dataUrl.split(",").pop(), "base64") };
+    return { buffer: this._extractImageBuffer(dataUrl) };
   }
 }
 

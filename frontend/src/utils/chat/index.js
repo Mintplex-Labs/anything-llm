@@ -39,21 +39,7 @@ export default function handleChat(
   }
 
   if (type === "imageGenerationPending") {
-    setChatHistory([
-      ...remHistory,
-      {
-        type: "imageGenerationPending",
-        uuid,
-        content: "",
-        role: "assistant",
-        sources: [],
-        closed: false,
-        error: null,
-        animate: false,
-        pending: true,
-      },
-    ]);
-    _chatHistory.push({
+    const pendingMsg = {
       type: "imageGenerationPending",
       uuid,
       content: "",
@@ -63,7 +49,9 @@ export default function handleChat(
       error: null,
       animate: false,
       pending: true,
-    });
+    };
+    setChatHistory([...remHistory, pendingMsg]);
+    _chatHistory.push(pendingMsg);
     return;
   }
 

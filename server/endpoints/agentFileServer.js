@@ -99,12 +99,14 @@ function agentFileServerEndpoints(app) {
       try {
         const fs = require("fs");
         const path = require("path");
-        const { generatedImagesPath } = require("../utils/files");
+        const {
+          generatedImagesPath,
+          GENERATED_IMAGE_FILENAME_PATTERN,
+        } = require("../utils/files");
         const user = await userFromSession(request, response);
         const { filename } = request.params;
 
-        // Only allow our `img-<uuid>.png` naming convention.
-        if (!filename || !/^img-[a-f0-9-]{36}\.png$/i.test(filename))
+        if (!filename || !GENERATED_IMAGE_FILENAME_PATTERN.test(filename))
           return response.status(400).json({ error: "Invalid filename" });
 
         const fileSource = await findFileSource(filename, {

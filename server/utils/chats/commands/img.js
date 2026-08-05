@@ -136,17 +136,22 @@ async function generateImage(
  * @returns {Buffer[]}
  */
 function resolveImageBuffers(attachments = []) {
-  const { generatedImagesPath } = require("../../files");
+  const {
+    generatedImagesPath,
+    isWithin,
+    GENERATED_IMAGE_FILENAME_PATTERN,
+  } = require("../../files");
   const buffers = [];
   for (const att of attachments) {
     if (!att.mime?.startsWith("image/")) continue;
 
     if (att.storageFilename) {
+      if (!GENERATED_IMAGE_FILENAME_PATTERN.test(att.storageFilename)) continue;
       const filePath = path.resolve(generatedImagesPath, att.storageFilename);
-      if (fs.existsSync(filePath)) {
-        buffers.push(fs.readFileSync(filePath));
+      if (!isWithin(generatedImagesPath, filePath) || !fs.existsSync(filePath))
         continue;
-      }
+      buffers.push(fs.readFileSync(filePath));
+      continue;
     }
 
     if (att.contentString) {

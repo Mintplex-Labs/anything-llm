@@ -878,6 +878,8 @@ function hasRequiredMetadata(metadata = {}) {
   );
 }
 
+const GENERATED_IMAGE_FILENAME_PATTERN = /^img-[a-f0-9-]{36}\.png$/i;
+
 /**
  * Persists a generated image to `storage/generated-images` as a PNG.
  * The storage name uses the `img-<uuid>.png` convention so the serve and
@@ -918,10 +920,15 @@ function generatedImageAttachments(outputs = []) {
   for (const output of outputs || []) {
     if (output?.type !== "imageGenerationCard") continue;
     const { storageFilename, filename } = output.payload || {};
-    if (!storageFilename) continue;
+    if (
+      !storageFilename ||
+      !GENERATED_IMAGE_FILENAME_PATTERN.test(storageFilename)
+    )
+      continue;
 
     const imagePath = path.resolve(generatedImagesPath, storageFilename);
-    if (!fs.existsSync(imagePath)) continue;
+    if (!isWithin(generatedImagesPath, imagePath) || !fs.existsSync(imagePath))
+      continue;
 
     const contentString = `data:image/png;base64,${fs.readFileSync(imagePath).toString("base64")}`;
     attachments.push({
@@ -952,6 +959,7 @@ module.exports = {
   generatedImagesPath,
   saveGeneratedImage,
   generatedImageAttachments,
+  GENERATED_IMAGE_FILENAME_PATTERN,
   moveProcessedDocsToFolder,
   viewLocalFiles,
   listFolders,

@@ -3,11 +3,11 @@ const path = require("path");
 const { log, conclude } = require("./helpers/index.js");
 const { WorkspaceChats } = require("../models/workspaceChats.js");
 const { ScheduledJobRun } = require("../models/scheduledJobRun.js");
-const { generatedImagesPath } = require("../utils/files/index.js");
+const {
+  generatedImagesPath,
+  GENERATED_IMAGE_FILENAME_PATTERN,
+} = require("../utils/files/index.js");
 const { safeJsonParse } = require("../utils/http/index.js");
-
-// Generated images are always stored as `img-<uuid>.png`.
-const IMAGE_FILENAME_PATTERN = /^img-[a-f0-9-]{36}\.png$/i;
 
 // Ignore images younger than this so a freshly generated file isn't deleted in
 // the window between writing it to disk and persisting its chat reference.
@@ -20,7 +20,7 @@ const MIN_AGE_MS = 60 * 60 * 1000;
     const now = Date.now();
     const candidates = fs
       .readdirSync(generatedImagesPath)
-      .filter((name) => IMAGE_FILENAME_PATTERN.test(name))
+      .filter((name) => GENERATED_IMAGE_FILENAME_PATTERN.test(name))
       .filter(
         (name) =>
           now - fs.statSync(path.join(generatedImagesPath, name)).mtimeMs >
@@ -74,7 +74,7 @@ function extractImageFilenames(jsonString, into) {
   const { outputs } = safeJsonParse(jsonString, { outputs: [] });
   for (const output of outputs || []) {
     const storageFilename = output?.payload?.storageFilename;
-    if (IMAGE_FILENAME_PATTERN.test(storageFilename)) into.add(storageFilename);
+    if (GENERATED_IMAGE_FILENAME_PATTERN.test(storageFilename)) into.add(storageFilename);
   }
 }
 

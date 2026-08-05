@@ -38,7 +38,11 @@ function ImageGenerationCard({ props }) {
       setObjectUrl(revokeUrl);
       setStatus("ready");
     }
-    if (storageFilename) loadImage();
+    if (storageFilename) {
+      loadImage();
+    } else {
+      setStatus("failed");
+    }
     return () => {
       if (revokeUrl) URL.revokeObjectURL(revokeUrl);
     };
@@ -99,7 +103,7 @@ function ImageGenerationCard({ props }) {
     <div className="my-2">
       <div className="inline-block">
         {status !== "ready" && (
-          <div className="relative rounded-xl overflow-hidden bg-zinc-800 aspect-square">
+          <div className="relative rounded-xl overflow-hidden bg-zinc-800 aspect-square w-[280px]">
             {status === "loading" && (
               <div className="absolute inset-0 flex items-center justify-center">
                 <CircleNotch
@@ -124,11 +128,21 @@ function ImageGenerationCard({ props }) {
             <img
               src={objectUrl}
               alt={prompt || "Generated image"}
+              role="button"
+              tabIndex={0}
               onClick={() =>
                 openImageLightbox([
                   { contentString: objectUrl, name: filename || prompt },
                 ])
               }
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  openImageLightbox([
+                    { contentString: objectUrl, name: filename || prompt },
+                  ]);
+                }
+              }}
               className="max-h-[280px] max-w-[500px] object-contain cursor-pointer"
             />
 
