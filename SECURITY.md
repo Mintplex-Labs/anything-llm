@@ -22,6 +22,8 @@ Below are some common types of invalid reports that we will not accept and shoul
 
 If you are about to report a SSRF about being able to call web-scraping or document collector against an internal host, [this is not a valid report](https://github.com/Mintplex-Labs/anything-llm/blob/master/collector/utils/url/index.js#L2-L13). This is a feature of the system and is intended to be used in this way given that AnythingLLM is designed to be used in this way so that it can leverage internal services for scraping and collecting content when deployed inside a VPC.
 
+This also applies to any endpoint that accepts a user-configured service URL (e.g., `basePath` for LLM providers like Ollama, LMStudio, or any other third-party service). AnythingLLM is designed to connect to services that administrators configure, including services on internal networks, localhost, or private IPs. An administrator providing a URL to a service they want to connect to is intended functionality, not a vulnerability. These endpoints require admin authentication and expose the same capability already available through the normal settings UI.
+
 ### XXS Reports where user must right-click and paste in the URL
 
 If you are about to report a XXS about being able to right-click on an image (like user profile picture) and paste in the URL, this is not a valid report. User profile pictures must be uploaded by the user and cannot be set by the administrator. In fact, nobody can even see them aside from the user themselves. The same goes for any other image that is uploaded by the user or even produced by the system. If the user must right-click and paste in the URL to their browser, this is not a valid report.
