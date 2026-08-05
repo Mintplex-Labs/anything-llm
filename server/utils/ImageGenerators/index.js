@@ -6,13 +6,13 @@
  * provider's configured size (IMAGE_GEN_SIZE_PREF) when omitted.
  * @returns {Promise<{storageFilename: string, filename: string, fileSize: number, buffer: Buffer}>}
  */
-async function generateImageForWorkspace({ prompt, size }) {
+async function generateImageForWorkspace({ prompt, size, signal }) {
   // Required lazily to avoid a circular dependency during boot (helpers/files
   // are loaded early and transitively reach this module).
   const { getImageGeneratorProvider } = require("../helpers");
   const { saveGeneratedImage } = require("../files");
   const provider = getImageGeneratorProvider();
-  const { buffer } = await provider.generateImage({ prompt, size });
+  const { buffer } = await provider.generateImage({ prompt, size, signal });
   const saved = await saveGeneratedImage({ buffer, prompt });
   return { ...saved, buffer };
 }
@@ -21,14 +21,19 @@ async function generateImageForWorkspace({ prompt, size }) {
  * Edits/transforms images from a prompt + reference images using the
  * system-configured provider. Falls back to generation if the provider
  * doesn't support editing (Ollama handles this internally).
- * @param {{prompt: string, images: Buffer[], size?: string}} params
+ * @param {{prompt: string, images: Buffer[], size?: string, signal?: AbortSignal}} params
  * @returns {Promise<{storageFilename: string, filename: string, fileSize: number, buffer: Buffer}>}
  */
-async function editImageForWorkspace({ prompt, images, size }) {
+async function editImageForWorkspace({ prompt, images, size, signal }) {
   const { getImageGeneratorProvider } = require("../helpers");
   const { saveGeneratedImage } = require("../files");
   const provider = getImageGeneratorProvider();
-  const { buffer, notice } = await provider.editImage({ prompt, images, size });
+  const { buffer, notice } = await provider.editImage({
+    prompt,
+    images,
+    size,
+    signal,
+  });
   const saved = await saveGeneratedImage({ buffer, prompt });
   return { ...saved, buffer, ...(notice && { notice }) };
 }

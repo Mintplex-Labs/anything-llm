@@ -31,20 +31,23 @@ class OpenRouterImageGenerator extends BaseImageGenerator {
   // image comes back as a base64 data URL in `message.images`.
   // IMAGE_GEN_SIZE_PREF is intentionally not used here — the chat completions
   // endpoint has no size parameter; dimensions are model-determined.
-  async generateImage({ prompt }) {
+  async generateImage({ prompt, signal }) {
     this.log(`Generating image with ${this.model}.`);
-    const completion = await this.client.chat.completions.create({
-      model: this.model,
-      messages: [{ role: "user", content: prompt }],
-      modalities: ["image", "text"],
-    });
+    const completion = await this.client.chat.completions.create(
+      {
+        model: this.model,
+        messages: [{ role: "user", content: prompt }],
+        modalities: ["image", "text"],
+      },
+      { signal: signal ?? undefined }
+    );
 
     const dataUrl =
       completion?.choices?.[0]?.message?.images?.[0]?.image_url?.url;
     return { buffer: this._extractImageBuffer(dataUrl) };
   }
 
-  async editImage({ prompt, images }) {
+  async editImage({ prompt, images, signal }) {
     this.log(
       `Editing image with ${this.model} (${images.length} reference(s)).`
     );
@@ -58,11 +61,14 @@ class OpenRouterImageGenerator extends BaseImageGenerator {
       { type: "text", text: prompt },
     ];
 
-    const completion = await this.client.chat.completions.create({
-      model: this.model,
-      messages: [{ role: "user", content }],
-      modalities: ["image", "text"],
-    });
+    const completion = await this.client.chat.completions.create(
+      {
+        model: this.model,
+        messages: [{ role: "user", content }],
+        modalities: ["image", "text"],
+      },
+      { signal: signal ?? undefined }
+    );
 
     const dataUrl =
       completion?.choices?.[0]?.message?.images?.[0]?.image_url?.url;

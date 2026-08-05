@@ -18,6 +18,8 @@ const fs = require("fs");
  * @param {object|null} user - requesting user
  * @param {object|null} thread - thread when the chat is in one
  * @param {object|null} response - SSE response stream for emitting progress events
+ * @param {Array} attachments - uploaded file attachments
+ * @param {AbortSignal|null} signal - optional external abort signal (e.g. from agent session)
  * @returns {Promise<object>} response chunk written back over the stream
  */
 async function generateImage(
@@ -27,7 +29,8 @@ async function generateImage(
   user = null,
   thread = null,
   response = null,
-  attachments = []
+  attachments = [],
+  signal = null
 ) {
   const prompt = String(message)
     .replace(/^\/img\s*/i, "")
@@ -74,11 +77,23 @@ async function generateImage(
       });
     }
 
+    const { combineAbortSignals } = require("../../helpers/abortSignals");
+    const disconnectController = new AbortController();
+    if (response && typeof response.on === "function")
+      response.on("close", () => disconnectController.abort());
+    const combinedSignal =
+      combineAbortSignals([disconnectController.signal, signal]) ??
+      disconnectController.signal;
+
     const imageBuffers = resolveImageBuffers(attachments);
     const result =
       imageBuffers.length > 0
-        ? await editImageForWorkspace({ prompt, images: imageBuffers })
-        : await generateImageForWorkspace({ prompt });
+        ? await editImageForWorkspace({
+            prompt,
+            images: imageBuffers,
+            signal: combinedSignal,
+          })
+        : await generateImageForWorkspace({ prompt, signal: combinedSignal });
     const { storageFilename, filename, fileSize, notice } = result;
 
     const outputs = [
@@ -116,6 +131,17 @@ async function generateImage(
       error: false,
     };
   } catch (e) {
+    const { isAbortError } = require("../../helpers/abortSignals");
+    if (isAbortError(e)) {
+      return {
+        uuid: msgUUID,
+        type: "textResponse",
+        textResponse: "",
+        sources: [],
+        close: true,
+        error: false,
+      };
+    }
     return {
       uuid: msgUUID,
       type: "textResponse",

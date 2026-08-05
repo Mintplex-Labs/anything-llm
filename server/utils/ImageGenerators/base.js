@@ -33,13 +33,13 @@ class BaseImageGenerator {
    * back to the configured IMAGE_GEN_SIZE_PREF and then the default size. The
    * size is passed straight to the provider - if the model rejects it, the error
    * surfaces to the caller so the user can adjust IMAGE_GEN_SIZE_PREF.
-   * @param {{prompt: string, size?: string}} params
+   * @param {{prompt: string, size?: string, signal?: AbortSignal}} params
    * @returns {Promise<GeneratedImage>}
    */
-  async generateImage({ prompt, size }) {
+  async generateImage({ prompt, size, signal }) {
     const imageSize =
       size || process.env.IMAGE_GEN_SIZE_PREF || DEFAULT_IMAGE_SIZE;
-    return await this.requestImage(prompt, imageSize);
+    return await this.requestImage(prompt, imageSize, signal);
   }
 
   /**
@@ -55,10 +55,10 @@ class BaseImageGenerator {
    * Edit/transform images using a text prompt. Uses the OpenAI-compatible
    * `/v1/images/edits` endpoint which OpenAI and Lemonade both support.
    * Providers that don't support editing should override this method.
-   * @param {{prompt: string, images: Buffer[], size?: string}} params
+   * @param {{prompt: string, images: Buffer[], size?: string, signal?: AbortSignal}} params
    * @returns {Promise<GeneratedImage>}
    */
-  async editImage({ prompt, images, size }) {
+  async editImage({ prompt, images, size, signal }) {
     const imageSize =
       size || process.env.IMAGE_GEN_SIZE_PREF || DEFAULT_IMAGE_SIZE;
     this.log(
@@ -85,6 +85,7 @@ class BaseImageGenerator {
         Authorization: `Bearer ${this.client.apiKey}`,
       },
       body: formData,
+      signal: signal ?? null,
     });
 
     if (!res.ok) {
@@ -99,7 +100,7 @@ class BaseImageGenerator {
     if (image?.b64_json)
       return { buffer: Buffer.from(image.b64_json, "base64") };
     if (image?.url) {
-      const imgRes = await fetch(image.url);
+      const imgRes = await fetch(image.url, { signal: signal ?? null });
       if (!imgRes.ok)
         throw new Error(`Failed to fetch edited image: ${imgRes.status}`);
       return { buffer: Buffer.from(await imgRes.arrayBuffer()) };
@@ -107,14 +108,17 @@ class BaseImageGenerator {
     throw new Error("Image edit returned no image data.");
   }
 
-  async requestImage(prompt, size) {
+  async requestImage(prompt, size, signal) {
     this.log(`Generating ${size} image with ${this.model}.`);
-    const result = await this.client.images.generate({
-      model: this.model,
-      prompt,
-      size,
-      n: 1,
-    });
+    const result = await this.client.images.generate(
+      {
+        model: this.model,
+        prompt,
+        size,
+        n: 1,
+      },
+      { signal: signal ?? undefined }
+    );
 
     // Some OpenAI-compatible providers (e.g. Ollama) return the body with a
     // non-JSON content-type (`application/x-ndjson`), so the SDK hands back the
@@ -125,7 +129,7 @@ class BaseImageGenerator {
     if (image?.b64_json)
       return { buffer: Buffer.from(image.b64_json, "base64") };
     if (image?.url) {
-      const res = await fetch(image.url);
+      const res = await fetch(image.url, { signal: signal ?? null });
       if (!res.ok)
         throw new Error(`Failed to fetch generated image: ${res.status}`);
       return { buffer: Buffer.from(await res.arrayBuffer()) };

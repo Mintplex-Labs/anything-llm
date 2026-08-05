@@ -288,7 +288,10 @@ function buildMessages({
       acc.push(<ScheduledJobCreatedCard key={props.uuid} props={props} />);
     } else if (props.type === "imageGenerationPending") {
       acc.push(
-        <ImageGenerationPending key={`img-pending-${props.uuid || index}`} />
+        <ImageGenerationPending
+          key={`img-pending-${props.uuid || index}`}
+          aborted={props.closed}
+        />
       );
     } else if (isLastBotReply && props.animate) {
       acc.push(

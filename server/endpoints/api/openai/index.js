@@ -237,6 +237,10 @@ function apiOpenAICompatibleEndpoints(app) {
         if (!prompt || !String(prompt).trim().length)
           return response.status(400).json({ error: "A prompt is required." });
 
+        const abortController = new AbortController();
+        response.on("close", () => abortController.abort());
+        const signal = abortController.signal;
+
         const imageBuffers = (request.files || []).map((f) => f.buffer);
         const {
           generateImageForWorkspace,
@@ -249,10 +253,12 @@ function apiOpenAICompatibleEndpoints(app) {
                 prompt: String(prompt),
                 images: imageBuffers,
                 size: size ? String(size) : undefined,
+                signal,
               })
             : await generateImageForWorkspace({
                 prompt: String(prompt),
                 size: size ? String(size) : undefined,
+                signal,
               });
 
         if (responseFormat === "blob") {
@@ -271,6 +277,8 @@ function apiOpenAICompatibleEndpoints(app) {
           ...(result.notice && { notice: result.notice }),
         });
       } catch (e) {
+        const { isAbortError } = require("../../../utils/helpers/abortSignals");
+        if (isAbortError(e)) return response.end();
         console.error(e.message, e);
         return response.status(500).json({ error: e.message });
       }

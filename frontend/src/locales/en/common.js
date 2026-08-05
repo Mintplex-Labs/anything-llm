@@ -1145,6 +1145,7 @@ const TRANSLATIONS = {
       heading: "Generating your image…",
       description:
         "This can take a little while. It'll appear here as soon as it's ready.",
+      aborted: "Image generation was aborted",
     },
   },
   text: {

@@ -81,7 +81,10 @@ async function handleImageCommand({ aibitat, socket, message }) {
     message,
     uuidv4(),
     user,
-    invocation.thread_id ? { id: invocation.thread_id } : null
+    invocation.thread_id ? { id: invocation.thread_id } : null,
+    null,
+    [],
+    aibitat?.abortController?.signal ?? null
   );
 
   socket.send(
