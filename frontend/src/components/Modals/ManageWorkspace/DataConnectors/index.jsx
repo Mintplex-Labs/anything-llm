@@ -3,6 +3,7 @@ import { MagnifyingGlass } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 import GithubOptions from "./Connectors/Github";
 import GitlabOptions from "./Connectors/Gitlab";
+import GiteaOptions from "./Connectors/Gitea";
 import YoutubeOptions from "./Connectors/Youtube";
 import ConfluenceOptions from "./Connectors/Confluence";
 import DrupalWikiOptions from "./Connectors/DrupalWiki";
@@ -24,6 +25,12 @@ export const getDataConnectors = (t) => ({
     image: ConnectorImages.gitlab,
     description: t("connectors.gitlab.description"),
     options: <GitlabOptions />,
+  },
+  gitea: {
+    name: t("connectors.gitea.name"),
+    image: ConnectorImages.gitea,
+    description: t("connectors.gitea.description"),
+    options: <GiteaOptions />,
   },
   "youtube-transcript": {
     name: t("connectors.youtube.name"),
