@@ -1951,6 +1951,7 @@ const TRANSLATIONS = {
       heading: "Görüntünüzü oluşturuluyor…",
       description:
         "Bu işlem biraz zaman alabilir. Hazır olduğunda burada görüntülenecektir.",
+      aborted: "Görüntü oluşturma işlemi başarısız oldu.",
     },
   },
 };

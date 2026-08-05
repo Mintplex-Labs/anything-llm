@@ -1934,6 +1934,7 @@ const TRANSLATIONS = {
       heading: "Gerando sua imagem…",
       description:
         "Isso pode demorar um pouco. Assim que estiver pronto, aparecerá aqui.",
+      aborted: "A geração de imagem foi interrompida.",
     },
   },
 };

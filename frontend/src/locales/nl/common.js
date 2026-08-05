@@ -1962,6 +1962,7 @@ const TRANSLATIONS = {
       heading: "Het genereren van uw afbeelding…",
       description:
         "Dit kan even duren. Het zal hier verschijnen zodra het klaar is.",
+      aborted: "Het genereren van het beeld is afgebroken.",
     },
   },
 };

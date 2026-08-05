@@ -1965,6 +1965,7 @@ const TRANSLATIONS = {
       heading: "Crearea imaginii dumneavoastră…",
       description:
         "Acest lucru poate dura ceva timp. Va apărea aici imediat ce va fi gata.",
+      aborted: "Generarea imaginii a fost anulată.",
     },
   },
 };

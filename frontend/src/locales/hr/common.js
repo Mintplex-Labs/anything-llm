@@ -1936,6 +1936,7 @@ const TRANSLATIONS = {
       heading: "Generiranje vaše slike…",
       description:
         "To može potrajati neko vrijeme. Bit će dostupno ovdje čim bude spremno.",
+      aborted: "Generiranje slike je prekinuto.",
     },
   },
 };

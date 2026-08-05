@@ -1968,6 +1968,7 @@ const TRANSLATIONS = {
       heading: "Generant la vostra imatge…",
       description:
         "Aquest procés pot prendre un temps. Apareixerà aquí tan aviat com estigui disponible.",
+      aborted: "La generació d'imatges va ser interrompuda.",
     },
   },
 };

@@ -1897,6 +1897,7 @@ const TRANSLATIONS = {
       heading: "Sinu pildi genereerimine…",
       description:
         "See võib võtta natuke aega. See ilmub siia, niipea kui see on valmis.",
+      aborted: "Pildi genereerimine katkestati.",
     },
   },
 };

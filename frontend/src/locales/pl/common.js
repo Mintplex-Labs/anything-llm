@@ -1960,6 +1960,7 @@ const TRANSLATIONS = {
       heading: "Tworzenie obrazu…",
       description:
         "To może zająć trochę czasu. Będzie dostępne tutaj, gdy tylko zostanie przygotowane.",
+      aborted: "Generowanie obrazu zostało przerwane.",
     },
   },
 };

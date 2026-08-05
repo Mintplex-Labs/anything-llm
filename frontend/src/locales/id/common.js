@@ -1937,6 +1937,7 @@ const TRANSLATIONS = {
       heading: "Menghasilkan gambar Anda…",
       description:
         "Ini mungkin membutuhkan waktu beberapa saat. Informasi ini akan muncul di sini segera setelah tersedia.",
+      aborted: "Pembuatan gambar telah dihentikan.",
     },
   },
 };

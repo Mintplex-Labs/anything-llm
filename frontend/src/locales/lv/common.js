@@ -1952,6 +1952,7 @@ const TRANSLATIONS = {
       heading: "Ierakstiet savu attēlu...",
       description:
         "Tam varbūt būs nepieciešams laiks. Tas tiks publicēts šeit, kad tas būs gatavs.",
+      aborted: "Attēla izveide tika pārtraukta.",
     },
   },
 };

@@ -1824,6 +1824,7 @@ const TRANSLATIONS = {
     pending: {
       heading: "正在生成您的图像…",
       description: "这可能需要一些时间。一旦准备好，它就会在这里显示出来。",
+      aborted: "图像生成已终止。",
     },
   },
 };

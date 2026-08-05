@@ -1980,6 +1980,7 @@ const TRANSLATIONS = {
       heading: "Erstellung Ihres Bildes…",
       description:
         "Dies kann etwas Zeit in Anspruch nehmen. Es wird hier erscheinen, sobald es fertig ist.",
+      aborted: "Die Bildgenerierung wurde abgebrochen.",
     },
   },
 };

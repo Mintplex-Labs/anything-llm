@@ -1987,6 +1987,7 @@ const TRANSLATIONS = {
       heading: "Generando su imagen...",
       description:
         "Esto puede tardar un poco. Aparecerá aquí en cuanto esté listo.",
+      aborted: "La generación de imágenes se ha cancelado.",
     },
   },
 };

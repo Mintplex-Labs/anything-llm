@@ -1966,6 +1966,7 @@ const TRANSLATIONS = {
       heading: "Génération de votre image…",
       description:
         "Cela peut prendre un certain temps. Il apparaîtra ici dès qu'il sera prêt.",
+      aborted: "La génération d'images a été interrompue.",
     },
   },
 };

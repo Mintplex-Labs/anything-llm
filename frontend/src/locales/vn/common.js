@@ -1939,6 +1939,7 @@ const TRANSLATIONS = {
       heading: "Tạo ảnh cho bạn…",
       description:
         "Quá trình này có thể mất một khoảng thời gian. Nội dung sẽ hiển thị ngay khi hoàn thành.",
+      aborted: "Việc tạo hình ảnh đã bị hủy bỏ.",
     },
   },
 };

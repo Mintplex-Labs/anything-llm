@@ -1945,6 +1945,7 @@ const TRANSLATIONS = {
       heading: "Kuriamas jūsų vaizdas…",
       description:
         "Tai gali užtrukti keletą minučių. Ji pasirodys čia, kai bus pasiruošusi.",
+      aborted: "Vaizdo kūrimas buvo nutrauktas.",
     },
   },
 };

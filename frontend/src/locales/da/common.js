@@ -1940,6 +1940,7 @@ const TRANSLATIONS = {
       heading: "Generering af dit billede...",
       description:
         "Det kan tage lidt tid. Det vil dukke op her, så snart det er klar.",
+      aborted: "Genereringen af billedet blev afbrudt.",
     },
   },
 };

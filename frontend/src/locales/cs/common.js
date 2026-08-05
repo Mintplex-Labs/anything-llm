@@ -1939,6 +1939,7 @@ const TRANSLATIONS = {
       heading: "Generování vaší obrázku…",
       description:
         "To může trvat nějakou dobu. Jakmile bude k dispozici, zobrazí se zde.",
+      aborted: "Generování obrázku bylo přerušeno.",
     },
   },
 };

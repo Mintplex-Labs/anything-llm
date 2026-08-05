@@ -1989,6 +1989,7 @@ const TRANSLATIONS = {
       heading: "Creazione dell'immagine...",
       description:
         "Questo potrebbe richiedere un po' di tempo. Apparirà qui non appena sarà disponibile.",
+      aborted: "La generazione dell'immagine è stata interrotta.",
     },
   },
 };
