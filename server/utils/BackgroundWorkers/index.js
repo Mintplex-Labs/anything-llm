@@ -38,7 +38,7 @@ class BackgroundService {
     },
     {
       name: "cleanup-generated-images",
-      timeout: "5m",
+      timeout: "6m",
       interval: "9hr",
     },
   ];
