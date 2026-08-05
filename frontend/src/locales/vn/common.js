@@ -111,6 +111,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Công việc theo lịch trình",
     "model-router": "Router mẫu",
+    "image-generation": "Tạo ảnh",
   },
   login: {
     "multi-user": {
@@ -1262,6 +1263,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Không thể chuyển đổi: {{error}}",
     export: "Xuất trò chuyện dưới dạng...",
     exporting: "Xuất khẩu...",
+    preset_img_description: "Tạo một hình ảnh từ một đoạn mô tả bằng văn bản.",
   },
   profile_settings: {
     edit_account: "Chỉnh sửa Tài khoản",
@@ -1920,6 +1922,23 @@ const TRANSLATIONS = {
       "routed-to": "Được chuyển đến <route>{{model}}</route>",
       "routed-to-rule":
         "Được chuyển đến <route>{{model}}</route> thông qua <rule>{{ruleTitle}}</rule>",
+    },
+  },
+  imageGeneration: {
+    title: "Ưu tiên tạo ảnh",
+    description:
+      "Cấu hình nhà cung cấp được sử dụng để tạo ảnh từ lệnh `/img`.",
+    provider: "Nhà cung cấp dịch vụ tạo hình ảnh",
+    card: {
+      "failed-to-load": "Không thể tải hình ảnh.",
+      "alt-text": "Hình ảnh được tạo ra",
+      edit: "Chỉnh sửa",
+      download: "Tải xuống",
+    },
+    pending: {
+      heading: "Tạo ảnh cho bạn…",
+      description:
+        "Quá trình này có thể mất một khoảng thời gian. Nội dung sẽ hiển thị ngay khi hoàn thành.",
     },
   },
 };

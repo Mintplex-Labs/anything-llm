@@ -112,6 +112,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "وظایف برنامه‌ریزی شده",
     "model-router": "روتر نمونه",
+    "image-generation": "تولید تصاویر",
   },
   login: {
     "multi-user": {
@@ -1257,6 +1258,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "ترجمه ناموفق: {{error}}",
     export: "صدور چت به صورت...",
     exporting: "صدور به خارج",
+    preset_img_description: "ایجاد یک تصویر بر اساس یک دستور متنی",
   },
   profile_settings: {
     edit_account: "ویرایش حساب",
@@ -1910,6 +1912,23 @@ const TRANSLATIONS = {
       "routed-to": "به {{model}} ارسال شده، مربوط به <route> و </route>",
       "routed-to-rule":
         "به <route>{{model}}</route> از طریق <rule>{{ruleTitle}}</rule> ارسال شد.",
+    },
+  },
+  imageGeneration: {
+    title: "ترجیح در تولید تصاویر",
+    description:
+      "تنظیم سرویس یا پلتفرم مورد استفاده برای تولید تصاویر از طریق دستور `/img` انجام شود.",
+    provider: "ارائه‌دهنده خدمات تولید تصاویر",
+    card: {
+      "failed-to-load": "تصویر بارگذاری نشد.",
+      "alt-text": "تصویر تولید شده",
+      edit: "ویرایش کردن",
+      download: "دانلود",
+    },
+    pending: {
+      heading: "ایجاد تصویر شما...",
+      description:
+        "ممکن است مدتی طول بکشد. پس از آماده شدن، این اطلاعات در اینجا نمایش داده خواهد شد.",
     },
   },
 };
