@@ -39,3 +39,7 @@ If the basis of your report relies on the system not setting up a password or mu
 During onboarding, the system will prompt the user to set up a password or multi-user mode. If the user does not opt to set up a password or multi-user mode, the system will be accessible to anyone who knows the URL. This is an intentional design choice and is not a vulnerability.
 
 If your report is about being able to access the system via _bypassing the authentication_ or lackthereof, that **is a valid report** and will be investigated and fixed.
+
+### Reports requiring knowledge or guessing of a UUID
+
+If your report depends on an attacker knowing or guessing a UUID (e.g., a session ID, embed ID, or any other random identifier) without demonstrating a practical way to obtain it, this is not a valid report. UUIDs (v4) have 122 bits of entropy and are not feasible to brute-force. Unless your report includes a concrete method to leak or enumerate the UUID in question, it will be closed immediately.
