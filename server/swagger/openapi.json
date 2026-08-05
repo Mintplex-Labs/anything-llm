@@ -1307,6 +1307,15 @@
             "schema": {
               "type": "integer"
             }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Max documents to return, capped at 1000. Defaults to all, which returns every document in the folder.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
