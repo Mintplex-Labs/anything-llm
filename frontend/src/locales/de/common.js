@@ -111,6 +111,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Geplante Aufgaben",
     "model-router": "Modell-Router",
+    "image-generation": "Bildgenerierung",
   },
   login: {
     "multi-user": {
@@ -1388,6 +1389,8 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Transkription fehlgeschlagen: {{error}}",
     export: "Chat-Export als...",
     exporting: "Exportieren...",
+    preset_img_description:
+      "Erstelle ein Bild basierend auf einer Textanfrage.",
   },
   profile_settings: {
     edit_account: "Account bearbeiten",
@@ -1960,6 +1963,23 @@ const TRANSLATIONS = {
       "routed-to": "Weitergeleitet am <route>{{model}}</route>",
       "routed-to-rule":
         "Weitergeleitet über <route>{{model}}</route> nach <rule>{{ruleTitle}}</rule>",
+    },
+  },
+  imageGeneration: {
+    title: "Bevorzugte Bildgenerierung",
+    description:
+      "Konfigurieren Sie den Anbieter, der für die Generierung von Bildern über den Befehl `/img` verwendet wird.",
+    provider: "Anbieter von Bildgenerierung",
+    card: {
+      "failed-to-load": "Bild konnte nicht geladen werden",
+      "alt-text": "Erstelltes Bild",
+      edit: "Bearbeiten",
+      download: "Herunterladen",
+    },
+    pending: {
+      heading: "Erstellung Ihres Bildes…",
+      description:
+        "Dies kann etwas Zeit in Anspruch nehmen. Es wird hier erscheinen, sobald es fertig ist.",
     },
   },
 };

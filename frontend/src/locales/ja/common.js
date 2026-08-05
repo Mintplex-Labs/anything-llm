@@ -110,6 +110,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "計画された作業",
     "model-router": "モデルルーター",
+    "image-generation": "画像生成",
   },
   login: {
     "multi-user": {
@@ -1248,6 +1249,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "文字起こしに失敗しました: {{error}}",
     export: "チャットを以下のような形式でエクスポートする：",
     exporting: "輸出…",
+    preset_img_description: "テキストプロンプトから画像を生成する。",
   },
   profile_settings: {
     edit_account: "アカウントを編集",
@@ -1909,6 +1911,23 @@ const TRANSLATIONS = {
       "routed-to": "<route>、{{model}}、</route> 宛にルーティング",
       "routed-to-rule":
         "<route>～</route>を経由して、<rule>～</rule>へルーティング",
+    },
+  },
+  imageGeneration: {
+    title: "画像生成の好み",
+    description:
+      "`/img` コマンドを使用して画像を生成するために使用するプロバイダーを設定します。",
+    provider: "画像生成サービスプロバイダー",
+    card: {
+      "failed-to-load": "画像の読み込みに失敗しました。",
+      "alt-text": "生成された画像",
+      edit: "編集",
+      download: "ダウンロード",
+    },
+    pending: {
+      heading: "画像の生成中…",
+      description:
+        "これには少し時間がかかる場合があります。準備が整ったら、こちらに表示されます。",
     },
   },
 };

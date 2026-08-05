@@ -109,6 +109,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "예정된 작업",
     "model-router": "모델 라우터",
+    "image-generation": "이미지 생성",
   },
   login: {
     "multi-user": {
@@ -1331,6 +1332,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "전사 오류: {{error}}",
     export: "채팅 내용을 다음 형식으로 내보내기:",
     exporting: "수출 중…",
+    preset_img_description: "텍스트 프롬프트에서 이미지를 생성합니다.",
   },
   profile_settings: {
     edit_account: "계정 정보 수정",
@@ -1875,6 +1877,23 @@ const TRANSLATIONS = {
       "invalid-model": "유효하지 않은 모델 선택",
       "routed-to": "<route> 정보가 {{model}}에 전달되었습니다.",
       "routed-to-rule": "<route>에서 {{model}}를 통해 </route>로 연결",
+    },
+  },
+  imageGeneration: {
+    title: "이미지 생성 선호도",
+    description:
+      "`/img` 명령어를 사용하여 이미지를 생성하는 데 사용되는 제공 업체를 구성합니다.",
+    provider: "이미지 생성 제공업체",
+    card: {
+      "failed-to-load": "이미지 로딩 실패",
+      "alt-text": "생성된 이미지",
+      edit: "편집",
+      download: "다운로드",
+    },
+    pending: {
+      heading: "이미지 생성 중...",
+      description:
+        "이 작업에는 시간이 걸릴 수 있습니다. 준비되면 바로 여기에서 확인하실 수 있습니다.",
     },
   },
 };

@@ -117,6 +117,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Planuojami darbai",
     "model-router": "Modelio maršrutizatorius",
+    "image-generation": "Vaizdų kūrimas",
   },
   login: {
     "multi-user": {
@@ -1394,6 +1395,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Transkripcija nepavyko: {{error}}",
     export: "Eksporteri pokalbį kaip…",
     exporting: "Eksporteris...",
+    preset_img_description: "Sukurkite vaizdą iš teksto instrukcijos",
   },
   profile_settings: {
     edit_account: "Redaguoti paskyrą",
@@ -1926,6 +1928,23 @@ const TRANSLATIONS = {
       "routed-to": "Siųsta į <route>{{model}}</route>",
       "routed-to-rule":
         "Peradresuota per <route>{{model}}</route> pagal <rule>{{ruleTitle}}</rule>",
+    },
+  },
+  imageGeneration: {
+    title: "Vaizdų generavimo pasirinkimas",
+    description:
+      "Nustatykite paslaugą, kuri naudojasi `/img` komanda, kad būtų sukurta vaizdai.",
+    provider: "Vaizdų generavimo paslaugos tiekėjas",
+    card: {
+      "failed-to-load": "Nepavyko įkelti vaizdą",
+      "alt-text": "Sukurta vaizdas",
+      edit: "Redaguoti",
+      download: "Atsisiųsti",
+    },
+    pending: {
+      heading: "Kuriamas jūsų vaizdas…",
+      description:
+        "Tai gali užtrukti keletą minučių. Ji pasirodys čia, kai bus pasiruošusi.",
     },
   },
 };

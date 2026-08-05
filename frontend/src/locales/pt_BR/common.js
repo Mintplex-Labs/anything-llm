@@ -110,6 +110,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Tarefas Agendadas",
     "model-router": "Roteador de modelo",
+    "image-generation": "Geração de Imagens",
   },
   login: {
     "multi-user": {
@@ -1363,6 +1364,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Falha na transcrição: {{error}}",
     export: "Exporte a conversa como...",
     exporting: "Exportando...",
+    preset_img_description: "Gerar uma imagem a partir de um texto",
   },
   profile_settings: {
     edit_account: "Editar conta",
@@ -1915,6 +1917,23 @@ const TRANSLATIONS = {
       "routed-to": "Encaminhado para <route>{{model}}</route>",
       "routed-to-rule":
         "Direcionado para <route>{{model}}</route> através de <rule>{{ruleTitle}}</rule>",
+    },
+  },
+  imageGeneration: {
+    title: "Preferência na geração de imagens",
+    description:
+      "Configure o provedor utilizado para gerar imagens a partir do comando `/img`.",
+    provider: "Fornecedor de Geração de Imagens",
+    card: {
+      "failed-to-load": "Não foi possível carregar a imagem.",
+      "alt-text": "Imagem gerada",
+      edit: "Editar",
+      download: "Baixar",
+    },
+    pending: {
+      heading: "Gerando sua imagem…",
+      description:
+        "Isso pode demorar um pouco. Assim que estiver pronto, aparecerá aqui.",
     },
   },
 };
