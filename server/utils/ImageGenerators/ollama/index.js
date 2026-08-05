@@ -19,6 +19,16 @@ class OllamaImageGenerator extends BaseImageGenerator {
       className: "OllamaImageGenerator",
     });
   }
+
+  async editImage({ prompt, images }) {
+    this.log(
+      `Ollama does not support image editing. Dropping ${images.length} reference image(s) and generating from prompt only.`
+    );
+    const result = await this.generateImage({ prompt });
+    result.notice =
+      "Ollama does not support image editing — your reference images were ignored and a new image was generated from the prompt only.";
+    return result;
+  }
 }
 
 module.exports = { OllamaImageGenerator };

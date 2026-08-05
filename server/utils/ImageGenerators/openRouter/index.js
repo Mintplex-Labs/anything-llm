@@ -39,6 +39,33 @@ class OpenRouterImageGenerator extends BaseImageGenerator {
     if (!dataUrl) throw new Error("OpenRouter returned no image data.");
     return { buffer: Buffer.from(dataUrl.split(",").pop(), "base64") };
   }
+
+  async editImage({ prompt, images }) {
+    this.log(
+      `Editing image with ${this.model} (${images.length} reference(s)).`
+    );
+    const content = [
+      ...images.map((buf) => ({
+        type: "image_url",
+        image_url: {
+          url: `data:image/png;base64,${buf.toString("base64")}`,
+        },
+      })),
+      { type: "text", text: prompt },
+    ];
+
+    const completion = await this.client.chat.completions.create({
+      model: this.model,
+      messages: [{ role: "user", content }],
+      modalities: ["image", "text"],
+    });
+
+    const dataUrl =
+      completion?.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+    if (!dataUrl)
+      throw new Error("OpenRouter returned no image data for edit.");
+    return { buffer: Buffer.from(dataUrl.split(",").pop(), "base64") };
+  }
 }
 
 module.exports = { OpenRouterImageGenerator };

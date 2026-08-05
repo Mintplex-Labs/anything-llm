@@ -1,6 +1,11 @@
 const { WorkspaceChats } = require("../../../models/workspaceChats");
-const { generateImageForWorkspace } = require("../../ImageGenerators");
+const {
+  generateImageForWorkspace,
+  editImageForWorkspace,
+} = require("../../ImageGenerators");
 const { writeResponseChunk } = require("../../helpers/chat/responses");
+const path = require("path");
+const fs = require("fs");
 
 /**
  * Handles the `/img <prompt>` slash command: generates an image, stores it, and
@@ -21,7 +26,8 @@ async function generateImage(
   msgUUID,
   user = null,
   thread = null,
-  response = null
+  response = null,
+  attachments = []
 ) {
   const prompt = String(message)
     .replace(/^\/img\s*/i, "")
@@ -68,8 +74,12 @@ async function generateImage(
       });
     }
 
-    const { storageFilename, filename, fileSize } =
-      await generateImageForWorkspace({ prompt });
+    const imageBuffers = resolveImageBuffers(attachments);
+    const result =
+      imageBuffers.length > 0
+        ? await editImageForWorkspace({ prompt, images: imageBuffers })
+        : await generateImageForWorkspace({ prompt });
+    const { storageFilename, filename, fileSize, notice } = result;
 
     const outputs = [
       {
@@ -77,7 +87,8 @@ async function generateImage(
         payload: { storageFilename, filename, fileSize, prompt },
       },
     ];
-    const textResponse = `Generated an image for: "${prompt}"`;
+    let textResponse = `Generated an image for: "${prompt}"`;
+    if (notice) textResponse += `\n\n_${notice}_`;
 
     const { chat } = await WorkspaceChats.new({
       workspaceId: workspace.id,
@@ -87,6 +98,7 @@ async function generateImage(
         sources: [],
         type: "textResponse",
         outputs,
+        attachments,
       },
       user,
       threadId: thread?.id || null,
@@ -113,6 +125,38 @@ async function generateImage(
       error: `Image generation failed: ${e.message}`,
     };
   }
+}
+
+/**
+ * Extracts image Buffers from chat attachments. Supports both:
+ * - base64 data-URL content strings (from pasted/dropped images)
+ * - storageFilename references (from the "Edit" action on generated images)
+ * Non-image attachments are silently skipped.
+ * @param {Array} attachments
+ * @returns {Buffer[]}
+ */
+function resolveImageBuffers(attachments = []) {
+  const { generatedImagesPath } = require("../../files");
+  const buffers = [];
+  for (const att of attachments) {
+    if (!att.mime?.startsWith("image/")) continue;
+
+    if (att.storageFilename) {
+      const filePath = path.resolve(generatedImagesPath, att.storageFilename);
+      if (fs.existsSync(filePath)) {
+        buffers.push(fs.readFileSync(filePath));
+        continue;
+      }
+    }
+
+    if (att.contentString) {
+      const base64 = att.contentString.includes(",")
+        ? att.contentString.split(",").pop()
+        : att.contentString;
+      buffers.push(Buffer.from(base64, "base64"));
+    }
+  }
+  return buffers;
 }
 
 module.exports = { generateImage };

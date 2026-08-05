@@ -17,4 +17,20 @@ async function generateImageForWorkspace({ prompt, size }) {
   return { ...saved, buffer };
 }
 
-module.exports = { generateImageForWorkspace };
+/**
+ * Edits/transforms images from a prompt + reference images using the
+ * system-configured provider. Falls back to generation if the provider
+ * doesn't support editing (Ollama handles this internally).
+ * @param {{prompt: string, images: Buffer[], size?: string}} params
+ * @returns {Promise<{storageFilename: string, filename: string, fileSize: number, buffer: Buffer}>}
+ */
+async function editImageForWorkspace({ prompt, images, size }) {
+  const { getImageGeneratorProvider } = require("../helpers");
+  const { saveGeneratedImage } = require("../files");
+  const provider = getImageGeneratorProvider();
+  const { buffer, notice } = await provider.editImage({ prompt, images, size });
+  const saved = await saveGeneratedImage({ buffer, prompt });
+  return { ...saved, buffer, ...(notice && { notice }) };
+}
+
+module.exports = { generateImageForWorkspace, editImageForWorkspace };

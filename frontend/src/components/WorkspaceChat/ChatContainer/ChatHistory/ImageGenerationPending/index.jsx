@@ -24,7 +24,7 @@ function ImageGenerationPending() {
             </p>
             <p className="text-white/70 light:text-slate-600 text-xs leading-relaxed">
               This can take a little while. It'll appear here as soon as it's
-              ready — no need to resend.
+              ready.
             </p>
           </div>
         </div>

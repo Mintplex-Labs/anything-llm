@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from "react";
+import { memo, useEffect, useState, useRef } from "react";
 import { saveAs } from "file-saver";
 import {
   DownloadSimple,
@@ -6,9 +6,13 @@ import {
   Check,
   CircleNotch,
   ImageBroken,
+  DotsThree,
+  PencilSimple,
 } from "@phosphor-icons/react";
 import StorageFiles from "@/models/files";
 import { openImageLightbox } from "@/components/ImageLightbox";
+import { PASTE_ATTACHMENT_EVENT } from "@/components/WorkspaceChat/ChatContainer/DnDWrapper";
+import { PROMPT_INPUT_EVENT } from "@/components/WorkspaceChat/ChatContainer/PromptInput";
 
 /**
  * Renders a generated image returned by the `/img` command. The serve endpoint
@@ -19,8 +23,10 @@ function ImageGenerationCard({ props }) {
   const { storageFilename, filename, prompt } = props.content || {};
   const [blob, setBlob] = useState(null);
   const [objectUrl, setObjectUrl] = useState(null);
-  const [status, setStatus] = useState("loading"); // loading | ready | failed
+  const [status, setStatus] = useState("loading");
   const [copied, setCopied] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
 
   useEffect(() => {
     let revokeUrl = null;
@@ -38,9 +44,20 @@ function ImageGenerationCard({ props }) {
     };
   }, [storageFilename]);
 
+  useEffect(() => {
+    if (!menuOpen) return;
+    function handleClickOutside(e) {
+      if (menuRef.current && !menuRef.current.contains(e.target))
+        setMenuOpen(false);
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [menuOpen]);
+
   const handleDownload = () => {
     if (!blob) return;
     saveAs(blob, filename || storageFilename);
+    setMenuOpen(false);
   };
 
   const handleCopy = async () => {
@@ -52,6 +69,30 @@ function ImageGenerationCard({ props }) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {}
+  };
+
+  const handleEdit = async () => {
+    setMenuOpen(false);
+    if (!blob) return;
+
+    const file = new File([blob], filename || storageFilename, {
+      type: blob.type,
+    });
+
+    window.dispatchEvent(
+      new CustomEvent(PASTE_ATTACHMENT_EVENT, {
+        detail: {
+          files: [file],
+          storageFilename,
+        },
+      })
+    );
+
+    window.dispatchEvent(
+      new CustomEvent(PROMPT_INPUT_EVENT, {
+        detail: { messageContent: "/img ", writeMode: "replace" },
+      })
+    );
   };
 
   return (
@@ -90,11 +131,12 @@ function ImageGenerationCard({ props }) {
               }
               className="max-h-[280px] max-w-[500px] object-contain cursor-pointer"
             />
-            <div className="absolute top-2 right-2 flex items-center gap-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+
+            {/* Copy — bottom left */}
+            <div className="absolute bottom-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity">
               <button
                 onClick={handleCopy}
-                data-tooltip-content="Copy image"
-                className="border-none p-2 rounded-lg bg-black/60 hover:bg-black/80 light:bg-slate-200 light:hover:bg-slate-300 text-white light:text-slate-700"
+                className="border-none p-2 rounded-lg bg-black/60 hover:bg-black/80 light:bg-slate-200/60 light:hover:bg-slate-200 text-white light:text-slate-700"
               >
                 {copied ? (
                   <Check size={16} weight="bold" />
@@ -102,13 +144,38 @@ function ImageGenerationCard({ props }) {
                   <Copy size={16} weight="bold" />
                 )}
               </button>
+            </div>
+
+            {/* 3-dot menu — top right */}
+            <div
+              ref={menuRef}
+              className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+            >
               <button
-                onClick={handleDownload}
-                data-tooltip-content="Download image"
-                className="border-none p-2 rounded-lg bg-black/60 hover:bg-black/80 light:bg-slate-200 light:hover:bg-slate-300 text-white light:text-slate-700"
+                onClick={() => setMenuOpen((prev) => !prev)}
+                className="border-none p-2 rounded-lg bg-black/60 hover:bg-black/80 light:bg-slate-200/60 light:hover:bg-slate-200 text-white light:text-slate-700"
               >
-                <DownloadSimple size={16} weight="bold" />
+                <DotsThree size={16} weight="bold" />
               </button>
+
+              {menuOpen && (
+                <div className="absolute right-0 mt-1 w-36 rounded-lg bg-zinc-900 light:bg-white border border-zinc-700 light:border-slate-200 shadow-lg z-10 overflow-hidden">
+                  <button
+                    onClick={handleEdit}
+                    className="w-full flex items-center gap-x-2 px-3 py-2 text-sm text-white light:text-slate-700 hover:bg-zinc-800 light:hover:bg-slate-100 border-none"
+                  >
+                    <PencilSimple size={14} weight="bold" />
+                    Edit
+                  </button>
+                  <button
+                    onClick={handleDownload}
+                    className="w-full flex items-center gap-x-2 px-3 py-2 text-sm text-white light:text-slate-700 hover:bg-zinc-800 light:hover:bg-slate-100 border-none"
+                  >
+                    <DownloadSimple size={14} weight="bold" />
+                    Download
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}

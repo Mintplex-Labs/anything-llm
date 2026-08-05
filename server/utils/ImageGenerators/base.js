@@ -51,6 +51,62 @@ class BaseImageGenerator {
    * @param {string} size
    * @returns {Promise<GeneratedImage>}
    */
+  /**
+   * Edit/transform images using a text prompt. Uses the OpenAI-compatible
+   * `/v1/images/edits` endpoint which OpenAI and Lemonade both support.
+   * Providers that don't support editing should override this method.
+   * @param {{prompt: string, images: Buffer[], size?: string}} params
+   * @returns {Promise<GeneratedImage>}
+   */
+  async editImage({ prompt, images, size }) {
+    const imageSize =
+      size || process.env.IMAGE_GEN_SIZE_PREF || DEFAULT_IMAGE_SIZE;
+    this.log(
+      `Editing image with ${this.model} (${images.length} reference(s)).`
+    );
+
+    const formData = new FormData();
+    formData.append("model", this.model);
+    formData.append("prompt", prompt);
+    formData.append("size", imageSize);
+    formData.append("n", "1");
+    for (let i = 0; i < images.length; i++) {
+      formData.append(
+        "image",
+        new Blob([images[i]], { type: "image/png" }),
+        `reference-${i}.png`
+      );
+    }
+
+    const baseURL = this.client.baseURL.replace(/\/+$/, "");
+    const res = await fetch(`${baseURL}/images/edits`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${this.client.apiKey}`,
+      },
+      body: formData,
+    });
+
+    if (!res.ok) {
+      const body = await res.text().catch(() => "");
+      throw new Error(
+        `Image edit failed (${res.status}): ${body || res.statusText}`
+      );
+    }
+
+    const payload = await res.json();
+    const image = payload?.data?.[0];
+    if (image?.b64_json)
+      return { buffer: Buffer.from(image.b64_json, "base64") };
+    if (image?.url) {
+      const imgRes = await fetch(image.url);
+      if (!imgRes.ok)
+        throw new Error(`Failed to fetch edited image: ${imgRes.status}`);
+      return { buffer: Buffer.from(await imgRes.arrayBuffer()) };
+    }
+    throw new Error("Image edit returned no image data.");
+  }
+
   async requestImage(prompt, size) {
     this.log(`Generating ${size} image with ${this.model}.`);
     const result = await this.client.images.generate({
