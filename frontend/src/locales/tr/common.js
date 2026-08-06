@@ -1137,6 +1137,32 @@ const TRANSLATIONS = {
       vault_warning:
         "Herhangi bir çakışmayı önlemek için Obsidian kasanızın şu anda açık olmadığından emin olun.",
     },
+    gitea: {
+      name: "Gitea Deposu",
+      description:
+        "Herhangi bir Gitea örneğinden, kamu veya özel bir depoyu tek tıklamayla içe aktarın.",
+      URL: "Gitea Depo URL'si",
+      URL_explained:
+        "Gitea örneğinizde toplamak istediğiniz deponun URL'si – kendi barındırdığınız örnekler de desteklenmektedir.",
+      token: "Gitea Erişim Belgesi",
+      optional: "isteğe bağlı",
+      token_explained:
+        "Özel depoları veya kimlik doğrulama gerektiren sunuculardaki depoları toplamak için erişim token'ına ihtiyaç vardır.",
+      token_explained_start: "Herhangi bir...",
+      token_explained_link1: "Erişim Belgesi",
+      token_explained_end:
+        "Sadece Gitea örneğinizin kamuya açık olarak sunduğu depolama alanlarından veri toplanabilir.",
+      ignores: "Dosya, belirtilen öğeyi dikkate almayacak.",
+      git_ignore:
+        "`.gitignore` formatında belirli dosyaların toplanma sırasında göz ardı edilmesini sağlamak için bir liste oluşturun. Kaydetmek istediğiniz her girişte Enter tuşuna basın.",
+      task_explained:
+        "İşlemler tamamlandıktan sonra, tüm dosyalar doküman seçici aracında çalışma alanlarına entegre etmek için kullanılabilir olacaktır.",
+      branch: "Dosyaları almayı istediğiniz şube.",
+      branch_loading: "– Mevcut dallar yükleniliyor –",
+      branch_explained: "Dosyaları almayı istediğiniz şube.",
+      token_information:
+        "<b>Gitea Erişim Belgesi</b> bilgisi sağlanmadığı takdirde, bu veri bağlantısı yalnızca <b>izinli erişilebilir</b> olan Gitea örneğinizdeki depoların dosyalarını toplayabilme yeteneğine sahip olacaktır.",
+    },
   },
   chat_window: {
     send_message: "Mesaj gönderin",
@@ -1822,7 +1848,7 @@ const TRANSLATIONS = {
       "calculated-single-condition":
         'Eğer <prop> {{property}} </prop> {{comparator}} <val> "{{value}}" </val> ise, rotayı <route> {{route}} </route> olarak belirle.',
       "calculated-multi-condition":
-        "Eğer {{quantifier}} (TAG_0) {{conditions}} (TAG_1) ise, rotayı <route> (PLACEHOLDER_2) __PLACEHOLDER_3__ (TAG_3) olarak belirle.",
+        "Eğer {{quantifier}} <cond>{{conditions}}</cond> ise, rotayı <route>{{route}}</route> olarak belirle.",
       "comparator-contains": "içerir",
       "comparator-matches": "Maçlar",
       "comparator-between": "arasında",

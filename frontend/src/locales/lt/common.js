@@ -1253,6 +1253,32 @@ const TRANSLATIONS = {
       watch_explained_block3_end: " administratoriaus peržiūroje.",
       accept: "Gerai, supratau",
     },
+    gitea: {
+      name: "„Gitea“ repozitorija",
+      description:
+        "Įtraukite visą viešą arba privataus repozitorijos iš bet kurios „Gitea“ instanso vienu spusteliu.",
+      URL: "„Gitea“ repozitorijos URL",
+      URL_explained:
+        "Repo URL, kurį norite importuoti į savo „Gitea“ instanciją – palaikomos ir saviname serverio instancijoje esančios repoziatorijos.",
+      token: "„Gitea“ prieigos žetonas",
+      optional: "Neprivaloma",
+      token_explained:
+        "Reikia naudoti API raktą, kad būtų galima pasiekti privatius repozitorijus arba repozitorijų sąrašus, kuriems reikalinga autentifikacija.",
+      token_explained_start: "Be to",
+      token_explained_link1: "Prisijimo žymė",
+      token_explained_end:
+        "„Gitea“ instancija, kurios duomenys yra prieinami publikai, gali būti surinkti tik iš šių vietų.",
+      ignores: "Failas ignoruoja",
+      git_ignore:
+        'Sąrašas `.gitignore` formate, skirtas ignoruoti konkrečius failus renkant informaciją. Spustelėkite "Enter" po kiekvieno elemento, kurį norite išsaugoti.',
+      task_explained:
+        "Vienas baigęs, visi failai bus prieinami įdiegti į darbo vietų dokumentų pasirinkimo programinę įrangą.",
+      branch: "Šalį, iš kurio norite gauti failus.",
+      branch_loading: "– Naudojamos galimos versijos –",
+      branch_explained: "Šaką, iš kurios norite gauti failus.",
+      token_information:
+        "Jei neįvesite <b>Gitea prieigos žymę</b>, šis duomenų jungiklis galės rinkti failus iš repozitorijų, kurie yra <b>prieinami viešai</b> jūsų Gitea instancijoje.",
+    },
   },
   chat_window: {
     attachments_processing: "Priedai apdorojami. Palaukite...",

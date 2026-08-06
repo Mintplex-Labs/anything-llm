@@ -1132,6 +1132,33 @@ const TRANSLATIONS = {
       vault_warning:
         "Zorg ervoor dat uw Obsidian-kluis niet geopend is om conflicten te voorkomen.",
     },
+    gitea: {
+      name: "Repo van Gitea",
+      description:
+        "Importeer een volledig publiek of privé-repository van elke Gitea-instantie met één klik.",
+      URL: "URL van de Gitea repository",
+      URL_explained:
+        "URL van het repository dat u wilt ophalen in uw Gitea-instantie – zelf gehoste instanties worden ondersteund.",
+      token: "Gitea toegangstoken",
+      optional: "optioneel",
+      token_explained:
+        "Een toegangstoken is vereist om privé-repositories of repositories op instanties te verzamelen die authenticatie vereisen.",
+      token_explained_start: "Zonder",
+      token_explained_link1: "Toegangstoken",
+      token_explained_end:
+        "Alleen repositories die door uw Gitea-instantie openbaar toegankelijk zijn, kunnen worden verzameld.",
+      ignores: "Bestand negeert",
+      git_ignore:
+        "Maak een bestand met de naam `.gitignore` waarin je specifieke bestanden kunt opsluiten tijdens het verzamelen. Druk na elke vermelding die je wilt opslaan op Enter.",
+      task_explained:
+        "Zodra het proces voltooid is, zullen alle bestanden beschikbaar zijn om in te voegen in werkruimtes via de documentkiezer.",
+      branch: "De tak waaruit u de bestanden wilt ophalen.",
+      branch_loading: "– beschikbare takken laden –",
+      branch_explained:
+        "De tak (of afdeling) waaruit u de bestanden wilt downloaden.",
+      token_information:
+        "Zonder het invullen van de <b>Gitea Access Token</b> kan deze dataconnecteur alleen bestanden ophalen uit repositories die <b>openbaar toegankelijk</b> zijn op uw Gitea-instantie.",
+    },
   },
   chat_window: {
     send_message: "Een bericht verzenden",

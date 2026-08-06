@@ -1193,6 +1193,32 @@ const TRANSLATIONS = {
       watch_explained_block3_end: " 관리자 화면에서 관리할 수 있습니다.",
       accept: "확인했습니다",
     },
+    gitea: {
+      name: "기테아 저장소",
+      description:
+        "어떤 Gitea 인스턴스에서든 전체 공개 또는 사내 저장소를 단일 클릭으로 가져올 수 있습니다.",
+      URL: "Gitea 저장소 URL",
+      URL_explained:
+        "수집하려는 저장소의 URL (자체 호스팅된 Gitea 인스턴스에 적용)",
+      token: "Gitea 접근 토큰",
+      optional: "선택 사항",
+      token_explained:
+        "개인 저장소 또는 인증이 필요한 인스턴스의 저장소를 수집하려면 액세스 토큰이 필요합니다.",
+      token_explained_start: "(어떤 것) 없이",
+      token_explained_link1: "액세스 토큰",
+      token_explained_end:
+        "Gitea 인스턴스가 공개적으로 노출하는 저장소만 수집할 수 있습니다.",
+      ignores: "파일 무시",
+      git_ignore:
+        "수집 시 특정 파일을 무시하도록 `.gitignore` 형식으로 목록을 작성합니다. 저장하려는 항목마다 엔터를 누르세요.",
+      task_explained:
+        "모든 파일이 완료되면, 문서 선택기에서 워크스페이스에 삽입할 수 있습니다.",
+      branch: "파일을 가져올 서버 또는 브랜치를 선택하세요.",
+      branch_loading: "– 사용 가능한 브랜치 로딩 중 –",
+      branch_explained: "파일을 가져올 서버를 선택하세요.",
+      token_information:
+        "<b>Gitea 접근 토큰</b>을 입력하지 않으면, 이 데이터 연결기는 귀하의 Gitea 인스턴스에서 <b>공개적으로 읽을 수 있는</b> 저장소에서만 파일을 수집할 수 있습니다.",
+    },
   },
   chat_window: {
     attachments_processing:

@@ -1146,6 +1146,32 @@ const TRANSLATIONS = {
       vault_warning:
         "Per evitare qualsiasi conflitto, assicurarsi che la cartella Obsidian non sia attualmente aperta.",
     },
+    gitea: {
+      name: "Repository di Gitea",
+      description:
+        "Importare un intero repository pubblico o privato da qualsiasi istanza di Gitea con un singolo clic.",
+      URL: "URL del repository di Gitea",
+      URL_explained:
+        "URL del repository che desideri raccogliere sulla tua istanza di Gitea – sono supportate anche le istanze ospitate da te.",
+      token: "Token di accesso a Gitea",
+      optional: "facoltativo",
+      token_explained:
+        "È necessario un token di accesso per accedere a repository privati o a repository presenti su istanze che richiedono l'autenticazione.",
+      token_explained_start: "Senza",
+      token_explained_link1: "Token di accesso",
+      token_explained_end:
+        "Solo i repository che la tua istanza di Gitea rende accessibili pubblicamente possono essere raccolti.",
+      ignores: "Il file viene ignorato",
+      git_ignore:
+        'Crea un file nel formato ".gitignore" per escludere file specifici durante la raccolta. Premi Invio dopo ogni voce che desideri salvare.',
+      task_explained:
+        "Una volta completata la procedura, tutti i file saranno disponibili per essere incorporati negli spazi di lavoro tramite l'utilità di selezione documenti.",
+      branch: "Ramo da cui desideri recuperare i file.",
+      branch_loading: "– Caricamento dei rami disponibili –",
+      branch_explained: "Ramo da cui desideri recuperare i file.",
+      token_information:
+        "Senza inserire il token di accesso <b>Gitea</b>, questo connettore dati sarà in grado di raccogliere file solo da repository che sono <b>accessibili pubblicamente</b> nella tua istanza di Gitea.",
+    },
   },
   chat_window: {
     send_message: "Invia un messaggio",
@@ -1969,7 +1995,7 @@ const TRANSLATIONS = {
     chat: {
       "select-router-error": "Seleziona un router",
       "invalid-model": "Selezione del modello non valida",
-      "routed-to": "Inviato a {{model}}<route>__PLACEHOLDER_1__",
+      "routed-to": "Inviato a <route>{{model}}</route>",
       "routed-to-rule":
         "Instradato tramite <route>{{model}}</route> seguendo il percorso <rule>{{ruleTitle}}</rule>",
     },
