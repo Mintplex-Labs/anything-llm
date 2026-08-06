@@ -74,9 +74,9 @@ The Open Computer OS is built on top of [Debian 13.5.0 (Trixie)](https://www.deb
 
 1. **Agent Harness**: The core of Open Computer is a minimal, lightweight client — [Pi](https://pi.dev) with custom extensions we've built to make it capable of handling complex tasks inside small context windows. You can always add your own extensions to the harness.
 
-2. **Interface Service**: The [interface service](./services/server/index.js) is an HTTP/WebSocket server that lets the agent interact with the computer, the browser, and native apps. It also serves the full live UI when running `open-computer create/up agent --dev`.
+2. **Interface Service**: The [interface service](./services/interface-service/index.js) is an HTTP/WebSocket server that lets the agent interact with the computer, the browser, and native apps. It also serves the full live UI when running `open-computer create/up agent --dev`.
 
-3. **Memory Manager**: The [memory manager](./services/memory-manager/index.js) is built on the [pi-hermes-memory](https://pi.dev/packages/pi-hermes-memory) package, extended with a full UI so you can inspect, edit, and manage the agent's memory at any time.
+3. **Memory Manager**: The [memory manager](./services/memory-manager/server.js) is built on the [pi-hermes-memory](https://pi.dev/packages/pi-hermes-memory) package, extended with a full UI so you can inspect, edit, and manage the agent's memory at any time.
 
 4. **XFCE Desktop**: The desktop environment is XFCE — lightweight, customizable, and ["riced"](https://jie-fang.github.io/blog/basics-of-ricing) to resemble Windows 10 (forked from [Fake10](https://store.kde.org/p/2332691)). Familiar enough for anyone to navigate.
 

@@ -74,8 +74,8 @@ export default function DataConnectors() {
   );
 
   return (
-    <div className="flex upload-modal -mt-10 relative min-h-[80vh] w-[70vw]">
-      <div className="w-full p-4 top-0 z-20">
+    <div className="flex upload-modal -mt-10 relative h-[70vh] w-[70vw]">
+      <div className="w-full p-4 top-0 z-20 overflow-y-auto h-full">
         <div className="w-full flex items-center sticky top-0 z-50">
           <MagnifyingGlass
             size={16}
@@ -112,7 +112,7 @@ export default function DataConnectors() {
         </div>
       </div>
       <div className="xl:block hidden absolute left-1/2 top-0 bottom-0 w-[0.5px] bg-white/20 -translate-x-1/2"></div>
-      <div className="w-full p-4 top-0 text-white min-w-[500px]">
+      <div className="w-full p-4 pb-8 top-0 text-white min-w-[500px] overflow-y-auto h-full">
         {DATA_CONNECTORS[selectedConnector].options}
       </div>
     </div>
