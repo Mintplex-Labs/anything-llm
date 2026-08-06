@@ -1374,6 +1374,32 @@ const TRANSLATIONS = {
       token_personal:
         "Get a free Personal Access Token with a GitLab account here.",
     },
+    gitea: {
+      name: "Gitea Repo",
+      description:
+        "Import an entire public or private repository from any Gitea instance in a single click.",
+      URL: "Gitea Repo URL",
+      URL_explained:
+        "Url of the repo you wish to collect on your Gitea instance - self-hosted instances are supported.",
+      token: "Gitea Access Token",
+      optional: "optional",
+      token_explained:
+        "Access Token required to collect private repositories or repos on instances that require authentication.",
+      token_explained_start: "Without an ",
+      token_explained_link1: "Access Token",
+      token_explained_end:
+        ", only repositories that your Gitea instance exposes publicly can be collected.",
+      ignores: "File Ignores",
+      git_ignore:
+        "List in .gitignore format to ignore specific files during collection. Press enter after each entry you want to save.",
+      task_explained:
+        "Once complete, all files will be available for embedding into workspaces in the document picker.",
+      branch: "Branch you wish to collect files from.",
+      branch_loading: "-- loading available branches --",
+      branch_explained: "Branch you wish to collect files from.",
+      token_information:
+        "Without filling out the <b>Gitea Access Token</b> this data connector will only be able to collect files from repositories that are <b>publicly readable</b> on your Gitea instance.",
+    },
     youtube: {
       name: "YouTube Transcript",
       description:

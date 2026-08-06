@@ -1221,6 +1221,33 @@ const TRANSLATIONS = {
       watch_explained_block3_end: " na visão de admin.",
       accept: "Ok, entendi",
     },
+    gitea: {
+      name: "Repositório Gitea",
+      description:
+        "Importe um repositório público ou privado inteiro de qualquer instância do Gitea com apenas um clique.",
+      URL: "URL do repositório Gitea",
+      URL_explained:
+        "URL do repositório que você deseja coletar na sua instância do Gitea – instâncias hospedadas por você são suportadas.",
+      token: "Token de acesso do Gitea",
+      optional: "opcional",
+      token_explained:
+        "Token de acesso necessário para coletar repositórios privados ou repositórios em instâncias que exigem autenticação.",
+      token_explained_start: "Sem",
+      token_explained_link1: "Token de Acesso",
+      token_explained_end:
+        "Somente os repositórios que sua instância do Gitea expõe publicamente podem ser coletados.",
+      ignores: "Arquivo ignorado",
+      git_ignore:
+        'Crie um arquivo no formato ".gitignore" para especificar quais arquivos devem ser ignorados durante a coleta. Pressione Enter após cada entrada que deseja salvar.',
+      task_explained:
+        "Após a conclusão, todos os arquivos estarão disponíveis para serem incorporados em espaços de trabalho no seletor de documentos.",
+      branch: "A filial de onde você deseja coletar os arquivos.",
+      branch_loading: "– Carregando os ramos disponíveis –",
+      branch_explained:
+        "A(s) filial(is) da qual(es) você deseja coletar arquivos.",
+      token_information:
+        "Sem preencher o token de acesso do <b>Gitea</b>, este conector de dados só poderá coletar arquivos de repositórios que são </b>acessíveis publicamente</b> na sua instância do Gitea.",
+    },
   },
   chat_window: {
     attachments_processing: "Anexos em processamento. Aguarde...",

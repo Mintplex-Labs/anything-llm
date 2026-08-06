@@ -1140,6 +1140,31 @@ const TRANSLATIONS = {
       processing_time: "根据你的仓库大小，这可能需要一些时间。",
       vault_warning: "为避免冲突，请确保你的 Obsidian 仓库当前未被打开。",
     },
+    gitea: {
+      name: "Gitea 仓库",
+      description:
+        "只需点击，即可从任何 Gitea 实例中导入整个公共或私有的代码仓库。",
+      URL: "Gitea 仓库 URL",
+      URL_explained:
+        "您希望在您的 Gitea 实例上收集的仓库的 URL – 支持自托管实例。",
+      token: "Gitea 访问令牌",
+      optional: "可选",
+      token_explained:
+        "需要访问令牌才能收集私有仓库或在需要身份验证的实例上的仓库。",
+      token_explained_start: "如果没有",
+      token_explained_link1: "访问令牌",
+      token_explained_end: "只有您的 Gitea 实例公开暴露的仓库才能被收集。",
+      ignores: "忽略文件",
+      git_ignore:
+        "使用 `.gitignore` 格式，列出需要忽略的文件，以便在收集时排除这些文件。 在您想要保存的每个条目后按回车键。",
+      task_explained:
+        "一旦完成，所有文件都将可用于在文档选择器中嵌入到工作空间中。",
+      branch: "您希望从哪个分支获取文件。",
+      branch_loading: "– 加载可用的分支 –",
+      branch_explained: "您希望从哪个分支收集文件。",
+      token_information:
+        "如果没有填写 <b>Gitea 访问令牌</b>，此数据连接器只能从您 Gitea 实例上的公开可读的仓库中收集文件。",
+    },
   },
   chat_window: {
     send_message: "发送消息",
