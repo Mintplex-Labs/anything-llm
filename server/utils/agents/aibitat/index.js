@@ -1025,7 +1025,11 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     };
 
     // Emit routing notification before the first completion so it appears above the response
-    if (depth === 0) this?.flushRoutingMetadata?.(v4());
+    // and reset the usage accumulator so metrics only cover this run's completions.
+    if (depth === 0) {
+      this?.flushRoutingMetadata?.(v4());
+      this.providerInstance.resetCumulativeUsage();
+    }
 
     /** @type {{ functionCall: { name: string, arguments: string }, textResponse: string }} */
     const completionStream = await this.#safeProviderCall(() =>
@@ -1111,7 +1115,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
         eventHandler?.("reportStreamEvent", {
           type: "usageMetrics",
           uuid: directOutputUUID,
-          metrics: this.providerInstance.getUsage(),
+          metrics: this.providerInstance.getCumulativeUsage(),
         });
         this?.flushCitations?.(directOutputUUID);
         this?.emitChatId?.(directOutputUUID);
@@ -1152,7 +1156,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     eventHandler?.("reportStreamEvent", {
       type: "usageMetrics",
       uuid: responseUuid,
-      metrics: this.providerInstance.getUsage(),
+      metrics: this.providerInstance.getCumulativeUsage(),
     });
     this?.flushCitations?.(responseUuid);
     this?.emitChatId?.(responseUuid);
@@ -1187,7 +1191,11 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     };
 
     // Emit routing notification before the first completion so it appears above the response
-    if (depth === 0) this?.flushRoutingMetadata?.(msgUUID);
+    // and reset the usage accumulator so metrics only cover this run's completions.
+    if (depth === 0) {
+      this?.flushRoutingMetadata?.(msgUUID);
+      this.providerInstance.resetCumulativeUsage();
+    }
 
     // get the chat completion
     const completion = await this.#safeProviderCall(() =>
@@ -1262,7 +1270,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
         eventHandler?.("reportStreamEvent", {
           type: "usageMetrics",
           uuid: msgUUID,
-          metrics: this.providerInstance.getUsage(),
+          metrics: this.providerInstance.getCumulativeUsage(),
         });
         this?.flushCitations?.(msgUUID);
         return result;
@@ -1302,7 +1310,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     eventHandler?.("reportStreamEvent", {
       type: "usageMetrics",
       uuid: msgUUID,
-      metrics: this.providerInstance.getUsage(),
+      metrics: this.providerInstance.getCumulativeUsage(),
     });
     this?.flushCitations?.(msgUUID);
     this?.emitChatId?.(msgUUID);
