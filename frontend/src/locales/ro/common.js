@@ -495,6 +495,33 @@ const TRANSLATIONS = {
       watch_explained_block3_end: ".",
       accept: "Ok, am înțeles",
     },
+    gitea: {
+      name: "Repoarte de la Gitea",
+      description:
+        "Importați un întreg depozit public sau privat dintr orice instanță Gitea printr-o singură acțiune.",
+      URL: "URL-ul Gitea pentru repo",
+      URL_explained:
+        "Adresa URL a depozitului pe care doriți să îl colectați în instanța dumneavoastră Gitea – sunt suportate și instanțele auto-gazduite.",
+      token: "Cheia de acces Gitea",
+      optional: "opțional",
+      token_explained:
+        "Se necesită un token de acces pentru a accesa depozitele private sau depozitele situate pe instanțe care necesită autentificare.",
+      token_explained_start: "Fără",
+      token_explained_link1: "Cheie de acces",
+      token_explained_end:
+        "Doar depozitele pe care instanța dumneavoastră Gitea le expune public pot fi colectate.",
+      ignores: "Fișierul este ignorat",
+      git_ignore:
+        "Creați un fișier în format `.gitignore` pentru a ignora anumite fișiere în timpul colectării. Apăsați tasta Enter după fiecare intrare pe care doriți să o salvați.",
+      task_explained:
+        "Odată ce procesul este finalizat, toate fișierele vor fi disponibile pentru a fi încărcate în spațiile de lucru prin intermediul instrumentului de selectare a documentelor.",
+      branch: "Ramura de rețea din care doriți să colectați fișierele.",
+      branch_loading: "— încărcare ramuri disponibile —",
+      branch_explained:
+        "Ramura din rețea de la care doriți să colectați fișierele.",
+      token_information:
+        "Fără a completa token-ul de acces <b>Gitea</b>, acest conector de date va putea colecta doar fișiere din depozitele care sunt <b>accesibile public</b> în instanța dumneavoastră Gitea.",
+    },
   },
   chat_window: {
     attachments_processing:
@@ -1935,7 +1962,7 @@ const TRANSLATIONS = {
         "Alege router-ul pe care dorești să-l folosești pentru acest spațiu de lucru.",
       "no-routers-chat":
         "Nu există routere configurate. Creați unul în secțiunea Setări > Furnizori de AI > Router de model.",
-      "rule-count": "(__REGULI__)",
+      "rule-count": "({{count}} reguli)",
     },
     metrics: {
       "model-router-default": "Model de router",

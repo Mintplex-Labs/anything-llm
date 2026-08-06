@@ -1491,6 +1491,32 @@ const TRANSLATIONS = {
       watch_explained_block3_end: ".",
       accept: "Oke, mengerti",
     },
+    gitea: {
+      name: "Repositori Gitea",
+      description:
+        "Impor seluruh repositori publik atau pribadi dari setiap instance Gitea hanya dengan satu klik.",
+      URL: "URL Repositori Gitea",
+      URL_explained:
+        "URL repositori yang ingin Anda kumpulkan di instance Gitea Anda – instance yang dihosting sendiri didukung.",
+      token: "Token Akses Gitea",
+      optional: "opsional",
+      token_explained:
+        "Token akses diperlukan untuk mengumpulkan repositori pribadi atau repositori pada instance yang memerlukan otentikasi.",
+      token_explained_start: "Tanpa",
+      token_explained_link1: "Token Akses",
+      token_explained_end:
+        "Hanya repositori yang dapat diakses secara publik oleh instansi Gitea Anda yang dapat dikumpulkan.",
+      ignores: "Berkas Diabaikan",
+      git_ignore:
+        'Buat daftar dalam format `.gitignore` untuk mengabaikan file-file tertentu selama proses pengumpulan. Tekan tombol "Enter" setelah setiap entri yang ingin Anda simpan.',
+      task_explained:
+        "Setelah selesai, semua file akan tersedia untuk dimasukkan ke dalam ruang kerja melalui fitur pemilihan dokumen.",
+      branch: "Cabang tempat Anda ingin mengambil file.",
+      branch_loading: "— cabang yang tersedia sedang dimuat —",
+      branch_explained: "Cabang tempat Anda ingin mengambil file.",
+      token_information:
+        "Tanpa mengisi <b>Token Akses Gitea</b>, konektor data ini hanya akan dapat mengumpulkan file dari repositori yang bersifat <b>dapat dibaca secara publik</b> pada instansi Gitea Anda.",
+    },
   },
   chat_window: {
     attachments_processing: "Lampiran sedang diproses. Harap tunggu...",

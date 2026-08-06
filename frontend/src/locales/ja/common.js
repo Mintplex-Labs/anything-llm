@@ -1104,6 +1104,32 @@ const TRANSLATIONS = {
       vault_warning:
         "いかなる紛争を避けるため、Obsidianの保管場所が現在開いている状態でないことを確認してください。",
     },
+    gitea: {
+      name: "ギテアのリポジトリ",
+      description:
+        "Gitea の任意のインスタンスから、公開またはプライベートなリポジトリ全体を 1 つのクリックでインポートします。",
+      URL: "ギテアのリポジトリURL",
+      URL_explained:
+        "収集したいリポジトリのGiteaインスタンス上のURL – 自社ホストのリポジトリもサポートされています。",
+      token: "ギテア アクセス トークン",
+      optional: "（オプション）",
+      token_explained:
+        "プライベートリポジトリや、認証が必要なインスタンス上のリポジトリを取得するには、アクセストークンが必要です。",
+      token_explained_start: "～なしで",
+      token_explained_link1: "アクセス トークン",
+      token_explained_end:
+        "ただし、Gitea インスタンスが公開しているリポジトリのみを収集できます。",
+      ignores: "ファイルは無視する",
+      git_ignore:
+        "`.gitignore`形式で、収集時に特定のファイルを無視するためのリストを作成します。保存したい項目ごとにEnterキーを押してください。",
+      task_explained:
+        "すべてのファイルが完了すると、ドキュメントピッカーを使用してワークスペースに埋め込むことができます。",
+      branch: "ファイルを収集したいブランチを指定してください。",
+      branch_loading: "— 利用可能なブランチのロード中 —",
+      branch_explained: "ファイルを収集したいブランチの名前。",
+      token_information:
+        "<b>Giteaアクセストークン</b>を入力しない場合、このデータコネクタは、あなたのGiteaインスタンス上の公開で読み取り可能なリポジトリからのみファイルを収集できます。",
+    },
   },
   chat_window: {
     send_message: "メッセージを送信",

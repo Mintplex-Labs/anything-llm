@@ -1145,6 +1145,34 @@ const TRANSLATIONS = {
       vault_warning:
         "Assurez-vous de sélectionner le dossier racine contenant le dossier .obsidian.",
     },
+    gitea: {
+      name: "Dépôt Git",
+      description:
+        "Importer un référentiel public ou privé entier depuis n'importe quelle instance Gitea en un seul clic.",
+      URL: "URL du dépôt Gitea",
+      URL_explained:
+        "URL du dépôt que vous souhaitez récupérer sur votre instance Gitea – les instances auto-hébergées sont prises en charge.",
+      token: "Token d'accès Gitea",
+      optional: "facultatif",
+      token_explained:
+        "Un jeton d'accès est nécessaire pour récupérer les dépôts privés ou les dépôts situés sur des instances qui nécessitent une authentification.",
+      token_explained_start: "Sans",
+      token_explained_link1: "Jeton d'accès",
+      token_explained_end:
+        "Seules les dépôts que votre instance Gitea expose publiquement peuvent être récupérés.",
+      ignores: "Le fichier est ignoré",
+      git_ignore:
+        'Créez un fichier au format ".gitignore" pour ignorer des fichiers spécifiques lors de la collecte. Appuyez sur Entrée après chaque entrée que vous souhaitez enregistrer.',
+      task_explained:
+        "Une fois terminés, tous les fichiers seront disponibles pour être intégrés dans des espaces de travail via le sélecteur de documents.",
+      branch:
+        "Branche à partir de laquelle vous souhaitez récupérer les fichiers.",
+      branch_loading: "– Chargement des branches disponibles –",
+      branch_explained:
+        "Branche à partir de laquelle vous souhaitez récupérer les fichiers.",
+      token_information:
+        "Sans saisir le jeton d'accès <b>Gitea</b>, ce connecteur de données ne pourra collecter que les fichiers provenant de dépôts accessibles publiquement sur votre instance Gitea.",
+    },
   },
   chat_window: {
     send_message: "Envoyer un message",

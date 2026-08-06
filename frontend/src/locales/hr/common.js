@@ -1496,6 +1496,32 @@ const TRANSLATIONS = {
       watch_explained_block3_end: " u administratorskom pregledu.",
       accept: "U redu, razumijem",
     },
+    gitea: {
+      name: "Repo Gitea",
+      description:
+        "Uvoz cijelog javnog ili privatnog repozitorija iz bilo koje instancije Gitea u samo jednom kliku.",
+      URL: "URL repozitorija Gitea",
+      URL_explained:
+        "URL repozitorija koje želite preuzeti na vašoj instanci Gitea – podržane su i samostalno hostovane instance.",
+      token: "Token za pristup Gitei",
+      optional: "opcionalno",
+      token_explained:
+        "Za pristup privatnim repozitorijima ili repozitorijima na serverima koji zahtijevaju autentifikaciju, je potreban token.",
+      token_explained_start: "Bez",
+      token_explained_link1: "Token za pristup",
+      token_explained_end:
+        "Samo repozitoriji koje vaše Gitea instancje objavljuju javno mogu biti prikupljeni.",
+      ignores: "Datoteka zanemaruje",
+      git_ignore:
+        'Kreirajte datoteku u formatu ".gitignore" kako biste isključili određene datoteke tijekom kopiranja. Pritisnite Enter nakon svake stavke koju želite sačuvati.',
+      task_explained:
+        "Nakon dovršetka, svi se datoteci bit će dostupni za umetanje u radne prostore putem izbornika dokumenata.",
+      branch: "Odjel/račun s kojim želite preuzeti datoteke.",
+      branch_loading: "– učitavanje dostupnih grana –",
+      branch_explained: "Odjel/račun s kojim želite preuzeti datoteke.",
+      token_information:
+        "Bez unosa <b>Token za pristup Gitei</b>, ovaj konektor neće moći prikupljati datove samo iz repozitorija koja su <b>otvorena za čitanje</b> na vašoj instanci Gitea.",
+    },
   },
   chat_window: {
     attachments_processing: "Privitci se obrađuju. Pričekajte...",
