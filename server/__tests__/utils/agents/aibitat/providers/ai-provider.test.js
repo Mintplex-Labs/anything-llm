@@ -147,3 +147,138 @@ describe("Provider usage tracking", () => {
     expect(providerA.getCumulativeUsage().total_tokens).toBe(0);
   });
 });
+
+describe("Provider usage robustness against malformed payloads", () => {
+  test.each([
+    ["null", null],
+    ["undefined", undefined],
+    ["a string", "not-a-usage-object"],
+    ["a number", 42],
+    ["a boolean", true],
+    ["an array", [100, 20, 120]],
+    ["an empty object", {}],
+  ])("recordUsage does not crash when the payload is %s", (_label, payload) => {
+    const provider = new TestProvider();
+
+    provider.resetUsage();
+    expect(() => provider.recordUsage(payload)).not.toThrow();
+
+    const totals = provider.getCumulativeUsage();
+    expect(totals.prompt_tokens).toBe(0);
+    expect(totals.completion_tokens).toBe(0);
+    expect(totals.total_tokens).toBe(0);
+  });
+
+  test.each([
+    ["null", null],
+    ["undefined", undefined],
+    ["a string", "not-a-usage-object"],
+    ["an array", [100, 20, 120]],
+  ])("applyUsage does not crash when the payload is %s", (_label, payload) => {
+    const provider = new TestProvider();
+    expect(() => provider.applyUsage(payload)).not.toThrow();
+    expect(provider.getCumulativeUsage().total_tokens).toBe(0);
+  });
+
+  test("coerces numeric strings instead of concatenating them", () => {
+    const provider = new TestProvider();
+
+    provider.resetUsage();
+    provider.recordUsage({
+      prompt_tokens: "100",
+      completion_tokens: "20",
+      total_tokens: "120",
+    });
+
+    provider.resetUsage();
+    provider.recordUsage({
+      prompt_tokens: "50",
+      completion_tokens: "5",
+      total_tokens: "55",
+    });
+
+    const totals = provider.getCumulativeUsage();
+    expect(totals.prompt_tokens).toBe(150);
+    expect(totals.completion_tokens).toBe(25);
+    expect(totals.total_tokens).toBe(175);
+    expect(typeof totals.total_tokens).toBe("number");
+  });
+
+  test("treats negative, NaN, and non-finite token counts as zero", () => {
+    const provider = new TestProvider();
+
+    provider.resetUsage();
+    provider.recordUsage({
+      prompt_tokens: -100,
+      completion_tokens: NaN,
+      total_tokens: Infinity,
+    });
+
+    const totals = provider.getCumulativeUsage();
+    expect(totals.prompt_tokens).toBe(0);
+    expect(totals.completion_tokens).toBe(0);
+    expect(totals.total_tokens).toBe(0);
+  });
+
+  test("treats non-numeric token values as zero", () => {
+    const provider = new TestProvider();
+
+    provider.resetUsage();
+    provider.recordUsage({
+      prompt_tokens: { nested: 100 },
+      completion_tokens: "twenty",
+      total_tokens: () => 120,
+    });
+
+    const totals = provider.getCumulativeUsage();
+    expect(totals.prompt_tokens).toBe(0);
+    expect(totals.completion_tokens).toBe(0);
+    expect(totals.total_tokens).toBe(0);
+  });
+
+  test("garbage payloads between valid completions do not corrupt totals", () => {
+    const provider = new TestProvider();
+
+    provider.resetUsage();
+    provider.recordUsage({
+      prompt_tokens: 100,
+      completion_tokens: 20,
+      total_tokens: 120,
+    });
+
+    provider.resetUsage();
+    provider.recordUsage(null);
+
+    provider.resetUsage();
+    provider.recordUsage({ prompt_tokens: "junk", completion_tokens: -5 });
+
+    provider.resetUsage();
+    provider.recordUsage({
+      prompt_tokens: 50,
+      completion_tokens: 10,
+      total_tokens: 60,
+    });
+
+    const totals = provider.getCumulativeUsage();
+    expect(totals.prompt_tokens).toBe(150);
+    expect(totals.completion_tokens).toBe(30);
+    expect(totals.total_tokens).toBe(180);
+  });
+
+  test("mixin providers survive malformed payloads too", () => {
+    const provider = new MixinProvider();
+
+    provider.resetUsage();
+    expect(() => provider.recordUsage(null)).not.toThrow();
+    expect(() => provider.recordUsage([1, 2, 3])).not.toThrow();
+
+    provider.resetUsage();
+    provider.recordUsage({
+      prompt_tokens: 100,
+      completion_tokens: 10,
+      total_tokens: 110,
+    });
+
+    expect(provider.getCumulativeUsage().total_tokens).toBe(110);
+  });
+});
