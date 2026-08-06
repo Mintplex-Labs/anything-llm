@@ -112,6 +112,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Lavori pianificati",
     "model-router": "Router di esempio",
+    "image-generation": "Generazione di immagini",
   },
   login: {
     "multi-user": {
@@ -1296,6 +1297,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Errore di trascrizione: {{error}}",
     export: "Esporta la conversazione come...",
     exporting: "Esportazione...",
+    preset_img_description: "Genera un'immagine a partire da un testo",
   },
   profile_settings: {
     edit_account: "Modifica account",
@@ -1970,6 +1972,24 @@ const TRANSLATIONS = {
       "routed-to": "Inviato a {{model}}<route>__PLACEHOLDER_1__",
       "routed-to-rule":
         "Instradato tramite <route>{{model}}</route> seguendo il percorso <rule>{{ruleTitle}}</rule>",
+    },
+  },
+  imageGeneration: {
+    title: "Preferenze per la generazione di immagini",
+    description:
+      "Configura il fornitore utilizzato per generare le immagini tramite il comando `/img`.",
+    provider: "Fornitore di servizi di generazione di immagini",
+    card: {
+      "failed-to-load": "Immagine non caricata",
+      "alt-text": "Immagine generata",
+      edit: "Modifica",
+      download: "Scarica",
+    },
+    pending: {
+      heading: "Creazione dell'immagine...",
+      description:
+        "Questo potrebbe richiedere un po' di tempo. Apparirà qui non appena sarà disponibile.",
+      aborted: "La generazione dell'immagine è stata interrotta.",
     },
   },
 };

@@ -107,6 +107,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "计划好的任务",
     "model-router": "型号路由器",
+    "image-generation": "图像生成",
   },
   login: {
     "multi-user": {
@@ -1274,6 +1275,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "转录失败：{{error}}",
     export: "导出聊天记录为…",
     exporting: "出口…",
+    preset_img_description: "根据文本提示生成图像。",
   },
   profile_settings: {
     edit_account: "编辑帐户",
@@ -1807,6 +1809,22 @@ const TRANSLATIONS = {
       "routed-to": "已发送至 <route>{{model}}</route>",
       "routed-to-rule":
         "通过<route>、{{model}}、</route>，到达<rule>、{{ruleTitle}}、</rule>",
+    },
+  },
+  imageGeneration: {
+    title: "图像生成偏好",
+    description: "配置用于生成图像的/img 命令所使用的提供商。",
+    provider: "图像生成服务提供商",
+    card: {
+      "failed-to-load": "图片加载失败",
+      "alt-text": "生成的图像",
+      edit: "编辑",
+      download: "下载",
+    },
+    pending: {
+      heading: "正在生成您的图像…",
+      description: "这可能需要一些时间。一旦准备好，它就会在这里显示出来。",
+      aborted: "图像生成已终止。",
     },
   },
 };

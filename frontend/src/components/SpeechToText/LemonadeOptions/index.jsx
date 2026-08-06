@@ -4,7 +4,7 @@ import { LEMONADE_COMMON_URLS } from "@/utils/constants";
 import { CircleNotch, Info } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import useProviderEndpointAutoDiscovery from "@/hooks/useProviderEndpointAutoDiscovery";
-import { cleanBasePath } from "@/components/LLMSelection/LemonadeOptions";
+import { originOnly } from "@/utils/url";
 
 export default function LemonadeSpeechToTextOptions({ settings }) {
   const {
@@ -16,7 +16,7 @@ export default function LemonadeSpeechToTextOptions({ settings }) {
     provider: "lemonade",
     initialBasePath: settings?.STTLemonadeBasePath,
     ENDPOINTS: LEMONADE_COMMON_URLS,
-    normalizeBasePath: cleanBasePath,
+    normalizeBasePath: originOnly,
   });
 
   return (

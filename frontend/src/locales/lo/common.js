@@ -118,6 +118,7 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
+    "image-generation": "ການສ້າງຮູບພາບ",
   },
   login: {
     "multi-user": {
@@ -1551,6 +1552,7 @@ const TRANSLATIONS = {
         cancel: "ຍົກເລີກ",
       },
     },
+    preset_img_description: "ຈາກຂໍ້ຄວາມ ໃຫ້ສ້າງຮູບພາບ",
   },
   profile_settings: {
     edit_account: "ແກ້ໄຂບັນຊີ",
@@ -1822,6 +1824,23 @@ const TRANSLATIONS = {
         spreadsheet: "ຕາຕະລາງ (Spreadsheet)",
         generic: "ໄຟລ໌",
       },
+    },
+  },
+  imageGeneration: {
+    title: "ຄວາມຕ້ອງການ ຜະນวกຮູບ",
+    description: "ການຕັ້ງຄ່າຜູ້ສະໜອງ ທີ່ຖືກນຳໃຊ້ເພື່ອສ້າງຮູບຈາກ ຄຳສັ່ງ `/img`",
+    provider: "ຜູ້ສະໜອງການສ້າງຮູບພາບ",
+    card: {
+      "failed-to-load": "รูปภาพບໍ່ສາມາດโหลดໄດ້",
+      "alt-text": "ຮູບພາບທີ່ສ້າງຂຶ້ນ",
+      edit: "ແກ້ໄຂ",
+      download: "ดาวน์โหลด",
+    },
+    pending: {
+      heading: "ສ້າງຮູບຂອງທ່ານ...",
+      description:
+        "ນີ້ ສາມາດໃຊ້ເວລາເລັກໜ້ອຍ. ມັນຈະປະກາດຢູ່ທີ່ນີ້ເມື່ອມັນຖືກແກ້ໄຂແລ້ວ",
+      aborted: "ການສ້າງຮູບພາບຖືກຢຸດແລ້ວ",
     },
   },
 };

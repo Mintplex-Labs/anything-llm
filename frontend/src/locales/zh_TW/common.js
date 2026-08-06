@@ -107,6 +107,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "預約排定的工作",
     "model-router": "模型路由器",
+    "image-generation": "圖像生成",
   },
   login: {
     "multi-user": {
@@ -1183,6 +1184,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "轉錄失敗：{{error}}",
     export: "匯出對話內容為…",
     exporting: "出口...",
+    preset_img_description: "根據文字提示，生成圖像。",
   },
   profile_settings: {
     edit_account: "編輯帳戶",
@@ -1802,6 +1804,22 @@ const TRANSLATIONS = {
       "routed-to": "已路由至 <route>{{model}}</route>",
       "routed-to-rule":
         "經由 <route> {{model}} </route>，並通過 <rule> {{ruleTitle}} </rule> 進行。",
+    },
+  },
+  imageGeneration: {
+    title: "圖像生成偏好",
+    description: "設定用於從 `/img` 命令生成圖像的提供者。",
+    provider: "圖像生成服務供應商",
+    card: {
+      "failed-to-load": "圖片無法載入",
+      "alt-text": "生成的圖像",
+      edit: "編輯",
+      download: "下載",
+    },
+    pending: {
+      heading: "正在生成您的圖片…",
+      description: "這可能需要一些時間。當內容準備好後，它就會在這裡顯示出來。",
+      aborted: "圖像生成已取消。",
     },
   },
 };

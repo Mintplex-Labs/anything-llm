@@ -110,6 +110,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Planeeritud tööd",
     "model-router": "Mudel: reiting",
+    "image-generation": "Pildi genereerimine",
   },
   login: {
     "multi-user": {
@@ -1330,6 +1331,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Transkribeerimine ebaõnnestunud: {{error}}",
     export: "Экспорти руй чат kui...",
     exporting: "Экспорт",
+    preset_img_description: "Loo pilt tekstist antud juhiste põhjal",
   },
   profile_settings: {
     edit_account: "Muuda kontot",
@@ -1878,6 +1880,24 @@ const TRANSLATIONS = {
       "routed-to": "Saadetakse <route>{{model}}</route>",
       "routed-to-rule":
         "Saadetakse <route>{{model}}</route> kaudu <rule>{{ruleTitle}}</rule>",
+    },
+  },
+  imageGeneration: {
+    title: "Pildi genereerimise eelistused",
+    description:
+      "Konfigureerige pakkuja, mida kasutatakse piltide genereerimiseks käsku `/img` kaudu.",
+    provider: "Pildide genereerimise teenuse pakkuja",
+    card: {
+      "failed-to-load": "Pildi laadimisel tekkis probleem.",
+      "alt-text": "Sünnitatud pilt",
+      edit: "Redigeerimine",
+      download: "Lae alla",
+    },
+    pending: {
+      heading: "Sinu pildi genereerimine…",
+      description:
+        "See võib võtta natuke aega. See ilmub siia, niipea kui see on valmis.",
+      aborted: "Pildi genereerimine katkestati.",
     },
   },
 };

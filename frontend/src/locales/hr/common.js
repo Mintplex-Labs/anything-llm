@@ -118,6 +118,7 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
+    "image-generation": "Generiranje slika",
   },
   login: {
     "multi-user": {
@@ -1637,6 +1638,7 @@ const TRANSLATIONS = {
         cancel: "Odustani",
       },
     },
+    preset_img_description: "Generiraj sliku na temelju tekstualnog uputa.",
   },
   profile_settings: {
     edit_account: "Uredi račun",
@@ -1917,6 +1919,24 @@ const TRANSLATIONS = {
         spreadsheet: "Proračunska tablica",
         generic: "Datoteka",
       },
+    },
+  },
+  imageGeneration: {
+    title: "Preferirani način generiranja slike",
+    description:
+      "Konfigurirajte pružatelja koji se koristi za generiranje slika iz naredbe `/img`.",
+    provider: "Pružatelj usluga generiranja slika",
+    card: {
+      "failed-to-load": "Slika nije uspjela se učitati.",
+      "alt-text": "Generirana slika",
+      edit: "Uredi",
+      download: "Preuzmi",
+    },
+    pending: {
+      heading: "Generiranje vaše slike…",
+      description:
+        "To može potrajati neko vrijeme. Bit će dostupno ovdje čim bude spremno.",
+      aborted: "Generiranje slike je prekinuto.",
     },
   },
 };

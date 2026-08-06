@@ -500,6 +500,20 @@ const SystemSettings = {
         process.env.GENERIC_OPEN_AI_EMBEDDING_QUERY_PREFIX || "",
 
       // --------------------------------------------------------
+      // Image Generation Provider Selection Settings & Configs
+      // --------------------------------------------------------
+      ImageGenerationProvider: process.env.IMAGE_GEN_PROVIDER || null,
+      ImageGenerationModelPref: process.env.IMAGE_GEN_MODEL_PREF || null,
+      ImageGenerationDimensions: process.env.IMAGE_GEN_SIZE_PREF || "512x512",
+      ImageGenerationOpenAiKey: !!process.env.IMAGE_GEN_OPENAI_KEY,
+      ImageGenerationOpenRouterApiKey:
+        !!process.env.IMAGE_GEN_OPENROUTER_API_KEY,
+      ImageGenerationOllamaBasePath: process.env.IMAGE_GEN_OLLAMA_BASE_PATH,
+      ImageGenerationOllamaAuthToken: !!process.env.IMAGE_GEN_OLLAMA_AUTH_TOKEN,
+      ImageGenerationLemonadeBasePath: process.env.IMAGE_GEN_LEMONADE_BASE_PATH,
+      ImageGenerationLemonadeApiKey: !!process.env.IMAGE_GEN_LEMONADE_API_KEY,
+
+      // --------------------------------------------------------
       // VectorDB Provider Selection Settings & Configs
       // --------------------------------------------------------
       VectorDB: vectorDB,

@@ -110,6 +110,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Plānotas darba uzdevumi",
     "model-router": "Modeļa routers",
+    "image-generation": "Attēlu ģenerēšana",
   },
   login: {
     "multi-user": {
@@ -1373,6 +1374,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Transkripcija neizdevās: {{error}}",
     export: "Eksportēt čatu kā...",
     exporting: "Eksporteris…",
+    preset_img_description: "Izveidot attēlu no teksta norādījuma",
   },
   profile_settings: {
     edit_account: "Rediģēt kontu",
@@ -1933,6 +1935,24 @@ const TRANSLATIONS = {
       "routed-to": "Sūtīts uz <route>{{model}}</route>",
       "routed-to-rule":
         "Aizvedēts pa <route>{{model}}</route> ceļu, izmantojot <rule>{{ruleTitle}}</rule>",
+    },
+  },
+  imageGeneration: {
+    title: "Attēla veidošanas preferences",
+    description:
+      "Iestatiet pakalpojumu, ko izmanto attēlu ģenerēšanai no `/img` komandas.",
+    provider: "Attēlu ģenerēšanas pakalpojumu sniedzējs",
+    card: {
+      "failed-to-load": "Attēlam izdevās neizveidoties",
+      "alt-text": "Sintetizēts attēls",
+      edit: "Rediģēt",
+      download: "Lejupielādēt",
+    },
+    pending: {
+      heading: "Ierakstiet savu attēlu...",
+      description:
+        "Tam varbūt būs nepieciešams laiks. Tas tiks publicēts šeit, kad tas būs gatavs.",
+      aborted: "Attēla izveide tika pārtraukta.",
     },
   },
 };
