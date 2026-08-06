@@ -2,13 +2,7 @@
 
 ## Supported Versions
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
-
-| Version | Supported          |
-| ------- | ------------------ |
-| 0.1.x   | :white_check_mark: |
-
+The supported versions are the current major version and its two most recent minor releases. Only the latest patch within each supported major/minor is in scope.
 
 ## Reporting a Vulnerability
 
