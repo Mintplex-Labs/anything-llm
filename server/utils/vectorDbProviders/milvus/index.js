@@ -59,12 +59,15 @@ class Milvus extends VectorDatabase {
   async totalVectors() {
     const { client } = await this.connect();
     const { collection_names } = await client.listCollections();
-    const total = collection_names.reduce(async (acc, collection_name) => {
+    let total = 0;
+    for (const name of collection_names.filter((n) =>
+      n.startsWith("anythingllm_")
+    )) {
       const statistics = await client.getCollectionStatistics({
-        collection_name: this.normalize(collection_name),
+        collection_name: name,
       });
-      return Number(acc) + Number(statistics?.data?.row_count ?? 0);
-    }, 0);
+      total += Number(statistics?.data?.row_count ?? 0);
+    }
     return total;
   }
 
