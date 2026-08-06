@@ -45,3 +45,9 @@ If your report is about being able to access the system via _bypassing the authe
 ### Reports requiring knowledge or guessing of a UUID
 
 If your report depends on an attacker knowing or guessing a UUID (e.g., a session ID, embed ID, or any other random identifier) without demonstrating a practical way to obtain it, this is not a valid report. UUIDs (v4) have 122 bits of entropy and are not feasible to brute-force. Unless your report includes a concrete method to leak or enumerate the UUID in question, it will be closed immediately.
+
+### Reports about admin-enabled agent tools doing "too much"
+
+Several agent tools (e.g., `sql-agent`, filesystem tools) are disabled by default and require an administrator to explicitly enable and configure them. If your report is that an admin-enabled tool can perform actions beyond what you think it should (writes via SQL, broad file access, etc.), this is not a valid report. The admin who enables the tool and configures its access (connection strings, paths, credentials) is making an intentional decision about what the agent can do. We provide UI-level warnings but intentionally do not restrict functionality — the user should be able to do whatever they want with their own systems.
+
+The correct enforcement layer is always the underlying system: use a read-only database account for read-only SQL access, scope filesystem permissions appropriately, etc. Trying to filter or restrict actions at the application layer (regex, allowlists) is trivially bypassable and provides a false sense of security.
