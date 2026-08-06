@@ -16,6 +16,10 @@ class OpenAiImageGenerator extends BaseImageGenerator {
       className: "OpenAiImageGenerator",
     });
   }
+
+  imageFieldName(count) {
+    return count > 1 ? "image[]" : "image";
+  }
 }
 
 module.exports = { OpenAiImageGenerator };

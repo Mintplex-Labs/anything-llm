@@ -28,6 +28,10 @@ class BaseImageGenerator {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
   }
 
+  imageFieldName(_count) {
+    return "image";
+  }
+
   /**
    * Generate a single image from a text prompt at the requested size, falling
    * back to the configured IMAGE_GEN_SIZE_PREF and then the default size. The
@@ -72,7 +76,7 @@ class BaseImageGenerator {
     formData.append("n", "1");
     for (let i = 0; i < images.length; i++) {
       formData.append(
-        "image",
+        this.imageFieldName(images.length),
         new Blob([images[i]], { type: "image/png" }),
         `reference-${i}.png`
       );
