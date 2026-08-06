@@ -666,7 +666,7 @@ function apiDocumentEndpoints(app) {
     }
     #swagger.parameters['limit'] = {
       in: 'query',
-      description: 'Max documents to return, capped at 1000. Defaults to "all", which returns every document in the folder.',
+      description: "Max documents to return, capped at 1000. Defaults to all, which returns every document in the folder.",
       required: false,
       type: 'string'
     }

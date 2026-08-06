@@ -111,6 +111,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Sarcini programate",
     "model-router": "Model de router",
+    "image-generation": "Generarea de imagini",
   },
   login: {
     "multi-user": {
@@ -666,6 +667,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Transcriere eșuată: {{error}}",
     export: "Exportați conversația sub forma de...",
     exporting: "Exportare...",
+    preset_img_description: "Generați o imagine pe baza unui text.",
   },
   profile_settings: {
     edit_account: "Editează contul",
@@ -1973,6 +1975,24 @@ const TRANSLATIONS = {
       "routed-to": "Trimis către <route>{{model}}</route>",
       "routed-to-rule":
         "Trasează spre <route>{{model}}</route> prin intermediul <rule>{{ruleTitle}}</rule>",
+    },
+  },
+  imageGeneration: {
+    title: "Preferințe privind generarea de imagini",
+    description:
+      "Configurați furnizorul utilizat pentru a genera imagini din comanda `/img`.",
+    provider: "Furnizor de servicii de generare de imagini",
+    card: {
+      "failed-to-load": "Imaginile nu s-au încărcat",
+      "alt-text": "Imaginea generată",
+      edit: "Editează",
+      download: "Descarcă",
+    },
+    pending: {
+      heading: "Crearea imaginii dumneavoastră…",
+      description:
+        "Acest lucru poate dura ceva timp. Va apărea aici imediat ce va fi gata.",
+      aborted: "Generarea imaginii a fost anulată.",
     },
   },
 };

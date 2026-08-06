@@ -112,6 +112,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Planlagte opgaver",
     "model-router": "Model-router",
+    "image-generation": "Billedgenerering",
   },
   login: {
     "multi-user": {
@@ -1291,6 +1292,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Transkribering mislykkedes: {{error}}",
     export: "Eksportér chat som...",
     exporting: "Eksportér...",
+    preset_img_description: "Generer et billede ud fra en tekstbeskrivelse",
   },
   profile_settings: {
     edit_account: "Rediger konto",
@@ -1947,6 +1949,24 @@ const TRANSLATIONS = {
       "routed-to": "Henvist til <route>{{model}}</route>",
       "routed-to-rule":
         "Rute via <route>{{model}}</route> gennem <rule>{{ruleTitle}}</rule>",
+    },
+  },
+  imageGeneration: {
+    title: "Præference for billedgenerering",
+    description:
+      "Konfigurer leverandøren, der bruges til at generere billeder fra kommandoen `/img`.",
+    provider: "Leverandør af billedgenerering",
+    card: {
+      "failed-to-load": "Billedet kunne ikke indlæses",
+      "alt-text": "Genereret billede",
+      edit: "Rediger",
+      download: "Download",
+    },
+    pending: {
+      heading: "Generering af dit billede...",
+      description:
+        "Det kan tage lidt tid. Det vil dukke op her, så snart det er klar.",
+      aborted: "Genereringen af billedet blev afbrudt.",
     },
   },
 };

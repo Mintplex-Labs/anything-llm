@@ -108,6 +108,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "משימות מתוכננות",
     "model-router": "מודל של נתב",
+    "image-generation": "יצירת תמונות",
   },
   login: {
     "multi-user": {
@@ -1343,6 +1344,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "לא הצליח הטרנסקריפציה: {{error}}",
     export: "ייצוא צ'אט כ...",
     exporting: "ייצוא...",
+    preset_img_description: "יצירת תמונה על סמך הנחיה טקסטואלית",
   },
   profile_settings: {
     edit_account: "ערוך חשבון",
@@ -1883,6 +1885,22 @@ const TRANSLATIONS = {
       "routed-to": "מופנה ל-{{model}} בתוך <route>",
       "routed-to-rule":
         "נשלח דרך <route>{{model}}</route> באמצעות <rule>{{ruleTitle}}</rule>",
+    },
+  },
+  imageGeneration: {
+    title: "העדפה לגבי יצירת תמונות",
+    description: "הגדר את הספק המשמש ליצירת תמונות באמצעות הפקודה `/img`.",
+    provider: "ספק יצירת תמונות",
+    card: {
+      "failed-to-load": "לא ניתן היה לטעון תמונה.",
+      "alt-text": "תמונה שנוצרה באופן אוטומטי",
+      edit: "ערוך",
+      download: "הורדה",
+    },
+    pending: {
+      heading: "יצירת התמונה שלכם...",
+      description: "זה עשוי לקחת קצת זמן. הוא יופיע כאן ברגע שהוא מוכן.",
+      aborted: "יצירת התמונה בוטלה.",
     },
   },
 };

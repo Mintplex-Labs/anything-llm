@@ -37,9 +37,11 @@ export default function SlashCommandsTab({
   const [presets, setPresets] = useState([]);
   const [selectedPreset, setSelectedPreset] = useState(null);
   const [presetToPublish, setPresetToPublish] = useState(null);
+  const [imageGenEnabled, setImageGenEnabled] = useState(false);
 
   useEffect(() => {
     fetchPresets();
+    fetchImageGenStatus();
   }, []);
 
   const fetchPresets = async () => {
@@ -47,9 +49,11 @@ export default function SlashCommandsTab({
     setPresets(presets);
   };
 
-  // Build the list of selectable items for keyboard navigation and rendering.
-  // /reset is a static English string since the backend matches it exactly.
-  // During an agent session it ends the session AND clears the chat.
+  const fetchImageGenStatus = async () => {
+    const settings = await System.keys();
+    setImageGenEnabled(!!settings?.ImageGenerationProvider);
+  };
+
   const items = useMemo(
     () => [
       {
@@ -57,6 +61,15 @@ export default function SlashCommandsTab({
         description: t("chat_window.preset_reset_description"),
         autoSubmit: true,
       },
+      ...(imageGenEnabled
+        ? [
+            {
+              command: "/img",
+              description: t("chat_window.preset_img_description"),
+              autoSubmit: false,
+            },
+          ]
+        : []),
       ...presets.map((preset) => ({
         command: preset.command,
         description: preset.description,
@@ -64,7 +77,7 @@ export default function SlashCommandsTab({
         preset,
       })),
     ],
-    [presets, t]
+    [presets, imageGenEnabled, t]
   );
 
   const handleUseCommand = useCallback(
@@ -104,7 +117,7 @@ export default function SlashCommandsTab({
     items,
     highlightedIndex,
     onSelect: (item) => {
-      const text = item.preset ? `${item.command} ` : item.command;
+      const text = item.autoSubmit ? item.command : `${item.command} `;
       handleUseCommand(text, item.autoSubmit);
     },
     registerItemCount,
@@ -166,7 +179,7 @@ export default function SlashCommandsTab({
           description={item.description}
           onClick={() =>
             handleUseCommand(
-              item.preset ? `${item.command} ` : item.command,
+              item.autoSubmit ? item.command : `${item.command} `,
               item.autoSubmit
             )
           }

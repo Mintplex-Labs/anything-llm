@@ -119,6 +119,7 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
+    "image-generation": "Pembuatan Gambar",
   },
   login: {
     "multi-user": {
@@ -1659,6 +1660,7 @@ const TRANSLATIONS = {
         cancel: "Batal",
       },
     },
+    preset_img_description: "Hasilkan gambar berdasarkan teks yang diberikan.",
   },
   profile_settings: {
     edit_account: "Edit Akun",
@@ -1944,6 +1946,24 @@ const TRANSLATIONS = {
         spreadsheet: "Spreadsheet",
         generic: "Berkas",
       },
+    },
+  },
+  imageGeneration: {
+    title: "Preferensi dalam menghasilkan gambar",
+    description:
+      "Konfigurasikan penyedia yang digunakan untuk menghasilkan gambar dari perintah `/img`.",
+    provider: "Penyedia Pembuatan Gambar",
+    card: {
+      "failed-to-load": "Gambar gagal dimuat",
+      "alt-text": "Gambar yang dihasilkan",
+      edit: "Sunting",
+      download: "Unduh",
+    },
+    pending: {
+      heading: "Menghasilkan gambar Anda…",
+      description:
+        "Ini mungkin membutuhkan waktu beberapa saat. Informasi ini akan muncul di sini segera setelah tersedia.",
+      aborted: "Pembuatan gambar telah dihentikan.",
     },
   },
 };

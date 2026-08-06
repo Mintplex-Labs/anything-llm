@@ -118,6 +118,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Naplánované úlohy",
     "model-router": "Modelový router",
+    "image-generation": "Generování obrázků",
   },
   login: {
     "multi-user": {
@@ -1416,6 +1417,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Přepis selhal: {{error}}",
     export: "Exportujte konverzaci jako…",
     exporting: "Exportování...",
+    preset_img_description: "Vytvořit obrázek na základě textového pokynu",
   },
   profile_settings: {
     edit_account: "Upravit účet",
@@ -1946,6 +1948,24 @@ const TRANSLATIONS = {
       "routed-to": "Přesměrováno na <route>{{model}}</route>",
       "routed-to-rule":
         "Přesměrováno na <route>{{model}}</route> prostřednictvím <rule>{{ruleTitle}}</rule>",
+    },
+  },
+  imageGeneration: {
+    title: "Preference pro generování obrázků",
+    description:
+      "Nastavte poskytovatele, který se používá k generování obrázků z příkazu `/img`.",
+    provider: "Poskytovatel služeb pro generování obrázků",
+    card: {
+      "failed-to-load": "Nelze načíst obrázek.",
+      "alt-text": "Vygenerovaný obrázek",
+      edit: "Upravit",
+      download: "Stáhnout",
+    },
+    pending: {
+      heading: "Generování vaší obrázku…",
+      description:
+        "To může trvat nějakou dobu. Jakmile bude k dispozici, zobrazí se zde.",
+      aborted: "Generování obrázku bylo přerušeno.",
     },
   },
 };

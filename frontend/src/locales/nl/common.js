@@ -111,6 +111,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Geplande taken",
     "model-router": "Modelrouter",
+    "image-generation": "Afbeelding genereren",
   },
   login: {
     "multi-user": {
@@ -1302,6 +1303,8 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Transcriptie mislukt: {{error}}",
     export: "Exporteer de chat als…",
     exporting: "Exporteren...",
+    preset_img_description:
+      "Genereer een afbeelding op basis van een tekstuele instructie.",
   },
   profile_settings: {
     edit_account: "Account bewerken",
@@ -1969,6 +1972,24 @@ const TRANSLATIONS = {
       "routed-to": "Verwezen naar <route>{{model}}</route>",
       "routed-to-rule":
         "Verzonden via <route>{{model}}</route> via <rule>{{ruleTitle}}</rule>",
+    },
+  },
+  imageGeneration: {
+    title: "Voorkeur voor het genereren van afbeeldingen",
+    description:
+      "Configureer de provider die gebruikt wordt om afbeeldingen te genereren vanuit het `/img` commando.",
+    provider: "Aanbieder van beeldgeneratie-diensten",
+    card: {
+      "failed-to-load": "Afbeelding kon niet worden geladen.",
+      "alt-text": "Gegenereerde afbeelding",
+      edit: "Bewerk",
+      download: "Downloaden",
+    },
+    pending: {
+      heading: "Het genereren van uw afbeelding…",
+      description:
+        "Dit kan even duren. Het zal hier verschijnen zodra het klaar is.",
+      aborted: "Het genereren van het beeld is afgebroken.",
     },
   },
 };
