@@ -222,6 +222,20 @@ const KEY_MAPPING = {
     checks: [nonZero],
   },
 
+  // GitHub Copilot InferenceSettings (uses official Copilot SDK)
+  GithubCopilotGhToken: {
+    envKey: "GH_TOKEN",
+    checks: [],
+  },
+  GithubCopilotModelPref: {
+    envKey: "GITHUB_COPILOT_MODEL_PREF",
+    checks: [],
+  },
+  GithubCopilotTokenLimit: {
+    envKey: "GITHUB_COPILOT_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+
   // AWS Bedrock LLM Settings
   AwsBedrockLLMApiKey: {
     envKey: "AWS_BEDROCK_LLM_API_KEY",

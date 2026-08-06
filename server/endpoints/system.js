@@ -1093,6 +1093,48 @@ function systemEndpoints(app) {
     }
   );
 
+  // GitHub Copilot device OAuth endpoints
+  app.post(
+    "/system/copilot/device-auth/initiate",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (_request, response) => {
+      try {
+        const { GithubCopilotLLM } = require(
+          "../utils/AiProviders/githubCopilot"
+        );
+        const result = await GithubCopilotLLM.initiateDeviceAuth();
+        return response.status(200).json(result);
+      } catch (error) {
+        console.error("Copilot device auth initiate failed:", error.message);
+        response.status(500).json({ error: error.message });
+      }
+    }
+  );
+
+  app.post(
+    "/system/copilot/device-auth/complete",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { deviceCode } = reqBody(request);
+        if (!deviceCode) {
+          return response
+            .status(400)
+            .json({ error: "deviceCode is required" });
+        }
+        const { GithubCopilotLLM } = require(
+          "../utils/AiProviders/githubCopilot"
+        );
+        const result = await GithubCopilotLLM.completeDeviceAuth(deviceCode);
+        return response.status(200).json(result);
+      } catch (error) {
+        console.error("Copilot device auth complete failed:", error.message);
+        const status = error.message.includes("timed out") ? 408 : 400;
+        response.status(status).json({ error: error.message });
+      }
+    }
+  );
+
   app.post(
     "/system/custom-models",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],

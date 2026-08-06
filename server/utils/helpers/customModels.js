@@ -53,6 +53,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "omlx",
   "bedrock",
   "generic-openai",
+  "github-copilot",
   // Embedding Engines
   "native-embedder",
   "cohere-embedder",
@@ -161,6 +162,8 @@ async function getCustomModels(
       return await getBedrockModels(apiKey, options);
     case "generic-openai":
       return await getGenericOpenAiModels(basePath, apiKey);
+    case "github-copilot":
+      return { models: getGithubCopilotModels(), error: null };
     case "deepgram-stt":
       return await getDeepgramSTTModels(apiKey);
     case "groq-stt":
@@ -1247,6 +1250,29 @@ async function getCerebrasModels() {
     console.error(`Cerebras:getCerebrasModels`, e.message);
     return { models: [], error: "Could not fetch Cerebras Models" };
   }
+}
+
+function getGithubCopilotModels() {
+  return [
+    { id: "auto", name: "Auto (recommended)", organization: "GitHub Copilot" },
+    { id: "gpt-5.6-sol", name: "GPT-5.6 Sol", organization: "OpenAI" },
+    { id: "gpt-5.6-terra", name: "GPT-5.6 Terra", organization: "OpenAI" },
+    { id: "gpt-5.6-luna", name: "GPT-5.6 Luna", organization: "OpenAI" },
+    { id: "gpt-5.5", name: "GPT-5.5", organization: "OpenAI" },
+    { id: "gpt-5.4", name: "GPT-5.4", organization: "OpenAI" },
+    { id: "gpt-5.4-mini", name: "GPT-5.4 mini", organization: "OpenAI" },
+    { id: "gpt-5.3-codex", name: "GPT-5.3-Codex", organization: "OpenAI" },
+    { id: "gpt-5-mini", name: "GPT-5 mini", organization: "OpenAI" },
+    { id: "claude-sonnet-5", name: "Claude Sonnet 5", organization: "Anthropic" },
+    { id: "claude-sonnet-4.6", name: "Claude Sonnet 4.6", organization: "Anthropic" },
+    { id: "claude-sonnet-4.5", name: "Claude Sonnet 4.5", organization: "Anthropic" },
+    { id: "claude-haiku-4.5", name: "Claude Haiku 4.5", organization: "Anthropic" },
+    { id: "claude-opus-4.8", name: "Claude Opus 4.8", organization: "Anthropic" },
+    { id: "claude-opus-4.7", name: "Claude Opus 4.7", organization: "Anthropic" },
+    { id: "claude-opus-4.6", name: "Claude Opus 4.6", organization: "Anthropic" },
+    { id: "claude-opus-4.5", name: "Claude Opus 4.5", organization: "Anthropic" },
+    { id: "gemini-3.1-pro-preview", name: "Gemini 3.1 Pro", organization: "Google" },
+  ];
 }
 
 async function getGenericOpenAiModels(basePath = null, apiKey = null) {
