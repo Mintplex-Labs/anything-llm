@@ -191,6 +191,9 @@ async function tooledStream(
     stream_options: { include_usage: true },
     messages: formattedMessages,
     ...(tools.length > 0 ? { tools } : {}),
+    ...(typeof provider?.temperature === "number"
+      ? { temperature: provider.temperature }
+      : {}),
   });
 
   const result = {
@@ -318,6 +321,9 @@ async function tooledComplete(
     stream: false,
     messages: formattedMessages,
     ...(tools.length > 0 ? { tools } : {}),
+    ...(typeof provider?.temperature === "number"
+      ? { temperature: provider.temperature }
+      : {}),
   });
 
   const completion = response.choices[0].message;
