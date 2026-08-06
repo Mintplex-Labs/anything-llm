@@ -1028,7 +1028,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     // and reset the usage accumulator so metrics only cover this run's completions.
     if (depth === 0) {
       this?.flushRoutingMetadata?.(v4());
-      this.providerInstance?.resetCumulativeUsage?.();
+      this.providerInstance.resetCumulativeUsage();
     }
 
     /** @type {{ functionCall: { name: string, arguments: string }, textResponse: string }} */
@@ -1194,7 +1194,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     // and reset the usage accumulator so metrics only cover this run's completions.
     if (depth === 0) {
       this?.flushRoutingMetadata?.(msgUUID);
-      this.providerInstance?.resetCumulativeUsage?.();
+      this.providerInstance.resetCumulativeUsage();
     }
 
     // get the chat completion
