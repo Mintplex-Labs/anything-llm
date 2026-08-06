@@ -77,16 +77,7 @@ class Provider {
    * Stores the usage metrics from the last completion call.
    * @type {ProviderUsageMetrics}
    */
-  lastUsage = {
-    prompt_tokens: 0,
-    completion_tokens: 0,
-    total_tokens: 0,
-    duration: 0,
-    outputTps: 0,
-    model: null,
-    provider: null,
-    timestamp: null,
-  };
+  lastUsage = Provider.#emptyUsage();
 
   /**
    * Stores the usage metrics accumulated across every completion call in the
@@ -95,16 +86,24 @@ class Provider {
    * only ever reflects the most recent call.
    * @type {ProviderUsageMetrics}
    */
-  cumulativeUsage = {
-    prompt_tokens: 0,
-    completion_tokens: 0,
-    total_tokens: 0,
-    duration: 0,
-    outputTps: 0,
-    model: null,
-    provider: null,
-    timestamp: null,
-  };
+  cumulativeUsage = Provider.#emptyUsage();
+
+  /**
+   * Zeroed usage metrics for initializing/resetting an accumulator.
+   * @returns {ProviderUsageMetrics}
+   */
+  static #emptyUsage() {
+    return {
+      prompt_tokens: 0,
+      completion_tokens: 0,
+      total_tokens: 0,
+      duration: 0,
+      outputTps: 0,
+      model: null,
+      provider: null,
+      timestamp: null,
+    };
+  }
 
   /**
    * Timestamp when the current request started (for duration calculation).
@@ -712,16 +711,7 @@ class Provider {
    * run so the totals only cover that run's completions.
    */
   resetCumulativeUsage() {
-    this.cumulativeUsage = {
-      prompt_tokens: 0,
-      completion_tokens: 0,
-      total_tokens: 0,
-      duration: 0,
-      outputTps: 0,
-      model: null,
-      provider: null,
-      timestamp: null,
-    };
+    this.cumulativeUsage = Provider.#emptyUsage();
   }
 
   /**
