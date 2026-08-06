@@ -63,20 +63,18 @@ class Milvus extends VectorDatabase {
     for (const name of collection_names.filter((n) =>
       n.startsWith("anythingllm_")
     )) {
-      const statistics = await client.getCollectionStatistics({
-        collection_name: name,
-      });
-      total += Number(statistics?.data?.row_count ?? 0);
+      const { data: count } = await client.count({ collection_name: name });
+      total += Number(count ?? 0);
     }
     return total;
   }
 
   async namespaceCount(_namespace = null) {
     const { client } = await this.connect();
-    const statistics = await client.getCollectionStatistics({
+    const { data: count } = await client.count({
       collection_name: this.normalize(_namespace),
     });
-    return Number(statistics?.data?.row_count ?? 0);
+    return Number(count ?? 0);
   }
 
   async namespace(client, namespace = null) {
