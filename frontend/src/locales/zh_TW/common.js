@@ -1311,6 +1311,11 @@ const TRANSLATIONS = {
         title: "停用自動捲動功能",
         description: "當收到新訊息時，取消自動將聊天視窗滾動到底部的功能。",
       },
+      "preferred-currency": {
+        title: "preferred 的貨幣",
+        description:
+          "用於顯示LLM使用成本的貨幣。所有成本都以美元（USD）記錄，並僅供展示時進行轉換。",
+      },
     },
   },
   "main-page": {
@@ -1631,6 +1636,7 @@ const TRANSLATIONS = {
       metrics: {
         promptTokens: "提示詞：",
         completionTokens: "完成標記：",
+        cost: "費用：",
       },
       stopJob: "停止工作",
       killing: "停止...",

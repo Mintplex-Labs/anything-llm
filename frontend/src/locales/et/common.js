@@ -862,6 +862,11 @@ const TRANSLATIONS = {
         description:
           "Lülitage automaatne rullimine alla lootes välja, kui saabuvad uued sõnumid.",
       },
+      "preferred-currency": {
+        title: "Eelistatav valuuta",
+        description:
+          "Valutüüp, mida kasutatakse suurte keelemudelite (LLM) kasutamise kulude näitamiseks. Kulud on alati väljastatud dollaritesse ja konverteeritakse ainult näidamiseks.",
+      },
     },
   },
   api: {
@@ -1699,6 +1704,7 @@ const TRANSLATIONS = {
       metrics: {
         promptTokens: "Algatusmärgid:",
         completionTokens: "Lõpetamisandmed:",
+        cost: "Hind:",
       },
       stopJob: "Töö peatamine",
       killing: "Peatumine...",

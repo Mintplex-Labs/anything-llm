@@ -838,6 +838,11 @@ const TRANSLATIONS = {
         description:
           "ຖ້າໄດ້ຮັບຂໍ້ຄວາມໃໝ, ຢ່າໃຫ້ການເຄື່ອນໄหวอัตโนμάតໄປຫາທົ່ວສຸດຂອງການสนทนา។",
       },
+      "preferred-currency": {
+        title: "ເງິນທີ່ກະລາຄະ",
+        description:
+          "ເງິນທີ່ໃຊ້ເພື່ອສະແດງຄ່າໃຊ້ຈ່າຍຂອງການນຳ käyttö LLM ໃຫ້. ຄ່າໃຊ້ຈ່າຍແມ່ນບັນທຶກໄວ້ໃນໂດລາສະຫະລັດ ແລະຖືກປ່ຽນເພື່ອສະແດງເທົ່ານັ້ນ।",
+      },
     },
   },
   api: {
@@ -1832,6 +1837,7 @@ const TRANSLATIONS = {
       metrics: {
         promptTokens: "Prompt tokens:",
         completionTokens: "Completion tokens:",
+        cost: "ລາຄາ:",
       },
     },
     toolCall: {

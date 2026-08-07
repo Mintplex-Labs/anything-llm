@@ -909,6 +909,11 @@ const TRANSLATIONS = {
         description:
           "Desactivar la función de desplazamiento automático hacia el final del chat cuando se reciben nuevos mensajes.",
       },
+      "preferred-currency": {
+        title: "Moneda preferida",
+        description:
+          "Moneda utilizada para mostrar los costos de uso del modelo de lenguaje. Los costos siempre se registran en dólares estadounidenses y se convierten únicamente con fines de visualización.",
+      },
     },
   },
   api: {
@@ -1789,6 +1794,7 @@ const TRANSLATIONS = {
       metrics: {
         promptTokens: "Palabras clave:",
         completionTokens: "Tokens de finalización:",
+        cost: "Costo:",
       },
       stopJob: "Suspender el empleo",
       killing: "Detener...",

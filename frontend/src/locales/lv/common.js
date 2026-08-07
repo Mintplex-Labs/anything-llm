@@ -884,6 +884,11 @@ const TRANSLATIONS = {
         description:
           "Atstāviet automātisko skrološanu uz sarunas beigām, kad saņemts jauns sūtījums.",
       },
+      "preferred-currency": {
+        title: "Ieelietotā valūta",
+        description:
+          "Valūta, kas izmantoja, lai rādītu LLM (liels valodas modelis) izmantošanas izmaksas. Izmaksas vienmēr tiek fiksētas ASV dolāros un konvertējamas tikai rādīšanai.",
+      },
     },
   },
   api: {
@@ -1756,6 +1761,7 @@ const TRANSLATIONS = {
       metrics: {
         promptTokens: "Ievade:",
         completionTokens: "Pilnībā aprakstīti elementi:",
+        cost: "Izmaksas:",
       },
       stopJob: "Aizstāt darbu",
       killing: "Apstādam...",

@@ -908,6 +908,11 @@ const TRANSLATIONS = {
         description:
           "Desactivar el recorregut automàtic fins al final del missatge quan s'arriben a rebre nous missatges.",
       },
+      "preferred-currency": {
+        title: "Moneda preferida",
+        description:
+          "Moneda utilitzada per mostrar els costos d'ús del model de llenguatge. Els costos sempre es registren en dòlars americans i es converteixen només per a la visualització.",
+      },
     },
   },
   api: {
@@ -1769,6 +1774,7 @@ const TRANSLATIONS = {
       metrics: {
         promptTokens: "Tokens de desencadenament:",
         completionTokens: "Tokens de finalització:",
+        cost: "Cost:",
       },
       stopJob: "Atura la tasca",
       killing: "Aturar...",

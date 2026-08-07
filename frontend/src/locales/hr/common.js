@@ -889,6 +889,11 @@ const TRANSLATIONS = {
         description:
           "Isključi automatsko pomicanje na dno razgovora kada stignu nove poruke.",
       },
+      "preferred-currency": {
+        title: "Preferirana valuta",
+        description:
+          "Valuta koju se koristi za prikaz troškova korištenja LLM-a. Troškovi su uvijek izraženi u dolarima i pretvaraju se samo za potrebe prikaza.",
+      },
     },
   },
   api: {
@@ -1927,6 +1932,7 @@ const TRANSLATIONS = {
       metrics: {
         promptTokens: "Tokeni upita:",
         completionTokens: "Tokeni dovršetka:",
+        cost: "Cijena:",
       },
     },
     toolCall: {

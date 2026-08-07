@@ -885,6 +885,11 @@ const TRANSLATIONS = {
         description:
           "Desative a rolagem automática até o final da conversa quando novas mensagens forem recebidas.",
       },
+      "preferred-currency": {
+        title: "Moeda Preferida",
+        description:
+          "Moeda utilizada para exibir os custos de utilização do LLM (Modelo de Linguagem Grande). Os custos são sempre registrados em dólares americanos e convertidos apenas para fins de exibição.",
+      },
     },
   },
   api: {
@@ -1736,6 +1741,7 @@ const TRANSLATIONS = {
       metrics: {
         promptTokens: "Palavras-chave de gatilho:",
         completionTokens: "Tokens de conclusão:",
+        cost: "Custo:",
       },
       stopJob: "Interromper o emprego",
       killing: "Parar...",

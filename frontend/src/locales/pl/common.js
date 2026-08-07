@@ -894,6 +894,11 @@ const TRANSLATIONS = {
         description:
           "Wyłącz automatyczne przewijanie do końca okna czatu po otrzymaniu nowych wiadomości.",
       },
+      "preferred-currency": {
+        title: "Preferowana waluta",
+        description:
+          "Waluta używana do wyświetlania kosztów korzystania z dużych modeli językowych (LLM). Koszty są zawsze podawane w dolarach amerykańskich i konwertowane wyłącznie w celach prezentacji.",
+      },
     },
   },
   api: {
@@ -1763,6 +1768,7 @@ const TRANSLATIONS = {
       metrics: {
         promptTokens: "Słowa kluczowe:",
         completionTokens: "Tokeny zakończenia:",
+        cost: "Koszt:",
       },
       stopJob: "Zakończ pracę",
       killing: "Przestań...",
