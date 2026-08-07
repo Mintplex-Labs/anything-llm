@@ -291,6 +291,14 @@ async function tooledStream(
     } catch {}
   }
 
+  if (reasoningText.length > 0 && !result.textResponse) {
+    eventHandler?.("reportStreamEvent", {
+      type: "textResponseChunk",
+      uuid: msgUUID,
+      content: "</think>",
+    });
+  }
+
   const toolCallIndices = Object.keys(toolCallsByIndex).map(Number);
   if (toolCallIndices.length > 0) {
     const firstToolCall = toolCallsByIndex[Math.min(...toolCallIndices)];
