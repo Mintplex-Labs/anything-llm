@@ -848,6 +848,11 @@ const TRANSLATIONS = {
         description:
           "כבה את הקיפול האוטומטי לסוף החלון כאשר מתקבלות הודעות חדשות.",
       },
+      "preferred-currency": {
+        title: "המטבע המועדף",
+        description:
+          "המטבע המשמש להצגת עלויות השימוש במודל שפה גדול (LLM). העלויות מתועדות תמיד בדולר אמריקאי, וההמרות נעשות לצורך הצגה בלבד.",
+      },
     },
   },
   api: {
@@ -1654,6 +1659,7 @@ const TRANSLATIONS = {
       metrics: {
         promptTokens: "מילות מפתח:",
         completionTokens: "טוקנים לסיום:",
+        cost: "מחיר:",
       },
       stopJob: "הפסק עבודה",
       killing: "עצירה...",

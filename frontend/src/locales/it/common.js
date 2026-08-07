@@ -1414,6 +1414,11 @@ const TRANSLATIONS = {
         description:
           "Disabilita lo scorrimento automatico fino alla fine della finestra di chat quando vengono ricevute nuove messaggi.",
       },
+      "preferred-currency": {
+        title: "Valuta preferita",
+        description:
+          "La valuta utilizzata per visualizzare i costi di utilizzo del modello linguistico di grandi dimensioni (LLM). I costi sono sempre indicati in dollari statunitensi e convertiti solo a scopo di visualizzazione.",
+      },
     },
   },
   "main-page": {
@@ -1762,6 +1767,7 @@ const TRANSLATIONS = {
       metrics: {
         promptTokens: "Parole chiave:",
         completionTokens: "Token di completamento:",
+        cost: "Costo:",
       },
       stopJob: "Interruzione del lavoro",
       killing: "Fermare...",

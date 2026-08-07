@@ -886,6 +886,11 @@ const TRANSLATIONS = {
         description:
           "Išjunkite automatinį skryptą į apačią, kai gaunamos naujos žinios.",
       },
+      "preferred-currency": {
+        title: "Pradinė valiuta",
+        description:
+          "Moneta, naudojama norint parodyti LLM (didžios kalbos modelio) naudojimo sąnaštus. Sąnašai visada nurodami JAV dolerimis ir konvertuojami tik rodymo tikslams.",
+      },
     },
   },
   api: {
@@ -1719,6 +1724,7 @@ const TRANSLATIONS = {
       metrics: {
         promptTokens: "Įspūdingos žymės:",
         completionTokens: "Baigimo žymekliai:",
+        cost: "Kaina:",
       },
       stopJob: "Nutraukite darbą",
       killing: "Sustabdyti...",

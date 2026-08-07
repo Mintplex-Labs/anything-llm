@@ -1411,6 +1411,11 @@ const TRANSLATIONS = {
         description:
           "Dezactivați derularea automată până la sfârșitul conversației atunci când se primesc mesaje noi.",
       },
+      "preferred-currency": {
+        title: "Moneda preferată",
+        description:
+          "Moneda utilizată pentru a afișa costurile utilizării modelelor lingvistice mari (LLM). Costurile sunt înregistrate întotdeauna în dolari americani și sunt convertite doar în scop informativ.",
+      },
     },
   },
   api: {
@@ -1738,6 +1743,7 @@ const TRANSLATIONS = {
       metrics: {
         promptTokens: "Cuvinte-cheie:",
         completionTokens: "Token-uri de finalizare:",
+        cost: "Costul:",
       },
       stopJob: "Încetarea activității",
       killing: "Oprire...",

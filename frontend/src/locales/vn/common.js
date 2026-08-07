@@ -1374,6 +1374,11 @@ const TRANSLATIONS = {
         description:
           "Tắt tính năng tự động cuộn xuống cuối cuộc trò chuyện khi nhận được tin nhắn mới.",
       },
+      "preferred-currency": {
+        title: "Tiền tệ được ưa chuộng",
+        description:
+          "Tiền tệ được sử dụng để hiển thị chi phí sử dụng mô hình ngôn ngữ lớn (LLM). Tất cả các chi phí đều được ghi lại bằng đô la Mỹ và chỉ được chuyển đổi để hiển thị mục đích.",
+      },
     },
   },
   "main-page": {
@@ -1712,6 +1717,7 @@ const TRANSLATIONS = {
       metrics: {
         promptTokens: "Từ gợi ý:",
         completionTokens: "Các token hoàn thành:",
+        cost: "Chi phí:",
       },
       stopJob: "Dừng việc",
       killing: "Dừng lại...",

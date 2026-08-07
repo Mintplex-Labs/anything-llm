@@ -881,6 +881,11 @@ const TRANSLATIONS = {
         description:
           "Matikan fungsi otomatis untuk menggulir ke bagian bawah jendela obrolan saat pesan baru diterima.",
       },
+      "preferred-currency": {
+        title: "Mata Uang yang Diprioritaskan",
+        description:
+          "Mata uang yang digunakan untuk menampilkan biaya penggunaan LLM. Biaya selalu dicatat dalam USD dan dikonversi hanya untuk tujuan tampilan.",
+      },
     },
   },
   api: {
@@ -1900,6 +1905,7 @@ const TRANSLATIONS = {
       metrics: {
         promptTokens: "Token prompt:",
         completionTokens: "Token penyelesaian:",
+        cost: "Biaya:",
       },
     },
     toolCall: {

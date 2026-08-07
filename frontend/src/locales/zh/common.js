@@ -820,6 +820,11 @@ const TRANSLATIONS = {
         title: "关闭自动滚动功能",
         description: "在收到新消息时，取消自动滚动到聊天窗口底部的功能。",
       },
+      "preferred-currency": {
+        title: "首选货币",
+        description:
+          "用于显示大型语言模型使用成本的货币。所有费用均以美元记录，仅供显示目的而进行转换。",
+      },
     },
   },
   api: {
@@ -1609,6 +1614,7 @@ const TRANSLATIONS = {
       metrics: {
         promptTokens: "提示词：",
         completionTokens: "完成标记：",
+        cost: "成本：",
       },
       stopJob: "停止工作",
       killing: "停止...",

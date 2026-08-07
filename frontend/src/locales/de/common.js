@@ -898,6 +898,11 @@ const TRANSLATIONS = {
         description:
           "Deaktivieren Sie das automatische Scrollen zum Ende des Chats, wenn neue Nachrichten empfangen werden.",
       },
+      "preferred-currency": {
+        title: "Bevorzugte Währung",
+        description:
+          "Währung, die zur Anzeige der Kosten für die Nutzung von LLMs verwendet wird. Die Kosten werden immer in US-Dollar angegeben und nur zu Informationszwecken umgerechnet.",
+      },
     },
   },
   api: {
@@ -1753,6 +1758,7 @@ const TRANSLATIONS = {
       metrics: {
         promptTokens: "Auslöse-Token:",
         completionTokens: "Abschluss-Token:",
+        cost: "Kosten:",
       },
       stopJob: "Arbeitsplatz verlassen",
       killing: "Anhalten...",

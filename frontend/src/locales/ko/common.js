@@ -854,6 +854,11 @@ const TRANSLATIONS = {
         description:
           "새 메시지가 도착할 때 자동으로 채팅 내용이 맨 아래로 스크롤되는 기능을 비활성화합니다.",
       },
+      "preferred-currency": {
+        title: "선호하는 화폐",
+        description:
+          "LLM 사용 비용을 표시하는 데 사용되는 통화입니다. 모든 비용은 미국 달러(USD)로 기록되며, 단지 표시 목적으로만 변환됩니다.",
+      },
     },
   },
   api: {
@@ -1674,6 +1679,7 @@ const TRANSLATIONS = {
       metrics: {
         promptTokens: "프롬프트 토큰:",
         completionTokens: "완료 토큰:",
+        cost: "비용:",
       },
       stopJob: "직업 중단",
       killing: "멈추다...",

@@ -1378,6 +1378,11 @@ const TRANSLATIONS = {
         description:
           "Deaktiver automatisk rulle ned til bundlinjen i chatten, når der modtages nye beskeder.",
       },
+      "preferred-currency": {
+        title: "Foretrukken valuta",
+        description:
+          "Valutaen bruges til at vise omkostningerne ved brug af LLM (Large Language Models). Omkostningerne registreres altid i USD og konverteres kun til visning.",
+      },
     },
   },
   "main-page": {
@@ -1716,6 +1721,7 @@ const TRANSLATIONS = {
       metrics: {
         promptTokens: "Prompt-ord:",
         completionTokens: "Afslutningsmarkører:",
+        cost: "Pris:",
       },
       stopJob: "Afslut stillingen",
       killing: "Afbryde...",

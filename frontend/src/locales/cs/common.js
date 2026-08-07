@@ -886,6 +886,11 @@ const TRANSLATIONS = {
         description:
           "Vypněte automatické posouvání dolů v chatu při přijetí nových zpráv.",
       },
+      "preferred-currency": {
+        title: "Preferovaná měna",
+        description:
+          "Měna používaná k zobrazení nákladů spojených s používáním LLM (velkých jazykových modelů). Náklady jsou vždy zaznamenávány v amerických dolarech a pro účely zobrazení jsou převedeny na jinou měnu.",
+      },
     },
   },
   api: {
@@ -1713,6 +1718,7 @@ const TRANSLATIONS = {
       metrics: {
         promptTokens: "Klíčová slova:",
         completionTokens: "Tokeny pro dokončení:",
+        cost: "Náklady:",
       },
       stopJob: "Zastavení práce",
       killing: "Zastavte...",
