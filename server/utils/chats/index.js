@@ -1,12 +1,14 @@
 const { v4: uuidv4 } = require("uuid");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { resetMemory } = require("./commands/reset");
+const { generateImage } = require("./commands/img");
 const { convertToPromptHistory } = require("../helpers/chat/responses");
 const { SlashCommandPresets } = require("../../models/slashCommandsPresets");
 const { SystemPromptVariables } = require("../../models/systemPromptVariables");
 
 const VALID_COMMANDS = {
   "/reset": resetMemory,
+  "/img": generateImage,
 };
 
 async function grepCommand(message, user = null) {

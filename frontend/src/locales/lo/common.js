@@ -118,6 +118,7 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
+    "image-generation": "ການສ້າງຮູບພາບ",
   },
   login: {
     "multi-user": {
@@ -1415,6 +1416,32 @@ const TRANSLATIONS = {
       watch_explained_block3_end: " ໃນໜ້າຜູ້ດູແລ.",
       accept: "ຕົກລົງ, ເຂົ້າໃຈແລ້ວ",
     },
+    gitea: {
+      name: "Gitea ບັນຊີ",
+      description:
+        "ຈາກ Gitea ຕົວຢ່າງໃດກໍ່ໄດ້, ສາມາດນຳເອົາບັນຊີທັງໝົດ ຫຼື ເອກະສານເອກະໜິດ ມາໃນການເຄື່ອໄ動ດຽວ.",
+      URL: "URL ຂອງ Gitea",
+      URL_explained:
+        "URL ຂອງ repository ທີ່ເຈົ້າຕ້ອງການລ 수집 ຢູ່លើເວັບໄຊ Gitea – ການນຳ käyttö ຕົວເອງແມ່ນຮັບຮອງ",
+      token: "Token ການເຂົ້າເຖິງ Gitea",
+      optional: "ສາມາດເລືອກໄດ້",
+      token_explained:
+        "ການນຳໃຊ້โทเคನ್‌ເພື່ອສేకະສະຖານທີ່ ຫຼື ສະຖານທີ່ໃນລະບົບທີ່ຕ້ອງການການອະໄດ",
+      token_explained_start: "ໂດຍບໍ່ມີ",
+      token_explained_link1: "โทเคນ ການເຂົ້າถึง",
+      token_explained_end:
+        ", ສິ່ງທີ່ສາມາດກຳນົດໄດ້ ແມ່ນ repository ທີ່ Gitea ຂອງທ່ານເປີດໃຫ້ສາธารະຊົນສາມາດເຂົ້າໄປໃຊ້ໄດ້ເທົ່ານັ້ນ។",
+      ignores: "ไฟล์ละเว้น",
+      git_ignore:
+        "ບັນຊີໃນຮູບແບບ .gitignore ດຳເນີນການບໍ່ໃຫ້ບັນทຶກไฟล์เฉพาะ ໃນຂະบวนການລວບรวม। ແລ້ວ ກົດปุ่ม Enter ຫຼັງຈາກແຕ່ละບັນຊີ ທີ່ເຈົ້າຕ້ອງການບັນทຶກ",
+      task_explained:
+        "ເມື່ອສຳເລັດແລ້ວ, ສਾਰົາເອກະສານຈະສາມາດນຳໃຊ້ໄດ້ເພື່ອຕິດຄліໃນຊ່ອງງານໃນຕົວເລືອກເອກະສານ.",
+      branch: "ສາขา ທີ່ເຈົ້າຕ້ອງການລ 수집 ਫाइल។",
+      branch_loading: "– ສ່ວນສາขาທີ່ມີຢູ່ –",
+      branch_explained: "ສາขาที่คุณຕ້ອງການລ 수 파일을 ලබාទ령",
+      token_information:
+        "ຖ້າບໍ່ໃຊ້ <b>Token ປະຕິหารະ</b>ນີ້, ສະຫນັບສະຫນູນຂໍ້ມູນນີ້ຈະສາມາດรวบรวมไฟล์ໄດ້ພຽງແຕ່ຈາກ repository ທີ່ <b>ສາມາດເບິ່ງໄດ້ສາธารណៈ</b>ໃນຕົວ Gitea ຂອງທ່ານ.",
+    },
   },
   chat_window: {
     attachments_processing: "ກຳລັງປະມວນຜົນໄຟລ໌ແນບ. ກະລຸນາລໍຖ້າ...",
@@ -1551,6 +1578,7 @@ const TRANSLATIONS = {
         cancel: "ຍົກເລີກ",
       },
     },
+    preset_img_description: "ຈາກຂໍ້ຄວາມ ໃຫ້ສ້າງຮູບພາບ",
   },
   profile_settings: {
     edit_account: "ແກ້ໄຂບັນຊີ",
@@ -1822,6 +1850,23 @@ const TRANSLATIONS = {
         spreadsheet: "ຕາຕະລາງ (Spreadsheet)",
         generic: "ໄຟລ໌",
       },
+    },
+  },
+  imageGeneration: {
+    title: "ຄວາມຕ້ອງການ ຜະນวกຮູບ",
+    description: "ການຕັ້ງຄ່າຜູ້ສະໜອງ ທີ່ຖືກນຳໃຊ້ເພື່ອສ້າງຮູບຈາກ ຄຳສັ່ງ `/img`",
+    provider: "ຜູ້ສະໜອງການສ້າງຮູບພາບ",
+    card: {
+      "failed-to-load": "รูปภาพບໍ່ສາມາດโหลดໄດ້",
+      "alt-text": "ຮູບພາບທີ່ສ້າງຂຶ້ນ",
+      edit: "ແກ້ໄຂ",
+      download: "ดาวน์โหลด",
+    },
+    pending: {
+      heading: "ສ້າງຮູບຂອງທ່ານ...",
+      description:
+        "ນີ້ ສາມາດໃຊ້ເວລາເລັກໜ້ອຍ. ມັນຈະປະກາດຢູ່ທີ່ນີ້ເມື່ອມັນຖືກແກ້ໄຂແລ້ວ",
+      aborted: "ການສ້າງຮູບພາບຖືກຢຸດແລ້ວ",
     },
   },
 };

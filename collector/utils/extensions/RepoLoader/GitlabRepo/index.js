@@ -141,7 +141,7 @@ async function fetchGitlabFile({
   console.log(
     `-- Working GitLab ${repo.author}/${repo.project}:${repo.branch} file:${sourceFilePath} --`
   );
-  const fileContent = await repo.fetchSingleFile(sourceFilePath);
+  const fileContent = await repo.fetchSingleFileContents(sourceFilePath);
   if (!fileContent) {
     return {
       success: false,

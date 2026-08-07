@@ -105,6 +105,17 @@ const router = createBrowserRouter([
         },
       },
       {
+        path: "/settings/image-generation-preference",
+        lazy: async () => {
+          const { default: ImageGenerationPreference } = await import(
+            "@/pages/GeneralSettings/ImageGenerationPreference"
+          );
+          return {
+            element: <AdminRoute Component={ImageGenerationPreference} />,
+          };
+        },
+      },
+      {
         path: "/settings/text-splitter-preference",
         lazy: async () => {
           const { default: EmbeddingTextSplitterPreference } = await import(
