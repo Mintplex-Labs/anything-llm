@@ -24,6 +24,7 @@ export default function handleChat(
     action = null,
     metrics = {},
     routedTo = null,
+    outputs = null,
   } = chatResult;
 
   if (type === "modelRouteNotification") {
@@ -34,6 +35,23 @@ export default function handleChat(
       role: "assistant",
     });
     setChatHistory([..._chatHistory]);
+    return;
+  }
+
+  if (type === "imageGenerationPending") {
+    const pendingMsg = {
+      type: "imageGenerationPending",
+      uuid,
+      content: "",
+      role: "assistant",
+      sources: [],
+      closed: false,
+      error: null,
+      animate: false,
+      pending: true,
+    };
+    setChatHistory([...remHistory, pendingMsg]);
+    _chatHistory.push(pendingMsg);
     return;
   }
 
@@ -84,6 +102,7 @@ export default function handleChat(
         pending: false,
         chatId,
         metrics,
+        ...(outputs ? { outputs } : {}),
       },
     ]);
     _chatHistory.push({
@@ -97,6 +116,7 @@ export default function handleChat(
       pending: false,
       chatId,
       metrics,
+      ...(outputs ? { outputs } : {}),
     });
     emitAssistantMessageCompleteEvent(chatId);
   } else if (

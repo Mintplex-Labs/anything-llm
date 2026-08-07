@@ -107,6 +107,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "預約排定的工作",
     "model-router": "模型路由器",
+    "image-generation": "圖像生成",
   },
   login: {
     "multi-user": {
@@ -1049,6 +1050,30 @@ const TRANSLATIONS = {
       processing_time: "這可能需要一段時間，具體取決於您的 Vault 大小。",
       vault_warning: "為避免任何衝突，請確保您的 Obsidian Vault 目前未開啟。",
     },
+    gitea: {
+      name: "GitEA 儲存庫",
+      description:
+        "只需單擊，即可從任何 Gitea 實例導入整個公共或私有的儲存庫。",
+      URL: "Gitea 儲存庫網址",
+      URL_explained: "您希望在您的 Gitea 實例中收集的倉庫 URL – 支持自建實例。",
+      token: "Gitea 訪問權限代碼",
+      optional: "可選",
+      token_explained:
+        "需要訪問權限才能存取私有倉庫或在需要驗證的伺服器上的倉庫。",
+      token_explained_start: "沒有…",
+      token_explained_link1: "訪問權杖",
+      token_explained_end: "只能從您的 Gitea 實例公開提供的儲存庫中進行收集。",
+      ignores: "忽略檔案",
+      git_ignore:
+        "使用 `.gitignore` 格式列出要排除的檔案，以便在收集時忽略這些檔案。 按下回車鍵後，您可以保存您想要排除的每一項。",
+      task_explained:
+        "完成後，所有檔案都會可供在文件選取器中嵌入到工作空間中使用。",
+      branch: "您希望從哪個分支收集檔案。",
+      branch_loading: "– 正在載入可用的分支 –",
+      branch_explained: "您想要從哪個分支收集檔案。",
+      token_information:
+        "如果沒有填寫 <b>Gitea 存取權杖</b>, 這個資料連接器只能從您 Gitea 實例中<b>公開可讀</b>的儲藏庫收集檔案。",
+    },
   },
   chat_window: {
     send_message: "傳送訊息",
@@ -1183,6 +1208,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "轉錄失敗：{{error}}",
     export: "匯出對話內容為…",
     exporting: "出口...",
+    preset_img_description: "根據文字提示，生成圖像。",
   },
   profile_settings: {
     edit_account: "編輯帳戶",
@@ -1808,6 +1834,22 @@ const TRANSLATIONS = {
       "routed-to": "已路由至 <route>{{model}}</route>",
       "routed-to-rule":
         "經由 <route> {{model}} </route>，並通過 <rule> {{ruleTitle}} </rule> 進行。",
+    },
+  },
+  imageGeneration: {
+    title: "圖像生成偏好",
+    description: "設定用於從 `/img` 命令生成圖像的提供者。",
+    provider: "圖像生成服務供應商",
+    card: {
+      "failed-to-load": "圖片無法載入",
+      "alt-text": "生成的圖像",
+      edit: "編輯",
+      download: "下載",
+    },
+    pending: {
+      heading: "正在生成您的圖片…",
+      description: "這可能需要一些時間。當內容準備好後，它就會在這裡顯示出來。",
+      aborted: "圖像生成已取消。",
     },
   },
 };

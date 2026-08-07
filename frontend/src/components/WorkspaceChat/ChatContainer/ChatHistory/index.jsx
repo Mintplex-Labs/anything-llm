@@ -5,6 +5,7 @@ import StatusResponse from "./StatusResponse";
 import ToolApprovalRequest from "./ToolApprovalRequest";
 import ClarifyingQuestionCard from "./ClarifyingQuestion";
 import FileDownloadCard from "./FileDownloadCard";
+import ImageGenerationPending from "./ImageGenerationPending";
 import ScheduledJobCreatedCard from "./ScheduledJobCreatedCard";
 import { useManageWorkspaceModal } from "../../../Modals/ManageWorkspace";
 import ManageWorkspace from "../../../Modals/ManageWorkspace";
@@ -285,6 +286,13 @@ function buildMessages({
       acc.push(<FileDownloadCard key={props.uuid} props={props} />);
     } else if (props.type === "scheduledJobCreated" && !!props.content) {
       acc.push(<ScheduledJobCreatedCard key={props.uuid} props={props} />);
+    } else if (props.type === "imageGenerationPending") {
+      acc.push(
+        <ImageGenerationPending
+          key={`img-pending-${props.uuid || index}`}
+          aborted={props.closed}
+        />
+      );
     } else if (isLastBotReply && props.animate) {
       acc.push(
         <PromptReply

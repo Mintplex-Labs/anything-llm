@@ -111,6 +111,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Công việc theo lịch trình",
     "model-router": "Router mẫu",
+    "image-generation": "Tạo ảnh",
   },
   login: {
     "multi-user": {
@@ -1121,6 +1122,32 @@ const TRANSLATIONS = {
       vault_warning:
         "Để tránh xung đột, hãy đảm bảo kho Obsidian của bạn hiện không mở.",
     },
+    gitea: {
+      name: "Kho lưu trữ Gitea",
+      description:
+        "Nhập toàn bộ kho lưu trữ công cộng hoặc riêng tư từ bất kỳ phiên bản Gitea nào chỉ bằng một cú nhấp chuột.",
+      URL: "URL kho lưu trữ Gitea",
+      URL_explained:
+        "Địa chỉ URL của kho lưu trữ mà bạn muốn sao chép trên phiên bản Gitea của mình – các phiên bản tự lưu trữ đều được hỗ trợ.",
+      token: "Mật khẩu truy cập Gitea",
+      optional: "tùy chọn",
+      token_explained:
+        "Mã truy cập cần thiết để thu thập các kho lưu trữ riêng tư hoặc các kho lưu trữ trên các máy chủ yêu cầu xác thực.",
+      token_explained_start: "Không có",
+      token_explained_link1: "Mã truy cập",
+      token_explained_end:
+        "Chỉ các kho lưu trữ mà phiên bản Gitea của bạn hiển thị công khai mới có thể được thu thập.",
+      ignores: "Tệp bỏ qua",
+      git_ignore:
+        "Liệt kê định dạng .gitignore để bỏ qua các tệp cụ thể trong quá trình thu thập. Nhấn Enter sau mỗi mục bạn muốn lưu.",
+      task_explained:
+        "Sau khi hoàn thành, tất cả các tệp sẽ có sẵn để gắn vào không gian làm việc trong trình chọn tài liệu.",
+      branch: "Kho lưu trữ mà bạn muốn truy cập.",
+      branch_loading: "– Hiển thị các chi nhánh hiện có –",
+      branch_explained: "Cơ sở bạn muốn tải xuống các tệp tin.",
+      token_information:
+        "Nếu không điền thông tin <b>Token truy cập Gitea</b>, kết nối dữ liệu này chỉ có thể thu thập các tệp từ các kho lưu trữ được <b>truy cập công khai</b> trên phiên bản Gitea của bạn.",
+    },
   },
   chat_window: {
     send_message: "Gửi tin nhắn",
@@ -1262,6 +1289,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Không thể chuyển đổi: {{error}}",
     export: "Xuất trò chuyện dưới dạng...",
     exporting: "Xuất khẩu...",
+    preset_img_description: "Tạo một hình ảnh từ một đoạn mô tả bằng văn bản.",
   },
   profile_settings: {
     edit_account: "Chỉnh sửa Tài khoản",
@@ -1915,7 +1943,7 @@ const TRANSLATIONS = {
         "Chọn router nào để sử dụng cho không gian làm việc này.",
       "no-routers-chat":
         "Không có bộ định tuyến nào được cấu hình. Tạo một bộ định tuyến trong mục Cài đặt > Nhà cung cấp AI > Bộ định tuyến Mô hình.",
-      "rule-count": "(__Quy tắc {{count}})",
+      "rule-count": "({{count}} quy tắc)",
     },
     metrics: {
       "model-router-default": "Mẫu Router",
@@ -1926,6 +1954,24 @@ const TRANSLATIONS = {
       "routed-to": "Được chuyển đến <route>{{model}}</route>",
       "routed-to-rule":
         "Được chuyển đến <route>{{model}}</route> thông qua <rule>{{ruleTitle}}</rule>",
+    },
+  },
+  imageGeneration: {
+    title: "Ưu tiên tạo ảnh",
+    description:
+      "Cấu hình nhà cung cấp được sử dụng để tạo ảnh từ lệnh `/img`.",
+    provider: "Nhà cung cấp dịch vụ tạo hình ảnh",
+    card: {
+      "failed-to-load": "Không thể tải hình ảnh.",
+      "alt-text": "Hình ảnh được tạo ra",
+      edit: "Chỉnh sửa",
+      download: "Tải xuống",
+    },
+    pending: {
+      heading: "Tạo ảnh cho bạn…",
+      description:
+        "Quá trình này có thể mất một khoảng thời gian. Nội dung sẽ hiển thị ngay khi hoàn thành.",
+      aborted: "Việc tạo hình ảnh đã bị hủy bỏ.",
     },
   },
 };

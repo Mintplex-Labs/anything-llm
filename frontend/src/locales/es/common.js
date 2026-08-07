@@ -111,6 +111,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Tareas programadas",
     "model-router": "Router de ejemplo",
+    "image-generation": "Generación de imágenes",
   },
   login: {
     "multi-user": {
@@ -1261,6 +1262,32 @@ const TRANSLATIONS = {
       watch_explained_block3_end: ".",
       accept: "Ok, entendido",
     },
+    gitea: {
+      name: "Repositorio de Gitea",
+      description:
+        "Importe todo un repositorio público o privado desde cualquier instancia de Gitea con un solo clic.",
+      URL: "URL del repositorio de Gitea",
+      URL_explained:
+        "URL del repositorio que desea obtener en su instancia de Gitea – se admiten instancias autohospedadas.",
+      token: "Token de acceso de Gitea",
+      optional: "opcional",
+      token_explained:
+        "Se requiere un token de acceso para acceder a repositorios privados o a repositorios en instancias que requieran autenticación.",
+      token_explained_start: "Sin",
+      token_explained_link1: "Token de acceso",
+      token_explained_end:
+        "Solo se pueden recopilar repositorios que tu instancia de Gitea expone públicamente.",
+      ignores: "El archivo se ignora",
+      git_ignore:
+        "Cree un archivo en formato `.gitignore` para excluir archivos específicos durante la recopilación. Pulse Intro después de cada entrada que desee guardar.",
+      task_explained:
+        "Una vez completado el proceso, todos los archivos estarán disponibles para incorporarlos en las áreas de trabajo a través del selector de documentos.",
+      branch: "La rama a la que desea acceder para obtener los archivos.",
+      branch_loading: "– Cargando las ramas disponibles –",
+      branch_explained: "La rama de la que desea obtener los archivos.",
+      token_information:
+        "Sin completar el token de acceso de <b>Gitea</b>, este conector de datos solo podrá recopilar archivos de repositorios que sean accesibles públicamente en su instancia de <b>Gitea.</b>",
+    },
   },
   chat_window: {
     attachments_processing:
@@ -1408,6 +1435,8 @@ const TRANSLATIONS = {
     stt_transcription_failed: "No se pudo realizar la transcripción: {{error}}",
     export: "Exportar la conversación como...",
     exporting: "Exportando...",
+    preset_img_description:
+      "Generar una imagen a partir de una descripción textual.",
   },
   profile_settings: {
     edit_account: "Editar cuenta",
@@ -1973,6 +2002,24 @@ const TRANSLATIONS = {
       "routed-to": "Dirigido a <route>{{model}}</route>",
       "routed-to-rule":
         "Enviado a <route>{{model}}</route> a través de <rule>{{ruleTitle}}</rule>",
+    },
+  },
+  imageGeneration: {
+    title: "Preferencias para la generación de imágenes",
+    description:
+      "Configurar el proveedor que se utiliza para generar imágenes a partir del comando `/img`.",
+    provider: "Proveedor de generación de imágenes",
+    card: {
+      "failed-to-load": "No se pudo cargar la imagen.",
+      "alt-text": "Imagen generada",
+      edit: "Editar",
+      download: "Descargar",
+    },
+    pending: {
+      heading: "Generando su imagen...",
+      description:
+        "Esto puede tardar un poco. Aparecerá aquí en cuanto esté listo.",
+      aborted: "La generación de imágenes se ha cancelado.",
     },
   },
 };

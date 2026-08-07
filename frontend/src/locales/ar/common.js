@@ -109,6 +109,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "المهام المجدولة",
     "model-router": "نموذج جهاز التوجيه",
+    "image-generation": "إنشاء الصور",
   },
   login: {
     "multi-user": {
@@ -1113,6 +1114,32 @@ const TRANSLATIONS = {
       vault_warning:
         "لتجنب أي تعارضات، تأكد من أن مجلد Obsidian الخاص بك ليس مفتوحًا حاليًا.",
     },
+    gitea: {
+      name: "مستودع Gitea",
+      description:
+        "استيراد مستودع كامل، سواء كان عامًا أو خاصًا، من أي خادم Gitea بنقرة واحدة فقط.",
+      URL: "عنوان مستودع Gitea",
+      URL_explained:
+        "عنوان المستودع الذي ترغب في استنساخه على خادم Gitea الخاص بك – يتم دعم الخوادم التي تستضيفها بنفسك.",
+      token: "رمز الوصول إلى Gitea",
+      optional: "اختياري",
+      token_explained:
+        "يجب الحصول على رمز الوصول لجمع المستودعات الخاصة أو المستودعات الموجودة على الخوادم التي تتطلب المصادقة.",
+      token_explained_start: "بدون",
+      token_explained_link1: "رمز الوصول",
+      token_explained_end:
+        "، يمكن جمع البيانات فقط من المستودعات التي تعرضها نسخة Gitea الخاصة بك علنًا.",
+      ignores: "يتجاهل الملف",
+      git_ignore:
+        'قم بإنشاء قائمة بتنسيق ".gitignore" لتجاهل الملفات المحددة أثناء عملية الاستنساخ. اضغط على مفتاح الإدخال بعد كل إدخال ترغب في حفظه.',
+      task_explained:
+        "بمجرد الانتهاء، ستكون جميع الملفات متاحة لإدراجها في مساحات العمل ضمن أداة اختيار المستندات.",
+      branch: "الفرع الذي ترغب في استرجاع الملفات منه.",
+      branch_loading: "– تحميل الفروع المتاحة –",
+      branch_explained: "الفرع الذي ترغب في استرجاع الملفات منه.",
+      token_information:
+        "بدون إدخال رمز الوصول <b> الخاص بـ Gitea، فإن هذا الموصل للبيانات سيكون قادرًا فقط على جمع الملفات من المستودعات التي يمكن قراءتها بشكل <b> علني على مثيل Gitea الخاص بك.",
+    },
   },
   chat_window: {
     send_message: "أرسل رسالة",
@@ -1250,6 +1277,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "فشلت عملية النسخ: {{error}}",
     export: "تصدير المحادثة كـ...",
     exporting: "التصدير...",
+    preset_img_description: "إنشاء صورة بناءً على نص معين.",
   },
   profile_settings: {
     edit_account: "تحرير الحساب",
@@ -1900,6 +1928,22 @@ const TRANSLATIONS = {
       "routed-to": "تم توجيهه إلى <route>{{model}}</route>",
       "routed-to-rule":
         "تم توجيهه إلى <route>{{model}}</route> عبر <rule>{{ruleTitle}}</rule>",
+    },
+  },
+  imageGeneration: {
+    title: "تفضيلات إنشاء الصور",
+    description: "قم بتكوين المزود المستخدم لإنشاء الصور من أمر `/img`.",
+    provider: "مزود خدمة إنشاء الصور",
+    card: {
+      "failed-to-load": "فشلت عملية تحميل الصورة.",
+      "alt-text": "الصورة التي تم إنشاؤها",
+      edit: "تحرير",
+      download: "تنزيل",
+    },
+    pending: {
+      heading: "إنشاء صورتك…",
+      description: "قد يستغرق ذلك بعض الوقت. سيظهر هنا بمجرد أن يكون جاهزًا.",
+      aborted: "تم إلغاء عملية إنشاء الصورة.",
     },
   },
 };

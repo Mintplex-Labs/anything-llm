@@ -110,6 +110,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Plānotas darba uzdevumi",
     "model-router": "Modeļa routers",
+    "image-generation": "Attēlu ģenerēšana",
   },
   login: {
     "multi-user": {
@@ -199,7 +200,7 @@ const TRANSLATIONS = {
       query: {
         title: "Vaicājums",
         description:
-          'sniedz atbildes <b>tikai__, </b>ja dokumenta konteksts ir atrasts.<br />Lai izmantotu rīkus, jums būs jāizmanto komanda "@agent".',
+          'sniedz atbildes <b>tikai, </b>ja dokumenta konteksts ir atrasts.<br />Lai izmantotu rīkus, jums būs jāizmanto komanda "@agent".',
       },
       automatic: {
         description:
@@ -1234,6 +1235,33 @@ const TRANSLATIONS = {
       watch_explained_block3_end: " administratora skata.",
       accept: "Labi, sapratu",
     },
+    gitea: {
+      name: "Gitea Repo",
+      description:
+        "Ievietojiet visu publisko vai privāto repozitāru no jebkuras Gitea instancē vienā darbībā.",
+      URL: "Gitea repozitorija URL",
+      URL_explained:
+        "Veidotā repozitāra URL, ko vēlaties izveidot savā Gitea instancē – atbalstītas arī pašnomājās instalācijas.",
+      token: "Gitea piekļuves atslēga",
+      optional: "pēc izvēles",
+      token_explained:
+        "Nepieciešams piekļuves tokens, lai iegūtu privātus repozitārus vai repozitārus, kas atrodas serveros, kur nepieciešama autentifikācija.",
+      token_explained_start: "Bez",
+      token_explained_link1: "Piekļuves tokens",
+      token_explained_end:
+        "Tikai tie repozitāri, kas ir pieejami jūsu Gitea instalācijas izmantošanai, var tikt apkopoti.",
+      ignores: "Faila ignorēšana",
+      git_ignore:
+        "Saraksts formātā `.gitignore`, kas paredzēts, lai ignorētu specifiskus failus, kad tiek veikta kolekcija. Nospiediet Enter pēc katra ieraksta, ko vēlaties saglabāt.",
+      task_explained:
+        "Kad visi faili būs saglabāti, tie būs pieejami, lai tos varētu ievietot darba vietās dokumentu izvēlēšanās funkcijā.",
+      branch: "Pasta mape, no kuras vēlaties izveidot kopijas.",
+      branch_loading: "— Pārbaudes pieejamos veidus —",
+      branch_explained:
+        "Pasta darbvietu, no kuras vēlaties lejupielādēt failus.",
+      token_information:
+        "Bez aizpildot <b>Gitea piekļuves atslēgu</b>, šis datu savienojums varēs vēlēt tikai failus no repozitāriem, kas ir <b>atvērti un pieejami</b> jūsu Gitea instancē.",
+    },
   },
   chat_window: {
     send_message: "Sūtīt ziņojumu",
@@ -1378,6 +1406,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Transkripcija neizdevās: {{error}}",
     export: "Eksportēt čatu kā...",
     exporting: "Eksporteris…",
+    preset_img_description: "Izveidot attēlu no teksta norādījuma",
   },
   profile_settings: {
     edit_account: "Rediģēt kontu",
@@ -1939,6 +1968,24 @@ const TRANSLATIONS = {
       "routed-to": "Sūtīts uz <route>{{model}}</route>",
       "routed-to-rule":
         "Aizvedēts pa <route>{{model}}</route> ceļu, izmantojot <rule>{{ruleTitle}}</rule>",
+    },
+  },
+  imageGeneration: {
+    title: "Attēla veidošanas preferences",
+    description:
+      "Iestatiet pakalpojumu, ko izmanto attēlu ģenerēšanai no `/img` komandas.",
+    provider: "Attēlu ģenerēšanas pakalpojumu sniedzējs",
+    card: {
+      "failed-to-load": "Attēlam izdevās neizveidoties",
+      "alt-text": "Sintetizēts attēls",
+      edit: "Rediģēt",
+      download: "Lejupielādēt",
+    },
+    pending: {
+      heading: "Ierakstiet savu attēlu...",
+      description:
+        "Tam varbūt būs nepieciešams laiks. Tas tiks publicēts šeit, kad tas būs gatavs.",
+      aborted: "Attēla izveide tika pārtraukta.",
     },
   },
 };
