@@ -120,7 +120,10 @@ class ModelPricing {
    */
   get isCacheStale() {
     if (!fs.existsSync(this.cacheFileExpiryPath)) return true;
-    const cachedAt = fs.readFileSync(this.cacheFileExpiryPath, "utf8");
+    const cachedAt = Number(fs.readFileSync(this.cacheFileExpiryPath, "utf8"));
+    // A corrupted timestamp would make every comparison false (NaN) and the
+    // cache permanently fresh - treat it as stale so it self-heals.
+    if (!Number.isFinite(cachedAt)) return true;
     return Date.now() - cachedAt > ModelPricing.expiryMs;
   }
 
@@ -315,6 +318,20 @@ class ModelPricing {
   }
 
   /**
+   * Coerces a caller-supplied token count into a safe, finite, non-negative
+   * number. Chat metrics are not sanitized upstream like agent usage is, so a
+   * provider reporting a negative or non-finite count must not produce a
+   * negative or infinite cost.
+   * @param {unknown} value
+   * @returns {number}
+   */
+  static #safeTokenCount(value) {
+    const number = Number(value);
+    if (!Number.isFinite(number) || number < 0) return 0;
+    return number;
+  }
+
+  /**
    * Calculates the USD cost of a completion for a given provider slug + model.
    *
    * Returns zeros for local/self-hosted providers, `null` when pricing is
@@ -342,8 +359,10 @@ class ModelPricing {
     const cost = this.#findModelCost(providerId, providerSlug, model);
     if (!cost) return null;
 
-    const promptTokens = Number(usage?.prompt_tokens) || 0;
-    const completionTokens = Number(usage?.completion_tokens) || 0;
+    const promptTokens = ModelPricing.#safeTokenCount(usage?.prompt_tokens);
+    const completionTokens = ModelPricing.#safeTokenCount(
+      usage?.completion_tokens
+    );
     const rates = this.#resolveRates(cost, promptTokens);
     if (!rates) return null;
 

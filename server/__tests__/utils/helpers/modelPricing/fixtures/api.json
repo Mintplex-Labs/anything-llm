@@ -52,6 +52,34 @@
           "output": 5,
           "context_over_200k": { "input": 2, "output": 10 }
         }
+      },
+      "gemini-garbage-tiers": {
+        "id": "gemini-garbage-tiers",
+        "name": "Gemini with malformed tier entries",
+        "cost": {
+          "input": 1,
+          "output": 5,
+          "tiers": [
+            null,
+            "junk",
+            { "tier": { "type": "context" } },
+            { "input": 99, "output": 99, "tier": { "type": "other", "size": 0 } }
+          ]
+        }
+      },
+      "gemini-corrupt-tier": {
+        "id": "gemini-corrupt-tier",
+        "name": "Gemini with a corrupt applicable tier",
+        "cost": {
+          "input": 1,
+          "output": 5,
+          "tiers": [
+            {
+              "input": "not-a-number",
+              "tier": { "type": "context", "size": 10 }
+            }
+          ]
+        }
       }
     }
   },

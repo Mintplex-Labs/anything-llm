@@ -148,6 +148,193 @@ describe("ModelPricing", () => {
       ).toEqual({ inputCost: 2.5, outputCost: 0, totalCost: 2.5 });
     });
 
+    it("walks the full retrieval lifecycle: cold fetch, warm cache, revalidation, upstream change", async () => {
+      // Boot 1 - cold: nothing on disk, fetch + cache the remote data.
+      mockFetchWith(okResponse(FIXTURE, { etag: '"v1"' }));
+      let pricing = freshInstance();
+      await flushRefresh();
+      expect(global.fetch).toHaveBeenCalled();
+      expect(
+        pricing.getCostBreakdown("openai", "gpt-4o", {
+          prompt_tokens: 1_000_000,
+        })
+      ).toEqual({ inputCost: 2.5, outputCost: 0, totalCost: 2.5 });
+
+      // Boot 2 - warm: cache is fresh, so no network call at all.
+      jest.resetModules();
+      global.fetch = jest.fn();
+      pricing = freshInstance();
+      await flushRefresh();
+      expect(global.fetch).not.toHaveBeenCalled();
+      expect(
+        pricing.getCostBreakdown("openai", "gpt-4o", {
+          prompt_tokens: 1_000_000,
+        })
+      ).toEqual({ inputCost: 2.5, outputCost: 0, totalCost: 2.5 });
+
+      // Boot 3 - expired: revalidates with the stored etag, gets a 304, and
+      // keeps serving the cached data.
+      const cacheDir = path.join(tempDir, "models", "pricing");
+      fs.writeFileSync(path.join(cacheDir, ".cached_at"), "0");
+      jest.resetModules();
+      mockFetchWith({
+        status: 304,
+        headers: { get: () => null },
+        json: async () => {
+          throw new Error("304 has no body");
+        },
+      });
+      pricing = freshInstance();
+      await flushRefresh();
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({ headers: { "If-None-Match": '"v1"' } })
+      );
+      expect(pricing.isCacheStale).toBe(false);
+
+      // Boot 4 - expired again, but upstream pricing actually changed: the
+      // new rates and the new etag both land.
+      fs.writeFileSync(path.join(cacheDir, ".cached_at"), "0");
+      const updatedFixture = JSON.parse(JSON.stringify(FIXTURE));
+      updatedFixture.openai.models["gpt-4o"].cost = { input: 5, output: 20 };
+      jest.resetModules();
+      mockFetchWith(okResponse(updatedFixture, { etag: '"v2"' }));
+      pricing = freshInstance();
+      await flushRefresh();
+      expect(
+        pricing.getCostBreakdown("openai", "gpt-4o", {
+          prompt_tokens: 1_000_000,
+        })
+      ).toEqual({ inputCost: 5, outputCost: 0, totalCost: 5 });
+      expect(fs.readFileSync(path.join(cacheDir, ".etag"), "utf8")).toBe(
+        '"v2"'
+      );
+    });
+
+    it("does a full GET (no etag) when the disk cache is unusable", async () => {
+      // If the cache body is corrupt, sending If-None-Match would risk a 304
+      // against data we no longer have - the guard must skip the etag.
+      mockFetchWith(okResponse(FIXTURE, { etag: '"v1"' }));
+      freshInstance();
+      await flushRefresh();
+
+      const cacheDir = path.join(tempDir, "models", "pricing");
+      fs.writeFileSync(
+        path.join(cacheDir, "model-pricing.json"),
+        "not-json{{{"
+      );
+      jest.resetModules();
+      mockFetchWith(okResponse(FIXTURE, { etag: '"v1"' }));
+      const pricing = freshInstance();
+      await flushRefresh();
+
+      expect(global.fetch).toHaveBeenCalledWith(expect.any(String), {
+        headers: {},
+      });
+      expect(
+        pricing.getCostBreakdown("openai", "gpt-4o", {
+          prompt_tokens: 1_000_000,
+        })
+      ).toEqual({ inputCost: 2.5, outputCost: 0, totalCost: 2.5 });
+    });
+
+    it("treats a corrupted .cached_at timestamp as stale and refetches", async () => {
+      mockFetchWith(okResponse(FIXTURE));
+      freshInstance();
+      await flushRefresh();
+
+      const cacheDir = path.join(tempDir, "models", "pricing");
+      fs.writeFileSync(path.join(cacheDir, ".cached_at"), "garbage-timestamp");
+      jest.resetModules();
+      mockFetchWith(okResponse(FIXTURE));
+      const pricing = freshInstance();
+      await flushRefresh();
+
+      expect(global.fetch).toHaveBeenCalled();
+      expect(pricing.isCacheStale).toBe(false);
+    });
+
+    it("recovers from a corrupted disk cache file by refetching", async () => {
+      mockFetchWith(okResponse(FIXTURE));
+      freshInstance();
+      await flushRefresh();
+
+      // Corrupt the cache body while its timestamp is still fresh - the boot
+      // must notice the unusable cache and refetch anyway.
+      const cacheDir = path.join(tempDir, "models", "pricing");
+      fs.writeFileSync(
+        path.join(cacheDir, "model-pricing.json"),
+        "not-json{{{"
+      );
+      jest.resetModules();
+      mockFetchWith(okResponse(FIXTURE));
+      const pricing = freshInstance();
+      await flushRefresh();
+
+      expect(global.fetch).toHaveBeenCalled();
+      expect(
+        pricing.getCostBreakdown("openai", "gpt-4o", {
+          prompt_tokens: 1_000_000,
+        })
+      ).toEqual({ inputCost: 2.5, outputCost: 0, totalCost: 2.5 });
+    });
+
+    it("keeps the existing cache when the remote returns unusable data", async () => {
+      mockFetchWith(okResponse(FIXTURE));
+      freshInstance();
+      await flushRefresh();
+
+      const cacheDir = path.join(tempDir, "models", "pricing");
+      fs.writeFileSync(path.join(cacheDir, ".cached_at"), "0");
+      jest.resetModules();
+      mockFetchWith(okResponse({}));
+      const pricing = freshInstance();
+      await flushRefresh();
+
+      expect(
+        pricing.getCostBreakdown("openai", "gpt-4o", {
+          prompt_tokens: 1_000_000,
+        })
+      ).toEqual({ inputCost: 2.5, outputCost: 0, totalCost: 2.5 });
+    });
+
+    it.each([
+      ["a null body", okResponse(null)],
+      ["an array body", okResponse([1, 2, 3])],
+      ["a string body", okResponse("<html>rate limited</html>")],
+      [
+        "a 500 status",
+        { status: 500, headers: { get: () => null }, json: async () => ({}) },
+      ],
+    ])(
+      "survives a remote response with %s and falls back to the snapshot",
+      async (_label, response) => {
+        mockFetchWith(response);
+        const {
+          ModelPricing,
+        } = require("../../../../utils/helpers/modelPricing");
+        const originalImporter = ModelPricing.importSnapshot;
+        ModelPricing.importSnapshot = jest
+          .fn()
+          .mockResolvedValue({ providers: FIXTURE });
+
+        try {
+          ModelPricing.instance = null;
+          const pricing = new ModelPricing();
+          await flushRefresh();
+
+          expect(ModelPricing.importSnapshot).toHaveBeenCalled();
+          expect(
+            pricing.getCostBreakdown("openai", "gpt-4o", {
+              prompt_tokens: 1_000_000,
+            })
+          ).toEqual({ inputCost: 2.5, outputCost: 0, totalCost: 2.5 });
+        } finally {
+          ModelPricing.importSnapshot = originalImporter;
+        }
+      }
+    );
+
     it("falls back to the bundled snapshot when offline with no disk cache", async () => {
       // Jest's VM cannot execute the real dynamic import of the ESM-only
       // snapshot package, so inject a fake importer. The real import is
@@ -298,6 +485,68 @@ describe("ModelPricing", () => {
       ).toEqual({ inputCost: (300_000 / 1_000_000) * 2, outputCost: 0, totalCost: (300_000 / 1_000_000) * 2 });
     });
 
+    it("clamps negative and non-finite token counts to zero cost", () => {
+      // A provider misreporting counts must never produce a negative or
+      // infinite dollar amount.
+      expect(
+        pricing.getCostBreakdown("openai", "gpt-4o", {
+          prompt_tokens: -100_000,
+          completion_tokens: -50_000,
+        })
+      ).toEqual({ inputCost: 0, outputCost: 0, totalCost: 0 });
+      expect(
+        pricing.getCostBreakdown("openai", "gpt-4o", {
+          prompt_tokens: Infinity,
+          completion_tokens: NaN,
+        })
+      ).toEqual({ inputCost: 0, outputCost: 0, totalCost: 0 });
+    });
+
+    it("treats malformed usage payloads as zero tokens for a known model", () => {
+      for (const usage of [
+        undefined,
+        null,
+        "not-usage",
+        [1, 2],
+        { prompt_tokens: "junk", completion_tokens: { nested: 5 } },
+      ]) {
+        expect(pricing.getCostBreakdown("openai", "gpt-4o", usage)).toEqual({
+          inputCost: 0,
+          outputCost: 0,
+          totalCost: 0,
+        });
+      }
+    });
+
+    it("coerces numeric-string token counts instead of dropping them", () => {
+      expect(
+        pricing.getCostBreakdown("openai", "gpt-4o", {
+          prompt_tokens: "1000000",
+          completion_tokens: "0",
+        })
+      ).toEqual({ inputCost: 2.5, outputCost: 0, totalCost: 2.5 });
+    });
+
+    it("ignores malformed tier entries and falls back to base rates", () => {
+      expect(
+        pricing.getCostBreakdown("gemini", "gemini-garbage-tiers", {
+          prompt_tokens: 1_000_000,
+          completion_tokens: 0,
+        })
+      ).toEqual({ inputCost: 1, outputCost: 0, totalCost: 1 });
+    });
+
+    it("degrades a corrupt applicable tier to unknown, never a wrong price", () => {
+      // The tier applies (prompt > size) but its rate is garbage - report
+      // no cost rather than a number computed from junk.
+      expect(
+        pricing.getCostBreakdown("gemini", "gemini-corrupt-tier", {
+          prompt_tokens: 1_000_000,
+          completion_tokens: 0,
+        })
+      ).toBeNull();
+    });
+
     it("resolves openrouter vendor/model ids directly", () => {
       expect(
         pricing.getCostBreakdown("openrouter", "anthropic/claude-sonnet-4.5", {
@@ -356,6 +605,103 @@ describe("ModelPricing", () => {
         addCostToMetrics(metrics, { provider: "generic-openai" })
       ).toEqual(metrics);
       expect(addCostToMetrics({}, { provider: "openai" })).toEqual({});
+    });
+
+    it("passes non-object metrics through untouched without crashing", () => {
+      const {
+        addCostToMetrics,
+      } = require("../../../../utils/helpers/modelPricing");
+      for (const metrics of [null, "metrics", 42]) {
+        expect(() =>
+          addCostToMetrics(metrics, { provider: "openai" })
+        ).not.toThrow();
+        expect(addCostToMetrics(metrics, { provider: "openai" })).toBe(metrics);
+      }
+      // undefined falls back to the default parameter and comes back empty
+      expect(addCostToMetrics(undefined, { provider: "openai" })).toEqual({});
+    });
+
+    it("does not mutate the metrics object it was given", () => {
+      const {
+        addCostToMetrics,
+      } = require("../../../../utils/helpers/modelPricing");
+      const metrics = {
+        prompt_tokens: 1_000_000,
+        completion_tokens: 0,
+        model: "gpt-4o",
+      };
+      const decorated = addCostToMetrics(metrics, { provider: "openai" });
+      expect(decorated).not.toBe(metrics);
+      expect(metrics).not.toHaveProperty("totalCost");
+    });
+  });
+
+  describe("addChatCostToMetrics provider/model resolution", () => {
+    const METRICS = {
+      prompt_tokens: 1_000_000,
+      completion_tokens: 0,
+      model: "gpt-4o",
+    };
+    let addChatCostToMetrics;
+    const originalLLMProvider = process.env.LLM_PROVIDER;
+
+    beforeEach(async () => {
+      mockFetchWith(okResponse(FIXTURE));
+      freshInstance();
+      await flushRefresh();
+      ({
+        addChatCostToMetrics,
+      } = require("../../../../utils/helpers/modelPricing"));
+      delete process.env.LLM_PROVIDER;
+    });
+
+    afterEach(() => {
+      if (originalLLMProvider === undefined) delete process.env.LLM_PROVIDER;
+      else process.env.LLM_PROVIDER = originalLLMProvider;
+    });
+
+    it("prefers the router delegate over workspace and env settings", () => {
+      process.env.LLM_PROVIDER = "anthropic";
+      const decorated = addChatCostToMetrics(METRICS, {
+        routingMetadata: {
+          routedTo: { provider: "openai", model: "gpt-4o-mini" },
+        },
+        workspace: { chatProvider: "generic-openai" },
+        connector: { model: "gpt-4o" },
+      });
+      // gpt-4o-mini's rate, not gpt-4o's - both provider and model came
+      // from the router delegate.
+      expect(decorated.inputCost).toBe(0.15);
+    });
+
+    it("falls back to the workspace provider and connector model", () => {
+      const decorated = addChatCostToMetrics(METRICS, {
+        workspace: { chatProvider: "openai" },
+        connector: { model: "gpt-4o-mini" },
+      });
+      expect(decorated.inputCost).toBe(0.15);
+    });
+
+    it("falls back to the env provider and metrics.model last", () => {
+      process.env.LLM_PROVIDER = "openai";
+      const decorated = addChatCostToMetrics(METRICS, {});
+      expect(decorated).toEqual({
+        ...METRICS,
+        inputCost: 2.5,
+        outputCost: 0,
+        totalCost: 2.5,
+      });
+    });
+
+    it("returns metrics unchanged when no provider can be resolved", () => {
+      expect(addChatCostToMetrics(METRICS, {})).toEqual(METRICS);
+      expect(
+        addChatCostToMetrics(METRICS, {
+          routingMetadata: { routedTo: null },
+          workspace: { chatProvider: null },
+          connector: null,
+        })
+      ).toEqual(METRICS);
     });
   });
 });

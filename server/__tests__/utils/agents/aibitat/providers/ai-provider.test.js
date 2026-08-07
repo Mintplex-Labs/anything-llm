@@ -122,6 +122,68 @@ describe("Provider usage tracking", () => {
     expect(providerB.getCumulativeUsage().total_tokens).toBe(0);
   });
 
+  test("duration accumulates and outputTps is recomputed from run totals", () => {
+    const provider = new TestProvider();
+
+    provider.applyUsage({
+      prompt_tokens: 100,
+      completion_tokens: 30,
+      total_tokens: 130,
+      duration: 2,
+    });
+    provider.applyUsage({
+      prompt_tokens: 200,
+      completion_tokens: 30,
+      total_tokens: 230,
+      duration: 4,
+    });
+
+    const totals = provider.getCumulativeUsage();
+    expect(totals.duration).toBe(6);
+    // 60 tokens over 6 seconds - not an average of the per-call TPS values.
+    expect(totals.outputTps).toBe(10);
+  });
+
+  test("negative and non-finite durations do not poison the TPS math", () => {
+    const provider = new TestProvider();
+
+    provider.applyUsage({
+      prompt_tokens: 100,
+      completion_tokens: 30,
+      total_tokens: 130,
+      duration: -5,
+    });
+    provider.applyUsage({
+      prompt_tokens: 100,
+      completion_tokens: 30,
+      total_tokens: 130,
+      duration: Infinity,
+    });
+
+    const totals = provider.getCumulativeUsage();
+    expect(totals.duration).toBe(0);
+    expect(totals.outputTps).toBe(0);
+  });
+
+  test("returned usage snapshots are copies, not live references", () => {
+    const provider = new TestProvider();
+
+    provider.resetUsage();
+    provider.recordUsage({
+      prompt_tokens: 100,
+      completion_tokens: 20,
+      total_tokens: 120,
+    });
+
+    const cumulative = provider.getCumulativeUsage();
+    const last = provider.getUsage();
+    cumulative.prompt_tokens = 999_999;
+    last.prompt_tokens = 999_999;
+
+    expect(provider.getCumulativeUsage().prompt_tokens).toBe(100);
+    expect(provider.getUsage().prompt_tokens).toBe(100);
+  });
+
   test("accumulation works through InheritMultiple mixin providers", () => {
     const providerA = new MixinProvider();
     const providerB = new MixinProvider();
