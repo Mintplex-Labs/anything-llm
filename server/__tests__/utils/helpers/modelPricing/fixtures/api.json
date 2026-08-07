@@ -1,0 +1,96 @@
+{
+  "openai": {
+    "id": "openai",
+    "name": "OpenAI",
+    "models": {
+      "gpt-4o": {
+        "id": "gpt-4o",
+        "name": "GPT-4o",
+        "cost": { "input": 2.5, "output": 10 }
+      },
+      "gpt-4o-mini": {
+        "id": "gpt-4o-mini",
+        "name": "GPT-4o mini",
+        "cost": { "input": 0.15, "output": 0.6, "cache_read": 0.075 }
+      },
+      "gpt-oss-free": {
+        "id": "gpt-oss-free",
+        "name": "Free model",
+        "cost": { "input": 0, "output": 0 }
+      },
+      "gpt-subscription-only": {
+        "id": "gpt-subscription-only",
+        "name": "No published pricing"
+      }
+    }
+  },
+  "google": {
+    "id": "google",
+    "name": "Google",
+    "models": {
+      "gemini-tiered": {
+        "id": "gemini-tiered",
+        "name": "Gemini with tiers",
+        "cost": {
+          "input": 1.25,
+          "output": 10,
+          "tiers": [
+            {
+              "input": 2.5,
+              "output": 15,
+              "tier": { "type": "context", "size": 200000 }
+            }
+          ],
+          "context_over_200k": { "input": 2.5, "output": 15 }
+        }
+      },
+      "gemini-legacy-200k": {
+        "id": "gemini-legacy-200k",
+        "name": "Gemini with legacy long-context pricing",
+        "cost": {
+          "input": 1,
+          "output": 5,
+          "context_over_200k": { "input": 2, "output": 10 }
+        }
+      }
+    }
+  },
+  "amazon-bedrock": {
+    "id": "amazon-bedrock",
+    "name": "Amazon Bedrock",
+    "models": {
+      "anthropic.claude-sonnet-4-5-20250929-v1:0": {
+        "id": "anthropic.claude-sonnet-4-5-20250929-v1:0",
+        "name": "Claude Sonnet 4.5",
+        "cost": { "input": 3, "output": 15 }
+      },
+      "eu.anthropic.claude-sonnet-4-5-20250929-v1:0": {
+        "id": "eu.anthropic.claude-sonnet-4-5-20250929-v1:0",
+        "name": "Claude Sonnet 4.5 (EU)",
+        "cost": { "input": 3.3, "output": 16.5 }
+      }
+    }
+  },
+  "openrouter": {
+    "id": "openrouter",
+    "name": "OpenRouter",
+    "models": {
+      "anthropic/claude-sonnet-4.5": {
+        "id": "anthropic/claude-sonnet-4.5",
+        "name": "Claude Sonnet 4.5",
+        "cost": { "input": 3, "output": 15 }
+      }
+    }
+  },
+  "ollama-cloud": {
+    "id": "ollama-cloud",
+    "name": "Ollama Cloud",
+    "models": {
+      "some-model": {
+        "id": "some-model",
+        "name": "Null-cost model",
+        "cost": null
+      }
+    }
+  }
+}

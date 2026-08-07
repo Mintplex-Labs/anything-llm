@@ -16,6 +16,7 @@ const { ChatAnthropic } = require("@langchain/anthropic");
 const { ChatOllama } = require("@langchain/community/chat_models/ollama");
 const { toValidNumber, safeJsonParse } = require("../../../http");
 const { getLLMProviderClass } = require("../../../helpers");
+const { MODEL_PRICING } = require("../../../helpers/modelPricing");
 const { parseLMStudioBasePath } = require("../../../AiProviders/lmStudio");
 const {
   parseDockerModelRunnerEndpoint,
@@ -39,6 +40,9 @@ const { bindAbortSignal } = require("../../../helpers/abortSignals");
  * @property {string|null} model - Model name
  * @property {string|null} provider - Provider class name
  * @property {Date|null} timestamp - Timestamp of the completion
+ * @property {number} [inputCost] - USD cost of the prompt tokens. Absent when pricing is unknown.
+ * @property {number} [outputCost] - USD cost of the completion tokens. Absent when pricing is unknown.
+ * @property {number} [totalCost] - USD sum of input and output costs. Absent when pricing is unknown.
  */
 
 /**
@@ -118,6 +122,15 @@ class Provider {
    * @type {string|null}
    */
   providerTag = null;
+
+  /**
+   * The AnythingLLM provider slug this instance was built for (eg: "openai",
+   * "anthropic") - set by AIbitat when the provider is instantiated. Unlike
+   * `providerTag` or `constructor.name`, this matches the slugs used for
+   * model pricing lookups. Null when the origin of the instance is unknown.
+   * @type {string|null}
+   */
+  providerSlug = null;
 
   /**
    * Abort signal for the active agent session, attached by AIbitat. Bound to the
@@ -681,6 +694,14 @@ class Provider {
     duration = 0,
   } = {}) {
     const timestamp = new Date();
+    // Cost is priced per-call (not derived from the summed totals) so the
+    // accumulated cost stays correct even if the model changes mid-run.
+    // A null breakdown (unknown pricing) leaves the cost fields absent.
+    const cost = MODEL_PRICING.getCostBreakdown(this.providerSlug, this.model, {
+      prompt_tokens,
+      completion_tokens,
+    });
+
     this.lastUsage = {
       prompt_tokens,
       completion_tokens,
@@ -691,6 +712,7 @@ class Provider {
       model: this.model,
       provider: this.constructor.name,
       timestamp,
+      ...(cost ?? {}),
     };
 
     const totals = this.cumulativeUsage;
@@ -705,6 +727,11 @@ class Provider {
     totals.model = this.model;
     totals.provider = this.constructor.name;
     totals.timestamp = timestamp;
+    if (cost) {
+      totals.inputCost = (totals.inputCost ?? 0) + cost.inputCost;
+      totals.outputCost = (totals.outputCost ?? 0) + cost.outputCost;
+      totals.totalCost = (totals.totalCost ?? 0) + cost.totalCost;
+    }
   }
 
   /**

@@ -1,6 +1,7 @@
 const Provider = require("../../../../../utils/agents/aibitat/providers/ai-provider.js");
 const UnTooled = require("../../../../../utils/agents/aibitat/providers/helpers/untooled.js");
 const InheritMultiple = require("../../../../../utils/agents/aibitat/providers/helpers/classes.js");
+const { MODEL_PRICING } = require("../../../../../utils/helpers/modelPricing");
 
 class TestProvider extends Provider {
   model = "test-model";
@@ -145,5 +146,72 @@ describe("Provider usage tracking", () => {
 
     providerA.resetCumulativeUsage();
     expect(providerA.getCumulativeUsage().total_tokens).toBe(0);
+  });
+});
+
+describe("Provider cost accumulation", () => {
+  afterEach(() => jest.restoreAllMocks());
+
+  test("cost is priced per-call and summed even when the model changes mid-run", () => {
+    // Return a different rate per model so a sum over per-call breakdowns is
+    // distinguishable from pricing the summed totals at the final model's rate.
+    jest
+      .spyOn(MODEL_PRICING, "getCostBreakdown")
+      .mockImplementation((_slug, model, { prompt_tokens }) => {
+        const rate = model === "expensive-model" ? 10 : 1;
+        const inputCost = (prompt_tokens / 1_000_000) * rate;
+        return { inputCost, outputCost: 0, totalCost: inputCost };
+      });
+
+    const provider = new TestProvider();
+    provider.providerSlug = "openai";
+
+    provider.resetUsage();
+    provider.recordUsage({ prompt_tokens: 1_000_000, completion_tokens: 10 });
+
+    provider.model = "expensive-model";
+    provider.resetUsage();
+    provider.recordUsage({ prompt_tokens: 1_000_000, completion_tokens: 10 });
+
+    expect(provider.getUsage().totalCost).toBe(10);
+    const totals = provider.getCumulativeUsage();
+    expect(totals.inputCost).toBe(11);
+    expect(totals.outputCost).toBe(0);
+    expect(totals.totalCost).toBe(11);
+  });
+
+  test("cost fields stay absent when pricing is unknown", () => {
+    jest.spyOn(MODEL_PRICING, "getCostBreakdown").mockReturnValue(null);
+
+    const provider = new TestProvider();
+    provider.resetUsage();
+    provider.recordUsage({ prompt_tokens: 100, completion_tokens: 10 });
+
+    expect(provider.getUsage()).not.toHaveProperty("totalCost");
+    expect(provider.getCumulativeUsage()).not.toHaveProperty("totalCost");
+  });
+
+  test("a partially priceable run sums only the priced calls", () => {
+    jest
+      .spyOn(MODEL_PRICING, "getCostBreakdown")
+      .mockImplementation((_slug, model) =>
+        model === "unknown-model"
+          ? null
+          : { inputCost: 1, outputCost: 2, totalCost: 3 }
+      );
+
+    const provider = new TestProvider();
+    provider.providerSlug = "openai";
+
+    provider.resetUsage();
+    provider.recordUsage({ prompt_tokens: 100, completion_tokens: 10 });
+
+    provider.model = "unknown-model";
+    provider.resetUsage();
+    provider.recordUsage({ prompt_tokens: 100, completion_tokens: 10 });
+
+    // The unpriced call contributes nothing, but the priced call's cost survives.
+    expect(provider.getUsage()).not.toHaveProperty("totalCost");
+    expect(provider.getCumulativeUsage().totalCost).toBe(3);
   });
 });

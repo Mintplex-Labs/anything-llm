@@ -1,6 +1,7 @@
 import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import { useTranslation } from "react-i18next";
+import CurrencyPreference from "../components/CurrencyPreference";
 import LanguagePreference from "../components/LanguagePreference";
 import ThemePreference from "../components/ThemePreference";
 
@@ -27,6 +28,7 @@ export default function InterfaceSettings() {
           </div>
           <ThemePreference />
           <LanguagePreference />
+          <CurrencyPreference />
         </div>
       </div>
     </div>

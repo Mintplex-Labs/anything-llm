@@ -1417,6 +1417,10 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
    */
   getProviderForConfig(config) {
     const provider = this.#buildProviderForConfig(config);
+    // Record the slug the instance was built from so usage metrics can be
+    // priced - pre-built instances (config.provider as an object) keep theirs.
+    if (typeof config?.provider === "string")
+      provider.providerSlug ??= config.provider;
     provider.attachAbortSignal?.(this.abortController.signal);
     return provider;
   }
