@@ -198,11 +198,9 @@ class GenericOpenAiLLM {
    */
   #parseReasoningFromResponse({ message }) {
     let textResponse = message?.content;
-    if (
-      !!message?.reasoning_content &&
-      message.reasoning_content.trim().length > 0
-    )
-      textResponse = `<think>${message.reasoning_content}</think>${textResponse}`;
+    const reasoning = message?.reasoning_content ?? message?.reasoning;
+    if (!!reasoning && reasoning.trim().length > 0)
+      textResponse = `<think>${reasoning}</think>${textResponse}`;
     return textResponse;
   }
 
@@ -308,7 +306,8 @@ class GenericOpenAiLLM {
         for await (const chunk of stream) {
           const message = chunk?.choices?.[0];
           const token = message?.delta?.content;
-          const reasoningToken = message?.delta?.reasoning_content;
+          const reasoningToken =
+            message?.delta?.reasoning_content ?? message?.delta?.reasoning;
 
           if (
             chunk.hasOwnProperty("usage") && // exists
