@@ -116,6 +116,115 @@ describe("GenericOpenAiLLM attachment content", () => {
   });
 });
 
+describe("GenericOpenAiLLM reasoning content", () => {
+  /** @type {GenericOpenAiLLM} */
+  let provider;
+  beforeEach(() => (provider = new GenericOpenAiLLM()));
+
+  function completionResponse(message) {
+    return {
+      choices: [{ message }],
+      usage: {
+        prompt_tokens: 1,
+        completion_tokens: 1,
+        total_tokens: 2,
+        duration: 1,
+      },
+    };
+  }
+
+  function reasoningStream(delta) {
+    const chunks = [
+      { choices: [{ delta, finish_reason: null }] },
+      {
+        choices: [{ delta: { content: "Answer" }, finish_reason: null }],
+      },
+      { choices: [{ delta: {}, finish_reason: "stop" }] },
+    ];
+
+    return {
+      async *[Symbol.asyncIterator]() {
+        for (const chunk of chunks) yield chunk;
+      },
+      endMeasurement: jest.fn(),
+    };
+  }
+
+  function mockWritableResponse() {
+    return {
+      writableEnded: false,
+      destroyed: false,
+      write: jest.fn(),
+      on: jest.fn(),
+      removeListener: jest.fn(),
+    };
+  }
+
+  it.each([
+    ["reasoning_content", "DeepSeek reasoning"],
+    ["reasoning", "vLLM reasoning"],
+  ])("parses non-streaming %s", async (field, reasoning) => {
+    provider.openai.chat.completions.create = jest
+      .fn()
+      .mockResolvedValue(
+        completionResponse({ content: "Answer", [field]: reasoning })
+      );
+
+    const result = await provider.getChatCompletion([], {});
+
+    expect(result.textResponse).toBe(`<think>${reasoning}</think>Answer`);
+  });
+
+  it("preserves reasoning_content precedence for non-streaming responses", async () => {
+    provider.openai.chat.completions.create = jest
+      .fn()
+      .mockResolvedValue(
+        completionResponse({
+          content: "Answer",
+          reasoning_content: "Preferred reasoning",
+          reasoning: "Fallback reasoning",
+        })
+      );
+
+    const result = await provider.getChatCompletion([], {});
+
+    expect(result.textResponse).toBe(
+      "<think>Preferred reasoning</think>Answer"
+    );
+  });
+
+  it.each([
+    ["reasoning_content", "DeepSeek reasoning"],
+    ["reasoning", "vLLM reasoning"],
+  ])("parses streaming delta.%s", async (field, reasoning) => {
+    const response = mockWritableResponse();
+    const result = await provider.handleStream(
+      response,
+      reasoningStream({ [field]: reasoning }),
+      { uuid: "test" }
+    );
+
+    expect(result).toBe(`<think>${reasoning}</think>Answer`);
+    expect(response.write).toHaveBeenCalledWith(
+      expect.stringContaining(`<think>${reasoning}`)
+    );
+  });
+
+  it("preserves reasoning_content precedence for streaming responses", async () => {
+    const response = mockWritableResponse();
+    const result = await provider.handleStream(
+      response,
+      reasoningStream({
+        reasoning_content: "Preferred reasoning",
+        reasoning: "Fallback reasoning",
+      }),
+      { uuid: "test" }
+    );
+
+    expect(result).toBe("<think>Preferred reasoning</think>Answer");
+  });
+});
+
 describe("GenericOpenAiProvider (agent) attachment content", () => {
   /** @type {GenericOpenAiProvider} */
   let provider;
