@@ -1,6 +1,9 @@
 const { v4 } = require("uuid");
 const { safeJsonParse } = require("../../../../http");
 const { attachmentToContentBlock } = require("../../../../helpers/attachments");
+const {
+  extractReasoningContent,
+} = require("../../../../helpers/chat/responses");
 
 /**
  * Shared native OpenAI-compatible tool calling utilities.
@@ -201,6 +204,7 @@ async function tooledStream(
   const toolCallsByIndex = {};
   let usage = null;
   let time_info = null;
+  let reasoningText = "";
 
   for await (const chunk of stream) {
     // Capture usage from final chunk (some providers send usage after finish_reason)
@@ -210,7 +214,32 @@ async function tooledStream(
     if (!chunk?.choices?.[0]) continue;
     const choice = chunk.choices[0];
 
+    const reasoningToken = extractReasoningContent(choice.delta);
+    if (reasoningToken) {
+      if (reasoningText.length === 0) {
+        eventHandler?.("reportStreamEvent", {
+          type: "textResponseChunk",
+          uuid: msgUUID,
+          content: `<think>${reasoningToken}`,
+        });
+      } else {
+        eventHandler?.("reportStreamEvent", {
+          type: "textResponseChunk",
+          uuid: msgUUID,
+          content: reasoningToken,
+        });
+      }
+      reasoningText += reasoningToken;
+    }
+
     if (choice.delta?.content) {
+      if (reasoningText.length > 0 && !result.textResponse) {
+        eventHandler?.("reportStreamEvent", {
+          type: "textResponseChunk",
+          uuid: msgUUID,
+          content: "</think>",
+        });
+      }
       result.textResponse += choice.delta.content;
       eventHandler?.("reportStreamEvent", {
         type: "textResponseChunk",
@@ -262,6 +291,14 @@ async function tooledStream(
     } catch {}
   }
 
+  if (reasoningText.length > 0 && !result.textResponse) {
+    eventHandler?.("reportStreamEvent", {
+      type: "textResponseChunk",
+      uuid: msgUUID,
+      content: "</think>",
+    });
+  }
+
   const toolCallIndices = Object.keys(toolCallsByIndex).map(Number);
   if (toolCallIndices.length > 0) {
     const firstToolCall = toolCallsByIndex[Math.min(...toolCallIndices)];
@@ -272,8 +309,13 @@ async function tooledStream(
     };
   }
 
+  let textResponse = result.textResponse;
+  if (reasoningText.trim().length > 0 && !result.functionCall) {
+    textResponse = `<think>${reasoningText}</think>${textResponse}`;
+  }
+
   return {
-    textResponse: result.textResponse,
+    textResponse,
     functionCall: result.functionCall,
     uuid: msgUUID,
     usage,
@@ -365,8 +407,14 @@ async function tooledComplete(
     };
   }
 
+  const reasoning = extractReasoningContent(completion);
+  let textResponse = completion.content;
+  if (reasoning && reasoning.trim().length > 0) {
+    textResponse = `<think>${reasoning}</think>${textResponse}`;
+  }
+
   return {
-    textResponse: completion.content,
+    textResponse,
     cost,
     usage,
   };
