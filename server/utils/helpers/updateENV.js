@@ -418,6 +418,10 @@ const KEY_MAPPING = {
     envKey: "TOGETHER_AI_MODEL_PREF",
     checks: [isNotEmpty],
   },
+  TogetherAiMaxTokens: {
+    envKey: "TOGETHER_AI_MAX_TOKENS",
+    checks: [nonZero],
+  },
 
   // Fireworks AI Options
   FireworksAiLLMApiKey: {

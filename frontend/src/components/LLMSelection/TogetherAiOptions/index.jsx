@@ -25,7 +25,24 @@ export default function TogetherAiOptions({ settings }) {
         />
       </div>
       {!settings?.credentialsOnly && (
-        <TogetherAiModelSelection settings={settings} apiKey={apiKey} />
+        <>
+          <TogetherAiModelSelection settings={settings} apiKey={apiKey} />
+          <div className="flex flex-col w-60">
+            <label className="text-white text-sm font-semibold block mb-3">
+              Max Tokens
+            </label>
+            <input
+              type="number"
+              name="TogetherAiMaxTokens"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              placeholder="Max tokens per request (eg: 1024)"
+              min={1}
+              defaultValue={settings?.TogetherAiMaxTokens || 1024}
+              required={true}
+              autoComplete="off"
+            />
+          </div>
+        </>
       )}
     </div>
   );
