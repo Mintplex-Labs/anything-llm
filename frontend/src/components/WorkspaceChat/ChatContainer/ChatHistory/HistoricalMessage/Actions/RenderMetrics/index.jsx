@@ -1,5 +1,6 @@
 import { formatDateTimeAsMoment } from "@/utils/directories";
 import { formatDuration, numberWithCommas } from "@/utils/numbers";
+import useCurrency from "@/hooks/useCurrency";
 import React, { useEffect, useState, useContext } from "react";
 import { isMobile } from "react-device-detect";
 const MetricsContext = React.createContext();
@@ -33,14 +34,17 @@ function getAutoShowMetrics() {
  * Build the metrics string for a given metrics object
  * - Model name
  * - Duration and output TPS
+ * - Cost (in the user's preferred currency, when known)
  * - Timestamp
- * @param {metrics: {duration:number, outputTps: number, model?: string, timestamp?: number}} metrics
+ * @param {metrics: {duration:number, outputTps: number, model?: string, timestamp?: number, totalCost?: number}} metrics
+ * @param {(usd: number) => string} formatCost - formats a USD cost in the user's preferred currency
  * @returns {string}
  */
-function buildMetricsString(metrics = {}) {
+function buildMetricsString(metrics = {}, formatCost = () => "") {
   return [
     metrics?.model ? metrics.model : "",
     `${formatDuration(metrics.duration)} (${formatTps(metrics.outputTps)} tok/s)`,
+    typeof metrics?.totalCost === "number" ? formatCost(metrics.totalCost) : "",
     metrics?.timestamp
       ? formatDateTimeAsMoment(metrics.timestamp, "MMM D, h:mm A")
       : "",
@@ -103,6 +107,7 @@ export default function RenderMetrics({ metrics = {} }) {
   // Inherit the showMetricsAutomatically state from the MetricsProvider so the state is shared across all chats
   const { showMetricsAutomatically, setShowMetricsAutomatically } =
     useContext(MetricsContext);
+  const { formatCost } = useCurrency();
   if (!metrics?.duration || !metrics?.outputTps || isMobile) return null;
 
   return (
@@ -118,7 +123,7 @@ export default function RenderMetrics({ metrics = {} }) {
       className={`border-none flex md:justify-end items-center gap-x-[8px] -ml-7 ${showMetricsAutomatically ? "opacity-100" : "opacity-0"} md:group-hover:opacity-100 transition-all duration-300`}
     >
       <p className="cursor-pointer text-xs font-mono text-zinc-400 light:text-slate-500">
-        {buildMetricsString(metrics)}
+        {buildMetricsString(metrics, formatCost)}
       </p>
     </button>
   );

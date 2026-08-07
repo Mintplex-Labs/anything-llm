@@ -34,6 +34,7 @@
     "@mintplex-labs/express-ws": "^5.0.7",
     "@mintplex-labs/mdpdf": "^0.1.9",
     "@modelcontextprotocol/sdk": "^1.24.3",
+    "@opencode-ai/models": "^0.0.34",
     "@pinecone-database/pinecone": "^2.0.1",
     "@prisma/client": "5.3.1",
     "@qdrant/js-client-rest": "^1.9.0",

@@ -13,6 +13,7 @@ import {
 } from "@phosphor-icons/react";
 import ScheduledJobs from "@/models/scheduledJobs";
 import usePolling from "@/hooks/usePolling";
+import useCurrency from "@/hooks/useCurrency";
 import showToast from "@/utils/toast";
 import paths from "@/utils/paths";
 import renderMarkdown from "@/utils/chat/markdown";
@@ -391,6 +392,7 @@ function FinalResponseSection({ t, result }) {
 }
 
 function MetricsSection({ t, metrics }) {
+  const { formatCost } = useCurrency();
   if (!metrics || Object.keys(metrics).length === 0) return null;
 
   // Todo: there is a bug where if you create a job that has no tools, we wont get any metrics
@@ -425,6 +427,14 @@ function MetricsSection({ t, metrics }) {
             {t("scheduledJobs.runDetail.metrics.completionTokens")}{" "}
             <span className="text-zinc-50 light:text-slate-950">
               {numberWithCommas(metrics.completion_tokens)}
+            </span>
+          </span>
+        )}
+        {typeof metrics.totalCost === "number" && (
+          <span>
+            {t("scheduledJobs.runDetail.metrics.cost")}{" "}
+            <span className="text-zinc-50 light:text-slate-950">
+              {formatCost(metrics.totalCost)}
             </span>
           </span>
         )}
