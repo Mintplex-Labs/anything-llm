@@ -81,16 +81,7 @@ class Provider {
    * Stores the usage metrics from the last completion call.
    * @type {ProviderUsageMetrics}
    */
-  lastUsage = {
-    prompt_tokens: 0,
-    completion_tokens: 0,
-    total_tokens: 0,
-    duration: 0,
-    outputTps: 0,
-    model: null,
-    provider: null,
-    timestamp: null,
-  };
+  lastUsage = Provider.#emptyUsage();
 
   /**
    * Stores the usage metrics accumulated across every completion call in the
@@ -99,16 +90,38 @@ class Provider {
    * only ever reflects the most recent call.
    * @type {ProviderUsageMetrics}
    */
-  cumulativeUsage = {
-    prompt_tokens: 0,
-    completion_tokens: 0,
-    total_tokens: 0,
-    duration: 0,
-    outputTps: 0,
-    model: null,
-    provider: null,
-    timestamp: null,
-  };
+  cumulativeUsage = Provider.#emptyUsage();
+
+  /**
+   * Zeroed usage metrics for initializing/resetting an accumulator.
+   * @returns {ProviderUsageMetrics}
+   */
+  static #emptyUsage() {
+    return {
+      prompt_tokens: 0,
+      completion_tokens: 0,
+      total_tokens: 0,
+      duration: 0,
+      outputTps: 0,
+      model: null,
+      provider: null,
+      timestamp: null,
+    };
+  }
+
+  /**
+   * Coerces a provider-reported metric into a safe, finite, non-negative
+   * number. Providers report usage in inconsistent shapes (missing keys,
+   * numeric strings, nulls, negative or non-finite values), so anything that
+   * does not resolve to a usable number becomes 0.
+   * @param {unknown} value
+   * @returns {number}
+   */
+  static #toSafeMetric(value) {
+    const number = Number(value);
+    if (!Number.isFinite(number) || number < 0) return 0;
+    return number;
+  }
 
   /**
    * Timestamp when the current request started (for duration calculation).
@@ -668,14 +681,19 @@ class Provider {
       duration = (Date.now() - this._requestStartTime) / 1000;
     }
 
-    const promptTokens = usage.prompt_tokens || usage.input_tokens || 0;
-    const completionTokens =
-      usage.completion_tokens || usage.output_tokens || 0;
+    const safeUsage = usage && typeof usage === "object" ? usage : {};
+    const promptTokens = Provider.#toSafeMetric(
+      safeUsage.prompt_tokens || safeUsage.input_tokens
+    );
+    const completionTokens = Provider.#toSafeMetric(
+      safeUsage.completion_tokens || safeUsage.output_tokens
+    );
+    const totalTokens = Provider.#toSafeMetric(safeUsage.total_tokens);
 
     this.applyUsage({
       prompt_tokens: promptTokens,
       completion_tokens: completionTokens,
-      total_tokens: usage.total_tokens || promptTokens + completionTokens,
+      total_tokens: totalTokens || promptTokens + completionTokens,
       duration,
     });
   }
@@ -685,29 +703,34 @@ class Provider {
    * adds it to the run-level accumulated totals. Subclasses that override
    * `recordUsage` should normalize their provider-specific usage format and
    * call this so accumulation still happens in one place.
+   * Every value is coerced to a safe number so a malformed payload from any
+   * provider cannot crash the run or corrupt the accumulated totals.
    * @param {{prompt_tokens?: number, completion_tokens?: number, total_tokens?: number, duration?: number}} usage
    */
-  applyUsage({
-    prompt_tokens = 0,
-    completion_tokens = 0,
-    total_tokens = 0,
-    duration = 0,
-  } = {}) {
+  applyUsage(usage = {}) {
+    const safeUsage = usage && typeof usage === "object" ? usage : {};
+    const promptTokens = Provider.#toSafeMetric(safeUsage.prompt_tokens);
+    const completionTokens = Provider.#toSafeMetric(
+      safeUsage.completion_tokens
+    );
+    const totalTokens = Provider.#toSafeMetric(safeUsage.total_tokens);
+    const duration = Provider.#toSafeMetric(safeUsage.duration);
+
     const timestamp = new Date();
     // Cost is priced per-call (not derived from the summed totals) so the
     // accumulated cost stays correct even if the model changes mid-run.
     // A null breakdown (unknown pricing) leaves the cost fields absent.
     const cost = MODEL_PRICING.getCostBreakdown(this.providerSlug, this.model, {
-      prompt_tokens,
-      completion_tokens,
+      prompt_tokens: promptTokens,
+      completion_tokens: completionTokens,
     });
 
     this.lastUsage = {
-      prompt_tokens,
-      completion_tokens,
-      total_tokens,
+      prompt_tokens: promptTokens,
+      completion_tokens: completionTokens,
+      total_tokens: totalTokens,
       outputTps:
-        completion_tokens && duration > 0 ? completion_tokens / duration : 0,
+        completionTokens && duration > 0 ? completionTokens / duration : 0,
       duration,
       model: this.model,
       provider: this.constructor.name,
@@ -716,9 +739,9 @@ class Provider {
     };
 
     const totals = this.cumulativeUsage;
-    totals.prompt_tokens += prompt_tokens;
-    totals.completion_tokens += completion_tokens;
-    totals.total_tokens += total_tokens;
+    totals.prompt_tokens += promptTokens;
+    totals.completion_tokens += completionTokens;
+    totals.total_tokens += totalTokens;
     totals.duration += duration;
     totals.outputTps =
       totals.completion_tokens && totals.duration > 0
@@ -739,16 +762,7 @@ class Provider {
    * run so the totals only cover that run's completions.
    */
   resetCumulativeUsage() {
-    this.cumulativeUsage = {
-      prompt_tokens: 0,
-      completion_tokens: 0,
-      total_tokens: 0,
-      duration: 0,
-      outputTps: 0,
-      model: null,
-      provider: null,
-      timestamp: null,
-    };
+    this.cumulativeUsage = Provider.#emptyUsage();
   }
 
   /**
