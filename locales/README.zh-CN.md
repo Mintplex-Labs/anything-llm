@@ -1,7 +1,7 @@
 <a name="readme-top"></a>
 
 <p align="center">
-  <a href="https://anythingllm.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="AnythingLLM logo"></a>
+  <a href="https://anythingllm.com"><img src="https://github.com/wmwijaya/obaradai-llm/blob/master/images/wordmark.png?raw=true" alt="ObaradaiLLM logo"></a>
 </p>
 
 <div align='center'>
@@ -9,7 +9,7 @@
 </div>
 
 <p align="center">
-    <b>AnythingLLM：</b> 您一直在寻找的全方位AI应用程序。<br />
+    <b>ObaradaiLLM：</b> 您一直在寻找的全方位AI应用程序。<br />
     与您的文档聊天，使用AI代理，高度可配置，多用户，无需繁琐的设置。
 </p>
 
@@ -17,7 +17,7 @@
 	<a href="https://discord.gg/6UyHPeGZAC" target="_blank">
       <img src="https://img.shields.io/badge/chat-mintplex_labs-blue.svg?style=flat&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAH1UExURQAAAP////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////r6+ubn5+7u7/3+/v39/enq6urq6/v7+97f39rb26eoqT1BQ0pOT4+Rkuzs7cnKykZKS0NHSHl8fdzd3ejo6UxPUUBDRdzc3RwgIh8jJSAkJm5xcvHx8aanqB4iJFBTVezt7V5hYlJVVuLj43p9fiImKCMnKZKUlaaoqSElJ21wcfT09O3u7uvr6zE0Nr6/wCUpK5qcnf7+/nh7fEdKTHx+f0tPUOTl5aipqiouMGtubz5CRDQ4OsTGxufn515hY7a3uH1/gXBydIOFhlVYWvX29qaoqCQoKs7Pz/Pz87/AwUtOUNfY2dHR0mhrbOvr7E5RUy8zNXR2d/f39+Xl5UZJSx0hIzQ3Odra2/z8/GlsbaGjpERHSezs7L/BwScrLTQ4Odna2zM3Obm7u3x/gKSmp9jZ2T1AQu/v71pdXkVISr2+vygsLiInKTg7PaOlpisvMcXGxzk8PldaXPLy8u7u7rm6u7S1tsDBwvj4+MPExbe4ueXm5s/Q0Kyf7ewAAAAodFJOUwAABClsrNjx/QM2l9/7lhmI6jTB/kA1GgKJN+nea6vy/MLZQYeVKK3rVA5tAAAAAWJLR0QB/wIt3gAAAAd0SU1FB+cKBAAmMZBHjXIAAAISSURBVDjLY2CAAkYmZhZWNnYODnY2VhZmJkYGVMDIycXNw6sBBbw8fFycyEoYGfkFBDVQgKAAPyMjQl5IWEQDDYgIC8FUMDKKsmlgAWyiEBWMjGJY5YEqxMAqGMWFNXAAYXGgAkYJSQ2cQFKCkYFRShq3AmkpRgYJbghbU0tbB0Tr6ukbgGhDI10gySfBwCwDUWBsYmpmDqQtLK2sbTQ0bO3sHYA8GWYGWWj4WTs6Obu4ami4OTm7exhqeHp5+4DCVJZBDmqdr7ufn3+ArkZgkJ+fU3CIRmgYWFiOARYGvo5OQUHhEUAFTkF+kVHRsLBgkIeyYmLjwoOc4hMSk5JTnINS06DC8gwcEEZ6RqZGlpOfc3ZObl5+gZ+TR2ERWFyBQQFMF5eklmqUpQb5+ReU61ZUOvkFVVXXQBSAraitq29o1GiKcfLzc29u0mjxBzq0tQ0kww5xZHtHUGeXhkZhdxBYgZ4d0LI6c4gjwd7siQQraOp1AivQ6CuAKZCDBBRQQQNQgUb/BGf3cqCCiZOcnCe3QQIKHNRTpk6bDgpZjRkzg3pBQTBrdtCcuZCgluAD0vPmL1gIdvSixUuWgqNs2YJ+DUhkEYxuggkGmOQUcckrioPTJCOXEnZ5JS5YslbGnuyVERlDDFvGEUPOWvwqaH6RVkHKeuDMK6SKnHlVhTgx8jeTmqy6Eij7K6nLqiGyPwChsa1MUrnq1wAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMy0xMC0wNFQwMDozODo0OSswMDowMB9V0a8AAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjMtMTAtMDRUMDA6Mzg6NDkrMDA6MDBuCGkTAAAAKHRFWHRkYXRlOnRpbWVzdGFtcAAyMDIzLTEwLTA0VDAwOjM4OjQ5KzAwOjAwOR1IzAAAAABJRU5ErkJggg==" alt="Discord">
   </a> |
-  <a href="https://github.com/Mintplex-Labs/anything-llm/blob/master/LICENSE" target="_blank">
+  <a href="https://github.com/wmwijaya/obaradai-llm/blob/master/LICENSE" target="_blank">
       <img src="https://img.shields.io/static/v1?label=license&message=MIT&color=white" alt="许可证">
   </a> |
   <a href="https://docs.anythingllm.com" target="_blank">
@@ -33,7 +33,7 @@
 </p>
 
 <p align="center">
-👉 适用于桌面（Mac、Windows和Linux）的AnythingLLM！<a href="https://anythingllm.com/download" target="_blank">立即下载</a>
+👉 适用于桌面（Mac、Windows和Linux）的ObaradaiLLM！<a href="https://anythingllm.com/download" target="_blank">立即下载</a>
 </p>
 
 这是一个全栈应用程序，可以将任何文档、资源（如网址链接、音频、视频）或内容片段转换为上下文，以便任何大语言模型（LLM）在聊天期间作为参考使用。此应用程序允许您选择使用哪个LLM或向量数据库，同时支持多用户管理并设置不同权限。
@@ -49,11 +49,11 @@
 
 ### 产品概览
 
-AnythingLLM是您一直在寻找的全方位AI应用程序。AnythingLLM包含了使用您喜爱的本地或云端LLM提供商构建私有ChatGPT所需的一切，毫无妥协。AnythingLLM高度可配置，但开箱即用，内置代理、多用户支持、向量数据库、文档摄取管道等功能。
+ObaradaiLLM是您一直在寻找的全方位AI应用程序。ObaradaiLLM包含了使用您喜爱的本地或云端LLM提供商构建私有ChatGPT所需的一切，毫无妥协。ObaradaiLLM高度可配置，但开箱即用，内置代理、多用户支持、向量数据库、文档摄取管道等功能。
 
-AnythingLLM还支持多用户，您可以控制每个用户的访问权限和体验，同时不会影响实例的安全性、隐私性或您的知识产权。
+ObaradaiLLM还支持多用户，您可以控制每个用户的访问权限和体验，同时不会影响实例的安全性、隐私性或您的知识产权。
 
-## AnythingLLM的一些酷炫特性
+## ObaradaiLLM的一些酷炫特性
 
 - 🆕 [**完全兼容 MCP**](https://docs.anythingllm.com/mcp-compatibility/overview)
 - 🆕 [**无代码AI代理构建器**](https://docs.anythingllm.com/agent-flows/overview)
@@ -111,7 +111,7 @@ AnythingLLM还支持多用户，您可以控制每个用户的访问权限和体
 
 **支持的嵌入模型：**
 
-- [AnythingLLM原生嵌入器](/server/storage/models/README.md)（默认）
+- [ObaradaiLLM原生嵌入器](/server/storage/models/README.md)（默认）
 - [OpenAI](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [LocalAI (全部)](https://localai.io/)
@@ -121,7 +121,7 @@ AnythingLLM还支持多用户，您可以控制每个用户的访问权限和体
 
 **支持的转录模型：**
 
-- [AnythingLLM内置](https://github.com/Mintplex-Labs/anything-llm/tree/master/server/storage/models#audiovideo-transcription) （默认）
+- [ObaradaiLLM内置](https://github.com/wmwijaya/obaradai-llm/tree/master/server/storage/models#audiovideo-transcription) （默认）
 - [OpenAI](https://openai.com/)
 
 **TTS (文本转语音) 支持：**
@@ -161,7 +161,7 @@ AnythingLLM还支持多用户，您可以控制每个用户的访问权限和体
 
 ## 🛳 自托管
 
-Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以使用它们在本地运行AnythingLLM。请参阅下面的表格，了解如何在您喜欢的环境上部署，或自动部署。
+Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以使用它们在本地运行ObaradaiLLM。请参阅下面的表格，了解如何在您喜欢的环境上部署，或自动部署。
 | Docker | AWS | GCP | Digital Ocean | Render.com |
 |----------------------------------------|----|-----|---------------|------------|
 | [![在 Docker 上部署][docker-btn]][docker-deploy] | [![在 AWS 上部署][aws-btn]][aws-deploy] | [![在 GCP 上部署][gcp-btn]][gcp-deploy] | [![在DigitalOcean上部署][do-btn]][do-deploy] | [![在 Render.com 上部署][render-btn]][render-deploy] |
@@ -170,7 +170,7 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 | --------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------- |
 | [![在 Railway 上部署][railway-btn]][railway-deploy] | [![在 RepoCloud 上部署][repocloud-btn]][repocloud-deploy] | [![在 Elestio 上部署][elestio-btn]][elestio-deploy] |
 
-[其他方案：不使用Docker配置AnythingLLM实例 →](../BARE_METAL.md)
+[其他方案：不使用Docker配置ObaradaiLLM实例 →](../BARE_METAL.md)
 
 ## 如何设置开发环境
 
@@ -184,14 +184,14 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 
 ## 远程信息收集与隐私保护
 
-由 Mintplex Labs Inc 开发的 AnythingLLM 包含一个收集匿名使用信息的 Telemetry 功能。
+由 Mintplex Labs Inc 开发的 ObaradaiLLM 包含一个收集匿名使用信息的 Telemetry 功能。
 
 <details>
-<summary><kbd>有关 AnythingLLM 的远程信息收集与隐私保护更多信息</kbd></summary>
+<summary><kbd>有关 ObaradaiLLM 的远程信息收集与隐私保护更多信息</kbd></summary>
 
 ### 为什么收集信息？
 
-我们使用这些信息来帮助我们理解 AnythingLLM 的使用情况，帮助我们确定新功能和错误修复的优先级，并帮助我们提高 AnythingLLM 的性能和稳定性。
+我们使用这些信息来帮助我们理解 ObaradaiLLM 的使用情况，帮助我们确定新功能和错误修复的优先级，并帮助我们提高 ObaradaiLLM 的性能和稳定性。
 
 ### 怎样关闭
 
@@ -255,7 +255,7 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 ---
 
 版权所有 © 2026 [Mintplex Labs][profile-link]。<br />
-本项目采用[MIT](https://github.com/Mintplex-Labs/anything-llm/blob/master/LICENSE)许可证。
+本项目采用[MIT](https://github.com/wmwijaya/obaradai-llm/blob/master/LICENSE)许可证。
 
 <!-- LINK GROUP -->
 
@@ -272,9 +272,9 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 [do-btn]: https://www.deploytodo.com/do-btn-blue.svg
 [do-deploy]: ../cloud-deployments/digitalocean/terraform/DEPLOY.md
 [render-btn]: https://render.com/images/deploy-to-render-button.svg
-[render-deploy]: https://render.com/deploy?repo=https://github.com/Mintplex-Labs/anything-llm&branch=render
+[render-deploy]: https://render.com/deploy?repo=https://github.com/wmwijaya/obaradai-llm&branch=render
 [render-btn]: https://render.com/images/deploy-to-render-button.svg
-[render-deploy]: https://render.com/deploy?repo=https://github.com/Mintplex-Labs/anything-llm&branch=render
+[render-deploy]: https://render.com/deploy?repo=https://github.com/wmwijaya/obaradai-llm&branch=render
 [railway-btn]: https://railway.app/button.svg
 [railway-deploy]: https://railway.app/template/HNSCS1?referralCode=WFgJkn
 [repocloud-btn]: https://d16t0pc4846x52.cloudfront.net/deploylobe.svg

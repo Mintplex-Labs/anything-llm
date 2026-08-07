@@ -1,7 +1,7 @@
 <a name="readme-top"></a>
 
 <p align="center">
-  <a href="https://anythingllm.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="AnythingLLM logo"></a>
+  <a href="https://anythingllm.com"><img src="https://github.com/wmwijaya/obaradai-llm/blob/master/images/wordmark.png?raw=true" alt="ObaradaiLLM logo"></a>
 </p>
 
 <div align='center'>
@@ -9,7 +9,7 @@
 </div>
 
 <p align="center">
-    <b>AnythingLLM:</b> あなたが探していたオールインワンAIアプリ。<br />
+    <b>ObaradaiLLM:</b> あなたが探していたオールインワンAIアプリ。<br />
     ドキュメントとチャットし、AIエージェントを使用し、高度にカスタマイズ可能で、複数ユーザー対応、面倒な設定は不要です。
 </p>
 
@@ -17,7 +17,7 @@
   <a href="https://discord.gg/6UyHPeGZAC" target="_blank">
       <img src="https://img.shields.io/badge/chat-mintplex_labs-blue.svg?style=flat&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAH1UExURQAAAP////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////r6+ubn5+7u7/3+/v39/enq6urq6/v7+97f39rb26eoqT1BQ0pOT4+Rkuzs7cnKykZKS0NHSHl8fdzd3ejo6UxPUUBDRdzc3RwgIh8jJSAkJm5xcvHx8aanqB4iJFBTVezt7V5hYlJVVuLj43p9fiImKCMnKZKUlaaoqSElJ21wcfT09O3u7uvr6zE0Nr6/wCUpK5qcnf7+/nh7fEdKTHx+f0tPUOTl5aipqiouMGtubz5CRDQ4OsTGxufn515hY7a3uH1/gXBydIOFhlVYWvX29qaoqCQoKs7Pz/Pz87/AwUtOUNfY2dHR0mhrbOvr7E5RUy8zNXR2d/f39+Xl5UZJSx0hIzQ3Odra2/z8/GlsbaGjpERHSezs7L/BwScrLTQ4Odna2zM3Obm7u3x/gKSmp9jZ2T1AQu/v71pdXkVISr2+vygsLiInKTg7PaOlpisvMcXGxzk8PldaXPLy8u7u7rm6u7S1tsDBwvj4+MPExbe4ueXm5s/Q0Kyf7ewAAAAodFJOUwAABClsrNjx/QM2l9/7lhmI6jTB/kA1GgKJN+nea6vy/MLZQYeVKK3rVA5tAAAAAWJLR0QB/wIt3gAAAAd0SU1FB+cKBAAmMZBHjXIAAAISSURBVDjLY2CAAkYmZhZWNnYODnY2VhZmJkYGVMDIycXNw6sBBbw8fFycyEoYGfkFBDVQgKAAPyMjQl5IWEQDDYgIC8FUMDKKsmlgAWyiEBWMjGJY5YEqxMAqGMWFNXAAYXGgAkYJSQ2cQFKCkYFRShq3AmkpRgYJbghbU0tbB0Tr6ukbgGhDI10gySfBwCwDUWBsYmpmDqQtLK2sbTQ0bO3sHYA8GWYGWWj4WTs6Obu4ami4OTm7exhqeHp5+4DCVJZBDmqdr7ufn3+ArkZgkJ+fU3CIRmgYWFiOARYGvo5OQUHhEUAFTkF+kVHRsLBgkIeyYmLjwoOc4hMSk5JTnINS06DC8gwcEEZ6RqZGlpOfc3ZObl5+gZ+TR2ERWFyBQQFMF5eklmqUpQb5+ReU61ZUOvkFVVXXQBSAraitq29o1GiKcfLzc29u0mjxBzq0tQ0kww5xZHtHUGeXhkZhdxBYgZ4d0LI6c4gjwd7siQQraOp1AivQ6CuAKZCDBBRQQQNQgUb/BGf3cqCCiZOcnCe3QQIKHNRTpk6bDgpZjRkzg3pBQTBrdtCcuZCgluAD0vPmL1gIdvSixUuWgqNs2YJ+DUhkEYxuggkGmOQUcckrioPTJCOXEnZ5JS5YslbGnuyVERlDDFvGEUPOWvwqaH6RVkHKeuDMK6SKnHlVhTgx8jeTmqy6Eij7K6nLqiGyPwChsa1MUrnq1wAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMy0xMC0wNFQwMDozODo0OSswMDowMB9V0a8AAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjMtMTAtMDRUMDA6Mzg6NDkrMDA6MDBuCGkTAAAAKHRFWHRkYXRlOnRpbWVzdGFtcAAyMDIzLTEwLTA0VDAwOjM4OjQ5KzAwOjAwOR1IzAAAAABJRU5ErkJggg==" alt="Discord">
   </a> |
-  <a href="https://github.com/Mintplex-Labs/anything-llm/blob/master/LICENSE" target="_blank">
+  <a href="https://github.com/wmwijaya/obaradai-llm/blob/master/LICENSE" target="_blank">
       <img src="https://img.shields.io/static/v1?label=license&message=MIT&color=white" alt="ライセンス">
   </a> |
   <a href="https://docs.anythingllm.com" target="_blank">
@@ -33,7 +33,7 @@
 </p>
 
 <p align="center">
-👉 デスクトップ用AnythingLLM（Mac、Windows、Linux対応）！<a href="https://anythingllm.com/download" target="_blank">今すぐダウンロード</a>
+👉 デスクトップ用ObaradaiLLM（Mac、Windows、Linux対応）！<a href="https://anythingllm.com/download" target="_blank">今すぐダウンロード</a>
 </p>
 
 これは、任意のドキュメント、リソース、またはコンテンツの断片を、チャット中にLLMが参照として使用できるコンテキストに変換できるフルスタックアプリケーションです。このアプリケーションを使用すると、使用するLLMまたはベクトルデータベースを選択し、マルチユーザー管理と権限をサポートできます。
@@ -49,11 +49,11 @@
 
 ### 製品概要
 
-AnythingLLMは、あなたが探していたオールインワンAIアプリです。AnythingLLMには、お気に入りのローカルまたはクラウドLLMプロバイダーを使用して、妥協のないプライベートChatGPTを構築するために必要なすべてが含まれています。AnythingLLMは高度にカスタマイズ可能でありながら、ビルトインエージェント、マルチユーザーサポート、ベクトルデータベース、ドキュメント取り込みパイプラインなど、すぐに使い始めるために必要なすべてが揃っています。
+ObaradaiLLMは、あなたが探していたオールインワンAIアプリです。ObaradaiLLMには、お気に入りのローカルまたはクラウドLLMプロバイダーを使用して、妥協のないプライベートChatGPTを構築するために必要なすべてが含まれています。ObaradaiLLMは高度にカスタマイズ可能でありながら、ビルトインエージェント、マルチユーザーサポート、ベクトルデータベース、ドキュメント取り込みパイプラインなど、すぐに使い始めるために必要なすべてが揃っています。
 
-AnythingLLMは複数ユーザーもサポートしており、インスタンスのセキュリティやプライバシー、知的財産を損なうことなく、ユーザーごとにアクセスと体験を制御できます。
+ObaradaiLLMは複数ユーザーもサポートしており、インスタンスのセキュリティやプライバシー、知的財産を損なうことなく、ユーザーごとにアクセスと体験を制御できます。
 
-## AnythingLLMのいくつかのクールな機能
+## ObaradaiLLMのいくつかのクールな機能
 
 - **マルチユーザーインスタンスのサポートと権限付与**
 - ワークスペース内のエージェント（ウェブを閲覧、コードを実行など）
@@ -102,7 +102,7 @@ AnythingLLMは複数ユーザーもサポートしており、インスタンス
 
 **埋め込みモデル：**
 
-- [AnythingLLMネイティブ埋め込み](/server/storage/models/README.md)（デフォルト）
+- [ObaradaiLLMネイティブ埋め込み](/server/storage/models/README.md)（デフォルト）
 - [OpenAI](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [LocalAi (すべて)](https://localai.io/)
@@ -112,7 +112,7 @@ AnythingLLMは複数ユーザーもサポートしており、インスタンス
 
 **音声変換モデル：**
 
-- [AnythingLLM内蔵](https://github.com/Mintplex-Labs/anything-llm/tree/master/server/storage/models#audiovideo-transcription)（デフォルト）
+- [ObaradaiLLM内蔵](https://github.com/wmwijaya/obaradai-llm/tree/master/server/storage/models#audiovideo-transcription)（デフォルト）
 - [OpenAI](https://openai.com/)
 
 **TTS（テキストから音声へ）サポート：**
@@ -149,7 +149,7 @@ AnythingLLMは複数ユーザーもサポートしており、インスタンス
 
 ## 🛳 セルフホスティング
 
-Mintplex Labsおよびコミュニティは、AnythingLLMをローカルで実行できる多数のデプロイメント方法、スクリプト、テンプレートを維持しています。以下の表を参照して、お好みの環境でのデプロイ方法を読むか、自動デプロイを行ってください。
+Mintplex Labsおよびコミュニティは、ObaradaiLLMをローカルで実行できる多数のデプロイメント方法、スクリプト、テンプレートを維持しています。以下の表を参照して、お好みの環境でのデプロイ方法を読むか、自動デプロイを行ってください。
 | Docker | AWS | GCP | Digital Ocean | Render.com |
 |----------------------------------------|----|-----|---------------|------------|
 | [![Docker上でデプロイ][docker-btn]][docker-deploy] | [![AWS上でデプロイ][aws-btn]][aws-deploy] | [![GCP上でデプロイ][gcp-btn]][gcp-deploy] | [![DigitalOcean上でデプロイ][do-btn]][do-deploy] | [![Render.com上でデプロイ][render-btn]][render-deploy] |
@@ -158,7 +158,7 @@ Mintplex Labsおよびコミュニティは、AnythingLLMをローカルで実�
 | ----------------------------------------------------- |
 | [![Railway上でデプロイ][railway-btn]][railway-deploy] |
 
-[Dockerを使用せずに本番環境のAnythingLLMインスタンスを設定する →](../BARE_METAL.md)
+[Dockerを使用せずに本番環境のObaradaiLLMインスタンスを設定する →](../BARE_METAL.md)
 
 ## 開発環境のセットアップ方法
 
@@ -178,14 +178,14 @@ Mintplex Labsおよびコミュニティは、AnythingLLMをローカルで実�
 
 ## テレメトリーとプライバシー
 
-Mintplex Labs Inc.によって開発されたAnythingLLMには、匿名の使用情報を収集するテレメトリー機能が含まれています。
+Mintplex Labs Inc.によって開発されたObaradaiLLMには、匿名の使用情報を収集するテレメトリー機能が含まれています。
 
 <details>
-<summary><kbd>AnythingLLMのテレメトリーとプライバシーについての詳細</kbd></summary>
+<summary><kbd>ObaradaiLLMのテレメトリーとプライバシーについての詳細</kbd></summary>
 
 ### なぜ？
 
-この情報を使用して、AnythingLLMの使用方法を理解し、新機能とバグ修正の優先順位を決定し、AnythingLLMのパフォーマンスと安定性を向上させるのに役立てます。
+この情報を使用して、ObaradaiLLMの使用方法を理解し、新機能とバグ修正の優先順位を決定し、ObaradaiLLMのパフォーマンスと安定性を向上させるのに役立てます。
 
 ### オプトアウト
 
@@ -221,7 +221,7 @@ Mintplex Labs Inc.によって開発されたAnythingLLMには、匿名の使用
 ---
 
 Copyright © 2026 [Mintplex Labs][profile-link]。<br />
-このプロジェクトは[MIT](https://github.com/Mintplex-Labs/anything-llm/blob/master/LICENSE)ライセンスの下でライセンスされています。
+このプロジェクトは[MIT](https://github.com/wmwijaya/obaradai-llm/blob/master/LICENSE)ライセンスの下でライセンスされています。
 
 <!-- LINK GROUP -->
 
@@ -238,8 +238,8 @@ Copyright © 2026 [Mintplex Labs][profile-link]。<br />
 [do-btn]: https://www.deploytodo.com/do-btn-blue.svg
 [do-deploy]: ./cloud-deployments/digitalocean/terraform/DEPLOY.md
 [render-btn]: https://render.com/images/deploy-to-render-button.svg
-[render-deploy]: https://render.com/deploy?repo=https://github.com/Mintplex-Labs/anything-llm&branch=render
+[render-deploy]: https://render.com/deploy?repo=https://github.com/wmwijaya/obaradai-llm&branch=render
 [render-btn]: https://render.com/images/deploy-to-render-button.svg
-[render-deploy]: https://render.com/deploy?repo=https://github.com/Mintplex-Labs/anything-llm&branch=render
+[render-deploy]: https://render.com/deploy?repo=https://github.com/wmwijaya/obaradai-llm&branch=render
 [railway-btn]: https://railway.app/button.svg
 [railway-deploy]: https://railway.app/template/HNSCS1?referralCode=WFgJkn

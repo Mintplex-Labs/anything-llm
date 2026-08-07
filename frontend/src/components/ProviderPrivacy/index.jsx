@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import System from "@/models/system";
 import { PROVIDER_PRIVACY_MAP } from "./constants";
 import { ArrowSquareOut } from "@phosphor-icons/react";
-import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
+import ObaradaiLLMIcon from "@/media/logo/anything-llm-icon.png";
 import { Link } from "react-router-dom";
 import { titleCase, sentenceCase } from "text-case";
 
@@ -12,9 +12,9 @@ function defaultProvider(providerString) {
       ? titleCase(sentenceCase(String(providerString)))
       : "Unknown",
     description: [
-      `"${providerString}" has no known data handling policy defined in AnythingLLM.`,
+      `"${providerString}" has no known data handling policy defined in ObaradaiLLM.`,
     ],
-    logo: AnythingLLMIcon,
+    logo: ObaradaiLLMIcon,
   };
 }
 

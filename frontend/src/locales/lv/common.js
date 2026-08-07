@@ -8,7 +8,7 @@ const TRANSLATIONS = {
     llm: {
       title: "LLM preferences",
       description:
-        "AnythingLLM var strādāt ar daudziem LLM pakalpojumu sniedzējiem. Šis būs pakalpojums, kas apstrādās sarunas.",
+        "ObaradaiLLM var strādāt ar daudziem LLM pakalpojumu sniedzējiem. Šis būs pakalpojums, kas apstrādās sarunas.",
     },
     userSetup: {
       title: "Lietotāja iestatīšana",
@@ -34,15 +34,15 @@ const TRANSLATIONS = {
         "Šos iestatījumus var pārkonfigurēt jebkurā laikā iestatījumos.",
     },
     survey: {
-      title: "Laipni lūgti AnythingLLM",
+      title: "Laipni lūgti ObaradaiLLM",
       description:
-        "Palīdziet mums veidot AnythingLLM atbilstoši jūsu vajadzībām. Neobligāti.",
+        "Palīdziet mums veidot ObaradaiLLM atbilstoši jūsu vajadzībām. Neobligāti.",
       email: "Kāds ir jūsu e-pasts?",
-      useCase: "Kam izmantosiet AnythingLLM?",
+      useCase: "Kam izmantosiet ObaradaiLLM?",
       useCaseWork: "Darbam",
       useCasePersonal: "Personīgai lietošanai",
       useCaseOther: "Citam nolūkam",
-      comment: "Kā jūs uzzinājāt par AnythingLLM?",
+      comment: "Kā jūs uzzinājāt par ObaradaiLLM?",
       commentPlaceholder:
         "Reddit, Twitter, GitHub, YouTube utt. - Ļaujiet mums zināt, kā jūs mūs atradāt!",
       skip: "Izlaist aptauju",
@@ -97,7 +97,7 @@ const TRANSLATIONS = {
     "experimental-features": "Eksperimentālās funkcijas",
     contact: "Sazināties ar atbalstu",
     "browser-extension": "Pārlūka paplašinājums",
-    "mobile-app": "AnythingLLM mobilā versija",
+    "mobile-app": "ObaradaiLLM mobilā versija",
     "community-hub": {
       title: "Sabiedriskais centrs",
       trending: "Izpētiet populārākās",
@@ -165,7 +165,7 @@ const TRANSLATIONS = {
       add: "Pievienot jaunu ziņu",
       save: "Saglabāt ziņas",
       heading: "Izskaidro man",
-      body: "AnythingLLM priekšrocības",
+      body: "ObaradaiLLM priekšrocības",
     },
     delete: {
       title: "Dzēst darba telpu",
@@ -760,7 +760,7 @@ const TRANSLATIONS = {
       "intelligent-skill-selection": {
         title: "Izglītības un prasmu izvēle, kas balstota uz spējām",
         description:
-          'Ievērojiet neierobežotu rīku un "cut token" izmantošanas samazinājumu līdz 80% uz katru pieprasījumu – AnythingLLM automātiski izvēlas piemērotākās prasmes katram pieprasījumam.',
+          'Ievērojiet neierobežotu rīku un "cut token" izmantošanas samazinājumu līdz 80% uz katru pieprasījumu – ObaradaiLLM automātiski izvēlas piemērotākās prasmes katram pieprasījumam.',
         "max-tools": {
           title: "Max Tools",
           description:
@@ -796,16 +796,16 @@ const TRANSLATIONS = {
   customization: {
     interface: {
       title: "UI preferences",
-      description: "Iestatiet savas UI preferences AnythingLLM.",
+      description: "Iestatiet savas UI preferences ObaradaiLLM.",
     },
     branding: {
       title: "Zīmolrade un identitāte",
       description:
-        "Pielāgojiet savu AnythingLLM instanci ar pielāgotu zīmolradi.",
+        "Pielāgojiet savu ObaradaiLLM instanci ar pielāgotu zīmolradi.",
     },
     chat: {
       title: "Saruna",
-      description: "Iestatiet savas sarunas preferences AnythingLLM.",
+      description: "Iestatiet savas sarunas preferences ObaradaiLLM.",
       auto_submit: {
         title: "Automātiski iesniegt runas ievadi",
         description: "Automātiski iesniegt runas ievadi pēc klusuma perioda",
@@ -842,7 +842,7 @@ const TRANSLATIONS = {
       "display-language": {
         title: "Displeja valoda",
         description:
-          "Izvēlieties vēlamo valodu AnythingLLM lietotāja saskarnei - kad pieejami tulkojumi.",
+          "Izvēlieties vēlamo valodu ObaradaiLLM lietotāja saskarnei - kad pieejami tulkojumi.",
       },
       logo: {
         title: "Zīmola logotips",
@@ -889,7 +889,7 @@ const TRANSLATIONS = {
   api: {
     title: "API atslēgas",
     description:
-      "API atslēgas ļauj to īpašniekam programmatiski piekļūt un pārvaldīt šo AnythingLLM instanci.",
+      "API atslēgas ļauj to īpašniekam programmatiski piekļūt un pārvaldīt šo ObaradaiLLM instanci.",
     link: "Lasīt API dokumentāciju",
     generate: "Ģenerēt jaunu API atslēgu",
     empty: "API atslēgas nav atrastas",
@@ -903,7 +903,7 @@ const TRANSLATIONS = {
       close: "Aizvērt",
       create: "Izveidot API atslēgu",
       helper:
-        "Pēc izveides API atslēgu var izmantot, lai programmatiski piekļūtu šai AnythingLLM instancei un to konfigurētu.",
+        "Pēc izveides API atslēgu var izmantot, lai programmatiski piekļūtu šai ObaradaiLLM instancei un to konfigurētu.",
       name: {
         label: "Nosaukums",
         placeholder: "Produkcijas integrācija",
@@ -928,7 +928,7 @@ const TRANSLATIONS = {
   llm: {
     title: "LLM preferences",
     description:
-      "Šie ir akreditācijas dati un iestatījumi jūsu vēlamajam LLM čata un iegulšanas pakalpojuma sniedzējam. Ir svarīgi, lai šīs atslēgas būtu aktuālas un pareizas, pretējā gadījumā AnythingLLM nedarbosies pareizi.",
+      "Šie ir akreditācijas dati un iestatījumi jūsu vēlamajam LLM čata un iegulšanas pakalpojuma sniedzējam. Ir svarīgi, lai šīs atslēgas būtu aktuālas un pareizas, pretējā gadījumā ObaradaiLLM nedarbosies pareizi.",
     provider: "LLM pakalpojuma sniedzējs",
     providers: {
       azure_openai: {
@@ -951,7 +951,7 @@ const TRANSLATIONS = {
       "Šie ir akreditācijas dati un iestatījumi jūsu vēlamajam transkripcijas modeļa pakalpojuma sniedzējam. Ir svarīgi, lai šīs atslēgas būtu aktuālas un pareizas, pretējā gadījumā multivides faili un audio netiks transkribēti.",
     provider: "Transkripcijas pakalpojuma sniedzējs",
     "warn-start":
-      "Izmantojot lokālo whisper modeli iekārtās ar ierobežotu RAM vai CPU var apstādināt AnythingLLM, apstrādājot multivides failus.",
+      "Izmantojot lokālo whisper modeli iekārtās ar ierobežotu RAM vai CPU var apstādināt ObaradaiLLM, apstrādājot multivides failus.",
     "warn-recommend":
       "Mēs iesakām vismaz 2GB RAM un augšupielādēt failus <10Mb.",
     "warn-end":
@@ -962,7 +962,7 @@ const TRANSLATIONS = {
     "desc-start":
       "Izmantojot LLM, kas neatbalsta iebūvētu iegulšanas dzinēju - jums var būt nepieciešams papildus norādīt akreditācijas datus teksta iegulšanai.",
     "desc-end":
-      "Iegulšana ir process, ar kuru teksts tiek pārveidots vektoros. Šie akreditācijas dati ir nepieciešami, lai pārveidotu jūsu failus un vaicājumus formātā, kuru AnythingLLM var izmantot apstrādei.",
+      "Iegulšana ir process, ar kuru teksts tiek pārveidots vektoros. Šie akreditācijas dati ir nepieciešami, lai pārveidotu jūsu failus un vaicājumus formātā, kuru ObaradaiLLM var izmantot apstrādei.",
     provider: {
       title: "Iegulšanas pakalpojuma sniedzējs",
     },
@@ -988,7 +988,7 @@ const TRANSLATIONS = {
   vector: {
     title: "Vektoru datubāze",
     description:
-      "Šie ir akreditācijas dati un iestatījumi tam, kā darbosies jūsu AnythingLLM instance. Ir svarīgi, lai šīs atslēgas būtu aktuālas un pareizas.",
+      "Šie ir akreditācijas dati un iestatījumi tam, kā darbosies jūsu ObaradaiLLM instance. Ir svarīgi, lai šīs atslēgas būtu aktuālas un pareizas.",
     provider: {
       title: "Vektoru datubāzes pakalpojuma sniedzējs",
       description: "LanceDB nav nepieciešama konfigurācija.",
@@ -1033,7 +1033,7 @@ const TRANSLATIONS = {
   privacy: {
     title: "Privātums un datu apstrāde",
     description:
-      "Šī ir jūsu konfigurācija tam, kā savienotie trešo pušu pakalpojumu sniedzēji un AnythingLLM apstrādā jūsu datus.",
+      "Šī ir jūsu konfigurācija tam, kā savienotie trešo pušu pakalpojumu sniedzēji un ObaradaiLLM apstrādā jūsu datus.",
     anonymous: "Anonīmā telemetrija iespējota",
   },
   connectors: {
@@ -1206,22 +1206,22 @@ const TRANSLATIONS = {
       fetching: "Iegūst...",
       "fetch-website": "Iegūt vietni",
       "privacy-notice":
-        "Šie faili tiks augšupielādēti dokumentu apstrādātājā, kas darbojas šajā AnythingLLM instancē. Šie faili netiek nosūtīti vai kopīgoti ar trešo pusi.",
+        "Šie faili tiks augšupielādēti dokumentu apstrādātājā, kas darbojas šajā ObaradaiLLM instancē. Šie faili netiek nosūtīti vai kopīgoti ar trešo pusi.",
     },
     pinning: {
       what_pinning: "Kas ir dokumentu piespraušana?",
       pin_explained_block1:
-        "Kad jūs <b>piespraudiet</b> dokumentu AnythingLLM, mēs ievietosim visu dokumenta saturu jūsu uzvednes logā, lai jūsu LLM to pilnībā saprastu.",
+        "Kad jūs <b>piespraudiet</b> dokumentu ObaradaiLLM, mēs ievietosim visu dokumenta saturu jūsu uzvednes logā, lai jūsu LLM to pilnībā saprastu.",
       pin_explained_block2:
         "Tas vislabāk darbojas ar <b>liela konteksta modeļiem</b> vai maziem failiem, kas ir kritiski tā zināšanu bāzei.",
       pin_explained_block3:
-        "Ja jūs nesaņemat vēlamās atbildes no AnythingLLM pēc noklusējuma, tad piespraušana ir lielisks veids, kā iegūt kvalitatīvākas atbildes ar vienu klikšķi.",
+        "Ja jūs nesaņemat vēlamās atbildes no ObaradaiLLM pēc noklusējuma, tad piespraušana ir lielisks veids, kā iegūt kvalitatīvākas atbildes ar vienu klikšķi.",
       accept: "Labi, sapratu",
     },
     watching: {
       what_watching: "Ko dara dokumenta novērošana?",
       watch_explained_block1:
-        "Kad jūs <b>novērojat</b> dokumentu AnythingLLM, mēs <i>automātiski</i> sinhronizēsim jūsu dokumenta saturu no tā sākotnējā avota regulāros intervālos. Tas automātiski atjauninās saturu katrā darba vietā, kur šis fails tiek pārvaldīts.",
+        "Kad jūs <b>novērojat</b> dokumentu ObaradaiLLM, mēs <i>automātiski</i> sinhronizēsim jūsu dokumenta saturu no tā sākotnējā avota regulāros intervālos. Tas automātiski atjauninās saturu katrā darba vietā, kur šis fails tiek pārvaldīts.",
       watch_explained_block2:
         "Šī funkcija pašlaik atbalsta tiešsaistes saturu un nebūs pieejama manuāli augšupielādētiem dokumentiem.",
       watch_explained_block3_start:
@@ -1496,7 +1496,7 @@ const TRANSLATIONS = {
         unauthenticated: {
           title: "Nepieciešama autentifikācija",
           description:
-            'Pirms satura publicēšanas ir jāiespējo autentifikācija "AnythingLLM" sabiedrības centrā.',
+            'Pirms satura publicēšanas ir jāiespējo autentifikācija "ObaradaiLLM" sabiedrības centrā.',
           button: "Pievienojieties sabiedrības centram",
         },
       },
@@ -1548,7 +1548,7 @@ const TRANSLATIONS = {
     password: {
       title: "Aizsardzība ar paroli",
       description:
-        "Aizsargājiet savu AnythingLLM instanci ar paroli. Ja aizmirsīsiet šo paroli, nav atgūšanas metodes, tāpēc pārliecinieties, ka saglabājat šo paroli.",
+        "Aizsargājiet savu ObaradaiLLM instanci ar paroli. Ja aizmirsīsiet šo paroli, nav atgūšanas metodes, tāpēc pārliecinieties, ka saglabājat šo paroli.",
       "password-label": "Instances paroles",
     },
   },
@@ -1562,7 +1562,7 @@ const TRANSLATIONS = {
   telegram: {
     title: "Telegram bot",
     description:
-      "Iespējiet savu AnythingLLM instanci, lai varētu tikt savienots ar Telegram, un tāpēc varēsat runāt ar saviem darba grupām no jebkura ierīces.",
+      "Iespējiet savu ObaradaiLLM instanci, lai varētu tikt savienots ar Telegram, un tāpēc varēsat runāt ar saviem darba grupām no jebkura ierīces.",
     setup: {
       step1: {
         title: "1. darbība: Izveidot savu Telegram botu",

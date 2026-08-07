@@ -34,7 +34,7 @@ export default function ExportRow({
     );
     if (blob) {
       const stamp = moment().format("YYYY-MM-DD HH:mm:ss");
-      saveAs(blob, `AnythingLLM Export - ${stamp}.${format.ext}`);
+      saveAs(blob, `ObaradaiLLM Export - ${stamp}.${format.ext}`);
     } else {
       showToast("Failed to export chat.", "error");
     }

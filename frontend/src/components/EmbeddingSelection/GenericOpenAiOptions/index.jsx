@@ -160,7 +160,7 @@ export default function GenericOpenAiEmbeddingOptions({ settings }) {
                   queries (e.g. "passage: " or "search_document: ").
                   <br />
                   <br />
-                  AnythingLLM <b>does not</b> append anything to this text
+                  ObaradaiLLM <b>does not</b> append anything to this text
                   including the ":" character.
                 </p>
               </Tooltip>
@@ -205,7 +205,7 @@ export default function GenericOpenAiEmbeddingOptions({ settings }) {
                   (e.g. "query: " or "search_query: ").
                   <br />
                   <br />
-                  AnythingLLM <b>does not</b> append anything to this text
+                  ObaradaiLLM <b>does not</b> append anything to this text
                   including the ":" character.
                 </p>
               </Tooltip>

@@ -3,12 +3,12 @@
 > [!NOTE]
 > We are also working on [Open Computer](/open-computer) which gives an entire computer environment for AI Agents to use.
 >
-> This will bring AnythingLLM's agent capabilities to a new level and a novel UX paradigm for AI Agent use.
+> This will bring ObaradaiLLM's agent capabilities to a new level and a novel UX paradigm for AI Agent use.
 >
 > ⭐ Star the repo to stay updated!
 
 <p align="center">
-  <a href="https://anythingllm.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="AnythingLLM logo"></a>
+  <a href="https://anythingllm.com"><img src="https://github.com/wmwijaya/obaradai-llm/blob/master/images/wordmark.png?raw=true" alt="ObaradaiLLM logo"></a>
 </p>
 
 <div align='center'>
@@ -16,7 +16,7 @@
 </div>
 
 <p align="center">
-    <b>AnythingLLM:</b> The all-in-one AI app you were looking for.<br />
+    <b>ObaradaiLLM:</b> The all-in-one AI app you were looking for.<br />
     Chat with your docs, use AI Agents, hyper-configurable, multi-user, & no frustrating setup required.
 </p>
 
@@ -24,7 +24,7 @@
   <a href="https://discord.gg/6UyHPeGZAC" target="_blank">
       <img src="https://img.shields.io/badge/chat-mintplex_labs-blue.svg?style=flat&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAH1UExURQAAAP////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////r6+ubn5+7u7/3+/v39/enq6urq6/v7+97f39rb26eoqT1BQ0pOT4+Rkuzs7cnKykZKS0NHSHl8fdzd3ejo6UxPUUBDRdzc3RwgIh8jJSAkJm5xcvHx8aanqB4iJFBTVezt7V5hYlJVVuLj43p9fiImKCMnKZKUlaaoqSElJ21wcfT09O3u7uvr6zE0Nr6/wCUpK5qcnf7+/nh7fEdKTHx+f0tPUOTl5aipqiouMGtubz5CRDQ4OsTGxufn515hY7a3uH1/gXBydIOFhlVYWvX29qaoqCQoKs7Pz/Pz87/AwUtOUNfY2dHR0mhrbOvr7E5RUy8zNXR2d/f39+Xl5UZJSx0hIzQ3Odra2/z8/GlsbaGjpERHSezs7L/BwScrLTQ4Odna2zM3Obm7u3x/gKSmp9jZ2T1AQu/v71pdXkVISr2+vygsLiInKTg7PaOlpisvMcXGxzk8PldaXPLy8u7u7rm6u7S1tsDBwvj4+MPExbe4ueXm5s/Q0Kyf7ewAAAAodFJOUwAABClsrNjx/QM2l9/7lhmI6jTB/kA1GgKJN+nea6vy/MLZQYeVKK3rVA5tAAAAAWJLR0QB/wIt3gAAAAd0SU1FB+cKBAAmMZBHjXIAAAISSURBVDjLY2CAAkYmZhZWNnYODnY2VhZmJkYGVMDIycXNw6sBBbw8fFycyEoYGfkFBDVQgKAAPyMjQl5IWEQDDYgIC8FUMDKKsmlgAWyiEBWMjGJY5YEqxMAqGMWFNXAAYXGgAkYJSQ2cQFKCkYFRShq3AmkpRgYJbghbU0tbB0Tr6ukbgGhDI10gySfBwCwDUWBsYmpmDqQtLK2sbTQ0bO3sHYA8GWYGWWj4WTs6Obu4ami4OTm7exhqeHp5+4DCVJZBDmqdr7ufn3+ArkZgkJ+fU3CIRmgYWFiOARYGvo5OQUHhEUAFTkF+kVHRsLBgkIeyYmLjwoOc4hMSk5JTnINS06DC8gwcEEZ6RqZGlpOfc3ZObl5+gZ+TR2ERWFyBQQFMF5eklmqUpQb5+ReU61ZUOvkFVVXXQBSAraitq29o1GiKcfLzc29u0mjxBzq0tQ0kww5xZHtHUGeXhkZhdxBYgZ4d0LI6c4gjwd7siQQraOp1AivQ6CuAKZCDBBRQQQNQgUb/BGf3cqCCiZOcnCe3QQIKHNRTpk6bDgpZjRkzg3pBQTBrdtCcuZCgluAD0vPmL1gIdvSixUuWgqNs2YJ+DUhkEYxuggkGmOQUcckrioPTJCOXEnZ5JS5YslbGnuyVERlDDFvGEUPOWvwqaH6RVkHKeuDMK6SKnHlVhTgx8jeTmqy6Eij7K6nLqiGyPwChsa1MUrnq1wAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMy0xMC0wNFQwMDozODo0OSswMDowMB9V0a8AAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjMtMTAtMDRUMDA6Mzg6NDkrMDA6MDBuCGkTAAAAKHRFWHRkYXRlOnRpbWVzdGFtcAAyMDIzLTEwLTA0VDAwOjM4OjQ5KzAwOjAwOR1IzAAAAABJRU5ErkJggg==" alt="Discord">
   </a> |
-  <a href="https://github.com/Mintplex-Labs/anything-llm/blob/master/LICENSE" target="_blank">
+  <a href="https://github.com/wmwijaya/obaradai-llm/blob/master/LICENSE" target="_blank">
       <img src="https://img.shields.io/static/v1?label=license&message=MIT&color=white" alt="License">
   </a> |
   <a href="https://docs.anythingllm.com" target="_blank">
@@ -40,7 +40,7 @@
 </p>
 
 <p align="center">
-👉 AnythingLLM for desktop (Mac, Windows, & Linux)! <a href="https://anythingllm.com/download" target="_blank"> Download Now</a>
+👉 ObaradaiLLM for desktop (Mac, Windows, & Linux)! <a href="https://anythingllm.com/download" target="_blank"> Download Now</a>
 </p>
 
 Chat with your docs. Automate complex workflows with AI Agents. Hyper-configurable, multi-user ready, battle-tested—and runs locally by default with zero setup friction.
@@ -56,11 +56,11 @@ Chat with your docs. Automate complex workflows with AI Agents. Hyper-configurab
 
 ### Product Overview
 
-AnythingLLM is the all-in-one AI application that lets you build a private, fully-featured ChatGPT—without compromises. Connect your favorite local or cloud LLM, ingest your documents, and start chatting in minutes. Out of the box you get built-in agents, multi-user support, vector databases, and document pipelines — no extra configuration required.
+ObaradaiLLM is the all-in-one AI application that lets you build a private, fully-featured ChatGPT—without compromises. Connect your favorite local or cloud LLM, ingest your documents, and start chatting in minutes. Out of the box you get built-in agents, multi-user support, vector databases, and document pipelines — no extra configuration required.
 
-AnythingLLM supports multiple users as well where you can control the access and experience per user without compromising the security or privacy of the instance or your intellectual property.
+ObaradaiLLM supports multiple users as well where you can control the access and experience per user without compromising the security or privacy of the instance or your intellectual property.
 
-## Cool Features of AnythingLLM
+## Cool Features of ObaradaiLLM
 
 - [Dynamic Model Routing](https://docs.anythingllm.com/model-router/overview) - Automatically route chats to the best provider & model for the conversation based on rules you define.
 - [Automatic & User Managed Memories](https://docs.anythingllm.com/features/memories) - Have your LLM remember important information about you or your workspace.
@@ -126,7 +126,7 @@ AnythingLLM supports multiple users as well where you can control the access and
 
 **Embedder models:**
 
-- [AnythingLLM Native Embedder](/server/storage/models/README.md) (default)
+- [ObaradaiLLM Native Embedder](/server/storage/models/README.md) (default)
 - [OpenAI](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [Gemini](https://ai.google.dev/)
@@ -143,7 +143,7 @@ AnythingLLM supports multiple users as well where you can control the access and
 
 **Audio Transcription models:**
 
-- [AnythingLLM Built-in](https://github.com/Mintplex-Labs/anything-llm/tree/master/server/storage/models#audiovideo-transcription) (default)
+- [ObaradaiLLM Built-in](https://github.com/wmwijaya/obaradai-llm/tree/master/server/storage/models#audiovideo-transcription) (default)
 - [OpenAI](https://openai.com/)
 
 **TTS (text-to-speech) support:**
@@ -183,7 +183,7 @@ This monorepo consists of six main sections:
 
 ## 🛳 Self-Hosting
 
-Mintplex Labs & the community maintain a number of deployment methods, scripts, and templates that you can use to run AnythingLLM locally. Refer to the table below to read how to deploy on your preferred environment or to automatically deploy.
+Mintplex Labs & the community maintain a number of deployment methods, scripts, and templates that you can use to run ObaradaiLLM locally. Refer to the table below to read how to deploy on your preferred environment or to automatically deploy.
 | Docker | AWS | GCP | Digital Ocean | Render.com |
 |----------------------------------------|----|-----|---------------|------------|
 | [![Deploy on Docker][docker-btn]][docker-deploy] | [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy] | [![Deploy on DigitalOcean][do-btn]][do-deploy] | [![Deploy on Render.com][render-btn]][render-deploy] |
@@ -192,7 +192,7 @@ Mintplex Labs & the community maintain a number of deployment methods, scripts, 
 | --------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------ |
 | [![Deploy on Railway][railway-btn]][railway-deploy] | [![Deploy on RepoCloud][repocloud-btn]][repocloud-deploy] | [![Deploy on Elestio][elestio-btn]][elestio-deploy] | [![Deploy on Northflank][northflank-btn]][northflank-deploy] |
 
-[or set up a production AnythingLLM instance without Docker →](./BARE_METAL.md)
+[or set up a production ObaradaiLLM instance without Docker →](./BARE_METAL.md)
 
 ## How to setup for development
 
@@ -206,14 +206,14 @@ Mintplex Labs & the community maintain a number of deployment methods, scripts, 
 
 ## Telemetry & Privacy
 
-AnythingLLM by Mintplex Labs Inc contains a telemetry feature that collects anonymous usage information.
+ObaradaiLLM by Mintplex Labs Inc contains a telemetry feature that collects anonymous usage information.
 
 <details>
-<summary><kbd>More about Telemetry & Privacy for AnythingLLM</kbd></summary>
+<summary><kbd>More about Telemetry & Privacy for ObaradaiLLM</kbd></summary>
 
 ### Why?
 
-We use this information to help us understand how AnythingLLM is used, to help us prioritize work on new features and bug fixes, and to help us improve AnythingLLM's performance and stability.
+We use this information to help us understand how ObaradaiLLM is used, to help us prioritize work on new features and bug fixes, and to help us improve ObaradaiLLM's performance and stability.
 
 ### Opting out
 
@@ -253,7 +253,7 @@ Basically, if telemetry is disabled we don't collect anything. However, dependin
 
 ## 👋 Contributing
 
-- [Contributing to AnythingLLM](./CONTRIBUTING.md) - How to contribute to AnythingLLM.
+- [Contributing to ObaradaiLLM](./CONTRIBUTING.md) - How to contribute to ObaradaiLLM.
 
 ## 💖 Sponsors
 
@@ -277,9 +277,9 @@ Basically, if telemetry is disabled we don't collect anything. However, dependin
 
 ## 🔗 More Products
 
-- **[AnythingLLM Mobile (MIT Licensed)][anythingllm-mobile]:** A mobile application that allows you to use AnythingLLM on your mobile device.
-- **[AnythingLLM Browser Extension][anythingllm-extension]:** A browser extension that allows you to use AnythingLLM in your browser.
-- **[AnythingLLM Embed][anythingllm-embed]:** A widget that allows you to embed AnythingLLM in your website.
+- **[ObaradaiLLM Mobile (MIT Licensed)][anythingllm-mobile]:** A mobile application that allows you to use ObaradaiLLM on your mobile device.
+- **[ObaradaiLLM Browser Extension][anythingllm-extension]:** A browser extension that allows you to use ObaradaiLLM in your browser.
+- **[ObaradaiLLM Embed][anythingllm-embed]:** A widget that allows you to embed ObaradaiLLM in your website.
 
 <div align="right">
 
@@ -308,9 +308,9 @@ This project is [MIT](./LICENSE) licensed.
 [do-btn]: https://www.deploytodo.com/do-btn-blue.svg
 [do-deploy]: ./cloud-deployments/digitalocean/terraform/DEPLOY.md
 [render-btn]: https://render.com/images/deploy-to-render-button.svg
-[render-deploy]: https://render.com/deploy?repo=https://github.com/Mintplex-Labs/anything-llm&branch=render
+[render-deploy]: https://render.com/deploy?repo=https://github.com/wmwijaya/obaradai-llm&branch=render
 [render-btn]: https://render.com/images/deploy-to-render-button.svg
-[render-deploy]: https://render.com/deploy?repo=https://github.com/Mintplex-Labs/anything-llm&branch=render
+[render-deploy]: https://render.com/deploy?repo=https://github.com/wmwijaya/obaradai-llm&branch=render
 [railway-btn]: https://railway.app/button.svg
 [railway-deploy]: https://railway.app/template/HNSCS1?referralCode=WFgJkn
 [repocloud-btn]: https://d16t0pc4846x52.cloudfront.net/deploylobe.svg

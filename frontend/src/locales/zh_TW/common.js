@@ -8,7 +8,7 @@ const TRANSLATIONS = {
     llm: {
       title: "LLM 偏好",
       description:
-        "AnythingLLM 可搭配多種 LLM 提供者使用。這項服務會負責處理對話。",
+        "ObaradaiLLM 可搭配多種 LLM 提供者使用。這項服務會負責處理對話。",
     },
     userSetup: {
       title: "使用者設定",
@@ -32,16 +32,16 @@ const TRANSLATIONS = {
       settingsHint: "這些設定之後都可以在設定頁面重新調整。",
     },
     survey: {
-      title: "歡迎使用 AnythingLLM",
-      description: "協助我們打造更符合需求的 AnythingLLM。此問卷為選填。",
+      title: "歡迎使用 ObaradaiLLM",
+      description: "協助我們打造更符合需求的 ObaradaiLLM。此問卷為選填。",
       email: "您的電子郵件是什麼？",
-      useCase: "您將如何使用 AnythingLLM？",
+      useCase: "您將如何使用 ObaradaiLLM？",
       useCaseWork: "用於工作",
       useCasePersonal: "用於個人使用",
       useCaseOther: "其他",
-      comment: "您是從哪裡知道 AnythingLLM 的？",
+      comment: "您是從哪裡知道 ObaradaiLLM 的？",
       commentPlaceholder:
-        "例如 Reddit、Twitter、GitHub、YouTube 等，告訴我們您是怎麼找到 AnythingLLM 的！",
+        "例如 Reddit、Twitter、GitHub、YouTube 等，告訴我們您是怎麼找到 ObaradaiLLM 的！",
       skip: "略過問卷",
       thankYou: "感謝您的回饋！",
     },
@@ -94,7 +94,7 @@ const TRANSLATIONS = {
     interface: "介面偏好",
     branding: "品牌與白標設定",
     chat: "對話",
-    "mobile-app": "AnythingLLM 行動版",
+    "mobile-app": "ObaradaiLLM 行動版",
     "community-hub": {
       title: "社群中心",
       trending: "探索熱門",
@@ -152,7 +152,7 @@ const TRANSLATIONS = {
       add: "新增訊息",
       save: "儲存訊息",
       heading: "請向我說明",
-      body: "AnythingLLM 的優點",
+      body: "ObaradaiLLM 的優點",
     },
     delete: {
       title: "刪除工作區",
@@ -700,7 +700,7 @@ const TRANSLATIONS = {
       "intelligent-skill-selection": {
         title: "智能技能選擇",
         description:
-          "啟用無限多個工具，並將每個查詢的 token 使用量最多降低 80% — AnythingLLM 能夠自動選擇最適合的技能，以處理每一個提示。",
+          "啟用無限多個工具，並將每個查詢的 token 使用量最多降低 80% — ObaradaiLLM 能夠自動選擇最適合的技能，以處理每一個提示。",
         "max-tools": {
           title: "馬克斯工具",
           description:
@@ -735,7 +735,7 @@ const TRANSLATIONS = {
   api: {
     title: "API 金鑰",
     description:
-      "API 金鑰可讓持有人透過程式方式存取並管理這個 AnythingLLM 系統。",
+      "API 金鑰可讓持有人透過程式方式存取並管理這個 ObaradaiLLM 系統。",
     link: "閱讀 API 文件",
     generate: "產生新的 API 金鑰",
     empty: "找不到 API 金鑰",
@@ -749,7 +749,7 @@ const TRANSLATIONS = {
       close: "關閉",
       create: "建立 API 金鑰",
       helper:
-        "建立後，API 金鑰可用於以程式方式存取並設定這個 AnythingLLM 執行個體。",
+        "建立後，API 金鑰可用於以程式方式存取並設定這個 ObaradaiLLM 執行個體。",
       name: {
         label: "名稱",
         placeholder: "正式環境整合",
@@ -773,7 +773,7 @@ const TRANSLATIONS = {
   llm: {
     title: "LLM 偏好設定",
     description:
-      "這裡設定偏好的 LLM 對話與嵌入提供者之認證資訊與參數。請確認金鑰保持最新且正確，否則 AnythingLLM 可能無法正常運作。",
+      "這裡設定偏好的 LLM 對話與嵌入提供者之認證資訊與參數。請確認金鑰保持最新且正確，否則 ObaradaiLLM 可能無法正常運作。",
     provider: "LLM 提供者",
     providers: {
       azure_openai: {
@@ -795,7 +795,7 @@ const TRANSLATIONS = {
       "這裡設定偏好的語音轉錄模型提供者之認證資訊與參數。請確認金鑰保持最新且正確，否則媒體檔與音訊可能無法完成轉錄。",
     provider: "語音轉錄提供者",
     "warn-start":
-      "在記憶體或 CPU 資源有限的電腦上使用本機 Whisper 模型時，處理媒體檔案可能會讓 AnythingLLM 卡住。",
+      "在記憶體或 CPU 資源有限的電腦上使用本機 Whisper 模型時，處理媒體檔案可能會讓 ObaradaiLLM 卡住。",
     "warn-recommend": "建議至少保留 2 GB 記憶體，且上傳檔案小於 10 MB。",
     "warn-end": "內建模型將會在第一次使用時自動下載。",
   },
@@ -804,7 +804,7 @@ const TRANSLATIONS = {
     "desc-start":
       "使用原生不支援嵌入引擎的 LLM 時，可能需要另外提供文字嵌入的認證資訊。",
     "desc-end":
-      "嵌入是把文字轉成向量的過程。這些認證資訊用來把檔案與提示詞轉成 AnythingLLM 可處理的格式。",
+      "嵌入是把文字轉成向量的過程。這些認證資訊用來把檔案與提示詞轉成 ObaradaiLLM 可處理的格式。",
     provider: {
       title: "向量嵌入提供者",
     },
@@ -828,7 +828,7 @@ const TRANSLATIONS = {
   vector: {
     title: "向量資料庫",
     description:
-      "這裡設定 AnythingLLM 系統運作所需的認證資訊與參數。請務必確認金鑰保持最新且正確。",
+      "這裡設定 ObaradaiLLM 系統運作所需的認證資訊與參數。請務必確認金鑰保持最新且正確。",
     provider: {
       title: "向量資料庫提供者",
       description: "使用 LanceDB 不需要任何設定。",
@@ -870,7 +870,7 @@ const TRANSLATIONS = {
   },
   privacy: {
     title: "隱私與資料處理",
-    description: "這裡設定已連線的第三方提供者與 AnythingLLM 會如何處理資料。",
+    description: "這裡設定已連線的第三方提供者與 ObaradaiLLM 會如何處理資料。",
     anonymous: "已啟用匿名遙測",
   },
   connectors: {
@@ -1017,22 +1017,22 @@ const TRANSLATIONS = {
       fetching: "正在擷取...",
       "fetch-website": "擷取網站",
       "privacy-notice":
-        "這些檔案會上傳到此 AnythingLLM 系統上的文件處理器，不會傳送給或分享給第三方。",
+        "這些檔案會上傳到此 ObaradaiLLM 系統上的文件處理器，不會傳送給或分享給第三方。",
     },
     pinning: {
       what_pinning: "什麼是文件釘選？",
       pin_explained_block1:
-        "當您在 AnythingLLM 中<b>釘選</b>文件時，系統會把整份文件的內容注入提示詞輸入區，讓 LLM 能完整理解。",
+        "當您在 ObaradaiLLM 中<b>釘選</b>文件時，系統會把整份文件的內容注入提示詞輸入區，讓 LLM 能完整理解。",
       pin_explained_block2:
         "這最適合搭配<b>大上下文模型</b>，或對知識庫很重要的小型文件。",
       pin_explained_block3:
-        "如果 AnythingLLM 在預設情況下給不出想要的答案，釘選文件是快速提升回答品質的好方法。",
+        "如果 ObaradaiLLM 在預設情況下給不出想要的答案，釘選文件是快速提升回答品質的好方法。",
       accept: "好的，明白了",
     },
     watching: {
       what_watching: "追蹤文件有何作用？",
       watch_explained_block1:
-        "當您在 AnythingLLM 中<b>追蹤</b>文件時，系統會<i>自動</i>定期從原始來源同步內容，並更新所有管理這份文件的工作區。",
+        "當您在 ObaradaiLLM 中<b>追蹤</b>文件時，系統會<i>自動</i>定期從原始來源同步內容，並更新所有管理這份文件的工作區。",
       watch_explained_block2:
         "目前這項功能只支援線上來源內容，手動上傳的文件無法使用。",
       watch_explained_block3_start: "您可以從 ",
@@ -1197,7 +1197,7 @@ const TRANSLATIONS = {
           "回憶應該簡潔明瞭，用單一的陳述來表達。例如：「使用者更偏好 Python 語言，而非 JavaScript 語言」。",
         edit_description: "更新此記憶的內容。",
         label: "記憶",
-        placeholder: "例如：使用者姓名為 Joe，使用者正在使用 AnythingLLM 等。",
+        placeholder: "例如：使用者姓名為 Joe，使用者正在使用 ObaradaiLLM 等。",
         create: "創造",
         save: "儲存",
         cancel: "取消",
@@ -1233,15 +1233,15 @@ const TRANSLATIONS = {
   customization: {
     interface: {
       title: "介面偏好設定",
-      description: "設定 AnythingLLM 的介面偏好。",
+      description: "設定 ObaradaiLLM 的介面偏好。",
     },
     branding: {
       title: "品牌與白標設定",
-      description: "透過自訂品牌元素，將 AnythingLLM 白標化。",
+      description: "透過自訂品牌元素，將 ObaradaiLLM 白標化。",
     },
     chat: {
       title: "對話",
-      description: "設定 AnythingLLM 的對話偏好。",
+      description: "設定 ObaradaiLLM 的對話偏好。",
       auto_submit: {
         title: "語音輸入自動送出",
         description: "在一段靜默後自動送出語音輸入",
@@ -1274,7 +1274,7 @@ const TRANSLATIONS = {
       },
       "display-language": {
         title: "顯示語言",
-        description: "選擇 AnythingLLM 介面的顯示語言；若已有翻譯就會套用。",
+        description: "選擇 ObaradaiLLM 介面的顯示語言；若已有翻譯就會套用。",
       },
       logo: {
         title: "品牌標誌",
@@ -1385,7 +1385,7 @@ const TRANSLATIONS = {
       generic: {
         unauthenticated: {
           title: "需要驗證",
-          description: "發布項目前，需先完成 AnythingLLM 社群中心驗證。",
+          description: "發布項目前，需先完成 ObaradaiLLM 社群中心驗證。",
           button: "連接到社群中心",
         },
       },
@@ -1432,7 +1432,7 @@ const TRANSLATIONS = {
     password: {
       title: "密碼保護",
       description:
-        "使用密碼保護 AnythingLLM 系統。若忘記此密碼，將無法復原，請務必妥善保存。",
+        "使用密碼保護 ObaradaiLLM 系統。若忘記此密碼，將無法復原，請務必妥善保存。",
       "password-label": "系統密碼",
     },
   },
@@ -1446,7 +1446,7 @@ const TRANSLATIONS = {
   telegram: {
     title: "Telegram 機器人",
     description:
-      "將您的 AnythingLLM 實例連接到 Telegram，以便您可以在任何裝置上與您的工作空間進行對話。",
+      "將您的 ObaradaiLLM 實例連接到 Telegram，以便您可以在任何裝置上與您的工作空間進行對話。",
     setup: {
       step1: {
         title: "第一步：建立您的 Telegram 機器人",

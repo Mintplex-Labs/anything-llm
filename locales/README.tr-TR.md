@@ -1,7 +1,7 @@
 <a name="readme-top"></a>
 
 <p align="center">
-  <a href="https://anythingllm.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="AnythingLLM logo"></a>
+  <a href="https://anythingllm.com"><img src="https://github.com/wmwijaya/obaradai-llm/blob/master/images/wordmark.png?raw=true" alt="ObaradaiLLM logo"></a>
 </p>
 
 <div align='center'>
@@ -9,7 +9,7 @@
 </div>
 
 <p align="center">
-<b>AnythingLLM:</b> Aradığınız hepsi bir arada yapay zeka uygulaması.<br />
+<b>ObaradaiLLM:</b> Aradığınız hepsi bir arada yapay zeka uygulaması.<br />
 Belgelerinizle sohbet edin, yapay zeka ajanlarını kullanın, son derece özelleştirilebilir, çok kullanıcılı ve zahmetsiz kurulum!
 </p>
 
@@ -17,7 +17,7 @@ Belgelerinizle sohbet edin, yapay zeka ajanlarını kullanın, son derece özell
   <a href="https://discord.gg/6UyHPeGZAC" target="_blank">
       <img src="https://img.shields.io/badge/chat-mintplex_labs-blue.svg?style=flat&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAH1UExURQAAAP////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////r6+ubn5+7u7/3+/v39/enq6urq6/v7+97f39rb26eoqT1BQ0pOT4+Rkuzs7cnKykZKS0NHSHl8fdzd3ejo6UxPUUBDRdzc3RwgIh8jJSAkJm5xcvHx8aanqB4iJFBTVezt7V5hYlJVVuLj43p9fiImKCMnKZKUlaaoqSElJ21wcfT09O3u7uvr6zE0Nr6/wCUpK5qcnf7+/nh7fEdKTHx+f0tPUOTl5aipqiouMGtubz5CRDQ4OsTGxufn515hY7a3uH1/gXBydIOFhlVYWvX29qaoqCQoKs7Pz/Pz87/AwUtOUNfY2dHR0mhrbOvr7E5RUy8zNXR2d/f39+Xl5UZJSx0hIzQ3Odra2/z8/GlsbaGjpERHSezs7L/BwScrLTQ4Odna2zM3Obm7u3x/gKSmp9jZ2T1AQu/v71pdXkVISr2+vygsLiInKTg7PaOlpisvMcXGxzk8PldaXPLy8u7u7rm6u7S1tsDBwvj4+MPExbe4ueXm5s/Q0Kyf7ewAAAAodFJOUwAABClsrNjx/QM2l9/7lhmI6jTB/kA1GgKJN+nea6vy/MLZQYeVKK3rVA5tAAAAAWJLR0QB/wIt3gAAAAd0SU1FB+cKBAAmMZBHjXIAAAISSURBVDjLY2CAAkYmZhZWNnYODnY2VhZmJkYGVMDIycXNw6sBBbw8fFycyEoYGfkFBDVQgKAAPyMjQl5IWEQDDYgIC8FUMDKKsmlgAWyiEBWMjGJY5YEqxMAqGMWFNXAAYXGgAkYJSQ2cQFKCkYFRShq3AmkpRgYJbghbU0tbB0Tr6ukbgGhDI10gySfBwCwDUWBsYmpmDqQtLK2sbTQ0bO3sHYA8GWYGWWj4WTs6Obu4ami4OTm7exhqeHp5+4DCVJZBDmqdr7ufn3+ArkZgkJ+fU3CIRmgYWFiOARYGvo5OQUHhEUAFTkF+kVHRsLBgkIeyYmLjwoOc4hMSk5JTnINS06DC8gwcEEZ6RqZGlpOfc3ZObl5+gZ+TR2ERWFyBQQFMF5eklmqUpQb5+ReU61ZUOvkFVVXXQBSAraitq29o1GiKcfLzc29u0mjxBzq0tQ0kww5xZHtHUGeXhkZhdxBYgZ4d0LI6c4gjwd7siQQraOp1AivQ6CuAKZCDBBRQQQNQgUb/BGf3cqCCiZOcnCe3QQIKHNRTpk6bDgpZjRkzg3pBQTBrdtCcuZCgluAD0vPmL1gIdvSixUuWgqNs2YJ+DUhkEYxuggkGmOQUcckrioPTJCOXEnZ5JS5YslbGnuyVERlDDFvGEUPOWvwqaH6RVkHKeuDMK6SKnHlVhTgx8jeTmqy6Eij7K6nLqiGyPwChsa1MUrnq1wAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMy0xMC0wNFQwMDozODo0OSswMDowMB9V0a8AAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjMtMTAtMDRUMDA6Mzg6NDkrMDA6MDBuCGkTAAAAKHRFWHRkYXRlOnRpbWVzdGFtcAAyMDIzLTEwLTA0VDAwOjM4OjQ5KzAwOjAwOR1IzAAAAABJRU5ErkJggg==" alt="Discord">
   </a> |
-  <a href="https://github.com/Mintplex-Labs/anything-llm/blob/master/LICENSE" target="_blank">
+  <a href="https://github.com/wmwijaya/obaradai-llm/blob/master/LICENSE" target="_blank">
       <img src="https://img.shields.io/static/v1?label=license&message=MIT&color=white" alt="License">
   </a> |
   <a href="https://docs.anythingllm.com" target="_blank">
@@ -33,7 +33,7 @@ Belgelerinizle sohbet edin, yapay zeka ajanlarını kullanın, son derece özell
 </p>
 
 <p align="center">
-👉 Masaüstü için AnythingLLM (Mac, Windows ve Linux)! <a href="https://anythingllm.com/download" target="_blank"> Şimdi İndir</a>
+👉 Masaüstü için ObaradaiLLM (Mac, Windows ve Linux)! <a href="https://anythingllm.com/download" target="_blank"> Şimdi İndir</a>
 </p>
 
 Herhangi bir belgeyi, kaynağı veya içeriği sohbet sırasında herhangi bir büyük dil modelinin referans olarak kullanabileceği bir bağlama dönüştürmenizi sağlayan tam kapsamlı bir uygulama. Bu uygulama, kullanmak istediğiniz LLM veya Vektör Veritabanını seçmenize olanak tanırken, çok kullanıcılı yönetim ve yetkilendirme desteği de sunar.
@@ -49,11 +49,11 @@ Herhangi bir belgeyi, kaynağı veya içeriği sohbet sırasında herhangi bir b
 
 ### Ürün Genel Bakışı
 
-AnythingLLM, aradığınız hepsi bir arada yapay zeka uygulamasıdır. AnythingLLM, favori yerel veya bulut LLM sağlayıcılarınızı kullanarak hiçbir ödün vermeden özel bir ChatGPT oluşturmak için ihtiyacınız olan her şeyi içerir. AnythingLLM son derece özelleştirilebilir olmakla birlikte, yerleşik ajanlar, çok kullanıcılı destek, vektör veritabanları, belge alma işlem hatları ve daha fazlası gibi hemen başlamak için ihtiyacınız olan her şeyle birlikte gelir.
+ObaradaiLLM, aradığınız hepsi bir arada yapay zeka uygulamasıdır. ObaradaiLLM, favori yerel veya bulut LLM sağlayıcılarınızı kullanarak hiçbir ödün vermeden özel bir ChatGPT oluşturmak için ihtiyacınız olan her şeyi içerir. ObaradaiLLM son derece özelleştirilebilir olmakla birlikte, yerleşik ajanlar, çok kullanıcılı destek, vektör veritabanları, belge alma işlem hatları ve daha fazlası gibi hemen başlamak için ihtiyacınız olan her şeyle birlikte gelir.
 
-AnythingLLM ayrıca birden fazla kullanıcıyı da destekler; burada örneğin güvenliğini veya gizliliğini ya da fikri mülkiyetinizi tehlikeye atmadan kullanıcı başına erişimi ve deneyimi kontrol edebilirsiniz.
+ObaradaiLLM ayrıca birden fazla kullanıcıyı da destekler; burada örneğin güvenliğini veya gizliliğini ya da fikri mülkiyetinizi tehlikeye atmadan kullanıcı başına erişimi ve deneyimi kontrol edebilirsiniz.
 
-## AnythingLLM’in Harika Özellikleri
+## ObaradaiLLM’in Harika Özellikleri
 
 - 🆕 [**Özel Yapay Zeka Ajanları**](https://docs.anythingllm.com/agent/custom/introduction)
 - 🆕 [**Kod yazmadan AI Ajanı oluşturma aracı**](https://docs.anythingllm.com/agent-flows/overview)
@@ -109,7 +109,7 @@ AnythingLLM ayrıca birden fazla kullanıcıyı da destekler; burada örneğin g
 
 **Embedder modelleri:**
 
-- [AnythingLLM Native Embedder](/server/storage/models/README.md) (default)
+- [ObaradaiLLM Native Embedder](/server/storage/models/README.md) (default)
 - [OpenAI](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [LocalAi (all)](https://localai.io/)
@@ -119,7 +119,7 @@ AnythingLLM ayrıca birden fazla kullanıcıyı da destekler; burada örneğin g
 
 **Ses Transkripsiyon Modelleri:**
 
-- [AnythingLLM Built-in](https://github.com/Mintplex-Labs/anything-llm/tree/master/server/storage/models#audiovideo-transcription) (default)
+- [ObaradaiLLM Built-in](https://github.com/wmwijaya/obaradai-llm/tree/master/server/storage/models#audiovideo-transcription) (default)
 - [OpenAI](https://openai.com/)
 
 **TTS (text-to-speech) desteği:**
@@ -159,7 +159,7 @@ Bu monorepo üç ana bölümden oluşmaktadır:
 
 ## 🛳 Kendi Sunucunuzda Barındırma
 
-Mintplex Labs ve topluluk, AnythingLLM'i yerel olarak çalıştırmak için çeşitli dağıtım yöntemleri, betikler ve şablonlar sunmaktadır. Aşağıdaki tabloya göz atarak tercih ettiğiniz ortamda nasıl dağıtım yapabileceğinizi öğrenebilir veya otomatik dağıtım seçeneklerini keşfedebilirsiniz.
+Mintplex Labs ve topluluk, ObaradaiLLM'i yerel olarak çalıştırmak için çeşitli dağıtım yöntemleri, betikler ve şablonlar sunmaktadır. Aşağıdaki tabloya göz atarak tercih ettiğiniz ortamda nasıl dağıtım yapabileceğinizi öğrenebilir veya otomatik dağıtım seçeneklerini keşfedebilirsiniz.
 | Docker | AWS | GCP | Digital Ocean | Render.com |
 |----------------------------------------|----|-----|---------------|------------|
 | [![Deploy on Docker][docker-btn]][docker-deploy] | [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy] | [![Deploy on DigitalOcean][do-btn]][do-deploy] | [![Deploy on Render.com][render-btn]][render-deploy] |
@@ -168,7 +168,7 @@ Mintplex Labs ve topluluk, AnythingLLM'i yerel olarak çalıştırmak için çe�
 | --------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------- |
 | [![Deploy on Railway][railway-btn]][railway-deploy] | [![Deploy on RepoCloud][repocloud-btn]][repocloud-deploy] | [![Deploy on Elestio][elestio-btn]][elestio-deploy] |
 
-[veya Docker kullanmadan üretim ortamında AnythingLLM kurun →](../BARE_METAL.md)
+[veya Docker kullanmadan üretim ortamında ObaradaiLLM kurun →](../BARE_METAL.md)
 
 ## Geliştirme İçin Kurulum
 
@@ -182,14 +182,14 @@ Mintplex Labs ve topluluk, AnythingLLM'i yerel olarak çalıştırmak için çe�
 
 ## Telemetri ve Gizlilik
 
-Mintplex Labs Inc. tarafından geliştirilen AnythingLLM, anonim kullanım bilgilerini toplayan bir telemetri özelliği içermektedir.
+Mintplex Labs Inc. tarafından geliştirilen ObaradaiLLM, anonim kullanım bilgilerini toplayan bir telemetri özelliği içermektedir.
 
 <details>
-<summary><kbd>AnythingLLM için Telemetri ve Gizlilik hakkında daha fazla bilgi</kbd></summary>
+<summary><kbd>ObaradaiLLM için Telemetri ve Gizlilik hakkında daha fazla bilgi</kbd></summary>
 
 ### Neden?
 
-Bu bilgileri, AnythingLLM’in nasıl kullanıldığını anlamak, yeni özellikler ve hata düzeltmelerine öncelik vermek ve uygulamanın performansını ve kararlılığını iyileştirmek için kullanıyoruz.
+Bu bilgileri, ObaradaiLLM’in nasıl kullanıldığını anlamak, yeni özellikler ve hata düzeltmelerine öncelik vermek ve uygulamanın performansını ve kararlılığını iyileştirmek için kullanıyoruz.
 
 ### Telemetriden Çıkış Yapma (Opt-Out)
 
@@ -254,9 +254,9 @@ Bu proje [MIT](../LICENSE) lisansı ile lisanslanmıştır.
 [do-btn]: https://www.deploytodo.com/do-btn-blue.svg
 [do-deploy]: ./cloud-deployments/digitalocean/terraform/DEPLOY.md
 [render-btn]: https://render.com/images/deploy-to-render-button.svg
-[render-deploy]: https://render.com/deploy?repo=https://github.com/Mintplex-Labs/anything-llm&branch=render
+[render-deploy]: https://render.com/deploy?repo=https://github.com/wmwijaya/obaradai-llm&branch=render
 [render-btn]: https://render.com/images/deploy-to-render-button.svg
-[render-deploy]: https://render.com/deploy?repo=https://github.com/Mintplex-Labs/anything-llm&branch=render
+[render-deploy]: https://render.com/deploy?repo=https://github.com/wmwijaya/obaradai-llm&branch=render
 [railway-btn]: https://railway.app/button.svg
 [railway-deploy]: https://railway.app/template/HNSCS1?referralCode=WFgJkn
 [repocloud-btn]: https://d16t0pc4846x52.cloudfront.net/deploylobe.svg
