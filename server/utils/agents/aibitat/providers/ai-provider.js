@@ -107,6 +107,14 @@ class Provider {
    */
   abortSignal = null;
 
+  /**
+   * Sampling temperature to use for this provider's completions, set by AIbitat
+   * from the workspace's LLM Temperature setting (`getProviderForConfig`).
+   * Left null so providers fall back to their own default temperature.
+   * @type {number|null}
+   */
+  temperature = null;
+
   constructor(client) {
     if (this.constructor == Provider) {
       return;
