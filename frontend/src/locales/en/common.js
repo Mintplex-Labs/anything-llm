@@ -931,6 +931,25 @@ const TRANSLATIONS = {
         default: "Default",
         reasoning: "Reasoning",
       },
+      generic_openai: {
+        saved_connections_label: "Saved endpoints",
+        saved_connection_select: "Saved connection",
+        saved_connection_manual: "Manual configuration",
+        saved_connection_save: "Save connection",
+        saved_connection_delete: "Delete",
+        saved_connections_help:
+          "Save multiple Generic OpenAI base URLs, API keys, and models so you can switch between RunPod workers, local servers, or LiteLLM routes without retyping settings.",
+        saved_connection_name_prompt: "Name for this connection",
+        saved_connection_saved: "Saved Generic OpenAI connection.",
+        saved_connection_deleted: "Deleted saved connection.",
+        saved_connection_applied: "Applied saved connection.",
+        saved_connection_save_failed: "Failed to save connection: {{error}}",
+        saved_connection_delete_failed:
+          "Failed to delete connection: {{error}}",
+        saved_connection_apply_failed: "Failed to apply connection: {{error}}",
+        saved_connection_delete_confirm:
+          "Delete this saved Generic OpenAI connection?",
+      },
     },
   },
   "model-router": {

@@ -974,6 +974,18 @@ const SystemSettings = {
       GenericOpenAiTokenLimit: process.env.GENERIC_OPEN_AI_MODEL_TOKEN_LIMIT,
       GenericOpenAiKey: !!process.env.GENERIC_OPEN_AI_API_KEY,
       GenericOpenAiMaxTokens: process.env.GENERIC_OPEN_AI_MAX_TOKENS,
+      GenericOpenAiSavedConnections: (() => {
+        const {
+          GenericOpenAiConnections,
+        } = require("../utils/llm/genericOpenAiConnections");
+        return new GenericOpenAiConnections().listSummaries();
+      })(),
+      GenericOpenAiActiveConnectionId: (() => {
+        const {
+          GenericOpenAiConnections,
+        } = require("../utils/llm/genericOpenAiConnections");
+        return new GenericOpenAiConnections().getActiveConnectionId();
+      })(),
 
       // Foundry Keys
       FoundryBasePath: process.env.FOUNDRY_BASE_PATH,
