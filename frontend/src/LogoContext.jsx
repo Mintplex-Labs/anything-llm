@@ -16,26 +16,36 @@ export function LogoProvider({ children }) {
   const [logo, setLogo] = useState("");
   const [loginLogo, setLoginLogo] = useState("");
   const [isCustomLogo, setIsCustomLogo] = useState(false);
+  const [isCustomLoginLogo, setIsCustomLoginLogo] = useState(false);
 
   async function fetchInstanceLogo() {
     const DefaultLoginLogo = isLightMode()
       ? DefaultLoginLogoDark
       : DefaultLoginLogoLight;
     try {
-      const { isCustomLogo, logoURL } = await System.fetchLogo();
+      const { isCustomLogo: _isCustom, logoURL } = await System.fetchLogo();
       if (logoURL) {
         setLogo(logoURL);
-        setLoginLogo(isCustomLogo ? logoURL : DefaultLoginLogo);
-        setIsCustomLogo(isCustomLogo);
+        setIsCustomLogo(_isCustom);
       } else {
         isLightMode() ? setLogo(AnythingLLMDark) : setLogo(AnythingLLM);
-        setLoginLogo(DefaultLoginLogo);
         setIsCustomLogo(false);
+      }
+
+      const { isCustomLogo: _isCustomLogin, logoURL: loginLogoURL } =
+        await System.fetchLoginLogo();
+      if (loginLogoURL) {
+        setLoginLogo(loginLogoURL);
+        setIsCustomLoginLogo(_isCustomLogin);
+      } else {
+        setLoginLogo(DefaultLoginLogo);
+        setIsCustomLoginLogo(false);
       }
     } catch (err) {
       isLightMode() ? setLogo(AnythingLLMDark) : setLogo(AnythingLLM);
       setLoginLogo(DefaultLoginLogo);
       setIsCustomLogo(false);
+      setIsCustomLoginLogo(false);
       console.error("Failed to fetch logo:", err);
     }
   }
@@ -49,7 +59,15 @@ export function LogoProvider({ children }) {
   }, []);
 
   return (
-    <LogoContext.Provider value={{ logo, setLogo, loginLogo, isCustomLogo }}>
+    <LogoContext.Provider
+      value={{
+        logo,
+        setLogo,
+        loginLogo,
+        isCustomLogo,
+        isCustomLoginLogo,
+      }}
+    >
       {children}
     </LogoContext.Provider>
   );
