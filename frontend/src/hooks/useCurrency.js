@@ -1,35 +1,43 @@
 import { useCallback, useEffect, useState } from "react";
-import Appearance from "@/models/appearance";
 import {
   CURRENCY_CHANGE_EVENT,
   formatCost,
-  getExchangeRates,
+  getCurrencySettings,
 } from "@/utils/currency";
 
 /**
- * Provides the user's preferred display currency and a formatter that
- * converts stored USD costs into it. Falls back to USD display when no
- * exchange rate is available for the preferred currency.
+ * Provides the instance's display currency and a formatter that converts
+ * stored USD costs into it. Both come from the server (admin-set system
+ * setting + server-cached exchange rates). Falls back to USD display when no
+ * exchange rate is available for the display currency.
  * @returns {{currency: string, formatCost: (usd: number) => string}}
  */
 export default function useCurrency() {
-  const [currency, setCurrency] = useState(
-    Appearance.get("preferredCurrency") || "USD"
-  );
+  const [currency, setCurrency] = useState("USD");
   const [rates, setRates] = useState(null);
 
   useEffect(() => {
-    getExchangeRates().then((record) => setRates(record?.rates ?? null));
-  }, []);
+    let mounted = true;
 
-  useEffect(() => {
-    function handleCurrencyChange(e) {
-      if (!e?.detail?.currency) return;
-      setCurrency(e.detail.currency);
+    function applySettings(settings) {
+      if (!mounted || !settings) return;
+      setCurrency(settings.currency || "USD");
+      setRates(settings.rates ?? null);
+    }
+
+    getCurrencySettings().then(applySettings);
+
+    // When an admin changes the display currency, `CurrencyPreference`
+    // invalidates the memoized settings and fires this event so every
+    // mounted consumer refetches without a page reload.
+    function handleCurrencyChange() {
+      getCurrencySettings().then(applySettings);
     }
     window.addEventListener(CURRENCY_CHANGE_EVENT, handleCurrencyChange);
-    return () =>
+    return () => {
+      mounted = false;
       window.removeEventListener(CURRENCY_CHANGE_EVENT, handleCurrencyChange);
+    };
   }, []);
 
   const rate = currency === "USD" ? 1 : rates?.[currency];

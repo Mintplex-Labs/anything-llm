@@ -353,6 +353,7 @@ function adminEndpoints(app) {
         // These match the ManagerRoute pages in the frontend.
         const managerAllowedFields = [
           "custom_app_name",
+          "display_currency",
           "footer_data",
           "support_email",
           "meta_page_title",
@@ -385,6 +386,9 @@ function adminEndpoints(app) {
               break;
             case "support_email":
               requestedSettings[label] = setting?.value || null;
+              break;
+            case "display_currency":
+              requestedSettings[label] = setting?.value || "USD";
               break;
             case "text_splitter_chunk_size":
               requestedSettings[label] =
@@ -473,6 +477,7 @@ function adminEndpoints(app) {
         if (user?.role === ROLES.manager) {
           const managerAllowedFields = [
             "custom_app_name",
+            "display_currency",
             "footer_data",
             "support_email",
             "meta_page_title",

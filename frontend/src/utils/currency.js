@@ -1,14 +1,11 @@
-import { safeJsonParse } from "@/utils/request";
+import System from "@/models/system";
 
-const FX_CACHE_KEY = "anythingllm_fx_rates";
-const FX_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
-const FX_RATES_URL = "https://api.frankfurter.dev/v1/latest?base=USD";
 export const CURRENCY_CHANGE_EVENT = "anythingllm_currency_change";
 
 /**
- * Currencies the Frankfurter API can convert USD into. Kept as a static list
- * (rather than Intl.supportedValuesOf) so the picker never offers a currency
- * we cannot actually convert to.
+ * Currencies the server's exchange rate source (Frankfurter) can convert USD
+ * into. Mirrored in `server/utils/helpers/currencyExchange/index.js` - keep
+ * the two lists in sync.
  */
 export const SUPPORTED_CURRENCIES = [
   "USD",
@@ -45,6 +42,34 @@ export const SUPPORTED_CURRENCIES = [
 ];
 
 /**
+ * Module-level cache of the exchange-rates fetch so the many components that
+ * render costs (one per chat message) share a single request per page load.
+ * @type {Promise<{base: string, currency: string, rates: Record<string, number>|null}|null>|null}
+ */
+let currencySettingsPromise = null;
+
+/**
+ * Fetches the instance display currency and USD exchange rates from our own
+ * server (which caches the upstream source). The result is memoized for the
+ * lifetime of the page - call `invalidateCurrencySettings` after changing
+ * the display currency to force a refetch.
+ * @returns {Promise<{base: string, currency: string, rates: Record<string, number>|null}|null>}
+ */
+export async function getCurrencySettings() {
+  currencySettingsPromise ??= System.exchangeRates().then((result) => {
+    // Never memoize a failed fetch - let the next caller retry.
+    if (!result) currencySettingsPromise = null;
+    return result;
+  });
+  return currencySettingsPromise;
+}
+
+/** Clears the memoized currency settings so the next read refetches. */
+export function invalidateCurrencySettings() {
+  currencySettingsPromise = null;
+}
+
+/**
  * Returns the display name of a currency code in the user's language,
  * falling back to the code itself.
  * @param {string} code - ISO 4217 currency code (eg: "EUR")
@@ -56,32 +81,6 @@ export function currencyName(code, locale = undefined) {
     return new Intl.DisplayNames(locale, { type: "currency" }).of(code) ?? code;
   } catch {
     return code;
-  }
-}
-
-/**
- * Fetches the latest USD-based exchange rates, cached in localStorage for
- * 24 hours. Returns a stale cache when the API is unreachable, or null when
- * no rates are available at all (callers should then display USD).
- * Never throws.
- * @returns {Promise<{fetchedAt: number, rates: Record<string, number>}|null>}
- */
-export async function getExchangeRates() {
-  const cached = safeJsonParse(window.localStorage.getItem(FX_CACHE_KEY), null);
-  if (cached?.fetchedAt && Date.now() - cached.fetchedAt < FX_TTL_MS)
-    return cached;
-
-  try {
-    const res = await fetch(FX_RATES_URL);
-    if (!res.ok) throw new Error(`Bad response: ${res.status}`);
-    const { rates } = await res.json();
-    if (!rates || typeof rates !== "object")
-      throw new Error("Malformed rates response");
-    const record = { fetchedAt: Date.now(), rates };
-    window.localStorage.setItem(FX_CACHE_KEY, JSON.stringify(record));
-    return record;
-  } catch {
-    return cached ?? null;
   }
 }
 

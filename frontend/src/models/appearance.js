@@ -7,8 +7,7 @@ import { safeJsonParse } from "@/utils/request";
  * 'autoPlayAssistantTtsResponse' |
  * 'enableSpellCheck' |
  * 'renderHTML' |
- * 'disableAutoScroll' |
- * 'preferredCurrency'
+ * 'disableAutoScroll'
  * } AvailableSettings - The supported settings for the appearance model.
  */
 
@@ -20,7 +19,6 @@ const Appearance = {
     enableSpellCheck: true,
     renderHTML: false,
     disableAutoScroll: false,
-    preferredCurrency: "USD",
   },
 
   /**

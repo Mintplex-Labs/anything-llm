@@ -60,6 +60,7 @@ const SystemSettings = {
     "agent_clarifying_questions_enabled",
     "agent_clarifying_questions_max_per_turn",
     "custom_app_name",
+    "display_currency",
     "feature_flags",
     "meta_page_title",
     "meta_page_favicon",
@@ -90,6 +91,7 @@ const SystemSettings = {
     "agent_clarifying_questions_max_per_turn",
     "custom_app_name",
     "default_system_prompt",
+    "display_currency",
 
     // Meta page customization
     "meta_page_title",
@@ -187,6 +189,16 @@ const SystemSettings = {
         console.error(`Could not validate agent skills.`);
         return JSON.stringify([]);
       }
+    },
+    display_currency: (update) => {
+      const {
+        isSupportedCurrency,
+      } = require("../utils/helpers/currencyExchange");
+      if (isSupportedCurrency(update)) return update;
+      console.error(
+        `Failed to run validation function on display_currency - unsupported currency "${update}"`
+      );
+      return "USD";
     },
     memory_enabled: async (update) => {
       try {
