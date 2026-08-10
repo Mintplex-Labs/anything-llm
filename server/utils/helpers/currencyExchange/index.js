@@ -57,6 +57,10 @@ class CurrencyExchange {
   // costs are stored in USD and only converted at render time.
   static expiryMs = 1000 * 60 * 60 * 24 * 30; // 30 days
   static remoteUrl = "https://api.frankfurter.dev/v1/latest?base=USD";
+  // Unlike ModelPricing's boot-time refresh, this fetch runs inside the
+  // /system/exchange-rates request path - a hung upstream must fail fast
+  // (serving stale or null rates) instead of stalling user requests.
+  static fetchTimeoutMs = 10_000;
 
   cacheLocation = path.resolve(
     process.env.STORAGE_DIR
@@ -138,7 +142,9 @@ class CurrencyExchange {
    */
   async #refresh() {
     try {
-      const response = await fetch(CurrencyExchange.remoteUrl);
+      const response = await fetch(CurrencyExchange.remoteUrl, {
+        signal: AbortSignal.timeout(CurrencyExchange.fetchTimeoutMs),
+      });
       if (response.status !== 200)
         throw new Error(
           `Failed to fetch remote exchange rates - status ${response.status}`

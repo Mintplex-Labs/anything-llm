@@ -128,6 +128,31 @@ describe("CurrencyExchange", () => {
       expect(global.fetch).toHaveBeenCalledTimes(1);
       expect(a).toEqual(b);
     });
+
+    it("fetches with an abort signal so a hung upstream cannot stall requests", async () => {
+      mockFetchWith(okResponse(FRANKFURTER_RESPONSE));
+      await freshInstance().getRates();
+
+      const [, options] = global.fetch.mock.calls[0];
+      expect(options?.signal).toBeInstanceOf(AbortSignal);
+    });
+
+    it("returns a copy so callers cannot mutate the memoized rates", async () => {
+      mockFetchWith(okResponse(FRANKFURTER_RESPONSE));
+      const exchange = freshInstance();
+
+      const rates = await exchange.getRates();
+      rates.EUR = 9999;
+      delete rates.USD;
+
+      expect(await exchange.getRates()).toEqual({
+        EUR: 0.85,
+        GBP: 0.74,
+        JPY: 147.2,
+        CAD: 1.37,
+        USD: 1,
+      });
+    });
   });
 
   describe("failure handling", () => {
