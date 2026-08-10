@@ -1928,7 +1928,6 @@ const TRANSLATIONS = {
       metrics: {
         promptTokens: "Prompt tokens:",
         completionTokens: "Completion tokens:",
-        cost: "Cost:",
       },
     },
     toolCall: {

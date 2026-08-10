@@ -10,6 +10,12 @@ import {
  * stored USD costs into it. Both come from the server (admin-set system
  * setting + server-cached exchange rates). Falls back to USD display when no
  * exchange rate is available for the display currency.
+ *
+ * NOTE: Currently unused - cost display was intentionally pulled from the UI
+ * since per-chat/per-run costs are too small to be useful on their own. This
+ * hook is the intended entry point for upcoming cost features (eg: aggregate
+ * usage/spend views): call it in any component that renders a stored USD cost
+ * and pass the value through `formatCost`.
  * @returns {{currency: string, formatCost: (usd: number) => string}}
  */
 export default function useCurrency() {
