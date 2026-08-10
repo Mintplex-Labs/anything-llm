@@ -821,10 +821,10 @@ const TRANSLATIONS = {
         title: "关闭自动滚动功能",
         description: "在收到新消息时，取消自动滚动到聊天窗口底部的功能。",
       },
-      "preferred-currency": {
-        title: "首选货币",
+      "display-currency": {
+        title: "显示货币",
         description:
-          "用于显示大型语言模型使用成本的货币。所有费用均以美元记录，仅供显示目的而进行转换。",
+          "用于显示LLM使用成本的货币，在本实例中采用。所有费用都以美元（USD）记录，仅供展示，并根据当前汇率进行转换。",
       },
     },
   },
@@ -1641,7 +1641,6 @@ const TRANSLATIONS = {
       metrics: {
         promptTokens: "提示词：",
         completionTokens: "完成标记：",
-        cost: "成本：",
       },
       stopJob: "停止工作",
       killing: "停止...",

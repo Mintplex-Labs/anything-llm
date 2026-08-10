@@ -882,10 +882,10 @@ const TRANSLATIONS = {
         description:
           "Matikan fungsi otomatis untuk menggulir ke bagian bawah jendela obrolan saat pesan baru diterima.",
       },
-      "preferred-currency": {
-        title: "Mata Uang yang Diprioritaskan",
+      "display-currency": {
+        title: "Menampilkan Mata Uang",
         description:
-          "Mata uang yang digunakan untuk menampilkan biaya penggunaan LLM. Biaya selalu dicatat dalam USD dan dikonversi hanya untuk tujuan tampilan.",
+          "Mata uang yang digunakan untuk menampilkan biaya penggunaan LLM pada instans ini. Biaya selalu dicatat dalam USD dan dikonversi menggunakan nilai tukar terkini hanya untuk keperluan tampilan.",
       },
     },
   },
@@ -1933,7 +1933,6 @@ const TRANSLATIONS = {
       metrics: {
         promptTokens: "Token prompt:",
         completionTokens: "Token penyelesaian:",
-        cost: "Biaya:",
       },
     },
     toolCall: {

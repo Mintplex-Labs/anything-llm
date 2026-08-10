@@ -862,10 +862,10 @@ const TRANSLATIONS = {
         description:
           "Lülitage automaatne rullimine alla lootes välja, kui saabuvad uued sõnumid.",
       },
-      "preferred-currency": {
-        title: "Eelistatav valuuta",
+      "display-currency": {
+        title: "Näidatav valuuta",
         description:
-          "Valutüüp, mida kasutatakse suurte keelemudelite (LLM) kasutamise kulude näitamiseks. Kulud on alati väljastatud dollaritesse ja konverteeritakse ainult näidamiseks.",
+          "Valuut, mida kasutatakse suurte mudelite (LLM) kasutuskulusid selle instantsi puhul näitama. Kulusid on alati esitatud dollaritesse (USD), ning need teisendatakse praeguste vahetuskurside kohaselt ainult näitamiseks.",
       },
     },
   },
@@ -1704,7 +1704,6 @@ const TRANSLATIONS = {
       metrics: {
         promptTokens: "Algatusmärgid:",
         completionTokens: "Lõpetamisandmed:",
-        cost: "Hind:",
       },
       stopJob: "Töö peatamine",
       killing: "Peatumine...",

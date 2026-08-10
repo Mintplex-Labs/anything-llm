@@ -889,10 +889,10 @@ const TRANSLATIONS = {
         description:
           "Isključi automatsko pomicanje na dno razgovora kada stignu nove poruke.",
       },
-      "preferred-currency": {
-        title: "Preferirana valuta",
+      "display-currency": {
+        title: "Valuta za prikaz",
         description:
-          "Valuta koju se koristi za prikaz troškova korištenja LLM-a. Troškovi su uvijek izraženi u dolarima i pretvaraju se samo za potrebe prikaza.",
+          "Valuta koja se koristi za prikaz troškova korištenja LLM-a u ovom konkretnom slučaju. Troškovi su uvijek izraženi u dolarima i pretvaraju se u trenutne tečajeve samo za prikaz.",
       },
     },
   },
@@ -1932,7 +1932,6 @@ const TRANSLATIONS = {
       metrics: {
         promptTokens: "Tokeni upita:",
         completionTokens: "Tokeni dovršetka:",
-        cost: "Cijena:",
       },
     },
     toolCall: {

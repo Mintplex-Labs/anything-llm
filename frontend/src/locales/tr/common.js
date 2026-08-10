@@ -1419,10 +1419,10 @@ const TRANSLATIONS = {
         description:
           "Yeni mesajlar aldığınızda sohbetin otomatik olarak en alttaki bölüme kaydırmasını devre dışı bırakın.",
       },
-      "preferred-currency": {
-        title: "Tercih Edilen Para Birimi",
+      "display-currency": {
+        title: "Para Birimi (Görüntülenen)",
         description:
-          "LLM kullanım maliyetlerinin görüntülenmesi için kullanılan para birimi. Maliyetler her zaman ABD doları cinsinden kaydedilir ve yalnızca görüntüleme amaçlı dönüştürülür.",
+          "Bu örneğe ait olarak kullanılan LLM (Büyük Dil Modeli) kullanım maliyetlerini görüntülemek için kullanılan para birimi. Maliyetler her zaman ABD dolarında (USD) kaydedilir ve sadece görüntüleme amacıyla mevcut kur oranlarına göre dönüştürülür.",
       },
     },
   },
@@ -1759,7 +1759,6 @@ const TRANSLATIONS = {
       metrics: {
         promptTokens: "Başlangıç belirteçleri:",
         completionTokens: "Tamamlanmış token'lar:",
-        cost: "Maliyet:",
       },
       stopJob: "İşten Çık",
       killing: "Dur...",

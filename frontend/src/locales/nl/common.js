@@ -1418,10 +1418,10 @@ const TRANSLATIONS = {
         description:
           "Schakel het automatische scrollen naar het einde van de chat uit wanneer er nieuwe berichten worden ontvangen.",
       },
-      "preferred-currency": {
-        title: "Voorkeursvaluta",
+      "display-currency": {
+        title: "Weergavevaluta",
         description:
-          "De valuta die wordt gebruikt om de kosten van het gebruik van het LLM weer te geven. De kosten worden altijd uitgedrukt in USD en alleen voor weergave omgerekend.",
+          "De valuta die wordt gebruikt om de kosten van het gebruik van het LLM weer te geven binnen deze instantie. De kosten worden altijd uitgedrukt in USD en vervolgens omgezet naar de huidige wisselkoers, alleen ter weergave.",
       },
     },
   },
@@ -1768,7 +1768,6 @@ const TRANSLATIONS = {
       metrics: {
         promptTokens: "Aanwijstokens:",
         completionTokens: "Voltooiingstokens:",
-        cost: "Kosten:",
       },
       stopJob: "Werkonderbreking",
       killing: "Stoppen...",

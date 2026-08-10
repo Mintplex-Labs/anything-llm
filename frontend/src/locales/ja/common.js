@@ -1389,10 +1389,10 @@ const TRANSLATIONS = {
         description:
           "新しいメッセージを受信した際に、チャットを自動的に最後までスクロールする機能を停止します。",
       },
-      "preferred-currency": {
-        title: "希望する通貨",
+      "display-currency": {
+        title: "表示通貨",
         description:
-          "LLMの使用コストを表示するために使用される通貨。すべての費用は米ドルで記録され、表示のみのために換算されます。",
+          "このインスタンスにおけるLLMの使用コストを表示するために使用される通貨。すべての費用は米ドルで記録され、表示のみのために現在のレートで換算されます。",
       },
     },
   },
@@ -1736,7 +1736,6 @@ const TRANSLATIONS = {
       metrics: {
         promptTokens: "プロンプトトークン:",
         completionTokens: "完了トークン：",
-        cost: "費用：",
       },
       stopJob: "求人停止",
       killing: "停止…",

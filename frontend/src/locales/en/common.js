@@ -839,10 +839,10 @@ const TRANSLATIONS = {
         description:
           "Select the preferred language to render AnythingLLM's UI in - when translations are available.",
       },
-      "preferred-currency": {
-        title: "Preferred Currency",
+      "display-currency": {
+        title: "Display Currency",
         description:
-          "Currency used to display LLM usage costs. Costs are always recorded in USD and converted for display only.",
+          "Currency used to display LLM usage costs across this instance. Costs are always recorded in USD and converted at current rates for display only.",
       },
       logo: {
         title: "Brand Logo",
@@ -1928,7 +1928,6 @@ const TRANSLATIONS = {
       metrics: {
         promptTokens: "Prompt tokens:",
         completionTokens: "Completion tokens:",
-        cost: "Cost:",
       },
     },
     toolCall: {

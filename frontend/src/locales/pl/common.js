@@ -894,10 +894,10 @@ const TRANSLATIONS = {
         description:
           "Wyłącz automatyczne przewijanie do końca okna czatu po otrzymaniu nowych wiadomości.",
       },
-      "preferred-currency": {
-        title: "Preferowana waluta",
+      "display-currency": {
+        title: "Waluta wyświetlana",
         description:
-          "Waluta używana do wyświetlania kosztów korzystania z dużych modeli językowych (LLM). Koszty są zawsze podawane w dolarach amerykańskich i konwertowane wyłącznie w celach prezentacji.",
+          "Waluta używana do wyświetlania kosztów korzystania z modelu językowego w ramach tego konkretnego przypadku. Koszty są zawsze rejestrowane w dolarach amerykańskich i konwertowane na bieżące kursy wyłącznie w celach prezentacji.",
       },
     },
   },
@@ -1768,7 +1768,6 @@ const TRANSLATIONS = {
       metrics: {
         promptTokens: "Słowa kluczowe:",
         completionTokens: "Tokeny zakończenia:",
-        cost: "Koszt:",
       },
       stopJob: "Zakończ pracę",
       killing: "Przestań...",

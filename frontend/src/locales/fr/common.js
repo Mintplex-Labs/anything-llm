@@ -1432,10 +1432,10 @@ const TRANSLATIONS = {
         description:
           "Désactiver le défilement automatique vers la fin de la conversation lorsqu'un nouveau message est reçu.",
       },
-      "preferred-currency": {
-        title: "Devise préférée",
+      "display-currency": {
+        title: "Devise affichée",
         description:
-          "La devise utilisée pour afficher les coûts d'utilisation du modèle de langage. Les coûts sont toujours enregistrés en dollars américains et convertis uniquement à des fins d'affichage.",
+          "La devise utilisée pour afficher les coûts d'utilisation du modèle de langage dans cette instance. Les coûts sont toujours enregistrés en dollars américains et convertis selon les taux actuels à des fins d'affichage uniquement.",
       },
     },
   },
@@ -1776,7 +1776,6 @@ const TRANSLATIONS = {
       metrics: {
         promptTokens: "Mots-clés de requête:",
         completionTokens: "Jetons de complétion :",
-        cost: "Coût :",
       },
       stopJob: "Arrêter le travail",
       killing: "Arrêt...",
