@@ -96,7 +96,7 @@ function contentIsNotEmpty(content = "") {
  * @returns {JSX.Element}
  */
 export const ThoughtChainComponent = forwardRef(
-  ({ content: initialContent, messageId }, ref) => {
+  ({ content: initialContent, messageId, allowAnimation = false }, ref) => {
     const [content, setContent] = useState(initialContent);
     const [hasReadableContent, setHasReadableContent] = useState(
       contentIsNotEmpty(initialContent)
@@ -125,7 +125,9 @@ export const ThoughtChainComponent = forwardRef(
     }));
 
     const isThinking =
-      content.match(THOUGHT_REGEX_OPEN) && !content.match(THOUGHT_REGEX_CLOSE);
+      allowAnimation &&
+      content.match(THOUGHT_REGEX_OPEN) &&
+      !content.match(THOUGHT_REGEX_CLOSE);
     const isComplete =
       content.match(THOUGHT_REGEX_COMPLETE) ||
       content.match(THOUGHT_REGEX_CLOSE);
