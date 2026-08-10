@@ -17,6 +17,7 @@ const { ChatOllama } = require("@langchain/community/chat_models/ollama");
 const { toValidNumber, safeJsonParse } = require("../../../http");
 const { getLLMProviderClass } = require("../../../helpers");
 const { MODEL_PRICING } = require("../../../helpers/modelPricing");
+const { toNonNegativeNumber } = require("../../../helpers/numbers");
 const { parseLMStudioBasePath } = require("../../../AiProviders/lmStudio");
 const {
   parseDockerModelRunnerEndpoint,
@@ -107,20 +108,6 @@ class Provider {
       provider: null,
       timestamp: null,
     };
-  }
-
-  /**
-   * Coerces a provider-reported metric into a safe, finite, non-negative
-   * number. Providers report usage in inconsistent shapes (missing keys,
-   * numeric strings, nulls, negative or non-finite values), so anything that
-   * does not resolve to a usable number becomes 0.
-   * @param {unknown} value
-   * @returns {number}
-   */
-  static #toSafeMetric(value) {
-    const number = Number(value);
-    if (!Number.isFinite(number) || number < 0) return 0;
-    return number;
   }
 
   /**
@@ -682,13 +669,13 @@ class Provider {
     }
 
     const safeUsage = usage && typeof usage === "object" ? usage : {};
-    const promptTokens = Provider.#toSafeMetric(
+    const promptTokens = toNonNegativeNumber(
       safeUsage.prompt_tokens || safeUsage.input_tokens
     );
-    const completionTokens = Provider.#toSafeMetric(
+    const completionTokens = toNonNegativeNumber(
       safeUsage.completion_tokens || safeUsage.output_tokens
     );
-    const totalTokens = Provider.#toSafeMetric(safeUsage.total_tokens);
+    const totalTokens = toNonNegativeNumber(safeUsage.total_tokens);
 
     this.applyUsage({
       prompt_tokens: promptTokens,
@@ -709,12 +696,10 @@ class Provider {
    */
   applyUsage(usage = {}) {
     const safeUsage = usage && typeof usage === "object" ? usage : {};
-    const promptTokens = Provider.#toSafeMetric(safeUsage.prompt_tokens);
-    const completionTokens = Provider.#toSafeMetric(
-      safeUsage.completion_tokens
-    );
-    const totalTokens = Provider.#toSafeMetric(safeUsage.total_tokens);
-    const duration = Provider.#toSafeMetric(safeUsage.duration);
+    const promptTokens = toNonNegativeNumber(safeUsage.prompt_tokens);
+    const completionTokens = toNonNegativeNumber(safeUsage.completion_tokens);
+    const totalTokens = toNonNegativeNumber(safeUsage.total_tokens);
+    const duration = toNonNegativeNumber(safeUsage.duration);
 
     const timestamp = new Date();
     // Cost is priced per-call (not derived from the summed totals) so the

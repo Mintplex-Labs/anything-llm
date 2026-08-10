@@ -1,5 +1,6 @@
 const path = require("path");
 const fs = require("fs");
+const { toNonNegativeNumber } = require("../numbers");
 
 /**
  * @typedef {Object} ModelCost - USD per 1,000,000 tokens (models.dev conventions)
@@ -318,20 +319,6 @@ class ModelPricing {
   }
 
   /**
-   * Coerces a caller-supplied token count into a safe, finite, non-negative
-   * number. Chat metrics are not sanitized upstream like agent usage is, so a
-   * provider reporting a negative or non-finite count must not produce a
-   * negative or infinite cost.
-   * @param {unknown} value
-   * @returns {number}
-   */
-  static #safeTokenCount(value) {
-    const number = Number(value);
-    if (!Number.isFinite(number) || number < 0) return 0;
-    return number;
-  }
-
-  /**
    * Calculates the USD cost of a completion for a given provider slug + model.
    *
    * Returns zeros for local/self-hosted providers, `null` when pricing is
@@ -359,10 +346,11 @@ class ModelPricing {
     const cost = this.#findModelCost(providerId, providerSlug, model);
     if (!cost) return null;
 
-    const promptTokens = ModelPricing.#safeTokenCount(usage?.prompt_tokens);
-    const completionTokens = ModelPricing.#safeTokenCount(
-      usage?.completion_tokens
-    );
+    // Chat metrics are not sanitized upstream like agent usage is, so a
+    // provider reporting a negative or non-finite count must not produce a
+    // negative or infinite cost.
+    const promptTokens = toNonNegativeNumber(usage?.prompt_tokens);
+    const completionTokens = toNonNegativeNumber(usage?.completion_tokens);
     const rates = this.#resolveRates(cost, promptTokens);
     if (!rates) return null;
 
