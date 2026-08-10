@@ -1,3 +1,5 @@
+const { getAudioFileInfo } = require("../../TextToSpeech/audioFormat");
+
 /**
  * Download a file from Telegram by file ID.
  * @param {TelegramBot} bot
@@ -133,13 +135,14 @@ async function sendVoiceResponse(bot, chatId, text) {
     const provider = getTTSProvider();
     const buffer = await provider.ttsBuffer(text);
     if (!buffer) return false;
+    const { mime, extension } = getAudioFileInfo(buffer);
     await bot.sendAudio(
       chatId,
       buffer,
       {},
       {
-        filename: `${chatId}-response.mp3`,
-        contentType: "audio/mpeg",
+        filename: `${chatId}-response${extension}`,
+        contentType: mime,
       }
     );
     return true;

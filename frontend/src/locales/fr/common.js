@@ -110,6 +110,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Tâches planifiées",
     "model-router": "Routeur modèle",
+    "image-generation": "Génération d'images",
   },
   login: {
     "multi-user": {
@@ -731,6 +732,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Créer des tâches planifiées",
+        description:
+          "Permettez à l'agent de créer des tâches planifiées récurrentes à partir des conversations (par exemple : « tous les jours ouvrables à 9h, résumez ma boîte de réception et envoyez-moi un e-mail »). Fonctionnalité disponible uniquement en mode utilisateur unique.",
+      },
     },
     mcp: {
       title: "Serveurs MCP",
@@ -1089,6 +1095,8 @@ const TRANSLATIONS = {
       save_embed: "Sauvegarder et intégrer",
       "total-documents_one": "{{count}}",
       "total-documents_other": "{{count}} documents",
+      "search-results_one": "{{count}} résultat",
+      "search-results_other": "{{count}} résultats",
     },
     upload: {
       "processor-offline": "Processeur de documents hors ligne",
@@ -1137,6 +1145,34 @@ const TRANSLATIONS = {
         "Le traitement peut prendre quelques minutes selon la taille du coffre.",
       vault_warning:
         "Assurez-vous de sélectionner le dossier racine contenant le dossier .obsidian.",
+    },
+    gitea: {
+      name: "Dépôt Git",
+      description:
+        "Importer un référentiel public ou privé entier depuis n'importe quelle instance Gitea en un seul clic.",
+      URL: "URL du dépôt Gitea",
+      URL_explained:
+        "URL du dépôt que vous souhaitez récupérer sur votre instance Gitea – les instances auto-hébergées sont prises en charge.",
+      token: "Token d'accès Gitea",
+      optional: "facultatif",
+      token_explained:
+        "Un jeton d'accès est nécessaire pour récupérer les dépôts privés ou les dépôts situés sur des instances qui nécessitent une authentification.",
+      token_explained_start: "Sans",
+      token_explained_link1: "Jeton d'accès",
+      token_explained_end:
+        "Seules les dépôts que votre instance Gitea expose publiquement peuvent être récupérés.",
+      ignores: "Le fichier est ignoré",
+      git_ignore:
+        'Créez un fichier au format ".gitignore" pour ignorer des fichiers spécifiques lors de la collecte. Appuyez sur Entrée après chaque entrée que vous souhaitez enregistrer.',
+      task_explained:
+        "Une fois terminés, tous les fichiers seront disponibles pour être intégrés dans des espaces de travail via le sélecteur de documents.",
+      branch:
+        "Branche à partir de laquelle vous souhaitez récupérer les fichiers.",
+      branch_loading: "– Chargement des branches disponibles –",
+      branch_explained:
+        "Branche à partir de laquelle vous souhaitez récupérer les fichiers.",
+      token_information:
+        "Sans saisir le jeton d'accès <b>Gitea</b>, ce connecteur de données ne pourra collecter que les fichiers provenant de dépôts accessibles publiquement sur votre instance Gitea.",
     },
   },
   chat_window: {
@@ -1284,6 +1320,8 @@ const TRANSLATIONS = {
     stt_transcription_failed: "La transcription a échoué : {{error}}",
     export: "Exporter la conversation au format...",
     exporting: "Exportation...",
+    preset_img_description:
+      "Générer une image à partir d'une requête textuelle.",
   },
   profile_settings: {
     edit_account: "Modifier le compte",
@@ -1388,6 +1426,11 @@ const TRANSLATIONS = {
         title: "Rendu HTML",
         description:
           "Autorise le rendu du contenu HTML dans les réponses du chat.",
+      },
+      "disable-auto-scroll": {
+        title: "Désactiver le défilement automatique",
+        description:
+          "Désactiver le défilement automatique vers la fin de la conversation lorsqu'un nouveau message est reçu.",
       },
     },
   },
@@ -1934,6 +1977,24 @@ const TRANSLATIONS = {
       "routed-to": "Dirigé vers <route>{{model}}</route>",
       "routed-to-rule":
         "Dirigé vers <route>{{model}}</route> via <rule>{{ruleTitle}}</rule>",
+    },
+  },
+  imageGeneration: {
+    title: "Préférences de génération d'images",
+    description:
+      "Configurer le fournisseur utilisé pour générer des images à partir de la commande `/img`.",
+    provider: "Fournisseur de génération d'images",
+    card: {
+      "failed-to-load": "L'image n'a pas pu être chargée.",
+      "alt-text": "Image générée",
+      edit: "Modifier",
+      download: "Télécharger",
+    },
+    pending: {
+      heading: "Génération de votre image…",
+      description:
+        "Cela peut prendre un certain temps. Il apparaîtra ici dès qu'il sera prêt.",
+      aborted: "La génération d'images a été interrompue.",
     },
   },
 };

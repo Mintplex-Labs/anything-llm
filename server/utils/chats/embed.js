@@ -7,6 +7,7 @@ const {
   writeResponseChunk,
 } = require("../helpers/chat/responses");
 const { DocumentManager } = require("../DocumentManager");
+const { abortConnectorOnClientDisconnect } = require("../helpers/abortSignals");
 
 async function streamChatWithForEmbed(
   response,
@@ -52,6 +53,10 @@ async function streamChatWithForEmbed(
       error: routerError,
     });
   }
+
+  // Stopping the generation (or closing the tab) should stop the provider
+  // generating too, not just stop us reading the response.
+  abortConnectorOnClientDisconnect(response, LLMConnector);
 
   const VectorDb = getVectorDbClass();
 

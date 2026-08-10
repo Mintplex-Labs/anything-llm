@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require("uuid");
 const moment = require("moment");
+const { isAbortError } = require("../abortSignals");
 
 function clientAbortedHandler(resolve, fullText) {
   console.log(
@@ -160,6 +161,13 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
         }
       }
     } catch (e) {
+      // Cancelling the upstream request rejects the iterator - that is the client
+      // leaving, not a failure, so it is not reported as a streaming error.
+      if (isAbortError(e)) {
+        stream?.endMeasurement(usage);
+        return clientAbortedHandler(resolve, fullText);
+      }
+
       console.log(`\x1b[43m\x1b[34m[STREAMING ERROR]\x1b[0m ${e.message}`);
       writeResponseChunk(response, {
         uuid,
@@ -294,14 +302,21 @@ function convertToPromptHistory(history = []) {
         assistantContent = `${assistantContent}\n\n${surveyBlocks}`;
     }
 
+    // Images produced by the `/img` command live on disk and are referenced in
+    // the assistant `outputs`, so re-read them as attachments to flow into chat
+    // history as vision context just like an uploaded image.
+    const { generatedImageAttachments } = require("../../files");
+    const attachments = [
+      ...(data?.attachments || []),
+      ...generatedImageAttachments(data?.outputs),
+    ];
+
     formattedHistory.push([
       {
         role: "user",
         content: prompt,
         // if there are attachments, add them as a property to the user message so we can reuse them in chat history later if supported by the llm.
-        ...(data?.attachments?.length > 0
-          ? { attachments: data?.attachments }
-          : {}),
+        ...(attachments.length > 0 ? { attachments } : {}),
       },
       {
         role: "assistant",
@@ -325,6 +340,10 @@ function safeJSONStringify(obj) {
 }
 
 function writeResponseChunk(response, data) {
+  // The client can leave mid-stream (stop button, tab close, dropped connection).
+  // Writing then is a no-op at best and an ERR_STREAM_WRITE_AFTER_END at worst,
+  // so chunks queued after the socket closed are dropped instead.
+  if (response.writableEnded || response.destroyed) return;
   response.write(`data: ${safeJSONStringify(data)}\n\n`);
   return;
 }

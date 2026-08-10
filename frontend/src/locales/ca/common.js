@@ -118,6 +118,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Tasques programades",
     "model-router": "Rúter de model",
+    "image-generation": "Generació d'imatges",
   },
   login: {
     "multi-user": {
@@ -740,6 +741,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Crea tasques programades",
+        description:
+          'Permet que l\'agent creï tasques programades recurrents a partir del missatge (per exemple, "cada dia de dilluny a les 9 del matí, resumeix la meva caixa de correu i envia un correu electrònic"). Només disponible en mode per a un usuari.',
+      },
     },
     mcp: {
       title: "Servidors MCP",
@@ -896,6 +902,11 @@ const TRANSLATIONS = {
         title: "Renderitza HTML al xat",
         description:
           "Renderitza l'HTML a les respostes de l'assistent.\nAixò pot donar com a resultat una qualitat de resposta molt més alta, però també pot comportar riscos potencials de seguretat.",
+      },
+      "disable-auto-scroll": {
+        title: "Desactivar el desplaçament automàtic",
+        description:
+          "Desactivar el recorregut automàtic fins al final del missatge quan s'arriben a rebre nous missatges.",
       },
     },
   },
@@ -1289,6 +1300,8 @@ const TRANSLATIONS = {
       deselect_all: "Desselecciona-ho tot",
       remove_selected: "Elimina la selecció",
       save_embed: "Desa i incrusta",
+      "search-results_one": "{{count}} resultat",
+      "search-results_other": "{{count}} resultats",
     },
     upload: {
       "processor-offline": "Processador de documents no disponible",
@@ -1325,6 +1338,32 @@ const TRANSLATIONS = {
       watch_explained_block3_link: "Gestor de fitxers",
       watch_explained_block3_end: ".",
       accept: "D'acord, entès",
+    },
+    gitea: {
+      name: "Repos de Gitea",
+      description:
+        "Importar un repositori públic o privat complet des de qualsevol instància de Gitea amb un sol clic.",
+      URL: "URL del repositori de Gitea",
+      URL_explained:
+        "URL del repositori que voleu obtenir a la vostra instància de Gitea – s'adrecen les instàncies autohospedades.",
+      token: "Token d'accés de Gitea",
+      optional: "opcional",
+      token_explained:
+        "S'requereix un token d'accés per accedir a repositoris privats o a repositoris en instàncies que requereixen autenticació.",
+      token_explained_start: "Sense",
+      token_explained_link1: "Token d'accés",
+      token_explained_end:
+        "Només es poden obtenir repositoris que la vostra instal·lació de Gitea exposi públicament.",
+      ignores: "El fitxer és ignorat",
+      git_ignore:
+        'Crea un fitxer amb el format ".gitignore" per ignorar els fitxers específics durant la recopilació. Prem "Enter" després de cada entrada que vulguis guardar.',
+      task_explained:
+        "Un cop estiguin complets, tots els fitxers estaran disponibles per incorporar-los a les àrees de treball dins del selector de documents.",
+      branch: "La branca des d'on voleu obtenir els fitxers.",
+      branch_loading: "— Carregant branques disponibles —",
+      branch_explained: "La branca des d'on voleu obtenir els fitxers.",
+      token_information:
+        "Sense introduir el token d'accés de Gitea, aquest connector de dades només podrà obtenir fitxers de repositoris que siguin accessibles per a tots els usuaris en la vostra instància de Gitea.",
     },
   },
   chat_window: {
@@ -1471,6 +1510,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "No s'ha pogut transmetre: {{error}}",
     export: "Exporta la conversa com a...",
     exporting: "Exportant…",
+    preset_img_description: "Generar una imatge a partir d'un text",
   },
   profile_settings: {
     edit_account: "Edita el compte",
@@ -1937,6 +1977,24 @@ const TRANSLATIONS = {
       "routed-to": "Enviat a <route>{{model}}</route>",
       "routed-to-rule":
         "Enviat a través de <route>{{model}}</route> a través de <rule>{{ruleTitle}}</rule>",
+    },
+  },
+  imageGeneration: {
+    title: "Preferència per la generació d'imatges",
+    description:
+      "Configura el proveïdor que s'utilitza per generar imatges a partir del comandament `/img`.",
+    provider: "Proveïdor de generació d'imatges",
+    card: {
+      "failed-to-load": "No s'ha pogut carregar la imatge.",
+      "alt-text": "Imatge generada",
+      edit: "Editar",
+      download: "Descarregar",
+    },
+    pending: {
+      heading: "Generant la vostra imatge…",
+      description:
+        "Aquest procés pot prendre un temps. Apareixerà aquí tan aviat com estigui disponible.",
+      aborted: "La generació d'imatges va ser interrompuda.",
     },
   },
 };

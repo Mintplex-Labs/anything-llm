@@ -1233,7 +1233,7 @@
         "tags": [
           "Documents"
         ],
-        "description": "List of all locally-stored documents in instance",
+        "description": "List of all locally-stored documents in instance. Optionally, pass ?folder=name to fetch the contents of a single folder, paginated with offset and limit (limit=all returns every document in that folder).",
         "parameters": [],
         "responses": {
           "200": {
@@ -1288,7 +1288,7 @@
         "tags": [
           "Documents"
         ],
-        "description": "Get all documents stored in a specific folder.",
+        "description": "Get all documents stored in a specific folder. Returns every document by default; pass offset and limit to paginate.",
         "parameters": [
           {
             "name": "folderName",
@@ -1298,6 +1298,24 @@
               "type": "string"
             },
             "description": "Name of the folder to retrieve documents from"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of documents to skip. Defaults to 0.",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Max documents to return, capped at 1000. Defaults to all, which returns every document in the folder.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -3654,6 +3672,83 @@
                 "temperature": 0.7
               }
             }
+          }
+        }
+      }
+    },
+    "/v1/openai/images/generations": {
+      "post": {
+        "tags": [
+          "OpenAI Compatible Endpoints"
+        ],
+        "description": "Generate or edit an image using the system-configured image generation provider. Send a multipart/form-data request with a \"prompt\" field and an optional \"size\" field. To edit an existing image, attach one or more files as \"image_references\" — when present, the request is automatically routed to the provider image editing endpoint. Returns the image as a base64 PNG. If the provider does not support editing (e.g. Ollama), a notice is included and a new image is generated from the prompt only.",
+        "parameters": [
+          {
+            "name": "prompt",
+            "in": "formData",
+            "description": "Text prompt describing the image to generate or the edit to apply.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "size",
+            "in": "formData",
+            "description": "Image dimensions (e.g. 1024x1024). Defaults to the system IMAGE_GEN_SIZE_PREF setting.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "image_references",
+            "in": "formData",
+            "description": "Optional reference image file(s) for editing. When provided, the request is routed to the edit endpoint instead of generation.",
+            "required": false,
+            "schema": {
+              "type": "file"
+            }
+          },
+          {
+            "name": "response_format",
+            "in": "formData",
+            "description": "Response format: b64_json (default) returns base64-encoded image data in JSON, blob returns the raw image bytes with content-type image/png.",
+            "required": false,
+            "default": "b64_json",
+            "enum": [
+              "b64_json",
+              "blob"
+            ],
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }

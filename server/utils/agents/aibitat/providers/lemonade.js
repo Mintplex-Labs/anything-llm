@@ -84,8 +84,7 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
    */
   async stream(messages, functions = [], eventHandler = null) {
     await this.preloadModel();
-    const useNative =
-      functions.length > 0 && (await this.supportsNativeToolCalling());
+    const useNative = await this.supportsNativeToolCalling();
 
     if (!useNative) {
       return await UnTooled.prototype.stream.call(
@@ -130,8 +129,7 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
    */
   async complete(messages, functions = []) {
     await this.preloadModel();
-    const useNative =
-      functions.length > 0 && (await this.supportsNativeToolCalling());
+    const useNative = await this.supportsNativeToolCalling();
 
     if (!useNative) {
       return await UnTooled.prototype.complete.call(

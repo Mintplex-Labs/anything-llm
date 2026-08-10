@@ -3,6 +3,7 @@ const { DocumentManager } = require("../DocumentManager");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { getVectorDbClass, resolveProviderConnector } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
+const { abortConnectorOnClientDisconnect } = require("../helpers/abortSignals");
 const {
   chatPrompt,
   sourceIdentifier,
@@ -189,7 +190,7 @@ async function chatSync({
     // After this, we conclude the call as we normally do.
     return await eventListener
       .waitForClose()
-      .then(async ({ thoughts, textResponse, outputs, metrics }) => {
+      .then(async ({ thoughts, textResponse, outputs, metrics, citations }) => {
         // Merge outputs from packMessages with outputs from aibitat (contains file download metadata with proper types)
         // These are needed for the download endpoint to authorize file access
         const allOutputs = [...outputs, ...agentHandler.getPendingOutputs()];
@@ -199,7 +200,7 @@ async function chatSync({
           prompt: String(message),
           response: {
             text: textResponse,
-            sources: [],
+            sources: citations,
             attachments,
             type: chatMode,
             thoughts,
@@ -212,7 +213,7 @@ async function chatSync({
         return {
           id: uuid,
           type: "textResponse",
-          sources: [],
+          sources: citations,
           close: true,
           error: null,
           textResponse,
@@ -555,7 +556,7 @@ async function streamChat({
     // and stream back any results we get from agents as they come in.
     return eventListener
       .streamAgentEvents(response, uuid)
-      .then(async ({ thoughts, textResponse, outputs, metrics }) => {
+      .then(async ({ thoughts, textResponse, outputs, metrics, citations }) => {
         // Merge outputs from packMessages with outputs from aibitat (contains file download metadata with proper types)
         // These are needed for the download endpoint to authorize file access
         const allOutputs = [...outputs, ...agentHandler.getPendingOutputs()];
@@ -565,7 +566,7 @@ async function streamChat({
           prompt: String(message),
           response: {
             text: textResponse,
-            sources: [],
+            sources: citations,
             attachments: attachments,
             type: chatMode,
             thoughts,
@@ -582,6 +583,7 @@ async function streamChat({
           textResponse,
           thoughts,
           outputs,
+          sources: citations,
           close: true,
           error: false,
           metrics,
@@ -597,6 +599,10 @@ async function streamChat({
     attachments,
     apiSessionId: sessionId,
   });
+
+  // A disconnected client (aborted request, closed connection) should stop the
+  // provider generating too, not just stop us reading the response.
+  abortConnectorOnClientDisconnect(response, LLMConnector);
 
   const VectorDb = getVectorDbClass();
   const messageLimit = workspace?.openAiHistory || 20;

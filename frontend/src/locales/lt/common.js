@@ -117,6 +117,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Planuojami darbai",
     "model-router": "Modelio maršrutizatorius",
+    "image-generation": "Vaizdų kūrimas",
   },
   login: {
     "multi-user": {
@@ -725,6 +726,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Sukurkite nurodytus užduotis",
+        description:
+          "Leiskite agentui kurti nuolatinės užduotės iš pokalbio (pvz., „kasdien, 9 val., peržiūrėkite mano pašto dėžę ir siųskite man el. laišką“). Šis funkcijomis galima naudotis tik vieno vartotojo režimu.",
+      },
     },
     mcp: {
       title: "MCP serveriai",
@@ -875,6 +881,11 @@ const TRANSLATIONS = {
         title: "Atvaizduoti HTML pokalbyje",
         description:
           "Atvaizduoti HTML kodą asistento atsakymuose.\nTai gali užtikrinti geresnę atsakymų vizualinę kokybę, tačiau taip pat gali kelti saugumo riziką.",
+      },
+      "disable-auto-scroll": {
+        title: "Išjunkite automatinį rolį",
+        description:
+          "Išjunkite automatinį skryptą į apačią, kai gaunamos naujos žinios.",
       },
     },
   },
@@ -1203,6 +1214,8 @@ const TRANSLATIONS = {
       deselect_all: "Atžymėti viską",
       remove_selected: "Šalinti pažymėtus",
       save_embed: "Išsaugoti ir kurti vektorius",
+      "search-results_one": "{{count}} rezultatas",
+      "search-results_other": "{{count}} rezultatai",
     },
     upload: {
       "processor-offline": "Dokumentų procesorius nepasiekiamas",
@@ -1239,6 +1252,32 @@ const TRANSLATIONS = {
       watch_explained_block3_link: "Failų vadybininko",
       watch_explained_block3_end: " administratoriaus peržiūroje.",
       accept: "Gerai, supratau",
+    },
+    gitea: {
+      name: "„Gitea“ repozitorija",
+      description:
+        "Įtraukite visą viešą arba privataus repozitorijos iš bet kurios „Gitea“ instanso vienu spusteliu.",
+      URL: "„Gitea“ repozitorijos URL",
+      URL_explained:
+        "Repo URL, kurį norite importuoti į savo „Gitea“ instanciją – palaikomos ir saviname serverio instancijoje esančios repoziatorijos.",
+      token: "„Gitea“ prieigos žetonas",
+      optional: "Neprivaloma",
+      token_explained:
+        "Reikia naudoti API raktą, kad būtų galima pasiekti privatius repozitorijus arba repozitorijų sąrašus, kuriems reikalinga autentifikacija.",
+      token_explained_start: "Be to",
+      token_explained_link1: "Prisijimo žymė",
+      token_explained_end:
+        "„Gitea“ instancija, kurios duomenys yra prieinami publikai, gali būti surinkti tik iš šių vietų.",
+      ignores: "Failas ignoruoja",
+      git_ignore:
+        'Sąrašas `.gitignore` formate, skirtas ignoruoti konkrečius failus renkant informaciją. Spustelėkite "Enter" po kiekvieno elemento, kurį norite išsaugoti.',
+      task_explained:
+        "Vienas baigęs, visi failai bus prieinami įdiegti į darbo vietų dokumentų pasirinkimo programinę įrangą.",
+      branch: "Šalį, iš kurio norite gauti failus.",
+      branch_loading: "– Naudojamos galimos versijos –",
+      branch_explained: "Šaką, iš kurios norite gauti failus.",
+      token_information:
+        "Jei neįvesite <b>Gitea prieigos žymę</b>, šis duomenų jungiklis galės rinkti failus iš repozitorijų, kurie yra <b>prieinami viešai</b> jūsų Gitea instancijoje.",
     },
   },
   chat_window: {
@@ -1382,6 +1421,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Transkripcija nepavyko: {{error}}",
     export: "Eksporteri pokalbį kaip…",
     exporting: "Eksporteris...",
+    preset_img_description: "Sukurkite vaizdą iš teksto instrukcijos",
   },
   profile_settings: {
     edit_account: "Redaguoti paskyrą",
@@ -1914,6 +1954,24 @@ const TRANSLATIONS = {
       "routed-to": "Siųsta į <route>{{model}}</route>",
       "routed-to-rule":
         "Peradresuota per <route>{{model}}</route> pagal <rule>{{ruleTitle}}</rule>",
+    },
+  },
+  imageGeneration: {
+    title: "Vaizdų generavimo pasirinkimas",
+    description:
+      "Nustatykite paslaugą, kuri naudojasi `/img` komanda, kad būtų sukurta vaizdai.",
+    provider: "Vaizdų generavimo paslaugos tiekėjas",
+    card: {
+      "failed-to-load": "Nepavyko įkelti vaizdą",
+      "alt-text": "Sukurta vaizdas",
+      edit: "Redaguoti",
+      download: "Atsisiųsti",
+    },
+    pending: {
+      heading: "Kuriamas jūsų vaizdas…",
+      description:
+        "Tai gali užtrukti keletą minučių. Ji pasirodys čia, kai bus pasiruošusi.",
+      aborted: "Vaizdo kūrimas buvo nutrauktas.",
     },
   },
 };

@@ -8,7 +8,7 @@ export default function ChatModelSelection({
   workspace,
   setHasChanges,
 }) {
-  const { defaultModels, customModels, loading } =
+  const { defaultModels, customModels, loading, downloadedModels } =
     useGetProviderModels(provider);
   const { t } = useTranslation();
   if (DISABLED_PROVIDERS.includes(provider)) return null;
@@ -70,6 +70,19 @@ export default function ChatModelSelection({
                 </option>
               );
             })}
+          </optgroup>
+        )}
+        {downloadedModels.length > 0 && (
+          <optgroup label="Downloaded models">
+            {downloadedModels.map((model) => (
+              <option
+                key={model.id}
+                value={model.id}
+                selected={workspace?.chatModel === model.id}
+              >
+                {model.name || model.id}
+              </option>
+            ))}
           </optgroup>
         )}
         {Array.isArray(customModels) && customModels.length > 0 && (

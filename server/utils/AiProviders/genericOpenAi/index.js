@@ -1,4 +1,5 @@
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
+const { isAbortError } = require("../../helpers/abortSignals");
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
@@ -10,6 +11,7 @@ const {
 const { v4: uuidv4 } = require("uuid");
 const { toValidNumber } = require("../../http");
 const { getAnythingLLMUserAgent } = require("../../../endpoints/utils");
+const { attachmentToContentBlock } = require("../../helpers/attachments");
 
 class GenericOpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -139,13 +141,9 @@ class GenericOpenAiLLM {
 
     const content = [{ type: "text", text: userPrompt }];
     for (let attachment of attachments) {
-      content.push({
-        type: "image_url",
-        image_url: {
-          url: attachment.contentString,
-          detail: "high",
-        },
-      });
+      content.push(
+        attachmentToContentBlock(attachment, { imageDetail: "high" })
+      );
     }
     return content.flat();
   }
@@ -406,6 +404,12 @@ class GenericOpenAiLLM {
           }
         }
       } catch (e) {
+        // Cancelling the upstream request rejects the iterator - that is the
+        // client leaving, not a failure, so it is not reported as an error.
+        if (isAbortError(e)) {
+          stream?.endMeasurement(usage);
+          return clientAbortedHandler(resolve, fullText);
+        }
         console.log(`\x1b[43m\x1b[34m[STREAMING ERROR]\x1b[0m ${e.message}`);
         writeResponseChunk(response, {
           uuid,
@@ -452,9 +456,9 @@ class GenericOpenAiLLM {
 
   /**
    * Returns the capabilities of the model.
-   * @returns {{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}}
+   * @returns {Promise<{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}>}
    */
-  getModelCapabilities() {
+  async getModelCapabilities() {
     try {
       return {
         tools: this.#supportsCapabilityFromENV("tools"),

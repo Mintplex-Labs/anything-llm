@@ -162,20 +162,36 @@ class MCPCompatibilityLayer extends MCPHypervisor {
         continue;
       }
 
-      const online = !!(await mcp.ping());
-      const tools = (online ? (await mcp.listTools()).tools : []).filter(
-        (tool) => !tool.name.startsWith("handle_mcp_connection_mcp_")
-      );
-      servers.push({
-        name,
-        config: config?.server || null,
-        running: online,
-        tools,
-        error: null,
-        process: {
-          pid: mcp.transport?.process?.pid || null,
-        },
-      });
+      // ping() and listTools() can throw - e.g. when a tool's outputSchema
+      // contains a $ref the MCP SDK cannot resolve. If we let that bubble up
+      // it crashes the entire list, so a single bad server would hide every
+      // other server. Keep the server visible with its error instead.
+      try {
+        const online = !!(await mcp.ping());
+        const tools = (online ? (await mcp.listTools()).tools : []).filter(
+          (tool) => !tool.name.startsWith("handle_mcp_connection_mcp_")
+        );
+        servers.push({
+          name,
+          config: config?.server || null,
+          running: online,
+          tools,
+          error: null,
+          process: {
+            pid: mcp.transport?.process?.pid || null,
+          },
+        });
+      } catch (error) {
+        this.log(`Failed to list tools for MCP server ${name}:`, error);
+        servers.push({
+          name,
+          config: config?.server || null,
+          running: false,
+          tools: [],
+          error: error?.message || "Failed to load tools for this MCP server.",
+          process: null,
+        });
+      }
     }
     return servers;
   }

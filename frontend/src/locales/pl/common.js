@@ -111,6 +111,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Zaplanowane zadania",
     "model-router": "Przykładowy router",
+    "image-generation": "Generowanie obrazów",
   },
   login: {
     "multi-user": {
@@ -731,6 +732,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Twórz zdefiniowane harmonogramy zadań",
+        description:
+          "Umożliw agentowi tworzenie powtarzalnych zadań w harmonogramie bezpośrednio z czatu (np. „codziennie w poniedziałek o 9:00, podsumuj zawartość mojej skrzynki pocztowej i wyślij mi e-mail”). Funkcja dostępna tylko w trybie dla jednego użytkownika.",
+      },
     },
     mcp: {
       title: "Serwery MCP",
@@ -882,6 +888,11 @@ const TRANSLATIONS = {
         title: "Renderowanie HTML w czacie",
         description:
           "Wyświetlanie odpowiedzi w formacie HTML w odpowiedziach asystenta.\nMoże to prowadzić do znacznie wyższej jakości odpowiedzi, ale również wiąże się z potencjalnymi zagrożeniami bezpieczeństwa.",
+      },
+      "disable-auto-scroll": {
+        title: "Wyłącz automatyczne przewijanie",
+        description:
+          "Wyłącz automatyczne przewijanie do końca okna czatu po otrzymaniu nowych wiadomości.",
       },
     },
   },
@@ -1189,6 +1200,8 @@ const TRANSLATIONS = {
       save_embed: "Zapisz",
       "total-documents_one": "{{count}} dokument",
       "total-documents_other": "{{count}} dokumenty",
+      "search-results_one": "{{count}} wynik",
+      "search-results_other": "Wyniki {{count}}",
     },
     upload: {
       "processor-offline": "Procesor dokumentów niedostępny",
@@ -1225,6 +1238,32 @@ const TRANSLATIONS = {
       watch_explained_block3_link: "Menedżer plików",
       watch_explained_block3_end: " widok administratora.",
       accept: "Ok, rozumiem",
+    },
+    gitea: {
+      name: "Repozytorium Gitea",
+      description:
+        "Zaimportuj całą publiczną lub prywatną repozytorium z dowolnej instancji Gitea w jednym kliknięciu.",
+      URL: "Adres repozytorium Gitea",
+      URL_explained:
+        "Adres URL repozytorium, które chcesz pobrać na swojej instancji Gitea – wspierane są również instancje samodzielnie zarządzane.",
+      token: "Token dostępu do Gitea",
+      optional: "opcjonalne",
+      token_explained:
+        "Token dostępu jest wymagany do pobierania prywatnych repozytoriów lub repozytoriów na serwerach, które wymagają uwierzytelniania.",
+      token_explained_start: "Bez",
+      token_explained_link1: "Token dostępu",
+      token_explained_end:
+        "Można pobierać tylko repozytoria, które są publicznie dostępne przez Twoją instancję Gitea.",
+      ignores: "Plik ignoruje",
+      git_ignore:
+        "Utwórz plik w formacie `.gitignore`, aby wykluczyć określone pliki podczas pobierania. Po wprowadzeniu nazwy każdego pliku, który chcesz pominąć, naciśnij Enter.",
+      task_explained:
+        "Po zakończeniu procesu, wszystkie pliki będą dostępne do włączenia w obszary robocze za pomocą narzędzia wyboru dokumentów.",
+      branch: "Główna gałąź, z której chcesz pobrać pliki.",
+      branch_loading: "– Wczytywanie dostępnych gałęzi –",
+      branch_explained: "Główna gałąź, z której chcesz pobrać pliki.",
+      token_information:
+        "Bez wprowadzenia wartości tokenu dostępu do <b>Gitea</b>, ten adapter danych będzie mógł pobierać tylko pliki z repozytoriów, które są <b>dostępne publicznie</b> w Twojej instancji Gitea.",
     },
   },
   chat_window: {
@@ -1369,6 +1408,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Błąd transkrypcji: {{error}}",
     export: "Eksportuj czat jako…",
     exporting: "Eksportowanie...",
+    preset_img_description: "Wygeneruj obraz na podstawie tekstu",
   },
   profile_settings: {
     edit_account: "Edytuj konto",
@@ -1929,6 +1969,24 @@ const TRANSLATIONS = {
       "invalid-model": "Nieprawidłowy wybór modelu",
       "routed-to": "Przekazane do <route>{{model}}</route>",
       "routed-to-rule": "Przekazane do <route> przez <rule>",
+    },
+  },
+  imageGeneration: {
+    title: "Preferowane metody generowania obrazów",
+    description:
+      "Skonfiguruj dostawcę, którego używasz do generowania obrazów z polecenia `/img`.",
+    provider: "Dostawca usług generowania obrazów",
+    card: {
+      "failed-to-load": "Nie udało się załadować obrazu.",
+      "alt-text": "Wygenerowane zdjęcie",
+      edit: "Edytuj",
+      download: "Pobierz",
+    },
+    pending: {
+      heading: "Tworzenie obrazu…",
+      description:
+        "To może zająć trochę czasu. Będzie dostępne tutaj, gdy tylko zostanie przygotowane.",
+      aborted: "Generowanie obrazu zostało przerwane.",
     },
   },
 };

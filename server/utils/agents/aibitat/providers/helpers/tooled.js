@@ -1,5 +1,6 @@
 const { v4 } = require("uuid");
 const { safeJsonParse } = require("../../../../http");
+const { attachmentToContentBlock } = require("../../../../helpers/attachments");
 
 /**
  * Shared native OpenAI-compatible tool calling utilities.
@@ -11,7 +12,7 @@ const { safeJsonParse } = require("../../../../http");
  *   const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
  *
  *   async stream(messages, functions, eventHandler) {
- *     if (functions.length > 0 && await this.supportsNativeToolCalling()) {
+ *     if (await this.supportsNativeToolCalling()) {
  *       return tooledStream(this.client, this.model, messages, functions, eventHandler);
  *     }
  *     // ... fallback to UnTooled ...
@@ -49,12 +50,7 @@ function formatMessageWithAttachments(message) {
   // Transform message with attachments into multimodal format
   const content = [{ type: "text", text: message.content }];
   for (const attachment of message.attachments) {
-    content.push({
-      type: "image_url",
-      image_url: {
-        url: attachment.contentString,
-      },
-    });
+    content.push(attachmentToContentBlock(attachment));
   }
 
   // Return message without attachments property, with content as array

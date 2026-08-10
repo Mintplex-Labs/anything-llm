@@ -4,6 +4,7 @@ const { WorkspaceChats } = require("../../models/workspaceChats");
 const { getVectorDbClass, resolveProviderConnector } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const { chatPrompt, sourceIdentifier } = require("./index");
+const { abortConnectorOnClientDisconnect } = require("../helpers/abortSignals");
 
 const { PassThrough } = require("stream");
 
@@ -243,6 +244,10 @@ async function streamChat({
     // and does not need to re-include an uncounted user message.
     messageCountOverride: history.length,
   });
+
+  // A disconnected client (aborted request, closed connection) should stop the
+  // provider generating too, not just stop us reading the response.
+  abortConnectorOnClientDisconnect(response, LLMConnector);
 
   const VectorDb = getVectorDbClass();
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);

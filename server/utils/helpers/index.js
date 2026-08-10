@@ -242,6 +242,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "lemonade":
       const { LemonadeLLM } = require("../AiProviders/lemonade");
       return new LemonadeLLM(embedder, model);
+    case "omlx":
+      const { OMLXLLM } = require("../AiProviders/omlx");
+      return new OMLXLLM(embedder, model);
     case "minimax":
       const { MinimaxLLM } = require("../AiProviders/minimax");
       return new MinimaxLLM(embedder, model);
@@ -316,6 +319,36 @@ function getEmbeddingEngineSelection() {
       return new LemonadeEmbedder();
     default:
       return new NativeEmbedder();
+  }
+}
+
+/**
+ * Returns the configured image generation provider instance.
+ * Selected system-wide via the IMAGE_GEN_PROVIDER env, mirroring the
+ * embedder/vector-db subsystem selection.
+ * @returns {import("../ImageGenerators/base").BaseImageGenerator}
+ */
+function getImageGeneratorProvider() {
+  const provider = process.env.IMAGE_GEN_PROVIDER;
+  switch (provider) {
+    case "openai":
+      const { OpenAiImageGenerator } = require("../ImageGenerators/openAi");
+      return new OpenAiImageGenerator();
+    case "ollama":
+      const { OllamaImageGenerator } = require("../ImageGenerators/ollama");
+      return new OllamaImageGenerator();
+    case "lemonade":
+      const { LemonadeImageGenerator } = require("../ImageGenerators/lemonade");
+      return new LemonadeImageGenerator();
+    case "openrouter":
+      const {
+        OpenRouterImageGenerator,
+      } = require("../ImageGenerators/openRouter");
+      return new OpenRouterImageGenerator();
+    default:
+      throw new Error(
+        `No valid image generation provider was set. Got: ${provider}`
+      );
   }
 }
 
@@ -430,6 +463,9 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "lemonade":
       const { LemonadeLLM } = require("../AiProviders/lemonade");
       return LemonadeLLM;
+    case "omlx":
+      const { OMLXLLM } = require("../AiProviders/omlx");
+      return OMLXLLM;
     case "minimax":
       const { MinimaxLLM } = require("../AiProviders/minimax");
       return MinimaxLLM;
@@ -519,6 +555,8 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.SAMBANOVA_LLM_MODEL_PREF;
     case "lemonade":
       return process.env.LEMONADE_LLM_MODEL_PREF;
+    case "omlx":
+      return process.env.OMLX_LLM_MODEL_PREF;
     case "minimax":
       return process.env.MINIMAX_MODEL_PREF;
     case "cerebras":
@@ -707,6 +745,7 @@ function stripThinkingFromText(text = "") {
 
 module.exports = {
   getEmbeddingEngineSelection,
+  getImageGeneratorProvider,
   maximumChunkLength,
   getVectorDbClass,
   getLLMProviderClass,

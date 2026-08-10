@@ -65,9 +65,9 @@ const TRANSLATIONS = {
       "Il nome utente deve essere compreso tra 2 e 64 caratteri, iniziare con una lettera minuscola e contenere solo lettere minuscole, numeri, trattini bassi, trattini e punti.",
     on: "Su",
     none: "Nessuno",
-    stopped: "Arrestato",
+    stopped: "Fermato",
     loading: "Caricamento",
-    refresh: "Rinfresca",
+    refresh: "Aggiorna",
   },
   settings: {
     title: "Impostazioni istanza",
@@ -80,14 +80,14 @@ const TRANSLATIONS = {
     llm: "LLM",
     transcription: "Trascrizione",
     embedder: "Embedder",
-    "text-splitting": "Suddivisione di testo & Chunking",
+    "text-splitting": "Suddivisione di testo & Divisione in blocchi",
     "voice-speech": "Voce & discorso",
     "vector-database": "Database Vettoriale",
     embeds: "Chat incorporata",
     security: "Sicurezza",
     "event-logs": "Log degli eventi",
     privacy: "Privacy & Dati",
-    "ai-providers": "AI Providers",
+    "ai-providers": "Provider IA",
     "agent-skills": "Abilità dell'agente",
     admin: "Admin",
     tools: "Strumenti",
@@ -112,6 +112,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Lavori pianificati",
     "model-router": "Router di esempio",
+    "image-generation": "Generazione di immagini",
   },
   login: {
     "multi-user": {
@@ -125,7 +126,7 @@ const TRANSLATIONS = {
     },
     "sign-in": "Accedi al tuo {{appName}} account.",
     "password-reset": {
-      title: "Password Reset",
+      title: "Reset Password",
       description:
         "Fornisci le informazioni necessarie qui sotto per reimpostare la tua password.",
       "recovery-codes": "Codici di recupero",
@@ -211,7 +212,7 @@ const TRANSLATIONS = {
     prompt: {
       title: "Prompt",
       description:
-        "Il prompt che verrà utilizzato in quest'area di lavoro. Definisci il contesto e le istruzioni affinché l'IA generi una risposta. Dovresti fornire un prompt elaborato con cura in modo che l'IA possa generare una risposta pertinente e accurata.",
+        "Il prompt che verrà utilizzato in quest'area di lavoro. Definisci il contesto e le istruzioni affinché l'AI generi una risposta. Dovresti fornire un prompt elaborato con cura in modo che l'IA possa generare una risposta pertinente e accurata.",
       history: {
         title: "Cronologia delle istruzioni del sistema",
         clearAll: "Cancella tutto",
@@ -729,6 +730,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Creare attività programmate",
+        description:
+          'Permetti all\'agente di creare attività ricorrenti programmate direttamente dalla chat (ad esempio, "ogni giorno feriale alle 9 del mattino, riassumi la mia casella di posta elettronica e inviami una copia"). Disponibile solo in modalità per singolo utente.',
+      },
     },
     mcp: {
       title: "Server MCP",
@@ -1084,11 +1090,13 @@ const TRANSLATIONS = {
       "move-success": "Trasferiti con successo {{count}} documenti.",
       no_docs: "Nessun documento.",
       select_all: "Seleziona tutto",
-      deselect_all: "Deselect All",
+      deselect_all: "Deseleziona tutto",
       remove_selected: "Elimina gli elementi selezionati",
       save_embed: "Salva e incorpora",
       "total-documents_one": "{{count}} documento",
       "total-documents_other": "{{count}} documenti",
+      "search-results_one": "{{count}} risultato",
+      "search-results_other": "{{count}} risultati",
     },
     upload: {
       "processor-offline": "Il processore di documenti non è disponibile.",
@@ -1123,7 +1131,7 @@ const TRANSLATIONS = {
       watch_explained_block3_start:
         "È possibile gestire quali documenti vengono visualizzati dall'applicazione.",
       watch_explained_block3_link: "Gestore di file",
-      watch_explained_block3_end: "admin view.",
+      watch_explained_block3_end: "vista admin.",
       accept: "Ok, ho capito.",
     },
     obsidian: {
@@ -1132,11 +1140,37 @@ const TRANSLATIONS = {
         "Seleziona la cartella del tuo archivio Obsidian per importare tutte le note e le loro relazioni.",
       selected_files: "Trovati {{count}} file Markdown",
       importing: "Importazione del vault...",
-      import_vault: "Import Vault",
+      import_vault: "Importa Vault",
       processing_time:
         "Questo potrebbe richiedere del tempo, a seconda delle dimensioni del vostro deposito.",
       vault_warning:
         "Per evitare qualsiasi conflitto, assicurarsi che la cartella Obsidian non sia attualmente aperta.",
+    },
+    gitea: {
+      name: "Repository di Gitea",
+      description:
+        "Importare un intero repository pubblico o privato da qualsiasi istanza di Gitea con un singolo clic.",
+      URL: "URL del repository di Gitea",
+      URL_explained:
+        "URL del repository che desideri raccogliere sulla tua istanza di Gitea – sono supportate anche le istanze ospitate da te.",
+      token: "Token di accesso a Gitea",
+      optional: "facoltativo",
+      token_explained:
+        "È necessario un token di accesso per accedere a repository privati o a repository presenti su istanze che richiedono l'autenticazione.",
+      token_explained_start: "Senza",
+      token_explained_link1: "Token di accesso",
+      token_explained_end:
+        "Solo i repository che la tua istanza di Gitea rende accessibili pubblicamente possono essere raccolti.",
+      ignores: "Il file viene ignorato",
+      git_ignore:
+        'Crea un file nel formato ".gitignore" per escludere file specifici durante la raccolta. Premi Invio dopo ogni voce che desideri salvare.',
+      task_explained:
+        "Una volta completata la procedura, tutti i file saranno disponibili per essere incorporati negli spazi di lavoro tramite l'utilità di selezione documenti.",
+      branch: "Ramo da cui desideri recuperare i file.",
+      branch_loading: "– Caricamento dei rami disponibili –",
+      branch_explained: "Ramo da cui desideri recuperare i file.",
+      token_information:
+        "Senza inserire il token di accesso <b>Gitea</b>, questo connettore dati sarà in grado di raccogliere file solo da repository che sono <b>accessibili pubblicamente</b> nella tua istanza di Gitea.",
     },
   },
   chat_window: {
@@ -1145,7 +1179,7 @@ const TRANSLATIONS = {
     text_size: "Modifica la dimensione del testo.",
     microphone: "Formula la tua richiesta.",
     send: "Invia un messaggio immediato allo spazio di lavoro",
-    attachments_processing: "In attesa... I allegati sono in elaborazione.",
+    attachments_processing: "In attesa... Gli allegati sono in elaborazione.",
     tts_speak_message: "Messaggio TTS Speak",
     copy: "Copia",
     regenerate: "Rigenerare",
@@ -1153,7 +1187,7 @@ const TRANSLATIONS = {
       "Per favore, fornisci il testo originale che desideri che venga riformulato.\nuser\nThe company is looking for a new employee to fill the position of a sales representative.\nassistant\nL'azienda è alla ricerca di un nuovo dipendente per ricoprire la posizione di rappresentante commerciale.\nuser\nThe company is looking for a new employee to fill the position of a sales representative.\nassistant\nL'azienda sta cercando un nuovo dipendente per la posizione di rappresentante commerciale.\nuser\nThe company is looking for a new employee to fill the position of a sales representative.\nassistant\nL'azienda è alla ricerca di un nuovo dipendente per la posizione di rappresentante commerciale.\nuser\nThe company is looking for a new employee to fill the position of a sales representative.\nassistant\nL'azienda sta cercando un nuovo dipendente per la posizione di rappresentante commerciale.\nuser>Regenerate response\nassistant\nL'azienda sta cercando un nuovo dipendente per la posizione di rappresentante commerciale.",
     good_response: "Ottima risposta.",
     more_actions: "Ulteriori azioni",
-    fork: "Forchetta",
+    fork: "Fork",
     delete: "Elimina",
     cancel: "Annulla",
     edit_prompt: "Suggerimento di modifica:",
@@ -1189,7 +1223,7 @@ const TRANSLATIONS = {
     },
     submit: "Invia",
     edit_info_user:
-      '"Invia" rigenera la risposta dell\'IA. "Salva" aggiorna solo il tuo messaggio.',
+      '"Invia" rigenera la risposta dell AI. "Salva" aggiorna solo il tuo messaggio.',
     edit_info_assistant:
       "Le modifiche verranno salvate direttamente in questa risposta.",
     see_less: "Visualizza meno",
@@ -1197,7 +1231,7 @@ const TRANSLATIONS = {
     tools: "Strumenti",
     text_size_label: "Dimensione del testo",
     select_model: "Seleziona il modello",
-    sources: "Fonti",
+    sources: "Sorgente",
     document: "Documento",
     similarity_match: "partita",
     source_count_one: "Riferimento {{count}}",
@@ -1289,6 +1323,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Errore di trascrizione: {{error}}",
     export: "Esporta la conversazione come...",
     exporting: "Esportazione...",
+    preset_img_description: "Genera un'immagine a partire da un testo",
   },
   profile_settings: {
     edit_account: "Modifica account",
@@ -1401,6 +1436,11 @@ const TRANSLATIONS = {
         title: "Visualizza codice HTML in chat",
         description:
           "Generare risposte HTML nelle risposte dell'assistente.\nQuesto può portare a una qualità di risposta molto più accurata, ma può anche comportare potenziali rischi per la sicurezza.",
+      },
+      "disable-auto-scroll": {
+        title: "Disattivare lo scorrimento automatico",
+        description:
+          "Disabilita lo scorrimento automatico fino alla fine della finestra di chat quando vengono ricevute nuove messaggi.",
       },
     },
   },
@@ -1599,7 +1639,7 @@ const TRANSLATIONS = {
       "voice-response": "Risposta vocale",
       disconnecting: "Disconnessione...",
       disconnect: "Disconnetti",
-      "voice-text-only": "Testo solo",
+      "voice-text-only": "Solo testo",
       "voice-mirror":
         "Specchio (risposta vocale quando l'utente invia un messaggio vocale)",
       "voice-always":
@@ -1955,9 +1995,27 @@ const TRANSLATIONS = {
     chat: {
       "select-router-error": "Seleziona un router",
       "invalid-model": "Selezione del modello non valida",
-      "routed-to": "Inviato a {{model}}<route>__PLACEHOLDER_1__",
+      "routed-to": "Inviato a <route>{{model}}</route>",
       "routed-to-rule":
         "Instradato tramite <route>{{model}}</route> seguendo il percorso <rule>{{ruleTitle}}</rule>",
+    },
+  },
+  imageGeneration: {
+    title: "Preferenze per la generazione di immagini",
+    description:
+      "Configura il fornitore utilizzato per generare le immagini tramite il comando `/img`.",
+    provider: "Fornitore di servizi di generazione di immagini",
+    card: {
+      "failed-to-load": "Immagine non caricata",
+      "alt-text": "Immagine generata",
+      edit: "Modifica",
+      download: "Scarica",
+    },
+    pending: {
+      heading: "Creazione dell'immagine...",
+      description:
+        "Questo potrebbe richiedere un po' di tempo. Apparirà qui non appena sarà disponibile.",
+      aborted: "La generazione dell'immagine è stata interrotta.",
     },
   },
 };
