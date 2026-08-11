@@ -3,6 +3,16 @@ import * as TTS from "@mintplex-labs/piper-tts-web";
 /** @type {import("@mintplexlabs/piper-web-tts").TtsSession | null} */
 let PIPER_SESSION = null;
 
+// Identifier of the only stream allowed to keep rendering. Starting a new
+// stream or sending {type:'abort'} changes this value, and any in-flight
+// stream loop exits at its next chunk boundary once it no longer matches -
+// a single boolean is racy: a new stream would "un-abort" the old one.
+let ACTIVE_STREAM_ID = null;
+// Serializes streamed predictions - the shared TtsSession cannot safely run
+// two predictions concurrently, so a superseding stream waits for the old
+// loop to notice it lost ACTIVE_STREAM_ID and exit.
+let STREAM_QUEUE = Promise.resolve();
+
 /**
  * @typedef PredictionRequest
  * @property {('init')} type
@@ -61,6 +71,13 @@ async function main(event) {
     return;
   }
 
+  if (event.data.type === "abort") {
+    // Aborts the matching stream (or whatever is active when untargeted).
+    if (!event.data.streamId || event.data.streamId === ACTIVE_STREAM_ID)
+      ACTIVE_STREAM_ID = null;
+    return;
+  }
+
   if (event.data?.type !== "init") return;
   if (!PIPER_SESSION) {
     PIPER_SESSION = new TTS.TtsSession({
@@ -85,23 +102,13 @@ async function main(event) {
   if (event.data.stream === true) {
     // Streamed mode: render sentence-sized chunks sequentially and post each
     // audio blob as soon as it is ready so playback can begin immediately.
-    try {
-      const chunks = splitIntoChunks(String(event.data.text));
-      if (chunks.length === 0) throw new Error("No text to predict on.");
-      self.postMessage({ type: "stream-start", total: chunks.length });
-      for (let i = 0; i < chunks.length; i++) {
-        const audio = await PIPER_SESSION.predict(chunks[i]);
-        self.postMessage({
-          type: "stream-chunk",
-          audio,
-          index: i,
-          total: chunks.length,
-        });
-      }
-      self.postMessage({ type: "stream-end" });
-    } catch (error) {
-      self.postMessage({ type: "error", message: error.message, error });
-    }
+    // Taking ACTIVE_STREAM_ID here immediately supersedes any prior stream;
+    // the queue then serializes the actual TtsSession usage.
+    const streamId =
+      event.data.streamId ?? `stream-${Math.random().toString(36).slice(2)}`;
+    ACTIVE_STREAM_ID = streamId;
+    const text = String(event.data.text);
+    STREAM_QUEUE = STREAM_QUEUE.then(() => runStream(streamId, text));
     return;
   }
 
@@ -115,6 +122,49 @@ async function main(event) {
     .catch((error) => {
       self.postMessage({ type: "error", message: error.message, error }); // Will be an error.
     });
+}
+
+/**
+ * Renders one streamed prediction. Every message posted back carries the
+ * streamId so listeners can ignore chunks that belong to a different stream.
+ * @param {string} streamId
+ * @param {string} text
+ */
+async function runStream(streamId, text) {
+  try {
+    if (ACTIVE_STREAM_ID !== streamId) {
+      // Superseded or aborted while waiting in the queue - never started.
+      self.postMessage({ type: "stream-end", streamId, aborted: true });
+      return;
+    }
+    const chunks = splitIntoChunks(text);
+    if (chunks.length === 0) throw new Error("No text to predict on.");
+    self.postMessage({ type: "stream-start", streamId, total: chunks.length });
+    for (let i = 0; i < chunks.length; i++) {
+      if (ACTIVE_STREAM_ID !== streamId) break;
+      const audio = await PIPER_SESSION.predict(chunks[i]);
+      if (ACTIVE_STREAM_ID !== streamId) break; // lost ownership mid-predict - drop the stale chunk
+      self.postMessage({
+        type: "stream-chunk",
+        streamId,
+        audio,
+        index: i,
+        total: chunks.length,
+      });
+    }
+    self.postMessage({
+      type: "stream-end",
+      streamId,
+      aborted: ACTIVE_STREAM_ID !== streamId,
+    });
+  } catch (error) {
+    self.postMessage({
+      type: "error",
+      streamId,
+      message: error.message,
+      error,
+    });
+  }
 }
 
 /**

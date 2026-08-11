@@ -156,13 +156,22 @@ export default class PiperTTSClient {
    *  onEnd?: () => void,
    *  onError?: (message: string) => void,
    * }} handlers
+   * @returns {() => void} abort - stops generation of any remaining chunks and
+   * detaches the handlers. Call when the consuming component unmounts (eg:
+   * thread change) so the shared worker does not keep rendering audio.
    */
   streamAudioForText(textToSpeak, voiceId = null, handlers = {}) {
     const { onChunk, onEnd, onError } = handlers;
     const primaryWorker = this.#getWorker();
+    // Unique id for this stream - all worker messages for it carry the id, so
+    // this listener never reacts to chunks from a previous (superseded) stream
+    // and the abort below only targets this stream.
+    const streamId = `tts-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 
     const handleMessage = (event) => {
       const data = event.data;
+      // Ignore messages that belong to a different stream on the shared worker.
+      if (data?.streamId && data.streamId !== streamId) return;
       if (data?.type === "error") {
         primaryWorker.removeEventListener("message", handleMessage);
         showToast(
@@ -184,7 +193,11 @@ export default class PiperTTSClient {
       }
 
       if (data?.type === "stream-end") {
-        console.log("PiperTTSWorker stream progress: all chunks rendered.");
+        console.log(
+          data.aborted
+            ? "PiperTTSWorker stream progress: stream aborted."
+            : "PiperTTSWorker stream progress: all chunks rendered."
+        );
         primaryWorker.removeEventListener("message", handleMessage);
         onEnd?.();
         return;
@@ -204,9 +217,16 @@ export default class PiperTTSClient {
     primaryWorker.postMessage({
       type: "init",
       stream: true,
+      streamId,
       text: stripThinkTags(textToSpeak),
       voiceId: voiceId ?? this.voiceId,
     });
+
+    return () => {
+      console.log("PiperTTSWorker: abort requested - stopping stream.");
+      primaryWorker.removeEventListener("message", handleMessage);
+      primaryWorker.postMessage({ type: "abort", streamId });
+    };
   }
 
   async getAudioBlobForText(textToSpeak, voiceId = null, onProgress = null) {
