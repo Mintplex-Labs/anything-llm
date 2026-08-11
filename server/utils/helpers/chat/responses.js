@@ -2,6 +2,20 @@ const { v4: uuidv4 } = require("uuid");
 const moment = require("moment");
 const { isAbortError } = require("../abortSignals");
 
+/**
+ * Extract reasoning content from a message or delta, checking all known field names.
+ * @param {Object} messageOrDelta
+ * @returns {string|undefined}
+ */
+function extractReasoningContent(messageOrDelta) {
+  return (
+    messageOrDelta?.reasoning_content ||
+    messageOrDelta?.reasoning ||
+    messageOrDelta?.thinking ||
+    undefined
+  );
+}
+
 function clientAbortedHandler(resolve, fullText) {
   console.log(
     "\x1b[43m\x1b[34m[STREAM ABORTED]\x1b[0m Client requested to abort stream. Exiting LLM stream handler early."
@@ -53,10 +67,7 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
         const message = chunk?.choices?.[0];
         const token = message?.delta?.content;
 
-        // Reasoning token can be in different properties depending on the provider.
-        // eg: Cerebras uses `reasoning` instead of `reasoning_content` like OpenAI.
-        const reasoningToken =
-          message?.delta?.reasoning_content || message?.delta?.reasoning;
+        const reasoningToken = extractReasoningContent(message?.delta);
 
         // If we see usage metrics in the chunk, we can use them directly
         // instead of estimating them, but we only want to assign values if
@@ -399,4 +410,5 @@ module.exports = {
   clientAbortedHandler,
   formatChatHistory,
   safeJSONStringify,
+  extractReasoningContent,
 };
