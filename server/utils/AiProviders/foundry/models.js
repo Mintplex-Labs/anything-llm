@@ -42,7 +42,6 @@ class FoundryModels {
   /** Loading reads a multi-GB model off disk, so it gets a much longer leash. */
   static LOAD_TIMEOUT_MS = 300_000;
 
-
   static #log(text, ...args) {
     console.log(`\x1b[36m[FoundryModels]\x1b[0m ${text}`, ...args);
   }
@@ -303,7 +302,6 @@ class FoundryModels {
       return await this.#listFromOpenAiSurface(basePath);
     }
   }
-
 
   /**
    * @typedef {'unknown'|boolean} Capability
