@@ -118,7 +118,7 @@ class FoundryLLM {
     if (!isPrematureClose) return error.message;
 
     FoundryLLM.#loadedModels.delete(model);
-    return `${model} was unloaded by Foundry Local mid-response. Send the message again to reload it.`;
+    return "Foundry Local crashed trying to reply to this message. You should change the message or try again.";
   }
 
   #appendContext(contextTexts = []) {

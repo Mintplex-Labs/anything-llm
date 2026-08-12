@@ -107,6 +107,13 @@ class FoundryProvider extends InheritMultiple([Provider, UnTooled]) {
     };
   }
 
+  #isPrematureClose(error) {
+    return (
+      error?.code === "ERR_STREAM_PREMATURE_CLOSE" ||
+      /premature close/i.test(error?.message ?? "")
+    );
+  }
+
   // ---- UnTooled callbacks (used when native tool calling is not supported) ----
 
   async #handleFunctionCallChat({ messages = [] }) {
@@ -124,7 +131,9 @@ class FoundryProvider extends InheritMultiple([Provider, UnTooled]) {
           throw new Error("Microsoft Foundry Local chat: No results length!");
         return result.choices[0].message.content;
       })
-      .catch((_) => {
+      .catch((e) => {
+        if (this.#isPrematureClose(e))
+          throw new Error(FoundryLLM.explainStreamError(e, this.model));
         return null;
       });
   }
@@ -173,6 +182,8 @@ class FoundryProvider extends InheritMultiple([Provider, UnTooled]) {
     } catch (error) {
       console.error(error.message, error);
       if (error instanceof OpenAI.AuthenticationError) throw error;
+      if (this.#isPrematureClose(error))
+        throw new Error(FoundryLLM.explainStreamError(error, this.model));
       if (
         error instanceof OpenAI.RateLimitError ||
         error instanceof OpenAI.InternalServerError ||
@@ -222,6 +233,8 @@ class FoundryProvider extends InheritMultiple([Provider, UnTooled]) {
     } catch (error) {
       console.error(error.message, error);
       if (error instanceof OpenAI.AuthenticationError) throw error;
+      if (this.#isPrematureClose(error))
+        throw new Error(FoundryLLM.explainStreamError(error, this.model));
       if (
         error instanceof OpenAI.RateLimitError ||
         error instanceof OpenAI.InternalServerError ||

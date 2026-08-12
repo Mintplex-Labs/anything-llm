@@ -357,7 +357,7 @@ class FoundryModels {
           tools: entry.toolCalling,
           reasoning: entry.reasoning,
           imageGeneration: false,
-          vision: entry.vision,
+          vision: false, // entry.vision - currently no vision models work on any hardware for some reason,
         };
 
       const { models, source } = await this.listModels(basePath);
