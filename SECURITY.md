@@ -1,5 +1,7 @@
 # Security Policy
 
+> Notice: We are **not** accepting reports for open-computer. It is in a primitive basic state for development and is not production ready or deployable in any LTS sense.
+
 ## Supported Versions
 
 The supported versions are the current major version and its two most recent minor releases. Only the latest patch within each supported major/minor is in scope.
