@@ -6,7 +6,7 @@ import showToast from "@/utils/toast";
 import PreLoader from "@/components/Preloader";
 import OpenAiLogo from "@/media/llmprovider/openai.png";
 import GenericOpenAiLogo from "@/media/llmprovider/generic-openai.png";
-import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
+import PsionHQIcon from "@/media/logo/anything-llm-icon.png";
 import OpenAiWhisperOptions from "@/components/TranscriptionSelection/OpenAiOptions";
 import GenericOpenAiWhisperOptions from "@/components/TranscriptionSelection/GenericOpenAiOptions";
 import NativeTranscriptionOptions from "@/components/TranscriptionSelection/NativeTranscriptionOptions";
@@ -32,9 +32,9 @@ const PROVIDERS = [
       "Transcribe audio using any OpenAI-compatible API via custom configuration.",
   },
   {
-    name: "AnythingLLM Built-In",
+    name: "PsionHQ Built-In",
     value: "local",
-    logo: AnythingLLMIcon,
+    logo: PsionHQIcon,
     options: (settings) => <NativeTranscriptionOptions settings={settings} />,
     description: "Run a built-in whisper model on this instance privately.",
   },

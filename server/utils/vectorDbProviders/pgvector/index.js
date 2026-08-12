@@ -42,11 +42,11 @@ class PGVector extends VectorDatabase {
 
   /**
    * Get the table name for the PGVector database.
-   * - Defaults to "anythingllm_vectors" if no table name is provided.
+   * - Defaults to "PsionHQ_vectors" if no table name is provided.
    * @returns {string}
    */
   static tableName() {
-    return process.env.PGVECTOR_TABLE_NAME || "anythingllm_vectors";
+    return process.env.PGVECTOR_TABLE_NAME || "PsionHQ_vectors";
   }
 
   /**
@@ -171,7 +171,7 @@ class PGVector extends VectorDatabase {
 
     if (result.rows.length === 0)
       throw new Error(
-        `The table '${tableName}' was found but does not contain any columns or cannot be accessed by role. It cannot be used as an embedding table in AnythingLLM.`
+        `The table '${tableName}' was found but does not contain any columns or cannot be accessed by role. It cannot be used as an embedding table in PsionHQ.`
       );
 
     for (const rowDef of expectedSchema) {
@@ -196,7 +196,7 @@ class PGVector extends VectorDatabase {
 
   /**
    * Validate the connection to the database and verify that the table does not already exist.
-   * so that anythingllm can manage the table directly.
+   * so that PsionHQ can manage the table directly.
    *
    * @param {{connectionString: string | null, tableName: string | null}} params
    * @returns {Promise<{error: string | null, success: boolean}>}
@@ -300,7 +300,7 @@ class PGVector extends VectorDatabase {
   }
 
   /**
-   * Check if the anythingllm embedding table exists in the database
+   * Check if the PsionHQ embedding table exists in the database
    * @returns {Promise<boolean>}
    */
   async dbTableExists() {
@@ -814,7 +814,7 @@ class PGVector extends VectorDatabase {
   }
 
   /**
-   * Reset the entire vector database table associated with anythingllm
+   * Reset the entire vector database table associated with PsionHQ
    * @returns {Promise<{reset: boolean}>}
    */
   async reset() {

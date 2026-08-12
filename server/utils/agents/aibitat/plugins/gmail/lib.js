@@ -207,7 +207,7 @@ async function handleAttachments(context, messages) {
 
 /**
  * Gmail Bridge Library
- * Handles communication with the AnythingLLM Gmail Google Apps Script deployment.
+ * Handles communication with the PsionHQ Gmail Google Apps Script deployment.
  */
 class GmailBridge {
   #deploymentId = null;
@@ -347,7 +347,7 @@ class GmailBridge {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-AnythingLLM-UA": "AnythingLLM-Gmail-Agent/1.0",
+          "X-PsionHQ-UA": "PsionHQ-Gmail-Agent/1.0",
         },
         body: JSON.stringify({
           key: this.#apiKey,

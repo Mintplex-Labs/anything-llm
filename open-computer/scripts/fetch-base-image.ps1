@@ -8,7 +8,7 @@ $ProjectDir = Split-Path -Parent $ScriptDir
 $BaseImageDir = Join-Path (Join-Path $ProjectDir 'master') 'base_image'
 
 $BaseImageDate = "06_08_2026"
-$BaseUrl = if ($env:OPEN_COMPUTER_BASE_IMAGE_URL) { $env:OPEN_COMPUTER_BASE_IMAGE_URL } else { "https://cdn.anythingllm.com/support/open-computer/base-images/$BaseImageDate" }
+$BaseUrl = if ($env:OPEN_COMPUTER_BASE_IMAGE_URL) { $env:OPEN_COMPUTER_BASE_IMAGE_URL } else { "https://cdn.PsionHQ.com/support/open-computer/base-images/$BaseImageDate" }
 
 # ── Detect arch ───────────────────────────────────────────────────────────────
 

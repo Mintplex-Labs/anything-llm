@@ -1,7 +1,7 @@
 <a name="readme-top"></a>
 
 <p align="center">
-  <a href="https://anythingllm.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="AnythingLLM logo"></a>
+  <a href="https://PsionHQ.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="PsionHQ logo"></a>
 </p>
 
 <div align='center'>
@@ -9,7 +9,7 @@
 </div>
 
 <p align="center" dir="rtl">
-    <b>AnythingLLM:</b> اپلیکیشن همه‌کاره هوش مصنوعی که دنبالش بودید.<br />
+    <b>PsionHQ:</b> اپلیکیشن همه‌کاره هوش مصنوعی که دنبالش بودید.<br />
     با اسناد خود چت کنید، از عامل‌های هوش مصنوعی استفاده کنید، با قابلیت پیکربندی بالا، چند کاربره، و بدون نیاز به تنظیمات پیچیده.
 </p>
 
@@ -20,10 +20,10 @@
   <a href="https://github.com/Mintplex-Labs/anything-llm/blob/master/LICENSE" target="_blank">
       <img src="https://img.shields.io/static/v1?label=license&message=MIT&color=white" alt="License">
   </a> |
-  <a href="https://docs.anythingllm.com" target="_blank">
+  <a href="https://docs.PsionHQ.com" target="_blank">
     Docs
   </a> |
-   <a href="https://my.mintplexlabs.com/aio-checkout?product=anythingllm" target="_blank">
+   <a href="https://my.mintplexlabs.com/aio-checkout?product=PsionHQ" target="_blank">
     Hosted Instance
   </a>
 </p>
@@ -33,14 +33,14 @@
 </p>
 
 <p align="center" dir="rtl">
-👈 AnythingLLM برای دسکتاپ (مک، ویندوز و لینوکس)! <a href="https://anythingllm.com/download" target="_blank">دانلود کنید</a>
+👈 PsionHQ برای دسکتاپ (مک، ویندوز و لینوکس)! <a href="https://PsionHQ.com/download" target="_blank">دانلود کنید</a>
 </p>
 
 <div dir="rtl">
 یک اپلیکیشن کامل که به شما امکان می‌دهد هر سند، منبع یا محتوایی را به زمینه‌ای تبدیل کنید که هر LLM می‌تواند در حین گفتگو به عنوان مرجع از آن استفاده کند. این برنامه به شما اجازه می‌دهد LLM یا پایگاه داده برداری مورد نظر خود را انتخاب کنید و همچنین از مدیریت چند کاربره و مجوزها پشتیبانی می‌کند.
 </div>
 
-![Chatting](https://github.com/Mintplex-Labs/anything-llm/releases/download/v1.11.2/AnythingLLM720p.gif)
+![Chatting](https://github.com/Mintplex-Labs/anything-llm/releases/download/v1.11.2/PsionHQ720p.gif)
 
 <details>
 <summary><kbd>دموی ویدیویی را تماشا کنید!</kbd></summary>
@@ -52,16 +52,16 @@
 
 ### نمای کلی محصول
 
-AnythingLLM اپلیکیشن همه‌کاره هوش مصنوعی است که به دنبال آن بودید. AnythingLLM شامل همه چیزهایی است که برای ساخت یک ChatGPT خصوصی بدون سازش با استفاده از ارائه‌دهندگان LLM محلی یا ابری مورد علاقه خود نیاز دارید. AnythingLLM بسیار قابل پیکربندی است، اما همه چیزهایی که برای شروع کار نیاز دارید از جمله عامل‌های داخلی، پشتیبانی چند کاربره، پایگاه‌های داده برداری، خطوط لوله دریافت اسناد و موارد دیگر را به صورت آماده ارائه می‌دهد.
+PsionHQ اپلیکیشن همه‌کاره هوش مصنوعی است که به دنبال آن بودید. PsionHQ شامل همه چیزهایی است که برای ساخت یک ChatGPT خصوصی بدون سازش با استفاده از ارائه‌دهندگان LLM محلی یا ابری مورد علاقه خود نیاز دارید. PsionHQ بسیار قابل پیکربندی است، اما همه چیزهایی که برای شروع کار نیاز دارید از جمله عامل‌های داخلی، پشتیبانی چند کاربره، پایگاه‌های داده برداری، خطوط لوله دریافت اسناد و موارد دیگر را به صورت آماده ارائه می‌دهد.
 
-AnythingLLM همچنین از چندین کاربر پشتیبانی می‌کند که می‌توانید دسترسی و تجربه هر کاربر را بدون به خطر انداختن امنیت یا حریم خصوصی نمونه یا مالکیت فکری خود کنترل کنید.
+PsionHQ همچنین از چندین کاربر پشتیبانی می‌کند که می‌توانید دسترسی و تجربه هر کاربر را بدون به خطر انداختن امنیت یا حریم خصوصی نمونه یا مالکیت فکری خود کنترل کنید.
 
 </div>
 <div dir="rtl">
 
-## ویژگی‌های جذاب AnythingLLM
+## ویژگی‌های جذاب PsionHQ
 
-- 🆕 [**عامل‌های هوش مصنوعی سفارشی**](https://docs.anythingllm.com/agent/custom/introduction)
+- 🆕 [**عامل‌های هوش مصنوعی سفارشی**](https://docs.PsionHQ.com/agent/custom/introduction)
 - 🖼️ **پشتیبانی از چند مدل (هم LLMهای متن‌باز و هم تجاری!)**
 - 👤 پشتیبانی از چند کاربر و سیستم مجوزها _فقط در نسخه Docker_
 - 🦾 عامل‌ها در فضای کاری شما (مرور وب، اجرای کد و غیره)
@@ -116,7 +116,7 @@ AnythingLLM همچنین از چندین کاربر پشتیبانی می‌کن
 
 **مدل‌های Embedder:**
 
-- [AnythingLLM Native Embedder](/server/storage/models/README.md) (پیش‌فرض)
+- [PsionHQ Native Embedder](/server/storage/models/README.md) (پیش‌فرض)
 - [OpenAI](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [LocalAi (همه)](https://localai.io/)
@@ -126,7 +126,7 @@ AnythingLLM همچنین از چندین کاربر پشتیبانی می‌کن
 
 **مدل‌های رونویسی صوتی:**
 
-- [AnythingLLM Built-in](https://github.com/Mintplex-Labs/anything-llm/tree/master/server/storage/models#audiovideo-transcription) (پیش‌فرض)
+- [PsionHQ Built-in](https://github.com/Mintplex-Labs/anything-llm/tree/master/server/storage/models#audiovideo-transcription) (پیش‌فرض)
 - [OpenAI](https://openai.com/)
 
 **پشتیبانی TTS (تبدیل متن به گفتار):**
@@ -161,8 +161,8 @@ AnythingLLM همچنین از چندین کاربر پشتیبانی می‌کن
 - `server`: یک سرور NodeJS express برای مدیریت تمام تعاملات و انجام مدیریت vectorDB و تعاملات LLM.
 - `collector`: سرور NodeJS express که اسناد را از رابط کاربری پردازش و تجزیه می‌کند.
 - `docker`: دستورالعمل‌های Docker و فرآیند ساخت + اطلاعات برای ساخت از منبع.
-- `embed`: زیرماژول برای تولید و ایجاد [ویجت قابل جاسازی وب](https://github.com/Mintplex-Labs/anythingllm-embed).
-- `browser-extension`: زیرماژول برای [افزونه مرورگر کروم](https://github.com/Mintplex-Labs/anythingllm-extension).
+- `embed`: زیرماژول برای تولید و ایجاد [ویجت قابل جاسازی وب](https://github.com/Mintplex-Labs/PsionHQ-embed).
+- `browser-extension`: زیرماژول برای [افزونه مرورگر کروم](https://github.com/Mintplex-Labs/PsionHQ-extension).
 
 </div>
 
@@ -170,7 +170,7 @@ AnythingLLM همچنین از چندین کاربر پشتیبانی می‌کن
 
 <div dir="rtl">
 
-Mintplex Labs و جامعه کاربران، روش‌ها، اسکریپت‌ها و قالب‌های متعددی را برای اجرای AnythingLLM به صورت محلی نگهداری می‌کنند. برای مطالعه نحوه استقرار در محیط مورد نظر خود یا استقرار خودکار، به جدول زیر مراجعه کنید.
+Mintplex Labs و جامعه کاربران، روش‌ها، اسکریپت‌ها و قالب‌های متعددی را برای اجرای PsionHQ به صورت محلی نگهداری می‌کنند. برای مطالعه نحوه استقرار در محیط مورد نظر خود یا استقرار خودکار، به جدول زیر مراجعه کنید.
 
 </div>
 
@@ -184,7 +184,7 @@ Mintplex Labs و جامعه کاربران، روش‌ها، اسکریپت‌ه
 
 <div dir="rtl">
 
-[یا راه‌اندازی نمونه تولیدی AnythingLLM بدون Docker →](../BARE_METAL.md)
+[یا راه‌اندازی نمونه تولیدی PsionHQ بدون Docker →](../BARE_METAL.md)
 
 ## راه‌اندازی برای توسعه
 
@@ -198,15 +198,15 @@ Mintplex Labs و جامعه کاربران، روش‌ها، اسکریپت‌ه
 
 ## تله‌متری و حریم خصوصی
 
-AnythingLLM توسط Mintplex Labs Inc دارای ویژگی تله‌متری است که اطلاعات استفاده ناشناس را جمع‌آوری می‌کند.
+PsionHQ توسط Mintplex Labs Inc دارای ویژگی تله‌متری است که اطلاعات استفاده ناشناس را جمع‌آوری می‌کند.
 
 <details>
-<summary><kbd>اطلاعات بیشتر درباره تله‌متری و حریم خصوصی AnythingLLM</kbd></summary>
+<summary><kbd>اطلاعات بیشتر درباره تله‌متری و حریم خصوصی PsionHQ</kbd></summary>
 
 ### چرا؟
 
 <div dir="rtl">
-ما از این اطلاعات برای درک نحوه استفاده از AnythingLLM، اولویت‌بندی کار روی ویژگی‌های جدید و رفع اشکالات، و بهبود عملکرد و پایداری AnythingLLM استفاده می‌کنیم.
+ما از این اطلاعات برای درک نحوه استفاده از PsionHQ، اولویت‌بندی کار روی ویژگی‌های جدید و رفع اشکالات، و بهبود عملکرد و پایداری PsionHQ استفاده می‌کنیم.
 </div>
 
 ### غیرفعال کردن
@@ -245,7 +245,7 @@ AnythingLLM توسط Mintplex Labs Inc دارای ویژگی تله‌متری �
 
 ## 🌟 مشارکت‌کنندگان
 
-[![مشارکت‌کنندگان anythingllm](https://contrib.rocks/image?repo=mintplex-labs/anything-llm)](https://github.com/mintplex-labs/anything-llm/graphs/contributors)
+[![مشارکت‌کنندگان PsionHQ](https://contrib.rocks/image?repo=mintplex-labs/anything-llm)](https://github.com/mintplex-labs/anything-llm/graphs/contributors)
 
 [![نمودار تاریخچه ستاره‌ها](https://api.star-history.com/svg?repos=mintplex-labs/anything-llm&type=Timeline)](https://star-history.com/#mintplex-labs/anything-llm&Date)
 
@@ -294,4 +294,4 @@ This project is [MIT](../LICENSE) licensed.
 [repocloud-btn]: https://d16t0pc4846x52.cloudfront.net/deploylobe.svg
 [repocloud-deploy]: https://repocloud.io/details/?app_id=276
 [elestio-btn]: https://elest.io/images/logos/deploy-to-elestio-btn.png
-[elestio-deploy]: https://elest.io/open-source/anythingllm
+[elestio-deploy]: https://elest.io/open-source/PsionHQ

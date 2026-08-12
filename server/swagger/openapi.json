@@ -2,8 +2,8 @@
   "openapi": "3.0.0",
   "info": {
     "version": "1.0.0",
-    "title": "AnythingLLM Developer API",
-    "description": "API endpoints that enable programmatic reading, writing, and updating of your AnythingLLM instance. UI supplied by Swagger.io."
+    "title": "PsionHQ Developer API",
+    "description": "API endpoints that enable programmatic reading, writing, and updating of your PsionHQ instance. UI supplied by Swagger.io."
   },
   "servers": [
     {
@@ -849,7 +849,7 @@
         "tags": [
           "Documents"
         ],
-        "description": "Upload a new file to AnythingLLM to be parsed and prepared for embedding, with optional metadata.",
+        "description": "Upload a new file to PsionHQ to be parsed and prepared for embedding, with optional metadata.",
         "parameters": [],
         "responses": {
           "200": {
@@ -863,14 +863,14 @@
                     "error": null,
                     "documents": [
                       {
-                        "location": "custom-documents/anythingllm.txt-6e8be64c-c162-4b43-9997-b068c0071e8b.json",
-                        "name": "anythingllm.txt-6e8be64c-c162-4b43-9997-b068c0071e8b.json",
-                        "url": "file://Users/tim/Documents/anything-llm/collector/hotdir/anythingllm.txt",
-                        "title": "anythingllm.txt",
+                        "location": "custom-documents/PsionHQ.txt-6e8be64c-c162-4b43-9997-b068c0071e8b.json",
+                        "name": "PsionHQ.txt-6e8be64c-c162-4b43-9997-b068c0071e8b.json",
+                        "url": "file://Users/tim/Documents/anything-llm/collector/hotdir/PsionHQ.txt",
+                        "title": "PsionHQ.txt",
                         "docAuthor": "Unknown",
                         "description": "Unknown",
                         "docSource": "a text file uploaded by the user.",
-                        "chunkSource": "anythingllm.txt",
+                        "chunkSource": "PsionHQ.txt",
                         "published": "1/16/2024, 3:07:00 PM",
                         "wordCount": 93,
                         "token_count_estimate": 115
@@ -945,7 +945,7 @@
         "tags": [
           "Documents"
         ],
-        "description": "Upload a new file to a specific folder in AnythingLLM to be parsed and prepared for embedding. If the folder does not exist, it will be created.",
+        "description": "Upload a new file to a specific folder in PsionHQ to be parsed and prepared for embedding. If the folder does not exist, it will be created.",
         "parameters": [
           {
             "name": "folderName",
@@ -970,14 +970,14 @@
                     "error": null,
                     "documents": [
                       {
-                        "location": "custom-documents/anythingllm.txt-6e8be64c-c162-4b43-9997-b068c0071e8b.json",
-                        "name": "anythingllm.txt-6e8be64c-c162-4b43-9997-b068c0071e8b.json",
-                        "url": "file://Users/tim/Documents/anything-llm/collector/hotdir/anythingllm.txt",
-                        "title": "anythingllm.txt",
+                        "location": "custom-documents/PsionHQ.txt-6e8be64c-c162-4b43-9997-b068c0071e8b.json",
+                        "name": "PsionHQ.txt-6e8be64c-c162-4b43-9997-b068c0071e8b.json",
+                        "url": "file://Users/tim/Documents/anything-llm/collector/hotdir/PsionHQ.txt",
+                        "title": "PsionHQ.txt",
                         "docAuthor": "Unknown",
                         "description": "Unknown",
                         "docSource": "a text file uploaded by the user.",
-                        "chunkSource": "anythingllm.txt",
+                        "chunkSource": "PsionHQ.txt",
                         "published": "1/16/2024, 3:07:00 PM",
                         "wordCount": 93,
                         "token_count_estimate": 115
@@ -1063,7 +1063,7 @@
         "tags": [
           "Documents"
         ],
-        "description": "Upload a valid URL for AnythingLLM to scrape and prepare for embedding. Optionally, specify a comma-separated list of workspace slugs to embed the document into post-upload.",
+        "description": "Upload a valid URL for PsionHQ to scrape and prepare for embedding. Optionally, specify a comma-separated list of workspace slugs to embed the document into post-upload.",
         "parameters": [],
         "responses": {
           "200": {
@@ -1083,10 +1083,10 @@
                         "docAuthor": "no author found",
                         "description": "No description found.",
                         "docSource": "URL link uploaded by the user.",
-                        "chunkSource": "https:anythingllm.com.html",
+                        "chunkSource": "https:PsionHQ.com.html",
                         "published": "1/16/2024, 3:46:33 PM",
                         "wordCount": 252,
-                        "pageContent": "AnythingLLM is the best....",
+                        "pageContent": "PsionHQ is the best....",
                         "token_count_estimate": 447,
                         "location": "custom-documents/url-useanything_com-c530dbe6-bff1-4b9e-b87f-710d539d20bc.json"
                       }
@@ -1126,7 +1126,7 @@
               "schema": {
                 "type": "object",
                 "example": {
-                  "link": "https://anythingllm.com",
+                  "link": "https://PsionHQ.com",
                   "addToWorkspaces": "workspace1,workspace2",
                   "scraperHeaders": {
                     "Authorization": "Bearer token123",
@@ -1173,7 +1173,7 @@
                         "chunkSource": "no chunk source specified",
                         "published": "1/16/2024, 3:46:33 PM",
                         "wordCount": 252,
-                        "pageContent": "AnythingLLM is the best....",
+                        "pageContent": "PsionHQ is the best....",
                         "token_count_estimate": 447,
                         "location": "custom-documents/raw-my-doc-text-c530dbe6-bff1-4b9e-b87f-710d539d20bc.json"
                       }
@@ -1213,7 +1213,7 @@
               "schema": {
                 "type": "object",
                 "example": {
-                  "textContent": "This is the raw text that will be saved as a document in AnythingLLM.",
+                  "textContent": "This is the raw text that will be saved as a document in PsionHQ.",
                   "addToWorkspaces": "workspace1,workspace2",
                   "metadata": {
                     "title": "This key is required. See in /server/endpoints/api/document/index.js:287",
@@ -1485,7 +1485,7 @@
         "tags": [
           "Documents"
         ],
-        "description": "Get a single document by its unique AnythingLLM document name",
+        "description": "Get a single document by its unique PsionHQ document name",
         "parameters": [
           {
             "name": "docName",
@@ -2173,12 +2173,12 @@
                     "history": [
                       {
                         "role": "user",
-                        "content": "What is AnythingLLM?",
+                        "content": "What is PsionHQ?",
                         "sentAt": 1692851630
                       },
                       {
                         "role": "assistant",
-                        "content": "AnythingLLM is a platform that allows you to convert notes, PDFs, and other source materials into a chatbot. It ensures privacy, cites its answers, and allows multiple people to interact with the same documents simultaneously. It is particularly useful for businesses to enhance the visibility and readability of various written communications such as SOPs, contracts, and sales calls. You can try it out with a free trial to see if it meets your business needs.",
+                        "content": "PsionHQ is a platform that allows you to convert notes, PDFs, and other source materials into a chatbot. It ensures privacy, cites its answers, and allows multiple people to interact with the same documents simultaneously. It is particularly useful for businesses to enhance the visibility and readability of various written communications such as SOPs, contracts, and sales calls. You can try it out with a free trial to see if it meets your business needs.",
                         "sources": [
                           {
                             "source": "object about source document and snippets used"
@@ -2289,7 +2289,7 @@
                   "custom-documents/my-pdf.pdf-hash.json"
                 ],
                 "deletes": [
-                  "custom-documents/anythingllm.txt-hash.json"
+                  "custom-documents/PsionHQ.txt-hash.json"
                 ]
               }
             }
@@ -2381,7 +2381,7 @@
                     "textResponse": "Response to your query",
                     "sources": [
                       {
-                        "title": "anythingllm.txt",
+                        "title": "PsionHQ.txt",
                         "chunk": "This is a context chunk used in the answer of the prompt by the LLM,"
                       }
                     ],
@@ -2415,12 +2415,12 @@
           }
         },
         "requestBody": {
-          "description": "Send a prompt to the workspace and the type of conversation (automatic, query or chat).<br/><b>Query:</b> Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.<br/><b>Automatic:</b> Will use tool-calling if the provider supports native tool calling without needing to invoke @agent.<br/><b>Chat:</b> Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.<br/><b>Attachments:</b> Can include images and documents.<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Document attachments:</b> must have the mime type <code>application/anythingllm-document</code> - otherwise it will be passed to the LLM as an image and may fail to process. This uses the built-in document processor to first parse the document to text before injecting it into the context window.",
+          "description": "Send a prompt to the workspace and the type of conversation (automatic, query or chat).<br/><b>Query:</b> Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.<br/><b>Automatic:</b> Will use tool-calling if the provider supports native tool calling without needing to invoke @agent.<br/><b>Chat:</b> Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.<br/><b>Attachments:</b> Can include images and documents.<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Document attachments:</b> must have the mime type <code>application/PsionHQ-document</code> - otherwise it will be passed to the LLM as an image and may fail to process. This uses the built-in document processor to first parse the document to text before injecting it into the context window.",
           "required": true,
           "content": {
             "application/json": {
               "example": {
-                "message": "What is AnythingLLM?",
+                "message": "What is PsionHQ?",
                 "mode": "automatic | query | chat",
                 "sessionId": "identifier-to-partition-chats-by-external-id",
                 "attachments": [
@@ -2431,7 +2431,7 @@
                   },
                   {
                     "name": "this is a document.pdf",
-                    "mime": "application/anythingllm-document",
+                    "mime": "application/PsionHQ-document",
                     "contentString": "data:application/pdf;base64,iVBORw0KGgoAAAANSUhEUgAA..."
                   }
                 ],
@@ -2490,7 +2490,7 @@
                       "textResponse": "final chunk of LLM output!",
                       "sources": [
                         {
-                          "title": "anythingllm.txt",
+                          "title": "PsionHQ.txt",
                           "chunk": "This is a context chunk used in the answer of the prompt by the LLM. This will only return in the final chunk."
                         }
                       ],
@@ -2523,12 +2523,12 @@
           }
         },
         "requestBody": {
-          "description": "Send a prompt to the workspace and the type of conversation (automatic, query or chat).<br/><b>Query:</b> Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.<br/><b>Automatic:</b> Will use tool-calling if the provider supports native tool calling without needing to invoke @agent.<br/><b>Chat:</b> Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.<br/><b>Attachments:</b> Can include images and documents.<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Document attachments:</b> must have the mime type <code>application/anythingllm-document</code> - otherwise it will be passed to the LLM as an image and may fail to process. This uses the built-in document processor to first parse the document to text before injecting it into the context window.",
+          "description": "Send a prompt to the workspace and the type of conversation (automatic, query or chat).<br/><b>Query:</b> Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.<br/><b>Automatic:</b> Will use tool-calling if the provider supports native tool calling without needing to invoke @agent.<br/><b>Chat:</b> Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.<br/><b>Attachments:</b> Can include images and documents.<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Document attachments:</b> must have the mime type <code>application/PsionHQ-document</code> - otherwise it will be passed to the LLM as an image and may fail to process. This uses the built-in document processor to first parse the document to text before injecting it into the context window.",
           "required": true,
           "content": {
             "application/json": {
               "example": {
-                "message": "What is AnythingLLM?",
+                "message": "What is PsionHQ?",
                 "mode": "automatic | query | chat",
                 "sessionId": "identifier-to-partition-chats-by-external-id",
                 "attachments": [
@@ -2539,7 +2539,7 @@
                   },
                   {
                     "name": "this is a document.pdf",
-                    "mime": "application/anythingllm-document",
+                    "mime": "application/PsionHQ-document",
                     "contentString": "data:application/pdf;base64,iVBORw0KGgoAAAANSUhEUgAA..."
                   }
                 ],
@@ -2830,11 +2830,11 @@
                   "example": [
                     {
                       "role": "user",
-                      "content": "What is AnythinglLM?"
+                      "content": "What is PsionHQ?"
                     },
                     {
                       "role": "assistant",
-                      "content": "AnythingLLM is a knowledge graph and vector database management system built using NodeJS express server. It provides an interface for handling all interactions, including vectorDB management and LLM (Language Model) interactions."
+                      "content": "PsionHQ is a knowledge graph and vector database management system built using NodeJS express server. It provides an interface for handling all interactions, including vectorDB management and LLM (Language Model) interactions."
                     }
                   ]
                 }
@@ -3178,12 +3178,12 @@
                     "history": [
                       {
                         "role": "user",
-                        "content": "What is AnythingLLM?",
+                        "content": "What is PsionHQ?",
                         "sentAt": 1692851630
                       },
                       {
                         "role": "assistant",
-                        "content": "AnythingLLM is a platform that allows you to convert notes, PDFs, and other source materials into a chatbot. It ensures privacy, cites its answers, and allows multiple people to interact with the same documents simultaneously. It is particularly useful for businesses to enhance the visibility and readability of various written communications such as SOPs, contracts, and sales calls. You can try it out with a free trial to see if it meets your business needs.",
+                        "content": "PsionHQ is a platform that allows you to convert notes, PDFs, and other source materials into a chatbot. It ensures privacy, cites its answers, and allows multiple people to interact with the same documents simultaneously. It is particularly useful for businesses to enhance the visibility and readability of various written communications such as SOPs, contracts, and sales calls. You can try it out with a free trial to see if it meets your business needs.",
                         "sources": [
                           {
                             "source": "object about source document and snippets used"
@@ -3259,7 +3259,7 @@
                     "textResponse": "Response to your query",
                     "sources": [
                       {
-                        "title": "anythingllm.txt",
+                        "title": "PsionHQ.txt",
                         "chunk": "This is a context chunk used in the answer of the prompt by the LLM."
                       }
                     ],
@@ -3301,7 +3301,7 @@
           "content": {
             "application/json": {
               "example": {
-                "message": "What is AnythingLLM?",
+                "message": "What is PsionHQ?",
                 "mode": "query | chat",
                 "userId": 1,
                 "attachments": [
@@ -3376,7 +3376,7 @@
                       "textResponse": "final chunk of LLM output!",
                       "sources": [
                         {
-                          "title": "anythingllm.txt",
+                          "title": "PsionHQ.txt",
                           "chunk": "This is a context chunk used in the answer of the prompt by the LLM. This will only return in the final chunk."
                         }
                       ],
@@ -3414,7 +3414,7 @@
           "content": {
             "application/json": {
               "example": {
-                "message": "What is AnythingLLM?",
+                "message": "What is PsionHQ?",
                 "mode": "query | chat",
                 "userId": 1,
                 "attachments": [
@@ -3425,7 +3425,7 @@
                   },
                   {
                     "name": "this is a document.pdf",
-                    "mime": "application/anythingllm-document",
+                    "mime": "application/PsionHQ-document",
                     "contentString": "data:application/pdf;base64,iVBORw0KGgoAAAANSUhEUgAA..."
                   }
                 ],
@@ -3644,7 +3644,7 @@
           }
         },
         "requestBody": {
-          "description": "Send a prompt to the workspace with full use of documents as if sending a chat in AnythingLLM. Only supports some values of OpenAI API. See example below.",
+          "description": "Send a prompt to the workspace with full use of documents as if sending a chat in PsionHQ. Only supports some values of OpenAI API. See example below.",
           "required": true,
           "content": {
             "application/json": {
@@ -3656,11 +3656,11 @@
                   },
                   {
                     "role": "user",
-                    "content": "What is AnythingLLM?"
+                    "content": "What is PsionHQ?"
                   },
                   {
                     "role": "assistant",
-                    "content": "AnythingLLM is...."
+                    "content": "PsionHQ is...."
                   },
                   {
                     "role": "user",
@@ -3805,7 +3805,7 @@
         "tags": [
           "OpenAI Compatible Endpoints"
         ],
-        "description": "List all the vector database collections connected to AnythingLLM. These are essentially workspaces but return their unique vector db identifier - this is the same as the workspace slug.",
+        "description": "List all the vector database collections connected to PsionHQ. These are essentially workspaces but return their unique vector db identifier - this is the same as the workspace slug.",
         "parameters": [],
         "responses": {
           "200": {

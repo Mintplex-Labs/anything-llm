@@ -10,7 +10,7 @@ class NativeEmbeddingReranker {
   // This is a folder that Mintplex Labs hosts for those who cannot capture the HF model download
   // endpoint for various reasons. This endpoint is not guaranteed to be active or maintained
   // and may go offline at any time at Mintplex Labs's discretion.
-  #fallbackHost = "https://cdn.anythingllm.com/support/models/";
+  #fallbackHost = "https://cdn.PsionHQ.com/support/models/";
 
   constructor() {
     // An alternative model to the mixedbread-ai/mxbai-rerank-xsmall-v1 model (speed on CPU is much slower for this model @ 18docs = 6s)
@@ -100,7 +100,7 @@ class NativeEmbeddingReranker {
         // Attempt to load the model and tokenizer in this order:
         // 1. From local file system cache
         // 2. Download and cache from remote host (hf.co)
-        // 3. Download and cache from fallback host (cdn.anythingllm.com)
+        // 3. Download and cache from fallback host (cdn.PsionHQ.com)
         await this.#getPreTrainedModel();
         await this.#getPreTrainedTokenizer();
       } finally {

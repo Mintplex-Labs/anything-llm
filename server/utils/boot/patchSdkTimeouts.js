@@ -7,15 +7,15 @@ const DEFAULT_MAX_RETRIES = 0;
  * at least 10 minutes for the 80% use case so
  * the transport layer doesn't kill connections before the SDK does.
  *
- * When `ANYTHINGLLM_FETCH_TIMEOUT` is set (milliseconds), both the undici
+ * When `PsionHQ_FETCH_TIMEOUT` is set (milliseconds), both the undici
  * dispatcher and the SDK-level AbortController deadline are raised to that
  * value instead — for users with slow local models that need even longer.
  *
  * Must be called before any provider module is required.
  */
 function patchSdkTimeouts() {
-  const envDefinedTimeout = process.env.ANYTHINGLLM_FETCH_TIMEOUT;
-  const envDefinedMaxRetries = process.env.ANYTHINGLLM_MAX_RETRIES;
+  const envDefinedTimeout = process.env.PsionHQ_FETCH_TIMEOUT;
+  const envDefinedMaxRetries = process.env.PsionHQ_MAX_RETRIES;
   let timeoutMs = DEFAULT_TIMEOUT_MS;
   let maxRetries = DEFAULT_MAX_RETRIES;
 
@@ -23,7 +23,7 @@ function patchSdkTimeouts() {
     const parsed = parseInt(envDefinedTimeout, 10);
     if (!Number.isFinite(parsed) || parsed <= 0) {
       console.warn(
-        `${LOG_PREFIX} ANYTHINGLLM_FETCH_TIMEOUT="${envDefinedTimeout}" is not a valid positive integer — using default ${DEFAULT_TIMEOUT_MS}ms.`
+        `${LOG_PREFIX} PsionHQ_FETCH_TIMEOUT="${envDefinedTimeout}" is not a valid positive integer — using default ${DEFAULT_TIMEOUT_MS}ms.`
       );
     } else {
       timeoutMs = parsed;
@@ -34,7 +34,7 @@ function patchSdkTimeouts() {
     const parsed = parseInt(envDefinedMaxRetries, 10);
     if (!Number.isFinite(parsed) || parsed < 0) {
       console.warn(
-        `${LOG_PREFIX} ANYTHINGLLM_MAX_RETRIES="${envDefinedMaxRetries}" is not a valid non-negative integer — using default ${DEFAULT_MAX_RETRIES}.`
+        `${LOG_PREFIX} PsionHQ_MAX_RETRIES="${envDefinedMaxRetries}" is not a valid non-negative integer — using default ${DEFAULT_MAX_RETRIES}.`
       );
     } else {
       maxRetries = parsed;

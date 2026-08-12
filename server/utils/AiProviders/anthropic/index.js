@@ -9,7 +9,7 @@ const { MODEL_MAP } = require("../modelMap");
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
-const { getAnythingLLMUserAgent } = require("../../../endpoints/utils");
+const { getPsionHQUserAgent } = require("../../../endpoints/utils");
 
 class AnthropicLLM {
   /**
@@ -34,7 +34,7 @@ class AnthropicLLM {
     const anthropic = new AnthropicAI({
       apiKey: process.env.ANTHROPIC_API_KEY,
       defaultHeaders: {
-        "User-Agent": getAnythingLLMUserAgent(),
+        "User-Agent": getPsionHQUserAgent(),
       },
     });
     this.anthropic = anthropic;

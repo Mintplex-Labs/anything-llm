@@ -186,8 +186,8 @@ function inferCellType(value) {
 }
 
 /**
- * Applies AnythingLLM branding to an Excel workbook.
- * Adds a subtle "Created with AnythingLLM" text row below the data on each sheet.
+ * Applies PsionHQ branding to an Excel workbook.
+ * Adds a subtle "Created with PsionHQ" text row below the data on each sheet.
  * @param {import('exceljs').Workbook} workbook - The ExcelJS workbook instance
  */
 function applyBranding(workbook) {
@@ -202,7 +202,7 @@ function applyBranding(workbook) {
     }
 
     const brandingCell = worksheet.getCell(brandingRowNum, 1);
-    brandingCell.value = "Created with AnythingLLM";
+    brandingCell.value = "Created with PsionHQ";
     brandingCell.font = {
       italic: true,
       size: 9,

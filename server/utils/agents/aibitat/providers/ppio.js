@@ -19,8 +19,8 @@ class PPIOProvider extends InheritMultiple([Provider, UnTooled]) {
       baseURL: "https://api.ppinfra.com/v3/openai",
       apiKey: process.env.PPIO_API_KEY,
       defaultHeaders: {
-        "HTTP-Referer": "https://anythingllm.com",
-        "X-API-Source": "anythingllm",
+        "HTTP-Referer": "https://PsionHQ.com",
+        "X-API-Source": "PsionHQ",
       },
     });
 

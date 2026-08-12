@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
+import PsionHQIcon from "@/media/logo/anything-llm-icon.png";
 import WorkspaceLLMItem from "./WorkspaceLLMItem";
 import { ALL_LLM_PROVIDERS } from "@/pages/GeneralSettings/LLMPreference";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -16,7 +16,7 @@ const FREE_FORM_LLM_SELECTION = ["azure"];
 
 // Some providers do not support model selection via /models
 // and only have a fixed single-model they can use.
-const NO_MODEL_SELECTION = ["default", "anythingllm-router"];
+const NO_MODEL_SELECTION = ["default", "PsionHQ-router"];
 
 // Some providers we just fully disable for ease of use.
 const DISABLED_PROVIDERS = [];
@@ -24,7 +24,7 @@ const DISABLED_PROVIDERS = [];
 const LLM_DEFAULT = {
   name: "System default",
   value: "default",
-  logo: AnythingLLMIcon,
+  logo: PsionHQIcon,
   options: () => <React.Fragment />,
   description: "Use the system LLM preference for this workspace.",
   requiredConfig: [],
@@ -170,7 +170,7 @@ export default function WorkspaceLLMSelection({
 
 // TODO: Add this to agent selector as well as make generic component.
 function ModelSelector({ selectedLLM, workspace, setHasChanges }) {
-  if (selectedLLM === "anythingllm-router") {
+  if (selectedLLM === "PsionHQ-router") {
     return (
       <RouterSelection workspace={workspace} setHasChanges={setHasChanges} />
     );

@@ -11,7 +11,7 @@ const { User } = require("../../../models/user");
  */
 async function validDeviceToken(request, response, next) {
   try {
-    const token = request.header("x-anythingllm-mobile-device-token");
+    const token = request.header("x-PsionHQ-mobile-device-token");
     if (!token)
       return response.status(400).json({ error: "Device token is required" });
 

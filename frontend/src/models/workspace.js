@@ -6,7 +6,7 @@ import { v4 } from "uuid";
 import { ABORT_STREAM_EVENT } from "@/utils/chat";
 
 const Workspace = {
-  workspaceOrderStorageKey: "anythingllm-workspace-order",
+  workspaceOrderStorageKey: "PsionHQ-workspace-order",
   /** The maximum percentage of the context window that can be used for attachments */
   maxContextWindowLimit: 0.8,
 

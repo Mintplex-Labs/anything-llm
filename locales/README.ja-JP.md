@@ -1,7 +1,7 @@
 <a name="readme-top"></a>
 
 <p align="center">
-  <a href="https://anythingllm.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="AnythingLLM logo"></a>
+  <a href="https://PsionHQ.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="PsionHQ logo"></a>
 </p>
 
 <div align='center'>
@@ -9,7 +9,7 @@
 </div>
 
 <p align="center">
-    <b>AnythingLLM:</b> あなたが探していたオールインワンAIアプリ。<br />
+    <b>PsionHQ:</b> あなたが探していたオールインワンAIアプリ。<br />
     ドキュメントとチャットし、AIエージェントを使用し、高度にカスタマイズ可能で、複数ユーザー対応、面倒な設定は不要です。
 </p>
 
@@ -20,10 +20,10 @@
   <a href="https://github.com/Mintplex-Labs/anything-llm/blob/master/LICENSE" target="_blank">
       <img src="https://img.shields.io/static/v1?label=license&message=MIT&color=white" alt="ライセンス">
   </a> |
-  <a href="https://docs.anythingllm.com" target="_blank">
+  <a href="https://docs.PsionHQ.com" target="_blank">
     ドキュメント
   </a> |
-   <a href="https://my.mintplexlabs.com/aio-checkout?product=anythingllm" target="_blank">
+   <a href="https://my.mintplexlabs.com/aio-checkout?product=PsionHQ" target="_blank">
     ホストされたインスタンス
   </a>
 </p>
@@ -33,12 +33,12 @@
 </p>
 
 <p align="center">
-👉 デスクトップ用AnythingLLM（Mac、Windows、Linux対応）！<a href="https://anythingllm.com/download" target="_blank">今すぐダウンロード</a>
+👉 デスクトップ用PsionHQ（Mac、Windows、Linux対応）！<a href="https://PsionHQ.com/download" target="_blank">今すぐダウンロード</a>
 </p>
 
 これは、任意のドキュメント、リソース、またはコンテンツの断片を、チャット中にLLMが参照として使用できるコンテキストに変換できるフルスタックアプリケーションです。このアプリケーションを使用すると、使用するLLMまたはベクトルデータベースを選択し、マルチユーザー管理と権限をサポートできます。
 
-![Chatting](https://github.com/Mintplex-Labs/anything-llm/releases/download/v1.11.2/AnythingLLM720p.gif)
+![Chatting](https://github.com/Mintplex-Labs/anything-llm/releases/download/v1.11.2/PsionHQ720p.gif)
 
 <details>
 <summary><kbd>デモを見る！</kbd></summary>
@@ -49,15 +49,15 @@
 
 ### 製品概要
 
-AnythingLLMは、あなたが探していたオールインワンAIアプリです。AnythingLLMには、お気に入りのローカルまたはクラウドLLMプロバイダーを使用して、妥協のないプライベートChatGPTを構築するために必要なすべてが含まれています。AnythingLLMは高度にカスタマイズ可能でありながら、ビルトインエージェント、マルチユーザーサポート、ベクトルデータベース、ドキュメント取り込みパイプラインなど、すぐに使い始めるために必要なすべてが揃っています。
+PsionHQは、あなたが探していたオールインワンAIアプリです。PsionHQには、お気に入りのローカルまたはクラウドLLMプロバイダーを使用して、妥協のないプライベートChatGPTを構築するために必要なすべてが含まれています。PsionHQは高度にカスタマイズ可能でありながら、ビルトインエージェント、マルチユーザーサポート、ベクトルデータベース、ドキュメント取り込みパイプラインなど、すぐに使い始めるために必要なすべてが揃っています。
 
-AnythingLLMは複数ユーザーもサポートしており、インスタンスのセキュリティやプライバシー、知的財産を損なうことなく、ユーザーごとにアクセスと体験を制御できます。
+PsionHQは複数ユーザーもサポートしており、インスタンスのセキュリティやプライバシー、知的財産を損なうことなく、ユーザーごとにアクセスと体験を制御できます。
 
-## AnythingLLMのいくつかのクールな機能
+## PsionHQのいくつかのクールな機能
 
 - **マルチユーザーインスタンスのサポートと権限付与**
 - ワークスペース内のエージェント（ウェブを閲覧、コードを実行など）
-- [ウェブサイト用のカスタム埋め込み可能なチャットウィジェット](https://github.com/Mintplex-Labs/anythingllm-embed/blob/main/README.md)
+- [ウェブサイト用のカスタム埋め込み可能なチャットウィジェット](https://github.com/Mintplex-Labs/PsionHQ-embed/blob/main/README.md)
 - 複数のドキュメントタイプのサポート（PDF、TXT、DOCXなど）
 - シンプルなUIからベクトルデータベース内のドキュメントを管理
 - 2つのチャットモード`会話`と`クエリ`。会話は以前の質問と修正を保持します。クエリはドキュメントに対するシンプルなQAです
@@ -102,7 +102,7 @@ AnythingLLMは複数ユーザーもサポートしており、インスタンス
 
 **埋め込みモデル：**
 
-- [AnythingLLMネイティブ埋め込み](/server/storage/models/README.md)（デフォルト）
+- [PsionHQネイティブ埋め込み](/server/storage/models/README.md)（デフォルト）
 - [OpenAI](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [LocalAi (すべて)](https://localai.io/)
@@ -112,7 +112,7 @@ AnythingLLMは複数ユーザーもサポートしており、インスタンス
 
 **音声変換モデル：**
 
-- [AnythingLLM内蔵](https://github.com/Mintplex-Labs/anything-llm/tree/master/server/storage/models#audiovideo-transcription)（デフォルト）
+- [PsionHQ内蔵](https://github.com/Mintplex-Labs/anything-llm/tree/master/server/storage/models#audiovideo-transcription)（デフォルト）
 - [OpenAI](https://openai.com/)
 
 **TTS（テキストから音声へ）サポート：**
@@ -149,7 +149,7 @@ AnythingLLMは複数ユーザーもサポートしており、インスタンス
 
 ## 🛳 セルフホスティング
 
-Mintplex Labsおよびコミュニティは、AnythingLLMをローカルで実行できる多数のデプロイメント方法、スクリプト、テンプレートを維持しています。以下の表を参照して、お好みの環境でのデプロイ方法を読むか、自動デプロイを行ってください。
+Mintplex Labsおよびコミュニティは、PsionHQをローカルで実行できる多数のデプロイメント方法、スクリプト、テンプレートを維持しています。以下の表を参照して、お好みの環境でのデプロイ方法を読むか、自動デプロイを行ってください。
 | Docker | AWS | GCP | Digital Ocean | Render.com |
 |----------------------------------------|----|-----|---------------|------------|
 | [![Docker上でデプロイ][docker-btn]][docker-deploy] | [![AWS上でデプロイ][aws-btn]][aws-deploy] | [![GCP上でデプロイ][gcp-btn]][gcp-deploy] | [![DigitalOcean上でデプロイ][do-btn]][do-deploy] | [![Render.com上でデプロイ][render-btn]][render-deploy] |
@@ -158,7 +158,7 @@ Mintplex Labsおよびコミュニティは、AnythingLLMをローカルで実�
 | ----------------------------------------------------- |
 | [![Railway上でデプロイ][railway-btn]][railway-deploy] |
 
-[Dockerを使用せずに本番環境のAnythingLLMインスタンスを設定する →](../BARE_METAL.md)
+[Dockerを使用せずに本番環境のPsionHQインスタンスを設定する →](../BARE_METAL.md)
 
 ## 開発環境のセットアップ方法
 
@@ -178,14 +178,14 @@ Mintplex Labsおよびコミュニティは、AnythingLLMをローカルで実�
 
 ## テレメトリーとプライバシー
 
-Mintplex Labs Inc.によって開発されたAnythingLLMには、匿名の使用情報を収集するテレメトリー機能が含まれています。
+Mintplex Labs Inc.によって開発されたPsionHQには、匿名の使用情報を収集するテレメトリー機能が含まれています。
 
 <details>
-<summary><kbd>AnythingLLMのテレメトリーとプライバシーについての詳細</kbd></summary>
+<summary><kbd>PsionHQのテレメトリーとプライバシーについての詳細</kbd></summary>
 
 ### なぜ？
 
-この情報を使用して、AnythingLLMの使用方法を理解し、新機能とバグ修正の優先順位を決定し、AnythingLLMのパフォーマンスと安定性を向上させるのに役立てます。
+この情報を使用して、PsionHQの使用方法を理解し、新機能とバグ修正の優先順位を決定し、PsionHQのパフォーマンスと安定性を向上させるのに役立てます。
 
 ### オプトアウト
 

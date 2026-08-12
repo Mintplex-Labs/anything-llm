@@ -1,9 +1,9 @@
 const { ModelRouterService } = require("../../router");
 const { getLLMProvider } = require("../../helpers");
 
-class AnythingLLMModelRouter {
+class PsionHQModelRouter {
   constructor(workspace, embedder = null) {
-    this.className = "AnythingLLMModelRouter";
+    this.className = "PsionHQModelRouter";
     this.workspace = workspace;
     this.embedder = embedder;
     this.routerService = ModelRouterService.getInstance();
@@ -207,4 +207,4 @@ class AnythingLLMModelRouter {
   }
 }
 
-module.exports = { AnythingLLMModelRouter };
+module.exports = { PsionHQModelRouter };

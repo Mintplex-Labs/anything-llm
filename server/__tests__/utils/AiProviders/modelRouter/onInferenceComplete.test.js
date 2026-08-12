@@ -6,7 +6,7 @@ const {
   modelRouterCooldown,
 } = require("../../../../utils/agents/aibitat/plugins/model-router-cooldown.js");
 const {
-  AnythingLLMModelRouter,
+  PsionHQModelRouter,
 } = require("../../../../utils/AiProviders/modelRouter/index.js");
 
 /**
@@ -32,13 +32,13 @@ const NON_FALLBACK_ROUTE = {
 };
 
 function makeRouter() {
-  const router = new AnythingLLMModelRouter({ slug: "test-ws", name: "Test" });
+  const router = new PsionHQModelRouter({ slug: "test-ws", name: "Test" });
   router._routeKey = "user:1|test-ws|thread:1";
   router.resolvedRoute = { ...NON_FALLBACK_ROUTE };
   return router;
 }
 
-describe("AnythingLLMModelRouter.onInferenceComplete", () => {
+describe("PsionHQModelRouter.onInferenceComplete", () => {
   it("re-stamps the sticky route for a real (non-fallback) route", () => {
     const router = makeRouter();
     const spy = jest
@@ -106,7 +106,7 @@ describe("AnythingLLMModelRouter.onInferenceComplete", () => {
   });
 });
 
-describe("AnythingLLMModelRouter delegate instrumentation", () => {
+describe("PsionHQModelRouter delegate instrumentation", () => {
   // `routerService` is a singleton, so the spy is shared across tests in this
   // block - reset it per test rather than counting another test's calls.
   afterEach(() => jest.restoreAllMocks());

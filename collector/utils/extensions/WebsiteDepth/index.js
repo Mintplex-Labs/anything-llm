@@ -52,7 +52,7 @@ async function getPageLinks(url, baseUrl) {
     let launchConfig = { headless: "new" };
 
     /* On MacOS 15.1, the headless=new option causes the browser to crash immediately.
-     * It is not clear why this is the case, but it is reproducible. Since AnythinglLM
+     * It is not clear why this is the case, but it is reproducible. Since PsionHQ
      * in production runs in a container, we can disable headless mode to workaround the issue for development purposes.
      *
      * This may show a popup window when scraping a page in development mode.
@@ -114,7 +114,7 @@ async function bulkScrapePages(links, outFolderPath) {
   let launchConfig = { headless: "new" };
 
   /* On MacOS 15.1, the headless=new option causes the browser to crash immediately.
-   * It is not clear why this is the case, but it is reproducible. Since AnythinglLM
+   * It is not clear why this is the case, but it is reproducible. Since PsionHQ
    * in production runs in a container, we can disable headless mode to workaround the issue for development purposes.
    *
    * This may show a popup window when scraping a page in development mode.

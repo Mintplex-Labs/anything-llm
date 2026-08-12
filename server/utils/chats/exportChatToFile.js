@@ -190,7 +190,7 @@ function chatHistoryToHTML(history = [], { workspaceName, threadName }) {
       ${msgs.join("\n")}
     </div>
     <footer class="mt-10 pt-4 border-t border-zinc-700 text-center text-xs text-zinc-500">
-      Exported from AnythingLLM
+      Exported from PsionHQ
     </footer>
   </div>
 </body>

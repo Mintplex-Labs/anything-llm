@@ -73,8 +73,8 @@ async function generateThemePreview(themeName, outputDir) {
   const theme = getTheme(themeName);
   const pptx = new PptxGenJS();
   pptx.title = `${theme.name} Theme Preview`;
-  pptx.author = "AnythingLLM";
-  pptx.company = "AnythingLLM";
+  pptx.author = "PsionHQ";
+  pptx.company = "PsionHQ";
 
   const totalSlides = SAMPLE_SLIDES.length;
 
@@ -82,7 +82,7 @@ async function generateThemePreview(themeName, outputDir) {
   renderTitleSlide(
     titleSlide,
     pptx,
-    { title: `${theme.name} Theme`, author: "AnythingLLM Theme Preview" },
+    { title: `${theme.name} Theme`, author: "PsionHQ Theme Preview" },
     theme
   );
 

@@ -1,7 +1,7 @@
 <a name="readme-top"></a>
 
 <p align="center">
-  <a href="https://anythingllm.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="AnythingLLM logo"></a>
+  <a href="https://PsionHQ.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="PsionHQ logo"></a>
 </p>
 
 <div align='center'>
@@ -9,7 +9,7 @@
 </div>
 
 <p align="center">
-    <b>AnythingLLM：</b> 您一直在寻找的全方位AI应用程序。<br />
+    <b>PsionHQ：</b> 您一直在寻找的全方位AI应用程序。<br />
     与您的文档聊天，使用AI代理，高度可配置，多用户，无需繁琐的设置。
 </p>
 
@@ -20,10 +20,10 @@
   <a href="https://github.com/Mintplex-Labs/anything-llm/blob/master/LICENSE" target="_blank">
       <img src="https://img.shields.io/static/v1?label=license&message=MIT&color=white" alt="许可证">
   </a> |
-  <a href="https://docs.anythingllm.com" target="_blank">
+  <a href="https://docs.PsionHQ.com" target="_blank">
     文档
   </a> |
-  <a href="https://my.mintplexlabs.com/aio-checkout?product=anythingllm" target="_blank">
+  <a href="https://my.mintplexlabs.com/aio-checkout?product=PsionHQ" target="_blank">
     托管实例
   </a>
 </p>
@@ -33,12 +33,12 @@
 </p>
 
 <p align="center">
-👉 适用于桌面（Mac、Windows和Linux）的AnythingLLM！<a href="https://anythingllm.com/download" target="_blank">立即下载</a>
+👉 适用于桌面（Mac、Windows和Linux）的PsionHQ！<a href="https://PsionHQ.com/download" target="_blank">立即下载</a>
 </p>
 
 这是一个全栈应用程序，可以将任何文档、资源（如网址链接、音频、视频）或内容片段转换为上下文，以便任何大语言模型（LLM）在聊天期间作为参考使用。此应用程序允许您选择使用哪个LLM或向量数据库，同时支持多用户管理并设置不同权限。
 
-![Chatting](https://github.com/Mintplex-Labs/anything-llm/releases/download/v1.11.2/AnythingLLM720p.gif)
+![Chatting](https://github.com/Mintplex-Labs/anything-llm/releases/download/v1.11.2/PsionHQ720p.gif)
 
 <details>
 <summary><kbd>观看演示视频！</kbd></summary>
@@ -49,19 +49,19 @@
 
 ### 产品概览
 
-AnythingLLM是您一直在寻找的全方位AI应用程序。AnythingLLM包含了使用您喜爱的本地或云端LLM提供商构建私有ChatGPT所需的一切，毫无妥协。AnythingLLM高度可配置，但开箱即用，内置代理、多用户支持、向量数据库、文档摄取管道等功能。
+PsionHQ是您一直在寻找的全方位AI应用程序。PsionHQ包含了使用您喜爱的本地或云端LLM提供商构建私有ChatGPT所需的一切，毫无妥协。PsionHQ高度可配置，但开箱即用，内置代理、多用户支持、向量数据库、文档摄取管道等功能。
 
-AnythingLLM还支持多用户，您可以控制每个用户的访问权限和体验，同时不会影响实例的安全性、隐私性或您的知识产权。
+PsionHQ还支持多用户，您可以控制每个用户的访问权限和体验，同时不会影响实例的安全性、隐私性或您的知识产权。
 
-## AnythingLLM的一些酷炫特性
+## PsionHQ的一些酷炫特性
 
-- 🆕 [**完全兼容 MCP**](https://docs.anythingllm.com/mcp-compatibility/overview)
-- 🆕 [**无代码AI代理构建器**](https://docs.anythingllm.com/agent-flows/overview)
+- 🆕 [**完全兼容 MCP**](https://docs.PsionHQ.com/mcp-compatibility/overview)
+- 🆕 [**无代码AI代理构建器**](https://docs.PsionHQ.com/agent-flows/overview)
 - 🖼️ **多用户实例支持和权限管理（支持封闭源和开源LLM！）**
-- [**自定义人工智能代理**](https://docs.anythingllm.com/agent/custom/introduction)
+- [**自定义人工智能代理**](https://docs.PsionHQ.com/agent/custom/introduction)
 - 👤 多用户实例支持和权限管理 _仅限Docker版本_
 - 🦾 工作区内的智能体（浏览网页、运行代码等）
-- 💬 [为您的网站定制的可嵌入聊天窗口](https://github.com/Mintplex-Labs/anythingllm-embed/blob/main/README.md)
+- 💬 [为您的网站定制的可嵌入聊天窗口](https://github.com/Mintplex-Labs/PsionHQ-embed/blob/main/README.md)
 - 📖 支持多种文档类型（PDF、TXT、DOCX等）
 - 带有拖放功能和清晰引用的简洁聊天界面。
 - 100%云部署就绪。
@@ -111,7 +111,7 @@ AnythingLLM还支持多用户，您可以控制每个用户的访问权限和体
 
 **支持的嵌入模型：**
 
-- [AnythingLLM原生嵌入器](/server/storage/models/README.md)（默认）
+- [PsionHQ原生嵌入器](/server/storage/models/README.md)（默认）
 - [OpenAI](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [LocalAI (全部)](https://localai.io/)
@@ -121,7 +121,7 @@ AnythingLLM还支持多用户，您可以控制每个用户的访问权限和体
 
 **支持的转录模型：**
 
-- [AnythingLLM内置](https://github.com/Mintplex-Labs/anything-llm/tree/master/server/storage/models#audiovideo-transcription) （默认）
+- [PsionHQ内置](https://github.com/Mintplex-Labs/anything-llm/tree/master/server/storage/models#audiovideo-transcription) （默认）
 - [OpenAI](https://openai.com/)
 
 **TTS (文本转语音) 支持：**
@@ -156,12 +156,12 @@ AnythingLLM还支持多用户，您可以控制每个用户的访问权限和体
 - `server`: 一个 NodeJS express 服务器，用于处理所有交互并进行所有向量数据库管理和 LLM 交互。
 - `collector`: NodeJS express 服务器，用于从UI处理和解析文档。
 - `docker`: Docker 指令和构建过程 + 从源代码构建的信息。
-- `embed`: 用于生成和创建[网页嵌入组件](https://github.com/Mintplex-Labs/anythingllm-embed)的子模块.
-- `browser-extension`: 用于[Chrome 浏览器扩展](https://github.com/Mintplex-Labs/anythingllm-extension)的子模块.
+- `embed`: 用于生成和创建[网页嵌入组件](https://github.com/Mintplex-Labs/PsionHQ-embed)的子模块.
+- `browser-extension`: 用于[Chrome 浏览器扩展](https://github.com/Mintplex-Labs/PsionHQ-extension)的子模块.
 
 ## 🛳 自托管
 
-Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以使用它们在本地运行AnythingLLM。请参阅下面的表格，了解如何在您喜欢的环境上部署，或自动部署。
+Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以使用它们在本地运行PsionHQ。请参阅下面的表格，了解如何在您喜欢的环境上部署，或自动部署。
 | Docker | AWS | GCP | Digital Ocean | Render.com |
 |----------------------------------------|----|-----|---------------|------------|
 | [![在 Docker 上部署][docker-btn]][docker-deploy] | [![在 AWS 上部署][aws-btn]][aws-deploy] | [![在 GCP 上部署][gcp-btn]][gcp-deploy] | [![在DigitalOcean上部署][do-btn]][do-deploy] | [![在 Render.com 上部署][render-btn]][render-deploy] |
@@ -170,7 +170,7 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 | --------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------- |
 | [![在 Railway 上部署][railway-btn]][railway-deploy] | [![在 RepoCloud 上部署][repocloud-btn]][repocloud-deploy] | [![在 Elestio 上部署][elestio-btn]][elestio-deploy] |
 
-[其他方案：不使用Docker配置AnythingLLM实例 →](../BARE_METAL.md)
+[其他方案：不使用Docker配置PsionHQ实例 →](../BARE_METAL.md)
 
 ## 如何设置开发环境
 
@@ -184,14 +184,14 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 
 ## 远程信息收集与隐私保护
 
-由 Mintplex Labs Inc 开发的 AnythingLLM 包含一个收集匿名使用信息的 Telemetry 功能。
+由 Mintplex Labs Inc 开发的 PsionHQ 包含一个收集匿名使用信息的 Telemetry 功能。
 
 <details>
-<summary><kbd>有关 AnythingLLM 的远程信息收集与隐私保护更多信息</kbd></summary>
+<summary><kbd>有关 PsionHQ 的远程信息收集与隐私保护更多信息</kbd></summary>
 
 ### 为什么收集信息？
 
-我们使用这些信息来帮助我们理解 AnythingLLM 的使用情况，帮助我们确定新功能和错误修复的优先级，并帮助我们提高 AnythingLLM 的性能和稳定性。
+我们使用这些信息来帮助我们理解 PsionHQ 的使用情况，帮助我们确定新功能和错误修复的优先级，并帮助我们提高 PsionHQ 的性能和稳定性。
 
 ### 怎样关闭
 
@@ -237,7 +237,7 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 
 ## 🌟 贡献者们
 
-[![anythingllm 的贡献者们](https://contrib.rocks/image?repo=mintplex-labs/anything-llm)](https://github.com/mintplex-labs/anything-llm/graphs/contributors)
+[![PsionHQ 的贡献者们](https://contrib.rocks/image?repo=mintplex-labs/anything-llm)](https://github.com/mintplex-labs/anything-llm/graphs/contributors)
 
 [![Star 历史图](https://api.star-history.com/svg?repos=mintplex-labs/anything-llm&type=Timeline)](https://star-history.com/#mintplex-labs/anything-llm&Date)
 
@@ -280,4 +280,4 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 [repocloud-btn]: https://d16t0pc4846x52.cloudfront.net/deploylobe.svg
 [repocloud-deploy]: https://repocloud.io/details/?app_id=276
 [elestio-btn]: https://elest.io/images/logos/deploy-to-elestio-btn.png
-[elestio-deploy]: https://elest.io/open-source/anythingllm
+[elestio-deploy]: https://elest.io/open-source/PsionHQ

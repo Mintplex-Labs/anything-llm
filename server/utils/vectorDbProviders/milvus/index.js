@@ -28,7 +28,7 @@ class Milvus extends VectorDatabase {
   normalize(inputString) {
     let normalized = inputString.replace(/[^a-zA-Z0-9_]/g, "_");
     if (new RegExp(/^[a-zA-Z_]/).test(normalized.slice(0, 1)))
-      normalized = `anythingllm_${normalized}`;
+      normalized = `PsionHQ_${normalized}`;
     return normalized;
   }
 
@@ -61,7 +61,7 @@ class Milvus extends VectorDatabase {
     const { collection_names } = await client.listCollections();
     let total = 0;
     for (const name of collection_names.filter((n) =>
-      n.startsWith("anythingllm_")
+      n.startsWith("PsionHQ_")
     )) {
       const { data: count } = await client.count({ collection_name: name });
       total += Number(count ?? 0);

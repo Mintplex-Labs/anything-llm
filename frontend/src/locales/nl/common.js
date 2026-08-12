@@ -3,18 +3,18 @@ const TRANSLATIONS = {
   onboarding: {
     survey: {
       email: "Wat is je e-mailadres?",
-      useCase: "Waarvoor ga je AnythingLLM gebruiken?",
+      useCase: "Waarvoor ga je PsionHQ gebruiken?",
       useCaseWork: "Voor werk",
       useCasePersonal: "Voor persoonlijk gebruik",
       useCaseOther: "Anders",
-      comment: "Hoe heb je over AnythingLLM gehoord?",
+      comment: "Hoe heb je over PsionHQ gehoord?",
       commentPlaceholder:
         "Reddit, Twitter, GitHub, YouTube, enz. - Laat ons weten hoe je ons gevonden hebt!",
       skip: "Enquête overslaan",
       thankYou: "Bedankt voor je feedback!",
-      title: "Welkom bij AnythingLLM",
+      title: "Welkom bij PsionHQ",
       description:
-        "Help ons AnythingLLM af te stemmen op jouw behoeften. (Optioneel)",
+        "Help ons PsionHQ af te stemmen op jouw behoeften. (Optioneel)",
     },
     home: {
       getStarted: "Aan de slag",
@@ -23,7 +23,7 @@ const TRANSLATIONS = {
     llm: {
       title: "LLM-voorkeuren",
       description:
-        "AnythingLLM kan samenwerken met veel LLM-aanbieders. Deze service verzorgt de chatfunctie.",
+        "PsionHQ kan samenwerken met veel LLM-aanbieders. Deze service verzorgt de chatfunctie.",
     },
     userSetup: {
       title: "Gebruikersinstellingen",
@@ -98,7 +98,7 @@ const TRANSLATIONS = {
     interface: "UI-voorkeuren",
     branding: "Branding & Whitelabeling",
     chat: "Chat",
-    "mobile-app": "AnythingLLM Mobiele App",
+    "mobile-app": "PsionHQ Mobiele App",
     "community-hub": {
       title: "Centraal punt",
       trending: "Bekijk populaire onderwerpen",
@@ -158,7 +158,7 @@ const TRANSLATIONS = {
       add: "Nieuw bericht toevoegen",
       save: "Berichten opslaan",
       heading: "Leg me uit",
-      body: "de voordelen van AnythingLLM",
+      body: "de voordelen van PsionHQ",
     },
     delete: {
       title: "Werkruimte Verwijderen",
@@ -753,7 +753,7 @@ const TRANSLATIONS = {
       "intelligent-skill-selection": {
         title: "Intelligente selectie van vaardigheden",
         description:
-          'Maak gebruik van een onbeperkt aantal tools en verminder het gebruik van "cut tokens" met tot wel 80% per query – AnythingLLM selecteert automatisch de juiste vaardigheden voor elke vraag.',
+          'Maak gebruik van een onbeperkt aantal tools en verminder het gebruik van "cut tokens" met tot wel 80% per query – PsionHQ selecteert automatisch de juiste vaardigheden voor elke vraag.',
         "max-tools": {
           title: "Max Tools",
           description:
@@ -791,7 +791,7 @@ const TRANSLATIONS = {
   api: {
     title: "API-sleutels",
     description:
-      "API-sleutels stellen de houder in staat om deze AnythingLLM-instantie programmatisch te openen en beheren.",
+      "API-sleutels stellen de houder in staat om deze PsionHQ-instantie programmatisch te openen en beheren.",
     link: "Lees de API-documentatie",
     generate: "Genereer Nieuwe API-sleutel",
     empty: "Geen API-sleutels gevonden",
@@ -805,7 +805,7 @@ const TRANSLATIONS = {
       close: "Sluiten",
       create: "API-sleutel maken",
       helper:
-        "Na het aanmaken kan de API-sleutel worden gebruikt om programmatisch toegang te krijgen tot deze AnythingLLM-instantie en deze te configureren.",
+        "Na het aanmaken kan de API-sleutel worden gebruikt om programmatisch toegang te krijgen tot deze PsionHQ-instantie en deze te configureren.",
       name: {
         label: "Naam",
         placeholder: "Productie-integratie",
@@ -830,7 +830,7 @@ const TRANSLATIONS = {
   llm: {
     title: "LLM Voorkeur",
     description:
-      "Dit zijn de inloggegevens en instellingen voor je voorkeurs LLM-chat & inbeddingprovider. Het is belangrijk dat deze sleutels actueel en correct zijn, anders zal AnythingLLM niet goed werken.",
+      "Dit zijn de inloggegevens en instellingen voor je voorkeurs LLM-chat & inbeddingprovider. Het is belangrijk dat deze sleutels actueel en correct zijn, anders zal PsionHQ niet goed werken.",
     provider: "LLM Provider",
     providers: {
       azure_openai: {
@@ -852,7 +852,7 @@ const TRANSLATIONS = {
       "Dit zijn de inloggegevens en instellingen voor je voorkeurs transcriptiemodelprovider. Het is belangrijk dat deze sleutels actueel en correct zijn, anders worden media en audio niet getranscribeerd.",
     provider: "Transcriptieprovider",
     "warn-start":
-      "Het gebruik van het lokale fluistermodel op machines met beperkte RAM of CPU kan AnythingLLM vertragen bij het verwerken van mediabestanden.",
+      "Het gebruik van het lokale fluistermodel op machines met beperkte RAM of CPU kan PsionHQ vertragen bij het verwerken van mediabestanden.",
     "warn-recommend":
       "We raden minstens 2GB RAM aan en upload bestanden <10Mb.",
     "warn-end":
@@ -863,7 +863,7 @@ const TRANSLATIONS = {
     "desc-start":
       "Bij het gebruik van een LLM die geen ingebouwde ondersteuning voor een inbeddingengine heeft, moet je mogelijk aanvullende inloggegevens opgeven voor het inbedden van tekst.",
     "desc-end":
-      "Inbedding is het proces van het omzetten van tekst in vectoren. Deze inloggegevens zijn vereist om je bestanden en prompts om te zetten naar een formaat dat AnythingLLM kan gebruiken om te verwerken.",
+      "Inbedding is het proces van het omzetten van tekst in vectoren. Deze inloggegevens zijn vereist om je bestanden en prompts om te zetten naar een formaat dat PsionHQ kan gebruiken om te verwerken.",
     provider: {
       title: "Inbedding Provider",
     },
@@ -889,7 +889,7 @@ const TRANSLATIONS = {
   vector: {
     title: "Vector Database",
     description:
-      "Dit zijn de inloggegevens en instellingen voor hoe je AnythingLLM-instantie zal functioneren. Het is belangrijk dat deze sleutels actueel en correct zijn.",
+      "Dit zijn de inloggegevens en instellingen voor hoe je PsionHQ-instantie zal functioneren. Het is belangrijk dat deze sleutels actueel en correct zijn.",
     provider: {
       title: "Vector Database Provider",
       description: "Er is geen configuratie nodig voor LanceDB.",
@@ -934,7 +934,7 @@ const TRANSLATIONS = {
   privacy: {
     title: "Privacy & Gegevensverwerking",
     description:
-      "Dit is je configuratie voor hoe verbonden derden en AnythingLLM je gegevens verwerken.",
+      "Dit is je configuratie voor hoe verbonden derden en PsionHQ je gegevens verwerken.",
     anonymous: "Anonieme Telemetrie Ingeschakeld",
   },
   connectors: {
@@ -1096,22 +1096,22 @@ const TRANSLATIONS = {
       fetching: "Bezig met ophalen...",
       "fetch-website": "Website ophalen",
       "privacy-notice":
-        "Deze bestanden worden geüpload naar de documentverwerker die op deze AnythingLLM-instantie draait. Deze bestanden worden niet verzonden naar of gedeeld met derden.",
+        "Deze bestanden worden geüpload naar de documentverwerker die op deze PsionHQ-instantie draait. Deze bestanden worden niet verzonden naar of gedeeld met derden.",
     },
     pinning: {
       what_pinning: "Wat is het vastzetten van documenten?",
       pin_explained_block1:
-        "Wanneer u een document vastzet in AnythingLLM, injecteren we de volledige inhoud van het document in uw promptvenster, zodat uw LLM het volledig kan begrijpen.",
+        "Wanneer u een document vastzet in PsionHQ, injecteren we de volledige inhoud van het document in uw promptvenster, zodat uw LLM het volledig kan begrijpen.",
       pin_explained_block2:
         "Dit werkt het beste met modellen met een grote context of kleine bestanden die essentieel zijn voor de kennisbasis.",
       pin_explained_block3:
-        "Als u standaard niet de gewenste antwoorden krijgt van AnythingLLM, is vastzetten een uitstekende manier om met één klik antwoorden van hogere kwaliteit te krijgen.",
+        "Als u standaard niet de gewenste antwoorden krijgt van PsionHQ, is vastzetten een uitstekende manier om met één klik antwoorden van hogere kwaliteit te krijgen.",
       accept: "Oké, begrepen.",
     },
     watching: {
       what_watching: "Wat doet het volgen van een document?",
       watch_explained_block1:
-        "Wanneer u een document in AnythingLLM volgt, synchroniseren we de inhoud van uw document automatisch met regelmatige tussenpozen vanuit de originele bron. Hierdoor wordt de inhoud in elke werkruimte waar dit bestand wordt beheerd automatisch bijgewerkt.",
+        "Wanneer u een document in PsionHQ volgt, synchroniseren we de inhoud van uw document automatisch met regelmatige tussenpozen vanuit de originele bron. Hierdoor wordt de inhoud in elke werkruimte waar dit bestand wordt beheerd automatisch bijgewerkt.",
       watch_explained_block2:
         "Deze functie ondersteunt momenteel online content en is niet beschikbaar voor handmatig geüploade documenten.",
       watch_explained_block3_start:
@@ -1290,7 +1290,7 @@ const TRANSLATIONS = {
         edit_description: "Update de inhoud van deze opslag.",
         label: "Geheugen",
         placeholder:
-          "bijvoorbeeld: De naam van de gebruiker is Joe, de gebruiker werkt aan AnythingLLM, enz.",
+          "bijvoorbeeld: De naam van de gebruiker is Joe, de gebruiker werkt aan PsionHQ, enz.",
         create: "Creëren",
         save: "Opslaan",
         cancel: "Annuleren",
@@ -1329,16 +1329,16 @@ const TRANSLATIONS = {
   customization: {
     interface: {
       title: "UI-voorkeuren",
-      description: "Stel uw UI-voorkeuren in voor AnythingLLM.",
+      description: "Stel uw UI-voorkeuren in voor PsionHQ.",
     },
     branding: {
       title: "Branding & Whitelabeling",
       description:
-        "Geef uw AnythingLLM-instantie een whitelabel met uw eigen branding.",
+        "Geef uw PsionHQ-instantie een whitelabel met uw eigen branding.",
     },
     chat: {
       title: "Chat",
-      description: "Stel uw chatvoorkeuren in voor AnythingLLM.",
+      description: "Stel uw chatvoorkeuren in voor PsionHQ.",
       auto_submit: {
         title: "Spraakinvoer automatisch verzenden",
         description:
@@ -1376,7 +1376,7 @@ const TRANSLATIONS = {
       "display-language": {
         title: "Weergavetaal",
         description:
-          "Selecteer de gewenste taal waarin de gebruikersinterface van AnythingLLM moet worden weergegeven - wanneer vertalingen beschikbaar zijn.",
+          "Selecteer de gewenste taal waarin de gebruikersinterface van PsionHQ moet worden weergegeven - wanneer vertalingen beschikbaar zijn.",
       },
       logo: {
         title: "Merklogo",
@@ -1500,7 +1500,7 @@ const TRANSLATIONS = {
         unauthenticated: {
           title: "Authenticatie vereist",
           description:
-            "U moet zich authenticeren bij de AnythingLLM Community Hub voordat u items kunt publiceren.",
+            "U moet zich authenticeren bij de PsionHQ Community Hub voordat u items kunt publiceren.",
           button: "Verbinden met Community Hub",
         },
       },
@@ -1553,7 +1553,7 @@ const TRANSLATIONS = {
     password: {
       title: "Wachtwoordbeveiliging",
       description:
-        "Bescherm je AnythingLLM-instantie met een wachtwoord. Als je dit vergeet, is er geen herstelmethode, dus zorg ervoor dat je dit wachtwoord opslaat.",
+        "Bescherm je PsionHQ-instantie met een wachtwoord. Als je dit vergeet, is er geen herstelmethode, dus zorg ervoor dat je dit wachtwoord opslaat.",
       "password-label": "Instances wachtwoord",
     },
   },
@@ -1567,7 +1567,7 @@ const TRANSLATIONS = {
   telegram: {
     title: "Telegram Bot",
     description:
-      "Verbind uw AnythingLLM-instantie met Telegram, zodat u vanuit elk apparaat kunt communiceren met uw werkruimtes.",
+      "Verbind uw PsionHQ-instantie met Telegram, zodat u vanuit elk apparaat kunt communiceren met uw werkruimtes.",
     setup: {
       step1: {
         title: "Stap 1: Maak je Telegram-bot",

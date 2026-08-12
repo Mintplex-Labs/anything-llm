@@ -25,7 +25,7 @@ async function resetAllVectorStores({ vectorDbKey }) {
     });
 
     console.log(
-      "Resetting anythingllm managed vector namespaces for",
+      "Resetting PsionHQ managed vector namespaces for",
       vectorDbKey
     );
     const VectorDb = getVectorDbClass(vectorDbKey);

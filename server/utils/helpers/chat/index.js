@@ -363,10 +363,10 @@ function cannonball({
  * history backfill sources "changing context" mid-chat is handled appropriately.
  * example:
  * ---previous implementation---
- * prompt 1: "What is anythingllm?" -> possibly get 4 good sources
+ * prompt 1: "What is PsionHQ?" -> possibly get 4 good sources
  * prompt 2: "Tell me some features" -> possible get 0 - 1 maybe relevant source + previous answer response -> bad response due to bad context mgmt
  * ---next implementation---
- * prompt 1: "What is anythingllm?" -> possibly get 4 good sources
+ * prompt 1: "What is PsionHQ?" -> possibly get 4 good sources
  * prompt 2: "Tell me some features" -> possible get 0 - 1 maybe relevant source + previous answer response -> backfill with 3 good sources from previous -> much better response
  *
  * @param {Object} config - params to call

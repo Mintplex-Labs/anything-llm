@@ -1,10 +1,10 @@
 [
   {
-    "thumbnail_url": "https://cdn.anythingllm.com/support/announcements/assets/mcp.jpg",
+    "thumbnail_url": "https://cdn.PsionHQ.com/support/announcements/assets/mcp.jpg",
     "title": "MCP Support",
-    "short_description": "Import and leverage MCP tools using AnythingLLM.",
-    "goto": "https://docs.anythingllm.com/mcp-compatibility/overview",
-    "author": "AnythingLLM",
+    "short_description": "Import and leverage MCP tools using PsionHQ.",
+    "goto": "https://docs.PsionHQ.com/mcp-compatibility/overview",
+    "author": "PsionHQ",
     "date": "April 8, 2025"
   },
   {
@@ -19,8 +19,8 @@
     "thumbnail_url": null,
     "title": "Community Hub Updates",
     "short_description": "We refreshed the Community Hub with a new look and feel. Check it out!",
-    "goto": "https://hub.anythingllm.com",
-    "author": "AnythingLLM",
+    "goto": "https://hub.PsionHQ.com",
+    "author": "PsionHQ",
     "date": "March 12, 2025"
   }
 ]

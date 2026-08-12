@@ -1,10 +1,10 @@
-# This GitHub action is for publishing of the primary image for AnythingLLM
+# This GitHub action is for publishing of the primary image for PsionHQ
 # It will publish a linux/amd64 and linux/arm64 image at the same time
 # This file should ONLY BY USED FOR `master` BRANCH. 
 # TODO: GitHub now has an ubuntu-24.04-arm64 runner, but we still need
 # to use QEMU to build the arm64 image because Chromium is not available for Linux arm64
 # so builds will still fail, or fail much more often. Its inconsistent and frustrating.
-name: Publish AnythingLLM Primary Docker image (amd64/arm64)
+name: Publish PsionHQ Primary Docker image (amd64/arm64)
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -59,7 +59,7 @@ jobs:
       
       - name: Log in to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
-        # Only login to the Docker Hub if the repo is mintplex/anythingllm, to allow for forks to build on GHCR
+        # Only login to the Docker Hub if the repo is mintplex/PsionHQ, to allow for forks to build on GHCR
         if: steps.dockerhub.outputs.enabled == 'true' 
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
@@ -77,7 +77,7 @@ jobs:
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
           images: |
-            ${{ steps.dockerhub.outputs.enabled == 'true' && 'mintplexlabs/anythingllm' || '' }}
+            ${{ steps.dockerhub.outputs.enabled == 'true' && 'mintplexlabs/PsionHQ' || '' }}
             ghcr.io/${{ github.repository }}
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}

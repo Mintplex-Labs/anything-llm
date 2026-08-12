@@ -397,12 +397,12 @@ function apiWorkspaceEndpoints(app) {
               history: [
                 {
                   "role": "user",
-                  "content": "What is AnythingLLM?",
+                  "content": "What is PsionHQ?",
                   "sentAt": 1692851630
                 },
                 {
                   "role": "assistant",
-                  "content": "AnythingLLM is a platform that allows you to convert notes, PDFs, and other source materials into a chatbot. It ensures privacy, cites its answers, and allows multiple people to interact with the same documents simultaneously. It is particularly useful for businesses to enhance the visibility and readability of various written communications such as SOPs, contracts, and sales calls. You can try it out with a free trial to see if it meets your business needs.",
+                  "content": "PsionHQ is a platform that allows you to convert notes, PDFs, and other source materials into a chatbot. It ensures privacy, cites its answers, and allows multiple people to interact with the same documents simultaneously. It is particularly useful for businesses to enhance the visibility and readability of various written communications such as SOPs, contracts, and sales calls. You can try it out with a free trial to see if it meets your business needs.",
                   "sources": [{"source": "object about source document and snippets used"}]
                 }
               ]
@@ -474,7 +474,7 @@ function apiWorkspaceEndpoints(app) {
         "application/json": {
           example: {
             adds: ["custom-documents/my-pdf.pdf-hash.json"],
-            deletes: ["custom-documents/anythingllm.txt-hash.json"]
+            deletes: ["custom-documents/PsionHQ.txt-hash.json"]
           }
         }
       }
@@ -607,12 +607,12 @@ function apiWorkspaceEndpoints(app) {
    #swagger.tags = ['Workspaces']
    #swagger.description = 'Execute a chat with a workspace'
    #swagger.requestBody = {
-       description: 'Send a prompt to the workspace and the type of conversation (automatic, query or chat).<br/><b>Query:</b> Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.<br/><b>Automatic:</b> Will use tool-calling if the provider supports native tool calling without needing to invoke @agent.<br/><b>Chat:</b> Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.<br/><b>Attachments:</b> Can include images and documents.<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Document attachments:</b> must have the mime type <code>application/anythingllm-document</code> - otherwise it will be passed to the LLM as an image and may fail to process. This uses the built-in document processor to first parse the document to text before injecting it into the context window.',
+       description: 'Send a prompt to the workspace and the type of conversation (automatic, query or chat).<br/><b>Query:</b> Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.<br/><b>Automatic:</b> Will use tool-calling if the provider supports native tool calling without needing to invoke @agent.<br/><b>Chat:</b> Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.<br/><b>Attachments:</b> Can include images and documents.<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Document attachments:</b> must have the mime type <code>application/PsionHQ-document</code> - otherwise it will be passed to the LLM as an image and may fail to process. This uses the built-in document processor to first parse the document to text before injecting it into the context window.',
        required: true,
        content: {
          "application/json": {
            example: {
-             message: "What is AnythingLLM?",
+             message: "What is PsionHQ?",
              mode:"automatic | query | chat",
              sessionId: "identifier-to-partition-chats-by-external-id",
              attachments: [
@@ -623,7 +623,7 @@ function apiWorkspaceEndpoints(app) {
                },
                {
                  name: "this is a document.pdf",
-                 mime: "application/anythingllm-document",
+                 mime: "application/PsionHQ-document",
                  contentString: "data:application/pdf;base64,iVBORw0KGgoAAAANSUhEUgAA..."
                }
              ],
@@ -641,7 +641,7 @@ function apiWorkspaceEndpoints(app) {
               id: 'chat-uuid',
               type: "abort | textResponse",
               textResponse: "Response to your query",
-              sources: [{title: "anythingllm.txt", chunk: "This is a context chunk used in the answer of the prompt by the LLM,"}],
+              sources: [{title: "PsionHQ.txt", chunk: "This is a context chunk used in the answer of the prompt by the LLM,"}],
               close: true,
               error: "null | text string of the failure mode."
            }
@@ -741,12 +741,12 @@ function apiWorkspaceEndpoints(app) {
    #swagger.tags = ['Workspaces']
    #swagger.description = 'Execute a streamable chat with a workspace'
    #swagger.requestBody = {
-       description: 'Send a prompt to the workspace and the type of conversation (automatic, query or chat).<br/><b>Query:</b> Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.<br/><b>Automatic:</b> Will use tool-calling if the provider supports native tool calling without needing to invoke @agent.<br/><b>Chat:</b> Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.<br/><b>Attachments:</b> Can include images and documents.<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Document attachments:</b> must have the mime type <code>application/anythingllm-document</code> - otherwise it will be passed to the LLM as an image and may fail to process. This uses the built-in document processor to first parse the document to text before injecting it into the context window.',
+       description: 'Send a prompt to the workspace and the type of conversation (automatic, query or chat).<br/><b>Query:</b> Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.<br/><b>Automatic:</b> Will use tool-calling if the provider supports native tool calling without needing to invoke @agent.<br/><b>Chat:</b> Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.<br/><b>Attachments:</b> Can include images and documents.<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Document attachments:</b> must have the mime type <code>application/PsionHQ-document</code> - otherwise it will be passed to the LLM as an image and may fail to process. This uses the built-in document processor to first parse the document to text before injecting it into the context window.',
        required: true,
        content: {
          "application/json": {
            example: {
-             message: "What is AnythingLLM?",
+             message: "What is PsionHQ?",
              mode: "automatic | query | chat",
              sessionId: "identifier-to-partition-chats-by-external-id",
              attachments: [
@@ -757,7 +757,7 @@ function apiWorkspaceEndpoints(app) {
                },
                {
                  name: "this is a document.pdf",
-                 mime: "application/anythingllm-document",
+                 mime: "application/PsionHQ-document",
                  contentString: "data:application/pdf;base64,iVBORw0KGgoAAAANSUhEUgAA..."
                }
              ],
@@ -795,7 +795,7 @@ function apiWorkspaceEndpoints(app) {
               id: 'uuid-123',
               type: "abort | textResponseChunk",
               textResponse: "final chunk of LLM output!",
-              sources: [{title: "anythingllm.txt", chunk: "This is a context chunk used in the answer of the prompt by the LLM. This will only return in the final chunk."}],
+              sources: [{title: "PsionHQ.txt", chunk: "This is a context chunk used in the answer of the prompt by the LLM. This will only return in the final chunk."}],
               close: true,
               error: "null | text string of the failure mode."
             }

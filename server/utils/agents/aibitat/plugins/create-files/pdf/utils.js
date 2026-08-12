@@ -1,7 +1,7 @@
 const createFilesLib = require("../lib.js");
 
 /**
- * Applies AnythingLLM branding to a PDF document.
+ * Applies PsionHQ branding to a PDF document.
  * Adds a logo watermark or fallback text to the bottom-right of each page.
  * @param {PDFDocument} pdfDoc - The pdf-lib PDFDocument instance
  * @param {Object} pdfLib - The pdf-lib module exports (rgb, StandardFonts)
@@ -51,7 +51,7 @@ async function applyBranding(pdfDoc, { rgb, StandardFonts }) {
         opacity: 0.6,
       });
     } else {
-      const fallbackText = "Created with AnythingLLM";
+      const fallbackText = "Created with PsionHQ";
       const fontSize = 9;
       const textWidth = font.widthOfTextAtSize(fallbackText, fontSize);
       page.drawText(fallbackText, {

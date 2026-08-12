@@ -8,7 +8,7 @@ const TRANSLATIONS = {
     llm: {
       title: "LLM postavka",
       description:
-        "AnythingLLM može raditi s mnogim LLM pružateljima usluga. Ovo je usluga koja će upravljati razgovorom.",
+        "PsionHQ može raditi s mnogim LLM pružateljima usluga. Ovo je usluga koja će upravljati razgovorom.",
     },
     userSetup: {
       title: "Postavljanje korisnika",
@@ -35,15 +35,15 @@ const TRANSLATIONS = {
         "Ove postavke mogu se ponovno konfigurirati u bilo kojem trenutku u postavkama.",
     },
     survey: {
-      title: "Dobrodošli u AnythingLLM",
+      title: "Dobrodošli u PsionHQ",
       description:
-        "Pomozite nam da AnythingLLM izgradimo prema vašim potrebama. Neobavezno.",
+        "Pomozite nam da PsionHQ izgradimo prema vašim potrebama. Neobavezno.",
       email: "Koja je vaša e-mail adresa?",
-      useCase: "Za što ćete koristiti AnythingLLM?",
+      useCase: "Za što ćete koristiti PsionHQ?",
       useCaseWork: "Za posao",
       useCasePersonal: "Za osobnu upotrebu",
       useCaseOther: "Ostalo",
-      comment: "Kako ste čuli za AnythingLLM?",
+      comment: "Kako ste čuli za PsionHQ?",
       commentPlaceholder:
         "Reddit, Twitter, GitHub, YouTube, itd. - Javite nam kako ste nas pronašli!",
       skip: "Preskoči anketu",
@@ -113,7 +113,7 @@ const TRANSLATIONS = {
     "experimental-features": "Eksperimentalne značajke",
     contact: "Kontaktirajte podršku",
     "browser-extension": "Ekstenzija za preglednik",
-    "mobile-app": "AnythingLLM mobilna aplikacija",
+    "mobile-app": "PsionHQ mobilna aplikacija",
     channels: "Kanali",
     "available-channels": {
       telegram: "Telegram",
@@ -175,7 +175,7 @@ const TRANSLATIONS = {
       add: "Dodaj novu poruku",
       save: "Spremi poruke",
       heading: "Objasni mi",
-      body: "prednosti AnythingLLM-a",
+      body: "prednosti PsionHQ-a",
     },
     delete: {
       title: "Izbriši radni prostor",
@@ -763,7 +763,7 @@ const TRANSLATIONS = {
       "intelligent-skill-selection": {
         title: "Inteligentan odabir vještina",
         description:
-          "Omogućite neograničen broj alata i smanjite potrošnju tokena do 80% po upitu — AnythingLLM automatski odabire prave vještine za svaki upit.",
+          "Omogućite neograničen broj alata i smanjite potrošnju tokena do 80% po upitu — PsionHQ automatski odabire prave vještine za svaki upit.",
         "max-tools": {
           title: "Maksimalan broj alata",
           description:
@@ -800,16 +800,16 @@ const TRANSLATIONS = {
   customization: {
     interface: {
       title: "Postavke sučelja",
-      description: "Postavite svoje postavke sučelja za AnythingLLM.",
+      description: "Postavite svoje postavke sučelja za PsionHQ.",
     },
     branding: {
       title: "Brendiranje i whitelabeling",
       description:
-        "Bijeli žig (white-label) vaše AnythingLLM instance s prilagođenim brendiranjem.",
+        "Bijeli žig (white-label) vaše PsionHQ instance s prilagođenim brendiranjem.",
     },
     chat: {
       title: "Razgovor",
-      description: "Postavite svoje postavke razgovora za AnythingLLM.",
+      description: "Postavite svoje postavke razgovora za PsionHQ.",
       auto_submit: {
         title: "Automatsko slanje glasovnog unosa",
         description: "Automatski pošalji glasovni unos nakon razdoblja tišine",
@@ -847,7 +847,7 @@ const TRANSLATIONS = {
       "display-language": {
         title: "Jezik prikaza",
         description:
-          "Odaberite preferirani jezik za prikaz AnythingLLM sučelja - kada su prijevodi dostupni.",
+          "Odaberite preferirani jezik za prikaz PsionHQ sučelja - kada su prijevodi dostupni.",
       },
       logo: {
         title: "Logotip branda",
@@ -894,7 +894,7 @@ const TRANSLATIONS = {
   api: {
     title: "API ključevi",
     description:
-      "API ključevi omogućuju vlasniku programski pristup i upravljanje ovom AnythingLLM instancom.",
+      "API ključevi omogućuju vlasniku programski pristup i upravljanje ovom PsionHQ instancom.",
     link: "Pročitajte API dokumentaciju",
     generate: "Generiraj novi API ključ",
     empty: "Nema pronađenih API ključeva",
@@ -908,7 +908,7 @@ const TRANSLATIONS = {
       close: "Zatvori",
       create: "Stvori API ključ",
       helper:
-        "Nakon stvaranja, API ključ se može koristiti za programski pristup i konfiguraciju ove AnythingLLM instance.",
+        "Nakon stvaranja, API ključ se može koristiti za programski pristup i konfiguraciju ove PsionHQ instance.",
       name: {
         label: "Naziv",
         placeholder: "Produkcijska integracija",
@@ -933,7 +933,7 @@ const TRANSLATIONS = {
   llm: {
     title: "LLM postavka",
     description:
-      "Ovo su vjerodajnice i postavke za vašeg preferiranog LLM pružatelja usluga razgovora i ugrađivanja (embedding). Važno je da su ovi ključevi ažurni i točni, jer inače AnythingLLM neće funkcionirati ispravno.",
+      "Ovo su vjerodajnice i postavke za vašeg preferiranog LLM pružatelja usluga razgovora i ugrađivanja (embedding). Važno je da su ovi ključevi ažurni i točni, jer inače PsionHQ neće funkcionirati ispravno.",
     provider: "LLM pružatelj usluga",
     providers: {
       azure_openai: {
@@ -1133,7 +1133,7 @@ const TRANSLATIONS = {
       "Ovo su vjerodajnice i postavke za vašeg preferiranog pružatelja usluga modela transkripcije. Važno je da su ovi ključevi ažurni i točni, jer se u protivnom medijske datoteke i audio zapisi neće transkribirati.",
     provider: "Pružatelj usluga transkripcije",
     "warn-start":
-      "Korištenje lokalnog whisper modela na uređajima s ograničenom RAM memorijom ili procesorom može zaustaviti AnythingLLM prilikom obrade medijskih datoteka.",
+      "Korištenje lokalnog whisper modela na uređajima s ograničenom RAM memorijom ili procesorom može zaustaviti PsionHQ prilikom obrade medijskih datoteka.",
     "warn-recommend":
       "Preporučujemo najmanje 2 GB RAM-a i datoteke za prijenos manje od 10 MB.",
     "warn-end":
@@ -1144,7 +1144,7 @@ const TRANSLATIONS = {
     "desc-start":
       "Kada koristite LLM koji izvorno ne podržava mehanizam za ugrađivanje (embedding) - možda ćete morati dodatno navesti vjerodajnice za ugrađivanje teksta.",
     "desc-end":
-      "Ugrađivanje (embedding) je proces pretvaranja teksta u vektore. Ove vjerodajnice su potrebne za pretvaranje vaših datoteka i upita u format koji AnythingLLM može koristiti za obradu.",
+      "Ugrađivanje (embedding) je proces pretvaranja teksta u vektore. Ove vjerodajnice su potrebne za pretvaranje vaših datoteka i upita u format koji PsionHQ može koristiti za obradu.",
     provider: {
       title: "Pružatelj usluga ugrađivanja",
     },
@@ -1170,7 +1170,7 @@ const TRANSLATIONS = {
   vector: {
     title: "Vektorska baza podataka",
     description:
-      "Ovo su vjerodajnice i postavke za funkcioniranje vaše AnythingLLM instance. Važno je da su ovi ključevi ažurni i točni.",
+      "Ovo su vjerodajnice i postavke za funkcioniranje vaše PsionHQ instance. Važno je da su ovi ključevi ažurni i točni.",
     provider: {
       title: "Pružatelj usluga vektorske baze podataka",
       description: "Za LanceDB nije potrebna nikakva konfiguracija.",
@@ -1204,7 +1204,7 @@ const TRANSLATIONS = {
   telegram: {
     title: "Telegram bot",
     description:
-      "Povežite svoju AnythingLLM instancu s Telegramom da biste mogli razgovarati sa svojim radnim prostorima s bilo kojeg uređaja.",
+      "Povežite svoju PsionHQ instancu s Telegramom da biste mogli razgovarati sa svojim radnim prostorima s bilo kojeg uređaja.",
     setup: {
       step1: {
         title: "Korak 1: Stvorite svoj Telegram bot",
@@ -1283,7 +1283,7 @@ const TRANSLATIONS = {
     password: {
       title: "Zaštita lozinkom",
       description:
-        "Zaštitite svoju AnythingLLM instancu lozinkom. Ako je zaboravite, ne postoji način oporavka, tako da svakako spremite ovu lozinku.",
+        "Zaštitite svoju PsionHQ instancu lozinkom. Ako je zaboravite, ne postoji način oporavka, tako da svakako spremite ovu lozinku.",
       "password-label": "Lozinka instance",
     },
   },
@@ -1301,7 +1301,7 @@ const TRANSLATIONS = {
   privacy: {
     title: "Privatnost i rukovanje podacima",
     description:
-      "Ovo je vaša konfiguracija za način na koji povezani pružatelji usluga trećih strana i AnythingLLM rukuju vašim podacima.",
+      "Ovo je vaša konfiguracija za način na koji povezani pružatelji usluga trećih strana i PsionHQ rukuju vašim podacima.",
     anonymous: "Anonimna telemetrija omogućena",
   },
   connectors: {
@@ -1473,22 +1473,22 @@ const TRANSLATIONS = {
       fetching: "Dohvaćanje...",
       "fetch-website": "Dohvati web stranicu",
       "privacy-notice":
-        "Ove datoteke bit će prenesene u procesor dokumenata koji radi na ovoj AnythingLLM instanci. Ove datoteke se ne šalju niti dijele s trećim stranama.",
+        "Ove datoteke bit će prenesene u procesor dokumenata koji radi na ovoj PsionHQ instanci. Ove datoteke se ne šalju niti dijele s trećim stranama.",
     },
     pinning: {
       what_pinning: "Što je prikvačivanje dokumenata?",
       pin_explained_block1:
-        "Kada <b>prikvačite</b> dokument u AnythingLLM-u, ubacit ćemo cijeli sadržaj dokumenta u vaš prozor upita da bi ga vaš LLM potpuno razumio.",
+        "Kada <b>prikvačite</b> dokument u PsionHQ-u, ubacit ćemo cijeli sadržaj dokumenta u vaš prozor upita da bi ga vaš LLM potpuno razumio.",
       pin_explained_block2:
         "Ovo najbolje funkcionira s <b>modelima velikog konteksta</b> ili malim datotekama koje su ključne za njegovu bazu znanja.",
       pin_explained_block3:
-        "Ako ne dobivate željene odgovore od AnythingLLM-a prema zadanim postavkama, prikvačivanje je odličan način za dobivanje kvalitetnijih odgovora jednim klikom.",
+        "Ako ne dobivate željene odgovore od PsionHQ-a prema zadanim postavkama, prikvačivanje je odličan način za dobivanje kvalitetnijih odgovora jednim klikom.",
       accept: "U redu, razumijem",
     },
     watching: {
       what_watching: "Što radi praćenje dokumenta?",
       watch_explained_block1:
-        "Kada <b>pratite</b> dokument u AnythingLLM-u, <i>automatski</i> ćemo sinkronizirati sadržaj vašeg dokumenta iz njegovog izvornog izvora u redovitim intervalima. Ovo će automatski ažurirati sadržaj u svakom radnom prostoru u kojem se ova datoteka upravlja.",
+        "Kada <b>pratite</b> dokument u PsionHQ-u, <i>automatski</i> ćemo sinkronizirati sadržaj vašeg dokumenta iz njegovog izvornog izvora u redovitim intervalima. Ovo će automatski ažurirati sadržaj u svakom radnom prostoru u kojem se ova datoteka upravlja.",
       watch_explained_block2:
         "Ova značajka trenutno podržava sadržaj temeljen na internetu i neće biti dostupna za ručno prenesene dokumente.",
       watch_explained_block3_start:
@@ -1658,7 +1658,7 @@ const TRANSLATIONS = {
         edit_description: "Ažurirajte sadržaj ove memorije.",
         label: "Memorija",
         placeholder:
-          "npr. Korisnikovo ime je Joe, korisnik radi na AnythingLLM-u, itd.",
+          "npr. Korisnikovo ime je Joe, korisnik radi na PsionHQ-u, itd.",
         create: "Stvori",
         save: "Spremi",
         cancel: "Odustani",
@@ -1782,7 +1782,7 @@ const TRANSLATIONS = {
         unauthenticated: {
           title: "Potrebna autentikacija",
           description:
-            "Morate se autentificirati putem AnythingLLM Community Hub-a prije objavljivanja stavki.",
+            "Morate se autentificirati putem PsionHQ Community Hub-a prije objavljivanja stavki.",
           button: "Poveži se s Community Hub-om",
         },
       },

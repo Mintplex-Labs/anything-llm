@@ -548,9 +548,9 @@ cat > "$HOME_DIR/.config/chromium/Default/Bookmarks" << 'BOOKMARKS'
       "bookmark_bar": {
          "children": [
             {
-               "name": "AnythingLLM",
+               "name": "PsionHQ",
                "type": "url",
-               "url": "https://anythingllm.com"
+               "url": "https://PsionHQ.com"
             },
             {
                "name": "Star on Github",
@@ -560,7 +560,7 @@ cat > "$HOME_DIR/.config/chromium/Default/Bookmarks" << 'BOOKMARKS'
             {
                "name": "Agent Computer Docs",
                "type": "url",
-               "url": "https://docs.anythingllm.com/features/agent-computers"
+               "url": "https://docs.PsionHQ.com/features/agent-computers"
             }
          ],
          "name": "Bookmarks bar",
@@ -599,20 +599,20 @@ CREATE INDEX IF NOT EXISTS favicons_url ON favicons(url);
 CREATE INDEX IF NOT EXISTS icon_mapping_page_url_idx ON icon_mapping(page_url);
 SQL
 
-sqlite3 "$FAVICON_DB" "INSERT OR REPLACE INTO favicons(id,url,icon_type) VALUES(1,'https://anythingllm.com/',1);"
+sqlite3 "$FAVICON_DB" "INSERT OR REPLACE INTO favicons(id,url,icon_type) VALUES(1,'https://PsionHQ.com/',1);"
 sqlite3 "$FAVICON_DB" "INSERT OR REPLACE INTO favicons(id,url,icon_type) VALUES(2,'https://github.com/',1);"
-sqlite3 "$FAVICON_DB" "INSERT OR REPLACE INTO favicons(id,url,icon_type) VALUES(3,'https://docs.anythingllm.com/',1);"
+sqlite3 "$FAVICON_DB" "INSERT OR REPLACE INTO favicons(id,url,icon_type) VALUES(3,'https://docs.PsionHQ.com/',1);"
 
-sqlite3 "$FAVICON_DB" "INSERT OR REPLACE INTO favicon_bitmaps(id,icon_id,last_updated,image_data,width,height) VALUES(1,1,$(date +%s),readfile('$FAV_DIR/anythingllm.png'),16,16);"
+sqlite3 "$FAVICON_DB" "INSERT OR REPLACE INTO favicon_bitmaps(id,icon_id,last_updated,image_data,width,height) VALUES(1,1,$(date +%s),readfile('$FAV_DIR/PsionHQ.png'),16,16);"
 sqlite3 "$FAVICON_DB" "INSERT OR REPLACE INTO favicon_bitmaps(id,icon_id,last_updated,image_data,width,height) VALUES(2,2,$(date +%s),readfile('$FAV_DIR/github.png'),16,16);"
-sqlite3 "$FAVICON_DB" "INSERT OR REPLACE INTO favicon_bitmaps(id,icon_id,last_updated,image_data,width,height) VALUES(3,3,$(date +%s),readfile('$FAV_DIR/anythingllm.png'),16,16);"
+sqlite3 "$FAVICON_DB" "INSERT OR REPLACE INTO favicon_bitmaps(id,icon_id,last_updated,image_data,width,height) VALUES(3,3,$(date +%s),readfile('$FAV_DIR/PsionHQ.png'),16,16);"
 
-sqlite3 "$FAVICON_DB" "INSERT OR REPLACE INTO icon_mapping(id,page_url,icon_id) VALUES(1,'https://anythingllm.com/',1);"
-sqlite3 "$FAVICON_DB" "INSERT OR REPLACE INTO icon_mapping(id,page_url,icon_id) VALUES(2,'https://anythingllm.com',1);"
+sqlite3 "$FAVICON_DB" "INSERT OR REPLACE INTO icon_mapping(id,page_url,icon_id) VALUES(1,'https://PsionHQ.com/',1);"
+sqlite3 "$FAVICON_DB" "INSERT OR REPLACE INTO icon_mapping(id,page_url,icon_id) VALUES(2,'https://PsionHQ.com',1);"
 sqlite3 "$FAVICON_DB" "INSERT OR REPLACE INTO icon_mapping(id,page_url,icon_id) VALUES(3,'https://github.com/Mintplex-Labs/anything-llm',2);"
 sqlite3 "$FAVICON_DB" "INSERT OR REPLACE INTO icon_mapping(id,page_url,icon_id) VALUES(4,'https://github.com/Mintplex-Labs/anything-llm/',2);"
-sqlite3 "$FAVICON_DB" "INSERT OR REPLACE INTO icon_mapping(id,page_url,icon_id) VALUES(5,'https://docs.anythingllm.com/features/agent-computers',3);"
-sqlite3 "$FAVICON_DB" "INSERT OR REPLACE INTO icon_mapping(id,page_url,icon_id) VALUES(6,'https://docs.anythingllm.com/features/agent-computers/',3);"
+sqlite3 "$FAVICON_DB" "INSERT OR REPLACE INTO icon_mapping(id,page_url,icon_id) VALUES(5,'https://docs.PsionHQ.com/features/agent-computers',3);"
+sqlite3 "$FAVICON_DB" "INSERT OR REPLACE INTO icon_mapping(id,page_url,icon_id) VALUES(6,'https://docs.PsionHQ.com/features/agent-computers/',3);"
 
 # ---------- Chromium .desktop with CDP and Chrome icon ----------
 echo "Configuring Chromium desktop entry..."

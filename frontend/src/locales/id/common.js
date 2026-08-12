@@ -8,7 +8,7 @@ const TRANSLATIONS = {
     llm: {
       title: "Preferensi LLM",
       description:
-        "AnythingLLM dapat bekerja dengan banyak penyedia LLM. Ini akan menjadi layanan yang menangani obrolan.",
+        "PsionHQ dapat bekerja dengan banyak penyedia LLM. Ini akan menjadi layanan yang menangani obrolan.",
     },
     userSetup: {
       title: "Pengaturan Pengguna",
@@ -36,15 +36,15 @@ const TRANSLATIONS = {
         "Pengaturan ini dapat dikonfigurasi ulang kapan saja di pengaturan.",
     },
     survey: {
-      title: "Selamat Datang di AnythingLLM",
+      title: "Selamat Datang di PsionHQ",
       description:
-        "Bantu kami membuat AnythingLLM yang sesuai dengan kebutuhan Anda. Opsional.",
+        "Bantu kami membuat PsionHQ yang sesuai dengan kebutuhan Anda. Opsional.",
       email: "Apa email Anda?",
-      useCase: "Untuk apa Anda akan menggunakan AnythingLLM?",
+      useCase: "Untuk apa Anda akan menggunakan PsionHQ?",
       useCaseWork: "Untuk pekerjaan",
       useCasePersonal: "Untuk penggunaan pribadi",
       useCaseOther: "Lainnya",
-      comment: "Bagaimana Anda mengetahui AnythingLLM?",
+      comment: "Bagaimana Anda mengetahui PsionHQ?",
       commentPlaceholder:
         "Reddit, Twitter, GitHub, YouTube, dll. - Beri tahu kami bagaimana Anda menemukan kami!",
       skip: "Lewati Survei",
@@ -114,7 +114,7 @@ const TRANSLATIONS = {
     "experimental-features": "Fitur Eksperimental",
     contact: "Hubungi Dukungan",
     "browser-extension": "Ekstensi Browser",
-    "mobile-app": "AnythingLLM Mobile",
+    "mobile-app": "PsionHQ Mobile",
     channels: "Saluran",
     "available-channels": {
       telegram: "Telegram",
@@ -175,7 +175,7 @@ const TRANSLATIONS = {
       add: "Tambah pesan baru",
       save: "Simpan Pesan",
       heading: "Jelaskan kepada saya",
-      body: "manfaat AnythingLLM",
+      body: "manfaat PsionHQ",
     },
     delete: {
       title: "Hapus Ruang Kerja",
@@ -756,7 +756,7 @@ const TRANSLATIONS = {
       "intelligent-skill-selection": {
         title: "Pemilihan Keterampilan Cerdas",
         description:
-          "Aktifkan alat tanpa batas dan kurangi penggunaan token hingga 80% per kueri — AnythingLLM secara otomatis memilih keterampilan yang tepat untuk setiap prompt.",
+          "Aktifkan alat tanpa batas dan kurangi penggunaan token hingga 80% per kueri — PsionHQ secara otomatis memilih keterampilan yang tepat untuk setiap prompt.",
         "max-tools": {
           title: "Alat Maksimal",
           description:
@@ -793,16 +793,16 @@ const TRANSLATIONS = {
   customization: {
     interface: {
       title: "Preferensi UI",
-      description: "Atur preferensi UI Anda untuk AnythingLLM.",
+      description: "Atur preferensi UI Anda untuk PsionHQ.",
     },
     branding: {
       title: "Branding & Whitelabeling",
       description:
-        "White-label instance AnythingLLM Anda dengan branding kustom.",
+        "White-label instance PsionHQ Anda dengan branding kustom.",
     },
     chat: {
       title: "Obrolan",
-      description: "Atur preferensi obrolan Anda untuk AnythingLLM.",
+      description: "Atur preferensi obrolan Anda untuk PsionHQ.",
       auto_submit: {
         title: "Kirim Otomatis Input Suara",
         description:
@@ -840,7 +840,7 @@ const TRANSLATIONS = {
       "display-language": {
         title: "Bahasa Tampilan",
         description:
-          "Pilih bahasa pilihan untuk merender UI AnythingLLM - saat terjemahan tersedia.",
+          "Pilih bahasa pilihan untuk merender UI PsionHQ - saat terjemahan tersedia.",
       },
       logo: {
         title: "Logo Merek",
@@ -887,7 +887,7 @@ const TRANSLATIONS = {
   api: {
     title: "Kunci API",
     description:
-      "Kunci API memungkinkan pemegangnya untuk mengakses dan mengelola instance AnythingLLM ini secara terprogram.",
+      "Kunci API memungkinkan pemegangnya untuk mengakses dan mengelola instance PsionHQ ini secara terprogram.",
     link: "Baca dokumentasi API",
     generate: "Hasilkan Kunci API Baru",
     empty: "Tidak ada kunci API ditemukan",
@@ -901,7 +901,7 @@ const TRANSLATIONS = {
       close: "Tutup",
       create: "Buat Kunci API",
       helper:
-        "Setelah dibuat, kunci API dapat digunakan untuk mengakses dan mengonfigurasi instance AnythingLLM ini secara terprogram.",
+        "Setelah dibuat, kunci API dapat digunakan untuk mengakses dan mengonfigurasi instance PsionHQ ini secara terprogram.",
       name: {
         label: "Nama",
         placeholder: "Integrasi produksi",
@@ -926,7 +926,7 @@ const TRANSLATIONS = {
   llm: {
     title: "Preferensi LLM",
     description:
-      "Ini adalah kredensial dan pengaturan untuk penyedia obrolan & embedding LLM pilihan Anda. Penting bahwa kunci ini terkini dan benar, atau AnythingLLM tidak akan berfungsi dengan baik.",
+      "Ini adalah kredensial dan pengaturan untuk penyedia obrolan & embedding LLM pilihan Anda. Penting bahwa kunci ini terkini dan benar, atau PsionHQ tidak akan berfungsi dengan baik.",
     provider: "Penyedia LLM",
     providers: {
       azure_openai: {
@@ -1127,7 +1127,7 @@ const TRANSLATIONS = {
       "Ini adalah kredensial dan pengaturan untuk penyedia model transkripsi pilihan Anda. Penting bahwa kunci ini terkini dan benar, atau berkas media dan audio tidak akan ditranskripsikan.",
     provider: "Penyedia Transkripsi",
     "warn-start":
-      "Menggunakan model whisper lokal pada mesin dengan RAM atau CPU terbatas dapat membuat AnythingLLM terhenti saat memproses berkas media.",
+      "Menggunakan model whisper lokal pada mesin dengan RAM atau CPU terbatas dapat membuat PsionHQ terhenti saat memproses berkas media.",
     "warn-recommend":
       "Kami merekomendasikan setidaknya 2GB RAM dan mengunggah berkas <10Mb.",
     "warn-end":
@@ -1138,7 +1138,7 @@ const TRANSLATIONS = {
     "desc-start":
       "Saat menggunakan LLM yang tidak secara bawaan mendukung mesin embedding - Anda mungkin perlu menentukan kredensial tambahan untuk embedding teks.",
     "desc-end":
-      "Embedding adalah proses mengubah teks menjadi vektor. Kredensial ini diperlukan untuk mengubah berkas dan prompt Anda menjadi format yang dapat diproses oleh AnythingLLM.",
+      "Embedding adalah proses mengubah teks menjadi vektor. Kredensial ini diperlukan untuk mengubah berkas dan prompt Anda menjadi format yang dapat diproses oleh PsionHQ.",
     provider: {
       title: "Penyedia Embedding",
     },
@@ -1164,7 +1164,7 @@ const TRANSLATIONS = {
   vector: {
     title: "Basis Data Vektor",
     description:
-      "Ini adalah kredensial dan pengaturan untuk bagaimana instance AnythingLLM Anda akan berfungsi. Penting bahwa kunci ini terkini dan benar.",
+      "Ini adalah kredensial dan pengaturan untuk bagaimana instance PsionHQ Anda akan berfungsi. Penting bahwa kunci ini terkini dan benar.",
     provider: {
       title: "Penyedia Basis Data Vektor",
       description: "Tidak ada konfigurasi yang diperlukan untuk LanceDB.",
@@ -1198,7 +1198,7 @@ const TRANSLATIONS = {
   telegram: {
     title: "Bot Telegram",
     description:
-      "Hubungkan instance AnythingLLM Anda ke Telegram sehingga Anda dapat mengobrol dengan ruang kerja Anda dari perangkat apa pun.",
+      "Hubungkan instance PsionHQ Anda ke Telegram sehingga Anda dapat mengobrol dengan ruang kerja Anda dari perangkat apa pun.",
     setup: {
       step1: {
         title: "Langkah 1: Buat bot Telegram Anda",
@@ -1277,7 +1277,7 @@ const TRANSLATIONS = {
     password: {
       title: "Perlindungan Kata Sandi",
       description:
-        "Lindungi instance AnythingLLM Anda dengan kata sandi. Jika Anda lupa, tidak ada metode pemulihan, jadi pastikan Anda menyimpan kata sandi ini.",
+        "Lindungi instance PsionHQ Anda dengan kata sandi. Jika Anda lupa, tidak ada metode pemulihan, jadi pastikan Anda menyimpan kata sandi ini.",
       "password-label": "Kata Sandi Instance",
     },
   },
@@ -1295,7 +1295,7 @@ const TRANSLATIONS = {
   privacy: {
     title: "Privasi & Penanganan Data",
     description:
-      "Ini adalah konfigurasi Anda tentang bagaimana penyedia pihak ketiga yang terhubung dan AnythingLLM menangani data Anda.",
+      "Ini adalah konfigurasi Anda tentang bagaimana penyedia pihak ketiga yang terhubung dan PsionHQ menangani data Anda.",
     anonymous: "Telemetri Anonim Diaktifkan",
   },
   connectors: {
@@ -1468,22 +1468,22 @@ const TRANSLATIONS = {
       fetching: "Mengambil...",
       "fetch-website": "Ambil situs web",
       "privacy-notice":
-        "Berkas ini akan diunggah ke pemroses dokumen yang berjalan di instance AnythingLLM ini. Berkas ini tidak dikirim atau dibagikan dengan pihak ketiga.",
+        "Berkas ini akan diunggah ke pemroses dokumen yang berjalan di instance PsionHQ ini. Berkas ini tidak dikirim atau dibagikan dengan pihak ketiga.",
     },
     pinning: {
       what_pinning: "Apa itu pinning dokumen?",
       pin_explained_block1:
-        "Saat Anda <b>pin</b> dokumen di AnythingLLM, kami akan menyuntikkan seluruh konten dokumen ke dalam jendela prompt Anda agar LLM Anda dapat memahaminya sepenuhnya.",
+        "Saat Anda <b>pin</b> dokumen di PsionHQ, kami akan menyuntikkan seluruh konten dokumen ke dalam jendela prompt Anda agar LLM Anda dapat memahaminya sepenuhnya.",
       pin_explained_block2:
         "Ini bekerja paling baik dengan <b>model konteks besar</b> atau berkas kecil yang penting untuk basis pengetahuannya.",
       pin_explained_block3:
-        "Jika Anda tidak mendapatkan jawaban yang Anda inginkan dari AnythingLLM secara bawaan, maka pinning adalah cara yang bagus untuk mendapatkan jawaban berkualitas lebih tinggi dalam satu klik.",
+        "Jika Anda tidak mendapatkan jawaban yang Anda inginkan dari PsionHQ secara bawaan, maka pinning adalah cara yang bagus untuk mendapatkan jawaban berkualitas lebih tinggi dalam satu klik.",
       accept: "Oke, mengerti",
     },
     watching: {
       what_watching: "Apa fungsi memantau dokumen?",
       watch_explained_block1:
-        "Saat Anda <b>memantau</b> dokumen di AnythingLLM, kami akan <i>secara otomatis</i> menyinkronkan konten dokumen Anda dari sumber aslinya secara berkala. Ini akan secara otomatis memperbarui konten di setiap ruang kerja tempat berkas ini dikelola.",
+        "Saat Anda <b>memantau</b> dokumen di PsionHQ, kami akan <i>secara otomatis</i> menyinkronkan konten dokumen Anda dari sumber aslinya secara berkala. Ini akan secara otomatis memperbarui konten di setiap ruang kerja tempat berkas ini dikelola.",
       watch_explained_block2:
         "Fitur ini saat ini mendukung konten berbasis online dan tidak akan tersedia untuk dokumen yang diunggah secara manual.",
       watch_explained_block3_start:
@@ -1654,7 +1654,7 @@ const TRANSLATIONS = {
         edit_description: "Perbarui konten memori ini.",
         label: "Memori",
         placeholder:
-          "mis. Nama pengguna adalah Joe, Pengguna bekerja pada AnythingLLM, dll.",
+          "mis. Nama pengguna adalah Joe, Pengguna bekerja pada PsionHQ, dll.",
         create: "Buat",
         save: "Simpan",
         cancel: "Batal",
@@ -1783,7 +1783,7 @@ const TRANSLATIONS = {
         unauthenticated: {
           title: "Autentikasi Diperlukan",
           description:
-            "Anda perlu mengautentikasi dengan Community Hub AnythingLLM sebelum mempublikasikan item.",
+            "Anda perlu mengautentikasi dengan Community Hub PsionHQ sebelum mempublikasikan item.",
           button: "Hubungkan ke Community Hub",
         },
       },

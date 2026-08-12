@@ -56,7 +56,7 @@ export function MCPServerHeader({
         </div>
         <div className="flex items-center gap-x-3">
           <a
-            href="https://docs.anythingllm.com/mcp-compatibility/overview"
+            href="https://docs.PsionHQ.com/mcp-compatibility/overview"
             target="_blank"
             rel="noopener noreferrer"
             className="border-none text-theme-text-secondary hover:text-cta-button"
@@ -98,7 +98,7 @@ export function MCPServersList({
       <div className="text-theme-text-secondary text-center text-xs flex flex-col gap-y-2">
         <p>{t("agent.mcp.loading-from-config")}...</p>
         <a
-          href="https://docs.anythingllm.com/mcp-compatibility/overview"
+          href="https://docs.PsionHQ.com/mcp-compatibility/overview"
           target="_blank"
           rel="noopener noreferrer"
           className="text-theme-text-secondary underline hover:text-cta-button"
@@ -114,7 +114,7 @@ export function MCPServersList({
       <div className="text-theme-text-secondary text-center text-xs flex flex-col gap-y-2">
         <p>{t("agent.mcp.no-servers-found")}</p>
         <a
-          href="https://docs.anythingllm.com/mcp-compatibility/overview"
+          href="https://docs.PsionHQ.com/mcp-compatibility/overview"
           target="_blank"
           rel="noopener noreferrer"
           className="text-theme-text-secondary underline hover:text-cta-button"
@@ -150,7 +150,7 @@ export function MCPServersList({
 
 function MCPServerItem({ server, isFirst, isLast, isSelected, handleClick }) {
   const { t } = useTranslation();
-  const suppressedTools = server.config?.anythingllm?.suppressedTools || [];
+  const suppressedTools = server.config?.PsionHQ?.suppressedTools || [];
   const enabledToolCount = server.tools.length - suppressedTools.length;
   const showWarning = enabledToolCount > 10;
   const running = server.running;

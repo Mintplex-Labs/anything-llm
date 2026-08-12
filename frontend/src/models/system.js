@@ -7,11 +7,11 @@ import SystemPromptVariable from "./systemPromptVariable";
 
 const System = {
   cacheKeys: {
-    footerIcons: "anythingllm_footer_links",
-    supportEmail: "anythingllm_support_email",
-    customAppName: "anythingllm_custom_app_name",
-    canViewChatHistory: "anythingllm_can_view_chat_history",
-    deploymentVersion: "anythingllm_deployment_version",
+    footerIcons: "PsionHQ_footer_links",
+    supportEmail: "PsionHQ_support_email",
+    customAppName: "PsionHQ_custom_app_name",
+    canViewChatHistory: "PsionHQ_can_view_chat_history",
+    deploymentVersion: "PsionHQ_deployment_version",
   },
   ping: async function () {
     return await fetch(`${API_BASE}/ping`)

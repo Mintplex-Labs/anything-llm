@@ -1,5 +1,5 @@
 // TODO: When CometAPI's model list is upgraded, this operation needs to be removed
-// Model filtering patterns from cometapi.md that are not supported by AnythingLLM
+// Model filtering patterns from cometapi.md that are not supported by PsionHQ
 module.exports.COMETAPI_IGNORE_PATTERNS = [
   // Image generation models
   "dall-e",

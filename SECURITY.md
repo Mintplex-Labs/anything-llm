@@ -14,9 +14,9 @@ Below are some common types of invalid reports that we will not accept and shoul
 
 ### SSRF Reports
 
-If you are about to report a SSRF about being able to call web-scraping or document collector against an internal host, [this is not a valid report](https://github.com/Mintplex-Labs/anything-llm/blob/master/collector/utils/url/index.js#L2-L13). This is a feature of the system and is intended to be used in this way given that AnythingLLM is designed to be used in this way so that it can leverage internal services for scraping and collecting content when deployed inside a VPC.
+If you are about to report a SSRF about being able to call web-scraping or document collector against an internal host, [this is not a valid report](https://github.com/Mintplex-Labs/anything-llm/blob/master/collector/utils/url/index.js#L2-L13). This is a feature of the system and is intended to be used in this way given that PsionHQ is designed to be used in this way so that it can leverage internal services for scraping and collecting content when deployed inside a VPC.
 
-This also applies to any endpoint that accepts a user-configured service URL (e.g., `basePath` for LLM providers like Ollama, LMStudio, or any other third-party service). AnythingLLM is designed to connect to services that administrators configure, including services on internal networks, localhost, or private IPs. An administrator providing a URL to a service they want to connect to is intended functionality, not a vulnerability. These endpoints require admin authentication and expose the same capability already available through the normal settings UI.
+This also applies to any endpoint that accepts a user-configured service URL (e.g., `basePath` for LLM providers like Ollama, LMStudio, or any other third-party service). PsionHQ is designed to connect to services that administrators configure, including services on internal networks, localhost, or private IPs. An administrator providing a URL to a service they want to connect to is intended functionality, not a vulnerability. These endpoints require admin authentication and expose the same capability already available through the normal settings UI.
 
 ### XXS Reports where user must right-click and paste in the URL
 
@@ -26,7 +26,7 @@ Valid XXS Reports must be zero-action - like on loading a page or a image instan
 
 ### Any "Unauthenticated" actions
 
-If the basis of your report relies on the system not setting up a password or multi-user mode, this is not a valid report. AnythingLLM is designed to be used in this way so that it can be used in trusted and fully isolated environments for single user or internal user. There are three options for authentication:
+If the basis of your report relies on the system not setting up a password or multi-user mode, this is not a valid report. PsionHQ is designed to be used in this way so that it can be used in trusted and fully isolated environments for single user or internal user. There are three options for authentication:
 
 1. No authentication - this would have no endpoint authentication and would be accessible to anyone who knows the URL.
 2. Password - this would require a password to access the system.

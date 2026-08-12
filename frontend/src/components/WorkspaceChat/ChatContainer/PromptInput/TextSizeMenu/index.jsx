@@ -55,12 +55,12 @@ export default function TextSizeButton() {
 function TextSizeMenu({ tooltipRef }) {
   const { t } = useTranslation();
   const [selectedSize, setSelectedSize] = useState(
-    window.localStorage.getItem("anythingllm_text_size") || "normal"
+    window.localStorage.getItem("PsionHQ_text_size") || "normal"
   );
 
   const handleTextSizeChange = (size) => {
     setSelectedSize(size);
-    window.localStorage.setItem("anythingllm_text_size", size);
+    window.localStorage.setItem("PsionHQ_text_size", size);
     window.dispatchEvent(new CustomEvent("textSizeChange", { detail: size }));
     tooltipRef.current?.close();
   };

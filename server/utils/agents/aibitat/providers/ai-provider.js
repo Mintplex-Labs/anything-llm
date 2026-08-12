@@ -224,8 +224,8 @@ class Provider {
           configuration: {
             baseURL: "https://openrouter.ai/api/v1",
             defaultHeaders: {
-              "HTTP-Referer": "https://anythingllm.com",
-              "X-Title": "AnythingLLM",
+              "HTTP-Referer": "https://PsionHQ.com",
+              "X-Title": "PsionHQ",
             },
           },
           apiKey: process.env.OPENROUTER_API_KEY ?? null,
@@ -403,7 +403,7 @@ class Provider {
           ...config,
         });
       // OSS Model Runners
-      // case "anythingllm_ollama":
+      // case "PsionHQ_ollama":
       //   return new ChatOllama({
       //     baseUrl: process.env.PLACEHOLDER,
       //     ...config,
@@ -511,7 +511,7 @@ class Provider {
   static contextLimit(provider = "openai", modelName) {
     if (typeof provider !== "string") {
       console.log(
-        `\x1b[43m\x1b[30m[.contextLimit warning] A non-string provider for .contextLimit was given — Returning fallback context limit of 8000.\x1b[0m\n\x1b[43m\x1b[30mThis is a bug and should be reported so that context windows are properly managed by AnythingLLM.\x1b[0m`
+        `\x1b[43m\x1b[30m[.contextLimit warning] A non-string provider for .contextLimit was given — Returning fallback context limit of 8000.\x1b[0m\n\x1b[43m\x1b[30mThis is a bug and should be reported so that context windows are properly managed by PsionHQ.\x1b[0m`
       );
       console.trace();
       return 8_000;
@@ -520,7 +520,7 @@ class Provider {
     const llm = getLLMProviderClass({ provider });
     if (!llm || !llm.hasOwnProperty("promptWindowLimit")) {
       console.warn(
-        `\x1b[33m[.contextLimit warning]\x1b[0m Could not determine .promptWindowLimit for provider ${provider}. This could lead to incorrect context window management by AnythingLLM since we cannot determine the context window limit for this provider/model combination.`
+        `\x1b[33m[.contextLimit warning]\x1b[0m Could not determine .promptWindowLimit for provider ${provider}. This could lead to incorrect context window management by PsionHQ since we cannot determine the context window limit for this provider/model combination.`
       );
       return 8_000;
     }

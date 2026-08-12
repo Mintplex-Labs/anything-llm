@@ -6,7 +6,7 @@ PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 BASE_IMAGE_DIR="$PROJECT_DIR/master/base_image"
 
 BASE_IMAGE_DATE="06_08_2026"
-BASE_URL="${OPEN_COMPUTER_BASE_IMAGE_URL:-https://cdn.anythingllm.com/support/open-computer/base-images/${BASE_IMAGE_DATE}}"
+BASE_URL="${OPEN_COMPUTER_BASE_IMAGE_URL:-https://cdn.PsionHQ.com/support/open-computer/base-images/${BASE_IMAGE_DATE}}"
 
 # ── Detect platform / arch ────────────────────────────────────────────────────
 

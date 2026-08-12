@@ -1,25 +1,25 @@
 [
   {
-    "thumbnail_url": "https://cdn.anythingllm.com/support/announcements/assets/private-browsing.png",
+    "thumbnail_url": "https://cdn.PsionHQ.com/support/announcements/assets/private-browsing.png",
     "title": "Private Web Scraping",
     "short_description": "Scrape private, gated, or authenticated websites using the browser tool.",
-    "goto": "https://docs.anythingllm.com/features/browser-tool",
-    "author": "AnythingLLM",
+    "goto": "https://docs.PsionHQ.com/features/browser-tool",
+    "author": "PsionHQ",
     "date": "July 8, 2025"
   },
   {
-    "thumbnail_url": "https://cdn.anythingllm.com/support/announcements/assets/mobile.png",
-    "title": "AnythingLLM Mobile Beta",
-    "short_description": "AnythingLLM on-device, offline, and private. Syncs with AnythingLLM.",
+    "thumbnail_url": "https://cdn.PsionHQ.com/support/announcements/assets/mobile.png",
+    "title": "PsionHQ Mobile Beta",
+    "short_description": "PsionHQ on-device, offline, and private. Syncs with PsionHQ.",
     "goto": "https://docs.google.com/forms/d/e/1FAIpQLSdrMRCUXVDWKrtNTcHzVcHQk_SRoiT8X8tiawTFtAhjMq_L6Q/viewform",
-    "author": "AnythingLLM",
+    "author": "PsionHQ",
     "date": "July 3, 2025"
   },
   {
     "title": "Community Hub updates",
-    "short_description": "You can now easily push and pull Agent Flows, System Prompts, and more to the AnythingLLM Community Hub.",
-    "goto": "https://hub.anythingllm.com",
-    "author": "AnythingLLM",
+    "short_description": "You can now easily push and pull Agent Flows, System Prompts, and more to the PsionHQ Community Hub.",
+    "goto": "https://hub.PsionHQ.com",
+    "author": "PsionHQ",
     "date": "June 25, 2025"
   }
 ]

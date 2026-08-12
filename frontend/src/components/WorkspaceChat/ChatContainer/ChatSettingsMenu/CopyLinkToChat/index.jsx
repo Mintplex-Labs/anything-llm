@@ -4,7 +4,7 @@ import { X } from "@phosphor-icons/react";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 
-const SEEN_COPY_LINK_CHAT_ALERT = "anythingllm_seen_copy_link_chat_alert";
+const SEEN_COPY_LINK_CHAT_ALERT = "PsionHQ_seen_copy_link_chat_alert";
 
 export default function CopyLinkToChatRow() {
   const { slug, threadSlug } = useParams();

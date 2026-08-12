@@ -89,7 +89,7 @@ describe("MCPHypervisor server definition parsing & validation", () => {
   function bootWithConfig(servers) {
     fs.mkdirSync(path.join(storageDir, "plugins"), { recursive: true });
     fs.writeFileSync(
-      path.join(storageDir, "plugins", "anythingllm_mcp_servers.json"),
+      path.join(storageDir, "plugins", "PsionHQ_mcp_servers.json"),
       JSON.stringify({ mcpServers: servers }, null, 2)
     );
     hypervisor = new MCPHypervisor();

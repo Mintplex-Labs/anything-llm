@@ -1,7 +1,7 @@
 <a name="readme-top"></a>
 
 <p align="center">
-  <a href="https://anythingllm.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="AnythingLLM logo"></a>
+  <a href="https://PsionHQ.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="PsionHQ logo"></a>
 </p>
 
 <div align='center'>
@@ -9,7 +9,7 @@
 </div>
 
 <p align="center">
-<b>AnythingLLM:</b> Aradığınız hepsi bir arada yapay zeka uygulaması.<br />
+<b>PsionHQ:</b> Aradığınız hepsi bir arada yapay zeka uygulaması.<br />
 Belgelerinizle sohbet edin, yapay zeka ajanlarını kullanın, son derece özelleştirilebilir, çok kullanıcılı ve zahmetsiz kurulum!
 </p>
 
@@ -20,10 +20,10 @@ Belgelerinizle sohbet edin, yapay zeka ajanlarını kullanın, son derece özell
   <a href="https://github.com/Mintplex-Labs/anything-llm/blob/master/LICENSE" target="_blank">
       <img src="https://img.shields.io/static/v1?label=license&message=MIT&color=white" alt="License">
   </a> |
-  <a href="https://docs.anythingllm.com" target="_blank">
+  <a href="https://docs.PsionHQ.com" target="_blank">
     Docs
   </a> |
-   <a href="https://my.mintplexlabs.com/aio-checkout?product=anythingllm" target="_blank">
+   <a href="https://my.mintplexlabs.com/aio-checkout?product=PsionHQ" target="_blank">
     Hosted Instance
   </a>
 </p>
@@ -33,12 +33,12 @@ Belgelerinizle sohbet edin, yapay zeka ajanlarını kullanın, son derece özell
 </p>
 
 <p align="center">
-👉 Masaüstü için AnythingLLM (Mac, Windows ve Linux)! <a href="https://anythingllm.com/download" target="_blank"> Şimdi İndir</a>
+👉 Masaüstü için PsionHQ (Mac, Windows ve Linux)! <a href="https://PsionHQ.com/download" target="_blank"> Şimdi İndir</a>
 </p>
 
 Herhangi bir belgeyi, kaynağı veya içeriği sohbet sırasında herhangi bir büyük dil modelinin referans olarak kullanabileceği bir bağlama dönüştürmenizi sağlayan tam kapsamlı bir uygulama. Bu uygulama, kullanmak istediğiniz LLM veya Vektör Veritabanını seçmenize olanak tanırken, çok kullanıcılı yönetim ve yetkilendirme desteği de sunar.
 
-![Chatting](https://github.com/Mintplex-Labs/anything-llm/releases/download/v1.11.2/AnythingLLM720p.gif)
+![Chatting](https://github.com/Mintplex-Labs/anything-llm/releases/download/v1.11.2/PsionHQ720p.gif)
 
 <details>
 <summary><kbd>Demoyu izle!</kbd></summary>
@@ -49,18 +49,18 @@ Herhangi bir belgeyi, kaynağı veya içeriği sohbet sırasında herhangi bir b
 
 ### Ürün Genel Bakışı
 
-AnythingLLM, aradığınız hepsi bir arada yapay zeka uygulamasıdır. AnythingLLM, favori yerel veya bulut LLM sağlayıcılarınızı kullanarak hiçbir ödün vermeden özel bir ChatGPT oluşturmak için ihtiyacınız olan her şeyi içerir. AnythingLLM son derece özelleştirilebilir olmakla birlikte, yerleşik ajanlar, çok kullanıcılı destek, vektör veritabanları, belge alma işlem hatları ve daha fazlası gibi hemen başlamak için ihtiyacınız olan her şeyle birlikte gelir.
+PsionHQ, aradığınız hepsi bir arada yapay zeka uygulamasıdır. PsionHQ, favori yerel veya bulut LLM sağlayıcılarınızı kullanarak hiçbir ödün vermeden özel bir ChatGPT oluşturmak için ihtiyacınız olan her şeyi içerir. PsionHQ son derece özelleştirilebilir olmakla birlikte, yerleşik ajanlar, çok kullanıcılı destek, vektör veritabanları, belge alma işlem hatları ve daha fazlası gibi hemen başlamak için ihtiyacınız olan her şeyle birlikte gelir.
 
-AnythingLLM ayrıca birden fazla kullanıcıyı da destekler; burada örneğin güvenliğini veya gizliliğini ya da fikri mülkiyetinizi tehlikeye atmadan kullanıcı başına erişimi ve deneyimi kontrol edebilirsiniz.
+PsionHQ ayrıca birden fazla kullanıcıyı da destekler; burada örneğin güvenliğini veya gizliliğini ya da fikri mülkiyetinizi tehlikeye atmadan kullanıcı başına erişimi ve deneyimi kontrol edebilirsiniz.
 
-## AnythingLLM’in Harika Özellikleri
+## PsionHQ’in Harika Özellikleri
 
-- 🆕 [**Özel Yapay Zeka Ajanları**](https://docs.anythingllm.com/agent/custom/introduction)
-- 🆕 [**Kod yazmadan AI Ajanı oluşturma aracı**](https://docs.anythingllm.com/agent-flows/overview)
+- 🆕 [**Özel Yapay Zeka Ajanları**](https://docs.PsionHQ.com/agent/custom/introduction)
+- 🆕 [**Kod yazmadan AI Ajanı oluşturma aracı**](https://docs.PsionHQ.com/agent-flows/overview)
 - 🖼️ **Çoklu-mod desteği (hem kapalı kaynak hem de açık kaynak LLM'ler!)**
 - 👤 Çok kullanıcılı destek ve yetkilendirme _(Yalnızca Docker sürümünde)_
 - 🦾 Çalışma alanı içinde ajanlar (web'de gezinme vb.)
-- 💬 [Web sitenize gömülebilir özel sohbet aracı](https://github.com/Mintplex-Labs/anythingllm-embed/blob/main/README.md) _(Yalnızca Docker sürümünde)_
+- 💬 [Web sitenize gömülebilir özel sohbet aracı](https://github.com/Mintplex-Labs/PsionHQ-embed/blob/main/README.md) _(Yalnızca Docker sürümünde)_
 - 📖 Çoklu belge türü desteği (PDF, TXT, DOCX vb.)
 - Sade ve kullanışlı sohbet arayüzü, sürükle-bırak özelliği ve net kaynak gösterimi.
 - %100 bulut konuşlandırmaya hazır.
@@ -109,7 +109,7 @@ AnythingLLM ayrıca birden fazla kullanıcıyı da destekler; burada örneğin g
 
 **Embedder modelleri:**
 
-- [AnythingLLM Native Embedder](/server/storage/models/README.md) (default)
+- [PsionHQ Native Embedder](/server/storage/models/README.md) (default)
 - [OpenAI](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [LocalAi (all)](https://localai.io/)
@@ -119,7 +119,7 @@ AnythingLLM ayrıca birden fazla kullanıcıyı da destekler; burada örneğin g
 
 **Ses Transkripsiyon Modelleri:**
 
-- [AnythingLLM Built-in](https://github.com/Mintplex-Labs/anything-llm/tree/master/server/storage/models#audiovideo-transcription) (default)
+- [PsionHQ Built-in](https://github.com/Mintplex-Labs/anything-llm/tree/master/server/storage/models#audiovideo-transcription) (default)
 - [OpenAI](https://openai.com/)
 
 **TTS (text-to-speech) desteği:**
@@ -154,12 +154,12 @@ Bu monorepo üç ana bölümden oluşmaktadır:
 - **`server`**: NodeJS ve Express tabanlı bir sunucu, tüm etkileşimleri yönetir ve vektör veritabanı işlemleri ile LLM entegrasyonlarını gerçekleştirir.
 - **`collector`**: Kullanıcı arayüzünden gelen belgeleri işleyen ve ayrıştıran NodeJS Express tabanlı bir sunucu.
 - **`docker`**: Docker kurulum talimatları, derleme süreci ve kaynak koddan nasıl derleneceğine dair bilgiler içerir.
-- **`embed`**: [Web gömme widget’ı](https://github.com/Mintplex-Labs/anythingllm-embed) oluşturma ve entegrasyonu için alt modül.
-- **`browser-extension`**: [Chrome tarayıcı eklentisi](https://github.com/Mintplex-Labs/anythingllm-extension) için alt modül.
+- **`embed`**: [Web gömme widget’ı](https://github.com/Mintplex-Labs/PsionHQ-embed) oluşturma ve entegrasyonu için alt modül.
+- **`browser-extension`**: [Chrome tarayıcı eklentisi](https://github.com/Mintplex-Labs/PsionHQ-extension) için alt modül.
 
 ## 🛳 Kendi Sunucunuzda Barındırma
 
-Mintplex Labs ve topluluk, AnythingLLM'i yerel olarak çalıştırmak için çeşitli dağıtım yöntemleri, betikler ve şablonlar sunmaktadır. Aşağıdaki tabloya göz atarak tercih ettiğiniz ortamda nasıl dağıtım yapabileceğinizi öğrenebilir veya otomatik dağıtım seçeneklerini keşfedebilirsiniz.
+Mintplex Labs ve topluluk, PsionHQ'i yerel olarak çalıştırmak için çeşitli dağıtım yöntemleri, betikler ve şablonlar sunmaktadır. Aşağıdaki tabloya göz atarak tercih ettiğiniz ortamda nasıl dağıtım yapabileceğinizi öğrenebilir veya otomatik dağıtım seçeneklerini keşfedebilirsiniz.
 | Docker | AWS | GCP | Digital Ocean | Render.com |
 |----------------------------------------|----|-----|---------------|------------|
 | [![Deploy on Docker][docker-btn]][docker-deploy] | [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy] | [![Deploy on DigitalOcean][do-btn]][do-deploy] | [![Deploy on Render.com][render-btn]][render-deploy] |
@@ -168,7 +168,7 @@ Mintplex Labs ve topluluk, AnythingLLM'i yerel olarak çalıştırmak için çe�
 | --------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------- |
 | [![Deploy on Railway][railway-btn]][railway-deploy] | [![Deploy on RepoCloud][repocloud-btn]][repocloud-deploy] | [![Deploy on Elestio][elestio-btn]][elestio-deploy] |
 
-[veya Docker kullanmadan üretim ortamında AnythingLLM kurun →](../BARE_METAL.md)
+[veya Docker kullanmadan üretim ortamında PsionHQ kurun →](../BARE_METAL.md)
 
 ## Geliştirme İçin Kurulum
 
@@ -182,14 +182,14 @@ Mintplex Labs ve topluluk, AnythingLLM'i yerel olarak çalıştırmak için çe�
 
 ## Telemetri ve Gizlilik
 
-Mintplex Labs Inc. tarafından geliştirilen AnythingLLM, anonim kullanım bilgilerini toplayan bir telemetri özelliği içermektedir.
+Mintplex Labs Inc. tarafından geliştirilen PsionHQ, anonim kullanım bilgilerini toplayan bir telemetri özelliği içermektedir.
 
 <details>
-<summary><kbd>AnythingLLM için Telemetri ve Gizlilik hakkında daha fazla bilgi</kbd></summary>
+<summary><kbd>PsionHQ için Telemetri ve Gizlilik hakkında daha fazla bilgi</kbd></summary>
 
 ### Neden?
 
-Bu bilgileri, AnythingLLM’in nasıl kullanıldığını anlamak, yeni özellikler ve hata düzeltmelerine öncelik vermek ve uygulamanın performansını ve kararlılığını iyileştirmek için kullanıyoruz.
+Bu bilgileri, PsionHQ’in nasıl kullanıldığını anlamak, yeni özellikler ve hata düzeltmelerine öncelik vermek ve uygulamanın performansını ve kararlılığını iyileştirmek için kullanıyoruz.
 
 ### Telemetriden Çıkış Yapma (Opt-Out)
 
@@ -219,7 +219,7 @@ Bu verileri doğrulamak için kod içinde **`Telemetry.sendTelemetry` çağrıla
 
 ## 🌟 Katkıda Bulunanlar
 
-[![anythingllm contributors](https://contrib.rocks/image?repo=mintplex-labs/anything-llm)](https://github.com/mintplex-labs/anything-llm/graphs/contributors)
+[![PsionHQ contributors](https://contrib.rocks/image?repo=mintplex-labs/anything-llm)](https://github.com/mintplex-labs/anything-llm/graphs/contributors)
 
 [![Star History Chart](https://api.star-history.com/svg?repos=mintplex-labs/anything-llm&type=Timeline)](https://star-history.com/#mintplex-labs/anything-llm&Date)
 
@@ -262,4 +262,4 @@ Bu proje [MIT](../LICENSE) lisansı ile lisanslanmıştır.
 [repocloud-btn]: https://d16t0pc4846x52.cloudfront.net/deploylobe.svg
 [repocloud-deploy]: https://repocloud.io/details/?app_id=276
 [elestio-btn]: https://elest.io/images/logos/deploy-to-elestio-btn.png
-[elestio-deploy]: https://elest.io/open-source/anythingllm
+[elestio-deploy]: https://elest.io/open-source/PsionHQ

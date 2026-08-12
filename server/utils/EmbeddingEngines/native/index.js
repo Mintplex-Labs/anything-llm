@@ -34,7 +34,7 @@ class NativeEmbedder {
   // This is a folder that Mintplex Labs hosts for those who cannot capture the HF model download
   // endpoint for various reasons. This endpoint is not guaranteed to be active or maintained
   // and may go offline at any time at Mintplex Labs's discretion.
-  #fallbackHost = "https://cdn.anythingllm.com/support/models/";
+  #fallbackHost = "https://cdn.PsionHQ.com/support/models/";
 
   constructor() {
     this.className = "NativeEmbedder";

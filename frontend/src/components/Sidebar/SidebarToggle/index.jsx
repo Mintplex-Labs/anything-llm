@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { SidebarSimple } from "@phosphor-icons/react";
 import paths from "@/utils/paths";
 import { Tooltip } from "react-tooltip";
-const SIDEBAR_TOGGLE_STORAGE_KEY = "anythingllm_sidebar_toggle";
+const SIDEBAR_TOGGLE_STORAGE_KEY = "PsionHQ_sidebar_toggle";
 export const SIDEBAR_TOGGLE_EVENT = "sidebar-toggle";
 
 /**

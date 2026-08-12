@@ -128,8 +128,8 @@ function getVectorDbClass(getExactly = null) {
 
 /**
  * Returns the LLMProvider with its embedder attached via system or via defined provider.
- * @notice Use resolveProviderConnector instead as this function DOES NOT handle the anythingllm-router provider.
- * You should only use this function if you are absolutely sure you are not using the anythingllm-router provider ever in your code.
+ * @notice Use resolveProviderConnector instead as this function DOES NOT handle the PsionHQ-router provider.
+ * You should only use this function if you are absolutely sure you are not using the PsionHQ-router provider ever in your code.
  * @param {{provider: string | null, model: string | null} | null} params - Initialize params for LLMs provider
  * @returns {BaseLLMProvider}
  */
@@ -251,11 +251,11 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "cerebras":
       const { CerebrasLLM } = require("../AiProviders/cerebras");
       return new CerebrasLLM(embedder, model);
-    case "anythingllm-router":
-      // Model router is handled separately in stream.js via AnythingLLMModelRouter.
+    case "PsionHQ-router":
+      // Model router is handled separately in stream.js via PsionHQModelRouter.
       // This case should not be hit directly - if it is, throw a descriptive error.
       throw new Error(
-        "anythingllm-router provider must be resolved via AnythingLLMModelRouter class, not getLLMProvider directly."
+        "PsionHQ-router provider must be resolved via PsionHQModelRouter class, not getLLMProvider directly."
       );
     default:
       throw new Error(
@@ -472,9 +472,9 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "cerebras":
       const { CerebrasLLM } = require("../AiProviders/cerebras");
       return CerebrasLLM;
-    case "anythingllm-router":
-      const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
-      return AnythingLLMModelRouter;
+    case "PsionHQ-router":
+      const { PsionHQModelRouter } = require("../AiProviders/modelRouter");
+      return PsionHQModelRouter;
     default:
       return null;
   }
@@ -647,7 +647,7 @@ function humanFileSize(bytes, si = false, dp = 1) {
 
 /**
  * Async wrapper that resolves the correct LLM connector for a workspace,
- * handling the anythingllm-router provider transparently. Callers get back
+ * handling the PsionHQ-router provider transparently. Callers get back
  * a ready-to-use connector without needing to know about routing internals.
  *
  * @param {Object} opts
@@ -673,7 +673,7 @@ async function resolveProviderConnector({
 }) {
   const effectiveProvider = workspace?.chatProvider || process.env.LLM_PROVIDER;
 
-  if (effectiveProvider !== "anythingllm-router") {
+  if (effectiveProvider !== "PsionHQ-router") {
     return {
       connector: getLLMProvider({
         provider: workspace?.chatProvider,
@@ -684,7 +684,7 @@ async function resolveProviderConnector({
     };
   }
 
-  const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
+  const { PsionHQModelRouter } = require("../AiProviders/modelRouter");
   const { ModelRouterService } = require("../router");
 
   const routerWorkspace = workspace?.router_id
@@ -696,7 +696,7 @@ async function resolveProviderConnector({
           : null,
       };
 
-  const router = new AnythingLLMModelRouter(routerWorkspace);
+  const router = new PsionHQModelRouter(routerWorkspace);
   const ctx = await ModelRouterService.gatherRoutingContext({
     workspace,
     user,
