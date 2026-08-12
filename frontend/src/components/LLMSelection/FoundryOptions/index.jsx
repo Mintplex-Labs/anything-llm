@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import System from "@/models/system";
-import showToast from "@/utils/toast";
 import strDistance from "js-levenshtein";
 import { Info } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
@@ -193,77 +192,6 @@ function FoundryModelSelection({
     setFilteredModels(Array.from(matches.values()));
   }, [searchQuery, customModels]);
 
-  async function uninstallModel(modelId) {
-    try {
-      if (
-        !window.confirm(
-          `Are you sure you want to uninstall this model? You will need to download it again to use it.`
-        )
-      )
-        return;
-
-      const { success, error } = await FoundryUtils.deleteModel(
-        modelId,
-        basePath
-      );
-      if (!success)
-        throw new Error(
-          error || "An error occurred while uninstalling the model"
-        );
-
-      const updatedModels = customModels.map((model) =>
-        model.id === modelId ? { ...model, downloaded: false } : model
-      );
-      setCustomModels(updatedModels);
-      setFilteredModels(updatedModels);
-      setSearchQuery("");
-    } catch (e) {
-      console.error("Error uninstalling model:", e);
-      showToast(
-        e.message || "An error occurred while uninstalling the model",
-        "error",
-        { clear: true }
-      );
-    }
-  }
-
-  async function downloadModel(modelId, fileSize, progressCallback) {
-    try {
-      if (
-        !window.confirm(
-          `Are you sure you want to download this model? It is ${fileSize} in size and may take a while to download.`
-        )
-      )
-        return;
-
-      const { success, error } = await FoundryUtils.downloadModel(
-        modelId,
-        basePath,
-        progressCallback
-      );
-      if (!success)
-        throw new Error(
-          error || "An error occurred while downloading the model"
-        );
-      progressCallback(100);
-
-      const updatedModels = customModels.map((model) =>
-        model.id === modelId ? { ...model, downloaded: true } : model
-      );
-      setCustomModels(updatedModels);
-      setFilteredModels(updatedModels);
-      setSearchQuery("");
-      onModelSelected(modelId);
-    } catch (e) {
-      console.error("Error downloading model:", e);
-      showToast(
-        e.message || "An error occurred while downloading the model",
-        "error",
-        { clear: true }
-      );
-    }
-  }
-
   /**
    * Pin everything already downloaded to the top, then group the rest by task.
    * The pinned group is skipped when every model is downloaded, since it would
@@ -332,8 +260,8 @@ function FoundryModelSelection({
               alias={group}
               models={models}
               setActiveModel={handleSetActiveModel}
-              downloadModel={canManage ? downloadModel : null}
-              uninstallModel={canManage ? uninstallModel : null}
+              downloadModel={null}
+              uninstallModel={null}
               selectedModelId={selectedModelId}
               ui={{ showRuntime: true }}
             />

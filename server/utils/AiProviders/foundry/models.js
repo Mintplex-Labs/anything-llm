@@ -1,5 +1,4 @@
 const { parseFoundryBasePath } = require("./index.js");
-const { safeJsonParse } = require("../../http");
 const FoundryCatalog = require("./catalog.js");
 
 /**
@@ -43,8 +42,6 @@ class FoundryModels {
   /** Loading reads a multi-GB model off disk, so it gets a much longer leash. */
   static LOAD_TIMEOUT_MS = 300_000;
 
-  static UNMANAGEABLE_ERROR =
-    "This Foundry service does not expose a model management API. Install models on the host with the Foundry Local CLI (`foundry model download <model>`), then refresh.";
 
   static #log(text, ...args) {
     console.log(`\x1b[36m[FoundryModels]\x1b[0m ${text}`, ...args);
@@ -307,107 +304,6 @@ class FoundryModels {
     }
   }
 
-  /**
-   * Download a model into the daemon's local storage.
-   * @param {string} modelId
-   * @param {(percentage: number) => void} onProgress
-   * @param {string} basePath
-   * @returns {Promise<{success: boolean, error: string|null}>}
-   */
-  static async downloadModel(
-    modelId,
-    onProgress = () => {},
-    basePath = process.env.FOUNDRY_BASE_PATH
-  ) {
-    const { source } = await this.resolveSource(basePath);
-    if (source !== "rest")
-      return { success: false, error: this.UNMANAGEABLE_ERROR };
-
-    const origin = this.#originOf(basePath);
-    try {
-      const catalog = await this.#fetchWithTimeout(
-        `${origin}/foundry/list`
-      ).then((res) => res.json());
-      const entries = Array.isArray(catalog) ? catalog : catalog?.models ?? [];
-      const model = entries.find(
-        (entry) => entry.alias === modelId || entry.name === modelId
-      );
-      if (!model)
-        throw new Error(`Model ${modelId} was not found in the catalog`);
-
-      // No timeout here — model downloads routinely run for many minutes.
-      const response = await fetch(`${origin}/openai/download`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: {
-            Uri: model.uri,
-            Name: model.name,
-            ProviderType: model.providerType,
-            Publisher: model.publisher ?? "",
-            PromptTemplate: model.promptTemplate ?? {},
-          },
-        }),
-      });
-      if (!response.ok)
-        throw new Error(`Download failed with status ${response.status}`);
-
-      // The daemon streams either `("file.onnx", 0.42)` tuples or `NN%` lines
-      // depending on its version, then a trailing JSON result object.
-      const reader = response.body.getReader();
-      let tail = "";
-      let lastPercentage = 0;
-
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
-
-        const chunk = new TextDecoder("utf-8").decode(value);
-        tail = (tail + chunk).slice(-4096);
-
-        for (const line of chunk.split(/[\r\n]+/)) {
-          if (!line.trim()) continue;
-          const tuple = line.match(/\(\s*"[^"]*"\s*,\s*(\d*\.?\d+)\s*\)/);
-          const percent = line.match(/(\d+(?:\.\d+)?)%/);
-
-          let percentage = null;
-          if (tuple) percentage = Math.round(Number(tuple[1]) * 100);
-          else if (percent) percentage = Math.round(Number(percent[1]));
-          if (percentage === null) continue;
-
-          percentage = Math.min(Math.max(percentage, 0), 100);
-          // Progress restarts per file in a multi-part model, so only advance.
-          if (percentage > lastPercentage) {
-            lastPercentage = percentage;
-            onProgress(percentage);
-          }
-        }
-      }
-
-      // Failures are reported in the final JSON payload, not the status code.
-      const finalJson = tail.match(/\{[\s\S]*\}\s*$/);
-      const result = finalJson ? safeJsonParse(finalJson[0]) : null;
-      if (result?.Success === false)
-        throw new Error(result.ErrorMessage || "Model download failed");
-
-      onProgress(100);
-      return { success: true, error: null };
-    } catch (e) {
-      return { success: false, error: e.message };
-    }
-  }
-
-  /**
-   * The REST API has no delete route — removing a model is a host-side action.
-   * @returns {Promise<{success: boolean, error: string}>}
-   */
-  static async deleteModel() {
-    return {
-      success: false,
-      error:
-        "Removing models is not supported over the Foundry REST API. Remove it on the host with `foundry cache remove <model>`.",
-    };
-  }
 
   /**
    * @typedef {'unknown'|boolean} Capability
