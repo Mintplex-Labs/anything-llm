@@ -43,18 +43,11 @@ class BaseImageGenerator {
   async generateImage({ prompt, size, signal }) {
     const imageSize =
       size || process.env.IMAGE_GEN_SIZE_PREF || DEFAULT_IMAGE_SIZE;
-    return await this.requestImage(prompt, imageSize, signal);
+    const result = await this.requestImage(prompt, imageSize, signal);
+    this._sendImageTelemetry("image_generated");
+    return result;
   }
 
-  /**
-   * Performs the actual image request and normalizes the response to a buffer.
-   * We do not force a `response_format` because some models (e.g. gpt-image-1)
-   * reject it and always return base64, while others default to a URL - so we
-   * accept whichever the provider returns.
-   * @param {string} prompt
-   * @param {string} size
-   * @returns {Promise<GeneratedImage>}
-   */
   /**
    * Edit/transform images using a text prompt. Uses the OpenAI-compatible
    * `/v1/images/edits` endpoint which OpenAI and Lemonade both support.
@@ -101,17 +94,47 @@ class BaseImageGenerator {
 
     const payload = await res.json();
     const image = payload?.data?.[0];
-    if (image?.b64_json)
-      return { buffer: Buffer.from(image.b64_json, "base64") };
-    if (image?.url) {
+    let result;
+    if (image?.b64_json) {
+      result = { buffer: Buffer.from(image.b64_json, "base64") };
+    } else if (image?.url) {
       const imgRes = await fetch(image.url, { signal: signal ?? null });
       if (!imgRes.ok)
         throw new Error(`Failed to fetch edited image: ${imgRes.status}`);
-      return { buffer: Buffer.from(await imgRes.arrayBuffer()) };
+      result = { buffer: Buffer.from(await imgRes.arrayBuffer()) };
+    } else {
+      throw new Error("Image edit returned no image data.");
     }
-    throw new Error("Image edit returned no image data.");
+    this._sendImageTelemetry("image_generated", {
+      withReferences: images.length > 0,
+    });
+    return result;
   }
 
+  /**
+   * Emits a telemetry event if Telemetry is turned on.
+   * @param {string} event
+   * @param {Object} [additionalOpts]
+   */
+  _sendImageTelemetry(event, additionalOpts = {}) {
+    const { Telemetry } = require("../../models/telemetry");
+    Telemetry.sendTelemetry(event, {
+      ...additionalOpts,
+      provider: this.className,
+      model: this.model,
+    }).catch(() => {});
+  }
+
+  /**
+   * Performs the actual image request and normalizes the response to a buffer.
+   * We do not force a `response_format` because some models (e.g. gpt-image-1)
+   * reject it and always return base64, while others default to a URL - so we
+   * accept whichever the provider returns.
+   * @param {string} prompt
+   * @param {string} size
+   * @param {AbortSignal} [signal]
+   * @returns {Promise<GeneratedImage>}
+   */
   async requestImage(prompt, size, signal) {
     this.log(`Generating ${size} image with ${this.model}.`);
     const result = await this.client.images.generate(
