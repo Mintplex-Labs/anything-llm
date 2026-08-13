@@ -88,6 +88,9 @@ function utilEndpoints(app) {
 
   const { lemonadeUtilsEndpoints } = require("./utils/lemonadeUtilsEndpoints");
   lemonadeUtilsEndpoints(app);
+
+  const { foundryUtilsEndpoints } = require("./utils/foundryUtilsEndpoints");
+  foundryUtilsEndpoints(app);
 }
 
 function getGitVersion() {

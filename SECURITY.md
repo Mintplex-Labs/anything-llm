@@ -1,12 +1,18 @@
 # Security Policy
 
+> Notice: We are **not** accepting reports for open-computer. It is in a primitive basic state for development and is not production ready or deployable in any LTS sense.
+
 ## Supported Versions
 
 The supported versions are the current major version and its two most recent minor releases. Only the latest patch within each supported major/minor is in scope.
 
 ## Reporting a Vulnerability
 
-If a security concern is found that you would like to disclose you can create a PR for it or if you would like to clear this issue before posting you can email [Core Mintplex Labs Team](mailto:team@mintplexlabs.com).
+All vulnerability reports must be submitted via [GitHub Security Advisories (GHSA)](https://github.com/Mintplex-Labs/anything-llm/security/advisories/new) — we do not monitor any other reporting platform or accept ad-hoc reports.
+
+For low-severity issues with an obvious fix, you are also welcome to simply open a public PR.
+
+If you are unsure whether something is a security issue or want to check with us before filing, you can email the [Core Mintplex Labs Team](mailto:team@mintplexlabs.com), but the report itself should still go through GHSA unless discussed otherwise.
 
 ## Invalid Report Types
 

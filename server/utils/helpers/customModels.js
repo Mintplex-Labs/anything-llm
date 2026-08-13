@@ -12,7 +12,6 @@ const { parseNvidiaNimBasePath } = require("../AiProviders/nvidiaNim");
 const { fetchPPIOModels } = require("../AiProviders/ppio");
 const { GeminiLLM } = require("../AiProviders/gemini");
 const { fetchCometApiModels } = require("../AiProviders/cometapi");
-const { parseFoundryBasePath } = require("../AiProviders/foundry");
 const { getDockerModels } = require("../AiProviders/dockerModelRunner");
 const { getAllLemonadeModels } = require("../AiProviders/lemonade");
 
@@ -939,26 +938,19 @@ async function getMoonshotAiModels(_apiKey = null) {
   return { models, error: null };
 }
 
+/**
+ * List Foundry models for the model picker.
+ *
+ * Resolves against whichever management surface this host exposes — see the
+ * models module for how that is determined and what each one can report.
+ * @see {@link ../AiProviders/foundry/models}
+ */
 async function getFoundryModels(basePath = null) {
   try {
-    const { OpenAI: OpenAIApi } = require("openai");
-    const openai = new OpenAIApi({
-      baseURL: parseFoundryBasePath(basePath || process.env.FOUNDRY_BASE_PATH),
-      apiKey: null,
-    });
-    const models = await openai.models
-      .list()
-      .then((results) =>
-        results.data.map((model) => ({
-          ...model,
-          name: model.id,
-        }))
-      )
-      .catch((e) => {
-        console.error(`Foundry:listModels`, e.message);
-        return [];
-      });
-
+    const FoundryModels = require("../AiProviders/foundry/models");
+    const { models } = await FoundryModels.listModels(
+      basePath || process.env.FOUNDRY_BASE_PATH
+    );
     return { models, error: null };
   } catch (e) {
     console.error(`Foundry:getFoundryModels`, e.message);
