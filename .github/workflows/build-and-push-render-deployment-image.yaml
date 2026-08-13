@@ -9,17 +9,17 @@ concurrency:
 
 on:
   push:
-    branches: ['render']
+    branches: ["render"]
     paths-ignore:
-      - '**.md'
-      - 'cloud-deployments/*'
-      - 'images/**/*'
-      - '.vscode/**/*'
-      - '**/.env.example'
-      - '.github/ISSUE_TEMPLATE/**/*'
-      - 'render.yaml'
-      - 'embed/**/*' # Embed should be published to frontend (yarn build:publish) if any changes are introduced
-      - 'server/utils/agents/aibitat/example/**/*' # Do not push new image for local dev testing of new aibitat images.
+      - "**.md"
+      - "cloud-deployments/*"
+      - "images/**/*"
+      - ".vscode/**/*"
+      - "**/.env.example"
+      - ".github/ISSUE_TEMPLATE/**/*"
+      - "render.yaml"
+      - "embed/**/*" # Embed should be published to frontend (yarn build:publish) if any changes are introduced
+      - "server/utils/agents/aibitat/example/**/*" # Do not push new image for local dev testing of new aibitat images.
 
 jobs:
   push_to_registries:
@@ -51,7 +51,7 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
         # Only login to the Docker Hub if the repo is mintplex/anythingllm, to allow for forks to build on GHCR
-        if: steps.dockerhub.outputs.enabled == 'true' 
+        if: steps.dockerhub.outputs.enabled == 'true'
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
@@ -65,8 +65,8 @@ jobs:
           tags: |
             type=raw,value=render
             type=raw,value=railway
-            type=raw,value=render-1.15.0
-            type=raw,value=railway-1.15.0
+            type=raw,value=render-1.16.0
+            type=raw,value=railway-1.16.0
 
       - name: Build and push multi-platform Docker image
         uses: docker/build-push-action@v6
@@ -83,7 +83,7 @@ jobs:
           cache-to: type=gha,mode=max
           build-args: |
             "STORAGE_DIR=/storage"
-      
+
       # VEX attestations are currently broken with docker scout when attaching
       # multiple attestations to multi-platform images. The second attachment
       # fails with "mismatched fs layers and diff ids".
