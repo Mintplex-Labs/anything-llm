@@ -1,4 +1,5 @@
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
+const { isAbortError } = require("../../helpers/abortSignals");
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
@@ -238,6 +239,12 @@ class SambaNovaLLM {
         stream?.endMeasurement(usage);
         resolve(fullText);
       } catch (e) {
+        // Cancelling the upstream request rejects the iterator - that is the
+        // client leaving, not a failure, so it is not reported as an error.
+        if (isAbortError(e)) {
+          stream?.endMeasurement(usage);
+          return clientAbortedHandler(resolve, fullText);
+        }
         this.log(`\x1b[43m\x1b[34m[STREAMING ERROR]\x1b[0m ${e.message}`);
         writeResponseChunk(response, {
           uuid,

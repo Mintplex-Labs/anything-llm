@@ -8,6 +8,7 @@ mkdir -p "$STORAGE_DIR/documents/custom-documents"
 mkdir -p "$STORAGE_DIR/models"
 mkdir -p "$STORAGE_DIR/vector-cache"
 mkdir -p "$STORAGE_DIR/assets"
+mkdir -p "$STORAGE_DIR/generated-images"
 touch "$STORAGE_DIR/anythingllm.db"
 
 { cd /app/server/ &&\

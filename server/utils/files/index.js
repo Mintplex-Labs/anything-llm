@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
-const { v5: uuidv5 } = require("uuid");
+const { spawn } = require("child_process");
+const { v5: uuidv5, v4: uuidv4 } = require("uuid");
 const { Document } = require("../../models/documents");
 const { DocumentSyncQueue } = require("../../models/documentSyncQueue");
 const documentsPath =
@@ -19,6 +20,10 @@ const hotdirPath =
   process.env.NODE_ENV === "development"
     ? path.resolve(__dirname, `../../../collector/hotdir`)
     : path.resolve(process.env.STORAGE_DIR, `../../collector/hotdir`);
+const generatedImagesPath =
+  process.env.NODE_ENV === "development"
+    ? path.resolve(__dirname, `../../storage/generated-images`)
+    : path.resolve(process.env.STORAGE_DIR, `generated-images`);
 
 // Should take in a folder that is a subfolder of documents
 // eg: youtube-subject/video-123.json
@@ -32,6 +37,41 @@ async function fileData(filePath = null) {
   return JSON.parse(data);
 }
 
+function listFolders() {
+  if (!fs.existsSync(documentsPath)) fs.mkdirSync(documentsPath);
+  const folders = [];
+
+  for (const file of fs.readdirSync(documentsPath)) {
+    if (path.extname(file) === ".md") continue;
+    const folderPath = path.resolve(documentsPath, file);
+    if (!fs.lstatSync(folderPath).isDirectory()) continue;
+
+    const fileCount = fs
+      .readdirSync(folderPath)
+      .filter((f) => path.extname(f) === ".json").length;
+    folders.push({ name: file, type: "folder", fileCount, items: [] });
+  }
+
+  folders.sort((a, b) => {
+    if (a.name === "custom-documents") return -1;
+    if (b.name === "custom-documents") return 1;
+    return a.name.localeCompare(b.name);
+  });
+
+  return { name: "documents", type: "folder", items: folders };
+}
+
+/**
+ * Walks the entire documents directory and returns every folder with all of
+ * its documents fully populated.
+ *
+ * This is the response shape `GET /v1/documents` has always had, so it is
+ * kept as that endpoint's default to avoid breaking existing API consumers.
+ * It is deliberately NOT used by the file picker: it parses every document on
+ * disk, which is exactly what the lazy listFolders/getDocumentsByFolder pair
+ * exists to avoid. Prefer those for anything new.
+ * @returns {Promise<{name: string, type: 'folder', items: any[]}>}
+ */
 async function viewLocalFiles() {
   if (!fs.existsSync(documentsPath)) fs.mkdirSync(documentsPath);
   const liveSyncAvailable = await DocumentSyncQueue.enabled();
@@ -99,16 +139,56 @@ async function viewLocalFiles() {
   return directory;
 }
 
+/** Largest page a caller may request. Guards against a single request
+ * synchronously reading and parsing an entire large folder. */
+const MAX_PAGE_SIZE = 1000;
+const DEFAULT_PAGE_SIZE = 100;
+
 /**
- * Gets the documents by folder name.
- * @param {string} folderName - The name of the folder to get the documents from.
- * @returns {Promise<{folder: string, documents: any[], code: number, error: string}>} - The documents by folder name.
+ * Coerces caller-supplied pagination into a safe window. Negative, NaN and
+ * oversized values fall back to defaults rather than being passed to slice(),
+ * where a negative offset would silently return the tail of the folder.
+ *
+ * `limit: "all"` is an explicit opt-out of paging, used by the file picker
+ * when the user selects a whole folder and every document must be resolved.
+ * @param {{offset?: number|string, limit?: number|string}} params
+ * @returns {{offset: number, limit: number}} limit may be Infinity for "all"
  */
-async function getDocumentsByFolder(folderName = "") {
+function normalizePagination({ offset, limit } = {}) {
+  const parsedOffset = Number.parseInt(offset, 10);
+  const parsedLimit = Number.parseInt(limit, 10);
+  return {
+    offset:
+      Number.isFinite(parsedOffset) && parsedOffset > 0 ? parsedOffset : 0,
+    limit:
+      String(limit).toLowerCase() === "all"
+        ? Infinity
+        : Number.isFinite(parsedLimit) && parsedLimit > 0
+          ? Math.min(parsedLimit, MAX_PAGE_SIZE)
+          : DEFAULT_PAGE_SIZE,
+  };
+}
+
+/**
+ * Gets a page of documents from a folder.
+ *
+ * Only the requested page is parsed, so a folder with hundreds of thousands
+ * of documents costs one readdir plus `limit` file reads. Parsing goes
+ * through fileToPickerData, which tolerates corrupt JSON and stream-parses
+ * oversized documents; anything missing required metadata is dropped rather
+ * than surfaced to the picker as a half-populated row.
+ * @param {string} folderName - The name of the folder to get the documents from.
+ * @param {{offset?: number|string, limit?: number|string}} pagination - `limit: "all"` returns every document.
+ * @returns {Promise<{folder: string, documents: any[], totalCount: number, hasMore: boolean, code: number, error: string}>}
+ */
+async function getDocumentsByFolder(folderName = "", pagination = {}) {
+  const { offset, limit } = normalizePagination(pagination);
   if (!folderName) {
     return {
       folder: folderName,
       documents: [],
+      totalCount: 0,
+      hasMore: false,
       code: 400,
       error: "Folder name must be provided.",
     };
@@ -123,30 +203,37 @@ async function getDocumentsByFolder(folderName = "") {
     return {
       folder: folderName,
       documents: [],
+      totalCount: 0,
+      hasMore: false,
       code: 404,
       error: `Folder "${folderName}" does not exist.`,
     };
   }
 
-  const documents = [];
-  const filenames = {};
-  const files = fs.readdirSync(folderPath);
-  for (const file of files) {
-    if (path.extname(file) !== ".json") continue;
-    const filePath = path.join(folderPath, file);
-    const rawData = fs.readFileSync(filePath, "utf8");
-    const cachefilename = `${folderName}/${file}`;
-    const { pageContent: _pageContent, ...metadata } = JSON.parse(rawData);
-    documents.push({
-      name: file,
-      type: "file",
-      ...metadata,
-      cached: await cachedVectorInformation(cachefilename, true),
-    });
-    filenames[cachefilename] = file;
-  }
+  const allJsonFiles = fs
+    .readdirSync(folderPath)
+    .filter((f) => path.extname(f) === ".json")
+    .sort();
+  const totalCount = allJsonFiles.length;
+  const paginatedFiles = allJsonFiles.slice(offset, offset + limit);
 
-  // Get pinned and watched information for each document in the folder
+  const liveSyncAvailable = await DocumentSyncQueue.enabled();
+  const documents = (
+    await Promise.all(
+      paginatedFiles.map((file) =>
+        fileToPickerData({
+          pathToFile: path.join(folderPath, file),
+          liveSyncAvailable,
+          cachefilename: `${folderName}/${file}`,
+        })
+      )
+    )
+  ).filter((doc) => !!doc && hasRequiredMetadata(doc));
+
+  const filenames = {};
+  for (const doc of documents)
+    filenames[`${folderName}/${doc.name}`] = doc.name;
+
   const pinnedWorkspacesByDocument =
     await getPinnedWorkspacesByDocument(filenames);
   const watchedDocumentsFilenames =
@@ -159,7 +246,14 @@ async function getDocumentsByFolder(folderName = "") {
     );
   }
 
-  return { folder: folderName, documents, code: 200, error: null };
+  return {
+    folder: folderName,
+    documents,
+    totalCount,
+    hasMore: offset + limit < totalCount,
+    code: 200,
+    error: null,
+  };
 }
 
 /**
@@ -380,6 +474,279 @@ async function getWatchedDocumentFilenames(filenames = []) {
 }
 
 /**
+ * Resolves picker metadata for a specific set of storage paths - used to
+ * render a workspace's already-embedded documents without walking the whole
+ * documents directory.
+ *
+ * Each result carries the `docpath` it was resolved from. Callers need it to
+ * attribute a document to its folder: filenames alone are ambiguous, since
+ * `folder-a/report.json` and `folder-b/myreport.json` cannot be told apart by
+ * suffix matching.
+ * @param {string[]} docpaths - `folder/file.json` paths, as stored on the workspace
+ * @returns {Promise<Array<object & {docpath: string}>>}
+ */
+async function getDocumentsByDocPaths(docpaths = []) {
+  if (!docpaths.length) return [];
+  const liveSyncAvailable = await DocumentSyncQueue.enabled();
+  const results = [];
+  const filenames = {};
+
+  for (const docpath of docpaths) {
+    const fullPath = path.resolve(documentsPath, normalizePath(docpath));
+    if (!fs.existsSync(fullPath) || !isWithin(documentsPath, fullPath))
+      continue;
+    const file = path.basename(docpath);
+    try {
+      const data = await fileToPickerData({
+        pathToFile: fullPath,
+        liveSyncAvailable,
+        cachefilename: docpath,
+      });
+      if (data && hasRequiredMetadata(data)) {
+        results.push({ ...data, docpath });
+        filenames[docpath] = file;
+      }
+    } catch {
+      continue;
+    }
+  }
+
+  const pinnedWorkspacesByDocument =
+    await getPinnedWorkspacesByDocument(filenames);
+  const watchedDocumentsFilenames =
+    await getWatchedDocumentFilenames(filenames);
+  for (const item of results) {
+    item.pinnedWorkspaces = pinnedWorkspacesByDocument[item.name] || [];
+    item.watched = watchedDocumentsFilenames.hasOwnProperty(item.name) || false;
+  }
+
+  return results;
+}
+
+const SEARCH_MAX_RESULTS = 50;
+/** Cap on a single ripgrep run's stdout so a pathological query cannot
+ * balloon memory. Well above what SEARCH_MAX_RESULTS worth of paths needs. */
+const RG_MAX_STDOUT_BYTES = 10 * 1024 * 1024;
+
+/**
+ * Runs ripgrep and resolves the set of absolute paths it printed.
+ *
+ * Asynchronous on purpose: searchDocuments is called from a request handler,
+ * and spawnSync would block the event loop for the entire scan - on a large
+ * documents directory that stalls every other request in the process.
+ * @param {string} rgPath
+ * @param {string[]} args
+ * @returns {Promise<Set<string>>} empty on any failure; search degrades rather than throwing
+ */
+function _rgRun(rgPath, args) {
+  return new Promise((resolve) => {
+    let child;
+    try {
+      child = spawn(rgPath, args, { windowsHide: true });
+    } catch {
+      return resolve(new Set());
+    }
+
+    let stdout = "";
+    let bytes = 0;
+    child.stdout.setEncoding("utf8");
+    child.stdout.on("data", (chunk) => {
+      bytes += Buffer.byteLength(chunk);
+      if (bytes > RG_MAX_STDOUT_BYTES) return child.kill();
+      stdout += chunk;
+    });
+    child.stderr.resume();
+    child.on("error", () => resolve(new Set()));
+    // Exit 0 = matches, 1 = no matches, >1 = a real error (eg. bad pattern).
+    child.on("close", (code) => {
+      if (code > 1 || !stdout) return resolve(new Set());
+      resolve(new Set(stdout.trim().split("\n").filter(Boolean)));
+    });
+  });
+}
+
+/**
+ * Finds JSON documents whose *filename* contains `searchTerm`.
+ * The term is escaped before being embedded in the glob so metacharacters are
+ * matched literally.
+ * @returns {Promise<Set<string>>} absolute file paths
+ */
+function _rgFileSearch(rgPath, searchTerm) {
+  const escaped = searchTerm.replace(/[[\]{}()*+?.\\^$|]/g, "\\$&");
+  return _rgRun(rgPath, [
+    "--files",
+    "--no-ignore",
+    "--glob",
+    `**/*${escaped}*.json`,
+    "--",
+    documentsPath,
+  ]);
+}
+
+/**
+ * Finds JSON documents whose *content* contains `searchTerm`.
+ * `--` terminates flag parsing, so a term beginning with "-" cannot be
+ * interpreted as an option.
+ * @returns {Promise<Set<string>>} absolute file paths
+ */
+function _rgContentSearch(rgPath, searchTerm) {
+  return _rgRun(rgPath, [
+    "--files-with-matches",
+    "--no-ignore",
+    "--ignore-case",
+    "--max-count",
+    "1",
+    "--glob",
+    "*.json",
+    "--",
+    searchTerm,
+    documentsPath,
+  ]);
+}
+
+/**
+ * Searches every stored document by filename and by content.
+ *
+ * Ripgrep does all of the matching. There is deliberately no fuzzy fallback
+ * pass: the previous Levenshtein stage had to readdir every folder and score
+ * every filename in-process, which is exactly the full-directory scan lazy
+ * loading exists to avoid. Only the files ripgrep actually returns are read.
+ * @param {string} searchTerm
+ * @returns {Promise<Array<{name: string, type: 'folder', items: any[]}>>} matches grouped by folder
+ */
+async function searchDocuments(searchTerm = "") {
+  const term = searchTerm?.trim();
+  if (!term) return [];
+  if (!fs.existsSync(documentsPath)) return [];
+
+  let rgPath = null;
+  try {
+    // Required lazily: a missing optional binary should disable search, not
+    // take down every consumer of this module at load time.
+    ({ rgPath } = require("@vscode/ripgrep"));
+  } catch {
+    console.error("searchDocuments: @vscode/ripgrep unavailable.");
+    return [];
+  }
+
+  const [fileHits, contentHits] = await Promise.all([
+    _rgFileSearch(rgPath, term),
+    _rgContentSearch(rgPath, term),
+  ]);
+
+  const hits = [...new Set([...fileHits, ...contentHits])]
+    .sort()
+    .slice(0, SEARCH_MAX_RESULTS);
+  if (hits.length === 0) return [];
+
+  // Group hits by their storage folder. Anything that is not exactly one
+  // level below documentsPath is not addressable as `folder/file.json`, so
+  // it cannot be embedded and is skipped.
+  const byFolder = new Map();
+  for (const absPath of hits) {
+    if (!isWithin(documentsPath, absPath)) continue;
+    const folderPath = path.dirname(absPath);
+    if (path.resolve(folderPath, "..") !== path.resolve(documentsPath))
+      continue;
+    const folder = path.basename(folderPath);
+    if (!byFolder.has(folder)) byFolder.set(folder, []);
+    byFolder.get(folder).push(absPath);
+  }
+
+  const liveSyncAvailable = await DocumentSyncQueue.enabled();
+  const results = [];
+  for (const [folder, paths] of byFolder) {
+    const filenames = {};
+    const items = (
+      await Promise.all(
+        paths.map((absPath) =>
+          fileToPickerData({
+            pathToFile: absPath,
+            liveSyncAvailable,
+            cachefilename: `${folder}/${path.basename(absPath)}`,
+          })
+        )
+      )
+    ).filter((doc) => !!doc && hasRequiredMetadata(doc));
+    if (items.length === 0) continue;
+
+    for (const doc of items) filenames[`${folder}/${doc.name}`] = doc.name;
+    const pinnedWorkspacesByDocument =
+      await getPinnedWorkspacesByDocument(filenames);
+    const watchedDocumentsFilenames =
+      await getWatchedDocumentFilenames(filenames);
+    for (const doc of items) {
+      doc.pinnedWorkspaces = pinnedWorkspacesByDocument[doc.name] || [];
+      doc.watched = Object.prototype.hasOwnProperty.call(
+        watchedDocumentsFilenames,
+        doc.name
+      );
+    }
+
+    results.push({ name: folder, type: "folder", items });
+  }
+
+  return results;
+}
+
+/**
+ * Ensures a target folder exists under the documents storage path and moves
+ * processed collector documents into it, updating each document's `location`
+ * and `name` in-place. If the folder already exists, documents are merged
+ * into it so repeated uploads to the same folder are idempotent.
+ *
+ * The folder must be a single path segment - see the note below on why.
+ * @param {Array<{location: string, name: string}>} documents - documents returned by Collector.processDocument
+ * @param {string} folderName - target folder name (e.g. "my-notes")
+ * @param {string} basePath - base documents directory (overridable for testing)
+ * @returns {string} the normalized folder name the documents were moved into
+ * @throws {Error} if the folder name is empty, escapes basePath, or is nested
+ */
+function moveProcessedDocsToFolder(
+  documents = [],
+  folderName = "",
+  basePath = documentsPath
+) {
+  const folder = normalizePath(folderName);
+  if (!folder) throw new Error("Invalid folder name.");
+
+  // Deliberate: document storage is exactly two segments (`folder/file.json`)
+  // and docpath, the embedding pipeline and the vector cache all assume that
+  // shape. A nested folder name would produce documents that the file picker
+  // (which only enumerates one level below documentsPath) cannot see and that
+  // cannot be embedded. /v1/document/upload/:folderName historically accepted
+  // a URL-encoded separator here; that is now rejected.
+  if (folder.includes("/") || folder.includes("\\"))
+    throw new Error("Folder name cannot contain path separators.");
+
+  const targetFolderPath = path.join(basePath, folder);
+  if (!isWithin(path.resolve(basePath), path.resolve(targetFolderPath)))
+    throw new Error("Invalid folder name.");
+  if (!fs.existsSync(targetFolderPath))
+    fs.mkdirSync(targetFolderPath, { recursive: true });
+
+  for (const doc of documents) {
+    const currentFolder = path.dirname(doc.location);
+    if (currentFolder === folder) continue;
+
+    const sourcePath = path.join(basePath, normalizePath(doc.location));
+    const destinationPath = path.join(
+      targetFolderPath,
+      path.basename(doc.location)
+    );
+
+    if (!isWithin(basePath, sourcePath) || !isWithin(basePath, destinationPath))
+      throw new Error("Invalid file location.");
+
+    fs.renameSync(sourcePath, destinationPath);
+    doc.location = path.join(folder, path.basename(doc.location));
+    doc.name = path.basename(doc.location);
+  }
+
+  return folder;
+}
+
+/**
  * Purges the entire vector-cache folder and recreates it.
  * @returns {void}
  */
@@ -511,10 +878,71 @@ function hasRequiredMetadata(metadata = {}) {
   );
 }
 
+const GENERATED_IMAGE_FILENAME_PATTERN = /^img-[a-f0-9-]{36}\.png$/i;
+
+/**
+ * Persists a generated image to `storage/generated-images` as a PNG.
+ * The storage name uses the `img-<uuid>.png` convention so the serve and
+ * cleanup paths can validate it. The display filename is derived from the prompt.
+ * @param {{buffer: Buffer, prompt?: string}} params
+ * @returns {Promise<{storageFilename: string, filename: string, fileSize: number}>}
+ */
+async function saveGeneratedImage({ buffer, prompt = "" }) {
+  if (!fs.existsSync(generatedImagesPath))
+    fs.mkdirSync(generatedImagesPath, { recursive: true });
+
+  const storageFilename = `img-${uuidv4()}.png`;
+  fs.writeFileSync(path.resolve(generatedImagesPath, storageFilename), buffer);
+
+  const slug =
+    prompt
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 50) || "image";
+  return {
+    storageFilename,
+    filename: `${slug}.png`,
+    fileSize: buffer.length,
+  };
+}
+
+/**
+ * Reads any `/img` generated images referenced in a chat response's `outputs`
+ * off disk and returns them as chat attachments, so they can be re-injected into
+ * chat history as vision context just like user-uploaded images. Images that are
+ * missing on disk (e.g. cleaned up) are skipped.
+ * @param {object[]} outputs - the `outputs` array from a parsed chat response
+ * @returns {import("../helpers").Attachment[]}
+ */
+function generatedImageAttachments(outputs = []) {
+  const attachments = [];
+  for (const output of outputs || []) {
+    if (output?.type !== "imageGenerationCard") continue;
+    const { storageFilename, filename } = output.payload || {};
+    if (
+      !storageFilename ||
+      !GENERATED_IMAGE_FILENAME_PATTERN.test(storageFilename)
+    )
+      continue;
+
+    const imagePath = path.resolve(generatedImagesPath, storageFilename);
+    if (!isWithin(generatedImagesPath, imagePath) || !fs.existsSync(imagePath))
+      continue;
+
+    const contentString = `data:image/png;base64,${fs.readFileSync(imagePath).toString("base64")}`;
+    attachments.push({
+      name: filename || storageFilename,
+      mime: "image/png",
+      contentString,
+    });
+  }
+  return attachments;
+}
+
 module.exports = {
   findDocumentInDocuments,
   cachedVectorInformation,
-  viewLocalFiles,
   purgeSourceDocument,
   purgeVectorCache,
   storeVectorResult,
@@ -528,4 +956,13 @@ module.exports = {
   getDocumentsByFolder,
   hotdirPath,
   sanitizeFileName,
+  generatedImagesPath,
+  saveGeneratedImage,
+  generatedImageAttachments,
+  GENERATED_IMAGE_FILENAME_PATTERN,
+  moveProcessedDocsToFolder,
+  viewLocalFiles,
+  listFolders,
+  searchDocuments,
+  getDocumentsByDocPaths,
 };

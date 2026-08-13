@@ -62,7 +62,7 @@ const TRANSLATIONS = {
     no: "Nej",
     search: "Søg",
     username_requirements:
-      "Brugernavnet skal bestå af 2-32 tegn, starte med et lille bogstav, og kun indeholde små bogstaver, tal, understregninger, bindestreger og punktummer.",
+      "Brugernavnet skal bestå af 2-64 tegn, starte med et lille bogstav, og kun indeholde små bogstaver, tal, understregninger, bindestreger og punktummer.",
     on: "Om",
     none: "Ingen",
     stopped: "Stoppet",
@@ -112,6 +112,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Planlagte opgaver",
     "model-router": "Model-router",
+    "image-generation": "Billedgenerering",
   },
   login: {
     "multi-user": {
@@ -707,6 +708,11 @@ const TRANSLATIONS = {
           },
         },
       },
+      scheduledJob: {
+        title: "Opret planlagte opgaver",
+        description:
+          'Lad agenten oprette gentagne planlagte opgaver fra chat (f.eks. "hver mandag kl. 9:00, opsummér min indbakke og send mig en e-mail"). Kun tilgængeligt i enkeltbruger-tilstand.',
+      },
     },
     mcp: {
       title: "MCP-servere",
@@ -1064,6 +1070,8 @@ const TRANSLATIONS = {
       save_embed: "Gem og indlejr",
       "total-documents_one": "{{count}} dokument",
       "total-documents_other": "{{count}} dokumenter",
+      "search-results_one": "{{count}} resultat",
+      "search-results_other": "{{count}} resultater",
     },
     upload: {
       "processor-offline": "Dokumentbehandler utilgængelig",
@@ -1112,6 +1120,32 @@ const TRANSLATIONS = {
         "Dette kan tage noget tid, afhængigt af størrelsen på din opbevaring.",
       vault_warning:
         "For at undgå eventuelle konflikter, skal du sørge for, at din Obsidian-mappe ikke er åben i øjeblikket.",
+    },
+    gitea: {
+      name: "Gitea-repository",
+      description:
+        "Importer en hel offentlig eller privat repository fra enhver Gitea-instans med ét enkelt klik.",
+      URL: "Gitea repository-URL",
+      URL_explained:
+        "URL'en til det repository, du ønsker at hente på din Gitea-instans – selvhostede instanser understøttes.",
+      token: "Gitea-adgangstoken",
+      optional: "valgfrit",
+      token_explained:
+        "Adgangstoken er nødvendigt for at få adgang til private repositories eller repositories på instanser, der kræver autentificering.",
+      token_explained_start: "Uden",
+      token_explained_link1: "Adgangstoken",
+      token_explained_end:
+        "Kun de repositorier, som din Gitea-instans eksponerer offentligt, kan indsamles.",
+      ignores: "Filen ignoreres",
+      git_ignore:
+        "Opret en liste i `.gitignore`-format for at ignorere specifikke filer under indsamlingen. Tryk på Enter efter hver post, du ønsker at gemme.",
+      task_explained:
+        "Når processen er fuldført, vil alle filer være tilgængelige for at blive indsat i arbejdsområder via dokumentvalget.",
+      branch: "Den gren, du ønsker at hente filer fra.",
+      branch_loading: "— Viser tilgængelige grene —",
+      branch_explained: "Den gren, du ønsker at hente filer fra.",
+      token_information:
+        "Uden at udfylde <b>Gitea-adgangstokenet</b>, vil denne dataforbindelse kun være i stand til at hente filer fra repositories, der er <b>offentligt tilgængelige</b> på din Gitea-instans.",
     },
   },
   chat_window: {
@@ -1258,6 +1292,7 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Transkribering mislykkedes: {{error}}",
     export: "Eksportér chat som...",
     exporting: "Eksportér...",
+    preset_img_description: "Generer et billede ud fra en tekstbeskrivelse",
   },
   profile_settings: {
     edit_account: "Rediger konto",
@@ -1365,6 +1400,11 @@ const TRANSLATIONS = {
         title: "Vis HTML i chat",
         description:
           "Generer HTML-svar i hjælperes svar.\nDette kan resultere i en meget højere kvalitet af svaret, men kan også føre til potentielle sikkerhedsrisici.",
+      },
+      "disable-auto-scroll": {
+        title: "Deaktiver automatisk rulle",
+        description:
+          "Deaktiver automatisk rulle ned til bundlinjen i chatten, når der modtages nye beskeder.",
       },
     },
   },
@@ -1909,6 +1949,24 @@ const TRANSLATIONS = {
       "routed-to": "Henvist til <route>{{model}}</route>",
       "routed-to-rule":
         "Rute via <route>{{model}}</route> gennem <rule>{{ruleTitle}}</rule>",
+    },
+  },
+  imageGeneration: {
+    title: "Præference for billedgenerering",
+    description:
+      "Konfigurer leverandøren, der bruges til at generere billeder fra kommandoen `/img`.",
+    provider: "Leverandør af billedgenerering",
+    card: {
+      "failed-to-load": "Billedet kunne ikke indlæses",
+      "alt-text": "Genereret billede",
+      edit: "Rediger",
+      download: "Download",
+    },
+    pending: {
+      heading: "Generering af dit billede...",
+      description:
+        "Det kan tage lidt tid. Det vil dukke op her, så snart det er klar.",
+      aborted: "Genereringen af billedet blev afbrudt.",
     },
   },
 };

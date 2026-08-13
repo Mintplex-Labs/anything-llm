@@ -66,10 +66,11 @@ export default function useSkillSections({
 
     // Agent Skills (default + configurable)
     const skillItems = [];
-    for (const [key, { title }] of Object.entries({
+    for (const [key, { title, mode }] of Object.entries({
       ...defaultSkills,
       ...configurableSkills,
     })) {
+      if (isMultiUser && mode?.includes("singleUserOnly")) continue;
       skillItems.push(
         buildSkillItem({
           key,

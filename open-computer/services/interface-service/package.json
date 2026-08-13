@@ -1,0 +1,20 @@
+{
+  "name": "interface-service",
+  "version": "0.1.0",
+  "private": true,
+  "description": "In-VM interface service: noVNC proxy, prompt API, event streaming, deliverables",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon --watch . --ext js,json,html --ignore node_modules --exec 'node index.js'"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "http-proxy-middleware": "^3.0.0",
+    "node-html-parser": "^7.0.1",
+    "turndown": "^7.2.0",
+    "uuid": "^11.1.0",
+    "ws": "^8.18.0",
+    "xlsx": "^0.18.5"
+  }
+}

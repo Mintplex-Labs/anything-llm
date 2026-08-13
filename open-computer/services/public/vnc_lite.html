@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Desktop</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+    }
+    #screen {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+  <script type="module">
+    import RFB from '/desktop/core/rfb.js';
+
+    function readParam(name, defaultValue) {
+      const re = new RegExp('[?&]' + name + '=([^&#]*)');
+      const match = window.location.href.match(re);
+      return match ? decodeURIComponent(match[1]) : defaultValue;
+    }
+
+    const host     = readParam('host',     window.location.hostname);
+    const port     = readParam('port',     window.location.port);
+    const password = readParam('password', '');
+    const path     = readParam('path',     'websockify');
+    const scale    = readParam('scale',    'false') !== 'false';
+
+    let url = (window.location.protocol === 'https:' ? 'wss' : 'ws') + '://' + host;
+    if (port) url += ':' + port;
+    url += '/' + path;
+
+    const rfb = new RFB(document.getElementById('screen'), url,
+      password ? { credentials: { password } } : undefined);
+
+    rfb.scaleViewport = scale;
+    rfb.resizeSession = !scale;
+  </script>
+</head>
+<body>
+  <div id="screen"></div>
+</body>
+</html>

@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require("uuid");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
+const { isAbortError } = require("../../helpers/abortSignals");
 const {
   formatChatHistory,
   writeResponseChunk,
@@ -19,7 +20,8 @@ class OpenAiLLM {
     this.openai = new OpenAIApi({
       apiKey: process.env.OPEN_AI_KEY,
     });
-    this.model = modelPreference || process.env.OPEN_MODEL_PREF || "gpt-4o";
+    this.model =
+      modelPreference || process.env.OPEN_MODEL_PREF || "gpt-4.1-nano";
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -266,6 +268,12 @@ class OpenAiLLM {
           }
         }
       } catch (e) {
+        // Cancelling the upstream request rejects the iterator - that is the
+        // client leaving, not a failure, so it is not reported as an error.
+        if (isAbortError(e)) {
+          stream?.endMeasurement(usage);
+          return clientAbortedHandler(resolve, fullText);
+        }
         console.log(`\x1b[43m\x1b[34m[STREAMING ERROR]\x1b[0m ${e.message}`);
         writeResponseChunk(response, {
           uuid,

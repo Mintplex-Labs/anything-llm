@@ -771,52 +771,10 @@
     "@langchain/core" "~0.1"
     js-tiktoken "^1.0.11"
 
-"@mdpdf/mdpdf-darwin-arm64@0.1.4":
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/@mdpdf/mdpdf-darwin-arm64/-/mdpdf-darwin-arm64-0.1.4.tgz#06e10d368512bcc19a77d702e1fbf32f00aba49d"
-  integrity sha512-WVfKlZgboAvudJHCr7PTdGgKNEUIUWwW/Md4MTzXamKfcfvJ6ORm8vQ6wx0jmfjBH1UwjqnINlxxYEUt1Jf7dw==
-
-"@mdpdf/mdpdf-darwin-x64@0.1.4":
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/@mdpdf/mdpdf-darwin-x64/-/mdpdf-darwin-x64-0.1.4.tgz#709e3cb191249f0b41785a01fb7aa2e9936badc7"
-  integrity sha512-tDaEuVhuFagWmSJuS44HeG4S2VzsMCV30JaF+1zMGKxnGYtuXEL+q+Lklvt1T6JkaHaZjHVEA5klz1XXTNDDHA==
-
-"@mdpdf/mdpdf-linux-arm64-gnu@0.1.4":
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/@mdpdf/mdpdf-linux-arm64-gnu/-/mdpdf-linux-arm64-gnu-0.1.4.tgz#fa4b4a319e47263df336c2a4620688cda242bfa5"
-  integrity sha512-Rhy5DI3uwKNjeS+JW33CZdguFYZ0uRmc5iOLDdHl2bvmDPUzfAQSD1g6KJtqrqyDXbTe2N9jP+NOCVtkOSpw3Q==
-
-"@mdpdf/mdpdf-linux-x64-gnu@0.1.4":
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/@mdpdf/mdpdf-linux-x64-gnu/-/mdpdf-linux-x64-gnu-0.1.4.tgz#bc4014b1da3bb6769665e002be162c993be99ddb"
-  integrity sha512-NWpMYDBr1z59H9GlQdBizI8H8ODygui7j9NHpn2qiMrcnMvPBtmkH84YaXSHSYmUQ41UafRA/bnY5h5tkQb+Bw==
-
-"@mdpdf/mdpdf-linux-x64-musl@0.1.4":
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/@mdpdf/mdpdf-linux-x64-musl/-/mdpdf-linux-x64-musl-0.1.4.tgz#f88fabab2ffd33a49b2213210d96c3d607cdd43f"
-  integrity sha512-dwwVfZpNONyYUFkFjrgRq5igEVqCMetkYR+cCmH0fD6b0mq2gsa7/mrSUPZGX5sz/dJ5hePmJb2hRBIL9Fu3yQ==
-
-"@mdpdf/mdpdf-win32-x64-msvc@0.1.4":
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/@mdpdf/mdpdf-win32-x64-msvc/-/mdpdf-win32-x64-msvc-0.1.4.tgz#75caba7ccc20d59f87bc7fa26e7597f803f13b2b"
-  integrity sha512-NQBTbhbe+i1HjC4F4WXDiYiItBm0j3LFVpz3uaZgz88umF656j0n4YgOeJKRRx6S4k+l3nzvu19GFoR3ocHLdg==
-
-"@mdpdf/mdpdf@0.1.4":
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/@mdpdf/mdpdf/-/mdpdf-0.1.4.tgz#5b244cccde9af845806deb949cd2530552e6cd1a"
-  integrity sha512-xGaqXEsuIylP0lQiA17BLb7ERMvcY3VRuyBOGbTRu6TjgrX4BZHPdoi6oUCUOi8sV/vZJYnjy7Xo/b/cX9lzsQ==
-  optionalDependencies:
-    "@mdpdf/mdpdf-darwin-arm64" "0.1.4"
-    "@mdpdf/mdpdf-darwin-x64" "0.1.4"
-    "@mdpdf/mdpdf-linux-arm64-gnu" "0.1.4"
-    "@mdpdf/mdpdf-linux-x64-gnu" "0.1.4"
-    "@mdpdf/mdpdf-linux-x64-musl" "0.1.4"
-    "@mdpdf/mdpdf-win32-x64-msvc" "0.1.4"
-
-"@mintplex-labs/bree@^9.2.5":
-  version "9.2.5"
-  resolved "https://registry.npmjs.org/@mintplex-labs/bree/-/bree-9.2.5.tgz"
-  integrity sha512-AdwR1bd3O3bucazeh8Rfdmgauy0CXwqzUKURVwBx+MJkWAUqxiMc6qOaIqg7qcWEqXC4Bm0IzOlDPNLL0EFeRQ==
+"@mintplex-labs/bree@^9.2.6":
+  version "9.2.6"
+  resolved "https://registry.yarnpkg.com/@mintplex-labs/bree/-/bree-9.2.6.tgz#aef5255744284b208a166d63f62c6ac6f7f69c1f"
+  integrity sha512-ebuwNO3LTEKfAkVM03FQ/B8KmNa6NziMpLxtH8UWq617zELXefVJD+gcgbP106XXBlCyrRs/n2wbPfJUpTqXHQ==
   dependencies:
     "@breejs/later" "^4.2.0"
     boolean "^3.2.0"
@@ -1941,7 +1899,7 @@ call-bound@^1.0.2, call-bound@^1.0.3, call-bound@^1.0.4:
 
 callsites@^3.0.0:
   version "3.1.0"
-  resolved "https://registry.yarnpkg.com/callsites/-/callsites-3.1.0.tgz#b3630abd8943432f54b3f0519238e33cd7df2f73"
+  resolved "https://registry.npmjs.org/callsites/-/callsites-3.1.0.tgz"
   integrity sha512-P8BjAsXvZS+VIDUI11hHCQEv74YT67YUi5JJFNWIqL235sBmjX4+qx9Muvls5ivyNENctx46xQLQ3aTuE7ssaQ==
 
 camelcase@6:
@@ -4773,7 +4731,7 @@ jws@^4.0.0:
 
 keyv@^4.5.4:
   version "4.5.4"
-  resolved "https://registry.yarnpkg.com/keyv/-/keyv-4.5.4.tgz#a879a99e29452f942439f2a405e3af8b31d4de93"
+  resolved "https://registry.npmjs.org/keyv/-/keyv-4.5.4.tgz"
   integrity sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==
   dependencies:
     json-buffer "3.0.1"
@@ -4991,7 +4949,7 @@ lodash.isundefined@^3.0.1:
 
 lodash.merge@^4.6.2:
   version "4.6.2"
-  resolved "https://registry.yarnpkg.com/lodash.merge/-/lodash.merge-4.6.2.tgz#558aa53b43b661e1925a0afdfa36a9a1085fe57a"
+  resolved "https://registry.npmjs.org/lodash.merge/-/lodash.merge-4.6.2.tgz"
   integrity sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==
 
 lodash.once@^4.0.0:
@@ -5792,7 +5750,7 @@ pako@^1.0.10, pako@^1.0.11, pako@^1.0.6, pako@~1.0.2:
 
 parent-module@^1.0.0:
   version "1.0.1"
-  resolved "https://registry.yarnpkg.com/parent-module/-/parent-module-1.0.1.tgz#691d2709e78c79fae3a156622452d00762caaaa2"
+  resolved "https://registry.npmjs.org/parent-module/-/parent-module-1.0.1.tgz"
   integrity sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g==
   dependencies:
     callsites "^3.0.0"
@@ -6419,7 +6377,7 @@ requires-port@^1.0.0:
 
 resolve-from@^4.0.0:
   version "4.0.0"
-  resolved "https://registry.yarnpkg.com/resolve-from/-/resolve-from-4.0.0.tgz#4abcd852ad32dd7baabfe9b40e00a36db5f392e6"
+  resolved "https://registry.npmjs.org/resolve-from/-/resolve-from-4.0.0.tgz"
   integrity sha512-pb/MYmXstAkysRFx8piNI1tGFNQIFA3vkE3Gq4EuA1dF6gHp/+vgZqsCGJapvy8N3Q+4o7FwvquPJcnZ7RYy4g==
 
 resolve@^2.0.0-next.5:
@@ -7039,7 +6997,7 @@ strip-final-newline@^2.0.0:
 
 strip-json-comments@^3.1.1:
   version "3.1.1"
-  resolved "https://registry.yarnpkg.com/strip-json-comments/-/strip-json-comments-3.1.1.tgz#31f1281b3832630434831c310c01cccda8cbe006"
+  resolved "https://registry.npmjs.org/strip-json-comments/-/strip-json-comments-3.1.1.tgz"
   integrity sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==
 
 strip-json-comments@~2.0.1:
