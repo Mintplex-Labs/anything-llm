@@ -96,6 +96,31 @@ export default function AwsBedrockLLMOptions({ settings }) {
                 autoComplete="off"
               />
             </div>
+            <div className="flex flex-col w-60">
+              <div className="flex items-center gap-x-1 mb-3">
+                <label className="text-white text-sm font-semibold block">
+                  Max Tokens
+                </label>
+                <div className="group relative">
+                  <Info size={14} className="text-white/60 cursor-pointer" />
+                  <div className="hidden group-hover:block absolute left-0 bottom-full mb-1 w-64 p-2 bg-theme-settings-input-bg text-white text-xs rounded-lg shadow-lg z-10">
+                    Maximum number of tokens the model can generate per
+                    response. Increase for longer outputs. Default is 4096.
+                  </div>
+                </div>
+              </div>
+              <input
+                type="number"
+                name="AwsBedrockLLMMaxTokens"
+                className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                placeholder="4096"
+                min={1}
+                onScroll={(e) => e.target.blur()}
+                defaultValue={settings?.AwsBedrockLLMMaxTokens}
+                required={false}
+                autoComplete="off"
+              />
+            </div>
           </>
         )}
       </div>

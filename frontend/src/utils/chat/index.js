@@ -1,5 +1,6 @@
 import { THREAD_RENAME_EVENT } from "@/components/Sidebar/ActiveWorkspaces/ThreadContainer";
 import { emitAssistantMessageCompleteEvent } from "@/components/contexts/TTSProvider";
+import { getAgentSessionActive } from "@/utils/chat/agent";
 export const ABORT_STREAM_EVENT = "abort-chat-stream";
 
 // For handling of chat responses in the frontend by their various types.
@@ -23,6 +24,7 @@ export default function handleChat(
     action = null,
     metrics = {},
     routedTo = null,
+    outputs = null,
   } = chatResult;
 
   if (type === "modelRouteNotification") {
@@ -36,8 +38,28 @@ export default function handleChat(
     return;
   }
 
+  if (type === "imageGenerationPending") {
+    const pendingMsg = {
+      type: "imageGenerationPending",
+      uuid,
+      content: "",
+      role: "assistant",
+      sources: [],
+      closed: false,
+      error: null,
+      animate: false,
+      pending: true,
+    };
+    setChatHistory([...remHistory, pendingMsg]);
+    _chatHistory.push(pendingMsg);
+    return;
+  }
+
   if (type === "abort" || type === "statusResponse") {
-    setLoadingResponse(false);
+    // Once an agent session is live, the websocket handlers in ChatContainer
+    // own the loading state - the statusResponse that closes the HTTP stream
+    // ("Swapping over to agent chat") must not hide the stop button.
+    if (type === "abort" || !getAgentSessionActive()) setLoadingResponse(false);
     setChatHistory([
       ...remHistory,
       {
@@ -80,6 +102,7 @@ export default function handleChat(
         pending: false,
         chatId,
         metrics,
+        ...(outputs ? { outputs } : {}),
       },
     ]);
     _chatHistory.push({
@@ -93,6 +116,7 @@ export default function handleChat(
       pending: false,
       chatId,
       metrics,
+      ...(outputs ? { outputs } : {}),
     });
     emitAssistantMessageCompleteEvent(chatId);
   } else if (
@@ -186,13 +210,6 @@ export default function handleChat(
       );
     }
   }
-}
-
-export function getWorkspaceSystemPrompt(workspace) {
-  return (
-    workspace?.openAiPrompt ??
-    "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed."
-  );
 }
 
 export function chatQueryRefusalResponse(workspace) {

@@ -6,6 +6,9 @@ const { Agent } = require("undici");
  * @property {string} whisperProvider - The provider to use for whisper, defaults to "local"
  * @property {string} WhisperModelPref - The model to use for whisper if set.
  * @property {string} openAiKey - The API key to use for OpenAI interfacing, mostly passed to OAI Whisper provider.
+ * @property {string} WhisperGenericOpenAiBaseUrl - The base URL of the OpenAI compatible endpoint used by the generic Whisper provider.
+ * @property {string} WhisperGenericOpenAiApiKey - The API key used by the generic (OpenAI compatible) Whisper provider.
+ * @property {string} WhisperGenericOpenAiModel - The transcription model used by the generic (OpenAI compatible) Whisper provider.
  * @property {Object} ocr - The OCR options
  * @property {{allowAnyIp: "true"|null|undefined}} runtimeSettings - The runtime settings that are passed to the collector. Persisted across requests.
  */
@@ -64,6 +67,12 @@ class CollectorApi {
       whisperProvider: process.env.WHISPER_PROVIDER || "local",
       WhisperModelPref: process.env.WHISPER_MODEL_PREF,
       openAiKey: process.env.OPEN_AI_KEY || null,
+      WhisperGenericOpenAiBaseUrl:
+        process.env.WHISPER_GENERIC_OPEN_AI_BASE_URL || null,
+      WhisperGenericOpenAiApiKey:
+        process.env.WHISPER_GENERIC_OPEN_AI_API_KEY || null,
+      WhisperGenericOpenAiModel:
+        process.env.WHISPER_GENERIC_OPEN_AI_MODEL || null,
       ocr: {
         langList: process.env.TARGET_OCR_LANG || "eng",
       },

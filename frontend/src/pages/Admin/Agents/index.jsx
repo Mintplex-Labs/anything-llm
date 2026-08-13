@@ -396,16 +396,20 @@ export default function AdminAgents() {
               activeSkills={agentSkills}
             />
 
-            <div className="text-theme-text-primary flex items-center gap-x-2 mt-6">
-              <Package size={24} />
-              <p className="text-lg font-medium">App Integrations</p>
-            </div>
-            <SkillList
-              skills={appIntegrationSkills}
-              selectedSkill={selectedSkill}
-              handleClick={handleSkillClick}
-              activeSkills={agentSkills}
-            />
+            {Object.keys(appIntegrationSkills).length > 0 && (
+              <>
+                <div className="text-theme-text-primary flex items-center gap-x-2 mt-6">
+                  <Package size={24} />
+                  <p className="text-lg font-medium">App Integrations</p>
+                </div>
+                <SkillList
+                  skills={appIntegrationSkills}
+                  selectedSkill={selectedSkill}
+                  handleClick={handleSkillClick}
+                  activeSkills={agentSkills}
+                />
+              </>
+            )}
 
             <div className="text-theme-text-primary flex items-center gap-x-2">
               <Plug size={24} />
@@ -620,16 +624,20 @@ export default function AdminAgents() {
                 activeSkills={agentSkills}
               />
 
-              <div className="text-theme-text-primary flex items-center gap-x-2 mt-6">
-                <Package size={24} />
-                <p className="text-lg font-medium">App Integrations</p>
-              </div>
-              <SkillList
-                skills={appIntegrationSkills}
-                selectedSkill={selectedSkill}
-                handleClick={handleSkillClick}
-                activeSkills={agentSkills}
-              />
+              {Object.keys(appIntegrationSkills).length > 0 && (
+                <>
+                  <div className="text-theme-text-primary flex items-center gap-x-2 mt-6">
+                    <Package size={24} />
+                    <p className="text-lg font-medium">App Integrations</p>
+                  </div>
+                  <SkillList
+                    skills={appIntegrationSkills}
+                    selectedSkill={selectedSkill}
+                    handleClick={handleSkillClick}
+                    activeSkills={agentSkills}
+                  />
+                </>
+              )}
 
               <div className="text-theme-text-primary flex items-center gap-x-2 mt-4">
                 <Plug size={24} />

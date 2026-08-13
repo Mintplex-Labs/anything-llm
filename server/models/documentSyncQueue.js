@@ -4,7 +4,7 @@ const { SystemSettings } = require("./systemSettings");
 const { Telemetry } = require("./telemetry");
 
 /**
- * @typedef {('link'|'youtube'|'confluence'|'github'|'gitlab')} validFileType
+ * @typedef {('link'|'youtube'|'confluence'|'github'|'gitlab'|'gitea')} validFileType
  */
 
 const DocumentSyncQueue = {
@@ -16,6 +16,7 @@ const DocumentSyncQueue = {
     "confluence",
     "github",
     "gitlab",
+    "gitea",
     "drupalwiki",
   ],
   /**
@@ -77,6 +78,7 @@ const DocumentSyncQueue = {
     if (chunkSource.startsWith("confluence://")) return true; // If is a confluence document link
     if (chunkSource.startsWith("github://")) return true; // If is a GitHub file reference
     if (chunkSource.startsWith("gitlab://")) return true; // If is a GitLab file reference
+    if (chunkSource.startsWith("gitea://")) return true; // If is a Gitea file reference
     if (chunkSource.startsWith("drupalwiki://")) return true; // If is a DrupalWiki document link
     return false;
   },

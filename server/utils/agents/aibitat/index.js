@@ -1,5 +1,5 @@
 /* eslint-disable unused-imports/no-unused-vars */
-const { EventEmitter } = require("events");
+const { EventEmitter, setMaxListeners } = require("events");
 const { APIError } = require("./error.js");
 const Providers = require("./providers/index.js");
 const { Telemetry } = require("../../../models/telemetry.js");
@@ -32,6 +32,20 @@ class AIbitat {
 
   /** @type {import("./providers/ai-provider").AgentProviderInstance|null} */
   _providerInstance = null;
+
+  /**
+   * Whether this session was aborted (user hit stop, socket closed, or bail command).
+   * Checked at loop boundaries so no further LLM calls or turns run after abort.
+   * @type {boolean}
+   */
+  _aborted = false;
+
+  /**
+   * Session-wide AbortController. Its signal is bound to every provider handed out
+   * by `getProviderForConfig` so an abort tears down in-flight LLM requests.
+   * @type {AbortController}
+   */
+  abortController = new AbortController();
 
   defaultProvider = null;
   defaultInterrupt;
@@ -110,6 +124,10 @@ class AIbitat {
     };
     this.provider = this.defaultProvider.provider;
     this.model = this.defaultProvider.model;
+
+    // Providers can register an abort listener per LLM request on the session
+    // signal - lift the EventTarget warning threshold (0 = unlimited).
+    setMaxListeners(0, this.abortController.signal);
   }
 
   /**
@@ -405,9 +423,13 @@ class AIbitat {
   }
 
   /**
-   * Abort the running of any plugins that may still be pending (Langchain summarize)
+   * Abort the session: cancels in-flight provider requests via the abort
+   * signal, stops the chat loop at the next boundary, and notifies plugins
+   * that may still be pending (Langchain summarize).
    */
   abort() {
+    this._aborted = true;
+    this.abortController.abort();
     this.emitter.emit("abort", null, this);
   }
 
@@ -580,6 +602,8 @@ class AIbitat {
    * @param keepAlive Whether to keep the chat alive.
    */
   async chat(route, keepAlive = true) {
+    if (this._aborted) return;
+
     // check if the message is for a group
     // if it is, select the next node to chat with from the group
     // and then ask them to reply.
@@ -589,6 +613,7 @@ class AIbitat {
       try {
         nextNode = await this.selectNext(route.from);
       } catch (error) {
+        if (this._aborted) return;
         if (error instanceof APIError) {
           return this.newError({ from: route.from, to: route.to }, error);
         }
@@ -633,11 +658,17 @@ class AIbitat {
     try {
       reply = await this.reply(route);
     } catch (error) {
+      if (this._aborted) return;
       if (error instanceof APIError) {
         return this.newError({ from: route.from, to: route.to }, error);
       }
       throw error;
     }
+
+    // An abort mid-stream resolves with a partial reply - stop here so the
+    // session doesn't fall through to interrupt/terminate handling (which
+    // would park a feedback timeout waiting on a socket that already closed).
+    if (this._aborted) return;
 
     if (
       reply === "TERMINATE" ||
@@ -962,6 +993,8 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     try {
       return await providerCall();
     } catch (error) {
+      // User-initiated abort - rethrow as-is so the chat loop exits quietly.
+      if (this._aborted) throw error;
       console.error(`[AIbitat] Provider error: ${error.message}`, {
         hide_meta: true,
       });
@@ -985,6 +1018,8 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     byAgent = null,
     depth = 0
   ) {
+    // Bail before any (further) LLM calls when the session was aborted mid-execution.
+    if (this._aborted) return null;
     const eventHandler = (type, data) => {
       this?.socket?.send(type, data);
     };
@@ -996,6 +1031,10 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     const completionStream = await this.#safeProviderCall(() =>
       this.providerInstance.stream(messages, functions, eventHandler)
     );
+
+    // An abort mid-stream resolves (not throws) with a partial completion,
+    // which can include a truncated tool call - never act on it.
+    if (this._aborted) return null;
 
     if (completionStream.functionCall) {
       const { name, arguments: args } = completionStream.functionCall;
@@ -1139,6 +1178,8 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     depth = 0,
     msgUUID = null
   ) {
+    // Bail before any (further) LLM calls when the session was aborted mid-execution.
+    if (this._aborted) return null;
     // Create a stable UUID at the start of execution for event correlation
     if (!msgUUID) msgUUID = v4();
     const eventHandler = (type, data) => {
@@ -1152,6 +1193,10 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     const completion = await this.#safeProviderCall(() =>
       this.providerInstance.complete(messages, functions)
     );
+
+    // An abort mid-stream resolves (not throws) with a partial completion,
+    // which can include a truncated tool call - never act on it.
+    if (this._aborted) return null;
 
     if (completion.functionCall) {
       const { name, arguments: args } = completion.functionCall;
@@ -1356,13 +1401,26 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
   }
 
   /**
-   * Get provider based on configurations.
-   * If the provider is a string, it will return the default provider for that string.
+   * Get provider based on configurations with the session abort signal bound to it,
+   * so aborting the session cancels whatever requests that provider has in flight.
    *
    * @param config The provider configuration.
    * @returns {Providers.OpenAIProvider} The provider instance.
    */
   getProviderForConfig(config) {
+    const provider = this.#buildProviderForConfig(config);
+    provider.attachAbortSignal?.(this.abortController.signal);
+    return provider;
+  }
+
+  /**
+   * Instantiate the provider for a configuration.
+   * If the provider is a string, it will return the default provider for that string.
+   *
+   * @param config The provider configuration.
+   * @returns {Providers.OpenAIProvider} The provider instance.
+   */
+  #buildProviderForConfig(config) {
     if (typeof config.provider === "object") return config.provider;
 
     switch (config.provider) {
@@ -1395,7 +1453,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       case "textgenwebui":
         return new Providers.TextWebGenUiProvider({});
       case "bedrock":
-        return new Providers.AWSBedrockProvider({});
+        return new Providers.AWSBedrockProvider({ model: config.model });
       case "fireworksai":
         return new Providers.FireworksAIProvider({ model: config.model });
       case "nvidia-nim":
@@ -1434,6 +1492,8 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
         return new Providers.SambaNovaProvider({ model: config.model });
       case "lemonade":
         return new Providers.LemonadeProvider({ model: config.model });
+      case "omlx":
+        return new Providers.OMLXProvider({ model: config.model });
       case "minimax":
         return new Providers.MinimaxProvider({ model: config.model });
       case "cerebras":
@@ -1452,6 +1512,17 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
    */
   function(functionConfig) {
     this.functions.set(functionConfig.name, functionConfig);
+    return this;
+  }
+
+  /**
+   * Remove a registered function so the agent can no longer call it on its next
+   * turn. Used to disable a tool mid-session; restore it by re-running its plugin
+   * via aibitat.use().
+   * @param {string} functionName - The registered name of the function to remove.
+   */
+  removeFunction(functionName) {
+    this.functions.delete(functionName);
     return this;
   }
 }

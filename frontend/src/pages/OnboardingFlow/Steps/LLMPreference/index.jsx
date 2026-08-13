@@ -33,6 +33,7 @@ import DockerModelRunnerLogo from "@/media/llmprovider/docker-model-runner.png";
 import PrivateModeLogo from "@/media/llmprovider/privatemode.png";
 import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
 import LemonadeLogo from "@/media/llmprovider/lemonade.png";
+import OMLXLogo from "@/media/llmprovider/omlx.png";
 import MinimaxLogo from "@/media/llmprovider/minimax.png";
 import CerebrasLogo from "@/media/llmprovider/cerebras.png";
 
@@ -69,6 +70,7 @@ import DockerModelRunnerOptions from "@/components/LLMSelection/DockerModelRunne
 import PrivateModeOptions from "@/components/LLMSelection/PrivateModeOptions";
 import SambaNovaOptions from "@/components/LLMSelection/SambaNovaOptions";
 import LemonadeOptions from "@/components/LLMSelection/LemonadeOptions";
+import OMLXOptions from "@/components/LLMSelection/OMLXOptions";
 import MinimaxOptions from "@/components/LLMSelection/MinimaxOptions";
 import CerebrasLLMOptions from "@/components/LLMSelection/CerebrasLLMOptions";
 
@@ -145,6 +147,13 @@ const LLMS = [
     options: (settings) => <LemonadeOptions settings={settings} />,
     description:
       "Run local LLMs, ASR, TTS, and more in a single unified AI runtime.",
+  },
+  {
+    name: "oMLX",
+    value: "omlx",
+    logo: OMLXLogo,
+    options: (settings) => <OMLXOptions settings={settings} />,
+    description: "Run MLX models on Apple Silicon with smart caching.",
   },
   {
     name: "Local AI",
