@@ -1,243 +1,110 @@
 import { ArrowsDownUp } from "@phosphor-icons/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Workspace from "../../../../models/workspace";
-import System from "../../../../models/system";
 import showToast from "../../../../utils/toast";
 import Directory from "./Directory";
 import WorkspaceDirectory from "./WorkspaceDirectory";
+import useDocumentPicker from "./hooks/useDocumentPicker";
 import { useWorkspaceEmbeddingProgress } from "@/EmbeddingProgressContext";
 
 export default function DocumentSettings({ workspace }) {
   const [highlightWorkspace, setHighlightWorkspace] = useState(false);
-  const [availableDocs, setAvailableDocs] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [workspaceDocs, setWorkspaceDocs] = useState([]);
-  const [selectedItems, setSelectedItems] = useState({});
-  const [hasChanges, setHasChanges] = useState(false);
   const [movedItems, setMovedItems] = useState([]);
-  const [loadingMessage, setLoadingMessage] = useState("");
-  const availableDocsRef = useRef([]);
+  // Busy state local to the workspace (right) panel - removing embeddings.
+  const [wsBusy, setWsBusy] = useState(false);
+  const [wsBusyMessage, setWsBusyMessage] = useState("");
+  const picker = useDocumentPicker(workspace);
+  const {
+    refresh,
+    resolveSelection,
+    removeFiles,
+    clearSelection,
+    workspaceDocs: embeddedDocs,
+  } = picker;
+  const hasChanges = movedItems.length > 0;
 
-  useEffect(() => {
-    availableDocsRef.current = availableDocs;
-  }, [availableDocs]);
-
-  const fetchKeysRef = useRef(null);
   const { embeddingProgress, startEmbedding } = useWorkspaceEmbeddingProgress(
     workspace.slug,
-    {
-      onProgressCleared: () => fetchKeysRef.current?.(true),
-    }
+    { onProgressCleared: refresh }
   );
 
-  async function fetchKeys(refetchWorkspace = false, options = {}) {
-    const { autoSelectNew = false } = options;
-    const previousIds = new Set();
-    if (autoSelectNew && availableDocsRef.current?.items) {
-      for (const folder of availableDocsRef.current.items) {
-        for (const file of folder.items ?? []) {
-          if (file?.id) previousIds.add(file.id);
-        }
-      }
-    }
-    setLoading(true);
-    const localFiles = await System.localFiles();
-    const currentWorkspace = refetchWorkspace
-      ? await Workspace.bySlug(workspace.slug)
-      : workspace;
+  /**
+   * Files mid-embed are shown in the workspace panel, so hide them from the
+   * picker to avoid rendering the same document on both sides.
+   */
+  const hiddenPaths = useMemo(
+    () => new Set(Object.keys(embeddingProgress ?? {})),
+    [embeddingProgress]
+  );
 
-    const documentsInWorkspace =
-      currentWorkspace.documents.map((doc) => doc.docpath) || [];
+  /**
+   * Stage the current selection for embedding. Files are removed from the
+   * picker optimistically - no refetch, so the move is instant.
+   */
+  const moveSelectedItemsToWorkspace = useCallback(async () => {
+    setHighlightWorkspace(false);
+    const resolved = await resolveSelection();
+    if (resolved.length === 0) return clearSelection();
 
-    // Documents that are not in the workspace
-    const filteredAvailableDocs = {
-      ...localFiles,
-      items: localFiles.items.map((folder) => {
-        if (folder.items && folder.type === "folder") {
-          return {
-            ...folder,
-            items: folder.items.filter(
-              (file) =>
-                file.type === "file" &&
-                !documentsInWorkspace.includes(`${folder.name}/${file.name}`)
-            ),
-          };
-        } else {
-          return folder;
-        }
-      }),
-    };
-
-    // Documents that are already in the workspace
-    const filteredWorkspaceDocs = {
-      ...localFiles,
-      items: localFiles.items.map((folder) => {
-        if (folder.items && folder.type === "folder") {
-          return {
-            ...folder,
-            items: folder.items.filter(
-              (file) =>
-                file.type === "file" &&
-                documentsInWorkspace.includes(`${folder.name}/${file.name}`)
-            ),
-          };
-        } else {
-          return folder;
-        }
-      }),
-    };
-
-    setAvailableDocs(filteredAvailableDocs);
-    setWorkspaceDocs(filteredWorkspaceDocs);
-
-    if (autoSelectNew) {
-      const newSelected = {};
-      for (const folder of filteredAvailableDocs.items ?? []) {
-        for (const file of folder.items ?? []) {
-          if (file?.id && !previousIds.has(file.id)) {
-            newSelected[file.id] = true;
-          }
-        }
-      }
-      if (Object.keys(newSelected).length > 0) {
-        setSelectedItems((prev) => ({ ...prev, ...newSelected }));
-      }
-    }
-
-    setLoading(false);
-  }
-
-  useEffect(() => {
-    fetchKeysRef.current = fetchKeys;
-  });
-
-  useEffect(() => {
-    fetchKeys(true);
-  }, []);
+    setMovedItems((prev) => {
+      const seen = new Set(prev.map((item) => item.id));
+      return [...prev, ...resolved.filter((item) => !seen.has(item.id))];
+    });
+    removeFiles(resolved.map((item) => item.id));
+    clearSelection();
+  }, [resolveSelection, removeFiles, clearSelection]);
 
   const updateWorkspace = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setLoadingMessage("This may take a while for large documents");
-
+    e?.preventDefault();
     const filenames = movedItems.map(
       (item) => `${item.folderName}/${item.name}`
     );
-    const changesToSend = { adds: filenames };
 
-    setSelectedItems({});
-    setHasChanges(false);
+    setMovedItems([]);
     setHighlightWorkspace(false);
+    clearSelection();
 
     // Fire the embed POST first so the server is already processing the job
     // by the time the SSE connection opens. This avoids the server sending
     // idle (no active job) before embedding has started.
-    const embedPromise = Workspace.modifyEmbeddings(
-      workspace.slug,
-      changesToSend
-    );
-    startEmbedding(workspace.slug, filenames);
-
-    embedPromise.catch((error) => {
-      showToast(`Workspace update failed: ${error}`, "error", {
-        clear: true,
-      });
+    const embedPromise = Workspace.modifyEmbeddings(workspace.slug, {
+      adds: filenames,
     });
-
-    setLoading(false);
-    setLoadingMessage("");
-    setMovedItems([]);
+    startEmbedding(workspace.slug, filenames);
+    embedPromise.catch((error) => {
+      showToast(`Workspace update failed: ${error}`, "error", { clear: true });
+    });
   };
 
-  const moveSelectedItemsToWorkspace = () => {
-    setHighlightWorkspace(false);
-    setHasChanges(true);
-
-    const newMovedItems = [];
-
-    for (const itemId of Object.keys(selectedItems)) {
-      for (const folder of availableDocs.items) {
-        const foundItem = folder.items.find((file) => file.id === itemId);
-        if (foundItem) {
-          newMovedItems.push({ ...foundItem, folderName: folder.name });
-          break;
-        }
+  /** Merge not-yet-embedded staged files into the workspace panel. */
+  const workspaceDocs = useMemo(() => {
+    if (movedItems.length === 0) return embeddedDocs;
+    const items = embeddedDocs.items.map((f) => ({
+      ...f,
+      items: [...f.items],
+    }));
+    for (const moved of movedItems) {
+      let folder = items.find((f) => f.name === moved.folderName);
+      if (!folder) {
+        folder = { name: moved.folderName, type: "folder", items: [] };
+        items.push(folder);
       }
+      if (!folder.items.some((item) => item.id === moved.id))
+        folder.items.push(moved);
     }
+    return { ...embeddedDocs, items };
+  }, [embeddedDocs, movedItems]);
 
-    setMovedItems([...movedItems, ...newMovedItems]);
-
-    let newAvailableDocs = JSON.parse(JSON.stringify(availableDocs));
-    let newWorkspaceDocs = JSON.parse(JSON.stringify(workspaceDocs));
-
-    for (const itemId of Object.keys(selectedItems)) {
-      let foundItem = null;
-      let foundFolderIndex = null;
-
-      newAvailableDocs.items = newAvailableDocs.items.map(
-        (folder, folderIndex) => {
-          const remainingItems = folder.items.filter((file) => {
-            const match = file.id === itemId;
-            if (match) {
-              foundItem = { ...file };
-              foundFolderIndex = folderIndex;
-            }
-            return !match;
-          });
-
-          return {
-            ...folder,
-            items: remainingItems,
-          };
-        }
-      );
-
-      if (foundItem) {
-        newWorkspaceDocs.items[foundFolderIndex].items.push(foundItem);
-      }
-    }
-
-    setAvailableDocs(newAvailableDocs);
-    setWorkspaceDocs(newWorkspaceDocs);
-    setSelectedItems({});
-  };
-
-  const visibleAvailableDocs = useMemo(() => {
-    const embeddingFilenames = new Set(Object.keys(embeddingProgress ?? {}));
-    if (embeddingFilenames.size === 0) return availableDocs;
-    return {
-      ...availableDocs,
-      items: (availableDocs.items ?? []).map((folder) => {
-        if (folder.items && folder.type === "folder") {
-          return {
-            ...folder,
-            items: folder.items.filter(
-              (file) => !embeddingFilenames.has(`${folder.name}/${file.name}`)
-            ),
-          };
-        }
-        return folder;
-      }),
-    };
-  }, [availableDocs, embeddingProgress]);
+  const initializing = picker.status === "initializing";
 
   return (
     <div className="flex upload-modal -mt-6 z-10 relative">
       <Directory
-        files={visibleAvailableDocs}
-        setFiles={setAvailableDocs}
-        loading={loading}
-        loadingMessage={loadingMessage}
-        setLoading={setLoading}
+        picker={picker}
         workspace={workspace}
-        fetchKeys={fetchKeys}
-        selectedItems={selectedItems}
-        setSelectedItems={setSelectedItems}
-        updateWorkspace={updateWorkspace}
-        highlightWorkspace={highlightWorkspace}
+        hiddenPaths={hiddenPaths}
         setHighlightWorkspace={setHighlightWorkspace}
         moveToWorkspace={moveSelectedItemsToWorkspace}
-        setLoadingMessage={setLoadingMessage}
       />
       <div className="upload-modal-arrow">
         <ArrowsDownUp className="text-white text-base font-bold rotate-90 w-11 h-11" />
@@ -246,11 +113,11 @@ export default function DocumentSettings({ workspace }) {
         workspace={workspace}
         files={workspaceDocs}
         highlightWorkspace={highlightWorkspace}
-        loading={loading}
-        loadingMessage={loadingMessage}
-        setLoadingMessage={setLoadingMessage}
-        setLoading={setLoading}
-        fetchKeys={fetchKeys}
+        loading={initializing || wsBusy}
+        loadingMessage={wsBusyMessage}
+        setLoadingMessage={setWsBusyMessage}
+        setLoading={setWsBusy}
+        fetchKeys={refresh}
         hasChanges={hasChanges}
         saveChanges={updateWorkspace}
         movedItems={movedItems}

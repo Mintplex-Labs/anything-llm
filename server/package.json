@@ -30,7 +30,7 @@
     "@langchain/core": "0.1.61",
     "@langchain/openai": "0.0.28",
     "@langchain/textsplitters": "0.0.0",
-    "@mintplex-labs/bree": "^9.2.5",
+    "@mintplex-labs/bree": "^9.2.6",
     "@mintplex-labs/express-ws": "^5.0.7",
     "@mintplex-labs/mdpdf": "^0.1.9",
     "@modelcontextprotocol/sdk": "^1.24.3",

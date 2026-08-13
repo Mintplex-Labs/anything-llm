@@ -88,6 +88,9 @@ function utilEndpoints(app) {
 
   const { lemonadeUtilsEndpoints } = require("./utils/lemonadeUtilsEndpoints");
   lemonadeUtilsEndpoints(app);
+
+  const { foundryUtilsEndpoints } = require("./utils/foundryUtilsEndpoints");
+  foundryUtilsEndpoints(app);
 }
 
 function getGitVersion() {
@@ -239,6 +242,9 @@ function getModelTag() {
       break;
     case "cerebras":
       model = process.env.CEREBRAS_MODEL_PREF;
+      break;
+    case "omlx":
+      model = process.env.OMLX_LLM_MODEL_PREF;
       break;
     default:
       model = "--";

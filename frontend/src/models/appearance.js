@@ -6,7 +6,8 @@ import { safeJsonParse } from "@/utils/request";
  * 'autoSubmitSttInput' |
  * 'autoPlayAssistantTtsResponse' |
  * 'enableSpellCheck' |
- * 'renderHTML'
+ * 'renderHTML' |
+ * 'disableAutoScroll'
  * } AvailableSettings - The supported settings for the appearance model.
  */
 
@@ -17,6 +18,7 @@ const Appearance = {
     autoPlayAssistantTtsResponse: false,
     enableSpellCheck: true,
     renderHTML: false,
+    disableAutoScroll: false,
   },
 
   /**

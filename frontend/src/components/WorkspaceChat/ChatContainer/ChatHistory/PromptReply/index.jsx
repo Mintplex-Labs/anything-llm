@@ -83,6 +83,7 @@ function RenderAssistantChatContent({ message, messageId }) {
         ref={thoughtChainRef}
         content=""
         messageId={messageId}
+        allowAnimation={true}
       />
     );
 
@@ -93,6 +94,7 @@ function RenderAssistantChatContent({ message, messageId }) {
           ref={thoughtChainRef}
           content=""
           messageId={messageId}
+          allowAnimation={true}
         />
       )}
       <span

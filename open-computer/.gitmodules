@@ -1,0 +1,3 @@
+[submodule "qemu"]
+	path = master/qemu-src
+	url = https://gitlab.com/qemu-project/qemu.git

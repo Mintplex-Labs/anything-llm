@@ -1,0 +1,1899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Open Computer</title>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0f0f0f;
+      color: #e0e0e0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      background: #1a1a1a;
+      border-bottom: 1px solid #2a2a2a;
+      flex-shrink: 0;
+    }
+
+    header h1 {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 17px; font-weight: 600; letter-spacing: 0.5px;
+      color: #fff;
+    }
+    header h1 img { height: 20px; }
+    header h1 span { opacity: 0.4; font-weight: 400; margin: 0 2px; }
+
+    .status {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12px; color: #888;
+    }
+
+    .status-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #444; transition: background 0.3s;
+    }
+    .status-dot.connected { background: #22c55e; }
+
+    .header-actions { display: flex; align-items: center; gap: 12px; }
+
+    #btn-config, #btn-upload {
+      background: none; border: 1px solid #333; border-radius: 4px;
+      color: #888; font-size: 11px; padding: 4px 10px; cursor: pointer;
+    }
+    #btn-config:hover, #btn-upload:hover { color: #fff; border-color: #555; }
+    #btn-config.active { color: #2563eb; border-color: #2563eb; }
+
+    #upload-progress {
+      display: none; flex-direction: column; align-items: center; gap: 10px;
+      position: fixed; bottom: 80px; right: 20px; z-index: 10000;
+      background: #1a1a1a; border: 1px solid #333; border-radius: 8px;
+      padding: 12px 16px; min-width: 240px;
+    }
+    #upload-progress.active { display: flex; }
+    #upload-progress .upload-filename {
+      font-size: 12px; color: #ccc; max-width: 200px;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    #upload-progress .upload-bar {
+      width: 100%; height: 4px; background: #333; border-radius: 2px; overflow: hidden;
+    }
+    #upload-progress .upload-bar-fill {
+      height: 100%; background: #3b82f6; width: 0%; transition: width 0.2s;
+    }
+    #upload-progress .upload-status { font-size: 11px; color: #888; }
+
+    #usage-badge {
+      font-size: 10px; color: #666; font-family: "SF Mono", Monaco, monospace;
+      display: none; gap: 8px; align-items: center;
+    }
+    #usage-badge.visible { display: flex; }
+    #usage-badge span { white-space: nowrap; }
+    #usage-badge .tok { color: #f59e0b; }
+    #usage-badge .tools { color: #60a5fa; }
+    #usage-badge .ctx-bar {
+      display: flex; align-items: center; gap: 4px;
+    }
+    #usage-badge .ctx-pct {
+      font-size: 10px; font-weight: 600; min-width: 28px; text-align: right;
+      transition: color 0.4s;
+    }
+    #usage-badge .ctx-track {
+      width: 40px; height: 4px; background: #2a2a2a; border-radius: 2px; overflow: hidden;
+    }
+    #usage-badge .ctx-fill {
+      height: 100%; width: 0%; border-radius: 2px;
+      transition: width 0.5s ease, background 0.5s ease;
+    }
+    #usage-badge .compacted-flash {
+      color: #a78bfa; animation: compact-pulse 2s ease-out forwards;
+    }
+    @keyframes compact-pulse {
+      0%   { opacity: 1; }
+      70%  { opacity: 1; }
+      100% { opacity: 0; display: none; }
+    }
+
+    #config-panel {
+      display: none; padding: 10px 20px;
+      background: #161616; border-bottom: 1px solid #2a2a2a;
+      flex-shrink: 0;
+    }
+    #config-panel.visible { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    #config-panel label { font-size: 11px; color: #888; white-space: nowrap; }
+    #config-panel input, #config-panel select {
+      padding: 5px 10px; border: 1px solid #333; border-radius: 4px;
+      background: #1e1e1e; color: #e0e0e0; font-size: 12px;
+    }
+    #config-panel input:focus, #config-panel select:focus { outline: none; border-color: #555; }
+    #config-panel input[type="password"] { width: 280px; font-family: monospace; }
+    #config-panel select { width: 160px; }
+    #config-panel button {
+      padding: 5px 14px; border: none; border-radius: 4px;
+      background: #2563eb; color: #fff; font-size: 12px; cursor: pointer;
+    }
+    #config-panel button:hover { background: #1d4ed8; }
+    #config-panel .config-status { font-size: 11px; color: #22c55e; margin-left: 4px; }
+    #config-panel .config-status.warn { color: #f59e0b; }
+
+    /* ─── Main: VM left, Sidebar right ─── */
+    #main-area {
+      flex: 1; display: flex; flex-direction: row; overflow: hidden; min-height: 0;
+    }
+
+    #desktop-container {
+      flex: 1; position: relative; background: #000;
+      overflow: hidden; min-width: 0;
+    }
+    #desktop-container iframe {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%; border: none;
+    }
+    .placeholder {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center; color: #444;
+    }
+    .placeholder p { margin-top: 8px; font-size: 13px; }
+
+    /* ─── Sidebar resize handle ─── */
+    #sidebar-resize-handle {
+      width: 5px; flex-shrink: 0; cursor: ew-resize;
+      background: #2a2a2a; transition: background 0.15s;
+    }
+    #sidebar-resize-handle:hover, #sidebar-resize-handle.active { background: #2563eb; }
+
+    /* ─── Sidebar ─── */
+    #sidebar {
+      width: 397px; min-width: 280px; max-width: 60vw;
+      display: flex; flex-direction: column;
+      background: #111; border-left: 1px solid #2a2a2a;
+      flex-shrink: 0;
+    }
+
+    /* ─── Sidebar tabs ─── */
+    #sidebar-tabs {
+      display: flex; align-items: stretch;
+      background: #161616; border-bottom: 1px solid #2a2a2a;
+      flex-shrink: 0;
+    }
+    #sidebar-tabs .tab {
+      flex: 1; padding: 8px 0; text-align: center;
+      font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.5px; color: #666; cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    #sidebar-tabs .tab:hover { color: #aaa; }
+    #sidebar-tabs .tab.active { color: #e0e0e0; border-bottom-color: #2563eb; }
+
+    /* ─── Tab panels ─── */
+    .tab-panel { display: none; flex: 1; flex-direction: column; min-height: 0; overflow: hidden; }
+    .tab-panel.active { display: flex; }
+
+    /* ─── Chat tab ─── */
+    #chat-messages {
+      flex: 1; overflow-y: auto; padding: 12px 14px; display: flex;
+      flex-direction: column; gap: 6px;
+    }
+
+    .chat-bubble {
+      max-width: 95%; padding: 8px 12px; border-radius: 10px;
+      font-size: 13px; line-height: 1.5; word-break: break-word;
+      white-space: pre-wrap;
+    }
+    .chat-bubble.user {
+      align-self: flex-end;
+      background: #1d4ed8; color: #e8edf3;
+      border-bottom-right-radius: 3px;
+    }
+    .chat-bubble.assistant {
+      align-self: flex-start;
+      background: #1e1e1e; color: #d4d4d4;
+      border-bottom-left-radius: 3px;
+    }
+    .chat-tool-hint {
+      align-self: flex-start;
+      font-size: 11px; color: #555; padding: 2px 0;
+      font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+      text-overflow: ellipsis; white-space: nowrap;
+      max-width: 100%; cursor: pointer;
+      transition: color 0.15s;
+    }
+    .chat-tool-hint:hover { color: #888; }
+    .chat-tool-hint.expanded {
+      white-space: pre-wrap; word-break: break-all;
+      text-overflow: unset; overflow: visible;
+    }
+    .chat-tool-hint::before {
+      content: "\25B6 "; font-size: 8px; vertical-align: middle; color: #444;
+    }
+    .chat-tool-hint.expanded::before {
+      content: "\25BC "; color: #666;
+    }
+    .chat-ts {
+      font-size: 9px; color: #3a3a3a; margin-top: 1px;
+    }
+
+    .plan-review-card {
+      background: #111827; border: 1px solid #374151; border-radius: 10px;
+      padding: 10px; margin: 4px 0 8px 0; font-size: 12px; color: #d1d5db;
+    }
+    .plan-review-card.resolved { opacity: 0.72; }
+    .plan-review-header {
+      display: flex; justify-content: space-between; gap: 8px; align-items: flex-start;
+      margin-bottom: 8px;
+    }
+    .plan-review-title { font-weight: 700; color: #f9fafb; font-size: 13px; }
+    .plan-review-meta { color: #9ca3af; font-size: 10px; margin-top: 2px; }
+    .plan-review-reason { color: #9ca3af; margin: 6px 0; line-height: 1.4; }
+    .plan-review-list { display: flex; flex-direction: column; gap: 6px; margin: 8px 0; }
+    .plan-review-row { display: flex; gap: 6px; align-items: flex-start; }
+    .plan-review-row textarea, .plan-review-feedback, .plan-review-answer {
+      width: 100%; min-height: 32px; resize: vertical; padding: 6px 8px;
+      border: 1px solid #374151; border-radius: 6px; background: #0b1220;
+      color: #e5e7eb; font-family: inherit; font-size: 12px; line-height: 1.35;
+    }
+    .plan-review-row button, .plan-review-actions button {
+      border: 1px solid #374151; border-radius: 5px; background: #1f2937;
+      color: #d1d5db; padding: 5px 8px; cursor: pointer; font-size: 11px;
+    }
+    .plan-review-row button:hover, .plan-review-actions button:hover { background: #374151; }
+    .plan-review-questions { border-top: 1px solid #1f2937; padding-top: 8px; margin-top: 8px; }
+    .plan-review-question { margin-bottom: 6px; }
+    .plan-review-question label { display: block; color: #fbbf24; margin-bottom: 3px; }
+    .plan-review-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+    .plan-review-actions .approve { background: #166534; border-color: #22c55e; color: #ecfdf5; }
+    .plan-review-actions .deny { background: #3b1a00; border-color: #f59e0b; color: #fef3c7; }
+    .plan-review-actions .clear { color: #fca5a5; }
+
+    .subagent-card {
+      background: #181818;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
+      border-radius: 12px; padding: 10px; margin: 5px 0; font-size: 12px; color: #d4d4d4;
+    }
+    .subagent-card.done { opacity: 0.86; }
+    .subagent-card.aborted { opacity: 0.78; }
+    .subagent-card.parent {
+      align-self: stretch;
+      cursor: pointer;
+    }
+    .subagent-card.step {
+      background: #141414;
+      margin: 6px 0 0 0;
+      cursor: pointer;
+      transition: background 0.12s ease;
+    }
+    .subagent-card.step:hover { background: #181818; }
+    .subagent-header { display: flex; justify-content: space-between; gap: 8px; cursor: pointer; align-items: flex-start; }
+    .subagent-chevron {
+      flex: 0 0 auto; margin-right: 2px; color: #6b6b6b; font-size: 10px;
+      transition: transform 0.15s ease; transform: rotate(0deg); margin-top: 4px;
+      user-select: none;
+    }
+    .subagent-card.expanded .subagent-chevron { transform: rotate(90deg); }
+    .subagent-title-row { display: flex; align-items: flex-start; gap: 6px; flex: 1; min-width: 0; }
+    .subagent-title-text { min-width: 0; }
+    .subagent-title { font-weight: 650; color: #f5f5f5; }
+    .subagent-meta { font-size: 10px; color: #8a8a8a; margin-top: 2px; line-height: 1.35; }
+    .subagent-status {
+      font-size: 10px; color: #a3a3a3; white-space: nowrap;
+      background: #232323; border-radius: 999px; padding: 2px 7px; height: fit-content;
+    }
+    .subagent-body { display: none; flex-direction: column; gap: 6px; margin-top: 9px; }
+    .subagent-card.expanded > .subagent-body { display: flex; }
+    .subagent-log {
+      font-family: "SF Mono", Monaco, monospace; font-size: 10px; color: #9ca3af;
+      white-space: pre-wrap; max-height: 160px; overflow: auto; background: #101010;
+      border-radius: 8px; padding: 7px;
+    }
+    .subagent-output {
+      white-space: pre-wrap; background: #101010;
+      border-radius: 8px; padding: 8px; color: #e5e5e5;
+    }
+    .subagent-actions { margin-top: 7px; display: flex; gap: 6px; }
+    .subagent-actions button {
+      border: none; border-radius: 7px; background: #242424;
+      color: #d4d4d4; padding: 5px 8px; cursor: pointer; font-size: 10px;
+    }
+    .subagent-actions .abort { background: #2a1717; color: #fca5a5; }
+
+    #subagents-panel-content {
+      flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px;
+    }
+    .subagent-tree-empty { color: #64748b; font-size: 12px; padding: 8px; }
+
+    /* ─── Prompt bar alert state ─── */
+    #prompt-bar.alert-active { border-top: 2px solid #f59e0b; }
+    #prompt-bar.alert-active textarea { border-color: #f59e0b; }
+    #prompt-bar .alert-label {
+      display: none;
+    }
+    #prompt-bar .alert-dismiss {
+      display: none; padding: 6px 10px; border: 1px solid #f59e0b;
+      border-radius: 4px; background: none; color: #f59e0b;
+      font-size: 11px; cursor: pointer; white-space: nowrap;
+    }
+    #prompt-bar.alert-active .alert-dismiss { display: block; }
+    #prompt-bar .alert-dismiss:hover { background: #3b1a00; }
+
+    /* ─── Deliverables panel (inside chat tab) ─── */
+    #deliverables-panel {
+      display: none; padding: 0; border-top: 1px solid #2a2a2a;
+      background: #0d1117; flex-shrink: 0;
+    }
+    #deliverables-panel.visible { display: block; }
+    #deliverables-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 6px 14px; background: #161b22; border-bottom: 1px solid #222;
+    }
+    #deliverables-header span {
+      font-size: 10px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 1px; color: #58a6ff;
+    }
+    #deliverables-header .badge {
+      background: #1f6feb; color: #fff; font-size: 9px; font-weight: 700;
+      padding: 1px 6px; border-radius: 8px; margin-left: 6px;
+    }
+    #deliverables-list {
+      padding: 6px 14px; max-height: 120px; overflow-y: auto;
+    }
+    .deliverable-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 4px 0; border-bottom: 1px solid #1a1f26;
+    }
+    .deliverable-item:last-child { border-bottom: none; }
+    .deliverable-info { display: flex; flex-direction: column; }
+    .deliverable-name { font-size: 12px; color: #c9d1d9; font-weight: 500; }
+    .deliverable-desc { font-size: 10px; color: #8b949e; }
+    .deliverable-item a {
+      padding: 3px 10px; font-size: 11px; border: 1px solid #30363d;
+      border-radius: 4px; background: #21262d; color: #58a6ff;
+      text-decoration: none; cursor: pointer; white-space: nowrap;
+    }
+    .deliverable-item a:hover { background: #30363d; border-color: #58a6ff; }
+
+    /* ─── Prompt bar (inside chat tab) ─── */
+    #prompt-bar {
+      display: flex; gap: 8px; align-items: flex-end;
+      padding: 8px 12px;
+      background: #1a1a1a; border-top: 1px solid #2a2a2a; flex-shrink: 0;
+    }
+    #prompt-bar textarea {
+      flex: 1; padding: 8px 12px; border: 1px solid #333;
+      border-radius: 6px; background: #111; color: #e0e0e0;
+      font-size: 13px; font-family: inherit; resize: vertical;
+      min-height: 34px; max-height: 200px;
+    }
+    #prompt-bar textarea:focus { outline: none; border-color: #555; }
+
+    /* ─── Combo button ─── */
+    .combo-btn {
+      position: relative; display: flex; align-items: stretch;
+      border-radius: 6px; overflow: visible;
+    }
+    .combo-btn .combo-main {
+      padding: 8px 14px; border: none;
+      border-radius: 6px 0 0 6px;
+      color: #fff; font-size: 13px; font-weight: 500;
+      cursor: pointer; white-space: nowrap;
+    }
+    .combo-btn .combo-main:disabled { opacity: 0.4; cursor: not-allowed; }
+    .combo-btn .combo-toggle {
+      padding: 8px 7px; border: none;
+      border-left: 1px solid rgba(255,255,255,0.2);
+      border-radius: 0 6px 6px 0;
+      color: #fff; font-size: 10px; cursor: pointer;
+      display: flex; align-items: center;
+    }
+    .combo-btn .combo-menu {
+      display: none; position: absolute; bottom: 100%; right: 0;
+      margin-bottom: 4px; min-width: 140px;
+      background: #1e1e1e; border: 1px solid #333; border-radius: 6px;
+      overflow: hidden; z-index: 100;
+      box-shadow: 0 -4px 12px rgba(0,0,0,0.4);
+    }
+    .combo-btn .combo-menu.open { display: block; }
+    .combo-btn .combo-menu button {
+      display: block; width: 100%; padding: 8px 14px;
+      border: none; background: none; color: #ccc;
+      font-size: 12px; text-align: left; cursor: pointer;
+    }
+    .combo-btn .combo-menu button:hover { background: #2a2a2a; color: #fff; }
+    .combo-btn .combo-menu button.active {
+      color: #22c55e; font-weight: 600;
+    }
+    .combo-btn .combo-menu .separator {
+      height: 1px; background: #333; margin: 2px 0;
+    }
+
+    /* ─── Logs tab ─── */
+    #log-tab-content {
+      flex: 1; display: flex; flex-direction: column; min-height: 0;
+    }
+    #log-tab-header {
+      display: flex; align-items: center; justify-content: flex-end;
+      padding: 4px 14px; background: #161616;
+      border-bottom: 1px solid #222; flex-shrink: 0;
+    }
+    #log-tab-header button {
+      padding: 2px 8px; font-size: 10px; border: 1px solid #333;
+      border-radius: 3px; background: #1a1a1a; color: #666; cursor: pointer;
+    }
+    #log-tab-header button:hover { color: #aaa; border-color: #555; }
+
+    #log {
+      flex: 1; overflow-y: auto; padding: 6px 14px;
+      font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+      font-size: 11px; line-height: 1.5;
+    }
+    #log .entry { padding: 1px 0; word-break: break-word; }
+    #log .entry .ts { color: #3a3a3a; margin-right: 6px; }
+    #log .entry.info { color: #60a5fa; }
+    #log .entry.error { color: #ef4444; }
+    #log .entry.agent { color: #a78bfa; }
+
+    /* ─── VM Logs tab ─── */
+    #vmlog-tab-content {
+      flex: 1; display: flex; flex-direction: column; min-height: 0;
+    }
+    #vmlog-tab-header {
+      display: flex; align-items: center; justify-content: flex-end;
+      padding: 4px 14px; background: #161616;
+      border-bottom: 1px solid #222; flex-shrink: 0;
+    }
+    #vmlog-tab-header button {
+      padding: 2px 8px; font-size: 10px; border: 1px solid #333;
+      border-radius: 3px; background: #1a1a1a; color: #666; cursor: pointer;
+    }
+    #vmlog-tab-header button:hover { color: #aaa; border-color: #555; }
+
+    #vm-log {
+      flex: 1; overflow-y: auto; padding: 6px 14px;
+      font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+      font-size: 11px; line-height: 1.5;
+    }
+    #vm-log .entry { padding: 2px 0; color: #888; }
+    #vm-log .entry .ts { color: #3a3a3a; margin-right: 6px; font-size: 10px; }
+    #vm-log .entry.warn { color: #f59e0b; }
+    #vm-log .entry.error { color: #ef4444; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 class="header-title"><img src="anythingllm-wordmark.png" alt="AnythingLLM"> / Open Computer</h1>
+    <div class="header-actions">
+      <div class="status">
+        <span class="status-dot" id="status-dot"></span>
+        <span id="status-text">Idle</span>
+      </div>
+      <div id="usage-badge">
+        <span class="tok" id="usage-tokens">--</span>
+        <span class="tools" id="usage-tools">--</span>
+        <div class="ctx-bar" id="ctx-bar" style="display:none">
+          <span class="ctx-pct" id="ctx-pct">0%</span>
+          <div class="ctx-track"><div class="ctx-fill" id="ctx-fill"></div></div>
+        </div>
+        <span id="compact-flash" class="compacted-flash" style="display:none">↓ compacted</span>
+      </div>
+      <button id="btn-upload">Upload</button>
+      <button id="btn-config">Config</button>
+    </div>
+  </header>
+
+  <div id="config-panel">
+    <label>API Key:</label>
+    <input type="password" id="config-api-key" placeholder="sk-..." />
+    <label>Model:</label>
+    <span id="model-wrapper">
+      <input type="text" id="config-model" placeholder="model name (e.g. gpt-4o)" style="width: 180px; font-family: monospace; font-size: 12px;" />
+    </span>
+    <label>Context:</label>
+    <input type="number" id="config-context-window" placeholder="32000" value="32000" style="width: 80px; font-family: monospace; font-size: 12px;" />
+    <label>Base URL:</label>
+    <input type="text" id="config-base-url" placeholder="http://localhost:11434/v1 (blank = OpenAI default)" style="width: 300px; font-family: monospace; font-size: 11px;" />
+    <label style="display:flex;align-items:center;gap:4px;cursor:pointer">
+      <input type="checkbox" id="config-parallel-tools" />
+      Parallel tool calls
+    </label>
+    <button id="btn-save-config">Save</button>
+    <span class="config-status warn" id="config-status">not configured</span>
+  </div>
+
+  <div id="main-area">
+    <!-- VM Desktop (left) -->
+    <div id="desktop-container">
+      <iframe id="desktop-iframe" src="about:blank"></iframe>
+      <div class="placeholder" id="desktop-placeholder" style="display:none">
+        <p>Desktop not available</p>
+      </div>
+    </div>
+
+    <!-- Resize handle -->
+    <div id="sidebar-resize-handle"></div>
+
+    <!-- Sidebar (right) -->
+    <div id="sidebar">
+      <div id="sidebar-tabs">
+        <div class="tab active" data-tab="chat">Chat</div>
+        <div class="tab" data-tab="subagents">Subagents</div>
+        <div class="tab" data-tab="logs">Logs</div>
+        <div class="tab" data-tab="vm-logs">VM Logs</div>
+      </div>
+
+      <!-- Chat tab -->
+      <div class="tab-panel active" id="panel-chat">
+        <div id="chat-messages"></div>
+
+        <div id="deliverables-panel">
+          <div id="deliverables-header">
+            <span>Deliverables <span class="badge" id="deliverables-count">0</span></span>
+          </div>
+          <div id="deliverables-list"></div>
+        </div>
+
+        <div id="prompt-bar">
+          <span class="alert-label">Responding to agent</span>
+          <textarea id="prompt-input" placeholder="Send a prompt to the agent..." rows="1"></textarea>
+          <button class="alert-dismiss" id="btn-alert-dismiss">Dismiss</button>
+          <div class="combo-btn" id="combo-btn">
+            <button class="combo-main" id="combo-main">Send</button>
+            <button class="combo-toggle" id="combo-toggle">&#9650;</button>
+            <div class="combo-menu" id="combo-menu">
+              <button data-action="send" class="active">Send</button>
+              <button data-action="new-session">New Session</button>
+              <button data-action="compact">Compact</button>
+              <div class="separator"></div>
+              <button data-action="abort">Abort</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subagents tab -->
+      <div class="tab-panel" id="panel-subagents">
+        <div id="subagents-panel-content">
+          <div class="subagent-tree-empty">No subagent runs yet.</div>
+        </div>
+      </div>
+
+      <!-- Logs tab -->
+      <div class="tab-panel" id="panel-logs">
+        <div id="log-tab-content">
+          <div id="log-tab-header">
+            <button id="btn-clear-log">Clear</button>
+          </div>
+          <div id="log"></div>
+        </div>
+      </div>
+
+      <!-- VM Logs tab -->
+      <div class="tab-panel" id="panel-vm-logs">
+        <div id="vmlog-tab-content">
+          <div id="vmlog-tab-header">
+            <button id="btn-clear-vmlog">Clear</button>
+          </div>
+          <div id="vm-log"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- File upload progress -->
+  <div id="upload-progress">
+    <div class="upload-filename" id="upload-filename"></div>
+    <div class="upload-bar"><div class="upload-bar-fill" id="upload-bar-fill"></div></div>
+    <div class="upload-status" id="upload-status"></div>
+  </div>
+
+  <script>
+    const _origConsoleError = console.error.bind(console);
+    const logEl = document.getElementById('log');
+    const vmLogEl = document.getElementById('vm-log');
+    const chatEl = document.getElementById('chat-messages');
+    const subagentsEl = document.getElementById('subagents-panel-content');
+    const statusDot = document.getElementById('status-dot');
+    const statusText = document.getElementById('status-text');
+
+    let eventsWs = null;
+    let statusName = 'agent';
+
+    function getAgentUrl() {
+      return window._openComputerAgentUrl
+        || new URLSearchParams(window.location.search).get('agent')
+        || window.location.origin;
+    }
+    function apiBase() { return getAgentUrl().replace(/\/+$/, ''); }
+    function wsBase() { return apiBase().replace(/^http/, 'ws'); }
+
+    function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+    function cssEsc(s) { return window.CSS?.escape ? CSS.escape(s) : String(s).replace(/["\\]/g, '\\$&'); }
+    function nowTs() { return new Date().toLocaleTimeString('en-US', { hour12: false }); }
+
+    // ─── Chat helpers ───
+
+    const MERGE_WINDOW_MS = 8000;
+    let _lastBubbleMeta = { role: null, epoch: 0, wrapper: null };
+
+    function addChatBubble(content, role, ts, epoch) {
+      const now = epoch || Date.now();
+      const prev = _lastBubbleMeta;
+
+      if (prev.wrapper && prev.role === role && (now - prev.epoch) < MERGE_WINDOW_MS) {
+        const bubble = prev.wrapper.querySelector('.chat-bubble');
+        bubble.textContent += '\n' + content;
+        const tsEl = prev.wrapper.querySelector('.chat-ts');
+        if (tsEl) tsEl.textContent = ts;
+        prev.epoch = now;
+        chatEl.scrollTop = chatEl.scrollHeight;
+        return;
+      }
+
+      const wrapper = document.createElement('div');
+      const bubble = document.createElement('div');
+      bubble.className = `chat-bubble ${role}`;
+      bubble.textContent = content;
+      wrapper.appendChild(bubble);
+      if (ts) {
+        const tsEl = document.createElement('div');
+        tsEl.className = 'chat-ts';
+        tsEl.style.textAlign = role === 'user' ? 'right' : 'left';
+        tsEl.textContent = ts;
+        wrapper.appendChild(tsEl);
+      }
+      chatEl.appendChild(wrapper);
+      chatEl.scrollTop = chatEl.scrollHeight;
+      _lastBubbleMeta = { role, epoch: now, wrapper };
+    }
+
+    function _breakBubbleMerge() { _lastBubbleMeta = { role: null, ts: 0, wrapper: null }; }
+
+    function addChatToolHint(summary, ts) {
+      _breakBubbleMerge();
+      const el = document.createElement('div');
+      el.className = 'chat-tool-hint';
+      el.textContent = summary;
+      if (ts) el.title = ts;
+      el.addEventListener('click', () => el.classList.toggle('expanded'));
+      chatEl.appendChild(el);
+      chatEl.scrollTop = chatEl.scrollHeight;
+    }
+
+    function addChatAlert(content, ts) {
+      _breakBubbleMerge();
+      const el = document.createElement('div');
+      el.style.cssText = 'padding:6px 10px;margin:4px 0;background:#3b1a00;border:1px solid #f59e0b;border-radius:6px;font-size:12px;color:#fbbf24;';
+      el.textContent = content;
+      chatEl.appendChild(el);
+      chatEl.scrollTop = chatEl.scrollHeight;
+    }
+
+    function collectPlanItems(card) {
+      return Array.from(card.querySelectorAll('[data-plan-item]'))
+        .map(el => el.value.trim())
+        .filter(Boolean);
+    }
+
+    function collectPlanAnswers(card) {
+      const answers = {};
+      card.querySelectorAll('[data-plan-question]').forEach(el => {
+        const question = el.dataset.planQuestion || '';
+        const answer = el.value.trim();
+        if (question && answer) answers[question] = answer;
+      });
+      return answers;
+    }
+
+    function markPlanCardResolved(card, label) {
+      card.classList.add('resolved');
+      card.querySelectorAll('textarea,button').forEach(el => { el.disabled = true; });
+      const meta = card.querySelector('.plan-review-status');
+      if (meta) meta.textContent = label;
+    }
+
+    function resolvePlanReview(requestId, status) {
+      if (!requestId) return;
+      const card = chatEl.querySelector(`[data-plan-request-id="${cssEsc(requestId)}"]`);
+      if (card) markPlanCardResolved(card, status || 'Resolved');
+    }
+
+    function addPlanItemRow(list, value = '') {
+      const row = document.createElement('div');
+      row.className = 'plan-review-row';
+      const textarea = document.createElement('textarea');
+      textarea.dataset.planItem = '1';
+      textarea.value = value;
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.textContent = 'Remove';
+      remove.addEventListener('click', () => row.remove());
+      row.appendChild(textarea);
+      row.appendChild(remove);
+      list.appendChild(row);
+      return textarea;
+    }
+
+    function renderPlanReview(plan, ts) {
+      _breakBubbleMerge();
+      const requestId = plan.requestId;
+      if (!requestId) return;
+      const existing = chatEl.querySelector(`[data-plan-request-id="${cssEsc(requestId)}"]`);
+      if (existing) existing.remove();
+
+      const card = document.createElement('div');
+      card.className = 'plan-review-card';
+      card.dataset.planRequestId = requestId;
+
+      const title = plan.title || 'Execution Plan';
+      const reason = plan.reason || '';
+      const items = Array.isArray(plan.items) && plan.items.length ? plan.items : ['Review the task and proceed carefully.'];
+      const questions = Array.isArray(plan.questions) ? plan.questions.filter(Boolean) : [];
+
+      card.innerHTML = `
+        <div class="plan-review-header">
+          <div>
+            <div class="plan-review-title">${esc(title)}</div>
+            <div class="plan-review-meta">Plan review${plan.attempt ? ` · attempt ${esc(String(plan.attempt))}` : ''}${ts ? ` · ${esc(ts)}` : ''}</div>
+          </div>
+          <div class="plan-review-status">Awaiting approval</div>
+        </div>
+        ${reason ? `<div class="plan-review-reason">${esc(reason)}</div>` : ''}
+        <div class="plan-review-list"></div>
+        <textarea class="plan-review-feedback" placeholder="Optional feedback for Deny / propose new plan"></textarea>
+        <div class="plan-review-questions"></div>
+        <div class="plan-review-actions">
+          <button type="button" data-plan-add>Add item</button>
+          <button type="button" class="clear" data-plan-clear>Clear all</button>
+          <button type="button" class="approve" data-plan-approve>Approve</button>
+          <button type="button" class="deny" data-plan-deny>Deny / propose new plan</button>
+        </div>`;
+
+      const list = card.querySelector('.plan-review-list');
+      items.forEach(item => addPlanItemRow(list, item));
+
+      const qWrap = card.querySelector('.plan-review-questions');
+      if (questions.length) {
+        for (const question of questions) {
+          const div = document.createElement('div');
+          div.className = 'plan-review-question';
+          const label = document.createElement('label');
+          label.textContent = question;
+          const answer = document.createElement('textarea');
+          answer.className = 'plan-review-answer';
+          answer.dataset.planQuestion = question;
+          answer.placeholder = 'Optional answer';
+          div.appendChild(label);
+          div.appendChild(answer);
+          qWrap.appendChild(div);
+        }
+      } else {
+        qWrap.remove();
+      }
+
+      card.querySelector('[data-plan-add]').addEventListener('click', () => {
+        const input = addPlanItemRow(list, '');
+        input.focus();
+      });
+      card.querySelector('[data-plan-clear]').addEventListener('click', () => {
+        list.innerHTML = '';
+      });
+      card.querySelector('[data-plan-approve]').addEventListener('click', async () => {
+        const editedItems = collectPlanItems(card);
+        if (editedItems.length === 0 && !confirm('Approve with no plan items?')) return;
+        try {
+          const res = await fetch(`${apiBase()}/api/v1/plan-response`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              requestId,
+              action: 'approve',
+              items: editedItems,
+              answers: collectPlanAnswers(card),
+            }),
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Approve failed');
+          markPlanCardResolved(card, 'Approved');
+        } catch (err) { addLog(`Plan approve failed: ${err.message}`, 'error'); }
+      });
+      card.querySelector('[data-plan-deny]').addEventListener('click', async () => {
+        try {
+          const res = await fetch(`${apiBase()}/api/v1/plan-response`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              requestId,
+              action: 'deny',
+              items: collectPlanItems(card),
+              feedback: card.querySelector('.plan-review-feedback')?.value || '',
+              answers: collectPlanAnswers(card),
+            }),
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Deny failed');
+          markPlanCardResolved(card, 'Denied; waiting for revision');
+        } catch (err) { addLog(`Plan deny failed: ${err.message}`, 'error'); }
+      });
+
+      chatEl.appendChild(card);
+      chatEl.scrollTop = chatEl.scrollHeight;
+      switchTab('chat');
+    }
+
+    const subagentRuns = new Map();
+
+    function clearSubagentUi() {
+      subagentRuns.clear();
+      subagentsEl.innerHTML = '<div class="subagent-tree-empty">No subagent runs yet.</div>';
+    }
+
+    function ensureSubagentRun(runId, msg = {}) {
+      if (!runId) return null;
+      let run = subagentRuns.get(runId);
+      if (run) return run;
+
+      const card = document.createElement('div');
+      card.className = 'subagent-card parent';
+      card.dataset.subagentRunId = runId;
+      card.innerHTML = `
+        <div class="subagent-header">
+          <div>
+            <div class="subagent-title">${esc(msg.title || 'Sequential Subagents')}</div>
+            <div class="subagent-meta">${esc(msg.reason || 'Preparing child agents')}</div>
+          </div>
+          <div class="subagent-status">running</div>
+        </div>
+        <div class="subagent-actions">
+          <button type="button" class="abort" data-subagent-abort>Abort run</button>
+        </div>`;
+      card.addEventListener('click', () => {
+        switchTab('subagents');
+        summary.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        summary.classList.add('expanded');
+      });
+      card.querySelector('[data-subagent-abort]').addEventListener('click', async (e) => {
+        e.stopPropagation();
+        if (!confirm('Abort this subagent run?')) return;
+        try {
+          await fetch(`${apiBase()}/api/v1/subagents/${encodeURIComponent(runId)}/abort`, { method: 'POST' });
+        } catch (err) {
+          addLog(`Subagent abort failed: ${err.message}`, 'error');
+        }
+      });
+
+      const empty = subagentsEl.querySelector('.subagent-tree-empty');
+      if (empty) empty.remove();
+      const summary = document.createElement('div');
+      summary.className = 'subagent-card expanded';
+      summary.dataset.subagentSummaryId = runId;
+      summary.innerHTML = `
+        <div class="subagent-header">
+          <div>
+            <div class="subagent-title">${esc(msg.title || 'Sequential Subagents')}</div>
+            <div class="subagent-meta">${esc(msg.reason || '')}</div>
+          </div>
+          <div class="subagent-status">running</div>
+        </div>
+        <div class="subagent-body"></div>
+        <div class="subagent-actions">
+          <button type="button" class="abort" data-subagent-abort>Abort run</button>
+        </div>`;
+      summary.querySelector('[data-subagent-abort]').addEventListener('click', async (e) => {
+        e.stopPropagation();
+        if (!confirm('Abort this subagent run?')) return;
+        try {
+          await fetch(`${apiBase()}/api/v1/subagents/${encodeURIComponent(runId)}/abort`, { method: 'POST' });
+        } catch (err) {
+          addLog(`Subagent abort failed: ${err.message}`, 'error');
+        }
+      });
+      // The parent container stays expanded; only the task subcards collapse.
+      subagentsEl.appendChild(summary);
+      chatEl.appendChild(card);
+      chatEl.scrollTop = chatEl.scrollHeight;
+
+      run = { card, summary, steps: new Map() };
+      subagentRuns.set(runId, run);
+      return run;
+    }
+
+    function renderSubagentRunStarted(msg, ts) {
+      _breakBubbleMerge();
+      const run = ensureSubagentRun(msg.runId, msg);
+      if (!run) return;
+      const body = run.summary.querySelector('.subagent-body');
+      if (Array.isArray(msg.units)) {
+        const summary = document.createElement('div');
+        summary.className = 'subagent-log';
+        summary.textContent = msg.units.map((unit, idx) => `${idx + 1}. ${unit.title || unit.id}: ${unit.objective}`).join('\n');
+        body.appendChild(summary);
+      }
+      if (ts) run.card.querySelector('.subagent-meta').textContent += ` · ${ts}`;
+      const runTitle = msg.title || 'Subagents';
+      setStatus(`${statusName} — ${runTitle}`, true);
+      switchTab('chat');
+    }
+
+    function ensureSubagentStep(msg) {
+      const run = ensureSubagentRun(msg.runId, msg);
+      if (!run) return null;
+      const stepId = msg.stepId || 'step';
+      let step = run.steps.get(stepId);
+      if (step) return step;
+      const el = document.createElement('div');
+      el.className = 'subagent-card step expanded';
+      el.dataset.subagentStepId = stepId;
+      el.innerHTML = `
+        <div class="subagent-header">
+          <div class="subagent-title-row">
+            <span class="subagent-chevron">&#9654;</span>
+            <div class="subagent-title-text">
+              <div class="subagent-title">${esc(msg.title || stepId)}</div>
+              <div class="subagent-meta">${esc(msg.role || '')}${msg.objective ? ` · ${esc(msg.objective)}` : ''}</div>
+            </div>
+          </div>
+          <div class="subagent-status">running</div>
+        </div>
+        <div class="subagent-body"></div>`;
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        // Allow text selection inside the body (output/log) without collapsing.
+        if (e.target.closest('.subagent-body') && window.getSelection && window.getSelection().toString()) return;
+        el.classList.toggle('expanded');
+      });
+      run.summary.querySelector('.subagent-body').appendChild(el);
+      step = { el, logText: '' };
+      run.steps.set(stepId, step);
+      return step;
+    }
+
+    function renderSubagentStepStarted(msg) {
+      const step = ensureSubagentStep(msg);
+      if (step) step.el.querySelector('.subagent-status').textContent = `${(msg.index || 0) + 1}/${msg.total || '?'}`;
+      const label = msg.title || `Step ${(msg.index || 0) + 1}`;
+      setStatus(`${statusName} — ${label}`, true);
+    }
+
+    function appendSubagentLog(msg) {
+      const step = ensureSubagentStep(msg);
+      if (!step) return;
+      step.logText += (step.logText ? '\n' : '') + (msg.content || msg.summary || '');
+      let log = step.el.querySelector('.subagent-log');
+      if (!log) {
+        log = document.createElement('div');
+        log.className = 'subagent-log';
+        step.el.querySelector('.subagent-body').appendChild(log);
+      }
+      log.textContent = step.logText.slice(-5000);
+    }
+
+    function renderSubagentOutput(msg) {
+      const step = ensureSubagentStep(msg);
+      if (!step) return;
+      let out = step.el.querySelector('.subagent-output');
+      if (!out) {
+        out = document.createElement('div');
+        out.className = 'subagent-output';
+        step.el.querySelector('.subagent-body').appendChild(out);
+      }
+      out.textContent = msg.output || '(no output)';
+    }
+
+    function resolveSubagentStep(msg, status) {
+      const step = ensureSubagentStep(msg);
+      if (!step) return;
+      step.el.classList.add(status === 'aborted' ? 'aborted' : 'done');
+      step.el.querySelector('.subagent-status').textContent = status || 'done';
+    }
+
+    function resolveSubagentRun(msg, status) {
+      const run = ensureSubagentRun(msg.runId, msg);
+      if (!run) return;
+      run.card.classList.add(status === 'aborted' ? 'aborted' : 'done');
+      run.card.querySelector('.subagent-status').textContent = status || 'done';
+      run.card.querySelectorAll('button').forEach(btn => { btn.disabled = true; });
+      if (run.summary) {
+        run.summary.classList.add(status === 'aborted' ? 'aborted' : 'done');
+        run.summary.querySelector('.subagent-status').textContent = status || 'done';
+        run.summary.querySelectorAll('button').forEach(btn => { btn.disabled = true; });
+      }
+      setStatus(
+        `${statusName} — ${status === 'aborted' ? 'Subagents aborted' : 'Subagents complete'}`,
+        true,
+      );
+    }
+
+    function handleSubagentEvent(msg, ts) {
+      if (msg.type === 'subagent_run_started') renderSubagentRunStarted(msg, ts);
+      else if (msg.type === 'subagent_step_started') renderSubagentStepStarted(msg);
+      else if (msg.type === 'subagent_log' || msg.type === 'subagent_tool') appendSubagentLog(msg);
+      else if (msg.type === 'subagent_output') renderSubagentOutput(msg);
+      else if (msg.type === 'subagent_step_done') resolveSubagentStep(msg, 'done');
+      else if (msg.type === 'subagent_run_done') resolveSubagentRun(msg, 'done');
+      else if (msg.type === 'subagent_aborted') resolveSubagentRun(msg, 'aborted');
+      else return false;
+      return true;
+    }
+
+    // ─── Log helpers ───
+
+    function addLog(msg, type = 'info') {
+      addLogWithTs(msg, type, nowTs());
+    }
+
+    function addLogWithTs(msg, type, ts) {
+      const el = document.createElement('div');
+      el.className = `entry ${type}`;
+      el.innerHTML = `<span class="ts">${ts}</span>${esc(msg)}`;
+      logEl.appendChild(el);
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    function addVmLog(line, ts) {
+      const time = ts ? new Date(ts).toLocaleTimeString('en-US', { hour12: false }) : nowTs();
+      const div = document.createElement('div');
+      let cls = 'entry';
+      if (line.startsWith('[error]')) cls += ' error';
+      else if (line.startsWith('[warn]')) cls += ' warn';
+      div.className = cls;
+      div.innerHTML = `<span class="ts">${time}</span>${esc(line)}`;
+      vmLogEl.appendChild(div);
+      vmLogEl.scrollTop = vmLogEl.scrollHeight;
+    }
+
+    // Base status — the persistent state (agent name, subagent title, etc.)
+    // LLM overlay briefly replaces the display text without changing the base.
+    let _statusBase = 'Idle';
+    let _statusConnected = false;
+
+    function setStatus(text, connected) {
+      _statusBase = text;
+      _statusConnected = !!connected;
+      statusDot.className = `status-dot ${_statusConnected ? 'connected' : ''}`;
+      statusText.textContent = _statusBase;
+    }
+
+    function _overlayStatus(text) {
+      statusText.textContent = text;
+    }
+
+    function _restoreStatus() {
+      statusDot.className = `status-dot ${_statusConnected ? 'connected' : ''}`;
+      statusText.textContent = _statusBase;
+    }
+
+    // ─── Sidebar tabs ───
+
+    document.querySelectorAll('#sidebar-tabs .tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('#sidebar-tabs .tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+      });
+    });
+
+    // ─── Clear buttons ───
+
+    document.getElementById('btn-clear-log').addEventListener('click', () => { logEl.innerHTML = ''; });
+    document.getElementById('btn-clear-vmlog').addEventListener('click', () => { vmLogEl.innerHTML = ''; });
+
+    // ─── Sidebar resize ───
+
+    const sidebarHandle = document.getElementById('sidebar-resize-handle');
+    const sidebar = document.getElementById('sidebar');
+    let sidebarResizing = false;
+
+    sidebarHandle.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      sidebarResizing = true;
+      sidebarHandle.classList.add('active');
+      document.body.style.cursor = 'ew-resize';
+      document.body.style.userSelect = 'none';
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!sidebarResizing) return;
+      const mainArea = document.getElementById('main-area');
+      const mainRect = mainArea.getBoundingClientRect();
+      const newWidth = mainRect.right - e.clientX;
+      const clamped = Math.max(280, Math.min(newWidth, mainRect.width * 0.6));
+      sidebar.style.width = clamped + 'px';
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (!sidebarResizing) return;
+      sidebarResizing = false;
+      sidebarHandle.classList.remove('active');
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    });
+
+    // ─── Dismiss help banner ───
+
+    function dismissHelpBanner() {
+      pendingHelpRequestId = null;
+      const bar = document.getElementById('prompt-bar');
+      bar.classList.remove('alert-active');
+      document.getElementById('prompt-input').placeholder = 'Send a prompt to the agent...';
+    }
+
+    // ─── Combo button ───
+
+    const comboActions = {
+      send:          { label: 'Send',        bg: '#22c55e', hover: '#16a34a' },
+      'new-session': { label: 'New Session', bg: '#6366f1', hover: '#4f46e5' },
+      compact:       { label: 'Compact',     bg: '#3b82f6', hover: '#2563eb' },
+      abort:         { label: 'Abort',       bg: '#ef4444', hover: '#dc2626' },
+    };
+
+    let currentAction = 'send';
+    const comboMain = document.getElementById('combo-main');
+    const comboToggle = document.getElementById('combo-toggle');
+    const comboMenu = document.getElementById('combo-menu');
+
+    function applyComboStyle() {
+      const a = comboActions[currentAction];
+      comboMain.textContent = a.label;
+      comboMain.style.background = a.bg;
+      comboToggle.style.background = a.bg;
+      comboMain.onmouseenter = () => { comboMain.style.background = a.hover; };
+      comboMain.onmouseleave = () => { comboMain.style.background = a.bg; };
+      comboToggle.onmouseenter = () => { comboToggle.style.background = a.hover; };
+      comboToggle.onmouseleave = () => { comboToggle.style.background = a.bg; };
+      comboMenu.querySelectorAll('button[data-action]').forEach(b => {
+        b.classList.toggle('active', b.dataset.action === currentAction);
+      });
+    }
+
+    comboToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      comboMenu.classList.toggle('open');
+    });
+
+    comboMenu.addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-action]');
+      if (!btn) return;
+      currentAction = btn.dataset.action;
+      applyComboStyle();
+      comboMenu.classList.remove('open');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#combo-btn')) comboMenu.classList.remove('open');
+    });
+
+    comboMain.addEventListener('click', () => executeComboAction());
+
+    document.getElementById('prompt-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); executeComboAction(); }
+    });
+
+    async function executeComboAction() {
+      if (currentAction === 'send') return sendPrompt();
+      if (currentAction === 'abort') return doAbort();
+      if (currentAction === 'new-session') return doNewSession();
+      if (currentAction === 'compact') return doCompact();
+    }
+
+    async function sendPrompt() {
+      const input = document.getElementById('prompt-input');
+      const prompt = input.value.trim();
+      if (!prompt) return;
+
+      // If there's a pending help request, respond to it instead of sending a new prompt
+      if (pendingHelpRequestId) {
+        input.value = '';
+        comboMain.disabled = true;
+        try {
+          await fetch(`${apiBase()}/api/v1/help-response`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ requestId: pendingHelpRequestId, response: prompt }),
+          });
+          addChatBubble(prompt, 'user', nowTs());
+        } catch (err) { addLog(`Help response failed: ${err.message}`, 'error'); }
+        finally { comboMain.disabled = false; dismissHelpBanner(); }
+        return;
+      }
+
+      resetUsageBadge();
+      comboMain.disabled = true;
+      try {
+        const res = await fetch(`${apiBase()}/api/v1/prompt`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        input.value = '';
+      } catch (err) { addLog(`Prompt failed: ${err.message}`, 'error'); }
+      finally { comboMain.disabled = false; }
+    }
+
+    async function doAbort() {
+      if (!confirm('Kill the running agent?')) return;
+      dismissHelpBanner();
+      stopUsagePolling();
+      resetUsageBadge();
+      try {
+        const res = await fetch(`${apiBase()}/api/v1/abort`, { method: 'POST' });
+        const data = await res.json();
+        addLog(`Agent aborted: ${data.status}`, 'error');
+        addChatAlert('Agent aborted by operator');
+      } catch (err) { addLog(`Abort failed: ${err.message}`, 'error'); }
+    }
+
+    async function doNewSession() {
+      dismissHelpBanner();
+      stopUsagePolling();
+      resetUsageBadge();
+      chatEl.innerHTML = '';
+      clearSubagentUi();
+      _breakBubbleMerge();
+      try {
+        await fetch(`${apiBase()}/api/v1/new-session`, { method: 'POST' });
+      } catch (err) { addLog(`New session failed: ${err.message}`, 'error'); }
+    }
+
+    async function doCompact() {
+      try {
+        const res = await fetch(`${apiBase()}/api/v1/compact`, { method: 'POST' });
+        const data = await res.json();
+        if (data.status === 'no_agent_running') addLog('No agent running to compact', 'error');
+      } catch (err) { addLog(`Compact failed: ${err.message}`, 'error'); }
+    }
+
+    applyComboStyle();
+
+    // ─── Usage badge ───
+
+    // Track whether the proxy has ever reported real tokens this session so
+    // task_usage (hypervisor estimates) doesn't overwrite accurate proxy data.
+    let _proxyHasReported = false;
+    let _lastCtxPct = 0;          // previous context % — used to detect compaction
+    let _configContextWindow = 0; // fetched from /api/v1/config on connect
+
+    function getProxyUsageFromBadge() {
+      return _proxyHasReported || null;
+    }
+
+    function _ctxColor(pct) {
+      if (pct >= 85) return '#ef4444';  // red
+      if (pct >= 65) return '#f59e0b';  // amber
+      if (pct >= 40) return '#22c55e';  // green
+      return '#3b82f6';                 // blue (low)
+    }
+
+    function updateUsageBadge(u) {
+      if (!u) return;
+      const badge   = document.getElementById('usage-badge');
+      const tokEl   = document.getElementById('usage-tokens');
+      const toolsEl = document.getElementById('usage-tools');
+      const ctxBar  = document.getElementById('ctx-bar');
+      const ctxPct  = document.getElementById('ctx-pct');
+      const ctxFill = document.getElementById('ctx-fill');
+
+      const inTok  = u.inputTokensReported  || u.inputTokensEstimated  || 0;
+      const outTok = u.outputTokensReported || u.outputTokensEstimated || 0;
+      const label  = u.inputTokensReported ? '' : '~';
+
+      if (u.inputTokensReported > 0 || u.outputTokensReported > 0) {
+        _proxyHasReported = true;
+      }
+
+      tokEl.textContent   = `${label}${fmtK(inTok)}in / ${label}${fmtK(outTok)}out`;
+      toolsEl.textContent = `${u.toolCalls || 0} calls`;
+      badge.classList.add('visible');
+
+      // ── Context window pressure ──────────────────────────────────────────
+      const ctxWindow = u.contextWindow || _configContextWindow || 0;
+      const lastIn    = u.lastInputTokens || 0;
+      if (ctxWindow > 0 && lastIn > 0) {
+        const pct   = Math.min(100, Math.round(lastIn / ctxWindow * 100));
+        const color = _ctxColor(pct);
+        ctxBar.style.display     = '';
+        ctxPct.textContent       = `${pct}%`;
+        ctxPct.style.color       = color;
+        ctxFill.style.width      = `${pct}%`;
+        ctxFill.style.background = color;
+
+        // Compaction: context drops by >25 pp — show a brief indicator
+        if (_lastCtxPct > 0 && pct < _lastCtxPct - 25) {
+          _showCompactFlash();
+        }
+        _lastCtxPct = pct;
+      }
+    }
+
+    function _showCompactFlash() {
+      const el = document.getElementById('compact-flash');
+      el.style.display = '';
+      el.style.animation = 'none';
+      void el.offsetWidth; // reflow to restart animation
+      el.style.animation = '';
+      setTimeout(() => { el.style.display = 'none'; }, 2200);
+    }
+
+    function fmtK(n) {
+      if (n >= 1000) return (n / 1000).toFixed(1) + 'k ';
+      return n + ' ';
+    }
+
+    let _usagePollTimer = null;
+    function startUsagePolling() {
+      if (_usagePollTimer) return;
+      _usagePollTimer = setInterval(async () => {
+        try {
+          const r = await fetch(`${apiBase()}/api/v1/usage`);
+          if (r.ok) updateUsageBadge(await r.json());
+        } catch {}
+      }, 5000);
+    }
+    function stopUsagePolling() {
+      if (_usagePollTimer) { clearInterval(_usagePollTimer); _usagePollTimer = null; }
+    }
+    function resetUsageBadge() {
+      _proxyHasReported = false;
+      _lastCtxPct = 0;
+      document.getElementById('usage-tokens').textContent = '--';
+      document.getElementById('usage-tools').textContent = '--';
+      document.getElementById('ctx-bar').style.display = 'none';
+      document.getElementById('ctx-pct').textContent = '0%';
+      document.getElementById('ctx-fill').style.width = '0%';
+      document.getElementById('compact-flash').style.display = 'none';
+      document.getElementById('usage-badge').classList.remove('visible');
+    }
+
+    // ─── WebSocket events ───
+
+    let wsReconnectAttempts = 0;
+    let wsIsReconnect = false;
+
+    function connectEvents() {
+      disconnectEvents();
+      const url = `${wsBase()}/ws/events`;
+      eventsWs = new WebSocket(url);
+      let wsStableTimer = null;
+      eventsWs.onopen = () => {
+        const wasReconnect = wsIsReconnect;
+        wsIsReconnect = true;
+        wsStableTimer = setTimeout(() => { wsReconnectAttempts = 0; }, 5000);
+        if (wasReconnect) addLog('Reconnected.', 'info');
+      };
+      eventsWs.onmessage = (event) => {
+        try {
+          const msg = JSON.parse(event.data);
+
+          if (msg.type === 'connected') {
+            statusName = msg.name || 'agent';
+            const statusLabel = msg.agent_status === 'running' ? 'Agent running'
+              : msg.agent_status === 'done' ? `Agent done (exit ${msg.last_exit_code})`
+              : 'Agent idle';
+            setStatus(`${statusName} — ${statusLabel}`, true);
+            // Fetch config (for contextWindow) and current usage on connect.
+            (async () => {
+              try {
+                const [uRes, cRes] = await Promise.all([
+                  fetch(`${apiBase()}/api/v1/usage`),
+                  fetch(`${apiBase()}/api/v1/config`),
+                ]);
+                if (cRes.ok) {
+                  const cfg = await cRes.json();
+                  if (cfg.context_window) _configContextWindow = cfg.context_window;
+                }
+                if (uRes.ok) updateUsageBadge(await uRes.json());
+              } catch {}
+            })();
+            startUsagePolling();
+            return;
+          }
+
+          if (msg.type === 'log_replay') {
+            logEl.innerHTML = '';
+            chatEl.innerHTML = '';
+            clearSubagentUi();
+            _breakBubbleMerge();
+            for (const entry of (msg.entries || [])) {
+              const ts = entry._ts ? new Date(entry._ts).toLocaleTimeString('en-US', { hour12: false }) : '';
+              if (handleSubagentEvent(entry, ts)) {
+                // handled
+              } else if (entry.type === 'chat_message') {
+                const epoch = entry._ts ? new Date(entry._ts).getTime() : undefined;
+                addChatBubble(entry.content, entry.role || 'assistant', ts, epoch);
+              } else if (entry.type === 'chat_tool_hint') {
+                addChatToolHint(entry.summary || entry.tool, ts);
+              } else if (entry.type === 'agent_log') {
+                addLogWithTs(entry.content, 'agent', ts);
+              } else if (entry.type === 'agent_delta') {
+                addLogWithTs(entry.content, 'agent', ts);
+              } else if (entry.type === 'agent_done') {
+                addLogWithTs(`Agent finished (code ${entry.code})`, entry.code === 0 ? 'info' : 'error', ts);
+                addChatAlert(`Agent finished (exit code ${entry.code})`);
+              } else if (entry.type === 'ask_for_help') {
+                addLogWithTs(`[help needed] ${[entry.title, entry.content].filter(Boolean).join(': ')}`, 'error', ts);
+                addChatAlert(`[help needed] ${entry.content || entry.title}`);
+              } else if (entry.type === 'plan_review') {
+                renderPlanReview(entry, ts);
+              } else if (entry.type === 'plan_resolved') {
+                resolvePlanReview(entry.requestId, entry.status);
+              } else if (entry.type === 'task_usage') {
+                updateUsageBadge(entry.usage);
+              } else if (entry.type === 'task_done') {
+                addLogWithTs('Task complete', entry.success ? 'info' : 'error', ts);
+              } else if (entry.type === 'deliverable_saved') {
+                addLogWithTs('[deliverable] File saved', 'info', ts);
+              } else if (entry.content) {
+                addLogWithTs(entry.content, 'info', ts);
+              }
+            }
+            if ((msg.entries || []).length > 0) {
+              addLog('--- live ---', 'info');
+            }
+            refreshDeliverables();
+            return;
+          }
+
+          if (msg.type === 'vm_log_replay') {
+            vmLogEl.innerHTML = '';
+            for (const entry of (msg.entries || [])) {
+              addVmLog(entry.line, entry.ts);
+            }
+            if ((msg.entries || []).length === 0) {
+              addVmLog('(connected — waiting for server logs)');
+            }
+            return;
+          }
+
+          if (msg.type === 'vm_log') {
+            addVmLog(msg.content, msg.ts);
+            return;
+          }
+
+          // LLM proxy status — updates header only, never adds to chat
+          if (msg.type === 'llm_status') {
+            if (msg.state === 'waiting') {
+              _overlayStatus(`${_statusBase} · thinking…`);
+            } else {
+              _restoreStatus();
+            }
+            return;
+          }
+
+          if (handleSubagentEvent(msg, nowTs())) {
+            return;
+          }
+
+          // Chat-specific events
+          if (msg.type === 'chat_message') {
+            addChatBubble(msg.content, msg.role || 'assistant', nowTs());
+            return;
+          }
+
+          if (msg.type === 'chat_tool_hint') {
+            addChatToolHint(msg.summary || msg.tool, nowTs());
+            return;
+          }
+
+          if (msg.type === 'plan_review') {
+            renderPlanReview(msg, nowTs());
+            return;
+          }
+
+          if (msg.type === 'plan_resolved') {
+            resolvePlanReview(msg.requestId, msg.status);
+            return;
+          }
+
+          // Proxy-level usage: fires after every LLM response, session-accumulated
+          if (msg.type === 'proxy_usage') {
+            if (msg.reset) {
+              resetUsageBadge();
+            } else {
+              if (msg.contextWindow) _configContextWindow = msg.contextWindow;
+              updateUsageBadge({
+                inputTokensReported:  msg.inputTokens,
+                outputTokensReported: msg.outputTokens,
+                toolCalls:            msg.calls,
+                lastInputTokens:      msg.lastInputTokens || 0,
+                contextWindow:        msg.contextWindow   || _configContextWindow,
+              });
+            }
+            return;
+          }
+
+          // Logs + status
+          if (msg.type === 'agent_log') { addLog(msg.content, 'agent'); startUsagePolling(); }
+          else if (msg.type === 'agent_delta') addLog(msg.content, 'agent');
+          else if (msg.type === 'agent_done') {
+            addLog(`Agent finished (code ${msg.code})`, msg.code === 0 ? 'info' : 'error');
+            addChatAlert(`Agent finished (exit code ${msg.code})`);
+            setStatus(`Agent done (exit ${msg.code})`, true);
+            stopUsagePolling();
+          } else if (msg.type === 'task_usage') {
+            // Only use task_usage to update badge if proxy hasn't reported
+            // real tokens (proxy takes precedence for reported counts).
+            const proxy = getProxyUsageFromBadge();
+            if (!proxy) updateUsageBadge(msg.usage);
+            stopUsagePolling();
+            const u = msg.usage;
+            const reportedIn = u.inputTokensReported || 0;
+            const reportedOut = u.outputTokensReported || 0;
+            const estIn = u.inputTokensEstimated || 0;
+            const estOut = u.outputTokensEstimated || 0;
+            const toolBreakdown = Object.entries(u.toolCallsByName || {}).map(([k,v]) => `${k}:${v}`).join(' ');
+            addLog(`[usage] turns=${u.turns} tools=${u.toolCalls} | reported(in=${reportedIn} out=${reportedOut}) est(in=${estIn} out=${estOut}) | resultChars=${u.toolResultCharsTotal} argChars=${u.toolArgCharsTotal} | ${toolBreakdown}`, 'info');
+          } else if (msg.type === 'task_done') {
+            addLog(`Task complete`, msg.success ? 'info' : 'error');
+            setStatus(`${statusName} — Task complete`, true);
+            stopUsagePolling();
+          } else if (msg.type === 'deliverable_saved') {
+            refreshDeliverables();
+            addLog('[deliverable] New file saved — check Deliverables panel', 'info');
+          } else if (msg.type === 'ask_for_help') {
+            const displayText = msg.content || msg.title || 'The agent needs your help.';
+            pendingHelpRequestId = msg.requestId;
+            const promptBar = document.getElementById('prompt-bar');
+            const promptInput = document.getElementById('prompt-input');
+            promptBar.classList.add('alert-active');
+            promptInput.placeholder = 'Respond to agent...';
+            promptInput.focus();
+            addLog(`[help needed] ${displayText}`, 'error');
+            addChatAlert(displayText);
+            switchTab('chat');
+            notifyUser(msg.title || 'Agent Question', displayText);
+          }
+        } catch (e) { _origConsoleError('[ws:parse]', e); }
+      };
+      eventsWs.onerror = () => {};
+      eventsWs.onclose = (ev) => {
+        clearTimeout(wsStableTimer);
+        wsReconnectAttempts++;
+        if (wsReconnectAttempts > 20) {
+          setStatus('Disconnected — gave up reconnecting', false);
+          return;
+        }
+        const delay = Math.min(1000 * Math.pow(1.5, wsReconnectAttempts), 30000);
+        setStatus(`Disconnected — reconnecting in ${Math.round(delay / 1000)}s...`, false);
+        setTimeout(() => connectEvents(), delay);
+      };
+    }
+
+    function disconnectEvents() {
+      if (eventsWs) { eventsWs.close(); eventsWs = null; }
+      wsReconnectAttempts = 0;
+    }
+
+    function switchTab(tabName) {
+      document.querySelectorAll('#sidebar-tabs .tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      const tab = document.querySelector(`#sidebar-tabs .tab[data-tab="${tabName}"]`);
+      if (tab) tab.classList.add('active');
+      const panel = document.getElementById('panel-' + tabName);
+      if (panel) panel.classList.add('active');
+    }
+
+    // ─── Help state ───
+
+    let pendingHelpRequestId = null;
+
+    document.getElementById('btn-alert-dismiss').addEventListener('click', async () => {
+      if (!pendingHelpRequestId) { dismissHelpBanner(); return; }
+      try {
+        await fetch(`${apiBase()}/api/v1/help-response`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ requestId: pendingHelpRequestId, response: '' }),
+        });
+      } catch (err) { addLog(`Dismiss failed: ${err.message}`, 'error'); }
+      dismissHelpBanner();
+    });
+
+    // ─── Deliverables ───
+
+    async function refreshDeliverables() {
+      try {
+        const res = await fetch(`${apiBase()}/api/v1/deliverables`);
+        const data = await res.json();
+        const list = document.getElementById('deliverables-list');
+        const panel = document.getElementById('deliverables-panel');
+        const badge = document.getElementById('deliverables-count');
+        const items = data.deliverables || [];
+        badge.textContent = items.length;
+        if (items.length === 0) { panel.classList.remove('visible'); return; }
+        panel.classList.add('visible');
+        list.innerHTML = '';
+        for (const d of items) {
+          const div = document.createElement('div');
+          div.className = 'deliverable-item';
+          const downloadUrl = `${apiBase()}/api/v1/deliverables/${encodeURIComponent(d.filename)}`;
+          div.innerHTML = `
+            <div class="deliverable-info">
+              <span class="deliverable-name">${esc(d.filename)}</span>
+              <span class="deliverable-desc">${esc(d.description || '')}</span>
+            </div>
+            <div style="display:flex;gap:6px">
+              <button data-dl="${esc(d.filename)}" data-url="${esc(downloadUrl)}" style="padding:3px 10px;font-size:11px;border:1px solid #30363d;border-radius:4px;background:#21262d;color:#c9d1d9;cursor:pointer">Download</button>
+              <button data-del="${esc(d.filename)}" style="padding:3px 10px;font-size:11px;border:1px solid #3d2020;border-radius:4px;background:#21262d;color:#ef4444;cursor:pointer">Remove</button>
+            </div>`;
+          list.appendChild(div);
+        }
+        list.querySelectorAll('[data-dl]').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const fn = btn.dataset.dl;
+            const url = btn.dataset.url;
+            try {
+              const res = await fetch(url);
+              if (!res.ok) { alert(`Download failed: ${res.status} ${res.statusText}`); return; }
+              const blob = await res.blob();
+              const a = document.createElement('a');
+              a.href = URL.createObjectURL(blob);
+              a.download = fn;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              URL.revokeObjectURL(a.href);
+            } catch (e) {
+              alert(`Download failed: ${e.message}`);
+            }
+          });
+        });
+        list.querySelectorAll('[data-del]').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const fn = btn.dataset.del;
+            await fetch(`${apiBase()}/api/v1/deliverables/${encodeURIComponent(fn)}`, { method: 'DELETE' });
+            refreshDeliverables();
+          });
+        });
+      } catch {}
+    }
+
+    // ─── Config panel ───
+
+    document.getElementById('btn-config').addEventListener('click', () => {
+      const panel = document.getElementById('config-panel');
+      const btn = document.getElementById('btn-config');
+      panel.classList.toggle('visible');
+      btn.classList.toggle('active');
+    });
+
+    function getModelValue() {
+      return document.getElementById('config-model').value;
+    }
+
+    function setModelControl(models, currentValue) {
+      const wrapper = document.getElementById('model-wrapper');
+      const prev = document.getElementById('config-model');
+      const val = currentValue || (prev ? prev.value : '');
+
+      if (models && models.length > 0) {
+        const sel = document.createElement('select');
+        sel.id = 'config-model';
+        for (const m of models) {
+          const opt = document.createElement('option');
+          opt.value = typeof m === 'string' ? m : m.value;
+          opt.textContent = typeof m === 'string' ? m : m.label;
+          sel.appendChild(opt);
+        }
+        if (val) sel.value = val;
+        if (!sel.value && sel.options.length) sel.selectedIndex = 0;
+        wrapper.replaceChildren(sel);
+      } else {
+        const inp = document.createElement('input');
+        inp.type = 'text';
+        inp.id = 'config-model';
+        inp.placeholder = 'model name (e.g. llama3)';
+        inp.style.cssText = 'width: 180px; font-family: monospace; font-size: 12px;';
+        inp.value = val;
+        wrapper.replaceChildren(inp);
+      }
+    }
+
+    let _fetchModelsDebounce = null;
+
+    async function fetchModels(baseUrl) {
+      const params = new URLSearchParams();
+      if (baseUrl) params.set('base_url', baseUrl);
+      try {
+        const res = await fetch(`${apiBase()}/api/v1/models?${params}`);
+        const data = await res.json();
+        if (data.models && data.models.length > 0) {
+          setModelControl(data.models.map(m => ({ value: m, label: m })));
+        } else {
+          setModelControl(null);
+        }
+      } catch {
+        setModelControl(null);
+      }
+    }
+
+    document.getElementById('config-base-url').addEventListener('input', (e) => {
+      clearTimeout(_fetchModelsDebounce);
+      const url = e.target.value.trim();
+      _fetchModelsDebounce = setTimeout(() => fetchModels(url), 400);
+    });
+
+    document.getElementById('btn-save-config').addEventListener('click', async () => {
+      const apiKey = document.getElementById('config-api-key').value.trim();
+      const model = getModelValue();
+      const baseUrl = document.getElementById('config-base-url').value.trim();
+      const ctxWindow = document.getElementById('config-context-window').value.trim();
+      const body = {};
+      if (apiKey) body.api_key = apiKey;
+      body.model = model;
+      body.base_url = baseUrl;
+      if (ctxWindow) body.context_window = parseInt(ctxWindow);
+      body.parallel_tool_calls = document.getElementById('config-parallel-tools').checked;
+      try {
+        const res = await fetch(`${apiBase()}/api/v1/config`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        const data = await res.json();
+        updateConfigStatus(data);
+        if (data.context_window) _configContextWindow = data.context_window;
+        document.getElementById('config-api-key').value = '';
+        await fetchModels(data.base_url || '');
+        const modelEl = document.getElementById('config-model');
+        if (modelEl && data.model) modelEl.value = data.model;
+        addLog(`Config updated — model: ${data.model}, key: ${data.api_key_set ? 'set' : 'not set'}, base_url: ${data.base_url || '(default)'}`, 'info');
+      } catch (err) { addLog(`Config save failed: ${err.message}`, 'error'); }
+    });
+
+    function updateConfigStatus(data) {
+      const el = document.getElementById('config-status');
+      const provider = data.base_url ? `via ${data.base_url}` : 'OpenAI';
+      if (data.api_key_set || data.base_url) {
+        el.textContent = `ready (${data.model} — ${provider})`;
+        el.className = 'config-status';
+      } else {
+        el.textContent = 'API key not set';
+        el.className = 'config-status warn';
+      }
+    }
+
+    async function loadConfig() {
+      try {
+        const res = await fetch(`${apiBase()}/api/v1/config`);
+        const data = await res.json();
+        if (data.base_url) document.getElementById('config-base-url').value = data.base_url;
+        if (data.context_window) document.getElementById('config-context-window').value = data.context_window;
+        document.getElementById('config-parallel-tools').checked = !!data.parallel_tool_calls;
+        await fetchModels(data.base_url || '');
+        const modelEl = document.getElementById('config-model');
+        if (modelEl) modelEl.value = data.model;
+        updateConfigStatus(data);
+        if (!data.api_key_set && !data.base_url) {
+          document.getElementById('config-panel').classList.add('visible');
+          document.getElementById('btn-config').classList.add('active');
+        }
+      } catch {}
+    }
+
+    // ─── Browser notifications ───
+
+    function notifyUser(title, body) {
+      if (Notification.permission !== 'granted') return;
+      if (document.hasFocus()) return;
+      const n = new Notification(title, {
+        body: body.slice(0, 200),
+        icon: '/desktop/app/images/icons/novnc-64x64.png',
+        tag: 'open-computer-ask',
+      });
+      n.onclick = () => { window.focus(); n.close(); };
+    }
+
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+
+    // ─── File Upload ───
+
+    const uploadInput = document.createElement('input');
+    uploadInput.type = 'file';
+    uploadInput.multiple = true;
+    uploadInput.style.display = 'none';
+    document.body.appendChild(uploadInput);
+
+    document.getElementById('btn-upload').addEventListener('click', () => { uploadInput.click(); });
+
+    uploadInput.addEventListener('change', () => {
+      const files = uploadInput.files;
+      if (files && files.length > 0) {
+        for (const file of files) uploadFile(file);
+      }
+      uploadInput.value = '';
+    });
+
+    function uploadFile(file) {
+      const CHUNK_SIZE = 64 * 1024;
+      const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+      const uploadId = `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+
+      const progressEl = document.getElementById('upload-progress');
+      const filenameEl = document.getElementById('upload-filename');
+      const barFill = document.getElementById('upload-bar-fill');
+      const statusEl = document.getElementById('upload-status');
+
+      filenameEl.textContent = file.name;
+      barFill.style.width = '0%';
+      statusEl.textContent = `0 / ${formatSize(file.size)}`;
+      progressEl.classList.add('active');
+
+      const ws = new WebSocket(`${wsBase()}/ws/upload`);
+      let chunkIndex = 0;
+
+      ws.onopen = () => {
+        ws.send(JSON.stringify({
+          type: 'upload_start', id: uploadId,
+          filename: file.name, size: file.size, totalChunks,
+        }));
+        sendNextChunk();
+      };
+
+      ws.onmessage = (evt) => {
+        const msg = JSON.parse(evt.data);
+        if (msg.type === 'chunk_ack') {
+          chunkIndex++;
+          const pct = Math.round((chunkIndex / totalChunks) * 100);
+          barFill.style.width = pct + '%';
+          statusEl.textContent = `${formatSize(chunkIndex * CHUNK_SIZE)} / ${formatSize(file.size)}`;
+          if (chunkIndex < totalChunks) sendNextChunk();
+          else ws.send(JSON.stringify({ type: 'upload_end', id: uploadId }));
+        } else if (msg.type === 'upload_complete') {
+          statusEl.textContent = 'Upload complete';
+          barFill.style.width = '100%';
+          setTimeout(() => progressEl.classList.remove('active'), 2000);
+          ws.close();
+        } else if (msg.type === 'upload_error') {
+          statusEl.textContent = `Error: ${msg.error}`;
+          barFill.style.background = '#ef4444';
+          setTimeout(() => progressEl.classList.remove('active'), 4000);
+          ws.close();
+        }
+      };
+
+      ws.onerror = () => {
+        statusEl.textContent = 'Connection error';
+        setTimeout(() => progressEl.classList.remove('active'), 3000);
+      };
+
+      function sendNextChunk() {
+        const start = chunkIndex * CHUNK_SIZE;
+        const end = Math.min(start + CHUNK_SIZE, file.size);
+        const slice = file.slice(start, end);
+        const reader = new FileReader();
+        reader.onload = () => { ws.send(reader.result); };
+        reader.readAsArrayBuffer(slice);
+      }
+    }
+
+    function formatSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    // ─── Init ───
+    document.getElementById('desktop-iframe').src =
+      `/vnc_lite.html?scale=true&path=desktop/websockify`;
+    connectEvents();
+    refreshDeliverables();
+    loadConfig();
+  </script>
+</body>
+</html>

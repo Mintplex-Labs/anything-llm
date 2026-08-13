@@ -15,7 +15,6 @@ const docSummarizer = {
         aibitat.function({
           super: aibitat,
           name: this.name,
-          controller: new AbortController(),
           description:
             "List all documents in the workspace or summarize a specific document. See what files are available, get a summary of a document's contents, or read and condense a file into key points.",
           examples: [
@@ -158,26 +157,14 @@ const docSummarizer = {
                 `${this.caller}: Summarizing ${filename ?? ""}...`
               );
 
-              // Use a named listener so we can remove it after summarization completes,
-              // preventing listener accumulation when summarizing many documents.
-              const abortListener = () => {
-                this.super.handlerProps.log(
-                  "Abort was triggered, exiting summarization early."
-                );
-                this.controller.abort();
-              };
-              this.super.emitter.on("abort", abortListener);
-              const cleanup = () => {
-                this.super.emitter.removeListener("abort", abortListener);
-              };
-
+              // Aborting is handled by the session abort signal that
+              // `summarizeContent` reads off the aibitat instance.
               return await summarizeContent({
                 provider: this.super.provider,
                 model: this.super.model,
-                controllerSignal: this.controller.signal,
                 content: document.content,
                 aibitat: this.super,
-              }).finally(cleanup);
+              });
             } catch (error) {
               this.super.handlerProps.log(
                 `document-summarizer.summarizeDoc raised an error. ${error.message}`

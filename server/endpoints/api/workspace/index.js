@@ -346,7 +346,10 @@ function apiWorkspaceEndpoints(app) {
           currWorkspace.id,
           data
         );
-        response.status(200).json({ workspace, message });
+
+        if (!workspace)
+          return response.status(500).json({ workspace: null, message });
+        return response.status(200).json({ workspace, message });
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();

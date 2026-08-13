@@ -11,6 +11,7 @@ import {
   YoutubeLogo,
   LinkSimple,
   GitlabLogo,
+  GitBranch,
 } from "@phosphor-icons/react";
 import GmailLogo from "@/pages/Admin/Agents/GMailSkillPanel/gmail.png";
 import GoogleCalendarLogo from "@/pages/Admin/Agents/GoogleCalendarSkillPanel/google-calendar.png";
@@ -25,6 +26,7 @@ const CIRCLE_ICONS = {
   youtube: YoutubeLogo,
   github: GithubLogo,
   gitlab: GitlabLogo,
+  gitea: GitBranch,
   confluence: LinkSimple,
   drupalwiki: FileText,
   obsidian: FileText,
@@ -50,7 +52,7 @@ export function getCustomImage(type) {
 
 /**
  * Renders a circle with a source type icon inside, or a favicon if URL is provided.
- * @param {"file"|"link"|"youtube"|"github"|"gitlab"|"confluence"|"drupalwiki"|"obsidian"|"paperlessNgx"} props.type
+ * @param {"file"|"link"|"youtube"|"github"|"gitlab"|"gitea"|"confluence"|"drupalwiki"|"obsidian"|"paperlessNgx"} props.type
  * @param {number} [props.size] - Circle diameter in px
  * @param {number} [props.iconSize] - Icon size in px
  * @param {string} [props.url] - Optional URL to fetch favicon from
@@ -289,6 +291,7 @@ const supportedSources = [
   "confluence://",
   "github://",
   "gitlab://",
+  "gitea://",
   "drupalwiki://",
   "youtube://",
   "obsidian://",
@@ -356,6 +359,11 @@ export function parseChunkSource({ title = "", chunks = [] }) {
       case "gitlab://":
         text = title;
         icon = "gitlab";
+        break;
+
+      case "gitea://":
+        text = title;
+        icon = "gitea";
         break;
 
       case "confluence://":

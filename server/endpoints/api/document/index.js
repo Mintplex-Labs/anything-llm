@@ -2,13 +2,14 @@ const { Telemetry } = require("../../../models/telemetry");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
 const { handleAPIFileUpload } = require("../../../utils/files/multer");
 const {
-  viewLocalFiles,
   findDocumentInDocuments,
   getDocumentsByFolder,
   normalizePath,
   isWithin,
+  moveProcessedDocsToFolder,
+  viewLocalFiles,
 } = require("../../../utils/files");
-const { reqBody, safeJsonParse } = require("../../../utils/http");
+const { reqBody, safeJsonParse, queryParams } = require("../../../utils/http");
 const { EventLogs } = require("../../../models/eventLogs");
 const { CollectorApi } = require("../../../utils/collectorApi");
 const fs = require("fs");
@@ -268,17 +269,7 @@ function apiDocumentEndpoints(app) {
             ? safeJsonParse(_metadata, {})
             : _metadata;
 
-        let folder = request.params?.folderName || "custom-documents";
-        folder = normalizePath(folder);
-        const targetFolderPath = path.join(documentsPath, folder);
-
-        if (
-          !isWithin(path.resolve(documentsPath), path.resolve(targetFolderPath))
-        )
-          throw new Error("Invalid folder name");
-        if (!fs.existsSync(targetFolderPath))
-          fs.mkdirSync(targetFolderPath, { recursive: true });
-
+        const folderName = request.params?.folderName || "custom-documents";
         const Collector = new CollectorApi();
         const processingOnline = await Collector.online();
         if (!processingOnline) {
@@ -305,29 +296,7 @@ function apiDocumentEndpoints(app) {
 
         // For each processed document, check if it is already in the desired folder.
         // If not, move it using similar logic as in the move-files endpoint.
-        for (const doc of documents) {
-          const currentFolder = path.dirname(doc.location);
-          if (currentFolder !== folder) {
-            const sourcePath = path.join(
-              documentsPath,
-              normalizePath(doc.location)
-            );
-            const destinationPath = path.join(
-              targetFolderPath,
-              path.basename(doc.location)
-            );
-
-            if (
-              !isWithin(documentsPath, sourcePath) ||
-              !isWithin(documentsPath, destinationPath)
-            )
-              throw new Error("Invalid file location");
-
-            fs.renameSync(sourcePath, destinationPath);
-            doc.location = path.join(folder, path.basename(doc.location));
-            doc.name = path.basename(doc.location);
-          }
-        }
+        const folder = moveProcessedDocsToFolder(documents, folderName);
 
         Collector.log(
           `Document ${originalname} uploaded, processed, and moved to folder ${folder} successfully.`
@@ -620,10 +589,10 @@ function apiDocumentEndpoints(app) {
     }
   );
 
-  app.get("/v1/documents", [validApiKey], async (_, response) => {
+  app.get("/v1/documents", [validApiKey], async (request, response) => {
     /*
     #swagger.tags = ['Documents']
-    #swagger.description = 'List of all locally-stored documents in instance'
+    #swagger.description = 'List of all locally-stored documents in instance. Optionally, pass ?folder=name to fetch the contents of a single folder, paginated with offset and limit (limit=all returns every document in that folder).'
     #swagger.responses[200] = {
       content: {
         "application/json": {
@@ -656,8 +625,20 @@ function apiDocumentEndpoints(app) {
     }
     */
     try {
-      const localFiles = await viewLocalFiles();
-      response.status(200).json({ localFiles });
+      const { folder, offset, limit } = queryParams(request);
+      if (folder) {
+        // Additive opt-in. Pagination is passed through as-is:
+        // getDocumentsByFolder clamps the window and understands `limit=all`.
+        const result = await getDocumentsByFolder(folder, { offset, limit });
+        response.status(result.code).json(result);
+      } else {
+        // Deliberately the full tree, unchanged from before folder support
+        // existed. This parses every document on disk and is slow on large
+        // instances, but silently returning empty `items` arrays to existing
+        // integrations would be worse. New callers should use ?folder=.
+        const localFiles = await viewLocalFiles();
+        response.status(200).json({ localFiles });
+      }
     } catch (e) {
       console.error(e.message, e);
       response.sendStatus(500).end();
@@ -670,11 +651,23 @@ function apiDocumentEndpoints(app) {
     async (request, response) => {
       /*
     #swagger.tags = ['Documents']
-    #swagger.description = 'Get all documents stored in a specific folder.'
+    #swagger.description = 'Get all documents stored in a specific folder. Returns every document by default; pass offset and limit to paginate.'
     #swagger.parameters['folderName'] = {
       in: 'path',
       description: 'Name of the folder to retrieve documents from',
       required: true,
+      type: 'string'
+    }
+    #swagger.parameters['offset'] = {
+      in: 'query',
+      description: 'Number of documents to skip. Defaults to 0.',
+      required: false,
+      type: 'integer'
+    }
+    #swagger.parameters['limit'] = {
+      in: 'query',
+      description: "Max documents to return, capped at 1000. Defaults to all, which returns every document in the folder.",
+      required: false,
       type: 'string'
     }
     #swagger.responses[200] = {
@@ -715,10 +708,19 @@ function apiDocumentEndpoints(app) {
     */
       try {
         const { folderName } = request.params;
-        const result = await getDocumentsByFolder(folderName);
+        const { offset, limit = "all" } = queryParams(request);
+        // Defaults to every document: this endpoint has never paginated and
+        // silently truncating to a page would break existing consumers.
+        // offset/limit are opt-in for callers that do want to page.
+        const result = await getDocumentsByFolder(folderName, {
+          offset,
+          limit,
+        });
         response.status(result.code).json({
           folder: result.folder,
           documents: result.documents,
+          totalCount: result.totalCount,
+          hasMore: result.hasMore,
           error: result.error,
         });
       } catch (e) {

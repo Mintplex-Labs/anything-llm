@@ -1,0 +1,14 @@
+{
+  "name": "memory-manager",
+  "version": "0.1.0",
+  "private": true,
+  "description": "In-VM memory management web UI",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "build": "npx esbuild server.js --bundle --platform=node --target=node22 --outfile=memory-manager.cjs --format=cjs --minify"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}

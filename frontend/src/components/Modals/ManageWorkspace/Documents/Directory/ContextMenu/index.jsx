@@ -3,13 +3,14 @@ import { useRef, useEffect } from "react";
 export default function ContextMenu({
   contextMenu,
   closeContextMenu,
-  files,
-  selectedItems,
-  setSelectedItems,
+  allSelected,
+  onSelectAll,
+  onClearSelection,
 }) {
   const contextMenuRef = useRef(null);
 
   useEffect(() => {
+    if (!contextMenu.visible) return;
     const handleClickOutside = (event) => {
       if (
         contextMenuRef.current &&
@@ -20,36 +21,15 @@ export default function ContextMenu({
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [closeContextMenu]);
-
-  const isAllSelected = () => {
-    const allItems = files.items.flatMap((folder) => [
-      folder.name,
-      ...folder.items.map((file) => file.id),
-    ]);
-    return allItems.every((item) => selectedItems[item]);
-  };
-
-  const toggleSelectAll = () => {
-    if (isAllSelected()) {
-      setSelectedItems({});
-    } else {
-      const newSelectedItems = {};
-      files.items.forEach((folder) => {
-        newSelectedItems[folder.name] = true;
-        folder.items.forEach((file) => {
-          newSelectedItems[file.id] = true;
-        });
-      });
-      setSelectedItems(newSelectedItems);
-    }
-    closeContextMenu();
-  };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [contextMenu.visible, closeContextMenu]);
 
   if (!contextMenu.visible) return null;
+
+  const toggleSelectAll = () => {
+    allSelected ? onClearSelection() : onSelectAll();
+    closeContextMenu();
+  };
 
   return (
     <div
@@ -66,7 +46,7 @@ export default function ContextMenu({
         onClick={toggleSelectAll}
         className="block w-full text-left px-4 py-2 text-sm text-theme-text-primary hover:bg-theme-file-picker-hover"
       >
-        {isAllSelected() ? "Unselect All" : "Select All"}
+        {allSelected ? "Unselect All" : "Select All"}
       </button>
       <button
         onClick={closeContextMenu}

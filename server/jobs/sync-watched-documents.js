@@ -51,7 +51,9 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
         newContent = response?.content;
       }
 
-      if (["confluence", "github", "gitlab", "drupalwiki"].includes(type)) {
+      if (
+        ["confluence", "github", "gitlab", "gitea", "drupalwiki"].includes(type)
+      ) {
         const response = await collector.forwardExtensionRequest({
           endpoint: "/ext/resync-source-document",
           method: "POST",
@@ -122,6 +124,10 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
       // update the defined document and workspace vectorDB with the latest information
       // it will skip cache and create a new vectorCache file.
       const vectorDatabase = getVectorDbClass();
+      // The published timestamp is half of the identifier used to filter RAG results whose parent
+      // document is pinned, so the vectors and the source document have to be stamped with the
+      // same value or a pinned document will be injected as full-text and as chunks.
+      const publishedAt = new Date().toLocaleString();
       await vectorDatabase.deleteDocumentFromNamespace(
         workspace.slug,
         document.docId
@@ -132,6 +138,7 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
           ...currentDocumentData,
           pageContent: newContent,
           docId: document.docId,
+          published: publishedAt,
         },
         document.docpath,
         true
@@ -140,7 +147,7 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
         ...currentDocumentData,
         pageContent: newContent,
         docId: document.docId,
-        published: new Date().toLocaleString(),
+        published: publishedAt,
         // Todo: Update word count and token_estimate?
       });
       log(
@@ -177,6 +184,7 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
               ...currentDocumentData,
               pageContent: newContent,
               docId: additionalDocumentRef.docId,
+              published: publishedAt,
             },
             additionalDocumentRef.docpath
           );

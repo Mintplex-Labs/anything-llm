@@ -36,7 +36,7 @@ function mergeStringField(target, source, fieldName, validator = null) {
 const SystemSettings = {
   /** A default system prompt that is used when no other system prompt is set or available to the function caller. */
   saneDefaultSystemPrompt:
-    "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.",
+    "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. The current date and time is {datetime}. Return only your response to the question given the above information following the users instructions as needed.",
   protectedFields: ["multi_user_mode", "hub_api_key", "onboarding_complete"],
   publicFields: [
     "footer_data",
@@ -166,6 +166,7 @@ const SystemSettings = {
             "perplexity-search",
             "brave-search",
             "crw-search",
+            "you-search",
           ].includes(update)
         )
           throw new Error("Invalid SERP provider.");
@@ -499,6 +500,20 @@ const SystemSettings = {
         process.env.GENERIC_OPEN_AI_EMBEDDING_QUERY_PREFIX || "",
 
       // --------------------------------------------------------
+      // Image Generation Provider Selection Settings & Configs
+      // --------------------------------------------------------
+      ImageGenerationProvider: process.env.IMAGE_GEN_PROVIDER || null,
+      ImageGenerationModelPref: process.env.IMAGE_GEN_MODEL_PREF || null,
+      ImageGenerationDimensions: process.env.IMAGE_GEN_SIZE_PREF || "512x512",
+      ImageGenerationOpenAiKey: !!process.env.IMAGE_GEN_OPENAI_KEY,
+      ImageGenerationOpenRouterApiKey:
+        !!process.env.IMAGE_GEN_OPENROUTER_API_KEY,
+      ImageGenerationOllamaBasePath: process.env.IMAGE_GEN_OLLAMA_BASE_PATH,
+      ImageGenerationOllamaAuthToken: !!process.env.IMAGE_GEN_OLLAMA_AUTH_TOKEN,
+      ImageGenerationLemonadeBasePath: process.env.IMAGE_GEN_LEMONADE_BASE_PATH,
+      ImageGenerationLemonadeApiKey: !!process.env.IMAGE_GEN_LEMONADE_API_KEY,
+
+      // --------------------------------------------------------
       // VectorDB Provider Selection Settings & Configs
       // --------------------------------------------------------
       VectorDB: vectorDB,
@@ -520,6 +535,9 @@ const SystemSettings = {
       WhisperProvider: process.env.WHISPER_PROVIDER || "local",
       WhisperModelPref:
         process.env.WHISPER_MODEL_PREF || "Xenova/whisper-small",
+      WhisperGenericOpenAiBaseUrl: process.env.WHISPER_GENERIC_OPEN_AI_BASE_URL,
+      WhisperGenericOpenAiApiKey: !!process.env.WHISPER_GENERIC_OPEN_AI_API_KEY,
+      WhisperGenericOpenAiModel: process.env.WHISPER_GENERIC_OPEN_AI_MODEL,
 
       // --------------------------------------------------------
       // TTS/STT  Selection Settings & Configs
@@ -586,6 +604,7 @@ const SystemSettings = {
       AgentBraveApiKey: !!process.env.AGENT_BRAVE_API_KEY || null,
       AgentCrwApiKey: !!process.env.AGENT_CRW_API_KEY || null,
       AgentCrwApiUrl: process.env.AGENT_CRW_API_URL || null,
+      AgentYouApiKey: !!process.env.AGENT_YOU_API_KEY || null,
 
       // --------------------------------------------------------
       // Compliance Settings
@@ -854,7 +873,7 @@ const SystemSettings = {
     return {
       // OpenAI Keys
       OpenAiKey: !!process.env.OPEN_AI_KEY,
-      OpenAiModelPref: process.env.OPEN_MODEL_PREF || "gpt-4o",
+      OpenAiModelPref: process.env.OPEN_MODEL_PREF || "gpt-4.1-nano",
 
       // Azure + OpenAI Keys
       AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
@@ -966,6 +985,7 @@ const SystemSettings = {
       AwsBedrockLLMModel: process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE,
       AwsBedrockLLMTokenLimit:
         process.env.AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT || 8192,
+      AwsBedrockLLMMaxTokens: process.env.AWS_BEDROCK_LLM_MAX_TOKENS || 4096,
 
       // Cohere API Keys
       CohereApiKey: !!process.env.COHERE_API_KEY,
@@ -1035,6 +1055,12 @@ const SystemSettings = {
       // Cerebras Keys
       CerebrasApiKey: !!process.env.CEREBRAS_API_KEY,
       CerebrasModelPref: process.env.CEREBRAS_MODEL_PREF,
+
+      // OMLX Keys
+      OMLXLLMBasePath: process.env.OMLX_LLM_BASE_PATH,
+      OMLXLLMApiKey: !!process.env.OMLX_LLM_API_KEY,
+      OMLXLLMModelPref: process.env.OMLX_LLM_MODEL_PREF,
+      OMLXLLMTokenLimit: process.env.OMLX_LLM_TOKEN_LIMIT,
     };
   },
 
@@ -1193,6 +1219,7 @@ function mergeConnections(existingConnections = [], updates = []) {
       }
 
       default: {
+        if (!action) continue;
         throw new Error("SQL connection update contains an invalid action.");
       }
     }

@@ -5,6 +5,7 @@ const Provider = require("./ai-provider.js");
 const { v4 } = require("uuid");
 const { safeJsonParse } = require("../../../http");
 const { getAnythingLLMUserAgent } = require("../../../../endpoints/utils");
+const { dereferenceSchema } = require("./helpers/dereferenceSchema");
 
 /**
  * The agent provider for the Anthropic API.
@@ -217,7 +218,11 @@ class AnthropicProvider extends Provider {
   #formatFunctions(functions = []) {
     return functions.map((func) => {
       const { name, description, parameters, required } = func;
-      const { type, properties } = parameters;
+      // Some MCP tools (e.g. Pydantic v2 nested models) describe their parameters
+      // with `$ref`/`$defs`. Anthropic's `input_schema` does not resolve local
+      // references, so we inline them here - otherwise the dangling pointer crashes
+      // the tool call. Flat schemas are left unchanged. See issue #3938.
+      const { type, properties } = dereferenceSchema(parameters);
       return {
         name,
         description,
@@ -426,11 +431,11 @@ class AnthropicProvider extends Provider {
         // wtf.
         let thought = response.content.find((res) => res.type === "text");
         thought =
-          thought?.content?.length > 0
+          thought?.text?.length > 0
             ? {
-                role: thought.role,
+                role: "assistant",
                 content: [
-                  { type: "text", text: thought.content },
+                  { type: "text", text: thought.text },
                   { ...toolCall },
                 ],
               }

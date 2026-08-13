@@ -11,6 +11,7 @@ const {
 } = require("../../../utils/chats/openaiCompatible");
 const { getModelTag } = require("../../utils");
 const { extractTextContent, extractAttachments } = require("./helpers");
+const { handleImageGenUpload } = require("../../../utils/files/multer");
 
 function apiOpenAICompatibleEndpoints(app) {
   if (!app) return;
@@ -185,6 +186,101 @@ function apiOpenAICompatibleEndpoints(app) {
       } catch (e) {
         console.error(e.message, e);
         response.status(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/v1/openai/images/generations",
+    [validApiKey, handleImageGenUpload],
+    async (request, response) => {
+      /*
+      #swagger.tags = ['OpenAI Compatible Endpoints']
+      #swagger.description = 'Generate or edit an image using the system-configured image generation provider. Send a multipart/form-data request with a "prompt" field and an optional "size" field. To edit an existing image, attach one or more files as "image_references" — when present, the request is automatically routed to the provider image editing endpoint. Returns the image as a base64 PNG. If the provider does not support editing (e.g. Ollama), a notice is included and a new image is generated from the prompt only.'
+      #swagger.consumes = ['multipart/form-data']
+      #swagger.parameters['prompt'] = {
+        in: 'formData',
+        description: 'Text prompt describing the image to generate or the edit to apply.',
+        required: true,
+        type: 'string'
+      }
+      #swagger.parameters['size'] = {
+        in: 'formData',
+        description: "Image dimensions (e.g. 1024x1024). Defaults to the system IMAGE_GEN_SIZE_PREF setting.",
+        required: false,
+        type: 'string'
+      }
+      #swagger.parameters['image_references'] = {
+        in: 'formData',
+        description: 'Optional reference image file(s) for editing. When provided, the request is routed to the edit endpoint instead of generation.',
+        required: false,
+        type: 'file'
+      }
+      #swagger.parameters['response_format'] = {
+        in: 'formData',
+        description: "Response format: b64_json (default) returns base64-encoded image data in JSON, blob returns the raw image bytes with content-type image/png.",
+        required: false,
+        type: 'string',
+        default: 'b64_json',
+        enum: ['b64_json', 'blob']
+      }
+      #swagger.responses[403] = {
+        schema: {
+          "$ref": "#/definitions/InvalidAPIKey"
+        }
+      }
+      */
+      try {
+        const prompt = request.body?.prompt;
+        const size = request.body?.size;
+        const responseFormat = request.body?.response_format || "b64_json";
+        if (!prompt || !String(prompt).trim().length)
+          return response.status(400).json({ error: "A prompt is required." });
+
+        const abortController = new AbortController();
+        response.on("close", () => abortController.abort());
+        const signal = abortController.signal;
+
+        const imageBuffers = (request.files || []).map((f) => f.buffer);
+        const {
+          generateImageForWorkspace,
+          editImageForWorkspace,
+        } = require("../../../utils/ImageGenerators");
+
+        const result =
+          imageBuffers.length > 0
+            ? await editImageForWorkspace({
+                prompt: String(prompt),
+                images: imageBuffers,
+                size: size ? String(size) : undefined,
+                signal,
+              })
+            : await generateImageForWorkspace({
+                prompt: String(prompt),
+                size: size ? String(size) : undefined,
+                signal,
+              });
+
+        if (responseFormat === "blob") {
+          if (result.notice)
+            response.setHeader("X-Image-Notice", result.notice);
+          response.setHeader("Content-Type", "image/png");
+          response.setHeader(
+            "Content-Disposition",
+            `inline; filename="${result.storageFilename}"`
+          );
+          return response.status(200).end(result.buffer);
+        }
+
+        return response.status(200).json({
+          data: [{ b64_json: result.buffer.toString("base64") }],
+          ...(result.notice && { notice: result.notice }),
+        });
+      } catch (e) {
+        const { isAbortError } = require("../../../utils/helpers/abortSignals");
+        if (isAbortError(e)) return response.end();
+        console.error(e.message, e);
+        return response.status(500).json({ error: e.message });
       }
     }
   );
