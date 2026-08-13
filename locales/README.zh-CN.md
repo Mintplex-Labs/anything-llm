@@ -1,7 +1,7 @@
 <a name="readme-top"></a>
 
 <p align="center">
-  <a href="https://PsionHQ.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="PsionHQ logo"></a>
+  <a href="https://github.com/psionHQ/Platform"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="PsionHQ logo"></a>
 </p>
 
 <div align='center'>
