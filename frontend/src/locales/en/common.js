@@ -1321,8 +1321,7 @@ const TRANSLATIONS = {
       description:
         "Import an entire public or private GitHub repository in a single click.",
       URL: "GitHub Repo URL",
-      URL_explained:
-        "Url of the GitHub repo you wish to collect - GitHub Enterprise Server instances are supported.",
+      URL_explained: "Url of the GitHub repo you wish to collect.",
       token: "GitHub Access Token",
       optional: "optional",
       token_explained: "Access Token to prevent rate limiting.",
