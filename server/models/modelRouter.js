@@ -45,7 +45,7 @@ const ModelRouter = {
     const cooldown_seconds =
       data.cooldown_seconds != null
         ? this.validations.cooldown_seconds(data.cooldown_seconds)
-        : ModelRouterService.DEFAULT_STICKY_MS;
+        : ModelRouterService.DEFAULT_STICKY_MS / 1000;
 
     try {
       const router = await prisma.model_routers.create({

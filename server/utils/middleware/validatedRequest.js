@@ -2,6 +2,7 @@ const { SystemSettings } = require("../../models/systemSettings");
 const { User } = require("../../models/user");
 const { EncryptionManager } = require("../EncryptionManager");
 const { decodeJWT } = require("../http");
+const { UserMetaCache } = require("../userLocale");
 const EncryptionMgr = new EncryptionManager();
 
 async function validatedRequest(request, response, next) {
@@ -17,6 +18,7 @@ async function validatedRequest(request, response, next) {
     !process.env.AUTH_TOKEN ||
     !process.env.JWT_SECRET
   ) {
+    UserMetaCache.setFromRequest(request);
     next();
     return;
   }
@@ -65,6 +67,7 @@ async function validatedRequest(request, response, next) {
     return;
   }
 
+  UserMetaCache.setFromRequest(request);
   next();
 }
 
@@ -103,6 +106,7 @@ async function validateMultiUserRequest(request, response, next) {
   }
 
   response.locals.user = user;
+  UserMetaCache.setFromRequest(request, user.id);
   next();
 }
 

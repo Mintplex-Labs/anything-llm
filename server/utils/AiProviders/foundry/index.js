@@ -10,8 +10,18 @@ const {
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 
 const { OpenAI: OpenAIApi } = require("openai");
+const ToolCallTextFilter = require("./toolCallFilter.js");
 
 class FoundryLLM {
+  /**
+   * The largest context window we will select on the user's behalf.
+   * Foundry runs on the user's own machine with no performance setting, so a
+   * model advertising 128K would make an average laptop crawl. A user who
+   * explicitly sets a larger limit still gets it, up to the model's real window.
+   * @type {number}
+   */
+  static MAX_DEFAULT_CONTEXT_WINDOW = 16_000;
+
   /** @see FoundryLLM.cacheContextWindows */
   static modelContextWindows = {};
 
@@ -51,6 +61,66 @@ class FoundryLLM {
     };
   }
 
+  /**
+   * Models this process has already loaded, so the check costs nothing after
+   * the first message. Cleared for a model whenever it turns out to be gone.
+   * @type {Set<string>}
+   */
+  static #loadedModels = new Set();
+
+  /**
+   * Ensure the model is in memory before we try to infer with it.
+   *
+   * Foundry 0.10 stopped auto-loading on inference. A non-streaming request
+   * against an unloaded model returns a clean error, but a *streaming* one
+   * answers 200 with SSE headers and then drops the connection, surfacing only
+   * as an opaque "Premature close". Loading first avoids both.
+   * @returns {Promise<void>}
+   */
+  async assertModelLoaded() {
+    if (!this.model || FoundryLLM.#loadedModels.has(this.model)) return;
+    const FoundryModels = require("./models.js");
+
+    // The service reports fully-qualified variant ids while the preference is
+    // usually an alias, so match on either side of the colon-versioned name.
+    const loaded = await FoundryModels.loadedModels();
+    const isLoaded = loaded.some(
+      (id) => id === this.model || id.split(":")[0] === this.model
+    );
+    if (isLoaded) {
+      FoundryLLM.#loadedModels.add(this.model);
+      return;
+    }
+
+    this.#log(`Loading ${this.model} into Foundry Local...`);
+    const { success, error } = await FoundryModels.loadModel(this.model);
+    if (!success)
+      throw new Error(
+        `Could not load ${this.model} into Foundry Local: ${error}`
+      );
+    FoundryLLM.#loadedModels.add(this.model);
+  }
+
+  /**
+   * Turn a mid-stream failure into something actionable.
+   *
+   * A model evicted after we loaded it — by an idle timeout, or from the host —
+   * makes the service answer 200 and then drop the socket, which reaches us
+   * only as "Premature close". Forget it so the next message reloads it.
+   * @param {Error} error
+   * @param {string} model
+   * @returns {string}
+   */
+  static explainStreamError(error, model) {
+    const isPrematureClose =
+      error?.code === "ERR_STREAM_PREMATURE_CLOSE" ||
+      /premature close/i.test(error?.message ?? "");
+    if (!isPrematureClose) return error.message;
+
+    FoundryLLM.#loadedModels.delete(model);
+    return "Foundry Local crashed trying to reply to this message. You should change the message or try again.";
+  }
+
   #appendContext(contextTexts = []) {
     if (!contextTexts || !contextTexts.length) return "";
     return (
@@ -84,18 +154,35 @@ class FoundryLLM {
       if (Object.keys(FoundryLLM.modelContextWindows).length > 0 && !force)
         return;
 
+      // A 0.10+ daemon dropped maxInputTokens/maxOutputTokens from /v1/models,
+      // so the registry catalog is the only place the real window is published.
+      // Key every name a model can be selected by, since the preference may
+      // hold an alias or a fully-qualified variant id.
+      const FoundryCatalog = require("./catalog.js");
+      for (const model of await FoundryCatalog.models()) {
+        if (!model.contextLength) continue;
+        FoundryLLM.modelContextWindows[model.alias] = model.contextLength;
+        for (const variant of model.variants)
+          FoundryLLM.modelContextWindows[variant.name] = model.contextLength;
+      }
+
       const openai = new OpenAIApi({
         baseURL: parseFoundryBasePath(process.env.FOUNDRY_BASE_PATH),
         apiKey: null,
       });
       (await openai.models.list().then((result) => result.data)).map(
         (model) => {
+          // Whatever the daemon reports wins — it knows how the model was
+          // actually loaded. Older daemons are the only ones that report this.
           const contextWindow =
             Number(model.maxInputTokens) + Number(model.maxOutputTokens);
-          FoundryLLM.modelContextWindows[model.id] = contextWindow;
+          if (contextWindow > 0)
+            FoundryLLM.modelContextWindows[model.id] = contextWindow;
         }
       );
-      FoundryLLM.#slog(`Context windows cached for all models!`);
+      FoundryLLM.#slog(
+        `Context windows cached for ${Object.keys(FoundryLLM.modelContextWindows).length} model name(s).`
+      );
     } catch (e) {
       FoundryLLM.#slog(`Error caching context windows: ${e.message}`);
       return;
@@ -111,39 +198,42 @@ class FoundryLLM {
    * @returns {Promise<boolean>}
    */
   static async unloadModelFromEngine(modelName) {
-    const basePath = parseFoundryBasePath(process.env.FOUNDRY_BASE_PATH);
-    const baseUrl = new URL(basePath);
-    baseUrl.pathname = `/openai/unload/${modelName}`;
-    baseUrl.searchParams.set("force", "true");
-    return await fetch(baseUrl.toString())
-      .then((res) => res.json())
-      .catch(() => null);
+    const FoundryModels = require("./models.js");
+    FoundryLLM.#loadedModels.delete(modelName);
+    return await FoundryModels.unloadModel(modelName);
   }
 
+  /**
+   * Resolve the context window to run a model with.
+   *
+   * - A user-set limit wins, but is clamped to what the model actually supports.
+   * - With no user limit we cap at MAX_DEFAULT_CONTEXT_WINDOW rather than using
+   *   the model's full window: these run on the user's own hardware, and
+   *   silently handing a 128K window to a laptop makes the app crawl.
+   * - With nothing known at all we fall back to a conservative 4096.
+   *
+   * @param {string} modelName - Alias or fully-qualified variant id.
+   * @returns {number}
+   */
   static promptWindowLimit(modelName) {
-    if (Object.keys(FoundryLLM.modelContextWindows).length === 0) {
+    const modelLimit = Number(this.modelContextWindows[modelName]) || null;
+    if (!modelLimit)
       this.#slog(
-        "No context windows cached - Context window may be inaccurately reported."
+        `No context window known for ${modelName} - it may be inaccurately reported.`
       );
-      return process.env.FOUNDRY_MODEL_TOKEN_LIMIT || 4096;
-    }
 
-    let userDefinedLimit = null;
-    const systemDefinedLimit =
-      Number(this.modelContextWindows[modelName]) || 4096;
+    const envLimit = Number(process.env.FOUNDRY_MODEL_TOKEN_LIMIT);
+    const userDefinedLimit =
+      Number.isFinite(envLimit) && envLimit > 0 ? envLimit : null;
 
-    if (
-      process.env.FOUNDRY_MODEL_TOKEN_LIMIT &&
-      !isNaN(Number(process.env.FOUNDRY_MODEL_TOKEN_LIMIT)) &&
-      Number(process.env.FOUNDRY_MODEL_TOKEN_LIMIT) > 0
-    )
-      userDefinedLimit = Number(process.env.FOUNDRY_MODEL_TOKEN_LIMIT);
-
-    // The user defined limit is always higher priority than the context window limit, but it cannot be higher than the context window limit
-    // so we return the minimum of the two, if there is no user defined limit, we return the system defined limit as-is.
     if (userDefinedLimit !== null)
-      return Math.min(userDefinedLimit, systemDefinedLimit);
-    return systemDefinedLimit;
+      return modelLimit
+        ? Math.min(userDefinedLimit, modelLimit)
+        : userDefinedLimit;
+
+    return modelLimit
+      ? Math.min(modelLimit, FoundryLLM.MAX_DEFAULT_CONTEXT_WINDOW)
+      : 8192;
   }
 
   promptWindowLimit() {
@@ -152,6 +242,15 @@ class FoundryLLM {
 
   async isValidChatCompletionModel(_ = "") {
     return true;
+  }
+
+  /**
+   * Returns the capabilities of the model.
+   * @returns {Promise<{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}>}
+   */
+  async getModelCapabilities() {
+    const FoundryModels = require("./models.js");
+    return await FoundryModels.getModelCapabilities(this.model);
   }
 
   /**
@@ -209,6 +308,10 @@ class FoundryLLM {
         `Foundry chat: ${this.model} is not valid or defined model for chat completion!`
       );
 
+    // max_completion_tokens is required by Foundry (it caps output at 1024
+    // otherwise), so the window has to be resolved before the request is built.
+    await this.assertModelContextLimits();
+    await this.assertModelLoaded();
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.openai.chat.completions
         .create({
@@ -249,6 +352,8 @@ class FoundryLLM {
         `Foundry chat: ${this.model} is not valid or defined model for chat completion!`
       );
 
+    await this.assertModelContextLimits();
+    await this.assertModelLoaded();
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.openai.chat.completions.create({
         model: this.model,
@@ -289,6 +394,9 @@ class FoundryLLM {
       let fullText = "";
       let reasoningText = "";
       let lastChunkTime = null; // null when first token is still not received.
+      // Foundry echoes tool calls into the content stream as raw markup on top
+      // of emitting them natively — keep that out of the chat window.
+      const toolCallFilter = new ToolCallTextFilter();
 
       // Establish listener to early-abort a streaming response
       // in case things go sideways or the user does not like the response.
@@ -387,15 +495,18 @@ class FoundryLLM {
           }
 
           if (token) {
-            fullText += token;
-            writeResponseChunk(response, {
-              uuid,
-              sources: [],
-              type: "textResponseChunk",
-              textResponse: token,
-              close: false,
-              error: false,
-            });
+            const visible = toolCallFilter.push(token);
+            if (visible) {
+              fullText += visible;
+              writeResponseChunk(response, {
+                uuid,
+                sources: [],
+                type: "textResponseChunk",
+                textResponse: visible,
+                close: false,
+                error: false,
+              });
+            }
           }
 
           // finish_reason can be "stop", "length", etc. when complete
@@ -425,7 +536,7 @@ class FoundryLLM {
           type: "abort",
           textResponse: null,
           close: true,
-          error: e.message,
+          error: FoundryLLM.explainStreamError(e, this.model),
         });
         response.removeListener("close", handleAbort);
         clearInterval(timeoutCheck);

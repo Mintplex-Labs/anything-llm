@@ -8,7 +8,7 @@ initContainers: []
 image:
   repository: mintplexlabs/anythingllm
   pullPolicy: IfNotPresent
-  tag: "1.15.0"
+  tag: "1.16.0"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -63,7 +63,7 @@ persistentVolume:
   #    release: "stable"
   #  matchExpressions:
   #    - { key: environment, operator: In, values: [ dev ] }
-  
+
   # AnythingLLM storage data Persistent Volume Name
   # Useful if Persistent Volumes have been provisioned in advance and you want to use a specific one
   #
@@ -152,18 +152,18 @@ httpRoute:
   annotations: {}
   # Which Gateways this Route is attached to.
   parentRefs:
-  - name: gateway
-    sectionName: http
-    # namespace: default
+    - name: gateway
+      sectionName: http
+      # namespace: default
   # Hostnames matching HTTP header.
   hostnames:
-  - chart-example.local
+    - chart-example.local
   # List of rules and filters applied.
   rules:
-  - matches:
-    - path:
-        type: PathPrefix
-        value: /headers
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /headers
   #   filters:
   #   - type: RequestHeaderModifier
   #     requestHeaderModifier:

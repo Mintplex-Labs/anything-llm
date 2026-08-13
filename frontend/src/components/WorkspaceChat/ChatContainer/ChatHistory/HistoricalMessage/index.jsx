@@ -22,6 +22,20 @@ import HistoricalOutputs from "./HistoricalOutputs";
 import HistoricalClarifyingQuestions from "./HistoricalClarifyingQuestions";
 import { openImageLightbox } from "@/components/ImageLightbox";
 
+function hasVisibleContent(message) {
+  if (!message) return false;
+  const stripped = message
+    .replace(new RegExp(THOUGHT_REGEX_COMPLETE, "g"), "")
+    .trim();
+  if (!stripped) return false;
+  if (
+    stripped.match(THOUGHT_REGEX_OPEN) &&
+    !stripped.match(THOUGHT_REGEX_CLOSE)
+  )
+    return false;
+  return true;
+}
+
 const HistoricalMessage = ({
   uuid: uuidProp,
   message,
@@ -148,7 +162,12 @@ const HistoricalMessage = ({
         ) : (
           <div className="break-words">
             <HistoricalClarifyingQuestions surveys={clarifyingQuestions} />
-            <RenderChatContent role={role} message={message} messageId={uuid} />
+            <RenderChatContent
+              role={role}
+              message={message}
+              messageId={uuid}
+              allowAnimation={isLastMessage}
+            />
             {isRefusalMessage && (
               <Link
                 data-tooltip-id="query-refusal-info"
@@ -169,25 +188,27 @@ const HistoricalMessage = ({
             <HistoricalOutputs outputs={outputs} />
           </div>
         )}
-        <div className="flex items-start md:items-center gap-x-1">
-          <TTSMessage
-            slug={workspace?.slug}
-            chatId={chatId}
-            message={message}
-          />
-          <Actions
-            message={message}
-            feedbackScore={feedbackScore}
-            chatId={chatId}
-            slug={workspace?.slug}
-            isLastMessage={isLastMessage}
-            regenerateMessage={regenerateMessage}
-            isEditing={isEditing}
-            role={role}
-            forkThread={forkThread}
-            metrics={metrics}
-          />
-        </div>
+        {hasVisibleContent(message) && (
+          <div className="flex items-start md:items-center gap-x-1">
+            <TTSMessage
+              slug={workspace?.slug}
+              chatId={chatId}
+              message={message}
+            />
+            <Actions
+              message={message}
+              feedbackScore={feedbackScore}
+              chatId={chatId}
+              slug={workspace?.slug}
+              isLastMessage={isLastMessage}
+              regenerateMessage={regenerateMessage}
+              isEditing={isEditing}
+              role={role}
+              forkThread={forkThread}
+              metrics={metrics}
+            />
+          </div>
+        )}
         {role === "assistant" && <Citations sources={sources} />}
       </div>
     </div>
@@ -298,7 +319,7 @@ function TruncatableContent({ children }) {
 }
 
 const RenderChatContent = memo(
-  ({ role, message, messageId }) => {
+  ({ role, message, messageId, allowAnimation = false }) => {
     // If the message is not from the assistant, we can render it directly
     // as normal since the user cannot think (lol)
     if (role !== "assistant")
@@ -335,14 +356,20 @@ const RenderChatContent = memo(
     return (
       <>
         {thoughtChain && (
-          <ThoughtChainComponent content={thoughtChain} messageId={messageId} />
+          <ThoughtChainComponent
+            content={thoughtChain}
+            messageId={messageId}
+            allowAnimation={allowAnimation}
+          />
         )}
-        <span
-          className="flex flex-col gap-y-1 text-white light:text-slate-900"
-          dangerouslySetInnerHTML={{
-            __html: DOMPurify.sanitize(renderMarkdown(msgToRender)),
-          }}
-        />
+        {msgToRender.trim().length > 0 && (
+          <span
+            className="flex flex-col gap-y-1 text-white light:text-slate-900"
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(renderMarkdown(msgToRender)),
+            }}
+          />
+        )}
       </>
     );
   },
@@ -350,7 +377,8 @@ const RenderChatContent = memo(
     return (
       prevProps.role === nextProps.role &&
       prevProps.message === nextProps.message &&
-      prevProps.messageId === nextProps.messageId
+      prevProps.messageId === nextProps.messageId &&
+      prevProps.allowAnimation === nextProps.allowAnimation
     );
   }
 );

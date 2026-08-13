@@ -86,6 +86,56 @@ function agentFileServerEndpoints(app) {
       }
     }
   );
+
+  /**
+   * Serve a generated image inline (so it can be used as an <img> src).
+   * Validates that the requesting user has access to a chat that references
+   * the image before serving it from storage/generated-images.
+   */
+  app.get(
+    "/image-generation/generated-images/:filename",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const fs = require("fs");
+        const path = require("path");
+        const {
+          generatedImagesPath,
+          GENERATED_IMAGE_FILENAME_PATTERN,
+        } = require("../utils/files");
+        const user = await userFromSession(request, response);
+        const { filename } = request.params;
+
+        if (!filename || !GENERATED_IMAGE_FILENAME_PATTERN.test(filename))
+          return response.status(400).json({ error: "Invalid filename" });
+
+        const fileSource = await findFileSource(filename, {
+          user,
+          isMultiUser: multiUserMode(response),
+        });
+        if (!fileSource)
+          return response
+            .status(404)
+            .json({ error: "Image not found or access denied" });
+
+        const imagePath = path.resolve(generatedImagesPath, filename);
+        let imageBuffer;
+        try {
+          imageBuffer = await fs.promises.readFile(imagePath);
+        } catch {
+          return response
+            .status(404)
+            .json({ error: "Image not found in storage" });
+        }
+
+        response.setHeader("Content-Type", "image/png");
+        return response.send(imageBuffer);
+      } catch (error) {
+        console.error("[agentFileServer] Image serve error:", error.message);
+        return response.status(500).json({ error: "Failed to serve image" });
+      }
+    }
+  );
 }
 
 /**

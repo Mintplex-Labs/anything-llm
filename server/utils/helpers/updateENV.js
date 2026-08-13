@@ -239,6 +239,10 @@ const KEY_MAPPING = {
     envKey: "AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
   },
+  AwsBedrockLLMMaxTokens: {
+    envKey: "AWS_BEDROCK_LLM_MAX_TOKENS",
+    checks: [],
+  },
 
   EmbeddingEngine: {
     envKey: "EMBEDDING_ENGINE",
@@ -288,6 +292,44 @@ const KEY_MAPPING = {
   },
   GenericOpenAiEmbeddingQueryPrefix: {
     envKey: "GENERIC_OPEN_AI_EMBEDDING_QUERY_PREFIX",
+    checks: [],
+  },
+
+  // Image Generation Settings
+  ImageGenerationProvider: {
+    envKey: "IMAGE_GEN_PROVIDER",
+    checks: [isNotEmpty, supportedImageGenerationProvider],
+  },
+  ImageGenerationModelPref: {
+    envKey: "IMAGE_GEN_MODEL_PREF",
+    checks: [],
+  },
+  ImageGenerationDimensions: {
+    envKey: "IMAGE_GEN_SIZE_PREF",
+    checks: [],
+  },
+  ImageGenerationOpenAiKey: {
+    envKey: "IMAGE_GEN_OPENAI_KEY",
+    checks: [isNotEmpty, validOpenAIKey],
+  },
+  ImageGenerationOpenRouterApiKey: {
+    envKey: "IMAGE_GEN_OPENROUTER_API_KEY",
+    checks: [isNotEmpty],
+  },
+  ImageGenerationOllamaBasePath: {
+    envKey: "IMAGE_GEN_OLLAMA_BASE_PATH",
+    checks: [isNotEmpty, validOllamaLLMBasePath, validDockerizedUrl],
+  },
+  ImageGenerationOllamaAuthToken: {
+    envKey: "IMAGE_GEN_OLLAMA_AUTH_TOKEN",
+    checks: [],
+  },
+  ImageGenerationLemonadeBasePath: {
+    envKey: "IMAGE_GEN_LEMONADE_BASE_PATH",
+    checks: [isValidURL],
+  },
+  ImageGenerationLemonadeApiKey: {
+    envKey: "IMAGE_GEN_LEMONADE_API_KEY",
     checks: [],
   },
 
@@ -500,6 +542,21 @@ const KEY_MAPPING = {
     checks: [validLocalWhisper],
     postUpdate: [],
   },
+  WhisperGenericOpenAiBaseUrl: {
+    envKey: "WHISPER_GENERIC_OPEN_AI_BASE_URL",
+    checks: [isValidURL],
+    postUpdate: [],
+  },
+  WhisperGenericOpenAiApiKey: {
+    envKey: "WHISPER_GENERIC_OPEN_AI_API_KEY",
+    checks: [],
+    postUpdate: [],
+  },
+  WhisperGenericOpenAiModel: {
+    envKey: "WHISPER_GENERIC_OPEN_AI_MODEL",
+    checks: [isNotEmpty],
+    postUpdate: [],
+  },
 
   // System Settings
   AuthToken: {
@@ -579,6 +636,10 @@ const KEY_MAPPING = {
   },
   AgentCrwApiUrl: {
     envKey: "AGENT_CRW_API_URL",
+    checks: [],
+  },
+  AgentYouApiKey: {
+    envKey: "AGENT_YOU_API_KEY",
     checks: [],
   },
 
@@ -907,6 +968,24 @@ const KEY_MAPPING = {
     checks: [nonZero],
   },
 
+  // OMLX Options
+  OMLXLLMBasePath: {
+    envKey: "OMLX_LLM_BASE_PATH",
+    checks: [isValidURL],
+  },
+  OMLXLLMApiKey: {
+    envKey: "OMLX_LLM_API_KEY",
+    checks: [],
+  },
+  OMLXLLMModelPref: {
+    envKey: "OMLX_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  OMLXLLMTokenLimit: {
+    envKey: "OMLX_LLM_TOKEN_LIMIT",
+    checks: [],
+  },
+
   // Agent Skill Settings
   AgentSkillMaxToolCalls: {
     envKey: "AGENT_MAX_TOOL_CALLS",
@@ -1050,13 +1129,14 @@ function supportedLLM(input = "") {
     "lemonade",
     "minimax",
     "cerebras",
+    "omlx",
     "anythingllm-router",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
 
 function supportedTranscriptionProvider(input = "") {
-  const validSelection = ["openai", "local"].includes(input);
+  const validSelection = ["openai", "generic-openai", "local"].includes(input);
   return validSelection
     ? null
     : `${input} is not a valid transcription model provider.`;
@@ -1112,6 +1192,13 @@ function supportedVectorDB(input = "") {
   return supported.includes(input)
     ? null
     : `Invalid VectorDB type. Must be one of ${supported.join(", ")}.`;
+}
+
+function supportedImageGenerationProvider(input = "") {
+  const supported = ["openai", "ollama", "lemonade", "openrouter"];
+  return supported.includes(input)
+    ? null
+    : `Invalid image generation provider. Must be one of ${supported.join(", ")}.`;
 }
 
 function validChromaURL(input = "") {
