@@ -20,7 +20,7 @@ The all-in-one Desktop & Docker AI application with built-in RAG, AI agents, No-
 
 Use Kubernetes Secrets. Below are example workflows and `values.yaml` snippets.
 
-1) Create a Kubernetes Secret with API keys:
+1. Create a Kubernetes Secret with API keys:
 
 ```
 kubectl create secret generic openai-secret --from-literal=OPENAI_KEY="sk-..."
@@ -28,7 +28,7 @@ kubectl create secret generic openai-secret --from-literal=OPENAI_KEY="sk-..."
 # kubectl create secret generic openai-secret --from-file=OPENAI_KEY=/path/to/keyfile
 ```
 
-2) Reference the Secret from `values.yaml` using `envFrom` (recommended when your secret contains multiple env keys):
+2. Reference the Secret from `values.yaml` using `envFrom` (recommended when your secret contains multiple env keys):
 
 ```yaml
 envFrom:
@@ -38,7 +38,7 @@ envFrom:
 
 This will inject all key/value pairs from the `openai-secret` Secret as environment variables in the container.
 
-3) Or reference a single secret key via `env` (explicit mapping):
+3. Or reference a single secret key via `env` (explicit mapping):
 
 ```yaml
 env:
@@ -50,6 +50,7 @@ env:
 ```
 
 Notes:
+
 - Avoid placing secret values into `config:` (the chart's `ConfigMap`) — `ConfigMap`s are visible to anyone who can read the namespace. Use `Secret` objects for any credentials/tokens.
 - If you use a GitOps workflow, consider integrating an external secret operator (ExternalSecrets, SealedSecrets, etc.) so you don't store raw secrets in Git.
 
@@ -58,7 +59,7 @@ Notes:
 ```yaml
 image:
   repository: mintplexlabs/anythingllm
-  tag: "1.15.0"
+  tag: "1.16.0"
 
 service:
   type: ClusterIP
@@ -91,59 +92,59 @@ helm install my-anythingllm ./anythingllm -f values-secret.yaml
 
 ## Values
 
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| affinity | object | `{}` |  |
-| config.DISABLE_TELEMETRY | string | `"true"` |  |
-| config.GID | string | `"1000"` |  |
-| config.NODE_ENV | string | `"production"` |  |
-| config.STORAGE_DIR | string | `"/storage"` |  |
-| config.UID | string | `"1000"` |  |
-| env | object | `{}` |  |
-| envFrom | object | `{}` |  |
-| fullnameOverride | string | `""` |  |
-| image.pullPolicy | string | `"IfNotPresent"` |  |
-| image.repository | string | `"mintplexlabs/anythingllm"` |  |
-| image.tag | string | `"1.15.0"` |  |
-| imagePullSecrets | list | `[]` |  |
-| ingress.annotations | object | `{}` |  |
-| ingress.className | string | `""` |  |
-| ingress.enabled | bool | `false` |  |
-| ingress.hosts[0].host | string | `"chart-example.local"` |  |
-| ingress.hosts[0].paths[0].path | string | `"/"` |  |
-| ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
-| ingress.tls | list | `[]` |  |
-| initContainers | list | `[]` |  |
-| livenessProbe.failureThreshold | int | `3` |  |
-| livenessProbe.httpGet.path | string | `"/v1/api/health"` |  |
-| livenessProbe.httpGet.port | int | `8888` |  |
-| livenessProbe.initialDelaySeconds | int | `15` |  |
-| livenessProbe.periodSeconds | int | `5` |  |
-| nameOverride | string | `""` |  |
-| nodeSelector | object | `{}` |  |
-| persistentVolume.accessModes[0] | string | `"ReadWriteOnce"` |  |
-| persistentVolume.annotations | object | `{}` |  |
-| persistentVolume.existingClaim | string | `""` |  |
-| persistentVolume.labels | object | `{}` |  |
-| persistentVolume.mountPath | string | `"/storage"` |  |
-| persistentVolume.size | string | `"8Gi"` |  |
-| podAnnotations | object | `{}` |  |
-| podLabels | object | `{}` |  |
-| podSecurityContext.fsGroup | int | `1000` |  |
-| readinessProbe.httpGet.path | string | `"/v1/api/health"` |  |
-| readinessProbe.httpGet.port | int | `8888` |  |
-| readinessProbe.initialDelaySeconds | int | `15` |  |
-| readinessProbe.periodSeconds | int | `5` |  |
-| readinessProbe.successThreshold | int | `2` |  |
-| replicaCount | int | `1` |  |
-| resources | object | `{}` |  |
-| securityContext | object | `{}` |  |
-| service.port | int | `3001` |  |
-| service.type | string | `"ClusterIP"` |  |
-| serviceAccount.annotations | object | `{}` |  |
-| serviceAccount.automount | bool | `true` |  |
-| serviceAccount.create | bool | `true` |  |
-| serviceAccount.name | string | `""` |  |
-| tolerations | list | `[]` |  |
-| volumeMounts | list | `[]` |  |
-| volumes | list | `[]` |  |
+| Key                                | Type   | Default                      | Description |
+| ---------------------------------- | ------ | ---------------------------- | ----------- |
+| affinity                           | object | `{}`                         |             |
+| config.DISABLE_TELEMETRY           | string | `"true"`                     |             |
+| config.GID                         | string | `"1000"`                     |             |
+| config.NODE_ENV                    | string | `"production"`               |             |
+| config.STORAGE_DIR                 | string | `"/storage"`                 |             |
+| config.UID                         | string | `"1000"`                     |             |
+| env                                | object | `{}`                         |             |
+| envFrom                            | object | `{}`                         |             |
+| fullnameOverride                   | string | `""`                         |             |
+| image.pullPolicy                   | string | `"IfNotPresent"`             |             |
+| image.repository                   | string | `"mintplexlabs/anythingllm"` |             |
+| image.tag                          | string | `"1.16.0"`                   |             |
+| imagePullSecrets                   | list   | `[]`                         |             |
+| ingress.annotations                | object | `{}`                         |             |
+| ingress.className                  | string | `""`                         |             |
+| ingress.enabled                    | bool   | `false`                      |             |
+| ingress.hosts[0].host              | string | `"chart-example.local"`      |             |
+| ingress.hosts[0].paths[0].path     | string | `"/"`                        |             |
+| ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"`   |             |
+| ingress.tls                        | list   | `[]`                         |             |
+| initContainers                     | list   | `[]`                         |             |
+| livenessProbe.failureThreshold     | int    | `3`                          |             |
+| livenessProbe.httpGet.path         | string | `"/v1/api/health"`           |             |
+| livenessProbe.httpGet.port         | int    | `8888`                       |             |
+| livenessProbe.initialDelaySeconds  | int    | `15`                         |             |
+| livenessProbe.periodSeconds        | int    | `5`                          |             |
+| nameOverride                       | string | `""`                         |             |
+| nodeSelector                       | object | `{}`                         |             |
+| persistentVolume.accessModes[0]    | string | `"ReadWriteOnce"`            |             |
+| persistentVolume.annotations       | object | `{}`                         |             |
+| persistentVolume.existingClaim     | string | `""`                         |             |
+| persistentVolume.labels            | object | `{}`                         |             |
+| persistentVolume.mountPath         | string | `"/storage"`                 |             |
+| persistentVolume.size              | string | `"8Gi"`                      |             |
+| podAnnotations                     | object | `{}`                         |             |
+| podLabels                          | object | `{}`                         |             |
+| podSecurityContext.fsGroup         | int    | `1000`                       |             |
+| readinessProbe.httpGet.path        | string | `"/v1/api/health"`           |             |
+| readinessProbe.httpGet.port        | int    | `8888`                       |             |
+| readinessProbe.initialDelaySeconds | int    | `15`                         |             |
+| readinessProbe.periodSeconds       | int    | `5`                          |             |
+| readinessProbe.successThreshold    | int    | `2`                          |             |
+| replicaCount                       | int    | `1`                          |             |
+| resources                          | object | `{}`                         |             |
+| securityContext                    | object | `{}`                         |             |
+| service.port                       | int    | `3001`                       |             |
+| service.type                       | string | `"ClusterIP"`                |             |
+| serviceAccount.annotations         | object | `{}`                         |             |
+| serviceAccount.automount           | bool   | `true`                       |             |
+| serviceAccount.create              | bool   | `true`                       |             |
+| serviceAccount.name                | string | `""`                         |             |
+| tolerations                        | list   | `[]`                         |             |
+| volumeMounts                       | list   | `[]`                         |             |
+| volumes                            | list   | `[]`                         |             |
