@@ -221,7 +221,7 @@ Bu verileri doğrulamak için kod içinde **`Telemetry.sendTelemetry` çağrıla
 
 [![anythingllm contributors](https://contrib.rocks/image?repo=mintplex-labs/anything-llm)](https://github.com/mintplex-labs/anything-llm/graphs/contributors)
 
-[![Star History Chart](https://api.star-history.com/svg?repos=mintplex-labs/anything-llm&type=Timeline)](https://star-history.com/#mintplex-labs/anything-llm&Date)
+[![Star History Chart](https://star-history.dera.page/svg?repos=mintplex-labs/anything-llm&type=Timeline)](https://star-history.dera.page/#mintplex-labs/anything-llm&Date)
 
 ## 🔗 Diğer Ürünler
 

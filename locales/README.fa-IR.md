@@ -247,7 +247,7 @@ AnythingLLM توسط Mintplex Labs Inc دارای ویژگی تله‌متری �
 
 [![مشارکت‌کنندگان anythingllm](https://contrib.rocks/image?repo=mintplex-labs/anything-llm)](https://github.com/mintplex-labs/anything-llm/graphs/contributors)
 
-[![نمودار تاریخچه ستاره‌ها](https://api.star-history.com/svg?repos=mintplex-labs/anything-llm&type=Timeline)](https://star-history.com/#mintplex-labs/anything-llm&Date)
+[![نمودار تاریخچه ستاره‌ها](https://star-history.dera.page/svg?repos=mintplex-labs/anything-llm&type=Timeline)](https://star-history.dera.page/#mintplex-labs/anything-llm&Date)
 
 ## 🔗 محصولات بیشتر
 

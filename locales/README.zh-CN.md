@@ -239,7 +239,7 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 
 [![anythingllm 的贡献者们](https://contrib.rocks/image?repo=mintplex-labs/anything-llm)](https://github.com/mintplex-labs/anything-llm/graphs/contributors)
 
-[![Star 历史图](https://api.star-history.com/svg?repos=mintplex-labs/anything-llm&type=Timeline)](https://star-history.com/#mintplex-labs/anything-llm&Date)
+[![Star 历史图](https://star-history.dera.page/svg?repos=mintplex-labs/anything-llm&type=Timeline)](https://star-history.dera.page/#mintplex-labs/anything-llm&Date)
 
 ## 🔗 更多产品
 
