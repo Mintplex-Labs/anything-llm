@@ -87,13 +87,13 @@ export default function MobileConnectModal({ isOpen, onClose }) {
  */
 function processConnectionUrl(url) {
   /*
-   * In dev mode, the connectionURL() method uses the `ip` module
+   * In dev mode, the connectionURL() method uses the local LAN address
    * see server/models/mobileDevice.js `connectionURL()` method.
    *
    * In prod mode, this method returns the absolute path since we will always want to use
    * the real instance hostname. If the domain changes, we should be able to inherit it from the client side
    * since the backend has no knowledge of the domain since typically it is run behind a reverse proxy or in a container - or both.
-   * So `ip` is useless in prod mode since it would only resolve to the internal IP address of the container or if non-containerized,
+   * So the local LAN address is useless in prod mode since it would only resolve to the internal IP address of the container or if non-containerized,
    * the local IP address may not be the preferred instance access point (eg: using custom domain)
    *
    * If the url does not start with http, we assume it is a relative path and add the origin to it.

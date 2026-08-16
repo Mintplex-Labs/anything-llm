@@ -1,6 +1,6 @@
 const prisma = require("../utils/prisma");
 const { v4: uuidv4 } = require("uuid");
-const ip = require("ip");
+const { getLocalNetworkAddress } = require("../utils/helpers/networkInterface");
 
 /**
  * @typedef {Object} TemporaryMobileDeviceRequest
@@ -99,8 +99,13 @@ const MobileDevice = {
   connectionURL: function (user = null) {
     let baseUrl = "/api/mobile";
     if (process.env.NODE_ENV === "production") baseUrl = "/api/mobile";
-    else
-      baseUrl = `http://${ip.address()}:${process.env.SERVER_PORT || 3001}/api/mobile`;
+    else {
+      // Leave the relative path when no LAN address is found so the client can
+      // tell the user the instance is not reachable from another device.
+      const localAddress = getLocalNetworkAddress();
+      if (localAddress)
+        baseUrl = `http://${localAddress}:${process.env.SERVER_PORT || 3001}/api/mobile`;
+    }
 
     const tempToken = this.registerTempToken(user);
     baseUrl = `${baseUrl}?t=${tempToken}`;
