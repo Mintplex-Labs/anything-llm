@@ -1524,6 +1524,7 @@ const TRANSLATIONS = {
   },
   chat_window: {
     attachments_processing: "Attachments are processing. Please wait...",
+    generating_response: "Generating response",
     send_message: "Send a message",
     attach_file: "Attach a file to this chat",
     text_size: "Change text size.",
