@@ -681,6 +681,14 @@ class EphemeralEventListener extends EventEmitter {
         continue;
       }
 
+      // Generated images are collected from the agent's pending outputs, so the
+      // live card event is not a text response and is ignored here.
+      if (
+        msg.type === "imageGenerationCard" ||
+        msg.type === "imageGenerationPending"
+      )
+        continue;
+
       if (msg.type === "reportStreamEvent") {
         const inner = msg.content;
         if (inner?.type === "textResponseChunk" && inner?.content)
@@ -744,6 +752,14 @@ class EphemeralEventListener extends EventEmitter {
           error: null,
         });
       }
+
+      // Generated images travel back in the final response `outputs`, so the
+      // live card event has nothing to stream.
+      if (
+        data.type === "imageGenerationCard" ||
+        data.type === "imageGenerationPending"
+      )
+        return;
 
       if (data.type === "reportStreamEvent") {
         const inner = data.content;

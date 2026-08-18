@@ -65,6 +65,7 @@ const handledEvents = [
   "statusResponse",
   "fileDownloadCard",
   "imageGenerationCard",
+  "imageGenerationPending",
   "scheduledJobCreated",
   "awaitingFeedback",
   "wssFailure",
@@ -314,10 +315,35 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
     });
   }
 
-  if (data.type === "imageGenerationCard") {
+  if (data.type === "imageGenerationPending") {
     return setChatHistory((prev) => {
       return [
         ...prev.filter((msg) => !!msg.content),
+        {
+          uuid: data.pendingId,
+          type: "imageGenerationPending",
+          content: data.content,
+          role: "assistant",
+          sources: [],
+          closed: false,
+          error: null,
+          animate: false,
+          pending: true,
+          metrics: {},
+        },
+      ];
+    });
+  }
+
+  if (data.type === "imageGenerationCard") {
+    return setChatHistory((prev) => {
+      // Drops the placeholder card this result belongs to, if there was one.
+      const history = prev.filter(
+        (msg) => !!msg.content && msg.uuid !== data.pendingId
+      );
+      if (data.failed) return history;
+      return [
+        ...history,
         {
           uuid: v4(),
           type: "textResponse",
