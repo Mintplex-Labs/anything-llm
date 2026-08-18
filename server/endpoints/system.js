@@ -711,8 +711,7 @@ function systemEndpoints(app) {
 
   app.get("/system/logo", async function (request, response) {
     try {
-      const darkMode =
-        !request?.query?.theme || request?.query?.theme === "default";
+      const darkMode = request?.query?.theme !== "light";
       const defaultFilename = getDefaultFilename(darkMode);
       const logoPath = await determineLogoFilepath(defaultFilename);
       const { found, buffer, size, mime } = fetchLogo(logoPath);
