@@ -862,11 +862,6 @@
     zod "^3.25 || ^4.0"
     zod-to-json-schema "^3.25.0"
 
-"@opencode-ai/models@^0.0.34":
-  version "0.0.34"
-  resolved "https://registry.yarnpkg.com/@opencode-ai/models/-/models-0.0.34.tgz#0115cd4d098afb1421b178f8d28bb1959d81f168"
-  integrity sha512-+wpkzEikhaGG97z9XjbLTz9jBqOd5vGV+6LTFhAtIDXmGq+4WXN3bv6Yc/fcnebR4b7BYLCSyeyctweuSRzLSA==
-
 "@pdf-lib/standard-fonts@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@pdf-lib/standard-fonts/-/standard-fonts-1.0.0.tgz#8ba691c4421f71662ed07c9a0294b44528af2d7f"

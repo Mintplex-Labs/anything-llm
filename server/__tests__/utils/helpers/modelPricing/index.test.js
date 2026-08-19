@@ -228,9 +228,10 @@ describe("ModelPricing", () => {
       const pricing = freshInstance();
       await flushRefresh();
 
-      expect(global.fetch).toHaveBeenCalledWith(expect.any(String), {
-        headers: {},
-      });
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({ headers: {} })
+      );
       expect(
         pricing.getCostBreakdown("openai", "gpt-4o", {
           prompt_tokens: 1_000_000,
@@ -307,65 +308,31 @@ describe("ModelPricing", () => {
         { status: 500, headers: { get: () => null }, json: async () => ({}) },
       ],
     ])(
-      "survives a remote response with %s and falls back to the snapshot",
+      "returns null for cost when remote responds with %s and no disk cache exists",
       async (_label, response) => {
         mockFetchWith(response);
-        const {
-          ModelPricing,
-        } = require("../../../../utils/helpers/modelPricing");
-        const originalImporter = ModelPricing.importSnapshot;
-        ModelPricing.importSnapshot = jest
-          .fn()
-          .mockResolvedValue({ providers: FIXTURE });
-
-        try {
-          ModelPricing.instance = null;
-          const pricing = new ModelPricing();
-          await flushRefresh();
-
-          expect(ModelPricing.importSnapshot).toHaveBeenCalled();
-          expect(
-            pricing.getCostBreakdown("openai", "gpt-4o", {
-              prompt_tokens: 1_000_000,
-            })
-          ).toEqual({ inputCost: 2.5, outputCost: 0, totalCost: 2.5 });
-        } finally {
-          ModelPricing.importSnapshot = originalImporter;
-        }
-      }
-    );
-
-    it("falls back to the bundled snapshot when offline with no disk cache", async () => {
-      // Jest's VM cannot execute the real dynamic import of the ESM-only
-      // snapshot package, so inject a fake importer. The real import is
-      // exercised by the server at runtime.
-      global.fetch = jest.fn().mockRejectedValue(new Error("offline"));
-      const { ModelPricing } = require("../../../../utils/helpers/modelPricing");
-      const originalImporter = ModelPricing.importSnapshot;
-      ModelPricing.importSnapshot = jest
-        .fn()
-        .mockResolvedValue({ providers: FIXTURE });
-
-      try {
-        ModelPricing.instance = null;
-        const pricing = new ModelPricing();
+        const pricing = freshInstance();
         await flushRefresh();
 
-        expect(ModelPricing.importSnapshot).toHaveBeenCalled();
         expect(
           pricing.getCostBreakdown("openai", "gpt-4o", {
             prompt_tokens: 1_000_000,
-            completion_tokens: 0,
           })
-        ).toEqual({ inputCost: 2.5, outputCost: 0, totalCost: 2.5 });
-
-        // No .cached_at is written so the next boot retries the remote.
-        expect(
-          fs.existsSync(path.join(tempDir, "models", "pricing", ".cached_at"))
-        ).toBe(false);
-      } finally {
-        ModelPricing.importSnapshot = originalImporter;
+        ).toBeNull();
       }
+    );
+
+    it("returns null for cost when offline with no disk cache", async () => {
+      global.fetch = jest.fn().mockRejectedValue(new Error("offline"));
+      const pricing = freshInstance();
+      await flushRefresh();
+
+      expect(
+        pricing.getCostBreakdown("openai", "gpt-4o", {
+          prompt_tokens: 1_000_000,
+          completion_tokens: 0,
+        })
+      ).toBeNull();
     });
   });
 
