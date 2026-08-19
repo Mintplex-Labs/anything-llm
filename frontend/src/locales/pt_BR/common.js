@@ -1392,6 +1392,9 @@ const TRANSLATIONS = {
     export: "Exporte a conversa como...",
     exporting: "Exportando...",
     preset_img_description: "Gerar uma imagem a partir de um texto",
+    generating_response: "Gerando resposta",
+    response_failed: "Não foi possível responder à mensagem.",
+    response_failed_reason: "Motivo: {{reason}}",
   },
   profile_settings: {
     edit_account: "Editar conta",

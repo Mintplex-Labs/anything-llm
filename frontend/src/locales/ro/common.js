@@ -668,6 +668,9 @@ const TRANSLATIONS = {
     export: "Exportați conversația sub forma de...",
     exporting: "Exportare...",
     preset_img_description: "Generați o imagine pe baza unui text.",
+    generating_response: "Generarea răspunsului",
+    response_failed: "Nu am putut răspunde la mesaj.",
+    response_failed_reason: "Motiv: {{reason}}",
   },
   profile_settings: {
     edit_account: "Editează contul",

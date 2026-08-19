@@ -1322,6 +1322,9 @@ const TRANSLATIONS = {
     exporting: "Exportation...",
     preset_img_description:
       "Générer une image à partir d'une requête textuelle.",
+    generating_response: "Générer une réponse",
+    response_failed: "Impossible de répondre au message.",
+    response_failed_reason: "Raison : {{reason}}",
   },
   profile_settings: {
     edit_account: "Modifier le compte",

@@ -1417,6 +1417,9 @@ const TRANSLATIONS = {
     exporting: "Exportieren...",
     preset_img_description:
       "Erstelle ein Bild basierend auf einer Textanfrage.",
+    generating_response: "Antwort generieren",
+    response_failed: "Ich konnte die Nachricht nicht beantworten.",
+    response_failed_reason: "Grund: {{reason}}",
   },
   profile_settings: {
     edit_account: "Account bearbeiten",

@@ -1301,6 +1301,9 @@ const TRANSLATIONS = {
     export: "导出聊天记录为…",
     exporting: "出口…",
     preset_img_description: "根据文本提示生成图像。",
+    generating_response: "生成回复",
+    response_failed: "无法回复消息。",
+    response_failed_reason: "原因：{{reason}}",
   },
   profile_settings: {
     edit_account: "编辑帐户",
