@@ -29,7 +29,16 @@ const FREE_PROVIDERS = [
   "omlx",
   "lemonade",
   "docker-model-runner",
+  "foundry",
 ];
+
+/**
+ * Providers explicitly excluded from both FREE_PROVIDERS and PROVIDER_ID_MAP.
+ * These degrade to null (cost fields omitted) — not forgotten, just unsupported:
+ *  - generic-openai, litellm: proxies to arbitrary backends, no way to determine cost
+ *  - apipie, cometapi, ppio, sambanova, giteeai, privatemode: cloud aggregators with costs but no models.dev listing
+ *  - nvidia-nim: self-hosted NIM, model set is user-defined and unaccounted for
+ */
 
 /**
  * AnythingLLM provider slug -> models.dev provider id.
