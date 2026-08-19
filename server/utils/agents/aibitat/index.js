@@ -99,6 +99,7 @@ class AIbitat {
    * @param {number} props.maxRounds - [default: 100] The maximum number of rounds for the AIbitat instance.
    * @param {number} props.maxToolCalls - [default: AIbitat.defaultMaxToolCalls()] The maximum number of tools an agent can chain for a single response.
    * @param {string} props.provider - [default: "openai"] The provider for the AIbitat instance.
+   * @param {number|null} [props.temperature] - Sampling temperature (ex: workspace's LLM Temperature) applied to the provider's completions when supported.
    * @param {Object} props.handlerProps - The handler properties for the AIbitat instance.
    * @param {Object} rest - The rest of the properties for the AIbitat instance.
    */
@@ -1409,6 +1410,8 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
    */
   getProviderForConfig(config) {
     const provider = this.#buildProviderForConfig(config);
+    if (typeof config.temperature === "number")
+      provider.temperature = config.temperature;
     provider.attachAbortSignal?.(this.abortController.signal);
     return provider;
   }
