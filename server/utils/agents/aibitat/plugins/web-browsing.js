@@ -1408,11 +1408,19 @@ const webBrowsing = {
 
             const data = [];
             response.results?.forEach((searchResult) => {
-              const { title, url, description } = searchResult;
+              const { title, url, description, snippet } = searchResult;
+              // Keenable returns both fields: `snippet` carries the page text and
+              // `description` is the page's meta description, which is empty for
+              // most pages. It returns whole pages rather than an excerpt, so the
+              // text is collapsed and capped to snippet length for the agent.
+              const text = String(snippet || description || "")
+                .replace(/\s+/g, " ")
+                .trim()
+                .slice(0, 500);
               data.push({
                 title,
                 link: url,
-                snippet: description,
+                snippet: text,
               });
             });
 
