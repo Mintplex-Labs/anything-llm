@@ -1524,6 +1524,9 @@ const TRANSLATIONS = {
   },
   chat_window: {
     attachments_processing: "Attachments are processing. Please wait...",
+    generating_response: "Generating response",
+    response_failed: "Could not respond to message.",
+    response_failed_reason: "Reason: {{reason}}",
     send_message: "Send a message",
     attach_file: "Attach a file to this chat",
     text_size: "Change text size.",
