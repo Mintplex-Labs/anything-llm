@@ -19,7 +19,6 @@ const System = {
       .then((res) => res?.online || false)
       .catch(() => false);
   },
-
   totalIndexes: async function (slug = null) {
     const url = new URL(`${fullApiUrl()}/system/system-vectors`);
     if (!!slug) url.searchParams.append("slug", encodeURIComponent(slug));
