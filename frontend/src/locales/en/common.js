@@ -1585,6 +1585,10 @@ const TRANSLATIONS = {
     custom_skills: "Custom Skills",
     agent_flows: "Agent Flows",
     sub_skills: "Sub-skills",
+    skills_for_workspace: "Skills for {{workspace}}",
+    workspace_agent_skills_description:
+      "Turn skills on or off for this workspace only. Anything you leave alone follows the instance defaults.",
+    reset_workspace_skills: "Reset to defaults",
     no_tools_found: "No matching tools found",
     loading_mcp_servers: "Loading MCP servers...",
     start_agent_session: "Start Agent Session",

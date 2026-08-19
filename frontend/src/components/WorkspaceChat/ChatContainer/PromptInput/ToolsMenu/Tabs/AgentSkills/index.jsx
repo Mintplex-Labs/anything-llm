@@ -38,16 +38,13 @@ export default function AgentSkillsTab({
     mcpServers,
     loading,
     mcpLoading,
-    isSkillEnabled,
-    toggleSkill,
-    toggleImportedSkill,
-    toggleFlow,
-    toggleMcpTool,
+    hasOverrides,
+    instanceSkillEnabled,
+    skillState,
+    resetOverrides,
     isMultiUser,
     isSubSkillEnabled,
-    toggleSubSkill,
-    disabledSubSkills,
-  } = useAgentSkillsState(defaultSkills);
+  } = useAgentSkillsState(defaultSkills, workspace);
 
   const configurableSkills = getConfigurableSkills(t, {
     fileSystemAgentAvailable,
@@ -70,14 +67,9 @@ export default function AgentSkillsTab({
     flows,
     mcpServers,
     isMultiUser,
-    isSkillEnabled,
-    toggleSkill,
+    instanceSkillEnabled,
+    skillState,
     isSubSkillEnabled,
-    toggleSubSkill,
-    toggleImportedSkill,
-    toggleFlow,
-    toggleMcpTool,
-    disabledSubSkills,
   });
 
   // Section expansion helpers
@@ -184,6 +176,22 @@ export default function AgentSkillsTab({
           {t("chat_window.use_agent_session_to_use_tools")}
         </p>
       )}
+      <div className="flex shrink-0 items-center justify-between gap-2 px-2">
+        <span className="text-[10px] text-zinc-500 light:text-slate-400 truncate">
+          {t("chat_window.skills_for_workspace", {
+            workspace: workspace?.name,
+          })}
+        </span>
+        {hasOverrides && (
+          <button
+            type="button"
+            onClick={resetOverrides}
+            className="border-none bg-transparent shrink-0 cursor-pointer text-[10px] text-zinc-400 light:text-slate-500 hover:text-white light:hover:text-slate-900"
+          >
+            {t("chat_window.reset_workspace_skills")}
+          </button>
+        )}
+      </div>
       {totalItemCount >= MIN_ITEMS_TO_SHOW_SEARCH && (
         <SearchInput
           value={searchQuery}

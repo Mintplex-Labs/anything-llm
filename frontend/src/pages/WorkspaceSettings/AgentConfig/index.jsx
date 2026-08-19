@@ -4,6 +4,7 @@ import showToast from "@/utils/toast";
 import { castToType } from "@/utils/types";
 import { useEffect, useRef, useState } from "react";
 import AgentLLMSelection from "./AgentLLMSelection";
+import WorkspaceAgentSkills from "./AgentSkills";
 import Admin from "@/models/admin";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -87,6 +88,7 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
         />
         {(!user || user?.role === "admin") && (
           <>
+            <WorkspaceAgentSkills workspace={workspace} />
             {!hasChanges && (
               <div className="flex flex-col gap-y-4">
                 <a
@@ -97,8 +99,8 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
                 </a>
                 <p className="text-white text-opacity-60 text-xs font-medium">
                   Customize and enhance the default agent's capabilities by
-                  enabling or disabling specific skills. These settings will be
-                  applied across all workspaces.
+                  enabling or disabling specific skills. These settings apply to
+                  every workspace that has not overridden them above.
                 </p>
               </div>
             )}
