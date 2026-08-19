@@ -52,9 +52,13 @@ const PromptReply = ({ uuid, reply, pending, error, sources = [] }) => {
             className="inline-block p-2 rounded-lg bg-red-50 text-red-500"
             role="alert"
           >
-            <Warning className="h-4 w-4 mb-1 inline-block" /> Could not respond
-            to message.
-            <span className="text-xs">Reason: {error || "unknown"}</span>
+            <Warning className="h-4 w-4 mb-1 inline-block" />{" "}
+            {t("chat_window.response_failed")}
+            <span className="text-xs">
+              {t("chat_window.response_failed_reason", {
+                reason: error || "unknown",
+              })}
+            </span>
           </span>
         </div>
       </div>
