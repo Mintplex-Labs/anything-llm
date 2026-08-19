@@ -85,6 +85,8 @@ const CACHE_FILES = {
  * Extracts only cost data from the full models.dev API response.
  * Models with absent or null cost are dropped so a lookup miss
  * cleanly signals "unknown pricing".
+ * @param {Object} apiJson - full models.dev response: `{provider: {models: {model: {cost: ModelCost}}}}`
+ * @returns {Record<string, Record<string, ModelCost>>} flattened to `{provider: {model: ModelCost}}`
  */
 function slim(apiJson = {}) {
   const slimmed = {};
@@ -100,6 +102,12 @@ function slim(apiJson = {}) {
   return slimmed;
 }
 
+/**
+ * Strips region prefix and version suffix from a Bedrock model id
+ * so that e.g. `us.anthropic.claude-3-haiku-v1:0` matches `anthropic.claude-3-haiku`.
+ * @param {string} modelId
+ * @returns {string}
+ */
 function normalizeBedrockId(modelId = "") {
   return modelId
     .replace(/^(us|eu|ap|apac|jp|au|global)\./, "")
@@ -132,9 +140,16 @@ class ModelPricing {
 
     this.#loadFromDisk();
     if (this.#isCacheStale() || !this.#pricing) {
-      this.#refresh().catch((err) =>
-        log("Background pricing refresh failed:", err?.message)
-      );
+      this.#refresh()
+        .then(() => {
+          if (this.#pricing)
+            console.log(`⚡\x1b[32mPre-cached model pricing data\x1b[0m`);
+        })
+        .catch((err) =>
+          log("Background pricing refresh failed:", err?.message)
+        );
+    } else {
+      console.log(`⚡\x1b[32mPre-cached model pricing data\x1b[0m`);
     }
   }
 
@@ -275,7 +290,8 @@ class ModelPricing {
       return { inputCost: 0, outputCost: 0, totalCost: 0 };
 
     const providerId = PROVIDER_ID_MAP[providerSlug];
-    if (!providerId || !model || !this.#pricing) return null;
+    if (!providerId || !model || typeof model !== "string" || !this.#pricing)
+      return null;
 
     const cost = this.#findModelCost(providerId, providerSlug, model);
     if (!cost) return null;
@@ -285,9 +301,14 @@ class ModelPricing {
     const rates = this.#resolveRates(cost, promptTokens);
     if (!rates) return null;
 
-    const inputCost = (promptTokens / 1_000_000) * rates.input;
-    const outputCost = (completionTokens / 1_000_000) * rates.output;
-    return { inputCost, outputCost, totalCost: inputCost + outputCost };
+    const inputCost = parseFloat(
+      ((promptTokens / 1_000_000) * rates.input).toFixed(10)
+    );
+    const outputCost = parseFloat(
+      ((completionTokens / 1_000_000) * rates.output).toFixed(10)
+    );
+    const totalCost = parseFloat((inputCost + outputCost).toFixed(10));
+    return { inputCost, outputCost, totalCost };
   }
 
   get isCacheStale() {
@@ -297,6 +318,15 @@ class ModelPricing {
 
 const MODEL_PRICING = new ModelPricing();
 
+/**
+ * Enriches a metrics object with inputCost, outputCost, and totalCost (USD).
+ * Returns the original metrics unchanged when pricing is unavailable.
+ * @param {Object} metrics - must contain `prompt_tokens` and `completion_tokens`
+ * @param {Object} opts
+ * @param {string|null} opts.provider - AnythingLLM provider slug
+ * @param {string|null} opts.model - model id (falls back to `metrics.model`)
+ * @returns {Object} metrics, optionally extended with cost fields
+ */
 function addCostToMetrics(
   metrics = {},
   { provider = null, model = null } = {}
@@ -315,6 +345,16 @@ function addCostToMetrics(
   return breakdown ? { ...metrics, ...breakdown } : metrics;
 }
 
+/**
+ * Chat-specific wrapper around {@link addCostToMetrics} that resolves the
+ * provider and model from routing metadata, workspace config, or env fallback.
+ * @param {Object} metrics - must contain `prompt_tokens` and `completion_tokens`
+ * @param {Object} opts
+ * @param {Object|null} opts.routingMetadata - model router result (if routing is enabled)
+ * @param {Object|null} opts.workspace - workspace record (fallback for provider)
+ * @param {Object|null} opts.connector - LLM connector instance (fallback for model)
+ * @returns {Object} metrics, optionally extended with cost fields
+ */
 function addChatCostToMetrics(
   metrics = {},
   { routingMetadata = null, workspace = null, connector = null } = {}

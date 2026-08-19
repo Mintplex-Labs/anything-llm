@@ -522,6 +522,49 @@ describe("ModelPricing", () => {
         })
       ).toEqual({ inputCost: 3, outputCost: 0, totalCost: 3 });
     });
+
+    it("returns null when model is a non-string type", () => {
+      for (const model of [123, {}, [], true, 0]) {
+        expect(
+          pricing.getCostBreakdown("openai", model, {
+            prompt_tokens: 1000,
+            completion_tokens: 0,
+          })
+        ).toBeNull();
+      }
+    });
+
+    it("returns null when providerSlug is a non-string type", () => {
+      for (const slug of [123, true, {}, []]) {
+        expect(
+          pricing.getCostBreakdown(slug, "gpt-4o", {
+            prompt_tokens: 1000,
+            completion_tokens: 0,
+          })
+        ).toBeNull();
+      }
+    });
+
+    it("handles extremely large token counts without Infinity or NaN", () => {
+      const result = pricing.getCostBreakdown("openai", "gpt-4o", {
+        prompt_tokens: Number.MAX_SAFE_INTEGER,
+        completion_tokens: Number.MAX_SAFE_INTEGER,
+      });
+      expect(result).not.toBeNull();
+      expect(Number.isFinite(result.inputCost)).toBe(true);
+      expect(Number.isFinite(result.outputCost)).toBe(true);
+      expect(Number.isFinite(result.totalCost)).toBe(true);
+    });
+
+    it("rounds costs to avoid floating-point artifacts", () => {
+      const result = pricing.getCostBreakdown("openai", "gpt-4o-mini", {
+        prompt_tokens: 522,
+        completion_tokens: 11,
+      });
+      const asString = JSON.stringify(result);
+      expect(asString).not.toMatch(/\d{10,}/);
+      expect(asString).not.toMatch(/e[+-]/);
+    });
   });
 
   describe("addCostToMetrics", () => {
