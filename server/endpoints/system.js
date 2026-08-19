@@ -123,36 +123,6 @@ function systemEndpoints(app) {
     }
   });
 
-  /**
-   * Returns the instance display currency and the cached USD exchange rates
-   * so any logged-in user can render stored USD costs in the display currency.
-   * `rates` is null when no rates have ever been fetched (eg: air-gapped
-   * install) - the frontend then falls back to displaying USD.
-   */
-  app.get(
-    "/system/exchange-rates",
-    [validatedRequest],
-    async (_request, response) => {
-      try {
-        const {
-          CURRENCY_EXCHANGE,
-        } = require("../utils/helpers/currencyExchange");
-        const setting = await SystemSettings.get({
-          label: "display_currency",
-        });
-        const rates = await CURRENCY_EXCHANGE.getRates();
-        response.status(200).json({
-          base: "USD",
-          currency: setting?.value || "USD",
-          rates,
-        });
-      } catch (e) {
-        console.error(e.message, e);
-        response.sendStatus(500).end();
-      }
-    }
-  );
-
   app.get(
     "/system/check-token",
     [validatedRequest],

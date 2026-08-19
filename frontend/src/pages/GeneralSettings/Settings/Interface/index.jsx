@@ -1,7 +1,6 @@
 import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import { useTranslation } from "react-i18next";
-// import CurrencyPreference from "../components/CurrencyPreference";
 import LanguagePreference from "../components/LanguagePreference";
 import ThemePreference from "../components/ThemePreference";
 
@@ -28,12 +27,6 @@ export default function InterfaceSettings() {
           </div>
           <ThemePreference />
           <LanguagePreference />
-          {/* Hidden until cost display features ship. LLM usage costs are
-              already recorded (in USD) but not yet surfaced anywhere in the
-              UI, so the display currency setting has nothing to affect.
-              Re-enable this (and its import above) with the first cost
-              surface. */}
-          {/* <CurrencyPreference /> */}
         </div>
       </div>
     </div>

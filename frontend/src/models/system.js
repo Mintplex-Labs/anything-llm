@@ -20,26 +20,6 @@ const System = {
       .catch(() => false);
   },
 
-  /**
-   * Fetches the instance display currency and the server-cached USD exchange
-   * rates used to render stored USD costs. `rates` is null when the server
-   * has no rates available (callers should then display USD).
-   * @returns {Promise<{base: string, currency: string, rates: Record<string, number>|null}|null>}
-   */
-  exchangeRates: async function () {
-    return await fetch(`${API_BASE}/system/exchange-rates`, {
-      method: "GET",
-      headers: baseHeaders(),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Could not fetch exchange rates.");
-        return res.json();
-      })
-      .catch((e) => {
-        console.error(e);
-        return null;
-      });
-  },
   totalIndexes: async function (slug = null) {
     const url = new URL(`${fullApiUrl()}/system/system-vectors`);
     if (!!slug) url.searchParams.append("slug", encodeURIComponent(slug));
