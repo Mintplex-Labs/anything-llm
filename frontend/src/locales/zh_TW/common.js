@@ -1209,6 +1209,9 @@ const TRANSLATIONS = {
     export: "匯出對話內容為…",
     exporting: "出口...",
     preset_img_description: "根據文字提示，生成圖像。",
+    generating_response: "產生回應",
+    response_failed: "無法回覆訊息。",
+    response_failed_reason: "原因：{{reason}}",
   },
   profile_settings: {
     edit_account: "編輯帳戶",

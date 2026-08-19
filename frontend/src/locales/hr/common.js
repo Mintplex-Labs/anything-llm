@@ -1665,6 +1665,9 @@ const TRANSLATIONS = {
       },
     },
     preset_img_description: "Generiraj sliku na temelju tekstualnog uputa.",
+    generating_response: "Generiranje odgovora",
+    response_failed: "Nije moguće odgovoriti na poruku.",
+    response_failed_reason: "Razlog: {{reason}}",
   },
   profile_settings: {
     edit_account: "Uredi račun",

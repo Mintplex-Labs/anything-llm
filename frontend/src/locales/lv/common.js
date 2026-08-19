@@ -1402,6 +1402,9 @@ const TRANSLATIONS = {
     export: "Eksportēt čatu kā...",
     exporting: "Eksporteris…",
     preset_img_description: "Izveidot attēlu no teksta norādījuma",
+    generating_response: "Atbildes izveide",
+    response_failed: "Neizdevās atbildēt uz ziņojumu.",
+    response_failed_reason: "Iemesls: {{reason}}",
   },
   profile_settings: {
     edit_account: "Rediģēt kontu",

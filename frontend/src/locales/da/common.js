@@ -1293,6 +1293,9 @@ const TRANSLATIONS = {
     export: "Eksportér chat som...",
     exporting: "Eksportér...",
     preset_img_description: "Generer et billede ud fra en tekstbeskrivelse",
+    generating_response: "Generere svar",
+    response_failed: "Kunne ikke svare på beskeden.",
+    response_failed_reason: "Årsag: {{reason}}",
   },
   profile_settings: {
     edit_account: "Rediger konto",

@@ -1313,6 +1313,9 @@ const TRANSLATIONS = {
     export: "Экспортировать чат в формате…",
     exporting: "Экспорт...",
     preset_img_description: "Создать изображение на основе текстового запроса",
+    generating_response: "Формирование ответа",
+    response_failed: "Не удалось ответить на сообщение.",
+    response_failed_reason: "Причина: {{reason}}",
   },
   profile_settings: {
     edit_account: "Редактировать учётную запись",

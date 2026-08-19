@@ -1276,6 +1276,9 @@ const TRANSLATIONS = {
     export: "チャットを以下のような形式でエクスポートする：",
     exporting: "輸出…",
     preset_img_description: "テキストプロンプトから画像を生成する。",
+    generating_response: "応答を生成する",
+    response_failed: "メッセージへの返信ができませんでした。",
+    response_failed_reason: "理由：{{reason}}",
   },
   profile_settings: {
     edit_account: "アカウントを編集",

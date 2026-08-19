@@ -1290,6 +1290,9 @@ const TRANSLATIONS = {
     export: "Xuất trò chuyện dưới dạng...",
     exporting: "Xuất khẩu...",
     preset_img_description: "Tạo một hình ảnh từ một đoạn mô tả bằng văn bản.",
+    generating_response: "Tạo ra câu trả lời",
+    response_failed: "Không thể phản hồi tin nhắn.",
+    response_failed_reason: "Lý do: {{reason}}",
   },
   profile_settings: {
     edit_account: "Chỉnh sửa Tài khoản",

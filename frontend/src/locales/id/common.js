@@ -1661,6 +1661,9 @@ const TRANSLATIONS = {
       },
     },
     preset_img_description: "Hasilkan gambar berdasarkan teks yang diberikan.",
+    generating_response: "Menghasilkan respons",
+    response_failed: "Tidak dapat membalas pesan tersebut.",
+    response_failed_reason: "Alasan: {{reason}}",
   },
   profile_settings: {
     edit_account: "Edit Akun",

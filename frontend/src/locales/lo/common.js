@@ -1579,6 +1579,9 @@ const TRANSLATIONS = {
       },
     },
     preset_img_description: "ຈາກຂໍ້ຄວາມ ໃຫ້ສ້າງຮູບພາບ",
+    generating_response: "ຜົນການຕອບ",
+    response_failed: "ສາมาถ ප්‍රතිສະໜອງ ຂໍ້ຄວາມ ໄດ້",
+    response_failed_reason: "ສາเหตุ: {{reason}}",
   },
   profile_settings: {
     edit_account: "ແກ້ໄຂບັນຊີ",
