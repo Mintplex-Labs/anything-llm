@@ -367,9 +367,19 @@ const Memory = {
         (m) => m.action === "update" && typeof m.updateId === "number"
       );
 
+      const existingWorkspaceCount = await this.countForScope(
+        userId,
+        workspaceId,
+        "workspace"
+      );
+      const workspaceSlots = Math.max(
+        0,
+        this.WORKSPACE_LIMIT - existingWorkspaceCount
+      );
+
       const newWorkspace = creates
         .filter((m) => m.scope === "WORKSPACE")
-        .slice(0, this.WORKSPACE_LIMIT);
+        .slice(0, workspaceSlots);
       const newGlobal = creates
         .filter((m) => m.scope === "GLOBAL")
         .slice(0, Math.max(0, globalSlots));

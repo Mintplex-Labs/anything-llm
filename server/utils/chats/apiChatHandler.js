@@ -208,8 +208,10 @@ async function chatSync({
             outputs: allOutputs,
             metrics,
           },
-          include: false,
+          include: true,
+          threadId: thread?.id || null,
           apiSessionId: sessionId,
+          user,
         });
         return {
           id: uuid,
@@ -583,6 +585,7 @@ async function streamChat({
           include: true,
           threadId: thread?.id || null,
           apiSessionId: sessionId,
+          user,
         });
         writeResponseChunk(response, {
           uuid,

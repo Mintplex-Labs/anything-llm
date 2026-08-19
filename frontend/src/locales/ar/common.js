@@ -1278,6 +1278,9 @@ const TRANSLATIONS = {
     export: "تصدير المحادثة كـ...",
     exporting: "التصدير...",
     preset_img_description: "إنشاء صورة بناءً على نص معين.",
+    generating_response: "إنشاء رد",
+    response_failed: "لم أتمكن من الرد على الرسالة.",
+    response_failed_reason: "السبب: {{reason}}",
   },
   profile_settings: {
     edit_account: "تحرير الحساب",

@@ -485,7 +485,7 @@ const System = {
     const url = new URL(`${fullApiUrl()}/system/logo`);
     url.searchParams.append(
       "theme",
-      localStorage.getItem("theme") || "default"
+      document.documentElement.getAttribute("data-theme") || "dark"
     );
 
     return await fetch(url, {

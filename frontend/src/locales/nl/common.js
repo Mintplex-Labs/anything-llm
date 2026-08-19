@@ -1305,6 +1305,9 @@ const TRANSLATIONS = {
     exporting: "Exporteren...",
     preset_img_description:
       "Genereer een afbeelding op basis van een tekstuele instructie.",
+    generating_response: "Antwoord genereren",
+    response_failed: "Kon de bericht niet beantwoorden.",
+    response_failed_reason: "Reden: {{reason}}",
   },
   profile_settings: {
     edit_account: "Account bewerken",

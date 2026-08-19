@@ -44,6 +44,7 @@ class OpenRouterImageGenerator extends BaseImageGenerator {
 
     const dataUrl =
       completion?.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+    this._sendImageTelemetry("image_generated");
     return { buffer: this._extractImageBuffer(dataUrl) };
   }
 
@@ -72,6 +73,9 @@ class OpenRouterImageGenerator extends BaseImageGenerator {
 
     const dataUrl =
       completion?.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+    this._sendImageTelemetry("image_generated", {
+      withReferences: images.length > 0,
+    });
     return { buffer: this._extractImageBuffer(dataUrl) };
   }
 }

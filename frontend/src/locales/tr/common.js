@@ -1306,6 +1306,9 @@ const TRANSLATIONS = {
     export: "Çat sohbetini şu şekilde dışa aktar:",
     exporting: "Dışarıya satışı yapma...",
     preset_img_description: "Bir metin isteminden bir görüntü oluşturun",
+    generating_response: "Yanıt üretme",
+    response_failed: "Mesaja cevap veremedim.",
+    response_failed_reason: "Nedeni: {{reason}}",
   },
   profile_settings: {
     edit_account: "Hesabı Düzenle",

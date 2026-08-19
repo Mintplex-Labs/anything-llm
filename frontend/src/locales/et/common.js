@@ -1358,6 +1358,9 @@ const TRANSLATIONS = {
     export: "Экспорти руй чат kui...",
     exporting: "Экспорт",
     preset_img_description: "Loo pilt tekstist antud juhiste põhjal",
+    generating_response: "Vastus genereerimine",
+    response_failed: "Ei olnud võimalik vastata teatele.",
+    response_failed_reason: "põhjus: {{reason}}",
   },
   profile_settings: {
     edit_account: "Muuda kontot",

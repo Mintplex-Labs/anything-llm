@@ -166,9 +166,9 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 |----------------------------------------|----|-----|---------------|------------|
 | [![在 Docker 上部署][docker-btn]][docker-deploy] | [![在 AWS 上部署][aws-btn]][aws-deploy] | [![在 GCP 上部署][gcp-btn]][gcp-deploy] | [![在DigitalOcean上部署][do-btn]][do-deploy] | [![在 Render.com 上部署][render-btn]][render-deploy] |
 
-| Railway                                             | RepoCloud                                                 | Elestio                                             |
-| --------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------- |
-| [![在 Railway 上部署][railway-btn]][railway-deploy] | [![在 RepoCloud 上部署][repocloud-btn]][repocloud-deploy] | [![在 Elestio 上部署][elestio-btn]][elestio-deploy] |
+| Railway                                             | RepoCloud                                                 | Elestio                                             | Sealos                                               |
+| --------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------- | ---------------------------------------------------- |
+| [![在 Railway 上部署][railway-btn]][railway-deploy] | [![在 RepoCloud 上部署][repocloud-btn]][repocloud-deploy] | [![在 Elestio 上部署][elestio-btn]][elestio-deploy] | [![在 Sealos 上部署][sealos-btn]][sealos-deploy] |
 
 [其他方案：不使用Docker配置AnythingLLM实例 →](../BARE_METAL.md)
 
@@ -281,3 +281,5 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 [repocloud-deploy]: https://repocloud.io/details/?app_id=276
 [elestio-btn]: https://elest.io/images/logos/deploy-to-elestio-btn.png
 [elestio-deploy]: https://elest.io/open-source/anythingllm
+[sealos-btn]: https://sealos.io/Deploy-on-Sealos.svg
+[sealos-deploy]: https://sealos.io/products/app-store/anything-llm

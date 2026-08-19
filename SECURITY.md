@@ -1,12 +1,18 @@
 # Security Policy
 
+> Notice: We are **not** accepting reports for open-computer. It is in a primitive basic state for development and is not production ready or deployable in any LTS sense.
+
 ## Supported Versions
 
 The supported versions are the current major version and its two most recent minor releases. Only the latest patch within each supported major/minor is in scope.
 
 ## Reporting a Vulnerability
 
-If a security concern is found that you would like to disclose you can create a PR for it or if you would like to clear this issue before posting you can email [Core Mintplex Labs Team](mailto:team@mintplexlabs.com).
+All vulnerability reports must be submitted via [GitHub Security Advisories (GHSA)](https://github.com/Mintplex-Labs/anything-llm/security/advisories/new) — we do not monitor any other reporting platform or accept ad-hoc reports.
+
+For low-severity issues with an obvious fix, you are also welcome to simply open a public PR.
+
+If you are unsure whether something is a security issue or want to check with us before filing, you can email the [Core Mintplex Labs Team](mailto:team@mintplexlabs.com), but the report itself should still go through GHSA unless discussed otherwise.
 
 ## Invalid Report Types
 
@@ -39,6 +45,12 @@ If your report is about being able to access the system via _bypassing the authe
 ### Reports requiring knowledge or guessing of a UUID
 
 If your report depends on an attacker knowing or guessing a UUID (e.g., a session ID, embed ID, or any other random identifier) without demonstrating a practical way to obtain it, this is not a valid report. UUIDs (v4) have 122 bits of entropy and are not feasible to brute-force. Unless your report includes a concrete method to leak or enumerate the UUID in question, it will be closed immediately.
+
+### Reports based on Developer API Key access
+
+Developer API keys are **system-level credentials**. They are only creatable by administrators and intentionally grant full, unrestricted access to the entire `/v1/*` API surface — equivalent to admin access. If your report's attack chain starts with "attacker has a developer API key," you are describing an attacker who already has admin-equivalent access. There is no privilege escalation possible from a developer API key because it is already the highest privilege level.
+
+This includes reports about API keys being able to mint auth tokens, access admin endpoints, or perform actions on behalf of other users. All of these are intended capabilities of the API key system. If you believe a developer API key should have scoped or limited permissions, that is a feature request, not a vulnerability.
 
 ### Reports about admin-enabled agent tools doing "too much"
 

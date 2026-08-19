@@ -1418,6 +1418,9 @@ const TRANSLATIONS = {
     export: "Exportujte konverzaci jako…",
     exporting: "Exportování...",
     preset_img_description: "Vytvořit obrázek na základě textového pokynu",
+    generating_response: "Generování odpovědi",
+    response_failed: "Nebyl možné odpovědět na zprávu.",
+    response_failed_reason: "Důvod: {{reason}}",
   },
   profile_settings: {
     edit_account: "Upravit účet",

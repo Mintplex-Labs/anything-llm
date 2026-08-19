@@ -188,9 +188,9 @@ Mintplex Labs & the community maintain a number of deployment methods, scripts, 
 |----------------------------------------|----|-----|---------------|------------|
 | [![Deploy on Docker][docker-btn]][docker-deploy] | [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy] | [![Deploy on DigitalOcean][do-btn]][do-deploy] | [![Deploy on Render.com][render-btn]][render-deploy] |
 
-| Railway                                             | RepoCloud                                                 | Elestio                                             | Northflank                                                   |
-| --------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------ |
-| [![Deploy on Railway][railway-btn]][railway-deploy] | [![Deploy on RepoCloud][repocloud-btn]][repocloud-deploy] | [![Deploy on Elestio][elestio-btn]][elestio-deploy] | [![Deploy on Northflank][northflank-btn]][northflank-deploy] |
+| Railway                                             | RepoCloud                                                 | Elestio                                             | Northflank                                                   | Sealos                                               |
+| --------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------- |
+| [![Deploy on Railway][railway-btn]][railway-deploy] | [![Deploy on RepoCloud][repocloud-btn]][repocloud-deploy] | [![Deploy on Elestio][elestio-btn]][elestio-deploy] | [![Deploy on Northflank][northflank-btn]][northflank-deploy] | [![Deploy on Sealos][sealos-btn]][sealos-deploy] |
 
 [or set up a production AnythingLLM instance without Docker →](./BARE_METAL.md)
 
@@ -257,12 +257,9 @@ Basically, if telemetry is disabled we don't collect anything. However, dependin
 
 ## 💖 Sponsors
 
+<!--
 ### Premium Sponsors
-
-<!-- premium-sponsors (reserved for $100/mth sponsors who request to be called out here and/or are non-private sponsors) -->
-<a href="https://www.dcsdigital.co.uk" target="_blank">
-  <img src="https://a8cforagenciesportfolio.wordpress.com/wp-content/uploads/2024/08/logo-image-232621379.png" height="100px" alt="User avatar: DCS DIGITAL" />
-</a>
+premium-sponsors (reserved for $100/mth sponsors who request to be called out here and/or are non-private sponsors) -->
 <!-- premium-sponsors -->
 
 ### All Sponsors
@@ -319,3 +316,5 @@ This project is [MIT](./LICENSE) licensed.
 [elestio-deploy]: https://elest.io/open-source/anythingllm
 [northflank-btn]: https://assets.northflank.com/deploy_to_northflank_smm_36700fb050.svg
 [northflank-deploy]: https://northflank.com/stacks/deploy-anythingllm
+[sealos-btn]: https://sealos.io/Deploy-on-Sealos.svg
+[sealos-deploy]: https://sealos.io/products/app-store/anything-llm
