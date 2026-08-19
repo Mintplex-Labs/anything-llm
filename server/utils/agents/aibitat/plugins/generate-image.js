@@ -4,6 +4,8 @@ const {
   editImageForWorkspace,
 } = require("../../../ImageGenerators");
 const { resolveImageBuffers } = require("../../../chats/commands/img");
+const { WorkspaceChats } = require("../../../../models/workspaceChats");
+const { safeJSONStringify } = require("../../../helpers/chat/responses");
 
 /**
  * Collects the image buffers an edit request should transform. Prefers the
@@ -17,9 +19,24 @@ function sourceImages(aibitat) {
     .reverse()
     .find((chat) => chat.from === "USER");
   const images = resolveImageBuffers(lastUserMessage?.attachments || []);
-  if (!images.length && aibitat._lastGeneratedImage)
-    images.push(aibitat._lastGeneratedImage);
-  return images;
+  if (images.length || !aibitat._lastGeneratedImage) return images;
+  return resolveImageBuffers([
+    { mime: "image/png", storageFilename: aibitat._lastGeneratedImage },
+  ]);
+}
+
+/**
+ * Writes the outputs collected so far onto the chat row reserved for this reply.
+ * The image serve endpoint authorizes a request by finding a chat that references
+ * the file, so that reference has to exist before the card asks for the image -
+ * the reply itself is not persisted until the agent finishes its turn.
+ * @param {object} aibitat
+ */
+async function persistOutputs(aibitat) {
+  if (!aibitat.trackedChatId) return;
+  await WorkspaceChats._update(aibitat.trackedChatId, {
+    response: safeJSONStringify({ outputs: aibitat._pendingOutputs }),
+  });
 }
 
 const generateImage = {
@@ -100,7 +117,7 @@ const generateImage = {
               if (!/^\d+x\d+$/.test(String(size))) size = null;
 
               const signal = this.super.abortController?.signal ?? null;
-              const { storageFilename, filename, fileSize, buffer, notice } =
+              const { storageFilename, filename, fileSize, notice } =
                 images.length > 0
                   ? await editImageForWorkspace({
                       prompt,
@@ -110,35 +127,23 @@ const generateImage = {
                     })
                   : await generateImageForWorkspace({ prompt, size, signal });
 
-              // Send the card live over the socket and register it as a pending
-              // output so it re-renders when the chat is reloaded. The live card
-              // carries the image inline because the serve endpoint only
-              // authorizes images referenced by an already-persisted chat, and
-              // this chat is not written until the agent finishes its reply.
+              // Register the card as a pending output so it is saved with the
+              // reply and re-renders when the chat is reloaded.
               const output = {
                 type: "imageGenerationCard",
                 payload: { storageFilename, filename, fileSize, prompt },
               };
-              this.super.socket?.send?.(
-                "imageGenerationCard",
-                `Generated an image for: "${prompt}"`,
-                {
-                  pendingId,
-                  outputs: [
-                    {
-                      ...output,
-                      payload: {
-                        ...output.payload,
-                        dataUrl: `data:image/png;base64,${buffer.toString("base64")}`,
-                      },
-                    },
-                  ],
-                }
-              );
               if (!Array.isArray(this.super._pendingOutputs))
                 this.super._pendingOutputs = [];
               this.super._pendingOutputs.push(output);
-              this.super._lastGeneratedImage = buffer;
+              this.super._lastGeneratedImage = storageFilename;
+              await persistOutputs(this.super);
+
+              this.super.socket?.send?.(
+                "imageGenerationCard",
+                `Generated an image for: "${prompt}"`,
+                { pendingId, outputs: [output] }
+              );
 
               return `The image was generated and is already displayed to the user.${notice ? ` Note: ${notice}.` : ""} Confirm it is ready in one short sentence - do not describe the image or repeat the prompt.`;
             } catch (error) {

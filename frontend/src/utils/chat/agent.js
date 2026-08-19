@@ -349,7 +349,6 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
           type: "textResponse",
           content: data.content,
           outputs: data.outputs || [],
-          chatId: data.chatId || null,
           role: "assistant",
           sources: [],
           closed: true,

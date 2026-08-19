@@ -179,10 +179,10 @@ async function findInWorkspaceChats(storageFilename, { user, isMultiUser }) {
   const workspaceIds = workspaces.map((w) => w.id);
   if (workspaceIds.length === 0) return null;
 
-  // DB-level filter so we don't load every chat into memory.
+  // DB-level filter so we don't load every chat into memory. `include` is skipped
+  // since an agent's chat row is still hidden while it generates files mid-turn.
   const chats = await WorkspaceChats.where({
     workspaceId: { in: workspaceIds },
-    include: true,
     response: { contains: storageFilename },
   });
 

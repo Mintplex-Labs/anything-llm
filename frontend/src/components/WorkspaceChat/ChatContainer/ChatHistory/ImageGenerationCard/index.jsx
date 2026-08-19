@@ -22,7 +22,7 @@ import { PROMPT_INPUT_EVENT } from "@/components/WorkspaceChat/ChatContainer/Pro
  */
 function ImageGenerationCard({ props }) {
   const { t } = useTranslation();
-  const { storageFilename, filename, prompt, dataUrl } = props.content || {};
+  const { storageFilename, filename, prompt } = props.content || {};
   const [blob, setBlob] = useState(null);
   const [objectUrl, setObjectUrl] = useState(null);
   const [status, setStatus] = useState("loading");
@@ -33,18 +33,14 @@ function ImageGenerationCard({ props }) {
   useEffect(() => {
     let revokeUrl = null;
     async function loadImage() {
-      // Agent skills send the image inline because the serve endpoint only
-      // authorizes images already referenced by a persisted chat.
-      const result = dataUrl
-        ? await fetch(dataUrl).then((res) => res.blob())
-        : await StorageFiles.image(storageFilename);
+      const result = await StorageFiles.image(storageFilename);
       if (!result) return setStatus("failed");
       revokeUrl = URL.createObjectURL(result);
       setBlob(result);
       setObjectUrl(revokeUrl);
       setStatus("ready");
     }
-    if (storageFilename || dataUrl) {
+    if (storageFilename) {
       loadImage();
     } else {
       setStatus("failed");
@@ -52,7 +48,7 @@ function ImageGenerationCard({ props }) {
     return () => {
       if (revokeUrl) URL.revokeObjectURL(revokeUrl);
     };
-  }, [storageFilename, dataUrl]);
+  }, [storageFilename]);
 
   useEffect(() => {
     if (!menuOpen) return;

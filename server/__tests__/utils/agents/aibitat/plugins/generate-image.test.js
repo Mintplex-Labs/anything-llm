@@ -1,6 +1,12 @@
 /* eslint-env jest */
+const fs = require("fs");
+const os = require("os");
+const path = require("path");
+
 // `utils/files` resolves its storage paths from STORAGE_DIR at require time.
-process.env.STORAGE_DIR = __dirname;
+process.env.STORAGE_DIR = fs.mkdtempSync(
+  path.join(os.tmpdir(), "generate-image-test-")
+);
 jest.mock("../../../../../utils/ImageGenerators", () => ({
   generateImageForWorkspace: jest.fn(),
   editImageForWorkspace: jest.fn(),
@@ -8,21 +14,38 @@ jest.mock("../../../../../utils/ImageGenerators", () => ({
 jest.mock("../../../../../utils/helpers", () => ({
   getImageGeneratorProvider: jest.fn(),
 }));
+jest.mock("../../../../../models/workspaceChats", () => ({
+  WorkspaceChats: { _update: jest.fn() },
+}));
 
 const {
   generateImageForWorkspace,
   editImageForWorkspace,
 } = require("../../../../../utils/ImageGenerators");
+const { WorkspaceChats } = require("../../../../../models/workspaceChats");
 const {
   generateImage,
 } = require("../../../../../utils/agents/aibitat/plugins/generate-image.js");
 
 const SAVED_IMAGE = {
-  storageFilename: "generated-image-abc.png",
+  storageFilename: "img-11111111-2222-3333-4444-555555555555.png",
   filename: "a-fox.png",
   fileSize: 100,
   buffer: Buffer.from("image-bytes"),
 };
+
+beforeAll(() => {
+  const dir = path.join(process.env.STORAGE_DIR, "generated-images");
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(
+    path.join(dir, SAVED_IMAGE.storageFilename),
+    SAVED_IMAGE.buffer
+  );
+});
+
+afterAll(() =>
+  fs.rmSync(process.env.STORAGE_DIR, { recursive: true, force: true })
+);
 
 function setupPlugin(chats = []) {
   const aibitat = {
@@ -60,17 +83,30 @@ describe("generate-image agent skill", () => {
         prompt: "a red fox in the snow",
       },
     };
-    // The persisted output must not carry the inline image, the live one must -
-    // the serve endpoint cannot authorize the image until the chat is saved.
+    // The card must only reference the stored file - no image bytes travel over
+    // the socket or into the chat record.
     expect(aibitat._pendingOutputs).toEqual([expectedOutput]);
-    const [type, , extras] = aibitat.socket.send.mock.calls.find(
+    const [, , extras] = aibitat.socket.send.mock.calls.find(
       ([type]) => type === "imageGenerationCard"
     );
-    expect(type).toBe("imageGenerationCard");
-    expect(extras.outputs[0].payload).toEqual({
-      ...expectedOutput.payload,
-      dataUrl: `data:image/png;base64,${SAVED_IMAGE.buffer.toString("base64")}`,
+    expect(extras.outputs).toEqual([expectedOutput]);
+  });
+
+  test("writes the image reference to the reserved chat before showing the card", async () => {
+    generateImageForWorkspace.mockResolvedValue(SAVED_IMAGE);
+    const { aibitat, handler } = setupPlugin();
+    aibitat.trackedChatId = 42;
+
+    await handler({ prompt: "a fox" });
+
+    // The serve endpoint only authorizes files referenced by a chat record, so
+    // the reference has to land before the frontend requests the image.
+    expect(WorkspaceChats._update).toHaveBeenCalledWith(42, {
+      response: JSON.stringify({ outputs: aibitat._pendingOutputs }),
     });
+    expect(WorkspaceChats._update.mock.invocationCallOrder[0]).toBeLessThan(
+      aibitat.socket.send.mock.invocationCallOrder[1]
+    );
   });
 
   test("shows a placeholder card and swaps it for the result", async () => {
@@ -138,11 +174,12 @@ describe("generate-image agent skill", () => {
   test("falls back to the image generated earlier in the session when editing", async () => {
     generateImageForWorkspace.mockResolvedValue(SAVED_IMAGE);
     editImageForWorkspace.mockResolvedValue(SAVED_IMAGE);
-    const { handler } = setupPlugin();
+    const { aibitat, handler } = setupPlugin();
 
     await handler({ prompt: "a fox" });
     await handler({ prompt: "now make it blue", edit: true });
 
+    expect(aibitat._lastGeneratedImage).toBe(SAVED_IMAGE.storageFilename);
     expect(editImageForWorkspace).toHaveBeenCalledWith(
       expect.objectContaining({ images: [SAVED_IMAGE.buffer] })
     );
