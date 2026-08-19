@@ -1422,6 +1422,9 @@ const TRANSLATIONS = {
     export: "Eksporteri pokalbį kaip…",
     exporting: "Eksporteris...",
     preset_img_description: "Sukurkite vaizdą iš teksto instrukcijos",
+    generating_response: "Sukurti atsakymą",
+    response_failed: "Nepavyko atsakyti į pranešimą.",
+    response_failed_reason: "Priežastis: {{reason}}",
   },
   profile_settings: {
     edit_account: "Redaguoti paskyrą",

@@ -1345,6 +1345,9 @@ const TRANSLATIONS = {
     export: "ייצוא צ'אט כ...",
     exporting: "ייצוא...",
     preset_img_description: "יצירת תמונה על סמך הנחיה טקסטואלית",
+    generating_response: "יצירת תגובה",
+    response_failed: "לא ניתן להגיב למסר.",
+    response_failed_reason: "סיבה: {{reason}}",
   },
   profile_settings: {
     edit_account: "ערוך חשבון",

@@ -1285,6 +1285,9 @@ const TRANSLATIONS = {
     export: "صدور چت به صورت...",
     exporting: "صدور به خارج",
     preset_img_description: "ایجاد یک تصویر بر اساس یک دستور متنی",
+    generating_response: "تولید پاسخ",
+    response_failed: "امکان پاسخ دادن به پیام وجود نداشت.",
+    response_failed_reason: "دلیل: {{reason}}",
   },
   profile_settings: {
     edit_account: "ویرایش حساب",

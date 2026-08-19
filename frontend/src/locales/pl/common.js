@@ -1409,6 +1409,9 @@ const TRANSLATIONS = {
     export: "Eksportuj czat jako…",
     exporting: "Eksportowanie...",
     preset_img_description: "Wygeneruj obraz na podstawie tekstu",
+    generating_response: "Generowanie odpowiedzi",
+    response_failed: "Nie udało się odpowiedzieć na wiadomość.",
+    response_failed_reason: "Powód: {{reason}}",
   },
   profile_settings: {
     edit_account: "Edytuj konto",
