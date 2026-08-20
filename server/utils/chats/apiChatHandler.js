@@ -2,6 +2,7 @@ const { v4: uuidv4 } = require("uuid");
 const { DocumentManager } = require("../DocumentManager");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { getVectorDbClass, resolveProviderConnector } = require("../helpers");
+const { addChatCostToMetrics } = require("../helpers/modelPricing");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const { abortConnectorOnClientDisconnect } = require("../helpers/abortSignals");
 const {
@@ -226,14 +227,15 @@ async function chatSync({
       });
   }
 
-  const { connector: LLMConnector } = await resolveProviderConnector({
-    workspace,
-    prompt: message,
-    user,
-    thread,
-    attachments,
-    apiSessionId: sessionId,
-  });
+  const { connector: LLMConnector, routingMetadata } =
+    await resolveProviderConnector({
+      workspace,
+      prompt: message,
+      user,
+      thread,
+      attachments,
+      apiSessionId: sessionId,
+    });
 
   const VectorDb = getVectorDbClass();
   const messageLimit = workspace?.openAiHistory || 20;
@@ -420,11 +422,16 @@ async function chatSync({
   );
 
   // Send the text completion.
-  const { textResponse, metrics: performanceMetrics } =
+  const { textResponse, metrics: completionMetrics } =
     await LLMConnector.getChatCompletion(messages, {
       temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
       user: user,
     });
+  const performanceMetrics = addChatCostToMetrics(completionMetrics, {
+    routingMetadata,
+    workspace,
+    connector: LLMConnector,
+  });
 
   if (!textResponse) {
     return {
@@ -594,14 +601,15 @@ async function streamChat({
       });
   }
 
-  const { connector: LLMConnector } = await resolveProviderConnector({
-    workspace,
-    prompt: message,
-    user,
-    thread,
-    attachments,
-    apiSessionId: sessionId,
-  });
+  const { connector: LLMConnector, routingMetadata } =
+    await resolveProviderConnector({
+      workspace,
+      prompt: message,
+      user,
+      thread,
+      attachments,
+      apiSessionId: sessionId,
+    });
 
   // A disconnected client (aborted request, closed connection) should stop the
   // provider generating too, not just stop us reading the response.
@@ -814,7 +822,11 @@ async function streamChat({
         user: user,
       });
     completeText = textResponse;
-    metrics = performanceMetrics;
+    metrics = addChatCostToMetrics(performanceMetrics, {
+      routingMetadata,
+      workspace,
+      connector: LLMConnector,
+    });
     writeResponseChunk(response, {
       uuid,
       sources,
@@ -830,7 +842,11 @@ async function streamChat({
       user: user,
     });
     completeText = await LLMConnector.handleStream(response, stream, { uuid });
-    metrics = stream.metrics;
+    metrics = addChatCostToMetrics(stream.metrics, {
+      routingMetadata,
+      workspace,
+      connector: LLMConnector,
+    });
   }
 
   if (completeText?.length > 0) {
