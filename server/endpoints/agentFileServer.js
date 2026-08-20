@@ -179,15 +179,19 @@ async function findInWorkspaceChats(storageFilename, { user, isMultiUser }) {
   const workspaceIds = workspaces.map((w) => w.id);
   if (workspaceIds.length === 0) return null;
 
-  // DB-level filter so we don't load every chat into memory. `include` is skipped
-  // since an agent's chat row is still hidden while it generates files mid-turn.
+  // DB-level filter so we don't load every chat into memory.
   const chats = await WorkspaceChats.where({
     workspaceId: { in: workspaceIds },
     response: { contains: storageFilename },
   });
 
   for (const chat of chats) {
-    const { outputs = [] } = safeJsonParse(chat.response, { outputs: [] });
+    const { outputs = [], text } = safeJsonParse(chat.response, {
+      outputs: [],
+    });
+    // A hidden chat is either an agent reply still being written (no text yet)
+    // or history the user cleared - only the former can still serve its files.
+    if (!chat.include && !!text) continue;
     const output = outputs.find(
       (o) => o?.payload?.storageFilename === storageFilename
     );
