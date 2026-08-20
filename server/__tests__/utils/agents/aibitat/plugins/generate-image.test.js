@@ -86,10 +86,10 @@ describe("generate-image agent skill", () => {
     // The card must only reference the stored file - no image bytes travel over
     // the socket or into the chat record.
     expect(aibitat._pendingOutputs).toEqual([expectedOutput]);
-    const [, , extras] = aibitat.socket.send.mock.calls.find(
+    const [, card] = aibitat.socket.send.mock.calls.find(
       ([type]) => type === "imageGenerationCard"
     );
-    expect(extras.outputs).toEqual([expectedOutput]);
+    expect(card.outputs).toEqual([expectedOutput]);
   });
 
   test("writes the image reference to the reserved chat before showing the card", async () => {
@@ -118,7 +118,7 @@ describe("generate-image agent skill", () => {
     const [pending, card] = aibitat.socket.send.mock.calls;
     expect(pending[0]).toBe("imageGenerationPending");
     expect(card[0]).toBe("imageGenerationCard");
-    expect(card[2].pendingId).toBe(pending[2].pendingId);
+    expect(card[1].pendingId).toBe(pending[1].pendingId);
   });
 
   test("clears the placeholder card when generation fails", async () => {
@@ -129,8 +129,9 @@ describe("generate-image agent skill", () => {
 
     const [pending, failure] = aibitat.socket.send.mock.calls;
     expect(failure[0]).toBe("imageGenerationCard");
-    expect(failure[2]).toEqual({
-      pendingId: pending[2].pendingId,
+    expect(failure[1]).toEqual({
+      pendingId: pending[1].pendingId,
+      text: "provider is down",
       failed: true,
     });
     expect(reply).toContain("provider is down");

@@ -90,9 +90,11 @@ async function handleImageCommand({ aibitat, socket, message }) {
   socket.send(
     JSON.stringify({
       type: "imageGenerationCard",
-      content: result.textResponse,
-      outputs: result.outputs || [],
-      chatId: result.chatId || null,
+      content: {
+        text: result.textResponse,
+        outputs: result.outputs || [],
+        chatId: result.chatId || null,
+      },
     })
   );
 
@@ -152,8 +154,8 @@ const websocket = {
         // expose function for sockets across aibitat
         // type param must be set or else msg will not be shown or handled in UI.
         aibitat.socket = {
-          send: (type = "__unhandled", content = "", extras = {}) => {
-            socket.send(JSON.stringify({ type, content, ...extras }));
+          send: (type = "__unhandled", content = "") => {
+            socket.send(JSON.stringify({ type, content }));
           },
         };
 

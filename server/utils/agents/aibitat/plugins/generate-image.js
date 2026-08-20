@@ -108,8 +108,9 @@ const generateImage = {
               this.super.introspect(
                 `${this.caller}: ${images.length ? "Editing image" : "Generating image"} - "${prompt}"`
               );
-              this.super.socket?.send?.("imageGenerationPending", prompt, {
+              this.super.socket?.send?.("imageGenerationPending", {
                 pendingId,
+                prompt,
               });
 
               // Models like to invent sizes ("large", "square"), so anything
@@ -139,16 +140,17 @@ const generateImage = {
               this.super._lastGeneratedImage = storageFilename;
               await persistOutputs(this.super);
 
-              this.super.socket?.send?.(
-                "imageGenerationCard",
-                `Generated an image for: "${prompt}"`,
-                { pendingId, outputs: [output] }
-              );
+              this.super.socket?.send?.("imageGenerationCard", {
+                pendingId,
+                text: `Generated an image for: "${prompt}"`,
+                outputs: [output],
+              });
 
               return `The image was generated and is already displayed to the user.${notice ? ` Note: ${notice}.` : ""} Confirm it is ready in one short sentence - do not describe the image or repeat the prompt.`;
             } catch (error) {
-              this.super.socket?.send?.("imageGenerationCard", error.message, {
+              this.super.socket?.send?.("imageGenerationCard", {
                 pendingId,
+                text: error.message,
                 failed: true,
               });
               const { isAbortError } = require("../../../helpers/abortSignals");

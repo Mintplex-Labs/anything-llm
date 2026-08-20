@@ -320,9 +320,9 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
       return [
         ...prev.filter((msg) => !!msg.content),
         {
-          uuid: data.pendingId,
+          uuid: data.content.pendingId,
           type: "imageGenerationPending",
-          content: data.content,
+          content: data.content.prompt,
           role: "assistant",
           sources: [],
           closed: false,
@@ -339,16 +339,17 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
     return setChatHistory((prev) => {
       // Drops the placeholder card this result belongs to, if there was one.
       const history = prev.filter(
-        (msg) => !!msg.content && msg.uuid !== data.pendingId
+        (msg) => !!msg.content && msg.uuid !== data.content.pendingId
       );
-      if (data.failed) return history;
+      if (data.content.failed) return history;
       return [
         ...history,
         {
           uuid: v4(),
           type: "textResponse",
-          content: data.content,
-          outputs: data.outputs || [],
+          content: data.content.text,
+          outputs: data.content.outputs || [],
+          chatId: data.content.chatId || null,
           role: "assistant",
           sources: [],
           closed: true,
