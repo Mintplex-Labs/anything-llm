@@ -9,7 +9,7 @@ import System from "@/models/system";
 import WorkspaceRow from "./WorkspaceRow";
 import NewWorkspaceModal from "./NewWorkspaceModal";
 import { useModal } from "@/hooks/useModal";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 import CTAButton from "@/components/lib/CTAButton";
 
 export default function AdminWorkspaces() {
@@ -46,9 +46,9 @@ export default function AdminWorkspaces() {
             <WorkspacesContainer />
           </div>
         </div>
-        <ModalWrapper isOpen={isOpen}>
+        <Modal isOpen={isOpen} onClose={closeModal}>
           <NewWorkspaceModal closeModal={closeModal} />
-        </ModalWrapper>
+        </Modal>
       </div>
     </div>
   );
