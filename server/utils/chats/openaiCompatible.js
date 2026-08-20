@@ -2,8 +2,10 @@ const { v4: uuidv4 } = require("uuid");
 const { DocumentManager } = require("../DocumentManager");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { getVectorDbClass, resolveProviderConnector } = require("../helpers");
+const { addChatCostToMetrics } = require("../helpers/modelPricing");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const { chatPrompt, sourceIdentifier } = require("./index");
+const { abortConnectorOnClientDisconnect } = require("../helpers/abortSignals");
 
 const { PassThrough } = require("stream");
 
@@ -18,18 +20,19 @@ async function chatSync({
   const uuid = uuidv4();
   const chatMode = workspace?.chatMode ?? "automatic";
 
-  const { connector: LLMConnector } = await resolveProviderConnector({
-    workspace,
-    prompt,
-    attachments,
-    chatHistoryOverride: {
-      rawHistory: history,
-      chatHistory: history,
-    },
-    // Do not +1 to this, since OAI message history ends in a user message
-    // and does not need to re-include an uncounted user message.
-    messageCountOverride: history.length,
-  });
+  const { connector: LLMConnector, routingMetadata } =
+    await resolveProviderConnector({
+      workspace,
+      prompt,
+      attachments,
+      chatHistoryOverride: {
+        rawHistory: history,
+        chatHistory: history,
+      },
+      // Do not +1 to this, since OAI message history ends in a user message
+      // and does not need to re-include an uncounted user message.
+      messageCountOverride: history.length,
+    });
 
   const VectorDb = getVectorDbClass();
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
@@ -171,13 +174,16 @@ async function chatSync({
   });
 
   // Send the text completion.
-  const { textResponse, metrics } = await LLMConnector.getChatCompletion(
-    messages,
-    {
+  const { textResponse, metrics: completionMetrics } =
+    await LLMConnector.getChatCompletion(messages, {
       temperature:
         temperature ?? workspace?.openAiTemp ?? LLMConnector.defaultTemp,
-    }
-  );
+    });
+  const metrics = addChatCostToMetrics(completionMetrics, {
+    routingMetadata,
+    workspace,
+    connector: LLMConnector,
+  });
 
   if (!textResponse) {
     return formatJSON(
@@ -231,18 +237,23 @@ async function streamChat({
   const uuid = uuidv4();
   const chatMode = workspace?.chatMode ?? "automatic";
 
-  const { connector: LLMConnector } = await resolveProviderConnector({
-    workspace,
-    prompt,
-    attachments,
-    chatHistoryOverride: {
-      rawHistory: history,
-      chatHistory: history,
-    },
-    // Do not +1 to this, since OAI message history ends in a user message
-    // and does not need to re-include an uncounted user message.
-    messageCountOverride: history.length,
-  });
+  const { connector: LLMConnector, routingMetadata } =
+    await resolveProviderConnector({
+      workspace,
+      prompt,
+      attachments,
+      chatHistoryOverride: {
+        rawHistory: history,
+        chatHistory: history,
+      },
+      // Do not +1 to this, since OAI message history ends in a user message
+      // and does not need to re-include an uncounted user message.
+      messageCountOverride: history.length,
+    });
+
+  // A disconnected client (aborted request, closed connection) should stop the
+  // provider generating too, not just stop us reading the response.
+  abortConnectorOnClientDisconnect(response, LLMConnector);
 
   const VectorDb = getVectorDbClass();
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
@@ -448,6 +459,11 @@ async function streamChat({
       sources,
     }
   );
+  const metrics = addChatCostToMetrics(stream.metrics, {
+    routingMetadata,
+    workspace,
+    connector: LLMConnector,
+  });
 
   if (completeText?.length > 0) {
     const { chat } = await WorkspaceChats.new({
@@ -457,7 +473,7 @@ async function streamChat({
         text: completeText,
         sources,
         type: chatMode,
-        metrics: stream.metrics,
+        metrics,
         attachments,
       },
     });
@@ -477,7 +493,7 @@ async function streamChat({
           chunked: true,
           model: workspace.slug,
           finish_reason: "stop",
-          usage: stream.metrics,
+          usage: metrics,
         }
       )
     );
@@ -498,7 +514,7 @@ async function streamChat({
         chunked: true,
         model: workspace.slug,
         finish_reason: "stop",
-        usage: stream.metrics,
+        usage: metrics,
       }
     )
   );

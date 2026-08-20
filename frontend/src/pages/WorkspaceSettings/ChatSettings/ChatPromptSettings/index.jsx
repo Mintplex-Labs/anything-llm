@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef, Fragment } from "react";
-import { getWorkspaceSystemPrompt } from "@/utils/chat";
 import { useTranslation } from "react-i18next";
 import SystemPromptVariable from "@/models/systemPromptVariable";
 import Highlighter from "react-highlight-words";
@@ -19,9 +18,8 @@ export default function ChatPromptSettings({
   const [searchParams] = useSearchParams();
 
   // Prompt state
-  const initialPrompt = getWorkspaceSystemPrompt(workspace);
-  const [prompt, setPrompt] = useState(initialPrompt);
-  const [savedPrompt, setSavedPrompt] = useState(initialPrompt);
+  const [prompt, setPrompt] = useState(workspace?.openAiPrompt ?? "");
+  const [savedPrompt, setSavedPrompt] = useState(workspace?.openAiPrompt ?? "");
   const [defaultSystemPrompt, setDefaultSystemPrompt] = useState("");
 
   // UI state
@@ -43,7 +41,8 @@ export default function ChatPromptSettings({
 
   // Derived state
   const isDirty = prompt !== savedPrompt;
-  const hasBeenModified = savedPrompt?.trim() !== initialPrompt?.trim();
+  const hasBeenModified =
+    defaultSystemPrompt && savedPrompt?.trim() !== defaultSystemPrompt?.trim();
   const showPublishButton =
     !isEditing && prompt?.trim().length >= 10 && (isDirty || hasBeenModified);
 
@@ -71,9 +70,13 @@ export default function ChatPromptSettings({
   }, [isEditing]);
 
   useEffect(() => {
-    System.fetchDefaultSystemPrompt().then(({ defaultSystemPrompt }) =>
-      setDefaultSystemPrompt(defaultSystemPrompt)
-    );
+    System.fetchDefaultSystemPrompt().then(({ defaultSystemPrompt }) => {
+      setDefaultSystemPrompt(defaultSystemPrompt);
+      if (!workspace?.openAiPrompt && defaultSystemPrompt) {
+        setPrompt(defaultSystemPrompt);
+        setSavedPrompt(defaultSystemPrompt);
+      }
+    });
   }, []);
 
   // Handle click outside for history panel

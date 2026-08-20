@@ -4,7 +4,7 @@ import { LEMONADE_COMMON_URLS } from "@/utils/constants";
 import { CircleNotch, Info } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import useProviderEndpointAutoDiscovery from "@/hooks/useProviderEndpointAutoDiscovery";
-import { cleanBasePath } from "@/components/LLMSelection/LemonadeOptions";
+import { originOnly } from "@/utils/url";
 
 export default function LemonadeSpeechToTextOptions({ settings }) {
   const {
@@ -16,6 +16,7 @@ export default function LemonadeSpeechToTextOptions({ settings }) {
     provider: "lemonade",
     initialBasePath: settings?.STTLemonadeBasePath,
     ENDPOINTS: LEMONADE_COMMON_URLS,
+    normalizeBasePath: originOnly,
   });
 
   return (
@@ -72,7 +73,7 @@ export default function LemonadeSpeechToTextOptions({ settings }) {
             name="STTLemonadeBasePath"
             className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="http://localhost:13305"
-            value={cleanBasePath(basePathValue.value)}
+            value={basePathValue.value}
             required={true}
             autoComplete="off"
             spellCheck={false}

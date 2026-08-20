@@ -111,6 +111,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Geplande taken",
     "model-router": "Modelrouter",
+    "image-generation": "Afbeelding genereren",
   },
   login: {
     "multi-user": {
@@ -1080,6 +1081,8 @@ const TRANSLATIONS = {
       save_embed: "Opslaan en embedden",
       "total-documents_one": "{{count}} document",
       "total-documents_other": "{{count}} documenten",
+      "search-results_one": "{{count}} uitkomst",
+      "search-results_other": "{{count}} resultaten",
     },
     upload: {
       "processor-offline": "Documentverwerker niet beschikbaar",
@@ -1128,6 +1131,33 @@ const TRANSLATIONS = {
         "Dit kan even duren, afhankelijk van de grootte van uw kluis.",
       vault_warning:
         "Zorg ervoor dat uw Obsidian-kluis niet geopend is om conflicten te voorkomen.",
+    },
+    gitea: {
+      name: "Repo van Gitea",
+      description:
+        "Importeer een volledig publiek of privé-repository van elke Gitea-instantie met één klik.",
+      URL: "URL van de Gitea repository",
+      URL_explained:
+        "URL van het repository dat u wilt ophalen in uw Gitea-instantie – zelf gehoste instanties worden ondersteund.",
+      token: "Gitea toegangstoken",
+      optional: "optioneel",
+      token_explained:
+        "Een toegangstoken is vereist om privé-repositories of repositories op instanties te verzamelen die authenticatie vereisen.",
+      token_explained_start: "Zonder",
+      token_explained_link1: "Toegangstoken",
+      token_explained_end:
+        "Alleen repositories die door uw Gitea-instantie openbaar toegankelijk zijn, kunnen worden verzameld.",
+      ignores: "Bestand negeert",
+      git_ignore:
+        "Maak een bestand met de naam `.gitignore` waarin je specifieke bestanden kunt opsluiten tijdens het verzamelen. Druk na elke vermelding die je wilt opslaan op Enter.",
+      task_explained:
+        "Zodra het proces voltooid is, zullen alle bestanden beschikbaar zijn om in te voegen in werkruimtes via de documentkiezer.",
+      branch: "De tak waaruit u de bestanden wilt ophalen.",
+      branch_loading: "– beschikbare takken laden –",
+      branch_explained:
+        "De tak (of afdeling) waaruit u de bestanden wilt downloaden.",
+      token_information:
+        "Zonder het invullen van de <b>Gitea Access Token</b> kan deze dataconnecteur alleen bestanden ophalen uit repositories die <b>openbaar toegankelijk</b> zijn op uw Gitea-instantie.",
     },
   },
   chat_window: {
@@ -1273,6 +1303,11 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Transcriptie mislukt: {{error}}",
     export: "Exporteer de chat als…",
     exporting: "Exporteren...",
+    preset_img_description:
+      "Genereer een afbeelding op basis van een tekstuele instructie.",
+    generating_response: "Antwoord genereren",
+    response_failed: "Kon de bericht niet beantwoorden.",
+    response_failed_reason: "Reden: {{reason}}",
   },
   profile_settings: {
     edit_account: "Account bewerken",
@@ -1940,6 +1975,24 @@ const TRANSLATIONS = {
       "routed-to": "Verwezen naar <route>{{model}}</route>",
       "routed-to-rule":
         "Verzonden via <route>{{model}}</route> via <rule>{{ruleTitle}}</rule>",
+    },
+  },
+  imageGeneration: {
+    title: "Voorkeur voor het genereren van afbeeldingen",
+    description:
+      "Configureer de provider die gebruikt wordt om afbeeldingen te genereren vanuit het `/img` commando.",
+    provider: "Aanbieder van beeldgeneratie-diensten",
+    card: {
+      "failed-to-load": "Afbeelding kon niet worden geladen.",
+      "alt-text": "Gegenereerde afbeelding",
+      edit: "Bewerk",
+      download: "Downloaden",
+    },
+    pending: {
+      heading: "Het genereren van uw afbeelding…",
+      description:
+        "Dit kan even duren. Het zal hier verschijnen zodra het klaar is.",
+      aborted: "Het genereren van het beeld is afgebroken.",
     },
   },
 };

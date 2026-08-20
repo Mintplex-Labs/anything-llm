@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require("uuid");
 const { getVectorDbClass, resolveProviderConnector } = require("../helpers");
+const { addChatCostToMetrics } = require("../helpers/modelPricing");
 const { chatPrompt, sourceIdentifier } = require("./index");
 const { EmbedChats } = require("../../models/embedChats");
 const {
@@ -7,6 +8,7 @@ const {
   writeResponseChunk,
 } = require("../helpers/chat/responses");
 const { DocumentManager } = require("../DocumentManager");
+const { abortConnectorOnClientDisconnect } = require("../helpers/abortSignals");
 
 async function streamChatWithForEmbed(
   response,
@@ -33,6 +35,7 @@ async function streamChatWithForEmbed(
   const uuid = uuidv4();
   const {
     connector: LLMConnector,
+    routingMetadata,
     prefetchedContext,
     error: routerError,
   } = await resolveLLMConnectorForEmbed({
@@ -52,6 +55,10 @@ async function streamChatWithForEmbed(
       error: routerError,
     });
   }
+
+  // Stopping the generation (or closing the tab) should stop the provider
+  // generating too, not just stop us reading the response.
+  abortConnectorOnClientDisconnect(response, LLMConnector);
 
   const VectorDb = getVectorDbClass();
 
@@ -190,7 +197,11 @@ async function streamChatWithForEmbed(
         temperature: embed.workspace?.openAiTemp ?? LLMConnector.defaultTemp,
       });
     completeText = textResponse;
-    metrics = performanceMetrics;
+    metrics = addChatCostToMetrics(performanceMetrics, {
+      routingMetadata,
+      workspace: embed.workspace,
+      connector: LLMConnector,
+    });
     writeResponseChunk(response, {
       uuid,
       sources: [],
@@ -207,7 +218,11 @@ async function streamChatWithForEmbed(
       uuid,
       sources: [],
     });
-    metrics = stream.metrics;
+    metrics = addChatCostToMetrics(stream.metrics, {
+      routingMetadata,
+      workspace: embed.workspace,
+      connector: LLMConnector,
+    });
   }
 
   await EmbedChats.new({
@@ -268,16 +283,18 @@ async function resolveLLMConnectorForEmbed({
       include: true,
     });
 
-    const { connector, prefetchedContext } = await resolveProviderConnector({
-      workspace,
-      prompt: message,
-      chatHistoryOverride: embedHistory,
-      // +1 to include the current in-flight message to ensure routing rules are evaluated against the real total.
-      messageCountOverride: embedMessageCount + 1,
-    });
+    const { connector, routingMetadata, prefetchedContext } =
+      await resolveProviderConnector({
+        workspace,
+        prompt: message,
+        chatHistoryOverride: embedHistory,
+        // +1 to include the current in-flight message to ensure routing rules are evaluated against the real total.
+        messageCountOverride: embedMessageCount + 1,
+      });
 
     return {
       connector,
+      routingMetadata,
       prefetchedContext: prefetchedContext
         ? {
             rawHistory: embedHistory.rawHistory,
@@ -290,6 +307,7 @@ async function resolveLLMConnectorForEmbed({
   } catch (routerError) {
     return {
       connector: null,
+      routingMetadata: null,
       prefetchedContext: null,
       error: `Model router error: ${routerError.message}`,
     };

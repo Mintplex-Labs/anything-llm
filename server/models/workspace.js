@@ -51,7 +51,6 @@ const Workspace = {
     "chatModel",
     "topN",
     "chatMode",
-    // "pfpFilename",
     "agentProvider",
     "agentModel",
     "queryRefusalResponse",
@@ -137,6 +136,12 @@ const Workspace = {
       const id = Number(value);
       if (isNaN(id)) return null;
       return id;
+    },
+    lastUpdatedAt: (value) => {
+      if (value === null || value === undefined) return new Date();
+      const date = new Date(value);
+      if (isNaN(date.getTime())) return new Date();
+      return date;
     },
   },
 

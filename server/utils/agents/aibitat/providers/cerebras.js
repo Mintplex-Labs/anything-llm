@@ -83,8 +83,7 @@ class CerebrasProvider extends InheritMultiple([Provider, UnTooled]) {
    * Uses native tool calling when enabled via ENV, otherwise falls back to UnTooled.
    */
   async stream(messages, functions = [], eventHandler = null) {
-    const useNative =
-      functions.length > 0 && (await this.supportsNativeToolCalling());
+    const useNative = await this.supportsNativeToolCalling();
 
     if (!useNative) {
       return await UnTooled.prototype.stream.call(
@@ -129,8 +128,7 @@ class CerebrasProvider extends InheritMultiple([Provider, UnTooled]) {
    * Uses native tool calling when enabled via ENV, otherwise falls back to UnTooled.
    */
   async complete(messages, functions = []) {
-    const useNative =
-      functions.length > 0 && (await this.supportsNativeToolCalling());
+    const useNative = await this.supportsNativeToolCalling();
 
     if (!useNative) {
       return await UnTooled.prototype.complete.call(
@@ -179,21 +177,17 @@ class CerebrasProvider extends InheritMultiple([Provider, UnTooled]) {
   recordUsage(usage = {}, time_info = {}) {
     // assume start time
     let duration = (Date.now() - this._requestStartTime) / 1000;
-    const promptTokens = usage.prompt_tokens || 0;
-    const completionTokens = usage.completion_tokens || 0;
+    const safeUsage = usage && typeof usage === "object" ? usage : {};
+    const promptTokens = safeUsage.prompt_tokens || 0;
+    const completionTokens = safeUsage.completion_tokens || 0;
     if (time_info?.completion_time) duration = time_info.completion_time;
 
-    this.lastUsage = {
+    this.applyUsage({
       prompt_tokens: promptTokens,
       completion_tokens: completionTokens,
-      total_tokens: usage.total_tokens,
-      outputTps:
-        completionTokens && duration > 0 ? completionTokens / duration : 0,
+      total_tokens: safeUsage.total_tokens || promptTokens + completionTokens,
       duration,
-      model: this.model,
-      provider: this.constructor.name,
-      timestamp: new Date(),
-    };
+    });
   }
 
   /**

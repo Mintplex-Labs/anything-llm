@@ -110,6 +110,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "計画された作業",
     "model-router": "モデルルーター",
+    "image-generation": "画像生成",
   },
   login: {
     "multi-user": {
@@ -1053,6 +1054,8 @@ const TRANSLATIONS = {
       save_embed: "保存して埋め込む",
       "total-documents_one": "{{count}} のドキュメント",
       "total-documents_other": "{{count}} に関する書類",
+      "search-results_one": "{{count}} の結果",
+      "search-results_other": "{{count}} の結果",
     },
     upload: {
       "processor-offline": "ドキュメント処理機能が利用できません",
@@ -1101,6 +1104,32 @@ const TRANSLATIONS = {
         "これは、保管場所のサイズによって時間がかかる可能性があります。",
       vault_warning:
         "いかなる紛争を避けるため、Obsidianの保管場所が現在開いている状態でないことを確認してください。",
+    },
+    gitea: {
+      name: "ギテアのリポジトリ",
+      description:
+        "Gitea の任意のインスタンスから、公開またはプライベートなリポジトリ全体を 1 つのクリックでインポートします。",
+      URL: "ギテアのリポジトリURL",
+      URL_explained:
+        "収集したいリポジトリのGiteaインスタンス上のURL – 自社ホストのリポジトリもサポートされています。",
+      token: "ギテア アクセス トークン",
+      optional: "（オプション）",
+      token_explained:
+        "プライベートリポジトリや、認証が必要なインスタンス上のリポジトリを取得するには、アクセストークンが必要です。",
+      token_explained_start: "～なしで",
+      token_explained_link1: "アクセス トークン",
+      token_explained_end:
+        "ただし、Gitea インスタンスが公開しているリポジトリのみを収集できます。",
+      ignores: "ファイルは無視する",
+      git_ignore:
+        "`.gitignore`形式で、収集時に特定のファイルを無視するためのリストを作成します。保存したい項目ごとにEnterキーを押してください。",
+      task_explained:
+        "すべてのファイルが完了すると、ドキュメントピッカーを使用してワークスペースに埋め込むことができます。",
+      branch: "ファイルを収集したいブランチを指定してください。",
+      branch_loading: "— 利用可能なブランチのロード中 —",
+      branch_explained: "ファイルを収集したいブランチの名前。",
+      token_information:
+        "<b>Giteaアクセストークン</b>を入力しない場合、このデータコネクタは、あなたのGiteaインスタンス上の公開で読み取り可能なリポジトリからのみファイルを収集できます。",
     },
   },
   chat_window: {
@@ -1246,6 +1275,10 @@ const TRANSLATIONS = {
     stt_transcription_failed: "文字起こしに失敗しました: {{error}}",
     export: "チャットを以下のような形式でエクスポートする：",
     exporting: "輸出…",
+    preset_img_description: "テキストプロンプトから画像を生成する。",
+    generating_response: "応答を生成する",
+    response_failed: "メッセージへの返信ができませんでした。",
+    response_failed_reason: "理由：{{reason}}",
   },
   profile_settings: {
     edit_account: "アカウントを編集",
@@ -1907,6 +1940,24 @@ const TRANSLATIONS = {
       "routed-to": "<route>、{{model}}、</route> 宛にルーティング",
       "routed-to-rule":
         "<route>～</route>を経由して、<rule>～</rule>へルーティング",
+    },
+  },
+  imageGeneration: {
+    title: "画像生成の好み",
+    description:
+      "`/img` コマンドを使用して画像を生成するために使用するプロバイダーを設定します。",
+    provider: "画像生成サービスプロバイダー",
+    card: {
+      "failed-to-load": "画像の読み込みに失敗しました。",
+      "alt-text": "生成された画像",
+      edit: "編集",
+      download: "ダウンロード",
+    },
+    pending: {
+      heading: "画像の生成中…",
+      description:
+        "これには少し時間がかかる場合があります。準備が整ったら、こちらに表示されます。",
+      aborted: "画像の生成は中止されました。",
     },
   },
 };

@@ -36,7 +36,7 @@ function mergeStringField(target, source, fieldName, validator = null) {
 const SystemSettings = {
   /** A default system prompt that is used when no other system prompt is set or available to the function caller. */
   saneDefaultSystemPrompt:
-    "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.",
+    "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. The current date and time is {datetime}. Return only your response to the question given the above information following the users instructions as needed.",
   protectedFields: ["multi_user_mode", "hub_api_key", "onboarding_complete"],
   publicFields: [
     "footer_data",
@@ -166,6 +166,7 @@ const SystemSettings = {
             "perplexity-search",
             "brave-search",
             "crw-search",
+            "you-search",
           ].includes(update)
         )
           throw new Error("Invalid SERP provider.");
@@ -499,6 +500,20 @@ const SystemSettings = {
         process.env.GENERIC_OPEN_AI_EMBEDDING_QUERY_PREFIX || "",
 
       // --------------------------------------------------------
+      // Image Generation Provider Selection Settings & Configs
+      // --------------------------------------------------------
+      ImageGenerationProvider: process.env.IMAGE_GEN_PROVIDER || null,
+      ImageGenerationModelPref: process.env.IMAGE_GEN_MODEL_PREF || null,
+      ImageGenerationDimensions: process.env.IMAGE_GEN_SIZE_PREF || "512x512",
+      ImageGenerationOpenAiKey: !!process.env.IMAGE_GEN_OPENAI_KEY,
+      ImageGenerationOpenRouterApiKey:
+        !!process.env.IMAGE_GEN_OPENROUTER_API_KEY,
+      ImageGenerationOllamaBasePath: process.env.IMAGE_GEN_OLLAMA_BASE_PATH,
+      ImageGenerationOllamaAuthToken: !!process.env.IMAGE_GEN_OLLAMA_AUTH_TOKEN,
+      ImageGenerationLemonadeBasePath: process.env.IMAGE_GEN_LEMONADE_BASE_PATH,
+      ImageGenerationLemonadeApiKey: !!process.env.IMAGE_GEN_LEMONADE_API_KEY,
+
+      // --------------------------------------------------------
       // VectorDB Provider Selection Settings & Configs
       // --------------------------------------------------------
       VectorDB: vectorDB,
@@ -589,6 +604,7 @@ const SystemSettings = {
       AgentBraveApiKey: !!process.env.AGENT_BRAVE_API_KEY || null,
       AgentCrwApiKey: !!process.env.AGENT_CRW_API_KEY || null,
       AgentCrwApiUrl: process.env.AGENT_CRW_API_URL || null,
+      AgentYouApiKey: !!process.env.AGENT_YOU_API_KEY || null,
 
       // --------------------------------------------------------
       // Compliance Settings
@@ -969,6 +985,7 @@ const SystemSettings = {
       AwsBedrockLLMModel: process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE,
       AwsBedrockLLMTokenLimit:
         process.env.AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT || 8192,
+      AwsBedrockLLMMaxTokens: process.env.AWS_BEDROCK_LLM_MAX_TOKENS || 4096,
 
       // Cohere API Keys
       CohereApiKey: !!process.env.COHERE_API_KEY,

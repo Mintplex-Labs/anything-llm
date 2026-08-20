@@ -48,6 +48,57 @@ const WEBSOCKET_BAIL_COMMANDS = [
   "/halt",
   "/reset", // Will not reset but will bail. Powerusers always do this and the LLM responds.
 ];
+/**
+ * Detects the /img slash command (optionally followed by a prompt) so it can be
+ * handled inline during an active agent session instead of being handed to the
+ * agent as a normal prompt.
+ * @param {string} feedback
+ * @returns {boolean}
+ */
+function isImageCommand(feedback = "") {
+  return /^\/img(\s|$)/i.test(String(feedback).trim());
+}
+
+/**
+ * Generates an image for a /img command issued mid agent session and streams the
+ * resulting card back over the socket. Reuses the same generator and persistence
+ * path as the standalone /img chat command so it renders and reloads identically.
+ * @param {{aibitat: object, socket: object, message: string}} params
+ * @returns {Promise<Array>} generated image attachments to carry into the next agent turn
+ */
+async function handleImageCommand({ aibitat, socket, message }) {
+  const { generateImage } = require("../../../chats/commands/img");
+  const { generatedImageAttachments } = require("../../../files");
+  const { User } = require("../../../../models/user");
+  const invocation = aibitat?.handlerProps?.invocation;
+  if (!invocation?.workspace) return [];
+
+  const user = invocation.user_id
+    ? await User.get({ id: invocation.user_id })
+    : null;
+  const result = await generateImage(
+    invocation.workspace,
+    message,
+    uuidv4(),
+    user,
+    invocation.thread_id ? { id: invocation.thread_id } : null,
+    null,
+    [],
+    aibitat?.abortController?.signal ?? null
+  );
+
+  socket.send(
+    JSON.stringify({
+      type: "imageGenerationCard",
+      content: result.textResponse,
+      outputs: result.outputs || [],
+      chatId: result.chatId || null,
+    })
+  );
+
+  return generatedImageAttachments(result.outputs);
+}
+
 const websocket = {
   name: "websocket",
   startupConfig: {
@@ -182,6 +233,25 @@ const websocket = {
           return new Promise((resolve) => {
             let timeoutId = null;
 
+            // Resolve exactly once and tear down every waiter, whichever of the
+            // three outcomes lands first: user response, abort, or timeout.
+            const settle = (result) => {
+              delete socket.handleToolApproval;
+              clearTimeout(timeoutId);
+              aibitat.emitter.removeListener("abort", abortListener);
+              resolve(result);
+            };
+
+            // The socket is already gone once the session aborts, so no response
+            // can arrive - settle now instead of parking on the full timeout.
+            function abortListener() {
+              settle({
+                approved: false,
+                message: "Session was aborted while awaiting tool approval.",
+              });
+            }
+            aibitat.emitter.once("abort", abortListener);
+
             socket.handleToolApproval = (message) => {
               try {
                 const data = safeJsonParse(message, {});
@@ -191,17 +261,14 @@ const websocket = {
                 )
                   return;
 
-                delete socket.handleToolApproval;
-                clearTimeout(timeoutId);
-
                 if (data.approved) {
-                  return resolve({
+                  return settle({
                     approved: true,
                     message: "User approved the tool execution.",
                   });
                 }
 
-                return resolve({
+                return settle({
                   approved: false,
                   message: "Tool call was rejected by the user.",
                 });
@@ -222,13 +289,12 @@ const websocket = {
             );
 
             timeoutId = setTimeout(() => {
-              delete socket.handleToolApproval;
               console.log(
                 chalk.yellow(
                   `Tool approval request timed out after ${TOOL_APPROVAL_TIMEOUT_MS}ms`
                 )
               );
-              resolve({
+              settle({
                 approved: false,
                 message:
                   "Tool approval request timed out. User did not respond in time.",
@@ -369,27 +435,55 @@ const websocket = {
 
             return new Promise(function (resolve) {
               let socketTimeout = null;
-              socket.handleFeedback = (message) => {
+              // Images generated via inline /img commands while awaiting feedback
+              // are carried into the next real reply so the agent sees them as
+              // vision context, mirroring how persisted /img images are re-read
+              // at session start.
+              let pendingImageAttachments = [];
+              const armTimeout = () => {
+                clearTimeout(socketTimeout);
+                socketTimeout = setTimeout(() => {
+                  console.log(
+                    chalk.red(
+                      `Client took too long to respond, chat thread is dead after ${SOCKET_TIMEOUT_MS}ms`
+                    )
+                  );
+                  resolve({ feedback: "exit", attachments: [] });
+                  return;
+                }, SOCKET_TIMEOUT_MS);
+              };
+
+              socket.handleFeedback = async (message) => {
                 const data = JSON.parse(message);
                 if (data.type !== "awaitingFeedback") return;
+
+                // Intercept the /img slash command so it generates an image
+                // inline instead of being sent to the agent as a normal prompt.
+                // The agent session stays paused and awaiting the next message.
+                if (isImageCommand(data.feedback)) {
+                  armTimeout();
+                  const attachments = await handleImageCommand({
+                    aibitat,
+                    socket,
+                    message: data.feedback,
+                  });
+                  pendingImageAttachments.push(...attachments);
+                  return;
+                }
+
                 delete socket.handleFeedback;
                 clearTimeout(socketTimeout);
                 resolve({
                   feedback: data.feedback,
-                  attachments: data.attachments || [],
+                  attachments: [
+                    ...pendingImageAttachments,
+                    ...(data.attachments || []),
+                  ],
                 });
                 return;
               };
 
-              socketTimeout = setTimeout(() => {
-                console.log(
-                  chalk.red(
-                    `Client took too long to respond, chat thread is dead after ${SOCKET_TIMEOUT_MS}ms`
-                  )
-                );
-                resolve({ feedback: "exit", attachments: [] });
-                return;
-              }, SOCKET_TIMEOUT_MS);
+              armTimeout();
             });
           };
 

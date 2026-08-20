@@ -16,6 +16,8 @@ const { ChatAnthropic } = require("@langchain/anthropic");
 const { ChatOllama } = require("@langchain/community/chat_models/ollama");
 const { toValidNumber, safeJsonParse } = require("../../../http");
 const { getLLMProviderClass } = require("../../../helpers");
+const { MODEL_PRICING } = require("../../../helpers/modelPricing");
+const { toNonNegativeNumber } = require("../../../helpers/numbers");
 const { parseLMStudioBasePath } = require("../../../AiProviders/lmStudio");
 const {
   parseDockerModelRunnerEndpoint,
@@ -27,9 +29,7 @@ const {
   SystemPromptVariables,
 } = require("../../../../models/systemPromptVariables");
 const { OllamaAILLM } = require("../../../AiProviders/ollama");
-
-const DEFAULT_WORKSPACE_PROMPT =
-  "You are a helpful ai assistant who can assist the user and use tools available to help answer the users prompts and questions.";
+const { bindAbortSignal } = require("../../../helpers/abortSignals");
 
 /**
  * @typedef {Object} ProviderUsageMetrics
@@ -41,6 +41,9 @@ const DEFAULT_WORKSPACE_PROMPT =
  * @property {string|null} model - Model name
  * @property {string|null} provider - Provider class name
  * @property {Date|null} timestamp - Timestamp of the completion
+ * @property {number} [inputCost] - USD cost of the prompt tokens. Absent when pricing is unknown.
+ * @property {number} [outputCost] - USD cost of the completion tokens. Absent when pricing is unknown.
+ * @property {number} [totalCost] - USD sum of input and output costs. Absent when pricing is unknown.
  */
 
 /**
@@ -49,9 +52,12 @@ const DEFAULT_WORKSPACE_PROMPT =
  * @property {boolean} [verbose] - Whether to log verbose introspection messages.
  * @property {boolean} supportsAgentStreaming - Whether the provider supports streaming tool-call execution.
  * @property {(handlerProps: Object) => void} attachHandlerProps - Attach invocation/handler context to the provider.
+ * @property {(signal: AbortSignal|null) => void} attachAbortSignal - Bind the session abort signal to the provider's SDK client(s).
  * @property {(messages: Array, functions?: Array, eventHandler?: Function) => Promise<{functionCall: any, textResponse: string}>} stream - Stream a chat completion with tool calling.
  * @property {(messages: Array, functions?: Array) => Promise<{functionCall: any, textResponse: string, result?: string}>} complete - Non-streaming chat completion with tool calling.
  * @property {() => ProviderUsageMetrics} getUsage - Get usage metrics from the last completion.
+ * @property {() => ProviderUsageMetrics} getCumulativeUsage - Get usage metrics accumulated across all completions in the current run.
+ * @property {() => void} resetCumulativeUsage - Reset the accumulated usage metrics (call at the start of a run).
  */
 
 class Provider {
@@ -76,16 +82,33 @@ class Provider {
    * Stores the usage metrics from the last completion call.
    * @type {ProviderUsageMetrics}
    */
-  lastUsage = {
-    prompt_tokens: 0,
-    completion_tokens: 0,
-    total_tokens: 0,
-    duration: 0,
-    outputTps: 0,
-    model: null,
-    provider: null,
-    timestamp: null,
-  };
+  lastUsage = Provider.#emptyUsage();
+
+  /**
+   * Stores the usage metrics accumulated across every completion call in the
+   * current run. An agent loop makes one completion per tool call plus a final
+   * one for the response - this is the sum of all of them, whereas `lastUsage`
+   * only ever reflects the most recent call.
+   * @type {ProviderUsageMetrics}
+   */
+  cumulativeUsage = Provider.#emptyUsage();
+
+  /**
+   * Zeroed usage metrics for initializing/resetting an accumulator.
+   * @returns {ProviderUsageMetrics}
+   */
+  static #emptyUsage() {
+    return {
+      prompt_tokens: 0,
+      completion_tokens: 0,
+      total_tokens: 0,
+      duration: 0,
+      outputTps: 0,
+      model: null,
+      provider: null,
+      timestamp: null,
+    };
+  }
 
   /**
    * Timestamp when the current request started (for duration calculation).
@@ -99,6 +122,23 @@ class Provider {
    * @type {string|null}
    */
   providerTag = null;
+
+  /**
+   * The AnythingLLM provider slug this instance was built for (eg: "openai",
+   * "anthropic") - set by AIbitat when the provider is instantiated. Unlike
+   * `providerTag` or `constructor.name`, this matches the slugs used for
+   * model pricing lookups. Null when the origin of the instance is unknown.
+   * @type {string|null}
+   */
+  providerSlug = null;
+
+  /**
+   * Abort signal for the active agent session, attached by AIbitat. Bound to the
+   * SDK client so every request this provider makes is cancelled when the session
+   * is aborted (stop button, socket close, bail command).
+   * @type {AbortSignal|null}
+   */
+  abortSignal = null;
 
   constructor(client) {
     if (this.constructor == Provider) {
@@ -125,6 +165,28 @@ class Provider {
     this.executingUserId = this.invocation?.user_id
       ? `user_${this.invocation.user_id}`
       : "";
+  }
+
+  /**
+   * Attach the session abort signal and bind it to this provider's SDK client(s)
+   * so every request they make is cancelled when the session aborts. Binding is
+   * done once per client; the wrappers read `this.abortSignal` at call time, so
+   * re-attaching a new signal needs no re-binding.
+   * @param {AbortSignal|null} signal
+   */
+  attachAbortSignal(signal = null) {
+    this.abortSignal = signal;
+    this.abortableClients().forEach((client) => bindAbortSignal(this, client));
+  }
+
+  /**
+   * The SDK clients that should honor the session abort signal. Providers holding
+   * more than one client (ex: Bedrock) override this.
+   * Must stay a method, not a getter - `InheritMultiple` flattens getters.
+   * @returns {Array<object>}
+   */
+  abortableClients() {
+    return [this._client];
   }
 
   get client() {
@@ -498,40 +560,27 @@ class Provider {
     return llm.promptWindowLimit(modelName);
   }
 
-  static defaultSystemPromptForProvider(provider = null) {
-    switch (provider) {
-      case "lmstudio":
-        return "You are a helpful ai assistant who can assist the user and use tools available to help answer the users prompts and questions. Tools will be handled by another assistant and you will simply receive their responses to help answer the user prompt - always try to answer the user's prompt the best you can with the context available to you and your general knowledge.";
-      default:
-        return DEFAULT_WORKSPACE_PROMPT;
-    }
-  }
-
   /**
    * Get the system prompt for a provider, with memories appended (when enabled).
    * @param {object} opts
-   * @param {string} opts.provider
    * @param {import("@prisma/client").workspaces | null} opts.workspace
    * @param {import("@prisma/client").users | null} opts.user
    * @param {string} [opts.prompt] - current user message, used for reranking injected memories
    * @returns {Promise<string>}
    */
-  static async systemPrompt({
-    provider = null,
-    workspace = null,
-    user = null,
-    prompt = "",
-  }) {
+  static async systemPrompt({ workspace = null, user = null, prompt = "" }) {
+    const { SystemSettings } = require("../../../../models/systemSettings");
     const { promptWithMemories } = require("../../../memories");
-    const basePrompt = !workspace?.openAiPrompt
-      ? Provider.defaultSystemPromptForProvider(provider)
-      : await SystemPromptVariables.expandSystemPromptVariables(
-          workspace.openAiPrompt,
-          user?.id || null,
-          workspace.id
-        );
+    const basePrompt =
+      workspace?.openAiPrompt ?? SystemSettings.saneDefaultSystemPrompt;
+    const systemPrompt =
+      await SystemPromptVariables.expandSystemPromptVariables(
+        basePrompt,
+        user?.id || null,
+        workspace?.id || null
+      );
     return promptWithMemories({
-      systemPrompt: basePrompt,
+      systemPrompt,
       userId: user?.id ?? null,
       workspaceId: workspace?.id,
       prompt,
@@ -619,21 +668,86 @@ class Provider {
       duration = (Date.now() - this._requestStartTime) / 1000;
     }
 
-    const promptTokens = usage.prompt_tokens || usage.input_tokens || 0;
-    const completionTokens =
-      usage.completion_tokens || usage.output_tokens || 0;
+    const safeUsage = usage && typeof usage === "object" ? usage : {};
+    const promptTokens = toNonNegativeNumber(
+      safeUsage.prompt_tokens || safeUsage.input_tokens
+    );
+    const completionTokens = toNonNegativeNumber(
+      safeUsage.completion_tokens || safeUsage.output_tokens
+    );
+    const totalTokens = toNonNegativeNumber(safeUsage.total_tokens);
+
+    this.applyUsage({
+      prompt_tokens: promptTokens,
+      completion_tokens: completionTokens,
+      total_tokens: totalTokens || promptTokens + completionTokens,
+      duration,
+    });
+  }
+
+  /**
+   * Stores a normalized usage record for the completion that just finished and
+   * adds it to the run-level accumulated totals. Subclasses that override
+   * `recordUsage` should normalize their provider-specific usage format and
+   * call this so accumulation still happens in one place.
+   * Every value is coerced to a safe number so a malformed payload from any
+   * provider cannot crash the run or corrupt the accumulated totals.
+   * @param {{prompt_tokens?: number, completion_tokens?: number, total_tokens?: number, duration?: number}} usage
+   */
+  applyUsage(usage = {}) {
+    const safeUsage = usage && typeof usage === "object" ? usage : {};
+    const promptTokens = toNonNegativeNumber(safeUsage.prompt_tokens);
+    const completionTokens = toNonNegativeNumber(safeUsage.completion_tokens);
+    const totalTokens = toNonNegativeNumber(safeUsage.total_tokens);
+    const duration = toNonNegativeNumber(safeUsage.duration);
+
+    const timestamp = new Date();
+    // Cost is priced per-call (not derived from the summed totals) so the
+    // accumulated cost stays correct even if the model changes mid-run.
+    // A null breakdown (unknown pricing) leaves the cost fields absent.
+    const cost = MODEL_PRICING.getCostBreakdown(this.providerSlug, this.model, {
+      prompt_tokens: promptTokens,
+      completion_tokens: completionTokens,
+    });
 
     this.lastUsage = {
       prompt_tokens: promptTokens,
       completion_tokens: completionTokens,
-      total_tokens: usage.total_tokens || promptTokens + completionTokens,
+      total_tokens: totalTokens,
       outputTps:
         completionTokens && duration > 0 ? completionTokens / duration : 0,
       duration,
       model: this.model,
       provider: this.constructor.name,
-      timestamp: new Date(),
+      timestamp,
+      ...(cost ?? {}),
     };
+
+    const totals = this.cumulativeUsage;
+    totals.prompt_tokens += promptTokens;
+    totals.completion_tokens += completionTokens;
+    totals.total_tokens += totalTokens;
+    totals.duration += duration;
+    totals.outputTps =
+      totals.completion_tokens && totals.duration > 0
+        ? totals.completion_tokens / totals.duration
+        : 0;
+    totals.model = this.model;
+    totals.provider = this.constructor.name;
+    totals.timestamp = timestamp;
+    if (cost) {
+      totals.inputCost = (totals.inputCost ?? 0) + cost.inputCost;
+      totals.outputCost = (totals.outputCost ?? 0) + cost.outputCost;
+      totals.totalCost = (totals.totalCost ?? 0) + cost.totalCost;
+    }
+  }
+
+  /**
+   * Resets the accumulated usage metrics. Call this at the start of an agent
+   * run so the totals only cover that run's completions.
+   */
+  resetCumulativeUsage() {
+    this.cumulativeUsage = Provider.#emptyUsage();
   }
 
   /**
@@ -642,6 +756,15 @@ class Provider {
    */
   getUsage() {
     return { ...this.lastUsage };
+  }
+
+  /**
+   * Get the usage metrics accumulated across all completions in the current
+   * run - one completion per tool call plus the final response.
+   * @returns {ProviderUsageMetrics} The accumulated usage metrics
+   */
+  getCumulativeUsage() {
+    return { ...this.cumulativeUsage };
   }
 
   /**

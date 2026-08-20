@@ -8,30 +8,22 @@ import {
   ModalSecondaryButton,
 } from "@/components/lib/Modal";
 
-export default function NewFolderModal({ closeModal, files, setFiles }) {
+export default function NewFolderModal({ closeModal, onCreated }) {
   const [error, setError] = useState(null);
   const [folderName, setFolderName] = useState("");
+  const [creating, setCreating] = useState(false);
 
   const handleCreate = async (e) => {
     e.preventDefault();
     setError(null);
-    if (folderName.trim() !== "") {
-      const newFolder = {
-        name: folderName,
-        type: "folder",
-        items: [],
-      };
-      const { success } = await Document.createFolder(folderName);
-      if (success) {
-        setFiles({
-          ...files,
-          items: [...files.items, newFolder],
-        });
-        closeModal();
-      } else {
-        setError("Failed to create folder");
-      }
-    }
+    const name = folderName.trim();
+    if (!name || creating) return;
+
+    setCreating(true);
+    const { success } = await Document.createFolder(name);
+    setCreating(false);
+    if (!success) return setError("Failed to create folder");
+    onCreated(name);
   };
 
   return (
@@ -62,7 +54,9 @@ export default function NewFolderModal({ closeModal, files, setFiles }) {
         <ModalSecondaryButton onClick={closeModal} type="button">
           Cancel
         </ModalSecondaryButton>
-        <ModalPrimaryButton type="submit">Create Folder</ModalPrimaryButton>
+        <ModalPrimaryButton type="submit" disabled={creating}>
+          {creating ? "Creating..." : "Create Folder"}
+        </ModalPrimaryButton>
       </ModalFooter>
     </form>
   );

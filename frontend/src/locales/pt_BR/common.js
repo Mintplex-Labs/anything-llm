@@ -110,6 +110,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Tarefas Agendadas",
     "model-router": "Roteador de modelo",
+    "image-generation": "Geração de Imagens",
   },
   login: {
     "multi-user": {
@@ -1182,6 +1183,8 @@ const TRANSLATIONS = {
       save_embed: "Salvar e Inserir",
       "total-documents_one": "{{count}} documento",
       "total-documents_other": "{{count}} documentos",
+      "search-results_one": "{{count}} resultado",
+      "search-results_other": "{{count}} resultados",
     },
     upload: {
       "processor-offline": "Processador de documentos Indisponível",
@@ -1217,6 +1220,33 @@ const TRANSLATIONS = {
       watch_explained_block3_link: "Gerenciador de arquivos",
       watch_explained_block3_end: " na visão de admin.",
       accept: "Ok, entendi",
+    },
+    gitea: {
+      name: "Repositório Gitea",
+      description:
+        "Importe um repositório público ou privado inteiro de qualquer instância do Gitea com apenas um clique.",
+      URL: "URL do repositório Gitea",
+      URL_explained:
+        "URL do repositório que você deseja coletar na sua instância do Gitea – instâncias hospedadas por você são suportadas.",
+      token: "Token de acesso do Gitea",
+      optional: "opcional",
+      token_explained:
+        "Token de acesso necessário para coletar repositórios privados ou repositórios em instâncias que exigem autenticação.",
+      token_explained_start: "Sem",
+      token_explained_link1: "Token de Acesso",
+      token_explained_end:
+        "Somente os repositórios que sua instância do Gitea expõe publicamente podem ser coletados.",
+      ignores: "Arquivo ignorado",
+      git_ignore:
+        'Crie um arquivo no formato ".gitignore" para especificar quais arquivos devem ser ignorados durante a coleta. Pressione Enter após cada entrada que deseja salvar.',
+      task_explained:
+        "Após a conclusão, todos os arquivos estarão disponíveis para serem incorporados em espaços de trabalho no seletor de documentos.",
+      branch: "A filial de onde você deseja coletar os arquivos.",
+      branch_loading: "– Carregando os ramos disponíveis –",
+      branch_explained:
+        "A(s) filial(is) da qual(es) você deseja coletar arquivos.",
+      token_information:
+        "Sem preencher o token de acesso do <b>Gitea</b>, este conector de dados só poderá coletar arquivos de repositórios que são </b>acessíveis publicamente</b> na sua instância do Gitea.",
     },
   },
   chat_window: {
@@ -1361,6 +1391,10 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Falha na transcrição: {{error}}",
     export: "Exporte a conversa como...",
     exporting: "Exportando...",
+    preset_img_description: "Gerar uma imagem a partir de um texto",
+    generating_response: "Gerando resposta",
+    response_failed: "Não foi possível responder à mensagem.",
+    response_failed_reason: "Motivo: {{reason}}",
   },
   profile_settings: {
     edit_account: "Editar conta",
@@ -1913,6 +1947,24 @@ const TRANSLATIONS = {
       "routed-to": "Encaminhado para <route>{{model}}</route>",
       "routed-to-rule":
         "Direcionado para <route>{{model}}</route> através de <rule>{{ruleTitle}}</rule>",
+    },
+  },
+  imageGeneration: {
+    title: "Preferência na geração de imagens",
+    description:
+      "Configure o provedor utilizado para gerar imagens a partir do comando `/img`.",
+    provider: "Fornecedor de Geração de Imagens",
+    card: {
+      "failed-to-load": "Não foi possível carregar a imagem.",
+      "alt-text": "Imagem gerada",
+      edit: "Editar",
+      download: "Baixar",
+    },
+    pending: {
+      heading: "Gerando sua imagem…",
+      description:
+        "Isso pode demorar um pouco. Assim que estiver pronto, aparecerá aqui.",
+      aborted: "A geração de imagem foi interrompida.",
     },
   },
 };

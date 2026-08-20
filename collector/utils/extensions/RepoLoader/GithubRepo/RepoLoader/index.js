@@ -1,6 +1,7 @@
 /**
  * @typedef {Object} RepoLoaderArgs
- * @property {string} repo - The GitHub repository URL.
+ * @property {string} repo - The GitHub repository URL. Can be github.com, a GitHub
+ * Enterprise Server instance, or a GHE.com data-residency subdomain.
  * @property {string} [branch] - The branch to load from (optional).
  * @property {string} [accessToken] - GitHub access token for authentication (optional).
  * @property {string[]} [ignorePaths] - Array of paths to ignore when loading (optional).
@@ -23,6 +24,7 @@ class GitHubRepoLoader {
     this.accessToken = args?.accessToken || null;
     this.ignorePaths = args?.ignorePaths || [];
 
+    this.apiBase = "https://api.github.com";
     this.author = null;
     this.project = null;
     this.branches = [];
@@ -51,35 +53,52 @@ class GitHubRepoLoader {
   }
 
   /**
+   * Resolves the REST API root for the host the repository lives on. Every flavor
+   * of GitHub serves the same REST API v3 endpoints - only the root differs.
+   * - github.com -> https://api.github.com
+   * - GHE.com data residency -> https://api.{subdomain}.ghe.com
+   * - GitHub Enterprise Server -> {origin}/api/v3
+   * @param {URL} url - The parsed repository URL.
+   * @returns {string} The API root, without a trailing slash.
+   */
+  #resolveApiBase(url) {
+    if (["github.com", "www.github.com"].includes(url.hostname))
+      return "https://api.github.com";
+    // Checked before .ghe.com so an api.* host is never doubled up.
+    if (url.hostname.startsWith("api.")) return url.origin;
+    if (url.hostname.endsWith(".ghe.com"))
+      return `${url.protocol}//api.${url.host}`;
+    return `${url.origin}/api/v3`;
+  }
+
+  /**
    * Validates the GitHub URL format.
-   * - ensure the url is valid
-   * - ensure the hostname is github.com
-   * - ensure the pathname is in the format of github.com/{author}/{project}
-   * - sets the author and project properties of class instance
+   * - ensure the url is valid and http(s)
+   * - ensure the pathname is in the format of {host}/{author}/{project}
+   * - sets the apiBase, author and project properties of class instance
    * @returns {boolean} True if the URL is valid, false otherwise.
    */
   #validGithubUrl() {
     try {
       const url = new URL(this.repo);
-
-      // Not a github url at all.
-      if (url.hostname !== "github.com") {
+      if (url.protocol !== "http:" && url.protocol !== "https:") {
         console.log(
-          `[GitHub Loader]: Invalid GitHub URL provided! Hostname must be 'github.com'. Got ${url.hostname}`
+          `[GitHub Loader]: Invalid GitHub URL provided! Protocol must be http or https. Got ${url.protocol}`
         );
         return false;
       }
 
-      // Assume the url is in the format of github.com/{author}/{project}
+      // Assume the url is in the format of {host}/{author}/{project}
       // Remove the first slash from the pathname so we can split it properly.
       const [author, project, ..._rest] = url.pathname.slice(1).split("/");
       if (!author || !project) {
         console.log(
-          `[GitHub Loader]: Invalid GitHub URL provided! URL must be in the format of 'github.com/{author}/{project}'. Got ${url.pathname}`
+          `[GitHub Loader]: Invalid GitHub URL provided! URL must be in the format of '{host}/{author}/{project}'. Got ${url.pathname}`
         );
         return false;
       }
 
+      this.apiBase = this.#resolveApiBase(url);
       this.author = author;
       this.project = project;
       return true;
@@ -107,7 +126,7 @@ class GitHubRepoLoader {
 
   async #validateAccessToken() {
     if (!this.accessToken) return;
-    const valid = await fetch("https://api.github.com/octocat", {
+    const valid = await fetch(`${this.apiBase}/octocat`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${this.accessToken}`,
@@ -159,6 +178,8 @@ class GitHubRepoLoader {
       );
 
     const loader = new LCGithubLoader(this.repo, {
+      baseUrl: new URL(this.repo).origin,
+      apiUrl: this.apiBase,
       branch: this.branch,
       recursive: !!this.accessToken, // Recursive will hit rate limits.
       maxConcurrency: 5,
@@ -196,7 +217,7 @@ class GitHubRepoLoader {
     while (polling) {
       console.log(`Fetching page ${page} of branches for ${this.project}`);
       await fetch(
-        `https://api.github.com/repos/${this.author}/${this.project}/branches?per_page=100&page=${page}`,
+        `${this.apiBase}/repos/${this.author}/${this.project}/branches?per_page=100&page=${page}`,
         {
           method: "GET",
           headers: {
@@ -234,7 +255,7 @@ class GitHubRepoLoader {
   async fetchSingleFile(sourceFilePath) {
     try {
       return fetch(
-        `https://api.github.com/repos/${this.author}/${this.project}/contents/${sourceFilePath}?ref=${this.branch}`,
+        `${this.apiBase}/repos/${this.author}/${this.project}/contents/${sourceFilePath}?ref=${this.branch}`,
         {
           method: "GET",
           headers: {

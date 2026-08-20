@@ -112,6 +112,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "وظایف برنامه‌ریزی شده",
     "model-router": "روتر نمونه",
+    "image-generation": "تولید تصاویر",
   },
   login: {
     "multi-user": {
@@ -1064,6 +1065,8 @@ const TRANSLATIONS = {
       save_embed: "ذخیره و وارد کردن",
       "total-documents_one": "{{count}} سند",
       "total-documents_other": "{{count}} اسناد",
+      "search-results_one": "{{count}} نتیجه",
+      "search-results_other": "نتایج {{count}}",
     },
     upload: {
       "processor-offline":
@@ -1113,6 +1116,32 @@ const TRANSLATIONS = {
       processing_time: "این ممکن است بسته به اندازه خزانه شما، مدتی طول بکشد.",
       vault_warning:
         "برای جلوگیری از هرگونه اختلاف، مطمئن شوید که دیسک Obsidian شما در حال حاضر بسته است.",
+    },
+    gitea: {
+      name: "ذخیره گیتیا",
+      description:
+        "وارد کردن کل یک مخزن عمومی یا خصوصی از هر نمونه‌ای از گیتیا با یک کلیک.",
+      URL: "آدرس مخزن Gitea",
+      URL_explained:
+        "آدرس مخزن (repository) که می‌خواهید در نمونه Gitea خود جمع‌آوری کنید – از نمونه‌های میزبانی شده نیز پشتیبانی می‌شود.",
+      token: "توکن دسترسی به Gitea",
+      optional: "اختیاری",
+      token_explained:
+        "برای دسترسی به مخازن خصوصی یا مخازنی که در محیط‌هایی با نیاز به احراز هویت قرار دارند، به یک توکن دسترسی نیاز است.",
+      token_explained_start: "بدون",
+      token_explained_link1: "توکن دسترسی",
+      token_explained_end:
+        "فقط گیت‌هایی که نمونه‌گیری از آن‌ها توسط نمونه‌گیتای شما به صورت عمومی در دسترس است، قابل جمع‌آوری هستند.",
+      ignores: "این فایل نادیده گرفته می‌شود.",
+      git_ignore:
+        "لیست در فرمت ‎.gitignore‎ برای نادیده گرفتن فایل‌های خاص هنگام جمع‌آوری. پس از هر آیتمی که می‌خواهید ذخیره کنید، کلید Enter را فشار دهید.",
+      task_explained:
+        "پس از اتمام، تمام فایل‌ها برای قرار دادن در محیط‌های کاری (یا فضاهای کاری) در قسمت انتخاب فایل در سندها، در دسترس خواهند بود.",
+      branch: "شعبه‌ای که می‌خواهید فایل‌ها را از آن دریافت کنید.",
+      branch_loading: "– بارگذاری شاخه‌های موجود –",
+      branch_explained: "شعبه‌ای که می‌خواهید فایل‌ها را از آن دریافت کنید.",
+      token_information:
+        "بدون وارد کردن کلید دسترسی <b>Gitea</b>، این اتصال داده فقط می‌تواند فایل‌ها را از مخازنی که در نمونه Gitea شما به صورت عمومی قابل دسترسی هستند، جمع‌آوری کند.",
     },
   },
   chat_window: {
@@ -1255,6 +1284,10 @@ const TRANSLATIONS = {
     stt_transcription_failed: "ترجمه ناموفق: {{error}}",
     export: "صدور چت به صورت...",
     exporting: "صدور به خارج",
+    preset_img_description: "ایجاد یک تصویر بر اساس یک دستور متنی",
+    generating_response: "تولید پاسخ",
+    response_failed: "امکان پاسخ دادن به پیام وجود نداشت.",
+    response_failed_reason: "دلیل: {{reason}}",
   },
   profile_settings: {
     edit_account: "ویرایش حساب",
@@ -1908,6 +1941,24 @@ const TRANSLATIONS = {
       "routed-to": "به {{model}} ارسال شده، مربوط به <route> و </route>",
       "routed-to-rule":
         "به <route>{{model}}</route> از طریق <rule>{{ruleTitle}}</rule> ارسال شد.",
+    },
+  },
+  imageGeneration: {
+    title: "ترجیح در تولید تصاویر",
+    description:
+      "تنظیم سرویس یا پلتفرم مورد استفاده برای تولید تصاویر از طریق دستور `/img` انجام شود.",
+    provider: "ارائه‌دهنده خدمات تولید تصاویر",
+    card: {
+      "failed-to-load": "تصویر بارگذاری نشد.",
+      "alt-text": "تصویر تولید شده",
+      edit: "ویرایش کردن",
+      download: "دانلود",
+    },
+    pending: {
+      heading: "ایجاد تصویر شما...",
+      description:
+        "ممکن است مدتی طول بکشد. پس از آماده شدن، این اطلاعات در اینجا نمایش داده خواهد شد.",
+      aborted: "تولید تصویر متوقف شد.",
     },
   },
 };

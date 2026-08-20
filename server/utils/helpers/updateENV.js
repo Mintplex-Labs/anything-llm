@@ -239,6 +239,10 @@ const KEY_MAPPING = {
     envKey: "AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
   },
+  AwsBedrockLLMMaxTokens: {
+    envKey: "AWS_BEDROCK_LLM_MAX_TOKENS",
+    checks: [],
+  },
 
   EmbeddingEngine: {
     envKey: "EMBEDDING_ENGINE",
@@ -288,6 +292,44 @@ const KEY_MAPPING = {
   },
   GenericOpenAiEmbeddingQueryPrefix: {
     envKey: "GENERIC_OPEN_AI_EMBEDDING_QUERY_PREFIX",
+    checks: [],
+  },
+
+  // Image Generation Settings
+  ImageGenerationProvider: {
+    envKey: "IMAGE_GEN_PROVIDER",
+    checks: [isNotEmpty, supportedImageGenerationProvider],
+  },
+  ImageGenerationModelPref: {
+    envKey: "IMAGE_GEN_MODEL_PREF",
+    checks: [],
+  },
+  ImageGenerationDimensions: {
+    envKey: "IMAGE_GEN_SIZE_PREF",
+    checks: [],
+  },
+  ImageGenerationOpenAiKey: {
+    envKey: "IMAGE_GEN_OPENAI_KEY",
+    checks: [isNotEmpty, validOpenAIKey],
+  },
+  ImageGenerationOpenRouterApiKey: {
+    envKey: "IMAGE_GEN_OPENROUTER_API_KEY",
+    checks: [isNotEmpty],
+  },
+  ImageGenerationOllamaBasePath: {
+    envKey: "IMAGE_GEN_OLLAMA_BASE_PATH",
+    checks: [isNotEmpty, validOllamaLLMBasePath, validDockerizedUrl],
+  },
+  ImageGenerationOllamaAuthToken: {
+    envKey: "IMAGE_GEN_OLLAMA_AUTH_TOKEN",
+    checks: [],
+  },
+  ImageGenerationLemonadeBasePath: {
+    envKey: "IMAGE_GEN_LEMONADE_BASE_PATH",
+    checks: [isValidURL],
+  },
+  ImageGenerationLemonadeApiKey: {
+    envKey: "IMAGE_GEN_LEMONADE_API_KEY",
     checks: [],
   },
 
@@ -594,6 +636,10 @@ const KEY_MAPPING = {
   },
   AgentCrwApiUrl: {
     envKey: "AGENT_CRW_API_URL",
+    checks: [],
+  },
+  AgentYouApiKey: {
+    envKey: "AGENT_YOU_API_KEY",
     checks: [],
   },
 
@@ -1146,6 +1192,13 @@ function supportedVectorDB(input = "") {
   return supported.includes(input)
     ? null
     : `Invalid VectorDB type. Must be one of ${supported.join(", ")}.`;
+}
+
+function supportedImageGenerationProvider(input = "") {
+  const supported = ["openai", "ollama", "lemonade", "openrouter"];
+  return supported.includes(input)
+    ? null
+    : `Invalid image generation provider. Must be one of ${supported.join(", ")}.`;
 }
 
 function validChromaURL(input = "") {
