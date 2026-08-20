@@ -6,7 +6,7 @@ import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import CTAButton from "@/components/lib/CTAButton";
 import VariableRow from "./VariableRow";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 import AddVariableModal from "./AddVariableModal";
 import { useModal } from "@/hooks/useModal";
 import * as Skeleton from "react-loading-skeleton";
@@ -112,9 +112,9 @@ export default function SystemPromptVariables() {
         </div>
       </div>
 
-      <ModalWrapper isOpen={isOpen}>
+      <Modal isOpen={isOpen} onClose={closeModal}>
         <AddVariableModal closeModal={closeModal} onRefresh={fetchVariables} />
-      </ModalWrapper>
+      </Modal>
     </div>
   );
 }

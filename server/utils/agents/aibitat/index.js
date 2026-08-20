@@ -888,6 +888,9 @@ ${this.getHistory({ to: route.to })
   async reply(route) {
     const fromConfig = this.getAgentConfig(route.from);
     const chatHistory = this.getOrFormatNodeChatHistory(route);
+    // Captured before document injection below - skill reranking and model
+    // routing must run on what the user asked, not on attached file contents.
+    const userPrompt = this.#extractUserPrompt(chatHistory);
 
     // Fetch fresh parsed file context and inject into the last user message
     if (this.fetchParsedFileContext) {
@@ -922,7 +925,6 @@ ${this.getHistory({ to: route.to })
     // Rerank tools based on user prompt if enabled
     if (ToolReranker.isEnabled() && functions?.length) {
       const toolReranker = new ToolReranker();
-      const userPrompt = this.#extractUserPrompt(messages);
       if (userPrompt)
         functions = await toolReranker.rerank(userPrompt, functions);
     } else {
@@ -942,9 +944,9 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     // Re-evaluate model router before each turn if a resolver is attached.
     // This ensures routing rules are applied per-message, not just at initialization.
     if (this.resolveRoute) {
-      const userPrompt =
-        this.#extractUserPrompt(messages) || route.content || "";
-      const resolved = await this.resolveRoute(userPrompt);
+      const resolved = await this.resolveRoute(
+        userPrompt || route.content || ""
+      );
       if (resolved) {
         this.defaultProvider = {
           ...this.defaultProvider,

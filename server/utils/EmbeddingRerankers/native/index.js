@@ -2,6 +2,11 @@ const path = require("path");
 const fs = require("fs");
 
 class NativeEmbeddingReranker {
+  // Memory per model call scales with batch size, and onnxruntime-node never
+  // returns it to the OS - so the largest batch we ever run sets process RSS
+  // for the life of the app. Callers pass as many documents as they like.
+  static maxBatchSize = 10;
+
   static #model = null;
   static #tokenizer = null;
   static #transformers = null;
@@ -228,20 +233,38 @@ class NativeEmbeddingReranker {
 
     const start = Date.now();
     this.log(`Reranking ${documents.length} documents...`);
-    const inputs = tokenizer(new Array(documents.length).fill(query), {
-      text_pair: documents.map((doc) => doc.text),
-      padding: true,
-      truncation: true,
-    });
-    const { logits } = await model(inputs);
-    const reranked = logits
-      .sigmoid()
-      .tolist()
-      .map(([score], i) => ({
-        rerank_corpus_id: i,
-        rerank_score: score,
-        ...documents[i],
-      }))
+    // Scored in batches to bound peak memory - see maxBatchSize
+    const scored = [];
+    for (
+      let offset = 0;
+      offset < documents.length;
+      offset += NativeEmbeddingReranker.maxBatchSize
+    ) {
+      const batch = documents.slice(
+        offset,
+        offset + NativeEmbeddingReranker.maxBatchSize
+      );
+      const inputs = tokenizer(new Array(batch.length).fill(query), {
+        text_pair: batch.map((doc) => doc.text),
+        padding: true,
+        truncation: true,
+      });
+      const { logits } = await model(inputs);
+      logits
+        .sigmoid()
+        .tolist()
+        .forEach(([score], i) => {
+          scored.push({
+            // Offset so ids index the caller's array, not the batch
+            rerank_corpus_id: offset + i,
+            rerank_score: score,
+            ...documents[offset + i],
+          });
+        });
+    }
+
+    // Sort once across all batches so topK is global, not per-batch
+    const reranked = scored
       .sort((a, b) => b.rerank_score - a.rerank_score)
       .slice(0, options.topK);
 
