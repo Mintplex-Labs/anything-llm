@@ -21,6 +21,7 @@ import RAGImage from "@/media/agents/rag-memory.png";
 import SummarizeImage from "@/media/agents/view-summarize.png";
 import ScrapeWebsitesImage from "@/media/agents/scrape-websites.png";
 import GenerateChartsImage from "@/media/agents/generate-charts.png";
+import GenerateImageImage from "@/media/agents/generate-image.png";
 import GenerateSaveImages from "@/media/agents/generate-save-files.png";
 import FileSystemImage from "@/media/agents/file-system.png";
 import GMailIcon from "./GMailSkillPanel/gmail.png";
@@ -109,6 +110,7 @@ export const getConfigurableSkills = (
       component: GenericSkillPanel,
       skill: "generate-image",
       icon: ImageSquare,
+      image: GenerateImageImage,
     },
   }),
   "web-browsing": {
