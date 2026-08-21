@@ -51,13 +51,20 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
     let fullText = "";
     let reasoningText = "";
 
+    function flushPendingReasoningToFullText() {
+      if (!reasoningText) return fullText;
+      fullText += `${reasoningText}</think>`;
+      reasoningText = "";
+      return fullText;
+    }
+
     // Establish listener to early-abort a streaming response
     // in case things go sideways or the user does not like the response.
     // We preserve the generated text but continue as if chat was completed
     // to preserve previously generated content.
     const handleAbort = () => {
       stream?.endMeasurement(usage);
-      clientAbortedHandler(resolve, fullText);
+      clientAbortedHandler(resolve, flushPendingReasoningToFullText());
     };
     response.on("close", handleAbort);
 
@@ -167,7 +174,7 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
           });
           response.removeListener("close", handleAbort);
           stream?.endMeasurement(usage);
-          resolve(fullText);
+          resolve(flushPendingReasoningToFullText());
           break; // Break streaming when a valid finish_reason is first encountered
         }
       }
@@ -176,7 +183,7 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
       // leaving, not a failure, so it is not reported as a streaming error.
       if (isAbortError(e)) {
         stream?.endMeasurement(usage);
-        return clientAbortedHandler(resolve, fullText);
+        return clientAbortedHandler(resolve, flushPendingReasoningToFullText());
       }
 
       console.log(`\x1b[43m\x1b[34m[STREAMING ERROR]\x1b[0m ${e.message}`);
