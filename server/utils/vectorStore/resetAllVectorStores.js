@@ -30,12 +30,16 @@ async function resetAllVectorStores({ vectorDbKey }) {
     );
     const VectorDb = getVectorDbClass(vectorDbKey);
 
-    if (vectorDbKey === "pgvector") {
+    if (vectorDbKey === "pgvector" || vectorDbKey === "valkey") {
       /*
       pgvector has a reset method that drops the entire embedding table
       which is required since if this function is called we will need to
       reset the embedding column VECTOR dimension value and you cannot change
       the dimension value of an existing vector column.
+
+      valkey-search has the same constraint: each per-namespace index has a
+      fixed vector DIM, so an embedder change must drop every `allm_idx_*`
+      index (its reset() does exactly that) rather than per-namespace deletes.
       */
       await VectorDb.reset();
     } else {
