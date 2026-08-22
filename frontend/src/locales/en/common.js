@@ -320,6 +320,11 @@ const TRANSLATIONS = {
         description:
           "Enable the default agent to generate various types of charts from data provided or given in chat.",
       },
+      generateImage: {
+        title: "Generate images",
+        description:
+          "Allow the agent to generate images from chat, or edit images attached to the conversation, using your configured image generation provider.",
+      },
       web: {
         title: "Web Search",
         description:
