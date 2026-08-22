@@ -889,7 +889,11 @@ function workspaceEndpoints(app) {
 
   app.get(
     "/workspace/:slug/prompt-history",
-    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      validWorkspaceSlug,
+    ],
     async (_, response) => {
       try {
         response.status(200).json({
