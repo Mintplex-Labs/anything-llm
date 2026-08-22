@@ -110,6 +110,9 @@ const webBrowsing = {
               case "you-search":
                 engine = "_youSearch";
                 break;
+              case "keenable-search":
+                engine = "_keenableSearch";
+                break;
               default:
                 engine = "_duckDuckGoEngine";
             }
@@ -1322,6 +1325,102 @@ const webBrowsing = {
                 title,
                 link: url,
                 snippet: description,
+              });
+            });
+
+            if (data.length === 0)
+              return `No information was found online for the search query.`;
+
+            this.reportSearchResultsCitations(data);
+            const result = JSON.stringify(data);
+            this.super.introspect(
+              `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
+            );
+            return result;
+          },
+
+          /**
+           * Use Keenable
+           * A web search API built for AI agents. Keyless by default (free
+           * tier); set AGENT_KEENABLE_API_KEY to lift rate limits.
+           * https://keenable.ai
+           */
+          _keenableSearch: async function (query) {
+            // Unlike the other providers, a key is optional here: with none we
+            // use the keyless public endpoint, so this works out of the box.
+            const apiKey = (process.env.AGENT_KEENABLE_API_KEY || "").trim();
+
+            let baseUrl = "https://api.keenable.ai";
+            if (process.env.AGENT_KEENABLE_API_URL) {
+              try {
+                const parsed = new URL(process.env.AGENT_KEENABLE_API_URL);
+                const isLoopback = ["localhost", "127.0.0.1", "::1"].includes(
+                  parsed.hostname
+                );
+                // HTTPS-only, except loopback for local development.
+                if (parsed.protocol === "https:" || isLoopback)
+                  baseUrl = parsed.origin;
+                else throw new Error("KEENABLE base URL must be https://");
+              } catch (e) {
+                this.super.handlerProps.log(
+                  `invalid Keenable Search URL: ${e.message}`
+                );
+              }
+            }
+
+            this.super.introspect(
+              `${this.caller}: Using Keenable to search for "${
+                query.length > 100 ? `${query.slice(0, 100)}...` : query
+              }"`
+            );
+
+            const headers = {
+              "Content-Type": "application/json",
+              "User-Agent": "keenable-anythingllm",
+              // Attribution header the Keenable backend segments traffic by.
+              "X-Keenable-Title": "AnythingLLM",
+            };
+            // Keyless public endpoint by default; keyed endpoint + X-API-Key
+            // when a key is configured.
+            const path = apiKey ? "/v1/search" : "/v1/search/public";
+            if (apiKey) headers["X-API-Key"] = apiKey;
+
+            const { response, error } = await fetch(`${baseUrl}${path}`, {
+              method: "POST",
+              headers,
+              body: JSON.stringify({ query, mode: "pro" }),
+            })
+              .then((res) => {
+                if (res.ok) return res.json();
+                throw new Error(`${res.status} - ${res.statusText}`);
+              })
+              .then((data) => {
+                return { response: data, error: null };
+              })
+              .catch((e) => {
+                this.super.handlerProps.log(
+                  `Keenable Search Error: ${e.message}`
+                );
+                return { response: null, error: e.message };
+              });
+            if (error)
+              return `There was an error searching for content. ${error}`;
+
+            const data = [];
+            response.results?.forEach((searchResult) => {
+              const { title, url, description, snippet } = searchResult;
+              // Keenable returns both fields: `snippet` carries the page text and
+              // `description` is the page's meta description, which is empty for
+              // most pages. It returns whole pages rather than an excerpt, so the
+              // text is collapsed and capped to snippet length for the agent.
+              const text = String(snippet || description || "")
+                .replace(/\s+/g, " ")
+                .trim()
+                .slice(0, 500);
+              data.push({
+                title,
+                link: url,
+                snippet: text,
               });
             });
 
