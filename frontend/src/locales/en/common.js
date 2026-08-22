@@ -840,9 +840,19 @@ const TRANSLATIONS = {
           "Select the preferred language to render AnythingLLM's UI in - when translations are available.",
       },
       logo: {
-        title: "Brand Logo",
-        description: "Upload your custom logo to showcase on all pages.",
+        title: "Primary Brand Logo",
+        description:
+          "Upload your custom logo to display in the sidebar. This is also used as the login page logo if no separate login logo is set.",
         add: "Add a custom logo",
+        recommended: "Recommended size: 800 x 200",
+        remove: "Remove",
+        replace: "Replace",
+      },
+      "login-logo": {
+        title: "Login Page Logo",
+        description:
+          "Upload a separate logo for the login page. If not set, the primary brand logo will be used instead.",
+        add: "Add a custom login logo",
         recommended: "Recommended size: 800 x 200",
         remove: "Remove",
         replace: "Replace",

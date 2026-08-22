@@ -105,6 +105,25 @@ async function removeCustomLogo(logoFilename = LOGO_FILENAME) {
   return true;
 }
 
+async function determineLoginLogoFilepath(defaultFilename = LOGO_FILENAME) {
+  const loginLogoFilename = await SystemSettings.currentLoginLogoFilename();
+  const basePath = process.env.STORAGE_DIR
+    ? path.join(process.env.STORAGE_DIR, "assets")
+    : path.join(__dirname, "../../storage/assets");
+
+  if (loginLogoFilename && validFilename(loginLogoFilename)) {
+    const customLogoPath = path.join(
+      basePath,
+      normalizePath(loginLogoFilename)
+    );
+    if (!isWithin(path.resolve(basePath), path.resolve(customLogoPath)))
+      return determineLogoFilepath(defaultFilename);
+    if (fs.existsSync(customLogoPath)) return customLogoPath;
+  }
+
+  return determineLogoFilepath(defaultFilename);
+}
+
 module.exports = {
   fetchLogo,
   renameLogoFile,
@@ -112,6 +131,7 @@ module.exports = {
   validFilename,
   getDefaultFilename,
   determineLogoFilepath,
+  determineLoginLogoFilepath,
   isDefaultFilename,
   LOGO_FILENAME,
 };
