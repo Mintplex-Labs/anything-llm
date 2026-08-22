@@ -12,6 +12,9 @@ const {
   USER_AGENT,
   WORKSPACE_AGENT,
   resolveAgentSkill,
+  workspaceSkillOverrides,
+  workspaceEnabledMCPTools,
+  disabledWorkspaceSkillNames,
 } = require("./defaults");
 const ImportedPlugin = require("./imported");
 const { AgentFlows } = require("../agentFlows");
@@ -568,6 +571,8 @@ class AgentHandler {
   async #attachPlugins(args) {
     for (const name of this.#funcsToLoad)
       await this.#attachPluginByName(name, args);
+    for (const name of disabledWorkspaceSkillNames(this.invocation.workspace))
+      this.aibitat.removeFunction(name);
   }
 
   /**
@@ -644,7 +649,8 @@ class AgentHandler {
       const plugins =
         await new MCPCompatibilityLayer().convertServerToolsToPlugins(
           mcpPluginName,
-          this.aibitat
+          this.aibitat,
+          workspaceEnabledMCPTools(this.invocation.workspace, mcpPluginName)
         );
       if (!plugins) {
         this.log(
@@ -721,6 +727,15 @@ class AgentHandler {
     if (!skill || !this.aibitat?.agents.has(WORKSPACE_AGENT.name)) return;
     const { loadable, registered } = resolveAgentSkill(skill, { serverName });
     const agent = () => this.aibitat.agents.get(WORKSPACE_AGENT.name);
+
+    // Mirror the override onto the cached workspace so plugin loading sees the same
+    // state the user just saved - MCP servers read it to decide which tools to attach.
+    const workspace = this.invocation.workspace;
+    if (workspace)
+      workspace.agentConfig = JSON.stringify({
+        ...workspaceSkillOverrides(workspace),
+        [skill]: enabled,
+      });
 
     if (enabled) {
       for (const entry of loadable) {

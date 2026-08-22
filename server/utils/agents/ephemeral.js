@@ -13,7 +13,8 @@ const { safeJsonParse } = require("../http");
 const {
   USER_AGENT,
   WORKSPACE_AGENT,
-  agentSkillsFromSystemSettings,
+  workspaceEnabledMCPTools,
+  disabledWorkspaceSkillNames,
 } = require("./defaults");
 const { AgentHandler } = require(".");
 const {
@@ -330,7 +331,8 @@ class EphemeralAgentHandler extends AgentHandler {
         const plugins =
           await new MCPCompatibilityLayer().convertServerToolsToPlugins(
             mcpPluginName,
-            this.aibitat
+            this.aibitat,
+            workspaceEnabledMCPTools(this.#workspace, mcpPluginName)
           );
         if (!plugins) {
           this.log(
@@ -393,6 +395,9 @@ class EphemeralAgentHandler extends AgentHandler {
       this.aibitat.use(AIbitatPlugin.plugin(callOpts));
       this.log(`Attached ${name} plugin to Agent cluster`);
     }
+
+    for (const name of disabledWorkspaceSkillNames(this.#workspace))
+      this.aibitat.removeFunction(name);
   }
 
   async #loadAgents() {
@@ -403,22 +408,14 @@ class EphemeralAgentHandler extends AgentHandler {
       ? await User.get({ id: Number(this.#userId) })
       : null;
 
-    this.aibitat.agent(
-      WORKSPACE_AGENT.name,
-      await WORKSPACE_AGENT.getDefinition(
-        this.provider,
-        this.#workspace,
-        user,
-        this.#prompt
-      )
+    const workspaceAgentDef = await WORKSPACE_AGENT.getDefinition(
+      this.provider,
+      this.#workspace,
+      user,
+      this.#prompt
     );
-
-    this.#funcsToLoad = [
-      ...(await agentSkillsFromSystemSettings()),
-      ...ImportedPlugin.activeImportedPlugins(),
-      ...AgentFlows.activeFlowPlugins(),
-      ...(await new MCPCompatibilityLayer().activeMCPServers()),
-    ];
+    this.aibitat.agent(WORKSPACE_AGENT.name, workspaceAgentDef);
+    this.#funcsToLoad = workspaceAgentDef.functions;
   }
 
   async init() {

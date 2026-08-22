@@ -244,6 +244,35 @@ describeValidation("router_id", () => {
   });
 });
 
+describeValidation("agentConfig", () => {
+  it("serializes a map of skill id to boolean", () => {
+    expect(
+      Workspace.validations.agentConfig({ "web-browsing": true, memory: false })
+    ).toBe(JSON.stringify({ "web-browsing": true, memory: false }));
+  });
+
+  it("accepts an already serialized map", () => {
+    expect(Workspace.validations.agentConfig('{"memory":false}')).toBe(
+      JSON.stringify({ memory: false })
+    );
+  });
+
+  it("drops entries that are not boolean valued", () => {
+    expect(
+      Workspace.validations.agentConfig({ memory: "yes", "web-browsing": true })
+    ).toBe(JSON.stringify({ "web-browsing": true }));
+  });
+
+  it("returns null for empty, malformed, or missing values", () => {
+    expect(Workspace.validations.agentConfig(null)).toBe(null);
+    expect(Workspace.validations.agentConfig(undefined)).toBe(null);
+    expect(Workspace.validations.agentConfig({})).toBe(null);
+    expect(Workspace.validations.agentConfig(["memory"])).toBe(null);
+    expect(Workspace.validations.agentConfig("not json")).toBe(null);
+    expect(Workspace.validations.agentConfig({ memory: "yes" })).toBe(null);
+  });
+});
+
 describeValidation("lastUpdatedAt", () => {
   it("passes a valid ISO date string through as a Date", () => {
     const result = Workspace.validations.lastUpdatedAt(

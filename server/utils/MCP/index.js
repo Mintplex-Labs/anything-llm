@@ -23,9 +23,14 @@ class MCPCompatibilityLayer extends MCPHypervisor {
    * Convert an MCP server name to an AnythingLLM Agent plugin
    * @param {string} name - The base name of the MCP server to convert - not the tool name. eg: `docker-mcp` not `docker-mcp:list-containers`
    * @param {Object} aibitat - The aibitat object to pass to the plugin
+   * @param {string[]} unsuppressedTools - Tool names to load even when the server config suppresses them.
    * @returns {Promise<{name: string, description: string, plugin: Function}[]|null>} Array of plugin configurations or null if not found
    */
-  async convertServerToolsToPlugins(name, _aibitat = null) {
+  async convertServerToolsToPlugins(
+    name,
+    _aibitat = null,
+    unsuppressedTools = []
+  ) {
     const mcp = this.mcps[name];
     if (!mcp) return null;
 
@@ -39,7 +44,9 @@ class MCPCompatibilityLayer extends MCPHypervisor {
     }
     if (!tools || !tools.length) return null;
 
-    const suppressedTools = this.getSuppressedTools(name);
+    const suppressedTools = this.getSuppressedTools(name).filter(
+      (tool) => !unsuppressedTools.includes(tool)
+    );
     const totalTools = tools.length;
     tools = tools.filter((tool) => !suppressedTools.includes(tool.name));
     const suppressedCount = totalTools - tools.length;

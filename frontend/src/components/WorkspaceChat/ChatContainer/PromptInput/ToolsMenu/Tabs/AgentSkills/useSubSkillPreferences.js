@@ -1,11 +1,8 @@
 import { useState, useCallback } from "react";
-import Admin from "@/models/admin";
 import { SUB_SKILL_REGISTRY, getPreferenceKeyForSkill } from "./skillRegistry";
-import { toggleAgentSessionTool } from "@/utils/chat/agent";
 
 /**
- * Hook to manage sub-skill preferences for all skills in the registry.
- * Handles loading, checking enabled state, and toggling sub-skills.
+ * Hook to read the instance-wide sub-skill preferences for all skills in the registry.
  *
  * This hook eliminates the need for separate state variables for each skill's
  * sub-skills. Adding a new skill with sub-skills only requires updating the
@@ -45,36 +42,8 @@ export default function useSubSkillPreferences() {
     [disabledSubSkills]
   );
 
-  /**
-   * Toggle a sub-skill's enabled state.
-   */
-  const toggleSubSkill = useCallback(
-    async (skillKey, subSkillName) => {
-      const prefKey = getPreferenceKeyForSkill(skillKey);
-      if (!prefKey) return;
-
-      const current = disabledSubSkills[prefKey] ?? [];
-      const updated = current.includes(subSkillName)
-        ? current.filter((s) => s !== subSkillName)
-        : [...current, subSkillName];
-
-      setDisabledSubSkills((prev) => ({
-        ...prev,
-        [prefKey]: updated,
-      }));
-
-      await Admin.updateSystemPreferences({
-        [prefKey]: updated.join(","),
-      });
-      toggleAgentSessionTool(subSkillName, !updated.includes(subSkillName));
-    },
-    [disabledSubSkills]
-  );
-
   return {
     loadFromSettings,
     isSubSkillEnabled,
-    toggleSubSkill,
-    disabledSubSkills,
   };
 }
