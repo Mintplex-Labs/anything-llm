@@ -45,7 +45,7 @@
 <details>
 <summary><kbd>دموی ویدیویی را تماشا کنید!</kbd></summary>
 
-[![Watch the video](/images/youtube.png)](https://youtu.be/f95rGD9trL0)
+[![Watch the video](../images/youtube.png)](https://youtu.be/f95rGD9trL0)
 
 </details>
 <div dir="rtl">
@@ -65,11 +65,11 @@ AnythingLLM همچنین از چندین کاربر پشتیبانی می‌کن
 - 🖼️ **پشتیبانی از چند مدل (هم LLMهای متن‌باز و هم تجاری!)**
 - 👤 پشتیبانی از چند کاربر و سیستم مجوزها _فقط در نسخه Docker_
 - 🦾 عامل‌ها در فضای کاری شما (مرور وب، اجرای کد و غیره)
-- 💬 [ویجت چت قابل جاسازی سفارشی برای وب‌سایت شما](../embed/README.md) _فقط در نسخه Docker_
+- 💬 [ویجت چت قابل جاسازی سفارشی برای وب‌سایت شما](https://github.com/Mintplex-Labs/anythingllm-embed/blob/main/README.md) _فقط در نسخه Docker_
 - 📖 پشتیبانی از انواع مختلف سند (PDF، TXT، DOCX و غیره)
 - رابط کاربری ساده چت با قابلیت کشیدن و رها کردن و استنادهای واضح
 - ۱۰۰٪ آماده استقرار در فضای ابری
-- سازگار با تمام [ارائه‌دهندگان محبوب LLM متن‌باز و تجاری](#supported-llms-embedder-models-speech-models-and-vector-databases)
+- سازگار با تمام [ارائه‌دهندگان محبوب LLM متن‌باز و تجاری](#llmها-مدلهای-embedder-مدلهای-گفتاری-و-پایگاههای-داده-برداری-پشتیبانی-شده)
 - دارای اقدامات داخلی صرفه‌جویی در هزینه و زمان برای مدیریت اسناد بسیار بزرگ در مقایسه با سایر رابط‌های کاربری چت
 - API کامل توسعه‌دهنده برای یکپارچه‌سازی‌های سفارشی!
 - و موارد بیشتر... نصب کنید و کشف کنید!
@@ -78,7 +78,7 @@ AnythingLLM همچنین از چندین کاربر پشتیبانی می‌کن
 
 **مدل‌های زبانی بزرگ (LLMs):**
 
-- [Any open-source llama.cpp compatible model](/server/storage/models/README.md#text-generation-llm-selection)
+- [Any open-source llama.cpp compatible model](../server/storage/models/README.md#text-generation-llm-selection)
 - [OpenAI](https://openai.com)
 - [OpenAI (Generic)](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
@@ -116,7 +116,7 @@ AnythingLLM همچنین از چندین کاربر پشتیبانی می‌کن
 
 **مدل‌های Embedder:**
 
-- [AnythingLLM Native Embedder](/server/storage/models/README.md) (پیش‌فرض)
+- [AnythingLLM Native Embedder](../server/storage/models/README.md) (پیش‌فرض)
 - [OpenAI](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [LocalAi (همه)](https://localai.io/)

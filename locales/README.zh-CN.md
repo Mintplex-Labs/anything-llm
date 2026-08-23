@@ -43,7 +43,7 @@
 <details>
 <summary><kbd>观看演示视频！</kbd></summary>
 
-[![观看视频](/images/youtube.png)](https://youtu.be/f95rGD9trL0)
+[![观看视频](../images/youtube.png)](https://youtu.be/f95rGD9trL0)
 
 </details>
 
@@ -74,7 +74,7 @@ AnythingLLM还支持多用户，您可以控制每个用户的访问权限和体
 
 **支持的LLM：**
 
-- [任何与llama.cpp兼容的开源模型](/server/storage/models/README.md#text-generation-llm-selection)
+- [任何与llama.cpp兼容的开源模型](../server/storage/models/README.md#text-generation-llm-selection)
 - [OpenAI](https://openai.com)
 - [OpenAI (通用)](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
@@ -111,7 +111,7 @@ AnythingLLM还支持多用户，您可以控制每个用户的访问权限和体
 
 **支持的嵌入模型：**
 
-- [AnythingLLM原生嵌入器](/server/storage/models/README.md)（默认）
+- [AnythingLLM原生嵌入器](../server/storage/models/README.md)（默认）
 - [OpenAI](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [LocalAI (全部)](https://localai.io/)

@@ -1,7 +1,7 @@
 <a name="readme-top"></a>
 
 > [!NOTE]
-> We are also working on [Open Computer](/open-computer) which gives an entire computer environment for AI Agents to use.
+> We are also working on [Open Computer](./open-computer) which gives an entire computer environment for AI Agents to use.
 >
 > This will bring AnythingLLM's agent capabilities to a new level and a novel UX paradigm for AI Agent use.
 >
@@ -50,7 +50,7 @@ Chat with your docs. Automate complex workflows with AI Agents. Hyper-configurab
 <details>
 <summary><kbd>Watch the demo!</kbd></summary>
 
-[![Watch the video](/images/youtube.png)](https://youtu.be/f95rGD9trL0)
+[![Watch the video](./images/youtube.png)](https://youtu.be/f95rGD9trL0)
 
 </details>
 
@@ -85,7 +85,7 @@ AnythingLLM supports multiple users as well where you can control the access and
 
 **Large Language Models (LLMs):**
 
-- [Any open-source llama.cpp compatible model](/server/storage/models/README.md#text-generation-llm-selection)
+- [Any open-source llama.cpp compatible model](./server/storage/models/README.md#text-generation-llm-selection)
 - [OpenAI](https://openai.com)
 - [OpenAI (Generic)](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
@@ -126,7 +126,7 @@ AnythingLLM supports multiple users as well where you can control the access and
 
 **Embedder models:**
 
-- [AnythingLLM Native Embedder](/server/storage/models/README.md) (default)
+- [AnythingLLM Native Embedder](./server/storage/models/README.md) (default)
 - [OpenAI](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [Gemini](https://ai.google.dev/)

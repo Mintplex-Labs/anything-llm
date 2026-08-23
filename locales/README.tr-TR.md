@@ -43,7 +43,7 @@ Herhangi bir belgeyi, kaynağı veya içeriği sohbet sırasında herhangi bir b
 <details>
 <summary><kbd>Demoyu izle!</kbd></summary>
 
-[![Video'yu izle](/images/youtube.png)](https://youtu.be/f95rGD9trL0)
+[![Video'yu izle](../images/youtube.png)](https://youtu.be/f95rGD9trL0)
 
 </details>
 
@@ -64,7 +64,7 @@ AnythingLLM ayrıca birden fazla kullanıcıyı da destekler; burada örneğin g
 - 📖 Çoklu belge türü desteği (PDF, TXT, DOCX vb.)
 - Sade ve kullanışlı sohbet arayüzü, sürükle-bırak özelliği ve net kaynak gösterimi.
 - %100 bulut konuşlandırmaya hazır.
-- [Tüm popüler kapalı ve açık kaynak LLM sağlayıcılarıyla](#supported-llms-embedder-models-speech-models-and-vector-databases) uyumlu.
+- [Tüm popüler kapalı ve açık kaynak LLM sağlayıcılarıyla](#desteklenen-llmler-embedding-modelleri-konuşma-modelleri-ve-vektör-veritabanları) uyumlu.
 - Büyük belgeleri yönetirken zaman ve maliyet tasarrufu sağlayan dahili optimizasyonlar.
 - Özel entegrasyonlar için tam kapsamlı Geliştirici API’si.
 - Ve çok daha fazlası... Kurup keşfedin!
@@ -73,7 +73,7 @@ AnythingLLM ayrıca birden fazla kullanıcıyı da destekler; burada örneğin g
 
 **Büyük Dil Modelleri (LLMs):**
 
-- [Any open-source llama.cpp compatible model](/server/storage/models/README.md#text-generation-llm-selection)
+- [Any open-source llama.cpp compatible model](../server/storage/models/README.md#text-generation-llm-selection)
 - [OpenAI](https://openai.com)
 - [OpenAI (Generic)](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
@@ -109,7 +109,7 @@ AnythingLLM ayrıca birden fazla kullanıcıyı da destekler; burada örneğin g
 
 **Embedder modelleri:**
 
-- [AnythingLLM Native Embedder](/server/storage/models/README.md) (default)
+- [AnythingLLM Native Embedder](../server/storage/models/README.md) (default)
 - [OpenAI](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [LocalAi (all)](https://localai.io/)

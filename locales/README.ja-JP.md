@@ -43,7 +43,7 @@
 <details>
 <summary><kbd>デモを見る！</kbd></summary>
 
-[![ビデオを見る](/images/youtube.png)](https://youtu.be/f95rGD9trL0)
+[![ビデオを見る](../images/youtube.png)](https://youtu.be/f95rGD9trL0)
 
 </details>
 
@@ -71,7 +71,7 @@ AnythingLLMは複数ユーザーもサポートしており、インスタンス
 
 **言語学習モデル：**
 
-- [llama.cpp互換の任意のオープンソースモデル](/server/storage/models/README.md#text-generation-llm-selection)
+- [llama.cpp互換の任意のオープンソースモデル](../server/storage/models/README.md#text-generation-llm-selection)
 - [OpenAI](https://openai.com)
 - [OpenAI (汎用)](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
@@ -102,7 +102,7 @@ AnythingLLMは複数ユーザーもサポートしており、インスタンス
 
 **埋め込みモデル：**
 
-- [AnythingLLMネイティブ埋め込み](/server/storage/models/README.md)（デフォルト）
+- [AnythingLLMネイティブ埋め込み](../server/storage/models/README.md)（デフォルト）
 - [OpenAI](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [LocalAi (すべて)](https://localai.io/)
@@ -145,7 +145,7 @@ AnythingLLMは複数ユーザーもサポートしており、インスタンス
 - `server`: すべてのインタラクションを処理し、すべてのベクトルDB管理およびLLMインタラクションを行うNodeJS expressサーバー。
 - `collector`: UIからドキュメントを処理および解析するNodeJS expressサーバー。
 - `docker`: Dockerの指示およびビルドプロセス + ソースからのビルド情報。
-- `embed`: [埋め込みウィジェット](../embed/README.md)の生成に特化したコード。
+- `embed`: [埋め込みウィジェット](https://github.com/Mintplex-Labs/anythingllm-embed/blob/main/README.md)の生成に特化したコード。
 
 ## 🛳 セルフホスティング
 
