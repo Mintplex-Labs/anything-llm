@@ -598,7 +598,7 @@ function workspaceEndpoints(app) {
       } catch (error) {
         console.error("Error processing the suggested messages:", error);
         response.status(500).json({
-          success: true,
+          success: false,
           message: "Error saving the suggested messages.",
         });
       }
@@ -930,14 +930,12 @@ function workspaceEndpoints(app) {
     [
       validatedRequest,
       flexUserRoleValid([ROLES.admin, ROLES.manager]),
-      validWorkspaceSlug,
     ],
     async (request, response) => {
       try {
         const { id } = request.params;
         response.status(200).json({
           success: await Workspace.deletePromptHistory({
-            workspaceId: response.locals.workspace.id,
             id: Number(id),
           }),
         });
