@@ -86,7 +86,7 @@ function systemEndpoints(app) {
     response.sendStatus(200);
   });
 
-  app.get("/env-dump", async (_, response) => {
+  app.get("/env-dump", [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])], async (_, response) => {
     if (process.env.NODE_ENV !== "production")
       return response.sendStatus(200).end();
     dumpENV();
