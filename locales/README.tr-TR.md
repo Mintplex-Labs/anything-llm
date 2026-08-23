@@ -64,7 +64,7 @@ AnythingLLM ayrıca birden fazla kullanıcıyı da destekler; burada örneğin g
 - 📖 Çoklu belge türü desteği (PDF, TXT, DOCX vb.)
 - Sade ve kullanışlı sohbet arayüzü, sürükle-bırak özelliği ve net kaynak gösterimi.
 - %100 bulut konuşlandırmaya hazır.
-- [Tüm popüler kapalı ve açık kaynak LLM sağlayıcılarıyla](#supported-llms-embedder-models-speech-models-and-vector-databases) uyumlu.
+- [Tüm popüler kapalı ve açık kaynak LLM sağlayıcılarıyla](../README.md#supported-llms-embedder-models-speech-models-and-vector-databases) uyumlu.
 - Büyük belgeleri yönetirken zaman ve maliyet tasarrufu sağlayan dahili optimizasyonlar.
 - Özel entegrasyonlar için tam kapsamlı Geliştirici API’si.
 - Ve çok daha fazlası... Kurup keşfedin!
