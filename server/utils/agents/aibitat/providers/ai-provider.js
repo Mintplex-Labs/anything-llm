@@ -26,6 +26,9 @@ const { parseFoundryBasePath } = require("../../../AiProviders/foundry");
 const { parseOMLXBasePath } = require("../../../AiProviders/omlx");
 const { AzureOpenAiLLM } = require("../../../AiProviders/azureOpenAi");
 const {
+  azureClientOptions,
+} = require("../../../AiProviders/azureOpenAi/credentials");
+const {
   SystemPromptVariables,
 } = require("../../../../models/systemPromptVariables");
 const { OllamaAILLM } = require("../../../AiProviders/ollama");
@@ -300,16 +303,19 @@ class Provider {
           apiKey: process.env.AWS_BEDROCK_LLM_API_KEY ?? null,
           ...config,
         });
-      case "azure":
+      case "azure": {
+        const { apiKey, ...clientOptions } = azureClientOptions();
         return new ChatOpenAI({
           configuration: {
             baseURL: AzureOpenAiLLM.formatBaseUrl(
               process.env.AZURE_OPENAI_ENDPOINT
             ),
+            ...clientOptions,
           },
-          apiKey: process.env.AZURE_OPENAI_KEY,
+          apiKey,
           ...config,
         });
+      }
       case "fireworksai":
         return new ChatOpenAI({
           apiKey: process.env.FIREWORKS_AI_LLM_API_KEY,

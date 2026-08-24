@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
+    "@azure/identity": "^4.13.2",
     "@breejs/later": "4.2.0",
     "@datastax/astra-db-ts": "^0.1.3",
     "@ladjs/graceful": "^3.2.2",

@@ -1,9 +1,14 @@
 import { Info } from "@phosphor-icons/react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Tooltip } from "react-tooltip";
 
 export default function AzureAiOptions({ settings }) {
   const { t } = useTranslation();
+  const [connectionMethod, setConnectionMethod] = useState(
+    settings?.AzureOpenAiConnectionMethod || "api_key"
+  );
+  const usesManagedIdentity = connectionMethod === "managed_identity";
 
   return (
     <div className="w-full flex flex-col gap-y-7 mt-1.5">
@@ -25,21 +30,111 @@ export default function AzureAiOptions({ settings }) {
         </div>
 
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
-            {t("llm.providers.azure_openai.api_key")}
-          </label>
-          <input
-            type="password"
-            name="AzureOpenAiKey"
+          <div className="flex items-center gap-1 mb-3">
+            <label className="text-white text-sm font-semibold block">
+              {t("llm.providers.azure_openai.connection_method")}
+            </label>
+            <Tooltip
+              id="azure-openai-connection-method"
+              place="top"
+              delayShow={300}
+              className="tooltip !text-xs !opacity-100"
+              style={{
+                maxWidth: "250px",
+                whiteSpace: "normal",
+                wordWrap: "break-word",
+              }}
+            />
+            <div
+              type="button"
+              className="text-theme-text-secondary cursor-pointer hover:bg-theme-bg-primary flex items-center justify-center rounded-full"
+              data-tooltip-id="azure-openai-connection-method"
+              data-tooltip-place="top"
+              data-tooltip-content={t(
+                "llm.providers.azure_openai.connection_method_tooltip"
+              )}
+            >
+              <Info size={18} className="text-theme-text-secondary" />
+            </div>
+          </div>
+          <select
+            name="AzureOpenAiConnectionMethod"
+            value={connectionMethod}
+            onChange={(e) => setConnectionMethod(e.target.value)}
             className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-            placeholder="Azure OpenAI API Key"
-            defaultValue={settings?.AzureOpenAiKey ? "*".repeat(20) : ""}
             required={true}
-            autoComplete="off"
-            spellCheck={false}
-          />
+          >
+            <option value="api_key">
+              {t("llm.providers.azure_openai.api_key")}
+            </option>
+            <option value="managed_identity">
+              {t("llm.providers.azure_openai.managed_identity")}
+            </option>
+          </select>
         </div>
 
+        {usesManagedIdentity ? (
+          <div className="flex flex-col w-60">
+            <div className="flex items-center gap-1 mb-3">
+              <label className="text-white text-sm font-semibold block">
+                {t("llm.providers.azure_openai.managed_identity_client_id")}
+              </label>
+              <Tooltip
+                id="azure-openai-managed-identity-client-id"
+                place="top"
+                delayShow={300}
+                className="tooltip !text-xs !opacity-100"
+                style={{
+                  maxWidth: "250px",
+                  whiteSpace: "normal",
+                  wordWrap: "break-word",
+                }}
+              />
+              <div
+                type="button"
+                className="text-theme-text-secondary cursor-pointer hover:bg-theme-bg-primary flex items-center justify-center rounded-full"
+                data-tooltip-id="azure-openai-managed-identity-client-id"
+                data-tooltip-place="top"
+                data-tooltip-content={t(
+                  "llm.providers.azure_openai.managed_identity_client_id_tooltip"
+                )}
+              >
+                <Info size={18} className="text-theme-text-secondary" />
+              </div>
+            </div>
+            <input
+              type="text"
+              name="AzureOpenAiManagedIdentityClientId"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              placeholder={t(
+                "llm.providers.azure_openai.managed_identity_client_id_placeholder"
+              )}
+              defaultValue={settings?.AzureOpenAiManagedIdentityClientId}
+              required={false}
+              autoComplete="off"
+              spellCheck={false}
+            />
+          </div>
+        ) : (
+          <div className="flex flex-col w-60">
+            <label className="text-white text-sm font-semibold block mb-3">
+              {t("llm.providers.azure_openai.api_key")}
+            </label>
+            <input
+              type="password"
+              name="AzureOpenAiKey"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              placeholder="Azure OpenAI API Key"
+              defaultValue={settings?.AzureOpenAiKey ? "*".repeat(20) : ""}
+              required={true}
+              autoComplete="off"
+              spellCheck={false}
+            />
+          </div>
+        )}
+      </div>
+
+      <div className="w-full flex items-center gap-[36px]">
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
             {t("llm.providers.azure_openai.chat_deployment_name")}
@@ -55,9 +150,7 @@ export default function AzureAiOptions({ settings }) {
             spellCheck={false}
           />
         </div>
-      </div>
 
-      <div className="w-full flex items-center gap-[36px]">
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
             {t("llm.providers.azure_openai.chat_model_token_limit")}

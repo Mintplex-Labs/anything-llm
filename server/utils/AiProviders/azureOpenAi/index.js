@@ -6,18 +6,22 @@ const {
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
+const {
+  azureClientOptions,
+  azureConnectionMethod,
+  validateAzureCredentials,
+} = require("./credentials");
 
 class AzureOpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
     const { OpenAI } = require("openai");
     if (!process.env.AZURE_OPENAI_ENDPOINT)
       throw new Error("No Azure API endpoint was set.");
-    if (!process.env.AZURE_OPENAI_KEY)
-      throw new Error("No Azure API key was set.");
+    validateAzureCredentials();
 
     this.className = "AzureOpenAiLLM";
     this.openai = new OpenAI({
-      apiKey: process.env.AZURE_OPENAI_KEY,
+      ...azureClientOptions(),
       baseURL: AzureOpenAiLLM.formatBaseUrl(process.env.AZURE_OPENAI_ENDPOINT),
     });
     this.model =
@@ -41,7 +45,7 @@ class AzureOpenAiLLM {
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
     this.#log(
-      `Initialized. Model "${this.model}" @ ${this.promptWindowLimit()} tokens.\nAPI-Version: ${this.apiVersion}.\nModel Type: ${this.isOTypeModel ? "reasoning" : "default"}`
+      `Initialized. Model "${this.model}" @ ${this.promptWindowLimit()} tokens.\nAPI-Version: ${this.apiVersion}.\nModel Type: ${this.isOTypeModel ? "reasoning" : "default"}\nAuth: ${azureConnectionMethod()}`
     );
   }
 
