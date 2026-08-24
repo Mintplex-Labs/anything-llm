@@ -60,6 +60,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "openrouter-imggen",
   "ollama-imggen",
   "lemonade-imggen",
+  "localai-imggen",
   // Embedding Engines
   "native-embedder",
   "cohere-embedder",
@@ -150,6 +151,8 @@ async function getCustomModels(
         "image",
         unmaskedSecret(apiKey) || process.env.IMAGE_GEN_LEMONADE_API_KEY || null
       );
+    case "localai-imggen":
+      return await getLocalAiImageModels(basePath, apiKey);
     case "native-embedder":
       return await getNativeEmbedderModels();
     case "cohere-embedder":
@@ -1477,6 +1480,48 @@ async function getOllamaImageModels(basePath = null, authToken = null) {
     )
     .catch((e) => {
       console.error(`Ollama:listImageModels`, e.message);
+      return [];
+    });
+  return { models, error: null };
+}
+
+/**
+ * Lists the image-capable models installed on a LocalAI server. LocalAI reports
+ * per-model capabilities on `/v1/models/capabilities`, so we filter on the
+ * `image` capability - chat and vision models cannot be used for image
+ * generation.
+ * @param {string|null} basePath - LocalAI base path (`/v1` suffixed); defaults to IMAGE_GEN_LOCALAI_BASE_PATH when null
+ * @param {string|boolean|null} apiKey - LocalAI API key; defaults to IMAGE_GEN_LOCALAI_API_KEY when null
+ * @returns {Promise<{models: {id: string, name: string}[], error: string|null}>}
+ */
+async function getLocalAiImageModels(basePath = null, apiKey = null) {
+  let url;
+  try {
+    const urlPath = basePath ?? process.env.IMAGE_GEN_LOCALAI_BASE_PATH;
+    new URL(urlPath);
+    url = urlPath.replace(/\/+$/, "");
+  } catch {
+    return { models: [], error: "Not a valid URL." };
+  }
+
+  const _apiKey =
+    unmaskedSecret(apiKey) || process.env.IMAGE_GEN_LOCALAI_API_KEY || null;
+  const models = await fetch(`${url}/models/capabilities`, {
+    headers: _apiKey ? { Authorization: `Bearer ${_apiKey}` } : {},
+  })
+    .then((res) => {
+      if (!res.ok)
+        throw new Error(`Could not reach LocalAI server! ${res.status}`);
+      return res.json();
+    })
+    .then((data) => data?.data || [])
+    .then((models) =>
+      models
+        .filter((model) => model?.capabilities?.includes("image"))
+        .map((model) => ({ id: model.id, name: model.id }))
+    )
+    .catch((e) => {
+      console.error(`LocalAI:listImageModels`, e.message);
       return [];
     });
   return { models, error: null };

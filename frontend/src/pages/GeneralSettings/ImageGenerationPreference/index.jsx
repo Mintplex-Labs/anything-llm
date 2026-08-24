@@ -8,12 +8,14 @@ import OpenAiLogo from "@/media/llmprovider/openai.png";
 import OllamaLogo from "@/media/llmprovider/ollama.png";
 import LemonadeLogo from "@/media/llmprovider/lemonade.png";
 import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
+import LocalAiLogo from "@/media/llmprovider/localai.png";
 
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/ImageGenerationSelection/OpenAiOptions";
 import OllamaOptions from "@/components/ImageGenerationSelection/OllamaOptions";
 import LemonadeOptions from "@/components/ImageGenerationSelection/LemonadeOptions";
 import OpenRouterOptions from "@/components/ImageGenerationSelection/OpenRouterOptions";
+import LocalAiOptions from "@/components/ImageGenerationSelection/LocalAiOptions";
 import ImageGenerationItem from "@/components/ImageGenerationSelection/ImageGenerationItem";
 
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -41,6 +43,13 @@ const PROVIDERS = [
     logo: LemonadeLogo,
     options: (settings) => <LemonadeOptions settings={settings} />,
     description: "Generate images locally on your own machine using Lemonade.",
+  },
+  {
+    name: "LocalAI",
+    value: "localai",
+    logo: LocalAiLogo,
+    options: (settings) => <LocalAiOptions settings={settings} />,
+    description: "Generate images locally on your own machine using LocalAI.",
   },
   {
     name: "OpenRouter",
