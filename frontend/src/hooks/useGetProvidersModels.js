@@ -1,4 +1,5 @@
 import System from "@/models/system";
+import LocalAiConnection from "@/models/localAiConnection";
 import { useEffect, useState } from "react";
 
 // Providers which cannot use this feature for workspace<>model selection
@@ -50,7 +51,10 @@ const groupedProviders = [
   "docker-model-runner",
   "sambanova",
 ];
-export default function useGetProviderModels(provider = null) {
+export default function useGetProviderModels(
+  provider = null,
+  connectionId = null
+) {
   const [defaultModels, setDefaultModels] = useState([]);
   const [customModels, setCustomModels] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -71,7 +75,10 @@ export default function useGetProviderModels(provider = null) {
     async function fetchProviderModels() {
       if (!provider) return;
       setLoading(true);
-      const { models = [] } = await System.customModels(provider);
+      const { models = [] } =
+        provider === "localai" && connectionId
+          ? await LocalAiConnection.models(connectionId)
+          : await System.customModels(provider);
       if (
         PROVIDER_DEFAULT_MODELS.hasOwnProperty(provider) &&
         !groupedProviders.includes(provider)
@@ -87,7 +94,7 @@ export default function useGetProviderModels(provider = null) {
       setLoading(false);
     }
     fetchProviderModels();
-  }, [provider]);
+  }, [provider, connectionId]);
 
   return { defaultModels, customModels, loading, downloadedModels };
 }

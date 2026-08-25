@@ -164,7 +164,7 @@ class AgentHandler {
           );
         break;
       case "localai":
-        if (!process.env.LOCAL_AI_BASE_PATH)
+        if (!this.connection && !process.env.LOCAL_AI_BASE_PATH)
           throw new Error(
             "LocalAI must have a valid base path to use for the api."
           );
@@ -468,6 +468,14 @@ class AgentHandler {
     // If provider resolved to model router, resolve the actual provider/model
     if (this.provider === "anythingllm-router") {
       await this.#resolveRouterProvider();
+    } else if (
+      this.provider === "localai" &&
+      this.invocation.workspace.chatConnectionId
+    ) {
+      const { LocalAiConnection } = require("../../models/localAiConnection");
+      this.connection = await LocalAiConnection.get({
+        id: this.invocation.workspace.chatConnectionId,
+      });
     }
 
     if (!this.provider)
@@ -529,6 +537,7 @@ class AgentHandler {
 
     this.provider = router.resolvedRoute.provider;
     this.model = router.resolvedRoute.model;
+    this.connection = router.resolvedConnection;
     this.routingMetadata = router.routingMetadata;
     // Held so the model-router-cooldown plugin can restart the cooldown when
     // the agent stops responding. Routing re-resolves per turn, so this always
@@ -846,6 +855,7 @@ class AgentHandler {
     this.aibitat = new AIbitat({
       provider: this.provider ?? "openai",
       model: this.model ?? "gpt-4.1-nano",
+      connection: this.connection ?? null,
       chats: await this.#chatHistory(20),
       handlerProps: {
         invocation: this.invocation,
@@ -871,13 +881,21 @@ class AgentHandler {
       this.aibitat.resolveRoute = async (prompt) => {
         if (isFirstCall) {
           isFirstCall = false;
-          return { provider: this.provider, model: this.model };
+          return {
+            provider: this.provider,
+            model: this.model,
+            connection: this.connection,
+          };
         }
         try {
           await this.#resolveRouterProvider(prompt);
           this.aibitat.handlerProps.routingMetadata =
             this.routingMetadata || null;
-          return { provider: this.provider, model: this.model };
+          return {
+            provider: this.provider,
+            model: this.model,
+            connection: this.connection,
+          };
         } catch (e) {
           this.log(
             "Router re-resolution failed, keeping current route",

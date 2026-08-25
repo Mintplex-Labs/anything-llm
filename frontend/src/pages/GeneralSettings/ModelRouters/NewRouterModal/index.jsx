@@ -42,6 +42,7 @@ export default function NewRouterModal({
       description: formData.get("description"),
       fallback_provider: formData.get("fallback_provider"),
       fallback_model: formData.get("fallback_model"),
+      fallback_connection_id: formData.get("fallback_connection_id") || null,
       cooldown_seconds: Number(formData.get("cooldown_seconds") ?? 30),
     };
 
@@ -106,12 +107,14 @@ export default function NewRouterModal({
           <LLMProviderModelPicker
             providerFieldName="fallback_provider"
             modelFieldName="fallback_model"
+            connectionFieldName="fallback_connection_id"
             label={t("model-router.new-router.fallback-label")}
             description={t("model-router.new-router.fallback-description")}
             defaultProvider={
               router?.fallback_provider ?? systemSettings?.LLMProvider
             }
             defaultModel={router?.fallback_model ?? systemSettings?.LLMModel}
+            defaultConnectionId={router?.fallback_connection_id || ""}
           />
 
           <ModalInput

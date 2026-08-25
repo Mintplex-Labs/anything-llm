@@ -84,9 +84,22 @@ async function classifyWithLLM(rules, prompt, router) {
   );
 
   try {
+    let connection = null;
+    if (
+      router.fallback_provider === "localai" &&
+      router.fallback_connection_id
+    ) {
+      const {
+        LocalAiConnection,
+      } = require("../../../../models/localAiConnection");
+      connection = await LocalAiConnection.get({
+        id: router.fallback_connection_id,
+      });
+    }
     const aibitat = new AIbitat({
       provider: router.fallback_provider,
       model: router.fallback_model,
+      connection,
       // Safety net: if the provider refuses to call the tool and responds
       // with free text, cap the chat at one round so we don't loop.
       maxRounds: 1,
