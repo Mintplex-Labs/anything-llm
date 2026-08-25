@@ -160,7 +160,7 @@ AnythingLLM supports multiple users as well where you can control the access and
 
 **Vector Databases:**
 
-- [LanceDB](https://github.com/lancedb/lancedb) (default)
+- [LanceDB](https://github.com/lancedb/lancedb) (default) & LanceDB Cloud
 - [PGVector](https://github.com/pgvector/pgvector)
 - [Astra DB](https://www.datastax.com/products/datastax-astra)
 - [Pinecone](https://pinecone.io)

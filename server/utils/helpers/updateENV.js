@@ -376,6 +376,20 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // LanceDB Cloud Options
+  LanceDBCloudUri: {
+    envKey: "LANCEDB_CLOUD_URI",
+    checks: [isNotEmpty, validLanceDBCloudUri],
+  },
+  LanceDBCloudApiKey: {
+    envKey: "LANCEDB_CLOUD_API_KEY",
+    checks: [],
+  },
+  LanceDBCloudRegion: {
+    envKey: "LANCEDB_CLOUD_REGION",
+    checks: [],
+  },
+
   // Weaviate Options
   WeaviateEndpoint: {
     envKey: "WEAVIATE_ENDPOINT",
@@ -1221,6 +1235,7 @@ function supportedVectorDB(input = "") {
     "chromacloud",
     "pinecone",
     "lancedb",
+    "lancedb_cloud",
     "weaviate",
     "qdrant",
     "milvus",
@@ -1320,6 +1335,22 @@ async function downloadEmbeddingModelIfRequired(key, prevValue, nextValue) {
   if (!NativeEmbedder.supportedModels[nextValue]) return; // if the model is not supported, don't download it
   new NativeEmbedder().embedderClient();
   return false;
+}
+
+/**
+ * Validates the LanceDB Cloud URI - an object store bucket (s3://, s3+ddb://, gs://, az://),
+ * a LanceDB Cloud database (db://) or an absolute path to a shared volume.
+ * @param {string} input - The LanceDB Cloud URI to validate.
+ * @returns {string} - An error message if the URI is invalid, otherwise null.
+ */
+function validLanceDBCloudUri(input = "") {
+  const uri = String(input ?? "").trim();
+  if (!uri) return "Invalid LanceDB Cloud URI. Must not be empty.";
+  if (uri.includes(" "))
+    return "Invalid LanceDB Cloud URI. Must not contain spaces.";
+  if (/^(s3|s3\+ddb|gs|az|db):\/\/[^/]+/i.test(uri)) return null;
+  if (/^\//.test(uri) || /^[a-zA-Z]:[\\/]/.test(uri)) return null;
+  return "Invalid LanceDB Cloud URI. Must be an absolute filesystem path or start with s3://, s3+ddb://, gs://, az:// or db://";
 }
 
 /**
