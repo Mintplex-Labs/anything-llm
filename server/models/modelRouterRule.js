@@ -73,6 +73,16 @@ const ModelRouterRule = {
         error: "Route provider and model are required.",
       };
 
+    const routeConnectionId =
+      data.route_provider === "localai"
+        ? this._validateConnectionId(data.route_connection_id)
+        : null;
+    if (routeConnectionId) {
+      const { LocalAiConnection } = require("./localAiConnection");
+      if (!(await LocalAiConnection.get({ id: routeConnectionId })))
+        return { rule: null, error: "LocalAI connection not found." };
+    }
+
     try {
       const rule = await prisma.model_router_rules.create({
         data: {
@@ -86,6 +96,7 @@ const ModelRouterRule = {
           conditions: serializedConditions,
           route_provider: String(data.route_provider),
           route_model: String(data.route_model),
+          route_connection_id: routeConnectionId,
           created_by: creatorId ? Number(creatorId) : null,
         },
       });
@@ -160,10 +171,13 @@ const ModelRouterRule = {
       ["description", (v) => v || null],
       ["route_provider", (v) => String(v)],
       ["route_model", (v) => String(v)],
+      ["route_connection_id", (v) => this._validateConnectionId(v)],
     ];
     for (const [key, map] of simpleFields) {
       if (data[key] !== undefined) updates[key] = map(data[key]);
     }
+    if (updates.route_provider && updates.route_provider !== "localai")
+      updates.route_connection_id = null;
 
     const typeErr = assignEnum(updates, data, "type", VALID_TYPES, "Type");
     if (typeErr) return typeErr;
@@ -189,6 +203,12 @@ const ModelRouterRule = {
 
     if (Object.keys(updates).length === 0)
       return { rule: { id }, error: "No valid fields to update." };
+
+    if (updates.route_connection_id) {
+      const { LocalAiConnection } = require("./localAiConnection");
+      if (!(await LocalAiConnection.get({ id: updates.route_connection_id })))
+        return { rule: null, error: "LocalAI connection not found." };
+    }
 
     try {
       const rule = await prisma.model_router_rules.update({
@@ -218,6 +238,12 @@ const ModelRouterRule = {
       console.error(error.message);
       return false;
     }
+  },
+
+  _validateConnectionId(value) {
+    if ([null, undefined, "", "none"].includes(value)) return null;
+    const id = Number(value);
+    return Number.isInteger(id) && id > 0 ? id : null;
   },
 
   /**

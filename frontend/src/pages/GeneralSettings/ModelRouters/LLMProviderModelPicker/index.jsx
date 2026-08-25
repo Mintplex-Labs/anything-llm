@@ -11,6 +11,8 @@ import Modal, {
 } from "@/components/lib/Modal";
 import { useModal } from "@/hooks/useModal";
 import showToast from "@/utils/toast";
+import LocalAiConnection from "@/models/localAiConnection";
+import LocalAiConnectionSelector from "@/components/LLMSelection/LocalAiConnectionSelector";
 
 // Providers that can't be routing targets
 const EXCLUDED_PROVIDERS = ["anythingllm-router"];
@@ -18,14 +20,18 @@ const EXCLUDED_PROVIDERS = ["anythingllm-router"];
 export default function LLMProviderModelPicker({
   providerFieldName = "fallback_provider",
   modelFieldName = "fallback_model",
+  connectionFieldName = "fallback_connection_id",
   label = "Provider & Model",
   description = "",
   defaultProvider = "",
   defaultModel = "",
+  defaultConnectionId = "",
 }) {
   const { t } = useTranslation();
   const [selectedProvider, setSelectedProvider] = useState(defaultProvider);
   const [selectedModel, setSelectedModel] = useState(defaultModel);
+  const [selectedConnectionId, setSelectedConnectionId] =
+    useState(defaultConnectionId);
   const [models, setModels] = useState([]);
   const [loadingModels, setLoadingModels] = useState(false);
   const [settings, setSettings] = useState(null);
@@ -40,6 +46,11 @@ export default function LLMProviderModelPicker({
     if (defaultModel && !selectedModel) setSelectedModel(defaultModel);
   }, [defaultModel]);
 
+  useEffect(() => {
+    if (defaultConnectionId && !selectedConnectionId)
+      setSelectedConnectionId(defaultConnectionId);
+  }, [defaultConnectionId]);
+
   const availableProviders = AVAILABLE_LLM_PROVIDERS.filter(
     (llm) => !EXCLUDED_PROVIDERS.includes(llm.value)
   );
@@ -53,6 +64,7 @@ export default function LLMProviderModelPicker({
   }, []);
 
   function isConfigured(providerValue) {
+    if (providerValue === "localai" && selectedConnectionId) return true;
     if (!settings) return true;
     const llm = availableProviders.find((l) => l.value === providerValue);
     const keys = llm?.connectionConfig || llm?.requiredConfig;
@@ -70,12 +82,14 @@ export default function LLMProviderModelPicker({
     async function fetchModels() {
       setLoadingModels(true);
       const { models: fetchedModels = [] } =
-        await System.customModels(selectedProvider);
+        selectedProvider === "localai" && selectedConnectionId
+          ? await LocalAiConnection.models(selectedConnectionId)
+          : await System.customModels(selectedProvider);
       setModels(fetchedModels);
       setLoadingModels(false);
     }
     fetchModels();
-  }, [selectedProvider, settings]);
+  }, [selectedProvider, selectedConnectionId, settings]);
 
   const downloadedModels = models.filter((model) => model?.downloaded);
 
@@ -83,8 +97,9 @@ export default function LLMProviderModelPicker({
     const value = e.target.value;
     setSelectedProvider(value);
     setSelectedModel("");
+    setSelectedConnectionId("");
     setModels([]);
-    if (value && !isConfigured(value)) openModal();
+    if (value && value !== "localai" && !isConfigured(value)) openModal();
   }
 
   function handleSetupCancel() {
@@ -213,6 +228,18 @@ export default function LLMProviderModelPicker({
           )}
         </div>
       </div>
+
+      {selectedProvider === "localai" && (
+        <LocalAiConnectionSelector
+          name={connectionFieldName}
+          value={selectedConnectionId}
+          onChange={(value) => setSelectedConnectionId(value)}
+          onConnectionChange={(connection) => {
+            setSelectedModel(connection?.model || "");
+          }}
+          className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-700 text-sm rounded-[8px] outline-none block w-full h-8 px-3.5"
+        />
+      )}
 
       <ProviderSetupModal
         isOpen={isOpen}

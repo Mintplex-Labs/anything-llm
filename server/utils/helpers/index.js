@@ -130,10 +130,14 @@ function getVectorDbClass(getExactly = null) {
  * Returns the LLMProvider with its embedder attached via system or via defined provider.
  * @notice Use resolveProviderConnector instead as this function DOES NOT handle the anythingllm-router provider.
  * You should only use this function if you are absolutely sure you are not using the anythingllm-router provider ever in your code.
- * @param {{provider: string | null, model: string | null} | null} params - Initialize params for LLMs provider
+ * @param {{provider: string | null, model: string | null, connection: Object | null} | null} params - Initialize params for LLMs provider
  * @returns {BaseLLMProvider}
  */
-function getLLMProvider({ provider = null, model = null } = {}) {
+function getLLMProvider({
+  provider = null,
+  model = null,
+  connection = null,
+} = {}) {
   const LLMSelection = provider ?? process.env.LLM_PROVIDER ?? "openai";
   const embedder = getEmbeddingEngineSelection();
 
@@ -155,7 +159,7 @@ function getLLMProvider({ provider = null, model = null } = {}) {
       return new LMStudioLLM(embedder, model);
     case "localai":
       const { LocalAiLLM } = require("../AiProviders/localAi");
-      return new LocalAiLLM(embedder, model);
+      return new LocalAiLLM(embedder, model, connection);
     case "ollama":
       const { OllamaAILLM } = require("../AiProviders/ollama");
       return new OllamaAILLM(embedder, model);
@@ -674,10 +678,18 @@ async function resolveProviderConnector({
   const effectiveProvider = workspace?.chatProvider || process.env.LLM_PROVIDER;
 
   if (effectiveProvider !== "anythingllm-router") {
+    let connection = null;
+    if (effectiveProvider === "localai" && workspace?.chatConnectionId) {
+      const { LocalAiConnection } = require("../../models/localAiConnection");
+      connection = await LocalAiConnection.get({
+        id: workspace.chatConnectionId,
+      });
+    }
     return {
       connector: getLLMProvider({
         provider: workspace?.chatProvider,
         model: workspace?.chatModel,
+        connection,
       }),
       routingMetadata: null,
       prefetchedContext: null,

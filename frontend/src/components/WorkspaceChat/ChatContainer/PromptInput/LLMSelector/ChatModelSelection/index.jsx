@@ -4,12 +4,13 @@ import useGetProviderModels, {
 
 export default function ChatModelSelection({
   provider,
+  connectionId,
   setHasChanges,
   selectedLLMModel,
   setSelectedLLMModel,
 }) {
   const { defaultModels, customModels, loading, downloadedModels } =
-    useGetProviderModels(provider);
+    useGetProviderModels(provider, connectionId);
   if (DISABLED_PROVIDERS.includes(provider)) return null;
 
   if (loading) {

@@ -16,6 +16,7 @@ import { NoSetupWarning } from "./SetupProvider";
 import showToast from "@/utils/toast";
 import Workspace from "@/models/workspace";
 import System from "@/models/system";
+import LocalAiConnectionSelector from "@/components/LLMSelection/LocalAiConnectionSelector";
 
 export default function LLMSelectorModal({
   workspaceSlug = null,
@@ -28,6 +29,7 @@ export default function LLMSelectorModal({
   const [settings, setSettings] = useState(null);
   const [selectedLLMProvider, setSelectedLLMProvider] = useState(null);
   const [selectedLLMModel, setSelectedLLMModel] = useState("");
+  const [selectedConnectionId, setSelectedConnectionId] = useState("");
   const [selectedRouterId, setSelectedRouterId] = useState(null);
   const [availableProviders, setAvailableProviders] = useState(
     WORKSPACE_LLM_PROVIDERS
@@ -50,6 +52,7 @@ export default function LLMSelectorModal({
         setSelectedLLMProvider(providerToSelect);
         autoScrollToSelectedLLMProvider(providerToSelect);
         setSelectedLLMModel(savedModel);
+        setSelectedConnectionId(workspace.chatConnectionId || "");
         setSelectedRouterId(
           workspace.router_id || systemSettings?.ModelRouterId || null
         );
@@ -78,6 +81,7 @@ export default function LLMSelectorModal({
     autoScrollToSelectedLLMProvider(provider, 50);
     document.getElementById("llm-search-input").value = "";
     setHasChanges(true);
+    if (provider !== "localai") setSelectedConnectionId("");
     setMissingCredentials(hasMissingCredentials(settings, provider));
   }
 
@@ -95,6 +99,10 @@ export default function LLMSelectorModal({
         : {
             chatProvider: selectedLLMProvider,
             chatModel: validatedModelSelection(selectedLLMModel),
+            chatConnectionId:
+              selectedLLMProvider === "localai"
+                ? selectedConnectionId || null
+                : null,
           };
 
       if (!isRouter && !updateData.chatModel)
@@ -160,12 +168,28 @@ export default function LLMSelectorModal({
                 setHasChanges={setHasChanges}
               />
             ) : (
-              <ChatModelSelection
-                provider={selectedLLMProvider}
-                setHasChanges={setHasChanges}
-                selectedLLMModel={selectedLLMModel}
-                setSelectedLLMModel={setSelectedLLMModel}
-              />
+              <div className="flex flex-col gap-2.5">
+                {selectedLLMProvider === "localai" && (
+                  <LocalAiConnectionSelector
+                    value={selectedConnectionId}
+                    onChange={(value) => {
+                      setSelectedConnectionId(value);
+                      setHasChanges(true);
+                    }}
+                    onConnectionChange={(connection) => {
+                      if (connection) setSelectedLLMModel(connection.model);
+                    }}
+                    className="bg-zinc-900 light:bg-white text-white light:text-slate-900 text-sm rounded-lg h-8 w-full px-2.5 outline-none border border-zinc-900 light:border-slate-400 cursor-pointer"
+                  />
+                )}
+                <ChatModelSelection
+                  provider={selectedLLMProvider}
+                  connectionId={selectedConnectionId}
+                  setHasChanges={setHasChanges}
+                  selectedLLMModel={selectedLLMModel}
+                  setSelectedLLMModel={setSelectedLLMModel}
+                />
+              </div>
             ))}
         </div>
         <NoSetupWarning

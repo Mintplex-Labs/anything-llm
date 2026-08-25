@@ -5,11 +5,12 @@ import { useTranslation } from "react-i18next";
 
 export default function ChatModelSelection({
   provider,
+  connectionId,
   workspace,
   setHasChanges,
 }) {
   const { defaultModels, customModels, loading, downloadedModels } =
-    useGetProviderModels(provider);
+    useGetProviderModels(provider, connectionId);
   const { t } = useTranslation();
   if (DISABLED_PROVIDERS.includes(provider)) return null;
 

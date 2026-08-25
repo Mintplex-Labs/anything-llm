@@ -24,6 +24,7 @@ function isNullOrNaN(value) {
  * @property {number} similarityThreshold - The similarity threshold of the workspace
  * @property {string} chatProvider - The chat provider of the workspace
  * @property {string} chatModel - The chat model of the workspace
+ * @property {number} chatConnectionId - The LocalAI connection used for chat
  * @property {number} topN - The top N of the workspace
  * @property {string} chatMode - The chat mode of the workspace
  * @property {string} agentProvider - The agent provider of the workspace
@@ -49,6 +50,7 @@ const Workspace = {
     "similarityThreshold",
     "chatProvider",
     "chatModel",
+    "chatConnectionId",
     "topN",
     "chatMode",
     "agentProvider",
@@ -105,6 +107,12 @@ const Workspace = {
     chatModel: (value) => {
       if (!value || typeof value !== "string") return null;
       return String(value);
+    },
+    chatConnectionId: (value) => {
+      if ([null, undefined, "", "none"].includes(value)) return null;
+      const id = Number(value);
+      if (!Number.isInteger(id) || id < 1) return null;
+      return id;
     },
     agentProvider: (value) => {
       if (!value || typeof value !== "string" || value === "none") return null;
@@ -257,17 +265,34 @@ const Workspace = {
     if (validatedUpdates?.chatProvider === "default") {
       validatedUpdates.chatProvider = null;
       validatedUpdates.chatModel = null;
+      validatedUpdates.chatConnectionId = null;
     }
 
     // When switching to anythingllm-router, chatModel is not used.
     // When switching away from anythingllm-router, clear router_id.
     if (validatedUpdates?.chatProvider === "anythingllm-router") {
       validatedUpdates.chatModel = null;
+      validatedUpdates.chatConnectionId = null;
     } else if (
       validatedUpdates?.chatProvider &&
       validatedUpdates.chatProvider !== "anythingllm-router"
     ) {
       validatedUpdates.router_id = null;
+    }
+
+    if (
+      validatedUpdates?.chatProvider &&
+      validatedUpdates.chatProvider !== "localai"
+    )
+      validatedUpdates.chatConnectionId = null;
+
+    if (validatedUpdates.chatConnectionId) {
+      const { LocalAiConnection } = require("./localAiConnection");
+      const connection = await LocalAiConnection.get({
+        id: validatedUpdates.chatConnectionId,
+      });
+      if (!connection)
+        return { workspace: null, message: "LocalAI connection not found." };
     }
 
     return this._update(id, validatedUpdates);
@@ -319,7 +344,7 @@ const Workspace = {
       return {
         ...workspace,
         documents: await Document.forWorkspace(workspace.id),
-        contextWindow: this._getContextWindow(workspace),
+        contextWindow: await this._getContextWindow(workspace),
         currentContextTokenCount: await this._getCurrentContextTokenCount(
           workspace.id
         ),
@@ -352,12 +377,19 @@ const Workspace = {
    * @returns {number|null} The context window size in tokens (defaults to null if no provider/model found)
    * @private
    */
-  _getContextWindow: function (workspace) {
+  _getContextWindow: async function (workspace) {
     const {
       getLLMProviderClass,
       getBaseLLMProviderModel,
     } = require("../utils/helpers");
     const provider = workspace.chatProvider || process.env.LLM_PROVIDER || null;
+    if (provider === "localai" && workspace.chatConnectionId) {
+      const { LocalAiConnection } = require("./localAiConnection");
+      const connection = await LocalAiConnection.get({
+        id: workspace.chatConnectionId,
+      });
+      if (connection) return connection.token_limit;
+    }
     const LLMProvider = getLLMProviderClass({ provider });
     const model =
       workspace.chatModel || getBaseLLMProviderModel({ provider }) || null;
@@ -378,7 +410,7 @@ const Workspace = {
       if (!workspace) return null;
       return {
         ...workspace,
-        contextWindow: this._getContextWindow(workspace),
+        contextWindow: await this._getContextWindow(workspace),
         currentContextTokenCount: await this._getCurrentContextTokenCount(
           workspace.id
         ),

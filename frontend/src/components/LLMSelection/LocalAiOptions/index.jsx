@@ -5,6 +5,8 @@ import System from "@/models/system";
 import PreLoader from "@/components/Preloader";
 import { LOCALAI_COMMON_URLS } from "@/utils/constants";
 import useProviderEndpointAutoDiscovery from "@/hooks/useProviderEndpointAutoDiscovery";
+import LocalAiConnection from "@/models/localAiConnection";
+import showToast from "@/utils/toast";
 
 export default function LocalAiOptions({ settings, showAlert = false }) {
   const {
@@ -24,6 +26,7 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
 
   return (
     <div className="w-full flex flex-col gap-y-7">
+      {!settings?.credentialsOnly && <LocalAiConnectionManager />}
       {showAlert && (
         <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-white mb-6 bg-blue-800/30 w-fit rounded-lg px-4 py-2">
           <div className="gap-x-2 flex items-center">
@@ -141,6 +144,162 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
         </div>
       </div>
     </div>
+  );
+}
+
+const EMPTY_CONNECTION = {
+  name: "",
+  base_url: "http://localhost:8080/v1",
+  api_key: "",
+  model: "",
+  token_limit: 4096,
+};
+
+function LocalAiConnectionManager() {
+  const [connections, setConnections] = useState([]);
+  const [selectedId, setSelectedId] = useState("");
+  const [draft, setDraft] = useState(EMPTY_CONNECTION);
+  const [saving, setSaving] = useState(false);
+
+  async function refresh() {
+    setConnections(await LocalAiConnection.all());
+  }
+
+  useEffect(() => {
+    refresh();
+  }, []);
+
+  function updateDraft(field, value) {
+    setDraft((current) => ({ ...current, [field]: value }));
+  }
+
+  function selectConnection(id) {
+    setSelectedId(id);
+    const connection = connections.find((item) => String(item.id) === id);
+    setDraft(
+      connection ? { ...connection, api_key: "" } : { ...EMPTY_CONNECTION }
+    );
+  }
+
+  async function saveConnection() {
+    setSaving(true);
+    const data = {
+      name: draft.name,
+      base_url: draft.base_url,
+      model: draft.model,
+      token_limit: Number(draft.token_limit),
+      ...(draft.api_key ? { api_key: draft.api_key } : {}),
+    };
+    const result = selectedId
+      ? await LocalAiConnection.update(selectedId, data)
+      : await LocalAiConnection.create({ ...data, api_key: draft.api_key });
+    setSaving(false);
+    if (result.error) return showToast(result.error, "error");
+
+    await refresh();
+    setSelectedId(String(result.connection.id));
+    setDraft({ ...result.connection, api_key: "" });
+    showToast("LocalAI connection saved.", "success");
+  }
+
+  async function deleteConnection() {
+    if (!selectedId || !window.confirm("Delete this LocalAI connection?"))
+      return;
+    const result = await LocalAiConnection.delete(selectedId);
+    if (!result.success) return showToast(result.error, "error");
+    await refresh();
+    setSelectedId("");
+    setDraft({ ...EMPTY_CONNECTION });
+    showToast("LocalAI connection deleted.", "success");
+  }
+
+  return (
+    <div className="w-full max-w-[760px] rounded-lg border border-white/10 p-4 flex flex-col gap-4">
+      <div>
+        <p className="text-white text-sm font-semibold">Saved connections</p>
+        <p className="text-white/60 text-xs mt-1">
+          Workspaces and model routers can use these LocalAI endpoints
+          concurrently.
+        </p>
+      </div>
+      <select
+        value={selectedId}
+        onChange={(event) => selectConnection(event.target.value)}
+        className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg block w-full p-2.5"
+      >
+        <option value="">Create a new connection</option>
+        {connections.map((connection) => (
+          <option key={connection.id} value={connection.id}>
+            {connection.name}
+          </option>
+        ))}
+      </select>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <ConnectionInput
+          label="Connection name"
+          value={draft.name}
+          onChange={(value) => updateDraft("name", value)}
+        />
+        <ConnectionInput
+          label="Base URL"
+          type="url"
+          value={draft.base_url}
+          onChange={(value) => updateDraft("base_url", value)}
+        />
+        <ConnectionInput
+          label="Default model"
+          value={draft.model}
+          onChange={(value) => updateDraft("model", value)}
+        />
+        <ConnectionInput
+          label="Context window"
+          type="number"
+          value={draft.token_limit}
+          onChange={(value) => updateDraft("token_limit", value)}
+        />
+        <ConnectionInput
+          label={draft.hasApiKey ? "API key (leave blank to keep)" : "API key"}
+          type="password"
+          value={draft.api_key}
+          onChange={(value) => updateDraft("api_key", value)}
+        />
+      </div>
+      <div className="flex gap-2">
+        <button
+          type="button"
+          disabled={saving}
+          onClick={saveConnection}
+          className="bg-primary-button px-3 py-2 rounded-lg text-sm font-medium"
+        >
+          {saving ? "Saving..." : "Save connection"}
+        </button>
+        {selectedId && (
+          <button
+            type="button"
+            onClick={deleteConnection}
+            className="bg-red-600 px-3 py-2 rounded-lg text-white text-sm font-medium"
+          >
+            Delete
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ConnectionInput({ label, type = "text", value, onChange }) {
+  return (
+    <label className="flex flex-col gap-2 text-white text-sm font-semibold">
+      {label}
+      <input
+        type={type}
+        value={value}
+        min={type === "number" ? 1 : undefined}
+        onChange={(event) => onChange(event.target.value)}
+        className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg block w-full p-2.5"
+        autoComplete="off"
+      />
+    </label>
   );
 }
 

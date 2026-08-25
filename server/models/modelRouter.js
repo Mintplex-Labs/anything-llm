@@ -20,6 +20,12 @@ const ModelRouter = {
       if (!value || typeof value !== "string") return null;
       return String(value);
     },
+    fallback_connection_id: (value) => {
+      if ([null, undefined, "", "none"].includes(value)) return null;
+      const id = Number(value);
+      if (!Number.isInteger(id) || id < 1) return null;
+      return id;
+    },
     cooldown_seconds: (value) => {
       const num = Number(value);
       if (isNaN(num) || num < 0 || num > 3600) return null;
@@ -46,6 +52,15 @@ const ModelRouter = {
       data.cooldown_seconds != null
         ? this.validations.cooldown_seconds(data.cooldown_seconds)
         : ModelRouterService.DEFAULT_STICKY_MS / 1000;
+    const fallback_connection_id =
+      fallback_provider === "localai"
+        ? this.validations.fallback_connection_id(data.fallback_connection_id)
+        : null;
+    if (fallback_connection_id) {
+      const { LocalAiConnection } = require("./localAiConnection");
+      if (!(await LocalAiConnection.get({ id: fallback_connection_id })))
+        return { router: null, error: "LocalAI connection not found." };
+    }
 
     try {
       const router = await prisma.model_routers.create({
@@ -54,6 +69,7 @@ const ModelRouter = {
           description: this.validations.description(data.description),
           fallback_provider,
           fallback_model,
+          fallback_connection_id,
           cooldown_seconds: cooldown_seconds ?? 30,
           created_by: creatorId ? Number(creatorId) : null,
         },
@@ -195,6 +211,12 @@ const ModelRouter = {
       if (!model) return { router: null, error: "Fallback model is required." };
       updates.fallback_model = model;
     }
+    if (data.fallback_connection_id !== undefined)
+      updates.fallback_connection_id = this.validations.fallback_connection_id(
+        data.fallback_connection_id
+      );
+    if (updates.fallback_provider && updates.fallback_provider !== "localai")
+      updates.fallback_connection_id = null;
     if (data.cooldown_seconds !== undefined) {
       const cooldown = this.validations.cooldown_seconds(data.cooldown_seconds);
       if (cooldown === null)
@@ -207,6 +229,14 @@ const ModelRouter = {
 
     if (Object.keys(updates).length === 0)
       return { router: { id }, error: "No valid fields to update." };
+
+    if (updates.fallback_connection_id) {
+      const { LocalAiConnection } = require("./localAiConnection");
+      if (
+        !(await LocalAiConnection.get({ id: updates.fallback_connection_id }))
+      )
+        return { router: null, error: "LocalAI connection not found." };
+    }
 
     try {
       const router = await prisma.model_routers.update({

@@ -156,6 +156,20 @@ describeValidation("chatModel", () => {
   });
 });
 
+describeValidation("chatConnectionId", () => {
+  it("coerces a positive integer string", () => {
+    expect(Workspace.validations.chatConnectionId("5")).toBe(5);
+  });
+
+  it("returns null for missing or invalid connection IDs", () => {
+    expect(Workspace.validations.chatConnectionId(null)).toBeNull();
+    expect(Workspace.validations.chatConnectionId("")).toBeNull();
+    expect(Workspace.validations.chatConnectionId("none")).toBeNull();
+    expect(Workspace.validations.chatConnectionId(0)).toBeNull();
+    expect(Workspace.validations.chatConnectionId("invalid")).toBeNull();
+  });
+});
+
 describeValidation("agentProvider", () => {
   it("passes a valid string through", () => {
     expect(Workspace.validations.agentProvider("openai")).toBe("openai");

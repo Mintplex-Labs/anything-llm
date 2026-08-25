@@ -11,6 +11,7 @@ class AnythingLLMModelRouter {
     this.resolvedRoute = null;
     this._routeKey = null;
     this.delegateProvider = null;
+    this.resolvedConnection = null;
     this.defaultTemp = 0.7;
     this.routerService.log(
       `Initialized for workspace "${workspace?.name || workspace?.slug}"`
@@ -55,7 +56,7 @@ class AnythingLLMModelRouter {
     if (calcResult) {
       this.resolvedRoute = calcResult;
       this.routerService.setStickyRoute(this._routeKey, calcResult);
-      this.#finalize();
+      await this.#finalize();
       return;
     }
 
@@ -70,7 +71,7 @@ class AnythingLLMModelRouter {
     if (llmResult) {
       this.resolvedRoute = llmResult;
       this.routerService.setStickyRoute(this._routeKey, llmResult);
-      this.#finalize();
+      await this.#finalize();
       return;
     }
 
@@ -81,7 +82,7 @@ class AnythingLLMModelRouter {
       this.routerService.log(
         `No rules matched → Sticky route active: ${sticky.provider}/${sticky.model} (rule: ${sticky.ruleTitle || "unknown"})`
       );
-      this.#finalize();
+      await this.#finalize();
       return;
     }
 
@@ -89,6 +90,7 @@ class AnythingLLMModelRouter {
     this.resolvedRoute = {
       provider: this.router.fallback_provider,
       model: this.router.fallback_model,
+      connectionId: this.router.fallback_connection_id,
       ruleTitle: null,
       ruleType: null,
       isFallback: true,
@@ -96,14 +98,31 @@ class AnythingLLMModelRouter {
     this.routerService.log(
       `No rules matched, sticky expired → Fallback: ${this.router.fallback_provider}/${this.router.fallback_model}`
     );
-    this.#finalize();
+    await this.#finalize();
   }
 
-  #finalize() {
+  async #finalize() {
+    if (
+      this.resolvedRoute.provider === "localai" &&
+      this.resolvedRoute.connectionId
+    ) {
+      const {
+        LocalAiConnection,
+      } = require("../../../models/localAiConnection");
+      this.resolvedConnection = await LocalAiConnection.get({
+        id: this.resolvedRoute.connectionId,
+      });
+      if (!this.resolvedConnection)
+        throw new Error("The selected LocalAI connection no longer exists.");
+    } else {
+      this.resolvedConnection = null;
+    }
+
     this.delegateProvider = this._instrumentProvider(
       getLLMProvider({
         provider: this.resolvedRoute.provider,
         model: this.resolvedRoute.model,
+        connection: this.resolvedConnection,
       })
     );
   }
@@ -152,6 +171,7 @@ class AnythingLLMModelRouter {
       routedTo: {
         provider: this.resolvedRoute.provider,
         model: this.resolvedRoute.model,
+        connectionId: this.resolvedRoute.connectionId || null,
         ruleTitle: this.resolvedRoute.ruleTitle,
         ruleType: this.resolvedRoute.ruleType,
         isFallback: this.resolvedRoute.isFallback,

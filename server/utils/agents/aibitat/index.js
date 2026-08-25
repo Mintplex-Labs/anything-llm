@@ -952,6 +952,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
           ...this.defaultProvider,
           provider: resolved.provider,
           model: resolved.model,
+          connection: resolved.connection ?? null,
         };
       }
     }
@@ -1455,7 +1456,10 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       case "koboldcpp":
         return new Providers.KoboldCPPProvider({});
       case "localai":
-        return new Providers.LocalAIProvider({ model: config.model });
+        return new Providers.LocalAIProvider({
+          model: config.model,
+          connection: config.connection,
+        });
       case "openrouter":
         return new Providers.OpenRouterProvider({ model: config.model });
       case "mistral":

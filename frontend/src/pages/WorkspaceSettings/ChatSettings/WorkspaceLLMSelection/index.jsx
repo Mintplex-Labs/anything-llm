@@ -8,6 +8,7 @@ import RouterSelection from "./RouterSelection";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
+import LocalAiConnectionSelector from "@/components/LLMSelection/LocalAiConnectionSelector";
 
 // Some providers do not support model selection via /models.
 // In that case we allow the user to enter the model name manually and hope they
@@ -200,12 +201,51 @@ function ModelSelector({ selectedLLM, workspace, setHasChanges }) {
     );
   }
 
+  if (selectedLLM === "localai") {
+    return (
+      <LocalAiModelSelector
+        workspace={workspace}
+        setHasChanges={setHasChanges}
+      />
+    );
+  }
+
   return (
     <ChatModelSelection
       provider={selectedLLM}
       workspace={workspace}
       setHasChanges={setHasChanges}
     />
+  );
+}
+
+function LocalAiModelSelector({ workspace, setHasChanges }) {
+  const [connectionId, setConnectionId] = useState(
+    workspace?.chatConnectionId || ""
+  );
+
+  return (
+    <>
+      <div className="flex flex-col gap-y-[8px]">
+        <label className="block input-label">LocalAI connection</label>
+        <p className="text-white text-opacity-60 text-xs font-medium">
+          Choose a saved connection or use the system LocalAI settings.
+        </p>
+        <LocalAiConnectionSelector
+          value={connectionId}
+          onChange={(value) => {
+            setConnectionId(value);
+            setHasChanges(true);
+          }}
+        />
+      </div>
+      <ChatModelSelection
+        provider="localai"
+        connectionId={connectionId}
+        workspace={workspace}
+        setHasChanges={setHasChanges}
+      />
+    </>
   );
 }
 

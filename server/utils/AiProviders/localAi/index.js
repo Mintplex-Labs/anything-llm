@@ -8,17 +8,20 @@ const {
 } = require("../../helpers/chat/responses");
 
 class LocalAiLLM {
-  constructor(embedder = null, modelPreference = null) {
-    if (!process.env.LOCAL_AI_BASE_PATH)
-      throw new Error("No LocalAI Base Path was set.");
+  constructor(embedder = null, modelPreference = null, connection = null) {
+    const baseURL = connection?.base_url || process.env.LOCAL_AI_BASE_PATH;
+    if (!baseURL) throw new Error("No LocalAI Base Path was set.");
 
     this.className = "LocalAiLLM";
     const { OpenAI: OpenAIApi } = require("openai");
     this.openai = new OpenAIApi({
-      baseURL: process.env.LOCAL_AI_BASE_PATH,
-      apiKey: process.env.LOCAL_AI_API_KEY ?? null,
+      baseURL,
+      apiKey: connection?.api_key ?? process.env.LOCAL_AI_API_KEY ?? null,
     });
-    this.model = modelPreference || process.env.LOCAL_AI_MODEL_PREF;
+    this.model =
+      modelPreference || connection?.model || process.env.LOCAL_AI_MODEL_PREF;
+    this.contextWindow =
+      connection?.token_limit || process.env.LOCAL_AI_MODEL_TOKEN_LIMIT || 4096;
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -55,7 +58,7 @@ class LocalAiLLM {
   // Ensure the user set a value for the token limit
   // and if undefined - assume 4096 window.
   promptWindowLimit() {
-    const limit = process.env.LOCAL_AI_MODEL_TOKEN_LIMIT || 4096;
+    const limit = this.contextWindow;
     if (!limit || isNaN(Number(limit)))
       throw new Error("No LocalAi token context limit was set.");
     return Number(limit);

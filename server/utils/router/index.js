@@ -509,6 +509,7 @@ class ModelRouterService {
     return {
       provider: rule.route_provider,
       model: rule.route_model,
+      connectionId: rule.route_connection_id,
       ruleTitle: rule.title,
       ruleType: rule.type,
       isFallback: false,

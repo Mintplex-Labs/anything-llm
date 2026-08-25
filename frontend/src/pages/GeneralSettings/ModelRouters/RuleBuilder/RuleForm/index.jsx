@@ -84,6 +84,7 @@ export default function RuleForm({
       type: ruleType,
       route_provider: formData.get("route_provider"),
       route_model: formData.get("route_model"),
+      route_connection_id: formData.get("route_connection_id") || null,
       priority: isEditing ? existingRule.priority : Number(nextPriority),
     };
 
@@ -183,10 +184,12 @@ export default function RuleForm({
           <LLMProviderModelPicker
             providerFieldName="route_provider"
             modelFieldName="route_model"
+            connectionFieldName="route_connection_id"
             label={t("model-router.rule-form.route-to-label")}
             description={t("model-router.rule-form.route-to-description")}
             defaultProvider={existingRule?.route_provider || ""}
             defaultModel={existingRule?.route_model || ""}
+            defaultConnectionId={existingRule?.route_connection_id || ""}
           />
         </ModalBody>
         <ModalFooter>

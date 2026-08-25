@@ -209,6 +209,14 @@ class EphemeralAgentHandler extends AgentHandler {
     // If provider resolved to model router, resolve the actual provider/model
     if (this.provider === "anythingllm-router") {
       await this.#resolveRouterProvider();
+    } else if (
+      this.provider === "localai" &&
+      this.#workspace?.chatConnectionId
+    ) {
+      const { LocalAiConnection } = require("../../models/localAiConnection");
+      this.connection = await LocalAiConnection.get({
+        id: this.#workspace.chatConnectionId,
+      });
     }
 
     if (!this.provider)
@@ -253,6 +261,7 @@ class EphemeralAgentHandler extends AgentHandler {
 
     this.provider = router.resolvedRoute.provider;
     this.model = router.resolvedRoute.model;
+    this.connection = router.resolvedConnection;
     this.routingMetadata = router.routingMetadata;
     // Held so the model-router-cooldown plugin can restart the cooldown when
     // the agent stops responding. Routing re-resolves per turn, so this always
@@ -514,6 +523,7 @@ class EphemeralAgentHandler extends AgentHandler {
     this.aibitat = new AIbitat({
       provider: this.provider ?? "openai",
       model: this.model ?? "gpt-4.1-nano",
+      connection: this.connection ?? null,
       chats: await this.#chatHistory(20),
       handlerProps: {
         invocation: {
@@ -537,7 +547,11 @@ class EphemeralAgentHandler extends AgentHandler {
           await this.#resolveRouterProvider(prompt);
           this.aibitat.handlerProps.routingMetadata =
             this.routingMetadata || null;
-          return { provider: this.provider, model: this.model };
+          return {
+            provider: this.provider,
+            model: this.model,
+            connection: this.connection,
+          };
         } catch (e) {
           this.log(
             "Router re-resolution failed, keeping current route",
