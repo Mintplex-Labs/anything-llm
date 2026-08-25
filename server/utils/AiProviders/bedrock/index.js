@@ -10,6 +10,7 @@ const {
   buildAnthropicParams,
   handleAnthropicChatStream,
 } = require("./anthropicChat");
+const { openaiBaseURL, anthropicBaseURL } = require("./endpoints");
 
 class AWSBedrockLLM {
   noSystemPromptModels = [
@@ -46,14 +47,14 @@ class AWSBedrockLLM {
 
     this.openai = new OpenAIApi({
       apiKey: process.env.AWS_BEDROCK_LLM_API_KEY,
-      baseURL: `https://bedrock-mantle.${this.region}.api.aws/v1`,
+      baseURL: openaiBaseURL(this.region),
     });
 
     if (this.model?.includes("anthropic")) {
       const AnthropicAI = require("@anthropic-ai/sdk");
       this.anthropic = new AnthropicAI({
         apiKey: process.env.AWS_BEDROCK_LLM_API_KEY,
-        baseURL: `https://bedrock-mantle.${this.region}.api.aws/anthropic`,
+        baseURL: anthropicBaseURL(this.region, this.model),
         defaultHeaders: { "anthropic-version": "2023-06-01" },
       });
     }
