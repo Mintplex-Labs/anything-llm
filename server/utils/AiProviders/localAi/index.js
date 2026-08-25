@@ -8,6 +8,9 @@ const {
 } = require("../../helpers/chat/responses");
 
 class LocalAiLLM {
+  /** @see LocalAiLLM.cacheContextWindows */
+  static modelContextWindows = {};
+
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.LOCAL_AI_BASE_PATH)
       throw new Error("No LocalAI Base Path was set.");
@@ -19,14 +22,85 @@ class LocalAiLLM {
       apiKey: process.env.LOCAL_AI_API_KEY ?? null,
     });
     this.model = modelPreference || process.env.LOCAL_AI_MODEL_PREF;
+
+    this.embedder = embedder ?? new NativeEmbedder();
+    this.defaultTemp = 0.7;
+
+    // Lazy load the limits to avoid blocking the main thread on cacheContextWindows
+    this.limits = null;
+
+    LocalAiLLM.cacheContextWindows(true);
+    this.#log(`initialized with model: ${this.model}`);
+  }
+
+  #log(text, ...args) {
+    console.log(`\x1b[32m[LocalAI]\x1b[0m ${text}`, ...args);
+  }
+
+  static #slog(text, ...args) {
+    console.log(`\x1b[32m[LocalAI]\x1b[0m ${text}`, ...args);
+  }
+
+  async assertModelContextLimits() {
+    if (this.limits !== null) return;
+    await LocalAiLLM.cacheContextWindows();
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
       user: this.promptWindowLimit() * 0.7,
     };
+    this.#log(
+      `${this.model} is using a max context window of ${this.promptWindowLimit()} tokens.`
+    );
+  }
 
-    this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
+  /**
+   * Cache the context windows for the LocalAI models.
+   * This is done once and then cached for the lifetime of the server. This is absolutely necessary to ensure that the context windows are correct.
+   *
+   * This is a convenience to ensure that the context windows are correct and that the user
+   * does not have to manually set the context window for each model.
+   * @param {boolean} force - Force the cache to be refreshed.
+   * @returns {Promise<void>} - A promise that resolves when the cache is refreshed.
+   */
+  static async cacheContextWindows(force = false) {
+    try {
+      // Skip if we already have cached context windows and we're not forcing a refresh
+      if (Object.keys(LocalAiLLM.modelContextWindows).length > 0 && !force)
+        return;
+
+      const apiKey = process.env.LOCAL_AI_API_KEY ?? null;
+      const headers = apiKey ? { Authorization: `Bearer ${apiKey}` } : {};
+      const { origin } = new URL(process.env.LOCAL_AI_BASE_PATH);
+      const { data: models = [] } = await fetch(`${origin}/v1/models`, {
+        headers,
+      }).then((res) => {
+        if (!res.ok)
+          throw new Error(`LocalAI:cacheContextWindows - ${res.statusText}`);
+        return res.json();
+      });
+      if (!models.length) return;
+
+      // The context window is only reported on the model config - never on `/v1/models`.
+      // Model ids are used raw here since LocalAI 404s on a URL-encoded name.
+      const configs = await Promise.all(
+        models.map(({ id }) =>
+          fetch(`${origin}/api/models/config-json/${id}`, { headers })
+            .then((res) => (res.ok ? res.json() : {}))
+            .then((config) => ({ id, ...config }))
+            .catch(() => ({ id }))
+        )
+      );
+      configs.forEach(({ id, context_size }) => {
+        // Non-text models (image, tts, etc) have no context size at all.
+        if (!context_size) return;
+        LocalAiLLM.modelContextWindows[id] = Number(context_size);
+      });
+      LocalAiLLM.#slog(`Context windows cached for all models!`);
+    } catch (e) {
+      LocalAiLLM.#slog(`Error caching context windows`, e);
+      return;
+    }
   }
 
   #appendContext(contextTexts = []) {
@@ -45,20 +119,34 @@ class LocalAiLLM {
     return "streamGetChatCompletion" in this;
   }
 
-  static promptWindowLimit(_modelName) {
-    const limit = process.env.LOCAL_AI_MODEL_TOKEN_LIMIT || 4096;
-    if (!limit || isNaN(Number(limit)))
-      throw new Error("No LocalAi token context limit was set.");
-    return Number(limit);
+  static promptWindowLimit(modelName) {
+    if (Object.keys(LocalAiLLM.modelContextWindows).length === 0) {
+      this.#slog(
+        "No context windows cached - Context window may be inaccurately reported."
+      );
+      return Number(process.env.LOCAL_AI_MODEL_TOKEN_LIMIT) || 4096;
+    }
+
+    let userDefinedLimit = null;
+    const systemDefinedLimit =
+      Number(this.modelContextWindows[modelName]) || 4096;
+
+    if (
+      process.env.LOCAL_AI_MODEL_TOKEN_LIMIT &&
+      !isNaN(Number(process.env.LOCAL_AI_MODEL_TOKEN_LIMIT)) &&
+      Number(process.env.LOCAL_AI_MODEL_TOKEN_LIMIT) > 0
+    )
+      userDefinedLimit = Number(process.env.LOCAL_AI_MODEL_TOKEN_LIMIT);
+
+    // The user defined limit is always higher priority than the context window limit, but it cannot be higher than the context window limit
+    // so we return the minimum of the two, if there is no user defined limit, we return the system defined limit as-is.
+    if (userDefinedLimit !== null)
+      return Math.min(userDefinedLimit, systemDefinedLimit);
+    return systemDefinedLimit;
   }
 
-  // Ensure the user set a value for the token limit
-  // and if undefined - assume 4096 window.
   promptWindowLimit() {
-    const limit = process.env.LOCAL_AI_MODEL_TOKEN_LIMIT || 4096;
-    if (!limit || isNaN(Number(limit)))
-      throw new Error("No LocalAi token context limit was set.");
-    return Number(limit);
+    return this.constructor.promptWindowLimit(this.model);
   }
 
   async isValidChatCompletionModel(_ = "") {
@@ -187,6 +275,7 @@ class LocalAiLLM {
   }
 
   async compressMessages(promptArgs = {}, rawHistory = []) {
+    await this.assertModelContextLimits();
     const { messageArrayCompressor } = require("../../helpers/chat");
     const messageArray = this.constructPrompt(promptArgs);
     return await messageArrayCompressor(this, messageArray, rawHistory);
