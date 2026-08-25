@@ -145,7 +145,7 @@ AnythingLLMは複数ユーザーもサポートしており、インスタンス
 - `server`: すべてのインタラクションを処理し、すべてのベクトルDB管理およびLLMインタラクションを行うNodeJS expressサーバー。
 - `collector`: UIからドキュメントを処理および解析するNodeJS expressサーバー。
 - `docker`: Dockerの指示およびビルドプロセス + ソースからのビルド情報。
-- `embed`: [埋め込みウィジェット](https://github.com/Mintplex-Labs/anythingllm-embed/blob/main/README.md)の生成に特化したコード。
+- `embed`: [埋め込みウィジェット](../embed/README.md)の生成に特化したコード。
 
 ## 🛳 セルフホスティング
 
