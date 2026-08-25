@@ -47,6 +47,7 @@ const HistoricalMessage = ({
   feedbackScore = null,
   chatId = null,
   isLastMessage = false,
+  closed,
   regenerateMessage,
   saveEditedMessage,
   forkThread,
@@ -166,7 +167,7 @@ const HistoricalMessage = ({
               role={role}
               message={message}
               messageId={uuid}
-              allowAnimation={isLastMessage}
+              allowAnimation={isLastMessage && closed === false}
             />
             {isRefusalMessage && (
               <Link

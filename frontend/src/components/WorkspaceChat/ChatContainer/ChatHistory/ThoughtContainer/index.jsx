@@ -1,6 +1,7 @@
 import {
   useState,
   useEffect,
+  useRef,
   forwardRef,
   useImperativeHandle,
   createContext,
@@ -8,11 +9,16 @@ import {
   useCallback,
 } from "react";
 import renderMarkdown from "@/utils/chat/markdown";
-import { CaretDown } from "@phosphor-icons/react";
+import { formatDuration } from "@/utils/numbers";
 import DOMPurify from "dompurify";
-import { isMobile } from "react-device-detect";
 import ThinkingAnimation from "@/media/animations/thinking-animation.webm";
 import ThinkingStatic from "@/media/animations/thinking-static.png";
+import {
+  ChainOfThought,
+  ChainOfThoughtContent,
+  ChainOfThoughtHeader,
+  ChainOfThoughtStep,
+} from "../ChainOfThought";
 
 /**
  * Context to persist thought expansion state across component transitions
@@ -22,6 +28,7 @@ const ThoughtExpansionContext = createContext(null);
 
 export function ThoughtExpansionProvider({ children }) {
   const [expansionStates, setExpansionStates] = useState({});
+  const [durations, setDurations] = useState({});
 
   const getExpanded = useCallback(
     (messageId) => {
@@ -39,8 +46,24 @@ export function ThoughtExpansionProvider({ children }) {
     }));
   }, []);
 
+  const getDuration = useCallback(
+    (messageId) => (messageId ? (durations[messageId] ?? null) : null),
+    [durations]
+  );
+
+  // First write wins. The reply is measured once while it streams; re-renders
+  // after that must not restart or overwrite the recorded time.
+  const setDuration = useCallback((messageId, seconds) => {
+    if (!messageId) return;
+    setDurations((prev) =>
+      prev[messageId] != null ? prev : { ...prev, [messageId]: seconds }
+    );
+  }, []);
+
   return (
-    <ThoughtExpansionContext.Provider value={{ getExpanded, setExpanded }}>
+    <ThoughtExpansionContext.Provider
+      value={{ getExpanded, setExpanded, getDuration, setDuration }}
+    >
       {children}
     </ThoughtExpansionContext.Provider>
   );
@@ -58,6 +81,44 @@ export function useThoughtExpansion(messageId) {
   };
 }
 
+/**
+ * Times how long a reply spent thinking and keeps the result on the provider,
+ * which outlives the swap from PromptReply to HistoricalMessage. Nothing about
+ * the duration is persisted server-side, so a reload leaves this null.
+ * @param {string} messageId
+ * @param {boolean} isThinking
+ * @returns {number|null} seconds spent thinking, or null if it was not observed
+ */
+function useThoughtDuration(messageId, isThinking) {
+  const context = useContext(ThoughtExpansionContext);
+  const startedAt = useRef(null);
+  const recorded = context?.getDuration(messageId) ?? null;
+  const setDuration = context?.setDuration;
+
+  useEffect(() => {
+    if (isThinking) {
+      if (startedAt.current === null) startedAt.current = Date.now();
+      return;
+    }
+    if (startedAt.current === null) return;
+    setDuration?.(messageId, (Date.now() - startedAt.current) / 1000);
+    startedAt.current = null;
+  }, [isThinking, messageId, setDuration]);
+
+  return recorded;
+}
+
+/**
+ * @param {boolean} isThinking
+ * @param {number|null} duration - seconds spent thinking, when it was observed
+ * @returns {string}
+ */
+export function thoughtLabel(isThinking, duration) {
+  if (isThinking) return "Thinking...";
+  if (duration) return `Thought for ${formatDuration(duration)}`;
+  return "Thoughts";
+}
+
 const THOUGHT_KEYWORDS = ["thought", "thinking", "think", "thought_chain"];
 const CLOSING_TAGS = [...THOUGHT_KEYWORDS, "response", "answer"];
 export const THOUGHT_REGEX_OPEN = new RegExp(
@@ -72,7 +133,6 @@ export const THOUGHT_REGEX_COMPLETE = new RegExp(
       `<${keyword}\\s*(?:[^>]*?)?\\s*>[\\s\\S]*?<\\/${keyword}\\s*(?:[^>]*?)?>`
   ).join("|")
 );
-const THOUGHT_PREVIEW_LENGTH = isMobile ? 25 : 50;
 
 /**
  * Checks if the content has readable content.
@@ -128,94 +188,65 @@ export const ThoughtChainComponent = forwardRef(
       allowAnimation &&
       content.match(THOUGHT_REGEX_OPEN) &&
       !content.match(THOUGHT_REGEX_CLOSE);
-    const isComplete =
-      content.match(THOUGHT_REGEX_COMPLETE) ||
-      content.match(THOUGHT_REGEX_CLOSE);
+    const duration = useThoughtDuration(messageId, !!isThinking);
     const tagStrippedContent = content
       .replace(THOUGHT_REGEX_OPEN, "")
       .replace(THOUGHT_REGEX_CLOSE, "");
-    const canExpand = tagStrippedContent.length > THOUGHT_PREVIEW_LENGTH;
     if (!content || !content.length || !hasReadableContent) return null;
 
-    function handleExpandClick() {
-      if (!canExpand) return;
-      setIsExpanded(!isExpanded);
-    }
-
     return (
-      <div className="flex justify-center w-full">
-        <div className="w-full flex flex-col">
-          <div className="w-full">
-            <div
-              style={{
-                transition: "all 0.1s ease-in-out",
-                borderRadius: "16px",
-              }}
-              className="relative bg-zinc-800 light:bg-slate-100 p-4"
-            >
-              <div className="absolute top-4 left-4 w-[18px] h-[18px]">
-                {isThinking ? (
-                  <video
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="w-[18px] h-[18px] scale-[115%] light:invert light:opacity-50"
-                    data-tooltip-id="cot-thinking"
-                    data-tooltip-content="Model is thinking..."
-                    aria-label="Model is thinking..."
-                  >
-                    <source src={ThinkingAnimation} type="video/webm" />
-                  </video>
-                ) : isComplete ? (
-                  <img
-                    src={ThinkingStatic}
-                    alt="Thinking complete"
-                    className="w-[18px] h-[18px] light:invert light:opacity-50"
-                    data-tooltip-id="cot-thinking"
-                    data-tooltip-content="Model has finished thinking"
-                    aria-label="Model has finished thinking"
-                  />
-                ) : null}
-              </div>
-              {canExpand && (
-                <button
-                  onClick={handleExpandClick}
-                  className="absolute top-4 right-4 border-none text-zinc-200 light:text-slate-800 transition-colors"
-                  data-tooltip-id="expand-cot"
-                  data-tooltip-content={
-                    isExpanded ? "Hide thought chain" : "Show thought chain"
-                  }
-                  aria-label={
-                    isExpanded ? "Hide thought chain" : "Show thought chain"
-                  }
-                >
-                  <CaretDown
-                    className={`w-4 h-4 transform transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
-                  />
-                </button>
-              )}
+      <ChainOfThought open={isExpanded} onOpenChange={setIsExpanded}>
+        <ChainOfThoughtHeader
+          icon={<ThinkingIcon isThinking={isThinking} />}
+          pending={!!isThinking}
+          data-tooltip-id="expand-cot"
+          data-tooltip-content={
+            isExpanded ? "Hide thought chain" : "Show thought chain"
+          }
+        >
+          {thoughtLabel(isThinking, duration)}
+        </ChainOfThoughtHeader>
+        <ChainOfThoughtContent>
+          <ChainOfThoughtStep
+            status={isThinking ? "active" : "complete"}
+            label={
               <div
-                className={`ml-[28px] mr-[26px] transition-[max-height] duration-300 ease-in-out origin-top ${isExpanded ? "" : "overflow-hidden max-h-[18px]"}`}
-              >
-                <div className="text-zinc-200 light:text-slate-800 font-mono text-sm leading-[18px] [&_p]:m-0">
-                  <span
-                    className={`block w-full ${!isExpanded ? "truncate" : ""}`}
-                    dangerouslySetInnerHTML={{
-                      __html: DOMPurify.sanitize(
-                        isExpanded
-                          ? renderMarkdown(tagStrippedContent)
-                          : tagStrippedContent
-                      ),
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+                className="font-mono [&_p]:m-0"
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(
+                    renderMarkdown(tagStrippedContent)
+                  ),
+                }}
+              />
+            }
+          />
+        </ChainOfThoughtContent>
+      </ChainOfThought>
     );
   }
 );
 ThoughtChainComponent.displayName = "ThoughtChainComponent";
+
+function ThinkingIcon({ isThinking }) {
+  if (isThinking)
+    return (
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="w-4 h-4 flex-shrink-0 scale-[115%] light:invert light:opacity-50"
+        aria-label="Model is thinking..."
+      >
+        <source src={ThinkingAnimation} type="video/webm" />
+      </video>
+    );
+
+  return (
+    <img
+      src={ThinkingStatic}
+      alt=""
+      className="w-4 h-4 flex-shrink-0 light:invert light:opacity-50"
+    />
+  );
+}

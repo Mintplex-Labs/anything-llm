@@ -320,6 +320,7 @@ function buildMessages({
           attachments={props.attachments}
           regenerateMessage={regenerateAssistantMessage}
           isLastMessage={isLastBotReply}
+          closed={props.closed}
           saveEditedMessage={saveEditedMessage}
           forkThread={forkThread}
           metrics={props.metrics}

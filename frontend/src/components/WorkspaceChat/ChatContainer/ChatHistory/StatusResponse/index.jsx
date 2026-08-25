@@ -1,99 +1,94 @@
-import React, { useState } from "react";
-import { CaretDown } from "@phosphor-icons/react";
-
+import { useEffect, useRef, useState } from "react";
 import AgentAnimation from "@/media/animations/agent-animation.webm";
 import AgentStatic from "@/media/animations/agent-static.png";
+import { thoughtLabel } from "../ThoughtContainer";
+import {
+  ChainOfThought,
+  ChainOfThoughtContent,
+  ChainOfThoughtHeader,
+  ChainOfThoughtStep,
+} from "../ChainOfThought";
 
 export default function StatusResponse({ messages = [], isThinking = false }) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const duration = useAgentDuration(messages.length);
   const currentThought = messages[messages.length - 1];
-  const previousThoughts = messages.slice(0, -1);
-
-  function handleExpandClick() {
-    if (!previousThoughts.length > 0) return;
-    setIsExpanded(!isExpanded);
-  }
 
   return (
-    <div className="flex justify-center w-full pr-4">
-      <div className="w-full flex flex-col">
-        <div className="w-full">
-          <div
-            onClick={handleExpandClick}
-            style={{
-              transition: "all 0.1s ease-in-out",
-              borderRadius: "16px",
-            }}
-            className="relative bg-zinc-800 light:bg-slate-100 p-4"
-          >
-            <div className="absolute top-4 left-4 w-[18px] h-[18px]">
-              {isThinking ? (
-                <video
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="w-[18px] h-[18px] scale-[165%] transition-opacity duration-200 light:invert light:opacity-50"
-                  data-tooltip-id="agent-thinking"
-                  data-tooltip-content="Agent is thinking..."
-                  aria-label="Agent is thinking..."
-                >
-                  <source src={AgentAnimation} type="video/webm" />
-                </video>
-              ) : (
-                <img
-                  src={AgentStatic}
-                  alt="Agent complete"
-                  className="w-[18px] h-[18px] transition-opacity duration-200 light:invert light:opacity-50"
-                  data-tooltip-id="agent-thinking"
-                  data-tooltip-content="Agent has finished thinking"
-                  aria-label="Agent has finished thinking"
-                />
-              )}
-            </div>
-            {previousThoughts?.length > 0 && (
-              <button
-                onClick={handleExpandClick}
-                className="absolute top-4 right-4 border-none text-zinc-200 light:text-slate-800 transition-colors"
-                data-tooltip-id="expand-cot"
-                data-tooltip-content={
-                  isExpanded ? "Hide thought chain" : "Show thought chain"
-                }
-                aria-label={
-                  isExpanded ? "Hide thought chain" : "Show thought chain"
-                }
-              >
-                <CaretDown
-                  className={`w-4 h-4 transform transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
-                />
-              </button>
-            )}
-            <div
-              className={`ml-[28px] mr-[26px] transition-[max-height] duration-300 ease-in-out origin-top ${isExpanded ? "" : "overflow-hidden max-h-[18px]"}`}
-            >
-              <div className="text-zinc-200 light:text-slate-800 font-mono text-sm leading-[18px]">
-                {!isExpanded ? (
-                  <span className="block w-full truncate">
-                    {currentThought.content}
-                  </span>
-                ) : (
-                  <>
-                    {previousThoughts.map((thought, index) => (
-                      <div
-                        key={`cot-${thought.uuid || index}`}
-                        className="mb-2"
-                      >
-                        {thought.content}
-                      </div>
-                    ))}
-                    <div>{currentThought.content}</div>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <ChainOfThought open={isExpanded} onOpenChange={setIsExpanded}>
+      <ChainOfThoughtHeader
+        icon={<AgentIcon isThinking={isThinking} />}
+        pending={isThinking}
+        data-tooltip-id="expand-cot"
+        data-tooltip-content={
+          isExpanded ? "Hide thought chain" : "Show thought chain"
+        }
+      >
+        {isThinking ? currentThought?.content : thoughtLabel(false, duration)}
+      </ChainOfThoughtHeader>
+      <ChainOfThoughtContent>
+        {messages.map((thought, index) => (
+          <ChainOfThoughtStep
+            key={`cot-${thought.uuid || index}`}
+            label={thought.content}
+            status={
+              isThinking && index === messages.length - 1
+                ? "active"
+                : "complete"
+            }
+          />
+        ))}
+      </ChainOfThoughtContent>
+    </ChainOfThought>
+  );
+}
+
+/**
+ * Measures the span the stacked thoughts cover: the first status update to the
+ * last. Status updates carry no timestamps, so they are timed on arrival; they
+ * are also never persisted, so this component stays mounted for the whole run
+ * and a reload drops the run entirely. Ending at the last update rather than at
+ * the end of the run leaves out the final answer, which the agent generates
+ * after it stops reporting steps.
+ * @param {number} messageCount
+ * @returns {number|null} seconds spanned, or null before a second update lands
+ */
+function useAgentDuration(messageCount) {
+  const firstSeenAt = useRef(null);
+  const [duration, setDuration] = useState(null);
+
+  useEffect(() => {
+    if (!messageCount) return;
+    if (firstSeenAt.current === null) {
+      firstSeenAt.current = Date.now();
+      return;
+    }
+    setDuration((Date.now() - firstSeenAt.current) / 1000);
+  }, [messageCount]);
+
+  return duration;
+}
+
+function AgentIcon({ isThinking }) {
+  if (isThinking)
+    return (
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="w-4 h-4 flex-shrink-0 scale-[165%] light:invert light:opacity-50"
+        aria-label="Agent is thinking..."
+      >
+        <source src={AgentAnimation} type="video/webm" />
+      </video>
+    );
+
+  return (
+    <img
+      src={AgentStatic}
+      alt=""
+      className="w-4 h-4 flex-shrink-0 light:invert light:opacity-50"
+    />
   );
 }
