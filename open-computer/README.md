@@ -108,7 +108,7 @@ You can skip building QEMU or the base image from scratch by using the pre-built
 
 ## Unzip the QEMU Binaries
 
-Pre-built QEMU binaries for macOS ARM64 and Windows x64 are in the `master/qemu` folder. Unzip the one you need. On macOS, you may need to unquarantine the binaries first. If you'd rather build from source, see [BUILD-QEMU.md](master/qemu/BUILD-QEMU.md).
+Pre-built QEMU binaries for macOS ARM64 and Windows x64 are in the `master/qemu` folder. Unzip the one you need. On macOS, you may need to unquarantine the binaries first.
 
 ## Grab the Base Debian ISO
 
