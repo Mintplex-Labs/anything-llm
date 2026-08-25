@@ -12,6 +12,37 @@ const {
 } = require("./anthropicChat");
 const { openaiBaseURL, anthropicBaseURL } = require("./endpoints");
 
+/**
+ * Bedrock's OpenAI-compatible stream reports usage in a final chunk that
+ * arrives AFTER the `finish_reason` chunk, but the default stream handler
+ * stops reading at the first `finish_reason` and would never see it -
+ * leaving metrics to be estimated at one token per visible chunk, which
+ * wildly undercounts reasoning models. This holds back only the
+ * `finish_reason` chunk and merges the trailing usage chunk into it before
+ * yielding, so real usage reaches the handler. Normal token chunks pass
+ * through without delay.
+ * @param {AsyncIterable<object>} stream
+ */
+async function* mergeTrailingUsageChunk(stream) {
+  let held = null;
+  for await (const chunk of stream) {
+    if (held) {
+      const usageOnly =
+        (!chunk?.choices || chunk.choices.length === 0) && !!chunk?.usage;
+      if (usageOnly) held.usage = chunk.usage;
+      yield held;
+      held = null;
+      if (usageOnly) continue;
+    }
+    if (!!chunk?.choices?.[0]?.finish_reason && !chunk?.usage) {
+      held = chunk;
+      continue;
+    }
+    yield chunk;
+  }
+  if (held) yield held;
+}
+
 class AWSBedrockLLM {
   noSystemPromptModels = [
     "amazon.titan-text-express-v1",
@@ -244,9 +275,10 @@ class AWSBedrockLLM {
       messages,
       temperature: this.temperatureParam(temperature),
       stream: true,
+      stream_options: { include_usage: true },
     });
     return await LLMPerformanceMonitor.measureStream({
-      func: stream,
+      func: mergeTrailingUsageChunk(stream),
       messages,
       modelTag: this.model,
       provider: this.className,
