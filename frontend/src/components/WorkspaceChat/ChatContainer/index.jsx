@@ -352,6 +352,13 @@ export default function ChatContainer({
   // TODO: Simplify this WSS stuff
   useEffect(() => {
     let socket = null;
+    let onAbortStream = null;
+
+    function removeAbortListener() {
+      if (!onAbortStream) return;
+      window.removeEventListener(ABORT_STREAM_EVENT, onAbortStream);
+      onAbortStream = null;
+    }
 
     function handleWSS() {
       try {
@@ -361,12 +368,13 @@ export default function ChatContainer({
         );
         socket.supportsAgentStreaming = false;
 
-        window.addEventListener(ABORT_STREAM_EVENT, () => {
+        onAbortStream = () => {
           setAgentSessionActive(false);
           setAgentSessionSocket(null);
           window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
           socket?.close();
-        });
+        };
+        window.addEventListener(ABORT_STREAM_EVENT, onAbortStream);
 
         socket.addEventListener("message", (event) => {
           try {
@@ -388,6 +396,7 @@ export default function ChatContainer({
         });
 
         socket.addEventListener("close", (_event) => {
+          removeAbortListener();
           setAgentSessionActive(false);
           setAgentSessionSocket(null);
           window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
@@ -447,6 +456,7 @@ export default function ChatContainer({
     handleWSS();
 
     return () => {
+      removeAbortListener();
       if (socket) {
         setAgentSessionActive(false);
         window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
