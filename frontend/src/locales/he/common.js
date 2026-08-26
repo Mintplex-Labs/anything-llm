@@ -1348,6 +1348,8 @@ const TRANSLATIONS = {
     generating_response: "יצירת תגובה",
     response_failed: "לא ניתן להגיב למסר.",
     response_failed_reason: "סיבה: {{reason}}",
+    thought_in_progress: "המערכת חושבת…",
+    thoughts: "מחשבות",
   },
   profile_settings: {
     edit_account: "ערוך חשבון",

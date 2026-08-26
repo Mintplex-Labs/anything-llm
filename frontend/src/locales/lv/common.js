@@ -1405,6 +1405,8 @@ const TRANSLATIONS = {
     generating_response: "Atbildes izveide",
     response_failed: "Neizdevās atbildēt uz ziņojumu.",
     response_failed_reason: "Iemesls: {{reason}}",
+    thought_in_progress: "Modeļim ir domas...",
+    thoughts: "Domas",
   },
   profile_settings: {
     edit_account: "Rediģēt kontu",

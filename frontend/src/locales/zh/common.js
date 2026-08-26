@@ -1304,6 +1304,8 @@ const TRANSLATIONS = {
     generating_response: "生成回复",
     response_failed: "无法回复消息。",
     response_failed_reason: "原因：{{reason}}",
+    thought_in_progress: "正在思考…",
+    thoughts: "想法、思绪",
   },
   profile_settings: {
     edit_account: "编辑帐户",

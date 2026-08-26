@@ -1361,6 +1361,8 @@ const TRANSLATIONS = {
     generating_response: "Vastus genereerimine",
     response_failed: "Ei olnud võimalik vastata teatele.",
     response_failed_reason: "põhjus: {{reason}}",
+    thought_in_progress: "Mudel mõtleb…",
+    thoughts: "Mõtisklused",
   },
   profile_settings: {
     edit_account: "Muuda kontot",

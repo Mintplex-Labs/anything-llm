@@ -1308,6 +1308,8 @@ const TRANSLATIONS = {
     generating_response: "Antwoord genereren",
     response_failed: "Kon de bericht niet beantwoorden.",
     response_failed_reason: "Reden: {{reason}}",
+    thought_in_progress: "Het model denkt...",
+    thoughts: "Denken",
   },
   profile_settings: {
     edit_account: "Account bewerken",

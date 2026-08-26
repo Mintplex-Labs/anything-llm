@@ -1279,6 +1279,8 @@ const TRANSLATIONS = {
     generating_response: "応答を生成する",
     response_failed: "メッセージへの返信ができませんでした。",
     response_failed_reason: "理由：{{reason}}",
+    thought_in_progress: "モデルは思考しています…",
+    thoughts: "考え、思索",
   },
   profile_settings: {
     edit_account: "アカウントを編集",

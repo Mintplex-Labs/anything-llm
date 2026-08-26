@@ -1421,6 +1421,8 @@ const TRANSLATIONS = {
     generating_response: "Generování odpovědi",
     response_failed: "Nebyl možné odpovědět na zprávu.",
     response_failed_reason: "Důvod: {{reason}}",
+    thought_in_progress: "Systém přemýšlí…",
+    thoughts: "Myšlenky",
   },
   profile_settings: {
     edit_account: "Upravit účet",
