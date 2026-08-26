@@ -304,6 +304,14 @@ export default function ChatContainer({
       // Override hook for new messages to now go to agents until the connection closes
       if (!!websocket) {
         if (!promptMessage || !promptMessage?.userMessage) return false;
+
+        // Session start re-triggers this effect (setLoadingResponse(true) in
+        // handleWSS) while the socket is still CONNECTING. The server already
+        // begins working on the invocation prompt itself on connect, so there
+        // is no feedback to relay yet - sending here would both throw
+        // (InvalidStateError) and duplicate the opening prompt.
+        if (websocket.readyState !== WebSocket.OPEN) return;
+
         const attachments = promptMessage?.attachments ?? parseAttachments();
         window.dispatchEvent(new CustomEvent(CLEAR_ATTACHMENTS_EVENT));
         websocket.send(
