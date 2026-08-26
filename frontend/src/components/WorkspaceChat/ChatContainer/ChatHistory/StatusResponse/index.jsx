@@ -83,7 +83,7 @@ function AgentIcon({ isThinking }) {
   return (
     <img
       src={AgentStatic}
-      alt=""
+      alt="Agent complete"
       className="w-4 h-4 flex-shrink-0 light:invert light:opacity-50"
     />
   );

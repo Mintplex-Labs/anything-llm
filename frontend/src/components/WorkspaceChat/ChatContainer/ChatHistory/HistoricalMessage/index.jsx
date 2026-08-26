@@ -47,7 +47,6 @@ const HistoricalMessage = ({
   feedbackScore = null,
   chatId = null,
   isLastMessage = false,
-  closed,
   regenerateMessage,
   saveEditedMessage,
   forkThread,
@@ -167,7 +166,7 @@ const HistoricalMessage = ({
               role={role}
               message={message}
               messageId={uuid}
-              allowAnimation={isLastMessage && closed === false}
+              allowAnimation={isLastMessage}
             />
             {isRefusalMessage && (
               <Link
@@ -228,7 +227,6 @@ export default memo(
     return (
       prevProps.message === nextProps.message &&
       prevProps.isLastMessage === nextProps.isLastMessage &&
-      prevProps.closed === nextProps.closed &&
       prevProps.chatId === nextProps.chatId &&
       JSON.stringify(prevProps.metrics) === JSON.stringify(nextProps.metrics) &&
       JSON.stringify(prevProps.sources) === JSON.stringify(nextProps.sources) &&

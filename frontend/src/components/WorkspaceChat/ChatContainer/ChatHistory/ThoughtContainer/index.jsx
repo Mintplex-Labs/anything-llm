@@ -1,14 +1,15 @@
 import {
   useState,
   useEffect,
-  useRef,
+  useMemo,
   forwardRef,
   useImperativeHandle,
   createContext,
   useContext,
   useCallback,
 } from "react";
-import renderMarkdown from "@/utils/chat/markdown";
+import { useTranslation } from "react-i18next";
+import { renderThoughtMarkdown } from "@/utils/chat/markdown";
 import { formatDuration } from "@/utils/numbers";
 import DOMPurify from "dompurify";
 import ThinkingAnimation from "@/media/animations/thinking-animation.webm";
@@ -17,7 +18,6 @@ import {
   ChainOfThought,
   ChainOfThoughtContent,
   ChainOfThoughtHeader,
-  ChainOfThoughtStep,
 } from "../ChainOfThought";
 
 /**
@@ -28,7 +28,6 @@ const ThoughtExpansionContext = createContext(null);
 
 export function ThoughtExpansionProvider({ children }) {
   const [expansionStates, setExpansionStates] = useState({});
-  const [durations, setDurations] = useState({});
 
   const getExpanded = useCallback(
     (messageId) => {
@@ -46,24 +45,8 @@ export function ThoughtExpansionProvider({ children }) {
     }));
   }, []);
 
-  const getDuration = useCallback(
-    (messageId) => (messageId ? (durations[messageId] ?? null) : null),
-    [durations]
-  );
-
-  // First write wins. The reply is measured once while it streams; re-renders
-  // after that must not restart or overwrite the recorded time.
-  const setDuration = useCallback((messageId, seconds) => {
-    if (!messageId) return;
-    setDurations((prev) =>
-      prev[messageId] != null ? prev : { ...prev, [messageId]: seconds }
-    );
-  }, []);
-
   return (
-    <ThoughtExpansionContext.Provider
-      value={{ getExpanded, setExpanded, getDuration, setDuration }}
-    >
+    <ThoughtExpansionContext.Provider value={{ getExpanded, setExpanded }}>
       {children}
     </ThoughtExpansionContext.Provider>
   );
@@ -82,72 +65,14 @@ export function useThoughtExpansion(messageId) {
 }
 
 /**
- * Times how long a reply spent thinking and keeps the result on the provider,
- * which outlives the swap from PromptReply to HistoricalMessage. Nothing about
- * the duration is persisted server-side, so a reload leaves this null.
- * @param {string} messageId
  * @param {boolean} isThinking
- * @returns {number|null} seconds spent thinking, or null if it was not observed
- */
-function useThoughtDuration(messageId, isThinking) {
-  const context = useContext(ThoughtExpansionContext);
-  const startedAt = useRef(null);
-  const recorded = context?.getDuration(messageId) ?? null;
-  const setDuration = context?.setDuration;
-
-  useEffect(() => {
-    if (isThinking) {
-      if (startedAt.current === null) startedAt.current = Date.now();
-      return;
-    }
-    if (startedAt.current === null) return;
-    setDuration?.(messageId, (Date.now() - startedAt.current) / 1000);
-    startedAt.current = null;
-  }, [isThinking, messageId, setDuration]);
-
-  return recorded;
-}
-
-/**
- * @param {boolean} isThinking
- * @param {number|null} duration - seconds spent thinking, when it was observed
+ * @param {number|null} duration - seconds spent working, when it was observed
  * @returns {string}
  */
 export function thoughtLabel(isThinking, duration) {
   if (isThinking) return "Thinking...";
   if (duration) return `Thought for ${formatDuration(duration)}`;
   return "Thoughts";
-}
-
-/**
- * Latest non-empty line of a streaming thought, shown as the live header
- * preview while the model is still thinking.
- * @param {string} content
- * @returns {string}
- */
-function lastLineOf(content = "") {
-  return content.trim().split("\n").filter(Boolean).pop() ?? "";
-}
-
-/**
- * Splits a thought block into one entry per line so each renders as its own
- * step. Models write reasoning as newline-separated thoughts inside a single
- * think tag. Lines inside a fenced code block stay part of one entry so the
- * fence still renders as markdown.
- * @param {string} content
- * @returns {string[]}
- */
-function splitThoughts(content = "") {
-  const thoughts = [];
-  let inFence = false;
-  for (const line of content.split("\n")) {
-    const trimmed = line.trim();
-    if (!trimmed && !inFence) continue;
-    if (inFence) thoughts[thoughts.length - 1] += `\n${line}`;
-    else thoughts.push(line);
-    if (trimmed.startsWith("```")) inFence = !inFence;
-  }
-  return thoughts;
 }
 
 const THOUGHT_KEYWORDS = ["thought", "thinking", "think", "thought_chain"];
@@ -188,6 +113,7 @@ function contentIsNotEmpty(content = "") {
  */
 export const ThoughtChainComponent = forwardRef(
   ({ content: initialContent, messageId, allowAnimation = false }, ref) => {
+    const { t } = useTranslation();
     const [content, setContent] = useState(initialContent);
     const [hasReadableContent, setHasReadableContent] = useState(
       contentIsNotEmpty(initialContent)
@@ -215,43 +141,46 @@ export const ThoughtChainComponent = forwardRef(
       },
     }));
 
+    // Whether the model is mid-thought is detected purely from the think
+    // tags: an open tag with no closing tag means thinking is in progress.
+    // The server never reports this state. allowAnimation only gates the
+    // shimmer/video so stale history can't animate forever.
     const isThinking =
-      allowAnimation &&
-      content.match(THOUGHT_REGEX_OPEN) &&
+      !!content.match(THOUGHT_REGEX_OPEN) &&
       !content.match(THOUGHT_REGEX_CLOSE);
-    const duration = useThoughtDuration(messageId, !!isThinking);
+    const animate = allowAnimation && isThinking;
     const tagStrippedContent = content
       .replace(THOUGHT_REGEX_OPEN, "")
       .replace(THOUGHT_REGEX_CLOSE, "");
+
+    const thoughtHtml = useMemo(
+      () => DOMPurify.sanitize(renderThoughtMarkdown(tagStrippedContent)),
+      [tagStrippedContent]
+    );
+
     if (!content || !content.length || !hasReadableContent) return null;
 
     return (
       <ChainOfThought open={isExpanded} onOpenChange={setIsExpanded}>
         <ChainOfThoughtHeader
-          icon={<ThinkingIcon isThinking={isThinking} />}
-          pending={!!isThinking}
+          icon={<ThinkingIcon isThinking={animate} />}
+          pending={animate}
         >
           {isThinking
-            ? lastLineOf(tagStrippedContent) || "Thinking..."
-            : thoughtLabel(false, duration)}
+            ? t("chat_window.thought_in_progress")
+            : t("chat_window.thoughts")}
         </ChainOfThoughtHeader>
         <ChainOfThoughtContent>
-          {splitThoughts(tagStrippedContent).map((thought, index, all) => (
-            <ChainOfThoughtStep
-              key={index}
-              status={
-                isThinking && index === all.length - 1 ? "active" : "complete"
-              }
-              label={
-                <div
-                  className="font-mono [&_p]:m-0"
-                  dangerouslySetInnerHTML={{
-                    __html: DOMPurify.sanitize(renderMarkdown(thought)),
-                  }}
-                />
-              }
-            />
-          ))}
+          {/*
+            A thought is one cohesive block of prose, not discrete steps, so it
+            renders as a single markdown body rather than ChainOfThoughtStep
+            bullets. List/paragraph styling comes from the chat container's
+            global `.markdown` styles.
+          */}
+          <div
+            className="break-words text-sm text-zinc-400 light:text-zinc-500"
+            dangerouslySetInnerHTML={{ __html: thoughtHtml }}
+          />
         </ChainOfThoughtContent>
       </ChainOfThought>
     );
@@ -277,7 +206,7 @@ function ThinkingIcon({ isThinking }) {
   return (
     <img
       src={ThinkingStatic}
-      alt=""
+      alt="Thinking complete"
       className="w-4 h-4 flex-shrink-0 light:invert light:opacity-50"
     />
   );

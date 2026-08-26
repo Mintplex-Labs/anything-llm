@@ -1525,6 +1525,8 @@ const TRANSLATIONS = {
   chat_window: {
     attachments_processing: "Attachments are processing. Please wait...",
     generating_response: "Generating response",
+    thought_in_progress: "Model is Thinking...",
+    thoughts: "Thoughts",
     response_failed: "Could not respond to message.",
     response_failed_reason: "Reason: {{reason}}",
     send_message: "Send a message",

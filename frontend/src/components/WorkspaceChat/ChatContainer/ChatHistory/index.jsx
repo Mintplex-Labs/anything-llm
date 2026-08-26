@@ -135,6 +135,10 @@ export default forwardRef(function (
       websocket,
     ]
   );
+  // A status group is only "thinking" while the run is still live. Without the
+  // animate check, a group that ends up last (aborted/errored run, stopped
+  // agent, reloaded history) would show the thinking state forever.
+  const isLastMessageAnimating = !!history?.[history.length - 1]?.animate;
   const renderStatusResponse = useCallback(
     (item, index) => {
       const hasSubsequentMessages = index < compiledHistory.length - 1;
@@ -142,11 +146,11 @@ export default forwardRef(function (
         <StatusResponse
           key={`status-group-${index}`}
           messages={item}
-          isThinking={!hasSubsequentMessages}
+          isThinking={!hasSubsequentMessages && isLastMessageAnimating}
         />
       );
     },
-    [compiledHistory.length]
+    [compiledHistory.length, isLastMessageAnimating]
   );
 
   return (
@@ -311,7 +315,6 @@ function buildMessages({
           attachments={props.attachments}
           regenerateMessage={regenerateAssistantMessage}
           isLastMessage={isLastBotReply}
-          closed={props.closed}
           saveEditedMessage={saveEditedMessage}
           forkThread={forkThread}
           metrics={props.metrics}

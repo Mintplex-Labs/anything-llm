@@ -4,6 +4,7 @@ import {
   memo,
   useContext,
   useEffect,
+  useId,
   useMemo,
   useState,
 } from "react";
@@ -44,22 +45,24 @@ export function ChainOfThought({
 }) {
   const [uncontrolledOpen, setUncontrolledOpen] = useState(defaultOpen);
   const isOpen = open ?? uncontrolledOpen;
+  const contentId = useId();
 
   const chainOfThoughtContext = useMemo(
     () => ({
       isOpen,
+      contentId,
       setIsOpen: (next) => {
         setUncontrolledOpen(next);
         onOpenChange?.(next);
       },
     }),
-    [isOpen, onOpenChange]
+    [isOpen, contentId, onOpenChange]
   );
 
   return (
     <ChainOfThoughtContext.Provider value={chainOfThoughtContext}>
       <div
-        className={cn("not-prose max-w-prose space-y-4 my-2", className)}
+        className={cn("not-prose max-w-prose space-y-4 mt-2 mb-1", className)}
         {...props}
       >
         {children}
@@ -80,15 +83,16 @@ export function ChainOfThoughtHeader({
   children,
   ...props
 }) {
-  const { isOpen, setIsOpen } = useChainOfThought();
+  const { isOpen, setIsOpen, contentId } = useChainOfThought();
 
   return (
     <button
       type="button"
       aria-expanded={isOpen}
+      aria-controls={contentId}
       onClick={() => setIsOpen(!isOpen)}
       className={cn(
-        "border-none bg-transparent p-0 flex w-full items-center gap-2 text-xs text-zinc-400 transition-colors hover:text-zinc-50 light:text-zinc-500 light:hover:text-zinc-950",
+        "border-none bg-transparent p-0 flex w-full items-center gap-2 text-md text-zinc-400 transition-colors hover:text-zinc-50 light:text-zinc-500 light:hover:text-zinc-950",
         className
       )}
       {...props}
@@ -121,7 +125,8 @@ export function ChainOfThoughtHeader({
 /**
  * @param {Object} props
  * @param {React.ElementType} [props.icon] - marker icon, defaults to a dot
- * @param {React.ReactNode} props.label
+ * @param {React.ReactNode} props.label - keep this a primitive (string) where
+ *   possible so the memo on this component can skip unchanged steps.
  * @param {React.ReactNode} [props.description]
  * @param {"complete" | "active" | "pending"} [props.status]
  */
@@ -137,7 +142,7 @@ export const ChainOfThoughtStep = memo(function ChainOfThoughtStep({
   return (
     <div
       className={cn(
-        "group relative flex gap-2 text-xs mb-1",
+        "group relative flex gap-2 text-sm",
         STEP_STATUS_STYLES[status],
         "fade-in-0 slide-in-from-top-2 animate-in",
         className
@@ -151,8 +156,9 @@ export const ChainOfThoughtStep = memo(function ChainOfThoughtStep({
         past the `space-y-3` gap between steps plus half a marker, so the rule
         meets the next marker instead of stopping short.
       */}
-      <div className="absolute left-[7.5px] top-[13px] bottom-[calc(-0.75rem-4.5px)] w-px bg-zinc-800 group-last:hidden light:bg-zinc-200" />
-      <div className="relative flex h-4 w-4 flex-shrink-0 items-center justify-center">
+      <div className="absolute left-[7.5px] top-[15px] bottom-[calc(-0.75rem-6.5px)] w-px bg-zinc-800 group-last:hidden light:bg-zinc-200" />
+      {/* h-5 matches the text-sm line height so the marker centers on the first line */}
+      <div className="relative flex h-5 w-4 flex-shrink-0 items-center justify-center">
         {Icon ? (
           <Icon className="size-4" />
         ) : (
@@ -173,7 +179,7 @@ export const ChainOfThoughtStep = memo(function ChainOfThoughtStep({
 });
 
 export function ChainOfThoughtContent({ className, children, ...props }) {
-  const { isOpen } = useChainOfThought();
+  const { isOpen, contentId } = useChainOfThought();
   const [isPresent, setIsPresent] = useState(isOpen);
 
   useEffect(() => {
@@ -184,6 +190,7 @@ export function ChainOfThoughtContent({ className, children, ...props }) {
 
   return (
     <div
+      id={contentId}
       data-state={isOpen ? "open" : "closed"}
       // Keeps the closed content mounted until its exit animation finishes,
       // matching how radix unmounts a collapsible. Steps animate too, so only
