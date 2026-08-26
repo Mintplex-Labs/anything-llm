@@ -1584,6 +1584,13 @@ const TRANSLATIONS = {
     response_failed_reason: "ສາเหตุ: {{reason}}",
     thought_in_progress: "ແບບนั้น ພາກັນຄິດ",
     thoughts: "ຄວາມຄິດ",
+    leave_generating: {
+      title: "ຢຸດການສ້າງຕອບ?",
+      description:
+        "ເຈົ້າ ກຳ ລັງຈະອອກຈາກການສົນทະນານີ້, ດັ່ງນັ້ນມັນຈະຢຸດ ໂໝດ ໃຫ້ສຳເລັດ ແລະບໍ່ສາມາດຟື້ນຟູໄດ້।",
+      cancel: "ຍົກເລີດ",
+      confirm: "ຊື່ຕໍ່",
+    },
   },
   profile_settings: {
     edit_account: "ແກ້ໄຂບັນຊີ",

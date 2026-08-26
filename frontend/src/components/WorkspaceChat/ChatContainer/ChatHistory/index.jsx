@@ -13,8 +13,9 @@ import { ArrowDown } from "@phosphor-icons/react";
 import Chartable from "./Chartable";
 import ModelRouteNotification from "./ModelRouteNotification";
 import Workspace from "@/models/workspace";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import paths from "@/utils/paths";
+import { THREAD_FORK_EVENT } from "@/components/Sidebar/ActiveWorkspaces/ThreadContainer";
 import Appearance from "@/models/appearance";
 import useTextSize from "@/hooks/useTextSize";
 import useAutoScroll from "@/hooks/useAutoScroll";
@@ -39,6 +40,7 @@ export default forwardRef(function (
 ) {
   const { chatHistoryRef, isAtBottom, scrollToBottom, scrollHandlers } =
     useAutoScroll(history, ref);
+  const navigate = useNavigate();
   const { threadSlug = null } = useParams();
   const { showing, hideModal } = useManageWorkspaceModal();
   const { showScrollbar } = Appearance.getSettings();
@@ -113,12 +115,18 @@ export default forwardRef(function (
         threadSlug,
         chatId
       );
-      window.location.href = paths.workspace.thread(
-        workspace.slug,
-        newThreadSlug
+      // Surface the fork in the sidebar first - if the navigation below gets
+      // blocked (ActiveGenerationGuard) and cancelled, the new thread still
+      // exists and stays reachable. Router navigation so the guard can
+      // intercept while a response is generating.
+      window.dispatchEvent(
+        new CustomEvent(THREAD_FORK_EVENT, {
+          detail: { threadSlug: newThreadSlug },
+        })
       );
+      navigate(paths.workspace.thread(workspace.slug, newThreadSlug));
     },
-    [workspace.slug, threadSlug]
+    [workspace.slug, threadSlug, navigate]
   );
 
   const compiledHistory = useMemo(

@@ -1364,6 +1364,13 @@ const TRANSLATIONS = {
     response_failed_reason: "이유: {{reason}}",
     thought_in_progress: "모델은 생각 중입니다…",
     thoughts: "생각들",
+    leave_generating: {
+      title: "응답 생성 중단?",
+      description:
+        "현재 대화를 종료하면 모델이 응답을 생성하는 것을 중단시키고, 이 상태를 되돌릴 수 없습니다.",
+      cancel: "취소",
+      confirm: "계속",
+    },
   },
   profile_settings: {
     edit_account: "계정 정보 수정",

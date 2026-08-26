@@ -1327,6 +1327,13 @@ const TRANSLATIONS = {
     response_failed_reason: "Raison : {{reason}}",
     thought_in_progress: "Le modèle réfléchit…",
     thoughts: "Réflexions",
+    leave_generating: {
+      title: "Arrêter de générer une réponse ?",
+      description:
+        "Vous allez bientôt quitter cette conversation. Cela empêchera le modèle de générer une réponse et il ne sera plus possible de récupérer la conversation.",
+      cancel: "Annuler",
+      confirm: "Continuer",
+    },
   },
   profile_settings: {
     edit_account: "Modifier le compte",

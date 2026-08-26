@@ -1666,6 +1666,13 @@ const TRANSLATIONS = {
         cancel: "Cancel",
       },
     },
+    leave_generating: {
+      title: "Stop generating response?",
+      description:
+        "You are about to leave this chat, this will stop the model from generating the response and it cannot be recovered.",
+      cancel: "Cancel",
+      confirm: "Continue",
+    },
   },
   profile_settings: {
     edit_account: "Edit Account",

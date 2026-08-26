@@ -673,6 +673,13 @@ const TRANSLATIONS = {
     response_failed_reason: "Motiv: {{reason}}",
     thought_in_progress: "Modelul analizează...",
     thoughts: "Gânduri",
+    leave_generating: {
+      title: "Încetați să generați răspunsuri?",
+      description:
+        "În curând veți părăsi această conversație; acest lucru va opri modelul de a genera răspunsul și nu poate fi recuperat.",
+      cancel: "Anula",
+      confirm: "Continuă",
+    },
   },
   profile_settings: {
     edit_account: "Editează contul",
