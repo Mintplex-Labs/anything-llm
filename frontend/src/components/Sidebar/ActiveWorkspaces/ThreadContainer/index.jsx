@@ -7,6 +7,7 @@ import ThreadItem from "./ThreadItem";
 import { useNavigate, useParams } from "react-router-dom";
 import useHoverMetaKey from "./hooks";
 export const THREAD_RENAME_EVENT = "renameThread";
+export const THREAD_FORK_EVENT = "forkToThread";
 
 export default function ThreadContainer({
   workspace,
@@ -38,6 +39,24 @@ export default function ThreadContainer({
       window.removeEventListener(THREAD_RENAME_EVENT, chatHandler);
     };
   }, []);
+
+  // Handle new fork events from chat actions. Forking navigates via the router
+  // now, so a blocked/cancelled navigation would otherwise leave the new thread
+  // missing from this list until the next refetch.
+  useEffect(() => {
+    const forkHandler = () => {
+      if (!workspace?.slug) return;
+      Workspace.threads
+        .all(workspace.slug)
+        .then(({ threads }) => setThreads(threads))
+        .catch((e) => console.error(e));
+    };
+
+    window.addEventListener(THREAD_FORK_EVENT, forkHandler);
+    return () => {
+      window.removeEventListener(THREAD_FORK_EVENT, forkHandler);
+    };
+  }, [workspace?.slug]);
 
   useEffect(() => {
     async function fetchThreads() {
