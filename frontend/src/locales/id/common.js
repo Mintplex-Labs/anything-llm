@@ -1664,6 +1664,8 @@ const TRANSLATIONS = {
     generating_response: "Menghasilkan respons",
     response_failed: "Tidak dapat membalas pesan tersebut.",
     response_failed_reason: "Alasan: {{reason}}",
+    thought_in_progress: "Model sedang berpikir...",
+    thoughts: "Pemikiran",
   },
   profile_settings: {
     edit_account: "Edit Akun",

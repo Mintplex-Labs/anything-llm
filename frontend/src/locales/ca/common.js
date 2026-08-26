@@ -1514,6 +1514,8 @@ const TRANSLATIONS = {
     generating_response: "Generar resposta",
     response_failed: "No he pogut respondre al missatge.",
     response_failed_reason: "Motiu: {{reason}}",
+    thought_in_progress: "L'entrenament continua...",
+    thoughts: "Pensaments",
   },
   profile_settings: {
     edit_account: "Edita el compte",

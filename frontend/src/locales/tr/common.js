@@ -1309,6 +1309,8 @@ const TRANSLATIONS = {
     generating_response: "Yanıt üretme",
     response_failed: "Mesaja cevap veremedim.",
     response_failed_reason: "Nedeni: {{reason}}",
+    thought_in_progress: "Model düşünüyor...",
+    thoughts: "Düşünceler",
   },
   profile_settings: {
     edit_account: "Hesabı Düzenle",

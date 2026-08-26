@@ -1316,6 +1316,8 @@ const TRANSLATIONS = {
     generating_response: "Формирование ответа",
     response_failed: "Не удалось ответить на сообщение.",
     response_failed_reason: "Причина: {{reason}}",
+    thought_in_progress: "Модель размышляет…",
+    thoughts: "Мысли",
   },
   profile_settings: {
     edit_account: "Редактировать учётную запись",

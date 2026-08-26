@@ -671,6 +671,8 @@ const TRANSLATIONS = {
     generating_response: "Generarea răspunsului",
     response_failed: "Nu am putut răspunde la mesaj.",
     response_failed_reason: "Motiv: {{reason}}",
+    thought_in_progress: "Modelul analizează...",
+    thoughts: "Gânduri",
   },
   profile_settings: {
     edit_account: "Editează contul",
