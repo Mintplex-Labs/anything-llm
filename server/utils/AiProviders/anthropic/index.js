@@ -304,6 +304,12 @@ class AnthropicLLM {
       };
       response.on("close", handleAbort);
 
+      stream.on("abort", () => {
+        response.removeListener("close", handleAbort);
+        stream?.endMeasurement(usage);
+        resolve(fullText);
+      });
+
       stream.on("error", (event) => {
         const parseErrorMsg = (event) => {
           const error = event?.error?.error;
