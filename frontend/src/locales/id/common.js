@@ -1666,6 +1666,13 @@ const TRANSLATIONS = {
     response_failed_reason: "Alasan: {{reason}}",
     thought_in_progress: "Model sedang berpikir...",
     thoughts: "Pemikiran",
+    leave_generating: {
+      title: "Berhenti menghasilkan respons?",
+      description:
+        "Anda akan segera keluar dari obrolan ini, hal ini akan menghentikan model untuk menghasilkan respons dan tidak dapat dipulihkan.",
+      cancel: "Batalkan",
+      confirm: "Lanjutkan",
+    },
   },
   profile_settings: {
     edit_account: "Edit Akun",

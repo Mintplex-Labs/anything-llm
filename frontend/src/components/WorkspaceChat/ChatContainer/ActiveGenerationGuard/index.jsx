@@ -1,4 +1,5 @@
 import { useBlocker } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { ABORT_STREAM_EVENT } from "@/utils/chat";
 import Modal, {
   ModalHeader,
@@ -38,6 +39,7 @@ import Modal, {
  * @param {boolean} props.isGenerating - Whether a response is actively generating (mirrors the Send/Stop button state)
  */
 export default function ActiveGenerationGuard({ isGenerating = false }) {
+  const { t } = useTranslation();
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) =>
       isGenerating && currentLocation.pathname !== nextLocation.pathname
@@ -55,19 +57,21 @@ export default function ActiveGenerationGuard({ isGenerating = false }) {
   if (blocker.state !== "blocked") return null;
   return (
     <Modal isOpen={true} onClose={blocker.reset} size="md">
-      <ModalHeader title="Stop generating response?" onClose={blocker.reset} />
+      <ModalHeader
+        title={t("chat_window.leave_generating.title")}
+        onClose={blocker.reset}
+      />
       <ModalBody>
         <p className="text-sm text-zinc-400 light:text-slate-600">
-          You are about to leave this chat, this will stop the model from
-          generating the response and it cannot be recovered.
+          {t("chat_window.leave_generating.description")}
         </p>
       </ModalBody>
       <ModalFooter>
         <ModalSecondaryButton type="button" onClick={blocker.reset}>
-          Cancel
+          {t("chat_window.leave_generating.cancel")}
         </ModalSecondaryButton>
         <ModalPrimaryButton type="button" onClick={stopGenerationAndLeave}>
-          Continue
+          {t("chat_window.leave_generating.confirm")}
         </ModalPrimaryButton>
       </ModalFooter>
     </Modal>

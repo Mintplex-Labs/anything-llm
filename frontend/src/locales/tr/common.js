@@ -1311,6 +1311,13 @@ const TRANSLATIONS = {
     response_failed_reason: "Nedeni: {{reason}}",
     thought_in_progress: "Model düşünüyor...",
     thoughts: "Düşünceler",
+    leave_generating: {
+      title: "Yanıt üretmeyi durdurun?",
+      description:
+        "Şu anda bu sohbetten çıkıyorsunuz. Bu, modelin yanıt oluşturmasını durduracak ve bu durumun geri alınamayacağını ifade eder.",
+      cancel: "İptal et",
+      confirm: "Devam et",
+    },
   },
   profile_settings: {
     edit_account: "Hesabı Düzenle",

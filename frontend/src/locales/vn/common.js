@@ -1295,6 +1295,13 @@ const TRANSLATIONS = {
     response_failed_reason: "Lý do: {{reason}}",
     thought_in_progress: "Đang suy nghĩ...",
     thoughts: "Ý tưởng",
+    leave_generating: {
+      title: "Dừng tạo phản hồi?",
+      description:
+        "Bạn sắp rời khỏi cuộc trò chuyện này, điều này sẽ ngăn mô hình tạo ra câu trả lời và không thể khôi phục lại.",
+      cancel: "Hủy",
+      confirm: "Tiếp tục",
+    },
   },
   profile_settings: {
     edit_account: "Chỉnh sửa Tài khoản",

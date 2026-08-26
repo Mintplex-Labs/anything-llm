@@ -1350,6 +1350,13 @@ const TRANSLATIONS = {
     response_failed_reason: "סיבה: {{reason}}",
     thought_in_progress: "המערכת חושבת…",
     thoughts: "מחשבות",
+    leave_generating: {
+      title: "האם הפסקת לייצר תגובה?",
+      description:
+        "אתם עומדים לצאת מהצ'אט הזה, וזה יגרום למודל להפסיק ליצור את התשובה, ואי אפשר יהיה לשחזר אותה.",
+      cancel: "ביטול",
+      confirm: "המשך",
+    },
   },
   profile_settings: {
     edit_account: "ערוך חשבון",

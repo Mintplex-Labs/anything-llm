@@ -1427,6 +1427,13 @@ const TRANSLATIONS = {
     response_failed_reason: "Priežastis: {{reason}}",
     thought_in_progress: "„Modelis mąstė…“",
     thoughts: "Mintys",
+    leave_generating: {
+      title: "Ar sustabdyti atsakymo generavimą?",
+      description:
+        "Jūs šiuo metu pasirenkate išeiti iš šio pokalbio, o tai sustabdys modelį ir jį nebegalės atnaujinti.",
+      cancel: "Anuliu",
+      confirm: "Toliau",
+    },
   },
   profile_settings: {
     edit_account: "Redaguoti paskyrą",

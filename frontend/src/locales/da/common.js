@@ -1298,6 +1298,13 @@ const TRANSLATIONS = {
     response_failed_reason: "Årsag: {{reason}}",
     thought_in_progress: "Modellen tænker…",
     thoughts: "Tanker",
+    leave_generating: {
+      title: "Hvilket svar skal jeg ikke generere?",
+      description:
+        "Du er ved at forlade denne samtale. Dette vil stoppe modellen fra at generere et svar, og det kan ikke gendannes.",
+      cancel: "Annullér",
+      confirm: "Fortsæt",
+    },
   },
   profile_settings: {
     edit_account: "Rediger konto",

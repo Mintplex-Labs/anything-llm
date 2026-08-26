@@ -1329,6 +1329,13 @@ const TRANSLATIONS = {
     response_failed_reason: "Motivo: {{reason}}",
     thought_in_progress: "Il modello sta riflettendo…",
     thoughts: "Pensieri",
+    leave_generating: {
+      title: "Arresto della generazione di risposte?",
+      description:
+        "State per uscire da questa conversazione; questo impedirà al modello di generare una risposta e non sarà più possibile recuperarla.",
+      cancel: "Annulla",
+      confirm: "Continua",
+    },
   },
   profile_settings: {
     edit_account: "Modifica account",

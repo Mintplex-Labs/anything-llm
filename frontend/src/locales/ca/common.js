@@ -1516,6 +1516,13 @@ const TRANSLATIONS = {
     response_failed_reason: "Motiu: {{reason}}",
     thought_in_progress: "L'entrenament continua...",
     thoughts: "Pensaments",
+    leave_generating: {
+      title: "Deu deixar de generar respostes?",
+      description:
+        "Estàs a punt de tancar aquesta conversa; això farà que el model deixi d'elaborar la resposta i no es podrà recuperar.",
+      cancel: "Cancelar",
+      confirm: "Segueix",
+    },
   },
   profile_settings: {
     edit_account: "Edita el compte",
