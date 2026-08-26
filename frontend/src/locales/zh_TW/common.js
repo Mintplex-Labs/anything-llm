@@ -1212,6 +1212,8 @@ const TRANSLATIONS = {
     generating_response: "產生回應",
     response_failed: "無法回覆訊息。",
     response_failed_reason: "原因：{{reason}}",
+    thought_in_progress: "正在思考…",
+    thoughts: "想法、思緒",
   },
   profile_settings: {
     edit_account: "編輯帳戶",

@@ -1296,6 +1296,8 @@ const TRANSLATIONS = {
     generating_response: "Generere svar",
     response_failed: "Kunne ikke svare på beskeden.",
     response_failed_reason: "Årsag: {{reason}}",
+    thought_in_progress: "Modellen tænker…",
+    thoughts: "Tanker",
   },
   profile_settings: {
     edit_account: "Rediger konto",

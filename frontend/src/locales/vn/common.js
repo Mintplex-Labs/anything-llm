@@ -1293,6 +1293,8 @@ const TRANSLATIONS = {
     generating_response: "Tạo ra câu trả lời",
     response_failed: "Không thể phản hồi tin nhắn.",
     response_failed_reason: "Lý do: {{reason}}",
+    thought_in_progress: "Đang suy nghĩ...",
+    thoughts: "Ý tưởng",
   },
   profile_settings: {
     edit_account: "Chỉnh sửa Tài khoản",

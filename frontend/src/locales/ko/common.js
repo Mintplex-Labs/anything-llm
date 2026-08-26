@@ -1362,6 +1362,8 @@ const TRANSLATIONS = {
     generating_response: "응답 생성",
     response_failed: "메시지에 응답할 수 없었습니다.",
     response_failed_reason: "이유: {{reason}}",
+    thought_in_progress: "모델은 생각 중입니다…",
+    thoughts: "생각들",
   },
   profile_settings: {
     edit_account: "계정 정보 수정",

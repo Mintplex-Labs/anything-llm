@@ -1425,6 +1425,8 @@ const TRANSLATIONS = {
     generating_response: "Sukurti atsakymą",
     response_failed: "Nepavyko atsakyti į pranešimą.",
     response_failed_reason: "Priežastis: {{reason}}",
+    thought_in_progress: "„Modelis mąstė…“",
+    thoughts: "Mintys",
   },
   profile_settings: {
     edit_account: "Redaguoti paskyrą",

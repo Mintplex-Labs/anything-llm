@@ -1582,6 +1582,8 @@ const TRANSLATIONS = {
     generating_response: "ຜົນການຕອບ",
     response_failed: "ສາมาถ ප්‍රතිສະໜອງ ຂໍ້ຄວາມ ໄດ້",
     response_failed_reason: "ສາเหตุ: {{reason}}",
+    thought_in_progress: "ແບບนั้น ພາກັນຄິດ",
+    thoughts: "ຄວາມຄິດ",
   },
   profile_settings: {
     edit_account: "ແກ້ໄຂບັນຊີ",

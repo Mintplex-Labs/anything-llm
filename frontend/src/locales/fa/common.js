@@ -1288,6 +1288,8 @@ const TRANSLATIONS = {
     generating_response: "تولید پاسخ",
     response_failed: "امکان پاسخ دادن به پیام وجود نداشت.",
     response_failed_reason: "دلیل: {{reason}}",
+    thought_in_progress: "مدل در حال تفکر است...",
+    thoughts: "اندیشه‌ها",
   },
   profile_settings: {
     edit_account: "ویرایش حساب",

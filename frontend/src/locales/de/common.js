@@ -1420,6 +1420,8 @@ const TRANSLATIONS = {
     generating_response: "Antwort generieren",
     response_failed: "Ich konnte die Nachricht nicht beantworten.",
     response_failed_reason: "Grund: {{reason}}",
+    thought_in_progress: "Das Modell denkt…",
+    thoughts: "Gedanken",
   },
   profile_settings: {
     edit_account: "Account bearbeiten",
