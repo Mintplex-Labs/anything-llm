@@ -97,7 +97,7 @@ export function ChainOfThoughtHeader({
       )}
       {...props}
     >
-      {icon ?? <Brain className="size-4 flex-shrink-0" />}
+      {icon ?? <Brain className="size-5 flex-shrink-0" />}
       {/*
         No `flex-1` here: the caret should sit next to the label rather than
         out at the container edge. The label still shrinks and truncates when

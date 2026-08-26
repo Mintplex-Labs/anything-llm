@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/refs */
-import { memo, useRef, useEffect } from "react";
+import { memo } from "react";
 import { useTranslation } from "react-i18next";
 import { Warning } from "@phosphor-icons/react";
 import renderMarkdown from "@/utils/chat/markdown";
@@ -9,7 +8,6 @@ import {
   THOUGHT_REGEX_CLOSE,
   THOUGHT_REGEX_COMPLETE,
   THOUGHT_REGEX_OPEN,
-  ThoughtChainComponent,
 } from "../ThoughtContainer";
 
 const PromptReply = ({ uuid, reply, pending, error, sources = [] }) => {
@@ -71,7 +69,6 @@ const PromptReply = ({ uuid, reply, pending, error, sources = [] }) => {
         <RenderAssistantChatContent
           key={`${uuid}-prompt-reply-content`}
           message={reply}
-          messageId={uuid}
         />
         <Citations sources={sources} />
       </div>
@@ -79,58 +76,21 @@ const PromptReply = ({ uuid, reply, pending, error, sources = [] }) => {
   );
 };
 
-function RenderAssistantChatContent({ message, messageId }) {
-  const contentRef = useRef("");
-  const thoughtChainRef = useRef(null);
-
-  useEffect(() => {
-    const thinking =
-      message.match(THOUGHT_REGEX_OPEN) && !message.match(THOUGHT_REGEX_CLOSE);
-
-    if (thinking && thoughtChainRef.current) {
-      thoughtChainRef.current.updateContent(message);
-      return;
-    }
-
-    const completeThoughtChain = message.match(THOUGHT_REGEX_COMPLETE)?.[0];
-    const msgToRender = message.replace(THOUGHT_REGEX_COMPLETE, "");
-
-    if (completeThoughtChain && thoughtChainRef.current) {
-      thoughtChainRef.current.updateContent(completeThoughtChain);
-    }
-
-    contentRef.current = msgToRender;
-  }, [message]);
-
-  const thinking =
-    message.match(THOUGHT_REGEX_OPEN) && !message.match(THOUGHT_REGEX_CLOSE);
-  if (thinking)
-    return (
-      <ThoughtChainComponent
-        ref={thoughtChainRef}
-        content=""
-        messageId={messageId}
-        allowAnimation={true}
-      />
-    );
+function RenderAssistantChatContent({ message }) {
+  // Thought segments are rendered by the activity chain (buildMessages splits
+  // them out) - this only renders the visible remainder of the reply.
+  if (message.match(THOUGHT_REGEX_OPEN) && !message.match(THOUGHT_REGEX_CLOSE))
+    return null;
+  const msgToRender = message.replace(THOUGHT_REGEX_COMPLETE, "");
+  if (!msgToRender.trim().length) return null;
 
   return (
-    <div className="flex flex-col gap-y-1">
-      {message.match(THOUGHT_REGEX_COMPLETE) && (
-        <ThoughtChainComponent
-          ref={thoughtChainRef}
-          content=""
-          messageId={messageId}
-          allowAnimation={true}
-        />
-      )}
-      <span
-        className="break-words"
-        dangerouslySetInnerHTML={{
-          __html: DOMPurify.sanitize(renderMarkdown(contentRef.current)),
-        }}
-      />
-    </div>
+    <span
+      className="break-words flex flex-col gap-y-1"
+      dangerouslySetInnerHTML={{
+        __html: DOMPurify.sanitize(renderMarkdown(msgToRender)),
+      }}
+    />
   );
 }
 
