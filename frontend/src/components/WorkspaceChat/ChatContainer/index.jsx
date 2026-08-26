@@ -38,6 +38,7 @@ import WorkspaceModelPicker from "./WorkspaceModelPicker";
 import { ChatSidebarProvider } from "./ChatSidebar";
 import SourcesSidebar from "./SourcesSidebar";
 import MemoriesSidebar from "./MemoriesSidebar";
+import ActiveGenerationGuard from "./ActiveGenerationGuard";
 
 export default function ChatContainer({
   workspace,
@@ -514,6 +515,7 @@ export default function ChatContainer({
 
   return (
     <ChatSidebarProvider>
+      <ActiveGenerationGuard isGenerating={loadingResponse} />
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
         className="relative flex md:ml-[2px] md:mr-[16px] md:my-[16px] w-full h-full z-[2]"
