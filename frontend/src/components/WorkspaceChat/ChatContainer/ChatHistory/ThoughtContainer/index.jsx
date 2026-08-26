@@ -35,13 +35,17 @@ export function ThoughtExpansionProvider({ children }) {
 
 export function useThoughtExpansion(messageId) {
   const context = useContext(ThoughtExpansionContext);
-  if (!context) {
-    // Fallback when used outside provider - use local state only
-    return { expanded: false, setExpanded: () => {} };
-  }
+  const contextSetExpanded = context?.setExpanded;
+  // Stable across renders so consumers can safely memoize on it.
+  const setExpanded = useCallback(
+    (value) => contextSetExpanded?.(messageId, value),
+    [contextSetExpanded, messageId]
+  );
+  // No provider - fall back to never-expanded local behavior.
+  if (!context) return { expanded: false, setExpanded };
   return {
     expanded: context.getExpanded(messageId),
-    setExpanded: (value) => context.setExpanded(messageId, value),
+    setExpanded,
   };
 }
 

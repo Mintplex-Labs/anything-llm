@@ -153,7 +153,10 @@ export default forwardRef(function (
       const hasSubsequentMessages = index < compiledHistory.length - 1;
       return (
         <StatusResponse
-          key={`status-group-${index}`}
+          // Keyed by the first node so a chain keeps its own client-side
+          // timing state when items above it are removed (regenerate, the
+          // content-less message sweeps) and compiled indexes shift.
+          key={item[0]?.uuid ?? `status-group-${index}`}
           messages={item}
           isLastGroup={!hasSubsequentMessages}
           isThinking={!hasSubsequentMessages && runIsLive}
