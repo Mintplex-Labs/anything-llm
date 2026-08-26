@@ -17,6 +17,8 @@ class LocalAiImageGenerator extends BaseImageGenerator {
     });
   }
 
+  // LocalAI supports `ref_images` on /v1/images/generations for Flux Kontext models,
+  // which could enable img2img here without needing /v1/images/edits. Untested.
   async editImage({ prompt, images, signal }) {
     this.log(
       `LocalAI does not support image editing. Dropping ${images.length} reference image(s) and generating from prompt only.`
