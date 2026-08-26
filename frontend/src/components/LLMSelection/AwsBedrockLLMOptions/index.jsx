@@ -3,10 +3,19 @@ import { AWS_REGIONS } from "./regions";
 import { useState, useEffect } from "react";
 import System from "@/models/system";
 
+const MANUAL_REGION_ENTRY = "-- Enter region manually --";
+
 export default function AwsBedrockLLMOptions({ settings }) {
   const [inputValue, setInputValue] = useState(settings?.AwsBedrockLLMApiKey);
   const [apiKey, setApiKey] = useState(settings?.AwsBedrockLLMApiKey);
   const [region, setRegion] = useState(settings?.AwsBedrockLLMRegion);
+  // A saved region outside the known list (eg: GovCloud or other specialized
+  // regions set via ENV/Helm) can only render via manual entry - a select
+  // with no matching option would silently fall back to the first region.
+  const [manualRegion, setManualRegion] = useState(
+    !!settings?.AwsBedrockLLMRegion &&
+      !AWS_REGIONS.some((r) => r.code === settings.AwsBedrockLLMRegion)
+  );
 
   return (
     <div className="w-full flex flex-col">
@@ -53,22 +62,54 @@ export default function AwsBedrockLLMOptions({ settings }) {
           <label className="text-white text-sm font-semibold block mb-3">
             AWS Region
           </label>
-          <select
-            name="AwsBedrockLLMRegion"
-            value={region}
-            required={true}
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-            onChange={(e) => setRegion(e.target.value)}
-            onBlur={() => setRegion(region)}
-          >
-            {AWS_REGIONS.map((region) => {
-              return (
-                <option key={region.code} value={region.code}>
-                  {region.name} ({region.code})
-                </option>
-              );
-            })}
-          </select>
+          {manualRegion ? (
+            <>
+              <input
+                type="text"
+                name="AwsBedrockLLMRegion"
+                className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                placeholder="us-gov-west-1"
+                defaultValue={region}
+                required={true}
+                autoComplete="off"
+                spellCheck={false}
+                onChange={(e) => setRegion(e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  if (!AWS_REGIONS.some((r) => r.code === region))
+                    setRegion(AWS_REGIONS[0].code);
+                  setManualRegion(false);
+                }}
+                className="text-white/60 hover:text-white text-xs text-left mt-1.5 underline w-fit"
+              >
+                Select from available regions
+              </button>
+            </>
+          ) : (
+            <select
+              name="AwsBedrockLLMRegion"
+              value={region}
+              required={true}
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              onChange={(e) => {
+                if (e.target.value === MANUAL_REGION_ENTRY)
+                  return setManualRegion(true);
+                setRegion(e.target.value);
+              }}
+            >
+              {AWS_REGIONS.map((region) => {
+                return (
+                  <option key={region.code} value={region.code}>
+                    {region.name} ({region.code})
+                  </option>
+                );
+              })}
+              <option disabled={true}>──────────</option>
+              <option value={MANUAL_REGION_ENTRY}>{MANUAL_REGION_ENTRY}</option>
+            </select>
+          )}
         </div>
       </div>
 
