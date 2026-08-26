@@ -81,20 +81,24 @@ class LocalAiLLM {
       });
       if (!models.length) return;
 
-      // The context window is only reported on the model config - never on `/v1/models`.
-      // Model ids are used raw here since LocalAI 404s on a URL-encoded name.
-      const configs = await Promise.all(
+      // The VRAM-estimate endpoint returns the resolved context_length for a
+      // loaded model, including values auto-detected from GGUF metadata that
+      // never appear in the static config JSON.
+      const estimates = await Promise.all(
         models.map(({ id }) =>
-          fetch(`${origin}/api/models/config-json/${id}`, { headers })
+          fetch(`${origin}/api/models/vram-estimate`, {
+            method: "POST",
+            headers: { ...headers, "Content-Type": "application/json" },
+            body: JSON.stringify({ model: id }),
+          })
             .then((res) => (res.ok ? res.json() : {}))
-            .then((config) => ({ id, ...config }))
+            .then((est) => ({ id, ...est }))
             .catch(() => ({ id }))
         )
       );
-      configs.forEach(({ id, context_size }) => {
-        // Non-text models (image, tts, etc) have no context size at all.
-        if (!context_size) return;
-        LocalAiLLM.modelContextWindows[id] = Number(context_size);
+      estimates.forEach(({ id, context_length }) => {
+        if (!context_length) return;
+        LocalAiLLM.modelContextWindows[id] = Number(context_length);
       });
       LocalAiLLM.#slog(`Context windows cached for all models!`);
     } catch (e) {
@@ -124,12 +128,12 @@ class LocalAiLLM {
       this.#slog(
         "No context windows cached - Context window may be inaccurately reported."
       );
-      return Number(process.env.LOCAL_AI_MODEL_TOKEN_LIMIT) || 4096;
+      return Number(process.env.LOCAL_AI_MODEL_TOKEN_LIMIT) || 8192;
     }
 
     let userDefinedLimit = null;
     const systemDefinedLimit =
-      Number(this.modelContextWindows[modelName]) || 4096;
+      Number(this.modelContextWindows[modelName]) || 8192;
 
     if (
       process.env.LOCAL_AI_MODEL_TOKEN_LIMIT &&

@@ -131,7 +131,7 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
                 size={18}
                 className="text-theme-text-secondary cursor-pointer"
                 data-tooltip-id="localai-max-tokens"
-                data-tooltip-content="Override the context window limit. Leave empty to auto-detect from the model (defaults to 4096 if detection fails)."
+                data-tooltip-content="Override the context window limit. Leave empty to auto-detect from the model (defaults to 8192 if detection fails)."
               />
               <Tooltip
                 id="localai-max-tokens"
