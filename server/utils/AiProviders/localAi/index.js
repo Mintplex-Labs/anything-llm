@@ -255,11 +255,12 @@ class LocalAiLLM {
       func: this.openai.chat.completions.create({
         model: this.model,
         stream: true,
+        stream_options: { include_usage: true },
         messages,
         temperature,
       }),
       messages,
-      runPromptTokenCalculation: true,
+      runPromptTokenCalculation: false,
       modelTag: this.model,
       provider: this.className,
     });

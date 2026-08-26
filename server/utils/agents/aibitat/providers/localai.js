@@ -63,6 +63,7 @@ class LocalAiProvider extends InheritMultiple([Provider, UnTooled]) {
     return await this.client.chat.completions.create({
       model: this.model,
       stream: true,
+      stream_options: { include_usage: true },
       messages,
     });
   }
