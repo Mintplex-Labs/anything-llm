@@ -19,10 +19,6 @@ export default function StatusResponse({ messages = [], isThinking = false }) {
       <ChainOfThoughtHeader
         icon={<AgentIcon isThinking={isThinking} />}
         pending={isThinking}
-        data-tooltip-id="expand-cot"
-        data-tooltip-content={
-          isExpanded ? "Hide thought chain" : "Show thought chain"
-        }
       >
         {isThinking ? currentThought?.content : thoughtLabel(false, duration)}
       </ChainOfThoughtHeader>

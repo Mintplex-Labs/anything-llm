@@ -119,6 +119,37 @@ export function thoughtLabel(isThinking, duration) {
   return "Thoughts";
 }
 
+/**
+ * Latest non-empty line of a streaming thought, shown as the live header
+ * preview while the model is still thinking.
+ * @param {string} content
+ * @returns {string}
+ */
+function lastLineOf(content = "") {
+  return content.trim().split("\n").filter(Boolean).pop() ?? "";
+}
+
+/**
+ * Splits a thought block into one entry per line so each renders as its own
+ * step. Models write reasoning as newline-separated thoughts inside a single
+ * think tag. Lines inside a fenced code block stay part of one entry so the
+ * fence still renders as markdown.
+ * @param {string} content
+ * @returns {string[]}
+ */
+function splitThoughts(content = "") {
+  const thoughts = [];
+  let inFence = false;
+  for (const line of content.split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed && !inFence) continue;
+    if (inFence) thoughts[thoughts.length - 1] += `\n${line}`;
+    else thoughts.push(line);
+    if (trimmed.startsWith("```")) inFence = !inFence;
+  }
+  return thoughts;
+}
+
 const THOUGHT_KEYWORDS = ["thought", "thinking", "think", "thought_chain"];
 const CLOSING_TAGS = [...THOUGHT_KEYWORDS, "response", "answer"];
 export const THOUGHT_REGEX_OPEN = new RegExp(
@@ -199,27 +230,28 @@ export const ThoughtChainComponent = forwardRef(
         <ChainOfThoughtHeader
           icon={<ThinkingIcon isThinking={isThinking} />}
           pending={!!isThinking}
-          data-tooltip-id="expand-cot"
-          data-tooltip-content={
-            isExpanded ? "Hide thought chain" : "Show thought chain"
-          }
         >
-          {thoughtLabel(isThinking, duration)}
+          {isThinking
+            ? lastLineOf(tagStrippedContent) || "Thinking..."
+            : thoughtLabel(false, duration)}
         </ChainOfThoughtHeader>
         <ChainOfThoughtContent>
-          <ChainOfThoughtStep
-            status={isThinking ? "active" : "complete"}
-            label={
-              <div
-                className="font-mono [&_p]:m-0"
-                dangerouslySetInnerHTML={{
-                  __html: DOMPurify.sanitize(
-                    renderMarkdown(tagStrippedContent)
-                  ),
-                }}
-              />
-            }
-          />
+          {splitThoughts(tagStrippedContent).map((thought, index, all) => (
+            <ChainOfThoughtStep
+              key={index}
+              status={
+                isThinking && index === all.length - 1 ? "active" : "complete"
+              }
+              label={
+                <div
+                  className="font-mono [&_p]:m-0"
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(renderMarkdown(thought)),
+                  }}
+                />
+              }
+            />
+          ))}
         </ChainOfThoughtContent>
       </ChainOfThought>
     );

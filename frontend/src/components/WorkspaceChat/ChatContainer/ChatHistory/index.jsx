@@ -135,7 +135,6 @@ export default forwardRef(function (
       websocket,
     ]
   );
-  const lastMessageInfo = useMemo(() => getLastMessageInfo(history), [history]);
   const renderStatusResponse = useCallback(
     (item, index) => {
       const hasSubsequentMessages = index < compiledHistory.length - 1;
@@ -143,11 +142,11 @@ export default forwardRef(function (
         <StatusResponse
           key={`status-group-${index}`}
           messages={item}
-          isThinking={!hasSubsequentMessages && lastMessageInfo.isAnimating}
+          isThinking={!hasSubsequentMessages}
         />
       );
     },
-    [compiledHistory.length, lastMessageInfo]
+    [compiledHistory.length]
   );
 
   return (
@@ -187,14 +186,6 @@ export default forwardRef(function (
     </MessageActionsProvider>
   );
 });
-
-const getLastMessageInfo = (history) => {
-  const lastMessage = history?.[history.length - 1] || {};
-  return {
-    isAnimating: lastMessage?.animate,
-    isStatusResponse: lastMessage?.type === "statusResponse",
-  };
-};
 
 /**
  * Builds the history of messages for the chat.
