@@ -92,7 +92,7 @@ export function ChainOfThoughtHeader({
       aria-controls={contentId}
       onClick={() => setIsOpen(!isOpen)}
       className={cn(
-        "border-none bg-transparent p-0 flex w-full items-center gap-2 text-md text-zinc-400 transition-colors hover:text-zinc-50 light:text-zinc-500 light:hover:text-zinc-950",
+        "border-none bg-transparent p-0 flex w-full items-center gap-2 text-zinc-400 transition-colors hover:text-zinc-50 light:text-zinc-500 light:hover:text-zinc-950",
         className
       )}
       {...props}
