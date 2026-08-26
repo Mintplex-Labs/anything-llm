@@ -112,7 +112,7 @@ const KEY_MAPPING = {
   },
   LocalAiTokenLimit: {
     envKey: "LOCAL_AI_MODEL_TOKEN_LIMIT",
-    checks: [nonZero],
+    checks: [],
   },
   LocalAiApiKey: {
     envKey: "LOCAL_AI_API_KEY",
