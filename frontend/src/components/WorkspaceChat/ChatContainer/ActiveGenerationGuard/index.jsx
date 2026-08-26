@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useBlocker } from "react-router-dom";
 import { ABORT_STREAM_EVENT } from "@/utils/chat";
 import Modal, {
@@ -20,8 +19,20 @@ import Modal, {
  * The guard is non-blocking: the stream keeps flowing in the background while
  * the modal is open. Generation is only aborted if the user confirms leaving.
  *
- * @note `useBlocker` requires a data router (`createBrowserRouter`/
- * `createHashRouter`) - plain `<HashRouter>` will throw. See main.jsx.
+ * @note `useBlocker` constraints - do not lose these as this evolves:
+ * - It requires a data router (`createBrowserRouter`/`createHashRouter`) and
+ *   will THROW at mount inside a plain `<BrowserRouter>`/`<HashRouter>`. See
+ *   main.jsx. The desktop app must use `createHashRouter` for this to work.
+ * - React-router supports only ONE active blocker at a time app-wide. This is
+ *   currently safe because a single ChatContainer mounts this guard - if
+ *   another `useBlocker` is ever added elsewhere (eg: unsaved-form guards),
+ *   they will silently conflict when co-mounted.
+ * - It only intercepts router-driven navigation (`navigate`/`<Link>`),
+ *   including browser back/forward. `window.location.*` navigations and
+ *   reloads bypass it entirely - reloads killing generation is accepted
+ *   behavior, but new in-app navigation must go through the router.
+ * - The `shouldBlock` callback compares pathnames, so same-path query/hash
+ *   changes are deliberately not blocked.
  *
  * @param {Object} props - Component props
  * @param {boolean} props.isGenerating - Whether a response is actively generating (mirrors the Send/Stop button state)
@@ -32,14 +43,12 @@ export default function ActiveGenerationGuard({ isGenerating = false }) {
       isGenerating && currentLocation.pathname !== nextLocation.pathname
   );
 
-  // If the response finishes while the modal is open there is nothing left
-  // to protect - resume the navigation the user already asked for.
-  useEffect(() => {
-    if (blocker.state === "blocked" && !isGenerating) blocker.proceed();
-  }, [blocker, isGenerating]);
-
+  // The modal stays open even if the response finishes while it is showing -
+  // auto-resuming the navigation underneath the user is jarring. They decide
+  // via Cancel/Continue either way, so only emit the abort if a response is
+  // actually still generating.
   function stopGenerationAndLeave() {
-    window.dispatchEvent(new CustomEvent(ABORT_STREAM_EVENT));
+    if (isGenerating) window.dispatchEvent(new CustomEvent(ABORT_STREAM_EVENT));
     blocker.proceed();
   }
 
