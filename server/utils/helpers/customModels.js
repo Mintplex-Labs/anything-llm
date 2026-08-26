@@ -1368,26 +1368,62 @@ async function getBedrockModels(_apiKey = null, options = {}) {
       options?.region || process.env.AWS_BEDROCK_LLM_REGION || "us-west-2";
 
     const { OpenAI: OpenAIApi } = require("openai");
+    const {
+      openaiBaseURL,
+      controlPlaneHost,
+    } = require("../AiProviders/bedrock/endpoints");
     const openai = new OpenAIApi({
       apiKey,
-      baseURL: `https://bedrock-mantle.${region}.api.aws/v1`,
+      baseURL: openaiBaseURL(region),
     });
-    const models = await openai.models
+
+    // The Mantle catalog listing omits cross-region inference profiles
+    // (eg: `eu.anthropic.*`), which are the only way to run Claude in many
+    // regions, and does not exist at all in some regions (eg: GovCloud East).
+    // The control plane accepts the same bearer key and lists them, so both
+    // sources are merged. Only Anthropic profiles are listed since profile
+    // IDs are only routable through the bedrock-runtime `/anthropic` path.
+    const catalogModels = await openai.models
       .list()
       .then((results) => results.data)
       .then((models) =>
-        models
-          .map((model) => ({
-            id: model.id,
-            name: model.id,
-            organization: model.owned_by ?? "AWS Bedrock",
-          }))
-          .sort((a, b) => a.name.localeCompare(b.name))
+        models.map((model) => ({
+          id: model.id,
+          name: model.id,
+          organization: model.owned_by ?? "AWS Bedrock",
+        }))
       )
       .catch((e) => {
         console.error(`AWSBedrock:listModels`, e.message);
         return [];
       });
+
+    const profileModels = await fetch(
+      `${controlPlaneHost(region)}/inference-profiles?maxResults=1000`,
+      { headers: { Authorization: `Bearer ${apiKey}` } }
+    )
+      .then((res) => (res.ok ? res.json() : { inferenceProfileSummaries: [] }))
+      .then((data) =>
+        (data.inferenceProfileSummaries ?? [])
+          .filter(
+            (profile) =>
+              profile.status === "ACTIVE" &&
+              profile.inferenceProfileId.includes("anthropic.")
+          )
+          .map((profile) => ({
+            id: profile.inferenceProfileId,
+            name: profile.inferenceProfileId,
+            organization: "Cross-Region Inference Profiles",
+          }))
+      )
+      .catch((e) => {
+        console.error(`AWSBedrock:listInferenceProfiles`, e.message);
+        return [];
+      });
+
+    const models = [...catalogModels, ...profileModels].sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
 
     if (models.length > 0 && !!apiKey)
       process.env.AWS_BEDROCK_LLM_API_KEY = apiKey;
