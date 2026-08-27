@@ -303,6 +303,7 @@ class GenericOpenAiLLM {
       };
       response.on("close", handleAbort);
 
+      let cleanup = () => response.removeListener("close", handleAbort);
       try {
         for await (const chunk of stream) {
           const message = chunk?.choices?.[0];
@@ -396,13 +397,14 @@ class GenericOpenAiLLM {
             });
             this.#extractLlamaCppTimings(chunk, usage);
 
-            response.removeListener("close", handleAbort);
+            cleanup();
             stream?.endMeasurement(usage);
             resolve(fullText);
             break; // Break streaming when a valid finish_reason is first encountered
           }
         }
       } catch (e) {
+        cleanup();
         // Cancelling the upstream request rejects the iterator - that is the
         // client leaving, not a failure, so it is not reported as an error.
         if (isAbortError(e)) {

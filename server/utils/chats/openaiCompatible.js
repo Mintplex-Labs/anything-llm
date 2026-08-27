@@ -272,11 +272,16 @@ async function streamChat({
         chunked: true,
         model: workspace.slug,
       }); // rewrite to OpenAI format
-      response.write(`data: ${JSON.stringify(modified)}\n\n`);
+      const canContinue = response.write(
+        `data: ${JSON.stringify(modified)}\n\n`
+      );
+      if (!canContinue) responseInterceptor.pause();
     } catch (e) {
       console.error(e);
     }
   });
+
+  response.on("drain", () => responseInterceptor.resume());
 
   // User is trying to query-mode chat a workspace that has no data in it - so
   // we should exit early as no information can be found under these conditions.

@@ -62,6 +62,7 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
     response.on("close", handleAbort);
 
     // Now handle the chunks from the streamed response and append to fullText.
+    let cleanup = () => response.removeListener("close", handleAbort);
     try {
       for await (const chunk of stream) {
         const message = chunk?.choices?.[0];
@@ -165,13 +166,14 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
             close: true,
             error: false,
           });
-          response.removeListener("close", handleAbort);
+          cleanup();
           stream?.endMeasurement(usage);
           resolve(fullText);
           break; // Break streaming when a valid finish_reason is first encountered
         }
       }
     } catch (e) {
+      cleanup();
       // Cancelling the upstream request rejects the iterator - that is the client
       // leaving, not a failure, so it is not reported as a streaming error.
       if (isAbortError(e)) {
