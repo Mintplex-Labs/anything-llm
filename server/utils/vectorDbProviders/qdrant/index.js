@@ -163,6 +163,7 @@ class QDrant extends VectorDatabase {
       let vectorDimension = null;
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
+      const vdbMetadata = { ...metadata, docId };
 
       this.logger("Adding new vectorized document into namespace", namespace);
       if (!skipCache) {
@@ -203,7 +204,7 @@ class QDrant extends VectorDatabase {
                 documentVectors.push({ docId, vectorId: id });
                 submission.ids.push(id);
                 submission.vectors.push(chunk.vector);
-                submission.payloads.push(payload);
+                submission.payloads.push({ ...payload, ...vdbMetadata });
               } else {
                 console.error(
                   "The 'id' property is not defined in chunk.payload - it will be omitted from being inserted in QDrant collection."
@@ -240,7 +241,7 @@ class QDrant extends VectorDatabase {
           { label: "text_splitter_chunk_overlap" },
           20
         ),
-        chunkHeaderMeta: TextSplitter.buildHeaderMeta(metadata),
+        chunkHeaderMeta: TextSplitter.buildHeaderMeta(vdbMetadata),
         chunkPrefix: EmbedderEngine?.embeddingPrefix,
       });
       const textChunks = await textSplitter.splitText(pageContent);
@@ -264,7 +265,7 @@ class QDrant extends VectorDatabase {
             // [DO NOT REMOVE]
             // LangChain will be unable to find your text if you embed manually and dont include the `text` key.
             // https://github.com/hwchase17/langchainjs/blob/2def486af734c0ca87285a48f1a04c057ab74bdf/langchain/src/vectorstores/pinecone.ts#L64
-            payload: { ...metadata, text: textChunks[i] },
+            payload: { ...vdbMetadata, text: textChunks[i] },
           };
 
           submission.ids.push(vectorRecord.id);

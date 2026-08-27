@@ -553,6 +553,7 @@ class PGVector extends VectorDatabase {
     try {
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
+      const vdbMetadata = { ...metadata, docId };
       connection = await this.connect();
 
       this.logger("Adding new vectorized document into namespace", namespace);
@@ -567,9 +568,9 @@ class PGVector extends VectorDatabase {
           for (const chunk of chunks.flat()) {
             if (!vectorDimensions) vectorDimensions = chunk.values.length;
             const id = uuidv4();
-            const { id: _id, ...metadata } = chunk.metadata;
+            const { id: _id, ...chunkMetadata } = chunk.metadata;
             documentVectors.push({ docId, vectorId: id });
-            submissions.push({ id: id, vector: chunk.values, metadata });
+            submissions.push({ id: id, vector: chunk.values, metadata: { ...chunkMetadata, ...vdbMetadata } });
           }
 
           await this.updateOrCreateCollection({
@@ -600,7 +601,7 @@ class PGVector extends VectorDatabase {
           { label: "text_splitter_chunk_overlap" },
           20
         ),
-        chunkHeaderMeta: TextSplitter.buildHeaderMeta(metadata),
+        chunkHeaderMeta: TextSplitter.buildHeaderMeta(vdbMetadata),
         chunkPrefix: EmbedderEngine?.embeddingPrefix,
       });
       const textChunks = await textSplitter.splitText(pageContent);
@@ -618,7 +619,7 @@ class PGVector extends VectorDatabase {
           const vectorRecord = {
             id: uuidv4(),
             values: vector,
-            metadata: { ...metadata, text: textChunks[i] },
+            metadata: { ...vdbMetadata, text: textChunks[i] },
           };
 
           vectors.push(vectorRecord);

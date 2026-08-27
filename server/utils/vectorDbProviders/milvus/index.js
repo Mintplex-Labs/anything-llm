@@ -164,6 +164,7 @@ class Milvus extends VectorDatabase {
       let vectorDimension = null;
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
+      const vdbMetadata = { ...metadata, docId };
 
       this.logger("Adding new vectorized document into namespace", namespace);
       if (!skipCache) {
@@ -182,7 +183,7 @@ class Milvus extends VectorDatabase {
               const newChunks = chunk.map((chunk) => {
                 const id = uuidv4();
                 documentVectors.push({ docId, vectorId: id });
-                return { id, vector: chunk.values, metadata: chunk.metadata };
+                return { id, vector: chunk.values, metadata: { ...chunk.metadata, ...vdbMetadata } };
               });
               const insertResult = await client.insert({
                 collection_name: this.normalize(namespace),
@@ -222,7 +223,7 @@ class Milvus extends VectorDatabase {
           { label: "text_splitter_chunk_overlap" },
           20
         ),
-        chunkHeaderMeta: TextSplitter.buildHeaderMeta(metadata),
+        chunkHeaderMeta: TextSplitter.buildHeaderMeta(vdbMetadata),
         chunkPrefix: EmbedderEngine?.embeddingPrefix,
       });
       const textChunks = await textSplitter.splitText(pageContent);
@@ -240,7 +241,7 @@ class Milvus extends VectorDatabase {
             values: vector,
             // [DO NOT REMOVE]
             // LangChain will be unable to find your text if you embed manually and dont include the `text` key.
-            metadata: { ...metadata, text: textChunks[i] },
+            metadata: { ...vdbMetadata, text: textChunks[i] },
           };
 
           vectors.push(vectorRecord);

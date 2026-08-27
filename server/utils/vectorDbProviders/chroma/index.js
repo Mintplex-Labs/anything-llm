@@ -210,6 +210,7 @@ class Chroma extends VectorDatabase {
     try {
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
+      const vdbMetadata = { ...metadata, docId };
 
       this.logger("Adding new vectorized document into namespace", namespace);
       if (!skipCache) {
@@ -236,12 +237,12 @@ class Chroma extends VectorDatabase {
             // we need to assign the id of each chunk that is stored in the cached file.
             chunk.forEach((chunk) => {
               const id = uuidv4();
-              const { id: _id, ...metadata } = chunk.metadata;
+              const { id: _id, ...chunkMetadata } = chunk.metadata;
               documentVectors.push({ docId, vectorId: id });
               submission.ids.push(id);
               submission.embeddings.push(chunk.values);
-              submission.metadatas.push(metadata);
-              submission.documents.push(metadata.text);
+              submission.metadatas.push({ ...chunkMetadata, ...vdbMetadata });
+              submission.documents.push(chunkMetadata.text);
             });
 
             await this.smartAdd(collection, submission);
@@ -268,7 +269,7 @@ class Chroma extends VectorDatabase {
           { label: "text_splitter_chunk_overlap" },
           20
         ),
-        chunkHeaderMeta: TextSplitter.buildHeaderMeta(metadata),
+        chunkHeaderMeta: TextSplitter.buildHeaderMeta(vdbMetadata),
         chunkPrefix: EmbedderEngine?.embeddingPrefix,
       });
       const textChunks = await textSplitter.splitText(pageContent);
@@ -292,12 +293,12 @@ class Chroma extends VectorDatabase {
             // [DO NOT REMOVE]
             // LangChain will be unable to find your text if you embed manually and dont include the `text` key.
             // https://github.com/hwchase17/langchainjs/blob/2def486af734c0ca87285a48f1a04c057ab74bdf/langchain/src/vectorstores/pinecone.ts#L64
-            metadata: { ...metadata, text: textChunks[i] },
+            metadata: { ...vdbMetadata, text: textChunks[i] },
           };
 
           submission.ids.push(vectorRecord.id);
           submission.embeddings.push(vectorRecord.values);
-          submission.metadatas.push(metadata);
+          submission.metadatas.push(vectorRecord.metadata);
           submission.documents.push(textChunks[i]);
 
           vectors.push(vectorRecord);

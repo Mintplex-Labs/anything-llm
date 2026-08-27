@@ -165,6 +165,7 @@ class AstraDB extends VectorDatabase {
       let vectorDimension = null;
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
+      const vdbMetadata = { ...metadata, docId };
 
       this.logger("Adding new vectorized document into namespace", namespace);
       if (!skipCache) {
@@ -194,7 +195,7 @@ class AstraDB extends VectorDatabase {
               return {
                 _id: _id,
                 $vector: chunk.values,
-                metadata: chunk.metadata || {},
+                metadata: { ...(chunk.metadata || {}), ...vdbMetadata },
               };
             });
 
@@ -220,7 +221,7 @@ class AstraDB extends VectorDatabase {
           { label: "text_splitter_chunk_overlap" },
           20
         ),
-        chunkHeaderMeta: TextSplitter.buildHeaderMeta(metadata),
+        chunkHeaderMeta: TextSplitter.buildHeaderMeta(vdbMetadata),
         chunkPrefix: EmbedderEngine?.embeddingPrefix,
       });
       const textChunks = await textSplitter.splitText(pageContent);
@@ -236,7 +237,7 @@ class AstraDB extends VectorDatabase {
           const vectorRecord = {
             _id: uuidv4(),
             $vector: vector,
-            metadata: { ...metadata, text: textChunks[i] },
+            metadata: { ...vdbMetadata, text: textChunks[i] },
           };
 
           vectors.push(vectorRecord);

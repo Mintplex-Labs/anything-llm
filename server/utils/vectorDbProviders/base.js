@@ -86,14 +86,18 @@ class VectorDatabase {
     throw new Error("Must be implemented by provider");
   }
 
-  /**
-   * Add a document to a namespace
-   * @param {string} namespace - Namespace to add document to
-   * @param {Object} documentData - Document data
-   * @param {string} fullFilePath - Full file path
-   * @param {boolean} skipCache - Skip cache
-   * @returns {Promise<{vectorized: boolean, error: string|null}>}
-   */
+   /**
+    * Add a document to a namespace
+    * @param {string} namespace - Namespace to add document to
+    * @param {Object} documentData - Document data containing pageContent, docId, and metadata fields
+    * @param {string} fullFilePath - Full file path
+    * @param {boolean} skipCache - Skip cache
+    * @returns {Promise<{vectorized: boolean, error: string|null}>}
+    *
+    * Note: docId is retained in the VDB metadata as a secondary index field
+    * to enable recovery when Prisma document_vectors records are out of sync.
+    * @see docId is stored in metadata: { ...metadata, docId }
+    */
   async addDocumentToNamespace(
     namespace,
     documentData = {},

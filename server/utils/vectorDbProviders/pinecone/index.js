@@ -122,6 +122,7 @@ class PineconeDB extends VectorDatabase {
     try {
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
+      const vdbMetadata = { ...metadata, docId };
 
       this.logger("Adding new vectorized document into namespace", namespace);
       if (!skipCache) {
@@ -138,7 +139,7 @@ class PineconeDB extends VectorDatabase {
             const newChunks = chunk.map((chunk) => {
               const id = uuidv4();
               documentVectors.push({ docId, vectorId: id });
-              return { ...chunk, id };
+              return { ...chunk, metadata: { ...chunk.metadata, ...vdbMetadata }, id };
             });
             await pineconeNamespace.upsert([...newChunks]);
           }
@@ -165,7 +166,7 @@ class PineconeDB extends VectorDatabase {
           { label: "text_splitter_chunk_overlap" },
           20
         ),
-        chunkHeaderMeta: TextSplitter.buildHeaderMeta(metadata),
+        chunkHeaderMeta: TextSplitter.buildHeaderMeta(vdbMetadata),
         chunkPrefix: EmbedderEngine?.embeddingPrefix,
       });
       const textChunks = await textSplitter.splitText(pageContent);
@@ -183,7 +184,7 @@ class PineconeDB extends VectorDatabase {
             // [DO NOT REMOVE]
             // LangChain will be unable to find your text if you embed manually and dont include the `text` key.
             // https://github.com/hwchase17/langchainjs/blob/2def486af734c0ca87285a48f1a04c057ab74bdf/langchain/src/vectorstores/pinecone.ts#L64
-            metadata: { ...metadata, text: textChunks[i] },
+            metadata: { ...vdbMetadata, text: textChunks[i] },
           };
 
           vectors.push(vectorRecord);

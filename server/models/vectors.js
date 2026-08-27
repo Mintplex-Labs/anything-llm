@@ -46,10 +46,10 @@ const DocumentVectors = {
       await prisma.document_vectors.deleteMany({
         where: { docId: { in: docIds } },
       });
-      return true;
+      return { success: true, docIds, documents };
     } catch (error) {
       console.error("Delete for workspace failed", error);
-      return false;
+      return { success: false, error: error.message, docIds, documents };
     }
   },
 

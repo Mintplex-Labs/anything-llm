@@ -266,7 +266,7 @@ function apiWorkspaceEndpoints(app) {
         try {
           await VectorDb["delete-namespace"]({ namespace: slug });
         } catch (e) {
-          console.error(e.message);
+          console.error(`Failed to delete VDB namespace for workspace ${slug}:`, e);
         }
         response.sendStatus(200).end();
       } catch (e) {
