@@ -109,6 +109,23 @@ const Observability = {
     }
   },
 
+  /**
+   * Resolve a thread id to its slug so agent traces share the same session id
+   * as regular workspace chats in that thread.
+   * @param {number|string|null} threadId
+   * @returns {Promise<string|null>}
+   */
+  threadSlugForId: async function (threadId) {
+    if (!threadId) return null;
+    try {
+      const { WorkspaceThread } = require("../../models/workspaceThread");
+      const thread = await WorkspaceThread.get({ id: Number(threadId) });
+      return thread?.slug || null;
+    } catch {
+      return null;
+    }
+  },
+
   flush: async function () {
     try {
       await Promise.allSettled([...this._pending]);
@@ -185,6 +202,7 @@ const Observability = {
         workspaceId: workspace.id,
         workspaceSlug: workspace.slug,
         threadId: thread?.id || null,
+        threadSlug: thread?.slug || null,
         chatId,
         chatMode,
         ...metadata,
@@ -229,7 +247,10 @@ const Observability = {
           const client = await this.client();
           if (!client) return;
           const workspace = invocation?.workspace || {};
-          const username = await this.usernameForId(invocation?.user_id);
+          const [username, threadSlug] = await Promise.all([
+            this.usernameForId(invocation?.user_id),
+            this.threadSlugForId(invocation?.thread_id),
+          ]);
           client.traceChat({
             name: "agent-chat",
             input,
@@ -238,13 +259,14 @@ const Observability = {
             messages,
             metrics,
             userId: username,
-            sessionId: invocation?.thread_id
-              ? `${workspace.slug}:thread-${invocation.thread_id}`
+            sessionId: threadSlug
+              ? `${workspace.slug}:${threadSlug}`
               : workspace.slug || null,
             metadata: {
               workspaceId: workspace.id || null,
               workspaceSlug: workspace.slug || null,
               threadId: invocation?.thread_id || null,
+              threadSlug,
             },
             tags: ["agent-chat"],
             spans: toolCalls.map((call) => ({

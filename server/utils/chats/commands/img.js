@@ -134,6 +134,8 @@ async function generateImage(
         provider: process.env.IMAGE_GEN_PROVIDER || null,
         workspaceId: workspace.id,
         workspaceSlug: workspace.slug,
+        threadId: thread?.id || null,
+        threadSlug: thread?.slug || null,
         chatId: chat?.id || null,
         fileSize,
         edited: imageBuffers.length > 0,
