@@ -69,7 +69,7 @@ AnythingLLM همچنین از چندین کاربر پشتیبانی می‌کن
 - 📖 پشتیبانی از انواع مختلف سند (PDF، TXT، DOCX و غیره)
 - رابط کاربری ساده چت با قابلیت کشیدن و رها کردن و استنادهای واضح
 - ۱۰۰٪ آماده استقرار در فضای ابری
-- سازگار با تمام [ارائه‌دهندگان محبوب LLM متن‌باز و تجاری](#supported-llms-embedder-models-speech-models-and-vector-databases)
+- سازگار با تمام [ارائه‌دهندگان محبوب LLM متن‌باز و تجاری](../README.md#supported-llms-embedder-models-speech-models-and-vector-databases)
 - دارای اقدامات داخلی صرفه‌جویی در هزینه و زمان برای مدیریت اسناد بسیار بزرگ در مقایسه با سایر رابط‌های کاربری چت
 - API کامل توسعه‌دهنده برای یکپارچه‌سازی‌های سفارشی!
 - و موارد بیشتر... نصب کنید و کشف کنید!
@@ -178,9 +178,9 @@ Mintplex Labs و جامعه کاربران، روش‌ها، اسکریپت‌ه
 | ------------------------------------------------ | --------------------------------------- | --------------------------------------- | ---------------------------------------------- | ---------------------------------------------------- |
 | [![Deploy on Docker][docker-btn]][docker-deploy] | [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy] | [![Deploy on DigitalOcean][do-btn]][do-deploy] | [![Deploy on Render.com][render-btn]][render-deploy] |
 
-| Railway                                             | RepoCloud                                                 | Elestio                                             |
-| --------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------- |
-| [![Deploy on Railway][railway-btn]][railway-deploy] | [![Deploy on RepoCloud][repocloud-btn]][repocloud-deploy] | [![Deploy on Elestio][elestio-btn]][elestio-deploy] |
+| Railway                                             | RepoCloud                                                 | Elestio                                             | Sealos                                               |
+| --------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------- | ---------------------------------------------------- |
+| [![Deploy on Railway][railway-btn]][railway-deploy] | [![Deploy on RepoCloud][repocloud-btn]][repocloud-deploy] | [![Deploy on Elestio][elestio-btn]][elestio-deploy] | [![Deploy on Sealos][sealos-btn]][sealos-deploy] |
 
 <div dir="rtl">
 
@@ -295,3 +295,5 @@ This project is [MIT](../LICENSE) licensed.
 [repocloud-deploy]: https://repocloud.io/details/?app_id=276
 [elestio-btn]: https://elest.io/images/logos/deploy-to-elestio-btn.png
 [elestio-deploy]: https://elest.io/open-source/anythingllm
+[sealos-btn]: https://sealos.io/Deploy-on-Sealos.svg
+[sealos-deploy]: https://sealos.io/products/app-store/anything-llm

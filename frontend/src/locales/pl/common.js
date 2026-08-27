@@ -1409,6 +1409,18 @@ const TRANSLATIONS = {
     export: "Eksportuj czat jako…",
     exporting: "Eksportowanie...",
     preset_img_description: "Wygeneruj obraz na podstawie tekstu",
+    generating_response: "Generowanie odpowiedzi",
+    response_failed: "Nie udało się odpowiedzieć na wiadomość.",
+    response_failed_reason: "Powód: {{reason}}",
+    thought_in_progress: "Model myśli…",
+    thoughts: "Myśli",
+    leave_generating: {
+      title: "Przestań generować odpowiedź?",
+      description:
+        "Wkrótce opuścisz tę rozmowę, co spowoduje zatrzymanie działania modelu i uniemożliwi jego odtworzenie.",
+      cancel: "Anuluj",
+      confirm: "Kontynuuj",
+    },
   },
   profile_settings: {
     edit_account: "Edytuj konto",

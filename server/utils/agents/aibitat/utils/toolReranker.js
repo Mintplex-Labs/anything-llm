@@ -3,7 +3,6 @@ const {
   NativeEmbeddingReranker,
 } = require("../../../EmbeddingRerankers/native");
 
-const CHUNK_SIZE = 25;
 const MAX_TEXT_LENGTH = 1000;
 
 class ToolReranker {
@@ -66,45 +65,6 @@ class ToolReranker {
       await this.reranker.initClient();
     }
     return this.reranker;
-  }
-
-  /**
-   * Process documents in chunks and merge results to get global top K
-   */
-  async #chunkedRerank(query, documents, topK) {
-    const reranker = await this.#getReranker();
-    const totalDocs = documents.length;
-
-    if (totalDocs <= CHUNK_SIZE) {
-      return await reranker.rerank(query, documents, { topK });
-    }
-
-    this.log(`Processing ${totalDocs} documents in chunks of ${CHUNK_SIZE}...`);
-    const allScored = [];
-
-    for (let i = 0; i < totalDocs; i += CHUNK_SIZE) {
-      const chunk = documents.slice(i, i + CHUNK_SIZE);
-      const chunkNum = Math.floor(i / CHUNK_SIZE) + 1;
-      const totalChunks = Math.ceil(totalDocs / CHUNK_SIZE);
-
-      this.log(
-        `Processing chunk ${chunkNum}/${totalChunks} (${chunk.length} docs)...`
-      );
-
-      const chunkResults = await reranker.rerank(query, chunk, {
-        topK: chunk.length,
-      });
-
-      chunkResults.forEach((result) => {
-        allScored.push({
-          ...result,
-          rerank_corpus_id: result.rerank_corpus_id + i,
-        });
-      });
-    }
-
-    allScored.sort((a, b) => b.rerank_score - a.rerank_score);
-    return allScored.slice(0, topK);
   }
 
   /**
@@ -186,7 +146,12 @@ class ToolReranker {
         text: this.#truncateText(doc.text),
       }));
 
-      const reranked = await this.#chunkedRerank(userPrompt, rerankDocs, topN);
+      const reranker = await this.#getReranker();
+      const reranked = await reranker.rerank(
+        this.#truncateText(userPrompt),
+        rerankDocs,
+        { topK: topN }
+      );
       const elapsedMs = Date.now() - startTime;
 
       const rerankedIndices = reranked.map((doc) => ({

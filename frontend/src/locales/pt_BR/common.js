@@ -1392,6 +1392,18 @@ const TRANSLATIONS = {
     export: "Exporte a conversa como...",
     exporting: "Exportando...",
     preset_img_description: "Gerar uma imagem a partir de um texto",
+    generating_response: "Gerando resposta",
+    response_failed: "Não foi possível responder à mensagem.",
+    response_failed_reason: "Motivo: {{reason}}",
+    thought_in_progress: "O modelo está pensando...",
+    thoughts: "Pensamentos",
+    leave_generating: {
+      title: "Parar de gerar respostas?",
+      description:
+        "Você está prestes a sair deste bate-papo. Isso impedirá que o modelo gere uma resposta e não poderá ser recuperado.",
+      cancel: "Cancelar",
+      confirm: "Continue",
+    },
   },
   profile_settings: {
     edit_account: "Editar conta",

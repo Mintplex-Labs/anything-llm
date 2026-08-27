@@ -38,6 +38,7 @@ import WorkspaceModelPicker from "./WorkspaceModelPicker";
 import { ChatSidebarProvider } from "./ChatSidebar";
 import SourcesSidebar from "./SourcesSidebar";
 import MemoriesSidebar from "./MemoriesSidebar";
+import ActiveGenerationGuard from "./ActiveGenerationGuard";
 
 export default function ChatContainer({
   workspace,
@@ -320,6 +321,14 @@ export default function ChatContainer({
       // Override hook for new messages to now go to agents until the connection closes
       if (!!websocket) {
         if (!promptMessage || !promptMessage?.userMessage) return false;
+
+        // Session start re-triggers this effect (setLoadingResponse(true) in
+        // handleWSS) while the socket is still CONNECTING. The server already
+        // begins working on the invocation prompt itself on connect, so there
+        // is no feedback to relay yet - sending here would both throw
+        // (InvalidStateError) and duplicate the opening prompt.
+        if (websocket.readyState !== WebSocket.OPEN) return;
+
         const attachments = promptMessage?.attachments ?? parseAttachments();
         window.dispatchEvent(new CustomEvent(CLEAR_ATTACHMENTS_EVENT));
         websocket.send(
@@ -368,6 +377,13 @@ export default function ChatContainer({
   // TODO: Simplify this WSS stuff
   useEffect(() => {
     let socket = null;
+    let onAbortStream = null;
+
+    function removeAbortListener() {
+      if (!onAbortStream) return;
+      window.removeEventListener(ABORT_STREAM_EVENT, onAbortStream);
+      onAbortStream = null;
+    }
 
     function handleWSS() {
       try {
@@ -377,12 +393,13 @@ export default function ChatContainer({
         );
         socket.supportsAgentStreaming = false;
 
-        window.addEventListener(ABORT_STREAM_EVENT, () => {
+        onAbortStream = () => {
           setAgentSessionActive(false);
           setAgentSessionSocket(null);
           window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
           socket?.close();
-        });
+        };
+        window.addEventListener(ABORT_STREAM_EVENT, onAbortStream);
 
         socket.addEventListener("message", (event) => {
           try {
@@ -404,6 +421,7 @@ export default function ChatContainer({
         });
 
         socket.addEventListener("close", (_event) => {
+          removeAbortListener();
           setAgentSessionActive(false);
           setAgentSessionSocket(null);
           window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
@@ -463,6 +481,7 @@ export default function ChatContainer({
     handleWSS();
 
     return () => {
+      removeAbortListener();
       if (socket) {
         setAgentSessionActive(false);
         window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
@@ -531,6 +550,7 @@ export default function ChatContainer({
 
   return (
     <ChatSidebarProvider>
+      <ActiveGenerationGuard isGenerating={loadingResponse} />
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
         className="relative flex md:ml-[2px] md:mr-[16px] md:my-[16px] w-full h-full z-[2]"

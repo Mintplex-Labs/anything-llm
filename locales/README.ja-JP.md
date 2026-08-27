@@ -154,9 +154,9 @@ Mintplex Labsおよびコミュニティは、AnythingLLMをローカルで実�
 |----------------------------------------|----|-----|---------------|------------|
 | [![Docker上でデプロイ][docker-btn]][docker-deploy] | [![AWS上でデプロイ][aws-btn]][aws-deploy] | [![GCP上でデプロイ][gcp-btn]][gcp-deploy] | [![DigitalOcean上でデプロイ][do-btn]][do-deploy] | [![Render.com上でデプロイ][render-btn]][render-deploy] |
 
-| Railway                                               |
-| ----------------------------------------------------- |
-| [![Railway上でデプロイ][railway-btn]][railway-deploy] |
+| Railway                                               | Sealos                                               |
+| ----------------------------------------------------- | ---------------------------------------------------- |
+| [![Railway上でデプロイ][railway-btn]][railway-deploy] | [![Sealos上でデプロイ][sealos-btn]][sealos-deploy] |
 
 [Dockerを使用せずに本番環境のAnythingLLMインスタンスを設定する →](../BARE_METAL.md)
 
@@ -243,3 +243,5 @@ Copyright © 2026 [Mintplex Labs][profile-link]。<br />
 [render-deploy]: https://render.com/deploy?repo=https://github.com/Mintplex-Labs/anything-llm&branch=render
 [railway-btn]: https://railway.app/button.svg
 [railway-deploy]: https://railway.app/template/HNSCS1?referralCode=WFgJkn
+[sealos-btn]: https://sealos.io/Deploy-on-Sealos.svg
+[sealos-deploy]: https://sealos.io/products/app-store/anything-llm

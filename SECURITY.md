@@ -46,6 +46,12 @@ If your report is about being able to access the system via _bypassing the authe
 
 If your report depends on an attacker knowing or guessing a UUID (e.g., a session ID, embed ID, or any other random identifier) without demonstrating a practical way to obtain it, this is not a valid report. UUIDs (v4) have 122 bits of entropy and are not feasible to brute-force. Unless your report includes a concrete method to leak or enumerate the UUID in question, it will be closed immediately.
 
+### Reports based on Developer API Key access
+
+Developer API keys are **system-level credentials**. They are only creatable by administrators and intentionally grant full, unrestricted access to the entire `/v1/*` API surface — equivalent to admin access. If your report's attack chain starts with "attacker has a developer API key," you are describing an attacker who already has admin-equivalent access. There is no privilege escalation possible from a developer API key because it is already the highest privilege level.
+
+This includes reports about API keys being able to mint auth tokens, access admin endpoints, or perform actions on behalf of other users. All of these are intended capabilities of the API key system. If you believe a developer API key should have scoped or limited permissions, that is a feature request, not a vulnerability.
+
 ### Reports about admin-enabled agent tools doing "too much"
 
 Several agent tools (e.g., `sql-agent`, filesystem tools) are disabled by default and require an administrator to explicitly enable and configure them. If your report is that an admin-enabled tool can perform actions beyond what you think it should (writes via SQL, broad file access, etc.), this is not a valid report. The admin who enables the tool and configures its access (connection strings, paths, credentials) is making an intentional decision about what the agent can do. We provide UI-level warnings but intentionally do not restrict functionality — the user should be able to do whatever they want with their own systems.

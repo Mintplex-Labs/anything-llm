@@ -10,7 +10,7 @@ import {
   X,
 } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 const THREAD_CALLOUT_DETAIL_WIDTH = 26;
 export default function ThreadItem({
@@ -171,6 +171,7 @@ function OptionsMenu({
   close,
   currentThreadSlug,
 }) {
+  const navigate = useNavigate();
   const menuRef = useRef(null);
 
   // Ref menu options
@@ -246,9 +247,10 @@ function OptionsMenu({
     if (success) {
       showToast("Thread deleted successfully!", "success", { clear: true });
       onRemove(thread.id);
-      // Redirect if deleting the active thread
+      // Redirect if deleting the active thread. Use router navigation so
+      // ActiveGenerationGuard can intercept if a response is generating.
       if (currentThreadSlug === thread.slug) {
-        window.location.href = paths.workspace.chat(workspace.slug);
+        navigate(paths.workspace.chat(workspace.slug));
       }
       return;
     }

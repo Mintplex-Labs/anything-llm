@@ -1,7 +1,7 @@
 import truncate from "truncate";
-import { X, Trash } from "@phosphor-icons/react";
+import { Trash } from "@phosphor-icons/react";
 import System from "@/models/system";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal, { ModalHeader, ModalBody } from "@/components/lib/Modal";
 import { useModal } from "@/hooks/useModal";
 import MarkdownRenderer from "../MarkdownRenderer";
 import { safeJsonParse } from "@/utils/request";
@@ -61,10 +61,10 @@ export default function ChatRow({ chat, onDelete }) {
           </button>
         </td>
       </tr>
-      <ModalWrapper isOpen={isPromptOpen}>
+      <Modal isOpen={isPromptOpen} onClose={closePromptModal}>
         <TextPreview text={chat.prompt} closeModal={closePromptModal} />
-      </ModalWrapper>
-      <ModalWrapper isOpen={isResponseOpen}>
+      </Modal>
+      <Modal isOpen={isResponseOpen} onClose={closeResponseModal}>
         <TextPreview
           text={
             <MarkdownRenderer
@@ -73,30 +73,19 @@ export default function ChatRow({ chat, onDelete }) {
           }
           closeModal={closeResponseModal}
         />
-      </ModalWrapper>
+      </Modal>
     </>
   );
 }
 const TextPreview = ({ text, closeModal }) => {
   return (
-    <div className="relative w-full md:max-w-2xl max-h-full">
-      <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
-        <div className="flex items-center justify-between p-6 border-b rounded-t border-theme-modal-border">
-          <h3 className="text-xl font-semibold text-white">Viewing Text</h3>
-          <button
-            onClick={closeModal}
-            type="button"
-            className="bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
-          >
-            <X className="text-white text-lg" />
-          </button>
-        </div>
-        <div className="w-full p-6">
-          <pre className="w-full h-[200px] py-2 px-4 whitespace-pre-line overflow-auto rounded-lg bg-zinc-900 light:bg-theme-bg-secondary border border-gray-500 text-white text-sm">
-            {text}
-          </pre>
-        </div>
-      </div>
-    </div>
+    <form className="flex flex-col gap-y-5">
+      <ModalHeader title="Viewing Text" onClose={closeModal} />
+      <ModalBody>
+        <pre className="w-full h-[200px] py-2 px-4 whitespace-pre-line overflow-auto rounded-lg bg-zinc-800 light:bg-white border border-zinc-800 light:border-slate-300 text-zinc-100 light:text-slate-900 text-sm">
+          {text}
+        </pre>
+      </ModalBody>
+    </form>
   );
 };
