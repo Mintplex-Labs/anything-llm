@@ -1276,6 +1276,18 @@ const TRANSLATIONS = {
     export: "チャットを以下のような形式でエクスポートする：",
     exporting: "輸出…",
     preset_img_description: "テキストプロンプトから画像を生成する。",
+    generating_response: "応答を生成する",
+    response_failed: "メッセージへの返信ができませんでした。",
+    response_failed_reason: "理由：{{reason}}",
+    thought_in_progress: "モデルは思考しています…",
+    thoughts: "考え、思索",
+    leave_generating: {
+      title: "応答を停止するには？",
+      description:
+        "あなたは今、このチャットを終了します。これにより、モデルが応答を生成できなくなり、もう回復することはできません。",
+      cancel: "キャンセル",
+      confirm: "続き",
+    },
   },
   profile_settings: {
     edit_account: "アカウントを編集",

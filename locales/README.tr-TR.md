@@ -64,7 +64,7 @@ AnythingLLM ayrıca birden fazla kullanıcıyı da destekler; burada örneğin g
 - 📖 Çoklu belge türü desteği (PDF, TXT, DOCX vb.)
 - Sade ve kullanışlı sohbet arayüzü, sürükle-bırak özelliği ve net kaynak gösterimi.
 - %100 bulut konuşlandırmaya hazır.
-- [Tüm popüler kapalı ve açık kaynak LLM sağlayıcılarıyla](#supported-llms-embedder-models-speech-models-and-vector-databases) uyumlu.
+- [Tüm popüler kapalı ve açık kaynak LLM sağlayıcılarıyla](../README.md#supported-llms-embedder-models-speech-models-and-vector-databases) uyumlu.
 - Büyük belgeleri yönetirken zaman ve maliyet tasarrufu sağlayan dahili optimizasyonlar.
 - Özel entegrasyonlar için tam kapsamlı Geliştirici API’si.
 - Ve çok daha fazlası... Kurup keşfedin!
@@ -164,9 +164,9 @@ Mintplex Labs ve topluluk, AnythingLLM'i yerel olarak çalıştırmak için çe�
 |----------------------------------------|----|-----|---------------|------------|
 | [![Deploy on Docker][docker-btn]][docker-deploy] | [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy] | [![Deploy on DigitalOcean][do-btn]][do-deploy] | [![Deploy on Render.com][render-btn]][render-deploy] |
 
-| Railway                                             | RepoCloud                                                 | Elestio                                             |
-| --------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------- |
-| [![Deploy on Railway][railway-btn]][railway-deploy] | [![Deploy on RepoCloud][repocloud-btn]][repocloud-deploy] | [![Deploy on Elestio][elestio-btn]][elestio-deploy] |
+| Railway                                             | RepoCloud                                                 | Elestio                                             | Sealos                                               |
+| --------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------- | ---------------------------------------------------- |
+| [![Deploy on Railway][railway-btn]][railway-deploy] | [![Deploy on RepoCloud][repocloud-btn]][repocloud-deploy] | [![Deploy on Elestio][elestio-btn]][elestio-deploy] | [![Deploy on Sealos][sealos-btn]][sealos-deploy] |
 
 [veya Docker kullanmadan üretim ortamında AnythingLLM kurun →](../BARE_METAL.md)
 
@@ -263,3 +263,5 @@ Bu proje [MIT](../LICENSE) lisansı ile lisanslanmıştır.
 [repocloud-deploy]: https://repocloud.io/details/?app_id=276
 [elestio-btn]: https://elest.io/images/logos/deploy-to-elestio-btn.png
 [elestio-deploy]: https://elest.io/open-source/anythingllm
+[sealos-btn]: https://sealos.io/Deploy-on-Sealos.svg
+[sealos-deploy]: https://sealos.io/products/app-store/anything-llm

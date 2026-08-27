@@ -84,6 +84,12 @@ function handleAnthropicChatStream(response, stream, responseProps) {
     };
     response.on("close", handleAbort);
 
+    stream.on("abort", () => {
+      response.removeListener("close", handleAbort);
+      stream?.endMeasurement(usage);
+      resolve(fullText);
+    });
+
     stream.on("error", (event) => {
       const error = event?.error?.error;
       const errorMsg = error
