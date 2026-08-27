@@ -1461,7 +1461,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       case "mistral":
         return new Providers.MistralProvider({ model: config.model });
       case "generic-openai":
-        return new Providers.GenericOpenAiProvider({ model: config.model });
+        return new Providers.GenericOpenAiProvider({ model: config.model, temperature: config.temperature });
       case "perplexity":
         return new Providers.PerplexityProvider({ model: config.model });
       case "textgenwebui":

@@ -21,7 +21,7 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
   constructor(config = {}) {
     super();
     this.providerTag = "generic-openai";
-    const { model = "gpt-4.1-nano" } = config;
+    const { model = "gpt-4.1-nano", temperature = null } = config;
     const client = new OpenAI({
       baseURL: process.env.GENERIC_OPEN_AI_BASE_PATH,
       apiKey: process.env.GENERIC_OPEN_AI_API_KEY ?? null,
@@ -33,6 +33,7 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
 
     this._client = client;
     this.model = model;
+    this.temperature = temperature;
     this.verbose = true;
     this._supportsToolCalling = null;
     this.maxTokens = process.env.GENERIC_OPEN_AI_MAX_TOKENS
@@ -75,7 +76,7 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
     return await this.client.chat.completions
       .create({
         model: this.model,
-        temperature: 0,
+        temperature: this.temperature ?? 0,
         messages,
         max_tokens: this.maxTokens,
       })

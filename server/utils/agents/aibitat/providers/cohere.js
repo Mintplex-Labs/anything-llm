@@ -16,7 +16,7 @@ class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
 
   constructor(config = {}) {
     super();
-    const { model = process.env.COHERE_MODEL_PREF || "command-r-08-2024" } =
+    const { model = process.env.COHERE_MODEL_PREF || "command-r-08-2024", temperature = null } =
       config;
     const client = new OpenAI({
       baseURL: "https://api.cohere.ai/compatibility/v1",
@@ -26,6 +26,7 @@ class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
     this.providerTag = "cohere";
     this._client = client;
     this.model = model;
+    this.temperature = temperature;
     this.verbose = true;
     this._supportsToolCalling = null;
   }
@@ -56,7 +57,7 @@ class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
     return await this.client.chat.completions
       .create({
         model: this.model,
-        temperature: 0,
+        temperature: this.temperature ?? 0,
         messages,
       })
       .then((result) => {
