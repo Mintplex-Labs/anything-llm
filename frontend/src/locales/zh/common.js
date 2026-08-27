@@ -1304,6 +1304,14 @@ const TRANSLATIONS = {
     generating_response: "生成回复",
     response_failed: "无法回复消息。",
     response_failed_reason: "原因：{{reason}}",
+    thought_in_progress: "正在思考…",
+    thoughts: "想法、思绪",
+    leave_generating: {
+      title: "停止生成回复吗？",
+      description: "您即将退出此对话，这将阻止模型生成回复，并且无法恢复。",
+      cancel: "取消",
+      confirm: "继续",
+    },
   },
   profile_settings: {
     edit_account: "编辑帐户",

@@ -16,6 +16,9 @@ const AGENT_AWAITING_USER_EVENTS = [
   "WAITING_ON_INPUT",
   "toolApprovalRequest",
   "clarificationRequest",
+  // An inline /img command finished while the session was paused awaiting
+  // feedback - it stays paused, so the send button must come back.
+  "imageGenerationCard",
 ];
 
 // Bookkeeping events that never indicate the agent is actively working. Some
@@ -125,6 +128,24 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
     if (!data.requestId || !data.skillName) return;
   } else if (data.type === "clarificationRequest") {
     if (!data.requestId || !Array.isArray(data.questions)) return;
+  } else if (data.type === "imageGenerationPending") {
+    // Carries no content - it only swaps the generic loading placeholder for
+    // the image-pending card while an inline /img command generates.
+    return setChatHistory((prev) => [
+      ...prev.filter((msg) => !!msg.content),
+      {
+        type: "imageGenerationPending",
+        uuid: v4(),
+        content: "",
+        role: "assistant",
+        sources: [],
+        closed: false,
+        error: null,
+        animate: false,
+        pending: true,
+        metrics: {},
+      },
+    ]);
   } else if (!handledEvents.includes(data.type) || !data.content) {
     return;
   }

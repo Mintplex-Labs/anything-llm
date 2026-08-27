@@ -34,8 +34,6 @@
     "prisma:reset": "truncate -s 0 server/storage/anythingllm.db && yarn prisma:migrate",
     "prod:server": "cd server && yarn start",
     "prod:frontend": "cd frontend && yarn build",
-    "generate:cloudformation": "node cloud-deployments/aws/cloudformation/generate.mjs",
-    "generate::gcp_deployment": "node cloud-deployments/gcp/deployment/generate.mjs",
     "translations:verify": "cd frontend/src/locales && node verifyTranslations.mjs",
     "translations:normalize": "cd frontend/src/locales && node normalizeEn.mjs && cd ../../.. && cd frontend && yarn lint && cd .. && yarn translations:verify",
     "translations:prune": "cd frontend/src/locales && node findUnusedTranslations.mjs --delete && cd ../../../ && yarn translations:normalize",

@@ -142,6 +142,7 @@ async function generateImage(
         error: false,
       };
     }
+    console.error(`[/img] Image generation failed: ${e.message}`);
     return {
       uuid: msgUUID,
       type: "textResponse",

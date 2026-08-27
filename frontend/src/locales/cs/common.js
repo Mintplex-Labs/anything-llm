@@ -1421,6 +1421,15 @@ const TRANSLATIONS = {
     generating_response: "Generování odpovědi",
     response_failed: "Nebyl možné odpovědět na zprávu.",
     response_failed_reason: "Důvod: {{reason}}",
+    thought_in_progress: "Systém přemýšlí…",
+    thoughts: "Myšlenky",
+    leave_generating: {
+      title: "Zastavte generování odpovědi?",
+      description:
+        "Chystáte se tuto konverzaci ukončit. To způsobí zastavení generování odpovědí modelem a není možné ji obnovit.",
+      cancel: "Zrušit",
+      confirm: "Pokračujte",
+    },
   },
   profile_settings: {
     edit_account: "Upravit účet",

@@ -1308,6 +1308,15 @@ const TRANSLATIONS = {
     generating_response: "Antwoord genereren",
     response_failed: "Kon de bericht niet beantwoorden.",
     response_failed_reason: "Reden: {{reason}}",
+    thought_in_progress: "Het model denkt...",
+    thoughts: "Denken",
+    leave_generating: {
+      title: "Stoppen met het genereren van een antwoord?",
+      description:
+        "U gaat nu deze chat afsluiten. Dit zorgt ervoor dat het model geen antwoord meer genereert en dit kan niet worden teruggedraaid.",
+      cancel: "Annuleren",
+      confirm: "Vervolg",
+    },
   },
   profile_settings: {
     edit_account: "Account bewerken",

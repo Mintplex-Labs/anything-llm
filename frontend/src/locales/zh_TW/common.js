@@ -1212,6 +1212,14 @@ const TRANSLATIONS = {
     generating_response: "產生回應",
     response_failed: "無法回覆訊息。",
     response_failed_reason: "原因：{{reason}}",
+    thought_in_progress: "正在思考…",
+    thoughts: "想法、思緒",
+    leave_generating: {
+      title: "停止生成回應？",
+      description: "您即將結束本次對話，這會阻止模型生成回應，而且無法恢復。",
+      cancel: "取消",
+      confirm: "繼續",
+    },
   },
   profile_settings: {
     edit_account: "編輯帳戶",

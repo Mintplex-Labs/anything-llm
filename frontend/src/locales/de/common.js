@@ -1420,6 +1420,15 @@ const TRANSLATIONS = {
     generating_response: "Antwort generieren",
     response_failed: "Ich konnte die Nachricht nicht beantworten.",
     response_failed_reason: "Grund: {{reason}}",
+    thought_in_progress: "Das Modell denkt…",
+    thoughts: "Gedanken",
+    leave_generating: {
+      title: "Stoppen der Antwortgenerierung?",
+      description:
+        "Sie werden diesen Chat jetzt verlassen. Dadurch wird verhindert, dass das Modell eine Antwort generiert, und dies kann nicht rückgängig gemacht werden.",
+      cancel: "Abbrechen",
+      confirm: "Weiter",
+    },
   },
   profile_settings: {
     edit_account: "Account bearbeiten",

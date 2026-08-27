@@ -1,7 +1,9 @@
 import React, { useRef, useState } from "react";
 import Workspace from "@/models/workspace";
 import paths from "@/utils/paths";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { REFETCH_WORKSPACES_EVENT } from "@/components/Sidebar/ActiveWorkspaces";
 import Modal, {
   ModalHeader,
   ModalBody,
@@ -12,6 +14,7 @@ import Modal, {
 
 const noop = () => false;
 export default function NewWorkspaceModal({ hideModal = noop }) {
+  const navigate = useNavigate();
   const formEl = useRef(null);
   const [error, setError] = useState(null);
   const { t } = useTranslation();
@@ -23,7 +26,14 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
     for (var [key, value] of form.entries()) data[key] = value;
     const { workspace, message } = await Workspace.new(data);
     if (!!workspace) {
-      window.location.href = paths.workspace.chat(workspace.slug);
+      // Refresh the sidebar list and navigate via the router so
+      // ActiveGenerationGuard can intercept if a response is generating.
+      // If the user cancels the navigation, the workspace still exists and
+      // shows in the sidebar - so close this modal either way.
+      window.dispatchEvent(new CustomEvent(REFETCH_WORKSPACES_EVENT));
+      hideModal();
+      navigate(paths.workspace.chat(workspace.slug));
+      return;
     }
     setError(message);
   };

@@ -1281,6 +1281,15 @@ const TRANSLATIONS = {
     generating_response: "إنشاء رد",
     response_failed: "لم أتمكن من الرد على الرسالة.",
     response_failed_reason: "السبب: {{reason}}",
+    thought_in_progress: "النموذج يفكر...",
+    thoughts: "أفكار",
+    leave_generating: {
+      title: "هل تريد التوقف عن إنشاء ردود؟",
+      description:
+        "أنت على وشك الخروج من هذا المحادثة، وهذا سيمنع النموذج من إنشاء الرد، ولا يمكن استعادته.",
+      cancel: "إلغاء",
+      confirm: "استمر",
+    },
   },
   profile_settings: {
     edit_account: "تحرير الحساب",

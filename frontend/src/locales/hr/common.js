@@ -1668,6 +1668,15 @@ const TRANSLATIONS = {
     generating_response: "Generiranje odgovora",
     response_failed: "Nije moguće odgovoriti na poruku.",
     response_failed_reason: "Razlog: {{reason}}",
+    thought_in_progress: "Model razmišlja...",
+    thoughts: "Razmišljanja",
+    leave_generating: {
+      title: "Zaustaviti generiranje odgovora?",
+      description:
+        "O trenutno napuštate ovu razgovornu sesiju. To će zaustaviti generiranje odgovora i ne postoji mogućnost da se to vrati.",
+      cancel: "Otkazati",
+      confirm: "Nastavite",
+    },
   },
   profile_settings: {
     edit_account: "Uredi račun",
