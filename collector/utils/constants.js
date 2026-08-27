@@ -1,5 +1,7 @@
 const WATCH_DIRECTORY = require("path").resolve(__dirname, "../hotdir");
 
+const MAX_PDF_FILE_SIZE_MB = parseInt(process.env.MAX_PDF_FILE_SIZE_MB) || 250;
+
 const ACCEPTED_MIMES = {
   "text/plain": [".txt", ".md", ".org", ".adoc", ".rst"],
   "text/html": [".html"],
@@ -89,4 +91,5 @@ module.exports = {
   SUPPORTED_FILETYPE_CONVERTERS,
   WATCH_DIRECTORY,
   ACCEPTED_MIMES,
+  MAX_PDF_FILE_SIZE_MB,
 };

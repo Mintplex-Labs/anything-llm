@@ -7,15 +7,34 @@ class PDFLoader {
   }
 
   async load() {
+    const MAX_PDF_FILE_SIZE_MB =
+      parseInt(process.env.MAX_PDF_FILE_SIZE_MB) || 250;
+    const stats = await fs.stat(this.filePath);
+    if (stats.size > MAX_PDF_FILE_SIZE_MB * 1024 * 1024) {
+      throw new Error(
+        `PDF file size (${(stats.size / (1024 * 1024)).toFixed(2)}MB) exceeds the maximum allowed size of ${MAX_PDF_FILE_SIZE_MB}MB.`
+      );
+    }
+
     const buffer = await fs.readFile(this.filePath);
     const { getDocument, version } = await this.getPdfJS();
 
-    const pdf = await getDocument({
-      data: new Uint8Array(buffer),
-      useWorkerFetch: false,
-      isEvalSupported: false,
-      useSystemFonts: true,
-    }).promise;
+    let pdf;
+    try {
+      pdf = await getDocument({
+        data: new Uint8Array(buffer),
+        useWorkerFetch: false,
+        isEvalSupported: false,
+        useSystemFonts: true,
+      }).promise;
+    } catch (e) {
+      if (e.name === "PasswordException" || e.type === "password" || /password/i.test(e.message || "")) {
+        throw new Error(
+          `PDF file "${this.filePath}" is password protected. This loader does not support password-protected PDFs.`
+        );
+      }
+      throw e;
+    }
 
     const meta = await pdf.getMetadata().catch(() => null);
     const documents = [];

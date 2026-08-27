@@ -1,4 +1,5 @@
 const { v4 } = require("uuid");
+const fs = require("fs").promises;
 const {
   createdDate,
   trashFile,
@@ -9,19 +10,47 @@ const { default: slugify } = require("slugify");
 const PDFLoader = require("./PDFLoader");
 const OCRLoader = require("../../../utils/OCRLoader");
 
+async function fallbackPdfParse(fullFilePath) {
+  const pdfParse = require("pdf-parse");
+  const buffer = await fs.readFile(fullFilePath);
+  const data = await pdfParse(buffer);
+  return [
+    {
+      pageContent: data.text,
+      metadata: {
+        source: fullFilePath,
+        pdf: {
+          version: "pdf-parse",
+          info: data.info,
+          metadata: data.metadata,
+          totalPages: data.numpages,
+        },
+      },
+    },
+  ];
+}
+
 async function asPdf({
   fullFilePath = "",
   filename = "",
   options = {},
   metadata = {},
 }) {
-  const pdfLoader = new PDFLoader(fullFilePath, {
-    splitPages: true,
-  });
-
   console.log(`-- Working ${filename} --`);
   const pageContent = [];
-  let docs = await pdfLoader.load();
+
+  let docs;
+  try {
+    const pdfLoader = new PDFLoader(fullFilePath, {
+      splitPages: true,
+    });
+    docs = await pdfLoader.load();
+  } catch (e) {
+    console.error(
+      `[asPDF] PDF.js loader failed for ${filename}: ${e.message}. Attempting fallback with pdf-parse.`
+    );
+    docs = await fallbackPdfParse(fullFilePath);
+  }
 
   if (docs.length === 0) {
     console.log(
