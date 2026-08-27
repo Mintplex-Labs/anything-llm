@@ -16,8 +16,11 @@ function log(stringContent = "") {
 }
 
 function conclude() {
-  if (parentPort) parentPort.postMessage("done");
-  else process.exit(0);
+  const { Observability } = require("../../utils/observability");
+  Observability.flush().finally(() => {
+    if (parentPort) parentPort.postMessage("done");
+    else process.exit(0);
+  });
 }
 
 function updateSourceDocument(docPath = null, jsonContent = {}) {

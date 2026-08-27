@@ -9,6 +9,7 @@ const {
 } = require("../helpers/chat/responses");
 const { DocumentManager } = require("../DocumentManager");
 const { abortConnectorOnClientDisconnect } = require("../helpers/abortSignals");
+const { Observability } = require("../observability");
 
 async function streamChatWithForEmbed(
   response,
@@ -236,6 +237,21 @@ async function streamChatWithForEmbed(
         }
       : { username: !!username ? String(username) : null },
     sessionId,
+  });
+
+  Observability.traceWorkspaceChat({
+    name: "embed-chat",
+    workspace: embed.workspace,
+    user: username ? { username: String(username) } : null,
+    sessionId,
+    chatMode,
+    metadata: { embedId: embed.id },
+    message,
+    output: completeText,
+    model: LLMConnector.model,
+    messages,
+    metrics,
+    sources,
   });
   return;
 }

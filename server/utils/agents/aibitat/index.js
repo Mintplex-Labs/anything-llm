@@ -5,6 +5,7 @@ const Providers = require("./providers/index.js");
 const { Telemetry } = require("../../../models/telemetry.js");
 const { v4 } = require("uuid");
 const { ToolReranker } = require("./utils/toolReranker.js");
+const { Observability } = require("../../observability");
 
 /**
  * AIbitat is a class that manages the conversation between agents.
@@ -962,21 +963,41 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     });
     this.providerInstance.attachHandlerProps(this.handlerProps);
 
+    const observedToolCalls = [];
+    const onToolCallResult = (event) => observedToolCalls.push(event);
+    this.emitter.on("toolCallResult", onToolCallResult);
+
     let content;
-    if (this.providerInstance.supportsAgentStreaming) {
-      this.handlerProps.log?.(
-        "[DEBUG] Provider supports agent streaming - will use async execution!"
-      );
-      content = await this.handleAsyncExecution(
+    try {
+      if (this.providerInstance.supportsAgentStreaming) {
+        this.handlerProps.log?.(
+          "[DEBUG] Provider supports agent streaming - will use async execution!"
+        );
+        content = await this.handleAsyncExecution(
+          messages,
+          functions,
+          route.from
+        );
+      } else {
+        this.handlerProps.log?.(
+          "[DEBUG] Provider does not support agent streaming - will use synchronous execution!"
+        );
+        content = await this.handleExecution(messages, functions, route.from);
+      }
+    } finally {
+      this.emitter.off("toolCallResult", onToolCallResult);
+    }
+
+    if (content) {
+      Observability.traceAgentChat({
+        invocation: this.handlerProps?.invocation,
+        input: userPrompt || route.content || "",
+        output: content,
         messages,
-        functions,
-        route.from
-      );
-    } else {
-      this.handlerProps.log?.(
-        "[DEBUG] Provider does not support agent streaming - will use synchronous execution!"
-      );
-      content = await this.handleExecution(messages, functions, route.from);
+        model: this.providerInstance?.model,
+        metrics: this.providerInstance?.getCumulativeUsage?.(),
+        toolCalls: observedToolCalls,
+      });
     }
 
     this.newMessage({ ...route, content });

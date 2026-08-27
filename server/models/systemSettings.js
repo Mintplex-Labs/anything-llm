@@ -37,7 +37,12 @@ const SystemSettings = {
   /** A default system prompt that is used when no other system prompt is set or available to the function caller. */
   saneDefaultSystemPrompt:
     "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. The current date and time is {datetime}. Return only your response to the question given the above information following the users instructions as needed.",
-  protectedFields: ["multi_user_mode", "hub_api_key", "onboarding_complete"],
+  protectedFields: [
+    "multi_user_mode",
+    "hub_api_key",
+    "onboarding_complete",
+    "observability_config",
+  ],
   publicFields: [
     "footer_data",
     "support_email",
@@ -100,6 +105,10 @@ const SystemSettings = {
 
     // Hub settings
     "hub_api_key",
+
+    // Observability
+    "observability_provider",
+    "observability_config",
 
     // Memory/Personalization
     "memory_enabled",
@@ -441,6 +450,23 @@ const SystemSettings = {
     hub_api_key: (apiKey) => {
       if (!apiKey) return null;
       return String(apiKey);
+    },
+    observability_provider: (provider) => {
+      if (!provider || provider === "none") return null;
+      return ["langfuse"].includes(String(provider)) ? String(provider) : null;
+    },
+    observability_config: (config) => {
+      try {
+        const obj = typeof config === "string" ? JSON.parse(config) : config;
+        if (!obj || typeof obj !== "object" || Array.isArray(obj)) return null;
+        const clean = {};
+        for (const [key, value] of Object.entries(obj)) {
+          if (typeof value === "string" && value.length) clean[key] = value;
+        }
+        return JSON.stringify(clean);
+      } catch {
+        return null;
+      }
     },
     default_system_prompt: (prompt) => {
       if (typeof prompt !== "string" || !prompt) return null;
@@ -1113,6 +1139,28 @@ const SystemSettings = {
     } catch (error) {
       console.error(error.message);
       return { connectionKey: null };
+    }
+  },
+
+  /**
+   * Get user configured observability settings.
+   * The config object holds provider-specific credentials (eg: for Langfuse
+   * `{ publicKey, secretKey, host }`) and is never exposed via publicFields.
+   * @returns {Promise<{provider: string|null, config: Object<string, string>}>}
+   */
+  observabilitySettings: async function () {
+    try {
+      const [provider, config] = await Promise.all([
+        this.get({ label: "observability_provider" }),
+        this.get({ label: "observability_config" }),
+      ]);
+      return {
+        provider: provider?.value || null,
+        config: config?.value ? JSON.parse(config.value) : {},
+      };
+    } catch (error) {
+      console.error(error.message);
+      return { provider: null, config: {} };
     }
   },
 

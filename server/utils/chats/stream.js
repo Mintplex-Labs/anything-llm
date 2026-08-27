@@ -6,6 +6,7 @@ const { getVectorDbClass, resolveProviderConnector } = require("../helpers");
 const { addChatCostToMetrics } = require("../helpers/modelPricing");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const { abortConnectorOnClientDisconnect } = require("../helpers/abortSignals");
+const { Observability } = require("../observability");
 const { grepAgents } = require("./agents");
 const {
   grepCommand,
@@ -337,6 +338,21 @@ async function streamChatWithWorkspace(
       },
       threadId: thread?.id || null,
       user,
+    });
+
+    Observability.traceWorkspaceChat({
+      name: "workspace-chat",
+      workspace,
+      thread,
+      user,
+      chatId: chat.id,
+      chatMode,
+      message,
+      output: completeText,
+      model: LLMConnector.model,
+      messages,
+      metrics,
+      sources,
     });
 
     writeResponseChunk(response, {

@@ -519,6 +519,8 @@ class EphemeralAgentHandler extends AgentHandler {
         invocation: {
           workspace: this.#workspace,
           workspace_id: this.#workspace?.id ?? null,
+          user_id: this.#userId || null,
+          thread_id: this.#threadId || null,
         },
         log: this.log,
         routingMetadata: this.routingMetadata || null,
