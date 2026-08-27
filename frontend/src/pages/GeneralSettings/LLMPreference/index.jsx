@@ -204,7 +204,7 @@ export const AVAILABLE_LLM_PROVIDERS = [
     logo: LocalAiLogo,
     options: (settings) => <LocalAiOptions settings={settings} />,
     description: "Run LLMs locally on your own machine.",
-    requiredConfig: ["LocalAiApiKey", "LocalAiBasePath", "LocalAiTokenLimit"],
+    requiredConfig: ["LocalAiApiKey", "LocalAiBasePath"],
   },
   {
     name: "Together AI",

@@ -60,6 +60,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "openrouter-imggen",
   "ollama-imggen",
   "lemonade-imggen",
+  "localai-imggen",
   // Embedding Engines
   "native-embedder",
   "cohere-embedder",
@@ -150,6 +151,8 @@ async function getCustomModels(
         "image",
         unmaskedSecret(apiKey) || process.env.IMAGE_GEN_LEMONADE_API_KEY || null
       );
+    case "localai-imggen":
+      return await getLocalAiImageModels(basePath, apiKey);
     case "native-embedder":
       return await getNativeEmbedderModels();
     case "cohere-embedder":
@@ -1365,26 +1368,62 @@ async function getBedrockModels(_apiKey = null, options = {}) {
       options?.region || process.env.AWS_BEDROCK_LLM_REGION || "us-west-2";
 
     const { OpenAI: OpenAIApi } = require("openai");
+    const {
+      openaiBaseURL,
+      controlPlaneHost,
+    } = require("../AiProviders/bedrock/endpoints");
     const openai = new OpenAIApi({
       apiKey,
-      baseURL: `https://bedrock-mantle.${region}.api.aws/v1`,
+      baseURL: openaiBaseURL(region),
     });
-    const models = await openai.models
+
+    // The Mantle catalog listing omits cross-region inference profiles
+    // (eg: `eu.anthropic.*`), which are the only way to run Claude in many
+    // regions, and does not exist at all in some regions (eg: GovCloud East).
+    // The control plane accepts the same bearer key and lists them, so both
+    // sources are merged. Only Anthropic profiles are listed since profile
+    // IDs are only routable through the bedrock-runtime `/anthropic` path.
+    const catalogModels = await openai.models
       .list()
       .then((results) => results.data)
       .then((models) =>
-        models
-          .map((model) => ({
-            id: model.id,
-            name: model.id,
-            organization: model.owned_by ?? "AWS Bedrock",
-          }))
-          .sort((a, b) => a.name.localeCompare(b.name))
+        models.map((model) => ({
+          id: model.id,
+          name: model.id,
+          organization: model.owned_by ?? "AWS Bedrock",
+        }))
       )
       .catch((e) => {
         console.error(`AWSBedrock:listModels`, e.message);
         return [];
       });
+
+    const profileModels = await fetch(
+      `${controlPlaneHost(region)}/inference-profiles?maxResults=1000`,
+      { headers: { Authorization: `Bearer ${apiKey}` } }
+    )
+      .then((res) => (res.ok ? res.json() : { inferenceProfileSummaries: [] }))
+      .then((data) =>
+        (data.inferenceProfileSummaries ?? [])
+          .filter(
+            (profile) =>
+              profile.status === "ACTIVE" &&
+              profile.inferenceProfileId.includes("anthropic.")
+          )
+          .map((profile) => ({
+            id: profile.inferenceProfileId,
+            name: profile.inferenceProfileId,
+            organization: "Cross-Region Inference Profiles",
+          }))
+      )
+      .catch((e) => {
+        console.error(`AWSBedrock:listInferenceProfiles`, e.message);
+        return [];
+      });
+
+    const models = [...catalogModels, ...profileModels].sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
 
     if (models.length > 0 && !!apiKey)
       process.env.AWS_BEDROCK_LLM_API_KEY = apiKey;
@@ -1477,6 +1516,48 @@ async function getOllamaImageModels(basePath = null, authToken = null) {
     )
     .catch((e) => {
       console.error(`Ollama:listImageModels`, e.message);
+      return [];
+    });
+  return { models, error: null };
+}
+
+/**
+ * Lists the image-capable models installed on a LocalAI server. LocalAI reports
+ * per-model capabilities on `/v1/models/capabilities`, so we filter on the
+ * `image` capability - chat and vision models cannot be used for image
+ * generation.
+ * @param {string|null} basePath - LocalAI base path (`/v1` suffixed); defaults to IMAGE_GEN_LOCALAI_BASE_PATH when null
+ * @param {string|boolean|null} apiKey - LocalAI API key; defaults to IMAGE_GEN_LOCALAI_API_KEY when null
+ * @returns {Promise<{models: {id: string, name: string}[], error: string|null}>}
+ */
+async function getLocalAiImageModels(basePath = null, apiKey = null) {
+  let url;
+  try {
+    const urlPath = basePath ?? process.env.IMAGE_GEN_LOCALAI_BASE_PATH;
+    new URL(urlPath);
+    url = urlPath.replace(/\/+$/, "");
+  } catch {
+    return { models: [], error: "Not a valid URL." };
+  }
+
+  const _apiKey =
+    unmaskedSecret(apiKey) || process.env.IMAGE_GEN_LOCALAI_API_KEY || null;
+  const models = await fetch(`${url}/models/capabilities`, {
+    headers: _apiKey ? { Authorization: `Bearer ${_apiKey}` } : {},
+  })
+    .then((res) => {
+      if (!res.ok)
+        throw new Error(`Could not reach LocalAI server! ${res.status}`);
+      return res.json();
+    })
+    .then((data) => data?.data || [])
+    .then((models) =>
+      models
+        .filter((model) => model?.capabilities?.includes("image"))
+        .map((model) => ({ id: model.id, name: model.id }))
+    )
+    .catch((e) => {
+      console.error(`LocalAI:listImageModels`, e.message);
       return [];
     });
   return { models, error: null };

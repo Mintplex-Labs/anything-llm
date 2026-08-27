@@ -1511,6 +1511,18 @@ const TRANSLATIONS = {
     export: "Exporta la conversa com a...",
     exporting: "Exportant…",
     preset_img_description: "Generar una imatge a partir d'un text",
+    generating_response: "Generar resposta",
+    response_failed: "No he pogut respondre al missatge.",
+    response_failed_reason: "Motiu: {{reason}}",
+    thought_in_progress: "L'entrenament continua...",
+    thoughts: "Pensaments",
+    leave_generating: {
+      title: "Deu deixar de generar respostes?",
+      description:
+        "Estàs a punt de tancar aquesta conversa; això farà que el model deixi d'elaborar la resposta i no es podrà recuperar.",
+      cancel: "Cancelar",
+      confirm: "Segueix",
+    },
   },
   profile_settings: {
     edit_account: "Edita el compte",

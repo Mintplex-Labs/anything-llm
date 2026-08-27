@@ -1402,6 +1402,18 @@ const TRANSLATIONS = {
     export: "Eksportēt čatu kā...",
     exporting: "Eksporteris…",
     preset_img_description: "Izveidot attēlu no teksta norādījuma",
+    generating_response: "Atbildes izveide",
+    response_failed: "Neizdevās atbildēt uz ziņojumu.",
+    response_failed_reason: "Iemesls: {{reason}}",
+    thought_in_progress: "Modeļim ir domas...",
+    thoughts: "Domas",
+    leave_generating: {
+      title: "Kas ir novērst atbildes generēšanu?",
+      description:
+        "Jūs gatavojaties iziet no šīs sarunas, un tas apturēs modeli, kas varētu atbildēt, un šo nevarēs atkāties.",
+      cancel: "Atcelt",
+      confirm: "Turpināt",
+    },
   },
   profile_settings: {
     edit_account: "Rediģēt kontu",
