@@ -8,6 +8,7 @@ const {
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
+const { PERPLEXITY_INTEGRATION_HEADERS } = require("./constants");
 
 function perplexityModels() {
   const { MODELS } = require("./models.js");
@@ -24,6 +25,7 @@ class PerplexityLLM {
     this.openai = new OpenAIApi({
       baseURL: "https://api.perplexity.ai",
       apiKey: process.env.PERPLEXITY_API_KEY ?? null,
+      defaultHeaders: PERPLEXITY_INTEGRATION_HEADERS,
     });
     this.model =
       modelPreference ||

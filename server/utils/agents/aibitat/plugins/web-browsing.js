@@ -1,5 +1,8 @@
 const { SystemSettings } = require("../../../../models/systemSettings");
 const { TokenManager } = require("../../../helpers/tiktoken");
+const {
+  PERPLEXITY_INTEGRATION_HEADERS,
+} = require("../../../AiProviders/perplexity/constants");
 const tiktoken = new TokenManager();
 
 const webBrowsing = {
@@ -1124,6 +1127,7 @@ const webBrowsing = {
                 headers: {
                   "Content-Type": "application/json",
                   Authorization: `Bearer ${process.env.AGENT_PERPLEXITY_API_KEY}`,
+                  ...PERPLEXITY_INTEGRATION_HEADERS,
                 },
                 body: JSON.stringify({
                   query: query,
