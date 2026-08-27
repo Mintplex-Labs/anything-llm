@@ -342,6 +342,9 @@ function getImageGeneratorProvider() {
     case "lemonade":
       const { LemonadeImageGenerator } = require("../ImageGenerators/lemonade");
       return new LemonadeImageGenerator();
+    case "localai":
+      const { LocalAiImageGenerator } = require("../ImageGenerators/localAi");
+      return new LocalAiImageGenerator();
     case "openrouter":
       const {
         OpenRouterImageGenerator,

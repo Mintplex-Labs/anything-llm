@@ -1359,6 +1359,18 @@ const TRANSLATIONS = {
     export: "채팅 내용을 다음 형식으로 내보내기:",
     exporting: "수출 중…",
     preset_img_description: "텍스트 프롬프트에서 이미지를 생성합니다.",
+    generating_response: "응답 생성",
+    response_failed: "메시지에 응답할 수 없었습니다.",
+    response_failed_reason: "이유: {{reason}}",
+    thought_in_progress: "모델은 생각 중입니다…",
+    thoughts: "생각들",
+    leave_generating: {
+      title: "응답 생성 중단?",
+      description:
+        "현재 대화를 종료하면 모델이 응답을 생성하는 것을 중단시키고, 이 상태를 되돌릴 수 없습니다.",
+      cancel: "취소",
+      confirm: "계속",
+    },
   },
   profile_settings: {
     edit_account: "계정 정보 수정",

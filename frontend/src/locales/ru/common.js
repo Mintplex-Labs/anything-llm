@@ -1313,6 +1313,18 @@ const TRANSLATIONS = {
     export: "Экспортировать чат в формате…",
     exporting: "Экспорт...",
     preset_img_description: "Создать изображение на основе текстового запроса",
+    generating_response: "Формирование ответа",
+    response_failed: "Не удалось ответить на сообщение.",
+    response_failed_reason: "Причина: {{reason}}",
+    thought_in_progress: "Модель размышляет…",
+    thoughts: "Мысли",
+    leave_generating: {
+      title: "Прекратить генерацию ответа?",
+      description:
+        "Вы собираетесь выйти из этого чата, это остановит работу модели и предотвратит генерацию ответа. Восстановить эту ситуацию невозможно.",
+      cancel: "Отменить",
+      confirm: "Продолжить",
+    },
   },
   profile_settings: {
     edit_account: "Редактировать учётную запись",

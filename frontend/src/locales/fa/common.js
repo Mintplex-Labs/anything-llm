@@ -1285,6 +1285,18 @@ const TRANSLATIONS = {
     export: "صدور چت به صورت...",
     exporting: "صدور به خارج",
     preset_img_description: "ایجاد یک تصویر بر اساس یک دستور متنی",
+    generating_response: "تولید پاسخ",
+    response_failed: "امکان پاسخ دادن به پیام وجود نداشت.",
+    response_failed_reason: "دلیل: {{reason}}",
+    thought_in_progress: "مدل در حال تفکر است...",
+    thoughts: "اندیشه‌ها",
+    leave_generating: {
+      title: "چگونه باید پاسخ را متوقف کنم؟",
+      description:
+        "شما در حال خروج از این گفتگو هستید، این کار باعث خواهد شد مدل دیگر پاسخ تولید نکند و امکان بازگشت به حالت قبلی وجود ندارد.",
+      cancel: "لغو کردن",
+      confirm: "ادامه بده",
+    },
   },
   profile_settings: {
     edit_account: "ویرایش حساب",

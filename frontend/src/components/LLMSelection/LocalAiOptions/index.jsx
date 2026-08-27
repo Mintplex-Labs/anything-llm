@@ -5,6 +5,7 @@ import System from "@/models/system";
 import PreLoader from "@/components/Preloader";
 import { LOCALAI_COMMON_URLS } from "@/utils/constants";
 import useProviderEndpointAutoDiscovery from "@/hooks/useProviderEndpointAutoDiscovery";
+import { Tooltip } from "react-tooltip";
 
 export default function LocalAiOptions({ settings, showAlert = false }) {
   const {
@@ -21,6 +22,7 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
   });
   const [apiKeyValue, setApiKeyValue] = useState(settings?.LocalAiApiKey);
   const [apiKey, setApiKey] = useState(settings?.LocalAiApiKey);
+  const [maxTokens, setMaxTokens] = useState(settings?.LocalAiTokenLimit || "");
 
   return (
     <div className="w-full flex flex-col gap-y-7">
@@ -43,29 +45,11 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
       )}
       <div className="w-full flex items-center gap-[36px] mt-1.5">
         {!settings?.credentialsOnly && (
-          <>
-            <LocalAIModelSelection
-              settings={settings}
-              basePath={basePath.value}
-              apiKey={apiKey}
-            />
-            <div className="flex flex-col w-60">
-              <label className="text-white text-sm font-semibold block mb-2">
-                Model context window
-              </label>
-              <input
-                type="number"
-                name="LocalAiTokenLimit"
-                className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-                placeholder="4096"
-                min={1}
-                onScroll={(e) => e.target.blur()}
-                defaultValue={settings?.LocalAiTokenLimit}
-                required={true}
-                autoComplete="off"
-              />
-            </div>
-          </>
+          <LocalAIModelSelection
+            settings={settings}
+            basePath={basePath.value}
+            apiKey={apiKey}
+          />
         )}
         <div className="flex flex-col w-60">
           <div className="flex flex-col gap-y-1 mb-2">
@@ -136,6 +120,42 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
               spellCheck={false}
               onChange={basePath.onChange}
               onBlur={basePath.onBlur}
+            />
+          </div>
+          <div className="flex flex-col w-60">
+            <div className="flex items-center mb-2 gap-x-1">
+              <label className="text-white text-sm font-semibold">
+                Model Context Window
+              </label>
+              <Info
+                size={18}
+                className="text-theme-text-secondary cursor-pointer"
+                data-tooltip-id="localai-max-tokens"
+                data-tooltip-content="Override the context window limit. Leave empty to auto-detect from the model (defaults to 8192 if detection fails)."
+              />
+              <Tooltip
+                id="localai-max-tokens"
+                className="tooltip !text-xs !opacity-100"
+                style={{
+                  maxWidth: "250px",
+                  whiteSpace: "normal",
+                  wordWrap: "break-word",
+                }}
+              />
+            </div>
+            <input
+              type="number"
+              name="LocalAiTokenLimit"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              placeholder="Automatically managed"
+              min={1}
+              value={maxTokens}
+              onChange={(e) =>
+                setMaxTokens(e.target.value ? Number(e.target.value) : "")
+              }
+              onScroll={(e) => e.target.blur()}
+              required={false}
+              autoComplete="off"
             />
           </div>
         </div>

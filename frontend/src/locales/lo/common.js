@@ -1579,6 +1579,18 @@ const TRANSLATIONS = {
       },
     },
     preset_img_description: "ຈາກຂໍ້ຄວາມ ໃຫ້ສ້າງຮູບພາບ",
+    generating_response: "ຜົນການຕອບ",
+    response_failed: "ສາมาถ ප්‍රතිສະໜອງ ຂໍ້ຄວາມ ໄດ້",
+    response_failed_reason: "ສາเหตุ: {{reason}}",
+    thought_in_progress: "ແບບนั้น ພາກັນຄິດ",
+    thoughts: "ຄວາມຄິດ",
+    leave_generating: {
+      title: "ຢຸດການສ້າງຕອບ?",
+      description:
+        "ເຈົ້າ ກຳ ລັງຈະອອກຈາກການສົນทະນານີ້, ດັ່ງນັ້ນມັນຈະຢຸດ ໂໝດ ໃຫ້ສຳເລັດ ແລະບໍ່ສາມາດຟື້ນຟູໄດ້।",
+      cancel: "ຍົກເລີດ",
+      confirm: "ຊື່ຕໍ່",
+    },
   },
   profile_settings: {
     edit_account: "ແກ້ໄຂບັນຊີ",
