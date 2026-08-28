@@ -25,7 +25,10 @@ class PerplexityLLM {
     this.openai = new OpenAIApi({
       baseURL: "https://api.perplexity.ai",
       apiKey: process.env.PERPLEXITY_API_KEY ?? null,
-      defaultHeaders: { "User-Agent": getAnythingLLMUserAgent() },
+      defaultHeaders: {
+        "User-Agent": getAnythingLLMUserAgent(),
+        "X-Pplx-Integration": "anythingllm",
+      },
     });
     this.model =
       modelPreference ||

@@ -1126,6 +1126,7 @@ const webBrowsing = {
                   "Content-Type": "application/json",
                   Authorization: `Bearer ${process.env.AGENT_PERPLEXITY_API_KEY}`,
                   "User-Agent": getAnythingLLMUserAgent(),
+                  "X-Pplx-Integration": "anythingllm",
                 },
                 body: JSON.stringify({
                   query: query,
