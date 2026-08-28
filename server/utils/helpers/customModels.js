@@ -14,9 +14,11 @@ const { GeminiLLM } = require("../AiProviders/gemini");
 const { fetchCometApiModels } = require("../AiProviders/cometapi");
 const { getDockerModels } = require("../AiProviders/dockerModelRunner");
 const { getAllLemonadeModels } = require("../AiProviders/lemonade");
+const { listAzureDeployments } = require("../AiProviders/azureOpenAi/models");
 
 const SUPPORT_CUSTOM_MODELS = [
   "openai",
+  "azure",
   "anthropic",
   "localai",
   "ollama",
@@ -135,6 +137,8 @@ async function getCustomModels(
       return await getMoonshotAiModels(apiKey);
     case "foundry":
       return await getFoundryModels(basePath);
+    case "azure":
+      return await azureDeployments(basePath, apiKey, options);
     case "cohere":
       return await getCohereModels(apiKey, "chat");
     case "zai":
@@ -948,6 +952,25 @@ async function getMoonshotAiModels(_apiKey = null) {
  * models module for how that is determined and what each one can report.
  * @see {@link ../AiProviders/foundry/models}
  */
+/**
+ * Azure addresses models by deployment name, which is chosen by whoever created
+ * the deployment, so the only way to offer a picker is to ask the resource.
+ * @param {string|null} basePath - The Azure resource endpoint.
+ * @param {string|null} apiKey
+ * @param {{connectionMethod: string|null, managedIdentityClientId: string|null}} options
+ * @returns {Promise<{models: Array, error: string|null}>}
+ */
+async function azureDeployments(basePath = null, apiKey = null, options = {}) {
+  return await listAzureDeployments({
+    endpoint: basePath,
+    // A saved key reaches the frontend as `true` rather than the secret itself,
+    // in which case the stored value is the one to use.
+    apiKey: typeof apiKey === "boolean" ? null : apiKey,
+    connectionMethod: options?.connectionMethod ?? null,
+    managedIdentityClientId: options?.managedIdentityClientId ?? null,
+  });
+}
+
 async function getFoundryModels(basePath = null) {
   try {
     const FoundryModels = require("../AiProviders/foundry/models");

@@ -17,6 +17,9 @@ const ImportedPlugin = require("./imported");
 const { AgentFlows } = require("../agentFlows");
 const MCPCompatibilityLayer = require("../MCP");
 const { getAndClearInvocationAttachments } = require("../chats/agents");
+const {
+  usesManagedIdentity,
+} = require("../AiProviders/azureOpenAi/credentials");
 const { DocumentManager } = require("../DocumentManager");
 
 class AgentHandler {
@@ -152,9 +155,15 @@ class AgentHandler {
           throw new Error("TogetherAI API key must be provided to use agents.");
         break;
       case "azure":
-        if (!process.env.AZURE_OPENAI_ENDPOINT || !process.env.AZURE_OPENAI_KEY)
+        if (!process.env.AZURE_OPENAI_ENDPOINT)
           throw new Error(
-            "Azure OpenAI API endpoint and key must be provided to use agents."
+            "Azure OpenAI API endpoint must be provided to use agents."
+          );
+        // With managed identity there is no key to check - the credential chain
+        // is resolved when the first request is made.
+        if (!usesManagedIdentity() && !process.env.AZURE_OPENAI_KEY)
+          throw new Error(
+            "Azure OpenAI API key must be provided to use agents."
           );
         break;
       case "koboldcpp":

@@ -1,5 +1,8 @@
 const { OpenAI } = require("openai");
 const { AzureOpenAiLLM } = require("../../../AiProviders/azureOpenAi");
+const {
+  azureClientOptions,
+} = require("../../../AiProviders/azureOpenAi/credentials");
 const Provider = require("./ai-provider.js");
 const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
@@ -13,7 +16,7 @@ class AzureOpenAiProvider extends Provider {
 
   constructor(config = { model: null }) {
     const client = new OpenAI({
-      apiKey: process.env.AZURE_OPENAI_KEY,
+      ...azureClientOptions(),
       baseURL: AzureOpenAiLLM.formatBaseUrl(process.env.AZURE_OPENAI_ENDPOINT),
     });
     super(client);

@@ -1,17 +1,20 @@
 const { toChunks, reportEmbeddingProgress } = require("../../helpers");
+const {
+  azureOpenAiClientOptions,
+  validateAzureCredentials,
+} = require("../../AiProviders/azureOpenAi/credentials");
 
 class AzureOpenAiEmbedder {
   constructor() {
     const { AzureOpenAI } = require("openai");
     if (!process.env.AZURE_OPENAI_ENDPOINT)
       throw new Error("No Azure API endpoint was set.");
-    if (!process.env.AZURE_OPENAI_KEY)
-      throw new Error("No Azure API key was set.");
+    validateAzureCredentials();
 
     this.className = "AzureOpenAiEmbedder";
     this.apiVersion = "2024-12-01-preview";
     const openai = new AzureOpenAI({
-      apiKey: process.env.AZURE_OPENAI_KEY,
+      ...azureOpenAiClientOptions(),
       endpoint: process.env.AZURE_OPENAI_ENDPOINT,
       apiVersion: this.apiVersion,
     });

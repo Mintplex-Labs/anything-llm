@@ -925,6 +925,22 @@ const TRANSLATIONS = {
         api_key: "API Key",
         chat_deployment_name: "Chat Deployment Name",
         chat_model_token_limit: "Chat Model Token Limit",
+        deployments_chat: "Chat deployments",
+        deployments_enter_manually: "Enter a deployment name manually",
+        deployments_loading: "-- loading your deployments --",
+        deployments_none_found:
+          "No deployments could be listed for this endpoint. Enter the deployment name from your Azure resource.",
+        deployments_unknown: "Capability not reported by Azure",
+        deployments_waiting: "-- waiting for endpoint --",
+        connection_method: "Connection Method",
+        connection_method_tooltip:
+          "Use “API Key” to authenticate with the key from your Azure resource, or “Managed Identity” to authenticate with a Microsoft Entra ID token from the identity assigned to this host. Managed Identity is required when the resource has local authentication disabled.",
+        managed_identity: "Managed Identity",
+        managed_identity_client_id: "Managed Identity Client ID",
+        managed_identity_client_id_placeholder:
+          "Optional - only for a user-assigned identity",
+        managed_identity_client_id_tooltip:
+          "Leave empty to use the system-assigned managed identity of this host. Set this to the client ID of a user-assigned managed identity to select it explicitly.",
         model_type: "Model Type",
         model_type_tooltip:
           "If your deployment uses a reasoning model (o1, o1-mini, o3-mini, etc.), set this to “Reasoning”. Otherwise, your chat requests may fail.",

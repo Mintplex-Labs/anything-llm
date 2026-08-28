@@ -33,6 +33,14 @@ const KEY_MAPPING = {
     envKey: "AZURE_OPENAI_KEY",
     checks: [isNotEmpty],
   },
+  AzureOpenAiConnectionMethod: {
+    envKey: "AZURE_OPENAI_CONNECTION_METHOD",
+    checks: [validAzureConnectionMethod],
+  },
+  AzureOpenAiManagedIdentityClientId: {
+    envKey: "AZURE_OPENAI_MANAGED_IDENTITY_CLIENT_ID",
+    checks: [],
+  },
   AzureOpenAiModelPref: {
     envKey: "AZURE_OPENAI_MODEL_PREF",
     checks: [isNotEmpty],
@@ -1213,6 +1221,12 @@ function validChromaURL(input = "") {
   return input.slice(-1) === "/"
     ? `Chroma Instance URL should not end in a trailing slash.`
     : null;
+}
+
+function validAzureConnectionMethod(input = "") {
+  return ["api_key", "managed_identity"].includes(input)
+    ? null
+    : "Invalid connection method. Must be one of: api_key, managed_identity.";
 }
 
 function validOpenAiTokenLimit(input = "") {
