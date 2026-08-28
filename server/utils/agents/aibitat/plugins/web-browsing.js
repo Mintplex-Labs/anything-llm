@@ -1368,6 +1368,7 @@ const webBrowsing = {
               // Pin identity encoding: keyless endpoint can advertise gzip with
               // body bytes that Node's decoder rejects (same workaround as LiteLLM).
               "Accept-Encoding": "identity",
+              "X-Client-Info": `skill; client=${getAnythingLLMUserAgent()}`,
             };
             if (usingKey) headers["X-API-Key"] = apiKey;
 
