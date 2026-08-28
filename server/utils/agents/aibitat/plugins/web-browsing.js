@@ -1,5 +1,6 @@
 const { SystemSettings } = require("../../../../models/systemSettings");
 const { TokenManager } = require("../../../helpers/tiktoken");
+const { getAnythingLLMUserAgent } = require("../../../../endpoints/utils");
 const tiktoken = new TokenManager();
 
 const webBrowsing = {
@@ -1124,7 +1125,7 @@ const webBrowsing = {
                 headers: {
                   "Content-Type": "application/json",
                   Authorization: `Bearer ${process.env.AGENT_PERPLEXITY_API_KEY}`,
-                  "X-Pplx-Integration": "anythingllm",
+                  "User-Agent": getAnythingLLMUserAgent(),
                 },
                 body: JSON.stringify({
                   query: query,
