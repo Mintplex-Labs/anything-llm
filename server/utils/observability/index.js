@@ -224,7 +224,7 @@ const Observability = {
    * Record a completed agent (AIbitat) run with tool calls as child spans.
    * Fire-and-forget - never throws.
    * @param {Object} event
-   * @param {Object} [event.invocation] - handlerProps invocation ({workspace, user_id, thread_id})
+   * @param {Object} [event.invocation] - handlerProps invocation ({workspace, user_id, thread_id}; may carry an `origin` tag and a `username` override for non-user channels like telegram)
    * @param {string} event.input - the user prompt
    * @param {string} event.output - the final text response
    * @param {Array} [event.messages]
@@ -258,7 +258,7 @@ const Observability = {
             model,
             messages,
             metrics,
-            userId: username,
+            userId: invocation?.username || username,
             sessionId: threadSlug
               ? `${workspace.slug}:${threadSlug}`
               : workspace.slug || null,
@@ -267,8 +267,11 @@ const Observability = {
               workspaceSlug: workspace.slug || null,
               threadId: invocation?.thread_id || null,
               threadSlug,
+              origin: invocation?.origin || null,
             },
-            tags: ["agent-chat"],
+            tags: invocation?.origin
+              ? ["agent-chat", invocation.origin]
+              : ["agent-chat"],
             spans: toolCalls.map((call) => ({
               name: `tool:${call.toolName}`,
               input: call.arguments,
@@ -302,7 +305,7 @@ const Observability = {
           ]);
           client.traceEvent({
             ...event,
-            userId: username,
+            userId: invocation?.username || username,
             sessionId: threadSlug
               ? `${workspace.slug}:${threadSlug}`
               : workspace.slug || null,
@@ -311,6 +314,7 @@ const Observability = {
               workspaceSlug: workspace.slug || null,
               threadId: invocation?.thread_id || null,
               threadSlug,
+              origin: invocation?.origin || null,
               ...metadata,
             },
           });

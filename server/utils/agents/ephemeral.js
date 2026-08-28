@@ -511,6 +511,7 @@ class EphemeralAgentHandler extends AgentHandler {
       toolOverrides: null,
     }
   ) {
+    const { telegramUserTag } = require("../telegramBot/utils/verification");
     this.aibitat = new AIbitat({
       provider: this.provider ?? "openai",
       model: this.model ?? "gpt-4.1-nano",
@@ -521,6 +522,12 @@ class EphemeralAgentHandler extends AgentHandler {
           workspace_id: this.#workspace?.id ?? null,
           user_id: this.#userId || null,
           thread_id: this.#threadId || null,
+          ...(args?.telegramChatId
+            ? {
+                origin: "telegram",
+                username: await telegramUserTag(args.telegramChatId),
+              }
+            : {}),
         },
         log: this.log,
         routingMetadata: this.routingMetadata || null,

@@ -10,6 +10,7 @@ const {
 const { fillSourceWindow } = require("../../helpers/chat");
 const { AgentHandler } = require("../../agents");
 const { Observability } = require("../../observability");
+const { telegramUserTag } = require("../utils/verification");
 const {
   STREAM_EDIT_INTERVAL,
   MAX_MSG_LEN,
@@ -347,7 +348,7 @@ async function persistAndDeliver({
     name: "telegram-chat",
     workspace,
     thread,
-    user: { username: `telegram:${chatId}` },
+    user: { username: await telegramUserTag(chatId) },
     chatMode,
     message,
     output: completeText,
