@@ -265,6 +265,10 @@ async function streamChat({
   // The chunk is coming in the format from `writeResponseChunk` but in the AnythingLLM
   // response chunk schema, so we here we mutate each chunk.
   const responseInterceptor = new PassThrough({});
+  let llStream; // set after stream creation; used for backpressure
+  let isReadableStream = false;
+  const onDrain = () => { if (llStream && isReadableStream) llStream.resume(); };
+  response.on("drain", onDrain);
   responseInterceptor.on("data", (chunk) => {
     try {
       const originalData = JSON.parse(chunk.toString().split("data: ")[1]);
@@ -272,7 +276,10 @@ async function streamChat({
         chunked: true,
         model: workspace.slug,
       }); // rewrite to OpenAI format
-      response.write(`data: ${JSON.stringify(modified)}\n\n`);
+      const canContinue = response.write(`data: ${JSON.stringify(modified)}\n\n`);
+      if (!canContinue && llStream && isReadableStream) {
+        llStream.pause();
+      }
     } catch (e) {
       console.error(e);
     }
@@ -311,6 +318,7 @@ async function streamChat({
         { chunked: true, model: workspace.slug, finish_reason: "abort" }
       )
     );
+    response.removeListener("drain", onDrain);
     return;
   }
 
@@ -444,6 +452,7 @@ async function streamChat({
         }
       )
     );
+    response.removeListener("drain", onDrain);
     return;
   }
 
@@ -451,6 +460,8 @@ async function streamChat({
     temperature:
       temperature ?? workspace?.openAiTemp ?? LLMConnector.defaultTemp,
   });
+  llStream = stream;
+  isReadableStream = typeof stream?.pause === "function" && typeof stream?.resume === "function";
   const completeText = await LLMConnector.handleStream(
     responseInterceptor,
     stream,
@@ -459,6 +470,7 @@ async function streamChat({
       sources,
     }
   );
+  response.removeListener("drain", onDrain);
   const metrics = addChatCostToMetrics(stream.metrics, {
     routingMetadata,
     workspace,
