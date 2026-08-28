@@ -283,6 +283,107 @@ const Observability = {
   },
 
   /**
+   * Record a standalone LLM event that runs inside an agent invocation
+   * (eg: content summarization, flow LLM blocks) with the same user/session
+   * attribution as the parent agent chat. Fire-and-forget - never throws.
+   * @param {{invocation?: Object} & TraceEvent} event - a TraceEvent plus the
+   * agent handlerProps invocation ({workspace, user_id, thread_id})
+   */
+  traceAgentEvent: function ({ invocation, metadata = {}, ...event }) {
+    return this._track(
+      (async () => {
+        try {
+          const client = await this.client();
+          if (!client) return;
+          const workspace = invocation?.workspace || {};
+          const [username, threadSlug] = await Promise.all([
+            this.usernameForId(invocation?.user_id),
+            this.threadSlugForId(invocation?.thread_id),
+          ]);
+          client.traceEvent({
+            ...event,
+            userId: username,
+            sessionId: threadSlug
+              ? `${workspace.slug}:${threadSlug}`
+              : workspace.slug || null,
+            metadata: {
+              workspaceId: workspace.id || null,
+              workspaceSlug: workspace.slug || null,
+              threadId: invocation?.thread_id || null,
+              threadSlug,
+              ...metadata,
+            },
+          });
+        } catch (error) {
+          console.error(
+            `[Observability] traceAgentEvent failed`,
+            error.message
+          );
+        }
+      })()
+    );
+  },
+
+  /**
+   * Wraps a TTS provider instance so every ttsBuffer call is traced with
+   * timing and payload sizes. Audio API costs have no pricing source, so
+   * these traces carry no cost.
+   * @param {Object} provider - a TextToSpeech provider instance
+   * @returns {Object} the same provider instance
+   */
+  wrapTTS: function (provider) {
+    if (typeof provider?.ttsBuffer !== "function") return provider;
+    const ttsBuffer = provider.ttsBuffer.bind(provider);
+    provider.ttsBuffer = async (textInput) => {
+      const start = Date.now();
+      const result = await ttsBuffer(textInput);
+      this.traceEvent({
+        name: "text-to-speech",
+        input: textInput,
+        model: provider.model || null,
+        metadata: {
+          provider: provider.constructor.name,
+          characters: String(textInput || "").length,
+          audioBytes: result?.length ?? null,
+          duration: (Date.now() - start) / 1000,
+        },
+        tags: ["text-to-speech"],
+      });
+      return result;
+    };
+    return provider;
+  },
+
+  /**
+   * Wraps an STT provider instance so every transcribe call is traced with
+   * timing and payload sizes. Audio API costs have no pricing source, so
+   * these traces carry no cost.
+   * @param {Object} provider - a SpeechToText provider instance
+   * @returns {Object} the same provider instance
+   */
+  wrapSTT: function (provider) {
+    if (typeof provider?.transcribe !== "function") return provider;
+    const transcribe = provider.transcribe.bind(provider);
+    provider.transcribe = async (audioBuffer, ...args) => {
+      const start = Date.now();
+      const result = await transcribe(audioBuffer, ...args);
+      this.traceEvent({
+        name: "speech-to-text",
+        output: typeof result === "string" ? result : null,
+        model: provider.model || null,
+        metadata: {
+          provider: provider.constructor.name,
+          audioBytes: audioBuffer?.length ?? null,
+          duration: (Date.now() - start) / 1000,
+        },
+        tags: ["speech-to-text"],
+      });
+      return result;
+    };
+    return provider;
+  },
+
+  /**
    * Wraps an embedder instance so every embedChunks call is traced with
    * timing and chunk counts (never chunk contents).
    * @param {Object} embedder - an EmbeddingEngines provider instance

@@ -154,6 +154,22 @@ async function runSectionAgent({
   );
   provider.attachHandlerProps(childAibitat.handlerProps);
 
+  const traceUsage = () => {
+    const { Observability } = require("../../../../../observability");
+    Observability.traceAgentEvent({
+      invocation: childAibitat.handlerProps?.invocation,
+      name: "pptx:section-agent",
+      input: section.title,
+      output: Array.isArray(childAibitat._submittedSlides)
+        ? `${childAibitat._submittedSlides.length} slide(s)`
+        : null,
+      model: provider.model,
+      observationType: "generation",
+      metrics: provider.getCumulativeUsage?.(),
+      tags: ["agent-tool"],
+    });
+  };
+
   log(
     `[SectionAgent] Running sub-agent for section: "${section.title}" with ${functions.length} tools`
   );
@@ -178,8 +194,10 @@ async function runSectionAgent({
     }
   } catch (error) {
     log(`[SectionAgent] Error in section "${section.title}": ${error.message}`);
+    traceUsage();
     return { ...buildFallbackSlides(section), citations: [] };
   }
+  traceUsage();
 
   // Collect any citations the child accumulated (from web-search, web-scrape, etc.)
   const citations = childAibitat._pendingCitations || [];

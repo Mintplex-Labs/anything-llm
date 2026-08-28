@@ -988,7 +988,10 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       this.emitter.off("toolCallResult", onToolCallResult);
     }
 
-    if (content) {
+    // Internal one-shot runs (memory extraction, router classification) emit
+    // their own named trace with the run's usage - the generic agent-chat
+    // trace here would double-count that same spend.
+    if (content && !this.suppressObservability) {
       Observability.traceAgentChat({
         invocation: this.handlerProps?.invocation,
         input: userPrompt || route.content || "",

@@ -131,6 +131,7 @@ class LangfuseProvider {
           "langfuse.observation.type": event.observationType || "span",
           "langfuse.observation.model.name": event.model || undefined,
           "gen_ai.usage.input_tokens": event?.metrics?.prompt_tokens,
+          "gen_ai.usage.output_tokens": event?.metrics?.completion_tokens,
           "langfuse.observation.cost_details": costDetails(event.metrics),
           "langfuse.observation.input": asJSON(event.input),
           "langfuse.observation.output": asJSON(event.output),
