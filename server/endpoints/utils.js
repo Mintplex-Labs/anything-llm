@@ -246,6 +246,9 @@ function getModelTag() {
     case "omlx":
       model = process.env.OMLX_LLM_MODEL_PREF;
       break;
+    case "vertex":
+      model = process.env.VERTEX_AI_LLM_MODEL_PREF;
+      break;
     default:
       model = "--";
       break;

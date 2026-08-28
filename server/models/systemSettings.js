@@ -1058,6 +1058,13 @@ const SystemSettings = {
       CerebrasApiKey: !!process.env.CEREBRAS_API_KEY,
       CerebrasModelPref: process.env.CEREBRAS_MODEL_PREF,
 
+      // Google Vertex AI Keys
+      VertexAiLLMApiKey: !!process.env.VERTEX_AI_LLM_API_KEY,
+      VertexAiLLMProjectId: process.env.VERTEX_AI_LLM_PROJECT_ID,
+      VertexAiLLMRegion: process.env.VERTEX_AI_LLM_REGION,
+      VertexAiLLMModelPref: process.env.VERTEX_AI_LLM_MODEL_PREF,
+      VertexAiLLMTokenLimit: process.env.VERTEX_AI_LLM_MODEL_TOKEN_LIMIT,
+
       // OMLX Keys
       OMLXLLMBasePath: process.env.OMLX_LLM_BASE_PATH,
       OMLXLLMApiKey: !!process.env.OMLX_LLM_API_KEY,

@@ -300,6 +300,26 @@ class Provider {
           apiKey: process.env.AWS_BEDROCK_LLM_API_KEY ?? null,
           ...config,
         });
+      case "vertex": {
+        // Vertex only accepts the API key via `x-goog-api-key` and rejects
+        // any request that also carries an Authorization header, so the
+        // client's own bearer header must be removed (a null default header
+        // deletes it). Google publisher models are requested as
+        // `google/<model>` on the OpenAI-compatible endpoint.
+        const { VertexLLM } = require("../../../AiProviders/vertex");
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: VertexLLM.openaiBaseURL(),
+            defaultHeaders: {
+              Authorization: null,
+              "x-goog-api-key": process.env.VERTEX_AI_LLM_API_KEY ?? null,
+            },
+          },
+          apiKey: "anythingllm",
+          ...config,
+          model: VertexLLM.apiModelId(config.model),
+        });
+      }
       case "azure":
         return new ChatOpenAI({
           configuration: {

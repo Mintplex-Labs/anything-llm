@@ -18,6 +18,7 @@ import KoboldCPPLogo from "@/media/llmprovider/koboldcpp.png";
 import TextGenWebUILogo from "@/media/llmprovider/text-generation-webui.png";
 import LiteLLMLogo from "@/media/llmprovider/litellm.png";
 import AWSBedrockLogo from "@/media/llmprovider/bedrock.png";
+import VertexLogo from "@/media/llmprovider/vertex.png";
 import DeepSeekLogo from "@/media/llmprovider/deepseek.png";
 import APIPieLogo from "@/media/llmprovider/apipie.png";
 import NovitaLogo from "@/media/llmprovider/novita.png";
@@ -56,6 +57,7 @@ import KoboldCPPOptions from "@/components/LLMSelection/KoboldCPPOptions";
 import TextGenWebUIOptions from "@/components/LLMSelection/TextGenWebUIOptions";
 import LiteLLMOptions from "@/components/LLMSelection/LiteLLMOptions";
 import AWSBedrockLLMOptions from "@/components/LLMSelection/AwsBedrockLLMOptions";
+import VertexLLMOptions from "@/components/LLMSelection/VertexLLMOptions";
 import DeepSeekOptions from "@/components/LLMSelection/DeepSeekOptions";
 import ApiPieLLMOptions from "@/components/LLMSelection/ApiPieOptions";
 import NovitaLLMOptions from "@/components/LLMSelection/NovitaLLMOptions";
@@ -286,6 +288,13 @@ const LLMS = [
     logo: AWSBedrockLogo,
     options: (settings) => <AWSBedrockLLMOptions settings={settings} />,
     description: "Run powerful foundation models privately with AWS Bedrock.",
+  },
+  {
+    name: "Google Vertex AI",
+    value: "vertex",
+    logo: VertexLogo,
+    options: (settings) => <VertexLLMOptions settings={settings} />,
+    description: "Run Gemini models through your Google Cloud project.",
   },
   {
     name: "Privatemode",
