@@ -1143,9 +1143,33 @@ const SystemSettings = {
   },
 
   /**
+   * Env-var configuration per observability provider, used as a fallback when
+   * no provider is configured in the admin UI. `enabled` gates the fallback on
+   * the provider's minimum required credentials. Adding a new provider here
+   * (and to `Observability.providers`) makes it env-configurable.
+   * @returns {Object<string, {enabled: boolean, config: Object<string, string>}>}
+   */
+  observabilityPreferenceKeys: function () {
+    return {
+      langfuse: {
+        enabled:
+          !!process.env.LANGFUSE_PUBLIC_KEY &&
+          !!process.env.LANGFUSE_SECRET_KEY,
+        config: {
+          publicKey: process.env.LANGFUSE_PUBLIC_KEY,
+          secretKey: process.env.LANGFUSE_SECRET_KEY,
+          host: process.env.LANGFUSE_HOST || "",
+        },
+      },
+    };
+  },
+
+  /**
    * Get user configured observability settings.
    * The config object holds provider-specific credentials (eg: for Langfuse
    * `{ publicKey, secretKey, host }`) and is never exposed via publicFields.
+   * When nothing is configured in the UI, falls back to the first provider
+   * with credentials set in the environment (see observabilityPreferenceKeys).
    * @returns {Promise<{provider: string|null, config: Object<string, string>}>}
    */
   observabilitySettings: async function () {
@@ -1154,10 +1178,19 @@ const SystemSettings = {
         this.get({ label: "observability_provider" }),
         this.get({ label: "observability_config" }),
       ]);
-      return {
-        provider: provider?.value || null,
-        config: config?.value ? JSON.parse(config.value) : {},
-      };
+      if (provider?.value)
+        return {
+          provider: provider.value,
+          config: config?.value ? JSON.parse(config.value) : {},
+        };
+
+      for (const [envProvider, envSettings] of Object.entries(
+        this.observabilityPreferenceKeys()
+      )) {
+        if (!envSettings.enabled) continue;
+        return { provider: envProvider, config: envSettings.config };
+      }
+      return { provider: null, config: {} };
     } catch (error) {
       console.error(error.message);
       return { provider: null, config: {} };
