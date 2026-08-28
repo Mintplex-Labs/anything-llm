@@ -50,6 +50,8 @@ function lemonadeUtilsEndpoints(app) {
               "An error occurred while downloading the model"
           );
         const reader = lemonadeResponse.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+        let buffer = "";
         let done = false;
         let currentEvent = null;
 
@@ -57,8 +59,14 @@ function lemonadeUtilsEndpoints(app) {
           const { value, done: readerDone } = await reader.read();
           if (readerDone) done = true;
 
-          const chunk = new TextDecoder("utf-8").decode(value);
-          const lines = chunk.split("\n");
+          // Decode incrementally and retain any trailing partial line across
+          // reads; otherwise a terminal `complete`/`error` frame that straddles
+          // a network chunk boundary is dropped and never forwarded to the UI.
+          buffer += value
+            ? decoder.decode(value, { stream: true })
+            : decoder.decode();
+          const lines = buffer.split("\n");
+          buffer = done ? "" : (lines.pop() ?? "");
           for (const line of lines) {
             if (!line.trim()) continue;
 
