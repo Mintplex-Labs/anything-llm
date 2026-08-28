@@ -794,53 +794,53 @@
   dependencies:
     ws "^7.5.10"
 
-"@mintplex-labs/mdpdf-darwin-arm64@0.1.9":
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/@mintplex-labs/mdpdf-darwin-arm64/-/mdpdf-darwin-arm64-0.1.9.tgz#36fbf70f3c0c331db42622e50599f20fab621f2c"
-  integrity sha512-hM8LjpmW3/wOgUzhMXsI4B4vEJKun0wU/BS8VnCANmfObjErKxFwBZm7PYqz43Z4BF5JMZx/DXKWg62Y+onWRA==
+"@mintplex-labs/mdpdf-darwin-arm64@0.1.10":
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/@mintplex-labs/mdpdf-darwin-arm64/-/mdpdf-darwin-arm64-0.1.10.tgz#ec5715f6acc1fbc12c974843ea75d17b12043415"
+  integrity sha512-Mv28Rc/jrmtoHOpO3W7UqX92BxuYX8HNIRVaLiMZ5DXVTP3CMLuM6ggJv/TrTgMgb26I7Cng2gldpTX9pl4ZDw==
 
-"@mintplex-labs/mdpdf-darwin-x64@0.1.9":
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/@mintplex-labs/mdpdf-darwin-x64/-/mdpdf-darwin-x64-0.1.9.tgz#fdeb42bbb8f172d060e6151c194eb6a5f38efa8f"
-  integrity sha512-Iq+nfTZTfG+o4Ub7Sjy61LeLbUk3RzM6VvuC5OijamyJjmyUvKZU3bLTwTonUNRgOBPSlFF0gjbaYhixQSr90A==
+"@mintplex-labs/mdpdf-darwin-x64@0.1.10":
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/@mintplex-labs/mdpdf-darwin-x64/-/mdpdf-darwin-x64-0.1.10.tgz#c0c0cfc8e73a761bda04eb55768cb5cb350e8ee7"
+  integrity sha512-Uz4I3xCnPon8v3yLN2PLqO9ezxYs2GXayAzl0rUkLlK74FjlJWoaU/dFqlMQ7/mTiJ+9aoM4R8P8vNFoSCbgeg==
 
-"@mintplex-labs/mdpdf-linux-arm64-gnu@0.1.9":
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/@mintplex-labs/mdpdf-linux-arm64-gnu/-/mdpdf-linux-arm64-gnu-0.1.9.tgz#c4fe2a480b9f8341bcb1bebeca90cafae51293ae"
-  integrity sha512-MJPD7RYqJRbrSbXFM72zFJdFMBMBut0HScuKtHlILme17gK/DGOb8croNGwLH1V2rKQ5gVNWFSWIzoIF8Q7R3Q==
+"@mintplex-labs/mdpdf-linux-arm64-gnu@0.1.10":
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/@mintplex-labs/mdpdf-linux-arm64-gnu/-/mdpdf-linux-arm64-gnu-0.1.10.tgz#0c63a86203a7b5d3cf015e0d390511cd00b35ee3"
+  integrity sha512-FU+zGd1YV/d50cRBJ9/RPH7CnZCxek59frXzbslmN9pWTVOr9qfjik8M9fw/Uw9B0GVnDC2uZZ/Ahkxgkjq9OQ==
 
-"@mintplex-labs/mdpdf-linux-x64-gnu@0.1.9":
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/@mintplex-labs/mdpdf-linux-x64-gnu/-/mdpdf-linux-x64-gnu-0.1.9.tgz#b816fcd071fcb5158c0c73516a6ffe486198b17c"
-  integrity sha512-7NwBhKjNjpX54n4CLhx/yNT+mrSEwRurC07fy9+GXT0BXPqyinBNwnT0r2iabMPJ+p98zcc3op9JeTKpSqE6iA==
+"@mintplex-labs/mdpdf-linux-x64-gnu@0.1.10":
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/@mintplex-labs/mdpdf-linux-x64-gnu/-/mdpdf-linux-x64-gnu-0.1.10.tgz#c7b4c4c1479f347aecfe19878d8a4d0148f2beb9"
+  integrity sha512-ZqGGFuYuiuj/jprZ4BUJVjal+vwGQZP1q1bNKGVynzrUsxA68zX/JbvkktD4UmpIFZzddv08xMMTADcPtVOmdA==
 
-"@mintplex-labs/mdpdf-linux-x64-musl@0.1.9":
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/@mintplex-labs/mdpdf-linux-x64-musl/-/mdpdf-linux-x64-musl-0.1.9.tgz#8c294af85fb9fc75e5c85048484691fe320daaf5"
-  integrity sha512-sqaLe1ANYdLul8V6u8BMHkx6RahRW+LkMZDrBELlz+LBC6IhgOTV1VPXrgLv6C1nK9ZIAuBlm3tyDA1OpW/iXA==
+"@mintplex-labs/mdpdf-linux-x64-musl@0.1.10":
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/@mintplex-labs/mdpdf-linux-x64-musl/-/mdpdf-linux-x64-musl-0.1.10.tgz#1bdc0525ba9cc23e84ff10dd2a841fb8858141be"
+  integrity sha512-sX5UK4v9FIvCpBfWGn2U1butJQ04PweBqgCEH/g8DW600OXjKW9L9T5rU4M9zL9hU5kD3UfGuwX1bTf2/xpl0g==
 
-"@mintplex-labs/mdpdf-win32-arm64-msvc@0.1.9":
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/@mintplex-labs/mdpdf-win32-arm64-msvc/-/mdpdf-win32-arm64-msvc-0.1.9.tgz#bbab7da24467d63d5fc1d11a1f6f428a7ea99894"
-  integrity sha512-ETxE7uXCKbGyBsapKbYb1OW6qp80lKtKB+4sXgR60u5mOiERdJp87es1rTqcZ7pTadQU2VPrkRNpjoS4slt85Q==
+"@mintplex-labs/mdpdf-win32-arm64-msvc@0.1.10":
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/@mintplex-labs/mdpdf-win32-arm64-msvc/-/mdpdf-win32-arm64-msvc-0.1.10.tgz#60e38be8d10f594c96f1cd32b1679752ac7f796a"
+  integrity sha512-pjcsFYTstvZpX0PsrXeJC7fGwCAa0IBgVlLYLlkGxuPRGAtgzwsSdsWg8NP52cwdrbAIsAiMwJ3Ex8Rn+30fVg==
 
-"@mintplex-labs/mdpdf-win32-x64-msvc@0.1.9":
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/@mintplex-labs/mdpdf-win32-x64-msvc/-/mdpdf-win32-x64-msvc-0.1.9.tgz#89b0899e58373b6836c0b529d938fb4b6e6585cd"
-  integrity sha512-FRCAxzJHp93EQxtKZDq78A+cBu2DQlaNSYZMoq6v5RBQZxw0/fIDNnzPPehzs5HWwbv++GxU7NxxSn2bRqVkWA==
+"@mintplex-labs/mdpdf-win32-x64-msvc@0.1.10":
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/@mintplex-labs/mdpdf-win32-x64-msvc/-/mdpdf-win32-x64-msvc-0.1.10.tgz#a6b978a6fa8c8c48f9aa5e31e147fa77262c36f2"
+  integrity sha512-88c1W4rbPaAKQa9/z7wiqLWlpmuUW3mqoWtyBk1bfnrIZyKVHWUpPDEo7yAaPlYG/G3GK3cxE9m9XAodA6QVIw==
 
-"@mintplex-labs/mdpdf@^0.1.9":
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/@mintplex-labs/mdpdf/-/mdpdf-0.1.9.tgz#a5f8a04e355195214c6492c47bdc650fa5d6b29c"
-  integrity sha512-EyJfgzZisEETrTg85KgtUQJ2CijzWkKidpfep3zsaFEY2x11yQeEyQeH4QmN34cWm1Xpk6cCjmvrJ8RixnNn9A==
+"@mintplex-labs/mdpdf@0.1.10":
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/@mintplex-labs/mdpdf/-/mdpdf-0.1.10.tgz#19ba89a6fb39db86054a36e6c1d0b8b4376b1628"
+  integrity sha512-JYsFr2f52KOLr3H3nulKysNlxYzT52OuWRhWIM/F7/PHRKxSiWyJxv6XOxSTg+HJADpxF2/AfYuqQiZ2+Moyjg==
   optionalDependencies:
-    "@mintplex-labs/mdpdf-darwin-arm64" "0.1.9"
-    "@mintplex-labs/mdpdf-darwin-x64" "0.1.9"
-    "@mintplex-labs/mdpdf-linux-arm64-gnu" "0.1.9"
-    "@mintplex-labs/mdpdf-linux-x64-gnu" "0.1.9"
-    "@mintplex-labs/mdpdf-linux-x64-musl" "0.1.9"
-    "@mintplex-labs/mdpdf-win32-arm64-msvc" "0.1.9"
-    "@mintplex-labs/mdpdf-win32-x64-msvc" "0.1.9"
+    "@mintplex-labs/mdpdf-darwin-arm64" "0.1.10"
+    "@mintplex-labs/mdpdf-darwin-x64" "0.1.10"
+    "@mintplex-labs/mdpdf-linux-arm64-gnu" "0.1.10"
+    "@mintplex-labs/mdpdf-linux-x64-gnu" "0.1.10"
+    "@mintplex-labs/mdpdf-linux-x64-musl" "0.1.10"
+    "@mintplex-labs/mdpdf-win32-arm64-msvc" "0.1.10"
+    "@mintplex-labs/mdpdf-win32-x64-msvc" "0.1.10"
 
 "@modelcontextprotocol/sdk@^1.24.3":
   version "1.24.3"
