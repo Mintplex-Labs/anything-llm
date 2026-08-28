@@ -10,12 +10,22 @@ class PDFLoader {
     const buffer = await fs.readFile(this.filePath);
     const { getDocument, version } = await this.getPdfJS();
 
-    const pdf = await getDocument({
-      data: new Uint8Array(buffer),
-      useWorkerFetch: false,
-      isEvalSupported: false,
-      useSystemFonts: true,
-    }).promise;
+    let pdf;
+    try {
+      pdf = await getDocument({
+        data: new Uint8Array(buffer),
+        useWorkerFetch: false,
+        isEvalSupported: false,
+        useSystemFonts: true,
+      }).promise;
+    } catch (e) {
+      if (e?.name === "PasswordException") {
+        throw new Error(
+          `PDF file "${this.filePath}" is password protected. Please provide an unencrypted version.`
+        );
+      }
+      throw e;
+    }
 
     const meta = await pdf.getMetadata().catch(() => null);
     const documents = [];
