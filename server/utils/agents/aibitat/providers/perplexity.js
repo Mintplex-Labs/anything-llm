@@ -17,8 +17,7 @@ class PerplexityProvider extends InheritMultiple([Provider, UnTooled]) {
       baseURL: "https://api.perplexity.ai",
       apiKey: process.env.PERPLEXITY_API_KEY ?? null,
       defaultHeaders: {
-        "User-Agent": getAnythingLLMUserAgent(),
-        "X-Pplx-Integration": "anythingllm",
+        "X-Pplx-Integration": getAnythingLLMUserAgent(),
       },
     });
 
