@@ -176,21 +176,12 @@ async function runSectionAgent({
 
   let agentName = `@section-builder`;
   if (sectionPrefix) agentName = `[${sectionPrefix}] ${agentName}`;
+  childAibitat.providerInstance = provider;
   try {
     if (provider.supportsAgentStreaming) {
-      await childAibitat.handleAsyncExecution(
-        provider,
-        messages,
-        functions,
-        agentName
-      );
+      await childAibitat.handleAsyncExecution(messages, functions, agentName);
     } else {
-      await childAibitat.handleExecution(
-        provider,
-        messages,
-        functions,
-        agentName
-      );
+      await childAibitat.handleExecution(messages, functions, agentName);
     }
   } catch (error) {
     log(`[SectionAgent] Error in section "${section.title}": ${error.message}`);
