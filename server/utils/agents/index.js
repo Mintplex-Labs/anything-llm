@@ -292,6 +292,15 @@ class AgentHandler {
         if (!process.env.CEREBRAS_API_KEY)
           throw new Error("Cerebras API key must be provided to use agents.");
         break;
+      case "vertex":
+        if (
+          !process.env.VERTEX_AI_LLM_API_KEY ||
+          !process.env.VERTEX_AI_LLM_PROJECT_ID
+        )
+          throw new Error(
+            "Vertex AI API key and project ID must be provided to use agents."
+          );
+        break;
       default:
         throw new Error(
           "No workspace agent provider set. Please set your agent provider in the workspace's settings"
@@ -386,6 +395,8 @@ class AgentHandler {
         return process.env.MINIMAX_MODEL_PREF ?? "MiniMax-M2.7";
       case "cerebras":
         return process.env.CEREBRAS_MODEL_PREF ?? "gpt-oss-120b";
+      case "vertex":
+        return process.env.VERTEX_AI_LLM_MODEL_PREF ?? "gemini-2.5-flash";
       default:
         return null;
     }

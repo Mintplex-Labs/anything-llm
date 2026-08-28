@@ -26,6 +26,7 @@ const PROVIDER_DEFAULT_MODELS = {
   textgenwebui: [],
   "generic-openai": [],
   bedrock: [],
+  vertex: [],
   xai: ["grok-beta"],
 };
 

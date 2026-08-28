@@ -25,6 +25,7 @@ import TextGenWebUILogo from "@/media/llmprovider/text-generation-webui.png";
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import LiteLLMLogo from "@/media/llmprovider/litellm.png";
 import AWSBedrockLogo from "@/media/llmprovider/bedrock.png";
+import VertexLogo from "@/media/llmprovider/vertex.png";
 import DeepSeekLogo from "@/media/llmprovider/deepseek.png";
 import APIPieLogo from "@/media/llmprovider/apipie.png";
 import XAILogo from "@/media/llmprovider/xai.png";
@@ -66,6 +67,7 @@ import KoboldCPPOptions from "@/components/LLMSelection/KoboldCPPOptions";
 import TextGenWebUIOptions from "@/components/LLMSelection/TextGenWebUIOptions";
 import LiteLLMOptions from "@/components/LLMSelection/LiteLLMOptions";
 import AWSBedrockLLMOptions from "@/components/LLMSelection/AwsBedrockLLMOptions";
+import VertexLLMOptions from "@/components/LLMSelection/VertexLLMOptions";
 import DeepSeekOptions from "@/components/LLMSelection/DeepSeekOptions";
 import ApiPieLLMOptions from "@/components/LLMSelection/ApiPieOptions";
 import XAILLMOptions from "@/components/LLMSelection/XAiLLMOptions";
@@ -312,6 +314,19 @@ export const AVAILABLE_LLM_PROVIDERS = [
       "AwsBedrockLLMApiKey",
       "AwsBedrockLLMRegion",
       "AwsBedrockLLMModel",
+    ],
+  },
+  {
+    name: "Google Vertex AI",
+    value: "vertex",
+    logo: VertexLogo,
+    options: (settings) => <VertexLLMOptions settings={settings} />,
+    description: "Run Gemini models through your Google Cloud project.",
+    requiredConfig: [
+      "VertexAiLLMApiKey",
+      "VertexAiLLMProjectId",
+      "VertexAiLLMRegion",
+      "VertexAiLLMModelPref",
     ],
   },
   {
