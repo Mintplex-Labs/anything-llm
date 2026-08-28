@@ -92,6 +92,15 @@ function formatMessagesForTools(messages, options = {}) {
               {
                 id: message.originalFunctionCall.id,
                 type: "function",
+                // Some providers require provider-specific tool call metadata
+                // to be echoed back on subsequent turns (eg: Gemini 3 models
+                // on Vertex 400 when `extra_content.google.thought_signature`
+                // is missing from replayed function calls).
+                ...(message.originalFunctionCall.extra_content
+                  ? {
+                      extra_content: message.originalFunctionCall.extra_content,
+                    }
+                  : {}),
                 function: {
                   name: message.originalFunctionCall.name,
                   arguments:
@@ -259,6 +268,9 @@ async function tooledStream(
             id: toolCall.id || `call_${v4()}`,
             name: toolCall.function?.name || "",
             arguments: toolCall.function?.arguments || "",
+            ...(toolCall.extra_content
+              ? { extra_content: toolCall.extra_content }
+              : {}),
           };
         } else {
           // Update existing entry with streamed data
@@ -270,6 +282,9 @@ async function tooledStream(
           }
           if (toolCall.function?.arguments) {
             toolCallsByIndex[idx].arguments += toolCall.function.arguments;
+          }
+          if (toolCall.extra_content) {
+            toolCallsByIndex[idx].extra_content = toolCall.extra_content;
           }
         }
 
@@ -306,6 +321,9 @@ async function tooledStream(
       id: firstToolCall.id,
       name: firstToolCall.name,
       arguments: safeJsonParse(firstToolCall.arguments, {}),
+      ...(firstToolCall.extra_content
+        ? { extra_content: firstToolCall.extra_content }
+        : {}),
     };
   }
 
@@ -388,6 +406,9 @@ async function tooledComplete(
             id: toolCall.id,
             name: toolCall.function.name,
             arguments: toolCall.function.arguments,
+            ...(toolCall.extra_content
+              ? { extra_content: toolCall.extra_content }
+              : {}),
           },
         },
         cost,
@@ -401,6 +422,9 @@ async function tooledComplete(
         id: toolCall.id,
         name: toolCall.function.name,
         arguments: functionArgs,
+        ...(toolCall.extra_content
+          ? { extra_content: toolCall.extra_content }
+          : {}),
       },
       cost,
       usage,

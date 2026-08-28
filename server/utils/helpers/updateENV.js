@@ -801,6 +801,28 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // Google Vertex AI Options
+  VertexAiLLMApiKey: {
+    envKey: "VERTEX_AI_LLM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  VertexAiLLMProjectId: {
+    envKey: "VERTEX_AI_LLM_PROJECT_ID",
+    checks: [isNotEmpty],
+  },
+  VertexAiLLMRegion: {
+    envKey: "VERTEX_AI_LLM_REGION",
+    checks: [isNotEmpty],
+  },
+  VertexAiLLMModelPref: {
+    envKey: "VERTEX_AI_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  VertexAiLLMTokenLimit: {
+    envKey: "VERTEX_AI_LLM_MODEL_TOKEN_LIMIT",
+    checks: [],
+  },
+
   // APIPie Options
   ApipieLLMApiKey: {
     envKey: "APIPIE_LLM_API_KEY",
@@ -1139,6 +1161,7 @@ function supportedLLM(input = "") {
     "cerebras",
     "omlx",
     "anythingllm-router",
+    "vertex",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }

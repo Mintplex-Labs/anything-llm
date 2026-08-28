@@ -52,6 +52,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "omlx",
   "bedrock",
   "generic-openai",
+  "vertex",
   // Image Generation Engines
   // These are suffixed with `-imggen` so that a provider that supports both
   // chat and image generation (eg: ollama) can return only its image-capable
@@ -181,6 +182,8 @@ async function getCustomModels(
       return await getCerebrasModels();
     case "bedrock":
       return await getBedrockModels(apiKey, options);
+    case "vertex":
+      return await getVertexModels();
     case "generic-openai":
       return await getGenericOpenAiModels(basePath, apiKey);
     case "deepgram-stt":
@@ -1358,6 +1361,34 @@ async function kokoroTtsVoices(basePath = null, apiKey = null) {
  * @param {string} [options.region] - The region to use
  * @returns {Promise<{models: Array<{id: string, organization: string, name: string}>, error: string | null}>}
  */
+async function getVertexModels() {
+  // Vertex's OpenAI-compatible endpoint has no /models listing, so the
+  // dropdown is built from the LiteLLM-backed context window cache, which
+  // is already filtered to `vertex_ai-language-models` under both keys -
+  // `gemini` covers caches pulled before `vertex` was tracked. Non-Gemini
+  // entries (partner/embedding models) are excluded since users run those
+  // via the manual model entry with their full publisher-prefixed IDs.
+  try {
+    const { MODEL_MAP } = require("../AiProviders/modelMap");
+    const modelMap = MODEL_MAP.get("vertex") ?? MODEL_MAP.get("gemini") ?? {};
+    const models = Object.keys(modelMap)
+      .filter(
+        (id) =>
+          id.startsWith("gemini") &&
+          // Retired on Vertex - the endpoint 404s for these models.
+          !id.startsWith("gemini-2.0") &&
+          !id.includes("embedding") &&
+          !id.includes("computer-use")
+      )
+      .sort()
+      .map((id) => ({ id, name: id, organization: "Google" }));
+    return { models, error: null };
+  } catch (e) {
+    console.error(`Vertex:getVertexModels`, e.message);
+    return { models: [], error: null };
+  }
+}
+
 async function getBedrockModels(_apiKey = null, options = {}) {
   try {
     const apiKey =
