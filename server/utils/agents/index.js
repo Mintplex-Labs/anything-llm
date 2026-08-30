@@ -260,11 +260,9 @@ class AgentHandler {
         if (!process.env.COHERE_API_KEY)
           throw new Error("Cohere API key must be provided to use agents.");
         break;
-      case "docker-model-runner":
-        if (!process.env.DOCKER_MODEL_RUNNER_BASE_PATH)
-          throw new Error(
-            "Docker Model Runner base path must be provided to use agents."
-          );
+      case "llmman":
+        if (!process.env.LLMMAN_BASE_PATH)
+          throw new Error("llmman base path must be provided to use agents.");
         break;
       case "privatemode":
         if (!process.env.PRIVATEMODE_LLM_BASE_PATH)
@@ -381,8 +379,8 @@ class AgentHandler {
         return process.env.GITEE_AI_MODEL_PREF ?? null;
       case "cohere":
         return process.env.COHERE_MODEL_PREF ?? "command-r-08-2024";
-      case "docker-model-runner":
-        return process.env.DOCKER_MODEL_RUNNER_LLM_MODEL_PREF ?? null;
+      case "llmman":
+        return process.env.LLMMAN_MODEL_PREF ?? null;
       case "privatemode":
         return process.env.PRIVATEMODE_LLM_MODEL_PREF ?? null;
       case "sambanova":

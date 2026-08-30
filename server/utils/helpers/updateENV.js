@@ -946,18 +946,26 @@ const KEY_MAPPING = {
     checks: [nonZero],
   },
 
-  // Docker Model Runner Options
-  DockerModelRunnerBasePath: {
-    envKey: "DOCKER_MODEL_RUNNER_BASE_PATH",
-    checks: [isValidURL],
+  // llmman Options
+  LlmmanBasePath: {
+    envKey: "LLMMAN_BASE_PATH",
+    checks: [isNotEmpty, isValidURL, validDockerizedUrl],
   },
-  DockerModelRunnerModelPref: {
-    envKey: "DOCKER_MODEL_RUNNER_LLM_MODEL_PREF",
-    checks: [isNotEmpty],
+  LlmmanModelPref: {
+    envKey: "LLMMAN_MODEL_PREF",
+    checks: [],
   },
-  DockerModelRunnerModelTokenLimit: {
-    envKey: "DOCKER_MODEL_RUNNER_LLM_MODEL_TOKEN_LIMIT",
+  LlmmanTokenLimit: {
+    envKey: "LLMMAN_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
+  },
+  LlmmanKeepAliveSeconds: {
+    envKey: "LLMMAN_KEEP_ALIVE_TIMEOUT",
+    checks: [isInteger],
+  },
+  LlmmanAuthToken: {
+    envKey: "LLMMAN_AUTH_TOKEN",
+    checks: [],
   },
 
   // Privatemode Options
@@ -1153,7 +1161,7 @@ function supportedLLM(input = "") {
     "foundry",
     "zai",
     "giteeai",
-    "docker-model-runner",
+    "llmman",
     "privatemode",
     "sambanova",
     "lemonade",

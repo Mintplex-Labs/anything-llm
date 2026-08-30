@@ -19,9 +19,7 @@ const { getLLMProviderClass } = require("../../../helpers");
 const { MODEL_PRICING } = require("../../../helpers/modelPricing");
 const { toNonNegativeNumber } = require("../../../helpers/numbers");
 const { parseLMStudioBasePath } = require("../../../AiProviders/lmStudio");
-const {
-  parseDockerModelRunnerEndpoint,
-} = require("../../../AiProviders/dockerModelRunner");
+const {} = require("../../../AiProviders/llmman");
 const { parseFoundryBasePath } = require("../../../AiProviders/foundry");
 const { parseOMLXBasePath } = require("../../../AiProviders/omlx");
 const { AzureOpenAiLLM } = require("../../../AiProviders/azureOpenAi");
@@ -29,6 +27,7 @@ const {
   SystemPromptVariables,
 } = require("../../../../models/systemPromptVariables");
 const { OllamaAILLM } = require("../../../AiProviders/ollama");
+const { LlmmanLLM } = require("../../../AiProviders/llmman");
 const { bindAbortSignal } = require("../../../helpers/abortSignals");
 
 /**
@@ -522,16 +521,8 @@ class Provider {
           ...config,
         });
       }
-      case "docker-model-runner":
-        return new ChatOpenAI({
-          configuration: {
-            baseURL: parseDockerModelRunnerEndpoint(
-              process.env.DOCKER_MODEL_RUNNER_BASE_PATH
-            ),
-          },
-          apiKey: null,
-          ...config,
-        });
+      case "llmman":
+        return LlmmanLangchainChatModel.create(config);
       case "lemonade":
         return new ChatOpenAI({
           configuration: {
@@ -858,10 +849,33 @@ class Provider {
 // Langchain Wrappers
 
 /**
+ * Langchain chat model for llmman, which serves the Ollama API, so the same
+ * client is reused. Passes context window options through so preferences are
+ * respected between chat/agent and Langchain tooling.
+ */
+
+/**
  * Ollama Langchain Chat Model that supports passing in context window options
  * so that context window preferences are respected between Ollama chat/agent and in
  * Langchain tooling.
  */
+class LlmmanLangchainChatModel {
+  static create(config = {}) {
+    return new ChatOllama({
+      baseUrl: process.env.LLMMAN_BASE_PATH,
+      ...this.queryOptions(config),
+      ...config,
+    });
+  }
+
+  static queryOptions(config = {}) {
+    const model = config?.model || process.env.LLMMAN_MODEL_PREF;
+    return {
+      num_ctx: LlmmanLLM.promptWindowLimit(model),
+    };
+  }
+}
+
 class OllamaLangchainChatModel {
   static create(config = {}) {
     return new ChatOllama({
