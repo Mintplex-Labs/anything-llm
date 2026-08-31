@@ -48,7 +48,6 @@ const groupedProviders = [
   "novita",
   "openrouter",
   "ppio",
-  "llmman",
   "sambanova",
 ];
 export default function useGetProviderModels(provider = null) {

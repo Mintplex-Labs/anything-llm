@@ -957,7 +957,7 @@ const KEY_MAPPING = {
   },
   LlmmanTokenLimit: {
     envKey: "LLMMAN_MODEL_TOKEN_LIMIT",
-    checks: [nonZero],
+    checks: [],
   },
   LlmmanKeepAliveSeconds: {
     envKey: "LLMMAN_KEEP_ALIVE_TIMEOUT",

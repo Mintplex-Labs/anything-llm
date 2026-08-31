@@ -58,6 +58,7 @@ class LlmmanLLM {
   async assertModelContextLimits() {
     if (this.limits !== null) return;
     await LlmmanLLM.cacheContextWindows();
+    await this.#syncLoadedContextWindow();
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -93,16 +94,35 @@ class LlmmanLLM {
       const { models } = await client.list().catch(() => ({ models: [] }));
       if (!models.length) return;
 
+      // llmman serves the Ollama API surface but /api/show does not always
+      // include the `capabilities` array or `model_info` block Ollama returns,
+      // so both are treated as optional here. The loaded-model report from
+      // /api/ps carries the accurate runtime `context_length`, so it takes
+      // priority over whatever /api/show advertises.
+      const loadedModels = await client
+        .ps()
+        .then((res) => res?.models || [])
+        .catch(() => []);
+      const loadedContextWindows = {};
+      loadedModels.forEach((model) => {
+        if (!model?.context_length) return;
+        loadedContextWindows[model.name] = Number(model.context_length);
+      });
+
       const infoPromises = models.map((model) =>
         client
           .show({ model: model.name })
           .then((info) => ({ name: model.name, ...info }))
+          .catch(() => ({ name: model.name }))
       );
       const infos = await Promise.all(infoPromises);
       infos.forEach((showInfo) => {
-        if (showInfo.capabilities.includes("embedding")) return;
-        const contextWindowKey = Object.keys(showInfo.model_info).find((key) =>
-          key.endsWith(".context_length")
+        if ((showInfo.capabilities || []).includes("embedding")) return;
+        if (loadedContextWindows[showInfo.name])
+          return (LlmmanLLM.modelContextWindows[showInfo.name] =
+            loadedContextWindows[showInfo.name]);
+        const contextWindowKey = Object.keys(showInfo.model_info || {}).find(
+          (key) => key.endsWith(".context_length")
         );
         if (!contextWindowKey)
           return (LlmmanLLM.modelContextWindows[showInfo.name] = 4096);
@@ -113,6 +133,42 @@ class LlmmanLLM {
     } catch (e) {
       LlmmanLLM.#slog(`Error caching context windows`, e);
       return;
+    }
+  }
+
+  /**
+   * llmman's /api/show does not report a model's context length, so the only
+   * accurate source is the runtime `context_length` from /api/ps - which only
+   * lists loaded models. Since this runs right before a completion, load the
+   * model now (empty prompt = load-only, Ollama semantics - returns instantly
+   * with done_reason "load") and record its true context window in the cache.
+   * Best-effort: any failure leaves the /api/show-derived value in place.
+   * @returns {Promise<void>}
+   */
+  async #syncLoadedContextWindow() {
+    try {
+      const findLoaded = async () => {
+        const { models = [] } = await this.client.ps();
+        return models.find(
+          (m) => m.name === this.model || m.model === this.model
+        );
+      };
+
+      let loaded = await findLoaded();
+      if (!loaded) {
+        await this.client.generate({
+          model: this.model,
+          prompt: "",
+          keep_alive: this.keepAlive,
+        });
+        loaded = await findLoaded();
+      }
+
+      if (!loaded?.context_length) return;
+      LlmmanLLM.modelContextWindows[this.model] = Number(loaded.context_length);
+    } catch {
+      // Model may not be pullable/loadable right now - the cached or default
+      // context window will be used instead.
     }
   }
 
