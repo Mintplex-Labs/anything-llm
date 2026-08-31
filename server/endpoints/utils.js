@@ -81,11 +81,6 @@ function utilEndpoints(app) {
     }
   );
 
-  const {
-    dockerModelRunnerUtilsEndpoints,
-  } = require("./utils/dockerModelRunnerUtils");
-  dockerModelRunnerUtilsEndpoints(app);
-
   const { lemonadeUtilsEndpoints } = require("./utils/lemonadeUtilsEndpoints");
   lemonadeUtilsEndpoints(app);
 
@@ -225,8 +220,8 @@ function getModelTag() {
     case "cohere":
       model = process.env.COHERE_MODEL_PREF;
       break;
-    case "docker-model-runner":
-      model = process.env.DOCKER_MODEL_RUNNER_LLM_MODEL_PREF;
+    case "llmman":
+      model = process.env.LLMMAN_MODEL_PREF;
       break;
     case "privatemode":
       model = process.env.PRIVATEMODE_LLM_MODEL_PREF;

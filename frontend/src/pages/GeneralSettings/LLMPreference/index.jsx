@@ -36,7 +36,7 @@ import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
 import FoundryLogo from "@/media/llmprovider/foundry-local.png";
 import GiteeAILogo from "@/media/llmprovider/giteeai.png";
-import DockerModelRunnerLogo from "@/media/llmprovider/docker-model-runner.png";
+import LlmmanLogo from "@/media/llmprovider/llmman.png";
 import PrivateModeLogo from "@/media/llmprovider/privatemode.png";
 import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
 import LemonadeLogo from "@/media/llmprovider/lemonade.png";
@@ -77,7 +77,7 @@ import PPIOLLMOptions from "@/components/LLMSelection/PPIOLLMOptions";
 import MoonshotAiOptions from "@/components/LLMSelection/MoonshotAiOptions";
 import FoundryOptions from "@/components/LLMSelection/FoundryOptions";
 import GiteeAIOptions from "@/components/LLMSelection/GiteeAIOptions/index.jsx";
-import DockerModelRunnerOptions from "@/components/LLMSelection/DockerModelRunnerOptions";
+import LlmmanOptions from "@/components/LLMSelection/LlmmanOptions";
 import PrivateModeOptions from "@/components/LLMSelection/PrivateModeOptions";
 import SambaNovaOptions from "@/components/LLMSelection/SambaNovaOptions";
 import LemonadeOptions from "@/components/LLMSelection/LemonadeOptions";
@@ -163,16 +163,12 @@ export const AVAILABLE_LLM_PROVIDERS = [
     requiredConfig: ["LMStudioBasePath"],
   },
   {
-    name: "Docker Model Runner",
-    value: "docker-model-runner",
-    logo: DockerModelRunnerLogo,
-    options: (settings) => <DockerModelRunnerOptions settings={settings} />,
-    description: "Run LLMs using Docker Model Runner.",
-    requiredConfig: [
-      "DockerModelRunnerBasePath",
-      "DockerModelRunnerModelPref",
-      "DockerModelRunnerModelTokenLimit",
-    ],
+    name: "llmman",
+    value: "llmman",
+    logo: LlmmanLogo,
+    options: (settings) => <LlmmanOptions settings={settings} />,
+    description: "Run LLMs locally using llmman.",
+    requiredConfig: ["LlmmanBasePath", "LlmmanModelPref", "LlmmanTokenLimit"],
   },
   {
     name: "Lemonade",

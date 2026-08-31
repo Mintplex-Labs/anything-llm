@@ -116,7 +116,7 @@ AnythingLLM supports multiple users as well where you can control the access and
 - [Moonshot AI](https://www.moonshot.ai/)
 - [Microsoft Foundry Local](https://github.com/microsoft/Foundry-Local)
 - [CometAPI (chat models)](https://api.cometapi.com/)
-- [Docker Model Runner](https://docs.docker.com/ai/model-runner/)
+- [llmman](https://github.com/llmmanorg/llmman)
 - [PrivateModeAI (chat models)](https://privatemode.ai/)
 - [SambaNova Cloud (chat models)](https://cloud.sambanova.ai/)
 - [Lemonade by AMD](https://lemonade-server.ai)
