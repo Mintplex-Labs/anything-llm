@@ -117,6 +117,7 @@ const WorkspaceChats = {
           workspaceId,
           user_id: user?.id,
           thread_id: null, // this function is now only used for the default thread on workspaces
+          api_session_id: null, // API session chats also live on the default thread - a UI reset must not clear them
         },
         data: {
           include: false,
