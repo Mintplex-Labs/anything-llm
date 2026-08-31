@@ -92,6 +92,10 @@ jest.mock("../../../utils/agents/ephemeral", () => {
 const { ApiChatHandler } = require("../../../utils/chats/apiChatHandler");
 const { WorkspaceChats } = require("../../../models/workspaceChats");
 const {
+  getVectorDbClass,
+  resolveProviderConnector,
+} = require("../../../utils/helpers");
+const {
   writeResponseChunk,
 } = require("../../../utils/helpers/chat/responses");
 const {
@@ -251,6 +255,44 @@ describe("ApiChatHandler @agent persistence", () => {
         })
       );
     });
+  });
+
+  describe("query-mode refusal, no embeddings", () => {
+    // Same contract as the agent saves above: a refusal row is still a turn,
+    // and must carry the scoping triple it was invoked with or it is orphaned.
+    test.each(REAL_WORLD_CASES)(
+      "chatSync keeps the scoping triple on the refusal row ($name)",
+      async ({ user, thread, sessionId }) => {
+        EphemeralAgentHandler.isAgentInvocation.mockResolvedValue(false);
+        resolveProviderConnector.mockResolvedValue({
+          connector: { promptWindowLimit: () => 8000 },
+          routingMetadata: null,
+        });
+        getVectorDbClass.mockReturnValue({
+          hasNamespace: jest.fn().mockResolvedValue(false),
+          namespaceCount: jest.fn().mockResolvedValue(0),
+        });
+
+        await ApiChatHandler.chatSync({
+          workspace,
+          message: "anything",
+          mode: "query",
+          user,
+          thread,
+          sessionId,
+        });
+
+        expect(WorkspaceChats.new).toHaveBeenCalledWith(
+          expect.objectContaining({
+            workspaceId: workspace.id,
+            include: false,
+            threadId: thread?.id || null,
+            apiSessionId: sessionId,
+            user,
+          })
+        );
+      }
+    );
   });
 
   describe("cross-cutting rules", () => {

@@ -136,7 +136,7 @@ async function chatSync({
     await WorkspaceChats.markThreadHistoryInvalidV2({
       workspaceId: workspace.id,
       user_id: user?.id,
-      thread_id: thread?.id,
+      thread_id: thread?.id ?? null, // an undefined thread_id would match (and reset) every thread in the workspace
       api_session_id: sessionId,
     });
     if (!message?.length) {
@@ -259,8 +259,10 @@ async function chatSync({
         type: chatMode,
         metrics: {},
       },
+      threadId: thread?.id || null,
       include: false,
       apiSessionId: sessionId,
+      user,
     });
 
     return {
@@ -508,7 +510,7 @@ async function streamChat({
     await WorkspaceChats.markThreadHistoryInvalidV2({
       workspaceId: workspace.id,
       user_id: user?.id,
-      thread_id: thread?.id,
+      thread_id: thread?.id ?? null, // an undefined thread_id would match (and reset) every thread in the workspace
       api_session_id: sessionId,
     });
     if (!message?.length) {
