@@ -51,7 +51,7 @@ describe("WebsiteDepth extractLinks scope", () => {
     ]);
   });
 
-  it("treats a root-slash start URL as the whole site", () => {
+  it("treats a double-slash start URL as the whole site", () => {
     const html = '<a href="/a">a</a><a href="/b/c">b</a>';
     expect(extractLinks(html, new URL("https://example.com//"))).toEqual([
       "https://example.com/a",
