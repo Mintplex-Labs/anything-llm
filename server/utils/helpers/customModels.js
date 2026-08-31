@@ -12,7 +12,6 @@ const { parseNvidiaNimBasePath } = require("../AiProviders/nvidiaNim");
 const { fetchPPIOModels } = require("../AiProviders/ppio");
 const { GeminiLLM } = require("../AiProviders/gemini");
 const { fetchCometApiModels } = require("../AiProviders/cometapi");
-const { getDockerModels } = require("../AiProviders/dockerModelRunner");
 const { getAllLemonadeModels } = require("../AiProviders/lemonade");
 
 const SUPPORT_CUSTOM_MODELS = [
@@ -43,7 +42,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "cohere",
   "zai",
   "giteeai",
-  "docker-model-runner",
+  "llmman",
   "privatemode",
   "sambanova",
   "lemonade",
@@ -162,8 +161,8 @@ async function getCustomModels(
       return await getOpenRouterEmbeddingModels();
     case "giteeai":
       return await getGiteeAIModels(apiKey);
-    case "docker-model-runner":
-      return await getDockerModelRunnerModels(basePath);
+    case "llmman":
+      return await llmmanModels(basePath);
     case "privatemode":
       return await getPrivatemodeModels(basePath, "generate");
     case "sambanova":
@@ -1039,17 +1038,38 @@ async function getOpenRouterEmbeddingModels() {
   return { models, error: null };
 }
 
-async function getDockerModelRunnerModels(basePath = null) {
+/**
+ * Lists the models llmman is serving, via the Ollama API's /api/tags.
+ */
+async function llmmanModels(basePath = null, _authToken = null) {
+  let url;
   try {
-    const models = await getDockerModels(basePath);
-    return { models, error: null };
-  } catch (e) {
-    console.error(`DockerModelRunner:getDockerModelRunnerModels`, e.message);
-    return {
-      models: [],
-      error: "Could not fetch Docker Model Runner Models",
-    };
+    let urlPath = basePath ?? process.env.LLMMAN_BASE_PATH;
+    new URL(urlPath);
+    if (urlPath.split("").slice(-1)?.[0] === "/")
+      throw new Error("BasePath Cannot end in /!");
+    url = urlPath;
+  } catch {
+    return { models: [], error: "Not a valid URL." };
   }
+
+  const authToken = _authToken || process.env.LLMMAN_AUTH_TOKEN || null;
+  const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
+  const models = await fetch(`${url}/api/tags`, { headers: headers })
+    .then((res) => {
+      if (!res.ok) throw new Error(`Could not reach llmman! ${res.status}`);
+      return res.json();
+    })
+    .then((data) => data?.models || [])
+    .then((models) => models.map((model) => ({ id: model.name })))
+    .catch((e) => {
+      console.error(e);
+      return [];
+    });
+
+  if (models.length > 0 && !!authToken)
+    process.env.LLMMAN_AUTH_TOKEN = authToken;
+  return { models, error: null };
 }
 
 async function getLemonadeModels(
