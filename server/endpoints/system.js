@@ -623,10 +623,6 @@ function systemEndpoints(app) {
           process.env.AUTH_TOKEN = "";
           process.env.JWT_SECRET = "";
         } else {
-          // Resolve updateENV before reading .error. Reading it inline as
-          // `await updateENV(...)?.error` takes .error off the pending
-          // Promise, which is always undefined, and lets a rejection escape
-          // this try block.
           const update = await updateENV(
             {
               AuthToken: newPassword,
