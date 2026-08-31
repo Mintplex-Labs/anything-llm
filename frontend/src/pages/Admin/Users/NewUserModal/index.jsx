@@ -62,7 +62,7 @@ export default function NewUserModal({ closeModal }) {
         <ModalInput
           label="Password"
           name="password"
-          type="text"
+          type="password"
           placeholder="User's initial password"
           required={true}
           autoComplete="off"
