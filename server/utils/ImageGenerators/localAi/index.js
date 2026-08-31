@@ -1,5 +1,10 @@
 const { BaseImageGenerator } = require("../base");
 
+// LocalAI only supports reference images on the flux.1-kontext-dev model - every
+// other model silently ignores `ref_images` and returns a fresh generation.
+// https://localai.io/docs/features/image-generation/
+const REF_IMAGE_SUPPORTED_MODELS = ["flux.1-kontext-dev"];
+
 class LocalAiImageGenerator extends BaseImageGenerator {
   constructor() {
     if (!process.env.IMAGE_GEN_LOCALAI_BASE_PATH)
@@ -17,6 +22,14 @@ class LocalAiImageGenerator extends BaseImageGenerator {
     });
   }
 
+  /**
+   * Whether the configured model can accept reference images.
+   * @returns {boolean}
+   */
+  get supportsReferenceImages() {
+    return REF_IMAGE_SUPPORTED_MODELS.includes(this.model);
+  }
+
   // LocalAI does not implement the OpenAI `/v1/images/edits` endpoint, but it
   // DOES support image editing through the same `/v1/images/generations`
   // endpoint used for generation: reference images are passed as `ref_images`,
@@ -29,11 +42,41 @@ class LocalAiImageGenerator extends BaseImageGenerator {
   // Verified end-to-end against LocalAI v4.9.0 with flux.1-kontext-dev
   // (stablediffusion-ggml backend): the backend log shows `ref_images_count: 1`
   // and the returned image is an edit of the reference, not a fresh generation.
+  //
+  // Because references ride along on the generations request, generation and
+  // editing share one implementation and the base class `generateImage` /
+  // `editImage` are both overridden here.
+  /**
+   * @param {{prompt: string, size?: string, signal?: AbortSignal}} params
+   * @returns {Promise<import("../base").GeneratedImage>}
+   */
+  async generateImage({ prompt, size, signal }) {
+    return this.#requestImage({ prompt, images: [], size, signal });
+  }
+
+  /**
+   * @param {{prompt: string, images: Buffer[], size?: string, signal?: AbortSignal}} params
+   * @returns {Promise<import("../base").GeneratedImage>}
+   */
   async editImage({ prompt, images, size, signal }) {
-    const imageSize =
-      size || process.env.IMAGE_GEN_SIZE_PREF || "1024x1024";
+    if (!this.supportsReferenceImages)
+      throw new Error(
+        `LocalAI only supports reference images on the ${REF_IMAGE_SUPPORTED_MODELS.join(", ")} model - the configured model (${this.model}) will ignore them. Remove the attached image(s) and send a text-only prompt, or switch your LocalAI image generation model.`
+      );
+    return this.#requestImage({ prompt, images, size, signal });
+  }
+
+  /**
+   * Performs the `/images/generations` request, optionally with `ref_images`.
+   * @param {{prompt: string, images: Buffer[], size?: string, signal?: AbortSignal}} params
+   * @returns {Promise<import("../base").GeneratedImage>}
+   */
+  async #requestImage({ prompt, images = [], size, signal }) {
+    const imageSize = size || process.env.IMAGE_GEN_SIZE_PREF || "1024x1024";
     this.log(
-      `Editing image with ${this.model} (${images.length} reference(s)) via ref_images.`
+      images.length
+        ? `Editing image with ${this.model} (${images.length} reference(s)) via ref_images.`
+        : `Generating ${imageSize} image with ${this.model}.`
     );
 
     const baseURL = this.client.baseURL.replace(/\/+$/, "");
@@ -49,7 +92,9 @@ class LocalAiImageGenerator extends BaseImageGenerator {
         prompt,
         size: imageSize,
         n: 1,
-        ref_images: images.map((buffer) => buffer.toString("base64")),
+        ...(images.length && {
+          ref_images: images.map((buffer) => buffer.toString("base64")),
+        }),
       }),
       signal: signal ?? null,
     });
@@ -57,7 +102,7 @@ class LocalAiImageGenerator extends BaseImageGenerator {
     if (!res.ok) {
       const body = await res.text().catch(() => "");
       throw new Error(
-        `Image edit failed (${res.status}): ${body || res.statusText}`
+        `Image ${images.length ? "edit" : "generation"} failed (${res.status}): ${body || res.statusText}`
       );
     }
 
@@ -69,10 +114,10 @@ class LocalAiImageGenerator extends BaseImageGenerator {
     } else if (image?.url) {
       const imgRes = await fetch(image.url, { signal: signal ?? null });
       if (!imgRes.ok)
-        throw new Error(`Failed to fetch edited image: ${imgRes.status}`);
+        throw new Error(`Failed to fetch generated image: ${imgRes.status}`);
       result = { buffer: Buffer.from(await imgRes.arrayBuffer()) };
     } else {
-      throw new Error("Image edit returned no image data.");
+      throw new Error("Image provider returned no image data.");
     }
     this._sendImageTelemetry("image_generated", {
       withReferences: images.length > 0,
