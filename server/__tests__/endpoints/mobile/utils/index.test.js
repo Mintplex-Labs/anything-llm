@@ -52,6 +52,7 @@ describe("handleMobileCommand: reset-chat", () => {
     expect(WorkspaceChats.markThreadHistoryInvalidV2).toHaveBeenCalledWith({
       workspaceId: 7,
       thread_id: 42,
+      api_session_id: null,
     });
   });
 
@@ -73,6 +74,7 @@ describe("handleMobileCommand: reset-chat", () => {
     expect(WorkspaceChats.markThreadHistoryInvalidV2).toHaveBeenCalledWith({
       workspaceId: 7,
       thread_id: null,
+      api_session_id: null,
     });
     expect(response.status).toHaveBeenCalledWith(200);
     expect(response.json).toHaveBeenCalledWith({ success: true });
@@ -90,9 +92,12 @@ describe("handleMobileCommand: reset-chat", () => {
     );
 
     expect(prisma.workspace_threads.findFirst).not.toHaveBeenCalled();
+    // api_session_id is named because API session chats also live on the
+    // default thread; row-level coverage is in chatHistoryReset.test.js.
     expect(WorkspaceChats.markThreadHistoryInvalidV2).toHaveBeenCalledWith({
       workspaceId: 7,
       thread_id: null,
+      api_session_id: null,
     });
   });
 });

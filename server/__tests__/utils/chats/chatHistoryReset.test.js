@@ -131,11 +131,24 @@ jest.mock("../../../utils/router", () => ({
   ModelRouterService: { resetForWorkspace: jest.fn() },
 }));
 
+// The mobile command handler pulls these in; reset-chat reaches none of them.
+jest.mock("../../../models/workspace", () => ({
+  Workspace: { get: jest.fn(), getWithUser: jest.fn() },
+}));
+jest.mock("../../../models/workspaceThread", () => ({ WorkspaceThread: {} }));
+jest.mock("../../../models/mobileDevice", () => ({ MobileDevice: {} }));
+jest.mock("../../../endpoints/utils", () => ({ getModelTag: () => "test" }));
+jest.mock("../../../utils/http", () => ({ reqBody: (request) => request.body }));
+
 const prisma = require("../../../utils/prisma");
 const { WorkspaceChats } = require("../../../models/workspaceChats");
 const { ApiChatHandler } = require("../../../utils/chats/apiChatHandler");
 const { recentChatHistory } = require("../../../utils/chats/index");
 const { resetMemory } = require("../../../utils/chats/commands/reset");
+const { Workspace } = require("../../../models/workspace");
+const {
+  handleMobileCommand,
+} = require("../../../endpoints/mobile/utils/index");
 
 const workspace = { id: 1, slug: "workspace-one", chatMode: "chat" };
 const otherWorkspace = { id: 2, slug: "workspace-two", chatMode: "chat" };
@@ -455,6 +468,64 @@ describe("UI /reset — workspace thread", () => {
     expect(await modelMemory({ user: userA, thread: threadT6 })).toEqual([
       "t6-userA",
     ]);
+    expectNothingDeleted();
+  });
+});
+
+describe("Mobile reset-chat - POST /mobile/reset-chat", () => {
+  function mobileResponse(user = null) {
+    return {
+      locals: { user },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn().mockReturnThis(),
+    };
+  }
+
+  test("single-user: clears the default thread but never API sessions", async () => {
+    Workspace.get.mockResolvedValue(workspace);
+    const response = mobileResponse();
+
+    await handleMobileCommand(
+      {
+        params: { command: "reset-chat" },
+        body: { workspaceSlug: workspace.slug },
+      },
+      response
+    );
+
+    expect(response.json).toHaveBeenCalledWith({ success: true });
+    // Same scope as the UI /reset: no user filter in single-user mode, so
+    // user-attributed rows on the default thread clear too. API session
+    // history lives on that same default thread and must survive.
+    await expectOnlyChanged({
+      workspaceListing: [],
+      userAListing: [],
+      userBListing: [],
+    });
+    expect(await modelMemory({ apiSessionId: "sess-a" })).toEqual([
+      "sess-a-1",
+      "sess-a-2",
+    ]);
+    expectNothingDeleted();
+  });
+
+  test("multi-user: clears only that user's default-thread history", async () => {
+    Workspace.getWithUser.mockResolvedValue(workspace);
+    const response = mobileResponse(userA);
+
+    await handleMobileCommand(
+      {
+        params: { command: "reset-chat" },
+        body: { workspaceSlug: workspace.slug },
+      },
+      response
+    );
+
+    await expectOnlyChanged({
+      workspaceListing: ["ws-single-1", "ws-single-2", "ws-userB"],
+      userAListing: [],
+    });
+    expect(await modelMemory({ user: userA })).toEqual([]);
     expectNothingDeleted();
   });
 });

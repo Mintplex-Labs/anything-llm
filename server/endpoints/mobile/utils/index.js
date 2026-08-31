@@ -126,6 +126,7 @@ async function handleMobileCommand(request, response) {
       workspaceId: workspace.id,
       ...(user ? { user_id: user.id } : {}),
       thread_id: threadId, // null here is the default thread.
+      api_session_id: null, // API session chats also live on the default thread - a mobile reset must not clear them
     });
     return response.status(200).json({ success: true });
   }
