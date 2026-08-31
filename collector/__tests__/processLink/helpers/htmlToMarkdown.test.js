@@ -29,6 +29,22 @@ describe("htmlToMarkdown citation stripping", () => {
     expect(markdown).toBe("See note[1](#fn1) end.");
   });
 
+  it("keeps a numeric image alt text", async () => {
+    const markdown = await htmlToMarkdown(
+      '<p><img src="/a.png" alt="1"></p>',
+      "https://example.com"
+    );
+    expect(markdown).toBe("![1](https://example.com/a.png)");
+  });
+
+  it("keeps a bracketed number inside a link target", async () => {
+    const markdown = await htmlToMarkdown(
+      '<p><a href="/docs/[1]/page">link</a></p>',
+      "https://example.com"
+    );
+    expect(markdown).toBe("[link](https://example.com/docs/[1]/page)");
+  });
+
   it("still removes a reference superscript from prose", async () => {
     const markdown = await htmlToMarkdown(
       '<p>As shown in the study<sup class="reference">[1]</sup>, results vary.</p>'
