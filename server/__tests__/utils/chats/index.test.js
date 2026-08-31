@@ -14,11 +14,34 @@ describe("grepCommand", () => {
     SlashCommandPresets.getUserPresets.mockResolvedValue([]);
     expect(await grepCommand("/reset")).toBe("/reset");
     expect(await grepCommand("/RESET now")).toBe("/reset"); // case-insensitive
+    expect(await grepCommand("/reset?")).toBe("/reset"); // punctuation still dispatches
+  });
+
+  it("returns the built-in command when followed by more text", async () => {
+    SlashCommandPresets.getUserPresets.mockResolvedValue([]);
+    expect(await grepCommand("/img a cat")).toBe("/img");
   });
 
   it("returns the message unchanged when no command matches", async () => {
     SlashCommandPresets.getUserPresets.mockResolvedValue([]);
     expect(await grepCommand("hello there")).toBe("hello there");
+  });
+
+  it("does not match a built-in command that is part of a longer command", async () => {
+    SlashCommandPresets.getUserPresets.mockResolvedValue([]);
+    expect(await grepCommand("/resetall")).toBe("/resetall");
+    expect(await grepCommand("/reset-all")).toBe("/reset-all");
+    expect(await grepCommand("/resetting my password, how?")).toBe(
+      "/resetting my password, how?"
+    );
+    expect(await grepCommand("/imgs hello")).toBe("/imgs hello");
+  });
+
+  it("expands a preset whose command extends a built-in command name", async () => {
+    SlashCommandPresets.getUserPresets.mockResolvedValue([
+      preset("/reset-all", "clear every workspace"),
+    ]);
+    expect(await grepCommand("/reset-all")).toBe("clear every workspace");
   });
 
   describe("preset expansion", () => {
