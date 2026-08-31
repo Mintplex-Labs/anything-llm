@@ -28,7 +28,7 @@ const FREE_PROVIDERS = [
   "textgenwebui",
   "omlx",
   "lemonade",
-  "docker-model-runner",
+  "llmman",
   "foundry",
 ];
 

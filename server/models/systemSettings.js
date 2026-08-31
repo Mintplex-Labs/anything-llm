@@ -1028,12 +1028,12 @@ const SystemSettings = {
       GiteeAIModelPref: process.env.GITEE_AI_MODEL_PREF,
       GiteeAITokenLimit: process.env.GITEE_AI_MODEL_TOKEN_LIMIT || 8192,
 
-      // Docker Model Runner Keys
-      DockerModelRunnerBasePath: process.env.DOCKER_MODEL_RUNNER_BASE_PATH,
-      DockerModelRunnerModelPref:
-        process.env.DOCKER_MODEL_RUNNER_LLM_MODEL_PREF,
-      DockerModelRunnerModelTokenLimit:
-        process.env.DOCKER_MODEL_RUNNER_LLM_MODEL_TOKEN_LIMIT || 8192,
+      // llmman Keys
+      LlmmanBasePath: process.env.LLMMAN_BASE_PATH,
+      LlmmanModelPref: process.env.LLMMAN_MODEL_PREF,
+      LlmmanTokenLimit: process.env.LLMMAN_MODEL_TOKEN_LIMIT || 8192,
+      LlmmanKeepAliveSeconds: process.env.LLMMAN_KEEP_ALIVE_TIMEOUT ?? 300,
+      LlmmanAuthToken: !!process.env.LLMMAN_AUTH_TOKEN,
 
       // Privatemode Keys
       PrivateModeBasePath: process.env.PRIVATEMODE_LLM_BASE_PATH,

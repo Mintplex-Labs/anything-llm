@@ -19,6 +19,12 @@ export const OLLAMA_COMMON_URLS = [
   "http://172.17.0.1:11434",
 ];
 
+export const LLMMAN_COMMON_URLS = [
+  "http://127.0.0.1:17434",
+  "http://host.docker.internal:17434",
+  "http://172.17.0.1:17434",
+];
+
 export const LMSTUDIO_COMMON_URLS = [
   "http://localhost:1234/v1",
   "http://127.0.0.1:1234/v1",
@@ -45,14 +51,6 @@ export const NVIDIA_NIM_COMMON_URLS = [
   "http://localhost:8000/v1/version",
   "http://host.docker.internal:8000/v1/version",
   "http://172.17.0.1:8000/v1/version",
-];
-
-export const DOCKER_MODEL_RUNNER_COMMON_URLS = [
-  "http://localhost:12434/engines/llama.cpp/v1",
-  "http://127.0.0.1:12434/engines/llama.cpp/v1",
-  "http://model-runner.docker.internal/engines/llama.cpp/v1",
-  "http://host.docker.internal:12434/engines/llama.cpp/v1",
-  "http://172.17.0.1:12434/engines/llama.cpp/v1",
 ];
 
 export const LEMONADE_COMMON_URLS = [
