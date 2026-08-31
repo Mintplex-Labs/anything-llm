@@ -46,11 +46,9 @@ async function executeApiCall(config, context) {
     }
 
     introspect(`API call completed`);
-    return await response
-      .text()
-      .then((text) =>
-        safeJsonParse(text, "Failed to parse output from API call block")
-      );
+    // Fall back to the raw body so a successful call that answers with plain
+    // text is passed through as-is instead of being replaced by a message.
+    return await response.text().then((text) => safeJsonParse(text, text));
   } catch (error) {
     console.error(error);
     throw new Error(`API Call failed: ${error.message}`);
