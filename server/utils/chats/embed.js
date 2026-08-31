@@ -27,10 +27,11 @@ async function streamChatWithForEmbed(
   const chatModel = embed.allow_model_override ? modelOverride : null;
 
   // If there are overrides in request & they are permitted, override the default workspace ref information.
-  if (embed.allow_prompt_override)
+  if (embed.allow_prompt_override && typeof promptOverride === "string")
     embed.workspace.openAiPrompt = promptOverride;
-  if (embed.allow_temperature_override)
-    embed.workspace.openAiTemp = parseFloat(temperatureOverride);
+  const temperatureValue = parseFloat(temperatureOverride);
+  if (embed.allow_temperature_override && !Number.isNaN(temperatureValue))
+    embed.workspace.openAiTemp = temperatureValue;
 
   const uuid = uuidv4();
   const {
