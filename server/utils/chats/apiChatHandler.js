@@ -259,8 +259,10 @@ async function chatSync({
         type: chatMode,
         metrics: {},
       },
+      threadId: thread?.id || null,
       include: false,
       apiSessionId: sessionId,
+      user,
     });
 
     return {
