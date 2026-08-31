@@ -91,16 +91,25 @@ function extractLinks(html, baseUrl) {
   const links = root.querySelectorAll("a");
   const extractedLinks = new Set();
 
+  // The start URL's parent path, or "" for a bare origin, which stays
+  // site-wide. Comparing the parsed origin and whole path segments rather
+  // than a string prefix: "https://example.com" also prefixed
+  // "https://example.com.evil.net", and "/docs" also prefixed
+  // "/docs-private".
+  const parentPath = baseUrl.pathname.split("/").slice(0, -1).join("/");
+  const scopePath = parentPath === "/" ? "" : parentPath;
+
   for (const link of links) {
     const href = link.getAttribute("href");
     if (href) {
-      const absoluteUrl = new URL(href, baseUrl.href).href;
-      if (
-        absoluteUrl.startsWith(
-          baseUrl.origin + baseUrl.pathname.split("/").slice(0, -1).join("/")
-        )
-      ) {
-        extractedLinks.add(absoluteUrl);
+      const absoluteUrl = new URL(href, baseUrl.href);
+      const inScope =
+        absoluteUrl.origin === baseUrl.origin &&
+        (!scopePath ||
+          absoluteUrl.pathname === scopePath ||
+          absoluteUrl.pathname.startsWith(`${scopePath}/`));
+      if (inScope) {
+        extractedLinks.add(absoluteUrl.href);
       }
     }
   }
@@ -209,3 +218,5 @@ async function websiteScraper(startUrl, depth = 1, maxLinks = 20) {
 }
 
 module.exports = websiteScraper;
+// Exposed for tests; the scraper itself is the module's callable export.
+module.exports.extractLinks = extractLinks;
