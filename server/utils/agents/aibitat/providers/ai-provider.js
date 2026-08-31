@@ -19,7 +19,6 @@ const { getLLMProviderClass } = require("../../../helpers");
 const { MODEL_PRICING } = require("../../../helpers/modelPricing");
 const { toNonNegativeNumber } = require("../../../helpers/numbers");
 const { parseLMStudioBasePath } = require("../../../AiProviders/lmStudio");
-const {} = require("../../../AiProviders/llmman");
 const { parseFoundryBasePath } = require("../../../AiProviders/foundry");
 const { parseOMLXBasePath } = require("../../../AiProviders/omlx");
 const { AzureOpenAiLLM } = require("../../../AiProviders/azureOpenAi");
@@ -853,12 +852,6 @@ class Provider {
  * client is reused. Passes context window options through so preferences are
  * respected between chat/agent and Langchain tooling.
  */
-
-/**
- * Ollama Langchain Chat Model that supports passing in context window options
- * so that context window preferences are respected between Ollama chat/agent and in
- * Langchain tooling.
- */
 class LlmmanLangchainChatModel {
   static create(config = {}) {
     return new ChatOllama({
@@ -876,6 +869,11 @@ class LlmmanLangchainChatModel {
   }
 }
 
+/**
+ * Ollama Langchain Chat Model that supports passing in context window options
+ * so that context window preferences are respected between Ollama chat/agent and in
+ * Langchain tooling.
+ */
 class OllamaLangchainChatModel {
   static create(config = {}) {
     return new ChatOllama({
