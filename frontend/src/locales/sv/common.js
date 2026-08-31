@@ -35,7 +35,8 @@ const TRANSLATIONS = {
     },
     survey: {
       title: "Välkommen till AnythingLLM",
-      description: "Hjälp oss att utveckla AnythingLLM för dina behov. Valfritt.",
+      description:
+        "Hjälp oss att utveckla AnythingLLM för dina behov. Valfritt.",
       email: "Vad är din e-postadress?",
       useCase: "Vad ska du använda AnythingLLM till?",
       useCaseWork: "Arbete",
@@ -132,8 +133,7 @@ const TRANSLATIONS = {
       "Ange användarnamn och lösenord för att komma åt din {{appName}}-instans.",
     "password-reset": {
       title: "Återställ lösenord",
-      description:
-        "Ange uppgifterna nedan för att återställa lösenordet.",
+      description: "Ange uppgifterna nedan för att återställa lösenordet.",
       "recovery-codes": "Återställningskoder",
       "back-to-login": "Tillbaka till inloggning",
     },
@@ -232,7 +232,8 @@ const TRANSLATIONS = {
         restore: "Återställ",
         delete: "Ta bort",
         publish: "Publicera på Community Hub",
-        deleteConfirm: "Är du säker på att du vill ta bort detta historikobjekt?",
+        deleteConfirm:
+          "Är du säker på att du vill ta bort detta historikobjekt?",
         clearAllConfirm:
           "Är du säker på att du vill rensa all historik? Åtgärden går inte att ångra.",
         expand: "Expandera",
@@ -303,7 +304,7 @@ const TRANSLATIONS = {
       rag: {
         title: "RAG och långtidsminne",
         description:
-          'Låt agenten använda dina lokala dokument för att besvara en fråga eller be agenten att ”komma ihåg” innehåll för hämtning från långtidsminnet.',
+          "Låt agenten använda dina lokala dokument för att besvara en fråga eller be agenten att ”komma ihåg” innehåll för hämtning från långtidsminnet.",
       },
       view: {
         title: "Visa och sammanfatta dokument",
@@ -312,8 +313,7 @@ const TRANSLATIONS = {
       },
       scrape: {
         title: "Hämta innehåll från webbplatser",
-        description:
-          "Låt agenten besöka webbplatser och hämta deras innehåll.",
+        description: "Låt agenten besöka webbplatser och hämta deras innehåll.",
       },
       generate: {
         title: "Skapa diagram",
@@ -333,7 +333,7 @@ const TRANSLATIONS = {
       scheduledJob: {
         title: "Skapa schemalagda jobb",
         description:
-          'Låt agenten skapa återkommande schemalagda jobb från chatten (till exempel ”sammanfatta min inkorg och mejla mig varje vardag klockan 9”). Endast tillgängligt i enanvändarläge.',
+          "Låt agenten skapa återkommande schemalagda jobb från chatten (till exempel ”sammanfatta min inkorg och mejla mig varje vardag klockan 9”). Endast tillgängligt i enanvändarläge.",
       },
       filesystem: {
         title: "Filsystemåtkomst",
@@ -418,8 +418,7 @@ const TRANSLATIONS = {
           },
           "create-docx": {
             title: "Word-dokument",
-            description:
-              "Skapa Word-dokument med grundläggande formatering",
+            description: "Skapa Word-dokument med grundläggande formatering",
           },
         },
       },
@@ -467,7 +466,8 @@ const TRANSLATIONS = {
         skills: {
           getInbox: {
             title: "Hämta inkorg",
-            description: "Ett förenklat sätt att hämta inkorgens e-post från Gmail",
+            description:
+              "Ett förenklat sätt att hämta inkorgens e-post från Gmail",
           },
           search: {
             title: "Sök e-post",
@@ -578,7 +578,8 @@ const TRANSLATIONS = {
         skills: {
           listCalendars: {
             title: "Lista kalendrar",
-            description: "Lista alla kalendrar som du äger eller prenumererar på",
+            description:
+              "Lista alla kalendrar som du äger eller prenumererar på",
           },
           getCalendar: {
             title: "Hämta kalenderuppgifter",
@@ -590,7 +591,8 @@ const TRANSLATIONS = {
           },
           getEventsForDay: {
             title: "Hämta händelser för dag",
-            description: "Hämta alla händelser som är planerade för en viss dag",
+            description:
+              "Hämta alla händelser som är planerade för en viss dag",
           },
           getEvents: {
             title: "Hämta händelser (datumintervall)",
@@ -617,7 +619,8 @@ const TRANSLATIONS = {
           },
           setMyStatus: {
             title: "Ange OSA-status",
-            description: "Acceptera, avböj eller acceptera preliminärt en händelse",
+            description:
+              "Acceptera, avböj eller acceptera preliminärt en händelse",
           },
         },
       },
@@ -790,16 +793,14 @@ const TRANSLATIONS = {
     },
     branding: {
       title: "Varumärke och vitmärkning",
-      description:
-        "Vitmärka din AnythingLLM-instans med anpassad profilering.",
+      description: "Vitmärka din AnythingLLM-instans med anpassad profilering.",
     },
     chat: {
       title: "Chatt",
       description: "Ange dina chattinställningar för AnythingLLM.",
       auto_submit: {
         title: "Skicka röstinmatning automatiskt",
-        description:
-          "Skicka röstinmatning automatiskt efter en stunds tystnad",
+        description: "Skicka röstinmatning automatiskt efter en stunds tystnad",
       },
       auto_speak: {
         title: "Läs upp svar automatiskt",
@@ -807,7 +808,8 @@ const TRANSLATIONS = {
       },
       spellcheck: {
         title: "Aktivera stavningskontroll",
-        description: "Aktivera eller inaktivera stavningskontroll i chattens inmatningsfält",
+        description:
+          "Aktivera eller inaktivera stavningskontroll i chattens inmatningsfält",
       },
     },
     items: {
@@ -817,7 +819,8 @@ const TRANSLATIONS = {
       },
       "show-scrollbar": {
         title: "Visa rullningslist",
-        description: "Aktivera eller inaktivera rullningslisten i chattfönstret.",
+        description:
+          "Aktivera eller inaktivera rullningslisten i chattfönstret.",
       },
       "disable-auto-scroll": {
         title: "Inaktivera automatisk rullning",
@@ -863,8 +866,7 @@ const TRANSLATIONS = {
       },
       "sidebar-footer": {
         title: "Objekt i sidofältets sidfot",
-        description:
-          "Anpassa objekten i sidfoten längst ned i sidofältet.",
+        description: "Anpassa objekten i sidfoten längst ned i sidofältet.",
         icon: "Ikon",
         link: "Länk",
       },
@@ -1028,7 +1030,8 @@ const TRANSLATIONS = {
       "match-description-help":
         "Beskriv situationen där du vill att regeln ska matcha. Din LLM utvärderar detta för att avgöra om regeln ska användas.",
       "route-to-label": "Dirigera till leverantör och modell",
-      "route-to-description": "När regeln matchar används denna leverantör/modell",
+      "route-to-description":
+        "När regeln matchar används denna leverantör/modell",
       cancel: "Avbryt",
       saving: "Sparar …",
       "update-rule": "Uppdatera regel",
@@ -1087,12 +1090,14 @@ const TRANSLATIONS = {
     },
     "router-selection": {
       "loading-routers": "Läser in anpassade routrar …",
-      "no-routers-prefix-settings": "Inga modellroutrar har konfigurerats ännu.",
+      "no-routers-prefix-settings":
+        "Inga modellroutrar har konfigurerats ännu.",
       "no-routers-prefix-workspace": "Inga modellroutrar har konfigurerats.",
       "no-routers-link": "Skapa en i modellrouterinställningarna",
       "model-router-label": "Modellrouter",
       "select-router": "Välj en router",
-      "select-description": "Välj vilken router som ska användas för arbetsytan.",
+      "select-description":
+        "Välj vilken router som ska användas för arbetsytan.",
       "no-routers-chat":
         "Inga routrar har konfigurerats. Skapa en under Inställningar > AI-leverantörer > Modellrouter.",
       "rule-count": "({{count}} regler)",
@@ -1115,8 +1120,7 @@ const TRANSLATIONS = {
     provider: "Leverantör av transkribering",
     "warn-start":
       "Att använda den lokala Whisper-modellen på datorer med begränsat RAM eller CPU kan göra att AnythingLLM hänger sig när mediefiler behandlas.",
-    "warn-recommend":
-      "Vi rekommenderar minst 2 GB RAM och filer under 10 MB.",
+    "warn-recommend": "Vi rekommenderar minst 2 GB RAM och filer under 10 MB.",
     "warn-end":
       "Den inbyggda modellen hämtas automatiskt vid första användningen.",
   },
@@ -1238,7 +1242,8 @@ const TRANSLATIONS = {
     },
     connected: {
       status: "Ansluten",
-      "status-disconnected": "Frånkopplad – token kan ha gått ut eller vara ogiltig",
+      "status-disconnected":
+        "Frånkopplad – token kan ha gått ut eller vara ogiltig",
       "placeholder-token": "Klistra in ny bot-token …",
       reconnect: "Anslut igen",
       workspace: "Arbetsyta",
@@ -1311,8 +1316,7 @@ const TRANSLATIONS = {
       selected_files: "Hittade {{count}} Markdown-filer",
       importing: "Importerar valv …",
       import_vault: "Importera valv",
-      processing_time:
-        "Detta kan ta en stund beroende på valvets storlek.",
+      processing_time: "Detta kan ta en stund beroende på valvets storlek.",
       vault_warning:
         "Undvik konflikter genom att se till att Obsidian-valvet inte är öppet just nu.",
     },
@@ -1352,8 +1356,7 @@ const TRANSLATIONS = {
       URL_explained: "URL till GitLab-arkivet som du vill hämta.",
       token: "GitLab-åtkomsttoken",
       optional: "valfritt",
-      token_description:
-        "Välj ytterligare objekt att hämta från GitLab API.",
+      token_description: "Välj ytterligare objekt att hämta från GitLab API.",
       token_explained_start: "Utan en ",
       token_explained_link1: "personlig åtkomsttoken",
       token_explained_middle:
@@ -1414,7 +1417,8 @@ const TRANSLATIONS = {
     },
     "website-depth": {
       name: "Masshämtning av länkar",
-      description: "Hämta innehåll från en webbplats och dess underlänkar till ett visst djup.",
+      description:
+        "Hämta innehåll från en webbplats och dess underlänkar till ett visst djup.",
       URL: "Webbplatsens URL",
       URL_explained: "URL till webbplatsen som du vill hämta innehåll från.",
       depth: "Genomsökningsdjup",
@@ -1558,9 +1562,8 @@ const TRANSLATIONS = {
     edit_prompt: "Redigera prompt",
     edit_response: "Redigera svar",
     edit_info_user:
-      '”Skicka” genererar AI-svaret på nytt. ”Spara” uppdaterar endast ditt meddelande.',
-    edit_info_assistant:
-      "Dina ändringar sparas direkt i detta svar.",
+      "”Skicka” genererar AI-svaret på nytt. ”Spara” uppdaterar endast ditt meddelande.",
+    edit_info_assistant: "Dina ändringar sparas direkt i detta svar.",
     see_less: "Visa mindre",
     see_more: "Visa mer",
     preset_reset_description: "Rensa chatthistoriken och börja en ny chatt",
@@ -1572,8 +1575,7 @@ const TRANSLATIONS = {
     stop_generating: "Sluta generera svar",
     command: "Kommando",
     your_command: "your-command",
-    placeholder_prompt:
-      "Detta innehåll infogas före din prompt.",
+    placeholder_prompt: "Detta innehåll infogas före din prompt.",
     description: "Beskrivning",
     placeholder_description: "Svarar med en dikt om LLM:er.",
     save: "Spara",
@@ -1601,7 +1603,8 @@ const TRANSLATIONS = {
       search: "Sök",
       loading_workspace_settings: "Läser in arbetsyteinställningar …",
       available_models: "Tillgängliga modeller för {{provider}}",
-      available_models_description: "Välj en modell som ska användas för arbetsytan.",
+      available_models_description:
+        "Välj en modell som ska användas för arbetsytan.",
       save: "Använd denna modell",
       saving: "Anger modellen som arbetsytans standard …",
       missing_credentials: "Denna leverantör saknar autentiseringsuppgifter!",
@@ -1644,8 +1647,7 @@ const TRANSLATIONS = {
       },
       auto_extraction: {
         label: "Automatiska minnen",
-        description:
-          "Låt assistenten automatiskt skapa minnen i bakgrunden",
+        description: "Låt assistenten automatiskt skapa minnen i bakgrunden",
       },
       menu: {
         edit: "Redigera",
@@ -1657,10 +1659,11 @@ const TRANSLATIONS = {
         create_title: "Skapa minne",
         edit_title: "Redigera minne",
         create_description:
-          'Minnen bör vara ett enda kort påstående, t.ex. ”Användaren föredrar Python framför JavaScript”.',
+          "Minnen bör vara ett enda kort påstående, t.ex. ”Användaren föredrar Python framför JavaScript”.",
         edit_description: "Uppdatera innehållet i detta minne.",
         label: "Minne",
-        placeholder: "t.ex. Användaren heter Kim, användaren arbetar med AnythingLLM osv.",
+        placeholder:
+          "t.ex. Användaren heter Kim, användaren arbetar med AnythingLLM osv.",
         create: "Skapa",
         save: "Spara",
         cancel: "Avbryt",
@@ -1729,7 +1732,8 @@ const TRANSLATIONS = {
         tags_placeholder: "Skriv och tryck på Retur för att lägga till taggar",
         visibility_label: "Synlighet",
         public_description: "Offentliga systempromptar är synliga för alla.",
-        private_description: "Privata systempromptar är endast synliga för dig.",
+        private_description:
+          "Privata systempromptar är endast synliga för dig.",
         publish_button: "Publicera på Community Hub",
         submitting: "Publicerar …",
         prompt_label: "Prompt",
@@ -1778,8 +1782,10 @@ const TRANSLATIONS = {
           "Taggar används för att märka snedstreckskommandot så att det blir lättare att söka efter. Du kan lägga till flera taggar. Högst 5 taggar och högst 20 tecken per tagg.",
         tags_placeholder: "Skriv och tryck på Retur för att lägga till taggar",
         visibility_label: "Synlighet",
-        public_description: "Offentliga snedstreckskommandon är synliga för alla.",
-        private_description: "Privata snedstreckskommandon är endast synliga för dig.",
+        public_description:
+          "Offentliga snedstreckskommandon är synliga för alla.",
+        private_description:
+          "Privata snedstreckskommandon är endast synliga för dig.",
         publish_button: "Publicera på Community Hub",
         submitting: "Publicerar …",
         prompt_label: "Prompt",
