@@ -108,8 +108,8 @@ async function handleMobileCommand(request, response) {
 
     if (!workspace)
       return response.status(400).json({ error: "Workspace not found" });
-    // Only an absent threadSlug means the default thread. A slug that resolves
-    // to nothing is an unknown thread, not a request to clear the default one.
+    // A threadSlug that does not resolve falls through to the default thread
+    // (threadId null), matching how stream-chat handles an unknown slug.
     let threadId = null;
     if (threadSlug) {
       const thread = await prisma.workspace_threads.findFirst({
@@ -119,9 +119,7 @@ async function handleMobileCommand(request, response) {
           ...(user ? { user_id: user.id } : {}),
         },
       });
-      if (!thread)
-        return response.status(400).json({ error: "Thread not found" });
-      threadId = thread.id;
+      threadId = thread?.id ?? null;
     }
 
     await WorkspaceChats.markThreadHistoryInvalidV2({

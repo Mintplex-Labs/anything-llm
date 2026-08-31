@@ -55,7 +55,7 @@ describe("handleMobileCommand: reset-chat", () => {
     });
   });
 
-  it("rejects an unknown threadSlug instead of clearing anything", async () => {
+  it("falls through to the default thread on an unknown threadSlug", async () => {
     prisma.workspace_threads.findFirst.mockResolvedValue(null);
     const response = mockResponse();
 
@@ -67,11 +67,15 @@ describe("handleMobileCommand: reset-chat", () => {
       response
     );
 
-    // A slug that resolves to nothing must not be retargeted at the default
-    // thread: that is a second silent data-loss path.
-    expect(WorkspaceChats.markThreadHistoryInvalidV2).not.toHaveBeenCalled();
-    expect(response.status).toHaveBeenCalledWith(400);
-    expect(response.json).toHaveBeenCalledWith({ error: "Thread not found" });
+    // An unresolved slug must resolve to null (the default thread), never
+    // undefined - Prisma drops an undefined where field and the reset would
+    // hit every chat in the workspace.
+    expect(WorkspaceChats.markThreadHistoryInvalidV2).toHaveBeenCalledWith({
+      workspaceId: 7,
+      thread_id: null,
+    });
+    expect(response.status).toHaveBeenCalledWith(200);
+    expect(response.json).toHaveBeenCalledWith({ success: true });
   });
 
   it("resets the default thread when no threadSlug is given", async () => {
