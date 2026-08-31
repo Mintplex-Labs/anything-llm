@@ -325,7 +325,6 @@ function PasswordProtection() {
                         minLength={8}
                         required={true}
                         autoComplete="off"
-                        defaultValue={usePassword ? "********" : ""}
                       />
                     </div>
                   </div>
