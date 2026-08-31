@@ -26,7 +26,7 @@ const DEFAULT_BLOCKS = [
     id: "start",
     type: BLOCK_TYPES.START,
     config: {
-      variables: [{ name: "", value: "" }],
+      variables: [{ name: "", value: "", type: "optional", description: "" }],
     },
     isExpanded: true,
   },
