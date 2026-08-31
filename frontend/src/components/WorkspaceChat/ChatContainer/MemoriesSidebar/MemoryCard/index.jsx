@@ -1,3 +1,4 @@
+import moment from "moment";
 import { useEffect, useRef, useState } from "react";
 import { DotsThreeVertical } from "@phosphor-icons/react";
 import { useMemoriesContext, LIMITS } from "../MemoriesContext";
@@ -45,11 +46,7 @@ export default function MemoryCard({ memory }) {
           {memory.content}
         </p>
         <p className="text-xs leading-4 text-zinc-400 light:text-slate-500 mt-1.5">
-          {new Date(memory.createdAt).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-          })}
+          {moment(memory.createdAt).format("ll")}
         </p>
       </div>
       <button
