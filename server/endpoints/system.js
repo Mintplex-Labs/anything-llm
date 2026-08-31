@@ -623,13 +623,18 @@ function systemEndpoints(app) {
           process.env.AUTH_TOKEN = "";
           process.env.JWT_SECRET = "";
         } else {
-          error = await updateENV(
+          // Resolve updateENV before reading .error. Reading it inline as
+          // `await updateENV(...)?.error` takes .error off the pending
+          // Promise, which is always undefined, and lets a rejection escape
+          // this try block.
+          const update = await updateENV(
             {
               AuthToken: newPassword,
               JWTSecret: v4(),
             },
             true
-          )?.error;
+          );
+          error = update?.error;
         }
         response.status(200).json({ success: !error, error });
       } catch (e) {
