@@ -71,7 +71,7 @@ const {
 } = require("../utils/middleware/simpleSSOEnabled");
 const { TemporaryAuthToken } = require("../models/temporaryAuthToken");
 const { SystemPromptVariables } = require("../models/systemPromptVariables");
-const { VALID_COMMANDS } = require("../utils/chats");
+const { isReservedCommand } = require("../utils/chats");
 const { AgentSkillWhitelist } = require("../models/agentSkillWhitelist");
 const { Memory } = require("../models/memory");
 
@@ -1296,7 +1296,7 @@ function systemEndpoints(app) {
           String(command)
         );
 
-        if (Object.keys(VALID_COMMANDS).includes(formattedCommand)) {
+        if (isReservedCommand(formattedCommand)) {
           return response.status(400).json({
             message:
               "Cannot create a preset with a command that matches a system command",
@@ -1335,7 +1335,7 @@ function systemEndpoints(app) {
           String(command)
         );
 
-        if (Object.keys(VALID_COMMANDS).includes(formattedCommand)) {
+        if (isReservedCommand(formattedCommand)) {
           return response.status(400).json({
             message:
               "Cannot update a preset to use a command that matches a system command",
