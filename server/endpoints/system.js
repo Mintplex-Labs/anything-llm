@@ -623,13 +623,14 @@ function systemEndpoints(app) {
           process.env.AUTH_TOKEN = "";
           process.env.JWT_SECRET = "";
         } else {
-          error = await updateENV(
+          const update = await updateENV(
             {
               AuthToken: newPassword,
               JWTSecret: v4(),
             },
             true
-          )?.error;
+          );
+          error = update?.error;
         }
         response.status(200).json({ success: !error, error });
       } catch (e) {
