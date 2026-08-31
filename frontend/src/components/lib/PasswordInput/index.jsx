@@ -55,7 +55,7 @@ export default function PasswordInput({
         onMouseLeave={hide}
         onTouchStart={show}
         onTouchEnd={hide}
-        className="absolute right-0 top-0 h-full px-2.5 flex items-center text-white text-opacity-60 light:text-theme-text-secondary hover:text-opacity-100 cursor-pointer"
+        className="absolute right-0 top-0 h-full px-2.5 flex items-center border-none bg-transparent text-white text-opacity-60 light:text-theme-text-secondary hover:text-opacity-100 cursor-pointer"
       >
         <Icon className="h-4 w-4" weight="bold" />
       </button>
