@@ -11,6 +11,17 @@ const VALID_COMMANDS = {
   "/img": generateImage,
 };
 
+/**
+ * Checks if a command exactly matches a built-in system command (eg: /reset)
+ * so a preset cannot shadow it. Commands that merely extend a built-in name
+ * (eg: /reset-all) are valid user-defined presets.
+ * @param {string} command - the formatted command to check (eg: /reset)
+ * @returns {boolean}
+ */
+function isReservedCommand(command = "") {
+  return Object.keys(VALID_COMMANDS).includes(String(command).toLowerCase());
+}
+
 async function grepCommand(message, user = null) {
   const userPresets = await SlashCommandPresets.getUserPresets(user?.id);
   const availableCommands = Object.keys(VALID_COMMANDS);
@@ -135,5 +146,6 @@ module.exports = {
   chatPrompt,
   grepCommand,
   grepAllSlashCommands,
+  isReservedCommand,
   VALID_COMMANDS,
 };

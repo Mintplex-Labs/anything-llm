@@ -1,5 +1,9 @@
 /* eslint-env jest, node */
-const { grepCommand, grepAllSlashCommands } = require("../../../utils/chats");
+const {
+  grepCommand,
+  grepAllSlashCommands,
+  isReservedCommand,
+} = require("../../../utils/chats");
 const { SlashCommandPresets } = require("../../../models/slashCommandsPresets");
 
 jest.mock("../../../models/slashCommandsPresets");
@@ -86,6 +90,30 @@ describe("grepCommand", () => {
     SlashCommandPresets.getUserPresets.mockResolvedValue([]);
     await grepCommand("hi", { id: 42 });
     expect(SlashCommandPresets.getUserPresets).toHaveBeenCalledWith(42);
+  });
+});
+
+describe("isReservedCommand", () => {
+  it("reserves exact matches of the built-in commands", () => {
+    expect(isReservedCommand("/reset")).toBe(true);
+    expect(isReservedCommand("/img")).toBe(true);
+  });
+
+  it("is case-insensitive", () => {
+    expect(isReservedCommand("/RESET")).toBe(true);
+    expect(isReservedCommand("/Img")).toBe(true);
+  });
+
+  it("allows commands that extend a built-in command name", () => {
+    expect(isReservedCommand("/reset-all")).toBe(false);
+    expect(isReservedCommand("/resetall")).toBe(false);
+    expect(isReservedCommand("/img-gen")).toBe(false);
+    expect(isReservedCommand("/imgs")).toBe(false);
+  });
+
+  it("allows unrelated commands", () => {
+    expect(isReservedCommand("/weather")).toBe(false);
+    expect(isReservedCommand("")).toBe(false);
   });
 });
 
