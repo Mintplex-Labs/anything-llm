@@ -30,22 +30,6 @@ class LocalAiImageGenerator extends BaseImageGenerator {
     return REF_IMAGE_SUPPORTED_MODELS.includes(this.model);
   }
 
-  // LocalAI does not implement the OpenAI `/v1/images/edits` endpoint, but it
-  // DOES support image editing through the same `/v1/images/generations`
-  // endpoint used for generation: reference images are passed as `ref_images`,
-  // an array of RAW base64 strings (no `data:` URI prefix). Two LocalAI
-  // specifics make base64 the only reliable reference format:
-  //   1. Non-public http(s) URLs (localhost/private IPs) are rejected by
-  //      LocalAI's SSRF validation.
-  //   2. A `data:image/...;base64,` prefixed string fails base64 decoding and
-  //      the reference is SILENTLY dropped (no client-side error).
-  // Verified end-to-end against LocalAI v4.9.0 with flux.1-kontext-dev
-  // (stablediffusion-ggml backend): the backend log shows `ref_images_count: 1`
-  // and the returned image is an edit of the reference, not a fresh generation.
-  //
-  // Because references ride along on the generations request, generation and
-  // editing share one implementation and the base class `generateImage` /
-  // `editImage` are both overridden here.
   /**
    * @param {{prompt: string, size?: string, signal?: AbortSignal}} params
    * @returns {Promise<import("../base").GeneratedImage>}
