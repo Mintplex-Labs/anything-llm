@@ -70,6 +70,7 @@ const WorkspaceChats = {
           user_id: null,
           api_session_id: String(apiSessionId),
           thread_id: null,
+          include: true,
         },
         ...(limit !== null ? { take: limit } : {}),
         ...(orderBy !== null ? { orderBy } : { orderBy: { id: "asc" } }),
