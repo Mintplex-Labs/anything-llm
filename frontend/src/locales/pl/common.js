@@ -737,6 +737,11 @@ const TRANSLATIONS = {
         description:
           "Umożliw agentowi tworzenie powtarzalnych zadań w harmonogramie bezpośrednio z czatu (np. „codziennie w poniedziałek o 9:00, podsumuj zawartość mojej skrzynki pocztowej i wyślij mi e-mail”). Funkcja dostępna tylko w trybie dla jednego użytkownika.",
       },
+      generateImage: {
+        title: "Generuj obrazy",
+        description:
+          "Pozwól przedstawicielowi generować obrazy na podstawie rozmowy lub edytować dołączone obrazy, korzystając z wybranego dostawcy usług generowania obrazów.",
+      },
     },
     mcp: {
       title: "Serwery MCP",

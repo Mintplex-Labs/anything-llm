@@ -734,6 +734,11 @@ const TRANSLATIONS = {
         description:
           'Permita que o agente crie tarefas recorrentes agendadas a partir do chat (por exemplo, "todos os dias úteis às 9h, resuma minha caixa de entrada e envie um e-mail"). Disponível apenas no modo para um único usuário.',
       },
+      generateImage: {
+        title: "Gerar imagens",
+        description:
+          "Permita que o agente gere imagens a partir do chat, ou edite as imagens anexadas à conversa, utilizando o provedor de geração de imagens configurado.",
+      },
     },
     mcp: {
       title: "Servidores MCP",

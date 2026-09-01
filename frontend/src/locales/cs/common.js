@@ -731,6 +731,11 @@ const TRANSLATIONS = {
         description:
           "Umožněte zástupci vytvářet opakující se plánované úkoly přímo z chatu (například „každý pracovní den v 9:00 shrňte obsah mé schránky a zašlete mi e-mail“). Tato funkce je dostupná pouze v režimu pro jednoho uživatele.",
       },
+      generateImage: {
+        title: "Generovat obrázky",
+        description:
+          "Nechte, aby agent generoval obrázky z chatu nebo upravoval obrázky přiložené ke konverzaci pomocí vašeho nakonfigurovaného poskytovatele pro generování obrázků.",
+      },
     },
     mcp: {
       title: "Servery společnosti MCP",

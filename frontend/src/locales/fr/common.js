@@ -737,6 +737,11 @@ const TRANSLATIONS = {
         description:
           "Permettez à l'agent de créer des tâches planifiées récurrentes à partir des conversations (par exemple : « tous les jours ouvrables à 9h, résumez ma boîte de réception et envoyez-moi un e-mail »). Fonctionnalité disponible uniquement en mode utilisateur unique.",
       },
+      generateImage: {
+        title: "Générer des images",
+        description:
+          "Permettez à l'agent de générer des images à partir du contenu de la conversation, ou d'éditer les images jointes à la conversation, en utilisant le fournisseur de génération d'images que vous avez configuré.",
+      },
     },
     mcp: {
       title: "Serveurs MCP",

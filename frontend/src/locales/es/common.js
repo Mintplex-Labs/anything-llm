@@ -747,6 +747,11 @@ const TRANSLATIONS = {
         description:
           'Permita que el agente cree tareas programadas recurrentes a partir de las conversaciones (por ejemplo, "todos los días laborables a las 9:00 am, resume mi bandeja de entrada y envíame un correo electrónico"). Disponible únicamente en modo para un solo usuario.',
       },
+      generateImage: {
+        title: "Generar imágenes",
+        description:
+          "Permita que el agente genere imágenes a partir de la conversación, o edite las imágenes adjuntas a la misma, utilizando el proveedor de generación de imágenes que haya configurado.",
+      },
     },
     mcp: {
       title: "Servidores MCP",

@@ -716,6 +716,11 @@ const TRANSLATIONS = {
         description:
           'Cho phép đại lý tạo các công việc lặp lại theo lịch trình từ cuộc trò chuyện (ví dụ: "mỗi ngày làm việc lúc 9 giờ sáng, tóm tắt hộp thư và gửi email cho tôi"). Chỉ khả dụng trong chế độ sử dụng riêng.',
       },
+      generateImage: {
+        title: "Tạo hình ảnh",
+        description:
+          "Cho phép đại lý tạo ảnh từ cuộc trò chuyện hoặc chỉnh sửa ảnh đính kèm trong cuộc trò chuyện bằng cách sử dụng nhà cung cấp dịch vụ tạo ảnh đã được cấu hình.",
+      },
     },
     mcp: {
       title: "Máy chủ MCP",

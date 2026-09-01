@@ -713,6 +713,11 @@ const TRANSLATIONS = {
         description:
           'Lad agenten oprette gentagne planlagte opgaver fra chat (f.eks. "hver mandag kl. 9:00, opsummér min indbakke og send mig en e-mail"). Kun tilgængeligt i enkeltbruger-tilstand.',
       },
+      generateImage: {
+        title: "Generer billeder",
+        description:
+          "Lad agenten generere billeder fra chat, eller redigere de vedhæftede billeder i samtalen, ved hjælp af den leverandør, du har konfigureret til billedgenerering.",
+      },
     },
     mcp: {
       title: "MCP-servere",

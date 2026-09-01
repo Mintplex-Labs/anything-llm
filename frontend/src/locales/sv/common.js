@@ -721,6 +721,11 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Som standard är denna färdighet aktiverad, men du kan stänga av den om du inte vill att den ska vara tillgänglig för agenten.",
+      generateImage: {
+        title: "Generera bilder",
+        description:
+          "Låt agenten generera bilder från chattet, eller redigera befintliga bilder som är kopplade till samtalet, med hjälp av den bildgenereringsleverantör som du har konfigurerat.",
+      },
     },
     mcp: {
       title: "MCP-servrar",

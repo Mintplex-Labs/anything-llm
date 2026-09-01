@@ -746,6 +746,11 @@ const TRANSLATIONS = {
         description:
           'Permet que l\'agent creï tasques programades recurrents a partir del missatge (per exemple, "cada dia de dilluny a les 9 del matí, resumeix la meva caixa de correu i envia un correu electrònic"). Només disponible en mode per a un usuari.',
       },
+      generateImage: {
+        title: "Generar imatges",
+        description:
+          "Permet que l'agent generi imatges a partir del xat, o editi les imatges adjuntes a la conversa, utilitzant el proveïdor de generació d'imatges configurat.",
+      },
     },
     mcp: {
       title: "Servidors MCP",
