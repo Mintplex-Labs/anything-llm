@@ -68,7 +68,7 @@ AnythingLLM supports multiple users as well where you can control the access and
 - [Intelligent Skill Selection](https://docs.anythingllm.com/agent/intelligent-tool-selection) Enable **unlimited** tools for your models while reducing token usage by up to 80% per query
 - [No-code AI Agent builder](https://docs.anythingllm.com/agent-flows/overview)
 - [MCP-compatibility](https://docs.anythingllm.com/mcp-compatibility/overview)
-- [Multi-modal support (both closed and open-source LLMs!)](https://docs.anythingllm.com/features/multimodal)
+- [Multi-modal support (both closed and open-source LLMs!)](https://docs.anythingllm.com/features/language-models)
 - [Custom AI Agents](https://docs.anythingllm.com/agent/custom/introduction)
 - 👤 Multi-user instance support and permissioning _Docker version only_
 - 🦾 Agents inside your workspace (browse the web, etc)
@@ -115,7 +115,7 @@ AnythingLLM supports multiple users as well where you can control the access and
 - [Gitee AI](https://ai.gitee.com/)
 - [Moonshot AI](https://www.moonshot.ai/)
 - [Microsoft Foundry Local](https://github.com/microsoft/Foundry-Local)
-- [CometAPI (chat models)](https://api.cometapi.com/)
+- [CometAPI (chat models)](https://www.cometapi.com/)
 - [llmman](https://github.com/llmmanorg/llmman)
 - [PrivateModeAI (chat models)](https://privatemode.ai/)
 - [SambaNova Cloud (chat models)](https://cloud.sambanova.ai/)
@@ -150,7 +150,7 @@ AnythingLLM supports multiple users as well where you can control the access and
 
 - Native Browser Built-in (default)
 - [PiperTTSLocal - runs in browser](https://github.com/rhasspy/piper)
-- [OpenAI TTS](https://platform.openai.com/docs/guides/text-to-speech/voice-options)
+- [OpenAI TTS](https://platform.openai.com/docs/guides/text-to-speech#voice-options)
 - [ElevenLabs](https://elevenlabs.io/)
 - Any OpenAI Compatible TTS service.
 
