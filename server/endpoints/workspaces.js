@@ -926,16 +926,18 @@ function workspaceEndpoints(app) {
   );
 
   app.delete(
-    "/workspace/prompt-history/:id",
+    "/workspace/:slug/prompt-history/:id",
     [
       validatedRequest,
       flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      validWorkspaceSlug,
     ],
     async (request, response) => {
       try {
         const { id } = request.params;
         response.status(200).json({
           success: await Workspace.deletePromptHistory({
+            workspaceId: response.locals.workspace.id,
             id: Number(id),
           }),
         });
