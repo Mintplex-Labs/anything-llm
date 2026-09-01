@@ -327,19 +327,16 @@ function apiDocumentEndpoints(app) {
     async (request, response) => {
       /*
     #swagger.tags = ['Documents']
-    #swagger.description = 'Upload one or more valid URLs for AnythingLLM to scrape and prepare for embedding. The link property accepts either a string or an array of strings. Optionally, specify a comma-separated list of workspace slugs to embed the documents into post-upload.'
+    #swagger.description = 'Upload a valid URL for AnythingLLM to scrape and prepare for embedding. The link property can be a single URL string or an array of URL strings. Optionally, specify a comma-separated list of workspace slugs to embed the document into post-upload.'
     #swagger.requestBody = {
-      description: 'One link or an array of links to be scraped, optionally with a comma-separated list of workspace slugs to embed the documents into post-upload, scraper headers, and metadata.',
+      description: 'Link of web address to be scraped and optionally a comma-separated list of workspace slugs to embed the document into post-upload, and optional metadata. The link property also accepts an array of links to process in a single request.',
       required: true,
       content: {
           "application/json": {
             schema: {
               type: 'object',
               example: {
-                "link": [
-                  "https://anythingllm.com",
-                  "https://docs.anythingllm.com"
-                ],
+                "link": "https://anythingllm.com",
                 "addToWorkspaces": "workspace1,workspace2",
                 "scraperHeaders": {
                   "Authorization": "Bearer token123",
@@ -393,20 +390,21 @@ function apiDocumentEndpoints(app) {
     */
       try {
         const Collector = new CollectorApi();
-        let {
-          link: links,
+        const {
+          link = "",
           addToWorkspaces = "",
           scraperHeaders = {},
           metadata: _metadata = {},
         } = reqBody(request);
 
-        if (!Array.isArray(links)) links = [links];
-        if (
-          links.length === 0 ||
-          !links.every(
-            (link) => typeof link === "string" && link.trim().length > 0
-          )
-        ) {
+        // `link` can be a single URL string or an array of URL strings.
+        // Drop any non-string or empty entries - URL validation itself is
+        // handled by the collector when each link is processed.
+        const links = (Array.isArray(link) ? link : [link])
+          .filter((url) => typeof url === "string" && url.trim().length > 0)
+          .map((url) => url.trim());
+
+        if (links.length === 0) {
           return response
             .status(422)
             .json({
@@ -429,66 +427,69 @@ function apiDocumentEndpoints(app) {
             .status(500)
             .json({
               success: false,
-              error:
-                links.length === 1
-                  ? `Document processing API is not online. Link ${links[0]} will not be processed automatically.`
-                  : `Document processing API is not online. Links ${links.join(", ")} will not be processed automatically.`,
+              error: `Document processing API is not online. Link(s) ${links.join(", ")} will not be processed automatically.`,
               documents: [],
             })
             .end();
         }
 
-        const processingResults = await Promise.all(
-          links.map((link) =>
-            Collector.processLink(link, scraperHeaders, metadata)
-          )
+        const results = await Promise.all(
+          links.map(async (url) => ({
+            url,
+            ...(await Collector.processLink(url, scraperHeaders, metadata)),
+          }))
         );
 
-        const documents = processingResults.flatMap(
-          ({ documents = [] }) => documents
-        );
-        const failures = processingResults
-          .map(({ success, reason }, index) => ({
-            link: links[index],
+        const documents = [];
+        const failures = [];
+        for (const result of results) {
+          const {
+            url,
             success,
             reason,
-          }))
-          .filter(({ success }) => !success);
+            documents: linkDocuments = [],
+          } = result;
+          if (!success) {
+            failures.push({ url, reason: reason || "Failed to process link." });
+            continue;
+          }
 
-        if (failures.length > 0) {
-          return response
-            .status(500)
-            .json({
-              success: false,
-              error:
-                links.length === 1
-                  ? failures[0].reason
-                  : failures
-                      .map(
-                        ({ link, reason }) =>
-                          `${link}: ${reason || "Processing failed."}`
-                      )
-                      .join("; "),
-              documents,
-            })
-            .end();
-        }
-
-        for (const link of links) {
           Collector.log(
-            `Link ${link} uploaded processed and successfully. It is now available in documents.`
+            `Link ${url} uploaded processed and successfully. It is now available in documents.`
           );
           await Telemetry.sendTelemetry("link_uploaded");
-          await EventLogs.logEvent("api_link_uploaded", { link });
+          await EventLogs.logEvent("api_link_uploaded", { link: url });
+          documents.push(...linkDocuments);
         }
 
         if (!!addToWorkspaces) {
-          for (const { location } of documents) {
-            await Document.api.uploadToWorkspace(addToWorkspaces, location);
+          for (const document of documents) {
+            await Document.api.uploadToWorkspace(
+              addToWorkspaces,
+              document.location
+            );
           }
         }
 
-        response.status(200).json({ success: true, error: null, documents });
+        const error =
+          failures.length === 0
+            ? null
+            : links.length === 1
+              ? failures[0].reason
+              : failures
+                  .map(({ url, reason }) => `${url}: ${reason}`)
+                  .join("; ");
+
+        if (documents.length === 0 && failures.length > 0) {
+          return response
+            .status(500)
+            .json({ success: false, error, documents })
+            .end();
+        }
+
+        response
+          .status(200)
+          .json({ success: failures.length === 0, error, documents });
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();

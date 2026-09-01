@@ -1063,7 +1063,7 @@
         "tags": [
           "Documents"
         ],
-        "description": "Upload one or more valid URLs for AnythingLLM to scrape and prepare for embedding. The link property accepts either a string or an array of strings. Optionally, specify a comma-separated list of workspace slugs to embed the documents into post-upload.",
+        "description": "Upload a valid URL for AnythingLLM to scrape and prepare for embedding. The link property can be a single URL string or an array of URL strings. Optionally, specify a comma-separated list of workspace slugs to embed the document into post-upload.",
         "parameters": [],
         "responses": {
           "200": {
@@ -1119,17 +1119,14 @@
           }
         },
         "requestBody": {
-          "description": "One link or an array of links to be scraped, optionally with a comma-separated list of workspace slugs to embed the documents into post-upload, scraper headers, and metadata.",
+          "description": "Link of web address to be scraped and optionally a comma-separated list of workspace slugs to embed the document into post-upload, and optional metadata. The link property also accepts an array of links to process in a single request.",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "example": {
-                  "link": [
-                    "https://anythingllm.com",
-                    "https://docs.anythingllm.com"
-                  ],
+                  "link": "https://anythingllm.com",
                   "addToWorkspaces": "workspace1,workspace2",
                   "scraperHeaders": {
                     "Authorization": "Bearer token123",
