@@ -623,6 +623,16 @@ function systemEndpoints(app) {
           process.env.AUTH_TOKEN = "";
           process.env.JWT_SECRET = "";
         } else {
+          // An all-asterisk value is indistinguishable from the UI's masked
+          // placeholder, so updateENV would silently drop it while JWT_SECRET
+          // still rotates - reject it before mutating anything.
+          if (/^\*+$/.test(String(newPassword))) {
+            response.status(200).json({
+              success: false,
+              error: "Password cannot consist of only asterisks (*).",
+            });
+            return;
+          }
           const update = await updateENV(
             {
               AuthToken: newPassword,

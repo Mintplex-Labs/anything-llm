@@ -1,3 +1,4 @@
+import moment from "moment";
 import { useRef, useState } from "react";
 import { titleCase } from "text-case";
 import Admin from "@/models/admin";
@@ -63,7 +64,7 @@ export default function UserRow({ currUser, user }) {
           {user.username}
         </th>
         <td className="px-6">{titleCase(user.role)}</td>
-        <td className="px-6">{user.createdAt}</td>
+        <td className="px-6">{moment(user.createdAt).format("lll")}</td>
         <td className="px-6 flex items-center gap-x-6 h-full mt-2">
           {canModify && (
             <button

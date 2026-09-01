@@ -8,6 +8,7 @@ import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 import { useTranslation } from "react-i18next";
 import { USERNAME_MIN_LENGTH, USERNAME_MAX_LENGTH } from "@/utils/username";
 import { PW_REGEX } from "@/pages/GeneralSettings/Security";
+import PasswordInput from "@/components/lib/PasswordInput";
 
 export default function UserSetup({ setHeader, setForwardBtn, setBackBtn }) {
   const { t } = useTranslation();
@@ -216,9 +217,8 @@ const JustMe = ({
             >
               {t("onboarding.userSetup.instancePassword")}
             </label>
-            <input
+            <PasswordInput
               name="password"
-              type="password"
               className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg block w-full p-2.5 focus:outline-primary-button active:outline-primary-button outline-none placeholder:text-theme-text-secondary"
               placeholder="Your admin password"
               minLength={6}
@@ -321,9 +321,8 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
                 >
                   {t("onboarding.userSetup.adminPassword")}
                 </label>
-                <input
+                <PasswordInput
                   name="password"
-                  type="password"
                   className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg block w-full p-2.5 focus:outline-primary-button active:outline-primary-button placeholder:text-theme-text-secondary outline-none"
                   placeholder="Your admin password"
                   minLength={8}
