@@ -44,6 +44,8 @@ const { Telemetry } = require("../models/telemetry");
 const { ApiKey } = require("../models/apiKeys");
 const { getCustomModels } = require("../utils/helpers/customModels");
 const { WorkspaceChats } = require("../models/workspaceChats");
+const { WorkspaceThread } = require("../models/workspaceThread");
+const { WorkspaceParsedFiles } = require("../models/workspaceParsedFiles");
 const {
   flexUserRoleValid,
   ROLES,
@@ -684,6 +686,8 @@ function systemEndpoints(app) {
         await BrowserExtensionApiKey.migrateApiKeysToMultiUser(user.id);
         await Memory.migrateToMultiUser(user.id);
         await WorkspaceChats.migrateToMultiUser(user.id);
+        await WorkspaceThread.migrateToMultiUser(user.id);
+        await WorkspaceParsedFiles.migrateToMultiUser(user.id);
         await MobileDevice.migrateDevicesToMultiUser(user.id);
         await SlashCommandPresets.migrateToMultiUser(user.id);
         await AgentSkillWhitelist.clearSingleUserWhitelist();
