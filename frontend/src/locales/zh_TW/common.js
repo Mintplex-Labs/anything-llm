@@ -670,6 +670,11 @@ const TRANSLATIONS = {
         description:
           "允許經理根據聊天內容，設定重複執行的工作（例如：「每天早上9點，請自動整理我的收件匣並將摘要發送至我的電子郵件」）。僅適用於單一使用者模式。",
       },
+      generateImage: {
+        title: "產生圖像",
+        description:
+          "讓代理能夠根據聊天內容生成圖片，或編輯與對話相關聯的圖片，並使用您已設定的圖片產生服務。",
+      },
     },
     mcp: {
       title: "MCP 伺服器",
@@ -1209,6 +1214,17 @@ const TRANSLATIONS = {
     export: "匯出對話內容為…",
     exporting: "出口...",
     preset_img_description: "根據文字提示，生成圖像。",
+    generating_response: "產生回應",
+    response_failed: "無法回覆訊息。",
+    response_failed_reason: "原因：{{reason}}",
+    thought_in_progress: "正在思考…",
+    thoughts: "想法、思緒",
+    leave_generating: {
+      title: "停止生成回應？",
+      description: "您即將結束本次對話，這會阻止模型生成回應，而且無法恢復。",
+      cancel: "取消",
+      confirm: "繼續",
+    },
   },
   profile_settings: {
     edit_account: "編輯帳戶",

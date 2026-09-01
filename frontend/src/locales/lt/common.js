@@ -731,6 +731,11 @@ const TRANSLATIONS = {
         description:
           "Leiskite agentui kurti nuolatinės užduotės iš pokalbio (pvz., „kasdien, 9 val., peržiūrėkite mano pašto dėžę ir siųskite man el. laišką“). Šis funkcijomis galima naudotis tik vieno vartotojo režimu.",
       },
+      generateImage: {
+        title: "Sukurti vaizdus",
+        description:
+          "Leiskite agentui generuoti vaizdus iš pokalbio arba redaguoti pokalbio metu pridedamus vaizdus, naudodami jūsų konfiguruotą vaizdų generavimo paslaugą.",
+      },
     },
     mcp: {
       title: "MCP serveriai",
@@ -1422,6 +1427,18 @@ const TRANSLATIONS = {
     export: "Eksporteri pokalbį kaip…",
     exporting: "Eksporteris...",
     preset_img_description: "Sukurkite vaizdą iš teksto instrukcijos",
+    generating_response: "Sukurti atsakymą",
+    response_failed: "Nepavyko atsakyti į pranešimą.",
+    response_failed_reason: "Priežastis: {{reason}}",
+    thought_in_progress: "„Modelis mąstė…“",
+    thoughts: "Mintys",
+    leave_generating: {
+      title: "Ar sustabdyti atsakymo generavimą?",
+      description:
+        "Jūs šiuo metu pasirenkate išeiti iš šio pokalbio, o tai sustabdys modelį ir jį nebegalės atnaujinti.",
+      cancel: "Anuliu",
+      confirm: "Toliau",
+    },
   },
   profile_settings: {
     edit_account: "Redaguoti paskyrą",

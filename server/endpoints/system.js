@@ -44,6 +44,8 @@ const { Telemetry } = require("../models/telemetry");
 const { ApiKey } = require("../models/apiKeys");
 const { getCustomModels } = require("../utils/helpers/customModels");
 const { WorkspaceChats } = require("../models/workspaceChats");
+const { WorkspaceThread } = require("../models/workspaceThread");
+const { WorkspaceParsedFiles } = require("../models/workspaceParsedFiles");
 const {
   flexUserRoleValid,
   ROLES,
@@ -71,7 +73,7 @@ const {
 } = require("../utils/middleware/simpleSSOEnabled");
 const { TemporaryAuthToken } = require("../models/temporaryAuthToken");
 const { SystemPromptVariables } = require("../models/systemPromptVariables");
-const { VALID_COMMANDS } = require("../utils/chats");
+const { isReservedCommand } = require("../utils/chats");
 const { AgentSkillWhitelist } = require("../models/agentSkillWhitelist");
 const { Memory } = require("../models/memory");
 
@@ -623,13 +625,24 @@ function systemEndpoints(app) {
           process.env.AUTH_TOKEN = "";
           process.env.JWT_SECRET = "";
         } else {
-          error = await updateENV(
+          // An all-asterisk value is indistinguishable from the UI's masked
+          // placeholder, so updateENV would silently drop it while JWT_SECRET
+          // still rotates - reject it before mutating anything.
+          if (/^\*+$/.test(String(newPassword))) {
+            response.status(200).json({
+              success: false,
+              error: "Password cannot consist of only asterisks (*).",
+            });
+            return;
+          }
+          const update = await updateENV(
             {
               AuthToken: newPassword,
               JWTSecret: v4(),
             },
             true
-          )?.error;
+          );
+          error = update?.error;
         }
         response.status(200).json({ success: !error, error });
       } catch (e) {
@@ -673,6 +686,8 @@ function systemEndpoints(app) {
         await BrowserExtensionApiKey.migrateApiKeysToMultiUser(user.id);
         await Memory.migrateToMultiUser(user.id);
         await WorkspaceChats.migrateToMultiUser(user.id);
+        await WorkspaceThread.migrateToMultiUser(user.id);
+        await WorkspaceParsedFiles.migrateToMultiUser(user.id);
         await MobileDevice.migrateDevicesToMultiUser(user.id);
         await SlashCommandPresets.migrateToMultiUser(user.id);
         await AgentSkillWhitelist.clearSingleUserWhitelist();
@@ -711,8 +726,7 @@ function systemEndpoints(app) {
 
   app.get("/system/logo", async function (request, response) {
     try {
-      const darkMode =
-        !request?.query?.theme || request?.query?.theme === "default";
+      const darkMode = request?.query?.theme !== "light";
       const defaultFilename = getDefaultFilename(darkMode);
       const logoPath = await determineLogoFilepath(defaultFilename);
       const { found, buffer, size, mime } = fetchLogo(logoPath);
@@ -1296,7 +1310,7 @@ function systemEndpoints(app) {
           String(command)
         );
 
-        if (Object.keys(VALID_COMMANDS).includes(formattedCommand)) {
+        if (isReservedCommand(formattedCommand)) {
           return response.status(400).json({
             message:
               "Cannot create a preset with a command that matches a system command",
@@ -1335,7 +1349,7 @@ function systemEndpoints(app) {
           String(command)
         );
 
-        if (Object.keys(VALID_COMMANDS).includes(formattedCommand)) {
+        if (isReservedCommand(formattedCommand)) {
           return response.status(400).json({
             message:
               "Cannot update a preset to use a command that matches a system command",

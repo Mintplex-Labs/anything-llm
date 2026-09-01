@@ -731,6 +731,11 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Prema zadanim postavkama ova vještina je omogućena, ali je možete isključiti ako ne želite da bude dostupna agentu.",
+      generateImage: {
+        title: "Generiranje slika",
+        description:
+          "Omogućite agentu da generira slike iz razgovora ili da uređuje slike priložene razgovoru, koristeći vaš konfiguriranog pružatelja usluga za generiranje slika.",
+      },
     },
     mcp: {
       title: "MCP poslužitelji",
@@ -1665,6 +1670,18 @@ const TRANSLATIONS = {
       },
     },
     preset_img_description: "Generiraj sliku na temelju tekstualnog uputa.",
+    generating_response: "Generiranje odgovora",
+    response_failed: "Nije moguće odgovoriti na poruku.",
+    response_failed_reason: "Razlog: {{reason}}",
+    thought_in_progress: "Model razmišlja...",
+    thoughts: "Razmišljanja",
+    leave_generating: {
+      title: "Zaustaviti generiranje odgovora?",
+      description:
+        "O trenutno napuštate ovu razgovornu sesiju. To će zaustaviti generiranje odgovora i ne postoji mogućnost da se to vrati.",
+      cancel: "Otkazati",
+      confirm: "Nastavite",
+    },
   },
   profile_settings: {
     edit_account: "Uredi račun",

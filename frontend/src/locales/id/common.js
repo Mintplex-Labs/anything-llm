@@ -725,6 +725,11 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Secara bawaan, keterampilan ini diaktifkan, tetapi Anda dapat menonaktifkannya jika tidak ingin tersedia untuk agen.",
+      generateImage: {
+        title: "Menghasilkan gambar",
+        description:
+          "Izinkan agen untuk menghasilkan gambar dari percakapan, atau mengedit gambar yang terlampir dalam percakapan, menggunakan penyedia pembuatan gambar yang telah Anda konfigurasi.",
+      },
     },
     mcp: {
       title: "Server MCP",
@@ -1661,6 +1666,18 @@ const TRANSLATIONS = {
       },
     },
     preset_img_description: "Hasilkan gambar berdasarkan teks yang diberikan.",
+    generating_response: "Menghasilkan respons",
+    response_failed: "Tidak dapat membalas pesan tersebut.",
+    response_failed_reason: "Alasan: {{reason}}",
+    thought_in_progress: "Model sedang berpikir...",
+    thoughts: "Pemikiran",
+    leave_generating: {
+      title: "Berhenti menghasilkan respons?",
+      description:
+        "Anda akan segera keluar dari obrolan ini, hal ini akan menghentikan model untuk menghasilkan respons dan tidak dapat dipulihkan.",
+      cancel: "Batalkan",
+      confirm: "Lanjutkan",
+    },
   },
   profile_settings: {
     edit_account: "Edit Akun",

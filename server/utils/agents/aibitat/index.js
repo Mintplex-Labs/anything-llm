@@ -888,6 +888,9 @@ ${this.getHistory({ to: route.to })
   async reply(route) {
     const fromConfig = this.getAgentConfig(route.from);
     const chatHistory = this.getOrFormatNodeChatHistory(route);
+    // Captured before document injection below - skill reranking and model
+    // routing must run on what the user asked, not on attached file contents.
+    const userPrompt = this.#extractUserPrompt(chatHistory);
 
     // Fetch fresh parsed file context and inject into the last user message
     if (this.fetchParsedFileContext) {
@@ -922,7 +925,6 @@ ${this.getHistory({ to: route.to })
     // Rerank tools based on user prompt if enabled
     if (ToolReranker.isEnabled() && functions?.length) {
       const toolReranker = new ToolReranker();
-      const userPrompt = this.#extractUserPrompt(messages);
       if (userPrompt)
         functions = await toolReranker.rerank(userPrompt, functions);
     } else {
@@ -942,9 +944,9 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     // Re-evaluate model router before each turn if a resolver is attached.
     // This ensures routing rules are applied per-message, not just at initialization.
     if (this.resolveRoute) {
-      const userPrompt =
-        this.#extractUserPrompt(messages) || route.content || "";
-      const resolved = await this.resolveRoute(userPrompt);
+      const resolved = await this.resolveRoute(
+        userPrompt || route.content || ""
+      );
       if (resolved) {
         this.defaultProvider = {
           ...this.defaultProvider,
@@ -1025,7 +1027,11 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     };
 
     // Emit routing notification before the first completion so it appears above the response
-    if (depth === 0) this?.flushRoutingMetadata?.(v4());
+    // and reset the usage accumulator so metrics only cover this run's completions.
+    if (depth === 0) {
+      this?.flushRoutingMetadata?.(v4());
+      this.providerInstance.resetCumulativeUsage();
+    }
 
     /** @type {{ functionCall: { name: string, arguments: string }, textResponse: string }} */
     const completionStream = await this.#safeProviderCall(() =>
@@ -1111,7 +1117,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
         eventHandler?.("reportStreamEvent", {
           type: "usageMetrics",
           uuid: directOutputUUID,
-          metrics: this.providerInstance.getUsage(),
+          metrics: this.providerInstance.getCumulativeUsage(),
         });
         this?.flushCitations?.(directOutputUUID);
         this?.emitChatId?.(directOutputUUID);
@@ -1152,7 +1158,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     eventHandler?.("reportStreamEvent", {
       type: "usageMetrics",
       uuid: responseUuid,
-      metrics: this.providerInstance.getUsage(),
+      metrics: this.providerInstance.getCumulativeUsage(),
     });
     this?.flushCitations?.(responseUuid);
     this?.emitChatId?.(responseUuid);
@@ -1187,7 +1193,11 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     };
 
     // Emit routing notification before the first completion so it appears above the response
-    if (depth === 0) this?.flushRoutingMetadata?.(msgUUID);
+    // and reset the usage accumulator so metrics only cover this run's completions.
+    if (depth === 0) {
+      this?.flushRoutingMetadata?.(msgUUID);
+      this.providerInstance.resetCumulativeUsage();
+    }
 
     // get the chat completion
     const completion = await this.#safeProviderCall(() =>
@@ -1262,7 +1272,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
         eventHandler?.("reportStreamEvent", {
           type: "usageMetrics",
           uuid: msgUUID,
-          metrics: this.providerInstance.getUsage(),
+          metrics: this.providerInstance.getCumulativeUsage(),
         });
         this?.flushCitations?.(msgUUID);
         return result;
@@ -1302,7 +1312,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     eventHandler?.("reportStreamEvent", {
       type: "usageMetrics",
       uuid: msgUUID,
-      metrics: this.providerInstance.getUsage(),
+      metrics: this.providerInstance.getCumulativeUsage(),
     });
     this?.flushCitations?.(msgUUID);
     this?.emitChatId?.(msgUUID);
@@ -1409,6 +1419,10 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
    */
   getProviderForConfig(config) {
     const provider = this.#buildProviderForConfig(config);
+    // Record the slug the instance was built from so usage metrics can be
+    // priced - pre-built instances (config.provider as an object) keep theirs.
+    if (typeof config?.provider === "string")
+      provider.providerSlug ??= config.provider;
     provider.attachAbortSignal?.(this.abortController.signal);
     return provider;
   }
@@ -1484,8 +1498,8 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
         return new Providers.GiteeAIProvider({ model: config.model });
       case "cohere":
         return new Providers.CohereProvider({ model: config.model });
-      case "docker-model-runner":
-        return new Providers.DockerModelRunnerProvider({ model: config.model });
+      case "llmman":
+        return new Providers.LlmmanProvider({ model: config.model });
       case "privatemode":
         return new Providers.PrivatemodeProvider({ model: config.model });
       case "sambanova":
@@ -1498,6 +1512,8 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
         return new Providers.MinimaxProvider({ model: config.model });
       case "cerebras":
         return new Providers.CerebrasProvider({ model: config.model });
+      case "vertex":
+        return new Providers.VertexProvider({ model: config.model });
       default:
         throw new Error(
           `Unknown provider: ${config.provider}. Please use a valid provider.`

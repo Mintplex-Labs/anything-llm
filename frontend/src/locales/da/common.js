@@ -713,6 +713,11 @@ const TRANSLATIONS = {
         description:
           'Lad agenten oprette gentagne planlagte opgaver fra chat (f.eks. "hver mandag kl. 9:00, opsummér min indbakke og send mig en e-mail"). Kun tilgængeligt i enkeltbruger-tilstand.',
       },
+      generateImage: {
+        title: "Generer billeder",
+        description:
+          "Lad agenten generere billeder fra chat, eller redigere de vedhæftede billeder i samtalen, ved hjælp af den leverandør, du har konfigureret til billedgenerering.",
+      },
     },
     mcp: {
       title: "MCP-servere",
@@ -1293,6 +1298,18 @@ const TRANSLATIONS = {
     export: "Eksportér chat som...",
     exporting: "Eksportér...",
     preset_img_description: "Generer et billede ud fra en tekstbeskrivelse",
+    generating_response: "Generere svar",
+    response_failed: "Kunne ikke svare på beskeden.",
+    response_failed_reason: "Årsag: {{reason}}",
+    thought_in_progress: "Modellen tænker…",
+    thoughts: "Tanker",
+    leave_generating: {
+      title: "Hvilket svar skal jeg ikke generere?",
+      description:
+        "Du er ved at forlade denne samtale. Dette vil stoppe modellen fra at generere et svar, og det kan ikke gendannes.",
+      cancel: "Annullér",
+      confirm: "Fortsæt",
+    },
   },
   profile_settings: {
     edit_account: "Rediger konto",

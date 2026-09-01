@@ -76,6 +76,10 @@ async function handleImageCommand({ aibitat, socket, message }) {
   const user = invocation.user_id
     ? await User.get({ id: invocation.user_id })
     : null;
+
+  // Show the image-pending card while generating - generateImage only emits
+  // this over an HTTP response stream, and there is none mid agent session.
+  socket.send(JSON.stringify({ type: "imageGenerationPending" }));
   const result = await generateImage(
     invocation.workspace,
     message,
@@ -87,12 +91,23 @@ async function handleImageCommand({ aibitat, socket, message }) {
     aibitat?.abortController?.signal ?? null
   );
 
+  // generateImage reports aborts and provider failures as an empty
+  // textResponse - an empty content card is dropped by the frontend, which
+  // would strand the pending card with no explanation. Always send something
+  // and surface failures in the server log.
+  if (result.error)
+    console.error(`[AgentHandler] Inline /img command failed: ${result.error}`);
   socket.send(
     JSON.stringify({
       type: "imageGenerationCard",
-      content: result.textResponse,
-      outputs: result.outputs || [],
-      chatId: result.chatId || null,
+      content: {
+        text:
+          result.textResponse ||
+          result.error ||
+          "Image generation was cancelled.",
+        outputs: result.outputs || [],
+        chatId: result.chatId || null,
+      },
     })
   );
 

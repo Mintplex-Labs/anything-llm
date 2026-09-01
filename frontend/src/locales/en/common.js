@@ -320,6 +320,11 @@ const TRANSLATIONS = {
         description:
           "Enable the default agent to generate various types of charts from data provided or given in chat.",
       },
+      generateImage: {
+        title: "Generate images",
+        description:
+          "Allow the agent to generate images from chat, or edit images attached to the conversation, using your configured image generation provider.",
+      },
       web: {
         title: "Web Search",
         description:
@@ -1524,6 +1529,11 @@ const TRANSLATIONS = {
   },
   chat_window: {
     attachments_processing: "Attachments are processing. Please wait...",
+    generating_response: "Generating response",
+    thought_in_progress: "Model is Thinking...",
+    thoughts: "Thoughts",
+    response_failed: "Could not respond to message.",
+    response_failed_reason: "Reason: {{reason}}",
     send_message: "Send a message",
     attach_file: "Attach a file to this chat",
     text_size: "Change text size.",
@@ -1660,6 +1670,13 @@ const TRANSLATIONS = {
         save: "Save",
         cancel: "Cancel",
       },
+    },
+    leave_generating: {
+      title: "Stop generating response?",
+      description:
+        "You are about to leave this chat, this will stop the model from generating the response and it cannot be recovered.",
+      cancel: "Cancel",
+      confirm: "Continue",
     },
   },
   profile_settings: {

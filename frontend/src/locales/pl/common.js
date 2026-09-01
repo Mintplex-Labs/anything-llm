@@ -737,6 +737,11 @@ const TRANSLATIONS = {
         description:
           "Umożliw agentowi tworzenie powtarzalnych zadań w harmonogramie bezpośrednio z czatu (np. „codziennie w poniedziałek o 9:00, podsumuj zawartość mojej skrzynki pocztowej i wyślij mi e-mail”). Funkcja dostępna tylko w trybie dla jednego użytkownika.",
       },
+      generateImage: {
+        title: "Generuj obrazy",
+        description:
+          "Pozwól przedstawicielowi generować obrazy na podstawie rozmowy lub edytować dołączone obrazy, korzystając z wybranego dostawcy usług generowania obrazów.",
+      },
     },
     mcp: {
       title: "Serwery MCP",
@@ -1409,6 +1414,18 @@ const TRANSLATIONS = {
     export: "Eksportuj czat jako…",
     exporting: "Eksportowanie...",
     preset_img_description: "Wygeneruj obraz na podstawie tekstu",
+    generating_response: "Generowanie odpowiedzi",
+    response_failed: "Nie udało się odpowiedzieć na wiadomość.",
+    response_failed_reason: "Powód: {{reason}}",
+    thought_in_progress: "Model myśli…",
+    thoughts: "Myśli",
+    leave_generating: {
+      title: "Przestań generować odpowiedź?",
+      description:
+        "Wkrótce opuścisz tę rozmowę, co spowoduje zatrzymanie działania modelu i uniemożliwi jego odtworzenie.",
+      cancel: "Anuluj",
+      confirm: "Kontynuuj",
+    },
   },
   profile_settings: {
     edit_account: "Edytuj konto",

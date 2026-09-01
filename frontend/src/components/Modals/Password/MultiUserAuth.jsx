@@ -3,11 +3,12 @@ import System from "../../../models/system";
 import { AUTH_TOKEN, AUTH_USER } from "../../../utils/constants";
 import paths from "../../../utils/paths";
 import showToast from "@/utils/toast";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 import { useModal } from "@/hooks/useModal";
 import RecoveryCodeModal from "@/components/Modals/DisplayRecoveryCodeModal";
 import { useTranslation } from "react-i18next";
 import { t } from "i18next";
+import PasswordInput from "@/components/lib/PasswordInput";
 
 const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
   const [username, setUsername] = useState("");
@@ -134,10 +135,10 @@ const ResetPasswordForm = ({ onSubmit }) => {
             <label className="text-zinc-300 light:text-slate-800 text-sm">
               New Password
             </label>
-            <input
-              type="password"
+            <PasswordInput
               name="newPassword"
-              className="border-none bg-zinc-800 light:bg-slate-200 text-zinc-200 light:text-zinc-600 text-sm rounded-lg p-2.5 w-[300px] h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
+              containerClassName="w-[300px]"
+              className="border-none bg-zinc-800 light:bg-slate-200 text-zinc-200 light:text-zinc-600 text-sm rounded-lg p-2.5 w-full h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               required
@@ -147,10 +148,10 @@ const ResetPasswordForm = ({ onSubmit }) => {
             <label className="text-zinc-300 light:text-slate-800 text-sm">
               Confirm Password
             </label>
-            <input
-              type="password"
+            <PasswordInput
               name="confirmPassword"
-              className="border-none bg-zinc-800 light:bg-slate-200 text-zinc-200 light:text-zinc-600 text-sm rounded-lg p-2.5 w-[300px] h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
+              containerClassName="w-[300px]"
+              className="border-none bg-zinc-800 light:bg-slate-200 text-zinc-200 light:text-zinc-600 text-sm rounded-lg p-2.5 w-full h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
@@ -319,10 +320,10 @@ export default function MultiUserAuth() {
               <label className="text-zinc-300 light:text-slate-800 text-sm">
                 {t("login.multi-user.placeholder-password")}
               </label>
-              <input
+              <PasswordInput
                 name="password"
-                type="password"
-                className="border-none bg-zinc-800 light:bg-slate-200 text-zinc-200 light:text-zinc-600 text-sm rounded-lg p-2.5 w-[300px] h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
+                containerClassName="w-[300px]"
+                className="border-none bg-zinc-800 light:bg-slate-200 text-zinc-200 light:text-zinc-600 text-sm rounded-lg p-2.5 w-full h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
                 required={true}
                 autoComplete="off"
               />
@@ -353,13 +354,17 @@ export default function MultiUserAuth() {
         </div>
       </form>
 
-      <ModalWrapper isOpen={isRecoveryCodeModalOpen} noPortal={true}>
+      <Modal
+        isOpen={isRecoveryCodeModalOpen}
+        noPortal={true}
+        onClose={closeRecoveryCodeModal}
+      >
         <RecoveryCodeModal
           recoveryCodes={recoveryCodes}
           onDownloadComplete={handleDownloadComplete}
           onClose={closeRecoveryCodeModal}
         />
-      </ModalWrapper>
+      </Modal>
     </>
   );
 }

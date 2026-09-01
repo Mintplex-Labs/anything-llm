@@ -735,6 +735,11 @@ const TRANSLATIONS = {
         description:
           'Permetti all\'agente di creare attività ricorrenti programmate direttamente dalla chat (ad esempio, "ogni giorno feriale alle 9 del mattino, riassumi la mia casella di posta elettronica e inviami una copia"). Disponibile solo in modalità per singolo utente.',
       },
+      generateImage: {
+        title: "Generare immagini",
+        description:
+          "Permetti all'agente di generare immagini a partire dalla conversazione, oppure di modificare le immagini allegate alla conversazione, utilizzando il fornitore di generazione di immagini configurato.",
+      },
     },
     mcp: {
       title: "Server MCP",
@@ -1324,6 +1329,18 @@ const TRANSLATIONS = {
     export: "Esporta la conversazione come...",
     exporting: "Esportazione...",
     preset_img_description: "Genera un'immagine a partire da un testo",
+    generating_response: "Generare una risposta",
+    response_failed: "Non è stato possibile rispondere al messaggio.",
+    response_failed_reason: "Motivo: {{reason}}",
+    thought_in_progress: "Il modello sta riflettendo…",
+    thoughts: "Pensieri",
+    leave_generating: {
+      title: "Arresto della generazione di risposte?",
+      description:
+        "State per uscire da questa conversazione; questo impedirà al modello di generare una risposta e non sarà più possibile recuperarla.",
+      cancel: "Annulla",
+      confirm: "Continua",
+    },
   },
   profile_settings: {
     edit_account: "Modifica account",

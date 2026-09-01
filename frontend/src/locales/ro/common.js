@@ -668,6 +668,18 @@ const TRANSLATIONS = {
     export: "Exportați conversația sub forma de...",
     exporting: "Exportare...",
     preset_img_description: "Generați o imagine pe baza unui text.",
+    generating_response: "Generarea răspunsului",
+    response_failed: "Nu am putut răspunde la mesaj.",
+    response_failed_reason: "Motiv: {{reason}}",
+    thought_in_progress: "Modelul analizează...",
+    thoughts: "Gânduri",
+    leave_generating: {
+      title: "Încetați să generați răspunsuri?",
+      description:
+        "În curând veți părăsi această conversație; acest lucru va opri modelul de a genera răspunsul și nu poate fi recuperat.",
+      cancel: "Anula",
+      confirm: "Continuă",
+    },
   },
   profile_settings: {
     edit_account: "Editează contul",
@@ -1277,6 +1289,11 @@ const TRANSLATIONS = {
         title: "Creați sarcini programate",
         description:
           "Permite reprezentantului să creeze sarcini programate repetitive direct din aplicație (de exemplu, „în fiecare zi de lucru la ora 9:00, rezumă e-mailurile mele și trimite-mi un raport”). Funcționalitatea este disponibilă doar în modul pentru utilizator unic.",
+      },
+      generateImage: {
+        title: "Generați imagini",
+        description:
+          "Permiteți agenților să genereze imagini din conversații sau să editeze imaginile atașate la acestea, folosind furnizorul de generare de imagini configurat de dumneavoastră.",
       },
     },
     mcp: {

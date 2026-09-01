@@ -16,10 +16,9 @@ const { ChatAnthropic } = require("@langchain/anthropic");
 const { ChatOllama } = require("@langchain/community/chat_models/ollama");
 const { toValidNumber, safeJsonParse } = require("../../../http");
 const { getLLMProviderClass } = require("../../../helpers");
+const { MODEL_PRICING } = require("../../../helpers/modelPricing");
+const { toNonNegativeNumber } = require("../../../helpers/numbers");
 const { parseLMStudioBasePath } = require("../../../AiProviders/lmStudio");
-const {
-  parseDockerModelRunnerEndpoint,
-} = require("../../../AiProviders/dockerModelRunner");
 const { parseFoundryBasePath } = require("../../../AiProviders/foundry");
 const { parseOMLXBasePath } = require("../../../AiProviders/omlx");
 const { AzureOpenAiLLM } = require("../../../AiProviders/azureOpenAi");
@@ -27,6 +26,7 @@ const {
   SystemPromptVariables,
 } = require("../../../../models/systemPromptVariables");
 const { OllamaAILLM } = require("../../../AiProviders/ollama");
+const { LlmmanLLM } = require("../../../AiProviders/llmman");
 const { bindAbortSignal } = require("../../../helpers/abortSignals");
 
 /**
@@ -39,6 +39,9 @@ const { bindAbortSignal } = require("../../../helpers/abortSignals");
  * @property {string|null} model - Model name
  * @property {string|null} provider - Provider class name
  * @property {Date|null} timestamp - Timestamp of the completion
+ * @property {number} [inputCost] - USD cost of the prompt tokens. Absent when pricing is unknown.
+ * @property {number} [outputCost] - USD cost of the completion tokens. Absent when pricing is unknown.
+ * @property {number} [totalCost] - USD sum of input and output costs. Absent when pricing is unknown.
  */
 
 /**
@@ -51,6 +54,8 @@ const { bindAbortSignal } = require("../../../helpers/abortSignals");
  * @property {(messages: Array, functions?: Array, eventHandler?: Function) => Promise<{functionCall: any, textResponse: string}>} stream - Stream a chat completion with tool calling.
  * @property {(messages: Array, functions?: Array) => Promise<{functionCall: any, textResponse: string, result?: string}>} complete - Non-streaming chat completion with tool calling.
  * @property {() => ProviderUsageMetrics} getUsage - Get usage metrics from the last completion.
+ * @property {() => ProviderUsageMetrics} getCumulativeUsage - Get usage metrics accumulated across all completions in the current run.
+ * @property {() => void} resetCumulativeUsage - Reset the accumulated usage metrics (call at the start of a run).
  */
 
 class Provider {
@@ -75,16 +80,33 @@ class Provider {
    * Stores the usage metrics from the last completion call.
    * @type {ProviderUsageMetrics}
    */
-  lastUsage = {
-    prompt_tokens: 0,
-    completion_tokens: 0,
-    total_tokens: 0,
-    duration: 0,
-    outputTps: 0,
-    model: null,
-    provider: null,
-    timestamp: null,
-  };
+  lastUsage = Provider.#emptyUsage();
+
+  /**
+   * Stores the usage metrics accumulated across every completion call in the
+   * current run. An agent loop makes one completion per tool call plus a final
+   * one for the response - this is the sum of all of them, whereas `lastUsage`
+   * only ever reflects the most recent call.
+   * @type {ProviderUsageMetrics}
+   */
+  cumulativeUsage = Provider.#emptyUsage();
+
+  /**
+   * Zeroed usage metrics for initializing/resetting an accumulator.
+   * @returns {ProviderUsageMetrics}
+   */
+  static #emptyUsage() {
+    return {
+      prompt_tokens: 0,
+      completion_tokens: 0,
+      total_tokens: 0,
+      duration: 0,
+      outputTps: 0,
+      model: null,
+      provider: null,
+      timestamp: null,
+    };
+  }
 
   /**
    * Timestamp when the current request started (for duration calculation).
@@ -98,6 +120,15 @@ class Provider {
    * @type {string|null}
    */
   providerTag = null;
+
+  /**
+   * The AnythingLLM provider slug this instance was built for (eg: "openai",
+   * "anthropic") - set by AIbitat when the provider is instantiated. Unlike
+   * `providerTag` or `constructor.name`, this matches the slugs used for
+   * model pricing lookups. Null when the origin of the instance is unknown.
+   * @type {string|null}
+   */
+  providerSlug = null;
 
   /**
    * Abort signal for the active agent session, attached by AIbitat. Bound to the
@@ -267,6 +298,26 @@ class Provider {
           apiKey: process.env.AWS_BEDROCK_LLM_API_KEY ?? null,
           ...config,
         });
+      case "vertex": {
+        // Vertex only accepts the API key via `x-goog-api-key` and rejects
+        // any request that also carries an Authorization header, so the
+        // client's own bearer header must be removed (a null default header
+        // deletes it). Google publisher models are requested as
+        // `google/<model>` on the OpenAI-compatible endpoint.
+        const { VertexLLM } = require("../../../AiProviders/vertex");
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: VertexLLM.openaiBaseURL(),
+            defaultHeaders: {
+              Authorization: null,
+              "x-goog-api-key": process.env.VERTEX_AI_LLM_API_KEY ?? null,
+            },
+          },
+          apiKey: "anythingllm",
+          ...config,
+          model: VertexLLM.apiModelId(config.model),
+        });
+      }
       case "azure":
         return new ChatOpenAI({
           configuration: {
@@ -469,16 +520,8 @@ class Provider {
           ...config,
         });
       }
-      case "docker-model-runner":
-        return new ChatOpenAI({
-          configuration: {
-            baseURL: parseDockerModelRunnerEndpoint(
-              process.env.DOCKER_MODEL_RUNNER_BASE_PATH
-            ),
-          },
-          apiKey: null,
-          ...config,
-        });
+      case "llmman":
+        return LlmmanLangchainChatModel.create(config);
       case "lemonade":
         return new ChatOpenAI({
           configuration: {
@@ -635,21 +678,86 @@ class Provider {
       duration = (Date.now() - this._requestStartTime) / 1000;
     }
 
-    const promptTokens = usage.prompt_tokens || usage.input_tokens || 0;
-    const completionTokens =
-      usage.completion_tokens || usage.output_tokens || 0;
+    const safeUsage = usage && typeof usage === "object" ? usage : {};
+    const promptTokens = toNonNegativeNumber(
+      safeUsage.prompt_tokens || safeUsage.input_tokens
+    );
+    const completionTokens = toNonNegativeNumber(
+      safeUsage.completion_tokens || safeUsage.output_tokens
+    );
+    const totalTokens = toNonNegativeNumber(safeUsage.total_tokens);
+
+    this.applyUsage({
+      prompt_tokens: promptTokens,
+      completion_tokens: completionTokens,
+      total_tokens: totalTokens || promptTokens + completionTokens,
+      duration,
+    });
+  }
+
+  /**
+   * Stores a normalized usage record for the completion that just finished and
+   * adds it to the run-level accumulated totals. Subclasses that override
+   * `recordUsage` should normalize their provider-specific usage format and
+   * call this so accumulation still happens in one place.
+   * Every value is coerced to a safe number so a malformed payload from any
+   * provider cannot crash the run or corrupt the accumulated totals.
+   * @param {{prompt_tokens?: number, completion_tokens?: number, total_tokens?: number, duration?: number}} usage
+   */
+  applyUsage(usage = {}) {
+    const safeUsage = usage && typeof usage === "object" ? usage : {};
+    const promptTokens = toNonNegativeNumber(safeUsage.prompt_tokens);
+    const completionTokens = toNonNegativeNumber(safeUsage.completion_tokens);
+    const totalTokens = toNonNegativeNumber(safeUsage.total_tokens);
+    const duration = toNonNegativeNumber(safeUsage.duration);
+
+    const timestamp = new Date();
+    // Cost is priced per-call (not derived from the summed totals) so the
+    // accumulated cost stays correct even if the model changes mid-run.
+    // A null breakdown (unknown pricing) leaves the cost fields absent.
+    const cost = MODEL_PRICING.getCostBreakdown(this.providerSlug, this.model, {
+      prompt_tokens: promptTokens,
+      completion_tokens: completionTokens,
+    });
 
     this.lastUsage = {
       prompt_tokens: promptTokens,
       completion_tokens: completionTokens,
-      total_tokens: usage.total_tokens || promptTokens + completionTokens,
+      total_tokens: totalTokens,
       outputTps:
         completionTokens && duration > 0 ? completionTokens / duration : 0,
       duration,
       model: this.model,
       provider: this.constructor.name,
-      timestamp: new Date(),
+      timestamp,
+      ...(cost ?? {}),
     };
+
+    const totals = this.cumulativeUsage;
+    totals.prompt_tokens += promptTokens;
+    totals.completion_tokens += completionTokens;
+    totals.total_tokens += totalTokens;
+    totals.duration += duration;
+    totals.outputTps =
+      totals.completion_tokens && totals.duration > 0
+        ? totals.completion_tokens / totals.duration
+        : 0;
+    totals.model = this.model;
+    totals.provider = this.constructor.name;
+    totals.timestamp = timestamp;
+    if (cost) {
+      totals.inputCost = (totals.inputCost ?? 0) + cost.inputCost;
+      totals.outputCost = (totals.outputCost ?? 0) + cost.outputCost;
+      totals.totalCost = (totals.totalCost ?? 0) + cost.totalCost;
+    }
+  }
+
+  /**
+   * Resets the accumulated usage metrics. Call this at the start of an agent
+   * run so the totals only cover that run's completions.
+   */
+  resetCumulativeUsage() {
+    this.cumulativeUsage = Provider.#emptyUsage();
   }
 
   /**
@@ -658,6 +766,15 @@ class Provider {
    */
   getUsage() {
     return { ...this.lastUsage };
+  }
+
+  /**
+   * Get the usage metrics accumulated across all completions in the current
+   * run - one completion per tool call plus the final response.
+   * @returns {ProviderUsageMetrics} The accumulated usage metrics
+   */
+  getCumulativeUsage() {
+    return { ...this.cumulativeUsage };
   }
 
   /**
@@ -729,6 +846,28 @@ class Provider {
 }
 
 // Langchain Wrappers
+
+/**
+ * Langchain chat model for llmman, which serves the Ollama API, so the same
+ * client is reused. Passes context window options through so preferences are
+ * respected between chat/agent and Langchain tooling.
+ */
+class LlmmanLangchainChatModel {
+  static create(config = {}) {
+    return new ChatOllama({
+      baseUrl: process.env.LLMMAN_BASE_PATH,
+      ...this.queryOptions(config),
+      ...config,
+    });
+  }
+
+  static queryOptions(config = {}) {
+    const model = config?.model || process.env.LLMMAN_MODEL_PREF;
+    return {
+      num_ctx: LlmmanLLM.promptWindowLimit(model),
+    };
+  }
+}
 
 /**
  * Ollama Langchain Chat Model that supports passing in context window options

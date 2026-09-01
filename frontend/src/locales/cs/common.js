@@ -731,6 +731,11 @@ const TRANSLATIONS = {
         description:
           "Umožněte zástupci vytvářet opakující se plánované úkoly přímo z chatu (například „každý pracovní den v 9:00 shrňte obsah mé schránky a zašlete mi e-mail“). Tato funkce je dostupná pouze v režimu pro jednoho uživatele.",
       },
+      generateImage: {
+        title: "Generovat obrázky",
+        description:
+          "Nechte, aby agent generoval obrázky z chatu nebo upravoval obrázky přiložené ke konverzaci pomocí vašeho nakonfigurovaného poskytovatele pro generování obrázků.",
+      },
     },
     mcp: {
       title: "Servery společnosti MCP",
@@ -1418,6 +1423,18 @@ const TRANSLATIONS = {
     export: "Exportujte konverzaci jako…",
     exporting: "Exportování...",
     preset_img_description: "Vytvořit obrázek na základě textového pokynu",
+    generating_response: "Generování odpovědi",
+    response_failed: "Nebyl možné odpovědět na zprávu.",
+    response_failed_reason: "Důvod: {{reason}}",
+    thought_in_progress: "Systém přemýšlí…",
+    thoughts: "Myšlenky",
+    leave_generating: {
+      title: "Zastavte generování odpovědi?",
+      description:
+        "Chystáte se tuto konverzaci ukončit. To způsobí zastavení generování odpovědí modelem a není možné ji obnovit.",
+      cancel: "Zrušit",
+      confirm: "Pokračujte",
+    },
   },
   profile_settings: {
     edit_account: "Upravit účet",

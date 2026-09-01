@@ -10,9 +10,9 @@ togetherAi
 tesseract
 ppio
 context-windows/*
+pricing/*
 MintplexLabs
 cometapi
 fireworks
 giteeai
-docker-model-runner
 foundry

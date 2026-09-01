@@ -33,13 +33,13 @@ export default function MaxToolCallStack() {
   }, [debouncedUpdateMaxCallStack]);
 
   return (
-    <div className="flex flex-col gap-y-2 mt-4">
-      <div className="flex items-center gap-x-4 mt-2">
+    <div className="flex flex-col gap-y-2">
+      <div className="flex items-center gap-x-4">
         <div className="flex flex-col gap-y-1 flex-1">
-          <label className="block text-md font-medium text-white">
+          <label className="block text-md font-medium text-zinc-50 light:text-slate-900">
             {t("agent.settings.max-tool-calls.title")}
           </label>
-          <p className="text-xs text-white/60">
+          <p className="text-xs text-zinc-400 light:text-slate-600">
             {t("agent.settings.max-tool-calls.description")}
           </p>
         </div>
@@ -55,7 +55,7 @@ export default function MaxToolCallStack() {
             setMaxCallStack(parseInt(e.target.value));
           }}
           onWheel={(e) => e.target.blur()}
-          className="border border-white/10 bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-[80px] p-2.5 text-center"
+          className="bg-zinc-800 border border-zinc-800 text-zinc-100 placeholder:text-zinc-400 light:bg-white light:border-slate-300 light:text-slate-900 light:placeholder:text-slate-400 text-sm rounded-lg outline-none focus:border-sky-500 light:focus:border-sky-500 block w-[80px] h-[34px] px-3 text-center"
           placeholder="10"
           autoComplete="off"
         />

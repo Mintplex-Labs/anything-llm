@@ -747,6 +747,11 @@ const TRANSLATIONS = {
         description:
           'Permita que el agente cree tareas programadas recurrentes a partir de las conversaciones (por ejemplo, "todos los días laborables a las 9:00 am, resume mi bandeja de entrada y envíame un correo electrónico"). Disponible únicamente en modo para un solo usuario.',
       },
+      generateImage: {
+        title: "Generar imágenes",
+        description:
+          "Permita que el agente genere imágenes a partir de la conversación, o edite las imágenes adjuntas a la misma, utilizando el proveedor de generación de imágenes que haya configurado.",
+      },
     },
     mcp: {
       title: "Servidores MCP",
@@ -1432,6 +1437,18 @@ const TRANSLATIONS = {
     exporting: "Exportando...",
     preset_img_description:
       "Generar una imagen a partir de una descripción textual.",
+    generating_response: "Generar respuesta",
+    response_failed: "No fue posible responder al mensaje.",
+    response_failed_reason: "Razón: {{reason}}",
+    thought_in_progress: "El modelo está pensando…",
+    thoughts: "Ideas, reflexiones",
+    leave_generating: {
+      title: "¿Debe dejar de generar respuestas?",
+      description:
+        "A continuación, finalizará esta conversación, lo que impedirá que el modelo genere una respuesta y no podrá recuperarse.",
+      cancel: "Cancelar",
+      confirm: "Continúa",
+    },
   },
   profile_settings: {
     edit_account: "Editar cuenta",

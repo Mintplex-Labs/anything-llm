@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import System from "../../../models/system";
 import { AUTH_TOKEN } from "../../../utils/constants";
 import paths from "../../../utils/paths";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 import { useModal } from "@/hooks/useModal";
 import RecoveryCodeModal from "@/components/Modals/DisplayRecoveryCodeModal";
 import { useTranslation } from "react-i18next";
+import PasswordInput from "@/components/lib/PasswordInput";
 
 export default function SingleUserAuth() {
   const { t } = useTranslation();
@@ -91,10 +92,10 @@ export default function SingleUserAuth() {
               <label className="text-zinc-300 light:text-slate-800 text-sm">
                 Password
               </label>
-              <input
+              <PasswordInput
                 name="password"
-                type="password"
-                className="border-none bg-zinc-800 light:bg-slate-200 text-zinc-200 light:text-zinc-600 text-sm rounded-lg p-2.5 w-[300px] h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
+                containerClassName="w-[300px]"
+                className="border-none bg-zinc-800 light:bg-slate-200 text-zinc-200 light:text-zinc-600 text-sm rounded-lg p-2.5 w-full h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
                 required={true}
                 autoComplete="off"
               />
@@ -115,13 +116,17 @@ export default function SingleUserAuth() {
         </div>
       </form>
 
-      <ModalWrapper isOpen={isRecoveryCodeModalOpen} noPortal={true}>
+      <Modal
+        isOpen={isRecoveryCodeModalOpen}
+        noPortal={true}
+        onClose={closeRecoveryCodeModal}
+      >
         <RecoveryCodeModal
           recoveryCodes={recoveryCodes}
           onDownloadComplete={handleDownloadComplete}
           onClose={closeRecoveryCodeModal}
         />
-      </ModalWrapper>
+      </Modal>
     </>
   );
 }

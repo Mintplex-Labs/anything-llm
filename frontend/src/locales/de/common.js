@@ -738,6 +738,11 @@ const TRANSLATIONS = {
         description:
           'Ermöglichen Sie dem Agenten, wiederkehrende geplante Aufgaben direkt aus dem Chat zu erstellen (z. B. „jeden Werktag um 9 Uhr meinen Posteingang zusammenfassen und mir eine E-Mail senden"). Diese Funktion ist nur im Einzelbenutzermodus verfügbar.',
       },
+      generateImage: {
+        title: "Bilder generieren",
+        description:
+          "Ermöglichen Sie dem Agenten, Bilder aus dem Chat zu generieren oder Bilder zu bearbeiten, die an das Gespräch angehängt sind, unter Verwendung Ihres konfigurierten Bildgenerierungsdienstes.",
+      },
     },
     "performance-warning":
       "Die Leistung von LLMs, die keine explizite Unterstützung für das Aufrufen von Tools bieten, hängt stark von den Fähigkeiten und der Genauigkeit des Modells ab. Einige Fähigkeiten können eingeschränkt oder nicht funktionsfähig sein.",
@@ -1417,6 +1422,18 @@ const TRANSLATIONS = {
     exporting: "Exportieren...",
     preset_img_description:
       "Erstelle ein Bild basierend auf einer Textanfrage.",
+    generating_response: "Antwort generieren",
+    response_failed: "Ich konnte die Nachricht nicht beantworten.",
+    response_failed_reason: "Grund: {{reason}}",
+    thought_in_progress: "Das Modell denkt…",
+    thoughts: "Gedanken",
+    leave_generating: {
+      title: "Stoppen der Antwortgenerierung?",
+      description:
+        "Sie werden diesen Chat jetzt verlassen. Dadurch wird verhindert, dass das Modell eine Antwort generiert, und dies kann nicht rückgängig gemacht werden.",
+      cancel: "Abbrechen",
+      confirm: "Weiter",
+    },
   },
   profile_settings: {
     edit_account: "Account bearbeiten",

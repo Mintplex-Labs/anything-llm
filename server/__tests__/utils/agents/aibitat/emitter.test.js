@@ -1,22 +1,25 @@
 process.env.STORAGE_DIR = __dirname;
 process.env.NODE_ENV = "test";
 
-const { EventEmitter } = require("events");
 const AIbitat = require("../../../../utils/agents/aibitat/index.js");
 
 /**
- * Tests for the EventEmitter memory leak fix (issue #3168).
+ * Tests for the EventEmitter memory leak fix (issue #3168, PR #5790).
  *
- * The AIbitat emitter used to be a plain `new EventEmitter()` with the
- * default maxListeners of 10. When bulk-scraping many URLs, the web-scraping
- * and summarize plugins each attach an "abort" listener per invocation via
- * onAbort(), easily exceeding the limit and triggering a
- * MaxListenersExceededWarning.
+ * When bulk-scraping many URLs, providers register an "abort" listener per
+ * LLM request on the session's AbortController signal, easily exceeding the
+ * default limit of 10 and triggering a MaxListenersExceededWarning.
  *
  * The fix:
- *   1. AIbitat.emitter now calls setMaxListeners(0) to disable the warning.
- *   2. web-scraping.js and summarize.js use named listeners with
- *      .finally(cleanup) so they are removed after summarization completes.
+ *   1. The constructor calls setMaxListeners(0, this.abortController.signal)
+ *      to lift the warning threshold on the session signal.
+ *   2. web-scraping.js and summarize.js use named emitter listeners with
+ *      .finally(cleanup) so they are removed after summarization completes,
+ *      keeping the emitter itself under its default limit.
+ *
+ * Warnings are captured by spying on process.emitWarning, which Node calls
+ * synchronously at the moment the limit is exceeded. (The "warning" event on
+ * process fires a tick later and cannot be captured synchronously.)
  */
 
 function createAibitat() {
@@ -32,51 +35,21 @@ describe("AIbitat emitter – setMaxListeners", () => {
     expect(instance.emitter.getMaxListeners()).toBe(10);
   });
 
-  it("should not emit MaxListenersExceededWarning with many onAbort listeners", () => {
+  it("should not warn when many abort listeners attach to the session signal", () => {
     const instance = createAibitat();
-    const warnings = [];
-    const originalEmit = process.emit;
-    process.emit = function (event, ...args) {
-      if (
-        event === "warning" &&
-        args[0]?.name === "MaxListenersExceededWarning"
-      ) {
-        warnings.push(args[0]);
-      }
-      return originalEmit.apply(process, [event, ...args]);
-    };
+    const warnSpy = jest
+      .spyOn(process, "emitWarning")
+      .mockImplementation(() => {});
 
     for (let i = 0; i < 50; i++) {
-      instance.onAbort(() => {});
+      instance.abortController.signal.addEventListener("abort", () => {});
     }
 
-    process.emit = originalEmit;
+    const warnings = warnSpy.mock.calls.filter(
+      ([warning]) => warning?.name === "MaxListenersExceededWarning"
+    );
+    warnSpy.mockRestore();
     expect(warnings).toHaveLength(0);
-    expect(instance.emitter.listenerCount("abort")).toBe(50);
-  });
-
-  it("a default EventEmitter WOULD trigger a warning with 11 listeners", () => {
-    const plain = new EventEmitter();
-    expect(plain.getMaxListeners()).toBe(10);
-
-    const warnings = [];
-    const originalEmit = process.emit;
-    process.emit = function (event, ...args) {
-      if (
-        event === "warning" &&
-        args[0]?.name === "MaxListenersExceededWarning"
-      ) {
-        warnings.push(args[0]);
-      }
-      return originalEmit.apply(process, [event, ...args]);
-    };
-
-    for (let i = 0; i < 11; i++) {
-      plain.on("abort", () => {});
-    }
-
-    process.emit = originalEmit;
-    expect(plain.listenerCount("abort")).toBe(11);
   });
 });
 

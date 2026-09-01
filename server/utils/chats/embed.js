@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require("uuid");
 const { getVectorDbClass, resolveProviderConnector } = require("../helpers");
+const { addChatCostToMetrics } = require("../helpers/modelPricing");
 const { chatPrompt, sourceIdentifier } = require("./index");
 const { EmbedChats } = require("../../models/embedChats");
 const {
@@ -26,14 +27,16 @@ async function streamChatWithForEmbed(
   const chatModel = embed.allow_model_override ? modelOverride : null;
 
   // If there are overrides in request & they are permitted, override the default workspace ref information.
-  if (embed.allow_prompt_override)
+  if (embed.allow_prompt_override && typeof promptOverride === "string")
     embed.workspace.openAiPrompt = promptOverride;
-  if (embed.allow_temperature_override)
-    embed.workspace.openAiTemp = parseFloat(temperatureOverride);
+  const temperatureValue = parseFloat(temperatureOverride);
+  if (embed.allow_temperature_override && !Number.isNaN(temperatureValue))
+    embed.workspace.openAiTemp = temperatureValue;
 
   const uuid = uuidv4();
   const {
     connector: LLMConnector,
+    routingMetadata,
     prefetchedContext,
     error: routerError,
   } = await resolveLLMConnectorForEmbed({
@@ -195,7 +198,11 @@ async function streamChatWithForEmbed(
         temperature: embed.workspace?.openAiTemp ?? LLMConnector.defaultTemp,
       });
     completeText = textResponse;
-    metrics = performanceMetrics;
+    metrics = addChatCostToMetrics(performanceMetrics, {
+      routingMetadata,
+      workspace: embed.workspace,
+      connector: LLMConnector,
+    });
     writeResponseChunk(response, {
       uuid,
       sources: [],
@@ -212,7 +219,11 @@ async function streamChatWithForEmbed(
       uuid,
       sources: [],
     });
-    metrics = stream.metrics;
+    metrics = addChatCostToMetrics(stream.metrics, {
+      routingMetadata,
+      workspace: embed.workspace,
+      connector: LLMConnector,
+    });
   }
 
   await EmbedChats.new({
@@ -273,16 +284,18 @@ async function resolveLLMConnectorForEmbed({
       include: true,
     });
 
-    const { connector, prefetchedContext } = await resolveProviderConnector({
-      workspace,
-      prompt: message,
-      chatHistoryOverride: embedHistory,
-      // +1 to include the current in-flight message to ensure routing rules are evaluated against the real total.
-      messageCountOverride: embedMessageCount + 1,
-    });
+    const { connector, routingMetadata, prefetchedContext } =
+      await resolveProviderConnector({
+        workspace,
+        prompt: message,
+        chatHistoryOverride: embedHistory,
+        // +1 to include the current in-flight message to ensure routing rules are evaluated against the real total.
+        messageCountOverride: embedMessageCount + 1,
+      });
 
     return {
       connector,
+      routingMetadata,
       prefetchedContext: prefetchedContext
         ? {
             rawHistory: embedHistory.rawHistory,
@@ -295,6 +308,7 @@ async function resolveLLMConnectorForEmbed({
   } catch (routerError) {
     return {
       connector: null,
+      routingMetadata: null,
       prefetchedContext: null,
       error: `Model router error: ${routerError.message}`,
     };

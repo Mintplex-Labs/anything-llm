@@ -9,6 +9,10 @@ const {
   anthropicTooledComplete,
 } = require("./helpers/anthropicTooled.js");
 const { RetryError } = require("../error.js");
+const {
+  openaiBaseURL,
+  anthropicBaseURL,
+} = require("../../../AiProviders/bedrock/endpoints.js");
 
 /**
  * The agent provider for the AWS Bedrock provider.
@@ -24,7 +28,7 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
       config.model || process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE || null;
     const region = process.env.AWS_BEDROCK_LLM_REGION;
     const client = new OpenAI({
-      baseURL: `https://bedrock-mantle.${region}.api.aws/v1`,
+      baseURL: openaiBaseURL(region),
       apiKey: process.env.AWS_BEDROCK_LLM_API_KEY,
     });
 
@@ -37,7 +41,7 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
     if (this.model?.includes("anthropic")) {
       this._anthropic = new Anthropic({
         apiKey: process.env.AWS_BEDROCK_LLM_API_KEY,
-        baseURL: `https://bedrock-mantle.${region}.api.aws/anthropic`,
+        baseURL: anthropicBaseURL(region, this.model),
         defaultHeaders: { "anthropic-version": "2023-06-01" },
       });
     }

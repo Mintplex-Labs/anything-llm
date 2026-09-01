@@ -327,9 +327,9 @@ function apiDocumentEndpoints(app) {
     async (request, response) => {
       /*
     #swagger.tags = ['Documents']
-    #swagger.description = 'Upload a valid URL for AnythingLLM to scrape and prepare for embedding. Optionally, specify a comma-separated list of workspace slugs to embed the document into post-upload.'
+    #swagger.description = 'Upload a valid URL for AnythingLLM to scrape and prepare for embedding. The link property can be a single URL string or an array of URL strings. Optionally, specify a comma-separated list of workspace slugs to embed the document into post-upload.'
     #swagger.requestBody = {
-      description: 'Link of web address to be scraped and optionally a comma-separated list of workspace slugs to embed the document into post-upload, and optional metadata.',
+      description: 'Link of web address to be scraped and optionally a comma-separated list of workspace slugs to embed the document into post-upload, and optional metadata. The link property also accepts an array of links to process in a single request.',
       required: true,
       content: {
           "application/json": {
@@ -391,11 +391,31 @@ function apiDocumentEndpoints(app) {
       try {
         const Collector = new CollectorApi();
         const {
-          link,
+          link = "",
           addToWorkspaces = "",
           scraperHeaders = {},
           metadata: _metadata = {},
         } = reqBody(request);
+
+        // `link` can be a single URL string or an array of URL strings.
+        // Drop any non-string or empty entries - URL validation itself is
+        // handled by the collector when each link is processed.
+        const links = (Array.isArray(link) ? link : [link])
+          .filter((url) => typeof url === "string" && url.trim().length > 0)
+          .map((url) => url.trim());
+
+        if (links.length === 0) {
+          return response
+            .status(422)
+            .json({
+              success: false,
+              error:
+                "link must be a non-empty string or an array of non-empty strings.",
+              documents: [],
+            })
+            .end();
+        }
+
         const metadata =
           typeof _metadata === "string"
             ? safeJsonParse(_metadata, {})
@@ -407,37 +427,69 @@ function apiDocumentEndpoints(app) {
             .status(500)
             .json({
               success: false,
-              error: `Document processing API is not online. Link ${link} will not be processed automatically.`,
+              error: `Document processing API is not online. Link(s) ${links.join(", ")} will not be processed automatically.`,
+              documents: [],
             })
             .end();
         }
 
-        const { success, reason, documents } = await Collector.processLink(
-          link,
-          scraperHeaders,
-          metadata
+        const results = await Promise.all(
+          links.map(async (url) => ({
+            url,
+            ...(await Collector.processLink(url, scraperHeaders, metadata)),
+          }))
         );
-        if (!success) {
+
+        const documents = [];
+        const failures = [];
+        for (const result of results) {
+          const {
+            url,
+            success,
+            reason,
+            documents: linkDocuments = [],
+          } = result;
+          if (!success) {
+            failures.push({ url, reason: reason || "Failed to process link." });
+            continue;
+          }
+
+          Collector.log(
+            `Link ${url} uploaded processed and successfully. It is now available in documents.`
+          );
+          await Telemetry.sendTelemetry("link_uploaded");
+          await EventLogs.logEvent("api_link_uploaded", { link: url });
+          documents.push(...linkDocuments);
+        }
+
+        if (!!addToWorkspaces) {
+          for (const document of documents) {
+            await Document.api.uploadToWorkspace(
+              addToWorkspaces,
+              document.location
+            );
+          }
+        }
+
+        const error =
+          failures.length === 0
+            ? null
+            : links.length === 1
+              ? failures[0].reason
+              : failures
+                  .map(({ url, reason }) => `${url}: ${reason}`)
+                  .join("; ");
+
+        if (documents.length === 0 && failures.length > 0) {
           return response
             .status(500)
-            .json({ success: false, error: reason, documents })
+            .json({ success: false, error, documents })
             .end();
         }
 
-        Collector.log(
-          `Link ${link} uploaded processed and successfully. It is now available in documents.`
-        );
-        await Telemetry.sendTelemetry("link_uploaded");
-        await EventLogs.logEvent("api_link_uploaded", {
-          link,
-        });
-
-        if (!!addToWorkspaces)
-          await Document.api.uploadToWorkspace(
-            addToWorkspaces,
-            documents?.[0].location
-          );
-        response.status(200).json({ success: true, error: null, documents });
+        response
+          .status(200)
+          .json({ success: failures.length === 0, error, documents });
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();
@@ -1128,7 +1180,7 @@ function apiDocumentEndpoints(app) {
     async (request, response) => {
       /*
       #swagger.tags = ['Documents']
-      #swagger.description = 'Download a file generated by an agent skill (e.g., PDF, DOCX, XLSX, PPTX). The filename is returned in the `outputs` array of a chat response when an agent generates a file. Use the `storageFilename` value from that response to download the file.'
+      #swagger.description = 'Download a file generated by an agent skill (e.g., PDF, DOCX, XLSX, PPTX) or a generated image (img-*.png). The filename is returned in the `outputs` array of a chat response when an agent generates a file or image. Use the `storageFilename` value from that response to download the file.'
       #swagger.parameters['filename'] = {
         in: 'path',
         description: 'The storage filename returned in the chat response outputs array (e.g., pdf-e9e14f28-d6b6-4f49-91a0-dd331517f567.pdf)',
@@ -1180,6 +1232,34 @@ function apiDocumentEndpoints(app) {
         const { filename } = request.params;
         if (!filename)
           return response.status(400).json({ error: "Filename is required" });
+
+        // Generated images live in their own storage directory, separate from
+        // the create-files output directory the block below reads from.
+        const {
+          generatedImagesPath,
+          GENERATED_IMAGE_FILENAME_PATTERN,
+        } = require("../../../utils/files");
+        if (GENERATED_IMAGE_FILENAME_PATTERN.test(filename)) {
+          const imagePath = path.resolve(generatedImagesPath, filename);
+          if (
+            !isWithin(generatedImagesPath, imagePath) ||
+            !fs.existsSync(imagePath)
+          )
+            return response.status(404).json({ error: "File not found" });
+
+          const imageBuffer = await fs.promises.readFile(imagePath);
+          response.setHeader("Content-Type", "image/png");
+          response.setHeader(
+            "Content-Disposition",
+            `attachment; filename="${createFilesLib.sanitizeFilenameForHeader(filename)}"`
+          );
+          response.setHeader("Content-Length", imageBuffer.length);
+          response.send(imageBuffer);
+          Telemetry.sendTelemetry("agent_generated_file_downloaded", {
+            type: "image/png",
+          }).catch(() => {});
+          return;
+        }
 
         const parsed = createFilesLib.parseFilename(filename);
         if (!parsed) {
