@@ -109,9 +109,16 @@ class Chroma extends VectorDatabase {
     return totalVectors;
   }
 
+  /**
+   * Converts a cosine distance ([0, 2]: 0 identical, 1 orthogonal, 2 opposite)
+   * to a similarity score in [0, 1]. Distances at or past orthogonal floor at 0
+   * so unrelated chunks can never clear a similarity threshold.
+   * @param {number|null} distance - Cosine distance from the vector search.
+   * @returns {number} Similarity score in [0, 1].
+   */
   distanceToSimilarity(distance = null) {
     if (distance === null || typeof distance !== "number") return 0.0;
-    if (distance >= 1.0) return 1;
+    if (distance >= 1.0) return 0;
     if (distance < 0) return 1 - Math.abs(distance);
     return 1 - distance;
   }
