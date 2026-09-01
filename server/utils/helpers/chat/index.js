@@ -24,7 +24,7 @@ on the quality of responses.
 We accomplish this by taking a rate-limit approach that is proportional to the model capacity. Since we support more than openAI models, this needs to 
 be generic and reliance on a "better summary" model just is not a luxury we can afford. The added latency overhead during prompting is also unacceptable.
 In general:
-  system: at best 15% of token capacity
+  system (message arrays): the capacity remaining after the reply buffer, prompt, and history
   history: at best 15% of token capacity
   prompt: at best 70% of token capacity.
 
@@ -36,7 +36,7 @@ we handle overflows by taking an aggressive path for two main cases.
 
 2. Context window is exceeded in regular use.
 - We do not touch prompt since it is very likely to be <70% of window.
-- We check system prompt is not outrageous - if it is we cannonball it and keep context if present.
+- For message arrays, we fit the system prompt and context into the capacity remaining after reserving space for the reply, prompt, and history.
 - We check a sliding window of history, only allowing up to 15% of the history to pass through if it fits, with a 
 preference for recent history if we can cannonball to fit it, otherwise it is omitted.
 
@@ -77,36 +77,53 @@ async function messageArrayCompressor(llm, messages = [], rawHistory = []) {
     ];
   }
 
+  // Reserve space for the reply, user prompt, and the maximum permitted chat
+  // history. The system instructions and document context can use the rest.
+  const systemTokenLimit = Math.max(
+    1,
+    llm.promptWindowLimit() - tokenBuffer - userPromptSize - llm.limits.history
+  );
+
   const compressedSystem = new Promise(async (resolve) => {
     const count = tokenManager.countFromString(system.content);
-    if (count < llm.limits.system) {
+    if (count < systemTokenLimit) {
       resolve(system);
       return;
     }
 
-    // Split context from system prompt - cannonball since its over the window.
-    // We assume the context + user prompt is enough tokens to fit.
+    // Split document context from the system instructions and fit both within
+    // the prompt-window capacity that remains.
     const [prompt, context = ""] = system.content.split("Context:");
     let compressedPrompt;
     let compressedContext;
 
-    // If the user system prompt contribution's to the system prompt is more than
-    // 25% of the system limit, we will cannonball it - this favors the context
-    // over the instruction from the user.
-    if (tokenManager.countFromString(prompt) >= llm.limits.system * 0.25) {
+    // When document context is present, reserve up to 25% of the available
+    // system capacity for instructions. Without context, instructions can use
+    // the entire system capacity.
+    const promptTokenLimit = context
+      ? systemTokenLimit * 0.25
+      : systemTokenLimit;
+
+    if (tokenManager.countFromString(prompt) >= promptTokenLimit) {
       compressedPrompt = cannonball({
         input: prompt,
-        targetTokenSize: llm.limits.system * 0.25,
+        targetTokenSize: promptTokenLimit,
         tiktokenInstance: tokenManager,
       });
     } else {
       compressedPrompt = prompt;
     }
 
-    if (tokenManager.countFromString(context) >= llm.limits.system * 0.75) {
+    // Give context any instruction capacity that was not needed.
+    const contextTokenLimit = Math.max(
+      1,
+      systemTokenLimit - tokenManager.countFromString(compressedPrompt)
+    );
+
+    if (tokenManager.countFromString(context) >= contextTokenLimit) {
       compressedContext = cannonball({
         input: context,
-        targetTokenSize: llm.limits.system * 0.75,
+        targetTokenSize: contextTokenLimit,
         tiktokenInstance: tokenManager,
       });
     } else {
