@@ -131,6 +131,9 @@ function log(text, ...args) {
 class ModelPricing {
   static instance = null;
 
+  /** @type {Promise<void>} - settles when the constructor's background refresh finishes (or immediately when the cache was fresh) */
+  bootRefresh = Promise.resolve();
+
   /** @type {Record<string, Record<string, ModelCost>>|null} */
   #pricing = null;
   /** @type {boolean} - true when data came from disk cache (safe to send etag) */
@@ -149,16 +152,17 @@ class ModelPricing {
 
     this.#loadFromDisk();
     if (this.#isCacheStale() || !this.#pricing) {
-      this.#refresh()
+      this.bootRefresh = this.#refresh()
         .then(() => {
           if (this.#pricing)
-            console.log(`⚡\x1b[32mPre-cached model pricing data\x1b[0m`);
+            log(`⚡\x1b[32mPre-cached model pricing data\x1b[0m`);
         })
         .catch((err) =>
           log("Background pricing refresh failed:", err?.message)
         );
     } else {
-      console.log(`⚡\x1b[32mPre-cached model pricing data\x1b[0m`);
+      this.bootRefresh = Promise.resolve();
+      log(`⚡\x1b[32mPre-cached model pricing data\x1b[0m`);
     }
   }
 
