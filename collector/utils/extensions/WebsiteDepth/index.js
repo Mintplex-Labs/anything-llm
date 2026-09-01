@@ -101,16 +101,24 @@ function extractLinks(html, baseUrl) {
 
   for (const link of links) {
     const href = link.getAttribute("href");
-    if (href) {
-      const absoluteUrl = new URL(href, baseUrl.href);
-      const inScope =
-        absoluteUrl.origin === baseUrl.origin &&
-        (!scopePath ||
-          absoluteUrl.pathname === scopePath ||
-          absoluteUrl.pathname.startsWith(`${scopePath}/`));
-      if (inScope) {
-        extractedLinks.add(absoluteUrl.href);
-      }
+    if (!href) continue;
+
+    // A single malformed href (e.g. href="http://") must not abort
+    // extraction of the page's remaining links.
+    let absoluteUrl;
+    try {
+      absoluteUrl = new URL(href, baseUrl.href);
+    } catch {
+      continue;
+    }
+
+    const inScope =
+      absoluteUrl.origin === baseUrl.origin &&
+      (!scopePath ||
+        absoluteUrl.pathname === scopePath ||
+        absoluteUrl.pathname.startsWith(`${scopePath}/`));
+    if (inScope) {
+      extractedLinks.add(absoluteUrl.href);
     }
   }
 
