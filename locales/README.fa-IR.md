@@ -1,5 +1,12 @@
 <a name="readme-top"></a>
 
+> [!NOTE]
+> ما همچنین روی [Open Computer](../open-computer) کار می‌کنیم که یک محیط کامل کامپیوتری در اختیار عامل‌های هوش مصنوعی قرار می‌دهد.
+>
+> این قابلیت‌های عاملِ AnythingLLM را به سطح تازه‌ای می‌رساند و الگوی جدیدی برای تجربه کاربری عامل‌های هوش مصنوعی ارائه می‌کند.
+>
+> ⭐ برای دریافت آخرین اخبار به مخزن ستاره بدهید!
+
 <p align="center">
   <a href="https://anythingllm.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="AnythingLLM logo"></a>
 </p>
@@ -21,15 +28,15 @@
       <img src="https://img.shields.io/static/v1?label=license&message=MIT&color=white" alt="License">
   </a> |
   <a href="https://docs.anythingllm.com" target="_blank">
-    Docs
+    مستندات
   </a> |
-   <a href="https://my.mintplexlabs.com/aio-checkout?product=anythingllm" target="_blank">
-    Hosted Instance
+  <a href="https://my.mintplexlabs.com/aio-checkout?product=anythingllm" target="_blank">
+    نمونه میزبانی‌شده
   </a>
 </p>
 
-<p align="center" dir="rtl">
-  <b>English</b> · <a href='./locales/README.zh-CN.md'>简体中文</a> · <a href='./locales/README.ja-JP.md'>日本語</a> · <b>فارسی</b>
+<p align="center">
+  <a href='../README.md'>English</a> · <a href='./README.zh-CN.md'>简体中文</a> · <a href='./README.ja-JP.md'>日本語</a> · <a href='./README.tr-TR.md'>Türkçe</a> · <b>فارسی</b>
 </p>
 
 <p align="center" dir="rtl">
@@ -37,7 +44,7 @@
 </p>
 
 <div dir="rtl">
-یک اپلیکیشن کامل که به شما امکان می‌دهد هر سند، منبع یا محتوایی را به زمینه‌ای تبدیل کنید که هر LLM می‌تواند در حین گفتگو به عنوان مرجع از آن استفاده کند. این برنامه به شما اجازه می‌دهد LLM یا پایگاه داده برداری مورد نظر خود را انتخاب کنید و همچنین از مدیریت چند کاربره و مجوزها پشتیبانی می‌کند.
+با اسناد خود چت کنید. گردش‌کارهای پیچیده را با عامل‌های هوش مصنوعی خودکار کنید. بسیار قابل پیکربندی، آماده برای چند کاربر، آزموده‌شده در عمل — و به‌صورت پیش‌فرض بدون هیچ دردسری به‌صورت محلی اجرا می‌شود.
 </div>
 
 ![Chatting](https://github.com/Mintplex-Labs/anything-llm/releases/download/v1.11.2/AnythingLLM720p.gif)
@@ -45,36 +52,42 @@
 <details>
 <summary><kbd>دموی ویدیویی را تماشا کنید!</kbd></summary>
 
-[![Watch the video](/images/youtube.png)](https://youtu.be/f95rGD9trL0)
+[![تماشای ویدیو](../images/youtube.png)](https://youtu.be/f95rGD9trL0)
 
 </details>
+
 <div dir="rtl">
 
 ### نمای کلی محصول
 
-AnythingLLM اپلیکیشن همه‌کاره هوش مصنوعی است که به دنبال آن بودید. AnythingLLM شامل همه چیزهایی است که برای ساخت یک ChatGPT خصوصی بدون سازش با استفاده از ارائه‌دهندگان LLM محلی یا ابری مورد علاقه خود نیاز دارید. AnythingLLM بسیار قابل پیکربندی است، اما همه چیزهایی که برای شروع کار نیاز دارید از جمله عامل‌های داخلی، پشتیبانی چند کاربره، پایگاه‌های داده برداری، خطوط لوله دریافت اسناد و موارد دیگر را به صورت آماده ارائه می‌دهد.
+AnythingLLM اپلیکیشن همه‌کاره هوش مصنوعی است که به شما امکان می‌دهد بدون هیچ سازشی یک ChatGPT خصوصی و کاملاً کارآمد بسازید. LLM محلی یا ابری مورد علاقه خود را متصل کنید، اسناد خود را وارد کنید و در عرض چند دقیقه شروع به چت کنید. به‌صورت آماده، عامل‌های داخلی، پشتیبانی چند کاربره، پایگاه‌های داده برداری و خطوط پردازش اسناد را در اختیار دارید — بدون نیاز به پیکربندی اضافی.
 
 AnythingLLM همچنین از چندین کاربر پشتیبانی می‌کند که می‌توانید دسترسی و تجربه هر کاربر را بدون به خطر انداختن امنیت یا حریم خصوصی نمونه یا مالکیت فکری خود کنترل کنید.
 
-</div>
-<div dir="rtl">
-
 ## ویژگی‌های جذاب AnythingLLM
 
-- 🆕 [**عامل‌های هوش مصنوعی سفارشی**](https://docs.anythingllm.com/agent/custom/introduction)
-- 🖼️ **پشتیبانی از چند مدل (هم LLMهای متن‌باز و هم تجاری!)**
-- 👤 پشتیبانی از چند کاربر و سیستم مجوزها _فقط در نسخه Docker_
-- 🦾 عامل‌ها در فضای کاری شما (مرور وب، اجرای کد و غیره)
-- 💬 [ویجت چت قابل جاسازی سفارشی برای وب‌سایت شما](../embed/README.md) _فقط در نسخه Docker_
+- [مسیریابی پویای مدل](https://docs.anythingllm.com/model-router/overview) - بر اساس قواعدی که تعریف می‌کنید، چت‌ها را به‌صورت خودکار به بهترین ارائه‌دهنده و مدل هدایت کنید.
+- [حافظه خودکار و مدیریت‌شده توسط کاربر](https://docs.anythingllm.com/features/memories) - کاری کنید LLM شما اطلاعات مهم درباره شما یا فضای کاری‌تان را به خاطر بسپارد.
+- [وظایف زمان‌بندی‌شده](https://docs.anythingllm.com/scheduled-jobs/overview) - وظایف یا پرامپت‌های تکرارشونده را با زمان‌بندی cron و با تمام قابلیت‌های عامل اجرا کنید.
+- [انتخاب هوشمند مهارت](https://docs.anythingllm.com/agent/intelligent-tool-selection) ابزارهای **نامحدود** را برای مدل‌های خود فعال کنید و در عین حال مصرف توکن هر پرس‌وجو را تا ۸۰٪ کاهش دهید
+- [سازنده عامل هوش مصنوعی بدون کدنویسی](https://docs.anythingllm.com/agent-flows/overview)
+- [سازگاری با MCP](https://docs.anythingllm.com/mcp-compatibility/overview)
+- [پشتیبانی چندوجهی (هم LLMهای متن‌باز و هم تجاری!)](https://docs.anythingllm.com/features/language-models)
+- [عامل‌های هوش مصنوعی سفارشی](https://docs.anythingllm.com/agent/custom/introduction)
+- 👤 پشتیبانی از نمونه چند کاربره و مدیریت مجوزها _فقط نسخه Docker_
+- 🦾 عامل‌ها در فضای کاری شما (مرور وب و غیره)
+- 💬 [ویجت چت قابل جاسازی سفارشی برای وب‌سایت شما](https://github.com/Mintplex-Labs/anythingllm-embed/blob/main/README.md) _فقط نسخه Docker_
 - 📖 پشتیبانی از انواع مختلف سند (PDF، TXT، DOCX و غیره)
-- رابط کاربری ساده چت با قابلیت کشیدن و رها کردن و استنادهای واضح
-- ۱۰۰٪ آماده استقرار در فضای ابری
-- سازگار با تمام [ارائه‌دهندگان محبوب LLM متن‌باز و تجاری](../README.md#supported-llms-embedder-models-speech-models-and-vector-databases)
-- دارای اقدامات داخلی صرفه‌جویی در هزینه و زمان برای مدیریت اسناد بسیار بزرگ در مقایسه با سایر رابط‌های کاربری چت
+- رابط چت شهودی با بارگذاری کشیدن و رها کردن و ارجاع به منابع.
+- آماده تولید برای هر نوع استقرار ابری.
+- سازگار با تمام [ارائه‌دهندگان محبوب LLM متن‌باز و تجاری](../README.md#supported-llms-embedder-models-speech-models-and-vector-databases).
+- بهینه‌سازی‌های داخلی برای مجموعه اسناد بزرگ — هزینه کمتر و پاسخ سریع‌تر نسبت به سایر رابط‌های چت.
 - API کامل توسعه‌دهنده برای یکپارچه‌سازی‌های سفارشی!
-- و موارد بیشتر... نصب کنید و کشف کنید!
+- ...و موارد بسیار بیشتر — در چند دقیقه نصب کنید و خودتان ببینید.
 
-### LLMها، مدل‌های Embedder، مدل‌های گفتاری و پایگاه‌های داده برداری پشتیبانی شده
+### LLMها، مدل‌های Embedder، مدل‌های گفتاری و پایگاه‌های داده برداری پشتیبانی‌شده
+
+</div>
 
 **مدل‌های زبانی بزرگ (LLMs):**
 
@@ -88,7 +101,7 @@ AnythingLLM همچنین از چندین کاربر پشتیبانی می‌کن
 - [Google Gemini Pro](https://ai.google.dev/)
 - [Ollama (chat models)](https://ollama.ai/)
 - [LM Studio (all models)](https://lmstudio.ai)
-- [LocalAi (all models)](https://localai.io/)
+- [LocalAI (all models)](https://localai.io/)
 - [Together AI (chat models)](https://www.together.ai/)
 - [Fireworks AI (chat models)](https://fireworks.ai/)
 - [Perplexity (chat models)](https://www.perplexity.ai/)
@@ -105,37 +118,47 @@ AnythingLLM همچنین از چندین کاربر پشتیبانی می‌کن
 - [Z.AI (chat models)](https://z.ai/model-api)
 - [Novita AI (chat models)](https://novita.ai/model-api/product/llm-api?utm_source=github_anything-llm&utm_medium=github_readme&utm_campaign=link)
 - [PPIO](https://ppinfra.com?utm_source=github_anything-llm)
+- [Gitee AI](https://ai.gitee.com/)
+- [Moonshot AI](https://www.moonshot.ai/)
+- [Microsoft Foundry Local](https://github.com/microsoft/Foundry-Local)
+- [CometAPI (chat models)](https://www.cometapi.com/)
 - [llmman](https://github.com/llmmanorg/llmman)
 - [PrivateModeAI (chat models)](https://privatemode.ai/)
 - [SambaNova Cloud (chat models)](https://cloud.sambanova.ai/)
 - [Lemonade by AMD](https://lemonade-server.ai)
 - [Minimax](https://platform.minimax.io)
 - [Cerebras (chat models)](https://www.cerebras.ai/)
-
-<div dir="rtl">
+- [oMLX](https://github.com/jundot/omlx)
 
 **مدل‌های Embedder:**
 
-- [AnythingLLM Native Embedder](/server/storage/models/README.md) (پیش‌فرض)
+- [AnythingLLM Native Embedder](/server/storage/models/README.md) (default)
 - [OpenAI](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
-- [LocalAi (همه)](https://localai.io/)
-- [Ollama (همه)](https://ollama.ai/)
-- [LM Studio (همه)](https://lmstudio.ai)
+- [Gemini](https://ai.google.dev/)
+- [LocalAI (all)](https://localai.io/)
+- [Ollama (all)](https://ollama.ai/)
+- [LM Studio (all)](https://lmstudio.ai)
+- [Lemonade](https://lemonade-server.ai)
+- [OpenRouter](https://openrouter.ai/)
+- [LiteLLM](https://github.com/BerriAI/litellm)
 - [Cohere](https://cohere.com/)
+- [Voyage AI](https://www.voyageai.com/)
+- [Mistral](https://mistral.ai/)
+- Generic OpenAI-compatible embedding APIs
 
 **مدل‌های رونویسی صوتی:**
 
-- [AnythingLLM Built-in](https://github.com/Mintplex-Labs/anything-llm/tree/master/server/storage/models#audiovideo-transcription) (پیش‌فرض)
+- [AnythingLLM Built-in](https://github.com/Mintplex-Labs/anything-llm/tree/master/server/storage/models#audiovideo-transcription) (default)
 - [OpenAI](https://openai.com/)
 
 **پشتیبانی TTS (تبدیل متن به گفتار):**
 
-- امکانات داخلی مرورگر (پیش‌فرض)
-- [PiperTTSLocal - اجرا در مرورگر](https://github.com/rhasspy/piper)
-- [OpenAI TTS](https://platform.openai.com/docs/guides/text-to-speech/voice-options)
+- Native Browser Built-in (default)
+- [PiperTTSLocal - runs in browser](https://github.com/rhasspy/piper)
+- [OpenAI TTS](https://platform.openai.com/docs/guides/text-to-speech#voice-options)
 - [ElevenLabs](https://elevenlabs.io/)
-- هر سرویس TTS سازگار با OpenAI
+- Any OpenAI Compatible TTS service.
 
 **پشتیبانی STT (تبدیل گفتار به متن):**
 
@@ -143,44 +166,42 @@ AnythingLLM همچنین از چندین کاربر پشتیبانی می‌کن
 
 **پایگاه‌های داده برداری:**
 
-- [LanceDB](https://github.com/lancedb/lancedb) (پیش‌فرض)
+- [LanceDB](https://github.com/lancedb/lancedb) (default)
 - [PGVector](https://github.com/pgvector/pgvector)
 - [Astra DB](https://www.datastax.com/products/datastax-astra)
 - [Pinecone](https://pinecone.io)
-- [Chroma](https://trychroma.com)
+- [Chroma & ChromaCloud](https://trychroma.com)
 - [Weaviate](https://weaviate.io)
 - [Qdrant](https://qdrant.tech)
 - [Milvus](https://milvus.io)
 - [Zilliz](https://zilliz.com)
 
+<div dir="rtl">
+
 ### نمای کلی فنی
 
-این مخزن شامل سه بخش اصلی است:
+این تک‌مخزن از شش بخش اصلی تشکیل شده است:
 
 - `frontend`: یک رابط کاربری viteJS + React که می‌توانید برای ایجاد و مدیریت آسان تمام محتوای قابل استفاده توسط LLM اجرا کنید.
-- `server`: یک سرور NodeJS express برای مدیریت تمام تعاملات و انجام مدیریت vectorDB و تعاملات LLM.
+- `server`: یک سرور NodeJS express برای مدیریت تمام تعاملات و انجام مدیریت پایگاه داده برداری و تعاملات LLM.
 - `collector`: سرور NodeJS express که اسناد را از رابط کاربری پردازش و تجزیه می‌کند.
-- `docker`: دستورالعمل‌های Docker و فرآیند ساخت + اطلاعات برای ساخت از منبع.
+- `docker`: دستورالعمل‌های Docker و فرآیند ساخت + اطلاعات ساخت از منبع.
 - `embed`: زیرماژول برای تولید و ایجاد [ویجت قابل جاسازی وب](https://github.com/Mintplex-Labs/anythingllm-embed).
 - `browser-extension`: زیرماژول برای [افزونه مرورگر کروم](https://github.com/Mintplex-Labs/anythingllm-extension).
 
-</div>
-
 ## 🛳 میزبانی شخصی
-
-<div dir="rtl">
 
 Mintplex Labs و جامعه کاربران، روش‌ها، اسکریپت‌ها و قالب‌های متعددی را برای اجرای AnythingLLM به صورت محلی نگهداری می‌کنند. برای مطالعه نحوه استقرار در محیط مورد نظر خود یا استقرار خودکار، به جدول زیر مراجعه کنید.
 
 </div>
 
-| Docker                                           | AWS                                     | GCP                                     | Digital Ocean                                  | Render.com                                           |
-| ------------------------------------------------ | --------------------------------------- | --------------------------------------- | ---------------------------------------------- | ---------------------------------------------------- |
+| Docker | AWS | GCP | Digital Ocean | Render.com |
+|----------------------------------------|----|-----|---------------|------------|
 | [![Deploy on Docker][docker-btn]][docker-deploy] | [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy] | [![Deploy on DigitalOcean][do-btn]][do-deploy] | [![Deploy on Render.com][render-btn]][render-deploy] |
 
-| Railway                                             | RepoCloud                                                 | Elestio                                             | Sealos                                               |
-| --------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------- | ---------------------------------------------------- |
-| [![Deploy on Railway][railway-btn]][railway-deploy] | [![Deploy on RepoCloud][repocloud-btn]][repocloud-deploy] | [![Deploy on Elestio][elestio-btn]][elestio-deploy] | [![Deploy on Sealos][sealos-btn]][sealos-deploy] |
+| Railway                                             | RepoCloud                                                 | Elestio                                             | Northflank                                                   | Sealos                                               |
+| --------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------- |
+| [![Deploy on Railway][railway-btn]][railway-deploy] | [![Deploy on RepoCloud][repocloud-btn]][repocloud-deploy] | [![Deploy on Elestio][elestio-btn]][elestio-deploy] | [![Deploy on Northflank][northflank-btn]][northflank-deploy] | [![Deploy on Sealos][sealos-btn]][sealos-deploy] |
 
 <div dir="rtl">
 
@@ -192,7 +213,7 @@ Mintplex Labs و جامعه کاربران، روش‌ها، اسکریپت‌ه
   - قبل از ادامه، آن‌ها را پر کنید. اطمینان حاصل کنید که `server/.env.development` پر شده است، در غیر این صورت همه چیز درست کار نخواهد کرد.
 - `yarn dev:server` برای راه‌اندازی سرور به صورت محلی (از ریشه مخزن).
 - `yarn dev:frontend` برای راه‌اندازی فرانت‌اند به صورت محلی (از ریشه مخزن).
-- `yarn dev:collector` برای اجرای جمع‌کننده اسناد (از ریشه مخزن).
+- `yarn dev:collector` سپس برای اجرای جمع‌کننده اسناد (از ریشه مخزن).
 
 [درباره اسناد بیشتر بدانید](../server/storage/documents/DOCUMENTS.md)
 
@@ -200,61 +221,81 @@ Mintplex Labs و جامعه کاربران، روش‌ها، اسکریپت‌ه
 
 AnythingLLM توسط Mintplex Labs Inc دارای ویژگی تله‌متری است که اطلاعات استفاده ناشناس را جمع‌آوری می‌کند.
 
+</div>
+
 <details>
 <summary><kbd>اطلاعات بیشتر درباره تله‌متری و حریم خصوصی AnythingLLM</kbd></summary>
 
+<div dir="rtl">
+
 ### چرا؟
 
-<div dir="rtl">
 ما از این اطلاعات برای درک نحوه استفاده از AnythingLLM، اولویت‌بندی کار روی ویژگی‌های جدید و رفع اشکالات، و بهبود عملکرد و پایداری AnythingLLM استفاده می‌کنیم.
-</div>
 
 ### غیرفعال کردن
 
-<div dir="rtl">
 برای غیرفعال کردن تله‌متری، `DISABLE_TELEMETRY` را در تنظیمات .env سرور یا داکر خود روی "true" تنظیم کنید. همچنین می‌توانید این کار را در برنامه با رفتن به نوار کناری > `حریم خصوصی` و غیرفعال کردن تله‌متری انجام دهید.
-</div>
 
 ### دقیقاً چه چیزی را ردیابی می‌کنید؟
 
-<div dir="rtl">
-ما فقط جزئیات استفاده‌ای را که به ما در تصمیم‌گیری‌های محصول و نقشه راه کمک می‌کند، ردیابی می‌کنیم، به طور خاص:
+ما فقط جزئیات استفاده‌ای را که به ما در تصمیم‌گیری‌های محصول و نقشه راه کمک می‌کند ردیابی می‌کنیم، به طور خاص:
 
 - نوع نصب شما (Docker یا Desktop)
-- زمانی که سندی اضافه یا حذف می‌شود. هیچ اطلاعاتی _درباره_ سند نداریم. فقط رویداد ثبت می‌شود.
-- نوع پایگاه داده برداری در حال استفاده. به ما کمک می‌کند بدانیم کدام ارائه‌دهنده بیشتر استفاده می‌شود.
-- نوع LLM در حال استفاده. به ما کمک می‌کند محبوب‌ترین انتخاب را بشناسیم.
-- ارسال چت. این معمول‌ترین "رویداد" است و به ما ایده‌ای از فعالیت روزانه می‌دهد.
 
-می‌توانید این ادعاها را با پیدا کردن تمام مکان‌هایی که `Telemetry.sendTelemetry` فراخوانی می‌شود، تأیید کنید. ارائه‌دهنده تله‌متری [PostHog](https://posthog.com/) است.
+- زمانی که سندی اضافه یا حذف می‌شود. هیچ اطلاعاتی _درباره_ خود سند جمع‌آوری نمی‌شود. فقط وقوع رویداد ثبت می‌شود. این به ما درکی از میزان استفاده می‌دهد.
+
+- نوع پایگاه داده برداری در حال استفاده. این به ما کمک می‌کند هنگام انتشار به‌روزرسانی‌های آن ارائه‌دهنده، تغییرات را اولویت‌بندی کنیم.
+
+- نوع ارائه‌دهنده LLM و برچسب مدل در حال استفاده. این به ما کمک می‌کند هنگام انتشار به‌روزرسانی‌ها برای آن ارائه‌دهنده یا مدل یا ترکیب آن‌ها، تغییرات را اولویت‌بندی کنیم. مثلاً: مدل‌های استدلالی در برابر مدل‌های معمولی، مدل‌های چندوجهی و غیره.
+
+- زمانی که چتی ارسال می‌شود. این معمول‌ترین «رویداد» است و به ما درکی از فعالیت روزانه این پروژه در تمام نصب‌ها می‌دهد. باز هم فقط **رویداد** ارسال می‌شود — ما هیچ اطلاعاتی درباره ماهیت یا محتوای خود چت نداریم.
+
+می‌توانید این ادعاها را با پیدا کردن تمام مکان‌هایی که `Telemetry.sendTelemetry` فراخوانی می‌شود تأیید کنید. علاوه بر این، در صورت فعال بودن، این رویدادها در لاگ خروجی نوشته می‌شوند تا داده‌های ارسالی را ببینید. **هیچ IP یا اطلاعات شناسایی دیگری جمع‌آوری نمی‌شود**. ارائه‌دهنده تله‌متری [PostHog](https://posthog.com/) است — یک سرویس متن‌باز جمع‌آوری تله‌متری.
+
+ما حریم خصوصی را بسیار جدی می‌گیریم و امیدواریم درک کنید که می‌خواهیم بدانیم ابزار ما چگونه استفاده می‌شود، بدون استفاده از نظرسنجی‌های آزاردهنده، تا بتوانیم چیزی ارزشمند بسازیم. داده‌های ناشناس _هرگز_ با اشخاص ثالث به اشتراک گذاشته نمی‌شوند.
 
 [مشاهده همه رویدادهای تله‌متری در کد منبع](https://github.com/search?q=repo%3AMintplex-Labs%2Fanything-llm%20.sendTelemetry(&type=code)
+
+### سایر اتصالات خروجی
+
+اگر تله‌متری را غیرفعال کنید، همچنان اتصالات خروجی به سرویس‌های زیر را خواهید دید:
+
+- در صورت استفاده از ابزار خارجی، LLM، مدل‌های Embedding یا پایگاه‌های داده برداری، همچنان اتصالات خروجی به ارائه‌دهنده مربوطه را خواهید دید.
+- `cdn.anythingllm.com` برای دریافت مدل‌ها از CDN آینه‌ای ما. این توسط تله‌متری ردیابی نمی‌شود و برای کاربران مناطق با محدودیت VPN مفید است.
+- `github/githubusercontent.com` تعدادی فایل تخت از این دامنه‌ها برای کش کردن پنجره زمینه دانلود می‌شود.
+
+در واقع، اگر تله‌متری غیرفعال باشد ما هیچ چیزی جمع‌آوری نمی‌کنیم. با این حال، بسته به پیکربندی شما ممکن است همچنان اتصالات خروجی ببینید و مشمول شرایط خدمات ارائه‌دهنده مربوطه باشید.
 
 </div>
 
 </details>
 
-## 👋 مشارکت
-
 <div dir="rtl">
 
-- ایجاد issue
-- ایجاد PR با فرمت نام شاخه `<شماره issue>-<نام کوتاه>`
-- تأیید از تیم اصلی
-</div>
+## 👋 مشارکت
+
+- [مشارکت در AnythingLLM](../CONTRIBUTING.md) - نحوه مشارکت در AnythingLLM.
+
+## 💖 حامیان
+
+فهرست حامیان در README انگلیسی نگهداری می‌شود، به [Sponsors](../README.md#-sponsors) مراجعه کنید.
 
 ## 🌟 مشارکت‌کنندگان
 
-[![مشارکت‌کنندگان anythingllm](https://contrib.rocks/image?repo=mintplex-labs/anything-llm)](https://github.com/mintplex-labs/anything-llm/graphs/contributors)
+</div>
 
-[![نمودار تاریخچه ستاره‌ها](https://api.star-history.com/svg?repos=mintplex-labs/anything-llm&type=Timeline)](https://star-history.com/#mintplex-labs/anything-llm&Date)
+[![anythingllm contributors](https://contrib.rocks/image?repo=mintplex-labs/anything-llm)](https://github.com/mintplex-labs/anything-llm/graphs/contributors)
 
-## 🔗 محصولات بیشتر
+[![Star History Chart](https://api.star-history.com/svg?repos=mintplex-labs/anything-llm&type=Timeline)](https://star-history.com/#mintplex-labs/anything-llm&Date)
 
 <div dir="rtl">
 
-- **[VectorAdmin][vector-admin]:** یک رابط کاربری و مجموعه ابزار همه‌کاره برای مدیریت پایگاه‌های داده برداری.
-- **[OpenAI Assistant Swarm][assistant-swarm]:** تبدیل کل کتابخانه دستیاران OpenAI به یک ارتش واحد تحت فرمان یک عامل.
+## 🔗 محصولات بیشتر
+
+- **[AnythingLLM Mobile (با مجوز MIT)][anythingllm-mobile]:** اپلیکیشن موبایلی که به شما امکان استفاده از AnythingLLM روی دستگاه همراهتان را می‌دهد.
+- **[افزونه مرورگر AnythingLLM][anythingllm-extension]:** افزونه مرورگری که امکان استفاده از AnythingLLM در مرورگر را فراهم می‌کند.
+- **[AnythingLLM Embed][anythingllm-embed]:** ویجتی که امکان جاسازی AnythingLLM در وب‌سایت شما را فراهم می‌کند.
+
 </div>
 
 <div align="right">
@@ -271,20 +312,22 @@ Copyright © 2026 [Mintplex Labs][profile-link]. <br />
 This project is [MIT](../LICENSE) licensed.
 
 </div>
+
 <!-- LINK GROUP -->
 
 [back-to-top]: https://img.shields.io/badge/-BACK_TO_TOP-222628?style=flat-square
 [profile-link]: https://github.com/mintplex-labs
-[vector-admin]: https://github.com/mintplex-labs/vector-admin
-[assistant-swarm]: https://github.com/Mintplex-Labs/openai-assistant-swarm
-[docker-btn]: ./images/deployBtns/docker.png
-[docker-deploy]: ./docker/HOW_TO_USE_DOCKER.md
-[aws-btn]: ./images/deployBtns/aws.png
-[aws-deploy]: ./cloud-deployments/aws/cloudformation/DEPLOY.md
+[anythingllm-mobile]: https://github.com/Mintplex-Labs/anythingllm-mobile
+[anythingllm-extension]: https://github.com/Mintplex-Labs/anythingllm-extension
+[anythingllm-embed]: https://github.com/Mintplex-Labs/anythingllm-embed
+[docker-btn]: ../images/deployBtns/docker.png
+[docker-deploy]: ../docker/HOW_TO_USE_DOCKER.md
+[aws-btn]: ../images/deployBtns/aws.png
+[aws-deploy]: ../cloud-deployments/aws/cloudformation/DEPLOY.md
 [gcp-btn]: https://deploy.cloud.run/button.svg
-[gcp-deploy]: ./cloud-deployments/gcp/deployment/DEPLOY.md
+[gcp-deploy]: ../cloud-deployments/gcp/deployment/DEPLOY.md
 [do-btn]: https://www.deploytodo.com/do-btn-blue.svg
-[do-deploy]: ./cloud-deployments/digitalocean/terraform/DEPLOY.md
+[do-deploy]: ../cloud-deployments/digitalocean/terraform/DEPLOY.md
 [render-btn]: https://render.com/images/deploy-to-render-button.svg
 [render-deploy]: https://render.com/deploy?repo=https://github.com/Mintplex-Labs/anything-llm&branch=render
 [render-btn]: https://render.com/images/deploy-to-render-button.svg
@@ -295,5 +338,7 @@ This project is [MIT](../LICENSE) licensed.
 [repocloud-deploy]: https://repocloud.io/details/?app_id=276
 [elestio-btn]: https://elest.io/images/logos/deploy-to-elestio-btn.png
 [elestio-deploy]: https://elest.io/open-source/anythingllm
+[northflank-btn]: https://assets.northflank.com/deploy_to_northflank_smm_36700fb050.svg
+[northflank-deploy]: https://northflank.com/stacks/deploy-anythingllm
 [sealos-btn]: https://sealos.io/Deploy-on-Sealos.svg
 [sealos-deploy]: https://sealos.io/products/app-store/anything-llm
