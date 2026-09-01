@@ -4,37 +4,34 @@ const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
-const {
-  DockerModelRunnerLLM,
-  parseDockerModelRunnerEndpoint,
-} = require("../../../AiProviders/dockerModelRunner/index.js");
+const { toValidNumber } = require("../../../http/index.js");
+const { VertexLLM } = require("../../../AiProviders/vertex");
 
-/**
- * The agent provider for the Docker Model Runner.
- */
-class DockerModelRunnerProvider extends InheritMultiple([Provider, UnTooled]) {
+class VertexProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
 
-  /**
-   *
-   * @param {{model?: string}} config
-   */
   constructor(config = {}) {
     super();
-    this.providerTag = "docker-model-runner";
-    const model =
-      config?.model || process.env.DOCKER_MODEL_RUNNER_LLM_MODEL_PREF || null;
+    const { model = "gemini-2.5-flash" } = config;
+    // Vertex only accepts the API key via `x-goog-api-key` and rejects any
+    // request that also carries an Authorization header, so the SDK's own
+    // bearer header must be removed (a null default header deletes it).
     const client = new OpenAI({
-      baseURL: parseDockerModelRunnerEndpoint(
-        process.env.DOCKER_MODEL_RUNNER_BASE_PATH
-      ),
-      apiKey: null,
+      baseURL: VertexLLM.openaiBaseURL(),
+      apiKey: "anythingllm",
+      defaultHeaders: {
+        Authorization: null,
+        "x-goog-api-key": process.env.VERTEX_AI_LLM_API_KEY ?? null,
+      },
     });
 
+    this.providerTag = "vertex";
     this._client = client;
     this.model = model;
     this.verbose = true;
-    this._supportsToolCalling = null;
+    this.maxTokens = process.env.VERTEX_AI_LLM_MAX_TOKENS
+      ? toValidNumber(process.env.VERTEX_AI_LLM_MAX_TOKENS, 1024)
+      : 1024;
   }
 
   get client() {
@@ -45,31 +42,22 @@ class DockerModelRunnerProvider extends InheritMultiple([Provider, UnTooled]) {
     return true;
   }
 
-  /**
-   * Whether this provider supports native OpenAI-compatible tool calling.
-   * Override in subclass and return true to use native tool calling instead of UnTooled.
-   * @returns {boolean|Promise<boolean>}
-   */
-  async supportsNativeToolCalling() {
-    if (this.optsOutOfNativeToolCallingViaEnv(this.providerTag)) return false;
-    if (this._supportsToolCalling !== null) return this._supportsToolCalling;
-    const dmr = new DockerModelRunnerLLM(null, this.model);
-    const capabilities = await dmr.getModelCapabilities();
-    this._supportsToolCalling = capabilities.tools === true;
-    return this._supportsToolCalling;
+  get #apiModelId() {
+    return VertexLLM.apiModelId(this.model);
   }
 
   async #handleFunctionCallChat({ messages = [] }) {
     return await this.client.chat.completions
       .create({
-        model: this.model,
+        model: this.#apiModelId,
         messages,
+        max_tokens: this.maxTokens,
       })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
-          throw new Error("Docker Model Runner chat: No results!");
+          throw new Error("Vertex AI chat: No results!");
         if (result.choices.length === 0)
-          throw new Error("Docker Model Runner chat: No results length!");
+          throw new Error("Vertex AI chat: No results length!");
         return result.choices[0].message.content;
       })
       .catch((_) => {
@@ -79,18 +67,14 @@ class DockerModelRunnerProvider extends InheritMultiple([Provider, UnTooled]) {
 
   async #handleFunctionCallStream({ messages = [] }) {
     return await this.client.chat.completions.create({
-      model: this.model,
+      model: this.#apiModelId,
       stream: true,
       messages,
     });
   }
 
-  /**
-   * Stream a chat completion with tool calling support.
-   * Uses native tool calling when supported, otherwise falls back to UnTooled.
-   */
   async stream(messages, functions = [], eventHandler = null) {
-    const useNative = await this.supportsNativeToolCalling();
+    const useNative = this.supportsNativeToolCalling();
 
     if (!useNative) {
       return await UnTooled.prototype.stream.call(
@@ -109,7 +93,7 @@ class DockerModelRunnerProvider extends InheritMultiple([Provider, UnTooled]) {
     try {
       return await tooledStream(
         this.client,
-        this.model,
+        this.#apiModelId,
         messages,
         functions,
         eventHandler,
@@ -129,12 +113,8 @@ class DockerModelRunnerProvider extends InheritMultiple([Provider, UnTooled]) {
     }
   }
 
-  /**
-   * Create a non-streaming completion with tool calling support.
-   * Uses native tool calling when supported, otherwise falls back to UnTooled.
-   */
   async complete(messages, functions = []) {
-    const useNative = await this.supportsNativeToolCalling();
+    const useNative = this.supportsNativeToolCalling();
 
     if (!useNative) {
       return await UnTooled.prototype.complete.call(
@@ -148,7 +128,7 @@ class DockerModelRunnerProvider extends InheritMultiple([Provider, UnTooled]) {
     try {
       const result = await tooledComplete(
         this.client,
-        this.model,
+        this.#apiModelId,
         messages,
         functions,
         this.getCost.bind(this),
@@ -178,11 +158,10 @@ class DockerModelRunnerProvider extends InheritMultiple([Provider, UnTooled]) {
    *
    * @param _usage The completion to get the cost for.
    * @returns The cost of the completion.
-   * Stubbed since Docker Model Runner has no cost basis.
    */
   getCost(_usage) {
     return 0;
   }
 }
 
-module.exports = DockerModelRunnerProvider;
+module.exports = VertexProvider;

@@ -12,7 +12,6 @@ const { parseNvidiaNimBasePath } = require("../AiProviders/nvidiaNim");
 const { fetchPPIOModels } = require("../AiProviders/ppio");
 const { GeminiLLM } = require("../AiProviders/gemini");
 const { fetchCometApiModels } = require("../AiProviders/cometapi");
-const { getDockerModels } = require("../AiProviders/dockerModelRunner");
 const { getAllLemonadeModels } = require("../AiProviders/lemonade");
 
 const SUPPORT_CUSTOM_MODELS = [
@@ -43,7 +42,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "cohere",
   "zai",
   "giteeai",
-  "docker-model-runner",
+  "llmman",
   "privatemode",
   "sambanova",
   "lemonade",
@@ -52,6 +51,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "omlx",
   "bedrock",
   "generic-openai",
+  "vertex",
   // Image Generation Engines
   // These are suffixed with `-imggen` so that a provider that supports both
   // chat and image generation (eg: ollama) can return only its image-capable
@@ -161,8 +161,8 @@ async function getCustomModels(
       return await getOpenRouterEmbeddingModels();
     case "giteeai":
       return await getGiteeAIModels(apiKey);
-    case "docker-model-runner":
-      return await getDockerModelRunnerModels(basePath);
+    case "llmman":
+      return await llmmanModels(basePath);
     case "privatemode":
       return await getPrivatemodeModels(basePath, "generate");
     case "sambanova":
@@ -181,6 +181,8 @@ async function getCustomModels(
       return await getCerebrasModels();
     case "bedrock":
       return await getBedrockModels(apiKey, options);
+    case "vertex":
+      return await getVertexModels();
     case "generic-openai":
       return await getGenericOpenAiModels(basePath, apiKey);
     case "deepgram-stt":
@@ -1036,17 +1038,38 @@ async function getOpenRouterEmbeddingModels() {
   return { models, error: null };
 }
 
-async function getDockerModelRunnerModels(basePath = null) {
+/**
+ * Lists the models llmman is serving, via the Ollama API's /api/tags.
+ */
+async function llmmanModels(basePath = null, _authToken = null) {
+  let url;
   try {
-    const models = await getDockerModels(basePath);
-    return { models, error: null };
-  } catch (e) {
-    console.error(`DockerModelRunner:getDockerModelRunnerModels`, e.message);
-    return {
-      models: [],
-      error: "Could not fetch Docker Model Runner Models",
-    };
+    let urlPath = basePath ?? process.env.LLMMAN_BASE_PATH;
+    new URL(urlPath);
+    if (urlPath.split("").slice(-1)?.[0] === "/")
+      throw new Error("BasePath Cannot end in /!");
+    url = urlPath;
+  } catch {
+    return { models: [], error: "Not a valid URL." };
   }
+
+  const authToken = _authToken || process.env.LLMMAN_AUTH_TOKEN || null;
+  const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
+  const models = await fetch(`${url}/api/tags`, { headers: headers })
+    .then((res) => {
+      if (!res.ok) throw new Error(`Could not reach llmman! ${res.status}`);
+      return res.json();
+    })
+    .then((data) => data?.models || [])
+    .then((models) => models.map((model) => ({ id: model.name })))
+    .catch((e) => {
+      console.error(e);
+      return [];
+    });
+
+  if (models.length > 0 && !!authToken)
+    process.env.LLMMAN_AUTH_TOKEN = authToken;
+  return { models, error: null };
 }
 
 async function getLemonadeModels(
@@ -1358,6 +1381,34 @@ async function kokoroTtsVoices(basePath = null, apiKey = null) {
  * @param {string} [options.region] - The region to use
  * @returns {Promise<{models: Array<{id: string, organization: string, name: string}>, error: string | null}>}
  */
+async function getVertexModels() {
+  // Vertex's OpenAI-compatible endpoint has no /models listing, so the
+  // dropdown is built from the LiteLLM-backed context window cache, which
+  // is already filtered to `vertex_ai-language-models` under both keys -
+  // `gemini` covers caches pulled before `vertex` was tracked. Non-Gemini
+  // entries (partner/embedding models) are excluded since users run those
+  // via the manual model entry with their full publisher-prefixed IDs.
+  try {
+    const { MODEL_MAP } = require("../AiProviders/modelMap");
+    const modelMap = MODEL_MAP.get("vertex") ?? MODEL_MAP.get("gemini") ?? {};
+    const models = Object.keys(modelMap)
+      .filter(
+        (id) =>
+          id.startsWith("gemini") &&
+          // Retired on Vertex - the endpoint 404s for these models.
+          !id.startsWith("gemini-2.0") &&
+          !id.includes("embedding") &&
+          !id.includes("computer-use")
+      )
+      .sort()
+      .map((id) => ({ id, name: id, organization: "Google" }));
+    return { models, error: null };
+  } catch (e) {
+    console.error(`Vertex:getVertexModels`, e.message);
+    return { models: [], error: null };
+  }
+}
+
 async function getBedrockModels(_apiKey = null, options = {}) {
   try {
     const apiKey =

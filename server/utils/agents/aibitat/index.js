@@ -1498,8 +1498,8 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
         return new Providers.GiteeAIProvider({ model: config.model });
       case "cohere":
         return new Providers.CohereProvider({ model: config.model });
-      case "docker-model-runner":
-        return new Providers.DockerModelRunnerProvider({ model: config.model });
+      case "llmman":
+        return new Providers.LlmmanProvider({ model: config.model });
       case "privatemode":
         return new Providers.PrivatemodeProvider({ model: config.model });
       case "sambanova":
@@ -1512,6 +1512,8 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
         return new Providers.MinimaxProvider({ model: config.model });
       case "cerebras":
         return new Providers.CerebrasProvider({ model: config.model });
+      case "vertex":
+        return new Providers.VertexProvider({ model: config.model });
       default:
         throw new Error(
           `Unknown provider: ${config.provider}. Please use a valid provider.`

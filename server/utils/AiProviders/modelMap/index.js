@@ -23,6 +23,7 @@ class ContextWindowFinder {
     sambanova: "sambanova",
     minimax: "minimax",
     cerebras: "cerebras",
+    vertex: "vertex_ai-language-models",
   };
   static expiryMs = 1000 * 60 * 60 * 24 * 3; // 3 days
   static remoteUrl =

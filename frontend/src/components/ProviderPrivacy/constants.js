@@ -19,6 +19,7 @@ import KoboldCPPLogo from "@/media/llmprovider/koboldcpp.png";
 import TextGenWebUILogo from "@/media/llmprovider/text-generation-webui.png";
 import LiteLLMLogo from "@/media/llmprovider/litellm.png";
 import AWSBedrockLogo from "@/media/llmprovider/bedrock.png";
+import VertexLogo from "@/media/llmprovider/vertex.png";
 import DeepSeekLogo from "@/media/llmprovider/deepseek.png";
 import APIPieLogo from "@/media/llmprovider/apipie.png";
 import XAILogo from "@/media/llmprovider/xai.png";
@@ -39,7 +40,7 @@ import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
 import FoundryLogo from "@/media/llmprovider/foundry-local.png";
 import GiteeAILogo from "@/media/llmprovider/giteeai.png";
-import DockerModelRunnerLogo from "@/media/llmprovider/docker-model-runner.png";
+import LlmmanLogo from "@/media/llmprovider/llmman.png";
 import PrivateModeLogo from "@/media/llmprovider/privatemode.png";
 import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
 import LemonadeLogo from "@/media/llmprovider/lemonade.png";
@@ -169,6 +170,12 @@ const LLM_PROVIDER_PRIVACY_MAP = {
     policyUrl: "https://aws.amazon.com/bedrock/security-compliance/",
     logo: AWSBedrockLogo,
   },
+  vertex: {
+    name: "Google Vertex AI",
+    policyUrl:
+      "https://cloud.google.com/vertex-ai/generative-ai/docs/data-governance",
+    logo: VertexLogo,
+  },
   deepseek: {
     name: "DeepSeek",
     policyUrl:
@@ -217,12 +224,12 @@ const LLM_PROVIDER_PRIVACY_MAP = {
     policyUrl: "https://ai.gitee.com/docs/appendix/privacy",
     logo: GiteeAILogo,
   },
-  "docker-model-runner": {
-    name: "Docker Model Runner",
+  llmman: {
+    name: "llmman",
     description: [
-      "Your model and chats are only accessible on the machine running Docker Model Runner.",
+      "Your model and chats are only accessible on the machine running llmman.",
     ],
-    logo: DockerModelRunnerLogo,
+    logo: LlmmanLogo,
   },
   privatemode: {
     name: "Privatemode",
