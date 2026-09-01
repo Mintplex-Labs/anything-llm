@@ -731,6 +731,11 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Prema zadanim postavkama ova vještina je omogućena, ali je možete isključiti ako ne želite da bude dostupna agentu.",
+      generateImage: {
+        title: "Generiranje slika",
+        description:
+          "Omogućite agentu da generira slike iz razgovora ili da uređuje slike priložene razgovoru, koristeći vaš konfiguriranog pružatelja usluga za generiranje slika.",
+      },
     },
     mcp: {
       title: "MCP poslužitelji",

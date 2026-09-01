@@ -729,6 +729,11 @@ const TRANSLATIONS = {
         description:
           'Ļauj aģentam izveidot atkārtotus plānotus darbus no čata (piemēram, "katru darba dienu plkst. 9:00 nosūtīt man savu e-pasta kopsavilkumu un nosūtīt ziņu"). Pieejams tikai vienam lietotājam.',
       },
+      generateImage: {
+        title: "Izveidot attēlus",
+        description:
+          "Ļauj aģentam ģenerēt attēlus no sarunas, vai rediģēt attēlus, kas pievienoti sarunai, izmantojot konfigurētu attēlu ģenerēšanas pakalpojumu.",
+      },
     },
     mcp: {
       title: "MCP serveri",

@@ -1290,6 +1290,11 @@ const TRANSLATIONS = {
         description:
           "Permite reprezentantului să creeze sarcini programate repetitive direct din aplicație (de exemplu, „în fiecare zi de lucru la ora 9:00, rezumă e-mailurile mele și trimite-mi un raport”). Funcționalitatea este disponibilă doar în modul pentru utilizator unic.",
       },
+      generateImage: {
+        title: "Generați imagini",
+        description:
+          "Permiteți agenților să genereze imagini din conversații sau să editeze imaginile atașate la acestea, folosind furnizorul de generare de imagini configurat de dumneavoastră.",
+      },
     },
     mcp: {
       title: "Servere MCP",

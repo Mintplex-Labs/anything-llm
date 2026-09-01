@@ -729,6 +729,11 @@ const TRANSLATIONS = {
         description:
           'Temsilcinin, sohbetten otomatik olarak tekrarlayan görevler oluşturmasına izin verin (örneğin, "her hafta içi her gün saat 09:00\'da e-posta kutlumu özetleyip bana gönder"). Sadece tek kullanıcı modunda kullanılabilir.',
       },
+      generateImage: {
+        title: "Görseller oluştur",
+        description:
+          "Ajantın, yapılandırılmış görüntü oluşturma sağlayıcınız aracılığıyla sohbetten görüntüler oluşturmasına veya konuşmaya eklenen görüntüleri düzenlemesine izin verin.",
+      },
     },
     mcp: {
       title: "MCP Sunucuları",

@@ -711,6 +711,11 @@ const TRANSLATIONS = {
         description:
           'Lase esindajal luua korduvad, planeeritud ülesanded vestluse kaudu (nt " iga tööpäeva kell 9 kokkuvõta minu postkasti ja saada mulle e-posti"). Saadav ainult ühe kasutaja režiimis.',
       },
+      generateImage: {
+        title: "Loo pildid",
+        description:
+          "Lase esindajal luua pilte vestluse põhjal või muuta dialoogi külge lisatud pilte, kasutades teie konfigureeritud piltide genereerimisteenust.",
+      },
     },
     mcp: {
       title: "MCP-serverid",

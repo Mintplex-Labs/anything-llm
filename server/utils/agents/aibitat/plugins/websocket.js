@@ -100,12 +100,14 @@ async function handleImageCommand({ aibitat, socket, message }) {
   socket.send(
     JSON.stringify({
       type: "imageGenerationCard",
-      content:
-        result.textResponse ||
-        result.error ||
-        "Image generation was cancelled.",
-      outputs: result.outputs || [],
-      chatId: result.chatId || null,
+      content: {
+        text:
+          result.textResponse ||
+          result.error ||
+          "Image generation was cancelled.",
+        outputs: result.outputs || [],
+        chatId: result.chatId || null,
+      },
     })
   );
 
