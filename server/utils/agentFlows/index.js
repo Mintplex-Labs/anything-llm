@@ -265,7 +265,9 @@ class AgentFlows {
                   llmVariables.some((v) => v.name === key)
                 )
               );
-              const missing = requiredNames.filter((name) => !flowArgs[name]);
+              const missing = requiredNames.filter(
+                (name) => flowArgs[name] === undefined || flowArgs[name] === ""
+              );
               if (missing.length > 0)
                 return `Flow execution failed: missing required parameter(s): ${missing.join(", ")}`;
 
