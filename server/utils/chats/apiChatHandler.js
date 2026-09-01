@@ -103,6 +103,27 @@ async function processDocumentAttachments(attachments = []) {
 }
 
 /**
+ * Generated images are registered as pending agent outputs and are never
+ * streamed as text, so the packed message outputs alone would omit them from
+ * the API response entirely. Returns those image outputs with the developer
+ * API URL the caller fetches to get the image blob back.
+ * @param {import("../agents/ephemeral").EphemeralAgentHandler} agentHandler
+ * @returns {Array<{type: string, payload: object}>}
+ */
+function generatedImageOutputs(agentHandler) {
+  return agentHandler
+    .getPendingOutputs()
+    .filter((output) => output?.type === "imageGenerationCard")
+    .map((output) => ({
+      ...output,
+      payload: {
+        ...output.payload,
+        url: `/v1/document/generated-files/${output.payload.storageFilename}`,
+      },
+    }));
+}
+
+/**
  * Handle synchronous chats with your workspace via the developer API endpoint
  * @param {{
  *  workspace: import("@prisma/client").workspaces,
@@ -136,7 +157,7 @@ async function chatSync({
     await WorkspaceChats.markThreadHistoryInvalidV2({
       workspaceId: workspace.id,
       user_id: user?.id,
-      thread_id: thread?.id,
+      thread_id: thread?.id ?? null, // an undefined thread_id would match (and reset) every thread in the workspace
       api_session_id: sessionId,
     });
     if (!message?.length) {
@@ -221,7 +242,7 @@ async function chatSync({
           error: null,
           textResponse,
           thoughts,
-          outputs,
+          outputs: [...outputs, ...generatedImageOutputs(agentHandler)],
           metrics,
         };
       });
@@ -259,8 +280,10 @@ async function chatSync({
         type: chatMode,
         metrics: {},
       },
+      threadId: thread?.id || null,
       include: false,
       apiSessionId: sessionId,
+      user,
     });
 
     return {
@@ -508,7 +531,7 @@ async function streamChat({
     await WorkspaceChats.markThreadHistoryInvalidV2({
       workspaceId: workspace.id,
       user_id: user?.id,
-      thread_id: thread?.id,
+      thread_id: thread?.id ?? null, // an undefined thread_id would match (and reset) every thread in the workspace
       api_session_id: sessionId,
     });
     if (!message?.length) {
@@ -592,7 +615,7 @@ async function streamChat({
           type: "finalizeResponseStream",
           textResponse,
           thoughts,
-          outputs,
+          outputs: [...outputs, ...generatedImageOutputs(agentHandler)],
           sources: citations,
           close: true,
           error: false,

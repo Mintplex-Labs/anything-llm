@@ -13,12 +13,18 @@ import { ArrowDown } from "@phosphor-icons/react";
 import Chartable from "./Chartable";
 import ModelRouteNotification from "./ModelRouteNotification";
 import Workspace from "@/models/workspace";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import paths from "@/utils/paths";
+import { THREAD_FORK_EVENT } from "@/components/Sidebar/ActiveWorkspaces/ThreadContainer";
 import Appearance from "@/models/appearance";
 import useTextSize from "@/hooks/useTextSize";
 import useAutoScroll from "@/hooks/useAutoScroll";
-import { ThoughtExpansionProvider } from "./ThoughtContainer";
+import {
+  ThoughtExpansionProvider,
+  THOUGHT_REGEX_OPEN,
+  THOUGHT_REGEX_CLOSE,
+  THOUGHT_REGEX_COMPLETE,
+} from "./ThoughtContainer";
 import { MessageActionsProvider } from "./MessageActionsContext";
 
 export default forwardRef(function (
@@ -34,6 +40,7 @@ export default forwardRef(function (
 ) {
   const { chatHistoryRef, isAtBottom, scrollToBottom, scrollHandlers } =
     useAutoScroll(history, ref);
+  const navigate = useNavigate();
   const { threadSlug = null } = useParams();
   const { showing, hideModal } = useManageWorkspaceModal();
   const { showScrollbar } = Appearance.getSettings();
@@ -108,12 +115,18 @@ export default forwardRef(function (
         threadSlug,
         chatId
       );
-      window.location.href = paths.workspace.thread(
-        workspace.slug,
-        newThreadSlug
+      // Surface the fork in the sidebar first - if the navigation below gets
+      // blocked (ActiveGenerationGuard) and cancelled, the new thread still
+      // exists and stays reachable. Router navigation so the guard can
+      // intercept while a response is generating.
+      window.dispatchEvent(
+        new CustomEvent(THREAD_FORK_EVENT, {
+          detail: { threadSlug: newThreadSlug },
+        })
       );
+      navigate(paths.workspace.thread(workspace.slug, newThreadSlug));
     },
-    [workspace.slug, threadSlug]
+    [workspace.slug, threadSlug, navigate]
   );
 
   const compiledHistory = useMemo(
@@ -135,19 +148,30 @@ export default forwardRef(function (
       websocket,
     ]
   );
-  const lastMessageInfo = useMemo(() => getLastMessageInfo(history), [history]);
+  // A chain stays animated while the run feeding it is still live: an open
+  // agent websocket session, or an HTTP reply still streaming (animate flag).
+  // Gating on liveness keeps a chain that ends up last (aborted/errored run,
+  // stopped agent, reloaded history) from showing a working state forever,
+  // while covering the gaps between activities (thought closed, tool still
+  // running, next status not yet arrived).
+  const isLastMessageAnimating = !!history?.[history.length - 1]?.animate;
+  const runIsLive = !!websocket || isLastMessageAnimating;
   const renderStatusResponse = useCallback(
     (item, index) => {
       const hasSubsequentMessages = index < compiledHistory.length - 1;
       return (
         <StatusResponse
-          key={`status-group-${index}`}
+          // Keyed by the first node so a chain keeps its own client-side
+          // timing state when items above it are removed (regenerate, the
+          // content-less message sweeps) and compiled indexes shift.
+          key={item[0]?.uuid ?? `status-group-${index}`}
           messages={item}
-          isThinking={!hasSubsequentMessages && lastMessageInfo.isAnimating}
+          isLastGroup={!hasSubsequentMessages}
+          isThinking={!hasSubsequentMessages && runIsLive}
         />
       );
     },
-    [compiledHistory.length, lastMessageInfo]
+    [compiledHistory.length, runIsLive]
   );
 
   return (
@@ -188,14 +212,6 @@ export default forwardRef(function (
   );
 });
 
-const getLastMessageInfo = (history) => {
-  const lastMessage = history?.[history.length - 1] || {};
-  return {
-    isAnimating: lastMessage?.animate,
-    isStatusResponse: lastMessage?.type === "statusResponse",
-  };
-};
-
 /**
  * Builds the history of messages for the chat.
  * This is mostly useful for rendering the history in a way that is easy to understand.
@@ -224,11 +240,7 @@ function buildMessages({
       index === history.length - 1 && props.role === "assistant";
 
     if (props?.type === "statusResponse" && !!props.content) {
-      if (acc.length > 0 && Array.isArray(acc[acc.length - 1])) {
-        acc[acc.length - 1].push(props);
-      } else {
-        acc.push([props]);
-      }
+      pushActivity(acc, props);
       return acc;
     }
 
@@ -293,41 +305,112 @@ function buildMessages({
           aborted={props.closed}
         />
       );
-    } else if (isLastBotReply && props.animate) {
-      acc.push(
-        <PromptReply
-          key={`prompt-reply-${props.uuid || index}`}
-          uuid={props.uuid}
-          reply={props.content}
-          pending={props.pending}
-          sources={props.sources}
-          error={props.error}
-          closed={props.closed}
-        />
-      );
     } else {
-      acc.push(
-        <HistoricalMessage
-          key={index}
-          uuid={props.uuid}
-          message={props.content}
-          role={props.role}
-          workspace={workspace}
-          sources={props.sources}
-          feedbackScore={props.feedbackScore}
-          chatId={props.chatId}
-          error={props.error}
-          attachments={props.attachments}
-          regenerateMessage={regenerateAssistantMessage}
-          isLastMessage={isLastBotReply}
-          saveEditedMessage={saveEditedMessage}
-          forkThread={forkThread}
-          metrics={props.metrics}
-          outputs={props.outputs}
-          clarifyingQuestions={props.clarifyingQuestions}
-        />
-      );
+      // Assistant replies can carry a <think> segment. Split it into the
+      // activity chain so it rolls up with any surrounding agent statuses;
+      // only the visible remainder renders as an actual message, which is
+      // what breaks the chain.
+      if (props.role === "assistant" && typeof props.content === "string") {
+        const { thought, hasVisible } = splitAssistantThought(props);
+        if (thought) {
+          pushActivity(acc, {
+            type: "thoughtChain",
+            uuid: props.uuid ? `thought-${props.uuid}` : undefined,
+            content: thought,
+          });
+        }
+        if (!hasVisible) return acc;
+      }
+
+      if (isLastBotReply && props.animate) {
+        acc.push(
+          <PromptReply
+            key={`prompt-reply-${props.uuid || index}`}
+            uuid={props.uuid}
+            reply={props.content}
+            pending={props.pending}
+            sources={props.sources}
+            error={props.error}
+            closed={props.closed}
+          />
+        );
+      } else {
+        acc.push(
+          <HistoricalMessage
+            key={index}
+            uuid={props.uuid}
+            message={props.content}
+            role={props.role}
+            workspace={workspace}
+            sources={props.sources}
+            feedbackScore={props.feedbackScore}
+            chatId={props.chatId}
+            error={props.error}
+            attachments={props.attachments}
+            regenerateMessage={regenerateAssistantMessage}
+            isLastMessage={isLastBotReply}
+            saveEditedMessage={saveEditedMessage}
+            forkThread={forkThread}
+            metrics={props.metrics}
+            outputs={props.outputs}
+            clarifyingQuestions={props.clarifyingQuestions}
+          />
+        );
+      }
     }
     return acc;
   }, []);
+}
+
+/**
+ * Appends an activity node (agent status or thought segment) to the current
+ * activity chain, or starts a new chain when the previous compiled item is a
+ * visible message/card - visible content is what breaks a chain.
+ * @param {Array} acc - the compiled history being built
+ * @param {Object} node - statusResponse history item or thoughtChain node
+ */
+function pushActivity(acc, node) {
+  if (acc.length > 0 && Array.isArray(acc[acc.length - 1])) {
+    acc[acc.length - 1].push(node);
+  } else {
+    acc.push([node]);
+  }
+}
+
+/**
+ * Splits an assistant message into its thought segment (if any) and reports
+ * whether anything visible remains to render as a message. A message with an
+ * open think tag and no close is mid-thought: the whole content is thought.
+ * `hasVisible` stays true for messages that carry other renderable payloads
+ * (citations, attachments, outputs, errors, the pending placeholder) even
+ * when the text itself is empty.
+ * @param {Object} props - the history item
+ * @returns {{thought: string|null, hasVisible: boolean}}
+ */
+function splitAssistantThought(props) {
+  const content = props.content;
+  let thought = null;
+  const complete = content.match(THOUGHT_REGEX_COMPLETE);
+  if (complete) thought = complete[0];
+  else if (
+    content.match(THOUGHT_REGEX_OPEN) &&
+    !content.match(THOUGHT_REGEX_CLOSE)
+  )
+    thought = content;
+
+  const visibleText =
+    thought === null
+      ? content
+      : thought === content
+        ? ""
+        : content.replace(THOUGHT_REGEX_COMPLETE, "");
+  const hasVisible =
+    visibleText.trim().length > 0 ||
+    !!props.pending ||
+    !!props.error ||
+    (props.sources?.length ?? 0) > 0 ||
+    (props.attachments?.length ?? 0) > 0 ||
+    (props.outputs?.length ?? 0) > 0 ||
+    (props.clarifyingQuestions?.length ?? 0) > 0;
+  return { thought, hasVisible };
 }

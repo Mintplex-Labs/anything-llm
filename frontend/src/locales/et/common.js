@@ -711,6 +711,11 @@ const TRANSLATIONS = {
         description:
           'Lase esindajal luua korduvad, planeeritud ülesanded vestluse kaudu (nt " iga tööpäeva kell 9 kokkuvõta minu postkasti ja saada mulle e-posti"). Saadav ainult ühe kasutaja režiimis.',
       },
+      generateImage: {
+        title: "Loo pildid",
+        description:
+          "Lase esindajal luua pilte vestluse põhjal või muuta dialoogi külge lisatud pilte, kasutades teie konfigureeritud piltide genereerimisteenust.",
+      },
     },
     mcp: {
       title: "MCP-serverid",
@@ -1361,6 +1366,15 @@ const TRANSLATIONS = {
     generating_response: "Vastus genereerimine",
     response_failed: "Ei olnud võimalik vastata teatele.",
     response_failed_reason: "põhjus: {{reason}}",
+    thought_in_progress: "Mudel mõtleb…",
+    thoughts: "Mõtisklused",
+    leave_generating: {
+      title: "Kas soovite peatada vastuste genereerimise?",
+      description:
+        "Te olete valmis loobuma sellest vestlusest, see peatab mudeli vastuste genereerimise ja seda ei saa enam taastada.",
+      cancel: "Katkuda",
+      confirm: "Jätka",
+    },
   },
   profile_settings: {
     edit_account: "Muuda kontot",

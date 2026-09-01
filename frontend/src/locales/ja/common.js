@@ -702,6 +702,11 @@ const TRANSLATIONS = {
         description:
           "エージェントがチャットから繰り返し実行されるタスク（例：「毎日午前9時に、私のインボックスとメールを要約してメールで通知する」）を作成できるようにします。この機能はシングルユーザーモードでのみ利用可能です。",
       },
+      generateImage: {
+        title: "画像を生成する",
+        description:
+          "エージェントが、設定した画像生成プロバイダーを使用して、チャットから画像を生成したり、会話に添付された画像を編集できるようにする。",
+      },
     },
     mcp: {
       title: "MCP サーバー",
@@ -1279,6 +1284,15 @@ const TRANSLATIONS = {
     generating_response: "応答を生成する",
     response_failed: "メッセージへの返信ができませんでした。",
     response_failed_reason: "理由：{{reason}}",
+    thought_in_progress: "モデルは思考しています…",
+    thoughts: "考え、思索",
+    leave_generating: {
+      title: "応答を停止するには？",
+      description:
+        "あなたは今、このチャットを終了します。これにより、モデルが応答を生成できなくなり、もう回復することはできません。",
+      cancel: "キャンセル",
+      confirm: "続き",
+    },
   },
   profile_settings: {
     edit_account: "アカウントを編集",

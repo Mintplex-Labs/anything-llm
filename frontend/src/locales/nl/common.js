@@ -722,6 +722,11 @@ const TRANSLATIONS = {
         description:
           'Laat de agent herhaalde geplande taken aanmaken vanuit het gesprek (bijvoorbeeld: "elke werkdag om 9 uur, vat mijn inbox samen en stuur me een e-mail"). Dit is alleen beschikbaar in single-user modus.',
       },
+      generateImage: {
+        title: "Afbeeldingen genereren",
+        description:
+          "Laat de agent afbeeldingen genereren op basis van de chat, of bestaande afbeeldingen in het gesprek bewerken, met behulp van uw geconfigureerde dienst voor het genereren van afbeeldingen.",
+      },
     },
     mcp: {
       title: "MCP-servers",
@@ -1308,6 +1313,15 @@ const TRANSLATIONS = {
     generating_response: "Antwoord genereren",
     response_failed: "Kon de bericht niet beantwoorden.",
     response_failed_reason: "Reden: {{reason}}",
+    thought_in_progress: "Het model denkt...",
+    thoughts: "Denken",
+    leave_generating: {
+      title: "Stoppen met het genereren van een antwoord?",
+      description:
+        "U gaat nu deze chat afsluiten. Dit zorgt ervoor dat het model geen antwoord meer genereert en dit kan niet worden teruggedraaid.",
+      cancel: "Annuleren",
+      confirm: "Vervolg",
+    },
   },
   profile_settings: {
     edit_account: "Account bewerken",

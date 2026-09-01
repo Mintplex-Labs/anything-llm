@@ -701,6 +701,11 @@ const TRANSLATIONS = {
         description:
           '대행자가 채팅을 통해 반복적인 예약 작업을 생성할 수 있도록 합니다(예: "매주 평일 오전 9시에 받은 이메일을 요약하여 제 이메일 주소로 보내기"). 단독 사용자 모드에서만 사용 가능합니다.',
       },
+      generateImage: {
+        title: "이미지 생성",
+        description:
+          "에이전트가 채팅에서 이미지를 생성하거나, 구성된 이미지 생성 제공업체를 사용하여 대화에 첨부된 이미지를 편집할 수 있도록 합니다.",
+      },
     },
     mcp: {
       title: "MCP 서버",
@@ -1362,6 +1367,15 @@ const TRANSLATIONS = {
     generating_response: "응답 생성",
     response_failed: "메시지에 응답할 수 없었습니다.",
     response_failed_reason: "이유: {{reason}}",
+    thought_in_progress: "모델은 생각 중입니다…",
+    thoughts: "생각들",
+    leave_generating: {
+      title: "응답 생성 중단?",
+      description:
+        "현재 대화를 종료하면 모델이 응답을 생성하는 것을 중단시키고, 이 상태를 되돌릴 수 없습니다.",
+      cancel: "취소",
+      confirm: "계속",
+    },
   },
   profile_settings: {
     edit_account: "계정 정보 수정",

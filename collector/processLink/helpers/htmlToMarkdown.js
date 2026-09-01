@@ -102,7 +102,6 @@ function htmlToMarkdown(html, baseUrl) {
       return textMatch ? textMatch[1] : "";
     });
 
-    markdown = markdown.replace(/\[[\d]+\]/g, "");
     markdown = markdown.replace(/\[#cite[^\]]*\]/g, "");
     markdown = markdown.replace(/\[edit\]/gi, "");
 

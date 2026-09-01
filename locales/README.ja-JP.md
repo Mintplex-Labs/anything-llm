@@ -1,5 +1,12 @@
 <a name="readme-top"></a>
 
+> [!NOTE]
+> 私たちは [Open Computer](../open-computer) も開発しています。これは AI エージェントが利用できる完全なコンピュータ環境を提供するものです。
+>
+> これにより AnythingLLM のエージェント機能は新たな段階に到達し、AI エージェント利用における新しい UX パラダイムをもたらします。
+>
+> ⭐ 最新情報を受け取るにはリポジトリに Star を付けてください！
+
 <p align="center">
   <a href="https://anythingllm.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="AnythingLLM logo"></a>
 </p>
@@ -9,8 +16,8 @@
 </div>
 
 <p align="center">
-    <b>AnythingLLM:</b> あなたが探していたオールインワンAIアプリ。<br />
-    ドキュメントとチャットし、AIエージェントを使用し、高度にカスタマイズ可能で、複数ユーザー対応、面倒な設定は不要です。
+    <b>AnythingLLM:</b> あなたが探していたオールインワン AI アプリ。<br />
+    ドキュメントとチャットし、AI エージェントを活用。高度にカスタマイズ可能で、マルチユーザー対応、面倒な設定は不要です。
 </p>
 
 <p align="center">
@@ -23,194 +30,242 @@
   <a href="https://docs.anythingllm.com" target="_blank">
     ドキュメント
   </a> |
-   <a href="https://my.mintplexlabs.com/aio-checkout?product=anythingllm" target="_blank">
-    ホストされたインスタンス
+  <a href="https://my.mintplexlabs.com/aio-checkout?product=anythingllm" target="_blank">
+    ホスト型インスタンス
   </a>
 </p>
 
 <p align="center">
-  <a href='../README.md'>English</a> · <a href='./README.zh-CN.md'>简体中文</a> · <b>日本語</b>
+  <a href='../README.md'>English</a> · <a href='./README.zh-CN.md'>简体中文</a> · <b>日本語</b> · <a href='./README.tr-TR.md'>Türkçe</a> · <a href='./README.fa-IR.md'>فارسی</a>
 </p>
 
 <p align="center">
-👉 デスクトップ用AnythingLLM（Mac、Windows、Linux対応）！<a href="https://anythingllm.com/download" target="_blank">今すぐダウンロード</a>
+👉 デスクトップ版 AnythingLLM（Mac、Windows、Linux 対応）！<a href="https://anythingllm.com/download" target="_blank">今すぐダウンロード</a>
 </p>
 
-これは、任意のドキュメント、リソース、またはコンテンツの断片を、チャット中にLLMが参照として使用できるコンテキストに変換できるフルスタックアプリケーションです。このアプリケーションを使用すると、使用するLLMまたはベクトルデータベースを選択し、マルチユーザー管理と権限をサポートできます。
+ドキュメントとチャットしましょう。AI エージェントで複雑なワークフローを自動化。高度にカスタマイズ可能でマルチユーザー対応、実運用で鍛えられ、既定ではローカルで動作し、面倒な初期設定は一切不要です。
 
 ![Chatting](https://github.com/Mintplex-Labs/anything-llm/releases/download/v1.11.2/AnythingLLM720p.gif)
 
 <details>
 <summary><kbd>デモを見る！</kbd></summary>
 
-[![ビデオを見る](/images/youtube.png)](https://youtu.be/f95rGD9trL0)
+[![ビデオを見る](../images/youtube.png)](https://youtu.be/f95rGD9trL0)
 
 </details>
 
 ### 製品概要
 
-AnythingLLMは、あなたが探していたオールインワンAIアプリです。AnythingLLMには、お気に入りのローカルまたはクラウドLLMプロバイダーを使用して、妥協のないプライベートChatGPTを構築するために必要なすべてが含まれています。AnythingLLMは高度にカスタマイズ可能でありながら、ビルトインエージェント、マルチユーザーサポート、ベクトルデータベース、ドキュメント取り込みパイプラインなど、すぐに使い始めるために必要なすべてが揃っています。
+AnythingLLM は、妥協のないプライベートで高機能な ChatGPT を構築できるオールインワン AI アプリケーションです。お気に入りのローカルまたはクラウドの LLM を接続し、ドキュメントを取り込めば、数分でチャットを開始できます。組み込みエージェント、マルチユーザー対応、ベクトルデータベース、ドキュメントパイプラインが最初から揃っており、追加設定は不要です。
 
-AnythingLLMは複数ユーザーもサポートしており、インスタンスのセキュリティやプライバシー、知的財産を損なうことなく、ユーザーごとにアクセスと体験を制御できます。
+AnythingLLM は複数ユーザーもサポートしており、インスタンスのセキュリティやプライバシー、知的財産を損なうことなく、ユーザーごとにアクセス権と体験を制御できます。
 
-## AnythingLLMのいくつかのクールな機能
+## AnythingLLM のクールな機能
 
-- **マルチユーザーインスタンスのサポートと権限付与**
-- ワークスペース内のエージェント（ウェブを閲覧、コードを実行など）
-- [ウェブサイト用のカスタム埋め込み可能なチャットウィジェット](https://github.com/Mintplex-Labs/anythingllm-embed/blob/main/README.md)
-- 複数のドキュメントタイプのサポート（PDF、TXT、DOCXなど）
-- シンプルなUIからベクトルデータベース内のドキュメントを管理
-- 2つのチャットモード`会話`と`クエリ`。会話は以前の質問と修正を保持します。クエリはドキュメントに対するシンプルなQAです
-- チャット中の引用
-- 100%クラウドデプロイメント対応。
-- 「独自のLLMを持参」モデル。
-- 大規模なドキュメントを管理するための非常に効率的なコスト削減策。巨大なドキュメントやトランスクリプトを埋め込むために一度以上支払うことはありません。他のドキュメントチャットボットソリューションよりも90%コスト効率が良いです。
-- カスタム統合のための完全な開発者API！
+- [動的モデルルーティング](https://docs.anythingllm.com/model-router/overview) - 定義したルールに基づき、会話に最適なプロバイダーとモデルへ自動的にチャットを振り分けます。
+- [自動およびユーザー管理のメモリ](https://docs.anythingllm.com/features/memories) - あなたやワークスペースに関する重要な情報を LLM に記憶させます。
+- [スケジュールタスク](https://docs.anythingllm.com/scheduled-jobs/overview) - cron スケジュールで定期的なタスクやプロンプトを、エージェント機能をフルに使って実行します。
+- [インテリジェントなスキル選択](https://docs.anythingllm.com/agent/intelligent-tool-selection) モデルで**無制限**のツールを有効にしつつ、クエリあたりのトークン使用量を最大 80% 削減します
+- [ノーコード AI エージェントビルダー](https://docs.anythingllm.com/agent-flows/overview)
+- [MCP 互換](https://docs.anythingllm.com/mcp-compatibility/overview)
+- [マルチモーダル対応（クローズドソースとオープンソースの LLM の両方！）](https://docs.anythingllm.com/features/language-models)
+- [カスタム AI エージェント](https://docs.anythingllm.com/agent/custom/introduction)
+- 👤 マルチユーザーインスタンス対応と権限管理 _Docker 版のみ_
+- 🦾 ワークスペース内のエージェント（ウェブ閲覧など）
+- 💬 [ウェブサイト向けのカスタム埋め込みチャットウィジェット](https://github.com/Mintplex-Labs/anythingllm-embed/blob/main/README.md) _Docker 版のみ_
+- 📖 複数のドキュメント形式に対応（PDF、TXT、DOCX など）
+- ドラッグ＆ドロップのアップロードと出典引用を備えた直感的なチャット UI。
+- あらゆるクラウド環境で本番運用可能。
+- 主要な[クローズドソースおよびオープンソースの LLM プロバイダー](#サポートされている-llm埋め込みモデル音声モデルベクトルデータベース)すべてに対応。
+- 大規模なドキュメント群向けの組み込み最適化により、他のチャット UI よりも低コストかつ高速に応答します。
+- カスタム統合のための完全な開発者 API！
+- ……他にも多数。数分でインストールして、ぜひご自身でお確かめください。
 
-### サポートされているLLM、埋め込みモデル、音声モデル、およびベクトルデータベース
+### サポートされている LLM、埋め込みモデル、音声モデル、ベクトルデータベース
 
-**言語学習モデル：**
+**大規模言語モデル（LLMs）：**
 
-- [llama.cpp互換の任意のオープンソースモデル](/server/storage/models/README.md#text-generation-llm-selection)
+- [Any open-source llama.cpp compatible model](/server/storage/models/README.md#text-generation-llm-selection)
 - [OpenAI](https://openai.com)
-- [OpenAI (汎用)](https://openai.com)
+- [OpenAI (Generic)](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
+- [AWS Bedrock](https://aws.amazon.com/bedrock/)
 - [Anthropic](https://www.anthropic.com/)
+- [NVIDIA NIM (chat models)](https://build.nvidia.com/explore/discover)
 - [Google Gemini Pro](https://ai.google.dev/)
-- [Ollama (チャットモデル)](https://ollama.ai/)
-- [LM Studio (すべてのモデル)](https://lmstudio.ai)
-- [LocalAi (すべてのモデル)](https://localai.io/)
-- [Together AI (チャットモデル)](https://www.together.ai/)
-- [Fireworks AI (チャットモデル)](https://fireworks.ai/)
-- [Perplexity (チャットモデル)](https://www.perplexity.ai/)
-- [OpenRouter (チャットモデル)](https://openrouter.ai/)
-- [Novita AI (チャットモデル)](https://novita.ai/model-api/product/llm-api?utm_source=github_anything-llm&utm_medium=github_readme&utm_campaign=link)
+- [Ollama (chat models)](https://ollama.ai/)
+- [LM Studio (all models)](https://lmstudio.ai)
+- [LocalAI (all models)](https://localai.io/)
+- [Together AI (chat models)](https://www.together.ai/)
+- [Fireworks AI (chat models)](https://fireworks.ai/)
+- [Perplexity (chat models)](https://www.perplexity.ai/)
+- [OpenRouter (chat models)](https://openrouter.ai/)
+- [DeepSeek (chat models)](https://deepseek.com/)
 - [Mistral](https://mistral.ai/)
 - [Groq](https://groq.com/)
 - [Cohere](https://cohere.com/)
 - [KoboldCPP](https://github.com/LostRuins/koboldcpp)
+- [LiteLLM](https://github.com/BerriAI/litellm)
+- [Text Generation Web UI](https://github.com/oobabooga/text-generation-webui)
+- [Apipie](https://apipie.ai/)
 - [xAI](https://x.ai/)
-- [Z.AI (チャットモデル)](https://z.ai/model-api)
+- [Z.AI (chat models)](https://z.ai/model-api)
+- [Novita AI (chat models)](https://novita.ai/model-api/product/llm-api?utm_source=github_anything-llm&utm_medium=github_readme&utm_campaign=link)
 - [PPIO](https://ppinfra.com?utm_source=github_anything-llm)
-- [CometAPI (チャットモデル)](https://api.cometapi.com/)
-- [Docker Model Runner](https://docs.docker.com/ai/model-runner/)
+- [Gitee AI](https://ai.gitee.com/)
+- [Moonshot AI](https://www.moonshot.ai/)
+- [Microsoft Foundry Local](https://github.com/microsoft/Foundry-Local)
+- [CometAPI (chat models)](https://www.cometapi.com/)
+- [llmman](https://github.com/llmmanorg/llmman)
 - [PrivateModeAI (chat models)](https://privatemode.ai/)
 - [SambaNova Cloud (chat models)](https://cloud.sambanova.ai/)
 - [Lemonade by AMD](https://lemonade-server.ai)
 - [Minimax](https://platform.minimax.io)
 - [Cerebras (chat models)](https://www.cerebras.ai/)
+- [oMLX](https://github.com/jundot/omlx)
 
 **埋め込みモデル：**
 
-- [AnythingLLMネイティブ埋め込み](/server/storage/models/README.md)（デフォルト）
+- [AnythingLLM Native Embedder](/server/storage/models/README.md) (default)
 - [OpenAI](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
-- [LocalAi (すべて)](https://localai.io/)
-- [Ollama (すべて)](https://ollama.ai/)
-- [LM Studio (すべて)](https://lmstudio.ai)
+- [Gemini](https://ai.google.dev/)
+- [LocalAI (all)](https://localai.io/)
+- [Ollama (all)](https://ollama.ai/)
+- [LM Studio (all)](https://lmstudio.ai)
+- [Lemonade](https://lemonade-server.ai)
+- [OpenRouter](https://openrouter.ai/)
+- [LiteLLM](https://github.com/BerriAI/litellm)
 - [Cohere](https://cohere.com/)
+- [Voyage AI](https://www.voyageai.com/)
+- [Mistral](https://mistral.ai/)
+- Generic OpenAI-compatible embedding APIs
 
-**音声変換モデル：**
+**音声文字起こしモデル：**
 
-- [AnythingLLM内蔵](https://github.com/Mintplex-Labs/anything-llm/tree/master/server/storage/models#audiovideo-transcription)（デフォルト）
+- [AnythingLLM Built-in](https://github.com/Mintplex-Labs/anything-llm/tree/master/server/storage/models#audiovideo-transcription) (default)
 - [OpenAI](https://openai.com/)
 
-**TTS（テキストから音声へ）サポート：**
+**TTS（テキスト読み上げ）サポート：**
 
-- ネイティブブラウザ内蔵（デフォルト）
-- [OpenAI TTS](https://platform.openai.com/docs/guides/text-to-speech/voice-options)
+- Native Browser Built-in (default)
+- [PiperTTSLocal - runs in browser](https://github.com/rhasspy/piper)
+- [OpenAI TTS](https://platform.openai.com/docs/guides/text-to-speech#voice-options)
 - [ElevenLabs](https://elevenlabs.io/)
+- Any OpenAI Compatible TTS service.
 
-**STT（音声からテキストへ）サポート：**
+**STT（音声認識）サポート：**
 
-- ネイティブブラウザ内蔵（デフォルト）
+- ブラウザネイティブ内蔵（デフォルト）
 
 **ベクトルデータベース：**
 
-- [LanceDB](https://github.com/lancedb/lancedb)（デフォルト）
+- [LanceDB](https://github.com/lancedb/lancedb) (default)
 - [PGVector](https://github.com/pgvector/pgvector)
 - [Astra DB](https://www.datastax.com/products/datastax-astra)
 - [Pinecone](https://pinecone.io)
-- [Chroma](https://trychroma.com)
+- [Chroma & ChromaCloud](https://trychroma.com)
 - [Weaviate](https://weaviate.io)
-- [QDrant](https://qdrant.tech)
+- [Qdrant](https://qdrant.tech)
 - [Milvus](https://milvus.io)
 - [Zilliz](https://zilliz.com)
 
 ### 技術概要
 
-このモノレポは、主に3つのセクションで構成されています：
+このモノレポは 6 つの主要セクションで構成されています：
 
-- `frontend`: LLMが使用できるすべてのコンテンツを簡単に作成および管理できるviteJS + Reactフロントエンド。
-- `server`: すべてのインタラクションを処理し、すべてのベクトルDB管理およびLLMインタラクションを行うNodeJS expressサーバー。
-- `collector`: UIからドキュメントを処理および解析するNodeJS expressサーバー。
-- `docker`: Dockerの指示およびビルドプロセス + ソースからのビルド情報。
-- `embed`: [埋め込みウィジェット](../embed/README.md)の生成に特化したコード。
+- `frontend`: LLM が利用できるすべてのコンテンツを簡単に作成・管理できる viteJS + React フロントエンド。
+- `server`: すべてのやり取りを処理し、ベクトル DB の管理と LLM との連携を担う NodeJS express サーバー。
+- `collector`: UI からドキュメントを処理・解析する NodeJS express サーバー。
+- `docker`: Docker の手順とビルドプロセス、およびソースからビルドするための情報。
+- `embed`: [ウェブ埋め込みウィジェット](https://github.com/Mintplex-Labs/anythingllm-embed)の生成・作成用サブモジュール。
+- `browser-extension`: [Chrome ブラウザ拡張機能](https://github.com/Mintplex-Labs/anythingllm-extension)用サブモジュール。
 
 ## 🛳 セルフホスティング
 
-Mintplex Labsおよびコミュニティは、AnythingLLMをローカルで実行できる多数のデプロイメント方法、スクリプト、テンプレートを維持しています。以下の表を参照して、お好みの環境でのデプロイ方法を読むか、自動デプロイを行ってください。
+Mintplex Labs とコミュニティは、AnythingLLM をローカルで実行するための多数のデプロイ方法、スクリプト、テンプレートを維持しています。以下の表を参照して、お好みの環境へのデプロイ方法をご確認いただくか、自動デプロイをご利用ください。
 | Docker | AWS | GCP | Digital Ocean | Render.com |
 |----------------------------------------|----|-----|---------------|------------|
-| [![Docker上でデプロイ][docker-btn]][docker-deploy] | [![AWS上でデプロイ][aws-btn]][aws-deploy] | [![GCP上でデプロイ][gcp-btn]][gcp-deploy] | [![DigitalOcean上でデプロイ][do-btn]][do-deploy] | [![Render.com上でデプロイ][render-btn]][render-deploy] |
+| [![Deploy on Docker][docker-btn]][docker-deploy] | [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy] | [![Deploy on DigitalOcean][do-btn]][do-deploy] | [![Deploy on Render.com][render-btn]][render-deploy] |
 
-| Railway                                               | Sealos                                               |
-| ----------------------------------------------------- | ---------------------------------------------------- |
-| [![Railway上でデプロイ][railway-btn]][railway-deploy] | [![Sealos上でデプロイ][sealos-btn]][sealos-deploy] |
+| Railway                                             | RepoCloud                                                 | Elestio                                             | Northflank                                                   | Sealos                                               |
+| --------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------- |
+| [![Deploy on Railway][railway-btn]][railway-deploy] | [![Deploy on RepoCloud][repocloud-btn]][repocloud-deploy] | [![Deploy on Elestio][elestio-btn]][elestio-deploy] | [![Deploy on Northflank][northflank-btn]][northflank-deploy] | [![Deploy on Sealos][sealos-btn]][sealos-deploy] |
 
-[Dockerを使用せずに本番環境のAnythingLLMインスタンスを設定する →](../BARE_METAL.md)
+[または Docker を使わずに本番環境の AnythingLLM インスタンスを構築する →](../BARE_METAL.md)
 
 ## 開発環境のセットアップ方法
 
-- `yarn setup` 各アプリケーションセクションに必要な`.env`ファイルを入力します（リポジトリのルートから）。
-  - 次に進む前にこれらを入力してください。`server/.env.development`が入力されていないと正しく動作しません。
+- `yarn setup` 各アプリケーションセクションで必要な `.env` ファイルを作成します（リポジトリのルートから）。
+  - 次に進む前に内容を記入してください。`server/.env.development` が記入されていないと正しく動作しません。
 - `yarn dev:server` ローカルでサーバーを起動します（リポジトリのルートから）。
 - `yarn dev:frontend` ローカルでフロントエンドを起動します（リポジトリのルートから）。
-- `yarn dev:collector` ドキュメントコレクターを実行します（リポジトリのルートから）。
+- `yarn dev:collector` 続いてドキュメントコレクターを実行します（リポジトリのルートから）。
 
 [ドキュメントについて学ぶ](../server/storage/documents/DOCUMENTS.md)
 
-## 貢献する方法
-
-- issueを作成する
-- `<issue number>-<short name>`の形式のブランチ名でPRを作成する
-- マージしましょう
-
 ## テレメトリーとプライバシー
 
-Mintplex Labs Inc.によって開発されたAnythingLLMには、匿名の使用情報を収集するテレメトリー機能が含まれています。
+Mintplex Labs Inc による AnythingLLM には、匿名の使用情報を収集するテレメトリー機能が含まれています。
 
 <details>
-<summary><kbd>AnythingLLMのテレメトリーとプライバシーについての詳細</kbd></summary>
+<summary><kbd>AnythingLLM のテレメトリーとプライバシーについての詳細</kbd></summary>
 
 ### なぜ？
 
-この情報を使用して、AnythingLLMの使用方法を理解し、新機能とバグ修正の優先順位を決定し、AnythingLLMのパフォーマンスと安定性を向上させるのに役立てます。
+この情報は、AnythingLLM がどのように使われているかを理解し、新機能やバグ修正の優先順位を決め、AnythingLLM のパフォーマンスと安定性を向上させるために利用します。
 
 ### オプトアウト
 
-サーバーまたはdockerの.env設定で`DISABLE_TELEMETRY`を「true」に設定して、テレメトリーからオプトアウトします。アプリ内でも、サイドバー > `プライバシー`に移動してテレメトリーを無効にすることができます。
+サーバーまたは docker の .env 設定で `DISABLE_TELEMETRY` を "true" に設定すると、テレメトリーを無効にできます。アプリ内でも、サイドバー > `プライバシー` からテレメトリーを無効にできます。
 
-### 明示的に追跡するもの
+### 具体的に何を追跡していますか？
 
-製品およびロードマップの意思決定に役立つ使用詳細のみを追跡します。具体的には：
+製品とロードマップの意思決定に役立つ使用状況の詳細のみを追跡します。具体的には：
 
-- インストールのタイプ（Dockerまたはデスクトップ）
-- ドキュメントが追加または削除されたとき。ドキュメントについての情報はありません。イベントが発生したことのみを知ります。これにより、使用状況を把握できます。
-- 使用中のベクトルデータベースのタイプ。どのベクトルデータベースプロバイダーが最も使用されているかを知り、更新があったときに優先して変更を行います。
-- 使用中のLLMのタイプ。最も人気のある選択肢を知り、更新があったときに優先して変更を行います。
-- チャットが送信された。これは最も一般的な「イベント」であり、すべてのインストールでのこのプロジェクトの日常的な「アクティビティ」についてのアイデアを提供します。再び、イベントのみが送信され、チャット自体の性質や内容に関する情報はありません。
+- インストールの種類（Docker またはデスクトップ）
 
-これらの主張を検証するには、`Telemetry.sendTelemetry`が呼び出されるすべての場所を見つけてください。また、これらのイベントは出力ログに書き込まれるため、送信された具体的なデータも確認できます。IPアドレスやその他の識別情報は収集されません。テレメトリープロバイダーは[PostHog](https://posthog.com/)です。
+- ドキュメントが追加または削除されたとき。ドキュメント_自体_に関する情報は一切ありません。イベントが発生したことのみを記録します。これにより利用状況を把握できます。
+
+- 使用中のベクトルデータベースの種類。該当プロバイダーの更新時に、変更の優先順位を判断するのに役立ちます。
+
+- 使用中の LLM プロバイダーとモデルタグ。該当プロバイダーやモデル、またはその組み合わせの更新時に、変更の優先順位を判断するのに役立ちます。例：推論モデルと通常モデル、マルチモーダルモデルなど。
+
+- チャットが送信されたとき。これは最も頻繁な「イベント」であり、すべてのインストールにおける本プロジェクトの日々の活動状況を把握できます。この場合も送信されるのは**イベント**のみで、チャットの性質や内容に関する情報は一切持ちません。
+
+これらの内容は、`Telemetry.sendTelemetry` が呼び出されるすべての箇所を確認することで検証できます。また、有効な場合これらのイベントは出力ログにも書き込まれるため、実際に送信されたデータを確認できます。**IP アドレスやその他の識別情報は収集されません**。テレメトリープロバイダーはオープンソースのテレメトリー収集サービス [PostHog](https://posthog.com/) です。
+
+私たちはプライバシーを非常に重視しています。煩わしいポップアップアンケートを使わずにツールの使われ方を知り、本当に使う価値のあるものを作りたいという意図をご理解いただければ幸いです。この匿名データが第三者と共有されることは_決してありません_。
 
 [ソースコード内のすべてのテレメトリーイベントを表示](https://github.com/search?q=repo%3AMintplex-Labs%2Fanything-llm%20.sendTelemetry(&type=code)
 
+### その他の外部接続
+
+テレメトリーを無効にしても、以下のサービスへの外部接続は発生します：
+
+- 外部ツール、LLM、埋め込みモデル、ベクトルデータベースを使用している場合、それぞれのサービスプロバイダーへの外部接続は引き続き発生します。
+- `cdn.anythingllm.com` は当社のミラー CDN からモデルを取得するために使用します。これはテレメトリーで追跡されず、VPN が制限された地域の方々にとって有用です。
+- `github/githubusercontent.com` コンテキストウィンドウのキャッシュ用に、これらのドメインからいくつかのフラットファイルをダウンロードします。
+
+基本的に、テレメトリーを無効にすれば当社は何も収集しません。ただし構成によっては外部接続が発生することがあり、その場合は各サービスプロバイダーの利用規約が適用されます。
+
 </details>
+
+## 👋 コントリビュート
+
+- [AnythingLLM へのコントリビュート](../CONTRIBUTING.md) - AnythingLLM に貢献する方法。
+
+## 🌟 コントリビューター
+
+[![anythingllm contributors](https://contrib.rocks/image?repo=mintplex-labs/anything-llm)](https://github.com/mintplex-labs/anything-llm/graphs/contributors)
+
+[![Star History Chart](https://api.star-history.com/svg?repos=mintplex-labs/anything-llm&type=Timeline)](https://star-history.com/#mintplex-labs/anything-llm&Date)
 
 ## 🔗 その他の製品
 
-- **[VectorAdmin][vector-admin]**：ベクトルデータベースを管理するためのオールインワンGUIおよびツールスイート。
-- **[OpenAI Assistant Swarm][assistant-swarm]**：単一のエージェントから指揮できるOpenAIアシスタントの軍隊に、ライブラリ全体を変換します。
+- **[AnythingLLM Mobile（MIT ライセンス）][anythingllm-mobile]：** モバイル端末で AnythingLLM を利用できるモバイルアプリケーション。
+- **[AnythingLLM ブラウザ拡張機能][anythingllm-extension]：** ブラウザ内で AnythingLLM を利用できるブラウザ拡張機能。
+- **[AnythingLLM Embed][anythingllm-embed]：** 自分のウェブサイトに AnythingLLM を埋め込めるウィジェット。
 
 <div align="right">
 
@@ -221,27 +276,34 @@ Mintplex Labs Inc.によって開発されたAnythingLLMには、匿名の使用
 ---
 
 Copyright © 2026 [Mintplex Labs][profile-link]。<br />
-このプロジェクトは[MIT](https://github.com/Mintplex-Labs/anything-llm/blob/master/LICENSE)ライセンスの下でライセンスされています。
+このプロジェクトは [MIT](../LICENSE) ライセンスの下で提供されています。
 
 <!-- LINK GROUP -->
 
 [back-to-top]: https://img.shields.io/badge/-BACK_TO_TOP-222628?style=flat-square
 [profile-link]: https://github.com/mintplex-labs
-[vector-admin]: https://github.com/mintplex-labs/vector-admin
-[assistant-swarm]: https://github.com/Mintplex-Labs/openai-assistant-swarm
-[docker-btn]: ./images/deployBtns/docker.png
-[docker-deploy]: ./docker/HOW_TO_USE_DOCKER.md
-[aws-btn]: ./images/deployBtns/aws.png
-[aws-deploy]: ./cloud-deployments/aws/cloudformation/DEPLOY.md
+[anythingllm-mobile]: https://github.com/Mintplex-Labs/anythingllm-mobile
+[anythingllm-extension]: https://github.com/Mintplex-Labs/anythingllm-extension
+[anythingllm-embed]: https://github.com/Mintplex-Labs/anythingllm-embed
+[docker-btn]: ../images/deployBtns/docker.png
+[docker-deploy]: ../docker/HOW_TO_USE_DOCKER.md
+[aws-btn]: ../images/deployBtns/aws.png
+[aws-deploy]: ../cloud-deployments/aws/cloudformation/DEPLOY.md
 [gcp-btn]: https://deploy.cloud.run/button.svg
-[gcp-deploy]: ./cloud-deployments/gcp/deployment/DEPLOY.md
+[gcp-deploy]: ../cloud-deployments/gcp/deployment/DEPLOY.md
 [do-btn]: https://www.deploytodo.com/do-btn-blue.svg
-[do-deploy]: ./cloud-deployments/digitalocean/terraform/DEPLOY.md
+[do-deploy]: ../cloud-deployments/digitalocean/terraform/DEPLOY.md
 [render-btn]: https://render.com/images/deploy-to-render-button.svg
 [render-deploy]: https://render.com/deploy?repo=https://github.com/Mintplex-Labs/anything-llm&branch=render
 [render-btn]: https://render.com/images/deploy-to-render-button.svg
 [render-deploy]: https://render.com/deploy?repo=https://github.com/Mintplex-Labs/anything-llm&branch=render
 [railway-btn]: https://railway.app/button.svg
 [railway-deploy]: https://railway.app/template/HNSCS1?referralCode=WFgJkn
+[repocloud-btn]: https://d16t0pc4846x52.cloudfront.net/deploylobe.svg
+[repocloud-deploy]: https://repocloud.io/details/?app_id=276
+[elestio-btn]: https://elest.io/images/logos/deploy-to-elestio-btn.png
+[elestio-deploy]: https://elest.io/open-source/anythingllm
+[northflank-btn]: https://assets.northflank.com/deploy_to_northflank_smm_36700fb050.svg
+[northflank-deploy]: https://northflank.com/stacks/deploy-anythingllm
 [sealos-btn]: https://sealos.io/Deploy-on-Sealos.svg
 [sealos-deploy]: https://sealos.io/products/app-store/anything-llm

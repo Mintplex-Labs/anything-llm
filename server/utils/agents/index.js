@@ -260,11 +260,9 @@ class AgentHandler {
         if (!process.env.COHERE_API_KEY)
           throw new Error("Cohere API key must be provided to use agents.");
         break;
-      case "docker-model-runner":
-        if (!process.env.DOCKER_MODEL_RUNNER_BASE_PATH)
-          throw new Error(
-            "Docker Model Runner base path must be provided to use agents."
-          );
+      case "llmman":
+        if (!process.env.LLMMAN_BASE_PATH)
+          throw new Error("llmman base path must be provided to use agents.");
         break;
       case "privatemode":
         if (!process.env.PRIVATEMODE_LLM_BASE_PATH)
@@ -291,6 +289,15 @@ class AgentHandler {
       case "cerebras":
         if (!process.env.CEREBRAS_API_KEY)
           throw new Error("Cerebras API key must be provided to use agents.");
+        break;
+      case "vertex":
+        if (
+          !process.env.VERTEX_AI_LLM_API_KEY ||
+          !process.env.VERTEX_AI_LLM_PROJECT_ID
+        )
+          throw new Error(
+            "Vertex AI API key and project ID must be provided to use agents."
+          );
         break;
       default:
         throw new Error(
@@ -372,8 +379,8 @@ class AgentHandler {
         return process.env.GITEE_AI_MODEL_PREF ?? null;
       case "cohere":
         return process.env.COHERE_MODEL_PREF ?? "command-r-08-2024";
-      case "docker-model-runner":
-        return process.env.DOCKER_MODEL_RUNNER_LLM_MODEL_PREF ?? null;
+      case "llmman":
+        return process.env.LLMMAN_MODEL_PREF ?? null;
       case "privatemode":
         return process.env.PRIVATEMODE_LLM_MODEL_PREF ?? null;
       case "sambanova":
@@ -386,6 +393,8 @@ class AgentHandler {
         return process.env.MINIMAX_MODEL_PREF ?? "MiniMax-M2.7";
       case "cerebras":
         return process.env.CEREBRAS_MODEL_PREF ?? "gpt-oss-120b";
+      case "vertex":
+        return process.env.VERTEX_AI_LLM_MODEL_PREF ?? "gemini-2.5-flash";
       default:
         return null;
     }

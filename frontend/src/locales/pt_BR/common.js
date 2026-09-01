@@ -734,6 +734,11 @@ const TRANSLATIONS = {
         description:
           'Permita que o agente crie tarefas recorrentes agendadas a partir do chat (por exemplo, "todos os dias úteis às 9h, resuma minha caixa de entrada e envie um e-mail"). Disponível apenas no modo para um único usuário.',
       },
+      generateImage: {
+        title: "Gerar imagens",
+        description:
+          "Permita que o agente gere imagens a partir do chat, ou edite as imagens anexadas à conversa, utilizando o provedor de geração de imagens configurado.",
+      },
     },
     mcp: {
       title: "Servidores MCP",
@@ -1395,6 +1400,15 @@ const TRANSLATIONS = {
     generating_response: "Gerando resposta",
     response_failed: "Não foi possível responder à mensagem.",
     response_failed_reason: "Motivo: {{reason}}",
+    thought_in_progress: "O modelo está pensando...",
+    thoughts: "Pensamentos",
+    leave_generating: {
+      title: "Parar de gerar respostas?",
+      description:
+        "Você está prestes a sair deste bate-papo. Isso impedirá que o modelo gere uma resposta e não poderá ser recuperado.",
+      cancel: "Cancelar",
+      confirm: "Continue",
+    },
   },
   profile_settings: {
     edit_account: "Editar conta",
