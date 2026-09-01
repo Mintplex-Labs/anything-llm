@@ -1,3 +1,4 @@
+import moment from "moment";
 import { useRef } from "react";
 import Admin from "@/models/admin";
 import paths from "@/utils/paths";
@@ -47,7 +48,7 @@ export default function WorkspaceRow({
             {workspace.userIds?.length}
           </a>
         </td>
-        <td className="px-6">{workspace.createdAt}</td>
+        <td className="px-6">{moment(workspace.createdAt).format("lll")}</td>
         <td className="px-6">
           {!deletionProtected && (
             <button

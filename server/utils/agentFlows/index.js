@@ -223,6 +223,16 @@ class AgentFlows {
     const variables = startBlock?.config?.variables || [];
     const toolName = AgentFlows.sanitizeToolName(flow.name) || `flow_${uuid}`;
 
+    // Variables with no `type` predate categories and behave as "optional".
+    // Only required/optional variables are exposed to the LLM - "static"
+    // variables are fixed at design time and invisible to the model.
+    const llmVariables = variables.filter(
+      (v) => v.name && (v.type || "optional") !== "static"
+    );
+    const requiredNames = llmVariables
+      .filter((v) => v.type === "required")
+      .map((v) => v.name);
+
     return {
       name: toolName,
       description: `Execute agent flow: ${flow.name}`,
@@ -237,20 +247,36 @@ class AgentFlows {
               flow.config.description || `Execute agent flow: ${flow.name}`,
             parameters: {
               type: "object",
-              properties: variables.reduce((acc, v) => {
-                if (v.name) {
-                  acc[v.name] = {
-                    type: "string",
-                    description:
-                      v.description || `Value for variable ${v.name}`,
-                  };
-                }
+              properties: llmVariables.reduce((acc, v) => {
+                acc[v.name] = {
+                  type: "string",
+                  description: v.description || `Value for variable ${v.name}`,
+                };
                 return acc;
               }, {}),
+              required: requiredNames,
             },
-            handler: async (args) => {
+            handler: async (args = {}) => {
+              // Drop any args the LLM hallucinated for variables it should not
+              // control, and enforce required variables ourselves since not all
+              // provider paths honor the JSON-schema `required` array.
+              const flowArgs = Object.fromEntries(
+                Object.entries(args).filter(([key]) =>
+                  llmVariables.some((v) => v.name === key)
+                )
+              );
+              const missing = requiredNames.filter(
+                (name) => flowArgs[name] === undefined || flowArgs[name] === ""
+              );
+              if (missing.length > 0)
+                return `Flow execution failed: missing required parameter(s): ${missing.join(", ")}`;
+
               aibitat.introspect(`Executing flow: ${flow.name}`);
-              const result = await AgentFlows.executeFlow(uuid, args, aibitat);
+              const result = await AgentFlows.executeFlow(
+                uuid,
+                flowArgs,
+                aibitat
+              );
               if (!result.success) {
                 aibitat.introspect(
                   `Flow failed: ${result.results[0]?.error || "Unknown error"}`

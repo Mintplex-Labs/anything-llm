@@ -2,6 +2,7 @@ import { Children } from "react";
 import { createPortal } from "react-dom";
 import { X } from "@phosphor-icons/react";
 import { useModalEscape } from "@/hooks/useModalEscape";
+import PasswordInput from "@/components/lib/PasswordInput";
 
 /** @type {Record<string, string>} max-width per size, matched to the Figma modal frames */
 const SIZE_CLASSES = {
@@ -183,6 +184,7 @@ export function ModalHint({ children, className = "" }) {
 /**
  * Labeled text input - the most-reused modal field. Renders label, input, and
  * optional hint with the uniform field styling. Extra props pass to `<input>`.
+ * `type="password"` renders a `PasswordInput` with a hold-to-reveal eye icon.
  *
  * @param {Object} props - Component props (forwarded to the input element)
  * @param {import("react").ReactNode} [props.label] - Field label
@@ -215,12 +217,21 @@ export function ModalInput({
             {leading}
           </span>
         )}
-        <input
-          id={inputId}
-          name={name}
-          className={`${FIELD_BASE} h-[34px] px-3.5 ${leading ? "pl-7" : ""} ${className}`}
-          {...props}
-        />
+        {props.type === "password" ? (
+          <PasswordInput
+            id={inputId}
+            name={name}
+            className={`${FIELD_BASE} h-[34px] px-3.5 ${leading ? "pl-7" : ""} ${className}`}
+            {...props}
+          />
+        ) : (
+          <input
+            id={inputId}
+            name={name}
+            className={`${FIELD_BASE} h-[34px] px-3.5 ${leading ? "pl-7" : ""} ${className}`}
+            {...props}
+          />
+        )}
       </div>
       {hint && <ModalHint>{hint}</ModalHint>}
     </div>
