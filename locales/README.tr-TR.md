@@ -255,10 +255,6 @@ Temel olarak, telemetri devre dışıysa hiçbir şey toplamayız. Ancak kurulum
 
 - [AnythingLLM'e Katkıda Bulunma](../CONTRIBUTING.md) - AnythingLLM'e nasıl katkıda bulunulur.
 
-## 💖 Sponsorlar
-
-Sponsor listesi İngilizce README'de tutulmaktadır, bkz. [Sponsors](../README.md#-sponsors).
-
 ## 🌟 Katkıda Bulunanlar
 
 [![anythingllm contributors](https://contrib.rocks/image?repo=mintplex-labs/anything-llm)](https://github.com/mintplex-labs/anything-llm/graphs/contributors)

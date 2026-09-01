@@ -255,10 +255,6 @@ Mintplex Labs 与社区维护了多种部署方式、脚本和模板，您可以
 
 - [为 AnythingLLM 做贡献](../CONTRIBUTING.md) - 如何为 AnythingLLM 做贡献。
 
-## 💖 赞助商
-
-赞助商名单维护在英文 README 中，请参阅 [Sponsors](../README.md#-sponsors)。
-
 ## 🌟 贡献者们
 
 [![anythingllm contributors](https://contrib.rocks/image?repo=mintplex-labs/anything-llm)](https://github.com/mintplex-labs/anything-llm/graphs/contributors)

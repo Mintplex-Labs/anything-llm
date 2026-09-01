@@ -276,10 +276,6 @@ AnythingLLM توسط Mintplex Labs Inc دارای ویژگی تله‌متری �
 
 - [مشارکت در AnythingLLM](../CONTRIBUTING.md) - نحوه مشارکت در AnythingLLM.
 
-## 💖 حامیان
-
-فهرست حامیان در README انگلیسی نگهداری می‌شود، به [Sponsors](../README.md#-sponsors) مراجعه کنید.
-
 ## 🌟 مشارکت‌کنندگان
 
 </div>

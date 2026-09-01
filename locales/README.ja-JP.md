@@ -255,10 +255,6 @@ Mintplex Labs Inc による AnythingLLM には、匿名の使用情報を収集�
 
 - [AnythingLLM へのコントリビュート](../CONTRIBUTING.md) - AnythingLLM に貢献する方法。
 
-## 💖 スポンサー
-
-スポンサー一覧は英語版 README で管理しています。[Sponsors](../README.md#-sponsors) をご覧ください。
-
 ## 🌟 コントリビューター
 
 [![anythingllm contributors](https://contrib.rocks/image?repo=mintplex-labs/anything-llm)](https://github.com/mintplex-labs/anything-llm/graphs/contributors)
