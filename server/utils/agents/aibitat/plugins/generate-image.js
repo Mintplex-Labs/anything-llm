@@ -8,21 +8,35 @@ const { WorkspaceChats } = require("../../../../models/workspaceChats");
 const { safeJSONStringify } = require("../../../helpers/chat/responses");
 
 /**
- * Collects the image buffers an edit request should transform. Prefers the
- * images attached to the most recent user message and falls back to the image
- * this session generated last, which is not yet in the persisted chat history.
+ * Collects the image buffers a generation call should work from. Images the
+ * user attached to the triggering message are always inputs, whether or not
+ * the model flagged the call as an edit. When editing with nothing attached,
+ * falls back to the image this session generated last (not yet in the
+ * persisted chat history), then walks back through the conversation for the
+ * most recent message carrying images - user uploads from earlier turns or
+ * previously generated images rehydrated as attachments when history loaded.
  * @param {object} aibitat
+ * @param {{edit?: boolean}} options
  * @returns {Buffer[]}
  */
-function sourceImages(aibitat) {
-  const lastUserMessage = [...aibitat.chats]
+function sourceImages(aibitat, { edit = false } = {}) {
+  const [lastUserMessage, ...priorUserMessages] = [...aibitat.chats]
     .reverse()
-    .find((chat) => chat.from === "USER");
-  const images = resolveImageBuffers(lastUserMessage?.attachments || []);
-  if (images.length || !aibitat._lastGeneratedImage) return images;
-  return resolveImageBuffers([
-    { mime: "image/png", storageFilename: aibitat._lastGeneratedImage },
-  ]);
+    .filter((chat) => chat.from === "USER");
+
+  const attached = resolveImageBuffers(lastUserMessage?.attachments || []);
+  if (attached.length || !edit) return attached;
+
+  if (aibitat._lastGeneratedImage)
+    return resolveImageBuffers([
+      { mime: "image/png", storageFilename: aibitat._lastGeneratedImage },
+    ]);
+
+  for (const chat of priorUserMessages) {
+    const images = resolveImageBuffers(chat.attachments || []);
+    if (images.length) return images;
+  }
+  return [];
 }
 
 /**
@@ -52,7 +66,7 @@ const generateImage = {
           super: aibitat,
           name: this.name,
           description:
-            "Generate an image from a text prompt, or edit an image already in the conversation. Use for any request to draw, create, render, or modify a picture.",
+            "Generate an image from a text prompt, or edit an image already in the conversation. Use for any request to draw, create, render, or modify a picture. Images the user attached and images generated earlier in the chat are sourced from the conversation automatically - never describe or re-encode them into the prompt.",
           examples: [
             {
               prompt: "Generate an image of a red fox in the snow",
@@ -83,7 +97,7 @@ const generateImage = {
               edit: {
                 type: "boolean",
                 description:
-                  "Set true to edit an image already in the conversation instead of creating a new one.",
+                  "Set true to edit an image already in the conversation - one the user attached or one generated earlier - instead of creating a new one. The image itself is found automatically.",
               },
             },
             additionalProperties: false,
@@ -104,7 +118,7 @@ const generateImage = {
             // or drop it once generation settles.
             const pendingId = uuidv4();
             try {
-              const images = edit ? sourceImages(this.super) : [];
+              const images = sourceImages(this.super, { edit });
               this.super.introspect(
                 `${this.caller}: ${images.length ? "Editing image" : "Generating image"} - "${prompt}"`
               );

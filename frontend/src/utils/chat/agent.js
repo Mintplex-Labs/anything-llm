@@ -129,14 +129,16 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
   } else if (data.type === "clarificationRequest") {
     if (!data.requestId || !Array.isArray(data.questions)) return;
   } else if (data.type === "imageGenerationPending") {
-    // Carries no content - it only swaps the generic loading placeholder for
-    // the image-pending card while an inline /img command generates.
+    // The generate-image skill tags its placeholder with a pendingId and the
+    // prompt so the result card can swap it out by uuid. The inline /img
+    // command sends no content - its empty placeholder is swept up by the
+    // !!msg.content filters when the next message lands.
     return setChatHistory((prev) => [
       ...prev.filter((msg) => !!msg.content),
       {
         type: "imageGenerationPending",
-        uuid: v4(),
-        content: "",
+        uuid: data.content?.pendingId || v4(),
+        content: data.content?.prompt || "",
         role: "assistant",
         sources: [],
         closed: false,
@@ -331,26 +333,6 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
           animate: false,
           pending: false,
           metrics: data.metrics || {},
-        },
-      ];
-    });
-  }
-
-  if (data.type === "imageGenerationPending") {
-    return setChatHistory((prev) => {
-      return [
-        ...prev.filter((msg) => !!msg.content),
-        {
-          uuid: data.content.pendingId,
-          type: "imageGenerationPending",
-          content: data.content.prompt,
-          role: "assistant",
-          sources: [],
-          closed: false,
-          error: null,
-          animate: false,
-          pending: true,
-          metrics: {},
         },
       ];
     });

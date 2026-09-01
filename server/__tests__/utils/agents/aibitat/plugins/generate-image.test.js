@@ -172,6 +172,78 @@ describe("generate-image agent skill", () => {
     );
   });
 
+  test("uses images attached to the triggering message even when edit is not set", async () => {
+    editImageForWorkspace.mockResolvedValue(SAVED_IMAGE);
+    const { handler } = setupPlugin([
+      {
+        from: "USER",
+        content: "generate a cartoon version of this photo",
+        attachments: [
+          {
+            mime: "image/png",
+            contentString: `data:image/png;base64,${Buffer.from("photo").toString("base64")}`,
+          },
+        ],
+      },
+    ]);
+
+    await handler({ prompt: "a cartoon version of this photo" });
+
+    expect(generateImageForWorkspace).not.toHaveBeenCalled();
+    expect(editImageForWorkspace).toHaveBeenCalledWith(
+      expect.objectContaining({ images: [Buffer.from("photo")] })
+    );
+  });
+
+  test("ignores images from earlier messages when the call is not an edit", async () => {
+    generateImageForWorkspace.mockResolvedValue(SAVED_IMAGE);
+    const { handler } = setupPlugin([
+      {
+        from: "USER",
+        content: "here is my photo",
+        attachments: [
+          {
+            mime: "image/png",
+            contentString: `data:image/png;base64,${Buffer.from("photo").toString("base64")}`,
+          },
+        ],
+      },
+      { from: "USER", content: "generate a sunset" },
+    ]);
+
+    await handler({ prompt: "a sunset" });
+
+    expect(editImageForWorkspace).not.toHaveBeenCalled();
+    expect(generateImageForWorkspace).toHaveBeenCalled();
+  });
+
+  test("edits the most recent image found in prior messages, including rehydrated generated images", async () => {
+    editImageForWorkspace.mockResolvedValue(SAVED_IMAGE);
+    const { handler } = setupPlugin([
+      {
+        from: "USER",
+        content: "make me a fox",
+        // Generated images from persisted history are rehydrated onto the USER
+        // entry as data-URL attachments by #chatHistory.
+        attachments: [
+          {
+            mime: "image/png",
+            contentString: `data:image/png;base64,${Buffer.from("generated-fox").toString("base64")}`,
+          },
+        ],
+      },
+      { from: "@agent", content: "Here is your fox." },
+      { from: "USER", content: "make it blue" },
+    ]);
+
+    await handler({ prompt: "make it blue", edit: true });
+
+    expect(generateImageForWorkspace).not.toHaveBeenCalled();
+    expect(editImageForWorkspace).toHaveBeenCalledWith(
+      expect.objectContaining({ images: [Buffer.from("generated-fox")] })
+    );
+  });
+
   test("falls back to the image generated earlier in the session when editing", async () => {
     generateImageForWorkspace.mockResolvedValue(SAVED_IMAGE);
     editImageForWorkspace.mockResolvedValue(SAVED_IMAGE);
