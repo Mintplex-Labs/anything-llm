@@ -15,11 +15,13 @@ import {
   FolderOpen,
   FilePlus,
   CalendarCheck,
+  ImageSquare,
 } from "@phosphor-icons/react";
 import RAGImage from "@/media/agents/rag-memory.png";
 import SummarizeImage from "@/media/agents/view-summarize.png";
 import ScrapeWebsitesImage from "@/media/agents/scrape-websites.png";
 import GenerateChartsImage from "@/media/agents/generate-charts.png";
+import GenerateImageImage from "@/media/agents/generate-image.png";
 import GenerateSaveImages from "@/media/agents/generate-save-files.png";
 import FileSystemImage from "@/media/agents/file-system.png";
 import GMailIcon from "./GMailSkillPanel/gmail.png";
@@ -60,11 +62,18 @@ export const getDefaultSkills = (t) => ({
  * @param {object} options - The options for the configurable skills.
  * @param {boolean} options.fileSystemAgentAvailable - Whether the file system agent is available.
  * @param {boolean} options.createFilesAgentAvailable - Whether the create files agent is available.
+ * @param {boolean} options.imageGenerationAvailable - Whether an image generation provider is
+ * configured. Only the in-chat skills menu passes this - the admin page always lists the skill so
+ * it can be enabled before a provider is set up.
  * @returns {object} The configurable skills.
  */
 export const getConfigurableSkills = (
   t,
-  { fileSystemAgentAvailable = true, createFilesAgentAvailable = true } = {}
+  {
+    fileSystemAgentAvailable = true,
+    createFilesAgentAvailable = true,
+    imageGenerationAvailable = true,
+  } = {}
 ) => ({
   ...(fileSystemAgentAvailable && {
     "filesystem-agent": {
@@ -94,6 +103,16 @@ export const getConfigurableSkills = (
     icon: ChartBar,
     image: GenerateChartsImage,
   },
+  ...(imageGenerationAvailable && {
+    "generate-image": {
+      title: t("agent.skill.generateImage.title"),
+      description: t("agent.skill.generateImage.description"),
+      component: GenericSkillPanel,
+      skill: "generate-image",
+      icon: ImageSquare,
+      image: GenerateImageImage,
+    },
+  }),
   "web-browsing": {
     title: t("agent.skill.web.title"),
     description: t("agent.skill.web.description"),

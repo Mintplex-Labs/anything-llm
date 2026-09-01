@@ -729,6 +729,11 @@ const TRANSLATIONS = {
         description:
           'Ļauj aģentam izveidot atkārtotus plānotus darbus no čata (piemēram, "katru darba dienu plkst. 9:00 nosūtīt man savu e-pasta kopsavilkumu un nosūtīt ziņu"). Pieejams tikai vienam lietotājam.',
       },
+      generateImage: {
+        title: "Izveidot attēlus",
+        description:
+          "Ļauj aģentam ģenerēt attēlus no sarunas, vai rediģēt attēlus, kas pievienoti sarunai, izmantojot konfigurētu attēlu ģenerēšanas pakalpojumu.",
+      },
     },
     mcp: {
       title: "MCP serveri",
@@ -1405,6 +1410,15 @@ const TRANSLATIONS = {
     generating_response: "Atbildes izveide",
     response_failed: "Neizdevās atbildēt uz ziņojumu.",
     response_failed_reason: "Iemesls: {{reason}}",
+    thought_in_progress: "Modeļim ir domas...",
+    thoughts: "Domas",
+    leave_generating: {
+      title: "Kas ir novērst atbildes generēšanu?",
+      description:
+        "Jūs gatavojaties iziet no šīs sarunas, un tas apturēs modeli, kas varētu atbildēt, un šo nevarēs atkāties.",
+      cancel: "Atcelt",
+      confirm: "Turpināt",
+    },
   },
   profile_settings: {
     edit_account: "Rediģēt kontu",

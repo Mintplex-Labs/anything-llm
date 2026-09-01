@@ -228,11 +228,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "giteeai":
       const { GiteeAILLM } = require("../AiProviders/giteeai");
       return new GiteeAILLM(embedder, model);
-    case "docker-model-runner":
-      const {
-        DockerModelRunnerLLM,
-      } = require("../AiProviders/dockerModelRunner");
-      return new DockerModelRunnerLLM(embedder, model);
+    case "llmman":
+      const { LlmmanLLM } = require("../AiProviders/llmman");
+      return new LlmmanLLM(embedder, model);
     case "privatemode":
       const { PrivatemodeLLM } = require("../AiProviders/privatemode");
       return new PrivatemodeLLM(embedder, model);
@@ -251,6 +249,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "cerebras":
       const { CerebrasLLM } = require("../AiProviders/cerebras");
       return new CerebrasLLM(embedder, model);
+    case "vertex":
+      const { VertexLLM } = require("../AiProviders/vertex");
+      return new VertexLLM(embedder, model);
     case "anythingllm-router":
       // Model router is handled separately in stream.js via AnythingLLMModelRouter.
       // This case should not be hit directly - if it is, throw a descriptive error.
@@ -340,6 +341,9 @@ function getImageGeneratorProvider() {
     case "lemonade":
       const { LemonadeImageGenerator } = require("../ImageGenerators/lemonade");
       return new LemonadeImageGenerator();
+    case "localai":
+      const { LocalAiImageGenerator } = require("../ImageGenerators/localAi");
+      return new LocalAiImageGenerator();
     case "openrouter":
       const {
         OpenRouterImageGenerator,
@@ -449,11 +453,9 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "giteeai":
       const { GiteeAILLM } = require("../AiProviders/giteeai");
       return GiteeAILLM;
-    case "docker-model-runner":
-      const {
-        DockerModelRunnerLLM,
-      } = require("../AiProviders/dockerModelRunner");
-      return DockerModelRunnerLLM;
+    case "llmman":
+      const { LlmmanLLM } = require("../AiProviders/llmman");
+      return LlmmanLLM;
     case "privatemode":
       const { PrivatemodeLLM } = require("../AiProviders/privatemode");
       return PrivatemodeLLM;
@@ -472,6 +474,9 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "cerebras":
       const { CerebrasLLM } = require("../AiProviders/cerebras");
       return CerebrasLLM;
+    case "vertex":
+      const { VertexLLM } = require("../AiProviders/vertex");
+      return VertexLLM;
     case "anythingllm-router":
       const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
       return AnythingLLMModelRouter;
@@ -547,8 +552,8 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.ZAI_MODEL_PREF;
     case "giteeai":
       return process.env.GITEE_AI_MODEL_PREF;
-    case "docker-model-runner":
-      return process.env.DOCKER_MODEL_RUNNER_LLM_MODEL_PREF;
+    case "llmman":
+      return process.env.LLMMAN_MODEL_PREF;
     case "privatemode":
       return process.env.PRIVATEMODE_LLM_MODEL_PREF;
     case "sambanova":
@@ -561,6 +566,8 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.MINIMAX_MODEL_PREF;
     case "cerebras":
       return process.env.CEREBRAS_MODEL_PREF;
+    case "vertex":
+      return process.env.VERTEX_AI_LLM_MODEL_PREF;
     default:
       return null;
   }

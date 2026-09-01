@@ -16,6 +16,9 @@ const AGENT_AWAITING_USER_EVENTS = [
   "WAITING_ON_INPUT",
   "toolApprovalRequest",
   "clarificationRequest",
+  // An inline /img command finished while the session was paused awaiting
+  // feedback - it stays paused, so the send button must come back.
+  "imageGenerationCard",
 ];
 
 // Bookkeeping events that never indicate the agent is actively working. Some
@@ -65,6 +68,7 @@ const handledEvents = [
   "statusResponse",
   "fileDownloadCard",
   "imageGenerationCard",
+  "imageGenerationPending",
   "scheduledJobCreated",
   "awaitingFeedback",
   "wssFailure",
@@ -124,6 +128,26 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
     if (!data.requestId || !data.skillName) return;
   } else if (data.type === "clarificationRequest") {
     if (!data.requestId || !Array.isArray(data.questions)) return;
+  } else if (data.type === "imageGenerationPending") {
+    // The generate-image skill tags its placeholder with a pendingId and the
+    // prompt so the result card can swap it out by uuid. The inline /img
+    // command sends no content - its empty placeholder is swept up by the
+    // !!msg.content filters when the next message lands.
+    return setChatHistory((prev) => [
+      ...prev.filter((msg) => !!msg.content),
+      {
+        type: "imageGenerationPending",
+        uuid: data.content?.pendingId || v4(),
+        content: data.content?.prompt || "",
+        role: "assistant",
+        sources: [],
+        closed: false,
+        error: null,
+        animate: false,
+        pending: true,
+        metrics: {},
+      },
+    ]);
   } else if (!handledEvents.includes(data.type) || !data.content) {
     return;
   }
@@ -316,14 +340,19 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
 
   if (data.type === "imageGenerationCard") {
     return setChatHistory((prev) => {
+      // Drops the placeholder card this result belongs to, if there was one.
+      const history = prev.filter(
+        (msg) => !!msg.content && msg.uuid !== data.content.pendingId
+      );
+      if (data.content.failed) return history;
       return [
-        ...prev.filter((msg) => !!msg.content),
+        ...history,
         {
           uuid: v4(),
           type: "textResponse",
-          content: data.content,
-          outputs: data.outputs || [],
-          chatId: data.chatId || null,
+          content: data.content.text,
+          outputs: data.content.outputs || [],
+          chatId: data.content.chatId || null,
           role: "assistant",
           sources: [],
           closed: true,

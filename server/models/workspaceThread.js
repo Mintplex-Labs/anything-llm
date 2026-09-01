@@ -132,6 +132,19 @@ const WorkspaceThread = {
     }
   },
 
+  migrateToMultiUser: async function (adminUserId) {
+    try {
+      await prisma.workspace_threads.updateMany({
+        where: { user_id: null },
+        data: { user_id: adminUserId },
+      });
+      return true;
+    } catch (error) {
+      console.error(error.message);
+      return false;
+    }
+  },
+
   // Will fire on first message (included or not) for a thread and rename the thread based on the prompt.
   autoRenameThread: async function ({
     workspace = null,

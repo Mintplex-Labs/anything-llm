@@ -52,7 +52,11 @@ const router = createBrowserRouter([
           );
           return { element: <PrivateRoute Component={WorkspaceChat} /> };
         },
-        children: [{ path: "t/:threadSlug" }],
+        // Pathless-element child so the thread URL matches and `threadSlug`
+        // is exposed via params - WorkspaceChat renders the page itself and
+        // has no <Outlet/>. The explicit null element silences the dev-only
+        // "matched leaf route has no element" warning.
+        children: [{ path: "t/:threadSlug", element: null }],
       },
       {
         path: "/accept-invite/:code",

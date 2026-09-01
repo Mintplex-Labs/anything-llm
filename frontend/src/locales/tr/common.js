@@ -729,6 +729,11 @@ const TRANSLATIONS = {
         description:
           'Temsilcinin, sohbetten otomatik olarak tekrarlayan görevler oluşturmasına izin verin (örneğin, "her hafta içi her gün saat 09:00\'da e-posta kutlumu özetleyip bana gönder"). Sadece tek kullanıcı modunda kullanılabilir.',
       },
+      generateImage: {
+        title: "Görseller oluştur",
+        description:
+          "Ajantın, yapılandırılmış görüntü oluşturma sağlayıcınız aracılığıyla sohbetten görüntüler oluşturmasına veya konuşmaya eklenen görüntüleri düzenlemesine izin verin.",
+      },
     },
     mcp: {
       title: "MCP Sunucuları",
@@ -1309,6 +1314,15 @@ const TRANSLATIONS = {
     generating_response: "Yanıt üretme",
     response_failed: "Mesaja cevap veremedim.",
     response_failed_reason: "Nedeni: {{reason}}",
+    thought_in_progress: "Model düşünüyor...",
+    thoughts: "Düşünceler",
+    leave_generating: {
+      title: "Yanıt üretmeyi durdurun?",
+      description:
+        "Şu anda bu sohbetten çıkıyorsunuz. Bu, modelin yanıt oluşturmasını durduracak ve bu durumun geri alınamayacağını ifade eder.",
+      cancel: "İptal et",
+      confirm: "Devam et",
+    },
   },
   profile_settings: {
     edit_account: "Hesabı Düzenle",

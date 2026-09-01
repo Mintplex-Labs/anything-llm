@@ -678,6 +678,11 @@ const TRANSLATIONS = {
         description:
           "允许代理人根据聊天内容创建重复的计划任务（例如，“每天工作日的早上9点，总结我的收件箱并发送邮件给我”）。仅适用于单用户模式。",
       },
+      generateImage: {
+        title: "生成图像",
+        description:
+          "允许代理使用您配置的图像生成提供商，从聊天内容中生成图片，或编辑与对话相关的图片。",
+      },
     },
     mcp: {
       title: "MCP 服务器",
@@ -1304,6 +1309,14 @@ const TRANSLATIONS = {
     generating_response: "生成回复",
     response_failed: "无法回复消息。",
     response_failed_reason: "原因：{{reason}}",
+    thought_in_progress: "正在思考…",
+    thoughts: "想法、思绪",
+    leave_generating: {
+      title: "停止生成回复吗？",
+      description: "您即将退出此对话，这将阻止模型生成回复，并且无法恢复。",
+      cancel: "取消",
+      confirm: "继续",
+    },
   },
   profile_settings: {
     edit_account: "编辑帐户",

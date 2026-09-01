@@ -746,6 +746,11 @@ const TRANSLATIONS = {
         description:
           'Permet que l\'agent creï tasques programades recurrents a partir del missatge (per exemple, "cada dia de dilluny a les 9 del matí, resumeix la meva caixa de correu i envia un correu electrònic"). Només disponible en mode per a un usuari.',
       },
+      generateImage: {
+        title: "Generar imatges",
+        description:
+          "Permet que l'agent generi imatges a partir del xat, o editi les imatges adjuntes a la conversa, utilitzant el proveïdor de generació d'imatges configurat.",
+      },
     },
     mcp: {
       title: "Servidors MCP",
@@ -1514,6 +1519,15 @@ const TRANSLATIONS = {
     generating_response: "Generar resposta",
     response_failed: "No he pogut respondre al missatge.",
     response_failed_reason: "Motiu: {{reason}}",
+    thought_in_progress: "L'entrenament continua...",
+    thoughts: "Pensaments",
+    leave_generating: {
+      title: "Deu deixar de generar respostes?",
+      description:
+        "Estàs a punt de tancar aquesta conversa; això farà que el model deixi d'elaborar la resposta i no es podrà recuperar.",
+      cancel: "Cancelar",
+      confirm: "Segueix",
+    },
   },
   profile_settings: {
     edit_account: "Edita el compte",

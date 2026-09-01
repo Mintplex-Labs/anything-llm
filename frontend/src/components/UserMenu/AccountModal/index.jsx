@@ -147,7 +147,7 @@ export default function AccountModal({ user, hideModal }) {
           <ModalInput
             label={t("profile_settings.new_password")}
             name="password"
-            type="text"
+            type="password"
             placeholder={`${user.username}'s new password`}
             minLength={8}
             hint={t("profile_settings.password_description")}

@@ -716,6 +716,11 @@ const TRANSLATIONS = {
         description:
           'Cho phép đại lý tạo các công việc lặp lại theo lịch trình từ cuộc trò chuyện (ví dụ: "mỗi ngày làm việc lúc 9 giờ sáng, tóm tắt hộp thư và gửi email cho tôi"). Chỉ khả dụng trong chế độ sử dụng riêng.',
       },
+      generateImage: {
+        title: "Tạo hình ảnh",
+        description:
+          "Cho phép đại lý tạo ảnh từ cuộc trò chuyện hoặc chỉnh sửa ảnh đính kèm trong cuộc trò chuyện bằng cách sử dụng nhà cung cấp dịch vụ tạo ảnh đã được cấu hình.",
+      },
     },
     mcp: {
       title: "Máy chủ MCP",
@@ -1293,6 +1298,15 @@ const TRANSLATIONS = {
     generating_response: "Tạo ra câu trả lời",
     response_failed: "Không thể phản hồi tin nhắn.",
     response_failed_reason: "Lý do: {{reason}}",
+    thought_in_progress: "Đang suy nghĩ...",
+    thoughts: "Ý tưởng",
+    leave_generating: {
+      title: "Dừng tạo phản hồi?",
+      description:
+        "Bạn sắp rời khỏi cuộc trò chuyện này, điều này sẽ ngăn mô hình tạo ra câu trả lời và không thể khôi phục lại.",
+      cancel: "Hủy",
+      confirm: "Tiếp tục",
+    },
   },
   profile_settings: {
     edit_account: "Chỉnh sửa Tài khoản",

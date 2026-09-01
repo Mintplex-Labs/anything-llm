@@ -691,6 +691,11 @@ const TRANSLATIONS = {
       },
       default_skill:
         "ໂດຍເລີ່ມຕົ້ນ ທັກສະນີ້ຈະຖືກເປີດໃຊ້ງານ, ແຕ່ທ່ານສາມາດປິດມັນໄດ້ຖ້າບໍ່ຕ້ອງການໃຫ້ເອເຈນໃຊ້.",
+      generateImage: {
+        title: "ສ້າງຮູບພາບ",
+        description:
+          "ໃຫ້ເອເຈນສ້າງຮູບຈາກການສົນທະນາ ຫຼື ແກ້ໄຂຮູບທີ່ແນບມາໃນການສົນທະນາ ໂດຍໃຊ້ຜູ້ສະໜອງການສ້າງຮູບທີ່ເຈົ້າຕັ້ງໄວ້.",
+      },
     },
     mcp: {
       title: "ເຊີບເວີ MCP",
@@ -1582,6 +1587,15 @@ const TRANSLATIONS = {
     generating_response: "ຜົນການຕອບ",
     response_failed: "ສາมาถ ප්‍රතිສະໜອງ ຂໍ້ຄວາມ ໄດ້",
     response_failed_reason: "ສາเหตุ: {{reason}}",
+    thought_in_progress: "ແບບนั้น ພາກັນຄິດ",
+    thoughts: "ຄວາມຄິດ",
+    leave_generating: {
+      title: "ຢຸດການສ້າງຕອບ?",
+      description:
+        "ເຈົ້າ ກຳ ລັງຈະອອກຈາກການສົນทະນານີ້, ດັ່ງນັ້ນມັນຈະຢຸດ ໂໝດ ໃຫ້ສຳເລັດ ແລະບໍ່ສາມາດຟື້ນຟູໄດ້।",
+      cancel: "ຍົກເລີດ",
+      confirm: "ຊື່ຕໍ່",
+    },
   },
   profile_settings: {
     edit_account: "ແກ້ໄຂບັນຊີ",
