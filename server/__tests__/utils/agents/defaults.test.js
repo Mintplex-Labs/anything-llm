@@ -10,6 +10,7 @@ jest.mock("../../../models/systemPromptVariables");
 jest.mock("../../../models/systemSettings");
 jest.mock("../../../utils/agents/imported", () => ({
   activeImportedPlugins: jest.fn().mockReturnValue([]),
+  validateImportedPluginHandler: jest.fn().mockReturnValue(false),
 }));
 jest.mock("../../../utils/agentFlows", () => ({
   AgentFlows: {
@@ -22,7 +23,12 @@ jest.mock("../../../utils/MCP", () => {
   }));
 });
 
-const { WORKSPACE_AGENT } = require("../../../utils/agents/defaults");
+const AgentPlugins = require("../../../utils/agents/aibitat/plugins");
+const {
+  WORKSPACE_AGENT,
+  workspaceEnabledMCPTools,
+  disabledWorkspaceSkillNames,
+} = require("../../../utils/agents/defaults");
 
 describe("WORKSPACE_AGENT.getDefinition", () => {
   beforeEach(() => {
@@ -138,5 +144,66 @@ describe("WORKSPACE_AGENT.getDefinition", () => {
       null,
       workspace.id
     );
+  });
+});
+
+describe("workspace agent skill overrides", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    SystemPromptVariables.expandSystemPromptVariables.mockImplementation(
+      async (prompt) => prompt
+    );
+    SystemSettings.getValueOrFallback = jest.fn().mockResolvedValue("[]");
+  });
+
+  async function functionsFor(agentConfig) {
+    const { functions } = await WORKSPACE_AGENT.getDefinition(
+      "openai",
+      { id: 1, name: "Test Workspace", agentConfig },
+      { id: 1 }
+    );
+    return functions;
+  }
+
+  it("inherits the instance defaults when the workspace has no overrides", async () => {
+    expect(await functionsFor(null)).toContain(AgentPlugins.memory.name);
+  });
+
+  it("drops a default skill the workspace turned off", async () => {
+    const functions = await functionsFor(
+      JSON.stringify({ [AgentPlugins.memory.name]: false })
+    );
+    expect(functions).not.toContain(AgentPlugins.memory.name);
+  });
+
+  it("adds a configurable skill the workspace turned on", async () => {
+    const functions = await functionsFor(
+      JSON.stringify({ [AgentPlugins.webBrowsing.name]: true })
+    );
+    expect(functions).toContain(AgentPlugins.webBrowsing.name);
+  });
+
+  it("resolves disabled overrides into the function names to remove", () => {
+    const names = disabledWorkspaceSkillNames({
+      agentConfig: JSON.stringify({
+        [AgentPlugins.memory.name]: false,
+        "github-create_issue": false,
+        "web-browsing": true,
+      }),
+    });
+    expect(names).toEqual([AgentPlugins.memory.name, "github-create_issue"]);
+  });
+
+  it("extracts enabled MCP tool names for a given server", () => {
+    const workspace = {
+      agentConfig: JSON.stringify({
+        "github-create_issue": true,
+        "github-list_repos": false,
+        "docker-list_containers": true,
+      }),
+    };
+    expect(workspaceEnabledMCPTools(workspace, "github")).toEqual([
+      "create_issue",
+    ]);
   });
 });

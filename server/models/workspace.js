@@ -7,6 +7,7 @@ const { v4: uuidv4 } = require("uuid");
 const { User } = require("./user");
 const { PromptHistory } = require("./promptHistory");
 const { SystemSettings } = require("./systemSettings");
+const { safeJsonParse } = require("../utils/http");
 
 function isNullOrNaN(value) {
   if (value === null) return true;
@@ -30,6 +31,7 @@ function isNullOrNaN(value) {
  * @property {string} agentModel - The agent model of the workspace
  * @property {string} queryRefusalResponse - The query refusal response of the workspace
  * @property {string} vectorSearchMode - The vector search mode of the workspace
+ * @property {string|null} agentConfig - JSON map of agent skill id to boolean overriding the instance-wide agent skill settings
  */
 
 const Workspace = {
@@ -55,6 +57,7 @@ const Workspace = {
     "agentModel",
     "queryRefusalResponse",
     "vectorSearchMode",
+    "agentConfig",
     "router_id",
   ],
 
@@ -130,6 +133,25 @@ const Workspace = {
       )
         return "default";
       return value;
+    },
+    agentConfig: (value) => {
+      if (value === null || value === undefined) return null;
+      const overrides =
+        typeof value === "string" ? safeJsonParse(value) : value;
+      if (
+        !overrides ||
+        typeof overrides !== "object" ||
+        Array.isArray(overrides)
+      )
+        return null;
+
+      const validated = {};
+      for (const [skill, enabled] of Object.entries(overrides)) {
+        if (typeof skill !== "string" || typeof enabled !== "boolean") continue;
+        validated[skill.slice(0, 255)] = enabled;
+      }
+      if (!Object.keys(validated).length) return null;
+      return JSON.stringify(validated);
     },
     router_id: (value) => {
       if ([null, undefined, "", "none"].includes(value)) return null;

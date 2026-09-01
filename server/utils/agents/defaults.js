@@ -86,11 +86,14 @@ const WORKSPACE_AGENT = {
     return {
       role,
       functions: [
-        ...(await agentSkillsFromSystemSettings()),
-        ...clarifyingQuestionsSkills,
-        ...ImportedPlugin.activeImportedPlugins(),
-        ...AgentFlows.activeFlowPlugins(),
-        ...(await new MCPCompatibilityLayer().activeMCPServers()),
+        ...new Set([
+          ...(await agentSkillsFromSystemSettings(workspace)),
+          ...clarifyingQuestionsSkills,
+          ...ImportedPlugin.activeImportedPlugins(),
+          ...AgentFlows.activeFlowPlugins(),
+          ...(await new MCPCompatibilityLayer().activeMCPServers()),
+          ...workspaceEnabledExternalSkills(workspace),
+        ]),
       ],
     };
   },
@@ -118,13 +121,71 @@ async function clarifyingQuestionsSkillIfEnabled() {
 }
 
 /**
+ * Agent skill overrides set on a workspace. Maps any identifier `resolveAgentSkill`
+ * accepts to a boolean that forces the skill on or off regardless of the
+ * instance-wide settings. Skills absent from the map inherit those settings.
+ * @param {import("@prisma/client").workspaces | null} workspace
+ * @returns {Record<string, boolean>}
+ */
+function workspaceSkillOverrides(workspace = null) {
+  return safeJsonParse(workspace?.agentConfig, {});
+}
+
+/**
+ * Loadable identifiers for agent flows and imported plugins a workspace enabled that
+ * the instance-wide config leaves inactive. Built-in skills are resolved by
+ * `agentSkillsFromSystemSettings` and MCP tools by `workspaceEnabledMCPTools`.
+ * @param {import("@prisma/client").workspaces | null} workspace
+ * @returns {string[]}
+ */
+function workspaceEnabledExternalSkills(workspace = null) {
+  return Object.entries(workspaceSkillOverrides(workspace))
+    .filter(
+      ([skill, enabled]) =>
+        enabled &&
+        (skill.startsWith("@@flow_") ||
+          ImportedPlugin.validateImportedPluginHandler(skill))
+    )
+    .flatMap(([skill]) => resolveAgentSkill(skill).loadable);
+}
+
+/**
+ * Tool names on a given MCP server that a workspace enabled, so they can be excluded
+ * from the instance-wide suppression list when the server is loaded for that workspace.
+ * @param {import("@prisma/client").workspaces | null} workspace
+ * @param {string} serverName
+ * @returns {string[]}
+ */
+function workspaceEnabledMCPTools(workspace = null, serverName = "") {
+  const prefix = `${serverName}-`;
+  return Object.entries(workspaceSkillOverrides(workspace))
+    .filter(([skill, enabled]) => enabled && skill.startsWith(prefix))
+    .map(([skill]) => skill.slice(prefix.length));
+}
+
+/**
+ * Aibitat function names a workspace turned off. Applied once plugins are attached
+ * since MCP servers load as a whole and their tools can only be dropped by the name
+ * they registered under.
+ * @param {import("@prisma/client").workspaces | null} workspace
+ * @returns {string[]}
+ */
+function disabledWorkspaceSkillNames(workspace = null) {
+  return Object.entries(workspaceSkillOverrides(workspace))
+    .filter(([_, enabled]) => !enabled)
+    .flatMap(([skill]) => resolveAgentSkill(skill).registered);
+}
+
+/**
  * Fetches and preloads the names/identifiers for plugins that will be dynamically
  * loaded later
+ * @param {import("@prisma/client").workspaces | null} workspace - applies this workspace's skill overrides when given
  * @returns {Promise<string[]>}
  */
-async function agentSkillsFromSystemSettings() {
+async function agentSkillsFromSystemSettings(workspace = null) {
   const systemFunctions = [];
   const isMultiUser = await SystemSettings.isMultiUserMode();
+  const overrides = workspaceSkillOverrides(workspace);
 
   // Load non-imported built-in skills that are configurable, but are default enabled.
   const _disabledDefaultSkills = safeJsonParse(
@@ -135,18 +196,29 @@ async function agentSkillsFromSystemSettings() {
     []
   );
   DEFAULT_SKILLS.forEach((skill) => {
-    if (!_disabledDefaultSkills.includes(skill))
+    if (overrides[skill] ?? !_disabledDefaultSkills.includes(skill))
       systemFunctions.push(AgentPlugins[skill].name);
   });
 
   // Load non-imported built-in skills that are configurable.
-  const _setting = safeJsonParse(
+  const _enabledSettingSkills = safeJsonParse(
     await SystemSettings.getValueOrFallback(
       { label: "default_agent_skills" },
       "[]"
     ),
     []
   );
+  const _setting = [
+    ...new Set([
+      ..._enabledSettingSkills,
+      ...Object.keys(overrides).filter(
+        (skill) =>
+          overrides[skill] &&
+          AgentPlugins.hasOwnProperty(skill) &&
+          !DEFAULT_SKILLS.includes(skill)
+      ),
+    ]),
+  ].filter((skill) => overrides[skill] !== false);
 
   // Pre-load disabled sub-skills and availability for configured skills
   const skillFilterState = {};
@@ -177,7 +249,10 @@ async function agentSkillsFromSystemSettings() {
         const filterState = skillFilterState[skillName];
         if (filterState) {
           if (!filterState.available) continue;
-          if (filterState.disabledSubSkills.includes(subPlugin.name)) continue;
+          const subSkillEnabled =
+            overrides[subPlugin.name] ??
+            !filterState.disabledSubSkills.includes(subPlugin.name);
+          if (!subSkillEnabled) continue;
         }
 
         systemFunctions.push(
@@ -260,6 +335,8 @@ function resolveAgentSkill(skill = "", { serverName = null } = {}) {
 module.exports = {
   USER_AGENT,
   WORKSPACE_AGENT,
-  agentSkillsFromSystemSettings,
   resolveAgentSkill,
+  workspaceSkillOverrides,
+  workspaceEnabledMCPTools,
+  disabledWorkspaceSkillNames,
 };

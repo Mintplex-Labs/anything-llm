@@ -139,6 +139,7 @@ model workspaces {
   agentModel                   String?
   queryRefusalResponse         String?
   vectorSearchMode             String?                        @default("default")
+  agentConfig                  String? // JSON agent skill overrides; null inherits the instance-wide settings
   router_id                    Int? // No relation to prevent whole table migration (SQLite limitation)
   workspace_users              workspace_users[]
   documents                    workspace_documents[]
