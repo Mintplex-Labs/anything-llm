@@ -40,12 +40,15 @@ class LanceDb extends VectorDatabase {
     return { client: LanceDb.#connection };
   }
 
+  /**
+   * Converts a cosine distance ([0, 2]: 0 identical, 1 orthogonal, 2 opposite)
+   * to a similarity score in [0, 1]. Distances at or past orthogonal floor at 0
+   * so unrelated chunks can never clear a similarity threshold.
+   * @param {number|null} distance - Cosine distance from the vector search.
+   * @returns {number} Similarity score in [0, 1].
+   */
   distanceToSimilarity(distance = null) {
     if (distance === null || typeof distance !== "number") return 0.0;
-    // Cosine distance runs [0, 2]: 0 identical, 1 orthogonal, 2 opposite.
-    // At or past orthogonal there is no similarity left to report, so this
-    // floors at 0. Returning 1 here scored the least similar chunks as
-    // perfect matches and let them clear any similarity threshold.
     if (distance >= 1.0) return 0;
     if (distance < 0) return 1 - Math.abs(distance);
     return 1 - distance;
