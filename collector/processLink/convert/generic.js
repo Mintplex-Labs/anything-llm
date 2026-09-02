@@ -44,7 +44,7 @@ async function scrapeGenericUrl({
    * so we can return the content immediately.
    */
   if (processVia === "file")
-    return await processAsFile({ uri: link, saveAsDocument });
+    return await processAsFile({ uri: link, saveAsDocument, metadata });
   else if (processVia === "youtube")
     return await loadYouTubeTranscript(
       { url: link },

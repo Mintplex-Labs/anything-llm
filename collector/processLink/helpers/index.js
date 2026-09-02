@@ -129,9 +129,10 @@ async function determineContentType(uri) {
  * Process a link as a file
  * @param {string} uri - The link to process as a file
  * @param {boolean} saveAsDocument - Whether to save the content as a document. Default is true
+ * @param {{[key: string]: string}} metadata - Metadata to use when creating the document
  * @returns {Promise<{success: boolean, reason: string|null, documents: Object[], content: string|null, saveAsDocument: boolean}>} - The content of the file
  */
-async function processAsFile({ uri, saveAsDocument = true }) {
+async function processAsFile({ uri, saveAsDocument = true, metadata = {} }) {
   const fileContentResult = await downloadURIToFile(uri);
   if (!fileContentResult.success)
     return returnResult({
@@ -155,9 +156,11 @@ async function processAsFile({ uri, saveAsDocument = true }) {
    * TODO: Improve this process via a new option that will instantly delete the file after processing
    * if we find we dont need this file ever after processing.
    */
-  const processSingleFileResult = await processSingleFile(targetFilename, {
-    parseOnly: saveAsDocument === false,
-  });
+  const processSingleFileResult = await processSingleFile(
+    targetFilename,
+    { parseOnly: saveAsDocument === false },
+    metadata
+  );
   if (!processSingleFileResult.success) {
     return returnResult({
       success: false,
