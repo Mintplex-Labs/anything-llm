@@ -264,6 +264,12 @@ const SidebarOptions = ({ user = null, t }) => (
               roles: ["admin"],
             },
             {
+              btnText: "Image Description",
+              href: paths.settings.visionPreference(),
+              flex: true,
+              roles: ["admin"],
+            },
+            {
               btnText: t("settings.model-router"),
               href: paths.settings.modelRouters(),
               flex: true,

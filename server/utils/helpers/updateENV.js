@@ -566,6 +566,28 @@ const KEY_MAPPING = {
     postUpdate: [],
   },
 
+  // Vision (image description) providers
+  VisionProvider: {
+    envKey: "VISION_PROVIDER",
+    checks: [isNotEmpty, supportedVisionProvider],
+    postUpdate: [],
+  },
+  VisionGenericOpenAiBaseUrl: {
+    envKey: "VISION_GENERIC_OPEN_AI_BASE_URL",
+    checks: [isValidURL],
+    postUpdate: [],
+  },
+  VisionGenericOpenAiApiKey: {
+    envKey: "VISION_GENERIC_OPEN_AI_API_KEY",
+    checks: [],
+    postUpdate: [],
+  },
+  VisionGenericOpenAiModel: {
+    envKey: "VISION_GENERIC_OPEN_AI_MODEL",
+    checks: [isNotEmpty],
+    postUpdate: [],
+  },
+
   // System Settings
   AuthToken: {
     envKey: "AUTH_TOKEN",
@@ -1179,6 +1201,13 @@ function supportedTranscriptionProvider(input = "") {
   return validSelection
     ? null
     : `${input} is not a valid transcription model provider.`;
+}
+
+function supportedVisionProvider(input = "") {
+  const validSelection = ["none", "openai", "generic-openai"].includes(input);
+  return validSelection
+    ? null
+    : `${input} is not a valid vision model provider.`;
 }
 
 function validGeminiSafetySetting(input = "") {
