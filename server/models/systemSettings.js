@@ -844,6 +844,11 @@ const SystemSettings = {
       ChromaCloudTenant: process.env.CHROMACLOUD_TENANT,
       ChromaCloudDatabase: process.env.CHROMACLOUD_DATABASE,
 
+      // LanceDB Cloud DB Keys
+      LanceDBCloudUri: process.env.LANCEDB_CLOUD_URI,
+      LanceDBCloudApiKey: !!process.env.LANCEDB_CLOUD_API_KEY,
+      LanceDBCloudRegion: process.env.LANCEDB_CLOUD_REGION,
+
       // Weaviate DB Keys
       WeaviateEndpoint: process.env.WEAVIATE_ENDPOINT,
       WeaviateApiKey: !!process.env.WEAVIATE_API_KEY,
