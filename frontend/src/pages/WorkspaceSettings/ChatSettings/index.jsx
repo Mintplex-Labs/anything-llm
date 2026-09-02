@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import ChatHistorySettings from "./ChatHistorySettings";
 import ChatPromptSettings from "./ChatPromptSettings";
 import ChatTemperatureSettings from "./ChatTemperatureSettings";
+import ReasoningEffortSettings from "./ReasoningEffortSettings";
 import ChatModeSelection from "./ChatModeSelection";
 import WorkspaceLLMSelection from "./WorkspaceLLMSelection";
 import ChatQueryRefusalResponse from "./ChatQueryRefusalResponse";
@@ -15,6 +16,12 @@ export default function ChatSettings({ workspace }) {
   const [settings, setSettings] = useState({});
   const [hasChanges, setHasChanges] = useState(false);
   const [saving, setSaving] = useState(false);
+  // Tracks saved updates so children depending on the workspace's current
+  // provider/model (eg: reasoning controls) re-render without a page refresh.
+  const [currentWorkspace, setCurrentWorkspace] = useState(workspace);
+  // Unsaved provider/model selection from the LLM picker so dependent
+  // controls can preview capabilities before the form is saved.
+  const [pendingLLM, setPendingLLM] = useState(null);
 
   const formEl = useRef(null);
   useEffect(() => {
@@ -38,6 +45,8 @@ export default function ChatSettings({ workspace }) {
     );
     if (updatedWorkspace) {
       showToast("Workspace updated!", "success", { clear: true });
+      setCurrentWorkspace(updatedWorkspace);
+      setPendingLLM(null);
       setHasChanges(false);
     } else {
       showToast(`Error: ${message}`, "error", { clear: true });
@@ -65,6 +74,13 @@ export default function ChatSettings({ workspace }) {
         <WorkspaceLLMSelection
           settings={settings}
           workspace={workspace}
+          setHasChanges={setHasChanges}
+          onSelectionChange={setPendingLLM}
+        />
+        <ReasoningEffortSettings
+          settings={settings}
+          workspace={currentWorkspace ?? workspace}
+          pendingLLM={pendingLLM}
           setHasChanges={setHasChanges}
         />
         <ChatModeSelection

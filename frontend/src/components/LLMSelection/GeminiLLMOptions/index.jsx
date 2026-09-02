@@ -1,7 +1,10 @@
 import System from "@/models/system";
 import { useEffect, useState } from "react";
 
-export default function GeminiLLMOptions({ settings }) {
+export default function GeminiLLMOptions({
+  settings,
+  reasoningControl = null,
+}) {
   const [inputValue, setInputValue] = useState(settings?.GeminiLLMApiKey);
   const [geminiApiKey, setGeminiApiKey] = useState(settings?.GeminiLLMApiKey);
 
@@ -56,6 +59,7 @@ export default function GeminiLLMOptions({ settings }) {
             </div> */}
           </>
         )}
+        {reasoningControl}
       </div>
     </div>
   );

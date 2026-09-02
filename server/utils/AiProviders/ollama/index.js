@@ -9,6 +9,10 @@ const {
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { Ollama } = require("ollama");
 const { v4: uuidv4 } = require("uuid");
+const {
+  PROVIDER_REASONING_EFFORTS,
+  validReasoningEffort,
+} = require("../../helpers/reasoningEffort");
 
 // Docs: https://github.com/jmorganca/ollama/blob/main/docs/api.md
 class OllamaAILLM {
@@ -267,7 +271,24 @@ class OllamaAILLM {
     ];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  /**
+   * Builds the reasoning portion of the request body when a reasoning effort
+   * is set - otherwise an empty object so the provider default applies.
+   * Ollama's `think` accepts a boolean toggle or an effort level string.
+   * @param {string|null} reasoningEffort
+   * @returns {object}
+   */
+  #constructReasoningConfig(reasoningEffort = null) {
+    const effort = validReasoningEffort("ollama", this.model, reasoningEffort);
+    if (!effort) return {};
+    if (["on", "off"].includes(effort)) return { think: effort === "on" };
+    return { think: effort };
+  }
+
+  async getChatCompletion(
+    messages = null,
+    { temperature = 0.7, reasoningEffort = null }
+  ) {
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.client
         .chat({
@@ -275,6 +296,7 @@ class OllamaAILLM {
           stream: false,
           messages,
           keep_alive: this.keepAlive,
+          ...this.#constructReasoningConfig(reasoningEffort),
           options: {
             temperature,
             num_ctx: this.promptWindowLimit(),
@@ -320,13 +342,17 @@ class OllamaAILLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = 0.7, reasoningEffort = null }
+  ) {
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.client.chat({
         model: this.model,
         stream: true,
         messages,
         keep_alive: this.keepAlive,
+        ...this.#constructReasoningConfig(reasoningEffort),
         options: {
           temperature,
           num_ctx: this.promptWindowLimit(),
@@ -471,16 +497,23 @@ class OllamaAILLM {
 
   /**
    * Returns the capabilities of the model.
-   * @returns {Promise<{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}>}
+   * @returns {Promise<{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, reasoningOptions: string[], imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}>}
    */
   async getModelCapabilities() {
     try {
       const { capabilities = [] } = await this.client.show({
         model: this.model,
       });
+
+      const supportsReasoning = capabilities.includes("thinking");
+      const reasoningOptions = supportsReasoning
+        ? PROVIDER_REASONING_EFFORTS.ollama(this.model)
+        : [];
+
       return {
         tools: capabilities.includes("tools") ? true : false,
-        reasoning: capabilities.includes("thinking") ? true : false,
+        reasoning: supportsReasoning,
+        reasoningOptions,
         imageGeneration: false, // we dont have any image generation capabilities for Ollama or anywhere right now.
         vision: capabilities.includes("vision") ? true : false,
       };
@@ -489,6 +522,7 @@ class OllamaAILLM {
       return {
         tools: "unknown",
         reasoning: "unknown",
+        reasoningOptions: [],
         imageGeneration: "unknown",
         vision: "unknown",
       };

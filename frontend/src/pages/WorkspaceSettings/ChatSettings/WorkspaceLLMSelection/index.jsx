@@ -34,10 +34,18 @@ const LLMS = [LLM_DEFAULT, ...ALL_LLM_PROVIDERS].filter(
   (llm) => !DISABLED_PROVIDERS.includes(llm.value)
 );
 
+/**
+ * @param {object} props
+ * @param {object} props.settings - System settings
+ * @param {object} props.workspace - Workspace object
+ * @param {function} props.setHasChanges - Marks the settings form dirty
+ * @param {function} [props.onSelectionChange] - Called with `{ provider, model }` when the unsaved provider/model selection changes
+ */
 export default function WorkspaceLLMSelection({
   settings,
   workspace,
   setHasChanges,
+  onSelectionChange = () => {},
 }) {
   const [filteredLLMs, setFilteredLLMs] = useState([]);
   const [selectedLLM, setSelectedLLM] = useState(
@@ -52,6 +60,7 @@ export default function WorkspaceLLMSelection({
     setSelectedLLM(selection);
     setSearchMenuOpen(false);
     setHasChanges(true);
+    onSelectionChange({ provider: selection, model: null });
   }
 
   function handleXButton() {
@@ -163,13 +172,21 @@ export default function WorkspaceLLMSelection({
         selectedLLM={selectedLLM}
         workspace={workspace}
         setHasChanges={setHasChanges}
+        onModelChange={(model) =>
+          onSelectionChange({ provider: selectedLLM, model })
+        }
       />
     </div>
   );
 }
 
 // TODO: Add this to agent selector as well as make generic component.
-function ModelSelector({ selectedLLM, workspace, setHasChanges }) {
+function ModelSelector({
+  selectedLLM,
+  workspace,
+  setHasChanges,
+  onModelChange,
+}) {
   if (selectedLLM === "anythingllm-router") {
     return (
       <RouterSelection workspace={workspace} setHasChanges={setHasChanges} />
@@ -205,6 +222,7 @@ function ModelSelector({ selectedLLM, workspace, setHasChanges }) {
       provider={selectedLLM}
       workspace={workspace}
       setHasChanges={setHasChanges}
+      onModelChange={onModelChange}
     />
   );
 }

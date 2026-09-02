@@ -250,6 +250,25 @@ const Workspace = {
       .catch(() => null);
     return workspace;
   },
+  /**
+   * Fetches the capabilities of the workspace's current LLM model.
+   * @param {string} slug - Workspace slug
+   * @param {{provider: string, model: string|null}|null} [pendingLLM] - Unsaved provider/model selection to preview capabilities for
+   * @returns {Promise<{reasoning: 'unknown' | boolean, reasoningOptions: string[]}>}
+   */
+  llmCapabilities: async function (slug = "", pendingLLM = null) {
+    const params = new URLSearchParams();
+    if (pendingLLM?.provider) params.set("provider", pendingLLM.provider);
+    if (pendingLLM?.model) params.set("model", pendingLLM.model);
+    const capabilities = await fetch(
+      `${API_BASE}/workspace/${slug}/llm-capabilities?${params.toString()}`,
+      { headers: baseHeaders() }
+    )
+      .then((res) => res.json())
+      .then((res) => res.capabilities)
+      .catch(() => null);
+    return capabilities ?? { reasoning: "unknown", reasoningOptions: [] };
+  },
   delete: async function (slug) {
     const result = await fetch(`${API_BASE}/workspace/${slug}`, {
       method: "DELETE",

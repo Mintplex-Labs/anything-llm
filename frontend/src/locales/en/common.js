@@ -253,6 +253,13 @@ const TRANSLATIONS = {
       "desc-end":
         "The higher the number the more creative. For some models this can lead to incoherent responses when set too high.",
     },
+    reasoning_effort: {
+      title: "Reasoning Effort",
+      description:
+        "Controls how much your model thinks before responding. Only shown for models that support reasoning controls.",
+      default: "Provider default",
+      global_default: "Global default ({{value}})",
+    },
   },
   "vector-workspace": {
     identifier: "Vector database identifier",
