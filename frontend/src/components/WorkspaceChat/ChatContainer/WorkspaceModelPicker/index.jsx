@@ -19,8 +19,19 @@ async function resolveModelName(workspace, systemSettings, t) {
   const effectiveProvider =
     workspace.chatProvider ?? systemSettings?.LLMProvider;
 
-  if (effectiveProvider !== "anythingllm-router")
-    return workspace.chatModel ?? systemSettings?.LLMModel ?? "";
+  if (effectiveProvider !== "anythingllm-router") {
+    const modelName = workspace.chatModel ?? systemSettings?.LLMModel ?? "";
+    const reasoningEffort =
+      workspace.reasoningEffort ?? systemSettings?.ReasoningEffort ?? null;
+    if (!reasoningEffort) return modelName;
+
+    // A stored effort can outlive a model switch - only show it when the
+    // current model actually supports it, matching what gets sent.
+    const capabilities = await Workspace.llmCapabilities(workspace.slug);
+    return capabilities?.reasoningOptions?.includes(reasoningEffort)
+      ? `${modelName} (${reasoningEffort})`
+      : modelName;
+  }
 
   const routerId = workspace.router_id || systemSettings?.ModelRouterId;
   if (!routerId) return t("model-router.metrics.model-router-default");

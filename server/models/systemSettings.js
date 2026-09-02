@@ -526,6 +526,7 @@ const SystemSettings = {
       // --------------------------------------------------------
       LLMProvider: llmProvider,
       LLMModel: getBaseLLMProviderModel({ provider: llmProvider }) || null,
+      ReasoningEffort: process.env.REASONING_EFFORT || null,
       ModelRouterId: process.env.MODEL_ROUTER_ID || null,
       ...this.llmPreferenceKeys(),
 

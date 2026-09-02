@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import System from "@/models/system";
 
-export default function OpenAiOptions({ settings }) {
+export default function OpenAiOptions({ settings, reasoningControl = null }) {
   const [inputValue, setInputValue] = useState(settings?.OpenAiKey);
   const [openAIKey, setOpenAIKey] = useState(settings?.OpenAiKey);
 
@@ -27,6 +27,7 @@ export default function OpenAiOptions({ settings }) {
       {!settings?.credentialsOnly && (
         <OpenAIModelSelection settings={settings} apiKey={openAIKey} />
       )}
+      {reasoningControl}
     </div>
   );
 }

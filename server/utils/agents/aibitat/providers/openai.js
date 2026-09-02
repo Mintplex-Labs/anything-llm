@@ -3,6 +3,7 @@ const Provider = require("./ai-provider.js");
 const { RetryError } = require("../error.js");
 const { v4 } = require("uuid");
 const { safeJsonParse } = require("../../../http");
+const { validReasoningEffort } = require("../../../helpers/reasoningEffort");
 
 /**
  * The agent provider for the OpenAI API.
@@ -16,6 +17,7 @@ class OpenAIProvider extends Provider {
         apiKey: process.env.OPEN_AI_KEY,
       },
       model = "gpt-4.1-nano",
+      reasoningEffort = null,
     } = config;
 
     const client = new OpenAI(options);
@@ -24,6 +26,22 @@ class OpenAIProvider extends Provider {
 
     this.providerTag = "openai";
     this.model = model;
+    this.reasoningEffort = reasoningEffort;
+  }
+
+  /**
+   * The reasoning portion of the request body when a supported reasoning
+   * effort is set - otherwise an empty object so the provider default applies.
+   * @returns {object}
+   */
+  get reasoningConfig() {
+    const effort = validReasoningEffort(
+      "openai",
+      this.model,
+      this.reasoningEffort
+    );
+    if (!effort) return {};
+    return { reasoning: { effort: effort === "off" ? "none" : effort } };
   }
 
   get supportsAgentStreaming() {
@@ -155,6 +173,7 @@ class OpenAIProvider extends Provider {
         ...(Array.isArray(functions) && functions?.length > 0
           ? { tools: this.#formatFunctions(functions) }
           : {}),
+        ...this.reasoningConfig,
       });
 
       const completion = {
@@ -277,6 +296,7 @@ class OpenAIProvider extends Provider {
         ...(Array.isArray(functions) && functions?.length > 0
           ? { tools: this.#formatFunctions(functions) }
           : {}),
+        ...this.reasoningConfig,
       });
 
       if (response.usage) this.recordUsage(response.usage);

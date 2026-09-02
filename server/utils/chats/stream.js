@@ -13,6 +13,7 @@ const {
   chatPrompt,
   recentChatHistory,
   sourceIdentifier,
+  resolveReasoningEffort,
 } = require("./index");
 
 const VALID_CHAT_MODE = ["automatic", "chat", "query"];
@@ -291,6 +292,7 @@ async function streamChatWithWorkspace(
       await LLMConnector.getChatCompletion(messages, {
         temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
         user: user,
+        reasoningEffort: resolveReasoningEffort(workspace),
       });
 
     completeText = textResponse;
@@ -312,6 +314,7 @@ async function streamChatWithWorkspace(
     const stream = await LLMConnector.streamGetChatCompletion(messages, {
       temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
       user: user,
+      reasoningEffort: resolveReasoningEffort(workspace),
     });
     completeText = await LLMConnector.handleStream(response, stream, {
       uuid,

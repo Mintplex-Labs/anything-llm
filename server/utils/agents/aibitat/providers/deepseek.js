@@ -1,3 +1,4 @@
+const { validReasoningEffort } = require("../../../helpers/reasoningEffort");
 const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
@@ -11,7 +12,7 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
 
   constructor(config = {}) {
     super();
-    const { model = "deepseek-chat" } = config;
+    const { model = "deepseek-chat", reasoningEffort = null } = config;
     const client = new OpenAI({
       baseURL: "https://api.deepseek.com/v1",
       apiKey: process.env.DEEPSEEK_API_KEY ?? null,
@@ -20,6 +21,7 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
     this.providerTag = "deepseek";
     this._client = client;
     this.model = model;
+    this.reasoningEffort = reasoningEffort;
     this.verbose = true;
     this.maxTokens = process.env.DEEPSEEK_MAX_TOKENS
       ? toValidNumber(process.env.DEEPSEEK_MAX_TOKENS, 1024)
@@ -28,6 +30,22 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get client() {
     return this._client;
+  }
+
+  /**
+   * The reasoning portion of the request body when a supported reasoning
+   * effort is set - otherwise an empty object so the provider default applies.
+   * DeepSeek only supports toggling thinking on or off.
+   * @returns {object}
+   */
+  get reasoningConfig() {
+    const effort = validReasoningEffort(
+      "deepseek",
+      this.model,
+      this.reasoningEffort
+    );
+    if (!effort) return {};
+    return { thinking: { type: effort === "on" ? "enabled" : "disabled" } };
   }
 
   get supportsAgentStreaming() {

@@ -10,6 +10,7 @@ const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { getAnythingLLMUserAgent } = require("../../../endpoints/utils");
+const { validReasoningEffort } = require("../../helpers/reasoningEffort");
 
 class AnthropicLLM {
   /**
@@ -21,6 +22,8 @@ class AnthropicLLM {
     "claude-opus-4-7",
     "claude-opus-4-8",
     "claude-sonnet-5",
+    "claude-opus-5",
+    "claude-fable-5",
     // Add other models here if identified
   ];
 
@@ -210,7 +213,63 @@ class AnthropicLLM {
     ];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  /**
+   * Builds the reasoning portion of the request body when a reasoning effort
+   * is set - otherwise an empty object so the provider default applies.
+   * Anthropic's `output_config.effort` controls response thoroughness and
+   * token spend with or without extended thinking enabled.
+   * @param {string|null} reasoningEffort
+   * @returns {object}
+   */
+  #constructReasoningConfig(reasoningEffort = null) {
+    const effort = validReasoningEffort(
+      "anthropic",
+      this.model,
+      reasoningEffort
+    );
+    if (!effort) return {};
+    return { output_config: { effort } };
+  }
+
+  /**
+   * Builds the sampling portion of the request body. Models that accept
+   * `output_config.effort` deprecate `temperature` and reject requests
+   * sending both, so temperature is only sent when no effort is set.
+   * @param {string|null} reasoningEffort
+   * @param {number} temperature
+   * @returns {object}
+   */
+  samplingParams(reasoningEffort = null, temperature = this.defaultTemp) {
+    const reasoningConfig = this.#constructReasoningConfig(reasoningEffort);
+    if (Object.keys(reasoningConfig).length > 0) return reasoningConfig;
+    return { temperature: this.temperatureParam(temperature) };
+  }
+
+  /**
+   * Returns the capabilities of the model.
+   * @returns {Promise<{reasoning: 'unknown' | boolean, reasoningOptions: string[]}>}
+   */
+  async getModelCapabilities() {
+    try {
+      const model = await this.anthropic.models.retrieve(this.model);
+      const effortCapabilities = model.capabilities?.effort;
+      if (!effortCapabilities?.supported)
+        return { reasoning: false, reasoningOptions: [] };
+
+      const reasoningOptions = Object.entries(effortCapabilities)
+        .filter(([level, config]) => level !== "supported" && config?.supported)
+        .map(([level]) => level);
+      return { reasoning: true, reasoningOptions };
+    } catch (error) {
+      console.error("Anthropic:getModelCapabilities", error.message);
+      return { reasoning: "unknown", reasoningOptions: [] };
+    }
+  }
+
+  async getChatCompletion(
+    messages = null,
+    { temperature = 0.7, reasoningEffort = null }
+  ) {
     await this.assertModelMaxTokens();
     try {
       const systemContent = messages[0].content;
@@ -229,7 +288,7 @@ class AnthropicLLM {
             max_tokens: this.maxTokens,
             system: this.#buildSystemPrompt(systemContent),
             messages: messages.slice(1), // Pop off the system message
-            temperature: this.temperatureParam(temperature),
+            ...this.samplingParams(reasoningEffort, temperature),
           })
           .finalMessage()
       );
@@ -258,7 +317,10 @@ class AnthropicLLM {
     }
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = 0.7, reasoningEffort = null }
+  ) {
     await this.assertModelMaxTokens();
     const systemContent = messages[0].content;
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
@@ -267,7 +329,7 @@ class AnthropicLLM {
         max_tokens: this.maxTokens,
         system: this.#buildSystemPrompt(systemContent),
         messages: messages.slice(1), // Pop off the system message
-        temperature: this.temperatureParam(temperature),
+        ...this.samplingParams(reasoningEffort, temperature),
       }),
       messages,
       runPromptTokenCalculation: false,

@@ -6,6 +6,10 @@ const KEY_MAPPING = {
     envKey: "LLM_PROVIDER",
     checks: [isNotEmpty, supportedLLM],
   },
+  ReasoningEffort: {
+    envKey: "REASONING_EFFORT",
+    checks: [validReasoningEffort],
+  },
   // Model Router Settings
   ModelRouterId: {
     envKey: "MODEL_ROUTER_ID",
@@ -1127,6 +1131,14 @@ function validLocalWhisper(input = "") {
   return validSelection
     ? null
     : `${input} is not a valid Whisper model selection.`;
+}
+
+function validReasoningEffort(input = "") {
+  if (!input) return null; // Empty clears the setting.
+  const { Workspace } = require("../../models/workspace");
+  return Workspace.VALID_REASONING_EFFORTS.includes(input)
+    ? null
+    : "Invalid reasoning effort value";
 }
 
 function supportedLLM(input = "") {

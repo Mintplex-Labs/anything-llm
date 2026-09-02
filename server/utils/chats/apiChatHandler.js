@@ -10,6 +10,7 @@ const {
   sourceIdentifier,
   recentChatHistory,
   grepAllSlashCommands,
+  resolveReasoningEffort,
 } = require("./index");
 const {
   EphemeralAgentHandler,
@@ -449,6 +450,7 @@ async function chatSync({
     await LLMConnector.getChatCompletion(messages, {
       temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
       user: user,
+      reasoningEffort: resolveReasoningEffort(workspace),
     });
   const performanceMetrics = addChatCostToMetrics(completionMetrics, {
     routingMetadata,
@@ -843,6 +845,7 @@ async function streamChat({
       await LLMConnector.getChatCompletion(messages, {
         temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
         user: user,
+        reasoningEffort: resolveReasoningEffort(workspace),
       });
     completeText = textResponse;
     metrics = addChatCostToMetrics(performanceMetrics, {
@@ -863,6 +866,7 @@ async function streamChat({
     const stream = await LLMConnector.streamGetChatCompletion(messages, {
       temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
       user: user,
+      reasoningEffort: resolveReasoningEffort(workspace),
     });
     completeText = await LLMConnector.handleStream(response, stream, { uuid });
     metrics = addChatCostToMetrics(stream.metrics, {

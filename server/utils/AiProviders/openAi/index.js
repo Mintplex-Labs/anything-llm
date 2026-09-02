@@ -10,6 +10,10 @@ const { MODEL_MAP } = require("../modelMap");
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
+const {
+  PROVIDER_REASONING_EFFORTS,
+  validReasoningEffort,
+} = require("../../helpers/reasoningEffort");
 
 class OpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -145,7 +149,32 @@ class OpenAiLLM {
     return temperature;
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  /**
+   * Builds the reasoning portion of the request body when a supported
+   * reasoning effort is set - otherwise an empty object so the provider
+   * default applies.
+   * @param {string|null} reasoningEffort
+   * @returns {object}
+   */
+  #constructReasoningConfig(reasoningEffort = null) {
+    const effort = validReasoningEffort("openai", this.model, reasoningEffort);
+    if (!effort) return {};
+    return { reasoning: { effort: effort === "off" ? "none" : effort } };
+  }
+
+  /**
+   * Returns the capabilities of the model.
+   * @returns {Promise<{reasoning: boolean, reasoningOptions: string[]}>}
+   */
+  async getModelCapabilities() {
+    const reasoningOptions = PROVIDER_REASONING_EFFORTS.openai(this.model);
+    return { reasoning: reasoningOptions.length > 0, reasoningOptions };
+  }
+
+  async getChatCompletion(
+    messages = null,
+    { temperature = 0.7, reasoningEffort = null }
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `OpenAI chat: ${this.model} is not valid for chat completion!`
@@ -158,6 +187,7 @@ class OpenAiLLM {
           input: messages,
           store: false,
           temperature: this.#temperature(this.model, temperature),
+          ...this.#constructReasoningConfig(reasoningEffort),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -184,7 +214,10 @@ class OpenAiLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = 0.7, reasoningEffort = null }
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `OpenAI chat: ${this.model} is not valid for chat completion!`
@@ -197,6 +230,7 @@ class OpenAiLLM {
         input: messages,
         store: false,
         temperature: this.#temperature(this.model, temperature),
+        ...this.#constructReasoningConfig(reasoningEffort),
       }),
       messages,
       runPromptTokenCalculation: false,
