@@ -122,6 +122,9 @@ export default {
     transcriptionPreference: () => {
       return "/settings/transcription-preference";
     },
+    visionPreference: () => {
+      return "/settings/vision-preference";
+    },
     audioPreference: () => {
       return "/settings/audio-preference";
     },

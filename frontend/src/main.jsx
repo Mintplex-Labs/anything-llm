@@ -87,6 +87,17 @@ const router = createBrowserRouter([
         },
       },
       {
+        path: "/settings/vision-preference",
+        lazy: async () => {
+          const { default: GeneralVisionPreference } = await import(
+            "@/pages/GeneralSettings/VisionPreference"
+          );
+          return {
+            element: <AdminRoute Component={GeneralVisionPreference} />,
+          };
+        },
+      },
+      {
         path: "/settings/audio-preference",
         lazy: async () => {
           const { default: GeneralAudioPreference } = await import(

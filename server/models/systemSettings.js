@@ -542,6 +542,15 @@ const SystemSettings = {
       WhisperGenericOpenAiModel: process.env.WHISPER_GENERIC_OPEN_AI_MODEL,
 
       // --------------------------------------------------------
+      // Vision (image description) Selection Settings & Configs
+      // - Disabled by default so image uploads stay OCR-only.
+      // --------------------------------------------------------
+      VisionProvider: process.env.VISION_PROVIDER || "none",
+      VisionGenericOpenAiBaseUrl: process.env.VISION_GENERIC_OPEN_AI_BASE_URL,
+      VisionGenericOpenAiApiKey: !!process.env.VISION_GENERIC_OPEN_AI_API_KEY,
+      VisionGenericOpenAiModel: process.env.VISION_GENERIC_OPEN_AI_MODEL,
+
+      // --------------------------------------------------------
       // TTS/STT  Selection Settings & Configs
       // - Currently the only 3rd party is OpenAI or the native browser-built in
       // --------------------------------------------------------

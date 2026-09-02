@@ -9,6 +9,10 @@ const { Agent } = require("undici");
  * @property {string} WhisperGenericOpenAiBaseUrl - The base URL of the OpenAI compatible endpoint used by the generic Whisper provider.
  * @property {string} WhisperGenericOpenAiApiKey - The API key used by the generic (OpenAI compatible) Whisper provider.
  * @property {string} WhisperGenericOpenAiModel - The transcription model used by the generic (OpenAI compatible) Whisper provider.
+ * @property {string} visionProvider - The provider used to describe uploaded images, defaults to "none"
+ * @property {string} VisionGenericOpenAiBaseUrl - The base URL of the OpenAI compatible endpoint used by the generic vision provider.
+ * @property {string} VisionGenericOpenAiApiKey - The API key used by the generic (OpenAI compatible) vision provider.
+ * @property {string} VisionGenericOpenAiModel - The vision model used by the generic (OpenAI compatible) vision provider.
  * @property {Object} ocr - The OCR options
  * @property {{allowAnyIp: "true"|null|undefined}} runtimeSettings - The runtime settings that are passed to the collector. Persisted across requests.
  */
@@ -73,6 +77,13 @@ class CollectorApi {
         process.env.WHISPER_GENERIC_OPEN_AI_API_KEY || null,
       WhisperGenericOpenAiModel:
         process.env.WHISPER_GENERIC_OPEN_AI_MODEL || null,
+      visionProvider: process.env.VISION_PROVIDER || "none",
+      VisionGenericOpenAiBaseUrl:
+        process.env.VISION_GENERIC_OPEN_AI_BASE_URL || null,
+      VisionGenericOpenAiApiKey:
+        process.env.VISION_GENERIC_OPEN_AI_API_KEY || null,
+      VisionGenericOpenAiModel:
+        process.env.VISION_GENERIC_OPEN_AI_MODEL || null,
       ocr: {
         langList: process.env.TARGET_OCR_LANG || "eng",
       },
