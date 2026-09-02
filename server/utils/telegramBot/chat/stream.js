@@ -9,6 +9,8 @@ const {
 } = require("../../chats");
 const { fillSourceWindow } = require("../../helpers/chat");
 const { AgentHandler } = require("../../agents");
+const { Observability } = require("../../observability");
+const { telegramUserTag } = require("../utils/verification");
 const {
   STREAM_EDIT_INTERVAL,
   MAX_MSG_LEN,
@@ -340,6 +342,19 @@ async function persistAndDeliver({
       attachments,
     },
     threadId: thread?.id || null,
+  });
+
+  Observability.traceWorkspaceChat({
+    name: "telegram-chat",
+    workspace,
+    thread,
+    user: { username: await telegramUserTag(chatId) },
+    chatMode,
+    message,
+    output: completeText,
+    model: metrics?.model,
+    metrics,
+    sources,
   });
 
   // Send voice as an additional attachment if requested

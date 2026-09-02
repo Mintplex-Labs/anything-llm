@@ -1,6 +1,8 @@
 const pluralize = require("pluralize");
 const { getLLMProvider } = require("../../../helpers");
 const { TokenManager } = require("../../../helpers/tiktoken");
+const { MODEL_PRICING } = require("../../../helpers/modelPricing");
+const { Observability } = require("../../../observability");
 const {
   combineAbortSignals,
   attachAbortSignal,
@@ -136,6 +138,8 @@ async function summarizeContent({
   introspect(`Content split into ${chunks.length} section(s) to summarize.`);
 
   let keyPoints = "";
+  const usage = { prompt_tokens: 0, completion_tokens: 0, duration: 0 };
+  let sectionsSummarized = 0;
   for (let i = 0; i < chunks.length; i++) {
     if (abortSignal?.aborted) break;
 
@@ -169,9 +173,9 @@ async function summarizeContent({
       tokenManager,
       priorPointsTokenLimit
     );
-    let textResponse;
+    let textResponse, metrics;
     try {
-      ({ textResponse } = await llm.getChatCompletion(
+      ({ textResponse, metrics } = await llm.getChatCompletion(
         [{ role: "user", content: summaryPrompt(chunks[i], priorPoints) }],
         { temperature: 0 }
       ));
@@ -182,9 +186,34 @@ async function summarizeContent({
       throw error;
     }
 
+    usage.prompt_tokens += metrics?.prompt_tokens || 0;
+    usage.completion_tokens += metrics?.completion_tokens || 0;
+    usage.duration += metrics?.duration || 0;
+    sectionsSummarized++;
+
     const sectionPoints = (textResponse || "").trim();
     keyPoints = keyPoints ? `${keyPoints}\n${sectionPoints}` : sectionPoints;
     introspect(`Captured ${countKeyPoints(keyPoints)} key points so far.`);
+  }
+
+  if (sectionsSummarized > 0) {
+    const cost = MODEL_PRICING.getCostBreakdown(provider, llm.model, usage);
+    Observability.traceAgentEvent({
+      invocation: aibitat?.handlerProps?.invocation,
+      name: "summarize",
+      input: `${chunks.length} section(s), ~${tokenManager.countFromString(content)} tokens of content`,
+      output: keyPoints,
+      model: llm.model,
+      observationType: "generation",
+      metrics: { ...usage, ...(cost ?? {}) },
+      metadata: {
+        provider,
+        sectionsSummarized,
+        sectionsTotal: chunks.length,
+        duration: usage.duration,
+      },
+      tags: ["summarize"],
+    });
   }
 
   return keyPoints;

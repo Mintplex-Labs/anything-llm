@@ -161,6 +161,25 @@ async function revokeUser(chatId, config) {
   });
 }
 
+/**
+ * Resolve a stable user tag for a chat id, preferring the approved user's
+ * telegram username over the raw chat id. Used for trace attribution.
+ * @param {number|string} chatId
+ * @returns {Promise<string>} eg: "telegram:seanhatfield" or "telegram:123456"
+ */
+async function telegramUserTag(chatId) {
+  try {
+    const connector = await ExternalCommunicationConnector.get("telegram");
+    const user = (connector?.config?.approved_users || []).find(
+      (u) => (typeof u === "string" ? u : u.chatId) === String(chatId)
+    );
+    const username = typeof user === "object" ? user?.username : null;
+    return `telegram:${username || chatId}`;
+  } catch {
+    return `telegram:${chatId}`;
+  }
+}
+
 module.exports = {
   MAX_PENDING_PAIRINGS,
   isVerified,
@@ -168,4 +187,5 @@ module.exports = {
   approveUser,
   denyUser,
   revokeUser,
+  telegramUserTag,
 };

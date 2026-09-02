@@ -120,6 +120,8 @@ async function processGroup(groupChats) {
     const { candidates, rawText: observerRaw } = await runObserver({
       ...llm,
       userMessage: observerMessage,
+      userId,
+      workspaceId,
     });
 
     if (candidates === null || candidates.length === 0) {
@@ -147,6 +149,8 @@ async function processGroup(groupChats) {
       await runReflector({
         ...llm,
         userMessage: reflectorMessage,
+        userId,
+        workspaceId,
       });
 
     if (finalMemories === null || finalMemories.length === 0) {

@@ -95,6 +95,7 @@ const TRANSLATIONS = {
     embeds: "Chat Embed",
     security: "Security",
     "event-logs": "Event Logs",
+    observability: "Observability",
     "scheduled-jobs": "Scheduled Jobs",
     privacy: "Privacy & Data",
     "ai-providers": "AI Providers",

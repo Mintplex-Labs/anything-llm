@@ -5,6 +5,7 @@ const { getVectorDbClass, resolveProviderConnector } = require("../helpers");
 const { addChatCostToMetrics } = require("../helpers/modelPricing");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const { abortConnectorOnClientDisconnect } = require("../helpers/abortSignals");
+const { Observability } = require("../observability");
 const {
   chatPrompt,
   sourceIdentifier,
@@ -483,6 +484,22 @@ async function chatSync({
     user,
   });
 
+  Observability.traceWorkspaceChat({
+    name: "api-chat",
+    workspace,
+    thread,
+    user,
+    sessionId: sessionId || null,
+    chatId: chat.id,
+    chatMode,
+    message,
+    output: textResponse,
+    model: LLMConnector.model,
+    messages,
+    metrics: performanceMetrics,
+    sources,
+  });
+
   return {
     id: uuid,
     type: "textResponse",
@@ -886,6 +903,22 @@ async function streamChat({
       threadId: thread?.id || null,
       apiSessionId: sessionId,
       user,
+    });
+
+    Observability.traceWorkspaceChat({
+      name: "api-chat",
+      workspace,
+      thread,
+      user,
+      sessionId: sessionId || null,
+      chatId: chat.id,
+      chatMode,
+      message,
+      output: completeText,
+      model: LLMConnector.model,
+      messages,
+      metrics,
+      sources,
     });
 
     writeResponseChunk(response, {
