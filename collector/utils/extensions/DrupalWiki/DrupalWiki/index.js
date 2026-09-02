@@ -314,8 +314,14 @@ class DrupalWiki {
         }
 
         const buffer = await attachmentResponse.arrayBuffer();
+        // sanitizeFileName strips path separators, so it has to run on the bare
+        // name: applied to a resolved path it removes every "/" and the result
+        // can never satisfy the isWithin guard below.
         const localFilePath = normalizePath(
-          sanitizeFileName(path.resolve(WATCH_DIRECTORY, fileName))
+          path.resolve(
+            WATCH_DIRECTORY,
+            sanitizeFileName(path.basename(fileName))
+          )
         );
         if (!isWithin(path.resolve(WATCH_DIRECTORY), localFilePath)) {
           console.error(
