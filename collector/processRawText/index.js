@@ -40,6 +40,11 @@ const METADATA_KEYS = {
         : `${stripAndSlug(title)}.txt`;
     },
     published: ({ published }) => {
+      // The metadata schema documents this key as nullable, and Number() maps
+      // null, "" and " " all to 0, which would stamp the document 1/1/1970 and
+      // bake that date into every chunk header the model reads.
+      if (published === null || `${published}`.trim() === "")
+        return new Date().toLocaleString();
       if (isNaN(Number(published))) return new Date().toLocaleString();
       return new Date(Number(published)).toLocaleString();
     },
