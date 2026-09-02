@@ -457,8 +457,8 @@ function getLLMProviderClass({ provider = null } = {}) {
       const { LlmmanLLM } = require("../AiProviders/llmman");
       return LlmmanLLM;
     case "privatemode":
-      const { PrivateModeLLM } = require("../AiProviders/privatemode");
-      return PrivateModeLLM;
+      const { PrivatemodeLLM } = require("../AiProviders/privatemode");
+      return PrivatemodeLLM;
     case "sambanova":
       const { SambaNovaLLM } = require("../AiProviders/sambanova");
       return SambaNovaLLM;
