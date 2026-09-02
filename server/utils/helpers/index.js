@@ -81,7 +81,7 @@
 
 /**
  * Gets the systems current vector database provider.
- * @param {('pinecone' | 'chroma' | 'chromacloud' | 'lancedb' | 'weaviate' | 'qdrant' | 'milvus' | 'zilliz' | 'astra') | null} getExactly - If provided, this will return an explit provider.
+ * @param {('pinecone' | 'chroma' | 'chromacloud' | 'lancedb' | 'weaviate' | 'qdrant' | 'milvus' | 'zilliz' | 'astra' | 'pgvector' | 'valkey') | null} getExactly - If provided, this will return an explit provider.
  * @returns { BaseVectorDatabaseProvider}
  */
 function getVectorDbClass(getExactly = null) {
@@ -117,6 +117,9 @@ function getVectorDbClass(getExactly = null) {
     case "pgvector":
       const { PGVector } = require("../vectorDbProviders/pgvector");
       return new PGVector();
+    case "valkey":
+      const { Valkey } = require("../vectorDbProviders/valkey");
+      return new Valkey();
     default:
       console.error(
         `\x1b[31m[ENV ERROR]\x1b[0m No VECTOR_DB value found in environment! Falling back to LanceDB`
