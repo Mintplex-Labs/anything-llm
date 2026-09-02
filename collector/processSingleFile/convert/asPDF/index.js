@@ -52,8 +52,6 @@ async function asPdf({
     };
   }
 
-  // Pages arrive trimmed from PDFLoader, so joining on "" fuses the last word of
-  // one page to the first of the next. Matches the loader's own page join.
   const content = pageContent.join("\n\n");
   const data = {
     id: v4(),
