@@ -398,12 +398,13 @@ export function CrwSearchOptions({ settings }) {
           className="text-blue-300 underline"
         >
           self-host.
-        </a>
+        </a>{" "}
+        Self-hosted instances work without an API key.
       </p>
       <div className="flex gap-x-4">
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
-            API Key
+            API Key (required for hosted fastCRW only)
           </label>
           <input
             type="password"
@@ -411,7 +412,6 @@ export function CrwSearchOptions({ settings }) {
             className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="fastCRW API Key"
             defaultValue={settings?.AgentCrwApiKey ? "*".repeat(20) : ""}
-            required={true}
             autoComplete="off"
             spellCheck={false}
           />
