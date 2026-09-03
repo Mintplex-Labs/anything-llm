@@ -1260,25 +1260,21 @@ const webBrowsing = {
           },
 
           _crwSearch: async function (query) {
-            if (!process.env.AGENT_CRW_API_KEY) {
-              this.super.introspect(
-                `${this.caller}: I can't use fastCRW searching because the user has not defined the required API key.\nVisit: https://fastcrw.com/ to create the API key.`
-              );
-              return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
-            }
-
             this.super.introspect(
               `${this.caller}: Using fastCRW to search for "${
                 query.length > 100 ? `${query.slice(0, 100)}...` : query
               }"`
             );
 
-            let baseUrl = "https://fastcrw.com/api";
-            if ("AGENT_CRW_API_URL" in process.env) {
+            const apiKey = process.env.AGENT_CRW_API_KEY || "";
+            let searchUrl = "https://fastcrw.com/api/v1/search";
+            const configuredUrl = process.env.AGENT_CRW_API_URL;
+            if (configuredUrl) {
               try {
-                baseUrl = new URL(process.env.AGENT_CRW_API_URL);
-                baseUrl.pathname = ""; // remove the trailing slash or any other path
-                baseUrl = baseUrl.toString();
+                const parsed = new URL(configuredUrl);
+                const path = parsed.pathname.replace(/\/+$/, "");
+                parsed.pathname = `${path}/v1/search`;
+                searchUrl = parsed.toString();
               } catch (e) {
                 this.super.handlerProps.log(
                   `invalid fastCRW Search URL: ${e.message}`
@@ -1286,18 +1282,24 @@ const webBrowsing = {
               }
             }
 
-            const { response, error } = await fetch(`${baseUrl}/v1/search`, {
+            const headers = { "Content-Type": "application/json" };
+            // Hosted fastCRW requires a Bearer token; self-hosted deployments
+            // accept requests without authentication. Only send the header when
+            // an API key is actually configured.
+            if (apiKey) headers.Authorization = `Bearer ${apiKey}`;
+
+            const { response, error } = await fetch(searchUrl, {
               method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${process.env.AGENT_CRW_API_KEY}`,
-              },
+              headers,
               body: JSON.stringify({ query }),
             })
               .then((res) => {
                 if (res.ok) return res.json();
                 throw new Error(
-                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ auth: this.middleTruncate(process.env.AGENT_CRW_API_KEY, 5), q: query })}`
+                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({
+                    auth: apiKey ? this.middleTruncate(apiKey, 5) : "none",
+                    q: query,
+                  })}`
                 );
               })
               .then((data) => {
@@ -1317,8 +1319,14 @@ const webBrowsing = {
             if (error)
               return `There was an error searching for content. ${error}`;
 
+            // Hosted fastCRW returns the results array directly under `data`; a
+            // self-hosted engine nests them as `data.results`. Handle both.
+            const searchResults = Array.isArray(response.data)
+              ? response.data
+              : response.data?.results ?? [];
+
             const data = [];
-            response.data?.forEach((searchResult) => {
+            searchResults.forEach((searchResult) => {
               const { title, url, description } = searchResult;
               data.push({
                 title,
