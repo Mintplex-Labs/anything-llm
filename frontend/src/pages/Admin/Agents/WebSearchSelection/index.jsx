@@ -42,6 +42,14 @@ import {
 
 const SEARCH_PROVIDERS = [
   {
+    name: "You.com Search",
+    value: "you-search",
+    logo: YouSearchIcon,
+    options: (settings) => <YouSearchOptions settings={settings} />,
+    description:
+      "LLM-ready web search with no API key required - falls back to DuckDuckGo automatically if unavailable.",
+  },
+  {
     name: "DuckDuckGo",
     value: "duckduckgo-engine",
     logo: DuckDuckGoIcon,
@@ -140,13 +148,6 @@ const SEARCH_PROVIDERS = [
     options: (settings) => <CrwSearchOptions settings={settings} />,
     description: "Open-source, self-hostable Firecrawl/Tavily alternative.",
   },
-  {
-    name: "You.com Search",
-    value: "you-search",
-    logo: YouSearchIcon,
-    options: (settings) => <YouSearchOptions settings={settings} />,
-    description: "LLM-ready web search. Optional API key for higher limits.",
-  },
 ];
 
 export default function AgentWebSearchSelection({
@@ -160,7 +161,7 @@ export default function AgentWebSearchSelection({
 }) {
   const searchInputRef = useRef(null);
   const [filteredResults, setFilteredResults] = useState([]);
-  const [selectedProvider, setSelectedProvider] = useState("duckduckgo-engine");
+  const [selectedProvider, setSelectedProvider] = useState("you-search");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
 
@@ -191,15 +192,15 @@ export default function AgentWebSearchSelection({
     Admin.systemPreferencesByFields(["agent_search_provider"])
       .then((res) =>
         setSelectedProvider(
-          res?.settings?.agent_search_provider ?? "duckduckgo-engine"
+          res?.settings?.agent_search_provider ?? "you-search"
         )
       )
-      .catch(() => setSelectedProvider("duckduckgo-engine"));
+      .catch(() => setSelectedProvider("you-search"));
   }, []);
 
   const selectedSearchProviderObject =
     SEARCH_PROVIDERS.find((provider) => provider.value === selectedProvider) ??
-    SEARCH_PROVIDERS[1];
+    SEARCH_PROVIDERS[0];
 
   return (
     <div className="p-2">
