@@ -112,7 +112,9 @@ const webBrowsing = {
                 engine = "_youSearch";
                 break;
               default:
-                engine = "_duckDuckGoEngine";
+                // No provider configured - use You.com's keyless free tier,
+                // which falls back to DuckDuckGo on any failure.
+                engine = "_youSearch";
             }
             return await this[engine](query);
           },
@@ -1341,7 +1343,10 @@ const webBrowsing = {
           /**
            * You.com Search — keyless free tier by default, optional API key for higher limits.
            * Keyless: GET https://api.you.com/v1/agents/search
+           * (100 queries/day per IP - responds 402 once exhausted)
            * Keyed:   GET https://ydc-index.io/v1/search with X-API-Key
+           * Falls back to DuckDuckGo on any failure or empty response so
+           * search never hard-fails.
            * @param {string} query
            * @returns {Promise<string>}
            */
@@ -1395,29 +1400,32 @@ const webBrowsing = {
                 return { response: null, error: e.message };
               });
 
-            if (error)
-              return `There was an error searching for content. ${error}`;
-
             const data = [];
             const webResults = response?.results?.web ?? [];
             const newsResults = response?.results?.news ?? [];
 
             [...webResults, ...newsResults].forEach((searchResult) => {
-              const { url, title, description, snippets } = searchResult;
+              const { url, title, description, snippets, page_age } =
+                searchResult;
               const snippet =
                 Array.isArray(snippets) && snippets.length > 0
-                  ? snippets[0]
+                  ? snippets.join("\n")
                   : description;
               if (!url && !title) return;
               data.push({
                 title: title || "",
                 link: url || "",
                 snippet: snippet || "",
+                ...(page_age ? { published: page_age } : {}),
               });
             });
 
-            if (data.length === 0)
-              return `No information was found online for the search query.`;
+            if (error || data.length === 0) {
+              this.super.handlerProps.log(
+                `You.com Search ${error ? "failed" : "returned no results"} - falling back to DuckDuckGo.`
+              );
+              return await this._duckDuckGoEngine(query);
+            }
 
             this.reportSearchResultsCitations(data);
             const result = JSON.stringify(data);
