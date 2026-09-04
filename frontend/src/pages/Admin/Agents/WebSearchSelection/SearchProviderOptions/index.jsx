@@ -389,7 +389,7 @@ export function CrwSearchOptions({ settings }) {
           className="text-blue-300 underline"
         >
           from fastCRW.
-        </a>
+        </a>{" "}
         You can also{" "}
         <a
           href="https://github.com/us/crw"
@@ -398,12 +398,14 @@ export function CrwSearchOptions({ settings }) {
           className="text-blue-300 underline"
         >
           self-host.
-        </a>
+        </a>{" "}
+        A self-hosted instance only needs the base URL below, and an API key
+        only if you configured one.
       </p>
       <div className="flex gap-x-4">
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
-            API Key
+            API Key (optional)
           </label>
           <input
             type="password"
@@ -411,14 +413,13 @@ export function CrwSearchOptions({ settings }) {
             className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="fastCRW API Key"
             defaultValue={settings?.AgentCrwApiKey ? "*".repeat(20) : ""}
-            required={true}
             autoComplete="off"
             spellCheck={false}
           />
         </div>
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
-            Base URL (optional)
+            Base URL (self-hosted)
           </label>
           <input
             type="url"
