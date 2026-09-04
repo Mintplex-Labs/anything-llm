@@ -227,6 +227,7 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
         ...validatedHeaders(headers),
       },
     }).then((res) => res.text());
+    if (captureAs === "html") return pageText;
     return htmlToMarkdown(pageText, link);
   } catch (error) {
     console.error("getPageContent failed to be fetched by any method.", error);
