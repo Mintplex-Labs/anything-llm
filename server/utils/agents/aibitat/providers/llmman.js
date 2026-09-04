@@ -64,6 +64,7 @@ class LlmmanProvider extends InheritMultiple([Provider, UnTooled]) {
     );
     return {
       num_ctx: LlmmanLLM.promptWindowLimit(this.model),
+      temperature: this.temperature,
     };
   }
 

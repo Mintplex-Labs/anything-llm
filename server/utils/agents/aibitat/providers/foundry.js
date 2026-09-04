@@ -121,6 +121,7 @@ class FoundryProvider extends InheritMultiple([Provider, UnTooled]) {
     return await this.client.chat.completions
       .create({
         model: this.model,
+        temperature: this.temperature,
         messages,
         max_completion_tokens: FoundryLLM.promptWindowLimit(this.model),
       })
@@ -142,6 +143,7 @@ class FoundryProvider extends InheritMultiple([Provider, UnTooled]) {
     await this.#assertContextLimits();
     return await this.client.chat.completions.create({
       model: this.model,
+      temperature: this.temperature,
       stream: true,
       messages,
       max_completion_tokens: FoundryLLM.promptWindowLimit(this.model),

@@ -34,7 +34,6 @@ class LMStudioLLM {
     if (!this.model) throw new Error("LMStudio must have a valid model set.");
 
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
 
     // Lazy load the limits to avoid blocking the main thread on cacheContextWindows
     this.limits = null;
@@ -228,7 +227,10 @@ class LMStudioLLM {
     return textResponse;
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!this.model)
       throw new Error(
         `LMStudio chat: ${this.model} is not valid or defined model for chat completion!`
@@ -263,7 +265,10 @@ class LMStudioLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!this.model)
       throw new Error(
         `LMStudio chat: ${this.model} is not valid or defined model for chat completion!`

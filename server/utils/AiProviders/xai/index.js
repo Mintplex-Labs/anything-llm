@@ -28,7 +28,6 @@ class XAiLLM {
     };
 
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
     this.log(
       `Initialized ${this.model} with context window ${this.promptWindowLimit()}`
     );
@@ -115,7 +114,10 @@ class XAiLLM {
     ];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!this.isValidChatCompletionModel(this.model))
       throw new Error(
         `xAI chat: ${this.model} is not valid for chat completion!`
@@ -154,7 +156,10 @@ class XAiLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!this.isValidChatCompletionModel(this.model))
       throw new Error(
         `xAI chat: ${this.model} is not valid for chat completion!`

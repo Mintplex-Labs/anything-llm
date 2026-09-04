@@ -138,6 +138,14 @@ class Provider {
    */
   abortSignal = null;
 
+  /**
+   * Sampling temperature for chat requests, assigned by AIbitat when the
+   * provider is instantiated. Undefined when unset or when the model rejects
+   * the parameter, so it is omitted from requests entirely.
+   * @type {number|undefined}
+   */
+  temperature = undefined;
+
   constructor(client) {
     if (this.constructor == Provider) {
       return;
@@ -792,6 +800,7 @@ class Provider {
     const formattedMessages = this.formatMessagesWithAttachments(messages);
     const stream = await this.client.chat.completions.create({
       model: this.model,
+      temperature: this.temperature,
       stream: true,
       messages: formattedMessages,
       ...(Array.isArray(functions) && functions?.length > 0

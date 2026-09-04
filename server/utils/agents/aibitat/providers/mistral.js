@@ -37,6 +37,7 @@ class MistralProvider extends InheritMultiple([Provider, UnTooled]) {
     return await this.client.chat.completions
       .create({
         model: this.model,
+        temperature: this.temperature,
         messages,
       })
       .then((result) => {
@@ -54,6 +55,7 @@ class MistralProvider extends InheritMultiple([Provider, UnTooled]) {
   async #handleFunctionCallStream({ messages = [] }) {
     return await this.client.chat.completions.create({
       model: this.model,
+      temperature: this.temperature,
       stream: true,
       messages,
     });

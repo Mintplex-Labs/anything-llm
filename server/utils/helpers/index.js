@@ -23,7 +23,7 @@
  * @property {ResponseMetrics} metrics - The response metrics
  *
  * @typedef {Object} ChatCompletionOptions
- * @property {number} temperature - The sampling temperature for the LLM response
+ * @property {number} temperature - Per-call override of the connector's temperature (defaults to the instance's `temperature` property)
  * @property {import("@prisma/client").users} user - The user object for the chat completion to send to the LLM provider for user tracking (optional)
  *
  * @typedef {function(Array<ChatMessage>, ChatCompletionOptions): Promise<ChatCompletionResponse>} getChatCompletionFunction
@@ -35,7 +35,7 @@
  * @typedef {Object} BaseLLMProvider - A basic llm provider object
  * @property {string} className - Provider identifier used in logs and response metrics.
  * @property {string} model - The active model name for this provider instance.
- * @property {number} defaultTemp - Default sampling temperature (typically 0.7).
+ * @property {number|undefined} temperature - Sampling temperature for chat requests. Undefined when unset so the parameter is omitted entirely.
  * @property {Function} streamingEnabled - Checks if streaming is enabled for chat completions.
  * @property {Function} promptWindowLimit - Returns the token limit for the current model.
  * @property {Function} isValidChatCompletionModel - Validates if the provided model is suitable for chat completion.
@@ -127,13 +127,49 @@ function getVectorDbClass(getExactly = null) {
 }
 
 /**
+ * Resolves the temperature to apply to a provider's chat requests.
+ * Unset or invalid values resolve to undefined - as do models the provider
+ * class reports as rejecting the parameter - so it is omitted from requests entirely.
+ * @param {string|null} provider - Provider slug (eg: "openai")
+ * @param {string|null} model - The model name the requests will use
+ * @param {number|string|null} value - The stored/user-provided temperature
+ * @returns {number|undefined}
+ */
+function resolveTemperature(provider = null, model = null, value = null) {
+  const temperature = parseFloat(value);
+  if (isNaN(temperature) || temperature < 0) return undefined;
+  const LLMClass = getLLMProviderClass({ provider });
+  if (LLMClass?.modelSupportsTemperature?.(model) === false) return undefined;
+  return temperature;
+}
+
+/**
  * Returns the LLMProvider with its embedder attached via system or via defined provider.
  * @notice Use resolveProviderConnector instead as this function DOES NOT handle the anythingllm-router provider.
  * You should only use this function if you are absolutely sure you are not using the anythingllm-router provider ever in your code.
+ * @param {{provider: string | null, model: string | null, temperature: number|string|null} | null} params - Initialize params for LLMs provider
+ * @returns {BaseLLMProvider}
+ */
+function getLLMProvider({
+  provider = null,
+  model = null,
+  temperature = null,
+} = {}) {
+  const connector = getLLMProviderConnector({ provider, model });
+  connector.temperature = resolveTemperature(
+    provider ?? process.env.LLM_PROVIDER ?? "openai",
+    connector.model,
+    temperature
+  );
+  return connector;
+}
+
+/**
+ * Instantiates the raw LLM connector class for a provider selection.
  * @param {{provider: string | null, model: string | null} | null} params - Initialize params for LLMs provider
  * @returns {BaseLLMProvider}
  */
-function getLLMProvider({ provider = null, model = null } = {}) {
+function getLLMProviderConnector({ provider = null, model = null } = {}) {
   const LLMSelection = provider ?? process.env.LLM_PROVIDER ?? "openai";
   const embedder = getEmbeddingEngineSelection();
 
@@ -666,6 +702,7 @@ function humanFileSize(bytes, si = false, dp = 1) {
  * @param {Object|null} [opts.chatHistoryOverride] - Pre-fetched chat history
  * @param {number|null} [opts.messageCountOverride] - Override for message count
  * @param {string|null} [opts.apiSessionId] - API session scope
+ * @param {number|string|null} [opts.temperature] - Per-request temperature override (defaults to the workspace setting)
  * @returns {Promise<{connector: BaseLLMProvider, routingMetadata: Object|null, prefetchedContext: Object|null}>}
  */
 async function resolveProviderConnector({
@@ -677,6 +714,7 @@ async function resolveProviderConnector({
   chatHistoryOverride = null,
   messageCountOverride = null,
   apiSessionId = null,
+  temperature = null,
 }) {
   const effectiveProvider = workspace?.chatProvider || process.env.LLM_PROVIDER;
 
@@ -685,6 +723,7 @@ async function resolveProviderConnector({
       connector: getLLMProvider({
         provider: workspace?.chatProvider,
         model: workspace?.chatModel,
+        temperature: temperature ?? workspace?.openAiTemp,
       }),
       routingMetadata: null,
       prefetchedContext: null,
@@ -758,6 +797,7 @@ module.exports = {
   getLLMProviderClass,
   getBaseLLMProviderModel,
   getLLMProvider,
+  resolveTemperature,
   resolveProviderConnector,
   toChunks,
   humanFileSize,

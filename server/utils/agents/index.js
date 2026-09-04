@@ -40,6 +40,47 @@ class AgentHandler {
     console.log(`\x1b[36m[AgentHandler]\x1b[0m ${text}`, ...args);
   }
 
+  /**
+   * Live agent session websockets by workspace id. An open agent session keeps
+   * the workspace settings it was built with, so saving new settings closes
+   * these sockets and the next agent message starts a fresh session.
+   * @type {Map<number, Set<import("ws").WebSocket>>}
+   */
+  static #liveSessionSockets = new Map();
+
+  /**
+   * Track an agent session socket for a workspace until it closes.
+   * @param {number} workspaceId
+   * @param {import("ws").WebSocket} socket
+   */
+  static registerSessionSocket(workspaceId, socket) {
+    const id = Number(workspaceId);
+    if (!id || !socket) return;
+    if (!this.#liveSessionSockets.has(id))
+      this.#liveSessionSockets.set(id, new Set());
+    const sockets = this.#liveSessionSockets.get(id);
+    sockets.add(socket);
+    socket.on("close", () => {
+      sockets.delete(socket);
+      if (sockets.size === 0) this.#liveSessionSockets.delete(id);
+    });
+  }
+
+  /**
+   * Closes all live agent sessions for a workspace so the next agent message
+   * starts a new session with the workspace's current settings.
+   * @param {number} workspaceId
+   */
+  static closeWorkspaceSessions(workspaceId) {
+    const sockets = this.#liveSessionSockets.get(Number(workspaceId));
+    if (!sockets?.size) return;
+    for (const socket of [...sockets]) {
+      try {
+        socket.close();
+      } catch {}
+    }
+  }
+
   closeAlert() {
     this.log(`End ${this.#invocationUUID}::${this.provider}:${this.model}`);
   }
@@ -855,6 +896,7 @@ class AgentHandler {
     this.aibitat = new AIbitat({
       provider: this.provider ?? "openai",
       model: this.model ?? "gpt-4.1-nano",
+      temperature: this.invocation.workspace?.openAiTemp,
       chats: await this.#chatHistory(20),
       handlerProps: {
         invocation: this.invocation,

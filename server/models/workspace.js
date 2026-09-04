@@ -270,7 +270,17 @@ const Workspace = {
       validatedUpdates.router_id = null;
     }
 
-    return this._update(id, validatedUpdates);
+    const result = await this._update(id, validatedUpdates);
+
+    // A live agent session keeps the settings it was built with, so end any
+    // open sessions for this workspace - the next agent message starts a
+    // fresh session with the updated settings.
+    if (result.workspace) {
+      const { AgentHandler } = require("../utils/agents");
+      AgentHandler.closeWorkspaceSessions(id);
+    }
+
+    return result;
   },
 
   /**

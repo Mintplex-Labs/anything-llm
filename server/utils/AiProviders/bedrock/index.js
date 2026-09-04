@@ -52,11 +52,20 @@ class AWSBedrockLLM {
     "us.deepseek.r1-v1:0",
   ];
 
-  noTemperatureModels = [
+  static noTemperatureModels = [
     "anthropic.claude-opus-4-7",
     "anthropic.claude-opus-4-8",
     "anthropic.claude-sonnet-5",
   ];
+
+  /**
+   * Whether the model supports the temperature parameter at all.
+   * @param {string} modelName
+   * @returns {boolean}
+   */
+  static modelSupportsTemperature(modelName = "") {
+    return !this.noTemperatureModels.some((model) => modelName.includes(model));
+  }
 
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.AWS_BEDROCK_LLM_API_KEY)
@@ -91,7 +100,6 @@ class AWSBedrockLLM {
     }
 
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
     this.#log(
       `Initialized with model: ${this.model}. Region: ${this.region}. Context Window: ${contextWindowLimit}.`
     );
@@ -105,10 +113,9 @@ class AWSBedrockLLM {
     return Number(process.env.AWS_BEDROCK_LLM_MAX_TOKENS) || 4096;
   }
 
-  temperatureParam(temperature = this.defaultTemp) {
+  temperatureParam(temperature = this.temperature) {
     if (typeof temperature !== "number") return undefined;
-    if (this.noTemperatureModels.some((model) => this.model.includes(model)))
-      return undefined;
+    if (!AWSBedrockLLM.modelSupportsTemperature(this.model)) return undefined;
     return parseFloat(temperature);
   }
 
@@ -211,7 +218,10 @@ class AWSBedrockLLM {
 
   // --- Chat completions ---
 
-  async getChatCompletion(messages = null, { temperature }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!messages?.length)
       throw new Error(
         "AWSBedrock::getChatCompletion requires a non-empty messages array."
@@ -246,7 +256,10 @@ class AWSBedrockLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!Array.isArray(messages) || messages.length === 0) {
       throw new Error(
         "AWSBedrock::streamGetChatCompletion requires a non-empty messages array."

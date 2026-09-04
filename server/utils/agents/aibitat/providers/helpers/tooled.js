@@ -199,6 +199,7 @@ async function tooledStream(
 
   const stream = await client.chat.completions.create({
     model,
+    temperature: provider?.temperature,
     stream: true,
     stream_options: { include_usage: true },
     messages: formattedMessages,
@@ -375,6 +376,7 @@ async function tooledComplete(
 
   const response = await client.chat.completions.create({
     model,
+    temperature: provider?.temperature,
     stream: false,
     messages: formattedMessages,
     ...(tools.length > 0 ? { tools } : {}),
