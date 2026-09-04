@@ -9,7 +9,8 @@
     "build": "vite build && node scripts/postbuild.js",
     "lint:check": "eslint src",
     "lint": "eslint --fix src",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node --test test/formatSkillName.js"
   },
   "dependencies": {
     "@lobehub/icons": "^4.0.3",
