@@ -254,6 +254,7 @@ class AnthropicProvider extends Provider {
       const response = await this.client.messages.create(
         {
           model: this.model,
+          temperature: this.temperature,
           max_tokens: this.maxTokens,
           system: this.#buildSystemPrompt(systemPrompt),
           messages: chats,
@@ -401,6 +402,7 @@ class AnthropicProvider extends Provider {
       const response = await this.client.messages.create(
         {
           model: this.model,
+          temperature: this.temperature,
           max_tokens: this.maxTokens,
           system: this.#buildSystemPrompt(systemPrompt),
           messages: chats,

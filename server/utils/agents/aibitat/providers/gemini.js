@@ -254,6 +254,7 @@ class GeminiProvider extends Provider {
       /** @type {OpenAI.OpenAI.Chat.ChatCompletion} */
       const response = await this.client.chat.completions.create({
         model: this.model,
+        temperature: this.temperature,
         messages: this.#formatMessages(messages),
         stream: true,
         stream_options: { include_usage: true },
@@ -382,6 +383,7 @@ class GeminiProvider extends Provider {
     try {
       const response = await this.client.chat.completions.create({
         model: this.model,
+        temperature: this.temperature,
         stream: false,
         messages: this.#formatMessages(messages),
         ...(Array.isArray(functions) && functions?.length > 0

@@ -38,7 +38,6 @@ class VertexLLM {
     };
 
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
     this.log(
       `Initialized ${this.model} with context window ${this.promptWindowLimit()}`
     );
@@ -131,7 +130,10 @@ class VertexLLM {
     return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.openai.chat.completions
         .create({
@@ -167,7 +169,10 @@ class VertexLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.openai.chat.completions.create({
         model: VertexLLM.apiModelId(this.model),

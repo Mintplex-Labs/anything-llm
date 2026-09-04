@@ -44,7 +44,6 @@ class CometApiLLM {
     };
 
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
     this.timeout = this.#parseTimeout();
 
     if (!fs.existsSync(cacheFolder))
@@ -193,7 +192,10 @@ class CometApiLLM {
     ];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `CometAPI chat: ${this.model} is not valid for chat completion!`
@@ -232,7 +234,10 @@ class CometApiLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `CometAPI chat: ${this.model} is not valid for chat completion!`

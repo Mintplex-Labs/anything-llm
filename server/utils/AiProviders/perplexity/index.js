@@ -40,7 +40,6 @@ class PerplexityLLM {
     };
 
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
   }
 
   #appendContext(contextTexts = []) {
@@ -91,7 +90,10 @@ class PerplexityLLM {
     return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `Perplexity chat: ${this.model} is not valid for chat completion!`
@@ -130,7 +132,10 @@ class PerplexityLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `Perplexity chat: ${this.model} is not valid for chat completion!`

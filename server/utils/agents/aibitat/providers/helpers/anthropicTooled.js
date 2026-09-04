@@ -177,6 +177,7 @@ async function anthropicTooledStream(
     const response = await client.messages.create(
       {
         model,
+        temperature: provider?.temperature,
         max_tokens: maxTokens,
         system: systemPromptBuilder
           ? systemPromptBuilder(systemPrompt)
@@ -317,6 +318,7 @@ async function anthropicTooledComplete(
     const response = await client.messages.create(
       {
         model,
+        temperature: provider?.temperature,
         max_tokens: maxTokens,
         system: systemPromptBuilder
           ? systemPromptBuilder(systemPrompt)

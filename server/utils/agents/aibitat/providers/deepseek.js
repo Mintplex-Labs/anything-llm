@@ -72,6 +72,7 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
     return await this.client.chat.completions
       .create({
         model: this.model,
+        temperature: this.temperature,
         messages,
         max_tokens: this.maxTokens,
       })
@@ -90,6 +91,7 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
   async #handleFunctionCallStream({ messages = [] }) {
     return await this.client.chat.completions.create({
       model: this.model,
+      temperature: this.temperature,
       stream: true,
       messages,
     });

@@ -64,6 +64,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     );
     return {
       num_ctx: OllamaAILLM.promptWindowLimit(this.model),
+      temperature: this.temperature,
     };
   }
 

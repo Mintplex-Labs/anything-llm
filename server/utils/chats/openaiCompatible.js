@@ -25,6 +25,7 @@ async function chatSync({
       workspace,
       prompt,
       attachments,
+      temperature,
       chatHistoryOverride: {
         rawHistory: history,
         chatHistory: history,
@@ -175,10 +176,7 @@ async function chatSync({
 
   // Send the text completion.
   const { textResponse, metrics: completionMetrics } =
-    await LLMConnector.getChatCompletion(messages, {
-      temperature:
-        temperature ?? workspace?.openAiTemp ?? LLMConnector.defaultTemp,
-    });
+    await LLMConnector.getChatCompletion(messages);
   const metrics = addChatCostToMetrics(completionMetrics, {
     routingMetadata,
     workspace,
@@ -242,6 +240,7 @@ async function streamChat({
       workspace,
       prompt,
       attachments,
+      temperature,
       chatHistoryOverride: {
         rawHistory: history,
         chatHistory: history,
@@ -447,10 +446,7 @@ async function streamChat({
     return;
   }
 
-  const stream = await LLMConnector.streamGetChatCompletion(messages, {
-    temperature:
-      temperature ?? workspace?.openAiTemp ?? LLMConnector.defaultTemp,
-  });
+  const stream = await LLMConnector.streamGetChatCompletion(messages);
   const completeText = await LLMConnector.handleStream(
     responseInterceptor,
     stream,

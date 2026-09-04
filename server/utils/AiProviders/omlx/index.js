@@ -30,7 +30,6 @@ class OMLXLLM {
     if (!this.model) throw new Error("OMLX must have a valid model set.");
 
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
 
     // Lazy load the limits to avoid blocking the main thread on cacheContextWindows
     this.limits = null;
@@ -235,7 +234,10 @@ class OMLXLLM {
     return textResponse;
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.omlx.chat.completions.create({
         model: this.model,
@@ -265,7 +267,10 @@ class OMLXLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.omlx.chat.completions.create({
         model: this.model,

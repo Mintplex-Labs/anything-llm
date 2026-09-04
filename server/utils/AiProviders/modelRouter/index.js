@@ -11,7 +11,6 @@ class AnythingLLMModelRouter {
     this.resolvedRoute = null;
     this._routeKey = null;
     this.delegateProvider = null;
-    this.defaultTemp = 0.7;
     this.routerService.log(
       `Initialized for workspace "${workspace?.name || workspace?.slug}"`
     );
@@ -104,6 +103,7 @@ class AnythingLLMModelRouter {
       getLLMProvider({
         provider: this.resolvedRoute.provider,
         model: this.resolvedRoute.model,
+        temperature: this.workspace?.openAiTemp,
       })
     );
   }

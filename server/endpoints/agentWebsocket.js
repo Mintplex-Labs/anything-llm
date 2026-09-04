@@ -34,6 +34,10 @@ function agentWebsocket(app) {
         return;
       }
 
+      AgentHandler.registerSessionSocket(
+        agentHandler.invocation.workspace_id,
+        socket
+      );
       socket.on("message", relayToSocket);
       socket.on("close", () => {
         // Abort the running agent loop (stop button, tab close, disconnect) so

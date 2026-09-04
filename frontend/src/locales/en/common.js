@@ -251,7 +251,8 @@ const TRANSLATIONS = {
     temperature: {
       title: "LLM Temperature",
       "desc-end":
-        "The higher the number the more creative. For some models this can lead to incoherent responses when set too high.",
+        "The higher the number the more creative. For some models this can lead to incoherent responses when set too high. Leave blank to use your model provider's default.",
+      placeholder: "Provider default",
     },
   },
   "vector-workspace": {

@@ -37,7 +37,6 @@ class FoundryLLM {
     });
 
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
     this.limits = null;
     FoundryLLM.cacheContextWindows(true);
     this.#log(`Loaded with model: ${this.model}`);
@@ -302,7 +301,10 @@ class FoundryLLM {
     ];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!this.model)
       throw new Error(
         `Foundry chat: ${this.model} is not valid or defined model for chat completion!`
@@ -346,7 +348,10 @@ class FoundryLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!this.model)
       throw new Error(
         `Foundry chat: ${this.model} is not valid or defined model for chat completion!`

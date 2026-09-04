@@ -52,7 +52,6 @@ class OpenRouterLLM {
     };
 
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
     this.timeout = this.#parseTimeout();
 
     if (!fs.existsSync(cacheFolder))
@@ -238,7 +237,10 @@ class OpenRouterLLM {
     ];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7, user = null }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature, user = null } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `OpenRouter chat: ${this.model} is not valid for chat completion!`
@@ -285,7 +287,7 @@ class OpenRouterLLM {
 
   async streamGetChatCompletion(
     messages = null,
-    { temperature = 0.7, user = null }
+    { temperature = this.temperature, user = null } = {}
   ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(

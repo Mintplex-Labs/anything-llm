@@ -27,7 +27,6 @@ class LemonadeLLM {
 
     this.model = modelPreference || process.env.LEMONADE_LLM_MODEL_PREF;
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
 
     // We can establish here since we cannot dynamically curl the context window limit from the API.
     this.limits = {
@@ -152,7 +151,10 @@ class LemonadeLLM {
     return textResponse;
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     await LemonadeLLM.loadModel(this.model);
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.lemonade.chat.completions.create({
@@ -183,7 +185,10 @@ class LemonadeLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     await LemonadeLLM.loadModel(this.model);
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.lemonade.chat.completions.create({
