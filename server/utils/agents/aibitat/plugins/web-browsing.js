@@ -1259,10 +1259,47 @@ const webBrowsing = {
             return result;
           },
 
+          /**
+           * fastCRW Search. Uses the managed endpoint by default, or any
+           * self-hosted instance when a base URL is set. A self-hosted instance
+           * runs without auth unless the operator configures API keys, so the
+           * API key is optional whenever a base URL is set.
+           * @param {string} query
+           * @returns {Promise<string>}
+           */
           _crwSearch: async function (query) {
-            if (!process.env.AGENT_CRW_API_KEY) {
+            const MANAGED_BASE_URL = "https://fastcrw.com/api";
+            const apiKey = process.env.AGENT_CRW_API_KEY || null;
+            const customBaseUrl = process.env.AGENT_CRW_API_URL?.trim() || null;
+
+            let searchURL;
+            try {
+              searchURL = new URL(customBaseUrl || MANAGED_BASE_URL);
+              if (
+                searchURL.protocol !== "http:" &&
+                searchURL.protocol !== "https:"
+              )
+                throw new Error(`unsupported protocol ${searchURL.protocol}`);
+              // Append to the configured path so an instance served under a
+              // sub-path stays reachable, and normalize the trailing slash so
+              // the join cannot emit "//v1/search", which fastCRW does not route.
+              searchURL.pathname = `${searchURL.pathname.replace(/\/+$/, "")}/v1/search`;
+            } catch (e) {
+              this.super.handlerProps.log(
+                `invalid fastCRW Search URL: ${e.message}`
+              );
               this.super.introspect(
-                `${this.caller}: I can't use fastCRW searching because the user has not defined the required API key.\nVisit: https://fastcrw.com/ to create the API key.`
+                `${this.caller}: I can't use fastCRW searching because the base URL provided is not a valid URL.`
+              );
+              return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
+            }
+
+            // The managed endpoint always needs a key. A self-hosted instance
+            // runs without auth unless its operator configured API keys, so the
+            // key stays optional there.
+            if (!apiKey && searchURL.host === new URL(MANAGED_BASE_URL).host) {
+              this.super.introspect(
+                `${this.caller}: I can't use fastCRW searching because the user has not defined the required API key.\nVisit: https://fastcrw.com/ to create the API key, or set a base URL to use a self-hosted instance.`
               );
               return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
             }
@@ -1273,31 +1310,18 @@ const webBrowsing = {
               }"`
             );
 
-            let baseUrl = "https://fastcrw.com/api";
-            if ("AGENT_CRW_API_URL" in process.env) {
-              try {
-                baseUrl = new URL(process.env.AGENT_CRW_API_URL);
-                baseUrl.pathname = ""; // remove the trailing slash or any other path
-                baseUrl = baseUrl.toString();
-              } catch (e) {
-                this.super.handlerProps.log(
-                  `invalid fastCRW Search URL: ${e.message}`
-                );
-              }
-            }
-
-            const { response, error } = await fetch(`${baseUrl}/v1/search`, {
+            const { response, error } = await fetch(searchURL.toString(), {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${process.env.AGENT_CRW_API_KEY}`,
+                ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
               },
               body: JSON.stringify({ query }),
             })
               .then((res) => {
                 if (res.ok) return res.json();
                 throw new Error(
-                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ auth: this.middleTruncate(process.env.AGENT_CRW_API_KEY, 5), q: query })}`
+                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ auth: apiKey ? this.middleTruncate(apiKey, 5) : "none", q: query })}`
                 );
               })
               .then((data) => {
@@ -1317,8 +1341,21 @@ const webBrowsing = {
             if (error)
               return `There was an error searching for content. ${error}`;
 
+            // The managed API returns `data` as a flat array of results, while a
+            // self-hosted instance nests them under `data.results`. That is an
+            // array for the query-only request sent above, and an object
+            // grouping results by source when `sources` is requested.
+            const payload = response?.data?.results ?? response?.data;
+            const searchResults = Array.isArray(payload)
+              ? payload
+              : [
+                  ...(payload?.web ?? []),
+                  ...(payload?.news ?? []),
+                  ...(payload?.images ?? []),
+                ];
+
             const data = [];
-            response.data?.forEach((searchResult) => {
+            searchResults.forEach((searchResult) => {
               const { title, url, description } = searchResult;
               data.push({
                 title,
