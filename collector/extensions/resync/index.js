@@ -136,7 +136,10 @@ async function resyncGitlab({ chunkSource }, response) {
       fetchGitlabFile,
     } = require("../../utils/extensions/RepoLoader/GitlabRepo");
     const { success, reason, content } = await fetchGitlabFile({
-      repoUrl: `https:${source.pathname}`,
+      // need to add back the real protocol - older chunkSources have none and default to https.
+      repoUrl: `${source.searchParams.get("scheme") || "https"}:${
+        source.pathname
+      }`,
       branch: source.searchParams.get("branch"),
       accessToken: source.searchParams.get("pat"),
       sourceFilePath: source.searchParams.get("path"),

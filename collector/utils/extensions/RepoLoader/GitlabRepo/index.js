@@ -163,6 +163,8 @@ function generateChunkSource(repo, doc, encryptionWorker) {
     branch: repo.branch,
     path: doc.metadata.source,
     pat: !!repo.accessToken ? repo.accessToken : null,
+    // Self-hosted instances may be served over http - the protocol cannot be assumed on resync.
+    scheme: new URL(repo.repo).protocol.replace(":", ""),
   };
   return `gitlab://${repo.repo}?payload=${encryptionWorker.encrypt(
     JSON.stringify(payload)
@@ -258,4 +260,4 @@ ${issue.discussions.join("\n\n")}
   return markdown;
 }
 
-module.exports = { loadGitlabRepo, fetchGitlabFile };
+module.exports = { loadGitlabRepo, fetchGitlabFile, generateChunkSource };
