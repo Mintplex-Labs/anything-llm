@@ -73,13 +73,14 @@ class QDrant extends VectorDatabase {
       scores: [],
     };
 
-    const responses = await client.search(namespace, {
-      vector: queryVector,
+    // @qdrant/js-client-rest >= 1.19 dropped search(); use query() and unwrap {points}.
+    const { points = [] } = await client.query(namespace, {
+      query: queryVector,
       limit: topN,
       with_payload: true,
     });
 
-    responses.forEach((response) => {
+    points.forEach((response) => {
       if (response.score < similarityThreshold) return;
       if (filterIdentifiers.includes(sourceIdentifier(response?.payload))) {
         this.logger(
