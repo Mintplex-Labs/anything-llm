@@ -511,8 +511,11 @@ const webBrowsing = {
                 query.length > 100 ? `${query.slice(0, 100)}...` : query
               }"`
             );
+            const serperBaseUrl = (
+              process.env.AGENT_SERPER_DEV_BASE_URL || "https://google.serper.dev"
+            ).replace(/\/+$/, "");
             const { response, error } = await fetch(
-              "https://google.serper.dev/search",
+              `${serperBaseUrl}/search`,
               {
                 method: "POST",
                 headers: {
