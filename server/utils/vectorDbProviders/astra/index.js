@@ -207,6 +207,10 @@ class AstraDB extends VectorDatabase {
 
       const EmbedderEngine = getEmbeddingEngineSelection();
       const textSplitter = new TextSplitter({
+        strategy: await SystemSettings.getValueOrFallback(
+          { label: "text_splitter_strategy" },
+          "recursive"
+        ),
         chunkSize: Math.min(
           7500,
           TextSplitter.determineMaxChunkSize(

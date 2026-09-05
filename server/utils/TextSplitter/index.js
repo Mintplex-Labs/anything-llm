@@ -27,6 +27,7 @@ class TextSplitter {
    * @param {string} [config.chunkPrefix = ""] - Prefix to be added to the start of each chunk.
    * @param {number} [config.chunkSize = 1000] - The size of each chunk.
    * @param {number} [config.chunkOverlap = 20] - The overlap between chunks.
+   * @param {"recursive"|"sentence"} [config.strategy = "recursive"] - How chunk boundaries are chosen.
    * @param {Object} [config.chunkHeaderMeta = null] - Metadata to be added to the start of each chunk - will come after the prefix.
    */
   constructor(config = {}) {
@@ -155,7 +156,9 @@ class TextSplitter {
    */
   #setSplitter(config = {}) {
     // if (!config?.splitByFilename) {// TODO do something when specific extension is present? }
-    return new RecursiveSplitter({
+    const Splitter =
+      config.strategy === "sentence" ? SentenceSplitter : RecursiveSplitter;
+    return new Splitter({
       chunkSize: isNaN(config?.chunkSize) ? 1_000 : Number(config?.chunkSize),
       chunkOverlap: isNaN(config?.chunkOverlap)
         ? 20
@@ -200,6 +203,57 @@ class RecursiveSplitter {
     return documents
       .filter((doc) => !!doc.pageContent)
       .map((doc) => doc.pageContent);
+  }
+}
+
+// Keep complete sentences together, with the recursive splitter handling oversized sentences.
+class SentenceSplitter {
+  constructor({ chunkSize, chunkOverlap, chunkHeader }) {
+    if (!Number.isInteger(chunkSize) || chunkSize <= 0)
+      throw new Error("Sentence chunk size must be a positive integer.");
+    if (
+      !Number.isInteger(chunkOverlap) ||
+      chunkOverlap < 0 ||
+      chunkOverlap > chunkSize
+    )
+      throw new Error(
+        "Sentence chunk overlap must be between zero and chunk size."
+      );
+    this.chunkSize = chunkSize;
+    this.chunkOverlap = chunkOverlap;
+    this.chunkHeader = chunkHeader || "";
+    this.segmenter = new Intl.Segmenter(undefined, { granularity: "sentence" });
+    this.fallback = new RecursiveSplitter({ chunkSize, chunkOverlap });
+  }
+
+  async _splitText(documentText) {
+    const chunks = [];
+    let sentences = [];
+    let length = 0;
+    for (const { segment } of this.segmenter.segment(documentText)) {
+      if (segment.trim().length === 0) continue;
+      if (segment.trim().length > this.chunkSize) {
+        if (sentences.length) chunks.push(sentences.join("").trim());
+        chunks.push(...(await this.fallback._splitText(segment)));
+        sentences = [];
+        length = 0;
+        continue;
+      }
+      const nextLength = segment.trimEnd().length;
+      if (sentences.length && length + nextLength > this.chunkSize) {
+        chunks.push(sentences.join("").trim());
+        while (
+          sentences.length &&
+          (length > this.chunkOverlap || length + nextLength > this.chunkSize)
+        ) {
+          length -= sentences.shift().length;
+        }
+      }
+      sentences.push(segment);
+      length += segment.length;
+    }
+    if (sentences.length) chunks.push(sentences.join("").trim());
+    return chunks.filter(Boolean).map((chunk) => `${this.chunkHeader}${chunk}`);
   }
 }
 

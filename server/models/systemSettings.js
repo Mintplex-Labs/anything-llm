@@ -43,6 +43,7 @@ const SystemSettings = {
     "support_email",
     "text_splitter_chunk_size",
     "text_splitter_chunk_overlap",
+    "text_splitter_strategy",
     "max_embed_chunk_size",
     "agent_search_provider",
     "agent_sql_connections",
@@ -74,6 +75,7 @@ const SystemSettings = {
 
     "text_splitter_chunk_size",
     "text_splitter_chunk_overlap",
+    "text_splitter_strategy",
     "agent_search_provider",
     "default_agent_skills",
     "disabled_agent_skills",
@@ -116,6 +118,15 @@ const SystemSettings = {
         console.error(`Failed to run validation function on footer_data`);
         return JSON.stringify([]);
       }
+    },
+    text_splitter_strategy: (update) => {
+      if (!["recursive", "sentence"].includes(update))
+        throw new Error(
+          "Text splitting strategy must be recursive or sentence."
+        );
+      const { purgeEntireVectorCache } = require("../utils/files");
+      purgeEntireVectorCache();
+      return update;
     },
     text_splitter_chunk_size: (update) => {
       try {

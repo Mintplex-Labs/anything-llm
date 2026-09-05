@@ -350,6 +350,10 @@ class LanceDb extends VectorDatabase {
       // from vectordb.
       const EmbedderEngine = getEmbeddingEngineSelection();
       const textSplitter = new TextSplitter({
+        strategy: await SystemSettings.getValueOrFallback(
+          { label: "text_splitter_strategy" },
+          "recursive"
+        ),
         chunkSize: TextSplitter.determineMaxChunkSize(
           await SystemSettings.getValueOrFallback({
             label: "text_splitter_chunk_size",

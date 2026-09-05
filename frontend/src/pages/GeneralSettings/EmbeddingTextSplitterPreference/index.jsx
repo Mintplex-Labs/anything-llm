@@ -49,6 +49,7 @@ export default function EmbeddingTextSplitterPreference() {
         document.getElementById("text-splitter-chunking-form")
       );
       await Admin.updateSystemPreferences({
+        text_splitter_strategy: form.get("text_splitter_strategy"),
         text_splitter_chunk_size: isNullOrNaN(
           form.get("text_splitter_chunk_size")
         )
@@ -76,6 +77,7 @@ export default function EmbeddingTextSplitterPreference() {
         await Admin.systemPreferencesByFields([
           "text_splitter_chunk_size",
           "text_splitter_chunk_overlap",
+          "text_splitter_strategy",
           "max_embed_chunk_size",
         ])
       )?.settings;
@@ -129,6 +131,32 @@ export default function EmbeddingTextSplitterPreference() {
               </div>
 
               <div className="flex flex-col gap-y-4 mt-8">
+                <div className="flex flex-col max-w-[300px] gap-y-2">
+                  <label
+                    htmlFor="text-splitter-strategy"
+                    className="text-white text-sm font-semibold"
+                  >
+                    {t("text.strategy.title")}
+                  </label>
+                  <p className="text-xs text-white/60">
+                    {t("text.strategy.description")}
+                  </p>
+                  <select
+                    id="text-splitter-strategy"
+                    name="text_splitter_strategy"
+                    defaultValue={
+                      settings?.text_splitter_strategy || "recursive"
+                    }
+                    className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg block w-full p-2.5"
+                  >
+                    <option value="recursive">
+                      {t("text.strategy.recursive")}
+                    </option>
+                    <option value="sentence">
+                      {t("text.strategy.sentence")}
+                    </option>
+                  </select>
+                </div>
                 <div className="flex flex-col max-w-[300px]">
                   <div className="flex flex-col gap-y-2 mb-4">
                     <label className="text-white text-sm font-semibold block">
