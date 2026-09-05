@@ -393,6 +393,9 @@ function adminEndpoints(app) {
             case "text_splitter_chunk_overlap":
               requestedSettings[label] = setting?.value || null;
               break;
+            case "text_splitter_strategy":
+              requestedSettings[label] = setting?.value || "recursive";
+              break;
             case "max_embed_chunk_size":
               requestedSettings[label] =
                 embedder?.embeddingMaxChunkLength || 1000;

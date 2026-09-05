@@ -1154,6 +1154,13 @@ const TRANSLATIONS = {
     },
   },
   text: {
+    strategy: {
+      title: "Splitting strategy",
+      description:
+        "Sentence splitting keeps complete sentences together when they fit. Longer sentences use recursive splitting. Overlap includes only complete sentences that fit within the overlap limit. Applies to newly embedded documents; re-embed existing documents to use the new strategy.",
+      recursive: "Recursive (default)",
+      sentence: "Sentence",
+    },
     title: "Text splitting & Chunking Preferences",
     "desc-start":
       "Sometimes, you may want to change the default way that new documents are split and chunked before being inserted into your vector database.",
