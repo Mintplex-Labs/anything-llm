@@ -606,6 +606,10 @@ const KEY_MAPPING = {
     envKey: "AGENT_SERPER_DEV_KEY",
     checks: [],
   },
+  AgentSerperApiUrl: {
+    envKey: "AGENT_SERPER_DEV_BASE_URL",
+    checks: [],
+  },
   AgentBingSearchApiKey: {
     envKey: "AGENT_BING_SEARCH_API_KEY",
     checks: [],
