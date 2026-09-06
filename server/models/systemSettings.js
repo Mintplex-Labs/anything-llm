@@ -1014,6 +1014,10 @@ const SystemSettings = {
       PPIOApiKey: !!process.env.PPIO_API_KEY,
       PPIOModelPref: process.env.PPIO_MODEL_PREF,
 
+      // Hubris API keys
+      HubrisApiKey: !!process.env.HUBRIS_API_KEY,
+      HubrisModelPref: process.env.HUBRIS_MODEL_PREF,
+
       // CometAPI LLM Keys
       CometApiLLMApiKey: !!process.env.COMETAPI_LLM_API_KEY,
       CometApiLLMModelPref: process.env.COMETAPI_LLM_MODEL_PREF,

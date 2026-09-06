@@ -10,6 +10,7 @@ const { fetchNovitaModels } = require("../AiProviders/novita");
 const { parseLMStudioBasePath } = require("../AiProviders/lmStudio");
 const { parseNvidiaNimBasePath } = require("../AiProviders/nvidiaNim");
 const { fetchPPIOModels } = require("../AiProviders/ppio");
+const { fetchHubrisModels } = require("../AiProviders/hubris");
 const { GeminiLLM } = require("../AiProviders/gemini");
 const { fetchCometApiModels } = require("../AiProviders/cometapi");
 const { getAllLemonadeModels } = require("../AiProviders/lemonade");
@@ -37,6 +38,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "xai",
   "gemini",
   "ppio",
+  "hubris",
   "moonshotai",
   "foundry",
   "cohere",
@@ -131,6 +133,8 @@ async function getCustomModels(
       return await getGeminiModels(apiKey);
     case "ppio":
       return await getPPIOModels(apiKey);
+    case "hubris":
+      return await getHubrisModels();
     case "moonshotai":
       return await getMoonshotAiModels(apiKey);
     case "foundry":
@@ -905,6 +909,19 @@ async function getPPIOModels() {
   const ppioModels = await fetchPPIOModels();
   if (!Object.keys(ppioModels).length === 0) return { models: [], error: null };
   const models = Object.values(ppioModels).map((model) => {
+    return {
+      id: model.id,
+      organization: model.organization,
+      name: model.name,
+    };
+  });
+  return { models, error: null };
+}
+
+async function getHubrisModels() {
+  const hubrisModels = await fetchHubrisModels();
+  if (Object.keys(hubrisModels).length === 0) return { models: [], error: null };
+  const models = Object.values(hubrisModels).map((model) => {
     return {
       id: model.id,
       organization: model.organization,

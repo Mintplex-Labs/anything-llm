@@ -112,6 +112,7 @@ AnythingLLM supports multiple users as well where you can control the access and
 - [Z.AI (chat models)](https://z.ai/model-api)
 - [Novita AI (chat models)](https://novita.ai/model-api/product/llm-api?utm_source=github_anything-llm&utm_medium=github_readme&utm_campaign=link)
 - [PPIO](https://ppinfra.com?utm_source=github_anything-llm)
+- [Hubris (chat models)](https://hubris.pw)
 - [Gitee AI](https://ai.gitee.com/)
 - [Moonshot AI](https://www.moonshot.ai/)
 - [Microsoft Foundry Local](https://github.com/microsoft/Foundry-Local)

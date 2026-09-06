@@ -236,6 +236,10 @@ class AgentHandler {
         if (!process.env.PPIO_API_KEY)
           throw new Error("PPIO API Key must be provided to use agents.");
         break;
+      case "hubris":
+        if (!process.env.HUBRIS_API_KEY)
+          throw new Error("Hubris API Key must be provided to use agents.");
+        break;
       case "gemini":
         if (!process.env.GEMINI_API_KEY)
           throw new Error("Gemini API key must be provided to use agents.");
@@ -369,6 +373,8 @@ class AgentHandler {
         return process.env.NVIDIA_NIM_LLM_MODEL_PREF ?? null;
       case "ppio":
         return process.env.PPIO_MODEL_PREF ?? "qwen/qwen2.5-32b-instruct";
+      case "hubris":
+        return process.env.HUBRIS_MODEL_PREF ?? "anthropic/claude-sonnet-5";
       case "gemini":
         return process.env.GEMINI_LLM_MODEL_PREF ?? "gemini-2.0-flash-lite";
       case "cometapi":

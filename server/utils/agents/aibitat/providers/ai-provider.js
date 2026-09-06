@@ -381,6 +381,14 @@ class Provider {
           apiKey: process.env.PPIO_API_KEY ?? null,
           ...config,
         });
+      case "hubris":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.hubris.pw/v1",
+          },
+          apiKey: process.env.HUBRIS_API_KEY ?? null,
+          ...config,
+        });
       case "gemini":
         return new ChatOpenAI({
           configuration: {

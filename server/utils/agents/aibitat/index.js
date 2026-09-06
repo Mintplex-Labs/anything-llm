@@ -1488,6 +1488,8 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
         return new Providers.NovitaProvider({ model: config.model });
       case "ppio":
         return new Providers.PPIOProvider({ model: config.model });
+      case "hubris":
+        return new Providers.HubrisProvider({ model: config.model });
       case "gemini":
         return new Providers.GeminiProvider({ model: config.model });
       case "cometapi":

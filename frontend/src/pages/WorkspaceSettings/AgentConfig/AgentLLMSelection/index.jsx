@@ -27,6 +27,7 @@ const ENABLED_PROVIDERS = [
   "fireworksai",
   "deepseek",
   "ppio",
+  "hubris",
   "litellm",
   "apipie",
   "xai",

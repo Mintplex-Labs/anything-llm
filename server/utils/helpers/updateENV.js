@@ -876,6 +876,16 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // Hubris Options
+  HubrisApiKey: {
+    envKey: "HUBRIS_API_KEY",
+    checks: [isNotEmpty],
+  },
+  HubrisModelPref: {
+    envKey: "HUBRIS_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
   // Moonshot AI Options
   MoonshotAiApiKey: {
     envKey: "MOONSHOT_AI_API_KEY",
@@ -1156,6 +1166,7 @@ function supportedLLM(input = "") {
     "xai",
     "nvidia-nim",
     "ppio",
+    "hubris",
     "moonshotai",
     "cometapi",
     "foundry",

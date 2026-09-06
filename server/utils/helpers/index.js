@@ -213,6 +213,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "ppio":
       const { PPIOLLM } = require("../AiProviders/ppio");
       return new PPIOLLM(embedder, model);
+    case "hubris":
+      const { HubrisLLM } = require("../AiProviders/hubris");
+      return new HubrisLLM(embedder, model);
     case "moonshotai":
       const { MoonshotAiLLM } = require("../AiProviders/moonshotAi");
       return new MoonshotAiLLM(embedder, model);
@@ -438,6 +441,9 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "ppio":
       const { PPIOLLM } = require("../AiProviders/ppio");
       return PPIOLLM;
+    case "hubris":
+      const { HubrisLLM } = require("../AiProviders/hubris");
+      return HubrisLLM;
     case "moonshotai":
       const { MoonshotAiLLM } = require("../AiProviders/moonshotAi");
       return MoonshotAiLLM;
@@ -542,6 +548,8 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.NVIDIA_NIM_LLM_MODEL_PREF;
     case "ppio":
       return process.env.PPIO_MODEL_PREF;
+    case "hubris":
+      return process.env.HUBRIS_MODEL_PREF;
     case "moonshotai":
       return process.env.MOONSHOT_AI_MODEL_PREF;
     case "cometapi":

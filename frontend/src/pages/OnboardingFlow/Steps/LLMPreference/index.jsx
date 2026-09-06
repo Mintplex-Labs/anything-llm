@@ -27,6 +27,7 @@ import ZAiLogo from "@/media/llmprovider/zai.png";
 import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
+import HubrisLogo from "@/media/llmprovider/hubris.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
 import GiteeAILogo from "@/media/llmprovider/giteeai.png";
@@ -65,6 +66,7 @@ import XAILLMOptions from "@/components/LLMSelection/XAiLLMOptions";
 import ZAiLLMOptions from "@/components/LLMSelection/ZAiLLMOptions";
 import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
 import PPIOLLMOptions from "@/components/LLMSelection/PPIOLLMOptions";
+import HubrisLLMOptions from "@/components/LLMSelection/HubrisLLMOptions";
 import MoonshotAiOptions from "@/components/LLMSelection/MoonshotAiOptions";
 import CometApiLLMOptions from "@/components/LLMSelection/CometApiLLMOptions";
 import GiteeAiOptions from "@/components/LLMSelection/GiteeAIOptions";
@@ -266,6 +268,14 @@ const LLMS = [
     options: (settings) => <PPIOLLMOptions settings={settings} />,
     description:
       "Run stable and cost-efficient open-source LLM APIs, such as DeepSeek, Llama, Qwen etc.",
+  },
+  {
+    name: "Hubris",
+    value: "hubris",
+    logo: HubrisLogo,
+    options: (settings) => <HubrisLLMOptions settings={settings} />,
+    description:
+      "500+ models from OpenAI, Anthropic, Google, DeepSeek, Qwen and others through one OpenAI-compatible gateway billed in rubles.",
   },
   {
     name: "APIpie",

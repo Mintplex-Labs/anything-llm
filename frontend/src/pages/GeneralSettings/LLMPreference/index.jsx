@@ -32,6 +32,7 @@ import XAILogo from "@/media/llmprovider/xai.png";
 import ZAiLogo from "@/media/llmprovider/zai.png";
 import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
+import HubrisLogo from "@/media/llmprovider/hubris.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
 import FoundryLogo from "@/media/llmprovider/foundry-local.png";
@@ -74,6 +75,7 @@ import XAILLMOptions from "@/components/LLMSelection/XAiLLMOptions";
 import ZAiLLMOptions from "@/components/LLMSelection/ZAiLLMOptions";
 import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
 import PPIOLLMOptions from "@/components/LLMSelection/PPIOLLMOptions";
+import HubrisLLMOptions from "@/components/LLMSelection/HubrisLLMOptions";
 import MoonshotAiOptions from "@/components/LLMSelection/MoonshotAiOptions";
 import FoundryOptions from "@/components/LLMSelection/FoundryOptions";
 import GiteeAIOptions from "@/components/LLMSelection/GiteeAIOptions/index.jsx";
@@ -299,6 +301,15 @@ export const AVAILABLE_LLM_PROVIDERS = [
     description:
       "Run stable and cost-efficient open-source LLM APIs, such as DeepSeek, Llama, Qwen etc.",
     requiredConfig: ["PPIOApiKey"],
+  },
+  {
+    name: "Hubris",
+    value: "hubris",
+    logo: HubrisLogo,
+    options: (settings) => <HubrisLLMOptions settings={settings} />,
+    description:
+      "500+ models from OpenAI, Anthropic, Google, DeepSeek, Qwen and others through one OpenAI-compatible gateway billed in rubles.",
+    requiredConfig: ["HubrisApiKey"],
   },
   {
     name: "AWS Bedrock",
