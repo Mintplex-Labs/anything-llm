@@ -29,3 +29,15 @@ services:
       - anything-llm
     extra_hosts:
       - "host.docker.internal:host-gateway"
+
+  # Opt-in Valkey vector database (valkey-search module). Uncomment to use VECTOR_DB=valkey.
+  # valkey:
+  #   image: valkey/valkey-bundle:8.1
+  #   container_name: anythingllm-valkey
+  #   ports:
+  #     - "6379:6379"
+  #   networks:
+  #     - anything-llm
+  #   volumes:
+  #     - "../server/storage/valkey:/data"
+  #   command: ["valkey-server", "--save", "60", "1"]

@@ -36,6 +36,7 @@ import MilvusLogo from "@/media/vectordbs/milvus.png";
 import VoyageAiLogo from "@/media/embeddingprovider/voyageai.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
 import PGVectorLogo from "@/media/vectordbs/pgvector.png";
+import ValkeyLogo from "@/media/vectordbs/valkey.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
 import FoundryLogo from "@/media/llmprovider/foundry-local.png";
@@ -327,6 +328,14 @@ const VECTOR_DB_PROVIDER_PRIVACY_MAP = {
       "Your vectors and document text are stored privately on this instance of AnythingLLM.",
     ],
     logo: LanceDbLogo,
+  },
+  valkey: {
+    name: "Valkey",
+    description: [
+      "Your vectors and document text are stored on your Valkey instance (cloud or self-hosted).",
+      "Access to your instance is managed by you.",
+    ],
+    logo: ValkeyLogo,
   },
 };
 
