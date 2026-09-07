@@ -18,7 +18,11 @@ const GitLabRepoLoader = require("../../../../utils/extensions/RepoLoader/Gitlab
 const {
   generateChunkSource,
   fetchGitlabFile,
+  issueToMarkdown,
 } = require("../../../../utils/extensions/RepoLoader/GitlabRepo");
+const { fetchGitlabFile: realFetchGitlabFile } = jest.requireActual(
+  "../../../../utils/extensions/RepoLoader/GitlabRepo"
+);
 const { EncryptionWorker } = require("../../../../utils/EncryptionWorker");
 const resyncHandlers = require("../../../../extensions/resync");
 
@@ -49,6 +53,15 @@ const errorResponse = (status, statusText = "Error") => ({
   text: async () => "",
 });
 
+const rateLimitResponse = () => ({
+  ok: false,
+  status: 429,
+  statusText: "Too Many Requests",
+  headers: { get: (name) => (name === "retry-after" ? "0.001" : null) },
+  json: async () => ({}),
+  text: async () => "",
+});
+
 /**
  * Stands up a fake GitLab REST v4 API over `fetch` so no network access is required.
  * The handlers key off the endpoint path only - never the host.
@@ -57,12 +70,31 @@ function mockGitlabApi({
   branches = [{ name: "main" }],
   branchStatus = 200,
   tree = [],
+  treePages = null,
   files = {},
   userStatus = 200,
+  issues = [],
+  discussions = {},
+  wikis = [],
+  wikiStatus = 200,
+  rateLimitOnce = [],
+  rateLimitAlways = [],
 } = {}) {
+  const pendingRateLimits = new Set(rateLimitOnce);
   return jest.spyOn(global, "fetch").mockImplementation(async (url) => {
     const { pathname, searchParams } = new URL(url);
-    const firstPage = Number(searchParams.get("page")) === 1;
+    const page = Number(searchParams.get("page"));
+    const firstPage = page === 1;
+
+    if (rateLimitAlways.some((suffix) => pathname.endsWith(suffix)))
+      return rateLimitResponse();
+    const limited = [...pendingRateLimits].find((suffix) =>
+      pathname.endsWith(suffix)
+    );
+    if (limited) {
+      pendingRateLimits.delete(limited);
+      return rateLimitResponse();
+    }
 
     if (pathname === "/api/v4/user")
       return userStatus === 200
@@ -74,8 +106,29 @@ function mockGitlabApi({
       return jsonResponse(firstPage ? branches : []);
     }
 
-    if (pathname.endsWith("/repository/tree"))
+    if (pathname.endsWith("/repository/tree")) {
+      if (treePages) {
+        const body = treePages[page - 1] ?? [];
+        const next = page < treePages.length ? String(page + 1) : "";
+        return {
+          ...jsonResponse(body),
+          headers: { get: (name) => (name === "x-next-page" ? next : null) },
+        };
+      }
       return jsonResponse(firstPage ? tree : []);
+    }
+
+    const discussion = pathname.match(/\/issues\/(\d+)\/discussions$/);
+    if (discussion)
+      return jsonResponse(firstPage ? discussions[discussion[1]] ?? [] : []);
+
+    if (pathname.endsWith("/issues"))
+      return jsonResponse(firstPage ? issues : []);
+
+    if (pathname.endsWith("/wikis")) {
+      if (wikiStatus !== 200) return errorResponse(wikiStatus, "Unauthorized");
+      return jsonResponse(wikis);
+    }
 
     const raw = pathname.match(/\/repository\/files\/(.+)\/raw$/);
     if (raw) {
@@ -286,6 +339,25 @@ describe("GitLabRepoLoader access token handling", () => {
     requestedHeaders(fetchMock).forEach((headers) =>
       expect(headers).toEqual({ "PRIVATE-TOKEN": "glpat-token" })
     );
+  });
+
+  test("a token whose validation request throws is dropped and the loader stays ready", async () => {
+    const realMock = mockGitlabApi();
+    const impl = realMock.getMockImplementation();
+    realMock.mockImplementation(async (url, options) => {
+      if (new URL(url).pathname === "/api/v4/user")
+        throw new Error("ECONNRESET");
+      return impl(url, options);
+    });
+    jest.spyOn(console, "error").mockImplementation(() => {});
+    const loader = new GitLabRepoLoader({
+      repo: "https://gitlab.example.com/acme/widgets",
+      accessToken: "glpat-token",
+    });
+    await loader.init();
+
+    expect(loader.ready).toBe(true);
+    expect(loader.accessToken).toBeNull();
   });
 
   test("sends no auth header and skips token validation without a PAT", async () => {
@@ -565,5 +637,449 @@ describe("GitLab chunkSource round trip", () => {
     await resyncHandlers.gitlab({ chunkSource }, response);
 
     expect(json).toHaveBeenCalledWith({ success: false, content: null });
+  });
+});
+
+describe("GitLabRepoLoader issues and wikis", () => {
+  const issue = {
+    iid: 7,
+    title: "Widgets fall over",
+    description: "They should not.",
+    web_url: "https://gitlab.example.com/acme/widgets/-/issues/7",
+    state: "opened",
+    author: { username: "alice" },
+  };
+  const discussions = {
+    7: [
+      {
+        notes: [
+          {
+            body: "Reproduced on main.",
+            author: { username: "bob" },
+            created_at: "2024-01-01T00:00:00Z",
+          },
+          {
+            body: "Fix incoming.",
+            author: { username: "alice" },
+            created_at: "2024-01-02T00:00:00Z",
+          },
+        ],
+      },
+    ],
+  };
+
+  test("issues are only requested when fetchIssues is set", async () => {
+    const fetchMock = mockGitlabApi({ issues: [issue], discussions });
+    const loader = new GitLabRepoLoader({
+      repo: "https://gitlab.example.com/acme/widgets",
+      branch: "main",
+    });
+    await loader.init();
+    const docs = await loader.recursiveLoader();
+
+    expect(docs).toEqual([]);
+    expect(
+      requestedUrls(fetchMock).some((url) => url.includes("/issues"))
+    ).toBe(false);
+  });
+
+  test("fetchIssues attaches every discussion note to its issue", async () => {
+    mockGitlabApi({ issues: [issue], discussions });
+    const loader = new GitLabRepoLoader({
+      repo: "https://gitlab.example.com/acme/widgets",
+      branch: "main",
+      fetchIssues: true,
+    });
+    await loader.init();
+    const issues = await loader.fetchIssues();
+
+    expect(issues).toHaveLength(1);
+    expect(issues[0].iid).toBe(7);
+    expect(issues[0].discussions.flat()).toEqual([
+      "bob at 2024-01-01T00:00:00Z:\nReproduced on main.",
+      "alice at 2024-01-02T00:00:00Z:\nFix incoming.",
+    ]);
+  });
+
+  test("recursiveLoader wraps issues with a stable source and the issue web url", async () => {
+    mockGitlabApi({ issues: [issue], discussions });
+    const loader = new GitLabRepoLoader({
+      repo: "https://gitlab.example.com/acme/widgets",
+      branch: "main",
+      fetchIssues: true,
+    });
+    await loader.init();
+    const docs = await loader.recursiveLoader();
+
+    expect(docs).toHaveLength(1);
+    expect(docs[0].pageContent).toBeUndefined();
+    expect(docs[0].issue.iid).toBe(7);
+    expect(docs[0].metadata).toEqual({
+      source: "issue-https://gitlab.example.com/acme/widgets-7",
+      url: "https://gitlab.example.com/acme/widgets/-/issues/7",
+    });
+  });
+
+  test("an issue without discussions yields an empty discussions list", async () => {
+    mockGitlabApi({ issues: [issue] });
+    const loader = new GitLabRepoLoader({
+      repo: "https://gitlab.example.com/acme/widgets",
+      branch: "main",
+      fetchIssues: true,
+    });
+    await loader.init();
+    const issues = await loader.fetchIssues();
+
+    expect(issues[0].discussions).toEqual([]);
+  });
+
+  test("fetchWiki requests page content and recursiveLoader wraps each page by slug", async () => {
+    const fetchMock = mockGitlabApi({
+      wikis: [
+        { slug: "home", title: "Home", format: "markdown", content: "# Home" },
+        { slug: "faq", title: "FAQ", format: "asciidoc", content: "= FAQ" },
+      ],
+    });
+    const loader = new GitLabRepoLoader({
+      repo: "https://gitlab.example.com/acme/widgets",
+      branch: "main",
+      fetchWikis: true,
+    });
+    await loader.init();
+    const docs = await loader.recursiveLoader();
+
+    expect(requestedUrls(fetchMock)).toContain(
+      "https://gitlab.example.com/api/v4/projects/acme%2Fwidgets/wikis?with_content=1&per_page=100&page=1"
+    );
+    expect(docs).toHaveLength(2);
+    expect(docs.map((doc) => doc.metadata)).toEqual([
+      {
+        source: "wiki-https://gitlab.example.com/acme/widgets-home",
+        url: "https://gitlab.example.com/acme/widgets/-/wikis/home",
+      },
+      {
+        source: "wiki-https://gitlab.example.com/acme/widgets-faq",
+        url: "https://gitlab.example.com/acme/widgets/-/wikis/faq",
+      },
+    ]);
+    expect(docs[0].wiki.content).toBe("# Home");
+  });
+
+  test("wikis are only requested when fetchWikis is set", async () => {
+    const fetchMock = mockGitlabApi({ wikis: [{ slug: "home" }] });
+    const loader = new GitLabRepoLoader({
+      repo: "https://gitlab.example.com/acme/widgets",
+      branch: "main",
+    });
+    await loader.init();
+    await loader.recursiveLoader();
+
+    expect(requestedUrls(fetchMock).some((url) => url.includes("/wikis"))).toBe(
+      false
+    );
+  });
+
+  test("a non-array wiki response yields no pages", async () => {
+    mockGitlabApi({ wikis: { message: "wiki disabled" } });
+    jest.spyOn(console, "warn").mockImplementation(() => {});
+    const loader = new GitLabRepoLoader({
+      repo: "https://gitlab.example.com/acme/widgets",
+      branch: "main",
+      fetchWikis: true,
+    });
+    await loader.init();
+
+    await expect(loader.fetchWiki()).resolves.toEqual([]);
+  });
+
+  test("an unauthorized wiki request yields no pages", async () => {
+    mockGitlabApi({ wikiStatus: 401 });
+    jest.spyOn(console, "warn").mockImplementation(() => {});
+    const loader = new GitLabRepoLoader({
+      repo: "https://gitlab.example.com/acme/widgets",
+      branch: "main",
+      fetchWikis: true,
+    });
+    await loader.init();
+
+    await expect(loader.fetchWiki()).resolves.toEqual([]);
+  });
+});
+
+describe("GitLabRepoLoader rate limiting and pagination", () => {
+  beforeEach(() => {
+    jest.spyOn(console, "warn").mockImplementation(() => {});
+  });
+
+  test("a single 429 on a raw file fetch is retried and the content returned", async () => {
+    const fetchMock = mockGitlabApi({
+      files: { "README.md": "# widgets" },
+      rateLimitOnce: ["/repository/files/README.md/raw"],
+    });
+    const loader = new GitLabRepoLoader({
+      repo: "https://gitlab.example.com/acme/widgets",
+      branch: "main",
+    });
+    await loader.init();
+
+    await expect(loader.fetchSingleFileContents("README.md")).resolves.toBe(
+      "# widgets"
+    );
+    expect(
+      requestedUrls(fetchMock).filter((url) => url.includes("/raw"))
+    ).toHaveLength(2);
+  });
+
+  test("a persistent 429 on a raw file fetch gives up after the retry budget and returns null", async () => {
+    const fetchMock = mockGitlabApi({
+      files: { "README.md": "# widgets" },
+      rateLimitAlways: ["/repository/files/README.md/raw"],
+    });
+    const loader = new GitLabRepoLoader({
+      repo: "https://gitlab.example.com/acme/widgets",
+      branch: "main",
+    });
+    await loader.init();
+
+    await expect(
+      loader.fetchSingleFileContents("README.md")
+    ).resolves.toBeNull();
+    // one initial attempt plus MAX_RETRIES
+    expect(
+      requestedUrls(fetchMock).filter((url) => url.includes("/raw"))
+    ).toHaveLength(4);
+  });
+
+  test("a single 429 on a paginated endpoint is retried and the page returned", async () => {
+    const fetchMock = mockGitlabApi({
+      branches: [{ name: "main" }, { name: "develop" }],
+      rateLimitOnce: ["/repository/branches"],
+    });
+    const loader = new GitLabRepoLoader({
+      repo: "https://gitlab.example.com/acme/widgets",
+    });
+    const branches = await loader.getRepoBranches();
+
+    expect(branches.sort()).toEqual(["develop", "main"]);
+    expect(
+      requestedUrls(fetchMock).filter((url) => url.includes("/branches"))
+    ).toHaveLength(2);
+  });
+
+  test("a persistent 429 on a paginated endpoint yields an empty page set", async () => {
+    mockGitlabApi({ rateLimitAlways: ["/repository/branches"] });
+    const loader = new GitLabRepoLoader({
+      repo: "https://gitlab.example.com/acme/widgets",
+    });
+
+    await expect(loader.getRepoBranches()).resolves.toEqual([]);
+  });
+
+  test("an unauthorized paginated request yields an empty page set", async () => {
+    mockGitlabApi({ branchStatus: 401 });
+    const loader = new GitLabRepoLoader({
+      repo: "https://gitlab.example.com/acme/widgets",
+    });
+
+    await expect(loader.getRepoBranches()).resolves.toEqual([]);
+  });
+
+  test("fetchNextPage follows x-next-page until it is empty", async () => {
+    const fetchMock = mockGitlabApi({
+      treePages: [
+        [{ type: "blob", path: "a.md" }],
+        [{ type: "blob", path: "b.md" }],
+      ],
+      files: { "a.md": "A", "b.md": "B" },
+    });
+    const loader = new GitLabRepoLoader({
+      repo: "https://gitlab.example.com/acme/widgets",
+      branch: "main",
+    });
+    await loader.init();
+    const docs = await loader.recursiveLoader();
+
+    expect(docs.map((doc) => doc.metadata.source).sort()).toEqual([
+      "a.md",
+      "b.md",
+    ]);
+    const treeRequests = requestedUrls(fetchMock).filter((url) =>
+      url.includes("/repository/tree")
+    );
+    expect(treeRequests).toHaveLength(2);
+    expect(treeRequests[0]).toContain("page=1");
+    expect(treeRequests[1]).toContain("page=2");
+  });
+
+  test("a request that throws resolves to null instead of propagating", async () => {
+    jest.spyOn(global, "fetch").mockRejectedValue(new Error("ECONNREFUSED"));
+    jest.spyOn(console, "error").mockImplementation(() => {});
+    const loader = new GitLabRepoLoader({
+      repo: "https://gitlab.example.com/acme/widgets",
+      branch: "main",
+    });
+
+    await expect(
+      loader.fetchNextPage({ endpoint: "/api/v4/anything" })
+    ).resolves.toBeNull();
+    await expect(
+      loader.fetchSingleFileContents("README.md")
+    ).resolves.toBeNull();
+  });
+});
+
+describe("fetchGitlabFile", () => {
+  test("returns the file contents for a reachable repo", async () => {
+    mockGitlabApi({ files: { "src/index.js": "console.log('hi');" } });
+
+    await expect(
+      realFetchGitlabFile({
+        repoUrl: "https://gitlab.example.com/acme/widgets",
+        branch: "main",
+        accessToken: "glpat-token",
+        sourceFilePath: "src/index.js",
+      })
+    ).resolves.toEqual({
+      success: true,
+      reason: null,
+      content: "console.log('hi');",
+    });
+  });
+
+  test("fetches over http when given an http repo url", async () => {
+    const fetchMock = mockGitlabApi({ files: { "README.md": "# hello" } });
+
+    const result = await realFetchGitlabFile({
+      repoUrl: "http://gitlab.example.com:8080/acme/widgets",
+      branch: "main",
+      sourceFilePath: "README.md",
+    });
+
+    expect(result.content).toBe("# hello");
+    requestedUrls(fetchMock).forEach((url) =>
+      expect(url.startsWith("http://gitlab.example.com:8080/")).toBe(true)
+    );
+  });
+
+  test("an invalid repo url fails before any request is made", async () => {
+    const fetchMock = mockGitlabApi();
+
+    await expect(
+      realFetchGitlabFile({
+        repoUrl: "not-a-url",
+        branch: "main",
+        sourceFilePath: "README.md",
+      })
+    ).resolves.toEqual({
+      success: false,
+      content: null,
+      reason: "Could not prepare GitLab repo for loading! Check URL or PAT.",
+    });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  test("a missing file reports a null content response", async () => {
+    mockGitlabApi({ files: {} });
+    jest.spyOn(console, "error").mockImplementation(() => {});
+
+    await expect(
+      realFetchGitlabFile({
+        repoUrl: "https://gitlab.example.com/acme/widgets",
+        branch: "main",
+        sourceFilePath: "missing.md",
+      })
+    ).resolves.toEqual({
+      success: false,
+      reason: "Target file returned a null content response.",
+      content: null,
+    });
+  });
+});
+
+describe("issueToMarkdown", () => {
+  const base = {
+    iid: 7,
+    title: "Widgets fall over",
+    description: "They should not.",
+    web_url: "https://gitlab.example.com/acme/widgets/-/issues/7",
+    state: "opened",
+    created_at: "2024-01-01T00:00:00Z",
+    discussions: [],
+  };
+
+  test("renders the title, description and scalar metadata", () => {
+    const markdown = issueToMarkdown(base);
+
+    expect(
+      markdown.startsWith("# Widgets fall over (7)\n\nThey should not.\n")
+    ).toBe(true);
+    expect(markdown).toContain("## Metadata");
+    expect(markdown).toContain(
+      "- web url: https://gitlab.example.com/acme/widgets/-/issues/7"
+    );
+    expect(markdown).toContain("- state: opened");
+    expect(markdown).toContain("- created at: 2024-01-01T00:00:00Z");
+    expect(markdown).not.toContain("## Activity");
+  });
+
+  test("user fields collapse to usernames, arrays as nested lists", () => {
+    const markdown = issueToMarkdown({
+      ...base,
+      author: { username: "alice", name: "Alice" },
+      assignees: [{ username: "bob" }, { username: "carol" }],
+      closed_by: { username: "dave" },
+    });
+
+    expect(markdown).toContain("- author: alice");
+    expect(markdown).toContain("- assignees:\n  - bob\n  - carol");
+    expect(markdown).toContain("- closed by: dave");
+    expect(markdown).not.toContain("Alice");
+  });
+
+  test("absent, null and empty metadata values are omitted", () => {
+    const markdown = issueToMarkdown({
+      ...base,
+      closed_at: null,
+      due_date: undefined,
+      labels: [],
+      assignees: [],
+    });
+
+    expect(markdown).not.toContain("closed at");
+    expect(markdown).not.toContain("due date");
+    expect(markdown).not.toContain("labels");
+    expect(markdown).not.toContain("assignees");
+  });
+
+  test("milestone and human time stats are included when present", () => {
+    const markdown = issueToMarkdown({
+      ...base,
+      milestone: { id: 3, title: "v1.0" },
+      time_stats: {
+        time_estimate: 3600,
+        total_time_spent: 1800,
+        human_time_estimate: "1h",
+        human_total_time_spent: "30m",
+      },
+    });
+
+    expect(markdown).toContain("- milestone: v1.0 (3)");
+    expect(markdown).toContain("- time estimate: 1h");
+    expect(markdown).toContain("- total time_spent: 30m");
+    expect(markdown).not.toContain("3600");
+  });
+
+  test("discussions are rendered under an Activity heading", () => {
+    const markdown = issueToMarkdown({
+      ...base,
+      discussions: [
+        "bob at 2024-01-01T00:00:00Z:\nReproduced on main.",
+        "alice at 2024-01-02T00:00:00Z:\nFix incoming.",
+      ],
+    });
+
+    expect(markdown).toContain(
+      "## Activity\n\nbob at 2024-01-01T00:00:00Z:\nReproduced on main.\n\nalice at 2024-01-02T00:00:00Z:\nFix incoming."
+    );
   });
 });
