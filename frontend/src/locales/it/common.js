@@ -94,8 +94,7 @@ const TRANSLATIONS = {
     "experimental-features": "Caratteristiche sperimentali",
     contact: "Contatta il Supporto",
     "browser-extension": "Estensione del browser",
-    "system-prompt-variables":
-      "Variabili del prompt di sistema",
+    "system-prompt-variables": "Variabili del prompt di sistema",
     interface: "Preferenze dell'interfaccia utente",
     branding: "Branding e personalizzazione",
     chat: "Chat",
