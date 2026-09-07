@@ -1,5 +1,6 @@
 const { Document } = require("../models/documents.js");
 const { DocumentSyncQueue } = require("../models/documentSyncQueue.js");
+const { DocumentVectors } = require("../models/vectors.js");
 const { CollectorApi } = require("../utils/collectorApi");
 const { fileData } = require("../utils/files");
 const { log, conclude, updateSourceDocument } = require("./helpers/index.js");
@@ -132,6 +133,9 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
         workspace.slug,
         document.docId
       );
+      // Lance and PGVector do not remove document_vectors rows on delete, so clear them here
+      // or every refresh leaves a stale set of rows behind for this docId.
+      await DocumentVectors.delete({ docId: document.docId });
       await vectorDatabase.addDocumentToNamespace(
         workspace.slug,
         {
@@ -178,6 +182,7 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
             additionalWorkspace.slug,
             additionalDocumentRef.docId
           );
+          await DocumentVectors.delete({ docId: additionalDocumentRef.docId });
           await vectorDatabase.addDocumentToNamespace(
             additionalWorkspace.slug,
             {
