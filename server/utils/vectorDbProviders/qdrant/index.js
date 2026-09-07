@@ -25,6 +25,10 @@ class QDrant extends VectorDatabase {
       ...(process.env.QDRANT_API_KEY
         ? { apiKey: process.env.QDRANT_API_KEY }
         : {}),
+      // The client fires an extra `GET /` version probe on construction and
+      // warns when the server is more than one minor version away. We create a
+      // client per request, so skip it to avoid the noise and the extra call.
+      checkCompatibility: false,
     });
 
     const isAlive = (await client.api("cluster")?.clusterStatus())?.ok || false;
