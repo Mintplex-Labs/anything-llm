@@ -1,5 +1,6 @@
 import { formatDateTimeAsMoment } from "@/utils/directories";
 import { formatDuration, numberWithCommas } from "@/utils/numbers";
+import formatTokenUsage from "@/utils/chat/formatTokenUsage";
 import React, { useEffect, useState, useContext } from "react";
 import { isMobile } from "react-device-detect";
 const MetricsContext = React.createContext();
@@ -30,17 +31,18 @@ function getAutoShowMetrics() {
 }
 
 /**
- * Build the metrics string for a given metrics object
- * - Model name
- * - Duration and output TPS
- * - Timestamp
- * @param {metrics: {duration:number, outputTps: number, model?: string, timestamp?: number}} metrics
+ * Build the metrics string for a given metrics object.
+ * @param {Object} metrics
+ * @param {string} tokenUsage
  * @returns {string}
  */
-function buildMetricsString(metrics = {}) {
+function buildMetricsString(metrics = {}, tokenUsage = "") {
   return [
     metrics?.model ? metrics.model : "",
-    `${formatDuration(metrics.duration)} (${formatTps(metrics.outputTps)} tok/s)`,
+    metrics?.duration && metrics?.outputTps
+      ? `${formatDuration(metrics.duration)} (${formatTps(metrics.outputTps)} tok/s)`
+      : "",
+    tokenUsage,
     metrics?.timestamp
       ? formatDateTimeAsMoment(metrics.timestamp, "MMM D, h:mm A")
       : "",
@@ -103,7 +105,12 @@ export default function RenderMetrics({ metrics = {} }) {
   // Inherit the showMetricsAutomatically state from the MetricsProvider so the state is shared across all chats
   const { showMetricsAutomatically, setShowMetricsAutomatically } =
     useContext(MetricsContext);
-  if (!metrics?.duration || !metrics?.outputTps || isMobile) return null;
+  const tokenUsage = formatTokenUsage(metrics);
+  const hasPerformanceMetrics = Boolean(
+    metrics?.duration && metrics?.outputTps
+  );
+
+  if (isMobile || (!hasPerformanceMetrics && !tokenUsage)) return null;
 
   return (
     <button
@@ -118,7 +125,7 @@ export default function RenderMetrics({ metrics = {} }) {
       className={`border-none flex md:justify-end items-center gap-x-[8px] -ml-7 ${showMetricsAutomatically ? "opacity-100" : "opacity-0"} md:group-hover:opacity-100 transition-all duration-300`}
     >
       <p className="cursor-pointer text-xs font-mono text-zinc-400 light:text-slate-500">
-        {buildMetricsString(metrics)}
+        {buildMetricsString(metrics, tokenUsage)}
       </p>
     </button>
   );
