@@ -14,7 +14,7 @@ import PerplexitySearchIcon from "./icons/perplexity.png";
 import BraveSearchIcon from "./icons/brave.png";
 import CrwSearchIcon from "./icons/crw.png";
 import YouSearchIcon from "./icons/you.png";
-import KeenableSearchIcon from "./icons/keenable.svg";
+import KeenableSearchIcon from "./icons/keenable.png";
 import {
   CaretUpDown,
   MagnifyingGlass,
