@@ -195,10 +195,36 @@ function handleAudioUpload(request, response, next) {
   });
 }
 
+/**
+ * Handle in-memory image upload for image generation/editing. Buffers are
+ * passed directly to the image generation provider, never persisted to disk.
+ */
+function handleImageGenUpload(request, response, next) {
+  const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 25 * 1024 * 1024 },
+    fileFilter: (_req, file, cb) => {
+      if (!file.mimetype?.startsWith("image/"))
+        return cb(new Error("Only image uploads are allowed."));
+      cb(null, true);
+    },
+  }).array("image_references", 10);
+  upload(request, response, function (err) {
+    if (err) {
+      return response.status(500).json({
+        success: false,
+        error: `Invalid image upload. ${err.message}`,
+      });
+    }
+    next();
+  });
+}
+
 module.exports = {
   handleFileUpload,
   handleAPIFileUpload,
   handleAssetUpload,
   handlePfpUpload,
   handleAudioUpload,
+  handleImageGenUpload,
 };

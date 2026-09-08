@@ -24,6 +24,7 @@ export default function handleChat(
     action = null,
     metrics = {},
     routedTo = null,
+    outputs = null,
   } = chatResult;
 
   if (type === "modelRouteNotification") {
@@ -37,11 +38,38 @@ export default function handleChat(
     return;
   }
 
+  if (type === "imageGenerationPending") {
+    const pendingMsg = {
+      type: "imageGenerationPending",
+      uuid,
+      content: "",
+      role: "assistant",
+      sources: [],
+      closed: false,
+      error: null,
+      animate: false,
+      pending: true,
+    };
+    setChatHistory([...remHistory, pendingMsg]);
+    _chatHistory.push(pendingMsg);
+    return;
+  }
+
   if (type === "abort" || type === "statusResponse") {
     // Once an agent session is live, the websocket handlers in ChatContainer
     // own the loading state - the statusResponse that closes the HTTP stream
     // ("Swapping over to agent chat") must not hide the stop button.
     if (type === "abort" || !getAgentSessionActive()) setLoadingResponse(false);
+
+    // The "@agent: Swapping over to agent chat..." handoff notice is stream
+    // plumbing, not conversation. It is never persisted, so it already
+    // vanishes on reload - keep it out of the live history too so it does not
+    // seed the agent's status bubble. History is left untouched so the pending
+    // placeholder keeps the loading dots up until the agent's first websocket
+    // event, which drops content-less messages itself.
+    if (type === "statusResponse" && textResponse?.startsWith("@agent:"))
+      return;
+
     setChatHistory([
       ...remHistory,
       {
@@ -84,6 +112,7 @@ export default function handleChat(
         pending: false,
         chatId,
         metrics,
+        ...(outputs ? { outputs } : {}),
       },
     ]);
     _chatHistory.push({
@@ -97,6 +126,7 @@ export default function handleChat(
       pending: false,
       chatId,
       metrics,
+      ...(outputs ? { outputs } : {}),
     });
     emitAssistantMessageCompleteEvent(chatId);
   } else if (

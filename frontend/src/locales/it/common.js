@@ -94,8 +94,7 @@ const TRANSLATIONS = {
     "experimental-features": "Caratteristiche sperimentali",
     contact: "Contatta il Supporto",
     "browser-extension": "Estensione del browser",
-    "system-prompt-variables":
-      "Variabili delle variabili del sistema\n\nVariabili delle variabili del sistema",
+    "system-prompt-variables": "Variabili del prompt di sistema",
     interface: "Preferenze dell'interfaccia utente",
     branding: "Branding e personalizzazione",
     chat: "Chat",
@@ -111,7 +110,8 @@ const TRANSLATIONS = {
       telegram: "Telegram",
     },
     "scheduled-jobs": "Lavori pianificati",
-    "model-router": "Router di esempio",
+    "model-router": "Router dei modelli",
+    "image-generation": "Generazione di immagini",
   },
   login: {
     "multi-user": {
@@ -203,7 +203,7 @@ const TRANSLATIONS = {
       },
     },
     history: {
-      title: "Chat History",
+      title: "Cronologia della chat",
       "desc-start":
         "Numero di chat precedenti che verranno incluse nella memoria a breve termine della risposta.",
       recommend: "Recommend 20. ",
@@ -343,7 +343,7 @@ const TRANSLATIONS = {
             description: "Apri e leggi più file contemporaneamente.",
           },
           "list-directory": {
-            title: "Elenco di contatti",
+            title: "Elenca contenuto della cartella",
             description:
               "Elenca i file e le directory all'interno di una cartella.",
           },
@@ -505,7 +505,7 @@ const TRANSLATIONS = {
               "Rispondere immediatamente a una conversazione via email.",
           },
           markRead: {
-            title: "Mark Read",
+            title: "Segna come letto",
             description: "Segna un thread come letto",
           },
           markUnread: {
@@ -554,7 +554,7 @@ const TRANSLATIONS = {
         clientId: "ID del cliente (richiesta)",
         clientIdHelp:
           "L'ID dell'applicazione (Client ID) dal registro della tua app in Azure AD.",
-        tenantId: "ID del locatore",
+        tenantId: "ID directory (tenant)",
         tenantIdHelp:
           "L'ID del \"Tenant\" (inquilino) dal registro della tua applicazione Azure AD. È necessario solo per l'autenticazione all'interno di un'organizzazione.",
         clientSecret: "Chiave segreta del cliente",
@@ -733,6 +733,11 @@ const TRANSLATIONS = {
         title: "Creare attività programmate",
         description:
           'Permetti all\'agente di creare attività ricorrenti programmate direttamente dalla chat (ad esempio, "ogni giorno feriale alle 9 del mattino, riassumi la mia casella di posta elettronica e inviami una copia"). Disponibile solo in modalità per singolo utente.',
+      },
+      generateImage: {
+        title: "Generare immagini",
+        description:
+          "Permetti all'agente di generare immagini a partire dalla conversazione, oppure di modificare le immagini allegate alla conversazione, utilizzando il fornitore di generazione di immagini configurato.",
       },
     },
     mcp: {
@@ -1145,6 +1150,32 @@ const TRANSLATIONS = {
       vault_warning:
         "Per evitare qualsiasi conflitto, assicurarsi che la cartella Obsidian non sia attualmente aperta.",
     },
+    gitea: {
+      name: "Repository di Gitea",
+      description:
+        "Importare un intero repository pubblico o privato da qualsiasi istanza di Gitea con un singolo clic.",
+      URL: "URL del repository di Gitea",
+      URL_explained:
+        "URL del repository che desideri raccogliere sulla tua istanza di Gitea – sono supportate anche le istanze ospitate da te.",
+      token: "Token di accesso a Gitea",
+      optional: "facoltativo",
+      token_explained:
+        "È necessario un token di accesso per accedere a repository privati o a repository presenti su istanze che richiedono l'autenticazione.",
+      token_explained_start: "Senza",
+      token_explained_link1: "Token di accesso",
+      token_explained_end:
+        "Solo i repository che la tua istanza di Gitea rende accessibili pubblicamente possono essere raccolti.",
+      ignores: "Il file viene ignorato",
+      git_ignore:
+        'Crea un file nel formato ".gitignore" per escludere file specifici durante la raccolta. Premi Invio dopo ogni voce che desideri salvare.',
+      task_explained:
+        "Una volta completata la procedura, tutti i file saranno disponibili per essere incorporati negli spazi di lavoro tramite l'utilità di selezione documenti.",
+      branch: "Ramo da cui desideri recuperare i file.",
+      branch_loading: "– Caricamento dei rami disponibili –",
+      branch_explained: "Ramo da cui desideri recuperare i file.",
+      token_information:
+        "Senza inserire il token di accesso <b>Gitea</b>, questo connettore dati sarà in grado di raccogliere file solo da repository che sono <b>accessibili pubblicamente</b> nella tua istanza di Gitea.",
+    },
   },
   chat_window: {
     send_message: "Invia un messaggio",
@@ -1296,6 +1327,19 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Errore di trascrizione: {{error}}",
     export: "Esporta la conversazione come...",
     exporting: "Esportazione...",
+    preset_img_description: "Genera un'immagine a partire da un testo",
+    generating_response: "Generare una risposta",
+    response_failed: "Non è stato possibile rispondere al messaggio.",
+    response_failed_reason: "Motivo: {{reason}}",
+    thought_in_progress: "Il modello sta riflettendo…",
+    thoughts: "Pensieri",
+    leave_generating: {
+      title: "Arresto della generazione di risposte?",
+      description:
+        "State per uscire da questa conversazione; questo impedirà al modello di generare una risposta e non sarà più possibile recuperarla.",
+      cancel: "Annulla",
+      confirm: "Continua",
+    },
   },
   profile_settings: {
     edit_account: "Modifica account",
@@ -1967,9 +2011,27 @@ const TRANSLATIONS = {
     chat: {
       "select-router-error": "Seleziona un router",
       "invalid-model": "Selezione del modello non valida",
-      "routed-to": "Inviato a {{model}}<route>__PLACEHOLDER_1__",
+      "routed-to": "Inviato a <route>{{model}}</route>",
       "routed-to-rule":
         "Instradato tramite <route>{{model}}</route> seguendo il percorso <rule>{{ruleTitle}}</rule>",
+    },
+  },
+  imageGeneration: {
+    title: "Preferenze per la generazione di immagini",
+    description:
+      "Configura il fornitore utilizzato per generare le immagini tramite il comando `/img`.",
+    provider: "Fornitore di servizi di generazione di immagini",
+    card: {
+      "failed-to-load": "Immagine non caricata",
+      "alt-text": "Immagine generata",
+      edit: "Modifica",
+      download: "Scarica",
+    },
+    pending: {
+      heading: "Creazione dell'immagine...",
+      description:
+        "Questo potrebbe richiedere un po' di tempo. Apparirà qui non appena sarà disponibile.",
+      aborted: "La generazione dell'immagine è stata interrotta.",
     },
   },
 };

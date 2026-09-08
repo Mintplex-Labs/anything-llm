@@ -110,6 +110,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Planeeritud tööd",
     "model-router": "Mudel: reiting",
+    "image-generation": "Pildi genereerimine",
   },
   login: {
     "multi-user": {
@@ -197,7 +198,7 @@ const TRANSLATIONS = {
       query: {
         title: "Päring",
         description:
-          'teenib vastuseid <b> ainult__, kui dokumendi kontekst on leitav.</b> Vajate kasutama käitu "@agent", et kasutada tööriime.',
+          'teenib vastuseid <b> ainult, kui dokumendi kontekst on leitav.</b> Vajate kasutama käitu "@agent", et kasutada tööriime.',
       },
       automatic: {
         description:
@@ -710,6 +711,11 @@ const TRANSLATIONS = {
         description:
           'Lase esindajal luua korduvad, planeeritud ülesanded vestluse kaudu (nt " iga tööpäeva kell 9 kokkuvõta minu postkasti ja saada mulle e-posti"). Saadav ainult ühe kasutaja režiimis.',
       },
+      generateImage: {
+        title: "Loo pildid",
+        description:
+          "Lase esindajal luua pilte vestluse põhjal või muuta dialoogi külge lisatud pilte, kasutades teie konfigureeritud piltide genereerimisteenust.",
+      },
     },
     mcp: {
       title: "MCP-serverid",
@@ -1193,6 +1199,32 @@ const TRANSLATIONS = {
       watch_explained_block3_end: " vaates.",
       accept: "Selge",
     },
+    gitea: {
+      name: "Git repo",
+      description:
+        "Impordige kogu avalik või privaatne Git-repositoor ühe klikiga mis tahes Gitea instantsist.",
+      URL: "Gitea repositooriumi URL",
+      URL_explained:
+        "Repo URL, mida soovite koguda oma Gitea instantsis – toetatakse ka isehoosutatud instansse.",
+      token: "Gitea juurdepääsu token",
+      optional: "valikuline",
+      token_explained:
+        "Avalik juurdepääs nõutakse, et saaksite koguda privaatseid veebikeskusi või veebikeskuseid, mis vajavad autentimist.",
+      token_explained_start: "Ilgata",
+      token_explained_link1: "Ligipääsitoimetunnus",
+      token_explained_end:
+        "Aga ainult need veebipõhised repositorid, mida teie Gitea instants avaldab, saab koguda.",
+      ignores: "Fail ignoreeritakse",
+      git_ignore:
+        "Loole .gitignore formaadis, et eitada konkreetseid failide kogumisel. Vajutage enter pärast iga faili, mida soovite säilitada.",
+      task_explained:
+        "Kui kõik failid on valmis, siis need on saadaval dokumendivaliku funktsiooni kaudu töövälade integreerimiseks.",
+      branch: "See osa, kust soovite failide hankida.",
+      branch_loading: "– saadaval olevate versioonide laadimine –",
+      branch_explained: "See osa, kust soovite failide hankida.",
+      token_information:
+        "Kui <b>Gitea andmeühenduse avatuse võti</b> pole täidetud, siis see andmekoguri võib saada failid ainult neist repositoriumidest, mis on <b>avalikult loetavad</b> teie Gitea instantsis.",
+    },
   },
   chat_window: {
     attachments_processing: "Manused töötlevad. Palun oota…",
@@ -1330,6 +1362,19 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Transkribeerimine ebaõnnestunud: {{error}}",
     export: "Экспорти руй чат kui...",
     exporting: "Экспорт",
+    preset_img_description: "Loo pilt tekstist antud juhiste põhjal",
+    generating_response: "Vastus genereerimine",
+    response_failed: "Ei olnud võimalik vastata teatele.",
+    response_failed_reason: "põhjus: {{reason}}",
+    thought_in_progress: "Mudel mõtleb…",
+    thoughts: "Mõtisklused",
+    leave_generating: {
+      title: "Kas soovite peatada vastuste genereerimise?",
+      description:
+        "Te olete valmis loobuma sellest vestlusest, see peatab mudeli vastuste genereerimise ja seda ei saa enam taastada.",
+      cancel: "Katkuda",
+      confirm: "Jätka",
+    },
   },
   profile_settings: {
     edit_account: "Muuda kontot",
@@ -1878,6 +1923,24 @@ const TRANSLATIONS = {
       "routed-to": "Saadetakse <route>{{model}}</route>",
       "routed-to-rule":
         "Saadetakse <route>{{model}}</route> kaudu <rule>{{ruleTitle}}</rule>",
+    },
+  },
+  imageGeneration: {
+    title: "Pildi genereerimise eelistused",
+    description:
+      "Konfigureerige pakkuja, mida kasutatakse piltide genereerimiseks käsku `/img` kaudu.",
+    provider: "Pildide genereerimise teenuse pakkuja",
+    card: {
+      "failed-to-load": "Pildi laadimisel tekkis probleem.",
+      "alt-text": "Sünnitatud pilt",
+      edit: "Redigeerimine",
+      download: "Lae alla",
+    },
+    pending: {
+      heading: "Sinu pildi genereerimine…",
+      description:
+        "See võib võtta natuke aega. See ilmub siia, niipea kui see on valmis.",
+      aborted: "Pildi genereerimine katkestati.",
     },
   },
 };

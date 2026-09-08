@@ -149,7 +149,7 @@ export default function GitlabOptions() {
               />
             </div>
 
-            <div className="flex flex-col w-full py-4 pr-10">
+            <div className="flex flex-col w-full py-4 pr-10 [&_.rti--container]:!bg-theme-settings-input-bg light:[&_.rti--container]:!bg-theme-settings-input-bg [&_.rti--container]:!border-transparent light:[&_.rti--container]:!border-transparent [&_.rti--container]:focus-within:!border-sky-500 light:[&_.rti--container]:focus-within:!border-sky-500">
               <div className="flex flex-col gap-y-1 mb-4">
                 <label className="text-white text-sm flex gap-x-2 items-center">
                   <p className="text-white text-sm font-bold">
@@ -166,9 +166,9 @@ export default function GitlabOptions() {
                 name="ignores"
                 placeholder="!*.js, images/*, .DS_Store, bin/*"
                 classNames={{
-                  tag: "bg-theme-settings-input-bg light:bg-black/10 bg-blue-300/10 text-zinc-800",
+                  tag: "!bg-zinc-700 light:!bg-slate-200 !text-zinc-100 light:!text-slate-800",
                   input:
-                    "flex p-1 !bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none",
+                    "flex !bg-transparent text-zinc-100 light:text-slate-900 placeholder:text-zinc-400 light:placeholder:text-slate-400 text-sm outline-none",
                 }}
               />
             </div>

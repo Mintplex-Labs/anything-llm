@@ -46,11 +46,16 @@ async function executeApiCall(config, context) {
     }
 
     introspect(`API call completed`);
-    return await response
-      .text()
-      .then((text) =>
-        safeJsonParse(text, "Failed to parse output from API call block")
-      );
+    const responseText = await response.text();
+    try {
+      // JSON bodies parse into values; anything else (plain text, HTML,
+      // empty bodies) is passed through verbatim. We intentionally avoid
+      // safeJsonParse here so non-JSON bodies are never "repaired" into
+      // invented JSON or reduced to an embedded JSON substring.
+      return JSON.parse(responseText);
+    } catch {
+      return responseText;
+    }
   } catch (error) {
     console.error(error);
     throw new Error(`API Call failed: ${error.message}`);

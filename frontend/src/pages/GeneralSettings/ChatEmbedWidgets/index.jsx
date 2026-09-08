@@ -65,7 +65,7 @@ export default function ChatEmbedWidgets() {
 
   return (
     <WidgetLayout>
-      <div className="flex-1 flex gap-x-6 p-4 mt-10">
+      <div className="flex-1 flex gap-x-6 p-4 mt-10 min-w-0">
         <div className="flex flex-col min-w-[360px] h-[calc(100vh-90px)]">
           <div className="flex-none mb-4">
             <div className="text-theme-text-primary flex items-center gap-x-2">
@@ -82,7 +82,7 @@ export default function ChatEmbedWidgets() {
             </div>
           </div>
         </div>
-        <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
+        <div className="flex-[2] flex flex-col gap-y-[18px] mt-10 min-w-0">
           <div className="bg-theme-bg-secondary text-white rounded-xl flex-1 p-4 overflow-y-scroll no-scroll">
             {selectedView === "configs" ? (
               <EmbedConfigsView />
@@ -105,7 +105,7 @@ function WidgetLayout({ children }) {
       <Sidebar />
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] w-full h-full flex"
+        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] w-full h-full flex min-w-0"
       >
         {children}
       </div>

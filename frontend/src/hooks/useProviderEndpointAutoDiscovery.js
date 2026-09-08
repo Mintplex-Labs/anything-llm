@@ -6,6 +6,7 @@ export default function useProviderEndpointAutoDiscovery({
   initialBasePath = "",
   initialAuthToken = null,
   ENDPOINTS = [],
+  normalizeBasePath = (value) => value,
 }) {
   const [loading, setLoading] = useState(false);
   const [basePath, setBasePath] = useState(initialBasePath);
@@ -65,8 +66,12 @@ export default function useProviderEndpointAutoDiscovery({
     setBasePathValue(value);
   }
 
+  // Normalization (if any) is only applied on blur - never while the user is typing
+  // otherwise the input value is rewritten on every keystroke.
   function handleBasePathBlur() {
-    setBasePath(basePathValue);
+    const normalized = normalizeBasePath(basePathValue);
+    setBasePathValue(normalized);
+    setBasePath(normalized);
   }
 
   function handleAuthTokenChange(e) {

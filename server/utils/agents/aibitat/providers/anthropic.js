@@ -431,11 +431,11 @@ class AnthropicProvider extends Provider {
         // wtf.
         let thought = response.content.find((res) => res.type === "text");
         thought =
-          thought?.content?.length > 0
+          thought?.text?.length > 0
             ? {
-                role: thought.role,
+                role: "assistant",
                 content: [
-                  { type: "text", text: thought.content },
+                  { type: "text", text: thought.text },
                   { ...toolCall },
                 ],
               }

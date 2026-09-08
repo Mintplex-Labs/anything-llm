@@ -118,6 +118,7 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
+    "image-generation": "Generiranje slika",
   },
   login: {
     "multi-user": {
@@ -730,6 +731,11 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Prema zadanim postavkama ova vještina je omogućena, ali je možete isključiti ako ne želite da bude dostupna agentu.",
+      generateImage: {
+        title: "Generiranje slika",
+        description:
+          "Omogućite agentu da generira slike iz razgovora ili da uređuje slike priložene razgovoru, koristeći vaš konfiguriranog pružatelja usluga za generiranje slika.",
+      },
     },
     mcp: {
       title: "MCP poslužitelji",
@@ -1496,6 +1502,32 @@ const TRANSLATIONS = {
       watch_explained_block3_end: " u administratorskom pregledu.",
       accept: "U redu, razumijem",
     },
+    gitea: {
+      name: "Repo Gitea",
+      description:
+        "Uvoz cijelog javnog ili privatnog repozitorija iz bilo koje instancije Gitea u samo jednom kliku.",
+      URL: "URL repozitorija Gitea",
+      URL_explained:
+        "URL repozitorija koje želite preuzeti na vašoj instanci Gitea – podržane su i samostalno hostovane instance.",
+      token: "Token za pristup Gitei",
+      optional: "opcionalno",
+      token_explained:
+        "Za pristup privatnim repozitorijima ili repozitorijima na serverima koji zahtijevaju autentifikaciju, je potreban token.",
+      token_explained_start: "Bez",
+      token_explained_link1: "Token za pristup",
+      token_explained_end:
+        "Samo repozitoriji koje vaše Gitea instancje objavljuju javno mogu biti prikupljeni.",
+      ignores: "Datoteka zanemaruje",
+      git_ignore:
+        'Kreirajte datoteku u formatu ".gitignore" kako biste isključili određene datoteke tijekom kopiranja. Pritisnite Enter nakon svake stavke koju želite sačuvati.',
+      task_explained:
+        "Nakon dovršetka, svi se datoteci bit će dostupni za umetanje u radne prostore putem izbornika dokumenata.",
+      branch: "Odjel/račun s kojim želite preuzeti datoteke.",
+      branch_loading: "– učitavanje dostupnih grana –",
+      branch_explained: "Odjel/račun s kojim želite preuzeti datoteke.",
+      token_information:
+        "Bez unosa <b>Token za pristup Gitei</b>, ovaj konektor neće moći prikupljati datove samo iz repozitorija koja su <b>otvorena za čitanje</b> na vašoj instanci Gitea.",
+    },
   },
   chat_window: {
     attachments_processing: "Privitci se obrađuju. Pričekajte...",
@@ -1636,6 +1668,19 @@ const TRANSLATIONS = {
         save: "Spremi",
         cancel: "Odustani",
       },
+    },
+    preset_img_description: "Generiraj sliku na temelju tekstualnog uputa.",
+    generating_response: "Generiranje odgovora",
+    response_failed: "Nije moguće odgovoriti na poruku.",
+    response_failed_reason: "Razlog: {{reason}}",
+    thought_in_progress: "Model razmišlja...",
+    thoughts: "Razmišljanja",
+    leave_generating: {
+      title: "Zaustaviti generiranje odgovora?",
+      description:
+        "O trenutno napuštate ovu razgovornu sesiju. To će zaustaviti generiranje odgovora i ne postoji mogućnost da se to vrati.",
+      cancel: "Otkazati",
+      confirm: "Nastavite",
     },
   },
   profile_settings: {
@@ -1917,6 +1962,24 @@ const TRANSLATIONS = {
         spreadsheet: "Proračunska tablica",
         generic: "Datoteka",
       },
+    },
+  },
+  imageGeneration: {
+    title: "Preferirani način generiranja slike",
+    description:
+      "Konfigurirajte pružatelja koji se koristi za generiranje slika iz naredbe `/img`.",
+    provider: "Pružatelj usluga generiranja slika",
+    card: {
+      "failed-to-load": "Slika nije uspjela se učitati.",
+      "alt-text": "Generirana slika",
+      edit: "Uredi",
+      download: "Preuzmi",
+    },
+    pending: {
+      heading: "Generiranje vaše slike…",
+      description:
+        "To može potrajati neko vrijeme. Bit će dostupno ovdje čim bude spremno.",
+      aborted: "Generiranje slike je prekinuto.",
     },
   },
 };

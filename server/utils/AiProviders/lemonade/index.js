@@ -393,18 +393,25 @@ function parseLemonadeServerEndpoint(basePath = null, to = "openai") {
  * This function will fetch the remote models from the Lemonade server as well
  * as the local models installed on the system.
  * @param {string} basePath - The base path of the Lemonade server endpoint.
- * @param {'chat' | 'embedding' | 'reranking' | 'transcription' | 'all'} task - The task to fetch the models for.
+ * @param {'chat' | 'embedding' | 'reranking' | 'transcription' | 'image' | 'all'} task - The task to fetch the models for.
+ * @param {string|null} apiKey - The API key to use for the request. Defaults to the LLM api key when not provided.
  */
-async function getAllLemonadeModels(basePath = null, task = "chat") {
+async function getAllLemonadeModels(
+  basePath = null,
+  task = "chat",
+  apiKey = null
+) {
   const availableModels = {};
+  const _apiKey = apiKey || process.env.LEMONADE_LLM_API_KEY || null;
 
   function isValidForTask(model) {
     if (task === "reranking") return model.labels?.includes("reranking");
     if (task === "embedding") return model.labels?.includes("embeddings");
     if (task === "transcription")
       return model.labels?.includes("transcription");
+    if (task === "image") return model.labels?.includes("image");
     if (task === "chat")
-      return !["embeddings", "reranking"].some((label) =>
+      return !["embeddings", "reranking", "image"].some((label) =>
         model.labels?.includes(label)
       );
     return true;
@@ -423,9 +430,7 @@ async function getAllLemonadeModels(basePath = null, task = "chat") {
 
     await fetch(lemonadeUrl.toString(), {
       headers: {
-        ...(!!process.env.LEMONADE_LLM_API_KEY
-          ? { Authorization: `Bearer ${process.env.LEMONADE_LLM_API_KEY}` }
-          : {}),
+        ...(!!_apiKey ? { Authorization: `Bearer ${_apiKey}` } : {}),
       },
     })
       .then((res) => res.json())

@@ -1,3 +1,4 @@
+import moment from "moment";
 import { useRef, useState } from "react";
 import BrowserExtensionApiKey from "@/models/browserExtensionApiKey";
 import showToast from "@/utils/toast";
@@ -93,9 +94,7 @@ export default function BrowserExtensionApiKeyRow({
           {apiKey.user ? apiKey.user.username : "N/A"}
         </td>
       )}
-      <td className="px-6 py-2">
-        {new Date(apiKey.createdAt).toLocaleString()}
-      </td>
+      <td className="px-6 py-2">{moment(apiKey.createdAt).format("lll")}</td>
       <td className="px-6 py-2">
         <button
           onClick={handleRevoke}

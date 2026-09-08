@@ -28,13 +28,14 @@ const CometApiProvider = require("./cometapi.js");
 const FoundryProvider = require("./foundry.js");
 const GiteeAIProvider = require("./giteeai.js");
 const CohereProvider = require("./cohere.js");
-const DockerModelRunnerProvider = require("./dockerModelRunner.js");
+const LlmmanProvider = require("./llmman.js");
 const PrivatemodeProvider = require("./privatemode.js");
 const SambaNovaProvider = require("./sambanova.js");
 const LemonadeProvider = require("./lemonade.js");
 const OMLXProvider = require("./omlx.js");
 const MinimaxProvider = require("./minimax.js");
 const CerebrasProvider = require("./cerebras.js");
+const VertexProvider = require("./vertex.js");
 
 module.exports = {
   OpenAIProvider,
@@ -67,11 +68,12 @@ module.exports = {
   FoundryProvider,
   GiteeAIProvider,
   CohereProvider,
-  DockerModelRunnerProvider,
+  LlmmanProvider,
   PrivatemodeProvider,
   SambaNovaProvider,
   LemonadeProvider,
   OMLXProvider,
   MinimaxProvider,
   CerebrasProvider,
+  VertexProvider,
 };

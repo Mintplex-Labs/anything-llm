@@ -131,6 +131,9 @@ export function DnDFileUploaderProvider({
               name: attachment.file.name,
               mime: attachment.file.type,
               contentString: attachment.contentString,
+              ...(attachment.storageFilename && {
+                storageFilename: attachment.storageFilename,
+              }),
             };
           }
         ) || []
@@ -142,7 +145,7 @@ export function DnDFileUploaderProvider({
    * @param {CustomEvent<{files: File[]}>} event
    */
   async function handlePastedAttachment(event) {
-    const { files = [] } = event.detail;
+    const { files = [], storageFilename = null } = event.detail;
     if (!files.length) return;
     const newAccepted = [];
     for (const file of files) {
@@ -154,6 +157,7 @@ export function DnDFileUploaderProvider({
           status: "success",
           error: null,
           type: "attachment",
+          ...(storageFilename && { storageFilename }),
         });
       } else {
         newAccepted.push({

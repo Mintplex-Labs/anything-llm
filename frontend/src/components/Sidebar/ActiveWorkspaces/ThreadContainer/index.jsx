@@ -4,14 +4,16 @@ import showToast from "@/utils/toast";
 import { Plus, CircleNotch, Trash } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import ThreadItem from "./ThreadItem";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import useHoverMetaKey from "./hooks";
 export const THREAD_RENAME_EVENT = "renameThread";
+export const THREAD_FORK_EVENT = "forkToThread";
 
 export default function ThreadContainer({
   workspace,
   isVirtualThread = false,
 }) {
+  const navigate = useNavigate();
   const { threadSlug = null } = useParams();
   const [threads, setThreads] = useState([]);
   const [defaultThreadHasChats, setDefaultThreadHasChats] = useState(false);
@@ -37,6 +39,24 @@ export default function ThreadContainer({
       window.removeEventListener(THREAD_RENAME_EVENT, chatHandler);
     };
   }, []);
+
+  // Handle new fork events from chat actions. Forking navigates via the router
+  // now, so a blocked/cancelled navigation would otherwise leave the new thread
+  // missing from this list until the next refetch.
+  useEffect(() => {
+    const forkHandler = () => {
+      if (!workspace?.slug) return;
+      Workspace.threads
+        .all(workspace.slug)
+        .then(({ threads }) => setThreads(threads))
+        .catch((e) => console.error(e));
+    };
+
+    window.addEventListener(THREAD_FORK_EVENT, forkHandler);
+    return () => {
+      window.removeEventListener(THREAD_FORK_EVENT, forkHandler);
+    };
+  }, [workspace?.slug]);
 
   useEffect(() => {
     async function fetchThreads() {
@@ -65,9 +85,10 @@ export default function ThreadContainer({
     await Workspace.threads.deleteBulk(workspace.slug, slugs);
     setThreads((prev) => prev.filter((t) => !t.deleted));
 
-    // Only redirect if current thread is being deleted
+    // Only redirect if current thread is being deleted. Use router navigation
+    // so ActiveGenerationGuard can intercept if a response is generating.
     if (slugs.includes(threadSlug)) {
-      window.location.href = paths.workspace.chat(workspace.slug);
+      navigate(paths.workspace.chat(workspace.slug));
     }
   };
 
@@ -159,12 +180,16 @@ export default function ThreadContainer({
         threads={threads}
         onDelete={handleDeleteAll}
       />
-      <NewThreadButton workspace={workspace} />
+      <NewThreadButton
+        workspace={workspace}
+        onNewThread={(thread) => setThreads((prev) => [...prev, thread])}
+      />
     </div>
   );
 }
 
-function NewThreadButton({ workspace }) {
+function NewThreadButton({ workspace, onNewThread }) {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const onClick = async () => {
     setLoading(true);
@@ -174,9 +199,15 @@ function NewThreadButton({ workspace }) {
       setLoading(false);
       return;
     }
-    window.location.replace(
-      paths.workspace.thread(workspace.slug, thread.slug)
-    );
+    // Show the new thread in the sidebar immediately - if the navigation below
+    // gets blocked (ActiveGenerationGuard) and cancelled, the thread still
+    // exists and remains reachable. Router navigation also ensures the guard
+    // can intercept and the button never wedges in its loading state.
+    onNewThread?.(thread);
+    navigate(paths.workspace.thread(workspace.slug, thread.slug), {
+      replace: true,
+    });
+    setLoading(false);
   };
 
   return (

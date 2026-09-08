@@ -8,13 +8,6 @@ export function nFormatter(input) {
   return Formatter.format(input);
 }
 
-export function dollarFormat(input) {
-  return new Intl.NumberFormat("en-us", {
-    style: "currency",
-    currency: "USD",
-  }).format(input);
-}
-
 export function toPercentString(input = null, decimals = 0) {
   if (isNaN(input) || input === null) return "";
   const percentage = Math.round(input * 100);

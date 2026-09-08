@@ -1,5 +1,6 @@
 const { Document } = require("../models/documents.js");
 const { DocumentSyncQueue } = require("../models/documentSyncQueue.js");
+const { DocumentVectors } = require("../models/vectors.js");
 const { CollectorApi } = require("../utils/collectorApi");
 const { fileData } = require("../utils/files");
 const { log, conclude, updateSourceDocument } = require("./helpers/index.js");
@@ -51,7 +52,9 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
         newContent = response?.content;
       }
 
-      if (["confluence", "github", "gitlab", "drupalwiki"].includes(type)) {
+      if (
+        ["confluence", "github", "gitlab", "gitea", "drupalwiki"].includes(type)
+      ) {
         const response = await collector.forwardExtensionRequest({
           endpoint: "/ext/resync-source-document",
           method: "POST",
@@ -130,6 +133,8 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
         workspace.slug,
         document.docId
       );
+      // Remove document_vectors rows on delete
+      await DocumentVectors.delete({ docId: document.docId });
       await vectorDatabase.addDocumentToNamespace(
         workspace.slug,
         {
@@ -176,6 +181,7 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
             additionalWorkspace.slug,
             additionalDocumentRef.docId
           );
+          await DocumentVectors.delete({ docId: additionalDocumentRef.docId });
           await vectorDatabase.addDocumentToNamespace(
             additionalWorkspace.slug,
             {

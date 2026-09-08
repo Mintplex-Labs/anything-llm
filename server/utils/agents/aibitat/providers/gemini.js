@@ -274,12 +274,17 @@ class GeminiProvider extends Provider {
         functionCall: null,
       };
 
+      // Gemini can attach usage to more than one chunk, so capture the latest
+      // and record exactly once after the stream ends - recordUsage accumulates
+      // into run totals, so calling it per-chunk would inflate them.
+      let usage = null;
+
       for await (const streamEvent of response) {
         /** @type {OpenAI.OpenAI.Chat.ChatCompletionChunk} */
         const chunk = streamEvent;
 
         // Capture usage from final chunk (when stream_options.include_usage is true)
-        if (chunk?.usage) this.recordUsage(chunk.usage);
+        if (chunk?.usage) usage = chunk.usage;
         const { content, tool_calls } = chunk?.choices?.[0]?.delta || {};
 
         if (content) {
@@ -315,6 +320,8 @@ class GeminiProvider extends Provider {
           });
         }
       }
+
+      if (usage) this.recordUsage(usage);
 
       if (completion.functionCall) {
         completion.functionCall.arguments = safeJsonParse(

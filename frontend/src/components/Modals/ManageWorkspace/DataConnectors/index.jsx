@@ -3,6 +3,7 @@ import { MagnifyingGlass } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 import GithubOptions from "./Connectors/Github";
 import GitlabOptions from "./Connectors/Gitlab";
+import GiteaOptions from "./Connectors/Gitea";
 import YoutubeOptions from "./Connectors/Youtube";
 import ConfluenceOptions from "./Connectors/Confluence";
 import DrupalWikiOptions from "./Connectors/DrupalWiki";
@@ -24,6 +25,12 @@ export const getDataConnectors = (t) => ({
     image: ConnectorImages.gitlab,
     description: t("connectors.gitlab.description"),
     options: <GitlabOptions />,
+  },
+  gitea: {
+    name: t("connectors.gitea.name"),
+    image: ConnectorImages.gitea,
+    description: t("connectors.gitea.description"),
+    options: <GiteaOptions />,
   },
   "youtube-transcript": {
     name: t("connectors.youtube.name"),
@@ -74,8 +81,8 @@ export default function DataConnectors() {
   );
 
   return (
-    <div className="flex upload-modal -mt-10 relative min-h-[80vh] w-[70vw]">
-      <div className="w-full p-4 top-0 z-20">
+    <div className="flex upload-modal -mt-10 relative h-[70vh] w-[70vw]">
+      <div className="w-full p-4 top-0 z-20 overflow-y-auto h-full">
         <div className="w-full flex items-center sticky top-0 z-50">
           <MagnifyingGlass
             size={16}
@@ -112,7 +119,7 @@ export default function DataConnectors() {
         </div>
       </div>
       <div className="xl:block hidden absolute left-1/2 top-0 bottom-0 w-[0.5px] bg-white/20 -translate-x-1/2"></div>
-      <div className="w-full p-4 top-0 text-white min-w-[500px]">
+      <div className="w-full p-4 pb-8 top-0 text-white min-w-[500px] overflow-y-auto h-full">
         {DATA_CONNECTORS[selectedConnector].options}
       </div>
     </div>

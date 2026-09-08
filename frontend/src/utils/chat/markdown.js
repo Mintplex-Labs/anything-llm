@@ -81,3 +81,49 @@ markdown.use(markdownItKatexPlugin);
 export default function renderMarkdown(text = "") {
   return markdown.render(text);
 }
+
+/**
+ * Chain-of-thought is written loosely: models pad list markers with extra
+ * spaces ("*   item") and indent even top-level lists by 4 spaces. Markdown
+ * reads a 4-space indent as an indented code block, or lazily folds those
+ * lines into the previous paragraph — either way the thought renders as a
+ * jumble of literal asterisks. Halve deep indents (4 -> 2 per level) and
+ * tighten marker padding so the content parses as the lists it was meant to
+ * be. Lines inside fenced ``` blocks pass through untouched.
+ * @param {string} text
+ * @returns {string}
+ */
+function normalizeThoughtIndentation(text = "") {
+  let inFence = false;
+  return text
+    .split("\n")
+    .map((line) => {
+      if (line.trim().startsWith("```")) {
+        inFence = !inFence;
+        return line;
+      }
+      if (inFence) return line;
+      const width = line.match(/^[ \t]*/)[0].replace(/\t/g, "    ").length;
+      const normWidth = width >= 4 ? Math.floor(width / 2) : width;
+      const dedented = " ".repeat(normWidth) + line.trimStart();
+      return dedented.replace(/^(\s*(?:[*+-]|\d+[.)]))\s{2,}/, "$1 ");
+    })
+    .join("\n");
+}
+
+/**
+ * Render for model thoughts. Indented-code parsing is turned off so any
+ * residual indentation can never render as literal monospace text; fenced
+ * ``` blocks still work. The toggle is safe on the shared instance because
+ * rendering is synchronous.
+ * @param {string} text
+ * @returns {string}
+ */
+export function renderThoughtMarkdown(text = "") {
+  markdown.disable("code");
+  try {
+    return markdown.render(normalizeThoughtIndentation(text));
+  } finally {
+    markdown.enable("code");
+  }
+}

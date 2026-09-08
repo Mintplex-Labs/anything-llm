@@ -275,6 +275,67 @@ class OCRLoader {
 }
 
 /**
+ * pdf.js ImageKind.GRAYSCALE_1BPP. Packed 1-bit rows are ceil(width/8) bytes.
+ * @type {number}
+ */
+const PDFJS_GRAYSCALE_1BPP = 1;
+
+/**
+ * Unpack pdf.js packed 1-bit DeviceGray into 8-bit grayscale Sharp can ingest.
+ * Bit 1 is white, bit 0 is black (PDF DeviceGray).
+ *
+ * @param {Buffer|Uint8Array} packed
+ * @param {number} width
+ * @param {number} height
+ * @returns {Buffer|null}
+ */
+function unpackPackedGray1Bpp(packed, width, height) {
+  if (!packed || width <= 0 || height <= 0) return null;
+  const rowBytes = Math.ceil(width / 8);
+  if (packed.length < rowBytes * height) return null;
+
+  const out = Buffer.alloc(width * height);
+  for (let y = 0; y < height; y++) {
+    const rowStart = y * rowBytes;
+    for (let x = 0; x < width; x++) {
+      const byte = packed[rowStart + (x >> 3)];
+      const bit = (byte >> (7 - (x & 7))) & 1;
+      out[y * width + x] = bit ? 255 : 0;
+    }
+  }
+  return out;
+}
+
+/**
+ * Build a Sharp `raw` input from a pdf.js image object.
+ * Copies the source buffer so concurrent OCR workers cannot share backing memory.
+ * 1-bit CCITT/bitonal scans (issue #6118) are expanded to 8-bit gray.
+ *
+ * @param {{width?: number, height?: number, data?: ArrayLike<number>, kind?: number}} img
+ * @returns {{data: Buffer, width: number, height: number, channels: number}|null}
+ */
+function toSharpRawInput(img) {
+  const width = img?.width;
+  const height = img?.height;
+  if (!width || !height || !img.data) return null;
+
+  const src = Buffer.from(img.data);
+  const isPacked1Bpp =
+    img.kind === PDFJS_GRAYSCALE_1BPP ||
+    src.length === Math.ceil(width / 8) * height;
+
+  if (isPacked1Bpp) {
+    const unpacked = unpackPackedGray1Bpp(src, width, height);
+    if (!unpacked) return null;
+    return { data: unpacked, width, height, channels: 1 };
+  }
+
+  const channels = src.length / width / height;
+  if (![1, 2, 3, 4].includes(channels)) return null;
+  return { data: src, width, height, channels };
+}
+
+/**
  * Converts a PDF page to a buffer using Sharp.
  * @param {Object} options - The options for the Sharp PDF page object.
  * @param {Object} options.page - The PDFJS page proxy object.
@@ -313,14 +374,14 @@ class PDFSharp {
 
           const name = ops.argsArray[i][0];
           const img = await page.objs.get(name);
-          const { width, height } = img;
-          const size = img.data.length;
-          const channels = size / width / height;
+          const raw = toSharpRawInput(img);
+          if (!raw) continue;
+          const { data, width, height, channels } = raw;
           const targetDPI = 70;
           const targetWidth = Math.floor(width * (targetDPI / 72));
           const targetHeight = Math.floor(height * (targetDPI / 72));
 
-          const image = this.sharp(img.data, {
+          const image = this.sharp(data, {
             raw: { width, height, channels },
             density: targetDPI,
           })
@@ -352,4 +413,6 @@ class PDFSharp {
   }
 }
 
+OCRLoader.toSharpRawInput = toSharpRawInput;
+OCRLoader.unpackPackedGray1Bpp = unpackPackedGray1Bpp;
 module.exports = OCRLoader;

@@ -1,6 +1,10 @@
 const pluralize = require("pluralize");
 const { getLLMProvider } = require("../../../helpers");
 const { TokenManager } = require("../../../helpers/tiktoken");
+const {
+  combineAbortSignals,
+  attachAbortSignal,
+} = require("../../../helpers/abortSignals");
 
 /**
  * Fraction of the model's context window used for each text chunk.
@@ -32,7 +36,7 @@ const CHUNKS_BEFORE_APPROVAL = 3;
  * @typedef {Object} LCSummarizationConfig
  * @property {string} provider The LLM to use for summarization (inherited)
  * @property {string} model The LLM Model to use for summarization (inherited)
- * @property {AbortController['signal']} controllerSignal Abort signal checked between sections to stop summarization early
+ * @property {AbortController['signal']} [controllerSignal] Additional abort signal to stop summarization early. The session signal from `aibitat` is always honored, so this is only needed by callers with their own controller.
  * @property {string} content The text content of the text to summarize
  * @property {import("../index")|null} [aibitat] The aibitat instance used to report progress and request approval to continue (optional)
  * @property {string|null} [skillName] The skill requesting summarization, used for the tool approval request (optional)
@@ -110,7 +114,17 @@ async function summarizeContent({
 }) {
   const introspect = (message) => aibitat?.introspect?.(message);
 
-  const llm = getLLMProvider({ provider, model });
+  // Always honor the session signal so no caller can forget to pass one, and bind
+  // it to the connector's SDK client - checking between sections alone leaves the
+  // section already in flight generating tokens nobody is waiting for.
+  const abortSignal = combineAbortSignals([
+    controllerSignal,
+    aibitat?.abortController?.signal,
+  ]);
+  const llm = attachAbortSignal(
+    getLLMProvider({ provider, model }),
+    abortSignal
+  );
   const tokenManager = new TokenManager(model);
   const contextWindow = llm.promptWindowLimit();
   const chunkTokenLimit = Math.floor(contextWindow * CHUNK_CONTEXT_RATIO);
@@ -123,7 +137,7 @@ async function summarizeContent({
 
   let keyPoints = "";
   for (let i = 0; i < chunks.length; i++) {
-    if (controllerSignal?.aborted) break;
+    if (abortSignal?.aborted) break;
 
     // After the first few sections, check in with the user before continuing
     // through the rest of the document. Approving here continues to the end
@@ -142,6 +156,9 @@ async function summarizeContent({
         introspect(`User stopped continuing with summarization.`);
         break;
       }
+      // The approval can be waiting long enough for the session to be aborted
+      // out from under it - don't start another section in that case.
+      if (abortSignal?.aborted) break;
     }
 
     introspect(
@@ -152,10 +169,18 @@ async function summarizeContent({
       tokenManager,
       priorPointsTokenLimit
     );
-    const { textResponse } = await llm.getChatCompletion(
-      [{ role: "user", content: summaryPrompt(chunks[i], priorPoints) }],
-      { temperature: 0 }
-    );
+    let textResponse;
+    try {
+      ({ textResponse } = await llm.getChatCompletion(
+        [{ role: "user", content: summaryPrompt(chunks[i], priorPoints) }],
+        { temperature: 0 }
+      ));
+    } catch (error) {
+      // An aborted request rejects - return the points gathered so far rather than
+      // failing the whole tool call, and never start another section.
+      if (abortSignal?.aborted) break;
+      throw error;
+    }
 
     const sectionPoints = (textResponse || "").trim();
     keyPoints = keyPoints ? `${keyPoints}\n${sectionPoints}` : sectionPoints;

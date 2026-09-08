@@ -109,6 +109,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "예정된 작업",
     "model-router": "모델 라우터",
+    "image-generation": "이미지 생성",
   },
   login: {
     "multi-user": {
@@ -700,6 +701,11 @@ const TRANSLATIONS = {
         description:
           '대행자가 채팅을 통해 반복적인 예약 작업을 생성할 수 있도록 합니다(예: "매주 평일 오전 9시에 받은 이메일을 요약하여 제 이메일 주소로 보내기"). 단독 사용자 모드에서만 사용 가능합니다.',
       },
+      generateImage: {
+        title: "이미지 생성",
+        description:
+          "에이전트가 채팅에서 이미지를 생성하거나, 구성된 이미지 생성 제공업체를 사용하여 대화에 첨부된 이미지를 편집할 수 있도록 합니다.",
+      },
     },
     mcp: {
       title: "MCP 서버",
@@ -1192,6 +1198,32 @@ const TRANSLATIONS = {
       watch_explained_block3_end: " 관리자 화면에서 관리할 수 있습니다.",
       accept: "확인했습니다",
     },
+    gitea: {
+      name: "기테아 저장소",
+      description:
+        "어떤 Gitea 인스턴스에서든 전체 공개 또는 사내 저장소를 단일 클릭으로 가져올 수 있습니다.",
+      URL: "Gitea 저장소 URL",
+      URL_explained:
+        "수집하려는 저장소의 URL (자체 호스팅된 Gitea 인스턴스에 적용)",
+      token: "Gitea 접근 토큰",
+      optional: "선택 사항",
+      token_explained:
+        "개인 저장소 또는 인증이 필요한 인스턴스의 저장소를 수집하려면 액세스 토큰이 필요합니다.",
+      token_explained_start: "(어떤 것) 없이",
+      token_explained_link1: "액세스 토큰",
+      token_explained_end:
+        "Gitea 인스턴스가 공개적으로 노출하는 저장소만 수집할 수 있습니다.",
+      ignores: "파일 무시",
+      git_ignore:
+        "수집 시 특정 파일을 무시하도록 `.gitignore` 형식으로 목록을 작성합니다. 저장하려는 항목마다 엔터를 누르세요.",
+      task_explained:
+        "모든 파일이 완료되면, 문서 선택기에서 워크스페이스에 삽입할 수 있습니다.",
+      branch: "파일을 가져올 서버 또는 브랜치를 선택하세요.",
+      branch_loading: "– 사용 가능한 브랜치 로딩 중 –",
+      branch_explained: "파일을 가져올 서버를 선택하세요.",
+      token_information:
+        "<b>Gitea 접근 토큰</b>을 입력하지 않으면, 이 데이터 연결기는 귀하의 Gitea 인스턴스에서 <b>공개적으로 읽을 수 있는</b> 저장소에서만 파일을 수집할 수 있습니다.",
+    },
   },
   chat_window: {
     attachments_processing:
@@ -1331,6 +1363,19 @@ const TRANSLATIONS = {
     stt_transcription_failed: "전사 오류: {{error}}",
     export: "채팅 내용을 다음 형식으로 내보내기:",
     exporting: "수출 중…",
+    preset_img_description: "텍스트 프롬프트에서 이미지를 생성합니다.",
+    generating_response: "응답 생성",
+    response_failed: "메시지에 응답할 수 없었습니다.",
+    response_failed_reason: "이유: {{reason}}",
+    thought_in_progress: "모델은 생각 중입니다…",
+    thoughts: "생각들",
+    leave_generating: {
+      title: "응답 생성 중단?",
+      description:
+        "현재 대화를 종료하면 모델이 응답을 생성하는 것을 중단시키고, 이 상태를 되돌릴 수 없습니다.",
+      cancel: "취소",
+      confirm: "계속",
+    },
   },
   profile_settings: {
     edit_account: "계정 정보 수정",
@@ -1875,6 +1920,24 @@ const TRANSLATIONS = {
       "invalid-model": "유효하지 않은 모델 선택",
       "routed-to": "<route> 정보가 {{model}}에 전달되었습니다.",
       "routed-to-rule": "<route>에서 {{model}}를 통해 </route>로 연결",
+    },
+  },
+  imageGeneration: {
+    title: "이미지 생성 선호도",
+    description:
+      "`/img` 명령어를 사용하여 이미지를 생성하는 데 사용되는 제공 업체를 구성합니다.",
+    provider: "이미지 생성 제공업체",
+    card: {
+      "failed-to-load": "이미지 로딩 실패",
+      "alt-text": "생성된 이미지",
+      edit: "편집",
+      download: "다운로드",
+    },
+    pending: {
+      heading: "이미지 생성 중...",
+      description:
+        "이 작업에는 시간이 걸릴 수 있습니다. 준비되면 바로 여기에서 확인하실 수 있습니다.",
+      aborted: "이미지 생성 작업이 중단되었습니다.",
     },
   },
 };

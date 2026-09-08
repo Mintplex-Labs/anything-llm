@@ -140,7 +140,7 @@ export default function SettingsSidebar() {
       <div>
         <Link
           to={paths.home()}
-          className="flex shrink-0 max-w-[55%] items-center justify-start mx-[20.5px] my-[18px]"
+          className="flex shrink-0 items-center justify-start mx-[20.5px] my-[18px]"
         >
           <img
             src={logo}
@@ -242,6 +242,12 @@ const SidebarOptions = ({ user = null, t }) => (
             {
               btnText: t("settings.text-splitting"),
               href: paths.settings.embedder.chunkingPreference(),
+              flex: true,
+              roles: ["admin"],
+            },
+            {
+              btnText: t("settings.image-generation"),
+              href: paths.settings.imageGenerationPreference(),
               flex: true,
               roles: ["admin"],
             },

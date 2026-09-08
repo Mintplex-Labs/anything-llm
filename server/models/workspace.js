@@ -654,7 +654,7 @@ const Workspace = {
    */
   deletePromptHistory: async function ({ workspaceId, id }) {
     try {
-      return await PromptHistory.delete({ id, workspaceId });
+      return await PromptHistory.deleteForWorkspace({ id, workspaceId });
     } catch (error) {
       console.error(error.message);
       return false;

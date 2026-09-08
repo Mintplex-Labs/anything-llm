@@ -150,10 +150,12 @@ function generateChunkSource(repo, doc, encryptionWorker) {
     branch: repo.branch,
     path: doc.metadata.source,
     pat: !!repo.accessToken ? repo.accessToken : null,
+    // Enterprise instances may be served over http - the protocol cannot be assumed on resync.
+    scheme: new URL(repo.repo).protocol.replace(":", ""),
   };
   return `github://${repo.repo}?payload=${encryptionWorker.encrypt(
     JSON.stringify(payload)
   )}`;
 }
 
-module.exports = { loadGithubRepo, fetchGithubFile };
+module.exports = { loadGithubRepo, fetchGithubFile, generateChunkSource };

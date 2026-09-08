@@ -108,6 +108,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "משימות מתוכננות",
     "model-router": "מודל של נתב",
+    "image-generation": "יצירת תמונות",
   },
   login: {
     "multi-user": {
@@ -697,6 +698,11 @@ const TRANSLATIONS = {
         description:
           'אפשר לסוכן ליצור משימות קבועות לפי לוח זמנים, המתבססות על שיחות (לדוגמה: "כל יום במהלך השבוע בשעה 9 בבוקר, סכם עבורי את תיבת הדואר שלי ושלוח לי מיילים"). אפשר להשתמש בתכונה זו רק במצב של משתמש אחד.',
       },
+      generateImage: {
+        title: "יצירת תמונות",
+        description:
+          "אפשר לסוכן ליצור תמונות מתוך השיחה, או לערוך תמונות המצורפות לשיחה, תוך שימוש בספק יצירת התמונות שהגדרת.",
+      },
     },
     mcp: {
       title: "שרתי MCP",
@@ -1180,6 +1186,32 @@ const TRANSLATIONS = {
       watch_explained_block3_end: " של המנהל.",
       accept: "אוקיי, הבנתי",
     },
+    gitea: {
+      name: "מאגר ג'יטה",
+      description:
+        "ייבוא שלמא מלא, בין אם הוא ציבורי או פרטי, מכל סביבת Gitea, באמצעות לחיצה אחת בלבד.",
+      URL: "כתובת URL של מאגר ג'יטה",
+      URL_explained:
+        "כתובת ה-URL של המאגר שברצונכם לאסוף בשרת ה-Gitea שלכם – נתמכות גם גרסאות מאוחזות באופן עצמי.",
+      token: "טוקן גיטה",
+      optional: "אופציונלי",
+      token_explained:
+        "סיסמה נדרשת כדי לגשת למאגרים פרטיים או למאגרים במערכות הדורשות אימות.",
+      token_explained_start: "ללא",
+      token_explained_link1: "מפתח גישה",
+      token_explained_end:
+        "ניתן לאסוף רק מאגרים שהאינסטנס של Gitea שלך חושף לציבור.",
+      ignores: "הקובץ מתעלם",
+      git_ignore:
+        "רשימה בפורמט של `.gitignore` כדי להתעלם ממסוימים מהקבצים במהלך איסוף. לחץ על Enter אחרי כל פריט שברצונך לשמור.",
+      task_explained:
+        "לאחר השלמת העיבוד, כל הקבצים יהיו זמינים לשילוב בסביבות עבודה דרך בחירת המסמכים.",
+      branch: "הענף ממנו ברצונך לאסוף קבצים.",
+      branch_loading: "– טעינת הסניפים הזמינים –",
+      branch_explained: "הענף ממנו ברצונך לאסוף קבצים.",
+      token_information:
+        "ללא מילוי של <b>מזהה גישה ל-Gitea</b>, חיבור הנתונים הזה יהיה מסוגל לאסוף קבצים רק ממאגרי קוד שניתן לגשת אליהם באופן <b>ציבורי</b> בתוך המופע של Gitea שלך.",
+    },
   },
   chat_window: {
     attachments_processing: "קבצים מצורפים בעיבוד. אנא המתן...",
@@ -1317,6 +1349,19 @@ const TRANSLATIONS = {
     stt_transcription_failed: "לא הצליח הטרנסקריפציה: {{error}}",
     export: "ייצוא צ'אט כ...",
     exporting: "ייצוא...",
+    preset_img_description: "יצירת תמונה על סמך הנחיה טקסטואלית",
+    generating_response: "יצירת תגובה",
+    response_failed: "לא ניתן להגיב למסר.",
+    response_failed_reason: "סיבה: {{reason}}",
+    thought_in_progress: "המערכת חושבת…",
+    thoughts: "מחשבות",
+    leave_generating: {
+      title: "האם הפסקת לייצר תגובה?",
+      description:
+        "אתם עומדים לצאת מהצ'אט הזה, וזה יגרום למודל להפסיק ליצור את התשובה, ואי אפשר יהיה לשחזר אותה.",
+      cancel: "ביטול",
+      confirm: "המשך",
+    },
   },
   profile_settings: {
     edit_account: "ערוך חשבון",
@@ -1857,6 +1902,22 @@ const TRANSLATIONS = {
       "routed-to": "מופנה ל-{{model}} בתוך <route>",
       "routed-to-rule":
         "נשלח דרך <route>{{model}}</route> באמצעות <rule>{{ruleTitle}}</rule>",
+    },
+  },
+  imageGeneration: {
+    title: "העדפה לגבי יצירת תמונות",
+    description: "הגדר את הספק המשמש ליצירת תמונות באמצעות הפקודה `/img`.",
+    provider: "ספק יצירת תמונות",
+    card: {
+      "failed-to-load": "לא ניתן היה לטעון תמונה.",
+      "alt-text": "תמונה שנוצרה באופן אוטומטי",
+      edit: "ערוך",
+      download: "הורדה",
+    },
+    pending: {
+      heading: "יצירת התמונה שלכם...",
+      description: "זה עשוי לקחת קצת זמן. הוא יופיע כאן ברגע שהוא מוכן.",
+      aborted: "יצירת התמונה בוטלה.",
     },
   },
 };

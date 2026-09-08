@@ -1,5 +1,6 @@
 const { SystemSettings } = require("../../../../models/systemSettings");
 const { TokenManager } = require("../../../helpers/tiktoken");
+const { getAnythingLLMUserAgent } = require("../../../../endpoints/utils");
 const tiktoken = new TokenManager();
 
 const webBrowsing = {
@@ -114,7 +115,9 @@ const webBrowsing = {
                 engine = "_keenableSearch";
                 break;
               default:
-                engine = "_duckDuckGoEngine";
+                // No provider configured - use You.com's keyless free tier,
+                // which falls back to DuckDuckGo on any failure.
+                engine = "_youSearch";
             }
             return await this[engine](query);
           },
@@ -1127,6 +1130,7 @@ const webBrowsing = {
                 headers: {
                   "Content-Type": "application/json",
                   Authorization: `Bearer ${process.env.AGENT_PERPLEXITY_API_KEY}`,
+                  "X-Pplx-Integration": getAnythingLLMUserAgent(),
                 },
                 body: JSON.stringify({
                   query: query,
@@ -1275,11 +1279,12 @@ const webBrowsing = {
             );
 
             let baseUrl = "https://fastcrw.com/api";
-            if ("AGENT_CRW_API_URL" in process.env) {
+            if (process.env.AGENT_CRW_API_URL) {
               try {
-                baseUrl = new URL(process.env.AGENT_CRW_API_URL);
-                baseUrl.pathname = ""; // remove the trailing slash or any other path
-                baseUrl = baseUrl.toString();
+                // Strip any trailing slash so appending pathname is still valid
+                baseUrl = new URL(process.env.AGENT_CRW_API_URL)
+                  .toString()
+                  .replace(/\/+$/, "");
               } catch (e) {
                 this.super.handlerProps.log(
                   `invalid fastCRW Search URL: ${e.message}`
@@ -1318,8 +1323,13 @@ const webBrowsing = {
             if (error)
               return `There was an error searching for content. ${error}`;
 
+            // Managed fastCRW returns `data` as a flat array; self-hosted nests it under `data.results`.
+            const searchResults = Array.isArray(response?.data)
+              ? response.data
+              : response?.data?.results ?? [];
+
             const data = [];
-            response.data?.forEach((searchResult) => {
+            searchResults.forEach((searchResult) => {
               const { title, url, description } = searchResult;
               data.push({
                 title,
@@ -1438,7 +1448,13 @@ const webBrowsing = {
           /**
            * You.com Search — keyless free tier by default, optional API key for higher limits.
            * Keyless: GET https://api.you.com/v1/agents/search
+           * (100 queries/day per IP - responds 402 once exhausted)
            * Keyed:   GET https://ydc-index.io/v1/search with X-API-Key
+           * Falls back to DuckDuckGo on any request failure so search never
+           * hard-fails. An empty-but-successful response is passed through as
+           * "no results" rather than retried, since DDG is unlikely to do better.
+           * Note: a rejected API key returns 401/403 (not 402), so we call that
+           * out separately - it is an admin misconfiguration, not a quota limit.
            * @param {string} query
            * @returns {Promise<string>}
            */
@@ -1465,52 +1481,83 @@ const webBrowsing = {
               // Pin identity encoding: keyless endpoint can advertise gzip with
               // body bytes that Node's decoder rejects (same workaround as LiteLLM).
               "Accept-Encoding": "identity",
+              "X-Client-Info": `skill; client=${getAnythingLLMUserAgent()}`,
             };
             if (usingKey) headers["X-API-Key"] = apiKey;
 
-            const { response, error } = await fetch(searchURL.toString(), {
-              method: "GET",
-              headers,
-            })
+            const { response, error, status } = await fetch(
+              searchURL.toString(),
+              {
+                method: "GET",
+                headers,
+              }
+            )
               .then((res) => {
                 if (res.ok) return res.json();
-                throw new Error(
+                const err = new Error(
                   `${res.status} - ${res.statusText}. params: ${JSON.stringify({
                     auth: usingKey ? this.middleTruncate(apiKey, 5) : "keyless",
                     q: query,
                   })}`
                 );
+                err.status = res.status;
+                throw err;
               })
               .then((data) => {
-                return { response: data, error: null };
+                return { response: data, error: null, status: null };
               })
               .catch((e) => {
                 this.super.handlerProps.log(
                   `You.com Search Error: ${e.message}`
                 );
-                return { response: null, error: e.message };
+                return { response: null, error: e.message, status: e.status };
               });
 
-            if (error)
-              return `There was an error searching for content. ${error}`;
-
             const data = [];
-            const webResults = response?.results?.web ?? [];
-            const newsResults = response?.results?.news ?? [];
+            const webResults = Array.isArray(response?.results?.web)
+              ? response.results.web
+              : [];
+            const newsResults = Array.isArray(response?.results?.news)
+              ? response.results.news
+              : [];
 
-            [...webResults, ...newsResults].forEach((searchResult) => {
-              const { url, title, description, snippets } = searchResult;
+            const mapResult = (searchResult, type) => {
+              const { url, title, description, snippets, page_age } =
+                searchResult;
+              if (!url && !title) return;
               const snippet =
                 Array.isArray(snippets) && snippets.length > 0
-                  ? snippets[0]
+                  ? snippets.join("\n")
                   : description;
-              if (!url && !title) return;
+
+              // `description` is a curated summary of the page while `snippets` are
+              // excerpts from it, so they usually carry different information. Pass
+              // both unless the description is already present in the snippet text.
+              const includeDescription =
+                !!description && snippet && !snippet.includes(description);
               data.push({
                 title: title || "",
                 link: url || "",
                 snippet: snippet || "",
+                ...(includeDescription ? { description } : {}),
+                ...(page_age ? { published: page_age } : {}),
+                ...(type === "news" ? { type } : {}),
               });
-            });
+            };
+            webResults.forEach((result) => mapResult(result, "web"));
+            newsResults.forEach((result) => mapResult(result, "news"));
+
+            if (error) {
+              if (usingKey && (status === 401 || status === 403))
+                this.super.handlerProps.log(
+                  `You.com Search rejected the configured AGENT_YOU_API_KEY (${status}) - verify the key. Falling back to DuckDuckGo.`
+                );
+              else
+                this.super.handlerProps.log(
+                  `You.com Search failed - falling back to DuckDuckGo.`
+                );
+              return await this._duckDuckGoEngine(query);
+            }
 
             if (data.length === 0)
               return `No information was found online for the search query.`;

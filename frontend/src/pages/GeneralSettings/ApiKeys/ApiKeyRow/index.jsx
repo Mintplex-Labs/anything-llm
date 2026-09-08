@@ -1,3 +1,4 @@
+import moment from "moment";
 import { useEffect, useState } from "react";
 import Admin from "@/models/admin";
 import { Trash } from "@phosphor-icons/react";
@@ -48,7 +49,7 @@ export default function ApiKeyRow({ apiKey, removeApiKey }) {
           {apiKey.createdBy?.username || "--"}
         </td>
         <td className="px-6 py-3 whitespace-nowrap align-middle">
-          {new Date(apiKey.createdAt).toLocaleString()}
+          {moment(apiKey.createdAt).format("lll")}
         </td>
         <td className="px-6 py-3 align-middle">
           <div className="flex items-center gap-x-6">

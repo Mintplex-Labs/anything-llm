@@ -464,7 +464,7 @@ const System = {
     const url = new URL(`${fullApiUrl()}/system/logo`);
     url.searchParams.append(
       "theme",
-      localStorage.getItem("theme") || "default"
+      document.documentElement.getAttribute("data-theme") || "dark"
     );
 
     return await fetch(url, {
@@ -897,6 +897,21 @@ const System = {
    */
   isCreateFilesAgentAvailable: async function () {
     return fetch(`${API_BASE}/agent-skills/create-files-agent/is-available`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .then((res) => res?.available ?? false)
+      .catch(() => false);
+  },
+
+  /**
+   * Checks if image generation is available.
+   * Image generation is only available when an image generation provider is configured.
+   * @returns {Promise<boolean>}
+   */
+  isImageGenerationAvailable: async function () {
+    return fetch(`${API_BASE}/agent-skills/image-generation/is-available`, {
       method: "GET",
       headers: baseHeaders(),
     })

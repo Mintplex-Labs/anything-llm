@@ -111,6 +111,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Sarcini programate",
     "model-router": "Model de router",
+    "image-generation": "Generarea de imagini",
   },
   login: {
     "multi-user": {
@@ -495,6 +496,33 @@ const TRANSLATIONS = {
       watch_explained_block3_end: ".",
       accept: "Ok, am înțeles",
     },
+    gitea: {
+      name: "Repoarte de la Gitea",
+      description:
+        "Importați un întreg depozit public sau privat dintr orice instanță Gitea printr-o singură acțiune.",
+      URL: "URL-ul Gitea pentru repo",
+      URL_explained:
+        "Adresa URL a depozitului pe care doriți să îl colectați în instanța dumneavoastră Gitea – sunt suportate și instanțele auto-gazduite.",
+      token: "Cheia de acces Gitea",
+      optional: "opțional",
+      token_explained:
+        "Se necesită un token de acces pentru a accesa depozitele private sau depozitele situate pe instanțe care necesită autentificare.",
+      token_explained_start: "Fără",
+      token_explained_link1: "Cheie de acces",
+      token_explained_end:
+        "Doar depozitele pe care instanța dumneavoastră Gitea le expune public pot fi colectate.",
+      ignores: "Fișierul este ignorat",
+      git_ignore:
+        "Creați un fișier în format `.gitignore` pentru a ignora anumite fișiere în timpul colectării. Apăsați tasta Enter după fiecare intrare pe care doriți să o salvați.",
+      task_explained:
+        "Odată ce procesul este finalizat, toate fișierele vor fi disponibile pentru a fi încărcate în spațiile de lucru prin intermediul instrumentului de selectare a documentelor.",
+      branch: "Ramura de rețea din care doriți să colectați fișierele.",
+      branch_loading: "— încărcare ramuri disponibile —",
+      branch_explained:
+        "Ramura din rețea de la care doriți să colectați fișierele.",
+      token_information:
+        "Fără a completa token-ul de acces <b>Gitea</b>, acest conector de date va putea colecta doar fișiere din depozitele care sunt <b>accesibile public</b> în instanța dumneavoastră Gitea.",
+    },
   },
   chat_window: {
     attachments_processing:
@@ -639,6 +667,19 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Transcriere eșuată: {{error}}",
     export: "Exportați conversația sub forma de...",
     exporting: "Exportare...",
+    preset_img_description: "Generați o imagine pe baza unui text.",
+    generating_response: "Generarea răspunsului",
+    response_failed: "Nu am putut răspunde la mesaj.",
+    response_failed_reason: "Motiv: {{reason}}",
+    thought_in_progress: "Modelul analizează...",
+    thoughts: "Gânduri",
+    leave_generating: {
+      title: "Încetați să generați răspunsuri?",
+      description:
+        "În curând veți părăsi această conversație; acest lucru va opri modelul de a genera răspunsul și nu poate fi recuperat.",
+      cancel: "Anula",
+      confirm: "Continuă",
+    },
   },
   profile_settings: {
     edit_account: "Editează contul",
@@ -1248,6 +1289,11 @@ const TRANSLATIONS = {
         title: "Creați sarcini programate",
         description:
           "Permite reprezentantului să creeze sarcini programate repetitive direct din aplicație (de exemplu, „în fiecare zi de lucru la ora 9:00, rezumă e-mailurile mele și trimite-mi un raport”). Funcționalitatea este disponibilă doar în modul pentru utilizator unic.",
+      },
+      generateImage: {
+        title: "Generați imagini",
+        description:
+          "Permiteți agenților să genereze imagini din conversații sau să editeze imaginile atașate la acestea, folosind furnizorul de generare de imagini configurat de dumneavoastră.",
       },
     },
     mcp: {
@@ -1935,7 +1981,7 @@ const TRANSLATIONS = {
         "Alege router-ul pe care dorești să-l folosești pentru acest spațiu de lucru.",
       "no-routers-chat":
         "Nu există routere configurate. Creați unul în secțiunea Setări > Furnizori de AI > Router de model.",
-      "rule-count": "(__REGULI__)",
+      "rule-count": "({{count}} reguli)",
     },
     metrics: {
       "model-router-default": "Model de router",
@@ -1946,6 +1992,24 @@ const TRANSLATIONS = {
       "routed-to": "Trimis către <route>{{model}}</route>",
       "routed-to-rule":
         "Trasează spre <route>{{model}}</route> prin intermediul <rule>{{ruleTitle}}</rule>",
+    },
+  },
+  imageGeneration: {
+    title: "Preferințe privind generarea de imagini",
+    description:
+      "Configurați furnizorul utilizat pentru a genera imagini din comanda `/img`.",
+    provider: "Furnizor de servicii de generare de imagini",
+    card: {
+      "failed-to-load": "Imaginile nu s-au încărcat",
+      "alt-text": "Imaginea generată",
+      edit: "Editează",
+      download: "Descarcă",
+    },
+    pending: {
+      heading: "Crearea imaginii dumneavoastră…",
+      description:
+        "Acest lucru poate dura ceva timp. Va apărea aici imediat ce va fi gata.",
+      aborted: "Generarea imaginii a fost anulată.",
     },
   },
 };

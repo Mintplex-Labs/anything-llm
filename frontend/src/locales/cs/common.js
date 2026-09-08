@@ -118,6 +118,7 @@ const TRANSLATIONS = {
     },
     "scheduled-jobs": "Naplánované úlohy",
     "model-router": "Modelový router",
+    "image-generation": "Generování obrázků",
   },
   login: {
     "multi-user": {
@@ -207,7 +208,7 @@ const TRANSLATIONS = {
       query: {
         title: "Dotaz",
         description:
-          "budou poskytovat odpovědi <b>pouze__, pokud je nalezen kontext dokumentu.</b>Budete muset použít příkaz @agent pro použití nástrojů.",
+          "budou poskytovat odpovědi <b>pouze, pokud je nalezen kontext dokumentu.</b>Budete muset použít příkaz @agent pro použití nástrojů.",
       },
       automatic: {
         description:
@@ -730,6 +731,11 @@ const TRANSLATIONS = {
         description:
           "Umožněte zástupci vytvářet opakující se plánované úkoly přímo z chatu (například „každý pracovní den v 9:00 shrňte obsah mé schránky a zašlete mi e-mail“). Tato funkce je dostupná pouze v režimu pro jednoho uživatele.",
       },
+      generateImage: {
+        title: "Generovat obrázky",
+        description:
+          "Nechte, aby agent generoval obrázky z chatu nebo upravoval obrázky přiložené ke konverzaci pomocí vašeho nakonfigurovaného poskytovatele pro generování obrázků.",
+      },
     },
     mcp: {
       title: "Servery společnosti MCP",
@@ -1250,6 +1256,32 @@ const TRANSLATIONS = {
       watch_explained_block3_end: " zobrazení správce.",
       accept: "OK, rozumím",
     },
+    gitea: {
+      name: "Repozitář Gitea",
+      description:
+        "Importujte celý veřejný nebo soukromý repozitář z jakékoliv instance Gitea jediným kliknutím.",
+      URL: "URL repozitáře Gitea",
+      URL_explained:
+        "URL repozitáře, který chcete stáhnout na vaši instanci Gitea – podporovány jsou i vlastní instalace.",
+      token: "Token pro přístup do Gitea",
+      optional: "volitelné",
+      token_explained:
+        "Pro získání přístupu k soukromým repozitářům nebo repozitářům na serverech, které vyžadují ověření, je nutný token přístupu.",
+      token_explained_start: "Bez",
+      token_explained_link1: "Token pro přístup",
+      token_explained_end:
+        "Možné jsou pouze repozitáře, které vaše instance Gitea zpřístupňuje veřejně.",
+      ignores: "Soubor je ignorován",
+      git_ignore:
+        "Vytvořte soubor ve formátu `.gitignore` pro ignorování specifických souborů během sběru. Po každém prvku, který chcete uložit, stiskněte klávesu Enter.",
+      task_explained:
+        "Jakmile budou všechny soubory dokončeny, budou k dispozici pro vložení do pracovních prostorů prostřednictvím nástroje pro výběr dokumentů.",
+      branch: "Od větve, ze které chcete stáhnout soubory.",
+      branch_loading: "– načítání dostupných větví –",
+      branch_explained: "Oddělení, ze kterého chcete stahovat soubory.",
+      token_information:
+        "Bez vyplnění <b>Token pro přístup do Gitea</b>, tento datový konektor bude schopen získávat pouze soubory z repozitářů, které jsou <b>dostupné veřejně</b> ve vaší instanci Gitea.",
+    },
   },
   chat_window: {
     attachments_processing: "Přílohy se zpracovávají. Prosím čekejte...",
@@ -1390,6 +1422,19 @@ const TRANSLATIONS = {
     stt_transcription_failed: "Přepis selhal: {{error}}",
     export: "Exportujte konverzaci jako…",
     exporting: "Exportování...",
+    preset_img_description: "Vytvořit obrázek na základě textového pokynu",
+    generating_response: "Generování odpovědi",
+    response_failed: "Nebyl možné odpovědět na zprávu.",
+    response_failed_reason: "Důvod: {{reason}}",
+    thought_in_progress: "Systém přemýšlí…",
+    thoughts: "Myšlenky",
+    leave_generating: {
+      title: "Zastavte generování odpovědi?",
+      description:
+        "Chystáte se tuto konverzaci ukončit. To způsobí zastavení generování odpovědí modelem a není možné ji obnovit.",
+      cancel: "Zrušit",
+      confirm: "Pokračujte",
+    },
   },
   profile_settings: {
     edit_account: "Upravit účet",
@@ -1920,6 +1965,24 @@ const TRANSLATIONS = {
       "routed-to": "Přesměrováno na <route>{{model}}</route>",
       "routed-to-rule":
         "Přesměrováno na <route>{{model}}</route> prostřednictvím <rule>{{ruleTitle}}</rule>",
+    },
+  },
+  imageGeneration: {
+    title: "Preference pro generování obrázků",
+    description:
+      "Nastavte poskytovatele, který se používá k generování obrázků z příkazu `/img`.",
+    provider: "Poskytovatel služeb pro generování obrázků",
+    card: {
+      "failed-to-load": "Nelze načíst obrázek.",
+      "alt-text": "Vygenerovaný obrázek",
+      edit: "Upravit",
+      download: "Stáhnout",
+    },
+    pending: {
+      heading: "Generování vaší obrázku…",
+      description:
+        "To může trvat nějakou dobu. Jakmile bude k dispozici, zobrazí se zde.",
+      aborted: "Generování obrázku bylo přerušeno.",
     },
   },
 };

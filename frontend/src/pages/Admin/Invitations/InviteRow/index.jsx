@@ -1,3 +1,4 @@
+import moment from "moment";
 import { useEffect, useRef, useState } from "react";
 import { titleCase } from "text-case";
 import Admin from "@/models/admin";
@@ -53,7 +54,7 @@ export default function InviteRow({ invite }) {
             : "--"}
         </td>
         <td className="px-6">{invite.createdBy?.username || "deleted user"}</td>
-        <td className="px-6">{invite.createdAt}</td>
+        <td className="px-6">{moment(invite.createdAt).format("lll")}</td>
         <td className="px-6 flex items-center gap-x-6 h-full mt-1">
           {status === "pending" && (
             <>

@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require("uuid");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
+const { isAbortError } = require("../../helpers/abortSignals");
 const {
   writeResponseChunk,
   clientAbortedHandler,
@@ -7,6 +8,7 @@ const {
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
+const { getAnythingLLMUserAgent } = require("../../../endpoints/utils");
 
 function perplexityModels() {
   const { MODELS } = require("./models.js");
@@ -23,6 +25,9 @@ class PerplexityLLM {
     this.openai = new OpenAIApi({
       baseURL: "https://api.perplexity.ai",
       apiKey: process.env.PERPLEXITY_API_KEY ?? null,
+      defaultHeaders: {
+        "X-Pplx-Integration": getAnythingLLMUserAgent(),
+      },
     });
     this.model =
       modelPreference ||
@@ -267,6 +272,12 @@ class PerplexityLLM {
           }
         }
       } catch (e) {
+        // Cancelling the upstream request rejects the iterator - that is the
+        // client leaving, not a failure, so it is not reported as an error.
+        if (isAbortError(e)) {
+          stream?.endMeasurement(usage);
+          return clientAbortedHandler(resolve, fullText);
+        }
         console.log(`\x1b[43m\x1b[34m[STREAMING ERROR]\x1b[0m ${e.message}`);
         writeResponseChunk(response, {
           uuid,

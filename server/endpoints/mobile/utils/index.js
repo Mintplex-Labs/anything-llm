@@ -108,20 +108,24 @@ async function handleMobileCommand(request, response) {
 
     if (!workspace)
       return response.status(400).json({ error: "Workspace not found" });
-    const threadId = threadSlug
-      ? await prisma.workspace_threads.findFirst({
-          where: {
-            workspace_id: workspace.id,
-            slug: String(threadSlug),
-            ...(user ? { user_id: user.id } : {}),
-          },
-        })?.id
-      : null;
+    // A threadSlug that does not resolve falls through to the default thread
+    // (threadId null), matching how stream-chat handles an unknown slug.
+    let threadId = null;
+    if (threadSlug) {
+      const thread = await prisma.workspace_threads.findFirst({
+        where: {
+          workspace_id: workspace.id,
+          slug: String(threadSlug),
+          ...(user ? { user_id: user.id } : {}),
+        },
+      });
+      threadId = thread?.id ?? null;
+    }
 
     await WorkspaceChats.markThreadHistoryInvalidV2({
       workspaceId: workspace.id,
       ...(user ? { user_id: user.id } : {}),
-      thread_id: threadId, // if threadId is null, this will reset the default thread.
+      thread_id: threadId, // null here is the default thread.
     });
     return response.status(200).json({ success: true });
   }

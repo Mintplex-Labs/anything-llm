@@ -165,6 +165,19 @@ const WorkspaceParsedFiles = {
     }
   },
 
+  migrateToMultiUser: async function (adminUserId) {
+    try {
+      await prisma.workspace_parsed_files.updateMany({
+        where: { userId: null },
+        data: { userId: adminUserId },
+      });
+      return true;
+    } catch (error) {
+      console.error(error.message);
+      return false;
+    }
+  },
+
   getContextMetadataAndLimits: async function (
     workspace,
     thread = null,

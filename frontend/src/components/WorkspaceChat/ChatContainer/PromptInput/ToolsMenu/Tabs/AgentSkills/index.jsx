@@ -33,6 +33,7 @@ export default function AgentSkillsTab({
   // All skill state management
   const {
     fileSystemAgentAvailable,
+    imageGenerationAvailable,
     importedSkills,
     flows,
     mcpServers,
@@ -51,6 +52,7 @@ export default function AgentSkillsTab({
 
   const configurableSkills = getConfigurableSkills(t, {
     fileSystemAgentAvailable,
+    imageGenerationAvailable,
   });
 
   // UI state

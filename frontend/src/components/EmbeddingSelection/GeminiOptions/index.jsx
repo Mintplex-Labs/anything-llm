@@ -6,6 +6,10 @@ const DEFAULT_MODELS = [
     id: "gemini-embedding-001",
     name: "Gemini Embedding 001",
   },
+  {
+    id: "gemini-embedding-2",
+    name: "Gemini Embedding 2",
+  },
 ];
 
 export default function GeminiOptions({ settings }) {

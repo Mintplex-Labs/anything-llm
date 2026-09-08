@@ -501,6 +501,22 @@ const SystemSettings = {
         process.env.GENERIC_OPEN_AI_EMBEDDING_QUERY_PREFIX || "",
 
       // --------------------------------------------------------
+      // Image Generation Provider Selection Settings & Configs
+      // --------------------------------------------------------
+      ImageGenerationProvider: process.env.IMAGE_GEN_PROVIDER || null,
+      ImageGenerationModelPref: process.env.IMAGE_GEN_MODEL_PREF || null,
+      ImageGenerationDimensions: process.env.IMAGE_GEN_SIZE_PREF || "512x512",
+      ImageGenerationOpenAiKey: !!process.env.IMAGE_GEN_OPENAI_KEY,
+      ImageGenerationOpenRouterApiKey:
+        !!process.env.IMAGE_GEN_OPENROUTER_API_KEY,
+      ImageGenerationOllamaBasePath: process.env.IMAGE_GEN_OLLAMA_BASE_PATH,
+      ImageGenerationOllamaAuthToken: !!process.env.IMAGE_GEN_OLLAMA_AUTH_TOKEN,
+      ImageGenerationLemonadeBasePath: process.env.IMAGE_GEN_LEMONADE_BASE_PATH,
+      ImageGenerationLemonadeApiKey: !!process.env.IMAGE_GEN_LEMONADE_API_KEY,
+      ImageGenerationLocalAiBasePath: process.env.IMAGE_GEN_LOCALAI_BASE_PATH,
+      ImageGenerationLocalAiApiKey: !!process.env.IMAGE_GEN_LOCALAI_API_KEY,
+
+      // --------------------------------------------------------
       // VectorDB Provider Selection Settings & Configs
       // --------------------------------------------------------
       VectorDB: vectorDB,
@@ -974,6 +990,7 @@ const SystemSettings = {
       AwsBedrockLLMModel: process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE,
       AwsBedrockLLMTokenLimit:
         process.env.AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT || 8192,
+      AwsBedrockLLMMaxTokens: process.env.AWS_BEDROCK_LLM_MAX_TOKENS || 4096,
 
       // Cohere API Keys
       CohereApiKey: !!process.env.COHERE_API_KEY,
@@ -1014,12 +1031,12 @@ const SystemSettings = {
       GiteeAIModelPref: process.env.GITEE_AI_MODEL_PREF,
       GiteeAITokenLimit: process.env.GITEE_AI_MODEL_TOKEN_LIMIT || 8192,
 
-      // Docker Model Runner Keys
-      DockerModelRunnerBasePath: process.env.DOCKER_MODEL_RUNNER_BASE_PATH,
-      DockerModelRunnerModelPref:
-        process.env.DOCKER_MODEL_RUNNER_LLM_MODEL_PREF,
-      DockerModelRunnerModelTokenLimit:
-        process.env.DOCKER_MODEL_RUNNER_LLM_MODEL_TOKEN_LIMIT || 8192,
+      // llmman Keys
+      LlmmanBasePath: process.env.LLMMAN_BASE_PATH,
+      LlmmanModelPref: process.env.LLMMAN_MODEL_PREF,
+      LlmmanTokenLimit: process.env.LLMMAN_MODEL_TOKEN_LIMIT || 8192,
+      LlmmanKeepAliveSeconds: process.env.LLMMAN_KEEP_ALIVE_TIMEOUT ?? 300,
+      LlmmanAuthToken: !!process.env.LLMMAN_AUTH_TOKEN,
 
       // Privatemode Keys
       PrivateModeBasePath: process.env.PRIVATEMODE_LLM_BASE_PATH,
@@ -1043,6 +1060,13 @@ const SystemSettings = {
       // Cerebras Keys
       CerebrasApiKey: !!process.env.CEREBRAS_API_KEY,
       CerebrasModelPref: process.env.CEREBRAS_MODEL_PREF,
+
+      // Google Vertex AI Keys
+      VertexAiLLMApiKey: !!process.env.VERTEX_AI_LLM_API_KEY,
+      VertexAiLLMProjectId: process.env.VERTEX_AI_LLM_PROJECT_ID,
+      VertexAiLLMRegion: process.env.VERTEX_AI_LLM_REGION,
+      VertexAiLLMModelPref: process.env.VERTEX_AI_LLM_MODEL_PREF,
+      VertexAiLLMTokenLimit: process.env.VERTEX_AI_LLM_MODEL_TOKEN_LIMIT,
 
       // OMLX Keys
       OMLXLLMBasePath: process.env.OMLX_LLM_BASE_PATH,

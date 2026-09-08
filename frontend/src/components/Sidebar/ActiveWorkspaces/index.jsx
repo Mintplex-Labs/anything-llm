@@ -15,6 +15,8 @@ import showToast from "@/utils/toast";
 import { LAST_VISITED_WORKSPACE } from "@/utils/constants";
 import { safeJsonParse } from "@/utils/request";
 
+export const REFETCH_WORKSPACES_EVENT = "refetchWorkspaces";
+
 export default function ActiveWorkspaces() {
   const navigate = useNavigate();
   const { slug } = useParams();
@@ -33,6 +35,13 @@ export default function ActiveWorkspaces() {
       setWorkspaces(Workspace.orderWorkspaces(workspaces));
     }
     getWorkspaces();
+
+    // Refetch when a workspace is created elsewhere in the app (eg: the
+    // NewWorkspace modal) since those flows navigate via the router and no
+    // longer trigger a full page reload.
+    window.addEventListener(REFETCH_WORKSPACES_EVENT, getWorkspaces);
+    return () =>
+      window.removeEventListener(REFETCH_WORKSPACES_EVENT, getWorkspaces);
   }, []);
 
   if (loading) {

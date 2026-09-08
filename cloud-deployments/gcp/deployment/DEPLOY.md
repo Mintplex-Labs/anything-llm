@@ -2,13 +2,22 @@
 
 With a GCP account you can easily deploy a private AnythingLLM instance on GCP. This will create a url that you can access from any browser over HTTP (HTTPS not supported). This single instance will run on your own keys and they will not be exposed - however if you want your instance to be protected it is highly recommend that you set a password once setup is complete.
 
-The output of this cloudformation stack will be:
-- 1 GCP VM
-- 1 Security Group with 0.0.0.0/0 access on Ports 22 & 3001
-- 1 GCP VM Volume `gb2` of 10Gib minimum
+This deployment is created with GCP Deployment Manager, and produces:
+- 1 Compute Engine VM (`n1-standard-1`, Ubuntu 20.04 LTS, zone `us-central1-a`)
+- 1 attached 10 GB persistent boot disk, deleted with the instance
+- 1 external IP on the `default` network
+
+It does **not** create a firewall rule. The `default` network allows SSH on port 22, but not port 3001, so the instance will not be reachable in a browser until you allow that port yourself:
+
+```
+gcloud compute firewall-rules create anything-llm-3001 \
+  --network default --allow tcp:3001
+```
+
+`--source-ranges` defaults to `0.0.0.0/0`; restrict it to your own address if you do not want the instance open to the internet. The instance carries no network tags, so the rule applies to it without `--target-tags`.
 
 **Requirements**
-- An GCP account with billing information.
+- A GCP account with billing information.
 
 ## How to deploy on GCP
 Open your terminal
@@ -21,7 +30,7 @@ Open your terminal
 
   ```
 
-  gcloud deployment-manager deployments create anything-llm-deployment --config gcp/deployment/gcp_deploy_anything_llm.yaml
+  gcloud deployment-manager deployments create anything-llm-deployment --config cloud-deployments/gcp/deployment/gcp_deploy_anything_llm.yaml
 
   ```
 

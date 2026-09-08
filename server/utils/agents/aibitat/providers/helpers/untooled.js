@@ -1,6 +1,9 @@
 const { safeJsonParse } = require("../../../../http");
 const { Deduplicator } = require("../../utils/dedupe");
 const { v4 } = require("uuid");
+const {
+  extractReasoningContent,
+} = require("../../../../helpers/chat/responses");
 
 // Useful inheritance class for a model which supports OpenAi schema for API requests
 // but does not have tool-calling or JSON output support.
@@ -200,9 +203,15 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
       content: "Agent is thinking...",
     });
 
+    let reasoningText = "";
     for await (const chunk of stream) {
       if (!chunk?.choices?.[0]) continue; // Skip if no choices
       const choice = chunk.choices[0];
+
+      const reasoningToken = extractReasoningContent(choice.delta);
+      if (reasoningToken) {
+        reasoningText += reasoningToken;
+      }
 
       if (choice.delta?.content) {
         textResponse += choice.delta.content;
@@ -215,8 +224,11 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
     }
 
     const call = safeJsonParse(textResponse, null);
-    if (call === null)
-      return { toolCall: null, text: textResponse, uuid: msgUUID }; // failed to parse, so must be regular text response.
+    if (call === null) {
+      if (reasoningText.trim().length > 0)
+        textResponse = `<think>${reasoningText}</think>${textResponse}`;
+      return { toolCall: null, text: textResponse, uuid: msgUUID };
+    }
 
     const { valid, reason } = this.validFuncCall(call, functions);
     if (!valid) {
@@ -335,6 +347,7 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
         );
         const msgUUID = v4();
         completion = { content: "" };
+        let completionReasoning = "";
         const stream = await chatCallback({
           messages: this.cleanMsgs(messages),
         });
@@ -342,6 +355,12 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
         for await (const chunk of stream) {
           if (!chunk?.choices?.[0]) continue; // Skip if no choices
           const choice = chunk.choices[0];
+
+          const rToken = extractReasoningContent(choice.delta);
+          if (rToken) {
+            completionReasoning += rToken;
+          }
+
           if (choice.delta?.content) {
             completion.content += choice.delta.content;
             eventHandler?.("reportStreamEvent", {
@@ -351,6 +370,9 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
             });
           }
         }
+
+        if (completionReasoning.trim().length > 0)
+          completion.content = `<think>${completionReasoning}</think>${completion.content}`;
       }
 
       // The UnTooled class inherited Deduplicator is mostly useful to prevent the agent
@@ -420,12 +442,17 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
             : response.choices?.[0]?.message;
       }
 
+      let textResponse = completion.content;
+      const reasoning = extractReasoningContent(completion);
+      if (reasoning && reasoning.trim().length > 0)
+        textResponse = `<think>${reasoning}</think>${textResponse}`;
+
       // The UnTooled class inherited Deduplicator is mostly useful to prevent the agent
       // from calling the exact same function over and over in a loop within a single chat exchange
       // _but_ we should enable it to call previously used tools in a new chat interaction.
       this.deduplicator.reset("runs");
       return {
-        textResponse: completion.content,
+        textResponse,
         cost: 0,
       };
     } catch (error) {

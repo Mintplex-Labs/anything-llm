@@ -2,7 +2,7 @@ import { useRef } from "react";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
 import { useModal } from "@/hooks/useModal";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 import EditVariableModal from "./EditVariableModal";
 import { titleCase } from "text-case";
 import truncate from "truncate";
@@ -108,13 +108,13 @@ export default function VariableRow({ variable, onRefresh }) {
           )}
         </td>
       </tr>
-      <ModalWrapper isOpen={isOpen}>
+      <Modal isOpen={isOpen} onClose={closeModal}>
         <EditVariableModal
           variable={variable}
           closeModal={closeModal}
           onRefresh={onRefresh}
         />
-      </ModalWrapper>
+      </Modal>
     </>
   );
 }

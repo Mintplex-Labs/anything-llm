@@ -12,7 +12,6 @@ import {
   THOUGHT_REGEX_CLOSE,
   THOUGHT_REGEX_COMPLETE,
   THOUGHT_REGEX_OPEN,
-  ThoughtChainComponent,
 } from "../ThoughtContainer";
 import paths from "@/utils/paths";
 import { useTranslation } from "react-i18next";
@@ -21,6 +20,20 @@ import { chatQueryRefusalResponse } from "@/utils/chat";
 import HistoricalOutputs from "./HistoricalOutputs";
 import HistoricalClarifyingQuestions from "./HistoricalClarifyingQuestions";
 import { openImageLightbox } from "@/components/ImageLightbox";
+
+function hasVisibleContent(message) {
+  if (!message) return false;
+  const stripped = message
+    .replace(new RegExp(THOUGHT_REGEX_COMPLETE, "g"), "")
+    .trim();
+  if (!stripped) return false;
+  if (
+    stripped.match(THOUGHT_REGEX_OPEN) &&
+    !stripped.match(THOUGHT_REGEX_CLOSE)
+  )
+    return false;
+  return true;
+}
 
 const HistoricalMessage = ({
   uuid: uuidProp,
@@ -148,7 +161,7 @@ const HistoricalMessage = ({
         ) : (
           <div className="break-words">
             <HistoricalClarifyingQuestions surveys={clarifyingQuestions} />
-            <RenderChatContent role={role} message={message} messageId={uuid} />
+            <RenderChatContent role={role} message={message} />
             {isRefusalMessage && (
               <Link
                 data-tooltip-id="query-refusal-info"
@@ -169,25 +182,27 @@ const HistoricalMessage = ({
             <HistoricalOutputs outputs={outputs} />
           </div>
         )}
-        <div className="flex items-start md:items-center gap-x-1">
-          <TTSMessage
-            slug={workspace?.slug}
-            chatId={chatId}
-            message={message}
-          />
-          <Actions
-            message={message}
-            feedbackScore={feedbackScore}
-            chatId={chatId}
-            slug={workspace?.slug}
-            isLastMessage={isLastMessage}
-            regenerateMessage={regenerateMessage}
-            isEditing={isEditing}
-            role={role}
-            forkThread={forkThread}
-            metrics={metrics}
-          />
-        </div>
+        {hasVisibleContent(message) && (
+          <div className="flex items-start md:items-center gap-x-1">
+            <TTSMessage
+              slug={workspace?.slug}
+              chatId={chatId}
+              message={message}
+            />
+            <Actions
+              message={message}
+              feedbackScore={feedbackScore}
+              chatId={chatId}
+              slug={workspace?.slug}
+              isLastMessage={isLastMessage}
+              regenerateMessage={regenerateMessage}
+              isEditing={isEditing}
+              role={role}
+              forkThread={forkThread}
+              metrics={metrics}
+            />
+          </div>
+        )}
         {role === "assistant" && <Citations sources={sources} />}
       </div>
     </div>
@@ -298,7 +313,7 @@ function TruncatableContent({ children }) {
 }
 
 const RenderChatContent = memo(
-  ({ role, message, messageId }) => {
+  ({ role, message }) => {
     // If the message is not from the assistant, we can render it directly
     // as normal since the user cannot think (lol)
     if (role !== "assistant")
@@ -310,47 +325,31 @@ const RenderChatContent = memo(
           }}
         />
       );
-    let thoughtChain = null;
-    let msgToRender = message;
     if (!message) return null;
 
-    // If the message is a perfect thought chain, we can render it directly
-    // Complete == open and close tags match perfectly.
-    if (message.match(THOUGHT_REGEX_COMPLETE)) {
-      thoughtChain = message.match(THOUGHT_REGEX_COMPLETE)?.[0];
-      msgToRender = message.replace(THOUGHT_REGEX_COMPLETE, "");
-    }
-
-    // If the message is a thought chain but not a complete thought chain (matching opening tags but not closing tags),
-    // we can render it as a thought chain if we can at least find a closing tag
-    // This can occur when the assistant starts with <thinking> and then <response>'s later.
+    // Thought segments are rendered by the activity chain (buildMessages
+    // splits them out) - this only renders the visible remainder.
     if (
       message.match(THOUGHT_REGEX_OPEN) &&
       !message.match(THOUGHT_REGEX_CLOSE)
-    ) {
-      thoughtChain = message;
-      msgToRender = "";
-    }
+    )
+      return null;
+    const msgToRender = message.replace(THOUGHT_REGEX_COMPLETE, "");
+    if (!msgToRender.trim().length) return null;
 
     return (
-      <>
-        {thoughtChain && (
-          <ThoughtChainComponent content={thoughtChain} messageId={messageId} />
-        )}
-        <span
-          className="flex flex-col gap-y-1 text-white light:text-slate-900"
-          dangerouslySetInnerHTML={{
-            __html: DOMPurify.sanitize(renderMarkdown(msgToRender)),
-          }}
-        />
-      </>
+      <span
+        className="flex flex-col gap-y-1 text-white light:text-slate-900"
+        dangerouslySetInnerHTML={{
+          __html: DOMPurify.sanitize(renderMarkdown(msgToRender)),
+        }}
+      />
     );
   },
   (prevProps, nextProps) => {
     return (
       prevProps.role === nextProps.role &&
-      prevProps.message === nextProps.message &&
-      prevProps.messageId === nextProps.messageId
+      prevProps.message === nextProps.message
     );
   }
 );

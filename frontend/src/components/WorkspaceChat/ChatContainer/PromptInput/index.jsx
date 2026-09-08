@@ -63,6 +63,8 @@ export default function PromptInput({
   usePromptInputStorage({
     promptInput,
     setPromptInput,
+    workspaceSlug: workspaceSlug ?? workspace?.slug,
+    threadSlug,
   });
 
   /*
@@ -108,6 +110,9 @@ export default function PromptInput({
    * @param {number} adjustment
    */
   function saveCurrentState(adjustment = 0) {
+    // The debounced call can land after this instance unmounted (eg: the
+    // empty->chat transition remounts PromptInput mid-debounce).
+    if (!textareaRef.current) return;
     if (undoStack.current.length >= MAX_EDIT_STACK_SIZE)
       undoStack.current.shift();
     undoStack.current.push({

@@ -315,7 +315,10 @@ class DrupalWiki {
 
         const buffer = await attachmentResponse.arrayBuffer();
         const localFilePath = normalizePath(
-          sanitizeFileName(path.resolve(WATCH_DIRECTORY, fileName))
+          path.resolve(
+            WATCH_DIRECTORY,
+            sanitizeFileName(path.basename(fileName))
+          )
         );
         if (!isWithin(path.resolve(WATCH_DIRECTORY), localFilePath)) {
           console.error(

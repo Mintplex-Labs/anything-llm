@@ -1,7 +1,12 @@
 import PreLoader from "@/components/Preloader";
 import WorkspaceFileRow from "./WorkspaceFileRow";
 import { memo, useEffect, useState } from "react";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal, {
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalPrimaryButton,
+} from "@/components/lib/Modal";
 import {
   Eye,
   PushPin,
@@ -323,48 +328,41 @@ const PinAlert = memo(() => {
   }, []);
 
   return (
-    <ModalWrapper isOpen={showAlert} noPortal={true}>
-      <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
-        <div className="relative p-6 border-b rounded-t border-theme-modal-border">
-          <div className="flex items-center gap-2">
-            <PushPin
-              className="text-theme-text-primary text-lg w-6 h-6"
-              weight="regular"
+    <Modal isOpen={showAlert} noPortal={true} onClose={dismissAlert}>
+      <ModalHeader
+        title={
+          <span className="flex items-center gap-x-2">
+            <PushPin className="w-6 h-6" weight="regular" />
+            {t("connectors.pinning.what_pinning")}
+          </span>
+        }
+        onClose={dismissAlert}
+      />
+      <ModalBody>
+        <div className="w-full text-zinc-300 light:text-slate-700 text-md flex flex-col gap-y-2">
+          <p>
+            <span
+              dangerouslySetInnerHTML={{
+                __html: t("connectors.pinning.pin_explained_block1"),
+              }}
             />
-            <h3 className="text-xl font-semibold text-white">
-              {t("connectors.pinning.what_pinning")}
-            </h3>
-          </div>
+          </p>
+          <p>
+            <span
+              dangerouslySetInnerHTML={{
+                __html: t("connectors.pinning.pin_explained_block2"),
+              }}
+            />
+          </p>
+          <p>{t("connectors.pinning.pin_explained_block3")}</p>
         </div>
-        <div className="py-7 px-9 space-y-2 flex-col">
-          <div className="w-full text-white text-md flex flex-col gap-y-2">
-            <p>
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: t("connectors.pinning.pin_explained_block1"),
-                }}
-              />
-            </p>
-            <p>
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: t("connectors.pinning.pin_explained_block2"),
-                }}
-              />
-            </p>
-            <p>{t("connectors.pinning.pin_explained_block3")}</p>
-          </div>
-        </div>
-        <div className="flex w-full justify-end items-center p-6 space-x-2 border-t border-theme-modal-border rounded-b">
-          <button
-            onClick={dismissAlert}
-            className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
-          >
-            {t("connectors.pinning.accept")}
-          </button>
-        </div>
-      </div>
-    </ModalWrapper>
+      </ModalBody>
+      <ModalFooter className="justify-end">
+        <ModalPrimaryButton onClick={dismissAlert}>
+          {t("connectors.pinning.accept")}
+        </ModalPrimaryButton>
+      </ModalFooter>
+    </Modal>
   );
 });
 
@@ -388,51 +386,44 @@ const DocumentWatchAlert = memo(() => {
   }, []);
 
   return (
-    <ModalWrapper isOpen={showAlert} noPortal={true}>
-      <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
-        <div className="relative p-6 border-b rounded-t border-theme-modal-border">
-          <div className="flex items-center gap-2">
-            <Eye
-              className="text-theme-text-primary text-lg w-6 h-6"
-              weight="regular"
+    <Modal isOpen={showAlert} noPortal={true} onClose={dismissAlert}>
+      <ModalHeader
+        title={
+          <span className="flex items-center gap-x-2">
+            <Eye className="w-6 h-6" weight="regular" />
+            {t("connectors.watching.what_watching")}
+          </span>
+        }
+        onClose={dismissAlert}
+      />
+      <ModalBody>
+        <div className="w-full text-zinc-300 light:text-slate-700 text-md flex flex-col gap-y-2">
+          <p>
+            <span
+              dangerouslySetInnerHTML={{
+                __html: t("connectors.watching.watch_explained_block1"),
+              }}
             />
-            <h3 className="text-xl font-semibold text-white">
-              {t("connectors.watching.what_watching")}
-            </h3>
-          </div>
+          </p>
+          <p>{t("connectors.watching.watch_explained_block2")}</p>
+          <p>
+            {t("connectors.watching.watch_explained_block3_start")}
+            <Link
+              to={paths.experimental.liveDocumentSync.manage()}
+              className="text-blue-600 underline"
+            >
+              {t("connectors.watching.watch_explained_block3_link")}
+            </Link>
+            {t("connectors.watching.watch_explained_block3_end")}
+          </p>
         </div>
-        <div className="py-7 px-9 space-y-2 flex-col">
-          <div className="w-full text-white text-md flex flex-col gap-y-2">
-            <p>
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: t("connectors.watching.watch_explained_block1"),
-                }}
-              />
-            </p>
-            <p>{t("connectors.watching.watch_explained_block2")}</p>
-            <p>
-              {t("connectors.watching.watch_explained_block3_start")}
-              <Link
-                to={paths.experimental.liveDocumentSync.manage()}
-                className="text-blue-600 underline"
-              >
-                {t("connectors.watching.watch_explained_block3_link")}
-              </Link>
-              {t("connectors.watching.watch_explained_block3_end")}
-            </p>
-          </div>
-        </div>
-        <div className="flex w-full justify-end items-center p-6 space-x-2 border-t border-theme-modal-border rounded-b">
-          <button
-            onClick={dismissAlert}
-            className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
-          >
-            {t("connectors.watching.accept")}
-          </button>
-        </div>
-      </div>
-    </ModalWrapper>
+      </ModalBody>
+      <ModalFooter className="justify-end">
+        <ModalPrimaryButton onClick={dismissAlert}>
+          {t("connectors.watching.accept")}
+        </ModalPrimaryButton>
+      </ModalFooter>
+    </Modal>
   );
 });
 

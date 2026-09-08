@@ -5,6 +5,7 @@ import { CircleNotch, Info } from "@phosphor-icons/react";
 import strDistance from "js-levenshtein";
 import { LLM_PREFERENCE_CHANGED_EVENT } from "@/pages/GeneralSettings/LLMPreference";
 import { LEMONADE_COMMON_URLS } from "@/utils/constants";
+import { originOnly } from "@/utils/url";
 import { Tooltip } from "react-tooltip";
 import { Link } from "react-router-dom";
 import ModelTable from "@/components/lib/ModelTable";
@@ -12,15 +13,6 @@ import ModelTableLayout from "@/components/lib/ModelTable/layout";
 import ModelTableLoadingSkeleton from "@/components/lib/ModelTable/loading";
 import showToast from "@/utils/toast";
 import LemonadeUtils from "@/models/utils/lemonadeUtils";
-
-export function cleanBasePath(basePath = "") {
-  try {
-    const url = new URL(basePath);
-    return url.origin;
-  } catch {
-    return basePath;
-  }
-}
 
 export default function LemonadeOptions({ settings }) {
   const {
@@ -32,6 +24,7 @@ export default function LemonadeOptions({ settings }) {
     provider: "lemonade",
     initialBasePath: settings?.LemonadeLLMBasePath,
     ENDPOINTS: LEMONADE_COMMON_URLS,
+    normalizeBasePath: originOnly,
   });
   const [selectedModelId, setSelectedModelId] = useState(
     settings?.LemonadeLLMModelPref
@@ -107,7 +100,7 @@ export default function LemonadeOptions({ settings }) {
             name="LemonadeLLMBasePath"
             className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="http://localhost:13305"
-            value={cleanBasePath(basePathValue.value)}
+            value={basePathValue.value}
             required={true}
             autoComplete="off"
             spellCheck={false}

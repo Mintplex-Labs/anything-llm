@@ -3,10 +3,19 @@ import { AWS_REGIONS } from "./regions";
 import { useState, useEffect } from "react";
 import System from "@/models/system";
 
+const MANUAL_REGION_ENTRY = "-- Enter region manually --";
+
 export default function AwsBedrockLLMOptions({ settings }) {
   const [inputValue, setInputValue] = useState(settings?.AwsBedrockLLMApiKey);
   const [apiKey, setApiKey] = useState(settings?.AwsBedrockLLMApiKey);
   const [region, setRegion] = useState(settings?.AwsBedrockLLMRegion);
+  // A saved region outside the known list (eg: GovCloud or other specialized
+  // regions set via ENV/Helm) can only render via manual entry - a select
+  // with no matching option would silently fall back to the first region.
+  const [manualRegion, setManualRegion] = useState(
+    !!settings?.AwsBedrockLLMRegion &&
+      !AWS_REGIONS.some((r) => r.code === settings.AwsBedrockLLMRegion)
+  );
 
   return (
     <div className="w-full flex flex-col">
@@ -53,22 +62,54 @@ export default function AwsBedrockLLMOptions({ settings }) {
           <label className="text-white text-sm font-semibold block mb-3">
             AWS Region
           </label>
-          <select
-            name="AwsBedrockLLMRegion"
-            value={region}
-            required={true}
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-            onChange={(e) => setRegion(e.target.value)}
-            onBlur={() => setRegion(region)}
-          >
-            {AWS_REGIONS.map((region) => {
-              return (
-                <option key={region.code} value={region.code}>
-                  {region.name} ({region.code})
-                </option>
-              );
-            })}
-          </select>
+          {manualRegion ? (
+            <>
+              <input
+                type="text"
+                name="AwsBedrockLLMRegion"
+                className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                placeholder="us-gov-west-1"
+                defaultValue={region}
+                required={true}
+                autoComplete="off"
+                spellCheck={false}
+                onChange={(e) => setRegion(e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  if (!AWS_REGIONS.some((r) => r.code === region))
+                    setRegion(AWS_REGIONS[0].code);
+                  setManualRegion(false);
+                }}
+                className="text-white/60 hover:text-white text-xs text-left mt-1.5 underline w-fit"
+              >
+                Select from available regions
+              </button>
+            </>
+          ) : (
+            <select
+              name="AwsBedrockLLMRegion"
+              value={region}
+              required={true}
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              onChange={(e) => {
+                if (e.target.value === MANUAL_REGION_ENTRY)
+                  return setManualRegion(true);
+                setRegion(e.target.value);
+              }}
+            >
+              {AWS_REGIONS.map((region) => {
+                return (
+                  <option key={region.code} value={region.code}>
+                    {region.name} ({region.code})
+                  </option>
+                );
+              })}
+              <option disabled={true}>──────────</option>
+              <option value={MANUAL_REGION_ENTRY}>{MANUAL_REGION_ENTRY}</option>
+            </select>
+          )}
         </div>
       </div>
 
@@ -96,6 +137,31 @@ export default function AwsBedrockLLMOptions({ settings }) {
                 autoComplete="off"
               />
             </div>
+            <div className="flex flex-col w-60">
+              <div className="flex items-center gap-x-1 mb-3">
+                <label className="text-white text-sm font-semibold block">
+                  Max Tokens
+                </label>
+                <div className="group relative">
+                  <Info size={14} className="text-white/60 cursor-pointer" />
+                  <div className="hidden group-hover:block absolute left-0 bottom-full mb-1 w-64 p-2 bg-theme-settings-input-bg text-white text-xs rounded-lg shadow-lg z-10">
+                    Maximum number of tokens the model can generate per
+                    response. Increase for longer outputs. Default is 4096.
+                  </div>
+                </div>
+              </div>
+              <input
+                type="number"
+                name="AwsBedrockLLMMaxTokens"
+                className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                placeholder="4096"
+                min={1}
+                onScroll={(e) => e.target.blur()}
+                defaultValue={settings?.AwsBedrockLLMMaxTokens}
+                required={false}
+                autoComplete="off"
+              />
+            </div>
           </>
         )}
       </div>
@@ -103,35 +169,45 @@ export default function AwsBedrockLLMOptions({ settings }) {
   );
 }
 
+const MANUAL_MODEL_ENTRY = "-- Enter model ID manually --";
+
 function BedrockModelSelection({ settings, apiKey, region }) {
   const [groupedModels, setGroupedModels] = useState({});
   const [loading, setLoading] = useState(true);
+  const [manualEntry, setManualEntry] = useState(false);
 
   useEffect(() => {
     async function findCustomModels() {
       setLoading(true);
-      const { models } = await System.customModels(
+      const { models = [] } = await System.customModels(
         "bedrock",
         apiKey,
         null,
         null,
         { region }
       );
-      if (models?.length > 0) {
-        const modelsByOrganization = models.reduce((acc, model) => {
-          const org = model.organization || "AWS Bedrock";
-          acc[org] = acc[org] || [];
-          acc[org].push(model);
-          return acc;
-        }, {});
-        setGroupedModels(modelsByOrganization);
-      }
+      const modelsByOrganization = models.reduce((acc, model) => {
+        const org = model.organization || "AWS Bedrock";
+        acc[org] = acc[org] || [];
+        acc[org].push(model);
+        return acc;
+      }, {});
+      setGroupedModels(modelsByOrganization);
+
+      // Saved models not present in the fetched list (eg: cross-region
+      // inference profile IDs the Mantle listing omits) can only render
+      // via manual entry - same for an empty list.
+      const savedModel = settings?.AwsBedrockLLMModel;
+      const savedModelInList = models.some((model) => model.id === savedModel);
+      setManualEntry(
+        models.length === 0 || (!!savedModel && !savedModelInList)
+      );
       setLoading(false);
     }
     findCustomModels();
   }, [apiKey, region]);
 
-  if (loading || Object.keys(groupedModels).length === 0) {
+  if (loading) {
     return (
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-3">
@@ -150,6 +226,35 @@ function BedrockModelSelection({ settings, apiKey, region }) {
     );
   }
 
+  if (manualEntry) {
+    return (
+      <div className="flex flex-col w-60">
+        <label className="text-white text-sm font-semibold block mb-3">
+          Chat Model Selection
+        </label>
+        <input
+          type="text"
+          name="AwsBedrockLLMModel"
+          className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          placeholder="eu.anthropic.claude-sonnet-4-5-20250929-v1:0"
+          defaultValue={settings?.AwsBedrockLLMModel}
+          required={true}
+          autoComplete="off"
+          spellCheck={false}
+        />
+        {Object.keys(groupedModels).length > 0 && (
+          <button
+            type="button"
+            onClick={() => setManualEntry(false)}
+            className="text-white/60 hover:text-white text-xs text-left mt-1.5 underline w-fit"
+          >
+            Select from available models
+          </button>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col w-60">
       <label className="text-white text-sm font-semibold block mb-3">
@@ -158,6 +263,9 @@ function BedrockModelSelection({ settings, apiKey, region }) {
       <select
         name="AwsBedrockLLMModel"
         required={true}
+        onChange={(e) => {
+          if (e.target.value === MANUAL_MODEL_ENTRY) setManualEntry(true);
+        }}
         className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
         {Object.keys(groupedModels)
@@ -175,6 +283,8 @@ function BedrockModelSelection({ settings, apiKey, region }) {
               ))}
             </optgroup>
           ))}
+        <option disabled={true}>──────────</option>
+        <option value={MANUAL_MODEL_ENTRY}>{MANUAL_MODEL_ENTRY}</option>
       </select>
     </div>
   );

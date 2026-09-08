@@ -26,6 +26,14 @@ export default function messageToSpeech(message = "") {
   let text = message;
 
   /*
+   * Reasoning blocks (<think>...</think>) are internal model output and never
+   * part of the final answer — drop them (and any unterminated trailing
+   * <think> block) entirely so they are not spoken.
+   */
+  text = text.replace(/<think>[\s\S]*?<\/think>/gi, " ");
+  text = text.replace(/<think>[\s\S]*$/gi, " ");
+
+  /*
    * Remove fenced code blocks entirely — reading code aloud is rarely
    * useful and produces a long stream of unintelligible characters.
    */

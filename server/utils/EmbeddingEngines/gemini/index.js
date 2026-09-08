@@ -2,6 +2,7 @@ const { toChunks, reportEmbeddingProgress } = require("../../helpers");
 
 const MODEL_MAP = {
   "gemini-embedding-001": 2048,
+  "gemini-embedding-2": 8192,
 };
 
 class GeminiEmbedder {

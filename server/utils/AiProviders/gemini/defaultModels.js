@@ -1,20 +1,19 @@
 const { MODEL_MAP } = require("../modelMap");
 
 const stableModels = [
-  // %STABLE_MODELS% - updated 2025-05-13T23:13:58.920Z
-  "gemini-1.5-pro-001",
-  "gemini-1.5-pro-002",
-  "gemini-1.5-pro",
-  "gemini-1.5-flash-001",
-  "gemini-1.5-flash",
-  "gemini-1.5-flash-002",
-  "gemini-1.5-flash-8b",
-  "gemini-1.5-flash-8b-001",
-  "gemini-2.0-flash",
-  "gemini-2.0-flash-001",
-  "gemini-2.0-flash-lite-001",
-  "gemini-2.0-flash-lite",
-  "gemini-2.0-flash-preview-image-generation",
+  // %STABLE_MODELS% - updated 2026-08-10T18:00:04.775Z
+  "gemini-2.5-flash",
+  "gemini-2.5-pro",
+  "gemma-4-26b-a4b-it",
+  "gemma-4-31b-it",
+  "gemini-2.5-flash-lite",
+  "gemini-2.5-flash-image",
+  "gemini-3.1-flash-lite",
+  "gemini-3.1-flash-image",
+  "gemini-3.1-flash-lite-image",
+  "gemini-3.5-flash",
+  "gemini-3.5-flash-lite",
+  "gemini-3.6-flash",
   // %EOC_STABLE_MODELS%
 ];
 
@@ -23,33 +22,21 @@ const stableModels = [
 // generally, v1beta models have `exp` in the name, but not always
 // so we check for both against a static list as well via API.
 const v1BetaModels = [
-  // %V1BETA_MODELS% - updated 2025-05-13T23:13:58.920Z
-  "gemini-1.5-pro-latest",
-  "gemini-1.5-flash-latest",
-  "gemini-1.5-flash-8b-latest",
-  "gemini-1.5-flash-8b-exp-0827",
-  "gemini-1.5-flash-8b-exp-0924",
-  "gemini-2.5-pro-exp-03-25",
-  "gemini-2.5-pro-preview-03-25",
-  "gemini-2.5-flash-preview-04-17",
-  "gemini-2.5-flash-preview-04-17-thinking",
-  "gemini-2.5-pro-preview-05-06",
-  "gemini-2.0-flash-exp",
-  "gemini-2.0-flash-exp-image-generation",
-  "gemini-2.0-flash-lite-preview-02-05",
-  "gemini-2.0-flash-lite-preview",
-  "gemini-2.0-pro-exp",
-  "gemini-2.0-pro-exp-02-05",
-  "gemini-exp-1206",
-  "gemini-2.0-flash-thinking-exp-01-21",
-  "gemini-2.0-flash-thinking-exp",
-  "gemini-2.0-flash-thinking-exp-1219",
-  "learnlm-1.5-pro-experimental",
-  "learnlm-2.0-flash-experimental",
-  "gemma-3-1b-it",
-  "gemma-3-4b-it",
-  "gemma-3-12b-it",
-  "gemma-3-27b-it",
+  // %V1BETA_MODELS% - updated 2026-08-10T18:00:04.776Z
+  "gemini-flash-latest",
+  "gemini-flash-lite-latest",
+  "gemini-pro-latest",
+  "gemini-3-flash-preview",
+  "gemini-3.1-pro-preview",
+  "gemini-3.1-flash-lite-preview",
+  "gemini-3-pro-image-preview",
+  "gemini-3-pro-image",
+  "nano-banana-pro-preview",
+  "gemini-3.1-flash-image-preview",
+  "gemini-omni-flash-preview",
+  "deep-research-max-preview-04-2026",
+  "deep-research-preview-04-2026",
+  "deep-research-pro-preview-12-2025",
   // %EOC_V1BETA_MODELS%
 ];
 

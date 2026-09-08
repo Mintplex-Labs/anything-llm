@@ -4,6 +4,7 @@ const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
+const { LocalAiLLM } = require("../../../AiProviders/localAi/index.js");
 
 /**
  * The agent provider for the LocalAI provider.
@@ -39,6 +40,7 @@ class LocalAiProvider extends InheritMultiple([Provider, UnTooled]) {
   // ---- UnTooled callbacks (used when native tool calling is not supported) ----
 
   async #handleFunctionCallChat({ messages = [] }) {
+    await LocalAiLLM.cacheContextWindows();
     return await this.client.chat.completions
       .create({
         model: this.model,
@@ -57,9 +59,11 @@ class LocalAiProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   async #handleFunctionCallStream({ messages = [] }) {
+    await LocalAiLLM.cacheContextWindows();
     return await this.client.chat.completions.create({
       model: this.model,
       stream: true,
+      stream_options: { include_usage: true },
       messages,
     });
   }
@@ -86,6 +90,7 @@ class LocalAiProvider extends InheritMultiple([Provider, UnTooled]) {
     );
 
     try {
+      await LocalAiLLM.cacheContextWindows();
       return await tooledStream(
         this.client,
         this.model,
@@ -125,6 +130,7 @@ class LocalAiProvider extends InheritMultiple([Provider, UnTooled]) {
     }
 
     try {
+      await LocalAiLLM.cacheContextWindows();
       const result = await tooledComplete(
         this.client,
         this.model,

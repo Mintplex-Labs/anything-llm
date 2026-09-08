@@ -44,7 +44,7 @@ async function scrapeGenericUrl({
    * so we can return the content immediately.
    */
   if (processVia === "file")
-    return await processAsFile({ uri: link, saveAsDocument });
+    return await processAsFile({ uri: link, saveAsDocument, metadata });
   else if (processVia === "youtube")
     return await loadYouTubeTranscript(
       { url: link },
@@ -227,6 +227,7 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
         ...validatedHeaders(headers),
       },
     }).then((res) => res.text());
+    if (captureAs === "html") return pageText;
     return htmlToMarkdown(pageText, link);
   } catch (error) {
     console.error("getPageContent failed to be fetched by any method.", error);

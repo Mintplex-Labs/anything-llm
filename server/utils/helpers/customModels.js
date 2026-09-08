@@ -12,8 +12,6 @@ const { parseNvidiaNimBasePath } = require("../AiProviders/nvidiaNim");
 const { fetchPPIOModels } = require("../AiProviders/ppio");
 const { GeminiLLM } = require("../AiProviders/gemini");
 const { fetchCometApiModels } = require("../AiProviders/cometapi");
-const { parseFoundryBasePath } = require("../AiProviders/foundry");
-const { getDockerModels } = require("../AiProviders/dockerModelRunner");
 const { getAllLemonadeModels } = require("../AiProviders/lemonade");
 
 const SUPPORT_CUSTOM_MODELS = [
@@ -44,7 +42,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "cohere",
   "zai",
   "giteeai",
-  "docker-model-runner",
+  "llmman",
   "privatemode",
   "sambanova",
   "lemonade",
@@ -53,6 +51,16 @@ const SUPPORT_CUSTOM_MODELS = [
   "omlx",
   "bedrock",
   "generic-openai",
+  "vertex",
+  // Image Generation Engines
+  // These are suffixed with `-imggen` so that a provider that supports both
+  // chat and image generation (eg: ollama) can return only its image-capable
+  // models for this key.
+  "openai-imggen",
+  "openrouter-imggen",
+  "ollama-imggen",
+  "lemonade-imggen",
+  "localai-imggen",
   // Embedding Engines
   "native-embedder",
   "cohere-embedder",
@@ -131,6 +139,20 @@ async function getCustomModels(
       return await getCohereModels(apiKey, "chat");
     case "zai":
       return await getZAiModels(apiKey);
+    case "openai-imggen":
+      return await getOpenAiImageModels(apiKey);
+    case "openrouter-imggen":
+      return await getOpenRouterImageModels();
+    case "ollama-imggen":
+      return await getOllamaImageModels(basePath, apiKey);
+    case "lemonade-imggen":
+      return await getLemonadeModels(
+        basePath,
+        "image",
+        unmaskedSecret(apiKey) || process.env.IMAGE_GEN_LEMONADE_API_KEY || null
+      );
+    case "localai-imggen":
+      return await getLocalAiImageModels(basePath, apiKey);
     case "native-embedder":
       return await getNativeEmbedderModels();
     case "cohere-embedder":
@@ -139,8 +161,8 @@ async function getCustomModels(
       return await getOpenRouterEmbeddingModels();
     case "giteeai":
       return await getGiteeAIModels(apiKey);
-    case "docker-model-runner":
-      return await getDockerModelRunnerModels(basePath);
+    case "llmman":
+      return await llmmanModels(basePath);
     case "privatemode":
       return await getPrivatemodeModels(basePath, "generate");
     case "sambanova":
@@ -159,6 +181,8 @@ async function getCustomModels(
       return await getCerebrasModels();
     case "bedrock":
       return await getBedrockModels(apiKey, options);
+    case "vertex":
+      return await getVertexModels();
     case "generic-openai":
       return await getGenericOpenAiModels(basePath, apiKey);
     case "deepgram-stt":
@@ -919,26 +943,19 @@ async function getMoonshotAiModels(_apiKey = null) {
   return { models, error: null };
 }
 
+/**
+ * List Foundry models for the model picker.
+ *
+ * Resolves against whichever management surface this host exposes — see the
+ * models module for how that is determined and what each one can report.
+ * @see {@link ../AiProviders/foundry/models}
+ */
 async function getFoundryModels(basePath = null) {
   try {
-    const { OpenAI: OpenAIApi } = require("openai");
-    const openai = new OpenAIApi({
-      baseURL: parseFoundryBasePath(basePath || process.env.FOUNDRY_BASE_PATH),
-      apiKey: null,
-    });
-    const models = await openai.models
-      .list()
-      .then((results) =>
-        results.data.map((model) => ({
-          ...model,
-          name: model.id,
-        }))
-      )
-      .catch((e) => {
-        console.error(`Foundry:listModels`, e.message);
-        return [];
-      });
-
+    const FoundryModels = require("../AiProviders/foundry/models");
+    const { models } = await FoundryModels.listModels(
+      basePath || process.env.FOUNDRY_BASE_PATH
+    );
     return { models, error: null };
   } catch (e) {
     console.error(`Foundry:getFoundryModels`, e.message);
@@ -1021,22 +1038,47 @@ async function getOpenRouterEmbeddingModels() {
   return { models, error: null };
 }
 
-async function getDockerModelRunnerModels(basePath = null) {
+/**
+ * Lists the models llmman is serving, via the Ollama API's /api/tags.
+ */
+async function llmmanModels(basePath = null, _authToken = null) {
+  let url;
   try {
-    const models = await getDockerModels(basePath);
-    return { models, error: null };
-  } catch (e) {
-    console.error(`DockerModelRunner:getDockerModelRunnerModels`, e.message);
-    return {
-      models: [],
-      error: "Could not fetch Docker Model Runner Models",
-    };
+    let urlPath = basePath ?? process.env.LLMMAN_BASE_PATH;
+    new URL(urlPath);
+    if (urlPath.split("").slice(-1)?.[0] === "/")
+      throw new Error("BasePath Cannot end in /!");
+    url = urlPath;
+  } catch {
+    return { models: [], error: "Not a valid URL." };
   }
+
+  const authToken = _authToken || process.env.LLMMAN_AUTH_TOKEN || null;
+  const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
+  const models = await fetch(`${url}/api/tags`, { headers: headers })
+    .then((res) => {
+      if (!res.ok) throw new Error(`Could not reach llmman! ${res.status}`);
+      return res.json();
+    })
+    .then((data) => data?.models || [])
+    .then((models) => models.map((model) => ({ id: model.name })))
+    .catch((e) => {
+      console.error(e);
+      return [];
+    });
+
+  if (models.length > 0 && !!authToken)
+    process.env.LLMMAN_AUTH_TOKEN = authToken;
+  return { models, error: null };
 }
 
-async function getLemonadeModels(basePath = null, task = "chat") {
+async function getLemonadeModels(
+  basePath = null,
+  task = "chat",
+  apiKey = null
+) {
   try {
-    const models = await getAllLemonadeModels(basePath, task);
+    const models = await getAllLemonadeModels(basePath, task, apiKey);
     return { models, error: null };
   } catch (e) {
     console.error(`Lemonade:getLemonadeModels`, e.message);
@@ -1339,6 +1381,34 @@ async function kokoroTtsVoices(basePath = null, apiKey = null) {
  * @param {string} [options.region] - The region to use
  * @returns {Promise<{models: Array<{id: string, organization: string, name: string}>, error: string | null}>}
  */
+async function getVertexModels() {
+  // Vertex's OpenAI-compatible endpoint has no /models listing, so the
+  // dropdown is built from the LiteLLM-backed context window cache, which
+  // is already filtered to `vertex_ai-language-models` under both keys -
+  // `gemini` covers caches pulled before `vertex` was tracked. Non-Gemini
+  // entries (partner/embedding models) are excluded since users run those
+  // via the manual model entry with their full publisher-prefixed IDs.
+  try {
+    const { MODEL_MAP } = require("../AiProviders/modelMap");
+    const modelMap = MODEL_MAP.get("vertex") ?? MODEL_MAP.get("gemini") ?? {};
+    const models = Object.keys(modelMap)
+      .filter(
+        (id) =>
+          id.startsWith("gemini") &&
+          // Retired on Vertex - the endpoint 404s for these models.
+          !id.startsWith("gemini-2.0") &&
+          !id.includes("embedding") &&
+          !id.includes("computer-use")
+      )
+      .sort()
+      .map((id) => ({ id, name: id, organization: "Google" }));
+    return { models, error: null };
+  } catch (e) {
+    console.error(`Vertex:getVertexModels`, e.message);
+    return { models: [], error: null };
+  }
+}
+
 async function getBedrockModels(_apiKey = null, options = {}) {
   try {
     const apiKey =
@@ -1349,11 +1419,22 @@ async function getBedrockModels(_apiKey = null, options = {}) {
       options?.region || process.env.AWS_BEDROCK_LLM_REGION || "us-west-2";
 
     const { OpenAI: OpenAIApi } = require("openai");
+    const {
+      openaiBaseURL,
+      controlPlaneHost,
+    } = require("../AiProviders/bedrock/endpoints");
     const openai = new OpenAIApi({
       apiKey,
-      baseURL: `https://bedrock-mantle.${region}.api.aws/v1`,
+      baseURL: openaiBaseURL(region),
     });
-    const models = await openai.models
+
+    // The Mantle catalog listing omits cross-region inference profiles
+    // (eg: `eu.anthropic.*`), which are the only way to run Claude in many
+    // regions, and does not exist at all in some regions (eg: GovCloud East).
+    // The control plane accepts the same bearer key and lists them, so both
+    // sources are merged. Only Anthropic profiles are listed since profile
+    // IDs are only routable through the bedrock-runtime `/anthropic` path.
+    const catalogModels = await openai.models
       .list()
       .then((results) => results.data)
       .then((models) =>
@@ -1368,6 +1449,33 @@ async function getBedrockModels(_apiKey = null, options = {}) {
         return [];
       });
 
+    const profileModels = await fetch(
+      `${controlPlaneHost(region)}/inference-profiles?maxResults=1000`,
+      { headers: { Authorization: `Bearer ${apiKey}` } }
+    )
+      .then((res) => (res.ok ? res.json() : { inferenceProfileSummaries: [] }))
+      .then((data) =>
+        (data.inferenceProfileSummaries ?? [])
+          .filter(
+            (profile) =>
+              profile.status === "ACTIVE" &&
+              profile.inferenceProfileId.includes("anthropic.")
+          )
+          .map((profile) => ({
+            id: profile.inferenceProfileId,
+            name: profile.inferenceProfileId,
+            organization: "Cross-Region Inference Profiles",
+          }))
+      )
+      .catch((e) => {
+        console.error(`AWSBedrock:listInferenceProfiles`, e.message);
+        return [];
+      });
+
+    const models = [...catalogModels, ...profileModels].sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+
     if (models.length > 0 && !!apiKey)
       process.env.AWS_BEDROCK_LLM_API_KEY = apiKey;
     return { models, error: null };
@@ -1375,6 +1483,160 @@ async function getBedrockModels(_apiKey = null, options = {}) {
     console.error(`AWSBedrock:getBedrockModels`, e.message);
     return { models: [], error: "Could not fetch AWS Bedrock Models" };
   }
+}
+
+// OpenAI image models follow predictable family names, so we filter the
+// account's live model list by family rather than maintaining an exhaustive
+// list - new variants (e.g. gpt-image-2) are picked up automatically.
+const OPENAI_IMAGE_MODEL_FAMILIES = /dall-e|gpt-image/i;
+
+/**
+ * Lists the OpenAI image-capable models the account can access by filtering its
+ * live model list to the known image model families. Returns nothing when the
+ * endpoint cannot be reached so the UI falls back to its manual-entry input.
+ * @param {string|null} apiKey - OpenAI API key; defaults to IMAGE_GEN_OPENAI_KEY when null
+ * @returns {Promise<{models: {id: string, name: string}[], error: string|null}>}
+ */
+async function getOpenAiImageModels(apiKey = null) {
+  const { OpenAI: OpenAIApi } = require("openai");
+  const openai = new OpenAIApi({
+    apiKey: unmaskedSecret(apiKey) || process.env.IMAGE_GEN_OPENAI_KEY,
+  });
+  const models = await openai.models
+    .list()
+    .then((results) => results.data)
+    .then((all) =>
+      all
+        .filter((model) => OPENAI_IMAGE_MODEL_FAMILIES.test(model.id))
+        .map((model) => ({ id: model.id, name: model.id }))
+    )
+    .catch((e) => {
+      console.error(`OpenAI:listImageModels`, e.message);
+      return [];
+    });
+  return { models, error: null };
+}
+
+/**
+ * The UI sends back a masked placeholder (eg: "********") for secrets that are
+ * already saved, so those must never be forwarded to a provider - the stored
+ * env value is used instead.
+ * @param {string|boolean|null} value
+ * @returns {string|null}
+ */
+function unmaskedSecret(value = null) {
+  if (typeof value !== "string" || value.includes("****")) return null;
+  return value || null;
+}
+
+/**
+ * Lists the image-capable models installed on an Ollama server. Ollama reports
+ * per-model capabilities in `/api/tags`, so we filter on the `image` capability
+ * - chat and vision models cannot be used for image generation.
+ * @param {string|null} basePath - Ollama base path; defaults to IMAGE_GEN_OLLAMA_BASE_PATH when null
+ * @param {string|boolean|null} authToken - Ollama bearer token; defaults to IMAGE_GEN_OLLAMA_AUTH_TOKEN when null
+ * @returns {Promise<{models: {id: string, name: string}[], error: string|null}>}
+ */
+async function getOllamaImageModels(basePath = null, authToken = null) {
+  let url;
+  try {
+    const urlPath = basePath ?? process.env.IMAGE_GEN_OLLAMA_BASE_PATH;
+    new URL(urlPath);
+    url = urlPath.replace(/\/+$/, "");
+  } catch {
+    return { models: [], error: "Not a valid URL." };
+  }
+
+  const _authToken =
+    unmaskedSecret(authToken) ||
+    process.env.IMAGE_GEN_OLLAMA_AUTH_TOKEN ||
+    null;
+  const models = await fetch(`${url}/api/tags`, {
+    headers: _authToken ? { Authorization: `Bearer ${_authToken}` } : {},
+  })
+    .then((res) => {
+      if (!res.ok)
+        throw new Error(`Could not reach Ollama server! ${res.status}`);
+      return res.json();
+    })
+    .then((data) => data?.models || [])
+    .then((models) =>
+      models
+        .filter((model) => model?.capabilities?.includes("image"))
+        .map((model) => ({ id: model.name, name: model.name }))
+    )
+    .catch((e) => {
+      console.error(`Ollama:listImageModels`, e.message);
+      return [];
+    });
+  return { models, error: null };
+}
+
+/**
+ * Lists the image-capable models installed on a LocalAI server. LocalAI reports
+ * per-model capabilities on `/v1/models/capabilities`, so we filter on the
+ * `image` capability - chat and vision models cannot be used for image
+ * generation.
+ * @param {string|null} basePath - LocalAI base path (`/v1` suffixed); defaults to IMAGE_GEN_LOCALAI_BASE_PATH when null
+ * @param {string|boolean|null} apiKey - LocalAI API key; defaults to IMAGE_GEN_LOCALAI_API_KEY when null
+ * @returns {Promise<{models: {id: string, name: string}[], error: string|null}>}
+ */
+async function getLocalAiImageModels(basePath = null, apiKey = null) {
+  let url;
+  try {
+    const urlPath = basePath ?? process.env.IMAGE_GEN_LOCALAI_BASE_PATH;
+    new URL(urlPath);
+    url = urlPath.replace(/\/+$/, "");
+  } catch {
+    return { models: [], error: "Not a valid URL." };
+  }
+
+  const _apiKey =
+    unmaskedSecret(apiKey) || process.env.IMAGE_GEN_LOCALAI_API_KEY || null;
+  const models = await fetch(`${url}/models/capabilities`, {
+    headers: _apiKey ? { Authorization: `Bearer ${_apiKey}` } : {},
+  })
+    .then((res) => {
+      if (!res.ok)
+        throw new Error(`Could not reach LocalAI server! ${res.status}`);
+      return res.json();
+    })
+    .then((data) => data?.data || [])
+    .then((models) =>
+      models
+        .filter((model) => model?.capabilities?.includes("image"))
+        .map((model) => ({ id: model.id, name: model.id }))
+    )
+    .catch((e) => {
+      console.error(`LocalAI:listImageModels`, e.message);
+      return [];
+    });
+  return { models, error: null };
+}
+
+/**
+ * Lists OpenRouter models that can output images (image output modality).
+ * @returns {Promise<{models: {id: string, name: string, organization: string}[], error: string|null}>}
+ */
+async function getOpenRouterImageModels() {
+  const models = await fetch("https://openrouter.ai/api/v1/models")
+    .then((res) => res.json())
+    .then(({ data = [] }) =>
+      data
+        .filter((model) =>
+          model?.architecture?.output_modalities?.includes("image")
+        )
+        .map((model) => ({
+          id: model.id,
+          name: model.name,
+          organization: model.id.split("/")[0],
+        }))
+    )
+    .catch((e) => {
+      console.error(`OpenRouter:listImageModels`, e.message);
+      return [];
+    });
+  return { models, error: null };
 }
 
 module.exports = {

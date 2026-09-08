@@ -1,6 +1,6 @@
 import { X } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 import { combineLikeSources } from "../../ChatHistory/Citation";
 import SourceDetailView from "./SourceDetailView";
 import SourceItem from "../SourceItem";
@@ -16,7 +16,7 @@ export default function MobileCitationModal({
   const { t } = useTranslation();
 
   return (
-    <ModalWrapper isOpen={isOpen}>
+    <Modal isOpen={isOpen} onClose={onClose}>
       <div className="fixed inset-0" onClick={onClose} />
       <div className="relative z-10 w-[calc(100%-40px)] max-h-[70vh] rounded-[16px] bg-zinc-800 light:bg-white light:border-2 light:border-slate-300 p-4 flex flex-col gap-4">
         {selectedSource ? (
@@ -51,6 +51,6 @@ export default function MobileCitationModal({
           </>
         )}
       </div>
-    </ModalWrapper>
+    </Modal>
   );
 }

@@ -4,6 +4,10 @@ const { ScheduledJobRun } = require("../models/scheduledJobRun.js");
 const createFilesLib = require("../utils/agents/aibitat/plugins/create-files/lib.js");
 const { safeJsonParse } = require("../utils/http/index.js");
 
+// Ignore files younger than this so a freshly generated file isn't deleted in
+// the window between writing it to disk and persisting its chat reference.
+const MIN_AGE_MS = 60 * 60 * 1000;
+
 (async () => {
   try {
     const fs = require("fs");
@@ -14,20 +18,21 @@ const { safeJsonParse } = require("../utils/http/index.js");
     const files = fs.readdirSync(storageDirectory);
     if (files.length === 0) return;
 
-    // Get all storage filenames referenced in active (include: true) chats
+    const now = Date.now();
     const activeFileRefs = await getActiveStorageFilenames();
     const filesToDelete = [];
     for (const filename of files) {
       const fullPath = path.join(storageDirectory, filename);
       const stat = fs.statSync(fullPath);
 
-      // Skip files/folders that don't match our naming pattern and add to deletion list
+      if (now - stat.mtimeMs < MIN_AGE_MS) continue;
+
+      // Files/folders that don't match our naming pattern are orphaned artifacts.
       if (!filename.match(/^[a-z]+-[a-f0-9-]{36}(\.\w+)?$/i)) {
         filesToDelete.push({ path: fullPath, isDirectory: stat.isDirectory() });
         continue;
       }
 
-      // If file/folder is not referenced in any active chat, add to deletion list
       if (!activeFileRefs.has(filename))
         filesToDelete.push({ path: fullPath, isDirectory: stat.isDirectory() });
     }

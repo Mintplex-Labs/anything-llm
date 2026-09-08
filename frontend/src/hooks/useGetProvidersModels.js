@@ -26,6 +26,7 @@ const PROVIDER_DEFAULT_MODELS = {
   textgenwebui: [],
   "generic-openai": [],
   bedrock: [],
+  vertex: [],
   xai: ["grok-beta"],
 };
 
@@ -47,7 +48,6 @@ const groupedProviders = [
   "novita",
   "openrouter",
   "ppio",
-  "docker-model-runner",
   "sambanova",
 ];
 export default function useGetProviderModels(provider = null) {

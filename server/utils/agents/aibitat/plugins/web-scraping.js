@@ -14,7 +14,6 @@ const webScraping = {
         aibitat.function({
           super: aibitat,
           name: this.name,
-          controller: new AbortController(),
           description:
             "Read and extract content from a specific webpage URL. Fetch the text from a website, get the contents of a link, or visit a URL to see what it says. Use when you have a specific web address to read.",
           examples: [
@@ -133,26 +132,14 @@ const webScraping = {
             this.super.introspect(
               `${this.caller}: This page's content exceeds the model's context limit. Summarizing it right now.`
             );
-            // Use a named listener so we can remove it after summarization completes,
-            // preventing listener accumulation when scraping many URLs in sequence.
-            const abortListener = () => {
-              this.super.handlerProps.log(
-                "Abort was triggered, exiting summarization early."
-              );
-              this.controller.abort();
-            };
-            this.super.emitter.on("abort", abortListener);
-            const cleanup = () => {
-              this.super.emitter.removeListener("abort", abortListener);
-            };
-
+            // Aborting is handled by the session abort signal that
+            // `summarizeContent` reads off the aibitat instance.
             return summarizeContent({
               provider: this.super.provider,
               model: this.super.model,
-              controllerSignal: this.controller.signal,
               content,
               aibitat: this.super,
-            }).finally(cleanup);
+            });
           },
         });
       },
