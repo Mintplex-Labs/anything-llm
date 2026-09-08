@@ -1359,15 +1359,19 @@ const webBrowsing = {
                   "localhost",
                   "127.0.0.1",
                   "::1",
-                  "host.docker.internal", // Loopback to host network in docker container - can be https.
+                  "host.docker.internal",
                 ].includes(parsed.hostname);
                 if (parsed.protocol === "https:" || isLoopback)
                   baseUrl = parsed.origin;
-                else throw new Error("KEENABLE base URL must be https://");
+                else
+                  throw new Error(
+                    "AGENT_KEENABLE_API_URL must use https:// (or target a loopback host)."
+                  );
               } catch (e) {
                 this.super.handlerProps.log(
                   `invalid Keenable Search URL: ${e.message}`
                 );
+                return `Keenable search is misconfigured: ${e.message}`;
               }
             }
 
