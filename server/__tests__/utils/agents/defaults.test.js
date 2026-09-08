@@ -140,3 +140,55 @@ describe("WORKSPACE_AGENT.getDefinition", () => {
     );
   });
 });
+
+describe("agentSkillsFromSystemSettings - default skill resolution", () => {
+  const WEB_BROWSING = "web-browsing";
+
+  /**
+   * Drive the skill resolver with a given system-settings state.
+   * @param {{default_agent_skills?: string[], disabled_agent_skills?: string[]}} settings
+   * @returns {Promise<string[]>}
+   */
+  async function resolveSkills(settings = {}) {
+    SystemSettings.isMultiUserMode = jest.fn().mockResolvedValue(false);
+    SystemSettings.getValueOrFallback = jest.fn(async ({ label }, fallback) =>
+      settings[label] ? JSON.stringify(settings[label]) : fallback
+    );
+    const { functions } = await WORKSPACE_AGENT.getDefinition();
+    return functions;
+  }
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    SystemPromptVariables.expandSystemPromptVariables.mockImplementation(
+      async (prompt) => prompt
+    );
+  });
+
+  it("enables web-browsing on a fresh install with no configured skills", async () => {
+    expect(await resolveSkills()).toContain(WEB_BROWSING);
+  });
+
+  it("registers web-browsing exactly once when it is also in default_agent_skills", async () => {
+    const functions = await resolveSkills({
+      default_agent_skills: [WEB_BROWSING, "sql-agent"],
+    });
+    expect(functions.filter((f) => f === WEB_BROWSING)).toHaveLength(1);
+  });
+
+  it("keeps web-browsing disabled via disabled_agent_skills even with a stale enabled entry", async () => {
+    const functions = await resolveSkills({
+      default_agent_skills: [WEB_BROWSING],
+      disabled_agent_skills: [WEB_BROWSING],
+    });
+    expect(functions).not.toContain(WEB_BROWSING);
+  });
+
+  it("still loads other configurable skills alongside the promoted default", async () => {
+    const functions = await resolveSkills({
+      default_agent_skills: [WEB_BROWSING, "create-chart"],
+    });
+    expect(functions).toContain(WEB_BROWSING);
+    expect(functions).toContain("create-chart");
+  });
+});

@@ -1351,8 +1351,11 @@ const webBrowsing = {
            * Keyless: GET https://api.you.com/v1/agents/search
            * (100 queries/day per IP - responds 402 once exhausted)
            * Keyed:   GET https://ydc-index.io/v1/search with X-API-Key
-           * Falls back to DuckDuckGo on any failure or empty response so
-           * search never hard-fails.
+           * Falls back to DuckDuckGo on any request failure so search never
+           * hard-fails. An empty-but-successful response is passed through as
+           * "no results" rather than retried, since DDG is unlikely to do better.
+           * Note: a rejected API key returns 401/403 (not 402), so we call that
+           * out separately - it is an admin misconfiguration, not a quota limit.
            * @param {string} query
            * @returns {Promise<string>}
            */
@@ -1383,32 +1386,43 @@ const webBrowsing = {
             };
             if (usingKey) headers["X-API-Key"] = apiKey;
 
-            const { response, error } = await fetch(searchURL.toString(), {
-              method: "GET",
-              headers,
-            })
+            const { response, error, status } = await fetch(
+              searchURL.toString(),
+              {
+                method: "GET",
+                headers,
+              }
+            )
               .then((res) => {
                 if (res.ok) return res.json();
-                throw new Error(
+                const err = new Error(
                   `${res.status} - ${res.statusText}. params: ${JSON.stringify({
                     auth: usingKey ? this.middleTruncate(apiKey, 5) : "keyless",
                     q: query,
                   })}`
                 );
+                err.status = res.status;
+                throw err;
               })
               .then((data) => {
-                return { response: data, error: null };
+                return { response: data, error: null, status: null };
               })
               .catch((e) => {
                 this.super.handlerProps.log(
                   `You.com Search Error: ${e.message}`
                 );
-                return { response: null, error: e.message };
+                return { response: null, error: e.message, status: e.status };
               });
 
             const data = [];
-            const webResults = response?.results?.web ?? [];
-            const newsResults = response?.results?.news ?? [];
+            // Defensive: the API returns arrays here, but a non-array would make
+            // the spread below throw outside the fetch catch and skip the fallback.
+            const webResults = Array.isArray(response?.results?.web)
+              ? response.results.web
+              : [];
+            const newsResults = Array.isArray(response?.results?.news)
+              ? response.results.news
+              : [];
 
             [...webResults, ...newsResults].forEach((searchResult) => {
               const { url, title, description, snippets, page_age } =
@@ -1427,9 +1441,17 @@ const webBrowsing = {
             });
 
             if (error) {
-              this.super.handlerProps.log(
-                `You.com Search failed - falling back to DuckDuckGo.`
-              );
+              // A rejected key is an admin misconfiguration that will fail every
+              // request until it is fixed - surface it instead of silently
+              // downgrading to DDG forever with a generic "failed" message.
+              if (usingKey && (status === 401 || status === 403))
+                this.super.handlerProps.log(
+                  `You.com Search rejected the configured AGENT_YOU_API_KEY (${status}) - verify the key. Falling back to DuckDuckGo.`
+                );
+              else
+                this.super.handlerProps.log(
+                  `You.com Search failed - falling back to DuckDuckGo.`
+                );
               return await this._duckDuckGoEngine(query);
             }
 
