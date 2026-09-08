@@ -14,6 +14,7 @@ import PerplexitySearchIcon from "./icons/perplexity.png";
 import BraveSearchIcon from "./icons/brave.png";
 import CrwSearchIcon from "./icons/crw.png";
 import YouSearchIcon from "./icons/you.png";
+import KeenableSearchIcon from "./icons/keenable.png";
 import {
   CaretUpDown,
   MagnifyingGlass,
@@ -40,6 +41,7 @@ import {
   BraveSearchOptions,
   CrwSearchOptions,
   YouSearchOptions,
+  KeenableSearchOptions,
 } from "./SearchProviderOptions";
 
 const SEARCH_PROVIDERS = [
@@ -49,7 +51,7 @@ const SEARCH_PROVIDERS = [
     logo: YouSearchIcon,
     options: (settings) => <YouSearchOptions settings={settings} />,
     description:
-      "LLM-ready web search with no API key required - falls back to DuckDuckGo automatically if unavailable.",
+      "LLM-ready web search with no API key required and zero data retention.",
   },
   {
     name: "DuckDuckGo",
@@ -149,6 +151,13 @@ const SEARCH_PROVIDERS = [
     logo: CrwSearchIcon,
     options: (settings) => <CrwSearchOptions settings={settings} />,
     description: "Open-source, self-hostable Firecrawl/Tavily alternative.",
+  },
+  {
+    name: "Keenable",
+    value: "keenable-search",
+    logo: KeenableSearchIcon,
+    options: (settings) => <KeenableSearchOptions settings={settings} />,
+    description: "Web search built for AI agents. No API key required.",
   },
 ];
 

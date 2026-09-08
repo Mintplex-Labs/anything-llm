@@ -650,6 +650,14 @@ const KEY_MAPPING = {
     envKey: "AGENT_YOU_API_KEY",
     checks: [],
   },
+  AgentKeenableApiKey: {
+    envKey: "AGENT_KEENABLE_API_KEY",
+    checks: [],
+  },
+  AgentKeenableApiUrl: {
+    envKey: "AGENT_KEENABLE_API_URL",
+    checks: [],
+  },
 
   // TTS/STT Integration ENVS
   TextToSpeechProvider: {
