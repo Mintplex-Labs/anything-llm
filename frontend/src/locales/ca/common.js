@@ -544,8 +544,6 @@ const TRANSLATIONS = {
           },
         },
       },
-      default_skill:
-        "Per defecte, aquesta habilitat està activada, però pots desactivar-la si no vols que estigui disponible per a l'agent.",
       outlook: {
         title: "Connector per a Outlook",
         description:

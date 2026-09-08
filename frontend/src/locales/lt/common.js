@@ -330,8 +330,6 @@ const TRANSLATIONS = {
         description:
           "Leidžia jūsų agentui naudoti SQL užklausas atsakymams per įvairius SQL duomenų bazių tiekėjus.",
       },
-      default_skill:
-        "Pagal numatytuosius nustatymus šis įgūdis yra įjungtas, bet galite jį išjungti, jei nenorite, kad jis būtų prieinamas agentui.",
       filesystem: {
         title: "Failų sistemos prieigos teisės",
         description:

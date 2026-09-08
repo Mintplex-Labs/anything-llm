@@ -314,8 +314,6 @@ const TRANSLATIONS = {
         description:
           "エージェントが、さまざまなSQLデータベースプロバイダーに接続することで、SQLを活用してお客様からの質問に回答できるようにする。",
       },
-      default_skill:
-        "デフォルトでは、この機能は有効になっていますが、エージェントに利用させたくない場合は、無効にすることができます。",
       filesystem: {
         title: "ファイルシステムのアクセス",
         description:

@@ -41,9 +41,6 @@ export default function DefaultSkillPanel({
         <img src={image} alt={title} className="w-full rounded-md" />
         <p className="text-theme-text-secondary text-opacity-60 text-xs font-medium py-1.5">
           {description}
-          <br />
-          <br />
-          {t("agent.skill.default_skill")}
         </p>
       </div>
     </div>

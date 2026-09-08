@@ -245,9 +245,6 @@ export default function AgentWebSearchSelection({
         />
         <p className="text-theme-text-secondary text-opacity-60 text-xs font-medium py-1.5">
           {description}
-          <br />
-          <br />
-          {t("agent.skill.default_skill")}
         </p>
         <div hidden={!enabled}>
           <div className="relative">

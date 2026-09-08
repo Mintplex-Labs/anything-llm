@@ -723,8 +723,6 @@ const TRANSLATIONS = {
           },
         },
       },
-      default_skill:
-        "Secara bawaan, keterampilan ini diaktifkan, tetapi Anda dapat menonaktifkannya jika tidak ingin tersedia untuk agen.",
       generateImage: {
         title: "Menghasilkan gambar",
         description:

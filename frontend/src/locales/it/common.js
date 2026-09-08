@@ -320,8 +320,6 @@ const TRANSLATIONS = {
         description:
           "Permetti al tuo agente di utilizzare SQL per rispondere alle tue domande, collegandosi a diversi fornitori di database SQL.",
       },
-      default_skill:
-        "Per impostazione predefinita, questa funzionalità è attiva, ma è possibile disabilitarla se non si desidera che sia disponibile per l'agente.",
       filesystem: {
         title: "Accesso al file system",
         description:
