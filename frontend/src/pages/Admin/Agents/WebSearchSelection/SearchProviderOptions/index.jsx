@@ -449,8 +449,8 @@ export function KeenableSearchOptions({ settings }) {
   return (
     <>
       <p className="text-sm text-white/60 my-2">
-        Keenable works without an API key by default (keyless free tier). To
-        lift rate limits, add an API key{" "}
+        Keenable works without an API key required. To lift rate limits, add an
+        API key{" "}
         <a
           href="https://keenable.ai/console"
           target="_blank"

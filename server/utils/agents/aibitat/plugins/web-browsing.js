@@ -1349,25 +1349,18 @@ const webBrowsing = {
             return result;
           },
 
-          /**
-           * Use Keenable
-           * A web search API built for AI agents. Keyless by default (free
-           * tier); set AGENT_KEENABLE_API_KEY to lift rate limits.
-           * https://keenable.ai
-           */
           _keenableSearch: async function (query) {
-            // Unlike the other providers, a key is optional here: with none we
-            // use the keyless public endpoint, so this works out of the box.
             const apiKey = (process.env.AGENT_KEENABLE_API_KEY || "").trim();
-
             let baseUrl = "https://api.keenable.ai";
             if (process.env.AGENT_KEENABLE_API_URL) {
               try {
                 const parsed = new URL(process.env.AGENT_KEENABLE_API_URL);
-                const isLoopback = ["localhost", "127.0.0.1", "::1"].includes(
-                  parsed.hostname
-                );
-                // HTTPS-only, except loopback for local development.
+                const isLoopback = [
+                  "localhost",
+                  "127.0.0.1",
+                  "::1",
+                  "host.docker.internal", // Loopback to host network in docker container - can be https.
+                ].includes(parsed.hostname);
                 if (parsed.protocol === "https:" || isLoopback)
                   baseUrl = parsed.origin;
                 else throw new Error("KEENABLE base URL must be https://");
@@ -1387,9 +1380,9 @@ const webBrowsing = {
             const headers = {
               "Content-Type": "application/json",
               "User-Agent": "keenable-anythingllm",
-              // Attribution header the Keenable backend segments traffic by.
-              "X-Keenable-Title": "AnythingLLM",
+              "X-Keenable-Title": getAnythingLLMUserAgent(),
             };
+
             // Keyless public endpoint by default; keyed endpoint + X-API-Key
             // when a key is configured.
             const path = apiKey ? "/v1/search" : "/v1/search/public";
@@ -1398,7 +1391,7 @@ const webBrowsing = {
             const { response, error } = await fetch(`${baseUrl}${path}`, {
               method: "POST",
               headers,
-              body: JSON.stringify({ query, mode: "pro" }),
+              body: JSON.stringify({ query: String(query), mode: "pro" }),
             })
               .then((res) => {
                 if (res.ok) return res.json();

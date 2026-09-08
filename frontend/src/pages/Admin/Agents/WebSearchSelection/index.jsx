@@ -65,8 +65,7 @@ const SEARCH_PROVIDERS = [
     value: "keenable-search",
     logo: KeenableSearchIcon,
     options: (settings) => <KeenableSearchOptions settings={settings} />,
-    description:
-      "Web search built for AI agents. Works without an API key (keyless free tier); add a key to lift rate limits.",
+    description: "Web search built for AI agents. No API key required.",
   },
   {
     name: "Brave Search",
