@@ -96,6 +96,7 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
       model: this.model,
       stream: true,
       messages,
+      max_tokens: this.maxTokens,
     });
   }
 
