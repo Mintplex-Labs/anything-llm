@@ -10,6 +10,7 @@ const {
   normalizePath,
   isWithin,
 } = require("../utils/files");
+
 const RESERVED_FILES = ["__HOTDIR__.md"];
 
 /**
@@ -22,10 +23,18 @@ const RESERVED_FILES = ["__HOTDIR__.md"];
  * @returns {Promise<{success: boolean, reason: string, documents: Object[]}>} - The documents from the file processing
  */
 async function processSingleFile(targetFilename, options = {}, metadata = {}) {
+  // Cheap, path-independent check moved first so reserved filenames short-circuit
+  // before doing any path resolution/normalization work below.
+  if (RESERVED_FILES.includes(targetFilename))
+    return {
+      success: false,
+      reason: "Filename is a reserved filename and cannot be processed.",
+      documents: [],
+    };
+
   const fullFilePath = normalizePath(
     options.absolutePath || path.resolve(WATCH_DIRECTORY, targetFilename)
   );
-
   // If absolute path is not provided, check if the file is within the watch directory
   // to prevent unauthorized paths from being processed.
   if (
@@ -38,14 +47,15 @@ async function processSingleFile(targetFilename, options = {}, metadata = {}) {
       documents: [],
     };
 
-  if (RESERVED_FILES.includes(targetFilename))
-    return {
-      success: false,
-      reason: "Filename is a reserved filename and cannot be processed.",
-      documents: [],
-    };
-
-  if (!fs.existsSync(fullFilePath))
+  // Non-blocking existence check instead of fs.existsSync, since this function
+  // is already async and may run concurrently across many files - a sync
+  // filesystem call here would block the event loop for every other in-flight
+  // request/process during the stat.
+  const fileExists = await fs.promises
+    .access(fullFilePath, fs.constants.F_OK)
+    .then(() => true)
+    .catch(() => false);
+  if (!fileExists)
     return {
       success: false,
       reason: "File does not exist in upload directory.",
