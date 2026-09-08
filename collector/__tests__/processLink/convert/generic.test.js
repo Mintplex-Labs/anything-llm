@@ -268,6 +268,7 @@ describe("scrapeGenericUrl", () => {
       expect(processAsFile).toHaveBeenCalledWith({
         uri: LINK,
         saveAsDocument: false,
+        metadata: {},
       });
       expect(PuppeteerWebBaseLoader).not.toHaveBeenCalled();
     });
