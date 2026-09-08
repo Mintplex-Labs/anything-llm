@@ -21,6 +21,8 @@ import {
   ListMagnifyingGlass,
 } from "@phosphor-icons/react";
 import Toggle from "@/components/lib/Toggle";
+import { DefaultBadge } from "../Badges/default";
+import { useTranslation } from "react-i18next";
 import SearchProviderItem from "./SearchProviderItem";
 import WebSearchImage from "@/media/agents/scrape-websites.png";
 import {
@@ -156,9 +158,10 @@ export default function AgentWebSearchSelection({
   description,
   settings,
   toggleSkill,
-  enabled = false,
+  enabled = true,
   setHasChanges,
 }) {
+  const { t } = useTranslation();
   const searchInputRef = useRef(null);
   const [filteredResults, setFilteredResults] = useState([]);
   const [selectedProvider, setSelectedProvider] = useState("you-search");
@@ -218,6 +221,7 @@ export default function AgentWebSearchSelection({
             >
               {title}
             </label>
+            <DefaultBadge title={title} />
           </div>
           <Toggle
             size="lg"
@@ -232,6 +236,9 @@ export default function AgentWebSearchSelection({
         />
         <p className="text-theme-text-secondary text-opacity-60 text-xs font-medium py-1.5">
           {description}
+          <br />
+          <br />
+          {t("agent.skill.default_skill")}
         </p>
         <div hidden={!enabled}>
           <div className="relative">
