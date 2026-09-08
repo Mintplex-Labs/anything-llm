@@ -689,8 +689,6 @@ const TRANSLATIONS = {
           },
         },
       },
-      default_skill:
-        "ໂດຍເລີ່ມຕົ້ນ ທັກສະນີ້ຈະຖືກເປີດໃຊ້ງານ, ແຕ່ທ່ານສາມາດປິດມັນໄດ້ຖ້າບໍ່ຕ້ອງການໃຫ້ເອເຈນໃຊ້.",
       generateImage: {
         title: "ສ້າງຮູບພາບ",
         description:
