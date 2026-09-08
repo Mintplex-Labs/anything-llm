@@ -1420,12 +1420,15 @@ const webBrowsing = {
               });
             });
 
-            if (error || data.length === 0) {
+            if (error) {
               this.super.handlerProps.log(
-                `You.com Search ${error ? "failed" : "returned no results"} - falling back to DuckDuckGo.`
+                `You.com Search failed - falling back to DuckDuckGo.`
               );
               return await this._duckDuckGoEngine(query);
             }
+
+            if (data.length === 0)
+              return `No information was found online for the search query.`;
 
             this.reportSearchResultsCitations(data);
             const result = JSON.stringify(data);
