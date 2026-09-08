@@ -141,7 +141,7 @@ describe("WORKSPACE_AGENT.getDefinition", () => {
   });
 });
 
-describe("agentSkillsFromSystemSettings - default skill resolution", () => {
+describe("agentSkillsFromSystemSettings - web-browsing is a configurable skill", () => {
   const WEB_BROWSING = "web-browsing";
 
   /**
@@ -165,30 +165,22 @@ describe("agentSkillsFromSystemSettings - default skill resolution", () => {
     );
   });
 
-  it("enables web-browsing on a fresh install with no configured skills", async () => {
-    expect(await resolveSkills()).toContain(WEB_BROWSING);
+  it("is not enabled on a fresh install with no configured skills", async () => {
+    expect(await resolveSkills()).not.toContain(WEB_BROWSING);
   });
 
-  it("registers web-browsing exactly once when it is also in default_agent_skills", async () => {
-    const functions = await resolveSkills({
-      default_agent_skills: [WEB_BROWSING, "sql-agent"],
-    });
-    expect(functions.filter((f) => f === WEB_BROWSING)).toHaveLength(1);
-  });
-
-  it("keeps web-browsing disabled via disabled_agent_skills even with a stale enabled entry", async () => {
-    const functions = await resolveSkills({
-      default_agent_skills: [WEB_BROWSING],
-      disabled_agent_skills: [WEB_BROWSING],
-    });
-    expect(functions).not.toContain(WEB_BROWSING);
-  });
-
-  it("still loads other configurable skills alongside the promoted default", async () => {
+  it("is enabled when present in default_agent_skills", async () => {
     const functions = await resolveSkills({
       default_agent_skills: [WEB_BROWSING, "create-chart"],
     });
-    expect(functions).toContain(WEB_BROWSING);
+    expect(functions.filter((f) => f === WEB_BROWSING)).toHaveLength(1);
     expect(functions).toContain("create-chart");
+  });
+
+  it("is not enabled when absent from default_agent_skills", async () => {
+    const functions = await resolveSkills({
+      default_agent_skills: ["create-chart"],
+    });
+    expect(functions).not.toContain(WEB_BROWSING);
   });
 });

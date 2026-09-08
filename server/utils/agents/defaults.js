@@ -11,7 +11,6 @@ const DEFAULT_SKILLS = [
   AgentPlugins.memory.name,
   AgentPlugins.docSummarizer.name,
   AgentPlugins.webScraping.name,
-  AgentPlugins.webBrowsing.name,
 ];
 
 // Skills that must never be injected when the instance is running in multi-user mode.
@@ -169,9 +168,6 @@ async function agentSkillsFromSystemSettings() {
   for (const skillName of _setting) {
     if (!AgentPlugins.hasOwnProperty(skillName)) continue;
     if (isMultiUser && SINGLE_USER_ONLY_SKILLS.has(skillName)) continue;
-    // Default skills are handled above so a stale entry here cannot re-enable
-    // one the admin has disabled via disabled_agent_skills.
-    if (DEFAULT_SKILLS.includes(skillName)) continue;
 
     // This is a plugin module with many sub-children plugins who
     // need to be named via `${parent}#${child}` naming convention
