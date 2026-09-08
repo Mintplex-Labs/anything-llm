@@ -742,7 +742,7 @@ async function resolveProviderConnector({
           : null,
       };
 
-  const router = new AnythingLLMModelRouter(routerWorkspace);
+  const router = new AnythingLLMModelRouter(routerWorkspace, null, temperature);
   const ctx = await ModelRouterService.gatherRoutingContext({
     workspace,
     user,
