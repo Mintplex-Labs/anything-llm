@@ -5,6 +5,7 @@ const { CommunicationKey } = require("../comKey");
 const setupTelemetry = require("../telemetry");
 const eagerLoadContextWindows = require("./eagerLoadContextWindows");
 const markOnboarded = require("./markOnboarded");
+const migrateWebBrowsingToDefault = require("./migrateWebBrowsingToDefault");
 const { PushNotifications } = require("../PushNotifications");
 const { TelegramBotService } = require("../telegramBot");
 
@@ -31,6 +32,7 @@ function bootSSL(app, port = 3001) {
 
     server
       .listen(port, async () => {
+        await migrateWebBrowsingToDefault(); // must run before markOnboarded() so a fresh instance is not mistaken for an existing one.
         await markOnboarded();
         await setupTelemetry();
         new CommunicationKey(true);
@@ -64,6 +66,7 @@ function bootHTTP(app, port = 3001) {
 
   app
     .listen(port, async () => {
+      await migrateWebBrowsingToDefault(); // must run before markOnboarded() so a fresh instance is not mistaken for an existing one.
       await markOnboarded();
       await setupTelemetry();
       new CommunicationKey(true);
