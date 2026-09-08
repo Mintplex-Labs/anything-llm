@@ -1276,11 +1276,12 @@ const webBrowsing = {
             );
 
             let baseUrl = "https://fastcrw.com/api";
-            if ("AGENT_CRW_API_URL" in process.env) {
+            if (process.env.AGENT_CRW_API_URL) {
               try {
-                baseUrl = new URL(process.env.AGENT_CRW_API_URL);
-                baseUrl.pathname = ""; // remove the trailing slash or any other path
-                baseUrl = baseUrl.toString();
+                // Strip any trailing slash so appending pathname is still valid
+                baseUrl = new URL(process.env.AGENT_CRW_API_URL)
+                  .toString()
+                  .replace(/\/+$/, "");
               } catch (e) {
                 this.super.handlerProps.log(
                   `invalid fastCRW Search URL: ${e.message}`
@@ -1319,8 +1320,13 @@ const webBrowsing = {
             if (error)
               return `There was an error searching for content. ${error}`;
 
+            // Managed fastCRW returns `data` as a flat array; self-hosted nests it under `data.results`.
+            const searchResults = Array.isArray(response?.data)
+              ? response.data
+              : response?.data?.results ?? [];
+
             const data = [];
-            response.data?.forEach((searchResult) => {
+            searchResults.forEach((searchResult) => {
               const { title, url, description } = searchResult;
               data.push({
                 title,
