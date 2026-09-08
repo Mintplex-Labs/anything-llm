@@ -174,3 +174,35 @@ describe("GenericOpenAiProvider (agent) attachment content", () => {
     });
   });
 });
+
+describe("GenericOpenAiProvider (agent) streaming options", () => {
+  it.each([
+    ["configured", "2048", 2048],
+    ["default", undefined, 1024],
+  ])("passes the %s max_tokens value to UnTooled streaming", async (_label, envValue, expected) => {
+    if (envValue === undefined) {
+      delete process.env.GENERIC_OPEN_AI_MAX_TOKENS;
+    } else {
+      process.env.GENERIC_OPEN_AI_MAX_TOKENS = envValue;
+    }
+
+    const provider = new GenericOpenAiProvider({ model: "test-model" });
+    provider.supportsNativeToolCalling = jest.fn().mockResolvedValue(false);
+    const create = jest
+      .spyOn(provider.client.chat.completions, "create")
+      .mockResolvedValue(
+        (async function* () {
+          yield { choices: [{ delta: { content: "response" } }] };
+        })()
+      );
+
+    await provider.stream([{ role: "user", content: "hello" }]);
+
+    expect(create).toHaveBeenCalledWith({
+      model: "test-model",
+      stream: true,
+      messages: [{ role: "user", content: "hello" }],
+      max_tokens: expected,
+    });
+  });
+});
