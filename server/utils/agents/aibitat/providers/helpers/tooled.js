@@ -163,6 +163,24 @@ function formatMessagesForTools(messages, options = {}) {
 }
 
 /**
+ * Build the `max_tokens` request field from an explicit output budget passed
+ * in the tooled options. This is opt-in per provider: only providers that pass
+ * `maxTokens` in options get the field, every other provider keeps sending no
+ * `max_tokens` so the backend's own default applies unchanged.
+ * @param {unknown} maxTokens
+ * @returns {{max_tokens?: number}}
+ */
+function maxTokensParam(maxTokens) {
+  if (
+    typeof maxTokens !== "number" ||
+    !Number.isFinite(maxTokens) ||
+    maxTokens <= 0
+  )
+    return {};
+  return { max_tokens: maxTokens };
+}
+
+/**
  * Stream a chat completion using native OpenAI-compatible tool calling.
  * Handles parallel tool calls by tracking each tool call by its streaming
  * index, then returning only the first one for the agent framework to process.
@@ -172,8 +190,9 @@ function formatMessagesForTools(messages, options = {}) {
  * @param {Array} messages - Raw aibitat message history
  * @param {Array} functions - Aibitat function definitions
  * @param {function|null} eventHandler - Stream event handler
- * @param {{injectReasoningContent?: boolean, provider?: object}} options - Provider-specific options
+ * @param {{injectReasoningContent?: boolean, provider?: object, maxTokens?: number}} options - Provider-specific options
  *   - provider: If passed, automatically handles usage tracking via provider.resetUsage()/recordUsage()
+ *   - maxTokens: If passed as a positive number, sent as `max_tokens` on the request
  * @returns {Promise<{textResponse: string, functionCall: object|null, uuid: string, usage: object|null}>}
  */
 async function tooledStream(
@@ -184,7 +203,7 @@ async function tooledStream(
   eventHandler = null,
   options = {}
 ) {
-  const { provider, ...formatOptions } = options;
+  const { provider, maxTokens, ...formatOptions } = options;
 
   // Auto-reset usage if provider is passed
   if (provider?.resetUsage) {
@@ -202,6 +221,7 @@ async function tooledStream(
     stream: true,
     stream_options: { include_usage: true },
     messages: formattedMessages,
+    ...maxTokensParam(maxTokens),
     ...(tools.length > 0 ? { tools } : {}),
   });
 
@@ -349,8 +369,9 @@ async function tooledStream(
  * @param {Array} messages - Raw aibitat message history
  * @param {Array} functions - Aibitat function definitions
  * @param {function} getCostFn - Provider's getCost function
- * @param {{injectReasoningContent?: boolean, provider?: object}} options - Provider-specific options
+ * @param {{injectReasoningContent?: boolean, provider?: object, maxTokens?: number}} options - Provider-specific options
  *   - provider: If passed, automatically handles usage tracking via provider.resetUsage()/recordUsage()
+ *   - maxTokens: If passed as a positive number, sent as `max_tokens` on the request
  * @returns {Promise<{textResponse: string|null, functionCall: object|null, cost: number, usage: object|null}>}
  */
 async function tooledComplete(
@@ -361,7 +382,7 @@ async function tooledComplete(
   getCostFn = () => 0,
   options = {}
 ) {
-  const { provider, ...formatOptions } = options;
+  const { provider, maxTokens, ...formatOptions } = options;
 
   // Auto-reset usage if provider is passed
   if (provider?.resetUsage) {
@@ -377,6 +398,7 @@ async function tooledComplete(
     model,
     stream: false,
     messages: formattedMessages,
+    ...maxTokensParam(maxTokens),
     ...(tools.length > 0 ? { tools } : {}),
   });
 
