@@ -1415,8 +1415,6 @@ const webBrowsing = {
               });
 
             const data = [];
-            // Defensive: the API returns arrays here, but a non-array would make
-            // the spread below throw outside the fetch catch and skip the fallback.
             const webResults = Array.isArray(response?.results?.web)
               ? response.results.web
               : [];
@@ -1424,26 +1422,33 @@ const webBrowsing = {
               ? response.results.news
               : [];
 
-            [...webResults, ...newsResults].forEach((searchResult) => {
+            const mapResult = (searchResult, type) => {
               const { url, title, description, snippets, page_age } =
                 searchResult;
+              if (!url && !title) return;
               const snippet =
                 Array.isArray(snippets) && snippets.length > 0
                   ? snippets.join("\n")
                   : description;
-              if (!url && !title) return;
+
+              // `description` is a curated summary of the page while `snippets` are
+              // excerpts from it, so they usually carry different information. Pass
+              // both unless the description is already present in the snippet text.
+              const includeDescription =
+                !!description && snippet && !snippet.includes(description);
               data.push({
                 title: title || "",
                 link: url || "",
                 snippet: snippet || "",
+                ...(includeDescription ? { description } : {}),
                 ...(page_age ? { published: page_age } : {}),
+                ...(type === "news" ? { type } : {}),
               });
-            });
+            };
+            webResults.forEach((result) => mapResult(result, "web"));
+            newsResults.forEach((result) => mapResult(result, "news"));
 
             if (error) {
-              // A rejected key is an admin misconfiguration that will fail every
-              // request until it is fixed - surface it instead of silently
-              // downgrading to DDG forever with a generic "failed" message.
               if (usingKey && (status === 401 || status === 403))
                 this.super.handlerProps.log(
                   `You.com Search rejected the configured AGENT_YOU_API_KEY (${status}) - verify the key. Falling back to DuckDuckGo.`
