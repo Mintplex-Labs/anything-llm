@@ -300,7 +300,6 @@ const TRANSLATIONS = {
         description:
           "讓您的智慧代理人能夠利用 SQL 查詢來回答您的問題，只需連接到不同的 SQL 資料庫提供者即可。",
       },
-      default_skill: "這項技能預設為啟用；若不希望智慧代理人使用，也可以停用。",
       filesystem: {
         title: "檔案系統存取",
         description:
