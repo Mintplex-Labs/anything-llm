@@ -154,3 +154,52 @@ describe("max_tokens forwarding from the tooled maxTokens option", () => {
     expect(body.tools[0].function.name).toBe("lookup");
   });
 });
+
+describe("service_tier forwarding from the tooled serviceTier option", () => {
+  const messages = [{ role: "user", content: "hi" }];
+
+  function fakeClient({ stream = false } = {}) {
+    const create = jest.fn(async () => {
+      if (!stream) {
+        return {
+          choices: [{ message: { role: "assistant", content: "ok" } }],
+          usage: null,
+        };
+      }
+      return (async function* () {
+        yield { choices: [{ delta: { content: "ok" } }] };
+      })();
+    });
+    return { client: { chat: { completions: { create } } }, create };
+  }
+
+  it.each(["flex", "priority"])("forwards %s on complete and stream", async (serviceTier) => {
+    const complete = fakeClient();
+    await tooledComplete(complete.client, "m", messages, [], () => 0, {
+      provider: {},
+      serviceTier,
+    });
+    expect(complete.create.mock.calls[0][0].service_tier).toBe(serviceTier);
+
+    const streamed = fakeClient({ stream: true });
+    await tooledStream(streamed.client, "m", messages, [], null, {
+      provider: {},
+      serviceTier,
+    });
+    expect(streamed.create.mock.calls[0][0].service_tier).toBe(serviceTier);
+  });
+
+  it("leaves service_tier undefined when the option is not passed", async () => {
+    const complete = fakeClient();
+    await tooledComplete(complete.client, "m", messages, [], () => 0, {
+      provider: {},
+    });
+    expect(complete.create.mock.calls[0][0].service_tier).toBeUndefined();
+
+    const streamed = fakeClient({ stream: true });
+    await tooledStream(streamed.client, "m", messages, [], null, {
+      provider: {},
+    });
+    expect(streamed.create.mock.calls[0][0].service_tier).toBeUndefined();
+  });
+});
