@@ -498,6 +498,15 @@ const KEY_MAPPING = {
     envKey: "OPENROUTER_TIMEOUT_MS",
     checks: [],
   },
+  OpenRouterServiceTier: {
+    envKey: "OPENROUTER_SERVICE_TIER",
+    checks: [
+      (input) =>
+        ["default", "flex", "priority"].includes(input)
+          ? null
+          : "Invalid service tier. Must be one of: default, flex, priority.",
+    ],
+  },
 
   // Novita Options
   NovitaLLMApiKey: {

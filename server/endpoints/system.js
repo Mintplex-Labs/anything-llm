@@ -43,6 +43,9 @@ const {
 const { Telemetry } = require("../models/telemetry");
 const { ApiKey } = require("../models/apiKeys");
 const { getCustomModels } = require("../utils/helpers/customModels");
+const {
+  fetchOpenRouterServiceTiers,
+} = require("../utils/AiProviders/openRouter");
 const { WorkspaceChats } = require("../models/workspaceChats");
 const { WorkspaceThread } = require("../models/workspaceThread");
 const { WorkspaceParsedFiles } = require("../models/workspaceParsedFiles");
@@ -1128,6 +1131,21 @@ function systemEndpoints(app) {
           models,
           error,
         });
+      } catch (error) {
+        console.error(error);
+        response.status(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/system/openrouter-service-tiers",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { model = "" } = reqBody(request);
+        const tiers = model ? await fetchOpenRouterServiceTiers(model) : [];
+        return response.status(200).json({ tiers });
       } catch (error) {
         console.error(error);
         response.status(500).end();

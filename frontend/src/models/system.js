@@ -587,6 +587,21 @@ const System = {
         return false;
       });
   },
+  /**
+   * Lists the OpenRouter service tiers (flex/priority) a model can be pinned to.
+   * @param {string} model - OpenRouter model id
+   * @returns {Promise<string[]>}
+   */
+  openRouterServiceTiers: async function (model) {
+    return fetch(`${API_BASE}/system/openrouter-service-tiers`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ model }),
+    })
+      .then((res) => res.json())
+      .then((res) => res.tiers ?? [])
+      .catch(() => []);
+  },
   customModels: async function (
     provider,
     apiKey = null,
