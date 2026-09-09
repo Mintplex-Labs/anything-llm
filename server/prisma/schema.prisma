@@ -193,6 +193,8 @@ model workspace_chats {
   feedbackScore   Boolean?
   memoryProcessed Boolean? @map("memory_processed")
   users           users?   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([user_id, workspaceId, thread_id, api_session_id, include, id, createdAt], map: "workspace_chats_user_history_quota_idx")
 }
 
 model workspace_agent_invocations {
