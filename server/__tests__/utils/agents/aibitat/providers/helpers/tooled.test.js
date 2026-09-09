@@ -189,17 +189,17 @@ describe("service_tier forwarding from the tooled serviceTier option", () => {
     expect(streamed.create.mock.calls[0][0].service_tier).toBe(serviceTier);
   });
 
-  it("leaves service_tier undefined when the option is not passed", async () => {
+  it("omits service_tier entirely when the option is not passed", async () => {
     const complete = fakeClient();
     await tooledComplete(complete.client, "m", messages, [], () => 0, {
       provider: {},
     });
-    expect(complete.create.mock.calls[0][0].service_tier).toBeUndefined();
+    expect(complete.create.mock.calls[0][0]).not.toHaveProperty("service_tier");
 
     const streamed = fakeClient({ stream: true });
     await tooledStream(streamed.client, "m", messages, [], null, {
       provider: {},
     });
-    expect(streamed.create.mock.calls[0][0].service_tier).toBeUndefined();
+    expect(streamed.create.mock.calls[0][0]).not.toHaveProperty("service_tier");
   });
 });

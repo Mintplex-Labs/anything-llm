@@ -4,7 +4,7 @@ const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
-const { openRouterServiceTier } = require("../../../AiProviders/openRouter");
+const { serviceTierParam } = require("../../../AiProviders/openRouter");
 
 /**
  * The agent provider for the OpenRouter provider.
@@ -31,7 +31,7 @@ class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
 
     this._client = client;
     this.model = model;
-    this.serviceTier = openRouterServiceTier();
+    this.serviceTier = process.env.OPENROUTER_SERVICE_TIER;
     this.verbose = true;
     this._supportsToolCalling = null;
   }
@@ -49,7 +49,7 @@ class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
       .create({
         model: this.model,
         messages,
-        service_tier: this.serviceTier,
+        ...serviceTierParam(this.serviceTier),
         user: this.executingUserId,
       })
       .then((result) => {
@@ -69,7 +69,7 @@ class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
       model: this.model,
       stream: true,
       messages,
-      service_tier: this.serviceTier,
+      ...serviceTierParam(this.serviceTier),
       user: this.executingUserId,
     });
   }

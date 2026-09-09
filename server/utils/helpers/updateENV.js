@@ -501,10 +501,12 @@ const KEY_MAPPING = {
   OpenRouterServiceTier: {
     envKey: "OPENROUTER_SERVICE_TIER",
     checks: [
-      (input) =>
-        ["default", "flex", "priority"].includes(input)
+      (input) => {
+        const { SERVICE_TIERS } = require("../AiProviders/openRouter");
+        return SERVICE_TIERS.includes(input)
           ? null
-          : "Invalid service tier. Must be one of: default, flex, priority.",
+          : `Invalid service tier. Must be one of: ${SERVICE_TIERS.join(", ")}.`;
+      },
     ],
   },
 

@@ -16,7 +16,7 @@ const cacheFolder = path.resolve(
     ? path.resolve(process.env.STORAGE_DIR, "models", "openrouter")
     : path.resolve(__dirname, `../../../storage/models/openrouter`)
 );
-const SERVICE_TIERS = ["flex", "priority"];
+const SERVICE_TIERS = ["auto", "default", "fast", "flex", "priority", "scale"];
 
 class OpenRouterLLM {
   /**
@@ -55,7 +55,7 @@ class OpenRouterLLM {
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
     this.timeout = this.#parseTimeout();
-    this.serviceTier = openRouterServiceTier();
+    this.serviceTier = process.env.OPENROUTER_SERVICE_TIER;
 
     if (!fs.existsSync(cacheFolder))
       fs.mkdirSync(cacheFolder, { recursive: true });
@@ -255,7 +255,7 @@ class OpenRouterLLM {
           // This is an OpenRouter specific option that allows us to get the reasoning text
           // before the token text.
           include_reasoning: true,
-          service_tier: this.serviceTier,
+          ...serviceTierParam(this.serviceTier),
           user: user?.id ? `user_${user.id}` : "",
         })
         .catch((e) => {
@@ -304,7 +304,7 @@ class OpenRouterLLM {
         // This is an OpenRouter specific option that allows us to get the reasoning text
         // before the token text.
         include_reasoning: true,
-        service_tier: this.serviceTier,
+        ...serviceTierParam(this.serviceTier),
         user: user?.id ? `user_${user.id}` : "",
       }),
       messages,
@@ -519,37 +519,13 @@ class OpenRouterLLM {
 }
 
 /**
- * Service tier to pin OpenRouter requests to, from OPENROUTER_SERVICE_TIER.
- * Only flex and priority change routing, anything else is left off the request
- * so OpenRouter routes at the default tier.
- * @returns {"flex"|"priority"|undefined}
+ * Build the `service_tier` request field, spread so the key is absent entirely
+ * when no tier is configured.
+ * @param {unknown} tier
+ * @returns {{service_tier?: string}}
  */
-function openRouterServiceTier() {
-  const tier = process.env.OPENROUTER_SERVICE_TIER;
-  return SERVICE_TIERS.includes(tier) ? tier : undefined;
-}
-
-/**
- * Lists the service tiers a model can be pinned to via `service_tier`.
- * Tier endpoints carry the tier as the last segment of their tag
- * (eg: `openai/flex`, `google-vertex/global/priority`) and `fast` is
- * OpenRouter's alias for `priority`.
- * @param {string} modelId - OpenRouter model id (eg: `openai/gpt-5`)
- * @returns {Promise<("flex"|"priority")[]>}
- */
-async function fetchOpenRouterServiceTiers(modelId) {
-  return await fetch(`https://openrouter.ai/api/v1/models/${modelId}/endpoints`)
-    .then((res) => res.json())
-    .then(({ data }) => {
-      const tiers = new Set();
-      for (const { tag = "" } of data?.endpoints ?? []) {
-        const tier = tag.split("/").pop();
-        if (tier === "flex") tiers.add("flex");
-        if (tier === "fast" || tier === "priority") tiers.add("priority");
-      }
-      return SERVICE_TIERS.filter((tier) => tiers.has(tier));
-    })
-    .catch(() => []);
+function serviceTierParam(tier) {
+  return tier ? { service_tier: tier } : {};
 }
 
 async function fetchOpenRouterModels() {
@@ -602,6 +578,6 @@ async function fetchOpenRouterModels() {
 module.exports = {
   OpenRouterLLM,
   fetchOpenRouterModels,
-  fetchOpenRouterServiceTiers,
-  openRouterServiceTier,
+  serviceTierParam,
+  SERVICE_TIERS,
 };

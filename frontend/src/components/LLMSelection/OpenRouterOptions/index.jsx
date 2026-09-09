@@ -4,8 +4,6 @@ import { useState, useEffect } from "react";
 import { Tooltip } from "react-tooltip";
 
 export default function OpenRouterOptions({ settings }) {
-  const [selectedModel, setSelectedModel] = useState(null);
-
   return (
     <div className="flex flex-col gap-y-4 mt-1.5">
       <div className="flex gap-[36px]">
@@ -25,13 +23,7 @@ export default function OpenRouterOptions({ settings }) {
           />
         </div>
         {!settings?.credentialsOnly && (
-          <>
-            <OpenRouterModelSelection
-              settings={settings}
-              onModelChange={setSelectedModel}
-            />
-            <ServiceTierSelection settings={settings} model={selectedModel} />
-          </>
+          <OpenRouterModelSelection settings={settings} />
         )}
       </div>
       <AdvancedControls settings={settings} />
@@ -57,28 +49,31 @@ function AdvancedControls({ settings }) {
         )}
       </button>
       <div hidden={!showAdvancedControls}>
-        <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
-            Stream Timeout (ms)
-          </label>
-          <input
-            type="number"
-            name="OpenRouterTimeout"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-            placeholder="Timeout value between token responses to auto-timeout the stream"
-            defaultValue={settings?.OpenRouterTimeout ?? 3_000}
-            autoComplete="off"
-            onScroll={(e) => e.target.blur()}
-            min={500}
-            step={1}
-          />
+        <div className="flex gap-[36px]">
+          <div className="flex flex-col w-60">
+            <label className="text-white text-sm font-semibold block mb-3">
+              Stream Timeout (ms)
+            </label>
+            <input
+              type="number"
+              name="OpenRouterTimeout"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              placeholder="Timeout value between token responses to auto-timeout the stream"
+              defaultValue={settings?.OpenRouterTimeout ?? 3_000}
+              autoComplete="off"
+              onScroll={(e) => e.target.blur()}
+              min={500}
+              step={1}
+            />
+          </div>
+          <ServiceTierSelection settings={settings} />
         </div>
       </div>
     </div>
   );
 }
 
-function OpenRouterModelSelection({ settings, onModelChange }) {
+function OpenRouterModelSelection({ settings }) {
   const [groupedModels, setGroupedModels] = useState({});
   const [loading, setLoading] = useState(true);
 
@@ -94,16 +89,6 @@ function OpenRouterModelSelection({ settings, onModelChange }) {
         }, {});
 
         setGroupedModels(modelsByOrganization);
-
-        // Mirror what the <select> will show: the saved preference, or the first
-        // option when the preference is no longer in the catalog.
-        const firstOrganization = Object.keys(modelsByOrganization).sort()[0];
-        const selected = models.some(
-          (model) => model.id === settings?.OpenRouterModelPref
-        )
-          ? settings.OpenRouterModelPref
-          : modelsByOrganization[firstOrganization][0].id;
-        onModelChange(selected);
       }
 
       setLoading(false);
@@ -138,7 +123,6 @@ function OpenRouterModelSelection({ settings, onModelChange }) {
       <select
         name="OpenRouterModelPref"
         required={true}
-        onChange={(e) => onModelChange(e.target.value)}
         className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
         {Object.keys(groupedModels)
@@ -161,24 +145,7 @@ function OpenRouterModelSelection({ settings, onModelChange }) {
   );
 }
 
-function ServiceTierSelection({ settings, model }) {
-  const [tiers, setTiers] = useState([]);
-
-  useEffect(() => {
-    if (!model) return;
-    let stale = false;
-    System.openRouterServiceTiers(model).then((tiers) => {
-      if (!stale) setTiers(tiers);
-    });
-    return () => {
-      stale = true;
-    };
-  }, [model]);
-
-  // Keeps a stale tier from silently carrying over to a model that gains tier support later.
-  if (tiers.length === 0)
-    return <input type="hidden" name="OpenRouterServiceTier" value="default" />;
-
+function ServiceTierSelection({ settings }) {
   return (
     <div className="flex flex-col w-60">
       <div className="flex items-center gap-1 mb-3">
@@ -201,7 +168,7 @@ function ServiceTierSelection({ settings, model }) {
           className="text-theme-text-secondary cursor-pointer hover:bg-theme-bg-primary flex items-center justify-center rounded-full"
           data-tooltip-id="openrouter-service-tier"
           data-tooltip-place="top"
-          data-tooltip-content="Flex never falls back to the default tier, so requests can fail when flex capacity is exhausted."
+          data-tooltip-content="Not every model honors every tier. Unsupported tiers are usually ignored, but some providers reject them and the request will error."
         >
           <Info size={18} className="text-theme-text-secondary" />
         </div>
@@ -211,13 +178,12 @@ function ServiceTierSelection({ settings, model }) {
         defaultValue={settings?.OpenRouterServiceTier ?? "default"}
         className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
+        <option value="auto">Auto</option>
         <option value="default">Default</option>
-        {tiers.includes("flex") && (
-          <option value="flex">Flex (cheaper, slower)</option>
-        )}
-        {tiers.includes("priority") && (
-          <option value="priority">Priority (faster, pricier)</option>
-        )}
+        <option value="fast">Fast</option>
+        <option value="flex">Flex</option>
+        <option value="priority">Priority</option>
+        <option value="scale">Scale</option>
       </select>
     </div>
   );

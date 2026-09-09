@@ -181,6 +181,18 @@ function maxTokensParam(maxTokens) {
 }
 
 /**
+ * Build the `service_tier` request field from the tooled options. Only providers
+ * that pass `serviceTier` get the field, every other provider keeps sending no
+ * `service_tier` at all.
+ * @param {unknown} serviceTier
+ * @returns {{service_tier?: string}}
+ */
+function serviceTierParam(serviceTier) {
+  if (typeof serviceTier !== "string" || !serviceTier.length) return {};
+  return { service_tier: serviceTier };
+}
+
+/**
  * Stream a chat completion using native OpenAI-compatible tool calling.
  * Handles parallel tool calls by tracking each tool call by its streaming
  * index, then returning only the first one for the agent framework to process.
@@ -223,7 +235,7 @@ async function tooledStream(
     stream_options: { include_usage: true },
     messages: formattedMessages,
     ...maxTokensParam(maxTokens),
-    service_tier: serviceTier,
+    ...serviceTierParam(serviceTier),
     ...(tools.length > 0 ? { tools } : {}),
   });
 
@@ -401,7 +413,7 @@ async function tooledComplete(
     stream: false,
     messages: formattedMessages,
     ...maxTokensParam(maxTokens),
-    service_tier: serviceTier,
+    ...serviceTierParam(serviceTier),
     ...(tools.length > 0 ? { tools } : {}),
   });
 

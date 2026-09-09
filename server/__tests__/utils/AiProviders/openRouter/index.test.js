@@ -8,8 +8,7 @@ jest.mock("../../../../utils/vectorStore/resetAllVectorStores", () => ({
 
 const {
   OpenRouterLLM,
-  openRouterServiceTier,
-  fetchOpenRouterServiceTiers,
+  serviceTierParam,
 } = require("../../../../utils/AiProviders/openRouter");
 const OpenRouterProvider = require("../../../../utils/agents/aibitat/providers/openrouter.js");
 const { updateENV } = require("../../../../utils/helpers/updateENV");
@@ -26,82 +25,38 @@ afterEach(() => {
 });
 
 describe("OPENROUTER_SERVICE_TIER validation on save", () => {
-  it.each(["default", "flex", "priority"])("accepts %s", async (tier) => {
-    const { error } = await updateENV({ OpenRouterServiceTier: tier });
-    expect(error).toBe(false);
-    expect(process.env.OPENROUTER_SERVICE_TIER).toBe(tier);
-  });
+  it.each(["auto", "default", "fast", "flex", "priority", "scale"])(
+    "accepts the documented tier %s",
+    async (tier) => {
+      const { error } = await updateENV({ OpenRouterServiceTier: tier });
+      expect(error).toBe(false);
+      expect(process.env.OPENROUTER_SERVICE_TIER).toBe(tier);
+    }
+  );
 
-  it("rejects anything else without touching the env", async () => {
+  it("rejects an undocumented tier without touching the env", async () => {
     process.env.OPENROUTER_SERVICE_TIER = "flex";
-    const { error } = await updateENV({ OpenRouterServiceTier: "scale" });
+    const { error } = await updateENV({ OpenRouterServiceTier: "bogus" });
     expect(error).toContain("Invalid service tier");
     expect(process.env.OPENROUTER_SERVICE_TIER).toBe("flex");
   });
 });
 
-describe("openRouterServiceTier", () => {
-  it.each(["flex", "priority"])("returns %s as-is", (tier) => {
-    process.env.OPENROUTER_SERVICE_TIER = tier;
-    expect(openRouterServiceTier()).toBe(tier);
-  });
+describe("serviceTierParam", () => {
+  it.each(["auto", "default", "fast", "flex", "priority", "scale"])(
+    "passes the tier %s straight through",
+    (tier) => {
+      expect(serviceTierParam(tier)).toEqual({ service_tier: tier });
+    }
+  );
 
   it.each([
     ["unset", undefined],
     ["empty", ""],
-    ["default", "default"],
-    ["an unknown value", "bogus"],
-    ["wrong casing", "FLEX"],
-    ["surrounding whitespace", " flex "],
-  ])("returns undefined for %s", (_label, value) => {
-    if (value === undefined) delete process.env.OPENROUTER_SERVICE_TIER;
-    else process.env.OPENROUTER_SERVICE_TIER = value;
-    expect(openRouterServiceTier()).toBeUndefined();
-  });
-});
-
-describe("fetchOpenRouterServiceTiers", () => {
-  function mockEndpoints(tags) {
-    jest.spyOn(global, "fetch").mockResolvedValue({
-      json: async () => ({ data: { endpoints: tags.map((tag) => ({ tag })) } }),
-    });
-  }
-
-  it("detects flex and maps fast to priority", async () => {
-    mockEndpoints(["openai/flex", "azure", "openai", "openai/fast"]);
-    expect(await fetchOpenRouterServiceTiers("openai/gpt-5")).toEqual([
-      "flex",
-      "priority",
-    ]);
-  });
-
-  it("reads the tier from the last tag segment", async () => {
-    mockEndpoints(["google-vertex/global/priority", "google-ai-studio/flex"]);
-    expect(await fetchOpenRouterServiceTiers("google/gemini")).toEqual([
-      "flex",
-      "priority",
-    ]);
-  });
-
-  it("returns only the tiers present", async () => {
-    mockEndpoints(["openai/priority", "openai"]);
-    expect(await fetchOpenRouterServiceTiers("m")).toEqual(["priority"]);
-  });
-
-  it("returns an empty list when no tier endpoints exist", async () => {
-    mockEndpoints(["openai", "azure", "deepinfra/fp8"]);
-    expect(await fetchOpenRouterServiceTiers("m")).toEqual([]);
-  });
-
-  it("returns an empty list for an unknown model or a failed request", async () => {
-    jest
-      .spyOn(global, "fetch")
-      .mockResolvedValueOnce({
-        json: async () => ({ error: { message: "Not Found", code: 404 } }),
-      })
-      .mockRejectedValueOnce(new Error("network"));
-    expect(await fetchOpenRouterServiceTiers("foo/bar")).toEqual([]);
-    expect(await fetchOpenRouterServiceTiers("foo/bar")).toEqual([]);
+  ])("returns an empty object when %s", (_label, value) => {
+    const params = serviceTierParam(value);
+    expect(params).toEqual({});
+    expect(params).not.toHaveProperty("service_tier");
   });
 });
 
@@ -144,7 +99,7 @@ describe("service_tier on every OpenRouter chat completion call site", () => {
     ["agent untooled stream", (c) => agent(c, false).stream(messages, [], () => {})],
   ];
 
-  describe.each(["flex", "priority"])("with the tier set to %s", (tier) => {
+  describe.each(["flex", "priority", "scale"])("with the tier set to %s", (tier) => {
     it.each(callSites)("%s sends it", async (_label, run) => {
       process.env.OPENROUTER_SERVICE_TIER = tier;
       const create = fakeCreate();
@@ -155,13 +110,12 @@ describe("service_tier on every OpenRouter chat completion call site", () => {
   });
 
   it.each(callSites)(
-    "%s sends an unchanged request body at the default tier",
+    "%s omits the key entirely when no tier is configured",
     async (_label, run) => {
-      process.env.OPENROUTER_SERVICE_TIER = "default";
+      delete process.env.OPENROUTER_SERVICE_TIER;
       const create = fakeCreate();
       await run(create);
-      const wireBody = JSON.parse(JSON.stringify(create.mock.calls[0][0]));
-      expect(wireBody).not.toHaveProperty("service_tier");
+      expect(create.mock.calls[0][0]).not.toHaveProperty("service_tier");
     }
   );
 });
