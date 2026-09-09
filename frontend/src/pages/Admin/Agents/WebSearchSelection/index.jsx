@@ -23,7 +23,6 @@ import {
 } from "@phosphor-icons/react";
 import Toggle from "@/components/lib/Toggle";
 import { DefaultBadge } from "../Badges/default";
-import { useTranslation } from "react-i18next";
 import SearchProviderItem from "./SearchProviderItem";
 import WebSearchImage from "@/media/agents/scrape-websites.png";
 import {
@@ -170,7 +169,6 @@ export default function AgentWebSearchSelection({
   enabled = true,
   setHasChanges,
 }) {
-  const { t } = useTranslation();
   const searchInputRef = useRef(null);
   const [filteredResults, setFilteredResults] = useState([]);
   const [selectedProvider, setSelectedProvider] = useState("you-search");

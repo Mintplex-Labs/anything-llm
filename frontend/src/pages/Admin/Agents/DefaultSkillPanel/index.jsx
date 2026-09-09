@@ -1,5 +1,4 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
 import { DefaultBadge } from "../Badges/default";
 import Toggle from "@/components/lib/Toggle";
 
@@ -12,7 +11,6 @@ export default function DefaultSkillPanel({
   toggleSkill,
   skill,
 }) {
-  const { t } = useTranslation();
   return (
     <div className="p-2">
       <div className="flex flex-col gap-y-[18px] max-w-[500px]">
