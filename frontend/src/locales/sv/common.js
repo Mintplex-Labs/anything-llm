@@ -1,3 +1,4 @@
+// Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
   onboarding: {
     home: {
@@ -719,8 +720,6 @@ const TRANSLATIONS = {
           },
         },
       },
-      default_skill:
-        "Som standard är denna färdighet aktiverad, men du kan stänga av den om du inte vill att den ska vara tillgänglig för agenten.",
       generateImage: {
         title: "Generera bilder",
         description:

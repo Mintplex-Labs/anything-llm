@@ -94,8 +94,7 @@ const TRANSLATIONS = {
     "experimental-features": "Caratteristiche sperimentali",
     contact: "Contatta il Supporto",
     "browser-extension": "Estensione del browser",
-    "system-prompt-variables":
-      "Variabili delle variabili del sistema\n\nVariabili delle variabili del sistema",
+    "system-prompt-variables": "Variabili del prompt di sistema",
     interface: "Preferenze dell'interfaccia utente",
     branding: "Branding e personalizzazione",
     chat: "Chat",
@@ -111,7 +110,7 @@ const TRANSLATIONS = {
       telegram: "Telegram",
     },
     "scheduled-jobs": "Lavori pianificati",
-    "model-router": "Router di esempio",
+    "model-router": "Router dei modelli",
     "image-generation": "Generazione di immagini",
   },
   login: {
@@ -204,7 +203,7 @@ const TRANSLATIONS = {
       },
     },
     history: {
-      title: "Chat History",
+      title: "Cronologia della chat",
       "desc-start":
         "Numero di chat precedenti che verranno incluse nella memoria a breve termine della risposta.",
       recommend: "Recommend 20. ",
@@ -321,8 +320,6 @@ const TRANSLATIONS = {
         description:
           "Permetti al tuo agente di utilizzare SQL per rispondere alle tue domande, collegandosi a diversi fornitori di database SQL.",
       },
-      default_skill:
-        "Per impostazione predefinita, questa funzionalità è attiva, ma è possibile disabilitarla se non si desidera che sia disponibile per l'agente.",
       filesystem: {
         title: "Accesso al file system",
         description:
@@ -344,7 +341,7 @@ const TRANSLATIONS = {
             description: "Apri e leggi più file contemporaneamente.",
           },
           "list-directory": {
-            title: "Elenco di contatti",
+            title: "Elenca contenuto della cartella",
             description:
               "Elenca i file e le directory all'interno di una cartella.",
           },
@@ -506,7 +503,7 @@ const TRANSLATIONS = {
               "Rispondere immediatamente a una conversazione via email.",
           },
           markRead: {
-            title: "Mark Read",
+            title: "Segna come letto",
             description: "Segna un thread come letto",
           },
           markUnread: {
@@ -555,7 +552,7 @@ const TRANSLATIONS = {
         clientId: "ID del cliente (richiesta)",
         clientIdHelp:
           "L'ID dell'applicazione (Client ID) dal registro della tua app in Azure AD.",
-        tenantId: "ID del locatore",
+        tenantId: "ID directory (tenant)",
         tenantIdHelp:
           "L'ID del \"Tenant\" (inquilino) dal registro della tua applicazione Azure AD. È necessario solo per l'autenticazione all'interno di un'organizzazione.",
         clientSecret: "Chiave segreta del cliente",

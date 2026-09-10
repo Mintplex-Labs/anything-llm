@@ -729,8 +729,6 @@ const TRANSLATIONS = {
           },
         },
       },
-      default_skill:
-        "Prema zadanim postavkama ova vještina je omogućena, ali je možete isključiti ako ne želite da bude dostupna agentu.",
       generateImage: {
         title: "Generiranje slika",
         description:
