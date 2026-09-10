@@ -9,6 +9,9 @@ const fs = require("fs");
 const path = require("path");
 const { safeJsonParse } = require("../../http");
 const {
+  serviceTierParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
+const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const cacheFolder = path.resolve(
@@ -16,8 +19,16 @@ const cacheFolder = path.resolve(
     ? path.resolve(process.env.STORAGE_DIR, "models", "openrouter")
     : path.resolve(__dirname, `../../../storage/models/openrouter`)
 );
-
 class OpenRouterLLM {
+  static SERVICE_TIERS = [
+    "auto",
+    "default",
+    "fast",
+    "flex",
+    "priority",
+    "scale",
+  ];
+
   /**
    * Some openrouter models never send a finish_reason and thus leave the stream open in the UI.
    * However, because OR is a middleware it can also wait an inordinately long time between chunks so we need
@@ -54,6 +65,7 @@ class OpenRouterLLM {
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
     this.timeout = this.#parseTimeout();
+    this.serviceTier = process.env.OPENROUTER_SERVICE_TIER;
 
     if (!fs.existsSync(cacheFolder))
       fs.mkdirSync(cacheFolder, { recursive: true });
@@ -253,6 +265,7 @@ class OpenRouterLLM {
           // This is an OpenRouter specific option that allows us to get the reasoning text
           // before the token text.
           include_reasoning: true,
+          ...serviceTierParam(this.serviceTier),
           user: user?.id ? `user_${user.id}` : "",
         })
         .catch((e) => {
@@ -301,6 +314,7 @@ class OpenRouterLLM {
         // This is an OpenRouter specific option that allows us to get the reasoning text
         // before the token text.
         include_reasoning: true,
+        ...serviceTierParam(this.serviceTier),
         user: user?.id ? `user_${user.id}` : "",
       }),
       messages,
