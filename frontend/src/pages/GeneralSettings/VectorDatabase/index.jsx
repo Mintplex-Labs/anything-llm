@@ -23,6 +23,7 @@ import AstraDBLogo from "@/media/vectordbs/astraDB.png";
 import PGVectorLogo from "@/media/vectordbs/pgvector.png";
 
 import LanceDBOptions from "@/components/VectorDBSelection/LanceDBOptions";
+import LanceDBCloudOptions from "@/components/VectorDBSelection/LanceDBCloudOptions";
 import ChromaDBOptions from "@/components/VectorDBSelection/ChromaDBOptions";
 import ChromaCloudOptions from "@/components/VectorDBSelection/ChromaCloudOptions";
 import PineconeDBOptions from "@/components/VectorDBSelection/PineconeDBOptions";
@@ -41,6 +42,14 @@ const VECTOR_DBS = [
     options: (_) => <LanceDBOptions />,
     description:
       "100% local vector DB that runs on the same instance as AnythingLLM.",
+  },
+  {
+    name: "LanceDB Cloud",
+    value: "lancedb_cloud",
+    logo: LanceDbLogo,
+    options: (settings) => <LanceDBCloudOptions settings={settings} />,
+    description:
+      "LanceDB backed by object storage or a LanceDB Cloud database.",
   },
   {
     name: "PGVector",
