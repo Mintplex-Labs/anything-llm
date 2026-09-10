@@ -7,6 +7,7 @@ export default function ChatModelSelection({
   provider,
   workspace,
   setHasChanges,
+  onModelChange = () => {},
 }) {
   const { defaultModels, customModels, loading, downloadedModels } =
     useGetProviderModels(provider);
@@ -52,8 +53,9 @@ export default function ChatModelSelection({
       <select
         name="chatModel"
         required={true}
-        onChange={() => {
+        onChange={(e) => {
           setHasChanges(true);
+          onModelChange(e.target.value);
         }}
         className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
       >

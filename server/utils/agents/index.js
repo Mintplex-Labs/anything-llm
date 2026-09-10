@@ -852,9 +852,11 @@ class AgentHandler {
     }
   ) {
     this.#args = args;
+    const { resolveReasoningEffort } = require("../chats");
     this.aibitat = new AIbitat({
       provider: this.provider ?? "openai",
       model: this.model ?? "gpt-4.1-nano",
+      reasoningEffort: resolveReasoningEffort(this.invocation?.workspace),
       chats: await this.#chatHistory(20),
       handlerProps: {
         invocation: this.invocation,

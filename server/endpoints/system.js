@@ -10,7 +10,7 @@ const {
   getDocumentsByDocPaths,
 } = require("../utils/files");
 const { purgeDocument, purgeFolder } = require("../utils/files/purgeDocument");
-const { getVectorDbClass } = require("../utils/helpers");
+const { getVectorDbClass, getLLMProvider } = require("../utils/helpers");
 const { updateENV, dumpENV } = require("../utils/helpers/updateENV");
 const {
   reqBody,
@@ -584,6 +584,49 @@ function systemEndpoints(app) {
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.get(
+    "/system/llm-capabilities",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      // Local providers read their endpoint from the ENV, so previewing an
+      // unsaved base path means overriding it for the duration of this check.
+      const BASE_PATH_ENV = {
+        ollama: "OLLAMA_BASE_PATH",
+        lmstudio: "LMSTUDIO_BASE_PATH",
+        lemonade: "LEMONADE_LLM_BASE_PATH",
+      };
+
+      // Optional overrides let the UI preview capabilities for an unsaved
+      // provider selection - otherwise the system LLM preference is used.
+      const { provider = null, model = null, basePath = null } = request.query;
+      const envKey = provider ? BASE_PATH_ENV[String(provider)] : null;
+      const originalBasePath = envKey ? process.env[envKey] : null;
+
+      try {
+        if (envKey && basePath) process.env[envKey] = String(basePath);
+        const LLMProvider = getLLMProvider({
+          provider: provider ? String(provider) : null,
+          model: model ? String(model) : null,
+        });
+        const capabilities = (await LLMProvider.getModelCapabilities?.()) ?? {
+          reasoning: "unknown",
+          reasoningOptions: [],
+        };
+        return response.status(200).json({ capabilities });
+      } catch (e) {
+        console.error(e.message, e);
+        return response.status(200).json({
+          capabilities: { reasoning: "unknown", reasoningOptions: [] },
+        });
+      } finally {
+        if (envKey && basePath) {
+          if (originalBasePath === undefined) delete process.env[envKey];
+          else process.env[envKey] = originalBasePath;
+        }
       }
     }
   );

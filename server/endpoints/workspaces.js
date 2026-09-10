@@ -9,7 +9,11 @@ const { Workspace } = require("../models/workspace");
 const { Document } = require("../models/documents");
 const { DocumentVectors } = require("../models/vectors");
 const { WorkspaceChats } = require("../models/workspaceChats");
-const { getVectorDbClass, stripThinkingFromText } = require("../utils/helpers");
+const {
+  getVectorDbClass,
+  getLLMProvider,
+  stripThinkingFromText,
+} = require("../utils/helpers");
 const { handleFileUpload } = require("../utils/files/multer");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { Telemetry } = require("../models/telemetry");
@@ -406,6 +410,47 @@ function workspaceEndpoints(app) {
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.get(
+    "/workspace/:slug/llm-capabilities",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const { slug } = request.params;
+        const user = await userFromSession(request, response);
+        const workspace = multiUserMode(response)
+          ? await Workspace.getWithUser(user, { slug })
+          : await Workspace.get({ slug });
+        if (!workspace) return response.sendStatus(400);
+
+        // Optional overrides let the UI preview capabilities for an unsaved
+        // provider/model selection. "default" means the system LLM preference.
+        const { provider = null, model = null } = request.query;
+        const LLMProvider = getLLMProvider({
+          provider: provider
+            ? provider === "default"
+              ? null
+              : String(provider)
+            : workspace.chatProvider,
+          model: provider
+            ? model
+              ? String(model)
+              : null
+            : workspace.chatModel,
+        });
+        const capabilities = (await LLMProvider.getModelCapabilities?.()) ?? {
+          reasoning: "unknown",
+          reasoningOptions: [],
+        };
+        return response.status(200).json({ capabilities });
+      } catch (e) {
+        console.error(e.message, e);
+        return response.status(200).json({
+          capabilities: { reasoning: "unknown", reasoningOptions: [] },
+        });
       }
     }
   );

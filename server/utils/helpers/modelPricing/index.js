@@ -1,6 +1,7 @@
 const path = require("path");
 const fs = require("fs");
 const { toNonNegativeNumber } = require("../numbers");
+const { PROVIDER_REASONING_EFFORTS } = require("../reasoningEffort");
 
 /**
  * @typedef {Object} ModelCost - USD per 1,000,000 tokens (models.dev conventions)
@@ -372,13 +373,27 @@ function addChatCostToMetrics(
   metrics = {},
   { routingMetadata = null, workspace = null, connector = null } = {}
 ) {
-  return addCostToMetrics(metrics, {
-    provider:
-      routingMetadata?.routedTo?.provider ??
-      workspace?.chatProvider ??
-      process.env.LLM_PROVIDER,
-    model: routingMetadata?.routedTo?.model ?? connector?.model,
-  });
+  const provider =
+    routingMetadata?.routedTo?.provider ??
+    workspace?.chatProvider ??
+    process.env.LLM_PROVIDER;
+  const model = routingMetadata?.routedTo?.model ?? connector?.model;
+
+  // Only report an effort the provider will actually apply - a stale value
+  // from a provider/model switch is dropped at request time and should not
+  // show on the chat's metrics.
+  const storedEffort =
+    workspace?.reasoningEffort ?? process.env.REASONING_EFFORT ?? null;
+  const reasoningEffort =
+    storedEffort &&
+    (PROVIDER_REASONING_EFFORTS[provider]?.(model ?? "") ?? []).includes(
+      storedEffort
+    )
+      ? storedEffort
+      : null;
+
+  const withCost = addCostToMetrics(metrics, { provider, model });
+  return reasoningEffort ? { ...withCost, reasoningEffort } : withCost;
 }
 
 module.exports = {

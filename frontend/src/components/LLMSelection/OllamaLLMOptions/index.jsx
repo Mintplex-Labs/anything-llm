@@ -6,7 +6,10 @@ import useProviderEndpointAutoDiscovery from "@/hooks/useProviderEndpointAutoDis
 import { Tooltip } from "react-tooltip";
 import { Link } from "react-router-dom";
 
-export default function OllamaLLMOptions({ settings }) {
+export default function OllamaLLMOptions({
+  settings,
+  reasoningControl = null,
+}) {
   const {
     autoDetecting: loading,
     basePath,
@@ -33,6 +36,7 @@ export default function OllamaLLMOptions({ settings }) {
           basePath={basePath.value}
           authToken={authToken.value}
         />
+        {reasoningControl}
       </div>
       <div className="flex justify-start mt-4">
         <button

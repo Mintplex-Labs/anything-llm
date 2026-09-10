@@ -88,6 +88,7 @@ import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
 import OMLXOptions from "@/components/LLMSelection/OMLXOptions";
+import SystemReasoningEffort from "./SystemReasoningEffort";
 
 export const MODEL_ROUTER_PROVIDER = {
   name: "Model Router",
@@ -108,7 +109,9 @@ export const AVAILABLE_LLM_PROVIDERS = [
     name: "OpenAI",
     value: "openai",
     logo: OpenAiLogo,
-    options: (settings) => <OpenAiOptions settings={settings} />,
+    options: (settings, extras) => (
+      <OpenAiOptions settings={settings} {...extras} />
+    ),
     description: "The standard option for most non-commercial use.",
     requiredConfig: ["OpenAiKey"],
   },
@@ -124,7 +127,9 @@ export const AVAILABLE_LLM_PROVIDERS = [
     name: "Anthropic",
     value: "anthropic",
     logo: AnthropicLogo,
-    options: (settings) => <AnthropicAiOptions settings={settings} />,
+    options: (settings, extras) => (
+      <AnthropicAiOptions settings={settings} {...extras} />
+    ),
     description: "A friendly AI Assistant hosted by Anthropic.",
     requiredConfig: ["AnthropicApiKey"],
   },
@@ -132,7 +137,9 @@ export const AVAILABLE_LLM_PROVIDERS = [
     name: "Gemini",
     value: "gemini",
     logo: GeminiLogo,
-    options: (settings) => <GeminiLLMOptions settings={settings} />,
+    options: (settings, extras) => (
+      <GeminiLLMOptions settings={settings} {...extras} />
+    ),
     description: "Google's largest and most capable AI model",
     requiredConfig: ["GeminiLLMApiKey"],
   },
@@ -149,7 +156,9 @@ export const AVAILABLE_LLM_PROVIDERS = [
     name: "Ollama",
     value: "ollama",
     logo: OllamaLogo,
-    options: (settings) => <OllamaLLMOptions settings={settings} />,
+    options: (settings, extras) => (
+      <OllamaLLMOptions settings={settings} {...extras} />
+    ),
     description: "Run LLMs locally on your own machine.",
     requiredConfig: ["OllamaLLMBasePath"],
   },
@@ -157,7 +166,9 @@ export const AVAILABLE_LLM_PROVIDERS = [
     name: "LM Studio",
     value: "lmstudio",
     logo: LMStudioLogo,
-    options: (settings) => <LMStudioOptions settings={settings} />,
+    options: (settings, extras) => (
+      <LMStudioOptions settings={settings} {...extras} />
+    ),
     description:
       "Discover, download, and run thousands of cutting edge LLMs in a few clicks.",
     requiredConfig: ["LMStudioBasePath"],
@@ -174,7 +185,9 @@ export const AVAILABLE_LLM_PROVIDERS = [
     name: "Lemonade",
     value: "lemonade",
     logo: LemonadeLogo,
-    options: (settings) => <LemonadeOptions settings={settings} />,
+    options: (settings, extras) => (
+      <LemonadeOptions settings={settings} {...extras} />
+    ),
     description:
       "Run local LLMs, ASR, TTS, and more in a single unified AI runtime.",
     requiredConfig: ["LemonadeLLMBasePath"],
@@ -287,7 +300,9 @@ export const AVAILABLE_LLM_PROVIDERS = [
     name: "DeepSeek",
     value: "deepseek",
     logo: DeepSeekLogo,
-    options: (settings) => <DeepSeekOptions settings={settings} />,
+    options: (settings, extras) => (
+      <DeepSeekOptions settings={settings} {...extras} />
+    ),
     description: "Run DeepSeek's powerful LLMs.",
     requiredConfig: ["DeepSeekApiKey"],
   },
@@ -456,6 +471,13 @@ export default function GeneralLLMPreference() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredLLMs, setFilteredLLMs] = useState([]);
   const [selectedLLM, setSelectedLLM] = useState(null);
+  // Unsaved model/base path selections bubbled up from the provider's options
+  // component so dependent controls (eg: reasoning effort) can preview
+  // capabilities before the form is saved.
+  const [pendingModel, setPendingModel] = useState(null);
+  const [pendingBasePath, setPendingBasePath] = useState(null);
+  // Bumped on save so capability-dependent controls refetch.
+  const [savedCount, setSavedCount] = useState(0);
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
   const { t } = useTranslation();
@@ -474,6 +496,7 @@ export default function GeneralLLMPreference() {
       showToast(`Failed to save LLM settings: ${error}`, "error");
     } else {
       showToast("LLM preferences saved successfully.", "success");
+      setSavedCount((count) => count + 1);
     }
     setSaving(false);
     setHasChanges(!!error);
@@ -482,6 +505,8 @@ export default function GeneralLLMPreference() {
   const updateLLMChoice = (selection) => {
     setSearchQuery("");
     setSelectedLLM(selection);
+    setPendingModel(null);
+    setPendingBasePath(null);
     setSearchMenuOpen(false);
     setHasChanges(true);
   };
@@ -655,13 +680,31 @@ export default function GeneralLLMPreference() {
                 )}
               </div>
               <div
-                onChange={() => setHasChanges(true)}
+                onChange={(e) => {
+                  setHasChanges(true);
+                  // Every provider's model selector input is named `*ModelPref`
+                  // and every local provider's endpoint input `*BasePath`.
+                  if (e.target?.name?.endsWith("ModelPref"))
+                    setPendingModel(e.target.value);
+                  if (e.target?.name?.endsWith("BasePath"))
+                    setPendingBasePath(e.target.value);
+                }}
                 className="mt-4 flex flex-col gap-y-1"
               >
                 {selectedLLM &&
                   AVAILABLE_LLM_PROVIDERS.find(
                     (llm) => llm.value === selectedLLM
-                  )?.options?.(settings)}
+                  )?.options?.(settings, {
+                    reasoningControl: (
+                      <SystemReasoningEffort
+                        settings={settings}
+                        selectedLLM={selectedLLM}
+                        selectedModel={pendingModel}
+                        basePath={pendingBasePath}
+                        refreshKey={savedCount}
+                      />
+                    ),
+                  })}
               </div>
             </div>
           </form>

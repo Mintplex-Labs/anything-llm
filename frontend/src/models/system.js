@@ -68,6 +68,31 @@ const System = {
       .catch(() => null);
   },
   /**
+   * Fetches the capabilities of the system LLM (or a given provider/model).
+   * @param {string|null} [provider] - Provider to preview capabilities for; defaults to the system LLM preference
+   * @param {string|null} [model] - Model to preview capabilities for; defaults to the provider's model preference
+   * @param {string|null} [basePath] - Unsaved base path for local providers
+   * @returns {Promise<{reasoning: 'unknown' | boolean, reasoningOptions: string[]}>}
+   */
+  llmCapabilities: async function (
+    provider = null,
+    model = null,
+    basePath = null
+  ) {
+    const params = new URLSearchParams();
+    if (provider) params.set("provider", provider);
+    if (model) params.set("model", model);
+    if (basePath) params.set("basePath", basePath);
+    const capabilities = await fetch(
+      `${API_BASE}/system/llm-capabilities?${params.toString()}`,
+      { headers: baseHeaders() }
+    )
+      .then((res) => res.json())
+      .then((res) => res.capabilities)
+      .catch(() => null);
+    return capabilities ?? { reasoning: "unknown", reasoningOptions: [] };
+  },
+  /**
    * Without a folderName, returns the folder shells for the picker.
    * With one, returns that folder's documents.
    * @param {string|null} folderName

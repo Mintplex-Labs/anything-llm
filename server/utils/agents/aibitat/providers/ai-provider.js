@@ -18,6 +18,9 @@ const { toValidNumber, safeJsonParse } = require("../../../http");
 const { getLLMProviderClass } = require("../../../helpers");
 const { MODEL_PRICING } = require("../../../helpers/modelPricing");
 const { toNonNegativeNumber } = require("../../../helpers/numbers");
+const {
+  PROVIDER_REASONING_EFFORTS,
+} = require("../../../helpers/reasoningEffort");
 const { parseLMStudioBasePath } = require("../../../AiProviders/lmStudio");
 const { parseFoundryBasePath } = require("../../../AiProviders/foundry");
 const { parseOMLXBasePath } = require("../../../AiProviders/omlx");
@@ -720,6 +723,18 @@ class Provider {
       completion_tokens: completionTokens,
     });
 
+    // Only report an effort the provider actually applied to its requests -
+    // an invalid stored value is dropped at request time and should not show
+    // on the chat's metrics.
+    const providerKey = this.providerSlug ?? this.providerTag;
+    const reasoningEffort =
+      this.reasoningEffort &&
+      (
+        PROVIDER_REASONING_EFFORTS[providerKey]?.(this.model ?? "") ?? []
+      ).includes(this.reasoningEffort)
+        ? this.reasoningEffort
+        : null;
+
     this.lastUsage = {
       prompt_tokens: promptTokens,
       completion_tokens: completionTokens,
@@ -730,6 +745,7 @@ class Provider {
       model: this.model,
       provider: this.constructor.name,
       timestamp,
+      ...(reasoningEffort ? { reasoningEffort } : {}),
       ...(cost ?? {}),
     };
 
@@ -745,6 +761,7 @@ class Provider {
     totals.model = this.model;
     totals.provider = this.constructor.name;
     totals.timestamp = timestamp;
+    if (reasoningEffort) totals.reasoningEffort = reasoningEffort;
     if (cost) {
       totals.inputCost = (totals.inputCost ?? 0) + cost.inputCost;
       totals.outputCost = (totals.outputCost ?? 0) + cost.outputCost;

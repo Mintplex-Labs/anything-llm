@@ -1,3 +1,4 @@
+const { validReasoningEffort } = require("../../../helpers/reasoningEffort");
 const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const { RetryError } = require("../error.js");
@@ -12,7 +13,7 @@ class GeminiProvider extends Provider {
   model;
 
   constructor(config = {}) {
-    const { model = "gemini-2.0-flash-lite" } = config;
+    const { model = "gemini-2.0-flash-lite", reasoningEffort = null } = config;
     super();
     this.providerTag = "gemini";
     this.className = "GeminiProvider";
@@ -42,11 +43,27 @@ class GeminiProvider extends Provider {
 
     this._client = client;
     this.model = model;
+    this.reasoningEffort = reasoningEffort;
     this.verbose = true;
   }
 
   get client() {
     return this._client;
+  }
+
+  /**
+   * The reasoning portion of the request body when a supported reasoning
+   * effort is set - otherwise an empty object so the provider default applies.
+   * @returns {object}
+   */
+  get reasoningConfig() {
+    const effort = validReasoningEffort(
+      "gemini",
+      this.model,
+      this.reasoningEffort
+    );
+    if (!effort) return {};
+    return { reasoning_effort: effort };
   }
 
   /**
@@ -257,6 +274,7 @@ class GeminiProvider extends Provider {
         messages: this.#formatMessages(messages),
         stream: true,
         stream_options: { include_usage: true },
+        ...this.reasoningConfig,
         ...(Array.isArray(functions) && functions?.length > 0
           ? {
               tools: this.#formatFunctions(functions),
@@ -384,6 +402,7 @@ class GeminiProvider extends Provider {
         model: this.model,
         stream: false,
         messages: this.#formatMessages(messages),
+        ...this.reasoningConfig,
         ...(Array.isArray(functions) && functions?.length > 0
           ? {
               tools: this.#formatFunctions(functions),

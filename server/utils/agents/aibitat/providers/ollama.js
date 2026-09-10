@@ -1,3 +1,4 @@
+const { validReasoningEffort } = require("../../../helpers/reasoningEffort");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
@@ -19,6 +20,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     const {
       // options = {},
       model = null,
+      reasoningEffort = null,
     } = config;
 
     super();
@@ -32,12 +34,30 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
       fetch: OllamaAILLM.applyOllamaFetch(),
     });
     this.model = model;
+    this.reasoningEffort = reasoningEffort;
     this.verbose = true;
     this._supportsToolCalling = null;
   }
 
   get client() {
     return this._client;
+  }
+
+  /**
+   * The reasoning portion of the request body when a supported reasoning
+   * effort is set - otherwise an empty object so the provider default applies.
+   * Ollama's `think` accepts a boolean toggle or an effort level string.
+   * @returns {object}
+   */
+  get reasoningConfig() {
+    const effort = validReasoningEffort(
+      "ollama",
+      this.model,
+      this.reasoningEffort
+    );
+    if (!effort) return {};
+    if (["on", "off"].includes(effort)) return { think: effort === "on" };
+    return { think: effort };
   }
 
   get supportsAgentStreaming() {
@@ -78,6 +98,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     const response = await this.client.chat({
       model: this.model,
       messages,
+      ...this.reasoningConfig,
       options: this.queryOptions,
     });
     return response?.message?.content || null;
@@ -89,6 +110,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
       model: this.model,
       messages,
       stream: true,
+      ...this.reasoningConfig,
       options: this.queryOptions,
     });
   }
@@ -312,6 +334,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
         messages: formattedMessages,
         ...(tools.length > 0 ? { tools } : {}),
         stream: true,
+        ...this.reasoningConfig,
         options: this.queryOptions,
       });
 
@@ -506,6 +529,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
         model: this.model,
         messages: formattedMessages,
         ...(tools.length > 0 ? { tools } : {}),
+        ...this.reasoningConfig,
         options: this.queryOptions,
       });
 

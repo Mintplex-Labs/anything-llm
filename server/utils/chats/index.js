@@ -140,8 +140,28 @@ function sourceIdentifier(sourceDocument) {
   return `title:${sourceDocument.title}-timestamp:${sourceDocument.published}`;
 }
 
+/**
+ * Resolves the reasoning effort for a chat - the workspace's own setting wins,
+ * otherwise the system-wide default. Logged when set so chat logs show what
+ * effort was requested; providers still ignore values their model cannot use.
+ * @param {import("@prisma/client").workspaces|null} workspace
+ * @returns {string|null}
+ */
+function resolveReasoningEffort(workspace = null) {
+  const reasoningEffort =
+    workspace?.reasoningEffort ?? process.env.REASONING_EFFORT ?? null;
+  if (reasoningEffort)
+    console.log(
+      `\x1b[36m[ReasoningEffort]\x1b[0m Chat requested with ${
+        workspace?.reasoningEffort ? "workspace" : "global"
+      } reasoning effort "${reasoningEffort}"`
+    );
+  return reasoningEffort;
+}
+
 module.exports = {
   sourceIdentifier,
+  resolveReasoningEffort,
   recentChatHistory,
   chatPrompt,
   grepCommand,

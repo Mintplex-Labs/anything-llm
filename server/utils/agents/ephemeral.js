@@ -517,9 +517,11 @@ class EphemeralAgentHandler extends AgentHandler {
       toolOverrides: null,
     }
   ) {
+    const { resolveReasoningEffort } = require("../chats");
     this.aibitat = new AIbitat({
       provider: this.provider ?? "openai",
       model: this.model ?? "gpt-4.1-nano",
+      reasoningEffort: resolveReasoningEffort(this.#workspace),
       chats: await this.#chatHistory(20),
       handlerProps: {
         invocation: {
