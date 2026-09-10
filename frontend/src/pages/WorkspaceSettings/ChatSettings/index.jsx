@@ -3,20 +3,18 @@ import Workspace from "@/models/workspace";
 import showToast from "@/utils/toast";
 import { castToType } from "@/utils/types";
 import { useEffect, useRef, useState } from "react";
+import useAutosaveForm from "@/hooks/useAutosaveForm";
 import ChatHistorySettings from "./ChatHistorySettings";
 import ChatPromptSettings from "./ChatPromptSettings";
 import ChatTemperatureSettings from "./ChatTemperatureSettings";
 import ChatModeSelection from "./ChatModeSelection";
 import WorkspaceLLMSelection from "./WorkspaceLLMSelection";
 import ChatQueryRefusalResponse from "./ChatQueryRefusalResponse";
-import CTAButton from "@/components/lib/CTAButton";
 
 export default function ChatSettings({ workspace }) {
   const [settings, setSettings] = useState({});
-  const [hasChanges, setHasChanges] = useState(false);
-  const [saving, setSaving] = useState(false);
-
   const formEl = useRef(null);
+  const { hasChanges, setHasChanges } = useAutosaveForm(formEl);
   useEffect(() => {
     async function fetchSettings() {
       const _settings = await System.keys();
@@ -27,7 +25,6 @@ export default function ChatSettings({ workspace }) {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-    setSaving(true);
     const data = {};
     const form = new FormData(formEl.current);
     for (var [key, value] of form.entries()) data[key] = castToType(key, value);
@@ -43,7 +40,6 @@ export default function ChatSettings({ workspace }) {
       showToast(`Error: ${message}`, "error", { clear: true });
       // Keep hasChanges true on error so user can retry
     }
-    setSaving(false);
   };
 
   if (!workspace) return null;
@@ -55,13 +51,6 @@ export default function ChatSettings({ workspace }) {
         id="chat-settings-form"
         className="w-1/2 flex flex-col gap-y-[32px]"
       >
-        {hasChanges && (
-          <div className="absolute top-0 right-0">
-            <CTAButton type="submit">
-              {saving ? "Updating..." : "Update Workspace"}
-            </CTAButton>
-          </div>
-        )}
         <WorkspaceLLMSelection
           settings={settings}
           workspace={workspace}

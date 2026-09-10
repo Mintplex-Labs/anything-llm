@@ -3,6 +3,7 @@ import Workspace from "@/models/workspace";
 import showToast from "@/utils/toast";
 import { castToType } from "@/utils/types";
 import { useEffect, useRef, useState } from "react";
+import useAutosaveForm from "@/hooks/useAutosaveForm";
 import AgentLLMSelection from "./AgentLLMSelection";
 import Admin from "@/models/admin";
 import * as Skeleton from "react-loading-skeleton";
@@ -13,10 +14,9 @@ import useUser from "@/hooks/useUser";
 export default function WorkspaceAgentConfiguration({ workspace }) {
   const { user } = useUser();
   const [settings, setSettings] = useState({});
-  const [hasChanges, setHasChanges] = useState(false);
-  const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const formEl = useRef(null);
+  const { setHasChanges } = useAutosaveForm(formEl);
 
   useEffect(() => {
     async function fetchSettings() {
@@ -28,7 +28,6 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
   }, []);
 
   const handleUpdate = async (e) => {
-    setSaving(true);
     e.preventDefault();
     const data = {
       workspace: {},
@@ -66,7 +65,6 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
       showToast(`Error: ${message}`, "error", { clear: true });
     }
 
-    setSaving(false);
     setHasChanges(false);
   };
 
@@ -86,33 +84,19 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
           setHasChanges={setHasChanges}
         />
         {(!user || user?.role === "admin") && (
-          <>
-            {!hasChanges && (
-              <div className="flex flex-col gap-y-4">
-                <a
-                  className="w-fit transition-all duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-                  href={paths.settings.agentSkills()}
-                >
-                  Configure Agent Skills
-                </a>
-                <p className="text-white text-opacity-60 text-xs font-medium">
-                  Customize and enhance the default agent's capabilities by
-                  enabling or disabling specific skills. These settings will be
-                  applied across all workspaces.
-                </p>
-              </div>
-            )}
-          </>
-        )}
-
-        {hasChanges && (
-          <button
-            type="submit"
-            form="agent-settings-form"
-            className="w-fit transition-all duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-          >
-            {saving ? "Updating agent..." : "Update workspace agent"}
-          </button>
+          <div className="flex flex-col gap-y-4">
+            <a
+              className="w-fit transition-all duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+              href={paths.settings.agentSkills()}
+            >
+              Configure Agent Skills
+            </a>
+            <p className="text-white text-opacity-60 text-xs font-medium">
+              Customize and enhance the default agent's capabilities by enabling
+              or disabling specific skills. These settings will be applied
+              across all workspaces.
+            </p>
+          </div>
         )}
       </form>
     </div>

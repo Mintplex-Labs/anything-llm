@@ -2,17 +2,16 @@ import Workspace from "@/models/workspace";
 import { castToType } from "@/utils/types";
 import showToast from "@/utils/toast";
 import { useEffect, useRef, useState } from "react";
+import useAutosaveForm from "@/hooks/useAutosaveForm";
 import WorkspaceName from "./WorkspaceName";
 import SuggestedChatMessages from "./SuggestedChatMessages";
 import DeleteWorkspace from "./DeleteWorkspace";
-import CTAButton from "@/components/lib/CTAButton";
 
 export default function GeneralInfo({ slug, deletionProtected = false }) {
   const [workspace, setWorkspace] = useState(null);
-  const [hasChanges, setHasChanges] = useState(false);
-  const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const formEl = useRef(null);
+  const { setHasChanges } = useAutosaveForm(formEl);
 
   useEffect(() => {
     async function fetchWorkspace() {
@@ -24,7 +23,6 @@ export default function GeneralInfo({ slug, deletionProtected = false }) {
   }, [slug]);
 
   const handleUpdate = async (e) => {
-    setSaving(true);
     e.preventDefault();
     const data = {};
     const form = new FormData(formEl.current);
@@ -38,7 +36,6 @@ export default function GeneralInfo({ slug, deletionProtected = false }) {
     } else {
       showToast(`Error: ${message}`, "error", { clear: true });
     }
-    setSaving(false);
     setHasChanges(false);
   };
 
@@ -50,13 +47,6 @@ export default function GeneralInfo({ slug, deletionProtected = false }) {
         onSubmit={handleUpdate}
         className="w-1/2 flex flex-col"
       >
-        {hasChanges && (
-          <div className="absolute top-0 right-0">
-            <CTAButton type="submit">
-              {saving ? "Updating..." : "Update Workspace"}
-            </CTAButton>
-          </div>
-        )}
         <WorkspaceName
           key={workspace.slug}
           workspace={workspace}
