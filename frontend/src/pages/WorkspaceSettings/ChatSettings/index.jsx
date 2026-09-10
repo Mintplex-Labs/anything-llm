@@ -14,7 +14,6 @@ import ChatQueryRefusalResponse from "./ChatQueryRefusalResponse";
 export default function ChatSettings({ workspace }) {
   const [settings, setSettings] = useState({});
   const formEl = useRef(null);
-  const { hasChanges, setHasChanges } = useAutosaveForm(formEl);
   useEffect(() => {
     async function fetchSettings() {
       const _settings = await System.keys();
@@ -24,7 +23,7 @@ export default function ChatSettings({ workspace }) {
   }, []);
 
   const handleUpdate = async (e) => {
-    e.preventDefault();
+    e?.preventDefault();
     const data = {};
     const form = new FormData(formEl.current);
     for (var [key, value] of form.entries()) data[key] = castToType(key, value);
@@ -41,6 +40,7 @@ export default function ChatSettings({ workspace }) {
       // Keep hasChanges true on error so user can retry
     }
   };
+  const { hasChanges, setHasChanges } = useAutosaveForm(formEl, handleUpdate);
 
   if (!workspace) return null;
   return (

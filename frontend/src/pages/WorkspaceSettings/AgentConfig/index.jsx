@@ -16,7 +16,6 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
   const [settings, setSettings] = useState({});
   const [loading, setLoading] = useState(true);
   const formEl = useRef(null);
-  const { setHasChanges } = useAutosaveForm(formEl);
 
   useEffect(() => {
     async function fetchSettings() {
@@ -28,7 +27,7 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
   }, []);
 
   const handleUpdate = async (e) => {
-    e.preventDefault();
+    e?.preventDefault();
     const data = {
       workspace: {},
       system: {},
@@ -67,6 +66,7 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
 
     setHasChanges(false);
   };
+  const { setHasChanges } = useAutosaveForm(formEl, handleUpdate);
 
   if (!workspace || loading) return <LoadingSkeleton />;
   return (

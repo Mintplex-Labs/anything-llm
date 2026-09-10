@@ -11,7 +11,6 @@ export default function GeneralInfo({ slug, deletionProtected = false }) {
   const [workspace, setWorkspace] = useState(null);
   const [loading, setLoading] = useState(true);
   const formEl = useRef(null);
-  const { setHasChanges } = useAutosaveForm(formEl);
 
   useEffect(() => {
     async function fetchWorkspace() {
@@ -23,7 +22,7 @@ export default function GeneralInfo({ slug, deletionProtected = false }) {
   }, [slug]);
 
   const handleUpdate = async (e) => {
-    e.preventDefault();
+    e?.preventDefault();
     const data = {};
     const form = new FormData(formEl.current);
     for (var [key, value] of form.entries()) data[key] = castToType(key, value);
@@ -38,6 +37,7 @@ export default function GeneralInfo({ slug, deletionProtected = false }) {
     }
     setHasChanges(false);
   };
+  const { setHasChanges } = useAutosaveForm(formEl, handleUpdate);
 
   if (!workspace || loading) return null;
   return (

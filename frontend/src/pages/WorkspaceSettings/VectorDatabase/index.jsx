@@ -12,10 +12,9 @@ import VectorSearchMode from "./VectorSearchMode";
 
 export default function VectorDatabase({ workspace }) {
   const formEl = useRef(null);
-  const { setHasChanges } = useAutosaveForm(formEl);
 
   const handleUpdate = async (e) => {
-    e.preventDefault();
+    e?.preventDefault();
     const data = {};
     const form = new FormData(formEl.current);
     for (var [key, value] of form.entries()) data[key] = castToType(key, value);
@@ -30,6 +29,7 @@ export default function VectorDatabase({ workspace }) {
     }
     setHasChanges(false);
   };
+  const { setHasChanges } = useAutosaveForm(formEl, handleUpdate);
 
   if (!workspace) return null;
   return (
