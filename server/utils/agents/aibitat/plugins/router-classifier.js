@@ -91,6 +91,7 @@ async function classifyWithLLM(rules, prompt, router) {
       // with free text, cap the chat at one round so we don't loop.
       maxRounds: 1,
     });
+    aibitat.suppressObservability = true;
 
     aibitat.use(
       routerClassifier.plugin({
@@ -106,6 +107,21 @@ async function classifyWithLLM(rules, prompt, router) {
       from: "USER",
       to: CLASSIFIER_AGENT,
       content: prompt,
+    });
+
+    const { Observability } = require("../../../observability");
+    Observability.traceEvent({
+      name: "model-router-classification",
+      input: prompt,
+      output: aibitat.classifiedCategory || "none",
+      model: router.fallback_model || null,
+      observationType: "generation",
+      metrics: aibitat.providerInstance?.getCumulativeUsage?.(),
+      metadata: {
+        routerId: router.id ?? null,
+        provider: router.fallback_provider || null,
+      },
+      tags: ["model-router"],
     });
 
     const selected = aibitat.classifiedCategory?.toLowerCase();
