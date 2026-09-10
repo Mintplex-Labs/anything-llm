@@ -10,6 +10,9 @@ const {
   formatChatHistory,
 } = require("../../helpers/chat/responses");
 const { MODEL_MAP } = require("../modelMap");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 class SambaNovaLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -122,7 +125,7 @@ class SambaNovaLLM {
         .create({
           model: this.model,
           messages,
-          temperature,
+          ...temperatureParam(temperature),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -159,7 +162,7 @@ class SambaNovaLLM {
         model: this.model,
         stream: true,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
         stream_options: {
           include_usage: true,
         },

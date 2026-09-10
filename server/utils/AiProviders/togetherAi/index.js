@@ -9,6 +9,9 @@ const {
 const fs = require("fs");
 const path = require("path");
 const { safeJsonParse } = require("../../http");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 const cacheFolder = path.resolve(
   process.env.STORAGE_DIR
@@ -192,7 +195,7 @@ class TogetherAiLLM {
         .create({
           model: this.model,
           messages,
-          temperature,
+          ...temperatureParam(temperature),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -234,7 +237,7 @@ class TogetherAiLLM {
         model: this.model,
         stream: true,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       }),
       messages,
       runPromptTokenCalculation: false,

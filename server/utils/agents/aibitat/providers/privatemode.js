@@ -2,7 +2,11 @@ const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
-const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
+const {
+  tooledStream,
+  tooledComplete,
+  temperatureParam,
+} = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
 const { PrivatemodeLLM } = require("../../../AiProviders/privatemode/index.js");
 
@@ -40,7 +44,7 @@ class PrivatemodelProvider extends InheritMultiple([Provider, UnTooled]) {
     return await this.client.chat.completions
       .create({
         model: this.model,
-        temperature: this.temperature,
+        ...temperatureParam(this.temperature),
         messages,
         user: this.executingUserId,
       })
@@ -59,7 +63,7 @@ class PrivatemodelProvider extends InheritMultiple([Provider, UnTooled]) {
   async #handleFunctionCallStream({ messages = [] }) {
     return await this.client.chat.completions.create({
       model: this.model,
-      temperature: this.temperature,
+      ...temperatureParam(this.temperature),
       stream: true,
       messages,
       user: this.executingUserId,

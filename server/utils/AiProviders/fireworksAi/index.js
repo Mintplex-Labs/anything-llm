@@ -8,6 +8,9 @@ const {
 const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 const cacheFolder = path.resolve(
   process.env.STORAGE_DIR
@@ -147,7 +150,7 @@ class FireworksAiLLM {
       this.openai.chat.completions.create({
         model: this.model,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       })
     );
 
@@ -186,7 +189,7 @@ class FireworksAiLLM {
         model: this.model,
         stream: true,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       }),
       messages,
       runPromptTokenCalculation: false,

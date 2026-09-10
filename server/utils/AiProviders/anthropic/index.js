@@ -10,6 +10,9 @@ const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { getAnythingLLMUserAgent } = require("../../../endpoints/utils");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 class AnthropicLLM {
   /**
@@ -96,14 +99,14 @@ class AnthropicLLM {
   }
 
   /**
-   * Gets the temperature configuration for the Anthropic LLM.
+   * Builds the `temperature` request field for the Anthropic LLM, spread so
+   * the key is absent when unset or when the model rejects the parameter.
    * @param {number} temperature - The temperature to use.
-   * @returns {number|undefined} The temperature value or undefined if not supported.
+   * @returns {{temperature?: number}}
    */
   temperatureParam(temperature = this.temperature) {
-    if (typeof temperature !== "number") return undefined;
-    if (!AnthropicLLM.modelSupportsTemperature(this.model)) return undefined;
-    return parseFloat(temperature);
+    if (!AnthropicLLM.modelSupportsTemperature(this.model)) return {};
+    return temperatureParam(temperature);
   }
 
   /**
@@ -239,7 +242,7 @@ class AnthropicLLM {
             max_tokens: this.maxTokens,
             system: this.#buildSystemPrompt(systemContent),
             messages: messages.slice(1), // Pop off the system message
-            temperature: this.temperatureParam(temperature),
+            ...this.temperatureParam(temperature),
           })
           .finalMessage()
       );
@@ -280,7 +283,7 @@ class AnthropicLLM {
         max_tokens: this.maxTokens,
         system: this.#buildSystemPrompt(systemContent),
         messages: messages.slice(1), // Pop off the system message
-        temperature: this.temperatureParam(temperature),
+        ...this.temperatureParam(temperature),
       }),
       messages,
       runPromptTokenCalculation: false,

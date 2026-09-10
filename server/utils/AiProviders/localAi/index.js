@@ -6,6 +6,9 @@ const {
   handleDefaultStreamResponseV2,
   formatChatHistory,
 } = require("../../helpers/chat/responses");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 class LocalAiLLM {
   /** @see LocalAiLLM.cacheContextWindows */
@@ -217,7 +220,7 @@ class LocalAiLLM {
       this.openai.chat.completions.create({
         model: this.model,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       })
     );
 
@@ -262,7 +265,7 @@ class LocalAiLLM {
         stream: true,
         stream_options: { include_usage: true },
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       }),
       messages,
       runPromptTokenCalculation: false,

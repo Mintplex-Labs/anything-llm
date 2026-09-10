@@ -11,6 +11,9 @@ const {
 
 const { OpenAI: OpenAIApi } = require("openai");
 const ToolCallTextFilter = require("./toolCallFilter.js");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 class FoundryLLM {
   /**
@@ -319,7 +322,7 @@ class FoundryLLM {
         .create({
           model: this.model,
           messages,
-          temperature,
+          ...temperatureParam(temperature),
           max_completion_tokens: this.promptWindowLimit(),
         })
         .catch((e) => {
@@ -364,7 +367,7 @@ class FoundryLLM {
         model: this.model,
         stream: true,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
         max_completion_tokens: this.promptWindowLimit(),
       }),
       messages,

@@ -2,7 +2,11 @@ const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
-const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
+const {
+  tooledStream,
+  tooledComplete,
+  temperatureParam,
+} = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
 const {
   parseFoundryBasePath,
@@ -121,7 +125,7 @@ class FoundryProvider extends InheritMultiple([Provider, UnTooled]) {
     return await this.client.chat.completions
       .create({
         model: this.model,
-        temperature: this.temperature,
+        ...temperatureParam(this.temperature),
         messages,
         max_completion_tokens: FoundryLLM.promptWindowLimit(this.model),
       })
@@ -143,7 +147,7 @@ class FoundryProvider extends InheritMultiple([Provider, UnTooled]) {
     await this.#assertContextLimits();
     return await this.client.chat.completions.create({
       model: this.model,
-      temperature: this.temperature,
+      ...temperatureParam(this.temperature),
       stream: true,
       messages,
       max_completion_tokens: FoundryLLM.promptWindowLimit(this.model),

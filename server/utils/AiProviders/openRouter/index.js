@@ -11,6 +11,9 @@ const { safeJsonParse } = require("../../http");
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 const cacheFolder = path.resolve(
   process.env.STORAGE_DIR
     ? path.resolve(process.env.STORAGE_DIR, "models", "openrouter")
@@ -251,7 +254,7 @@ class OpenRouterLLM {
         .create({
           model: this.model,
           messages,
-          temperature,
+          ...temperatureParam(temperature),
           // This is an OpenRouter specific option that allows us to get the reasoning text
           // before the token text.
           include_reasoning: true,
@@ -299,7 +302,7 @@ class OpenRouterLLM {
         model: this.model,
         stream: true,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
         // This is an OpenRouter specific option that allows us to get the reasoning text
         // before the token text.
         include_reasoning: true,

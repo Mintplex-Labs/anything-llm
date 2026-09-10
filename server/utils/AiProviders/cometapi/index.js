@@ -12,6 +12,9 @@ const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { COMETAPI_IGNORE_PATTERNS } = require("./constants");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 const cacheFolder = path.resolve(
   process.env.STORAGE_DIR
     ? path.resolve(process.env.STORAGE_DIR, "models", "cometapi")
@@ -206,7 +209,7 @@ class CometApiLLM {
         .create({
           model: this.model,
           messages,
-          temperature,
+          ...temperatureParam(temperature),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -248,7 +251,7 @@ class CometApiLLM {
         model: this.model,
         stream: true,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       }),
       messages,
       runPromptTokenCalculation: true,

@@ -8,6 +8,9 @@ const {
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { OpenAI: OpenAIApi } = require("openai");
 const { humanFileSize } = require("../../helpers");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 class LemonadeLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -160,7 +163,7 @@ class LemonadeLLM {
       this.lemonade.chat.completions.create({
         model: this.model,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       })
     );
 
@@ -195,7 +198,7 @@ class LemonadeLLM {
         model: this.model,
         stream: true,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       }),
       messages,
       runPromptTokenCalculation: true,

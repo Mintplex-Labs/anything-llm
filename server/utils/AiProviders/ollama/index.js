@@ -9,6 +9,9 @@ const {
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { Ollama } = require("ollama");
 const { v4: uuidv4 } = require("uuid");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 // Docs: https://github.com/jmorganca/ollama/blob/main/docs/api.md
 class OllamaAILLM {
@@ -278,7 +281,7 @@ class OllamaAILLM {
           messages,
           keep_alive: this.keepAlive,
           options: {
-            temperature,
+            ...temperatureParam(temperature),
             num_ctx: this.promptWindowLimit(),
           },
         })
@@ -333,7 +336,7 @@ class OllamaAILLM {
         messages,
         keep_alive: this.keepAlive,
         options: {
-          temperature,
+          ...temperatureParam(temperature),
           num_ctx: this.promptWindowLimit(),
         },
       }),

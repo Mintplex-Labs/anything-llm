@@ -11,6 +11,9 @@ const {
 const { MODEL_MAP } = require("../modelMap");
 const { defaultGeminiModels, v1BetaModels } = require("./defaultModels");
 const { safeJsonParse } = require("../../http");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 const cacheFolder = path.resolve(
   process.env.STORAGE_DIR
     ? path.resolve(process.env.STORAGE_DIR, "models", "gemini")
@@ -385,7 +388,7 @@ class GeminiLLM {
         .create({
           model: this.model,
           messages,
-          temperature: temperature,
+          ...temperatureParam(temperature),
         })
         .catch((e) => {
           console.error(e);
@@ -423,7 +426,7 @@ class GeminiLLM {
         model: this.model,
         stream: true,
         messages,
-        temperature: temperature,
+        ...temperatureParam(temperature),
         stream_options: {
           include_usage: true,
         },

@@ -2,7 +2,11 @@ const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
-const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
+const {
+  tooledStream,
+  tooledComplete,
+  temperatureParam,
+} = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
 const { toValidNumber } = require("../../../http/index.js");
 const { getAnythingLLMUserAgent } = require("../../../../endpoints/utils");
@@ -94,7 +98,7 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
   async #handleFunctionCallStream({ messages = [] }) {
     return await this.client.chat.completions.create({
       model: this.model,
-      temperature: this.temperature,
+      ...temperatureParam(this.temperature),
       stream: true,
       messages,
       max_tokens: this.maxTokens,

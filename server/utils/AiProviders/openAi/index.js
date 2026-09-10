@@ -10,6 +10,9 @@ const { MODEL_MAP } = require("../modelMap");
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 class OpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -163,7 +166,7 @@ class OpenAiLLM {
           model: this.model,
           input: messages,
           store: false,
-          temperature: this.#temperature(this.model, temperature),
+          ...temperatureParam(this.#temperature(this.model, temperature)),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -205,7 +208,7 @@ class OpenAiLLM {
         stream: true,
         input: messages,
         store: false,
-        temperature: this.#temperature(this.model, temperature),
+        ...temperatureParam(this.#temperature(this.model, temperature)),
       }),
       messages,
       runPromptTokenCalculation: false,

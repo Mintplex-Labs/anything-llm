@@ -7,6 +7,9 @@ const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { OpenAI: OpenAIApi } = require("openai");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 /**
  * OMLX (oMLX) is an OpenAI-compatible MLX inference server for Apple Silicon.
@@ -242,7 +245,7 @@ class OMLXLLM {
       this.omlx.chat.completions.create({
         model: this.model,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       })
     );
 
@@ -277,7 +280,7 @@ class OMLXLLM {
         stream: true,
         stream_options: { include_usage: true },
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       }),
       messages,
       runPromptTokenCalculation: false,

@@ -8,6 +8,9 @@ const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { v4: uuidv4 } = require("uuid");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 class KoboldCPPLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -135,7 +138,7 @@ class KoboldCPPLLM {
         .create({
           model: this.model,
           messages,
-          temperature,
+          ...temperatureParam(temperature),
           max_tokens: this.maxTokens,
         })
         .catch((e) => {
@@ -178,7 +181,7 @@ class KoboldCPPLLM {
         model: this.model,
         stream: true,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
         max_tokens: this.maxTokens,
       }),
       messages,

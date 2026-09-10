@@ -1,5 +1,6 @@
 const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
+const { temperatureParam } = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
 const { safeJsonParse } = require("../../../http");
 const { v4 } = require("uuid");
@@ -254,7 +255,7 @@ class GeminiProvider extends Provider {
       /** @type {OpenAI.OpenAI.Chat.ChatCompletion} */
       const response = await this.client.chat.completions.create({
         model: this.model,
-        temperature: this.temperature,
+        ...temperatureParam(this.temperature),
         messages: this.#formatMessages(messages),
         stream: true,
         stream_options: { include_usage: true },
@@ -383,7 +384,7 @@ class GeminiProvider extends Provider {
     try {
       const response = await this.client.chat.completions.create({
         model: this.model,
-        temperature: this.temperature,
+        ...temperatureParam(this.temperature),
         stream: false,
         messages: this.#formatMessages(messages),
         ...(Array.isArray(functions) && functions?.length > 0

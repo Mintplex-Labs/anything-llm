@@ -1,7 +1,10 @@
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
-const { formatFunctionsToTools } = require("./helpers/tooled.js");
+const {
+  formatFunctionsToTools,
+  temperatureParam,
+} = require("./helpers/tooled.js");
 const { LlmmanLLM } = require("../../../AiProviders/llmman");
 const { Ollama } = require("ollama");
 const { v4 } = require("uuid");
@@ -64,7 +67,7 @@ class LlmmanProvider extends InheritMultiple([Provider, UnTooled]) {
     );
     return {
       num_ctx: LlmmanLLM.promptWindowLimit(this.model),
-      temperature: this.temperature,
+      ...temperatureParam(this.temperature),
     };
   }
 

@@ -9,6 +9,9 @@ const {
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { Ollama } = require("ollama");
 const { v4: uuidv4 } = require("uuid");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 // Talks the Ollama API, which llmman serves alongside OpenAI- and
 // Anthropic-compatible ones, so the same client library is reused.
@@ -336,7 +339,7 @@ class LlmmanLLM {
           messages,
           keep_alive: this.keepAlive,
           options: {
-            temperature,
+            ...temperatureParam(temperature),
             num_ctx: this.promptWindowLimit(),
           },
         })
@@ -391,7 +394,7 @@ class LlmmanLLM {
         messages,
         keep_alive: this.keepAlive,
         options: {
-          temperature,
+          ...temperatureParam(temperature),
           num_ctx: this.promptWindowLimit(),
         },
       }),

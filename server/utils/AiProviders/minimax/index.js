@@ -6,6 +6,9 @@ const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
 const { MODEL_MAP } = require("../modelMap");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 class MinimaxLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -92,7 +95,7 @@ class MinimaxLLM {
         .create({
           model: this.model,
           messages,
-          temperature,
+          ...temperatureParam(temperature),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -136,7 +139,7 @@ class MinimaxLLM {
         model: this.model,
         stream: true,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       }),
       messages,
       runPromptTokenCalculation: false,

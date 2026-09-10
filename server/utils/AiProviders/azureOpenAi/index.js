@@ -6,6 +6,9 @@ const {
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 class AzureOpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -171,7 +174,7 @@ class AzureOpenAiLLM {
       this.openai.chat.completions.create({
         messages,
         model: this.model,
-        ...(this.isOTypeModel ? {} : { temperature }),
+        ...(this.isOTypeModel ? {} : temperatureParam(temperature)),
       })
     );
 
@@ -209,7 +212,7 @@ class AzureOpenAiLLM {
       func: await this.openai.chat.completions.create({
         messages,
         model: this.model,
-        ...(this.isOTypeModel ? {} : { temperature }),
+        ...(this.isOTypeModel ? {} : temperatureParam(temperature)),
         n: 1,
         stream: true,
       }),

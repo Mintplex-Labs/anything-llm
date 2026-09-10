@@ -6,6 +6,9 @@ const {
 const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 class CohereLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -87,7 +90,7 @@ class CohereLLM {
         .create({
           model: this.model,
           messages,
-          temperature,
+          ...temperatureParam(temperature),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -127,7 +130,7 @@ class CohereLLM {
         stream: true,
         stream_options: { include_usage: true },
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       }),
       messages,
       runPromptTokenCalculation: false,

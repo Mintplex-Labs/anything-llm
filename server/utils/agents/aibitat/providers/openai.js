@@ -1,5 +1,6 @@
 const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
+const { temperatureParam } = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
 const { v4 } = require("uuid");
 const { safeJsonParse } = require("../../../http");
@@ -148,7 +149,7 @@ class OpenAIProvider extends Provider {
       /** @type {OpenAI.OpenAI.Responses.Response} */
       const response = await this.client.responses.create({
         model: this.model,
-        temperature: this.temperature,
+        ...temperatureParam(this.temperature),
         input: this.#formatToResponsesInput(messages),
         stream: true,
         store: false,
@@ -271,7 +272,7 @@ class OpenAIProvider extends Provider {
       /** @type {OpenAI.OpenAI.Responses.Response} */
       const response = await this.client.responses.create({
         model: this.model,
-        temperature: this.temperature,
+        ...temperatureParam(this.temperature),
         stream: false,
         store: false,
         parallel_tool_calls: false,

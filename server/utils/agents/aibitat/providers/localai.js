@@ -2,7 +2,11 @@ const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
-const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
+const {
+  tooledStream,
+  tooledComplete,
+  temperatureParam,
+} = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
 const { LocalAiLLM } = require("../../../AiProviders/localAi/index.js");
 
@@ -44,7 +48,7 @@ class LocalAiProvider extends InheritMultiple([Provider, UnTooled]) {
     return await this.client.chat.completions
       .create({
         model: this.model,
-        temperature: this.temperature,
+        ...temperatureParam(this.temperature),
         messages,
       })
       .then((result) => {
@@ -63,7 +67,7 @@ class LocalAiProvider extends InheritMultiple([Provider, UnTooled]) {
     await LocalAiLLM.cacheContextWindows();
     return await this.client.chat.completions.create({
       model: this.model,
-      temperature: this.temperature,
+      ...temperatureParam(this.temperature),
       stream: true,
       stream_options: { include_usage: true },
       messages,

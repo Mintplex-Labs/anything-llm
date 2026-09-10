@@ -6,6 +6,9 @@ const { MODEL_MAP } = require("../modelMap");
 const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 class DeepSeekLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -107,7 +110,7 @@ class DeepSeekLLM {
         .create({
           model: this.model,
           messages,
-          temperature,
+          ...temperatureParam(temperature),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -151,7 +154,7 @@ class DeepSeekLLM {
         model: this.model,
         stream: true,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       }),
       messages,
       runPromptTokenCalculation: false,
