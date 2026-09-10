@@ -19,9 +19,16 @@ const cacheFolder = path.resolve(
     ? path.resolve(process.env.STORAGE_DIR, "models", "openrouter")
     : path.resolve(__dirname, `../../../storage/models/openrouter`)
 );
-const SERVICE_TIERS = ["auto", "default", "fast", "flex", "priority", "scale"];
-
 class OpenRouterLLM {
+  static SERVICE_TIERS = [
+    "auto",
+    "default",
+    "fast",
+    "flex",
+    "priority",
+    "scale",
+  ];
+
   /**
    * Some openrouter models never send a finish_reason and thus leave the stream open in the UI.
    * However, because OR is a middleware it can also wait an inordinately long time between chunks so we need
@@ -571,5 +578,4 @@ async function fetchOpenRouterModels() {
 module.exports = {
   OpenRouterLLM,
   fetchOpenRouterModels,
-  SERVICE_TIERS,
 };

@@ -502,10 +502,10 @@ const KEY_MAPPING = {
     envKey: "OPENROUTER_SERVICE_TIER",
     checks: [
       (input) => {
-        const { SERVICE_TIERS } = require("../AiProviders/openRouter");
-        return SERVICE_TIERS.includes(input)
+        const { OpenRouterLLM } = require("../AiProviders/openRouter");
+        return OpenRouterLLM.SERVICE_TIERS.includes(input)
           ? null
-          : `Invalid service tier. Must be one of: ${SERVICE_TIERS.join(", ")}.`;
+          : `Invalid service tier. Must be one of: ${OpenRouterLLM.SERVICE_TIERS.join(", ")}.`;
       },
     ],
   },
