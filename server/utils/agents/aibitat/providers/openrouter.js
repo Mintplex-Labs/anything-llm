@@ -2,9 +2,12 @@ const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
-const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
+const {
+  tooledStream,
+  tooledComplete,
+  serviceTierParam,
+} = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
-const { serviceTierParam } = require("../../../AiProviders/openRouter");
 
 /**
  * The agent provider for the OpenRouter provider.

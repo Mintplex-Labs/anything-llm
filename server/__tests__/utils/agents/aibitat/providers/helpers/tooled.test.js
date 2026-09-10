@@ -2,6 +2,7 @@ const {
   formatMessagesForTools,
   tooledStream,
   tooledComplete,
+  serviceTierParam,
 } = require("../../../../../../utils/agents/aibitat/providers/helpers/tooled.js");
 
 describe("formatMessagesForTools attachment content (native tool path)", () => {
@@ -152,6 +153,20 @@ describe("max_tokens forwarding from the tooled maxTokens option", () => {
     expect(body.max_tokens).toBe(512);
     expect(body.tools).toHaveLength(1);
     expect(body.tools[0].function.name).toBe("lookup");
+  });
+});
+
+describe("serviceTierParam", () => {
+  it("passes a tier straight through", () => {
+    expect(serviceTierParam("flex")).toEqual({ service_tier: "flex" });
+  });
+
+  it.each([
+    ["unset", undefined],
+    ["empty", ""],
+    ["non-string", 3],
+  ])("returns an empty object when %s", (_label, value) => {
+    expect(serviceTierParam(value)).toEqual({});
   });
 });
 

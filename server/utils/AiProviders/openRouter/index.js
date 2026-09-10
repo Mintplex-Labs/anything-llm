@@ -9,6 +9,9 @@ const fs = require("fs");
 const path = require("path");
 const { safeJsonParse } = require("../../http");
 const {
+  serviceTierParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
+const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const cacheFolder = path.resolve(
@@ -518,16 +521,6 @@ class OpenRouterLLM {
   }
 }
 
-/**
- * Build the `service_tier` request field, spread so the key is absent entirely
- * when no tier is configured.
- * @param {unknown} tier
- * @returns {{service_tier?: string}}
- */
-function serviceTierParam(tier) {
-  return tier ? { service_tier: tier } : {};
-}
-
 async function fetchOpenRouterModels() {
   return await fetch(`https://openrouter.ai/api/v1/models`, {
     method: "GET",
@@ -578,6 +571,5 @@ async function fetchOpenRouterModels() {
 module.exports = {
   OpenRouterLLM,
   fetchOpenRouterModels,
-  serviceTierParam,
   SERVICE_TIERS,
 };

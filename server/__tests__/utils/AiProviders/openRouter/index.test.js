@@ -6,10 +6,7 @@ jest.mock("../../../../utils/vectorStore/resetAllVectorStores", () => ({
   resetAllVectorStores: jest.fn(),
 }));
 
-const {
-  OpenRouterLLM,
-  serviceTierParam,
-} = require("../../../../utils/AiProviders/openRouter");
+const { OpenRouterLLM } = require("../../../../utils/AiProviders/openRouter");
 const OpenRouterProvider = require("../../../../utils/agents/aibitat/providers/openrouter.js");
 const { updateENV } = require("../../../../utils/helpers/updateENV");
 
@@ -39,24 +36,6 @@ describe("OPENROUTER_SERVICE_TIER validation on save", () => {
     const { error } = await updateENV({ OpenRouterServiceTier: "bogus" });
     expect(error).toContain("Invalid service tier");
     expect(process.env.OPENROUTER_SERVICE_TIER).toBe("flex");
-  });
-});
-
-describe("serviceTierParam", () => {
-  it.each(["auto", "default", "fast", "flex", "priority", "scale"])(
-    "passes the tier %s straight through",
-    (tier) => {
-      expect(serviceTierParam(tier)).toEqual({ service_tier: tier });
-    }
-  );
-
-  it.each([
-    ["unset", undefined],
-    ["empty", ""],
-  ])("returns an empty object when %s", (_label, value) => {
-    const params = serviceTierParam(value);
-    expect(params).toEqual({});
-    expect(params).not.toHaveProperty("service_tier");
   });
 });
 

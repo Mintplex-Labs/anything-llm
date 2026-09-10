@@ -486,4 +486,5 @@ module.exports = {
   formatMessagesForTools,
   tooledStream,
   tooledComplete,
+  serviceTierParam,
 };
