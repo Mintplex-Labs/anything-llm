@@ -279,7 +279,8 @@ const TRANSLATIONS = {
       resetting: "Изчистване на векторите...",
       confirm:
         "На път сте да нулирате векторната база данни на това пространство. Всички текущи векторни ембединги ще бъдат премахнати.\n\nОригиналните файлове остават непокътнати. Действието е необратимо.",
-      error: "Векторната база данни на пространството не можа да бъде нулирана!",
+      error:
+        "Векторната база данни на пространството не можа да бъде нулирана!",
       success: "Векторната база данни на пространството беше нулирана!",
     },
   },
@@ -546,8 +547,7 @@ const TRANSLATIONS = {
           },
           getMailboxStats: {
             title: "Статистика на пощата",
-            description:
-              "Извличане на броя непрочетени и статистика за пощата",
+            description: "Извличане на броя непрочетени и статистика за пощата",
           },
         },
       },
@@ -630,8 +630,7 @@ const TRANSLATIONS = {
           },
           setMyStatus: {
             title: "Задаване на RSVP статус",
-            description:
-              "Приемане, отказване или условно приемане на събитие",
+            description: "Приемане, отказване или условно приемане на събитие",
           },
         },
       },
@@ -647,8 +646,7 @@ const TRANSLATIONS = {
           "Изберете кои типове Microsoft акаунти могат да се удостоверяват. „Всички акаунти“ поддържа лични и служебни/учебни акаунти. „Само лични“ ограничава до лични Microsoft акаунти. „Само организация“ ограничава до служебни/учебни акаунти от конкретен Azure AD наемател.",
         authTypeCommon: "Всички акаунти (лични и служебни/учебни)",
         authTypeConsumers: "Само лични Microsoft акаунти",
-        authTypeOrganization:
-          "Само акаунти на организация (изисква Tenant ID)",
+        authTypeOrganization: "Само акаунти на организация (изисква Tenant ID)",
         clientId: "Application (Client) ID",
         clientIdHelp:
           "Application (Client) ID от регистрацията на приложението в Azure AD",
@@ -691,7 +689,8 @@ const TRANSLATIONS = {
         skills: {
           getInbox: {
             title: "Входяща поща",
-            description: "Извличане на последните имейли от вашата Outlook поща",
+            description:
+              "Извличане на последните имейли от вашата Outlook поща",
           },
           search: {
             title: "Търсене на имейли",
@@ -970,7 +969,8 @@ const TRANSLATIONS = {
     "delete-confirm":
       'Сигурни ли сте, че искате да изтриете маршрутизатора "{{name}}"?\nТова ще премахне всичките му правила и ще го откачи от пространствата, които го използват.\n\nДействието е необратимо.',
     "toast-deleted": "Маршрутизаторът е изтрит",
-    "toast-delete-failed": "Изтриването на маршрутизатора се провали: {{error}}",
+    "toast-delete-failed":
+      "Изтриването на маршрутизатора се провали: {{error}}",
     "new-router": {
       title: "Създаване на нов маршрутизатор",
       name: "Име",
@@ -1110,7 +1110,8 @@ const TRANSLATIONS = {
       "loading-routers": "Зареждане на маршрутизаторите...",
       "no-routers-prefix-settings": "Няма конфигурирани маршрутизатори.",
       "no-routers-prefix-workspace": "Няма конфигурирани маршрутизатори.",
-      "no-routers-link": "Създайте един в настройките на Маршрутизатор на модели",
+      "no-routers-link":
+        "Създайте един в настройките на Маршрутизатор на модели",
       "model-router-label": "Маршрутизатор на модели",
       "select-router": "Изберете маршрутизатор",
       "select-description":
@@ -1345,10 +1346,12 @@ const TRANSLATIONS = {
       description:
         "Импортирайте цяло публично или частно GitHub хранилище с едно кликване.",
       URL: "URL на GitHub хранилището",
-      URL_explained: "URL адрес на GitHub хранилището, което искате да съберете.",
+      URL_explained:
+        "URL адрес на GitHub хранилището, което искате да съберете.",
       token: "GitHub Access Token",
       optional: "по желание",
-      token_explained: "Access Token за избягване на ограниченията на заявките.",
+      token_explained:
+        "Access Token за избягване на ограниченията на заявките.",
       token_explained_start: "Без ",
       token_explained_link1: "Personal Access Token",
       token_explained_middle:
@@ -1373,7 +1376,8 @@ const TRANSLATIONS = {
       description:
         "Импортирайте цяло публично или частно GitLab хранилище с едно кликване.",
       URL: "URL на GitLab хранилището",
-      URL_explained: "URL адрес на GitLab хранилището, което искате да съберете.",
+      URL_explained:
+        "URL адрес на GitLab хранилището, което искате да съберете.",
       token: "GitLab Access Token",
       optional: "по желание",
       token_description:
@@ -1438,8 +1442,7 @@ const TRANSLATIONS = {
     },
     "website-depth": {
       name: "Масов линк скрейпър",
-      description:
-        "Извлича уебсайт и подвръзките му до определена дълбочина.",
+      description: "Извлича уебсайт и подвръзките му до определена дълбочина.",
       URL: "URL на уебсайта",
       URL_explained: "URL адрес на уебсайта, който искате да извлечете.",
       depth: "Дълбочина на обхождане",
@@ -1457,7 +1460,8 @@ const TRANSLATIONS = {
       deployment_type_explained:
         "Определете дали вашата Confluence инсталация е в облака на Atlassian или е self-hosted.",
       base_url: "Базов URL на Confluence",
-      base_url_explained: "Това е базовият URL адрес на вашето Confluence пространство.",
+      base_url_explained:
+        "Това е базовият URL адрес на вашето Confluence пространство.",
       space_key: "Ключ на Confluence пространството",
       space_key_explained:
         "Това е ключът на пространството във вашата Confluence инсталация, който ще се използва. Обикновено започва с ~",
@@ -1548,7 +1552,8 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
-    attachments_processing: "Прикачените файлове се обработват. Моля, изчакайте...",
+    attachments_processing:
+      "Прикачените файлове се обработват. Моля, изчакайте...",
     generating_response: "Генериране на отговор",
     thought_in_progress: "Моделът мисли...",
     thoughts: "Мисли",
@@ -1624,7 +1629,8 @@ const TRANSLATIONS = {
       "Можете да използвате инструменти в чата, като стартирате агентна сесия с '@agent' в началото на промпта.",
     workspace_llm_manager: {
       search: "Търсене",
-      loading_workspace_settings: "Зареждане на настройките на пространството...",
+      loading_workspace_settings:
+        "Зареждане на настройките на пространството...",
       available_models: "Налични модели за {{provider}}",
       available_models_description:
         "Изберете модел за това работно пространство.",
@@ -1670,8 +1676,7 @@ const TRANSLATIONS = {
       },
       auto_extraction: {
         label: "Автоматични спомени",
-        description:
-          "Асистентът автоматично създава спомени във фонов режим",
+        description: "Асистентът автоматично създава спомени във фонов режим",
       },
       menu: {
         edit: "Редактирай",
@@ -1755,8 +1760,10 @@ const TRANSLATIONS = {
           "Етикетите служат за по-лесно търсене на системния промпт. Можете да добавите няколко. Максимум 5 етикета по 20 символа.",
         tags_placeholder: "Пишете и натиснете Enter, за да добавите етикети",
         visibility_label: "Видимост",
-        public_description: "Публичните системни промптове са видими за всички.",
-        private_description: "Частните системни промптове са видими само за вас.",
+        public_description:
+          "Публичните системни промптове са видими за всички.",
+        private_description:
+          "Частните системни промптове са видими само за вас.",
         publish_button: "Публикувай в Общностния хъб",
         submitting: "Публикуване...",
         prompt_label: "Промпт",
@@ -1842,7 +1849,8 @@ const TRANSLATIONS = {
       nextRun: "Следващо изпълнение",
       actions: "Действия",
     },
-    confirmDelete: "Сигурни ли сте, че искате да изтриете тази планирана задача?",
+    confirmDelete:
+      "Сигурни ли сте, че искате да изтриете тази планирана задача?",
     status: {
       completed: "Завършена",
       failed: "Провалена",

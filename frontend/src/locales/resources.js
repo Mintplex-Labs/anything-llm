@@ -16,7 +16,6 @@
 
 import English from "./en/common.js";
 import Korean from "./ko/common.js";
-import Bulgarian from "./bg/common.js";
 import Spanish from "./es/common.js";
 import French from "./fr/common.js";
 import Mandarin from "./zh/common.js";
@@ -45,12 +44,10 @@ import Lao from "./lo/common.js";
 import Croatian from "./hr/common.js";
 import Swedish from "./sv/common.js";
 import Hindi from "./hi/common.js";
+import Bulgarian from "./bg/common.js";
 
 export const defaultNS = "common";
 export const resources = {
-  bg: {
-    common: Bulgarian,
-  },
   en: {
     common: English,
   },
@@ -140,5 +137,8 @@ export const resources = {
   },
   hi: {
     common: Hindi,
+  },
+  bg: {
+    common: Bulgarian,
   },
 };
