@@ -14,6 +14,7 @@ import PerplexitySearchIcon from "./icons/perplexity.png";
 import BraveSearchIcon from "./icons/brave.png";
 import CrwSearchIcon from "./icons/crw.png";
 import YouSearchIcon from "./icons/you.png";
+import KeenableSearchIcon from "./icons/keenable.png";
 import {
   CaretUpDown,
   MagnifyingGlass,
@@ -22,7 +23,6 @@ import {
 } from "@phosphor-icons/react";
 import Toggle from "@/components/lib/Toggle";
 import { DefaultBadge } from "../Badges/default";
-import { useTranslation } from "react-i18next";
 import SearchProviderItem from "./SearchProviderItem";
 import WebSearchImage from "@/media/agents/scrape-websites.png";
 import {
@@ -40,6 +40,7 @@ import {
   BraveSearchOptions,
   CrwSearchOptions,
   YouSearchOptions,
+  KeenableSearchOptions,
 } from "./SearchProviderOptions";
 
 const SEARCH_PROVIDERS = [
@@ -49,7 +50,7 @@ const SEARCH_PROVIDERS = [
     logo: YouSearchIcon,
     options: (settings) => <YouSearchOptions settings={settings} />,
     description:
-      "LLM-ready web search with no API key required - falls back to DuckDuckGo automatically if unavailable.",
+      "LLM-ready web search with no API key required and zero data retention.",
   },
   {
     name: "DuckDuckGo",
@@ -150,6 +151,13 @@ const SEARCH_PROVIDERS = [
     options: (settings) => <CrwSearchOptions settings={settings} />,
     description: "Open-source, self-hostable Firecrawl/Tavily alternative.",
   },
+  {
+    name: "Keenable",
+    value: "keenable-search",
+    logo: KeenableSearchIcon,
+    options: (settings) => <KeenableSearchOptions settings={settings} />,
+    description: "Web search built for AI agents. No API key required.",
+  },
 ];
 
 export default function AgentWebSearchSelection({
@@ -161,7 +169,6 @@ export default function AgentWebSearchSelection({
   enabled = true,
   setHasChanges,
 }) {
-  const { t } = useTranslation();
   const searchInputRef = useRef(null);
   const [filteredResults, setFilteredResults] = useState([]);
   const [selectedProvider, setSelectedProvider] = useState("you-search");
@@ -236,9 +243,6 @@ export default function AgentWebSearchSelection({
         />
         <p className="text-theme-text-secondary text-opacity-60 text-xs font-medium py-1.5">
           {description}
-          <br />
-          <br />
-          {t("agent.skill.default_skill")}
         </p>
         <div hidden={!enabled}>
           <div className="relative">
