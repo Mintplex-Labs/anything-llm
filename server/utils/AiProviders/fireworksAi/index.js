@@ -8,6 +8,9 @@ const {
 const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 const cacheFolder = path.resolve(
   process.env.STORAGE_DIR
@@ -34,7 +37,6 @@ class FireworksAiLLM {
     };
 
     this.embedder = !embedder ? new NativeEmbedder() : embedder;
-    this.defaultTemp = 0.7;
 
     if (!fs.existsSync(cacheFolder))
       fs.mkdirSync(cacheFolder, { recursive: true });
@@ -135,7 +137,10 @@ class FireworksAiLLM {
     return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `FireworksAI chat: ${this.model} is not valid for chat completion!`
@@ -145,7 +150,7 @@ class FireworksAiLLM {
       this.openai.chat.completions.create({
         model: this.model,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       })
     );
 
@@ -170,7 +175,10 @@ class FireworksAiLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `FireworksAI chat: ${this.model} is not valid for chat completion!`
@@ -181,7 +189,7 @@ class FireworksAiLLM {
         model: this.model,
         stream: true,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       }),
       messages,
       runPromptTokenCalculation: false,

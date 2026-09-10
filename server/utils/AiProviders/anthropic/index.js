@@ -10,6 +10,9 @@ const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { getAnythingLLMUserAgent } = require("../../../endpoints/utils");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 class AnthropicLLM {
   /**
@@ -17,12 +20,21 @@ class AnthropicLLM {
    * These models reject `temperature`/`top_p`/`top_k` with a 400 error.
    * @type {string[]}
    */
-  noTemperatureModels = [
+  static noTemperatureModels = [
     "claude-opus-4-7",
     "claude-opus-4-8",
     "claude-sonnet-5",
     // Add other models here if identified
   ];
+
+  /**
+   * Whether the model supports the temperature parameter at all.
+   * @param {string} modelName
+   * @returns {boolean}
+   */
+  static modelSupportsTemperature(modelName = "") {
+    return !this.noTemperatureModels.some((model) => modelName.includes(model));
+  }
 
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.ANTHROPIC_API_KEY)
@@ -50,7 +62,6 @@ class AnthropicLLM {
 
     this.maxTokens = null;
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
     this.log(
       `Initialized with ${this.model}. Cache ${this.cacheControl ? `enabled (${this.cacheControl.ttl})` : "disabled"}`
     );
@@ -88,15 +99,14 @@ class AnthropicLLM {
   }
 
   /**
-   * Gets the temperature configuration for the Anthropic LLM.
+   * Builds the `temperature` request field for the Anthropic LLM, spread so
+   * the key is absent when unset or when the model rejects the parameter.
    * @param {number} temperature - The temperature to use.
-   * @returns {number|undefined} The temperature value or undefined if not supported.
+   * @returns {{temperature?: number}}
    */
-  temperatureParam(temperature = this.defaultTemp) {
-    if (typeof temperature !== "number") return undefined;
-    if (this.noTemperatureModels.some((model) => this.model.includes(model)))
-      return undefined;
-    return parseFloat(temperature);
+  temperatureParam(temperature = this.temperature) {
+    if (!AnthropicLLM.modelSupportsTemperature(this.model)) return {};
+    return temperatureParam(temperature);
   }
 
   /**
@@ -210,7 +220,10 @@ class AnthropicLLM {
     ];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     await this.assertModelMaxTokens();
     try {
       const systemContent = messages[0].content;
@@ -229,7 +242,7 @@ class AnthropicLLM {
             max_tokens: this.maxTokens,
             system: this.#buildSystemPrompt(systemContent),
             messages: messages.slice(1), // Pop off the system message
-            temperature: this.temperatureParam(temperature),
+            ...this.temperatureParam(temperature),
           })
           .finalMessage()
       );
@@ -258,7 +271,10 @@ class AnthropicLLM {
     }
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     await this.assertModelMaxTokens();
     const systemContent = messages[0].content;
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
@@ -267,7 +283,7 @@ class AnthropicLLM {
         max_tokens: this.maxTokens,
         system: this.#buildSystemPrompt(systemContent),
         messages: messages.slice(1), // Pop off the system message
-        temperature: this.temperatureParam(temperature),
+        ...this.temperatureParam(temperature),
       }),
       messages,
       runPromptTokenCalculation: false,

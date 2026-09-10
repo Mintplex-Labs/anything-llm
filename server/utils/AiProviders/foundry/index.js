@@ -11,6 +11,9 @@ const {
 
 const { OpenAI: OpenAIApi } = require("openai");
 const ToolCallTextFilter = require("./toolCallFilter.js");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 class FoundryLLM {
   /**
@@ -37,7 +40,6 @@ class FoundryLLM {
     });
 
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
     this.limits = null;
     FoundryLLM.cacheContextWindows(true);
     this.#log(`Loaded with model: ${this.model}`);
@@ -302,7 +304,10 @@ class FoundryLLM {
     ];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!this.model)
       throw new Error(
         `Foundry chat: ${this.model} is not valid or defined model for chat completion!`
@@ -317,7 +322,7 @@ class FoundryLLM {
         .create({
           model: this.model,
           messages,
-          temperature,
+          ...temperatureParam(temperature),
           max_completion_tokens: this.promptWindowLimit(),
         })
         .catch((e) => {
@@ -346,7 +351,10 @@ class FoundryLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!this.model)
       throw new Error(
         `Foundry chat: ${this.model} is not valid or defined model for chat completion!`
@@ -359,7 +367,7 @@ class FoundryLLM {
         model: this.model,
         stream: true,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
         max_completion_tokens: this.promptWindowLimit(),
       }),
       messages,

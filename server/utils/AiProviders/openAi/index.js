@@ -10,6 +10,9 @@ const { MODEL_MAP } = require("../modelMap");
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 class OpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -29,7 +32,6 @@ class OpenAiLLM {
     };
 
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
     this.log(
       `Initialized ${this.model} with context window ${this.promptWindowLimit()}`
     );
@@ -128,24 +130,31 @@ class OpenAiLLM {
   }
 
   /**
+   * Whether the model supports the temperature parameter at all.
+   * @param {string} modelName
+   * @returns {boolean}
+   */
+  static modelSupportsTemperature(modelName = "") {
+    // For models that don't support temperature
+    const NO_TEMP_MODELS = ["o", "gpt-5"];
+    return !NO_TEMP_MODELS.some((prefix) => modelName.startsWith(prefix));
+  }
+
+  /**
    * Determine the appropriate temperature for the model.
    * @param {string} modelName
-   * @param {number} temperature
-   * @returns {number}
+   * @param {number|undefined} temperature
+   * @returns {number|undefined}
    */
   #temperature(modelName, temperature) {
-    // For models that don't support temperature
-    // OpenAI accepts temperature 1
-    const NO_TEMP_MODELS = ["o", "gpt-5"];
-
-    if (NO_TEMP_MODELS.some((prefix) => modelName.startsWith(prefix))) {
-      return 1;
-    }
-
+    if (!OpenAiLLM.modelSupportsTemperature(modelName)) return undefined;
     return temperature;
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `OpenAI chat: ${this.model} is not valid for chat completion!`
@@ -157,7 +166,7 @@ class OpenAiLLM {
           model: this.model,
           input: messages,
           store: false,
-          temperature: this.#temperature(this.model, temperature),
+          ...temperatureParam(this.#temperature(this.model, temperature)),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -184,7 +193,10 @@ class OpenAiLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `OpenAI chat: ${this.model} is not valid for chat completion!`
@@ -196,7 +208,7 @@ class OpenAiLLM {
         stream: true,
         input: messages,
         store: false,
-        temperature: this.#temperature(this.model, temperature),
+        ...temperatureParam(this.#temperature(this.model, temperature)),
       }),
       messages,
       runPromptTokenCalculation: false,

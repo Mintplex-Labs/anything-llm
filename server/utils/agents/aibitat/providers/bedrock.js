@@ -3,7 +3,11 @@ const Anthropic = require("@anthropic-ai/sdk");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
-const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
+const {
+  tooledStream,
+  tooledComplete,
+  temperatureParam,
+} = require("./helpers/tooled.js");
 const {
   anthropicTooledStream,
   anthropicTooledComplete,
@@ -75,6 +79,7 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
     return await this.client.chat.completions
       .create({
         model: this.model,
+        ...temperatureParam(this.temperature),
         messages,
         user: this.executingUserId,
       })
@@ -93,6 +98,7 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
   async #handleFunctionCallStream({ messages = [] }) {
     return await this.client.chat.completions.create({
       model: this.model,
+      ...temperatureParam(this.temperature),
       stream: true,
       messages,
       user: this.executingUserId,

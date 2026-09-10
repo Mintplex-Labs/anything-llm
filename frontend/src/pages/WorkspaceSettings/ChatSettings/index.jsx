@@ -85,7 +85,6 @@ export default function ChatSettings({ workspace }) {
           setHasChanges={setHasChanges}
         />
         <ChatTemperatureSettings
-          settings={settings}
           workspace={workspace}
           setHasChanges={setHasChanges}
         />

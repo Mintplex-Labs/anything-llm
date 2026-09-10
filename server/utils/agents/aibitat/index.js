@@ -2,6 +2,7 @@
 const { EventEmitter, setMaxListeners } = require("events");
 const { APIError } = require("./error.js");
 const Providers = require("./providers/index.js");
+const { resolveTemperature } = require("../../helpers");
 const { Telemetry } = require("../../../models/telemetry.js");
 const { v4 } = require("uuid");
 const { ToolReranker } = require("./utils/toolReranker.js");
@@ -99,6 +100,7 @@ class AIbitat {
    * @param {number} props.maxRounds - [default: 100] The maximum number of rounds for the AIbitat instance.
    * @param {number} props.maxToolCalls - [default: AIbitat.defaultMaxToolCalls()] The maximum number of tools an agent can chain for a single response.
    * @param {string} props.provider - [default: "openai"] The provider for the AIbitat instance.
+   * @param {number|string|null} props.temperature - Sampling temperature applied to provider requests. Omitted from requests when unset.
    * @param {Object} props.handlerProps - The handler properties for the AIbitat instance.
    * @param {Object} rest - The rest of the properties for the AIbitat instance.
    */
@@ -1421,8 +1423,14 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     const provider = this.#buildProviderForConfig(config);
     // Record the slug the instance was built from so usage metrics can be
     // priced - pre-built instances (config.provider as an object) keep theirs.
-    if (typeof config?.provider === "string")
+    if (typeof config?.provider === "string") {
       provider.providerSlug ??= config.provider;
+      provider.temperature = resolveTemperature(
+        config.provider,
+        provider.model,
+        config.temperature
+      );
+    }
     provider.attachAbortSignal?.(this.abortController.signal);
     return provider;
   }

@@ -2,6 +2,7 @@ const {
   formatMessagesForTools,
   tooledStream,
   tooledComplete,
+  temperatureParam,
 } = require("../../../../../../utils/agents/aibitat/providers/helpers/tooled.js");
 
 describe("formatMessagesForTools attachment content (native tool path)", () => {
@@ -152,5 +153,19 @@ describe("max_tokens forwarding from the tooled maxTokens option", () => {
     expect(body.max_tokens).toBe(512);
     expect(body.tools).toHaveLength(1);
     expect(body.tools[0].function.name).toBe("lookup");
+  });
+});
+
+describe("temperatureParam", () => {
+  it("omits the field when temperature is unset or not a finite number", () => {
+    expect(temperatureParam(undefined)).toEqual({});
+    expect(temperatureParam(null)).toEqual({});
+    expect(temperatureParam("0.5")).toEqual({});
+    expect(temperatureParam(NaN)).toEqual({});
+  });
+
+  it("sends the field for finite numbers, including 0", () => {
+    expect(temperatureParam(0)).toEqual({ temperature: 0 });
+    expect(temperatureParam(0.7)).toEqual({ temperature: 0.7 });
   });
 });

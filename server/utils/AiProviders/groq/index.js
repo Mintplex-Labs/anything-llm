@@ -6,6 +6,9 @@ const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
 const { MODEL_MAP } = require("../modelMap");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 class GroqLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -26,7 +29,6 @@ class GroqLLM {
     };
 
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
   }
 
   #appendContext(contextTexts = []) {
@@ -170,7 +172,10 @@ class GroqLLM {
     });
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `GroqAI:chatCompletion: ${this.model} is not valid for chat completion!`
@@ -181,7 +186,7 @@ class GroqLLM {
         .create({
           model: this.model,
           messages,
-          temperature,
+          ...temperatureParam(temperature),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -211,7 +216,10 @@ class GroqLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `GroqAI:streamChatCompletion: ${this.model} is not valid for chat completion!`
@@ -222,7 +230,7 @@ class GroqLLM {
         model: this.model,
         stream: true,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       }),
       messages,
       runPromptTokenCalculation: false,
