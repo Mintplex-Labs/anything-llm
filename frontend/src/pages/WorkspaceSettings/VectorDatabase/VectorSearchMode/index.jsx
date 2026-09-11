@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { SavedIndicator } from "@/components/AutosaveForm";
 
 // We dont support all vectorDBs yet for reranking due to complexities of how each provider
 // returns information. We need to normalize the response data so Reranker can be used for each provider.
@@ -16,7 +17,7 @@ const hint = {
   },
 };
 
-export default function VectorSearchMode({ workspace, setHasChanges }) {
+export default function VectorSearchMode({ workspace }) {
   const [selection, setSelection] = useState(
     workspace?.vectorSearchMode ?? "default"
   );
@@ -28,6 +29,7 @@ export default function VectorSearchMode({ workspace, setHasChanges }) {
       <div className="flex flex-col gap-y-[8px]">
         <label htmlFor="name" className="block input-label">
           Search Preference
+          <SavedIndicator name="vectorSearchMode" />
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium">
           {hint[selection]?.description}
@@ -37,10 +39,7 @@ export default function VectorSearchMode({ workspace, setHasChanges }) {
         name="vectorSearchMode"
         value={selection}
         className="border-none bg-theme-settings-input-bg text-white text-sm mt-2 rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-        onChange={(e) => {
-          setSelection(e.target.value);
-          setHasChanges(true);
-        }}
+        onChange={(e) => setSelection(e.target.value)}
         required={true}
       >
         <option value="default">Default</option>

@@ -1,69 +1,44 @@
 import Workspace from "@/models/workspace";
 import showToast from "@/utils/toast";
 import { castToType } from "@/utils/types";
-import { useRef, useState } from "react";
+import AutosaveForm from "@/components/AutosaveForm";
 import VectorDBIdentifier from "./VectorDBIdentifier";
 import MaxContextSnippets from "./MaxContextSnippets";
 import DocumentSimilarityThreshold from "./DocumentSimilarityThreshold";
 import ResetDatabase from "./ResetDatabase";
 import VectorCount from "./VectorCount";
 import VectorSearchMode from "./VectorSearchMode";
-import CTAButton from "@/components/lib/CTAButton";
 
 export default function VectorDatabase({ workspace }) {
-  const [hasChanges, setHasChanges] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const formEl = useRef(null);
-
-  const handleUpdate = async (e) => {
-    setSaving(true);
-    e.preventDefault();
+  const handleUpdate = async (formEl) => {
     const data = {};
-    const form = new FormData(formEl.current);
+    const form = new FormData(formEl);
     for (var [key, value] of form.entries()) data[key] = castToType(key, value);
     const { workspace: updatedWorkspace, message } = await Workspace.update(
       workspace.slug,
       data
     );
-    if (!!updatedWorkspace) {
-      showToast("Workspace updated!", "success", { clear: true });
-    } else {
+    if (!updatedWorkspace)
       showToast(`Error: ${message}`, "error", { clear: true });
-    }
-    setSaving(false);
-    setHasChanges(false);
+    return !!updatedWorkspace;
   };
 
   if (!workspace) return null;
   return (
     <div className="w-full relative">
-      <form
-        ref={formEl}
-        onSubmit={handleUpdate}
+      <AutosaveForm
+        onSave={handleUpdate}
         className="w-1/2 flex flex-col gap-y-[32px]"
       >
-        {hasChanges && (
-          <div className="absolute top-0 right-0">
-            <CTAButton type="submit">
-              {saving ? "Updating..." : "Update Workspace"}
-            </CTAButton>
-          </div>
-        )}
         <div className="flex items-start gap-x-5">
           <VectorDBIdentifier workspace={workspace} />
           <VectorCount reload={true} workspace={workspace} />
         </div>
-        <VectorSearchMode workspace={workspace} setHasChanges={setHasChanges} />
-        <MaxContextSnippets
-          workspace={workspace}
-          setHasChanges={setHasChanges}
-        />
-        <DocumentSimilarityThreshold
-          workspace={workspace}
-          setHasChanges={setHasChanges}
-        />
+        <VectorSearchMode workspace={workspace} />
+        <MaxContextSnippets workspace={workspace} />
+        <DocumentSimilarityThreshold workspace={workspace} />
         <ResetDatabase workspace={workspace} />
-      </form>
+      </AutosaveForm>
     </div>
   );
 }

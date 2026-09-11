@@ -2,7 +2,8 @@ import System from "@/models/system";
 import Workspace from "@/models/workspace";
 import showToast from "@/utils/toast";
 import { castToType } from "@/utils/types";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import AutosaveForm from "@/components/AutosaveForm";
 import AgentLLMSelection from "./AgentLLMSelection";
 import Admin from "@/models/admin";
 import * as Skeleton from "react-loading-skeleton";
@@ -13,10 +14,7 @@ import useUser from "@/hooks/useUser";
 export default function WorkspaceAgentConfiguration({ workspace }) {
   const { user } = useUser();
   const [settings, setSettings] = useState({});
-  const [hasChanges, setHasChanges] = useState(false);
-  const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
-  const formEl = useRef(null);
 
   useEffect(() => {
     async function fetchSettings() {
@@ -27,16 +25,14 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
     fetchSettings();
   }, []);
 
-  const handleUpdate = async (e) => {
-    setSaving(true);
-    e.preventDefault();
+  const handleUpdate = async (formEl) => {
     const data = {
       workspace: {},
       system: {},
       env: {},
     };
 
-    const form = new FormData(formEl.current);
+    const form = new FormData(formEl);
     for (var [key, value] of form.entries()) {
       if (key.startsWith("system::")) {
         const [_, label] = key.split("system::");
@@ -60,61 +56,36 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
     await Admin.updateSystemPreferences(data.system);
     await System.updateSystem(data.env);
 
-    if (!!updatedWorkspace) {
-      showToast("Workspace updated!", "success", { clear: true });
-    } else {
+    if (!updatedWorkspace)
       showToast(`Error: ${message}`, "error", { clear: true });
-    }
-
-    setSaving(false);
-    setHasChanges(false);
+    return !!updatedWorkspace;
   };
 
   if (!workspace || loading) return <LoadingSkeleton />;
   return (
     <div id="workspace-agent-settings-container">
-      <form
-        ref={formEl}
-        onSubmit={handleUpdate}
-        onChange={() => setHasChanges(true)}
+      <AutosaveForm
+        onSave={handleUpdate}
         id="agent-settings-form"
         className="w-1/2 flex flex-col gap-y-6"
       >
-        <AgentLLMSelection
-          settings={settings}
-          workspace={workspace}
-          setHasChanges={setHasChanges}
-        />
+        <AgentLLMSelection settings={settings} workspace={workspace} />
         {(!user || user?.role === "admin") && (
-          <>
-            {!hasChanges && (
-              <div className="flex flex-col gap-y-4">
-                <a
-                  className="w-fit transition-all duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-                  href={paths.settings.agentSkills()}
-                >
-                  Configure Agent Skills
-                </a>
-                <p className="text-white text-opacity-60 text-xs font-medium">
-                  Customize and enhance the default agent's capabilities by
-                  enabling or disabling specific skills. These settings will be
-                  applied across all workspaces.
-                </p>
-              </div>
-            )}
-          </>
+          <div className="flex flex-col gap-y-4">
+            <a
+              className="w-fit transition-all duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+              href={paths.settings.agentSkills()}
+            >
+              Configure Agent Skills
+            </a>
+            <p className="text-white text-opacity-60 text-xs font-medium">
+              Customize and enhance the default agent's capabilities by enabling
+              or disabling specific skills. These settings will be applied
+              across all workspaces.
+            </p>
+          </div>
         )}
-
-        {hasChanges && (
-          <button
-            type="submit"
-            form="agent-settings-form"
-            className="w-fit transition-all duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-          >
-            {saving ? "Updating agent..." : "Update workspace agent"}
-          </button>
-        )}
-      </form>
+      </AutosaveForm>
     </div>
   );
 }

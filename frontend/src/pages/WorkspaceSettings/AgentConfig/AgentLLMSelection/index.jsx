@@ -5,6 +5,7 @@ import { ALL_LLM_PROVIDERS } from "@/pages/GeneralSettings/LLMPreference";
 import { CaretUpDown, Gauge, MagnifyingGlass, X } from "@phosphor-icons/react";
 import AgentModelSelection from "../AgentModelSelection";
 import { useTranslation } from "react-i18next";
+import { useAutosaveForm, SavedIndicator } from "@/components/AutosaveForm";
 
 const ENABLED_PROVIDERS = [
   "openai",
@@ -70,11 +71,7 @@ const LLMS = [
   ...ALL_LLM_PROVIDERS.filter((llm) => ENABLED_PROVIDERS.includes(llm.value)),
 ];
 
-export default function AgentLLMSelection({
-  settings,
-  workspace,
-  setHasChanges,
-}) {
+export default function AgentLLMSelection({ settings, workspace }) {
   const [filteredLLMs, setFilteredLLMs] = useState([]);
   const [selectedLLM, setSelectedLLM] = useState(
     workspace?.agentProvider ?? "none"
@@ -82,12 +79,16 @@ export default function AgentLLMSelection({
   const [searchQuery, setSearchQuery] = useState("");
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
+  const { markDirty, save } = useAutosaveForm();
   const { t } = useTranslation();
   function updateLLMChoice(selection) {
     setSearchQuery("");
     setSelectedLLM(selection);
     setSearchMenuOpen(false);
-    setHasChanges(true);
+    markDirty("agentProvider");
+    markDirty("agentModel");
+    // Other providers save once AgentModelSelection has loaded its models.
+    if (selection === "none") save();
   }
 
   function handleXButton() {
@@ -121,6 +122,7 @@ export default function AgentLLMSelection({
       <div className="flex flex-col gap-y-[8px]">
         <label htmlFor="name" className="block input-label">
           {t("agent.provider.title")}
+          <SavedIndicator name="agentProvider" />
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium">
           {t("agent.provider.description")}
@@ -206,11 +208,7 @@ export default function AgentLLMSelection({
       </div>
       {selectedLLM !== "none" && (
         <div className="flex flex-col gap-y-1">
-          <AgentModelSelection
-            provider={selectedLLM}
-            workspace={workspace}
-            setHasChanges={setHasChanges}
-          />
+          <AgentModelSelection provider={selectedLLM} workspace={workspace} />
         </div>
       )}
     </div>

@@ -2,8 +2,10 @@ import useGetProviderModels, {
   DISABLED_PROVIDERS,
 } from "@/hooks/useGetProvidersModels";
 import paths from "@/utils/paths";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
+import { useAutosaveForm, SavedIndicator } from "@/components/AutosaveForm";
 
 /**
  * These models do NOT support function calling
@@ -33,16 +35,18 @@ function supportedModel(provider, model = "") {
   return true;
 }
 
-export default function AgentModelSelection({
-  provider,
-  workspace,
-  setHasChanges,
-}) {
+export default function AgentModelSelection({ provider, workspace }) {
   const { slug } = useParams();
   const { defaultModels, customModels, loading, downloadedModels } =
     useGetProviderModels(provider);
-
+  const { save } = useAutosaveForm();
   const { t } = useTranslation();
+
+  // A provider change is only persisted once its model list is ready so both save together.
+  useEffect(() => {
+    if (!loading) save();
+  }, [loading]);
+
   if (DISABLED_PROVIDERS.includes(provider)) {
     return (
       <div className="w-full h-10 justify-center items-center flex">
@@ -71,6 +75,7 @@ export default function AgentModelSelection({
         <div className="flex flex-col">
           <label htmlFor="name" className="block input-label">
             {t("agent.mode.chat.title")}
+            <SavedIndicator name="agentModel" />
           </label>
           <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
             {t("agent.mode.chat.description")}
@@ -95,6 +100,7 @@ export default function AgentModelSelection({
       <div className="flex flex-col">
         <label htmlFor="name" className="block input-label">
           {t("agent.mode.title")}
+          <SavedIndicator name="agentModel" />
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
           {t("agent.mode.description")}
@@ -104,9 +110,6 @@ export default function AgentModelSelection({
       <select
         name="agentModel"
         required={true}
-        onChange={() => {
-          setHasChanges(true);
-        }}
         className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
       >
         {defaultModels.length > 0 && (
