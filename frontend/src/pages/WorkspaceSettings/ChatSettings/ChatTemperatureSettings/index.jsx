@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { SavedIndicator } from "@/components/AutosaveForm";
 function recommendedSettings(provider = null) {
   switch (provider) {
     case "mistral":
@@ -8,11 +9,7 @@ function recommendedSettings(provider = null) {
   }
 }
 
-export default function ChatTemperatureSettings({
-  settings,
-  workspace,
-  setHasChanges,
-}) {
+export default function ChatTemperatureSettings({ settings, workspace }) {
   const defaults = recommendedSettings(settings?.LLMProvider);
   const { t } = useTranslation();
   return (
@@ -20,6 +17,7 @@ export default function ChatTemperatureSettings({
       <div className="flex flex-col gap-y-[8px]">
         <label htmlFor="name" className="block input-label">
           {t("chat.temperature.title")}
+          <SavedIndicator name="openAiTemp" />
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium">
           {t("chat.temperature.desc-end")}
@@ -36,7 +34,6 @@ export default function ChatTemperatureSettings({
         placeholder="0.7"
         required={true}
         autoComplete="off"
-        onChange={() => setHasChanges(true)}
       />
     </div>
   );

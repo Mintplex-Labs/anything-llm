@@ -2,8 +2,8 @@ import System from "@/models/system";
 import Workspace from "@/models/workspace";
 import showToast from "@/utils/toast";
 import { castToType } from "@/utils/types";
-import { useEffect, useRef, useState } from "react";
-import useAutosaveForm from "@/hooks/useAutosaveForm";
+import { useEffect, useState } from "react";
+import AutosaveForm from "@/components/AutosaveForm";
 import AgentLLMSelection from "./AgentLLMSelection";
 import Admin from "@/models/admin";
 import * as Skeleton from "react-loading-skeleton";
@@ -15,7 +15,6 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
   const { user } = useUser();
   const [settings, setSettings] = useState({});
   const [loading, setLoading] = useState(true);
-  const formEl = useRef(null);
 
   useEffect(() => {
     async function fetchSettings() {
@@ -26,15 +25,14 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
     fetchSettings();
   }, []);
 
-  const handleUpdate = async (e) => {
-    e?.preventDefault();
+  const handleUpdate = async (formEl) => {
     const data = {
       workspace: {},
       system: {},
       env: {},
     };
 
-    const form = new FormData(formEl.current);
+    const form = new FormData(formEl);
     for (var [key, value] of form.entries()) {
       if (key.startsWith("system::")) {
         const [_, label] = key.split("system::");
@@ -58,31 +56,20 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
     await Admin.updateSystemPreferences(data.system);
     await System.updateSystem(data.env);
 
-    if (!!updatedWorkspace) {
-      showToast("Workspace updated!", "success", { clear: true });
-    } else {
+    if (!updatedWorkspace)
       showToast(`Error: ${message}`, "error", { clear: true });
-    }
-
-    setHasChanges(false);
+    return !!updatedWorkspace;
   };
-  const { setHasChanges } = useAutosaveForm(formEl, handleUpdate);
 
   if (!workspace || loading) return <LoadingSkeleton />;
   return (
     <div id="workspace-agent-settings-container">
-      <form
-        ref={formEl}
-        onSubmit={handleUpdate}
-        onChange={() => setHasChanges(true)}
+      <AutosaveForm
+        onSave={handleUpdate}
         id="agent-settings-form"
         className="w-1/2 flex flex-col gap-y-6"
       >
-        <AgentLLMSelection
-          settings={settings}
-          workspace={workspace}
-          setHasChanges={setHasChanges}
-        />
+        <AgentLLMSelection settings={settings} workspace={workspace} />
         {(!user || user?.role === "admin") && (
           <div className="flex flex-col gap-y-4">
             <a
@@ -98,7 +85,7 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
             </p>
           </div>
         )}
-      </form>
+      </AutosaveForm>
     </div>
   );
 }

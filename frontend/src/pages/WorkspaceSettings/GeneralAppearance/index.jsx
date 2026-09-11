@@ -1,8 +1,8 @@
 import Workspace from "@/models/workspace";
 import { castToType } from "@/utils/types";
 import showToast from "@/utils/toast";
-import { useEffect, useRef, useState } from "react";
-import useAutosaveForm from "@/hooks/useAutosaveForm";
+import { useEffect, useState } from "react";
+import AutosaveForm from "@/components/AutosaveForm";
 import WorkspaceName from "./WorkspaceName";
 import SuggestedChatMessages from "./SuggestedChatMessages";
 import DeleteWorkspace from "./DeleteWorkspace";
@@ -10,7 +10,6 @@ import DeleteWorkspace from "./DeleteWorkspace";
 export default function GeneralInfo({ slug, deletionProtected = false }) {
   const [workspace, setWorkspace] = useState(null);
   const [loading, setLoading] = useState(true);
-  const formEl = useRef(null);
 
   useEffect(() => {
     async function fetchWorkspace() {
@@ -21,38 +20,25 @@ export default function GeneralInfo({ slug, deletionProtected = false }) {
     fetchWorkspace();
   }, [slug]);
 
-  const handleUpdate = async (e) => {
-    e?.preventDefault();
+  const handleUpdate = async (formEl) => {
     const data = {};
-    const form = new FormData(formEl.current);
+    const form = new FormData(formEl);
     for (var [key, value] of form.entries()) data[key] = castToType(key, value);
     const { workspace: updatedWorkspace, message } = await Workspace.update(
       workspace.slug,
       data
     );
-    if (!!updatedWorkspace) {
-      showToast("Workspace updated!", "success", { clear: true });
-    } else {
+    if (!updatedWorkspace)
       showToast(`Error: ${message}`, "error", { clear: true });
-    }
-    setHasChanges(false);
+    return !!updatedWorkspace;
   };
-  const { setHasChanges } = useAutosaveForm(formEl, handleUpdate);
 
   if (!workspace || loading) return null;
   return (
     <div className="w-full relative flex flex-col gap-y-[32px]">
-      <form
-        ref={formEl}
-        onSubmit={handleUpdate}
-        className="w-1/2 flex flex-col"
-      >
-        <WorkspaceName
-          key={workspace.slug}
-          workspace={workspace}
-          setHasChanges={setHasChanges}
-        />
-      </form>
+      <AutosaveForm onSave={handleUpdate} className="w-1/2 flex flex-col">
+        <WorkspaceName key={workspace.slug} workspace={workspace} />
+      </AutosaveForm>
       <SuggestedChatMessages slug={workspace.slug} />
       <DeleteWorkspace workspace={workspace} visible={!deletionProtected} />
     </div>
