@@ -405,6 +405,14 @@ class Provider {
           apiKey: process.env.COMETAPI_LLM_API_KEY ?? null,
           ...config,
         });
+      case "hubris":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.hubris.pw/v1",
+          },
+          apiKey: process.env.HUBRIS_LLM_API_KEY ?? null,
+          ...config,
+        });
       case "giteeai":
         return new ChatOpenAI({
           configuration: {

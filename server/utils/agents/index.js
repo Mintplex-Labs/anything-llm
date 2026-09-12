@@ -248,6 +248,10 @@ class AgentHandler {
         if (!process.env.COMETAPI_LLM_API_KEY)
           throw new Error("CometAPI API Key must be provided to use agents.");
         break;
+      case "hubris":
+        if (!process.env.HUBRIS_LLM_API_KEY)
+          throw new Error("Hubris API Key must be provided to use agents.");
+        break;
       case "foundry":
         if (!process.env.FOUNDRY_BASE_PATH)
           throw new Error("Foundry base path must be provided to use agents.");
@@ -373,6 +377,8 @@ class AgentHandler {
         return process.env.GEMINI_LLM_MODEL_PREF ?? "gemini-2.0-flash-lite";
       case "cometapi":
         return process.env.COMETAPI_LLM_MODEL_PREF ?? "gpt-5-mini";
+      case "hubris":
+        return process.env.HUBRIS_LLM_MODEL_PREF ?? "anthropic/claude-haiku-4.5";
       case "foundry":
         return process.env.FOUNDRY_MODEL_PREF ?? null;
       case "giteeai":

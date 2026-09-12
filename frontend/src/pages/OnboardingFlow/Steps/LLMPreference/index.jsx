@@ -29,6 +29,7 @@ import CohereLogo from "@/media/llmprovider/cohere.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
+import HubrisLogo from "@/media/llmprovider/hubris.png";
 import GiteeAILogo from "@/media/llmprovider/giteeai.png";
 import LlmmanLogo from "@/media/llmprovider/llmman.png";
 import PrivateModeLogo from "@/media/llmprovider/privatemode.png";
@@ -67,6 +68,7 @@ import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
 import PPIOLLMOptions from "@/components/LLMSelection/PPIOLLMOptions";
 import MoonshotAiOptions from "@/components/LLMSelection/MoonshotAiOptions";
 import CometApiLLMOptions from "@/components/LLMSelection/CometApiLLMOptions";
+import HubrisLLMOptions from "@/components/LLMSelection/HubrisLLMOptions";
 import GiteeAiOptions from "@/components/LLMSelection/GiteeAIOptions";
 import LlmmanOptions from "@/components/LLMSelection/LlmmanOptions";
 import PrivateModeOptions from "@/components/LLMSelection/PrivateModeOptions";
@@ -330,6 +332,13 @@ const LLMS = [
     logo: CometApiLogo,
     options: (settings) => <CometApiLLMOptions settings={settings} />,
     description: "500+ AI Models all in one API.",
+  },
+  {
+    name: "Hubris",
+    value: "hubris",
+    logo: HubrisLogo,
+    options: (settings) => <HubrisLLMOptions settings={settings} />,
+    description: "500+ AI models via one API, billed in rubles.",
   },
   {
     name: "GiteeAI",
