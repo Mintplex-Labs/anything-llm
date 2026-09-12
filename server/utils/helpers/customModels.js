@@ -12,6 +12,7 @@ const { parseNvidiaNimBasePath } = require("../AiProviders/nvidiaNim");
 const { fetchPPIOModels } = require("../AiProviders/ppio");
 const { GeminiLLM } = require("../AiProviders/gemini");
 const { fetchCometApiModels } = require("../AiProviders/cometapi");
+const { fetchHubrisModels } = require("../AiProviders/hubris");
 const { getAllLemonadeModels } = require("../AiProviders/lemonade");
 
 const SUPPORT_CUSTOM_MODELS = [
@@ -34,6 +35,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "apipie",
   "novita",
   "cometapi",
+  "hubris",
   "xai",
   "gemini",
   "ppio",
@@ -123,6 +125,8 @@ async function getCustomModels(
       return await getNovitaModels();
     case "cometapi":
       return await getCometApiModels();
+    case "hubris":
+      return await getHubrisModels();
     case "xai":
       return await getXAIModels(apiKey);
     case "nvidia-nim":
@@ -631,6 +635,20 @@ async function getNovitaModels() {
 
 async function getCometApiModels() {
   const knownModels = await fetchCometApiModels();
+  if (!Object.keys(knownModels).length === 0)
+    return { models: [], error: null };
+  const models = Object.values(knownModels).map((model) => {
+    return {
+      id: model.id,
+      organization: model.organization,
+      name: model.name,
+    };
+  });
+  return { models, error: null };
+}
+
+async function getHubrisModels() {
+  const knownModels = await fetchHubrisModels();
   if (!Object.keys(knownModels).length === 0)
     return { models: [], error: null };
   const models = Object.values(knownModels).map((model) => {

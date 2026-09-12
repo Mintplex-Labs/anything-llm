@@ -930,6 +930,20 @@ const KEY_MAPPING = {
     checks: [],
   },
 
+  // Hubris Options
+  HubrisLLMApiKey: {
+    envKey: "HUBRIS_LLM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  HubrisLLMModelPref: {
+    envKey: "HUBRIS_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  HubrisLLMTimeout: {
+    envKey: "HUBRIS_LLM_TIMEOUT_MS",
+    checks: [],
+  },
+
   // Z.AI Options
   ZAiApiKey: {
     envKey: "ZAI_API_KEY",
@@ -1166,6 +1180,7 @@ function supportedLLM(input = "") {
     "ppio",
     "moonshotai",
     "cometapi",
+    "hubris",
     "foundry",
     "zai",
     "giteeai",

@@ -38,6 +38,7 @@ import PPIOLogo from "@/media/llmprovider/ppio.png";
 import PGVectorLogo from "@/media/vectordbs/pgvector.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
+import HubrisLogo from "@/media/llmprovider/hubris.png";
 import FoundryLogo from "@/media/llmprovider/foundry-local.png";
 import GiteeAILogo from "@/media/llmprovider/giteeai.png";
 import LlmmanLogo from "@/media/llmprovider/llmman.png";
@@ -211,6 +212,11 @@ const LLM_PROVIDER_PRIVACY_MAP = {
     name: "CometAPI",
     policyUrl: "https://apidoc.cometapi.com/privacy-policy-873819m0",
     logo: CometApiLogo,
+  },
+  hubris: {
+    name: "Hubris",
+    policyUrl: "https://hubris.pw/legal/privacy",
+    logo: HubrisLogo,
   },
   foundry: {
     name: "Microsoft Foundry Local",

@@ -34,6 +34,7 @@ import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
+import HubrisLogo from "@/media/llmprovider/hubris.png";
 import FoundryLogo from "@/media/llmprovider/foundry-local.png";
 import GiteeAILogo from "@/media/llmprovider/giteeai.png";
 import LlmmanLogo from "@/media/llmprovider/llmman.png";
@@ -56,6 +57,7 @@ import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
 import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
 import NovitaLLMOptions from "@/components/LLMSelection/NovitaLLMOptions";
 import CometApiLLMOptions from "@/components/LLMSelection/CometApiLLMOptions";
+import HubrisLLMOptions from "@/components/LLMSelection/HubrisLLMOptions";
 import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
 import FireworksAiOptions from "@/components/LLMSelection/FireworksAiOptions";
 import MistralOptions from "@/components/LLMSelection/MistralOptions";
@@ -365,6 +367,14 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <CometApiLLMOptions settings={settings} />,
     description: "500+ AI Models all in one API.",
     requiredConfig: ["CometApiLLMApiKey"],
+  },
+  {
+    name: "Hubris",
+    value: "hubris",
+    logo: HubrisLogo,
+    options: (settings) => <HubrisLLMOptions settings={settings} />,
+    description: "500+ AI models via one API, billed in rubles.",
+    requiredConfig: ["HubrisLLMApiKey"],
   },
   {
     name: "Microsoft Foundry Local",

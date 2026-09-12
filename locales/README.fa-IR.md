@@ -122,6 +122,7 @@ AnythingLLM همچنین از چندین کاربر پشتیبانی می‌کن
 - [Moonshot AI](https://www.moonshot.ai/)
 - [Microsoft Foundry Local](https://github.com/microsoft/Foundry-Local)
 - [CometAPI (chat models)](https://www.cometapi.com/)
+- [Hubris (chat models)](https://hubris.pw/)
 - [llmman](https://github.com/llmmanorg/llmman)
 - [PrivateModeAI (chat models)](https://privatemode.ai/)
 - [SambaNova Cloud (chat models)](https://cloud.sambanova.ai/)
