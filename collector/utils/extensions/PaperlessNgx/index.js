@@ -33,10 +33,11 @@ async function loadPaperlessNgx({ baseUrl = null, apiToken = null }, response) {
     };
   }
 
-  const { origin, hostname } = new URL(baseUrl);
-  console.log(`-- Working Paperless-ngx ${origin} --`);
+  const normalizedBaseUrl = resolvePaperlessBaseUrl(baseUrl);
+  const { hostname } = new URL(normalizedBaseUrl);
+  console.log(`-- Working Paperless-ngx ${normalizedBaseUrl} --`);
   const loader = new PaperlessNgxLoader({
-    baseUrl: origin,
+    baseUrl: normalizedBaseUrl,
     apiToken,
   });
 
@@ -72,10 +73,10 @@ async function loadPaperlessNgx({ baseUrl = null, apiToken = null }, response) {
       url: doc.metadata.url,
       title: doc.metadata.title,
       docAuthor: doc.metadata.correspondent || "Unknown",
-      description: `A document from the Paperless-ngx instance at ${origin}`,
+      description: `A document from the Paperless-ngx instance at ${normalizedBaseUrl}`,
       docSource: `paperless-ngx`,
       chunkSource: generateChunkSource(
-        { doc, baseUrl: origin, apiToken },
+        { doc, baseUrl: normalizedBaseUrl, apiToken },
         response.locals.encryptionWorker
       ),
       published: doc.metadata.created,
@@ -123,6 +124,21 @@ function generateChunkSource({ doc, baseUrl, apiToken }, encryptionWorker) {
   )}`;
 }
 
+/**
+ * Resolves the Paperless-ngx base URL, preserving context paths for self-hosted
+ * deployments. Paperless-ngx only supports self-hosted instances, so unlike the
+ * Confluence connector there is no cloud branch: the context path (e.g.
+ * `/paperless`) is always kept and any trailing slashes are stripped.
+ * @param {string} baseUrl
+ * @returns {string}
+ */
+function resolvePaperlessBaseUrl(baseUrl) {
+  const url = new URL(baseUrl);
+  const contextPath = url.pathname.replace(/\/+$/, "");
+  return `${url.origin}${contextPath}`;
+}
+
 module.exports = {
   loadPaperlessNgx,
+  resolvePaperlessBaseUrl,
 };
