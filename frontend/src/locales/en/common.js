@@ -728,8 +728,6 @@ const TRANSLATIONS = {
           },
         },
       },
-      default_skill:
-        "By default, this skill is enabled, but you can disable it if you don't want it to be available to the agent.",
     },
     mcp: {
       title: "MCP Servers",

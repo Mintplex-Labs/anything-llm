@@ -136,7 +136,9 @@ async function resyncGitlab({ chunkSource }, response) {
       fetchGitlabFile,
     } = require("../../utils/extensions/RepoLoader/GitlabRepo");
     const { success, reason, content } = await fetchGitlabFile({
-      repoUrl: `https:${source.pathname}`,
+      repoUrl: `${source.searchParams.get("scheme") || "https"}:${
+        source.pathname
+      }`,
       branch: source.searchParams.get("branch"),
       accessToken: source.searchParams.get("pat"),
       sourceFilePath: source.searchParams.get("path"),
@@ -236,14 +238,12 @@ async function resyncPaperlessNgx({ chunkSource }, response) {
   if (!chunkSource) throw new Error("Invalid source property provided");
   try {
     const source = response.locals.encryptionWorker.expandPayload(chunkSource);
-    const {
-      PaperlessNgxLoader,
-    } = require("../../utils/extensions/PaperlessNgx/PaperlessNgxLoader");
+    const PaperlessNgxLoader = require("../../utils/extensions/PaperlessNgx/PaperlessNgxLoader");
     const loader = new PaperlessNgxLoader({
       baseUrl: source.searchParams.get("baseUrl"),
       apiToken: source.searchParams.get("token"),
     });
-    const documentId = source.pathname.split("//")[1];
+    const documentId = source.host;
     const content = await loader.fetchDocumentContent(documentId);
 
     if (!content) throw new Error("Failed to fetch document content");

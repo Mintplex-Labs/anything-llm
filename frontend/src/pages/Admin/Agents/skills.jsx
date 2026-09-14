@@ -54,6 +54,12 @@ export const getDefaultSkills = (t) => ({
     image: ScrapeWebsitesImage,
     skill: "web-scraping",
   },
+  "web-browsing": {
+    title: t("agent.skill.web.title"),
+    description: t("agent.skill.web.description"),
+    component: AgentWebSearchSelection,
+    skill: "web-browsing",
+  },
 });
 
 /**
@@ -113,12 +119,6 @@ export const getConfigurableSkills = (
       image: GenerateImageImage,
     },
   }),
-  "web-browsing": {
-    title: t("agent.skill.web.title"),
-    description: t("agent.skill.web.description"),
-    component: AgentWebSearchSelection,
-    skill: "web-browsing",
-  },
   "sql-agent": {
     title: t("agent.skill.sql.title"),
     description: t("agent.skill.sql.description"),

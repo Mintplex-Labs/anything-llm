@@ -163,6 +163,7 @@ function generateChunkSource(repo, doc, encryptionWorker) {
     branch: repo.branch,
     path: doc.metadata.source,
     pat: !!repo.accessToken ? repo.accessToken : null,
+    scheme: new URL(repo.repo).protocol.replace(":", ""),
   };
   return `gitlab://${repo.repo}?payload=${encryptionWorker.encrypt(
     JSON.stringify(payload)
@@ -258,4 +259,9 @@ ${issue.discussions.join("\n\n")}
   return markdown;
 }
 
-module.exports = { loadGitlabRepo, fetchGitlabFile };
+module.exports = {
+  loadGitlabRepo,
+  fetchGitlabFile,
+  generateChunkSource,
+  issueToMarkdown,
+};
