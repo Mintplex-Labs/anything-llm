@@ -3,8 +3,6 @@ const pdf = require("pdf-parse");
 
 class PaperlessNgxLoader {
   constructor({ baseUrl, apiToken }) {
-    // Paperless-ngx is self-hosted and may live under a context path (eg: /paperless),
-    // so keep the path and only strip trailing slashes instead of truncating to the origin.
     const url = new URL(baseUrl);
     this.baseUrl = `${url.origin}${url.pathname.replace(/\/+$/, "")}`;
     this.apiToken = apiToken;
