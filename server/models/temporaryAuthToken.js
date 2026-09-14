@@ -7,7 +7,7 @@ const prisma = require("../utils/prisma");
  * to login as a user without the need of a username and password. These tokens are single-use and expire.
  */
 const TemporaryAuthToken = {
-  expiry: 1000 * 60 * 10, // Time-based expiry for a single-use SSO login token. Keep this short.
+  expiry: 1000 * 60 * 10, // Time-based expiry for a single-use SSO login token.
   tablename: "temporary_auth_tokens",
   writable: [],
 
