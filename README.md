@@ -194,7 +194,7 @@ Mintplex Labs & the community maintain a number of deployment methods, scripts, 
 
 | Easypanel |
 | --- |
-| [Deploy on Easypanel][easypanel-deploy] |
+| [![Deploy on Easypanel][easypanel-btn]][easypanel-deploy] |
 
 [or set up a production AnythingLLM instance without Docker →](./BARE_METAL.md)
 
@@ -322,4 +322,5 @@ This project is [MIT](./LICENSE) licensed.
 [northflank-deploy]: https://northflank.com/stacks/deploy-anythingllm
 [sealos-btn]: https://sealos.io/Deploy-on-Sealos.svg
 [sealos-deploy]: https://sealos.io/products/app-store/anything-llm
+[easypanel-btn]: https://easypanel.io/img/deploy-on-easypanel-40.svg
 [easypanel-deploy]: https://easypanel.io/templates/anythingllm
