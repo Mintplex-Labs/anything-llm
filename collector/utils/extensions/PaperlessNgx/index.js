@@ -33,13 +33,10 @@ async function loadPaperlessNgx({ baseUrl = null, apiToken = null }, response) {
     };
   }
 
-  const normalizedBaseUrl = resolvePaperlessBaseUrl(baseUrl);
+  const loader = new PaperlessNgxLoader({ baseUrl, apiToken });
+  const normalizedBaseUrl = loader.baseUrl;
   const { hostname } = new URL(normalizedBaseUrl);
   console.log(`-- Working Paperless-ngx ${normalizedBaseUrl} --`);
-  const loader = new PaperlessNgxLoader({
-    baseUrl: normalizedBaseUrl,
-    apiToken,
-  });
 
   const { docs, error } = await loader
     .load()
@@ -124,21 +121,6 @@ function generateChunkSource({ doc, baseUrl, apiToken }, encryptionWorker) {
   )}`;
 }
 
-/**
- * Resolves the Paperless-ngx base URL, preserving context paths for self-hosted
- * deployments. Paperless-ngx only supports self-hosted instances, so unlike the
- * Confluence connector there is no cloud branch: the context path (e.g.
- * `/paperless`) is always kept and any trailing slashes are stripped.
- * @param {string} baseUrl
- * @returns {string}
- */
-function resolvePaperlessBaseUrl(baseUrl) {
-  const url = new URL(baseUrl);
-  const contextPath = url.pathname.replace(/\/+$/, "");
-  return `${url.origin}${contextPath}`;
-}
-
 module.exports = {
   loadPaperlessNgx,
-  resolvePaperlessBaseUrl,
 };

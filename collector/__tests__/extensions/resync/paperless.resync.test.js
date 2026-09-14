@@ -1,28 +1,20 @@
 const resyncExtensions = require("../../../extensions/resync");
-jest.mock(
-  "../../../processLink",
-  () => ({ getLinkText: jest.fn() }),
-  { virtual: true }
-);
+jest.mock("../../../processLink", () => ({ getLinkText: jest.fn() }));
 
-jest.mock(
-  "../../../utils/extensions/PaperlessNgx/PaperlessNgxLoader",
-  () => {
-    const calls = [];
-    class PaperlessNgxLoader {
-      constructor(opts) {
-        calls.push({ constructedWith: opts });
-      }
-      async fetchDocumentContent(documentId) {
-        calls.push({ fetchedDocumentId: documentId });
-        return documentId === "123" ? "re-synced document body" : "";
-      }
+jest.mock("../../../utils/extensions/PaperlessNgx/PaperlessNgxLoader", () => {
+  const calls = [];
+  class PaperlessNgxLoader {
+    constructor(opts) {
+      calls.push({ constructedWith: opts });
     }
-    PaperlessNgxLoader.__calls = calls;
-    return PaperlessNgxLoader;
-  },
-  { virtual: true }
-);
+    async fetchDocumentContent(documentId) {
+      calls.push({ fetchedDocumentId: documentId });
+      return documentId === "123" ? "re-synced document body" : "";
+    }
+  }
+  PaperlessNgxLoader.__calls = calls;
+  return PaperlessNgxLoader;
+});
 
 describe("resyncPaperlessNgx", () => {
   function buildResponse(chunkSource) {
