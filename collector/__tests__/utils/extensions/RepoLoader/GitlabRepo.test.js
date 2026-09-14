@@ -360,6 +360,28 @@ describe("GitLabRepoLoader access token handling", () => {
     expect(loader.accessToken).toBeNull();
   });
 
+  test("a token rejected with HTTP 401 is dropped and public reads continue without it", async () => {
+    const fetchMock = mockGitlabApi({
+      userStatus: 401,
+      tree: [{ type: "blob", path: "README.md" }],
+      files: { "README.md": "# hello" },
+    });
+    jest.spyOn(console, "error").mockImplementation(() => {});
+    const loader = new GitLabRepoLoader({
+      repo: "https://gitlab.example.com/acme/widgets",
+      accessToken: "glpat-expired",
+    });
+    await loader.init();
+    const docs = await loader.recursiveLoader();
+
+    expect(loader.ready).toBe(true);
+    expect(loader.accessToken).toBeNull();
+    expect(docs).toHaveLength(1);
+    fetchMock.mock.calls
+      .filter(([url]) => !String(url).endsWith("/api/v4/user"))
+      .forEach(([, options]) => expect(options?.headers ?? {}).toEqual({}));
+  });
+
   test("sends no auth header and skips token validation without a PAT", async () => {
     const fetchMock = mockGitlabApi({
       tree: [{ type: "blob", path: "README.md" }],

@@ -93,7 +93,9 @@ class GitLabRepoLoader {
       await fetch(`${this.apiBase}/api/v4/user`, {
         method: "GET",
         headers: this.accessToken ? { "PRIVATE-TOKEN": this.accessToken } : {},
-      }).then((res) => res.ok);
+      }).then((res) => {
+        if (!res.ok) throw new Error(res.statusText || `HTTP ${res.status}`);
+      });
     } catch (e) {
       console.error(
         "Invalid Gitlab Access Token provided! Access token will not be used",
