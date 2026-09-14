@@ -3,10 +3,20 @@ const {
   grepCommand,
   grepAllSlashCommands,
   isReservedCommand,
+  chatPrompt,
 } = require("../../../utils/chats");
 const { SlashCommandPresets } = require("../../../models/slashCommandsPresets");
+const { promptWithMemories } = require("../../../utils/memories");
 
 jest.mock("../../../models/slashCommandsPresets");
+jest.mock("../../../utils/memories", () => ({
+  promptWithMemories: jest.fn(async ({ systemPrompt }) => systemPrompt),
+}));
+jest.mock("../../../models/systemPromptVariables", () => ({
+  SystemPromptVariables: {
+    expandSystemPromptVariables: jest.fn(async (prompt) => prompt),
+  },
+}));
 
 // Helper to shape preset rows the way the model returns them.
 const preset = (command, prompt) => ({ command, prompt });
@@ -60,7 +70,9 @@ describe("grepCommand", () => {
     });
 
     it("expands a command that follows other text and a space", async () => {
-      expect(await grepCommand("ok, /weather")).toBe("ok, what is the weather?");
+      expect(await grepCommand("ok, /weather")).toBe(
+        "ok, what is the weather?"
+      );
     });
 
     it("expands a command with trailing punctuation", async () => {
@@ -145,5 +157,40 @@ describe("grepAllSlashCommands", () => {
     expect(await grepAllSlashCommands("/weather and /time")).toBe(
       "the weather and the time"
     );
+  });
+});
+
+describe("chatPrompt", () => {
+  const workspace = { id: 7, openAiPrompt: "Workspace prompt." };
+
+  beforeEach(() => promptWithMemories.mockClear());
+
+  it("injects memories scoped to the provided user", async () => {
+    await chatPrompt(workspace, { id: 3 });
+
+    expect(promptWithMemories).toHaveBeenCalledWith(
+      expect.objectContaining({ userId: 3, workspaceId: 7 })
+    );
+  });
+
+  it("falls back to the null memory scope when no user is given", async () => {
+    await chatPrompt(workspace);
+
+    expect(promptWithMemories).toHaveBeenCalledWith(
+      expect.objectContaining({ userId: null, workspaceId: 7 })
+    );
+  });
+
+  it("never looks up memories when skipMemories is set", async () => {
+    const result = await chatPrompt(workspace, null, { skipMemories: true });
+
+    expect(result).toBe("Workspace prompt.");
+    expect(promptWithMemories).not.toHaveBeenCalled();
+  });
+
+  it("does not treat a non-object user (eg: a username string) as an identity", async () => {
+    await chatPrompt(workspace, "visitor-name", { skipMemories: true });
+
+    expect(promptWithMemories).not.toHaveBeenCalled();
   });
 });
