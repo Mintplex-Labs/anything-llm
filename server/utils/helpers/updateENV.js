@@ -1559,6 +1559,9 @@ function dumpENV() {
 
     // Deny-by-default for embed widgets that have no allowlist configured
     "EMBED_REQUIRE_ALLOWLIST",
+
+    // Allow setting a custom timeout for tool call approval prompts
+    "TOOL_CALL_APPROVAL_TIMEOUT_MS",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.

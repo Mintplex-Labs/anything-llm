@@ -22,8 +22,18 @@ async function userCanToggleTools(userId = null) {
   return user?.role === ROLES.admin;
 }
 
+/**
+ * Returns the timeout in ms for agent tool-call approval prompts.
+ * Reads from `TOOL_CALL_APPROVAL_TIMEOUT_MS` env var; defaults to 120 000 ms (2 min).
+ * @returns {number}
+ */
+function toolApprovalTimeoutMs() {
+  const envVal = Number(process.env.TOOL_CALL_APPROVAL_TIMEOUT_MS);
+  return Number.isFinite(envVal) && envVal > 0 ? envVal : 120_000;
+}
+
 const SOCKET_TIMEOUT_MS = 300 * 1_000; // 5 mins
-const TOOL_APPROVAL_TIMEOUT_MS = 120 * 1_000; // 2 mins for tool approval
+const TOOL_APPROVAL_TIMEOUT_MS = toolApprovalTimeoutMs();
 const CLARIFICATION_DEFAULT_TIMEOUT_MS = 120 * 1_000; // 2 mins for clarifying questions
 
 /**

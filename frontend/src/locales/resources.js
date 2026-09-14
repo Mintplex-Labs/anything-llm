@@ -44,6 +44,7 @@ import Lao from "./lo/common.js";
 import Croatian from "./hr/common.js";
 import Swedish from "./sv/common.js";
 import Hindi from "./hi/common.js";
+import Bulgarian from "./bg/common.js";
 
 export const defaultNS = "common";
 export const resources = {
@@ -136,5 +137,8 @@ export const resources = {
   },
   hi: {
     common: Hindi,
+  },
+  bg: {
+    common: Bulgarian,
   },
 };
