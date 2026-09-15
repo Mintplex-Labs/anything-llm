@@ -219,5 +219,73 @@ describe("htmlToMarkdown", () => {
       );
       expect(markdown).toBe("[link](https://example.com/docs/[1]/page)");
     });
+
+    it("keeps a section marker inside a fenced code block", async () => {
+      const markdown = await htmlToMarkdown(
+        "<pre><code>config[edit] = true;</code></pre>"
+      );
+      expect(markdown).toContain("config[edit] = true;");
+    });
+
+    it("keeps a section marker inside inline code", async () => {
+      const markdown = await htmlToMarkdown(
+        "<p>Set <code>menu[edit]</code> to enable it.</p>"
+      );
+      expect(markdown).toContain("`menu[edit]`");
+    });
+
+    it("keeps an uppercase section marker inside code", async () => {
+      const markdown = await htmlToMarkdown(
+        "<pre><code>config[EDIT] = true;</code></pre>"
+      );
+      expect(markdown).toContain("config[EDIT] = true;");
+    });
+
+    it("keeps a link whose visible text is the section marker", async () => {
+      const markdown = await htmlToMarkdown(
+        '<p><a href="/wiki/page?action=edit">edit</a></p>',
+        "https://example.com"
+      );
+      expect(markdown).toBe(
+        "[edit](https://example.com/wiki/page?action=edit)"
+      );
+    });
+
+    it("keeps a section marker inside a link target", async () => {
+      const markdown = await htmlToMarkdown(
+        '<p><a href="/docs/[edit]/page">link</a></p>',
+        "https://example.com"
+      );
+      expect(markdown).toBe("[link](https://example.com/docs/[edit]/page)");
+    });
+
+    it("keeps a cite anchor inside a fenced code block", async () => {
+      const markdown = await htmlToMarkdown(
+        "<pre><code>const ref = notes[#cite_note-1];</code></pre>"
+      );
+      expect(markdown).toContain("notes[#cite_note-1]");
+    });
+
+    it("keeps a link whose visible text is a cite anchor", async () => {
+      const markdown = await htmlToMarkdown(
+        '<p><a href="#cite_note-1">#cite_note-1</a></p>',
+        "https://example.com"
+      );
+      // compactLinks emits an unescaped [text](href), so the cite pattern ate
+      // the link text and left a dangling (#cite_note-1) behind.
+      expect(markdown).toBe("[#cite\\_note-1](#cite_note-1)");
+    });
+
+    it("keeps a bracketed cite marker in prose", async () => {
+      // Turndown escapes brackets in prose, and the cite pattern's [^\]]*
+      // spans the backslash before the escaped closing bracket. It therefore
+      // matched from the opening bracket through the closing one and left the
+      // first backslash stranded, turning this whole phrase into "See \ for
+      // details." The numeric pattern could not reach escaped prose this way.
+      const markdown = await htmlToMarkdown(
+        "<p>See [#cite_note-1] for details.</p>"
+      );
+      expect(markdown).toBe("See \\[#cite\\_note-1\\] for details.");
+    });
   });
 });
