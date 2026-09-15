@@ -2,7 +2,7 @@ const prisma = require("../utils/prisma");
 const { safeJsonParse } = require("../utils/http");
 
 const ExternalCommunicationConnector = {
-  supportedTypes: ["telegram"],
+  supportedTypes: Object.freeze(["telegram", "lark"]),
 
   /**
    * Get a connector by type.
