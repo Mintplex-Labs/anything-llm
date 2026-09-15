@@ -3,7 +3,7 @@ jest.mock("@larksuiteoapi/node-sdk", () => ({
   createLarkChannel: jest.fn(),
 }));
 jest.mock("../../../models/externalCommunicationConnector", () => ({
-  ExternalCommunicationConnector: { get: jest.fn() },
+  ExternalCommunicationConnector: { get: jest.fn(), updateConfig: jest.fn() },
 }));
 jest.mock("../../../models/systemSettings", () => ({
   SystemSettings: { isMultiUserMode: jest.fn() },
@@ -11,6 +11,32 @@ jest.mock("../../../models/systemSettings", () => ({
 jest.mock("../../../utils/externalChannels/credentials", () => ({
   decryptConnectorSecret: jest.fn(),
 }));
+jest.mock("../../../utils/externalChannels/chat", () => ({
+  ExternalChannelChatRunner: jest
+    .fn()
+    .mockImplementation(() => ({ run: mockRun, abort: mockAbort })),
+}));
+jest.mock("../../../models/workspace", () => ({
+  Workspace: { get: jest.fn(), where: jest.fn() },
+}));
+jest.mock("../../../models/workspaceThread", () => ({
+  WorkspaceThread: { get: jest.fn() },
+}));
+jest.mock("../../../models/workspaceChats", () => ({ WorkspaceChats: {} }));
+jest.mock("../../../utils/helpers", () => ({
+  getBaseLLMProviderModel: jest.fn(),
+}));
+jest.mock("../../../utils/files", () => ({
+  hotdirPath: require("node:os").tmpdir(),
+}));
+jest.mock("../../../utils/collectorApi", () => ({
+  CollectorApi: jest
+    .fn()
+    .mockImplementation(() => ({ parseDocument: mockParse })),
+}));
+const mockRun = jest.fn(),
+  mockAbort = jest.fn(),
+  mockParse = jest.fn();
 
 const {
   createLarkChannel,
@@ -31,6 +57,311 @@ const config = {
   app_id: "cli_1",
   app_secret: "plaintext-secret",
 };
+function message(overrides = {}) {
+  return {
+    messageId: "om_1",
+    chatId: "oc_1",
+    chatType: "p2p",
+    senderId: "ou_user",
+    content: "Hello",
+    rawContentType: "text",
+    resources: [],
+    mentions: [],
+    mentionAll: false,
+    mentionedBot: false,
+    createTime: Date.now(),
+    ...overrides,
+  };
+}
+function approvedConfig() {
+  return {
+    ...config,
+    default_workspace: "general",
+    approved_users: [
+      {
+        open_id: "ou_user",
+        name: "User",
+        active_workspace: "research",
+        active_thread: "paper",
+      },
+    ],
+  };
+}
+
+test("unapproved DM gets a pairing code without state, attachment, or model work", async () => {
+  const {
+    ChannelStateStore,
+  } = require("../../../utils/externalChannels/state");
+  const stateRead = jest.spyOn(ChannelStateStore.prototype, "get");
+  await service.start(config);
+  await handlers.message(
+    message({
+      resources: [{ type: "file", fileKey: "file_1", fileName: "a.txt" }],
+    })
+  );
+  expect(channel.send.mock.calls[0][1].text).toMatch(/\b\d{6}\b/);
+  expect(channel.downloadResource).not.toHaveBeenCalled();
+  expect(stateRead).not.toHaveBeenCalled();
+  expect(mockRun).not.toHaveBeenCalled();
+});
+
+test("unapproved group mention never creates or exposes a pairing code", async () => {
+  const { PairingAccess } = require("../../../utils/externalChannels/access");
+  const pairing = jest.spyOn(PairingAccess.prototype, "request");
+  await service.start(config);
+  await handlers.message(message({ chatType: "group", mentionedBot: true }));
+  expect(channel.send.mock.calls[0][1].text).toMatch(/direct/i);
+  expect(channel.send.mock.calls[0][1].text).not.toMatch(/\d{6}/);
+  expect(pairing).not.toHaveBeenCalled();
+  expect(mockRun).not.toHaveBeenCalled();
+});
+
+test("approved direct sender reaches shared runner with saved workspace/thread and conversation key", async () => {
+  await service.start(approvedConfig());
+  await handlers.message(message());
+  expect(mockRun).toHaveBeenCalledWith(
+    expect.objectContaining({
+      conversationId: "lark:oc_1:ou_user",
+      workspaceSlug: "research",
+      threadSlug: "paper",
+      message: "Hello",
+      attachments: [],
+    }),
+    expect.objectContaining({ requestToolApproval: expect.any(Function) })
+  );
+});
+
+test("group strips only bot mention placeholders and uses source message for replies", async () => {
+  await service.start(approvedConfig());
+  mockRun.mockImplementation(async (_, transport) =>
+    transport.status("Working")
+  );
+  await handlers.message(
+    message({
+      chatType: "group",
+      mentionedBot: true,
+      content: "@_user_1 Hello @Alice",
+      mentions: [
+        { key: "@_user_1", openId: "ou_bot", isBot: true, name: "Bot" },
+        { key: "@_user_2", openId: "ou_alice", name: "Alice" },
+      ],
+    })
+  );
+  expect(mockRun.mock.calls[0][0].message).toBe("Hello @Alice");
+  expect(channel.send).toHaveBeenCalledWith(
+    "oc_1",
+    { markdown: "Working" },
+    { replyTo: "om_1" }
+  );
+});
+
+test.each([
+  { chatType: "group", mentionedBot: false },
+  { senderId: "ou_bot" },
+  { senderId: "cli_other_bot" },
+  { createTime: Date.now() - 600001 },
+  { createTime: 0 },
+  { chatType: "unknown" },
+])("ignores inadmissible message %j", async (overrides) => {
+  await service.start(approvedConfig());
+  await handlers.message(message(overrides));
+  expect(mockRun).not.toHaveBeenCalled();
+  expect(channel.send).not.toHaveBeenCalled();
+});
+
+test("duplicate messages execute once", async () => {
+  await service.start(approvedConfig());
+  const input = message();
+  await Promise.all([handlers.message(input), handlers.message(input)]);
+  expect(mockRun).toHaveBeenCalledTimes(1);
+});
+
+test("commands send help without model invocation", async () => {
+  await service.start(approvedConfig());
+  await handlers.message(message({ content: "/help" }));
+  expect(channel.send.mock.calls[0][1].text).toContain("/workspace");
+  expect(mockRun).not.toHaveBeenCalled();
+});
+
+test.each(["audio", "media"])(
+  "explicitly rejects %s messages with supported type guidance",
+  async (rawContentType) => {
+    await service.start(approvedConfig());
+    await handlers.message(message({ rawContentType }));
+    expect(channel.send.mock.calls[0][1].text).toMatch(
+      /Voice, video.*not supported/
+    );
+    expect(channel.downloadResource).not.toHaveBeenCalled();
+    expect(mockRun).not.toHaveBeenCalled();
+  }
+);
+
+test("same conversation is serial while different conversations run concurrently", async () => {
+  await service.start(approvedConfig());
+  const first = deferred(),
+    entered = deferred();
+  mockRun.mockImplementation(async (payload) => {
+    if (payload.message === "first") {
+      entered.resolve();
+      await first.promise;
+    }
+  });
+  const a = handlers.message(message({ content: "first" }));
+  await entered.promise;
+  const b = handlers.message(message({ messageId: "om_2", content: "second" }));
+  await handlers.message(
+    message({ messageId: "om_3", chatId: "oc_2", content: "other" })
+  );
+  expect(mockRun.mock.calls.map(([payload]) => payload.message)).toEqual([
+    "first",
+    "other",
+  ]);
+  first.resolve();
+  await Promise.all([a, b]);
+  expect(mockRun.mock.calls.map(([payload]) => payload.message)).toEqual([
+    "first",
+    "other",
+    "second",
+  ]);
+});
+
+test("documents go through collector and become prompt text before model work", async () => {
+  const fs = require("node:fs");
+  let scopedFile;
+  mockParse.mockImplementation(async (_, options) => {
+    scopedFile = options.absolutePath;
+    expect(fs.existsSync(scopedFile)).toBe(true);
+    return { success: true, documents: [{ pageContent: "parsed text" }] };
+  });
+  await service.start(approvedConfig());
+  await handlers.message(
+    message({
+      resources: [{ type: "file", fileKey: "file_1", fileName: "notes.md" }],
+    })
+  );
+  expect(mockRun.mock.calls[0][0]).toMatchObject({
+    message: expect.stringContaining("parsed text"),
+    attachments: [],
+  });
+  expect(fs.existsSync(scopedFile)).toBe(false);
+});
+
+test("attachment setup failures cannot expose internal paths to chat", async () => {
+  const files = require("../../../utils/files");
+  const original = files.hotdirPath;
+  Object.defineProperty(files, "hotdirPath", {
+    configurable: true,
+    get: () => {
+      throw new Error("/secret/internal/path raw body");
+    },
+  });
+  try {
+    await service.start(approvedConfig());
+    await handlers.message(
+      message({
+        resources: [{ type: "file", fileKey: "file_1", fileName: "a.txt" }],
+      })
+    );
+    expect(JSON.stringify(channel.send.mock.calls)).not.toContain(
+      "/secret/internal/path"
+    );
+  } finally {
+    Object.defineProperty(files, "hotdirPath", {
+      configurable: true,
+      value: original,
+    });
+  }
+});
+
+function click(requestId, extra = {}) {
+  return {
+    messageId: "om_reply",
+    chatId: "oc_1",
+    operator: { openId: "ou_user" },
+    action: { tag: "button", value: { requestId, action: "approve" } },
+    ...extra,
+  };
+}
+
+test("same-chat card action resolves only the matching approved sender's pending invocation once", async () => {
+  const started = deferred();
+  let approval;
+  mockRun.mockImplementation(async (_, transport) => {
+    const pending = transport.requestToolApproval({
+      requestId: "worker-request",
+      skillName: "tool",
+      payload: "secret",
+    });
+    started.resolve();
+    approval = await pending;
+  });
+  await service.start(approvedConfig());
+  const turn = handlers.message(message());
+  await started.promise;
+  const card = channel.send.mock.calls[0][1].card;
+  const requestId = card.body.elements[1].actions[0].value.requestId;
+  expect(requestId).toMatch(/^[0-9a-f-]{36}$/);
+  expect(requestId).not.toBe("worker-request");
+  await handlers.cardAction(
+    click(requestId, { operator: { openId: "ou_other" } })
+  );
+  await handlers.cardAction(click(requestId, { chatId: "oc_other" }));
+  await handlers.cardAction(click("made-up"));
+  await handlers.cardAction(
+    click(requestId, {
+      action: {
+        tag: "button",
+        value: { requestId, action: "yes", raw: "secret" },
+      },
+    })
+  );
+  expect(approval).toBeUndefined();
+  await handlers.cardAction(click(requestId));
+  await turn;
+  expect(approval).toEqual({ approved: true });
+  await handlers.cardAction(
+    click(requestId, {
+      action: { tag: "button", value: { requestId, action: "deny" } },
+    })
+  );
+  expect(approval).toEqual({ approved: true });
+  expect(
+    JSON.stringify([channel.send.mock.calls, console.warn.mock.calls])
+  ).not.toContain("secret");
+});
+
+test.each(["deny", "expire", "stop"])(
+  "pending approval resolves safely on %s",
+  async (action) => {
+    const started = deferred();
+    let approval;
+    mockRun.mockImplementation(async (_, transport) => {
+      const promise = transport.requestToolApproval({
+        requestId: "worker-request",
+        timeoutMs: action === "expire" ? 1 : 10000,
+      });
+      started.resolve();
+      approval = await promise;
+    });
+    await service.start(approvedConfig());
+    const turn = handlers.message(message());
+    await started.promise;
+    const requestId =
+      channel.send.mock.calls[0][1].card.body.elements[1].actions[0].value
+        .requestId;
+    if (action === "deny")
+      await handlers.cardAction(
+        click(requestId, {
+          action: { tag: "button", value: { requestId, action: "deny" } },
+        })
+      );
+    if (action === "stop") await service.stop();
+    await turn;
+    expect(approval).toMatchObject({ approved: false });
+    if (action === "stop")
+      expect(mockAbort).toHaveBeenCalledWith("lark:oc_1:ou_user");
+  }
+);
 let service, channel, handlers, unsubscribe;
 function deferred() {
   let resolve, reject;
@@ -43,6 +374,10 @@ function deferred() {
 
 beforeEach(() => {
   jest.clearAllMocks();
+  mockRun.mockReset().mockResolvedValue();
+  ExternalCommunicationConnector.updateConfig.mockResolvedValue({
+    error: null,
+  });
   service = new LarkChannelService();
   handlers = {};
   unsubscribe = jest.fn();
@@ -55,6 +390,8 @@ beforeEach(() => {
     }),
     botIdentity: { openId: "ou_bot", name: "Bot" },
     rawWsClient: { close: jest.fn() },
+    send: jest.fn().mockResolvedValue({ messageId: "om_reply" }),
+    downloadResource: jest.fn().mockResolvedValue(Buffer.from("notes")),
   };
   createLarkChannel.mockReturnValue(channel);
   SystemSettings.isMultiUserMode.mockResolvedValue(false);
@@ -86,10 +423,16 @@ test("shares a singleton and sends plaintext credentials with the official chann
     })
   );
   expect(Object.keys(handlers).sort()).toEqual([
+    "cardAction",
     "error",
+    "message",
     "reconnected",
     "reconnecting",
   ]);
+  expect(createLarkChannel.mock.calls[0][0]).toMatchObject({
+    safety: { chatQueue: { enabled: false } },
+    includeRawEvent: false,
+  });
   expect(service.status).toMatchObject({
     connected: true,
     connection_state: "connected",
@@ -469,4 +812,114 @@ test("boot does not re-record a connection failure already reported by start", a
     last_error: { category: "permission_denied" },
   });
   expect(console.warn).toHaveBeenCalledTimes(1);
+});
+
+test("admin pairing approves immutable open ID, persists, and returns only safe copies", async () => {
+  await service.start({ ...config, approved_users: [] });
+  await handlers.message(message());
+  const pending = service.listPendingUsers();
+  expect(pending[0]).toMatchObject({
+    userId: "ou_user",
+    code: expect.stringMatching(/^\d{6}$/),
+  });
+  pending[0].code = "tampered";
+  expect(service.listPendingUsers()[0].code).not.toBe("tampered");
+  await service.approveUser("ou_user");
+  expect(ExternalCommunicationConnector.updateConfig).toHaveBeenCalledWith(
+    "lark",
+    { approved_users: [expect.objectContaining({ open_id: "ou_user" })] }
+  );
+  expect(service.listPendingUsers()).toEqual([]);
+  const users = service.listApprovedUsers();
+  expect(users[0].open_id).toBe("ou_user");
+  users[0].open_id = "tampered";
+  expect(service.listApprovedUsers()[0].open_id).toBe("ou_user");
+  expect(JSON.stringify(users)).not.toContain("plaintext-secret");
+});
+
+test("admin operations fail safely for missing, expired, denied, and disconnected users", async () => {
+  expect(await service.approveUser("ou_user")).toEqual({
+    error: "Lark is not connected.",
+  });
+  expect(service.listPendingUsers()).toEqual([]);
+  expect(service.listApprovedUsers()).toEqual([]);
+  await service.start({ ...config, approved_users: [] });
+  expect(await service.approveUser("ou_missing")).toEqual({
+    error: "Pairing request expired",
+  });
+  await handlers.message(message());
+  await service.denyUser("ou_user");
+  expect(service.listPendingUsers()).toEqual([]);
+  expect(await service.approveUser("ou_user")).toEqual({
+    error: "Pairing request expired",
+  });
+  expect(await service.revokeUser("ou_missing")).toEqual({
+    error: "User is not approved.",
+  });
+});
+
+test("revoke immediately cancels model/approval and denies queued messages while persistence waits", async () => {
+  const started = deferred(),
+    saved = deferred();
+  let approval;
+  mockRun.mockImplementation(async (_, transport) => {
+    const pending = transport.requestToolApproval({
+      requestId: "worker-request",
+    });
+    started.resolve();
+    approval = await pending;
+  });
+  await service.start(approvedConfig());
+  const first = handlers.message(message());
+  await started.promise;
+  const queued = handlers.message(message({ messageId: "om_next" }));
+  ExternalCommunicationConnector.updateConfig.mockReturnValue(saved.promise);
+  const revoking = service.revokeUser("ou_user");
+  await first;
+  await queued;
+  expect(mockAbort).toHaveBeenCalledWith("lark:oc_1:ou_user");
+  expect(approval).toMatchObject({ approved: false });
+  expect(mockRun).toHaveBeenCalledTimes(1);
+  expect(service.listApprovedUsers()).toEqual([]);
+  saved.resolve({ error: null });
+  await revoking;
+});
+
+test("admin persistence errors remain sanitized and failed revoke stays denied", async () => {
+  await service.start(approvedConfig());
+  ExternalCommunicationConnector.updateConfig.mockRejectedValue(
+    new Error("secret database path")
+  );
+  expect(await service.revokeUser("ou_user")).toEqual({
+    error: "Could not update Lark access.",
+  });
+  expect(service.listApprovedUsers()).toEqual([]);
+  await handlers.message(message());
+  expect(mockRun).not.toHaveBeenCalled();
+});
+
+test("concurrent admin writes cannot restore a revoked user from an old approval snapshot", async () => {
+  await service.start(approvedConfig());
+  await handlers.message(message({ senderId: "ou_new" }));
+  const writing = deferred(),
+    firstWrite = deferred();
+  ExternalCommunicationConnector.updateConfig.mockImplementationOnce(
+    async () => {
+      writing.resolve();
+      return firstWrite.promise;
+    }
+  );
+  const approving = service.approveUser("ou_new");
+  await writing.promise;
+  const revoking = service.revokeUser("ou_user");
+  firstWrite.resolve({ error: null });
+  await Promise.all([approving, revoking]);
+  expect(service.listApprovedUsers().map((user) => user.open_id)).toEqual([
+    "ou_new",
+  ]);
+  const lastWrite =
+    ExternalCommunicationConnector.updateConfig.mock.calls.at(-1)[1];
+  expect(lastWrite.approved_users.map((user) => user.open_id)).toEqual([
+    "ou_new",
+  ]);
 });

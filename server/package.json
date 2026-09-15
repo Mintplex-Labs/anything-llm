@@ -62,6 +62,7 @@
     "express": "^4.21.2",
     "extract-json-from-string": "^1.0.1",
     "fast-levenshtein": "^3.0.0",
+    "file-type": "3.9.0",
     "fix-path": "^4.0.0",
     "graphql": "^16.7.1",
     "ip": "^2.0.1",
