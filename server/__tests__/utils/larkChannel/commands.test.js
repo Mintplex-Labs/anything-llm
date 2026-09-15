@@ -79,7 +79,11 @@ describe("handleLarkCommand", () => {
     getBaseLLMProviderModel.mockReturnValue("default-model");
   });
 
-  const handle = (command, args = "") =>
+  const handle = (
+    command,
+    args = "",
+    message = { chatId: "oc_1", messageId: "om_1", chatType: "p2p" }
+  ) =>
     handleLarkCommand({
       command,
       args,
@@ -87,7 +91,33 @@ describe("handleLarkCommand", () => {
       chatId: "oc_1",
       stateStore,
       channel,
+      message,
     });
+
+  test.each([
+    ["workspace", ""],
+    ["thread", ""],
+    ["new", "New thread"],
+    ["reset", ""],
+    ["status", ""],
+    ["help", ""],
+  ])("replies to the source group message for /%s", async (command, args) => {
+    await handle(command, args, {
+      chatId: "oc_1",
+      messageId: "om_source",
+      chatType: "group",
+    });
+
+    expect(channel.send.mock.calls.at(-1)[2]).toEqual({
+      replyTo: "om_source",
+    });
+  });
+
+  test("uses an explicit non-reply option for direct commands", async () => {
+    await handle("help");
+
+    expect(channel.send.mock.calls.at(-1)[2]).toEqual({});
+  });
 
   test("rejects users missing from channel state before reading workspace data", async () => {
     stateStore.get.mockReturnValue(null);
@@ -96,24 +126,30 @@ describe("handleLarkCommand", () => {
 
     expect(Workspace.where).not.toHaveBeenCalled();
     expect(Workspace.get).not.toHaveBeenCalled();
-    expect(channel.send).toHaveBeenCalledWith("oc_1", {
-      text: "Access denied.",
-    });
+    expect(channel.send).toHaveBeenCalledWith(
+      "oc_1",
+      { text: "Access denied." },
+      {}
+    );
   });
 
   test("lists numbered workspaces with slug-based usage", async () => {
     await handle("workspace");
 
     expect(Workspace.where).toHaveBeenCalledWith({});
-    expect(channel.send).toHaveBeenCalledWith("oc_1", {
-      text: [
-        "Available workspaces:",
-        "1. General (`general`)",
-        "2. Research (`research`)",
-        "",
-        "Usage: /workspace <slug>",
-      ].join("\n"),
-    });
+    expect(channel.send).toHaveBeenCalledWith(
+      "oc_1",
+      {
+        text: [
+          "Available workspaces:",
+          "1. General (`general`)",
+          "2. Research (`research`)",
+          "",
+          "Usage: /workspace <slug>",
+        ].join("\n"),
+      },
+      {}
+    );
   });
 
   test("selects an exact workspace slug and clears the active thread", async () => {
@@ -130,9 +166,11 @@ describe("handleLarkCommand", () => {
       workspaceSlug: "research",
       threadSlug: null,
     });
-    expect(channel.send).toHaveBeenCalledWith("oc_1", {
-      text: 'Workspace set to "Research".',
-    });
+    expect(channel.send).toHaveBeenCalledWith(
+      "oc_1",
+      { text: 'Workspace set to "Research".' },
+      {}
+    );
   });
 
   test("turns state persistence failures into a generic command error", async () => {
@@ -147,9 +185,11 @@ describe("handleLarkCommand", () => {
 
     await expect(handle("workspace", "research")).resolves.toBeDefined();
 
-    expect(channel.send).toHaveBeenCalledWith("oc_1", {
-      text: "Unable to update channel state.",
-    });
+    expect(channel.send).toHaveBeenCalledWith(
+      "oc_1",
+      { text: "Unable to update channel state." },
+      {}
+    );
     expect(JSON.stringify(channel.send.mock.calls)).not.toContain(
       "private configuration"
     );
@@ -161,23 +201,29 @@ describe("handleLarkCommand", () => {
     await handle("workspace", "private-workspace");
 
     expect(stateStore.set).not.toHaveBeenCalled();
-    expect(channel.send).toHaveBeenCalledWith("oc_1", {
-      text: "Workspace not found.",
-    });
+    expect(channel.send).toHaveBeenCalledWith(
+      "oc_1",
+      { text: "Workspace not found." },
+      {}
+    );
   });
 
   test("lists only threads in the active workspace", async () => {
     await handle("thread");
 
     expect(WorkspaceThread.where).toHaveBeenCalledWith({ workspace_id: 1 });
-    expect(channel.send).toHaveBeenCalledWith("oc_1", {
-      text: [
-        'Threads in "General":',
-        "1. Paper (`paper`)",
-        "",
-        "Usage: /thread <slug>",
-      ].join("\n"),
-    });
+    expect(channel.send).toHaveBeenCalledWith(
+      "oc_1",
+      {
+        text: [
+          'Threads in "General":',
+          "1. Paper (`paper`)",
+          "",
+          "Usage: /thread <slug>",
+        ].join("\n"),
+      },
+      {}
+    );
   });
 
   test("selects a thread only when its exact slug belongs to the active workspace", async () => {
@@ -203,9 +249,11 @@ describe("handleLarkCommand", () => {
     expect(stateStore.set).toHaveBeenCalledWith("ou_approved", {
       threadSlug: "quarterly-notes",
     });
-    expect(channel.send).toHaveBeenCalledWith("oc_1", {
-      text: 'New thread "Quarterly notes" created and selected.',
-    });
+    expect(channel.send).toHaveBeenCalledWith(
+      "oc_1",
+      { text: 'New thread "Quarterly notes" created and selected.' },
+      {}
+    );
   });
 
   test("resets only the active workspace and active scoped thread history", async () => {
@@ -229,17 +277,21 @@ describe("handleLarkCommand", () => {
     await handle("reset");
 
     expect(WorkspaceChats.markThreadHistoryInvalidV2).not.toHaveBeenCalled();
-    expect(channel.send).toHaveBeenCalledWith("oc_1", {
-      text: "Thread not found.",
-    });
+    expect(channel.send).toHaveBeenCalledWith(
+      "oc_1",
+      { text: "Thread not found." },
+      {}
+    );
   });
 
   test("reports workspace, thread, and the resolved model", async () => {
     await handle("status");
 
-    expect(channel.send).toHaveBeenCalledWith("oc_1", {
-      text: "Workspace: General\nThread: Paper\nModel: gpt-4o",
-    });
+    expect(channel.send).toHaveBeenCalledWith(
+      "oc_1",
+      { text: "Workspace: General\nThread: Paper\nModel: gpt-4o" },
+      {}
+    );
   });
 
   test("falls back to the provider default when status has no selected model", async () => {
@@ -255,9 +307,11 @@ describe("handleLarkCommand", () => {
     expect(getBaseLLMProviderModel).toHaveBeenCalledWith({
       provider: "openai",
     });
-    expect(channel.send).toHaveBeenCalledWith("oc_1", {
-      text: "Workspace: General\nThread: Paper\nModel: default-model",
-    });
+    expect(channel.send).toHaveBeenCalledWith(
+      "oc_1",
+      { text: "Workspace: General\nThread: Paper\nModel: default-model" },
+      {}
+    );
   });
 
   test("help lists all supported text commands", async () => {

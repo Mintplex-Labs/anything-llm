@@ -259,6 +259,31 @@ describe("chat worker protocol", () => {
     expect(workers[0].kill).toHaveBeenCalledWith("SIGTERM");
     expect(bree.remove).toHaveBeenCalledTimes(1);
   });
+  test("abort awaits an optional transport cancellation before cleanup", async () => {
+    const transport = createBufferedTransport();
+    let finishCancellation;
+    const cancellationFinished = new Promise((resolve) => {
+      finishCancellation = resolve;
+    });
+    transport.cancel = jest.fn(() => cancellationFinished);
+    let settled = false;
+    const run = runner.run(payload, transport).catch((error) => {
+      settled = true;
+      return error;
+    });
+    await tick();
+    workers[0].emit("message", { type: "ready" });
+    await tick();
+
+    expect(runner.abort(payload.conversationId)).toBe(true);
+    await tick();
+    expect(transport.cancel).toHaveBeenCalledTimes(1);
+    expect(settled).toBe(false);
+
+    finishCancellation();
+    expect((await run).name).toBe("AbortError");
+    expect(bree.remove).toHaveBeenCalledTimes(1);
+  });
   test("unexpected exit reports failure and removes the job", async () => {
     const transport = createBufferedTransport();
     const run = runner.run(payload, transport);

@@ -6,25 +6,62 @@ const {
 const {
   assertChannelTransport,
 } = require("../../../utils/externalChannels/chat/transport");
+const { createLarkChannel } = require("@larksuiteoapi/node-sdk");
+
+const quietLogger = {
+  error() {},
+  warn() {},
+  info() {},
+  debug() {},
+  trace() {},
+};
+
+function actualSdkStreamChannel({ failUpdate } = {}) {
+  const snapshots = [];
+  const channel = createLarkChannel({
+    appId: "cli_test",
+    appSecret: "test-secret",
+    logger: quietLogger,
+    outbound: {
+      streamThrottleMs: 0,
+      streamThrottleChars: 1,
+      streamInitialText: "",
+    },
+  });
+  Object.assign(channel.sender, {
+    createCardInstance: jest.fn(async () => "card_1"),
+    sendCardByReference: jest.fn(async () => "om_stream"),
+    updateCardElementContent: jest.fn(async (_cardId, _elementId, content) => {
+      if (failUpdate) throw failUpdate;
+      snapshots.push(content);
+    }),
+    finishStreamingCard: jest.fn(async () => {}),
+    sendOneWithFallback: jest.fn(async () => "om_stream"),
+    patchCard: jest.fn(async (_messageId, card) => {
+      if (failUpdate) throw failUpdate;
+      snapshots.push(card.body.elements[0].content);
+    }),
+  });
+  channel.send = jest.fn().mockResolvedValue({ messageId: "om_fallback" });
+  return { channel, snapshots };
+}
 
 function fakeStreamingChannel() {
-  const chunks = [];
+  const snapshots = [];
   const controller = {
-    append: jest.fn(async (text) => chunks.push(text)),
-    setContent: jest.fn(async (text) => {
-      chunks.length = 0;
-      chunks.push(text);
-    }),
+    update: jest.fn(async (card) =>
+      snapshots.push(card.body.elements[0].content)
+    ),
   };
   const channel = {
     send: jest.fn().mockResolvedValue({ messageId: "om_send" }),
-    stream: jest.fn(async (_chatId, input) => input.markdown(controller)),
+    stream: jest.fn(async (_chatId, input) => input.card.producer(controller)),
   };
-  return { channel, chunks, controller };
+  return { channel, snapshots, controller };
 }
 
 test("streams ordered chunks and completes one reply to the source group message", async () => {
-  const { channel, chunks, controller } = fakeStreamingChannel();
+  const { channel, snapshots, controller } = fakeStreamingChannel();
   const transport = createLarkTransport({
     channel,
     message: {
@@ -42,14 +79,85 @@ test("streams ordered chunks and completes one reply to the source group message
   expect(channel.stream).toHaveBeenCalledTimes(1);
   expect(channel.stream).toHaveBeenCalledWith(
     "oc_1",
-    { markdown: expect.any(Function) },
+    {
+      card: {
+        initial: expect.any(Object),
+        producer: expect.any(Function),
+      },
+    },
     { replyTo: "om_1" }
   );
-  expect(controller.append.mock.calls.map(([text]) => text)).toEqual([
-    "hello ",
-    "world",
-  ]);
-  expect(chunks.join("")).toBe("hello world");
+  expect(
+    controller.update.mock.calls.map(([card]) => card.body.elements[0].content)
+  ).toEqual(["hello ", "hello world"]);
+  expect(snapshots.at(-1)).toBe("hello world");
+});
+
+test("preserves repeated and overlapping deltas through the actual SDK stream", async () => {
+  const { channel, snapshots } = actualSdkStreamChannel();
+  const transport = createLarkTransport({
+    channel,
+    message: { chatId: "oc_1", messageId: "om_1", chatType: "group" },
+  });
+
+  await transport.start();
+  await transport.append("ha");
+  await transport.append("ha");
+  await transport.append("ab");
+  await transport.append("bc");
+  await transport.complete({ text: "hahaabbc" });
+
+  expect(snapshots.at(-1)).toBe("hahaabbc");
+});
+
+test("falls back after an actual SDK card update failure following card creation", async () => {
+  const failure = {
+    code: "permission_denied",
+    message: "secret update response",
+    response: { data: "raw card body" },
+  };
+  const { channel } = actualSdkStreamChannel({ failUpdate: failure });
+  const transport = createLarkTransport({
+    channel,
+    message: { chatId: "oc_1", messageId: "om_1", chatType: "group" },
+  });
+
+  await transport.start();
+  await transport.append("complete answer");
+  await transport.complete({ text: "complete answer" });
+
+  expect(channel.sender.sendOneWithFallback).toHaveBeenCalledTimes(1);
+  expect(channel.send).toHaveBeenCalledWith(
+    "oc_1",
+    { markdown: "complete answer" },
+    { replyTo: "om_1" }
+  );
+  expect(JSON.stringify(channel.send.mock.calls)).not.toMatch(
+    /secret update response|raw card body/
+  );
+});
+
+test("cancel closes an active SDK stream and suppresses later transport effects", async () => {
+  const { channel, snapshots } = actualSdkStreamChannel();
+  const transport = createLarkTransport({
+    channel,
+    message: { chatId: "oc_1", messageId: "om_1", chatType: "group" },
+  });
+
+  await transport.start();
+  await transport.append("partial answer");
+  await transport.cancel();
+  expect(snapshots.at(-1)).toBe("partial answer");
+
+  const updateCount = channel.sender.patchCard.mock.calls.length;
+  const sendCount = channel.send.mock.calls.length;
+  await transport.append("late chunk");
+  await transport.status("late status");
+  await transport.artifact({ filename: "late.txt" });
+  await transport.complete({ text: "late completion" });
+
+  expect(channel.sender.patchCard).toHaveBeenCalledTimes(updateCount);
+  expect(channel.send).toHaveBeenCalledTimes(sendCount);
 });
 
 test("implements the complete shared channel transport contract", () => {
@@ -91,7 +199,7 @@ test("delivers status and safe artifact labels as readable fallback messages", a
 });
 
 test("finalizes an active stream with the public failure message", async () => {
-  const { channel, chunks } = fakeStreamingChannel();
+  const { channel, snapshots } = fakeStreamingChannel();
   const transport = createLarkTransport({
     channel,
     message: { chatId: "oc_1", messageId: "om_1", chatType: "group" },
@@ -100,7 +208,7 @@ test("finalizes an active stream with the public failure message", async () => {
   await transport.start();
   await transport.fail("Sorry, something went wrong.");
 
-  expect(chunks).toEqual(["Sorry, something went wrong."]);
+  expect(snapshots).toEqual(["Sorry, something went wrong."]);
 });
 
 test("does not turn a direct-message response into a reply thread", async () => {
@@ -117,7 +225,7 @@ test("does not turn a direct-message response into a reply thread", async () => 
 });
 
 test("replaces streamed draft text with a differing final agent response", async () => {
-  const { channel, chunks, controller } = fakeStreamingChannel();
+  const { channel, snapshots, controller } = fakeStreamingChannel();
   const transport = createLarkTransport({
     channel,
     message: { chatId: "oc_1", messageId: "om_1", chatType: "group" },
@@ -127,8 +235,10 @@ test("replaces streamed draft text with a differing final agent response", async
   await transport.append("draft");
   await transport.complete({ text: "final answer", agent: true });
 
-  expect(controller.setContent).toHaveBeenCalledWith("final answer");
-  expect(chunks).toEqual(["final answer"]);
+  expect(controller.update.mock.calls.at(-1)[0].body.elements[0].content).toBe(
+    "final answer"
+  );
+  expect(snapshots.at(-1)).toBe("final answer");
 });
 
 test("splits fallback Markdown on readable boundaries without losing content", () => {
@@ -144,6 +254,17 @@ test("splits fallback Markdown on readable boundaries without losing content", (
   );
   expect(chunks.join("")).toBe(text);
   expect(chunks[0].endsWith("\n\n")).toBe(true);
+});
+
+test("never lets a selected newline separator exceed the fallback limit", () => {
+  const text = `${"a".repeat(LARK_MESSAGE_LIMIT - 1)}\n\nb`;
+
+  const chunks = splitLarkMarkdown(text);
+
+  expect(chunks.every((chunk) => chunk.length <= LARK_MESSAGE_LIMIT)).toBe(
+    true
+  );
+  expect(chunks.join("")).toBe(text);
 });
 
 test("sends bounded Markdown sequentially when streaming is unavailable", async () => {

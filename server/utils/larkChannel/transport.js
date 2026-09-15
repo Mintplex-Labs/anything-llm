@@ -8,14 +8,23 @@ const APPROVAL_UNAVAILABLE =
   "Tool approval is unavailable in Lark. Retry in the web UI.";
 const STREAM_FALLBACK_ERRORS = new Set(["permission_denied", "format_error"]);
 
+function streamingCard(text) {
+  return {
+    schema: "2.0",
+    body: {
+      elements: [{ tag: "markdown", content: text || "Thinking..." }],
+    },
+  };
+}
+
 function splitLarkMarkdown(text, limit = LARK_MESSAGE_LIMIT) {
   const chunks = [];
   let remaining = String(text || "");
   while (remaining.length > limit) {
-    let splitAt = remaining.lastIndexOf("\n\n", limit);
+    let splitAt = remaining.lastIndexOf("\n\n", limit - 2);
     if (splitAt > 0) splitAt += 2;
     else {
-      splitAt = remaining.lastIndexOf("\n", limit);
+      splitAt = remaining.lastIndexOf("\n", limit - 1);
       if (splitAt > 0) splitAt += 1;
       else splitAt = limit;
     }
@@ -115,8 +124,11 @@ function createLarkTransport({ channel, message, onToolApproval }) {
       : {};
   let started = false;
   let streamPromise = null;
+  let streamOpened = false;
   let accumulated = "";
   let completionPromise = null;
+  let cancelled = false;
+  let cancellationPromise = null;
 
   async function sendBounded(text) {
     for (const chunk of splitLarkMarkdown(text)) {
@@ -135,7 +147,7 @@ function createLarkTransport({ channel, message, onToolApproval }) {
   }
 
   async function start() {
-    if (started) return;
+    if (started || cancelled) return;
     started = true;
     if (typeof channel.stream !== "function") return;
     try {
@@ -143,17 +155,14 @@ function createLarkTransport({ channel, message, onToolApproval }) {
         channel.stream(
           message.chatId,
           {
-            markdown: async (controller) => {
-              for await (const event of queue.events()) {
-                if (
-                  event.type === "set" &&
-                  typeof controller.setContent === "function"
-                ) {
-                  await controller.setContent(event.text);
-                } else {
-                  await controller.append(event.text);
+            card: {
+              initial: streamingCard(""),
+              producer: async (controller) => {
+                streamOpened = true;
+                for await (const event of queue.events()) {
+                  await controller.update(streamingCard(event.text));
                 }
-              }
+              },
             },
           },
           replyOptions
@@ -168,39 +177,44 @@ function createLarkTransport({ channel, message, onToolApproval }) {
   }
 
   async function append(text) {
+    if (cancelled) return;
     await start();
+    if (cancelled) return;
     const chunk = String(text || "");
     if (!chunk) return;
     accumulated += chunk;
-    if (streamPromise) queue.push({ type: "append", text: chunk });
+    if (streamPromise) queue.push({ text: accumulated });
   }
 
   async function finish(result = {}) {
+    if (cancelled) return cancellationPromise;
     await start();
+    if (cancelled) return cancellationPromise;
     const finalText =
       typeof result.text === "string" ? result.text : accumulated;
     if (!streamPromise) return sendBounded(finalText);
 
-    if (finalText && !accumulated)
-      queue.push({ type: "append", text: finalText });
-    else if (finalText !== accumulated)
-      queue.push({ type: "set", text: finalText });
+    if (finalText && (!accumulated || finalText !== accumulated))
+      queue.push({ text: finalText });
     queue.close();
     try {
       await streamPromise;
     } catch (error) {
       const { category } = sanitizedError(error);
-      if (STREAM_FALLBACK_ERRORS.has(category)) return sendBounded(finalText);
+      if (streamOpened || STREAM_FALLBACK_ERRORS.has(category))
+        return sendBounded(finalText);
       throw safeTransportError(error);
     }
   }
 
   async function complete(result) {
+    if (cancelled) return cancellationPromise;
     completionPromise ||= finish(result);
     return completionPromise;
   }
 
   async function fail(publicMessage) {
+    if (cancelled) return cancellationPromise;
     const text = String(publicMessage || "Sorry, something went wrong.");
     if (completionPromise) return sendBounded(text);
     try {
@@ -212,6 +226,7 @@ function createLarkTransport({ channel, message, onToolApproval }) {
   }
 
   async function requestToolApproval(request) {
+    if (cancelled) return { approved: false, message: APPROVAL_UNAVAILABLE };
     if (typeof onToolApproval !== "function") {
       await sendBounded(APPROVAL_UNAVAILABLE);
       return { approved: false, message: APPROVAL_UNAVAILABLE };
@@ -236,18 +251,36 @@ function createLarkTransport({ channel, message, onToolApproval }) {
     }
   }
 
+  async function cancel() {
+    if (cancellationPromise) return cancellationPromise;
+    cancelled = true;
+    queue.close();
+    cancellationPromise = (async () => {
+      if (!streamPromise) return;
+      try {
+        await streamPromise;
+      } catch {
+        // Cancellation is terminal and must not trigger replacement output.
+      }
+    })();
+    return cancellationPromise;
+  }
+
   return {
     start,
     append,
     async status(text) {
+      if (cancelled) return;
       await sendBounded(String(text || ""));
     },
     async artifact(file) {
+      if (cancelled) return;
       await sendBounded(safeArtifactLabel(file));
     },
     complete,
     fail,
     requestToolApproval,
+    cancel,
   };
 }
 

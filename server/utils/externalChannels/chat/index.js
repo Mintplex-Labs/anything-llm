@@ -26,6 +26,7 @@ class ExternalChannelChatRunner {
     let worker,
       chain = Promise.resolve(),
       delivery = Promise.resolve(),
+      transportCancellation = Promise.resolve(),
       completed = false,
       failed = false,
       workerExited = false;
@@ -44,7 +45,11 @@ class ExternalChannelChatRunner {
       aborted: false,
       stopping: false,
       abort: () => {
+        if (active.aborted) return;
         active.aborted = true;
+        transportCancellation = Promise.resolve()
+          .then(() => transport.cancel?.())
+          .catch(() => {});
         const error = new Error("Chat aborted");
         error.name = "AbortError";
         cancel(error);
@@ -172,7 +177,7 @@ class ExternalChannelChatRunner {
       active.stopping = true;
       // Cancellation stops future deliveries, but cannot undo an output method
       // already writing to a platform. Retain this conversation until it settles.
-      await delivery.catch(() => {});
+      await Promise.all([delivery.catch(() => {}), transportCancellation]);
       try {
         if (!failed && !active.aborted) await transport.fail(error.message);
       } finally {
