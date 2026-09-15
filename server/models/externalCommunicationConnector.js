@@ -1,12 +1,20 @@
 const prisma = require("../utils/prisma");
 const { safeJsonParse } = require("../utils/http");
 
+// Prisma diagnostics may embed complete credential-bearing input values.
+function logConnectorError(operation, type) {
+  console.error(
+    operation,
+    ["telegram", "lark"].includes(type) ? type : "unknown"
+  );
+}
+
 const ExternalCommunicationConnector = {
   supportedTypes: Object.freeze(["telegram", "lark"]),
 
   /**
    * Get a connector by type.
-   * @param {'telegram'} type
+   * @param {'telegram'|'lark'} type
    * @returns {Promise<{id: number, type: string, config: object, active: boolean}|null>}
    */
   get: async function (type) {
@@ -20,15 +28,15 @@ const ExternalCommunicationConnector = {
         ...connector,
         config: safeJsonParse(connector.config, {}),
       };
-    } catch (error) {
-      console.error("ExternalCommunicationConnector.get", error.message);
+    } catch {
+      logConnectorError("ExternalCommunicationConnector.get", type);
       return null;
     }
   },
 
   /**
    * Create or update a connector's config and active state.
-   * @param {'telegram'} type
+   * @param {'telegram'|'lark'} type
    * @param {object} config
    * @param {boolean} active
    * @returns {Promise<{connector: object|null, error: string|null}>}
@@ -69,14 +77,14 @@ const ExternalCommunicationConnector = {
         error: null,
       };
     } catch (error) {
-      console.error("ExternalCommunicationConnector.upsert", error.message);
+      logConnectorError("ExternalCommunicationConnector.upsert", type);
       return { connector: null, error: error.message };
     }
   },
 
   /**
    * Merge partial config updates into an existing connector.
-   * @param {'telegram'} type
+   * @param {'telegram'|'lark'} type
    * @param {object} configUpdates - Partial config to merge.
    * @returns {Promise<{connector: object|null, error: string|null}>}
    */
@@ -91,7 +99,7 @@ const ExternalCommunicationConnector = {
 
   /**
    * Delete a connector entirely.
-   * @param {'telegram'} type
+   * @param {'telegram'|'lark'} type
    * @returns {Promise<boolean>}
    */
   delete: async function (type) {
@@ -100,8 +108,8 @@ const ExternalCommunicationConnector = {
         where: { type },
       });
       return true;
-    } catch (error) {
-      console.error("ExternalCommunicationConnector.delete", error.message);
+    } catch {
+      logConnectorError("ExternalCommunicationConnector.delete", type);
       return false;
     }
   },

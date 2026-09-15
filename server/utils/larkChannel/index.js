@@ -56,7 +56,7 @@ class LarkChannelService {
     };
   }
 
-  async start(config) {
+  async start(config, { beforeActivate } = {}) {
     const generation = ++this.#generation;
     const previous = this.#session;
     this.#session = null;
@@ -89,6 +89,7 @@ class LarkChannelService {
         channel,
         config,
         connected: false,
+        ready: false,
         access: new PairingAccess({ connectorType: "lark" }),
         state: new ChannelStateStore({ connectorType: "lark", config }),
         executor: new KeyedSerialExecutor(),
@@ -112,6 +113,18 @@ class LarkChannelService {
         await this.#dispose(session);
         return this.status;
       }
+      // Management startup commits encrypted configuration after the handshake
+      // and before any incoming message or admin mutation can touch its state.
+      if (beforeActivate)
+        await beforeActivate({
+          bot_name: channel.botIdentity?.name || null,
+          bot_open_id: channel.botIdentity?.openId || null,
+        });
+      if (generation !== this.#generation) {
+        await this.#dispose(session);
+        return this.status;
+      }
+      session.ready = true;
       this.#connectionState = "connected";
       return this.status;
     } catch (error) {
@@ -136,7 +149,7 @@ class LarkChannelService {
         this.#connectionState = "reconnecting";
       },
       reconnected: () => {
-        if (this.#session !== session || !session.connected) return;
+        if (this.#session !== session || !session.ready) return;
         this.#connectionState = "connected";
       },
       error: (error) => {
@@ -147,7 +160,12 @@ class LarkChannelService {
   }
 
   #receiveMessage(session, message) {
-    if (this.#session !== session || session.controller.signal.aborted) return;
+    if (
+      this.#session !== session ||
+      !session.ready ||
+      session.controller.signal.aborted
+    )
+      return;
     const now = Date.now();
     if (
       !message ||
@@ -209,6 +227,31 @@ class LarkChannelService {
   listPendingUsers() {
     if (!this.status.connected) return [];
     return this.#session.access.listPending();
+  }
+
+  async updateConfig(input) {
+    const updates = {};
+    for (const key of ["default_workspace", "attachment_size_limit"])
+      if (Object.hasOwn(input, key)) updates[key] = input[key];
+    if (!Object.keys(updates).length)
+      return { error: "Could not update Lark configuration." };
+    const session = this.#session;
+    const persist = async () => {
+      const result = await ExternalCommunicationConnector.updateConfig(
+        "lark",
+        updates
+      );
+      if (result.error)
+        return { error: "Could not update Lark configuration." };
+      if (session && this.#session === session)
+        Object.assign(session.config, updates);
+      return { success: true };
+    };
+    try {
+      return session ? await this.#mutate(session, persist) : await persist();
+    } catch {
+      return { error: "Could not update Lark configuration." };
+    }
   }
 
   listApprovedUsers() {
@@ -582,13 +625,37 @@ class LarkChannelService {
 
   static async bootIfActive() {
     const service = new LarkChannelService();
+    if (service.#session) return;
     const generation = service.#generation;
     try {
       const connector = await ExternalCommunicationConnector.get("lark");
       if (generation !== service.#generation) return;
       if (!connector?.active) return;
-      if (await SystemSettings.isMultiUserMode()) return;
+      const config = connector.config;
+      if (
+        !config ||
+        !["lark", "feishu"].includes(config.platform) ||
+        typeof config.app_id !== "string" ||
+        !config.app_id.trim() ||
+        typeof config.app_secret !== "string" ||
+        !config.app_secret.trim() ||
+        typeof config.default_workspace !== "string" ||
+        !config.default_workspace.trim() ||
+        (config.attachment_size_limit != null &&
+          (!Number.isSafeInteger(config.attachment_size_limit) ||
+            config.attachment_size_limit <= 0))
+      )
+        return;
+      const multiUser = await SystemSettings.isMultiUserMode();
       if (generation !== service.#generation) return;
+      if (multiUser) {
+        await service.stop();
+        await ExternalCommunicationConnector.delete("lark");
+        return;
+      }
+      const { Workspace } = require("../../models/workspace");
+      const workspace = await Workspace.get({ slug: config.default_workspace });
+      if (generation !== service.#generation || !workspace) return;
       const appSecret = decryptConnectorSecret(connector.config?.app_secret);
       if (!appSecret) {
         throw Object.assign(new Error("permission_denied"), {

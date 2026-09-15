@@ -8,6 +8,57 @@ const markOnboarded = require("./markOnboarded");
 const migrateWebBrowsingToDefault = require("./migrateWebBrowsingToDefault");
 const { PushNotifications } = require("../PushNotifications");
 const { TelegramBotService } = require("../telegramBot");
+const { LarkChannelService } = require("../larkChannel");
+const { cleanupActiveAttachmentScopes } = require("../larkChannel/attachments");
+
+const shutdownRegistrations = new WeakSet();
+
+function registerShutdownHandlers({
+  processTarget = process,
+  timeoutMs = 5000,
+} = {}) {
+  if (shutdownRegistrations.has(processTarget)) return;
+  shutdownRegistrations.add(processTarget);
+  let shuttingDown = false;
+  const shutdown = async (signal) => {
+    if (shuttingDown) return;
+    shuttingDown = true;
+    let timer;
+    // All cleanup starts independently; a hung SDK must not prevent file cleanup.
+    const cleanup = Promise.allSettled([
+      Promise.resolve().then(() => new LarkChannelService().stop()),
+      Promise.resolve().then(() => cleanupActiveAttachmentScopes()),
+      Promise.resolve().then(() => Telemetry.flush()),
+    ]);
+    await Promise.race([
+      cleanup,
+      new Promise((resolve) => {
+        timer = setTimeout(resolve, timeoutMs);
+      }),
+    ]);
+    clearTimeout(timer);
+    if (signal === "SIGUSR2") processTarget.kill(processTarget.pid, signal);
+    else processTarget.exit(signal === "SIGINT" ? 130 : 143);
+  };
+  processTarget.on("SIGINT", () => {
+    void shutdown("SIGINT");
+  });
+  processTarget.on("SIGTERM", () => {
+    void shutdown("SIGTERM");
+  });
+  // Nodemon's restart signal must return to its default disposition on resend.
+  processTarget.once("SIGUSR2", () => {
+    void shutdown("SIGUSR2");
+  });
+}
+
+async function bootLarkChannel() {
+  try {
+    await LarkChannelService.bootIfActive();
+  } catch {
+    console.warn("[LarkChannel] Could not restore channel.");
+  }
+}
 
 // Testing SSL? You can make a self signed certificate and point the ENVs to that location
 // make a directory in server called 'sslcert' - cd into it
@@ -19,6 +70,7 @@ const { TelegramBotService } = require("../telegramBot");
 // Test with https://localhost:3001/api/ping
 // build and copy frontend to server/public with correct API_BASE and start server in prod model and all should be ok
 function bootSSL(app, port = 3001) {
+  registerShutdownHandlers();
   try {
     console.log(
       `\x1b[33m[SSL BOOT ENABLED]\x1b[0m Loading the certificate and key for HTTPS mode...`
@@ -41,6 +93,7 @@ function bootSSL(app, port = 3001) {
         await eagerLoadContextWindows();
         await PushNotifications.setupPushNotificationService();
         await TelegramBotService.bootIfActive();
+        await bootLarkChannel();
         console.log(`Primary server in HTTPS mode listening on port ${port}`);
       })
       .on("error", catchSigTerms);
@@ -63,6 +116,7 @@ function bootSSL(app, port = 3001) {
 
 function bootHTTP(app, port = 3001) {
   if (!app) throw new Error('No "app" defined - crashing!');
+  registerShutdownHandlers();
 
   app
     .listen(port, async () => {
@@ -75,6 +129,7 @@ function bootHTTP(app, port = 3001) {
       await eagerLoadContextWindows();
       await PushNotifications.setupPushNotificationService();
       await TelegramBotService.bootIfActive();
+      await bootLarkChannel();
       console.log(`Primary server in HTTP mode listening on port ${port}`);
     })
     .on("error", catchSigTerms);
@@ -83,17 +138,11 @@ function bootHTTP(app, port = 3001) {
 }
 
 function catchSigTerms() {
-  process.once("SIGUSR2", function () {
-    Telemetry.flush();
-    process.kill(process.pid, "SIGUSR2");
-  });
-  process.on("SIGINT", function () {
-    Telemetry.flush();
-    process.kill(process.pid, "SIGINT");
-  });
+  registerShutdownHandlers();
 }
 
 module.exports = {
   bootHTTP,
   bootSSL,
+  registerShutdownHandlers,
 };

@@ -38,6 +38,7 @@ const { mcpServersEndpoints } = require("./endpoints/mcpServers");
 const { mobileEndpoints } = require("./endpoints/mobile");
 const { webPushEndpoints } = require("./endpoints/webPush");
 const { telegramEndpoints } = require("./endpoints/telegram");
+const { larkEndpoints } = require("./endpoints/lark");
 const { scheduledJobEndpoints } = require("./endpoints/scheduledJobs");
 const {
   outlookAgentEndpoints,
@@ -101,6 +102,7 @@ mcpServersEndpoints(apiRouter);
 mobileEndpoints(apiRouter);
 webPushEndpoints(apiRouter);
 telegramEndpoints(apiRouter);
+larkEndpoints(apiRouter);
 scheduledJobEndpoints(apiRouter);
 outlookAgentEndpoints(apiRouter);
 googleAgentSkillEndpoints(apiRouter);

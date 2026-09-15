@@ -3,7 +3,11 @@ jest.mock("@larksuiteoapi/node-sdk", () => ({
   createLarkChannel: jest.fn(),
 }));
 jest.mock("../../../models/externalCommunicationConnector", () => ({
-  ExternalCommunicationConnector: { get: jest.fn(), updateConfig: jest.fn() },
+  ExternalCommunicationConnector: {
+    get: jest.fn(),
+    updateConfig: jest.fn(),
+    delete: jest.fn(),
+  },
 }));
 jest.mock("../../../models/systemSettings", () => ({
   SystemSettings: { isMultiUserMode: jest.fn() },
@@ -58,6 +62,8 @@ const config = {
   platform: "lark",
   app_id: "cli_1",
   app_secret: "plaintext-secret",
+  default_workspace: "general",
+  attachment_size_limit: null,
 };
 function message(overrides = {}) {
   return {
@@ -399,6 +405,10 @@ beforeEach(() => {
   };
   createLarkChannel.mockReturnValue(channel);
   SystemSettings.isMultiUserMode.mockResolvedValue(false);
+  require("../../../models/workspace").Workspace.get.mockResolvedValue({
+    slug: "general",
+  });
+  ExternalCommunicationConnector.delete.mockResolvedValue(true);
   jest.spyOn(console, "warn").mockImplementation(() => {});
 });
 
@@ -653,7 +663,7 @@ test.each([null, { active: false, config }])(
   }
 );
 
-test("boot skips multi-user mode", async () => {
+test("boot deletes connector and skips multi-user mode", async () => {
   ExternalCommunicationConnector.get.mockResolvedValue({
     active: true,
     config,
@@ -661,6 +671,129 @@ test("boot skips multi-user mode", async () => {
   SystemSettings.isMultiUserMode.mockResolvedValue(true);
   await LarkChannelService.bootIfActive();
   expect(createLarkChannel).not.toHaveBeenCalled();
+  expect(ExternalCommunicationConnector.delete).toHaveBeenCalledWith("lark");
+});
+
+test.each([
+  { app_id: "" },
+  { app_secret: "" },
+  { platform: "other" },
+  { default_workspace: null },
+  { attachment_size_limit: 0 },
+])("boot skips incomplete config %j", async (invalid) => {
+  ExternalCommunicationConnector.get.mockResolvedValue({
+    active: true,
+    config: { ...config, ...invalid },
+  });
+  await LarkChannelService.bootIfActive();
+  expect(createLarkChannel).not.toHaveBeenCalled();
+});
+test("boot skips deleted default workspace", async () => {
+  ExternalCommunicationConnector.get.mockResolvedValue({
+    active: true,
+    config,
+  });
+  require("../../../models/workspace").Workspace.get.mockResolvedValue(null);
+  await LarkChannelService.bootIfActive();
+  expect(createLarkChannel).not.toHaveBeenCalled();
+});
+test("live config updates persist before changing routing and reject credential/state fields", async () => {
+  const liveConfig = approvedConfig();
+  await service.start(liveConfig);
+  const write = deferred();
+  ExternalCommunicationConnector.updateConfig.mockReturnValueOnce(
+    write.promise
+  );
+  const update = service.updateConfig({
+    default_workspace: "new",
+    attachment_size_limit: 100,
+    app_secret: "injected",
+    approved_users: [],
+  });
+  await new Promise(setImmediate);
+  expect(liveConfig.default_workspace).toBe("general");
+  expect(ExternalCommunicationConnector.updateConfig).toHaveBeenCalledWith(
+    "lark",
+    { default_workspace: "new", attachment_size_limit: 100 }
+  );
+  write.resolve({ error: null });
+  expect(await update).toEqual({ success: true });
+  expect(liveConfig.default_workspace).toBe("new");
+  expect(service.listApprovedUsers()).toHaveLength(1);
+  ExternalCommunicationConnector.updateConfig.mockResolvedValueOnce({
+    error: "SDK secret",
+  });
+  expect(await service.updateConfig({ default_workspace: "failure" })).toEqual({
+    error: "Could not update Lark configuration.",
+  });
+  expect(liveConfig.default_workspace).toBe("new");
+});
+
+test("live config updates serialize with user revocation", async () => {
+  await service.start(approvedConfig());
+  const write = deferred();
+  ExternalCommunicationConnector.updateConfig.mockReturnValueOnce(
+    write.promise
+  );
+  const update = service.updateConfig({ attachment_size_limit: 100 });
+  await new Promise(setImmediate);
+  const revoke = service.revokeUser("ou_user");
+  await new Promise(setImmediate);
+  expect(ExternalCommunicationConnector.updateConfig).toHaveBeenCalledTimes(1);
+  write.resolve({ error: null });
+  await Promise.all([update, revoke]);
+  expect(ExternalCommunicationConnector.updateConfig).toHaveBeenLastCalledWith(
+    "lark",
+    { approved_users: [] }
+  );
+  expect(service.listApprovedUsers()).toEqual([]);
+});
+
+test("repeated boot restores only one running channel", async () => {
+  ExternalCommunicationConnector.get.mockResolvedValue({
+    active: true,
+    config,
+  });
+  decryptConnectorSecret.mockReturnValue("plaintext-secret");
+  await LarkChannelService.bootIfActive();
+  await LarkChannelService.bootIfActive();
+  expect(createLarkChannel).toHaveBeenCalledTimes(1);
+});
+
+test("management handshake admits no commands or admin mutations until encrypted persistence completes", async () => {
+  const save = deferred(),
+    saving = deferred();
+  const start = service.start(approvedConfig(), {
+    beforeActivate: async (identity) => {
+      expect(identity).toEqual({ bot_name: "Bot", bot_open_id: "ou_bot" });
+      saving.resolve();
+      await save.promise;
+    },
+  });
+  await saving.promise;
+  expect(service.status.connected).toBe(false);
+  await handlers.message(message({ content: "/reset" }));
+  expect(ExternalCommunicationConnector.updateConfig).not.toHaveBeenCalled();
+  expect(await service.revokeUser("ou_user")).toEqual({
+    error: "Lark is not connected.",
+  });
+  save.resolve();
+  await start;
+  expect(service.status.connected).toBe(true);
+  expect(service.listApprovedUsers()).toHaveLength(1);
+});
+
+test("failed persistence never admits a session and closes the handshaken channel", async () => {
+  await expect(
+    service.start(approvedConfig(), {
+      beforeActivate: async () => {
+        throw new Error("enc:secret");
+      },
+    })
+  ).rejects.toThrow("unknown");
+  expect(service.status.connected).toBe(false);
+  expect(channel.disconnect).toHaveBeenCalledTimes(1);
+  expect(JSON.stringify(console.warn.mock.calls)).not.toContain("enc:secret");
 });
 
 test("boot failures are non-fatal with sanitized failed status", async () => {
