@@ -173,10 +173,16 @@ async function processAsFile({ uri, saveAsDocument = true, metadata = {} }) {
 
   // If we intend to return only the text content, return the content from the file
   // and then delete the file - otherwise it will be saved as a document
+  //
+  // A file can parse into more than one document. An mbox yields one per message,
+  // so reading only the first returned a single email as the whole mailbox.
   if (!saveAsDocument) {
     return returnResult({
       success: true,
-      content: processSingleFileResult.documents[0].pageContent,
+      content: processSingleFileResult.documents
+        .map((document) => document?.pageContent ?? "")
+        .filter((pageContent) => pageContent.length > 0)
+        .join("\n\n"),
       saveAsDocument,
     });
   }
