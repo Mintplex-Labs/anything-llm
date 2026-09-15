@@ -153,23 +153,45 @@ function sourceIdentifier(sourceDocument) {
   return `title:${sourceDocument.title}-timestamp:${sourceDocument.published}`;
 }
 
+// Live reasoning options per LLM class + model. Some providers only know a
+// model's support from a network lookup (Anthropic models API, Gemini model
+// info, Ollama show), so it is fetched once per model for the process.
+const liveReasoningOptions = new Map();
+
 /**
  * Resolves the reasoning effort for a chat - the workspace's own setting wins,
- * otherwise the system-wide default. Logged when set so chat logs show what
- * effort was requested; providers still ignore values their model cannot use.
+ * otherwise the system-wide default. A stored effort can outlive a model
+ * switch, so it is checked against the model's live capabilities and dropped
+ * (with a log) when the model cannot use it, rather than failing the request.
  * @param {import("@prisma/client").workspaces|null} workspace
- * @returns {string|null}
+ * @param {{model: string, getModelCapabilities?: () => Promise<{reasoning: 'unknown'|boolean, reasoningOptions: string[]}>}|null} llm - LLM connector the chat will use
+ * @returns {Promise<string|null>}
  */
-function resolveReasoningEffort(workspace = null) {
+async function resolveReasoningEffort(workspace = null, llm = null) {
   const reasoningEffort =
     workspace?.reasoningEffort ?? process.env.REASONING_EFFORT ?? null;
-  if (reasoningEffort)
-    console.log(
-      `\x1b[36m[ReasoningEffort]\x1b[0m Chat requested with ${
-        workspace?.reasoningEffort ? "workspace" : "global"
-      } reasoning effort "${reasoningEffort}"`
-    );
-  return reasoningEffort;
+  if (!reasoningEffort) return null;
+  console.log(
+    `\x1b[36m[ReasoningEffort]\x1b[0m Chat requested with ${
+      workspace?.reasoningEffort ? "workspace" : "global"
+    } reasoning effort "${reasoningEffort}"`
+  );
+
+  if (!llm?.getModelCapabilities) return reasoningEffort;
+  const key = `${llm.constructor.name}:${llm.model}`;
+  if (!liveReasoningOptions.has(key)) {
+    const { reasoning, reasoningOptions } =
+      (await llm.getModelCapabilities().catch(() => null)) ?? {};
+    if (reasoning === "unknown" || !Array.isArray(reasoningOptions))
+      return reasoningEffort;
+    liveReasoningOptions.set(key, reasoningOptions);
+  }
+  if (liveReasoningOptions.get(key).includes(reasoningEffort))
+    return reasoningEffort;
+  console.log(
+    `\x1b[36m[ReasoningEffort]\x1b[0m Ignoring reasoning effort "${reasoningEffort}" - not supported by model "${llm.model}".`
+  );
+  return null;
 }
 
 module.exports = {

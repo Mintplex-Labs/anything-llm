@@ -446,16 +446,18 @@ async function chatSync({
   );
 
   // Send the text completion.
+  const reasoningEffort = await resolveReasoningEffort(workspace, LLMConnector);
   const { textResponse, metrics: completionMetrics } =
     await LLMConnector.getChatCompletion(messages, {
       temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
       user: user,
-      reasoningEffort: resolveReasoningEffort(workspace),
+      reasoningEffort,
     });
   const performanceMetrics = addChatCostToMetrics(completionMetrics, {
     routingMetadata,
     workspace,
     connector: LLMConnector,
+    reasoningEffort,
   });
 
   if (!textResponse) {
@@ -835,6 +837,8 @@ async function streamChat({
     rawHistory
   );
 
+  const reasoningEffort = await resolveReasoningEffort(workspace, LLMConnector);
+
   // If streaming is not explicitly enabled for connector
   // we do regular waiting of a response and send a single chunk.
   if (LLMConnector.streamingEnabled() !== true) {
@@ -845,13 +849,14 @@ async function streamChat({
       await LLMConnector.getChatCompletion(messages, {
         temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
         user: user,
-        reasoningEffort: resolveReasoningEffort(workspace),
+        reasoningEffort,
       });
     completeText = textResponse;
     metrics = addChatCostToMetrics(performanceMetrics, {
       routingMetadata,
       workspace,
       connector: LLMConnector,
+      reasoningEffort,
     });
     writeResponseChunk(response, {
       uuid,
@@ -866,13 +871,14 @@ async function streamChat({
     const stream = await LLMConnector.streamGetChatCompletion(messages, {
       temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
       user: user,
-      reasoningEffort: resolveReasoningEffort(workspace),
+      reasoningEffort,
     });
     completeText = await LLMConnector.handleStream(response, stream, { uuid });
     metrics = addChatCostToMetrics(stream.metrics, {
       routingMetadata,
       workspace,
       connector: LLMConnector,
+      reasoningEffort,
     });
   }
 

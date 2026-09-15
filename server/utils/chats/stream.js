@@ -282,6 +282,8 @@ async function streamChatWithWorkspace(
     rawHistory
   );
 
+  const reasoningEffort = await resolveReasoningEffort(workspace, LLMConnector);
+
   // If streaming is not explicitly enabled for connector
   // we do regular waiting of a response and send a single chunk.
   if (LLMConnector.streamingEnabled() !== true) {
@@ -292,7 +294,7 @@ async function streamChatWithWorkspace(
       await LLMConnector.getChatCompletion(messages, {
         temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
         user: user,
-        reasoningEffort: resolveReasoningEffort(workspace),
+        reasoningEffort,
       });
 
     completeText = textResponse;
@@ -300,6 +302,7 @@ async function streamChatWithWorkspace(
       routingMetadata,
       workspace,
       connector: LLMConnector,
+      reasoningEffort,
     });
     writeResponseChunk(response, {
       uuid,
@@ -314,7 +317,7 @@ async function streamChatWithWorkspace(
     const stream = await LLMConnector.streamGetChatCompletion(messages, {
       temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
       user: user,
-      reasoningEffort: resolveReasoningEffort(workspace),
+      reasoningEffort,
     });
     completeText = await LLMConnector.handleStream(response, stream, {
       uuid,
@@ -324,6 +327,7 @@ async function streamChatWithWorkspace(
       routingMetadata,
       workspace,
       connector: LLMConnector,
+      reasoningEffort,
     });
   }
 

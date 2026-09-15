@@ -1,7 +1,6 @@
 const path = require("path");
 const fs = require("fs");
 const { toNonNegativeNumber } = require("../numbers");
-const { PROVIDER_REASONING_EFFORTS } = require("../reasoningEffort");
 
 /**
  * @typedef {Object} ModelCost - USD per 1,000,000 tokens (models.dev conventions)
@@ -367,32 +366,25 @@ function addCostToMetrics(
  * @param {Object|null} opts.routingMetadata - model router result (if routing is enabled)
  * @param {Object|null} opts.workspace - workspace record (fallback for provider)
  * @param {Object|null} opts.connector - LLM connector instance (fallback for model)
+ * @param {string|null} opts.reasoningEffort - reasoning effort applied to the request (see resolveReasoningEffort)
  * @returns {Object} metrics, optionally extended with cost fields
  */
 function addChatCostToMetrics(
   metrics = {},
-  { routingMetadata = null, workspace = null, connector = null } = {}
+  {
+    routingMetadata = null,
+    workspace = null,
+    connector = null,
+    reasoningEffort = null,
+  } = {}
 ) {
-  const provider =
-    routingMetadata?.routedTo?.provider ??
-    workspace?.chatProvider ??
-    process.env.LLM_PROVIDER;
-  const model = routingMetadata?.routedTo?.model ?? connector?.model;
-
-  // Only report an effort the provider will actually apply - a stale value
-  // from a provider/model switch is dropped at request time and should not
-  // show on the chat's metrics.
-  const storedEffort =
-    workspace?.reasoningEffort ?? process.env.REASONING_EFFORT ?? null;
-  const reasoningEffort =
-    storedEffort &&
-    (PROVIDER_REASONING_EFFORTS[provider]?.(model ?? "") ?? []).includes(
-      storedEffort
-    )
-      ? storedEffort
-      : null;
-
-  const withCost = addCostToMetrics(metrics, { provider, model });
+  const withCost = addCostToMetrics(metrics, {
+    provider:
+      routingMetadata?.routedTo?.provider ??
+      workspace?.chatProvider ??
+      process.env.LLM_PROVIDER,
+    model: routingMetadata?.routedTo?.model ?? connector?.model,
+  });
   return reasoningEffort ? { ...withCost, reasoningEffort } : withCost;
 }
 
