@@ -296,6 +296,7 @@ function createApprovalRequester(emit, ipc = process) {
     new Promise((resolve) => {
       const requestId = randomUUID();
       const timeoutMs = 120000;
+      const expiresAt = Date.now() + timeoutMs;
       const finish = (result) => {
         clearTimeout(timer);
         ipc.removeListener("message", receive);
@@ -332,6 +333,7 @@ function createApprovalRequester(emit, ipc = process) {
             type: "toolApprovalRequest",
             requestId,
             timeoutMs,
+            expiresAt,
           })
         )
         .catch(() =>
@@ -343,25 +345,38 @@ function createApprovalRequester(emit, ipc = process) {
     });
 }
 
-if (require.main === module) {
-  const { parentPort } = require("node:worker_threads");
-  const emit = (event) =>
-    parentPort
-      ? parentPort.postMessage({ ...event, silent: true })
-      : process.send({ ...event, silent: true });
-  const { conclude } = require("./helpers");
+function startExternalChannelWorker({
+  ipc = process,
+  parentPort = null,
+  conclude,
+}) {
+  const {
+    createWorkerIPC,
+  } = require("../utils/externalChannels/chat/workerIpc");
+  const channel = createWorkerIPC({ ipc, parentPort });
+  const emit = channel.send;
   let started = false;
-  process.on("message", async (payload) => {
+  ipc.on("message", async (payload) => {
     if (started || payload?.type === "toolApprovalResponse") return;
     started = true;
     try {
       await runExternalChannelChat(payload, emit, {
-        requestToolApproval: createApprovalRequester(emit),
+        requestToolApproval: createApprovalRequester(emit, ipc),
       });
     } finally {
-      conclude();
+      await channel.drain().finally(conclude);
     }
   });
 }
 
-module.exports = { runExternalChannelChat, createApprovalRequester };
+if (require.main === module) {
+  const { parentPort } = require("node:worker_threads");
+  const { conclude } = require("./helpers");
+  startExternalChannelWorker({ parentPort, conclude });
+}
+
+module.exports = {
+  runExternalChannelChat,
+  createApprovalRequester,
+  startExternalChannelWorker,
+};

@@ -218,3 +218,44 @@ test("generation failures preserve the Telegram streaming error and never persis
   });
   expect(WorkspaceChats.new).not.toHaveBeenCalled();
 });
+
+test("worker waits for completion IPC callback and drains unawaited chunk sends before exit", async () => {
+  const { EventEmitter } = require("events");
+  const {
+    startExternalChannelWorker,
+  } = require("../../../jobs/handle-external-channel-chat");
+  const ipc = new EventEmitter();
+  const sends = [];
+  ipc.send = (event, callback) => {
+    sends.push({ event, callback });
+    return false;
+  };
+  const conclude = jest.fn();
+  const largeText = "x".repeat(2 * 1024 * 1024);
+  connector.streamingEnabled = () => true;
+  connector.streamGetChatCompletion = async () => ({ metrics: {} });
+  connector.handleStream = async (handler) => {
+    handler.write(`data: ${JSON.stringify({ textResponse: largeText })}\n\n`);
+    return largeText;
+  };
+  startExternalChannelWorker({ ipc, conclude });
+  const work = ipc.listeners("message")[0](payload);
+  await new Promise((resolve) => setImmediate(resolve));
+  expect(sends.map(({ event }) => event.type)).toEqual(["ready"]);
+  sends[0].callback(null);
+  await new Promise((resolve) => setImmediate(resolve));
+  expect(sends.map(({ event }) => event.type)).toEqual([
+    "ready",
+    "textChunk",
+    "complete",
+  ]);
+  expect(sends[2].event.result.text).toHaveLength(2 * 1024 * 1024);
+  expect(WorkspaceChats.new).toHaveBeenCalledTimes(1);
+  expect(conclude).not.toHaveBeenCalled();
+  sends[2].callback(null);
+  await new Promise((resolve) => setImmediate(resolve));
+  expect(conclude).not.toHaveBeenCalled();
+  sends[1].callback(null);
+  await work;
+  expect(conclude).toHaveBeenCalledTimes(1);
+});

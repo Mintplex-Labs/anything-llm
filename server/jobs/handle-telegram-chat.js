@@ -101,14 +101,20 @@ function createTelegramTransport(
   };
 }
 
-if (require.main === module) {
-  const { log, conclude } = require("./helpers");
-  const { parentPort } = require("node:worker_threads");
+function startTelegramChatWorker({
+  ipc = process,
+  parentPort = null,
+  log,
+  conclude,
+}) {
   const { EVENT_METHODS } = require("../utils/externalChannels/chat");
-  const send = (event) =>
-    parentPort ? parentPort.postMessage(event) : process.send(event);
+  const {
+    createWorkerIPC,
+  } = require("../utils/externalChannels/chat/workerIpc");
+  const channel = createWorkerIPC({ ipc, parentPort });
+  const send = channel.send;
   let started = false;
-  process.on("message", async (payload) => {
+  ipc.on("message", async (payload) => {
     if (started || payload?.type === "toolApprovalResponse") return;
     started = true;
     const { botToken, chatId, voiceResponse = false } = payload;
@@ -117,8 +123,9 @@ if (require.main === module) {
       log: (text, ...args) =>
         log(args.length ? `${text} ${args.join(" ")}` : text),
     };
-    const relayApproval = createApprovalRequester((event) =>
-      send({ ...event, chatId })
+    const relayApproval = createApprovalRequester(
+      (event) => send({ ...event, chatId, silent: true }),
+      ipc
     );
     const transport = createTelegramTransport(ctx, chatId, {
       voiceResponse,
@@ -156,9 +163,15 @@ if (require.main === module) {
       } catch {}
     } finally {
       transport.dispose();
-      conclude();
+      await channel.drain().finally(conclude);
     }
   });
 }
 
-module.exports = { createTelegramTransport };
+if (require.main === module) {
+  const { log, conclude } = require("./helpers");
+  const { parentPort } = require("node:worker_threads");
+  startTelegramChatWorker({ log, conclude, parentPort });
+}
+
+module.exports = { createTelegramTransport, startTelegramChatWorker };

@@ -20,7 +20,32 @@ jest.mock("../../../utils/agents", () => ({}));
 jest.mock("../../../utils/agents/ephemeral", () => ({}));
 jest.mock("../../../jobs/handle-external-channel-chat", () => ({
   runExternalChannelChat: jest.fn(),
-  createApprovalRequester: jest.fn(),
+  createApprovalRequester: jest.requireActual(
+    "../../../jobs/handle-external-channel-chat"
+  ).createApprovalRequester,
+}));
+jest.mock("@mintplex-labs/bree", () =>
+  jest.fn().mockImplementation((config) => ({ config, start: jest.fn() }))
+);
+jest.mock("@ladjs/graceful", () =>
+  jest.fn().mockImplementation(() => ({ listen: jest.fn() }))
+);
+jest.mock("../../../utils/logger", () => () => ({
+  info: jest.fn(),
+  log: jest.fn(),
+  error: jest.fn(),
+}));
+jest.mock("../../../models/documentSyncQueue", () => ({
+  DocumentSyncQueue: { enabled: async () => false },
+}));
+jest.mock("../../../models/systemSettings", () => ({
+  SystemSettings: { autoMemoriesEnabled: async () => false },
+}));
+jest.mock("../../../models/scheduledJobRun", () => ({
+  ScheduledJobRun: { failOrphanedRuns: async () => 0 },
+}));
+jest.mock("../../../models/scheduledJob", () => ({
+  ScheduledJob: { allEnabled: async () => [] },
 }));
 jest.mock("../../../utils/telegramBot/utils/media", () => ({
   sendVoiceResponse: jest.fn(async () => {}),
@@ -163,4 +188,64 @@ test("failure clears typing and edit timers and sends the error message", async 
   } finally {
     jest.useRealTimers();
   }
+});
+test("Telegram approval relay suppresses tool payloads at the real BackgroundService logger boundary", async () => {
+  const { EventEmitter } = require("events");
+  const { BackgroundService } = require("../../../utils/BackgroundWorkers");
+  const {
+    startTelegramChatWorker,
+  } = require("../../../jobs/handle-telegram-chat");
+  const {
+    runExternalChannelChat,
+  } = require("../../../jobs/handle-external-channel-chat");
+  BackgroundService._instance = null;
+  const service = new BackgroundService();
+  await service.boot();
+  const ipc = new EventEmitter();
+  const sent = [];
+  ipc.send = (event, callback) => {
+    const received = JSON.parse(JSON.stringify(event));
+    sent.push(received);
+    // These are both logger paths used by Bree for process IPC.
+    service.bree.config.logger.info(received);
+    service.onWorkerMessageHandler({ message: received });
+    callback(null);
+    return true;
+  };
+  service.bree.config.logger.info("ordinary diagnostic");
+  expect(service.logger.info).toHaveBeenCalledWith("ordinary diagnostic");
+  service.logger.info.mockClear();
+  require("node-telegram-bot-api").mockImplementation(() => bot);
+  runExternalChannelChat.mockImplementation(async (_payload, emit, options) => {
+    await emit({ type: "ready" });
+    await options.requestToolApproval({
+      skillName: "write",
+      payload: { token: "sensitive-tool-payload" },
+    });
+    await emit({ type: "complete", result: { text: "done" } });
+  });
+  const conclude = jest.fn();
+  startTelegramChatWorker({ ipc, conclude, log() {} });
+  const work = ipc.listeners("message")[0]({
+    chatId: 123,
+    botToken: "bot-token",
+    message: "hi",
+    workspaceSlug: "general",
+  });
+  await new Promise((resolve) => setImmediate(resolve));
+  expect(sent[0]).toMatchObject({
+    type: "toolApprovalRequest",
+    chatId: 123,
+    payload: { token: "sensitive-tool-payload" },
+  });
+  ipc.emit("message", {
+    type: "toolApprovalResponse",
+    requestId: sent[0].requestId,
+    approved: true,
+  });
+  await work;
+  expect(service.logger.info).not.toHaveBeenCalled();
+  expect(service.logger.log).not.toHaveBeenCalled();
+  expect(conclude).toHaveBeenCalledTimes(1);
+  BackgroundService._instance = null;
 });

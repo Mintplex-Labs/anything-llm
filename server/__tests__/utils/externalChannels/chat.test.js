@@ -60,6 +60,136 @@ describe("chat worker protocol", () => {
     attachments: [],
   };
   const tick = () => new Promise((resolve) => setImmediate(resolve));
+  test.each(["append", "complete"])(
+    "abort during pending %s retains conversation until delivery settles",
+    async (method) => {
+      const transport = createBufferedTransport();
+      let release;
+      const gate = new Promise((resolve) => {
+        release = resolve;
+      });
+      transport[method] = jest.fn(async () => {
+        await gate;
+      });
+      const run = runner.run(payload, transport);
+      const outcome = run.catch((error) => error);
+      await tick();
+      workers[0].emit(
+        "message",
+        method === "append"
+          ? { type: "textChunk", text: "a" }
+          : { type: "complete", result: { text: "answer" } }
+      );
+      await tick();
+      expect(transport[method]).toHaveBeenCalledTimes(1);
+      runner.abort(payload.conversationId);
+      await tick();
+      // This guard must stay set until the old transport can no longer write.
+      const successor = runner
+        .run(payload, createBufferedTransport())
+        .catch((error) => error);
+      await tick();
+      const workerCountBeforeRelease = workers.length;
+      release();
+      if (workers[1]) {
+        workers[1].emit("message", {
+          type: "complete",
+          result: { text: "successor" },
+        });
+        workers[1].emit("exit", 0);
+      }
+      expect((await outcome).name).toBe("AbortError");
+      const successorResult = await successor;
+      expect(workerCountBeforeRelease).toBe(1);
+      expect(successorResult.message).toBe("Conversation is already running");
+      expect(runner.abort(payload.conversationId)).toBe(false);
+    }
+  );
+  test("approval deadline unblocks completion and ignores a late approval after exit", async () => {
+    jest.useFakeTimers({ doNotFake: ["setImmediate"] });
+    try {
+      const transport = createBufferedTransport();
+      let approve;
+      transport.requestToolApproval = () =>
+        new Promise((resolve) => {
+          approve = resolve;
+        });
+      const run = runner.run(payload, transport);
+      let finished = false;
+      const outcome = run.then(
+        () => {
+          finished = true;
+        },
+        (error) => {
+          finished = true;
+          return error;
+        }
+      );
+      await tick();
+      const worker = workers[0];
+      worker.emit("message", {
+        type: "toolApprovalRequest",
+        requestId: "expiring",
+        timeoutMs: 120000,
+      });
+      await tick();
+      await jest.advanceTimersByTimeAsync(120000);
+      worker.emit("message", {
+        type: "complete",
+        result: { text: "timed out safely" },
+      });
+      worker.emit("exit", 0);
+      await tick();
+      const finishedAtDeadline = finished;
+      // Resolve the underlying UI promise to avoid leaving a hanging test on RED.
+      const sendsBeforeLateApproval = worker.send.mock.calls.length;
+      approve({ approved: true });
+      await outcome;
+      expect(finishedAtDeadline).toBe(true);
+      expect(worker.send.mock.calls.length).toBe(sendsBeforeLateApproval);
+      expect(worker.listenerCount("message")).toBe(0);
+      expect(worker.listenerCount("exit")).toBe(0);
+      expect(bree.remove).toHaveBeenCalledTimes(1);
+      expect(jest.getTimerCount()).toBe(0);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+  test("worker exit interrupts approval wait before its deadline and clears timer", async () => {
+    jest.useFakeTimers({ doNotFake: ["setImmediate"] });
+    try {
+      const transport = createBufferedTransport();
+      let approve;
+      transport.requestToolApproval = () =>
+        new Promise((resolve) => {
+          approve = resolve;
+        });
+      const run = runner.run(payload, transport);
+      await tick();
+      const worker = workers[0];
+      worker.emit("message", {
+        type: "toolApprovalRequest",
+        requestId: "exited",
+        timeoutMs: 120000,
+      });
+      await tick();
+      expect(jest.getTimerCount()).toBe(1);
+      worker.emit("message", {
+        type: "complete",
+        result: { text: "finished" },
+      });
+      worker.emit("exit", 0);
+      await run;
+      approve({ approved: true });
+      await tick();
+      expect(worker.send).toHaveBeenCalledTimes(1);
+      expect(jest.getTimerCount()).toBe(0);
+      expect(worker.listenerCount("message")).toBe(0);
+      expect(worker.listenerCount("exit")).toBe(0);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
   test("forwards ordered IPC, replies to approval, and removes its unique job", async () => {
     const transport = createBufferedTransport();
     const run = runner.run(payload, transport);
@@ -78,6 +208,7 @@ describe("chat worker protocol", () => {
       requestId: "request-1",
       skillName: "write",
     });
+    await tick();
     worker.emit("message", { type: "closeInvocation", uuid: "invocation-1" });
     worker.emit("message", {
       type: "complete",

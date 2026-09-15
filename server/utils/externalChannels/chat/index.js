@@ -25,8 +25,14 @@ class ExternalChannelChatRunner {
     const jobId = `handle-external-channel-chat-${randomUUID()}`;
     let worker,
       chain = Promise.resolve(),
+      delivery = Promise.resolve(),
       completed = false,
-      failed = false;
+      failed = false,
+      workerExited = false;
+    let markWorkerStopped;
+    const workerStopped = new Promise((resolve) => {
+      markWorkerStopped = resolve;
+    });
     let onMessage, onExit, onError;
     let cancel;
     const cancellation = new Promise((_, reject) => {
@@ -36,6 +42,7 @@ class ExternalChannelChatRunner {
     cancellation.catch(() => {});
     const active = {
       aborted: false,
+      stopping: false,
       abort: () => {
         active.aborted = true;
         const error = new Error("Chat aborted");
@@ -63,11 +70,16 @@ class ExternalChannelChatRunner {
         await cancellation;
       }
       const exited = new Promise((resolve, reject) => {
-        onExit = (code) =>
-          code === 0
-            ? resolve()
-            : reject(new Error(`Chat worker exited with code ${code}`));
-        onError = reject;
+        onExit = (code) => {
+          workerExited = true;
+          markWorkerStopped(null);
+          if (code === 0) resolve();
+          else reject(new Error(`Chat worker exited with code ${code}`));
+        };
+        onError = (error) => {
+          markWorkerStopped(null);
+          reject(error);
+        };
         worker.once("exit", onExit);
         worker.once("error", onError);
       });
@@ -75,18 +87,55 @@ class ExternalChannelChatRunner {
       // Observe it before send, including an exit caused by catch-path cleanup.
       exited.catch(() => {});
       onMessage = (event) => {
+        const receivedAt = Date.now();
         chain = chain.then(async () => {
-          if (!event || completed || failed || active.aborted) return;
+          if (
+            !event ||
+            completed ||
+            failed ||
+            active.aborted ||
+            active.stopping
+          )
+            return;
           if (event.type === "toolApprovalRequest") {
-            const result = await Promise.race([
-              transport.requestToolApproval(event),
-              cancellation,
-            ]);
-            worker.send({
-              ...result,
-              type: "toolApprovalResponse",
-              requestId: event.requestId,
-            });
+            if (workerExited) return;
+            const timeoutMs = Number.isFinite(event.timeoutMs)
+              ? Math.max(0, Math.min(event.timeoutMs, 120000))
+              : 120000;
+            const expiresAt = Math.min(
+              Number.isFinite(event.expiresAt) ? event.expiresAt : Infinity,
+              receivedAt + timeoutMs
+            );
+            let timer;
+            try {
+              const remaining = expiresAt - Date.now();
+              const result =
+                remaining <= 0
+                  ? null
+                  : await Promise.race([
+                      transport.requestToolApproval(event),
+                      cancellation,
+                      workerStopped,
+                      new Promise((resolve) => {
+                        timer = setTimeout(() => resolve(null), remaining);
+                      }),
+                    ]);
+              if (
+                result &&
+                !workerExited &&
+                !active.aborted &&
+                !active.stopping &&
+                Date.now() < expiresAt
+              ) {
+                worker.send({
+                  ...result,
+                  type: "toolApprovalResponse",
+                  requestId: event.requestId,
+                });
+              }
+            } finally {
+              clearTimeout(timer);
+            }
             return;
           }
           if (event.type === "closeInvocation") {
@@ -101,9 +150,12 @@ class ExternalChannelChatRunner {
           const method = EVENT_METHODS[event.type];
           if (!method) return;
           if (event.type === "failed") failed = true;
-          await transport[method](
-            event.text ?? event.file ?? event.result ?? event.message
+          delivery = Promise.resolve().then(() =>
+            transport[method](
+              event.text ?? event.file ?? event.result ?? event.message
+            )
           );
+          await delivery;
           if (event.type === "complete") completed = true;
           if (event.type === "failed") {
             throw new Error(event.message);
@@ -117,6 +169,10 @@ class ExternalChannelChatRunner {
       await Promise.race([chain, cancellation]);
       if (!completed) throw new Error("Chat worker exited without completion");
     } catch (error) {
+      active.stopping = true;
+      // Cancellation stops future deliveries, but cannot undo an output method
+      // already writing to a platform. Retain this conversation until it settles.
+      await delivery.catch(() => {});
       try {
         if (!failed && !active.aborted) await transport.fail(error.message);
       } finally {
