@@ -190,6 +190,9 @@ export default {
     telegram: () => {
       return `/settings/external-connections/telegram`;
     },
+    lark: () => {
+      return `/settings/external-connections/lark`;
+    },
     scheduledJobs: () => {
       return `/settings/scheduled-jobs`;
     },

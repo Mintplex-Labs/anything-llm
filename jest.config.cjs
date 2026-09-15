@@ -3,5 +3,6 @@ module.exports = {
   testPathIgnorePatterns: [
     "/node_modules/",
     "/open-computer/",
+    "/frontend/",
   ],
 };

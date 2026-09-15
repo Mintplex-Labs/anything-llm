@@ -387,6 +387,12 @@ const SidebarOptions = ({ user = null, t }) => (
               flex: true,
               hidden: !!user,
             },
+            {
+              btnText: t("settings.available-channels.lark"),
+              href: paths.settings.lark(),
+              flex: true,
+              hidden: !!user,
+            },
           ]}
         />
         <Option

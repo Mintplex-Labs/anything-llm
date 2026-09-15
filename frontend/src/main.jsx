@@ -408,6 +408,15 @@ const router = createBrowserRouter([
         },
       },
       {
+        path: "/settings/external-connections/lark",
+        lazy: async () => {
+          const { default: LarkSettings } = await import(
+            "@/pages/GeneralSettings/Connections/Lark"
+          );
+          return { element: <AdminRoute Component={LarkSettings} /> };
+        },
+      },
+      {
         path: "/settings/scheduled-jobs",
         lazy: async () => {
           const { default: ScheduledJobs } = await import(
