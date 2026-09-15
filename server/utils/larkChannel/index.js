@@ -166,10 +166,13 @@ class LarkChannelService {
 
   static async bootIfActive() {
     const service = new LarkChannelService();
+    const generation = service.#generation;
     try {
       const connector = await ExternalCommunicationConnector.get("lark");
+      if (generation !== service.#generation) return;
       if (!connector?.active) return;
       if (await SystemSettings.isMultiUserMode()) return;
+      if (generation !== service.#generation) return;
       const appSecret = decryptConnectorSecret(connector.config?.app_secret);
       if (!appSecret) {
         throw Object.assign(new Error("permission_denied"), {
@@ -178,6 +181,9 @@ class LarkChannelService {
       }
       await service.start({ ...connector.config, app_secret: appSecret });
     } catch (error) {
+      // A newer lifecycle owns status. start() also advances the generation
+      // and reports its own failures, so boot must not report them again.
+      if (generation !== service.#generation) return;
       service.#connectionState = "failed";
       service.#recordError(sanitizedError(error));
     }

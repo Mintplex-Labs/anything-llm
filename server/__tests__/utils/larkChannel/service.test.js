@@ -329,3 +329,144 @@ test("boot failures are non-fatal with sanitized failed status", async () => {
     last_error: { category: "permission_denied" },
   });
 });
+
+test("cancelled boot handshake cannot overwrite stopped status with its late failure", async () => {
+  const handshake = deferred();
+  const connecting = deferred();
+  ExternalCommunicationConnector.get.mockResolvedValue({
+    active: true,
+    config,
+  });
+  decryptConnectorSecret.mockReturnValue("plaintext-secret");
+  channel.connect.mockImplementation(() => {
+    connecting.resolve();
+    return handshake.promise;
+  });
+  const boot = LarkChannelService.bootIfActive();
+  await connecting.promise;
+  const stop = service.stop();
+  handshake.reject({ code: "permission_denied" });
+  await Promise.all([boot, stop]);
+  expect(service.status).toMatchObject({
+    connection_state: "disconnected",
+    connected: false,
+    last_error: null,
+  });
+  expect(console.warn).not.toHaveBeenCalled();
+});
+
+test("a newer start retains its status after an old boot handshake rejects", async () => {
+  const handshake = deferred();
+  const connecting = deferred();
+  ExternalCommunicationConnector.get.mockResolvedValue({
+    active: true,
+    config,
+  });
+  decryptConnectorSecret.mockReturnValue("plaintext-secret");
+  channel.connect.mockImplementation(() => {
+    connecting.resolve();
+    return handshake.promise;
+  });
+  const boot = LarkChannelService.bootIfActive();
+  await connecting.promise;
+  const replacement = {
+    ...channel,
+    connect: jest.fn().mockResolvedValue(),
+    disconnect: jest.fn().mockResolvedValue(),
+    botIdentity: { openId: "ou_new", name: "New bot" },
+  };
+  createLarkChannel.mockReturnValue(replacement);
+  const start = service.start({ ...config, app_id: "cli_new" });
+  handshake.reject({ code: "permission_denied" });
+  await Promise.all([boot, start]);
+  expect(service.status).toMatchObject({
+    connection_state: "connected",
+    connected: true,
+    bot_open_id: "ou_new",
+    last_error: null,
+  });
+  expect(console.warn).not.toHaveBeenCalled();
+});
+
+test.each([
+  ["connector", "resolve"],
+  ["connector", "reject"],
+  ["settings", "resolve"],
+  ["settings", "reject"],
+])(
+  "stop cancels boot during %s read even when it later %ss",
+  async (stage, outcome) => {
+    const read = deferred();
+    const reading = deferred();
+    ExternalCommunicationConnector.get.mockResolvedValue({
+      active: true,
+      config,
+    });
+    decryptConnectorSecret.mockReturnValue("plaintext-secret");
+    const reader =
+      stage === "connector"
+        ? ExternalCommunicationConnector.get
+        : SystemSettings.isMultiUserMode;
+    reader.mockImplementation(() => {
+      reading.resolve();
+      return read.promise;
+    });
+    const boot = LarkChannelService.bootIfActive();
+    await reading.promise;
+    await service.stop();
+    if (outcome === "reject") read.reject(new Error("sensitive-response"));
+    else read.resolve(stage === "connector" ? { active: true, config } : false);
+    await boot;
+    expect(createLarkChannel).not.toHaveBeenCalled();
+    expect(service.status).toMatchObject({
+      connection_state: "disconnected",
+      last_error: null,
+    });
+    expect(console.warn).not.toHaveBeenCalled();
+  }
+);
+
+test.each(["connector", "settings"])(
+  "a newer start prevents delayed boot %s read from starting another session",
+  async (stage) => {
+    const read = deferred();
+    const reading = deferred();
+    ExternalCommunicationConnector.get.mockResolvedValue({
+      active: true,
+      config,
+    });
+    decryptConnectorSecret.mockReturnValue("plaintext-secret");
+    const reader =
+      stage === "connector"
+        ? ExternalCommunicationConnector.get
+        : SystemSettings.isMultiUserMode;
+    reader.mockImplementation(() => {
+      reading.resolve();
+      return read.promise;
+    });
+    const boot = LarkChannelService.bootIfActive();
+    await reading.promise;
+    await service.start({ ...config, app_id: "cli_new" });
+    read.resolve(stage === "connector" ? { active: true, config } : false);
+    await boot;
+    expect(createLarkChannel).toHaveBeenCalledTimes(1);
+    expect(createLarkChannel.mock.calls[0][0].appId).toBe("cli_new");
+    expect(channel.disconnect).not.toHaveBeenCalled();
+    expect(service.status).toMatchObject({ connected: true, last_error: null });
+  }
+);
+
+test("boot does not re-record a connection failure already reported by start", async () => {
+  ExternalCommunicationConnector.get.mockResolvedValue({
+    active: true,
+    config,
+  });
+  decryptConnectorSecret.mockReturnValue("plaintext-secret");
+  channel.connect.mockRejectedValue({ code: "permission_denied" });
+  await LarkChannelService.bootIfActive();
+  expect(service.status).toMatchObject({
+    connection_state: "failed",
+    last_error: { category: "permission_denied" },
+  });
+  expect(console.warn).toHaveBeenCalledTimes(1);
+});
