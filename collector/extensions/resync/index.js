@@ -1,6 +1,21 @@
 const { getLinkText } = require("../../processLink");
 
 /**
+ * Reads the scheme a document was imported with from the baseUrl stored in its
+ * chunkSource payload. Falls back to https for a payload with no usable
+ * baseUrl, which is what every payload resolved to before.
+ * @param {string|null} baseUrl
+ * @returns {string} the protocol including its trailing colon, eg "http:"
+ */
+function protocolOf(baseUrl) {
+  try {
+    return new URL(baseUrl).protocol;
+  } catch {
+    return "https:";
+  }
+}
+
+/**
  * Fetches the content of a raw link. Returns the content as a text string of the link in question.
  * @param {object} data - metadata from document (eg: link)
  * @param {import("../../middleware/setDataSigner").ResponseWithSigner} response
@@ -63,9 +78,13 @@ async function resyncConfluence({ chunkSource }, response) {
     const {
       fetchConfluencePage,
     } = require("../../utils/extensions/Confluence");
+    const baseUrl = source.searchParams.get("baseUrl");
     const { success, reason, content } = await fetchConfluencePage({
-      pageUrl: `https:${source.pathname}`, // need to add back the real protocol
-      baseUrl: source.searchParams.get("baseUrl"),
+      // The stored pathname carries no scheme, and the page is selected by
+      // exact match against the url the loader built from baseUrl. Rebuilding
+      // with a fixed https: made every http self-hosted page miss.
+      pageUrl: `${protocolOf(baseUrl)}${source.pathname}`,
+      baseUrl,
       spaceKey: source.searchParams.get("spaceKey"),
       accessToken: source.searchParams.get("token"),
       username: source.searchParams.get("username"),
