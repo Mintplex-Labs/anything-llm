@@ -7,8 +7,8 @@ import ConfigurationFields from "../components/ConfigurationFields";
 export default function SetupView({
   config,
   workspaces,
-  onConnected,
-  reportError,
+  lifecycleAction,
+  runLifecycle,
 }) {
   const { t } = useTranslation();
   const [platform, setPlatform] = useState(config?.platform || "lark");
@@ -16,7 +16,8 @@ export default function SetupView({
   const [secret, setSecret] = useState("");
   const [workspace, setWorkspace] = useState(config?.default_workspace || "");
   const [limit, setLimit] = useState(config?.attachment_size_limit ?? "");
-  const [connecting, setConnecting] = useState(false);
+  const busy = Boolean(lifecycleAction);
+  const connecting = lifecycleAction === "connect";
   const canReuseSecret = config?.has_app_secret;
   const validLimit =
     limit === "" || (Number.isSafeInteger(Number(limit)) && Number(limit) > 0);
@@ -28,29 +29,21 @@ export default function SetupView({
 
   async function connect(event) {
     event.preventDefault();
-    if (connecting || !canConnect) return;
-    setConnecting(true);
-    reportError(null);
-    let response;
-    try {
-      response = await Lark.connect({
-        platform,
-        app_id: appId.trim(),
-        ...(secret.trim() ? { app_secret: secret.trim() } : {}),
-        default_workspace: workspace,
-        attachment_size_limit: limit === "" ? null : Number(limit),
-      });
-    } catch {
-      reportError(t("lark.errors.connect"));
-    } finally {
-      // Never persist credentials; release the input as soon as the request settles.
-      setSecret("");
-      setConnecting(false);
-    }
-    if (!response) return;
-    if (!response.success)
-      return reportError(response.error || t("lark.errors.connect"));
-    onConnected(response.config);
+    if (busy || !canConnect) return;
+    await runLifecycle("connect", async () => {
+      try {
+        return await Lark.connect({
+          platform,
+          app_id: appId.trim(),
+          ...(secret.trim() ? { app_secret: secret.trim() } : {}),
+          default_workspace: workspace,
+          attachment_size_limit: limit === "" ? null : Number(limit),
+        });
+      } finally {
+        // Clear credentials before the page applies the result or changes views.
+        setSecret("");
+      }
+    });
   }
 
   return (
@@ -65,7 +58,7 @@ export default function SetupView({
         <PlatformSelector
           value={platform}
           onChange={setPlatform}
-          disabled={connecting}
+          disabled={busy}
         />
         <label className="flex flex-col gap-y-1.5 text-sm font-medium w-full max-w-[400px]">
           {t("lark.setup.app-id")}
@@ -73,7 +66,7 @@ export default function SetupView({
             value={appId}
             onChange={(event) => setAppId(event.target.value)}
             required
-            disabled={connecting}
+            disabled={busy}
             className="bg-zinc-800 light:bg-white light:border light:border-slate-300 rounded-lg h-9 px-3"
           />
         </label>
@@ -85,7 +78,7 @@ export default function SetupView({
             onChange={(event) => setSecret(event.target.value)}
             autoComplete="new-password"
             required={!canReuseSecret}
-            disabled={connecting}
+            disabled={busy}
             placeholder={canReuseSecret ? "••••••••" : ""}
             className="bg-zinc-800 light:bg-white light:border light:border-slate-300 rounded-lg h-9 px-3"
           />
@@ -101,11 +94,11 @@ export default function SetupView({
           setWorkspace={setWorkspace}
           limit={limit}
           setLimit={setLimit}
-          disabled={connecting}
+          disabled={busy}
         />
         <button
           type="submit"
-          disabled={connecting || !canConnect}
+          disabled={busy || !canConnect}
           className="text-sm font-medium bg-zinc-50 light:bg-slate-900 text-zinc-900 light:text-white rounded-lg h-9 px-5 w-fit hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {t(

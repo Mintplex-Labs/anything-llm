@@ -6,38 +6,16 @@ import ConfigurationFields from "../components/ConfigurationFields";
 export default function ConnectedView({
   config,
   workspaces,
-  onConfigChange,
-  reportError,
+  busy,
+  runLifecycle,
 }) {
   const { t } = useTranslation();
   const [workspace, setWorkspace] = useState(config.default_workspace || "");
   const [limit, setLimit] = useState(config.attachment_size_limit ?? "");
-  const [busy, setBusy] = useState(false);
   const valid =
     workspaces.some((item) => item.slug === workspace) &&
     (limit === "" ||
       (Number.isSafeInteger(Number(limit)) && Number(limit) > 0));
-  async function mutate(action) {
-    if (busy) return;
-    setBusy(true);
-    reportError(null);
-    try {
-      const response =
-        action === "disconnect"
-          ? await Lark.disconnect()
-          : await Lark.updateConfig({
-              default_workspace: workspace,
-              attachment_size_limit: limit === "" ? null : Number(limit),
-            });
-      if (!response.success)
-        return reportError(response.error || t(`lark.errors.${action}`));
-      onConfigChange(action === "disconnect" ? null : response.config);
-    } catch {
-      reportError(t(`lark.errors.${action}`));
-    } finally {
-      setBusy(false);
-    }
-  }
   const buttonClass =
     "text-sm font-medium bg-zinc-50 light:bg-slate-900 text-zinc-900 light:text-white rounded-lg h-9 px-5 w-fit hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed";
   return (
@@ -60,7 +38,13 @@ export default function ConnectedView({
       <form
         onSubmit={(event) => {
           event.preventDefault();
-          if (valid) mutate("save");
+          if (valid && !busy)
+            runLifecycle("save", () =>
+              Lark.updateConfig({
+                default_workspace: workspace,
+                attachment_size_limit: limit === "" ? null : Number(limit),
+              })
+            );
         }}
         className="flex flex-col gap-y-[18px]"
       >
@@ -79,14 +63,6 @@ export default function ConnectedView({
             className={buttonClass}
           >
             {t("lark.connected.save")}
-          </button>
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() => mutate("disconnect")}
-            className={buttonClass}
-          >
-            {t("lark.connected.disconnect")}
           </button>
         </div>
       </form>

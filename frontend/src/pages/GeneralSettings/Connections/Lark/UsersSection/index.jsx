@@ -10,12 +10,13 @@ export default function UsersSection({
   approvedUsers,
   refreshUsers,
   reportError,
+  disabled,
 }) {
   const { t } = useTranslation();
   const inFlight = useRef(new Set());
   const [busyIds, setBusyIds] = useState([]);
   async function actOnUser(action, id) {
-    if (inFlight.current.has(id)) return;
+    if (disabled || inFlight.current.has(id)) return;
     inFlight.current.add(id);
     setBusyIds([...inFlight.current]);
     reportError(null);
@@ -71,7 +72,7 @@ export default function UsersSection({
             <button
               key={action}
               type="button"
-              disabled={busyIds.includes(id)}
+              disabled={disabled || busyIds.includes(id)}
               onClick={() => actOnUser(action, id)}
               className="text-sm rounded-lg border border-zinc-700 light:border-slate-300 px-3 py-1.5 hover:bg-zinc-800 light:hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed"
             >

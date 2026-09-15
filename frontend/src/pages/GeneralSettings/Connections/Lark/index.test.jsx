@@ -13,12 +13,14 @@ import Admin from "@/models/admin";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
 
-const { navigate } = vi.hoisted(() => ({ navigate: vi.fn() }));
+const { navigate, translation } = vi.hoisted(() => ({
+  navigate: vi.fn(),
+  translation: { t: (key) => key },
+}));
 vi.mock("react-router-dom", () => ({ useNavigate: () => navigate }));
 vi.mock("@/components/SettingsSidebar", () => ({ default: () => null }));
 vi.mock("react-i18next", () => {
-  const t = (key) => key;
-  return { useTranslation: () => ({ t }) };
+  return { useTranslation: () => translation };
 });
 vi.mock("@/models/lark", () => ({
   default: {
@@ -89,6 +91,7 @@ function fillCredentials() {
 }
 beforeEach(() => {
   vi.resetAllMocks();
+  translation.t = (key) => key;
   System.isMultiUserMode.mockResolvedValue(false);
   Admin.workspaces.mockResolvedValue([
     { id: 1, slug: "research", name: "Research" },
@@ -106,6 +109,125 @@ afterEach(() => {
 });
 
 describe("Lark settings", () => {
+  it("preserves request ownership when translations change during disconnect", async () => {
+    const disconnect = deferred();
+    Lark.getConfig.mockResolvedValue({ config: connected });
+    Lark.disconnect.mockReturnValue(disconnect.promise);
+    const view = render(<LarkSettings />);
+    fireEvent.click(
+      await screen.findByRole("button", { name: "lark.connected.disconnect" })
+    );
+    translation.t = (key) => key;
+    await act(async () => view.rerender(<LarkSettings />));
+    expect(
+      screen.getByRole("button", { name: "lark.connected.disconnect" })
+    ).toBeDisabled();
+    expect(Lark.getConfig).toHaveBeenCalledTimes(1);
+    await act(async () => disconnect.resolve({ success: true }));
+    expect(
+      screen.getByRole("button", { name: "lark.setup.connect" })
+    ).toBeDisabled();
+  });
+
+  it.each(["failed", "reconnecting"])(
+    "can disconnect saved %s configuration without reconnecting",
+    async (state) => {
+      Lark.getConfig.mockResolvedValue({
+        config: { ...connected, connected: false, connection_state: state },
+      });
+      await setup();
+      fireEvent.click(
+        screen.getByRole("button", { name: "lark.connected.disconnect" })
+      );
+      await screen.findByRole("button", { name: "lark.setup.connect" });
+      expect(Lark.disconnect).toHaveBeenCalledTimes(1);
+      expect(Lark.connect).not.toHaveBeenCalled();
+      expect(screen.queryByRole("status")).not.toBeInTheDocument();
+    }
+  );
+
+  it("keeps disconnect ownership and disabled controls when an in-flight poll flips status", async () => {
+    vi.useFakeTimers();
+    const status = deferred();
+    const disconnect = deferred();
+    Lark.getConfig.mockResolvedValue({ config: connected });
+    Lark.status.mockReturnValue(status.promise);
+    Lark.disconnect.mockReturnValue(disconnect.promise);
+    render(<LarkSettings />);
+    await act(async () => {});
+    await act(async () => vi.advanceTimersByTimeAsync(5000));
+    fireEvent.click(
+      screen.getByRole("button", { name: "lark.connected.disconnect" })
+    );
+    await act(async () =>
+      status.resolve({
+        ...connected,
+        connected: false,
+        connection_state: "reconnecting",
+      })
+    );
+    expect(
+      screen.getByRole("button", { name: "lark.connected.disconnect" })
+    ).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: "lark.connected.save" })
+    ).toBeDisabled();
+    expect(screen.getByLabelText("lark.setup.workspace")).toBeDisabled();
+    expect(
+      screen.queryByRole("button", { name: "lark.setup.reconnect" })
+    ).not.toBeInTheDocument();
+    fireEvent.click(
+      screen.getByRole("button", { name: "lark.connected.disconnect" })
+    );
+    await act(async () => vi.advanceTimersByTimeAsync(5000));
+    expect(Lark.disconnect).toHaveBeenCalledTimes(1);
+    expect(Lark.status).toHaveBeenCalledTimes(1);
+    await act(async () => disconnect.resolve({ success: true }));
+    expect(
+      screen.getByRole("button", { name: "lark.setup.connect" })
+    ).toBeDisabled();
+    expect(screen.getByLabelText("lark.setup.app-id")).toBeEnabled();
+    expect(screen.queryByText("Team bot")).not.toBeInTheDocument();
+  });
+
+  it("keeps reconnect credentials and controls owned until its request settles", async () => {
+    vi.useFakeTimers();
+    const status = deferred();
+    const connect = deferred();
+    Lark.getConfig.mockResolvedValue({
+      config: { ...connected, connected: false, connection_state: "failed" },
+    });
+    Lark.status.mockReturnValue(status.promise);
+    Lark.connect.mockReturnValue(connect.promise);
+    render(<LarkSettings />);
+    await act(async () => {});
+    await act(async () => vi.advanceTimersByTimeAsync(5000));
+    fireEvent.change(screen.getByLabelText("lark.setup.app-secret"), {
+      target: { value: "replacement-secret" },
+    });
+    fireEvent.click(
+      screen.getByRole("button", { name: "lark.setup.reconnect" })
+    );
+    await act(async () => status.resolve(connected));
+    expect(screen.getByLabelText("lark.setup.app-secret")).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: "lark.connected.disconnect" })
+    ).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: "lark.setup.connecting" })
+    ).toBeDisabled();
+    await act(async () =>
+      connect.resolve({ success: false, error: "Could not connect to Lark." })
+    );
+    expect(screen.getByLabelText("lark.setup.app-secret")).toHaveValue("");
+    expect(
+      screen.getByRole("button", { name: "lark.setup.reconnect" })
+    ).toBeEnabled();
+    expect(
+      screen.getByRole("button", { name: "lark.connected.disconnect" })
+    ).toBeEnabled();
+  });
+
   it("requires credentials and a workspace before connecting", async () => {
     await setup();
     expect(screen.getByLabelText("lark.setup.platform")).toHaveValue("lark");

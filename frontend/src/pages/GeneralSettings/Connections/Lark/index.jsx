@@ -22,6 +22,8 @@ export default function LarkSettings() {
   const [pendingUsers, setPendingUsers] = useState([]);
   const [approvedUsers, setApprovedUsers] = useState([]);
   const [error, setError] = useState(null);
+  const [lifecycleAction, setLifecycleAction] = useState(null);
+  const lifecycleOwner = useRef(null);
   const lastError = useRef(null);
   const revision = useRef(0);
   const usersRequest = useRef(0);
@@ -45,6 +47,37 @@ export default function LarkSettings() {
       setApprovedUsers([]);
     }
   }, []);
+
+  const runLifecycle = useCallback(
+    async (action, request) => {
+      // Own the configuration before sending a lifecycle request. In-flight polls
+      // and callbacks from older generations must not replace this request's view.
+      if (!mounted.current || lifecycleOwner.current !== null) return;
+      const owner = ++revision.current;
+      lifecycleOwner.current = owner;
+      setLifecycleAction(action);
+      reportError(null);
+      const isCurrent = () =>
+        mounted.current &&
+        lifecycleOwner.current === owner &&
+        revision.current === owner;
+      try {
+        const response = await request();
+        if (!isCurrent()) return;
+        if (!response?.success)
+          return reportError(response?.error || t(`lark.errors.${action}`));
+        changeConfig(action === "disconnect" ? null : response.config);
+      } catch {
+        if (isCurrent()) reportError(t(`lark.errors.${action}`));
+      } finally {
+        if (lifecycleOwner.current === owner) {
+          lifecycleOwner.current = null;
+          if (mounted.current) setLifecycleAction(null);
+        }
+      }
+    },
+    [changeConfig, reportError, t]
+  );
 
   const refreshUsers = useCallback(async () => {
     const current = revision.current;
@@ -100,9 +133,12 @@ export default function LarkSettings() {
     return () => {
       cancelled = true;
       mounted.current = false;
+      lifecycleOwner.current = null;
       revision.current += 1;
     };
-  }, [navigate, reportError, t]);
+    // This is the page lifetime, not a translation-change subscription. A new
+    // translator must not abandon an in-flight lifecycle owner or reload config.
+  }, []);
 
   const hasConfig = Boolean(config?.app_id);
   const shouldPoll =
@@ -119,7 +155,7 @@ export default function LarkSettings() {
     let cancelled = false;
     let refreshing = false;
     const interval = setInterval(async () => {
-      if (refreshing) return;
+      if (refreshing || lifecycleOwner.current !== null) return;
       refreshing = true;
       const current = revision.current;
       try {
@@ -129,7 +165,12 @@ export default function LarkSettings() {
         else setConfig(status);
         await refreshUsers();
       } catch {
-        if (!cancelled) reportError(t("lark.errors.status"));
+        if (
+          !cancelled &&
+          current === revision.current &&
+          lifecycleOwner.current === null
+        )
+          reportError(t("lark.errors.status"));
       } finally {
         refreshing = false;
       }
@@ -189,24 +230,37 @@ export default function LarkSettings() {
                 <ConnectedView
                   config={config}
                   workspaces={workspaces}
-                  onConfigChange={changeConfig}
-                  reportError={reportError}
+                  busy={Boolean(lifecycleAction)}
+                  runLifecycle={runLifecycle}
                 />
               ) : (
                 <SetupView
                   config={config}
                   workspaces={workspaces}
-                  onConnected={changeConfig}
-                  reportError={reportError}
+                  lifecycleAction={lifecycleAction}
+                  runLifecycle={runLifecycle}
                 />
               )}
               {hasConfig && (
-                <UsersSection
-                  pendingUsers={pendingUsers}
-                  approvedUsers={approvedUsers}
-                  refreshUsers={refreshUsers}
-                  reportError={reportError}
-                />
+                <>
+                  <button
+                    type="button"
+                    disabled={Boolean(lifecycleAction)}
+                    onClick={() =>
+                      runLifecycle("disconnect", () => Lark.disconnect())
+                    }
+                    className="mt-4 text-sm font-medium bg-zinc-50 light:bg-slate-900 text-zinc-900 light:text-white rounded-lg h-9 px-5 w-fit hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {t("lark.connected.disconnect")}
+                  </button>
+                  <UsersSection
+                    pendingUsers={pendingUsers}
+                    approvedUsers={approvedUsers}
+                    refreshUsers={refreshUsers}
+                    reportError={reportError}
+                    disabled={Boolean(lifecycleAction)}
+                  />
+                </>
               )}
             </>
           )}
