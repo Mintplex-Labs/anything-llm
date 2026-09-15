@@ -80,10 +80,13 @@ const Lark = {
   },
 
   updateConfig: async function (updates) {
+    if (!updates || typeof updates !== "object" || Array.isArray(updates))
+      return FAILURE.mutation;
+
     const safeUpdates = {};
-    if (Object.hasOwn(updates, "default_workspace"))
+    if (Object.prototype.hasOwnProperty.call(updates, "default_workspace"))
       safeUpdates.default_workspace = updates.default_workspace;
-    if (Object.hasOwn(updates, "attachment_size_limit"))
+    if (Object.prototype.hasOwnProperty.call(updates, "attachment_size_limit"))
       safeUpdates.attachment_size_limit = updates.attachment_size_limit;
 
     return await request(

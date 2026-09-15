@@ -119,6 +119,17 @@ describe("Lark API client", () => {
     });
   });
 
+  test.each([null, undefined])(
+    "updateConfig normalizes %s to a safe failure",
+    async (updates) => {
+      await expect(Lark.updateConfig(updates)).resolves.toEqual({
+        success: false,
+        error: "Unable to complete Lark request.",
+      });
+      expect(fetch).not.toHaveBeenCalled();
+    }
+  );
+
   test.each([
     [
       "getConfig",
