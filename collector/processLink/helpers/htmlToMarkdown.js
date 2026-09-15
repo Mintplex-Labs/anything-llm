@@ -102,9 +102,6 @@ function htmlToMarkdown(html, baseUrl) {
       return textMatch ? textMatch[1] : "";
     });
 
-    markdown = markdown.replace(/\[#cite[^\]]*\]/g, "");
-    markdown = markdown.replace(/\[edit\]/gi, "");
-
     markdown = markdown.replace(/\n{4,}/g, "\n\n\n").trim();
     return markdown;
   } catch (error) {
