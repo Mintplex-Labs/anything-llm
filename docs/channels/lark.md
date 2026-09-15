@@ -27,7 +27,7 @@ must use Feishu.
 ## 2. Grant the application permissions
 
 Under the application's permissions page, grant these application/tenant
-permissions. Console display names can change, so search by scope identifier.
+permissions. Console labels can change, so search by scope identifier.
 
 | Scope | Purpose |
 | --- | --- |
@@ -35,7 +35,6 @@ permissions. Console display names can change, so search by scope identifier.
 | `im:message.group_at_msg:readonly` | Receive group messages that explicitly mention the bot. |
 | `im:message:send_as_bot` | Send AnythingLLM replies as the bot. |
 | `im:resource` | Download images and files attached to received messages. |
-| `contact:user.base:readonly` | Read the basic user identity used for a display name. |
 
 AnythingLLM deliberately responds only to direct messages and explicit group
 mentions. It does not need the broader permission to read every group message.
@@ -81,8 +80,8 @@ application until a new version is published and approved.
 2. Open **Settings > Channels > Lark / Feishu**.
 3. Select the same platform as the developer console used above.
 4. Enter the App ID and App Secret, choose a default workspace, and optionally
-   set an attachment-size limit. Leave the limit blank to inherit the
-   AnythingLLM upload limit.
+   set an attachment-size limit in MB. Decimal MB values are rounded to the
+   nearest byte. Leave the limit blank to inherit the AnythingLLM upload limit.
 5. Select **Connect**. AnythingLLM encrypts the App Secret before storing it and
    reports the bot identity only after the WebSocket handshake succeeds.
 
@@ -92,7 +91,9 @@ application until a new version is published and approved.
    code but does not expose workspace data or run a model yet.
 2. In the Lark / Feishu settings page, compare the user's code with the entry
    under **Pending approval**, then approve or deny it. Match both the code and
-   the displayed user details before approving.
+   the displayed user details before approving. AnythingLLM does not request a
+   contact-directory scope; if the event supplies no name, the page shows an
+   unknown-user fallback, so verify the pairing code and Open ID suffix.
 3. After approval, the user can chat in a direct message. In a group, the user
    must explicitly `@` mention the bot. Pairing codes are never posted into a
    group.

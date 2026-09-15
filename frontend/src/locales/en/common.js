@@ -1287,7 +1287,7 @@ const TRANSLATIONS = {
       "no-workspaces": "Create a workspace before connecting.",
       "attachment-limit": "Attachment size limit (MB)",
       "attachment-limit-help":
-        "Enter a positive limit in bytes, or leave blank to use the AnythingLLM default.",
+        "Enter a positive size in MB. Decimal values are rounded to the nearest byte; leave blank to use the AnythingLLM default.",
       "inherit-limit": "Use AnythingLLM default",
       connect: "Connect",
       connecting: "Connecting...",
@@ -1338,7 +1338,7 @@ const TRANSLATIONS = {
       title: "Required application setup",
       events: "Enable WebSocket events and subscribe to im.message.receive_v1.",
       scopes:
-        "Grant message receive, send-as-bot, user identity, and message resource permissions.",
+        "Grant direct-message and group-mention receive, send-as-bot, and message resource permissions.",
     },
     toast: {
       connected: "Lark channel connected.",

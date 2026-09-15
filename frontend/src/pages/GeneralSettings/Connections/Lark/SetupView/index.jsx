@@ -2,7 +2,10 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import Lark from "@/models/lark";
 import PlatformSelector from "../components/PlatformSelector";
-import ConfigurationFields from "../components/ConfigurationFields";
+import ConfigurationFields, {
+  bytesToMegabytes,
+  megabytesToBytes,
+} from "../components/ConfigurationFields";
 
 export default function SetupView({
   config,
@@ -15,12 +18,14 @@ export default function SetupView({
   const [appId, setAppId] = useState(config?.app_id || "");
   const [secret, setSecret] = useState("");
   const [workspace, setWorkspace] = useState(config?.default_workspace || "");
-  const [limit, setLimit] = useState(config?.attachment_size_limit ?? "");
+  const [limit, setLimit] = useState(
+    bytesToMegabytes(config?.attachment_size_limit)
+  );
   const busy = Boolean(lifecycleAction);
   const connecting = lifecycleAction === "connect";
   const canReuseSecret = config?.has_app_secret;
-  const validLimit =
-    limit === "" || (Number.isSafeInteger(Number(limit)) && Number(limit) > 0);
+  const limitBytes = megabytesToBytes(limit);
+  const validLimit = limitBytes !== undefined;
   const canConnect =
     appId.trim() &&
     (secret.trim() || canReuseSecret) &&
@@ -37,7 +42,7 @@ export default function SetupView({
           app_id: appId.trim(),
           ...(secret.trim() ? { app_secret: secret.trim() } : {}),
           default_workspace: workspace,
-          attachment_size_limit: limit === "" ? null : Number(limit),
+          attachment_size_limit: limitBytes,
         });
       } finally {
         // Clear credentials before the page applies the result or changes views.

@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import Lark from "@/models/lark";
-import ConfigurationFields from "../components/ConfigurationFields";
+import ConfigurationFields, {
+  bytesToMegabytes,
+  megabytesToBytes,
+} from "../components/ConfigurationFields";
 
 export default function ConnectedView({
   config,
@@ -11,11 +14,13 @@ export default function ConnectedView({
 }) {
   const { t } = useTranslation();
   const [workspace, setWorkspace] = useState(config.default_workspace || "");
-  const [limit, setLimit] = useState(config.attachment_size_limit ?? "");
+  const [limit, setLimit] = useState(
+    bytesToMegabytes(config.attachment_size_limit)
+  );
+  const limitBytes = megabytesToBytes(limit);
   const valid =
     workspaces.some((item) => item.slug === workspace) &&
-    (limit === "" ||
-      (Number.isSafeInteger(Number(limit)) && Number(limit) > 0));
+    limitBytes !== undefined;
   const buttonClass =
     "text-sm font-medium bg-zinc-50 light:bg-slate-900 text-zinc-900 light:text-white rounded-lg h-9 px-5 w-fit hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed";
   return (
@@ -42,7 +47,7 @@ export default function ConnectedView({
             runLifecycle("save", () =>
               Lark.updateConfig({
                 default_workspace: workspace,
-                attachment_size_limit: limit === "" ? null : Number(limit),
+                attachment_size_limit: limitBytes,
               })
             );
         }}

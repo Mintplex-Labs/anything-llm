@@ -1545,7 +1545,7 @@ const TRANSLATIONS = {
       "no-workspaces": "请先创建工作区再连接。",
       "attachment-limit": "附件大小限制（MB）",
       "attachment-limit-help":
-        "输入以字节为单位的正整数；留空则使用 AnythingLLM 默认值。",
+        "输入以 MB 为单位的正数。小数值将四舍五入到最接近的字节；留空则使用 AnythingLLM 默认值。",
       "inherit-limit": "使用 AnythingLLM 默认值",
       connect: "连接",
       connecting: "正在连接...",
@@ -1593,7 +1593,7 @@ const TRANSLATIONS = {
     permissions: {
       title: "应用必需配置",
       events: "启用 WebSocket 事件并订阅 im.message.receive_v1。",
-      scopes: "授予接收消息、机器人发送消息、用户身份和消息资源权限。",
+      scopes: "授予接收单聊和群聊 @ 消息、机器人发送消息及消息资源权限。",
     },
     toast: {
       connected: "Lark 频道已连接。",

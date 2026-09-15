@@ -279,6 +279,24 @@ describe("Lark settings", () => {
     }
   );
 
+  it("converts setup attachment megabytes to integer bytes before connecting", async () => {
+    await setup();
+    fillCredentials();
+    fireEvent.change(screen.getByLabelText("lark.setup.attachment-limit"), {
+      target: { value: "1" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "lark.setup.connect" }));
+    await waitFor(() =>
+      expect(Lark.connect).toHaveBeenCalledWith({
+        platform: "lark",
+        app_id: "cli_1",
+        app_secret: "secret",
+        default_workspace: "research",
+        attachment_size_limit: 1_048_576,
+      })
+    );
+  });
+
   it("handles rejected requests without retaining the secret or showing raw errors", async () => {
     Lark.connect.mockRejectedValue(new Error("raw secret internal failure"));
     await setup();
@@ -420,11 +438,24 @@ describe("Lark settings", () => {
     );
   });
 
-  it("saves workspace and positive byte limits, and blank restores inheritance", async () => {
+  it.each([
+    [1_572_864, "1.5"],
+    [null, ""],
+  ])("renders stored byte limit %s as megabytes '%s'", async (bytes, mb) => {
+    Lark.getConfig.mockResolvedValue({
+      config: { ...connected, attachment_size_limit: bytes },
+    });
+    render(<LarkSettings />);
+    expect(
+      await screen.findByLabelText("lark.setup.attachment-limit")
+    ).toHaveValue(mb === "" ? null : Number(mb));
+  });
+
+  it("saves decimal megabytes as bytes, rejects unsafe edges, and blank restores inheritance", async () => {
     Lark.getConfig.mockResolvedValue({ config: connected });
     Lark.updateConfig.mockResolvedValue({
       success: true,
-      config: { ...connected, attachment_size_limit: 1024 },
+      config: { ...connected, attachment_size_limit: 1_572_864 },
     });
     render(<LarkSettings />);
     const input = await screen.findByLabelText("lark.setup.attachment-limit");
@@ -432,14 +463,22 @@ describe("Lark settings", () => {
     expect(
       screen.getByRole("button", { name: "lark.connected.save" })
     ).toBeDisabled();
-    fireEvent.change(input, { target: { value: "1024" } });
+    fireEvent.change(input, { target: { value: "0.0000001" } });
+    expect(
+      screen.getByRole("button", { name: "lark.connected.save" })
+    ).toBeDisabled();
+    fireEvent.change(input, { target: { value: "8589934592" } });
+    expect(
+      screen.getByRole("button", { name: "lark.connected.save" })
+    ).toBeDisabled();
+    fireEvent.change(input, { target: { value: "1.5" } });
     fireEvent.click(
       screen.getByRole("button", { name: "lark.connected.save" })
     );
     await waitFor(() =>
       expect(Lark.updateConfig).toHaveBeenCalledWith({
         default_workspace: "research",
-        attachment_size_limit: 1024,
+        attachment_size_limit: 1_572_864,
       })
     );
     await waitFor(() =>

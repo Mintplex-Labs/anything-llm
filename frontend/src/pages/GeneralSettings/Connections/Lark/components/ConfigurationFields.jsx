@@ -1,5 +1,22 @@
 import { useTranslation } from "react-i18next";
 
+export const BYTES_PER_MEGABYTE = 1024 * 1024;
+
+export function bytesToMegabytes(value) {
+  if (value == null) return "";
+  if (!Number.isSafeInteger(value) || value <= 0) return "";
+  return String(value / BYTES_PER_MEGABYTE);
+}
+
+export function megabytesToBytes(value) {
+  if (value === "") return null;
+  const megabytes = Number(value);
+  if (!Number.isFinite(megabytes) || megabytes <= 0) return undefined;
+  const bytes = Math.round(megabytes * BYTES_PER_MEGABYTE);
+  if (!Number.isSafeInteger(bytes) || bytes <= 0) return undefined;
+  return bytes;
+}
+
 export default function ConfigurationFields({
   workspaces,
   workspace,
@@ -39,8 +56,8 @@ export default function ConfigurationFields({
         {t("lark.setup.attachment-limit")}
         <input
           type="number"
-          min="1"
-          step="1"
+          min={0.5 / BYTES_PER_MEGABYTE}
+          step="any"
           value={limit}
           onChange={(event) => setLimit(event.target.value)}
           disabled={disabled}
