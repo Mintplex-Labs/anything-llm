@@ -16,34 +16,29 @@ const quietLogger = {
   trace() {},
 };
 
-function actualSdkStreamChannel({ failUpdate } = {}) {
+function highLevelSdkChannel({ send, updateCard, recallMessage } = {}) {
   const snapshots = [];
   const channel = createLarkChannel({
     appId: "cli_test",
     appSecret: "test-secret",
     logger: quietLogger,
-    outbound: {
-      streamThrottleMs: 0,
-      streamThrottleChars: 1,
-      streamInitialText: "",
-    },
   });
-  Object.assign(channel.sender, {
-    createCardInstance: jest.fn(async () => "card_1"),
-    sendCardByReference: jest.fn(async () => "om_stream"),
-    updateCardElementContent: jest.fn(async (_cardId, _elementId, content) => {
-      if (failUpdate) throw failUpdate;
-      snapshots.push(content);
-    }),
-    finishStreamingCard: jest.fn(async () => {}),
-    sendOneWithFallback: jest.fn(async () => "om_stream"),
-    patchCard: jest.fn(async (_messageId, card) => {
-      if (typeof failUpdate === "function") await failUpdate();
-      else if (failUpdate) throw failUpdate;
-      snapshots.push(card.body.elements[0].content);
-    }),
+  channel.send = jest.fn(
+    send ||
+      (async (_to, input) => ({
+        messageId: input.card ? "om_card" : "om_fallback",
+      }))
+  );
+  channel.updateCard = jest.fn(async (messageId, card) => {
+    if (updateCard) await updateCard(messageId, card);
+    snapshots.push(card.body.elements[0].content);
   });
-  channel.send = jest.fn().mockResolvedValue({ messageId: "om_fallback" });
+  channel.recallMessage = jest.fn(async (messageId) => {
+    if (recallMessage) await recallMessage(messageId);
+  });
+  channel.stream = jest.fn(() => {
+    throw new Error("SDK-owned streaming must not be used");
+  });
   return { channel, snapshots };
 }
 
@@ -57,190 +52,211 @@ function deferred() {
   return { promise, resolve, reject };
 }
 
-function fakeStreamingChannel() {
-  const snapshots = [];
-  const controller = {
-    update: jest.fn(async (card) =>
-      snapshots.push(card.body.elements[0].content)
-    ),
-  };
-  const channel = {
-    send: jest.fn().mockResolvedValue({ messageId: "om_send" }),
-    stream: jest.fn(async (_chatId, input) => input.card.producer(controller)),
-  };
-  return { channel, snapshots, controller };
-}
-
-test("streams ordered chunks and completes one reply to the source group message", async () => {
-  const { channel, snapshots, controller } = fakeStreamingChannel();
-  const transport = createLarkTransport({
-    channel,
-    message: {
-      chatId: "oc_1",
-      messageId: "om_1",
-      chatType: "group",
-    },
-  });
-
-  await transport.start();
-  await transport.append("hello ");
-  await transport.append("world");
-  await transport.complete({ text: "hello world", sources: [] });
-
-  expect(channel.stream).toHaveBeenCalledTimes(1);
-  expect(channel.stream).toHaveBeenCalledWith(
-    "oc_1",
-    {
-      card: {
-        initial: expect.any(Object),
-        producer: expect.any(Function),
-      },
-    },
-    { replyTo: "om_1" }
-  );
-  expect(
-    controller.update.mock.calls.map(([card]) => card.body.elements[0].content)
-  ).toEqual(["hello world"]);
-  expect(snapshots.at(-1)).toBe("hello world");
-});
-
-test("preserves repeated and overlapping deltas through the actual SDK stream", async () => {
-  const { channel, snapshots } = actualSdkStreamChannel();
-  const transport = createLarkTransport({
-    channel,
-    message: { chatId: "oc_1", messageId: "om_1", chatType: "group" },
-  });
-
-  await transport.start();
-  await transport.append("ha");
-  await transport.append("ha");
-  await transport.append("ab");
-  await transport.append("bc");
-  await transport.complete({ text: "hahaabbc" });
-
-  expect(snapshots.at(-1)).toBe("hahaabbc");
-});
-
-test("falls back after an actual SDK card update failure following card creation", async () => {
-  const failure = {
-    code: "permission_denied",
-    message: "secret update response",
-    response: { data: "raw card body" },
-  };
-  const { channel } = actualSdkStreamChannel({ failUpdate: failure });
-  const transport = createLarkTransport({
-    channel,
-    message: { chatId: "oc_1", messageId: "om_1", chatType: "group" },
-  });
-
-  await transport.start();
-  await transport.append("complete answer");
-  await transport.complete({ text: "complete answer" });
-
-  expect(channel.sender.sendOneWithFallback).toHaveBeenCalledTimes(1);
-  expect(channel.send).toHaveBeenCalledWith(
-    "oc_1",
-    { markdown: "complete answer" },
-    { replyTo: "om_1" }
-  );
-  expect(JSON.stringify(channel.send.mock.calls)).not.toMatch(
-    /secret update response|raw card body/
-  );
-});
-
-test("keeps a delayed actual SDK patch failure handled and sends one complete fallback", async () => {
-  const failure = {
-    code: "permission_denied",
-    message: "secret timer response",
-    response: { data: "raw timer body" },
-  };
-  let patchCount = 0;
-  const { channel } = actualSdkStreamChannel({
-    failUpdate: async () => {
-      patchCount += 1;
-      if (patchCount === 1) throw failure;
-    },
-  });
-  const unhandledRejections = [];
-  const observeUnhandled = (error) => unhandledRejections.push(error);
-  process.on("unhandledRejection", observeUnhandled);
+test("shows progressive cumulative output before completion and replies in the group", async () => {
+  jest.useFakeTimers();
   try {
+    const { channel, snapshots } = highLevelSdkChannel();
     const transport = createLarkTransport({
       channel,
       message: { chatId: "oc_1", messageId: "om_1", chatType: "group" },
     });
 
     await transport.start();
-    await transport.append("complete ");
-    await new Promise((resolve) => setTimeout(resolve, 20));
-    await transport.append("answer");
-    await transport.complete({ text: "complete answer" });
-    await new Promise((resolve) => setImmediate(resolve));
+    await transport.append("hello");
+    await jest.advanceTimersByTimeAsync(100);
 
-    expect(unhandledRejections).toEqual([]);
-    expect(channel.sender.patchCard).toHaveBeenCalledTimes(1);
-    expect(channel.send.mock.calls).toEqual([
-      ["oc_1", { markdown: "complete answer" }, { replyTo: "om_1" }],
-    ]);
-    expect(JSON.stringify(channel.send.mock.calls)).not.toMatch(
-      /secret timer response|raw timer body/
+    expect(snapshots).toEqual(["hello"]);
+    expect(channel.send).toHaveBeenNthCalledWith(
+      1,
+      "oc_1",
+      { card: expect.any(Object) },
+      { replyTo: "om_1" }
     );
+
+    await transport.append(" world");
+    await transport.complete({ text: "hello world", sources: [] });
+
+    expect(snapshots).toEqual(["hello", "hello world"]);
+    expect(channel.stream).not.toHaveBeenCalled();
   } finally {
-    process.removeListener("unhandledRejection", observeUnhandled);
+    jest.useRealTimers();
   }
 });
 
-test("cancel closes an active SDK stream and suppresses later transport effects", async () => {
-  const { channel, snapshots } = actualSdkStreamChannel();
-  const transport = createLarkTransport({
-    channel,
-    message: { chatId: "oc_1", messageId: "om_1", chatType: "group" },
+test("complete awaits the final cumulative card update", async () => {
+  const updateStarted = deferred();
+  const finalUpdate = deferred();
+  const { channel } = highLevelSdkChannel({
+    updateCard: async () => {
+      updateStarted.resolve();
+      await finalUpdate.promise;
+    },
   });
-
-  await transport.start();
-  await transport.append("partial answer");
-  await transport.cancel();
-  expect(snapshots.at(-1)).toBe("Thinking...");
-
-  const updateCount = channel.sender.patchCard.mock.calls.length;
-  const sendCount = channel.send.mock.calls.length;
-  await transport.append("late chunk");
-  await transport.status("late status");
-  await transport.artifact({ filename: "late.txt" });
-  await transport.complete({ text: "late completion" });
-
-  expect(channel.sender.patchCard).toHaveBeenCalledTimes(updateCount);
-  expect(channel.send).toHaveBeenCalledTimes(sendCount);
-});
-
-test("cancel while finish awaits a rejected stream suppresses fallback", async () => {
-  const stream = deferred();
-  const channel = {
-    stream: jest.fn(() => stream.promise),
-    send: jest.fn().mockResolvedValue({ messageId: "om_fallback" }),
-  };
   const transport = createLarkTransport({
     channel,
-    message: { chatId: "oc_1", messageId: "om_1", chatType: "group" },
+    message: { chatId: "ou_1", messageId: "om_1", chatType: "p2p" },
   });
 
   await transport.start();
   await transport.append("answer");
-  const completion = transport.complete({ text: "answer" });
-  await new Promise((resolve) => setImmediate(resolve));
-  const cancellation = transport.cancel();
-  let errorInspections = 0;
-  stream.reject({
-    get code() {
-      errorInspections += 1;
-      return "permission_denied";
-    },
-    message: "private failure",
+  let completed = false;
+  const completion = transport.complete({ text: "answer" }).then(() => {
+    completed = true;
   });
-  await Promise.all([completion, cancellation]);
+  await updateStarted.promise;
+  await new Promise((resolve) => setImmediate(resolve));
+  expect(completed).toBe(false);
 
-  expect(errorInspections).toBe(0);
-  expect(channel.send).not.toHaveBeenCalled();
+  finalUpdate.resolve();
+  await completion;
+  expect(completed).toBe(true);
+  expect(channel.updateCard).toHaveBeenCalledWith(
+    "om_card",
+    expect.objectContaining({ schema: "2.0" })
+  );
+});
+
+test("throttles token deltas into one cumulative card update", async () => {
+  jest.useFakeTimers();
+  try {
+    const { channel, snapshots } = highLevelSdkChannel();
+    const transport = createLarkTransport({
+      channel,
+      message: { chatId: "ou_1", messageId: "om_1", chatType: "p2p" },
+    });
+
+    await transport.start();
+    await transport.append("a");
+    await transport.append("b");
+    await transport.append("c");
+    await jest.advanceTimersByTimeAsync(99);
+    expect(snapshots).toEqual([]);
+
+    await jest.advanceTimersByTimeAsync(1);
+    expect(snapshots).toEqual(["abc"]);
+    await transport.complete({ text: "abc" });
+    expect(channel.updateCard).toHaveBeenCalledTimes(1);
+  } finally {
+    jest.useRealTimers();
+  }
+});
+
+test("preserves repeated and overlapping deltas in cumulative updates", async () => {
+  jest.useFakeTimers();
+  try {
+    const { channel, snapshots } = highLevelSdkChannel();
+    const transport = createLarkTransport({
+      channel,
+      message: { chatId: "oc_1", messageId: "om_1", chatType: "group" },
+    });
+
+    await transport.start();
+    await transport.append("ha");
+    await transport.append("ha");
+    await transport.append("ab");
+    await transport.append("bc");
+    await jest.advanceTimersByTimeAsync(100);
+    await transport.complete({ text: "hahaabbc" });
+
+    expect(snapshots.at(-1)).toBe("hahaabbc");
+  } finally {
+    jest.useRealTimers();
+  }
+});
+
+test("handles an intermediate update failure and sends one complete fallback", async () => {
+  jest.useFakeTimers();
+  const unhandledRejections = [];
+  const observeUnhandled = (error) => unhandledRejections.push(error);
+  process.on("unhandledRejection", observeUnhandled);
+  try {
+    const failure = {
+      code: "permission_denied",
+      message: "secret update response",
+      response: { data: "raw card body" },
+    };
+    const { channel } = highLevelSdkChannel({
+      updateCard: async () => {
+        throw failure;
+      },
+      recallMessage: async () => {
+        throw new Error("secret cleanup response");
+      },
+    });
+    const transport = createLarkTransport({
+      channel,
+      message: { chatId: "oc_1", messageId: "om_1", chatType: "group" },
+    });
+
+    await transport.start();
+    await transport.append("partial");
+    await jest.advanceTimersByTimeAsync(100);
+    await transport.append(" complete answer");
+    await transport.complete({ text: "partial complete answer" });
+    await Promise.resolve();
+
+    expect(unhandledRejections).toEqual([]);
+    expect(channel.updateCard).toHaveBeenCalledTimes(1);
+    expect(channel.recallMessage).toHaveBeenCalledWith("om_card");
+    expect(channel.send.mock.calls).toEqual([
+      ["oc_1", { card: expect.any(Object) }, { replyTo: "om_1" }],
+      ["oc_1", { markdown: "partial complete answer" }, { replyTo: "om_1" }],
+    ]);
+    expect(JSON.stringify(channel.send.mock.calls)).not.toMatch(
+      /secret update response|raw card body|secret cleanup response/
+    );
+  } finally {
+    process.removeListener("unhandledRejection", observeUnhandled);
+    jest.useRealTimers();
+  }
+});
+
+test("cancel waits for an in-flight update, clears queued work, and finalizes the card", async () => {
+  jest.useFakeTimers();
+  try {
+    const firstUpdate = deferred();
+    let updateCount = 0;
+    const { channel, snapshots } = highLevelSdkChannel({
+      updateCard: async () => {
+        updateCount += 1;
+        if (updateCount === 1) await firstUpdate.promise;
+      },
+    });
+    const transport = createLarkTransport({
+      channel,
+      message: { chatId: "oc_1", messageId: "om_1", chatType: "group" },
+    });
+
+    await transport.start();
+    await transport.append("partial");
+    jest.advanceTimersByTime(100);
+    await Promise.resolve();
+    await transport.append(" queued");
+    let cancelled = false;
+    const cancellation = transport.cancel().then(() => {
+      cancelled = true;
+    });
+    await Promise.resolve();
+    expect(cancelled).toBe(false);
+
+    firstUpdate.resolve();
+    await cancellation;
+    expect(snapshots).toEqual(["partial", "Generation cancelled."]);
+    const callsAfterCancellation = channel.updateCard.mock.calls.length;
+    await jest.advanceTimersByTimeAsync(100);
+    expect(channel.updateCard).toHaveBeenCalledTimes(callsAfterCancellation);
+
+    const sendCount = channel.send.mock.calls.length;
+    const updateCalls = channel.updateCard.mock.calls.length;
+    await transport.append("late chunk");
+    await transport.status("late status");
+    await transport.artifact({ filename: "late.txt" });
+    await transport.complete({ text: "late completion" });
+    expect(channel.send).toHaveBeenCalledTimes(sendCount);
+    expect(channel.updateCard).toHaveBeenCalledTimes(updateCalls);
+  } finally {
+    jest.useRealTimers();
+  }
 });
 
 test("cancel during a bounded send suppresses every later chunk", async () => {
@@ -291,7 +307,7 @@ test("cancel during a rejected Markdown send suppresses the plain-text retry", a
 });
 
 test("implements the complete shared channel transport contract", () => {
-  const { channel } = fakeStreamingChannel();
+  const { channel } = highLevelSdkChannel();
 
   expect(() =>
     assertChannelTransport(
@@ -329,7 +345,7 @@ test("delivers status and safe artifact labels as readable fallback messages", a
 });
 
 test("finalizes an active stream with the public failure message", async () => {
-  const { channel, snapshots } = fakeStreamingChannel();
+  const { channel, snapshots } = highLevelSdkChannel();
   const transport = createLarkTransport({
     channel,
     message: { chatId: "oc_1", messageId: "om_1", chatType: "group" },
@@ -342,7 +358,7 @@ test("finalizes an active stream with the public failure message", async () => {
 });
 
 test("does not turn a direct-message response into a reply thread", async () => {
-  const { channel } = fakeStreamingChannel();
+  const { channel } = highLevelSdkChannel();
   const transport = createLarkTransport({
     channel,
     message: { chatId: "ou_1", messageId: "om_1", chatType: "p2p" },
@@ -351,11 +367,15 @@ test("does not turn a direct-message response into a reply thread", async () => 
   await transport.start();
   await transport.complete({ text: "hello" });
 
-  expect(channel.stream).toHaveBeenCalledWith("ou_1", expect.any(Object), {});
+  expect(channel.send).toHaveBeenCalledWith(
+    "ou_1",
+    { card: expect.any(Object) },
+    {}
+  );
 });
 
 test("replaces streamed draft text with a differing final agent response", async () => {
-  const { channel, snapshots, controller } = fakeStreamingChannel();
+  const { channel, snapshots } = highLevelSdkChannel();
   const transport = createLarkTransport({
     channel,
     message: { chatId: "oc_1", messageId: "om_1", chatType: "group" },
@@ -365,7 +385,7 @@ test("replaces streamed draft text with a differing final agent response", async
   await transport.append("draft");
   await transport.complete({ text: "final answer", agent: true });
 
-  expect(controller.update.mock.calls.at(-1)[0].body.elements[0].content).toBe(
+  expect(channel.updateCard.mock.calls.at(-1)[1].body.elements[0].content).toBe(
     "final answer"
   );
   expect(snapshots.at(-1)).toBe("final answer");
@@ -429,12 +449,15 @@ test.each(["permission_denied", "format_error"])(
   "falls back to bounded sends when streaming fails with %s",
   async (code) => {
     const channel = {
-      stream: jest.fn().mockRejectedValue({
-        code,
-        message: "sensitive SDK response",
-        response: { data: "raw body" },
-      }),
-      send: jest.fn().mockResolvedValue({ messageId: "om_fallback" }),
+      updateCard: jest.fn(),
+      send: jest
+        .fn()
+        .mockRejectedValueOnce({
+          code,
+          message: "sensitive SDK response",
+          response: { data: "raw body" },
+        })
+        .mockResolvedValueOnce({ messageId: "om_fallback" }),
     };
     const transport = createLarkTransport({
       channel,
@@ -475,12 +498,12 @@ test("degrades a rejected Markdown chunk to readable plain text", async () => {
 
 test("sanitizes non-fallback SDK errors", async () => {
   const channel = {
-    stream: jest.fn().mockRejectedValue({
+    updateCard: jest.fn(),
+    send: jest.fn().mockRejectedValue({
       code: "not_connected",
       message: "secret response detail",
       response: { data: "raw body" },
     }),
-    send: jest.fn(),
   };
   const transport = createLarkTransport({
     channel,
