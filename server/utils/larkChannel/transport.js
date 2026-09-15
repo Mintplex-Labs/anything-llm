@@ -132,14 +132,20 @@ function createLarkTransport({ channel, message, onToolApproval }) {
 
   async function sendBounded(text) {
     for (const chunk of splitLarkMarkdown(text)) {
+      if (cancelled) return;
       try {
         await channel.send(message.chatId, { markdown: chunk }, replyOptions);
+        if (cancelled) return;
       } catch (error) {
+        if (cancelled) return;
         if (sanitizedError(error).category !== "format_error")
           throw safeTransportError(error);
+        if (cancelled) return;
         try {
           await channel.send(message.chatId, { text: chunk }, replyOptions);
+          if (cancelled) return;
         } catch (fallbackError) {
+          if (cancelled) return;
           throw safeTransportError(fallbackError);
         }
       }
@@ -159,9 +165,16 @@ function createLarkTransport({ channel, message, onToolApproval }) {
               initial: streamingCard(""),
               producer: async (controller) => {
                 streamOpened = true;
+                let latest = null;
                 for await (const event of queue.events()) {
-                  await controller.update(streamingCard(event.text));
+                  latest = event;
                 }
+                // SDK 1.74.0 does not expose failures from timer-driven card
+                // patches: update() resolves after scheduling `void doFire()`.
+                // Submit only the latest cumulative snapshot as the producer
+                // closes, so completeTerminal() owns and propagates the patch.
+                if (!cancelled && latest)
+                  await controller.update(streamingCard(latest.text));
               },
             },
           },
@@ -199,7 +212,9 @@ function createLarkTransport({ channel, message, onToolApproval }) {
     queue.close();
     try {
       await streamPromise;
+      if (cancelled) return cancellationPromise;
     } catch (error) {
+      if (cancelled) return cancellationPromise;
       const { category } = sanitizedError(error);
       if (streamOpened || STREAM_FALLBACK_ERRORS.has(category))
         return sendBounded(finalText);
@@ -221,6 +236,7 @@ function createLarkTransport({ channel, message, onToolApproval }) {
       completionPromise = finish({ text });
       return await completionPromise;
     } catch {
+      if (cancelled) return cancellationPromise;
       return sendBounded(text);
     }
   }
@@ -237,15 +253,20 @@ function createLarkTransport({ channel, message, onToolApproval }) {
         { card: approvalCard(request) },
         replyOptions
       );
+      if (cancelled) return { approved: false, message: APPROVAL_UNAVAILABLE };
     } catch (error) {
+      if (cancelled) return { approved: false, message: APPROVAL_UNAVAILABLE };
       const { category } = sanitizedError(error);
       if (!STREAM_FALLBACK_ERRORS.has(category))
         throw safeTransportError(error);
       await sendBounded(APPROVAL_UNAVAILABLE);
       return { approved: false, message: APPROVAL_UNAVAILABLE };
     }
+    if (cancelled) return { approved: false, message: APPROVAL_UNAVAILABLE };
     try {
-      return await onToolApproval(request);
+      const result = await onToolApproval(request);
+      if (cancelled) return { approved: false, message: APPROVAL_UNAVAILABLE };
+      return result;
     } catch {
       return { approved: false, message: APPROVAL_UNAVAILABLE };
     }
