@@ -572,6 +572,7 @@ class EphemeralAgentHandler extends AgentHandler {
         muteUserReply: true,
         introspection: true,
         telegramChatId: args.telegramChatId,
+        requestToolApproval: args.requestToolApproval,
       })
     );
 

@@ -71,6 +71,7 @@ const httpSocket = {
     muteUserReply = true, // Do not post messages to "USER" back to frontend.
     introspection = false, // when enabled will attach socket to Aibitat object with .introspect method which reports status updates to frontend.
     telegramChatId = null, // When set, enables tool approval via Telegram IPC
+    requestToolApproval = null, // Optional platform-neutral approval transport
   }) {
     return {
       name: this.name,
@@ -143,7 +144,14 @@ const httpSocket = {
             };
           }
 
-          // Tool approval only available in Telegram worker context
+          if (typeof requestToolApproval === "function") {
+            aibitat.introspect(
+              `Requesting approval to execute: ${skillName}${description ? ` - ${description}` : ""}`
+            );
+            return requestToolApproval({ skillName, payload, description });
+          }
+
+          // Legacy Telegram worker fallback
           const ipc = getWorkerIPC();
           if (!telegramChatId || !ipc) {
             console.log(
