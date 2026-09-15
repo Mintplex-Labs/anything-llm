@@ -1,10 +1,20 @@
 const { CommunicationKey } = require("../utils/comKey");
 const RuntimeSettings = require("../utils/runtimeSettings");
 const runtimeSettings = new RuntimeSettings();
+const { reqBody } = require("../utils/http");
 
 function verifyPayloadIntegrity(request, response, next) {
   const comKey = new CommunicationKey();
-  if (process.env.NODE_ENV === "development") {
+  // Safe parsing is an authenticated server capability, including development.
+  let safeLogging;
+  try {
+    safeLogging = reqBody(request)?.options?.safeLogging === true;
+  } catch {
+    return response
+      .status(400)
+      .json({ msg: "Failed integrity signature check." });
+  }
+  if (process.env.NODE_ENV === "development" && !safeLogging) {
     comKey.log("verifyPayloadIntegrity is skipped in development.");
     runtimeSettings.parseOptionsFromRequest(request);
     next();
@@ -22,6 +32,8 @@ function verifyPayloadIntegrity(request, response, next) {
     return response
       .status(400)
       .json({ msg: "Failed integrity signature check." });
+
+  request.payloadIntegrityVerified = true;
 
   runtimeSettings.parseOptionsFromRequest(request);
   next();

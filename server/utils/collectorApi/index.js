@@ -327,6 +327,8 @@ class CollectorApi {
    * @param {string} filename - The filename of the document to parse
    * @param {Object} parseOptions - Additional options for parsing
    * @param {string} parseOptions.absolutePath - If provided, use this absolute path instead of looking in the hotdir
+   * @param {boolean} parseOptions.safeLogging - Isolate parser diagnostics for external-channel files
+   * @param {AbortSignal} parseOptions.signal - Cancel the request and collector worker
    * @returns {Promise<Object>} - The response from the collector API
    */
   async parseDocument(filename = "", parseOptions = {}) {
@@ -337,11 +339,13 @@ class CollectorApi {
       options: {
         ...this.#attachOptions(),
         absolutePath: parseOptions.absolutePath || null,
+        ...(parseOptions.safeLogging === true ? { safeLogging: true } : {}),
       },
     });
 
     return await fetch(`${this.endpoint}/parse`, {
       method: "POST",
+      signal: parseOptions.signal,
       headers: {
         "Content-Type": "application/json",
         "X-Integrity": this.comkey.sign(data),
@@ -357,8 +361,10 @@ class CollectorApi {
       })
       .then((res) => res)
       .catch((e) => {
-        this.log(e.message);
-        return { success: false, reason: e.message, documents: [] };
+        const reason =
+          parseOptions.safeLogging === true ? "parse_failed" : e.message;
+        this.log(reason);
+        return { success: false, reason, documents: [] };
       });
   }
 }

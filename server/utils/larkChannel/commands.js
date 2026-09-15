@@ -25,26 +25,29 @@ function sendText(channel, chatId, text, replyOptions) {
   return channel.send(chatId, { text }, replyOptions);
 }
 
-async function updateChannelState(stateStore, userId, updates) {
+async function updateChannelState(stateStore, userId, updates, run) {
   try {
-    await stateStore.set(userId, updates);
+    await run(() => stateStore.set(userId, updates));
     return true;
-  } catch {
+  } catch (error) {
+    if (error.name === "AbortError") throw error;
     return false;
   }
 }
 
-async function activeWorkspace(state) {
+async function activeWorkspace(state, run) {
   if (!state.workspaceSlug) return null;
-  return Workspace.get({ slug: state.workspaceSlug });
+  return run(() => Workspace.get({ slug: state.workspaceSlug }));
 }
 
-async function activeThread(state, workspace) {
+async function activeThread(state, workspace, run) {
   if (!state.threadSlug) return null;
-  return WorkspaceThread.get({
-    slug: state.threadSlug,
-    workspace_id: workspace.id,
-  });
+  return run(() =>
+    WorkspaceThread.get({
+      slug: state.threadSlug,
+      workspace_id: workspace.id,
+    })
+  );
 }
 
 function numberedList(records) {
@@ -60,22 +63,28 @@ async function handleWorkspace({
   stateStore,
   channel,
   replyOptions,
+  run,
 }) {
   if (!args) {
-    const workspaces = await Workspace.where({});
+    const workspaces = await run(() => Workspace.where({}));
     const lines = ["Available workspaces:", ...numberedList(workspaces)];
     if (workspaces.length === 0) lines.push("No workspaces available.");
     lines.push("", "Usage: /workspace <slug>");
     return sendText(channel, chatId, lines.join("\n"), replyOptions);
   }
 
-  const workspace = await Workspace.get({ slug: args });
+  const workspace = await run(() => Workspace.get({ slug: args }));
   if (!workspace)
     return sendText(channel, chatId, "Workspace not found.", replyOptions);
-  const updated = await updateChannelState(stateStore, userId, {
-    workspaceSlug: workspace.slug,
-    threadSlug: null,
-  });
+  const updated = await updateChannelState(
+    stateStore,
+    userId,
+    {
+      workspaceSlug: workspace.slug,
+      threadSlug: null,
+    },
+    run
+  );
   if (!updated)
     return sendText(
       channel,
@@ -99,28 +108,38 @@ async function handleThread({
   channel,
   state,
   replyOptions,
+  run,
 }) {
-  const workspace = await activeWorkspace(state);
+  const workspace = await activeWorkspace(state, run);
   if (!workspace)
     return sendText(channel, chatId, "No workspace configured.", replyOptions);
 
   if (!args) {
-    const threads = await WorkspaceThread.where({ workspace_id: workspace.id });
+    const threads = await run(() =>
+      WorkspaceThread.where({ workspace_id: workspace.id })
+    );
     const lines = [`Threads in "${workspace.name}":`, ...numberedList(threads)];
     if (threads.length === 0) lines.push("No threads available.");
     lines.push("", "Usage: /thread <slug>");
     return sendText(channel, chatId, lines.join("\n"), replyOptions);
   }
 
-  const thread = await WorkspaceThread.get({
-    slug: args,
-    workspace_id: workspace.id,
-  });
+  const thread = await run(() =>
+    WorkspaceThread.get({
+      slug: args,
+      workspace_id: workspace.id,
+    })
+  );
   if (!thread)
     return sendText(channel, chatId, "Thread not found.", replyOptions);
-  const updated = await updateChannelState(stateStore, userId, {
-    threadSlug: thread.slug,
-  });
+  const updated = await updateChannelState(
+    stateStore,
+    userId,
+    {
+      threadSlug: thread.slug,
+    },
+    run
+  );
   if (!updated)
     return sendText(
       channel,
@@ -144,19 +163,27 @@ async function handleNew({
   channel,
   state,
   replyOptions,
+  run,
 }) {
-  const workspace = await activeWorkspace(state);
+  const workspace = await activeWorkspace(state, run);
   if (!workspace)
     return sendText(channel, chatId, "No workspace configured.", replyOptions);
   const name = args || "Lark Thread";
-  const { thread, message } = await WorkspaceThread.new(workspace, null, {
-    name,
-  });
+  const { thread, message } = await run(() =>
+    WorkspaceThread.new(workspace, null, {
+      name,
+    })
+  );
   if (message || !thread)
     return sendText(channel, chatId, "Failed to create thread.", replyOptions);
-  const updated = await updateChannelState(stateStore, userId, {
-    threadSlug: thread.slug,
-  });
+  const updated = await updateChannelState(
+    stateStore,
+    userId,
+    {
+      threadSlug: thread.slug,
+    },
+    run
+  );
   if (!updated)
     return sendText(
       channel,
@@ -172,19 +199,21 @@ async function handleNew({
   );
 }
 
-async function handleReset({ chatId, channel, state, replyOptions }) {
-  const workspace = await activeWorkspace(state);
+async function handleReset({ chatId, channel, state, replyOptions, run }) {
+  const workspace = await activeWorkspace(state, run);
   if (!workspace)
     return sendText(channel, chatId, "No workspace configured.", replyOptions);
-  const thread = await activeThread(state, workspace);
+  const thread = await activeThread(state, workspace, run);
   if (state.threadSlug && !thread)
     return sendText(channel, chatId, "Thread not found.", replyOptions);
-  await WorkspaceChats.markThreadHistoryInvalidV2({
-    workspaceId: workspace.id,
-    user_id: null,
-    thread_id: thread?.id || null,
-    api_session_id: null,
-  });
+  await run(() =>
+    WorkspaceChats.markThreadHistoryInvalidV2({
+      workspaceId: workspace.id,
+      user_id: null,
+      thread_id: thread?.id || null,
+      api_session_id: null,
+    })
+  );
   return sendText(
     channel,
     chatId,
@@ -193,11 +222,11 @@ async function handleReset({ chatId, channel, state, replyOptions }) {
   );
 }
 
-async function handleStatus({ chatId, channel, state, replyOptions }) {
-  const workspace = await activeWorkspace(state);
+async function handleStatus({ chatId, channel, state, replyOptions, run }) {
+  const workspace = await activeWorkspace(state, run);
   if (!workspace)
     return sendText(channel, chatId, "No workspace configured.", replyOptions);
-  const thread = await activeThread(state, workspace);
+  const thread = await activeThread(state, workspace, run);
   const provider =
     workspace.agentProvider ??
     workspace.chatProvider ??
@@ -240,19 +269,41 @@ async function handleLarkCommand({
   stateStore,
   channel,
   message,
+  signal,
+  isAuthorized = () => true,
 }) {
+  const assertAccess = () => {
+    if (signal?.aborted || !isAuthorized())
+      throw Object.assign(new Error("Command cancelled."), {
+        name: "AbortError",
+      });
+  };
+  const run = async (work) => {
+    assertAccess();
+    const result = await work();
+    assertAccess();
+    return result;
+  };
+  // Every delivery is checked at the actual send boundary, including results
+  // from a query/mutation that was already in flight when access was revoked.
+  const guardedChannel = {
+    send: (...args) => run(() => channel.send(...args)),
+  };
+  assertAccess();
   const replyOptions =
     message?.chatType === "group" && message?.messageId
       ? { replyTo: message.messageId }
       : {};
   const state = stateStore.get(userId);
-  if (!state) return sendText(channel, chatId, "Access denied.", replyOptions);
+  if (!state)
+    return sendText(guardedChannel, chatId, "Access denied.", replyOptions);
   const input = {
     args: String(args).trim(),
     userId,
     chatId,
     stateStore,
-    channel,
+    channel: guardedChannel,
+    run,
     state,
     replyOptions,
   };
@@ -271,7 +322,7 @@ async function handleLarkCommand({
       return handleHelp(input);
     default:
       return sendText(
-        channel,
+        guardedChannel,
         chatId,
         "Unknown command. Use /help.",
         replyOptions

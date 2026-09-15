@@ -20,9 +20,11 @@ jest.mock("../../../models/workspace", () => ({
   Workspace: { get: jest.fn(), where: jest.fn() },
 }));
 jest.mock("../../../models/workspaceThread", () => ({
-  WorkspaceThread: { get: jest.fn() },
+  WorkspaceThread: { get: jest.fn(), new: jest.fn() },
 }));
-jest.mock("../../../models/workspaceChats", () => ({ WorkspaceChats: {} }));
+jest.mock("../../../models/workspaceChats", () => ({
+  WorkspaceChats: { markThreadHistoryInvalidV2: jest.fn() },
+}));
 jest.mock("../../../utils/helpers", () => ({
   getBaseLLMProviderModel: jest.fn(),
 }));
@@ -230,6 +232,8 @@ test("documents go through collector and become prompt text before model work", 
   let scopedFile;
   mockParse.mockImplementation(async (_, options) => {
     scopedFile = options.absolutePath;
+    expect(options.safeLogging).toBe(true);
+    expect(options.signal).toBeInstanceOf(AbortSignal);
     expect(fs.existsSync(scopedFile)).toBe(true);
     return { success: true, documents: [{ pageContent: "parsed text" }] };
   });
@@ -922,4 +926,207 @@ test("concurrent admin writes cannot restore a revoked user from an old approval
   expect(lastWrite.approved_users.map((user) => user.open_id)).toEqual([
     "ou_new",
   ]);
+});
+
+test("denial waits for overlapping approval persistence and prevents its authorization", async () => {
+  await service.start({
+    ...config,
+    default_workspace: "general",
+    approved_users: [],
+  });
+  await handlers.message(message());
+  const writing = deferred(),
+    saved = deferred();
+  ExternalCommunicationConnector.updateConfig.mockImplementationOnce(() => {
+    writing.resolve();
+    return saved.promise;
+  });
+  const approving = service.approveUser("ou_user");
+  await writing.promise;
+  let denied = false;
+  const denying = Promise.resolve(service.denyUser("ou_user")).then(
+    (result) => {
+      denied = true;
+      return result;
+    }
+  );
+  await new Promise((resolve) => setImmediate(resolve));
+  const settledBeforeAck = denied;
+  saved.resolve({ error: null });
+  const approvalResult = await approving,
+    denialResult = await denying;
+  expect(settledBeforeAck).toBe(false);
+  expect(approvalResult).toMatchObject({ error: expect.any(String) });
+  expect(denialResult).toEqual({ success: true });
+  expect(service.listPendingUsers()).toEqual([]);
+  expect(service.listApprovedUsers()).toEqual([]);
+  expect(
+    ExternalCommunicationConnector.updateConfig.mock.calls.at(-1)[1]
+      .approved_users
+  ).toEqual([]);
+  await handlers.message(message({ messageId: "om_after_denial" }));
+  expect(mockRun).not.toHaveBeenCalled();
+});
+
+test("denial cannot report success if rollback of an overlapping approval fails", async () => {
+  await service.start({ ...config, approved_users: [] });
+  await handlers.message(message());
+  const writing = deferred(),
+    saved = deferred();
+  ExternalCommunicationConnector.updateConfig
+    .mockImplementationOnce(() => {
+      writing.resolve();
+      return saved.promise;
+    })
+    .mockResolvedValueOnce({ error: "private database failure" });
+  const approving = service.approveUser("ou_user");
+  await writing.promise;
+  const denying = service.denyUser("ou_user");
+  saved.resolve({ error: null });
+  await approving;
+  expect(await denying).toEqual({ error: "Could not update Lark access." });
+  expect(service.listApprovedUsers()).toEqual([]);
+});
+
+test("revoke during delayed /workspace query suppresses workspace names and slugs", async () => {
+  const { Workspace } = require("../../../models/workspace");
+  const queried = deferred(),
+    query = deferred();
+  Workspace.where.mockImplementationOnce(() => {
+    queried.resolve();
+    return query.promise;
+  });
+  await service.start(approvedConfig());
+  const command = handlers.message(message({ content: "/workspace" }));
+  await queried.promise;
+  const revoking = service.revokeUser("ou_user");
+  query.resolve([{ id: 1, name: "Private workspace", slug: "secret-slug" }]);
+  await Promise.all([command, revoking]);
+  expect(channel.send).not.toHaveBeenCalled();
+  expect(mockAbort).toHaveBeenCalledWith("lark:oc_1:ou_user");
+});
+
+test.each(["/new private", "/reset"])(
+  "revoke during %s lookup stops later mutations",
+  async (content) => {
+    const { Workspace } = require("../../../models/workspace");
+    const { WorkspaceThread } = require("../../../models/workspaceThread");
+    const { WorkspaceChats } = require("../../../models/workspaceChats");
+    const queried = deferred(),
+      query = deferred();
+    Workspace.get.mockImplementationOnce(() => {
+      queried.resolve();
+      return query.promise;
+    });
+    WorkspaceThread.get.mockResolvedValue({ id: 2, slug: "paper" });
+    WorkspaceThread.new.mockResolvedValue({
+      thread: { id: 3, slug: "private", name: "Private" },
+    });
+    await service.start(approvedConfig());
+    const command = handlers.message(message({ content }));
+    await queried.promise;
+    const revoking = service.revokeUser("ou_user");
+    query.resolve({ id: 1, name: "Private", slug: "research" });
+    await Promise.all([command, revoking]);
+    expect(WorkspaceThread.new).not.toHaveBeenCalled();
+    expect(WorkspaceThread.get).not.toHaveBeenCalled();
+    expect(WorkspaceChats.markThreadHistoryInvalidV2).not.toHaveBeenCalled();
+    expect(channel.send).not.toHaveBeenCalled();
+  }
+);
+
+test("revoke during thread creation prevents selecting the created thread or sending its details", async () => {
+  const { Workspace } = require("../../../models/workspace");
+  const { WorkspaceThread } = require("../../../models/workspaceThread");
+  Workspace.get.mockResolvedValue({
+    id: 1,
+    slug: "research",
+    name: "Research",
+  });
+  const creating = deferred(),
+    creation = deferred();
+  WorkspaceThread.new.mockImplementationOnce(() => {
+    creating.resolve();
+    return creation.promise;
+  });
+  await service.start(approvedConfig());
+  const command = handlers.message(message({ content: "/new private" }));
+  await creating.promise;
+  const revoking = service.revokeUser("ou_user");
+  creation.resolve({ thread: { id: 3, slug: "secret", name: "Secret" } });
+  await Promise.all([command, revoking]);
+  expect(ExternalCommunicationConnector.updateConfig).toHaveBeenCalledTimes(1);
+  expect(
+    ExternalCommunicationConnector.updateConfig.mock.calls[0][1].approved_users
+  ).toEqual([]);
+  expect(channel.send).not.toHaveBeenCalled();
+});
+
+test.each(["approve", "deny"])(
+  "early %s click survives delayed card send acknowledgement and rejects replay",
+  async (action) => {
+    const started = deferred(),
+      acknowledgement = deferred();
+    let decision;
+    mockRun.mockImplementation(async (_, transport) => {
+      const pending = transport.requestToolApproval({
+        requestId: "worker-request",
+      });
+      started.resolve();
+      decision = await pending;
+    });
+    channel.send.mockReturnValue(acknowledgement.promise);
+    await service.start(approvedConfig());
+    const turn = handlers.message(message());
+    await started.promise;
+    const requestId =
+      channel.send.mock.calls[0][1].card.body.elements[1].actions[0].value
+        .requestId;
+    await handlers.cardAction(
+      click(requestId, {
+        action: { tag: "button", value: { requestId, action } },
+      })
+    );
+    await handlers.cardAction(
+      click(requestId, {
+        action: {
+          tag: "button",
+          value: {
+            requestId,
+            action: action === "approve" ? "deny" : "approve",
+          },
+        },
+      })
+    );
+    acknowledgement.resolve({ messageId: "om_reply" });
+    await turn;
+    expect(decision).toEqual({ approved: action === "approve" });
+    await handlers.cardAction(click(requestId));
+    expect(decision).toEqual({ approved: action === "approve" });
+  }
+);
+
+test("revocation before delayed card acknowledgement invalidates an early approval", async () => {
+  const started = deferred(),
+    acknowledgement = deferred();
+  let decision;
+  mockRun.mockImplementation(async (_, transport) => {
+    const pending = transport.requestToolApproval({
+      requestId: "worker-request",
+    });
+    started.resolve();
+    decision = await pending;
+  });
+  channel.send.mockReturnValue(acknowledgement.promise);
+  await service.start(approvedConfig());
+  const turn = handlers.message(message());
+  await started.promise;
+  const requestId =
+    channel.send.mock.calls[0][1].card.body.elements[1].actions[0].value
+      .requestId;
+  await handlers.cardAction(click(requestId));
+  await service.revokeUser("ou_user");
+  acknowledgement.resolve({ messageId: "om_reply" });
+  await turn;
+  expect(decision).toMatchObject({ approved: false });
 });

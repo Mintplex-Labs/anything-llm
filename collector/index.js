@@ -10,6 +10,7 @@ const path = require("path");
 const { ACCEPTED_MIMES } = require("./utils/constants");
 const { reqBody, getCollectorPort } = require("./utils/http");
 const { processSingleFile } = require("./processSingleFile");
+const { handleParseRequest } = require("./utils/parseRequest");
 const { processLink, getLinkText } = require("./processLink");
 const { wipeCollectorStorage } = require("./utils/files");
 const extensions = require("./extensions");
@@ -72,39 +73,7 @@ app.post(
   }
 );
 
-app.post(
-  "/parse",
-  [verifyPayloadIntegrity],
-  async function (request, response) {
-    const { filename, options = {} } = reqBody(request);
-    try {
-      const targetFilename = path
-        .normalize(filename)
-        .replace(/^(\.\.(\/|\\|$))+/, "");
-      const {
-        success,
-        reason,
-        documents = [],
-      } = await processSingleFile(targetFilename, {
-        ...options,
-        parseOnly: true,
-        absolutePath: options.absolutePath || null,
-      });
-      response
-        .status(200)
-        .json({ filename: targetFilename, success, reason, documents });
-    } catch (e) {
-      console.error(e);
-      response.status(200).json({
-        filename: filename,
-        success: false,
-        reason: "A processing error occurred.",
-        documents: [],
-      });
-    }
-    return;
-  }
-);
+app.post("/parse", [verifyPayloadIntegrity], handleParseRequest);
 
 app.post(
   "/process-link",

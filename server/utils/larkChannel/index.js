@@ -100,6 +100,7 @@ class LarkChannelService {
         work: new Set(),
         approvals: new Map(),
         revoked: new Set(),
+        accessVersions: new Map(),
         turns: new Map(),
       };
       this.#session = session;
@@ -226,6 +227,8 @@ class LarkChannelService {
   async approveUser(openId) {
     const session = this.#session;
     if (!this.status.connected) return { error: "Lark is not connected." };
+    const id = String(openId);
+    const version = session.accessVersions.get(id);
     try {
       const result = await this.#mutate(session, () =>
         session.access.approve(session.config, openId)
@@ -237,6 +240,8 @@ class LarkChannelService {
               ? result.error
               : "Could not update Lark access.",
         };
+      if (session.accessVersions.get(id) !== version)
+        return { error: "Pairing request denied." };
       session.revoked.delete(String(openId));
       return {
         open_id: result.open_id,
@@ -250,10 +255,38 @@ class LarkChannelService {
     }
   }
 
-  denyUser(openId) {
+  async denyUser(openId) {
+    const session = this.#session;
     if (!this.status.connected) return { error: "Lark is not connected." };
-    this.#session.access.deny(openId);
-    return { success: true };
+    const id = String(openId);
+    this.#invalidateAccess(session, id);
+    try {
+      const result = await this.#mutate(session, async () => {
+        session.access.deny(id);
+        // An approval already writing when denial arrived may have committed.
+        // Do not report a successful denial until its grant is removed too.
+        if (session.access.isApproved(session.config, id))
+          return session.access.revoke(session.config, id);
+      });
+      return result?.error
+        ? { error: "Could not update Lark access." }
+        : { success: true };
+    } catch {
+      return { error: "Could not update Lark access." };
+    }
+  }
+
+  #invalidateAccess(session, id) {
+    session.accessVersions.set(id, (session.accessVersions.get(id) || 0) + 1);
+    session.revoked.add(id);
+    for (const [key, turn] of session.turns) {
+      if (turn.senderId !== id) continue;
+      turn.controller.abort();
+      session.runner.abort(key);
+    }
+    for (const pending of session.approvals.values()) {
+      if (pending.senderId === id) pending.finish(false);
+    }
   }
 
   async revokeUser(openId) {
@@ -264,16 +297,8 @@ class LarkChannelService {
       return { error: "User is not approved." };
     // Block new/queued work immediately, before the persistence round trip.
     // A failed persistence write stays denied in this running session.
-    session.revoked.add(id);
+    this.#invalidateAccess(session, id);
     session.access.deny(id);
-    for (const [key, turn] of session.turns) {
-      if (turn.senderId !== id) continue;
-      turn.controller.abort();
-      session.runner.abort(key);
-    }
-    for (const pending of session.approvals.values()) {
-      if (pending.senderId === id) pending.finish(false);
-    }
     try {
       const result = await this.#mutate(session, () =>
         session.access.revoke(session.config, id)
@@ -317,32 +342,34 @@ class LarkChannelService {
         content = content.split(mention.key).join("");
     }
     content = content.trim();
-    const command = parseLarkCommand(content);
-    if (command)
-      return this.#mutate(session, () =>
-        this.#approved(session, message.senderId)
-          ? handleLarkCommand({
-              command: command.name,
-              args: command.args,
-              userId: message.senderId,
-              chatId: message.chatId,
-              stateStore: state,
-              channel,
-              message,
-            })
-          : reply("Access denied.")
-      );
-    if (["audio", "media", "video", "sticker"].includes(message.rawContentType))
-      return reply(SUPPORTED_TYPES);
-    const selection = state.get(message.senderId);
-    if (!selection?.workspaceSlug)
-      return reply("No workspace configured. Use /workspace to select one.");
     session.active.add(key);
     const controller = new AbortController();
     const abort = () => controller.abort();
     session.controller.signal.addEventListener("abort", abort, { once: true });
     session.turns.set(key, { controller, senderId: message.senderId });
     try {
+      const command = parseLarkCommand(content);
+      if (command)
+        return await this.#mutate(session, () =>
+          handleLarkCommand({
+            command: command.name,
+            args: command.args,
+            userId: message.senderId,
+            chatId: message.chatId,
+            stateStore: state,
+            channel,
+            message,
+            signal: controller.signal,
+            isAuthorized: () => this.#approved(session, message.senderId),
+          })
+        );
+      if (
+        ["audio", "media", "video", "sticker"].includes(message.rawContentType)
+      )
+        return reply(SUPPORTED_TYPES);
+      const selection = state.get(message.senderId);
+      if (!selection?.workspaceSlug)
+        return reply("No workspace configured. Use /workspace to select one.");
       let normalized;
       try {
         normalized = await normalizeLarkAttachments({
@@ -355,8 +382,11 @@ class LarkChannelService {
           parseDocument: async (name, options) => {
             const { CollectorApi } = require("../collectorApi");
             const collector = new CollectorApi();
-            collector.log = () => {}; // Collector failures can include paths.
-            return collector.parseDocument(name, options);
+            return collector.parseDocument(name, {
+              ...options,
+              safeLogging: true,
+              signal: controller.signal,
+            });
           },
         });
       } catch (error) {
@@ -394,11 +424,14 @@ class LarkChannelService {
   }
 
   #transport(session, message, key) {
+    // Action eligibility is one-shot, but its decision must survive until the
+    // SDK acknowledges sending the card and the transport asks for the result.
+    const decisions = new Map();
     const transport = createLarkTransport({
       channel: session.channel,
       message,
       onToolApproval: (request) =>
-        session.approvals.get(request.requestId)?.promise || {
+        decisions.get(request.requestId) || {
           approved: false,
         },
     });
@@ -437,15 +470,25 @@ class LarkChannelService {
         },
       };
       session.approvals.set(requestId, pending);
+      decisions.set(requestId, promise);
       pending.timer = setTimeout(
         () => pending.finish(false),
         expiresAt - Date.now()
       );
       pending.timer.unref?.();
       try {
-        return await requestApproval({ ...request, requestId });
+        const decision = await requestApproval({ ...request, requestId });
+        if (
+          session.controller.signal.aborted ||
+          !this.#approved(session, message.senderId) ||
+          !session.active.has(key) ||
+          expiresAt <= Date.now()
+        )
+          return { approved: false };
+        return decision;
       } finally {
         pending.finish(false);
+        decisions.delete(requestId);
       }
     };
     const fail = transport.fail;
