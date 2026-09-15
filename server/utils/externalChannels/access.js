@@ -40,7 +40,9 @@ class PairingAccess {
 
   listPending() {
     this.purgeExpired();
-    return [...this.pendingPairings.values()].map((pending) => ({ ...pending }));
+    return [...this.pendingPairings.values()].map((pending) => ({
+      ...pending,
+    }));
   }
 
   isApproved(config, userId) {

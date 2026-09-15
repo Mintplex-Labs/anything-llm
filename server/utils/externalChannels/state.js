@@ -28,13 +28,17 @@ class ChannelStateStore {
     const user = { ...approvedUsers[userIndex] };
     if (Object.hasOwn(updates, "workspaceSlug"))
       user.active_workspace = updates.workspaceSlug;
-    if (Object.hasOwn(updates, "threadSlug")) user.active_thread = updates.threadSlug;
+    if (Object.hasOwn(updates, "threadSlug"))
+      user.active_thread = updates.threadSlug;
     const updatedUsers = approvedUsers.map((item, index) =>
       index === userIndex ? user : item
     );
-    const result = await ExternalCommunicationConnector.updateConfig(this.connectorType, {
-      approved_users: updatedUsers,
-    });
+    const result = await ExternalCommunicationConnector.updateConfig(
+      this.connectorType,
+      {
+        approved_users: updatedUsers,
+      }
+    );
     if (result.error) throw new Error(result.error);
     this.config.approved_users = updatedUsers;
     return this.get(userId);
