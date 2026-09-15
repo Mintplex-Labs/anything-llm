@@ -274,7 +274,12 @@ class GitHubRepoLoader {
         .then((json) => {
           if (json.hasOwnProperty("status") || !json.hasOwnProperty("content"))
             throw new Error(json?.message || "missing content");
-          return atob(json.content);
+          // `atob` yields one code unit per byte, so any multi-byte character
+          // arrives mangled. Decode the bytes as UTF-8 the same way the initial
+          // import does, which also drops a leading byte order mark.
+          return new TextDecoder("utf-8").decode(
+            Buffer.from(json.content, "base64")
+          );
         });
     } catch (e) {
       console.error(`RepoLoader.fetchSingleFile`, e);
