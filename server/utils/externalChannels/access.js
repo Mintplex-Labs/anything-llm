@@ -55,7 +55,7 @@ class PairingAccess {
     const pending = this.pendingPairings.get(id);
     if (!pending) return { error: "Pairing request expired" };
 
-    const approvedUsers = config.approved_users || [];
+    const approvedUsers = [...(config.approved_users || [])];
     let approved = approvedUsers.find((user) => user.open_id === id);
     if (!approved) {
       approved = {
@@ -66,10 +66,14 @@ class PairingAccess {
         active_thread: null,
       };
       approvedUsers.push(approved);
+      const result = await ExternalCommunicationConnector.updateConfig(
+        this.connectorType,
+        {
+          approved_users: approvedUsers,
+        }
+      );
+      if (result.error) return { error: result.error };
       config.approved_users = approvedUsers;
-      await ExternalCommunicationConnector.updateConfig(this.connectorType, {
-        approved_users: approvedUsers,
-      });
     }
 
     this.pendingPairings.delete(id);
@@ -84,10 +88,14 @@ class PairingAccess {
     const approvedUsers = (config.approved_users || []).filter(
       (user) => user.open_id !== String(userId)
     );
+    const result = await ExternalCommunicationConnector.updateConfig(
+      this.connectorType,
+      {
+        approved_users: approvedUsers,
+      }
+    );
+    if (result.error) return { error: result.error };
     config.approved_users = approvedUsers;
-    await ExternalCommunicationConnector.updateConfig(this.connectorType, {
-      approved_users: approvedUsers,
-    });
   }
 
   purgeExpired() {

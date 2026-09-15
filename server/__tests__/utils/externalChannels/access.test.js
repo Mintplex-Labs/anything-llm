@@ -8,7 +8,13 @@ const {
 const { PairingAccess } = require("../../../utils/externalChannels/access");
 
 describe("PairingAccess", () => {
-  beforeEach(() => jest.clearAllMocks());
+  beforeEach(() => {
+    jest.clearAllMocks();
+    ExternalCommunicationConnector.updateConfig.mockResolvedValue({
+      connector: {},
+      error: null,
+    });
+  });
 
   test("reuses an unexpired six-digit code and expires old requests", () => {
     let now = 1_000;
@@ -100,5 +106,41 @@ describe("PairingAccess", () => {
     await expect(access.approve({ approved_users: [] }, "ou_1")).resolves.toEqual(
       { error: "Pairing request expired" }
     );
+  });
+
+  test("keeps the pairing pending when approval persistence resolves an error", async () => {
+    const access = new PairingAccess({ connectorType: "lark" });
+    const config = { approved_users: [] };
+    access.request({ userId: "ou_1", name: "Ada", platform: "lark" });
+    ExternalCommunicationConnector.updateConfig.mockResolvedValue({
+      connector: null,
+      error: "database unavailable",
+    });
+
+    await expect(access.approve(config, "ou_1")).resolves.toEqual({
+      error: "database unavailable",
+    });
+    expect(config).toEqual({ approved_users: [] });
+    expect(access.listPending()).toEqual([
+      expect.objectContaining({ userId: "ou_1", name: "Ada" }),
+    ]);
+  });
+
+  test("keeps approved users when revocation persistence resolves an error", async () => {
+    const access = new PairingAccess({ connectorType: "lark" });
+    const config = {
+      approved_users: [{ open_id: "ou_1", name: "Ada", platform: "lark" }],
+    };
+    ExternalCommunicationConnector.updateConfig.mockResolvedValue({
+      connector: null,
+      error: "database unavailable",
+    });
+
+    await expect(access.revoke(config, "ou_1")).resolves.toEqual({
+      error: "database unavailable",
+    });
+    expect(config).toEqual({
+      approved_users: [{ open_id: "ou_1", name: "Ada", platform: "lark" }],
+    });
   });
 });

@@ -20,16 +20,23 @@ class ChannelStateStore {
   }
 
   async set(userId, updates) {
-    const user = (this.config.approved_users || []).find(
+    const approvedUsers = this.config.approved_users || [];
+    const userIndex = approvedUsers.findIndex(
       (item) => item.open_id === String(userId)
     );
-    if (!user) throw new Error("User is not approved");
+    if (userIndex === -1) throw new Error("User is not approved");
+    const user = { ...approvedUsers[userIndex] };
     if (Object.hasOwn(updates, "workspaceSlug"))
       user.active_workspace = updates.workspaceSlug;
     if (Object.hasOwn(updates, "threadSlug")) user.active_thread = updates.threadSlug;
-    await ExternalCommunicationConnector.updateConfig(this.connectorType, {
-      approved_users: this.config.approved_users,
+    const updatedUsers = approvedUsers.map((item, index) =>
+      index === userIndex ? user : item
+    );
+    const result = await ExternalCommunicationConnector.updateConfig(this.connectorType, {
+      approved_users: updatedUsers,
     });
+    if (result.error) throw new Error(result.error);
+    this.config.approved_users = updatedUsers;
     return this.get(userId);
   }
 }
