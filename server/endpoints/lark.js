@@ -100,7 +100,9 @@ async function connectLark(request, response) {
 
       // Drain pending access/routing writes before reading state to preserve.
       await service.stop();
-      const latest = await ExternalCommunicationConnector.get("lark");
+      const read = await ExternalCommunicationConnector.getWithStatus("lark");
+      if (read.error) return fail(response);
+      const latest = read.connector;
       const config = {
         ...latest?.config,
         platform,

@@ -35,6 +35,33 @@ const ExternalCommunicationConnector = {
   },
 
   /**
+   * Read state for a subsequent save without conflating absence and read failure.
+   * Legacy get() intentionally retains its nullable return contract.
+   * @param {'telegram'|'lark'} type
+   * @returns {Promise<{connector: object|null, error: string|null}>}
+   */
+  getWithStatus: async function (type) {
+    try {
+      const connector =
+        await prisma.external_communication_connectors.findUnique({
+          where: { type },
+        });
+      if (!connector) return { connector: null, error: null };
+      // A malformed stored document must not turn into an empty user list.
+      const config = JSON.parse(connector.config);
+      if (!config || typeof config !== "object" || Array.isArray(config))
+        throw new Error("Invalid connector configuration");
+      return { connector: { ...connector, config }, error: null };
+    } catch {
+      logConnectorError("ExternalCommunicationConnector.getWithStatus", type);
+      return {
+        connector: null,
+        error: "Could not read connector configuration.",
+      };
+    }
+  },
+
+  /**
    * Create or update a connector's config and active state.
    * @param {'telegram'|'lark'} type
    * @param {object} config

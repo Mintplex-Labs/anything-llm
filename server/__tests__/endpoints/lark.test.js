@@ -1,6 +1,7 @@
 jest.mock("../../models/externalCommunicationConnector", () => ({
   ExternalCommunicationConnector: {
     get: jest.fn(),
+    getWithStatus: jest.fn(),
     upsert: jest.fn(),
     delete: jest.fn(),
   },
@@ -86,6 +87,10 @@ beforeEach(() => {
   };
   LarkChannelService.mockImplementation(() => service);
   model.get.mockResolvedValue(null);
+  model.getWithStatus.mockImplementation(async () => ({
+    connector: await model.get("lark"),
+    error: null,
+  }));
   model.upsert.mockImplementation(async (_type, config) => ({
     connector: { active: true, config },
     error: null,
@@ -182,6 +187,62 @@ test("failed handshake exposes no SDK errors and persists nothing", async () => 
   expect(res.code).toBe(400);
   expect(model.upsert).not.toHaveBeenCalled();
   expect(JSON.stringify(res.body)).not.toMatch(/SDK|app-secret|ciphertext/);
+});
+
+test("failed post-stop read aborts reconnect without overwriting approved users", async () => {
+  const existing = {
+    active: true,
+    config: {
+      ...body,
+      app_secret: "enc:ciphertext",
+      approved_users: [{ open_id: "ou_1", active_thread: "old" }],
+    },
+  };
+  model.get.mockResolvedValueOnce(existing).mockResolvedValue(null);
+  model.getWithStatus.mockResolvedValue({
+    connector: null,
+    error: "Database failure enc:ciphertext",
+  });
+  const res = await call("connectLark");
+  expect(res.code).toBe(500);
+  expect(JSON.stringify(res.body)).not.toMatch(
+    /Database|ciphertext|app-secret/
+  );
+  expect(service.stop).toHaveBeenCalledTimes(1);
+  expect(service.start).not.toHaveBeenCalled();
+  expect(model.upsert).not.toHaveBeenCalled();
+  expect(existing.config.approved_users).toEqual([
+    { open_id: "ou_1", active_thread: "old" },
+  ]);
+});
+
+test("successful post-stop read preserves the latest drained routing state", async () => {
+  const existing = {
+    active: true,
+    config: {
+      ...body,
+      approved_users: [{ open_id: "ou_1", active_thread: "old" }],
+    },
+  };
+  const latest = {
+    active: true,
+    config: {
+      ...body,
+      approved_users: [{ open_id: "ou_1", active_thread: "latest" }],
+    },
+  };
+  model.get.mockResolvedValue(existing);
+  model.getWithStatus.mockImplementation(async () => {
+    expect(service.stop).toHaveBeenCalled();
+    return { connector: latest, error: null };
+  });
+  expect((await call("connectLark")).code).toBe(200);
+  expect(model.upsert).toHaveBeenCalledWith(
+    "lark",
+    expect.objectContaining({
+      approved_users: [{ open_id: "ou_1", active_thread: "latest" }],
+    })
+  );
 });
 test("a handshake superseded by stop is not saved and its runtime is stopped", async () => {
   service.start.mockResolvedValue({ connected: false });
