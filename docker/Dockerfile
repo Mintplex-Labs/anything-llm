@@ -149,7 +149,17 @@ WORKDIR /app
 # Install server layer
 # Also pull and build collector deps (chromium issues prevent bad bindings)
 FROM build AS backend-build
+ARG DATABASE_PROVIDER=sqlite
 COPY --chown=anythingllm:anythingllm ./server /app/server/
+# Select the Prisma schema/migrations tree for this image variant.
+# sqlite  -> server/prisma (default latest image)
+# postgresql -> server/prisma-postgresql (pg / pg-* image)
+RUN if [ "$DATABASE_PROVIDER" = "postgresql" ]; then \
+      rm -rf /app/server/prisma && \
+      mv /app/server/prisma-postgresql /app/server/prisma; \
+    else \
+      rm -rf /app/server/prisma-postgresql; \
+    fi
 WORKDIR /app/server
 RUN yarn install --production --network-timeout 100000 && yarn cache clean
 WORKDIR /app
@@ -165,6 +175,7 @@ USER anythingllm
 
 # Since we are building from backend-build we just need to move built frontend into server/public
 FROM backend-build AS production-build
+ARG DATABASE_PROVIDER=sqlite
 WORKDIR /app
 COPY --chown=anythingllm:anythingllm --from=frontend-build /app/frontend/dist /app/server/public
 
@@ -172,6 +183,8 @@ COPY --chown=anythingllm:anythingllm --from=frontend-build /app/frontend/dist /a
 ENV NODE_ENV=production
 ENV ANYTHING_LLM_RUNTIME=docker
 ENV DEPLOYMENT_VERSION=1.16.1
+# Persist the provider so the entrypoint can apply PG-oriented defaults.
+ENV DATABASE_PROVIDER=${DATABASE_PROVIDER}
 
 # Setup the healthcheck
 HEALTHCHECK --interval=1m --timeout=10s --start-period=1m \

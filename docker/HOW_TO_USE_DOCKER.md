@@ -155,6 +155,12 @@ container rebuilds or pulls from Docker Hub.
 - `cp .env.example .env` **you must do this before building**
 - `docker-compose up -d --build` to build the image - this will take a few moments.
 
+To build the PostgreSQL image variant instead of the default SQLite image:
+
+```bash
+docker build -f docker/Dockerfile --build-arg DATABASE_PROVIDER=postgresql -t anythingllm:pg .
+```
+
 Your docker host will show the image as online once the build process is completed. This will build the app to `http://localhost:3001`.
 
 ## Integrations and one-click setups

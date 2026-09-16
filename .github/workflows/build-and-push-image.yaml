@@ -1,13 +1,14 @@
 # This GitHub action is for publishing of the primary image for AnythingLLM
 # It will publish a linux/amd64 and linux/arm64 image at the same time
-# This file should ONLY BY USED FOR `master` BRANCH. 
+# This file should ONLY BY USED FOR `master` BRANCH.
+# Builds both the default SQLite image (`latest`) and the PostgreSQL image (`pg`).
 # TODO: GitHub now has an ubuntu-24.04-arm64 runner, but we still need
 # to use QEMU to build the arm64 image because Chromium is not available for Linux arm64
 # so builds will still fail, or fail much more often. Its inconsistent and frustrating.
 name: Publish AnythingLLM Primary Docker image (amd64/arm64)
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ matrix.database_provider }}
   cancel-in-progress: true
 
 on:
@@ -30,11 +31,24 @@ on:
 
 jobs:
   push_multi_platform_to_registries:
-    name: Push Docker multi-platform image to multiple registries
+    name: Push ${{ matrix.database_provider }} Docker multi-platform image
     runs-on: ubuntu-22.04-arm
     permissions:
       packages: write
       contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - database_provider: sqlite
+            meta_tags: |
+              type=raw,value=latest,enable={{is_default_branch}}
+              type=ref,event=branch
+              type=ref,event=tag
+              type=ref,event=pr
+          - database_provider: postgresql
+            meta_tags: |
+              type=raw,value=pg
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
@@ -56,22 +70,22 @@ jobs:
         uses: docker/setup-buildx-action@v3
         with:
           version: v0.22.0
-      
+
       - name: Log in to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
         # Only login to the Docker Hub if the repo is mintplex/anythingllm, to allow for forks to build on GHCR
-        if: steps.dockerhub.outputs.enabled == 'true' 
+        if: steps.dockerhub.outputs.enabled == 'true'
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      
+
       - name: Log in to the Container registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
@@ -79,11 +93,7 @@ jobs:
           images: |
             ${{ steps.dockerhub.outputs.enabled == 'true' && 'mintplexlabs/anythingllm' || '' }}
             ghcr.io/${{ github.repository }}
-          tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=ref,event=branch
-            type=ref,event=tag
-            type=ref,event=pr
+          tags: ${{ matrix.meta_tags }}
 
       - name: Build and push multi-platform Docker image
         uses: docker/build-push-action@v6
@@ -96,9 +106,11 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-      
+          build-args: |
+            DATABASE_PROVIDER=${{ matrix.database_provider }}
+          cache-from: type=gha,scope=${{ matrix.database_provider }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.database_provider }}
+
       # VEX attestations are currently broken with docker scout when attaching
       # multiple attestations to multi-platform images. The second attachment
       # fails with "mismatched fs layers and diff ids".

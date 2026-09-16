@@ -2,12 +2,12 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// SQLite is the default local/dev and `latest` Docker image datasource.
-// The PostgreSQL Docker image (`pg` / `pg-*`) uses server/prisma-postgresql/.
-// Keep models in sync between both schemas when making structural changes.
+// PostgreSQL schema used by the `pg` Docker image variant.
+// Keep models in sync with server/prisma/schema.prisma (SQLite).
+// When adding schema changes, create matching migrations in both trees.
 datasource db {
-  provider = "sqlite"
-  url      = "file:../storage/anythingllm.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model api_keys {

@@ -26,6 +26,24 @@ if [ -z "$STORAGE_DIR" ]; then
     echo "================================================================"
 fi
 
+# PostgreSQL image variant defaults (mintplexlabs/anythingllm:pg)
+if [ "${DATABASE_PROVIDER:-sqlite}" = "postgresql" ]; then
+    export VECTOR_DB="${VECTOR_DB:-pgvector}"
+
+    if [ -z "$DATABASE_URL" ]; then
+        echo "================================================================"
+        echo "⚠️  ⚠️  ⚠️  WARNING: DATABASE_URL environment variable is not set! ⚠️  ⚠️  ⚠️"
+        echo ""
+        echo "The PostgreSQL AnythingLLM image requires DATABASE_URL to connect"
+        echo "to your Postgres database (with the pgvector extension installed)."
+        echo ""
+        echo "See https://docs.anythingllm.com/installation-docker/available-images#pg"
+        echo ""
+        echo "⚠️  ⚠️  ⚠️  WARNING: DATABASE_URL environment variable is not set! ⚠️  ⚠️  ⚠️"
+        echo "================================================================"
+    fi
+fi
+
 {
   cd /app/server/ &&
     # Disable Prisma CLI telemetry (https://www.prisma.io/docs/orm/tools/prisma-cli#how-to-opt-out-of-data-collection)

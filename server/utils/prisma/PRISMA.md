@@ -45,3 +45,11 @@ These commands should be run from the `server` directory, where the Prisma schem
 - Before running migrations, ensure that the Prisma schema is correctly defined to prevent data loss or corruption.
 - If you are adding a new feature or making changes that require a change in the database schema, create a new migration rather than editing existing migrations.
 - For users transitioning from the old SQLite ORM, navigate to the `server` directory and run the `sqlite:migrate` script to smoothly transition to Prisma. If you're setting up the project fresh, this step is unnecessary as the setup will already be using Prisma.
+
+## SQLite vs PostgreSQL schemas
+
+Local development and the default Docker image (`latest`) use `server/prisma/` (SQLite).
+
+The PostgreSQL Docker image (`pg` / `pg-*`) is built with `DATABASE_PROVIDER=postgresql`, which swaps in `server/prisma-postgresql/` at image build time.
+
+When you change models in `server/prisma/schema.prisma`, also update `server/prisma-postgresql/schema.prisma` and add a matching migration under `server/prisma-postgresql/migrations/` so both image variants stay in sync.
