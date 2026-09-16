@@ -190,18 +190,19 @@ class KoboldCPPLLM {
 
     return new Promise(async (resolve) => {
       let fullText = "";
-      // `prompt_tokens` is left out on purpose: LLMPerformanceMonitor.measureStream
-      // already counted the prompt, and endMeasurement merges this object over the
-      // metrics it holds, so reporting a value here would replace a real count.
-      let usage = {
-        completion_tokens: 0,
+
+      // prompt_tokens is intentionally omitted so the count measureStream already
+      // computed is not overwritten on merge in endMeasurement.
+      const endMeasurement = () => {
+        stream?.endMeasurement({
+          completion_tokens: LLMPerformanceMonitor.countTokens([
+            { content: fullText },
+          ]),
+        });
       };
 
       const handleAbort = () => {
-        usage.completion_tokens = LLMPerformanceMonitor.countTokens([
-          { content: fullText },
-        ]);
-        stream?.endMeasurement(usage);
+        endMeasurement();
         clientAbortedHandler(resolve, fullText);
       };
       response.on("close", handleAbort);
@@ -237,31 +238,19 @@ class KoboldCPPLLM {
               error: false,
             });
             response.removeListener("close", handleAbort);
-            usage.completion_tokens = LLMPerformanceMonitor.countTokens([
-              { content: fullText },
-            ]);
-            stream?.endMeasurement(usage);
+            endMeasurement();
             resolve(fullText);
-            break; // Break streaming when a valid finish_reason is first encountered
+            break;
           }
         }
 
-        // The stream ended without a finish_reason - keep what was generated
-        // instead of leaving the caller awaiting a promise that never settles.
+        // Stream ended without a finish_reason - resolve with what we have.
         response.removeListener("close", handleAbort);
-        usage.completion_tokens = LLMPerformanceMonitor.countTokens([
-          { content: fullText },
-        ]);
-        stream?.endMeasurement(usage);
+        endMeasurement();
         resolve(fullText);
       } catch (e) {
-        // Cancelling the upstream request rejects the iterator - that is the
-        // client leaving, not a failure, so it is not reported as an error.
         if (isAbortError(e)) {
-          usage.completion_tokens = LLMPerformanceMonitor.countTokens([
-            { content: fullText },
-          ]);
-          stream?.endMeasurement(usage);
+          endMeasurement();
           return clientAbortedHandler(resolve, fullText);
         }
 
@@ -275,11 +264,8 @@ class KoboldCPPLLM {
           error: e.message,
         });
         response.removeListener("close", handleAbort);
-        usage.completion_tokens = LLMPerformanceMonitor.countTokens([
-          { content: fullText },
-        ]);
-        stream?.endMeasurement(usage);
-        resolve(fullText); // Return what we currently have - if anything.
+        endMeasurement();
+        resolve(fullText);
       }
     });
   }
