@@ -61,6 +61,11 @@ class MistralEmbedder {
             .catch((e) => {
               chunksProcessed += chunk.length;
               reportEmbeddingProgress(chunksProcessed, textChunks.length);
+              e.type =
+                e?.response?.data?.error?.code ||
+                e?.response?.status ||
+                "failed_to_embed";
+              e.message = e?.response?.data?.error?.message || e.message;
               resolve({ data: [], error: e });
             });
         })
@@ -76,8 +81,10 @@ class MistralEmbedder {
         .map((res) => res.error)
         .flat();
       if (errors.length > 0) {
-        const uniqueErrors = new Set();
-        errors.map((e) => uniqueErrors.add(e.message));
+        let uniqueErrors = new Set();
+        errors.map((error) =>
+          uniqueErrors.add(`[${error.type}]: ${error.message}`)
+        );
         return { data: [], error: Array.from(uniqueErrors).join(", ") };
       }
       return {
@@ -86,11 +93,11 @@ class MistralEmbedder {
       };
     });
 
-    if (!!error) {
-      console.error("Failed to get embeddings from Mistral.", error);
-      throw new Error(`Mistral Failed to embed: ${error}`);
-    }
+    if (!!error) throw new Error(`Mistral Failed to embed: ${error}`);
 
+    // Unlike the OpenAI/Generic OpenAI embedders which return null on an empty or
+    // malformed result, Mistral throws here to preserve the failure contract from #5513
+    // so a document is never silently embedded with empty vectors.
     const embeddings = data.map((emb) => emb.embedding);
     if (embeddings.length === 0)
       throw new Error("Mistral returned empty embeddings for batch");
