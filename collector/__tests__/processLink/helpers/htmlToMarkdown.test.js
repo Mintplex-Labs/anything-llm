@@ -310,4 +310,97 @@ describe("htmlToMarkdown", () => {
       expect(markdown).toBe("See \\[#cite\\_note-1\\] for details.");
     });
   });
+  describe("tables", () => {
+    /** Read the markdown table back the way a reader does. */
+    const tableRows = (markdown) =>
+      markdown
+        .split("\n")
+        .filter((line) => line.trim().startsWith("|"))
+        .map((line) =>
+          line
+            .trim()
+            .replace(/^\||\|$/g, "")
+            .split(/(?<!\\)\|/)
+            .map((cell) => cell.replace(/\\(.)/g, "$1").trim())
+        );
+
+    it("keeps a value in the row and the column it belongs to", async () => {
+      // Turndown ships no table rules, so every cell came out as a paragraph
+      // of its own and a price lost the product it belonged to.
+      const markdown = await htmlToMarkdown(
+        "<h1>Specs</h1>" +
+          "<table><thead><tr><th>Product</th><th>Price</th></tr></thead>" +
+          "<tbody><tr><td>Cable</td><td>9 EUR</td></tr>" +
+          "<tr><td>Hub</td><td>29 EUR</td></tr></tbody></table>" +
+          "<p>after</p>"
+      );
+
+      expect(tableRows(markdown)).toEqual([
+        ["Product", "Price"],
+        ["---", "---"],
+        ["Cable", "9 EUR"],
+        ["Hub", "29 EUR"],
+      ]);
+      // The table has to be a block of its own, or it is read as prose.
+      expect(markdown).toBe(
+        "# Specs\n\n| Product | Price |\n| --- | --- |\n| Cable | 9 EUR |\n| Hub | 29 EUR |\n\nafter"
+      );
+    });
+
+    it("uses the first row as the header when the page wrote no th", async () => {
+      const markdown = await htmlToMarkdown(
+        "<table><tr><td>Product</td><td>Price</td></tr>" +
+          "<tr><td>Cable</td><td>9 EUR</td></tr></table>"
+      );
+
+      expect(tableRows(markdown)).toEqual([
+        ["Product", "Price"],
+        ["---", "---"],
+        ["Cable", "9 EUR"],
+      ]);
+    });
+
+    it("keeps a pipe inside the cell that holds it", async () => {
+      const markdown = await htmlToMarkdown(
+        "<table><tr><th>Product</th><th>Spec</th></tr>" +
+          "<tr><td>Cable</td><td>USB-A|USB-C</td></tr></table>"
+      );
+
+      expect(tableRows(markdown)[2]).toEqual(["Cable", "USB-A|USB-C"]);
+    });
+
+    it("keeps a cell's own backslash next to a pipe", async () => {
+      const markdown = await htmlToMarkdown(
+        "<table><tr><th>Pattern</th></tr><tr><td>a\\|b</td></tr></table>"
+      );
+
+      expect(tableRows(markdown)[2]).toEqual(["a\\|b"]);
+    });
+
+    it("keeps the inline markup and the resolved links inside a cell", async () => {
+      const markdown = await htmlToMarkdown(
+        "<table><tr><th>Item</th></tr>" +
+          '<tr><td><b>Cable</b>, see <a href="/docs">Docs</a></td></tr></table>',
+        "https://example.com"
+      );
+
+      expect(tableRows(markdown)[2]).toEqual([
+        "**Cable**, see [Docs](https://example.com/docs)",
+      ]);
+    });
+
+    it("puts a caption in its own paragraph above the table", async () => {
+      const markdown = await htmlToMarkdown(
+        "<table><caption>Prices</caption><tr><th>A</th></tr><tr><td>1</td></tr></table>"
+      );
+
+      expect(markdown).toBe("Prices\n\n| A |\n| --- |\n| 1 |");
+    });
+
+    it("leaves a page without a table alone", async () => {
+      expect(await htmlToMarkdown("<h1>Title</h1><p>hello</p>")).toBe(
+        "# Title\n\nhello"
+      );
+    });
+  });
 });
