@@ -155,12 +155,33 @@ class TextSplitter {
    */
   #setSplitter(config = {}) {
     // if (!config?.splitByFilename) {// TODO do something when specific extension is present? }
+    const chunkHeader = this.stringifyHeader();
+    const chunkSize = isNullOrNaN(config?.chunkSize)
+      ? 1_000
+      : Number(config?.chunkSize);
+    const chunkOverlap = isNullOrNaN(config?.chunkOverlap)
+      ? 20
+      : Number(config?.chunkOverlap);
+
+    // The header and prefix go on every chunk, so the embedder receives
+    // header + content. chunkSize is the embedder's hard limit (see
+    // determineMaxChunkSize), so the header has to come out of that budget
+    // rather than be added on top of it.
+    let contentSize = chunkSize - chunkHeader.length;
+    if (chunkHeader.length > 0 && contentSize <= chunkOverlap) {
+      // The header alone does not fit, so no split can honour the limit.
+      // Leave the budget alone rather than emit chunks that are almost all
+      // metadata, and say so.
+      this.log(
+        `\x1b[43m[WARN]\x1b[0m Chunk header of ${chunkHeader.length} chars does not fit in a chunk size of ${chunkSize} - chunks will exceed the chunk size. Raise the chunk size or shorten the document metadata.`
+      );
+      contentSize = chunkSize;
+    }
+
     return new RecursiveSplitter({
-      chunkSize: isNaN(config?.chunkSize) ? 1_000 : Number(config?.chunkSize),
-      chunkOverlap: isNaN(config?.chunkOverlap)
-        ? 20
-        : Number(config?.chunkOverlap),
-      chunkHeader: this.stringifyHeader(),
+      chunkSize: contentSize,
+      chunkOverlap,
+      chunkHeader,
     });
   }
 
