@@ -8,12 +8,15 @@ import { useSystemReasoningEffort } from "./SystemReasoningEffortContext";
  * Workspaces without their own reasoning effort fall back to this value.
  * Renders nothing unless mounted under SystemReasoningEffortContext (the LLM
  * preference page), so provider option forms can include it unconditionally.
+ * @param {object} props
+ * @param {string|null} [props.model] - Unsaved model selection for providers whose model picker is not a form input (eg: Lemonade's model table)
  */
-export default function SystemReasoningEffort() {
+export default function SystemReasoningEffort({ model = null }) {
   const { t } = useTranslation();
   const context = useSystemReasoningEffort();
   const [capabilities, setCapabilities] = useState(null);
-  const { settings, selectedLLM, selectedModel, basePath } = context ?? {};
+  const { settings, selectedLLM, basePath } = context ?? {};
+  const selectedModel = model ?? context?.selectedModel;
 
   useEffect(() => {
     if (!context) return;

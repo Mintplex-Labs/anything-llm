@@ -20,10 +20,13 @@ const PROVIDER_REASONING_EFFORTS = {
       ? ["low", "medium", "high"]
       : ["minimal", "low", "medium", "high"],
   ollama: () => ["on", "off", "low", "medium", "high", "max"],
-  // "off" is sent as "none".
-  lmstudio: () => ["off", "minimal", "low", "medium", "high"],
-  // Lemonade does no validation of its own - this gate is the only guard.
-  lemonade: () => ["off", "low", "medium", "high"],
+  // "off" is sent as "none". Per-model support comes from the LM Studio
+  // models API (see getModelCapabilities).
+  lmstudio: () => ["off", "low", "medium", "high"],
+  // llama.cpp chat template kwargs: gpt-oss takes a reasoning level, other
+  // thinking models only a toggle.
+  lemonade: (model = "") =>
+    model.includes("gpt-oss") ? ["low", "medium", "high"] : ["on", "off"],
   // Only the thinking toggle is documented.
   deepseek: () => ["on", "off"],
 };
