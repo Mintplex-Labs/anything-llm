@@ -191,6 +191,7 @@ function stripCitations(root) {
     "#References",
     ".catlinks",
     ".mw-authority-control",
+    ".mw-editsection",
   ]) {
     root.querySelectorAll(sel).forEach((el) => el.remove());
   }

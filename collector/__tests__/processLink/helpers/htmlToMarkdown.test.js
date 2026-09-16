@@ -180,6 +180,28 @@ describe("htmlToMarkdown", () => {
       expect(markdown).toBe("body");
     });
 
+    it("removes MediaWiki section-edit controls from headings", async () => {
+      const markdown = await htmlToMarkdown(
+        '<h2><span class="mw-headline">Intro</span>' +
+          '<span class="mw-editsection">' +
+          '<span class="mw-editsection-bracket">[</span>' +
+          '<a href="/w/index.php?title=Help:Section&amp;action=edit&amp;section=1">edit</a>' +
+          '<span class="mw-editsection-bracket">]</span>' +
+          "</span></h2><p>Body text.</p>",
+        "https://www.mediawiki.org"
+      );
+      expect(markdown).toBe("## Intro\n\nBody text.");
+    });
+
+    it("removes section-edit controls without touching [edit] in body code", async () => {
+      const markdown = await htmlToMarkdown(
+        '<h2>Config<span class="mw-editsection">[<a href="/edit">edit</a>]</span></h2>' +
+          "<pre><code>config[edit] = true;</code></pre>",
+        "https://example.com"
+      );
+      expect(markdown).toBe("## Config\n\n```\nconfig[edit] = true;\n```");
+    });
+
     it("keeps a numeric index inside a fenced code block", async () => {
       const markdown = await htmlToMarkdown(
         "<pre><code>const second = items[1];</code></pre>"
