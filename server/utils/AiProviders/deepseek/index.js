@@ -5,6 +5,7 @@ const {
 const { MODEL_MAP } = require("../modelMap");
 const {
   handleDefaultStreamResponseV2,
+  formatChatHistory,
 } = require("../../helpers/chat/responses");
 
 class DeepSeekLLM {
@@ -66,17 +67,46 @@ class DeepSeekLLM {
     return models.data.some((model) => model.id === modelName);
   }
 
+  /**
+   * Generates appropriate content array for a message + attachments.
+   * @param {{userPrompt:string, attachments: import("../../helpers").Attachment[]}}
+   * @returns {string|object[]}
+   */
+  #generateContent({ userPrompt, attachments: _attachments = [] }) {
+    return userPrompt;
+
+    /** @dev-note
+     * DeepSeek publishes no vision model, so this is stubbed out the way Cerebras is.
+     * Running it through `formatChatHistory` is still what keeps the internal
+     * `attachments` array out of the request body. If DeepSeek ever ships a vision
+     * model, this can be filled in the way the other OpenAI-compatible providers do.
+     */
+  }
+
+  /**
+   * Construct the user prompt for this model.
+   * @param {{attachments: import("../../helpers").Attachment[]}} param0
+   * @returns
+   */
   constructPrompt({
     systemPrompt = "",
     contextTexts = [],
     chatHistory = [],
     userPrompt = "",
+    attachments = [], // This is the specific attachment for only this prompt
   }) {
     const prompt = {
       role: "system",
       content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
-    return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
+    return [
+      prompt,
+      ...formatChatHistory(chatHistory, this.#generateContent),
+      {
+        role: "user",
+        content: this.#generateContent({ userPrompt, attachments }),
+      },
+    ];
   }
 
   /**
