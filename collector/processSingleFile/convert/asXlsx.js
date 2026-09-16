@@ -12,13 +12,8 @@ const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
 
 /**
- * Renders a sheet's rows as CSV.
- *
- * A field is quoted when it holds a separator, a double quote or a line break,
- * and an embedded quote is doubled inside it (RFC 4180). Quoting only on a
- * comma leaves a cell that contains a line break splitting its row in two, and
- * a cell that contains a quote producing a field no CSV reader can parse.
- *
+ * Renders a sheet's rows as RFC 4180 CSV. Fields containing a comma, double quote,
+ * or line break are quoted, with embedded quotes doubled.
  * @param {Array<Array<string|number|null|undefined>>} data - Rows of cell values
  * @returns {string} - The rows as CSV
  */
@@ -202,5 +197,3 @@ function processSheet(sheet) {
 }
 
 module.exports = asXlsx;
-// Exported for tests; the converter itself is the default export.
-module.exports.convertToCSV = convertToCSV;
