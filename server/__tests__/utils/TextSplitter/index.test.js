@@ -56,10 +56,8 @@ describe("TextSplitter", () => {
       chunkPrefix: "testing: ",
     });
     let chunks = await textSplitter.splitText(text);
-    // Prefix counts against chunkSize.
-    expect(chunks.length).toEqual(9);
+    expect(chunks.length).toEqual(5);
     expect(chunks.every(chunk => chunk.startsWith("testing: "))).toBe(true);
-    expect(chunks.every(chunk => chunk.length <= 20)).toBe(true);
 
     textSplitter = new TextSplitter({
       chunkSize: 20,
@@ -67,9 +65,8 @@ describe("TextSplitter", () => {
       chunkPrefix: "testing2: ",
     });
     chunks = await textSplitter.splitText(text);
-    expect(chunks.length).toEqual(12);
+    expect(chunks.length).toEqual(5);
     expect(chunks.every(chunk => chunk.startsWith("testing2: "))).toBe(true);
-    expect(chunks.every(chunk => chunk.length <= 20)).toBe(true);
 
     textSplitter = new TextSplitter({
       chunkSize: 20,
@@ -105,50 +102,30 @@ describe("TextSplitter", () => {
     expect(chunks.every(chunk => chunk.startsWith("testing3: <document_metadata>"))).toBe(true);
   });
 
-  test("keeps the header inside the chunk size", async () => {
-    const text = "word ".repeat(2_000);
-    const chunkHeaderMeta = TextSplitter.buildHeaderMeta({
-      title: "A Fairly Long Document Title That Real Uploads Have.pdf",
-      published: "2026-09-16T00:00:00.000Z",
-      chunkSource: "link://https://example.com/some/deep/path/to/a/page",
-    });
-    const textSplitter = new TextSplitter({
-      chunkSize: 1_000,
-      chunkOverlap: 20,
-      chunkHeaderMeta,
-    });
-
+  test("defaults chunkSize to 1000 when null", async () => {
+    const text = "word ".repeat(500);
+    const textSplitter = new TextSplitter({ chunkSize: null, chunkOverlap: 20 });
     const chunks = await textSplitter.splitText(text);
-
-    expect(textSplitter.stringifyHeader().length).toBeGreaterThan(0);
-    expect(chunks.length).toBeGreaterThan(1);
-    expect(Math.max(...chunks.map((chunk) => chunk.length))).toBeLessThanOrEqual(
-      1_000
-    );
+    expect(chunks.length).toEqual(3);
+    expect(chunks.every((chunk) => chunk.length <= 1000)).toBe(true);
   });
 
-  test("leaves the chunk size alone when the header cannot fit in it", async () => {
+  test("warns when a chunk header is present but does not change the split", async () => {
     const text = "word ".repeat(200);
     const chunkHeaderMeta = TextSplitter.buildHeaderMeta({
-      title: "A Fairly Long Document Title That Real Uploads Have.pdf",
+      title: "Example.pdf",
       published: "2026-09-16T00:00:00.000Z",
-      chunkSource: "link://https://example.com/some/deep/path/to/a/page",
+      chunkSource: "link://https://example.com/page",
     });
-    const textSplitter = new TextSplitter({
-      chunkSize: 100,
-      chunkOverlap: 20,
-      chunkHeaderMeta,
-    });
+    const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+    const textSplitter = new TextSplitter({ chunkSize: 100, chunkOverlap: 20, chunkHeaderMeta });
     const header = textSplitter.stringifyHeader();
-    expect(header.length).toBeGreaterThan(100);
-
     const chunks = await textSplitter.splitText(text);
-    const headerless = await new TextSplitter({
-      chunkSize: 100,
-      chunkOverlap: 20,
-    }).splitText(text);
+    const headerless = await new TextSplitter({ chunkSize: 100, chunkOverlap: 20 }).splitText(text);
+    const logged = logSpy.mock.calls.map((call) => String(call[0]));
+    logSpy.mockRestore();
 
-    // Content is split on the full chunkSize, exactly as if there were no header.
+    expect(logged.some((line) => line.includes(`Chunk header of ${header.length} chars`))).toBe(true);
     expect(chunks.map((chunk) => chunk.slice(header.length))).toEqual(headerless);
     expect(chunks.every((chunk) => chunk.startsWith(header))).toBe(true);
   });

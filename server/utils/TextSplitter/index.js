@@ -163,18 +163,14 @@ class TextSplitter {
       ? 20
       : Number(config?.chunkOverlap);
 
-    // The header is prepended to every chunk, so it counts against chunkSize.
-    let contentSize = chunkSize - chunkHeader.length;
-    if (chunkHeader.length > 0 && contentSize <= chunkOverlap) {
-      // Header cannot fit inside chunkSize - split on the full size and warn.
+    // The header is prepended to every chunk after splitting, so chunks may exceed chunkSize.
+    if (chunkHeader.length > 0)
       this.log(
-        `\x1b[43m[WARN]\x1b[0m Chunk header of ${chunkHeader.length} chars does not fit in a chunk size of ${chunkSize} - chunks will exceed the chunk size. Raise the chunk size or shorten the document metadata.`
+        `\x1b[43m[WARN]\x1b[0m Chunk header of ${chunkHeader.length} chars is prepended to each chunk - chunks may be up to ${chunkSize + chunkHeader.length} chars.`
       );
-      contentSize = chunkSize;
-    }
 
     return new RecursiveSplitter({
-      chunkSize: contentSize,
+      chunkSize,
       chunkOverlap,
       chunkHeader,
     });
