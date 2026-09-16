@@ -11,15 +11,26 @@ const {
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
 
+/**
+ * Renders a sheet's rows as CSV.
+ *
+ * A field is quoted when it holds a separator, a double quote or a line break,
+ * and an embedded quote is doubled inside it (RFC 4180). Quoting only on a
+ * comma leaves a cell that contains a line break splitting its row in two, and
+ * a cell that contains a quote producing a field no CSV reader can parse.
+ *
+ * @param {Array<Array<string|number|null|undefined>>} data - Rows of cell values
+ * @returns {string} - The rows as CSV
+ */
 function convertToCSV(data) {
   return data
     .map((row) =>
       row
         .map((cell) => {
           if (cell === null || cell === undefined) return "";
-          if (typeof cell === "string" && cell.includes(","))
-            return `"${cell}"`;
-          return cell;
+          const value = String(cell);
+          if (/[",\r\n]/.test(value)) return `"${value.replace(/"/g, '""')}"`;
+          return value;
         })
         .join(",")
     )
@@ -191,3 +202,5 @@ function processSheet(sheet) {
 }
 
 module.exports = asXlsx;
+// Exported for tests; the converter itself is the default export.
+module.exports.convertToCSV = convertToCSV;
