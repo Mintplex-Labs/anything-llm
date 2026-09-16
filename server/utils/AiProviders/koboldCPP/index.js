@@ -1,4 +1,5 @@
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
+const { isAbortError } = require("../../helpers/abortSignals");
 const {
   clientAbortedHandler,
   writeResponseChunk,
@@ -189,8 +190,10 @@ class KoboldCPPLLM {
 
     return new Promise(async (resolve) => {
       let fullText = "";
+      // `prompt_tokens` is left out on purpose: LLMPerformanceMonitor.measureStream
+      // already counted the prompt, and endMeasurement merges this object over the
+      // metrics it holds, so reporting a value here would replace a real count.
       let usage = {
-        prompt_tokens: LLMPerformanceMonitor.countTokens(stream.messages || []),
         completion_tokens: 0,
       };
 
@@ -203,43 +206,80 @@ class KoboldCPPLLM {
       };
       response.on("close", handleAbort);
 
-      for await (const chunk of stream) {
-        const message = chunk?.choices?.[0];
-        const token = message?.delta?.content;
+      try {
+        for await (const chunk of stream) {
+          const message = chunk?.choices?.[0];
+          const token = message?.delta?.content;
 
-        if (token) {
-          fullText += token;
-          writeResponseChunk(response, {
-            uuid,
-            sources: [],
-            type: "textResponseChunk",
-            textResponse: token,
-            close: false,
-            error: false,
-          });
+          if (token) {
+            fullText += token;
+            writeResponseChunk(response, {
+              uuid,
+              sources: [],
+              type: "textResponseChunk",
+              textResponse: token,
+              close: false,
+              error: false,
+            });
+          }
+
+          // KoboldCPP finishes with "length" or "stop"
+          if (
+            message?.finish_reason === "length" ||
+            message?.finish_reason === "stop"
+          ) {
+            writeResponseChunk(response, {
+              uuid,
+              sources,
+              type: "textResponseChunk",
+              textResponse: "",
+              close: true,
+              error: false,
+            });
+            response.removeListener("close", handleAbort);
+            usage.completion_tokens = LLMPerformanceMonitor.countTokens([
+              { content: fullText },
+            ]);
+            stream?.endMeasurement(usage);
+            resolve(fullText);
+            break; // Break streaming when a valid finish_reason is first encountered
+          }
         }
 
-        // KoboldCPP finishes with "length" or "stop"
-        if (
-          message.finish_reason !== "null" &&
-          (message.finish_reason === "length" ||
-            message.finish_reason === "stop")
-        ) {
-          writeResponseChunk(response, {
-            uuid,
-            sources,
-            type: "textResponseChunk",
-            textResponse: "",
-            close: true,
-            error: false,
-          });
-          response.removeListener("close", handleAbort);
+        // The stream ended without a finish_reason - keep what was generated
+        // instead of leaving the caller awaiting a promise that never settles.
+        response.removeListener("close", handleAbort);
+        usage.completion_tokens = LLMPerformanceMonitor.countTokens([
+          { content: fullText },
+        ]);
+        stream?.endMeasurement(usage);
+        resolve(fullText);
+      } catch (e) {
+        // Cancelling the upstream request rejects the iterator - that is the
+        // client leaving, not a failure, so it is not reported as an error.
+        if (isAbortError(e)) {
           usage.completion_tokens = LLMPerformanceMonitor.countTokens([
             { content: fullText },
           ]);
           stream?.endMeasurement(usage);
-          resolve(fullText);
+          return clientAbortedHandler(resolve, fullText);
         }
+
+        console.log(`\x1b[43m\x1b[34m[STREAMING ERROR]\x1b[0m ${e.message}`);
+        writeResponseChunk(response, {
+          uuid,
+          type: "abort",
+          textResponse: null,
+          sources: [],
+          close: true,
+          error: e.message,
+        });
+        response.removeListener("close", handleAbort);
+        usage.completion_tokens = LLMPerformanceMonitor.countTokens([
+          { content: fullText },
+        ]);
+        stream?.endMeasurement(usage);
+        resolve(fullText); // Return what we currently have - if anything.
       }
     });
   }
