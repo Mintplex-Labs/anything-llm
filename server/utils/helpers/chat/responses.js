@@ -363,13 +363,15 @@ function writeResponseChunk(response, data) {
  * Formats the chat history to re-use attachments in the chat history
  * that might have existed in the conversation earlier.
  * @param {{role:string, content:string, attachments?: Object[]}[]} chatHistory
- * @param {function} formatterFunction - The function to format the chat history from the llm provider
+ * @param {function} formatterFunction - The function to format the chat history from the llm provider.
+ * Providers without vision support can omit it: the default keeps the message text and drops the
+ * internal `attachments` property, which is not part of any provider's message schema.
  * @param {('asProperty'|'spread')} mode - "asProperty" or "spread". Determines how the content is formatted in the message object.
  * @returns {object[]}
  */
 function formatChatHistory(
   chatHistory = [],
-  formatterFunction,
+  formatterFunction = ({ userPrompt }) => userPrompt,
   mode = "asProperty"
 ) {
   return chatHistory.map((historicalMessage) => {

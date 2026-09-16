@@ -5,6 +5,7 @@ const {
 const { MODEL_MAP } = require("../modelMap");
 const {
   handleDefaultStreamResponseV2,
+  formatChatHistory,
 } = require("../../helpers/chat/responses");
 
 class DeepSeekLLM {
@@ -76,7 +77,11 @@ class DeepSeekLLM {
       role: "system",
       content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
-    return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
+    return [
+      prompt,
+      ...formatChatHistory(chatHistory),
+      { role: "user", content: userPrompt },
+    ];
   }
 
   /**

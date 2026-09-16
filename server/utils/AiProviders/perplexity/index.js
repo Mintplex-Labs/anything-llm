@@ -4,6 +4,7 @@ const { isAbortError } = require("../../helpers/abortSignals");
 const {
   writeResponseChunk,
   clientAbortedHandler,
+  formatChatHistory,
 } = require("../../helpers/chat/responses");
 const {
   LLMPerformanceMonitor,
@@ -88,7 +89,11 @@ class PerplexityLLM {
       role: "system",
       content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
-    return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
+    return [
+      prompt,
+      ...formatChatHistory(chatHistory),
+      { role: "user", content: userPrompt },
+    ];
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
