@@ -88,6 +88,7 @@ import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
 import OMLXOptions from "@/components/LLMSelection/OMLXOptions";
+import { SystemReasoningEffortContext } from "@/components/LLMSelection/SystemReasoningEffort/SystemReasoningEffortContext";
 
 export const MODEL_ROUTER_PROVIDER = {
   name: "Model Router",
@@ -456,6 +457,11 @@ export default function GeneralLLMPreference() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredLLMs, setFilteredLLMs] = useState([]);
   const [selectedLLM, setSelectedLLM] = useState(null);
+  // Unsaved model/base path selections bubbled up from the provider's options
+  // component so dependent controls (eg: reasoning effort) can preview
+  // capabilities before the form is saved.
+  const [pendingModel, setPendingModel] = useState(null);
+  const [pendingBasePath, setPendingBasePath] = useState(null);
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
   const { t } = useTranslation();
@@ -474,6 +480,7 @@ export default function GeneralLLMPreference() {
       showToast(`Failed to save LLM settings: ${error}`, "error");
     } else {
       showToast("LLM preferences saved successfully.", "success");
+      setSettings(await System.keys());
     }
     setSaving(false);
     setHasChanges(!!error);
@@ -482,6 +489,8 @@ export default function GeneralLLMPreference() {
   const updateLLMChoice = (selection) => {
     setSearchQuery("");
     setSelectedLLM(selection);
+    setPendingModel(null);
+    setPendingBasePath(null);
     setSearchMenuOpen(false);
     setHasChanges(true);
   };
@@ -655,13 +664,30 @@ export default function GeneralLLMPreference() {
                 )}
               </div>
               <div
-                onChange={() => setHasChanges(true)}
+                onChange={(e) => {
+                  setHasChanges(true);
+                  // Every provider's model selector input is named `*ModelPref`
+                  // and every local provider's endpoint input `*BasePath`.
+                  if (e.target?.name?.endsWith("ModelPref"))
+                    setPendingModel(e.target.value);
+                  if (e.target?.name?.endsWith("BasePath"))
+                    setPendingBasePath(e.target.value);
+                }}
                 className="mt-4 flex flex-col gap-y-1"
               >
-                {selectedLLM &&
-                  AVAILABLE_LLM_PROVIDERS.find(
-                    (llm) => llm.value === selectedLLM
-                  )?.options?.(settings)}
+                <SystemReasoningEffortContext.Provider
+                  value={{
+                    settings,
+                    selectedLLM,
+                    selectedModel: pendingModel,
+                    basePath: pendingBasePath,
+                  }}
+                >
+                  {selectedLLM &&
+                    AVAILABLE_LLM_PROVIDERS.find(
+                      (llm) => llm.value === selectedLLM
+                    )?.options?.(settings)}
+                </SystemReasoningEffortContext.Provider>
               </div>
             </div>
           </form>

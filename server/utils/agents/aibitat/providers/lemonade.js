@@ -1,3 +1,4 @@
+const { validReasoningEffort } = require("../../../helpers/reasoningEffort");
 const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
@@ -17,7 +18,7 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
 
   /**
    *
-   * @param {{model?: string}} config
+   * @param {{model?: string, reasoningEffort?: string|null}} config
    */
   constructor(config = {}) {
     super();
@@ -33,6 +34,7 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
 
     this._client = client;
     this.model = model;
+    this.reasoningEffort = config?.reasoningEffort ?? null;
     this.verbose = true;
     this.preloaded = false;
     this._supportsToolCalling = null;
@@ -40,6 +42,25 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get client() {
     return this._client;
+  }
+
+  /**
+   * The reasoning portion of the request body when a supported reasoning
+   * effort is set - otherwise an empty object so the provider default applies.
+   * Lemonade's llama.cpp backend reads reasoning controls from the chat
+   * template kwargs.
+   * @returns {object}
+   */
+  get reasoningConfig() {
+    const effort = validReasoningEffort(
+      "lemonade",
+      this.model,
+      this.reasoningEffort
+    );
+    if (!effort) return {};
+    if (["on", "off"].includes(effort))
+      return { chat_template_kwargs: { enable_thinking: effort === "on" } };
+    return { chat_template_kwargs: { reasoning_effort: effort } };
   }
 
   get supportsAgentStreaming() {
@@ -57,6 +78,7 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
       .create({
         model: this.model,
         messages,
+        ...this.reasoningConfig,
       })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
@@ -75,6 +97,7 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
       model: this.model,
       stream: true,
       messages,
+      ...this.reasoningConfig,
     });
   }
 

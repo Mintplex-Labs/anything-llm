@@ -1,3 +1,4 @@
+const { validReasoningEffort } = require("../../../helpers/reasoningEffort");
 const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
@@ -18,7 +19,7 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
 
   /**
-   * @param {{model?: string}} config
+   * @param {{model?: string, reasoningEffort?: string|null}} config
    */
   constructor(config = {}) {
     super();
@@ -34,12 +35,28 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
 
     this._client = client;
     this.model = model;
+    this.reasoningEffort = config?.reasoningEffort ?? null;
     this.verbose = true;
     this._supportsToolCalling = null;
   }
 
   get client() {
     return this._client;
+  }
+
+  /**
+   * The reasoning portion of the request body when a supported reasoning
+   * effort is set - otherwise an empty object so the provider default applies.
+   * @returns {object}
+   */
+  get reasoningConfig() {
+    const effort = validReasoningEffort(
+      "lmstudio",
+      this.model,
+      this.reasoningEffort
+    );
+    if (!effort) return {};
+    return { reasoning_effort: effort === "off" ? "none" : effort };
   }
 
   get supportsAgentStreaming() {
@@ -68,6 +85,7 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
       .create({
         model: this.model,
         messages,
+        ...this.reasoningConfig,
       })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
@@ -87,6 +105,7 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
       model: this.model,
       stream: true,
       messages,
+      ...this.reasoningConfig,
     });
   }
 

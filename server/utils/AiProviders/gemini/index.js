@@ -11,6 +11,10 @@ const {
 const { MODEL_MAP } = require("../modelMap");
 const { defaultGeminiModels, v1BetaModels } = require("./defaultModels");
 const { safeJsonParse } = require("../../http");
+const {
+  PROVIDER_REASONING_EFFORTS,
+  validReasoningEffort,
+} = require("../../helpers/reasoningEffort");
 const cacheFolder = path.resolve(
   process.env.STORAGE_DIR
     ? path.resolve(process.env.STORAGE_DIR, "models", "gemini")
@@ -377,13 +381,52 @@ class GeminiLLM {
     ];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  /**
+   * Builds the reasoning portion of the request body when a reasoning effort
+   * is set - otherwise an empty object so the provider default applies.
+   * Gemini's OpenAI-compatible endpoint accepts `reasoning_effort` and maps
+   * it to a thinking budget.
+   * @param {string|null} reasoningEffort
+   * @returns {object}
+   */
+  #constructReasoningConfig(reasoningEffort = null) {
+    const effort = validReasoningEffort("gemini", this.model, reasoningEffort);
+    if (!effort) return {};
+    return { reasoning_effort: effort };
+  }
+
+  /**
+   * Returns the capabilities of the model.
+   * @returns {Promise<{reasoning: 'unknown' | boolean, reasoningOptions: string[]}>}
+   */
+  async getModelCapabilities() {
+    try {
+      const modelInfo = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${this.model}?key=${process.env.GEMINI_API_KEY}`
+      ).then((res) => res.json());
+      if (modelInfo.thinking !== true)
+        return { reasoning: false, reasoningOptions: [] };
+      return {
+        reasoning: true,
+        reasoningOptions: PROVIDER_REASONING_EFFORTS.gemini(this.model),
+      };
+    } catch (error) {
+      console.error("Gemini:getModelCapabilities", error.message);
+      return { reasoning: "unknown", reasoningOptions: [] };
+    }
+  }
+
+  async getChatCompletion(
+    messages = null,
+    { temperature = 0.7, reasoningEffort = null }
+  ) {
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.openai.chat.completions
         .create({
           model: this.model,
           messages,
           temperature: temperature,
+          ...this.#constructReasoningConfig(reasoningEffort),
         })
         .catch((e) => {
           console.error(e);
@@ -412,13 +455,17 @@ class GeminiLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = 0.7, reasoningEffort = null }
+  ) {
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.openai.chat.completions.create({
         model: this.model,
         stream: true,
         messages,
         temperature: temperature,
+        ...this.#constructReasoningConfig(reasoningEffort),
         stream_options: {
           include_usage: true,
         },

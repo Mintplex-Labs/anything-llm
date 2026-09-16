@@ -6,6 +6,7 @@ const {
   sourceIdentifier,
   recentChatHistory,
   chatPrompt,
+  resolveReasoningEffort,
 } = require("../../chats");
 const { fillSourceWindow } = require("../../helpers/chat");
 const { AgentHandler } = require("../../agents");
@@ -271,10 +272,12 @@ async function generateResponse({
 }) {
   let completeText = "";
   let metrics = {};
+  const reasoningEffort = await resolveReasoningEffort(workspace, LLMConnector);
 
   if (LLMConnector.streamingEnabled() === true) {
     const stream = await LLMConnector.streamGetChatCompletion(messages, {
       temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
+      reasoningEffort,
     });
 
     const { responseHandler, flushEdit } = createStreamHandler({
@@ -293,6 +296,7 @@ async function generateResponse({
       await LLMConnector.getChatCompletion(messages, {
         temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
         user: null,
+        reasoningEffort,
       });
     completeText = textResponse;
     metrics = performanceMetrics || {};
@@ -304,6 +308,7 @@ async function generateResponse({
     routingMetadata,
     workspace,
     connector: LLMConnector,
+    reasoningEffort,
   });
   return { completeText, metrics };
 }

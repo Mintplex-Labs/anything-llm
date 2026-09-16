@@ -223,6 +223,7 @@ async function tooledStream(
     messages: formattedMessages,
     ...maxTokensParam(maxTokens),
     ...(tools.length > 0 ? { tools } : {}),
+    ...(provider?.reasoningConfig ?? {}),
   });
 
   const result = {
@@ -400,6 +401,7 @@ async function tooledComplete(
     messages: formattedMessages,
     ...maxTokensParam(maxTokens),
     ...(tools.length > 0 ? { tools } : {}),
+    ...(provider?.reasoningConfig ?? {}),
   });
 
   const completion = response.choices[0].message;

@@ -8,6 +8,10 @@ const {
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { OpenAI: OpenAIApi } = require("openai");
 const { humanFileSize } = require("../../helpers");
+const {
+  PROVIDER_REASONING_EFFORTS,
+  validReasoningEffort,
+} = require("../../helpers/reasoningEffort");
 
 class LemonadeLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -152,13 +156,37 @@ class LemonadeLLM {
     return textResponse;
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  /**
+   * Builds the reasoning portion of the request body when a reasoning effort
+   * is set - otherwise an empty object so the provider default applies.
+   * Lemonade's llama.cpp backend reads reasoning controls from the chat
+   * template kwargs.
+   * @param {string|null} reasoningEffort
+   * @returns {object}
+   */
+  #constructReasoningConfig(reasoningEffort = null) {
+    const effort = validReasoningEffort(
+      "lemonade",
+      this.model,
+      reasoningEffort
+    );
+    if (!effort) return {};
+    if (["on", "off"].includes(effort))
+      return { chat_template_kwargs: { enable_thinking: effort === "on" } };
+    return { chat_template_kwargs: { reasoning_effort: effort } };
+  }
+
+  async getChatCompletion(
+    messages = null,
+    { temperature = 0.7, reasoningEffort = null }
+  ) {
     await LemonadeLLM.loadModel(this.model);
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.lemonade.chat.completions.create({
         model: this.model,
         messages,
         temperature,
+        ...this.#constructReasoningConfig(reasoningEffort),
       })
     );
 
@@ -183,7 +211,10 @@ class LemonadeLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = 0.7, reasoningEffort = null }
+  ) {
     await LemonadeLLM.loadModel(this.model);
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.lemonade.chat.completions.create({
@@ -191,6 +222,7 @@ class LemonadeLLM {
         stream: true,
         messages,
         temperature,
+        ...this.#constructReasoningConfig(reasoningEffort),
       }),
       messages,
       runPromptTokenCalculation: true,
@@ -209,7 +241,7 @@ class LemonadeLLM {
    * Note: This is a heuristic approach to get the capabilities of the model based on the model metadata.
    * It is not perfect, but works since every model metadata is different and may not have key values we rely on.
    * There is no "capabilities" key in the metadata via any API endpoint - so we do this.
-   * @returns {Promise<{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}>}
+   * @returns {Promise<{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, reasoningOptions: string[], imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}>}
    */
   async getModelCapabilities() {
     try {
@@ -222,9 +254,13 @@ class LemonadeLLM {
       });
 
       const { labels = [] } = await client.models.retrieve(this.model);
+      const supportsReasoning = labels.includes("reasoning");
       return {
         tools: labels.includes("tool-calling"),
-        reasoning: labels.includes("reasoning"),
+        reasoning: supportsReasoning,
+        reasoningOptions: supportsReasoning
+          ? PROVIDER_REASONING_EFFORTS.lemonade(this.model)
+          : [],
         imageGeneration: "unknown",
         vision: labels.includes("vision"),
       };
@@ -233,6 +269,7 @@ class LemonadeLLM {
       return {
         tools: "unknown",
         reasoning: "unknown",
+        reasoningOptions: [],
         imageGeneration: "unknown",
         vision: "unknown",
       };

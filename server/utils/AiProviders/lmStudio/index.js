@@ -7,6 +7,10 @@ const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { OpenAI: OpenAIApi } = require("openai");
+const {
+  PROVIDER_REASONING_EFFORTS,
+  validReasoningEffort,
+} = require("../../helpers/reasoningEffort");
 
 //  hybrid of openAi LLM chat completion for LMStudio
 class LMStudioLLM {
@@ -228,7 +232,26 @@ class LMStudioLLM {
     return textResponse;
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  /**
+   * Builds the reasoning portion of the request body when a reasoning effort
+   * is set - otherwise an empty object so the provider default applies.
+   * @param {string|null} reasoningEffort
+   * @returns {object}
+   */
+  #constructReasoningConfig(reasoningEffort = null) {
+    const effort = validReasoningEffort(
+      "lmstudio",
+      this.model,
+      reasoningEffort
+    );
+    if (!effort) return {};
+    return { reasoning_effort: effort === "off" ? "none" : effort };
+  }
+
+  async getChatCompletion(
+    messages = null,
+    { temperature = 0.7, reasoningEffort = null }
+  ) {
     if (!this.model)
       throw new Error(
         `LMStudio chat: ${this.model} is not valid or defined model for chat completion!`
@@ -239,6 +262,7 @@ class LMStudioLLM {
         model: this.model,
         messages,
         temperature,
+        ...this.#constructReasoningConfig(reasoningEffort),
       })
     );
 
@@ -263,7 +287,10 @@ class LMStudioLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = 0.7, reasoningEffort = null }
+  ) {
     if (!this.model)
       throw new Error(
         `LMStudio chat: ${this.model} is not valid or defined model for chat completion!`
@@ -275,6 +302,7 @@ class LMStudioLLM {
         stream: true,
         messages,
         temperature,
+        ...this.#constructReasoningConfig(reasoningEffort),
       }),
       messages,
       runPromptTokenCalculation: true,
@@ -291,7 +319,7 @@ class LMStudioLLM {
   /**
    * Returns the capabilities of the model.
    * This uses the new /api/v1 endpoint, which returns the model info in a different format.
-   * @returns {Promise<{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}>}
+   * @returns {Promise<{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, reasoningOptions: string[], imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}>}
    */
   async getModelCapabilities() {
     try {
@@ -325,9 +353,17 @@ class LMStudioLLM {
             vision: "unknown",
           };
 
+      // `reasoning.allowed_options` is per model (eg: on/off for Qwen3, or
+      // low/medium/high for gpt-oss). Only the levels that change behavior
+      // over the default are offered - "on" is the default for those models.
+      const reasoningOptions = PROVIDER_REASONING_EFFORTS.lmstudio().filter(
+        (option) => capabilities.reasoning?.allowed_options?.includes(option)
+      );
+
       return {
         tools: capabilities.trained_for_tool_use,
-        reasoning: "unknown",
+        reasoning: capabilities.hasOwnProperty("reasoning"),
+        reasoningOptions,
         imageGeneration: "unknown", // LM Studio does not support image generation yet.
         vision: capabilities.vision,
       };
@@ -336,6 +372,7 @@ class LMStudioLLM {
       return {
         tools: "unknown",
         reasoning: "unknown",
+        reasoningOptions: [],
         imageGeneration: "unknown",
         vision: "unknown",
       };
