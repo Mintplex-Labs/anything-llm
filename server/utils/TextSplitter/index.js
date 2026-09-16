@@ -163,15 +163,10 @@ class TextSplitter {
       ? 20
       : Number(config?.chunkOverlap);
 
-    // The header and prefix go on every chunk, so the embedder receives
-    // header + content. chunkSize is the embedder's hard limit (see
-    // determineMaxChunkSize), so the header has to come out of that budget
-    // rather than be added on top of it.
+    // The header is prepended to every chunk, so it counts against chunkSize.
     let contentSize = chunkSize - chunkHeader.length;
     if (chunkHeader.length > 0 && contentSize <= chunkOverlap) {
-      // The header alone does not fit, so no split can honour the limit.
-      // Leave the budget alone rather than emit chunks that are almost all
-      // metadata, and say so.
+      // Header cannot fit inside chunkSize - split on the full size and warn.
       this.log(
         `\x1b[43m[WARN]\x1b[0m Chunk header of ${chunkHeader.length} chars does not fit in a chunk size of ${chunkSize} - chunks will exceed the chunk size. Raise the chunk size or shorten the document metadata.`
       );

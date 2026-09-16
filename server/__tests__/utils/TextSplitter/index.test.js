@@ -56,8 +56,7 @@ describe("TextSplitter", () => {
       chunkPrefix: "testing: ",
     });
     let chunks = await textSplitter.splitText(text);
-    // The prefix is part of what the embedder receives, so it comes out of the
-    // chunk size rather than being added on top of it.
+    // Prefix counts against chunkSize.
     expect(chunks.length).toEqual(9);
     expect(chunks.every(chunk => chunk.startsWith("testing: "))).toBe(true);
     expect(chunks.every(chunk => chunk.length <= 20)).toBe(true);
@@ -121,8 +120,6 @@ describe("TextSplitter", () => {
 
     const chunks = await textSplitter.splitText(text);
 
-    // The header goes on every chunk, so header + content is what the embedder
-    // is asked to embed, and chunkSize is that embedder's hard limit.
     expect(textSplitter.stringifyHeader().length).toBeGreaterThan(0);
     expect(chunks.length).toBeGreaterThan(1);
     expect(Math.max(...chunks.map((chunk) => chunk.length))).toBeLessThanOrEqual(
@@ -142,15 +139,17 @@ describe("TextSplitter", () => {
       chunkOverlap: 20,
       chunkHeaderMeta,
     });
-    const headerLength = textSplitter.stringifyHeader().length;
-    expect(headerLength).toBeGreaterThan(100);
+    const header = textSplitter.stringifyHeader();
+    expect(header.length).toBeGreaterThan(100);
 
     const chunks = await textSplitter.splitText(text);
+    const headerless = await new TextSplitter({
+      chunkSize: 100,
+      chunkOverlap: 20,
+    }).splitText(text);
 
-    // No split can honour the limit here, so the content budget is left as it
-    // was rather than producing chunks that are almost entirely metadata.
-    expect(
-      chunks.every((chunk) => chunk.length - headerLength <= 100)
-    ).toBe(true);
+    // Content is split on the full chunkSize, exactly as if there were no header.
+    expect(chunks.map((chunk) => chunk.slice(header.length))).toEqual(headerless);
+    expect(chunks.every((chunk) => chunk.startsWith(header))).toBe(true);
   });
 });
