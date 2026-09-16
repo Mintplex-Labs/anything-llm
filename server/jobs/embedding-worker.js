@@ -25,6 +25,7 @@ const prisma = require("../utils/prisma");
 const { getVectorDbClass } = require("../utils/helpers");
 const { fileData } = require("../utils/files");
 const { Telemetry } = require("../models/telemetry");
+const { Observability } = require("../utils/observability");
 
 const queue = [];
 const cancelled = new Set();
@@ -157,6 +158,7 @@ async function processQueue() {
     embeddedFiles: embedded,
     failedFiles: failedToEmbed,
   });
+  await Observability.flush();
   process.exit(0);
 }
 
