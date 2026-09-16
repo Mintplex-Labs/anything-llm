@@ -1,6 +1,7 @@
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
   handleDefaultStreamResponseV2,
+  formatChatHistory,
 } = require("../../helpers/chat/responses");
 const fs = require("fs");
 const path = require("path");
@@ -142,7 +143,11 @@ class PPIOLLM {
       role: "system",
       content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
-    return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
+    return [
+      prompt,
+      ...formatChatHistory(chatHistory),
+      { role: "user", content: userPrompt },
+    ];
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {

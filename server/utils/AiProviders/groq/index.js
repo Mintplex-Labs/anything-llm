@@ -4,6 +4,7 @@ const {
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const {
   handleDefaultStreamResponseV2,
+  formatChatHistory,
 } = require("../../helpers/chat/responses");
 const { MODEL_MAP } = require("../modelMap");
 
@@ -109,7 +110,7 @@ class GroqLLM {
         role: "system",
         content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
       },
-      ...chatHistory,
+      ...formatChatHistory(chatHistory),
       { role: "user", content: userPrompt },
     ];
 
