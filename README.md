@@ -249,12 +249,6 @@ Basically, if telemetry is disabled we don't collect anything. However, dependin
 
 - [Contributing to AnythingLLM](./CONTRIBUTING.md) - How to contribute to AnythingLLM.
 
-## 🌟 Contributors
-
-[![cogpt contributors](https://contrib.rocks/image?repo=ondics/cogpt)](https://github.com/ondics/cogpt/graphs/contributors)
-
-[![Star History Chart](https://api.star-history.com/svg?repos=ondics/cogpt&type=Timeline)](https://star-history.com/#ondics/cogpt&Date)
-
 ## 🔗 More Products
 
 - **[AnythingLLM Mobile (MIT Licensed)][anythingllm-mobile]:** A mobile application that allows you to use AnythingLLM on your mobile device.
