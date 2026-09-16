@@ -12,7 +12,7 @@ concurrency:
 
 on:
   push:
-    branches: ['master'] # master branch only. Do not modify.
+    branches: ['ondics-master'] # ondics-master branch only. Do not modify.
     paths-ignore:
       - '**.md'
       - '.gitmodules'
