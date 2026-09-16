@@ -83,7 +83,7 @@ export default function ReasoningEffortButton({
           }`}
         />
         {effort && (
-          <span className="text-xs capitalize text-zinc-300 light:text-slate-600 group-hover:text-white light:group-hover:text-slate-800">
+          <span className="text-sm font-medium capitalize text-zinc-300 light:text-slate-600 group-hover:text-white light:group-hover:text-slate-800">
             {effort}
           </span>
         )}
