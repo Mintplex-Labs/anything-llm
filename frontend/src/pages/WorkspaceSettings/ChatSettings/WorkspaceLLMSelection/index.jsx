@@ -8,6 +8,7 @@ import RouterSelection from "./RouterSelection";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
+import { useAutosaveForm, SavedIndicator } from "@/components/AutosaveForm";
 
 // Some providers do not support model selection via /models.
 // In that case we allow the user to enter the model name manually and hope they
@@ -34,11 +35,7 @@ const LLMS = [LLM_DEFAULT, ...ALL_LLM_PROVIDERS].filter(
   (llm) => !DISABLED_PROVIDERS.includes(llm.value)
 );
 
-export default function WorkspaceLLMSelection({
-  settings,
-  workspace,
-  setHasChanges,
-}) {
+export default function WorkspaceLLMSelection({ settings, workspace }) {
   const [filteredLLMs, setFilteredLLMs] = useState([]);
   const [selectedLLM, setSelectedLLM] = useState(
     workspace?.chatProvider ?? "default"
@@ -46,12 +43,16 @@ export default function WorkspaceLLMSelection({
   const [searchQuery, setSearchQuery] = useState("");
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
+  const { markDirty, save } = useAutosaveForm();
   const { t } = useTranslation();
   function updateLLMChoice(selection) {
     setSearchQuery("");
     setSelectedLLM(selection);
     setSearchMenuOpen(false);
-    setHasChanges(true);
+    markDirty("chatProvider");
+    markDirty("chatModel");
+    // Every other provider saves once its model/router picker is ready, see ModelSelector.
+    if (selection === "default") save();
   }
 
   function handleXButton() {
@@ -76,6 +77,7 @@ export default function WorkspaceLLMSelection({
       <div className="flex flex-col gap-y-[8px]">
         <label htmlFor="name" className="block input-label">
           {t("chat.llm.title")}
+          <SavedIndicator name="chatProvider" />
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium">
           {t("chat.llm.description")}
@@ -159,21 +161,15 @@ export default function WorkspaceLLMSelection({
           </button>
         )}
       </div>
-      <ModelSelector
-        selectedLLM={selectedLLM}
-        workspace={workspace}
-        setHasChanges={setHasChanges}
-      />
+      <ModelSelector selectedLLM={selectedLLM} workspace={workspace} />
     </div>
   );
 }
 
 // TODO: Add this to agent selector as well as make generic component.
-function ModelSelector({ selectedLLM, workspace, setHasChanges }) {
+function ModelSelector({ selectedLLM, workspace }) {
   if (selectedLLM === "anythingllm-router") {
-    return (
-      <RouterSelection workspace={workspace} setHasChanges={setHasChanges} />
-    );
+    return <RouterSelection workspace={workspace} />;
   }
 
   if (NO_MODEL_SELECTION.includes(selectedLLM)) {
@@ -195,25 +191,20 @@ function ModelSelector({ selectedLLM, workspace, setHasChanges }) {
   }
 
   if (FREE_FORM_LLM_SELECTION.includes(selectedLLM)) {
-    return (
-      <FreeFormLLMInput workspace={workspace} setHasChanges={setHasChanges} />
-    );
+    return <FreeFormLLMInput workspace={workspace} />;
   }
 
-  return (
-    <ChatModelSelection
-      provider={selectedLLM}
-      workspace={workspace}
-      setHasChanges={setHasChanges}
-    />
-  );
+  return <ChatModelSelection provider={selectedLLM} workspace={workspace} />;
 }
 
-function FreeFormLLMInput({ workspace, setHasChanges }) {
+function FreeFormLLMInput({ workspace }) {
   const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-y-[8px]">
-      <label className="block input-label">{t("chat.model.title")}</label>
+      <label className="block input-label">
+        {t("chat.model.title")}
+        <SavedIndicator name="chatModel" />
+      </label>
       <p className="text-white text-opacity-60 text-xs font-medium">
         {t("chat.model.description")}
       </p>
@@ -221,7 +212,6 @@ function FreeFormLLMInput({ workspace, setHasChanges }) {
         type="text"
         name="chatModel"
         defaultValue={workspace?.chatModel || ""}
-        onChange={() => setHasChanges(true)}
         className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
         placeholder="Enter model name exactly as referenced in the API (e.g., gpt-4.1-nano)"
       />
