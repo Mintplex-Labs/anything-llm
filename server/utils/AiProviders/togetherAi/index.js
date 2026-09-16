@@ -9,6 +9,9 @@ const {
 const fs = require("fs");
 const path = require("path");
 const { safeJsonParse } = require("../../http");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 const cacheFolder = path.resolve(
   process.env.STORAGE_DIR
@@ -96,7 +99,6 @@ class TogetherAiLLM {
     };
 
     this.embedder = !embedder ? new NativeEmbedder() : embedder;
-    this.defaultTemp = 0.7;
   }
 
   #appendContext(contextTexts = []) {
@@ -179,7 +181,10 @@ class TogetherAiLLM {
     ];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `TogetherAI chat: ${this.model} is not valid for chat completion!`
@@ -190,7 +195,7 @@ class TogetherAiLLM {
         .create({
           model: this.model,
           messages,
-          temperature,
+          ...temperatureParam(temperature),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -218,7 +223,10 @@ class TogetherAiLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `TogetherAI chat: ${this.model} is not valid for chat completion!`
@@ -229,7 +237,7 @@ class TogetherAiLLM {
         model: this.model,
         stream: true,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       }),
       messages,
       runPromptTokenCalculation: false,

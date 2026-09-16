@@ -7,6 +7,9 @@ const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { OpenAI: OpenAIApi } = require("openai");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 /**
  * OMLX (oMLX) is an OpenAI-compatible MLX inference server for Apple Silicon.
@@ -30,7 +33,6 @@ class OMLXLLM {
     if (!this.model) throw new Error("OMLX must have a valid model set.");
 
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
 
     // Lazy load the limits to avoid blocking the main thread on cacheContextWindows
     this.limits = null;
@@ -235,12 +237,15 @@ class OMLXLLM {
     return textResponse;
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.omlx.chat.completions.create({
         model: this.model,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       })
     );
 
@@ -265,14 +270,17 @@ class OMLXLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.omlx.chat.completions.create({
         model: this.model,
         stream: true,
         stream_options: { include_usage: true },
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       }),
       messages,
       runPromptTokenCalculation: false,

@@ -198,9 +198,7 @@ async function streamChatWithForEmbed(
       `\x1b[31m[STREAMING DISABLED]\x1b[0m Streaming is not available for ${LLMConnector.constructor.name}. Will use regular chat method.`
     );
     const { textResponse, metrics: performanceMetrics } =
-      await LLMConnector.getChatCompletion(messages, {
-        temperature: embed.workspace?.openAiTemp ?? LLMConnector.defaultTemp,
-      });
+      await LLMConnector.getChatCompletion(messages);
     completeText = textResponse;
     metrics = addChatCostToMetrics(performanceMetrics, {
       routingMetadata,
@@ -216,9 +214,7 @@ async function streamChatWithForEmbed(
       error: false,
     });
   } else {
-    const stream = await LLMConnector.streamGetChatCompletion(messages, {
-      temperature: embed.workspace?.openAiTemp ?? LLMConnector.defaultTemp,
-    });
+    const stream = await LLMConnector.streamGetChatCompletion(messages);
     completeText = await LLMConnector.handleStream(response, stream, {
       uuid,
       sources: [],

@@ -18,6 +18,7 @@ const { toValidNumber, safeJsonParse } = require("../../../http");
 const { getLLMProviderClass } = require("../../../helpers");
 const { MODEL_PRICING } = require("../../../helpers/modelPricing");
 const { toNonNegativeNumber } = require("../../../helpers/numbers");
+const { temperatureParam } = require("./helpers/tooled.js");
 const { parseLMStudioBasePath } = require("../../../AiProviders/lmStudio");
 const { parseFoundryBasePath } = require("../../../AiProviders/foundry");
 const { parseOMLXBasePath } = require("../../../AiProviders/omlx");
@@ -137,6 +138,14 @@ class Provider {
    * @type {AbortSignal|null}
    */
   abortSignal = null;
+
+  /**
+   * Sampling temperature for chat requests, assigned by AIbitat when the
+   * provider is instantiated. Undefined when unset or when the model rejects
+   * the parameter, so it is omitted from requests entirely.
+   * @type {number|undefined}
+   */
+  temperature = undefined;
 
   constructor(client) {
     if (this.constructor == Provider) {
@@ -792,6 +801,7 @@ class Provider {
     const formattedMessages = this.formatMessagesWithAttachments(messages);
     const stream = await this.client.chat.completions.create({
       model: this.model,
+      ...temperatureParam(this.temperature),
       stream: true,
       messages: formattedMessages,
       ...(Array.isArray(functions) && functions?.length > 0
