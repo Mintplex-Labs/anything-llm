@@ -1,15 +1,15 @@
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
-  clientAbortedHandler,
-  writeResponseChunk,
+  handleDefaultStreamResponseV2,
   formatChatHistory,
 } = require("../../helpers/chat/responses");
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
-const { v4: uuidv4 } = require("uuid");
 
 class KoboldCPPLLM {
+  static contextWindowSize = null;
+
   constructor(embedder = null, modelPreference = null) {
     const { OpenAI: OpenAIApi } = require("openai");
     if (!process.env.KOBOLD_CPP_BASE_PATH)
@@ -25,20 +25,54 @@ class KoboldCPPLLM {
     });
     this.model = modelPreference ?? process.env.KOBOLD_CPP_MODEL_PREF ?? null;
     if (!this.model) throw new Error("KoboldCPP must have a valid model set.");
+
+    this.embedder = embedder ?? new NativeEmbedder();
+    this.defaultTemp = 0.7;
+    this.maxTokens = process.env.KOBOLD_CPP_MAX_TOKENS
+      ? Number(process.env.KOBOLD_CPP_MAX_TOKENS)
+      : null;
+
+    this.limits = null;
+    KoboldCPPLLM.cacheContextWindow();
+    this.log(
+      `Inference API: ${this.basePath} Model: ${this.model} Context Window: ${this.promptWindowLimit()}`
+    );
+  }
+
+  log(text, ...args) {
+    console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  static async cacheContextWindow() {
+    if (KoboldCPPLLM.contextWindowSize !== null) return;
+    try {
+      const basePath = process.env.KOBOLD_CPP_BASE_PATH;
+      if (!basePath) return;
+      const origin = new URL(basePath).origin;
+      const res = await fetch(`${origin}/api/extra/true_max_context_length`);
+      if (!res.ok) throw new Error(res.statusText);
+      const data = await res.json();
+      if (data?.value && !isNaN(Number(data.value))) {
+        KoboldCPPLLM.contextWindowSize = Number(data.value);
+        console.log(
+          `\x1b[36m[KoboldCPPLLM]\x1b[0m Context window cached: ${KoboldCPPLLM.contextWindowSize}`
+        );
+      }
+    } catch (e) {
+      console.log(
+        `\x1b[36m[KoboldCPPLLM]\x1b[0m Could not cache context window: ${e.message}`
+      );
+    }
+  }
+
+  async assertModelContextLimits() {
+    if (this.limits !== null) return;
+    await KoboldCPPLLM.cacheContextWindow();
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
       user: this.promptWindowLimit() * 0.7,
     };
-
-    this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
-    this.maxTokens = Number(process.env.KOBOLD_CPP_MAX_TOKENS) || 2048;
-    this.log(`Inference API: ${this.basePath} Model: ${this.model}`);
-  }
-
-  log(text, ...args) {
-    console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {
@@ -58,23 +92,19 @@ class KoboldCPPLLM {
   }
 
   static promptWindowLimit(_modelName) {
-    const limit = process.env.KOBOLD_CPP_MODEL_TOKEN_LIMIT || 4096;
-    if (!limit || isNaN(Number(limit)))
-      throw new Error("No token context limit was set.");
-    return Number(limit);
+    const userLimit = process.env.KOBOLD_CPP_MODEL_TOKEN_LIMIT;
+    if (userLimit && !isNaN(Number(userLimit)) && Number(userLimit) > 0) {
+      const systemLimit = KoboldCPPLLM.contextWindowSize;
+      if (systemLimit) return Math.min(Number(userLimit), systemLimit);
+      return Number(userLimit);
+    }
+    return KoboldCPPLLM.contextWindowSize || 16384;
   }
 
-  // Ensure the user set a value for the token limit
-  // and if undefined - assume 4096 window.
   promptWindowLimit() {
-    const limit = process.env.KOBOLD_CPP_MODEL_TOKEN_LIMIT || 4096;
-    if (!limit || isNaN(Number(limit)))
-      throw new Error("No token context limit was set.");
-    return Number(limit);
+    return this.constructor.promptWindowLimit(this.model);
   }
 
-  // Short circuit since we have no idea if the model is valid or not
-  // in pre-flight for generic endpoints
   isValidChatCompletionModel(_modelName = "") {
     return true;
   }
@@ -127,6 +157,16 @@ class KoboldCPPLLM {
     ];
   }
 
+  #parseReasoningFromResponse({ message }) {
+    let textResponse = message?.content ?? "";
+    if (
+      !!message?.reasoning_content &&
+      message.reasoning_content.trim().length > 0
+    )
+      textResponse = `<think>${message.reasoning_content}</think>${textResponse}`;
+    return textResponse;
+  }
+
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.openai.chat.completions
@@ -134,7 +174,7 @@ class KoboldCPPLLM {
           model: this.model,
           messages,
           temperature,
-          max_tokens: this.maxTokens,
+          ...(this.maxTokens ? { max_tokens: this.maxTokens } : {}),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -147,18 +187,14 @@ class KoboldCPPLLM {
     )
       return null;
 
-    const promptTokens = LLMPerformanceMonitor.countTokens(messages);
-    const completionTokens = LLMPerformanceMonitor.countTokens([
-      { content: result.output.choices[0].message.content },
-    ]);
-
     return {
-      textResponse: result.output.choices[0].message.content,
+      textResponse: this.#parseReasoningFromResponse(result.output.choices[0]),
       metrics: {
-        prompt_tokens: promptTokens,
-        completion_tokens: completionTokens,
-        total_tokens: promptTokens + completionTokens,
-        outputTps: completionTokens / result.duration,
+        prompt_tokens: result.output.usage?.prompt_tokens || 0,
+        completion_tokens: result.output.usage?.completion_tokens || 0,
+        total_tokens: result.output.usage?.total_tokens || 0,
+        outputTps:
+          (result.output.usage?.completion_tokens || 0) / result.duration,
         duration: result.duration,
         model: this.model,
         provider: this.className,
@@ -174,7 +210,7 @@ class KoboldCPPLLM {
         stream: true,
         messages,
         temperature,
-        max_tokens: this.maxTokens,
+        ...(this.maxTokens ? { max_tokens: this.maxTokens } : {}),
       }),
       messages,
       runPromptTokenCalculation: true,
@@ -185,66 +221,9 @@ class KoboldCPPLLM {
   }
 
   handleStream(response, stream, responseProps) {
-    const { uuid = uuidv4(), sources = [] } = responseProps;
-
-    return new Promise(async (resolve) => {
-      let fullText = "";
-      let usage = {
-        prompt_tokens: LLMPerformanceMonitor.countTokens(stream.messages || []),
-        completion_tokens: 0,
-      };
-
-      const handleAbort = () => {
-        usage.completion_tokens = LLMPerformanceMonitor.countTokens([
-          { content: fullText },
-        ]);
-        stream?.endMeasurement(usage);
-        clientAbortedHandler(resolve, fullText);
-      };
-      response.on("close", handleAbort);
-
-      for await (const chunk of stream) {
-        const message = chunk?.choices?.[0];
-        const token = message?.delta?.content;
-
-        if (token) {
-          fullText += token;
-          writeResponseChunk(response, {
-            uuid,
-            sources: [],
-            type: "textResponseChunk",
-            textResponse: token,
-            close: false,
-            error: false,
-          });
-        }
-
-        // KoboldCPP finishes with "length" or "stop"
-        if (
-          message.finish_reason !== "null" &&
-          (message.finish_reason === "length" ||
-            message.finish_reason === "stop")
-        ) {
-          writeResponseChunk(response, {
-            uuid,
-            sources,
-            type: "textResponseChunk",
-            textResponse: "",
-            close: true,
-            error: false,
-          });
-          response.removeListener("close", handleAbort);
-          usage.completion_tokens = LLMPerformanceMonitor.countTokens([
-            { content: fullText },
-          ]);
-          stream?.endMeasurement(usage);
-          resolve(fullText);
-        }
-      }
-    });
+    return handleDefaultStreamResponseV2(response, stream, responseProps);
   }
 
-  // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations
   async embedTextInput(textInput) {
     return await this.embedder.embedTextInput(textInput);
   }
@@ -253,6 +232,7 @@ class KoboldCPPLLM {
   }
 
   async compressMessages(promptArgs = {}, rawHistory = []) {
+    await this.assertModelContextLimits();
     const { messageArrayCompressor } = require("../../helpers/chat");
     const messageArray = this.constructPrompt(promptArgs);
     return await messageArrayCompressor(this, messageArray, rawHistory);

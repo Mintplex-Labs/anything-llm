@@ -253,11 +253,7 @@ export const AVAILABLE_LLM_PROVIDERS = [
     logo: KoboldCPPLogo,
     options: (settings) => <KoboldCPPOptions settings={settings} />,
     description: "Run local LLMs using koboldcpp.",
-    requiredConfig: [
-      "KoboldCPPModelPref",
-      "KoboldCPPBasePath",
-      "KoboldCPPTokenLimit",
-    ],
+    requiredConfig: ["KoboldCPPBasePath"],
   },
   {
     name: "Oobabooga Web UI",

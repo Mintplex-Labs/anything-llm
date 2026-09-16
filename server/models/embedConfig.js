@@ -227,11 +227,12 @@ function validatedCreationData(value, field) {
   if (field === "allowlist_domains") {
     try {
       if (!value) return null;
+      const inputs = typeof value === "string" ? value.split(",") : value;
+      if (!Array.isArray(inputs) || inputs.length === 0) return null;
       return JSON.stringify(
-        // Iterate and force all domains to URL object
-        // and stringify the result.
-        value
-          .split(",")
+        // Iterate and force all domains to URL objects. Non-string/invalids are dropped.
+        inputs
+          .filter((input) => typeof input === "string")
           .map((input) => {
             let url = input;
             if (!url.includes("http://") && !url.includes("https://"))

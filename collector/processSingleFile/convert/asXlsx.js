@@ -11,15 +11,21 @@ const {
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
 
+/**
+ * Renders a sheet's rows as RFC 4180 CSV. Fields containing a comma, double quote,
+ * or line break are quoted, with embedded quotes doubled.
+ * @param {Array<Array<string|number|null|undefined>>} data - Rows of cell values
+ * @returns {string} - The rows as CSV
+ */
 function convertToCSV(data) {
   return data
     .map((row) =>
       row
         .map((cell) => {
           if (cell === null || cell === undefined) return "";
-          if (typeof cell === "string" && cell.includes(","))
-            return `"${cell}"`;
-          return cell;
+          const value = String(cell);
+          if (/[",\r\n]/.test(value)) return `"${value.replace(/"/g, '""')}"`;
+          return value;
         })
         .join(",")
     )

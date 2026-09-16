@@ -16,6 +16,62 @@ const IGNORED_IMG_BASEPATHS = [
 ];
 
 /**
+ * Give Turndown the table rules it does not ship with.
+ *
+ * Without them a `<table>` is flattened into one paragraph per cell, so a
+ * value loses the row and the column it belonged to: a price ends up as a
+ * paragraph of its own, several blank lines away from the product it belongs
+ * to, and the chunker can split the two apart.
+ * @param {import('turndown')} turndown
+ */
+function addTableRules(turndown) {
+  // Turndown has already escaped the cell's backslashes, so only the pipe is
+  // left to escape, and a pipe inside a cell would add a column of its own.
+  const cellText = (content) =>
+    content.replace(/\r?\n/g, " ").replace(/\|/g, "\\|").trim();
+
+  const isFirstRow = (node) => {
+    let table = node.parentNode;
+    while (table && table.nodeName !== "TABLE") table = table.parentNode;
+    return !!table && table.querySelector("tr") === node;
+  };
+
+  turndown.addRule("tableCell", {
+    filter: ["th", "td"],
+    replacement: (content) => ` ${cellText(content)} |`,
+  });
+
+  turndown.addRule("tableRow", {
+    filter: "tr",
+    replacement: (content, node) => {
+      const row = `|${content}`;
+      if (!isFirstRow(node)) return `\n${row}`;
+      // A GFM table has to open with a header row, so the first row becomes
+      // one. On a page written without <th> that is what it is anyway.
+      const columns = node.querySelectorAll("th, td").length;
+      return `\n${row}\n|${" --- |".repeat(columns)}`;
+    },
+  });
+
+  // A section wrapper must not put a blank line between the header row and the
+  // body, because a blank line ends the table.
+  turndown.addRule("tableSection", {
+    filter: ["thead", "tbody", "tfoot"],
+    replacement: (content) => content,
+  });
+
+  turndown.addRule("tableCaption", {
+    filter: "caption",
+    replacement: (content) => (content.trim() ? `${content.trim()}\n\n` : ""),
+  });
+
+  turndown.addRule("table", {
+    filter: "table",
+    replacement: (content) => `\n\n${content.trim()}\n\n`,
+  });
+}
+
+/**
  * Convert raw page HTML into clean markdown using Turndown.
  * Strips non-content elements (nav, footer, ads, etc.), hidden elements,
  * base64 images, scripts, styles, and resolves relative URLs before converting.
@@ -81,6 +137,7 @@ function htmlToMarkdown(html, baseUrl) {
       bulletListMarker: "-",
     });
     turndown.remove(["script", "style", "noscript", "iframe", "svg"]);
+    addTableRules(turndown);
 
     turndown.addRule("compactLinks", {
       filter: "a",
@@ -101,9 +158,6 @@ function htmlToMarkdown(html, baseUrl) {
       const textMatch = match.match(/\[([^\]]*)\]/);
       return textMatch ? textMatch[1] : "";
     });
-
-    markdown = markdown.replace(/\[#cite[^\]]*\]/g, "");
-    markdown = markdown.replace(/\[edit\]/gi, "");
 
     markdown = markdown.replace(/\n{4,}/g, "\n\n\n").trim();
     return markdown;
@@ -194,6 +248,7 @@ function stripCitations(root) {
     "#References",
     ".catlinks",
     ".mw-authority-control",
+    ".mw-editsection",
   ]) {
     root.querySelectorAll(sel).forEach((el) => el.remove());
   }

@@ -1,6 +1,20 @@
 const { getLinkText } = require("../../processLink");
 
 /**
+ * Returns the protocol of the given baseUrl, falling back to https when the
+ * value is missing or not a valid URL.
+ * @param {string|null} baseUrl
+ * @returns {string} the protocol including its trailing colon, eg "http:"
+ */
+function protocolOf(baseUrl) {
+  try {
+    return new URL(baseUrl).protocol;
+  } catch {
+    return "https:";
+  }
+}
+
+/**
  * Fetches the content of a raw link. Returns the content as a text string of the link in question.
  * @param {object} data - metadata from document (eg: link)
  * @param {import("../../middleware/setDataSigner").ResponseWithSigner} response
@@ -63,9 +77,12 @@ async function resyncConfluence({ chunkSource }, response) {
     const {
       fetchConfluencePage,
     } = require("../../utils/extensions/Confluence");
+    const baseUrl = source.searchParams.get("baseUrl");
     const { success, reason, content } = await fetchConfluencePage({
-      pageUrl: `https:${source.pathname}`, // need to add back the real protocol
-      baseUrl: source.searchParams.get("baseUrl"),
+      // The stored pathname carries no scheme. Use the one from baseUrl so the
+      // page url matches the one the loader builds from the same baseUrl.
+      pageUrl: `${protocolOf(baseUrl)}${source.pathname}`,
+      baseUrl,
       spaceKey: source.searchParams.get("spaceKey"),
       accessToken: source.searchParams.get("token"),
       username: source.searchParams.get("username"),
@@ -238,14 +255,12 @@ async function resyncPaperlessNgx({ chunkSource }, response) {
   if (!chunkSource) throw new Error("Invalid source property provided");
   try {
     const source = response.locals.encryptionWorker.expandPayload(chunkSource);
-    const {
-      PaperlessNgxLoader,
-    } = require("../../utils/extensions/PaperlessNgx/PaperlessNgxLoader");
+    const PaperlessNgxLoader = require("../../utils/extensions/PaperlessNgx/PaperlessNgxLoader");
     const loader = new PaperlessNgxLoader({
       baseUrl: source.searchParams.get("baseUrl"),
       apiToken: source.searchParams.get("token"),
     });
-    const documentId = source.pathname.split("//")[1];
+    const documentId = source.host;
     const content = await loader.fetchDocumentContent(documentId);
 
     if (!content) throw new Error("Failed to fetch document content");

@@ -180,6 +180,28 @@ describe("htmlToMarkdown", () => {
       expect(markdown).toBe("body");
     });
 
+    it("removes MediaWiki section-edit controls from headings", async () => {
+      const markdown = await htmlToMarkdown(
+        '<h2><span class="mw-headline">Intro</span>' +
+          '<span class="mw-editsection">' +
+          '<span class="mw-editsection-bracket">[</span>' +
+          '<a href="/w/index.php?title=Help:Section&amp;action=edit&amp;section=1">edit</a>' +
+          '<span class="mw-editsection-bracket">]</span>' +
+          "</span></h2><p>Body text.</p>",
+        "https://www.mediawiki.org"
+      );
+      expect(markdown).toBe("## Intro\n\nBody text.");
+    });
+
+    it("removes section-edit controls without touching [edit] in body code", async () => {
+      const markdown = await htmlToMarkdown(
+        '<h2>Config<span class="mw-editsection">[<a href="/edit">edit</a>]</span></h2>' +
+          "<pre><code>config[edit] = true;</code></pre>",
+        "https://example.com"
+      );
+      expect(markdown).toBe("## Config\n\n```\nconfig[edit] = true;\n```");
+    });
+
     it("keeps a numeric index inside a fenced code block", async () => {
       const markdown = await htmlToMarkdown(
         "<pre><code>const second = items[1];</code></pre>"
@@ -218,6 +240,167 @@ describe("htmlToMarkdown", () => {
         "https://example.com"
       );
       expect(markdown).toBe("[link](https://example.com/docs/[1]/page)");
+    });
+
+    it("keeps a section marker inside a fenced code block", async () => {
+      const markdown = await htmlToMarkdown(
+        "<pre><code>config[edit] = true;</code></pre>"
+      );
+      expect(markdown).toContain("config[edit] = true;");
+    });
+
+    it("keeps a section marker inside inline code", async () => {
+      const markdown = await htmlToMarkdown(
+        "<p>Set <code>menu[edit]</code> to enable it.</p>"
+      );
+      expect(markdown).toContain("`menu[edit]`");
+    });
+
+    it("keeps an uppercase section marker inside code", async () => {
+      const markdown = await htmlToMarkdown(
+        "<pre><code>config[EDIT] = true;</code></pre>"
+      );
+      expect(markdown).toContain("config[EDIT] = true;");
+    });
+
+    it("keeps a link whose visible text is the section marker", async () => {
+      const markdown = await htmlToMarkdown(
+        '<p><a href="/wiki/page?action=edit">edit</a></p>',
+        "https://example.com"
+      );
+      expect(markdown).toBe(
+        "[edit](https://example.com/wiki/page?action=edit)"
+      );
+    });
+
+    it("keeps a section marker inside a link target", async () => {
+      const markdown = await htmlToMarkdown(
+        '<p><a href="/docs/[edit]/page">link</a></p>',
+        "https://example.com"
+      );
+      expect(markdown).toBe("[link](https://example.com/docs/[edit]/page)");
+    });
+
+    it("keeps a cite anchor inside a fenced code block", async () => {
+      const markdown = await htmlToMarkdown(
+        "<pre><code>const ref = notes[#cite_note-1];</code></pre>"
+      );
+      expect(markdown).toContain("notes[#cite_note-1]");
+    });
+
+    it("keeps a link whose visible text is a cite anchor", async () => {
+      const markdown = await htmlToMarkdown(
+        '<p><a href="#cite_note-1">#cite_note-1</a></p>',
+        "https://example.com"
+      );
+      // compactLinks emits an unescaped [text](href), so the cite pattern ate
+      // the link text and left a dangling (#cite_note-1) behind.
+      expect(markdown).toBe("[#cite\\_note-1](#cite_note-1)");
+    });
+
+    it("keeps a bracketed cite marker in prose", async () => {
+      // Turndown escapes brackets in prose, and the cite pattern's [^\]]*
+      // spans the backslash before the escaped closing bracket. It therefore
+      // matched from the opening bracket through the closing one and left the
+      // first backslash stranded, turning this whole phrase into "See \ for
+      // details." The numeric pattern could not reach escaped prose this way.
+      const markdown = await htmlToMarkdown(
+        "<p>See [#cite_note-1] for details.</p>"
+      );
+      expect(markdown).toBe("See \\[#cite\\_note-1\\] for details.");
+    });
+  });
+  describe("tables", () => {
+    /** Read the markdown table back the way a reader does. */
+    const tableRows = (markdown) =>
+      markdown
+        .split("\n")
+        .filter((line) => line.trim().startsWith("|"))
+        .map((line) =>
+          line
+            .trim()
+            .replace(/^\||\|$/g, "")
+            .split(/(?<!\\)\|/)
+            .map((cell) => cell.replace(/\\(.)/g, "$1").trim())
+        );
+
+    it("keeps a value in the row and the column it belongs to", async () => {
+      // Turndown ships no table rules, so every cell came out as a paragraph
+      // of its own and a price lost the product it belonged to.
+      const markdown = await htmlToMarkdown(
+        "<h1>Specs</h1>" +
+          "<table><thead><tr><th>Product</th><th>Price</th></tr></thead>" +
+          "<tbody><tr><td>Cable</td><td>9 EUR</td></tr>" +
+          "<tr><td>Hub</td><td>29 EUR</td></tr></tbody></table>" +
+          "<p>after</p>"
+      );
+
+      expect(tableRows(markdown)).toEqual([
+        ["Product", "Price"],
+        ["---", "---"],
+        ["Cable", "9 EUR"],
+        ["Hub", "29 EUR"],
+      ]);
+      // The table has to be a block of its own, or it is read as prose.
+      expect(markdown).toBe(
+        "# Specs\n\n| Product | Price |\n| --- | --- |\n| Cable | 9 EUR |\n| Hub | 29 EUR |\n\nafter"
+      );
+    });
+
+    it("uses the first row as the header when the page wrote no th", async () => {
+      const markdown = await htmlToMarkdown(
+        "<table><tr><td>Product</td><td>Price</td></tr>" +
+          "<tr><td>Cable</td><td>9 EUR</td></tr></table>"
+      );
+
+      expect(tableRows(markdown)).toEqual([
+        ["Product", "Price"],
+        ["---", "---"],
+        ["Cable", "9 EUR"],
+      ]);
+    });
+
+    it("keeps a pipe inside the cell that holds it", async () => {
+      const markdown = await htmlToMarkdown(
+        "<table><tr><th>Product</th><th>Spec</th></tr>" +
+          "<tr><td>Cable</td><td>USB-A|USB-C</td></tr></table>"
+      );
+
+      expect(tableRows(markdown)[2]).toEqual(["Cable", "USB-A|USB-C"]);
+    });
+
+    it("keeps a cell's own backslash next to a pipe", async () => {
+      const markdown = await htmlToMarkdown(
+        "<table><tr><th>Pattern</th></tr><tr><td>a\\|b</td></tr></table>"
+      );
+
+      expect(tableRows(markdown)[2]).toEqual(["a\\|b"]);
+    });
+
+    it("keeps the inline markup and the resolved links inside a cell", async () => {
+      const markdown = await htmlToMarkdown(
+        "<table><tr><th>Item</th></tr>" +
+          '<tr><td><b>Cable</b>, see <a href="/docs">Docs</a></td></tr></table>',
+        "https://example.com"
+      );
+
+      expect(tableRows(markdown)[2]).toEqual([
+        "**Cable**, see [Docs](https://example.com/docs)",
+      ]);
+    });
+
+    it("puts a caption in its own paragraph above the table", async () => {
+      const markdown = await htmlToMarkdown(
+        "<table><caption>Prices</caption><tr><th>A</th></tr><tr><td>1</td></tr></table>"
+      );
+
+      expect(markdown).toBe("Prices\n\n| A |\n| --- |\n| 1 |");
+    });
+
+    it("leaves a page without a table alone", async () => {
+      expect(await htmlToMarkdown("<h1>Title</h1><p>hello</p>")).toBe(
+        "# Title\n\nhello"
+      );
     });
   });
 });

@@ -3,7 +3,8 @@ const pdf = require("pdf-parse");
 
 class PaperlessNgxLoader {
   constructor({ baseUrl, apiToken }) {
-    this.baseUrl = new URL(baseUrl).origin;
+    const url = new URL(baseUrl);
+    this.baseUrl = `${url.origin}${url.pathname.replace(/\/+$/, "")}`;
     this.apiToken = apiToken;
     this.baseHeaders = {
       Authorization: `Token ${this.apiToken}`,

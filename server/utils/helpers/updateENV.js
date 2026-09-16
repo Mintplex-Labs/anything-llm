@@ -161,11 +161,11 @@ const KEY_MAPPING = {
   },
   KoboldCPPTokenLimit: {
     envKey: "KOBOLD_CPP_MODEL_TOKEN_LIMIT",
-    checks: [nonZero],
+    checks: [],
   },
   KoboldCPPMaxTokens: {
     envKey: "KOBOLD_CPP_MAX_TOKENS",
-    checks: [nonZero],
+    checks: [],
   },
 
   // Text Generation Web UI Settings
