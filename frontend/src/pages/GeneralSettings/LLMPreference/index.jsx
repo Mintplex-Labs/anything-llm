@@ -88,7 +88,7 @@ import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
 import OMLXOptions from "@/components/LLMSelection/OMLXOptions";
-import SystemReasoningEffort from "./SystemReasoningEffort";
+import { SystemReasoningEffortContext } from "@/components/LLMSelection/SystemReasoningEffort/SystemReasoningEffortContext";
 
 export const MODEL_ROUTER_PROVIDER = {
   name: "Model Router",
@@ -109,9 +109,7 @@ export const AVAILABLE_LLM_PROVIDERS = [
     name: "OpenAI",
     value: "openai",
     logo: OpenAiLogo,
-    options: (settings, extras) => (
-      <OpenAiOptions settings={settings} {...extras} />
-    ),
+    options: (settings) => <OpenAiOptions settings={settings} />,
     description: "The standard option for most non-commercial use.",
     requiredConfig: ["OpenAiKey"],
   },
@@ -127,9 +125,7 @@ export const AVAILABLE_LLM_PROVIDERS = [
     name: "Anthropic",
     value: "anthropic",
     logo: AnthropicLogo,
-    options: (settings, extras) => (
-      <AnthropicAiOptions settings={settings} {...extras} />
-    ),
+    options: (settings) => <AnthropicAiOptions settings={settings} />,
     description: "A friendly AI Assistant hosted by Anthropic.",
     requiredConfig: ["AnthropicApiKey"],
   },
@@ -137,9 +133,7 @@ export const AVAILABLE_LLM_PROVIDERS = [
     name: "Gemini",
     value: "gemini",
     logo: GeminiLogo,
-    options: (settings, extras) => (
-      <GeminiLLMOptions settings={settings} {...extras} />
-    ),
+    options: (settings) => <GeminiLLMOptions settings={settings} />,
     description: "Google's largest and most capable AI model",
     requiredConfig: ["GeminiLLMApiKey"],
   },
@@ -156,9 +150,7 @@ export const AVAILABLE_LLM_PROVIDERS = [
     name: "Ollama",
     value: "ollama",
     logo: OllamaLogo,
-    options: (settings, extras) => (
-      <OllamaLLMOptions settings={settings} {...extras} />
-    ),
+    options: (settings) => <OllamaLLMOptions settings={settings} />,
     description: "Run LLMs locally on your own machine.",
     requiredConfig: ["OllamaLLMBasePath"],
   },
@@ -166,9 +158,7 @@ export const AVAILABLE_LLM_PROVIDERS = [
     name: "LM Studio",
     value: "lmstudio",
     logo: LMStudioLogo,
-    options: (settings, extras) => (
-      <LMStudioOptions settings={settings} {...extras} />
-    ),
+    options: (settings) => <LMStudioOptions settings={settings} />,
     description:
       "Discover, download, and run thousands of cutting edge LLMs in a few clicks.",
     requiredConfig: ["LMStudioBasePath"],
@@ -185,9 +175,7 @@ export const AVAILABLE_LLM_PROVIDERS = [
     name: "Lemonade",
     value: "lemonade",
     logo: LemonadeLogo,
-    options: (settings, extras) => (
-      <LemonadeOptions settings={settings} {...extras} />
-    ),
+    options: (settings) => <LemonadeOptions settings={settings} />,
     description:
       "Run local LLMs, ASR, TTS, and more in a single unified AI runtime.",
     requiredConfig: ["LemonadeLLMBasePath"],
@@ -300,9 +288,7 @@ export const AVAILABLE_LLM_PROVIDERS = [
     name: "DeepSeek",
     value: "deepseek",
     logo: DeepSeekLogo,
-    options: (settings, extras) => (
-      <DeepSeekOptions settings={settings} {...extras} />
-    ),
+    options: (settings) => <DeepSeekOptions settings={settings} />,
     description: "Run DeepSeek's powerful LLMs.",
     requiredConfig: ["DeepSeekApiKey"],
   },
@@ -476,8 +462,6 @@ export default function GeneralLLMPreference() {
   // capabilities before the form is saved.
   const [pendingModel, setPendingModel] = useState(null);
   const [pendingBasePath, setPendingBasePath] = useState(null);
-  // Bumped on save so capability-dependent controls refetch.
-  const [savedCount, setSavedCount] = useState(0);
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
   const { t } = useTranslation();
@@ -496,7 +480,7 @@ export default function GeneralLLMPreference() {
       showToast(`Failed to save LLM settings: ${error}`, "error");
     } else {
       showToast("LLM preferences saved successfully.", "success");
-      setSavedCount((count) => count + 1);
+      setSettings(await System.keys());
     }
     setSaving(false);
     setHasChanges(!!error);
@@ -691,20 +675,19 @@ export default function GeneralLLMPreference() {
                 }}
                 className="mt-4 flex flex-col gap-y-1"
               >
-                {selectedLLM &&
-                  AVAILABLE_LLM_PROVIDERS.find(
-                    (llm) => llm.value === selectedLLM
-                  )?.options?.(settings, {
-                    reasoningControl: (
-                      <SystemReasoningEffort
-                        settings={settings}
-                        selectedLLM={selectedLLM}
-                        selectedModel={pendingModel}
-                        basePath={pendingBasePath}
-                        refreshKey={savedCount}
-                      />
-                    ),
-                  })}
+                <SystemReasoningEffortContext.Provider
+                  value={{
+                    settings,
+                    selectedLLM,
+                    selectedModel: pendingModel,
+                    basePath: pendingBasePath,
+                  }}
+                >
+                  {selectedLLM &&
+                    AVAILABLE_LLM_PROVIDERS.find(
+                      (llm) => llm.value === selectedLLM
+                    )?.options?.(settings)}
+                </SystemReasoningEffortContext.Provider>
               </div>
             </div>
           </form>

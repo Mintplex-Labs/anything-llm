@@ -5,11 +5,9 @@ import { CaretDown, CaretUp, Info, CircleNotch } from "@phosphor-icons/react";
 import useProviderEndpointAutoDiscovery from "@/hooks/useProviderEndpointAutoDiscovery";
 import { Tooltip } from "react-tooltip";
 import { Link } from "react-router-dom";
+import SystemReasoningEffort from "../SystemReasoningEffort";
 
-export default function OllamaLLMOptions({
-  settings,
-  reasoningControl = null,
-}) {
+export default function OllamaLLMOptions({ settings }) {
   const {
     autoDetecting: loading,
     basePath,
@@ -36,7 +34,7 @@ export default function OllamaLLMOptions({
           basePath={basePath.value}
           authToken={authToken.value}
         />
-        {reasoningControl}
+        <SystemReasoningEffort />
       </div>
       <div className="flex justify-start mt-4">
         <button

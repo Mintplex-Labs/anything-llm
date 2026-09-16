@@ -1,37 +1,32 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import System from "@/models/system";
+import { useSystemReasoningEffort } from "./SystemReasoningEffortContext";
 
 /**
  * Sets the system-wide default reasoning effort for the selected LLM provider.
  * Workspaces without their own reasoning effort fall back to this value.
- * @param {object} props
- * @param {object} props.settings - System settings
- * @param {string|null} props.selectedLLM - Currently selected (possibly unsaved) provider
- * @param {string|null} [props.selectedModel] - Currently selected (possibly unsaved) model
- * @param {string|null} [props.basePath] - Unsaved base path for local providers
- * @param {number} [props.refreshKey] - Bumped by the parent to force a capability refetch (eg: after save)
+ * Renders nothing unless mounted under SystemReasoningEffortContext (the LLM
+ * preference page), so provider option forms can include it unconditionally.
  */
-export default function SystemReasoningEffort({
-  settings,
-  selectedLLM,
-  selectedModel = null,
-  basePath = null,
-  refreshKey = 0,
-}) {
+export default function SystemReasoningEffort() {
   const { t } = useTranslation();
+  const context = useSystemReasoningEffort();
   const [capabilities, setCapabilities] = useState(null);
+  const { settings, selectedLLM, selectedModel, basePath } = context ?? {};
 
   useEffect(() => {
+    if (!context) return;
     async function fetchCapabilities() {
       setCapabilities(
         await System.llmCapabilities(selectedLLM, selectedModel, basePath)
       );
     }
     fetchCapabilities();
-  }, [selectedLLM, selectedModel, basePath, refreshKey]);
+  }, [settings, selectedLLM, selectedModel, basePath]);
 
   if (
+    !context ||
     capabilities?.reasoning !== true ||
     !capabilities?.reasoningOptions?.length
   )

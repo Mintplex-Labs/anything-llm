@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import System from "@/models/system";
+import SystemReasoningEffort from "../SystemReasoningEffort";
 
-export default function DeepSeekOptions({ settings, reasoningControl = null }) {
+export default function DeepSeekOptions({ settings }) {
   const [inputValue, setInputValue] = useState(settings?.DeepSeekApiKey);
   const [deepSeekApiKey, setDeepSeekApiKey] = useState(
     settings?.DeepSeekApiKey
@@ -29,7 +30,7 @@ export default function DeepSeekOptions({ settings, reasoningControl = null }) {
       {!settings?.credentialsOnly && (
         <DeepSeekModelSelection settings={settings} apiKey={deepSeekApiKey} />
       )}
-      {reasoningControl}
+      <SystemReasoningEffort />
     </div>
   );
 }
