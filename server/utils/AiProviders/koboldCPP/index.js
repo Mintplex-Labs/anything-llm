@@ -191,8 +191,6 @@ class KoboldCPPLLM {
     return new Promise(async (resolve) => {
       let fullText = "";
 
-      // prompt_tokens is intentionally omitted so the count measureStream already
-      // computed is not overwritten on merge in endMeasurement.
       const endMeasurement = () => {
         stream?.endMeasurement({
           completion_tokens: LLMPerformanceMonitor.countTokens([
