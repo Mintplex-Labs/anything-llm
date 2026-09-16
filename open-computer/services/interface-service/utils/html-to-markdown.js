@@ -83,12 +83,15 @@ function addTableRules(turndown) {
             taken.add(`${rowIndex + r},${column + c}`);
         column += colspan;
       }
-      free();
+      // `column` is now the width the row emits cells for. Trailing slots a
+      // rowspan from above still claims widen the table but emit no cell here,
+      // so they count toward `width` and become right-side padding.
       after.set(row, column);
+      free();
       width = Math.max(width, column);
     });
 
-    // `after` held each row's own width; turn it into the padding it needs.
+    // `after` held each row's own emitted width; turn it into the padding it needs.
     for (const row of rows) after.set(row, width - (after.get(row) ?? width));
     return { width, before, after };
   };

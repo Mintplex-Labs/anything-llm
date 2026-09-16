@@ -454,6 +454,23 @@ describe("htmlToMarkdown", () => {
       ]);
     });
 
+    it("holds a rowspan open when it covers the row's last columns", async () => {
+      // The spanned column is trailing, so no later cell forces its placeholder
+      // and the padding has to come from the row's right side.
+      const markdown = await htmlToMarkdown(
+        "<table><tr><th>A</th><th>B</th></tr>" +
+          '<tr><td>1</td><td rowspan="2">x</td></tr>' +
+          "<tr><td>2</td></tr></table>"
+      );
+
+      expect(tableRows(markdown)).toEqual([
+        ["A", "B"],
+        ["---", "---"],
+        ["1", "x"],
+        ["2", ""],
+      ]);
+    });
+
     it("leaves a page without a table alone", async () => {
       expect(await htmlToMarkdown("<h1>Title</h1><p>hello</p>")).toBe(
         "# Title\n\nhello"
