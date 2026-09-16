@@ -79,9 +79,7 @@ function mockGithubApi({
       const filePath = decodeURIComponent(contents[1]);
       if (!(filePath in files)) return errorResponse(404, "Not Found");
       return jsonResponse({
-        // The contents API wraps its base64 at 60 characters, so a decoder that
-        // works line by line sees different bytes than one that decodes the whole
-        // payload. Mirror that wrapping rather than returning one long line.
+        // The contents API wraps base64 at 60 characters.
         content: Buffer.from(files[filePath])
           .toString("base64")
           .replace(/.{60}/g, "$&\n"),
@@ -568,14 +566,11 @@ describe("GitHubRepoLoader single file decoding", () => {
   }
 
   test("keeps accented, CJK, and astral characters intact", async () => {
-    // atob returns one code unit per byte, so each multi-byte character came
-    // back as its individual bytes, rendering as mojibake.
     await expect(fetchFile("café 東京 😀")).resolves.toBe("café 東京 😀");
   });
 
   test("keeps a multi-byte character whose bytes straddle a base64 line break", async () => {
-    // A wrapped line holds 45 bytes, so the first byte of this character closes
-    // line one and its other two open line two.
+    // 60 base64 chars hold 45 bytes, so the 3 bytes of 東 span the line break.
     const contents = `${"a".repeat(44)}東京`;
     await expect(fetchFile(contents)).resolves.toBe(contents);
   });
