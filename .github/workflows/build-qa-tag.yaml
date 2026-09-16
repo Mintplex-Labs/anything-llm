@@ -21,7 +21,6 @@ on:
       - "extras/**/*"
       - 'open-computer/**/*'
 
-
 concurrency:
   group: qa-build-pr-${{ github.event.pull_request.number }}
   cancel-in-progress: true

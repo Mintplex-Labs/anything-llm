@@ -22,27 +22,36 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.ALLM_RW_PACKAGES }}
           PR_NUMBER: ${{ inputs.pr_number }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
         run: |
-          # Must use lowercase - packages are published with lowercase owner
-          ORG_LC="${GITHUB_REPOSITORY_OWNER,,}"
-          REPO_LC="${GITHUB_REPOSITORY#*/}"
-          REPO_LC="${REPO_LC,,}"
-          
+          # Determine whether the repository owner is a user or organization.
+          OWNER_TYPE=$(gh api "/users/${OWNER}" --jq '.type')
+
+          echo "Owner: ${OWNER} (${OWNER_TYPE})"
           echo "Looking for tag: pr-${PR_NUMBER}"
-          echo "Package: /orgs/${ORG_LC}/packages/container/${REPO_LC}/versions"
-          
+
+          if [[ "$OWNER_TYPE" == "Organization" ]]; then
+            API_PATH="/orgs/${OWNER}/packages/container/${REPO}/versions"
+          else
+            API_PATH="/users/${OWNER}/packages/container/${REPO}/versions"
+          fi
+
+          echo "Package versions endpoint: ${API_PATH}"
+
           VERSION_ID=$(gh api \
             -H "Accept: application/vnd.github+json" \
             --paginate \
-            "/orgs/${ORG_LC}/packages/container/${REPO_LC}/versions" \
+            "$API_PATH" \
             --jq ".[] | select(.metadata.container.tags[] == \"pr-${PR_NUMBER}\") | .id")
-          
+
           if [ -n "$VERSION_ID" ]; then
             echo "Deleting package version $VERSION_ID (tag: pr-${PR_NUMBER})"
+
             gh api \
               --method DELETE \
               -H "Accept: application/vnd.github+json" \
-              "/orgs/${ORG_LC}/packages/container/${REPO_LC}/versions/$VERSION_ID"
+              "${API_PATH}/${VERSION_ID}"
           else
             echo "No package found with tag pr-${PR_NUMBER}, skipping cleanup"
           fi
@@ -60,25 +69,37 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.ALLM_RW_PACKAGES }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
         run: |
-          # Must use lowercase - packages are published with lowercase owner
-          ORG_LC="${GITHUB_REPOSITORY_OWNER,,}"
-          REPO_LC="${GITHUB_REPOSITORY#*/}"
-          REPO_LC="${REPO_LC,,}"
-          
+          # Determine whether the repository owner is a user or organization.
+          OWNER_TYPE=$(gh api "/users/${OWNER}" --jq '.type')
+
+          echo "Owner: ${OWNER} (${OWNER_TYPE})"
+          echo "Looking for tag: pr-${PR_NUMBER}"
+
+          if [[ "$OWNER_TYPE" == "Organization" ]]; then
+            API_PATH="/orgs/${OWNER}/packages/container/${REPO}/versions"
+          else
+            API_PATH="/users/${OWNER}/packages/container/${REPO}/versions"
+          fi
+
+          echo "Package versions endpoint: ${API_PATH}"
+
           VERSION_ID=$(gh api \
             -H "Accept: application/vnd.github+json" \
             --paginate \
-            "/orgs/${ORG_LC}/packages/container/${REPO_LC}/versions" \
+            "$API_PATH" \
             --jq ".[] | select(.metadata.container.tags[] == \"pr-${PR_NUMBER}\") | .id" \
             2>/dev/null || true)
-          
+
           if [ -n "$VERSION_ID" ]; then
             echo "Deleting package version $VERSION_ID (tag: pr-${PR_NUMBER})"
+
             gh api \
               --method DELETE \
               -H "Accept: application/vnd.github+json" \
-              "/orgs/${ORG_LC}/packages/container/${REPO_LC}/versions/$VERSION_ID"
+              "${API_PATH}/${VERSION_ID}"
           else
             echo "No package found with tag pr-${PR_NUMBER}, skipping cleanup"
           fi
