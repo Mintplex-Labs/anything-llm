@@ -58,6 +58,7 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
       "deepseek-reasoner",
       "deepseek-v4-flash",
       "deepseek-v4-pro",
+      "deepseek-flash",
     ].includes(this.model);
   }
 
