@@ -79,7 +79,10 @@ function mockGithubApi({
       const filePath = decodeURIComponent(contents[1]);
       if (!(filePath in files)) return errorResponse(404, "Not Found");
       return jsonResponse({
-        content: Buffer.from(files[filePath]).toString("base64"),
+        // The contents API wraps base64 at 60 characters.
+        content: Buffer.from(files[filePath])
+          .toString("base64")
+          .replace(/.{60}/g, "$&\n"),
       });
     }
 
@@ -540,6 +543,45 @@ describe("GitHub chunkSource round trip", () => {
         repoUrl: "https://github.com/org/repo",
         sourceFilePath: "README.md",
       })
+    );
+  });
+});
+
+describe("GitHubRepoLoader single file decoding", () => {
+  let fetchMock;
+
+  afterEach(() => {
+    fetchMock?.mockRestore();
+    jest.clearAllMocks();
+  });
+
+  async function fetchFile(contents) {
+    fetchMock = mockGithubApi({ files: { "README.md": contents } });
+    const loader = new GitHubRepoLoader({
+      repo: "https://github.com/acme/demo",
+      branch: "main",
+    });
+    await loader.init();
+    return loader.fetchSingleFile("README.md");
+  }
+
+  test("keeps accented, CJK, and astral characters intact", async () => {
+    await expect(fetchFile("café 東京 😀")).resolves.toBe("café 東京 😀");
+  });
+
+  test("keeps a multi-byte character whose bytes straddle a base64 line break", async () => {
+    // 60 base64 chars hold 45 bytes, so the 3 bytes of 東 span the line break.
+    const contents = `${"a".repeat(44)}東京`;
+    await expect(fetchFile(contents)).resolves.toBe(contents);
+  });
+
+  test("drops a leading byte order mark, as the initial import does", async () => {
+    await expect(fetchFile("﻿first line")).resolves.toBe("first line");
+  });
+
+  test("leaves plain ascii unchanged", async () => {
+    await expect(fetchFile("console.log('hi');")).resolves.toBe(
+      "console.log('hi');"
     );
   });
 });

@@ -274,7 +274,11 @@ class GitHubRepoLoader {
         .then((json) => {
           if (json.hasOwnProperty("status") || !json.hasOwnProperty("content"))
             throw new Error(json?.message || "missing content");
-          return atob(json.content);
+          // TextDecoder also strips a leading BOM, matching the `response.text()`
+          // decode the initial import uses.
+          return new TextDecoder("utf-8").decode(
+            Buffer.from(json.content, "base64")
+          );
         });
     } catch (e) {
       console.error(`RepoLoader.fetchSingleFile`, e);
