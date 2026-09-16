@@ -14,13 +14,14 @@ class MistralEmbedder {
     this.openai = new OpenAIApi({
       baseURL: "https://api.mistral.ai/v1",
       apiKey: process.env.MISTRAL_API_KEY ?? null,
+      fetch: MistralEmbedder.applyMistralFetch(),
     });
     this.model = process.env.EMBEDDING_MODEL_PREF || "mistral-embed";
 
-    // Mistral serves an OpenAI-compatible embeddings endpoint through the same SDK, so the
-    // request is capped the way the OpenAI and Generic OpenAI embedders cap theirs instead
-    // of sending a whole document in one POST.
-    this.maxConcurrentChunks = 500;
+    // Mistral rejects a batch whose total token count is too large with
+    // 400 {"code":"3210","message":"Too many tokens overall, split into more batches."}.
+    // With 1000-char chunks, 200 inputs succeed and 300 fail, so 100 leaves headroom.
+    this.maxConcurrentChunks = 100;
     this.embeddingMaxChunkLength = maximumChunkLength();
     this.log(`Initialized ${this.model}`, {
       maxConcurrentChunks: this.maxConcurrentChunks,
@@ -30,6 +31,30 @@ class MistralEmbedder {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  /**
+   * Mistral returns error bodies at the top level ({ message, code, type })
+   * while the OpenAI SDK only reads `body.error`, so without this the SDK
+   * reports "400 status code (no body)". Re-wrap the body so the real
+   * message and code survive to the catch handler.
+   */
+  static applyMistralFetch() {
+    return async (url, init) => {
+      const response = await fetch(url, init);
+      if (response.ok) return response;
+
+      const body = await response
+        .clone()
+        .json()
+        .catch(() => null);
+      if (!body || body.error) return response;
+      return new Response(JSON.stringify({ error: body }), {
+        status: response.status,
+        statusText: response.statusText,
+        headers: response.headers,
+      });
+    };
   }
 
   async embedTextInput(textInput) {
@@ -61,11 +86,8 @@ class MistralEmbedder {
             .catch((e) => {
               chunksProcessed += chunk.length;
               reportEmbeddingProgress(chunksProcessed, textChunks.length);
-              e.type =
-                e?.response?.data?.error?.code ||
-                e?.response?.status ||
-                "failed_to_embed";
-              e.message = e?.response?.data?.error?.message || e.message;
+              e.type = e?.error?.code || e?.status || "failed_to_embed";
+              e.message = e?.error?.message || e.message;
               resolve({ data: [], error: e });
             });
         })
@@ -75,7 +97,6 @@ class MistralEmbedder {
     const { data = [], error = null } = await Promise.all(
       embeddingRequests
     ).then((results) => {
-      // If any batch failed the embeddings are incomplete, so the whole sequence is abandoned.
       const errors = results
         .filter((res) => !!res.error)
         .map((res) => res.error)
@@ -95,9 +116,7 @@ class MistralEmbedder {
 
     if (!!error) throw new Error(`Mistral Failed to embed: ${error}`);
 
-    // Unlike the OpenAI/Generic OpenAI embedders which return null on an empty or
-    // malformed result, Mistral throws here to preserve the failure contract from #5513
-    // so a document is never silently embedded with empty vectors.
+    // Throw rather than return null so a document is never silently embedded with empty vectors (#5513).
     const embeddings = data.map((emb) => emb.embedding);
     if (embeddings.length === 0)
       throw new Error("Mistral returned empty embeddings for batch");
