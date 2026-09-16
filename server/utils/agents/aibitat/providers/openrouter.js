@@ -52,7 +52,7 @@ class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
       .create({
         model: this.model,
         messages,
-        ...serviceTierParam(this.serviceTier),
+        ...serviceTierParam(this.serviceTier, this.providerLog.bind(this)),
         user: this.executingUserId,
       })
       .then((result) => {
@@ -72,7 +72,7 @@ class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
       model: this.model,
       stream: true,
       messages,
-      ...serviceTierParam(this.serviceTier),
+      ...serviceTierParam(this.serviceTier, this.providerLog.bind(this)),
       user: this.executingUserId,
     });
   }

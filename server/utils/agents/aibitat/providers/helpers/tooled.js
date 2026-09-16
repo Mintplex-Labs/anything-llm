@@ -184,11 +184,13 @@ function maxTokensParam(maxTokens) {
  * Build the `service_tier` request field from the tooled options. Only providers
  * that pass `serviceTier` get the field, every other provider keeps sending no
  * `service_tier` at all.
- * @param {unknown} serviceTier
+ * @param {string} serviceTier
+ * @param {((text: string) => void)|null} log - Optional provider logger.
  * @returns {{service_tier?: string}}
  */
-function serviceTierParam(serviceTier) {
+function serviceTierParam(serviceTier, log = null) {
   if (typeof serviceTier !== "string" || !serviceTier.length) return {};
+  if (typeof log === "function") log(`Requesting service tier: ${serviceTier}`);
   return { service_tier: serviceTier };
 }
 
@@ -235,7 +237,7 @@ async function tooledStream(
     stream_options: { include_usage: true },
     messages: formattedMessages,
     ...maxTokensParam(maxTokens),
-    ...serviceTierParam(serviceTier),
+    ...serviceTierParam(serviceTier, provider?.providerLog?.bind(provider)),
     ...(tools.length > 0 ? { tools } : {}),
   });
 
@@ -413,7 +415,7 @@ async function tooledComplete(
     stream: false,
     messages: formattedMessages,
     ...maxTokensParam(maxTokens),
-    ...serviceTierParam(serviceTier),
+    ...serviceTierParam(serviceTier, provider?.providerLog?.bind(provider)),
     ...(tools.length > 0 ? { tools } : {}),
   });
 

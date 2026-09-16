@@ -265,7 +265,7 @@ class OpenRouterLLM {
           // This is an OpenRouter specific option that allows us to get the reasoning text
           // before the token text.
           include_reasoning: true,
-          ...serviceTierParam(this.serviceTier),
+          ...serviceTierParam(this.serviceTier, this.log.bind(this)),
           user: user?.id ? `user_${user.id}` : "",
         })
         .catch((e) => {
@@ -314,7 +314,7 @@ class OpenRouterLLM {
         // This is an OpenRouter specific option that allows us to get the reasoning text
         // before the token text.
         include_reasoning: true,
-        ...serviceTierParam(this.serviceTier),
+        ...serviceTierParam(this.serviceTier, this.log.bind(this)),
         user: user?.id ? `user_${user.id}` : "",
       }),
       messages,
