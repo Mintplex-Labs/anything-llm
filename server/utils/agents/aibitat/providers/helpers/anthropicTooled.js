@@ -3,6 +3,7 @@ const { RetryError } = require("../../error.js");
 const { v4 } = require("uuid");
 const { safeJsonParse } = require("../../../../http");
 const { dereferenceSchema } = require("./dereferenceSchema");
+const { temperatureParam } = require("./tooled.js");
 
 /**
  * Shared Anthropic Messages API tool-calling utilities.
@@ -177,6 +178,7 @@ async function anthropicTooledStream(
     const response = await client.messages.create(
       {
         model,
+        ...temperatureParam(provider?.temperature),
         max_tokens: maxTokens,
         system: systemPromptBuilder
           ? systemPromptBuilder(systemPrompt)
@@ -317,6 +319,7 @@ async function anthropicTooledComplete(
     const response = await client.messages.create(
       {
         model,
+        ...temperatureParam(provider?.temperature),
         max_tokens: maxTokens,
         system: systemPromptBuilder
           ? systemPromptBuilder(systemPrompt)

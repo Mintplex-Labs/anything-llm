@@ -9,6 +9,9 @@ const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { getAnythingLLMUserAgent } = require("../../../endpoints/utils");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 function perplexityModels() {
   const { MODELS } = require("./models.js");
@@ -40,7 +43,6 @@ class PerplexityLLM {
     };
 
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
   }
 
   #appendContext(contextTexts = []) {
@@ -91,7 +93,10 @@ class PerplexityLLM {
     return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `Perplexity chat: ${this.model} is not valid for chat completion!`
@@ -102,7 +107,7 @@ class PerplexityLLM {
         .create({
           model: this.model,
           messages,
-          temperature,
+          ...temperatureParam(temperature),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -130,7 +135,10 @@ class PerplexityLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `Perplexity chat: ${this.model} is not valid for chat completion!`
@@ -141,7 +149,7 @@ class PerplexityLLM {
         model: this.model,
         stream: true,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       }),
       messages,
       runPromptTokenCalculation: true,
