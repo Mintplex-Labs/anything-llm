@@ -181,6 +181,20 @@ function maxTokensParam(maxTokens) {
 }
 
 /**
+ * Build the `service_tier` request field from the tooled options. Only providers
+ * that pass `serviceTier` get the field, every other provider keeps sending no
+ * `service_tier` at all.
+ * @param {string} serviceTier
+ * @param {((text: string) => void)|null} log - Optional provider logger.
+ * @returns {{service_tier?: string}}
+ */
+function serviceTierParam(serviceTier, log = null) {
+  if (typeof serviceTier !== "string" || !serviceTier.length) return {};
+  if (typeof log === "function") log(`Requesting service tier: ${serviceTier}`);
+  return { service_tier: serviceTier };
+}
+
+/**
  * Stream a chat completion using native OpenAI-compatible tool calling.
  * Handles parallel tool calls by tracking each tool call by its streaming
  * index, then returning only the first one for the agent framework to process.
@@ -190,9 +204,10 @@ function maxTokensParam(maxTokens) {
  * @param {Array} messages - Raw aibitat message history
  * @param {Array} functions - Aibitat function definitions
  * @param {function|null} eventHandler - Stream event handler
- * @param {{injectReasoningContent?: boolean, provider?: object, maxTokens?: number}} options - Provider-specific options
+ * @param {{injectReasoningContent?: boolean, provider?: object, maxTokens?: number, serviceTier?: string}} options - Provider-specific options
  *   - provider: If passed, automatically handles usage tracking via provider.resetUsage()/recordUsage()
  *   - maxTokens: If passed as a positive number, sent as `max_tokens` on the request
+ *   - serviceTier: If passed, sent as `service_tier` on the request
  * @returns {Promise<{textResponse: string, functionCall: object|null, uuid: string, usage: object|null}>}
  */
 async function tooledStream(
@@ -203,7 +218,7 @@ async function tooledStream(
   eventHandler = null,
   options = {}
 ) {
-  const { provider, maxTokens, ...formatOptions } = options;
+  const { provider, maxTokens, serviceTier, ...formatOptions } = options;
 
   // Auto-reset usage if provider is passed
   if (provider?.resetUsage) {
@@ -222,6 +237,7 @@ async function tooledStream(
     stream_options: { include_usage: true },
     messages: formattedMessages,
     ...maxTokensParam(maxTokens),
+    ...serviceTierParam(serviceTier, provider?.providerLog?.bind(provider)),
     ...(tools.length > 0 ? { tools } : {}),
   });
 
@@ -382,7 +398,7 @@ async function tooledComplete(
   getCostFn = () => 0,
   options = {}
 ) {
-  const { provider, maxTokens, ...formatOptions } = options;
+  const { provider, maxTokens, serviceTier, ...formatOptions } = options;
 
   // Auto-reset usage if provider is passed
   if (provider?.resetUsage) {
@@ -399,6 +415,7 @@ async function tooledComplete(
     stream: false,
     messages: formattedMessages,
     ...maxTokensParam(maxTokens),
+    ...serviceTierParam(serviceTier, provider?.providerLog?.bind(provider)),
     ...(tools.length > 0 ? { tools } : {}),
   });
 
@@ -471,4 +488,5 @@ module.exports = {
   formatMessagesForTools,
   tooledStream,
   tooledComplete,
+  serviceTierParam,
 };
