@@ -397,6 +397,63 @@ describe("htmlToMarkdown", () => {
       expect(markdown).toBe("Prices\n\n| A |\n| --- |\n| 1 |");
     });
 
+    it("pads the columns a colspan covers", async () => {
+      // One cell for three columns left the row two cells short of the header.
+      const markdown = await htmlToMarkdown(
+        "<table><tr><th>A</th><th>B</th><th>C</th></tr>" +
+          '<tr><td colspan="3">total</td></tr>' +
+          '<tr><td>1</td><td colspan="2">rest</td></tr></table>'
+      );
+
+      expect(tableRows(markdown)).toEqual([
+        ["A", "B", "C"],
+        ["---", "---", "---"],
+        ["total", "", ""],
+        ["1", "rest", ""],
+      ]);
+    });
+
+    it("holds the column a rowspan covers open in the rows below it", async () => {
+      // Without the placeholder, "9 EUR" moved left into the Product column.
+      const markdown = await htmlToMarkdown(
+        "<table><tr><th>Product</th><th>Variant</th><th>Price</th></tr>" +
+          '<tr><td rowspan="2">Cable</td><td>1 m</td><td>9 EUR</td></tr>' +
+          "<tr><td>2 m</td><td>12 EUR</td></tr></table>"
+      );
+
+      expect(tableRows(markdown)).toEqual([
+        ["Product", "Variant", "Price"],
+        ["---", "---", "---"],
+        ["Cable", "1 m", "9 EUR"],
+        ["", "2 m", "12 EUR"],
+      ]);
+    });
+
+    it("counts the header columns by their spans", async () => {
+      const markdown = await htmlToMarkdown(
+        '<table><tr><th colspan="2">Size</th><th>Price</th></tr>' +
+          "<tr><td>S</td><td>M</td><td>9 EUR</td></tr></table>"
+      );
+
+      expect(tableRows(markdown)).toEqual([
+        ["Size", "", "Price"],
+        ["---", "---", "---"],
+        ["S", "M", "9 EUR"],
+      ]);
+    });
+
+    it("pads a row that is short of the widest row", async () => {
+      const markdown = await htmlToMarkdown(
+        "<table><tr><th>A</th><th>B</th></tr><tr><td>1</td></tr></table>"
+      );
+
+      expect(tableRows(markdown)).toEqual([
+        ["A", "B"],
+        ["---", "---"],
+        ["1", ""],
+      ]);
+    });
+
     it("leaves a page without a table alone", async () => {
       expect(await htmlToMarkdown("<h1>Title</h1><p>hello</p>")).toBe(
         "# Title\n\nhello"

@@ -32,25 +32,97 @@ function addTableRules(turndown) {
   const cellText = (content) =>
     content.replace(/\r?\n/g, " ").replace(/\|/g, "\\|").trim();
 
-  const isFirstRow = (node) => {
+  const tableOf = (node) => {
     let table = node.parentNode;
     while (table && table.nodeName !== "TABLE") table = table.parentNode;
+    return table ?? null;
+  };
+
+  const isFirstRow = (node) => {
+    const table = tableOf(node);
     return !!table && table.querySelector("tr") === node;
+  };
+
+  const spanOf = (cell, attribute) => {
+    const value = Number.parseInt(cell.getAttribute(attribute) ?? "", 10);
+    return Number.isFinite(value) && value > 0 ? value : 1;
+  };
+
+  const cellsOf = (row) =>
+    Array.from(row.children).filter(
+      (child) => child.nodeName === "TH" || child.nodeName === "TD"
+    );
+
+  // Lay the table out on a grid the way a browser does, so a span takes the
+  // columns it covers instead of leaving the row short.
+  const measure = (table) => {
+    const before = new Map();
+    const after = new Map();
+    const taken = new Set();
+    const rows = Array.from(table.querySelectorAll("tr")).filter(
+      (row) => tableOf(row) === table
+    );
+    let width = 0;
+
+    rows.forEach((row, rowIndex) => {
+      let column = 0;
+      const free = () => {
+        let skipped = 0;
+        while (taken.has(`${rowIndex},${column}`)) {
+          column++;
+          skipped++;
+        }
+        return skipped;
+      };
+      for (const cell of cellsOf(row)) {
+        before.set(cell, free());
+        const colspan = spanOf(cell, "colspan");
+        const rowspan = spanOf(cell, "rowspan");
+        for (let r = 0; r < rowspan; r++)
+          for (let c = 0; c < colspan; c++)
+            taken.add(`${rowIndex + r},${column + c}`);
+        column += colspan;
+      }
+      free();
+      after.set(row, column);
+      width = Math.max(width, column);
+    });
+
+    // `after` held each row's own width; turn it into the padding it needs.
+    for (const row of rows) after.set(row, width - (after.get(row) ?? width));
+    return { width, before, after };
+  };
+
+  const grids = new WeakMap();
+  const gridFor = (node) => {
+    const table = tableOf(node);
+    if (!table) return null;
+    if (!grids.has(table)) grids.set(table, measure(table));
+    return grids.get(table);
   };
 
   turndown.addRule("tableCell", {
     filter: ["th", "td"],
-    replacement: (content) => ` ${cellText(content)} |`,
+    replacement: (content, node) => {
+      const grid = gridFor(node);
+      // Markdown has no merged cells, so a span becomes the empty cells the
+      // columns it covers would otherwise be missing.
+      const before = " |".repeat(grid?.before.get(node) ?? 0);
+      const spanned = " |".repeat(spanOf(node, "colspan") - 1);
+      return `${before} ${cellText(content)} |${spanned}`;
+    },
   });
 
   turndown.addRule("tableRow", {
     filter: "tr",
     replacement: (content, node) => {
-      const row = `|${content}`;
+      const grid = gridFor(node);
+      const after = " |".repeat(grid?.after.get(node) ?? 0);
+      const row = `|${content}${after}`;
       if (!isFirstRow(node)) return `\n${row}`;
       // A GFM table has to open with a header row, so the first row becomes
       // one. On a page written without <th> that is what it is anyway.
-      const columns = node.querySelectorAll("th, td").length;
+      const columns = grid?.width ?? node.querySelectorAll("th, td").length;
       return `\n${row}\n|${" --- |".repeat(columns)}`;
     },
   });
@@ -156,7 +228,9 @@ function htmlToMarkdown(html, baseUrl) {
     markdown = markdown.replace(/\n{4,}/g, "\n\n\n").trim();
     return markdown;
   } catch (error) {
-    process.stderr.write("html-to-markdown conversion failed: " + error.message + "\n");
+    process.stderr.write(
+      "html-to-markdown conversion failed: " + error.message + "\n"
+    );
     try {
       return parse(html).text.trim();
     } catch {
@@ -239,7 +313,9 @@ function stripCitations(root) {
 // --- CLI entry point ---
 let input = "";
 process.stdin.setEncoding("utf-8");
-process.stdin.on("data", (chunk) => { input += chunk; });
+process.stdin.on("data", (chunk) => {
+  input += chunk;
+});
 process.stdin.on("end", () => {
   const baseUrl = process.argv[2] || "";
   const md = htmlToMarkdown(input, baseUrl);
