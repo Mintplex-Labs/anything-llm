@@ -1,5 +1,7 @@
 <a name="readme-top"></a>
 
+Ondics coGPT
+
 > [!NOTE]
 > We are also working on [Open Computer](/open-computer) which gives an entire computer environment for AI Agents to use.
 >
