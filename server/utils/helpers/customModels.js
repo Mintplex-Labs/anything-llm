@@ -162,7 +162,7 @@ async function getCustomModels(
     case "giteeai":
       return await getGiteeAIModels(apiKey);
     case "llmman":
-      return await llmmanModels(basePath);
+      return await llmmanModels(basePath, apiKey);
     case "privatemode":
       return await getPrivatemodeModels(basePath, "generate");
     case "sambanova":
