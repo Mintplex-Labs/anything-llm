@@ -1,12 +1,12 @@
-name: anythingllm
+name: cogpt
 
 networks:
-  anything-llm:
+  cogpt:
     driver: bridge
 
 services:
-  anything-llm:
-    container_name: anythingllm
+  cogpt:
+    container_name: cogpt
     build:
       context: ../.
       dockerfile: ./docker/Dockerfile
@@ -26,6 +26,6 @@ services:
     env_file:
       - .env
     networks:
-      - anything-llm
+      - cogpt
     extra_hosts:
       - "host.docker.internal:host-gateway"

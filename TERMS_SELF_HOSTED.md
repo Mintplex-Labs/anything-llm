@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> Needs to be updated
+
 # AnythingLLM Self-Hosted: Data Privacy & Terms of Service
 
 This document outlines the privacy standards, data handling procedures, and licensing terms for the self-hosted version of AnythingLLM, developed by Mintplex Labs Inc.

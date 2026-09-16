@@ -1,9 +1,9 @@
 {
-  "name": "anything-llm-document-collector",
+  "name": "cogpt-document-collector",
   "version": "1.16.1",
   "description": "Document collector server endpoints",
   "main": "index.js",
-  "author": "Timothy Carambat (Mintplex Labs)",
+  "author": "Ondics GmbH",
   "license": "MIT",
   "private": false,
   "engines": {

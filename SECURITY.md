@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> Needs to be updated
+
 # Security Policy
 
 > Notice: We are **not** accepting reports for open-computer. It is in a primitive basic state for development and is not production ready or deployable in any LTS sense.

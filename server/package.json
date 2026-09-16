@@ -1,9 +1,9 @@
 {
-  "name": "anything-llm-server",
+  "name": "cogpt-server",
   "version": "1.16.1",
   "description": "Server endpoints to process or create content for chatting",
   "main": "index.js",
-  "author": "Timothy Carambat (Mintplex Labs)",
+  "author": "Ondics GmbH",
   "license": "MIT",
   "private": false,
   "engines": {

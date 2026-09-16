@@ -1,19 +1,19 @@
 {
-  "name": "anything-llm",
-  "version": "1.16.1",
-  "description": "The best solution for turning private documents into a chat bot using off-the-shelf tools and commercially viable AI technologies.",
+  "name": "cogpt",
+  "version": "3.0.0",
+  "description": "KI für den Arbeitsplatz",
   "main": "index.js",
   "type": "module",
-  "author": "Timothy Carambat (Mintplex Labs)",
+  "author": "Ondics GmbH",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mintplex-labs/anything-llm.git"
+    "url": "git+https://github.com/ondics/cogpt.git"
   },
   "bugs": {
-    "url": "https://github.com/mintplex-labs/anything-llm/issues"
+    "url": "https://github.com/ondics/cogpt/issues"
   },
-  "homepage": "https://github.com/mintplex-labs/anything-llm#readme",
+  "homepage": "https://github.com/ondics/cogpt#readme",
   "engines": {
     "node": ">=18"
   },
