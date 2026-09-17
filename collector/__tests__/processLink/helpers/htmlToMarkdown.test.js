@@ -397,6 +397,281 @@ describe("htmlToMarkdown", () => {
       expect(markdown).toBe("Prices\n\n| A |\n| --- |\n| 1 |");
     });
 
+    it("pads the columns a colspan covers", async () => {
+      // A cell that covers three columns emits the two empty cells it spans.
+      const markdown = await htmlToMarkdown(
+        "<table><tr><th>A</th><th>B</th><th>C</th></tr>" +
+          '<tr><td colspan="3">total</td></tr>' +
+          '<tr><td>1</td><td colspan="2">rest</td></tr></table>'
+      );
+
+      expect(tableRows(markdown)).toEqual([
+        ["A", "B", "C"],
+        ["---", "---", "---"],
+        ["total", "", ""],
+        ["1", "rest", ""],
+      ]);
+    });
+
+    it("holds the column a rowspan covers open in the rows below it", async () => {
+      // The rows under a rowspan get an empty cell where the spanned column sits.
+      const markdown = await htmlToMarkdown(
+        "<table><tr><th>Product</th><th>Variant</th><th>Price</th></tr>" +
+          '<tr><td rowspan="2">Cable</td><td>1 m</td><td>9 EUR</td></tr>' +
+          "<tr><td>2 m</td><td>12 EUR</td></tr></table>"
+      );
+
+      expect(tableRows(markdown)).toEqual([
+        ["Product", "Variant", "Price"],
+        ["---", "---", "---"],
+        ["Cable", "1 m", "9 EUR"],
+        ["", "2 m", "12 EUR"],
+      ]);
+    });
+
+    it("counts the header columns by their spans", async () => {
+      const markdown = await htmlToMarkdown(
+        '<table><tr><th colspan="2">Size</th><th>Price</th></tr>' +
+          "<tr><td>S</td><td>M</td><td>9 EUR</td></tr></table>"
+      );
+
+      expect(tableRows(markdown)).toEqual([
+        ["Size", "", "Price"],
+        ["---", "---", "---"],
+        ["S", "M", "9 EUR"],
+      ]);
+    });
+
+    it("pads a row that is short of the widest row", async () => {
+      const markdown = await htmlToMarkdown(
+        "<table><tr><th>A</th><th>B</th></tr><tr><td>1</td></tr></table>"
+      );
+
+      expect(tableRows(markdown)).toEqual([
+        ["A", "B"],
+        ["---", "---"],
+        ["1", ""],
+      ]);
+    });
+
+    it("holds a rowspan open when it covers the row's last columns", async () => {
+      // The spanned column is trailing, so no later cell forces its placeholder
+      // and the padding has to come from the row's right side.
+      const markdown = await htmlToMarkdown(
+        "<table><tr><th>A</th><th>B</th></tr>" +
+          '<tr><td>1</td><td rowspan="2">x</td></tr>' +
+          "<tr><td>2</td></tr></table>"
+      );
+
+      expect(tableRows(markdown)).toEqual([
+        ["A", "B"],
+        ["---", "---"],
+        ["1", "x"],
+        ["2", ""],
+      ]);
+    });
+
+    it('holds a rowspan="0" column open for the rest of its row group', async () => {
+      // rowspan="0" reaches to the end of the row group.
+      const markdown = await htmlToMarkdown(
+        "<table><thead><tr><th>Product</th><th>Variant</th></tr></thead>" +
+          '<tbody><tr><td rowspan="0">Cable</td><td>1 m</td></tr>' +
+          "<tr><td>2 m</td></tr>" +
+          "<tr><td>3 m</td></tr></tbody></table>"
+      );
+
+      expect(tableRows(markdown)).toEqual([
+        ["Product", "Variant"],
+        ["---", "---"],
+        ["Cable", "1 m"],
+        ["", "2 m"],
+        ["", "3 m"],
+      ]);
+    });
+
+    it('stops a rowspan="0" at the end of its row group', async () => {
+      // The span sits in the head, so the body rows below keep their own first
+      // column.
+      const markdown = await htmlToMarkdown(
+        '<table><thead><tr><th rowspan="0">Size</th><th>S</th></tr>' +
+          "<tr><th>M</th></tr></thead>" +
+          "<tbody><tr><td>9 EUR</td><td>12 EUR</td></tr></tbody></table>"
+      );
+
+      expect(tableRows(markdown)).toEqual([
+        ["Size", "S"],
+        ["---", "---"],
+        ["", "M"],
+        ["9 EUR", "12 EUR"],
+      ]);
+    });
+
+    it('counts a colspan="0" as the one column it covers', async () => {
+      // HTML5 dropped colspan="0", so it is not the row-group span rowspan="0"
+      // is: the cell covers its own column only.
+      const markdown = await htmlToMarkdown(
+        "<table><tr><th>A</th><th>B</th></tr>" +
+          '<tr><td colspan="0">1</td><td>2</td></tr></table>'
+      );
+
+      expect(tableRows(markdown)).toEqual([
+        ["A", "B"],
+        ["---", "---"],
+        ["1", "2"],
+      ]);
+    });
+
+    it('does not let a rowspan="0" grow the output', async () => {
+      // The span reaches every row left in the group, so a wide cell repeating
+      // it is the worst case the budget has to hold.
+      const rows = '<tr><td rowspan="0" colspan="1000">x</td></tr>'.repeat(200);
+      const markdown = await htmlToMarkdown(
+        `<table>${rows}</table><p>after</p>`
+      );
+
+      expect(markdown.length).toBeLessThan(2000);
+      expect(markdown).toContain("after");
+    });
+
+    it("does not let a span attribute grow the output", async () => {
+      // A colspan is clamped to what HTML allows, so a few bytes of page cannot
+      // produce megabytes of output.
+      const page = (span) =>
+        `<table><tr><td colspan="${span}">x</td></tr><tr><td>a</td></tr></table><p>after</p>`;
+      const huge = await htmlToMarkdown(page(1_000_000));
+
+      expect(huge).toBe(await htmlToMarkdown(page(1000)));
+      expect(huge.length).toBeLessThan(100);
+      expect(huge).toContain("after");
+    });
+
+    it("keeps a table whose spans would cover millions of grid cells", async () => {
+      // A grid this large is over budget, so the table is written one column
+      // per cell instead of being laid out.
+      const html = `<table>${'<tr><td rowspan="65534" colspan="1000">x</td></tr>'.repeat(
+        3
+      )}</table>`;
+
+      expect(await htmlToMarkdown(html)).toBe("| x |\n| --- |\n| x |\n| x |");
+    });
+
+    it("keeps the widest row inside the table when the spans are over budget", async () => {
+      // Past the budget only the header is padded, out to the widest row, so
+      // every cell of a wider body row stays inside the table.
+      const markdown = await htmlToMarkdown(
+        "<table><tr><th>A</th><th>B</th></tr>" +
+          '<tr><td colspan="1000">wide</td></tr>' +
+          "<tr><td>1</td><td>2</td><td>3</td></tr></table>"
+      );
+
+      expect(markdown).toBe(
+        "| A | B | |\n| --- | --- | --- |\n| wide |\n| 1 | 2 | 3 |"
+      );
+    });
+
+    it("pads only the header when padding every row would outgrow the budget", async () => {
+      // GFM fills a short body row with empty cells itself. Padding every row
+      // instead grows with the square of the table: one wide row under many
+      // narrow ones.
+      const width = 2000;
+      const markdown = await htmlToMarkdown(
+        "<table>" +
+          "<tr><td>h</td></tr>".repeat(width) +
+          `<tr>${"<td>w</td>".repeat(width)}</tr></table>`
+      );
+      const lines = markdown.split("\n");
+
+      expect(lines[1]).toBe(`|${" --- |".repeat(width)}`);
+      expect(lines[lines.length - 1]).toBe(`|${" w |".repeat(width)}`);
+      expect(markdown.length).toBeLessThan(40 * width);
+    });
+
+    it("keeps the table whole around a row that has no cells", async () => {
+      // Turndown writes a cell-less row as a blank line; the table rule removes
+      // it so the table stays whole.
+      const markdown = await htmlToMarkdown(
+        "<table><tr><th>A</th><th>B</th></tr><tr></tr><tr><td>1</td><td>2</td></tr></table>"
+      );
+
+      expect(markdown).toBe("| A | B |\n| --- | --- |\n| 1 | 2 |");
+    });
+
+    it("puts the delimiter under the first row that has cells", async () => {
+      const markdown = await htmlToMarkdown(
+        "<table><tr></tr><tr><td>a</td><td>b</td></tr><tr><td>1</td><td>2</td></tr></table>"
+      );
+
+      expect(markdown).toBe("| a | b |\n| --- | --- |\n| 1 | 2 |");
+    });
+
+    it("keeps a pipe inside a code span from splitting the cell", async () => {
+      // The code span already has one backslash before the pipe, so none is
+      // added: an even run of backslashes would let GFM split the cell there.
+      const markdown = await htmlToMarkdown(
+        "<table><tr><th>Regex</th><th>Use</th></tr><tr><td><code>a\\|b</code></td><td>alt</td></tr></table>"
+      );
+
+      expect(markdown.split("\n")[2]).toBe("| `a\\|b` | alt |");
+    });
+
+    it("draws the <thead> first wherever it sits in the source", async () => {
+      // A browser draws the head above the body even when the body is written
+      // first, so the head row is the one that becomes the GFM header.
+      const markdown = await htmlToMarkdown(
+        "<table><tbody><tr><td>1</td><td>2</td></tr></tbody>" +
+          "<thead><tr><th>A</th><th>B</th></tr></thead></table>"
+      );
+
+      expect(markdown).toBe("| A | B |\n| --- | --- |\n| 1 | 2 |");
+    });
+
+    it("draws the <tfoot> last wherever it sits in the source", async () => {
+      // HTML 4 asked for the foot before the body so it could be drawn while
+      // the body was still loading; a browser still draws it at the bottom.
+      const markdown = await htmlToMarkdown(
+        "<table><thead><tr><th>A</th></tr></thead>" +
+          "<tfoot><tr><td>total</td></tr></tfoot>" +
+          "<tbody><tr><td>1</td></tr><tr><td>2</td></tr></tbody></table>"
+      );
+
+      expect(markdown).toBe("| A |\n| --- |\n| 1 |\n| 2 |\n| total |");
+    });
+
+    it('keeps a rowspan="0" inside its group when the sections are reordered', async () => {
+      // The foot is drawn after the body, so the span in the foot must not
+      // reach into the body rows that follow it in the source.
+      const markdown = await htmlToMarkdown(
+        "<table><thead><tr><th>A</th><th>B</th></tr></thead>" +
+          '<tfoot><tr><td rowspan="0">f</td><td>f1</td></tr><tr><td>f2</td></tr></tfoot>' +
+          "<tbody><tr><td>1</td><td>2</td></tr></tbody></table>"
+      );
+
+      expect(tableRows(markdown)).toEqual([
+        ["A", "B"],
+        ["---", "---"],
+        ["1", "2"],
+        ["f", "f1"],
+        ["", "f2"],
+      ]);
+    });
+
+    it("writes a table nested in a cell as text inside that cell", async () => {
+      // A pipe or a line break in the inner table would break the outer one,
+      // so the inner rows read as clauses and their cells as a list.
+      const markdown = await htmlToMarkdown(
+        "<table><tr><th>Plan</th><th>Limits</th></tr>" +
+          "<tr><td>Pro</td><td><table>" +
+          "<tr><td>Users</td><td>10</td></tr>" +
+          "<tr><td>Storage</td><td>50 GB</td></tr>" +
+          "</table></td></tr>" +
+          "<tr><td>Team</td><td>Unlimited</td></tr></table>"
+      );
+
+      expect(markdown).toBe(
+        "| Plan | Limits |\n| --- | --- |\n| Pro | Users, 10; Storage, 50 GB |\n| Team | Unlimited |"
+      );
+    });
+
     it("leaves a page without a table alone", async () => {
       expect(await htmlToMarkdown("<h1>Title</h1><p>hello</p>")).toBe(
         "# Title\n\nhello"
