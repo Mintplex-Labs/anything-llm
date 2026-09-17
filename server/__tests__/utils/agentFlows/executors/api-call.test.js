@@ -208,14 +208,30 @@ describe("executeApiCall", () => {
       expect(requestConfig.headers["Content-Type"]).toBe("application/json");
     });
 
-    it("omits the body when a json body cannot be parsed", async () => {
+    it("throws when a non-empty json body cannot be parsed", async () => {
+      mockResponse("{}");
+      await expect(
+        executeApiCall(
+          {
+            url: "https://example.com/items",
+            method: "POST",
+            bodyType: "json",
+            body: "not json at all",
+          },
+          context
+        )
+      ).rejects.toThrow(/not valid JSON/);
+      expect(global.fetch).not.toHaveBeenCalled();
+    });
+
+    it("omits the body when a json body is empty", async () => {
       const fetchMock = mockResponse("{}");
       await executeApiCall(
         {
           url: "https://example.com/items",
           method: "POST",
           bodyType: "json",
-          body: "not json at all",
+          body: "",
         },
         context
       );

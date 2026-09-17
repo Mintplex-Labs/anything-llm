@@ -91,3 +91,106 @@ describe("FlowExecutor: getValueFromPath", () => {
     expect(executor.getValueFromPath(obj, "a.items[0]['my-long-key'][1].name")).toBe("answer2");
   });
 });
+
+describe("FlowExecutor: replaceVariables", () => {
+  const executor = new FlowExecutor();
+  executor.variables = {
+    plan: 'Step 1: say "hello"\nthen open C:\\temp',
+    history: [{ role: "user", content: 'say "hi"' }],
+    obj: { a: 1 },
+    n: 5,
+    token: 'abc"def',
+  };
+
+  it("replaces variables in strings, nested objects, and arrays", () => {
+    const replaced = executor.replaceVariables({
+      url: "https://example.com/${n}",
+      headers: [{ key: "Authorization", value: "Bearer ${token}" }],
+      nested: { deep: ["${n}", "${missing}"] },
+      count: 1,
+    });
+    expect(replaced.url).toBe("https://example.com/5");
+    expect(replaced.headers[0].value).toBe('Bearer abc"def');
+    expect(replaced.nested.deep).toEqual(["5", "${missing}"]);
+    expect(replaced.count).toBe(1);
+  });
+
+  it("stringifies object variables outside of json bodies", () => {
+    const replaced = executor.replaceVariables({ instruction: "Use ${obj}" });
+    expect(replaced.instruction).toBe('Use {"a":1}');
+  });
+
+  it("does not escape values for non-json body types", () => {
+    const replaced = executor.replaceVariables({
+      bodyType: "text",
+      body: "Plan: ${plan}",
+    });
+    expect(replaced.body).toBe(`Plan: ${executor.variables.plan}`);
+  });
+
+  describe("json bodies", () => {
+    it("escapes values embedded inside string literals", () => {
+      const replaced = executor.replaceVariables({
+        bodyType: "json",
+        body: '{"prompt":"Implement:\\n${plan}","stream":false}',
+        headers: [{ key: "Authorization", value: "Bearer ${token}" }],
+      });
+      expect(JSON.parse(replaced.body)).toEqual({
+        prompt: `Implement:\n${executor.variables.plan}`,
+        stream: false,
+      });
+      expect(replaced.headers[0].value).toBe('Bearer abc"def');
+    });
+
+    it("escapes values in nested string literals", () => {
+      const replaced = executor.replaceVariables({
+        bodyType: "json",
+        body: '{"messages":[{"role":"user","content":"${plan}"}]}',
+      });
+      expect(JSON.parse(replaced.body).messages[0].content).toBe(
+        executor.variables.plan
+      );
+    });
+
+    it("splices bare placeholders raw so objects, arrays, and numbers keep their type", () => {
+      const replaced = executor.replaceVariables({
+        bodyType: "json",
+        body: '{"messages":${history},"meta":${obj},"n":${n},"s":"${n}"}',
+      });
+      expect(JSON.parse(replaced.body)).toEqual({
+        messages: executor.variables.history,
+        meta: executor.variables.obj,
+        n: 5,
+        s: "5",
+      });
+    });
+
+    it("substitutes a whole-body placeholder raw", () => {
+      const replaced = executor.replaceVariables({
+        bodyType: "json",
+        body: "${history}",
+      });
+      expect(JSON.parse(replaced.body)).toEqual(executor.variables.history);
+    });
+
+    it("leaves unknown placeholders untouched", () => {
+      const replaced = executor.replaceVariables({
+        bodyType: "json",
+        body: '{"x":"${missing}","y":${missing}}',
+      });
+      expect(replaced.body).toBe('{"x":"${missing}","y":${missing}}');
+    });
+
+    it("ignores escaped quotes when deciding if a placeholder is in a string", () => {
+      const replaced = executor.replaceVariables({
+        bodyType: "json",
+        body: '{"title":"say \\"hi\\"","n":${n},"p":"${plan}"}',
+      });
+      expect(JSON.parse(replaced.body)).toEqual({
+        title: 'say "hi"',
+        n: 5,
+        p: executor.variables.plan,
+      });
+    });
+  });
+});
