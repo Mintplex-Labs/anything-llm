@@ -208,20 +208,18 @@ describe("executeApiCall", () => {
       expect(requestConfig.headers["Content-Type"]).toBe("application/json");
     });
 
-    it("omits the body when a json body cannot be parsed", async () => {
-      const fetchMock = mockResponse("{}");
-      await executeApiCall(
-        {
-          url: "https://example.com/items",
-          method: "POST",
-          bodyType: "json",
-          body: "not json at all",
-        },
-        context
-      );
-      const [, requestConfig] = fetchMock.mock.calls[0];
-      expect(requestConfig.body).toBeUndefined();
-      expect(requestConfig.headers["Content-Type"]).toBe("application/json");
+    it("throws when a non-empty json body cannot be parsed", async () => {
+      await expect(
+        executeApiCall(
+          {
+            url: "https://example.com/items",
+            method: "POST",
+            bodyType: "json",
+            body: "not json at all",
+          },
+          context
+        )
+      ).rejects.toThrow(/JSON body is invalid after variable substitution/);
     });
 
     it("sends text bodies as strings", async () => {

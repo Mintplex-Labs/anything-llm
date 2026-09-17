@@ -28,6 +28,10 @@ async function executeApiCall(config, context) {
       const parsedBody = safeJsonParse(body, null);
       if (parsedBody !== null) {
         requestConfig.body = JSON.stringify(parsedBody);
+      } else if (body != null && String(body).trim() !== "") {
+        throw new Error(
+          "API Call JSON body is invalid after variable substitution. Check that interpolated values with quotes or backslashes are escaped."
+        );
       }
       requestConfig.headers["Content-Type"] = "application/json";
     } else if (bodyType === "text") {

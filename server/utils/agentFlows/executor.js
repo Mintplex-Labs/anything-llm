@@ -99,30 +99,59 @@ class FlowExecutor {
   }
 
   /**
-   * Replaces variables in the config with their values
+   * Replaces variables in the config with their values.
+   * For API Call JSON bodies, embedded ${var} values are JSON-string-escaped
+   * so quotes/backslashes from free-form text do not corrupt the body.
+   * A string that is exactly "${var}" keeps the raw value so whole JSON blobs
+   * can still be substituted structurally.
    * @param {Object} config - The config to replace variables in
    * @returns {Object} The config with variables replaced
    */
   replaceVariables(config) {
-    const deepReplace = (obj) => {
+    const deepReplace = (obj, { jsonEscapeEmbedded = false } = {}) => {
       if (typeof obj === "string") {
+        const exactMatch = obj.match(/^\${([^}]+)}$/);
+        if (exactMatch) {
+          const value = this.getValueFromPath(this.variables, exactMatch[1]);
+          return value !== undefined ? value : obj;
+        }
+
         return obj.replace(/\${([^}]+)}/g, (match, varName) => {
           const value = this.getValueFromPath(this.variables, varName);
-          return value !== undefined ? value : match;
+          if (value === undefined) return match;
+          if (jsonEscapeEmbedded) {
+            return JSON.stringify(String(value)).slice(1, -1);
+          }
+          return value;
         });
       }
 
-      if (Array.isArray(obj)) return obj.map((item) => deepReplace(item));
+      if (Array.isArray(obj))
+        return obj.map((item) => deepReplace(item, { jsonEscapeEmbedded }));
 
       if (obj && typeof obj === "object") {
         const result = {};
         for (const [key, value] of Object.entries(obj)) {
-          result[key] = deepReplace(value);
+          result[key] = deepReplace(value, { jsonEscapeEmbedded });
         }
         return result;
       }
       return obj;
     };
+
+    // Only escape inside the JSON request body — URLs/headers/other fields stay raw.
+    if (
+      config &&
+      typeof config === "object" &&
+      config.bodyType === "json" &&
+      typeof config.body === "string"
+    ) {
+      const { body, ...rest } = config;
+      return {
+        ...deepReplace(rest),
+        body: deepReplace(body, { jsonEscapeEmbedded: true }),
+      };
+    }
 
     return deepReplace(config);
   }

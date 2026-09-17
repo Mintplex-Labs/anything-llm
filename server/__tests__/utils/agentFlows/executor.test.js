@@ -91,3 +91,66 @@ describe("FlowExecutor: getValueFromPath", () => {
     expect(executor.getValueFromPath(obj, "a.items[0]['my-long-key'][1].name")).toBe("answer2");
   });
 });
+
+describe("FlowExecutor: replaceVariables JSON body escaping", () => {
+  const executor = new FlowExecutor();
+
+  beforeEach(() => {
+    executor.variables = {};
+  });
+
+  it("JSON-escapes embedded ${var} values so quoted text does not break the body", () => {
+    executor.variables = {
+      plan: 'Step 1: say "hello" then use path C:\\temp\\file',
+    };
+    const config = {
+      bodyType: "json",
+      body: '{"model":"x","prompt":"Implement:\\n${plan}","stream":false}',
+      url: "https://example.com/${path}",
+      method: "POST",
+      headers: [{ key: "X-Token", value: "Bearer ${token}" }],
+    };
+    executor.variables.path = "api/v1";
+    executor.variables.token = 'abc"def';
+
+    const replaced = executor.replaceVariables(config);
+    const parsed = JSON.parse(replaced.body);
+
+    expect(parsed.prompt).toBe(
+      'Implement:\nStep 1: say "hello" then use path C:\\temp\\file'
+    );
+    expect(parsed.stream).toBe(false);
+    // Non-body fields must not get JSON escaping applied
+    expect(replaced.url).toBe("https://example.com/api/v1");
+    expect(replaced.headers[0].value).toBe('Bearer abc"def');
+  });
+
+  it("keeps whole-value ${var} substitution raw so a full JSON blob still parses", () => {
+    executor.variables = {
+      payload: '{"model":"x","prompt":"he said \\"hi\\"","n":1}',
+    };
+    const config = {
+      bodyType: "json",
+      body: "${payload}",
+      method: "POST",
+    };
+
+    const replaced = executor.replaceVariables(config);
+    expect(replaced.body).toBe(executor.variables.payload);
+    expect(JSON.parse(replaced.body)).toEqual({
+      model: "x",
+      prompt: 'he said "hi"',
+      n: 1,
+    });
+  });
+
+  it("does not JSON-escape embedded vars when bodyType is not json", () => {
+    executor.variables = { note: 'say "hi"' };
+    const config = {
+      bodyType: "text",
+      body: "Note: ${note}",
+    };
+    const replaced = executor.replaceVariables(config);
+    expect(replaced.body).toBe('Note: say "hi"');
+  });
+});
