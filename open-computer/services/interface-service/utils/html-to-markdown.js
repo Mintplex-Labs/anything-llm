@@ -162,16 +162,36 @@ function addTableRules(turndown) {
     return { width, before, colspan, after };
   };
 
+  // A browser draws the <thead> first and the <tfoot> last wherever they sit
+  // in the source, so the rows are taken in that order. Rows in a <tbody>, or
+  // in no group at all, keep their place between the two.
+  const SECTION_ORDER = { THEAD: 0, TFOOT: 2 };
+  const rowsOf = (table) =>
+    Array.from(table.querySelectorAll("tr"))
+      .filter((row) => tableOf(row) === table)
+      .map((row, index) => ({
+        row,
+        index,
+        order: SECTION_ORDER[groupOf(row, table).nodeName] ?? 1,
+      }))
+      .sort((a, b) => a.order - b.order || a.index - b.index)
+      .map(({ row }) => row);
+
   const measure = (table) => {
-    const rows = Array.from(table.querySelectorAll("tr")).filter(
-      (row) => tableOf(row) === table
-    );
+    const rows = rowsOf(table);
     const cells = rows.map(cellsOf);
     // The delimiter goes under the first row that has cells.
     const headerIndex = cells.findIndex((rowCells) => rowCells.length > 0);
     const header = headerIndex >= 0 ? rows[headerIndex] : null;
+    // A table inside a cell has no markdown of its own, since a pipe or a line
+    // break in a cell would break the table around it.
+    const nested = tableOf(table) !== null;
+    // Each row's markdown line, collected as the rows are converted and written
+    // out in row order by the table rule.
+    const lines = new Map();
+    const shape = { rows, header, nested, lines };
     const layout = layOut(rows, cells, table);
-    if (layout) return { header, headerWidth: layout.width, ...layout };
+    if (layout) return { ...shape, headerWidth: layout.width, ...layout };
     // Past the budget the spans are ignored, so a row is as wide as its own
     // cells. The header still has to reach the widest row, or the cells beyond
     // it fall out of the table. A shorter body row is fine as it is, because
@@ -184,7 +204,7 @@ function addTableRules(turndown) {
     const after = new Map();
     if (header) after.set(header, width - cells[headerIndex].length);
     return {
-      header,
+      ...shape,
       headerWidth: width,
       before: new Map(),
       colspan: new Map(),
@@ -193,24 +213,35 @@ function addTableRules(turndown) {
   };
 
   const notInATable = {
+    rows: [],
     header: null,
     headerWidth: 0,
+    nested: false,
+    lines: new Map(),
     before: new Map(),
     colspan: new Map(),
     after: new Map(),
   };
   const grids = new WeakMap();
-  const gridFor = (node) => {
-    const table = tableOf(node);
-    if (!table) return notInATable;
+  const gridOfTable = (table) => {
     if (!grids.has(table)) grids.set(table, measure(table));
     return grids.get(table);
   };
+  const gridFor = (node) => {
+    const table = tableOf(node);
+    return table ? gridOfTable(table) : notInATable;
+  };
+
+  // Inside a nested table the cells of a row read as a list and the rows as
+  // clauses, so the text survives inside the outer cell.
+  const NESTED_CELL_SEPARATOR = ", ";
+  const NESTED_ROW_SEPARATOR = "; ";
 
   turndown.addRule("tableCell", {
     filter: ["th", "td"],
     replacement: (content, node) => {
       const grid = gridFor(node);
+      if (grid.nested) return `${cellText(content)}${NESTED_CELL_SEPARATOR}`;
       // Markdown has no merged cells, so a span becomes the empty cells the
       // columns it covers would otherwise be missing.
       const before = " |".repeat(grid.before.get(node) ?? 0);
@@ -223,11 +254,21 @@ function addTableRules(turndown) {
     filter: "tr",
     replacement: (content, node) => {
       const grid = gridFor(node);
+      if (grid.nested) {
+        const text = content.replace(/, $/, "");
+        return text ? `${text}${NESTED_ROW_SEPARATOR}` : "";
+      }
       const row = `|${content}${" |".repeat(grid.after.get(node) ?? 0)}`;
-      if (node !== grid.header) return `\n${row}`;
       // A GFM table has to open with a header row, so the first row that has
       // cells becomes one. On a page written without <th> that is what it is.
-      return `\n${row}\n|${" --- |".repeat(grid.headerWidth)}`;
+      const line =
+        node === grid.header
+          ? `${row}\n|${" --- |".repeat(grid.headerWidth)}`
+          : row;
+      // The table rule writes the rows in their drawn order, so nothing is
+      // written here.
+      grid.lines.set(node, line);
+      return "";
     },
   });
 
@@ -245,10 +286,19 @@ function addTableRules(turndown) {
 
   turndown.addRule("table", {
     filter: "table",
-    // A row with no cells is blank to Turndown, which writes it as a blank line
-    // instead of calling the row rule, and a blank line ends the table.
-    replacement: (content) =>
-      `\n\n${content.trim().replace(/^(\|.*)\n\s*\n(?=\|)/gm, "$1\n")}\n\n`,
+    replacement: (content, node) => {
+      const grid = gridOfTable(node);
+      const rows = grid.rows
+        .filter((row) => grid.lines.has(row))
+        .map((row) => grid.lines.get(row));
+      if (grid.nested) return ` ${content.replace(/; $/, "").trim()} `;
+      // What is left of the content is the caption and any stray text; a row
+      // with no cells is blank to Turndown and left nothing in `lines`.
+      const caption = content.trim();
+      const table = rows.join("\n");
+      if (!table) return caption ? `\n\n${caption}\n\n` : "";
+      return `\n\n${caption ? `${caption}\n\n` : ""}${table}\n\n`;
+    },
   });
 }
 

@@ -614,6 +614,64 @@ describe("htmlToMarkdown", () => {
       expect(markdown.split("\n")[2]).toBe("| `a\\|b` | alt |");
     });
 
+    it("draws the <thead> first wherever it sits in the source", async () => {
+      // A browser draws the head above the body even when the body is written
+      // first, so the head row is the one that becomes the GFM header.
+      const markdown = await htmlToMarkdown(
+        "<table><tbody><tr><td>1</td><td>2</td></tr></tbody>" +
+          "<thead><tr><th>A</th><th>B</th></tr></thead></table>"
+      );
+
+      expect(markdown).toBe("| A | B |\n| --- | --- |\n| 1 | 2 |");
+    });
+
+    it("draws the <tfoot> last wherever it sits in the source", async () => {
+      // HTML 4 asked for the foot before the body so it could be drawn while
+      // the body was still loading; a browser still draws it at the bottom.
+      const markdown = await htmlToMarkdown(
+        "<table><thead><tr><th>A</th></tr></thead>" +
+          "<tfoot><tr><td>total</td></tr></tfoot>" +
+          "<tbody><tr><td>1</td></tr><tr><td>2</td></tr></tbody></table>"
+      );
+
+      expect(markdown).toBe("| A |\n| --- |\n| 1 |\n| 2 |\n| total |");
+    });
+
+    it('keeps a rowspan="0" inside its group when the sections are reordered', async () => {
+      // The foot is drawn after the body, so the span in the foot must not
+      // reach into the body rows that follow it in the source.
+      const markdown = await htmlToMarkdown(
+        "<table><thead><tr><th>A</th><th>B</th></tr></thead>" +
+          '<tfoot><tr><td rowspan="0">f</td><td>f1</td></tr><tr><td>f2</td></tr></tfoot>' +
+          "<tbody><tr><td>1</td><td>2</td></tr></tbody></table>"
+      );
+
+      expect(tableRows(markdown)).toEqual([
+        ["A", "B"],
+        ["---", "---"],
+        ["1", "2"],
+        ["f", "f1"],
+        ["", "f2"],
+      ]);
+    });
+
+    it("writes a table nested in a cell as text inside that cell", async () => {
+      // A pipe or a line break in the inner table would break the outer one,
+      // so the inner rows read as clauses and their cells as a list.
+      const markdown = await htmlToMarkdown(
+        "<table><tr><th>Plan</th><th>Limits</th></tr>" +
+          "<tr><td>Pro</td><td><table>" +
+          "<tr><td>Users</td><td>10</td></tr>" +
+          "<tr><td>Storage</td><td>50 GB</td></tr>" +
+          "</table></td></tr>" +
+          "<tr><td>Team</td><td>Unlimited</td></tr></table>"
+      );
+
+      expect(markdown).toBe(
+        "| Plan | Limits |\n| --- | --- |\n| Pro | Users, 10; Storage, 50 GB |\n| Team | Unlimited |"
+      );
+    });
+
     it("leaves a page without a table alone", async () => {
       expect(await htmlToMarkdown("<h1>Title</h1><p>hello</p>")).toBe(
         "# Title\n\nhello"
