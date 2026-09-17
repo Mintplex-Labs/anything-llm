@@ -27,21 +27,14 @@ const IGNORED_IMG_BASEPATHS = [
  * @param {import('turndown')} turndown
  */
 function addTableRules(turndown) {
-  // HTML clamps colspan to 1..1000, and a rowspan never reaches past its table.
+  // HTML clamps colspan to 1000. The grid budget keeps a hostile span from
+  // inflating the output; a table over budget is written as if it had no spans.
   const MAX_COLSPAN = 1000;
-  // A span attribute on a scraped page must not be able to make the output, or
-  // the conversion, much larger than the page. So a table is padded out to a
-  // full grid only while the grid stays within a few cells per real cell, and
-  // never past MAX_GRID_CELLS; a table past that is written row by row, one
-  // column per cell, as if it had no spans.
   const GRID_CELLS_PER_CELL = 8;
   const MIN_GRID_CELLS = 64;
   const MAX_GRID_CELLS = 40_000;
 
-  // A GFM row splits at a pipe preceded by an even number of backslashes, so
-  // every pipe is left with an odd number. In text Turndown has already
-  // doubled each backslash, so that is always one more; inside a code span it
-  // has not, and `a\|b` there already has one.
+  // GFM splits a row at any pipe with an even run of backslashes before it.
   const escapePipes = (text) => {
     const parts = text.split("|");
     for (let index = 0; index < parts.length - 1; index++) {
@@ -53,8 +46,6 @@ function addTableRules(turndown) {
     return parts.join("|");
   };
 
-  // A newline would end the row halfway through, so a line break folds into a
-  // space.
   const cellText = (content) =>
     escapePipes(content.replace(/\r?\n/g, " ").trim());
 
@@ -64,13 +55,10 @@ function addTableRules(turndown) {
     return table ?? null;
   };
 
-  // A span is a non-negative integer, so a leading number wins and the rest of
-  // the value is ignored. `zero` is what a `0` means: HTML5 dropped
-  // `colspan="0"` so it counts as one column, while `rowspan="0"` still reaches
-  // to the end of the cell's row group.
+  // `zero` is what a "0" means: one column for colspan, the rest of the row
+  // group for rowspan.
   const spanOf = (cell, attribute, max, zero = 1) => {
     const value = Number.parseInt(cell.getAttribute(attribute) ?? "", 10);
-    // `-0` parses to zero but is not a non-negative integer, so it is no span.
     if (Object.is(value, 0)) return Math.min(zero, max);
     return Number.isFinite(value) && value > 0 ? Math.min(value, max) : 1;
   };
@@ -80,8 +68,6 @@ function addTableRules(turndown) {
       (child) => child.nodeName === "TH" || child.nodeName === "TD"
     );
 
-  // The row's group is the <thead>, <tbody> or <tfoot> around it, or the table
-  // itself when its rows are not wrapped in one.
   const groupOf = (row, table) => {
     let group = row.parentNode;
     while (
@@ -95,9 +81,8 @@ function addTableRules(turndown) {
     return group ?? table;
   };
 
-  // Lay the table out on a grid the way a browser does, so a span takes the
-  // columns it covers instead of leaving the row short. Returns null once the
-  // grid would pass the table's budget.
+  // Lay the table out on a grid the way a browser does. Returns null when the
+  // grid would pass the budget.
   const layOut = (rows, cells, table) => {
     const before = new Map();
     const colspan = new Map();
@@ -112,9 +97,7 @@ function addTableRules(turndown) {
       MAX_GRID_CELLS,
       MIN_GRID_CELLS + GRID_CELLS_PER_CELL * realCells
     );
-    // How far a `rowspan="0"` in each row reaches: its own row plus the rows
-    // left in its group. Groups run in document order, so one pass from the
-    // bottom counts them.
+    // Rows left in each row's group, which is how far a rowspan="0" reaches.
     const groups = rows.map((row) => groupOf(row, table));
     const groupRowsLeft = new Array(rows.length);
     for (let index = rows.length - 1; index >= 0; index--)
@@ -147,14 +130,12 @@ function addTableRules(turndown) {
             taken.add(`${rowIndex + r},${column + c}`);
         column += across;
       }
-      // `column` is the width the row emits cells for. Trailing slots a rowspan
-      // from above still claims widen the table but emit no cell here, so they
-      // count toward `width` and become right-side padding.
+      // Trailing slots claimed by a rowspan above widen the table but emit no
+      // cell here, so they become right-side padding.
       widths.push(column);
       free();
       width = Math.max(width, column);
     }
-    // A row with no cells is never written, so only the others are padded.
     const writtenRows = cells.filter((rowCells) => rowCells.length > 0).length;
     if (width * writtenRows > budget) return null;
     const after = new Map();
@@ -162,9 +143,8 @@ function addTableRules(turndown) {
     return { width, before, colspan, after };
   };
 
-  // A browser draws the <thead> first and the <tfoot> last wherever they sit
-  // in the source, so the rows are taken in that order. Rows in a <tbody>, or
-  // in no group at all, keep their place between the two.
+  // A browser draws <thead> first and <tfoot> last wherever they sit in the
+  // source.
   const SECTION_ORDER = { THEAD: 0, TFOOT: 2 };
   const rowsOf = (table) =>
     Array.from(table.querySelectorAll("tr"))
@@ -180,23 +160,16 @@ function addTableRules(turndown) {
   const measure = (table) => {
     const rows = rowsOf(table);
     const cells = rows.map(cellsOf);
-    // The delimiter goes under the first row that has cells.
     const headerIndex = cells.findIndex((rowCells) => rowCells.length > 0);
     const header = headerIndex >= 0 ? rows[headerIndex] : null;
-    // A table inside a cell has no markdown of its own, since a pipe or a line
-    // break in a cell would break the table around it.
     const nested = tableOf(table) !== null;
-    // Each row's markdown line, collected as the rows are converted and written
-    // out in row order by the table rule.
+    // Row lines, collected here and written in drawn order by the table rule.
     const lines = new Map();
     const shape = { rows, header, nested, lines };
     const layout = layOut(rows, cells, table);
     if (layout) return { ...shape, headerWidth: layout.width, ...layout };
-    // Past the budget the spans are ignored, so a row is as wide as its own
-    // cells. The header still has to reach the widest row, or the cells beyond
-    // it fall out of the table. A shorter body row is fine as it is, because
-    // GFM fills it with empty cells, and padding every row is exactly the
-    // growth the budget exists to prevent.
+    // Over budget: spans are ignored and only the header is padded to the
+    // widest row. GFM fills a short body row with empty cells itself.
     const width = cells.reduce(
       (widest, rowCells) => Math.max(widest, rowCells.length),
       0
@@ -232,8 +205,7 @@ function addTableRules(turndown) {
     return table ? gridOfTable(table) : notInATable;
   };
 
-  // Inside a nested table the cells of a row read as a list and the rows as
-  // clauses, so the text survives inside the outer cell.
+  // A nested table is flattened to text so it cannot break the outer table.
   const NESTED_CELL_SEPARATOR = ", ";
   const NESTED_ROW_SEPARATOR = "; ";
 
@@ -242,8 +214,7 @@ function addTableRules(turndown) {
     replacement: (content, node) => {
       const grid = gridFor(node);
       if (grid.nested) return `${cellText(content)}${NESTED_CELL_SEPARATOR}`;
-      // Markdown has no merged cells, so a span becomes the empty cells the
-      // columns it covers would otherwise be missing.
+      // A span becomes the empty cells for the columns it covers.
       const before = " |".repeat(grid.before.get(node) ?? 0);
       const spanned = " |".repeat((grid.colspan.get(node) ?? 1) - 1);
       return `${before} ${cellText(content)} |${spanned}`;
@@ -259,21 +230,16 @@ function addTableRules(turndown) {
         return text ? `${text}${NESTED_ROW_SEPARATOR}` : "";
       }
       const row = `|${content}${" |".repeat(grid.after.get(node) ?? 0)}`;
-      // A GFM table has to open with a header row, so the first row that has
-      // cells becomes one. On a page written without <th> that is what it is.
+      // GFM needs a header row, so the first row with cells becomes one.
       const line =
         node === grid.header
           ? `${row}\n|${" --- |".repeat(grid.headerWidth)}`
           : row;
-      // The table rule writes the rows in their drawn order, so nothing is
-      // written here.
       grid.lines.set(node, line);
       return "";
     },
   });
 
-  // A section wrapper must not put a blank line between the header row and the
-  // body, because a blank line ends the table.
   turndown.addRule("tableSection", {
     filter: ["thead", "tbody", "tfoot"],
     replacement: (content) => content,
@@ -292,8 +258,7 @@ function addTableRules(turndown) {
         .filter((row) => grid.lines.has(row))
         .map((row) => grid.lines.get(row));
       if (grid.nested) return ` ${content.replace(/; $/, "").trim()} `;
-      // What is left of the content is the caption and any stray text; a row
-      // with no cells is blank to Turndown and left nothing in `lines`.
+      // The rows wrote nothing, so what is left is the caption and stray text.
       const caption = content.trim();
       const table = rows.join("\n");
       if (!table) return caption ? `\n\n${caption}\n\n` : "";
