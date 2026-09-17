@@ -398,7 +398,7 @@ describe("htmlToMarkdown", () => {
     });
 
     it("pads the columns a colspan covers", async () => {
-      // One cell for three columns left the row two cells short of the header.
+      // A cell that covers three columns emits the two empty cells it spans.
       const markdown = await htmlToMarkdown(
         "<table><tr><th>A</th><th>B</th><th>C</th></tr>" +
           '<tr><td colspan="3">total</td></tr>' +
@@ -414,7 +414,7 @@ describe("htmlToMarkdown", () => {
     });
 
     it("holds the column a rowspan covers open in the rows below it", async () => {
-      // Without the placeholder, "9 EUR" moved left into the Product column.
+      // The rows under a rowspan get an empty cell where the spanned column sits.
       const markdown = await htmlToMarkdown(
         "<table><tr><th>Product</th><th>Variant</th><th>Price</th></tr>" +
           '<tr><td rowspan="2">Cable</td><td>1 m</td><td>9 EUR</td></tr>' +
@@ -472,8 +472,7 @@ describe("htmlToMarkdown", () => {
     });
 
     it('holds a rowspan="0" column open for the rest of its row group', async () => {
-      // rowspan="0" reaches to the end of the row group. Counting it as a
-      // single row moved "2 m" and "3 m" left into the Product column.
+      // rowspan="0" reaches to the end of the row group.
       const markdown = await htmlToMarkdown(
         "<table><thead><tr><th>Product</th><th>Variant</th></tr></thead>" +
           '<tbody><tr><td rowspan="0">Cable</td><td>1 m</td></tr>' +
@@ -535,8 +534,8 @@ describe("htmlToMarkdown", () => {
     });
 
     it("does not let a span attribute grow the output", async () => {
-      // colspan="1000000" produced ten million characters from a few bytes of
-      // page.
+      // A colspan is clamped to what HTML allows, so a few bytes of page cannot
+      // produce megabytes of output.
       const page = (span) =>
         `<table><tr><td colspan="${span}">x</td></tr><tr><td>a</td></tr></table><p>after</p>`;
       const huge = await htmlToMarkdown(page(1_000_000));
@@ -546,17 +545,19 @@ describe("htmlToMarkdown", () => {
       expect(huge).toContain("after");
     });
 
-    it("keeps a table whose spans would cover millions of grid cells", () => {
-      // Tracking that many slots threw "RangeError: Set maximum size exceeded"
-      // after 3.4 s, and the fallback returned the page as the text "xxx".
-      const html = `<table>${'<tr><td rowspan="65534" colspan="1000">x</td></tr>'.repeat(3)}</table>`;
+    it("keeps a table whose spans would cover millions of grid cells", async () => {
+      // A grid this large is over budget, so the table is written one column
+      // per cell instead of being laid out.
+      const html = `<table>${'<tr><td rowspan="65534" colspan="1000">x</td></tr>'.repeat(
+        3
+      )}</table>`;
 
-      expect(htmlToMarkdown(html)).toBe("| x |\n| --- |\n| x |\n| x |");
+      expect(await htmlToMarkdown(html)).toBe("| x |\n| --- |\n| x |\n| x |");
     });
 
     it("keeps the widest row inside the table when the spans are over budget", async () => {
-      // Past the budget the delimiter counted only the header's own cells, so
-      // the third cell of the last row fell outside the table.
+      // Past the budget only the header is padded, out to the widest row, so
+      // every cell of a wider body row stays inside the table.
       const markdown = await htmlToMarkdown(
         "<table><tr><th>A</th><th>B</th></tr>" +
           '<tr><td colspan="1000">wide</td></tr>' +
@@ -586,7 +587,8 @@ describe("htmlToMarkdown", () => {
     });
 
     it("keeps the table whole around a row that has no cells", async () => {
-      // Turndown writes a cell-less row as a blank line, which ended the table.
+      // Turndown writes a cell-less row as a blank line; the table rule removes
+      // it so the table stays whole.
       const markdown = await htmlToMarkdown(
         "<table><tr><th>A</th><th>B</th></tr><tr></tr><tr><td>1</td><td>2</td></tr></table>"
       );
@@ -603,8 +605,8 @@ describe("htmlToMarkdown", () => {
     });
 
     it("keeps a pipe inside a code span from splitting the cell", async () => {
-      // The code span already has one backslash; a second made an even run,
-      // which GFM splits at.
+      // The code span already has one backslash before the pipe, so none is
+      // added: an even run of backslashes would let GFM split the cell there.
       const markdown = await htmlToMarkdown(
         "<table><tr><th>Regex</th><th>Use</th></tr><tr><td><code>a\\|b</code></td><td>alt</td></tr></table>"
       );
