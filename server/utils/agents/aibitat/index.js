@@ -1005,6 +1005,21 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
   }
 
   /**
+   * Local inference servers can take a long time to load a model into memory,
+   * so tell the user when the upcoming completion will have to wait on that.
+   */
+  async #reportModelLoading() {
+    try {
+      if (await this.providerInstance.isModelLoaded()) return;
+    } catch {
+      return;
+    }
+    this?.introspect?.(
+      `Loading ${this.providerInstance.model} into memory, this may take a moment.`
+    );
+  }
+
+  /**
    * Handle the async (streaming) execution of the provider
    * with tool calls. Reads the provider from this.providerInstance.
    *
@@ -1031,6 +1046,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     if (depth === 0) {
       this?.flushRoutingMetadata?.(v4());
       this.providerInstance.resetCumulativeUsage();
+      await this.#reportModelLoading();
     }
 
     /** @type {{ functionCall: { name: string, arguments: string }, textResponse: string }} */
@@ -1197,6 +1213,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     if (depth === 0) {
       this?.flushRoutingMetadata?.(msgUUID);
       this.providerInstance.resetCumulativeUsage();
+      await this.#reportModelLoading();
     }
 
     // get the chat completion
