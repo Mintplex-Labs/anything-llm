@@ -1009,7 +1009,11 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
    * so tell the user when the upcoming completion will have to wait on that.
    */
   async #reportModelLoading() {
-    if (await this.providerInstance.isModelLoaded()) return;
+    try {
+      if (await this.providerInstance.isModelLoaded()) return;
+    } catch {
+      return;
+    }
     this?.introspect?.(
       `Loading ${this.providerInstance.model} into memory, this may take a moment.`
     );

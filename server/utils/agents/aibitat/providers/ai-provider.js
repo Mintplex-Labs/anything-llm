@@ -218,9 +218,9 @@ class Provider {
   /**
    * Whether the model is loaded into memory on the inference server.
    * Local providers override this; overrides should resolve true on error.
-   * @returns {boolean|Promise<boolean>}
+   * @returns {Promise<boolean>}
    */
-  isModelLoaded() {
+  async isModelLoaded() {
     return true;
   }
 
