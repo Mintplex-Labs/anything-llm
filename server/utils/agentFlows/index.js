@@ -278,10 +278,9 @@ class AgentFlows {
                 aibitat
               );
               if (!result.success) {
-                aibitat.introspect(
-                  `Flow failed: ${result.results[0]?.error || "Unknown error"}`
-                );
-                return `Flow execution failed: ${result.results[0]?.error || "Unknown error"}`;
+                const error = result.results.at(-1)?.error || "Unknown error";
+                aibitat.introspect(`Flow failed: ${error}`);
+                return `Flow execution failed: ${error}`;
               }
               aibitat.introspect(`${flow.name} completed successfully`);
 
