@@ -103,6 +103,62 @@ const {
   __mocks: ephemeralMocks,
 } = require("../../../utils/agents/ephemeral");
 
+describe("API chat datetime injection", () => {
+  const { chatPrompt, recentChatHistory } = require("../../../utils/chats");
+  const { DocumentManager } = require("../../../utils/DocumentManager");
+  const {
+    appendPromptDatetime,
+    getPromptDatetime,
+  } = require("../../../utils/helpers/chat/prompt");
+
+  afterEach(() => jest.useRealTimers());
+
+  test.each(["chatSync", "streamChat"])(
+    "%s appends time only to the outgoing prompt, without persisting it",
+    async (method) => {
+      jest.clearAllMocks();
+      jest.useFakeTimers().setSystemTime(new Date("2026-09-17T06:32:59Z"));
+      const datetime = getPromptDatetime(null);
+      EphemeralAgentHandler.isAgentInvocation.mockResolvedValue(false);
+      WorkspaceChats.new.mockResolvedValue({ chat: { id: 1 } });
+      chatPrompt.mockResolvedValue("Static system prompt");
+      recentChatHistory.mockResolvedValue({ rawHistory: [], chatHistory: [] });
+      DocumentManager.mockImplementation(() => ({
+        pinnedDocs: async () => [],
+      }));
+      getVectorDbClass.mockReturnValue({
+        hasNamespace: async () => false,
+        namespaceCount: async () => 0,
+      });
+      const connector = {
+        promptWindowLimit: () => 8000,
+        compressMessages: jest.fn(async (args) => args),
+        streamingEnabled: () => false,
+        getChatCompletion: async () => {
+          jest.setSystemTime(new Date("2026-09-17T06:34:00Z"));
+          return { textResponse: "Answer", metrics: {} };
+        },
+      };
+      resolveProviderConnector.mockResolvedValue({ connector });
+      await ApiChatHandler[method]({
+        workspace: {
+          id: 1,
+          slug: "test",
+          chatMode: "chat",
+          openAiPrompt: null,
+        },
+        message: "Hello",
+        response: { write: jest.fn() },
+      });
+      const saved = WorkspaceChats.new.mock.calls[0][0];
+      const sent = connector.compressMessages.mock.calls[0][0];
+      expect(saved.prompt).toBe("Hello");
+      expect(saved.response).not.toHaveProperty("promptDatetime");
+      expect(sent.userPrompt).toBe(appendPromptDatetime("Hello", datetime));
+    }
+  );
+});
+
 const workspace = { id: 1, slug: "workspace", chatMode: "chat" };
 const attachments = [
   {

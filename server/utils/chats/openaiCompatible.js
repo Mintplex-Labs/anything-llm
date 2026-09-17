@@ -8,6 +8,10 @@ const { chatPrompt, sourceIdentifier } = require("./index");
 const { abortConnectorOnClientDisconnect } = require("../helpers/abortSignals");
 
 const { PassThrough } = require("stream");
+const {
+  getPromptDatetime,
+  appendPromptDatetime,
+} = require("../helpers/chat/prompt");
 
 async function chatSync({
   workspace,
@@ -165,9 +169,13 @@ async function chatSync({
 
   // Compress & Assemble message to ensure prompt passes token limit with room for response
   // and build system messages based on inputs and history.
+  const promptDatetime =
+    systemPrompt == null
+      ? getPromptDatetime(workspace?.openAiPrompt)
+      : undefined;
   const messages = await LLMConnector.compressMessages({
     systemPrompt: systemPrompt ?? (await chatPrompt(workspace)),
-    userPrompt: String(prompt),
+    userPrompt: appendPromptDatetime(String(prompt), promptDatetime),
     contextTexts,
     chatHistory: history,
     attachments,
@@ -417,9 +425,13 @@ async function streamChat({
 
   // Compress & Assemble message to ensure prompt passes token limit with room for response
   // and build system messages based on inputs and history.
+  const promptDatetime =
+    systemPrompt == null
+      ? getPromptDatetime(workspace?.openAiPrompt)
+      : undefined;
   const messages = await LLMConnector.compressMessages({
     systemPrompt: systemPrompt ?? (await chatPrompt(workspace)),
-    userPrompt: String(prompt),
+    userPrompt: appendPromptDatetime(String(prompt), promptDatetime),
     contextTexts,
     chatHistory: history,
     attachments,

@@ -1,4 +1,8 @@
 const { WorkspaceChats } = require("../../../models/workspaceChats");
+const {
+  getPromptDatetime,
+  appendPromptDatetime,
+} = require("../../helpers/chat/prompt");
 const { getVectorDbClass, resolveProviderConnector } = require("../../helpers");
 const { addChatCostToMetrics } = require("../../helpers/modelPricing");
 const { DocumentManager } = require("../../DocumentManager");
@@ -135,10 +139,11 @@ async function streamResponse({
 
   const contextTexts = [...pinnedContextTexts, ...searchContextTexts];
   const sources = [...pinnedSources, ...searchSources];
+  const promptDatetime = getPromptDatetime(workspace?.openAiPrompt);
   const messages = await LLMConnector.compressMessages(
     {
       systemPrompt: await chatPrompt(workspace),
-      userPrompt: message,
+      userPrompt: appendPromptDatetime(message, promptDatetime),
       contextTexts,
       chatHistory,
       attachments,

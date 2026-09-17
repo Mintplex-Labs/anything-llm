@@ -29,7 +29,7 @@ describe("WORKSPACE_AGENT.getDefinition", () => {
     jest.clearAllMocks();
     SystemPromptVariables.expandSystemPromptVariables.mockReset();
     SystemPromptVariables.expandSystemPromptVariables.mockImplementation(
-      async (prompt) => prompt.replace("{datetime}", "January 1, 2024 12:00 PM")
+      async (prompt) => prompt
     );
     // Mock SystemSettings to return empty arrays for agent skills
     SystemSettings.getValueOrFallback = jest.fn().mockResolvedValue("[]");

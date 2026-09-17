@@ -1,4 +1,8 @@
 const { v4: uuidv4 } = require("uuid");
+const {
+  getPromptDatetime,
+  appendPromptDatetime,
+} = require("../helpers/chat/prompt");
 const { DocumentManager } = require("../DocumentManager");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { WorkspaceParsedFiles } = require("../../models/workspaceParsedFiles");
@@ -270,10 +274,11 @@ async function streamChatWithWorkspace(
       prompt: updatedMessage,
       rawHistory,
     }));
+  const promptDatetime = getPromptDatetime(workspace?.openAiPrompt);
   const messages = await LLMConnector.compressMessages(
     {
       systemPrompt,
-      userPrompt: updatedMessage,
+      userPrompt: appendPromptDatetime(updatedMessage, promptDatetime),
       contextTexts,
       chatHistory,
       attachments,

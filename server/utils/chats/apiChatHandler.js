@@ -1,4 +1,8 @@
 const { v4: uuidv4 } = require("uuid");
+const {
+  getPromptDatetime,
+  appendPromptDatetime,
+} = require("../helpers/chat/prompt");
 const { DocumentManager } = require("../DocumentManager");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { getVectorDbClass, resolveProviderConnector } = require("../helpers");
@@ -433,10 +437,11 @@ async function chatSync({
     prompt: message,
     rawHistory,
   });
+  const promptDatetime = getPromptDatetime(workspace?.openAiPrompt);
   const messages = await LLMConnector.compressMessages(
     {
       systemPrompt,
-      userPrompt: message,
+      userPrompt: appendPromptDatetime(message, promptDatetime),
       contextTexts,
       chatHistory,
       attachments,
@@ -822,10 +827,11 @@ async function streamChat({
     prompt: message,
     rawHistory,
   });
+  const promptDatetime = getPromptDatetime(workspace?.openAiPrompt);
   const messages = await LLMConnector.compressMessages(
     {
       systemPrompt: streamSystemPrompt,
-      userPrompt: message,
+      userPrompt: appendPromptDatetime(message, promptDatetime),
       contextTexts,
       chatHistory,
       attachments,

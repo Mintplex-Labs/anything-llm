@@ -1,4 +1,8 @@
 const { v4: uuidv4 } = require("uuid");
+const {
+  getPromptDatetime,
+  appendPromptDatetime,
+} = require("../helpers/chat/prompt");
 const { getVectorDbClass, resolveProviderConnector } = require("../helpers");
 const { addChatCostToMetrics } = require("../helpers/modelPricing");
 const { chatPrompt, sourceIdentifier } = require("./index");
@@ -177,6 +181,7 @@ async function streamChatWithForEmbed(
 
   // Compress message to ensure prompt passes token limit with room for response
   // and build system messages based on inputs and history.
+  const promptDatetime = getPromptDatetime(embed.workspace?.openAiPrompt);
   const messages = await LLMConnector.compressMessages(
     {
       // Embed visitors are anonymous - never pass request-supplied identity
@@ -184,7 +189,7 @@ async function streamChatWithForEmbed(
       systemPrompt: await chatPrompt(embed.workspace, null, {
         skipMemories: true,
       }),
-      userPrompt: message,
+      userPrompt: appendPromptDatetime(message, promptDatetime),
       contextTexts,
       chatHistory,
     },

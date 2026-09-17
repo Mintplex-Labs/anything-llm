@@ -5,6 +5,10 @@ const Providers = require("./providers/index.js");
 const { Telemetry } = require("../../../models/telemetry.js");
 const { v4 } = require("uuid");
 const { ToolReranker } = require("./utils/toolReranker.js");
+const {
+  getPromptDatetime,
+  appendPromptDatetime,
+} = require("../../helpers/chat/prompt");
 
 /**
  * AIbitat is a class that manages the conversation between agents.
@@ -888,25 +892,26 @@ ${this.getHistory({ to: route.to })
   async reply(route) {
     const fromConfig = this.getAgentConfig(route.from);
     const chatHistory = this.getOrFormatNodeChatHistory(route);
-    // Captured before document injection below - skill reranking and model
-    // routing must run on what the user asked, not on attached file contents.
+    // Routing and skill reranking use the original text, before documents/time.
     const userPrompt = this.#extractUserPrompt(chatHistory);
 
-    // Fetch fresh parsed file context and inject into the last user message
-    if (this.fetchParsedFileContext) {
-      const parsedContext = await this.fetchParsedFileContext();
-      if (parsedContext) {
-        // Find the last user message and append context to it
-        for (let i = chatHistory.length - 1; i >= 0; i--) {
-          if (chatHistory[i].role === "user") {
-            chatHistory[i] = {
-              ...chatHistory[i],
-              content: chatHistory[i].content + parsedContext,
-            };
-            break;
-          }
-        }
-      }
+    const parsedContext = this.fetchParsedFileContext
+      ? (await this.fetchParsedFileContext()) || ""
+      : "";
+    const workspace = this.handlerProps?.invocation?.workspace;
+    const promptDatetime = getPromptDatetime(workspace?.openAiPrompt);
+    // Only decorate the outgoing turn. Stored history stays unchanged, and
+    // recursive tool calls reuse these messages without refreshing the time.
+    for (let i = chatHistory.length - 1; i >= 0; i--) {
+      if (chatHistory[i].role !== "user") continue;
+      chatHistory[i] = {
+        ...chatHistory[i],
+        content: appendPromptDatetime(
+          chatHistory[i].content + parsedContext,
+          promptDatetime
+        ),
+      };
+      break;
     }
 
     const messages = [

@@ -579,10 +579,9 @@ class Provider {
    * @returns {Promise<string>}
    */
   static async systemPrompt({ workspace = null, user = null, prompt = "" }) {
-    const { SystemSettings } = require("../../../../models/systemSettings");
+    const { resolveSystemPrompt } = require("../../../helpers/chat/prompt");
     const { promptWithMemories } = require("../../../memories");
-    const basePrompt =
-      workspace?.openAiPrompt ?? SystemSettings.saneDefaultSystemPrompt;
+    const basePrompt = resolveSystemPrompt(workspace?.openAiPrompt);
     const systemPrompt =
       await SystemPromptVariables.expandSystemPromptVariables(
         basePrompt,
