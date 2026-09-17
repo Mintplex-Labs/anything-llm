@@ -136,12 +136,23 @@ function addTableRules(turndown) {
     const header = headerIndex >= 0 ? rows[headerIndex] : null;
     const layout = layOut(rows, cells);
     if (layout) return { header, headerWidth: layout.width, ...layout };
+    // Past the budget the spans are ignored, so a row is as wide as its own
+    // cells. The header still has to reach the widest row, or the cells beyond
+    // it fall out of the table. A shorter body row is fine as it is, because
+    // GFM fills it with empty cells, and padding every row is exactly the
+    // growth the budget exists to prevent.
+    const width = cells.reduce(
+      (widest, rowCells) => Math.max(widest, rowCells.length),
+      0
+    );
+    const after = new Map();
+    if (header) after.set(header, width - cells[headerIndex].length);
     return {
       header,
-      headerWidth: headerIndex >= 0 ? cells[headerIndex].length : 0,
+      headerWidth: width,
       before: new Map(),
       colspan: new Map(),
-      after: new Map(),
+      after,
     };
   };
 
