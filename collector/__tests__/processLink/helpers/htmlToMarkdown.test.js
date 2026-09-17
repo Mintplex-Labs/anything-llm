@@ -471,6 +471,69 @@ describe("htmlToMarkdown", () => {
       ]);
     });
 
+    it('holds a rowspan="0" column open for the rest of its row group', async () => {
+      // rowspan="0" reaches to the end of the row group. Counting it as a
+      // single row moved "2 m" and "3 m" left into the Product column.
+      const markdown = await htmlToMarkdown(
+        "<table><thead><tr><th>Product</th><th>Variant</th></tr></thead>" +
+          '<tbody><tr><td rowspan="0">Cable</td><td>1 m</td></tr>' +
+          "<tr><td>2 m</td></tr>" +
+          "<tr><td>3 m</td></tr></tbody></table>"
+      );
+
+      expect(tableRows(markdown)).toEqual([
+        ["Product", "Variant"],
+        ["---", "---"],
+        ["Cable", "1 m"],
+        ["", "2 m"],
+        ["", "3 m"],
+      ]);
+    });
+
+    it('stops a rowspan="0" at the end of its row group', async () => {
+      // The span sits in the head, so the body rows below keep their own first
+      // column.
+      const markdown = await htmlToMarkdown(
+        '<table><thead><tr><th rowspan="0">Size</th><th>S</th></tr>' +
+          "<tr><th>M</th></tr></thead>" +
+          "<tbody><tr><td>9 EUR</td><td>12 EUR</td></tr></tbody></table>"
+      );
+
+      expect(tableRows(markdown)).toEqual([
+        ["Size", "S"],
+        ["---", "---"],
+        ["", "M"],
+        ["9 EUR", "12 EUR"],
+      ]);
+    });
+
+    it('counts a colspan="0" as the one column it covers', async () => {
+      // HTML5 dropped colspan="0", so it is not the row-group span rowspan="0"
+      // is: the cell covers its own column only.
+      const markdown = await htmlToMarkdown(
+        "<table><tr><th>A</th><th>B</th></tr>" +
+          '<tr><td colspan="0">1</td><td>2</td></tr></table>'
+      );
+
+      expect(tableRows(markdown)).toEqual([
+        ["A", "B"],
+        ["---", "---"],
+        ["1", "2"],
+      ]);
+    });
+
+    it('does not let a rowspan="0" grow the output', async () => {
+      // The span reaches every row left in the group, so a wide cell repeating
+      // it is the worst case the budget has to hold.
+      const rows = '<tr><td rowspan="0" colspan="1000">x</td></tr>'.repeat(200);
+      const markdown = await htmlToMarkdown(
+        `<table>${rows}</table><p>after</p>`
+      );
+
+      expect(markdown.length).toBeLessThan(2000);
+      expect(markdown).toContain("after");
+    });
+
     it("does not let a span attribute grow the output", async () => {
       // colspan="1000000" produced ten million characters from a few bytes of
       // page.

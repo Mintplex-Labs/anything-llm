@@ -64,8 +64,14 @@ function addTableRules(turndown) {
     return table ?? null;
   };
 
-  const spanOf = (cell, attribute, max) => {
+  // A span is a non-negative integer, so a leading number wins and the rest of
+  // the value is ignored. `zero` is what a `0` means: HTML5 dropped
+  // `colspan="0"` so it counts as one column, while `rowspan="0"` still reaches
+  // to the end of the cell's row group.
+  const spanOf = (cell, attribute, max, zero = 1) => {
     const value = Number.parseInt(cell.getAttribute(attribute) ?? "", 10);
+    // `-0` parses to zero but is not a non-negative integer, so it is no span.
+    if (Object.is(value, 0)) return Math.min(zero, max);
     return Number.isFinite(value) && value > 0 ? Math.min(value, max) : 1;
   };
 
@@ -74,10 +80,25 @@ function addTableRules(turndown) {
       (child) => child.nodeName === "TH" || child.nodeName === "TD"
     );
 
+  // The row's group is the <thead>, <tbody> or <tfoot> around it, or the table
+  // itself when its rows are not wrapped in one.
+  const groupOf = (row, table) => {
+    let group = row.parentNode;
+    while (
+      group &&
+      group !== table &&
+      group.nodeName !== "THEAD" &&
+      group.nodeName !== "TBODY" &&
+      group.nodeName !== "TFOOT"
+    )
+      group = group.parentNode;
+    return group ?? table;
+  };
+
   // Lay the table out on a grid the way a browser does, so a span takes the
   // columns it covers instead of leaving the row short. Returns null once the
   // grid would pass the table's budget.
-  const layOut = (rows, cells) => {
+  const layOut = (rows, cells, table) => {
     const before = new Map();
     const colspan = new Map();
     const widths = [];
@@ -91,6 +112,14 @@ function addTableRules(turndown) {
       MAX_GRID_CELLS,
       MIN_GRID_CELLS + GRID_CELLS_PER_CELL * realCells
     );
+    // How far a `rowspan="0"` in each row reaches: its own row plus the rows
+    // left in its group. Groups run in document order, so one pass from the
+    // bottom counts them.
+    const groups = rows.map((row) => groupOf(row, table));
+    const groupRowsLeft = new Array(rows.length);
+    for (let index = rows.length - 1; index >= 0; index--)
+      groupRowsLeft[index] =
+        groups[index + 1] === groups[index] ? groupRowsLeft[index + 1] + 1 : 1;
 
     for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
       let column = 0;
@@ -105,7 +134,12 @@ function addTableRules(turndown) {
       for (const cell of cells[rowIndex]) {
         before.set(cell, free());
         const across = spanOf(cell, "colspan", MAX_COLSPAN);
-        const down = spanOf(cell, "rowspan", rows.length - rowIndex);
+        const down = spanOf(
+          cell,
+          "rowspan",
+          rows.length - rowIndex,
+          groupRowsLeft[rowIndex]
+        );
         if (taken.size + across * down > budget) return null;
         colspan.set(cell, across);
         for (let r = 0; r < down; r++)
@@ -136,7 +170,7 @@ function addTableRules(turndown) {
     // The delimiter goes under the first row that has cells.
     const headerIndex = cells.findIndex((rowCells) => rowCells.length > 0);
     const header = headerIndex >= 0 ? rows[headerIndex] : null;
-    const layout = layOut(rows, cells);
+    const layout = layOut(rows, cells, table);
     if (layout) return { header, headerWidth: layout.width, ...layout };
     // Past the budget the spans are ignored, so a row is as wide as its own
     // cells. The header still has to reach the widest row, or the cells beyond
