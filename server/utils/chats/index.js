@@ -153,8 +153,53 @@ function sourceIdentifier(sourceDocument) {
   return `title:${sourceDocument.title}-timestamp:${sourceDocument.published}`;
 }
 
+// Reasoning options per LLM class + model. Some providers only know a model's
+// support from a network lookup (Anthropic models API, Gemini model info,
+// Ollama show), so it is fetched once per model for the process.
+const liveReasoningOptions = new Map();
+
+/**
+ * Resolves the reasoning effort for a chat - the workspace's own setting wins,
+ * otherwise the system-wide default. The effort is only kept when the model's
+ * capabilities list it: providers that implement reasoning controls report
+ * `reasoningOptions`, so a stale value from a model switch or a provider
+ * without controls is dropped (with a log) rather than failing the request.
+ * @param {import("@prisma/client").workspaces|null} workspace
+ * @param {{model: string, getModelCapabilities?: () => Promise<{reasoning: 'unknown'|boolean, reasoningOptions?: string[]}>}} llm - LLM connector the chat will use
+ * @returns {Promise<string|null>}
+ */
+async function resolveReasoningEffort(workspace, llm) {
+  const reasoningEffort =
+    workspace?.reasoningEffort ?? process.env.REASONING_EFFORT ?? null;
+  if (!reasoningEffort) return null;
+  console.log(
+    `\x1b[36m[ReasoningEffort]\x1b[0m Chat requested with ${
+      workspace?.reasoningEffort ? "workspace" : "global"
+    } reasoning effort "${reasoningEffort}"`
+  );
+
+  const key = `${llm.constructor.name}:${llm.model}`;
+  let allowed = liveReasoningOptions.get(key);
+  if (!allowed) {
+    const capabilities = llm.getModelCapabilities
+      ? await llm.getModelCapabilities()
+      : {};
+    allowed = capabilities.reasoningOptions ?? [];
+    // A failed lookup is not cached so the next chat retries it.
+    if (capabilities.reasoning !== "unknown")
+      liveReasoningOptions.set(key, allowed);
+  }
+
+  if (allowed.includes(reasoningEffort)) return reasoningEffort;
+  console.log(
+    `\x1b[36m[ReasoningEffort]\x1b[0m Ignoring reasoning effort "${reasoningEffort}" - not supported by model "${llm.model}".`
+  );
+  return null;
+}
+
 module.exports = {
   sourceIdentifier,
+  resolveReasoningEffort,
   recentChatHistory,
   chatPrompt,
   grepCommand,

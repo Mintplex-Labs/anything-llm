@@ -8,6 +8,7 @@ import {
 } from "@phosphor-icons/react";
 import paths from "@/utils/paths";
 import System from "@/models/system";
+import SystemReasoningEffort from "../SystemReasoningEffort";
 import { LMSTUDIO_COMMON_URLS } from "@/utils/constants";
 import useProviderEndpointAutoDiscovery from "@/hooks/useProviderEndpointAutoDiscovery";
 import { Tooltip } from "react-tooltip";
@@ -61,6 +62,7 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
           basePath={basePath.value}
           apiKey={authTokenValue.value}
         />
+        <SystemReasoningEffort />
       </div>
       <div className="flex justify-start mt-4">
         <button

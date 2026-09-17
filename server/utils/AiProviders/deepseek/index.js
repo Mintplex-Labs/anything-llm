@@ -6,6 +6,10 @@ const { MODEL_MAP } = require("../modelMap");
 const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
+const {
+  PROVIDER_REASONING_EFFORTS,
+  validReasoningEffort,
+} = require("../../helpers/reasoningEffort");
 
 class DeepSeekLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -94,7 +98,38 @@ class DeepSeekLLM {
     return textResponse;
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  /**
+   * Builds the reasoning portion of the request body when a reasoning effort
+   * is set - otherwise an empty object so the provider default applies.
+   * DeepSeek only supports toggling thinking on or off via the `thinking` param.
+   * @param {string|null} reasoningEffort
+   * @returns {object}
+   */
+  #constructReasoningConfig(reasoningEffort = null) {
+    const effort = validReasoningEffort(
+      "deepseek",
+      this.model,
+      reasoningEffort
+    );
+    if (!effort) return {};
+    return { thinking: { type: effort === "on" ? "enabled" : "disabled" } };
+  }
+
+  /**
+   * Returns the capabilities of the model.
+   * @returns {Promise<{reasoning: boolean, reasoningOptions: string[]}>}
+   */
+  async getModelCapabilities() {
+    return {
+      reasoning: true,
+      reasoningOptions: PROVIDER_REASONING_EFFORTS.deepseek(this.model),
+    };
+  }
+
+  async getChatCompletion(
+    messages = null,
+    { temperature = 0.7, reasoningEffort = null }
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `DeepSeek chat: ${this.model} is not valid for chat completion!`
@@ -106,6 +141,7 @@ class DeepSeekLLM {
           model: this.model,
           messages,
           temperature,
+          ...this.#constructReasoningConfig(reasoningEffort),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -135,7 +171,10 @@ class DeepSeekLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = 0.7, reasoningEffort = null }
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `DeepSeek chat: ${this.model} is not valid for chat completion!`
@@ -147,6 +186,7 @@ class DeepSeekLLM {
         stream: true,
         messages,
         temperature,
+        ...this.#constructReasoningConfig(reasoningEffort),
       }),
       messages,
       runPromptTokenCalculation: false,

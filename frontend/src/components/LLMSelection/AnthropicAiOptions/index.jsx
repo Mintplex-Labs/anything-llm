@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import System from "@/models/system";
 import { CaretDown, CaretUp } from "@phosphor-icons/react";
+import SystemReasoningEffort from "../SystemReasoningEffort";
 
 export default function AnthropicAiOptions({ settings }) {
   const [showAdvancedControls, setShowAdvancedControls] = useState(false);
@@ -35,6 +36,7 @@ export default function AnthropicAiOptions({ settings }) {
             settings={settings}
           />
         )}
+        <SystemReasoningEffort />
       </div>
       <div className="flex justify-start mt-4">
         <button
