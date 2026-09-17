@@ -471,6 +471,53 @@ describe("htmlToMarkdown", () => {
       ]);
     });
 
+    it("does not let a span attribute grow the output", async () => {
+      // colspan="1000000" produced ten million characters from a few bytes of
+      // page.
+      const page = (span) =>
+        `<table><tr><td colspan="${span}">x</td></tr><tr><td>a</td></tr></table><p>after</p>`;
+      const huge = await htmlToMarkdown(page(1_000_000));
+
+      expect(huge).toBe(await htmlToMarkdown(page(1000)));
+      expect(huge.length).toBeLessThan(100);
+      expect(huge).toContain("after");
+    });
+
+    it("keeps a table whose spans would cover millions of grid cells", () => {
+      // Tracking that many slots threw "RangeError: Set maximum size exceeded"
+      // after 3.4 s, and the fallback returned the page as the text "xxx".
+      const html = `<table>${'<tr><td rowspan="65534" colspan="1000">x</td></tr>'.repeat(3)}</table>`;
+
+      expect(htmlToMarkdown(html)).toBe("| x |\n| --- |\n| x |\n| x |");
+    });
+
+    it("keeps the table whole around a row that has no cells", async () => {
+      // Turndown writes a cell-less row as a blank line, which ended the table.
+      const markdown = await htmlToMarkdown(
+        "<table><tr><th>A</th><th>B</th></tr><tr></tr><tr><td>1</td><td>2</td></tr></table>"
+      );
+
+      expect(markdown).toBe("| A | B |\n| --- | --- |\n| 1 | 2 |");
+    });
+
+    it("puts the delimiter under the first row that has cells", async () => {
+      const markdown = await htmlToMarkdown(
+        "<table><tr></tr><tr><td>a</td><td>b</td></tr><tr><td>1</td><td>2</td></tr></table>"
+      );
+
+      expect(markdown).toBe("| a | b |\n| --- | --- |\n| 1 | 2 |");
+    });
+
+    it("keeps a pipe inside a code span from splitting the cell", async () => {
+      // The code span already has one backslash; a second made an even run,
+      // which GFM splits at.
+      const markdown = await htmlToMarkdown(
+        "<table><tr><th>Regex</th><th>Use</th></tr><tr><td><code>a\\|b</code></td><td>alt</td></tr></table>"
+      );
+
+      expect(markdown.split("\n")[2]).toBe("| `a\\|b` | alt |");
+    });
+
     it("leaves a page without a table alone", async () => {
       expect(await htmlToMarkdown("<h1>Title</h1><p>hello</p>")).toBe(
         "# Title\n\nhello"

@@ -25,10 +25,36 @@ const IGNORED_IMG_BASEPATHS = [
  * @param {import('turndown')} turndown
  */
 function addTableRules(turndown) {
-  // Turndown has already escaped the cell's backslashes, so only the pipe is
-  // left to escape, and a pipe inside a cell would add a column of its own.
+  // HTML clamps colspan to 1..1000, and a rowspan never reaches past its table.
+  const MAX_COLSPAN = 1000;
+  // A span attribute on a scraped page must not be able to make the output, or
+  // the conversion, much larger than the page. So a table is padded out to a
+  // full grid only while the grid stays within a few cells per real cell, and
+  // never past MAX_GRID_CELLS; a table past that is written row by row, one
+  // column per cell, as if it had no spans.
+  const GRID_CELLS_PER_CELL = 8;
+  const MIN_GRID_CELLS = 64;
+  const MAX_GRID_CELLS = 40_000;
+
+  // A GFM row splits at a pipe preceded by an even number of backslashes, so
+  // every pipe is left with an odd number. In text Turndown has already
+  // doubled each backslash, so that is always one more; inside a code span it
+  // has not, and `a\|b` there already has one.
+  const escapePipes = (text) => {
+    const parts = text.split("|");
+    for (let index = 0; index < parts.length - 1; index++) {
+      const part = parts[index];
+      let run = 0;
+      while (run < part.length && part[part.length - 1 - run] === "\\") run++;
+      if (run % 2 === 0) parts[index] = `${part}\\`;
+    }
+    return parts.join("|");
+  };
+
+  // A newline would end the row halfway through, so a line break folds into a
+  // space.
   const cellText = (content) =>
-    content.replace(/\r?\n/g, " ").replace(/\|/g, "\\|").trim();
+    escapePipes(content.replace(/\r?\n/g, " ").trim());
 
   const tableOf = (node) => {
     let table = node.parentNode;
@@ -36,14 +62,9 @@ function addTableRules(turndown) {
     return table ?? null;
   };
 
-  const isFirstRow = (node) => {
-    const table = tableOf(node);
-    return !!table && table.querySelector("tr") === node;
-  };
-
-  const spanOf = (cell, attribute) => {
+  const spanOf = (cell, attribute, max) => {
     const value = Number.parseInt(cell.getAttribute(attribute) ?? "", 10);
-    return Number.isFinite(value) && value > 0 ? value : 1;
+    return Number.isFinite(value) && value > 0 ? Math.min(value, max) : 1;
   };
 
   const cellsOf = (row) =>
@@ -52,17 +73,24 @@ function addTableRules(turndown) {
     );
 
   // Lay the table out on a grid the way a browser does, so a span takes the
-  // columns it covers instead of leaving the row short.
-  const measure = (table) => {
+  // columns it covers instead of leaving the row short. Returns null once the
+  // grid would pass the table's budget.
+  const layOut = (rows, cells) => {
     const before = new Map();
-    const after = new Map();
+    const colspan = new Map();
+    const widths = [];
     const taken = new Set();
-    const rows = Array.from(table.querySelectorAll("tr")).filter(
-      (row) => tableOf(row) === table
-    );
     let width = 0;
+    const realCells = cells.reduce(
+      (total, rowCells) => total + rowCells.length,
+      0
+    );
+    const budget = Math.min(
+      MAX_GRID_CELLS,
+      MIN_GRID_CELLS + GRID_CELLS_PER_CELL * realCells
+    );
 
-    rows.forEach((row, rowIndex) => {
+    for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
       let column = 0;
       const free = () => {
         let skipped = 0;
@@ -72,32 +100,62 @@ function addTableRules(turndown) {
         }
         return skipped;
       };
-      for (const cell of cellsOf(row)) {
+      for (const cell of cells[rowIndex]) {
         before.set(cell, free());
-        const colspan = spanOf(cell, "colspan");
-        const rowspan = spanOf(cell, "rowspan");
-        for (let r = 0; r < rowspan; r++)
-          for (let c = 0; c < colspan; c++)
+        const across = spanOf(cell, "colspan", MAX_COLSPAN);
+        const down = spanOf(cell, "rowspan", rows.length - rowIndex);
+        if (taken.size + across * down > budget) return null;
+        colspan.set(cell, across);
+        for (let r = 0; r < down; r++)
+          for (let c = 0; c < across; c++)
             taken.add(`${rowIndex + r},${column + c}`);
-        column += colspan;
+        column += across;
       }
-      // `column` is now the width the row emits cells for. Trailing slots a
-      // rowspan from above still claims widen the table but emit no cell here,
-      // so they count toward `width` and become right-side padding.
-      after.set(row, column);
+      // `column` is the width the row emits cells for. Trailing slots a rowspan
+      // from above still claims widen the table but emit no cell here, so they
+      // count toward `width` and become right-side padding.
+      widths.push(column);
       free();
       width = Math.max(width, column);
-    });
-
-    // `after` held each row's own emitted width; turn it into the padding it needs.
-    for (const row of rows) after.set(row, width - (after.get(row) ?? width));
-    return { width, before, after };
+    }
+    // A row with no cells is never written, so only the others are padded.
+    const writtenRows = cells.filter((rowCells) => rowCells.length > 0).length;
+    if (width * writtenRows > budget) return null;
+    const after = new Map();
+    rows.forEach((row, index) => after.set(row, width - widths[index]));
+    return { width, before, colspan, after };
   };
 
+  const measure = (table) => {
+    const rows = Array.from(table.querySelectorAll("tr")).filter(
+      (row) => tableOf(row) === table
+    );
+    const cells = rows.map(cellsOf);
+    // The delimiter goes under the first row that has cells.
+    const headerIndex = cells.findIndex((rowCells) => rowCells.length > 0);
+    const header = headerIndex >= 0 ? rows[headerIndex] : null;
+    const layout = layOut(rows, cells);
+    if (layout) return { header, headerWidth: layout.width, ...layout };
+    return {
+      header,
+      headerWidth: headerIndex >= 0 ? cells[headerIndex].length : 0,
+      before: new Map(),
+      colspan: new Map(),
+      after: new Map(),
+    };
+  };
+
+  const notInATable = {
+    header: null,
+    headerWidth: 0,
+    before: new Map(),
+    colspan: new Map(),
+    after: new Map(),
+  };
   const grids = new WeakMap();
   const gridFor = (node) => {
     const table = tableOf(node);
-    if (!table) return null;
+    if (!table) return notInATable;
     if (!grids.has(table)) grids.set(table, measure(table));
     return grids.get(table);
   };
@@ -108,8 +166,8 @@ function addTableRules(turndown) {
       const grid = gridFor(node);
       // Markdown has no merged cells, so a span becomes the empty cells the
       // columns it covers would otherwise be missing.
-      const before = " |".repeat(grid?.before.get(node) ?? 0);
-      const spanned = " |".repeat(spanOf(node, "colspan") - 1);
+      const before = " |".repeat(grid.before.get(node) ?? 0);
+      const spanned = " |".repeat((grid.colspan.get(node) ?? 1) - 1);
       return `${before} ${cellText(content)} |${spanned}`;
     },
   });
@@ -118,13 +176,11 @@ function addTableRules(turndown) {
     filter: "tr",
     replacement: (content, node) => {
       const grid = gridFor(node);
-      const after = " |".repeat(grid?.after.get(node) ?? 0);
-      const row = `|${content}${after}`;
-      if (!isFirstRow(node)) return `\n${row}`;
-      // A GFM table has to open with a header row, so the first row becomes
-      // one. On a page written without <th> that is what it is anyway.
-      const columns = grid?.width ?? node.querySelectorAll("th, td").length;
-      return `\n${row}\n|${" --- |".repeat(columns)}`;
+      const row = `|${content}${" |".repeat(grid.after.get(node) ?? 0)}`;
+      if (node !== grid.header) return `\n${row}`;
+      // A GFM table has to open with a header row, so the first row that has
+      // cells becomes one. On a page written without <th> that is what it is.
+      return `\n${row}\n|${" --- |".repeat(grid.headerWidth)}`;
     },
   });
 
@@ -142,7 +198,10 @@ function addTableRules(turndown) {
 
   turndown.addRule("table", {
     filter: "table",
-    replacement: (content) => `\n\n${content.trim()}\n\n`,
+    // A row with no cells is blank to Turndown, which writes it as a blank line
+    // instead of calling the row rule, and a blank line ends the table.
+    replacement: (content) =>
+      `\n\n${content.trim().replace(/^(\|.*)\n\s*\n(?=\|)/gm, "$1\n")}\n\n`,
   });
 }
 
