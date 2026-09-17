@@ -216,6 +216,15 @@ class Provider {
   }
 
   /**
+   * Whether the model is loaded into memory on the inference server.
+   * Local providers override this; overrides should resolve true on error.
+   * @returns {Promise<boolean>}
+   */
+  async isModelLoaded() {
+    return true;
+  }
+
+  /**
    *
    * @param {string} provider - the string key of the provider LLM being loaded.
    * @param {LangChainModelConfig} config - Config to be used to override default connection object.
