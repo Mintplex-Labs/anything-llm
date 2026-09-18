@@ -4,8 +4,12 @@
     "baseline-response": [
       ".relai/learning-envs/anythingllm-baseline-response.ts"
     ],
+    "document-grounding": [
+      ".relai/learning-envs/anythingllm-document-grounding.ts"
+    ],
     "end-to-end": [
-      ".relai/learning-envs/anythingllm-baseline-response.ts"
+      ".relai/learning-envs/anythingllm-baseline-response.ts",
+      ".relai/learning-envs/anythingllm-document-grounding.ts"
     ]
   }
 }
