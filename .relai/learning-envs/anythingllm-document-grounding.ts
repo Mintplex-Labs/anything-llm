@@ -46,7 +46,7 @@ export const environment = new RELAIEnvironment({
         "Checks the requested grounded answers and retrieval-source metadata for all turns.",
       evaluate: (result) => {
         const agentMessages = result.events.filter(
-          (event) => event.type === "agent_message",
+          (event) => event.eventType === "agent_message",
         );
         const byTurn = new Map(
           agentMessages.map((event) => [event.turnIndex, event]),
@@ -60,9 +60,12 @@ export const environment = new RELAIEnvironment({
         const archivePassed = contentFor(1).includes(
           "The north archive closes at violet dusk.",
         );
-        const budgetPassed = /budget.{0,80}(not (?:stated|specified)|(?:is )?unstated|(?:is )?unspecified)|(?:not (?:stated|specified)|(?:is )?unstated|(?:is )?unspecified).{0,80}budget/i.test(
-          contentFor(2),
-        );
+        const budgetOutput = contentFor(2);
+        const budgetPassed =
+          /budget/i.test(budgetOutput) &&
+          /do(?:es)? not (?:state|specify)|not (?:stated|specified)|(?:is )?unstated|(?:is )?unspecified|no .{0,40}budget/i.test(
+            budgetOutput,
+          );
         const sourcesPassed =
           agentMessages.length === 3 &&
           agentMessages.every((event) => {
