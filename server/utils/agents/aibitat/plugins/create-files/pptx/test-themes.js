@@ -1,6 +1,6 @@
 /**
- * Generate a preview presentation for every theme using the same rendering
- * pipeline as the production tool.  Run from repo root:
+ * Generate a preview presentation for every palette, exercising every layout,
+ * using the same rendering pipeline as the production tool. Run from repo root:
  *
  *   node server/utils/agents/aibitat/plugins/create-files/pptx/test-themes.js
  *
@@ -12,17 +12,20 @@ const fs = require("fs");
 const PptxGenJS = require("pptxgenjs");
 const createFilesLib = require("../lib.js");
 const { getTheme, getAvailableThemes } = require("./themes.js");
-const {
-  renderTitleSlide,
-  renderSectionSlide,
-  renderContentSlide,
-  renderBlankSlide,
-} = require("./utils.js");
+const { renderCover, renderSlide } = require("./layouts.js");
+const { normalizeSlides } = require("./normalize.js");
 
 const SAMPLE_SLIDES = [
   {
+    layout: "section",
     title: "Executive Summary",
-    content: [
+    subtitle: "Where we are and where we are going",
+  },
+  {
+    layout: "bullets",
+    title: "Highlights",
+    subtitle: "FY2025 at a glance",
+    bullets: [
       "Revenue grew 23% year-over-year to $4.2B",
       "Operating margin expanded 180bps to 28.4%",
       "Customer retention rate improved to 94.7%",
@@ -31,22 +34,93 @@ const SAMPLE_SLIDES = [
     notes: "Emphasize the margin expansion story",
   },
   {
-    layout: "section",
-    title: "Strategic Priorities",
-    subtitle: "Key initiatives for the next fiscal year",
-  },
-  {
-    title: "Market Opportunity",
-    subtitle: "Total addressable market analysis",
-    content: [
-      "Global TAM estimated at $180B by 2027",
-      "Our serviceable market represents $42B opportunity",
-      "Current market share: 8.3% with clear path to 15%",
-      "Three adjacent markets identified for expansion",
-      "Competitive moat strengthening through R&D investment",
+    layout: "stats",
+    title: "By the Numbers",
+    items: [
+      { title: "$4.2B", text: "Annual revenue, up 23% YoY" },
+      { title: "28.4%", text: "Operating margin" },
+      { title: "94.7%", text: "Net customer retention" },
     ],
   },
   {
+    layout: "two-column",
+    title: "Opportunities vs. Risks",
+    items: [
+      {
+        title: "Opportunities",
+        bullets: [
+          "Global TAM estimated at $180B by 2027",
+          "Two adjacent markets ready for entry",
+          "Pricing power in enterprise tier",
+        ],
+      },
+      {
+        title: "Risks",
+        bullets: [
+          "FX headwinds in EMEA",
+          "Integration load from three acquisitions",
+          "Talent competition in core engineering",
+        ],
+      },
+    ],
+  },
+  {
+    layout: "cards",
+    title: "Strategic Priorities",
+    items: [
+      {
+        title: "Platform Modernization",
+        text: "Migrate the core stack to a unified cloud architecture by Q3.",
+      },
+      {
+        title: "Geographic Expansion",
+        text: "Open two new regional hubs with local go-to-market teams.",
+      },
+      {
+        title: "Customer Success",
+        text: "Cut time-to-value in half through guided onboarding.",
+      },
+      {
+        title: "Operational Excellence",
+        text: "Automate reporting and reduce close cycle to five days.",
+      },
+    ],
+  },
+  {
+    layout: "steps",
+    title: "Roadmap",
+    items: [
+      { title: "Q1", text: "Launch Phase 2 of platform modernization" },
+      { title: "Q2", text: "Complete integration of acquired entities" },
+      { title: "Q3", text: "Enter two new geographic markets" },
+      { title: "Q4", text: "Reach $5B annual revenue run-rate" },
+    ],
+  },
+  {
+    layout: "chart",
+    title: "Revenue by Quarter",
+    chart: {
+      type: "bar",
+      categories: ["Q1", "Q2", "Q3", "Q4"],
+      values: [950, 1000, 1100, 1150],
+    },
+    bullets: [
+      "Every quarter beat the prior year",
+      "Q4 driven by enterprise renewals",
+      "Run-rate now above $4.5B",
+    ],
+  },
+  {
+    layout: "chart",
+    title: "Revenue Mix",
+    chart: {
+      type: "doughnut",
+      categories: ["Enterprise", "Mid-market", "SMB", "Services"],
+      values: [52, 24, 16, 8],
+    },
+  },
+  {
+    layout: "table",
     title: "Financial Performance",
     table: {
       headers: ["Metric", "FY2024", "FY2025", "Growth"],
@@ -59,13 +133,10 @@ const SAMPLE_SLIDES = [
     },
   },
   {
-    title: "Next Steps & Timeline",
-    content: [
-      "Q1: Launch Phase 2 of platform modernization",
-      "Q2: Complete integration of acquired entities",
-      "Q3: Enter two new geographic markets",
-      "Q4: Achieve $5B annual revenue run-rate",
-    ],
+    layout: "quote",
+    title:
+      "The best way to predict the future is to build it. This year we built more than ever.",
+    subtitle: "Jane Doe, Chief Executive Officer",
   },
 ];
 
@@ -76,52 +147,31 @@ async function generateThemePreview(themeName, outputDir) {
   pptx.author = "AnythingLLM";
   pptx.company = "AnythingLLM";
 
-  const totalSlides = SAMPLE_SLIDES.length;
-
-  const titleSlide = pptx.addSlide();
-  renderTitleSlide(
-    titleSlide,
+  renderCover(
+    pptx.addSlide(),
     pptx,
-    { title: `${theme.name} Theme`, author: "AnythingLLM Theme Preview" },
+    {
+      title: `${theme.name} Palette`,
+      subtitle: "FY2025 Annual Review",
+      author: "AnythingLLM",
+    },
     theme
   );
 
-  SAMPLE_SLIDES.forEach((slideData, index) => {
-    const slide = pptx.addSlide();
-    const slideNumber = index + 1;
-    const layout = slideData.layout || "content";
-
-    switch (layout) {
-      case "title":
-      case "section":
-        renderSectionSlide(
-          slide,
-          pptx,
-          slideData,
-          theme,
-          slideNumber,
-          totalSlides
-        );
-        break;
-      case "blank":
-        renderBlankSlide(slide, pptx, theme, slideNumber, totalSlides);
-        break;
-      default:
-        renderContentSlide(
-          slide,
-          pptx,
-          slideData,
-          theme,
-          slideNumber,
-          totalSlides
-        );
-        break;
-    }
+  const slides = normalizeSlides(SAMPLE_SLIDES);
+  let sectionIndex = 0;
+  slides.forEach((slideData, index) => {
+    if (slideData.layout === "section") sectionIndex++;
+    renderSlide(pptx, slideData, theme, {
+      n: index + 1,
+      total: slides.length,
+      sectionIndex,
+      firstInSection: slides[index - 1]?.layout === "section",
+    });
   });
 
   const filename = `theme-preview-${themeName}.pptx`;
-  const filepath = path.join(outputDir, filename);
-  await pptx.writeFile({ fileName: filepath });
+  await pptx.writeFile({ fileName: path.join(outputDir, filename) });
   console.log(`  ✓ ${theme.name} → ${filename}`);
 }
 
