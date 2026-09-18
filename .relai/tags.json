@@ -1,0 +1,11 @@
+{
+  "schema_version": "relai.tags.v1",
+  "tags": {
+    "baseline-response": [
+      ".relai/learning-envs/anythingllm-baseline-response.ts"
+    ],
+    "end-to-end": [
+      ".relai/learning-envs/anythingllm-baseline-response.ts"
+    ]
+  }
+}
