@@ -1319,6 +1319,18 @@ const TRANSLATIONS = {
       vault_warning:
         "To avoid any conflicts, make sure your Obsidian vault is not currently open.",
     },
+    "local-folder": {
+      folder_location: "Folder Location",
+      folder_description:
+        "Select your local folder to import all files.",
+      selected_files: "Found {{count}} files",
+      importing: "Importing folder...",
+      import_folder: "Import Folder",
+      processing_time:
+        "This may take a while depending on the size of your folder.",
+      folder_warning:
+        "To avoid any conflicts, make sure your folder is not currently open.",
+    },
     github: {
       name: "GitHub Repo",
       description:

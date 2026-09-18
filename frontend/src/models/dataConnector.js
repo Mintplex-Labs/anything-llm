@@ -248,7 +248,24 @@ const DataConnector = {
         });
     },
   },
-
+  localFolder: {
+    collect: async function (formData) {
+      return await fetch(`${API_BASE}/ext/local-folder`, {
+        method: "POST",
+        headers: baseHeaders(),
+        body: formData,
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          if (!res.success) throw new Error(res.reason);
+          return { data: res.data, error: null };
+        })
+        .catch((e) => {
+          console.error(e);
+          return { data: null, error: e.message };
+        });
+    },
+  },
   paperlessNgx: {
     collect: async function ({ baseUrl, apiToken }) {
       return await fetch(`${API_BASE}/ext/paperless-ngx`, {

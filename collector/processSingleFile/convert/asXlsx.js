@@ -10,6 +10,7 @@ const {
 } = require("../../utils/files");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
+const { parseXlsx } = require("../../utils/xlsxParser");
 
 /**
  * Renders a sheet's rows as RFC 4180 CSV. Fields containing a comma, double quote,
@@ -41,7 +42,7 @@ async function asXlsx({
   const documents = [];
 
   try {
-    const workSheetsFromFile = xlsx.parse(fullFilePath);
+    const { workSheetsFromFile } = await parseXlsx(fullFilePath, { timeout: 1_000 });
 
     if (options.parseOnly) {
       const allSheetContents = [];
@@ -94,7 +95,7 @@ async function asXlsx({
       const document = writeToServerDocuments({
         data: combinedData,
         filename: `${slugify(path.basename(filename))}-${combinedData.id}`,
-        destinationOverride: null,
+        destinationOverride: options.destinationOverride,
         options: { parseOnly: true },
       });
       documents.push(document);
@@ -108,7 +109,7 @@ async function asXlsx({
         }
       );
       const outFolderPath = path.resolve(documentsFolder, folderName);
-      if (!fs.existsSync(outFolderPath))
+      if (!options.destinationOverride && !fs.existsSync(outFolderPath))
         fs.mkdirSync(outFolderPath, { recursive: true });
 
       for (const sheet of workSheetsFromFile) {
@@ -134,7 +135,7 @@ async function asXlsx({
         const document = writeToServerDocuments({
           data: sheetData,
           filename: `sheet-${slugify(name)}`,
-          destinationOverride: outFolderPath,
+          destinationOverride: options.destinationOverride || outFolderPath,
           options: { parseOnly: options.parseOnly },
         });
         documents.push(document);

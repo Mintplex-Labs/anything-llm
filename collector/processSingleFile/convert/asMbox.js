@@ -68,6 +68,7 @@ async function asMbox({
     const document = writeToServerDocuments({
       data,
       filename: `${slugify(filename)}-${data.id}-msg-${item}`,
+      destinationOverride: options.destinationOverride,
       options: { parseOnly: options.parseOnly },
     });
     documents.push(document);

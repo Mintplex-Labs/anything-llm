@@ -51,6 +51,7 @@ async function asEPub({
   const document = writeToServerDocuments({
     data,
     filename: `${slugify(filename)}-${data.id}`,
+    destinationOverride: options.destinationOverride,
     options: { parseOnly: options.parseOnly },
   });
   if (!options.absolutePath) trashFile(fullFilePath);

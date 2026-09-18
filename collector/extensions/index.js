@@ -8,6 +8,7 @@ const { reqBody } = require("../utils/http");
 const { validURL, validateURL } = require("../utils/url");
 const RESYNC_METHODS = require("./resync");
 const { loadObsidianVault } = require("../utils/extensions/ObsidianVault");
+const { loadLocalFolder } = require("../utils/extensions/LocalFolder");
 
 function extensions(app) {
   if (!app) return;
@@ -200,6 +201,26 @@ function extensions(app) {
       try {
         const { files } = reqBody(request);
         const result = await loadObsidianVault({ files });
+        response.status(200).json(result);
+      } catch (e) {
+        console.error(e);
+        response.status(400).json({
+          success: false,
+          reason: e.message,
+          data: null,
+        });
+      }
+      return;
+    }
+  );
+
+  app.post(
+    "/ext/local-folder",
+    [verifyPayloadIntegrity, setDataSigner],
+    async function (request, response) {
+      try {
+        const { files, batchUUId } = reqBody(request);
+        const result = await loadLocalFolder({ files, batchUUId });
         response.status(200).json(result);
       } catch (e) {
         console.error(e);

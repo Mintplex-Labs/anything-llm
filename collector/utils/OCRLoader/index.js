@@ -211,6 +211,69 @@ class OCRLoader {
     return documents;
   }
 
+  validateImage(filePath) {
+    const stat = fs.statSync(filePath);
+  
+    if (stat.size < 100) {
+      return { ok: false, reason: `File too small (${stat.size} bytes)` };
+    }
+  
+    const ext = path.extname(filePath).toLowerCase();
+    const fd = fs.openSync(filePath, "r");
+    try {
+      const header = Buffer.alloc(16);
+      fs.readSync(fd, header, 0, 16, 0);
+  
+      const sigOk =
+        (ext === ".png" &&
+          header[0] === 0x89 && header[1] === 0x50 &&
+          header[2] === 0x4e && header[3] === 0x47) ||
+        ((".jpg" === ext || ".jpeg" === ext) &&
+          header[0] === 0xff && header[1] === 0xd8 && header[2] === 0xff) ||
+        (ext === ".gif" &&
+          header[0] === 0x47 && header[1] === 0x49 && header[2] === 0x46) ||
+        (ext === ".bmp" && header[0] === 0x42 && header[1] === 0x4d) ||
+        (ext === ".webp" &&
+          header[0] === 0x52 && header[1] === 0x49 &&
+          header[2] === 0x46 && header[3] === 0x46);
+  
+      if (!sigOk) {
+        return {
+          ok: false,
+          reason: `Invalid signature for ${ext || "unknown"} file`,
+        };
+      }
+  
+      const tailSize = Math.min(32, stat.size);
+      const tail = Buffer.alloc(tailSize);
+      fs.readSync(fd, tail, 0, tailSize, stat.size - tailSize);
+  
+      if (ext === ".png") {
+        // IEND chunk: 00 00 00 00 49 45 4E 44 AE 42 60 82
+        const iend = Buffer.from(
+          [0, 0, 0, 0, 0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82]
+        );
+        if (!tail.includes(iend)) {
+          return { ok: false, reason: "PNG is truncated (missing IEND)" };
+        }
+      } else if (ext === ".jpg" || ext === ".jpeg") {
+        // EOI marker: FF D9
+        if (tail[tail.length - 2] !== 0xff || tail[tail.length - 1] !== 0xd9) {
+          return { ok: false, reason: "JPEG is truncated (missing EOI)" };
+        }
+      } else if (ext === ".gif") {
+        // Terminator: 0x3B
+        if (tail[tail.length - 1] !== 0x3b) {
+          return { ok: false, reason: "GIF is truncated (missing terminator)" };
+        }
+      }
+  
+      return { ok: true };
+    } finally {
+      fs.closeSync(fd);
+    }
+  }
+
   /**
    * Loads an image file and returns the OCRed text.
    * @param {string} filePath - The path to the image file.
@@ -231,6 +294,15 @@ class OCRLoader {
     }
 
     const documentTitle = path.basename(filePath);
+
+    const validation = this.validateImage(filePath);
+    if (!validation.ok) {
+      this.log(
+        `Skipping OCR of ${documentTitle}: ${validation.reason}`
+      );
+      return null;
+    }
+
     try {
       this.log(`Starting OCR of ${documentTitle}`);
       const startTime = Date.now();

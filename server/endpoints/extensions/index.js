@@ -8,6 +8,10 @@ const { validatedRequest } = require("../../utils/middleware/validatedRequest");
 const {
   isSupportedRepoProvider,
 } = require("../../utils/middleware/isSupportedRepoProviders");
+const { handleLocalFolderFileUpload } = require("../../utils/files/multer");
+const fs = require("fs");
+const path = require("path");
+const { normalizePath } = require("../../utils/files");
 
 function extensionEndpoints(app) {
   if (!app) return;
@@ -162,6 +166,41 @@ function extensionEndpoints(app) {
           });
         await Telemetry.sendTelemetry("extension_invoked", {
           type: "obsidian_vault",
+        });
+        response.status(200).json(responseFromProcessor);
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/ext/local-folder",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager]), handleLocalFolderFileUpload],
+    async (request, response) => {
+      const uploadedFiles = request.files || [];
+      const filesMeta = JSON.parse(request.body.files_meta);
+
+      const filesForCollector = uploadedFiles.map((file, i) => {
+        const meta = filesMeta[i];
+        return {
+          name: meta.path || path.basename(file.originalname),
+          path: normalizePath(meta.path || file.originalname),
+          serverPath: file.path,
+        };
+      });
+
+      try {
+        const responseFromProcessor =
+          await new CollectorApi().forwardExtensionRequest({
+            endpoint: "/ext/local-folder",
+            method: "POST",
+            body: { files: filesForCollector, batchUUId: request.body?.batch_uuid },
+          });
+
+        await Telemetry.sendTelemetry("extension_invoked", {
+          type: "local_folder",
         });
         response.status(200).json(responseFromProcessor);
       } catch (e) {

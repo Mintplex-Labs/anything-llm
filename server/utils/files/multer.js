@@ -44,6 +44,24 @@ const fileAPIUploadStorage = multer.diskStorage({
   },
 });
 
+
+const fileLocalFolderUploadStorage = multer.diskStorage({
+  destination: function (_, file, cb) {
+    const uploadOutput =
+      process.env.NODE_ENV === "development"
+        ? path.resolve(__dirname, `../../../collector/hotdir`)
+        : path.resolve(process.env.STORAGE_DIR, `../../collector/hotdir`);
+    cb(null, uploadOutput);
+  },
+  filename: function (request, file, cb) {
+    request.__localFolderUploadIndex = (request.__localFolderUploadIndex || 0) + 1;
+    const safeName = sanitizeFileName(
+      normalizePath(Buffer.from(file.originalname, "latin1").toString("utf8"))
+    );
+    cb(null, `${request.__localFolderUploadIndex}-${safeName}`);
+  },
+});
+
 // Asset storage for logos
 const assetUploadStorage = multer.diskStorage({
   destination: function (_, __, cb) {
@@ -115,6 +133,25 @@ function handleFileUpload(request, response, next) {
  */
 function handleAPIFileUpload(request, response, next) {
   const upload = multer({ storage: fileAPIUploadStorage }).single("file");
+  upload(request, response, function (err) {
+    if (err) {
+      response
+        .status(500)
+        .json({
+          success: false,
+          error: `Invalid file upload. ${err.message}`,
+        })
+        .end();
+      return;
+    }
+    next();
+  });
+}
+
+function handleLocalFolderFileUpload(request, response, next) {
+  const upload = multer({
+    storage: fileLocalFolderUploadStorage,
+  }).array("files", 100);
   upload(request, response, function (err) {
     if (err) {
       response
