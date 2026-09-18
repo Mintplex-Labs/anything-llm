@@ -21,6 +21,20 @@ type AIbitatConstructor = new (props: {
   chats: unknown[];
 }) => AIbitatSession;
 
+type AnythingLLMLiveInput = {
+  kind: "anythingllm-rag";
+  prompt: string;
+  mode?: "automatic" | "chat" | "query";
+  workspaceSlug?: string;
+};
+
+type AnythingLLMChatResponse = {
+  error?: string | null;
+  sources?: Array<{ title?: unknown }>;
+  textResponse?: unknown;
+  type?: unknown;
+};
+
 /**
  * Locally injected provider that exercises AIbitat's production agent loop
  * without contacting a configured AnythingLLM provider.
@@ -53,9 +67,13 @@ class ProjectAgentAdapter implements AgentAdapter {
     userInput: unknown,
     _runtime: AdapterRuntime,
   ): Promise<AgentTurnResult> {
+    if (isAnythingLLMLiveInput(userInput)) {
+      return runAnythingLLMLiveTurn(userInput);
+    }
+
     if (typeof userInput !== "string") {
       throw new TypeError(
-        "AnythingLLM workspace-agent simulator turns must be strings.",
+        "AnythingLLM simulator turns must be strings or anythingllm-rag inputs.",
       );
     }
 
@@ -97,6 +115,73 @@ class ProjectAgentAdapter implements AgentAdapter {
       metadata: { simulation_provider: "local" },
     });
   }
+}
+
+function isAnythingLLMLiveInput(value: unknown): value is AnythingLLMLiveInput {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const input = value as Record<string, unknown>;
+  return input.kind === "anythingllm-rag" && typeof input.prompt === "string";
+}
+
+async function runAnythingLLMLiveTurn(
+  input: AnythingLLMLiveInput,
+): Promise<AgentTurnResult> {
+  const apiKey = process.env.ANYTHINGLLM_API_KEY?.trim();
+  const workspaceSlug =
+    input.workspaceSlug ?? process.env.ANYTHINGLLM_WORKSPACE_SLUG?.trim();
+  const apiBase = (
+    process.env.ANYTHINGLLM_API_BASE ?? "http://127.0.0.1:3101/api"
+  ).replace(/\/$/, "");
+
+  if (!apiKey) {
+    throw new Error(
+      "ANYTHINGLLM_API_KEY is required for anythingllm-rag simulation turns.",
+    );
+  }
+  if (!workspaceSlug) {
+    throw new Error(
+      "ANYTHINGLLM_WORKSPACE_SLUG is required for anythingllm-rag simulation turns.",
+    );
+  }
+
+  const response = await fetch(
+    `${apiBase}/v1/workspace/${encodeURIComponent(workspaceSlug)}/chat`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        message: input.prompt,
+        mode: input.mode ?? "query",
+        reset: true,
+      }),
+    },
+  );
+  const body = (await response.json()) as AnythingLLMChatResponse;
+
+  if (!response.ok || body.error) {
+    throw new Error(
+      `AnythingLLM chat failed (${response.status}): ${body.error ?? "unknown error"}`,
+    );
+  }
+  if (typeof body.textResponse !== "string") {
+    throw new TypeError("AnythingLLM chat response did not contain textResponse.");
+  }
+
+  const sourceTitles = (body.sources ?? [])
+    .map((source) => source.title)
+    .filter((title): title is string => typeof title === "string");
+  return new AgentTurnResult({
+    assistantMessage: body.textResponse,
+    metadata: {
+      simulation_provider: "anythingllm-api",
+      response_type: typeof body.type === "string" ? body.type : "unknown",
+      source_count: sourceTitles.length,
+      source_titles: sourceTitles,
+    },
+  });
 }
 
 export function buildAgentAdapter(
