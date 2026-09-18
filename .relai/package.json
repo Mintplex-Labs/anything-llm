@@ -1,0 +1,11 @@
+{
+  "name": "relai-workspace",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@relai-ai/relai": "^0.1.9"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.13"
+  }
+}

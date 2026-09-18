@@ -1,0 +1,17 @@
+{
+  "schema_version": "relai.learning_env_context.v1",
+  "agent": {
+    "entrypoint": "server/utils/agents/aibitat/index.js:AIbitat",
+    "runner_summary": "The adapter runs the AIbitat session underlying AgentHandler with USER -> @agent and a local deterministic provider."
+  },
+  "components": [],
+  "log_notes": [
+    "AIbitat records messages in its chats array; the adapter returns the final @agent message.",
+    "Production AgentHandler resolves workspace, persistence, plugins, and provider configuration before creating AIbitat; those mutable boundaries are intentionally not part of the simulator turn."
+  ],
+  "learning_env_guidance": [
+    "Use a raw string fixed turn: the public adapter input is an AnythingLLM workspace-agent prompt.",
+    "No named agent target is available. The adapter uses a local provider and no tools, so smoke and learning environments need no provider credentials or mocks.",
+    "Workspace file context is application-managed. If a learning environment models file-backed prompts, embed the relevant contents into the prompt rather than passing a local path."
+  ]
+}

@@ -1,0 +1,4 @@
+.cache/
+*.log
+*.tmp
+smoke-output/
