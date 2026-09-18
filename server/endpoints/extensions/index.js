@@ -9,7 +9,6 @@ const {
   isSupportedRepoProvider,
 } = require("../../utils/middleware/isSupportedRepoProviders");
 const { handleLocalFolderFileUpload } = require("../../utils/files/multer");
-const fs = require("fs");
 const path = require("path");
 const { normalizePath } = require("../../utils/files");
 

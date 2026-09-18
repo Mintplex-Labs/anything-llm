@@ -44,7 +44,6 @@ const fileAPIUploadStorage = multer.diskStorage({
   },
 });
 
-
 const fileLocalFolderUploadStorage = multer.diskStorage({
   destination: function (_, file, cb) {
     const uploadOutput =
@@ -54,7 +53,8 @@ const fileLocalFolderUploadStorage = multer.diskStorage({
     cb(null, uploadOutput);
   },
   filename: function (request, file, cb) {
-    request.__localFolderUploadIndex = (request.__localFolderUploadIndex || 0) + 1;
+    request.__localFolderUploadIndex =
+      (request.__localFolderUploadIndex || 0) + 1;
     const safeName = sanitizeFileName(
       normalizePath(Buffer.from(file.originalname, "latin1").toString("utf8"))
     );
