@@ -1,17 +1,13 @@
 const createFilesLib = require("../lib.js");
+const { luminance } = require("./themes.js");
 
 // All positioning assumes LAYOUT_16x9: 10 × 5.625 in.
 const MARGIN_X = 0.6;
 const CONTENT_W = 8.8; // 10 - 2 × MARGIN_X
 const FOOTER_Y = 5.15;
 
-function isDarkColor(hexColor) {
-  const hex = (hexColor || "FFFFFF").replace("#", "");
-  const r = parseInt(hex.substr(0, 2), 16);
-  const g = parseInt(hex.substr(2, 2), 16);
-  const b = parseInt(hex.substr(4, 2), 16);
-  return (0.299 * r + 0.587 * g + 0.114 * b) / 255 < 0.6;
-}
+// Mid-tones read better with white text, so the cutoff sits above 0.5.
+const isDarkColor = (hex) => luminance(hex) < 0.6;
 
 /** Mixes `amount` (0-1) of `into` into `hex`. */
 function mix(hex, into, amount) {
@@ -130,7 +126,7 @@ function addTitle(slide, pptx, theme, { title, subtitle }) {
   }
   const x = style.cardFill && !style.band ? MARGIN_X + 0.22 : MARGIN_X;
   const titleW = CONTENT_W - (x - MARGIN_X);
-  slide.addText(title || "", {
+  slide.addText(title, {
     x,
     y: 0.38,
     w: titleW,
@@ -211,7 +207,7 @@ function addBullets(slide, theme, bullets, { x, y, w, h, max = 20 }) {
   const size = fitText(bullets, { w: w - 0.4, h, max, lineGap: 0.7 });
   slide.addText(
     bullets.map((text) => ({
-      text: String(text),
+      text,
       options: {
         fontSize: size,
         color: theme.text,
@@ -243,47 +239,46 @@ function gridCells(count, { x, y, w, h, gap = 0.25 }) {
 
 /**
  * Design knobs derived from `theme.style`. Every layout reads these instead
- * of branching on the style name, so a new style is one more case here.
+ * of branching on the style name, so a new style is one more entry here.
  *   geometric – dark canvases with translucent circles, filled cards
  *   minimal   – no shapes, thin rules, outlined cards, generous whitespace
- *   bold      – accent-colored canvases, left color band, dark filled cards
+ *   bold      – accent-colored canvases, full-width header band, dark cards
  */
-function styleOf(theme) {
-  switch (theme.style) {
-    case "minimal":
-      return {
-        canvas: theme.bg,
-        shapes: false,
-        band: false,
-        cardFill: null,
-        cardTitle: theme.text,
-        cardText: theme.muted,
-        marker: "number",
-      };
-    case "bold": {
-      const cardFill = isDarkColor(theme.bg) ? theme.surface : theme.dark;
-      return {
-        canvas: theme.accent,
-        shapes: false,
-        band: true,
-        cardFill,
-        cardTitle: isDarkColor(cardFill) ? theme.onDark : theme.text,
-        cardText: isDarkColor(cardFill) ? theme.onDarkMuted : theme.muted,
-        marker: "square",
-      };
-    }
-    default:
-      return {
-        canvas: theme.dark,
-        shapes: true,
-        band: false,
-        cardFill: theme.surface,
-        cardTitle: theme.text,
-        cardText: theme.muted,
-        marker: "circle",
-      };
-  }
-}
+const STYLES = {
+  geometric: (theme) => ({
+    canvas: theme.dark,
+    shapes: true,
+    band: false,
+    cardFill: theme.surface,
+    cardTitle: theme.text,
+    cardText: theme.muted,
+    marker: "circle",
+  }),
+  minimal: (theme) => ({
+    canvas: theme.bg,
+    shapes: false,
+    band: false,
+    cardFill: null,
+    cardTitle: theme.text,
+    cardText: theme.muted,
+    marker: "number",
+  }),
+  bold: (theme) => {
+    const cardFill = isDarkColor(theme.bg) ? theme.surface : theme.dark;
+    const darkCard = isDarkColor(cardFill);
+    return {
+      canvas: theme.accent,
+      shapes: false,
+      band: true,
+      cardFill,
+      cardTitle: darkCard ? theme.onDark : theme.text,
+      cardText: darkCard ? theme.onDarkMuted : theme.muted,
+      marker: "square",
+    };
+  },
+};
+
+const styleOf = (theme) => (STYLES[theme.style] ?? STYLES.geometric)(theme);
 
 /** Text colors that read on a given canvas color. */
 function onCanvas(theme, canvas) {
@@ -463,7 +458,7 @@ function renderTwoColumn(slide, pptx, data, theme, meta) {
   });
   items.forEach((item, i) => {
     const x = MARGIN_X + i * (colW + gap);
-    slide.addText(item.title || "", {
+    slide.addText(item.title, {
       x,
       y: y + 0.05,
       w: colW,
@@ -498,6 +493,7 @@ function renderStats(slide, pptx, data, theme, meta) {
     h:
       items.length > 3 ? FOOTER_Y - y - 0.6 : Math.min(2.6, FOOTER_Y - y - 0.6),
   });
+  const numberColor = styleOf(theme).band ? null : theme.accent;
   // Every number shares one size so the row reads as a set.
   const innerW = cells[0].w - 0.5;
   const numberSize = Math.min(
@@ -530,7 +526,7 @@ function renderStats(slide, pptx, data, theme, meta) {
       h: numberH,
       fontSize: numberSize,
       bold: true,
-      color: styleOf(theme).band ? ink.title : theme.accent,
+      color: numberColor ?? ink.title,
       fontFace: theme.fontTitle,
       valign: "middle",
     });
@@ -556,6 +552,7 @@ function renderCards(slide, pptx, data, theme, meta) {
   const y = addTitle(slide, pptx, theme, data);
   const items = data.items.slice(0, 6);
   const twoRows = items.length > 3;
+  const filled = !!styleOf(theme).cardFill;
   const cells = gridCells(items.length, {
     x: MARGIN_X,
     y: y + 0.2,
@@ -565,11 +562,12 @@ function renderCards(slide, pptx, data, theme, meta) {
   items.forEach((item, i) => {
     const c = cells[i];
     const ink = addCard(slide, pptx, theme, c, 0.06);
+    // Filled cards get a left accent stripe, outlined cards a top rule.
     addRect(slide, pptx, {
       x: c.x,
       y: c.y,
-      w: styleOf(theme).cardFill ? 0.07 : c.w,
-      h: styleOf(theme).cardFill ? c.h : 0.05,
+      w: filled ? 0.07 : c.w,
+      h: filled ? c.h : 0.05,
       color: theme.accent,
     });
     const innerW = c.w - 0.4;
@@ -770,7 +768,7 @@ function renderTable(slide, pptx, data, theme, meta) {
     { type: "none" },
   ];
   const cell = (text, options) => ({
-    text: String(text ?? ""),
+    text,
     options: {
       fontFace: theme.fontBody,
       valign: "middle",

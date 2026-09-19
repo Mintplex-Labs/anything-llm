@@ -1,6 +1,7 @@
+const pluralize = require("pluralize");
 const createFilesLib = require("../lib.js");
 const { safeJsonParse } = require("../../../../../http");
-const { THEMES, getTheme, getAvailableThemes } = require("./themes.js");
+const { THEMES, getTheme } = require("./themes.js");
 const { renderCover, renderSlide } = require("./layouts.js");
 const { pruneDividers } = require("./normalize.js");
 const { buildSection, searchWeb } = require("./section-agent.js");
@@ -8,6 +9,7 @@ const { buildSection, searchWeb } = require("./section-agent.js");
 const THEME_HELP = Object.entries(THEMES)
   .map(([id, t]) => `${id} (${t.description})`)
   .join("; ");
+const MAX_SECTIONS = 5;
 
 /**
  * Extracts recent conversation history from the parent AIbitat's chat log
@@ -47,7 +49,7 @@ module.exports.CreatePptxPresentation = {
             "Create a professional PowerPoint presentation (PPTX). " +
             "Provide a title, a theme you choose to fit the topic, and section outlines with key points. " +
             "The user does not need to specify a theme, layouts or slide count; pick them yourself. " +
-            "Use 3-5 sections; a typical deck is 10-16 slides. " +
+            `Use 3-${MAX_SECTIONS} sections; a typical deck is 10-16 slides. ` +
             "Each section is built separately; set research to true to run a web search first.",
           examples: [
             {
@@ -128,7 +130,7 @@ module.exports.CreatePptxPresentation = {
               },
               theme: {
                 type: "string",
-                enum: getAvailableThemes(),
+                enum: Object.keys(THEMES),
                 description:
                   "Color palette for the presentation. Choose the one that best fits the topic and audience: " +
                   THEME_HELP,
@@ -145,9 +147,8 @@ module.exports.CreatePptxPresentation = {
               },
               sections: {
                 type: "array",
-                description:
-                  "Section outlines for the presentation, 3-5 of them. Each section becomes a divider plus 2-3 content slides.",
-                maxItems: 5,
+                description: `Section outlines for the presentation, 3-${MAX_SECTIONS} of them. Each section becomes a divider plus 2-3 content slides.`,
+                maxItems: MAX_SECTIONS,
                 items: {
                   type: "object",
                   properties: {
@@ -206,14 +207,14 @@ module.exports.CreatePptxPresentation = {
               if (!Array.isArray(sections)) sections = [];
               sections = sections
                 .filter((s) => s && typeof s === "object" && s.title)
-                .slice(0, 5);
+                .slice(0, MAX_SECTIONS);
               research = research === true || research === "true";
 
               const theme = getTheme(themeName, accentColor);
               const totalSections = sections.length;
 
               this.super.introspect(
-                `${this.caller}: Planning presentation "${title}" — ${totalSections} section${totalSections !== 1 ? "s" : ""}, ${theme.name} theme`
+                `${this.caller}: Planning presentation "${title}" — ${pluralize("section", totalSections, true)}, ${theme.name} theme`
               );
 
               // Ask for approval BEFORE kicking off the section builds
@@ -276,17 +277,16 @@ module.exports.CreatePptxPresentation = {
                   sectionPrefix: `${i + 1}/${totalSections}`,
                 });
 
-                const slideCount = sectionResult.slides?.length || 0;
-                for (const slide of sectionResult.slides || [])
+                const slideCount = sectionResult.slides.length;
+                for (const slide of sectionResult.slides)
                   if (slide.layout !== "section")
                     layoutTally[slide.layout] =
                       (layoutTally[slide.layout] || 0) + 1;
-                allSlides.push(...(sectionResult.slides || []));
-                if (sectionResult.citations?.length > 0)
-                  allCitations.push(...sectionResult.citations);
+                allSlides.push(...sectionResult.slides);
+                allCitations.push(...sectionResult.citations);
 
                 this.super.introspect(
-                  `${this.caller}: [${i + 1}/${totalSections}] Section "${section.title}" complete — ${slideCount} slide${slideCount !== 1 ? "s" : ""}`
+                  `${this.caller}: [${i + 1}/${totalSections}] Section "${section.title}" complete — ${pluralize("slide", slideCount, true)}`
                 );
               }
 

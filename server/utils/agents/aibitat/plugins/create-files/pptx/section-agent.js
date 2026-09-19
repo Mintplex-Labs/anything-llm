@@ -130,12 +130,14 @@ async function searchWeb(parentAibitat, query) {
       citations: host._pendingCitations || [],
     };
   } catch (error) {
-    parentAibitat.handlerProps?.log?.(
+    logOf(parentAibitat)(
       `[SectionBuilder] Search failed for "${query}": ${error.message}`
     );
     return { notes: "", citations: [] };
   }
 }
+
+const logOf = (aibitat) => aibitat.handlerProps?.log || console.log;
 
 const HTML_ENTITIES = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'" };
 // Search snippets arrive HTML-escaped; every `&#x27;` costs several tokens.
@@ -189,7 +191,7 @@ async function buildSection({
   layoutTally = {},
   sectionPrefix = "",
 }) {
-  const log = parentAibitat.handlerProps?.log || console.log;
+  const log = logOf(parentAibitat);
   const agentName = sectionPrefix
     ? `[${sectionPrefix}] @section-builder`
     : "@section-builder";
@@ -259,6 +261,11 @@ async function buildSection({
   return { slides, citations, usage };
 }
 
+/**
+ * The user turn for one section: outline, optional research and the layouts
+ * earlier sections already used.
+ * @returns {string}
+ */
 function buildSectionPrompt({
   section,
   presentationTitle,

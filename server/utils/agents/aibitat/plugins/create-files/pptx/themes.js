@@ -175,10 +175,20 @@ function getTheme(themeName, accentColor) {
   if (!/^[0-9A-F]{6}$/.test(accent)) return theme;
   // An accent must read against both the dark canvas and the light slides,
   // so near-black and near-white overrides are ignored.
-  const [r, g, b] = [0, 2, 4].map((i) => parseInt(accent.substr(i, 2), 16));
-  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-  if (luminance < 0.2 || luminance > 0.85) return theme;
+  const lum = luminance(accent);
+  if (lum < 0.2 || lum > 0.85) return theme;
   return { ...theme, accent };
+}
+
+/**
+ * Perceived brightness of a hex color, 0 (black) to 1 (white).
+ * @param {string} hex - 6-digit hex, with or without `#`
+ * @returns {number}
+ */
+function luminance(hex) {
+  const clean = (hex || "FFFFFF").replace("#", "");
+  const [r, g, b] = [0, 2, 4].map((i) => parseInt(clean.substr(i, 2), 16));
+  return (0.299 * r + 0.587 * g + 0.114 * b) / 255;
 }
 
 /**
@@ -188,4 +198,4 @@ function getAvailableThemes() {
   return Object.keys(THEMES);
 }
 
-module.exports = { THEMES, getTheme, getAvailableThemes };
+module.exports = { THEMES, getTheme, getAvailableThemes, luminance };
