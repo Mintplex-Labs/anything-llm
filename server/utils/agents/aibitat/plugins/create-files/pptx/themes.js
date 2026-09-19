@@ -1,181 +1,201 @@
 /**
- * Curated presentation themes for pptxgenjs.
+ * Color palettes for generated presentations.
  *
- * Each theme is a complete design system: title-slide palette, content-slide
- * palette, table styling, footer colors, and typography.  The rendering code
- * in utils.js consumes these tokens to produce consistent, professional slides.
+ * A palette is only color + type. It knows nothing about slide layouts, and
+ * every layout in layouts.js renders with every palette, so the model picks
+ * the two independently and never writes styling itself.
  *
- * Themes: default · corporate · dark · minimal · creative
+ * `style` picks the design language in layouts.js (geometric, minimal, bold)
+ * so one theme choice sets both color and look.
+ *
+ * Token roles:
+ *   dark / onDark / onDarkMuted  – cover, section and quote slides (dark canvas)
+ *   bg / surface / text / muted  – content slides (cards and tables sit on `surface`)
+ *   accent / accent2             – highlights, numbers, chart series, decorative shapes
  */
 
 const THEMES = {
-  default: {
-    name: "Professional",
-    description: "Clean and versatile — works for any presentation",
-
-    titleSlideBackground: "1E293B",
-    titleSlideTitleColor: "FFFFFF",
-    titleSlideSubtitleColor: "94A3B8",
-    titleSlideAccentColor: "3B82F6",
-
-    background: "FFFFFF",
-    titleColor: "0F172A",
-    subtitleColor: "64748B",
-    bodyColor: "334155",
-    accentColor: "2563EB",
-    bulletColor: "2563EB",
-
-    tableHeaderBg: "1E293B",
-    tableHeaderColor: "FFFFFF",
-    tableAltRowBg: "F8FAFC",
-    tableBorderColor: "E2E8F0",
-
-    footerColor: "94A3B8",
-    footerLineColor: "E2E8F0",
-
+  midnight: {
+    name: "Midnight",
+    description:
+      "Navy and electric blue with soft geometric shapes. Safe default for any business deck.",
+    style: "geometric",
+    dark: "0F172A",
+    onDark: "F8FAFC",
+    onDarkMuted: "94A3B8",
+    bg: "FFFFFF",
+    surface: "F1F5F9",
+    text: "0F172A",
+    muted: "64748B",
+    accent: "2563EB",
+    accent2: "F59E0B",
     fontTitle: "Calibri",
     fontBody: "Calibri",
   },
 
   corporate: {
     name: "Corporate",
-    description: "Refined and authoritative — ideal for business and finance",
+    description:
+      "Deep navy with gold, minimal editorial look with serif titles. Finance, legal, board meetings.",
+    style: "minimal",
+    dark: "0C1929",
+    onDark: "FFFFFF",
+    onDarkMuted: "8FA3BC",
+    bg: "FFFFFF",
+    surface: "F4F6F9",
+    text: "0C1929",
+    muted: "5A6D82",
+    accent: "C9943E",
+    accent2: "1A5276",
+    fontTitle: "Georgia",
+    fontBody: "Calibri",
+  },
 
-    titleSlideBackground: "0C1929",
-    titleSlideTitleColor: "FFFFFF",
-    titleSlideSubtitleColor: "7B96B5",
-    titleSlideAccentColor: "C9943E",
-
-    background: "FFFFFF",
-    titleColor: "0C1929",
-    subtitleColor: "5A6D82",
-    bodyColor: "2C3E50",
-    accentColor: "1A5276",
-    bulletColor: "1A5276",
-
-    tableHeaderBg: "0C1929",
-    tableHeaderColor: "FFFFFF",
-    tableAltRowBg: "F4F7FA",
-    tableBorderColor: "D5DBE2",
-
-    footerColor: "8B9DB3",
-    footerLineColor: "D5DBE2",
-
+  forest: {
+    name: "Forest",
+    description:
+      "Deep green with warm gold and soft shapes. Sustainability, health, growth.",
+    style: "geometric",
+    dark: "0B2E1F",
+    onDark: "F0FDF4",
+    onDarkMuted: "86B99E",
+    bg: "FFFFFF",
+    surface: "F0F7F3",
+    text: "0B2E1F",
+    muted: "5B7267",
+    accent: "1F8A5B",
+    accent2: "D9A441",
     fontTitle: "Calibri",
     fontBody: "Calibri",
   },
 
-  dark: {
-    name: "Dark",
-    description: "Sleek dark theme — great for tech and product presentations",
-
-    titleSlideBackground: "0F0F1A",
-    titleSlideTitleColor: "F8FAFC",
-    titleSlideSubtitleColor: "7C8DB5",
-    titleSlideAccentColor: "818CF8",
-
-    background: "18181B",
-    titleColor: "F4F4F5",
-    subtitleColor: "A1A1AA",
-    bodyColor: "D4D4D8",
-    accentColor: "6366F1",
-    bulletColor: "818CF8",
-
-    tableHeaderBg: "6366F1",
-    tableHeaderColor: "FFFFFF",
-    tableAltRowBg: "1F1F24",
-    tableBorderColor: "3F3F46",
-
-    footerColor: "71717A",
-    footerLineColor: "3F3F46",
-
+  ember: {
+    name: "Ember",
+    description:
+      "Charcoal with orange, bold full-color slides and big type. Pitches and launches.",
+    style: "bold",
+    dark: "1C1917",
+    onDark: "FAFAF9",
+    onDarkMuted: "A8A29E",
+    bg: "FFFFFF",
+    surface: "F5F5F4",
+    text: "1C1917",
+    muted: "6B6560",
+    accent: "EA580C",
+    accent2: "F5B301",
     fontTitle: "Calibri",
     fontBody: "Calibri",
   },
 
-  minimal: {
-    name: "Minimal",
-    description: "Ultra-clean with maximum whitespace — lets content speak",
-
-    titleSlideBackground: "F5F5F5",
-    titleSlideTitleColor: "171717",
-    titleSlideSubtitleColor: "737373",
-    titleSlideAccentColor: "A3A3A3",
-
-    background: "FFFFFF",
-    titleColor: "171717",
-    subtitleColor: "737373",
-    bodyColor: "404040",
-    accentColor: "525252",
-    bulletColor: "A3A3A3",
-
-    tableHeaderBg: "262626",
-    tableHeaderColor: "FFFFFF",
-    tableAltRowBg: "FAFAFA",
-    tableBorderColor: "E5E5E5",
-
-    footerColor: "A3A3A3",
-    footerLineColor: "E5E5E5",
-
+  ocean: {
+    name: "Ocean",
+    description:
+      "Bright cyan and teal, bold full-color slides. Tech, SaaS, product updates.",
+    style: "bold",
+    dark: "0A2540",
+    onDark: "F8FAFC",
+    onDarkMuted: "8FB3D9",
+    bg: "FFFFFF",
+    surface: "EEF5FB",
+    text: "0A2540",
+    muted: "5A7590",
+    accent: "0284C7",
+    accent2: "14B8A6",
     fontTitle: "Calibri",
+    fontBody: "Calibri",
+  },
+
+  plum: {
+    name: "Plum",
+    description:
+      "Deep purple with violet and pink shapes. Creative and marketing.",
+    style: "geometric",
+    dark: "2E1065",
+    onDark: "FAF5FF",
+    onDarkMuted: "C4B5FD",
+    bg: "FFFFFF",
+    surface: "F5F0FF",
+    text: "2E1065",
+    muted: "6D5A8F",
+    accent: "7C3AED",
+    accent2: "EC4899",
+    fontTitle: "Calibri",
+    fontBody: "Calibri",
+  },
+
+  mono: {
+    name: "Mono",
+    description:
+      "Black, white and gray, minimal editorial with thin rules. Lets content speak.",
+    style: "minimal",
+    dark: "171717",
+    onDark: "FAFAFA",
+    onDarkMuted: "A3A3A3",
+    bg: "FFFFFF",
+    surface: "F5F5F5",
+    text: "171717",
+    muted: "737373",
+    accent: "525252",
+    accent2: "A3A3A3",
+    fontTitle: "Georgia",
     fontBody: "Calibri Light",
   },
 
-  creative: {
-    name: "Creative",
-    description: "Bold and expressive — perfect for pitches and creative work",
-
-    titleSlideBackground: "2E1065",
-    titleSlideTitleColor: "FFFFFF",
-    titleSlideSubtitleColor: "C4B5FD",
-    titleSlideAccentColor: "A78BFA",
-
-    background: "FFFFFF",
-    titleColor: "3B0764",
-    subtitleColor: "7C3AED",
-    bodyColor: "374151",
-    accentColor: "7C3AED",
-    bulletColor: "7C3AED",
-
-    tableHeaderBg: "5B21B6",
-    tableHeaderColor: "FFFFFF",
-    tableAltRowBg: "FAF5FF",
-    tableBorderColor: "E9D5FF",
-
-    footerColor: "A78BFA",
-    footerLineColor: "E9D5FF",
-
+  carbon: {
+    name: "Carbon",
+    description:
+      "Dark mode throughout with indigo shapes. Developer and AI topics.",
+    style: "geometric",
+    dark: "09090B",
+    onDark: "FAFAFA",
+    onDarkMuted: "A1A1AA",
+    bg: "18181B",
+    surface: "27272A",
+    text: "F4F4F5",
+    muted: "A1A1AA",
+    accent: "818CF8",
+    accent2: "34D399",
     fontTitle: "Calibri",
     fontBody: "Calibri",
   },
 };
 
 /**
- * Get a theme by name, falling back to default if not found.
+ * Get a palette by name, falling back to midnight if not found.
  * @param {string} themeName
- * @returns {object} Theme configuration
+ * @param {string} [accentColor] - Optional hex override for the accent color (e.g. brand color)
+ * @returns {object} Palette tokens
  */
-function getTheme(themeName) {
-  const key = (themeName || "default").toLowerCase().trim();
-  return THEMES[key] || THEMES.default;
+function getTheme(themeName, accentColor) {
+  const key = (themeName || "midnight").toLowerCase().trim();
+  const theme = THEMES[key] || THEMES.midnight;
+  const accent = String(accentColor || "")
+    .replace("#", "")
+    .toUpperCase();
+  if (!/^[0-9A-F]{6}$/.test(accent)) return theme;
+  // An accent must read against both the dark canvas and the light slides,
+  // so near-black and near-white overrides are ignored.
+  const lum = luminance(accent);
+  if (lum < 0.2 || lum > 0.85) return theme;
+  return { ...theme, accent };
 }
 
 /**
- * @returns {string[]} Available theme identifiers
+ * Perceived brightness of a hex color, 0 (black) to 1 (white).
+ * @param {string} hex - 6-digit hex, with or without `#`
+ * @returns {number}
+ */
+function luminance(hex) {
+  const clean = (hex || "FFFFFF").replace("#", "");
+  const [r, g, b] = [0, 2, 4].map((i) => parseInt(clean.substr(i, 2), 16));
+  return (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+}
+
+/**
+ * @returns {string[]} Available palette identifiers
  */
 function getAvailableThemes() {
   return Object.keys(THEMES);
 }
 
-/**
- * @returns {object[]} Array of { id, name, description } for documentation
- */
-function getThemeDescriptions() {
-  return Object.entries(THEMES).map(([id, t]) => ({
-    id,
-    name: t.name,
-    description: t.description,
-  }));
-}
-
-module.exports = { THEMES, getTheme, getAvailableThemes, getThemeDescriptions };
+module.exports = { THEMES, getTheme, getAvailableThemes, luminance };

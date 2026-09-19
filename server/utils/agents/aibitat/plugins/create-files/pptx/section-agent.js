@@ -1,142 +1,224 @@
 const AIbitat = require("../../../index.js");
+const { safeJsonParse } = require("../../../../../http");
+const { LAYOUTS, CHART_TYPES, normalizeSlides } = require("./normalize.js");
 
-const SECTION_BUILDER_PROMPT = `You are a focused presentation section builder. Your ONLY task is to create detailed slides for ONE section of a PowerPoint presentation.
+// Search results are injected into a single model call, so they are capped to
+// leave room for the prompt, the tool schema and the answer on small local
+// models with 4k context windows.
+const RESEARCH_CHAR_LIMIT = 2500;
+const RESEARCH_RESULT_LIMIT = 6;
 
-You have access to web search and web scraping tools, but only use them when the topic genuinely requires up-to-date information you don't already know (e.g., current statistics, recent events, specific company data). For general knowledge topics, create slides directly from your existing knowledge.
+const SECTION_BUILDER_PROMPT = `You write the slides for ONE section of a PowerPoint presentation. You must call the submit-section-slides tool exactly once with all slides for this section. Never reply with plain text or raw JSON.
 
 RULES:
-- Create 2-5 slides for this section (no more)
-- Each content slide should have 3-6 concise bullet points
-- Be specific and data-driven when possible
-- Include speaker notes with key talking points
-- Do NOT add a title slide - only section content
+- First slide is a "section" divider with the section title, then 2 content slides (3 only if the section truly needs it)
+- Vary the layouts. Never use "bullets" for every slide; pick the layout that fits the content
+- Keep text short: bullets under 12 words, card/step text one sentence
+- Be specific. Use numbers from the research notes when they exist; never invent statistics
+- Never write placeholders like "(insert %)" or "TBD"; if a figure is unknown, describe it in words instead
+- Tables: at most 6 rows and 4 columns, short cell text
+- Charts only for real numeric data with at least 3 differing values; never chart concepts or placeholder values
 
-When finished, you MUST call the submit-section-slides tool with your slides. Do not respond with raw JSON - always use the tool.
+Layouts and the fields each one uses:
+- "section": divider. title + subtitle
+- "bullets": title + bullets (3-6 short strings)
+- "two-column": compare or contrast. title + items (exactly 2, each with title + bullets)
+- "stats": real measured figures only (money, percentages, counts with a source), e.g. "42%" or "$1.2B". title + items (2-4, each title is the number, text is the label). Never use it for wordplay like "0", "1 app" or "∞"
+- "cards": parallel ideas. title + items (2-6, each with title + one-sentence text)
+- "steps": process or timeline. title + items (3-5, each with title + short text)
+- "chart": title + chart { type: bar|line|pie|doughnut|area, categories, values } + optional bullets
+- "table": title + table { headers, rows }
+- "quote": title is the quote text, subtitle is who said it`;
 
-Available slide layouts:
-- "section": Divider slide with title + optional subtitle
-- "content": Bullet points with title + content array + optional notes
-  - May include "table": { "headers": ["Col1", "Col2"], "rows": [["a", "b"]] }
-- "blank": Empty slide`;
+// Field meanings live in SECTION_BUILDER_PROMPT; the schema stays bare so it
+// costs as few tokens as possible on every section call.
+const SUBMIT_TOOL = {
+  name: "submit-section-slides",
+  description:
+    "Submit the finished slides for this section. Call this exactly once.",
+  parameters: {
+    $schema: "http://json-schema.org/draft-07/schema#",
+    type: "object",
+    properties: {
+      slides: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            layout: { type: "string", enum: LAYOUTS },
+            title: { type: "string" },
+            subtitle: { type: "string" },
+            bullets: { type: "array", items: { type: "string" } },
+            items: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  title: { type: "string" },
+                  text: { type: "string" },
+                  bullets: { type: "array", items: { type: "string" } },
+                },
+              },
+            },
+            chart: {
+              type: "object",
+              properties: {
+                type: { type: "string", enum: CHART_TYPES },
+                categories: { type: "array", items: { type: "string" } },
+                values: { type: "array", items: { type: "number" } },
+              },
+            },
+            table: {
+              type: "object",
+              properties: {
+                headers: { type: "array", items: { type: "string" } },
+                rows: {
+                  type: "array",
+                  items: { type: "array", items: { type: "string" } },
+                },
+              },
+            },
+            notes: { type: "string" },
+          },
+          required: ["layout", "title"],
+        },
+      },
+    },
+    required: ["slides"],
+  },
+};
 
 /**
- * Spawns a focused child AIbitat agent to build slides for a single presentation section.
- * The child reuses the parent's provider/model/socket so introspection events (tool calls,
- * research progress) flow to the frontend in real-time.
- *
- * @param {Object} options
- * @param {AIbitat} options.parentAibitat - The parent AIbitat instance (provides provider, socket, introspect)
- * @param {Object} options.section - Section definition { title, keyPoints?, instructions? }
- * @param {string} options.presentationTitle - Overall presentation title for context
- * @param {string} [options.conversationContext] - Recent conversation history for context
- * @param {string} [options.sectionPrefix] - Progress indicator like "1/5" for UI display
- * @returns {Promise<{slides: Object[], citations: Object[]}>} Parsed section slides and accumulated citations
+ * Creates a child AIbitat that shares the parent's provider, log and
+ * introspection stream but never echoes model text to the chat UI.
  */
-async function runSectionAgent({
-  parentAibitat,
-  section,
-  presentationTitle,
-  conversationContext = "",
-  sectionPrefix = "",
-}) {
-  const log = parentAibitat.handlerProps?.log || console.log;
-
-  const childAibitat = new AIbitat({
+function childOf(parentAibitat) {
+  const child = new AIbitat({
     provider: parentAibitat.defaultProvider.provider,
     model: parentAibitat.defaultProvider.model,
     chats: [],
     handlerProps: parentAibitat.handlerProps,
-    maxToolCalls: 5,
+    maxToolCalls: 1,
   });
-
-  // Share introspect so tool activity (web-search status, etc.) streams to the frontend
-  childAibitat.introspect = parentAibitat.introspect;
-
-  // Filtered socket: pass through introspection but suppress reportStreamEvent
-  // so sub-agent chatter doesn't render in the UI as a chat message.
-  childAibitat.socket = {
+  child.introspect = parentAibitat.introspect;
+  child.socket = {
     send: (type, content) => {
       if (type === "reportStreamEvent") return;
       parentAibitat.socket?.send(type, content);
     },
   };
+  return child;
+}
 
-  // Only load the research tools this sub-agent needs
+/**
+ * Runs one web search through the web-browsing skill without any model call
+ * and returns compacted notes plus the citations the search produced.
+ * @param {AIbitat} parentAibitat
+ * @param {string} query
+ * @returns {Promise<{notes: string, citations: object[]}>}
+ */
+async function searchWeb(parentAibitat, query) {
+  const host = childOf(parentAibitat);
   const { webBrowsing } = require("../../web-browsing.js");
-  const { webScraping } = require("../../web-scraping.js");
-  childAibitat.use(webBrowsing.plugin());
-  childAibitat.use(webScraping.plugin());
+  host.use(webBrowsing.plugin());
+  const search = host.functions.get("web-browsing");
+  search.caller = "@section-builder";
+  try {
+    const result = await search.handler({ query });
+    return {
+      notes: compactResults(result),
+      citations: host._pendingCitations || [],
+    };
+  } catch (error) {
+    logOf(parentAibitat)(
+      `[SectionBuilder] Search failed for "${query}": ${error.message}`
+    );
+    return { notes: "", citations: [] };
+  }
+}
 
-  // Internal tool for structured slide submission - not exposed as a public plugin
-  childAibitat.function({
-    super: childAibitat,
-    name: "submit-section-slides",
-    description:
-      "Submit the completed slides for this presentation section. Call this tool when you have finished creating all slides.",
-    parameters: {
-      $schema: "http://json-schema.org/draft-07/schema#",
-      type: "object",
-      properties: {
-        slides: {
-          type: "array",
-          description: "Array of slide objects for this section",
-          items: {
-            type: "object",
-            properties: {
-              layout: {
-                type: "string",
-                enum: ["section", "content", "blank"],
-                description: "The slide layout type",
-              },
-              title: {
-                type: "string",
-                description: "The slide title",
-              },
-              subtitle: {
-                type: "string",
-                description: "Optional subtitle (for section layout)",
-              },
-              content: {
-                type: "array",
-                items: { type: "string" },
-                description: "Bullet points (for content layout)",
-              },
-              notes: {
-                type: "string",
-                description: "Speaker notes for this slide",
-              },
-              table: {
-                type: "object",
-                description: "Optional table data",
-                properties: {
-                  headers: {
-                    type: "array",
-                    items: { type: "string" },
-                  },
-                  rows: {
-                    type: "array",
-                    items: {
-                      type: "array",
-                      items: { type: "string" },
-                    },
-                  },
-                },
-              },
-            },
-            required: ["layout", "title"],
-          },
-        },
-      },
-      required: ["slides"],
-      additionalProperties: false,
-    },
+const logOf = (aibitat) => aibitat.handlerProps?.log || console.log;
+
+const HTML_ENTITIES = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'" };
+// Search snippets arrive HTML-escaped; every `&#x27;` costs several tokens.
+const decodeEntities = (text) =>
+  String(text).replace(/&(#x([0-9a-f]+)|#(\d+)|[a-z]+);/gi, (m, _, hex, dec) =>
+    hex
+      ? String.fromCodePoint(parseInt(hex, 16))
+      : dec
+        ? String.fromCodePoint(+dec)
+        : HTML_ENTITIES[m.slice(1, -1).toLowerCase()] ?? m
+  );
+
+/**
+ * Reduces the search skill's JSON result to one snippet line per result.
+ * Links and titles are dropped: links already reach the user as citations and
+ * titles mostly repeat the snippet, so both are tokens the model never needs.
+ */
+function compactResults(result) {
+  const parsed = safeJsonParse(String(result || ""), null);
+  const lines = Array.isArray(parsed)
+    ? parsed
+        .slice(0, RESEARCH_RESULT_LIMIT)
+        .map((r) => `- ${decodeEntities(r.snippet || r.description || "")}`)
+    : [String(result || "")];
+  return lines.join("\n").replace(/\s+/g, " ").slice(0, RESEARCH_CHAR_LIMIT);
+}
+
+/**
+ * Builds the slides for one presentation section with at most one web search
+ * and exactly one model call, so cost is fixed and small local models only
+ * ever have to fill in the slide schema.
+ *
+ * @param {Object} options
+ * @param {AIbitat} options.parentAibitat - Parent agent (provides provider, socket, introspect)
+ * @param {{title: string, keyPoints?: string[], instructions?: string}} options.section
+ * @param {string} options.presentationTitle
+ * @param {boolean} [options.research] - Run one web search for the section first
+ * @param {string} [options.notes] - Research notes already gathered for the whole deck; used instead of searching
+ * @param {Object<string, number>} [options.layoutTally] - Layouts used by earlier sections, so this one can vary
+ * @param {string} [options.conversationContext] - Recent chat history for context
+ * @param {string} [options.sectionPrefix] - Progress label like "1/5" for the UI
+ * @returns {Promise<{slides: object[], citations: object[], usage: {prompt_tokens: number, completion_tokens: number}}>}
+ */
+async function buildSection({
+  parentAibitat,
+  section,
+  presentationTitle,
+  research = false,
+  notes: deckNotes = "",
+  conversationContext = "",
+  layoutTally = {},
+  sectionPrefix = "",
+}) {
+  const log = logOf(parentAibitat);
+  const agentName = sectionPrefix
+    ? `[${sectionPrefix}] @section-builder`
+    : "@section-builder";
+
+  let notes = deckNotes;
+  let citations = [];
+  // A section with its own instructions asks for facts the deck-level search
+  // will not have, so it gets one search of its own.
+  if (research && (!deckNotes || section.instructions)) {
+    const found = await searchWeb(
+      parentAibitat,
+      `${section.title} ${presentationTitle}`.slice(0, 100)
+    );
+    notes = found.notes;
+    citations = found.citations;
+  }
+
+  const child = childOf(parentAibitat);
+  child.function({
+    ...SUBMIT_TOOL,
     handler: function ({ slides }) {
-      this.super._submittedSlides = slides;
-      return "Slides submitted successfully. Section complete.";
+      child._submittedSlides = slides;
+      child.skipHandleExecution = true;
+      return "Slides submitted.";
     },
   });
-
-  const functions = Array.from(childAibitat.functions.values());
+  const functions = Array.from(child.functions.values());
   const messages = [
     { role: "system", content: SECTION_BUILDER_PROMPT },
     {
@@ -145,113 +227,99 @@ async function runSectionAgent({
         section,
         presentationTitle,
         conversationContext,
+        notes,
+        layoutTally,
       }),
     },
   ];
 
-  const provider = childAibitat.getProviderForConfig(
-    childAibitat.defaultProvider
-  );
-  provider.attachHandlerProps(childAibitat.handlerProps);
+  const provider = child.getProviderForConfig(child.defaultProvider);
+  provider.attachHandlerProps(child.handlerProps);
+  child.providerInstance = provider;
 
-  log(
-    `[SectionAgent] Running sub-agent for section: "${section.title}" with ${functions.length} tools`
-  );
-
-  let agentName = `@section-builder`;
-  if (sectionPrefix) agentName = `[${sectionPrefix}] ${agentName}`;
+  let text = "";
   try {
-    if (provider.supportsAgentStreaming) {
-      await childAibitat.handleAsyncExecution(
-        provider,
-        messages,
-        functions,
-        agentName
-      );
-    } else {
-      await childAibitat.handleExecution(
-        provider,
-        messages,
-        functions,
-        agentName
-      );
-    }
+    text = provider.supportsAgentStreaming
+      ? await child.handleAsyncExecution(messages, functions, agentName)
+      : await child.handleExecution(messages, functions, agentName);
   } catch (error) {
-    log(`[SectionAgent] Error in section "${section.title}": ${error.message}`);
-    return { ...buildFallbackSlides(section), citations: [] };
+    log(`[SectionBuilder] "${section.title}" failed: ${error.message}`);
   }
 
-  // Collect any citations the child accumulated (from web-search, web-scrape, etc.)
-  const citations = childAibitat._pendingCitations || [];
-
-  // Retrieve slides from the tool call (structured data, no parsing needed)
-  const slides = childAibitat._submittedSlides;
-  if (!Array.isArray(slides) || slides.length === 0) {
-    log(
-      `[SectionAgent] No slides submitted for "${section.title}", using fallback`
-    );
-    return { ...buildFallbackSlides(section), citations };
-  }
-
-  log(
-    `[SectionAgent] Section "${section.title}" produced ${slides.length} slides, ${citations.length} citations`
+  const usage = provider.getCumulativeUsage();
+  const slides = normalizeSlides(
+    child._submittedSlides ?? slidesFromText(text),
+    section.title
   );
-  return { slides, citations };
+  if (slides.length === 0) {
+    log(`[SectionBuilder] No slides for "${section.title}", using fallback`);
+    return { ...buildFallbackSlides(section), citations, usage };
+  }
+  log(
+    `[SectionBuilder] "${section.title}" produced ${slides.length} slides, ${citations.length} citations, ${usage.prompt_tokens + usage.completion_tokens} tokens`
+  );
+  return { slides, citations, usage };
 }
 
+/**
+ * The user turn for one section: outline, optional research and the layouts
+ * earlier sections already used.
+ * @returns {string}
+ */
 function buildSectionPrompt({
   section,
   presentationTitle,
   conversationContext,
+  notes,
+  layoutTally,
 }) {
   const parts = [
-    `Build slides for this section of the presentation "${presentationTitle}":`,
-    `\nSection Title: ${section.title}`,
+    `Presentation: "${presentationTitle}"`,
+    `Section: ${section.title}`,
   ];
-
-  if (section.keyPoints?.length > 0) {
+  if (section.keyPoints?.length > 0)
     parts.push(
-      `\nKey Points to Cover:\n${section.keyPoints.map((p) => `- ${p}`).join("\n")}`
+      `Key points to cover:\n${section.keyPoints.map((p) => `- ${p}`).join("\n")}`
     );
-  }
-
-  if (section.instructions) {
-    parts.push(`\nSpecial Instructions: ${section.instructions}`);
-  }
-
-  if (conversationContext) {
-    parts.push(`\nContext from the conversation:\n${conversationContext}`);
-  }
-
-  parts.push(
-    `\nCreate 2-5 detailed slides and submit them using the submit-section-slides tool. Only use web search/scraping if you genuinely lack the information needed.`
-  );
-
-  return parts.join("\n");
+  if (section.instructions) parts.push(`Instructions: ${section.instructions}`);
+  if (notes) parts.push(`Research:\n${notes}`);
+  if (conversationContext)
+    parts.push(`Conversation context:\n${conversationContext}`);
+  const used = Object.entries(layoutTally)
+    .sort((a, b) => b[1] - a[1])
+    .map(([layout, count]) => `${layout} x${count}`);
+  if (used.length)
+    parts.push(
+      `Layouts already used by earlier sections: ${used.join(", ")}. Prefer layouts not on this list.`
+    );
+  parts.push("Call submit-section-slides now with the slides.");
+  return parts.join("\n\n");
 }
 
 /**
- * Generates basic slides from the section definition when the sub-agent fails.
+ * Small models sometimes answer with the tool arguments as text instead of a
+ * tool call. Recover the JSON object from that text when possible.
  */
-function buildFallbackSlides(section) {
-  const slides = [
-    {
-      layout: "section",
-      title: section.title,
-      subtitle: section.subtitle || "",
-    },
-  ];
-
-  if (section.keyPoints?.length > 0) {
-    slides.push({
-      layout: "content",
-      title: section.title,
-      content: section.keyPoints,
-      notes: `Key points for ${section.title}`,
-    });
-  }
-
-  return { slides };
+function slidesFromText(text) {
+  if (typeof text !== "string") return null;
+  const start = text.indexOf("{");
+  if (start === -1) return null;
+  return safeJsonParse(text.slice(start, text.lastIndexOf("}") + 1), null);
 }
 
-module.exports = { runSectionAgent };
+/**
+ * Generates basic slides from the section definition when the model fails.
+ */
+function buildFallbackSlides(section) {
+  return {
+    slides: normalizeSlides(
+      [
+        { layout: "section", title: section.title },
+        { layout: "bullets", title: section.title, bullets: section.keyPoints },
+      ],
+      section.title
+    ),
+  };
+}
+
+module.exports = { buildSection, searchWeb };

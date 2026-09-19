@@ -1,16 +1,19 @@
+const pluralize = require("pluralize");
 const createFilesLib = require("../lib.js");
-const { getTheme, getAvailableThemes } = require("./themes.js");
-const {
-  renderTitleSlide,
-  renderSectionSlide,
-  renderContentSlide,
-  renderBlankSlide,
-} = require("./utils.js");
-const { runSectionAgent } = require("./section-agent.js");
+const { safeJsonParse } = require("../../../../../http");
+const { THEMES, getTheme } = require("./themes.js");
+const { renderCover, renderSlide } = require("./layouts.js");
+const { pruneDividers } = require("./normalize.js");
+const { buildSection, searchWeb } = require("./section-agent.js");
+
+const THEME_HELP = Object.entries(THEMES)
+  .map(([id, t]) => `${id} (${t.description})`)
+  .join("; ");
+const MAX_SECTIONS = 5;
 
 /**
  * Extracts recent conversation history from the parent AIbitat's chat log
- * to provide context to each section sub-agent.
+ * to provide context to each section builder.
  * @param {Array} chats - The parent AIbitat's _chats array
  * @param {number} [maxMessages=10] - Maximum messages to include
  * @returns {string} Formatted conversation context
@@ -44,9 +47,10 @@ module.exports.CreatePptxPresentation = {
           name: this.name,
           description:
             "Create a professional PowerPoint presentation (PPTX). " +
-            "Provide a title, theme, and section outlines with key points. " +
-            "Each section is independently researched and built by a focused sub-agent " +
-            "that can use web search and web scraping to gather data.",
+            "Provide a title, a theme you choose to fit the topic, and section outlines with key points. " +
+            "The user does not need to specify a theme, layouts or slide count; pick them yourself. " +
+            `Use 3-${MAX_SECTIONS} sections; a typical deck is 10-16 slides. ` +
+            "Each section is built separately; set research to true to run a web search first.",
           examples: [
             {
               prompt: "Create a presentation about project updates",
@@ -77,11 +81,11 @@ module.exports.CreatePptxPresentation = {
               }),
             },
             {
-              prompt: "Create a dark themed presentation about AI trends",
+              prompt: "Make a powerpoint about AI trends",
               call: JSON.stringify({
                 filename: "ai-trends.pptx",
                 title: "AI Trends 2025",
-                theme: "dark",
+                theme: "carbon",
                 sections: [
                   {
                     title: "Large Language Models",
@@ -114,6 +118,11 @@ module.exports.CreatePptxPresentation = {
                 description:
                   "The title of the presentation (shown on title slide).",
               },
+              subtitle: {
+                type: "string",
+                description:
+                  "Optional subtitle for the title slide (e.g. date, event, tagline).",
+              },
               author: {
                 type: "string",
                 description:
@@ -121,15 +130,25 @@ module.exports.CreatePptxPresentation = {
               },
               theme: {
                 type: "string",
-                enum: getAvailableThemes(),
+                enum: Object.keys(THEMES),
                 description:
-                  "Color theme for the presentation. Options: " +
-                  getAvailableThemes().join(", "),
+                  "Color palette for the presentation. Choose the one that best fits the topic and audience: " +
+                  THEME_HELP,
+              },
+              accentColor: {
+                type: "string",
+                description:
+                  "Optional 6-digit hex color (e.g. 'ED1C24') to use as the accent color instead of the palette default. Use for brand colors when the user asks.",
+              },
+              research: {
+                type: "boolean",
+                description:
+                  "Search the web before writing. Only set true when the user explicitly asks to research or look something up. Otherwise false.",
               },
               sections: {
                 type: "array",
-                description:
-                  "Section outlines for the presentation. Each section is independently researched and built by a focused sub-agent.",
+                description: `Section outlines for the presentation, 3-${MAX_SECTIONS} of them. Each section becomes a divider plus 2-3 content slides.`,
+                maxItems: MAX_SECTIONS,
                 items: {
                   type: "object",
                   properties: {
@@ -141,7 +160,7 @@ module.exports.CreatePptxPresentation = {
                       type: "array",
                       items: { type: "string" },
                       description:
-                        "Key points this section should cover. The sub-agent will expand these into detailed slides.",
+                        "Key points this section should cover. They are expanded into detailed slides.",
                     },
                     instructions: {
                       type: "string",
@@ -153,15 +172,18 @@ module.exports.CreatePptxPresentation = {
                 },
               },
             },
-            required: ["filename", "title", "sections"],
+            required: ["filename", "title", "theme", "sections"],
             additionalProperties: false,
           },
 
           handler: async function ({
             filename = "presentation.pptx",
             title = "Untitled Presentation",
+            subtitle = "",
             author = "",
-            theme: themeName = "default",
+            theme: themeName = "midnight",
+            accentColor = "",
+            research = false,
             sections = [],
           }) {
             try {
@@ -172,19 +194,30 @@ module.exports.CreatePptxPresentation = {
               // Strip XML 1.0 illegal control characters so PowerPoint can open
               // the generated deck (slide content is sanitized after assembly).
               title = createFilesLib.stripInvalidXmlChars(title);
+              subtitle = createFilesLib.stripInvalidXmlChars(subtitle);
               author = createFilesLib.stripInvalidXmlChars(author);
 
               if (!filename.toLowerCase().endsWith(".pptx"))
                 filename += ".pptx";
 
-              const theme = getTheme(themeName);
+              // Small models sometimes pass the array as a JSON string and
+              // booleans as strings.
+              if (typeof sections === "string")
+                sections = safeJsonParse(sections, []);
+              if (!Array.isArray(sections)) sections = [];
+              sections = sections
+                .filter((s) => s && typeof s === "object" && s.title)
+                .slice(0, MAX_SECTIONS);
+              research = research === true || research === "true";
+
+              const theme = getTheme(themeName, accentColor);
               const totalSections = sections.length;
 
               this.super.introspect(
-                `${this.caller}: Planning presentation "${title}" — ${totalSections} section${totalSections !== 1 ? "s" : ""}, ${theme.name} theme`
+                `${this.caller}: Planning presentation "${title}" — ${pluralize("section", totalSections, true)}, ${theme.name} theme`
               );
 
-              // Ask for approval BEFORE kicking off the expensive sub-agent work
+              // Ask for approval BEFORE kicking off the section builds
               if (this.super.requestToolApproval) {
                 const approval = await this.super.requestToolApproval({
                   skillName: this.name,
@@ -208,36 +241,56 @@ module.exports.CreatePptxPresentation = {
                 this.super._chats
               );
 
-              // Run a focused sub-agent for each section sequentially.
+              // One search on the deck topic feeds every section; sections with
+              // their own instructions search again for their specific facts.
+              let deckNotes = "";
+              const deckCitations = [];
+              if (research) {
+                const found = await searchWeb(
+                  this.super,
+                  `${title} ${subtitle}`.trim().slice(0, 100)
+                );
+                deckNotes = found.notes;
+                deckCitations.push(...found.citations);
+              }
+
+              // Build each section sequentially.
               // Sequential execution is intentional — local models typically serve
               // one request at a time, and it keeps introspection events ordered.
               const allSlides = [];
-              const allCitations = [];
+              const allCitations = [...deckCitations];
+              const layoutTally = {};
               for (let i = 0; i < sections.length; i++) {
                 const section = sections[i];
                 this.super.introspect(
                   `${this.caller}: [${i + 1}/${totalSections}] Building section "${section.title}"…`
                 );
 
-                const sectionResult = await runSectionAgent({
+                const sectionResult = await buildSection({
                   parentAibitat: this.super,
                   section,
                   presentationTitle: title,
+                  research,
+                  notes: deckNotes,
                   conversationContext,
+                  layoutTally,
                   sectionPrefix: `${i + 1}/${totalSections}`,
                 });
 
-                const slideCount = sectionResult.slides?.length || 0;
-                allSlides.push(...(sectionResult.slides || []));
-                if (sectionResult.citations?.length > 0)
-                  allCitations.push(...sectionResult.citations);
+                const slideCount = sectionResult.slides.length;
+                for (const slide of sectionResult.slides)
+                  if (slide.layout !== "section")
+                    layoutTally[slide.layout] =
+                      (layoutTally[slide.layout] || 0) + 1;
+                allSlides.push(...sectionResult.slides);
+                allCitations.push(...sectionResult.citations);
 
                 this.super.introspect(
-                  `${this.caller}: [${i + 1}/${totalSections}] Section "${section.title}" complete — ${slideCount} slide${slideCount !== 1 ? "s" : ""}`
+                  `${this.caller}: [${i + 1}/${totalSections}] Section "${section.title}" complete — ${pluralize("slide", slideCount, true)}`
                 );
               }
 
-              // Roll up all citations from sub-agents to the parent so they
+              // Roll up all citations from section research to the parent so they
               // appear as sources on the final assistant message.
               if (allCitations.length > 0) this.super.addCitation(allCitations);
 
@@ -253,56 +306,32 @@ module.exports.CreatePptxPresentation = {
               if (author) pptx.author = author;
               pptx.company = "AnythingLLM";
 
-              const totalSlideCount = allSlides.length;
-
-              // Sub-agent output can carry XML 1.0 illegal control characters
+              // Section builder output can carry XML 1.0 illegal control characters
               // (e.g. a form feed from a LaTeX `\frac`); strip them recursively
               // from every slide so PowerPoint can open the generated deck.
-              const cleanSlides =
-                createFilesLib.stripInvalidXmlChars(allSlides);
+              const cleanSlides = pruneDividers(
+                createFilesLib.stripInvalidXmlChars(allSlides)
+              );
+              const totalSlideCount = cleanSlides.length;
 
               // Title slide
-              const titleSlide = pptx.addSlide();
-              renderTitleSlide(titleSlide, pptx, { title, author }, theme);
+              renderCover(
+                pptx.addSlide(),
+                pptx,
+                { title, subtitle, author },
+                theme
+              );
 
-              // Render every slide produced by the section agents
+              // Render every slide produced by the section builders
+              let sectionIndex = 0;
               cleanSlides.forEach((slideData, index) => {
-                const slide = pptx.addSlide();
-                const slideNumber = index + 1;
-                const layout = slideData.layout || "content";
-
-                switch (layout) {
-                  case "title":
-                  case "section":
-                    renderSectionSlide(
-                      slide,
-                      pptx,
-                      slideData,
-                      theme,
-                      slideNumber,
-                      totalSlideCount
-                    );
-                    break;
-                  case "blank":
-                    renderBlankSlide(
-                      slide,
-                      pptx,
-                      theme,
-                      slideNumber,
-                      totalSlideCount
-                    );
-                    break;
-                  default:
-                    renderContentSlide(
-                      slide,
-                      pptx,
-                      slideData,
-                      theme,
-                      slideNumber,
-                      totalSlideCount
-                    );
-                    break;
-                }
+                if (slideData.layout === "section") sectionIndex++;
+                renderSlide(pptx, slideData, theme, {
+                  n: index + 1,
+                  total: totalSlideCount,
+                  sectionIndex,
+                  firstInSection: cleanSlides[index - 1]?.layout === "section",
+                });
               });
 
               const buffer = await pptx.write({ outputType: "nodebuffer" });
