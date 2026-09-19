@@ -12,6 +12,7 @@ import ConnectorOption from "./ConnectorOption";
 import WebsiteDepthOptions from "./Connectors/WebsiteDepth";
 import ObsidianOptions from "./Connectors/Obsidian";
 import PaperlessNgxOptions from "./Connectors/PaperlessNgx";
+import TwelveLabsOptions from "./Connectors/TwelveLabs";
 
 export const getDataConnectors = (t) => ({
   github: {
@@ -67,6 +68,12 @@ export const getDataConnectors = (t) => ({
     image: ConnectorImages.paperlessNgx,
     description: "Import documents from your Paperless-ngx instance.",
     options: <PaperlessNgxOptions />,
+  },
+  twelvelabs: {
+    name: t("connectors.twelvelabs.name"),
+    image: ConnectorImages.twelvelabs,
+    description: t("connectors.twelvelabs.description"),
+    options: <TwelveLabsOptions />,
   },
 });
 

@@ -43,6 +43,7 @@
     "strip-ansi": "^7.1.2",
     "tesseract.js": "^6.0.0",
     "turndown": "7.2.4",
+    "twelvelabs-js": "1.2.8",
     "url-pattern": "^1.0.3",
     "uuid": "^9.0.0",
     "wavefile": "^11.0.0",
