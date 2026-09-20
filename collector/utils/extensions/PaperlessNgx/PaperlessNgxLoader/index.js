@@ -3,7 +3,11 @@ const pdf = require("pdf-parse");
 
 class PaperlessNgxLoader {
   constructor({ baseUrl, apiToken }) {
-    this.baseUrl = new URL(baseUrl).origin;
+    // Trust the caller's baseUrl as-is so self-hosted deployments configured
+    // behind a context path (e.g. `https://docs.example.com/paperless`) keep
+    // the path when we append `/api/documents/`. The entry helper strips the
+    // trailing slash and is responsible for any further normalisation.
+    this.baseUrl = baseUrl;
     this.apiToken = apiToken;
     this.baseHeaders = {
       Authorization: `Token ${this.apiToken}`,

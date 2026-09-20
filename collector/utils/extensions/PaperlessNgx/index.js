@@ -33,10 +33,11 @@ async function loadPaperlessNgx({ baseUrl = null, apiToken = null }, response) {
     };
   }
 
-  const { origin, hostname } = new URL(baseUrl);
-  console.log(`-- Working Paperless-ngx ${origin} --`);
+  const resolvedBaseUrl = resolvePaperlessNgxBaseUrl(baseUrl);
+  const { hostname } = new URL(resolvedBaseUrl);
+  console.log(`-- Working Paperless-ngx ${resolvedBaseUrl} --`);
   const loader = new PaperlessNgxLoader({
-    baseUrl: origin,
+    baseUrl: resolvedBaseUrl,
     apiToken,
   });
 
@@ -72,10 +73,10 @@ async function loadPaperlessNgx({ baseUrl = null, apiToken = null }, response) {
       url: doc.metadata.url,
       title: doc.metadata.title,
       docAuthor: doc.metadata.correspondent || "Unknown",
-      description: `A document from the Paperless-ngx instance at ${origin}`,
+      description: `A document from the Paperless-ngx instance at ${resolvedBaseUrl}`,
       docSource: `paperless-ngx`,
       chunkSource: generateChunkSource(
-        { doc, baseUrl: origin, apiToken },
+        { doc, baseUrl: resolvedBaseUrl, apiToken },
         response.locals.encryptionWorker
       ),
       published: doc.metadata.created,
@@ -123,6 +124,24 @@ function generateChunkSource({ doc, baseUrl, apiToken }, encryptionWorker) {
   )}`;
 }
 
+/**
+ * Resolves the Paperless-ngx base URL, preserving any configured context path
+ * (e.g. `https://docs.example.com/paperless`) for self-hosted reverse-proxy
+ * deployments. Mirrors the helper used by the Confluence connector (#5415).
+ *
+ * Trailing slashes on the context path are trimmed so callers can append
+ * `/api/documents/` without producing `//api/documents/`.
+ *
+ * @param {string} baseUrl
+ * @returns {string}
+ */
+function resolvePaperlessNgxBaseUrl(baseUrl) {
+  const url = new URL(baseUrl);
+  const contextPath = url.pathname.replace(/\/+$/, "");
+  return `${url.origin}${contextPath}`;
+}
+
 module.exports = {
   loadPaperlessNgx,
+  resolvePaperlessNgxBaseUrl,
 };
