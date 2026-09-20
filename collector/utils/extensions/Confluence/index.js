@@ -109,6 +109,7 @@ async function loadConfluence(
           spaceKey,
           accessToken,
           username,
+          personalAccessToken,
           cloud,
           bypassSSL,
         },
@@ -154,10 +155,16 @@ async function fetchConfluencePage({
   spaceKey,
   username,
   accessToken,
+  personalAccessToken = null,
   cloud = true,
   bypassSSL = false,
 }) {
-  if (!pageUrl || !baseUrl || !spaceKey || !username || !accessToken) {
+  if (
+    !pageUrl ||
+    !baseUrl ||
+    !spaceKey ||
+    (!personalAccessToken && (!username || !accessToken))
+  ) {
     return {
       success: false,
       content: null,
@@ -190,6 +197,7 @@ async function fetchConfluencePage({
     username,
     accessToken,
     cloud,
+    personalAccessToken,
     bypassSSL,
   });
 
@@ -269,16 +277,28 @@ function resolveConfluenceBaseUrl(baseUrl, cloud = true) {
  * @returns {string}
  */
 function generateChunkSource(
-  { doc, baseUrl, spaceKey, accessToken, username, cloud, bypassSSL },
+  {
+    doc,
+    baseUrl,
+    spaceKey,
+    accessToken,
+    username,
+    personalAccessToken,
+    cloud,
+    bypassSSL,
+  },
   encryptionWorker
 ) {
+  // Store only the credential in use. An unset key would expand to the string
+  // "null" and be replayed as a real credential.
   const payload = {
     baseUrl,
     spaceKey,
-    token: accessToken,
-    username,
     cloud,
     bypassSSL,
+    ...(personalAccessToken
+      ? { personalAccessToken }
+      : { token: accessToken, username }),
   };
   return `confluence://${doc.metadata.url}?payload=${encryptionWorker.encrypt(
     JSON.stringify(payload)
@@ -289,4 +309,5 @@ module.exports = {
   loadConfluence,
   fetchConfluencePage,
   resolveConfluenceBaseUrl,
+  generateChunkSource,
 };

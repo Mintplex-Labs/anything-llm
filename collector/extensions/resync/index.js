@@ -86,6 +86,7 @@ async function resyncConfluence({ chunkSource }, response) {
       spaceKey: source.searchParams.get("spaceKey"),
       accessToken: source.searchParams.get("token"),
       username: source.searchParams.get("username"),
+      personalAccessToken: source.searchParams.get("personalAccessToken"),
       cloud: source.searchParams.get("cloud") === "true",
       bypassSSL: source.searchParams.get("bypassSSL") === "true",
     });
