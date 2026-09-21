@@ -141,8 +141,8 @@ async function resyncGithub({ chunkSource }, response) {
 }
 
 /**
- * Fetches the content of a specific GitLab file via its chunkSource.
- * Returns the content as a text string of the file in question and only that file.
+ * Fetches the content of a specific GitLab file, issue or wiki page via its chunkSource.
+ * Returns the content as a text string of the document in question and only that document.
  * @param {object} data - metadata from document (eg: chunkSource)
  * @param {import("../../middleware/setDataSigner").ResponseWithSigner} response
  */
@@ -152,18 +152,39 @@ async function resyncGitlab({ chunkSource }, response) {
     const source = response.locals.encryptionWorker.expandPayload(chunkSource);
     const {
       fetchGitlabFile,
+      fetchGitlabIssue,
+      fetchGitlabWiki,
     } = require("../../utils/extensions/RepoLoader/GitlabRepo");
-    const { success, reason, content } = await fetchGitlabFile({
+    const repoArgs = {
       repoUrl: `${source.searchParams.get("scheme") || "https"}:${
         source.pathname
       }`,
       branch: source.searchParams.get("branch"),
       accessToken: source.searchParams.get("pat"),
-      sourceFilePath: source.searchParams.get("path"),
-    });
+    };
+    // Missing kind uses the file path for compatibility with legacy file documents.
+    // Legacy issue and wiki payloads remain unsupported until the document is
+    // re-imported and watched again.
+    const kind = source.searchParams.get("kind");
+    let result;
+    if (kind === "issue")
+      result = await fetchGitlabIssue({
+        ...repoArgs,
+        issueId: source.searchParams.get("ref"),
+      });
+    else if (kind === "wiki")
+      result = await fetchGitlabWiki({
+        ...repoArgs,
+        slug: source.searchParams.get("ref"),
+      });
+    else
+      result = await fetchGitlabFile({
+        ...repoArgs,
+        sourceFilePath: source.searchParams.get("path"),
+      });
+    const { success, reason, content } = result;
 
-    if (!success)
-      throw new Error(`Failed to sync GitLab file content. ${reason}`);
+    if (!success) throw new Error(`Failed to sync GitLab content. ${reason}`);
     response.status(200).json({ success, content });
   } catch (e) {
     console.error(e);
