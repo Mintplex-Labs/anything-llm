@@ -29,12 +29,15 @@ AI agents are most capable in a Linux shell, but most people truthfully dont fee
 ## Use Case Demos
 
 <video src="https://github.com/user-attachments/assets/cd5363d9-1daf-4867-8d97-d7fd903ad1b5"></video>
+
 <p align="center"><em>Open Computer building a data visualization from an uploaded CSV file | LM Studio Gemma 4 12B QAT on MacBook Pro M4 Pro for inference</em></p>
 
 <video src="https://github.com/user-attachments/assets/cf8444d8-15f9-489d-8800-fb25a1769804"></video>
+
 <p align="center"><em>Open Computer building a data visualization from web research | OpenRouter Qwen 3.6 35B A3B</em></p>
 
 <video src="https://github.com/user-attachments/assets/79334c87-c5ae-4c2c-8384-d7ef922e4184"></video>
+
 <p align="center"><em>Open Computer doing deep research and analysis on a topic | LM Studio Gemma 4 12B QAT on MacBook Pro M4 Pro</em></p>
 
 The above demos are just a few of the many use cases that Open Computer can be used for - all while the human can see and interact with the agent in real time.
@@ -78,7 +81,7 @@ The Open Computer OS is built on top of [Debian 13.5.0 (Trixie)](https://www.deb
 
 3. **Memory Manager**: The [memory manager](./services/memory-manager/server.js) is built on the [pi-hermes-memory](https://pi.dev/packages/pi-hermes-memory) package, extended with a full UI so you can inspect, edit, and manage the agent's memory at any time.
 
-4. **XFCE Desktop**: The desktop environment is XFCE — lightweight, customizable, and ["riced"](https://jie-fang.github.io/blog/basics-of-ricing) to resemble Windows 10 (forked from [Fake10](https://store.kde.org/p/2332691)). Familiar enough for anyone to navigate.
+4. **XFCE Desktop**: The desktop environment is XFCE — lightweight, customizable, and ["riced"](https://jie-fang.github.io/blog/basics-of-ricing) to resemble Windows 10 (forked from [Fake10](https://github.com/honu1234/fake10)). Familiar enough for anyone to navigate.
 
 5. **Chromium Browser**: Chromium, pre-configured for agent use. Fast, scriptable, and deeply integrated with the interface service.
 
