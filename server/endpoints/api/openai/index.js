@@ -116,7 +116,7 @@ function apiOpenAICompatibleEndpoints(app) {
         if (!workspace) return response.status(401).end();
 
         const userMessage = messages.pop();
-        if (userMessage.role !== "user") {
+        if (userMessage?.role !== "user") {
           return response.status(400).json({
             id: uuidv4(),
             type: "abort",
