@@ -20,11 +20,40 @@ function conclude() {
   else process.exit(0);
 }
 
+/**
+ * Checks that `inner` is a path strictly inside the `outer` directory.
+ * @param {string} outer
+ * @param {string} inner
+ * @returns {boolean}
+ */
+function isWithin(outer, inner) {
+  const rel = path.relative(path.resolve(outer), path.resolve(inner));
+  if (rel === "") return false;
+  return (
+    !rel.startsWith(`..${path.sep}`) && rel !== ".." && !path.isAbsolute(rel)
+  );
+}
+
+/**
+ * Overwrites a document's cached JSON in the documents folder.
+ * Refuses to write anywhere outside the documents folder.
+ * @param {string|null} docPath - relative docpath of the document
+ * @param {object} jsonContent - full document JSON to persist
+ * @returns {boolean} whether the file was written
+ */
 function updateSourceDocument(docPath = null, jsonContent = {}) {
+  if (!docPath) return false;
   const destinationFilePath = path.resolve(documentsPath, docPath);
+  if (!isWithin(documentsPath, destinationFilePath)) {
+    log(
+      `Refusing to write document outside of the documents folder: ${docPath}`
+    );
+    return false;
+  }
   fs.writeFileSync(destinationFilePath, JSON.stringify(jsonContent, null, 4), {
     encoding: "utf-8",
   });
+  return true;
 }
 
 /**
