@@ -129,7 +129,9 @@ function apiOpenAICompatibleEndpoints(app) {
         }
 
         const systemPrompt =
-          messages.find((chat) => chat.role === "system")?.content ?? null;
+          extractTextContent(
+            messages.find((chat) => chat.role === "system")?.content
+          ) ?? null;
         const history = messages.filter((chat) => chat.role !== "system") ?? [];
 
         if (!stream) {
