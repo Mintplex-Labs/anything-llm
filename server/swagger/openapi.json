@@ -3406,6 +3406,9 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Not Found"
           }
         },
         "requestBody": {
