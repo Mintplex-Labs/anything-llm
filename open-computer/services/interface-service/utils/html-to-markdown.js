@@ -343,10 +343,6 @@ function htmlToMarkdown(html, baseUrl) {
       return textMatch ? textMatch[1] : "";
     });
 
-    markdown = markdown.replace(/\[[\d]+\]/g, "");
-    markdown = markdown.replace(/\[#cite[^\]]*\]/g, "");
-    markdown = markdown.replace(/\[edit\]/gi, "");
-
     markdown = markdown.replace(/\n{4,}/g, "\n\n\n").trim();
     return markdown;
   } catch (error) {
@@ -427,6 +423,7 @@ function stripCitations(root) {
     "#References",
     ".catlinks",
     ".mw-authority-control",
+    ".mw-editsection",
   ]) {
     root.querySelectorAll(sel).forEach((el) => el.remove());
   }
