@@ -272,6 +272,35 @@ class GitLabRepoLoader {
   }
 
   /**
+   * Fetches every discussion note on a single issue.
+   * @param {number|string} issueId - The iid of the issue.
+   * @returns {Promise<string[][]>} The notes of each discussion.
+   */
+  async #fetchIssueDiscussions(issueId) {
+    const discussionsRequestData = {
+      endpoint: `/api/v4/projects/${this.projectId}/issues/${issueId}/discussions`,
+    };
+    let discussionPage = null;
+    const discussions = [];
+
+    while (
+      (discussionPage = await this.fetchNextPage(discussionsRequestData))
+    ) {
+      if (!Array.isArray(discussionPage) || !discussionPage?.length) break;
+      discussions.push(
+        ...discussionPage.map(({ notes }) =>
+          notes.map(
+            ({ body, author, created_at }) =>
+              `${author.username} at ${created_at}:
+${body}`
+          )
+        )
+      );
+    }
+    return discussions;
+  }
+
+  /**
    * Fetches all issues from the repository.
    * @returns {Promise<Issue[]>} An array of issue objects.
    */
@@ -287,29 +316,9 @@ class GitLabRepoLoader {
       if (!Array.isArray(issuesPage) || !issuesPage?.length) break;
       // Fetch all the issues in parallel.
       pagePromises = issuesPage.map(async (issue) => {
-        const discussionsRequestData = {
-          endpoint: `/api/v4/projects/${this.projectId}/issues/${issue.iid}/discussions`,
-        };
-        let discussionPage = null;
-        const discussions = [];
-
-        while (
-          (discussionPage = await this.fetchNextPage(discussionsRequestData))
-        ) {
-          if (!Array.isArray(discussionPage) || !discussionPage?.length) break;
-          discussions.push(
-            ...discussionPage.map(({ notes }) =>
-              notes.map(
-                ({ body, author, created_at }) =>
-                  `${author.username} at ${created_at}:
-${body}`
-              )
-            )
-          );
-        }
         const result = {
           ...issue,
-          discussions,
+          discussions: await this.#fetchIssueDiscussions(issue.iid),
         };
         return result;
       });
@@ -321,6 +330,33 @@ ${body}`
     }
     console.log(`Total issues fetched: ${issues.length}`);
     return issues;
+  }
+
+  /**
+   * Fetches a single issue and its discussions.
+   * @param {number|string} issueId - The iid of the issue.
+   * @returns {Promise<Issue|null>} The issue object, or null if fetching fails.
+   */
+  async fetchSingleIssue(issueId) {
+    try {
+      const url = `${this.apiBase}/api/v4/projects/${this.projectId}/issues/${issueId}`;
+      const response = await fetch(url, {
+        method: "GET",
+        headers: this.accessToken ? { "PRIVATE-TOKEN": this.accessToken } : {},
+      });
+
+      if (!response.ok)
+        throw new Error(`Failed to fetch single issue ${issueId}`);
+
+      const issue = await response.json();
+      return {
+        ...issue,
+        discussions: await this.#fetchIssueDiscussions(issueId),
+      };
+    } catch (e) {
+      console.error(`RepoLoader.fetchSingleIssue`, e);
+      return null;
+    }
   }
 
   /**
