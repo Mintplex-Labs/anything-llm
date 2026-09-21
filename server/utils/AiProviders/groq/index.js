@@ -85,7 +85,6 @@ class GroqLLM {
    * Last Updated: September 20, 2026
    * According to https://console.groq.com/docs/vision
    * the vision models supported all make a mess of prompting depending on the model.
-   * The llama3.2 vision previews this list originally carried were shut down by Groq on April 14, 2025 (https://console.groq.com/docs/deprecations). The list now holds the model the vision page documents.
    *
    * Since we can only explicitly support the current models, this is a temporary solution.
    * If the attachments are empty or the model is not a vision model, we will return the default prompt structure which will work for all models.
