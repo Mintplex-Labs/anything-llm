@@ -106,6 +106,13 @@ class TogetherAiLLM {
 
     this.embedder = !embedder ? new NativeEmbedder() : embedder;
     this.defaultTemp = 0.7;
+    this.log(
+      `Initialized with model: ${this.model} (context window: ${this.promptWindowLimit()})`
+    );
+  }
+
+  log(text, ...args) {
+    console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {
