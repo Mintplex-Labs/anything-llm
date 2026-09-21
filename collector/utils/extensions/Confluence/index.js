@@ -309,5 +309,4 @@ module.exports = {
   loadConfluence,
   fetchConfluencePage,
   resolveConfluenceBaseUrl,
-  generateChunkSource,
 };
