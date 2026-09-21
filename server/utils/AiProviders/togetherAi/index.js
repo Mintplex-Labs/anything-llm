@@ -16,6 +16,15 @@ const cacheFolder = path.resolve(
     : path.resolve(__dirname, `../../../storage/models/togetherAi`)
 );
 
+function cachedTogetherAiModels() {
+  const cacheModelPath = path.resolve(cacheFolder, "models.json");
+  if (!fs.existsSync(cacheModelPath)) return [];
+  return safeJsonParse(
+    fs.readFileSync(cacheModelPath, { encoding: "utf-8" }),
+    []
+  );
+}
+
 async function togetherAiModels(apiKey = null) {
   const cacheModelPath = path.resolve(cacheFolder, "models.json");
   const cacheAtPath = path.resolve(cacheFolder, ".cached_at");
@@ -140,14 +149,14 @@ class TogetherAiLLM {
     return "streamGetChatCompletion" in this;
   }
 
-  static async promptWindowLimit(modelName) {
-    const models = await togetherAiModels();
+  static promptWindowLimit(modelName) {
+    const models = cachedTogetherAiModels();
     const model = models.find((m) => m.id === modelName);
     return model?.maxLength || 4096;
   }
 
-  async promptWindowLimit() {
-    const models = await togetherAiModels();
+  promptWindowLimit() {
+    const models = cachedTogetherAiModels();
     const model = models.find((m) => m.id === this.model);
     return model?.maxLength || 4096;
   }
