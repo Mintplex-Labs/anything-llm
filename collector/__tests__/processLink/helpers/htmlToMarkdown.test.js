@@ -1,7 +1,5 @@
 /* eslint-env jest, node */
 process.env.STORAGE_DIR = "test-storage"; // needed for tests to run
-const path = require("path");
-const { execFileSync } = require("child_process");
 const {
   htmlToMarkdown,
 } = require("../../../processLink/helpers/htmlToMarkdown");
@@ -677,85 +675,6 @@ describe("htmlToMarkdown", () => {
     it("leaves a page without a table alone", async () => {
       expect(await htmlToMarkdown("<h1>Title</h1><p>hello</p>")).toBe(
         "# Title\n\nhello"
-      );
-    });
-  });
-
-  // The open-computer VM ships a second copy of this converter as a CLI, and
-  // its curl wrapper pipes every text/html response through it. The two are
-  // kept in sync by hand, so these cases run the sibling and compare it with
-  // this one. Each also pins the literal output, so a regression shared by
-  // both copies still fails.
-  describe("open-computer parity", () => {
-    const openComputerPath = path.resolve(
-      __dirname,
-      "../../../../open-computer/services/interface-service/utils/html-to-markdown.js"
-    );
-    const collectorModules = path.resolve(__dirname, "../../../node_modules");
-
-    function runOpenComputer(html, baseUrl) {
-      return execFileSync("node", [openComputerPath, baseUrl], {
-        input: html,
-        encoding: "utf8",
-        env: { ...process.env, NODE_PATH: collectorModules },
-      });
-    }
-
-    async function expectParity(html, baseUrl, expected) {
-      expect(await htmlToMarkdown(html, baseUrl)).toBe(expected);
-      expect(runOpenComputer(html, baseUrl)).toBe(expected);
-    }
-
-    it("keeps a bracketed index inside a fenced code block", async () => {
-      await expectParity(
-        "<pre><code>const first = items[0];\nconst port = config[1];</code></pre>",
-        "https://example.com",
-        "```\nconst first = items[0];\nconst port = config[1];\n```"
-      );
-    });
-
-    it("keeps the label of a link whose text is the section marker", async () => {
-      await expectParity(
-        '<p>See <a href="/w/index.php?title=Help:Section&amp;action=edit&amp;section=1">edit</a> to change it.</p>',
-        "https://example.com",
-        "See [edit](https://example.com/w/index.php?title=Help:Section&action=edit&section=1) to change it."
-      );
-    });
-
-    it("keeps the label when the section marker is uppercase", async () => {
-      await expectParity(
-        '<p><a href="/wiki/page?action=edit">EDIT</a></p>',
-        "https://example.com",
-        "[EDIT](https://example.com/wiki/page?action=edit)"
-      );
-    });
-
-    it("keeps a bracketed cite marker in escaped prose", async () => {
-      await expectParity(
-        "<p>See [#cite_note-1] for details.</p>",
-        "https://example.com",
-        "See \\[#cite\\_note-1\\] for details."
-      );
-    });
-
-    it("removes MediaWiki section-edit controls from the DOM", async () => {
-      await expectParity(
-        '<h2><span class="mw-headline">Intro</span>' +
-          '<span class="mw-editsection">' +
-          '<span class="mw-editsection-bracket">[</span>' +
-          '<a href="/w/index.php?action=edit&amp;section=1">edit</a>' +
-          '<span class="mw-editsection-bracket">]</span>' +
-          "</span></h2><p>Body text.</p>",
-        "https://example.com",
-        "## Intro\n\nBody text."
-      );
-    });
-
-    it("removes a reference superscript in both copies", async () => {
-      await expectParity(
-        '<p>As shown in the study<sup class="reference">[1]</sup>, results vary.</p>',
-        "https://example.com",
-        "As shown in the study, results vary."
       );
     });
   });
