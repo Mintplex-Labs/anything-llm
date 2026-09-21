@@ -96,7 +96,13 @@ class LocalAiImageGenerator extends BaseImageGenerator {
     if (image?.b64_json) {
       result = { buffer: Buffer.from(image.b64_json, "base64") };
     } else if (image?.url) {
-      const imgRes = await fetch(image.url, { signal: signal ?? null });
+      const imageFetchHeaders = {};
+      if (this.client.apiKey)
+        imageFetchHeaders.Authorization = `Bearer ${this.client.apiKey}`;
+      const imgRes = await fetch(image.url, {
+        headers: imageFetchHeaders,
+        signal: signal ?? null,
+      });
       if (!imgRes.ok)
         throw new Error(`Failed to fetch generated image: ${imgRes.status}`);
       result = { buffer: Buffer.from(await imgRes.arrayBuffer()) };
