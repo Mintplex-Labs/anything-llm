@@ -583,7 +583,7 @@ function apiWorkspaceThreadEndpoints(app) {
         } = reqBody(request);
         const workspace = await Workspace.get({ slug: String(slug) });
         if (!workspace) {
-          response.status(404).json({
+          return response.status(404).json({
             id: uuidv4(),
             type: "abort",
             textResponse: null,
@@ -591,7 +591,6 @@ function apiWorkspaceThreadEndpoints(app) {
             close: true,
             error: `Workspace ${slug} not found.`,
           });
-          return;
         }
 
         const thread = await WorkspaceThread.get({
@@ -599,7 +598,7 @@ function apiWorkspaceThreadEndpoints(app) {
           workspace_id: workspace.id,
         });
         if (!thread) {
-          response.status(404).json({
+          return response.status(404).json({
             id: uuidv4(),
             type: "abort",
             textResponse: null,
@@ -607,7 +606,6 @@ function apiWorkspaceThreadEndpoints(app) {
             close: true,
             error: `Thread ${threadSlug} not found.`,
           });
-          return;
         }
 
         const resolvedMode = mode ?? workspace.chatMode;
@@ -615,7 +613,7 @@ function apiWorkspaceThreadEndpoints(app) {
           (!message?.length || !VALID_CHAT_MODE.includes(resolvedMode)) &&
           !reset
         ) {
-          response.status(400).json({
+          return response.status(400).json({
             id: uuidv4(),
             type: "abort",
             textResponse: null,
@@ -625,7 +623,6 @@ function apiWorkspaceThreadEndpoints(app) {
               ? "Message is empty"
               : `${resolvedMode} is not a valid mode.`,
           });
-          return;
         }
 
         const user = userId ? await User.get({ id: Number(userId) }) : null;
