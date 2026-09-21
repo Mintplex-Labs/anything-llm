@@ -14,6 +14,15 @@ const cacheFolder = path.resolve(
     : path.resolve(__dirname, `../../../storage/models/ppio`)
 );
 
+function cachedPPIOModels() {
+  const cacheModelPath = path.resolve(cacheFolder, "models.json");
+  if (!fs.existsSync(cacheModelPath)) return {};
+  return safeJsonParse(
+    fs.readFileSync(cacheModelPath, { encoding: "utf-8" }),
+    {}
+  );
+}
+
 class PPIOLLM {
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.PPIO_API_KEY) throw new Error("No PPIO API key was set.");
@@ -84,21 +93,21 @@ class PPIOLLM {
   }
 
   models() {
-    if (!fs.existsSync(this.cacheModelPath)) return {};
-    return safeJsonParse(
-      fs.readFileSync(this.cacheModelPath, { encoding: "utf-8" }),
-      {}
-    );
+    return cachedPPIOModels();
   }
 
   streamingEnabled() {
     return "streamGetChatCompletion" in this;
   }
 
-  promptWindowLimit() {
-    const model = this.models()[this.model];
+  static promptWindowLimit(modelName) {
+    const model = cachedPPIOModels()[modelName];
     if (!model) return 4096; // Default to 4096 if we cannot find the model
     return model?.maxLength || 4096;
+  }
+
+  promptWindowLimit() {
+    return PPIOLLM.promptWindowLimit(this.model);
   }
 
   async isValidChatCompletionModel(model = "") {
