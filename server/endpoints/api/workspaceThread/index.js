@@ -582,19 +582,30 @@ function apiWorkspaceThreadEndpoints(app) {
           reset = false,
         } = reqBody(request);
         const workspace = await Workspace.get({ slug: String(slug) });
-        const thread = await WorkspaceThread.get({
-          slug: String(threadSlug),
-          workspace_id: workspace.id,
-        });
-
-        if (!workspace || !thread) {
-          response.status(400).json({
+        if (!workspace) {
+          response.status(404).json({
             id: uuidv4(),
             type: "abort",
             textResponse: null,
             sources: [],
             close: true,
-            error: `Workspace ${slug} or thread ${threadSlug} is not valid.`,
+            error: `Workspace ${slug} not found.`,
+          });
+          return;
+        }
+
+        const thread = await WorkspaceThread.get({
+          slug: String(threadSlug),
+          workspace_id: workspace.id,
+        });
+        if (!thread) {
+          response.status(404).json({
+            id: uuidv4(),
+            type: "abort",
+            textResponse: null,
+            sources: [],
+            close: true,
+            error: `Thread ${threadSlug} not found.`,
           });
           return;
         }
