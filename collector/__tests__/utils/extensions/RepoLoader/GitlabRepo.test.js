@@ -227,6 +227,59 @@ describe("GitLabRepoLoader url parsing", () => {
     expect(loader.ready).toBe(false);
     expect(fetchMock).not.toHaveBeenCalled();
   });
+
+  test.each([
+    ["https://gitlab.com/owner/proj.git", "owner%2Fproj"],
+    ["https://gitlab.com/owner/proj.git/", "owner%2Fproj"],
+    ["https://gitlab.com/owner/proj/", "owner%2Fproj"],
+    ["https://gitlab.com/owner/proj/-/tree/main", "owner%2Fproj"],
+    ["https://gitlab.com/owner/proj/-/blob/main/src/a.js", "owner%2Fproj"],
+    ["https://gitlab.com/owner/proj?ref_type=heads", "owner%2Fproj"],
+    ["https://gitlab.com/owner/proj#readme", "owner%2Fproj"],
+    ["https://gitlab.com/group/sub/proj", "group%2Fsub%2Fproj"],
+    ["https://gitlab.com/group/sub/proj/-/tree/main", "group%2Fsub%2Fproj"],
+    [
+      "https://gitlab.com/gitlab-org/gitlab-foss/-/tree/master",
+      "gitlab-org%2Fgitlab-foss",
+    ],
+    ["http://gitlab.example.com:8080/acme/widgets", "acme%2Fwidgets"],
+    [
+      "http://gitlab.example.com:8080/acme/widgets/-/tree/main",
+      "acme%2Fwidgets",
+    ],
+  ])("%s asks the api for project %s", async (repo, projectId) => {
+    const fetchMock = mockGitlabApi();
+    const loader = new GitLabRepoLoader({ repo });
+    await loader.init();
+
+    expect(loader.ready).toBe(true);
+    expect(loader.projectId).toBe(projectId);
+    const branchRequest = requestedUrls(fetchMock).find((url) =>
+      url.includes("/repository/branches")
+    );
+    expect(branchRequest).toContain(`/projects/${projectId}/`);
+  });
+
+  test("a group page carries no project and leaves the loader un-ready", async () => {
+    const fetchMock = mockGitlabApi();
+    const loader = new GitLabRepoLoader({
+      repo: "https://gitlab.com/mygroup/-/issues",
+    });
+    await loader.init();
+
+    expect(loader.ready).toBe(false);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  test("a clone url leaves the repository url the documents are stored under clean", async () => {
+    mockGitlabApi();
+    const loader = new GitLabRepoLoader({
+      repo: "https://gitlab.com/owner/proj.git",
+    });
+    await loader.init();
+
+    expect(loader.repo).toBe("https://gitlab.com/owner/proj");
+  });
 });
 
 describe("GitLabRepoLoader request urls", () => {

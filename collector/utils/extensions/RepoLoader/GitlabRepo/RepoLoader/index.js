@@ -68,10 +68,25 @@ class GitLabRepoLoader {
     if (!match?.groups) return false;
 
     const { author, project } = match.groups;
-    this.projectId = encodeURIComponent(`${author}/${project}`);
-    this.apiBase = new URL(this.repo).origin;
+    // GitLab puts the reserved `/-/` segment between a project path and its views (eg: `/-/tree/main`)
+    // and forbids a project path that ends in `.git`, so the repository is everything before either.
+    // A trailing slash is not part of the path. Sub-groups (`group/sub/project`) are preserved.
+    const segments = project.replace(/[?#].*$/, "").split("/");
+    const separator = segments.indexOf("-");
+    const projectPath = (
+      separator === -1 ? segments : segments.slice(0, separator)
+    )
+      .filter(Boolean)
+      .join("/")
+      .replace(/\.git$/, "");
+    if (!projectPath) return false;
+
+    const { origin } = new URL(this.repo);
+    this.repo = `${origin}/${author}/${projectPath}`;
+    this.projectId = encodeURIComponent(`${author}/${projectPath}`);
+    this.apiBase = origin;
     this.author = author;
-    this.project = project;
+    this.project = projectPath;
     return true;
   }
 
