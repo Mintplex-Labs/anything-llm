@@ -15,6 +15,7 @@ import BraveSearchIcon from "./icons/brave.png";
 import CrwSearchIcon from "./icons/crw.png";
 import YouSearchIcon from "./icons/you.png";
 import KeenableSearchIcon from "./icons/keenable.png";
+import AnySearchSearchIcon from "./icons/anysearch.png";
 import {
   CaretUpDown,
   MagnifyingGlass,
@@ -41,6 +42,7 @@ import {
   CrwSearchOptions,
   YouSearchOptions,
   KeenableSearchOptions,
+  AnySearchOptions,
 } from "./SearchProviderOptions";
 
 const SEARCH_PROVIDERS = [
@@ -157,6 +159,14 @@ const SEARCH_PROVIDERS = [
     logo: KeenableSearchIcon,
     options: (settings) => <KeenableSearchOptions settings={settings} />,
     description: "Web search built for AI agents. No API key required.",
+  },
+  {
+    name: "AnySearch",
+    value: "anysearch-search",
+    logo: AnySearchSearchIcon,
+    options: (settings) => <AnySearchOptions settings={settings} />,
+    description:
+      "Real-time web search for AI agents. Requires a free API key.",
   },
 ];
 

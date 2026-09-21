@@ -114,6 +114,9 @@ const webBrowsing = {
               case "keenable-search":
                 engine = "_keenableSearch";
                 break;
+              case "anysearch-search":
+                engine = "_anySearchSearch";
+                break;
               default:
                 // No provider configured - use You.com's keyless free tier,
                 // which falls back to DuckDuckGo on any failure.
@@ -1442,6 +1445,7 @@ const webBrowsing = {
             return result;
           },
 
+
           /**
            * You.com Search — keyless free tier by default, optional API key for higher limits.
            * Keyless: GET https://api.you.com/v1/agents/search
@@ -1566,6 +1570,89 @@ const webBrowsing = {
             );
             return result;
           },
+          /**
+           * AnySearch — https://anysearch.com
+           * POST https://api.anysearch.com/v1/search
+           * Requires AGENT_ANYSEARCH_API_KEY (free key from
+           * https://anysearch.com/console/api-keys). Envelope responses use
+           * `{code, message, data}` where a non-zero `code` is an API error.
+           * @param {string} query
+           * @returns {Promise<string>}
+           */
+          _anySearchSearch: async function (query) {
+            const apiKey = (process.env.AGENT_ANYSEARCH_API_KEY || "").trim();
+            if (!apiKey)
+              return `AnySearch API key is missing. Get a free key at https://anysearch.com/console/api-keys and set AGENT_ANYSEARCH_API_KEY.`;
+
+            this.super.introspect(
+              `${this.caller}: Using AnySearch to search for "${
+                query.length > 100 ? `${query.slice(0, 100)}...` : query
+              }"`
+            );
+
+            const headers = {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${apiKey}`,
+            };
+
+            const { response, error } = await fetch(
+              "https://api.anysearch.com/v1/search",
+              {
+                method: "POST",
+                headers,
+                body: JSON.stringify({ query: String(query), max_results: 10 }),
+              }
+            )
+              .then(async (res) => {
+                if (res.ok) return res.json();
+                // AnySearch returns a JSON envelope with an actionable
+                // message on errors (e.g. 401 {"code": -1, "message":
+                // "Invalid API key."}); surface it when present.
+                let message = `${res.status} - ${res.statusText}`;
+                try {
+                  const body = await res.json();
+                  if (body?.message) message = body.message;
+                } catch {}
+                throw new Error(message);
+              })
+              .then((data) => {
+                if (data?.code !== 0)
+                  throw new Error(data?.message || `API error code ${data?.code}`);
+                return { response: data, error: null };
+              })
+              .catch((e) => {
+                this.super.handlerProps.log(`AnySearch Error: ${e.message}`);
+                return { response: null, error: e.message };
+              });
+            if (error)
+              return `There was an error searching for content. ${error}`;
+
+            const data = [];
+            response?.data?.results?.forEach((searchResult) => {
+              const { title, url, snippet, content } = searchResult;
+              if (!url) return; // skip rows without a link
+              const text = String(snippet || content || "")
+                .replace(/\s+/g, " ")
+                .trim()
+                .slice(0, 500);
+              data.push({
+                title: String(title || url).slice(0, 100),
+                link: url,
+                snippet: text,
+              });
+            });
+
+            if (data.length === 0)
+              return `No information was found online for the search query.`;
+
+            this.reportSearchResultsCitations(data);
+            const result = JSON.stringify(data);
+            this.super.introspect(
+              `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
+            );
+            return result;
+          },
+
         });
       },
     };
