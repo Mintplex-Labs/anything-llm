@@ -317,8 +317,6 @@ const TRANSLATIONS = {
         description:
           "Maak het mogelijk voor uw agent om SQL te gebruiken om uw vragen te beantwoorden, door verbinding te maken met verschillende SQL-databaseproviders.",
       },
-      default_skill:
-        "Standaard is deze functie ingeschakeld, maar u kunt deze uitschakelen als u niet wilt dat de agent er gebruik van kan maken.",
       filesystem: {
         title: "Toegang tot het bestandssysteem",
         description:
@@ -721,6 +719,11 @@ const TRANSLATIONS = {
         title: "Maak geplande taken aan",
         description:
           'Laat de agent herhaalde geplande taken aanmaken vanuit het gesprek (bijvoorbeeld: "elke werkdag om 9 uur, vat mijn inbox samen en stuur me een e-mail"). Dit is alleen beschikbaar in single-user modus.',
+      },
+      generateImage: {
+        title: "Afbeeldingen genereren",
+        description:
+          "Laat de agent afbeeldingen genereren op basis van de chat, of bestaande afbeeldingen in het gesprek bewerken, met behulp van uw geconfigureerde dienst voor het genereren van afbeeldingen.",
       },
     },
     mcp: {

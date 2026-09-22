@@ -28,6 +28,10 @@ async function executeApiCall(config, context) {
       const parsedBody = safeJsonParse(body, null);
       if (parsedBody !== null) {
         requestConfig.body = JSON.stringify(parsedBody);
+      } else if (body?.trim()) {
+        throw new Error(
+          "The request body of this API Call block is not valid JSON. Open the flow in the Agent Builder and check the body for syntax errors such as missing commas, brackets, or quotes."
+        );
       }
       requestConfig.headers["Content-Type"] = "application/json";
     } else if (bodyType === "text") {
@@ -46,11 +50,16 @@ async function executeApiCall(config, context) {
     }
 
     introspect(`API call completed`);
-    return await response
-      .text()
-      .then((text) =>
-        safeJsonParse(text, "Failed to parse output from API call block")
-      );
+    const responseText = await response.text();
+    try {
+      // JSON bodies parse into values; anything else (plain text, HTML,
+      // empty bodies) is passed through verbatim. We intentionally avoid
+      // safeJsonParse here so non-JSON bodies are never "repaired" into
+      // invented JSON or reduced to an embedded JSON substring.
+      return JSON.parse(responseText);
+    } catch {
+      return responseText;
+    }
   } catch (error) {
     console.error(error);
     throw new Error(`API Call failed: ${error.message}`);

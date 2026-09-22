@@ -68,7 +68,7 @@ AnythingLLM supports multiple users as well where you can control the access and
 - [Intelligent Skill Selection](https://docs.anythingllm.com/agent/intelligent-tool-selection) Enable **unlimited** tools for your models while reducing token usage by up to 80% per query
 - [No-code AI Agent builder](https://docs.anythingllm.com/agent-flows/overview)
 - [MCP-compatibility](https://docs.anythingllm.com/mcp-compatibility/overview)
-- [Multi-modal support (both closed and open-source LLMs!)](https://docs.anythingllm.com/features/multimodal)
+- [Multi-modal support (both closed and open-source LLMs!)](https://docs.anythingllm.com/features/language-models)
 - [Custom AI Agents](https://docs.anythingllm.com/agent/custom/introduction)
 - 👤 Multi-user instance support and permissioning _Docker version only_
 - 🦾 Agents inside your workspace (browse the web, etc)
@@ -115,8 +115,8 @@ AnythingLLM supports multiple users as well where you can control the access and
 - [Gitee AI](https://ai.gitee.com/)
 - [Moonshot AI](https://www.moonshot.ai/)
 - [Microsoft Foundry Local](https://github.com/microsoft/Foundry-Local)
-- [CometAPI (chat models)](https://api.cometapi.com/)
-- [Docker Model Runner](https://docs.docker.com/ai/model-runner/)
+- [CometAPI (chat models)](https://www.cometapi.com/)
+- [llmman](https://github.com/llmmanorg/llmman)
 - [PrivateModeAI (chat models)](https://privatemode.ai/)
 - [SambaNova Cloud (chat models)](https://cloud.sambanova.ai/)
 - [Lemonade by AMD](https://lemonade-server.ai)
@@ -150,7 +150,7 @@ AnythingLLM supports multiple users as well where you can control the access and
 
 - Native Browser Built-in (default)
 - [PiperTTSLocal - runs in browser](https://github.com/rhasspy/piper)
-- [OpenAI TTS](https://platform.openai.com/docs/guides/text-to-speech/voice-options)
+- [OpenAI TTS](https://platform.openai.com/docs/guides/text-to-speech#voice-options)
 - [ElevenLabs](https://elevenlabs.io/)
 - Any OpenAI Compatible TTS service.
 
@@ -191,6 +191,10 @@ Mintplex Labs & the community maintain a number of deployment methods, scripts, 
 | Railway                                             | RepoCloud                                                 | Elestio                                             | Northflank                                                   | Sealos                                               |
 | --------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------- |
 | [![Deploy on Railway][railway-btn]][railway-deploy] | [![Deploy on RepoCloud][repocloud-btn]][repocloud-deploy] | [![Deploy on Elestio][elestio-btn]][elestio-deploy] | [![Deploy on Northflank][northflank-btn]][northflank-deploy] | [![Deploy on Sealos][sealos-btn]][sealos-deploy] |
+
+| Easypanel |
+| --- |
+| [![Deploy on Easypanel][easypanel-btn]][easypanel-deploy] |
 
 [or set up a production AnythingLLM instance without Docker →](./BARE_METAL.md)
 
@@ -318,3 +322,5 @@ This project is [MIT](./LICENSE) licensed.
 [northflank-deploy]: https://northflank.com/stacks/deploy-anythingllm
 [sealos-btn]: https://sealos.io/Deploy-on-Sealos.svg
 [sealos-deploy]: https://sealos.io/products/app-store/anything-llm
+[easypanel-btn]: https://easypanel.io/img/deploy-on-easypanel-40.svg
+[easypanel-deploy]: https://easypanel.io/templates/anythingllm

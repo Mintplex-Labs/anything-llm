@@ -19,8 +19,8 @@ async function generateImageForWorkspace({ prompt, size, signal }) {
 
 /**
  * Edits/transforms images from a prompt + reference images using the
- * system-configured provider. Falls back to generation if the provider
- * doesn't support editing (Ollama handles this internally).
+ * system-configured provider. Providers that cannot accept reference images
+ * (e.g. Ollama, or LocalAI on a non-kontext model) throw a descriptive error.
  * @param {{prompt: string, images: Buffer[], size?: string, signal?: AbortSignal}} params
  * @returns {Promise<{storageFilename: string, filename: string, fileSize: number, buffer: Buffer}>}
  */

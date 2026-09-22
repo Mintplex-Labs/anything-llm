@@ -300,7 +300,6 @@ const TRANSLATIONS = {
         description:
           "讓您的智慧代理人能夠利用 SQL 查詢來回答您的問題，只需連接到不同的 SQL 資料庫提供者即可。",
       },
-      default_skill: "這項技能預設為啟用；若不希望智慧代理人使用，也可以停用。",
       filesystem: {
         title: "檔案系統存取",
         description:
@@ -669,6 +668,11 @@ const TRANSLATIONS = {
         title: "建立排程工作",
         description:
           "允許經理根據聊天內容，設定重複執行的工作（例如：「每天早上9點，請自動整理我的收件匣並將摘要發送至我的電子郵件」）。僅適用於單一使用者模式。",
+      },
+      generateImage: {
+        title: "產生圖像",
+        description:
+          "讓代理能夠根據聊天內容生成圖片，或編輯與對話相關聯的圖片，並使用您已設定的圖片產生服務。",
       },
     },
     mcp: {

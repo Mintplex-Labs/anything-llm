@@ -46,6 +46,16 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
     return true;
   }
 
+  /**
+   * Checks Lemonade's loaded-model list (/health) for this model.
+   * @returns {Promise<boolean>}
+   */
+  async isModelLoaded() {
+    return await LemonadeLLM.getCurrentlyLoadedModels()
+      .then((models) => models.some((m) => m.model_name === this.model))
+      .catch(() => true);
+  }
+
   async preloadModel() {
     if (this.preloaded) return;
     await LemonadeLLM.loadModel(this.model);

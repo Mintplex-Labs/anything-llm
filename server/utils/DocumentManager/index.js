@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const { isWithin } = require("../files");
 
 const documentsPath =
   process.env.NODE_ENV === "development"
@@ -36,6 +37,12 @@ class DocumentManager {
     for await (const docPath of docPaths) {
       try {
         const filePath = path.resolve(this.documentStoragePath, docPath);
+        if (!isWithin(this.documentStoragePath, filePath)) {
+          this.log(
+            `Skipping document - pinned source path is outside of the documents folder.`
+          );
+          continue;
+        }
         const data = JSON.parse(
           fs.readFileSync(filePath, { encoding: "utf-8" })
         );

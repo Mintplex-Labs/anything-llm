@@ -58,6 +58,19 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     return this._supportsToolCalling;
   }
 
+  /**
+   * Checks Ollama's running-model list (/api/ps) for this model.
+   * @returns {Promise<boolean>}
+   */
+  async isModelLoaded() {
+    return await this.client
+      .ps()
+      .then(({ models = [] }) =>
+        models.some((m) => m.name === this.model || m.model === this.model)
+      )
+      .catch(() => true);
+  }
+
   get queryOptions() {
     this.providerLog(
       `${this.model} is using a max context window of ${OllamaAILLM.promptWindowLimit(this.model)}/${OllamaAILLM.maxContextWindow(this.model)} tokens.`
