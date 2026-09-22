@@ -1445,7 +1445,6 @@ const webBrowsing = {
             return result;
           },
 
-
           /**
            * You.com Search — keyless free tier by default, optional API key for higher limits.
            * Keyless: GET https://api.you.com/v1/agents/search
@@ -1570,6 +1569,7 @@ const webBrowsing = {
             );
             return result;
           },
+
           /**
            * AnySearch — https://anysearch.com
            * POST https://api.anysearch.com/v1/search
@@ -1617,7 +1617,9 @@ const webBrowsing = {
               })
               .then((data) => {
                 if (data?.code !== 0)
-                  throw new Error(data?.message || `API error code ${data?.code}`);
+                  throw new Error(
+                    data?.message || `API error code ${data?.code}`
+                  );
                 return { response: data, error: null };
               })
               .catch((e) => {
@@ -1652,7 +1654,6 @@ const webBrowsing = {
             );
             return result;
           },
-
         });
       },
     };

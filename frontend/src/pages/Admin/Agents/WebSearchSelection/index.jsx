@@ -165,8 +165,7 @@ const SEARCH_PROVIDERS = [
     value: "anysearch-search",
     logo: AnySearchSearchIcon,
     options: (settings) => <AnySearchOptions settings={settings} />,
-    description:
-      "Real-time web search for AI agents. Requires a free API key.",
+    description: "Real-time web search for AI agents. Requires a free API key.",
   },
 ];
 
