@@ -168,6 +168,7 @@ const SystemSettings = {
             "crw-search",
             "you-search",
             "keenable-search",
+            "anysearch-search",
           ].includes(update)
         )
           throw new Error("Invalid SERP provider.");
@@ -610,6 +611,7 @@ const SystemSettings = {
       AgentYouApiKey: !!process.env.AGENT_YOU_API_KEY || null,
       AgentKeenableApiKey: !!process.env.AGENT_KEENABLE_API_KEY || null,
       AgentKeenableApiUrl: process.env.AGENT_KEENABLE_API_URL || null,
+      AgentAnySearchApiKey: !!process.env.AGENT_ANYSEARCH_API_KEY || null,
 
       // --------------------------------------------------------
       // Compliance Settings
