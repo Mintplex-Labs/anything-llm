@@ -40,6 +40,7 @@ const KEY_MAPPING = {
   AzureOpenAiEmbeddingModelPref: {
     envKey: "EMBEDDING_MODEL_PREF",
     checks: [isNotEmpty],
+    postUpdate: [handleVectorStoreReset],
   },
   AzureOpenAiModelType: {
     envKey: "AZURE_OPENAI_MODEL_TYPE",
@@ -1320,7 +1321,11 @@ async function handleVectorStoreReset(key, prevValue, nextValue) {
     return await resetAllVectorStores({ vectorDbKey: prevValue });
   }
 
-  if (key === "EmbeddingEngine" || key === "EmbeddingModelPref") {
+  if (
+    key === "EmbeddingEngine" ||
+    key === "EmbeddingModelPref" ||
+    key === "AzureOpenAiEmbeddingModelPref"
+  ) {
     console.log(
       `${key} changed from ${prevValue} to ${nextValue} - resetting ${process.env.VECTOR_DB} namespaces`
     );
