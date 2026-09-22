@@ -12,10 +12,12 @@ const FIXTURE = JSON.parse(
  * The module memoizes a singleton at require time, so every test builds its
  * own instance against a fresh temp STORAGE_DIR and a mocked global fetch.
  */
+let lastInstance = null;
 function freshInstance() {
   const { ModelPricing } = require("../../../../utils/helpers/modelPricing");
   ModelPricing.instance = null;
-  return new ModelPricing();
+  lastInstance = new ModelPricing();
+  return lastInstance;
 }
 
 function mockFetchWith(response) {
@@ -30,9 +32,9 @@ function okResponse(data, { etag = null } = {}) {
   };
 }
 
-/** Waits for the constructor's fire-and-forget refresh to settle. */
+/** Waits for the constructor's background refresh to settle. */
 async function flushRefresh() {
-  await new Promise((resolve) => setTimeout(resolve, 25));
+  await lastInstance.bootRefresh;
 }
 
 describe("ModelPricing", () => {
@@ -449,7 +451,11 @@ describe("ModelPricing", () => {
           prompt_tokens: 300_000,
           completion_tokens: 0,
         })
-      ).toEqual({ inputCost: (300_000 / 1_000_000) * 2, outputCost: 0, totalCost: (300_000 / 1_000_000) * 2 });
+      ).toEqual({
+        inputCost: (300_000 / 1_000_000) * 2,
+        outputCost: 0,
+        totalCost: (300_000 / 1_000_000) * 2,
+      });
     });
 
     it("clamps negative and non-finite token counts to zero cost", () => {
@@ -611,9 +617,9 @@ describe("ModelPricing", () => {
         completion_tokens: 10,
         model: "some-local-model",
       };
-      expect(
-        addCostToMetrics(metrics, { provider: "generic-openai" })
-      ).toEqual(metrics);
+      expect(addCostToMetrics(metrics, { provider: "generic-openai" })).toEqual(
+        metrics
+      );
       expect(addCostToMetrics({}, { provider: "openai" })).toEqual({});
     });
 

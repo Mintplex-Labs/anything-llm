@@ -60,6 +60,11 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
     return this._supportsToolCalling;
   }
 
+  /** @returns {Promise<boolean>} */
+  async isModelLoaded() {
+    return await LMStudioLLM.isModelLoaded(this.model);
+  }
+
   // ---- UnTooled callbacks (used when native tool calling is not supported) ----
 
   async #handleFunctionCallChat({ messages = [] }) {

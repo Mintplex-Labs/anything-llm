@@ -14,6 +14,8 @@ import PerplexitySearchIcon from "./icons/perplexity.png";
 import BraveSearchIcon from "./icons/brave.png";
 import CrwSearchIcon from "./icons/crw.png";
 import YouSearchIcon from "./icons/you.png";
+import KeenableSearchIcon from "./icons/keenable.png";
+import AnySearchSearchIcon from "./icons/anysearch.png";
 import {
   CaretUpDown,
   MagnifyingGlass,
@@ -21,6 +23,7 @@ import {
   ListMagnifyingGlass,
 } from "@phosphor-icons/react";
 import Toggle from "@/components/lib/Toggle";
+import { DefaultBadge } from "../Badges/default";
 import SearchProviderItem from "./SearchProviderItem";
 import WebSearchImage from "@/media/agents/scrape-websites.png";
 import {
@@ -38,9 +41,19 @@ import {
   BraveSearchOptions,
   CrwSearchOptions,
   YouSearchOptions,
+  KeenableSearchOptions,
+  AnySearchOptions,
 } from "./SearchProviderOptions";
 
 const SEARCH_PROVIDERS = [
+  {
+    name: "You.com Search",
+    value: "you-search",
+    logo: YouSearchIcon,
+    options: (settings) => <YouSearchOptions settings={settings} />,
+    description:
+      "LLM-ready web search with no API key required and zero data retention.",
+  },
   {
     name: "DuckDuckGo",
     value: "duckduckgo-engine",
@@ -141,11 +154,18 @@ const SEARCH_PROVIDERS = [
     description: "Open-source, self-hostable Firecrawl/Tavily alternative.",
   },
   {
-    name: "You.com Search",
-    value: "you-search",
-    logo: YouSearchIcon,
-    options: (settings) => <YouSearchOptions settings={settings} />,
-    description: "LLM-ready web search. Optional API key for higher limits.",
+    name: "Keenable",
+    value: "keenable-search",
+    logo: KeenableSearchIcon,
+    options: (settings) => <KeenableSearchOptions settings={settings} />,
+    description: "Web search built for AI agents. No API key required.",
+  },
+  {
+    name: "AnySearch",
+    value: "anysearch-search",
+    logo: AnySearchSearchIcon,
+    options: (settings) => <AnySearchOptions settings={settings} />,
+    description: "Real-time web search for AI agents. Requires a free API key.",
   },
 ];
 
@@ -155,12 +175,12 @@ export default function AgentWebSearchSelection({
   description,
   settings,
   toggleSkill,
-  enabled = false,
+  enabled = true,
   setHasChanges,
 }) {
   const searchInputRef = useRef(null);
   const [filteredResults, setFilteredResults] = useState([]);
-  const [selectedProvider, setSelectedProvider] = useState("duckduckgo-engine");
+  const [selectedProvider, setSelectedProvider] = useState("you-search");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
 
@@ -191,15 +211,15 @@ export default function AgentWebSearchSelection({
     Admin.systemPreferencesByFields(["agent_search_provider"])
       .then((res) =>
         setSelectedProvider(
-          res?.settings?.agent_search_provider ?? "duckduckgo-engine"
+          res?.settings?.agent_search_provider ?? "you-search"
         )
       )
-      .catch(() => setSelectedProvider("duckduckgo-engine"));
+      .catch(() => setSelectedProvider("you-search"));
   }, []);
 
   const selectedSearchProviderObject =
     SEARCH_PROVIDERS.find((provider) => provider.value === selectedProvider) ??
-    SEARCH_PROVIDERS[1];
+    SEARCH_PROVIDERS[0];
 
   return (
     <div className="p-2">
@@ -217,6 +237,7 @@ export default function AgentWebSearchSelection({
             >
               {title}
             </label>
+            <DefaultBadge title={title} />
           </div>
           <Toggle
             size="lg"

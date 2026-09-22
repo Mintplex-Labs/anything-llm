@@ -322,8 +322,6 @@ const TRANSLATIONS = {
         description:
           "Ļauj savam pārstāvim izmantot SQL, lai atbildētu uz jūsu jautājumiem, savienojoties ar dažādiem SQL datubāzes sniedzējiem.",
       },
-      default_skill:
-        "Par iestatījumu, šī spēja ir aktivizēta, taču jūs varat to izslēgt, ja nevēlaties, lai tā būtu pieejama aģentam.",
       filesystem: {
         title: "Failu sistēmas piekļuves tiesības",
         description:
@@ -728,6 +726,11 @@ const TRANSLATIONS = {
         title: "Ierīkojiet periodiskas darbības",
         description:
           'Ļauj aģentam izveidot atkārtotus plānotus darbus no čata (piemēram, "katru darba dienu plkst. 9:00 nosūtīt man savu e-pasta kopsavilkumu un nosūtīt ziņu"). Pieejams tikai vienam lietotājam.',
+      },
+      generateImage: {
+        title: "Izveidot attēlus",
+        description:
+          "Ļauj aģentam ģenerēt attēlus no sarunas, vai rediģēt attēlus, kas pievienoti sarunai, izmantojot konfigurētu attēlu ģenerēšanas pakalpojumu.",
       },
     },
     mcp: {

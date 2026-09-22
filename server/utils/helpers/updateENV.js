@@ -161,11 +161,11 @@ const KEY_MAPPING = {
   },
   KoboldCPPTokenLimit: {
     envKey: "KOBOLD_CPP_MODEL_TOKEN_LIMIT",
-    checks: [nonZero],
+    checks: [],
   },
   KoboldCPPMaxTokens: {
     envKey: "KOBOLD_CPP_MAX_TOKENS",
-    checks: [nonZero],
+    checks: [],
   },
 
   // Text Generation Web UI Settings
@@ -498,6 +498,17 @@ const KEY_MAPPING = {
     envKey: "OPENROUTER_TIMEOUT_MS",
     checks: [],
   },
+  OpenRouterServiceTier: {
+    envKey: "OPENROUTER_SERVICE_TIER",
+    checks: [
+      (input) => {
+        const { OpenRouterLLM } = require("../AiProviders/openRouter");
+        return OpenRouterLLM.SERVICE_TIERS.includes(input)
+          ? null
+          : `Invalid service tier. Must be one of: ${OpenRouterLLM.SERVICE_TIERS.join(", ")}.`;
+      },
+    ],
+  },
 
   // Novita Options
   NovitaLLMApiKey: {
@@ -648,6 +659,18 @@ const KEY_MAPPING = {
   },
   AgentYouApiKey: {
     envKey: "AGENT_YOU_API_KEY",
+    checks: [],
+  },
+  AgentKeenableApiKey: {
+    envKey: "AGENT_KEENABLE_API_KEY",
+    checks: [],
+  },
+  AgentKeenableApiUrl: {
+    envKey: "AGENT_KEENABLE_API_URL",
+    checks: [],
+  },
+  AgentAnySearchApiKey: {
+    envKey: "AGENT_ANYSEARCH_API_KEY",
     checks: [],
   },
 
@@ -801,6 +824,28 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // Google Vertex AI Options
+  VertexAiLLMApiKey: {
+    envKey: "VERTEX_AI_LLM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  VertexAiLLMProjectId: {
+    envKey: "VERTEX_AI_LLM_PROJECT_ID",
+    checks: [isNotEmpty],
+  },
+  VertexAiLLMRegion: {
+    envKey: "VERTEX_AI_LLM_REGION",
+    checks: [isNotEmpty],
+  },
+  VertexAiLLMModelPref: {
+    envKey: "VERTEX_AI_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  VertexAiLLMTokenLimit: {
+    envKey: "VERTEX_AI_LLM_MODEL_TOKEN_LIMIT",
+    checks: [],
+  },
+
   // APIPie Options
   ApipieLLMApiKey: {
     envKey: "APIPIE_LLM_API_KEY",
@@ -924,18 +969,26 @@ const KEY_MAPPING = {
     checks: [nonZero],
   },
 
-  // Docker Model Runner Options
-  DockerModelRunnerBasePath: {
-    envKey: "DOCKER_MODEL_RUNNER_BASE_PATH",
-    checks: [isValidURL],
+  // llmman Options
+  LlmmanBasePath: {
+    envKey: "LLMMAN_BASE_PATH",
+    checks: [isNotEmpty, isValidURL, validDockerizedUrl],
   },
-  DockerModelRunnerModelPref: {
-    envKey: "DOCKER_MODEL_RUNNER_LLM_MODEL_PREF",
-    checks: [isNotEmpty],
+  LlmmanModelPref: {
+    envKey: "LLMMAN_MODEL_PREF",
+    checks: [],
   },
-  DockerModelRunnerModelTokenLimit: {
-    envKey: "DOCKER_MODEL_RUNNER_LLM_MODEL_TOKEN_LIMIT",
-    checks: [nonZero],
+  LlmmanTokenLimit: {
+    envKey: "LLMMAN_MODEL_TOKEN_LIMIT",
+    checks: [],
+  },
+  LlmmanKeepAliveSeconds: {
+    envKey: "LLMMAN_KEEP_ALIVE_TIMEOUT",
+    checks: [isInteger],
+  },
+  LlmmanAuthToken: {
+    envKey: "LLMMAN_AUTH_TOKEN",
+    checks: [],
   },
 
   // Privatemode Options
@@ -1131,7 +1184,7 @@ function supportedLLM(input = "") {
     "foundry",
     "zai",
     "giteeai",
-    "docker-model-runner",
+    "llmman",
     "privatemode",
     "sambanova",
     "lemonade",
@@ -1139,6 +1192,7 @@ function supportedLLM(input = "") {
     "cerebras",
     "omlx",
     "anythingllm-router",
+    "vertex",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
@@ -1364,7 +1418,7 @@ async function updateENV(newENVs = {}, force = false, userId = null) {
   const runAfterAll = [];
   const validKeys = Object.keys(KEY_MAPPING);
   const ENV_KEYS = Object.keys(newENVs).filter(
-    (key) => validKeys.includes(key) && !newENVs[key].includes("******") // strip out answers where the value is all asterisks
+    (key) => validKeys.includes(key) && !/^\*+$/.test(newENVs[key]) // strip out answers where the value is all asterisks (masked placeholder)
   );
   const newValues = {};
 
@@ -1520,6 +1574,9 @@ function dumpENV() {
 
     // Deny-by-default for embed widgets that have no allowlist configured
     "EMBED_REQUIRE_ALLOWLIST",
+
+    // Allow setting a custom timeout for tool call approval prompts
+    "TOOL_CALL_APPROVAL_TIMEOUT_MS",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.

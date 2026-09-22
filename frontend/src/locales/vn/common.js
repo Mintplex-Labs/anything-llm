@@ -316,8 +316,6 @@ const TRANSLATIONS = {
         description:
           "Cho phép đại lý của bạn sử dụng SQL để trả lời các câu hỏi của bạn bằng cách kết nối với nhiều nhà cung cấp cơ sở dữ liệu SQL khác nhau.",
       },
-      default_skill:
-        "Theo mặc định, kỹ năng này được kích hoạt, nhưng bạn có thể tắt nó nếu không muốn nó được sử dụng bởi người đại diện.",
       filesystem: {
         title: "Quyền truy cập hệ thống tệp",
         description:
@@ -715,6 +713,11 @@ const TRANSLATIONS = {
         title: "Tạo các công việc theo lịch trình",
         description:
           'Cho phép đại lý tạo các công việc lặp lại theo lịch trình từ cuộc trò chuyện (ví dụ: "mỗi ngày làm việc lúc 9 giờ sáng, tóm tắt hộp thư và gửi email cho tôi"). Chỉ khả dụng trong chế độ sử dụng riêng.',
+      },
+      generateImage: {
+        title: "Tạo hình ảnh",
+        description:
+          "Cho phép đại lý tạo ảnh từ cuộc trò chuyện hoặc chỉnh sửa ảnh đính kèm trong cuộc trò chuyện bằng cách sử dụng nhà cung cấp dịch vụ tạo ảnh đã được cấu hình.",
       },
     },
     mcp: {

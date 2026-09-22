@@ -906,6 +906,21 @@ const System = {
   },
 
   /**
+   * Checks if image generation is available.
+   * Image generation is only available when an image generation provider is configured.
+   * @returns {Promise<boolean>}
+   */
+  isImageGenerationAvailable: async function () {
+    return fetch(`${API_BASE}/agent-skills/image-generation/is-available`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .then((res) => res?.available ?? false)
+      .catch(() => false);
+  },
+
+  /**
    * Send a recorded audio blob to the configured server-side STT provider
    * for transcription. Returns the transcribed text or an error string.
    * @param {Blob} audioBlob - Recorded audio (e.g., audio/webm) to transcribe.

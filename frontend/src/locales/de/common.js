@@ -322,8 +322,6 @@ const TRANSLATIONS = {
         description:
           "Ermöglichen Sie Ihrem Agenten, SQL zu nutzen, um Ihre Fragen zu beantworten, indem Sie eine Verbindung zu verschiedenen SQL-Datenbankanbietern herstellen.",
       },
-      default_skill:
-        "Standardmäßig ist diese Funktion aktiviert, aber Sie können sie deaktivieren, wenn Sie nicht möchten, dass sie für den Agenten verfügbar ist.",
       filesystem: {
         title: "Zugriff auf das Dateisystem",
         description:
@@ -737,6 +735,11 @@ const TRANSLATIONS = {
         title: "Erstellen Sie geplante Aufgaben",
         description:
           'Ermöglichen Sie dem Agenten, wiederkehrende geplante Aufgaben direkt aus dem Chat zu erstellen (z. B. „jeden Werktag um 9 Uhr meinen Posteingang zusammenfassen und mir eine E-Mail senden"). Diese Funktion ist nur im Einzelbenutzermodus verfügbar.',
+      },
+      generateImage: {
+        title: "Bilder generieren",
+        description:
+          "Ermöglichen Sie dem Agenten, Bilder aus dem Chat zu generieren oder Bilder zu bearbeiten, die an das Gespräch angehängt sind, unter Verwendung Ihres konfigurierten Bildgenerierungsdienstes.",
       },
     },
     "performance-warning":

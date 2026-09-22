@@ -1,5 +1,5 @@
 import { CaretRight } from "@phosphor-icons/react";
-import { sentenceCase } from "text-case";
+import { formatSkillName } from "../formatSkillName";
 
 export default function ImportedSkillList({
   skills = [],
@@ -43,7 +43,9 @@ export default function ImportedSkillList({
           }`}
           onClick={() => handleClick?.({ ...config, imported: true })}
         >
-          <div className="text-sm font-light">{sentenceCase(config.name)}</div>
+          <div className="text-sm font-light">
+            {formatSkillName(config.name)}
+          </div>
           <div className="flex items-center gap-x-2">
             <div className="text-sm text-theme-text-secondary font-medium">
               {config.active ? "On" : "Off"}

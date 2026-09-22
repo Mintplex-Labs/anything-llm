@@ -328,8 +328,6 @@ const TRANSLATIONS = {
         description:
           "Permita que su agente pueda utilizar SQL para responder a sus preguntas, conectándose con diferentes proveedores de bases de datos SQL.",
       },
-      default_skill:
-        "Por defecto, esta función está activada, pero puede desactivarla si no desea que esté disponible para el agente.",
       filesystem: {
         title: "Acceso al sistema de archivos",
         description:
@@ -746,6 +744,11 @@ const TRANSLATIONS = {
         title: "Crear tareas programadas",
         description:
           'Permita que el agente cree tareas programadas recurrentes a partir de las conversaciones (por ejemplo, "todos los días laborables a las 9:00 am, resume mi bandeja de entrada y envíame un correo electrónico"). Disponible únicamente en modo para un solo usuario.',
+      },
+      generateImage: {
+        title: "Generar imágenes",
+        description:
+          "Permita que el agente genere imágenes a partir de la conversación, o edite las imágenes adjuntas a la misma, utilizando el proveedor de generación de imágenes que haya configurado.",
       },
     },
     mcp: {

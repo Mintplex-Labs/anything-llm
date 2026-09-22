@@ -320,6 +320,11 @@ const TRANSLATIONS = {
         description:
           "Enable the default agent to generate various types of charts from data provided or given in chat.",
       },
+      generateImage: {
+        title: "Generate images",
+        description:
+          "Allow the agent to generate images from chat, or edit images attached to the conversation, using your configured image generation provider.",
+      },
       web: {
         title: "Web Search",
         description:
@@ -716,8 +721,6 @@ const TRANSLATIONS = {
           },
         },
       },
-      default_skill:
-        "By default, this skill is enabled, but you can disable it if you don't want it to be available to the agent.",
     },
     mcp: {
       title: "MCP Servers",

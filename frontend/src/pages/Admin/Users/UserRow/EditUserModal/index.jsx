@@ -78,7 +78,7 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
         <ModalInput
           label="New Password"
           name="password"
-          type="text"
+          type="password"
           placeholder={`${user.username}'s new password`}
           autoComplete="off"
           minLength={8}

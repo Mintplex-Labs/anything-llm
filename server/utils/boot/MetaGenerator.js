@@ -162,6 +162,22 @@ class MetaGenerator {
   }
 
   /**
+   * HTML-escapes a value for safe insertion into attribute values or text content.
+   * Meta values (e.g. meta_page_title/meta_page_favicon) are operator-controlled but
+   * must never be able to break out of the attribute or element context they land in.
+   * @param {any} value
+   * @returns {string}
+   */
+  #escapeHtml(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  /**
    * Assembles Meta tags as one large string
    * @param {MetaTagDefinition[]} tagArray
    * @returns {string}
@@ -174,11 +190,11 @@ class MetaGenerator {
 
       if (tag.props !== null) {
         for (const [key, value] of Object.entries(tag.props))
-          htmlString += `${key}="${value}" `;
+          htmlString += `${this.#escapeHtml(key)}="${this.#escapeHtml(value)}" `;
       }
 
       if (tag.content) {
-        htmlString += `>${tag.content}</${tag.tag}>`;
+        htmlString += `>${this.#escapeHtml(tag.content)}</${tag.tag}>`;
       } else {
         htmlString += `>`;
       }

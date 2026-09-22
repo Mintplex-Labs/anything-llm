@@ -331,8 +331,6 @@ const TRANSLATIONS = {
         description:
           "Umožněte svému agentovi, aby mohl využívat SQL k zodpovězení vašich otázek, a to prostřednictvím připojení k různým poskytovatelům databází.",
       },
-      default_skill:
-        "Výchozí nastavení je, že tato schopnost je aktivní, ale můžete ji vypnout, pokud nechcete, aby ji mohl využít zástupce.",
       filesystem: {
         title: "Přístup k souborovému systému",
         description:
@@ -730,6 +728,11 @@ const TRANSLATIONS = {
         title: "Vytvořte naplánované úlohy",
         description:
           "Umožněte zástupci vytvářet opakující se plánované úkoly přímo z chatu (například „každý pracovní den v 9:00 shrňte obsah mé schránky a zašlete mi e-mail“). Tato funkce je dostupná pouze v režimu pro jednoho uživatele.",
+      },
+      generateImage: {
+        title: "Generovat obrázky",
+        description:
+          "Nechte, aby agent generoval obrázky z chatu nebo upravoval obrázky přiložené ke konverzaci pomocí vašeho nakonfigurovaného poskytovatele pro generování obrázků.",
       },
     },
     mcp: {

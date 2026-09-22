@@ -129,9 +129,10 @@ async function determineContentType(uri) {
  * Process a link as a file
  * @param {string} uri - The link to process as a file
  * @param {boolean} saveAsDocument - Whether to save the content as a document. Default is true
+ * @param {{[key: string]: string}} metadata - Metadata to use when creating the document
  * @returns {Promise<{success: boolean, reason: string|null, documents: Object[], content: string|null, saveAsDocument: boolean}>} - The content of the file
  */
-async function processAsFile({ uri, saveAsDocument = true }) {
+async function processAsFile({ uri, saveAsDocument = true, metadata = {} }) {
   const fileContentResult = await downloadURIToFile(uri);
   if (!fileContentResult.success)
     return returnResult({
@@ -155,9 +156,11 @@ async function processAsFile({ uri, saveAsDocument = true }) {
    * TODO: Improve this process via a new option that will instantly delete the file after processing
    * if we find we dont need this file ever after processing.
    */
-  const processSingleFileResult = await processSingleFile(targetFilename, {
-    parseOnly: saveAsDocument === false,
-  });
+  const processSingleFileResult = await processSingleFile(
+    targetFilename,
+    { parseOnly: saveAsDocument === false },
+    metadata
+  );
   if (!processSingleFileResult.success) {
     return returnResult({
       success: false,
@@ -169,11 +172,16 @@ async function processAsFile({ uri, saveAsDocument = true }) {
   }
 
   // If we intend to return only the text content, return the content from the file
-  // and then delete the file - otherwise it will be saved as a document
+  // and then delete the file - otherwise it will be saved as a document.
+  // Some file types (eg: mbox) parse into multiple documents, so we join the text
+  // of every non-empty document rather than returning just the first.
   if (!saveAsDocument) {
     return returnResult({
       success: true,
-      content: processSingleFileResult.documents[0].pageContent,
+      content: processSingleFileResult.documents
+        .map((document) => document?.pageContent ?? "")
+        .filter((pageContent) => pageContent.length > 0)
+        .join("\n\n"),
       saveAsDocument,
     });
   }

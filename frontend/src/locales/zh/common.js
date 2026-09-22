@@ -308,8 +308,6 @@ const TRANSLATIONS = {
         description:
           "让您的代理能够利用 SQL 来回答您的问题，只需连接到各种 SQL 数据库提供商即可。",
       },
-      default_skill:
-        "默认情况下，这项技能已启用。但是，如果您不想让该技能被代理使用，您可以将其禁用。",
       filesystem: {
         title: "文件系统访问",
         description:
@@ -677,6 +675,11 @@ const TRANSLATIONS = {
         title: "创建计划任务",
         description:
           "允许代理人根据聊天内容创建重复的计划任务（例如，“每天工作日的早上9点，总结我的收件箱并发送邮件给我”）。仅适用于单用户模式。",
+      },
+      generateImage: {
+        title: "生成图像",
+        description:
+          "允许代理使用您配置的图像生成提供商，从聊天内容中生成图片，或编辑与对话相关的图片。",
       },
     },
     mcp: {

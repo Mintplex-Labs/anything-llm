@@ -8,8 +8,9 @@ import Modal, {
   ModalInput,
   ModalTextarea,
 } from "@/components/lib/Modal";
-import { CMD_REGEX } from "./constants";
+import { CMD_REGEX, isReservedCommand } from "./constants";
 import { useTranslation } from "react-i18next";
+import showToast from "@/utils/toast";
 
 export default function AddPresetModal({ isOpen, onClose, onSave }) {
   const [command, setCommand] = useState("");
@@ -19,6 +20,13 @@ export default function AddPresetModal({ isOpen, onClose, onSave }) {
     e.preventDefault();
     const form = new FormData(e.target);
     const sanitizedCommand = command.replace(CMD_REGEX, "");
+    if (isReservedCommand(`/${sanitizedCommand}`)) {
+      showToast(
+        "This command is reserved for system use - please choose another.",
+        "error"
+      );
+      return;
+    }
     const saved = await onSave({
       command: `/${sanitizedCommand}`,
       prompt: form.get("prompt"),
