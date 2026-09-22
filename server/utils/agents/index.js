@@ -18,6 +18,7 @@ const { AgentFlows } = require("../agentFlows");
 const MCPCompatibilityLayer = require("../MCP");
 const { getAndClearInvocationAttachments } = require("../chats/agents");
 const { DocumentManager } = require("../DocumentManager");
+const { getLLMProvider } = require("../helpers");
 
 class AgentHandler {
   #invocationUUID;
@@ -791,8 +792,16 @@ class AgentHandler {
     const thread = this.invocation.thread_id
       ? { id: this.invocation.thread_id }
       : null;
+    // Bound pinned-document injection to the model's prompt window, matching
+    // the normal chat path; unbounded injection can exceed the context window
+    // on every agent turn.
+    const LLMConnector = getLLMProvider({
+      provider: this.provider,
+      model: this.model,
+    });
     const documentManager = new DocumentManager({
       workspace: this.invocation.workspace,
+      maxTokens: LLMConnector.promptWindowLimit(),
     });
 
     return Promise.all([
