@@ -59,7 +59,7 @@ Notes:
 ```yaml
 image:
   repository: mintplexlabs/anythingllm
-  tag: "1.16.1"
+  tag: "1.16.2"
 
 service:
   type: ClusterIP
@@ -105,7 +105,7 @@ helm install my-anythingllm ./anythingllm -f values-secret.yaml
 | fullnameOverride                   | string | `""`                         |             |
 | image.pullPolicy                   | string | `"IfNotPresent"`             |             |
 | image.repository                   | string | `"mintplexlabs/anythingllm"` |             |
-| image.tag                          | string | `"1.16.1"`                   |             |
+| image.tag                          | string | `"1.16.2"`                   |             |
 | imagePullSecrets                   | list   | `[]`                         |             |
 | ingress.annotations                | object | `{}`                         |             |
 | ingress.className                  | string | `""`                         |             |
