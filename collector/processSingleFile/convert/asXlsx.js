@@ -133,7 +133,7 @@ async function asXlsx({
 
         const document = writeToServerDocuments({
           data: sheetData,
-          filename: `sheet-${slugify(name)}`,
+          filename: `sheet-${slugify(name)}-${sheetData.id}`,
           destinationOverride: outFolderPath,
           options: { parseOnly: options.parseOnly },
         });
