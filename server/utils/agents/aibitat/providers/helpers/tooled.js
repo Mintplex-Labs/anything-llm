@@ -195,6 +195,28 @@ function serviceTierParam(serviceTier, log = null) {
 }
 
 /**
+ * Build the `temperature` request field from the workspace sampling temperature
+ * passed in the tooled options. This is opt-in per provider: only providers
+ * that pass `temperature` in options get the field, every other provider keeps
+ * sending no `temperature` so the backend's own default applies unchanged.
+ * Accepts a number or a numeric string since workspace settings store it as text.
+ * @param {unknown} temperature
+ * @returns {{temperature?: number}}
+ */
+function temperatureParam(temperature) {
+  if (typeof temperature === "string" && temperature.trim().length)
+    temperature = Number(temperature);
+  if (
+    typeof temperature !== "number" ||
+    !Number.isFinite(temperature) ||
+    temperature < 0 ||
+    temperature > 2
+  )
+    return {};
+  return { temperature };
+}
+
+/**
  * Stream a chat completion using native OpenAI-compatible tool calling.
  * Handles parallel tool calls by tracking each tool call by its streaming
  * index, then returning only the first one for the agent framework to process.
@@ -204,10 +226,11 @@ function serviceTierParam(serviceTier, log = null) {
  * @param {Array} messages - Raw aibitat message history
  * @param {Array} functions - Aibitat function definitions
  * @param {function|null} eventHandler - Stream event handler
- * @param {{injectReasoningContent?: boolean, provider?: object, maxTokens?: number, serviceTier?: string}} options - Provider-specific options
+ * @param {{injectReasoningContent?: boolean, provider?: object, maxTokens?: number, serviceTier?: string, temperature?: number|string}} options - Provider-specific options
  *   - provider: If passed, automatically handles usage tracking via provider.resetUsage()/recordUsage()
  *   - maxTokens: If passed as a positive number, sent as `max_tokens` on the request
  *   - serviceTier: If passed, sent as `service_tier` on the request
+ *   - temperature: If passed as a valid number (or numeric string), sent as `temperature` on the request
  * @returns {Promise<{textResponse: string, functionCall: object|null, uuid: string, usage: object|null}>}
  */
 async function tooledStream(
@@ -218,7 +241,8 @@ async function tooledStream(
   eventHandler = null,
   options = {}
 ) {
-  const { provider, maxTokens, serviceTier, ...formatOptions } = options;
+  const { provider, maxTokens, serviceTier, temperature, ...formatOptions } =
+    options;
 
   // Auto-reset usage if provider is passed
   if (provider?.resetUsage) {
@@ -238,6 +262,7 @@ async function tooledStream(
     messages: formattedMessages,
     ...maxTokensParam(maxTokens),
     ...serviceTierParam(serviceTier, provider?.providerLog?.bind(provider)),
+    ...temperatureParam(temperature),
     ...(tools.length > 0 ? { tools } : {}),
   });
 
@@ -385,9 +410,11 @@ async function tooledStream(
  * @param {Array} messages - Raw aibitat message history
  * @param {Array} functions - Aibitat function definitions
  * @param {function} getCostFn - Provider's getCost function
- * @param {{injectReasoningContent?: boolean, provider?: object, maxTokens?: number}} options - Provider-specific options
+ * @param {{injectReasoningContent?: boolean, provider?: object, maxTokens?: number, serviceTier?: string, temperature?: number|string}} options - Provider-specific options
  *   - provider: If passed, automatically handles usage tracking via provider.resetUsage()/recordUsage()
  *   - maxTokens: If passed as a positive number, sent as `max_tokens` on the request
+ *   - serviceTier: If passed, sent as `service_tier` on the request
+ *   - temperature: If passed as a valid number (or numeric string), sent as `temperature` on the request
  * @returns {Promise<{textResponse: string|null, functionCall: object|null, cost: number, usage: object|null}>}
  */
 async function tooledComplete(
@@ -398,7 +425,8 @@ async function tooledComplete(
   getCostFn = () => 0,
   options = {}
 ) {
-  const { provider, maxTokens, serviceTier, ...formatOptions } = options;
+  const { provider, maxTokens, serviceTier, temperature, ...formatOptions } =
+    options;
 
   // Auto-reset usage if provider is passed
   if (provider?.resetUsage) {
@@ -416,6 +444,7 @@ async function tooledComplete(
     messages: formattedMessages,
     ...maxTokensParam(maxTokens),
     ...serviceTierParam(serviceTier, provider?.providerLog?.bind(provider)),
+    ...temperatureParam(temperature),
     ...(tools.length > 0 ? { tools } : {}),
   });
 
@@ -489,4 +518,5 @@ module.exports = {
   tooledStream,
   tooledComplete,
   serviceTierParam,
+  temperatureParam,
 };
