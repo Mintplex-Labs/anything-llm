@@ -20,14 +20,18 @@ class OllamaImageGenerator extends BaseImageGenerator {
     });
   }
 
-  async editImage({ prompt, images, signal }) {
-    this.log(
-      `Ollama does not support image editing. Dropping ${images.length} reference image(s) and generating from prompt only.`
+  /**
+   * Ollama's OpenAI-compatible image endpoint does not implement image editing
+   * or accept reference images in any form, so there is nothing we can do with
+   * them - we surface a descriptive error instead of silently dropping them and
+   * returning an unrelated image.
+   * @param {{prompt: string, images: Buffer[], size?: string, signal?: AbortSignal}} _params
+   * @returns {Promise<never>}
+   */
+  async editImage(_params) {
+    throw new Error(
+      "Ollama image generation does not support reference images. Remove the attached image(s) and send a text-only prompt, or switch to an image generation provider that supports image editing."
     );
-    const result = await this.generateImage({ prompt, signal });
-    result.notice =
-      "Ollama does not support image editing — your reference images were ignored and a new image was generated from the prompt only.";
-    return result;
   }
 }
 

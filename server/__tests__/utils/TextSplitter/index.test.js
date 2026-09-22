@@ -101,4 +101,32 @@ describe("TextSplitter", () => {
     expect(chunks.length).toEqual(5);
     expect(chunks.every(chunk => chunk.startsWith("testing3: <document_metadata>"))).toBe(true);
   });
+
+  test("defaults chunkSize to 1000 when null", async () => {
+    const text = "word ".repeat(500);
+    const textSplitter = new TextSplitter({ chunkSize: null, chunkOverlap: 20 });
+    const chunks = await textSplitter.splitText(text);
+    expect(chunks.length).toEqual(3);
+    expect(chunks.every((chunk) => chunk.length <= 1000)).toBe(true);
+  });
+
+  test("warns when a chunk header is present but does not change the split", async () => {
+    const text = "word ".repeat(200);
+    const chunkHeaderMeta = TextSplitter.buildHeaderMeta({
+      title: "Example.pdf",
+      published: "2026-09-16T00:00:00.000Z",
+      chunkSource: "link://https://example.com/page",
+    });
+    const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+    const textSplitter = new TextSplitter({ chunkSize: 100, chunkOverlap: 20, chunkHeaderMeta });
+    const header = textSplitter.stringifyHeader();
+    const chunks = await textSplitter.splitText(text);
+    const headerless = await new TextSplitter({ chunkSize: 100, chunkOverlap: 20 }).splitText(text);
+    const logged = logSpy.mock.calls.map((call) => String(call[0]));
+    logSpy.mockRestore();
+
+    expect(logged.some((line) => line.includes(`Chunk header of ${header.length} chars`))).toBe(true);
+    expect(chunks.map((chunk) => chunk.slice(header.length))).toEqual(headerless);
+    expect(chunks.every((chunk) => chunk.startsWith(header))).toBe(true);
+  });
 });

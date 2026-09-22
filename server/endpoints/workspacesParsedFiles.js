@@ -100,7 +100,7 @@ function workspaceParsedFilesEndpoints(app) {
         await EventLogs.logEvent(
           "document_embedded",
           {
-            documentName: document?.name || "unknown",
+            documentName: document?.filename || "unknown",
             workspaceId: workspace.id,
           },
           user?.id

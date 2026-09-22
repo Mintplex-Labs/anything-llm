@@ -78,8 +78,12 @@ class MoonshotAiLLM {
     return true;
   }
 
+  static promptWindowLimit(modelName) {
+    return MODEL_MAP.get("moonshot", modelName) ?? 8_192;
+  }
+
   promptWindowLimit() {
-    return MODEL_MAP.get("moonshot", this.model) ?? 8_192;
+    return MoonshotAiLLM.promptWindowLimit(this.model);
   }
 
   constructPrompt({

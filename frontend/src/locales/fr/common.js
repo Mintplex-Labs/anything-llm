@@ -318,8 +318,6 @@ const TRANSLATIONS = {
         description:
           "Permettez à votre agent d'utiliser SQL pour répondre à vos questions en lui fournissant un accès à divers fournisseurs de bases de données SQL.",
       },
-      default_skill:
-        "Par défaut, cette fonctionnalité est activée, mais vous pouvez la désactiver si vous ne souhaitez pas qu'elle soit disponible pour l'agent.",
       filesystem: {
         title: "Accès au système de fichiers",
         description:
@@ -736,6 +734,11 @@ const TRANSLATIONS = {
         title: "Créer des tâches planifiées",
         description:
           "Permettez à l'agent de créer des tâches planifiées récurrentes à partir des conversations (par exemple : « tous les jours ouvrables à 9h, résumez ma boîte de réception et envoyez-moi un e-mail »). Fonctionnalité disponible uniquement en mode utilisateur unique.",
+      },
+      generateImage: {
+        title: "Générer des images",
+        description:
+          "Permettez à l'agent de générer des images à partir du contenu de la conversation, ou d'éditer les images jointes à la conversation, en utilisant le fournisseur de génération d'images que vous avez configuré.",
       },
     },
     mcp: {

@@ -27,10 +27,11 @@ async function streamChatWithForEmbed(
   const chatModel = embed.allow_model_override ? modelOverride : null;
 
   // If there are overrides in request & they are permitted, override the default workspace ref information.
-  if (embed.allow_prompt_override)
+  if (embed.allow_prompt_override && typeof promptOverride === "string")
     embed.workspace.openAiPrompt = promptOverride;
-  if (embed.allow_temperature_override)
-    embed.workspace.openAiTemp = parseFloat(temperatureOverride);
+  const temperatureValue = parseFloat(temperatureOverride);
+  if (embed.allow_temperature_override && !Number.isNaN(temperatureValue))
+    embed.workspace.openAiTemp = temperatureValue;
 
   const uuid = uuidv4();
   const {
@@ -178,7 +179,11 @@ async function streamChatWithForEmbed(
   // and build system messages based on inputs and history.
   const messages = await LLMConnector.compressMessages(
     {
-      systemPrompt: await chatPrompt(embed.workspace, username),
+      // Embed visitors are anonymous - never pass request-supplied identity
+      // into chatPrompt and never inject stored memories into the prompt.
+      systemPrompt: await chatPrompt(embed.workspace, null, {
+        skipMemories: true,
+      }),
       userPrompt: message,
       contextTexts,
       chatHistory,

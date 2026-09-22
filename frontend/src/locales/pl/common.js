@@ -323,8 +323,6 @@ const TRANSLATIONS = {
         description:
           "Umożliw agentowi korzystanie z języka SQL, aby odpowiadał na Twoje pytania, poprzez połączenie z różnymi dostawcami baz danych SQL.",
       },
-      default_skill:
-        "Domyślnie, ta umiejętność jest włączona, ale można ją wyłączyć, jeśli nie chcemy, aby była dostępna dla agenta.",
       filesystem: {
         title: "Dostęp do systemu plików",
         description:
@@ -736,6 +734,11 @@ const TRANSLATIONS = {
         title: "Twórz zdefiniowane harmonogramy zadań",
         description:
           "Umożliw agentowi tworzenie powtarzalnych zadań w harmonogramie bezpośrednio z czatu (np. „codziennie w poniedziałek o 9:00, podsumuj zawartość mojej skrzynki pocztowej i wyślij mi e-mail”). Funkcja dostępna tylko w trybie dla jednego użytkownika.",
+      },
+      generateImage: {
+        title: "Generuj obrazy",
+        description:
+          "Pozwól przedstawicielowi generować obrazy na podstawie rozmowy lub edytować dołączone obrazy, korzystając z wybranego dostawcy usług generowania obrazów.",
       },
     },
     mcp: {

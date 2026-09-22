@@ -173,6 +173,8 @@ const SystemSettings = {
             "brave-search",
             "crw-search",
             "you-search",
+            "keenable-search",
+            "anysearch-search",
           ].includes(update)
         )
           throw new Error("Invalid SERP provider.");
@@ -613,6 +615,9 @@ const SystemSettings = {
       AgentCrwApiKey: !!process.env.AGENT_CRW_API_KEY || null,
       AgentCrwApiUrl: process.env.AGENT_CRW_API_URL || null,
       AgentYouApiKey: !!process.env.AGENT_YOU_API_KEY || null,
+      AgentKeenableApiKey: !!process.env.AGENT_KEENABLE_API_KEY || null,
+      AgentKeenableApiUrl: process.env.AGENT_KEENABLE_API_URL || null,
+      AgentAnySearchApiKey: !!process.env.AGENT_ANYSEARCH_API_KEY || null,
 
       // --------------------------------------------------------
       // Compliance Settings
@@ -945,6 +950,7 @@ const SystemSettings = {
       OpenRouterApiKey: !!process.env.OPENROUTER_API_KEY,
       OpenRouterModelPref: process.env.OPENROUTER_MODEL_PREF,
       OpenRouterTimeout: process.env.OPENROUTER_TIMEOUT_MS,
+      OpenRouterServiceTier: process.env.OPENROUTER_SERVICE_TIER,
 
       // Mistral AI (API) Keys
       MistralApiKey: !!process.env.MISTRAL_API_KEY,
@@ -1034,12 +1040,12 @@ const SystemSettings = {
       GiteeAIModelPref: process.env.GITEE_AI_MODEL_PREF,
       GiteeAITokenLimit: process.env.GITEE_AI_MODEL_TOKEN_LIMIT || 8192,
 
-      // Docker Model Runner Keys
-      DockerModelRunnerBasePath: process.env.DOCKER_MODEL_RUNNER_BASE_PATH,
-      DockerModelRunnerModelPref:
-        process.env.DOCKER_MODEL_RUNNER_LLM_MODEL_PREF,
-      DockerModelRunnerModelTokenLimit:
-        process.env.DOCKER_MODEL_RUNNER_LLM_MODEL_TOKEN_LIMIT || 8192,
+      // llmman Keys
+      LlmmanBasePath: process.env.LLMMAN_BASE_PATH,
+      LlmmanModelPref: process.env.LLMMAN_MODEL_PREF,
+      LlmmanTokenLimit: process.env.LLMMAN_MODEL_TOKEN_LIMIT || 8192,
+      LlmmanKeepAliveSeconds: process.env.LLMMAN_KEEP_ALIVE_TIMEOUT ?? 300,
+      LlmmanAuthToken: !!process.env.LLMMAN_AUTH_TOKEN,
 
       // Privatemode Keys
       PrivateModeBasePath: process.env.PRIVATEMODE_LLM_BASE_PATH,
@@ -1063,6 +1069,13 @@ const SystemSettings = {
       // Cerebras Keys
       CerebrasApiKey: !!process.env.CEREBRAS_API_KEY,
       CerebrasModelPref: process.env.CEREBRAS_MODEL_PREF,
+
+      // Google Vertex AI Keys
+      VertexAiLLMApiKey: !!process.env.VERTEX_AI_LLM_API_KEY,
+      VertexAiLLMProjectId: process.env.VERTEX_AI_LLM_PROJECT_ID,
+      VertexAiLLMRegion: process.env.VERTEX_AI_LLM_REGION,
+      VertexAiLLMModelPref: process.env.VERTEX_AI_LLM_MODEL_PREF,
+      VertexAiLLMTokenLimit: process.env.VERTEX_AI_LLM_MODEL_TOKEN_LIMIT,
 
       // OMLX Keys
       OMLXLLMBasePath: process.env.OMLX_LLM_BASE_PATH,

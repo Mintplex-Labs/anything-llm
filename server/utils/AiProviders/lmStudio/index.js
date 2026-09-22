@@ -289,34 +289,52 @@ class LMStudioLLM {
   }
 
   /**
+   * Fetches a model's entry from the /api/v1/models endpoint.
+   * @param {string} model - The model key to look up
+   * @returns {Promise<object>} The model info, or an empty object if not found.
+   */
+  static async #getModelInfo(model) {
+    const endpoint = new URL(
+      parseLMStudioBasePath(process.env.LMSTUDIO_BASE_PATH, "v1")
+    );
+    const apiKey = process.env.LMSTUDIO_AUTH_TOKEN ?? null;
+    endpoint.pathname += "/models";
+    return (
+      (await fetch(endpoint.toString(), {
+        headers: {
+          "Content-Type": "application/json",
+          ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
+        },
+      })
+        .then((res) => {
+          if (!res.ok)
+            throw new Error(`LMStudio:getModelInfo - ${res.statusText}`);
+          return res.json();
+        })
+        .then(({ models = [] }) => models.find((m) => m.key === model))) || {}
+    );
+  }
+
+  /**
+   * Whether the model currently has an instance loaded into memory.
+   * Resolves true on error so a dead server fails on the real completion instead.
+   * @param {string} model - The model key to check
+   * @returns {Promise<boolean>}
+   */
+  static async isModelLoaded(model) {
+    return await LMStudioLLM.#getModelInfo(model)
+      .then((info) => (info.loaded_instances ?? []).length > 0)
+      .catch(() => true);
+  }
+
+  /**
    * Returns the capabilities of the model.
    * This uses the new /api/v1 endpoint, which returns the model info in a different format.
    * @returns {Promise<{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}>}
    */
   async getModelCapabilities() {
     try {
-      const endpoint = new URL(
-        parseLMStudioBasePath(process.env.LMSTUDIO_BASE_PATH, "v1")
-      );
-      const apiKey = process.env.LMSTUDIO_AUTH_TOKEN ?? null;
-      endpoint.pathname += "/models";
-      const modelInfo =
-        (await fetch(endpoint.toString(), {
-          headers: {
-            "Content-Type": "application/json",
-            ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
-          },
-        })
-          .then((res) => {
-            if (!res.ok)
-              throw new Error(
-                `LMStudio:getModelCapabilities - ${res.statusText}`
-              );
-            return res.json();
-          })
-          .then(({ models = [] }) =>
-            models.find((model) => model.key === this.model)
-          )) || {};
+      const modelInfo = await LMStudioLLM.#getModelInfo(this.model);
 
       const capabilities = modelInfo.hasOwnProperty("capabilities")
         ? modelInfo.capabilities

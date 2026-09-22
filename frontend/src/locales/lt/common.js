@@ -330,8 +330,6 @@ const TRANSLATIONS = {
         description:
           "Leidžia jūsų agentui naudoti SQL užklausas atsakymams per įvairius SQL duomenų bazių tiekėjus.",
       },
-      default_skill:
-        "Pagal numatytuosius nustatymus šis įgūdis yra įjungtas, bet galite jį išjungti, jei nenorite, kad jis būtų prieinamas agentui.",
       filesystem: {
         title: "Failų sistemos prieigos teisės",
         description:
@@ -730,6 +728,11 @@ const TRANSLATIONS = {
         title: "Sukurkite nurodytus užduotis",
         description:
           "Leiskite agentui kurti nuolatinės užduotės iš pokalbio (pvz., „kasdien, 9 val., peržiūrėkite mano pašto dėžę ir siųskite man el. laišką“). Šis funkcijomis galima naudotis tik vieno vartotojo režimu.",
+      },
+      generateImage: {
+        title: "Sukurti vaizdus",
+        description:
+          "Leiskite agentui generuoti vaizdus iš pokalbio arba redaguoti pokalbio metu pridedamus vaizdus, naudodami jūsų konfiguruotą vaizdų generavimo paslaugą.",
       },
     },
     mcp: {
