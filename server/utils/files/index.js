@@ -29,6 +29,11 @@ const generatedImagesPath =
 // eg: youtube-subject/video-123.json
 async function fileData(filePath = null) {
   if (!filePath) throw new Error("No docPath provided in request");
+  // The raw filePath is what gets persisted as a document's `docpath` and later
+  // resolved directly by background jobs, so it must stay inside the documents
+  // folder on its own and not only after normalization strips a leading `../`.
+  if (!isWithin(documentsPath, path.resolve(documentsPath, filePath)))
+    return null;
   const fullFilePath = path.resolve(documentsPath, normalizePath(filePath));
   if (!fs.existsSync(fullFilePath) || !isWithin(documentsPath, fullFilePath))
     return null;
@@ -585,6 +590,9 @@ function _rgFileSearch(rgPath, searchTerm) {
 
 /**
  * Finds JSON documents whose *content* contains `searchTerm`.
+ * `--fixed-strings` keeps the term literal, matching the escaping the filename
+ * search does: without it "(2024)" is a capture group and "[pricing]" is a
+ * character class, so punctuation silently changes which documents match.
  * `--` terminates flag parsing, so a term beginning with "-" cannot be
  * interpreted as an option.
  * @returns {Promise<Set<string>>} absolute file paths
@@ -594,6 +602,7 @@ function _rgContentSearch(rgPath, searchTerm) {
     "--files-with-matches",
     "--no-ignore",
     "--ignore-case",
+    "--fixed-strings",
     "--max-count",
     "1",
     "--glob",

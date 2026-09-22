@@ -544,8 +544,6 @@ const TRANSLATIONS = {
           },
         },
       },
-      default_skill:
-        "Per defecte, aquesta habilitat està activada, però pots desactivar-la si no vols que estigui disponible per a l'agent.",
       outlook: {
         title: "Connector per a Outlook",
         description:
@@ -745,6 +743,11 @@ const TRANSLATIONS = {
         title: "Crea tasques programades",
         description:
           'Permet que l\'agent creï tasques programades recurrents a partir del missatge (per exemple, "cada dia de dilluny a les 9 del matí, resumeix la meva caixa de correu i envia un correu electrònic"). Només disponible en mode per a un usuari.',
+      },
+      generateImage: {
+        title: "Generar imatges",
+        description:
+          "Permet que l'agent generi imatges a partir del xat, o editi les imatges adjuntes a la conversa, utilitzant el proveïdor de generació d'imatges configurat.",
       },
     },
     mcp: {

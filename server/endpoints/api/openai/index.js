@@ -116,7 +116,7 @@ function apiOpenAICompatibleEndpoints(app) {
         if (!workspace) return response.status(401).end();
 
         const userMessage = messages.pop();
-        if (userMessage.role !== "user") {
+        if (userMessage?.role !== "user") {
           return response.status(400).json({
             id: uuidv4(),
             type: "abort",
@@ -129,7 +129,9 @@ function apiOpenAICompatibleEndpoints(app) {
         }
 
         const systemPrompt =
-          messages.find((chat) => chat.role === "system")?.content ?? null;
+          extractTextContent(
+            messages.find((chat) => chat.role === "system")?.content
+          ) ?? null;
         const history = messages.filter((chat) => chat.role !== "system") ?? [];
 
         if (!stream) {
@@ -196,7 +198,7 @@ function apiOpenAICompatibleEndpoints(app) {
     async (request, response) => {
       /*
       #swagger.tags = ['OpenAI Compatible Endpoints']
-      #swagger.description = 'Generate or edit an image using the system-configured image generation provider. Send a multipart/form-data request with a "prompt" field and an optional "size" field. To edit an existing image, attach one or more files as "image_references" — when present, the request is automatically routed to the provider image editing endpoint. Returns the image as a base64 PNG. If the provider does not support editing (e.g. Ollama), a notice is included and a new image is generated from the prompt only.'
+      #swagger.description = 'Generate or edit an image using the system-configured image generation provider. Send a multipart/form-data request with a "prompt" field and an optional "size" field. To edit an existing image, attach one or more files as "image_references" — when present, the request is automatically routed to the provider image editing endpoint. Returns the image as a base64 PNG. If the provider does not support reference images (e.g. Ollama), the request fails with a descriptive error.'
       #swagger.consumes = ['multipart/form-data']
       #swagger.parameters['prompt'] = {
         in: 'formData',

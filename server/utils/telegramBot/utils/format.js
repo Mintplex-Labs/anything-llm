@@ -108,13 +108,13 @@ function markdownToTelegram(
 
   // Restore preserved blocks
   thinkBlocks.forEach((block, i) => {
-    result = result.replace(`\x00THINKBLOCK${i}\x00`, block);
+    result = result.replace(`\x00THINKBLOCK${i}\x00`, () => block);
   });
   codeBlocks.forEach((block, i) => {
-    result = result.replace(`\x00CODEBLOCK${i}\x00`, block);
+    result = result.replace(`\x00CODEBLOCK${i}\x00`, () => block);
   });
   inlineCode.forEach((code, i) => {
-    result = result.replace(`\x00INLINECODE${i}\x00`, code);
+    result = result.replace(`\x00INLINECODE${i}\x00`, () => code);
   });
 
   // Close any unclosed HTML tags to prevent Telegram API errors during streaming

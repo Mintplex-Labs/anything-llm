@@ -316,8 +316,6 @@ const TRANSLATIONS = {
         description:
           "Tagage, et teie esindaja saaks kasutada SQL-i, et vastata teie küsimustele, ühendades erinevate SQL andmebaasiteenustega.",
       },
-      default_skill:
-        "Vaikimisi on see funktsioon lubatud, kuid saate seda välja lülitada, kui ei soovi, et see oleks saadaval kaagentile.",
       filesystem: {
         title: "Failisüsteemi juurdepääs",
         description:
@@ -710,6 +708,11 @@ const TRANSLATIONS = {
         title: "Loo planeeritud ülesandeid",
         description:
           'Lase esindajal luua korduvad, planeeritud ülesanded vestluse kaudu (nt " iga tööpäeva kell 9 kokkuvõta minu postkasti ja saada mulle e-posti"). Saadav ainult ühe kasutaja režiimis.',
+      },
+      generateImage: {
+        title: "Loo pildid",
+        description:
+          "Lase esindajal luua pilte vestluse põhjal või muuta dialoogi külge lisatud pilte, kasutades teie konfigureeritud piltide genereerimisteenust.",
       },
     },
     mcp: {

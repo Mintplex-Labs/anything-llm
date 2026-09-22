@@ -1,6 +1,7 @@
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
   handleDefaultStreamResponseV2,
+  formatChatHistory,
 } = require("../../helpers/chat/responses");
 const {
   LLMPerformanceMonitor,
@@ -14,6 +15,15 @@ const cacheFolder = path.resolve(
     ? path.resolve(process.env.STORAGE_DIR, "models", "togetherAi")
     : path.resolve(__dirname, `../../../storage/models/togetherAi`)
 );
+
+function cachedTogetherAiModels() {
+  const cacheModelPath = path.resolve(cacheFolder, "models.json");
+  if (!fs.existsSync(cacheModelPath)) return [];
+  return safeJsonParse(
+    fs.readFileSync(cacheModelPath, { encoding: "utf-8" }),
+    []
+  );
+}
 
 async function togetherAiModels(apiKey = null) {
   const cacheModelPath = path.resolve(cacheFolder, "models.json");
@@ -96,6 +106,13 @@ class TogetherAiLLM {
 
     this.embedder = !embedder ? new NativeEmbedder() : embedder;
     this.defaultTemp = 0.7;
+    this.log(
+      `Initialized with model: ${this.model} (context window: ${this.promptWindowLimit()})`
+    );
+  }
+
+  log(text, ...args) {
+    console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {
@@ -139,14 +156,14 @@ class TogetherAiLLM {
     return "streamGetChatCompletion" in this;
   }
 
-  static async promptWindowLimit(modelName) {
-    const models = await togetherAiModels();
+  static promptWindowLimit(modelName) {
+    const models = cachedTogetherAiModels();
     const model = models.find((m) => m.id === modelName);
     return model?.maxLength || 4096;
   }
 
-  async promptWindowLimit() {
-    const models = await togetherAiModels();
+  promptWindowLimit() {
+    const models = cachedTogetherAiModels();
     const model = models.find((m) => m.id === this.model);
     return model?.maxLength || 4096;
   }
@@ -170,7 +187,7 @@ class TogetherAiLLM {
     };
     return [
       prompt,
-      ...chatHistory,
+      ...formatChatHistory(chatHistory, this.#generateContent),
       {
         role: "user",
         content: this.#generateContent({ userPrompt, attachments }),
