@@ -296,7 +296,20 @@ async function storeVectorResult(vectorData = [], filename = null) {
 
   const digest = uuidv5(filename, uuidv5.URL);
   const writeTo = path.resolve(vectorCachePath, `${digest}.json`);
-  fs.writeFileSync(writeTo, JSON.stringify(vectorData), "utf8");
+  // Serialize chunk-by-chunk: stringifying the whole array at once can exceed
+  // V8's max string length on large embeddings (RangeError) even though the
+  // vectors were already persisted to the vector database successfully.
+  const stream = fs.createWriteStream(writeTo, { encoding: "utf8" });
+  stream.write("[");
+  for (let i = 0; i < vectorData.length; i++) {
+    stream.write((i > 0 ? "," : "") + JSON.stringify(vectorData[i]));
+  }
+  stream.write("]");
+  await new Promise((resolve, reject) => {
+    stream.on("error", reject);
+    stream.on("finish", resolve);
+    stream.end();
+  });
   return;
 }
 
