@@ -1,6 +1,6 @@
 /**
- * Generate a preview presentation for every palette, exercising every layout,
- * using the same rendering pipeline as the production tool. Run from repo root:
+ * Renders a preview deck for every theme, exercising every layout through the
+ * production pipeline. Run from repo root:
  *
  *   node server/utils/agents/aibitat/plugins/create-files/pptx/test-themes.js
  *
@@ -8,12 +8,11 @@
  */
 
 const path = require("path");
-const fs = require("fs");
-const PptxGenJS = require("pptxgenjs");
+const fs = require("fs/promises");
 const createFilesLib = require("../lib.js");
-const { getTheme, getAvailableThemes } = require("./themes.js");
-const { renderCover, renderSlide } = require("./layouts.js");
-const { normalizeSlides } = require("./normalize.js");
+const { PALETTES, getTheme } = require("./themes.js");
+const { normalizeSlides } = require("./slides.js");
+const { renderDeck } = require("./render.js");
 
 const SAMPLE_SLIDES = [
   {
@@ -140,54 +139,31 @@ const SAMPLE_SLIDES = [
   },
 ];
 
-async function generateThemePreview(themeName, outputDir) {
-  const theme = getTheme(themeName);
-  const pptx = new PptxGenJS();
-  pptx.title = `${theme.name} Theme Preview`;
-  pptx.author = "AnythingLLM";
-  pptx.company = "AnythingLLM";
-
-  renderCover(
-    pptx.addSlide(),
-    pptx,
-    {
-      title: `${theme.name} Palette`,
-      subtitle: "FY2025 Annual Review",
-      author: "AnythingLLM",
-    },
-    theme
-  );
-
-  const slides = normalizeSlides(SAMPLE_SLIDES);
-  let sectionIndex = 0;
-  slides.forEach((slideData, index) => {
-    if (slideData.layout === "section") sectionIndex++;
-    renderSlide(pptx, slideData, theme, {
-      n: index + 1,
-      total: slides.length,
-      sectionIndex,
-      firstInSection: slides[index - 1]?.layout === "section",
-    });
-  });
-
-  const filename = `theme-preview-${themeName}.pptx`;
-  await pptx.writeFile({ fileName: path.join(outputDir, filename) });
-  console.log(`  ✓ ${theme.name} → ${filename}`);
-}
-
 async function main() {
-  const baseDir = await createFilesLib.getOutputDirectory();
-  const outputDir = path.join(baseDir, "theme-previews");
-  if (!fs.existsSync(outputDir)) {
-    fs.mkdirSync(outputDir, { recursive: true });
+  const outputDir = path.join(
+    await createFilesLib.getOutputDirectory(),
+    "theme-previews"
+  );
+  await fs.mkdir(outputDir, { recursive: true });
+  const slides = normalizeSlides(SAMPLE_SLIDES);
+  for (const name of Object.keys(PALETTES)) {
+    const theme = getTheme(name);
+    const buffer = await renderDeck(
+      {
+        title: `${theme.name} Theme`,
+        subtitle: "FY2025 Annual Review",
+        author: "AnythingLLM",
+        slides,
+      },
+      theme
+    );
+    await fs.writeFile(
+      path.join(outputDir, `theme-preview-${name}.pptx`),
+      buffer
+    );
+    console.log(`  ✓ ${theme.name}`);
   }
-
-  console.log("Generating theme previews…\n");
-  const themes = getAvailableThemes();
-  for (const themeName of themes) {
-    await generateThemePreview(themeName, outputDir);
-  }
-  console.log(`\nDone! ${themes.length} previews saved to:\n  ${outputDir}`);
+  console.log(`\nDone! Previews saved to:\n  ${outputDir}`);
 }
 
 main().catch(console.error);

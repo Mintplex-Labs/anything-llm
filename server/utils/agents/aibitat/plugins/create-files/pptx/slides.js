@@ -1,9 +1,12 @@
 const { safeJsonParse } = require("../../../../../http");
 
 /**
- * The one shape every renderer trusts. Produced only by normalizeSlides.
+ * The slide contract between the model and the renderer: the layouts that
+ * exist, what the model may submit for one (SLIDE_SCHEMA) and how any model
+ * output is turned into the one shape every renderer trusts (normalizeSlides).
+ *
  * @typedef {Object} Slide
- * @property {string} layout - A key of LAYOUT_RULES
+ * @property {string} layout - A key of LAYOUTS
  * @property {string} title
  * @property {string} subtitle
  * @property {string[]} bullets
@@ -16,6 +19,98 @@ const { safeJsonParse } = require("../../../../../http");
 const CHART_TYPES = ["bar", "line", "pie", "doughnut", "area"];
 const MAX_TABLE_COLS = 6;
 const MAX_TABLE_ROWS = 8;
+
+// A stat title is the big number, so prose or bare "0"/"1" wordplay is not one.
+const isStat = (item) =>
+  /\d/.test(item.title) &&
+  !/^[01]$/.test(item.title) &&
+  item.title.length <= 14;
+
+/**
+ * Every layout: the one-line description the builder prompt shows the model
+ * and the rule a normalized slide must pass to render with it.
+ */
+const LAYOUTS = {
+  section: {
+    hint: "divider. title + subtitle",
+    fits: (s) => !!s.title,
+  },
+  bullets: {
+    hint: "title + bullets (3-6 short strings)",
+    fits: (s) => s.bullets.length > 0,
+  },
+  "two-column": {
+    hint: "compare or contrast. title + items (exactly 2, each with title + bullets)",
+    fits: (s) => s.items.length > 1,
+  },
+  stats: {
+    hint: 'real measured figures only (money, percentages, counts with a source), e.g. "42%" or "$1.2B". title + items (2-4, each title is the number, text is the label). Never use it for wordplay like "0", "1 app" or "∞"',
+    fits: (s) => s.items.length > 0 && s.items.every(isStat),
+  },
+  cards: {
+    hint: "parallel ideas. title + items (2-6, each with title + one-sentence text)",
+    fits: (s) => s.items.length > 0,
+  },
+  steps: {
+    hint: "process or timeline. title + items (3-5, each with title + short text)",
+    fits: (s) => s.items.length > 0,
+  },
+  chart: {
+    hint: `title + chart { type: ${CHART_TYPES.join("|")}, categories, values } + optional bullets`,
+    fits: (s) => !!s.chart,
+  },
+  table: {
+    hint: "title + table { headers, rows }",
+    fits: (s) => !!s.table,
+  },
+  quote: {
+    hint: "title is the quote text, subtitle is who said it",
+    fits: (s) => !!s.title,
+  },
+};
+
+// Field meanings live in the builder prompt; the schema stays bare so it
+// costs as few tokens as possible on every section call.
+const SLIDE_SCHEMA = {
+  type: "object",
+  properties: {
+    layout: { type: "string", enum: Object.keys(LAYOUTS) },
+    title: { type: "string" },
+    subtitle: { type: "string" },
+    bullets: { type: "array", items: { type: "string" } },
+    items: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          title: { type: "string" },
+          text: { type: "string" },
+          bullets: { type: "array", items: { type: "string" } },
+        },
+      },
+    },
+    chart: {
+      type: "object",
+      properties: {
+        type: { type: "string", enum: CHART_TYPES },
+        categories: { type: "array", items: { type: "string" } },
+        values: { type: "array", items: { type: "number" } },
+      },
+    },
+    table: {
+      type: "object",
+      properties: {
+        headers: { type: "array", items: { type: "string" } },
+        rows: {
+          type: "array",
+          items: { type: "array", items: { type: "string" } },
+        },
+      },
+    },
+    notes: { type: "string" },
+  },
+  required: ["layout", "title"],
+};
 
 const text = (v) => (v == null ? "" : String(v).trim());
 const list = (v) => (Array.isArray(v) ? v : typeof v === "string" ? [v] : []);
@@ -76,32 +171,14 @@ function normalizeChart(raw) {
   };
 }
 
-// Which layouts are valid for a normalized slide's data. A stat title is the
-// big number, so prose or bare "0"/"1" wordplay is not a stat.
-const LAYOUT_RULES = {
-  section: (s) => !!s.title,
-  quote: (s) => !!s.title,
-  bullets: (s) => s.bullets.length > 0,
-  "two-column": (s) => s.items.length > 1,
-  stats: (s) =>
-    s.items.length > 0 &&
-    s.items.every(
-      (i) =>
-        /\d/.test(i.title) && !/^[01]$/.test(i.title) && i.title.length <= 14
-    ),
-  cards: (s) => s.items.length > 0,
-  steps: (s) => s.items.length > 0,
-  chart: (s) => !!s.chart,
-  table: (s) => !!s.table,
-};
-
+/** The requested layout when the slide's data supports it, else the richest one that does. */
 function resolveLayout(slide, requested) {
-  if (LAYOUT_RULES[requested]?.(slide)) return requested;
+  if (LAYOUTS[requested]?.fits(slide)) return requested;
   if (slide.chart) return "chart";
   if (slide.table) return "table";
   if (slide.items.length) return "cards";
   if (slide.bullets.length) return "bullets";
-  return requested === "quote" && slide.title ? "quote" : null;
+  return null;
 }
 
 /**
@@ -127,10 +204,7 @@ function normalizeSlides(raw, sectionTitle = "") {
         chart: normalizeChart(s.chart),
         notes: text(s.notes),
       };
-      const layout =
-        s.layout === "section" && slide.title
-          ? "section"
-          : resolveLayout(slide, text(s.layout));
+      const layout = resolveLayout(slide, text(s.layout));
       return layout ? { layout, ...slide } : null;
     })
     .filter(Boolean);
@@ -150,9 +224,4 @@ function pruneDividers(slides) {
   );
 }
 
-module.exports = {
-  LAYOUTS: Object.keys(LAYOUT_RULES),
-  CHART_TYPES,
-  normalizeSlides,
-  pruneDividers,
-};
+module.exports = { LAYOUTS, SLIDE_SCHEMA, normalizeSlides, pruneDividers };
