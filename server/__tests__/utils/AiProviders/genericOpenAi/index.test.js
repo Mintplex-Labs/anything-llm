@@ -174,3 +174,30 @@ describe("GenericOpenAiProvider (agent) attachment content", () => {
     });
   });
 });
+
+describe("GenericOpenAiLLM max_tokens payload", () => {
+  function stubCreate(provider) {
+    const create = jest.fn().mockResolvedValue({
+      choices: [{ message: { content: "ok" } }],
+      usage: {},
+    });
+    provider.openai = { chat: { completions: { create } } };
+    return create;
+  }
+
+  it("omits max_tokens when the ENV is set to zero", async () => {
+    process.env.GENERIC_OPEN_AI_MAX_TOKENS = "0";
+    const provider = new GenericOpenAiLLM();
+    const create = stubCreate(provider);
+    await provider.getChatCompletion([], { temperature: 0.7 });
+    expect(create.mock.calls[0][0]).not.toHaveProperty("max_tokens");
+  });
+
+  it("sends max_tokens when the ENV is a positive number", async () => {
+    process.env.GENERIC_OPEN_AI_MAX_TOKENS = "512";
+    const provider = new GenericOpenAiLLM();
+    const create = stubCreate(provider);
+    await provider.getChatCompletion([], { temperature: 0.7 });
+    expect(create.mock.calls[0][0].max_tokens).toBe(512);
+  });
+});

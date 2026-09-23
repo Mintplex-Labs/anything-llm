@@ -13,6 +13,9 @@ const { v4: uuidv4 } = require("uuid");
 const { toValidNumber } = require("../../http");
 const { getAnythingLLMUserAgent } = require("../../../endpoints/utils");
 const { attachmentToContentBlock } = require("../../helpers/attachments");
+const {
+  maxTokensParam,
+} = require("../../agents/aibitat/providers/helpers/tooled.js");
 
 class GenericOpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -228,7 +231,7 @@ class GenericOpenAiLLM {
           model: this.model,
           messages,
           temperature,
-          max_tokens: this.maxTokens,
+          ...maxTokensParam(this.maxTokens),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -268,7 +271,7 @@ class GenericOpenAiLLM {
         stream: true,
         messages,
         temperature,
-        max_tokens: this.maxTokens,
+        ...maxTokensParam(this.maxTokens),
         ...this.#includeStreamOptionsUsage(),
       }),
       messages,

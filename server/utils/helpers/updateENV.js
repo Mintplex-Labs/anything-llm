@@ -219,7 +219,7 @@ const KEY_MAPPING = {
   },
   GenericOpenAiMaxTokens: {
     envKey: "GENERIC_OPEN_AI_MAX_TOKENS",
-    checks: [nonZero],
+    checks: [nonNegative],
   },
 
   // AWS Bedrock LLM Settings
@@ -1069,6 +1069,12 @@ function isNotEmpty(input = "") {
 function nonZero(input = "") {
   if (isNaN(Number(input))) return "Value must be a number";
   return Number(input) <= 0 ? "Value must be greater than zero" : null;
+}
+
+// Zero is allowed and means the field is omitted from the request payload.
+function nonNegative(input = "") {
+  if (isNaN(Number(input))) return "Value must be a number";
+  return Number(input) < 0 ? "Value cannot be negative" : null;
 }
 
 function isInteger(input = "") {

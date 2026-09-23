@@ -2,7 +2,11 @@ const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
-const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
+const {
+  tooledStream,
+  tooledComplete,
+  maxTokensParam,
+} = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
 const { toValidNumber } = require("../../../http/index.js");
 const { getAnythingLLMUserAgent } = require("../../../../endpoints/utils");
@@ -77,7 +81,7 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
         model: this.model,
         temperature: 0,
         messages,
-        max_tokens: this.maxTokens,
+        ...maxTokensParam(this.maxTokens),
       })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
@@ -96,7 +100,7 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
       model: this.model,
       stream: true,
       messages,
-      max_tokens: this.maxTokens,
+      ...maxTokensParam(this.maxTokens),
     });
   }
 

@@ -168,16 +168,17 @@ function formatMessagesForTools(messages, options = {}) {
  * `maxTokens` in options get the field, every other provider keeps sending no
  * `max_tokens` so the backend's own default applies unchanged.
  * @param {unknown} maxTokens
- * @returns {{max_tokens?: number}}
+ * @param {string} [key] - field name to build, for clients that expect a different casing
+ * @returns {Object}
  */
-function maxTokensParam(maxTokens) {
+function maxTokensParam(maxTokens, key = "max_tokens") {
   if (
     typeof maxTokens !== "number" ||
     !Number.isFinite(maxTokens) ||
     maxTokens <= 0
   )
     return {};
-  return { max_tokens: maxTokens };
+  return { [key]: maxTokens };
 }
 
 /**
@@ -489,4 +490,5 @@ module.exports = {
   tooledStream,
   tooledComplete,
   serviceTierParam,
+  maxTokensParam,
 };
