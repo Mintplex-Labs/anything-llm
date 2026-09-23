@@ -498,15 +498,17 @@ export function AnySearchOptions({ settings }) {
   return (
     <>
       <p className="text-sm text-white/60 my-2">
-        AnySearch requires a free API key{" "}
+        AnySearch works without an API key (anonymous tier, daily quota). Add a
+        free key{" "}
         <a
           href="https://anysearch.com/console/api-keys"
           target="_blank"
           rel="noreferrer"
           className="text-blue-300 underline"
         >
-          from the AnySearch console.
-        </a>
+          from the AnySearch console
+        </a>{" "}
+        to lift quotas.
       </p>
       <div className="flex gap-x-4">
         <div className="flex flex-col w-60">
@@ -517,8 +519,7 @@ export function AnySearchOptions({ settings }) {
             type="password"
             name="env::AgentAnySearchApiKey"
             className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-            placeholder="AnySearch API Key"
-            required={true}
+            placeholder="AnySearch API Key (optional)"
             defaultValue={settings?.AgentAnySearchApiKey ? "*".repeat(20) : ""}
             autoComplete="off"
             spellCheck={false}

@@ -46,12 +46,17 @@ const webBrowsing = {
                 type: "string",
                 description: "A search query.",
               },
+              count: {
+                type: "number",
+                description:
+                  "Optional number of search results to return (1-10). Used when the configured provider supports it.",
+              },
             },
             additionalProperties: false,
           },
-          handler: async function ({ query }) {
+          handler: async function ({ query, count }) {
             try {
-              if (query) return await this.search(query);
+              if (query) return await this.search(query, count);
               return "There is nothing we can do. This function call returns no information.";
             } catch (error) {
               return `There was an error while calling the function. No data or response was found. Let the user know this was the error: ${error.message}`;
@@ -63,7 +68,7 @@ const webBrowsing = {
            * Free to set up, easy to use, 100 calls/day!
            * https://programmablesearchengine.google.com/controlpanel/create
            */
-          search: async function (query) {
+          search: async function (query, count) {
             const provider =
               (await SystemSettings.get({ label: "agent_search_provider" }))
                 ?.value ?? "unknown";
@@ -122,7 +127,7 @@ const webBrowsing = {
                 // which falls back to DuckDuckGo on any failure.
                 engine = "_youSearch";
             }
-            return await this[engine](query);
+            return await this[engine](query, count);
           },
 
           /**
@@ -1329,7 +1334,7 @@ const webBrowsing = {
             // Managed fastCRW returns `data` as a flat array; self-hosted nests it under `data.results`.
             const searchResults = Array.isArray(response?.data)
               ? response.data
-              : response?.data?.results ?? [];
+              : (response?.data?.results ?? []);
 
             const data = [];
             searchResults.forEach((searchResult) => {
@@ -1573,16 +1578,20 @@ const webBrowsing = {
           /**
            * AnySearch — https://anysearch.com
            * POST https://api.anysearch.com/v1/search
-           * Requires AGENT_ANYSEARCH_API_KEY (free key from
-           * https://anysearch.com/console/api-keys). Envelope responses use
+           * AGENT_ANYSEARCH_API_KEY is optional (free key from
+           * https://anysearch.com/console/api-keys); without it the anonymous
+           * tier is used, subject to daily quotas. Envelope responses use
            * `{code, message, data}` where a non-zero `code` is an API error.
            * @param {string} query
+           * @param {number} [count=10] - number of results to return (1-10)
            * @returns {Promise<string>}
            */
-          _anySearchSearch: async function (query) {
+          _anySearchSearch: async function (query, count = 10) {
             const apiKey = (process.env.AGENT_ANYSEARCH_API_KEY || "").trim();
-            if (!apiKey)
-              return `AnySearch API key is missing. Get a free key at https://anysearch.com/console/api-keys and set AGENT_ANYSEARCH_API_KEY.`;
+            const maxResults = Math.min(
+              10,
+              Math.max(1, Math.round(Number(count) || 10))
+            );
 
             this.super.introspect(
               `${this.caller}: Using AnySearch to search for "${
@@ -1590,17 +1599,23 @@ const webBrowsing = {
               }"`
             );
 
-            const headers = {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${apiKey}`,
-            };
+            const headers = { "Content-Type": "application/json" };
+            if (apiKey) headers.Authorization = `Bearer ${apiKey}`;
+            else
+              this.super.introspect(
+                `${this.caller}: No AnySearch API key set - using the anonymous tier (daily quota applies).`
+              );
 
             const { response, error } = await fetch(
               "https://api.anysearch.com/v1/search",
               {
                 method: "POST",
                 headers,
-                body: JSON.stringify({ query: String(query), max_results: 10 }),
+                body: JSON.stringify({
+                  query: String(query),
+                  max_results: maxResults,
+                }),
+                signal: AbortSignal.timeout(20_000),
               }
             )
               .then(async (res) => {
@@ -1620,17 +1635,25 @@ const webBrowsing = {
                   throw new Error(
                     data?.message || `API error code ${data?.code}`
                   );
+                if (!Array.isArray(data?.data?.results))
+                  throw new Error(
+                    "Unexpected AnySearch response: missing data.results"
+                  );
                 return { response: data, error: null };
               })
               .catch((e) => {
-                this.super.handlerProps.log(`AnySearch Error: ${e.message}`);
-                return { response: null, error: e.message };
+                const message =
+                  e?.name === "TimeoutError" || e?.name === "AbortError"
+                    ? "Request timed out after 20s"
+                    : e.message;
+                this.super.handlerProps.log(`AnySearch Error: ${message}`);
+                return { response: null, error: message };
               });
             if (error)
               return `There was an error searching for content. ${error}`;
 
             const data = [];
-            response?.data?.results?.forEach((searchResult) => {
+            response.data.results.forEach((searchResult) => {
               const { title, url, snippet, content } = searchResult;
               if (!url) return; // skip rows without a link
               const text = String(snippet || content || "")
