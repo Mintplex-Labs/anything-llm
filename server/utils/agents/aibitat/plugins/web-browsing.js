@@ -1334,7 +1334,7 @@ const webBrowsing = {
             // Managed fastCRW returns `data` as a flat array; self-hosted nests it under `data.results`.
             const searchResults = Array.isArray(response?.data)
               ? response.data
-              : (response?.data?.results ?? []);
+              : response?.data?.results ?? [];
 
             const data = [];
             searchResults.forEach((searchResult) => {
