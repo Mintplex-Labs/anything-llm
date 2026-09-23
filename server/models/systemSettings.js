@@ -931,6 +931,7 @@ const SystemSettings = {
       // TogetherAI Keys
       TogetherAiApiKey: !!process.env.TOGETHER_AI_API_KEY,
       TogetherAiModelPref: process.env.TOGETHER_AI_MODEL_PREF,
+      TogetherAiMaxTokens: process.env.TOGETHER_AI_MAX_TOKENS,
 
       // Fireworks AI API Keys
       FireworksAiLLMApiKey: !!process.env.FIREWORKS_AI_LLM_API_KEY,

@@ -6,7 +6,7 @@ export default function TogetherAiOptions({ settings }) {
   const [apiKey, setApiKey] = useState(settings?.TogetherAiApiKey);
 
   return (
-    <div className="flex gap-[36px] mt-1.5">
+    <div className="flex gap-[36px] mt-1.5 flex-wrap">
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-3">
           Together AI API Key
@@ -25,7 +25,24 @@ export default function TogetherAiOptions({ settings }) {
         />
       </div>
       {!settings?.credentialsOnly && (
-        <TogetherAiModelSelection settings={settings} apiKey={apiKey} />
+        <>
+          <TogetherAiModelSelection settings={settings} apiKey={apiKey} />
+          <div className="flex flex-col w-60">
+            <label className="text-white text-sm font-semibold block mb-3">
+              Max Tokens
+            </label>
+            <input
+              type="number"
+              name="TogetherAiMaxTokens"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              placeholder="Max tokens (eg: 4096)"
+              min={1}
+              onScroll={(e) => e.target.blur()}
+              defaultValue={settings?.TogetherAiMaxTokens}
+              autoComplete="off"
+            />
+          </div>
+        </>
       )}
     </div>
   );
