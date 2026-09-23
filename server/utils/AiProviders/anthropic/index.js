@@ -6,24 +6,13 @@ const {
 } = require("../../helpers/chat/responses");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const { MODEL_MAP } = require("../modelMap");
+const { supportsTemperature } = require("./models");
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { getAnythingLLMUserAgent } = require("../../../endpoints/utils");
 
 class AnthropicLLM {
-  /**
-   * List of Anthropic models that do not support the `temperature` inference parameter.
-   * These models reject `temperature`/`top_p`/`top_k` with a 400 error.
-   * @type {string[]}
-   */
-  noTemperatureModels = [
-    "claude-opus-4-7",
-    "claude-opus-4-8",
-    "claude-sonnet-5",
-    // Add other models here if identified
-  ];
-
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.ANTHROPIC_API_KEY)
       throw new Error("No Anthropic API key was set.");
@@ -94,8 +83,7 @@ class AnthropicLLM {
    */
   temperatureParam(temperature = this.defaultTemp) {
     if (typeof temperature !== "number") return undefined;
-    if (this.noTemperatureModels.some((model) => this.model.includes(model)))
-      return undefined;
+    if (!supportsTemperature(this.model)) return undefined;
     return parseFloat(temperature);
   }
 

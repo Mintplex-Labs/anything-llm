@@ -11,6 +11,7 @@ const {
   handleAnthropicChatStream,
 } = require("./anthropicChat");
 const { openaiBaseURL, anthropicBaseURL } = require("./endpoints");
+const { supportsTemperature } = require("../anthropic/models");
 
 /**
  * Bedrock's OpenAI-compatible stream reports usage in a final chunk that
@@ -50,12 +51,6 @@ class AWSBedrockLLM {
     "cohere.command-text-v14",
     "cohere.command-light-text-v14",
     "us.deepseek.r1-v1:0",
-  ];
-
-  noTemperatureModels = [
-    "anthropic.claude-opus-4-7",
-    "anthropic.claude-opus-4-8",
-    "anthropic.claude-sonnet-5",
   ];
 
   constructor(embedder = null, modelPreference = null) {
@@ -107,8 +102,7 @@ class AWSBedrockLLM {
 
   temperatureParam(temperature = this.defaultTemp) {
     if (typeof temperature !== "number") return undefined;
-    if (this.noTemperatureModels.some((model) => this.model.includes(model)))
-      return undefined;
+    if (!supportsTemperature(this.model)) return undefined;
     return parseFloat(temperature);
   }
 
