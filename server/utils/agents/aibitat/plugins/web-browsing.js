@@ -497,8 +497,9 @@ const webBrowsing = {
                 snippet: answerBox.answer,
               });
             }
+            const takeTen = (results) => results?.slice(0, 10) ?? [];
             const addLocalResults = (results) => {
-              results?.slice(0, 10).forEach((place) => {
+              takeTen(results).forEach((place) => {
                 const { title, address, place_id } = place;
                 const terms = [title, address].filter(Boolean).join(", ");
                 const mapUrl = new URL("https://www.google.com/maps/search/");
@@ -518,7 +519,7 @@ const webBrowsing = {
             };
             switch (engine) {
               case "google_jobs":
-                response.jobs?.forEach((job) => {
+                takeTen(response.jobs).forEach((job) => {
                   data.push({
                     title: job.title,
                     company_name: job.company_name,
@@ -532,7 +533,7 @@ const webBrowsing = {
                 addLocalResults(response.local_results);
                 break;
               case "google_shopping":
-                response.shopping_results?.slice(0, 10).forEach((product) => {
+                takeTen(response.shopping_results).forEach((product) => {
                   data.push({
                     title: product.title,
                     link: product.product_link,
@@ -556,7 +557,7 @@ const webBrowsing = {
                   });
                 break;
               case "google_patents":
-                response.organic_results?.forEach((patent) => {
+                takeTen(response.organic_results).forEach((patent) => {
                   const link = patent.patent_id
                     ? new URL(patent.patent_id, "https://patents.google.com/")
                         .href
@@ -572,7 +573,7 @@ const webBrowsing = {
                 });
                 break;
               case "youtube":
-                response.videos?.slice(0, 10).forEach((video) => {
+                takeTen(response.videos).forEach((video) => {
                   data.push({
                     title: video.title,
                     link: video.link,
@@ -584,7 +585,7 @@ const webBrowsing = {
                 });
                 break;
               case "amazon_search":
-                response.organic_results?.slice(0, 10).forEach((product) => {
+                takeTen(response.organic_results).forEach((product) => {
                   data.push({
                     title: product.title,
                     link: product.link,
@@ -596,7 +597,7 @@ const webBrowsing = {
                 break;
               case "google_news":
               case "bing_news":
-                response.organic_results?.forEach((article) => {
+                takeTen(response.organic_results).forEach((article) => {
                   const { title, link, snippet, source, date } = article;
                   data.push({
                     title,
@@ -608,7 +609,7 @@ const webBrowsing = {
                 });
                 break;
               case "google_scholar":
-                response.organic_results?.forEach((paper) => {
+                takeTen(response.organic_results).forEach((paper) => {
                   const { title, link, snippet, publication } = paper;
                   data.push({
                     title,
@@ -619,7 +620,7 @@ const webBrowsing = {
                 });
                 break;
               case "google":
-                response.organic_results?.forEach((searchResult) => {
+                takeTen(response.organic_results).forEach((searchResult) => {
                   const { title, link, snippet } = searchResult;
                   data.push({
                     title,
@@ -630,7 +631,7 @@ const webBrowsing = {
                 addLocalResults(response.local_results);
                 break;
               default:
-                response.organic_results?.forEach((searchResult) => {
+                takeTen(response.organic_results).forEach((searchResult) => {
                   const { title, link, snippet } = searchResult;
                   data.push({
                     title,

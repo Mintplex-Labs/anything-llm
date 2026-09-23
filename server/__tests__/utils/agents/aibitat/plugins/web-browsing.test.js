@@ -216,6 +216,26 @@ describe("SearchApi web browsing", () => {
     ]);
   });
 
+  test("limits each Google result list without dropping local places", async () => {
+    const organicResults = Array.from({ length: 11 }, (_, index) => ({
+      title: `Web ${index}`,
+      link: `https://example.com/${index}`,
+    }));
+    const localResults = Array.from({ length: 11 }, (_, index) => ({
+      title: `Place ${index}`,
+    }));
+    const { results, citations } = await runSearch("google", {
+      organic_results: organicResults,
+      local_results: localResults,
+    });
+
+    expect(results).toHaveLength(20);
+    expect(results[9].title).toBe("Web 9");
+    expect(results[10].title).toBe("Place 0");
+    expect(results[19].title).toBe("Place 9");
+    expect(citations).toHaveLength(20);
+  });
+
   test("cites knowledge graph and featured answer sources", async () => {
     const { results, citations } = await runSearch("google", {
       search_metadata: { request_url: "https://google.com/search?q=seasons" },
