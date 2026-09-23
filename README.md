@@ -192,9 +192,9 @@ Mintplex Labs & the community maintain a number of deployment methods, scripts, 
 | --------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------- |
 | [![Deploy on Railway][railway-btn]][railway-deploy] | [![Deploy on RepoCloud][repocloud-btn]][repocloud-deploy] | [![Deploy on Elestio][elestio-btn]][elestio-deploy] | [![Deploy on Northflank][northflank-btn]][northflank-deploy] | [![Deploy on Sealos][sealos-btn]][sealos-deploy] |
 
-| Easypanel |
-| --- |
-| [![Deploy on Easypanel][easypanel-btn]][easypanel-deploy] |
+| Easypanel | ZopDay |
+| --- | --- |
+| [![Deploy on Easypanel][easypanel-btn]][easypanel-deploy] | [![Deploy on ZopDay][zopday-btn]][zopday-deploy] |
 
 [or set up a production AnythingLLM instance without Docker →](./BARE_METAL.md)
 
@@ -324,3 +324,5 @@ This project is [MIT](./LICENSE) licensed.
 [sealos-deploy]: https://sealos.io/products/app-store/anything-llm
 [easypanel-btn]: https://easypanel.io/img/deploy-on-easypanel-40.svg
 [easypanel-deploy]: https://easypanel.io/templates/anythingllm
+[zopday-btn]: https://zop.dev/deploytozopday-inkhard.svg
+[zopday-deploy]: https://zop.dev/zopday/app/deploy?image=mintplexlabs/anythingllm:latest&port=3001
