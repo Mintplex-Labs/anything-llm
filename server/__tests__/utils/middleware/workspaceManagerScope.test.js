@@ -155,4 +155,70 @@ describe("workspaceManagerScopeValid middleware", () => {
 
     expect(SystemSettings.isMultiUserMode).not.toHaveBeenCalled();
   });
+
+  it("resolves the workspace by :workspaceId on admin panel routes", async () => {
+    response.locals.user = { id: 2, role: "manager" };
+    Workspace.get.mockResolvedValue({ id: 11, slug: "ws" });
+    WorkspaceUser.get.mockResolvedValue({ user_id: 2, workspace_id: 11 });
+
+    await workspaceManagerScopeValid(
+      { params: { workspaceId: "11" } },
+      response,
+      next
+    );
+
+    expect(Workspace.get).toHaveBeenCalledWith({ id: 11 });
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(response.status).not.toHaveBeenCalled();
+  });
+
+  it("resolves the workspace by :id on delete routes", async () => {
+    response.locals.user = { id: 2, role: "manager" };
+    Workspace.get.mockResolvedValue({ id: 11, slug: "ws" });
+    WorkspaceUser.get.mockResolvedValue({ user_id: 2, workspace_id: 11 });
+
+    await workspaceManagerScopeValid({ params: { id: "11" } }, response, next);
+
+    expect(Workspace.get).toHaveBeenCalledWith({ id: 11 });
+    expect(next).toHaveBeenCalledTimes(1);
+  });
+
+  it("blocks a manager on an id-addressed workspace they are not a member of", async () => {
+    response.locals.user = { id: 2, role: "manager" };
+    Workspace.get.mockResolvedValue({ id: 11, slug: "ws" });
+    WorkspaceUser.get.mockResolvedValue(null);
+
+    await workspaceManagerScopeValid(
+      { params: { workspaceId: "11" } },
+      response,
+      next
+    );
+
+    expect(next).not.toHaveBeenCalled();
+    expect(response.status).toHaveBeenCalledWith(403);
+  });
+
+  it("blocks a manager when the id param is not a valid workspace id", async () => {
+    response.locals.user = { id: 2, role: "manager" };
+
+    await workspaceManagerScopeValid(
+      { params: { workspaceId: "not-a-number" } },
+      response,
+      next
+    );
+
+    expect(Workspace.get).not.toHaveBeenCalled();
+    expect(next).not.toHaveBeenCalled();
+    expect(response.status).toHaveBeenCalledWith(403);
+  });
+
+  it("blocks a manager when the route exposes no workspace param at all", async () => {
+    response.locals.user = { id: 2, role: "manager" };
+
+    await workspaceManagerScopeValid({ params: {} }, response, next);
+
+    expect(Workspace.get).not.toHaveBeenCalled();
+    expect(next).not.toHaveBeenCalled();
+    expect(response.status).toHaveBeenCalledWith(403);
+  });
 });

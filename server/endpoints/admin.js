@@ -31,6 +31,9 @@ const {
 const {
   workspaceDeletionProtection,
 } = require("../utils/middleware/workspaceDeletionProtection");
+const {
+  workspaceManagerScopeValid,
+} = require("../utils/middleware/workspaceManagerScope");
 
 function adminEndpoints(app) {
   if (!app) return;
@@ -241,7 +244,11 @@ function adminEndpoints(app) {
 
   app.get(
     "/admin/workspaces/:workspaceId/users",
-    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
+    [
+      validatedRequest,
+      strictMultiUserRoleValid([ROLES.admin, ROLES.manager]),
+      workspaceManagerScopeValid,
+    ],
     async (request, response) => {
       try {
         const { workspaceId } = request.params;
@@ -275,7 +282,11 @@ function adminEndpoints(app) {
 
   app.post(
     "/admin/workspaces/:workspaceId/update-users",
-    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
+    [
+      validatedRequest,
+      strictMultiUserRoleValid([ROLES.admin, ROLES.manager]),
+      workspaceManagerScopeValid,
+    ],
     async (request, response) => {
       try {
         const { workspaceId } = request.params;
@@ -297,6 +308,7 @@ function adminEndpoints(app) {
     [
       validatedRequest,
       strictMultiUserRoleValid([ROLES.admin, ROLES.manager]),
+      workspaceManagerScopeValid,
       workspaceDeletionProtection,
     ],
     async (request, response) => {

@@ -10,7 +10,9 @@ const { userFromSession } = require("../http");
  *
  * - Admins are unaffected and retain full access.
  * - In single-user mode the check is bypassed entirely.
- * - The target workspace is resolved from the `:slug` request param.
+ * - The target workspace is resolved from the `:slug` request param, or from
+ *   `:workspaceId`/`:id` on the admin panel routes that address workspaces
+ *   by numeric id.
  *
  * Intended to be used on workspace-scoped mutation routes that are gated
  * by `flexUserRoleValid([ROLES.admin, ROLES.manager])`.
@@ -19,6 +21,12 @@ const { userFromSession } = require("../http");
  * @param {NextFunction} next - The next function.
  */
 async function workspaceManagerScopeValid(request, response, next) {
+  const block = () =>
+    response.status(403).json({
+      success: false,
+      error: "Managers may only modify workspaces they are a member of.",
+    });
+
   const multiUserMode =
     response.locals?.multiUserMode ?? (await SystemSettings.isMultiUserMode());
   if (!multiUserMode) return next();
@@ -31,7 +39,15 @@ async function workspaceManagerScopeValid(request, response, next) {
 
   // Managers may only act on workspaces they created or are a member of.
   if (user?.role === ROLES.manager) {
-    const workspace = await Workspace.get({ slug: request.params?.slug });
+    const slug = request.params?.slug;
+    const workspaceId =
+      request.params?.workspaceId ?? request.params?.id ?? null;
+
+    // No resolvable workspace target on the route - deny by default.
+    const parsedId = slug ? null : Number(workspaceId);
+    if (!slug && (!Number.isInteger(parsedId) || parsedId <= 0)) return block();
+
+    const workspace = await Workspace.get(slug ? { slug } : { id: parsedId });
     if (workspace) {
       const membership = await WorkspaceUser.get({
         user_id: user.id,
@@ -41,10 +57,7 @@ async function workspaceManagerScopeValid(request, response, next) {
     }
   }
 
-  return response.status(403).json({
-    success: false,
-    error: "Managers may only modify workspaces they are a member of.",
-  });
+  return block();
 }
 
 module.exports = {
