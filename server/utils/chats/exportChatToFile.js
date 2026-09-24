@@ -33,10 +33,21 @@ function stripThoughtChain(text = "") {
     .trim();
 }
 
-// Render uploaded image attachments as markdown images so they appear in the PDF.
-function imagesToMarkdown(attachments = []) {
-  return attachments
-    .filter((a) => a?.contentString?.startsWith("data:image"))
+// Every image tied to a message - what the user uploaded as context plus any
+// image the assistant generated while answering.
+function messageImages(msg = {}) {
+  const { generatedImageAttachments } = require("../files/index.js");
+  return [
+    ...(msg.attachments || []).filter((a) =>
+      a?.contentString?.startsWith("data:image")
+    ),
+    ...generatedImageAttachments(msg.outputs),
+  ];
+}
+
+// Render a message's images as markdown so they appear inline in the export.
+function imagesToMarkdown(msg = {}) {
+  return messageImages(msg)
     .map((a) => `![${a.name || "attachment"}](${a.contentString})`)
     .join("\n\n");
 }
@@ -53,7 +64,7 @@ function chatHistoryToMarkdown(history = [], { workspaceName, threadName }) {
       msg.role === "assistant"
         ? stripThoughtChain(msg.content)
         : (msg.content || "").trim();
-    const images = imagesToMarkdown(msg.attachments);
+    const images = imagesToMarkdown(msg);
     if (!content && !images) continue;
 
     lines.push(
@@ -142,8 +153,7 @@ function chatHistoryToHTML(history = [], { workspaceName, threadName }) {
       msg.role === "assistant" ? stripThoughtChain(rawContent) : rawContent;
     const reasoning =
       msg.role === "assistant" ? extractThoughtChain(rawContent) : null;
-    const images = (msg.attachments || [])
-      .filter((a) => a?.contentString?.startsWith("data:image"))
+    const images = messageImages(msg)
       .map(
         (a) =>
           `<img src="${a.contentString}" alt="${escapeHtml(a.name || "attachment")}" class="max-w-full rounded-lg mt-2" />`
