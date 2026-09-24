@@ -81,7 +81,7 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
         model: this.model,
         temperature: 0,
         messages,
-        ...maxTokensParam(this.maxTokens),
+        ...maxTokensParam(this.maxTokens, GenericOpenAiLLM.maxTokensKey()),
       })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
@@ -100,7 +100,7 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
       model: this.model,
       stream: true,
       messages,
-      ...maxTokensParam(this.maxTokens),
+      ...maxTokensParam(this.maxTokens, GenericOpenAiLLM.maxTokensKey()),
     });
   }
 
@@ -132,7 +132,11 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
         messages,
         functions,
         eventHandler,
-        { provider: this, maxTokens: this.maxTokens }
+        {
+          provider: this,
+          maxTokens: this.maxTokens,
+          maxTokensKey: GenericOpenAiLLM.maxTokensKey(),
+        }
       );
     } catch (error) {
       console.error(error.message, error);
@@ -171,7 +175,11 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
         messages,
         functions,
         this.getCost.bind(this),
-        { provider: this, maxTokens: this.maxTokens }
+        {
+          provider: this,
+          maxTokens: this.maxTokens,
+          maxTokensKey: GenericOpenAiLLM.maxTokensKey(),
+        }
       );
 
       if (result.retryWithError) {

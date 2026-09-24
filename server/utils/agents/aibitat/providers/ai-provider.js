@@ -294,10 +294,18 @@ class Provider {
             baseURL: process.env.GENERIC_OPEN_AI_BASE_PATH,
           },
           apiKey: process.env.GENERIC_OPEN_AI_API_KEY,
-          ...maxTokensParam(
-            toValidNumber(process.env.GENERIC_OPEN_AI_MAX_TOKENS, 1024),
-            "maxTokens"
-          ),
+          // LangChain names the field `maxTokens`; a custom key is sent raw via modelKwargs.
+          ...(process.env.GENERIC_OPEN_AI_MODEL_MAX_TOKEN_KEY
+            ? {
+                modelKwargs: maxTokensParam(
+                  toValidNumber(process.env.GENERIC_OPEN_AI_MAX_TOKENS, 1024),
+                  process.env.GENERIC_OPEN_AI_MODEL_MAX_TOKEN_KEY
+                ),
+              }
+            : maxTokensParam(
+                toValidNumber(process.env.GENERIC_OPEN_AI_MAX_TOKENS, 1024),
+                "maxTokens"
+              )),
           ...config,
         });
       case "bedrock":

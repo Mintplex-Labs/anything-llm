@@ -1551,6 +1551,8 @@ function dumpENV() {
     "GENERIC_OPENAI_STREAMING_DISABLED",
     // Custom headers for Generic OpenAI
     "GENERIC_OPEN_AI_CUSTOM_HEADERS",
+    // Custom request field name for Generic OpenAI max tokens (eg: max_completion_tokens)
+    "GENERIC_OPEN_AI_MODEL_MAX_TOKEN_KEY",
 
     // Specify Chromium args for collector
     "ANYTHINGLLM_CHROMIUM_ARGS",
