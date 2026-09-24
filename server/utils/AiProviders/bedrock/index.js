@@ -52,12 +52,6 @@ class AWSBedrockLLM {
     "us.deepseek.r1-v1:0",
   ];
 
-  noTemperatureModels = [
-    "anthropic.claude-opus-4-7",
-    "anthropic.claude-opus-4-8",
-    "anthropic.claude-sonnet-5",
-  ];
-
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.AWS_BEDROCK_LLM_API_KEY)
       throw new Error("AWS_BEDROCK_LLM_API_KEY is required for AWS Bedrock.");
@@ -105,10 +99,11 @@ class AWSBedrockLLM {
     return Number(process.env.AWS_BEDROCK_LLM_MAX_TOKENS) || 4096;
   }
 
+  // Temperature is omitted for all Anthropic models (Opus 4.7 onward reject it
+  // with a 400) and passed through for the rest of Bedrock's catalog.
   temperatureParam(temperature = this.defaultTemp) {
     if (typeof temperature !== "number") return undefined;
-    if (this.noTemperatureModels.some((model) => this.model.includes(model)))
-      return undefined;
+    if (this.#isAnthropic) return undefined;
     return parseFloat(temperature);
   }
 
