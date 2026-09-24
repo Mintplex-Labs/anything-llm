@@ -36,6 +36,9 @@ const { workspaceParsedFilesEndpoints } = require("./workspacesParsedFiles");
 const {
   workspaceDeletionProtection,
 } = require("../utils/middleware/workspaceDeletionProtection");
+const {
+  workspaceManagerScopeValid,
+} = require("../utils/middleware/workspaceManagerScope");
 
 function workspaceEndpoints(app) {
   if (!app) return;
@@ -79,7 +82,11 @@ function workspaceEndpoints(app) {
 
   app.post(
     "/workspace/:slug/update",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      workspaceManagerScopeValid,
+    ],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
@@ -112,6 +119,7 @@ function workspaceEndpoints(app) {
     [
       validatedRequest,
       flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      workspaceManagerScopeValid,
       handleFileUpload,
     ],
     async function (request, response) {
@@ -178,7 +186,11 @@ function workspaceEndpoints(app) {
 
   app.post(
     "/workspace/:slug/upload-link",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      workspaceManagerScopeValid,
+    ],
     async (request, response) => {
       try {
         const Collector = new CollectorApi();
@@ -221,7 +233,11 @@ function workspaceEndpoints(app) {
 
   app.post(
     "/workspace/:slug/update-embeddings",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      workspaceManagerScopeValid,
+    ],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
@@ -290,6 +306,7 @@ function workspaceEndpoints(app) {
     [
       validatedRequest,
       flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      workspaceManagerScopeValid,
       workspaceDeletionProtection,
     ],
     async (request, response) => {
@@ -334,7 +351,11 @@ function workspaceEndpoints(app) {
 
   app.delete(
     "/workspace/:slug/reset-vector-db",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      workspaceManagerScopeValid,
+    ],
     async (request, response) => {
       try {
         const { slug = "" } = request.params;
@@ -578,7 +599,11 @@ function workspaceEndpoints(app) {
 
   app.post(
     "/workspace/:slug/suggested-messages",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      workspaceManagerScopeValid,
+    ],
     async (request, response) => {
       try {
         const { messages = [] } = reqBody(request);
@@ -610,6 +635,7 @@ function workspaceEndpoints(app) {
     [
       validatedRequest,
       flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      workspaceManagerScopeValid,
       validWorkspaceSlug,
     ],
     async (request, response) => {
@@ -785,6 +811,7 @@ function workspaceEndpoints(app) {
     [
       validatedRequest,
       flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      workspaceManagerScopeValid,
       handleFileUpload,
     ],
     async function (request, response) {
@@ -863,6 +890,7 @@ function workspaceEndpoints(app) {
     [
       validatedRequest,
       flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      workspaceManagerScopeValid,
       handleFileUpload,
     ],
     async function (request, response) {
@@ -892,6 +920,7 @@ function workspaceEndpoints(app) {
     [
       validatedRequest,
       flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      workspaceManagerScopeValid,
       validWorkspaceSlug,
     ],
     async (_, response) => {
@@ -913,6 +942,7 @@ function workspaceEndpoints(app) {
     [
       validatedRequest,
       flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      workspaceManagerScopeValid,
       validWorkspaceSlug,
     ],
     async (_, response) => {
@@ -934,6 +964,7 @@ function workspaceEndpoints(app) {
     [
       validatedRequest,
       flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      workspaceManagerScopeValid,
       validWorkspaceSlug,
     ],
     async (request, response) => {
@@ -980,6 +1011,7 @@ function workspaceEndpoints(app) {
     [
       validatedRequest,
       flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      workspaceManagerScopeValid,
       validWorkspaceSlug,
     ],
     async (request, response) => {
@@ -1011,6 +1043,7 @@ function workspaceEndpoints(app) {
     [
       validatedRequest,
       flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      workspaceManagerScopeValid,
       validWorkspaceSlug,
     ],
     async (request, response) => {

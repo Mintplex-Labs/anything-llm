@@ -6,6 +6,9 @@ const {
   flexUserRoleValid,
   ROLES,
 } = require("../utils/middleware/multiUserProtected");
+const {
+  workspaceManagerScopeValid,
+} = require("../utils/middleware/workspaceManagerScope");
 const { EventLogs } = require("../models/eventLogs");
 const { validWorkspaceSlug } = require("../utils/middleware/validWorkspace");
 const { CollectorApi } = require("../utils/collectorApi");
@@ -73,6 +76,7 @@ function workspaceParsedFilesEndpoints(app) {
       validatedRequest,
       // Embed is still an admin/manager only feature
       flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      workspaceManagerScopeValid,
       validWorkspaceSlug,
     ],
     async function (request, response) {

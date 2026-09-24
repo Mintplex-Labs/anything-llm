@@ -295,8 +295,8 @@ const Workspace = {
   },
 
   getWithUser: async function (user = null, clause = {}) {
-    if ([ROLES.admin, ROLES.manager].includes(user.role))
-      return this.get(clause);
+    // Managers are scoped to workspaces they created or are members of.
+    if (user.role === ROLES.admin) return this.get(clause);
 
     try {
       const workspace = await prisma.workspaces.findFirst({
@@ -421,7 +421,8 @@ const Workspace = {
     limit = null,
     orderBy = null
   ) {
-    if ([ROLES.admin, ROLES.manager].includes(user.role))
+    // Managers are scoped to workspaces they created or are members of.
+    if (user.role === ROLES.admin)
       return await this.where(clause, limit, orderBy);
 
     try {
