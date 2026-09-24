@@ -16,6 +16,7 @@ import CrwSearchIcon from "./icons/crw.png";
 import YouSearchIcon from "./icons/you.png";
 import KeenableSearchIcon from "./icons/keenable.png";
 import AnySearchSearchIcon from "./icons/anysearch.png";
+import FirecrawlSearchIcon from "./icons/firecrawl.png";
 import {
   CaretUpDown,
   MagnifyingGlass,
@@ -43,6 +44,7 @@ import {
   YouSearchOptions,
   KeenableSearchOptions,
   AnySearchOptions,
+  FirecrawlSearchOptions,
 } from "./SearchProviderOptions";
 
 const SEARCH_PROVIDERS = [
@@ -166,6 +168,13 @@ const SEARCH_PROVIDERS = [
     logo: AnySearchSearchIcon,
     options: (settings) => <AnySearchOptions settings={settings} />,
     description: "Real-time web search for AI agents. Requires a free API key.",
+  },
+  {
+    name: "Firecrawl",
+    value: "firecrawl-search",
+    logo: FirecrawlSearchIcon,
+    options: (settings) => <FirecrawlSearchOptions settings={settings} />,
+    description: "Web search API for AI agents. Requires a free API key.",
   },
 ];
 

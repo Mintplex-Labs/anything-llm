@@ -117,6 +117,9 @@ const webBrowsing = {
               case "anysearch-search":
                 engine = "_anySearchSearch";
                 break;
+              case "firecrawl-search":
+                engine = "_firecrawlSearch";
+                break;
               default:
                 // No provider configured - use You.com's keyless free tier,
                 // which falls back to DuckDuckGo on any failure.
@@ -1634,6 +1637,94 @@ const webBrowsing = {
               const { title, url, snippet, content } = searchResult;
               if (!url) return; // skip rows without a link
               const text = String(snippet || content || "")
+                .replace(/\s+/g, " ")
+                .trim()
+                .slice(0, 500);
+              data.push({
+                title: String(title || url).slice(0, 100),
+                link: url,
+                snippet: text,
+              });
+            });
+
+            if (data.length === 0)
+              return `No information was found online for the search query.`;
+
+            this.reportSearchResultsCitations(data);
+            const result = JSON.stringify(data);
+            this.super.introspect(
+              `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
+            );
+            return result;
+          },
+
+          /**
+           * Firecrawl Search - https://www.firecrawl.dev
+           * POST https://api.firecrawl.dev/v2/search
+           * Requires AGENT_FIRECRAWL_API_KEY (free key from
+           * https://www.firecrawl.dev/app/api-keys).
+           * @param {string} query
+           * @returns {Promise<string>}
+           */
+          _firecrawlSearch: async function (query) {
+            const apiKey = (process.env.AGENT_FIRECRAWL_API_KEY || "").trim();
+            if (!apiKey) {
+              this.super.introspect(
+                `${this.caller}: I can't use Firecrawl searching because the user has not defined the required API key.\nVisit: https://www.firecrawl.dev/app/api-keys to create the API key.`
+              );
+              return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
+            }
+
+            this.super.introspect(
+              `${this.caller}: Using Firecrawl to search for "${
+                query.length > 100 ? `${query.slice(0, 100)}...` : query
+              }"`
+            );
+
+            const { response, error } = await fetch(
+              "https://api.firecrawl.dev/v2/search",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${apiKey}`,
+                },
+                body: JSON.stringify({
+                  query: String(query),
+                  limit: 10,
+                  sources: ["web"],
+                  highlights: false,
+                  origin: "anythingllm",
+                }),
+              }
+            )
+              .then(async (res) => {
+                if (res.ok) return res.json();
+                // Surface Firecrawl's {error} message (e.g. 401 "Unauthorized: Invalid token").
+                let message = `${res.status} - ${res.statusText}`;
+                try {
+                  const body = await res.json();
+                  if (body?.error) message = body.error;
+                } catch {}
+                throw new Error(message);
+              })
+              .then((data) => {
+                if (data?.success === false)
+                  throw new Error(data?.error || "Unknown error");
+                return { response: data, error: null };
+              })
+              .catch((e) => {
+                this.super.handlerProps.log(`Firecrawl Error: ${e.message}`);
+                return { response: null, error: e.message };
+              });
+            if (error)
+              return `There was an error searching for content. ${error}`;
+
+            const data = [];
+            response?.data?.web?.forEach((searchResult) => {
+              const { title, url, description } = searchResult;
+              if (!url) return; // skip rows without a link
+              const text = String(description || "")
                 .replace(/\s+/g, " ")
                 .trim()
                 .slice(0, 500);

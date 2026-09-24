@@ -673,6 +673,10 @@ const KEY_MAPPING = {
     envKey: "AGENT_ANYSEARCH_API_KEY",
     checks: [],
   },
+  AgentFirecrawlApiKey: {
+    envKey: "AGENT_FIRECRAWL_API_KEY",
+    checks: [],
+  },
 
   // TTS/STT Integration ENVS
   TextToSpeechProvider: {
