@@ -11,7 +11,8 @@ const {
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { getAnythingLLMUserAgent } = require("../../../endpoints/utils");
 
-// Anthropic models reject temperature/top_p/top_k with a 400, so they are never sent.
+// Temperature is never sent: newer Anthropic models reject it with a 400,
+// and older models behave correctly without it.
 class AnthropicLLM {
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.ANTHROPIC_API_KEY)
@@ -187,10 +188,7 @@ class AnthropicLLM {
     ];
   }
 
-  async getChatCompletion(
-    messages = null,
-    { temperature: _temperature = 0.7 }
-  ) {
+  async getChatCompletion(messages = null, _opts = {}) {
     await this.assertModelMaxTokens();
     try {
       const systemContent = messages[0].content;
@@ -237,10 +235,7 @@ class AnthropicLLM {
     }
   }
 
-  async streamGetChatCompletion(
-    messages = null,
-    { temperature: _temperature = 0.7 }
-  ) {
+  async streamGetChatCompletion(messages = null, _opts = {}) {
     await this.assertModelMaxTokens();
     const systemContent = messages[0].content;
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
