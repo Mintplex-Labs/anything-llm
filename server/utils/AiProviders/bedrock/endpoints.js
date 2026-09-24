@@ -49,6 +49,16 @@ function isInferenceProfileId(modelId = "") {
 }
 
 /**
+ * Whether a model ID belongs to AWS Bedrock's OpenAI model namespace.
+ * @param {string|null} modelId
+ * @returns {boolean}
+ */
+function isOpenAIModelId(modelId = "") {
+  if (!modelId) return false;
+  return modelId.split(".").includes("openai");
+}
+
+/**
  * Base host for the Mantle (OpenAI-compatible catalog) endpoint.
  * @param {string} region
  * @returns {string}
@@ -87,10 +97,13 @@ function controlPlaneHost(region) {
 /**
  * OpenAI-compatible base URL for chat completions.
  * @param {string} region
+ * @param {string|null} modelId
  * @returns {string}
  */
-function openaiBaseURL(region) {
-  return `${mantleHost(region)}/v1`;
+function openaiBaseURL(region, modelId = "") {
+  return isOpenAIModelId(modelId)
+    ? `${runtimeHost(region)}/openai/v1`
+    : `${mantleHost(region)}/v1`;
 }
 
 /**
@@ -109,6 +122,7 @@ function anthropicBaseURL(region, modelId = "") {
 
 module.exports = {
   isInferenceProfileId,
+  isOpenAIModelId,
   mantleHost,
   runtimeHost,
   controlPlaneHost,

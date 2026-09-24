@@ -12,6 +12,7 @@ const { RetryError } = require("../error.js");
 const {
   openaiBaseURL,
   anthropicBaseURL,
+  isOpenAIModelId,
 } = require("../../../AiProviders/bedrock/endpoints.js");
 
 /**
@@ -28,7 +29,7 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
       config.model || process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE || null;
     const region = process.env.AWS_BEDROCK_LLM_REGION;
     const client = new OpenAI({
-      baseURL: openaiBaseURL(region),
+      baseURL: openaiBaseURL(region, model),
       apiKey: process.env.AWS_BEDROCK_LLM_API_KEY,
     });
 
@@ -63,6 +64,19 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
   get supportsAgentStreaming() {
     if (!!process.env.AWS_BEDROCK_STREAMING_DISABLED) return false;
     return true;
+  }
+
+  /**
+   * Bedrock OpenAI models currently reject the OpenAI-compatible native
+   * `tools` payload shape. Use the provider's prompt-based tool wrapper
+   * instead while preserving the existing env opt-out behavior for other
+   * Bedrock chat models.
+   * @returns {boolean}
+   */
+  supportsNativeToolCalling() {
+    if (isOpenAIModelId(this.model)) return false;
+    if (!this.providerTag) return true;
+    return !this.optsOutOfNativeToolCallingViaEnv(this.providerTag);
   }
 
   get #maxTokens() {

@@ -10,7 +10,11 @@ const {
   buildAnthropicParams,
   handleAnthropicChatStream,
 } = require("./anthropicChat");
-const { openaiBaseURL, anthropicBaseURL } = require("./endpoints");
+const {
+  openaiBaseURL,
+  anthropicBaseURL,
+  isOpenAIModelId,
+} = require("./endpoints");
 
 /**
  * Bedrock's OpenAI-compatible stream reports usage in a final chunk that
@@ -78,7 +82,7 @@ class AWSBedrockLLM {
 
     this.openai = new OpenAIApi({
       apiKey: process.env.AWS_BEDROCK_LLM_API_KEY,
-      baseURL: openaiBaseURL(this.region),
+      baseURL: openaiBaseURL(this.region, this.model),
     });
 
     if (this.model?.includes("anthropic")) {
@@ -107,6 +111,7 @@ class AWSBedrockLLM {
 
   temperatureParam(temperature = this.defaultTemp) {
     if (typeof temperature !== "number") return undefined;
+    if (isOpenAIModelId(this.model)) return undefined;
     if (this.noTemperatureModels.some((model) => this.model.includes(model)))
       return undefined;
     return parseFloat(temperature);
@@ -162,7 +167,9 @@ class AWSBedrockLLM {
     userPrompt = "",
     attachments = [],
   }) {
-    const systemMessageContent = `${systemPrompt}${this.#appendContext(contextTexts)}`;
+    const systemMessageContent = `${systemPrompt}${this.#appendContext(
+      contextTexts
+    )}`;
     let messages = [];
 
     if (this.noSystemPromptModels.includes(this.model)) {
