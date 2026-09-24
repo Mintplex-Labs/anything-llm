@@ -41,11 +41,10 @@ async function asXlsx({
   const documents = [];
 
   try {
-    // A date or time in a spreadsheet is a number with a date format, and
-    // node-xlsx returns raw values by default, so 2024-09-30 was read as 45565.
-    // Dates and times are read as the sheet shows them; numbers stay raw,
-    // because in Excel's General format a long ID or phone number would
-    // otherwise come out as 1.23457E+12.
+    // Spreadsheets store dates and times as numbers with a date format, so
+    // they are read as the formatted text the sheet shows. Other numbers stay
+    // raw so long IDs and phone numbers keep every digit instead of being
+    // shortened to Excel's General display (1.23457E+12).
     const workSheetsFromFile = xlsx.parse(fullFilePath, {
       cellDates: true,
       raw: false,
