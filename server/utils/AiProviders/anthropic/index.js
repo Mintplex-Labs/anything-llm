@@ -11,8 +11,10 @@ const {
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { getAnythingLLMUserAgent } = require("../../../endpoints/utils");
 
-// Temperature is never sent: newer Anthropic models reject it with a 400,
-// and older models behave correctly without it.
+// Temperature is never sent. Anthropic models from Opus 4.7 onward reject it with
+// a 400, and every model accepts requests without it, so omitting it everywhere
+// avoids tracking per-model support as new models ship. The workspace temperature
+// setting therefore has no effect for Anthropic.
 class AnthropicLLM {
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.ANTHROPIC_API_KEY)

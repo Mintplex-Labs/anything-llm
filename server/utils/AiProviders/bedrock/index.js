@@ -99,8 +99,8 @@ class AWSBedrockLLM {
     return Number(process.env.AWS_BEDROCK_LLM_MAX_TOKENS) || 4096;
   }
 
-  // Temperature is omitted for Anthropic models (newer ones reject it with a 400)
-  // and passed through for the rest of Bedrock's catalog.
+  // Temperature is omitted for all Anthropic models (Opus 4.7 onward reject it
+  // with a 400) and passed through for the rest of Bedrock's catalog.
   temperatureParam(temperature = this.defaultTemp) {
     if (typeof temperature !== "number") return undefined;
     if (this.#isAnthropic) return undefined;
