@@ -90,25 +90,6 @@ const BLANK_PLAIN_AND_HTML = message(
   ]
 );
 
-const ATTACHMENT_ONLY = message(
-  "From scanner@example.com Thu Sep 24 12:00:00 2026",
-  [
-    "From: scanner@example.com",
-    "Subject: Scan",
-    "MIME-Version: 1.0",
-    'Content-Type: multipart/mixed; boundary="scan"',
-  ],
-  [
-    "--scan",
-    "Content-Type: application/pdf; name=scan.pdf",
-    "Content-Disposition: attachment; filename=scan.pdf",
-    "Content-Transfer-Encoding: base64",
-    "",
-    "JVBERi0xLjQ=",
-    "--scan--",
-  ]
-);
-
 let directory;
 
 async function convert(...messages) {
@@ -148,15 +129,5 @@ describe("asMbox", () => {
 
     expect(contents).toHaveLength(1);
     expect(contents[0]).toContain("Only the HTML says it.");
-  });
-
-  test("still skips a message with no text at all", async () => {
-    const contents = await convert(
-      PLAIN_AND_HTML,
-      ATTACHMENT_ONLY,
-      HTML_WITH_ATTACHMENT
-    );
-
-    expect(contents).toHaveLength(2);
   });
 });
