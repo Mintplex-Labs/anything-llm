@@ -1,25 +1,88 @@
-import { useRef, useState } from "react";
-import { MagnifyingGlass, X } from "@phosphor-icons/react";
+import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import useScrollActiveItemIntoView from "@/hooks/useScrollActiveItemIntoView";
 
 /**
- * Searchable dropdown panel shared by every provider selection menu.
- * Renders the backdrop, search field and filtered list - the caller renders
- * the closed state of the menu and each row.
+ * Provider selection dropdown shared by every provider settings page.
+ * Renders the trigger button for the selected provider and, once opened,
+ * a searchable list of providers - the caller renders each row.
  * @param {object} props
- * @param {Array<{name: string}>} props.items - options to list, filtered by name
+ * @param {Array<{name: string, value: string}>} props.items - options to list, filtered by name
+ * @param {{name: string, logo: string, description: string, value?: string}} props.selected - provider shown on the trigger button
  * @param {string} props.placeholder - search field placeholder
- * @param {(item: object) => React.ReactNode} props.renderItem - row renderer for a single item
- * @param {() => void} props.onClose - close the menu
+ * @param {(item: object, close: () => void) => React.ReactNode} props.renderItem - row renderer for a single item
  */
 export default function ProviderSearchMenu({
   items,
+  selected,
+  placeholder,
+  renderItem,
+}) {
+  const [open, setOpen] = useState(false);
+  const triggerRef = useRef(null);
+  const wasOpen = useRef(false);
+
+  // Return focus to the trigger on close so the keyboard is not stranded on document.body.
+  useEffect(() => {
+    if (wasOpen.current && !open) triggerRef.current?.focus();
+    wasOpen.current = open;
+  }, [open]);
+
+  if (open) {
+    return (
+      <SearchPanel
+        items={items}
+        selectedValue={selected?.value}
+        placeholder={placeholder}
+        renderItem={renderItem}
+        onClose={() => setOpen(false)}
+      />
+    );
+  }
+
+  return (
+    <button
+      ref={triggerRef}
+      className="w-full max-w-[640px] h-[64px] bg-theme-settings-input-bg rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-primary-button focus:border-primary-button focus:outline-none transition-all duration-300"
+      type="button"
+      onClick={() => setOpen(true)}
+    >
+      <div className="flex gap-x-4 items-center">
+        <img
+          src={selected.logo}
+          alt={`${selected.name} logo`}
+          className="w-10 h-10 rounded-md"
+        />
+        <div className="flex flex-col text-left">
+          <div className="text-sm font-semibold text-white">
+            {selected.name}
+          </div>
+          <div className="mt-1 text-xs text-description">
+            {selected.description}
+          </div>
+        </div>
+      </div>
+      <CaretUpDown size={24} weight="bold" className="text-white" />
+    </button>
+  );
+}
+
+function SearchPanel({
+  items,
+  selectedValue,
   placeholder,
   renderItem,
   onClose,
 }) {
+  const { t } = useTranslation();
   const [query, setQuery] = useState("");
-  const [highlightedIndex, setHighlightedIndex] = useState(0);
+  const [highlightedIndex, setHighlightedIndex] = useState(() =>
+    Math.max(
+      items.findIndex((item) => item.value === selectedValue),
+      0
+    )
+  );
   const listRef = useRef(null);
   const results = items.filter((item) =>
     item.name.toLowerCase().includes(query.toLowerCase())
@@ -91,7 +154,7 @@ export default function ProviderSearchMenu({
           </div>
           {results.length === 0 && (
             <p className="text-center text-sm text-theme-text-secondary py-6">
-              No results found
+              {t("common.noResults")}
             </p>
           )}
           <div
@@ -103,7 +166,7 @@ export default function ProviderSearchMenu({
                 key={item.name}
                 highlighted={index === highlightedIndex}
               >
-                {renderItem(item)}
+                {renderItem(item, onClose)}
               </MenuItem>
             ))}
           </div>

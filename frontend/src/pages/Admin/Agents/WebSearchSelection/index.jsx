@@ -16,13 +16,12 @@ import CrwSearchIcon from "./icons/crw.png";
 import YouSearchIcon from "./icons/you.png";
 import KeenableSearchIcon from "./icons/keenable.png";
 import AnySearchSearchIcon from "./icons/anysearch.png";
-import { CaretUpDown, ListMagnifyingGlass } from "@phosphor-icons/react";
+import { ListMagnifyingGlass } from "@phosphor-icons/react";
 import Toggle from "@/components/lib/Toggle";
 import { DefaultBadge } from "../Badges/default";
 import SearchProviderItem from "./SearchProviderItem";
 import WebSearchImage from "@/media/agents/scrape-websites.png";
 import ProviderSearchMenu from "@/components/lib/ProviderSearchMenu";
-import useRefocusOnClose from "@/hooks/useRefocusOnClose";
 import {
   SerpApiOptions,
   SearchApiOptions,
@@ -176,12 +175,9 @@ export default function AgentWebSearchSelection({
   setHasChanges,
 }) {
   const [selectedProvider, setSelectedProvider] = useState("you-search");
-  const [searchMenuOpen, setSearchMenuOpen] = useState(false);
-  const searchMenuTrigger = useRefocusOnClose(searchMenuOpen);
 
   function updateChoice(selection) {
     setSelectedProvider(selection);
-    setSearchMenuOpen(false);
     setHasChanges(true);
   }
 
@@ -238,44 +234,21 @@ export default function AgentWebSearchSelection({
               name="system::agent_search_provider"
               value={selectedProvider}
             />
-            {searchMenuOpen ? (
-              <ProviderSearchMenu
-                items={SEARCH_PROVIDERS}
-                placeholder="Search available web-search providers"
-                onClose={() => setSearchMenuOpen(false)}
-                renderItem={(provider) => (
-                  <SearchProviderItem
-                    provider={provider}
-                    checked={selectedProvider === provider.value}
-                    onClick={() => updateChoice(provider.value)}
-                  />
-                )}
-              />
-            ) : (
-              <button
-                ref={searchMenuTrigger}
-                className="w-full max-w-[640px] h-[64px] bg-theme-settings-input-bg rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-primary-button focus:border-primary-button focus:outline-none transition-all duration-300"
-                type="button"
-                onClick={() => setSearchMenuOpen(true)}
-              >
-                <div className="flex gap-x-4 items-center">
-                  <img
-                    src={selectedSearchProviderObject.logo}
-                    alt={`${selectedSearchProviderObject.name} logo`}
-                    className="w-10 h-10 rounded-md"
-                  />
-                  <div className="flex flex-col text-left">
-                    <div className="text-sm font-semibold text-white">
-                      {selectedSearchProviderObject.name}
-                    </div>
-                    <div className="mt-1 text-xs text-description">
-                      {selectedSearchProviderObject.description}
-                    </div>
-                  </div>
-                </div>
-                <CaretUpDown size={24} weight="bold" className="text-white" />
-              </button>
-            )}
+            <ProviderSearchMenu
+              items={SEARCH_PROVIDERS}
+              selected={selectedSearchProviderObject}
+              placeholder="Search available web-search providers"
+              renderItem={(provider, close) => (
+                <SearchProviderItem
+                  provider={provider}
+                  checked={selectedProvider === provider.value}
+                  onClick={() => {
+                    updateChoice(provider.value);
+                    close();
+                  }}
+                />
+              )}
+            />
           </div>
           <div className="mt-4 flex flex-col gap-y-1">
             {selectedSearchProviderObject.options(settings)}

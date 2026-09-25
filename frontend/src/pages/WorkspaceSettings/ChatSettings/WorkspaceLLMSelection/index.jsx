@@ -2,14 +2,12 @@ import React, { useState } from "react";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import WorkspaceLLMItem from "./WorkspaceLLMItem";
 import { ALL_LLM_PROVIDERS } from "@/pages/GeneralSettings/LLMPreference";
-import { CaretUpDown } from "@phosphor-icons/react";
 import ChatModelSelection from "./ChatModelSelection";
 import RouterSelection from "./RouterSelection";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
 import ProviderSearchMenu from "@/components/lib/ProviderSearchMenu";
-import useRefocusOnClose from "@/hooks/useRefocusOnClose";
 
 // Some providers do not support model selection via /models.
 // In that case we allow the user to enter the model name manually and hope they
@@ -44,12 +42,9 @@ export default function WorkspaceLLMSelection({
   const [selectedLLM, setSelectedLLM] = useState(
     workspace?.chatProvider ?? "default"
   );
-  const [searchMenuOpen, setSearchMenuOpen] = useState(false);
-  const searchMenuTrigger = useRefocusOnClose(searchMenuOpen);
   const { t } = useTranslation();
   function updateLLMChoice(selection) {
     setSelectedLLM(selection);
-    setSearchMenuOpen(false);
     setHasChanges(true);
   }
 
@@ -68,46 +63,23 @@ export default function WorkspaceLLMSelection({
 
       <div className="relative">
         <input type="hidden" name="chatProvider" value={selectedLLM} />
-        {searchMenuOpen ? (
-          <ProviderSearchMenu
-            items={LLMS}
-            placeholder={t("chat.llm.search")}
-            onClose={() => setSearchMenuOpen(false)}
-            renderItem={(llm) => (
-              <WorkspaceLLMItem
-                llm={llm}
-                availableLLMs={LLMS}
-                settings={settings}
-                checked={selectedLLM === llm.value}
-                onClick={() => updateLLMChoice(llm.value)}
-              />
-            )}
-          />
-        ) : (
-          <button
-            ref={searchMenuTrigger}
-            className="w-full max-w-[640px] h-[64px] bg-theme-settings-input-bg rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-primary-button focus:border-primary-button focus:outline-none transition-all duration-300"
-            type="button"
-            onClick={() => setSearchMenuOpen(true)}
-          >
-            <div className="flex gap-x-4 items-center">
-              <img
-                src={selectedLLMObject.logo}
-                alt={`${selectedLLMObject.name} logo`}
-                className="w-10 h-10 rounded-md"
-              />
-              <div className="flex flex-col text-left">
-                <div className="text-sm font-semibold text-white">
-                  {selectedLLMObject.name}
-                </div>
-                <div className="text-xs text-description">
-                  {selectedLLMObject.description}
-                </div>
-              </div>
-            </div>
-            <CaretUpDown size={24} weight="bold" className="text-white" />
-          </button>
-        )}
+        <ProviderSearchMenu
+          items={LLMS}
+          selected={selectedLLMObject}
+          placeholder={t("chat.llm.search")}
+          renderItem={(llm, close) => (
+            <WorkspaceLLMItem
+              llm={llm}
+              availableLLMs={LLMS}
+              settings={settings}
+              checked={selectedLLM === llm.value}
+              onClick={() => {
+                updateLLMChoice(llm.value);
+                close();
+              }}
+            />
+          )}
+        />
       </div>
       <ModelSelector
         selectedLLM={selectedLLM}

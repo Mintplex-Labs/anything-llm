@@ -5,7 +5,6 @@ import System from "@/models/system";
 import showToast from "@/utils/toast";
 import { useModal } from "@/hooks/useModal";
 import CTAButton from "@/components/lib/CTAButton";
-import { CaretUpDown } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 import PreLoader from "@/components/Preloader";
 import ChangeWarningModal from "@/components/ChangeWarning";
@@ -33,7 +32,6 @@ import ZillizCloudOptions from "@/components/VectorDBSelection/ZillizCloudOption
 import AstraDBOptions from "@/components/VectorDBSelection/AstraDBOptions";
 import PGVectorOptions from "@/components/VectorDBSelection/PGVectorOptions";
 import ProviderSearchMenu from "@/components/lib/ProviderSearchMenu";
-import useRefocusOnClose from "@/hooks/useRefocusOnClose";
 
 const VECTOR_DBS = [
   {
@@ -120,8 +118,6 @@ export default function GeneralVectorDatabase() {
   const [settings, setSettings] = useState({});
   const [loading, setLoading] = useState(true);
   const [selectedVDB, setSelectedVDB] = useState(null);
-  const [searchMenuOpen, setSearchMenuOpen] = useState(false);
-  const searchMenuTrigger = useRefocusOnClose(searchMenuOpen);
   const { isOpen, openModal, closeModal } = useModal();
   const { t } = useTranslation();
 
@@ -156,7 +152,6 @@ export default function GeneralVectorDatabase() {
 
   const updateVectorChoice = (selection) => {
     setSelectedVDB(selection);
-    setSearchMenuOpen(false);
     setHasChanges(true);
   };
 
@@ -221,51 +216,24 @@ export default function GeneralVectorDatabase() {
                 {t("vector.provider.title")}
               </div>
               <div className="relative">
-                {searchMenuOpen ? (
-                  <ProviderSearchMenu
-                    items={VECTOR_DBS}
-                    placeholder="Search all vector database providers"
-                    onClose={() => setSearchMenuOpen(false)}
-                    renderItem={(vdb) => (
-                      <VectorDBItem
-                        name={vdb.name}
-                        value={vdb.value}
-                        image={vdb.logo}
-                        description={vdb.description}
-                        checked={selectedVDB === vdb.value}
-                        onClick={() => updateVectorChoice(vdb.value)}
-                      />
-                    )}
-                  />
-                ) : (
-                  <button
-                    ref={searchMenuTrigger}
-                    className="w-full max-w-[640px] h-[64px] bg-theme-settings-input-bg rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-primary-button focus:border-primary-button focus:outline-none transition-all duration-300"
-                    type="button"
-                    onClick={() => setSearchMenuOpen(true)}
-                  >
-                    <div className="flex gap-x-4 items-center">
-                      <img
-                        src={selectedVDBObject.logo}
-                        alt={`${selectedVDBObject.name} logo`}
-                        className="w-10 h-10 rounded-md"
-                      />
-                      <div className="flex flex-col text-left">
-                        <div className="text-sm font-semibold text-white">
-                          {selectedVDBObject.name}
-                        </div>
-                        <div className="mt-1 text-xs text-description">
-                          {selectedVDBObject.description}
-                        </div>
-                      </div>
-                    </div>
-                    <CaretUpDown
-                      size={24}
-                      weight="bold"
-                      className="text-white"
+                <ProviderSearchMenu
+                  items={VECTOR_DBS}
+                  selected={selectedVDBObject}
+                  placeholder="Search all vector database providers"
+                  renderItem={(vdb, close) => (
+                    <VectorDBItem
+                      name={vdb.name}
+                      value={vdb.value}
+                      image={vdb.logo}
+                      description={vdb.description}
+                      checked={selectedVDB === vdb.value}
+                      onClick={() => {
+                        updateVectorChoice(vdb.value);
+                        close();
+                      }}
                     />
-                  </button>
-                )}
+                  )}
+                />
               </div>
               <div
                 onChange={() => setHasChanges(true)}

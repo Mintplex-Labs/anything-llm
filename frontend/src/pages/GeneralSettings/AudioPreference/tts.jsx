@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
 import LLMItem from "@/components/LLMSelection/LLMItem";
-import { CaretUpDown } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
 import OpenAiLogo from "@/media/llmprovider/openai.png";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
@@ -18,7 +17,6 @@ import PiperTTSOptions from "@/components/TextToSpeech/PiperTTSOptions";
 import OpenAiGenericTTSOptions from "@/components/TextToSpeech/OpenAiGenericOptions";
 import KokoroTTSOptions from "@/components/TextToSpeech/KokoroOptions";
 import ProviderSearchMenu from "@/components/lib/ProviderSearchMenu";
-import useRefocusOnClose from "@/hooks/useRefocusOnClose";
 
 const PROVIDERS = [
   {
@@ -73,8 +71,6 @@ export default function TextToSpeechProvider({ settings }) {
   const [selectedProvider, setSelectedProvider] = useState(
     settings?.TextToSpeechProvider || "native"
   );
-  const [searchMenuOpen, setSearchMenuOpen] = useState(false);
-  const searchMenuTrigger = useRefocusOnClose(searchMenuOpen);
 
   const handleSubmit = async (e) => {
     e?.preventDefault();
@@ -97,7 +93,6 @@ export default function TextToSpeechProvider({ settings }) {
 
   const updateProviderChoice = (selection) => {
     setSelectedProvider(selection);
-    setSearchMenuOpen(false);
     setHasChanges(true);
   };
 
@@ -130,47 +125,24 @@ export default function TextToSpeechProvider({ settings }) {
         </div>
         <div className="text-base font-bold text-white mt-6 mb-4">Provider</div>
         <div className="relative">
-          {searchMenuOpen ? (
-            <ProviderSearchMenu
-              items={PROVIDERS}
-              placeholder="Search text to speech providers"
-              onClose={() => setSearchMenuOpen(false)}
-              renderItem={(provider) => (
-                <LLMItem
-                  name={provider.name}
-                  value={provider.value}
-                  image={provider.logo}
-                  description={provider.description}
-                  checked={selectedProvider === provider.value}
-                  onClick={() => updateProviderChoice(provider.value)}
-                />
-              )}
-            />
-          ) : (
-            <button
-              ref={searchMenuTrigger}
-              className="w-full max-w-[640px] h-[64px] bg-theme-settings-input-bg rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-primary-button focus:border-primary-button focus:outline-none transition-all duration-300"
-              type="button"
-              onClick={() => setSearchMenuOpen(true)}
-            >
-              <div className="flex gap-x-4 items-center">
-                <img
-                  src={selectedProviderObject.logo}
-                  alt={`${selectedProviderObject.name} logo`}
-                  className="w-10 h-10 rounded-md"
-                />
-                <div className="flex flex-col text-left">
-                  <div className="text-sm font-semibold text-white">
-                    {selectedProviderObject.name}
-                  </div>
-                  <div className="mt-1 text-xs text-description">
-                    {selectedProviderObject.description}
-                  </div>
-                </div>
-              </div>
-              <CaretUpDown size={24} weight="bold" className="text-white" />
-            </button>
-          )}
+          <ProviderSearchMenu
+            items={PROVIDERS}
+            selected={selectedProviderObject}
+            placeholder="Search text to speech providers"
+            renderItem={(provider, close) => (
+              <LLMItem
+                name={provider.name}
+                value={provider.value}
+                image={provider.logo}
+                description={provider.description}
+                checked={selectedProvider === provider.value}
+                onClick={() => {
+                  updateProviderChoice(provider.value);
+                  close();
+                }}
+              />
+            )}
+          />
         </div>
         <div
           onChange={() => setHasChanges(true)}

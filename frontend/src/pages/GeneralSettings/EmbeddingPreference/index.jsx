@@ -36,13 +36,11 @@ import MistralAiOptions from "@/components/EmbeddingSelection/MistralAiOptions";
 import LemonadeOptions from "@/components/EmbeddingSelection/LemonadeOptions";
 
 import EmbedderItem from "@/components/EmbeddingSelection/EmbedderItem";
-import { CaretUpDown } from "@phosphor-icons/react";
 import { useModal } from "@/hooks/useModal";
 import Modal from "@/components/lib/Modal";
 import CTAButton from "@/components/lib/CTAButton";
 import { useTranslation } from "react-i18next";
 import ProviderSearchMenu from "@/components/lib/ProviderSearchMenu";
-import useRefocusOnClose from "@/hooks/useRefocusOnClose";
 
 const EMBEDDERS = [
   {
@@ -158,8 +156,6 @@ export default function GeneralEmbeddingPreference() {
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedEmbedder, setSelectedEmbedder] = useState(null);
-  const [searchMenuOpen, setSearchMenuOpen] = useState(false);
-  const searchMenuTrigger = useRefocusOnClose(searchMenuOpen);
   const { isOpen, openModal, closeModal } = useModal();
   const { t } = useTranslation();
 
@@ -210,7 +206,6 @@ export default function GeneralEmbeddingPreference() {
 
   const updateChoice = (selection) => {
     setSelectedEmbedder(selection);
-    setSearchMenuOpen(false);
     setHasChanges(true);
   };
 
@@ -279,51 +274,24 @@ export default function GeneralEmbeddingPreference() {
                 {t("embedding.provider.title")}
               </div>
               <div className="relative">
-                {searchMenuOpen ? (
-                  <ProviderSearchMenu
-                    items={EMBEDDERS}
-                    placeholder="Search all embedding providers"
-                    onClose={() => setSearchMenuOpen(false)}
-                    renderItem={(embedder) => (
-                      <EmbedderItem
-                        name={embedder.name}
-                        value={embedder.value}
-                        image={embedder.logo}
-                        description={embedder.description}
-                        checked={selectedEmbedder === embedder.value}
-                        onClick={() => updateChoice(embedder.value)}
-                      />
-                    )}
-                  />
-                ) : (
-                  <button
-                    ref={searchMenuTrigger}
-                    className="w-full max-w-[640px] h-[64px] bg-theme-settings-input-bg rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-primary-button focus:border-primary-button focus:outline-none transition-all duration-300"
-                    type="button"
-                    onClick={() => setSearchMenuOpen(true)}
-                  >
-                    <div className="flex gap-x-4 items-center">
-                      <img
-                        src={selectedEmbedderObject.logo}
-                        alt={`${selectedEmbedderObject.name} logo`}
-                        className="w-10 h-10 rounded-md"
-                      />
-                      <div className="flex flex-col text-left">
-                        <div className="text-sm font-semibold text-white">
-                          {selectedEmbedderObject.name}
-                        </div>
-                        <div className="mt-1 text-xs text-description">
-                          {selectedEmbedderObject.description}
-                        </div>
-                      </div>
-                    </div>
-                    <CaretUpDown
-                      size={24}
-                      weight="bold"
-                      className="text-white"
+                <ProviderSearchMenu
+                  items={EMBEDDERS}
+                  selected={selectedEmbedderObject}
+                  placeholder="Search all embedding providers"
+                  renderItem={(embedder, close) => (
+                    <EmbedderItem
+                      name={embedder.name}
+                      value={embedder.value}
+                      image={embedder.logo}
+                      description={embedder.description}
+                      checked={selectedEmbedder === embedder.value}
+                      onClick={() => {
+                        updateChoice(embedder.value);
+                        close();
+                      }}
                     />
-                  </button>
-                )}
+                  )}
+                />
               </div>
               <div
                 onChange={() => setHasChanges(true)}

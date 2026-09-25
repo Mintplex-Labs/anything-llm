@@ -85,11 +85,9 @@ import MinimaxOptions from "@/components/LLMSelection/MinimaxOptions";
 import CerebrasLLMOptions from "@/components/LLMSelection/CerebrasLLMOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
-import { CaretUpDown } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
 import OMLXOptions from "@/components/LLMSelection/OMLXOptions";
 import ProviderSearchMenu from "@/components/lib/ProviderSearchMenu";
-import useRefocusOnClose from "@/hooks/useRefocusOnClose";
 
 export const MODEL_ROUTER_PROVIDER = {
   name: "Model Router",
@@ -452,8 +450,6 @@ export default function GeneralLLMPreference() {
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedLLM, setSelectedLLM] = useState(null);
-  const [searchMenuOpen, setSearchMenuOpen] = useState(false);
-  const searchMenuTrigger = useRefocusOnClose(searchMenuOpen);
   const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
@@ -477,7 +473,6 @@ export default function GeneralLLMPreference() {
 
   const updateLLMChoice = (selection) => {
     setSelectedLLM(selection);
-    setSearchMenuOpen(false);
     setHasChanges(true);
   };
 
@@ -552,52 +547,30 @@ export default function GeneralLLMPreference() {
                 {t("llm.provider")}
               </div>
               <div className="relative">
-                {searchMenuOpen ? (
-                  <ProviderSearchMenu
-                    items={AVAILABLE_LLM_PROVIDERS}
-                    placeholder="Search all LLM providers"
-                    onClose={() => setSearchMenuOpen(false)}
-                    renderItem={(llm) => (
-                      <LLMItem
-                        name={llm.name}
-                        value={llm.value}
-                        image={llm.logo}
-                        description={llm.description}
-                        checked={selectedLLM === llm.value}
-                        onClick={() => updateLLMChoice(llm.value)}
-                      />
-                    )}
-                  />
-                ) : (
-                  <button
-                    ref={searchMenuTrigger}
-                    className="w-full max-w-[640px] h-[64px] bg-theme-settings-input-bg rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-primary-button focus:border-primary-button focus:outline-none transition-all duration-300"
-                    type="button"
-                    onClick={() => setSearchMenuOpen(true)}
-                  >
-                    <div className="flex gap-x-4 items-center">
-                      <img
-                        src={selectedLLMObject?.logo || AnythingLLMIcon}
-                        alt={`${selectedLLMObject?.name} logo`}
-                        className="w-10 h-10 rounded-md"
-                      />
-                      <div className="flex flex-col text-left">
-                        <div className="text-sm font-semibold text-white">
-                          {selectedLLMObject?.name || "None selected"}
-                        </div>
-                        <div className="mt-1 text-xs text-description">
-                          {selectedLLMObject?.description ||
-                            "You need to select an LLM"}
-                        </div>
-                      </div>
-                    </div>
-                    <CaretUpDown
-                      size={24}
-                      weight="bold"
-                      className="text-white"
+                <ProviderSearchMenu
+                  items={AVAILABLE_LLM_PROVIDERS}
+                  selected={
+                    selectedLLMObject ?? {
+                      name: "None selected",
+                      logo: AnythingLLMIcon,
+                      description: "You need to select an LLM",
+                    }
+                  }
+                  placeholder="Search all LLM providers"
+                  renderItem={(llm, close) => (
+                    <LLMItem
+                      name={llm.name}
+                      value={llm.value}
+                      image={llm.logo}
+                      description={llm.description}
+                      checked={selectedLLM === llm.value}
+                      onClick={() => {
+                        updateLLMChoice(llm.value);
+                        close();
+                      }}
                     />
-                  </button>
-                )}
+                  )}
+                />
               </div>
               <div
                 onChange={() => setHasChanges(true)}

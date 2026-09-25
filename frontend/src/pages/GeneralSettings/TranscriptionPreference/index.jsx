@@ -11,11 +11,9 @@ import OpenAiWhisperOptions from "@/components/TranscriptionSelection/OpenAiOpti
 import GenericOpenAiWhisperOptions from "@/components/TranscriptionSelection/GenericOpenAiOptions";
 import NativeTranscriptionOptions from "@/components/TranscriptionSelection/NativeTranscriptionOptions";
 import LLMItem from "@/components/LLMSelection/LLMItem";
-import { CaretUpDown } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
 import { useTranslation } from "react-i18next";
 import ProviderSearchMenu from "@/components/lib/ProviderSearchMenu";
-import useRefocusOnClose from "@/hooks/useRefocusOnClose";
 
 const PROVIDERS = [
   {
@@ -48,8 +46,6 @@ export default function TranscriptionModelPreference() {
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedProvider, setSelectedProvider] = useState(null);
-  const [searchMenuOpen, setSearchMenuOpen] = useState(false);
-  const searchMenuTrigger = useRefocusOnClose(searchMenuOpen);
   const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
@@ -73,7 +69,6 @@ export default function TranscriptionModelPreference() {
 
   const updateProviderChoice = (selection) => {
     setSelectedProvider(selection);
-    setSearchMenuOpen(false);
     setHasChanges(true);
   };
 
@@ -134,51 +129,24 @@ export default function TranscriptionModelPreference() {
                 {t("transcription.provider")}
               </div>
               <div className="relative">
-                {searchMenuOpen ? (
-                  <ProviderSearchMenu
-                    items={PROVIDERS}
-                    placeholder="Search audio transcription providers"
-                    onClose={() => setSearchMenuOpen(false)}
-                    renderItem={(provider) => (
-                      <LLMItem
-                        name={provider.name}
-                        value={provider.value}
-                        image={provider.logo}
-                        description={provider.description}
-                        checked={selectedProvider === provider.value}
-                        onClick={() => updateProviderChoice(provider.value)}
-                      />
-                    )}
-                  />
-                ) : (
-                  <button
-                    ref={searchMenuTrigger}
-                    className="w-full max-w-[640px] h-[64px] bg-theme-settings-input-bg rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-primary-button focus:border-primary-button focus:outline-none transition-all duration-300"
-                    type="button"
-                    onClick={() => setSearchMenuOpen(true)}
-                  >
-                    <div className="flex gap-x-4 items-center">
-                      <img
-                        src={selectedProviderObject.logo}
-                        alt={`${selectedProviderObject.name} logo`}
-                        className="w-10 h-10 rounded-md"
-                      />
-                      <div className="flex flex-col text-left">
-                        <div className="text-sm font-semibold text-white">
-                          {selectedProviderObject.name}
-                        </div>
-                        <div className="mt-1 text-xs text-description">
-                          {selectedProviderObject.description}
-                        </div>
-                      </div>
-                    </div>
-                    <CaretUpDown
-                      size={24}
-                      weight="bold"
-                      className="text-white"
+                <ProviderSearchMenu
+                  items={PROVIDERS}
+                  selected={selectedProviderObject}
+                  placeholder="Search audio transcription providers"
+                  renderItem={(provider, close) => (
+                    <LLMItem
+                      name={provider.name}
+                      value={provider.value}
+                      image={provider.logo}
+                      description={provider.description}
+                      checked={selectedProvider === provider.value}
+                      onClick={() => {
+                        updateProviderChoice(provider.value);
+                        close();
+                      }}
                     />
-                  </button>
-                )}
+                  )}
+                />
               </div>
               <div
                 onChange={() => setHasChanges(true)}
