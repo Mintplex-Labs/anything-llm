@@ -1322,9 +1322,11 @@ async function handleVectorStoreReset(key, prevValue, nextValue) {
   }
 
   if (
-    key === "EmbeddingEngine" ||
-    key === "EmbeddingModelPref" ||
-    key === "AzureOpenAiEmbeddingModelPref"
+    [
+      "EmbeddingEngine",
+      "EmbeddingModelPref",
+      "AzureOpenAiEmbeddingModelPref",
+    ].includes(key)
   ) {
     console.log(
       `${key} changed from ${prevValue} to ${nextValue} - resetting ${process.env.VECTOR_DB} namespaces`
