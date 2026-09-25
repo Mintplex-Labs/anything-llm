@@ -65,7 +65,7 @@ async function asTxt({
  * that are UTF-8 nowhere come from a legacy code page, most often the
  * Windows-1252 ("ANSI") that Notepad and Excel write in Western Europe; read as
  * UTF-8 they would lose every accented letter to U+FFFD. A file that is UTF-8
- * apart from a few damaged bytes keeps its text, as before.
+ * apart from a few damaged bytes keeps its text, with U+FFFD for those bytes.
  * @param {Buffer} buffer
  * @param {{html?: boolean}} options
  * @returns {string}
