@@ -169,6 +169,7 @@ const SystemSettings = {
             "you-search",
             "keenable-search",
             "anysearch-search",
+            "firecrawl-search",
           ].includes(update)
         )
           throw new Error("Invalid SERP provider.");
@@ -612,6 +613,7 @@ const SystemSettings = {
       AgentKeenableApiKey: !!process.env.AGENT_KEENABLE_API_KEY || null,
       AgentKeenableApiUrl: process.env.AGENT_KEENABLE_API_URL || null,
       AgentAnySearchApiKey: !!process.env.AGENT_ANYSEARCH_API_KEY || null,
+      AgentFirecrawlApiKey: !!process.env.AGENT_FIRECRAWL_API_KEY || null,
 
       // --------------------------------------------------------
       // Compliance Settings
