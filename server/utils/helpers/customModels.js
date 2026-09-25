@@ -162,7 +162,7 @@ async function getCustomModels(
     case "giteeai":
       return await getGiteeAIModels(apiKey);
     case "llmman":
-      return await llmmanModels(basePath);
+      return await llmmanModels(basePath, apiKey);
     case "privatemode":
       return await getPrivatemodeModels(basePath, "generate");
     case "sambanova":
@@ -1336,7 +1336,8 @@ async function kokoroTtsVoices(basePath = null, apiKey = null) {
     return { models: [], error: "No Kokoro endpoint was provided." };
 
   endpoint = new URL(endpoint);
-  endpoint.pathname = "/v1/audio/voices";
+  if (!endpoint.pathname.endsWith("/v1")) endpoint.pathname = "/v1";
+  endpoint.pathname += "/audio/voices";
   const headers = { "Content-Type": "application/json" };
   const key = typeof apiKey === "boolean" ? null : apiKey;
   if (key) headers.Authorization = `Bearer ${key}`;

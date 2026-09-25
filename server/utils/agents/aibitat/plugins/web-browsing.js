@@ -114,6 +114,12 @@ const webBrowsing = {
               case "keenable-search":
                 engine = "_keenableSearch";
                 break;
+              case "anysearch-search":
+                engine = "_anySearchSearch";
+                break;
+              case "firecrawl-search":
+                engine = "_firecrawlSearch";
+                break;
               default:
                 // No provider configured - use You.com's keyless free tier,
                 // which falls back to DuckDuckGo on any failure.
@@ -474,18 +480,175 @@ const webBrowsing = {
               return `There was an error searching for content. ${error}`;
 
             const data = [];
-            if (response.hasOwnProperty("knowledge_graph"))
-              data.push(response.knowledge_graph?.description);
-            if (response.hasOwnProperty("answer_box"))
-              data.push(response.answer_box?.answer);
-            response.organic_results?.forEach((searchResult) => {
-              const { title, link, snippet } = searchResult;
+            const knowledgeGraph = response.knowledge_graph;
+            const knowledgeGraphSnippet =
+              knowledgeGraph?.description || knowledgeGraph?.snippet;
+            if (knowledgeGraphSnippet)
               data.push({
-                title,
-                link,
-                snippet,
+                title: knowledgeGraph.title || query,
+                link:
+                  knowledgeGraph.source?.link ||
+                  knowledgeGraph.website ||
+                  knowledgeGraph.link ||
+                  response.search_metadata?.request_url,
+                snippet: knowledgeGraphSnippet,
               });
-            });
+            if (response.answer_box?.answer) {
+              const answerBox = response.answer_box;
+              data.push({
+                title:
+                  answerBox.organic_result?.title || answerBox.title || query,
+                link:
+                  answerBox.organic_result?.link ||
+                  answerBox.link ||
+                  response.search_metadata?.request_url,
+                snippet: answerBox.answer,
+              });
+            }
+            const takeTen = (results) => results?.slice(0, 10) ?? [];
+            const addLocalResults = (results) => {
+              takeTen(results).forEach((place) => {
+                const { title, address, place_id } = place;
+                const terms = [title, address].filter(Boolean).join(", ");
+                const mapUrl = new URL("https://www.google.com/maps/search/");
+                mapUrl.searchParams.set("api", "1");
+                mapUrl.searchParams.set("query", terms || query);
+                if (place_id)
+                  mapUrl.searchParams.set("query_place_id", place_id);
+                data.push({
+                  title,
+                  link: place.website || mapUrl.href,
+                  snippet: place.description,
+                  address,
+                  rating: place.rating,
+                  reviews: place.reviews,
+                });
+              });
+            };
+            switch (engine) {
+              case "google_jobs":
+                takeTen(response.jobs).forEach((job) => {
+                  data.push({
+                    title: job.title,
+                    company_name: job.company_name,
+                    location: job.location,
+                    link: job.apply_link || job.sharing_link,
+                    snippet: job.description,
+                  });
+                });
+                break;
+              case "google_maps":
+                addLocalResults(response.local_results);
+                break;
+              case "google_shopping":
+                takeTen(response.shopping_results).forEach((product) => {
+                  data.push({
+                    title: product.title,
+                    link: product.product_link,
+                    snippet: product.price,
+                    seller: product.seller,
+                    rating: product.rating,
+                    reviews: product.reviews,
+                  });
+                });
+                break;
+              case "google_finance":
+                if (response.summary)
+                  data.push({
+                    ...response.summary,
+                    link: response.search_metadata?.request_url,
+                    snippet:
+                      response.knowledge_graph?.about?.description ||
+                      [response.summary.price, response.summary.currency]
+                        .filter((value) => value != null)
+                        .join(" "),
+                  });
+                break;
+              case "google_patents":
+                takeTen(response.organic_results).forEach((patent) => {
+                  const link = patent.patent_id
+                    ? new URL(patent.patent_id, "https://patents.google.com/")
+                        .href
+                    : response.search_metadata?.request_url;
+                  data.push({
+                    title: patent.title,
+                    link,
+                    snippet: patent.snippet,
+                    inventor: patent.inventor,
+                    assignee: patent.assignee,
+                    publication_number: patent.publication_number,
+                  });
+                });
+                break;
+              case "youtube":
+                takeTen(response.videos).forEach((video) => {
+                  data.push({
+                    title: video.title,
+                    link: video.link,
+                    snippet: video.description,
+                    channel: video.channel?.title,
+                    views: video.views,
+                    published_time: video.published_time,
+                  });
+                });
+                break;
+              case "amazon_search":
+                takeTen(response.organic_results).forEach((product) => {
+                  data.push({
+                    title: product.title,
+                    link: product.link,
+                    snippet: product.price,
+                    rating: product.rating,
+                    reviews: product.reviews,
+                  });
+                });
+                break;
+              case "google_news":
+              case "bing_news":
+                takeTen(response.organic_results).forEach((article) => {
+                  const { title, link, snippet, source, date } = article;
+                  data.push({
+                    title,
+                    link,
+                    snippet,
+                    source,
+                    date,
+                  });
+                });
+                break;
+              case "google_scholar":
+                takeTen(response.organic_results).forEach((paper) => {
+                  const { title, link, snippet, publication } = paper;
+                  data.push({
+                    title,
+                    link,
+                    snippet,
+                    publication,
+                  });
+                });
+                break;
+              case "google":
+                takeTen(response.organic_results).forEach((searchResult) => {
+                  const { title, link, snippet } = searchResult;
+                  data.push({
+                    title,
+                    link,
+                    snippet,
+                  });
+                });
+                addLocalResults(response.local_results);
+                break;
+              default:
+                takeTen(response.organic_results).forEach((searchResult) => {
+                  const { title, link, snippet } = searchResult;
+                  data.push({
+                    title,
+                    link,
+                    snippet,
+                  });
+                });
+                break;
+            }
 
             if (data.length === 0)
               return `No information was found online for the search query.`;
@@ -1555,6 +1718,179 @@ const webBrowsing = {
                 );
               return await this._duckDuckGoEngine(query);
             }
+
+            if (data.length === 0)
+              return `No information was found online for the search query.`;
+
+            this.reportSearchResultsCitations(data);
+            const result = JSON.stringify(data);
+            this.super.introspect(
+              `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
+            );
+            return result;
+          },
+
+          /**
+           * AnySearch — https://anysearch.com
+           * POST https://api.anysearch.com/v1/search
+           * Requires AGENT_ANYSEARCH_API_KEY (free key from
+           * https://anysearch.com/console/api-keys). Envelope responses use
+           * `{code, message, data}` where a non-zero `code` is an API error.
+           * @param {string} query
+           * @returns {Promise<string>}
+           */
+          _anySearchSearch: async function (query) {
+            const apiKey = (process.env.AGENT_ANYSEARCH_API_KEY || "").trim();
+            if (!apiKey)
+              return `AnySearch API key is missing. Get a free key at https://anysearch.com/console/api-keys and set AGENT_ANYSEARCH_API_KEY.`;
+
+            this.super.introspect(
+              `${this.caller}: Using AnySearch to search for "${
+                query.length > 100 ? `${query.slice(0, 100)}...` : query
+              }"`
+            );
+
+            const headers = {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${apiKey}`,
+            };
+
+            const { response, error } = await fetch(
+              "https://api.anysearch.com/v1/search",
+              {
+                method: "POST",
+                headers,
+                body: JSON.stringify({ query: String(query), max_results: 10 }),
+              }
+            )
+              .then(async (res) => {
+                if (res.ok) return res.json();
+                // AnySearch returns a JSON envelope with an actionable
+                // message on errors (e.g. 401 {"code": -1, "message":
+                // "Invalid API key."}); surface it when present.
+                let message = `${res.status} - ${res.statusText}`;
+                try {
+                  const body = await res.json();
+                  if (body?.message) message = body.message;
+                } catch {}
+                throw new Error(message);
+              })
+              .then((data) => {
+                if (data?.code !== 0)
+                  throw new Error(
+                    data?.message || `API error code ${data?.code}`
+                  );
+                return { response: data, error: null };
+              })
+              .catch((e) => {
+                this.super.handlerProps.log(`AnySearch Error: ${e.message}`);
+                return { response: null, error: e.message };
+              });
+            if (error)
+              return `There was an error searching for content. ${error}`;
+
+            const data = [];
+            response?.data?.results?.forEach((searchResult) => {
+              const { title, url, snippet, content } = searchResult;
+              if (!url) return; // skip rows without a link
+              const text = String(snippet || content || "")
+                .replace(/\s+/g, " ")
+                .trim()
+                .slice(0, 500);
+              data.push({
+                title: String(title || url).slice(0, 100),
+                link: url,
+                snippet: text,
+              });
+            });
+
+            if (data.length === 0)
+              return `No information was found online for the search query.`;
+
+            this.reportSearchResultsCitations(data);
+            const result = JSON.stringify(data);
+            this.super.introspect(
+              `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
+            );
+            return result;
+          },
+
+          /**
+           * Firecrawl Search - https://www.firecrawl.dev
+           * POST https://api.firecrawl.dev/v2/search
+           * Requires AGENT_FIRECRAWL_API_KEY (free key from
+           * https://www.firecrawl.dev/app/api-keys).
+           * @param {string} query
+           * @returns {Promise<string>}
+           */
+          _firecrawlSearch: async function (query) {
+            const apiKey = (process.env.AGENT_FIRECRAWL_API_KEY || "").trim();
+            if (!apiKey) {
+              this.super.introspect(
+                `${this.caller}: I can't use Firecrawl searching because the user has not defined the required API key.\nVisit: https://www.firecrawl.dev/app/api-keys to create the API key.`
+              );
+              return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
+            }
+
+            this.super.introspect(
+              `${this.caller}: Using Firecrawl to search for "${
+                query.length > 100 ? `${query.slice(0, 100)}...` : query
+              }"`
+            );
+
+            const { response, error } = await fetch(
+              "https://api.firecrawl.dev/v2/search",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${apiKey}`,
+                },
+                body: JSON.stringify({
+                  query: String(query),
+                  limit: 10,
+                  sources: ["web"],
+                  highlights: false,
+                  origin: "anythingllm",
+                }),
+              }
+            )
+              .then(async (res) => {
+                if (res.ok) return res.json();
+                // Surface Firecrawl's {error} message (e.g. 401 "Unauthorized: Invalid token").
+                let message = `${res.status} - ${res.statusText}`;
+                try {
+                  const body = await res.json();
+                  if (body?.error) message = body.error;
+                } catch {}
+                throw new Error(message);
+              })
+              .then((data) => {
+                if (data?.success === false)
+                  throw new Error(data?.error || "Unknown error");
+                return { response: data, error: null };
+              })
+              .catch((e) => {
+                this.super.handlerProps.log(`Firecrawl Error: ${e.message}`);
+                return { response: null, error: e.message };
+              });
+            if (error)
+              return `There was an error searching for content. ${error}`;
+
+            const data = [];
+            response?.data?.web?.forEach((searchResult) => {
+              const { title, url, description } = searchResult;
+              if (!url) return; // skip rows without a link
+              const text = String(description || "")
+                .replace(/\s+/g, " ")
+                .trim()
+                .slice(0, 500);
+              data.push({
+                title: String(title || url).slice(0, 100),
+                link: url,
+                snippet: text,
+              });
+            });
 
             if (data.length === 0)
               return `No information was found online for the search query.`;

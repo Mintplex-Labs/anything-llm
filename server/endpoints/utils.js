@@ -65,6 +65,8 @@ function utilEndpoints(app) {
           workspaceId: workspace.id,
           user_id: user?.id || null,
           thread_id: thread?.id || null,
+          api_session_id: null, // Do not include API session chats.
+          include: true, // only export visible chats
         });
         if (chats.length === 0) return response.sendStatus(400).end();
 

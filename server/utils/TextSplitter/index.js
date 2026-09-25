@@ -155,12 +155,24 @@ class TextSplitter {
    */
   #setSplitter(config = {}) {
     // if (!config?.splitByFilename) {// TODO do something when specific extension is present? }
+    const chunkHeader = this.stringifyHeader();
+    const chunkSize = isNullOrNaN(config?.chunkSize)
+      ? 1_000
+      : Number(config?.chunkSize);
+    const chunkOverlap = isNullOrNaN(config?.chunkOverlap)
+      ? 20
+      : Number(config?.chunkOverlap);
+
+    // The header is prepended to every chunk after splitting, so chunks may exceed chunkSize.
+    if (chunkHeader.length > 0)
+      this.log(
+        `\x1b[43m[WARN]\x1b[0m Chunk header of ${chunkHeader.length} chars is prepended to each chunk - chunks may be up to ${chunkSize + chunkHeader.length} chars.`
+      );
+
     return new RecursiveSplitter({
-      chunkSize: isNaN(config?.chunkSize) ? 1_000 : Number(config?.chunkSize),
-      chunkOverlap: isNaN(config?.chunkOverlap)
-        ? 20
-        : Number(config?.chunkOverlap),
-      chunkHeader: this.stringifyHeader(),
+      chunkSize,
+      chunkOverlap,
+      chunkHeader,
     });
   }
 

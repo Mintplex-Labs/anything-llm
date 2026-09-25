@@ -11,15 +11,21 @@ const {
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
 
+/**
+ * Renders a sheet's rows as RFC 4180 CSV. Fields containing a comma, double quote,
+ * or line break are quoted, with embedded quotes doubled.
+ * @param {Array<Array<string|number|null|undefined>>} data - Rows of cell values
+ * @returns {string} - The rows as CSV
+ */
 function convertToCSV(data) {
   return data
     .map((row) =>
       row
         .map((cell) => {
           if (cell === null || cell === undefined) return "";
-          if (typeof cell === "string" && cell.includes(","))
-            return `"${cell}"`;
-          return cell;
+          const value = String(cell);
+          if (/[",\r\n]/.test(value)) return `"${value.replace(/"/g, '""')}"`;
+          return value;
         })
         .join(",")
     )
@@ -35,7 +41,15 @@ async function asXlsx({
   const documents = [];
 
   try {
-    const workSheetsFromFile = xlsx.parse(fullFilePath);
+    // Spreadsheets store dates and times as numbers with a date format, so
+    // they are read as the formatted text the sheet shows. Other numbers stay
+    // raw so long IDs and phone numbers keep every digit instead of being
+    // shortened to Excel's General display (1.23457E+12).
+    const workSheetsFromFile = xlsx.parse(fullFilePath, {
+      cellDates: true,
+      raw: false,
+      rawNumbers: true,
+    });
 
     if (options.parseOnly) {
       const allSheetContents = [];
@@ -113,7 +127,7 @@ async function asXlsx({
         const sheetData = {
           id: v4(),
           url: `file://${path.join(outFolderPath, `${slugify(name)}.csv`)}`,
-          title: metadata.title || `${filename} - Sheet:${name}`,
+          title: `${metadata.title || filename} - Sheet:${name}`,
           docAuthor: metadata.docAuthor || "Unknown",
           description:
             metadata.description || `Spreadsheet data from sheet: ${name}`,
@@ -127,7 +141,7 @@ async function asXlsx({
 
         const document = writeToServerDocuments({
           data: sheetData,
-          filename: `sheet-${slugify(name)}`,
+          filename: `sheet-${slugify(name)}-${sheetData.id}`,
           destinationOverride: outFolderPath,
           options: { parseOnly: options.parseOnly },
         });

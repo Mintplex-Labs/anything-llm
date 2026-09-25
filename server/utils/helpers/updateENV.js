@@ -40,6 +40,7 @@ const KEY_MAPPING = {
   AzureOpenAiEmbeddingModelPref: {
     envKey: "EMBEDDING_MODEL_PREF",
     checks: [isNotEmpty],
+    postUpdate: [handleVectorStoreReset],
   },
   AzureOpenAiModelType: {
     envKey: "AZURE_OPENAI_MODEL_TYPE",
@@ -161,11 +162,11 @@ const KEY_MAPPING = {
   },
   KoboldCPPTokenLimit: {
     envKey: "KOBOLD_CPP_MODEL_TOKEN_LIMIT",
-    checks: [nonZero],
+    checks: [],
   },
   KoboldCPPMaxTokens: {
     envKey: "KOBOLD_CPP_MAX_TOKENS",
-    checks: [nonZero],
+    checks: [],
   },
 
   // Text Generation Web UI Settings
@@ -219,7 +220,7 @@ const KEY_MAPPING = {
   },
   GenericOpenAiMaxTokens: {
     envKey: "GENERIC_OPEN_AI_MAX_TOKENS",
-    checks: [nonZero],
+    checks: [nonNegative],
   },
 
   // AWS Bedrock LLM Settings
@@ -464,6 +465,10 @@ const KEY_MAPPING = {
     envKey: "TOGETHER_AI_MODEL_PREF",
     checks: [isNotEmpty],
   },
+  TogetherAiMaxTokens: {
+    envKey: "TOGETHER_AI_MAX_TOKENS",
+    checks: [nonNegative],
+  },
 
   // Fireworks AI Options
   FireworksAiLLMApiKey: {
@@ -497,6 +502,17 @@ const KEY_MAPPING = {
   OpenRouterTimeout: {
     envKey: "OPENROUTER_TIMEOUT_MS",
     checks: [],
+  },
+  OpenRouterServiceTier: {
+    envKey: "OPENROUTER_SERVICE_TIER",
+    checks: [
+      (input) => {
+        const { OpenRouterLLM } = require("../AiProviders/openRouter");
+        return OpenRouterLLM.SERVICE_TIERS.includes(input)
+          ? null
+          : `Invalid service tier. Must be one of: ${OpenRouterLLM.SERVICE_TIERS.join(", ")}.`;
+      },
+    ],
   },
 
   // Novita Options
@@ -656,6 +672,14 @@ const KEY_MAPPING = {
   },
   AgentKeenableApiUrl: {
     envKey: "AGENT_KEENABLE_API_URL",
+    checks: [],
+  },
+  AgentAnySearchApiKey: {
+    envKey: "AGENT_ANYSEARCH_API_KEY",
+    checks: [],
+  },
+  AgentFirecrawlApiKey: {
+    envKey: "AGENT_FIRECRAWL_API_KEY",
     checks: [],
   },
 
@@ -1056,6 +1080,12 @@ function nonZero(input = "") {
   return Number(input) <= 0 ? "Value must be greater than zero" : null;
 }
 
+// Zero is allowed and means the field is omitted from the request payload.
+function nonNegative(input = "") {
+  if (isNaN(Number(input))) return "Value must be a number";
+  return Number(input) < 0 ? "Value cannot be negative" : null;
+}
+
 function isInteger(input = "") {
   if (isNaN(Number(input))) return "Value must be a number";
   return Number(input);
@@ -1305,7 +1335,13 @@ async function handleVectorStoreReset(key, prevValue, nextValue) {
     return await resetAllVectorStores({ vectorDbKey: prevValue });
   }
 
-  if (key === "EmbeddingEngine" || key === "EmbeddingModelPref") {
+  if (
+    [
+      "EmbeddingEngine",
+      "EmbeddingModelPref",
+      "AzureOpenAiEmbeddingModelPref",
+    ].includes(key)
+  ) {
     console.log(
       `${key} changed from ${prevValue} to ${nextValue} - resetting ${process.env.VECTOR_DB} namespaces`
     );
@@ -1510,6 +1546,7 @@ function dumpENV() {
     // Other Configuration Keys
     "DISABLE_VIEW_CHAT_HISTORY",
     "DISABLE_SWAGGER_DOCS",
+    "WORKSPACE_DELETION_PROTECTION",
     // Simple SSO
     "SIMPLE_SSO_ENABLED",
     "SIMPLE_SSO_NO_LOGIN",
@@ -1530,6 +1567,8 @@ function dumpENV() {
     "GENERIC_OPENAI_STREAMING_DISABLED",
     // Custom headers for Generic OpenAI
     "GENERIC_OPEN_AI_CUSTOM_HEADERS",
+    // Custom request field name for Generic OpenAI max tokens (eg: max_completion_tokens)
+    "GENERIC_OPEN_AI_MODEL_MAX_TOKEN_KEY",
 
     // Specify Chromium args for collector
     "ANYTHINGLLM_CHROMIUM_ARGS",
@@ -1562,6 +1601,27 @@ function dumpENV() {
 
     // Allow setting a custom timeout for tool call approval prompts
     "TOOL_CALL_APPROVAL_TIMEOUT_MS",
+
+    // AWS Bedrock endpoint host overrides for air-gapped or specialized partitions
+    "AWS_BEDROCK_LLM_MANTLE_ENDPOINT",
+    "AWS_BEDROCK_LLM_RUNTIME_ENDPOINT",
+    "AWS_BEDROCK_LLM_CONTROL_ENDPOINT",
+
+    // Allow setting a delay between Generic OpenAI embedding requests
+    "GENERIC_OPEN_AI_EMBEDDING_API_DELAY_MS",
+
+    // Memory extraction, scheduled job and document sync worker settings
+    "MEMORY_EXTRACTION_INTERVAL",
+    "MEMORY_IDLE_THRESHOLD_MS",
+    "SCHEDULED_JOB_MAX_CONCURRENT",
+    "SCHEDULED_JOB_TIMEOUT_MS",
+    "DOCUMENT_SYNC_STALE_AFTER_MS",
+
+    // Legacy provider overrides that are still read when set
+    "CEREBRAS_MODEL_TOKEN_LIMIT",
+    "DEEPSEEK_MAX_TOKENS",
+    "LLMMAN_RESPONSE_TIMEOUT",
+    "VERTEX_AI_LLM_MAX_TOKENS",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.
