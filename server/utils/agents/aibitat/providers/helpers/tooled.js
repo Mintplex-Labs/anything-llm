@@ -168,16 +168,17 @@ function formatMessagesForTools(messages, options = {}) {
  * `maxTokens` in options get the field, every other provider keeps sending no
  * `max_tokens` so the backend's own default applies unchanged.
  * @param {unknown} maxTokens
- * @returns {{max_tokens?: number}}
+ * @param {string} [key] - field name to build, for clients that expect a different casing
+ * @returns {Object}
  */
-function maxTokensParam(maxTokens) {
+function maxTokensParam(maxTokens, key = "max_tokens") {
   if (
     typeof maxTokens !== "number" ||
     !Number.isFinite(maxTokens) ||
     maxTokens <= 0
   )
     return {};
-  return { max_tokens: maxTokens };
+  return { [key]: maxTokens };
 }
 
 /**
@@ -204,9 +205,9 @@ function serviceTierParam(serviceTier, log = null) {
  * @param {Array} messages - Raw aibitat message history
  * @param {Array} functions - Aibitat function definitions
  * @param {function|null} eventHandler - Stream event handler
- * @param {{injectReasoningContent?: boolean, provider?: object, maxTokens?: number, serviceTier?: string}} options - Provider-specific options
+ * @param {{injectReasoningContent?: boolean, provider?: object, maxTokens?: number, maxTokensKey?: string, serviceTier?: string}} options - Provider-specific options
  *   - provider: If passed, automatically handles usage tracking via provider.resetUsage()/recordUsage()
- *   - maxTokens: If passed as a positive number, sent as `max_tokens` on the request
+ *   - maxTokens: If passed as a positive number, sent as `max_tokens` (or `maxTokensKey`) on the request
  *   - serviceTier: If passed, sent as `service_tier` on the request
  * @returns {Promise<{textResponse: string, functionCall: object|null, uuid: string, usage: object|null}>}
  */
@@ -218,7 +219,8 @@ async function tooledStream(
   eventHandler = null,
   options = {}
 ) {
-  const { provider, maxTokens, serviceTier, ...formatOptions } = options;
+  const { provider, maxTokens, maxTokensKey, serviceTier, ...formatOptions } =
+    options;
 
   // Auto-reset usage if provider is passed
   if (provider?.resetUsage) {
@@ -236,7 +238,7 @@ async function tooledStream(
     stream: true,
     stream_options: { include_usage: true },
     messages: formattedMessages,
-    ...maxTokensParam(maxTokens),
+    ...maxTokensParam(maxTokens, maxTokensKey),
     ...serviceTierParam(serviceTier, provider?.providerLog?.bind(provider)),
     ...(tools.length > 0 ? { tools } : {}),
   });
@@ -385,9 +387,9 @@ async function tooledStream(
  * @param {Array} messages - Raw aibitat message history
  * @param {Array} functions - Aibitat function definitions
  * @param {function} getCostFn - Provider's getCost function
- * @param {{injectReasoningContent?: boolean, provider?: object, maxTokens?: number}} options - Provider-specific options
+ * @param {{injectReasoningContent?: boolean, provider?: object, maxTokens?: number, maxTokensKey?: string, serviceTier?: string}} options - Provider-specific options
  *   - provider: If passed, automatically handles usage tracking via provider.resetUsage()/recordUsage()
- *   - maxTokens: If passed as a positive number, sent as `max_tokens` on the request
+ *   - maxTokens: If passed as a positive number, sent as `max_tokens` (or `maxTokensKey`) on the request
  * @returns {Promise<{textResponse: string|null, functionCall: object|null, cost: number, usage: object|null}>}
  */
 async function tooledComplete(
@@ -398,7 +400,8 @@ async function tooledComplete(
   getCostFn = () => 0,
   options = {}
 ) {
-  const { provider, maxTokens, serviceTier, ...formatOptions } = options;
+  const { provider, maxTokens, maxTokensKey, serviceTier, ...formatOptions } =
+    options;
 
   // Auto-reset usage if provider is passed
   if (provider?.resetUsage) {
@@ -414,7 +417,7 @@ async function tooledComplete(
     model,
     stream: false,
     messages: formattedMessages,
-    ...maxTokensParam(maxTokens),
+    ...maxTokensParam(maxTokens, maxTokensKey),
     ...serviceTierParam(serviceTier, provider?.providerLog?.bind(provider)),
     ...(tools.length > 0 ? { tools } : {}),
   });
@@ -489,4 +492,5 @@ module.exports = {
   tooledStream,
   tooledComplete,
   serviceTierParam,
+  maxTokensParam,
 };

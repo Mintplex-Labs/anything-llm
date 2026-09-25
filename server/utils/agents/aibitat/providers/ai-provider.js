@@ -18,6 +18,7 @@ const { toValidNumber, safeJsonParse } = require("../../../http");
 const { getLLMProviderClass } = require("../../../helpers");
 const { MODEL_PRICING } = require("../../../helpers/modelPricing");
 const { toNonNegativeNumber } = require("../../../helpers/numbers");
+const { maxTokensParam } = require("./helpers/tooled.js");
 const { parseLMStudioBasePath } = require("../../../AiProviders/lmStudio");
 const { parseFoundryBasePath } = require("../../../AiProviders/foundry");
 const { parseOMLXBasePath } = require("../../../AiProviders/omlx");
@@ -293,9 +294,9 @@ class Provider {
             baseURL: process.env.GENERIC_OPEN_AI_BASE_PATH,
           },
           apiKey: process.env.GENERIC_OPEN_AI_API_KEY,
-          maxTokens: toValidNumber(
-            process.env.GENERIC_OPEN_AI_MAX_TOKENS,
-            1024
+          ...maxTokensParam(
+            toValidNumber(process.env.GENERIC_OPEN_AI_MAX_TOKENS, 1024),
+            "maxTokens"
           ),
           ...config,
         });
