@@ -6,6 +6,7 @@ const { addChatCostToMetrics } = require("../helpers/modelPricing");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const { chatPrompt, sourceIdentifier } = require("./index");
 const { abortConnectorOnClientDisconnect } = require("../helpers/abortSignals");
+const { Observability } = require("../observability");
 
 const { PassThrough } = require("stream");
 
@@ -209,6 +210,19 @@ async function chatSync({
       metrics,
       attachments,
     },
+  });
+
+  Observability.traceWorkspaceChat({
+    name: "openai-compatible-chat",
+    workspace,
+    chatId: chat.id,
+    chatMode,
+    message: String(prompt),
+    output: textResponse,
+    model: LLMConnector.model,
+    messages,
+    metrics,
+    sources,
   });
 
   return formatJSON(
@@ -476,6 +490,19 @@ async function streamChat({
         metrics,
         attachments,
       },
+    });
+
+    Observability.traceWorkspaceChat({
+      name: "openai-compatible-chat",
+      workspace,
+      chatId: chat.id,
+      chatMode,
+      message: String(prompt),
+      output: completeText,
+      model: LLMConnector.model,
+      messages,
+      metrics,
+      sources,
     });
 
     writeResponseChunk(
