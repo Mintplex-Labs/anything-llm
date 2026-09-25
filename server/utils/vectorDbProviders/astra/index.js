@@ -360,7 +360,7 @@ class AstraDB extends VectorDatabase {
    * back to a cosine similarity score in [0, 1]. Chunks at or past orthogonal
    * floor at 0 so unrelated chunks can never clear a similarity threshold,
    * matching the scale of the other providers.
-   * @see https://dev.to/datastax/the-subtleties-of-vector-similarity-scales-part-4-2hjd
+   * @see https://docs.datastax.com/en/astra-db-serverless/get-started/vector-concepts.html#cosine-metric
    * @param {number|null} similarity - `$similarity` from the vector search.
    * @returns {number} Similarity score in [0, 1].
    */
