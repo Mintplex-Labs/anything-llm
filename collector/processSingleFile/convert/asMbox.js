@@ -88,7 +88,20 @@ async function asMbox({
 function messageText(mail) {
   if (mail.text?.trim()) return mail.text;
   if (!mail.html) return "";
-  return htmlToText(mail.html, { wordwrap: false, preserveNewlines: true });
+  return htmlToText(mail.html, {
+    wordwrap: false,
+    preserveNewlines: true,
+    // Deeply nested markup overflows the call stack without a depth cap.
+    limits: { maxDepth: 100 },
+    // Link targets are kept so they can be cited in responses. Images are
+    // dropped since their sources are tracking pixels or inline base64 data.
+    selectors: [
+      { selector: "img", format: "skip" },
+      { selector: "script", format: "skip" },
+      { selector: "style", format: "skip" },
+      { selector: "noscript", format: "skip" },
+    ],
+  });
 }
 
 module.exports = asMbox;
