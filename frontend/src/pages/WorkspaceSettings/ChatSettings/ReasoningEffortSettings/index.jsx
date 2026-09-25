@@ -1,31 +1,23 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Workspace from "@/models/workspace";
+import { SavedIndicator } from "@/components/AutosaveForm";
 
 /**
  * @param {object} props
  * @param {object} props.settings - System settings
- * @param {object} props.workspace - Workspace object
- * @param {function} props.setHasChanges - Marks the settings form dirty
- * @param {{provider: string, model: string|null}|null} [props.pendingLLM] - Unsaved provider/model selection to preview capabilities for
+ * @param {object} props.workspace - Workspace object as last saved
  */
-export default function ReasoningEffortSettings({
-  settings,
-  workspace,
-  setHasChanges,
-  pendingLLM = null,
-}) {
+export default function ReasoningEffortSettings({ settings, workspace }) {
   const { t } = useTranslation();
   const [capabilities, setCapabilities] = useState(null);
 
   useEffect(() => {
     async function fetchCapabilities() {
-      setCapabilities(
-        await Workspace.llmCapabilities(workspace.slug, pendingLLM)
-      );
+      setCapabilities(await Workspace.llmCapabilities(workspace.slug));
     }
     fetchCapabilities();
-  }, [workspace.slug, workspace.chatProvider, workspace.chatModel, pendingLLM]);
+  }, [workspace.slug, workspace.chatProvider, workspace.chatModel]);
 
   if (
     capabilities?.reasoning !== true ||
@@ -38,16 +30,16 @@ export default function ReasoningEffortSettings({
       <div className="flex flex-col gap-y-[8px] mb-[8px]">
         <label htmlFor="reasoningEffort" className="block input-label">
           {t("chat.reasoning_effort.title")}
+          <SavedIndicator name="reasoningEffort" />
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium">
           {t("chat.reasoning_effort.description")}
         </p>
       </div>
       <select
-        key={`${pendingLLM?.provider ?? workspace?.chatProvider}-${pendingLLM?.model ?? workspace?.chatModel}`}
+        key={`${workspace?.chatProvider}-${workspace?.chatModel}`}
         name="reasoningEffort"
         defaultValue={workspace?.reasoningEffort ?? ""}
-        onChange={() => setHasChanges(true)}
         className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 capitalize"
       >
         <option value="">

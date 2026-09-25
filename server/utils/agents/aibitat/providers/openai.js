@@ -1,9 +1,10 @@
 const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
-const { RetryError } = require("../error.js");
-const { v4 } = require("uuid");
-const { safeJsonParse } = require("../../../http");
 const { validReasoningEffort } = require("../../../helpers/reasoningEffort");
+const {
+  responsesTooledStream,
+  responsesTooledComplete,
+} = require("./helpers/responsesTooled.js");
 
 /**
  * The agent provider for the OpenAI API.
@@ -58,98 +59,7 @@ class OpenAIProvider extends Provider {
   }
 
   /**
-   * Format the messages to the OpenAI API Responses format.
-   * - If the message is our internal `function` type, then we need to map it to a function call + output format
-   * - Otherwise, map it to the input text format for user, system, and assistant messages
-   * - Handles attachments (images) for multimodal support
-   *
-   * @param {any[]} messages - The messages to format.
-   * @returns {OpenAI.OpenAI.Responses.ResponseInput[]} The formatted messages.
-   */
-  #formatToResponsesInput(messages) {
-    let formattedMessages = [];
-    messages.forEach((message) => {
-      if (message.role === "function") {
-        // If the message does not have an originalFunctionCall we cannot
-        // map it to a function call id and OpenAI will throw an error.
-        // so if this does not carry over - log and skip
-        if (!message.hasOwnProperty("originalFunctionCall")) {
-          this.providerLog(
-            "[OpenAI.#formatToResponsesInput]: message did not pass back the originalFunctionCall. We need this to map the function call to the correct id.",
-            { message: JSON.stringify(message, null, 2) }
-          );
-          return;
-        }
-
-        formattedMessages.push(
-          {
-            type: "function_call",
-            name: message.originalFunctionCall.name,
-            call_id: message.originalFunctionCall.id,
-            arguments: JSON.stringify(message.originalFunctionCall.arguments),
-          },
-          {
-            type: "function_call_output",
-            call_id: message.originalFunctionCall.id,
-            output: message.content,
-          }
-        );
-        return;
-      }
-
-      // Build content array with text and optional image attachments
-      const content = [
-        {
-          type: message.role === "assistant" ? "output_text" : "input_text",
-          text: message.content,
-        },
-      ];
-
-      // Add image attachments if present (for multimodal/vision support)
-      if (message.attachments && message.attachments.length > 0) {
-        for (const attachment of message.attachments) {
-          content.push({
-            type: "input_image",
-            image_url: attachment.contentString,
-          });
-        }
-      }
-
-      formattedMessages.push({
-        role: message.role,
-        content,
-      });
-    });
-
-    return formattedMessages;
-  }
-
-  /**
-   * Format the functions to the OpenAI API Responses format.
-   *
-   * @param {any[]} functions - The functions to format.
-   * @returns {{
-   *   type: "function",
-   *   name: string,
-   *   description: string,
-   *   parameters: object,
-   *   strict: boolean,
-   * }[]} The formatted functions.
-   */
-  #formatFunctions(functions) {
-    return functions.map((func) => ({
-      type: "function",
-      name: func.name,
-      description: func.description,
-      parameters: func.parameters,
-      strict: false,
-    }));
-  }
-
-  /**
-   * Stream a chat completion from the LLM with tool calling
-   * Note: This using the OpenAI API Responses SDK and its implementation is specific to OpenAI models.
-   * Do not re-use this code for providers that do not EXACTLY implement the OpenAI API Responses SDK.
+   * Stream a chat completion from the LLM with tool calling via the Responses API.
    *
    * @param {any[]} messages - The messages to send to the LLM.
    * @param {any[]} functions - The functions to use in the LLM.
@@ -158,119 +68,18 @@ class OpenAIProvider extends Provider {
    */
   async stream(messages, functions = [], eventHandler = null) {
     this.providerLog("OpenAI.stream - will process this chat completion.");
-    this.resetUsage();
-
-    try {
-      const msgUUID = v4();
-
-      /** @type {OpenAI.OpenAI.Responses.Response} */
-      const response = await this.client.responses.create({
-        model: this.model,
-        input: this.#formatToResponsesInput(messages),
-        stream: true,
-        store: false,
-        parallel_tool_calls: false,
-        ...(Array.isArray(functions) && functions?.length > 0
-          ? { tools: this.#formatFunctions(functions) }
-          : {}),
-        ...this.reasoningConfig,
-      });
-
-      const completion = {
-        content: "",
-        /** @type {null|{name: string, call_id: string, arguments: string|object}} */
-        functionCall: null,
-      };
-
-      for await (const streamEvent of response) {
-        /** @type {OpenAI.OpenAI.Responses.ResponseStreamEvent} */
-        const chunk = streamEvent;
-
-        if (chunk.type === "response.output_text.delta") {
-          completion.content += chunk.delta;
-          eventHandler?.("reportStreamEvent", {
-            type: "textResponseChunk",
-            uuid: msgUUID,
-            content: chunk.delta,
-          });
-          continue;
-        }
-
-        if (
-          chunk.type === "response.output_item.added" &&
-          chunk.item.type === "function_call"
-        ) {
-          completion.functionCall = {
-            name: chunk.item.name,
-            call_id: chunk.item.call_id,
-            arguments: chunk.item.arguments,
-          };
-          eventHandler?.("reportStreamEvent", {
-            type: "toolCallInvocation",
-            uuid: `${msgUUID}:tool_call_invocation`,
-            content: `Assembling Tool Call: ${completion.functionCall.name}(${completion.functionCall.arguments})`,
-          });
-          continue;
-        }
-
-        if (chunk.type === "response.function_call_arguments.delta") {
-          completion.functionCall.arguments += chunk.delta;
-          eventHandler?.("reportStreamEvent", {
-            type: "toolCallInvocation",
-            uuid: `${msgUUID}:tool_call_invocation`,
-            content: `Assembling Tool Call: ${completion.functionCall.name}(${completion.functionCall.arguments})`,
-          });
-          continue;
-        }
-
-        if (chunk.type === "response.completed") {
-          const completedResponse = chunk.response;
-          if (!completedResponse?.usage) continue;
-          this.recordUsage(completedResponse.usage);
-          continue;
-        }
-      }
-
-      if (completion.functionCall) {
-        completion.functionCall.arguments = safeJsonParse(
-          completion.functionCall.arguments,
-          {}
-        );
-        return {
-          textResponse: completion.content,
-          functionCall: {
-            id: completion.functionCall.call_id,
-            name: completion.functionCall.name,
-            arguments: completion.functionCall.arguments,
-          },
-          cost: this.getCost(),
-          uuid: msgUUID,
-        };
-      }
-
-      return {
-        textResponse: completion.content,
-        functionCall: null,
-        cost: this.getCost(),
-        uuid: msgUUID,
-      };
-    } catch (error) {
-      if (error instanceof OpenAI.AuthenticationError) throw error;
-
-      if (
-        error instanceof OpenAI.RateLimitError ||
-        error instanceof OpenAI.InternalServerError ||
-        error instanceof OpenAI.APIError
-      ) {
-        throw new RetryError(error.message);
-      }
-
-      throw error;
-    }
+    return await responsesTooledStream(
+      this.client,
+      this.model,
+      messages,
+      functions,
+      eventHandler,
+      { provider: this }
+    );
   }
 
   /**
-   * Create a completion based on the received messages.
+   * Create a completion based on the received messages via the Responses API.
    *
    * @param messages A list of messages to send to the OpenAI API.
    * @param functions
@@ -278,79 +87,13 @@ class OpenAIProvider extends Provider {
    */
   async complete(messages, functions = []) {
     this.providerLog("OpenAI.complete - will process this chat completion.");
-    this.resetUsage();
-
-    try {
-      const completion = {
-        content: "",
-        functionCall: null,
-      };
-
-      /** @type {OpenAI.OpenAI.Responses.Response} */
-      const response = await this.client.responses.create({
-        model: this.model,
-        stream: false,
-        store: false,
-        parallel_tool_calls: false,
-        input: this.#formatToResponsesInput(messages),
-        ...(Array.isArray(functions) && functions?.length > 0
-          ? { tools: this.#formatFunctions(functions) }
-          : {}),
-        ...this.reasoningConfig,
-      });
-
-      if (response.usage) this.recordUsage(response.usage);
-      for (const outputBlock of response.output) {
-        if (outputBlock.type === "message") {
-          if (outputBlock.content[0]?.type === "output_text") {
-            completion.content = outputBlock.content[0].text;
-          }
-        }
-
-        if (outputBlock.type === "function_call") {
-          completion.functionCall = {
-            name: outputBlock.name,
-            call_id: outputBlock.call_id,
-            arguments: outputBlock.arguments,
-          };
-        }
-      }
-
-      if (completion.functionCall) {
-        completion.functionCall.arguments = safeJsonParse(
-          completion.functionCall.arguments,
-          {}
-        );
-        return {
-          textResponse: completion.content,
-          functionCall: {
-            id: completion.functionCall.call_id,
-            name: completion.functionCall.name,
-            arguments: completion.functionCall.arguments,
-          },
-          cost: this.getCost(),
-          usage: this.getUsage(),
-        };
-      }
-
-      return {
-        textResponse: completion.content,
-        functionCall: null,
-        cost: this.getCost(),
-        usage: this.getUsage(),
-      };
-    } catch (error) {
-      if (error instanceof OpenAI.AuthenticationError) throw error;
-      if (
-        error instanceof OpenAI.RateLimitError ||
-        error instanceof OpenAI.InternalServerError ||
-        error instanceof OpenAI.APIError
-      ) {
-        throw new RetryError(error.message);
-      }
-
-      throw error;
-    }
+    return await responsesTooledComplete(
+      this.client,
+      this.model,
+      messages,
+      functions,
+      { provider: this }
+    );
   }
 
   /**

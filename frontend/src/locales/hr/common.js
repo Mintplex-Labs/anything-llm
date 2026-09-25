@@ -54,6 +54,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Naziv radnog prostora",
     selection: "Odabir modela",
     saving: "Spremanje...",
+    saved: "Spremljeno",
     save: "Spremi promjene",
     previous: "Prethodna stranica",
     next: "Sljedeća stranica",
@@ -68,6 +69,7 @@ const TRANSLATIONS = {
       "Korisničko ime mora imati 2-64 znaka, započeti malim slovom te sadržavati samo mala slova, brojeve, podvlake, crtice i točke.",
     loading: "Učitavanje",
     refresh: "Osvježi",
+    noResults: "Nema rezultata",
   },
   home: {
     welcome: "Dobrodošli",

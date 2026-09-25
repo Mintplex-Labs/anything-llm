@@ -53,6 +53,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Tööruumide nimi",
     selection: "Mudeli valik",
     saving: "Salvestan…",
+    saved: "Salvestatud",
     save: "Salvesta muudatused",
     previous: "Eelmine leht",
     next: "Järgmine leht",
@@ -67,6 +68,7 @@ const TRANSLATIONS = {
     stopped: "Peatas",
     loading: "Laadimine",
     refresh: "Värskendada",
+    noResults: "Tulemusi ei leitud",
   },
   settings: {
     title: "Instantsi seaded",

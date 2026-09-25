@@ -55,6 +55,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Nama Ruang Kerja",
     selection: "Pemilihan Model",
     saving: "Menyimpan...",
+    saved: "Tersimpan",
     save: "Simpan perubahan",
     previous: "Halaman Sebelumnya",
     next: "Halaman Berikutnya",
@@ -69,6 +70,7 @@ const TRANSLATIONS = {
       "Nama pengguna harus 2-64 karakter, dimulai dengan huruf kecil, dan hanya boleh berisi huruf kecil, angka, garis bawah, tanda hubung, dan titik.",
     loading: "Memuat...",
     refresh: "Segarkan",
+    noResults: "Tidak ditemukan hasil",
   },
   home: {
     welcome: "Selamat Datang",

@@ -29,6 +29,11 @@ const generatedImagesPath =
 // eg: youtube-subject/video-123.json
 async function fileData(filePath = null) {
   if (!filePath) throw new Error("No docPath provided in request");
+  // The raw filePath is what gets persisted as a document's `docpath` and later
+  // resolved directly by background jobs, so it must stay inside the documents
+  // folder on its own and not only after normalization strips a leading `../`.
+  if (!isWithin(documentsPath, path.resolve(documentsPath, filePath)))
+    return null;
   const fullFilePath = path.resolve(documentsPath, normalizePath(filePath));
   if (!fs.existsSync(fullFilePath) || !isWithin(documentsPath, fullFilePath))
     return null;
@@ -697,7 +702,8 @@ async function searchDocuments(searchTerm = "") {
  * Ensures a target folder exists under the documents storage path and moves
  * processed collector documents into it, updating each document's `location`
  * and `name` in-place. If the folder already exists, documents are merged
- * into it so repeated uploads to the same folder are idempotent.
+ * into it so repeated uploads to the same folder are idempotent. Source
+ * folders left empty by the move are removed, except custom-documents.
  *
  * The folder must be a single path segment - see the note below on why.
  * @param {Array<{location: string, name: string}>} documents - documents returned by Collector.processDocument
@@ -729,6 +735,7 @@ function moveProcessedDocsToFolder(
   if (!fs.existsSync(targetFolderPath))
     fs.mkdirSync(targetFolderPath, { recursive: true });
 
+  const sourceFolders = new Set();
   for (const doc of documents) {
     const currentFolder = path.dirname(doc.location);
     if (currentFolder === folder) continue;
@@ -743,8 +750,20 @@ function moveProcessedDocsToFolder(
       throw new Error("Invalid file location.");
 
     fs.renameSync(sourcePath, destinationPath);
+    sourceFolders.add(path.dirname(sourcePath));
     doc.location = path.join(folder, path.basename(doc.location));
     doc.name = path.basename(doc.location);
+  }
+
+  // The collector writes multi-document uploads (e.g. each sheet of an XLSX)
+  // into a folder of their own. Once those documents live in the target
+  // folder that folder is empty and would show up in the picker as a stray.
+  // custom-documents is the default upload folder, so it is always kept.
+  const defaultFolder = path.resolve(basePath, "custom-documents");
+  for (const sourceFolder of sourceFolders) {
+    const resolved = path.resolve(sourceFolder);
+    if (resolved === defaultFolder || !isWithin(basePath, resolved)) continue;
+    if (fs.readdirSync(resolved).length === 0) fs.rmdirSync(resolved);
   }
 
   return folder;

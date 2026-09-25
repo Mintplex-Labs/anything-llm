@@ -52,6 +52,7 @@ const TRANSLATIONS = {
     "workspaces-name": "워크스페이스 이름",
     selection: "모델 선택",
     saving: "저장 중...",
+    saved: "저장됨",
     save: "저장",
     previous: "이전",
     next: "다음",
@@ -66,6 +67,7 @@ const TRANSLATIONS = {
     stopped: "멈춤",
     loading: "로딩 중",
     refresh: "새롭게",
+    noResults: "결과가 없습니다",
   },
   settings: {
     title: "인스턴스 설정",

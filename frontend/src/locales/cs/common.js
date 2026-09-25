@@ -54,6 +54,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Název pracovního prostoru",
     selection: "Výběr modelu",
     saving: "Ukládání...",
+    saved: "Uloženo",
     save: "Uložit změny",
     previous: "Předchozí stránka",
     next: "Další stránka",
@@ -68,6 +69,7 @@ const TRANSLATIONS = {
     stopped: "Zastaveno",
     loading: "Načítání",
     refresh: "Obnovit",
+    noResults: "Nebyl nalezen žádný výsledek",
   },
   home: {
     welcome: "Vítejte",

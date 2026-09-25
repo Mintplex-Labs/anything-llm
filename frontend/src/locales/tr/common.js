@@ -54,6 +54,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Çalışma Alanları Adı",
     selection: "Model Seçimi",
     saving: "Kaydediliyor...",
+    saved: "Kaydedildi",
     save: "Değişiklikleri Kaydet",
     previous: "Önceki Sayfa",
     next: "Sonraki Sayfa",
@@ -68,6 +69,7 @@ const TRANSLATIONS = {
     stopped: "Durdu",
     loading: "Yükleniyor",
     refresh: "Tazelemek",
+    noResults: "Hiçbir sonuç bulunamadı",
   },
   settings: {
     title: "Instance Ayarları",

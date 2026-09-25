@@ -28,6 +28,10 @@ async function executeApiCall(config, context) {
       const parsedBody = safeJsonParse(body, null);
       if (parsedBody !== null) {
         requestConfig.body = JSON.stringify(parsedBody);
+      } else if (body?.trim()) {
+        throw new Error(
+          "The request body of this API Call block is not valid JSON. Open the flow in the Agent Builder and check the body for syntax errors such as missing commas, brackets, or quotes."
+        );
       }
       requestConfig.headers["Content-Type"] = "application/json";
     } else if (bodyType === "text") {

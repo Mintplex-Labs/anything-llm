@@ -78,6 +78,7 @@ async function streamChatWithForEmbed(
       id: uuid,
       type: "textResponse",
       textResponse:
+        embed.workspace?.queryRefusalResponse ??
         "I do not have enough information to answer that. Try another question.",
       sources: [],
       close: true,

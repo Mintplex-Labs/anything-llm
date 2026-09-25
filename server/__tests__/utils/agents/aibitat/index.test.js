@@ -86,3 +86,53 @@ describe("AIbitat.getProviderForConfig providerSlug wiring", () => {
     expect(provider.getCumulativeUsage().totalCost).toBe(3);
   });
 });
+
+describe("AIbitat model loading status", () => {
+  const makeProvider = (isModelLoaded) => ({
+    model: "llama3:latest",
+    isModelLoaded: jest.fn().mockResolvedValue(isModelLoaded),
+    stream: jest.fn().mockResolvedValue({ textResponse: "ok" }),
+    resetCumulativeUsage: jest.fn(),
+    getCumulativeUsage: jest.fn().mockReturnValue({}),
+  });
+
+  const makeAibitat = (provider) => {
+    const aibitat = new AIbitat({ provider: "openai", model: "gpt-4o" });
+    aibitat.providerInstance = provider;
+    aibitat.introspect = jest.fn();
+    return aibitat;
+  };
+
+  test("reports a loading status before the first completion when the model is not loaded", async () => {
+    const provider = makeProvider(false);
+    const aibitat = makeAibitat(provider);
+
+    await aibitat.handleAsyncExecution([], []);
+
+    expect(aibitat.introspect).toHaveBeenCalledTimes(1);
+    expect(aibitat.introspect.mock.calls[0][0]).toContain(
+      "Loading llama3:latest into memory"
+    );
+    expect(provider.isModelLoaded.mock.invocationCallOrder[0]).toBeLessThan(
+      provider.stream.mock.invocationCallOrder[0]
+    );
+  });
+
+  test("reports nothing when the model is already loaded", async () => {
+    const aibitat = makeAibitat(makeProvider(true));
+
+    await aibitat.handleAsyncExecution([], []);
+
+    expect(aibitat.introspect).not.toHaveBeenCalled();
+  });
+
+  test("only checks at the start of a turn, not on tool follow-up completions", async () => {
+    const provider = makeProvider(false);
+    const aibitat = makeAibitat(provider);
+
+    await aibitat.handleAsyncExecution([], [], null, 1);
+
+    expect(provider.isModelLoaded).not.toHaveBeenCalled();
+    expect(aibitat.introspect).not.toHaveBeenCalled();
+  });
+});

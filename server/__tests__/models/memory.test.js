@@ -458,7 +458,7 @@ describe("Memory.applyExtractedMemories", () => {
     tx = {
       memories: {
         create: jest.fn().mockResolvedValue({}),
-        update: jest.fn().mockResolvedValue({}),
+        updateMany: jest.fn().mockResolvedValue({ count: 1 }),
       },
     };
     prisma.$transaction.mockImplementation((cb) => cb(tx));
@@ -480,7 +480,7 @@ describe("Memory.applyExtractedMemories", () => {
     expect(tx.memories.create).toHaveBeenCalledTimes(2);
   });
 
-  it("handles updates with updateId", async () => {
+  it("scopes updates to the current user's workspace or global memories", async () => {
     prisma.memories.count.mockResolvedValue(0);
 
     const result = await Memory.applyExtractedMemories(1, 2, [
@@ -488,10 +488,43 @@ describe("Memory.applyExtractedMemories", () => {
     ], Memory.GLOBAL_LIMIT);
 
     expect(result.updatedCount).toBe(1);
-    expect(tx.memories.update).toHaveBeenCalledWith({
-      where: { id: 10 },
+    expect(tx.memories.updateMany).toHaveBeenCalledWith({
+      where: {
+        id: 10,
+        userId: 1,
+        OR: [
+          { scope: "workspace", workspaceId: 2 },
+          { scope: "global" },
+        ],
+      },
       data: expect.objectContaining({ content: "revised" }),
     });
+  });
+
+  it("does not count an update whose id belongs to another user or workspace", async () => {
+    prisma.memories.count.mockResolvedValue(0);
+    tx.memories.updateMany.mockResolvedValue({ count: 0 });
+
+    const result = await Memory.applyExtractedMemories(4, 2, [
+      { content: "attacker replacement", scope: "WORKSPACE", action: "update", updateId: 1 },
+    ], Memory.GLOBAL_LIMIT);
+
+    expect(result.updatedCount).toBe(0);
+    expect(tx.memories.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ id: 1, userId: 4 }) })
+    );
+  });
+
+  it("scopes updates to unowned memories in single-user mode", async () => {
+    prisma.memories.count.mockResolvedValue(0);
+
+    await Memory.applyExtractedMemories(null, 2, [
+      { content: "revised", scope: "WORKSPACE", action: "update", updateId: 10 },
+    ], Memory.GLOBAL_LIMIT);
+
+    expect(tx.memories.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ id: 10, userId: null }) })
+    );
   });
 
   it("skips updates without a numeric updateId", async () => {
@@ -503,7 +536,7 @@ describe("Memory.applyExtractedMemories", () => {
     ], Memory.GLOBAL_LIMIT);
 
     expect(result.updatedCount).toBe(0);
-    expect(tx.memories.update).not.toHaveBeenCalled();
+    expect(tx.memories.updateMany).not.toHaveBeenCalled();
   });
 
   it("does not create workspace memories past the workspace limit", async () => {

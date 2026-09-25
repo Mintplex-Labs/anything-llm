@@ -75,6 +75,7 @@ function mockGitlabApi({
   userStatus = 200,
   issues = [],
   discussions = {},
+  discussionPages = {},
   wikis = [],
   wikiStatus = 200,
   rateLimitOnce = [],
@@ -119,8 +120,27 @@ function mockGitlabApi({
     }
 
     const discussion = pathname.match(/\/issues\/(\d+)\/discussions$/);
-    if (discussion)
+    if (discussion) {
+      const pages = discussionPages[discussion[1]];
+      if (pages) {
+        return {
+          ...jsonResponse(pages[page - 1] ?? []),
+          headers: {
+            get: (name) =>
+              name === "x-next-page" && page < pages.length
+                ? String(page + 1)
+                : null,
+          },
+        };
+      }
       return jsonResponse(firstPage ? discussions[discussion[1]] ?? [] : []);
+    }
+
+    const singleIssue = pathname.match(/\/issues\/(\d+)$/);
+    if (singleIssue) {
+      const issue = issues.find(({ iid }) => String(iid) === singleIssue[1]);
+      return issue ? jsonResponse(issue) : errorResponse(404, "Not Found");
+    }
 
     if (pathname.endsWith("/issues"))
       return jsonResponse(firstPage ? issues : []);
@@ -226,6 +246,59 @@ describe("GitLabRepoLoader url parsing", () => {
 
     expect(loader.ready).toBe(false);
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  test.each([
+    ["https://gitlab.com/owner/proj.git", "owner%2Fproj"],
+    ["https://gitlab.com/owner/proj.git/", "owner%2Fproj"],
+    ["https://gitlab.com/owner/proj/", "owner%2Fproj"],
+    ["https://gitlab.com/owner/proj/-/tree/main", "owner%2Fproj"],
+    ["https://gitlab.com/owner/proj/-/blob/main/src/a.js", "owner%2Fproj"],
+    ["https://gitlab.com/owner/proj?ref_type=heads", "owner%2Fproj"],
+    ["https://gitlab.com/owner/proj#readme", "owner%2Fproj"],
+    ["https://gitlab.com/group/sub/proj", "group%2Fsub%2Fproj"],
+    ["https://gitlab.com/group/sub/proj/-/tree/main", "group%2Fsub%2Fproj"],
+    [
+      "https://gitlab.com/gitlab-org/gitlab-foss/-/tree/master",
+      "gitlab-org%2Fgitlab-foss",
+    ],
+    ["http://gitlab.example.com:8080/acme/widgets", "acme%2Fwidgets"],
+    [
+      "http://gitlab.example.com:8080/acme/widgets/-/tree/main",
+      "acme%2Fwidgets",
+    ],
+  ])("%s asks the api for project %s", async (repo, projectId) => {
+    const fetchMock = mockGitlabApi();
+    const loader = new GitLabRepoLoader({ repo });
+    await loader.init();
+
+    expect(loader.ready).toBe(true);
+    expect(loader.projectId).toBe(projectId);
+    const branchRequest = requestedUrls(fetchMock).find((url) =>
+      url.includes("/repository/branches")
+    );
+    expect(branchRequest).toContain(`/projects/${projectId}/`);
+  });
+
+  test("a group page carries no project and leaves the loader un-ready", async () => {
+    const fetchMock = mockGitlabApi();
+    const loader = new GitLabRepoLoader({
+      repo: "https://gitlab.com/mygroup/-/issues",
+    });
+    await loader.init();
+
+    expect(loader.ready).toBe(false);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  test("a clone url leaves the repository url the documents are stored under clean", async () => {
+    mockGitlabApi();
+    const loader = new GitLabRepoLoader({
+      repo: "https://gitlab.com/owner/proj.git",
+    });
+    await loader.init();
+
+    expect(loader.repo).toBe("https://gitlab.com/owner/proj");
   });
 });
 
@@ -660,6 +733,138 @@ describe("GitLab chunkSource round trip", () => {
 
     expect(json).toHaveBeenCalledWith({ success: false, content: null });
   });
+
+  test("an imported issue resyncs with its updated description and new discussion", async () => {
+    const issue = {
+      iid: 42,
+      title: "Widgets fall over",
+      description: "They should not.",
+      web_url: "https://gitlab.example.com/acme/widgets/-/issues/42",
+      state: "opened",
+      author: { username: "alice" },
+    };
+    const discussions = {
+      42: [
+        {
+          notes: [
+            {
+              body: "Reproduced on main.",
+              author: { username: "bob" },
+              created_at: "2024-01-01T00:00:00Z",
+            },
+          ],
+        },
+      ],
+    };
+    const fetchMock = mockGitlabApi({ issues: [issue], discussions });
+    fetchGitlabFile.mockImplementation(realFetchGitlabFile);
+    const loader = new GitLabRepoLoader({
+      repo: "https://gitlab.example.com/acme/widgets",
+      branch: "main",
+      fetchIssues: true,
+    });
+    await loader.init();
+    const [doc] = await loader.recursiveLoader();
+    const chunkSource = generateChunkSource(loader, doc, encryptionWorker);
+
+    const importDescription = issue.description;
+    issue.description = "The updated reproduction uses two widgets.";
+    discussions[42].push({
+      notes: [
+        {
+          body: "Confirmed with the updated steps.",
+          author: { username: "carol" },
+          created_at: "2024-01-03T00:00:00Z",
+        },
+      ],
+    });
+
+    fetchMock.mockClear();
+    const { response, json } = mockResponse();
+    await resyncHandlers.gitlab({ chunkSource }, response);
+
+    const { content } = json.mock.calls[0][0];
+    expect(content).toContain("The updated reproduction uses two widgets.");
+    expect(content).toContain("Confirmed with the updated steps.");
+    expect(content).not.toContain(importDescription);
+    const urls = requestedUrls(fetchMock);
+    expect(urls.some((url) => url.includes("/repository/files/"))).toBe(false);
+    expect(urls).toContain(
+      "https://gitlab.example.com/api/v4/projects/acme%2Fwidgets/issues/42"
+    );
+    expect(urls.some((url) => url.includes("/issues/42/discussions"))).toBe(
+      true
+    );
+    expect(json).toHaveBeenCalledWith({
+      success: true,
+      content: expect.any(String),
+    });
+  });
+
+  test("an imported wiki page resyncs with its updated content rather than another page", async () => {
+    const wikis = [
+      { slug: "home", title: "Home", format: "markdown", content: "# Home" },
+      { slug: "faq", title: "FAQ", format: "markdown", content: "# FAQ" },
+    ];
+    const fetchMock = mockGitlabApi({ wikis });
+    fetchGitlabFile.mockImplementation(realFetchGitlabFile);
+    const loader = new GitLabRepoLoader({
+      repo: "https://gitlab.example.com/acme/widgets",
+      branch: "main",
+      fetchWikis: true,
+    });
+    await loader.init();
+    const docs = await loader.recursiveLoader();
+    const doc = docs.find(({ wiki }) => wiki.slug === "faq");
+    const chunkSource = generateChunkSource(loader, doc, encryptionWorker);
+
+    const importContent = doc.wiki.content;
+    wikis[1] = {
+      ...wikis[1],
+      content: "# Updated questions\nThe new answer is here.",
+    };
+
+    fetchMock.mockClear();
+    const { response, json } = mockResponse();
+    await resyncHandlers.gitlab({ chunkSource }, response);
+
+    expect(json.mock.calls[0][0].content).toBe(
+      "# Updated questions\nThe new answer is here."
+    );
+    const urls = requestedUrls(fetchMock);
+    expect(urls.some((url) => url.includes("/repository/files/"))).toBe(false);
+    expect(urls.some((url) => url.includes("/wikis"))).toBe(true);
+    expect(json).toHaveBeenCalledWith({
+      success: true,
+      content: "# Updated questions\nThe new answer is here.",
+    });
+    expect(json.mock.calls[0][0].content).not.toContain(importContent);
+    expect(json.mock.calls[0][0].content).not.toContain(wikis[0].content);
+  });
+
+  test("a chunkSource stored before this change still fetches its repository file", async () => {
+    const fetchMock = mockGitlabApi({ files: { "README.md": "# widgets" } });
+    fetchGitlabFile.mockImplementation(realFetchGitlabFile);
+    const legacy = `gitlab://https://gitlab.example.com/acme/widgets?payload=${encryptionWorker.encrypt(
+      JSON.stringify({
+        projectId: "acme/widgets",
+        branch: "main",
+        path: "README.md",
+        pat: null,
+        scheme: "https",
+      })
+    )}`;
+
+    const { response, json } = mockResponse();
+    await resyncHandlers.gitlab({ chunkSource: legacy }, response);
+
+    expect(
+      requestedUrls(fetchMock).some((url) =>
+        url.includes("/repository/files/README.md/raw")
+      )
+    ).toBe(true);
+    expect(json).toHaveBeenCalledWith({ success: true, content: "# widgets" });
+  });
 });
 
 describe("GitLabRepoLoader issues and wikis", () => {
@@ -721,6 +926,43 @@ describe("GitLabRepoLoader issues and wikis", () => {
       "bob at 2024-01-01T00:00:00Z:\nReproduced on main.",
       "alice at 2024-01-02T00:00:00Z:\nFix incoming.",
     ]);
+  });
+
+  test("issue import and single-issue refresh preserve discussion notes across pages in order", async () => {
+    const secondDiscussion = {
+      notes: [
+        {
+          body: "Verified the fix.",
+          author: { username: "carol" },
+          created_at: "2024-01-03T00:00:00Z",
+        },
+      ],
+    };
+    mockGitlabApi({
+      issues: [issue],
+      discussionPages: { 7: [[discussions[7][0]], [secondDiscussion]] },
+    });
+    const loader = new GitLabRepoLoader({
+      repo: "https://gitlab.example.com/acme/widgets",
+      branch: "main",
+      fetchIssues: true,
+    });
+    await loader.init();
+    const [imported] = await loader.fetchIssues();
+    const refreshed = await loader.fetchSingleIssue(7);
+    const expectedDiscussions = [
+      [
+        "bob at 2024-01-01T00:00:00Z:\nReproduced on main.",
+        "alice at 2024-01-02T00:00:00Z:\nFix incoming.",
+      ],
+      ["carol at 2024-01-03T00:00:00Z:\nVerified the fix."],
+    ];
+    expect(imported.discussions).toEqual(expectedDiscussions);
+    expect(refreshed.discussions).toEqual(expectedDiscussions);
+    const expectedActivity =
+      "## Activity\n\nbob at 2024-01-01T00:00:00Z:\nReproduced on main.,alice at 2024-01-02T00:00:00Z:\nFix incoming.\n\ncarol at 2024-01-03T00:00:00Z:\nVerified the fix.\n";
+    expect(issueToMarkdown(imported)).toContain(expectedActivity);
+    expect(issueToMarkdown(refreshed)).toContain(expectedActivity);
   });
 
   test("recursiveLoader wraps issues with a stable source and the issue web url", async () => {

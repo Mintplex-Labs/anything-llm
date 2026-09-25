@@ -12,21 +12,11 @@ const {
 const { getAnythingLLMUserAgent } = require("../../../endpoints/utils");
 const { validReasoningEffort } = require("../../helpers/reasoningEffort");
 
+// Temperature is never sent. Anthropic models from Opus 4.7 onward reject it with
+// a 400, and every model accepts requests without it, so omitting it everywhere
+// avoids tracking per-model support as new models ship. The workspace temperature
+// setting therefore has no effect for Anthropic.
 class AnthropicLLM {
-  /**
-   * List of Anthropic models that do not support the `temperature` inference parameter.
-   * These models reject `temperature`/`top_p`/`top_k` with a 400 error.
-   * @type {string[]}
-   */
-  noTemperatureModels = [
-    "claude-opus-4-7",
-    "claude-opus-4-8",
-    "claude-sonnet-5",
-    "claude-opus-5",
-    "claude-fable-5",
-    // Add other models here if identified
-  ];
-
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.ANTHROPIC_API_KEY)
       throw new Error("No Anthropic API key was set.");
@@ -88,18 +78,6 @@ class AnthropicLLM {
     if (this.maxTokens) return this.maxTokens;
     this.maxTokens = await AnthropicLLM.fetchModelMaxTokens(this.model);
     return this.maxTokens;
-  }
-
-  /**
-   * Gets the temperature configuration for the Anthropic LLM.
-   * @param {number} temperature - The temperature to use.
-   * @returns {number|undefined} The temperature value or undefined if not supported.
-   */
-  temperatureParam(temperature = this.defaultTemp) {
-    if (typeof temperature !== "number") return undefined;
-    if (this.noTemperatureModels.some((model) => this.model.includes(model)))
-      return undefined;
-    return parseFloat(temperature);
   }
 
   /**
@@ -232,20 +210,6 @@ class AnthropicLLM {
   }
 
   /**
-   * Builds the sampling portion of the request body. Models that accept
-   * `output_config.effort` deprecate `temperature` and reject requests
-   * sending both, so temperature is only sent when no effort is set.
-   * @param {string|null} reasoningEffort
-   * @param {number} temperature
-   * @returns {object}
-   */
-  samplingParams(reasoningEffort = null, temperature = this.defaultTemp) {
-    const reasoningConfig = this.#constructReasoningConfig(reasoningEffort);
-    if (Object.keys(reasoningConfig).length > 0) return reasoningConfig;
-    return { temperature: this.temperatureParam(temperature) };
-  }
-
-  /**
    * Returns the capabilities of the model.
    * @returns {Promise<{reasoning: 'unknown' | boolean, reasoningOptions: string[]}>}
    */
@@ -266,10 +230,7 @@ class AnthropicLLM {
     }
   }
 
-  async getChatCompletion(
-    messages = null,
-    { temperature = 0.7, reasoningEffort = null }
-  ) {
+  async getChatCompletion(messages = null, { reasoningEffort = null } = {}) {
     await this.assertModelMaxTokens();
     try {
       const systemContent = messages[0].content;
@@ -288,7 +249,7 @@ class AnthropicLLM {
             max_tokens: this.maxTokens,
             system: this.#buildSystemPrompt(systemContent),
             messages: messages.slice(1), // Pop off the system message
-            ...this.samplingParams(reasoningEffort, temperature),
+            ...this.#constructReasoningConfig(reasoningEffort),
           })
           .finalMessage()
       );
@@ -319,7 +280,7 @@ class AnthropicLLM {
 
   async streamGetChatCompletion(
     messages = null,
-    { temperature = 0.7, reasoningEffort = null }
+    { reasoningEffort = null } = {}
   ) {
     await this.assertModelMaxTokens();
     const systemContent = messages[0].content;
@@ -329,7 +290,7 @@ class AnthropicLLM {
         max_tokens: this.maxTokens,
         system: this.#buildSystemPrompt(systemContent),
         messages: messages.slice(1), // Pop off the system message
-        ...this.samplingParams(reasoningEffort, temperature),
+        ...this.#constructReasoningConfig(reasoningEffort),
       }),
       messages,
       runPromptTokenCalculation: false,

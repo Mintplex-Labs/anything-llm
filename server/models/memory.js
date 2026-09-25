@@ -384,6 +384,7 @@ const Memory = {
         .filter((m) => m.scope === "GLOBAL")
         .slice(0, Math.max(0, globalSlots));
 
+      let appliedUpdates = 0;
       await prisma.$transaction(async (tx) => {
         for (const { content } of newWorkspace) {
           await tx.memories.create({
@@ -407,17 +408,31 @@ const Memory = {
           });
         }
 
+        // The updateId comes from the LLM and is untrusted, so the update is
+        // scoped to memories this user owns: workspace memories in the current
+        // workspace, or the user's global memories. Anything else matches no row.
         for (const { updateId, content } of updates) {
-          await tx.memories.update({
-            where: { id: this.validations.id(updateId) },
+          const { count } = await tx.memories.updateMany({
+            where: {
+              id: this.validations.id(updateId),
+              userId: this.validations.userId(userId),
+              OR: [
+                {
+                  scope: "workspace",
+                  workspaceId: this.validations.id(workspaceId),
+                },
+                { scope: "global" },
+              ],
+            },
             data: { content, updatedAt: new Date() },
           });
+          appliedUpdates += count;
         }
       });
 
       result.workspaceCount = newWorkspace.length;
       result.globalCount = newGlobal.length;
-      result.updatedCount = updates.length;
+      result.updatedCount = appliedUpdates;
     } catch (error) {
       console.error(error.message);
     }

@@ -54,6 +54,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Nom de l'espai de treball",
     selection: "Selecció de model",
     saving: "Desant...",
+    saved: "Desat",
     save: "Desa els canvis",
     previous: "Pàgina anterior",
     next: "Pàgina següent",
@@ -68,6 +69,7 @@ const TRANSLATIONS = {
       "El nom d'usuari ha de tenir entre 2 i 64 caràcters, començar amb una lletra minúscula i només pot contenir lletres minúscules, números, guions baixos, guions i punts.",
     loading: "Carregant",
     refresh: "Actualitza",
+    noResults: "No s'han trobat resultats",
   },
   home: {
     welcome: "Benvingut",

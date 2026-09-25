@@ -50,6 +50,7 @@ const TRANSLATIONS = {
     "workspaces-name": "工作區名稱",
     selection: "模型選擇",
     saving: "儲存中...",
+    saved: "已儲存",
     save: "儲存變更",
     previous: "上一頁",
     next: "下一頁",
@@ -64,6 +65,7 @@ const TRANSLATIONS = {
     stopped: "停止",
     loading: "載入",
     refresh: "重新整理",
+    noResults: "未找到任何結果",
   },
   settings: {
     title: "系統設定",

@@ -159,6 +159,26 @@ describe("AgentFlows.loadFlowPlugin - categorized variables", () => {
   });
 });
 
+describe("AgentFlows.loadFlowPlugin - failure reporting", () => {
+  it("returns the error of the step that failed, not the first step", async () => {
+    const fn = registerFlowWithVariables([]);
+    mockExecuteFlow({
+      success: false,
+      results: [
+        { success: true, result: {} },
+        { success: false, error: "API Call JSON body is not valid JSON" },
+      ],
+      variables: {},
+      directOutput: null,
+    });
+
+    const reply = await fn.handler({});
+    expect(reply).toBe(
+      "Flow execution failed: API Call JSON body is not valid JSON"
+    );
+  });
+});
+
 describe("FlowExecutor.executeFlow - variable initialization", () => {
   beforeEach(() => {
     jest.spyOn(Telemetry, "sendTelemetry").mockResolvedValue();
