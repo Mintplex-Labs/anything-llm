@@ -1542,6 +1542,7 @@ function dumpENV() {
     // Other Configuration Keys
     "DISABLE_VIEW_CHAT_HISTORY",
     "DISABLE_SWAGGER_DOCS",
+    "WORKSPACE_DELETION_PROTECTION",
     // Simple SSO
     "SIMPLE_SSO_ENABLED",
     "SIMPLE_SSO_NO_LOGIN",
@@ -1596,6 +1597,27 @@ function dumpENV() {
 
     // Allow setting a custom timeout for tool call approval prompts
     "TOOL_CALL_APPROVAL_TIMEOUT_MS",
+
+    // AWS Bedrock endpoint host overrides for air-gapped or specialized partitions
+    "AWS_BEDROCK_LLM_MANTLE_ENDPOINT",
+    "AWS_BEDROCK_LLM_RUNTIME_ENDPOINT",
+    "AWS_BEDROCK_LLM_CONTROL_ENDPOINT",
+
+    // Allow setting a delay between Generic OpenAI embedding requests
+    "GENERIC_OPEN_AI_EMBEDDING_API_DELAY_MS",
+
+    // Memory extraction, scheduled job and document sync worker settings
+    "MEMORY_EXTRACTION_INTERVAL",
+    "MEMORY_IDLE_THRESHOLD_MS",
+    "SCHEDULED_JOB_MAX_CONCURRENT",
+    "SCHEDULED_JOB_TIMEOUT_MS",
+    "DOCUMENT_SYNC_STALE_AFTER_MS",
+
+    // Legacy provider overrides that are still read when set
+    "CEREBRAS_MODEL_TOKEN_LIMIT",
+    "DEEPSEEK_MAX_TOKENS",
+    "LLMMAN_RESPONSE_TIMEOUT",
+    "VERTEX_AI_LLM_MAX_TOKENS",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.
