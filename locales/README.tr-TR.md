@@ -263,7 +263,7 @@ Temel olarak, telemetri devre dışıysa hiçbir şey toplamayız. Ancak kurulum
 
 ## 🔗 Diğer Ürünler
 
-- **[AnythingLLM Mobile (MIT Lisanslı)][anythingllm-mobile]:** AnythingLLM'i mobil cihazınızda kullanmanızı sağlayan mobil uygulama.
+- **[AnythingLLM Mobile (Açık Kaynak Lisanslı)][anythingllm-mobile]:** Aynı cihaz üzerinde AnythingLLM deneyimi, ama bu kez telefonunuzda.
 - **[AnythingLLM Tarayıcı Eklentisi][anythingllm-extension]:** AnythingLLM'i tarayıcınızda kullanmanızı sağlayan tarayıcı eklentisi.
 - **[AnythingLLM Embed][anythingllm-embed]:** AnythingLLM'i web sitenize gömmenizi sağlayan bir araç.
 
