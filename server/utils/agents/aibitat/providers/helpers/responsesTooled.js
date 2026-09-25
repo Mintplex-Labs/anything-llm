@@ -2,6 +2,9 @@ const OpenAI = require("openai");
 const { RetryError } = require("../../error.js");
 const { v4 } = require("uuid");
 const { safeJsonParse } = require("../../../../http");
+const {
+  createWithReasoningSummaryFallback,
+} = require("../../../../helpers/reasoningEffort");
 
 /**
  * Shared OpenAI Responses API tool-calling utilities.
@@ -159,19 +162,52 @@ async function responsesTooledStream(
 
   try {
     const msgUUID = v4();
-    const response = await client.responses.create({
-      ...buildRequest(model, messages, functions, provider),
-      stream: true,
-    });
+    const response = await createWithReasoningSummaryFallback(
+      (body) => client.responses.create(body),
+      { ...buildRequest(model, messages, functions, provider), stream: true }
+    );
 
     const completion = {
       content: "",
       /** @type {null|{name: string, call_id: string, arguments: string}} */
       functionCall: null,
     };
+    // Reasoning summaries stream before the answer and are shown as a
+    // <think> block, the same way tooled.js streams reasoning.
+    let reasoningText = "";
+    const reportText = (content) =>
+      eventHandler?.("reportStreamEvent", {
+        type: "textResponseChunk",
+        uuid: msgUUID,
+        content,
+      });
+    const closeReasoning = () => {
+      if (reasoningText.length > 0 && !completion.content)
+        reportText("</think>");
+    };
 
     for await (const chunk of response) {
+      if (chunk.type === "response.reasoning_summary_text.delta") {
+        if (!chunk.delta) continue;
+        reportText(
+          reasoningText.length === 0 ? `<think>${chunk.delta}` : chunk.delta
+        );
+        reasoningText += chunk.delta;
+        continue;
+      }
+
+      if (
+        chunk.type === "response.reasoning_summary_part.done" &&
+        reasoningText.length > 0 &&
+        !completion.content
+      ) {
+        reportText("\n\n");
+        reasoningText += "\n\n";
+        continue;
+      }
+
       if (chunk.type === "response.output_text.delta") {
+        closeReasoning();
         completion.content += chunk.delta;
         eventHandler?.("reportStreamEvent", {
           type: "textResponseChunk",
@@ -215,8 +251,12 @@ async function responsesTooledStream(
       }
     }
 
+    closeReasoning();
+    const result = toResult(completion);
+    if (reasoningText.trim().length > 0 && !result.functionCall)
+      result.textResponse = `<think>${reasoningText.trim()}</think>${result.textResponse}`;
     return {
-      ...toResult(completion),
+      ...result,
       cost: provider?.getCost?.() ?? 0,
       uuid: msgUUID,
     };
@@ -246,10 +286,10 @@ async function responsesTooledComplete(
 
   try {
     const completion = { content: "", functionCall: null };
-    const response = await client.responses.create({
-      ...buildRequest(model, messages, functions, provider),
-      stream: false,
-    });
+    const response = await createWithReasoningSummaryFallback(
+      (body) => client.responses.create(body),
+      { ...buildRequest(model, messages, functions, provider), stream: false }
+    );
 
     if (response.usage) provider?.recordUsage?.(response.usage);
     for (const outputBlock of response.output) {

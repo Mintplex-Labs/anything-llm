@@ -81,7 +81,12 @@ function reasoningParams(provider, effort = null) {
   const toggle = ["on", "off"].includes(effort);
   switch (provider) {
     case "openai":
-      return { reasoning: { effort: effort === "off" ? "none" : effort } };
+      // Raw reasoning is never returned - a summary is the only way to show
+      // the model's thinking, so it is requested whenever reasoning is on.
+      return {
+        reasoning:
+          effort === "off" ? { effort: "none" } : { effort, summary: "auto" },
+      };
     case "anthropic":
       return { output_config: { effort } };
     case "gemini":
@@ -105,6 +110,57 @@ function reasoningParams(provider, effort = null) {
     default:
       return {};
   }
+}
+
+// OpenAI only returns reasoning summaries to verified organizations - once a
+// request is refused for that, summaries are no longer requested.
+let reasoningSummariesUnavailable = false;
+
+/**
+ * Whether an OpenAI error is the refusal to return reasoning summaries.
+ * @param {Error & {status?: number}} error
+ * @returns {boolean}
+ */
+function isReasoningSummaryRefusal(error) {
+  return (
+    error?.status === 400 &&
+    /summar/i.test(error?.message ?? "") &&
+    /verif/i.test(error?.message ?? "")
+  );
+}
+
+/**
+ * Sends an OpenAI Responses API request, retrying once without the reasoning
+ * summary when the organization is not allowed to receive summaries.
+ * @template T
+ * @param {(body: object) => Promise<T>} create - Sends the request body
+ * @param {object} body - Request body, possibly with `reasoning.summary`
+ * @returns {Promise<T>}
+ */
+async function createWithReasoningSummaryFallback(create, body) {
+  const withoutSummary = () => {
+    if (!body?.reasoning?.summary) return body;
+    const { summary: _, ...reasoning } = body.reasoning;
+    return { ...body, reasoning };
+  };
+
+  if (reasoningSummariesUnavailable) return await create(withoutSummary());
+  try {
+    return await create(body);
+  } catch (error) {
+    if (!body?.reasoning?.summary || !isReasoningSummaryRefusal(error))
+      throw error;
+    reasoningSummariesUnavailable = true;
+    console.log(
+      `\x1b[36m[ReasoningEffort]\x1b[0m Reasoning summaries are not available for this OpenAI organization - requesting without them.`
+    );
+    return await create(withoutSummary());
+  }
+}
+
+/** Resets the summary refusal flag - for tests only. */
+function resetReasoningSummaryFallback() {
+  reasoningSummariesUnavailable = false;
 }
 
 const CAPABILITY_CACHE_TTL_MS = 5 * 60 * 1000;
@@ -193,5 +249,7 @@ module.exports = {
   reasoningParams,
   getReasoningCapabilities,
   resolveReasoningEffort,
+  createWithReasoningSummaryFallback,
+  resetReasoningSummaryFallback,
   capabilityCache,
 };

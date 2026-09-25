@@ -13,6 +13,7 @@ const {
 const {
   PROVIDER_REASONING_EFFORTS,
   reasoningParams,
+  createWithReasoningSummaryFallback,
 } = require("../../helpers/reasoningEffort");
 
 class OpenAiLLM {
@@ -168,17 +169,18 @@ class OpenAiLLM {
       );
 
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
-      this.openai.responses
-        .create({
+      createWithReasoningSummaryFallback(
+        (body) => this.openai.responses.create(body),
+        {
           model: this.model,
           input: messages,
           store: false,
           temperature: this.#temperature(this.model, temperature),
           ...reasoningParams("openai", reasoningEffort),
-        })
-        .catch((e) => {
-          throw new Error(e.message);
-        })
+        }
+      ).catch((e) => {
+        throw new Error(e.message);
+      })
     );
 
     if (!result.output.hasOwnProperty("output_text")) return null;
@@ -211,14 +213,17 @@ class OpenAiLLM {
       );
 
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
-      func: this.openai.responses.create({
-        model: this.model,
-        stream: true,
-        input: messages,
-        store: false,
-        temperature: this.#temperature(this.model, temperature),
-        ...reasoningParams("openai", reasoningEffort),
-      }),
+      func: createWithReasoningSummaryFallback(
+        (body) => this.openai.responses.create(body),
+        {
+          model: this.model,
+          stream: true,
+          input: messages,
+          store: false,
+          temperature: this.#temperature(this.model, temperature),
+          ...reasoningParams("openai", reasoningEffort),
+        }
+      ),
       messages,
       runPromptTokenCalculation: false,
       modelTag: this.model,
@@ -238,6 +243,25 @@ class OpenAiLLM {
 
     return new Promise(async (resolve) => {
       let fullText = "";
+      // Reasoning summaries stream before the answer and are shown as a
+      // <think> block, the same way other providers stream reasoning.
+      let reasoningOpen = false;
+      const writeText = (textResponse) => {
+        fullText += textResponse;
+        writeResponseChunk(response, {
+          uuid,
+          sources: [],
+          type: "textResponseChunk",
+          textResponse,
+          close: false,
+          error: false,
+        });
+      };
+      const closeReasoning = () => {
+        if (!reasoningOpen) return;
+        reasoningOpen = false;
+        writeText("</think>");
+      };
 
       const handleAbort = () => {
         stream?.endMeasurement(usage);
@@ -247,22 +271,27 @@ class OpenAiLLM {
 
       try {
         for await (const chunk of stream) {
-          if (chunk.type === "response.output_text.delta") {
+          if (chunk.type === "response.reasoning_summary_text.delta") {
+            if (!chunk.delta) continue;
+            if (!reasoningOpen) {
+              reasoningOpen = true;
+              writeText(`<think>${chunk.delta}`);
+            } else writeText(chunk.delta);
+          } else if (
+            chunk.type === "response.reasoning_summary_part.done" &&
+            reasoningOpen
+          ) {
+            // Separate the summary's parts like paragraphs.
+            writeText("\n\n");
+          } else if (chunk.type === "response.output_text.delta") {
             const token = chunk.delta;
             if (token) {
-              fullText += token;
+              closeReasoning();
               if (!hasUsageMetrics) usage.completion_tokens++;
-
-              writeResponseChunk(response, {
-                uuid,
-                sources: [],
-                type: "textResponseChunk",
-                textResponse: token,
-                close: false,
-                error: false,
-              });
+              writeText(token);
             }
           } else if (chunk.type === "response.completed") {
+            closeReasoning();
             const { response: res } = chunk;
             if (res.hasOwnProperty("usage") && !!res.usage) {
               hasUsageMetrics = true;

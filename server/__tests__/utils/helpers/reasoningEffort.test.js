@@ -4,6 +4,8 @@ const {
   reasoningParams,
   getReasoningCapabilities,
   resolveReasoningEffort,
+  createWithReasoningSummaryFallback,
+  resetReasoningSummaryFallback,
   capabilityCache,
 } = require("../../../utils/helpers/reasoningEffort");
 
@@ -130,8 +132,12 @@ describe("PROVIDER_REASONING_EFFORTS other providers", () => {
 describe("reasoningParams", () => {
   it.each([
     ["openai", "off", { reasoning: { effort: "none" } }],
-    ["openai", "minimal", { reasoning: { effort: "minimal" } }],
-    ["openai", "high", { reasoning: { effort: "high" } }],
+    [
+      "openai",
+      "minimal",
+      { reasoning: { effort: "minimal", summary: "auto" } },
+    ],
+    ["openai", "high", { reasoning: { effort: "high", summary: "auto" } }],
     ["anthropic", "max", { output_config: { effort: "max" } }],
     ["anthropic", "xhigh", { output_config: { effort: "xhigh" } }],
     ["gemini", "minimal", { reasoning_effort: "minimal" }],
@@ -337,5 +343,76 @@ describe("resolveReasoningEffort", () => {
   it("resolves to null without a connector", async () => {
     expect(await resolveReasoningEffort(null, "low")).toBeNull();
     expect(await resolveReasoningEffort(() => null, "low")).toBeNull();
+  });
+});
+
+describe("createWithReasoningSummaryFallback", () => {
+  const body = {
+    model: "gpt-5.1",
+    reasoning: { effort: "high", summary: "auto" },
+  };
+  const refusal = Object.assign(
+    new Error(
+      "400 Your organization must be verified to generate reasoning summaries."
+    ),
+    { status: 400 }
+  );
+
+  beforeEach(() => resetReasoningSummaryFallback());
+
+  it("sends the body unchanged when summaries are allowed", async () => {
+    const create = jest.fn(async () => "ok");
+    expect(await createWithReasoningSummaryFallback(create, body)).toBe("ok");
+    expect(create).toHaveBeenCalledWith(body);
+  });
+
+  it("retries once without the summary when the organization is refused", async () => {
+    const create = jest
+      .fn()
+      .mockRejectedValueOnce(refusal)
+      .mockResolvedValueOnce("ok");
+    expect(await createWithReasoningSummaryFallback(create, body)).toBe("ok");
+    expect(create).toHaveBeenCalledTimes(2);
+    expect(create.mock.calls[1][0]).toEqual({
+      model: "gpt-5.1",
+      reasoning: { effort: "high" },
+    });
+  });
+
+  it("stops requesting summaries after a refusal", async () => {
+    const create = jest
+      .fn()
+      .mockRejectedValueOnce(refusal)
+      .mockResolvedValue("ok");
+    await createWithReasoningSummaryFallback(create, body);
+    await createWithReasoningSummaryFallback(create, body);
+    expect(create).toHaveBeenCalledTimes(3);
+    expect(create.mock.calls[2][0].reasoning).toEqual({ effort: "high" });
+  });
+
+  it.each([
+    [
+      "another 400",
+      Object.assign(new Error("400 Invalid value: 'low'"), { status: 400 }),
+    ],
+    [
+      "a rate limit",
+      Object.assign(new Error("429 Rate limit reached"), { status: 429 }),
+    ],
+    ["a network error", new Error("fetch failed")],
+  ])("rethrows %s without retrying", async (_, error) => {
+    const create = jest.fn().mockRejectedValue(error);
+    await expect(createWithReasoningSummaryFallback(create, body)).rejects.toBe(
+      error
+    );
+    expect(create).toHaveBeenCalledTimes(1);
+  });
+
+  it("rethrows a summary refusal when no summary was requested", async () => {
+    const create = jest.fn().mockRejectedValue(refusal);
+    await expect(
+      createWithReasoningSummaryFallback(create, { model: "gpt-5.1" })
+    ).rejects.toBe(refusal);
+    expect(create).toHaveBeenCalledTimes(1);
   });
 });
