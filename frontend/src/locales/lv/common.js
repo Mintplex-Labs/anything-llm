@@ -247,6 +247,7 @@ const TRANSLATIONS = {
       title: "LLM Temperatūra",
       "desc-end":
         "Jo lielāks skaitlis, jo radošākas atbildes. Dažiem modeļiem tas var novest pie nesaprotamām atbildēm, ja iestatīts pārāk augsts.",
+      placeholder: "Nodrošinātāja noklusējums",
     },
   },
   "vector-workspace": {

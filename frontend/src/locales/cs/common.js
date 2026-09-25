@@ -255,6 +255,7 @@ const TRANSLATIONS = {
       title: "Teplota LLM",
       "desc-end":
         "Vyšší číslo znamená kreativnější. U některých modelů to může vést k nesourodým odpovědím při nastavení příliš vysoko.",
+      placeholder: "Výchozí hodnota poskytovatele",
     },
   },
   "vector-workspace": {

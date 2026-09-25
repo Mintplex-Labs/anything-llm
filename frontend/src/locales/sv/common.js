@@ -256,6 +256,7 @@ const TRANSLATIONS = {
       title: "LLM-temperatur",
       "desc-end":
         "Ju högre värde, desto mer kreativa blir svaren. För vissa modeller kan ett alltför högt värde ge osammanhängande svar.",
+      placeholder: "Leverantörens standard",
     },
   },
   "vector-workspace": {

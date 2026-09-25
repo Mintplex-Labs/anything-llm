@@ -258,6 +258,7 @@ const TRANSLATIONS = {
       title: "Temperatura del LLM",
       "desc-end":
         "Com més alt sigui el número, més creatiu serà. Per a alguns models, això pot provocar respostes incoherents si és massa alt.",
+      placeholder: "Valor per defecte del proveïdor",
     },
   },
   "vector-workspace": {

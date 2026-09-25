@@ -242,6 +242,7 @@ const TRANSLATIONS = {
       title: "LLM 온도",
       "desc-end":
         "숫자가 높을수록 창의적입니다. 일부 모델에서는 너무 높게 설정하면 일관성 없는 응답이 나올 수 있습니다.",
+      placeholder: "제공자 기본값",
     },
   },
   "vector-workspace": {

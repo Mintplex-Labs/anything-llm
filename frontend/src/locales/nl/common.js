@@ -241,6 +241,7 @@ const TRANSLATIONS = {
       title: "LLM Temperatuur",
       "desc-end":
         "Hoe hoger het getal, hoe creatiever. Voor sommige modellen kan dit leiden tot onsamenhangende antwoorden als het te hoog wordt ingesteld.",
+      placeholder: "Standaard van de provider",
     },
   },
   "vector-workspace": {

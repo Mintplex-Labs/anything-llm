@@ -257,6 +257,7 @@ const TRANSLATIONS = {
       title: "Temperature LLM",
       "desc-end":
         "Semakin tinggi angkanya, semakin kreatif. Untuk beberapa model, ini dapat menyebabkan respons yang tidak koheren jika diatur terlalu tinggi.",
+      placeholder: "Default penyedia",
     },
   },
   "vector-workspace": {

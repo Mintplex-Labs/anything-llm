@@ -238,6 +238,7 @@ const TRANSLATIONS = {
       title: "LLM温度",
       "desc-end":
         "数値が高いほど創造的になりますが、高すぎると一部のモデルでは一貫性のない応答になる場合があります。",
+      placeholder: "プロバイダーのデフォルト",
     },
   },
   "vector-workspace": {

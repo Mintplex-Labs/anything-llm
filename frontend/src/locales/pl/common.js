@@ -247,6 +247,7 @@ const TRANSLATIONS = {
       title: "Temperatura modelu",
       "desc-end":
         "Im wyższa liczba, tym większa kreatywność. W przypadku niektórych modeli może to prowadzić do niespójnych odpowiedzi przy zbyt wysokich ustawieniach.",
+      placeholder: "Domyślna wartość dostawcy",
     },
   },
   "vector-workspace": {

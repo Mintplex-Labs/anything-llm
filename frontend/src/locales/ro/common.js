@@ -248,6 +248,7 @@ const TRANSLATIONS = {
       title: "Temperatura LLM",
       "desc-end":
         "Cu cât numărul e mai mare, cu atât mai creativ. Pentru unele modele poate duce la răspunsuri incoerente la valori mari.",
+      placeholder: "Valoarea implicită a furnizorului",
     },
   },
   vector: {
