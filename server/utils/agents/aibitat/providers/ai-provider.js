@@ -286,6 +286,10 @@ class Provider {
             baseURL: "https://api.together.xyz/v1",
           },
           apiKey: process.env.TOGETHER_AI_API_KEY ?? null,
+          ...maxTokensParam(
+            toValidNumber(process.env.TOGETHER_AI_MAX_TOKENS, null),
+            "maxTokens"
+          ),
           ...config,
         });
       case "generic-openai":

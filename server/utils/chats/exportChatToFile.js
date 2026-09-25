@@ -5,6 +5,19 @@ const {
 const { convertToChatHistory } = require("../helpers/chat/responses.js");
 
 const THOUGHT_TAGS = "thinking|think|thought|thought_chain";
+const THUMB_EDGE = 96;
+const THUMB_GAP = 8;
+const THUMB_COLUMNS = 4;
+const JPEG_QUALITY = 0.8;
+// Stands in for a message's images when `canvas` cannot draw the thumbnail
+// sheet, so the export still shows that the message carried images.
+const IMAGE_PLACEHOLDER = `data:image/svg+xml;base64,${Buffer.from(
+  `<svg xmlns="http://www.w3.org/2000/svg" width="${THUMB_EDGE}" height="${THUMB_EDGE}" viewBox="0 0 96 96">` +
+    `<rect width="96" height="96" rx="8" fill="#e5e7eb"/>` +
+    `<g font-family="sans-serif" font-size="10" fill="#6b7280" text-anchor="middle">` +
+    `<text x="48" y="44">Image could</text><text x="48" y="58">not be loaded</text>` +
+    `</g></svg>`
+).toString("base64")}`;
 const validExportTypes = ["pdf", "markdown", "plaintext", "json", "html"];
 
 // Extract thought chain content from assistant messages.
@@ -33,16 +46,81 @@ function stripThoughtChain(text = "") {
     .trim();
 }
 
-// Render uploaded image attachments as markdown images so they appear in the PDF.
-function imagesToMarkdown(attachments = []) {
-  return attachments
-    .filter((a) => a?.contentString?.startsWith("data:image"))
-    .map((a) => `![${a.name || "attachment"}](${a.contentString})`)
-    .join("\n\n");
+/**
+ * Tile every image of a message into one wrapping grid of thumbnails. Images in
+ * an export are decorative - they only show that a message carried one - so the
+ * originals never need to be embedded at full resolution.
+ * @param {{contentString: string}[]} images
+ * @returns {Promise<string|null>} `data:image/jpeg;base64,...`, or null if the
+ * sheet could not be drawn.
+ */
+async function imageThumbnailSheet(images = []) {
+  try {
+    const { loadImage, createCanvas } = require("canvas");
+    const loaded = await Promise.all(
+      images.map((image) => loadImage(image.contentString))
+    );
+
+    const columns = Math.min(loaded.length, THUMB_COLUMNS);
+    const rows = Math.ceil(loaded.length / columns);
+    const cell = THUMB_EDGE + THUMB_GAP;
+    const canvas = createCanvas(
+      columns * cell - THUMB_GAP,
+      rows * cell - THUMB_GAP
+    );
+
+    const context = canvas.getContext("2d");
+    // JPEG carries no alpha channel - without a ground, transparent pixels
+    // encode as black.
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
+    loaded.forEach((image, index) => {
+      const scale = THUMB_EDGE / Math.max(image.width, image.height);
+      const width = image.width * scale;
+      const height = image.height * scale;
+      context.drawImage(
+        image,
+        (index % columns) * cell + (THUMB_EDGE - width) / 2,
+        Math.floor(index / columns) * cell + (THUMB_EDGE - height) / 2,
+        width,
+        height
+      );
+    });
+
+    return canvas.toDataURL("image/jpeg", JPEG_QUALITY);
+  } catch (error) {
+    console.error(
+      `[exportChatToFile] Could not draw image thumbnails: ${error.message}`
+    );
+    return null;
+  }
+}
+
+/**
+ * Every image tied to a message - what the user uploaded as context plus any
+ * image the assistant generated while answering - tiled into one thumbnail
+ * sheet, or a placeholder when the sheet cannot be drawn.
+ * @returns {Promise<string|null>} image data URL to embed, or null if the
+ * message has no images.
+ */
+async function messageImages(msg = {}) {
+  const { generatedImageAttachments } = require("../files/index.js");
+  const images = [
+    ...(msg.attachments || []).filter((a) =>
+      a?.contentString?.startsWith("data:image")
+    ),
+    ...generatedImageAttachments(msg.outputs),
+  ];
+  if (!images.length) return null;
+  return (await imageThumbnailSheet(images)) || IMAGE_PLACEHOLDER;
 }
 
 // Build a clean markdown document from a converted chat history.
-function chatHistoryToMarkdown(history = [], { workspaceName, threadName }) {
+async function chatHistoryToMarkdown(
+  history = [],
+  { workspaceName, threadName }
+) {
   const lines = [`**Workspace:** ${workspaceName}  `];
   if (threadName) lines.push(`**Thread:** ${threadName}  `);
   lines.push(`**Exported:** ${moment().format("MMMM D, YYYY h:mm A")}`, "");
@@ -53,7 +131,7 @@ function chatHistoryToMarkdown(history = [], { workspaceName, threadName }) {
       msg.role === "assistant"
         ? stripThoughtChain(msg.content)
         : (msg.content || "").trim();
-    const images = imagesToMarkdown(msg.attachments);
+    const images = await messageImages(msg);
     if (!content && !images) continue;
 
     lines.push(
@@ -63,7 +141,7 @@ function chatHistoryToMarkdown(history = [], { workspaceName, threadName }) {
       ""
     );
     if (content) lines.push(content, "");
-    if (images) lines.push(images, "");
+    if (images) lines.push(`![attachments](${images})`, "");
   }
 
   return lines.join("\n");
@@ -118,7 +196,7 @@ function chatHistoryToJSON(history = [], { workspaceName, threadName }) {
   );
 }
 
-function chatHistoryToHTML(history = [], { workspaceName, threadName }) {
+async function chatHistoryToHTML(history = [], { workspaceName, threadName }) {
   const rawTitle = threadName
     ? `${workspaceName} — ${threadName}`
     : workspaceName;
@@ -142,13 +220,10 @@ function chatHistoryToHTML(history = [], { workspaceName, threadName }) {
       msg.role === "assistant" ? stripThoughtChain(rawContent) : rawContent;
     const reasoning =
       msg.role === "assistant" ? extractThoughtChain(rawContent) : null;
-    const images = (msg.attachments || [])
-      .filter((a) => a?.contentString?.startsWith("data:image"))
-      .map(
-        (a) =>
-          `<img src="${a.contentString}" alt="${escapeHtml(a.name || "attachment")}" class="max-w-full rounded-lg mt-2" />`
-      )
-      .join("\n");
+    const sheet = await messageImages(msg);
+    const images = sheet
+      ? `<img src="${sheet}" alt="attachments" class="max-w-full rounded-lg mt-2" />`
+      : "";
     if (!content && !images && !reasoning) continue;
 
     const escapedContent = content ? escapeHtml(content) : "";
@@ -206,7 +281,7 @@ function chatHistoryToHTML(history = [], { workspaceName, threadName }) {
  * @returns {Promise<Buffer>}
  */
 async function chatHistoryToPDF(history = [], meta = {}) {
-  const markdown = chatHistoryToMarkdown(history, meta);
+  const markdown = await chatHistoryToMarkdown(history, meta);
   const { markdownToPdf } = await import("@mintplex-labs/mdpdf");
   const { PDFDocument, rgb, StandardFonts } = await import("pdf-lib");
 
@@ -231,7 +306,7 @@ async function sendChatHistoryFile(response, chats, meta, type = "pdf") {
       return response.send(buffer);
     }
     case "markdown": {
-      const md = chatHistoryToMarkdown(convertToChatHistory(chats), meta);
+      const md = await chatHistoryToMarkdown(convertToChatHistory(chats), meta);
       response.setHeader("Content-Type", "text/markdown");
       return response.send(Buffer.from(md, "utf-8"));
     }
@@ -246,7 +321,7 @@ async function sendChatHistoryFile(response, chats, meta, type = "pdf") {
       return response.send(Buffer.from(json, "utf-8"));
     }
     case "html": {
-      const html = chatHistoryToHTML(convertToChatHistory(chats), meta);
+      const html = await chatHistoryToHTML(convertToChatHistory(chats), meta);
       response.setHeader("Content-Type", "text/html");
       return response.send(Buffer.from(html, "utf-8"));
     }

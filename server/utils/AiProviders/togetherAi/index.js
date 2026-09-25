@@ -8,7 +8,7 @@ const {
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const fs = require("fs");
 const path = require("path");
-const { safeJsonParse } = require("../../http");
+const { safeJsonParse, toValidNumber } = require("../../http");
 
 const cacheFolder = path.resolve(
   process.env.STORAGE_DIR
@@ -98,6 +98,9 @@ class TogetherAiLLM {
       apiKey: process.env.TOGETHER_AI_API_KEY ?? null,
     });
     this.model = modelPreference || process.env.TOGETHER_AI_MODEL_PREF;
+    this.maxTokens = process.env.TOGETHER_AI_MAX_TOKENS
+      ? toValidNumber(process.env.TOGETHER_AI_MAX_TOKENS, null)
+      : null;
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -207,6 +210,7 @@ class TogetherAiLLM {
           model: this.model,
           messages,
           temperature,
+          ...(this.maxTokens ? { max_tokens: this.maxTokens } : {}),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -246,6 +250,7 @@ class TogetherAiLLM {
         stream: true,
         messages,
         temperature,
+        ...(this.maxTokens ? { max_tokens: this.maxTokens } : {}),
       }),
       messages,
       runPromptTokenCalculation: false,

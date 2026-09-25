@@ -127,7 +127,7 @@ async function asXlsx({
         const sheetData = {
           id: v4(),
           url: `file://${path.join(outFolderPath, `${slugify(name)}.csv`)}`,
-          title: metadata.title || `${filename} - Sheet:${name}`,
+          title: `${metadata.title || filename} - Sheet:${name}`,
           docAuthor: metadata.docAuthor || "Unknown",
           description:
             metadata.description || `Spreadsheet data from sheet: ${name}`,
@@ -141,7 +141,7 @@ async function asXlsx({
 
         const document = writeToServerDocuments({
           data: sheetData,
-          filename: `sheet-${slugify(name)}`,
+          filename: `sheet-${slugify(name)}-${sheetData.id}`,
           destinationOverride: outFolderPath,
           options: { parseOnly: options.parseOnly },
         });
