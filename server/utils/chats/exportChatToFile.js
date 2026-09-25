@@ -80,14 +80,22 @@ async function imageThumbnailSheet(images = []) {
     });
 
     return canvas.toDataURL("image/jpeg", JPEG_QUALITY);
-  } catch {
+  } catch (error) {
+    console.error(
+      `[exportChatToFile] Could not draw image thumbnails: ${error.message}`
+    );
     return null;
   }
 }
 
-// Every image tied to a message - what the user uploaded as context plus any
-// image the assistant generated while answering.
-function messageImages(msg = {}) {
+/**
+ * Every image tied to a message - what the user uploaded as context plus any
+ * image the assistant generated while answering. Tiled into one thumbnail sheet
+ * when `canvas` can draw it, otherwise the originals are embedded as-is so an
+ * export never silently loses its images.
+ * @returns {Promise<string[]>} image data URLs to embed, empty if none.
+ */
+async function messageImages(msg = {}) {
   const { generatedImageAttachments } = require("../files/index.js");
   const images = [
     ...(msg.attachments || []).filter((a) =>
@@ -95,7 +103,9 @@ function messageImages(msg = {}) {
     ),
     ...generatedImageAttachments(msg.outputs),
   ];
-  return images.length ? imageThumbnailSheet(images) : null;
+  if (!images.length) return [];
+  const sheet = await imageThumbnailSheet(images);
+  return sheet ? [sheet] : images.map((image) => image.contentString);
 }
 
 // Build a clean markdown document from a converted chat history.
@@ -113,7 +123,9 @@ async function chatHistoryToMarkdown(
       msg.role === "assistant"
         ? stripThoughtChain(msg.content)
         : (msg.content || "").trim();
-    const images = await messageImages(msg);
+    const images = (await messageImages(msg))
+      .map((src) => `![attachments](${src})`)
+      .join("\n\n");
     if (!content && !images) continue;
 
     lines.push(
@@ -123,7 +135,7 @@ async function chatHistoryToMarkdown(
       ""
     );
     if (content) lines.push(content, "");
-    if (images) lines.push(`![attachments](${images})`, "");
+    if (images) lines.push(images, "");
   }
 
   return lines.join("\n");
@@ -202,10 +214,12 @@ async function chatHistoryToHTML(history = [], { workspaceName, threadName }) {
       msg.role === "assistant" ? stripThoughtChain(rawContent) : rawContent;
     const reasoning =
       msg.role === "assistant" ? extractThoughtChain(rawContent) : null;
-    const sheet = await messageImages(msg);
-    const images = sheet
-      ? `<img src="${sheet}" alt="attachments" class="max-w-full rounded-lg mt-2" />`
-      : "";
+    const images = (await messageImages(msg))
+      .map(
+        (src) =>
+          `<img src="${src}" alt="attachments" class="max-w-full rounded-lg mt-2" />`
+      )
+      .join("\n");
     if (!content && !images && !reasoning) continue;
 
     const escapedContent = content ? escapeHtml(content) : "";
