@@ -1,4 +1,4 @@
-const { validReasoningEffort } = require("../../../helpers/reasoningEffort");
+const { reasoningParams } = require("../../../helpers/reasoningEffort");
 const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
@@ -45,18 +45,12 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   /**
-   * The reasoning portion of the request body when a supported reasoning
-   * effort is set - otherwise an empty object so the provider default applies.
+   * The reasoning portion of the request body. The effort is validated against
+   * the model before the provider is built, so it only needs mapping here.
    * @returns {object}
    */
   get reasoningConfig() {
-    const effort = validReasoningEffort(
-      "lmstudio",
-      this.model,
-      this.reasoningEffort
-    );
-    if (!effort) return {};
-    return { reasoning_effort: effort === "off" ? "none" : effort };
+    return reasoningParams("lmstudio", this.reasoningEffort);
   }
 
   get supportsAgentStreaming() {

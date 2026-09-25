@@ -16,7 +16,11 @@ const {
 const ImportedPlugin = require("./imported");
 const { AgentFlows } = require("../agentFlows");
 const MCPCompatibilityLayer = require("../MCP");
-const { getAndClearInvocationAttachments } = require("../chats/agents");
+const {
+  getAndClearInvocationAttachments,
+  getAndClearInvocationReasoningEffort,
+} = require("../chats/agents");
+const { resolveReasoningEffort } = require("../helpers/reasoningEffort");
 const { DocumentManager } = require("../DocumentManager");
 
 class AgentHandler {
@@ -775,6 +779,9 @@ class AgentHandler {
 
     // Retrieve cached attachments (images, etc.) from the HTTP request
     this.attachments = getAndClearInvocationAttachments(this.#invocationUUID);
+    this.sessionReasoningEffort = getAndClearInvocationReasoningEffort(
+      this.#invocationUUID
+    );
 
     return this;
   }
@@ -846,21 +853,31 @@ class AgentHandler {
       });
   }
 
+  /**
+   * Reasoning effort for the current provider + model, validated against the
+   * model's live capabilities. Re-run whenever the route changes, since an
+   * effort valid for one model can be rejected by another.
+   * @returns {Promise<string|null>}
+   */
+  async #reasoningEffortForRoute() {
+    const { getLLMProvider } = require("../helpers");
+    return await resolveReasoningEffort(
+      this.invocation?.workspace,
+      () => getLLMProvider({ provider: this.provider, model: this.model }),
+      this.sessionReasoningEffort
+    );
+  }
+
   async createAIbitat(
     args = {
       socket: null,
     }
   ) {
     this.#args = args;
-    const { resolveReasoningEffort } = require("../chats");
-    const { getLLMProvider } = require("../helpers");
     this.aibitat = new AIbitat({
       provider: this.provider ?? "openai",
       model: this.model ?? "gpt-4.1-nano",
-      reasoningEffort: await resolveReasoningEffort(
-        this.invocation?.workspace,
-        getLLMProvider({ provider: this.provider, model: this.model })
-      ),
+      reasoningEffort: await this.#reasoningEffortForRoute(),
       chats: await this.#chatHistory(20),
       handlerProps: {
         invocation: this.invocation,
@@ -886,13 +903,21 @@ class AgentHandler {
       this.aibitat.resolveRoute = async (prompt) => {
         if (isFirstCall) {
           isFirstCall = false;
-          return { provider: this.provider, model: this.model };
+          return {
+            provider: this.provider,
+            model: this.model,
+            reasoningEffort: this.aibitat.defaultProvider.reasoningEffort,
+          };
         }
         try {
           await this.#resolveRouterProvider(prompt);
           this.aibitat.handlerProps.routingMetadata =
             this.routingMetadata || null;
-          return { provider: this.provider, model: this.model };
+          return {
+            provider: this.provider,
+            model: this.model,
+            reasoningEffort: await this.#reasoningEffortForRoute(),
+          };
         } catch (e) {
           this.log(
             "Router re-resolution failed, keeping current route",

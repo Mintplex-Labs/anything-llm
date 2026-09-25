@@ -28,6 +28,10 @@ import WorkspaceModelPicker from "@/components/WorkspaceChat/ChatContainer/Works
 import { ChatTooltips } from "@/components/WorkspaceChat/ChatContainer/ChatTooltips";
 import { ChatSidebarProvider } from "@/components/WorkspaceChat/ChatContainer/ChatSidebar";
 import { clearPromptInputDraft } from "@/hooks/usePromptInputStorage";
+import {
+  getSessionReasoningEffort,
+  setSessionReasoningEffort,
+} from "@/utils/chat/reasoningEffort";
 import MemoriesSidebar from "@/components/WorkspaceChat/ChatContainer/MemoriesSidebar";
 
 async function getTargetWorkspace() {
@@ -220,7 +224,16 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
       if (!targetThread) {
         const { thread } = await Workspace.threads.new(targetWorkspace.slug);
         targetThread = thread?.slug;
-        if (thread) setThreadSlug(thread.slug);
+        if (thread) {
+          // Carry the reasoning effort picked before the thread existed over
+          // to the thread the message is sent in.
+          setSessionReasoningEffort(
+            targetWorkspace.slug,
+            thread.slug,
+            getSessionReasoningEffort(targetWorkspace.slug)
+          );
+          setThreadSlug(thread.slug);
+        }
       }
 
       sessionStorage.setItem(
@@ -297,7 +310,10 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
         <ChatSettingsMenu />
         <div className="flex-1 min-w-0 transition-all duration-500 relative md:rounded-[16px] bg-zinc-900 light:bg-white w-full h-full overflow-hidden border-none light:border-solid light:border light:border-theme-modal-border">
           {isMobile && <SidebarMobileHeader />}
-          <WorkspaceModelPicker workspaceSlug={workspace?.slug} />
+          <WorkspaceModelPicker
+            workspaceSlug={workspace?.slug}
+            threadSlug={threadSlug}
+          />
           <DnDFileUploaderWrapper>
             <div className="flex flex-col h-full w-full items-center justify-center">
               <div className="flex flex-col items-center w-full max-w-[750px]">

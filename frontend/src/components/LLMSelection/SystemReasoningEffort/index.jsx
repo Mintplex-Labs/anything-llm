@@ -15,18 +15,16 @@ export default function SystemReasoningEffort({ model = null }) {
   const { t } = useTranslation();
   const context = useSystemReasoningEffort();
   const [capabilities, setCapabilities] = useState(null);
-  const { settings, selectedLLM, basePath } = context ?? {};
+  const { settings, selectedLLM } = context ?? {};
   const selectedModel = model ?? context?.selectedModel;
 
   useEffect(() => {
     if (!context) return;
     async function fetchCapabilities() {
-      setCapabilities(
-        await System.llmCapabilities(selectedLLM, selectedModel, basePath)
-      );
+      setCapabilities(await System.llmCapabilities(selectedLLM, selectedModel));
     }
     fetchCapabilities();
-  }, [settings, selectedLLM, selectedModel, basePath]);
+  }, [settings, selectedLLM, selectedModel]);
 
   if (
     !context ||

@@ -15,6 +15,9 @@ const {
   stripThinkingFromText,
 } = require("../utils/helpers");
 const { handleFileUpload } = require("../utils/files/multer");
+const {
+  getReasoningCapabilities,
+} = require("../utils/helpers/reasoningEffort");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { Telemetry } = require("../models/telemetry");
 const {
@@ -426,25 +429,12 @@ function workspaceEndpoints(app) {
           : await Workspace.get({ slug });
         if (!workspace) return response.sendStatus(400);
 
-        // Optional overrides let the UI preview capabilities for an unsaved
-        // provider/model selection. "default" means the system LLM preference.
-        const { provider = null, model = null } = request.query;
-        const LLMProvider = getLLMProvider({
-          provider: provider
-            ? provider === "default"
-              ? null
-              : String(provider)
-            : workspace.chatProvider,
-          model: provider
-            ? model
-              ? String(model)
-              : null
-            : workspace.chatModel,
-        });
-        const capabilities = (await LLMProvider.getModelCapabilities?.()) ?? {
-          reasoning: "unknown",
-          reasoningOptions: [],
-        };
+        const capabilities = await getReasoningCapabilities(
+          getLLMProvider({
+            provider: workspace.chatProvider,
+            model: workspace.chatModel,
+          })
+        );
         return response.status(200).json({ capabilities });
       } catch (e) {
         console.error(e.message, e);

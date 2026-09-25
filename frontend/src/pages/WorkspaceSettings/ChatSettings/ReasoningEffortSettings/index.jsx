@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Workspace from "@/models/workspace";
 import { SavedIndicator } from "@/components/AutosaveForm";
+import { effectiveReasoningEffort } from "@/utils/chat/reasoningEffort";
 
 /**
  * @param {object} props
@@ -25,6 +26,12 @@ export default function ReasoningEffortSettings({ settings, workspace }) {
   )
     return null;
 
+  // The system default only applies when this model supports it.
+  const systemEffort = effectiveReasoningEffort(
+    { systemEffort: settings?.ReasoningEffort },
+    capabilities.reasoningOptions
+  );
+
   return (
     <div>
       <div className="flex flex-col gap-y-[8px] mb-[8px]">
@@ -43,10 +50,8 @@ export default function ReasoningEffortSettings({ settings, workspace }) {
         className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 capitalize"
       >
         <option value="">
-          {settings?.ReasoningEffort
-            ? t("chat.reasoning_effort.global_default", {
-                value: settings.ReasoningEffort,
-              })
+          {systemEffort
+            ? t("chat.reasoning_effort.global_default", { value: systemEffort })
             : t("chat.reasoning_effort.default")}
         </option>
         {capabilities.reasoningOptions.map((option) => (

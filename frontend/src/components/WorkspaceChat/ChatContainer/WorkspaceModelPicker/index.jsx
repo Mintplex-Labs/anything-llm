@@ -14,23 +14,32 @@ import Workspace from "@/models/workspace";
 import System from "@/models/system";
 import ModelRouterAPI from "@/models/modelRouter";
 import { SIDEBAR_TOGGLE_EVENT } from "@/components/Sidebar/SidebarToggle";
+import {
+  SESSION_REASONING_EFFORT_EVENT,
+  effectiveReasoningEffort,
+  getSessionReasoningEffort,
+} from "@/utils/chat/reasoningEffort";
 
-async function resolveModelName(workspace, systemSettings, t) {
+async function resolveModelName(workspace, systemSettings, threadSlug, t) {
   const effectiveProvider =
     workspace.chatProvider ?? systemSettings?.LLMProvider;
 
   if (effectiveProvider !== "anythingllm-router") {
     const modelName = workspace.chatModel ?? systemSettings?.LLMModel ?? "";
-    const reasoningEffort =
-      workspace.reasoningEffort ?? systemSettings?.ReasoningEffort ?? null;
-    if (!reasoningEffort) return modelName;
+    const efforts = {
+      sessionEffort: getSessionReasoningEffort(workspace.slug, threadSlug),
+      workspaceEffort: workspace.reasoningEffort,
+      systemEffort: systemSettings?.ReasoningEffort,
+    };
+    if (!Object.values(efforts).some(Boolean)) return modelName;
 
-    // A stored effort can outlive a model switch - only show it when the
-    // current model actually supports it, matching what gets sent.
+    // Only show an effort the current model supports, matching what gets sent.
     const capabilities = await Workspace.llmCapabilities(workspace.slug);
-    return capabilities?.reasoningOptions?.includes(reasoningEffort)
-      ? `${modelName} (${reasoningEffort})`
-      : modelName;
+    const reasoningEffort = effectiveReasoningEffort(
+      efforts,
+      capabilities?.reasoningOptions
+    );
+    return reasoningEffort ? `${modelName} (${reasoningEffort})` : modelName;
   }
 
   const routerId = workspace.router_id || systemSettings?.ModelRouterId;
@@ -42,19 +51,25 @@ async function resolveModelName(workspace, systemSettings, t) {
   return router.name;
 }
 
-async function fetchModelName(slug, setModelName, t) {
+async function fetchModelName(slug, threadSlug, setModelName, t) {
   if (!slug) return;
   const [workspace, systemSettings] = await Promise.all([
     Workspace.bySlug(slug),
     System.keys(),
   ]);
-  setModelName(await resolveModelName(workspace, systemSettings, t));
+  setModelName(
+    await resolveModelName(workspace, systemSettings, threadSlug, t)
+  );
 }
 
-export default function WorkspaceModelPicker({ workspaceSlug = null }) {
+export default function WorkspaceModelPicker({
+  workspaceSlug = null,
+  threadSlug = null,
+}) {
   const { t } = useTranslation();
-  const { slug: urlSlug } = useParams();
+  const { slug: urlSlug, threadSlug: urlThreadSlug } = useParams();
   const slug = urlSlug ?? workspaceSlug;
+  const thread = urlThreadSlug ?? threadSlug;
   const { user } = useUser();
   const [showSelector, setShowSelector] = useState(false);
   const [modelName, setModelName] = useState("");
@@ -77,19 +92,32 @@ export default function WorkspaceModelPicker({ workspaceSlug = null }) {
 
   // Fetch current model name for display
   useEffect(() => {
-    fetchModelName(slug, setModelName, t);
-  }, [slug]);
+    fetchModelName(slug, thread, setModelName, t);
+  }, [slug, thread]);
 
   // Close selector and refresh model name when model is saved
   useEffect(() => {
     function handleSave() {
       setShowSelector(false);
-      fetchModelName(slug, setModelName, t);
+      fetchModelName(slug, thread, setModelName, t);
     }
     window.addEventListener(SAVE_LLM_SELECTOR_EVENT, handleSave);
     return () =>
       window.removeEventListener(SAVE_LLM_SELECTOR_EVENT, handleSave);
-  }, [slug]);
+  }, [slug, thread]);
+
+  // Refresh the shown reasoning effort when this session's choice changes
+  useEffect(() => {
+    function handleEffortChange() {
+      fetchModelName(slug, thread, setModelName, t);
+    }
+    window.addEventListener(SESSION_REASONING_EFFORT_EVENT, handleEffortChange);
+    return () =>
+      window.removeEventListener(
+        SESSION_REASONING_EFFORT_EVENT,
+        handleEffortChange
+      );
+  }, [slug, thread]);
 
   // Handle provider setup request
   useEffect(() => {

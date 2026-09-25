@@ -451,11 +451,10 @@ export default function GeneralLLMPreference() {
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedLLM, setSelectedLLM] = useState(null);
-  // Unsaved model/base path selections bubbled up from the provider's options
-  // component so dependent controls (eg: reasoning effort) can preview
-  // capabilities before the form is saved.
+  // Unsaved model selection bubbled up from the provider's options component
+  // so dependent controls (eg: reasoning effort) can preview capabilities
+  // before the form is saved.
   const [pendingModel, setPendingModel] = useState(null);
-  const [pendingBasePath, setPendingBasePath] = useState(null);
   const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
@@ -481,7 +480,6 @@ export default function GeneralLLMPreference() {
   const updateLLMChoice = (selection) => {
     setSelectedLLM(selection);
     setPendingModel(null);
-    setPendingBasePath(null);
     setHasChanges(true);
   };
 
@@ -584,12 +582,9 @@ export default function GeneralLLMPreference() {
               <div
                 onChange={(e) => {
                   setHasChanges(true);
-                  // Every provider's model selector input is named `*ModelPref`
-                  // and every local provider's endpoint input `*BasePath`.
+                  // Every provider's model selector input is named `*ModelPref`.
                   if (e.target?.name?.endsWith("ModelPref"))
                     setPendingModel(e.target.value);
-                  if (e.target?.name?.endsWith("BasePath"))
-                    setPendingBasePath(e.target.value);
                 }}
                 className="mt-4 flex flex-col gap-y-1"
               >
@@ -598,7 +593,6 @@ export default function GeneralLLMPreference() {
                     settings,
                     selectedLLM,
                     selectedModel: pendingModel,
-                    basePath: pendingBasePath,
                   }}
                 >
                   {selectedLLM &&

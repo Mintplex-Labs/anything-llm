@@ -12,7 +12,7 @@ const {
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const {
   PROVIDER_REASONING_EFFORTS,
-  validReasoningEffort,
+  reasoningParams,
 } = require("../../helpers/reasoningEffort");
 
 class OpenAiLLM {
@@ -150,19 +150,6 @@ class OpenAiLLM {
   }
 
   /**
-   * Builds the reasoning portion of the request body when a supported
-   * reasoning effort is set - otherwise an empty object so the provider
-   * default applies.
-   * @param {string|null} reasoningEffort
-   * @returns {object}
-   */
-  #constructReasoningConfig(reasoningEffort = null) {
-    const effort = validReasoningEffort("openai", this.model, reasoningEffort);
-    if (!effort) return {};
-    return { reasoning: { effort: effort === "off" ? "none" : effort } };
-  }
-
-  /**
    * Returns the capabilities of the model.
    * @returns {Promise<{reasoning: boolean, reasoningOptions: string[]}>}
    */
@@ -187,7 +174,7 @@ class OpenAiLLM {
           input: messages,
           store: false,
           temperature: this.#temperature(this.model, temperature),
-          ...this.#constructReasoningConfig(reasoningEffort),
+          ...reasoningParams("openai", reasoningEffort),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -230,7 +217,7 @@ class OpenAiLLM {
         input: messages,
         store: false,
         temperature: this.#temperature(this.model, temperature),
-        ...this.#constructReasoningConfig(reasoningEffort),
+        ...reasoningParams("openai", reasoningEffort),
       }),
       messages,
       runPromptTokenCalculation: false,

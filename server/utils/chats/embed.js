@@ -1,11 +1,8 @@
 const { v4: uuidv4 } = require("uuid");
 const { getVectorDbClass, resolveProviderConnector } = require("../helpers");
 const { addChatCostToMetrics } = require("../helpers/modelPricing");
-const {
-  chatPrompt,
-  sourceIdentifier,
-  resolveReasoningEffort,
-} = require("./index");
+const { chatPrompt, sourceIdentifier } = require("./index");
+const { resolveReasoningEffort } = require("../helpers/reasoningEffort");
 const { EmbedChats } = require("../../models/embedChats");
 const {
   convertToPromptHistory,

@@ -13,7 +13,7 @@ const { defaultGeminiModels, v1BetaModels } = require("./defaultModels");
 const { safeJsonParse } = require("../../http");
 const {
   PROVIDER_REASONING_EFFORTS,
-  validReasoningEffort,
+  reasoningParams,
 } = require("../../helpers/reasoningEffort");
 const cacheFolder = path.resolve(
   process.env.STORAGE_DIR
@@ -382,20 +382,6 @@ class GeminiLLM {
   }
 
   /**
-   * Builds the reasoning portion of the request body when a reasoning effort
-   * is set - otherwise an empty object so the provider default applies.
-   * Gemini's OpenAI-compatible endpoint accepts `reasoning_effort` and maps
-   * it to a thinking budget.
-   * @param {string|null} reasoningEffort
-   * @returns {object}
-   */
-  #constructReasoningConfig(reasoningEffort = null) {
-    const effort = validReasoningEffort("gemini", this.model, reasoningEffort);
-    if (!effort) return {};
-    return { reasoning_effort: effort };
-  }
-
-  /**
    * Returns the capabilities of the model.
    * @returns {Promise<{reasoning: 'unknown' | boolean, reasoningOptions: string[]}>}
    */
@@ -426,7 +412,7 @@ class GeminiLLM {
           model: this.model,
           messages,
           temperature: temperature,
-          ...this.#constructReasoningConfig(reasoningEffort),
+          ...reasoningParams("gemini", reasoningEffort),
         })
         .catch((e) => {
           console.error(e);
@@ -465,7 +451,7 @@ class GeminiLLM {
         stream: true,
         messages,
         temperature: temperature,
-        ...this.#constructReasoningConfig(reasoningEffort),
+        ...reasoningParams("gemini", reasoningEffort),
         stream_options: {
           include_usage: true,
         },

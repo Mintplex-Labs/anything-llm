@@ -9,7 +9,7 @@ const {
 const { OpenAI: OpenAIApi } = require("openai");
 const {
   PROVIDER_REASONING_EFFORTS,
-  validReasoningEffort,
+  reasoningParams,
 } = require("../../helpers/reasoningEffort");
 
 //  hybrid of openAi LLM chat completion for LMStudio
@@ -232,22 +232,6 @@ class LMStudioLLM {
     return textResponse;
   }
 
-  /**
-   * Builds the reasoning portion of the request body when a reasoning effort
-   * is set - otherwise an empty object so the provider default applies.
-   * @param {string|null} reasoningEffort
-   * @returns {object}
-   */
-  #constructReasoningConfig(reasoningEffort = null) {
-    const effort = validReasoningEffort(
-      "lmstudio",
-      this.model,
-      reasoningEffort
-    );
-    if (!effort) return {};
-    return { reasoning_effort: effort === "off" ? "none" : effort };
-  }
-
   async getChatCompletion(
     messages = null,
     { temperature = 0.7, reasoningEffort = null }
@@ -262,7 +246,7 @@ class LMStudioLLM {
         model: this.model,
         messages,
         temperature,
-        ...this.#constructReasoningConfig(reasoningEffort),
+        ...reasoningParams("lmstudio", reasoningEffort),
       })
     );
 
@@ -302,7 +286,7 @@ class LMStudioLLM {
         stream: true,
         messages,
         temperature,
-        ...this.#constructReasoningConfig(reasoningEffort),
+        ...reasoningParams("lmstudio", reasoningEffort),
       }),
       messages,
       runPromptTokenCalculation: true,

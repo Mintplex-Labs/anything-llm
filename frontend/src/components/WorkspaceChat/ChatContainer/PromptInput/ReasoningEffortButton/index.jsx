@@ -1,59 +1,84 @@
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { Brain } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import { useTranslation } from "react-i18next";
-import useUser from "@/hooks/useUser";
 import Workspace from "@/models/workspace";
 import System from "@/models/system";
 import { SAVE_LLM_SELECTOR_EVENT } from "../LLMSelector/action";
+import {
+  effectiveReasoningEffort,
+  getSessionReasoningEffort,
+  setSessionReasoningEffort,
+} from "@/utils/chat/reasoningEffort";
 
 /**
- * Quick picker for the workspace reasoning effort. Only renders when the
- * workspace's current model supports reasoning controls.
+ * Quick picker for the current chat session's reasoning effort. The choice is
+ * kept per thread in this browser, so it never changes other users' chats.
+ * Only renders when the workspace's current model supports reasoning controls.
  * @param {object} props
- * @param {string} props.workspaceSlug - Workspace slug
+ * @param {string} [props.workspaceSlug] - Workspace slug when the route has no params (home page)
+ * @param {string} [props.threadSlug] - Thread slug when the route has no params (home page)
  * @param {boolean} [props.centered] - When true the menu opens below the button (home page layout)
  */
 export default function ReasoningEffortButton({
-  workspaceSlug,
+  workspaceSlug = null,
+  threadSlug = null,
   centered = false,
 }) {
   const { t } = useTranslation();
-  const { user } = useUser();
+  const params = useParams();
+  const slug = workspaceSlug ?? params.slug ?? null;
+  const thread = threadSlug ?? params.threadSlug ?? null;
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState([]);
-  const [effort, setEffort] = useState(null);
-  const [globalEffort, setGlobalEffort] = useState(null);
+  const [sessionEffort, setSessionEffort] = useState(null);
+  const [defaults, setDefaults] = useState({
+    workspaceEffort: null,
+    systemEffort: null,
+  });
 
   useEffect(() => {
-    if (!workspaceSlug) return;
+    setSessionEffort(getSessionReasoningEffort(slug, thread));
+  }, [slug, thread]);
+
+  useEffect(() => {
+    if (!slug) return;
     async function load() {
       const [capabilities, workspace, settings] = await Promise.all([
-        Workspace.llmCapabilities(workspaceSlug),
-        Workspace.bySlug(workspaceSlug),
+        Workspace.llmCapabilities(slug),
+        Workspace.bySlug(slug),
         System.keys(),
       ]);
       setOptions(
         capabilities?.reasoning === true ? capabilities.reasoningOptions : []
       );
-      setEffort(workspace?.reasoningEffort ?? null);
-      setGlobalEffort(settings?.ReasoningEffort ?? null);
+      setDefaults({
+        workspaceEffort: workspace?.reasoningEffort ?? null,
+        systemEffort: settings?.ReasoningEffort ?? null,
+      });
     }
     load();
     window.addEventListener(SAVE_LLM_SELECTOR_EVENT, load);
     return () => window.removeEventListener(SAVE_LLM_SELECTOR_EVENT, load);
-  }, [workspaceSlug]);
+  }, [slug]);
 
-  async function select(value) {
+  function select(value) {
     setOpen(false);
-    if (value === effort) return;
-    setEffort(value);
-    await Workspace.update(workspaceSlug, { reasoningEffort: value });
-    window.dispatchEvent(new Event(SAVE_LLM_SELECTOR_EVENT));
+    setSessionEffort(value);
+    setSessionReasoningEffort(slug, thread, value);
   }
 
-  if (!!user && !["admin", "manager"].includes(user.role)) return null;
   if (!options.length) return null;
+
+  // Mirrors how the server picks the effort, so the chip only ever shows a
+  // level that will actually be sent to the current model.
+  const defaultEffort = effectiveReasoningEffort(defaults, options);
+  const effort = effectiveReasoningEffort(
+    { ...defaults, sessionEffort },
+    options
+  );
+  const usingDefault = !sessionEffort || !options.includes(sessionEffort);
 
   // The menu is positioned against the prompt input's outer wrapper (not this
   // button) so the input's overflow-hidden container does not clip it.
@@ -104,23 +129,28 @@ export default function ReasoningEffortButton({
         >
           <EffortOption
             label={
-              globalEffort
-                ? t("chat.reasoning_effort.global_default", {
-                    value: globalEffort,
+              defaultEffort
+                ? t("chat.reasoning_effort.session_default", {
+                    value: defaultEffort,
                   })
                 : t("chat.reasoning_effort.default")
             }
-            selected={!effort}
+            selected={usingDefault}
             onClick={() => select(null)}
           />
           {options.map((option) => (
             <EffortOption
               key={option}
               label={option}
-              selected={effort === option}
+              selected={!usingDefault && sessionEffort === option}
               onClick={() => select(option)}
             />
           ))}
+          {!options.includes("off") && (
+            <p className="px-2 pt-1 pb-0.5 text-[11px] text-zinc-400 light:text-slate-500">
+              {t("chat.reasoning_effort.cannot_disable")}
+            </p>
+          )}
         </div>
       )}
     </>

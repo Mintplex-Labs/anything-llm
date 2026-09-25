@@ -7,6 +7,7 @@ const { v4: uuidv4 } = require("uuid");
 const { User } = require("./user");
 const { PromptHistory } = require("./promptHistory");
 const { SystemSettings } = require("./systemSettings");
+const { REASONING_EFFORT_LEVELS } = require("../utils/helpers/reasoningEffort");
 
 function isNullOrNaN(value) {
   if (value === null) return true;
@@ -35,16 +36,6 @@ function isNullOrNaN(value) {
 
 const Workspace = {
   VALID_CHAT_MODES: ["chat", "query", "automatic"],
-  VALID_REASONING_EFFORTS: [
-    "off",
-    "on",
-    "minimal",
-    "low",
-    "medium",
-    "high",
-    "xhigh",
-    "max",
-  ],
   defaultPrompt: SystemSettings.saneDefaultSystemPrompt,
 
   // Used for generic updates so we can validate keys in request body
@@ -119,8 +110,7 @@ const Workspace = {
       return String(value);
     },
     reasoningEffort: (value) => {
-      if (!value || !Workspace.VALID_REASONING_EFFORTS.includes(value))
-        return null;
+      if (!value || !REASONING_EFFORT_LEVELS.includes(value)) return null;
       return value;
     },
     agentProvider: (value) => {
@@ -285,6 +275,19 @@ const Workspace = {
       validatedUpdates.chatProvider !== "anythingllm-router"
     ) {
       validatedUpdates.router_id = null;
+    }
+
+    // A reasoning effort is picked for a specific model, so changing the
+    // provider or model clears it rather than carrying it to a model that
+    // may reject it or read the same level differently.
+    if ("chatProvider" in validatedUpdates || "chatModel" in validatedUpdates) {
+      const current = await prisma.workspaces.findUnique({ where: { id } });
+      const changed = ["chatProvider", "chatModel"].some(
+        (key) =>
+          key in validatedUpdates &&
+          (validatedUpdates[key] ?? null) !== (current?.[key] ?? null)
+      );
+      if (changed) validatedUpdates.reasoningEffort = null;
     }
 
     return this._update(id, validatedUpdates);

@@ -11,7 +11,7 @@ const { Ollama } = require("ollama");
 const { v4: uuidv4 } = require("uuid");
 const {
   PROVIDER_REASONING_EFFORTS,
-  validReasoningEffort,
+  reasoningParams,
 } = require("../../helpers/reasoningEffort");
 
 // Docs: https://github.com/jmorganca/ollama/blob/main/docs/api.md
@@ -271,20 +271,6 @@ class OllamaAILLM {
     ];
   }
 
-  /**
-   * Builds the reasoning portion of the request body when a reasoning effort
-   * is set - otherwise an empty object so the provider default applies.
-   * Ollama's `think` accepts a boolean toggle or an effort level string.
-   * @param {string|null} reasoningEffort
-   * @returns {object}
-   */
-  #constructReasoningConfig(reasoningEffort = null) {
-    const effort = validReasoningEffort("ollama", this.model, reasoningEffort);
-    if (!effort) return {};
-    if (["on", "off"].includes(effort)) return { think: effort === "on" };
-    return { think: effort };
-  }
-
   async getChatCompletion(
     messages = null,
     { temperature = 0.7, reasoningEffort = null }
@@ -296,7 +282,7 @@ class OllamaAILLM {
           stream: false,
           messages,
           keep_alive: this.keepAlive,
-          ...this.#constructReasoningConfig(reasoningEffort),
+          ...reasoningParams("ollama", reasoningEffort),
           options: {
             temperature,
             num_ctx: this.promptWindowLimit(),
@@ -352,7 +338,7 @@ class OllamaAILLM {
         stream: true,
         messages,
         keep_alive: this.keepAlive,
-        ...this.#constructReasoningConfig(reasoningEffort),
+        ...reasoningParams("ollama", reasoningEffort),
         options: {
           temperature,
           num_ctx: this.promptWindowLimit(),

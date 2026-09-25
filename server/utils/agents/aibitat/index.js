@@ -944,16 +944,9 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     // Re-evaluate model router before each turn if a resolver is attached.
     // This ensures routing rules are applied per-message, not just at initialization.
     if (this.resolveRoute) {
-      const resolved = await this.resolveRoute(
-        userPrompt || route.content || ""
+      this.applyResolvedRoute(
+        await this.resolveRoute(userPrompt || route.content || "")
       );
-      if (resolved) {
-        this.defaultProvider = {
-          ...this.defaultProvider,
-          provider: resolved.provider,
-          model: resolved.model,
-        };
-      }
     }
 
     this.providerInstance = this.getProviderForConfig({
@@ -1434,6 +1427,22 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
    * @param config The provider configuration.
    * @returns {Providers.OpenAIProvider} The provider instance.
    */
+  /**
+   * Switches the default provider to a route the model router resolved. The
+   * route's reasoning effort replaces the previous one, since an effort is
+   * only validated for the model it was resolved against.
+   * @param {{provider: string, model: string, reasoningEffort?: string|null}|null} resolved
+   */
+  applyResolvedRoute(resolved) {
+    if (!resolved) return;
+    this.defaultProvider = {
+      ...this.defaultProvider,
+      provider: resolved.provider,
+      model: resolved.model,
+      reasoningEffort: resolved.reasoningEffort ?? null,
+    };
+  }
+
   getProviderForConfig(config) {
     const provider = this.#buildProviderForConfig(config);
     // Record the slug the instance was built from so usage metrics can be
@@ -1453,8 +1462,13 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
    */
   #buildProviderForConfig(config) {
     if (typeof config.provider === "object") return config.provider;
+    // The effort was validated for the default provider + model only - any
+    // other provider or model this config points at gets no reasoning params.
     const reasoningEffort =
-      config.reasoningEffort ?? this.defaultProvider?.reasoningEffort ?? null;
+      config.provider === this.defaultProvider?.provider &&
+      config.model === this.defaultProvider?.model
+        ? config.reasoningEffort ?? null
+        : null;
 
     switch (config.provider) {
       case "openai":

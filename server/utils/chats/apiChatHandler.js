@@ -10,8 +10,8 @@ const {
   sourceIdentifier,
   recentChatHistory,
   grepAllSlashCommands,
-  resolveReasoningEffort,
 } = require("./index");
+const { resolveReasoningEffort } = require("../helpers/reasoningEffort");
 const {
   EphemeralAgentHandler,
   EphemeralEventListener,

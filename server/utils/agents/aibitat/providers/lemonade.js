@@ -1,4 +1,4 @@
-const { validReasoningEffort } = require("../../../helpers/reasoningEffort");
+const { reasoningParams } = require("../../../helpers/reasoningEffort");
 const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
@@ -45,22 +45,12 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   /**
-   * The reasoning portion of the request body when a supported reasoning
-   * effort is set - otherwise an empty object so the provider default applies.
-   * Lemonade's llama.cpp backend reads reasoning controls from the chat
-   * template kwargs.
+   * The reasoning portion of the request body. The effort is validated against
+   * the model before the provider is built, so it only needs mapping here.
    * @returns {object}
    */
   get reasoningConfig() {
-    const effort = validReasoningEffort(
-      "lemonade",
-      this.model,
-      this.reasoningEffort
-    );
-    if (!effort) return {};
-    if (["on", "off"].includes(effort))
-      return { chat_template_kwargs: { enable_thinking: effort === "on" } };
-    return { chat_template_kwargs: { reasoning_effort: effort } };
+    return reasoningParams("lemonade", this.reasoningEffort);
   }
 
   get supportsAgentStreaming() {

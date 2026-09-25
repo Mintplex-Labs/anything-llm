@@ -10,7 +10,7 @@ const { OpenAI: OpenAIApi } = require("openai");
 const { humanFileSize } = require("../../helpers");
 const {
   PROVIDER_REASONING_EFFORTS,
-  validReasoningEffort,
+  reasoningParams,
 } = require("../../helpers/reasoningEffort");
 
 class LemonadeLLM {
@@ -156,26 +156,6 @@ class LemonadeLLM {
     return textResponse;
   }
 
-  /**
-   * Builds the reasoning portion of the request body when a reasoning effort
-   * is set - otherwise an empty object so the provider default applies.
-   * Lemonade's llama.cpp backend reads reasoning controls from the chat
-   * template kwargs.
-   * @param {string|null} reasoningEffort
-   * @returns {object}
-   */
-  #constructReasoningConfig(reasoningEffort = null) {
-    const effort = validReasoningEffort(
-      "lemonade",
-      this.model,
-      reasoningEffort
-    );
-    if (!effort) return {};
-    if (["on", "off"].includes(effort))
-      return { chat_template_kwargs: { enable_thinking: effort === "on" } };
-    return { chat_template_kwargs: { reasoning_effort: effort } };
-  }
-
   async getChatCompletion(
     messages = null,
     { temperature = 0.7, reasoningEffort = null }
@@ -186,7 +166,7 @@ class LemonadeLLM {
         model: this.model,
         messages,
         temperature,
-        ...this.#constructReasoningConfig(reasoningEffort),
+        ...reasoningParams("lemonade", reasoningEffort),
       })
     );
 
@@ -222,7 +202,7 @@ class LemonadeLLM {
         stream: true,
         messages,
         temperature,
-        ...this.#constructReasoningConfig(reasoningEffort),
+        ...reasoningParams("lemonade", reasoningEffort),
       }),
       messages,
       runPromptTokenCalculation: true,

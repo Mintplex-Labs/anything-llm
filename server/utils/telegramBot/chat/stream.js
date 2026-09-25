@@ -6,8 +6,8 @@ const {
   sourceIdentifier,
   recentChatHistory,
   chatPrompt,
-  resolveReasoningEffort,
 } = require("../../chats");
+const { resolveReasoningEffort } = require("../../helpers/reasoningEffort");
 const { fillSourceWindow } = require("../../helpers/chat");
 const { AgentHandler } = require("../../agents");
 const {

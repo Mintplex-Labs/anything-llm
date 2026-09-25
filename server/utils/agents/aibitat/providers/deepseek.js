@@ -1,4 +1,4 @@
-const { validReasoningEffort } = require("../../../helpers/reasoningEffort");
+const { reasoningParams } = require("../../../helpers/reasoningEffort");
 const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
@@ -33,19 +33,12 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   /**
-   * The reasoning portion of the request body when a supported reasoning
-   * effort is set - otherwise an empty object so the provider default applies.
-   * DeepSeek only supports toggling thinking on or off.
+   * The reasoning portion of the request body. The effort is validated against
+   * the model before the provider is built, so it only needs mapping here.
    * @returns {object}
    */
   get reasoningConfig() {
-    const effort = validReasoningEffort(
-      "deepseek",
-      this.model,
-      this.reasoningEffort
-    );
-    if (!effort) return {};
-    return { thinking: { type: effort === "on" ? "enabled" : "disabled" } };
+    return reasoningParams("deepseek", this.reasoningEffort);
   }
 
   get supportsAgentStreaming() {

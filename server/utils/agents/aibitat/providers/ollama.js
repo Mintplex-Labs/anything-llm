@@ -1,4 +1,4 @@
-const { validReasoningEffort } = require("../../../helpers/reasoningEffort");
+const { reasoningParams } = require("../../../helpers/reasoningEffort");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
@@ -44,20 +44,12 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   /**
-   * The reasoning portion of the request body when a supported reasoning
-   * effort is set - otherwise an empty object so the provider default applies.
-   * Ollama's `think` accepts a boolean toggle or an effort level string.
+   * The reasoning portion of the request body. The effort is validated against
+   * the model before the provider is built, so it only needs mapping here.
    * @returns {object}
    */
   get reasoningConfig() {
-    const effort = validReasoningEffort(
-      "ollama",
-      this.model,
-      this.reasoningEffort
-    );
-    if (!effort) return {};
-    if (["on", "off"].includes(effort)) return { think: effort === "on" };
-    return { think: effort };
+    return reasoningParams("ollama", this.reasoningEffort);
   }
 
   get supportsAgentStreaming() {

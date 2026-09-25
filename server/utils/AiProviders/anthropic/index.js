@@ -10,7 +10,7 @@ const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { getAnythingLLMUserAgent } = require("../../../endpoints/utils");
-const { validReasoningEffort } = require("../../helpers/reasoningEffort");
+const { reasoningParams } = require("../../helpers/reasoningEffort");
 
 // Temperature is never sent. Anthropic models from Opus 4.7 onward reject it with
 // a 400, and every model accepts requests without it, so omitting it everywhere
@@ -192,24 +192,6 @@ class AnthropicLLM {
   }
 
   /**
-   * Builds the reasoning portion of the request body when a reasoning effort
-   * is set - otherwise an empty object so the provider default applies.
-   * Anthropic's `output_config.effort` controls response thoroughness and
-   * token spend with or without extended thinking enabled.
-   * @param {string|null} reasoningEffort
-   * @returns {object}
-   */
-  #constructReasoningConfig(reasoningEffort = null) {
-    const effort = validReasoningEffort(
-      "anthropic",
-      this.model,
-      reasoningEffort
-    );
-    if (!effort) return {};
-    return { output_config: { effort } };
-  }
-
-  /**
    * Returns the capabilities of the model.
    * @returns {Promise<{reasoning: 'unknown' | boolean, reasoningOptions: string[]}>}
    */
@@ -249,7 +231,7 @@ class AnthropicLLM {
             max_tokens: this.maxTokens,
             system: this.#buildSystemPrompt(systemContent),
             messages: messages.slice(1), // Pop off the system message
-            ...this.#constructReasoningConfig(reasoningEffort),
+            ...reasoningParams("anthropic", reasoningEffort),
           })
           .finalMessage()
       );
@@ -290,7 +272,7 @@ class AnthropicLLM {
         max_tokens: this.maxTokens,
         system: this.#buildSystemPrompt(systemContent),
         messages: messages.slice(1), // Pop off the system message
-        ...this.#constructReasoningConfig(reasoningEffort),
+        ...reasoningParams("anthropic", reasoningEffort),
       }),
       messages,
       runPromptTokenCalculation: false,

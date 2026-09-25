@@ -1173,10 +1173,40 @@ function validLocalWhisper(input = "") {
 
 function validReasoningEffort(input = "") {
   if (!input) return null; // Empty clears the setting.
-  const { Workspace } = require("../../models/workspace");
-  return Workspace.VALID_REASONING_EFFORTS.includes(input)
+  const { REASONING_EFFORT_LEVELS } = require("./reasoningEffort");
+  return REASONING_EFFORT_LEVELS.includes(input)
     ? null
     : "Invalid reasoning effort value";
+}
+
+// Settings that pick the system chat model for providers with reasoning controls.
+const SYSTEM_REASONING_MODEL_KEYS = [
+  "LLMProvider",
+  "OpenAiModelPref",
+  "AnthropicModelPref",
+  "GeminiLLMModelPref",
+  "OllamaLLMModelPref",
+  "LMStudioModelPref",
+  "LemonadeLLMModelPref",
+  "DeepSeekModelPref",
+];
+
+/**
+ * The system reasoning effort is picked for the system model, so an update
+ * that changes the provider or model without choosing an effort alongside it
+ * also clears the effort.
+ * @param {Object} newENVs - Settings being updated
+ * @returns {Object} Settings to apply
+ */
+function withStaleReasoningEffortCleared(newENVs = {}) {
+  if ("ReasoningEffort" in newENVs || !process.env.REASONING_EFFORT)
+    return newENVs;
+  const modelChanged = SYSTEM_REASONING_MODEL_KEYS.some(
+    (key) =>
+      key in newENVs &&
+      (newENVs[key] ?? "") !== (process.env[KEY_MAPPING[key].envKey] ?? "")
+  );
+  return modelChanged ? { ...newENVs, ReasoningEffort: "" } : newENVs;
 }
 
 function supportedLLM(input = "") {
@@ -1447,6 +1477,7 @@ async function validatePGVectorTableName(key, prevValue, nextValue) {
 // to the process will at least alleviate that issue. It does not perform comprehensive validity checks or sanity checks
 // and is simply for debugging when the .env not found issue many come across.
 async function updateENV(newENVs = {}, force = false, userId = null) {
+  newENVs = withStaleReasoningEffortCleared(newENVs);
   let error = "";
   const runAfterAll = [];
   const validKeys = Object.keys(KEY_MAPPING);

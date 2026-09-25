@@ -13,6 +13,9 @@ const { purgeDocument, purgeFolder } = require("../utils/files/purgeDocument");
 const { getVectorDbClass, getLLMProvider } = require("../utils/helpers");
 const { updateENV, dumpENV } = require("../utils/helpers/updateENV");
 const {
+  getReasoningCapabilities,
+} = require("../utils/helpers/reasoningEffort");
+const {
   reqBody,
   makeJWT,
   userFromSession,
@@ -592,41 +595,22 @@ function systemEndpoints(app) {
     "/system/llm-capabilities",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
-      // Local providers read their endpoint from the ENV, so previewing an
-      // unsaved base path means overriding it for the duration of this check.
-      const BASE_PATH_ENV = {
-        ollama: "OLLAMA_BASE_PATH",
-        lmstudio: "LMSTUDIO_BASE_PATH",
-        lemonade: "LEMONADE_LLM_BASE_PATH",
-      };
-
       // Optional overrides let the UI preview capabilities for an unsaved
-      // provider selection - otherwise the system LLM preference is used.
-      const { provider = null, model = null, basePath = null } = request.query;
-      const envKey = provider ? BASE_PATH_ENV[String(provider)] : null;
-      const originalBasePath = envKey ? process.env[envKey] : null;
-
+      // provider/model selection - otherwise the system LLM preference is used.
       try {
-        if (envKey && basePath) process.env[envKey] = String(basePath);
-        const LLMProvider = getLLMProvider({
-          provider: provider ? String(provider) : null,
-          model: model ? String(model) : null,
-        });
-        const capabilities = (await LLMProvider.getModelCapabilities?.()) ?? {
-          reasoning: "unknown",
-          reasoningOptions: [],
-        };
+        const { provider = null, model = null } = request.query;
+        const capabilities = await getReasoningCapabilities(
+          getLLMProvider({
+            provider: provider ? String(provider) : null,
+            model: model ? String(model) : null,
+          })
+        );
         return response.status(200).json({ capabilities });
       } catch (e) {
         console.error(e.message, e);
         return response.status(200).json({
           capabilities: { reasoning: "unknown", reasoningOptions: [] },
         });
-      } finally {
-        if (envKey && basePath) {
-          if (originalBasePath === undefined) delete process.env[envKey];
-          else process.env[envKey] = originalBasePath;
-        }
       }
     }
   );

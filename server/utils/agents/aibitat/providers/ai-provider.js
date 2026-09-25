@@ -18,9 +18,6 @@ const { toValidNumber, safeJsonParse } = require("../../../http");
 const { getLLMProviderClass } = require("../../../helpers");
 const { MODEL_PRICING } = require("../../../helpers/modelPricing");
 const { toNonNegativeNumber } = require("../../../helpers/numbers");
-const {
-  PROVIDER_REASONING_EFFORTS,
-} = require("../../../helpers/reasoningEffort");
 const { maxTokensParam } = require("./helpers/tooled.js");
 const { parseLMStudioBasePath } = require("../../../AiProviders/lmStudio");
 const { parseFoundryBasePath } = require("../../../AiProviders/foundry");
@@ -737,17 +734,9 @@ class Provider {
       completion_tokens: completionTokens,
     });
 
-    // Only report an effort the provider actually applied to its requests -
-    // an invalid stored value is dropped at request time and should not show
-    // on the chat's metrics.
-    const providerKey = this.providerSlug ?? this.providerTag;
-    const reasoningEffort =
-      this.reasoningEffort &&
-      (
-        PROVIDER_REASONING_EFFORTS[providerKey]?.(this.model ?? "") ?? []
-      ).includes(this.reasoningEffort)
-        ? this.reasoningEffort
-        : null;
+    // Providers are only built with an effort already validated for their
+    // model, so a set effort is one that was applied to the request.
+    const reasoningEffort = this.reasoningEffort ?? null;
 
     this.lastUsage = {
       prompt_tokens: promptTokens,

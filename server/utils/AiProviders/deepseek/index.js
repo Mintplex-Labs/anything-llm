@@ -8,7 +8,7 @@ const {
 } = require("../../helpers/chat/responses");
 const {
   PROVIDER_REASONING_EFFORTS,
-  validReasoningEffort,
+  reasoningParams,
 } = require("../../helpers/reasoningEffort");
 
 class DeepSeekLLM {
@@ -99,23 +99,6 @@ class DeepSeekLLM {
   }
 
   /**
-   * Builds the reasoning portion of the request body when a reasoning effort
-   * is set - otherwise an empty object so the provider default applies.
-   * DeepSeek only supports toggling thinking on or off via the `thinking` param.
-   * @param {string|null} reasoningEffort
-   * @returns {object}
-   */
-  #constructReasoningConfig(reasoningEffort = null) {
-    const effort = validReasoningEffort(
-      "deepseek",
-      this.model,
-      reasoningEffort
-    );
-    if (!effort) return {};
-    return { thinking: { type: effort === "on" ? "enabled" : "disabled" } };
-  }
-
-  /**
    * Returns the capabilities of the model.
    * @returns {Promise<{reasoning: boolean, reasoningOptions: string[]}>}
    */
@@ -141,7 +124,7 @@ class DeepSeekLLM {
           model: this.model,
           messages,
           temperature,
-          ...this.#constructReasoningConfig(reasoningEffort),
+          ...reasoningParams("deepseek", reasoningEffort),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -186,7 +169,7 @@ class DeepSeekLLM {
         stream: true,
         messages,
         temperature,
-        ...this.#constructReasoningConfig(reasoningEffort),
+        ...reasoningParams("deepseek", reasoningEffort),
       }),
       messages,
       runPromptTokenCalculation: false,

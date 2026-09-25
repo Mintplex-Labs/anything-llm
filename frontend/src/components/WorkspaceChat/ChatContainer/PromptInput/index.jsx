@@ -386,6 +386,7 @@ export default function PromptInput({
                     />
                     <ReasoningEffortButton
                       workspaceSlug={workspaceSlug ?? workspace?.slug}
+                      threadSlug={threadSlug}
                       centered={centered}
                     />
                   </div>

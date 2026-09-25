@@ -28,6 +28,7 @@ import { MetricsProvider } from "./ChatHistory/HistoricalMessage/Actions/RenderM
 import useChatContainerQuickScroll from "@/hooks/useChatContainerQuickScroll";
 import { PENDING_HOME_MESSAGE } from "@/utils/constants";
 import { clearPromptInputDraft } from "@/hooks/usePromptInputStorage";
+import { getSessionReasoningEffort } from "@/utils/chat/reasoningEffort";
 import { safeJsonParse } from "@/utils/request";
 import { useTranslation } from "react-i18next";
 import paths from "@/utils/paths";
@@ -351,6 +352,10 @@ export default function ChatContainer({
             setSocketId
           ),
         attachments,
+        reasoningEffort: getSessionReasoningEffort(
+          workspace.slug,
+          activeThreadSlug
+        ),
       });
       return;
     }

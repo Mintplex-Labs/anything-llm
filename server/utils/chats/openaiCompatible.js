@@ -4,11 +4,8 @@ const { WorkspaceChats } = require("../../models/workspaceChats");
 const { getVectorDbClass, resolveProviderConnector } = require("../helpers");
 const { addChatCostToMetrics } = require("../helpers/modelPricing");
 const { writeResponseChunk } = require("../helpers/chat/responses");
-const {
-  chatPrompt,
-  sourceIdentifier,
-  resolveReasoningEffort,
-} = require("./index");
+const { chatPrompt, sourceIdentifier } = require("./index");
+const { resolveReasoningEffort } = require("../helpers/reasoningEffort");
 const { abortConnectorOnClientDisconnect } = require("../helpers/abortSignals");
 
 const { PassThrough } = require("stream");
