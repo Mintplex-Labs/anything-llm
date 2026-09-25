@@ -6,6 +6,9 @@ const {
   handleDefaultStreamResponseV2,
   formatChatHistory,
 } = require("../../helpers/chat/responses");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 class MistralLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -108,9 +111,7 @@ class MistralLLM {
 
   async getChatCompletion(
     messages = null,
-    // These models degrade quickly at higher temperatures, so an unset
-    // workspace temperature falls back to 0 instead of the provider default.
-    { temperature = this.temperature ?? 0 } = {}
+    { temperature = this.temperature } = {}
   ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
@@ -122,7 +123,7 @@ class MistralLLM {
         .create({
           model: this.model,
           messages,
-          temperature,
+          ...temperatureParam(temperature),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -152,9 +153,7 @@ class MistralLLM {
 
   async streamGetChatCompletion(
     messages = null,
-    // These models degrade quickly at higher temperatures, so an unset
-    // workspace temperature falls back to 0 instead of the provider default.
-    { temperature = this.temperature ?? 0 } = {}
+    { temperature = this.temperature } = {}
   ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
@@ -166,7 +165,7 @@ class MistralLLM {
         model: this.model,
         stream: true,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       }),
       messages,
       runPromptTokenCalculation: false,

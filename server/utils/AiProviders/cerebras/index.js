@@ -6,6 +6,9 @@ const {
   handleDefaultStreamResponseV2,
   formatChatHistory,
 } = require("../../helpers/chat/responses");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 const { MODEL_MAP } = require("../modelMap");
 
 class CerebrasLLM {
@@ -199,16 +202,14 @@ class CerebrasLLM {
 
   async getChatCompletion(
     messages = null,
-    // These models degrade quickly at higher temperatures, so an unset
-    // workspace temperature falls back to 0 instead of the provider default.
-    { temperature = this.temperature ?? 0 } = {}
+    { temperature = this.temperature } = {}
   ) {
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.openai.chat.completions
         .create({
           model: this.model,
           messages,
-          temperature,
+          ...temperatureParam(temperature),
         })
         .catch((e) => {
           console.error(e);
@@ -241,16 +242,14 @@ class CerebrasLLM {
 
   async streamGetChatCompletion(
     messages = null,
-    // These models degrade quickly at higher temperatures, so an unset
-    // workspace temperature falls back to 0 instead of the provider default.
-    { temperature = this.temperature ?? 0 } = {}
+    { temperature = this.temperature } = {}
   ) {
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.openai.chat.completions.create({
         model: this.model,
         stream: true,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       }),
       messages,
       runPromptTokenCalculation: false,

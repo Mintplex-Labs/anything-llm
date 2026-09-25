@@ -80,7 +80,7 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
     return await this.client.chat.completions
       .create({
         model: this.model,
-        temperature: this.temperature ?? 0,
+        ...temperatureParam(this.temperature),
         messages,
         ...maxTokensParam(this.maxTokens, GenericOpenAiLLM.maxTokensKey()),
       })
