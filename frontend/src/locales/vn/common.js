@@ -3,18 +3,18 @@ const TRANSLATIONS = {
   onboarding: {
     survey: {
       email: "Email của bạn là gì?",
-      useCase: "Bạn sẽ sử dụng AnythingLLM để làm gì?",
+      useCase: "Bạn sẽ sử dụng chatbot để làm gì?",
       useCaseWork: "Cho công việc",
       useCasePersonal: "Cho mục đích cá nhân",
       useCaseOther: "Khác",
-      comment: "Bạn biết đến AnythingLLM như thế nào?",
+      comment: "Bạn biết đến chatbot trợ lý như thế nào?",
       commentPlaceholder:
         "Reddit, Twitter, GitHub, YouTube, v.v. - Hãy cho chúng tôi biết bạn tìm thấy chúng tôi như thế nào!",
       skip: "Bỏ qua Khảo sát",
       thankYou: "Cảm ơn phản hồi của bạn!",
-      title: "Chào mừng đến với AnythingLLM",
+      title: "Chào mừng đến với chatbot",
       description:
-        "Giúp chúng tôi xây dựng AnythingLLM phù hợp với nhu cầu của bạn. Tùy chọn.",
+        "Giúp chúng tôi xây dựng chatbot phù hợp với nhu cầu của bạn. Tùy chọn.",
     },
     home: {
       getStarted: "Bắt đầu",
@@ -23,7 +23,7 @@ const TRANSLATIONS = {
     llm: {
       title: "Tùy chọn LLM",
       description:
-        "AnythingLLM có thể hoạt động với nhiều nhà cung cấp LLM. Đây sẽ là dịch vụ xử lý trò chuyện.",
+        "chatbot có thể hoạt động với nhiều nhà cung cấp LLM. Đây sẽ là dịch vụ xử lý trò chuyện.",
     },
     userSetup: {
       title: "Thiết lập Người dùng",
@@ -31,21 +31,21 @@ const TRANSLATIONS = {
       howManyUsers: "Có bao nhiêu người sẽ sử dụng phiên bản này?",
       justMe: "Chỉ mình tôi",
       myTeam: "Nhóm của tôi",
-      instancePassword: "Mật khẩu Phiên bản",
+      instancePassword: "Mật khẩu",
       setPassword: "Bạn có muốn thiết lập mật khẩu không?",
       passwordReq: "Mật khẩu phải có ít nhất 8 ký tự.",
       passwordWarn:
-        "Điều quan trọng là phải lưu mật khẩu này vì không có phương pháp khôi phục.",
+        "Hãy lưu lại mật khẩu này vì nó không thể khôi phục được.",
       adminUsername: "Tên người dùng tài khoản Quản trị viên",
       adminPassword: "Mật khẩu tài khoản Quản trị viên",
       adminPasswordReq: "Mật khẩu phải có ít nhất 8 ký tự.",
       teamHint:
-        "Theo mặc định, bạn sẽ là quản trị viên duy nhất. Sau khi hoàn tất thiết lập, bạn có thể tạo và mời người khác làm người dùng hoặc quản trị viên. Không được mất mật khẩu vì chỉ quản trị viên mới có thể đặt lại mật khẩu.",
+        "Theo mặc định, bạn sẽ là quản trị viên duy nhất. Sau khi hoàn tất thiết lập, bạn có thể tạo và mời người khác làm người dùng hoặc quản trị viên. Hãy chắc chắn đã lưu lại mật khẩu vì chỉ quản trị viên mới có thể đặt lại mật khẩu.",
     },
     data: {
       title: "Xử lý Dữ liệu & Quyền riêng tư",
       description:
-        "Chúng tôi cam kết minh bạch và kiểm soát khi liên quan đến dữ liệu cá nhân của bạn.",
+        "Dữ liệu khi sử dụng chatbot sẽ được lưu trữ và bảo mật tuyệt đối",
       settingsHint:
         "Các cài đặt này có thể được cấu hình lại bất cứ lúc nào trong cài đặt.",
     },
@@ -74,7 +74,7 @@ const TRANSLATIONS = {
     invites: "Lời mời",
     users: "Người dùng",
     workspaces: "Không gian làm việc",
-    "workspace-chats": "Hội thoại không gian làm việc",
+    "workspace-chats": "Hội thoại trong không gian làm việc",
     customization: "Tùy chỉnh",
     "api-keys": "API nhà phát triển",
     llm: "LLM",
@@ -95,27 +95,27 @@ const TRANSLATIONS = {
     contact: "Liên hệ hỗ trợ",
     "browser-extension": "Tiện ích trình duyệt",
     "system-prompt-variables": "Biến System Prompt",
-    interface: "Tùy chọn Giao diện",
-    branding: "Thương hiệu & Nhãn trắng",
+    interface: "Chỉnh sửa giao diện",
+    branding: "Thương hiệu",
     chat: "Trò chuyện",
-    "mobile-app": "AnythingLLM Di động",
+    "mobile-app": "Ứng dụng di động",
     "community-hub": {
-      title: "Trung tâm cộng đồng",
+      title: "Cộng đồng",
       trending: "Khám phá các nội dung đang thịnh hành",
       "your-account": "Tài khoản của bạn",
-      "import-item": "Nhập hàng",
+      // "import-item": "Nhập hàng",
     },
     channels: "Kênh",
     "available-channels": {
       telegram: "Telegram",
     },
     "scheduled-jobs": "Công việc theo lịch trình",
-    "model-router": "Router mẫu",
+    "model-router": "Điều hướng mô hình AI",
     "image-generation": "Tạo ảnh",
   },
   login: {
     "multi-user": {
-      welcome: "Chào mừng đến với",
+      welcome: "Chào mừng đã quay trở lại",
       "placeholder-username": "Tên người dùng",
       "placeholder-password": "Mật khẩu",
       login: "Đăng nhập",
@@ -123,7 +123,7 @@ const TRANSLATIONS = {
       "forgot-pass": "Quên mật khẩu",
       reset: "Đặt lại",
     },
-    "sign-in": "Đăng nhập vào {{appName}} tài khoản của bạn.",
+    "sign-in": "Đăng nhập vào {{appName}} sử dụng tài khoản của bạn.",
     "password-reset": {
       title: "Đặt lại Mật khẩu",
       description: "Cung cấp thông tin cần thiết dưới đây để đặt lại mật khẩu.",
@@ -158,30 +158,30 @@ const TRANSLATIONS = {
       add: "Thêm tin nhắn mới",
       save: "Lưu Tin nhắn",
       heading: "Giải thích cho tôi",
-      body: "các lợi ích của AnythingLLM",
+      body: "các lợi ích của chatbot trợ lý pháp luật",
     },
     delete: {
       title: "Xóa không gian làm việc",
       description:
-        "Xóa không gian làm việc này và tất cả dữ liệu của nó. Điều này sẽ xóa không gian làm việc cho tất cả người dùng.",
+        "Xóa không gian làm việc này và tất cả dữ liệu của nó. Điều này sẽ xóa không gian làm việc với tất cả người dùng.",
       delete: "Xóa không gian làm việc",
       deleting: "Đang xóa Không gian làm việc...",
-      "confirm-start": "Bạn sắp xóa toàn bộ",
+      "confirm-start": "Bạn sắp xóa toàn bộ dữ liệu của",
       "confirm-end":
         "không gian làm việc. Điều này sẽ xóa tất cả vector embedding trong cơ sở dữ liệu vector của bạn.\n\nCác tệp nguồn gốc sẽ không bị ảnh hưởng. Hành động này không thể hoàn tác.",
     },
   },
   chat: {
     llm: {
-      title: "Nhà cung cấp LLM Không gian làm việc",
+      title: "Lựa chọn mô hình LLM cho không gian làm việc",
       description:
-        "Nhà cung cấp LLM và mô hình cụ thể sẽ được sử dụng cho không gian làm việc này. Theo mặc định, nó sử dụng nhà cung cấp LLM hệ thống và cài đặt.",
-      search: "Tìm kiếm tất cả nhà cung cấp LLM",
+        "Mô hình được sử dụng cho không gian làm việc này. Theo mặc định, sử dụng mô hình LLM đã được cài đặt trong hệ thống.",
+      search: "Tìm kiếm mô hình",
     },
     model: {
-      title: "Mô hình Trò chuyện Không gian làm việc",
+      title: "Mô hình LLM cho Không gian làm việc",
       description:
-        "Mô hình trò chuyện cụ thể sẽ được sử dụng cho không gian làm việc này. Nếu để trống, sẽ sử dụng tùy chọn LLM hệ thống.",
+        "Mô hình trò chuyện cụ thể sẽ được sử dụng cho không gian làm việc này. Nếu để trống, sẽ sử dụng mô hình mặc định.",
     },
     mode: {
       title: "Chế độ trò chuyện",
@@ -193,25 +193,26 @@ const TRANSLATIONS = {
       query: {
         title: "Truy vấn",
         description:
-          "sẽ cung cấp câu trả lời <b>chỉ</b> nếu ngữ cảnh của tài liệu được tìm thấy.<br />Bạn sẽ cần sử dụng lệnh @agent để sử dụng các công cụ.",
+          "<b>chỉ cung cấp câu trả lời</b> nếu tham chiếu được ngữ cảnh của câu hỏi từ tài liệu.<br />Bạn sẽ cần sử dụng lệnh @agent để sử dụng các công cụ.",
       },
       automatic: {
         description:
           "sẽ tự động sử dụng các công cụ nếu mô hình và nhà cung cấp hỗ trợ gọi công cụ gốc. Nếu không hỗ trợ gọi công cụ gốc, bạn sẽ cần sử dụng lệnh `@agent` để sử dụng các công cụ.",
-        title: "Đại lý",
+        title: "Agent",
       },
     },
     history: {
       title: "Lịch sử Trò chuyện",
       "desc-start":
-        "Số lượng cuộc trò chuyện trước đó sẽ được bao gồm trong bộ nhớ ngắn hạn của phản hồi.",
+        "Số lượng cuộc trò chuyện trước đó được lưu bộ nhớ ngắn hạn để hỗ duy trì ngữ cảnh và tính liên tục của phản hồi.",
       recommend: "Khuyến nghị 20. ",
     },
     prompt: {
       title: "Prompt",
       description:
-        "Nhập vào đây prompt cho không gian làm việc này. Định nghĩa ngữ cảnh và hướng dẫn cho AI để tạo ra một phản hồi liên quan và chính xác.",
+        "Nhập vào đây prompt để sử dụng trong không gian làm việc này. Định nghĩa ngữ cảnh và hướng dẫn cho AI để tạo ra một phản hồi liên quan và chính xác.",
       history: {
+
         title: "Lịch sử System Prompt",
         clearAll: "Xóa Tất cả",
         noHistory: "Không có lịch sử system prompt",
@@ -235,13 +236,13 @@ const TRANSLATIONS = {
         "Bạn đang ở chế độ truy vấn, chỉ sử dụng thông tin từ tài liệu của bạn. Chuyển sang chế độ trò chuyện để có cuộc trò chuyện linh hoạt hơn, hoặc nhấp vào đây để truy cập tài liệu của chúng tôi để tìm hiểu thêm về các chế độ trò chuyện.",
     },
     temperature: {
-      title: "Nhiệt độ LLM",
+      title: "LLM temperature",
       "desc-end":
         "Số càng cao thì càng sáng tạo. Đối với một số mô hình, điều này có thể dẫn đến phản hồi không mạch lạc khi đặt quá cao.",
     },
   },
   "vector-workspace": {
-    identifier: "Định danh cơ sở dữ liệu vector",
+    identifier: "Tùy chỉnh cơ sở dữ liệu vector",
     snippets: {
       title: "Đoạn Ngữ cảnh Tối đa",
       description:
@@ -276,11 +277,11 @@ const TRANSLATIONS = {
     },
     mode: {
       chat: {
-        title: "Mô hình Trò chuyện cho Agent Không gian làm việc",
+        title: "Mô hình LLM sử dụng bởi Agent trong Không gian làm việc",
         description:
-          "Mô hình trò chuyện cụ thể sẽ được sử dụng cho @agent agent của không gian làm việc này.",
+          "Mô hình LLM cụ thể sẽ được sử dụng cho @agent agent của không gian làm việc này.",
       },
-      title: "Mô hình Agent Không gian làm việc",
+      title: "Mô hình LLM sử dụng cho Agent trong Không gian làm việc",
       description:
         "Mô hình LLM cụ thể sẽ được sử dụng cho @agent agent của không gian làm việc này.",
       wait: "-- đang chờ mô hình --",
@@ -294,7 +295,7 @@ const TRANSLATIONS = {
       view: {
         title: "Xem & tóm tắt tài liệu",
         description:
-          "Cho phép agent liệt kê và tóm tắt nội dung của các tệp không gian làm việc hiện đang được nhúng.",
+          "Cho phép agent liệt kê và tóm tắt nội dung của các tệp trong không gian làm việc hiện đang được nhúng.",
       },
       scrape: {
         title: "Thu thập dữ liệu website",
@@ -741,7 +742,7 @@ const TRANSLATIONS = {
       "tools-enabled": "các công cụ đã được kích hoạt",
     },
     settings: {
-      title: "Cài đặt kỹ năng của đại lý",
+      title: "Cài đặt kỹ năng của agent",
       "max-tool-calls": {
         title: "Số lượng lệnh gọi công cụ tối đa cho mỗi phản hồi",
         description:
@@ -750,7 +751,7 @@ const TRANSLATIONS = {
       "intelligent-skill-selection": {
         title: "Lựa chọn kỹ năng thông minh",
         description:
-          "Cho phép sử dụng không giới hạn các công cụ và giảm mức sử dụng token lên đến 80% cho mỗi truy vấn – AnythingLLM tự động chọn các kỹ năng phù hợp nhất cho mỗi yêu cầu.",
+          "Cho phép sử dụng không giới hạn các công cụ và giảm mức sử dụng token lên đến 80% cho mỗi truy vấn – chatbot tự động chọn các kỹ năng phù hợp nhất cho mỗi yêu cầu.",
         "max-tools": {
           title: "Công cụ Max",
           description:
@@ -765,13 +766,13 @@ const TRANSLATIONS = {
         "max-per-turn": {
           title: "Số lượng câu hỏi tối đa trong mỗi lượt",
           description:
-            "Người đại diện có thể đặt bao nhiêu câu hỏi để làm rõ trong một cuộc khảo sát duy nhất?",
+            "Agent có thể đặt bao nhiêu câu hỏi để làm rõ trong một cuộc hội thoại?",
         },
       },
     },
   },
   recorded: {
-    title: "Hội thoại không gian làm việc",
+    title: "Hội thoại trong không gian làm việc",
     description:
       "Đây là tất cả các cuộc trò chuyện và tin nhắn đã được ghi lại được gửi bởi người dùng, sắp xếp theo ngày tạo.",
     export: "Xuất",
@@ -787,7 +788,7 @@ const TRANSLATIONS = {
   api: {
     title: "Khóa API",
     description:
-      "Khóa API cho phép người sở hữu truy cập và quản lý phiên bản AnythingLLM này theo chương trình.",
+      "Khóa API cho phép người sở hữu truy cập và quản lý phiên bản chatbot này theo chương trình.",
     link: "Đọc tài liệu API",
     generate: "Tạo Khóa API Mới",
     empty: "Không tìm thấy khóa API nào",
@@ -801,7 +802,7 @@ const TRANSLATIONS = {
       close: "Đóng",
       create: "Tạo khóa API",
       helper:
-        "Sau khi được tạo, khóa API có thể được dùng để truy cập và cấu hình phiên bản AnythingLLM này theo chương trình.",
+        "Sau khi được tạo, khóa API có thể được dùng để truy cập và cấu hình phiên bản chatbot này theo chương trình.",
       name: {
         label: "Tên",
         placeholder: "Tích hợp production",
@@ -826,7 +827,7 @@ const TRANSLATIONS = {
   llm: {
     title: "Tùy chọn LLM",
     description:
-      "Đây là thông tin đăng nhập và cài đặt cho nhà cung cấp LLM trò chuyện & nhúng ưa thích của bạn. Điều quan trọng là các khóa này phải chính xác, nếu không AnythingLLM sẽ không hoạt động đúng.",
+      "Đây là thông tin đăng nhập và cài đặt cho nhà cung cấp LLM trò chuyện & nhúng ưa thích của bạn. Điều quan trọng là các khóa này phải chính xác, nếu không chatbot sẽ không hoạt động đúng.",
     provider: "Nhà cung cấp LLM",
     providers: {
       azure_openai: {
@@ -848,7 +849,7 @@ const TRANSLATIONS = {
       "Đây là thông tin đăng nhập và cài đặt cho nhà cung cấp mô hình chuyển đổi giọng nói ưa thích của bạn. Điều quan trọng là các khóa này phải chính xác, nếu không tệp media và âm thanh sẽ không được chuyển đổi.",
     provider: "Nhà cung cấp Chuyển đổi giọng nói",
     "warn-start":
-      "Sử dụng mô hình whisper cục bộ trên máy có RAM hoặc CPU hạn chế có thể làm AnythingLLM bị treo khi xử lý tệp media.",
+      "Sử dụng mô hình whisper cục bộ trên máy có RAM hoặc CPU hạn chế có thể làm chatbot bị treo khi xử lý tệp media.",
     "warn-recommend":
       "Chúng tôi khuyến nghị ít nhất 2GB RAM và tải lên tệp <10Mb.",
     "warn-end": "Mô hình tích hợp sẽ tự động tải xuống khi sử dụng lần đầu.",
@@ -858,7 +859,7 @@ const TRANSLATIONS = {
     "desc-start":
       "Khi sử dụng LLM không hỗ trợ bộ máy nhúng nguyên bản - bạn có thể cần chỉ định thêm thông tin đăng nhập để nhúng văn bản.",
     "desc-end":
-      "Nhúng là quá trình chuyển đổi văn bản thành vector. Thông tin đăng nhập này cần thiết để chuyển đổi tệp và prompt của bạn thành định dạng mà AnythingLLM có thể sử dụng để xử lý.",
+      "Nhúng là quá trình chuyển đổi văn bản thành vector. Thông tin đăng nhập này cần thiết để chuyển đổi tệp và prompt của bạn thành định dạng mà chatbot có thể sử dụng để xử lý.",
     provider: {
       title: "Nhà cung cấp Nhúng",
     },
@@ -884,7 +885,7 @@ const TRANSLATIONS = {
   vector: {
     title: "Cơ sở dữ liệu Vector",
     description:
-      "Đây là thông tin đăng nhập và cài đặt cho cách phiên bản AnythingLLM của bạn sẽ hoạt động. Điều quan trọng là các khóa này phải chính xác.",
+      "Đây là thông tin đăng nhập và cài đặt cho cách phiên bản chatbot của bạn sẽ hoạt động. Điều quan trọng là các khóa này phải chính xác.",
     provider: {
       title: "Nhà cung cấp Cơ sở dữ liệu Vector",
       description: "Không cần cấu hình cho LanceDB.",
@@ -929,7 +930,7 @@ const TRANSLATIONS = {
   privacy: {
     title: "Quyền riêng tư & Xử lý Dữ liệu",
     description:
-      "Đây là cấu hình của bạn về cách các nhà cung cấp bên thứ ba được kết nối và AnythingLLM xử lý dữ liệu của bạn.",
+      "Đây là cấu hình của bạn về cách các nhà cung cấp bên thứ ba được kết nối và chatbot xử lý dữ liệu của bạn.",
     anonymous: "Đã Bật Telemetry Ẩn danh",
   },
   connectors: {
@@ -1089,22 +1090,22 @@ const TRANSLATIONS = {
       fetching: "Đang lấy...",
       "fetch-website": "Lấy website",
       "privacy-notice":
-        "Các tệp này sẽ được tải lên trình xử lý tài liệu đang chạy trên phiên bản AnythingLLM này. Các tệp này không được gửi hoặc chia sẻ với bên thứ ba.",
+        "Các tệp này sẽ được tải lên trình xử lý tài liệu đang chạy trên phiên bản chatbot này. Các tệp này không được gửi hoặc chia sẻ với bên thứ ba.",
     },
     pinning: {
       what_pinning: "Ghim tài liệu là gì?",
       pin_explained_block1:
-        "Khi bạn <b>ghim</b> một tài liệu trong AnythingLLM, chúng tôi sẽ đưa toàn bộ nội dung của tài liệu vào cửa sổ prompt của bạn để LLM hiểu đầy đủ.",
+        "Khi bạn <b>ghim</b> một tài liệu trong chatbot, chúng tôi sẽ đưa toàn bộ nội dung của tài liệu vào cửa sổ prompt của bạn để LLM hiểu đầy đủ.",
       pin_explained_block2:
         "Điều này hoạt động tốt nhất với <b>mô hình ngữ cảnh lớn</b> hoặc các tệp nhỏ quan trọng với cơ sở kiến thức của nó.",
       pin_explained_block3:
-        "Nếu bạn không nhận được câu trả lời mong muốn từ AnythingLLM theo mặc định, ghim là một cách tuyệt vời để có được câu trả lời chất lượng cao hơn chỉ với một cú nhấp chuột.",
+        "Nếu bạn không nhận được câu trả lời mong muốn từ chatbot theo mặc định, ghim là một cách tuyệt vời để có được câu trả lời chất lượng cao hơn chỉ với một cú nhấp chuột.",
       accept: "Ok, tôi hiểu rồi",
     },
     watching: {
       what_watching: "Theo dõi tài liệu làm gì?",
       watch_explained_block1:
-        "Khi bạn <b>theo dõi</b> một tài liệu trong AnythingLLM, chúng tôi sẽ <i>tự động</i> đồng bộ nội dung tài liệu của bạn từ nguồn gốc theo các khoảng thời gian đều đặn. Điều này sẽ tự động cập nhật nội dung trong mọi không gian làm việc nơi tệp này được quản lý.",
+        "Khi bạn <b>theo dõi</b> một tài liệu trong chatbot, chúng tôi sẽ <i>tự động</i> đồng bộ nội dung tài liệu của bạn từ nguồn gốc theo các khoảng thời gian đều đặn. Điều này sẽ tự động cập nhật nội dung trong mọi không gian làm việc nơi tệp này được quản lý.",
       watch_explained_block2:
         "Tính năng này hiện chỉ hỗ trợ nội dung dựa trên trực tuyến và sẽ không khả dụng cho các tài liệu được tải lên thủ công.",
       watch_explained_block3_start:
@@ -1280,7 +1281,7 @@ const TRANSLATIONS = {
         edit_description: "Cập nhật nội dung của bộ nhớ này.",
         label: "Bộ nhớ",
         placeholder:
-          "Ví dụ: Tên người dùng là Joe, người dùng làm việc trên AnythingLLM, v.v.",
+          "Ví dụ: Tên người dùng là Joe, người dùng làm việc trên chatbot, v.v.",
         create: "Tạo",
         save: "Lưu",
         cancel: "Hủy",
@@ -1329,16 +1330,16 @@ const TRANSLATIONS = {
   customization: {
     interface: {
       title: "Tùy chọn Giao diện",
-      description: "Đặt tùy chọn giao diện của bạn cho AnythingLLM.",
+      description: "Đặt tùy chọn giao diện của bạn cho chatbot.",
     },
     branding: {
       title: "Thương hiệu & Nhãn trắng",
       description:
-        "Nhãn trắng phiên bản AnythingLLM của bạn với thương hiệu tùy chỉnh.",
+        "Nhãn trắng phiên bản chatbot của bạn với thương hiệu tùy chỉnh.",
     },
     chat: {
       title: "Trò chuyện",
-      description: "Đặt tùy chọn trò chuyện của bạn cho AnythingLLM.",
+      description: "Đặt tùy chọn trò chuyện của bạn cho chatbot.",
       auto_submit: {
         title: "Tự động Gửi Đầu vào Giọng nói",
         description:
@@ -1376,7 +1377,7 @@ const TRANSLATIONS = {
       "display-language": {
         title: "Ngôn ngữ Hiển thị",
         description:
-          "Chọn ngôn ngữ ưa thích để hiển thị giao diện người dùng của AnythingLLM - khi bản dịch có sẵn.",
+          "Chọn ngôn ngữ ưa thích để hiển thị giao diện người dùng của chatbot - khi bản dịch có sẵn.",
       },
       logo: {
         title: "Logo Thương hiệu",
@@ -1526,7 +1527,7 @@ const TRANSLATIONS = {
         unauthenticated: {
           title: "Yêu cầu Xác thực",
           description:
-            "Bạn cần xác thực với AnythingLLM Community Hub trước khi đăng các mục.",
+            "Bạn cần xác thực với chatbot Community Hub trước khi đăng các mục.",
           button: "Kết nối với Community Hub",
         },
       },
@@ -1550,7 +1551,7 @@ const TRANSLATIONS = {
     password: {
       title: "Bảo vệ Mật khẩu",
       description:
-        "Bảo vệ phiên bản AnythingLLM của bạn bằng mật khẩu. Nếu bạn quên mật khẩu này, không có phương pháp khôi phục nên hãy đảm bảo lưu mật khẩu này.",
+        "Bảo vệ phiên bản chatbot của bạn bằng mật khẩu. Nếu bạn quên mật khẩu này, không có phương pháp khôi phục nên hãy đảm bảo lưu mật khẩu này.",
       "password-label": "Mật khẩu của phiên bản",
     },
   },
@@ -1564,7 +1565,7 @@ const TRANSLATIONS = {
   telegram: {
     title: "Bot Telegram",
     description:
-      "Kết nối phiên bản AnythingLLM của bạn với Telegram để bạn có thể trò chuyện với các không gian làm việc của mình từ bất kỳ thiết bị nào.",
+      "Kết nối phiên bản chatbot của bạn với Telegram để bạn có thể trò chuyện với các không gian làm việc của mình từ bất kỳ thiết bị nào.",
     setup: {
       step1: {
         title: "Bước 1: Tạo bot Telegram của bạn",
