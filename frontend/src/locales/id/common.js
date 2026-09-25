@@ -70,6 +70,7 @@ const TRANSLATIONS = {
       "Nama pengguna harus 2-64 karakter, dimulai dengan huruf kecil, dan hanya boleh berisi huruf kecil, angka, garis bawah, tanda hubung, dan titik.",
     loading: "Memuat...",
     refresh: "Segarkan",
+    noResults: "Tidak ditemukan hasil",
   },
   home: {
     welcome: "Selamat Datang",

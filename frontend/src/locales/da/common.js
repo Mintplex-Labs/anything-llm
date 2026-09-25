@@ -69,6 +69,7 @@ const TRANSLATIONS = {
     stopped: "Stoppet",
     loading: "Indlæsning",
     refresh: "Opfrisk",
+    noResults: "Ingen resultater fundet",
   },
   settings: {
     title: "Instansindstillinger",

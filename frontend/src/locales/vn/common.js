@@ -69,6 +69,7 @@ const TRANSLATIONS = {
     stopped: "Dừng",
     loading: "Đang tải",
     refresh: "Tái tạo",
+    noResults: "Không tìm thấy kết quả",
   },
   settings: {
     title: "Cài đặt hệ thống",

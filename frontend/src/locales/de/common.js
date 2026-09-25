@@ -69,6 +69,7 @@ const TRANSLATIONS = {
     stopped: "Gestoppt",
     loading: "Laden",
     refresh: "Erfrischen",
+    noResults: "Keine Ergebnisse gefunden",
   },
   settings: {
     title: "Instanzeinstellungen",

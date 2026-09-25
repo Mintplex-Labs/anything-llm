@@ -65,6 +65,7 @@ const TRANSLATIONS = {
     stopped: "停止",
     loading: "載入",
     refresh: "重新整理",
+    noResults: "未找到任何結果",
   },
   settings: {
     title: "系統設定",

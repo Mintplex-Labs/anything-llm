@@ -68,6 +68,7 @@ const TRANSLATIONS = {
     stopped: "Peatas",
     loading: "Laadimine",
     refresh: "Värskendada",
+    noResults: "Tulemusi ei leitud",
   },
   settings: {
     title: "Instantsi seaded",

@@ -68,6 +68,7 @@ const TRANSLATIONS = {
       "Vartotojo vardą turi sudaryti 2–64 simboliai, jis turi prasidėti mažąja raide ir susidėti tik iš mažųjų raidžių, skaičių, pabraukimo brūkšnių, brūkšnelių ir taškų.",
     loading: "Kraunama",
     refresh: "Atnaujinti",
+    noResults: "Nėra rezultatų",
   },
   home: {
     welcome: "Sveiki",

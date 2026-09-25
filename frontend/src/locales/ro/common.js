@@ -69,6 +69,7 @@ const TRANSLATIONS = {
     stopped: "Oprit",
     loading: "Încărcare",
     refresh: "Reîmprospătează",
+    noResults: "Nu s-au găsit rezultate",
   },
   settings: {
     title: "Setările instanței",

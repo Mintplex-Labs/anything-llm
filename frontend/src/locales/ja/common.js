@@ -68,6 +68,7 @@ const TRANSLATIONS = {
     stopped: "停止",
     loading: "読み込み中",
     refresh: "リフレッシュ",
+    noResults: "検索結果はありません",
   },
   settings: {
     title: "インスタンス設定",

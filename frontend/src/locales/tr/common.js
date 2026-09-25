@@ -69,6 +69,7 @@ const TRANSLATIONS = {
     stopped: "Durdu",
     loading: "Yükleniyor",
     refresh: "Tazelemek",
+    noResults: "Hiçbir sonuç bulunamadı",
   },
   settings: {
     title: "Instance Ayarları",
