@@ -355,6 +355,20 @@ class AstraDB extends VectorDatabase {
     };
   }
 
+  /**
+   * Converts Astra's cosine `$similarity` ([0, 1], computed as (1 + cosine) / 2)
+   * back to a cosine similarity score in [0, 1]. Chunks at or past orthogonal
+   * floor at 0 so unrelated chunks can never clear a similarity threshold,
+   * matching the scale of the other providers.
+   * @see https://dev.to/datastax/the-subtleties-of-vector-similarity-scales-part-4-2hjd
+   * @param {number|null} similarity - `$similarity` from the vector search.
+   * @returns {number} Similarity score in [0, 1].
+   */
+  similarityToScore(similarity = null) {
+    if (!Number.isFinite(similarity)) return 0.0;
+    return Math.min(1, Math.max(0, 2 * similarity - 1));
+  }
+
   async similarityResponse({
     client,
     namespace,
@@ -383,7 +397,8 @@ class AstraDB extends VectorDatabase {
       .toArray();
 
     responses.forEach((response) => {
-      if (response.$similarity < similarityThreshold) return;
+      const score = this.similarityToScore(response.$similarity);
+      if (score < similarityThreshold) return;
       if (filterIdentifiers.includes(sourceIdentifier(response.metadata))) {
         this.logger(
           "A source was filtered from context as it's parent document is pinned."
@@ -393,9 +408,9 @@ class AstraDB extends VectorDatabase {
       result.contextTexts.push(response.metadata.text);
       result.sourceDocuments.push({
         ...response.metadata,
-        score: response.$similarity,
+        score,
       });
-      result.scores.push(response.$similarity);
+      result.scores.push(score);
     });
     return result;
   }

@@ -44,6 +44,7 @@ class Weaviate extends VectorDatabase {
    * so unrelated chunks can never clear a similarity threshold.
    * Weaviate's own `certainty` is 1 - distance / 2, which puts an orthogonal
    * chunk at 0.5, so it is not comparable with the other providers' scores.
+   * @see https://docs.weaviate.io/weaviate/config-refs/distances
    * @param {number|null} distance - Cosine distance from the vector search.
    * @returns {number} Similarity score in [0, 1].
    */
