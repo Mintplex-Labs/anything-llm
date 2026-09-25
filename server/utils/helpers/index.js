@@ -81,7 +81,7 @@
 
 /**
  * Gets the systems current vector database provider.
- * @param {('pinecone' | 'chroma' | 'chromacloud' | 'lancedb' | 'weaviate' | 'qdrant' | 'milvus' | 'zilliz' | 'astra') | null} getExactly - If provided, this will return an explit provider.
+ * @param {('pinecone' | 'chroma' | 'chromacloud' | 'lancedb' | 'lancedb_cloud' | 'weaviate' | 'qdrant' | 'milvus' | 'zilliz' | 'astra') | null} getExactly - If provided, this will return an explit provider.
  * @returns { BaseVectorDatabaseProvider}
  */
 function getVectorDbClass(getExactly = null) {
@@ -99,6 +99,9 @@ function getVectorDbClass(getExactly = null) {
     case "lancedb":
       const { LanceDb } = require("../vectorDbProviders/lance");
       return new LanceDb();
+    case "lancedb_cloud":
+      const { LanceDbCloud } = require("../vectorDbProviders/lancedb_cloud");
+      return new LanceDbCloud();
     case "weaviate":
       const { Weaviate } = require("../vectorDbProviders/weaviate");
       return new Weaviate();
