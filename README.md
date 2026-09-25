@@ -192,9 +192,9 @@ Mintplex Labs & the community maintain a number of deployment methods, scripts, 
 | --------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------- |
 | [![Deploy on Railway][railway-btn]][railway-deploy] | [![Deploy on RepoCloud][repocloud-btn]][repocloud-deploy] | [![Deploy on Elestio][elestio-btn]][elestio-deploy] | [![Deploy on Northflank][northflank-btn]][northflank-deploy] | [![Deploy on Sealos][sealos-btn]][sealos-deploy] |
 
-| Easypanel |
-| --- |
-| [![Deploy on Easypanel][easypanel-btn]][easypanel-deploy] |
+| Easypanel | NEXUS AI |
+| --- | --- |
+| [![Deploy on Easypanel][easypanel-btn]][easypanel-deploy] | [![Deploy on NEXUS AI][nexusai-btn]][nexusai-deploy] |
 
 [or set up a production AnythingLLM instance without Docker →](./BARE_METAL.md)
 
@@ -324,3 +324,5 @@ This project is [MIT](./LICENSE) licensed.
 [sealos-deploy]: https://sealos.io/products/app-store/anything-llm
 [easypanel-btn]: https://easypanel.io/img/deploy-on-easypanel-40.svg
 [easypanel-deploy]: https://easypanel.io/templates/anythingllm
+[nexusai-btn]: https://nexusai.run/deploy-button.svg
+[nexusai-deploy]: https://nexusai.run/deploy?repo=https://github.com/Mintplex-Labs/anything-llm&dockerfile=docker/Dockerfile&port=3001&env=STORAGE_DIR=/app/server/storage
