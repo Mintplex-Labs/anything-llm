@@ -1,6 +1,5 @@
 import System from "@/models/system";
 import { useEffect, useState } from "react";
-import SystemReasoningEffort from "../SystemReasoningEffort";
 
 export default function GeminiLLMOptions({ settings }) {
   const [inputValue, setInputValue] = useState(settings?.GeminiLLMApiKey);
@@ -57,7 +56,6 @@ export default function GeminiLLMOptions({ settings }) {
             </div> */}
           </>
         )}
-        <SystemReasoningEffort />
       </div>
     </div>
   );

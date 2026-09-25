@@ -10,11 +10,8 @@ const {
   getDocumentsByDocPaths,
 } = require("../utils/files");
 const { purgeDocument, purgeFolder } = require("../utils/files/purgeDocument");
-const { getVectorDbClass, getLLMProvider } = require("../utils/helpers");
+const { getVectorDbClass } = require("../utils/helpers");
 const { updateENV, dumpENV } = require("../utils/helpers/updateENV");
-const {
-  getReasoningCapabilities,
-} = require("../utils/helpers/reasoningEffort");
 const {
   reqBody,
   makeJWT,
@@ -587,30 +584,6 @@ function systemEndpoints(app) {
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();
-      }
-    }
-  );
-
-  app.get(
-    "/system/llm-capabilities",
-    [validatedRequest, flexUserRoleValid([ROLES.admin])],
-    async (request, response) => {
-      // Optional overrides let the UI preview capabilities for an unsaved
-      // provider/model selection - otherwise the system LLM preference is used.
-      try {
-        const { provider = null, model = null } = request.query;
-        const capabilities = await getReasoningCapabilities(
-          getLLMProvider({
-            provider: provider ? String(provider) : null,
-            model: model ? String(model) : null,
-          })
-        );
-        return response.status(200).json({ capabilities });
-      } catch (e) {
-        console.error(e.message, e);
-        return response.status(200).json({
-          capabilities: { reasoning: "unknown", reasoningOptions: [] },
-        });
       }
     }
   );

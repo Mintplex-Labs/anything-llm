@@ -2,7 +2,6 @@ const { v4: uuidv4 } = require("uuid");
 const { getVectorDbClass, resolveProviderConnector } = require("../helpers");
 const { addChatCostToMetrics } = require("../helpers/modelPricing");
 const { chatPrompt, sourceIdentifier } = require("./index");
-const { resolveReasoningEffort } = require("../helpers/reasoningEffort");
 const { EmbedChats } = require("../../models/embedChats");
 const {
   convertToPromptHistory,
@@ -193,8 +192,6 @@ async function streamChatWithForEmbed(
     rawHistory
   );
 
-  const reasoningEffort = await resolveReasoningEffort(LLMConnector);
-
   // If streaming is not explicitly enabled for connector
   // we do regular waiting of a response and send a single chunk.
   if (LLMConnector.streamingEnabled() !== true) {
@@ -204,7 +201,6 @@ async function streamChatWithForEmbed(
     const { textResponse, metrics: performanceMetrics } =
       await LLMConnector.getChatCompletion(messages, {
         temperature: embed.workspace?.openAiTemp ?? LLMConnector.defaultTemp,
-        reasoningEffort,
       });
     completeText = textResponse;
     metrics = addChatCostToMetrics(performanceMetrics, {
@@ -223,7 +219,6 @@ async function streamChatWithForEmbed(
   } else {
     const stream = await LLMConnector.streamGetChatCompletion(messages, {
       temperature: embed.workspace?.openAiTemp ?? LLMConnector.defaultTemp,
-      reasoningEffort,
     });
     completeText = await LLMConnector.handleStream(response, stream, {
       uuid,

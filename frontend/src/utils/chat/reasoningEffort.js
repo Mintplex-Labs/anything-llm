@@ -4,8 +4,8 @@ import { safeJsonParse } from "@/utils/request";
 /**
  * Reasoning effort is chosen per chat session - a thread, or a workspace's
  * default chat - and kept in this browser only, so one user's choice never
- * changes another user's chats. Sessions without a choice use the system
- * default.
+ * changes another user's chats. Sessions without a choice send no reasoning
+ * params, so the provider's default applies.
  */
 function sessionKey(workspaceSlug, threadSlug = null) {
   return threadSlug ? `${workspaceSlug}:${threadSlug}` : workspaceSlug;
@@ -25,7 +25,7 @@ function readMap() {
 /**
  * @param {string} workspaceSlug
  * @param {string|null} [threadSlug]
- * @returns {string|null} The session's own reasoning effort, or null to use the defaults
+ * @returns {string|null} The session's reasoning effort, or null for the provider default
  */
 export function getSessionReasoningEffort(workspaceSlug, threadSlug = null) {
   if (!workspaceSlug) return null;
@@ -46,23 +46,4 @@ export function setSessionReasoningEffort(workspaceSlug, threadSlug, effort) {
     else delete map[key];
     localStorage.setItem(SESSION_REASONING_EFFORT_MAP, JSON.stringify(map));
   } catch {}
-}
-
-/**
- * The effort a chat session will run with: its own choice, then the system
- * default - skipping any the current model does not support, the same way
- * the server picks it.
- * @param {{sessionEffort?: string|null, systemEffort?: string|null}} efforts
- * @param {string[]} reasoningOptions - Efforts the current model supports
- * @returns {string|null}
- */
-export function effectiveReasoningEffort(
-  { sessionEffort = null, systemEffort = null },
-  reasoningOptions = []
-) {
-  return (
-    [sessionEffort, systemEffort].find(
-      (effort) => !!effort && reasoningOptions.includes(effort)
-    ) ?? null
-  );
 }

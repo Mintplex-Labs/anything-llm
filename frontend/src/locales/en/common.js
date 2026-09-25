@@ -258,7 +258,6 @@ const TRANSLATIONS = {
     reasoning_effort: {
       title: "Reasoning Effort",
       default: "Provider default",
-      session_default: "Default ({{value}})",
       cannot_disable: "This model cannot turn reasoning off.",
     },
   },

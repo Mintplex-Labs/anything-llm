@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import System from "@/models/system";
-import SystemReasoningEffort from "../SystemReasoningEffort";
 
 export default function OpenAiOptions({ settings }) {
   const [inputValue, setInputValue] = useState(settings?.OpenAiKey);
@@ -28,7 +27,6 @@ export default function OpenAiOptions({ settings }) {
       {!settings?.credentialsOnly && (
         <OpenAIModelSelection settings={settings} apiKey={openAIKey} />
       )}
-      <SystemReasoningEffort />
     </div>
   );
 }

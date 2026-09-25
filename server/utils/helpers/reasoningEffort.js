@@ -1,5 +1,5 @@
 /**
- * Every effort level a chat session or the system default can store. Which of these a request may actually carry depends on the provider
+ * Every effort level a chat session can pick. Which of these a request may actually carry depends on the provider
  * and model - see getReasoningCapabilities.
  */
 const REASONING_EFFORT_LEVELS = [
@@ -199,24 +199,20 @@ async function getReasoningCapabilities(llm) {
 }
 
 /**
- * Picks the reasoning effort for a request: the chat session's own choice,
- * then the system default - whichever comes first that the model's
- * capabilities list. Anything the model does not list is skipped, so a value
- * left over from a model switch or a provider without reasoning controls is
- * never sent.
+ * The reasoning effort a request is sent with: the chat session's choice, but
+ * only when the model's capabilities list it. A value left over from a model
+ * switch, or one for a provider without reasoning controls, is never sent.
  * @param {object|(() => object)|null} connector - LLM connector the request will use, or a
  *   function building it - only called when an effort is set, and a throw resolves to null
  * @param {string|null} [sessionEffort] - Effort chosen for this chat session
  * @returns {Promise<string|null>}
  */
 async function resolveReasoningEffort(connector, sessionEffort = null) {
-  const candidates = [
-    ["session", sessionEffort],
-    ["system", process.env.REASONING_EFFORT],
-  ].filter(
-    ([, value]) => !!value && REASONING_EFFORT_LEVELS.includes(String(value))
-  );
-  if (!candidates.length) return null;
+  if (
+    typeof sessionEffort !== "string" ||
+    !REASONING_EFFORT_LEVELS.includes(sessionEffort)
+  )
+    return null;
 
   let llm = connector;
   try {
@@ -230,17 +226,13 @@ async function resolveReasoningEffort(connector, sessionEffort = null) {
   if (!llm) return null;
 
   const { reasoningOptions } = await getReasoningCapabilities(llm);
-  const match = candidates.find(([, value]) =>
-    reasoningOptions.includes(value)
-  );
+  const supported = reasoningOptions.includes(sessionEffort);
   console.log(
     `\x1b[36m[ReasoningEffort]\x1b[0m ${llm.model}: ${
-      match
-        ? `${match[1]} (${match[0]})`
-        : `none - ${candidates.map(([source, value]) => `${source} "${value}"`).join(", ")} not supported`
+      supported ? sessionEffort : `none - "${sessionEffort}" not supported`
     }`
   );
-  return match?.[1] ?? null;
+  return supported ? sessionEffort : null;
 }
 
 module.exports = {

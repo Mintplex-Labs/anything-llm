@@ -5,7 +5,6 @@ const { getVectorDbClass, resolveProviderConnector } = require("../helpers");
 const { addChatCostToMetrics } = require("../helpers/modelPricing");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const { chatPrompt, sourceIdentifier } = require("./index");
-const { resolveReasoningEffort } = require("../helpers/reasoningEffort");
 const { abortConnectorOnClientDisconnect } = require("../helpers/abortSignals");
 
 const { PassThrough } = require("stream");
@@ -175,12 +174,10 @@ async function chatSync({
   });
 
   // Send the text completion.
-  const reasoningEffort = await resolveReasoningEffort(LLMConnector);
   const { textResponse, metrics: completionMetrics } =
     await LLMConnector.getChatCompletion(messages, {
       temperature:
         temperature ?? workspace?.openAiTemp ?? LLMConnector.defaultTemp,
-      reasoningEffort,
     });
   const metrics = addChatCostToMetrics(completionMetrics, {
     routingMetadata,
@@ -450,11 +447,9 @@ async function streamChat({
     return;
   }
 
-  const reasoningEffort = await resolveReasoningEffort(LLMConnector);
   const stream = await LLMConnector.streamGetChatCompletion(messages, {
     temperature:
       temperature ?? workspace?.openAiTemp ?? LLMConnector.defaultTemp,
-    reasoningEffort,
   });
   const completeText = await LLMConnector.handleStream(
     responseInterceptor,

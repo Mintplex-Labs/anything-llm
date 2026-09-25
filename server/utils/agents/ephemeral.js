@@ -10,7 +10,6 @@ const { WorkspaceChats } = require("../../models/workspaceChats");
 const { WorkspaceParsedFiles } = require("../../models/workspaceParsedFiles");
 const { DocumentManager } = require("../DocumentManager");
 const { safeJsonParse } = require("../http");
-const { resolveReasoningEffort } = require("../helpers/reasoningEffort");
 const {
   USER_AGENT,
   WORKSPACE_AGENT,
@@ -511,19 +510,6 @@ class EphemeralAgentHandler extends AgentHandler {
     return stripped;
   }
 
-  /**
-   * Reasoning effort for the current provider + model, validated against the
-   * model's live capabilities. Re-run whenever the route changes, since an
-   * effort valid for one model can be rejected by another.
-   * @returns {Promise<string|null>}
-   */
-  async #reasoningEffortForRoute() {
-    const { getLLMProvider } = require("../helpers");
-    return await resolveReasoningEffort(() =>
-      getLLMProvider({ provider: this.provider, model: this.model })
-    );
-  }
-
   async createAIbitat(
     args = {
       handler: null,
@@ -534,7 +520,6 @@ class EphemeralAgentHandler extends AgentHandler {
     this.aibitat = new AIbitat({
       provider: this.provider ?? "openai",
       model: this.model ?? "gpt-4.1-nano",
-      reasoningEffort: await this.#reasoningEffortForRoute(),
       chats: await this.#chatHistory(20),
       handlerProps: {
         invocation: {
@@ -558,11 +543,7 @@ class EphemeralAgentHandler extends AgentHandler {
           await this.#resolveRouterProvider(prompt);
           this.aibitat.handlerProps.routingMetadata =
             this.routingMetadata || null;
-          return {
-            provider: this.provider,
-            model: this.model,
-            reasoningEffort: await this.#reasoningEffortForRoute(),
-          };
+          return { provider: this.provider, model: this.model };
         } catch (e) {
           this.log(
             "Router re-resolution failed, keeping current route",

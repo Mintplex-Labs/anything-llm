@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import System from "@/models/system";
-import SystemReasoningEffort from "../SystemReasoningEffort";
 import useProviderEndpointAutoDiscovery from "@/hooks/useProviderEndpointAutoDiscovery";
 import { CircleNotch, Info } from "@phosphor-icons/react";
 import strDistance from "js-levenshtein";
@@ -195,7 +194,6 @@ export default function LemonadeOptions({ settings }) {
           setSelectedModelId={setSelectedModelId}
           basePath={basePathValue.value}
         />
-        <SystemReasoningEffort model={selectedModelId} />
       </div>
     </div>
   );

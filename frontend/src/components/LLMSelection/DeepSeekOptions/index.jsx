@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import System from "@/models/system";
-import SystemReasoningEffort from "../SystemReasoningEffort";
 
 export default function DeepSeekOptions({ settings }) {
   const [inputValue, setInputValue] = useState(settings?.DeepSeekApiKey);
@@ -30,7 +29,6 @@ export default function DeepSeekOptions({ settings }) {
       {!settings?.credentialsOnly && (
         <DeepSeekModelSelection settings={settings} apiKey={deepSeekApiKey} />
       )}
-      <SystemReasoningEffort />
     </div>
   );
 }

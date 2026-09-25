@@ -4,10 +4,8 @@ import { Brain } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import { useTranslation } from "react-i18next";
 import Workspace from "@/models/workspace";
-import System from "@/models/system";
 import { SAVE_LLM_SELECTOR_EVENT } from "../LLMSelector/action";
 import {
-  effectiveReasoningEffort,
   getSessionReasoningEffort,
   setSessionReasoningEffort,
 } from "@/utils/chat/reasoningEffort";
@@ -33,7 +31,6 @@ export default function ReasoningEffortButton({
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState([]);
   const [sessionEffort, setSessionEffort] = useState(null);
-  const [systemEffort, setSystemEffort] = useState(null);
 
   useEffect(() => {
     setSessionEffort(getSessionReasoningEffort(slug, thread));
@@ -42,14 +39,10 @@ export default function ReasoningEffortButton({
   useEffect(() => {
     if (!slug) return;
     async function load() {
-      const [capabilities, settings] = await Promise.all([
-        Workspace.llmCapabilities(slug),
-        System.keys(),
-      ]);
+      const capabilities = await Workspace.llmCapabilities(slug);
       setOptions(
         capabilities?.reasoning === true ? capabilities.reasoningOptions : []
       );
-      setSystemEffort(settings?.ReasoningEffort ?? null);
     }
     load();
     window.addEventListener(SAVE_LLM_SELECTOR_EVENT, load);
@@ -64,8 +57,6 @@ export default function ReasoningEffortButton({
 
   if (!options.length) return null;
 
-  // The system default only applies when the current model supports it.
-  const defaultEffort = effectiveReasoningEffort({ systemEffort }, options);
   const usingDefault = !sessionEffort || !options.includes(sessionEffort);
 
   // The menu is positioned against the prompt input's outer wrapper (not this
@@ -111,13 +102,7 @@ export default function ReasoningEffortButton({
           }`}
         >
           <EffortOption
-            label={
-              defaultEffort
-                ? t("chat.reasoning_effort.session_default", {
-                    value: defaultEffort,
-                  })
-                : t("chat.reasoning_effort.default")
-            }
+            label={t("chat.reasoning_effort.default")}
             selected={usingDefault}
             onClick={() => select(null)}
           />
