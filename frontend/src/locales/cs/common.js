@@ -69,6 +69,7 @@ const TRANSLATIONS = {
     stopped: "Zastaveno",
     loading: "Načítání",
     refresh: "Obnovit",
+    noResults: "Nebyl nalezen žádný výsledek",
   },
   home: {
     welcome: "Vítejte",

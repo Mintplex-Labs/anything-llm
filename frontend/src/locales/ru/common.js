@@ -68,6 +68,7 @@ const TRANSLATIONS = {
     stopped: "Остановлен",
     loading: "Загрузка",
     refresh: "Обновить",
+    noResults: "Не найдено результатов",
   },
   settings: {
     title: "Настройки экземпляра",

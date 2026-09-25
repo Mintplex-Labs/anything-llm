@@ -1,3 +1,4 @@
+// Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
   onboarding: {
     home: {
@@ -68,6 +69,7 @@ const TRANSLATIONS = {
       "Потребителското име трябва да е 2-64 символа, да започва с малка буква и да съдържа само малки букви, цифри, долни черти, тирета и точки.",
     loading: "Зареждане",
     refresh: "Опресни",
+    noResults: "Няма намерени резултати",
   },
   home: {
     welcome: "Добре дошли",

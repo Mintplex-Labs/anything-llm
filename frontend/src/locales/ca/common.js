@@ -69,6 +69,7 @@ const TRANSLATIONS = {
       "El nom d'usuari ha de tenir entre 2 i 64 caràcters, començar amb una lletra minúscula i només pot contenir lletres minúscules, números, guions baixos, guions i punts.",
     loading: "Carregant",
     refresh: "Actualitza",
+    noResults: "No s'han trobat resultats",
   },
   home: {
     welcome: "Benvingut",

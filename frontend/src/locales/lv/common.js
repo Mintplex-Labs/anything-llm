@@ -68,6 +68,7 @@ const TRANSLATIONS = {
     stopped: "Apstājās",
     loading: "Ielāde",
     refresh: "Atjaunot",
+    noResults: "Netika atrasti rezultāti",
   },
   settings: {
     title: "Instances iestatījumi",
