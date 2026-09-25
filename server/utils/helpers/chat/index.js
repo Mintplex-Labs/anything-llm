@@ -86,7 +86,10 @@ async function messageArrayCompressor(llm, messages = [], rawHistory = []) {
 
     // Split context from system prompt - cannonball since its over the window.
     // We assume the context + user prompt is enough tokens to fit.
-    const [prompt, context = ""] = system.content.split("Context:");
+    // Split on the "Context:" header the providers append before [CONTEXT 0],
+    // not on every "Context:" - the workspace prompt or a document chunk may
+    // contain the word too, and splitting there would drop the context after it.
+    const { prompt, context } = splitSystemContext(system.content);
     let compressedPrompt;
     let compressedContext;
 
@@ -187,6 +190,22 @@ async function messageArrayCompressor(llm, messages = [], rawHistory = []) {
     compressedPrompt,
   ]);
   return [cSystem, ...cHistory, cPrompt];
+}
+
+/**
+ * Splits a system prompt into the instruction and the appended context block.
+ * @param {string} content - The system prompt content.
+ * @returns {{prompt: string, context: string}}
+ */
+function splitSystemContext(content = "") {
+  const header = "Context:";
+  let idx = content.indexOf(`${header}\n[CONTEXT 0]:`);
+  if (idx === -1) idx = content.indexOf(header);
+  if (idx === -1) return { prompt: content, context: "" };
+  return {
+    prompt: content.slice(0, idx),
+    context: content.slice(idx + header.length),
+  };
 }
 
 // Implementation of messageArrayCompressor, but for string only completion models
