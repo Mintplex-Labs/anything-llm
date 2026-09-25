@@ -54,6 +54,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Çalışma Alanları Adı",
     selection: "Model Seçimi",
     saving: "Kaydediliyor...",
+    saved: "Kaydedildi",
     save: "Değişiklikleri Kaydet",
     previous: "Önceki Sayfa",
     next: "Sonraki Sayfa",

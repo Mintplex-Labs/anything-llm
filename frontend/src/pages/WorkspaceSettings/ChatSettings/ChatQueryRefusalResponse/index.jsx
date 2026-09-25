@@ -1,12 +1,14 @@
 import { chatQueryRefusalResponse } from "@/utils/chat";
 import { useTranslation } from "react-i18next";
-export default function ChatQueryRefusalResponse({ workspace, setHasChanges }) {
+import { SavedIndicator } from "@/components/AutosaveForm";
+export default function ChatQueryRefusalResponse({ workspace }) {
   const { t } = useTranslation();
   return (
     <div>
       <div className="flex flex-col gap-y-[8px]">
         <label htmlFor="name" className="block input-label">
           {t("chat.refusal.title")}
+          <SavedIndicator name="queryRefusalResponse" />
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium">
           {t("chat.refusal.desc-start")}{" "}
@@ -25,7 +27,6 @@ export default function ChatQueryRefusalResponse({ workspace, setHasChanges }) {
         required={true}
         wrap="soft"
         autoComplete="off"
-        onChange={() => setHasChanges(true)}
       />
     </div>
   );
