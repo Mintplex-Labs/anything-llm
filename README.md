@@ -1,12 +1,5 @@
 <a name="readme-top"></a>
 
-> [!NOTE]
-> We are also working on [Open Computer](/open-computer) which gives an entire computer environment for AI Agents to use.
->
-> This will bring AnythingLLM's agent capabilities to a new level and a novel UX paradigm for AI Agent use.
->
-> ⭐ Star the repo to stay updated!
-
 <p align="center">
   <a href="https://anythingllm.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="AnythingLLM logo"></a>
 </p>
@@ -41,6 +34,10 @@
 
 <p align="center">
 👉 AnythingLLM for desktop (Mac, Windows, & Linux)! <a href="https://anythingllm.com/download" target="_blank"> Download Now</a>
+</p>
+
+<p align="center">
+📱 AnythingLLM Mobile (Android) is open source! <a href="https://github.com/Mintplex-Labs/anythingllm-mobile" target="_blank">View the repo</a>
 </p>
 
 Chat with your docs. Automate complex workflows with AI Agents. Hyper-configurable, multi-user ready, battle-tested—and runs locally by default with zero setup friction.
@@ -188,12 +185,12 @@ Mintplex Labs & the community maintain a number of deployment methods, scripts, 
 |----------------------------------------|----|-----|---------------|------------|
 | [![Deploy on Docker][docker-btn]][docker-deploy] | [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy] | [![Deploy on DigitalOcean][do-btn]][do-deploy] | [![Deploy on Render.com][render-btn]][render-deploy] |
 
-| Railway                                             | RepoCloud                                                 | Elestio                                             | Northflank                                                   | Sealos                                               |
-| --------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------- |
+| Railway                                             | RepoCloud                                                 | Elestio                                             | Northflank                                                   | Sealos                                           |
+| --------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------ |
 | [![Deploy on Railway][railway-btn]][railway-deploy] | [![Deploy on RepoCloud][repocloud-btn]][repocloud-deploy] | [![Deploy on Elestio][elestio-btn]][elestio-deploy] | [![Deploy on Northflank][northflank-btn]][northflank-deploy] | [![Deploy on Sealos][sealos-btn]][sealos-deploy] |
 
-| Easypanel |
-| --- |
+| Easypanel                                                 |
+| --------------------------------------------------------- |
 | [![Deploy on Easypanel][easypanel-btn]][easypanel-deploy] |
 
 [or set up a production AnythingLLM instance without Docker →](./BARE_METAL.md)
@@ -278,7 +275,7 @@ premium-sponsors (reserved for $100/mth sponsors who request to be called out he
 
 ## 🔗 More Products
 
-- **[AnythingLLM Mobile (MIT Licensed)][anythingllm-mobile]:** A mobile application that allows you to use AnythingLLM on your mobile device.
+- **[AnythingLLM Mobile (Open-Source Licensed)][anythingllm-mobile]:** The same AnythingLLM on-device expierence, but on your phone.
 - **[AnythingLLM Browser Extension][anythingllm-extension]:** A browser extension that allows you to use AnythingLLM in your browser.
 - **[AnythingLLM Embed][anythingllm-embed]:** A widget that allows you to embed AnythingLLM in your website.
 
