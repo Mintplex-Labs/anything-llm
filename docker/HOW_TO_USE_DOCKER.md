@@ -56,7 +56,6 @@ export STORAGE_LOCATION=$HOME/anythingllm && \
 mkdir -p $STORAGE_LOCATION && \
 touch "$STORAGE_LOCATION/.env" && \
 docker run -d --rm -p 3001:3001 \
---cap-add SYS_ADMIN \
 -v ${STORAGE_LOCATION}:/app/server/storage \
 -v ${STORAGE_LOCATION}/.env:/app/server/.env \
 -e STORAGE_DIR="/app/server/storage" \
@@ -77,7 +76,6 @@ $env:STORAGE_LOCATION="$HOME\Documents\anythingllm"; `
 If(!(Test-Path $env:STORAGE_LOCATION)) {New-Item $env:STORAGE_LOCATION -ItemType Directory}; `
 If(!(Test-Path "$env:STORAGE_LOCATION\.env")) {New-Item "$env:STORAGE_LOCATION\.env" -ItemType File}; `
 docker run -d --rm -p 3001:3001 `
---cap-add SYS_ADMIN `
 -v "$env:STORAGE_LOCATION`:/app/server/storage" `
 -v "$env:STORAGE_LOCATION\.env:/app/server/.env" `
 -e STORAGE_DIR="/app/server/storage" `
@@ -99,8 +97,6 @@ services:
     container_name: anythingllm
     ports:
     - "3001:3001"
-    cap_add:
-      - SYS_ADMIN
     environment:
     # Adjust for your environment
       - STORAGE_DIR=/app/server/storage
