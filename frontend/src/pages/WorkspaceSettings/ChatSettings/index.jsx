@@ -32,7 +32,7 @@ export default function ChatSettings({ workspace }) {
     );
     if (!updatedWorkspace) {
       showToast(`Error: ${message}`, "error", { clear: true });
-      // Keep hasChanges true on error so user can retry
+      // Returning false keeps the fields dirty so the next save retries them.
       return false;
     }
     return true;

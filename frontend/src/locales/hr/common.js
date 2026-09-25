@@ -54,6 +54,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Naziv radnog prostora",
     selection: "Odabir modela",
     saving: "Spremanje...",
+    saved: "Spremljeno",
     save: "Spremi promjene",
     previous: "Prethodna stranica",
     next: "Sljedeća stranica",
