@@ -139,6 +139,7 @@ describe("reasoningParams", () => {
     ["ollama", "off", { think: false }],
     ["ollama", "high", { think: "high" }],
     ["lmstudio", "off", { reasoning_effort: "none" }],
+    ["lmstudio", "on", { reasoning_effort: "medium" }],
     ["lmstudio", "low", { reasoning_effort: "low" }],
     ["lemonade", "on", { chat_template_kwargs: { enable_thinking: true } }],
     ["lemonade", "off", { chat_template_kwargs: { enable_thinking: false } }],

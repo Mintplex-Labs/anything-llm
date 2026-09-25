@@ -58,8 +58,9 @@ const PROVIDER_REASONING_EFFORTS = {
   // models only take the on/off toggle.
   ollama: (model = "") =>
     model.includes("gpt-oss") ? ["low", "medium", "high"] : ["on", "off"],
-  // "off" is sent as "none". Filtered per model by the LM Studio models API.
-  lmstudio: () => ["off", "low", "medium", "high"],
+  // Filtered per model by `reasoning.allowed_options` from the LM Studio
+  // models API - on/off for toggle models, levels for eg: gpt-oss.
+  lmstudio: () => ["off", "on", "low", "medium", "high"],
   // llama.cpp chat template kwargs: gpt-oss takes a reasoning level, other
   // thinking models only a toggle.
   lemonade: (model = "") =>
@@ -89,7 +90,11 @@ function reasoningParams(provider, effort = null) {
     case "ollama":
       return { think: toggle ? effort === "on" : effort };
     case "lmstudio":
-      return { reasoning_effort: effort === "off" ? "none" : effort };
+      // Only levels are accepted on the wire - toggle models think at any
+      // level, so "on" is sent as the middle one.
+      return {
+        reasoning_effort: { off: "none", on: "medium" }[effort] ?? effort,
+      };
     case "lemonade":
       return {
         chat_template_kwargs: toggle

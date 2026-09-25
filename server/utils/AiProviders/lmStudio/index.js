@@ -356,8 +356,7 @@ class LMStudioLLM {
           };
 
       // `reasoning.allowed_options` is per model (eg: on/off for Qwen3, or
-      // low/medium/high for gpt-oss). Only the levels that change behavior
-      // over the default are offered - "on" is the default for those models.
+      // low/medium/high for gpt-oss).
       const reasoningOptions = PROVIDER_REASONING_EFFORTS.lmstudio().filter(
         (option) => capabilities.reasoning?.allowed_options?.includes(option)
       );
