@@ -52,6 +52,7 @@ const TRANSLATIONS = {
     "workspaces-name": "워크스페이스 이름",
     selection: "모델 선택",
     saving: "저장 중...",
+    saved: "저장됨",
     save: "저장",
     previous: "이전",
     next: "다음",

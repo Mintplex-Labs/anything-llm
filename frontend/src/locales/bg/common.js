@@ -54,6 +54,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Име на работното пространство",
     selection: "Избор на модел",
     saving: "Запазване...",
+    saved: "Запазено",
     save: "Запази промените",
     previous: "Предишна страница",
     next: "Следваща страница",

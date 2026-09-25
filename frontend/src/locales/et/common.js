@@ -53,6 +53,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Tööruumide nimi",
     selection: "Mudeli valik",
     saving: "Salvestan…",
+    saved: "Salvestatud",
     save: "Salvesta muudatused",
     previous: "Eelmine leht",
     next: "Järgmine leht",

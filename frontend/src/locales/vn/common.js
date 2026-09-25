@@ -54,6 +54,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Tên không gian làm việc",
     selection: "Lựa chọn mô hình",
     saving: "Đang lưu...",
+    saved: "Đã lưu",
     save: "Lưu thay đổi",
     previous: "Trang trước",
     next: "Trang tiếp theo",

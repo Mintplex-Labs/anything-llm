@@ -54,6 +54,7 @@ const TRANSLATIONS = {
     "workspaces-name": "ຊື່ພື້ນທີ່ເຮັດວຽກ (Workspace)",
     selection: "ການເລືອກແບບຈຳລອງ",
     saving: "ກຳລັງບັນທຶກ...",
+    saved: "ບັນທຶກແລ້ວ",
     save: "ບັນທຶກການປ່ຽນແປງ",
     previous: "ໜ້າກ່ອນໜ້າ",
     next: "ໜ້າຖັດໄປ",

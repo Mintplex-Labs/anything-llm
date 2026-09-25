@@ -54,6 +54,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Nazwa obszaru roboczego",
     selection: "Wybór modelu",
     saving: "Zapisywanie...",
+    saved: "Zapisano",
     save: "Zapisz zmiany",
     previous: "Poprzednia strona",
     next: "Następna strona",
