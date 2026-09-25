@@ -9,6 +9,15 @@ const THUMB_EDGE = 96;
 const THUMB_GAP = 8;
 const THUMB_COLUMNS = 4;
 const JPEG_QUALITY = 0.8;
+// Stands in for a message's images when `canvas` cannot draw the thumbnail
+// sheet, so the export still shows that the message carried images.
+const IMAGE_PLACEHOLDER = `data:image/svg+xml;base64,${Buffer.from(
+  `<svg xmlns="http://www.w3.org/2000/svg" width="${THUMB_EDGE}" height="${THUMB_EDGE}" viewBox="0 0 96 96">` +
+    `<rect width="96" height="96" rx="8" fill="#e5e7eb"/>` +
+    `<g font-family="sans-serif" font-size="10" fill="#6b7280" text-anchor="middle">` +
+    `<text x="48" y="44">Image could</text><text x="48" y="58">not be loaded</text>` +
+    `</g></svg>`
+).toString("base64")}`;
 const validExportTypes = ["pdf", "markdown", "plaintext", "json", "html"];
 
 // Extract thought chain content from assistant messages.
@@ -90,10 +99,10 @@ async function imageThumbnailSheet(images = []) {
 
 /**
  * Every image tied to a message - what the user uploaded as context plus any
- * image the assistant generated while answering. Tiled into one thumbnail sheet
- * when `canvas` can draw it, otherwise the originals are embedded as-is so an
- * export never silently loses its images.
- * @returns {Promise<string[]>} image data URLs to embed, empty if none.
+ * image the assistant generated while answering - tiled into one thumbnail
+ * sheet, or a placeholder when the sheet cannot be drawn.
+ * @returns {Promise<string|null>} image data URL to embed, or null if the
+ * message has no images.
  */
 async function messageImages(msg = {}) {
   const { generatedImageAttachments } = require("../files/index.js");
@@ -103,9 +112,8 @@ async function messageImages(msg = {}) {
     ),
     ...generatedImageAttachments(msg.outputs),
   ];
-  if (!images.length) return [];
-  const sheet = await imageThumbnailSheet(images);
-  return sheet ? [sheet] : images.map((image) => image.contentString);
+  if (!images.length) return null;
+  return (await imageThumbnailSheet(images)) || IMAGE_PLACEHOLDER;
 }
 
 // Build a clean markdown document from a converted chat history.
@@ -123,9 +131,7 @@ async function chatHistoryToMarkdown(
       msg.role === "assistant"
         ? stripThoughtChain(msg.content)
         : (msg.content || "").trim();
-    const images = (await messageImages(msg))
-      .map((src) => `![attachments](${src})`)
-      .join("\n\n");
+    const images = await messageImages(msg);
     if (!content && !images) continue;
 
     lines.push(
@@ -135,7 +141,7 @@ async function chatHistoryToMarkdown(
       ""
     );
     if (content) lines.push(content, "");
-    if (images) lines.push(images, "");
+    if (images) lines.push(`![attachments](${images})`, "");
   }
 
   return lines.join("\n");
@@ -214,12 +220,10 @@ async function chatHistoryToHTML(history = [], { workspaceName, threadName }) {
       msg.role === "assistant" ? stripThoughtChain(rawContent) : rawContent;
     const reasoning =
       msg.role === "assistant" ? extractThoughtChain(rawContent) : null;
-    const images = (await messageImages(msg))
-      .map(
-        (src) =>
-          `<img src="${src}" alt="attachments" class="max-w-full rounded-lg mt-2" />`
-      )
-      .join("\n");
+    const sheet = await messageImages(msg);
+    const images = sheet
+      ? `<img src="${sheet}" alt="attachments" class="max-w-full rounded-lg mt-2" />`
+      : "";
     if (!content && !images && !reasoning) continue;
 
     const escapedContent = content ? escapeHtml(content) : "";
