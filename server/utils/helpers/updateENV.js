@@ -219,7 +219,7 @@ const KEY_MAPPING = {
   },
   GenericOpenAiMaxTokens: {
     envKey: "GENERIC_OPEN_AI_MAX_TOKENS",
-    checks: [nonZero],
+    checks: [nonNegative],
   },
 
   // AWS Bedrock LLM Settings
@@ -463,6 +463,10 @@ const KEY_MAPPING = {
   TogetherAiModelPref: {
     envKey: "TOGETHER_AI_MODEL_PREF",
     checks: [isNotEmpty],
+  },
+  TogetherAiMaxTokens: {
+    envKey: "TOGETHER_AI_MAX_TOKENS",
+    checks: [nonNegative],
   },
 
   // Fireworks AI Options
@@ -1071,6 +1075,12 @@ function nonZero(input = "") {
   return Number(input) <= 0 ? "Value must be greater than zero" : null;
 }
 
+// Zero is allowed and means the field is omitted from the request payload.
+function nonNegative(input = "") {
+  if (isNaN(Number(input))) return "Value must be a number";
+  return Number(input) < 0 ? "Value cannot be negative" : null;
+}
+
 function isInteger(input = "") {
   if (isNaN(Number(input))) return "Value must be a number";
   return Number(input);
@@ -1546,6 +1556,8 @@ function dumpENV() {
     "GENERIC_OPENAI_STREAMING_DISABLED",
     // Custom headers for Generic OpenAI
     "GENERIC_OPEN_AI_CUSTOM_HEADERS",
+    // Custom request field name for Generic OpenAI max tokens (eg: max_completion_tokens)
+    "GENERIC_OPEN_AI_MODEL_MAX_TOKEN_KEY",
 
     // Specify Chromium args for collector
     "ANYTHINGLLM_CHROMIUM_ARGS",
