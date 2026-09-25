@@ -1,6 +1,7 @@
 const { v4 } = require("uuid");
 const fs = require("fs");
 const { mboxParser } = require("mbox-parser");
+const { htmlToText } = require("html-to-text");
 const {
   createdDate,
   trashFile,
@@ -37,9 +38,7 @@ async function asMbox({
   let item = 1;
   const documents = [];
   for (const mail of mails) {
-    if (!mail.hasOwnProperty("text")) continue;
-
-    const content = mail.text;
+    const content = messageText(mail);
     if (!content) continue;
     console.log(
       `-- Working on message "${mail.subject || "Unknown subject"}" --`
@@ -78,6 +77,18 @@ async function asMbox({
     `[SUCCESS]: ${filename} messages converted & ready for embedding.\n`
   );
   return { success: true, reason: null, documents };
+}
+
+/**
+ * The readable text of a parsed message. mailparser derives `text` from the
+ * HTML part only when that part is the whole message, so an HTML-only message
+ * that carries an attachment (`multipart/mixed` with an HTML body and a file)
+ * has `html` and no `text`. Its text is taken from the HTML then.
+ */
+function messageText(mail) {
+  if (mail.text?.trim()) return mail.text;
+  if (!mail.html) return "";
+  return htmlToText(mail.html, { wordwrap: false, preserveNewlines: true });
 }
 
 module.exports = asMbox;
