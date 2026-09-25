@@ -5,7 +5,9 @@ const {
 const { convertToChatHistory } = require("../helpers/chat/responses.js");
 
 const THOUGHT_TAGS = "thinking|think|thought|thought_chain";
-const MAX_IMAGE_EDGE = 512;
+const THUMB_EDGE = 96;
+const THUMB_GAP = 8;
+const THUMB_COLUMNS = 4;
 const JPEG_QUALITY = 0.8;
 const validExportTypes = ["pdf", "markdown", "plaintext", "json", "html"];
 
@@ -36,40 +38,56 @@ function stripThoughtChain(text = "") {
 }
 
 /**
- * Downscale and re-encode an image so exports do not carry full-resolution
- * originals. Returns it untouched if that saves nothing or canvas is missing.
- * @param {string} dataUri - `data:image/xxx;base64,...`
- * @returns {Promise<string>}
+ * Tile every image of a message into one wrapping grid of thumbnails. Images in
+ * an export are decorative - they only show that a message carried one - so the
+ * originals never need to be embedded at full resolution.
+ * @param {{contentString: string}[]} images
+ * @returns {Promise<string|null>} `data:image/jpeg;base64,...`, or null if the
+ * sheet could not be drawn.
  */
-async function shrinkImage(dataUri) {
+async function imageThumbnailSheet(images = []) {
   try {
     const { loadImage, createCanvas } = require("canvas");
-    const image = await loadImage(dataUri);
-    const scale = Math.min(
-      1,
-      MAX_IMAGE_EDGE / Math.max(image.width, image.height)
+    const loaded = await Promise.all(
+      images.map((image) => loadImage(image.contentString))
     );
-    const width = Math.round(image.width * scale);
-    const height = Math.round(image.height * scale);
 
-    const canvas = createCanvas(width, height);
+    const columns = Math.min(loaded.length, THUMB_COLUMNS);
+    const rows = Math.ceil(loaded.length / columns);
+    const cell = THUMB_EDGE + THUMB_GAP;
+    const canvas = createCanvas(
+      columns * cell - THUMB_GAP,
+      rows * cell - THUMB_GAP
+    );
+
     const context = canvas.getContext("2d");
     // JPEG carries no alpha channel - without a ground, transparent pixels
     // encode as black.
     context.fillStyle = "#ffffff";
-    context.fillRect(0, 0, width, height);
-    context.drawImage(image, 0, 0, width, height);
+    context.fillRect(0, 0, canvas.width, canvas.height);
 
-    const shrunk = canvas.toDataURL("image/jpeg", JPEG_QUALITY);
-    return shrunk.length < dataUri.length ? shrunk : dataUri;
+    loaded.forEach((image, index) => {
+      const scale = THUMB_EDGE / Math.max(image.width, image.height);
+      const width = image.width * scale;
+      const height = image.height * scale;
+      context.drawImage(
+        image,
+        (index % columns) * cell + (THUMB_EDGE - width) / 2,
+        Math.floor(index / columns) * cell + (THUMB_EDGE - height) / 2,
+        width,
+        height
+      );
+    });
+
+    return canvas.toDataURL("image/jpeg", JPEG_QUALITY);
   } catch {
-    return dataUri;
+    return null;
   }
 }
 
 // Every image tied to a message - what the user uploaded as context plus any
 // image the assistant generated while answering.
-async function messageImages(msg = {}) {
+function messageImages(msg = {}) {
   const { generatedImageAttachments } = require("../files/index.js");
   const images = [
     ...(msg.attachments || []).filter((a) =>
@@ -77,13 +95,7 @@ async function messageImages(msg = {}) {
     ),
     ...generatedImageAttachments(msg.outputs),
   ];
-
-  return Promise.all(
-    images.map(async (image) => ({
-      ...image,
-      contentString: await shrinkImage(image.contentString),
-    }))
-  );
+  return images.length ? imageThumbnailSheet(images) : null;
 }
 
 // Build a clean markdown document from a converted chat history.
@@ -101,9 +113,7 @@ async function chatHistoryToMarkdown(
       msg.role === "assistant"
         ? stripThoughtChain(msg.content)
         : (msg.content || "").trim();
-    const images = (await messageImages(msg))
-      .map((a) => `![${a.name || "attachment"}](${a.contentString})`)
-      .join("\n\n");
+    const images = await messageImages(msg);
     if (!content && !images) continue;
 
     lines.push(
@@ -113,7 +123,7 @@ async function chatHistoryToMarkdown(
       ""
     );
     if (content) lines.push(content, "");
-    if (images) lines.push(images, "");
+    if (images) lines.push(`![attachments](${images})`, "");
   }
 
   return lines.join("\n");
@@ -192,12 +202,10 @@ async function chatHistoryToHTML(history = [], { workspaceName, threadName }) {
       msg.role === "assistant" ? stripThoughtChain(rawContent) : rawContent;
     const reasoning =
       msg.role === "assistant" ? extractThoughtChain(rawContent) : null;
-    const images = (await messageImages(msg))
-      .map(
-        (a) =>
-          `<img src="${a.contentString}" alt="${escapeHtml(a.name || "attachment")}" class="max-w-full rounded-lg mt-2" />`
-      )
-      .join("\n");
+    const sheet = await messageImages(msg);
+    const images = sheet
+      ? `<img src="${sheet}" alt="attachments" class="max-w-full rounded-lg mt-2" />`
+      : "";
     if (!content && !images && !reasoning) continue;
 
     const escapedContent = content ? escapeHtml(content) : "";
