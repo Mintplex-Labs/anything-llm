@@ -167,9 +167,7 @@ class AWSBedrockLLM {
     userPrompt = "",
     attachments = [],
   }) {
-    const systemMessageContent = `${systemPrompt}${this.#appendContext(
-      contextTexts
-    )}`;
+    const systemMessageContent = `${systemPrompt}${this.#appendContext(contextTexts)}`;
     let messages = [];
 
     if (this.noSystemPromptModels.includes(this.model)) {
